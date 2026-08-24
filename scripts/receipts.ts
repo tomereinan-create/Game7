@@ -1101,7 +1101,7 @@ const ROUNDS: Record<string, () => void> = {
   },
   '44': () => {
     console.log(`${EOL}recal_44 (his ruling) — playvol out of the bonus; a SHOOTER is gated by the offense he already has`)
-    note('The version has moved past 44: r45 replaced this round's usage multiplier with attempt rates.')
+    note('The version has moved past 44: r45 replaced the usage multiplier of this round with attempt rates.')
     line('playvol gone from the bonus', /play_f/.test(OVR) ? 'STILL REFERENCED' : 'gone', 'gone', !/play_f/.test(OVR))
     src('the paint gate is unchanged', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(a\['ft'\] - 58\) \* 0\.075\)\)/, 'the stroke')
     src('the shooter gate', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(pre_off - 55\) \* 0\.025\)\)/, '1.0 at 55, 0.5 at 75, 0.25 at 85')
