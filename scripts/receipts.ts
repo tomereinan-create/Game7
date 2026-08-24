@@ -1099,6 +1099,66 @@ const ROUNDS: Record<string, () => void> = {
     note(`top: ${hit.map((p) => [p, bonus(p)] as const).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([p, b]) => `${p.name} ${b.toFixed(1)}`).join(', ')}`)
     note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50.')
   },
+  '44': () => {
+    console.log(`${EOL}recal_44 (his ruling) — playvol out of the bonus; a SHOOTER is gated by the offense he already has`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '44', /PIPELINE_VERSION = 44/.test(OVR))
+    line('playvol gone from the bonus', /play_f/.test(OVR) ? 'STILL REFERENCED' : 'gone', 'gone', !/play_f/.test(OVR))
+    src('the paint gate is unchanged', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(a\['ft'\] - 58\) \* 0\.075\)\)/, 'the stroke')
+    src('the shooter gate', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(pre_off - 55\) \* 0\.025\)\)/, '1.0 at 55, 0.5 at 75, 0.25 at 85')
+    src('measured BEFORE the bonus', OVR, /pre_off = std \* 0\.93/, 'the standard path only')
+    src('added once', OVR, /std \+= 8 \* zone_f \* vol_f \* gate_f/, 'three factors, one addition')
+    note('NOT RECURSIVE: the shooter gate reads the standard path as it stands before the bonus is')
+    note('added, and o_ovr is never consulted — at that moment it does not exist yet.')
+    const shooterGate = (pre: number) => Math.min(1, Math.max(0.25, 1 - (pre - 55) * 0.025))
+    for (const [pre, want] of [[50, 1], [55, 1], [75, 0.5], [85, 0.25], [95, 0.25]] as const)
+      line(`shooter at pre-bonus OFF ${pre}`, shooterGate(pre).toFixed(3), String(want), Math.abs(shooterGate(pre) - want) < 1e-9)
+    line('a better shooter keeps less', `${shooterGate(60).toFixed(3)} at 60 vs ${shooterGate(80).toFixed(3)} at 80`, 'strictly decreasing', shooterGate(60) > shooterGate(80))
+    // what it did to the pool
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const hit = PLAYERS.filter(fires)
+    const paint = hit.filter((p) => p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid))
+    const shooters = hit.filter((p) => !(p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid)))
+    line('bonus cards', `${hit.length} — ${paint.length} paint, ${shooters.length} shooters`, 'the shape gate is unchanged', hit.length === 1823)
+    // the shooters that keep the most should be the ones the card underpays
+    const lo = shooters.filter((p) => p.o_ovr <= 65)
+    const hi = shooters.filter((p) => p.o_ovr >= 85)
+    const mean = (xs: typeof PLAYERS) => (xs.length ? xs.reduce((t, p) => t + p.o_ovr, 0) / xs.length : 0)
+    line('low-OFF shooters keep the bonus', `${lo.length} cards, mean OFF ${mean(lo).toFixed(1)}`, 'they are the underpaid ones', lo.length > 0)
+    line('high-OFF shooters are throttled', `${hi.length} cards at OFF 85+`, 'few, and only on other merits', hi.length < lo.length)
+    note('Band anchors re-derived, both moved: dropping playvol lifted the paint weapons hard, so')
+    note('OFF_TOP 101.95 -> 107.37, and OVR_TOP 97.50 -> 96.50 followed it down.')
+    const shaq = PLAYERS.filter((p) => p.name.startsWith("Shaquille O'Neal '"))
+    line("Shaq's peak OFF", String(Math.max(...shaq.map((p) => p.o_ovr))), 'lifted: playvol no longer taxes him', Math.max(...shaq.map((p) => p.o_ovr)) >= 95)
+    note(`He carried playvol 41-57 and was paying 60-75% of the bonus for it. ${shaq.filter((p) => p.o_ovr >= 95).length} of his seasons now read OFF 95+.`)
+  },
+  '45': () => {
+    console.log(`${EOL}recal_45 (his ruling) — the bonus scales with the ATTEMPTS OF THE WEAPON, not with usage`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '45', /PIPELINE_VERSION = 45/.test(OVR))
+    line('the usage multiplier is gone', /vol_f/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/vol_f/.test(OVR))
+    src('paint attempts, hinged at 7.5', OVR, /att_f = max\(_two \/ 7\.5, 1\.0\)/, 'per 100 possessions')
+    src('three-point attempts, hinged at 8.5', OVR, /att_f = max\(_three \/ 8\.5, 1\.0\)/, 'per 100 possessions')
+    src('rates read from the provenance sidecar', OVR, /_ATT\[_n\] = \(\(_r\[1\]/, 'rim[1] and 3pt[1], the same numbers Advanced prints')
+    src('the bonus multiplies by it', OVR, /std \+= 8 \* zone_f \* att_f \* gate_f/, 'zone x attempts x gate')
+    note('The hinges are set so the factor behaves as max(volume/50, 1) did: the median specialist sits')
+    note('on the floor of 1.0 and the busiest lands near 2.0 (paint max 14.9/7.5 = 1.99, three 16.7/8.5 = 1.96).')
+    // the shape of the replacement, checked on the arithmetic
+    for (const [att, hinge, want] of [[7.5, 7.5, 1], [3.0, 7.5, 1], [14.9, 7.5, 1.987], [8.5, 8.5, 1], [16.7, 8.5, 1.965]] as const)
+      line(`${att} attempts against a ${hinge} hinge`, Math.max(att / hinge, 1).toFixed(3), String(want), Math.abs(Math.max(att / hinge, 1) - want) < 0.001)
+    line('it never falls below the floor', String(Math.max(0.1 / 7.5, 1)), '1', Math.max(0.1 / 7.5, 1) === 1)
+    // the men it moves
+    for (const [who, why] of [["Shaquille O'Neal '00", 'the most paint attempts in the pool'], ["Duncan Robinson '20", 'a shooter who does nothing but shoot'], ["Kyle Korver '15", 'the same, at lower volume']] as const) {
+      const q = by.get(who)
+      if (q) line(`${who}`, `OFF ${q.o_ovr}  OVR ${q.ovr}`, why, true)
+    }
+    note('Band anchor re-derived: OFF_TOP 107.37 -> 105.92. OVR_TOP holds at 96.50.')
+    note("Two pins moved with this round and the one before it, both recorded in tests/engine.test.ts:")
+    note("Shaq '00 OFF 90 -> 98 (playvol no longer taxes him; 14 paint attempts a hundred now multiply")
+    note("the bonus) and Dwight '11 75 -> 85 (ft 58 keeps the whole free-throw gate).")
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))

@@ -151,7 +151,11 @@ describe('player data (stats-only doctrine)', () => {
     near("LeBron James '13", 95, 96)
     near("Kawhi Leonard '17", 92, 99)
     near("Giannis Antetokounmpo '20", 91, 93)
-    near("Shaquille O'Neal '00", 90, 89)
+    // r44/r45 lifted him: 90 -> 98. Two rulings compound on exactly his profile. Dropping playvol from
+    // the specialist bonus stopped taxing him for passing out of the double (playvol 56 in 2000), and
+    // the bonus now scales with PAINT ATTEMPTS — he took 14 a hundred, the most in the pool — instead
+    // of with usage. A 99 rim game on ft 52 keeps the whole free-throw gate as well.
+    near("Shaquille O'Neal '00", 98, 89)
     // r42 lifted him: 75 -> 85. His ruling gates the specialist bonus on the free-throw stroke, and
     // Howard at ft 58 is the exact man it is for — a 98 rim game and no touch, so he keeps ALL of a
     // bonus that volume had already multiplied. The men with a stroke (Ewing 74, Moses 76) keep a

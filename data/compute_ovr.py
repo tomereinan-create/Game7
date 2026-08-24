@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 43
+PIPELINE_VERSION = 45
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -26,6 +26,21 @@ W_OFF, W_DEF, W_MARG = 0.45, 0.20, 0.35   # SUPERSEDED by recal_37; nothing read
 
 path = sys.argv[1] if len(sys.argv) > 1 else 'players_stats.json'
 players = json.load(io.open(path, encoding='utf-8'))
+
+# ATTEMPT RATES (recal_45). The specialist bonus scales with how often a man fires HIS OWN shot, and
+# those rates are already recorded per card in the provenance sidecar as the raw inputs to the rim and
+# 3pt ratings: rim[1] is paint attempts per 100, 3pt[1] is three-point attempts per 100. Read here so
+# the bonus can use them; a card with no sidecar entry simply gets the floor.
+_ATT = {}
+try:
+    _prov_path = _os.path.join(_os.path.dirname(_os.path.abspath(path)), 'provenance.json')
+    for _n, _m in json.load(io.open(_prov_path, encoding='utf-8')).items():
+        _r, _t = _m.get('rim'), _m.get('3pt')
+        _ATT[_n] = ((_r[1] if _r and len(_r) > 1 and _r[1] is not None else 0.0),
+                    (_t[1] if _t and len(_t) > 1 and _t[1] is not None else 0.0))
+    print(f"attempt rates loaded for {len(_ATT):,} cards")
+except Exception as _e:
+    print(f"WARNING: no attempt rates ({_e}) — the specialist bonus falls back to its floor")
 for p in players:
     best = -99
     for i in range(5):
@@ -106,22 +121,36 @@ def o_score(p):
         # now beats a 95 (1.10 against 1.00) and a 61 free-throw shooter beats a 64 (0.775 against 0.55),
         # where before each pair was paid identically and a single point at a boundary cost a quarter.
         zone_f = min(1.10, max(0.35, 0.50 + (z[0] - 75) * 0.025))
-        pv = a['playvol']
-        play_f = min(1.00, max(0.25, 1.00 - (pv - 25) * 0.025))
         # AND THEN VOLUME (recal_41): high(bonus x volume/50, bonus). A weapon is worth what it is
         # FIRED, so carrying a real load multiplies it — 50 volume is the hinge, 100 doubles it. Written
         # as a single factor, max(volume/50, 1), because that IS the high() of the two: nothing here
         # reads its own output, so there is no recursion and no order-of-operations to get wrong. Note
         # it only ever LIFTS: a low-volume finisher keeps his bonus rather than losing it.
-        vol_f = max(a['volume'] / 50.0, 1.0)
-        # AND THE STROKE, FOR PAINT WEAPONS ONLY (recal_42). The standard path already pays touch through
-        # 0.11 x fouldraw x ft/100, so a rim scorer who shoots free throws is collecting there. This bonus
-        # exists for the man who gets nothing from that term — the pure interior finisher — so the better
-        # his stroke, the less of it he needs. A three-point specialist is untouched.
-        ft_f = 1.0
+        # HOW OFTEN HE FIRES IT (recal_45, replacing the usage multiplier). Paint attempts for a rim
+        # weapon, threes for a shooter — hinged so the median specialist sits on the floor and the
+        # busiest doubles, which is how max(volume/50, 1) behaved before it.
+        _two, _three = _ATT.get(p['name'], (0.0, 0.0))
         if a['rim'] >= max(a['3pt'], a['mid']):
-            ft_f = min(1.00, max(0.25, 1.00 - (a['ft'] - 58) * 0.075))
-        std += 8 * zone_f * play_f * vol_f * ft_f
+            att_f = max(_two / 7.5, 1.0)
+        else:
+            att_f = max(_three / 8.5, 1.0)
+        # EACH SPECIALIST IS GATED BY WHATEVER ALREADY PAYS HIM (recal_44).
+        #
+        # A PAINT weapon is gated on his free-throw stroke: the standard path pays touch through
+        # 0.11 x fouldraw x ft/100, so the better the stroke, the less he needs from here.
+        #
+        # A SHOOTER is gated on the offense he ALREADY has. A 55-OFF shooter is a man whose one skill
+        # the card is failing to price; a 90-OFF shooter is already being paid, and topping him up again
+        # is paying twice for the same jumper.
+        #
+        # NOT RECURSIVE: `std` here is the standard path BEFORE this bonus is added, and the bonus is
+        # added once. o_ovr is never consulted — it does not exist yet.
+        if a['rim'] >= max(a['3pt'], a['mid']):
+            gate_f = min(1.00, max(0.25, 1.00 - (a['ft'] - 58) * 0.075))
+        else:
+            pre_off = std * 0.93
+            gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
+        std += 8 * zone_f * att_f * gate_f
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     return std
@@ -147,10 +176,10 @@ for cls in (True, False):
 # Above it, the raw range is mapped onto 93-99 so the men who were tied now separate. The tops are the
 # measured maxima (OFF 108.0, DEF 104.7) so the best card in the pool lands ON 99 rather than short of
 # it; a future outlier past them simply pins at 99, which is what a ceiling is for.
-KNEE, OFF_TOP, DEF_TOP = 93.0, 101.95, 104.5
+KNEE, OFF_TOP, DEF_TOP = 93.0, 105.92, 104.5
 # OVR's own band: knee 93, top set to the highest raw the blend actually produces so the best card
 # lands ON 99. The run prints the measured top, so drift away from the anchor is visible immediately.
-OVR_KNEE, OVR_TOP = 93.0, 97.50
+OVR_KNEE, OVR_TOP = 93.0, 96.50
 def band_ovr(raw):
     return raw if raw <= OVR_KNEE else OVR_KNEE + (raw - OVR_KNEE) * (99.0 - OVR_KNEE) / (OVR_TOP - OVR_KNEE)
 _tops = []
