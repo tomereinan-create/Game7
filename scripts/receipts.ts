@@ -1184,6 +1184,37 @@ const ROUNDS: Record<string, () => void> = {
     note('Band anchors unmoved: OFF_TOP 105.92, OVR_TOP 96.50 — the top card is a paint weapon and the')
     note('cut only touches shooters.')
   },
+  '47': () => {
+    console.log(`${EOL}recal_47 (his ruling) — paint attempts decide more of the bonus, and the base pays for it`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '47', /PIPELINE_VERSION = 47/.test(OVR))
+    src('attempts as a power, no floor at 1', OVR, /att_f = min\(2\.85, max\(0\.30, \(_two \/ 7\.5\) \*\* 1\.5\)\)/, 'it cuts as well as pays')
+    src('the paint base comes down', OVR, /base = 6\.5/, '8.0 -> 6.5')
+    src('the shooter branch is untouched', OVR, /base = 5\.0/, 'still 5')
+    const af = (two: number) => Math.min(2.85, Math.max(0.3, (two / 7.5) ** 1.5))
+    for (const [att, want] of [[7.5, 1], [5, 0.544], [10, 1.54], [14, 2.55], [1, 0.3]] as const)
+      line(`${att} paint attempts`, af(att).toFixed(3), String(want), Math.abs(af(att) - want) < 0.01)
+    line('it now cuts below the hinge', `${af(5).toFixed(2)} at 5 attempts`, 'under 1, where it used to floor', af(5) < 1)
+    // HIS CONSTRAINT: Shaq holds or rises, the rest come down
+    const shaq = PLAYERS.filter((p) => p.name.startsWith("Shaquille O'Neal '"))
+    line("Shaq's peak OFF", String(Math.max(...shaq.map((p) => p.o_ovr))), '99 — held and gained', Math.max(...shaq.map((p) => p.o_ovr)) === 99)
+    for (const [who, was] of [["Shaquille O'Neal '00", 98], ["Shaquille O'Neal '06", 89], ["Dwight Howard '11", 84], ["JaVale McGee '13", 66], ["Clint Capela '17", 67]] as const) {
+      const q = by.get(who)
+      if (!q) continue
+      const up = q.o_ovr >= was
+      line(`${who}`, `OFF ${was} -> ${q.o_ovr}`, who.startsWith('Shaq') ? 'holds or rises' : 'comes down or holds', who.startsWith('Shaq') ? up : q.o_ovr <= was)
+    }
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const paints = PLAYERS.filter((p) => fires(p) && p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid))
+    const mean = (xs: typeof PLAYERS) => xs.reduce((t, p) => t + p.o_ovr, 0) / (xs.length || 1)
+    line(`paint specialists (n=${paints.length}) mean OFF`, mean(paints).toFixed(1), 'down from 49.6', mean(paints) < 49.6)
+    note('Mean paint bonus 2.16 -> 1.26. The tuning was measured against his constraint before it was')
+    note('applied, not guessed: base 6.5 with exponent 1.5 was the pair that held Shaq and dropped the rest.')
+    note('Band anchor re-derived: OFF_TOP 105.92 -> 106.36. OVR_TOP holds at 96.50.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))

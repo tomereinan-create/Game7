@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 46
+PIPELINE_VERSION = 47
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -135,8 +135,12 @@ def o_score(p):
         # collapses — and the standard path prices almost none of it. A shooter's damage is the shot,
         # which his zone rating already pays for. So the shooter's top-up is 5 where the paint man's is 8.
         if a['rim'] >= max(a['3pt'], a['mid']):
-            base = 8.0
-            att_f = max(_two / 7.5, 1.0)
+            # ATTEMPTS DECIDE MORE OF IT (recal_47). The factor is now a POWER, and it has no floor at
+            # 1.0: living at the rim pays, standing near it costs. 5 attempts a hundred keeps 0.54,
+            # 7.5 is even, 14 takes 2.55. The base comes down to 6.5 to pay for the steeper curve, so
+            # the man who actually shoots there holds his ground while the rest come back down.
+            base = 6.5
+            att_f = min(2.85, max(0.30, (_two / 7.5) ** 1.5))
         else:
             base = 5.0
             att_f = max(_three / 8.5, 1.0)
@@ -182,7 +186,7 @@ for cls in (True, False):
 # Above it, the raw range is mapped onto 93-99 so the men who were tied now separate. The tops are the
 # measured maxima (OFF 108.0, DEF 104.7) so the best card in the pool lands ON 99 rather than short of
 # it; a future outlier past them simply pins at 99, which is what a ceiling is for.
-KNEE, OFF_TOP, DEF_TOP = 93.0, 105.92, 104.5
+KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 104.5
 # OVR's own band: knee 93, top set to the highest raw the blend actually produces so the best card
 # lands ON 99. The run prints the measured top, so drift away from the anchor is visible immediately.
 OVR_KNEE, OVR_TOP = 93.0, 96.50
