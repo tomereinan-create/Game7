@@ -152,7 +152,11 @@ describe('player data (stats-only doctrine)', () => {
     near("Kawhi Leonard '17", 92, 99)
     near("Giannis Antetokounmpo '20", 91, 93)
     near("Shaquille O'Neal '00", 90, 89)
-    near("Dwight Howard '11", 75, 97)
+    // r42 lifted him: 75 -> 85. His ruling gates the specialist bonus on the free-throw stroke, and
+    // Howard at ft 58 is the exact man it is for — a 98 rim game and no touch, so he keeps ALL of a
+    // bonus that volume had already multiplied. The men with a stroke (Ewing 74, Moses 76) keep a
+    // quarter. This anchor now records the ruling rather than the old flat bonus.
+    near("Dwight Howard '11", 85, 97)
     // r37 put it back: 51 -> 61. The zone dominance bonus is a claim about SHAPE with no volume gate,
     // and Gobert's shape is as narrow as they come — rim 75, mid 6, 3pt 2, so clause B (z0 > 1.5 x the
     // other two) fires on a man taking 27-volume lobs. Three quarters of the 2,268 cards the bonus

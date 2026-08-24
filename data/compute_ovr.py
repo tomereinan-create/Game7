@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 41
+PIPELINE_VERSION = 42
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -110,7 +110,14 @@ def o_score(p):
         # reads its own output, so there is no recursion and no order-of-operations to get wrong. Note
         # it only ever LIFTS: a low-volume finisher keeps his bonus rather than losing it.
         vol_f = max(a['volume'] / 50.0, 1.0)
-        std += 8 * zone_f * play_f * vol_f
+        # AND THE STROKE, FOR PAINT WEAPONS ONLY (recal_42). The standard path already pays touch through
+        # 0.11 x fouldraw x ft/100, so a rim scorer who shoots free throws is collecting there. This bonus
+        # exists for the man who gets nothing from that term — the pure interior finisher — so the better
+        # his stroke, the less of it he needs. A three-point specialist is untouched.
+        ft_f = 1.0
+        if a['rim'] >= max(a['3pt'], a['mid']):
+            ft_f = 1.00 if a['ft'] < 60 else (0.50 if a['ft'] < 65 else 0.25)
+        std += 8 * zone_f * play_f * vol_f * ft_f
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     return std

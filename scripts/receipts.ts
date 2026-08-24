@@ -1025,6 +1025,38 @@ const ROUNDS: Record<string, () => void> = {
     note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50 — the top card of the pool is a creator,')
     note('so it never collected this bonus in the first place.')
   },
+  '42': () => {
+    console.log(`${EOL}recal_42 (his ruling) — a PAINT weapon is gated on his free-throw stroke`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '42', /PIPELINE_VERSION = 42/.test(OVR))
+    src('the ladder', OVR, /ft_f = 1\.00 if a\['ft'\] < 60 else \(0\.50 if a\['ft'\] < 65 else 0\.25\)/, '<60 full, <65 half, else a quarter')
+    src('paint-primary only', OVR, /if a\['rim'\] >= max\(a\['3pt'\], a\['mid'\]\):/, 'a shooter is untouched')
+    src('it multiplies with the rest', OVR, /std \+= 8 \* zone_f \* play_f \* vol_f \* ft_f/, 'four factors, one bonus')
+    note('The 65-70 band was not named; the ladder continues at 0.25 from 65 up. The reasoning: the')
+    note('standard path already pays touch through 0.11 x fouldraw x ft/100, so a rim scorer with a')
+    note('stroke collects there — this bonus is for the man who gets nothing from that term.')
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const paint = (p: (typeof PLAYERS)[number]) => p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid)
+    const ftf = (p: (typeof PLAYERS)[number]) => (!paint(p) ? 1 : p.attrs.ft < 60 ? 1 : p.attrs.ft < 65 ? 0.5 : 0.25)
+    const hit = PLAYERS.filter(fires)
+    const paints = hit.filter(paint)
+    line('paint-primary cards in the bonus', `${paints.length} of ${hit.length}`, 'the rest are shooters, untouched', paints.length < hit.length)
+    for (const [band, want] of [['ft < 60 keeps all', 1], ['ft 60-64 keeps half', 0.5], ['ft 65+ keeps a quarter', 0.25]] as const) {
+      const n = paints.filter((p) => ftf(p) === want).length
+      line(band, `${n} cards`, 'populated', n > 0)
+    }
+    const cut = paints.filter((p) => ftf(p) < 1)
+    line('paint weapons cut by their stroke', `${cut.length} (${((100 * cut.length) / paints.length).toFixed(0)}% of paint bonuses)`, '> 0', cut.length > 0)
+    for (const who of ["Shaquille O'Neal '93", "Dwight Howard '11", "Patrick Ewing '92", "Moses Malone '82", "Karl Malone '88"]) {
+      const p = by.get(who)
+      if (!p) continue
+      line(`${who}`, `ft ${p.attrs.ft} -> keeps ${ftf(p)}  (OFF ${p.o_ovr})`, paint(p) ? 'paint-primary, gated' : 'not paint-primary', true)
+    }
+    note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50 — the top card never took this bonus.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))
