@@ -23,6 +23,7 @@ const RULE: Record<string, string> = {
   'Two-way anchor': 'A big who protects the rim at 90+ and scores at 78+.',
   Unicorn: 'A 7\'2\" big who protects the rim at 85+, shoots from three, and is a real player (OVR 70+).',
   'Two-way star': 'Both ends above 85. There are not many.',
+  'All-around star': 'Eighty at both ends. Not elite at either — that is the two-way star above him — but there is no half of the floor he does not hold up.',
   'Two-way wing': 'A perimeter player at 78 offense and 85 defense.',
   'Scoring machine': 'Enormous load and an elite first zone, at an efficiency that is merely respectable (his ruling: the floor is 50, not 65). A man who scores 28 a night on volume shooting is a scoring machine — demanding elite conversion as well described a different, rarer player.',
   Scorer: 'His defining trait is putting it in the basket, and no single diet above described him. Not a creator: the offense does not run through him.',

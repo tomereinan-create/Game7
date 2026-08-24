@@ -92,7 +92,7 @@ export const RULES: Rule[] = [
   // never tier — quality is OVR's job. Thresholds are tunable; the order is law.
   { tag: 'Defensive playmaker', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.perdef, 80) && c.lt(c.zone, 55) },
   { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && !c.big && c.ltH(c.h, 79) },
-  { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 95) && c.ge(c.a.volume, 90) },
+  { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.volume, 90) },
   { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 88) },
   { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) && !c.big },
   { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) },
@@ -100,6 +100,9 @@ export const RULES: Rule[] = [
   { tag: 'Two-way anchor', test: (c) => c.big && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
   { tag: 'Unicorn', test: (c) => c.big && c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
   { tag: 'Two-way star', test: (c) => c.ge(c.p.o_ovr, 85) && c.ge(c.p.d_ovr, 85) },
+  // the tier below the two-way star: good at BOTH ends without being elite at either. Placed here so
+  // the three two-way claims read in order — 85/85 star, 80/80 all-around star, 78/85 wing.
+  { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 80) },
   { tag: 'Two-way wing', test: (c) => !c.big && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
@@ -111,7 +114,7 @@ export const RULES: Rule[] = [
   { tag: 'Spark plug', test: (c) => c.ltH(c.h, 75) && c.ge(c.a.volume, 80) && c.p.o_ovr < 85 },
   { tag: 'Flamethrower', test: (c) => c.ge(c.three, 90) && c.ge(c.a.volume, 70) },
   { tag: 'Sniper', test: (c) => c.ge(c.three, 90) && c.lt(c.a.volume, 40) },
-  { tag: 'Deadeye', test: (c) => c.ge(c.a.ft, 80) && c.ge(c.three, 80) && c.lt(c.a.volume, 50) },
+  { tag: 'Deadeye', test: (c) => c.ge(c.a.ft, 80) && c.ge(c.three, 80) && c.lt(c.a.volume, 50) && c.lt(c.p.o_ovr, 80) && c.lt(c.p.d_ovr, 70) },
   { tag: 'Catch-and-shoot wing', test: (c) => c.ge(c.three, 80) && c.lt(c.a.playvol, 40) && c.lt(c.a.volume, 55) && c.geH(c.h, 77) && c.ltH(c.h, 83) },
   { tag: 'Stretch big', test: (c) => c.big && c.ge(c.three, 70) && c.geH(c.h, 82) },
   { tag: 'Glass cleaner', test: (c) => c.ge(c.a.orb, 90) && c.ge(c.a.drb, 90) },
@@ -137,7 +140,7 @@ export const RULES: Rule[] = [
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
   // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
-  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 95) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 26) },
+  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 20) },
   { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) && c.ltH(c.h, 81) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]

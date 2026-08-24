@@ -220,7 +220,7 @@ describe('archetype labels', () => {
       if (t === 'Sniper') expect(a['3pt']).toBeGreaterThanOrEqual(90 - slack)
       if (t === 'Midrange maestro') expect(a.mid).toBeGreaterThanOrEqual(85 - slack)
       if (t === 'Freight train') expect(a.rim).toBeGreaterThanOrEqual(90 - slack)
-      if (t === 'Offensive engine') expect(a.playvol).toBeGreaterThanOrEqual(95 - slack)
+      if (t === 'Offensive engine') expect(a.playvol).toBeGreaterThanOrEqual(85 - slack)   // his ruling: the engine floor is 85, not 95
       if (t === 'Post scorer') expect(a.rim).toBeGreaterThanOrEqual(70 - slack)
       if (t === 'Two-way star') expect(Math.min(p.o_ovr, p.d_ovr)).toBeGreaterThanOrEqual(85 - slack)
       if (t === 'Defensive playmaker') expect(a.perdef).toBeGreaterThanOrEqual(80 - slack)
