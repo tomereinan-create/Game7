@@ -27,6 +27,7 @@ const RULE: Record<string, string> = {
   'Offensive superstar': 'Eighty-five and up on offense with a defense under 70. He wins you games at one end and gives some of it back at the other — the trade every contender argues about.',
   'Elite defender': 'Ninety and up on defense with an offense under 80. The mirror of the offensive superstar: you play him for what he stops, and you live with the rest.',
   'Two-way wing': 'A perimeter player at 78 offense and 85 defense.',
+  'Volume shooter': 'He takes everything and converts little — volume over 90 on an efficiency under 75. Somebody has to shoot, and on his team it is him.',
   'Scoring machine': 'Enormous load and an elite first zone, at an efficiency that is merely respectable (his ruling: the floor is 50, not 65). A man who scores 28 a night on volume shooting is a scoring machine — demanding elite conversion as well described a different, rarer player.',
   Scorer: 'His defining trait is putting it in the basket, and no single diet above described him. Not a creator: the offense does not run through him.',
   'Three-level scorer': 'Real usage, high efficiency, and three REAL levels — paint and mid at 65+, three at 55+. Nowhere to hide him.',

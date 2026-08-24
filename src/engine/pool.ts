@@ -108,7 +108,7 @@ export const RULES: Rule[] = [
   // two catch the men who are only good at one — and they sit above the diet tags because "elite
   // defender" says more about a 90-defence card than "enforcer" does.
   { tag: 'Offensive superstar', test: (c) => c.ge(c.p.o_ovr, 85) && c.lt(c.p.d_ovr, 70) },
-  { tag: 'Elite defender', test: (c) => c.ge(c.p.d_ovr, 90) && c.lt(c.p.o_ovr, 80) },
+  { tag: 'Elite defender', test: (c) => c.ge(c.p.d_ovr, 90) && c.lt(c.p.o_ovr, 70) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
@@ -146,6 +146,9 @@ export const RULES: Rule[] = [
   // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
   { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 20) },
+  // the machine's inefficient twin: he takes everything and does not convert. Placed directly under it,
+  // so a man with an elite zone AND a scoring gap is still named for the diet first. ">90" is ge(91).
+  { tag: 'Volume shooter', test: (c) => c.lt(c.a.efficiency, 75) && c.ge(c.a.volume, 91) },
   { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) && c.ltH(c.h, 81) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
