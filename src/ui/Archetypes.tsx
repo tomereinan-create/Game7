@@ -36,7 +36,7 @@ const RULE: Record<string, string> = {
   'Spark plug': 'Under 6′3″, using 80+ of the possessions he is on the floor for, without being a star (OFF under 85).',
   Flamethrower: 'Three-point rating 90+ at real usage.',
   Sniper: 'Three-point rating 90+ at low usage — he does one thing perfectly.',
-  Deadeye: 'Free throws at 95+ with a three-point game behind it.',
+  Deadeye: 'A pure stroke on a small load — 80+ from three, 80+ from the line, under 50 volume. He is not asked to create the shot, only to make it.',
   'Catch-and-shoot wing': 'A WING who shoots at 80+ — 6′5″ to 6′10″ — creating nothing and using nothing.',
   'Stretch big': 'A big of 6\'10\" or more who shoots the three at 70+. A wing who shoots is just a wing.',
   'Glass cleaner': 'Both rebounding rates at 90+.',
