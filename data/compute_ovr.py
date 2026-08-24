@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 45
+PIPELINE_VERSION = 46
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -130,9 +130,15 @@ def o_score(p):
         # weapon, threes for a shooter — hinged so the median specialist sits on the floor and the
         # busiest doubles, which is how max(volume/50, 1) behaved before it.
         _two, _three = _ATT.get(p['name'], (0.0, 0.0))
+        # THE TWO SPECIALISTS DO NOT SHARE A BASE (recal_46, his ruling: the shooter's was too big).
+        # A paint weapon's damage is mostly OFF the shot — fouls drawn, offensive boards, the defence he
+        # collapses — and the standard path prices almost none of it. A shooter's damage is the shot,
+        # which his zone rating already pays for. So the shooter's top-up is 5 where the paint man's is 8.
         if a['rim'] >= max(a['3pt'], a['mid']):
+            base = 8.0
             att_f = max(_two / 7.5, 1.0)
         else:
+            base = 5.0
             att_f = max(_three / 8.5, 1.0)
         # EACH SPECIALIST IS GATED BY WHATEVER ALREADY PAYS HIM (recal_44).
         #
@@ -150,7 +156,7 @@ def o_score(p):
         else:
             pre_off = std * 0.93
             gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
-        std += 8 * zone_f * att_f * gate_f
+        std += base * zone_f * att_f * gate_f
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     return std

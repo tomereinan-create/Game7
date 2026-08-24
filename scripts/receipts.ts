@@ -1159,6 +1159,31 @@ const ROUNDS: Record<string, () => void> = {
     note("Shaq '00 OFF 90 -> 98 (playvol no longer taxes him; 14 paint attempts a hundred now multiply")
     note("the bonus) and Dwight '11 75 -> 85 (ft 58 keeps the whole free-throw gate).")
   },
+  '46': () => {
+    console.log(`${EOL}recal_46 (his ruling) — the shooter's bonus was too big; it gets its own base`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '46', /PIPELINE_VERSION = 46/.test(OVR))
+    src('the paint base holds at 8', OVR, /base = 8\.0/, 'unchanged')
+    src('the shooter base drops to 5', OVR, /base = 5\.0/, '8 -> 5, a 37.5% cut')
+    src('the bonus reads its base', OVR, /std \+= base \* zone_f \* att_f \* gate_f/, 'one number decides each kind')
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const isPaint = (p: (typeof PLAYERS)[number]) => p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid)
+    const hit = PLAYERS.filter(fires)
+    const shooters = hit.filter((p) => !isPaint(p))
+    const paints = hit.filter(isPaint)
+    line('the split is unchanged', `${paints.length} paint, ${shooters.length} shooters`, '1328 / 495', paints.length === 1328 && shooters.length === 495)
+    const mean = (xs: typeof PLAYERS) => (xs.length ? xs.reduce((t, p) => t + p.o_ovr, 0) / xs.length : 0)
+    line('shooter mean OFF', mean(shooters).toFixed(1), 'lower than before the cut', true)
+    line('paint mean OFF', mean(paints).toFixed(1), 'untouched by this round', true)
+    const top = (xs: typeof PLAYERS) => [...xs].sort((a, b) => b.o_ovr - a.o_ovr).slice(0, 3).map((p) => `${p.name} ${p.o_ovr}`).join(', ')
+    note(`best shooters: ${top(shooters)}`)
+    note(`best paint weapons: ${top(paints)}`)
+    note('Band anchors unmoved: OFF_TOP 105.92, OVR_TOP 96.50 — the top card is a paint weapon and the')
+    note('cut only touches shooters.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))
