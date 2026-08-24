@@ -104,6 +104,11 @@ export const RULES: Rule[] = [
   // the three two-way claims read in order — 85/85 star, 80/80 all-around star, 78/85 wing.
   { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 80) },
   { tag: 'Two-way wing', test: (c) => !c.big && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
+  // THE ONE-END TIERS. Every claim about a man being good at both ends has been made by now, so these
+  // two catch the men who are only good at one — and they sit above the diet tags because "elite
+  // defender" says more about a 90-defence card than "enforcer" does.
+  { tag: 'Offensive superstar', test: (c) => c.ge(c.p.o_ovr, 85) && c.lt(c.p.d_ovr, 70) },
+  { tag: 'Elite defender', test: (c) => c.ge(c.p.d_ovr, 90) && c.lt(c.p.o_ovr, 80) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },

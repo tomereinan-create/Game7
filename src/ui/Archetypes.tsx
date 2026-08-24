@@ -24,6 +24,8 @@ const RULE: Record<string, string> = {
   Unicorn: 'A 7\'2\" big who protects the rim at 85+, shoots from three, and is a real player (OVR 70+).',
   'Two-way star': 'Both ends above 85. There are not many.',
   'All-around star': 'Eighty at both ends. Not elite at either — that is the two-way star above him — but there is no half of the floor he does not hold up.',
+  'Offensive superstar': 'Eighty-five and up on offense with a defense under 70. He wins you games at one end and gives some of it back at the other — the trade every contender argues about.',
+  'Elite defender': 'Ninety and up on defense with an offense under 80. The mirror of the offensive superstar: you play him for what he stops, and you live with the rest.',
   'Two-way wing': 'A perimeter player at 78 offense and 85 defense.',
   'Scoring machine': 'Enormous load and an elite first zone, at an efficiency that is merely respectable (his ruling: the floor is 50, not 65). A man who scores 28 a night on volume shooting is a scoring machine — demanding elite conversion as well described a different, rarer player.',
   Scorer: 'His defining trait is putting it in the basket, and no single diet above described him. Not a creator: the offense does not run through him.',
