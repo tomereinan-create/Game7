@@ -1057,6 +1057,48 @@ const ROUNDS: Record<string, () => void> = {
     }
     note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50 — the top card never took this bonus.')
   },
+  '43': () => {
+    console.log(`${EOL}recal_43 (his ruling) — the specialist bonus has no cliffs left: every factor is a line`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '43', /PIPELINE_VERSION = 43/.test(OVR))
+    src('zone as a line', OVR, /zone_f = min\(1\.10, max\(0\.35, 0\.50 \+ \(z\[0\] - 75\) \* 0\.025\)\)/, '0.5 at 75, 1.0 at 95, 1.10 at 99')
+    src('playvol as a line', OVR, /play_f = min\(1\.00, max\(0\.25, 1\.00 - \(pv - 25\) \* 0\.025\)\)/, '1.0 at 25 down to 0.25 at 55')
+    src('free throw as a line', OVR, /ft_f = min\(1\.00, max\(0\.25, 1\.00 - \(a\['ft'\] - 58\) \* 0\.075\)\)/, '1.0 at 58 down to 0.25 at 68')
+    line('no step function survives', /if z\[0\] > 90 else|if a\['ft'\] < 60 else|if pv < 30 else/.test(OVR) ? 'A LADDER REMAINS' : 'all continuous', 'all continuous', !/if z\[0\] > 90 else|if a\['ft'\] < 60 else|if pv < 30 else/.test(OVR))
+    const zf = (z0: number) => Math.min(1.1, Math.max(0.35, 0.5 + (z0 - 75) * 0.025))
+    const ff = (ft: number) => Math.min(1, Math.max(0.25, 1 - (ft - 58) * 0.075))
+    const pf = (pv: number) => Math.min(1, Math.max(0.25, 1 - (pv - 25) * 0.025))
+    // HIS TWO CASES, the whole point of the round
+    line('a 99 zone beats a 95', `${zf(99).toFixed(3)} vs ${zf(95).toFixed(3)}`, 'strictly greater', zf(99) > zf(95))
+    line('a 61 free throw beats a 64', `${ff(61).toFixed(3)} vs ${ff(64).toFixed(3)}`, 'strictly greater', ff(61) > ff(64))
+    // monotone everywhere, not just at his two probes
+    const mono = (f: (x: number) => number, lo: number, hi: number, up: boolean) => {
+      for (let x = lo; x < hi; x++) if (up ? f(x + 1) < f(x) : f(x + 1) > f(x)) return false
+      return true
+    }
+    line('zone never pays less for more', mono(zf, 40, 99, true) ? 'monotone up' : 'REVERSES', 'monotone up', mono(zf, 40, 99, true))
+    line('free throw never pays more for more', mono(ff, 40, 99, false) ? 'monotone down' : 'REVERSES', 'monotone down', mono(ff, 40, 99, false))
+    line('playvol never pays more for more', mono(pf, 0, 99, false) ? 'monotone down' : 'REVERSES', 'monotone down', mono(pf, 0, 99, false))
+    // the lines pass through the midpoints of the bands they replace, so the LEVEL is unchanged
+    for (const [what, got, want] of [['zone 85', zf(85), 0.75], ['playvol 35', pf(35), 0.75], ['playvol 45', pf(45), 0.5], ['ft 62', ff(62), 0.7]] as const)
+      line(`${what} lands on its old band`, got.toFixed(3), String(want), Math.abs(got - want) < 1e-9)
+    // what it did to the pool
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const bonus = (p: (typeof PLAYERS)[number]) => {
+      const paint = p.attrs.rim >= Math.max(p.attrs['3pt'], p.attrs.mid)
+      return 8 * zf(z(p)[0]) * pf(p.attrs.playvol) * Math.max(p.attrs.volume / 50, 1) * (paint ? ff(p.attrs.ft) : 1)
+    }
+    const hit = PLAYERS.filter(fires)
+    line('cards carrying a bonus', String(hit.length), 'the gate is unchanged', hit.length === 1823)
+    const vals = hit.map(bonus)
+    line('bonus range', `${Math.min(...vals).toFixed(1)} to ${Math.max(...vals).toFixed(1)}`, 'a spread, not four values', new Set(vals.map((v) => v.toFixed(2))).size > 200)
+    line('distinct bonus values', String(new Set(vals.map((v) => v.toFixed(2))).size), 'hundreds, where the ladder had dozens', true)
+    note(`top: ${hit.map((p) => [p, bonus(p)] as const).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([p, b]) => `${p.name} ${b.toFixed(1)}`).join(', ')}`)
+    note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))

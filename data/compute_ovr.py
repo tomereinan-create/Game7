@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 42
+PIPELINE_VERSION = 43
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -98,12 +98,16 @@ def o_score(p):
     # is the shot a defence concedes on purpose. Shape alone was paying all three the same. Ties go to
     # the bonus — an equal rim or three IS a paint or perimeter weapon.
     if max(a['3pt'], a['rim']) >= a['mid'] and ((z[0] > z[1] + z[2] and z[0] >= 91) or (z[0] > 1.5 * (z[1] + z[2]))):
-        # HOW MUCH OF IT HE KEEPS (his ruling). The shape says he HAS one weapon; these two say whether
-        # the weapon is worth fearing and whether he is really a specialist at all. A 99 three on a man
-        # who never passes is the whole bonus; a 75 zone on a secondary creator is a quarter of it.
-        zone_f = 1.00 if z[0] > 90 else (0.75 if z[0] >= 80 else 0.50)
+        # HOW MUCH OF IT HE KEEPS. The shape says he HAS one weapon; these factors say whether the
+        # weapon is worth fearing and whether he is really a specialist at all.
+        #
+        # NO CLIFFS (recal_43, his ruling). Every factor is a LINE, drawn through the midpoints of the
+        # bands it replaces, so the level of the bonus is unchanged and only the step is gone. A 99 zone
+        # now beats a 95 (1.10 against 1.00) and a 61 free-throw shooter beats a 64 (0.775 against 0.55),
+        # where before each pair was paid identically and a single point at a boundary cost a quarter.
+        zone_f = min(1.10, max(0.35, 0.50 + (z[0] - 75) * 0.025))
         pv = a['playvol']
-        play_f = 1.00 if pv < 30 else (0.75 if pv < 40 else (0.50 if pv < 50 else 0.25))
+        play_f = min(1.00, max(0.25, 1.00 - (pv - 25) * 0.025))
         # AND THEN VOLUME (recal_41): high(bonus x volume/50, bonus). A weapon is worth what it is
         # FIRED, so carrying a real load multiplies it — 50 volume is the hinge, 100 doubles it. Written
         # as a single factor, max(volume/50, 1), because that IS the high() of the two: nothing here
@@ -116,7 +120,7 @@ def o_score(p):
         # his stroke, the less of it he needs. A three-point specialist is untouched.
         ft_f = 1.0
         if a['rim'] >= max(a['3pt'], a['mid']):
-            ft_f = 1.00 if a['ft'] < 60 else (0.50 if a['ft'] < 65 else 0.25)
+            ft_f = min(1.00, max(0.25, 1.00 - (a['ft'] - 58) * 0.075))
         std += 8 * zone_f * play_f * vol_f * ft_f
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
