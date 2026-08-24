@@ -1101,12 +1101,12 @@ const ROUNDS: Record<string, () => void> = {
   },
   '44': () => {
     console.log(`${EOL}recal_44 (his ruling) — playvol out of the bonus; a SHOOTER is gated by the offense he already has`)
-    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '44', /PIPELINE_VERSION = 44/.test(OVR))
+    note('The version has moved past 44: r45 replaced this round's usage multiplier with attempt rates.')
     line('playvol gone from the bonus', /play_f/.test(OVR) ? 'STILL REFERENCED' : 'gone', 'gone', !/play_f/.test(OVR))
     src('the paint gate is unchanged', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(a\['ft'\] - 58\) \* 0\.075\)\)/, 'the stroke')
     src('the shooter gate', OVR, /gate_f = min\(1\.00, max\(0\.25, 1\.00 - \(pre_off - 55\) \* 0\.025\)\)/, '1.0 at 55, 0.5 at 75, 0.25 at 85')
     src('measured BEFORE the bonus', OVR, /pre_off = std \* 0\.93/, 'the standard path only')
-    src('added once', OVR, /std \+= 8 \* zone_f \* vol_f \* gate_f/, 'three factors, one addition')
+    src('added once', OVR, /std \+= 8 \* zone_f \* \w+ \* gate_f/, 'three factors, one addition (r45 renamed the middle one)')
     note('NOT RECURSIVE: the shooter gate reads the standard path as it stands before the bonus is')
     note('added, and o_ovr is never consulted — at that moment it does not exist yet.')
     const shooterGate = (pre: number) => Math.min(1, Math.max(0.25, 1 - (pre - 55) * 0.025))
