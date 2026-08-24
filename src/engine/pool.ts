@@ -96,7 +96,7 @@ export const RULES: Rule[] = [
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
-  { tag: 'Paint beast', test: (c) => c.ge(c.paint, 95) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
+  { tag: 'Paint beast', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
   { tag: 'Freight train', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 40) && c.lt(c.mid, 60) },
   { tag: 'Tank', test: (c) => c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 80) && c.lt(c.a.ft, 60) },
   { tag: 'Foul merchant', test: (c) => c.ge(c.a.fouldraw, 90) && c.ge(c.a.ft, 85) },
@@ -123,13 +123,13 @@ export const RULES: Rule[] = [
   { tag: 'Pest', test: (c) => c.ltH(c.h, 76) && c.ge(c.a.perimdisrupt, 90) },
   // the guard who does some of both and neither at a lead handler's rate. Height is a physical fact and
   // never relaxes, so geH/ltH; the two windows are ordinary floors and ceilings.
-  { tag: 'Combo guard', test: (c) => c.geH(c.h, 72) && c.ltH(c.h, 79) && c.ge(c.a.playvol, 50) && c.lt(c.a.playvol, 75) && c.ge(c.a.volume, 60) && c.lt(c.a.volume, 85) },
+  { tag: 'Combo guard', test: (c) => c.geH(c.h, 72) && c.ltH(c.h, 77) && c.ge(c.a.playvol, 50) && c.lt(c.a.playvol, 75) && c.ge(c.a.volume, 60) && c.lt(c.a.volume, 85) },
   { tag: 'Throwback', test: (c) => c.ge(c.mid, 75) && c.lt(c.three, 20) },
   { tag: 'Post scorer', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 65) && c.lt(c.three, 40) && c.lt(c.a.playvol, 60) },
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
   // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
-  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.lt(c.a.playvol, 70) },
+  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 95) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.lt(c.a.playvol, 70) },
   { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
@@ -201,17 +201,47 @@ const ORDER_KEY = 'game7.tagorder.v1'
 let order: string[] = DEFAULT_ORDER
 /** The order that is WRITTEN DOWN. A draft is only law once it is saved. */
 let saved: string[] = DEFAULT_ORDER
-/** A saved ranking is honoured only if it still names exactly the tags this build has. */
+/** A stored ranking has to be a list of unique tag names. Whether they are the CURRENT tags is not its
+ *  problem — see reconcile. */
 const sane = (o: unknown): o is string[] =>
-  Array.isArray(o) && o.length === DEFAULT_ORDER.length && o.every((t) => typeof t === 'string' && BY_TAG.has(t)) && new Set(o).size === o.length
+  Array.isArray(o) && o.every((t) => typeof t === 'string') && new Set(o).size === o.length
+/**
+ * A SAVED RANKING SURVIVES THE TREE CHANGING (his ruling: "I want those to save").
+ *
+ * The old check honoured a stored order only if it named exactly the tags of the build reading it, so
+ * every round that added, deleted or renamed a rule silently threw his ranking away. This keeps what
+ * he decided and repairs the rest: tags he ranked that still exist hold their relative order, tags
+ * that no longer exist drop out, and a tag he has never seen is inserted where the shipped law puts
+ * it — immediately before the first tag that follows it in DEFAULT_ORDER.
+ */
+const reconcile = (stored: string[]): string[] => {
+  const out = stored.filter((t) => BY_TAG.has(t))
+  for (const t of DEFAULT_ORDER) {
+    if (out.includes(t)) continue
+    let at = out.length
+    for (let i = DEFAULT_ORDER.indexOf(t) + 1; i < DEFAULT_ORDER.length; i++) {
+      const j = out.indexOf(DEFAULT_ORDER[i])
+      if (j !== -1) {
+        at = j
+        break
+      }
+    }
+    out.splice(at, 0, t)
+  }
+  return out
+}
 try {
   if (typeof localStorage !== 'undefined') {
     const raw = localStorage.getItem(ORDER_KEY)
     if (raw) {
       const parsed: unknown = JSON.parse(raw)
       if (sane(parsed)) {
-        order = parsed
-        saved = parsed
+        order = reconcile(parsed)
+        saved = order
+        // heal the stored copy, so a ranking does not decay a little more with every round
+        if (order.length !== parsed.length || order.some((t, i) => t !== parsed[i])) {
+          localStorage.setItem(ORDER_KEY, JSON.stringify(order))
+        }
       }
     }
   }
@@ -232,7 +262,7 @@ export const isSavedOrder = () => order.every((t, i) => t === saved[i])
  * the saved ranking.
  */
 export function setTagOrder(next: string[] | null, persist = true) {
-  order = next && sane(next) ? [...next] : DEFAULT_ORDER
+  order = next && sane(next) ? reconcile(next) : DEFAULT_ORDER
   if (!persist) return
   saved = [...order]
   try {

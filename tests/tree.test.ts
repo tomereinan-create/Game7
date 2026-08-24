@@ -3,7 +3,7 @@ import OPP from '../src/data/opponents.json'
 import STATS from '../src/data/stats.json'
 import { ROUNDS } from '../src/config'
 import { defenseVs, naiveAssignment } from '../src/engine/offense'
-import { PLAYERS } from '../src/engine/pool'
+import { DEFAULT_ORDER, PLAYERS, setTagOrder, tagOrder } from '../src/engine/pool'
 import { starsFor } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
 import { balance, buy, capBonus, earned, maxed, migrate, NODES, parIncome, price, rank, respec, respinSeason, treeCost, unlocked, type Wallet } from '../src/engine/tree'
@@ -152,5 +152,59 @@ describe('defensive assignment — naive vs optimal', () => {
     const man = defenseVs(wall, lac, manual)
     expect(man.anchor).toBeCloseTo(opt.anchor, 9)
     expect(man.drtg).toBeCloseTo(opt.drtg, 6)
+  })
+})
+
+/**
+ * HIS RANKING MUST SURVIVE THE TREE CHANGING. The store used to honour a saved order only if it named
+ * exactly the tags of the build reading it, so every round that added, deleted or renamed a rule threw
+ * the ranking away in silence. These pin the repair: what he decided is kept, what no longer exists is
+ * dropped, and a tag he has never seen lands where the shipped law puts it.
+ */
+describe('the tag ranking survives the tree changing', () => {
+  const DEF = () => [...DEFAULT_ORDER]
+
+  it('keeps his order when the tree has not moved', () => {
+    const mine = DEF()
+    ;[mine[0], mine[1]] = [mine[1], mine[0]]
+    setTagOrder(mine)
+    expect(tagOrder()).toEqual(mine)
+    setTagOrder(null)
+  })
+
+  it('drops a tag the tree no longer has, without losing the rest of his order', () => {
+    const mine = DEF()
+    ;[mine[0], mine[1]] = [mine[1], mine[0]]
+    const withGhost = ['Microwave', ...mine, 'Connector'] // two tags this build deleted
+    setTagOrder(withGhost)
+    const got = tagOrder()
+    expect(got).not.toContain('Microwave')
+    expect(got).not.toContain('Connector')
+    expect(got).toEqual(mine) // his swap survived the ghosts
+    setTagOrder(null)
+  })
+
+  it('inserts a tag he has never ranked at its position in the shipped law', () => {
+    const def = DEF()
+    const newcomer = def[def.length - 3] // pretend he ranked everything except this one
+    const without = def.filter((t) => t !== newcomer)
+    setTagOrder(without)
+    const got = tagOrder()
+    expect(got).toContain(newcomer)
+    expect(got.length).toBe(def.length)
+    // it lands IMMEDIATELY BEFORE the tag that follows it in the shipped law, not at the end
+    expect(got.indexOf(newcomer)).toBe(got.indexOf(def[def.length - 2]) - 1)
+    setTagOrder(null)
+  })
+
+  it('never drops or duplicates a rule, whatever it is given', () => {
+    for (const junk of [[], ['nonsense'], ['Anchor', 'Anchor'], DEF().reverse()]) {
+      setTagOrder(junk as string[])
+      const got = tagOrder()
+      expect(new Set(got).size).toBe(got.length)
+      expect([...got].sort()).toEqual([...DEFAULT_ORDER].sort())
+    }
+    setTagOrder(null)
+    expect(tagOrder()).toEqual(DEFAULT_ORDER)
   })
 })
