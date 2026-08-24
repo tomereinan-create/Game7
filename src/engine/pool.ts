@@ -83,20 +83,20 @@ export const RULES: Rule[] = [
   // Tree v2, 43 rules. Evaluated top-down, FIRST MATCH WINS. Names describe style,
   // never tier — quality is OVR's job. Thresholds are tunable; the order is law.
   { tag: 'Defensive playmaker', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.perdef, 80) && c.lt(c.zone, 55) },
-  { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 92) && !c.big && c.ltH(c.h, 79) },
+  { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && !c.big && c.ltH(c.h, 79) },
   { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 95) && c.ge(c.a.volume, 90) },
   { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 88) },
   { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) && !c.big },
   { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) },
   { tag: 'Floor raiser', test: (c) => c.ge(c.a.playvol, 90) && c.lt(c.a.efficiency, 45) && c.ge(c.a.volume, 85) },
   { tag: 'Two-way anchor', test: (c) => c.big && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
-  { tag: 'Unicorn', test: (c) => c.big && c.ge(c.three, 60) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
+  { tag: 'Unicorn', test: (c) => c.big && c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
   { tag: 'Two-way star', test: (c) => c.ge(c.p.o_ovr, 85) && c.ge(c.p.d_ovr, 85) },
   { tag: 'Two-way wing', test: (c) => !c.big && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
-  { tag: 'Paint beast', test: (c) => c.ge(c.paint, 95) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) },
+  { tag: 'Paint beast', test: (c) => c.ge(c.paint, 95) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
   { tag: 'Freight train', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 40) },
   { tag: 'Tank', test: (c) => c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 80) && c.lt(c.a.ft, 60) },
   { tag: 'Foul merchant', test: (c) => c.ge(c.a.fouldraw, 90) && c.ge(c.a.ft, 85) },
@@ -110,7 +110,7 @@ export const RULES: Rule[] = [
   { tag: 'Glass cleaner', test: (c) => c.ge(c.a.orb, 90) && c.ge(c.a.drb, 90) },
   { tag: 'Energy big', test: (c) => c.big && c.ge(c.a.orb, 85) && c.lt(c.a.volume, 40) },
   { tag: 'Enforcer', test: (c) => c.big && c.ge(c.a.rimprot, 70) && c.lt(c.a.discipline, 35) },
-  { tag: 'Anchor', test: (c) => c.ge(c.a.rimprot, 90) && c.lt(c.a.volume, 55) },
+  { tag: 'Anchor', test: (c) => c.ge(c.a.rimprot, 90) },
   // ELITE ROLE PLAYER is a TIER name, not a style — the one exception to the law above, added on
   // Tomer's explicit repeated order. It sits above Stopper because a shooter who defends is not a
   // stopper who happens to shoot, and Stopper now says so itself with a 3pt ceiling.
@@ -129,8 +129,8 @@ export const RULES: Rule[] = [
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
   // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
-  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) },
-  { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 70) },
+  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.lt(c.a.playvol, 70) },
+  { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
 
