@@ -113,15 +113,14 @@ export const RULES: Rule[] = [
   // ELITE ROLE PLAYER is a TIER name, not a style — the one exception to the law above, added on
   // Tomer's explicit repeated order. It sits above Stopper because a shooter who defends is not a
   // stopper who happens to shoot, and Stopper now says so itself with a 3pt ceiling.
-  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.ge(c.three, 75) && c.ge(c.a.perdef, 80) && c.ge(c.a.playvol, 60) && c.p.o_ovr >= 72 },
+  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.lt(c.a.playvol, 60) && c.p.o_ovr > 60 && c.p.d_ovr > 60 },
   // 3&D catches the rest of the shape: the shooting and the defending, without the passing or the
   // offensive standard that make an ELITE role player.
   { tag: '3&D', test: (c) => c.ge(c.three, 75) && c.ge(c.a.perdef, 70) && c.lt(c.a.volume, 60) },
   // guards several spots without being a one-end specialist — neither number is allowed to be elite
   { tag: 'Versatile defender', test: (c) => c.ge(Math.min(c.a.perdef, c.a.rimprot), 68) && c.p.d_ovr >= 78 },
-  { tag: 'Stopper', test: (c) => c.ge(c.a.perdef, 90) && c.lt(c.a.volume, 70) && c.lt(c.p.o_ovr, 80) && c.lt(c.three, 60) },
+  { tag: 'Stopper', test: (c) => c.ge(c.a.perdef, 90) && c.lt(c.a.volume, 60) && c.lt(c.p.o_ovr, 70) && c.lt(c.three, 60) },
   { tag: 'Pest', test: (c) => c.ltH(c.h, 76) && c.ge(c.a.perimdisrupt, 90) },
-  { tag: 'Secondary creator', test: (c) => c.ge(c.a.playvol, 70) && c.lt(c.a.playvol, 90) && c.ge(c.a.volume, 55) && c.lt(c.a.volume, 86) },
   // the guard who does some of both and neither at a lead handler's rate. Height is a physical fact and
   // never relaxes, so geH/ltH; the two windows are ordinary floors and ceilings.
   { tag: 'Combo guard', test: (c) => c.geH(c.h, 72) && c.ltH(c.h, 79) && c.ge(c.a.playvol, 50) && c.lt(c.a.playvol, 75) && c.ge(c.a.volume, 60) && c.lt(c.a.volume, 85) },

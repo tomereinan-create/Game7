@@ -36,7 +36,7 @@ const CANON: [string, string[]][] = [
   ["Allen Iverson '01", ['Spark plug', 'Gambler']],
   // 3&D did not exist when this list was written; it is exactly this sheet (shoots, defends, uses nothing).
   ["Shane Battier '06", ['3&D', 'Mid glue', 'Balanced']],   // Connector deleted from the tree
-  ["Manu Ginóbili '08", ['Secondary creator', 'Three-level scorer']],
+  ["Manu Ginóbili '08", ['Three-level scorer']],   // Secondary creator deleted from the tree
   // Paint beast is Freight train's stricter sibling (paint 95+ rather than 90+), so a sheet the list
   // already accepted as a Freight train qualifies: King '85 is paint 97, usage 98, no three.
   ["Bernard King '85", ['Midrange maestro', 'Throwback', 'Freight train', 'Paint beast']],
