@@ -35,12 +35,12 @@ const CANON: [string, string[]][] = [
   ["Patrick Beverley '17", ['Pest', 'Stopper']],
   ["Allen Iverson '01", ['Spark plug', 'Gambler']],
   // 3&D did not exist when this list was written; it is exactly this sheet (shoots, defends, uses nothing).
-  ["Shane Battier '06", ['3&D', 'Connector', 'Mid glue', 'Balanced']],
+  ["Shane Battier '06", ['3&D', 'Mid glue', 'Balanced']],   // Connector deleted from the tree
   ["Manu Ginóbili '08", ['Secondary creator', 'Three-level scorer']],
   // Paint beast is Freight train's stricter sibling (paint 95+ rather than 90+), so a sheet the list
   // already accepted as a Freight train qualifies: King '85 is paint 97, usage 98, no three.
   ["Bernard King '85", ['Midrange maestro', 'Throwback', 'Freight train', 'Paint beast']],
-  ["Moses Malone '83", ['Glass cleaner', 'Post scorer', 'Microwave']],
+  ["Moses Malone '83", ['Glass cleaner', 'Post scorer']],   // Microwave deleted from the tree
   // recal_21 deleted Post hub. Versatile defender is what this sheet now describes — min(perdef,
   // rimprot) 85, d_ovr 98, neither elite — and the check stays honest until its placement is ruled on.
   ["Draymond Green '16", ['Versatile defender', 'All-around']],

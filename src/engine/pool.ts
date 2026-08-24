@@ -97,12 +97,11 @@ export const RULES: Rule[] = [
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
   { tag: 'Paint beast', test: (c) => c.ge(c.paint, 95) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
-  { tag: 'Freight train', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 40) },
+  { tag: 'Freight train', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 40) && c.lt(c.mid, 60) },
   { tag: 'Tank', test: (c) => c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 80) && c.lt(c.a.ft, 60) },
   { tag: 'Foul merchant', test: (c) => c.ge(c.a.fouldraw, 90) && c.ge(c.a.ft, 85) },
-  { tag: 'Microwave', test: (c) => c.ge(c.a.volume, 85) && c.ge(c.a.efficiency, 75) && c.lt(c.a.playvol, 50) },
   { tag: 'Spark plug', test: (c) => c.ltH(c.h, 75) && c.ge(c.a.volume, 80) && c.p.o_ovr < 85 },
-  { tag: 'Flamethrower', test: (c) => c.ge(c.three, 90) && c.ge(c.a.volume, 55) },
+  { tag: 'Flamethrower', test: (c) => c.ge(c.three, 90) && c.ge(c.a.volume, 70) },
   { tag: 'Sniper', test: (c) => c.ge(c.three, 90) && c.lt(c.a.volume, 40) },
   { tag: 'Deadeye', test: (c) => c.ge(c.a.ft, 95) && c.ge(c.three, 75) },
   { tag: 'Catch-and-shoot wing', test: (c) => c.ge(c.three, 80) && c.lt(c.a.playvol, 40) && c.lt(c.a.volume, 55) && c.geH(c.h, 77) && c.ltH(c.h, 83) },
@@ -122,8 +121,10 @@ export const RULES: Rule[] = [
   { tag: 'Versatile defender', test: (c) => c.ge(Math.min(c.a.perdef, c.a.rimprot), 68) && c.p.d_ovr >= 78 },
   { tag: 'Stopper', test: (c) => c.ge(c.a.perdef, 90) && c.lt(c.a.volume, 70) && c.lt(c.p.o_ovr, 80) && c.lt(c.three, 60) },
   { tag: 'Pest', test: (c) => c.ltH(c.h, 76) && c.ge(c.a.perimdisrupt, 90) },
-  { tag: 'Connector', test: (c) => c.lt(c.a.volume, 55) && c.ge(c.three, 70) && c.ge(c.a.playvol, 65) && c.ge(c.a.perdef, 75) },
   { tag: 'Secondary creator', test: (c) => c.ge(c.a.playvol, 70) && c.lt(c.a.playvol, 90) && c.ge(c.a.volume, 55) && c.lt(c.a.volume, 86) },
+  // the guard who does some of both and neither at a lead handler's rate. Height is a physical fact and
+  // never relaxes, so geH/ltH; the two windows are ordinary floors and ceilings.
+  { tag: 'Combo guard', test: (c) => c.geH(c.h, 72) && c.ltH(c.h, 79) && c.ge(c.a.playvol, 50) && c.lt(c.a.playvol, 75) && c.ge(c.a.volume, 60) && c.lt(c.a.volume, 85) },
   { tag: 'Throwback', test: (c) => c.ge(c.mid, 75) && c.lt(c.three, 20) },
   { tag: 'Post scorer', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 65) && c.lt(c.three, 40) && c.lt(c.a.playvol, 60) },
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
