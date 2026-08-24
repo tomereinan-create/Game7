@@ -1,0 +1,13 @@
+# dependencies and build output — both regenerate from source in one command
+node_modules/
+dist/
+
+# local safety copies of the pipeline, not part of the project
+data/.backup/
+
+# editor and OS noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

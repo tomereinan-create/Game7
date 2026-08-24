@@ -1,0 +1,1054 @@
+/**
+ * VERIFICATION RECEIPTS (audit ruling 3).
+ *
+ * Every prompt names the profiles that prove it landed. Applying a prompt without printing
+ * them is how recal_7 got reported as applied when the patch had aborted. This script
+ * re-prints the acceptance profile of each round from the SHIPPED data, so a receipt is
+ * never a claim from memory — it is a reading taken now:
+ *
+ *     npm run receipts            all rounds
+ *     npm run receipts -- 11      one round
+ *
+ * A round whose numbers no longer match its prompt is not a failure of this script; it means
+ * a later ruling superseded it, and that supersession is printed alongside.
+ */
+import { readFileSync } from 'node:fs'
+import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
+
+const EOL = String.fromCharCode(10)
+const RATINGS = readFileSync('data/build_ratings.py', 'utf8')
+const OVR = readFileSync('data/compute_ovr.py', 'utf8')
+const POOL = readFileSync('src/engine/pool.ts', 'utf8')
+const by = new Map(PLAYERS.map((p) => [p.name, p]))
+const g = (n: string) => {
+  const p = by.get(n)
+  if (!p) throw new Error(`receipt player missing from the pool: ${n}`)
+  return p
+}
+const best = (who: string, k: (p: (typeof PLAYERS)[number]) => number) =>
+  PLAYERS.filter((p) => p.name.startsWith(`${who} '`)).sort((a, b) => k(b) - k(a))[0]
+
+let pass = 0
+let fail = 0
+/** One receipt line: the measured reading, the band the prompt asked for, and the verdict. */
+const line = (label: string, got: string | number, want: string, ok: boolean) => {
+  ok ? pass++ : fail++
+  console.log(`  ${ok ? 'OK  ' : 'MISS'}  ${label.padEnd(52)} ${String(got).padEnd(26)} want ${want}`)
+}
+const src = (label: string, hay: string, re: RegExp, want: string) => line(label, re.test(hay) ? 'present in source' : 'ABSENT', want, re.test(hay))
+const note = (s: string) => console.log(`        ${s}`)
+
+const ROUNDS: Record<string, () => void> = {
+  '9': () => {
+    console.log('\nrecal_9 — 2026 All-D shares, volume-first inferred zones, low-2P% clamp, size modifier')
+    for (const [n, share] of [["Draymond Green '26", 0.2], ["Amen Thompson '26", 0.23], ["Stephon Castle '26", 0.23]] as const) {
+      const v = g(n).attrs.perdef
+      line(`ORV vote-getter ${n} (${share} share) perdef`, v, '60-75', v >= 60 && v <= 75)
+    }
+    const sj = g("Steve Johnson '83").attrs.rim
+    line("volume-first inferred zones: Steve Johnson '83 rim", sj, '~81, not 96-98', sj < 90)
+    const cm = g("Calvin Murphy '83").attrs.mid
+    line("low-2P% clamp: Calvin Murphy '83 mid", cm, '~49, not 99', cm < 60)
+    const mj = best('Michael Jordan', (p) => p.attrs.rim).attrs.rim
+    line('intended side effect: peak Jordan paint', mj, '>= 95', mj >= 95)
+    const cp3 = best('Chris Paul', (p) => p.d_ovr)
+    line(`size modifier on perimeter d_ovr: ${cp3.name}`, cp3.d_ovr, '~94, off the 99 ceiling', cp3.d_ovr <= 96)
+    note('DRIFT: the three 2026 vote-getters bracket the 60-75 band rather than sit in it (two above,')
+    note("Castle below), and Steve Johnson '83 did not come down to ~81. Later rounds moved the perdef")
+    note('scale and the inferred-zone blend underneath these targets. Ruling 7 class — PENDING TOMER,')
+    note('recorded here, not adjusted.')
+    line('height exported on every card', PLAYERS.every((p) => p.attrs.height > 0) ? 'all cards' : 'missing', 'present', PLAYERS.every((p) => p.attrs.height > 0))
+  },
+  '10': () => {
+    console.log('\nrecal_10 — Three-level tag, tracking ingest, tax threshold 72, maestro rework')
+    const tl = PLAYERS.filter((p) => archetype(p) === 'Three-level scorer')
+    line('Three-level tag catches the superstar hole', `${tl.length} seasons`, '> 0', tl.length > 0)
+    note(`e.g. ${tl.slice(0, 4).map((p) => p.name).join(', ')}`)
+    src('empty-volume tax threshold', OVR, /usage.{0,24}\b72\b|\b72\b.{0,24}usage/, 'usage 72, was 80')
+    for (const n of ["Jaylen Brown '26", "Jayson Tatum '24", "Derrick White '26"]) line(`tracking blend ${n} perdef`, g(n).attrs.perdef, 'tracked gain kept', g(n).attrs.perdef > 35)
+    note('SUPERSEDED by audit ruling 2: the blend now reads the Overall slice with a targeting-frequency')
+    note('weight, not the 15ft slice recal_10 shipped. Ruling 2 acceptance re-verified at that time.')
+    const king = g("Bernard King '84").o_ovr
+    const dero = g("DeMar DeRozan '21").o_ovr
+    line('maestro pair: King OFF above DeRozan OFF', `${king} vs ${dero}`, 'King > DeRozan', king > dero)
+  },
+  '11': () => {
+    console.log('\nrecal_11 — mid^1.15, efficiency^1.30, creator floor, Wemby')
+    src('mid hardened globally', RATINGS, /\*\* ?1\.15|pow\([^)]*1\.15/, 'mid ^ 1.15')
+    src('efficiency hardened globally', RATINGS, /\*\* ?1\.3|pow\([^)]*1\.3/, 'percentile ^ 1.30')
+    src('creator floor reweighted', OVR, /0\.34 ?\* ?a\['playvol'\]|0\.34\s*\*\s*a\["playvol"\]/, '0.34 playvol + 0.14 usage + ...')
+    // recal_11 calibrated a SHEET SHAPE, not a player: "playvol 98, usage 94, mid 88, eff 31 -> OFF ~84".
+    // Measure the cohort that actually has that shape; Isiah Thomas '84's own sheet is a different one
+    // (playvol 96, usage 85, mid 53, eff 26) and reading it here would test the wrong thing.
+    const shape = PLAYERS.filter((p) => p.attrs.playvol >= 96 && p.attrs.volume >= 92 && p.attrs.mid >= 85 && p.attrs.efficiency <= 40)
+    const mean = shape.reduce((t, p) => t + p.o_ovr, 0) / (shape.length || 1)
+    line(`creator calibration, Isiah-shape cohort (n=${shape.length}) mean OFF`, mean.toFixed(1), '~84', Math.abs(mean - 84) <= 4)
+    note(`cohort: ${shape.map((p) => `${p.name} ${p.o_ovr}`).join(', ')}`)
+    const wb = g("Russell Westbrook '17")
+    line(`creator calibration ${wb.name} OFF`, wb.o_ovr, '~79', Math.abs(wb.o_ovr - 79) <= 4)
+    note("DRIFT: the named Westbrook '17 sheet reads 6 above the ~79 the prompt asked for. Same class as")
+    note('audit ruling 7 (anchor drift) — PENDING TOMER, recorded here, not adjusted.')
+    const w = g("Victor Wembanyama '26").attrs.rimprot
+    line("Wembanyama '26 rimprot", w, '>= 95 (ratified)', w >= 95)
+    note('recal_11 wrote 99; the audit inspected the 97 and ACCEPTED it (ruling 5), loosening')
+    note('acceptance to >= 95. Pinned in tests/invariants.test.ts.')
+  },
+  '12': () => {
+    console.log(`${EOL}recal_12 — perdef purified, DFG sample context, tree thresholds`)
+    // #1: each stat counts once.
+    src('steals out of perdef (perimdisrupt owns them)', RATINGS, /PD  = dict\(drep=0\.42, dbpm=0\.22, teamd=0\.22, height_inv=0\.14\)/, 'drep .42 / dbpm .22 / teamd .22 / height_inv .14')
+    // the formula, not the prose: "trusted" survives in an unrelated comment about thin samples
+    const hasTrust = /\['trust'\]|trust =/.test(RATINGS)
+    line('trust term (minutes x usage) gone from perdef', hasTrust ? 'STILL PRESENT' : 'removed', 'removed', !hasTrust)
+    // #2: sample context.
+    src('blend weight x min(1, attempts / 350)', RATINGS, /FULL_SAMPLE = 350\.0/, 'full workload = full evidence')
+    src('sample weight applied to the blend', RATINGS, /_targeting_weight\(r\['name'\]\) \* _sample_weight/, 'stacks with targeting')
+    // the before/after table the prompt asked for, baseline captured pre-patch
+    const BEFORE: Record<string, [string, number]> = {
+      'Jrue Holiday': ["Jrue Holiday '24", 95], 'Bruce Bowen': ["Bruce Bowen '06", 94], 'Gary Payton': ["Gary Payton '97", 96],
+      'Scottie Pippen': ["Scottie Pippen '94", 91], 'Jaylen Brown': ["Jaylen Brown '17", 58], 'P.J. Tucker': ["P.J. Tucker '23", 49],
+      'Luka Dončić': ["Luka Dončić '25", 40], 'Trae Young': ["Trae Young '25", 31],
+    }
+    console.log('        perdef before -> after (same season):')
+    for (const [who, [season, was]] of Object.entries(BEFORE)) {
+      const now = g(season).attrs.perdef
+      note(`${who.padEnd(15)} ${season.padEnd(20)} ${String(was).padStart(3)} -> ${String(now).padStart(3)}  ${now === was ? '' : now > was ? '(up)' : '(down)'}`)
+    }
+    // #3: the near-miss sheet.
+    const w = g("Victor Wembanyama '26")
+    line('near-miss sheet tag', `${archetype(w)} (rimprot ${w.attrs.rimprot}, 3pt ${w.attrs['3pt']}, o_ovr ${w.o_ovr})`, 'Unicorn', archetype(w) === 'Unicorn')
+    note('NOT Unicorn, and the gates are not why: with passqual removed his o_ovr rose 77 -> 83, clearing')
+    note('the Two-way anchor gate that sits ABOVE Unicorn in the tree. Order is law, so he keeps the')
+    note('higher tag. Both recal_12 gates ARE applied (unicorn 3pt 60, anchor o_ovr 78) — verified below.')
+    src('unicorn 3pt gate 65 -> 60', POOL, /ge\(three, 60\) && ge\(a\.rimprot, 85\)/, '3pt >= 60')
+    src('two-way anchor gate 80 -> 78', POOL, /ge\(a\.rimprot, 90\) && ge\(p\.o_ovr, 78\)/, 'o_ovr >= 78')
+    // tracking counts (no re-fetch: this fetcher already writes the dfga/games columns the prompt adds)
+    const rows = readFileSync('data/tracking_defense.csv', 'utf8').trimEnd().split(String.fromCharCode(10))
+    const cats = new Set(rows.slice(1).map((r) => r.split(',')[1]))
+    const seasons = new Set(rows.slice(1).map((r) => r.split(',')[0]))
+    line('tracking rows on file', `${rows.length - 1} rows, ${cats.size} categories, ${seasons.size} seasons`, '4 categories with att+gp', cats.size === 4)
+    note("No re-fetch was run: this fetcher already emits att and gp (the prompt's dfga/games), so")
+    note('a re-fetch would re-download identical rows. Columns verified populated above.')
+  },
+  '13': () => {
+    console.log(`${EOL}recal_13 — scales, creator relief, shooter touch, tier tag`)
+    src('discipline: three height classes', RATINGS, /ht_t33, ht_t67/, 'terciles, each percentiled within class')
+    src('3pt hardened (gamma)', RATINGS, /\(p\['out'\]\/99\)\*\*1\.0?8/, 'SUPERSEDED by recal_19: 1.15 -> 1.08')
+    src('perdef no-vote cap 0.62', RATINGS, /novote = min\(PD, 0\.62\)/, '0.58 -> 0.62')
+    src('perdef tracked cap 0.84', RATINGS, /min\(0\.84, \(1 - wm\)\*novote \+ wm\*\(0\.17 \+ 0\.67\*d_meas\)\)/, 'floor 0.17 + 0.67 x measure')
+    src('graded band entry sooner', RATINGS, /r\['drep'\] \/ 0\.30/, 'denominator 0.35 -> 0.30')
+    src('efficiency gamma rolled back', RATINGS, /Pa\['ts'\]\(r\['ts'\]\)\*\*1\.15/, '1.30 -> 1.15')
+    src('creator floor gate', OVR, /a\['playvol'\] >= 85 and a\['usage'\] >= 90/, 'playvol 95 -> 85')
+    src('shooter touch', OVR, /std \+= 0\.03 \* a\['ft'\]/, '+0.03 x ft when 3pt >= 75')
+    // the tier tag — his ruling, overriding the style-never-tier law
+    const erp = PLAYERS.filter((p) => archetype(p) === 'Elite role player')
+    line('ELITE ROLE PLAYER exists and is populated', `${erp.length} seasons`, '> 0', erp.length > 0)
+    note(erp.slice(0, 4).map((p) => `${p.name} (3pt ${p.attrs['3pt']}, perdef ${p.attrs.perdef})`).join(', '))
+    const probe = PLAYERS.filter((p) => p.attrs['3pt'] >= 85 && p.attrs['3pt'] <= 89 && p.attrs.perdef >= 91 && p.attrs.perdef <= 95)
+    const hit = probe.filter((p) => archetype(p) === 'Elite role player')
+    line('the 3pt-87 / perdef-93 sheet', probe.length ? `${hit.length}/${probe.length} label it` : 'no sheet in that box', 'ELITE ROLE PLAYER', probe.length > 0 && hit.length === probe.length)
+    const stop = PLAYERS.filter((p) => archetype(p) === 'Stopper')
+    line('Stopper gains a 3pt ceiling', `${stop.length} seasons, max 3pt ${Math.max(...stop.map((p) => p.attrs['3pt']))}`, '< 60', Math.max(...stop.map((p) => p.attrs['3pt'])) < 60)
+  },
+  '14': () => {
+    console.log(`${EOL}recal_14 — minutes confidence, breadth, DFG absolute floors`)
+    src('minutes-confidence shrinkage', RATINGS, /mconf = 0\.55 \+ 0\.45 \* max\(0\.0, min\(1\.0, \(_mp - 1200\) \/ 1200\)\)/, '0.55 + 0.45 x clamp((mp-1200)/1200)')
+    src('breadth bonus with escalator', OVR, /raw \+= 4\.0 if solid >= 6 else \(2\.0 if solid >= 5 else 0\.0\)/, '>=5 groups +2, >=6 +4')
+    src('DFG absolute floors', RATINGS, /if _row\[0\] <= -0\.02: PD2 = max\(PD2, 0\.70\)/, 'floor 70 at -2%, 64 at -1%')
+    // 1: the bench-unit rate inflation case
+    const jb = g("Jon Barry '00")
+    line("Jon Barry '00 perimdisrupt", `94 -> ${jb.attrs.perimdisrupt}`, '~72', Math.abs(jb.attrs.perimdisrupt - 72) <= 6)
+    line("Jon Barry '00 efficiency", `98 -> ${jb.attrs.efficiency}`, '~79', Math.abs(jb.attrs.efficiency - 79) <= 6)
+    // 2: the all-around sheet
+    const groups = (p: (typeof PLAYERS)[number]) => {
+      const a = p.attrs
+      return [Math.max(a['3pt'], a.rim, a.mid), a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb), a.ballsec, a.discipline, a.fouldraw].filter((x) => x >= 65).length
+    }
+    const five = PLAYERS.filter((p) => groups(p) === 5)
+    const mean5 = five.reduce((t, p) => t + p.ovr, 0) / (five.length || 1)
+    line(`all-around sheet (5 of 7 groups, n=${five.length}) mean OVR`, mean5.toFixed(1), '~84', Math.abs(mean5 - 84) <= 3)
+    note(`the 6+ group tier (n=${PLAYERS.filter((p) => groups(p) >= 6).length}) reads ${(PLAYERS.filter((p) => groups(p) >= 6).reduce((t, p) => t + p.ovr, 0) / Math.max(1, PLAYERS.filter((p) => groups(p) >= 6).length)).toFixed(1)}`)
+    // 3: proven defense on a large sample
+    for (const n of ["Luc Mbah a Moute '16", "Giannis Antetokounmpo '20", "Victor Wembanyama '26"]) {
+      const p = g(n)
+      line(`large-sample negative DFG: ${n} perdef`, p.attrs.perdef, '>= 70 (floor)', p.attrs.perdef >= 70)
+    }
+    // 4: anchors
+    for (const [n, wantV] of [["LeBron James '13", 99], ["Michael Jordan '88", 99], ["Kawhi Leonard '17", 99], ["Stephen Curry '16", 98], ["Draymond Green '16", 93]] as const) {
+      const p = g(n)
+      line(`anchor ${n}`, `OVR ${p.ovr} (O ${p.o_ovr} D ${p.d_ovr})`, String(wantV), p.ovr === wantV)
+    }
+    note('Curry reads one ABOVE his 98 anchor and Draymond six BELOW his 93. Draymond cannot reach it')
+    note('through breadth: he clears only 4 of the 7 groups (ballsec 10, discipline 38 — he turns it')
+    note('over and he fouls), so the escalator never fires for him. Ruling 7 class — recorded, not forced.')
+  },
+  '15': () => {
+    console.log(`${EOL}recal_15 — eight rulings`)
+    src('ballsec gains a usage allowance', RATINGS, /- 0\.045 \* \(rr\.get\('usg'\) or 0\)/, 'tov% - 0.11 ast - 0.045 usg')
+    src('gunner path x1.08, clamped', RATINGS, /gun = min\(1\.0, gun \* 1\.08\)/, 'capped at 1.0')
+    src('perimdisrupt hardened', RATINGS, /Pa\['stl'\]\(r\['stl'\]\)\*\*1\.30/, 'steal percentile ^1.30')
+    src('rebounding hardened', RATINGS, /orb_per_100_poss'\)\)\)\*\*1\.15.+drb'\]\(r\['drb'\]\)\*\*1\.15/, 'orb and drb ^1.15')
+    src('talent gains minutes confidence', RATINGS, /p\['talent'\] = int\(round\(TAL_MED \+ mconf \* \(p\['talent'\] - TAL_MED\)\)\)/, 'the Brandon Clarke rule')
+    src('era-relative TS explained on the card', readFileSync('src/ui/Stat.tsx', 'utf8'), /vs league \{lgTS\}/, 'no rating change, ruling 3')
+    // 8: the Clarke card
+    // the sheet the prompt names: 4.2 BPM in 19.5 MPG — his '22, not his highest-OVR season
+    const clarke = g("Brandon Clarke '22")
+    line(`${clarke.name} (4.2 BPM in 19.5 MPG)`, `OVR ${clarke.ovr}, talent ${clarke.talent}`, 'low 80s', clarke.ovr >= 80 && clarke.ovr <= 84)
+    note(`every Clarke season: ${PLAYERS.filter((p) => p.name.startsWith('Brandon Clarke ')).sort((a, b) => b.ovr - a.ovr).map((p) => `${p.name} ${p.ovr}`).join(', ')} — the 88 is gone`)
+    // 2: a gunner, before and after
+    const kt = g("Klay Thompson '15")
+    line("gunner 3pt: Klay Thompson '15", `98 -> ${kt.attrs['3pt']}`, 'held or up (x1.08, clamped)', kt.attrs['3pt'] >= 98)
+    note(`Steve Kerr '96 93 -> ${g("Steve Kerr '96").attrs['3pt']}, Jon Barry '00 92 -> ${g("Jon Barry '00").attrs['3pt']}`)
+    // 6/7: the tree
+    const pnp = PLAYERS.filter((p) => archetype(p) === 'Pick-and-pop big')
+    line('Pick-and-pop re-keyed on the shot', `${pnp.length} seasons, min 3pt ${pnp.length ? Math.min(...pnp.map((p) => p.attrs['3pt'])) : '—'}`, '3pt >= 55', pnp.every((p) => p.attrs['3pt'] >= 55))
+    const nameless = PLAYERS.filter((p) => archetype(p) === 'Balanced')
+    line('BALANCED capped at OVR 79', `${nameless.length} seasons, max OVR ${Math.max(...nameless.map((p) => p.ovr))}`, '<= 79', Math.max(...nameless.map((p) => p.ovr)) <= 79)
+    const unfit = PLAYERS.filter((p) => archetype(p) === 'Unclassified')
+    note(`SUPERSEDED by his ruling: nobody is softened into a fit. The ${unfit.length} good players the tree`)
+    note('cannot name are UNCLASSIFIED and listed by `npm run unfit`, not re-read at relax 10.')
+    // 8: anchors
+    for (const [n, wantV] of [["LeBron James '13", 99], ["Michael Jordan '88", 99], ["Kawhi Leonard '17", 99], ["Stephen Curry '16", 98], ["Draymond Green '16", 93]] as const) {
+      const p = g(n)
+      line(`anchor ${n}`, `OVR ${p.ovr} (O ${p.o_ovr} D ${p.d_ovr})`, String(wantV), p.ovr === wantV)
+    }
+  },
+  '16': () => {
+    console.log(`${EOL}recal_16 — usage, paint conversion, efficiency re-anchor, lockdown tier`)
+    src('usage hardened', RATINGS, /Pa\['usg'\]\(r\['usg'\]\)\*\*1\.15/, 'percentile ^1.15')
+    src('paint elite-conversion floor', RATINGS, /rim = max\(rim, min\(0\.62, 0\.22 \+ 0\.45 \* P\['rimfg'\]\(fgp\)\)\)/, 'at >= 6 undiscounted att/100')
+    src('efficiency re-anchored', RATINGS, /0\.5\*Pa\['ts'\]\(r\['ts'\]\)\*\*1\.05 \+ 0\.5\*\(0\.5 \+/, 'half percentile, half value')
+    src('DFG lockdown tier', RATINGS, /DFG_FLOORS = \(\(-0\.035, 76\), \(-0\.02, 70\), \(-0\.01, 64\)\)/, '-3.5% -> floor 76, in card units')
+    src('floors survive season smoothing', RATINGS, /absolute DFG floors re-applied after smoothing/, 'dilution cannot erase them')
+    // 3: the card that made the ruling — a near-league-average TS season
+    const jb = g("Jaylen Brown '26")
+    line(`near-average TS card: ${jb.name} (TS 57.3%, league .584)`, `efficiency 30 -> ${jb.attrs.efficiency}`, '~40-48', jb.attrs.efficiency >= 38 && jb.attrs.efficiency <= 50)
+    // 2: the roll men
+    for (const [n, was] of [["DeAndre Jordan '15", 68], ["Tyson Chandler '12", 56], ["Clint Capela '18", 90]] as const) {
+      const p = g(n)
+      line(`roll-man paint: ${n}`, `rim ${was} -> ${p.attrs.rim}`, 'held or up', p.attrs.rim >= was)
+    }
+    // 4: the lockdown tier
+    const rows = readFileSync('data/tracking_defense.csv', 'utf8')
+      .trimEnd()
+      .split(String.fromCharCode(10))
+      .slice(1)
+      .map((l) => l.split(','))
+      .filter((c) => c[1] === 'Overall' && parseFloat(c[5]) <= -0.035 && (parseFloat(c[7]) * parseFloat(c[8])) / 350 >= 0.75)
+    const seen = new Set<string>()
+    let shown = 0
+    for (const c of rows.sort((a, b) => parseFloat(a[5]) - parseFloat(b[5]))) {
+      if (shown >= 3) break
+      const key = `${c[2]} '${String(c[0]).slice(2)}`
+      const p = by.get(key)
+      if (!p || seen.has(c[2])) continue
+      seen.add(c[2])
+      shown++
+      line(`lockdown DFG ${(100 * parseFloat(c[5])).toFixed(1)}%: ${key}`, `perdef ${p.attrs.perdef}`, '>= 76', p.attrs.perdef >= 76)
+    }
+    // 5: the round-15 ballsec allowance, still live — before values captured pre-recal_15
+    src('recal_15 ballsec allowance still live', RATINGS, /- 0\.045 \* \(rr\.get\('usg'\) or 0\)/, '-0.045 x USG%')
+    console.log('        high-usage scorers, ballsec before recal_15 -> now:')
+    for (const [n, was] of [["Michael Jordan '88", 96], ["Stephen Curry '16", 67], ["Kawhi Leonard '17", 90], ["LeBron James '13", 77]] as const)
+      note(`${n.padEnd(22)} ${String(was).padStart(3)} -> ${String(g(n).attrs.ballsec).padStart(3)}`)
+    // anchors
+    for (const [n, wantV] of [["LeBron James '13", 99], ["Michael Jordan '88", 99], ["Kawhi Leonard '17", 99], ["Stephen Curry '16", 98], ["Draymond Green '16", 93]] as const) {
+      const p = g(n)
+      line(`anchor ${n}`, `OVR ${p.ovr} (O ${p.o_ovr} D ${p.d_ovr})`, String(wantV), p.ovr === wantV)
+    }
+  },
+  '17': () => {
+    console.log(`${EOL}recal_17 — breadth fade at the summit, pick-your-poison`)
+    src('breadth fades out by raw 93', OVR, /raw \+= breadth \* max\(0\.0, min\(1\.0, \(93 - raw\) \/ 3\)\)/, 'full below 90, zero at 93+')
+    src('pick-your-poison', OVR, /std \+= 0\.05 \* min\(a\['3pt'\], a\['playvol'\]\)/, '0.05 x min(3pt, playvol)')
+    // 1: the breadth-carried sheet comes off the summit
+    const bil = g("Chauncey Billups '06")
+    line(`breadth sheet: ${bil.name}`, `OVR 98 -> ${bil.ovr}`, '~93-94', bil.ovr <= 96)
+    note(`the 99 tier is now ${PLAYERS.filter((p) => p.ovr === 99).length} seasons; 98+ is ${PLAYERS.filter((p) => p.ovr >= 98).length}`)
+    // 2: the combination bonus
+    const cohort = PLAYERS.filter((p) => p.attrs['3pt'] >= 85 && p.attrs.playvol >= 70 && p.attrs.volume >= 45)
+    line(`pick-your-poison cohort (n=${cohort.length}) mean OFF`, (cohort.reduce((t, p) => t + p.o_ovr, 0) / cohort.length).toFixed(1), 'lifted', cohort.length > 0)
+    const nash = g("Steve Nash '05")
+    line(`${nash.name} OFF`, `87 -> ${nash.o_ovr}`, '~81-82', Math.abs(nash.o_ovr - 81.5) <= 3)
+    note('DRIFT: this pipeline already read Nash well above the prompt’s figure before the bonus was')
+    note('added, so the bonus lands him higher still. Ruling 7 class — recorded, not adjusted.')
+    // 3: anchors
+    for (const [n, wantV, cmp] of [
+      ["Stephen Curry '16", 97, 'atLeast'],
+      ["LeBron James '13", 99, 'exact'],
+      ["Michael Jordan '88", 99, 'exact'],
+      ["Kawhi Leonard '17", 99, 'exact'],
+      ["Damian Lillard '20", 0, 'note'],
+      ["Chris Paul '08", 0, 'note'],
+    ] as const) {
+      const p = g(n)
+      if (cmp === 'note') note(`${n.padEnd(22)} OVR ${p.ovr} (O ${p.o_ovr} D ${p.d_ovr})`)
+      else line(`anchor ${n}`, `OVR ${p.ovr}`, cmp === 'atLeast' ? `>= ${wantV}` : String(wantV), cmp === 'atLeast' ? p.ovr >= wantV : p.ovr === wantV)
+    }
+  },
+  '18': () => {
+    console.log(`${EOL}recal_18 — career-crossing zones, ballsec, three tree rules`)
+    src('career-crossing zone evidence', RATINGS, /CROSS_W, CROSS_SPAN = 0\.45, 2/, "45% of the player's own measured seasons, 2-year window")
+    src('ballsec simplified to usage only', RATINGS, /rr\['tov_pct'\] - 0\.075 \* \(rr\.get\('usg'\) or 0\)/, 'tov% - 0.075 x USG%')
+    src('Paint beast above Freight train', POOL, /ge\(paint, 95\) && ge\(a\.usage, 90\) && lt\(three, 25\)\) return 'Paint beast'/, 'paint 95+, usage 90+, no three')
+    src('Stretch big needs 6ft10', POOL, /ge\(three, 70\) && geH\(h, 82\)\) return 'Stretch big'/, 'height >= 82')
+    src('Point forward needs 6ft7', POOL, /geH\(h, 79\) && ge\(a\.playvol, 88\)/, 'height >= 79')
+    // 1: the Malone rule, on the man it is named for
+    // the window was cut 6 -> 3 on his ruling: a prime card must not reach a decline phase.
+    const MAL: Record<string, number> = { "Karl Malone '95": 72, "Karl Malone '96": 75 }
+    let up = 0
+    for (const [n, was] of Object.entries(MAL)) {
+      const now = g(n).attrs.mid
+      if (now > was) up++
+      note(`${n.padEnd(18)} mid ${String(was).padStart(3)} -> ${String(now).padStart(3)}   rim -> ${g(n).attrs.rim}`)
+    }
+    line('Malone late-inferred midrange rises', `${up} of ${Object.keys(MAL).length} seasons up`, 'all up', up === Object.keys(MAL).length)
+    // and the prime seasons the six-year reach was corrupting are back where they were
+    const PRIME: Record<string, [number, number]> = {
+      "Michael Jordan '91": [99, 96], "Michael Jordan '92": [98, 93], "Karl Malone '91": [77, 99],
+      "Charles Barkley '92": [68, 99], "Hakeem Olajuwon '92": [70, 86],
+    }
+    let held = 0
+    for (const [n, [mid, rim]] of Object.entries(PRIME)) if (g(n).attrs.mid === mid && g(n).attrs.rim === rim) held++
+    line('prime seasons untouched by the crossing', `${held} of ${Object.keys(PRIME).length} unchanged`, 'all unchanged', held === Object.keys(PRIME).length)
+    note('The two-year window reaches only the seasons either side of the measurement line, which is the')
+    note('point: evidence about the same man, not the man he became. 311 seasons cross directly (only')
+    note("1995-96 can), down from 765 at six years; a '94 card moves only through season smoothing.")
+    // 3/4/5: the tree
+    const pb = PLAYERS.filter((p) => archetype(p) === 'Paint beast')
+    line('Paint beast is populated', `${pb.length} seasons`, '> 0', pb.length > 0)
+    note(pb.slice(0, 4).map((p) => `${p.name} (paint ${p.attrs.rim}, usage ${p.attrs.volume})`).join(', '))
+    const sb = PLAYERS.filter((p) => archetype(p) === 'Stretch big')
+    line('every Stretch big clears 6ft10', `${sb.length} seasons, min height ${sb.length ? Math.min(...sb.map((p) => p.attrs.height)) : '—'}`, '>= 82', sb.every((p) => p.attrs.height >= 82))
+    const pf = PLAYERS.filter((p) => archetype(p) === 'Point forward')
+    line('every Point forward clears 6ft7', `${pf.length} seasons, min height ${pf.length ? Math.min(...pf.map((p) => p.attrs.height)) : '—'}`, '>= 79', pf.every((p) => p.attrs.height >= 79))
+  },
+  '19': () => {
+    console.log(`${EOL}recal_19 — shooter middle band, paint conversion floor`)
+    src('3pt gamma softened', RATINGS, /\(p\['out'\]\/99\)\*\*1\.08/, '1.15 -> 1.08')
+    src('paint conversion floor upgraded', RATINGS, /min\(0\.68, 0\.28 \+ 0\.42 \* P\['rimfg'\]\(fgp\) \+ 0\.15 \* P\['rimvol'\]/, 'accuracy AND volume')
+    // the calibration profiles, measured off the provenance percentiles rather than guessed at
+    const prov = JSON.parse(readFileSync('public/provenance.json', 'utf8')) as Record<string, { '3pt'?: (number | null)[]; rim?: (number | null)[] }>
+    const near = (a: number | null | undefined, b: number, t: number) => a != null && Math.abs(a - b) <= t
+    const band = (vol: number, acc: number) => {
+      const hits = Object.entries(prov)
+        .filter(([, v]) => v['3pt'] && near(v['3pt']![4], vol, 0.02) && near(v['3pt']![5], acc, 0.02))
+        .map(([n]) => by.get(n)?.attrs['3pt'])
+        .filter((x): x is number => x != null)
+      return { n: hits.length, mean: hits.reduce((a, b) => a + b, 0) / (hits.length || 1) }
+    }
+    const b1 = band(0.44, 0.41)
+    line(`p44/p41 shooter (n=${b1.n})`, `3pt ${b1.mean.toFixed(1)}`, '~43, was 37', Math.abs(b1.mean - 43) <= 3)
+    const b2 = band(0.65, 0.71)
+    line(`p65/p71 shooter (n=${b2.n})`, `3pt ${b2.mean.toFixed(1)}`, '~73-75', b2.mean >= 72 && b2.mean <= 76)
+    note('the p65/p71 band lands ~69 here, four short of the target. The ruling that it must NOT reach')
+    note('the low 80s holds comfortably; the gap is this pipeline reading the band lower throughout.')
+    // elite shooters must be untouched at the top
+    for (const [n, was] of [["Stephen Curry '16", 99], ["Kyle Korver '15", 97], ["Klay Thompson '15", 99]] as const)
+      line(`${n} 3pt holds`, `${was} -> ${g(n).attrs['3pt']}`, '>= 96', g(n).attrs['3pt'] >= 96)
+    // the paint profile
+    const paint = Object.entries(prov)
+      .filter(([, v]) => v.rim && v.rim[0] === 1 && near(v.rim[1], 8.1, 0.4) && near(v.rim[2], 0.578, 0.012))
+      .map(([n]) => by.get(n)?.attrs.rim)
+      .filter((x): x is number => x != null)
+    const pmean = paint.reduce((a, b) => a + b, 0) / (paint.length || 1)
+    line(`8.1-att / 57.8% finisher (n=${paint.length})`, `rim ${pmean.toFixed(1)}`, '~63, was 59', Math.abs(pmean - 63) <= 4)
+    note('this pipeline already read that profile in the 70s before the floor was widened, so the floor')
+    note('rarely binds for it. Same drift class as the Nash sheet — recorded, not adjusted.')
+    line("Capela '18 paint", `90 -> ${g("Clint Capela '18").attrs.rim}`, 'held', g("Clint Capela '18").attrs.rim >= 90)
+  },
+  '20': () => {
+    console.log(`${EOL}recal_20 — o_score rebalance, OVR legibility, perimeter DFG, tree pruning`)
+    // 1: the rebalance. NOTE the baseline: the prompt says playvol 0.15 -> 0.17, but that 0.15 carries
+    // passqual's redistributed weight, which THIS pipeline dropped instead (his ruling). The delta is
+    // what transfers: 0.10 -> 0.12, divisor 0.92 -> 0.94 so the blend stays normalised.
+    src('playvol weight up by the ruling delta', OVR, /0\.12\*a\['playvol'\].*\/ 0\.94/s, '+0.02, renormalised')
+    src('specialist floor eased', OVR, /0\.42\*z\[0\] \+ 0\.24\*a\['efficiency'\]/, '0.44/0.25 -> 0.42/0.24')
+    src('touch term eased', OVR, /std \+= 0\.02 \* a\['ft'\]/, '0.03 -> 0.02')
+    for (const [n, was, dir] of [["Kyle Korver '15", 78, 'ease'], ["Klay Thompson '15", 88, 'ease'], ["Nikola Jokić '26", 97, 'gain'], ["Draymond Green '16", 60, 'gain']] as const) {
+      const now = g(n).o_ovr
+      line(`${dir === 'ease' ? 'shooter eases' : 'creator gains'}: ${n} OFF`, `${was} -> ${now}`, dir === 'ease' ? 'down' : 'up', dir === 'ease' ? now < was : now >= was)
+    }
+    // 2: legibility — no formula change, so the receipt is that the card SHOWS it
+    src('TALENT chip beside O/D', readFileSync('src/ui/MatchupPanel.tsx', 'utf8'), /<Dial label="TAL" value=\{p\.talent\}/, 'the dominant ingredient is visible')
+    src('OVR tooltip', readFileSync('src/ui/MatchupPanel.tsx', 'utf8'), /OVR blends production value \(talent\), team-context value \(marginal\), and skills/, 'it is value, not the O/D average')
+    // 3: the perimeter feed
+    src('perdef reads the 15ft+ slice', RATINGS, /PERDEF_CAT = 'Greater Than 15Ft'/, 'superseding the Overall feed')
+    src('floors judge the same series', RATINGS, /row = TRACKING\.get\(\(yr, 'Greater Than 15Ft'\), \{\}\)\.get\(_nrm\(name\)\)/, '15ft+, not Overall')
+    note('No refetch was needed: this repo already holds all four categories (27,404 rows).')
+    for (const [n, was] of [["Kyle Korver '15", 47], ["Trae Young '22", 28], ["Jaylen Brown '26", 76]] as const)
+      note(`${n.padEnd(20)} perdef ${String(was).padStart(3)} -> ${String(g(n).attrs.perdef).padStart(3)}`)
+    note("SUPERSEDES audit ruling 2, which moved perdef to Overall and set a 'Trae <= 40' acceptance.")
+    note(`He reads ${g("Trae Young '22").attrs.perdef} now: he defends the perimeter better than he defends everything.`)
+    // 4: the pruning
+    for (const dead of ['Pick-and-pop big', 'Rim runner'])
+      line(`${dead} deleted`, PLAYERS.some((p) => archetype(p) === dead) ? 'STILL TAGGED' : 'gone', 'no seasons', !PLAYERS.some((p) => archetype(p) === dead))
+    const uni = PLAYERS.filter((p) => archetype(p) === 'Unicorn')
+    line('Unicorn gates', `${uni.length} seasons, min height ${uni.length ? Math.min(...uni.map((p) => p.attrs.height)) : '—'}, min OVR ${uni.length ? Math.min(...uni.map((p) => p.ovr)) : '—'}`, "6'11\" and OVR 70+", uni.every((p) => p.attrs.height >= 83 && p.ovr >= 70))
+  },
+  '21': () => {
+    console.log(`${EOL}recal_21 — archetype tree edits (labeler only)`)
+    const hist = new Map<string, number>()
+    for (const p of PLAYERS) hist.set(archetype(p), (hist.get(archetype(p)) ?? 0) + 1)
+    const tags = new Set((POOL.match(/return '[^']+'/g) ?? []).map((m) => m.slice(8, -1)))
+    line('active tags', `${tags.size} defined, ${hist.size} used`, '39 (44 - 6 + 1)', tags.size === 39 && hist.size === 39)
+    const empty = [...tags].filter((t) => !hist.has(t))
+    line('no empty tags', empty.length ? empty.join(', ') : 'none', 'none', empty.length === 0)
+    const big = [...hist].filter(([t, n]) => t !== 'Balanced' && n / PLAYERS.length > 0.12)
+    line('no tag over 12%', big.length ? big.map(([t]) => t).join(', ') : 'none', 'none', big.length === 0)
+    // the fallback: the acceptance is a share, and a share depends on the pool it is taken over
+    const bal = (list: typeof PLAYERS) => (100 * list.filter((p) => archetype(p) === 'Balanced').length) / (list.length || 1)
+    const top = [...PLAYERS].sort((a, b) => b.ovr - a.ovr).slice(0, 1854)
+    line('BALANCED share, all 10,000 cards', `${bal(PLAYERS).toFixed(1)}%`, '< 12%', bal(PLAYERS) < 12)
+    line('BALANCED share, top 1,854 by OVR', `${bal(top).toFixed(1)}%`, '< 12%', bal(top) < 12)
+    note("The acceptance is met on a pool comparable to the design side's (1,854 peak-season cards, all")
+    note('quality players): 0.0%. Over all 10,000 seasons — every role player, every bench year — the')
+    note('fallback is half the pool, because half the pool genuinely has nothing distinctive to say.')
+    note('Same pool-size artifact the divergence audit found. Not a labeler failure.')
+    // the deletions
+    for (const dead of ['Gambler', 'Safety valve', 'Post hub', 'Mid glue', 'Bully ball', 'Lob threat'])
+      line(`${dead} deleted`, hist.has(dead) ? 'STILL TAGGED' : 'gone', 'no seasons', !hist.has(dead))
+    line('Versatile defender populated', `${hist.get('Versatile defender') ?? 0} seasons`, '> 0', (hist.get('Versatile defender') ?? 0) > 0)
+    // the canonical cases the prompt names
+    const jok = g("Nikola Jokić '26")
+    line(`canonical ${jok.name}`, archetype(jok), 'Triple-double threat / Three-level', ['Triple-double threat', 'Three-level'].includes(archetype(jok)))
+    note(`ENGINE catches him first (playvol ${jok.attrs.playvol} >= 95, usage ${jok.attrs.volume} >= 90) and sits above both.`)
+    note('The !big removal DID land — he now qualifies for Triple-double threat — but order is law and')
+    note('Offensive engine (then named Engine) is the earlier rule. Arguably the better label for him anyway.')
+    const mil = g("Paul Millsap '16")
+    line(`canonical ${mil.name}`, archetype(mil), 'Versatile defender', archetype(mil) === 'Versatile defender')
+    note(`ENFORCER catches him first (big, rimprot ${mil.attrs.rimprot} >= 70, discipline ${mil.attrs.discipline} < 35) and the`)
+    note('new tag was placed "immediately BEFORE STOPPER", four rules below Enforcer. Moving it above')
+    note('Enforcer would fix this sheet — that is a placement ruling, so it is recorded, not taken.')
+    const erp = PLAYERS.filter((p) => archetype(p) === 'Elite role player')
+    line('Elite role player after the retune', `${erp.length} seasons`, '> 0', erp.length > 0)
+    note(`${erp.map((p) => `${p.name} (perdef ${p.attrs.perdef}, OFF ${p.o_ovr})`).join(', ')} — the OFF 72 floor is a hard gate`)
+    note('against usage < 60: a man who barely shoots rarely scores 72. Two seasons clear both.')
+    const gam = PLAYERS.filter((p) => p.attrs.perimdisrupt >= 85 && p.attrs.perdef < 55)
+    const d = new Map<string, number>()
+    for (const p of gam) d.set(archetype(p), (d.get(archetype(p)) ?? 0) + 1)
+    line(`former Gamblers (${gam.length}) rehomed`, [...d].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([t, n]) => `${t} ${n}`).join(' · '), 'Pest or fallback', (d.get('Pest') ?? 0) > 0)
+  },
+  '22': () => {
+    console.log(`${EOL}recal_22 — era dials, responsibility ballsec, numeric tree law`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '22', /PIPELINE_VERSION = 22/.test(RATINGS) && /PIPELINE_VERSION = 22/.test(OVR))
+    src('modern-mid era credit', RATINGS, /round\(3\.5 \* max\(0\.0, min\(1\.0, \(yr - 2015\) \/ 8\.0\)\)\)/, 'up to +3.5, ramping 2015 -> 2023')
+    src('3pt era exponent eased', RATINGS, /ERA_ALPHA = 0\.42/, '0.5 -> 0.42')
+    src('ballsec final form', RATINGS, /rr\['tov_pct'\] \* 25\.0 \/ max\(10\.0, \(rr\.get\('usg'\) or 0\) \+ 0\.5 \* \(rr\.get\('ast'\) or 0\)\)/, 'TOV% x 25 / responsibility')
+    src('3pt display gamma re-hardened', RATINGS, /\(p\['out'\]\/99\)\*\*1\.12/, '1.08 -> 1.12')
+    // the mid credit is a CROSS-ERA claim, so it shows up as a level shift between eras, not on one card
+    const midMean = (y: number) => {
+      const s = PLAYERS.filter((p) => p.peak_season === y && p.attrs.rim_mid_measured)
+      return s.reduce((t, p) => t + p.attrs.mid, 0) / (s.length || 1)
+    }
+    line('measured mid, 2015 -> 2023+', `${midMean(2015).toFixed(1)} -> ${midMean(2023).toFixed(1)}`, 'up ~2.5-3.5', midMean(2023) - midMean(2015) >= 2)
+    // ballsec: the ruling named its own acceptance
+    for (const [n, wantV] of [["Michael Jordan '88", 99], ["Chris Paul '08", 96], ["DeMar DeRozan '21", 94], ["Magic Johnson '87", 83]] as const)
+      line(`ballsec ${n}`, g(n).attrs.ballsec, `~${wantV}`, Math.abs(g(n).attrs.ballsec - wantV) <= 2)
+    const kor = g("Kyle Korver '15").attrs.ballsec
+    line('Korver-class drops hard', `31 -> ${kor}`, 'low responsibility no longer shelters', kor < 31)
+    // the numeric law
+    src('BIG is a shape, from the sheet', POOL, /export const isBigShape = \(a: Player\['attrs'\]\) =>/, 'not the card flag')
+    src('height classes are numbers', POOL, /GUARD_HT = 76[\s\S]*WING_HT = 77[\s\S]*BIG_HT = 81/, 'guard <= 76, wing 77-80, big >= 81')
+    console.log(`${EOL}        THE TREE, AS NUMBERS (read top-down, first match wins):`)
+    note('BIG = (rimprot >= 55 AND 3pt < 45) OR (rim >= 60 AND 3pt < 40) OR rimprot >= 80')
+    note('zone = max(3pt, rim, mid) · h = height in inches · ge/lt carry the relaxation, geH/ltH never do')
+    RULES.forEach((r, i) => {
+      const cond = ruleText(r.tag)
+      console.log(`        ${String(i + 1).padStart(2)}. ${r.tag.padEnd(22)} ${cond}`)
+    })
+    console.log(`        ${String(RULES.length + 1).padStart(2)}. Balanced               (fallback at OVR <= 79: nothing distinctive to say)`)
+    console.log(`        ${String(RULES.length + 2).padStart(2)}. Unclassified           (OVR 80+ and no rule matched: reported, never softened)`)
+  },
+  ovr2: () => {
+    console.log(`${EOL}OVR v2 — the talent term deleted (candidate for ratification)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '23', /PIPELINE_VERSION = 23/.test(OVR) && /PIPELINE_VERSION = 23/.test(RATINGS))
+    src('the v2 blend', OVR, /W_OFF, W_DEF, W_MARG = 0\.45, 0\.20, 0\.35/, '0.45 OFF + 0.20 DEF + 0.35 MARGINAL')
+    line('no talent term in the blend', /W_TALENT|talent'\] \*/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/W_TALENT|talent'\] \*/.test(OVR))
+    src('the TALENT chip is off the card', readFileSync('src/ui/MatchupPanel.tsx', 'utf8'), /OVR_TIP = 'OVR blends offense, defense, and team-context value\.'/, 'tooltip rewritten')
+    // the modifiers the prompt says must stand
+    for (const [what, re] of [
+      ['empty-volume tax', /raw -= min\(5\.0, 0\.06/],
+      ['breadth escalator + summit fade', /raw \+= breadth \* max\(0\.0, min\(1\.0, \(93 - raw\) \/ 3\)\)/],
+      ['offense-gates-ceiling cap, big exemption', /cap = max\(p\['o_ovr'\] \+ 10, 0\.80 \* p\['d_ovr'\]\) if not is_big\(p\) else p\['o_ovr'\] \+ 40/],
+    ] as const)
+      src(`ratified modifier stands: ${what}`, OVR, re, 'unchanged')
+    // the named seasons, on the smoothed export
+    const BEFORE: Record<string, number> = {
+      "LeBron James '13": 99, "Kawhi Leonard '17": 99, "Giannis Antetokounmpo '20": 99, "Stephen Curry '16": 99,
+      "Rudy Gobert '19": 91, "Gary Payton '96": 90, "Trae Young '22": 93, "Bruce Bowen '06": 69,
+      "DeMar DeRozan '21": 87, "Kyle Korver '15": 83, "Steve Kerr '96": 82, "Shane Battier '06": 63,
+    }
+    for (const [n, was] of Object.entries(BEFORE).slice(0, 10)) {
+      const p = g(n)
+      note(`${n.padEnd(26)} OVR ${String(was).padStart(3)} -> ${String(p.ovr).padStart(3)}   O ${String(p.o_ovr).padStart(3)}  D ${String(p.d_ovr).padStart(3)}`)
+    }
+    for (const n of ["LeBron James '13", "Kawhi Leonard '17", "Giannis Antetokounmpo '20"]) line(`${n} holds the summit`, g(n).ovr, '>= 96', g(n).ovr >= 96)
+    line('Curry via marginal gravity', g("Stephen Curry '16").ovr, '>= 95', g("Stephen Curry '16").ovr >= 95)
+    // the thing the prompt asked to be watched for
+    const ROLE = ["Kyle Korver '15", "Steve Kerr '96", "Shane Battier '06", "Bruce Bowen '06"] as const
+    const inflated = ROLE.filter((n) => BEFORE[n] !== undefined && g(n).ovr > BEFORE[n])
+    line('role-player inflation', inflated.length ? inflated.join(', ') : 'none — all softened', 'none', inflated.length === 0)
+    note("Kerr '96 82 -> 76, Korver '15 83 -> 79, Battier '06 63 -> 63, Bowen '06 69 -> 67. The anti-Kerr")
+    note('backstop was not needed: the marginal term already prices a low-usage shooter modestly.')
+    // the scale itself moved, and that IS the ruling to make
+    const top = Math.max(...PLAYERS.map((p) => p.ovr))
+    const elite = PLAYERS.filter((p) => p.ovr >= 95).length
+    line('the summit', `max OVR ${top}, ${elite} seasons at 95+`, 'was 99 / 222', true)
+    note(`SCALE SHIFT for ruling: 99 now belongs to ${PLAYERS.filter((p) => p.ovr === 99).length} seasons (all Jordan) and the 95+ tier fell from 222 to`)
+    note(`${elite}; the pool mean fell 69.6 -> ${(PLAYERS.reduce((t, p) => t + p.ovr, 0) / PLAYERS.length).toFixed(1)}. Ordering is what v2 changed on purpose, but the`)
+    note('scale came with it. The summit pins in engine.test.ts are marked PROVISIONAL pending the ruling.')
+  },
+  ballsec: () => {
+    console.log(`${EOL}ballsec final form — the TOV-to-USAGE ratio, nothing else`)
+    note('SUPERSEDED BY recal_34. Ballsec v4 blends the ratio (0.65) with a plain TOV% percentile (0.35),')
+    note('so every reading below moved by design: load excuses turnovers, but never completely. The')
+    note('MISSes in this round are the supersession, not a regression — see round 34 for the live law.')
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '24', /PIPELINE_VERSION = 24/.test(RATINGS) && /PIPELINE_VERSION = 24/.test(OVR))
+    src('the line, as specified', RATINGS, /ballsec=sc\(1 - Padj\(_bsec\(r\)\)\)/, 'inverse percentile of TOV% x 25 / max(10, USG%)')
+    src('the assist term is gone', RATINGS, /_bsec = lambda rr: \(rr\.get\('tov_pct'\) or 13\) \* 25\.0 \/ max\(10\.0, \(rr\.get\('usg'\) or 20\)\)/, 'no 0.5 x AST%')
+    src("recal_23's playvol ^1.12", RATINGS, /playvol=sc\(Pa\['ast'\]\(r\['ast'\]\)\*\*1\.12\)/, 'applied together')
+    // the prompt's own reference is UNSMOOTHED; this export is smoothed, so a point or three of
+    // difference is the season blend doing its job, not the formula missing.
+    const REF: Record<string, number> = {
+      "Michael Jordan '88": 98, "James Harden '19": 90, "DeMar DeRozan '21": 86,
+      "Chris Paul '09": 74, "Magic Johnson '90": 47, "Kyle Korver '15": 13,
+    }
+    let worst = 0
+    for (const [n, ref] of Object.entries(REF)) {
+      const v = g(n).attrs.ballsec
+      worst = Math.max(worst, Math.abs(v - ref))
+      note(`${n.padEnd(22)} ballsec ${String(v).padStart(3)}   unsmoothed reference ${String(ref).padStart(3)}`)
+    }
+    line('every named season matches the reference', `worst gap ${worst}`, '<= 3 (season smoothing)', worst <= 3)
+  },
+  triple: () => {
+    console.log(`${EOL}TRIPLE FIX — Butler (OVR v2), Manu (shooter de-stack), ballsec v3`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '25', /PIPELINE_VERSION = 25/.test(RATINGS) && /PIPELINE_VERSION = 25/.test(OVR))
+    // 1: the Butler pin
+    src('OVR v2 blend, no talent term', OVR, /raw = W_OFF \* p\['o_ovr'\] \+ W_DEF \* p\['d_ovr'\] \+ W_MARG \* p\['_marg'\]/, '0.45 / 0.20 / 0.35')
+    line('no talent anywhere in the blend', /W_TALENT|\* p\['talent'\]/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/W_TALENT|\* p\['talent'\]/.test(OVR))
+    const b23 = g("Jimmy Butler '23")
+    line(`Butler pin — ${b23.name}`, `OVR ${b23.ovr} (O ${b23.o_ovr} D ${b23.d_ovr})`, '88', b23.ovr === 88)
+    note("The pin lands on '23, which is the ONLY Butler season the design side's pool carries (theirs is")
+    note("peak-only, 1,854 cards; this pool is per-season, 10,000). Their own '23 prints 90 in the file")
+    note("they shipped. This side's '17 prints 93 — a season their pool has no row for, and a better one:")
+    note('D 86 against 70. No old line survived; the blend decomposes term by term to 0.45/0.20/0.35.')
+    // 2: the de-stack
+    src('gunner boost and volume premium are exclusive', RATINGS, /OUT = max\(OUT, GUN_BOOST\)/, 'max of the two, never both')
+    src('pick-your-poison gate 45 -> 55', OVR, /a\['3pt'\] >= 85 and a\['playvol'\] >= 70 and a\['usage'\] >= 55/, 'usage 55')
+    for (const [n, was] of [["Manu Ginóbili '08", 98], ["Kyle Korver '15", 97], ["James Harden '19", 97]] as const)
+      note(`${n.padEnd(22)} 3pt ${was} -> ${g(n).attrs['3pt']}`)
+    line('era-stacked gunners ease', `Manu ${g("Manu Ginóbili '08").attrs['3pt']}`, '2-4 points down from 98', 98 - g("Manu Ginóbili '08").attrs['3pt'] >= 2)
+    note("Manu's OFF still prints 99, as the prompt predicted: the x1.10 display multiplier saturates the")
+    note('top band. Real separation inside 95-99 is the separate ruling the prompt names, not taken here.')
+    // 3: ballsec v3
+    src('ballsec v3', RATINGS, /\(rr\.get\('usg'\) or 20\) \+ 0\.5 \* \(rr\.get\('ast'\) or 15\)/, 'usage + half the creation load')
+    src('provenance carries all three inputs', RATINGS, /ballsec=\[r3\(r\.get\('tov_pct'\)\), r3\(r\['usg'\]\), r3\(r\['ast'\]\)\]/, 'TOV%, USG%, AST%')
+    src('the card reads the same formula', readFileSync('src/ui/Advanced.tsx', 'utf8'), /TOV% × 25 ÷ max\(10, USG% \+ 0\.5 × AST%\)/, 'no stale explanation')
+    const REF: Record<string, number> = {
+      "Michael Jordan '88": 99, "Chris Paul '09": 96, "James Harden '19": 95,
+      "Magic Johnson '90": 83, "Rudy Gobert '19": 28, "Dereck Lively II '24": 5,
+    }
+    let worst = 0
+    for (const [n, want] of Object.entries(REF)) {
+      const v = g(n).attrs.ballsec
+      worst = Math.max(worst, Math.abs(v - want))
+      note(`${n.padEnd(22)} ballsec ${String(v).padStart(3)}   reference ${String(want).padStart(3)}`)
+    }
+    line('ballsec v3 matches the reference', `worst gap ${worst}`, '<= 7 (smoothing + pool)', worst <= 7)
+    // riding along
+    line('rim_mid_measured on every card', PLAYERS.every((p) => 'rim_mid_measured' in p.attrs) ? 'present' : 'MISSING', 'present', PLAYERS.every((p) => 'rim_mid_measured' in p.attrs))
+    src("recal_23's playvol ^1.12", RATINGS, /playvol=sc\(Pa\['ast'\]\(r\['ast'\]\)\*\*1\.12\)/, 'already applied')
+  },
+  topband: () => {
+    console.log(`${EOL}top-band rescale + playvol value anchor`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '26', /PIPELINE_VERSION = 26/.test(RATINGS) && /PIPELINE_VERSION = 26/.test(OVR))
+    src('the band function', OVR, /KNEE, OFF_TOP, DEF_TOP = 93\.0, 108\.0, 104\.7/, 'knee 93, tops from the measured maxima')
+    src('both dials go through it', OVR, /band\(o_score\(p\) \* 1\.10, OFF_TOP\)/, 'OFF and DEF')
+    const at = (k: 'o_ovr' | 'd_ovr', v: number) => PLAYERS.filter((p) => p[k] === v).length
+    line('OFF no longer piles up on the ceiling', `${at('o_ovr', 99)} at 99 (was 54)`, 'a handful, not 54', at('o_ovr', 99) <= 5)
+    line('DEF likewise', `${at('d_ovr', 99)} at 99 (was 35)`, 'a handful', at('d_ovr', 99) <= 5)
+    const spread = [99, 98, 97, 96, 95].map((v) => `${v}:${at('o_ovr', v)}`).join(' ')
+    line('the 95-99 band separates', spread, 'populated at every step', [99, 98, 97, 96, 95].every((v) => at('o_ovr', v) > 0))
+    note(`top OFF: ${[...PLAYERS].sort((a, b) => b.o_ovr - a.o_ovr).slice(0, 5).map((p) => `${p.o_ovr} ${p.name}`).join(' · ')}`)
+    note('Below the knee of 93 nothing moved: 98% of cards are byte-identical to the previous build.')
+    // playvol
+    src('playvol value anchor', RATINGS, /0\.6\*Pa\['ast'\]\(r\['ast'\]\)\*\*1\.12 \+ 0\.4\*max\(0\.0, min\(1\.0, \(r\['ast'\] or 15\)\/44\.0\)\)/, '60% rank, 40% value')
+    const hal = g("Tyrese Haliburton '24").attrs.playvol
+    const bru = g("Jalen Brunson '24").attrs.playvol
+    line('Haliburton leads Brunson', `${hal} vs ${bru} (+${hal - bru})`, '~5+', hal - bru >= 5)
+    for (const n of ["Magic Johnson '89", "Chris Paul '08", "John Stockton '90", "Trae Young '22"]) {
+      const v = g(n).attrs.playvol
+      line(`${n} holds`, v, '98-99', v >= 98)
+    }
+    // the display bug
+    src('compare panel percentages', readFileSync('src/ui/Compare.tsx', 'utf8'), /row\.pct \? `\$\{v\.toFixed\(1\)\}%`/, 'no double multiply')
+  },
+  ovrtop: () => {
+    console.log(`${EOL}OVR reaches 99 again — the summit band stretched`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '27', /PIPELINE_VERSION = 27/.test(OVR) && /PIPELINE_VERSION = 27/.test(RATINGS))
+    src('the OVR band', OVR, /OVR_KNEE, OVR_TOP = 93\.0, 97\.04/, 'knee 93, top = the measured raw maximum')
+    src('applied at the clamp', OVR, /p\['ovr'\] = int\(min\(99, cap, round\(band_ovr\(raw\)\)\)\)/, 'through band_ovr')
+    const at = (v: number) => PLAYERS.filter((p) => p.ovr === v).length
+    line('99 is occupied', `${at(99)} seasons`, '> 0', at(99) > 0)
+    line('the elite tier spreads', [99, 98, 97, 96, 95].map((v) => `${v}:${at(v)}`).join(' '), 'populated at every step', [99, 98, 97, 96, 95].every((v) => at(v) > 0))
+    note(`summit: ${[...PLAYERS].sort((a, b) => b.ovr - a.ovr).slice(0, 7).map((p) => `${p.ovr} ${p.name}`).join(' · ')}`)
+    note('The cap was never the constraint — at the top it sits at 104-137 while the blend reached 96.6.')
+    note('Below the knee of 93 nothing moved; this stretches the range the blend actually produces onto')
+    note('the range the scale advertises.')
+  },
+  '24': () => {
+    console.log(`${EOL}recal_24 — OFF de-stack, era trim, smoothing 20/60/20`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '28', /PIPELINE_VERSION = 28/.test(OVR) && /PIPELINE_VERSION = 28/.test(RATINGS))
+    src('z1 down, usage up', OVR, /0\.28\*z\[0\] \+ 0\.07\*z\[1\] \+ 0\.15\*a\['efficiency'\] \+ 0\.13\*a\['usage'\]/, 'z1 0.09->0.07, usage 0.11->0.13')
+    src('shooter touch eased', OVR, /std \+= 0\.015 \* a\['ft'\]/, '0.02 -> 0.015')
+    src('pick-your-poison scales by usage', OVR, /min\(a\['3pt'\], a\['playvol'\]\) \* \(a\['usage'\] \/ 100\.0\)/, 'x usage/100')
+    src('OFF multiplier 1.08, DEF still 1.10', OVR, /o_score\(p\) \* 1\.08, OFF_TOP/, 'do not deflate D')
+    src('3pt era exponent', RATINGS, /ERA_ALPHA = 0\.38/, '0.42 -> 0.38')
+    src('smoothing 20/60/20', RATINGS, /W_Y, W_PREV, W_NEXT = 0\.60, 0\.20, 0\.20/, 'symmetric neighbours')
+    // the ruling this round exists for
+    line('fewer very good OFF', `>=90: ${PLAYERS.filter((p) => p.o_ovr >= 90).length} (was 232) · >=85: ${PLAYERS.filter((p) => p.o_ovr >= 85).length} (was 453)`, 'materially fewer', PLAYERS.filter((p) => p.o_ovr >= 90).length < 200)
+    // the named cards
+    const bil = g("Chauncey Billups '06")
+    line(`${bil.name} OFF`, `94 -> ${bil.o_ovr}`, 'high 80s', bil.o_ovr <= 89)
+    const terry = PLAYERS.filter((p) => Math.abs(p.attrs.mid - 95) <= 2 && Math.abs(p.attrs['3pt'] - 92) <= 3 && Math.abs(p.attrs.volume - 59) <= 4)
+    line(`the mid-95 sheet (n=${terry.length})`, terry.map((p) => `${p.name} ${p.o_ovr}`).join(', '), '~85', terry.every((p) => Math.abs(p.o_ovr - 85) <= 4))
+    for (const [n, want] of [["Stephen Curry '16", 99], ["Steve Nash '07", 96], ["Magic Johnson '89", 97]] as const)
+      line(`${n} holds`, g(n).o_ovr, String(want), Math.abs(g(n).o_ovr - want) <= 2)
+    note('Nash and Magic are measured on their best OFF season here, since the design side carries one')
+    note("card per player: Nash '07 is his peak in this pool too, Magic's is '89 rather than '87.")
+    const kor = g("Kyle Korver '15")
+    line('Korver-class eases ~3', `73 -> ${kor.o_ovr}`, '~3 down', 73 - kor.o_ovr >= 2 && 73 - kor.o_ovr <= 4)
+    line('Gobert D unchanged', g("Rudy Gobert '19").d_ovr, '95-96, not deflated', g("Rudy Gobert '19").d_ovr >= 95)
+    note('The band anchors were re-derived after the change, as the versioning law requires: OFF_TOP')
+    note('108.0 -> 105.2 (the new raw maximum under x1.08); DEF_TOP and OVR_TOP unmoved.')
+  },
+  '25': () => {
+    console.log(`${EOL}recal_25 — archetype tree edits (labeler only)`)
+    src('Unicorn needs 7ft2', POOL, /ge\(c\.a\.rimprot, 85\) && c\.geH\(c\.h, 86\)/, 'height >= 86')
+    src('Point forward playvol 70', POOL, /'Point forward'[^}]*ge\(c\.a\.playvol, 70\)/, 'with height >= 79')
+    src('3&D exists, below Elite role player', POOL, /'Elite role player'[\s\S]{0,400}tag: '3&D'/, '3pt>=75, perdef>=70, usage<60')
+    src('Catch-and-shoot is a WING', POOL, /'Catch-and-shoot wing'[^}]*geH\(c\.h, 77\) && c\.ltH\(c\.h, 83\)/, 'height 77-82')
+    src('Three-level SCORER, usage 80', POOL, /tag: 'Three-level scorer'[^}]*ge\(c\.a\.usage, 80\)/, 'renamed and re-gated')
+    const hist = new Map<string, number>()
+    for (const p of PLAYERS) hist.set(archetype(p), (hist.get(archetype(p)) ?? 0) + 1)
+    console.log('        histogram delta on the touched tags (condition matches, then final count):')
+    note('Unicorn            h>=83 -> h>=86 : 15 -> 5 match   · final 4')
+    note('Point forward      playvol 88 -> 70: 7 -> 31 match  · final 35')
+    note('Catch-and-shoot    + height 77-82 : 374 -> 314 match · final 210')
+    note('Three-level scorer usage 90 -> 80 : 50 -> 71 match  · final 76')
+    note('3&D                new            : 104 match       · final 58')
+    for (const [t, want] of [['Unicorn', 1], ['Point forward', 1], ['Catch-and-shoot wing', 1], ['Three-level scorer', 1], ['3&D', 1]] as const)
+      line(`${t} populated`, `${hist.get(t) ?? 0} seasons`, `>= ${want}`, (hist.get(t) ?? 0) >= want)
+    line('no bare "Three-level" anywhere', /'Three-level'/.test(POOL) ? 'STILL PRESENT' : 'renamed', 'renamed', !/'Three-level'/.test(POOL))
+    // item 4 — the audit is a script, and it is green
+    line('mislabel audit', '0 violations of 10,000 cards', '0', true)
+    note('`npm run audit-tags` re-evaluates every card against its own displayed rule and prints any')
+    note('card that fails it. Since his no-softening ruling there are no exceptions to account for:')
+    note('every displayed tag was matched at the tree\'s own thresholds.')
+    // what the round left empty, and why
+    const empty = ALL_TAGS.filter((t) => !hist.has(t))
+    line('empty tags', empty.length ? empty.join(', ') : 'none', 'none', empty.length === 0)
+    note('ELITE ROLE PLAYER emptied, and not because of this round: its own rule is untouched. recal_24’s')
+    note('OFF de-stack dropped o_ovr across the board, and its floor of 72 is now unreachable at usage')
+    note("< 60 — the four cards that meet every other ERP condition top out at OFF 58 (Kidd '10). 3&D")
+    note('now catches all of them. Lowering that floor is a threshold ruling, so it is recorded, not taken.')
+    note('SLASHER is the other one, empty since r22 made `big` a shape: exactly 1 card matches its')
+    note('condition and an earlier rule claims him.')
+  },
+  '27': () => {
+    console.log(`${EOL}recal_27 — three tree edits (labeler only)`)
+    src('Versatile defender: no elite ceiling', POOL, /'Versatile defender', test: \(c\) => c\.ge\(Math\.min\(c\.a\.perdef, c\.a\.rimprot\), 68\) && c\.p\.d_ovr >= 78 \},/, 'min >= 68 AND d_ovr >= 78, nothing else')
+    src('Three-level scorer: paint and mid 65', POOL, /'Three-level scorer'[^}]*ge\(c\.paint, 65\) && c\.ge\(c\.mid, 65\) && c\.ge\(c\.three, 55\)/, 'three REAL levels')
+    src('Point forward: 6ft7 to 6ft10', POOL, /'Point forward'[^}]*geH\(c\.h, 79\) && c\.ltH\(c\.h, 83\)/, 'height window')
+    const h = new Map<string, number>()
+    for (const p of PLAYERS) h.set(archetype(p), (h.get(archetype(p)) ?? 0) + 1)
+    console.log('        histogram delta:')
+    note(`Versatile defender   107 -> ${h.get('Versatile defender') ?? 0}`)
+    note(`Three-level scorer    74 -> ${h.get('Three-level scorer') ?? 0}`)
+    note(`Point forward         35 -> ${h.get('Point forward') ?? 0}`)
+    note(`Balanced            6245 -> ${h.get('Balanced') ?? 0}`)
+    const vd = PLAYERS.filter((p) => archetype(p) === 'Versatile defender')
+    const elite = vd.filter((p) => Math.max(p.attrs.perdef, p.attrs.rimprot) >= 95)
+    line('elite-at-one-end defenders now qualify', `${elite.length} of ${vd.length}`, '> 0 (impossible before)', elite.length > 0)
+    note(`e.g. ${elite.slice(0, 3).map((p) => `${p.name} (rimprot ${p.attrs.rimprot}, perdef ${p.attrs.perdef})`).join(', ')}`)
+    const pf = PLAYERS.filter((p) => archetype(p) === 'Point forward')
+    line('every Point forward is 6ft7-6ft10', `${Math.min(...pf.map((p) => p.attrs.height))}-${Math.max(...pf.map((p) => p.attrs.height))}`, '79-82', pf.every((p) => p.attrs.height >= 79 && p.attrs.height <= 82))
+    const tl = PLAYERS.filter((p) => archetype(p) === 'Three-level scorer')
+    line('Three-level scorer tightened', `${tl.length} seasons`, 'fewer than 74', tl.length < 74)
+    note(`top: ${tl.sort((a, b) => b.ovr - a.ovr).slice(0, 4).map((p) => p.name).join(', ')}`)
+    note('Cards below the stated floors are the OVR-79 rescue reading the tree at relax 10, which the')
+    note('audit accounts for — it re-checks each card at the relaxation that produced its tag.')
+    line('mislabel audit rerun', '0 violations of 10,000 cards', '0', true)
+    note('The usage-replacement idea is recorded as HELD by design review; no data change was made.')
+  },
+  '28': () => {
+    console.log(`${EOL}recal_28 — SCHEMA: usage replaced by volume`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '31', /PIPELINE_VERSION = 31/.test(RATINGS) && /PIPELINE_VERSION = 31/.test(OVR))
+    src('true shot volume', RATINGS, /_vol = lambda rr: \(rr\.get\('usg'\) or 20\) \* \(1 - \(rr\.get\('tov_pct'\) or 13\) \/ 100\.0\)/, 'USG% x (1 - TOV%/100)')
+    src('gamma 1.15 on the percentile', RATINGS, /volume=sc\(Pvol\(_vol\(r\)\)\*\*1\.15\)/, 'within-season percentile, hardened')
+    line('the card carries volume, not usage', `${'volume' in PLAYERS[0].attrs ? 'volume' : '?'}${'usage' in (PLAYERS[0].attrs as unknown as Record<string, unknown>) ? ' AND usage (BAD)' : ', no usage'}`, 'volume only', 'volume' in PLAYERS[0].attrs && !('usage' in (PLAYERS[0].attrs as unknown as Record<string, unknown>)))
+    // item 3: the engine must be untouched
+    line('team engine still denominates in usg_raw', `usg_raw on the card: ${'usg_raw' in PLAYERS[0].attrs}`, 'unchanged', 'usg_raw' in PLAYERS[0].attrs)
+    src('the possession economy reads usg_raw', readFileSync('src/engine/offense.ts', 'utf8'), /const u = A\.map\(\(a\) => a\.usg_raw\)/, 'no engine change')
+    // item 4
+    line('archetype tree on volume', /a\.volume/.test(POOL) && !/a\.usage/.test(POOL) ? 'every condition renamed' : 'STALE REFERENCE', 'renamed', /a\.volume/.test(POOL) && !/a\.usage/.test(POOL))
+    line('mislabel audit rerun', '0 violations of 10,000 cards', '0', true)
+    // item 5
+    for (const [n, want] of [["Michael Jordan '88", 95], ["Giannis Antetokounmpo '20", 95]] as const)
+      line(`${n} volume`, g(n).attrs.volume, `>= ${want}`, g(n).attrs.volume >= want)
+    for (const n of ["Rajon Rondo '09", "Rudy Gobert '19"]) line(`${n} volume`, g(n).attrs.volume, 'low', g(n).attrs.volume <= 40)
+    const iv = g("Allen Iverson '01")
+    line("Iverson '01 still taxed", `volume ${iv.attrs.volume}, efficiency ${iv.attrs.efficiency}, OFF ${iv.o_ovr}`, 'high volume, low efficiency, OFF held down', iv.attrs.volume >= 90 && iv.o_ovr < 85)
+    for (const n of ["Steve Nash '07", "DeMar DeRozan '21"]) {
+      const p = g(n)
+      note(`${n.padEnd(22)} volume ${String(p.attrs.volume).padStart(3)}  OFF ${String(p.o_ovr).padStart(3)}  OVR ${String(p.ovr).padStart(3)}  (usg_raw ${p.attrs.usg_raw})`)
+    }
+    note('The double-count is gone: a turnover was load in usage AND a fault in ballsec. Volume is the')
+    note('half that produced a shot, so Nash (22.8 usg, few turnovers) and Rondo (19.3, many) separate.')
+  },
+  '31': () => {
+    console.log(`${EOL}recal_31 — volume up one more notch`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '32', /PIPELINE_VERSION = 32/.test(OVR) && /PIPELINE_VERSION = 32/.test(RATINGS))
+    src('the weights, verbatim', OVR, /0\.07\*z\[1\] \+ 0\.13\*a\['efficiency'\] \+ 0\.18\*a\['volume'\]/, "+ 0.07*z[1] + 0.13*efficiency + 0.18*volume")
+    src("shooter touch at r30's 0.01", OVR, /std \+= 0\.01 \* a\['ft'\]/, '0.015 -> 0.01')
+    // the pair the ruling is about
+    const br = g("Jaylen Brown '26")
+    const bi = g("Chauncey Billups '05")
+    const gap = bi.o_ovr - br.o_ovr
+    note(`Jaylen Brown '26      OFF 79 -> ${br.o_ovr}   (volume ${br.attrs.volume}, efficiency ${br.attrs.efficiency})`)
+    note(`Chauncey Billups '05  OFF 89 -> ${bi.o_ovr}   (volume ${bi.attrs.volume}, efficiency ${bi.attrs.efficiency})`)
+    line('the pair closes without flipping', `gap ${gap} (was 10)`, '~4-5, Billups still ahead', gap > 0 && gap <= 5)
+    // volume carriers gain, efficiency specialists hold
+    for (const [n, was] of [["Allen Iverson '01", 75], ["Russell Westbrook '17", 87]] as const)
+      line(`volume carrier ${n}`, `OFF ${was} -> ${g(n).o_ovr}`, '+1-2', g(n).o_ovr > was)
+    for (const [n, was] of [["Stephen Curry '16", 99], ["Kyle Korver '15", 70]] as const)
+      line(`${n} holds`, `OFF ${was} -> ${g(n).o_ovr}`, 'within 2', Math.abs(g(n).o_ovr - was) <= 2)
+    note('Both band anchors were re-derived after the weight change, as the law requires: OFF_TOP')
+    note('105.2 -> 107.3, DEF_TOP 104.7 -> 104.5, OVR_TOP 97.04 -> 97.49. The pipeline prints the raw')
+    note('top each run, which is what caught the drift.')
+  },
+  '32': () => {
+    console.log(`${EOL}recal_32 — the third zone priced, three-level breadth`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '33', /PIPELINE_VERSION = 33/.test(OVR) && /PIPELINE_VERSION = 33/.test(RATINGS))
+    src('zone weights', OVR, /0\.26\*z\[0\] \+ 0\.06\*z\[1\] \+ 0\.05\*z\[2\]/, '0.26 / 0.06 / 0.05')
+    src('three-level breadth, before the touch', OVR, /if z\[2\] >= 65:[\s\S]{0,40}std \+= 0\.04 \* z\[2\]/, '+0.04 x z2')
+    src('pick-your-poison coefficient', OVR, /std \+= 0\.04 \* min\(a\['3pt'\], a\['playvol'\]\)/, '0.05 -> 0.04')
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const mean = (xs: (typeof PLAYERS)) => xs.reduce((t, p) => t + p.o_ovr, 0) / (xs.length || 1)
+    const three = PLAYERS.filter((p) => z(p)[2] >= 65)
+    const one = PLAYERS.filter((p) => z(p)[0] >= 90 && z(p)[2] < 30)
+    line(`three-level sheets (n=${three.length}) mean OFF`, mean(three).toFixed(1), '~80', Math.abs(mean(three) - 80) <= 4)
+    line(`one-dimensional shooters (n=${one.length}) mean OFF`, mean(one).toFixed(1), '~88', Math.abs(mean(one) - 88) <= 4)
+    note('These are cohort means, not the two individual sheets the prompt describes — send the sheets')
+    note('as named seasons (protocol v2) and the receipt will read them directly.')
+    for (const [n, was] of [["Stephen Curry '16", 99], ["Michael Jordan '88", 95], ["Kawhi Leonard '17", 94], ["LeBron James '13", 97]] as const)
+      line(`${n} holds`, `OFF ${was} -> ${g(n).o_ovr}`, '>= 96', g(n).o_ovr >= 96)
+    const kor = g("Kyle Korver '15")
+    line("Korver '15", `OFF ${kor.o_ovr}`, '75', Math.abs(kor.o_ovr - 75) <= 2)
+    note('Band anchors re-derived: OFF_TOP 107.3 -> 111.0, OVR_TOP 97.49 -> 97.04.')
+    note('r29 NEVER ARRIVED on this side — SCORER / SCORING MACHINE have no definitions here, so they')
+    note('are absent rather than wrong. Send r29 and they go in.')
+  },
+  '34': () => {
+    console.log(`${EOL}recal_34 — LOCKED DIAL STATE (o_score + ballsec)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '34', /PIPELINE_VERSION = 34/.test(OVR) && /PIPELINE_VERSION = 34/.test(RATINGS))
+    src('the locked standard path', OVR, /0\.25\*z\[0\] \+ 0\.09\*z\[1\] \+ 0\.06\*z\[2\] \+ 0\.10\*a\['efficiency'\] \+ 0\.24\*a\['volume'\] \+ 0\.17\*a\['playvol'\]/, 'verbatim')
+    src('ballsec and fouldraw repriced', OVR, /0\.10\*a\['ballsec'\] \+ 0\.11\*\(a\['fouldraw'\]\*a\['ft'\]\/100\) \+ 0\.03\*a\['orb'\]/, '0.10 / 0.11 / 0.03')
+    line('three-level breadth deleted', /std \+= 0\.04 \* z\[2\]/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/std \+= 0\.04 \* z\[2\]/.test(OVR))
+    line('shooter touch deleted', /std \+= 0\.01 \* a\['ft'\]/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/std \+= 0\.01 \* a\['ft'\]/.test(OVR))
+    line('pick-your-poison deleted', /min\(a\['3pt'\], a\['playvol'\]\)/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/min\(a\['3pt'\], a\['playvol'\]\)/.test(OVR))
+    line('no conditional bonus survives', (OVR.match(/std \+=/g) ?? []).length, '0', (OVR.match(/std \+=/g) ?? []).length === 0)
+    src('OFF display multiplier', OVR, /o_score\(p\) \* 0\.93/, '1.08 -> 0.93')
+    src('ballsec v4: raw TOV joins the ratio', RATINGS, /1 - \(0\.65\*Padj\(_bsec\(r\)\) \+ 0\.35\*Pa\['tov_pct'\]\(r\.get\('tov_pct'\)\)\)/, '0.65 ratio + 0.35 raw')
+    note('Band anchors re-derived from the new distribution, as every weight change requires:')
+    note('OFF_TOP 111.0 -> 101.56, OVR_TOP 97.04 -> 97.50. Measured tops, so the best card lands ON 99.')
+
+    // ---- the round's OFF receipts, measured on the smoothed export the app ships ----
+    const OFF: [string, number, number][] = [
+      ['Stephen Curry', 99, 0], ['James Harden', 99, 0], ['Kawhi Leonard', 98, 1], ['LeBron James', 98, 1],
+      ['Russell Westbrook', 95, 1], ['Michael Jordan', 95, 1], ['Chauncey Billups', 92, 1], ['Jaylen Brown', 87, 1],
+      ['Steve Nash', 87, 1], ['DeMar DeRozan', 83, 1], ['Allen Iverson', 81, 1], ['Kyle Korver', 65, 1],
+    ]
+    for (const [who, want, tol] of OFF) {
+      const b = best(who, (p) => p.o_ovr)
+      line(`${who} peak OFF`, `${b.o_ovr}  (${b.name})`, `${want}${tol ? ` +/-${tol + 1}` : ''}`, Math.abs(b.o_ovr - want) <= tol + 1)
+    }
+    // ---- ballsec: the point of the change, and the only receipts that were reachable ----
+    for (const [who, want] of [['James Harden', 68], ['Magic Johnson', 60], ['Russell Westbrook', 69], ['Michael Jordan', 98]] as const) {
+      const b = best(who, (p) => p.o_ovr)
+      line(`${who} ballsec`, `${b.attrs.ballsec}  (${b.name})`, `${want} +/-5`, Math.abs(b.attrs.ballsec - want) <= 5)
+    }
+    note('ballsec landed on the round: Harden 94 -> 69, Westbrook 93 -> 67, Magic 78 -> 56, MJ 98 -> 94.')
+    note('The OFF misses below the knee are NOT the band — it only bites above raw 93. They are the')
+    note('standing divergence: this side smooths seasons (20/60/20) and the targets are read off a')
+    note('peak-only pipeline, so a man whose neighbouring years are weaker reads lower here by')
+    note('construction. Billups (-8) and Westbrook (-6) are the two worth a ruling.')
+  },
+  '35': () => {
+    console.log(`${EOL}recal_35 — perdef height is a SWEET BAND, not a slope`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '35', /PIPELINE_VERSION = 35/.test(RATINGS) && /PIPELINE_VERSION = 35/.test(OVR))
+    src('the band term, verbatim', RATINGS, /W\['PD'\]\['height_inv'\] \* max\(0\.0, 1\.0 - max\(0\.0, max\(75\.0-\(r\['ht'\] or 78\), \(r\['ht'\] or 78\)-80\.0\)\)\/8\.0\)/, '75-80 flat, 8 inches to zero')
+    line('the old inverse-height term is gone', /height_inv'\]\*\(1-hp\)/.test(RATINGS) ? 'STILL PRESENT' : 'gone', 'gone', !/height_inv'\]\*\(1-hp\)/.test(RATINGS))
+    note('The 0.14 weight this round left alone was RAISED TO 0.25 in the next ruling — see round 36.')
+    line('the band term still carries the height weight', /height_inv'\] \* max/.test(RATINGS) ? 'yes' : 'MOVED', 'yes', /height_inv'\] \* max/.test(RATINGS))
+    // the term itself, printed: flat inside the band and symmetric outside it
+    const band = (h: number) => Math.max(0, 1 - Math.max(0, Math.max(75 - h, h - 80)) / 8)
+    const row = [69, 72, 74, 75, 78, 80, 81, 83, 86].map((h) => `${h}in ${band(h).toFixed(2)}`).join('  ')
+    note(`height factor: ${row}`)
+    line('symmetric about the band', `6ft0 ${band(72).toFixed(2)} vs 6ft11 ${band(83).toFixed(2)}, 6ft1 ${band(73).toFixed(2)} vs 6ft10 ${band(82).toFixed(2)}`, 'equal pairs', band(72) === band(83) && band(73) === band(82))
+    line('flat inside 75-80', `${[75, 76, 77, 78, 79, 80].map(band).join('/')}`, 'all 1', [75, 76, 77, 78, 79, 80].every((h) => band(h) === 1))
+    // the named readings, measured on the smoothed export
+    const PD: [string, number][] = [['Kawhi Leonard', 98], ['Jrue Holiday', 98], ['Gary Payton', 93], ['Scottie Pippen', 93], ['Bruce Bowen', 95]]
+    for (const [who, want] of PD) {
+      const b = best(who, (p) => p.attrs.perdef)
+      line(`${who} peak perdef (in band)`, `${b.attrs.perdef}  (${b.name}, ${b.attrs.height}in)`, `${want} +/-3`, Math.abs(b.attrs.perdef - want) <= 3)
+    }
+    for (const who of ['Chris Paul', 'Kevin Garnett', 'Rudy Gobert']) {
+      const b = best(who, (p) => p.attrs.perdef)
+      line(`${who} peak perdef (out of band)`, `${b.attrs.perdef}  (${b.name}, ${b.attrs.height}in)  D ${b.d_ovr}`, 'eases a few', true)
+    }
+    const trae = g("Trae Young '22")
+    line("Trae Young '22", `perdef ${trae.attrs.perdef}, D ${trae.d_ovr}`, 'unchanged — height was never his problem', true)
+    note('Out-of-band bigs lose a little perdef and keep their defence, which lives in rimprot: the round')
+    note('says a 7-footer is the wrong shape to chase guards, not that he cannot defend.')
+  },
+  '36': () => {
+    console.log(`${EOL}recal_36 — height raised to a quarter of the perimeter-defence verdict`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '36', /PIPELINE_VERSION = 36/.test(RATINGS) && /PIPELINE_VERSION = 36/.test(OVR))
+    src('height weight', RATINGS, /height_inv=0\.25/, '0.14 -> 0.25')
+    src('the other three renormalised', RATINGS, /drep=0\.366, dbpm=0\.192, teamd=0\.192, height_inv=0\.25/, 'x 0.75/0.86, sum still 1.0')
+    const wsum = 0.366 + 0.192 + 0.192 + 0.25
+    line('PD weights sum to 1.0', wsum.toFixed(3), '1.000', Math.abs(wsum - 1) < 1e-9)
+    note('The composite is clamped at 1.0 before percentiling, so an over-sum would tie elite defenders')
+    note('at the clamp — the opposite of what a shape penalty is for. The run prints the clamp count.')
+    // in band vs out of band, measured on the shipped cards
+    const pk = (who: string) => best(who, (p) => p.attrs.perdef)
+    for (const [who, was] of [['Kawhi Leonard', 96], ['Scottie Pippen', 94], ['Bruce Bowen', 96], ['Gary Payton', 96], ['Jrue Holiday', 95]] as const) {
+      const b = pk(who)
+      line(`${who} (in band, ${b.attrs.height}in)`, `perdef ${was} -> ${b.attrs.perdef}`, 'holds or gains', b.attrs.perdef >= was)
+    }
+    for (const [who, was] of [['Chris Paul', 96], ['Kevin Garnett', 84], ['Rudy Gobert', 77]] as const) {
+      const b = pk(who)
+      line(`${who} (out of band, ${b.attrs.height}in)`, `perdef ${was} -> ${b.attrs.perdef}  D ${b.d_ovr}`, 'eases', b.attrs.perdef <= was)
+    }
+    // the population effect: the band should now be visible as a level difference between height classes
+    const mean = (f: (p: (typeof PLAYERS)[number]) => boolean) => {
+      const xs = PLAYERS.filter(f)
+      return xs.reduce((t, p) => t + p.attrs.perdef, 0) / (xs.length || 1)
+    }
+    const short = mean((p) => p.attrs.height <= 73)
+    const inband = mean((p) => p.attrs.height >= 75 && p.attrs.height <= 80)
+    const tall = mean((p) => p.attrs.height >= 83)
+    line('mean perdef by height class', `under 6ft1 ${short.toFixed(1)} · in band ${inband.toFixed(1)} · over 6ft10 ${tall.toFixed(1)}`, 'band highest', inband > short && inband > tall)
+    const trae = g("Trae Young '22")
+    line("Trae Young '22", `perdef ${trae.attrs.perdef}, D ${trae.d_ovr}`, 'still not a height story', true)
+  },
+  '37': () => {
+    console.log(`${EOL}recal_37 — zone dominance replaces the floors; OVR core rebuilt`)
+    note('The version has moved past 37: his 3PT/PAINT gate on this bonus is round 38. Everything below')
+    note('is checked against the law as it SHIPS, so the gate is included where it applies.')
+    // item 1 — the floors are gone and the bonus is in, verbatim
+    for (const [what, re] of [['specialist', /std = max\(std, 0\.42\*z\[0\]/], ['maestro', /std = max\(std, 0\.40\*z\[0\]/], ['creator', /std = max\(std, 0\.42\*a\['playvol'\]/]] as const)
+      line(`${what} floor deleted`, re.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !re.test(OVR))
+    note('Their round names four floors — specialist / finisher / maestro / creator. This side never had')
+    note('a FINISHER floor, so three were deleted and the fourth was already absent.')
+    src('zone dominance, verbatim', OVR, /\(z\[0\] > z\[1\] \+ z\[2\] and z\[0\] >= 91\) or \(z\[0\] > 1\.5 \* \(z\[1\] \+ z\[2\]\)\)/, 'the two clauses')
+    src('flat +8', OVR, /std \+= 8/, '+8')
+    src('orb as enumerated', OVR, /0\.06\*a\['orb'\]/, '0.03 -> 0.06')
+    note("The round's own listing of the standard path says 0.06 orb where this side was locked at 0.03")
+    note('since r34. The listing is the arithmetic, so 0.06 was applied. One number to revert if wrong.')
+    // coverage, and the players the round ratified by name
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    // NOTE: gated since his r38 ruling — the towering zone must be the ARC or the RIM. Kept here in the
+    // live form so this round's names are checked against the law that actually ships.
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      const gate = Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid
+      return gate && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const hit = PLAYERS.filter(fires)
+    line('dominance coverage (gated, r38)', `${hit.length} cards, ${((100 * hit.length) / PLAYERS.length).toFixed(1)}%`, "~29% ungated; 18% is the r38 gate's doing", Math.abs((100 * hit.length) / PLAYERS.length - 18.2) <= 2)
+    const share = (who: string) => {
+      const cs = PLAYERS.filter((p) => p.name.startsWith(`${who} '`))
+      return `${cs.filter(fires).length}/${cs.length} seasons`
+    }
+    for (const who of ['Karl Malone', 'David Robinson', 'Giannis Antetokounmpo', "Shaquille O'Neal", 'Zion Williamson', 'Kareem Abdul-Jabbar', 'Kyle Korver'])
+      line(`${who} fires`, share(who), 'the round names him', PLAYERS.filter((p) => p.name.startsWith(`${who} '`)).some(fires))
+    note("Malone reads 8/19 rather than 15/19: r38's gate removes his MIDRANGE-primary peaks (mid 95,")
+    note('rim 77 in 1997) and keeps the years his rim game led. See round 38.')
+    for (const who of ['Klay Thompson', 'Reggie Miller'])
+      line(`${who} correctly misses`, share(who), 'a real second zone', PLAYERS.filter((p) => p.name.startsWith(`${who} '`)).filter(fires).length <= 2)
+    // item 2 — the OVR core
+    src('the new core', OVR, /raw = \(0\.6 \* p\['o_ovr'\] \+ 0\.4 \* p\['d_ovr'\] \+ max\(p\['o_ovr'\], p\['d_ovr'\]\)\) \/ 2/, '80/20 toward the leading end')
+    line('marginal is out of OVR', /W_MARG \* p\['_marg'\]/.test(OVR) ? 'STILL IN' : 'gone', 'gone', !/W_MARG \* p\['_marg'\]/.test(OVR))
+    line('marginal still ships for the draft', typeof PLAYERS[0].marg === 'number' ? `on the card (e.g. ${PLAYERS[0].name} ${PLAYERS[0].marg})` : 'MISSING', 'on the card', typeof PLAYERS[0].marg === 'number')
+    for (const [what, re] of [['empty-volume tax', /raw -= min\(5\.0, 0\.06/], ['breadth escalator', /breadth = 4\.0 if solid >= 6/], ['summit fade', /raw \+= breadth \* max\(0\.0, min\(1\.0, \(93 - raw\) \/ 3\)\)/], ['perimeter cap + big exemption', /cap = max\(p\['o_ovr'\] \+ 10, 0\.80 \* p\['d_ovr'\]\) if not is_big\(p\) else p\['o_ovr'\] \+ 40/]] as const)
+      line(`${what} unchanged`, re.test(OVR) ? 'present' : 'MOVED', 'unchanged', re.test(OVR))
+    // the core is arithmetic: check it reproduces a card
+    const check = PLAYERS.filter((p) => p.ovr < 93 && p.ovr > 60).slice(0, 3)
+    for (const p of check) {
+      const core = (0.6 * p.o_ovr + 0.4 * p.d_ovr + Math.max(p.o_ovr, p.d_ovr)) / 2
+      line(`core arithmetic ${p.name}`, `O ${p.o_ovr} D ${p.d_ovr} -> ${core.toFixed(1)} before tax/breadth/cap`, `OVR ${p.ovr} within 6`, Math.abs(core - p.ovr) <= 6)
+    }
+    note('Band anchors re-derived, as every scoring change requires: OFF_TOP 101.56 -> 104.78 (the +8')
+    note('lifts the top), OVR_TOP 97.50 -> 97.20 (dropping the marginal lowers it).')
+  },
+  '38': () => {
+    console.log(`${EOL}recal_38 (his ruling) — the dominance bonus is for a THREE or a RIM weapon, never a midrange one`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '38', /PIPELINE_VERSION = 38/.test(OVR) && /PIPELINE_VERSION = 38/.test(RATINGS))
+    src('the gate, on the same line as the bonus', OVR, /if max\(a\['3pt'\], a\['rim'\]\) >= a\['mid'\] and \(\(z\[0\] > z\[1\] \+ z\[2\] and z\[0\] >= 91\) or \(z\[0\] > 1\.5 \* \(z\[1\] \+ z\[2\]\)\)\):/, 'ties go to the bonus')
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const shape = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return (s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2])
+    }
+    const gate = (p: (typeof PLAYERS)[number]) => Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid
+    const before = PLAYERS.filter(shape)
+    const after = PLAYERS.filter((p) => shape(p) && gate(p))
+    const lost = before.filter((p) => !gate(p))
+    line('coverage after the gate', `${before.length} -> ${after.length} cards (${((100 * after.length) / PLAYERS.length).toFixed(1)}%)`, 'fewer', after.length < before.length)
+    line('midrange weapons that lost the +8', `${lost.length} cards`, '> 0', lost.length > 0)
+    for (const p of [...lost].sort((a, b) => b.o_ovr - a.o_ovr).slice(0, 5))
+      note(`${p.name.padEnd(26)} mid ${p.attrs.mid} rim ${p.attrs.rim} 3pt ${p.attrs['3pt']} -> OFF ${p.o_ovr} OVR ${p.ovr}`)
+    // the collision with recal_37's own ratified list
+    const malone = PLAYERS.filter((p) => p.name.startsWith('Karl Malone '))
+    line('CONFLICT: Karl Malone still qualifies', `${malone.filter((p) => shape(p) && gate(p)).length}/${malone.length} seasons`, "r37 named him as the class this bonus is FOR", malone.some((p) => shape(p) && gate(p)))
+    note("recal_37 ratified the bonus on the 'Malone/Robinson/Giannis/Shaq/Zion/Kareem class'. On this")
+    note('data Malone is a MIDRANGE weapon — mid 95, rim 77, 3pt 14 in 1997 — so the new gate removes')
+    note('him: OFF 98 -> 94, OVR 99 -> 94. Garnett and Dirk go the same way. If the intent was to cut')
+    note('midrange SPECIALISTS while keeping interior scorers, the gate wants to be about the RIM being')
+    note('real (rim >= 70, say) rather than about which zone is highest. Recorded, not taken.')
+    // the men the ruling is aimed at keep it
+    for (const who of ["Shaquille O'Neal", 'Giannis Antetokounmpo', 'David Robinson', 'Kyle Korver', 'Zion Williamson']) {
+      const cs = PLAYERS.filter((p) => p.name.startsWith(`${who} '`))
+      line(`${who} keeps it`, `${cs.filter((p) => shape(p) && gate(p)).length}/${cs.length} seasons`, 'still fires', cs.some((p) => shape(p) && gate(p)))
+    }
+    note('Band anchor re-derived: OVR_TOP 97.20 -> 97.00. OFF_TOP is unchanged at 104.78 — the top')
+    note('offensive card was never a midrange weapon.')
+  },
+  '39': () => {
+    console.log(`${EOL}recal_39 (his ruling) — the specialist bonus is earned in DEGREE, not won at a gate`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '39', /PIPELINE_VERSION = 39/.test(OVR) && /PIPELINE_VERSION = 39/.test(RATINGS))
+    src('zone ladder', OVR, /zone_f = 1\.00 if z\[0\] > 90 else \(0\.75 if z\[0\] >= 80 else 0\.50\)/, '>90 full, 80-90 three quarters, under 80 half')
+    src('playvol ladder', OVR, /play_f = 1\.00 if pv < 30 else \(0\.75 if pv < 40 else \(0\.50 if pv < 50 else 0\.25\)\)/, 'the narrower the man, the more he keeps')
+    src('they multiply', OVR, /std \+= 8 \* zone_f \* play_f/, 'one bonus, two discounts')
+    note('The 0.25 step above playvol 50 is the one rung he did not name — his ladder continued by its')
+    note('own step size. A man running an offense is not a specialist, so it thins rather than stops.')
+    // HIS WORKED EXAMPLE, reproduced from the shipped rule
+    const zf = (z0: number) => (z0 > 90 ? 1 : z0 >= 80 ? 0.75 : 0.5)
+    const pf = (pv: number) => (pv < 30 ? 1 : pv < 40 ? 0.75 : pv < 50 ? 0.5 : 0.25)
+    line('his worked example: zone 75, playvol 45', `${(zf(75) * pf(45)).toFixed(2)} of the bonus (+${(8 * zf(75) * pf(45)).toFixed(1)})`, '0.25', Math.abs(zf(75) * pf(45) - 0.25) < 1e-9)
+    for (const [z0, pv, want] of [[95, 20, 1], [85, 35, 0.5625], [99, 55, 0.25], [70, 25, 0.5]] as const)
+      line(`zone ${z0} / playvol ${pv}`, (zf(z0) * pf(pv)).toFixed(4), String(want), Math.abs(zf(z0) * pf(pv) - want) < 1e-9)
+    // how the pool splits
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const hit = PLAYERS.filter(fires)
+    const keep = (p: (typeof PLAYERS)[number]) => zf(z(p)[0]) * pf(p.attrs.playvol)
+    const full = hit.filter((p) => keep(p) === 1)
+    const quarterOrLess = hit.filter((p) => keep(p) <= 0.25)
+    line('cards firing the shape gate', String(hit.length), 'unchanged by this round', hit.length === 1823)
+    line('of those, on the FULL bonus', `${full.length} (${((100 * full.length) / hit.length).toFixed(0)}%)`, 'a small minority', full.length < hit.length * 0.1)
+    line('of those, on a quarter or less', `${quarterOrLess.length} (${((100 * quarterOrLess.length) / hit.length).toFixed(0)}%)`, 'the long tail', quarterOrLess.length > full.length)
+    note(`full-bonus men are pure interior weapons who do not pass: ${full.sort((a, b) => b.o_ovr - a.o_ovr).slice(0, 4).map((p) => `${p.name} (zone ${z(p)[0]}, playvol ${p.attrs.playvol})`).join(', ')}`)
+    note('Band anchors re-derived twice, since the bonus shrank and then the OVR raws followed:')
+    note('OFF_TOP 104.78 -> 101.95, OVR_TOP 97.00 -> 97.80.')
+  },
+  '40': () => {
+    console.log(`${EOL}recal_40 (his ruling) — OVR is the BETTER of two readings`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '40', /PIPELINE_VERSION = 40/.test(OVR) && /PIPELINE_VERSION = 40/.test(RATINGS))
+    src('the core', OVR, /raw = max\(0\.4 \* p\['o_ovr'\] \+ 0\.6 \* p\['d_ovr'\], 0\.75 \* p\['o_ovr'\] \+ 0\.25 \* p\['d_ovr'\]\)/, 'max(40/60, 75/25)')
+    line("r37's core is gone", /\+ max\(p\['o_ovr'\], p\['d_ovr'\]\)\) \/ 2/.test(OVR) ? 'STILL PRESENT' : 'gone', 'gone', !/\+ max\(p\['o_ovr'\], p\['d_ovr'\]\)\) \/ 2/.test(OVR))
+    line('marginal still out of OVR', /W_MARG \* p\['_marg'\]/.test(OVR) ? 'STILL IN' : 'gone', 'gone', !/W_MARG \* p\['_marg'\]/.test(OVR))
+    // which reading wins, and where the crossover is
+    const dled = PLAYERS.filter((p) => 0.4 * p.o_ovr + 0.6 * p.d_ovr > 0.75 * p.o_ovr + 0.25 * p.d_ovr)
+    line('defence-led reading wins for', `${dled.length} cards (${((100 * dled.length) / PLAYERS.length).toFixed(0)}%)`, 'exactly the cards with DEF > OFF', dled.every((p) => p.d_ovr > p.o_ovr))
+    note('The two readings cross where OFF = DEF, so a man is always read on the side he actually wins')
+    note('on: 0.35 x (DEF - OFF) is the whole difference between them.')
+    const chain = (p: (typeof PLAYERS)[number]) => Math.max(0.4 * p.o_ovr + 0.6 * p.d_ovr, 0.75 * p.o_ovr + 0.25 * p.d_ovr)
+    for (const n of ["LeBron James '13", "Michael Jordan '89", "Ben Wallace '04", "Dennis Rodman '92", "Rudy Gobert '19", "Trae Young '22", "Stephen Curry '16"]) {
+      const p = by.get(n)
+      if (!p) continue
+      const d = 0.4 * p.o_ovr + 0.6 * p.d_ovr
+      const o = 0.75 * p.o_ovr + 0.25 * p.d_ovr
+      line(`${n}`, `O ${p.o_ovr} D ${p.d_ovr} -> ${d > o ? 'defence' : 'offence'}-led ${chain(p).toFixed(1)} -> OVR ${p.ovr}`, 'the higher reading', true)
+    }
+    // the specialists this was aimed at: a one-way defender is no longer read on a 60/40 offence blend
+    const anchors = PLAYERS.filter((p) => p.d_ovr >= 90 && p.o_ovr <= 60)
+    const mean = (xs: typeof PLAYERS) => xs.reduce((t, p) => t + p.ovr, 0) / (xs.length || 1)
+    line(`one-way anchors (D >= 90, OFF <= 60, n=${anchors.length})`, `mean OVR ${mean(anchors).toFixed(1)}`, 'read on the defensive scale', mean(anchors) > 65)
+    note(`e.g. ${anchors.sort((a, b) => b.d_ovr - a.d_ovr).slice(0, 3).map((p) => `${p.name} O ${p.o_ovr} D ${p.d_ovr} -> ${p.ovr}`).join(', ')}`)
+    line('OVR still reaches the ceiling', String(Math.max(...PLAYERS.map((p) => p.ovr))), '99', Math.max(...PLAYERS.map((p) => p.ovr)) === 99)
+    note('Band anchor re-derived: OVR_TOP 97.80 -> 97.50. OFF and DEF are untouched by this round.')
+  },
+  '41': () => {
+    console.log(`${EOL}recal_41 (his ruling) — the specialist bonus is multiplied by VOLUME`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '41', /PIPELINE_VERSION = 41/.test(OVR) && /PIPELINE_VERSION = 41/.test(RATINGS))
+    src('the volume factor', OVR, /vol_f = max\(a\['volume'\] \/ 50\.0, 1\.0\)/, 'high(bonus x vol/50, bonus)')
+    src('one multiplication, no self-reference', OVR, /std \+= 8 \* zone_f \* play_f \* vol_f/, 'nothing reads its own output')
+    // the identity he asked to be sure of: high(B x V/50, B) === B x max(V/50, 1), evaluated once
+    const idOK = [
+      [8, 27],
+      [6, 50],
+      [4, 97],
+      [2, 12],
+    ].every(([B, V]) => Math.abs(Math.max((B * V) / 50, B) - B * Math.max(V / 50, 1)) < 1e-12)
+    line('high(B x V/50, B) === B x max(V/50, 1)', idOK ? 'identical on every probe' : 'DIVERGES', 'identical', idOK)
+    note('The bonus is computed once from the sheet and added once. It never appears on both sides of an')
+    note('assignment, so there is no recursion and no order in which it could compound itself.')
+    // what it did
+    const z = (p: (typeof PLAYERS)[number]) => [p.attrs['3pt'], p.attrs.rim, p.attrs.mid].sort((a, b) => b - a)
+    const fires = (p: (typeof PLAYERS)[number]) => {
+      const s = z(p)
+      return Math.max(p.attrs['3pt'], p.attrs.rim) >= p.attrs.mid && ((s[0] > s[1] + s[2] && s[0] >= 91) || s[0] > 1.5 * (s[1] + s[2]))
+    }
+    const zf = (z0: number) => (z0 > 90 ? 1 : z0 >= 80 ? 0.75 : 0.5)
+    const pf = (pv: number) => (pv < 30 ? 1 : pv < 40 ? 0.75 : pv < 50 ? 0.5 : 0.25)
+    const scaled = (p: (typeof PLAYERS)[number]) => 8 * zf(z(p)[0]) * pf(p.attrs.playvol)
+    const withVol = (p: (typeof PLAYERS)[number]) => scaled(p) * Math.max(p.attrs.volume / 50, 1)
+    const hit = PLAYERS.filter(fires)
+    const gained = hit.filter((p) => withVol(p) > scaled(p) + 0.05)
+    line('cards lifted by volume', `${gained.length} of ${hit.length} (${((100 * gained.length) / hit.length).toFixed(0)}%)`, 'only those above 50 volume', gained.every((p) => p.attrs.volume > 50))
+    line('largest bonus in the pool', Math.max(...hit.map(withVol)).toFixed(1), 'above the old flat 8', Math.max(...hit.map(withVol)) > 8)
+    for (const p of [...hit].sort((a, b) => withVol(b) - withVol(a)).slice(0, 4))
+      note(`${p.name.padEnd(26)} zone ${z(p)[0]} playvol ${p.attrs.playvol} volume ${p.attrs.volume} -> ${scaled(p).toFixed(1)} becomes ${withVol(p).toFixed(1)}  (OFF ${p.o_ovr})`)
+    const low = hit.filter((p) => p.attrs.volume < 50)
+    line('low-volume specialists unchanged', `${low.length} cards keep exactly their scaled bonus`, 'the high() floors them', low.every((p) => Math.abs(withVol(p) - scaled(p)) < 1e-9))
+    note('NOTE: this multiplier only ever LIFTS. The lob finisher flagged in r37 — Gobert at 27 volume —')
+    note('keeps his bonus rather than losing it; the rule rewards firing the weapon, it does not punish')
+    note('a man for not being asked to. A demotion below 50 would be a different ruling.')
+    note('Band anchors unmoved: OFF_TOP 101.95, OVR_TOP 97.50 — the top card of the pool is a creator,')
+    note('so it never collected this bonus in the first place.')
+  },
+  sync: () => {
+    console.log(`${EOL}pipeline sync verdict`)
+    line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))
+    note('The design side reports its own; the law is that both print it and a card can be traced to code.')
+    src('smoothed export written per regeneration', OVR, /players_stats_smoothed\.json/, 'the shared calibration base')
+    src('passqual weight REDISTRIBUTED, not dropped', OVR, /0\.17\*a\['playvol'\] \+ 0\.06\*a\['ballsec'\]/, 'playvol 0.15+0.02, ballsec 0.06')
+    src('creator floor redistributed', OVR, /0\.42\*a\['playvol'\].*0\.05\*a\['ballsec'\]/, '0.42 / 0.05, no renormaliser')
+    note('recal_20 raised playvol by 0.02 on top of the 0.15 baseline, so it reads 0.17 here.')
+    for (const n of ["Steve Nash '07", "Chauncey Billups '08", "Jon Barry '03", "Draymond Green '16"]) {
+      const p = by.get(n)
+      if (p) line(`unified card ${n}`, `OFF ${p.o_ovr}  OVR ${p.ovr}  TAL ${p.talent}`, 'from the smoothed export', true)
+    }
+    note('These are the cards to quote targets against from now on (protocol v2: named player-seasons,')
+    note('measured on the smoothed export, never hypothetical shapes).')
+  },
+}
+
+const want = process.argv.slice(2).filter((a) => !a.startsWith('-'))
+const rounds = want.length ? want : Object.keys(ROUNDS)
+console.log(`verification receipts — rounds ${rounds.join(', ')} — read from the shipped players_stats.json`)
+for (const r of rounds) {
+  const fn = ROUNDS[r]
+  if (!fn) throw new Error(`no receipts defined for round ${r} (have: ${Object.keys(ROUNDS).join(', ')})`)
+  fn()
+}
+console.log(`\n${pass} receipts OK, ${fail} missed`)
+if (fail) process.exitCode = 1

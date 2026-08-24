@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"/c/Users/tomer/Desktop/data\" 2>/dev/null | head -40; echo \"=== bball dirs ===\"; find /c/Users/tomer/Desktop -maxdepth 3 -iname \"*bball*\" -o -maxdepth 3 -iname \"*basketball*\" -o -maxdepth 3 -iname \"*bref*\" 2>/dev/null | head)"
+    ]
+  }
+}

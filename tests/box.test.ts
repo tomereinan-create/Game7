@@ -1,0 +1,123 @@
+import { describe, expect, it } from 'vitest'
+import CAMPAIGNS from '../src/data/campaigns.json'
+import OPP from '../src/data/opponents.json'
+import STATS from '../src/data/stats.json'
+import { gameBoxes, shapeOf, splitBox } from '../src/engine/boxstats'
+import { ratings100, REF_FIVE } from '../src/engine/offense'
+import { PLAYERS } from '../src/engine/pool'
+import { compile, simSeries } from '../src/engine/resolver'
+import { makeRng } from '../src/engine/rng'
+import type { Opponent, StatLine } from '../src/engine/types'
+
+const L = STATS as Record<string, StatLine | null>
+const opp = OPP as Opponent[]
+const by = new Map(PLAYERS.map((p) => [p.name, p]))
+const five = (...n: string[]) => n.map((x) => by.get(x)!)
+
+describe('box scores — shape follows the score and the identity', () => {
+  it('200 simmed games: FG% 44–50, 3P% 33–39, FTA 16–26, TRB 36–46, TOV 10–16 on average; every ledger exact', () => {
+    const rng = makeRng(77)
+    const acc = { fgp: 0, tpp: 0, fta: 0, reb: 0, tov: 0, n: 0 }
+    for (let k = 0; k < 40; k++) {
+      const A = opp[k % 30].players
+      const B = opp[(k * 7 + 3) % 30].players
+      const r = simSeries(compile(A, B), compile(B, A), rng)
+      for (const g of r.games) {
+        const b = gameBoxes(A, B, L, g.us, g.them, rng)
+        for (const t of [b.us, b.them]) {
+          expect(t.pts).toBe(2 * (t.fgm - t.tpm) + 3 * t.tpm + t.ftm)
+          expect(t.tpm).toBeLessThanOrEqual(t.tpa)
+          expect(t.ftm).toBeLessThanOrEqual(t.fta)
+          expect(t.fgm).toBeLessThanOrEqual(t.fga)
+          acc.fgp += t.fgm / t.fga
+          acc.tpp += t.tpm / t.tpa
+          acc.fta += t.fta
+          acc.reb += t.reb
+          acc.tov += t.tov
+          acc.n++
+        }
+      }
+      if (acc.n >= 400) break
+    }
+    const m = { fgp: acc.fgp / acc.n, tpp: acc.tpp / acc.n, fta: acc.fta / acc.n, reb: acc.reb / acc.n, tov: acc.tov / acc.n }
+    console.log(`  ${acc.n / 2} games: FG% ${(100 * m.fgp).toFixed(1)}  3P% ${(100 * m.tpp).toFixed(1)}  FTA ${m.fta.toFixed(1)}  TRB ${m.reb.toFixed(1)}  TOV ${m.tov.toFixed(1)}`)
+    expect(acc.n).toBeGreaterThanOrEqual(400)
+    expect(m.fgp).toBeGreaterThanOrEqual(0.44)
+    expect(m.fgp).toBeLessThanOrEqual(0.5)
+    expect(m.tpp).toBeGreaterThanOrEqual(0.33)
+    expect(m.tpp).toBeLessThanOrEqual(0.39)
+    expect(m.fta).toBeGreaterThanOrEqual(16)
+    expect(m.fta).toBeLessThanOrEqual(26)
+    expect(m.reb).toBeGreaterThanOrEqual(36)
+    expect(m.reb).toBeLessThanOrEqual(46)
+    expect(m.tov).toBeGreaterThanOrEqual(10)
+    expect(m.tov).toBeLessThanOrEqual(16)
+  })
+
+  it('player lines sum to the team line exactly in every column, and each player balances his own ledger', () => {
+    const rng = makeRng(11)
+    for (let k = 0; k < 30; k++) {
+      const A = opp[k].players
+      const B = opp[(k + 9) % 30].players
+      const g = gameBoxes(A, B, L, 90 + (k % 25), 96 + (k % 17), rng)
+      for (const [team, box] of [[A, g.us], [B, g.them]] as const) {
+        const ls = splitBox(team, box)
+        for (const key of ['pts', 'fgm', 'fga', 'tpm', 'tpa', 'ftm', 'fta', 'reb', 'ast', 'stl', 'blk', 'tov'] as const)
+          expect(ls.reduce((s, l) => s + l[key], 0)).toBe(box[key])
+        for (const l of ls) {
+          expect(l.pts).toBe(2 * (l.fgm - l.tpm) + 3 * l.tpm + l.ftm)
+          expect(l.tpm).toBeLessThanOrEqual(l.tpa)
+          expect(l.fgm).toBeLessThanOrEqual(l.fga)
+          expect(l.ftm).toBeLessThanOrEqual(l.fta)
+        }
+      }
+    }
+  })
+
+  it('tails: a 92-point game and a 112-point game both land inside the FG% band', () => {
+    const A = opp[5].players
+    const B = opp[20].players
+    for (const [a, b] of [
+      [92, 88],
+      [112, 104],
+      [92, 112],
+    ]) {
+      const box = gameBoxes(A, B, L, a, b, makeRng(a * 31 + b))
+      for (const t of [box.us, box.them]) {
+        const pct = t.fgm / t.fga
+        expect(pct).toBeGreaterThanOrEqual(0.41)
+        expect(pct).toBeLessThanOrEqual(0.53)
+        expect(t.pts).toBe(2 * (t.fgm - t.tpm) + 3 * t.tpm + t.ftm)
+      }
+      expect(box.us.pts).toBe(a)
+      expect(box.them.pts).toBe(b)
+    }
+  })
+
+  it('shooting-heavy lineups take visibly more threes than paint lineups', () => {
+    const shooters = five("Stephen Curry '16", "Klay Thompson '15", "Kyle Korver '15", "Steve Kerr '96", "Shane Battier '06")
+    const paint = five("Rajon Rondo '09", "Tony Allen '12", "Dennis Rodman '92", "Ben Wallace '04", "Shaquille O'Neal '00")
+    expect(shapeOf(shooters, L).outShare - shapeOf(paint, L).outShare).toBeGreaterThan(0.1)
+    const rng = makeRng(5)
+    const g = gameBoxes(shooters, paint, L, 104, 98, rng)
+    console.log(`  3PA shooters ${g.us.tpa}  paint ${g.them.tpa}`)
+    expect(g.us.tpa).toBeGreaterThan(g.them.tpa * 1.3)
+  })
+
+  it('ratings anchored empirically: the median in-game opponent sits 45–58 on both dials; opponent changes never move a dial', () => {
+    // ten levels spread across the whole 120-level campaign (the first ten are the league's worst by construction)
+    const all = (CAMPAIGNS as unknown as { levels: Opponent[] }[]).flatMap((t) => t.levels)
+    const sample = Array.from({ length: 10 }, (_, i) => all[Math.floor((i * (all.length - 1)) / 9)]).map((o) => ratings100(o.players))
+    const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+    const mo = med(sample.map((s) => s.off))
+    const md = med(sample.map((s) => s.def))
+    console.log(`  10-level sample: median OFF ${mo} DEF ${md}; ref five ${ratings100(REF_FIVE).off}/${ratings100(REF_FIVE).def}`)
+    expect(mo).toBeGreaterThanOrEqual(40) // 45 before season smoothing, 41 after (anchor 132.0 kept)
+    expect(mo).toBeLessThanOrEqual(58)
+    expect(md).toBeGreaterThanOrEqual(45)
+    expect(md).toBeLessThanOrEqual(82) // 58 -> 60 (smoothing) -> 65 (recal 5) -> 77 (tracking defense lifts no-vote defenders); anchor 113.1 kept
+    const mine = opp[10].players
+    const r = ratings100(mine)
+    for (let k = 0; k < opp.length; k++) expect(ratings100(mine)).toEqual(r)
+  })
+})

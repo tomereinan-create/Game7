@@ -1,0 +1,40 @@
+{
+  "name": "game7",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "ticker-check": "vite-node scripts/ticker-check.ts",
+    "opponents": "vite-node scripts/campaigns.ts",
+    "tags": "vite-node scripts/tags.ts",
+    "stats": "vite-node scripts/stats.ts",
+    "teams": "vite-node scripts/teams.ts",
+    "salaries": "vite-node scripts/salaries.ts",
+    "ovr": "python data/compute_ovr.py src/data/players_stats.json",
+    "data": "npm run opponents && npm run stats && npm run teams && npm run salaries",
+    "icon": "node scripts/make-icon.mjs",
+    "play": "node serve.mjs",
+    "receipts": "vite-node scripts/receipts.ts",
+    "audit-tags": "vite-node scripts/audit-tags.ts",
+    "pair": "vite-node scripts/pair-decomp.ts",
+    "unfit": "vite-node scripts/unfit.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-node": "^2.1.8",
+    "vitest": "^2.1.8"
+  }
+}
