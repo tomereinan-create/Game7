@@ -126,7 +126,7 @@ export const RULES: Rule[] = [
   // offensive standard that make an ELITE role player.
   { tag: '3&D', test: (c) => c.ge(c.three, 75) && c.ge(c.a.perdef, 70) && c.lt(c.a.volume, 60) },
   // guards several spots without being a one-end specialist — neither number is allowed to be elite
-  { tag: 'Versatile defender', test: (c) => c.ge(Math.min(c.a.perdef, c.a.rimprot), 68) && c.p.d_ovr >= 78 },
+  { tag: 'Versatile defender', test: (c) => c.ge(Math.min(c.a.perdef, c.a.rimprot), 68) && c.p.d_ovr >= 78 && c.p.o_ovr < 80 },
   { tag: 'Stopper', test: (c) => c.ge(c.a.perdef, 90) && c.lt(c.a.volume, 60) && c.lt(c.p.o_ovr, 70) && c.lt(c.three, 60) },
   { tag: 'Pest', test: (c) => c.ltH(c.h, 76) && c.ge(c.a.perimdisrupt, 90) },
   // the guard who does some of both and neither at a lead handler's rate. Height is a physical fact and
