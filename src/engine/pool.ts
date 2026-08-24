@@ -1,4 +1,6 @@
 import RAW from '../data/players_stats.json'
+import STATS from '../data/stats.json'
+import { eligible, type Pos } from './positions'
 import type { Player } from './types'
 
 /**
@@ -77,6 +79,12 @@ export interface Ctx {
   geH: (v: number, t: number) => boolean
   ltH: (v: number, t: number) => boolean
   solid: number
+  /**
+   * The positions Basketball-Reference ever listed for this man — the SAME list the draft slots him
+   * with, so the labeler and the floor cannot disagree about what he is. Not a rating: the numeric law
+   * governs everything else, and this is the one fact that is a fact.
+   */
+  pos: Pos[]
 }
 
 export const RULES: Rule[] = [
@@ -113,7 +121,7 @@ export const RULES: Rule[] = [
   // ELITE ROLE PLAYER is a TIER name, not a style — the one exception to the law above, added on
   // Tomer's explicit repeated order. It sits above Stopper because a shooter who defends is not a
   // stopper who happens to shoot, and Stopper now says so itself with a 3pt ceiling.
-  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.lt(c.a.playvol, 60) && c.p.o_ovr > 60 && c.p.d_ovr > 60 },
+  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.lt(c.a.playvol, 60) && c.ge(c.three, 50) && c.p.o_ovr > 60 && c.p.d_ovr > 75 },
   // 3&D catches the rest of the shape: the shooting and the defending, without the passing or the
   // offensive standard that make an ELITE role player.
   { tag: '3&D', test: (c) => c.ge(c.three, 75) && c.ge(c.a.perdef, 70) && c.lt(c.a.volume, 60) },
@@ -125,12 +133,12 @@ export const RULES: Rule[] = [
   // never relaxes, so geH/ltH; the two windows are ordinary floors and ceilings.
   { tag: 'Combo guard', test: (c) => c.geH(c.h, 72) && c.ltH(c.h, 77) && c.ge(c.a.playvol, 50) && c.lt(c.a.playvol, 75) && c.ge(c.a.volume, 60) && c.lt(c.a.volume, 85) },
   { tag: 'Throwback', test: (c) => c.ge(c.mid, 75) && c.lt(c.three, 20) },
-  { tag: 'Post scorer', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 65) && c.lt(c.three, 40) && c.lt(c.a.playvol, 60) },
+  { tag: 'Post scorer', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 65) && c.lt(c.three, 40) && c.lt(c.a.playvol, 60) && (c.pos.includes('PF') || c.pos.includes('C')) },
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
   // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
-  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 95) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.lt(c.a.playvol, 70) },
-  { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) },
+  { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 95) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 26) },
+  { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) && c.ltH(c.h, 81) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
 
@@ -306,7 +314,12 @@ export function archetype(p: Player, relax: number = RELAX): string {
  * pinned tests) can ask what the tree says at its OWN thresholds, before the OVR-79
  * rescue relaxes them.
  */
-export function strictTag(p: Player, relax: number = RELAX): string {
+/**
+ * THE EVALUATION CONTEXT, built in ONE place. The audit and the unfit report used to construct this by
+ * hand, so a change to the tree's vocabulary broke them — and, worse, let the audit drift away from the
+ * labeler it exists to check. Everything reads a card through this function now.
+ */
+export function ctxFor(p: Player, relax: number = RELAX): Ctx {
   const a = p.attrs
   const paint = a.rim
   const mid = a.mid
@@ -329,10 +342,15 @@ export function strictTag(p: Player, relax: number = RELAX): string {
   // and come back tagged Spark plug. A physical fact stays a physical fact at any relaxation.
   const geH = (v: number, t: number) => v >= t
   const ltH = (v: number, t: number) => v < t
-  const c: Ctx = {
+  return {
     p, a, paint, mid, three, zone, big, h, ge, lt, geH, ltH,
+    pos: eligible((STATS as Record<string, { pos?: string[] } | null>)[p.name]?.pos),
     solid: [zone, a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb)].filter((v) => ge(v, 60)).length,
   }
+}
+
+export function strictTag(p: Player, relax: number = RELAX): string {
+  const c = ctxFor(p, relax)
   for (const tag of order) {
     const rule = BY_TAG.get(tag)
     if (rule && rule.test(c)) return tag

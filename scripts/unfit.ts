@@ -11,7 +11,7 @@
  *     npm run unfit             the list
  *     npm run unfit -- --all    every card, not just the top 40
  */
-import { archetype, PLAYERS, RULES, ruleText, UNCLASSIFIED } from '../src/engine/pool'
+import { archetype, ctxFor, PLAYERS, RULES, ruleText, UNCLASSIFIED } from '../src/engine/pool'
 import type { Player } from '../src/engine/types'
 
 const all = process.argv.includes('--all')
@@ -34,34 +34,10 @@ function nearest(p: Player): { tag: string; miss: number } | null {
   return null
 }
 
-/** Does exactly one named rule match this sheet at this relaxation? */
+/** Does the named rule match this sheet at this relaxation? Read through the labeler's own context. */
 function tagAt(p: Player, tag: string, relax: number): boolean {
   const rule = RULES.find((r) => r.tag === tag)
-  if (!rule) return false
-  const a = p.attrs
-  const paint = a.rim
-  const mid = a.mid
-  const three = a['3pt']
-  const zone = Math.max(three, paint, mid)
-  const ge = (v: number, t: number) => v >= t - relax
-  const lt = (v: number, t: number) => v < t
-  const geH = (v: number, t: number) => v >= t
-  const ltH = (v: number, t: number) => v < t
-  return rule.test({
-    p,
-    a,
-    paint,
-    mid,
-    three,
-    zone,
-    big: (a.rimprot >= 55 && three < 45) || (a.rim >= 60 && three < 40) || a.rimprot >= 80,
-    h: a.height,
-    ge,
-    lt,
-    geH,
-    ltH,
-    solid: [zone, a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb)].filter((v) => ge(v, 60)).length,
-  })
+  return rule ? rule.test(ctxFor(p, relax)) : false
 }
 
 console.log(`\n${unfit.length} cards the tree cannot name at its own thresholds (OVR 80+).`)

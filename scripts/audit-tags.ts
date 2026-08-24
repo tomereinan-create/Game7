@@ -10,38 +10,9 @@
  *
  *     npm run audit-tags
  */
-import { archetype, BALANCED_CAP, PLAYERS, RELAX, RULES, ruleText, UNCLASSIFIED } from '../src/engine/pool'
+import { archetype, BALANCED_CAP, ctxFor, PLAYERS, RELAX, RULES, ruleText, UNCLASSIFIED } from '../src/engine/pool'
 
 const BY_TAG = new Map(RULES.map((r) => [r.tag, r]))
-type Card = (typeof PLAYERS)[number]
-
-/** Rebuild the evaluation context exactly as the labeler does, at a given relaxation. */
-const ctxFor = (p: Card, relax: number) => {
-  const a = p.attrs
-  const paint = a.rim
-  const mid = a.mid
-  const three = a['3pt']
-  const zone = Math.max(three, paint, mid)
-  const ge = (v: number, t: number) => v >= t - relax
-  const lt = (v: number, t: number) => v < t + relax
-  const geH = (v: number, t: number) => v >= t
-  const ltH = (v: number, t: number) => v < t
-  return {
-    p,
-    a,
-    paint,
-    mid,
-    three,
-    zone,
-    big: (a.rimprot >= 55 && three < 45) || (a.rim >= 60 && three < 40) || a.rimprot >= 80,
-    h: a.height,
-    ge,
-    lt,
-    geH,
-    ltH,
-    solid: [zone, a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb)].filter((v) => ge(v, 60)).length,
-  }
-}
 
 let violations = 0
 let unfit = 0
