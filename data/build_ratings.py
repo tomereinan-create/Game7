@@ -436,6 +436,16 @@ print(f"superstar residual (ue>=0.70, n={int(hi.sum())}): rim +{RES_RIM:.3f}, mi
 # zone credit for volume x efficiency. Tomer's design ruling says inferred-era megastars must read like megastars,
 # so this is a bounded feel knob tied to the measured ue signal, applied to INFERRED seasons only.
 UPLIFT_RIM, UPLIFT_MID = 0.11, 0.09
+# PRE-1997 MIDRANGE: FREE THROWS AND VOLUME CARRY IT (Tomer's ruling).
+# The inferred era has no shot-location data, so the fitted model reads midrange mostly off 2P% — which
+# for a jump-shooting forward is diluted by his layups. The two honest signals for a middy are the
+# stroke (FT%) and how much he shot (2PA/100), so both are lifted out of the model and given their own
+# weight. Rim is untouched: a finisher's evidence is not his free throw line.
+# 0.45 is the FT COEFFICIENT, not the weight: the weight is 0.45 x his 2P-volume percentile, so a man
+# who never shot gets none of it. Calibrated on Tomer's mark — Bird '82 (51% on 2s, 86% FT, 22 2PA/100)
+# reads 88, inside the 88-90 he called for. MID_VOL_W is left at the 0.25 it has always been; volume
+# gains its extra say through w_ft rather than by pushing the low-volume population down.
+MID_FT_W, MID_VOL_W = 0.45, 0.25
 
 # infer for pre-1997 seasons
 for yr in sorted(rows_by):
@@ -446,8 +456,13 @@ for yr in sorted(rows_by):
         x = np.array([1, base['x2p_pct'](r['x2p_pct']), base['ft_pct'](r['ft_pct']), base['ftr'](r['ftr']), base['ht'](r['ht']), base['x2p_per_100'](r['x2p_per_100']), base['usg'](r['usg']), ue])
         ramp = max(0.0, min(1.0, (ue - 0.62) / 0.28))
         vol = base['x2p_per_100'](r['x2p_per_100']); p2 = base['x2p_pct'](r['x2p_pct'])
+        ftp = base['ft_pct'](r['ft_pct'])
         rim_m = 0.75*float(np.clip(x@br,0,1)) + 0.25*vol   # volume-first holds in inference too (Steve Johnson rule)
-        mid_m = 0.75*float(np.clip(x@bm,0,1)) + 0.25*vol
+        # FT% EARNS ITS WEIGHT IN PROPORTION TO HOW MUCH HE SHOT. Flat FT weight reads a stroke off men
+        # who never took a jumper — Caldwell Jones '86 went 9 -> 30 on his free throws alone. Scaling by
+        # the 2P-volume percentile keeps the signal where the phrase "high-volume middy" points.
+        w_ft = MID_FT_W * vol
+        mid_m = (1.0 - w_ft - MID_VOL_W)*float(np.clip(x@bm,0,1)) + w_ft*ftp + MID_VOL_W*vol
         if p2 < 0.40:                                      # low-2P% clamp: the FT-touch proxy can't outrun the actual shooting (Murphy rule)
             cap2 = 0.45 + 0.55*p2; rim_m = min(rim_m, cap2); mid_m = min(mid_m, cap2)
         attr_store[(r['pid'],yr)] = dict(rim=float(np.clip(rim_m + ramp*UPLIFT_RIM, 0, 1)), mid=float(np.clip(mid_m + ramp*UPLIFT_MID, 0, 1)), measured=False,
