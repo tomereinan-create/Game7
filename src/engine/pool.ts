@@ -117,7 +117,7 @@ export const RULES: Rule[] = [
   // floor sits under the offensive one — the claim is a scorer who holds up, not a symmetric card —
   // and an OVR floor keeps the tag on men who are actually stars. Placed here so the two-way claims
   // read in order — 85/85 star, the guard, the all-around star, 78/85 wing.
-  { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 75) && c.ge(c.a.playvol, 40) && c.ge(c.p.ovr, 85) },
+  { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 75) && c.ge(c.a.playvol, 40) && c.ge(c.p.ovr, 82) },
   { tag: 'Two-way wing', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
   // THE ONE-END TIERS. Every claim about a man being good at both ends has been made by now, so these
   // two catch the men who are only good at one — and they sit above the diet tags because "elite
