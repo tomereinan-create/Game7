@@ -1,0 +1,188 @@
+mid hardened globally
+    /\*\* ?1\.15|pow\([^)]*1\.15/
+    want: mid ^ 1.15
+
+efficiency hardened globally
+    /\*\* ?1\.3|pow\([^)]*1\.3/
+    want: percentile ^ 1.30
+
+steals out of perdef (perimdisrupt owns them)
+    /PD  = dict\(drep=0\.42, dbpm=0\.22, teamd=0\.22, height_inv=0\.14\)/
+    want: drep .42 / dbpm .22 / teamd .22 / height_inv .14
+
+blend weight x min(1, attempts / 350)
+    /FULL_SAMPLE = 350\.0/
+    want: full workload = full evidence
+
+sample weight applied to the blend
+    /_targeting_weight\(r\['name'\]\) \* _sample_weight/
+    want: stacks with targeting
+
+discipline: three height classes
+    /ht_t33, ht_t67/
+    want: terciles, each percentiled within class
+
+3pt hardened (gamma)
+    /\(p\['out'\]\/99\)\*\*1\.0?8/
+    want: SUPERSEDED by recal_19: 1.15 -> 1.08
+
+perdef no-vote cap 0.62
+    /novote = min\(PD, 0\.62\)/
+    want: 0.58 -> 0.62
+
+perdef tracked cap 0.84
+    /min\(0\.84, \(1 - wm\)\*novote \+ wm\*\(0\.17 \+ 0\.67\*d_meas\)\)/
+    want: floor 0.17 + 0.67 x measure
+
+graded band entry sooner
+    /r\['drep'\] \/ 0\.30/
+    want: denominator 0.35 -> 0.30
+
+efficiency gamma rolled back
+    /Pa\['ts'\]\(r\['ts'\]\)\*\*1\.15/
+    want: 1.30 -> 1.15
+
+minutes-confidence shrinkage
+    /mconf = 0\.55 \+ 0\.45 \* max\(0\.0, min\(1\.0, \(_mp - 1200\) \/ 1200\)\)/
+    want: 0.55 + 0.45 x clamp((mp-1200)/1200)
+
+DFG absolute floors
+    /if _row\[0\] <= -0\.02: PD2 = max\(PD2, 0\.70\)/
+    want: floor 70 at -2%, 64 at -1%
+
+ballsec gains a usage allowance
+    /- 0\.045 \* \(rr\.get\('usg'\) or 0\)/
+    want: tov% - 0.11 ast - 0.045 usg
+
+gunner path x1.08, clamped
+    /gun = min\(1\.0, gun \* 1\.08\)/
+    want: capped at 1.0
+
+perimdisrupt hardened
+    /Pa\['stl'\]\(r\['stl'\]\)\*\*1\.30/
+    want: steal percentile ^1.30
+
+rebounding hardened
+    /orb_per_100_poss'\)\)\)\*\*1\.15.+drb'\]\(r\['drb'\]\)\*\*1\.15/
+    want: orb and drb ^1.15
+
+talent gains minutes confidence
+    /p\['talent'\] = int\(round\(TAL_MED \+ mconf \* \(p\['talent'\] - TAL_MED\)\)\)/
+    want: the Brandon Clarke rule
+
+usage hardened
+    /Pa\['usg'\]\(r\['usg'\]\)\*\*1\.15/
+    want: percentile ^1.15
+
+paint elite-conversion floor
+    /rim = max\(rim, min\(0\.62, 0\.22 \+ 0\.45 \* P\['rimfg'\]\(fgp\)\)\)/
+    want: at >= 6 undiscounted att/100
+
+efficiency re-anchored
+    /0\.5\*Pa\['ts'\]\(r\['ts'\]\)\*\*1\.05 \+ 0\.5\*\(0\.5 \+/
+    want: half percentile, half value
+
+DFG lockdown tier
+    /DFG_FLOORS = \(\(-0\.035, 76\), \(-0\.02, 70\), \(-0\.01, 64\)\)/
+    want: -3.5% -> floor 76, in card units
+
+floors survive season smoothing
+    /absolute DFG floors re-applied after smoothing/
+    want: dilution cannot erase them
+
+recal_15 ballsec allowance still live
+    /- 0\.045 \* \(rr\.get\('usg'\) or 0\)/
+    want: -0.045 x USG%
+
+career-crossing zone evidence
+    /CROSS_W, CROSS_SPAN = 0\.45, 2/, "45% of the player's own measured seasons, 2-year window")
+    src('ballsec simplified to usage only', RATINGS, /rr\['tov_pct'\] - 0\.075 \* \(rr\.get\('usg'\) or 0\)/
+    want: tov% - 0.075 x USG%
+
+3pt gamma softened
+    /\(p\['out'\]\/99\)\*\*1\.08/
+    want: 1.15 -> 1.08
+
+paint conversion floor upgraded
+    /min\(0\.68, 0\.28 \+ 0\.42 \* P\['rimfg'\]\(fgp\) \+ 0\.15 \* P\['rimvol'\]/
+    want: accuracy AND volume
+
+perdef reads the 15ft+ slice
+    /PERDEF_CAT = 'Greater Than 15Ft'/
+    want: superseding the Overall feed
+
+floors judge the same series
+    /row = TRACKING\.get\(\(yr, 'Greater Than 15Ft'\), \{\}\)\.get\(_nrm\(name\)\)/
+    want: 15ft+, not Overall
+
+modern-mid era credit
+    /round\(3\.5 \* max\(0\.0, min\(1\.0, \(yr - 2015\) \/ 8\.0\)\)\)/
+    want: up to +3.5, ramping 2015 -> 2023
+
+3pt era exponent eased
+    /ERA_ALPHA = 0\.42/
+    want: 0.5 -> 0.42
+
+ballsec final form
+    /rr\['tov_pct'\] \* 25\.0 \/ max\(10\.0, \(rr\.get\('usg'\) or 0\) \+ 0\.5 \* \(rr\.get\('ast'\) or 0\)\)/
+    want: TOV% x 25 / responsibility
+
+3pt display gamma re-hardened
+    /\(p\['out'\]\/99\)\*\*1\.12/
+    want: 1.08 -> 1.12
+
+the line, as specified
+    /ballsec=sc\(1 - Padj\(_bsec\(r\)\)\)/
+    want: inverse percentile of TOV% x 25 / max(10, USG%)
+
+the assist term is gone
+    /_bsec = lambda rr: \(rr\.get\('tov_pct'\) or 13\) \* 25\.0 \/ max\(10\.0, \(rr\.get\('usg'\) or 20\)\)/
+    want: no 0.5 x AST%
+
+gunner boost and volume premium are exclusive
+    /OUT = max\(OUT, GUN_BOOST\)/
+    want: max of the two, never both
+
+ballsec v3
+    /\(rr\.get\('usg'\) or 20\) \+ 0\.5 \* \(rr\.get\('ast'\) or 15\)/
+    want: usage + half the creation load
+
+provenance carries all three inputs
+    /ballsec=\[r3\(r\.get\('tov_pct'\)\), r3\(r\['usg'\]\), r3\(r\['ast'\]\)\]/
+    want: TOV%, USG%, AST%
+
+playvol value anchor
+    /0\.6\*Pa\['ast'\]\(r\['ast'\]\)\*\*1\.12 \+ 0\.4\*max\(0\.0, min\(1\.0, \(r\['ast'\] or 15\)\/44\.0\)\)/
+    want: 60% rank, 40% value
+
+3pt era exponent
+    /ERA_ALPHA = 0\.38/
+    want: 0.42 -> 0.38
+
+smoothing 20/60/20
+    /W_Y, W_PREV, W_NEXT = 0\.60, 0\.20, 0\.20/
+    want: symmetric neighbours
+
+true shot volume
+    /_vol = lambda rr: \(rr\.get\('usg'\) or 20\) \* \(1 - \(rr\.get\('tov_pct'\) or 13\) \/ 100\.0\)/
+    want: USG% x (1 - TOV%/100)
+
+gamma 1.15 on the percentile
+    /volume=sc\(Pvol\(_vol\(r\)\)\*\*1\.15\)/
+    want: within-season percentile, hardened
+
+ballsec v4: raw TOV joins the ratio
+    /1 - \(0\.65\*Padj\(_bsec\(r\)\) \+ 0\.35\*Pa\['tov_pct'\]\(r\.get\('tov_pct'\)\)\)/
+    want: 0.65 ratio + 0.35 raw
+
+the band term, verbatim
+    /W\['PD'\]\['height_inv'\] \* max\(0\.0, 1\.0 - max\(0\.0, max\(75\.0-\(r\['ht'\] or 78\), \(r\['ht'\] or 78\)-80\.0\)\)\/8\.0\)/
+    want: 75-80 flat, 8 inches to zero
+
+height weight
+    /height_inv=0\.25/
+    want: 0.14 -> 0.25
+
+the other three renormalised
+    /drep=0\.366, dbpm=0\.192, teamd=0\.192, height_inv=0\.25/
+    want: x 0.75/0.86, sum still 1.0

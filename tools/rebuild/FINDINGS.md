@@ -228,3 +228,68 @@ durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt 
 * **season smoothing** (20/60/20, 75/25 at edges, the injury-gap reach) — also the only way to verify
   `usg_raw` / `ts_raw` / `ts_rel`, which are floats and have no pre-smoothing target
 * the provenance writer, then a full run diffed against both oracles
+
+---
+
+# SESSION 4 — the 2P model is exact, and the repo turned out to contain a SPEC
+
+## rim and mid — both 100% on the measured era (1997+), 6,748/6,748
+
+```python
+share, fgp = paint_stats(sh)          # 0-3ft + 3-10ft share, attempt-weighted FG%
+s10  = pct_fga_10_16 + pct_fga_16_3p
+fmid = mean of the two mid FG% (or the one that exists)
+fga100 = x2p_per_100 + x3pa_per_100
+cf = 1 - 0.45 * percent_assisted_x2p_fg        # the serve discount
+
+rim = 0.65*P_rimvol(share*fga100*cf) + 0.35*P_rimfg(fgp)
+if fgp is not None and share*fga100 >= 6.0:                     # recal_19 WIDENED floor
+    rim = max(rim, min(0.68, 0.28 + 0.42*P_rimfg(fgp) + 0.15*P_rimvol(share*fga100)))
+mid = 0.65*P_midvol(s10*fga100) + 0.35*P_midfg(fmid)
+rim = min(1.0, rim + 0.07*max(0.0, (P_rimvol(share*fga100) - 0.70)/0.30))    # high-volume premium
+mid = min(1.0, mid + 0.07*max(0.0, (P_midvol(s10*fga100) - 0.70)/0.30))
+if fgp and share*fga100 >= 2.5 and cf >= 0.73:                   # zone deadeye, self-created only
+    rim = max(rim, min(0.92, 0.85*P_rimfg(fgp) + 0.15*P_rimvol(share*fga100)))
+if fmid and s10*fga100 >= 2.5:
+    mid = max(mid, min(0.92, 0.85*P_midfg(fmid) + 0.15*P_midvol(s10*fga100)))
+
+attrs['rim'] = sc(rim)
+attrs['mid'] = min(99, sc(mid ** 1.15) + round(3.5 * clamp((yr - 2015)/8)))   # recal_22 era credit
+```
+
+The pools are the season's measured rows, RAW (undiscounted) volumes. The two pieces that were
+missing from my first attempt: the **recal_19 widened conversion floor** (the recal_16 version caps at
+0.62 and could not lift a high-assisted big past it — 825 cards read low) and the **recal_22 modern-mid
+era credit**, up to +3.5 ramping 2015 -> 2023, measured seasons only.
+
+## THE FIND: scripts/receipts.ts IS A SPECIFICATION OF THE LOST FILE
+
+Every round's receipt asserts against the pipeline SOURCE with a regex:
+
+```ts
+src('paint conversion floor upgraded', RATINGS,
+    /min\(0\.68, 0\.28 \+ 0\.42 \* P\['rimfg'\]\(fgp\) \+ 0\.15 \* P\['rimvol'\]/, 'accuracy AND volume')
+```
+
+**47 such assertions** exist, extracted to `spec_from_receipts.txt`. They are verbatim fragments of
+the file that was lost, committed to the repo the whole time, and they cover the hardest remaining
+part — the defensive composites:
+
+* PD weights `drep .42 / dbpm .22 / teamd .22 / height_inv .14`, later `x 0.75/0.86` with height 0.25
+* perdef no-vote cap 0.62, tracked cap 0.84 = `min(0.84, (1-wm)*novote + wm*(0.17 + 0.67*d_meas))`
+* the graded-band denominator 0.35 -> 0.30
+* `DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))`, in card units, re-applied after smoothing
+* perdef reads the **15ft+** tracking slice, not Overall
+* the recal_35 height band, verbatim
+
+## Exact so far — 15 attributes
+
+durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
+orb · discipline · 3pt · **rim** · **mid**
+
+## Remaining
+
+* rim / mid for the INFERRED era (1980-96): the regression fitted on 1997-2005, the volume-first
+  blend, the low-2P% clamp, the UPLIFT ramp
+* rimprot / perdef — now with 12 verbatim source fragments to build against
+* season smoothing, the provenance writer, the full-run diff
