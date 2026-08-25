@@ -43,7 +43,7 @@ tp = os.path.join(GAME7, 'data', 'tracking_defense.csv')
 if os.path.exists(tp):
     for r in csv.DictReader(io.open(tp, encoding='utf-8')):
         try:
-            TRACKING[(int(r['season']), r['category'])][_nrm(r['player_name'])] = (float(r['diff_pct']), float(r['att'] or 0))
+            TRACKING[(int(r['season']), r['category'])][_nrm(r['player_name'])] = (float(r['diff_pct']), float(r['att'] or 0) * float(r['gp'] or 0))
         except Exception: pass
 print(f'tracking rows loaded for {len({k[0] for k in TRACKING})} seasons')
 
@@ -79,9 +79,12 @@ name = lambda r: f"{r['player']} '{str(r['season'])[-2:]}"
 
 W_PD = dict(drep=0.366, dbpm=0.192, teamd=0.192, height_inv=0.25)
 W_ID = dict(blk=0.55, height=0.25, dbpm=0.20)
-MIN_ATT, FULL_SAMPLE, RIM_GATE = 150.0, 350.0, 0.60
+import sys
+MIN_ATT, FULL_SAMPLE, RIM_GATE = float(sys.argv[1]) if len(sys.argv)>1 else 150.0, float(sys.argv[2]) if len(sys.argv)>2 else 350.0, 0.60
 
 hit_pd = hit_id = tot = 0
+from collections import defaultdict as _dd
+ERA = _dd(lambda: [0,0,0]); EX = []; IMP = []
 for yr in sorted(rows_by):
     rs = rows_by[yr]
     P = {k: pctile([f(r.get(c)) for r in rs]) for k, c in
@@ -142,8 +145,33 @@ for yr in sorted(rows_by):
         t = PRE.get(name(r))
         if not t: continue
         tot += 1
-        hit_pd += (sc(PD2) == t.get('perdef'))
-        hit_id += (sc(ID2) == t.get('rimprot'))
+        okp, oki = sc(PD2) == t.get('perdef'), sc(ID2) == t.get('rimprot')
+        hit_pd += okp; hit_id += oki
+        bucket = 'tracking' if yr >= 2014 else ('voted' if drep > 0.05 else 'plain')
+        ERA[bucket][0] += 1; ERA[bucket][1] += okp; ERA[bucket][2] += oki
+        if yr >= 2014 and drep <= 0.05:
+            _dv = _trk('Greater Than 15Ft', r['player'])
+            if Pperim and _dv is not None:
+                _dm = 1 - Pperim(_dv)
+                _nb, _tg = min(PD, 0.62), (t['perdef'] - 1) / 98.0
+                _den = _nb - (0.17 + 0.67 * _dm)
+                if abs(_den) > 0.05:
+                    _row = TRACKING.get((yr, 'Overall'), {}).get(_nrm(r['player']))
+                    IMP.append(((_nb - _tg) / _den, (_row[1] if _row else 0), _row[1]/TGT_MED if (_row and TGT_MED) else 0))
+        if not okp and len(EX) < 8 and yr >= 2014 and drep <= 0.05:
+            dv2 = _trk('Greater Than 15Ft', r['player'])
+            dm = (1 - Pperim(dv2)) if (Pperim and dv2 is not None) else None
+            EX.append(f"{name(r):26s} PD {PD:.4f} novote_base {min(PD,0.62):.4f} d_meas {dm if dm is None else round(dm,4)} "
+                      f"wm {round(0.70*_tw(r['player'])*_sw(r['player']),4)} -> mine {sc(PD2)} want {t['perdef']} (target frac {(t['perdef']-1)/98:.4f})")
 print(f'cards: {tot:,}')
 print(f'  perdef  exact {hit_pd:,}  ({100*hit_pd/tot:.1f}%)')
 print(f'  rimprot exact {hit_id:,}  ({100*hit_id/tot:.1f}%)')
+for k, (n, p_, i_) in sorted(ERA.items()):
+    print(f'   {k:<9} n={n:>5,}   perdef {100*p_/n:5.1f}%   rimprot {100*i_/n:5.1f}%')
+import statistics as _st
+print("")
+print(f"implied wm on {len(IMP):,} no-vote tracked cards: median {_st.median(w for w,_a,_r in IMP):.4f}")
+for lo, hi in ((0,0.6),(0.6,0.9),(0.9,1.2),(1.2,1.6),(1.6,2.5),(2.5,9)):
+    sub = [w for w, a, rr in IMP if lo <= rr < hi]
+    if len(sub) > 30:
+        print(f"   att/median {lo}-{hi}: n={len(sub):>4}  median wm {_st.median(sub):.4f}")

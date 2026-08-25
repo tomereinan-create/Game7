@@ -347,3 +347,49 @@ source assertion in `spec_from_receipts.txt` to build against.
 
 durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
 orb · discipline · 3pt · rim · mid
+
+## SESSION 5b — rimprot EXACT, and perdef narrowed to one term
+
+Two corrections, both found by splitting the hit rate by era rather than guessing:
+
+1. **The reputation feed** (above) — 1st team 1.0, everything else 0.6, DPOY at HALF share.
+2. **The tracking CSV stores PER-GAME attempts with a `gp` column.** Season attempts are `att * gp`.
+   Reading `att` as a season total made every sample weight ~0.01, so the measured term barely
+   applied at all.
+
+With both fixed:
+
+| bucket | n | perdef | rimprot |
+|---|---|---|---|
+| pre-2014, no votes | 5,933 | **100.0%** | **100.0%** |
+| pre-2014, voted | 1,051 | **99.6%** | **99.6%** |
+| 2014+ (tracking) | 3,016 | 36.3% | **100.0%** |
+| **total** | 10,000 | 80.7% | **99.9% — EXACT** |
+
+(The 99.6% in the voted bucket is the six name-collision cards, as everywhere else.)
+
+**rimprot is done.** So is the entire perdef composite — the r36 weight vector, the r35 height band,
+the no-vote shrink, the graded vote band, `career_rep`, the team-DRtg term. All of it reproduces
+exactly for the 6,984 cards that predate tracking.
+
+### The one open term
+
+`wm`, the weight the measured 15ft+ term carries, in
+
+```python
+novote = min(0.84, (1 - wm) * min(PD, 0.62) + wm * (0.17 + 0.67 * d_meas))
+wm     = 0.70 * targeting_weight * sample_weight
+```
+
+Solving `wm` out of 2,198 no-vote tracked cards gives a median of **0.3744, and it is FLAT across
+att/median from 0.6 to 2.5** — which is not what `targeting_weight` (a decline from 1.0 to 0.35 over
+that range) predicts. So the shape of one of the two weights differs from the version in the
+transcript patch. FULL_SAMPLE = 700 scores best (83.6% vs 80.7% at 350) but no value is exact, so this
+is a shape problem, not a constant.
+
+It affects ONLY the 3,016 cards from 2014 on. Everything else in the defensive half is exact.
+
+## Exact so far — 16 attributes
+
+durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
+orb · discipline · 3pt · rim · mid · **rimprot**
