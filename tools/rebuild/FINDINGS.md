@@ -167,3 +167,64 @@ pool.
 rim / mid / 3pt (the shooting model, era multiplier, assisted-share discount), rimprot and perdef
 (the defensive composites, the tracking/DFG layer, All-D vote shares), season smoothing, the
 provenance writer, then a full run diffed against both oracles.
+
+---
+
+# SESSION 3 — thirteen attributes exact
+
+## The three near-misses were one bug in MY test, not the formulas
+
+`pf100` prefers the **TOT row**: `if k not in pf100 or is_tot(r['team']): pf100[k] = r`. My probe kept
+the last row instead, which for a traded player is a single-team row. Fixing it:
+
+| attribute | was | now |
+|---|---|---|
+| ft = `round(100 x ft_percent)` | 93.1% | **100.0%** (9,995) |
+| orb = `shrink(sc(P_orb ** 1.15))` | 73.5% | **99.9%** |
+| discipline = `sc(1 - P_pf[height class](pf_per_100))`, terciles at 0.33/0.67 | 60.1% | **99.9%** |
+
+## The 3PT model — verified end to end  ✅
+
+**The era layer is exact on all 47 seasons.** The baseline is NOT player rows: it is the mean of team
+`x3p_ar` from **Team Summaries.csv**, `MODERN_3AR = 0.326280` over 2011-2025, and
+
+```python
+era_mult(yr) = min(3.0, (MODERN_3AR / lg3ar[yr]) ** 0.38)      # ERA_ALPHA = 0.38
+```
+
+Solving the recorded multipliers for the exponent gives 0.3800 on every season with zero spread.
+
+The rest of the chain, all confirmed against the recorded intermediates
+(`prov['3pt'] = [path, 3PA/100, era_mult, 3P%, vol_pct, acc_pct, gate]`):
+
+```python
+vol = P_3pa_mod(att * era_mult(yr))                    # modern pool, 2011-2025 card rows
+acc = P_3pp_mod(p3) if att >= 2 else 0.35 * P_ft_pct(ft_pct)     # within-season FT prior below 2
+if season in {1995,1996,1997}: p3 *= 0.93
+gun = 0.65*vol + 0.35*acc
+if gap := med3 - p3 > 0.02: gun *= max(0.55, 1 - 3.0*(gap - 0.02))    # chucker gate
+GUN_BOOST = min(1.0, gun * 1.08)
+eye = min(0.95, 0.88*acc + 0.12*vol) if att * era_mult >= 3.0 else 0
+OUT = max(gun, eye)
+OUT = min(1.0, OUT + 0.07 * max(0.0, (vol - 0.70)/0.30))    # high-volume premium
+OUT = max(OUT, GUN_BOOST)                                    # the de-stack: better of the two, never both
+3pt = sc((sc(OUT) / 99) ** 1.12)                             # display gamma 1.12, not 1.08 or 1.15
+```
+
+**Result: 9,995 / 10,000 exact.** Gamma 1.08 scores 23.7% and 1.15 scores 31.5%, so 1.12 is not a
+coincidence.
+
+## Exact so far — 13 attributes
+
+durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height ·
+**ft · orb · discipline · 3pt**
+
+## Remaining
+
+* **rim / mid** — the 2P model: `attr_store` per player-season, the assisted-share discount, the
+  paint conversion floor, `mid ** 1.15`
+* **rimprot / perdef** — the ID and PD composites, the tracking/DFG layer with its 150-attempt
+  shrink and absolute floors, All-D vote shares (`drep`), the r35 height band, the r36 weights
+* **season smoothing** (20/60/20, 75/25 at edges, the injury-gap reach) — also the only way to verify
+  `usg_raw` / `ts_raw` / `ts_rel`, which are floats and have no pre-smoothing target
+* the provenance writer, then a full run diffed against both oracles
