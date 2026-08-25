@@ -108,8 +108,13 @@ export const RULES: Rule[] = [
   { tag: 'Two-way anchor', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
   { tag: 'Unicorn', test: (c) => c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
   { tag: 'Two-way star', test: (c) => c.ge(c.p.o_ovr, 85) && c.ge(c.p.d_ovr, 85) },
+  // TWO-WAY GUARD — the smallest man on the two-way list, and the most specific claim of the four: a
+  // height class, an elite perimeter number, a real second-handler's passing rate, and an offence that
+  // is good without being a star's. Above All-around star deliberately: its 80/80 would otherwise take
+  // the top of the o_ovr 70-84 band before this rule was ever asked.
+  { tag: 'Two-way guard', test: (c) => c.ltH(c.h, 79) && c.ge(c.a.perdef, 85) && c.ge(c.p.o_ovr, 70) && c.lt(c.p.o_ovr, 85) && c.ge(c.a.playvol, 55) },
   // the tier below the two-way star: good at BOTH ends without being elite at either. Placed here so
-  // the three two-way claims read in order — 85/85 star, 80/80 all-around star, 78/85 wing.
+  // the two-way claims read in order — 85/85 star, the guard, 80/80 all-around star, 78/85 wing.
   { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 80) },
   { tag: 'Two-way wing', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
   // THE ONE-END TIERS. Every claim about a man being good at both ends has been made by now, so these
@@ -150,7 +155,7 @@ export const RULES: Rule[] = [
   // ELITE ROLE PLAYER is a TIER name, not a style — the one exception to the law above, added on
   // Tomer's explicit repeated order. It sits above Stopper because a shooter who defends is not a
   // stopper who happens to shoot, and Stopper now says so itself with a 3pt ceiling.
-  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.lt(c.a.playvol, 60) && c.ge(c.three, 50) && c.p.o_ovr > 60 && c.p.d_ovr > 75 },
+  { tag: 'Elite role player', test: (c) => c.lt(c.a.volume, 60) && c.ge(c.a.playvol, 45) && c.lt(c.a.playvol, 60) && c.ge(c.three, 50) && c.p.o_ovr > 60 && c.p.d_ovr > 75 },
   // 3&D catches the rest of the shape: the shooting and the defending, without the passing or the
   // offensive standard that make an ELITE role player.
   { tag: '3&D', test: (c) => c.ge(c.three, 75) && c.ge(c.a.perdef, 70) && c.lt(c.a.volume, 60) },
@@ -169,14 +174,14 @@ export const RULES: Rule[] = [
   { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 20) },
   // the machine's inefficient twin: he takes everything and does not convert. Placed directly under it,
   // so a man with an elite zone AND a scoring gap is still named for the diet first. ">90" is ge(91).
-  { tag: 'Volume shooter', test: (c) => c.lt(c.a.efficiency, 75) && c.ge(c.a.volume, 91) && c.lt(c.a.playvol, 60) },
+  { tag: 'Volume shooter', test: (c) => c.lt(c.a.efficiency, 60) && c.ge(c.a.volume, 91) && c.lt(c.a.playvol, 60) },
   { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) && c.ltH(c.h, 81) },
   // GLUE GUY — the shape BALANCED was hiding. Every rule above names a strength; this one names the
   // absence of one, which is why it can only be written as a BAND. Four of the five glue dimensions
   // between 55 and 75, nothing at 80, and enough playmaking volume (40) that he is on the floor
   // touching the ball rather than merely unremarkable. Directly above All-around, which is the same
   // claim with floors instead of a window and would otherwise take him first.
-  { tag: 'Glue guy', test: (c) => c.glue >= 4 && c.lt(c.glueMax, 80) && c.ge(c.a.playvol, 40) },
+  { tag: 'Glue guy', test: (c) => c.glue >= 4 && c.lt(c.glueMax, 80) && c.ge(c.a.playvol, 40) && c.lt(c.a.volume, 65) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
 
