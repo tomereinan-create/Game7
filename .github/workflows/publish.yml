@@ -1,0 +1,124 @@
+# Publishes the site to the gh-pages branch: main at the root, every other
+# branch under preview/<branch>/ so a change can be opened on a phone before it
+# is merged. Deleting a branch takes its preview with it.
+#
+# The branch is rewritten as a single orphan commit each time. A build is seven
+# megabytes; kept as history it would add that to the repo on every push.
+name: publish
+
+on:
+  push:
+    branches-ignore: [gh-pages]
+  delete:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Publishing rewrites one branch, so one job holds it at a time. Nothing is
+# cancelled — a queued push is a build someone is waiting to look at.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    steps:
+      - name: Work out which slot this is
+        id: slot
+        run: |
+          if [ "${{ github.event_name }}" = 'delete' ]; then
+            ref='${{ github.event.ref }}'
+            echo "mode=remove" >> "$GITHUB_OUTPUT"
+          else
+            ref='${{ github.ref_name }}'
+            echo "mode=publish" >> "$GITHUB_OUTPUT"
+          fi
+          # A branch name is not a path: lower-case it and let through only what
+          # survives a URL.
+          slug=$(printf '%s' "$ref" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g' | cut -c1-60)
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          if [ "$ref" = 'main' ]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=preview/$slug" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.slot.outputs.mode == 'publish'
+      - uses: actions/setup-node@v4
+        if: steps.slot.outputs.mode == 'publish'
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+        if: steps.slot.outputs.mode == 'publish'
+      - run: npm run build
+        if: steps.slot.outputs.mode == 'publish'
+
+      - name: Fetch what is published now
+        run: |
+          git clone --branch gh-pages --single-branch --depth 1 \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" site \
+            || { mkdir site && git -C site init -q -b gh-pages; }
+
+      - name: Set the slot
+        env:
+          DIR: ${{ steps.slot.outputs.dir }}
+          MODE: ${{ steps.slot.outputs.mode }}
+        run: |
+          set -eu
+          if [ "$MODE" = 'remove' ]; then
+            [ -d "site/$DIR" ] || { echo "no preview at $DIR — nothing to do"; exit 0; }
+            rm -rf "site/${DIR:?}"
+          elif [ "$DIR" = '.' ]; then
+            # Main owns the root, but not the previews sitting beside it.
+            find site -mindepth 1 -maxdepth 1 ! -name .git ! -name preview -exec rm -rf {} +
+            cp -R dist/. site/
+          else
+            rm -rf "site/${DIR:?}"
+            mkdir -p "site/$DIR"
+            cp -R dist/. "site/$DIR/"
+          fi
+
+          # Pages runs Jekyll otherwise, which drops anything starting with _.
+          touch site/.nojekyll
+
+          # An index of the previews, because branch names are no fun to type on
+          # a phone.
+          rm -f site/preview/index.html
+          if [ -d site/preview ] && [ -n "$(ls -A site/preview)" ]; then
+            {
+              printf '<!doctype html><meta charset=utf-8><title>Game7 previews</title>'
+              printf '<meta name=viewport content="width=device-width,initial-scale=1">'
+              printf '<style>body{background:#141210;color:#f2ece3;font:16px/1.7 system-ui;margin:0;padding:2rem}'
+              printf 'a{color:#e07b39;display:block;padding:.6rem 0}h1{font-size:1.1rem;opacity:.7;font-weight:400}</style>'
+              printf '<h1>Game7 — branch previews</h1>'
+              for d in site/preview/*/; do
+                b=$(basename "$d")
+                printf '<a href="%s/">%s</a>' "$b" "$b"
+              done
+              printf '<a href="../">← main</a>'
+            } > site/preview/index.html
+          else
+            rmdir site/preview 2>/dev/null || true
+          fi
+
+      - name: Publish
+        env:
+          REF: ${{ steps.slot.outputs.ref }}
+          MODE: ${{ steps.slot.outputs.mode }}
+        run: |
+          set -eu
+          cd site
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'nothing changed'; exit 0; }
+          git checkout -q --orphan fresh
+          git add -A
+          git commit -q -m "$MODE $REF ($GITHUB_SHA)"
+          git push -q -f origin fresh:gh-pages
+          echo "published $MODE for $REF"
