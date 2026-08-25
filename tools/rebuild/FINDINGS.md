@@ -103,3 +103,67 @@ of the rate attributes. Identifying that subset, and the exact curve, is the nex
   DFG floors, discipline by height tercile, fouldraw, orb, ft, perimdisrupt
 * season smoothing (weights are recorded per card) and the injury-gap reach
 * provenance output, then a full run diffed against both oracles
+
+---
+
+# SESSION 2 — the genuine file was found, and the shrink is solved
+
+## THE BASE  ✅
+
+`C:\Users\tomer\Desktop\game7\game7_formula_modules.zip` → `pipeline/build_ratings.py`,
+**32,467 B, md5 e4621876b495, 518 lines** — the hash the first status report recorded. It is the real
+file, but from an EARLIER snapshot than the truncation: it still has `passqual`, `usage` (not
+`volume`), ballsec v2 (`tov_pct - 0.11 x ast`), `efficiency = sc(P_ts ** 1.30)`, smoothing 65/20/15,
+`ERA_ALPHA 0.5`, and a PD vector with `stl` and `trust` terms. That is the pre-recal_12 state.
+
+Extracted to `base.py` here. It supplies the true skeleton: CSV loading, the row filter, the
+percentile helpers, the IN/OUT/ID/PD composites, the attribute assembly, smoothing and the provenance
+writer.
+
+## MILESTONE 4 — SOLVED: the minutes-confidence shrink
+
+Recovered verbatim from the recal_14 patch script in the transcript, not fitted:
+
+```python
+_mp = f(by_pid_yr[(pid,yr)].get('mp_v')) or 0.0
+mconf = 0.55 + 0.45 * max(0.0, min(1.0, (_mp - 1200) / 1200))
+if mconf < 1.0:
+    for _k in ('playvol', 'perimdisrupt', 'orb', 'drb', 'fouldraw', 'efficiency'):
+        p['attrs'][_k] = int(round(50 + mconf * (p['attrs'][_k] - 50)))
+```
+
+Two details my curve-fitting could never have found: it shrinks toward **50**, and it is applied to
+the **already-rounded integer**, not in 0..1 space. It touches exactly SIX attributes — which is why
+volume, ballsec and durability matched exactly without it.
+
+`lg_ts` was the other missing piece: the mean TS over **every NBA row with mp >= 800**, not the card
+pool.
+
+## Attributes now EXACT (9 of ~17), all 9,994/9,994
+
+| attribute | formula |
+|---|---|
+| durability | `sc(P_mp(mp))` |
+| volume | `sc(P_vol(usg x (1-tov/100)) ** 1.15)` |
+| ballsec | `sc(1 - (0.65 x P_ratio + 0.35 x P_tov))` |
+| playvol | `shrink(sc(0.6 x P_ast**1.12 + 0.4 x clamp(ast/44)))` |
+| drb | `shrink(sc(P_drb ** 1.15))` |
+| efficiency | `shrink(sc(0.5 x P_ts**1.05 + 0.5 x (0.5 + (ts - lg_ts) x 6)))` |
+| perimdisrupt | `shrink(sc(P_stl ** 1.30))` |
+| fouldraw | `shrink(sc(P_ftr(ftr)))` |
+| height | `round(ht_in_in)` |
+
+## Close, needs one more detail
+
+* `ft = round(100 x ft_percent)` — 93.1%
+* `orb = shrink(sc(P_orb ** 1.15))` — 73.5% (gamma or pool differs)
+* `discipline = sc(1 - P_pf_by_height_class)` — 60.1% (class boundaries or pool)
+* `usg_raw` / `ts_raw` / `ts_rel` — 13% is EXPECTED, not a failure: they are floats, and `smooth.was`
+  records only the integer attributes, so there is no pre-smoothing target for them. They can only be
+  verified after smoothing is implemented.
+
+## Still to do
+
+rim / mid / 3pt (the shooting model, era multiplier, assisted-share discount), rimprot and perdef
+(the defensive composites, the tracking/DFG layer, All-D vote shares), season smoothing, the
+provenance writer, then a full run diffed against both oracles.
