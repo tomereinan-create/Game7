@@ -393,3 +393,48 @@ It affects ONLY the 3,016 cards from 2014 on. Everything else in the defensive h
 
 durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
 orb · discipline · 3pt · rim · mid · **rimprot**
+
+## SESSION 5c — perdef EXACT. The whole defensive half is done.
+
+Two more pieces, both recovered rather than fitted:
+
+**1. recal_20 moved BOTH tracking weights to the 15ft+ series.** The targeting median, the targeting
+weight and the sample weight all read `'Greater Than 15Ft'`, not `'Overall'` — and 15ft+ attempts are
+a fraction of Overall attempts, which is exactly why the sample weight never throttled anything in my
+version and the implied wm looked flat. perdef 80.7% -> **92.5%**.
+
+**2. The DFG floors apply at BUILD time as well as after smoothing**, in CARD units, judged on the
+same 15ft+ series, and only on a real workload:
+
+```python
+DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))
+row = TRACKING[(yr, 'Greater Than 15Ft')].get(nrm(name))
+if row and row[1] and min(1.0, row[1] / 350.0) >= 0.75:
+    for d, card in DFG_FLOORS:
+        if row[0] <= d: perdef = max(perdef, card); break
+```
+
+perdef 92.5% -> **99.9% (9,994/9,994)**.
+
+| bucket | n | perdef | rimprot |
+|---|---|---|---|
+| pre-2014, no votes | 5,933 | **100.0%** | **100.0%** |
+| pre-2014, voted | 1,051 | **99.6%** | **99.6%** |
+| 2014+ tracking | 3,016 | **100.0%** | **100.0%** |
+
+## Exact — 17 attributes
+
+durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
+orb · discipline · 3pt · rim · mid · rimprot · **perdef**
+
+Everything the pipeline computes per season is now reproduced exactly, EXCEPT rim/mid for 1980-96,
+which come from the inference model rather than measured shooting data.
+
+## Remaining
+
+1. rim/mid for 1980-96 — the regression fitted on 1997-2005, the volume-first blend, the low-2P%
+   clamp, the UPLIFT ramp (3,252 cards)
+2. season smoothing (20/60/20, 75/25 at edges, injury-gap reach) and the career-crossing zone
+   evidence (CROSS_W 0.45, CROSS_SPAN 2) — also the only way to verify usg_raw / ts_raw / ts_rel
+3. the provenance writer (15 keys, exact shapes)
+4. assemble the file and diff a full run against both oracles

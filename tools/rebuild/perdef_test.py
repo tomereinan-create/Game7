@@ -101,14 +101,14 @@ for yr in sorted(rows_by):
         vals = [d * min(1.0, a / MIN_ATT) for d, a in TRACKING.get((yr, cat), {}).values() if a]
         return pctile_top(vals) if vals else None
     Pperim, Prim = _pct_for('Greater Than 15Ft'), _pct_for('Less Than 6Ft')
-    _atts = sorted(a for _d, a in TRACKING.get((yr, 'Overall'), {}).values() if a)
+    _atts = sorted(a for _d, a in TRACKING.get((yr, 'Greater Than 15Ft'), {}).values() if a)
     TGT_MED = _atts[len(_atts) // 2] if _atts else None
     def _tw(nm):
-        row = TRACKING.get((yr, 'Overall'), {}).get(_nrm(nm))
+        row = TRACKING.get((yr, 'Greater Than 15Ft'), {}).get(_nrm(nm))
         if not row or not TGT_MED: return 1.0
         return min(1.0, max(0.35, 1 - 0.6 * max(0.0, row[1] / TGT_MED - 1)))
     def _sw(nm):
-        row = TRACKING.get((yr, 'Overall'), {}).get(_nrm(nm))
+        row = TRACKING.get((yr, 'Greater Than 15Ft'), {}).get(_nrm(nm))
         return min(1.0, row[1] / FULL_SAMPLE) if row and row[1] else 0.0
     tmp = []
     for r in rs:
@@ -142,10 +142,19 @@ for yr in sorted(rows_by):
                 wm = 0.70 * _tw(r['player']) * _sw(r['player'])
                 novote = min(0.84, (1 - wm) * novote + wm * (0.17 + 0.67 * d_meas))
         PD2 = (1 - wv) * novote + wv * (0.55 + 0.44 * Pvot(PD))
+        pd_card = sc(PD2)
+        # DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64)) in CARD units, judged on the 15ft+
+        # series, only on a real workload (recal_14 -> recal_16 -> recal_20)
+        _fl = TRACKING.get((yr, 'Greater Than 15Ft'), {}).get(_nrm(r['player']))
+        if _fl and _fl[1] and min(1.0, _fl[1] / 350.0) >= 0.75:
+            for _d, _card in ((-0.035, 76), (-0.02, 70), (-0.01, 64)):
+                if _fl[0] <= _d:
+                    pd_card = max(pd_card, _card)
+                    break
         t = PRE.get(name(r))
         if not t: continue
         tot += 1
-        okp, oki = sc(PD2) == t.get('perdef'), sc(ID2) == t.get('rimprot')
+        okp, oki = pd_card == t.get('perdef'), sc(ID2) == t.get('rimprot')
         hit_pd += okp; hit_id += oki
         bucket = 'tracking' if yr >= 2014 else ('voted' if drep > 0.05 else 'plain')
         ERA[bucket][0] += 1; ERA[bucket][1] += okp; ERA[bucket][2] += oki
@@ -170,8 +179,14 @@ for k, (n, p_, i_) in sorted(ERA.items()):
     print(f'   {k:<9} n={n:>5,}   perdef {100*p_/n:5.1f}%   rimprot {100*i_/n:5.1f}%')
 import statistics as _st
 print("")
-print(f"implied wm on {len(IMP):,} no-vote tracked cards: median {_st.median(w for w,_a,_r in IMP):.4f}")
-for lo, hi in ((0,0.6),(0.6,0.9),(0.9,1.2),(1.2,1.6),(1.6,2.5),(2.5,9)):
+print(f"implied wm on {len(IMP):,} cards: median {_st.median(w for w,_a,_r in IMP):.4f}")
+print("by SEASON ATTEMPTS (the sample):")
+for lo, hi in ((0,200),(200,350),(350,500),(500,700),(700,900),(900,1200),(1200,1600),(1600,9999)):
+    sub = [w for w, a, rr in IMP if lo <= a < hi]
+    if len(sub) > 20:
+        print(f"   att {lo:>4}-{hi:<4}: n={len(sub):>4}  median wm {_st.median(sub):.4f}")
+print("by att/median ratio:")
+for lo, hi in ((0,0.8),(0.8,1.0),(1.0,1.3),(1.3,1.7),(1.7,2.2),(2.2,3.0),(3.0,9)):
     sub = [w for w, a, rr in IMP if lo <= rr < hi]
-    if len(sub) > 30:
-        print(f"   att/median {lo}-{hi}: n={len(sub):>4}  median wm {_st.median(sub):.4f}")
+    if len(sub) > 20:
+        print(f"   ratio {lo}-{hi}: n={len(sub):>4}  median wm {_st.median(sub):.4f}")
