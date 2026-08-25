@@ -12,13 +12,11 @@ export interface Era {
 }
 
 /** The front door: the campaign, its salary variant, versus, the database. */
-export function Home({ progress, eras, onPick }: { progress: Record<CampaignMode, Progress>; eras: Era[]; onPick: (m: Mode) => void }) {
+export function Home({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
   const tally = (p: Progress) => {
     const n = p.stars.reduce((a, b) => a + b, 0)
     return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : 'PLAY →'
   }
-  const cleared = (p: Progress) => p.stars.filter((s) => s > 0).length
-  const eraLine = eras.map((e) => `${e.name}${e.handicap ? ` +${e.handicap}` : ''}`).join(' → ')
   return (
     <>
       <div className="hero">
@@ -35,10 +33,6 @@ export function Home({ progress, eras, onPick }: { progress: Record<CampaignMode
         <div className="in">
           <div style={{ minWidth: 0 }}>
             <b>Campaign</b>
-            <span>
-              {ROUNDS} levels, worst record first: {eraLine}. Each era ends with its champions; each era's opponents carry more spread. Sweep for three stars, spend them on your staff, replay any level for a better rating.
-              {cleared(progress.campaign) ? ` ${cleared(progress.campaign)} cleared.` : ''}
-            </span>
           </div>
           <em>{tally(progress.campaign)}</em>
         </div>

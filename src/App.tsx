@@ -181,7 +181,6 @@ export default function App() {
         {sheet}
         <Home
           progress={progress}
-          eras={ERAS}
           onPick={(m) => {
             if (m === 'database') setRoster(true)
             else if (m === 'archetypes') setArchs(true)
