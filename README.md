@@ -11,6 +11,19 @@ npm run dev
 
 Then open the URL on a phone (the layout is built for one).
 
+## On a phone
+
+<https://tomereinan-create.github.io/Game7/>
+
+Open that in Chrome or Safari and add it to the home screen. It installs as its own
+app — no browser chrome, and it opens with no signal.
+
+Every push to `main` rebuilds and republishes it, so a change is live at the same URL
+a minute later. `index.html` is always fetched from the network, so a refresh can
+never hand back an older build; only the hashed files a build renames are cached, and
+when new html arrives the cache is dropped rather than grown. Nothing reloads on its
+own — a deploy will not walk in on a game in progress.
+
 ## Playing it without a terminal
 
 There is a **Game7** shortcut on the Desktop. Double-clicking it runs
@@ -26,7 +39,7 @@ forget itself on every reload.
 
 ```bash
 npm run play   # same thing, with a console
-npm run icon   # regenerate game7.ico (drawn in code, no binary art in the repo)
+npm run icon   # regenerate game7.ico and the home-screen icons (drawn in code)
 ```
 
 ```bash
