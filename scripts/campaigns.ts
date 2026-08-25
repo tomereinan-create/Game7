@@ -15,10 +15,10 @@ import { fileURLToPath } from 'node:url'
 import { eligible } from '../src/engine/positions'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const DEFAULT_DIR = join(
-  process.env.LOCALAPPDATA ?? '',
-  'Temp/claude/C--Users-tomer-Desktop/213b1108-7de9-4ece-b091-d21781a1f07f/scratchpad/bref',
-)
+const REPO_BREF = join(here, '..', 'data', 'bref')   // the CSVs live in the repo now
+const DEFAULT_DIR = existsSync(REPO_BREF)
+  ? REPO_BREF
+  : join(process.env.LOCALAPPDATA ?? '', 'Temp/claude/C--Users-tomer-Desktop/213b1108-7de9-4ece-b091-d21781a1f07f/scratchpad/bref')
 const dir = process.argv[2] ?? DEFAULT_DIR
 if (!existsSync(join(dir, 'Team Summaries.csv'))) {
   console.error(`missing Team Summaries.csv in ${dir}`)

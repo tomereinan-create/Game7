@@ -17,7 +17,8 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const SCRATCH = join(process.env.LOCALAPPDATA ?? '', 'Temp/claude/C--Users-tomer-Desktop/213b1108-7de9-4ece-b091-d21781a1f07f/scratchpad')
-const BREF = join(SCRATCH, 'bref')
+const REPO_BREF = join(here, '..', 'data', 'bref')   // the CSVs live in the repo now
+const BREF = existsSync(REPO_BREF) ? REPO_BREF : join(SCRATCH, 'bref')
 const SAL = join(SCRATCH, 'salaries')
 
 for (const f of [join(BREF, 'Player Per Game.csv'), join(SAL, 's85.csv')]) {

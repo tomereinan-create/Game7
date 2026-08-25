@@ -8,11 +8,14 @@ Philosophy:
   - talent        = within-season percentile of BPM (dominance over your own league), stretched.
 All weights live in WEIGHTS below - tune freely.
 """
-import csv, json, math
+import csv, json, math, os as _os
 from collections import defaultdict
 
 import sys
-DATA = sys.argv[1] if len(sys.argv) > 1 else "/home/claude/bball-reference-datasets-master/Data"
+# The Basketball-Reference CSVs live in the repo (data/bref) so the pipeline runs anywhere — a fresh
+# clone, another machine, a cloud session — without hunting for a scratch folder. An explicit path
+# still wins if one is given.
+DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'bref')
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
