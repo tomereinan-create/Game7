@@ -293,3 +293,57 @@ orb · discipline · 3pt · **rim** · **mid**
   blend, the low-2P% clamp, the UPLIFT ramp
 * rimprot / perdef — now with 12 verbatim source fragments to build against
 * season smoothing, the provenance writer, the full-run diff
+
+---
+
+# SESSION 5 — the defensive composites, assembled from the spec
+
+Built `perdef_test.py` from the receipts' source assertions plus the base skeleton. First assembly
+scored perdef 56.5% / rimprot 51.4%; replacing my guessed reputation loader with the real one took it
+to **perdef 74.6% / rimprot 75.8%**. The structure is therefore right and what remains is detail.
+
+## The reputation feed (recovered verbatim from base.py)
+
+```python
+alld[(pid, yr)] = max(alld[...], 1.0 if number_tm == '1st' else 0.6)   # type == 'All-Defense'
+dpoy[(pid, yr)] = float(share)                                          # award contains 'dpoy'
+rep[pid][yr] = max(alld, min(1.0, alld + 0.5 * dpoy))
+career_rep(pid, yr) = max over y2 of rep[pid][y2] * max(0, 1 - 0.15 * |yr - y2|)
+```
+
+The 0.6 for a second team (not 0.75) and the DPOY entering at HALF share are what moved ~19 points of
+accuracy on both attributes.
+
+## The composites as they now stand
+
+```python
+PD = 0.366*(drep*(1.2 - 0.8*hp)) + 0.192*P_dbpm + 0.192*(1 - P_team_drtg)
+     + 0.25 * max(0, 1 - max(0, max(75 - ht, ht - 80))/8)          # r35 band, r36 weights
+if drep == 0: PD = 0.5 + 0.70*(PD - 0.5)
+ID = 0.55*P_blk + 0.25*P_ht + 0.20*P_dbpm + 0.25*(drep * hp)
+
+ID2 = min(1, 0.55 + 0.47*Prot(ID)) if ID >= 0.60 else min(ID, 0.54)
+     blended 0.65/0.35 with the measured 'Less Than 6Ft' slice where tracking exists
+wv     = min(1, drep/0.30) if drep > 0.05 else 0
+novote = min(PD, 0.62)
+     with tracking: min(0.84, (1-wm)*novote + wm*(0.17 + 0.67*d_meas)),
+     wm = 0.70 * targeting_weight * sample_weight
+     targeting_weight = clamp(1 - 0.6*max(0, att/median_att - 1), 0.35, 1)
+     sample_weight    = min(1, att/350)
+     d_meas measured on 'Greater Than 15Ft', scaled by min(1, att/150)
+PD2 = (1 - wv)*novote + wv*(0.55 + 0.44*Pvot(PD))
+```
+
+`DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))` are in CARD units and are re-applied AFTER
+smoothing, so they are outside this pre-smoothing comparison by construction.
+
+## Where the remaining quarter probably is
+
+Rounds that touched the defensive composites after the base and are not yet in the assembly: the
+recal_13 perdef purification, the rimprot purify round, and recal_16's lockdown tier. Each has a
+source assertion in `spec_from_receipts.txt` to build against.
+
+## Exact so far — 15 attributes; defense at ~75%
+
+durability · volume · ballsec · playvol · drb · efficiency · perimdisrupt · fouldraw · height · ft ·
+orb · discipline · 3pt · rim · mid
