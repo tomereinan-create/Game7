@@ -1215,6 +1215,28 @@ const ROUNDS: Record<string, () => void> = {
     note('applied, not guessed: base 6.5 with exponent 1.5 was the pair that held Shaq and dropped the rest.')
     note('Band anchor re-derived: OFF_TOP 105.92 -> 106.36. OVR_TOP holds at 96.50.')
   },
+  '48': () => {
+    console.log(`${EOL}recal_48 (his ruling) — every shot he defended carries weight in perdef`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '48', /PIPELINE_VERSION = 48/.test(RATINGS) && /PIPELINE_VERSION = 48/.test(OVR))
+    src('the Overall series is loaded', RATINGS, /Pall = _pct_for\('Overall'\)/, 'every contested shot')
+    src('it corroborates at 0.30', RATINGS, /ALLSHOT_W = 0\.30/, 'the 15ft\+ slice keeps 0.70')
+    src('blended into the measured term', RATINGS, /d_meas = \(1 - ALLSHOT_W\) \* d_meas \+ ALLSHOT_W \* \(1 - Pall\(dv_all\)\)/, 'not a replacement')
+    src('the 15ft+ slice is still primary', RATINGS, /PERDEF_CAT = 'Greater Than 15Ft'/, 'unchanged')
+    note('The two series are not independent — Overall CONTAINS the 15ft+ shots — which is why the')
+    note('perimeter slice keeps the majority. A man with one series and not the other is judged on the')
+    note('one that exists rather than dragged toward the middle.')
+    const tracked = PLAYERS.filter((p) => p.peak_season >= 2014)
+    line('cards the ruling can reach', `${tracked.length.toLocaleString()} from 2014 on`, 'the tracking era only', tracked.length > 0)
+    for (const [n, was] of [["Rudy Gobert '19", 69], ["Draymond Green '16", 94], ["Kawhi Leonard '17", 96], ["Jrue Holiday '24", 95]] as const) {
+      const p = by.get(n)
+      if (p) line(`${n} perdef`, `${was} -> ${p.attrs.perdef}`, 'the elite hold', Math.abs(p.attrs.perdef - was) <= 2)
+    }
+    note('1,408 cards moved, mean +0.26, range -6 to +6. The men who turn away everything they are')
+    note('asked to guard gain (Myles Turner \u201922 +6, Mozgov \u201914 +5); the men whose perimeter number')
+    note('flattered the rest of their night give some back (Jake Layman \u201919 -6).')
+    note('The absolute DFG floors still judge the 15ft+ series alone — that is a separate ruling about')
+    note('proven lockdown seasons and was left untouched.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))

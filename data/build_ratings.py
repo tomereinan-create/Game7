@@ -16,7 +16,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else "/home/claude/bball-reference-datas
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 47   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 48   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -252,8 +252,12 @@ for yr, rows in seasons.items():
     def _pct_for(cat):
         vals = [d * min(1.0, a / MIN_ATT) for d, a in TRACKING.get((yr, cat), {}).values() if a]
         return pctile_top(vals) if vals else None
-    PERDEF_CAT = 'Greater Than 15Ft'   # recal_20: perdef reads the outside-paint slice
+    PERDEF_CAT = 'Greater Than 15Ft'   # recal_20: the outside-paint slice is the primary claim
     Pperim = _pct_for(PERDEF_CAT)
+    # ALL SHOTS CARRY WEIGHT (his ruling). The 15ft+ series keeps the majority — it is what perimeter
+    # defence IS — but every shot he contested is evidence, so the Overall series corroborates at 0.30.
+    ALLSHOT_W = 0.30
+    Pall = _pct_for('Overall')
     _atts = sorted(a for _d, a in TRACKING.get((yr, PERDEF_CAT), {}).values() if a)
     TGT_MED = _atts[len(_atts) // 2] if _atts else None
     FULL_SAMPLE = 350.0
@@ -285,6 +289,11 @@ for yr, rows in seasons.items():
             dv = _trk(PERDEF_CAT, r['name'])
             if dv is not None:
                 d_meas = 1 - Pperim(dv)                                        # a lower defended-FG% diff is a better defender
+                # the rest of his workload, blended in. If he has one series and not the other, the
+                # one that exists carries the term alone rather than pulling him toward the middle.
+                dv_all = _trk('Overall', r['name'])
+                if Pall is not None and dv_all is not None:
+                    d_meas = (1 - ALLSHOT_W) * d_meas + ALLSHOT_W * (1 - Pall(dv_all))
                 wm = 0.70 * _targeting_weight(r['name']) * _sample_weight(r['name'])   # hunted men, and thin samples, lean back on the composite
                 novote = min(0.84, (1 - wm)*novote + wm*(0.17 + 0.67*d_meas))
         PD2 = (1 - wv) * novote + wv * (0.55 + 0.44 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)

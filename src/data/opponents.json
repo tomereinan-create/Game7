@@ -22,7 +22,7 @@
         "in": 12,
         "out": 77,
         "id": 17,
-        "pd": 34,
+        "pd": 33,
         "attrs": {
           "3pt": 76,
           "rim": 2,
@@ -40,7 +40,7 @@
           "rimprot": 17,
           "perimdisrupt": 7,
           "height": 76,
-          "perdef": 34,
+          "perdef": 33,
           "discipline": 46,
           "usg_raw": 17.4,
           "ts_raw": 0.545,
@@ -50,7 +50,7 @@
         "o_ovr": 47,
         "d_ovr": 33,
         "ovr": 44,
-        "marg": 43
+        "marg": 42
       },
       {
         "name": "CJ McCollum '26",
@@ -98,7 +98,7 @@
         "in": 46,
         "out": 40,
         "id": 27,
-        "pd": 42,
+        "pd": 39,
         "attrs": {
           "3pt": 37,
           "rim": 50,
@@ -116,7 +116,7 @@
           "rimprot": 27,
           "perimdisrupt": 38,
           "height": 81,
-          "perdef": 42,
+          "perdef": 39,
           "discipline": 93,
           "usg_raw": 20.2,
           "ts_raw": 0.548,
@@ -124,9 +124,9 @@
         },
         "big": false,
         "o_ovr": 50,
-        "d_ovr": 48,
-        "ovr": 50,
-        "marg": 44
+        "d_ovr": 46,
+        "ovr": 49,
+        "marg": 43
       },
       {
         "name": "Marvin Bagley III '26",
@@ -174,7 +174,7 @@
         "in": 52,
         "out": 38,
         "id": 89,
-        "pd": 30,
+        "pd": 32,
         "attrs": {
           "3pt": 35,
           "rim": 58,
@@ -192,7 +192,7 @@
           "rimprot": 89,
           "perimdisrupt": 30,
           "height": 84,
-          "perdef": 30,
+          "perdef": 32,
           "discipline": 58,
           "usg_raw": 25.1,
           "ts_raw": 0.528,
@@ -200,9 +200,9 @@
         },
         "big": true,
         "o_ovr": 62,
-        "d_ovr": 67,
-        "ovr": 60,
-        "marg": 60
+        "d_ovr": 68,
+        "ovr": 61,
+        "marg": 61
       }
     ]
   },
@@ -267,7 +267,7 @@
         "in": 28,
         "out": 60,
         "id": 32,
-        "pd": 41,
+        "pd": 42,
         "attrs": {
           "3pt": 57,
           "rim": 22,
@@ -285,7 +285,7 @@
           "rimprot": 32,
           "perimdisrupt": 32,
           "height": 78,
-          "perdef": 41,
+          "perdef": 42,
           "discipline": 38,
           "usg_raw": 13.2,
           "ts_raw": 0.559,
@@ -293,7 +293,7 @@
         },
         "big": false,
         "o_ovr": 40,
-        "d_ovr": 43,
+        "d_ovr": 44,
         "ovr": 42,
         "marg": 47
       },
@@ -343,7 +343,7 @@
         "in": 71,
         "out": 58,
         "id": 48,
-        "pd": 43,
+        "pd": 42,
         "attrs": {
           "3pt": 55,
           "rim": 75,
@@ -361,7 +361,7 @@
           "rimprot": 48,
           "perimdisrupt": 30,
           "height": 80,
-          "perdef": 43,
+          "perdef": 42,
           "discipline": 70,
           "usg_raw": 28.6,
           "ts_raw": 0.571,
@@ -474,7 +474,7 @@
         "in": 34,
         "out": 51,
         "id": 35,
-        "pd": 49,
+        "pd": 46,
         "attrs": {
           "3pt": 48,
           "rim": 37,
@@ -492,7 +492,7 @@
           "rimprot": 35,
           "perimdisrupt": 32,
           "height": 78,
-          "perdef": 49,
+          "perdef": 46,
           "discipline": 14,
           "usg_raw": 13.8,
           "ts_raw": 0.569,
@@ -500,9 +500,9 @@
         },
         "big": false,
         "o_ovr": 42,
-        "d_ovr": 47,
-        "ovr": 45,
-        "marg": 73
+        "d_ovr": 44,
+        "ovr": 43,
+        "marg": 69
       },
       {
         "name": "Michael Porter Jr. '26",
@@ -643,7 +643,7 @@
         "in": 40,
         "out": 59,
         "id": 19,
-        "pd": 53,
+        "pd": 50,
         "attrs": {
           "3pt": 56,
           "rim": 52,
@@ -661,7 +661,7 @@
           "rimprot": 19,
           "perimdisrupt": 77,
           "height": 76,
-          "perdef": 53,
+          "perdef": 50,
           "discipline": 42,
           "usg_raw": 25.4,
           "ts_raw": 0.529,
@@ -669,9 +669,9 @@
         },
         "big": false,
         "o_ovr": 60,
-        "d_ovr": 61,
-        "ovr": 61,
-        "marg": 65
+        "d_ovr": 59,
+        "ovr": 60,
+        "marg": 63
       },
       {
         "name": "Nique Clifford '26",
@@ -719,7 +719,7 @@
         "in": 70,
         "out": 24,
         "id": 33,
-        "pd": 33,
+        "pd": 34,
         "attrs": {
           "3pt": 20,
           "rim": 66,
@@ -737,7 +737,7 @@
           "rimprot": 33,
           "perimdisrupt": 26,
           "height": 78,
-          "perdef": 33,
+          "perdef": 34,
           "discipline": 83,
           "usg_raw": 23.3,
           "ts_raw": 0.588,
@@ -747,7 +747,7 @@
         "o_ovr": 80,
         "d_ovr": 34,
         "ovr": 68,
-        "marg": 48
+        "marg": 49
       },
       {
         "name": "Precious Achiuwa '26",
@@ -823,7 +823,7 @@
         "o_ovr": 53,
         "d_ovr": 55,
         "ovr": 54,
-        "marg": 75
+        "marg": 74
       }
     ]
   },
@@ -888,7 +888,7 @@
         "in": 51,
         "out": 12,
         "id": 53,
-        "pd": 29,
+        "pd": 30,
         "attrs": {
           "3pt": 10,
           "rim": 33,
@@ -906,7 +906,7 @@
           "rimprot": 53,
           "perimdisrupt": 34,
           "height": 80,
-          "perdef": 29,
+          "perdef": 30,
           "discipline": 71,
           "usg_raw": 16,
           "ts_raw": 0.524,
@@ -914,8 +914,8 @@
         },
         "big": false,
         "o_ovr": 38,
-        "d_ovr": 35,
-        "ovr": 37,
+        "d_ovr": 36,
+        "ovr": 38,
         "marg": 42
       },
       {
@@ -926,7 +926,7 @@
         "in": 35,
         "out": 65,
         "id": 54,
-        "pd": 31,
+        "pd": 33,
         "attrs": {
           "3pt": 62,
           "rim": 35,
@@ -944,7 +944,7 @@
           "rimprot": 54,
           "perimdisrupt": 26,
           "height": 81,
-          "perdef": 31,
+          "perdef": 33,
           "discipline": 38,
           "usg_raw": 21.4,
           "ts_raw": 0.533,
@@ -952,9 +952,9 @@
         },
         "big": false,
         "o_ovr": 55,
-        "d_ovr": 34,
+        "d_ovr": 35,
         "ovr": 50,
-        "marg": 60
+        "marg": 62
       },
       {
         "name": "Jaren Jackson Jr. '26",
@@ -992,7 +992,7 @@
         "o_ovr": 69,
         "d_ovr": 82,
         "ovr": 72,
-        "marg": 61
+        "marg": 60
       },
       {
         "name": "Kyle Filipowski '26",
@@ -1095,7 +1095,7 @@
         "in": 25,
         "out": 95,
         "id": 17,
-        "pd": 39,
+        "pd": 37,
         "attrs": {
           "3pt": 95,
           "rim": 9,
@@ -1113,7 +1113,7 @@
           "rimprot": 17,
           "perimdisrupt": 29,
           "height": 75,
-          "perdef": 39,
+          "perdef": 37,
           "discipline": 86,
           "usg_raw": 17.2,
           "ts_raw": 0.649,
@@ -1121,9 +1121,9 @@
         },
         "big": false,
         "o_ovr": 72,
-        "d_ovr": 42,
+        "d_ovr": 41,
         "ovr": 64,
-        "marg": 86
+        "marg": 84
       },
       {
         "name": "Cedric Coward '26",
@@ -1133,7 +1133,7 @@
         "in": 59,
         "out": 55,
         "id": 60,
-        "pd": 42,
+        "pd": 43,
         "attrs": {
           "3pt": 52,
           "rim": 68,
@@ -1151,7 +1151,7 @@
           "rimprot": 60,
           "perimdisrupt": 23,
           "height": 77,
-          "perdef": 42,
+          "perdef": 43,
           "discipline": 58,
           "usg_raw": 21.5,
           "ts_raw": 0.585,
@@ -1159,9 +1159,9 @@
         },
         "big": false,
         "o_ovr": 61,
-        "d_ovr": 46,
-        "ovr": 57,
-        "marg": 92
+        "d_ovr": 47,
+        "ovr": 58,
+        "marg": 93
       },
       {
         "name": "Jock Landale '26",
@@ -1171,7 +1171,7 @@
         "in": 61,
         "out": 67,
         "id": 65,
-        "pd": 30,
+        "pd": 32,
         "attrs": {
           "3pt": 64,
           "rim": 68,
@@ -1189,7 +1189,7 @@
           "rimprot": 65,
           "perimdisrupt": 21,
           "height": 83,
-          "perdef": 30,
+          "perdef": 32,
           "discipline": 33,
           "usg_raw": 18.3,
           "ts_raw": 0.595,
@@ -1197,9 +1197,9 @@
         },
         "big": true,
         "o_ovr": 58,
-        "d_ovr": 53,
+        "d_ovr": 54,
         "ovr": 57,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "Jaren Jackson Jr. '26",
@@ -1237,7 +1237,7 @@
         "o_ovr": 69,
         "d_ovr": 82,
         "ovr": 72,
-        "marg": 61
+        "marg": 60
       }
     ]
   },
@@ -1264,7 +1264,7 @@
         "in": 74,
         "out": 17,
         "id": 34,
-        "pd": 43,
+        "pd": 41,
         "attrs": {
           "3pt": 15,
           "rim": 60,
@@ -1282,7 +1282,7 @@
           "rimprot": 34,
           "perimdisrupt": 61,
           "height": 73,
-          "perdef": 43,
+          "perdef": 41,
           "discipline": 71,
           "usg_raw": 25.1,
           "ts_raw": 0.572,
@@ -1290,9 +1290,9 @@
         },
         "big": false,
         "o_ovr": 68,
-        "d_ovr": 50,
-        "ovr": 61,
-        "marg": 66
+        "d_ovr": 48,
+        "ovr": 60,
+        "marg": 64
       },
       {
         "name": "Max Christie '26",
@@ -1330,7 +1330,7 @@
         "o_ovr": 46,
         "d_ovr": 62,
         "ovr": 56,
-        "marg": 76
+        "marg": 77
       },
       {
         "name": "Cooper Flagg '26",
@@ -1509,7 +1509,7 @@
         "in": 55,
         "out": 86,
         "id": 37,
-        "pd": 47,
+        "pd": 46,
         "attrs": {
           "3pt": 85,
           "rim": 65,
@@ -1527,7 +1527,7 @@
           "rimprot": 37,
           "perimdisrupt": 59,
           "height": 80,
-          "perdef": 47,
+          "perdef": 46,
           "discipline": 90,
           "usg_raw": 22.9,
           "ts_raw": 0.609,
@@ -1537,7 +1537,7 @@
         "o_ovr": 74,
         "d_ovr": 57,
         "ovr": 70,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "Saddiq Bey '26",
@@ -1651,7 +1651,7 @@
         "o_ovr": 83,
         "d_ovr": 66,
         "ovr": 81,
-        "marg": 89
+        "marg": 88
       }
     ]
   },
@@ -1678,7 +1678,7 @@
         "in": 81,
         "out": 21,
         "id": 15,
-        "pd": 52,
+        "pd": 47,
         "attrs": {
           "3pt": 18,
           "rim": 75,
@@ -1696,7 +1696,7 @@
           "rimprot": 15,
           "perimdisrupt": 63,
           "height": 73,
-          "perdef": 52,
+          "perdef": 47,
           "discipline": 92,
           "usg_raw": 19.2,
           "ts_raw": 0.637,
@@ -1704,9 +1704,9 @@
         },
         "big": false,
         "o_ovr": 67,
-        "d_ovr": 57,
+        "d_ovr": 53,
         "ovr": 66,
-        "marg": 94
+        "marg": 92
       },
       {
         "name": "Ayo Dosunmu '26",
@@ -1754,7 +1754,7 @@
         "in": 53,
         "out": 70,
         "id": 80,
-        "pd": 42,
+        "pd": 43,
         "attrs": {
           "3pt": 68,
           "rim": 62,
@@ -1772,7 +1772,7 @@
           "rimprot": 80,
           "perimdisrupt": 11,
           "height": 80,
-          "perdef": 42,
+          "perdef": 43,
           "discipline": 58,
           "usg_raw": 21.8,
           "ts_raw": 0.582,
@@ -1830,7 +1830,7 @@
         "in": 55,
         "out": 63,
         "id": 63,
-        "pd": 48,
+        "pd": 50,
         "attrs": {
           "3pt": 61,
           "rim": 65,
@@ -1848,7 +1848,7 @@
           "rimprot": 63,
           "perimdisrupt": 12,
           "height": 81,
-          "perdef": 48,
+          "perdef": 50,
           "discipline": 78,
           "usg_raw": 21.6,
           "ts_raw": 0.583,
@@ -1856,9 +1856,9 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 67,
+        "d_ovr": 68,
         "ovr": 67,
-        "marg": 80
+        "marg": 81
       }
     ]
   },
@@ -1923,7 +1923,7 @@
         "in": 4,
         "out": 98,
         "id": 17,
-        "pd": 41,
+        "pd": 42,
         "attrs": {
           "3pt": 98,
           "rim": 6,
@@ -1941,7 +1941,7 @@
           "rimprot": 17,
           "perimdisrupt": 7,
           "height": 76,
-          "perdef": 41,
+          "perdef": 42,
           "discipline": 37,
           "usg_raw": 13.6,
           "ts_raw": 0.625,
@@ -1949,9 +1949,9 @@
         },
         "big": false,
         "o_ovr": 54,
-        "d_ovr": 36,
+        "d_ovr": 37,
         "ovr": 50,
-        "marg": 60
+        "marg": 61
       },
       {
         "name": "Kyle Kuzma '26",
@@ -2037,7 +2037,7 @@
         "in": 40,
         "out": 81,
         "id": 87,
-        "pd": 30,
+        "pd": 32,
         "attrs": {
           "3pt": 79,
           "rim": 21,
@@ -2055,7 +2055,7 @@
           "rimprot": 87,
           "perimdisrupt": 21,
           "height": 83,
-          "perdef": 30,
+          "perdef": 32,
           "discipline": 32,
           "usg_raw": 19.1,
           "ts_raw": 0.591,
@@ -2063,9 +2063,9 @@
         },
         "big": true,
         "o_ovr": 55,
-        "d_ovr": 66,
+        "d_ovr": 67,
         "ovr": 62,
-        "marg": 49
+        "marg": 50
       }
     ]
   },
@@ -2130,7 +2130,7 @@
         "in": 27,
         "out": 92,
         "id": 56,
-        "pd": 43,
+        "pd": 45,
         "attrs": {
           "3pt": 91,
           "rim": 25,
@@ -2148,7 +2148,7 @@
           "rimprot": 56,
           "perimdisrupt": 52,
           "height": 77,
-          "perdef": 43,
+          "perdef": 45,
           "discipline": 54,
           "usg_raw": 18.1,
           "ts_raw": 0.594,
@@ -2156,9 +2156,9 @@
         },
         "big": false,
         "o_ovr": 63,
-        "d_ovr": 48,
-        "ovr": 59,
-        "marg": 75
+        "d_ovr": 50,
+        "ovr": 60,
+        "marg": 77
       },
       {
         "name": "Will Richard '26",
@@ -2168,7 +2168,7 @@
         "in": 45,
         "out": 49,
         "id": 25,
-        "pd": 47,
+        "pd": 45,
         "attrs": {
           "3pt": 46,
           "rim": 40,
@@ -2186,7 +2186,7 @@
           "rimprot": 25,
           "perimdisrupt": 76,
           "height": 75,
-          "perdef": 47,
+          "perdef": 45,
           "discipline": 11,
           "usg_raw": 13,
           "ts_raw": 0.596,
@@ -2194,9 +2194,9 @@
         },
         "big": false,
         "o_ovr": 37,
-        "d_ovr": 50,
-        "ovr": 45,
-        "marg": 83
+        "d_ovr": 49,
+        "ovr": 44,
+        "marg": 81
       },
       {
         "name": "Draymond Green '26",
@@ -2375,7 +2375,7 @@
         "in": 80,
         "out": 87,
         "id": 34,
-        "pd": 54,
+        "pd": 53,
         "attrs": {
           "3pt": 86,
           "rim": 79,
@@ -2393,7 +2393,7 @@
           "rimprot": 34,
           "perimdisrupt": 89,
           "height": 78,
-          "perdef": 54,
+          "perdef": 53,
           "discipline": 99,
           "usg_raw": 33.5,
           "ts_raw": 0.629,
@@ -2544,7 +2544,7 @@
         "in": 56,
         "out": 64,
         "id": 14,
-        "pd": 47,
+        "pd": 44,
         "attrs": {
           "3pt": 60,
           "rim": 70,
@@ -2562,7 +2562,7 @@
           "rimprot": 14,
           "perimdisrupt": 59,
           "height": 77,
-          "perdef": 47,
+          "perdef": 44,
           "discipline": 73,
           "usg_raw": 29.1,
           "ts_raw": 0.547,
@@ -2570,9 +2570,9 @@
         },
         "big": false,
         "o_ovr": 70,
-        "d_ovr": 55,
-        "ovr": 61,
-        "marg": 54
+        "d_ovr": 52,
+        "ovr": 60,
+        "marg": 52
       },
       {
         "name": "Deni Avdija '26",
@@ -2582,7 +2582,7 @@
         "in": 71,
         "out": 52,
         "id": 65,
-        "pd": 42,
+        "pd": 43,
         "attrs": {
           "3pt": 49,
           "rim": 64,
@@ -2600,7 +2600,7 @@
           "rimprot": 65,
           "perimdisrupt": 17,
           "height": 80,
-          "perdef": 42,
+          "perdef": 43,
           "discipline": 63,
           "usg_raw": 27.8,
           "ts_raw": 0.601,
@@ -2610,7 +2610,7 @@
         "o_ovr": 75,
         "d_ovr": 47,
         "ovr": 68,
-        "marg": 86
+        "marg": 87
       },
       {
         "name": "Toumani Camara '26",
@@ -2648,7 +2648,7 @@
         "o_ovr": 42,
         "d_ovr": 58,
         "ovr": 52,
-        "marg": 67
+        "marg": 66
       },
       {
         "name": "Donovan Clingan '26",
@@ -2658,7 +2658,7 @@
         "in": 69,
         "out": 33,
         "id": 96,
-        "pd": 42,
+        "pd": 44,
         "attrs": {
           "3pt": 30,
           "rim": 70,
@@ -2676,7 +2676,7 @@
           "rimprot": 96,
           "perimdisrupt": 13,
           "height": 86,
-          "perdef": 42,
+          "perdef": 44,
           "discipline": 35,
           "usg_raw": 16.2,
           "ts_raw": 0.597,
@@ -2684,9 +2684,9 @@
         },
         "big": true,
         "o_ovr": 51,
-        "d_ovr": 78,
-        "ovr": 67,
-        "marg": 93
+        "d_ovr": 79,
+        "ovr": 68,
+        "marg": 94
       }
     ]
   },
@@ -2741,7 +2741,7 @@
         "o_ovr": 45,
         "d_ovr": 56,
         "ovr": 52,
-        "marg": 60
+        "marg": 61
       },
       {
         "name": "Pelle Larsson '26",
@@ -2789,7 +2789,7 @@
         "in": 62,
         "out": 24,
         "id": 51,
-        "pd": 53,
+        "pd": 54,
         "attrs": {
           "3pt": 21,
           "rim": 62,
@@ -2807,7 +2807,7 @@
           "rimprot": 51,
           "perimdisrupt": 26,
           "height": 78,
-          "perdef": 53,
+          "perdef": 54,
           "discipline": 79,
           "usg_raw": 21.8,
           "ts_raw": 0.563,
@@ -2958,7 +2958,7 @@
         "in": 16,
         "out": 47,
         "id": 57,
-        "pd": 52,
+        "pd": 53,
         "attrs": {
           "3pt": 44,
           "rim": 4,
@@ -2976,7 +2976,7 @@
           "rimprot": 57,
           "perimdisrupt": 28,
           "height": 77,
-          "perdef": 52,
+          "perdef": 53,
           "discipline": 42,
           "usg_raw": 11,
           "ts_raw": 0.531,
@@ -2984,8 +2984,8 @@
         },
         "big": false,
         "o_ovr": 30,
-        "d_ovr": 52,
-        "ovr": 41,
+        "d_ovr": 53,
+        "ovr": 42,
         "marg": 51
       },
       {
@@ -3072,7 +3072,7 @@
         "in": 76,
         "out": 6,
         "id": 79,
-        "pd": 46,
+        "pd": 47,
         "attrs": {
           "3pt": 6,
           "rim": 53,
@@ -3090,7 +3090,7 @@
           "rimprot": 79,
           "perimdisrupt": 38,
           "height": 82,
-          "perdef": 46,
+          "perdef": 47,
           "discipline": 37,
           "usg_raw": 11.9,
           "ts_raw": 0.642,
@@ -3098,8 +3098,8 @@
         },
         "big": true,
         "o_ovr": 41,
-        "d_ovr": 70,
-        "ovr": 58,
+        "d_ovr": 71,
+        "ovr": 59,
         "marg": 92
       }
     ]
@@ -3448,7 +3448,7 @@
         "in": 66,
         "out": 12,
         "id": 85,
-        "pd": 41,
+        "pd": 44,
         "attrs": {
           "3pt": 10,
           "rim": 46,
@@ -3466,7 +3466,7 @@
           "rimprot": 85,
           "perimdisrupt": 53,
           "height": 81,
-          "perdef": 41,
+          "perdef": 44,
           "discipline": 42,
           "usg_raw": 12.8,
           "ts_raw": 0.597,
@@ -3474,9 +3474,9 @@
         },
         "big": true,
         "o_ovr": 37,
-        "d_ovr": 65,
-        "ovr": 54,
-        "marg": 77
+        "d_ovr": 67,
+        "ovr": 55,
+        "marg": 79
       },
       {
         "name": "Adem Bona '26",
@@ -3486,7 +3486,7 @@
         "in": 67,
         "out": 10,
         "id": 93,
-        "pd": 38,
+        "pd": 42,
         "attrs": {
           "3pt": 9,
           "rim": 61,
@@ -3504,7 +3504,7 @@
           "rimprot": 93,
           "perimdisrupt": 28,
           "height": 82,
-          "perdef": 38,
+          "perdef": 42,
           "discipline": 6,
           "usg_raw": 11.1,
           "ts_raw": 0.638,
@@ -3512,9 +3512,9 @@
         },
         "big": true,
         "o_ovr": 40,
-        "d_ovr": 68,
-        "ovr": 57,
-        "marg": 74
+        "d_ovr": 70,
+        "ovr": 58,
+        "marg": 76
       }
     ]
   },
@@ -3786,7 +3786,7 @@
         "in": 40,
         "out": 89,
         "id": 39,
-        "pd": 44,
+        "pd": 43,
         "attrs": {
           "3pt": 88,
           "rim": 28,
@@ -3804,7 +3804,7 @@
           "rimprot": 39,
           "perimdisrupt": 50,
           "height": 77,
-          "perdef": 44,
+          "perdef": 43,
           "discipline": 69,
           "usg_raw": 21.9,
           "ts_raw": 0.602,
@@ -3812,9 +3812,9 @@
         },
         "big": false,
         "o_ovr": 67,
-        "d_ovr": 48,
+        "d_ovr": 47,
         "ovr": 62,
-        "marg": 82
+        "marg": 81
       },
       {
         "name": "Zaccharie Risacher '26",
@@ -3993,7 +3993,7 @@
         "in": 35,
         "out": 82,
         "id": 35,
-        "pd": 51,
+        "pd": 52,
         "attrs": {
           "3pt": 80,
           "rim": 34,
@@ -4011,7 +4011,7 @@
           "rimprot": 35,
           "perimdisrupt": 66,
           "height": 74,
-          "perdef": 51,
+          "perdef": 52,
           "discipline": 76,
           "usg_raw": 21.1,
           "ts_raw": 0.577,
@@ -4019,9 +4019,9 @@
         },
         "big": false,
         "o_ovr": 69,
-        "d_ovr": 57,
+        "d_ovr": 58,
         "ovr": 66,
-        "marg": 79
+        "marg": 80
       },
       {
         "name": "Scottie Barnes '26",
@@ -4107,7 +4107,7 @@
         "in": 66,
         "out": 74,
         "id": 74,
-        "pd": 46,
+        "pd": 48,
         "attrs": {
           "3pt": 72,
           "rim": 68,
@@ -4125,7 +4125,7 @@
           "rimprot": 74,
           "perimdisrupt": 53,
           "height": 81,
-          "perdef": 46,
+          "perdef": 48,
           "discipline": 49,
           "usg_raw": 18.8,
           "ts_raw": 0.637,
@@ -4135,7 +4135,7 @@
         "o_ovr": 65,
         "d_ovr": 68,
         "ovr": 67,
-        "marg": 84
+        "marg": 85
       }
     ]
   },
@@ -4276,7 +4276,7 @@
         "in": 73,
         "out": 38,
         "id": 48,
-        "pd": 48,
+        "pd": 49,
         "attrs": {
           "3pt": 35,
           "rim": 67,
@@ -4294,7 +4294,7 @@
           "rimprot": 48,
           "perimdisrupt": 26,
           "height": 81,
-          "perdef": 48,
+          "perdef": 49,
           "discipline": 48,
           "usg_raw": 26.1,
           "ts_raw": 0.587,
@@ -4304,7 +4304,7 @@
         "o_ovr": 75,
         "d_ovr": 56,
         "ovr": 68,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "Rudy Gobert '26",
@@ -4407,7 +4407,7 @@
         "in": 72,
         "out": 86,
         "id": 44,
-        "pd": 41,
+        "pd": 42,
         "attrs": {
           "3pt": 85,
           "rim": 72,
@@ -4425,7 +4425,7 @@
           "rimprot": 44,
           "perimdisrupt": 74,
           "height": 74,
-          "perdef": 41,
+          "perdef": 42,
           "discipline": 70,
           "usg_raw": 31.9,
           "ts_raw": 0.603,
@@ -4435,7 +4435,7 @@
         "o_ovr": 90,
         "d_ovr": 51,
         "ovr": 82,
-        "marg": 92
+        "marg": 93
       },
       {
         "name": "Jaylon Tyson '26",
@@ -4445,7 +4445,7 @@
         "in": 36,
         "out": 93,
         "id": 57,
-        "pd": 45,
+        "pd": 47,
         "attrs": {
           "3pt": 92,
           "rim": 48,
@@ -4463,7 +4463,7 @@
           "rimprot": 57,
           "perimdisrupt": 33,
           "height": 78,
-          "perdef": 45,
+          "perdef": 47,
           "discipline": 26,
           "usg_raw": 19.3,
           "ts_raw": 0.608,
@@ -4471,9 +4471,9 @@
         },
         "big": false,
         "o_ovr": 63,
-        "d_ovr": 46,
+        "d_ovr": 48,
         "ovr": 59,
-        "marg": 96
+        "marg": 97
       },
       {
         "name": "Evan Mobley '26",
@@ -4521,7 +4521,7 @@
         "in": 95,
         "out": 10,
         "id": 85,
-        "pd": 52,
+        "pd": 54,
         "attrs": {
           "3pt": 8,
           "rim": 74,
@@ -4539,7 +4539,7 @@
           "rimprot": 85,
           "perimdisrupt": 45,
           "height": 81,
-          "perdef": 52,
+          "perdef": 54,
           "discipline": 86,
           "usg_raw": 18.9,
           "ts_raw": 0.683,
@@ -4547,7 +4547,7 @@
         },
         "big": true,
         "o_ovr": 62,
-        "d_ovr": 78,
+        "d_ovr": 79,
         "ovr": 74,
         "marg": 96
       }
@@ -4614,7 +4614,7 @@
         "in": 16,
         "out": 97,
         "id": 51,
-        "pd": 53,
+        "pd": 52,
         "attrs": {
           "3pt": 97,
           "rim": 18,
@@ -4632,7 +4632,7 @@
           "rimprot": 51,
           "perimdisrupt": 88,
           "height": 74,
-          "perdef": 53,
+          "perdef": 52,
           "discipline": 44,
           "usg_raw": 21.7,
           "ts_raw": 0.564,
@@ -4640,8 +4640,8 @@
         },
         "big": false,
         "o_ovr": 65,
-        "d_ovr": 59,
-        "ovr": 64,
+        "d_ovr": 58,
+        "ovr": 63,
         "marg": 71
       },
       {
@@ -4680,7 +4680,7 @@
         "o_ovr": 89,
         "d_ovr": 81,
         "ovr": 87,
-        "marg": 82
+        "marg": 81
       },
       {
         "name": "Jabari Smith Jr. '26",
@@ -4690,7 +4690,7 @@
         "in": 38,
         "out": 67,
         "id": 78,
-        "pd": 44,
+        "pd": 45,
         "attrs": {
           "3pt": 64,
           "rim": 36,
@@ -4708,7 +4708,7 @@
           "rimprot": 78,
           "perimdisrupt": 5,
           "height": 83,
-          "perdef": 44,
+          "perdef": 45,
           "discipline": 69,
           "usg_raw": 17.7,
           "ts_raw": 0.568,
@@ -4718,7 +4718,7 @@
         "o_ovr": 49,
         "d_ovr": 69,
         "ovr": 61,
-        "marg": 58
+        "marg": 59
       },
       {
         "name": "Alperen Şengün '26",
@@ -4728,7 +4728,7 @@
         "in": 75,
         "out": 17,
         "id": 82,
-        "pd": 48,
+        "pd": 49,
         "attrs": {
           "3pt": 15,
           "rim": 77,
@@ -4746,7 +4746,7 @@
           "rimprot": 82,
           "perimdisrupt": 53,
           "height": 83,
-          "perdef": 48,
+          "perdef": 49,
           "discipline": 26,
           "usg_raw": 26.5,
           "ts_raw": 0.563,
@@ -4754,8 +4754,8 @@
         },
         "big": true,
         "o_ovr": 73,
-        "d_ovr": 73,
-        "ovr": 70,
+        "d_ovr": 74,
+        "ovr": 71,
         "marg": 93
       }
     ]
@@ -4935,7 +4935,7 @@
         "in": 79,
         "out": 5,
         "id": 80,
-        "pd": 32,
+        "pd": 34,
         "attrs": {
           "3pt": 4,
           "rim": 71,
@@ -4953,7 +4953,7 @@
           "rimprot": 80,
           "perimdisrupt": 15,
           "height": 84,
-          "perdef": 32,
+          "perdef": 34,
           "discipline": 57,
           "usg_raw": 17.4,
           "ts_raw": 0.653,
@@ -4961,7 +4961,7 @@
         },
         "big": true,
         "o_ovr": 53,
-        "d_ovr": 66,
+        "d_ovr": 67,
         "ovr": 61,
         "marg": 89
       }
@@ -5142,7 +5142,7 @@
         "in": 76,
         "out": 64,
         "id": 70,
-        "pd": 38,
+        "pd": 40,
         "attrs": {
           "3pt": 62,
           "rim": 72,
@@ -5160,7 +5160,7 @@
           "rimprot": 70,
           "perimdisrupt": 23,
           "height": 84,
-          "perdef": 38,
+          "perdef": 40,
           "discipline": 18,
           "usg_raw": 26.3,
           "ts_raw": 0.622,
@@ -5168,7 +5168,7 @@
         },
         "big": true,
         "o_ovr": 77,
-        "d_ovr": 66,
+        "d_ovr": 67,
         "ovr": 74,
         "marg": 94
       }
@@ -5235,7 +5235,7 @@
         "in": 31,
         "out": 93,
         "id": 14,
-        "pd": 41,
+        "pd": 40,
         "attrs": {
           "3pt": 92,
           "rim": 11,
@@ -5253,7 +5253,7 @@
           "rimprot": 14,
           "perimdisrupt": 7,
           "height": 77,
-          "perdef": 41,
+          "perdef": 40,
           "discipline": 93,
           "usg_raw": 17.7,
           "ts_raw": 0.61,
@@ -5261,9 +5261,9 @@
         },
         "big": false,
         "o_ovr": 67,
-        "d_ovr": 41,
+        "d_ovr": 40,
         "ovr": 60,
-        "marg": 73
+        "marg": 71
       },
       {
         "name": "Bruce Brown '26",
@@ -5301,7 +5301,7 @@
         "o_ovr": 39,
         "d_ovr": 73,
         "ovr": 58,
-        "marg": 78
+        "marg": 79
       },
       {
         "name": "Cameron Johnson '26",
@@ -5311,7 +5311,7 @@
         "in": 43,
         "out": 91,
         "id": 41,
-        "pd": 43,
+        "pd": 44,
         "attrs": {
           "3pt": 90,
           "rim": 42,
@@ -5329,7 +5329,7 @@
           "rimprot": 41,
           "perimdisrupt": 25,
           "height": 80,
-          "perdef": 43,
+          "perdef": 44,
           "discipline": 69,
           "usg_raw": 17,
           "ts_raw": 0.63,
@@ -5337,9 +5337,9 @@
         },
         "big": true,
         "o_ovr": 62,
-        "d_ovr": 45,
+        "d_ovr": 46,
         "ovr": 58,
-        "marg": 54
+        "marg": 55
       },
       {
         "name": "Nikola Jokić '26",
@@ -5349,7 +5349,7 @@
         "in": 92,
         "out": 70,
         "id": 71,
-        "pd": 44,
+        "pd": 45,
         "attrs": {
           "3pt": 68,
           "rim": 92,
@@ -5367,7 +5367,7 @@
           "rimprot": 71,
           "perimdisrupt": 72,
           "height": 83,
-          "perdef": 44,
+          "perdef": 45,
           "discipline": 68,
           "usg_raw": 30.2,
           "ts_raw": 0.668,
@@ -5556,7 +5556,7 @@
         "in": 86,
         "out": 10,
         "id": 96,
-        "pd": 46,
+        "pd": 49,
         "attrs": {
           "3pt": 9,
           "rim": 72,
@@ -5574,7 +5574,7 @@
           "rimprot": 96,
           "perimdisrupt": 36,
           "height": 84,
-          "perdef": 46,
+          "perdef": 49,
           "discipline": 10,
           "usg_raw": 14.7,
           "ts_raw": 0.674,
@@ -5582,9 +5582,9 @@
         },
         "big": true,
         "o_ovr": 51,
-        "d_ovr": 78,
-        "ovr": 67,
-        "marg": 95
+        "d_ovr": 79,
+        "ovr": 68,
+        "marg": 96
       }
     ]
   },
@@ -5649,7 +5649,7 @@
         "in": 34,
         "out": 98,
         "id": 47,
-        "pd": 50,
+        "pd": 51,
         "attrs": {
           "3pt": 98,
           "rim": 26,
@@ -5667,7 +5667,7 @@
           "rimprot": 47,
           "perimdisrupt": 10,
           "height": 79,
-          "perdef": 50,
+          "perdef": 51,
           "discipline": 48,
           "usg_raw": 16.6,
           "ts_raw": 0.62,
@@ -5675,9 +5675,9 @@
         },
         "big": false,
         "o_ovr": 64,
-        "d_ovr": 45,
-        "ovr": 59,
-        "marg": 82
+        "d_ovr": 46,
+        "ovr": 60,
+        "marg": 83
       },
       {
         "name": "Ausar Thompson '26",
@@ -5763,7 +5763,7 @@
         "in": 96,
         "out": 4,
         "id": 81,
-        "pd": 49,
+        "pd": 50,
         "attrs": {
           "3pt": 3,
           "rim": 93,
@@ -5781,7 +5781,7 @@
           "rimprot": 81,
           "perimdisrupt": 25,
           "height": 82,
-          "perdef": 49,
+          "perdef": 50,
           "discipline": 23,
           "usg_raw": 21.8,
           "ts_raw": 0.692,
@@ -5789,7 +5789,7 @@
         },
         "big": true,
         "o_ovr": 73,
-        "d_ovr": 74,
+        "d_ovr": 75,
         "ovr": 74,
         "marg": 97
       }
@@ -5818,7 +5818,7 @@
         "in": 67,
         "out": 52,
         "id": 27,
-        "pd": 48,
+        "pd": 49,
         "attrs": {
           "3pt": 49,
           "rim": 72,
@@ -5836,7 +5836,7 @@
           "rimprot": 27,
           "perimdisrupt": 64,
           "height": 75,
-          "perdef": 48,
+          "perdef": 49,
           "discipline": 52,
           "usg_raw": 25.7,
           "ts_raw": 0.573,
@@ -5844,9 +5844,9 @@
         },
         "big": false,
         "o_ovr": 77,
-        "d_ovr": 52,
+        "d_ovr": 53,
         "ovr": 66,
-        "marg": 76
+        "marg": 77
       },
       {
         "name": "Devin Vassell '26",
@@ -6091,7 +6091,7 @@
         "o_ovr": 33,
         "d_ovr": 87,
         "ovr": 65,
-        "marg": 70
+        "marg": 71
       },
       {
         "name": "Luguentz Dort '26",
@@ -6205,7 +6205,7 @@
         "o_ovr": 51,
         "d_ovr": 88,
         "ovr": 73,
-        "marg": 61
+        "marg": 60
       }
     ]
   }
