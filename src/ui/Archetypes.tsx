@@ -24,7 +24,7 @@ const RULE: Record<string, string> = {
   Unicorn: 'A 7\'2\" big who protects the rim at 85+, shoots from three, and is a real player (OVR 70+).',
   'Two-way star': 'Both ends above 85. There are not many.',
   'Two-way guard': 'Six-foot-six and under, guarding the perimeter at 85+, passing at a second handler’s rate, and scoring between 70 and 84 — good on the ball without being the reason you watch. The smallest man on the two-way list, and the most specific of its claims.',
-  'All-around star': 'Eighty at both ends. Not elite at either — that is the two-way star above him — but there is no half of the floor he does not hold up.',
+  'All-around star': 'Eighty and up on offense, holding up at 75 on defense, passing enough to be part of the offence (playmaking volume 40+), and an OVR of 85 — an actual star. Not elite at either end; that is the two-way star above him.',
   'Offensive superstar': 'Eighty-five and up on offense with a defense under 70. He wins you games at one end and gives some of it back at the other — the trade every contender argues about.',
   'Elite defender': 'Ninety and up on defense with an offense under 80. The mirror of the offensive superstar: you play him for what he stops, and you live with the rest.',
   'Two-way wing': 'A perimeter player at 78 offense and 85 defense.',
