@@ -24,6 +24,15 @@ never hand back an older build; only the hashed files a build renames are cached
 when new html arrives the cache is dropped rather than grown. Nothing reloads on its
 own — a deploy will not walk in on a game in progress.
 
+Branches get their own copy. Push `try-something` and it appears at
+`/Game7/preview/try-something/`, so a change can be opened on the phone before it
+is merged; `/Game7/preview/` lists whatever is live, because branch names are no
+fun to type on a phone. Deleting the branch takes its preview with it.
+
+The published site is the `gh-pages` branch — main at the root, previews beside it
+— rewritten as a single commit each time, since a build is seven megabytes and
+keeping them as history would add that to the repo on every push.
+
 ## Playing it without a terminal
 
 There is a **Game7** shortcut on the Desktop. Double-clicking it runs
