@@ -20,7 +20,7 @@ const CANON: [string, string[]][] = [
   ["Dwyane Wade '09", ['Slasher', 'Offensive engine']],
   ["Shaquille O'Neal '00", ['Tank', 'Two-way anchor']],
   ["Giannis Antetokounmpo '20", ['Freight train', 'Two-way anchor']],
-  ["James Harden '19", ['Foul merchant', 'Three-level scorer', 'Offensive engine']],
+  ["James Harden '19", ['Free throw merchant', 'Three-level scorer', 'Offensive engine']],
   ["Klay Thompson '15", ['Flamethrower']],
   ["Kyle Korver '15", ['Sniper', 'Catch-and-shoot wing']],
   ["Steve Kerr '96", ['Deadeye', 'Sniper']],

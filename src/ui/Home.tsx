@@ -1,4 +1,4 @@
-import { PLAYERS } from '../engine/pool'
+import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import type { CampaignMode, Progress } from '../state/campaign'
 
@@ -104,7 +104,7 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
             <b>Archetypes</b>
             <span>Every tag the tree hands out, what it means, and every man who wears it.</span>
           </div>
-          <em>44 TAGS →</em>
+          <em>{DEFAULT_ORDER.length} TAGS →</em>
         </div>
       </button>
     </>

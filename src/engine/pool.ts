@@ -80,6 +80,14 @@ export interface Ctx {
   ltH: (v: number, t: number) => boolean
   solid: number
   /**
+   * THE GLUE WINDOW. The same four dimensions `solid` counts, plus ball security, scored against a
+   * BAND rather than a floor: how many of the five sit between 55 and 75. `glueMax` is the best of
+   * those five. Together they name the shape no floor-based rule can — above average at several
+   * things, elite at none.
+   */
+  glue: number
+  glueMax: number
+  /**
    * The positions Basketball-Reference ever listed for this man — the SAME list the draft slots him
    * with, so the labeler and the floor cannot disagree about what he is. Not a rating: the numeric law
    * governs everything else, and this is the one fact that is a fact.
@@ -88,22 +96,22 @@ export interface Ctx {
 }
 
 export const RULES: Rule[] = [
-  // Tree v2, 43 rules. Evaluated top-down, FIRST MATCH WINS. Names describe style,
+  // Tree v2, 45 rules. Evaluated top-down, FIRST MATCH WINS. Names describe style,
   // never tier — quality is OVR's job. Thresholds are tunable; the order is law.
   { tag: 'Defensive playmaker', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.perdef, 80) && c.lt(c.zone, 55) },
-  { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && !c.big && c.ltH(c.h, 79) },
+  { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && c.ltH(c.h, 79) },
   { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.volume, 90) },
   { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 88) },
-  { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) && !c.big },
+  { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) },
   { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) },
   { tag: 'Floor raiser', test: (c) => c.ge(c.a.playvol, 90) && c.lt(c.a.efficiency, 45) && c.ge(c.a.volume, 85) },
-  { tag: 'Two-way anchor', test: (c) => c.big && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
-  { tag: 'Unicorn', test: (c) => c.big && c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
+  { tag: 'Two-way anchor', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
+  { tag: 'Unicorn', test: (c) => c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
   { tag: 'Two-way star', test: (c) => c.ge(c.p.o_ovr, 85) && c.ge(c.p.d_ovr, 85) },
   // the tier below the two-way star: good at BOTH ends without being elite at either. Placed here so
   // the three two-way claims read in order — 85/85 star, 80/80 all-around star, 78/85 wing.
   { tag: 'All-around star', test: (c) => c.ge(c.p.o_ovr, 80) && c.ge(c.p.d_ovr, 80) },
-  { tag: 'Two-way wing', test: (c) => !c.big && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
+  { tag: 'Two-way wing', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.p.o_ovr, 78) && c.ge(c.p.d_ovr, 85) },
   // THE ONE-END TIERS. Every claim about a man being good at both ends has been made by now, so these
   // two catch the men who are only good at one — and they sit above the diet tags because "elite
   // defender" says more about a 90-defence card than "enforcer" does.
@@ -111,24 +119,33 @@ export const RULES: Rule[] = [
   { tag: 'Elite defender', test: (c) => c.ge(c.p.d_ovr, 90) && c.lt(c.p.o_ovr, 70) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
-  { tag: 'Slasher', test: (c) => !c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
+  { tag: 'Slasher', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
   { tag: 'Paint beast', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
-  { tag: 'Freight train', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 40) && c.lt(c.mid, 60) },
-  { tag: 'Tank', test: (c) => c.big && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 80) && c.lt(c.a.ft, 60) },
-  { tag: 'Foul merchant', test: (c) => c.ge(c.a.fouldraw, 90) && c.ge(c.a.ft, 85) },
+  // A freight train is a MAN, not just a diet: he has to be small enough for going through people to
+  // be the remarkable thing about it, and big enough that it is going THROUGH them rather than around.
+  // Small forward on his lifetime card, or 6'4" to 6'8" — the positions list is the same fact the draft
+  // slots him with, and height is inches, so neither relaxes.
+  { tag: 'Freight train', test: (c) => c.ge(c.paint, 85) && c.ge(c.a.volume, 75) && c.lt(c.three, 40) && c.lt(c.mid, 60) && (c.pos.includes('SF') || (c.geH(c.h, 76) && c.ltH(c.h, 81))) },
+  { tag: 'Tank', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 80) && c.lt(c.a.ft, 60) },
+  { tag: 'Free throw merchant', test: (c) => c.ge(c.a.fouldraw, 90) && c.ge(c.a.ft, 80) },
   { tag: 'Spark plug', test: (c) => c.ltH(c.h, 75) && c.ge(c.a.volume, 80) && c.p.o_ovr < 85 },
   { tag: 'Flamethrower', test: (c) => c.ge(c.three, 90) && c.ge(c.a.volume, 70) },
   { tag: 'Sniper', test: (c) => c.ge(c.three, 90) && c.lt(c.a.volume, 40) },
   { tag: 'Deadeye', test: (c) => c.ge(c.a.ft, 80) && c.ge(c.three, 80) && c.lt(c.a.volume, 50) && c.lt(c.p.o_ovr, 80) && c.lt(c.p.d_ovr, 70) },
-  { tag: 'Catch-and-shoot wing', test: (c) => c.ge(c.three, 80) && c.lt(c.a.playvol, 40) && c.lt(c.a.volume, 55) && c.geH(c.h, 77) && c.ltH(c.h, 83) },
-  { tag: 'Stretch big', test: (c) => c.big && c.ge(c.three, 70) && c.geH(c.h, 82) },
+  { tag: 'Catch-and-shoot wing', test: (c) => c.ge(c.three, 80) && c.lt(c.a.playvol, 40) && c.lt(c.a.volume, 55) && c.geH(c.h, 77) && c.ltH(c.h, 83) && (c.pos.includes('SG') || c.pos.includes('SF')) },
+  // HEIGHT IS THE BIG HERE, not the shape. The numeric BIG SHAPE requires 3pt < 45 (or < 40), which
+  // this rule then contradicts with 3pt >= 70 — so the only man who could ever satisfy both was one
+  // with rimprot >= 80, the shape's third clause. That left the tag naming rim protectors who shoot
+  // and turning away every actual stretch four: Mirotić is 6'10" at 86 from three and read BALANCED.
+  // 6'10" and up is the gate, and it is inches, so it never relaxes.
+  { tag: 'Stretch big', test: (c) => c.ge(c.three, 70) && c.geH(c.h, 82) },
   // the complete seven-footer: he scores at the rim, has a jumper, and cleans the defensive glass.
   // Placed with the big diets and ABOVE the rebounding and energy claims, so a big who does all three
   // is named for that rather than for the one of them a later rule notices first.
   { tag: 'All-around big', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 60) && c.ge(c.a.drb, 70) && c.geH(c.h, 83) },
   { tag: 'Glass cleaner', test: (c) => c.ge(c.a.orb, 90) && c.ge(c.a.drb, 90) },
-  { tag: 'Energy big', test: (c) => c.big && c.ge(c.a.orb, 85) && c.lt(c.a.volume, 40) },
-  { tag: 'Enforcer', test: (c) => c.big && c.ge(c.a.rimprot, 70) && c.lt(c.a.discipline, 35) },
+  { tag: 'Energy big', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.orb, 85) && c.lt(c.a.volume, 40) },
+  { tag: 'Enforcer', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.rimprot, 70) && c.lt(c.a.discipline, 35) },
   { tag: 'Anchor', test: (c) => c.ge(c.a.rimprot, 90) },
   // ELITE ROLE PLAYER is a TIER name, not a style — the one exception to the law above, added on
   // Tomer's explicit repeated order. It sits above Stopper because a shooter who defends is not a
@@ -147,13 +164,19 @@ export const RULES: Rule[] = [
   { tag: 'Throwback', test: (c) => c.ge(c.mid, 75) && c.lt(c.three, 20) },
   { tag: 'Post scorer', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 65) && c.lt(c.three, 40) && c.lt(c.a.playvol, 60) && (c.pos.includes('PF') || c.pos.includes('C')) },
   // r29's two tags, defined on this side because the round never arrived. Both sit LATE, under every
-  // specific diet: a Paint beast, a Flamethrower or a Foul merchant is a better answer than "he scores",
+  // specific diet: a Paint beast, a Flamethrower or a Free throw merchant is a better answer than "he scores",
   // so the generic pair only catches the men no diet described. Machine first — it is the stronger claim.
   { tag: 'Scoring machine', test: (c) => c.ge(c.a.volume, 90) && c.ge(c.zone, 88) && c.ge(c.a.efficiency, 50) && c.ge(c.a.volume - c.a.playvol, 20) },
   // the machine's inefficient twin: he takes everything and does not convert. Placed directly under it,
   // so a man with an elite zone AND a scoring gap is still named for the diet first. ">90" is ge(91).
-  { tag: 'Volume shooter', test: (c) => c.lt(c.a.efficiency, 75) && c.ge(c.a.volume, 91) },
+  { tag: 'Volume shooter', test: (c) => c.lt(c.a.efficiency, 75) && c.ge(c.a.volume, 91) && c.lt(c.a.playvol, 60) },
   { tag: 'Scorer', test: (c) => c.ge(c.a.volume, 75) && c.ge(c.zone, 75) && c.lt(c.a.playvol, 45) && c.ltH(c.h, 81) },
+  // GLUE GUY — the shape BALANCED was hiding. Every rule above names a strength; this one names the
+  // absence of one, which is why it can only be written as a BAND. Four of the five glue dimensions
+  // between 55 and 75, nothing at 80, and enough playmaking volume (40) that he is on the floor
+  // touching the ball rather than merely unremarkable. Directly above All-around, which is the same
+  // claim with floors instead of a window and would otherwise take him first.
+  { tag: 'Glue guy', test: (c) => c.glue >= 4 && c.lt(c.glueMax, 80) && c.ge(c.a.playvol, 40) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]
 
@@ -325,7 +348,7 @@ export function archetype(p: Player, relax: number = RELAX): string {
 }
 
 /**
- * The tree itself: 44 rules, top-down, first match wins. Exported so callers (and the
+ * The tree itself: 45 rules, top-down, first match wins. Exported so callers (and the
  * pinned tests) can ask what the tree says at its OWN thresholds, before the OVR-79
  * rescue relaxes them.
  */
@@ -357,10 +380,15 @@ export function ctxFor(p: Player, relax: number = RELAX): Ctx {
   // and come back tagged Spark plug. A physical fact stays a physical fact at any relaxation.
   const geH = (v: number, t: number) => v >= t
   const ltH = (v: number, t: number) => v < t
+  /** The glue dimensions: what `solid` reads, plus ball security. */
+  const glueDims = [zone, a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb), a.ballsec]
   return {
     p, a, paint, mid, three, zone, big, h, ge, lt, geH, ltH,
     pos: eligible((STATS as Record<string, { pos?: string[] } | null>)[p.name]?.pos),
     solid: [zone, a.playvol, Math.max(a.perdef, a.rimprot), Math.max(a.orb, a.drb)].filter((v) => ge(v, 60)).length,
+    // the band: floor relaxes with RELAX, ceiling never does — same law as ge/lt above.
+    glue: glueDims.filter((v) => ge(v, 55) && lt(v, 76)).length,
+    glueMax: Math.max(...glueDims),
   }
 }
 

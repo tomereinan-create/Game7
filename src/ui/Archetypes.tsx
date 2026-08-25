@@ -6,7 +6,7 @@ import { DetailGrid } from './Stat'
 
 /**
  * The archetype database: every tag the tree hands out, what it means, and every
- * player-season wearing it. The tree is 43 rules read top-down, first match wins,
+ * player-season wearing it. The tree is 45 rules read top-down, first match wins,
  * so a man holds exactly one tag — which makes this a partition of the whole
  * database, not a set of overlapping filters. Tags describe STYLE, never tier;
  * quality is OVR's job, and the OVR spread inside a tag shows it.
@@ -27,16 +27,16 @@ const RULE: Record<string, string> = {
   'Offensive superstar': 'Eighty-five and up on offense with a defense under 70. He wins you games at one end and gives some of it back at the other — the trade every contender argues about.',
   'Elite defender': 'Ninety and up on defense with an offense under 80. The mirror of the offensive superstar: you play him for what he stops, and you live with the rest.',
   'Two-way wing': 'A perimeter player at 78 offense and 85 defense.',
-  'Volume shooter': 'He takes everything and converts little — volume over 90 on an efficiency under 75. Somebody has to shoot, and on his team it is him.',
+  'Volume shooter': 'He takes everything and converts little — volume over 90 on an efficiency under 75, and he is not the one setting the table: playmaking volume under 60. Somebody has to shoot, and on his team it is him.',
   'Scoring machine': 'Enormous load and an elite first zone, at an efficiency that is merely respectable (his ruling: the floor is 50, not 65). A man who scores 28 a night on volume shooting is a scoring machine — demanding elite conversion as well described a different, rarer player.',
   Scorer: 'His defining trait is putting it in the basket, and no single diet above described him. Not a creator: the offense does not run through him.',
   'Three-level scorer': 'Real usage, high efficiency, and three REAL levels — paint and mid at 65+, three at 55+. Nowhere to hide him.',
   'Midrange maestro': 'Mid at 85+ with no three-point game, at high usage.',
   Slasher: 'A perimeter player who lives at the rim and draws fouls, without a three.',
   'Paint beast': 'Paint 95+ at high usage with no three at all. The rim is the whole plan, and it works.',
-  'Freight train': 'Rim 90-94 at high usage, no three. He goes through you.',
+  'Freight train': 'Rim 85+ on a real load, no three, no midrange, and a small forward or 6′8″ and under. He goes through you.',
   Tank: 'A big who scores inside and draws fouls but cannot make the free throws.',
-  'Foul merchant': 'Draws fouls at 90+ and makes them pay at 85+.',
+  'Free throw merchant': 'Draws fouls at 90+ and makes them pay at 80+.',
   'Spark plug': 'Under 6′3″, using 80+ of the possessions he is on the floor for, without being a star (OFF under 85).',
   Flamethrower: 'Three-point rating 90+ at real usage.',
   Sniper: 'Three-point rating 90+ at low usage — he does one thing perfectly.',
@@ -55,6 +55,7 @@ const RULE: Record<string, string> = {
   'Combo guard': 'Six foot to six-six, creating at a second handler’s rate and scoring on a real but not leading load. He does some of both and neither at a star’s rate — the guard every rotation has and no single diet describes.',
   Throwback: 'Midrange at 75+ with essentially no three-point shot.',
   'Post scorer': 'Scores inside and from mid, no three, no playmaking.',
+  'Glue guy': 'Four of the five glue dimensions — best scoring zone, playmaking volume, his better defensive number, his better rebounding number, ball security — between 55 and 75, with nothing at 80 and enough playmaking volume (40) to be a real rotation piece. Above average at four things and elite at none: the shape BALANCED was hiding, because every rule above this one names a strength and he does not have one.',
   'All-around': 'Solid on at least three of four dimensions with no single rating above 88 — good at everything, remarkable at nothing.',
   Balanced: 'Matched no rule in the tree: nothing about the sheet is distinctive enough to name. Only for OVR 79 and below — for a role player that is simply the truth.',
   Unclassified: 'OVR 80 and up, and no rule in the tree matched his sheet at its own thresholds. He is NOT softened into the nearest fit — the tree says plainly that it has no name for him. Each one is a missing rule or a threshold set a few points too high; `npm run unfit` prints the list with the rule each man came closest to.',
