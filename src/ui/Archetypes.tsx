@@ -43,6 +43,7 @@ const RULE: Record<string, string> = {
   Deadeye: 'A pure stroke on a small load — 80+ from three, 80+ from the line, under 50 volume. He is not asked to create the shot, only to make it.',
   'Catch-and-shoot wing': 'A WING who shoots at 80+ — 6′5″ to 6′10″ — creating nothing and using nothing.',
   'Stretch big': 'A big of 6\'10\" or more who shoots the three at 70+. A wing who shoots is just a wing.',
+  'All-around big': 'Six-eleven and up, scoring at the rim, carrying a jumper, and cleaning the defensive glass. The complete big — no half of the frontcourt job he cannot do.',
   'Glass cleaner': 'Both rebounding rates at 90+.',
   'Energy big': 'Offensive rebounding at 85+ on low usage.',
   Enforcer: 'A rim protector who fouls — discipline under 35.',

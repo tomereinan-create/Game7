@@ -122,6 +122,10 @@ export const RULES: Rule[] = [
   { tag: 'Deadeye', test: (c) => c.ge(c.a.ft, 80) && c.ge(c.three, 80) && c.lt(c.a.volume, 50) && c.lt(c.p.o_ovr, 80) && c.lt(c.p.d_ovr, 70) },
   { tag: 'Catch-and-shoot wing', test: (c) => c.ge(c.three, 80) && c.lt(c.a.playvol, 40) && c.lt(c.a.volume, 55) && c.geH(c.h, 77) && c.ltH(c.h, 83) },
   { tag: 'Stretch big', test: (c) => c.big && c.ge(c.three, 70) && c.geH(c.h, 82) },
+  // the complete seven-footer: he scores at the rim, has a jumper, and cleans the defensive glass.
+  // Placed with the big diets and ABOVE the rebounding and energy claims, so a big who does all three
+  // is named for that rather than for the one of them a later rule notices first.
+  { tag: 'All-around big', test: (c) => c.ge(c.paint, 70) && c.ge(c.mid, 60) && c.ge(c.a.drb, 70) && c.geH(c.h, 83) },
   { tag: 'Glass cleaner', test: (c) => c.ge(c.a.orb, 90) && c.ge(c.a.drb, 90) },
   { tag: 'Energy big', test: (c) => c.big && c.ge(c.a.orb, 85) && c.lt(c.a.volume, 40) },
   { tag: 'Enforcer', test: (c) => c.big && c.ge(c.a.rimprot, 70) && c.lt(c.a.discipline, 35) },
