@@ -1239,8 +1239,9 @@ const ROUNDS: Record<string, () => void> = {
   },
   '49': () => {
     console.log(`${EOL}recal_49 — the dominance bonus counts SELF-CREATED paint work`)
-    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '49', /PIPELINE_VERSION = 49/.test(OVR) && /PIPELINE_VERSION = 49/.test(RATINGS))
-    src('creation scales the attempts', OVR, /_create = 0\.55 \+ 0\.45 \* min\(1\.0, a\['playvol'\] \/ 50\.0\)/, 'nothing created keeps 55%, playvol 50 keeps all')
+    note('The floor this round set at 0.55 was lowered to 0.35 in round 50; the mechanism below is')
+    note('unchanged and is checked there against the live source.')
+    src('creation scales the attempts', OVR, /_create = 0\.\d+ \+ 0\.\d+ \* min\(1\.0, a\['playvol'\] \/ 50\.0\)/, 'creation scales the paint attempts')
     src('it feeds the paint attempt factor', OVR, /att_f = min\(2\.85, max\(0\.30, \(\(_two \* _create\) \/ 7\.5\) \*\* 1\.5\)\)/, 'self-created attempts only')
     src('the shooter branch is untouched', OVR, /att_f = max\(_three \/ 8\.5, 1\.0\)/, 'a three is self-created by the shot')
     note('THE ROUND PROPOSED THE ASSISTED SHARE AND IT WAS REPORTED, NOT APPLIED. Basketball-Reference')
@@ -1271,6 +1272,29 @@ const ROUNDS: Record<string, () => void> = {
     note('attempts, and the 1.5 power then flattens the rest. The dial is the 0.55 floor — drop it and')
     note('the finisher falls further. Recorded, not taken, because the round fixed the mechanism, not')
     note('the magnitude.')
+  },
+  '50': () => {
+    console.log(`${EOL}recal_50 (his ruling) — the creation floor drops 0.55 -> 0.35`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '50', /PIPELINE_VERSION = 50/.test(OVR) && /PIPELINE_VERSION = 50/.test(RATINGS))
+    src('the floor', OVR, /_create = 0\.35 \+ 0\.65 \* min\(1\.0, a\['playvol'\] \/ 50\.0\)/, 'creates nothing keeps a third')
+    const cr = (pv: number) => 0.35 + 0.65 * Math.min(1, pv / 50)
+    for (const [pv, want] of [[0, 0.35], [12, 0.506], [21, 0.623], [39, 0.857], [50, 1], [80, 1]] as const)
+      line(`playvol ${pv} keeps`, cr(pv).toFixed(3), String(want), Math.abs(cr(pv) - want) < 0.002)
+    for (const [n, was] of [["Shaquille O'Neal '00", 99], ["Giannis Antetokounmpo '25", 99], ["Joel Embiid '23", 95], ["Zion Williamson '21", 90], ["Hakeem Olajuwon '93", 87]] as const) {
+      const q = by.get(n)
+      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'untouched', q.o_ovr === was)
+    }
+    for (const [n, was] of [["Dwight Howard '11", 80], ["Clint Capela '18", 66], ["Andre Drummond '16", 58]] as const) {
+      const q = by.get(n)
+      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'down again', q.o_ovr <= was)
+    }
+    note('THE DIAL IS NEARLY EXHAUSTED. Only 106 cards moved and none by more than 2, because the')
+    note('attempt factor already clamps at 0.30 and the men with the least creation have small paint')
+    note('volumes that sit on that clamp. Montrezl Harrell \u201918 — the sheet the round cited — holds at')
+    note('82 against its 74-76 target: at playvol 39 he keeps 0.857 of his attempts under this floor')
+    note('against 0.901 under the old one, a 5% cut that the 1.5 power then flattens.')
+    note('The lever that WOULD move him is the hinge, not the floor: playvol/50 -> playvol/75 would')
+    note('take him to 0.70 of his attempts. Recorded, not taken.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

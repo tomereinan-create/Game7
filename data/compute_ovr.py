@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 49
+PIPELINE_VERSION = 50
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -146,7 +146,10 @@ def o_score(p):
             # creates nothing keeps 55% of his attempts; by playvol 50 he keeps all of them.
             # (The round proposed the ASSISTED SHARE for this. It fails its own Shaq constraint by 9
             # points, because an entry pass into the post counts as an assist — reported, not applied.)
-            _create = 0.55 + 0.45 * min(1.0, a['playvol'] / 50.0)
+            # FLOOR 0.55 -> 0.35 (his ruling): r49 fixed the mechanism, this sets the magnitude.
+            # A man who creates nothing now keeps just over a third of his attempts; playvol 50
+            # still keeps all of them, so the post scorers are untouched and only the finishers move.
+            _create = 0.35 + 0.65 * min(1.0, a['playvol'] / 50.0)
             att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
         else:
             base = 5.0
