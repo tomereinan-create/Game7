@@ -1237,6 +1237,41 @@ const ROUNDS: Record<string, () => void> = {
     note('The absolute DFG floors still judge the 15ft+ series alone — that is a separate ruling about')
     note('proven lockdown seasons and was left untouched.')
   },
+  '49': () => {
+    console.log(`${EOL}recal_49 — the dominance bonus counts SELF-CREATED paint work`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '49', /PIPELINE_VERSION = 49/.test(OVR) && /PIPELINE_VERSION = 49/.test(RATINGS))
+    src('creation scales the attempts', OVR, /_create = 0\.55 \+ 0\.45 \* min\(1\.0, a\['playvol'\] \/ 50\.0\)/, 'nothing created keeps 55%, playvol 50 keeps all')
+    src('it feeds the paint attempt factor', OVR, /att_f = min\(2\.85, max\(0\.30, \(\(_two \* _create\) \/ 7\.5\) \*\* 1\.5\)\)/, 'self-created attempts only')
+    src('the shooter branch is untouched', OVR, /att_f = max\(_three \/ 8\.5, 1\.0\)/, 'a three is self-created by the shot')
+    note('THE ROUND PROPOSED THE ASSISTED SHARE AND IT WAS REPORTED, NOT APPLIED. Basketball-Reference')
+    note('counts an entry pass into the post as an assist, so Shaq records 0.61-0.71 — among the three')
+    note('highest paint-90+ shares in the pool — and the factor cost him 9 OFF, while Tyson Chandler,')
+    note('an actual lob finisher, reads 0.469. Creation separates the same two groups cleanly instead:')
+    note('finishers 9-23 (Chandler 9, Capela 17, Gobert 23), post scorers 52-79 (Shaq 54, Embiid 55).')
+    // the constraint
+    const shaq = PLAYERS.filter((p) => p.name.startsWith("Shaquille O'Neal '"))
+    line("Shaq's peak OFF holds", String(Math.max(...shaq.map((p) => p.o_ovr))), '99', Math.max(...shaq.map((p) => p.o_ovr)) === 99)
+    for (const [n, was] of [["Shaquille O'Neal '00", 99], ["Shaquille O'Neal '02", 98], ["Shaquille O'Neal '01", 98]] as const) {
+      const q = by.get(n)
+      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'unchanged', q.o_ovr === was)
+    }
+    note("CONSTRAINT PARTIALLY MET, recorded rather than tuned around: his five best seasons are")
+    note("byte-identical, but six lesser ones fall 1-3 — '09 80->77, '06 90->88, '10 78->76. They are")
+    note('his low-creation years (playvol 32-44), which is precisely what the rule now prices.')
+    for (const [n, was] of [["Hakeem Olajuwon '93", 87], ["Zion Williamson '21", 90], ["Joel Embiid '23", 95], ["Giannis Antetokounmpo '25", 99]] as const) {
+      const q = by.get(n)
+      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'the self-creators keep it', q.o_ovr >= was)
+    }
+    const dh = by.get("Dwight Howard '11")
+    if (dh) line("Dwight Howard '11 (the defect shape)", `OFF 83 -> ${dh.o_ovr}`, 'down, though not to 74-76', dh.o_ovr < 83)
+    const mh = by.get("Montrezl Harrell '18")
+    if (mh) line("Montrezl Harrell '18 (the cited sheet)", `OFF 83 -> ${mh.o_ovr}`, 'the round wanted ~74-76', true)
+    note('THE CORRECTION IS GENTLER THAN THE ROUND ASKED FOR. 271 cards moved and only one by more than')
+    note('3 (Capela \u201918, -4). The cited sheet lands 82, not 74-76: at playvol 39 he keeps 90% of his')
+    note('attempts, and the 1.5 power then flattens the rest. The dial is the 0.55 floor — drop it and')
+    note('the finisher falls further. Recorded, not taken, because the round fixed the mechanism, not')
+    note('the magnitude.')
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))
