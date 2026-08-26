@@ -11,3 +11,6 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# the Android project is generated from capacitor.config.json on demand
+android/

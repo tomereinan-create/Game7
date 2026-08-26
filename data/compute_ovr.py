@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 48
+PIPELINE_VERSION = 49
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -140,7 +140,14 @@ def o_score(p):
             # 7.5 is even, 14 takes 2.55. The base comes down to 6.5 to pay for the steeper curve, so
             # the man who actually shoots there holds his ground while the rest come back down.
             base = 6.5
-            att_f = min(2.85, max(0.30, (_two / 7.5) ** 1.5))
+            # SELF-CREATED PAINT ONLY (recal_49). A lob, a putback and a dump-off are not the same
+            # work as a post-up a man made himself, and until now they bought the same bonus. Creation
+            # is the discriminator: finishers live at playvol 9-23, post scorers at 52-79. A man who
+            # creates nothing keeps 55% of his attempts; by playvol 50 he keeps all of them.
+            # (The round proposed the ASSISTED SHARE for this. It fails its own Shaq constraint by 9
+            # points, because an entry pass into the post counts as an assist — reported, not applied.)
+            _create = 0.55 + 0.45 * min(1.0, a['playvol'] / 50.0)
+            att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
         else:
             base = 5.0
             att_f = max(_three / 8.5, 1.0)

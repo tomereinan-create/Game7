@@ -1,0 +1,81 @@
+# Builds a sideloadable Android APK. The whole game goes inside it — the web
+# build is copied into the package — so it runs with no network at all, unlike
+# the installed web app which needs one first visit.
+#
+# Nothing here is installed on anyone's machine: the runner already has the JDK
+# and the Android SDK. Run it from the Actions tab.
+name: apk
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Also publish it as a public download link (a GitHub release)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Generate the Android project
+        run: npx cap add android
+
+      - name: Draw the launcher icon
+        run: node scripts/make-android-icons.mjs
+
+      - name: Copy the build into it
+        run: npx cap sync android
+
+      - name: Assemble
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Name it after the commit
+        id: apk
+        run: |
+          set -eu
+          src=android/app/build/outputs/apk/debug/app-debug.apk
+          out="Game7-${GITHUB_SHA::7}.apk"
+          cp "$src" "$out"
+          echo "path=$out" >> "$GITHUB_OUTPUT"
+          ls -lh "$out"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Game7-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+
+      # An artifact can only be downloaded by someone signed in with access to
+      # the repo, and arrives as a zip. A release asset is a plain link that
+      # anyone can tap — which is the point of building an apk at all.
+      - name: Publish a download link
+        if: inputs.release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          gh release delete apk --yes --cleanup-tag || true
+          gh release create apk "${{ steps.apk.outputs.path }}" \
+            --title 'Game7 (Android)' \
+            --notes 'Sideloadable debug build. Android will warn about installing outside the Play Store; allow it for your browser or files app, then open the file.'
+          echo "https://github.com/${GITHUB_REPOSITORY}/releases/tag/apk"
