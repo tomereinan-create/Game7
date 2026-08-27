@@ -235,12 +235,23 @@ export function Draft({
   const left = (n: string) => wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99
   /** Worn out: he cannot take the floor again, so he must go — even if you would rather he stayed. */
   const broken = carried ? picks.filter((n) => carried.includes(n) && left(n) <= WEAR_OUT) : []
-  // A forced change is not charged against the round's allowance: two men breaking down in the same
-  // week buys two changes, because the alternative is fielding four.
+  // A forced change is not charged against the round's allowance: a worn-out man's replacement is
+  // free, and the round's own change stays in hand for anyone else. Two ledgers, never mixed —
+  // `max(allowed, broken)` used to collapse them, so one broken man ATE the round's change.
   // Between games the allowance is ONE change (plus any the durability floor forces); before the
   // series starts it is the round's allowance from the Survival branch.
   const allowed = series ? 1 : subs
-  const subsLeft = carried ? Math.max(allowed, broken.length) - swapped.length - burned : Infinity
+  /** Forced swaps already made: the outgoing man was worn out when he was sent away. */
+  const forcedDone = swapped.filter((n) => left(n) <= WEAR_OUT).length
+  /** Voluntary changes left: the allowance, minus chosen swaps and wheels walked away from. */
+  const volLeft = carried ? allowed - (swapped.length - forcedDone) - burned : Infinity
+  const subsLeft = carried ? Math.max(0, volLeft) + broken.length : Infinity
+  /**
+   * When only forced changes remain, the wheel serves the worn-out men and no one else — spending
+   * the forced spin on a healthy man would leave the broken one on the floor with nothing to move
+   * him, which is a soft-locked run.
+   */
+  const canVacate = (x: Pos) => volLeft > 0 || !broken.length || (!!slots[x] && left(slots[x]!) <= WEAR_OUT)
   /** In a death match the wheel only turns while you still have a change to spend. */
   const canSpin = subsLeft > 0
   // Salary Cap campaign: the five's combined share of the cap may not pass CAP_LIMIT.
@@ -259,7 +270,7 @@ export function Draft({
    * every candidate out and killed the wheel before it turned.
    */
   const swapRoom = (name: string) => {
-    const spots = posOf(name)
+    const spots = posOf(name).filter(canVacate) // a forced spin only frees the worn-out men's money
     return Math.max(0, ...spots.map((x) => (slots[x] ? capPct(slots[x]!) ?? 0 : 0)))
   }
   const overCap = (name: string) =>
@@ -290,7 +301,7 @@ export function Draft({
   // drawn in the same order either way). Shown only with the Wheel whisperer.
   useEffect(() => {
     if (spun || spinning || (full && !carried) || !canSpin || upcoming) return
-    const next = landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
+    const next = landOn(takenMen, carried ? POSITIONS.filter(canVacate) : open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
     setUpcoming(next)
     setDead(!next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -310,7 +321,7 @@ export function Draft({
       if (i < steps) {
         timer.current = window.setTimeout(tick, 45 + i * i * 1.2)
       } else {
-        const res = upcoming ?? landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
+        const res = upcoming ?? landOn(takenMen, carried ? POSITIONS.filter(canVacate) : open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
         avoidRef.current = null
         setUpcoming(null)
         setDisplay(res)
@@ -330,7 +341,7 @@ export function Draft({
       return
     }
     // death match: every slot is full, so a man may be aimed at any position he can play
-    const fits = posOf(name).filter((x) => (carried ? fitsCap(name, x) : open.includes(x)))
+    const fits = posOf(name).filter((x) => (carried ? fitsCap(name, x) && canVacate(x) : open.includes(x)))
     if (!fits.length || overCap(name)) {
       // no open slot, or he breaks the cap — still show the stats, just no pick
       setSel(null)
@@ -355,7 +366,7 @@ export function Draft({
 
   const confirm = () => {
     if (!sel || !slot) return
-    if (carried && !fitsCap(sel, slot)) return // the swap would put the five over the cap
+    if (carried && (!fitsCap(sel, slot) || !canVacate(slot))) return // over the cap, or a forced spin aimed at a healthy man
     if (carried) {
       if (subsLeft <= 0) return
       const outgoing = slots[slot]
@@ -466,7 +477,7 @@ export function Draft({
                   ? 'Tap a player to swap him in'
                   : 'Tap a player to scout him'}
           </button>
-          {carried && !broken.length ? (
+          {carried && volLeft > 0 ? (
             <button className="btn ghost" onClick={keepFive}>
               Keep the five — the change is spent
             </button>
@@ -743,7 +754,7 @@ export function Draft({
                 <span />
               </div>
               {roster.map((p) => {
-                const fits = posOf(p.name).filter((x) => open.includes(x))
+                const fits = posOf(p.name).filter((x) => (carried ? fitsCap(p.name, x) && canVacate(x) : open.includes(x)))
                 const priced = overCap(p.name)
                 return scoutRow(p, {
                   sub: unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name),
@@ -757,7 +768,7 @@ export function Draft({
                   <span className="cap">Assign to</span>
                   <div className="poschips">
                     {POSITIONS.map((x) => {
-                      const can = open.includes(x) && posOf(sel).includes(x) && fitsCap(sel, x)
+                      const can = open.includes(x) && posOf(sel).includes(x) && fitsCap(sel, x) && canVacate(x)
                       return (
                         <button
                           key={x}
@@ -1040,7 +1051,7 @@ export function Draft({
       </div>
 
       <div className="dock">
-        <div className={`dock-inner ${(spun && carried && !broken.length) || (full && !spinning && !spun && (series || carried) && canSpin && !broken.length) ? 'two' : ''}`}>{dock()}</div>
+        <div className={`dock-inner ${(spun && carried && volLeft > 0) || (full && !spinning && !spun && (series || carried) && canSpin && !broken.length) ? 'two' : ''}`}>{dock()}</div>
       </div>
     </>
   )
