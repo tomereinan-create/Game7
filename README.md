@@ -29,6 +29,18 @@ Branches get their own copy. Push `try-something` and it appears at
 is merged; `/Game7/preview/` lists whatever is live, because branch names are no
 fun to type on a phone. Deleting the branch takes its preview with it.
 
+## The Android app
+
+<https://tomereinan-create.github.io/Game7/Game7.apk>
+
+The same game, wrapped so it installs from a file rather than from a browser. The
+whole build goes inside the package, so it runs with no network at all. Every push
+to `main` builds a new one and replaces the file at that address; the site carries
+it, so the link never moves.
+
+It is a debug-signed build, which is what makes it sideloadable without a Play
+Store account. Android says so when installing.
+
 The published site is the `gh-pages` branch — main at the root, previews beside it
 — rewritten as a single commit each time, since a build is seven megabytes and
 keeping them as history would add that to the repo on every push.
