@@ -9,6 +9,7 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
+import { tacticsMod, TEMPO_SIGMA, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
@@ -119,6 +120,7 @@ export function Draft({
   handicap = 0,
   carry = null,
   wear = {},
+  tactics = null,
   onSim,
   onBack,
   onRoster,
@@ -137,6 +139,8 @@ export function Draft({
   carry?: Player[] | null
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
   wear?: Record<string, number>
+  /** Death match: the My team plan — the sim prices it, so the odds here must too. */
+  tactics?: Tactics | null
   onSim: (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => void
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
@@ -189,7 +193,7 @@ export function Draft({
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
   const [sigmaPick, setSigmaPick] = useState<number | null>(null)
-  const sigma = sigmaPick ?? SIGMA
+  const sigma = sigmaPick ?? (tactics ? TEMPO_SIGMA[tactics.tempo] : SIGMA)
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -253,7 +257,7 @@ export function Draft({
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
-  const mine = five.length ? compile(five, opponent.players, assignment) : null
+  const mine = five.length ? (tactics ? applyMod(compile(five, opponent.players, assignment), tacticsMod(tactics, five)) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Their optimal board against your five, as [their man, your man] short names. */
   const theirBoard = useMemo(() => {
@@ -835,7 +839,7 @@ export function Draft({
               fit <b>{chance.parts.fit >= 0 ? '+' : '−'}{Math.abs(chance.parts.fit).toFixed(1)}</b>
             </span>
             <span>
-              era <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
+              {tactics ? 'edge' : 'era'} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
             </span>
             <span className="eq">
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>

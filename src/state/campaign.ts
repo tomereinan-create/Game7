@@ -1,4 +1,5 @@
 import { ROUNDS } from '../config'
+import { DEFAULT_TACTICS, reconcileTactics, type Tactics } from '../engine/tactics'
 import { migrate, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 
@@ -59,6 +60,8 @@ export interface Progress {
   wear: Record<string, number>
   /** Death match: changes spent in My team since the last series settled. Reset when one does. */
   subsUsed: number
+  /** Death match: the plan picked on the My team screen. The names must be men on the roster. */
+  tactics: Tactics
 }
 
 /** What a series cost each man who played it: one point of durability per game. */
@@ -89,6 +92,7 @@ const fresh = (): Progress => ({
   deaths: 0,
   wear: {},
   subsUsed: 0,
+  tactics: DEFAULT_TACTICS,
 })
 
 /**
@@ -101,7 +105,8 @@ const fresh = (): Progress => ({
 export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
   const stars = p.stars.map((s, i) => (i < p.checkpoint ? s : 0))
-  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, deaths: p.deaths + 1 }
+  // The five is gone, so the named men reset; the plan itself (tempo, style, the glass) survives.
+  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: reconcileTactics(p.tactics, null), deaths: p.deaths + 1 }
 }
 
 export function loadProgress(m: CampaignMode): Progress {
@@ -126,6 +131,10 @@ export function loadProgress(m: CampaignMode): Progress {
       deaths: typeof p.deaths === 'number' ? p.deaths : 0,
       wear: p.wear && typeof p.wear === 'object' ? p.wear : {},
       subsUsed: typeof p.subsUsed === 'number' ? p.subsUsed : 0,
+      tactics: reconcileTactics(
+        p.tactics && typeof p.tactics === 'object' ? { ...DEFAULT_TACTICS, ...p.tactics } : DEFAULT_TACTICS,
+        Array.isArray(p.roster) ? p.roster : null,
+      ),
     })
   } catch {
     return fresh()

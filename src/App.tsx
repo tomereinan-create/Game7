@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
+import { reconcileTactics, tacticsMod, TEMPO_SIGMA } from './engine/tactics'
 import { buy, capBonus, checkpointLevel, duraBoost, livesBought, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
@@ -98,12 +99,14 @@ export default function App() {
 
   const sim = (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => {
     if (!opponent || !prog || !cm) return
-    // Our defense is whatever the board assigned; the AI always plays optimal.
-    const mine = compile(five, opponent.players, assignment)
+    // Our defense is whatever the board assigned; the AI always plays optimal. The death match
+    // adds the My team plan, priced in points of spread like every other modifier.
+    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(prog.tactics, five)) : compile(five, opponent.players, assignment)
     // The era's handicap: points of spread the opponent brings to every game of this campaign.
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     const seed = randomSeed()
-    const sig = sigma ?? SIGMA
+    // Tempo (the plan) sets the night's default noise; the Tempo control node's explicit pick wins.
+    const sig = sigma ?? (death ? TEMPO_SIGMA[prog.tactics.tempo] : SIGMA)
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran.
     setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
@@ -212,6 +215,8 @@ export default function App() {
           five={carry}
           wear={prog.wear}
           boost={duraBoost(prog)}
+          tactics={prog.tactics}
+          onTactics={(t) => commit(cm, { ...prog, tactics: t })}
           allowed={subsPerRound(prog)}
           used={prog.subsUsed}
           capMax={CAP_LIMIT + capBonus(prog)}
@@ -221,7 +226,8 @@ export default function App() {
             const roster = prog.roster.map((n) => (n === out ? inn : n))
             const wear = { ...prog.wear }
             delete wear[out]
-            commit(cm, { ...prog, roster, wear })
+            // the departed man may have been the named scorer or playmaker
+            commit(cm, { ...prog, roster, wear, tactics: reconcileTactics(prog.tactics, roster) })
           }}
           onBack={() => setMyTeam(false)}
         />
@@ -314,6 +320,7 @@ export default function App() {
         wallet={prog}
         carry={carry}
         wear={prog.wear}
+        tactics={death ? prog.tactics : null}
         onSim={sim}
         onBack={(started) => {
           // The staff tree lives on the map only. Walking out of a draft with picks on the

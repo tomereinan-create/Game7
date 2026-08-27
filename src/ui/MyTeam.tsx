@@ -4,6 +4,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
+import { tacticsParts, type Tactics } from '../engine/tactics'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
 
@@ -26,6 +27,8 @@ export function MyTeam({
   five,
   wear,
   boost = 0,
+  tactics,
+  onTactics,
   allowed,
   used,
   capMax,
@@ -37,6 +40,9 @@ export function MyTeam({
   wear: Record<string, number>
   /** Iron men: extra durability every man carries, read at evaluation. */
   boost?: number
+  /** The plan: who the offense runs through, the tempo, the shot diet, the glass. */
+  tactics: Tactics
+  onTactics: (t: Tactics) => void
   /** The round's allowance: 1 plus the Survival branch's Extra sub ranks. */
   allowed: number
   /** Changes already spent since the last series settled. */
@@ -228,6 +234,83 @@ export function MyTeam({
           </div>
         </section>
         <section className="col b">
+          <div className="card" style={{ paddingBottom: 4 }}>
+            <div className="card-head">
+              <span className="label">Tactics</span>
+              <span className="cap">
+                {(() => {
+                  const w = tacticsParts(tactics, five).reduce((a, x) => a + x.pts, 0)
+                  return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
+                })()}
+              </span>
+            </div>
+            {([
+              ['Main scorer', 'scorer'],
+              ['Main playmaker', 'playmaker'],
+            ] as const).map(([label, key]) => (
+              <div className="posbar" key={key}>
+                <span className="cap">{label}</span>
+                <div className="poschips">
+                  <button className={`sortb ${tactics[key] === null ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, [key]: null })}>
+                    —
+                  </button>
+                  {five.map((p) => (
+                    <button
+                      key={p.name}
+                      className={`sortb ${tactics[key] === p.name ? 'on' : ''}`}
+                      onClick={() => onTactics({ ...tactics, [key]: p.name })}
+                    >
+                      {p.name.replace(/ '\d\d( \([a-z]\))?$/, '').split(' ').slice(-1)[0]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="posbar">
+              <span className="cap">Tempo</span>
+              <div className="poschips">
+                {(['slow', 'normal', 'fast'] as const).map((k) => (
+                  <button key={k} className={`sortb ${tactics.tempo === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, tempo: k })}>
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="posbar">
+              <span className="cap">Playstyle</span>
+              <div className="poschips">
+                {(['inside', 'balanced', 'outside'] as const).map((k) => (
+                  <button key={k} className={`sortb ${tactics.style === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: k })}>
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="posbar">
+              <span className="cap">Crash the glass</span>
+              <div className="poschips">
+                <button className={`sortb ${tactics.crashOff ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashOff: !tactics.crashOff })}>
+                  offensive
+                </button>
+                <button className={`sortb ${tactics.crashDef ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashDef: !tactics.crashDef })}>
+                  defensive
+                </button>
+              </div>
+            </div>
+            {(() => {
+              const parts = tacticsParts(tactics, five)
+              return parts.length ? (
+                <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                  {parts.map((x) => `${x.label} ${x.pts >= 0 ? '+' : '−'}${Math.abs(x.pts).toFixed(1)}`).join(' · ')}
+                  {tactics.tempo !== 'normal' ? ` · ${tactics.tempo} tempo moves the night's noise, both teams` : ''}
+                </div>
+              ) : (
+                <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                  Every call is priced by the five you actually have — with the grain it pays, against it it costs.
+                </div>
+              )
+            })()}
+          </div>
           {display ? (
             <div className={`card ${spinning ? 'spin-live' : ''}`}>
               <div className="card-head">
