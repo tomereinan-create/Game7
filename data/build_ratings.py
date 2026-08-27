@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 52   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 54   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -172,7 +172,12 @@ def score_season(r, P):
     tD = 1 - P['team_drtg'](r['team_drtg']) if r['team_drtg'] is not None else 0.5   # lower d_rtg = better
     trust = P['mp_v'](r['mp_v']) * (1 - 0.6*P['usg'](r['usg']))   # heavy minutes = trust; usage discounts but never zeroes it (star wings were being punished for scoring)
     # recal_35: height is a SWEET BAND (75-80 flat, 8 inches to zero), not an inverse slope.
-    PD  = W['PD']['drep']*(r['drep']*(1.2-0.8*hp)) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['teamd']*tD + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
+    # recal_54: the tall-defender discount keys on the SWEET BAND, not percentile. Percentile height
+    # halved a perfect reputation at 6'9" and taxed every voted WING while guards kept full credit —
+    # and r53's voted ceiling on rimprot made it obsolete as rim-vote protection. 6'8" and under
+    # keep the full 1.2; 7'1" is ~0.53; the floor is 0.5, so true bigs' rim-vote protection stands.
+    rep_hf = max(0.5, 1.2 - 0.8 * max(0.0, min(1.0, ((r['ht'] or 78) - 80.0) / 6.0)))
+    PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['teamd']*tD + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
     ID  = ID + 0.25*(r['drep']*hp)   # big-man defensive votes reinforce rim protection
@@ -283,6 +288,18 @@ for yr, rows in seasons.items():
             rv = _trk('Less Than 6Ft', r['name'])
             if rv is not None:
                 ID2 = min(1.0, 0.65*ID2 + 0.35*(0.10 + 0.90*(1 - Prim(rv))))   # the best measured deterrent reaches the top too
+        # recal_53: THE VOTED CEILING — perdef's architecture, mirrored. Block rate is chaseable;
+        # deterrence at the elite level is what the league's votes certify. A no-vote rim protector
+        # caps at 88; the same graded band perdef uses (drep/0.30, trace shares buy nothing — the
+        # Iverson rule) unlocks the rest. The measured tier mirrors the DFG floors: a rim-zone
+        # defended-FG% diff of -4.0% or better on a real workload (2014+) lifts the cap to 92 —
+        # measurement beats the cap, votes beat both.
+        _w53 = min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0
+        _cap53 = (88 - 1) / 98.0
+        _row6 = TRACKING.get((yr, 'Less Than 6Ft'), {}).get(_nrm(r['name']))
+        if _row6 and _row6[1] and min(1.0, _row6[1] / 350.0) >= 0.75 and _row6[0] <= -0.040:
+            _cap53 = (92 - 1) / 98.0
+        ID2 = (1 - _w53) * min(ID2, _cap53) + _w53 * ID2
         # GRADED entry to the voted band (the Kawhi-'26 cliff fix): membership is a weight, not a switch.
         # Full selections (drep>=0.35) sit purely in the voted band; fading legends blend down SMOOTHLY;
         # trace votes (<=0.05) still buy nothing (the Iverson rule holds).

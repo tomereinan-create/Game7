@@ -800,7 +800,10 @@ const ROUNDS: Record<string, () => void> = {
     line('symmetric about the band', `6ft0 ${band(72).toFixed(2)} vs 6ft11 ${band(83).toFixed(2)}, 6ft1 ${band(73).toFixed(2)} vs 6ft10 ${band(82).toFixed(2)}`, 'equal pairs', band(72) === band(83) && band(73) === band(82))
     line('flat inside 75-80', `${[75, 76, 77, 78, 79, 80].map(band).join('/')}`, 'all 1', [75, 76, 77, 78, 79, 80].every((h) => band(h) === 1))
     // the named readings, measured on the smoothed export
-    const PD: [string, number][] = [['Kawhi Leonard', 98], ['Jrue Holiday', 98], ['Gary Payton', 93], ['Scottie Pippen', 93], ['Bruce Bowen', 95]]
+    // r54 SUPERSEDED two of these: the voted band re-percentiles once the wing tax is gone, so the
+    // small in-band guards ease a point or two while the 6'8"+ voted men rise. Jrue's peak reads 94
+    // now and Kawhi's 95 — recorded here so the r35 receipt keeps telling the truth about BOTH eras.
+    const PD: [string, number][] = [['Kawhi Leonard', 95], ['Jrue Holiday', 94], ['Gary Payton', 93], ['Scottie Pippen', 95], ['Bruce Bowen', 95]]
     for (const [who, want] of PD) {
       const b = best(who, (p) => p.attrs.perdef)
       line(`${who} peak perdef (in band)`, `${b.attrs.perdef}  (${b.name}, ${b.attrs.height}in)`, `${want} +/-3`, Math.abs(b.attrs.perdef - want) <= 3)
@@ -825,9 +828,12 @@ const ROUNDS: Record<string, () => void> = {
     note('at the clamp — the opposite of what a shape penalty is for. The run prints the clamp count.')
     // in band vs out of band, measured on the shipped cards
     const pk = (who: string) => best(who, (p) => p.attrs.perdef)
+    // r54 SUPERSEDED the holds-or-gains claim for the smallest in-band men: once the wing tax fell,
+    // the voted band re-percentiled and Kawhi/Payton/Jrue eased 1-2 while Pippen and the 6'8" class
+    // rose. The receipt now asserts the r54 state: nobody in the band eases by more than 2.
     for (const [who, was] of [['Kawhi Leonard', 96], ['Scottie Pippen', 94], ['Bruce Bowen', 96], ['Gary Payton', 96], ['Jrue Holiday', 95]] as const) {
       const b = pk(who)
-      line(`${who} (in band, ${b.attrs.height}in)`, `perdef ${was} -> ${b.attrs.perdef}`, 'holds or gains', b.attrs.perdef >= was)
+      line(`${who} (in band, ${b.attrs.height}in)`, `perdef ${was} -> ${b.attrs.perdef}`, 'within 2 of the r36 reading (r54 re-percentiles)', b.attrs.perdef >= was - 2)
     }
     for (const [who, was] of [['Chris Paul', 96], ['Kevin Garnett', 84], ['Rudy Gobert', 77]] as const) {
       const b = pk(who)
@@ -1392,6 +1398,51 @@ const ROUNDS: Record<string, () => void> = {
     }
     note('72 cards changed, EVERY one an inferred season and every one a riser (max +5, Shaq ’93/’96);')
     note('zero measured-season cards moved — the gate keeps its measured data whole.')
+  },
+  '53': () => {
+    console.log(`${EOL}recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '54 (53+54 applied together)', /PIPELINE_VERSION = 54/.test(RATINGS) && /PIPELINE_VERSION = 54/.test(OVR))
+    src('the graded ceiling', RATINGS, /_w53 = min\(1\.0, r\['drep'\] \/ 0\.30\) if r\['drep'\] > 0\.05 else 0\.0/, 'the same band perdef uses; trace shares buy nothing')
+    src('no-vote cap 88, measured tier 92', RATINGS, /_cap53 = \(92 - 1\) \/ 98\.0/, 'rim-zone diff <= -4.0% on a real workload lifts it')
+    note('Block rate is chaseable; deterrence at the elite level is what the league’s votes certify.')
+    for (const [n, was, want] of [["Shawn Bradley '95", 98, 88], ["Shaquille O'Neal '93", 98, 88], ["Sam Bowie '85", 98, 88],
+                                  ["DeSagana Diop '06", 98, 88], ["Yao Ming '09", 97, 88], ["Walker Kessler '23", 97, 92]] as const) {
+      const q = by.get(n)
+      if (q) line(`no-vote: ${n}`, `rimprot ${was} -> ${q.attrs.rimprot}`, `${want}${want === 92 ? ' — the measured tier' : ''}`, q.attrs.rimprot === want)
+    }
+    for (const [n, want] of [["Rudy Gobert '19", 97], ["Victor Wembanyama '25", 97], ["Ben Wallace '03", 98], ["Dikembe Mutombo '97", 99], ["Tim Duncan '03", 98]] as const) {
+      const q = by.get(n)
+      if (q) line(`voted: ${n}`, `rimprot ${q.attrs.rimprot}`, `${want} — unchanged`, q.attrs.rimprot === want)
+    }
+    note("Kessler is the round's own “if any exist”: no votes, tracked at -4%+ on a real rim workload,")
+    note('and he reaches exactly 92 — measurement beats the cap, votes beat both. Rookie Shaq ’93 is the')
+    note('honest casualty: his first All-D is seven years out, past the reputation reach, so the season')
+    note('is no-vote by the same rule that names the class. The anchor-term ripple is the intended one:')
+    note('the chase-block bigs’ DEF eases 3-5 and certified anchors hold.')
+  },
+  '54': () => {
+    console.log(`${EOL}recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile`)
+    src('the factor', RATINGS, /rep_hf = max\(0\.5, 1\.2 - 0\.8 \* max\(0\.0, min\(1\.0, \(\(r\['ht'\] or 78\) - 80\.0\) \/ 6\.0\)\)\)/, "6'8\" and under 1.2; 7'1\" ~0.53; floor 0.5")
+    note('Percentile height halved a PERFECT reputation at 6\'9" and taxed every voted wing while guards')
+    note('kept full credit — and r53\'s voted ceiling on rimprot made it obsolete as rim-vote protection.')
+    {
+      const q = by.get("Andrei Kirilenko '06")
+      if (q) line("HIS CARD — Andrei Kirilenko '06 (6'9\", drep 1.0)", `perdef 78 -> ${q.attrs.perdef}`, '84 (the round hoped low 90s)', q.attrs.perdef === 84)
+    }
+    note('THE ROUND’S LOW-90s ESTIMATE DOES NOT SURVIVE the voted band’s own architecture: the band is')
+    note('PERCENTILED (Pvot), and every voted wing rose with him, so his absolute gain compresses to +6.')
+    note('Reported, not tuned around — lifting him further means touching the band, a separate ruling.')
+    for (const [n, was, want] of [["Kawhi Leonard '17", 96, 94], ["Scottie Pippen '94", 93, 95], ["Jrue Holiday '21", 93, 90],
+                                  ["Chris Paul '09", 94, 88], ["Marcus Smart '22", 94, 91], ["Rudy Gobert '19", 69, 69]] as const) {
+      const q = by.get(n)
+      if (q) line(n, `perdef ${was} -> ${q.attrs.perdef}`, `${want}`, q.attrs.perdef === want)
+    }
+    note('The ordering shift is the point, and it lands: guards ease (CP3 -6, Smart -3, Jrue -3, Rondo')
+    note('’09 -3), 6\'8"+ wings and voted bigs rise (Pippen +2, Duncan ’03 +4, Ben Wallace +3), and the')
+    note('true seven-footers hold (Gobert 69). Kawhi at 6\'6" slips 2 — not the hold-or-gain the round')
+    note('predicted, because the 79-80 inch class above him gained MORE and the band re-percentiles;')
+    note('his own raw composite rose. Voted-class top-10: Kidd, Dennis Johnson and Bowen displace the')
+    note('Rondo/Smart/Moncrief guard block. 1,686 cards moved in all across the two rounds.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

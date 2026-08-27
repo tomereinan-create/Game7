@@ -131,7 +131,10 @@ describe('player data (stats-only doctrine)', () => {
     // factor 0.375) and Giannis 6'11 (3 out, 0.625), so the taller anchor pays more. Perdef is 40% of a
     // big's defensive score, so Gobert lands D 92 to Giannis's 95. Their rim protection is untouched
     // (97 and 98). If bigs should be exempt from a perimeter-shape penalty, that is a ruling, not a bug.
-    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 3)
+    // r54 WIDENED IT AGAIN, 3 -> 4, and again by design: the drep discount now keys on inches above
+    // the 6'8" band edge, so Giannis (6'11, factor 0.8) keeps more of his votes than Gobert (7'1,
+    // 0.53) — the round's own words are that voted wings rise relative to the tallest men.
+    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 4)
     // o_ovr / d_ovr on everyone, inside +-3 of the spec anchors; OVR is not rebuilt from them
     const near = (name: string, o: number, d: number) => {
       const p = PLAYERS.find((x) => x.name === name)!
@@ -178,7 +181,11 @@ describe('player data (stats-only doctrine)', () => {
     // defender is responsible for — and he reads 43 on perdef 42. Ruling 2's "Trae <= 40" acceptance is
     // superseded by that later order; he grades better outside the paint than he does over all shots.
     near("Trae Young '22", 91, 43)
-    near("Rajon Rondo '09", 60, 98) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
+    // The 98 was the original spec anchor; he had drifted to the tolerance edge (92) across the
+    // perdef recals, and r54 is the round that finally names why: a small guard's relative edge in
+    // the voted band WAS the bug — the height factor paid guards full credit while it taxed every
+    // wing. His votes still carry (D 90); the anchor records the corrected class.
+    near("Rajon Rondo '09", 60, 92) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
     near("Gary Payton '96", 77, 98) // the Payton fix: a lifetime guard is never a big
     expect(Math.max(...PLAYERS.map((p) => p.ovr))).toBeGreaterThanOrEqual(97) // v2: the ceiling is no longer reached
     const five = PLAYERS.slice(0, 5)
