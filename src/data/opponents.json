@@ -202,7 +202,7 @@
         "o_ovr": 62,
         "d_ovr": 68,
         "ovr": 61,
-        "marg": 62
+        "marg": 61
       }
     ]
   },
@@ -502,7 +502,7 @@
         "o_ovr": 42,
         "d_ovr": 44,
         "ovr": 43,
-        "marg": 70
+        "marg": 69
       },
       {
         "name": "Michael Porter Jr. '26",
@@ -782,7 +782,7 @@
           "ts_rel": 0.544
         },
         "big": true,
-        "o_ovr": 49,
+        "o_ovr": 50,
         "d_ovr": 74,
         "ovr": 64,
         "marg": 82
@@ -823,7 +823,7 @@
         "o_ovr": 53,
         "d_ovr": 55,
         "ovr": 54,
-        "marg": 75
+        "marg": 74
       }
     ]
   },
@@ -992,7 +992,7 @@
         "o_ovr": 69,
         "d_ovr": 82,
         "ovr": 72,
-        "marg": 61
+        "marg": 60
       },
       {
         "name": "Kyle Filipowski '26",
@@ -1237,7 +1237,7 @@
         "o_ovr": 69,
         "d_ovr": 82,
         "ovr": 72,
-        "marg": 61
+        "marg": 60
       }
     ]
   },
@@ -1406,7 +1406,7 @@
         "o_ovr": 46,
         "d_ovr": 66,
         "ovr": 58,
-        "marg": 54
+        "marg": 53
       },
       {
         "name": "Marvin Bagley III '26",
@@ -1651,7 +1651,7 @@
         "o_ovr": 83,
         "d_ovr": 66,
         "ovr": 81,
-        "marg": 89
+        "marg": 88
       }
     ]
   },
@@ -2648,7 +2648,7 @@
         "o_ovr": 42,
         "d_ovr": 58,
         "ovr": 52,
-        "marg": 67
+        "marg": 66
       },
       {
         "name": "Donovan Clingan '26",
@@ -4097,7 +4097,7 @@
         "o_ovr": 76,
         "d_ovr": 72,
         "ovr": 70,
-        "marg": 55
+        "marg": 54
       },
       {
         "name": "Sandro Mamukelashvili '26",
@@ -4339,7 +4339,7 @@
           "ts_rel": 0.657
         },
         "big": true,
-        "o_ovr": 47,
+        "o_ovr": 48,
         "d_ovr": 90,
         "ovr": 73,
         "marg": 98
@@ -4811,7 +4811,7 @@
         "o_ovr": 94,
         "d_ovr": 80,
         "ovr": 94,
-        "marg": 97
+        "marg": 98
       },
       {
         "name": "Marcus Smart '26",
@@ -5263,7 +5263,7 @@
         "o_ovr": 67,
         "d_ovr": 40,
         "ovr": 60,
-        "marg": 72
+        "marg": 71
       },
       {
         "name": "Bruce Brown '26",
@@ -5301,7 +5301,7 @@
         "o_ovr": 39,
         "d_ovr": 73,
         "ovr": 58,
-        "marg": 78
+        "marg": 79
       },
       {
         "name": "Cameron Johnson '26",
@@ -5788,10 +5788,10 @@
           "ts_rel": 0.679
         },
         "big": true,
-        "o_ovr": 72,
+        "o_ovr": 73,
         "d_ovr": 75,
         "ovr": 74,
-        "marg": 98
+        "marg": 97
       }
     ]
   },
@@ -6205,7 +6205,7 @@
         "o_ovr": 51,
         "d_ovr": 88,
         "ovr": 73,
-        "marg": 61
+        "marg": 60
       }
     ]
   }
