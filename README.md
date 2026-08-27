@@ -41,6 +41,18 @@ it, so the link never moves.
 It is a debug-signed build, which is what makes it sideloadable without a Play
 Store account. Android says so when installing.
 
+Installing a new one over an old one keeps the saved runs, because every build
+carries the same signature: keystore/debug.keystore, in the repo. Android accepts
+an update only from the key that signed what is already on the phone, and gradle
+would not use that keystore by any route — left at ~/.android/debug.keystore or
+named through signingConfigs, it signed as CN=Android Debug with a fresh key each
+time. apksigner replaces the signature after the build instead, and the step fails
+if the result is not the key in the repo, so a build that would refuse to install
+never reaches anyone.
+
+The password is `android`, the documented default. It is a debug key for a
+sideloaded game and grants nothing beyond signing this package.
+
 The published site is the `gh-pages` branch — main at the root, previews beside it
 — rewritten as a single commit each time, since a build is seven megabytes and
 keeping them as history would add that to the repo on every push.
