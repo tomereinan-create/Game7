@@ -11,6 +11,7 @@ import { PLAYERS } from './engine/pool'
 import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import {
   applyWear,
+  WEAR_OUT,
   die,
   levelSeed,
   loadProgress,
@@ -298,6 +299,18 @@ export default function App() {
           onTeam={() => setPickTeam(true)}
           onStaff={() => setStaff(true)}
           onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
+          teamNote={
+            death && prog.roster
+              ? (() => {
+                  // the same reading My team and the draft use: raw durability plus the Iron men boost
+                  const left = (n: string) => (prog.wear[n] ?? PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 99) + duraBoost(prog)
+                  const worn = prog.roster.filter((n) => left(n) <= WEAR_OUT).length
+                  if (worn) return worn === 1 ? 'A man is worn out — replace him in My team' : `${worn} men are worn out — My team`
+                  if (subsPerRound(prog) - prog.subsUsed > 0) return 'A change is waiting in My team'
+                  return null
+                })()
+              : null
+          }
           onReset={() => {
             if (window.confirm(`Reset the ${TITLE(cm)}? All 120 levels and their stars start over.`)) {
               setProgress((all) => ({ ...all, [cm]: resetProgress(cm) }))

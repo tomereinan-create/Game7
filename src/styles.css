@@ -2253,6 +2253,10 @@ button {
 
 /* ---- era banners on the map ---- */
 .era-band { position: absolute; width: 30%; pointer-events: none; }
+/* the my-team nudge, pinned beside the next opponent's node */
+.node-note { position: absolute; z-index: 5; max-width: 34%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.node-note.left { left: 2%; }
+.node-note.right { right: 2%; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); }

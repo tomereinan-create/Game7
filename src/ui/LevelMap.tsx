@@ -47,6 +47,7 @@ export function LevelMap({
   onTeam,
   onStaff,
   onMyTeam,
+  teamNote = null,
   onReset,
 }: {
   title: string
@@ -59,6 +60,8 @@ export function LevelMap({
   onStaff: () => void
   /** Death match only: the team screen — the five, their durability, and the round's spin. */
   onMyTeam?: () => void
+  /** Death match only: a nudge pinned beside the next opponent — a change waiting, or a man worn out. */
+  teamNote?: string | null
   onReset: () => void
 }) {
   const cur = currentLevel(progress)
@@ -132,6 +135,15 @@ export function LevelMap({
             </i>
           </div>
         ))}
+        {teamNote && cur && onMyTeam ? (
+          <button
+            className={`node-note ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`}
+            style={{ top: yAt(cur - 1) - 6 }}
+            onClick={onMyTeam}
+          >
+            {teamNote} →
+          </button>
+        ) : null}
         {opponents.map((o) => {
           const level = o.round
           const i = level - 1
