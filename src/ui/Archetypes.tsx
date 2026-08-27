@@ -156,7 +156,20 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
     }
   }, [tag])
 
-  const first = Math.max(0, Math.floor(scroll / ROW_H) - OVERSCAN)
+  // THE ONE VARIABLE-HEIGHT ROW. The open panel's height is measured off the DOM and folded into
+  // the window math: scroll past the panel is shifted back by its height before slicing, and the
+  // pad on whichever side holds the open row reserves it. Without this the slice lagged the real
+  // offset, and when the open row left the slice its panel unmounted, the list shrank and the
+  // browser clamped the scroll straight back up — the press-a-player-then-scroll jump.
+  const expRef = useRef<HTMLDivElement>(null)
+  const [expH, setExpH] = useState(0)
+  useEffect(() => {
+    if (open && expRef.current) setExpH(expRef.current.offsetHeight)
+  }, [open])
+  const openIdx = open ? rows.findIndex((p) => p.name === open) : -1
+  const panelAt = openIdx >= 0 ? (openIdx + 1) * ROW_H : Infinity
+  const eff = scroll > panelAt ? Math.max(panelAt, scroll - expH) : scroll
+  const first = Math.max(0, Math.floor(eff / ROW_H) - OVERSCAN)
   const count = Math.ceil(viewH / ROW_H) + OVERSCAN * 2
   const slice = rows.slice(first, first + count)
 
@@ -321,7 +334,7 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
             <i>DEF</i>
           </span>
         </div>
-        <div style={{ height: first * ROW_H }} />
+        <div style={{ height: first * ROW_H + (openIdx >= 0 && openIdx < first ? expH : 0) }} />
         {slice.map((p) => (
           <div key={p.name} style={{ display: 'contents' }}>
             <div
@@ -345,10 +358,14 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
               </span>
               <PlayerDials p={p} />
             </div>
-            {open === p.name ? <DetailGrid p={p} /> : null}
+            {open === p.name ? (
+              <div ref={expRef}>
+                <DetailGrid p={p} />
+              </div>
+            ) : null}
           </div>
         ))}
-        <div style={{ height: Math.max(0, (rows.length - first - slice.length) * ROW_H) }} />
+        <div style={{ height: Math.max(0, (rows.length - first - slice.length) * ROW_H) + (openIdx >= first + slice.length ? expH : 0) }} />
       </div>
     </div>
   )

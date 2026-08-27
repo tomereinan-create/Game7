@@ -119,11 +119,24 @@ export function Roster({ onBack }: { onBack: () => void }) {
     }
   }, [])
 
-  const first = Math.max(0, Math.floor(scroll / ROW_H) - OVERSCAN)
+  // THE ONE VARIABLE-HEIGHT ROW. The open panel's height is measured off the DOM and folded into
+  // the window math: scroll past the panel is shifted back by its height before slicing, and the
+  // pad on whichever side holds the open row reserves it. Without this the slice lagged the real
+  // offset, and when the open row left the slice its panel unmounted, the list shrank and the
+  // browser clamped the scroll straight back up — the press-a-player-then-scroll jump.
+  const expRef = useRef<HTMLDivElement>(null)
+  const [expH, setExpH] = useState(0)
+  useEffect(() => {
+    if (open && expRef.current) setExpH(expRef.current.offsetHeight)
+  }, [open])
+  const openIdx = open ? rows.findIndex((p) => p.name === open) : -1
+  const panelAt = openIdx >= 0 ? (openIdx + 1) * ROW_H : Infinity
+  const eff = scroll > panelAt ? Math.max(panelAt, scroll - expH) : scroll
+  const first = Math.max(0, Math.floor(eff / ROW_H) - OVERSCAN)
   const count = Math.ceil(viewH / ROW_H) + OVERSCAN * 2
   const slice = rows.slice(first, first + count)
-  const padTop = first * ROW_H
-  const padBottom = Math.max(0, (rows.length - first - slice.length) * ROW_H)
+  const padTop = first * ROW_H + (openIdx >= 0 && openIdx < first ? expH : 0)
+  const padBottom = Math.max(0, (rows.length - first - slice.length) * ROW_H) + (openIdx >= first + slice.length ? expH : 0)
 
   const extra = !inRow(key)
   const extraLabel = RAIL.find((r) => r.k === key)?.short ?? ''
@@ -289,7 +302,11 @@ export function Roster({ onBack }: { onBack: () => void }) {
               <PlayerDials p={p} />
               {extra ? <span className="pextra">{valueOf(p, key)}</span> : null}
             </div>
-            {open === p.name ? <DetailGrid p={p} /> : null}
+            {open === p.name ? (
+              <div ref={expRef}>
+                <DetailGrid p={p} />
+              </div>
+            ) : null}
           </div>
         ))}
         <div style={{ height: padBottom }} />
