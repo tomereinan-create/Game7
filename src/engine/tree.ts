@@ -29,6 +29,7 @@ export type NodeId =
   | 'coach_optimal'
   | 'coach_manual'
   | 'coach_sigma'
+  | 'coach_tactics'
   | 'cap'
   | 'surv_life'
   | 'surv_save'
@@ -134,6 +135,16 @@ export const NODES: Node[] = [
     rankBlurbs: ['Tight (σ 8), normal (10) or loose (13).', 'σ 6 and σ 16 open up.', 'σ 4 and σ 20 open up — a coin flip or a formality.'],
   },
   {
+    id: 'coach_tactics', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_sigma',
+    name: 'Playbook',
+    blurb: 'Death match only: the tactics called from the My team screen.',
+    rankBlurbs: [
+      'Name your main scorer and main playmaker, and set the tempo.',
+      'The shot diet, and crashing the glass.',
+      'The defensive scheme, and hunting the mismatch.',
+    ],
+  },
+  {
     id: 'surv_life', branch: 'Survival', depth: 0, ranks: 3,
     name: 'Extra life',
     blurb: 'Death match only: a loss you walk away from.',
@@ -197,6 +208,8 @@ export const checkpointLevel = (w: Wallet) => [0, 20, 40, 60][rank(w, 'surv_save
 export const subsPerRound = (w: Wallet) => 1 + rank(w, 'surv_sub')
 /** Death match: extra durability every carried man gets, read at evaluation so buying it helps the CURRENT five too. */
 export const duraBoost = (w: Wallet) => rank(w, 'surv_dura') * 10
+/** Death match: how much of the My team playbook is open. 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 everything. */
+export const playbookRank = (w: Wallet) => rank(w, 'coach_tactics')
 
 /** Extra payroll room bought in the Salary branch, in points of the cap. */
 export const capBonus = (w: Wallet) => rank(w, 'cap') * 5

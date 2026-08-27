@@ -57,6 +57,25 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
   }
 }
 
+/**
+ * THE PLAYBOOK GATE (his ruling: the Coach branch allows the tactics). Rank 1 opens the men and the
+ * tempo, rank 2 the shot diet and the glass, rank 3 the scheme and the hunt. A call beyond the rank
+ * is priced as if it were never made — a saved plan survives a respec, it just stops being heard.
+ */
+export function gateTactics(t: Tactics, rank: number): Tactics {
+  return {
+    ...t,
+    scorer: rank >= 1 ? t.scorer : null,
+    playmaker: rank >= 1 ? t.playmaker : null,
+    tempo: rank >= 1 ? t.tempo : 'normal',
+    style: rank >= 2 ? t.style : 'balanced',
+    crashOff: rank >= 2 ? t.crashOff : false,
+    crashDef: rank >= 2 ? t.crashDef : false,
+    scheme: rank >= 3 ? t.scheme : 'matchup',
+    hunt: rank >= 3 ? t.hunt : false,
+  }
+}
+
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.reduce((t, p) => t + f(p), 0) / five.length : 50)
 

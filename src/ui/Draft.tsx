@@ -9,8 +9,8 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
-import { tacticsMod, TEMPO_SIGMA, type Tactics } from '../engine/tactics'
-import { capBonus, duraBoost, owned, rank, respinSeason, type NodeId } from '../engine/tree'
+import { gateTactics, tacticsMod, TEMPO_SIGMA, type Tactics } from '../engine/tactics'
+import { capBonus, duraBoost, owned, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
@@ -120,6 +120,7 @@ export function Draft({
   handicap = 0,
   carry = null,
   wear = {},
+  spinLeft = false,
   tactics = null,
   onSim,
   onBack,
@@ -139,6 +140,8 @@ export function Draft({
   carry?: Player[] | null
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
   wear?: Record<string, number>
+  /** Death match: a My team change is still unspent — simming now deserves a second look. */
+  spinLeft?: boolean
   /** Death match: the My team plan — the sim prices it, so the odds here must too. */
   tactics?: Tactics | null
   onSim: (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => void
@@ -193,7 +196,8 @@ export function Draft({
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
   const [sigmaPick, setSigmaPick] = useState<number | null>(null)
-  const sigma = sigmaPick ?? (tactics ? TEMPO_SIGMA[tactics.tempo] : SIGMA)
+  const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
+  const sigma = sigmaPick ?? (plan ? TEMPO_SIGMA[plan.tempo] : SIGMA)
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -257,7 +261,7 @@ export function Draft({
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
-  const mine = five.length ? (tactics ? applyMod(compile(five, opponent.players, assignment), tacticsMod(tactics, five, opponent.players)) : compile(five, opponent.players, assignment)) : null
+  const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), tacticsMod(plan, five, opponent.players)) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Their optimal board against your five, as [their man, your man] short names. */
   const theirBoard = useMemo(() => {
@@ -409,7 +413,8 @@ export function Draft({
         .filter((n) => !takenMen.has(bare(n)))
         .map((n) => BY_NAME.get(n)!)
         .filter(Boolean)
-        .sort((a, b) => b.ovr - a.ovr || (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0))
+        // his ruling: the wheel's roster reads like a box score — points per game first, OVR as the tiebreak
+        .sort((a, b) => (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0) || b.ovr - a.ovr)
     : []
 
   const dock = () => {
@@ -423,7 +428,14 @@ export function Draft({
       )
     if (full)
       return (
-        <button className="btn" onClick={() => onSim(five, assignment, toWin, sigmaPick ?? undefined)}>
+        <button
+          className="btn"
+          onClick={() => {
+            // his ruling: an unspent My team change is worth a second look before the series runs
+            if (spinLeft && !window.confirm('You still have a change left in My team. Sim the series without it?')) return
+            onSim(five, assignment, toWin, sigmaPick ?? undefined)
+          }}
+        >
           Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
         </button>
       )
@@ -839,7 +851,7 @@ export function Draft({
               fit <b>{chance.parts.fit >= 0 ? '+' : '−'}{Math.abs(chance.parts.fit).toFixed(1)}</b>
             </span>
             <span>
-              {tactics ? 'edge' : 'era'} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
+              {plan ? 'edge' : 'era'} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
             </span>
             <span className="eq">
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>

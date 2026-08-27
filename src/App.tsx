@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
-import { reconcileTactics, tacticsMod, TEMPO_SIGMA } from './engine/tactics'
-import { buy, capBonus, checkpointLevel, duraBoost, livesBought, respec, subsPerRound } from './engine/tree'
+import { gateTactics, reconcileTactics, tacticsMod, TEMPO_SIGMA } from './engine/tactics'
+import { buy, capBonus, checkpointLevel, duraBoost, livesBought, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -101,12 +101,12 @@ export default function App() {
     if (!opponent || !prog || !cm) return
     // Our defense is whatever the board assigned; the AI always plays optimal. The death match
     // adds the My team plan, priced in points of spread like every other modifier.
-    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(prog.tactics, five, opponent.players)) : compile(five, opponent.players, assignment)
+    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(gateTactics(prog.tactics, playbookRank(prog)), five, opponent.players)) : compile(five, opponent.players, assignment)
     // The era's handicap: points of spread the opponent brings to every game of this campaign.
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     const seed = randomSeed()
     // Tempo (the plan) sets the night's default noise; the Tempo control node's explicit pick wins.
-    const sig = sigma ?? (death ? TEMPO_SIGMA[prog.tactics.tempo] : SIGMA)
+    const sig = sigma ?? (death ? TEMPO_SIGMA[gateTactics(prog.tactics, playbookRank(prog)).tempo] : SIGMA)
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran.
     setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
@@ -216,6 +216,7 @@ export default function App() {
           wear={prog.wear}
           boost={duraBoost(prog)}
           tactics={prog.tactics}
+          playbook={playbookRank(prog)}
           onTactics={(t) => commit(cm, { ...prog, tactics: t })}
           allowed={subsPerRound(prog)}
           used={prog.subsUsed}
@@ -320,6 +321,7 @@ export default function App() {
         wallet={prog}
         carry={carry}
         wear={prog.wear}
+        spinLeft={death && !!carry && subsPerRound(prog) - prog.subsUsed > 0}
         tactics={death ? prog.tactics : null}
         onSim={sim}
         onBack={(started) => {

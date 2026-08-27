@@ -4,7 +4,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
-import { tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, tacticsParts, type Tactics } from '../engine/tactics'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
 
@@ -28,6 +28,7 @@ export function MyTeam({
   wear,
   boost = 0,
   tactics,
+  playbook,
   onTactics,
   allowed,
   used,
@@ -42,6 +43,8 @@ export function MyTeam({
   boost?: number
   /** The plan: who the offense runs through, the tempo, the shot diet, the glass. */
   tactics: Tactics
+  /** The Playbook node's rank: 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 all of it. */
+  playbook: number
   onTactics: (t: Tactics) => void
   /** The round's allowance: 1 plus the Survival branch's Extra sub ranks. */
   allowed: number
@@ -238,13 +241,15 @@ export function MyTeam({
             <div className="card-head">
               <span className="label">Tactics</span>
               <span className="cap">
-                {(() => {
-                  const w = tacticsParts(tactics, five).reduce((a, x) => a + x.pts, 0)
-                  return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
-                })()}
+                {playbook <= 0
+                  ? 'locked'
+                  : (() => {
+                      const w = tacticsParts(gateTactics(tactics, playbook), five).reduce((a, x) => a + x.pts, 0)
+                      return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
+                    })()}
               </span>
             </div>
-            {([
+            {playbook >= 1 ? ([
               ['Main scorer', 'scorer'],
               ['Main playmaker', 'playmaker'],
             ] as const).map(([label, key]) => (
@@ -265,7 +270,8 @@ export function MyTeam({
                   ))}
                 </div>
               </div>
-            ))}
+            )) : null}
+            {playbook >= 1 ? (
             <div className="posbar">
               <span className="cap">Tempo</span>
               <div className="poschips">
@@ -276,6 +282,8 @@ export function MyTeam({
                 ))}
               </div>
             </div>
+            ) : null}
+            {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Playstyle</span>
               <div className="poschips">
@@ -286,6 +294,9 @@ export function MyTeam({
                 ))}
               </div>
             </div>
+            ) : null}
+            {playbook >= 3 ? (
+            <>
             <div className="posbar">
               <span className="cap">Defensive scheme</span>
               <div className="poschips">
@@ -304,6 +315,9 @@ export function MyTeam({
                 </button>
               </div>
             </div>
+            </>
+            ) : null}
+            {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
               <div className="poschips">
@@ -315,17 +329,26 @@ export function MyTeam({
                 </button>
               </div>
             </div>
+            ) : null}
             {(() => {
-              const parts = tacticsParts(tactics, five)
+              if (playbook <= 0)
+                return (
+                  <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                    Tactics are called from the bench: the PLAYBOOK node, at the end of the Coach branch, opens them — the men and the tempo first, then the shot diet and the glass, then the scheme and the hunt.
+                  </div>
+                )
+              const plan = gateTactics(tactics, playbook)
+              const parts = tacticsParts(plan, five)
               return parts.length ? (
                 <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
                   {parts.map((x) => `${x.label} ${x.pts >= 0 ? '+' : '−'}${Math.abs(x.pts).toFixed(1)}`).join(' · ')}
-                  {tactics.scheme !== 'matchup' || tactics.hunt ? ' · the scheme and the hunt price fully at the draft, against the level’s five' : ''}
-                  {tactics.tempo !== 'normal' ? ` · ${tactics.tempo} tempo moves the night's noise, both teams` : ''}
+                  {plan.scheme !== 'matchup' || plan.hunt ? ' · the scheme and the hunt price fully at the draft, against the level’s five' : ''}
+                  {plan.tempo !== 'normal' ? ` · ${plan.tempo} tempo moves the night's noise, both teams` : ''}
                 </div>
               ) : (
                 <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
                   Every call is priced by the five you actually have — with the grain it pays, against it it costs.
+                  {playbook < 3 ? ` The next Playbook rank opens ${playbook === 1 ? 'the shot diet and the glass' : 'the scheme and the hunt'}.` : ''}
                 </div>
               )
             })()}
