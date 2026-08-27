@@ -150,12 +150,16 @@ export function Draft({
   onRoster: () => void
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
-  // Seeded by a MATCHING, not first-fit greed: My team approves swaps whenever the five can cover
-  // the positions at all, so the seeding has to find that cover — least-flexible men place first,
-  // and only a five with no cover (impossible via My team) falls back to force-fitting.
+  // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
+  // rearrange by hand — so the seeding honors it verbatim when it is legal, and only a five whose
+  // saved order cannot field falls back to a matching, then to force-fitting.
   const [slots, setSlots] = useState<Partial<Record<Pos, string>>>(() => {
     if (!carry?.length) return {}
     const start: Partial<Record<Pos, string>> = {}
+    if (carry.length === POSITIONS.length && carry.every((p, i) => eligible(LINES[p.name]?.pos).includes(POSITIONS[i]))) {
+      carry.forEach((p, i) => (start[POSITIONS[i]] = p.name))
+      return start
+    }
     const order = [...carry].sort((a, b) => eligible(LINES[a.name]?.pos).length - eligible(LINES[b.name]?.pos).length)
     const fit = (i: number): boolean => {
       if (i === order.length) return true

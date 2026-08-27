@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
+// (orderFive lives below — the roster's slot order is derived here and honored everywhere)
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
@@ -10,6 +11,29 @@ import { DetailGrid, LINES } from './Stat'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const posOf = (name: string) => eligible(LINES[name]?.pos)
+
+/**
+ * THE ROSTER'S SLOT ORDER, PG to C. If the saved order is already legal it is kept exactly — a
+ * switch the player made by hand is never undone. Otherwise the least-flexible men place first
+ * and a matching rebuilds a legal order; a five with no cover comes back unchanged.
+ */
+export function orderFive(names: string[]): string[] {
+  if (names.length === POSITIONS.length && names.every((n, i) => posOf(n).includes(POSITIONS[i]))) return names
+  const at: Partial<Record<Pos, string>> = {}
+  const order = [...names].sort((a, b) => posOf(a).length - posOf(b).length)
+  const fit = (i: number): boolean => {
+    if (i === order.length) return true
+    for (const x of posOf(order[i])) {
+      if (at[x]) continue
+      at[x] = order[i]
+      if (fit(i + 1)) return true
+      delete at[x]
+    }
+    return false
+  }
+  if (!fit(0)) return names
+  return POSITIONS.map((x) => at[x]!)
+}
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
@@ -35,6 +59,7 @@ export function MyTeam({
   heal = 0,
   onSign,
   onRest,
+  onReorder,
   allowed,
   used,
   capMax,
@@ -60,6 +85,8 @@ export function MyTeam({
   onSign?: (inn: string) => void
   /** The free exchange the node sells: the floor man sits, the rested man takes his place. */
   onRest?: (floorName: string) => void
+  /** Two floor men switched positions by hand — the new slot order, PG to C. */
+  onReorder: (next: string[]) => void
   /** The round's allowance: 1 plus the Survival branch's Extra sub ranks. */
   allowed: number
   /** Changes already spent since the last series settled. */
@@ -98,6 +125,8 @@ export function MyTeam({
   const [out, setOut] = useState<string | null>(null)
   /** Resting mode: the bench row was tapped, the next floor tap makes the exchange. */
   const [resting, setResting] = useState(false)
+  /** Switching mode: a floor man was tapped with nothing else pending; the next tap trades spots. */
+  const [moving, setMoving] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const timer = useRef<number | null>(null)
 
@@ -144,25 +173,21 @@ export function MyTeam({
     capUsed - (capPct(floorName) ?? 0) + (capPct(bench.name) ?? 0) <= capMax + 1e-9 &&
     canField([...five.map((p) => p.name).filter((x) => x !== floorName), bench.name])
 
-  /** Each floor man's ASSIGNED position — the same matching the draft seeds its slots with. */
-  const assigned: Record<string, Pos> = (() => {
-    const at: Partial<Record<Pos, string>> = {}
-    const order = [...five].sort((a, b) => posOf(a.name).length - posOf(b.name).length)
-    const fit = (i: number): boolean => {
-      if (i === order.length) return true
-      for (const x of posOf(order[i].name)) {
-        if (at[x]) continue
-        at[x] = order[i].name
-        if (fit(i + 1)) return true
-        delete at[x]
-      }
-      return false
-    }
-    fit(0)
-    const by: Record<string, Pos> = {}
-    for (const x of POSITIONS) if (at[x]) by[at[x]!] = x
-    return by
-  })()
+  /** The five arrive in SLOT ORDER (PG to C) — the saved order is the assignment. */
+  const assigned: Record<string, Pos> = Object.fromEntries(five.map((p, i) => [p.name, POSITIONS[i]]))
+  /** A hand switch is legal when each man fits the other's spot. */
+  const canSwitch = (a: string, b: string) => {
+    const ia = five.findIndex((p) => p.name === a)
+    const ib = five.findIndex((p) => p.name === b)
+    return ia >= 0 && ib >= 0 && posOf(a).includes(POSITIONS[ib]) && posOf(b).includes(POSITIONS[ia])
+  }
+  const doSwitch = (a: string, b: string) => {
+    const next = five.map((p) => p.name)
+    const ia = next.indexOf(a)
+    const ib = next.indexOf(b)
+    ;[next[ia], next[ib]] = [next[ib], next[ia]]
+    onReorder(next)
+  }
 
   const taken = new Set([...five.map((p) => bare(p.name)), ...(bench ? [bare(bench.name)] : [])])
   // Every position is open to the wheel — a swap can free ANY slot through a reshuffle, and the
@@ -279,8 +304,11 @@ export function MyTeam({
                   left(p.name) <= WEAR_OUT
                     ? `${assigned[p.name] ?? posOf(p.name)[0]} · WORN OUT — must be replaced`
                     : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${left(p.name)} durability left`,
-                dim: left(p.name) <= WEAR_OUT || (resting ? !canRest(p.name) : false),
-                on: out === p.name,
+                dim:
+                  left(p.name) <= WEAR_OUT ||
+                  (resting ? !canRest(p.name) : false) ||
+                  (moving && moving !== p.name ? !canSwitch(moving, p.name) : false),
+                on: out === p.name || moving === p.name,
                 onTap: sel
                   ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
                   : resting
@@ -289,7 +317,14 @@ export function MyTeam({
                         onRest?.(p.name)
                         setResting(false)
                       }
-                    : undefined,
+                    : moving
+                      ? () => {
+                          if (moving === p.name) return setMoving(null)
+                          if (!canSwitch(moving, p.name)) return
+                          doSwitch(moving, p.name)
+                          setMoving(null)
+                        }
+                      : () => setMoving(p.name),
               }),
             )}
             {benchOpen ? (
@@ -299,7 +334,10 @@ export function MyTeam({
                   on: resting || out === bench.name,
                   onTap: sel
                     ? () => setOut(replaceable(sel).includes(bench.name) ? bench.name : out)
-                    : () => setResting((r) => !r),
+                    : () => {
+                        setMoving(null)
+                        setResting((r) => !r)
+                      },
                 })
               ) : sel ? (
                 <button className={`sortb ${out === BENCH_SLOT ? 'on' : ''}`} style={{ margin: '6px 0 10px' }} onClick={() => setOut(BENCH_SLOT)}>
@@ -310,6 +348,11 @@ export function MyTeam({
               )
             ) : null}
             {resting ? <div className="seriesnow-note">Tap the floor man who sits — the exchange is free, positions permitting.</div> : null}
+            {moving ? (
+              <div className="seriesnow-note">
+                Tap the man he switches positions with — both must fit the other’s spot. Tap him again to cancel.
+              </div>
+            ) : null}
             <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
               {broken.length
                 ? `${broken.length === 1 ? 'A man is' : `${broken.length} men are`} worn out — the spin replaces ${broken.length === 1 ? 'him' : 'them'}, and nothing else.`

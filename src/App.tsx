@@ -26,7 +26,7 @@ import {
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap } from './ui/LevelMap'
-import { MyTeam } from './ui/MyTeam'
+import { MyTeam, orderFive } from './ui/MyTeam'
 import { Archetypes } from './ui/Archetypes'
 import { Roster } from './ui/Roster'
 import { Series } from './ui/Series'
@@ -83,7 +83,8 @@ export default function App() {
   const prog = cm ? progress[cm] : null
   const opponent = level ? opponents[Math.min(level, ROUNDS) - 1] : null
   /** Death match: last level's five, ready to be carried in. Null at the start of a run. */
-  const carried = death && prog?.roster ? (prog.roster.map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[]) : null
+  // the roster is kept in SLOT ORDER (PG to C); a saved order that no longer fields re-derives here
+  const carried = death && prog?.roster ? (orderFive(prog.roster).map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[]) : null
   const carry = carried && carried.length === 5 ? carried : null
 
   const commit = (m: CampaignMode, p: Progress) => {
@@ -232,7 +233,7 @@ export default function App() {
           onRest={(floorName) => {
             // the free exchange the node sells: the floor man sits, the rested man takes his place
             if (!prog.roster || !prog.bench) return
-            const roster = prog.roster.map((n) => (n === floorName ? prog.bench! : n))
+            const roster = orderFive(prog.roster.map((n) => (n === floorName ? prog.bench! : n)))
             commit(cm, { ...prog, roster, bench: floorName, tactics: reconcileTactics(prog.tactics, roster) })
           }}
           onTactics={(t) => commit(cm, { ...prog, tactics: t })}
@@ -249,10 +250,11 @@ export default function App() {
               commit(cm, { ...prog, bench: inn, wear })
               return
             }
-            const roster = prog.roster.map((n) => (n === out ? inn : n))
+            const roster = orderFive(prog.roster.map((n) => (n === out ? inn : n)))
             // the departed man may have been the named scorer or playmaker
             commit(cm, { ...prog, roster, wear, tactics: reconcileTactics(prog.tactics, roster) })
           }}
+          onReorder={(next) => commit(cm, { ...prog, roster: next })}
           onBack={() => setMyTeam(false)}
         />
       </>
