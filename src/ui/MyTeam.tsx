@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PLAYERS } from '../engine/pool'
 import { eligible } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
@@ -54,6 +54,11 @@ export function MyTeam({
   /** The men this spin may send away: the worn-out ones while any remain, otherwise anyone. */
   const outs = broken.length ? broken : five.map((p) => p.name)
 
+  // Like the draft, this screen earns the full width of a desktop.
+  useEffect(() => {
+    document.body.classList.add('wide')
+    return () => document.body.classList.remove('wide')
+  }, [])
   const [spinning, setSpinning] = useState(false)
   const [spun, setSpun] = useState<TeamSeason | null>(null)
   const [display, setDisplay] = useState<TeamSeason | null>(null)
@@ -168,7 +173,7 @@ export function MyTeam({
         <button onClick={onBack}>← Map</button>
       </div>
       <div className="ladder" />
-      <div className="draft" style={{ paddingTop: 8 }}>
+      <div className="myteam" style={{ paddingTop: 8 }}>
         <section className="col a">
           <div className="card" style={{ paddingBottom: 4 }}>
             <div className="card-head">

@@ -1175,6 +1175,27 @@ button {
   display: flex;
   flex-direction: column;
 }
+/* MY TEAM (death match): the five and the wheel, two columns on a desk, five first on a phone. */
+.myteam {
+  display: flex;
+  flex-direction: column;
+}
+.myteam .col { min-width: 0; }
+/* no OVR cell on these rows, so the name keeps the 34px the draft's rows give it */
+.myteam .row.dr,
+.myteam .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
+.myteam .col.a { order: 1; }
+.myteam .col.b { order: 2; }
+@media (min-width: 900px) {
+  .myteam {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
 .draft .col.b { order: 1; }
 .draft .col.c { order: 2; }
 .draft .col.a { order: 3; }
