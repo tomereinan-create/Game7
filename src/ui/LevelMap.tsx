@@ -46,6 +46,7 @@ export function LevelMap({
   onPlay,
   onTeam,
   onStaff,
+  onMyTeam,
   onReset,
 }: {
   title: string
@@ -56,6 +57,8 @@ export function LevelMap({
   onPlay: (level: number) => void
   onTeam: () => void
   onStaff: () => void
+  /** Death match only: the team screen — the five, their durability, and the round's spin. */
+  onMyTeam?: () => void
   onReset: () => void
 }) {
   const cur = currentLevel(progress)
@@ -102,6 +105,11 @@ export function LevelMap({
           <button className="map-link" onClick={onTeam}>
             {teamName} · rename
           </button>
+          {onMyTeam ? (
+            <button className="map-link" onClick={onMyTeam}>
+              My team →
+            </button>
+          ) : null}
         </div>
       </div>
 

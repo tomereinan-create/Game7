@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { ROUNDS, SIGMA } from './config'
+import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, compile, simGame, simSeries, starsFor } from './engine/resolver'
-import { buy, checkpointLevel, livesBought, respec, subsPerRound } from './engine/tree'
+import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
+import { buy, capBonus, checkpointLevel, livesBought, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
 import { PLAYERS } from './engine/pool'
-import type { GameResult, Lineup, Opponent, Player, SeriesResult } from './engine/types'
+import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import {
   applyWear,
   die,
@@ -24,6 +24,7 @@ import {
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap } from './ui/LevelMap'
+import { MyTeam } from './ui/MyTeam'
 import { Archetypes } from './ui/Archetypes'
 import { Roster } from './ui/Roster'
 import { Series } from './ui/Series'
@@ -66,13 +67,9 @@ export default function App() {
   )
   const [level, setLevel] = useState<number | null>(null)
   const [pending, setPending] = useState<Pending | null>(null)
-  /**
-   * DEATH MATCH: a series in progress. The five can change between games, so the series cannot be
-   * simmed in one go — it is played a game at a time and this holds the score while it is live.
-   */
-  const [run, setRun] = useState<{ games: GameResult[]; wins: number; losses: number; five: string[]; toWin: number; sigma: number; assignment: Assignment } | null>(null)
   const [pickTeam, setPickTeam] = useState(false)
   const [staff, setStaff] = useState(false)
+  const [myTeam, setMyTeam] = useState(false)
   const [roster, setRoster] = useState(false)
   const [archs, setArchs] = useState(false)
 
@@ -107,30 +104,9 @@ export default function App() {
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     const seed = randomSeed()
     const sig = sigma ?? SIGMA
-    if (!death) {
-      setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
-      return
-    }
-    // DEATH MATCH: one game. Every man on the floor loses a point of durability for playing it.
-    // Same five, possibly in a different slot order: the draft re-seeds positions from the carried
-    // roster each game, so the order is not stable. Identity is the SET of men, not their sequence.
-    const same = (a: string[], b: string[]) => a.length === b.length && [...a].sort().join('|') === [...b].sort().join('|')
-    const prior = run && same(run.five, five.map((p) => p.name)) ? run : null
-    const games = [...(prior?.games ?? [])]
-    const g = simGame(mine, theirs, makeRng(seed), sig, games.length + 1)
-    games.push(g)
-    const wins = (prior?.wins ?? 0) + (g.won ? 1 : 0)
-    const losses = (prior?.losses ?? 0) + (g.won ? 0 : 1)
-    const names = five.map((p) => p.name)
-    const wear = applyWear(prog.wear, names, 1, (n) => PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 50)
-    commit(cm, { ...prog, wear, roster: names })
-    const next = { games, wins, losses, five: names, toWin, sigma: sig, assignment }
-    setRun(next)
-    if (wins >= toWin || losses >= toWin) {
-      // the series is decided: hand the accumulated games to the normal result screen
-      setPending({ five, mine, theirs, result: { games, wins, losses, won: wins >= toWin, toWin }, seed, assignment })
-      setRun(null)
-    }
+    // Every mode sims the series entirely — the death match included (his ruling). Its wear is
+    // charged when the series settles, in finish(), one durability per game it ran.
+    setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
   }
 
 
@@ -140,11 +116,13 @@ export default function App() {
     const stars = [...prog.stars]
     if (pending.result.won) stars[level - 1] = Math.max(stars[level - 1], starsFor(pending.result))
     if (death) {
-      // Durability was already spent game by game as they were played; nothing more to charge here.
+      // The series is simmed in one piece now, so its cost lands in one piece too: every man who
+      // played loses one durability per game the series ran. The My team spin resets — one change
+      // between series, spent there and nowhere else.
       const names = pending.five.map((p) => p.name)
-      const next = { ...prog, stars, plays: prog.plays + 1 }
+      const wear = applyWear(prog.wear, names, pending.result.games.length, (n) => PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 50)
+      const next = { ...prog, stars, plays: prog.plays + 1, wear, subsUsed: 0 }
       commit(cm, pending.result.won ? { ...next, roster: names } : die(next))
-      setRun(null)
     } else {
       commit(cm, { ...prog, stars, plays: prog.plays + 1 })
     }
@@ -158,6 +136,7 @@ export default function App() {
     setPending(null)
     setPickTeam(false)
     setStaff(false)
+    setMyTeam(false)
   }
 
   // The roster is an overlay, not a screen: leaving the draft to look something
@@ -223,6 +202,32 @@ export default function App() {
     )
   }
 
+  // DEATH MATCH: the team screen. The five with their durability, and the round's one spin.
+  if (myTeam && death && carry && (!level || !opponent)) {
+    return (
+      <>
+        {sheet}
+        {homeFab}
+        <MyTeam
+          five={carry}
+          wear={prog.wear}
+          allowed={subsPerRound(prog)}
+          used={prog.subsUsed}
+          capMax={CAP_LIMIT + capBonus(prog)}
+          onSpend={() => commit(cm, { ...prog, subsUsed: prog.subsUsed + 1 })}
+          onSwap={(out, inn) => {
+            if (!prog.roster) return
+            const roster = prog.roster.map((n) => (n === out ? inn : n))
+            const wear = { ...prog.wear }
+            delete wear[out]
+            commit(cm, { ...prog, roster, wear })
+          }}
+          onBack={() => setMyTeam(false)}
+        />
+      </>
+    )
+  }
+
   if (staff && (!level || !opponent)) {
     return (
       <>
@@ -262,6 +267,7 @@ export default function App() {
           onPlay={setLevel}
           onTeam={() => setPickTeam(true)}
           onStaff={() => setStaff(true)}
+          onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
           onReset={() => {
             if (window.confirm(`Reset the ${TITLE(cm)}? All 120 levels and their stars start over.`)) {
               setProgress((all) => ({ ...all, [cm]: resetProgress(cm) }))
@@ -297,9 +303,7 @@ export default function App() {
       {sheet}
       {homeFab}
       <Draft
-        // the game number is part of the identity: each break between games is a FRESH screen, so the
-        // change allowance, the wheel and the slots all reset and re-seed from the five as it stands now
-        key={`${cm}-${level}-${prog.plays}-${run?.games.length ?? 0}`}
+        key={`${cm}-${level}-${prog.plays}`}
         opponent={opponent}
         seed={levelSeed(prog, level)}
         handicap={opponent.handicap ?? 0}
@@ -308,9 +312,7 @@ export default function App() {
         salary={capped}
         wallet={prog}
         carry={carry}
-        subs={subsPerRound(prog)}
         wear={prog.wear}
-        series={run ? { games: run.games, wins: run.wins, losses: run.losses, toWin: run.toWin } : null}
         onSim={sim}
         onBack={(started) => {
           // The staff tree lives on the map only. Walking out of a draft with picks on the

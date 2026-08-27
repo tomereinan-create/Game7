@@ -18,7 +18,7 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 
-interface TeamSeason {
+export interface TeamSeason {
   y: number
   c: 'E' | 'W'
   team: string
@@ -28,7 +28,7 @@ interface TeamSeason {
   rec: string | null
   p: string[]
 }
-const WHEEL = TEAMSEASONS as TeamSeason[]
+export const WHEEL = TEAMSEASONS as TeamSeason[]
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const SAL = SALARIES as Record<string, { sal: number; cap: number; pct: number }>
 const money = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${Math.round(n / 1e3)}K`)
@@ -58,10 +58,10 @@ const posLine = (name: string) => posOf(name).join(' · ')
 
 /** Bare-name index: the same man in a different year is still the same man. */
 const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
-const bare = (name: string) => PLAYER_OF.get(name) ?? name
+export const bare = (name: string) => PLAYER_OF.get(name) ?? name
 
 /** A settled spin: a team-season with at least one available player who can fill an open slot. */
-function landOn(taken: Set<string>, open: Pos[], next: () => number, avoid?: TeamSeason | null, afford?: (n: string) => boolean): TeamSeason | null {
+export function landOn(taken: Set<string>, open: Pos[], next: () => number, avoid?: TeamSeason | null, afford?: (n: string) => boolean): TeamSeason | null {
   const ok = (t: TeamSeason) =>
     t !== avoid && t.p.some((n) => !taken.has(bare(n)) && posOf(n).some((x) => open.includes(x)) && (!afford || afford(n)))
   for (let i = 0; i < 400; i++) {
@@ -118,9 +118,7 @@ export function Draft({
   wallet,
   handicap = 0,
   carry = null,
-  subs = 0,
   wear = {},
-  series = null,
   onSim,
   onBack,
   onRoster,
@@ -137,12 +135,8 @@ export function Draft({
   handicap?: number
   /** Death match: the five carried in from the last level, already in their slots. */
   carry?: Player[] | null
-  /** Death match: how many of them may be changed before this level. */
-  subs?: number
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
   wear?: Record<string, number>
-  /** Death match: the series already in progress, if this is a break between games. */
-  series?: { games: { won: boolean; us: number; them: number }[]; wins: number; losses: number; toWin: number } | null
   onSim: (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => void
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
@@ -162,10 +156,6 @@ export function Draft({
     }
     return start
   })
-  /** Death match: which carried men have been sent away. Each one spends a change. */
-  const [swapped, setSwapped] = useState<string[]>([])
-  /** Death match: landed wheels walked away from. The wheel does not turn twice for one change. */
-  const [burned, setBurned] = useState(0)
   const [spun, setSpun] = useState<TeamSeason | null>(null)
   const [display, setDisplay] = useState<TeamSeason | null>(null)
   const [spinning, setSpinning] = useState(false)
@@ -223,37 +213,15 @@ export function Draft({
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
+  const open = POSITIONS.filter((x) => !slots[x])
   // Defense is a pairing: both ratings are against the other five, and change as you draft.
   const full = picks.length === DRAFT_SIZE
   /** Death match: changes left before this level. A normal draft is not limited. */
   const carried = carry?.length ? carry.map((p) => p.name) : null
-  // With a carried five every slot is taken, but a SWAP can vacate any of them — so for the wheel,
-  // the landing filter and the assign chips, every position is open. Without this the decide effect
-  // finds no landable team on a full five and declares the wheel dead.
-  const open = carried ? [...POSITIONS] : POSITIONS.filter((x) => !slots[x])
   /** Durability left for a man on this five — his card's number until he has played on it. */
   const left = (n: string) => wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99
   /** Worn out: he cannot take the floor again, so he must go — even if you would rather he stayed. */
   const broken = carried ? picks.filter((n) => carried.includes(n) && left(n) <= WEAR_OUT) : []
-  // A forced change is not charged against the round's allowance: a worn-out man's replacement is
-  // free, and the round's own change stays in hand for anyone else. Two ledgers, never mixed —
-  // `max(allowed, broken)` used to collapse them, so one broken man ATE the round's change.
-  // Between games the allowance is ONE change (plus any the durability floor forces); before the
-  // series starts it is the round's allowance from the Survival branch.
-  const allowed = series ? 1 : subs
-  /** Forced swaps already made: the outgoing man was worn out when he was sent away. */
-  const forcedDone = swapped.filter((n) => left(n) <= WEAR_OUT).length
-  /** Voluntary changes left: the allowance, minus chosen swaps and wheels walked away from. */
-  const volLeft = carried ? allowed - (swapped.length - forcedDone) - burned : Infinity
-  const subsLeft = carried ? Math.max(0, volLeft) + broken.length : Infinity
-  /**
-   * When only forced changes remain, the wheel serves the worn-out men and no one else — spending
-   * the forced spin on a healthy man would leave the broken one on the floor with nothing to move
-   * him, which is a soft-locked run.
-   */
-  const canVacate = (x: Pos) => volLeft > 0 || !broken.length || (!!slots[x] && left(slots[x]!) <= WEAR_OUT)
-  /** In a death match the wheel only turns while you still have a change to spend. */
-  const canSpin = subsLeft > 0
   // Salary Cap campaign: the five's combined share of the cap may not pass CAP_LIMIT.
   const capUsed = salary ? picks.reduce((a, n) => a + (capPct(n) ?? 0), 0) : 0
   const capMax = CAP_LIMIT + capBonus(wallet)
@@ -263,21 +231,7 @@ export function Draft({
   const budget = capLeft - reserve
   /** In the Salary Cap campaign a player must have a salary on record and fit this pick's budget. */
   const unpriced = (name: string) => salary && capPct(name) === null
-  /**
-   * A SWAP frees the outgoing man's salary, and until the incoming man is aimed at a slot the
-   * outgoing man could be anyone he can replace — so the budget credits the richest of them. The
-   * plain budget on a carried five is (at best) whatever the cap reserve left over, which priced
-   * every candidate out and killed the wheel before it turned.
-   */
-  const swapRoom = (name: string) => {
-    const spots = posOf(name).filter(canVacate) // a forced spin only frees the worn-out men's money
-    return Math.max(0, ...spots.map((x) => (slots[x] ? capPct(slots[x]!) ?? 0 : 0)))
-  }
-  const overCap = (name: string) =>
-    salary && (unpriced(name) || (capPct(name) ?? 0) > (carried ? capLeft + swapRoom(name) : budget) + 1e-9)
-  /** The affordable check per SLOT: he may fit replacing the expensive man but not the cheap one. */
-  const fitsCap = (name: string, x: Pos) =>
-    !salary || !carried || (capPct(name) ?? 0) <= capLeft + (slots[x] ? capPct(slots[x]!) ?? 0 : 0) + 1e-9
+  const overCap = (name: string) => salary && ((capPct(name) ?? 0) > budget + 1e-9 || unpriced(name))
   // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
@@ -300,15 +254,15 @@ export function Draft({
   // Decide the next landing as soon as the wheel is idle (deterministic: the rng is
   // drawn in the same order either way). Shown only with the Wheel whisperer.
   useEffect(() => {
-    if (spun || spinning || (full && !carried) || !canSpin || upcoming) return
-    const next = landOn(takenMen, carried ? POSITIONS.filter(canVacate) : open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
+    if (spun || spinning || full || upcoming) return
+    const next = landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
     setUpcoming(next)
     setDead(!next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spun, spinning, full, picks.length])
 
   const spin = (force = false) => {
-    if (spinning || (spun && !force) || (full && !carried) || !canSpin || dead) return
+    if (spinning || (spun && !force) || full || dead) return
     setSpinning(true)
     setSel(null)
     setSlot(null)
@@ -321,7 +275,7 @@ export function Draft({
       if (i < steps) {
         timer.current = window.setTimeout(tick, 45 + i * i * 1.2)
       } else {
-        const res = upcoming ?? landOn(takenMen, carried ? POSITIONS.filter(canVacate) : open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
+        const res = upcoming ?? landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
         avoidRef.current = null
         setUpcoming(null)
         setDisplay(res)
@@ -341,7 +295,7 @@ export function Draft({
       return
     }
     // death match: every slot is full, so a man may be aimed at any position he can play
-    const fits = posOf(name).filter((x) => (carried ? fitsCap(name, x) && canVacate(x) : open.includes(x)))
+    const fits = posOf(name).filter((x) => open.includes(x))
     if (!fits.length || overCap(name)) {
       // no open slot, or he breaks the cap — still show the stats, just no pick
       setSel(null)
@@ -354,26 +308,8 @@ export function Draft({
     setInfo(name)
   }
 
-  /** Death match: keep the five after seeing where the wheel landed. The change is spent. */
-  const keepFive = () => {
-    setBurned((b) => b + 1)
-    setSpun(null)
-    setDisplay(null)
-    setSel(null)
-    setSlot(null)
-    setInfo(null)
-  }
-
   const confirm = () => {
     if (!sel || !slot) return
-    if (carried && (!fitsCap(sel, slot) || !canVacate(slot))) return // over the cap, or a forced spin aimed at a healthy man
-    if (carried) {
-      if (subsLeft <= 0) return
-      const outgoing = slots[slot]
-      // only a man you CARRIED costs a change; swapping out someone you just brought in is free,
-      // so a mis-aimed pick can be corrected without spending the round's other changes.
-      if (outgoing && carried.includes(outgoing) && !swapped.includes(outgoing)) setSwapped((c) => [...c, outgoing])
-    }
     setSlots((cur) => ({ ...cur, [slot]: sel }))
     setSpun(null)
     setDisplay(null)
@@ -456,9 +392,20 @@ export function Draft({
     : []
 
   const dock = () => {
-    // The wheel outranks the play button: while it spins, or while a landed roster waits for a
-    // pick, a carried five is still FULL — the old order shadowed this branch and made every
-    // death-match change unreachable.
+    // A worn-out man cannot take the floor, and the change lives in MY TEAM on the map — the
+    // draft only holds the door until he has been replaced there.
+    if (full && broken.length)
+      return (
+        <button className="btn" disabled>
+          {broken.length === 1 ? '1 man is worn out' : `${broken.length} men are worn out`} — replace him in My team
+        </button>
+      )
+    if (full)
+      return (
+        <button className="btn" onClick={() => onSim(five, assignment, toWin, sigmaPick ?? undefined)}>
+          Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
+        </button>
+      )
     if (spinning)
       return (
         <button className="btn" disabled>
@@ -467,54 +414,12 @@ export function Draft({
       )
     if (spun)
       return (
-        <>
-          <button className="btn" disabled={!sel || !slot} onClick={confirm}>
-            {sel && slot
-              ? `${carried ? 'Swap in' : 'Draft'} ${sel} at ${slot}`
-              : salary && budget < 1
-                ? `No cap room — ${capUsed.toFixed(1)}% of ${capMax}% used`
-                : carried
-                  ? 'Tap a player to swap him in'
-                  : 'Tap a player to scout him'}
-          </button>
-          {carried && volLeft > 0 ? (
-            <button className="btn ghost" onClick={keepFive}>
-              Keep the five — the change is spent
-            </button>
-          ) : null}
-        </>
-      )
-    // A worn-out man cannot take the floor, so the series cannot start until he is replaced. The
-    // change he forces is free — `subsLeft` already counts him — and it is not optional.
-    if (full && broken.length)
-      return (
-        <button className="btn" onClick={() => spin()}>
-          {broken.length === 1 ? '1 man is worn out' : `${broken.length} men are worn out`} — spin to replace
-        </button>
-      )
-    if (full && (series || carried)) {
-      const play = (
-        <button className="btn" onClick={() => onSim(five, assignment, toWin, sigmaPick ?? undefined)}>
-          Play game {series ? series.games.length + 1 : 1}
-        </button>
-      )
-      // The offered switch: one change before game 1 of every series (plus the Survival branch's
-      // extras), and one between games. The wheel only turns while a change is in hand.
-      return canSpin ? (
-        <>
-          {play}
-          <button className="btn ghost" onClick={() => spin()}>
-            Change a man · spin
-          </button>
-        </>
-      ) : (
-        play
-      )
-    }
-    if (full)
-      return (
-        <button className="btn" onClick={() => onSim(five, assignment, toWin, sigmaPick ?? undefined)}>
-          Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
+        <button className="btn" disabled={!sel || !slot} onClick={confirm}>
+          {sel && slot
+            ? `Draft ${sel} at ${slot}`
+            : salary && budget < 1
+              ? `No cap room — ${capUsed.toFixed(1)}% of ${capMax}% used`
+              : 'Tap a player to scout him'}
         </button>
       )
     if (dead)
@@ -754,7 +659,7 @@ export function Draft({
                 <span />
               </div>
               {roster.map((p) => {
-                const fits = posOf(p.name).filter((x) => (carried ? fitsCap(p.name, x) && canVacate(x) : open.includes(x)))
+                const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
                 return scoutRow(p, {
                   sub: unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name),
@@ -768,7 +673,7 @@ export function Draft({
                   <span className="cap">Assign to</span>
                   <div className="poschips">
                     {POSITIONS.map((x) => {
-                      const can = open.includes(x) && posOf(sel).includes(x) && fitsCap(sel, x) && canVacate(x)
+                      const can = open.includes(x) && posOf(sel).includes(x)
                       return (
                         <button
                           key={x}
@@ -869,33 +774,6 @@ export function Draft({
               ))}
             </div>
           ) : null}
-        </div>
-      ) : null}
-      {series ? (
-        <div className="card seriesnow">
-          <div className="card-head">
-            <span className="label">
-              Game {series.games.length + 1} of {series.toWin * 2 - 1}
-            </span>
-            <span className="cap">
-              {series.wins}–{series.losses}
-              {series.wins > series.losses ? ' up' : series.wins < series.losses ? ' down' : ' level'}
-            </span>
-          </div>
-          <div className="seriesnow-games">
-            {series.games.map((g, i) => (
-              <span key={i} className={g.won ? 'w' : 'l'}>
-                {g.won ? 'W' : 'L'} {g.us}–{g.them}
-              </span>
-            ))}
-          </div>
-          <div className="seriesnow-note">
-            {broken.length
-              ? `${broken.length === 1 ? 'A man is' : `${broken.length} men are`} spent — replace before the next game.`
-              : subsLeft > 0
-                ? 'One change before the next game, if you want it. Every man on the floor loses a point of durability a night.'
-                : 'Change made. Play it out.'}
-          </div>
         </div>
       ) : null}
       {full && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
@@ -1051,7 +929,7 @@ export function Draft({
       </div>
 
       <div className="dock">
-        <div className={`dock-inner ${(spun && carried && volLeft > 0) || (full && !spinning && !spun && (series || carried) && canSpin && !broken.length) ? 'two' : ''}`}>{dock()}</div>
+        <div className="dock-inner">{dock()}</div>
       </div>
     </>
   )
