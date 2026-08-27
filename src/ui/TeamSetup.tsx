@@ -21,8 +21,8 @@ const countryName = (() => {
 
 /**
  * Name your team: any city in the world (34,000 of them, population 15,000
- * and up) plus a nickname. Shown before the coach the first time a campaign
- * is opened, and again from the map if you want to rename.
+ * and up) plus a nickname. The first screen of a campaign, and again from the
+ * map if you want to rename.
  */
 export function TeamSetup({
   title,

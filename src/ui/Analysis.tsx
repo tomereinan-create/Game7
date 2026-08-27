@@ -1,8 +1,8 @@
 import { SIGMA } from '../config'
 import { odds } from '../engine/odds'
 import { defenseVs, MKNOBS, readsOf, teamOffense, transitionBonus, type Assignment, type DefenseVs, type Offense } from '../engine/offense'
-import { applyMod, compile } from '../engine/resolver'
-import type { Coach, Player } from '../engine/types'
+import { compile } from '../engine/resolver'
+import type { Player } from '../engine/types'
 
 const f1 = (v: number) => v.toFixed(1)
 const sgn = (v: number, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(d)
@@ -29,7 +29,6 @@ export function Analysis({
   theirs,
   myName,
   theirName,
-  coach,
   assignment = 'optimal',
   onClose,
 }: {
@@ -37,17 +36,16 @@ export function Analysis({
   theirs: Player[]
   myName: string
   theirName: string
-  coach?: Coach
   /** Our defensive assignment — what the sim actually scored. The opponent is always optimal. */
   assignment?: Assignment
   onClose: () => void
 }) {
-  const sigma = coach?.sigma ?? SIGMA
+  const sigma = SIGMA
   const A: Side = { label: myName, five: mine, off: teamOffense(mine), transition: transitionBonus(mine), d: defenseVs(mine, theirs, assignment), steals: 0, tone: 'you' }
   const B: Side = { label: theirName, five: theirs, off: teamOffense(theirs), transition: transitionBonus(theirs), d: defenseVs(theirs, mine), steals: 0, tone: 'them' }
   A.steals = A.d.steals
   B.steals = B.d.steals
-  const L = coach ? applyMod(compile(mine, theirs, assignment), coach.mod) : compile(mine, theirs, assignment)
+  const L = compile(mine, theirs, assignment)
   const R = compile(theirs, mine)
   const o = mine.length && theirs.length ? odds(L, R, sigma) : null
   const readsB = theirs.length ? readsOf(theirs) : null

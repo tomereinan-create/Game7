@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import SALARIES from '../data/salaries.json'
 import TEAMSEASONS from '../data/teamseasons.json'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, ROUNDS, SIGMA } from '../config'
-import { coachById } from '../data/coaches'
 import { PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
@@ -16,7 +15,7 @@ import { Matchups } from './Matchups'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { applyMod, compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
-import type { Coach, Opponent, Player } from '../engine/types'
+import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 
 interface TeamSeason {
@@ -113,7 +112,6 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
 export function Draft({
   opponent,
   seed,
-  coach,
   stars,
   teamName,
   salary = false,
@@ -129,7 +127,6 @@ export function Draft({
 }: {
   opponent: Opponent
   seed: number
-  coach: Coach
   stars: number
   teamName: string
   /** Salary Cap campaign: every row also shows that season's salary and share of the cap. */
@@ -184,7 +181,7 @@ export function Draft({
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
   const [sigmaPick, setSigmaPick] = useState<number | null>(null)
-  const sigma = sigmaPick ?? coach.sigma ?? SIGMA
+  const sigma = sigmaPick ?? SIGMA
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -255,7 +252,7 @@ export function Draft({
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
-  const mine = five.length ? applyMod(compile(five, opponent.players, assignment), coachById(coach.id).mod) : null
+  const mine = five.length ? compile(five, opponent.players, assignment) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Their optimal board against your five, as [their man, your man] short names. */
   const theirBoard = useMemo(() => {
@@ -266,9 +263,9 @@ export function Draft({
   /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */
   const assignWorth = useMemo(() => {
     if (!full || !mine) return null
-    const naive = applyMod(compile(five, opponent.players, 'naive'), coach.mod)
+    const naive = compile(five, opponent.players, 'naive')
     return meanMargin(mine, theirs) - meanMargin(naive, theirs)
-  }, [full, mine, five, opponent, theirs, coach])
+  }, [full, mine, five, opponent, theirs])
 
   // Decide the next landing as soon as the wheel is idle (deterministic: the rng is
   // drawn in the same order either way). Shown only with the Wheel whisperer.
@@ -523,7 +520,7 @@ export function Draft({
           Level <b>{opponent.round}</b> of {ROUNDS}
         </span>
         <span>
-          {coach.name} · <b>★ {stars}</b>
+          <b>★ {stars}</b>
         </span>
         <button onClick={() => onBack(picks.length > 0)}>← Map</button>
       </div>
@@ -773,7 +770,7 @@ export function Draft({
 
       <section className="col c">
       {analysis ? (
-        <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} coach={coach} onClose={() => setAnalysis(false)} />
+        <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
       ) : null}
       {five.length ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>
@@ -877,7 +874,7 @@ export function Draft({
               fit <b>{chance.parts.fit >= 0 ? '+' : '−'}{Math.abs(chance.parts.fit).toFixed(1)}</b>
             </span>
             <span>
-              {coach.name.toLowerCase()} <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
+              era <b>{chance.parts.modifiers >= 0 ? '+' : '−'}{Math.abs(chance.parts.modifiers).toFixed(1)}</b>
             </span>
             <span className="eq">
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>

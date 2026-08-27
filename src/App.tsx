@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { ROUNDS, SIGMA } from './config'
-import { coachById } from './data/coaches'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, simGame, simSeries, starsFor } from './engine/resolver'
 import { buy, checkpointLevel, livesBought, respec, subsPerRound } from './engine/tree'
@@ -8,7 +7,7 @@ import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
 import { PLAYERS } from './engine/pool'
-import type { CoachId, GameResult, Lineup, Opponent, Player, SeriesResult } from './engine/types'
+import type { GameResult, Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import {
   applyWear,
   die,
@@ -22,7 +21,6 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
-import { CoachSelect } from './ui/CoachSelect'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap } from './ui/LevelMap'
@@ -73,7 +71,6 @@ export default function App() {
    * simmed in one go — it is played a game at a time and this holds the score while it is live.
    */
   const [run, setRun] = useState<{ games: GameResult[]; wins: number; losses: number; five: string[]; toWin: number; sigma: number; assignment: Assignment } | null>(null)
-  const [pickCoach, setPickCoach] = useState(false)
   const [pickTeam, setPickTeam] = useState(false)
   const [staff, setStaff] = useState(false)
   const [roster, setRoster] = useState(false)
@@ -85,7 +82,6 @@ export default function App() {
   const capped = cm === 'salary' || death
   const opponents = LEVELS
   const prog = cm ? progress[cm] : null
-  const coach = coachById(prog?.coach ?? 'def')
   const opponent = level ? opponents[Math.min(level, ROUNDS) - 1] : null
   /** Death match: last level's five, ready to be carried in. Null at the start of a run. */
   const carried = death && prog?.roster ? (prog.roster.map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[]) : null
@@ -103,20 +99,14 @@ export default function App() {
   }
   const teamName = prog?.team ? `${prog.team.city} ${prog.team.name}` : 'Your team'
 
-  const setCoach = (c: CoachId) => {
-    if (!cm || !prog) return
-    commit(cm, { ...prog, coach: c })
-    setPickCoach(false)
-  }
-
   const sim = (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => {
     if (!opponent || !prog || !cm) return
-    // Our defense is whatever the coach (or the board) assigned; the AI always plays optimal.
-    const mine = applyMod(compile(five, opponent.players, assignment), coach.mod)
+    // Our defense is whatever the board assigned; the AI always plays optimal.
+    const mine = compile(five, opponent.players, assignment)
     // The era's handicap: points of spread the opponent brings to every game of this campaign.
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     const seed = randomSeed()
-    const sig = sigma ?? coach.sigma ?? SIGMA
+    const sig = sigma ?? SIGMA
     if (!death) {
       setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
       return
@@ -166,7 +156,6 @@ export default function App() {
     setMode(null)
     setLevel(null)
     setPending(null)
-    setPickCoach(false)
     setPickTeam(false)
     setStaff(false)
   }
@@ -234,20 +223,6 @@ export default function App() {
     )
   }
 
-  if (prog.coach === null || pickCoach) {
-    return (
-      <>
-        {sheet}
-        {homeFab}
-        <CoachSelect
-          best={prog.stars.filter((s) => s > 0).length}
-          onStart={setCoach}
-          onRoster={() => setRoster(true)}
-        />
-      </>
-    )
-  }
-
   if (staff && (!level || !opponent)) {
     return (
       <>
@@ -283,10 +258,8 @@ export default function App() {
           progress={prog}
           opponents={opponents}
           eras={ERAS}
-          coachName={coach.name}
           teamName={teamName}
           onPlay={setLevel}
-          onCoach={() => setPickCoach(true)}
           onTeam={() => setPickTeam(true)}
           onStaff={() => setStaff(true)}
           onReset={() => {
@@ -329,7 +302,6 @@ export default function App() {
         key={`${cm}-${level}-${prog.plays}-${run?.games.length ?? 0}`}
         opponent={opponent}
         seed={levelSeed(prog, level)}
-        coach={coach}
         handicap={opponent.handicap ?? 0}
         stars={totalStars(prog)}
         teamName={teamName}

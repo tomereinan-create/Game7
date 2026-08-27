@@ -42,10 +42,8 @@ export function LevelMap({
   progress,
   opponents,
   eras,
-  coachName,
   teamName,
   onPlay,
-  onCoach,
   onTeam,
   onStaff,
   onReset,
@@ -54,10 +52,8 @@ export function LevelMap({
   progress: Progress
   opponents: Opponent[]
   eras: { name: string; years: [number, number]; handicap: number; first: number }[]
-  coachName: string
   teamName: string
   onPlay: (level: number) => void
-  onCoach: () => void
   onTeam: () => void
   onStaff: () => void
   onReset: () => void
@@ -105,9 +101,6 @@ export function LevelMap({
           </button>
           <button className="map-link" onClick={onTeam}>
             {teamName} · rename
-          </button>
-          <button className="map-link" onClick={onCoach}>
-            {coachName} · change
           </button>
         </div>
       </div>
