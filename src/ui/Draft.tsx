@@ -257,7 +257,7 @@ export function Draft({
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
-  const mine = five.length ? (tactics ? applyMod(compile(five, opponent.players, assignment), tacticsMod(tactics, five)) : compile(five, opponent.players, assignment)) : null
+  const mine = five.length ? (tactics ? applyMod(compile(five, opponent.players, assignment), tacticsMod(tactics, five, opponent.players)) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Their optimal board against your five, as [their man, your man] short names. */
   const theirBoard = useMemo(() => {

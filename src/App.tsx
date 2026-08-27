@@ -101,7 +101,7 @@ export default function App() {
     if (!opponent || !prog || !cm) return
     // Our defense is whatever the board assigned; the AI always plays optimal. The death match
     // adds the My team plan, priced in points of spread like every other modifier.
-    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(prog.tactics, five)) : compile(five, opponent.players, assignment)
+    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(prog.tactics, five, opponent.players)) : compile(five, opponent.players, assignment)
     // The era's handicap: points of spread the opponent brings to every game of this campaign.
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     const seed = randomSeed()

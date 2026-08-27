@@ -287,6 +287,24 @@ export function MyTeam({
               </div>
             </div>
             <div className="posbar">
+              <span className="cap">Defensive scheme</span>
+              <div className="poschips">
+                {(['matchup', 'drop', 'switch'] as const).map((k) => (
+                  <button key={k} className={`sortb ${tactics.scheme === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, scheme: k })}>
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="posbar">
+              <span className="cap">Hunt the mismatch</span>
+              <div className="poschips">
+                <button className={`sortb ${tactics.hunt ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, hunt: !tactics.hunt })}>
+                  {tactics.hunt ? 'hunting' : 'off'}
+                </button>
+              </div>
+            </div>
+            <div className="posbar">
               <span className="cap">Crash the glass</span>
               <div className="poschips">
                 <button className={`sortb ${tactics.crashOff ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashOff: !tactics.crashOff })}>
@@ -302,6 +320,7 @@ export function MyTeam({
               return parts.length ? (
                 <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
                   {parts.map((x) => `${x.label} ${x.pts >= 0 ? '+' : '−'}${Math.abs(x.pts).toFixed(1)}`).join(' · ')}
+                  {tactics.scheme !== 'matchup' || tactics.hunt ? ' · the scheme and the hunt price fully at the draft, against the level’s five' : ''}
                   {tactics.tempo !== 'normal' ? ` · ${tactics.tempo} tempo moves the night's noise, both teams` : ''}
                 </div>
               ) : (
