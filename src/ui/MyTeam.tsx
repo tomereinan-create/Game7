@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { PLAYERS } from '../engine/pool'
-import { eligible } from '../engine/positions'
+import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
@@ -68,16 +68,40 @@ export function MyTeam({
   const timer = useRef<number | null>(null)
 
   const capUsed = five.reduce((t, p) => t + (capPct(p.name) ?? 0), 0)
-  /** Who on the five this candidate could replace: shared position, and the payroll stays legal. */
+  /**
+   * Can these five men cover the five positions at all? A tiny backtracking matching — five men,
+   * five slots. This, not "does the new man play the old man's spot", is what makes a swap legal:
+   * an SG-only man may replace a PG-only man when the SG already on the five can slide to PG.
+   */
+  const canField = (names: string[]): boolean => {
+    const used = new Set<Pos>()
+    const order = [...names].sort((a, b) => posOf(a).length - posOf(b).length)
+    const fit = (i: number): boolean => {
+      if (i === order.length) return true
+      for (const x of posOf(order[i])) {
+        if (used.has(x)) continue
+        used.add(x)
+        if (fit(i + 1)) return true
+        used.delete(x)
+      }
+      return false
+    }
+    return fit(0)
+  }
+  /** Who on the five this candidate could replace: the five still fields, and the payroll stays legal. */
   const replaceable = (n: string) =>
     capPct(n) === null
       ? []
       : outs.filter(
-          (o) => posOf(n).some((x) => posOf(o).includes(x)) && capUsed - (capPct(o) ?? 0) + (capPct(n) ?? 0) <= capMax + 1e-9,
+          (o) =>
+            capUsed - (capPct(o) ?? 0) + (capPct(n) ?? 0) <= capMax + 1e-9 &&
+            canField([...five.map((p) => p.name).filter((x) => x !== o), n]),
         )
 
   const taken = new Set(five.map((p) => bare(p.name)))
-  const openPos = [...new Set(outs.flatMap((o) => posOf(o)))]
+  // Every position is open to the wheel — a swap can free ANY slot through a reshuffle, and the
+  // afford callback below runs the exact matching per candidate anyway.
+  const openPos = [...POSITIONS]
 
   const spin = () => {
     if (spinning || spun || spinsLeft <= 0) return
