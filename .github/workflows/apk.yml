@@ -57,15 +57,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          mkdir -p ~/.android
           if [ -f keystore/debug.keystore ]; then
-            cp keystore/debug.keystore ~/.android/debug.keystore
-            echo 'using the committed key'
+            echo 'the key is already in the repo'
             exit 0
           fi
           mkdir -p keystore
           keytool -genkeypair -noprompt             -keystore keystore/debug.keystore             -storepass android -keypass android -alias androiddebugkey             -keyalg RSA -keysize 2048 -validity 10950             -dname 'CN=Game7, O=Game7, C=US'
-          cp keystore/debug.keystore ~/.android/debug.keystore
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add keystore/debug.keystore
@@ -75,6 +72,28 @@ jobs:
 
       - name: Generate the Android project
         run: npx cap add android
+
+      # Gradle signs a debug build with whatever sits at ~/.android/debug.keystore,
+      # and on a runner it will mint its own rather than use one left there — the
+      # first build proved it, coming out as CN=Android Debug instead of the key it
+      # had just written. So the generated project is told the path outright. A
+      # second android block is legal: it configures the same extension again.
+      - name: Point the build at that key
+        run: |
+          cat >> android/app/build.gradle <<'GRADLE'
+
+          android {
+              signingConfigs {
+                  debug {
+                      storeFile file('../../keystore/debug.keystore')
+                      storePassword 'android'
+                      keyAlias 'androiddebugkey'
+                      keyPassword 'android'
+                  }
+              }
+          }
+          GRADLE
+          tail -12 android/app/build.gradle
 
       - name: Draw the launcher icon
         run: node scripts/make-android-icons.mjs
