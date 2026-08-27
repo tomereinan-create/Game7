@@ -7,12 +7,20 @@
 name: apk
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       release:
-        description: 'Also publish it as a public download link (a GitHub release)'
+        description: 'Publish it as a public download link (a GitHub release)'
         type: boolean
-        default: false
+        default: true
+
+# Only the newest push is worth an apk; the release it publishes replaces the
+# one before it anyway.
+concurrency:
+  group: apk
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -70,7 +78,7 @@ jobs:
       # the repo, and arrives as a zip. A release asset is a plain link that
       # anyone can tap — which is the point of building an apk at all.
       - name: Publish a download link
-        if: inputs.release
+        if: github.event_name == 'push' || inputs.release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
