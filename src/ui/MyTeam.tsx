@@ -306,6 +306,7 @@ export function MyTeam({
                     : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${left(p.name)} durability left`,
                 dim:
                   left(p.name) <= WEAR_OUT ||
+                  (sel ? !replaceable(sel).includes(p.name) : false) ||
                   (resting ? !canRest(p.name) : false) ||
                   (moving && moving !== p.name ? !canSwitch(moving, p.name) : false),
                 on: out === p.name || moving === p.name,
@@ -347,6 +348,20 @@ export function MyTeam({
                 <div className="seriesnow-note">The bench is empty — the wheel can sign a sixth man outright.</div>
               )
             ) : null}
+            {sel
+              ? (() => {
+                  const legal = replaceable(sel).filter((o) => o !== BENCH_SLOT)
+                  const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
+                  return (
+                    <div className="seriesnow-note">
+                      {legal.length
+                        ? `${short(sel)} (${capPct(sel) ?? 0}% of cap) fits over: ${legal.map(short).join(', ')}.`
+                        : `${short(sel)} has no legal way in.`}{' '}
+                      The dimmed men cannot make way — the swap must leave a five that fields and a payroll inside the {capMax}% cap.
+                    </div>
+                  )
+                })()
+              : null}
             {resting ? <div className="seriesnow-note">Tap the floor man who sits — the exchange is free, positions permitting.</div> : null}
             {moving ? (
               <div className="seriesnow-note">
