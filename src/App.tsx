@@ -3,7 +3,7 @@ import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
 import { gateTactics, reconcileTactics, tacticsMod, TEMPO_SIGMA } from './engine/tactics'
-import { buy, capBonus, checkpointLevel, duraBoost, livesBought, playbookRank, respec, subsPerRound } from './engine/tree'
+import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -124,6 +124,13 @@ export default function App() {
       // between series, spent there and nowhere else.
       const names = pending.five.map((p) => p.name)
       const wear = applyWear(prog.wear, names, pending.result.games.length, (n) => PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 50)
+      // THE BENCH HEALS. The sixth man played nothing, so he takes no wear — and each settled
+      // series restores him, capped at his own card's durability, never past it.
+      const heal = benchHeal(prog)
+      if (prog.bench && heal > 0) {
+        const cap = PLAYERS.find((p) => p.name === prog.bench)?.attrs.durability ?? 50
+        wear[prog.bench] = Math.min(cap, (wear[prog.bench] ?? cap) + heal)
+      }
       const next = { ...prog, stars, plays: prog.plays + 1, wear, subsUsed: 0 }
       commit(cm, pending.result.won ? { ...next, roster: names } : die(next))
     } else {
@@ -217,6 +224,16 @@ export default function App() {
           boost={duraBoost(prog)}
           tactics={prog.tactics}
           playbook={playbookRank(prog)}
+          bench={prog.bench ? (PLAYERS.find((x) => x.name === prog.bench) ?? null) : null}
+          benchOpen={benchHeal(prog) > 0}
+          heal={benchHeal(prog)}
+          onSign={(inn) => commit(cm, { ...prog, bench: inn })}
+          onRest={(floorName) => {
+            // the free exchange the node sells: the floor man sits, the rested man takes his place
+            if (!prog.roster || !prog.bench) return
+            const roster = prog.roster.map((n) => (n === floorName ? prog.bench! : n))
+            commit(cm, { ...prog, roster, bench: floorName, tactics: reconcileTactics(prog.tactics, roster) })
+          }}
           onTactics={(t) => commit(cm, { ...prog, tactics: t })}
           allowed={subsPerRound(prog)}
           used={prog.subsUsed}
@@ -224,9 +241,14 @@ export default function App() {
           onSpend={() => commit(cm, { ...prog, subsUsed: prog.subsUsed + 1 })}
           onSwap={(out, inn) => {
             if (!prog.roster) return
-            const roster = prog.roster.map((n) => (n === out ? inn : n))
             const wear = { ...prog.wear }
             delete wear[out]
+            if (out === prog.bench) {
+              // the wheel replaced the resting man, not a floor man
+              commit(cm, { ...prog, bench: inn, wear })
+              return
+            }
+            const roster = prog.roster.map((n) => (n === out ? inn : n))
             // the departed man may have been the named scorer or playmaker
             commit(cm, { ...prog, roster, wear, tactics: reconcileTactics(prog.tactics, roster) })
           }}

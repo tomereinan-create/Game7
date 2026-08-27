@@ -6,7 +6,7 @@ import { PLAYERS } from '../src/engine/pool'
 import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '../src/engine/tree'
 import { applyWear, currentLevel, die, levelSeed, playable, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
-const prog = (stars: number[]): Progress => ({ coach: 'def', team: null, stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS })
+const prog = (stars: number[]): Progress => ({ coach: 'def', team: null, stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
 
 describe('campaign map', () => {

@@ -30,6 +30,11 @@ export function MyTeam({
   tactics,
   playbook,
   onTactics,
+  bench,
+  benchOpen = false,
+  heal = 0,
+  onSign,
+  onRest,
   allowed,
   used,
   capMax,
@@ -46,6 +51,15 @@ export function MyTeam({
   /** The Playbook node's rank: 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 all of it. */
   playbook: number
   onTactics: (t: Tactics) => void
+  /** The bench node: the sixth man, resting. Null while the spot is empty. */
+  bench?: Player | null
+  benchOpen?: boolean
+  /** Durability the resting man recovers per settled series. */
+  heal?: number
+  /** The wheel signs a sixth man to an EMPTY bench (spends the change like any spin). */
+  onSign?: (inn: string) => void
+  /** The free exchange the node sells: the floor man sits, the rested man takes his place. */
+  onRest?: (floorName: string) => void
   /** The round's allowance: 1 plus the Survival branch's Extra sub ranks. */
   allowed: number
   /** Changes already spent since the last series settled. */
@@ -63,8 +77,14 @@ export function MyTeam({
   // A worn-out man's replacement is the round's change, not a bonus on top of it — but every worn
   // man can always be replaced, or the run soft-locks on a five it cannot field.
   const spinsLeft = Math.max(allowed - used, broken.length)
-  /** The men this spin may send away: the worn-out ones while any remain, otherwise anyone. */
-  const outs = broken.length ? broken : five.map((p) => p.name)
+  /**
+   * The men this spin may send away: the worn-out ones while any remain, otherwise anyone —
+   * including the resting man, and an EMPTY bench itself (a spin can sign a sixth man outright).
+   */
+  const BENCH_SLOT = '::bench'
+  const outs = broken.length
+    ? broken
+    : [...five.map((p) => p.name), ...(bench ? [bench.name] : []), ...(benchOpen && !bench ? [BENCH_SLOT] : [])]
 
   // Like the draft, this screen earns the full width of a desktop.
   useEffect(() => {
@@ -76,6 +96,8 @@ export function MyTeam({
   const [display, setDisplay] = useState<TeamSeason | null>(null)
   const [sel, setSel] = useState<string | null>(null)
   const [out, setOut] = useState<string | null>(null)
+  /** Resting mode: the bench row was tapped, the next floor tap makes the exchange. */
+  const [resting, setResting] = useState(false)
   const [info, setInfo] = useState<string | null>(null)
   const timer = useRef<number | null>(null)
 
@@ -100,17 +122,49 @@ export function MyTeam({
     }
     return fit(0)
   }
-  /** Who on the five this candidate could replace: the five still fields, and the payroll stays legal. */
+  /**
+   * Who this candidate could replace. A floor swap must leave a five that fields and a payroll
+   * that fits; the bench is outside both — the cap judges the five ON THE FLOOR — but a bench
+   * man must still be priced, or the free rest-exchange would smuggle him in under the cap.
+   */
   const replaceable = (n: string) =>
     capPct(n) === null
       ? []
-      : outs.filter(
-          (o) =>
-            capUsed - (capPct(o) ?? 0) + (capPct(n) ?? 0) <= capMax + 1e-9 &&
-            canField([...five.map((p) => p.name).filter((x) => x !== o), n]),
+      : outs.filter((o) =>
+          o === BENCH_SLOT || o === bench?.name
+            ? true
+            : capUsed - (capPct(o) ?? 0) + (capPct(n) ?? 0) <= capMax + 1e-9 &&
+              canField([...five.map((p) => p.name).filter((x) => x !== o), n]),
         )
 
-  const taken = new Set(five.map((p) => bare(p.name)))
+  /** The rest-exchange is legal when the resulting floor five fields and fits the cap. */
+  const canRest = (floorName: string) =>
+    !!bench &&
+    capPct(bench.name) !== null &&
+    capUsed - (capPct(floorName) ?? 0) + (capPct(bench.name) ?? 0) <= capMax + 1e-9 &&
+    canField([...five.map((p) => p.name).filter((x) => x !== floorName), bench.name])
+
+  /** Each floor man's ASSIGNED position — the same matching the draft seeds its slots with. */
+  const assigned: Record<string, Pos> = (() => {
+    const at: Partial<Record<Pos, string>> = {}
+    const order = [...five].sort((a, b) => posOf(a.name).length - posOf(b.name).length)
+    const fit = (i: number): boolean => {
+      if (i === order.length) return true
+      for (const x of posOf(order[i].name)) {
+        if (at[x]) continue
+        at[x] = order[i].name
+        if (fit(i + 1)) return true
+        delete at[x]
+      }
+      return false
+    }
+    fit(0)
+    const by: Record<string, Pos> = {}
+    for (const x of POSITIONS) if (at[x]) by[at[x]!] = x
+    return by
+  })()
+
+  const taken = new Set([...five.map((p) => bare(p.name)), ...(bench ? [bare(bench.name)] : [])])
   // Every position is open to the wheel — a swap can free ANY slot through a reshuffle, and the
   // afford callback below runs the exact matching per candidate anyway.
   const openPos = [...POSITIONS]
@@ -138,7 +192,8 @@ export function MyTeam({
 
   const confirm = () => {
     if (!sel || !out || !replaceable(sel).includes(out)) return
-    onSwap(out, sel)
+    if (out === BENCH_SLOT) onSign?.(sel)
+    else onSwap(out, sel)
     setSpun(null)
     setDisplay(null)
     setSel(null)
@@ -222,13 +277,39 @@ export function MyTeam({
               row(p, {
                 sub:
                   left(p.name) <= WEAR_OUT
-                    ? `${posOf(p.name).join(' · ')} · WORN OUT — must be replaced`
-                    : `${posOf(p.name).join(' · ')} · ${left(p.name)} durability left`,
-                dim: left(p.name) <= WEAR_OUT,
+                    ? `${assigned[p.name] ?? posOf(p.name)[0]} · WORN OUT — must be replaced`
+                    : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${left(p.name)} durability left`,
+                dim: left(p.name) <= WEAR_OUT || (resting ? !canRest(p.name) : false),
                 on: out === p.name,
-                onTap: sel ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out) : undefined,
+                onTap: sel
+                  ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
+                  : resting
+                    ? () => {
+                        if (!canRest(p.name)) return
+                        onRest?.(p.name)
+                        setResting(false)
+                      }
+                    : undefined,
               }),
             )}
+            {benchOpen ? (
+              bench ? (
+                row(bench, {
+                  sub: `BENCH · resting, does not play · ${left(bench.name)} durability${heal ? ` · +${heal} a series` : ''}`,
+                  on: resting || out === bench.name,
+                  onTap: sel
+                    ? () => setOut(replaceable(sel).includes(bench.name) ? bench.name : out)
+                    : () => setResting((r) => !r),
+                })
+              ) : sel ? (
+                <button className={`sortb ${out === BENCH_SLOT ? 'on' : ''}`} style={{ margin: '6px 0 10px' }} onClick={() => setOut(BENCH_SLOT)}>
+                  Sign him to the empty bench →
+                </button>
+              ) : (
+                <div className="seriesnow-note">The bench is empty — the wheel can sign a sixth man outright.</div>
+              )
+            ) : null}
+            {resting ? <div className="seriesnow-note">Tap the floor man who sits — the exchange is free, positions permitting.</div> : null}
             <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
               {broken.length
                 ? `${broken.length === 1 ? 'A man is' : `${broken.length} men are`} worn out — the spin replaces ${broken.length === 1 ? 'him' : 'them'}, and nothing else.`
@@ -378,6 +459,7 @@ export function MyTeam({
                       on: sel === p.name,
                       onTap: () => {
                         if (!outsFor.length) return
+                        setResting(false)
                         setSel(sel === p.name ? null : p.name)
                         setOut(outsFor.length === 1 ? outsFor[0] : null)
                       },
@@ -397,7 +479,13 @@ export function MyTeam({
             </button>
           ) : spun ? (
             <button className="btn" disabled={!sel || !out} onClick={confirm}>
-              {sel && out ? `${sel} in, ${out} out` : sel ? 'Tap the man he replaces' : 'Tap a player to swap him in'}
+              {sel && out
+                ? out === BENCH_SLOT
+                  ? `Sign ${sel} to the bench`
+                  : `${sel} in, ${out} out`
+                : sel
+                  ? 'Tap the man he replaces'
+                  : 'Tap a player to swap him in'}
             </button>
           ) : spinsLeft > 0 ? (
             <button className="btn" onClick={spin}>

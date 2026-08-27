@@ -35,6 +35,7 @@ export type NodeId =
   | 'surv_save'
   | 'surv_sub'
   | 'surv_dura'
+  | 'surv_bench'
 
 export interface Node {
   id: NodeId
@@ -173,6 +174,15 @@ export const NODES: Node[] = [
     rankBlurbs: ['+10 durability, every man, the whole run.', '+20.', '+30 — built for the long haul.'],
   },
   {
+    id: 'surv_bench', branch: 'Survival', depth: 4, ranks: 2, requires: 'surv_dura',
+    name: 'The bench',
+    blurb: 'Death match only: a sixth man. He does not play — he rests, and resting heals.',
+    rankBlurbs: [
+      'A sixth roster spot. The man on it recovers 3 durability a series, never past his own card.',
+      'He recovers 6 — a real rotation, one man at a time.',
+    ],
+  },
+  {
     id: 'cap', branch: 'Salary', depth: 0, ranks: 4,
     name: 'Payroll room',
     blurb: 'Salary Cap campaign only: each rank buys five more points of cap.',
@@ -210,6 +220,8 @@ export const subsPerRound = (w: Wallet) => 1 + rank(w, 'surv_sub')
 export const duraBoost = (w: Wallet) => rank(w, 'surv_dura') * 10
 /** Death match: how much of the My team playbook is open. 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 everything. */
 export const playbookRank = (w: Wallet) => rank(w, 'coach_tactics')
+/** Death match: durability the benched man recovers per settled series (0 = no bench at all). */
+export const benchHeal = (w: Wallet) => [0, 3, 6][rank(w, 'surv_bench')] ?? 0
 
 /** Extra payroll room bought in the Salary branch, in points of the cap. */
 export const capBonus = (w: Wallet) => rank(w, 'cap') * 5

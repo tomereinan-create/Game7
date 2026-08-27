@@ -62,6 +62,8 @@ export interface Progress {
   subsUsed: number
   /** Death match: the plan picked on the My team screen. The names must be men on the roster. */
   tactics: Tactics
+  /** Death match: the sixth man, resting. He does not play, and resting heals (The bench node). */
+  bench: string | null
 }
 
 /** What a series cost each man who played it: one point of durability per game. */
@@ -93,6 +95,7 @@ const fresh = (): Progress => ({
   wear: {},
   subsUsed: 0,
   tactics: DEFAULT_TACTICS,
+  bench: null,
 })
 
 /**
@@ -106,7 +109,7 @@ export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
   const stars = p.stars.map((s, i) => (i < p.checkpoint ? s : 0))
   // The five is gone, so the named men reset; the plan itself (tempo, style, the glass) survives.
-  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: reconcileTactics(p.tactics, null), deaths: p.deaths + 1 }
+  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: reconcileTactics(p.tactics, null), bench: null, deaths: p.deaths + 1 }
 }
 
 export function loadProgress(m: CampaignMode): Progress {
@@ -135,6 +138,7 @@ export function loadProgress(m: CampaignMode): Progress {
         p.tactics && typeof p.tactics === 'object' ? { ...DEFAULT_TACTICS, ...p.tactics } : DEFAULT_TACTICS,
         Array.isArray(p.roster) ? p.roster : null,
       ),
+      bench: typeof p.bench === 'string' ? p.bench : null,
     })
   } catch {
     return fresh()
