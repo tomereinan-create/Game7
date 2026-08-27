@@ -124,6 +124,10 @@ export const RULES: Rule[] = [
   // defender" says more about a 90-defence card than "enforcer" does.
   { tag: 'Offensive superstar', test: (c) => c.ge(c.p.o_ovr, 85) && c.lt(c.p.d_ovr, 70) },
   { tag: 'Elite defender', test: (c) => c.ge(c.p.d_ovr, 90) && c.lt(c.p.o_ovr, 70) },
+  // TWO-WAY BIG — the Sikma hole: a big whose defence carries him, with an offence that is real
+  // and secondary rather than absent. Closed at BOTH ends on purpose: above 95 defence he is an
+  // anchor or an elite defender and keeps that name, and above 77 offence he is a two-way star.
+  { tag: 'Two-way big', test: (c) => c.big && c.ge(c.p.d_ovr, 85) && c.lt(c.p.d_ovr, 96) && c.ge(c.p.o_ovr, 60) && c.lt(c.p.o_ovr, 78) },
   { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
@@ -183,6 +187,12 @@ export const RULES: Rule[] = [
   // between 55 and 75, nothing at 80, and enough playmaking volume (40) that he is on the floor
   // touching the ball rather than merely unremarkable. Directly above All-around, which is the same
   // claim with floors instead of a window and would otherwise take him first.
+  // CO-STAR — the second star: an offence in the star band with no defensive claim to match it.
+  // A tier name, and it sits at the very bottom with the other generic claims for the same reason
+  // they do. Its band holds 252 cards and nearly every one of them already has a diet that says
+  // more — a Point forward, a Throwback, a Flamethrower. Down here it only names the men no rule
+  // above described, which is exactly the hole it was written for.
+  { tag: 'Co-star', test: (c) => c.ge(c.p.o_ovr, 78) && c.lt(c.p.o_ovr, 90) && c.ge(c.p.d_ovr, 60) && c.lt(c.p.d_ovr, 85) },
   { tag: 'Glue guy', test: (c) => c.glue >= 4 && c.lt(c.glueMax, 80) && c.ge(c.a.playvol, 40) && c.lt(c.a.volume, 65) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
 ]

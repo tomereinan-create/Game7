@@ -1296,6 +1296,42 @@ const ROUNDS: Record<string, () => void> = {
     note('The lever that WOULD move him is the hinge, not the floor: playvol/50 -> playvol/75 would')
     note('take him to 0.70 of his attempts. Recorded, not taken.')
   },
+  '50-tags': () => {
+    console.log(`${EOL}recal_50 (design side) — TWO-WAY BIG + CO-STAR, and the named pair`)
+    src('Two-way big, after Elite defender', POOL, /Elite defender[^]{0,600}tag: 'Two-way big', test: \(c\) => c\.big && c\.ge\(c\.p\.d_ovr, 85\) && c\.lt\(c\.p\.d_ovr, 96\) && c\.ge\(c\.p\.o_ovr, 60\) && c\.lt\(c\.p\.o_ovr, 78\)/, 'the Sikma hole, closed at both ends')
+    src('Co-star, above Glue guy', POOL, /tag: 'Co-star', test: \(c\) => c\.ge\(c\.p\.o_ovr, 78\) && c\.lt\(c\.p\.o_ovr, 90\) && c\.ge\(c\.p\.d_ovr, 60\) && c\.lt\(c\.p\.d_ovr, 85\)[^]{0,400}tag: 'Glue guy'/, 'a tier name, so it sits with the generic claims')
+    note('CO-STAR IS PLACED LATE, not with the one-end tiers: its band holds 252 cards and 218 of them')
+    note('already wear a diet that says more (Two-way anchor, Point forward, Throwback...). Late, it only')
+    note('names the men no rule above described — which is the entire Unclassified screenshot set.')
+    const verify: [string, string][] = [
+      ["Dirk Nowitzki '04", 'Co-star'], ["Manu Ginóbili '07", 'Co-star'], ["Paul Pierce '03", 'Co-star'],
+      ["Chauncey Billups '09", 'Co-star'], ["Julius Erving '83", 'Co-star'], ["Pau Gasol '04", 'Co-star'],
+      ["Chris Bosh '16", 'Co-star'], ["Clyde Drexler '88", 'Co-star'], ["Clyde Drexler '89", 'Co-star'],
+      ["Jack Sikma '83", 'Two-way big'], ["Montrezl Harrell '18", 'Co-star'],
+    ]
+    for (const [n, want] of verify) {
+      const q = by.get(n)
+      if (q) line(n, archetype(q), want, archetype(q) === want)
+    }
+    const un = PLAYERS.filter((q) => archetype(q) === 'Unclassified').length
+    line('Unclassified count', `11 -> ${un}`, '0', un === 0)
+    for (const [n, want] of [["Al Horford '18", 'Elite defender'], ["Dikembe Mutombo '97", 'Elite defender'], ["Serge Ibaka '16", 'Anchor'], ["Shaquille O'Neal '00", 'Two-way anchor']] as const) {
+      const q = by.get(n)
+      if (q) line(`${n} keeps his name`, archetype(q), want, archetype(q) === want)
+    }
+    note('THE NAMED PAIR, measured by A/B (the self-created gate toggled off and on, same pipeline v50):')
+    note("  Montrezl Harrell '18   OFF 83 -> 82 (gate on)     the round expected ~75-77")
+    note("  Shaquille O'Neal '00   OFF 99 -> 99               holds, as required")
+    note('One falls and one holds, so the pair test passes IN DIRECTION — but the gate as tuned cannot')
+    note('reach 75-77: at playvol 39 the r50 floor keeps 0.857 of his attempts and the 1.5 power')
+    note('flattens the rest. The hinge (playvol/50 -> /75) was A/B-tested and REJECTED: it drops Shaq')
+    note("-2 to -4 on every season ('00 99 -> 97) before Harrell even reaches 80 — both move, which the")
+    note('round names as the stopping condition. Reported rather than tuned around; the data pipeline is')
+    note('untouched this round and v50 stands. Harrell tags Co-star per his ACTUAL post-gate numbers')
+    note('(82/68), not the predicted ones.')
+    const mh = by.get("Montrezl Harrell '18")
+    if (mh) line("Harrell '18 as shipped", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 82 DEF 68', mh.o_ovr === 82 && mh.d_ovr === 68)
+  },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
     line('PIPELINE_VERSION, this side', `build_ratings ${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]} / compute_ovr ${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, 'both 21', /PIPELINE_VERSION = 21/.test(RATINGS) && /PIPELINE_VERSION = 21/.test(OVR))
