@@ -25,6 +25,7 @@ const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 export function MyTeam({
   five,
   wear,
+  boost = 0,
   allowed,
   used,
   capMax,
@@ -34,6 +35,8 @@ export function MyTeam({
 }: {
   five: Player[]
   wear: Record<string, number>
+  /** Iron men: extra durability every man carries, read at evaluation. */
+  boost?: number
   /** The round's allowance: 1 plus the Survival branch's Extra sub ranks. */
   allowed: number
   /** Changes already spent since the last series settled. */
@@ -46,7 +49,7 @@ export function MyTeam({
   onSwap: (out: string, inn: string) => void
   onBack: () => void
 }) {
-  const left = (n: string) => wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99
+  const left = (n: string) => (wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99) + boost
   const broken = five.filter((p) => left(p.name) <= WEAR_OUT).map((p) => p.name)
   // A worn-out man's replacement is the round's change, not a bonus on top of it — but every worn
   // man can always be replaced, or the run soft-locks on a five it cannot field.

@@ -33,6 +33,7 @@ export type NodeId =
   | 'surv_life'
   | 'surv_save'
   | 'surv_sub'
+  | 'surv_dura'
 
 export interface Node {
   id: NodeId
@@ -155,6 +156,12 @@ export const NODES: Node[] = [
     rankBlurbs: ['A second change every round.', 'A third.'],
   },
   {
+    id: 'surv_dura', branch: 'Survival', depth: 3, ranks: 3, requires: 'surv_sub',
+    name: 'Iron men',
+    blurb: 'Death match only: every man on the five carries more durability.',
+    rankBlurbs: ['+10 durability, every man, the whole run.', '+20.', '+30 — built for the long haul.'],
+  },
+  {
     id: 'cap', branch: 'Salary', depth: 0, ranks: 4,
     name: 'Payroll room',
     blurb: 'Salary Cap campaign only: each rank buys five more points of cap.',
@@ -188,6 +195,8 @@ export const canBuy = (w: Wallet, id: NodeId) => balance(w) >= price(id) && !max
 export const livesBought = (w: Wallet) => rank(w, 'surv_life')
 export const checkpointLevel = (w: Wallet) => [0, 20, 40, 60][rank(w, 'surv_save')] ?? 0
 export const subsPerRound = (w: Wallet) => 1 + rank(w, 'surv_sub')
+/** Death match: extra durability every carried man gets, read at evaluation so buying it helps the CURRENT five too. */
+export const duraBoost = (w: Wallet) => rank(w, 'surv_dura') * 10
 
 /** Extra payroll room bought in the Salary branch, in points of the cap. */
 export const capBonus = (w: Wallet) => rank(w, 'cap') * 5

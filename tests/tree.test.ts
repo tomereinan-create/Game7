@@ -46,7 +46,7 @@ describe('staff tree — stars as a campaign currency', () => {
     expect(rank(w, 'fo_spin')).toBe(3)
     expect(buy(w, 'fo_spin')).toBeNull()
     expect(buy({ ...w, spent: 100000 }, 'scout_ratings')).toBeNull() // no stars, no rank
-    expect(NODES).toHaveLength(14) // 10 staff + the Salary payroll node + the 3 Survival nodes (death match)
+    expect(NODES).toHaveLength(15) // 10 staff + the Salary payroll node + the 4 Survival nodes (death match)
     // respec: everything refunded, nothing owned, earned untouched
     const back = respec(w)
     expect(balance(back)).toBe(ROUNDS * 2)

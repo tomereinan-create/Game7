@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
-import { buy, capBonus, checkpointLevel, livesBought, respec, subsPerRound } from './engine/tree'
+import { buy, capBonus, checkpointLevel, duraBoost, livesBought, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -211,6 +211,7 @@ export default function App() {
         <MyTeam
           five={carry}
           wear={prog.wear}
+          boost={duraBoost(prog)}
           allowed={subsPerRound(prog)}
           used={prog.subsUsed}
           capMax={CAP_LIMIT + capBonus(prog)}

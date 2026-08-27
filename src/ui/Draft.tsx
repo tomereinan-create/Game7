@@ -9,7 +9,7 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
-import { capBonus, owned, rank, respinSeason, type NodeId } from '../engine/tree'
+import { capBonus, duraBoost, owned, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
@@ -234,8 +234,9 @@ export function Draft({
   const full = picks.length === DRAFT_SIZE
   /** Death match: changes left before this level. A normal draft is not limited. */
   const carried = carry?.length ? carry.map((p) => p.name) : null
-  /** Durability left for a man on this five — his card's number until he has played on it. */
-  const left = (n: string) => wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99
+  /** Durability left for a man on this five — his card's number until he has played on it, plus
+   * the Iron men boost, read at evaluation so a rank bought mid-run lifts the current five too. */
+  const left = (n: string) => (wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99) + duraBoost(wallet)
   /** Worn out: he cannot take the floor again, so he must go — even if you would rather he stayed. */
   const broken = carried ? picks.filter((n) => carried.includes(n) && left(n) <= WEAR_OUT) : []
   // Salary Cap campaign: the five's combined share of the cap may not pass CAP_LIMIT.
