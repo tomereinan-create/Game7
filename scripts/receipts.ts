@@ -1280,9 +1280,14 @@ const ROUNDS: Record<string, () => void> = {
     const cr = (pv: number) => 0.35 + 0.65 * Math.min(1, pv / 50)
     for (const [pv, want] of [[0, 0.35], [12, 0.506], [21, 0.623], [39, 0.857], [50, 1], [80, 1]] as const)
       line(`playvol ${pv} keeps`, cr(pv).toFixed(3), String(want), Math.abs(cr(pv) - want) < 0.002)
-    for (const [n, was] of [["Shaquille O'Neal '00", 99], ["Giannis Antetokounmpo '25", 99], ["Joel Embiid '23", 95], ["Zion Williamson '21", 90], ["Hakeem Olajuwon '93", 87]] as const) {
+    for (const [n, was] of [["Shaquille O'Neal '00", 99], ["Giannis Antetokounmpo '25", 99], ["Joel Embiid '23", 95], ["Zion Williamson '21", 90]] as const) {
       const q = by.get(n)
       if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'untouched', q.o_ovr === was)
+    }
+    // Hakeem '93 sat at 87 here; r52 then lifted the assumed clamp on INFERRED seasons and he reads 88.
+    {
+      const q = by.get("Hakeem Olajuwon '93")
+      if (q) line("Hakeem Olajuwon '93 (87 at r50, then r52)", `OFF ${q.o_ovr}`, '88', q.o_ovr === 88)
     }
     for (const [n, was] of [["Dwight Howard '11", 80], ["Clint Capela '18", 66], ["Andre Drummond '16", 58]] as const) {
       const q = by.get(n)
@@ -1309,7 +1314,8 @@ const ROUNDS: Record<string, () => void> = {
       const q = by.get(n)
       if (q) line(`THE PAIR: ${n}`, `OFF ${was} -> ${q.o_ovr}`, `${want}${n.startsWith('Shaq') ? ' — holds, the permanent constraint' : ' — the round wanted ~74-75'}`, q.o_ovr === want)
     }
-    for (const [n, want] of [["Zion Williamson '21", 90], ["Hakeem Olajuwon '94", 87], ["Giannis Antetokounmpo '23", 96], ["Joel Embiid '23", 95]] as const) {
+    // Hakeem '94 read 87 here; r52 then lifted the assumed clamp on INFERRED seasons and he reads 88.
+    for (const [n, want] of [["Zion Williamson '21", 90], ["Hakeem Olajuwon '94", 88], ["Giannis Antetokounmpo '23", 96], ["Joel Embiid '23", 95]] as const) {
       const q = by.get(n)
       if (q) line(`${n} (vol 85+)`, `OFF ${q.o_ovr}`, `${want} — vol_f = 1.0 by construction`, q.o_ovr === want)
     }
@@ -1363,6 +1369,29 @@ const ROUNDS: Record<string, () => void> = {
     const mh = by.get("Montrezl Harrell '18")
     // OFF 82 was this round's shipped number; r51's volume ramp then took him to 77.
     if (mh) line("Harrell '18 as shipped (82 at r50, then r51)", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 77 DEF 68', mh.o_ovr === 77 && mh.d_ovr === 68)
+  },
+  '52': () => {
+    console.log(`${EOL}recal_52 — the self-created gate must not GUESS on inferred seasons`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '52', /PIPELINE_VERSION = 52/.test(OVR) && /PIPELINE_VERSION = 52/.test(RATINGS))
+    src('the waiver, on the measured flag the zones carry', OVR, /if a\.get\('rim_mid_measured'\):[^]{0,600}att_f = 1\.0/, 'measured keeps the gate; inferred takes no discount and no boost')
+    note('THE DEFECT, in the shipped mechanism: the attempt rate exists only where the shot tables do')
+    note('(1997+). On an inferred season rim[1] is a 0-1 MODEL value, not a rate — so _two ~ 0.6 parked')
+    note('every pre-97 interior monster on the 0.30 clamp: a 70% cut for a number nobody measured.')
+    note('The r51 volume ramp still applies to them — volume IS measured in every era.')
+    for (const [n, was, want] of [["Shaquille O'Neal '94", 88, 92], ["Shaquille O'Neal '95", 89, 93], ["Shaquille O'Neal '96", 86, 91],
+                                  ["Hakeem Olajuwon '90", 73, 73], ["Moses Malone '82", 85, 86], ["Patrick Ewing '90", 84, 85]] as const) {
+      const q = by.get(n)
+      if (q) line(n, `OFF ${was} -> ${q.o_ovr}`, `${want}`, q.o_ovr === want)
+    }
+    note("Orlando Shaq lands 91-93 against the round's ~90-92. Hakeem '90 holds because his shape does")
+    note('not fire the dominance bonus at all (rim 85 with a real midrange — neither clause matches),')
+    note('so there was no clamp to lift; his bonus-carrying seasons (’93, ’94) rose 1 apiece.')
+    for (const [n, want] of [["Montrezl Harrell '18", 77], ["Dwight Howard '11", 78], ["Clint Capela '18", 61], ["Shaquille O'Neal '00", 99]] as const) {
+      const q = by.get(n)
+      if (q) line(`post-97, measured: ${n}`, `OFF ${q.o_ovr}`, `${want} — unchanged`, q.o_ovr === want)
+    }
+    note('72 cards changed, EVERY one an inferred season and every one a riser (max +5, Shaq ’93/’96);')
+    note('zero measured-season cards moved — the gate keeps its measured data whole.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

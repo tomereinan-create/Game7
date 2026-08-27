@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 51
+PIPELINE_VERSION = 52
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -149,8 +149,17 @@ def o_score(p):
             # FLOOR 0.55 -> 0.35 (his ruling): r49 fixed the mechanism, this sets the magnitude.
             # A man who creates nothing now keeps just over a third of his attempts; playvol 50
             # still keeps all of them, so the post scorers are untouched and only the finishers move.
-            _create = 0.35 + 0.65 * min(1.0, a['playvol'] / 50.0)
-            att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
+            # MEASURED, OR INFERRED BY MODEL — NEVER ASSUMED (recal_52). The attempt rate exists
+            # only where the shot tables do (1997+). On an inferred season rim[1] is a 0-1 model
+            # value, not a rate, so the old line read _two ~ 0.6 and parked every pre-97 interior
+            # monster on the 0.30 clamp — a 70% cut for a number nobody measured. Where the data
+            # is measured the r49/r50 gate stands whole; where it is not, the factor is 1.0 —
+            # no discount, no boost.
+            if a.get('rim_mid_measured'):
+                _create = 0.35 + 0.65 * min(1.0, a['playvol'] / 50.0)
+                att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
+            else:
+                att_f = 1.0
             # AND HOW MUCH HE SHOOTS AT ALL (recal_51). Attempts are a RATE — per hundred — so a
             # 17-minute bench finisher can post a starter's attempt rate while carrying no load.
             # The ramp asks the load question the rate cannot: zero below volume 70, full at 80+.
