@@ -29,6 +29,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+
+      # If an Android build has been published, carry it into the site, so the
+      # apk has a link on the game's own address instead of a GitHub page.
+      - name: Include the Android app
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download apk --pattern 'Game7.apk' --dir dist --clobber 2>/dev/null; then
+            ls -lh dist/Game7.apk
+          else
+            echo 'no apk published yet — the site goes out without one'
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

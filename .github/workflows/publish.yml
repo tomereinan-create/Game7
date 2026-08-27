@@ -58,6 +58,19 @@ jobs:
       - run: npm run build
         if: steps.slot.outputs.mode == 'publish'
 
+      # If an Android build has been published, carry it into the site, so the
+      # apk has a link on the game's own address instead of a GitHub page.
+      - name: Include the Android app
+        if: steps.slot.outputs.mode == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download apk --pattern 'Game7.apk' --dir dist --clobber 2>/dev/null; then
+            ls -lh dist/Game7.apk
+          else
+            echo 'no apk published yet — the site goes out without one'
+          fi
+
       - name: Fetch what is published now
         run: |
           remote="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"

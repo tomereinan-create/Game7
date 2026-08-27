@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # to nudge the site workflow once the apk exists
 
 jobs:
   apk:
@@ -74,8 +75,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
+          # A fixed name, because the site links to it and that link should not
+          # change with every build.
+          cp "${{ steps.apk.outputs.path }}" Game7.apk
           gh release delete apk --yes --cleanup-tag || true
-          gh release create apk "${{ steps.apk.outputs.path }}" \
-            --title 'Game7 (Android)' \
-            --notes 'Sideloadable debug build. Android will warn about installing outside the Play Store; allow it for your browser or files app, then open the file.'
-          echo "https://github.com/${GITHUB_REPOSITORY}/releases/tag/apk"
+          gh release create apk Game7.apk --title 'Game7 (Android)' --notes 'Sideloadable debug build. Android warns about installing outside the Play Store; allow it for your browser or files app, then open the file.'
+
+          # The site copies the apk in at build time, so it has to run again now
+          # that there is one to copy.
+          gh workflow run deploy.yml --ref main || true
+          gh workflow run publish.yml --ref main || true
+          echo "apk published; the site will carry it once the deploy finishes"
