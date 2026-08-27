@@ -42,6 +42,36 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+      # Android will only install a new apk over an old one when both carry the
+      # same signature. Gradle's debug build signs with ~/.android/debug.keystore,
+      # and a runner starts without one — so every build was minting a fresh key
+      # and every update would have demanded an uninstall, taking the player's
+      # saved runs with it. The first build here makes one key and commits it;
+      # every build after uses it.
+      #
+      # The password is `android`, the documented default the Android plugin
+      # expects. It is not a secret, and this is a debug key for a sideloaded
+      # game — it grants nothing beyond signing this package.
+      - name: One signing key, kept
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          mkdir -p ~/.android
+          if [ -f keystore/debug.keystore ]; then
+            cp keystore/debug.keystore ~/.android/debug.keystore
+            echo 'using the committed key'
+            exit 0
+          fi
+          mkdir -p keystore
+          keytool -genkeypair -noprompt             -keystore keystore/debug.keystore             -storepass android -keypass android -alias androiddebugkey             -keyalg RSA -keysize 2048 -validity 10950             -dname 'CN=Game7, O=Game7, C=US'
+          cp keystore/debug.keystore ~/.android/debug.keystore
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add keystore/debug.keystore
+          git commit -q -m 'apk: one signing key, so a new build installs over the old app'
+          git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main             || echo 'could not push the key — the next build will try again'
+
 
       - name: Generate the Android project
         run: npx cap add android
