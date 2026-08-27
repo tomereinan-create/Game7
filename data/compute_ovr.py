@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 50
+PIPELINE_VERSION = 51
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -151,6 +151,14 @@ def o_score(p):
             # still keeps all of them, so the post scorers are untouched and only the finishers move.
             _create = 0.35 + 0.65 * min(1.0, a['playvol'] / 50.0)
             att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
+            # AND HOW MUCH HE SHOOTS AT ALL (recal_51). Attempts are a RATE — per hundred — so a
+            # 17-minute bench finisher can post a starter's attempt rate while carrying no load.
+            # The ramp asks the load question the rate cannot: zero below volume 70, full at 80+.
+            # Paint branch only; a shooter's branch stays, because narrow shooting specialists are
+            # definitionally low-volume and the Korver class would re-collapse. Stacks with r49's
+            # creation gate — they multiply. Shaq/Zion/Hakeem/Giannis/Embiid all sit at a full ramp
+            # by construction (volume 85+), so the permanent constraint holds untouched.
+            att_f *= max(0.0, min(1.0, (a['volume'] - 70) / 10.0))
         else:
             base = 5.0
             att_f = max(_three / 8.5, 1.0)

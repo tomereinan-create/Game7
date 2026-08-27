@@ -1296,6 +1296,34 @@ const ROUNDS: Record<string, () => void> = {
     note('The lever that WOULD move him is the hinge, not the floor: playvol/50 -> playvol/75 would')
     note('take him to 0.70 of his attempts. Recorded, not taken.')
   },
+  '51': () => {
+    console.log(`${EOL}recal_51 — the paint branch gains a VOLUME RAMP`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '51', /PIPELINE_VERSION = 51/.test(OVR) && /PIPELINE_VERSION = 51/.test(RATINGS))
+    src('the ramp, paint branch only', OVR, /att_f \*= max\(0\.0, min\(1\.0, \(a\['volume'\] - 70\) \/ 10\.0\)\)/, 'zero below volume 70, full at 80+')
+    note('Attempts are a RATE — per hundred — so a 17-minute bench finisher can post a starter’s attempt')
+    note('rate while carrying no load. The ramp asks the load question the rate cannot. It STACKS with')
+    note('r49’s creation gate (they multiply). The shooter branch is untouched: narrow shooting')
+    note('specialists are definitionally low-volume, and gating them would re-collapse the Korver class.')
+    const pair: [string, number, number][] = [["Montrezl Harrell '18", 82, 77], ["Shaquille O'Neal '00", 99, 99]]
+    for (const [n, was, want] of pair) {
+      const q = by.get(n)
+      if (q) line(`THE PAIR: ${n}`, `OFF ${was} -> ${q.o_ovr}`, `${want}${n.startsWith('Shaq') ? ' — holds, the permanent constraint' : ' — the round wanted ~74-75'}`, q.o_ovr === want)
+    }
+    for (const [n, want] of [["Zion Williamson '21", 90], ["Hakeem Olajuwon '94", 87], ["Giannis Antetokounmpo '23", 96], ["Joel Embiid '23", 95]] as const) {
+      const q = by.get(n)
+      if (q) line(`${n} (vol 85+)`, `OFF ${q.o_ovr}`, `${want} — vol_f = 1.0 by construction`, q.o_ovr === want)
+    }
+    note('THE FIVE BIGGEST BONUSES UNDER VOLUME 80, before -> after (the receipt the round asked for):')
+    for (const [n, was, want] of [["Shaquille O'Neal '08", 70, 64], ["Montrezl Harrell '18", 82, 77], ["Shaquille O'Neal '09", 76, 71], ["Clint Capela '17", 63, 58], ["Andre Drummond '20", 63, 58]] as const) {
+      const q = by.get(n)
+      if (q) line(`  ${n}`, `OFF ${was} -> ${q.o_ovr}`, `${want} (vol ${q.attrs.volume})`, q.o_ovr === want)
+    }
+    note('670 cards moved, every one of them DOWN, none by more than 6. Harrell lands 77 against the')
+    note('estimated 74-75: his vol_f is 0.30 exactly as the round computed, but the r50 floor already')
+    note('held less of his bonus than the round’s ~10-point figure assumed. Gobert ’19 (volume 27)')
+    note('loses the whole bonus, 61 -> 54 — his old anchor comment named volume as the missing gate,')
+    note('recorded-not-taken; r51 took it, and the anchor is re-pinned at 54 with the reason.')
+  },
   '50-tags': () => {
     console.log(`${EOL}recal_50 (design side) — TWO-WAY BIG + CO-STAR, and the named pair`)
     src('Two-way big, after Elite defender', POOL, /Elite defender[^]{0,600}tag: 'Two-way big', test: \(c\) => c\.big && c\.ge\(c\.p\.d_ovr, 85\) && c\.lt\(c\.p\.d_ovr, 96\) && c\.ge\(c\.p\.o_ovr, 60\) && c\.lt\(c\.p\.o_ovr, 78\)/, 'the Sikma hole, closed at both ends')
@@ -1307,7 +1335,10 @@ const ROUNDS: Record<string, () => void> = {
       ["Dirk Nowitzki '04", 'Co-star'], ["Manu Ginóbili '07", 'Co-star'], ["Paul Pierce '03", 'Co-star'],
       ["Chauncey Billups '09", 'Co-star'], ["Julius Erving '83", 'Co-star'], ["Pau Gasol '04", 'Co-star'],
       ["Chris Bosh '16", 'Co-star'], ["Clyde Drexler '88", 'Co-star'], ["Clyde Drexler '89", 'Co-star'],
-      ["Jack Sikma '83", 'Two-way big'], ["Montrezl Harrell '18", 'Co-star'],
+      ["Jack Sikma '83", 'Two-way big'],
+      // SUPERSEDED by r51: the volume ramp takes his OFF 82 -> 77, under Co-star's 78 floor, and at
+      // OVR 77 he reads Balanced. The round asked for his tag per his ACTUAL numbers, and this is it.
+      ["Montrezl Harrell '18", 'Balanced'],
     ]
     for (const [n, want] of verify) {
       const q = by.get(n)
@@ -1330,7 +1361,8 @@ const ROUNDS: Record<string, () => void> = {
     note('untouched this round and v50 stands. Harrell tags Co-star per his ACTUAL post-gate numbers')
     note('(82/68), not the predicted ones.')
     const mh = by.get("Montrezl Harrell '18")
-    if (mh) line("Harrell '18 as shipped", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 82 DEF 68', mh.o_ovr === 82 && mh.d_ovr === 68)
+    // OFF 82 was this round's shipped number; r51's volume ramp then took him to 77.
+    if (mh) line("Harrell '18 as shipped (82 at r50, then r51)", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 77 DEF 68', mh.o_ovr === 77 && mh.d_ovr === 68)
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

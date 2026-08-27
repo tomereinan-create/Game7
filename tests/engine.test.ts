@@ -169,7 +169,10 @@ describe('player data (stats-only doctrine)', () => {
     // other two) fires on a man taking 27-volume lobs. Three quarters of the 2,268 cards the bonus
     // reaches carry volume under 50. If the +8 is meant for the great interior SCORERS rather than for
     // finishers, the gate it needs is volume — recorded, not taken.
-    near("Rudy Gobert '19", 61, 96)
+    // r51 TOOK IT: the paint bonus now ramps on volume (zero below 70, full at 80+), and Gobert at
+    // volume 27 is the man the old comment named. His bonus is gone entirely: 61 -> 54. The great
+    // interior scorers (volume 85+) sit on vol_f = 1.0 and never felt it.
+    near("Rudy Gobert '19", 54, 96)
     // This anchor has now been round-tripped by two rulings. Audit ruling 2 moved perdef to the Overall
     // slice and he read 35; recal_20 moves it BACK to shots from 15 feet out — the shots a perimeter
     // defender is responsible for — and he reads 43 on perdef 42. Ruling 2's "Trae <= 40" acceptance is
