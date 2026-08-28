@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 55   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 56   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -190,9 +190,9 @@ def score_season(r, P):
         idc=[r['blk'], r['ht'], r['dbpm'], round(r['drep'], 3),
              (TRACKING.get((r['season'], 'Less Than 6Ft'), {}).get(_nrm(r['name'])) or (None,))[0]],
         pdc=[round(r['drep'], 3), r['dbpm'], r['team_drtg'], r['ht'], 1 if r['drep'] == 0 else 0,
-             (TRACKING.get((r['season'], 'Greater Than 15Ft'), {}).get(_nrm(r['name'])) or (None, None))[0],
+             (TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, None))[0],
              round(min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0, 2),
-             round((TRACKING.get((r['season'], 'Greater Than 15Ft'), {}).get(_nrm(r['name'])) or (None, 0))[1]),
+             round((TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, 0))[1]),   # recal_56: the sidecar records the 6ft+ series the score reads
              (TRACKING.get((r['season'], 'Overall'), {}).get(_nrm(r['name'])) or (None,))[0]],
     )
     OUT = min(1.0, OUT + 0.07*max(0.0, (vol - 0.70)/0.30))   # HIGH-VOLUME PREMIUM (never subtracts)
@@ -577,7 +577,7 @@ for yr in sorted(rows_by):
             fouldraw=sc(P['ftr'](r['ftr'])),
             orb=sc(Pk['orb'](f(s100.get('orb_per_100_poss')))**1.15), drb=sc(Pa['drb'](r['drb'])**1.15),
             playvol=sc(0.6*Pa['ast'](r['ast'])**1.12 + 0.4*max(0.0, min(1.0, (r['ast'] or 15)/44.0))),
-            ballsec=sc(1 - (0.65*Padj(_bsec(r)) + 0.35*Pa['tov_pct'](r.get('tov_pct')))),
+            ballsec=sc(1 - (0.55*Padj(_bsec(r)) + 0.45*Pa['tov_pct'](r.get('tov_pct')))),   # recal_56: the raw side louder (was 0.65/0.35) — near-3-a-night no longer hides in a big denominator
             # efficiency hardened globally (^1.30): the median reads ~40, elite stays elite
             volume=sc(Pvol(_vol(r))**1.15),
             efficiency=sc(0.5*Pa['ts'](r['ts'])**1.05 + 0.5*(0.5 + ((r['ts'] or lg_ts.get(yr, 0.545)) - lg_ts.get(yr, 0.545))*6)),

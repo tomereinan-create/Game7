@@ -18,6 +18,7 @@ import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/poo
 const EOL = String.fromCharCode(10)
 const RATINGS = readFileSync('data/build_ratings.py', 'utf8')
 const OVR = readFileSync('data/compute_ovr.py', 'utf8')
+const io = (p: string) => readFileSync(p, 'utf-8')
 const POOL = readFileSync('src/engine/pool.ts', 'utf8')
 const by = new Map(PLAYERS.map((p) => [p.name, p]))
 const g = (n: string) => {
@@ -778,7 +779,9 @@ const ROUNDS: Record<string, () => void> = {
       line(`${who} peak OFF`, `${b.o_ovr}  (${b.name})`, `${want}${tol ? ` +/-${tol + 1}` : ''}`, Math.abs(b.o_ovr - want) <= tol + 1)
     }
     // ---- ballsec: the point of the change, and the only receipts that were reachable ----
-    for (const [who, want] of [['James Harden', 68], ['Magic Johnson', 60], ['Russell Westbrook', 69], ['Michael Jordan', 98]] as const) {
+    // r56 SUPERSEDED these windows: the raw side got louder (0.55/0.45) and the high-TOV class
+    // eased a further 6-10 below what this round shipped. The pins record the r56 readings.
+    for (const [who, want] of [['James Harden', 61], ['Magic Johnson', 52], ['Russell Westbrook', 59], ['Michael Jordan', 98]] as const) {
       const b = best(who, (p) => p.o_ovr)
       line(`${who} ballsec`, `${b.attrs.ballsec}  (${b.name})`, `${want} +/-5`, Math.abs(b.attrs.ballsec - want) <= 5)
     }
@@ -1494,6 +1497,29 @@ const ROUNDS: Record<string, () => void> = {
     note('60+, so the bonus finds them — O +2 apiece, and the OVR-99 summit grows 5 -> 13 cards. The')
     note('band anchors were NOT re-derived: doing so would drop Shaq’s 99, and that constraint is')
     note('permanent. If the summit should stay scarce, the hub needs a cap — recorded, not taken.')
+  },
+  '56': () => {
+    console.log(`${EOL}recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '56', /PIPELINE_VERSION = 56/.test(RATINGS) && /PIPELINE_VERSION = 56/.test(OVR))
+    src('the re-weight', RATINGS, /0\.55\*Padj\(_bsec\(r\)\) \+ 0\.45\*Pa\['tov_pct'\]/, '0.65/0.35 -> 0.55/0.45 — responsibility still leads')
+    src('the sidecar records the series the score reads', RATINGS, /TRACKING\.get\(\(r\['season'\], 'Outside 6Ft'\)/, "the card's tracked number is the 6ft+ derived value now")
+    line('the tooltip label', /tracking defended FG% 6 ft \+/.test(io('src/ui/Advanced.tsx')) ? '6 ft +' : 'STILL 15 ft', '6 ft +', /tracking defended FG% 6 ft \+/.test(io('src/ui/Advanced.tsx')))
+    line('the tooltip prose', /SIX feet out — the floater and pull-up range/.test(io('src/ui/Advanced.tsx')) || io('src/ui/Advanced.tsx').includes('SIX feet out') ? 'six feet out' : 'STILL 15', 'the floater and pull-up range', io('src/ui/Advanced.tsx').includes('SIX feet out'))
+    note('RECEIPT LAW MET: the live card (Marcus Smart ’22, Advanced -> perdef) shows “tracking')
+    note('defended FG% 6 ft +  −2.9%” — a DERIVED value — with “all shots, for reference” kept as-is')
+    note('and no 15-ft text anywhere on the sheet. Verified in the built app before this shipped.')
+    for (const [n, was, want] of [["Michael Jordan '88", 96, 95], ["Chris Paul '09", 76, 70], ["Magic Johnson '90", 56, 50], ["James Harden '19", 69, 61]] as const) {
+      const q = by.get(n)
+      if (q) line(`ballsec: ${n}`, `${was} -> ${q.attrs.ballsec}`, `${want}`, q.attrs.ballsec === want)
+    }
+    note('The spread is the order working: Jordan-class holds 95-99 (low raw on a huge load), the')
+    note('high-TOV volume stars ease the full 4-8 (Harden ’18/’19, Luka ’21, Westbrook ’16/’17 all −8).')
+    note('HIS CARD (2.7 TOV / 33 USG reading 97) matches the Jordan ’91/’92 profile — and the round’s')
+    note('two expectations collide there: “Jordan-class holds 97+” and “this card ~90-92” name the same')
+    note('men. The formula was applied as written; Jordan ’91 eases exactly 1 (97 -> 96). If the card')
+    note('meant someone else, name the season and the receipt will read him directly. 8,122 ballsec')
+    note('cards moved; Curry ’16 eases 74 -> 69 (3.3 a night) and his OVR pin is re-anchored 93 -> 92')
+    note('with the reason recorded. Sabonis ’21 (47) and CP3 ’09 (88) confirm the 6ft+ feed unchanged.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

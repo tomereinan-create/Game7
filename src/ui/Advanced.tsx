@@ -141,14 +141,14 @@ const SECTIONS: Section[] = [
     k: 'perdef',
     title: 'perdef',
     formula:
-      'Perimeter/impact defense: anchored on defensive reputation (All-Defensive selections + DPOY vote shares over a career window, decaying 15%/yr), plus DBPM, the defense his team actually played, and size. Each stat counts once: steals belong to perimdisrupt, and minutes and usage are out of perdef entirely — playing time is not defense. Entry to the voted band is graded — a fading legend slides rather than falling off a cliff. Without votes the composite is shrunk toward the league middle, but from 2014 on it is replaced by measured evidence: NBA tracking defended-FG% as closest defender on shots from 15 feet out — the shots a perimeter defender is actually responsible for, with the rim slice feeding rimprot instead. A thin sample is discounted toward neutral, and a man the league hunts every possession leans back on the composite — being targeted constantly is itself evidence.',
+      'Perimeter/impact defense: anchored on defensive reputation (All-Defensive selections + DPOY vote shares over a career window, decaying 15%/yr), plus DBPM, the defense his team actually played, and size. Each stat counts once: steals belong to perimdisrupt, and minutes and usage are out of perdef entirely — playing time is not defense. Entry to the voted band is graded — a fading legend slides rather than falling off a cliff. Without votes the composite is shrunk toward the league middle, but from 2014 on it is replaced by measured evidence: NBA tracking defended-FG% as closest defender on shots from SIX feet out — the floater and pull-up range where slow defenders bleed, with the rim slice feeding rimprot instead. A thin sample is discounted toward neutral, and a man the league hunts every possession leans back on the composite — being targeted constantly is itself evidence.',
     rows: (_p, v) => [
       { label: 'defensive reputation (0–1)', value: n1(v[0]) },
       { label: 'DBPM', value: n1(v[1]) },
       { label: 'team def. rating', value: n1(v[2]) },
       { label: 'height', value: ft(v[3]) },
       { label: 'voted-band weight', value: v[6] == null ? '—' : n1(v[6]) },
-      { label: 'tracking defended FG% 15 ft +', value: v[5] == null ? 'not tracked' : `${v[5] > 0 ? '+' : ''}${(100 * v[5]).toFixed(1)}%` },
+      { label: 'tracking defended FG% 6 ft +', value: v[5] == null ? 'not tracked' : `${v[5] > 0 ? '+' : ''}${(100 * v[5]).toFixed(1)}%` },
       { label: 'all shots, for reference', value: v[8] == null ? 'not tracked' : `${v[8] > 0 ? '+' : ''}${(100 * v[8]).toFixed(1)}%` },
       { label: 'shots defended (season)', value: v[7] ? `${v[7]} — ${Math.round(100 * Math.min(1, v[7] / 350))}% blend weight` : 'not tracked' },
     ],

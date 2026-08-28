@@ -120,8 +120,11 @@ describe('player data (stats-only doctrine)', () => {
     // (0.06 -> 0.10) — Curry '16 keeps a 98 efficiency and a 99 three, but his ballsec fell 92 -> 74
     // when raw TOV joined the ratio, so he lands OVR 94 / OFF 96 instead of 97 / 99. Pinned where the
     // round put him, not where the old dials had him.
+    // recal_56 moved it AGAIN by the same mechanism: the raw-TOV side of ballsec got louder
+    // (0.65/0.35 -> 0.55/0.45) and Curry's 3.3-a-night eases him 74 -> 69, OVR 93 -> 92. Both
+    // moves are the ball-security rounds doing to Curry exactly what they say they do.
     const curry = PLAYERS.find((p) => p.name === "Stephen Curry '16")!
-    expect(curry.ovr).toBeGreaterThanOrEqual(93)
+    expect(curry.ovr).toBeGreaterThanOrEqual(92)
     expect(curry.o_ovr).toBeGreaterThanOrEqual(95)
     for (const n of ["LeBron James '13", "Kawhi Leonard '17"]) expect(PLAYERS.find((p) => p.name === n)!.ovr).toBeGreaterThanOrEqual(96)
     // flawless anchors outrank fouling rim gods: discipline keeps meaning something on the card
