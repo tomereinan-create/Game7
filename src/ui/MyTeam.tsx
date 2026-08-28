@@ -9,6 +9,7 @@ import { gateTactics, styleFit, STYLES, tacticsParts, type Tactics } from '../en
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
+import { useUserMode } from '../state/viewmode'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const posOf = (name: string) => eligible(LINES[name]?.pos)
@@ -129,6 +130,7 @@ export function MyTeam({
   /** Switching mode: a floor man was tapped with nothing else pending; the next tap trades spots. */
   const [moving, setMoving] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const user = useUserMode()
   const timer = useRef<number | null>(null)
 
   const capUsed = five.reduce((t, p) => t + (capPct(p.name) ?? 0), 0)
@@ -383,10 +385,12 @@ export function MyTeam({
               <span className="cap">
                 {playbook <= 0
                   ? 'locked'
-                  : (() => {
-                      const w = tacticsParts(gateTactics(tactics, playbook), five).reduce((a, x) => a + x.pts, 0)
-                      return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
-                    })()}
+                  : user
+                    ? 'your plan'
+                    : (() => {
+                        const w = tacticsParts(gateTactics(tactics, playbook), five).reduce((a, x) => a + x.pts, 0)
+                        return `worth ${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)} pts of spread`
+                      })()}
               </span>
             </div>
             {playbook >= 1 ? ([
@@ -429,7 +433,7 @@ export function MyTeam({
               <div className="poschips">
                 {STYLES.map(({ key, label }) => (
                   <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
-                    {key === 'balanced' ? label : `${label} ${Math.round(styleFit(key, five))}`}
+                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five))}`}
                   </button>
                 ))}
               </div>
@@ -471,6 +475,7 @@ export function MyTeam({
             </div>
             ) : null}
             {(() => {
+              if (user) return null
               if (playbook <= 0)
                 return (
                   <div className="seriesnow-note" style={{ paddingBottom: 10 }}>

@@ -18,6 +18,7 @@ import { applyMod, compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
+import { useUserMode } from '../state/viewmode'
 
 export interface TeamSeason {
   y: number
@@ -192,6 +193,8 @@ export function Draft({
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
+  // USER MODE: every choice still works; nothing says whether it was good.
+  const user = useUserMode()
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -553,9 +556,9 @@ export function Draft({
           <span className="cap">Season lines</span>
         </div>
         <div className="opp-name">{opponent.team}</div>
-        <TeamDials five={opponent.players} tone="them" />
+        {user ? null : <TeamDials five={opponent.players} tone="them" />}
         <div className="opp-line">
-          {opponent.record ? `${opponent.record} · ` : ''}vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}
+          {opponent.record ? `${opponent.record} · ` : ''}{user ? '' : <>vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}</>}
           {theirs.net > 0 ? '+' : ''}
           {theirs.net.toFixed(1)}
         </div>
@@ -574,13 +577,15 @@ export function Draft({
                   onClick={() => setOppOpen((o) => (o === p.name ? null : p.name))}
                 >
                   <span className="oppman-name">{p.name}</span>
+                  {user ? null : (
                   <span className="oppman-nums">
                     <i>{p.ovr}</i>
                     <i>{p.o_ovr}</i>
                     <i>{p.d_ovr}</i>
                   </span>
+                  )}
                 </button>
-                {oppOpen === p.name ? <DetailGrid p={p} /> : null}
+                {oppOpen === p.name ? <DetailGrid p={p} mode={user ? 'stats' : undefined} /> : null}
               </div>
             ))}
             <div className="oppmen-cap">
@@ -782,7 +787,7 @@ export function Draft({
       {analysis ? (
         <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
       ) : null}
-      {five.length ? (
+      {five.length && !user ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>
           Full analysis →
         </button>
@@ -804,7 +809,7 @@ export function Draft({
           </button>
         </div>
       ) : null}
-      {full && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
+      {full && !user && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
         <div className="card assignworth">
           <span className="label">Assignment</span>
           <b>
@@ -814,8 +819,8 @@ export function Draft({
           <i>points of spread against a naive board</i>
         </div>
       ) : null}
-      {full ? <MatchupPanel mine={five} theirs={opponent.players} myName={teamName} theirName={opponent.team} assignment={assignment} /> : null}
-      {chance ? (
+      {full && !user ? <MatchupPanel mine={five} theirs={opponent.players} myName={teamName} theirName={opponent.team} assignment={assignment} /> : null}
+      {chance && !user ? (
         <div className="card odds">
           <div className="card-head">
             <span className="label">Before you sim</span>
@@ -852,7 +857,7 @@ export function Draft({
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>
             </span>
           </div>
-          {pc ? (
+          {pc && !user ? (
             <div className="seriesnow-note">
               {paceMastery(wallet) >= 1 ? (
                 <>
@@ -865,7 +870,7 @@ export function Draft({
               {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
             </div>
           ) : null}
-          {plan && five.length === DRAFT_SIZE ? (
+          {plan && five.length === DRAFT_SIZE && !user ? (
             <div className="seriesnow-note">
               {/* the full fits, opponent included — transition's matchup quarter prices HERE */}
               Style fits vs {opponent.team}:{' '}

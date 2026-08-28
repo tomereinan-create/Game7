@@ -1,6 +1,7 @@
 import { useRef, useState, type PointerEvent } from 'react'
 import { defenseVs, pairingTable, PAIR_SCALE, solveBoard } from '../engine/offense'
 import { K_MATCH } from '../config'
+import { useUserMode } from '../state/viewmode'
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 
@@ -29,6 +30,7 @@ export function Matchups({
   canSolve?: boolean
 }) {
   const [picked, setPicked] = useState<number | null>(null)
+  const user = useUserMode()
   const [drag, setDrag] = useState<{ i: number; x: number; y: number; over: number | null } | null>(null)
   const ref = useRef<{ i: number; x0: number; y0: number; moved: boolean } | null>(null)
 
@@ -90,20 +92,26 @@ export function Matchups({
         <button onClick={onBack}>← Done</button>
       </div>
       <div className="rule2" />
-      <div className="map-head">
-        <div>
-          <div className="map-kicker">Your board</div>
-          <div className="map-total">
-            {cur.drtg.toFixed(1)}
-            <i> DRtg</i>
+      {user ? (
+        <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent.</div>
+      ) : (
+        <>
+          <div className="map-head">
+            <div>
+              <div className="map-kicker">Your board</div>
+              <div className="map-total">
+                {cur.drtg.toFixed(1)}
+                <i> DRtg</i>
+              </div>
+            </div>
+            <div className="map-side">
+              <div className="map-kicker">Engine’s optimal</div>
+              <div className="map-total small">{opt.drtg.toFixed(1)}</div>
+            </div>
           </div>
-        </div>
-        <div className="map-side">
-          <div className="map-kicker">Engine’s optimal</div>
-          <div className="map-total small">{opt.drtg.toFixed(1)}</div>
-        </div>
-      </div>
-      <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent. Lower is better.</div>
+          <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent. Lower is better.</div>
+        </>
+      )}
       {canSolve ? (
         <div className="solvebar">
           <button className="sortb on" onClick={() => onChange(solveBoard(mine, theirs))}>
@@ -156,13 +164,15 @@ export function Matchups({
                 >
                   <b>{short(d.name)}</b>
                   <i>
-                    D {d.attrs.perdef} · rim {d.attrs.rimprot}
-                    {isAnchor ? ' · anchor' : ''}
+                    {user ? '' : `D ${d.attrs.perdef} · rim ${d.attrs.rimprot}`}
+                    {isAnchor ? `${user ? '' : ' · '}anchor` : ''}
                   </i>
+                  {user ? null : (
                   <i>
                     on their {archetype(t)}: {edgeOf(g, j) >= 0 ? '+' : '−'}
                     {Math.abs(edgeOf(g, j)).toFixed(1)}
                   </i>
+                  )}
                 </button>
               ) : (
                 <span className="mdef empty">—</span>
@@ -172,6 +182,7 @@ export function Matchups({
         })}
       </div>
 
+      {user ? null : (
       <div className="card">
         <div className="card-head">
           <span className="label">What the board does</span>
@@ -192,6 +203,7 @@ export function Matchups({
           The optimal board hides the anchor on their worst shooter ({short(theirs[opt.worstShooter].name)}); the star hunts your weakest defender through switches whatever you do.
         </div>
       </div>
+      )}
 
       {drag ? (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }}>

@@ -1,6 +1,7 @@
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import type { CampaignMode, Progress } from '../state/campaign'
+import { setUserMode, useUserMode } from '../state/viewmode'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom'
 
@@ -13,6 +14,7 @@ export interface Era {
 
 /** The front door: the campaign, its salary variant, versus, the database. */
 export function Home({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
+  const user = useUserMode()
   const tally = (p: Progress) => {
     const n = p.stars.reduce((a, b) => a + b, 0)
     return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : 'PLAY →'
@@ -25,6 +27,9 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           GAME<em>7</em>
         </h1>
         <p>Draft a five off the wheel. Best of seven against every team in the league.</p>
+        <button className="sortb" onClick={() => setUserMode(!user)} style={{ marginTop: 8 }}>
+          {user ? 'USER MODE — the numbers are hidden. Tap for scout mode' : 'SCOUT MODE — every number shows. Tap for user mode'}
+        </button>
         <div className="rule2" />
       </div>
 
@@ -86,6 +91,7 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
         </div>
       </button>
 
+      {user ? null : (
       <button className="mode" onClick={() => onPick('database')}>
         <div className="bar" />
         <div className="in">
@@ -97,6 +103,8 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
         </div>
       </button>
 
+      )}
+      {user ? null : (
       <button className="mode" onClick={() => onPick('archetypes')}>
         <div className="bar" />
         <div className="in">
@@ -107,6 +115,7 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           <em>{DEFAULT_ORDER.length} TAGS →</em>
         </div>
       </button>
+      )}
     </>
   )
 }

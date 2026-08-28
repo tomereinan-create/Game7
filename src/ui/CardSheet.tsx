@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
+import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
 
 /**
@@ -86,6 +87,9 @@ const BOX = [
 
 export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
   const [adv, setAdv] = useState(false)
+  // USER MODE: the card is the man and his real season line — no verdict rail, no attribute
+  // sheet, no Advanced. The engine keeps every number; the card just stops showing its hand.
+  const user = useUserMode()
   const line = LINES[p.name] ?? null
   const inferred = !p.attrs.rim_mid_measured
   const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
@@ -108,6 +112,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
 
       <div className="pc-body">
         {/* the verdict, down the side */}
+        {user ? null : (
         <div className="pc-rail">
           {(
             [
@@ -125,6 +130,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
             Advanced →
           </button>
         </div>
+        )}
 
         {/* the stats and the attributes, in the middle */}
         <div className="pc-main">
@@ -145,6 +151,8 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
             </>
           ) : null}
 
+          {user ? null : (
+          <>
           <div className="pc-rule">
             <span>Attributes — a season blend, 60% {p.peak_season} and 20% each side</span>
             <i />
@@ -174,6 +182,8 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
             ))}
           </div>
           {inferred ? <div className="pc-note">* rim/mid inferred (pre-1997)</div> : null}
+          </>
+          )}
         </div>
       </div>
 
