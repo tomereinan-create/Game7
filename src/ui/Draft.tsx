@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import SALARIES from '../data/salaries.json'
 import TEAMSEASONS from '../data/teamseasons.json'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, ROUNDS, SIGMA } from '../config'
-import { PLAYERS } from '../engine/pool'
+import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
@@ -636,14 +636,15 @@ export function Draft({
         {opponent.players.map((p, i) =>
           scoutRow(p, {
             tone: 'them',
-            sub:
+            sub: `${
               naiveMap && naiveMap.indexOf(i) >= 0
                 ? `${opponent.positions?.[i] ?? ''} · guarded by ${five[naiveMap.indexOf(i)].name.replace(/ '\d\d( \([a-z]\))?$/, '')}`
                 : opponent.positions?.[i]
                   ? posOf(p.name).length > 1
                     ? `${opponent.positions[i]} · can play ${posLine(p.name)}`
                     : opponent.positions[i]
-                  : posLine(p.name),
+                  : posLine(p.name)
+            } · ${archetype(p)}`,
             short: true,
             onTap: () => setInfo(info === p.name ? null : p.name),
           }),
@@ -700,7 +701,7 @@ export function Draft({
                 const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
                 return scoutRow(p, {
-                  sub: unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name),
+                  sub: `${unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name)} · ${archetype(p)}`,
                   on: sel === p.name,
                   dim: !fits.length || priced,
                   onTap: () => select(p.name),
@@ -909,11 +910,13 @@ export function Draft({
               {scoutRow(p, {
                 on: true,
                 slot: x,
-                sub: carried
-                  ? `${x} · ${left(p.name) <= WEAR_OUT ? 'WORN OUT — must be replaced' : `${left(p.name)} durability left`}`
-                  : posOf(p.name).length > 1
-                    ? `${x} · can play ${posOf(p.name).join(' · ')}`
-                    : x,
+                sub: `${
+                  carried
+                    ? `${x} · ${left(p.name) <= WEAR_OUT ? 'WORN OUT — must be replaced' : `${left(p.name)} durability left`}`
+                    : posOf(p.name).length > 1
+                      ? `${x} · can play ${posOf(p.name).join(' · ')}`
+                      : x
+                } · ${archetype(p)}`,
                 dim: carried ? left(p.name) <= WEAR_OUT : false,
                 onTap: () => setMoving(moving === x ? null : x),
               })}
