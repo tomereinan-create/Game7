@@ -9,7 +9,7 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
-import { aiTempo, gateTactics, pace, tacticsMod, type Tactics } from '../engine/tactics'
+import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
@@ -868,6 +868,16 @@ export function Draft({
               Pace: your surplus {pc.ours >= 0 ? '+' : ''}{pc.ours.toFixed(0)} vs {pc.theirs >= 0 ? '+' : ''}{pc.theirs.toFixed(0)} —{' '}
               {Math.abs(pc.ours - pc.theirs) <= 2 ? 'a wash' : pc.ours > pc.theirs ? 'pace favors you' : 'pace favors them'}
               {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
+            </div>
+          ) : null}
+          {plan && five.length === DRAFT_SIZE ? (
+            <div className="seriesnow-note">
+              {/* the full fits, opponent included — transition's matchup quarter prices HERE */}
+              Style fits vs {opponent.team}:{' '}
+              {STYLES.filter((x) => x.key !== 'balanced')
+                .map((x) => `${x.label} ${Math.round(styleFit(x.key, five, opponent.players))}${plan.style === x.key ? ' ← called' : ''}`)
+                .join(' · ')}
+              {plan.style === 'balanced' ? ' · no call — the style is picked in My team' : ''}
             </div>
           ) : null}
         </div>
