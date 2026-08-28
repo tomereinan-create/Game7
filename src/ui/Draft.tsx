@@ -8,7 +8,7 @@ import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
-import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
+import { naiveAssignment, ratings100, readsOf, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -43,6 +43,10 @@ export const salaryLine = (name: string) => {
 export const capPct = (name: string): number | null => SAL[name]?.pct ?? null
 
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
+
+/** A slot chip's name: three letters of the man's last name (design 2e's command strip). */
+const ab3 = (n: string) =>
+  (n.replace(/ '\d\d( \([a-z]\))?$/, '').trim().split(/\s+/).pop() ?? '').replace(/\W/g, '').slice(0, 3).toUpperCase()
 
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 /** The three numbers everyone reads first. */
@@ -221,6 +225,8 @@ export function Draft({
   const seen = has('scout_wheel') ? upcoming : null
   /** Exact ratings rank 3: which opposing man has his sheet open. */
   const [oppOpen, setOppOpen] = useState<string | null>(null)
+  /** Design 2e: the opponent folds into a scout bar; the full card opens on demand. */
+  const [scoutOpen, setScoutOpen] = useState(false)
   /** No team-season on the wheel can legally fill an open slot (salary rules). */
   const [dead, setDead] = useState(false)
   // The draft is the one screen that earns the full width of a desktop.
@@ -527,27 +533,73 @@ export function Draft({
 
   return (
     <>
-      <div className="topbar">
-        <span>
-          Level <b>{opponent.round}</b> of {ROUNDS}
-        </span>
-        <span>
-          <b>★ {stars}</b>
-        </span>
-        <button onClick={() => onBack(picks.length > 0)}>← Map</button>
+      {/* The command strip (design 2e): the five and the odds pinned as a scoreboard. */}
+      <div className="cmd">
+        <div className="cmd-top">
+          <span>
+            Level {opponent.round} of {ROUNDS} · vs {opponent.team.split(' ').pop()}
+          </span>
+          <span className="r">
+            <b>★ {stars}</b>
+            <button onClick={() => onBack(picks.length > 0)}>← Map</button>
+          </span>
+        </div>
+        <div className="cmd-slots">
+          {POSITIONS.map((x) => {
+            const n = slots[x]
+            const pend = !n && sel && slot === x
+            return (
+              <span key={x} className={`cslot ${n ? 'full' : pend ? 'pend' : ''}`}>
+                <i>{x}</i>
+                <b>{n ? ab3(n) : pend && sel ? `${ab3(sel)}?` : '·'}</b>
+              </span>
+            )
+          })}
+        </div>
+        <div className="cmd-odds">
+          {chance && !user ? (
+            <>
+              <span>
+                SPREAD{' '}
+                <b className={chance.spread >= 0 ? 'you' : 'them'}>
+                  {chance.spread >= 0 ? '−' : '+'}
+                  {Math.abs(chance.spread).toFixed(1)}
+                </b>
+              </span>
+              <span>
+                GAME <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
+              </span>
+              <span>
+                SERIES <b className={chance.series >= 0.5 ? 'you' : 'them'}>{(100 * chance.series).toFixed(0)}%</b>
+              </span>
+            </>
+          ) : (
+            <span className="dim">{open.length ? `OPEN ${open.join(' ')}` : 'FIVE SET'}</span>
+          )}
+          <span className="dim">
+            {picks.length} OF {DRAFT_SIZE}
+          </span>
+        </div>
       </div>
-      <div className="ladder">
-        {Array.from({ length: ROUNDS }, (_, i) => (
-          <span
-            key={i}
-            className={`rung ${i + 1 < opponent.round ? 'done' : i + 1 === opponent.round ? 'now' : ''}`}
-          />
-        ))}
-      </div>
-      <div className="rule2" />
 
       <div className="draft">
       <section className="col a">
+      <button className="scoutbar" onClick={() => setScoutOpen((v) => !v)}>
+        <span className="sc-l">
+          <i>Scout the opponent</i>
+          <b>
+            {opponent.team} {opponent.record ? <span>{opponent.record}</span> : null}
+          </b>
+        </span>
+        <span className="sc-r">
+          {user
+            ? scoutOpen
+              ? '▴'
+              : '▾'
+            : `OFF ${Math.round(ratings100(opponent.players).off)} · DEF ${Math.round(ratings100(opponent.players).def)} ${scoutOpen ? '▴' : '▾'}`}
+        </span>
+      </button>
+      {scoutOpen ? (
       <div className="card" style={{ paddingBottom: 6 }}>
         <div className="card-head">
           <span className="label">
@@ -655,6 +707,7 @@ export function Draft({
           }),
         )}
       </div>
+      ) : null}
 
       </section>
 
@@ -826,23 +879,7 @@ export function Draft({
             <span className="label">Before you sim</span>
             <span className="cap">noise σ {sigma}</span>
           </div>
-          <div className="odds-grid">
-            <div>
-              <b className={chance.spread >= 0 ? 'you' : 'them'}>
-                {chance.spread >= 0 ? '−' : '+'}
-                {Math.abs(chance.spread).toFixed(1)}
-              </b>
-              <i>spread</i>
-            </div>
-            <div>
-              <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
-              <i>to win a game</i>
-            </div>
-            <div>
-              <b className={chance.series >= 0.5 ? 'you' : 'them'}>{(100 * chance.series).toFixed(0)}%</b>
-              <i>to win the series</i>
-            </div>
-          </div>
+          {/* The three headline numbers live on the command strip now (design 2e); this card keeps the why. */}
           <div className="decomp">
             <span>
               talent <b>{chance.parts.talent >= 0 ? '+' : '−'}{Math.abs(chance.parts.talent).toFixed(1)}</b>

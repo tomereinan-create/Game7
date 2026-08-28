@@ -24,6 +24,40 @@ interface StatRow {
 
 const f1 = (v: number) => v.toFixed(1)
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
+/** The scorebug name: the last word of the team, set in mono caps. */
+const bug = (n: string) => (n.trim().split(/\s+/).pop() ?? n).toUpperCase()
+
+/** The current run over the last stretch of the tape — "7–2 run · CLASH", or nothing when it's trading. */
+function runLine(ticks: { us: number; them: number }[], i: number, you: string, them: string): string | null {
+  const from = Math.max(0, i - 10)
+  if (i - 1 <= from) return null
+  const du = ticks[i - 1].us - ticks[from].us
+  const dt = ticks[i - 1].them - ticks[from].them
+  if (du > dt + 2) return `${du}–${dt} run · ${you}`
+  if (dt > du + 2) return `${dt}–${du} run · ${them}`
+  return null
+}
+
+/** One diverging stat bar (design 2g): gold grows left-out, ice right-out, the leader saturated. */
+function Duel({ label, a, b, aText, bText, lowerBetter = false }: { label: string; a: number; b: number; aText: string; bText: string; lowerBetter?: boolean }) {
+  const share = a + b > 0 ? a / (a + b) : 0.5
+  const wa = Math.max(20, Math.min(70, 48 + (share - 0.5) * 320))
+  const lead = a === b ? 0 : (a > b) !== lowerBetter ? 1 : -1
+  return (
+    <div className="duel">
+      <div className="duel-line">
+        <b className={lead > 0 ? 'you' : ''}>{aText}</b>
+        <span>{label}</span>
+        <b className={lead < 0 ? 'them' : ''}>{bText}</b>
+      </div>
+      <div className="duel-bar">
+        <i className="you" style={{ width: `${wa}%`, opacity: lead < 0 ? 0.55 : 1 }} />
+        <i className="mid" />
+        <i className="them" style={{ width: `${96 - wa}%`, opacity: lead > 0 ? 0.55 : 1 }} />
+      </div>
+    </div>
+  )
+}
 
 /** A team's player box lines, averaged over the series. Columns sum to the team line every game. */
 function PlayerLines({ title, tone, lines }: { title: string; tone: 'you' | 'them'; lines: PlayerBox[] }) {
@@ -154,6 +188,7 @@ export function Series({
 
   const [i, setI] = useState(0)
   const [analysis, setAnalysis] = useState(false)
+  const [boxOpen, setBoxOpen] = useState(false)
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -207,46 +242,35 @@ export function Series({
       </div>
       <div className="rule2" />
 
-      <div className="card gcard">
-        {shown.map((g) => (
-          <div className="gline" key={g.game}>
-            <span className="g">G{g.game}</span>
-            <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
-            <span className="sc">
-              {g.us}–{g.them}
-            </span>
-            <span className="note">{g.note}</span>
-          </div>
-        ))}
-        {decider && done && tape ? (
-          <div className="gline">
-            <span className="g">G7</span>
-            <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
-            <span className="sc">
-              {tape.us}–{tape.them}
-            </span>
-            <span className="note">{decider.note}</span>
-          </div>
-        ) : null}
-      </div>
-
       {decider && tape && !done ? (
-        <div className="card">
-          <div className="g7-head">
-            <div className="l">
+        /* Game 7 as a true scorebug (design 2h): team panels on their tints, the run on the bug's foot. */
+        <div className="scorebug">
+          <div className="sb-grid">
+            <div className="sb-side you">
+              <i>{bug(teamName)}</i>
+              <b>{head!.us}</b>
+            </div>
+            <div className="sb-mid">
               <span className="g7-badge">GAME 7</span>
-              <span className="g7-clock">
+              <span className="sb-clock">
                 Q{head!.q} · {head!.clock}
               </span>
+              <span className="g7-live">● LIVE</span>
             </div>
-            <span className="g7-live">● LIVE</span>
+            <div className="sb-side them">
+              <i>{opponent.ab ?? bug(opponent.team)}</i>
+              <b>{head!.them}</b>
+            </div>
           </div>
-          <div className="g7-score">
-            <span className="u">{head!.us}</span>
-            <span className="d"> – </span>
-            <span className="t">{head!.them}</span>
+          <div className="sb-foot">
+            <span className="you">{runLine(tape.ticks, i, bug(teamName), opponent.ab ?? bug(opponent.team)) ?? ''}</span>
+            <span>Series 3–3</span>
           </div>
-          <div className="feed">
+        </div>
+      ) : null}
+      {decider && tape && !done ? (
+        <div className="card" style={{ paddingTop: 10 }}>
+          <div className="feed tall">
             {cur.map((t, k) => (
               <div className="feed-row" key={i - cur.length + k}>
                 <span className="t">
@@ -263,15 +287,115 @@ export function Series({
       ) : null}
 
       {done ? (
-        <div className="verdict">
-          <h1 className={result.won ? 'w' : 'l'}>
-            {result.wins}–{result.losses}
-          </h1>
+        /* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */
+        <div className="verdict final">
+          <div className="v-kick">Series · best of seven</div>
+          <div className="v-row">
+            <span className="v-side you">{bug(teamName)}</span>
+            <h1 className={result.won ? 'w' : 'l'}>
+              <span className="u">{result.wins}</span>
+              <span className="d">–</span>
+              <span className="t">{result.losses}</span>
+            </h1>
+            <span className="v-side them">{opponent.ab ?? bug(opponent.team)}</span>
+          </div>
           <p>{seriesNote(result.won, result.wins, result.losses)}</p>
           {result.won && !exhibition ? (
             <div className="stars">
               {'★'.repeat(starsFor(result))}
               <span>{'★'.repeat(3 - starsFor(result))}</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {done ? (
+        <div className="strip">
+          {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {
+            const won = result.games[k].won
+            const clinch = k === result.games.length - 1 && result.won
+            return (
+              <span className={`gt ${clinch ? 'clinch' : won ? 'w' : 'l'}`} key={k}>
+                <i>G{k + 1}</i>
+                <b>
+                  {s.us}
+                  <em>–</em>
+                  {s.them}
+                </b>
+              </span>
+            )
+          })}
+        </div>
+      ) : null}
+
+      {done && box ? (
+        <div className="card">
+          <div className="card-head">
+            <span className="label">Where it was won</span>
+            <span className="cap">per game · {result.games.length} played</span>
+          </div>
+          <div className="duels">
+            {(() => {
+              const scores = scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)
+              const us = scores.reduce((a, s) => a + s.us, 0) / scores.length
+              const them = scores.reduce((a, s) => a + s.them, 0) / scores.length
+              return <Duel label="Points" a={us} b={them} aText={f1(us)} bText={f1(them)} />
+            })()}
+            <Duel label="FG%" a={box.us.fgm / box.us.fga} b={box.them.fgm / box.them.fga} aText={pc(box.us.fgm, box.us.fga)} bText={pc(box.them.fgm, box.them.fga)} />
+            <Duel label="3P%" a={box.us.tpm / Math.max(1, box.us.tpa)} b={box.them.tpm / Math.max(1, box.them.tpa)} aText={pc(box.us.tpm, box.us.tpa)} bText={pc(box.them.tpm, box.them.tpa)} />
+            <Duel label="Rebounds" a={box.us.reb} b={box.them.reb} aText={f1(box.us.reb)} bText={f1(box.them.reb)} />
+            <Duel label="Turnovers" a={box.us.tov} b={box.them.tov} aText={f1(box.us.tov)} bText={f1(box.them.tov)} lowerBetter />
+          </div>
+        </div>
+      ) : null}
+
+      {done && box ? (
+        (() => {
+          const star = [...box.usLines].sort((a, b) => b.pts - a.pts)[0]
+          const answer = [...box.themLines].sort((a, b) => b.pts - a.pts)[0]
+          return (
+            <div className="card night">
+              <div className="card-head">
+                <span className="label">The night belonged to</span>
+              </div>
+              <div className="night-row">
+                <b className="you">{short(star.name)}</b>
+                <span>
+                  {f1(star.pts)} PTS · {pc(star.fgm, star.fga)} FG · {f1(star.reb)} REB
+                </span>
+              </div>
+              <div className="night-row small">
+                <b className="them">{short(answer.name)}</b>
+                <span>{f1(answer.pts)} PTS · their best answer</span>
+              </div>
+              <button className="linkb" style={{ paddingTop: 12 }} onClick={() => setBoxOpen((v) => !v)}>
+                {boxOpen ? 'Fold the box scores ↑' : 'Full box scores →'}
+              </button>
+            </div>
+          )
+        })()
+      ) : null}
+
+      {done && boxOpen ? (
+        <div className="card gcard">
+          {shown.map((g) => (
+            <div className="gline" key={g.game}>
+              <span className="g">G{g.game}</span>
+              <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
+              <span className="sc">
+                {g.us}–{g.them}
+              </span>
+              <span className="note">{g.note}</span>
+            </div>
+          ))}
+          {decider && tape ? (
+            <div className="gline">
+              <span className="g">G7</span>
+              <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
+              <span className="sc">
+                {tape.us}–{tape.them}
+              </span>
+              <span className="note">{decider.note}</span>
             </div>
           ) : null}
         </div>
@@ -283,7 +407,7 @@ export function Series({
           Full analysis →
         </button>
       ) : null}
-      {done ? (
+      {done && boxOpen ? (
         <div className="card">
           <div className="card-head">
             <span className="label">Series stats</span>
@@ -305,7 +429,7 @@ export function Series({
         </div>
       ) : null}
 
-      {done && box ? (
+      {done && boxOpen && box ? (
         <>
           <PlayerLines title={teamName} tone="you" lines={box.usLines} />
           <PlayerLines title={opponent.team} tone="them" lines={box.themLines} />

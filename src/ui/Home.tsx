@@ -1,6 +1,6 @@
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
-import type { CampaignMode, Progress } from '../state/campaign'
+import { currentLevel, type CampaignMode, type Progress } from '../state/campaign'
 import { setUserMode, useUserMode } from '../state/viewmode'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom'
@@ -12,110 +12,112 @@ export interface Era {
   first: number
 }
 
-/** The front door: the campaign, its salary variant, versus, the database. */
+/**
+ * The front door, set like a front page (design 2a): masthead, a slate of
+ * numbered ledger rows for the campaigns, and the record book below the fold.
+ */
 export function Home({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
   const user = useUserMode()
   const tally = (p: Progress) => {
     const n = p.stars.reduce((a, b) => a + b, 0)
-    return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : 'PLAY →'
+    return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : null
   }
+  const cur = currentLevel(progress.campaign)
   return (
     <>
-      <div className="hero">
-        <div className="kicker">A basketball draft roguelike</div>
+      <div className="mast">
+        <span>A basketball draft roguelike</span>
+        <i>1980–2026</i>
+      </div>
+      <div className="hero front">
         <h1>
           GAME<em>7</em>
         </h1>
-        <p>Draft a five off the wheel. Best of seven against every team in the league.</p>
-        <button className="sortb" onClick={() => setUserMode(!user)} style={{ marginTop: 8 }}>
+        <p>
+          Draft a five off the wheel.
+          <br />
+          Best of seven against every team in the league.
+        </p>
+        <button className="sortb" onClick={() => setUserMode(!user)} style={{ marginTop: 10 }}>
           {user ? 'USER MODE — the numbers are hidden. Tap for scout mode' : 'SCOUT MODE — every number shows. Tap for user mode'}
         </button>
-        <div className="rule2" />
+        <div className="rule2" style={{ margin: '22px 0 0' }} />
       </div>
 
-      <button className="mode you" onClick={() => onPick('campaign')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
+      <div className="section-rule">
+        <span>Tonight's slate</span>
+        <i />
+      </div>
+
+      <button className="slate-row" onClick={() => onPick('campaign')}>
+        <div className="slate-top">
+          <span className="slate-name">
+            <span className="slate-n">01</span>
             <b>Campaign</b>
-          </div>
-          <em>{tally(progress.campaign)}</em>
+          </span>
+          <em className="slate-tag">{tally(progress.campaign) ?? 'PLAY →'}</em>
         </div>
+        <div className="ladder slate-ladder">
+          {Array.from({ length: ROUNDS }, (_, i) => (
+            <span key={i} className={`rung ${progress.campaign.stars[i] > 0 ? 'done' : i + 1 === cur ? 'now' : ''}`} />
+          ))}
+        </div>
+        <span className="slate-status">{cur ? `Level ${cur} is up` : 'All cleared'}</span>
       </button>
 
-      <button className="mode you" onClick={() => onPick('salary')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
+      <button className="slate-row" onClick={() => onPick('salary')}>
+        <div className="slate-top">
+          <span className="slate-name">
+            <span className="slate-n">02</span>
             <b>Salary Cap Campaign</b>
-            <span>The same {ROUNDS} levels, with every player's salary that year and his share of the league cap on the card.</span>
-          </div>
-          <em>{tally(progress.salary)}</em>
+          </span>
+          <em className="slate-tag">{tally(progress.salary) ?? 'PLAY →'}</em>
         </div>
+        <span className="slate-sub">The same {ROUNDS} levels — every card priced that year, the five held under the cap.</span>
       </button>
 
-      <button className="mode you" onClick={() => onPick('death')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
+      <button className="slate-row" onClick={() => onPick('death')}>
+        <div className="slate-top">
+          <span className="slate-name">
+            <span className="slate-n">03</span>
             <b>Death Match Campaign</b>
-            <span>
-              The salary cap campaign with your life on it. One five, carried the whole way — change a single man before
-              each level. Lose and the run is over: no five, and every level past your checkpoint gone. The Survival branch
-              sells the only mercy there is.
-            </span>
-          </div>
-          <em>{tally(progress.death)}</em>
+          </span>
+          <em className="slate-tag danger">{tally(progress.death) ?? 'ONE LIFE'}</em>
         </div>
+        <span className="slate-sub">One five, carried the whole way — change a single man before each level. Lose and the run is over.</span>
       </button>
 
-      <button className="mode them" onClick={() => onPick('custom')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
-            <b>Custom matchup</b>
-            <span>Build two fives by hand out of the whole database — any era — and play the series.</span>
-          </div>
-          <em>PLAY →</em>
-        </div>
-      </button>
-
-      <button className="mode them" onClick={() => onPick('versus')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
-            <b>Player vs Friend</b>
-            <span>Same phone. Draft in turns from one pool, then sim the series.</span>
-          </div>
-          <em>PLAY →</em>
-        </div>
-      </button>
+      <div className="slate-grid">
+        <button className="slate-row half" onClick={() => onPick('custom')}>
+          <b className="them">Custom matchup</b>
+          <em>ANY ERA · PLAY →</em>
+        </button>
+        <button className="slate-row half" onClick={() => onPick('versus')}>
+          <b className="them">Player vs Friend</b>
+          <em>SAME PHONE · PLAY →</em>
+        </button>
+      </div>
 
       {user ? null : (
-      <button className="mode" onClick={() => onPick('database')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
-            <b>Database</b>
-            <span>{PLAYERS.length.toLocaleString()} player-seasons, 1980–2026. Every rating from real stats.</span>
+        <>
+          <div className="section-rule">
+            <span>The record book</span>
+            <i />
           </div>
-          <em>BROWSE →</em>
-        </div>
-      </button>
+          <div className="slate-grid book">
+            <button className="slate-row half" onClick={() => onPick('database')}>
+              <b>Database</b>
+              <em>{PLAYERS.length.toLocaleString()} MEN · BROWSE →</em>
+            </button>
+            <button className="slate-row half" onClick={() => onPick('archetypes')}>
+              <b>Archetypes</b>
+              <em>{DEFAULT_ORDER.length} TAGS →</em>
+            </button>
+          </div>
+        </>
+      )}
 
-      )}
-      {user ? null : (
-      <button className="mode" onClick={() => onPick('archetypes')}>
-        <div className="bar" />
-        <div className="in">
-          <div style={{ minWidth: 0 }}>
-            <b>Archetypes</b>
-            <span>Every tag the tree hands out, what it means, and every man who wears it.</span>
-          </div>
-          <em>{DEFAULT_ORDER.length} TAGS →</em>
-        </div>
-      </button>
-      )}
+      <div className="alltime">Every number from real 1980–2026 stats</div>
     </>
   )
 }
