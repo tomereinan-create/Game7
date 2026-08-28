@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, compile, simSeries, starsFor } from './engine/resolver'
-import { gateTactics, reconcileTactics, tacticsMod, TEMPO_SIGMA } from './engine/tactics'
+import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
+import { aiTempo, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
@@ -103,12 +103,15 @@ export default function App() {
     if (!opponent || !prog || !cm) return
     // Our defense is whatever the board assigned; the AI always plays optimal. The death match
     // adds the My team plan, priced in points of spread like every other modifier.
-    const mine = death ? applyMod(compile(five, opponent.players, assignment), tacticsMod(gateTactics(prog.tactics, playbookRank(prog)), five, opponent.players)) : compile(five, opponent.players, assignment)
-    // The era's handicap: points of spread the opponent brings to every game of this campaign.
+    const plan = death ? gateTactics(prog.tactics, playbookRank(prog)) : null
+    const base = compile(five, opponent.players, assignment)
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
+    // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
+    // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
+    const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players) : null
+    const mine = plan ? applyMod(base, { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : base
     const seed = randomSeed()
-    // Tempo (the plan) sets the night's default noise; the Tempo control node's explicit pick wins.
-    const sig = sigma ?? (death ? TEMPO_SIGMA[gateTactics(prog.tactics, playbookRank(prog)).tempo] : SIGMA)
+    const sig = sigma ?? (pc ? SIGMA * pc.sigmaMult : SIGMA)
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran.
     setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })

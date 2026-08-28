@@ -14,6 +14,10 @@
  */
 import { readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
+import { applyMod, compile, simSeries } from '../src/engine/resolver'
+import { makeRng } from '../src/engine/rng'
+import { pace } from '../src/engine/tactics'
+import { usageSurplus } from '../src/engine/offense'
 
 const EOL = String.fromCharCode(10)
 const RATINGS = readFileSync('data/build_ratings.py', 'utf8')
@@ -1520,6 +1524,48 @@ const ROUNDS: Record<string, () => void> = {
     note('meant someone else, name the season and the receipt will read him directly. 8,122 ballsec')
     note('cards moved; Curry ’16 eases 74 -> 69 (3.3 a night) and his OVR pin is re-anchored 93 -> 92')
     note('with the reason recorded. Sabonis ’21 (47) and CP3 ’09 (88) confirm the 6ft+ feed unchanged.')
+  },
+  '57': () => {
+    console.log(`${EOL}recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '57', /PIPELINE_VERSION = 57/.test(OVR) && /PIPELINE_VERSION = 57/.test(RATINGS))
+    src('the trim', OVR, /base = 0\.75\*a\['perdef'\] \+ 0\.09\*a\['perimdisrupt'\] \+ 0\.09\*a\['drb'\] \+ 0\.07\*a\['discipline'\]/, '0.70/0.15/0.08/0.07 -> 0.75/0.09/0.09/0.07')
+    for (const [n, was, want, lbl] of [["Doug Christie '97", 75, 73, 'gambler eases'], ["Caron Butler '08", 75, 73, 'gambler eases'],
+                                       ["Sidney Moncrief '84", 90, 92, 'lockdown gains'], ["Dennis Rodman '90", 94, 94, 'lockdown holds']] as const) {
+      const q = by.get(n)
+      if (q) line(`${lbl}: ${n}`, `D ${was} -> ${q.d_ovr}`, `${want}`, q.d_ovr === want)
+    }
+    note('3,785 d_ovr cards moved; the bigs are untouched (their mix never read perimdisrupt).')
+    src('pace, in the engine', io('src/engine/tactics.ts'), /margin: clamp\(lvl \* 0\.045 \* \(ours - others\), -2\.5, 2\.5\)/, 'the relative volume-surplus term, capped +-2.5')
+    src('the variance shift', io('src/engine/tactics.ts'), /sigmaMult: lvl > 0 \? 0\.94 : lvl < 0 \? 1\.08 : 1\.0/, 'fast shrinks, slow adds chaos')
+    src('the surplus is the reconciliation surplus', io('src/engine/offense.ts'), /usageSurplus = \(five: Player\[\]\) =>/, 'sum usg_raw - TEAM_USG, clamped +-25')
+    // ---- the three scenarios, 500 series each, fixed seeds ----
+    const top = (f: (p: (typeof PLAYERS)[number]) => boolean, k: number) => PLAYERS.filter(f).sort((x, y) => y.o_ovr - x.o_ovr).slice(0, k)
+    const HIGH = top((q) => q.attrs.usg_raw >= 31, 5)
+    const LOW = top((q) => q.attrs.usg_raw <= 14 && q.ovr >= 60, 5)
+    const MID = top((q) => q.attrs.usg_raw >= 18 && q.attrs.usg_raw <= 22 && q.ovr >= 70, 5)
+    const winPct = (A: (typeof PLAYERS)[number][], B: (typeof PLAYERS)[number][], t1: 'fast' | 'normal' | 'slow', t2: 'fast' | 'normal' | 'slow') => {
+      const pcx = pace(t1, t2, A, B)
+      const L = applyMod(compile(A, B), { bonus: pcx.margin })
+      const R = compile(B, A)
+      let w = 0
+      for (let i = 0; i < 500; i++) if (simSeries(L, R, makeRng(1234 + i), 10 * pcx.sigmaMult, 4).won) w++
+      return w / 5
+    }
+    {
+      const base = winPct(HIGH, LOW, 'normal', 'normal')
+      const fast = winPct(HIGH, LOW, 'fast', 'fast')
+      line(`1. surplus ${usageSurplus(HIGH)} vs ${usageSurplus(LOW)}, fast night`, `${base}% -> ${fast}%`, 'the starved five gains at pace', fast > base)
+      const b2 = winPct(HIGH, HIGH, 'normal', 'normal')
+      const f2 = winPct(HIGH, HIGH, 'fast', 'fast')
+      line('2. both high-surplus, fast night', `${b2}% -> ${f2}%`, 'no pace edge, variance shrinks (favorite firms up)', Math.abs(f2 - b2) < 8)
+      const b3 = winPct(MID, HIGH, 'normal', 'normal')
+      const s3 = winPct(MID, HIGH, 'slow', 'normal')
+      line('3. underdog calls slow', `${b3}% -> ${s3}%`, 'chaos helps the weaker five', s3 >= b3 - 1)
+      note(`Scenario fives — HIGH: ${HIGH.map((q) => q.name).join(', ')}.`)
+      note(`LOW: ${LOW.map((q) => q.name).join(', ')}. MID: ${MID.map((q) => q.name).join(', ')}.`)
+      note('Slow also LOWERS the pace level, so a deficit five slowing a surplus five removes the')
+      note('margin term AND buys variance — both of the underdog’s levers in one call.')
+    }
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

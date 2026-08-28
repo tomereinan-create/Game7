@@ -67,6 +67,14 @@ const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x
 /** The stack cap: a player's combined interaction multiplier never leaves [0.90, 1.12]. */
 export const stackClamp = (m: number) => clamp(m, KNOBS.STACK_MIN, KNOBS.STACK_MAX)
 
+/**
+ * THE USAGE-RECONCILIATION SURPLUS (recal_57 reuses it for PACE). A five whose natural usage runs
+ * past the 100 the floor allows has STARVED shot-takers — extra possessions feed them. A five that
+ * runs short stretches role players — extra possessions hurt. Positive = starved, clamped +-25.
+ */
+export const usageSurplus = (five: Player[]) =>
+  clamp(five.reduce((s, p) => s + p.attrs.usg_raw, 0) - KNOBS.TEAM_USG, -25, 25)
+
 /** `stackCap=false` exists only so a test can prove the cap binds. The game never passes it. */
 export function teamOffense(five: Player[], stackCap = true): Offense {
   const K = KNOBS

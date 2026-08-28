@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 56
+PIPELINE_VERSION = 57
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -203,7 +203,8 @@ def d_score(p):
     a = p['attrs']
     if is_big(p):
         return 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']   # drb weight up: rebounding credit now lives here, not inside rimprot
-    base = 0.70*a['perdef'] + 0.15*a['perimdisrupt'] + 0.08*a['drb'] + 0.07*a['discipline']
+    # recal_57: perimdisrupt trimmed 0.15 -> 0.09 (steals are a gamble, not a lockdown), perdef and drb take the slack
+    base = 0.75*a['perdef'] + 0.09*a['perimdisrupt'] + 0.09*a['drb'] + 0.07*a['discipline']
     # size modifier: a 6'0 defender guards one matchup; tall stoppers switch. Guard-quota All-D
     # selections are real evidence, but size caps the ceiling. Bites only truly small defenders.
     return base * min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)

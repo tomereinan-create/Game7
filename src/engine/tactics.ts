@@ -1,4 +1,4 @@
-import { GAMBLER_SIGMA, SIGMA } from '../config'
+import { usageSurplus } from './offense'
 import type { Lineup, Player } from './types'
 
 /**
@@ -44,8 +44,32 @@ export const DEFAULT_TACTICS: Tactics = {
   crashDef: false,
 }
 
-/** Tempo is a RISK knob, not a value knob: it moves sigma for both teams and nothing else. */
-export const TEMPO_SIGMA: Record<Tactics['tempo'], number> = { slow: 8, normal: SIGMA, fast: GAMBLER_SIGMA }
+/**
+ * PACE (recal_57, Tomer's design ratified) — tempo is a VOLUME-SURPLUS mechanic, replacing the old
+ * flat sigma map. Both teams pick; the night's pace is their average. A surplus five has starved
+ * shot-takers, so possessions feed it; a deficit five stretches role players, so possessions hurt.
+ * It is RELATIVE — fast against a higher-surplus opponent helps THEM — and the margin term is
+ * capped at +-2.5 points of spread. Fast also shrinks the night's variance (the favorite's friend);
+ * slow adds chaos, the underdog's weapon even at volume parity.
+ */
+const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
+export function pace(self: Tactics['tempo'], opp: Tactics['tempo'], five: Player[], theirs: Player[]) {
+  const lvl = (TEMPO_LVL[self] + TEMPO_LVL[opp]) / 2
+  const ours = usageSurplus(five)
+  const others = usageSurplus(theirs)
+  return {
+    lvl,
+    ours,
+    theirs: others,
+    margin: clamp(lvl * 0.045 * (ours - others), -2.5, 2.5),
+    sigmaMult: lvl > 0 ? 0.94 : lvl < 0 ? 1.08 : 1.0,
+  }
+}
+/** The AI's call: fast when pace favors it, slow when it hurts, and slow at parity as the underdog. */
+export function aiTempo(theirs: Player[], five: Player[], underdog: boolean): Tactics['tempo'] {
+  const d = usageSurplus(theirs) - usageSurplus(five)
+  return d > 2 ? 'fast' : d < -2 ? 'slow' : underdog ? 'slow' : 'normal'
+}
 
 /** A saved plan can name men who have since left the five. The plan survives; the names reset. */
 export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {

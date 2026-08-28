@@ -9,7 +9,7 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
-import { gateTactics, tacticsMod, TEMPO_SIGMA, type Tactics } from '../engine/tactics'
+import { aiTempo, gateTactics, pace, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
@@ -201,7 +201,6 @@ export function Draft({
   const toWin = 4 // best of seven, always
   const [sigmaPick, setSigmaPick] = useState<number | null>(null)
   const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
-  const sigma = sigmaPick ?? (plan ? TEMPO_SIGMA[plan.tempo] : SIGMA)
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -241,6 +240,9 @@ export function Draft({
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
+  // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
+  const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players) : null
+  const sigma = sigmaPick ?? (pc ? SIGMA * pc.sigmaMult : SIGMA)
   const open = POSITIONS.filter((x) => !slots[x])
   // Defense is a pairing: both ratings are against the other five, and change as you draft.
   const full = picks.length === DRAFT_SIZE
@@ -265,7 +267,7 @@ export function Draft({
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
-  const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), tacticsMod(plan, five, opponent.players)) : compile(five, opponent.players, assignment)) : null
+  const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Their optimal board against your five, as [their man, your man] short names. */
   const theirBoard = useMemo(() => {
@@ -861,6 +863,13 @@ export function Draft({
               = <b>{chance.parts.total >= 0 ? '+' : '−'}{Math.abs(chance.parts.total).toFixed(1)}</b>
             </span>
           </div>
+          {pc ? (
+            <div className="seriesnow-note">
+              Pace: your surplus {pc.ours >= 0 ? '+' : ''}{pc.ours.toFixed(0)} vs {pc.theirs >= 0 ? '+' : ''}{pc.theirs.toFixed(0)} —{' '}
+              {Math.abs(pc.ours - pc.theirs) <= 2 ? 'a wash' : pc.ours > pc.theirs ? 'pace favors you' : 'pace favors them'}
+              {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
+            </div>
+          ) : null}
         </div>
       ) : null}
       <div className="card" style={{ paddingBottom: 4 }}>

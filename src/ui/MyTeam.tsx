@@ -6,6 +6,7 @@ import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { gateTactics, tacticsParts, type Tactics } from '../engine/tactics'
+import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
 
@@ -482,7 +483,9 @@ export function MyTeam({
                 <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
                   {parts.map((x) => `${x.label} ${x.pts >= 0 ? '+' : '−'}${Math.abs(x.pts).toFixed(1)}`).join(' · ')}
                   {plan.scheme !== 'matchup' || plan.hunt ? ' · the scheme and the hunt price fully at the draft, against the level’s five' : ''}
-                  {plan.tempo !== 'normal' ? ` · ${plan.tempo} tempo moves the night's noise, both teams` : ''}
+                  {plan.tempo !== 'normal'
+                    ? ` · ${plan.tempo} pace: your surplus ${usageSurplus(five) >= 0 ? '+' : ''}${usageSurplus(five).toFixed(0)} — the matchup readout is at the draft`
+                    : ''}
                 </div>
               ) : (
                 <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
