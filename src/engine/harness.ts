@@ -1,3 +1,5 @@
+import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE } from './offense'
+import { K_MATCH } from '../config'
 import { PLAYERS } from './pool'
 import { makeRng } from './rng'
 import { compile, meanMargin } from './resolver'
@@ -83,6 +85,25 @@ export function runHarness(N = 200, seed = 20260828): HarnessRow[] {
   push('hunt', { choices: (m) => [evFor({ ...DEFAULT_TACTICS, hunt: true }, m.A, m.B)] })
   push('crash off glass', { choices: (m) => [evFor({ ...DEFAULT_TACTICS, crashOff: true }, m.A, m.B)] })
   push('crash def glass', { choices: (m) => [evFor({ ...DEFAULT_TACTICS, crashDef: true }, m.A, m.B)] })
+  // ASSIGNMENT (recal_60): the default is the sane naive board; a random shuffle of it must read
+  // negative and the oracle (the best of all 120) positive. The round's own acceptance for this
+  // tactic is that pair of signs — the tax is structural (a bad board concedes real edges), so no
+  // separate constant exists to tune.
+  {
+    let rSum = 0
+    let oSum = 0
+    for (const m of matchups) {
+      const bUsg = m.B.map((p) => p.attrs.usg_raw)
+      const E = pairingTable(m.A, m.B, bUsg)
+      const nv = pairingTerm(E, naiveAssignment(m.A, m.B), bUsg)
+      const shuffled = [0, 1, 2, 3, 4].sort(() => rng.next() - 0.5)
+      rSum += K_MATCH * PAIR_SCALE * (nv - pairingTerm(E, shuffled, bUsg))
+      oSum += K_MATCH * PAIR_SCALE * (nv - pairingTerm(E, bestBoard(E, bUsg), bUsg))
+    }
+    const random = rSum / matchups.length
+    const oracle = oSum / matchups.length
+    rows.push({ tactic: 'assignment', dflt: 0, random, oracle, pass: random < 0 && oracle >= 0.5 })
+  }
   return rows
 }
 

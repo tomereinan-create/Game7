@@ -291,6 +291,76 @@ export function solveBoard(us: Player[], them: Player[]): number[] {
   return best
 }
 
+/**
+ * MATCHUPS WITH TEETH (recal_60): every pairing generates edge. The attacker brings his best zone
+ * at his usage; the defender answers with perdef outside, rimprot inside, and his size against the
+ * attacker's height. Positive edge = the attacker wins the pairing. Each edge is clamped +-6 and
+ * usage-weighted into ONE team term, and the assignment — naive, optimal, or the player's own
+ * board — decides who absorbs whom. Optimal is the best of all 120 boards over this same table.
+ */
+export function pairingEdge(defender: Player, attacker: Player, atkUsg: number): number {
+  const a = defender.attrs
+  const b = attacker.attrs
+  const wOut = b['3pt'] / (b['3pt'] + b.rim + 1e-9)
+  const zone = wOut * (b['3pt'] - a.perdef) + (1 - wOut) * (b.rim - a.rimprot)
+  const size = Math.max(-4, Math.min(6, (b.height - a.height) * 0.6))
+  // usage gates the whole pairing: a man who never attacks cannot cash his edge
+  return Math.max(-6, Math.min(6, (zone * 0.09 + size * 0.35) * Math.min(1.5, atkUsg / 20)))
+}
+
+/** The full 5x5 table: E[i][j] = our defender i against their attacker j. */
+export const pairingTable = (us: Player[], them: Player[], bUsg: number[]): number[][] =>
+  us.map((d) => them.map((o, j) => pairingEdge(d, o, bUsg[j] ?? 20)))
+
+/**
+ * The usage-weighted team term for a given board (map[i] = the attacker our i guards), CENTERED
+ * per attacker on the table's own column mean — the term reads how much better or worse this board
+ * absorbs each man than an average assignment would, so choosing boards moves the margin without
+ * moving the league's scoring level.
+ */
+export function pairingTerm(E: number[][], map: number[], bUsg: number[]): number {
+  const totU = bUsg.reduce((s, x) => s + x, 0) || 1
+  const n = E.length
+  let t = 0
+  for (let i = 0; i < map.length; i++) {
+    const j = map[i]
+    let col = 0
+    for (let r = 0; r < n; r++) col += E[r][j]
+    t += ((bUsg[j] ?? 20) / totU) * (E[i][j] - col / n)
+  }
+  return t
+}
+
+/** The best board over the table alone — 120 cheap permutations, no recursion into defenseVs. */
+export function bestBoard(E: number[][], bUsg: number[]): number[] {
+  const n = E.length
+  let best: number[] = Array.from({ length: n }, (_, i) => i)
+  let bestT = Infinity
+  const cur: number[] = []
+  const used = new Array(n).fill(false)
+  const walk = () => {
+    if (cur.length === n) {
+      const t = pairingTerm(E, cur, bUsg)
+      if (t < bestT) (bestT = t), (best = [...cur])
+      return
+    }
+    for (let j = 0; j < n; j++) {
+      if (!used[j]) {
+        used[j] = true
+        cur.push(j)
+        walk()
+        cur.pop()
+        used[j] = false
+      }
+    }
+  }
+  walk()
+  return best
+}
+
+/** DRtg pts per point of the usage-weighted pairing term — sized so the full team lever spans ~+-3.5 margin. */
+export const PAIR_SCALE = 22.3
+
 /** DRtg of US defending THEM. Defense is a property of the pairing. 1:1 with defense_vs (assignment = 'optimal'). */
 export function defenseVs(us: Player[], them: Player[], assignment: Assignment = 'optimal'): DefenseVs {
   const K = MKNOBS
@@ -329,17 +399,19 @@ export function defenseVs(us: Player[], them: Player[], assignment: Assignment =
   const guardedPaint = map && B[anchorOn] ? B[anchorOn].rim / (B[anchorOn].rim + B[anchorOn]['3pt'] + 1e-9) : paintOrient
   const cover = Math.min(deficit, K.ANCHOR_CAP * (anchor / 99)) * Math.min(1, Math.min(paintOrient, guardedPaint) * 2)
   const effDi = (A.reduce((s, a) => s + a.perdef, 0) + cover) / 5
-  // HUNTED MAN: the star hunts the weakest defender through switches whatever the
-  // assignment; an assigned matchup only adds to it when the man put on him is weaker still
-  // (he never is — the weakest is the floor — so assignments cannot beat the engine here).
-  const weakAll = A.length ? Math.min(...A.map((a) => a.perdef)) : 0
-  let weakIdx = A.findIndex((a) => a.perdef === weakAll)
-  if (map && map.indexOf(star) >= 0 && A[map.indexOf(star)].perdef < weakAll) weakIdx = map.indexOf(star)
-  const weak = weakIdx >= 0 ? A[weakIdx].perdef : weakAll
+  // EVERY PAIRING GENERATES EDGE (recal_60, replacing the lone hunted-man term): the board —
+  // naive, the player's own, or the best of all 120 — decides who absorbs whom, and the whole
+  // usage-weighted table lands on the DRtg. The hunt is now simply the star's row of the table.
   const bs = B[star]
   const starPaint = bs ? bs.rim / (bs.rim + bs['3pt'] + 1e-9) : 0
-  const mitig = 0.45 * Math.min(1, anchor / 99) * starPaint
-  const huntPen = Math.max(0, 60 - weak) * ((bs ? bUsg[star] : 0) / 25) * (1 - mitig) * K.HUNT_SCALE
+  const E = us.length === them.length && us.length ? pairingTable(us, them, bUsg) : null
+  const bestB = E ? bestBoard(E, bUsg) : null
+  const board = E ? (map ?? bestB) : null
+  const weakIdx = board ? board.indexOf(star) : -1
+  // the penalty is RELATIVE TO PERFECT COACHING: the best of all 120 boards pays nothing, and every
+  // other board pays for exactly the edges it concedes past that — so the lever moves the margin
+  // without moving the league's scoring level.
+  const huntPen = E && board && bestB ? PAIR_SCALE * (pairingTerm(E, board, bUsg) - pairingTerm(E, bestB, bUsg)) : 0
   // STEALS: on-ball — the top disruptor works the star (optimal) or the man he was given (assigned)
   let topPdIdx = 0
   for (let i = 1; i < A.length; i++) if (A[i].perimdisrupt > A[topPdIdx].perimdisrupt) topPdIdx = i
@@ -452,7 +524,11 @@ export const RATING_SCALE = { K_OFF: 3.0, K_DEF: 8.0 } as const
 const REF_OFF = 128.3   // re-derived after recal_13/14: the median of the 120 campaign levels
 // sits at 128.3 raw offense once bench rates shrink toward the middle, so that is what reads 50.
 // Mirrors data/team_rating.py (the parity test enforces the pair).
-const REF_DRTG = 113.1
+// recal_60 PARITY CALIBRATION: the defensive evidence campaign (DFG floors, DBPM relief, voted
+// ceilings, the 6ft+ feed) inflated the defensive pool and the display dials drifted 23 points
+// apart (OFF mean 45.6, DEF mean 69.1 over 300 random fives). One dial moves: the display DRtg
+// reference, until the two means match. Orderings within each side are untouched by construction.
+const REF_DRTG = 108.85
 
 /** Opponent-independent OFF and DEF, 1–99. 50 = a median drafted five. Display only. */
 export function ratings100(five: Player[]): { off: number; def: number; offRaw: number; drtgRef: number } {

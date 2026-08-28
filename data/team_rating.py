@@ -135,6 +135,32 @@ MKNOBS = dict(
     HUNT_SCALE=0.10,    # DRtg pts per unit of hunted-man exposure
     DRTG_COEF=0.181,     # calibrated to his 60/40 offense/defense ruling (see calibration below)
 )
+# recal_60: EVERY PAIRING GENERATES EDGE — mirrors offense.ts pairingEdge/pairingTable/pairingTerm/bestBoard.
+def pairing_edge(a, b, atk_usg):
+    w_out = b['3pt'] / (b['3pt'] + b['rim'] + 1e-9)
+    zone = w_out * (b['3pt'] - a['perdef']) + (1 - w_out) * (b['rim'] - a['rimprot'])
+    size = max(-4.0, min(6.0, (b.get('height', 78) - a.get('height', 78)) * 0.6))   # the synthetic REF five carries no height
+    return max(-6.0, min(6.0, (zone * 0.09 + size * 0.35) * min(1.5, atk_usg / 20.0)))
+
+def pairing_table(A, B, b_usg):
+    return [[pairing_edge(a, b, b_usg[j]) for j, b in enumerate(B)] for a in A]
+
+def pairing_term(E, mp, b_usg):
+    tot = sum(b_usg) or 1.0
+    n = len(E)
+    t = 0.0
+    for i, j in enumerate(mp):
+        col = sum(E[r][j] for r in range(n)) / n
+        t += (b_usg[j] / tot) * (E[i][j] - col)
+    return t
+
+def best_board(E, b_usg):
+    import itertools
+    n = len(E)
+    return min(itertools.permutations(range(n)), key=lambda mp: pairing_term(E, mp, b_usg))
+
+PAIR_SCALE = 22.3   # sized with offense.ts so the full team lever spans ~+-3.5 margin
+
 def defense_vs(us, them):
     """DRtg of US defending THEM (lower = better), plus our steal generation vs their handlers."""
     A = [p['attrs'] for p in us]; B = [p['attrs'] for p in them]
@@ -152,11 +178,11 @@ def defense_vs(us, them):
     deficit = sum(max(0, 60-d) for d in others)
     cover = min(deficit, MKNOBS['ANCHOR_CAP']*(anchor/99)) * min(1.0, paint_orient*2)
     eff_di = (sum(a['perdef'] for a in A) + cover)/5
-    # HUNTED MAN: exposure scales with hunter's usage; anchor mitigates only paint-hunters
-    weak = min(a['perdef'] for a in A)
-    star_paint = B[star]['rim'] / (B[star]['rim'] + B[star]['3pt'] + 1e-9)
-    mitig = 0.45 * min(1.0, anchor/99) * star_paint
-    hunt_pen = max(0, 60-weak) * (b_usg[star]/25) * (1-mitig) * MKNOBS['HUNT_SCALE']
+    # recal_60: the lone hunted-man term is generalized — every pairing generates edge, the board is
+    # the best of all 120, and the penalty is RELATIVE TO PERFECT COACHING (the best board pays 0).
+    E = pairing_table(A, B, b_usg)
+    bb = best_board(E, b_usg)
+    hunt_pen = PAIR_SCALE * (pairing_term(E, list(bb), b_usg) - pairing_term(E, list(bb), b_usg))
     # STEALS: on-ball vs their star handler (ballsec x usage), plus team pressure; no discipline gate
     top_pd = max(a['perimdisrupt'] for a in A)
     onball = top_pd * ((99-B[star]['ballsec'])/99) * (b_usg[star]/25)

@@ -1,5 +1,5 @@
 {
- "pipeline_version": 59,
+ "pipeline_version": 60,
  "cards": 10000,
  "smoothing": "20/60/20 season blend, applied (75/25 at career edges; reaches yr+2 across an injury gap)",
  "note": "This is the app-side smoothed export. Calibration targets are quoted against THESE cards as named player-seasons (protocol v2), never as hypothetical shapes."

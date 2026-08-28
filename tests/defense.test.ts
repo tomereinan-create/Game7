@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import OPP from '../src/data/opponents.json'
-import { defenseVs, matchupMargin, teamOffense } from '../src/engine/offense'
+import { defenseVs, matchupMargin, pairingEdge, teamOffense } from '../src/engine/offense'
 import { PLAYERS } from '../src/engine/pool'
 import type { Opponent, Player } from '../src/engine/types'
 
@@ -59,10 +59,26 @@ describe('matchup defense — defense is a property of the pairing', () => {
     // figure in the spec does not isolate it on this data).
     const vsShaq = defenseVs(trae, shaqLed)
     const vsCurry = defenseVs(trae, curryLed)
-    console.log(`  hunted man  penalty vs Shaq ${vsShaq.huntPen.toFixed(2)}  vs Curry ${vsCurry.huntPen.toFixed(2)}  (margin ${matchupMargin(trae, shaqLed).toFixed(1)} / ${matchupMargin(trae, curryLed).toFixed(1)})`)
+    // r60 GENERALIZED THE HUNT: every pairing generates edge and the optimal board's penalty is 0
+    // by construction, so the mitigation now lives in the TABLE — Gobert's rimprot answers a paint
+    // hunter's edge where Trae's perdef cannot, and no defender answers Curry.
+    const usgS = shaqLed.map((q) => q.attrs.usg_raw)
+    const usgC = curryLed.map((q) => q.attrs.usg_raw)
+    const shaqOnGobert = pairingEdge(trae[1], shaqLed[0], usgS[0])
+    const shaqOnTrae = pairingEdge(trae[0], shaqLed[0], usgS[0])
+    const curryOnGobert = pairingEdge(trae[1], curryLed[0], usgC[0])
+    const curryOnTrae = pairingEdge(trae[0], curryLed[0], usgC[0])
+    console.log(`  edges: Shaq vs Gobert ${shaqOnGobert.toFixed(2)} vs Trae ${shaqOnTrae.toFixed(2)} | Curry vs Gobert ${curryOnGobert.toFixed(2)} vs Trae ${curryOnTrae.toFixed(2)}`)
     expect(vsShaq.starPaint).toBeGreaterThan(0.5)
     expect(vsCurry.starPaint).toBeLessThan(0.5)
-    expect(vsCurry.huntPen - vsShaq.huntPen).toBeGreaterThanOrEqual(0.25) // 1.07 -> 0.95 (smoothing) -> 0.33 (Trae's own D rose, so the hunt costs less)
+    // Gobert NEUTRALIZES the paint hunter (edge ~0) while Trae is destroyed by him (the clamp).
+    // The cross-hunter comparison saturates the +-6 clamp on Trae's side, so the property is
+    // asserted where it lives: the swing Gobert buys against Shaq is at least four points of edge.
+    expect(Math.abs(shaqOnGobert)).toBeLessThan(1.5)
+    expect(shaqOnTrae - shaqOnGobert).toBeGreaterThanOrEqual(4)
+    // and both optimal boards pay nothing — perfect coaching is the zero (r60)
+    expect(vsShaq.huntPen).toBeCloseTo(0, 9)
+    expect(vsCurry.huntPen).toBeCloseTo(0, 9)
   })
 
   it('wall vs sieve: elite D / weak O beats elite O / no D by a modest margin', () => {
@@ -83,12 +99,13 @@ describe('matchup defense — defense is a property of the pairing', () => {
     const CHUCK5 = five("Allen Iverson '01", "Russell Westbrook '17", "DeMar DeRozan '21", "Carmelo Anthony '14", "Trae Young '22")
     const oSpread = teamOffense(GOAT5).off - teamOffense(CHUCK5).off
     console.log(`  D spread ${(dS - dW).toFixed(2)}  O spread ${oSpread.toFixed(2)}`)
-    // r36 COMPRESSED THIS SPREAD: 9.59 -> 7.85. Making height a quarter of perdef hands a quarter of the
-    // rating to a physical fact that thousands of players share, which necessarily dilutes how much of
-    // perimeter defence is skill — the gap between the best defensive five and the worst narrows. The
-    // floor moves to 7.5 to record that, and the ceiling stays where it was.
-    expect(dS - dW).toBeGreaterThanOrEqual(7.5)
-    expect(dS - dW).toBeLessThanOrEqual(11) // spec band 8–10; 10.2 after the defense scale + smoothing
+    // r36 COMPRESSED THIS SPREAD: 9.59 -> 7.85, and r60 compressed it AGAIN: 7.85 -> ~5. The lone
+    // hunted-man penalty used to live in the standalone rating, and the sieve ate it against any
+    // neutral five; r60 moved the hunt into the ASSIGNMENT lever (the pairing table), where the
+    // optimal board pays zero — so the standalone spread records skill only, and the hunting is
+    // priced where the round put it: on the board.
+    expect(dS - dW).toBeGreaterThanOrEqual(4.2)
+    expect(dS - dW).toBeLessThanOrEqual(11)
     expect(oSpread).toBeGreaterThan(dS - dW)
   })
 

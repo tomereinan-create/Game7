@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import OPP from '../src/data/opponents.json'
 import STATS from '../src/data/stats.json'
 import { ROUNDS } from '../src/config'
-import { defenseVs, naiveAssignment } from '../src/engine/offense'
+import { bestBoard, defenseVs, naiveAssignment, pairingTable } from '../src/engine/offense'
 import { DEFAULT_ORDER, PLAYERS, setTagOrder, tagOrder } from '../src/engine/pool'
 import { starsFor } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
@@ -134,7 +134,10 @@ describe('defensive assignment — naive vs optimal', () => {
     const d = defenseVs(wall, was, 'naive').drtg
     console.log(`  five-out  optimal ${a.toFixed(2)} naive ${b.toFixed(2)} gap ${(b - a).toFixed(2)} | paint  optimal ${c.toFixed(2)} naive ${d.toFixed(2)} gap ${(d - c).toFixed(2)}`)
     expect(b - a).toBeGreaterThanOrEqual(3)
-    expect(Math.abs(d - c)).toBeLessThanOrEqual(1)
+    // r60: EVERY pairing generates edge, so naive pays a little against paint fives too — the old
+    // <= 1 recorded a world where only the anchor's spot mattered. Still far below the five-out gap.
+    expect(Math.abs(d - c)).toBeLessThanOrEqual(2.5)
+    expect(b - a).toBeGreaterThan(Math.abs(d - c))
   })
 
   it('a broken manual map is scored as the naive board, never as optimal', () => {
@@ -143,15 +146,21 @@ describe('defensive assignment — naive vs optimal', () => {
     expect(defenseVs(wall, lac, [0, 1]).drtg).toBeCloseTo(defenseVs(wall, lac, 'naive').drtg, 9)
   })
 
-  it('a manual map scores with the same math: the optimal hide reproduced by hand equals optimal', () => {
+  it('a manual map scores with the same math: the BEST BOARD reproduced by hand pays no pairing penalty (r60)', () => {
     const lac = opp.find((o) => o.ab === 'LAC')!.players
     const opt = defenseVs(wall, lac, 'optimal')
-    // put Gobert on their worst shooter, everyone else anywhere
-    const rest = [0, 1, 2, 3, 4].filter((j) => j !== opt.worstShooter)
-    const manual = [rest[0], rest[1], rest[2], rest[3], opt.worstShooter]
-    const man = defenseVs(wall, lac, manual)
-    expect(man.anchor).toBeCloseTo(opt.anchor, 9)
-    expect(man.drtg).toBeCloseTo(opt.drtg, 6)
+    // r60: "everyone else anywhere" stopped being free — every pairing generates edge, and only the
+    // best of all 120 boards pays nothing. Reproduce THAT board by hand and the penalty is zero;
+    // any other arrangement pays for exactly the edges it concedes.
+    const bUsg = lac.map((q) => q.attrs.usg_raw)
+    const best = bestBoard(pairingTable(wall, lac, bUsg), bUsg)
+    const man = defenseVs(wall, lac, [...best])
+    expect(man.huntPen).toBeCloseTo(0, 9)
+    expect(opt.huntPen).toBeCloseTo(0, 9)
+    // the abstract optimal and the hand-made best board differ only by where the anchor stands —
+    // against LAC the table's best board parks Gobert off the worst shooter, and the hide factor
+    // plus his protection gating are worth ~3.7 DRtg. The pairing penalty itself is zero for both.
+    expect(Math.abs(man.drtg - opt.drtg)).toBeLessThanOrEqual(5)
   })
 })
 

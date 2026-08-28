@@ -17,7 +17,8 @@ import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/poo
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
 import { DEFAULT_TACTICS, pace, scorerPts, styleFit, stylePts, STYLES, type Style } from '../src/engine/tactics'
-import { usageSurplus } from '../src/engine/offense'
+import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
+import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 
 const EOL = String.fromCharCode(10)
@@ -1632,6 +1633,64 @@ const ROUNDS: Record<string, () => void> = {
     line("BAD pick: Malone '94 featured vs the same five", `${bad.toFixed(2)}`, '-EV — a third option into elite stoppers', bad < 0)
     note('Same roster, same opponent: the choice is the read. Before r59 every pick added value — the')
     note('bug the round names — because the old term read the man’s volume, not the reallocation.')
+  },
+  '60': () => {
+    console.log(`${EOL}recal_60 — offense-defense parity + matchups with teeth`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '60', /PIPELINE_VERSION = 60/.test(OVR) && /PIPELINE_VERSION = 60/.test(RATINGS))
+    src('the parity dial', io('src/engine/offense.ts'), /const REF_DRTG = 108\.85/, 'ONE constant moved; orderings untouched')
+    src('every pairing generates edge', io('src/engine/offense.ts'), /export function pairingEdge/, 'perdef outside, rimprot inside, size against height, usage-gated')
+    src('mirrored in the pipeline', RATINGS.includes('def pairing_edge') ? RATINGS : io('data/team_rating.py'), /def pairing_edge/, 'team_rating.py runs the same table (the parity test enforces it)')
+    // parity harness, live
+    const rng60 = makeRng(6060)
+    const pool60 = PLAYERS.filter((q) => q.ovr >= 55)
+    const rand5 = () => {
+      const out: (typeof PLAYERS)[number][] = []
+      const seen = new Set<string>()
+      while (out.length < 5) {
+        const q = pool60[Math.floor(rng60.next() * pool60.length)]
+        if (!seen.has(q.player)) {
+          seen.add(q.player)
+          out.push(q)
+        }
+      }
+      return out
+    }
+    let so = 0
+    let sd = 0
+    for (let k = 0; k < 300; k++) {
+      const r = ratings100(rand5())
+      so += r.off
+      sd += r.def
+    }
+    line('PARITY over 300 random fives', `OFF ${(so / 300).toFixed(2)}  DEF ${(sd / 300).toFixed(2)}`, 'means within 0.5 (was a 23.5-point drift)', Math.abs(so - sd) / 300 <= 0.5)
+    // one game's full edge table
+    const A60 = rand5()
+    const B60 = rand5()
+    const bU = B60.map((q) => q.attrs.usg_raw)
+    const E60 = pairingTable(A60, B60, bU)
+    const best60 = bestBoard(E60, bU)
+    note(`ONE GAME'S TABLE — ${A60.map((q) => q.name.split(' ').slice(-2)[0]).join('/')} defending ${B60.map((q) => q.name.split(' ').slice(-2)[0]).join('/')}:`)
+    for (let i = 0; i < 5; i++) note(`  ${A60[i].name.padEnd(26)} ${E60[i].map((e) => (e >= 0 ? '+' : '') + e.toFixed(1)).join('  ')}   best board guards #${best60[i] + 1}`)
+    const nv60 = pairingTerm(E60, naiveAssignment(A60, B60), bU)
+    note(`  naive board pays ${(K_MATCH * PAIR_SCALE * (nv60 - pairingTerm(E60, best60, bU))).toFixed(2)} margin vs the best of 120 in this game.`)
+    // the r59 harness, assignment row included
+    for (const r of runHarness(200)) line(`  harness: ${r.tactic}`, `random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'the law holds', r.pass)
+    // 500 series optimal vs naive
+    let wOpt = 0
+    let wNaive = 0
+    for (let i = 0; i < 500; i++) {
+      const A = rand5()
+      const B = rand5()
+      const R = compile(B, A)
+      if (simSeries(compile(A, B, 'optimal'), R, makeRng(777 + i), 10, 4).won) wOpt++
+      if (simSeries(compile(A, B, 'naive'), R, makeRng(777 + i), 10, 4).won) wNaive++
+    }
+    line('optimal vs naive, 500 series', `${wOpt / 5}% vs ${wNaive / 5}%`, 'grew from 0.0pp before the round', wOpt - wNaive >= 25)
+    note('Pre-round baselines, measured before the change: dial drift +23.49 (DEF over OFF), and')
+    note('optimal-vs-naive worth 0.0pp — assignments did nothing. The lever half-span now measures')
+    note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
+    note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
+    note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

@@ -1,5 +1,7 @@
 import { useRef, useState, type PointerEvent } from 'react'
-import { defenseVs, solveBoard } from '../engine/offense'
+import { defenseVs, pairingTable, PAIR_SCALE, solveBoard } from '../engine/offense'
+import { K_MATCH } from '../config'
+import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
@@ -33,6 +35,16 @@ export function Matchups({
   const cur = defenseVs(mine, theirs, map)
   const opt = defenseVs(mine, theirs, 'optimal')
   const guardOf = (j: number) => map.indexOf(j)
+  // EVERY PAIRING GENERATES EDGE (recal_60): each row prices what THIS defender on THIS attacker is
+  // worth against an average assignment, in margin points, live as the board changes.
+  const bUsg = theirs.map((q) => q.attrs.usg_raw)
+  const E = pairingTable(mine, theirs, bUsg)
+  const totU = bUsg.reduce((a2, x) => a2 + x, 0) || 1
+  const edgeOf = (i: number, j: number) => {
+    let col = 0
+    for (let r = 0; r < E.length; r++) col += E[r][j]
+    return -K_MATCH * PAIR_SCALE * ((bUsg[j] ?? 20) / totU) * (E[i][j] - col / E.length)
+  }
 
   /** Move defender i onto opponent j: the man already there takes i's old assignment. */
   const put = (i: number, j: number) => {
@@ -146,6 +158,10 @@ export function Matchups({
                   <i>
                     D {d.attrs.perdef} · rim {d.attrs.rimprot}
                     {isAnchor ? ' · anchor' : ''}
+                  </i>
+                  <i>
+                    on their {archetype(t)}: {edgeOf(g, j) >= 0 ? '+' : '−'}
+                    {Math.abs(edgeOf(g, j)).toFixed(1)}
                   </i>
                 </button>
               ) : (
