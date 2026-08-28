@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { PLAYERS } from '../engine/pool'
+import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
 import { WEAR_OUT } from '../state/campaign'
@@ -303,8 +303,8 @@ export function MyTeam({
               row(p, {
                 sub:
                   left(p.name) <= WEAR_OUT
-                    ? `${assigned[p.name] ?? posOf(p.name)[0]} · WORN OUT — must be replaced`
-                    : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${left(p.name)} durability left`,
+                    ? `${assigned[p.name] ?? posOf(p.name)[0]} · ${archetype(p)} · WORN OUT — must be replaced`
+                    : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)} · ${left(p.name)} durability left`,
                 dim:
                   left(p.name) <= WEAR_OUT ||
                   (sel ? !replaceable(sel).includes(p.name) : false) ||
@@ -332,7 +332,7 @@ export function MyTeam({
             {benchOpen ? (
               bench ? (
                 row(bench, {
-                  sub: `BENCH · resting, does not play · ${left(bench.name)} durability${heal ? ` · +${heal} a series` : ''}`,
+                  sub: `BENCH · ${archetype(bench)} · resting, does not play · ${left(bench.name)} durability${heal ? ` · +${heal} a series` : ''}`,
                   on: resting || out === bench.name,
                   onTap: sel
                     ? () => setOut(replaceable(sel).includes(bench.name) ? bench.name : out)
@@ -515,7 +515,7 @@ export function MyTeam({
                   {roster.map((p) => {
                     const outsFor = replaceable(p.name)
                     return row(p, {
-                      sub: outsFor.length ? posOf(p.name).join(' · ') : `${posOf(p.name).join(' · ')} · no legal swap`,
+                      sub: `${posOf(p.name).join(' · ')} · ${archetype(p)}${outsFor.length ? '' : ' · no legal swap'}`,
                       dim: !outsFor.length,
                       on: sel === p.name,
                       onTap: () => {
