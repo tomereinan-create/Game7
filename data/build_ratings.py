@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 54   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 55   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -207,8 +207,8 @@ TRACKING = {}          # (season, category) -> {norm name: (diff_pct, attempts)}
 TRK_CATS = {'overall': 'Overall', 'rim': 'Less Than 6Ft', 'perim': 'Greater Than 15Ft', 'three': '3 Pointers'}
 DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))   # recal_16: defended-FG% diff -> absolute card floor
 def dfg_floor(yr, name):
-    # recal_20: the floors judge the same series perdef reads — shots from 15 feet out.
-    row = TRACKING.get((yr, 'Greater Than 15Ft'), {}).get(_nrm(name))
+    # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
+    row = TRACKING.get((yr, 'Outside 6Ft'), {}).get(_nrm(name))
     if not row or not row[1] or min(1.0, row[1] / 350.0) < 0.75: return None
     for _d, _card in DFG_FLOORS:
         if row[0] <= _d: return _card
@@ -228,6 +228,20 @@ try:
             except ValueError:
                 _a = 0.0
             TRACKING.setdefault((int(_row['season']), _cat), {})[_nrm(_row['player_name'])] = (_d, _a)
+    # recal_55 (his ruling): perdef reads shots from SIX feet out. No category measures it directly,
+    # so it is DERIVED: att = overall - lt6, diff = the attempt-weighted remainder. 6-15ft is where
+    # slow bigs bleed - floaters, short pull-ups, drives finishing short of the rim - and the 15ft+
+    # series was blind to all of it. The rim series (<6ft) keeps feeding rimprot untouched.
+    for _yr55 in sorted({_k[0] for _k in TRACKING if _k[1] == 'Overall'}):
+        _ov = TRACKING.get((_yr55, 'Overall'), {})
+        _l6 = TRACKING.get((_yr55, 'Less Than 6Ft'), {})
+        _d6 = {}
+        for _n55, (_do, _ao) in _ov.items():
+            _dl, _al = _l6.get(_n55, (0.0, 0.0))
+            _att55 = max(0.0, (_ao or 0.0) - (_al or 0.0))
+            if _att55 <= 0: continue
+            _d6[_n55] = (((_do or 0.0) * (_ao or 0.0) - (_dl or 0.0) * (_al or 0.0)) / max(1.0, _att55), _att55)
+        TRACKING[(_yr55, 'Outside 6Ft')] = _d6
     print(f"tracking defense loaded: {sum(len(v) for v in TRACKING.values())} rows across {len({k[0] for k in TRACKING})} seasons, categories {sorted({k[1] for k in TRACKING})}")
 except FileNotFoundError:
     pass   # inert until the CSV exists
@@ -260,7 +274,7 @@ for yr, rows in seasons.items():
     def _pct_for(cat):
         vals = [d * min(1.0, a / MIN_ATT) for d, a in TRACKING.get((yr, cat), {}).values() if a]
         return pctile_top(vals) if vals else None
-    PERDEF_CAT = 'Greater Than 15Ft'   # recal_20: the outside-paint slice is the primary claim
+    PERDEF_CAT = 'Outside 6Ft'   # recal_20 chose the outside-paint slice; recal_55 widens it to 6ft+ (derived: overall - rim)
     Pperim = _pct_for(PERDEF_CAT)
     # ALL SHOTS CARRY WEIGHT (his ruling). The 15ft+ series keeps the majority — it is what perimeter
     # defence IS — but every shot he contested is evidence, so the Overall series corroborates at 0.30.
@@ -305,6 +319,12 @@ for yr, rows in seasons.items():
         # trace votes (<=0.05) still buy nothing (the Iverson rule holds).
         wv = min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0   # recal_20: graded band enters sooner
         novote = min(PD, 0.62)   # recal_13: no-vote cap 0.58 -> 0.62
+        # recal_55: PRE-2014 NO-REP DBPM RELIEF, at his "big increase" size. Before tracking exists
+        # a no-vote defender had no way past the cap no matter what DBPM said; elite-DBPM unvoted
+        # men now reach ~78-80. The negative control holds by construction: a bad DBPM percentile
+        # makes 0.28 + 0.60 x P less than the cap he already had, so gamblers move zero.
+        if yr < 2014 and r['drep'] <= 0.05:
+            novote = max(novote, min(0.80, 0.28 + 0.60 * P['dbpm'](r['dbpm'])))
         if Pperim is not None:
             dv = _trk(PERDEF_CAT, r['name'])
             if dv is not None:

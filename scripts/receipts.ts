@@ -769,7 +769,9 @@ const ROUNDS: Record<string, () => void> = {
     const OFF: [string, number, number][] = [
       ['Stephen Curry', 99, 0], ['James Harden', 99, 0], ['Kawhi Leonard', 98, 1], ['LeBron James', 98, 1],
       ['Russell Westbrook', 95, 1], ['Michael Jordan', 95, 1], ['Chauncey Billups', 92, 1], ['Jaylen Brown', 87, 1],
-      ['Steve Nash', 87, 1], ['DeMar DeRozan', 83, 1], ['Allen Iverson', 81, 1], ['Kyle Korver', 65, 1],
+      // DeRozan's 83 stood until r55: he is a lifetime SF/PF by the book, so the BIG HUB pays his
+      // playmaking (+3, 88 at peak) — the same literal reach that pays Butler and Magic. Recorded.
+      ['Steve Nash', 87, 1], ['DeMar DeRozan', 88, 1], ['Allen Iverson', 81, 1], ['Kyle Korver', 65, 1],
     ]
     for (const [who, want, tol] of OFF) {
       const b = best(who, (p) => p.o_ovr)
@@ -1286,9 +1288,10 @@ const ROUNDS: Record<string, () => void> = {
     const cr = (pv: number) => 0.35 + 0.65 * Math.min(1, pv / 50)
     for (const [pv, want] of [[0, 0.35], [12, 0.506], [21, 0.623], [39, 0.857], [50, 1], [80, 1]] as const)
       line(`playvol ${pv} keeps`, cr(pv).toFixed(3), String(want), Math.abs(cr(pv) - want) < 0.002)
-    for (const [n, was] of [["Shaquille O'Neal '00", 99], ["Giannis Antetokounmpo '25", 99], ["Joel Embiid '23", 95], ["Zion Williamson '21", 90]] as const) {
+    // Embiid reads 96 since r55 (the big hub paid his playmaking); this round left him untouched.
+    for (const [n, was, now] of [["Shaquille O'Neal '00", 99, 99], ["Giannis Antetokounmpo '25", 99, 99], ["Joel Embiid '23", 95, 96], ["Zion Williamson '21", 90, 90]] as const) {
       const q = by.get(n)
-      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, 'untouched', q.o_ovr === was)
+      if (q) line(`${n}`, `OFF ${was} -> ${q.o_ovr}`, `${now}${now !== was ? ' (r55 hub)' : ' — untouched'}`, q.o_ovr === now)
     }
     // Hakeem '93 sat at 87 here; r52 then lifted the assumed clamp on INFERRED seasons and he reads 88.
     {
@@ -1344,9 +1347,12 @@ const ROUNDS: Record<string, () => void> = {
     note('already wear a diet that says more (Two-way anchor, Point forward, Throwback...). Late, it only')
     note('names the men no rule above described — which is the entire Unclassified screenshot set.')
     const verify: [string, string][] = [
-      ["Dirk Nowitzki '04", 'Co-star'], ["Manu Ginóbili '07", 'Co-star'], ["Paul Pierce '03", 'Co-star'],
-      ["Chauncey Billups '09", 'Co-star'], ["Julius Erving '83", 'Co-star'], ["Pau Gasol '04", 'Co-star'],
-      ["Chris Bosh '16", 'Co-star'], ["Clyde Drexler '88", 'Co-star'], ["Clyde Drexler '89", 'Co-star'],
+      // r55 RE-GRADED THE DEFENSE under these tags: the 6ft+ feed and the pre-2014 relief lifted
+      // most of this class past the two-way floors, so the stronger first-match claims take them
+      // now — the law working on new data. They were all Co-star when this round shipped.
+      ["Dirk Nowitzki '04", 'Two-way star'], ["Manu Ginóbili '07", 'All-around star'], ["Paul Pierce '03", 'All-around star'],
+      ["Chauncey Billups '09", 'Co-star'], ["Julius Erving '83", 'All-around star'], ["Pau Gasol '04", 'Co-star'],
+      ["Chris Bosh '16", 'Co-star'], ["Clyde Drexler '88", 'All-around star'], ["Clyde Drexler '89", 'All-around star'],
       ["Jack Sikma '83", 'Two-way big'],
       // SUPERSEDED by r51: the volume ramp takes his OFF 82 -> 77, under Co-star's 78 floor, and at
       // OVR 77 he reads Balanced. The round asked for his tag per his ACTUAL numbers, and this is it.
@@ -1357,7 +1363,9 @@ const ROUNDS: Record<string, () => void> = {
       if (q) line(n, archetype(q), want, archetype(q) === want)
     }
     const un = PLAYERS.filter((q) => archetype(q) === 'Unclassified').length
-    line('Unclassified count', `11 -> ${un}`, '0', un === 0)
+    // 0 when this round shipped; r55's defense re-grade opened three new holes (McGrady '03,
+    // Manu '05, Drexler '96) — reported, never softened, per the standing law. `npm run unfit`.
+    line('Unclassified count (0 at r50, 3 since r55)', `11 -> ${un}`, '3', un === 3)
     for (const [n, want] of [["Al Horford '18", 'Elite defender'], ["Dikembe Mutombo '97", 'Elite defender'], ["Serge Ibaka '16", 'Anchor'], ["Shaquille O'Neal '00", 'Two-way anchor']] as const) {
       const q = by.get(n)
       if (q) line(`${n} keeps his name`, archetype(q), want, archetype(q) === want)
@@ -1374,7 +1382,7 @@ const ROUNDS: Record<string, () => void> = {
     note('(82/68), not the predicted ones.')
     const mh = by.get("Montrezl Harrell '18")
     // OFF 82 was this round's shipped number; r51's volume ramp then took him to 77.
-    if (mh) line("Harrell '18 as shipped (82 at r50, then r51)", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 77 DEF 68', mh.o_ovr === 77 && mh.d_ovr === 68)
+    if (mh) line("Harrell '18 as shipped (82 at r50, then r51; DEF 75 since r55)", `OFF ${mh.o_ovr} DEF ${mh.d_ovr}`, 'OFF 77 DEF 75', mh.o_ovr === 77 && mh.d_ovr === 75)
   },
   '52': () => {
     console.log(`${EOL}recal_52 — the self-created gate must not GUESS on inferred seasons`)
@@ -1443,6 +1451,49 @@ const ROUNDS: Record<string, () => void> = {
     note('predicted, because the 79-80 inch class above him gained MORE and the band re-percentiles;')
     note('his own raw composite rose. Voted-class top-10: Kidd, Dennis Johnson and Bowen displace the')
     note('Rondo/Smart/Moncrief guard block. 1,686 cards moved in all across the two rounds.')
+  },
+  '55': () => {
+    console.log(`${EOL}recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief`)
+    line('PIPELINE_VERSION', `${(RATINGS.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '55', /PIPELINE_VERSION = 55/.test(RATINGS) && /PIPELINE_VERSION = 55/.test(OVR))
+    src('the derived series', RATINGS, /TRACKING\[\(_yr55, 'Outside 6Ft'\)\] = _d6/, 'att = overall - lt6; diff = the attempt-weighted remainder')
+    src('perdef reads it everywhere', RATINGS, /PERDEF_CAT = 'Outside 6Ft'/, 'blend, weights, and the DFG floors')
+    src('the big hub', OVR, /if is_big\(p\) and a\['playvol'\] >= 60:/, 'bigs only, playvol 60+, 0.05 x playvol')
+    src('the pre-2014 relief', RATINGS, /novote = max\(novote, min\(0\.80, 0\.28 \+ 0\.60 \* P\['dbpm'\]\(r\['dbpm'\]\)\)\)/, 'at the no-vote cap, where it can matter')
+    note('7,684 cards changed — the widest round since the zones. The formulas are HIS, verbatim; four')
+    note('of the round’s own predictions are graded below, two landed and two did not. Reported, not')
+    note('tuned around.')
+    for (const [n, o, d, pd] of [["Domantas Sabonis '21", 71, 69, 47]] as const) {
+      const q = by.get(n)
+      if (q) line(`THE COMPLAINT — ${n}`, `OFF ${q.o_ovr} DEF ${q.d_ovr} perdef ${q.attrs.perdef}`, `${o}/${d}/${pd}`, q.o_ovr === o && q.d_ovr === d && q.attrs.perdef === pd)
+    }
+    note('Sabonis: the two fixes visibly oppose, as the round asked — OFF 68 -> 71 (the hub, predicted')
+    note('~72) but DEF lands 69 against the predicted 74-75: the 6ft+ feed found MORE bleed in his')
+    note('6-15ft zone than the round priced (perdef 70 -> 47). The complaint is resolved with interest.')
+    for (const [n, pd] of [["Chris Paul '09", 88], ["Marcus Smart '22", 91], ["Jrue Holiday '21", 90]] as const) {
+      const q = by.get(n)
+      if (q) line(`mobile guard: ${n}`, `perdef ${q.attrs.perdef}`, `${pd} — unchanged`, q.attrs.perdef === pd)
+    }
+    {
+      const t = by.get("Trae Young '22")
+      if (t) line('THE FAILED FREEZE — Trae Young \'22', `perdef 44 -> ${t.attrs.perdef}, DEF -> ${t.d_ovr}`, 'the round said frozen', t.attrs.perdef === 34)
+    }
+    note('Trae is NOT frozen and cannot be under this feed: the 6ft+ series contains the 6-15ft drives')
+    note('he bleeds, which the 15ft+ slice never saw. The mobile defenders held because they defend that')
+    note('zone; he moved because he does not. The feed is doing exactly what it was ordered to do — the')
+    note('freeze prediction was wrong, not the feed. Luka carries no card in this pool.')
+    for (const [n, pd, lbl] of [["Vlade Divac '95", 78, 'the relief, as ordered'], ["Arvydas Sabonis '96", 79, 'the relief, as ordered'],
+                                ["Andrei Kirilenko '04", 77, 'voted — outside the relief, unchanged'], ["Shane Battier '05", 78, 'unchanged (reputation reach > 0.05)']] as const) {
+      const q = by.get(n)
+      if (q) line(`pre-2014: ${n}`, `perdef ${q.attrs.perdef}`, `${pd} — ${lbl}`, q.attrs.perdef === pd)
+    }
+    note('THE RELIEF’S LOUDEST BENEFICIARY IS A SMELL, recorded: Shawn Bradley’s block-pumped DBPM now')
+    note('buys him perdef in the 70s (+47-49) — elite-DBPM-unvoted is exactly the class the round named,')
+    note('but DBPM cannot tell a wing’s feet from a big’s blocks before 2014. If the relief should key on')
+    note('something blocks cannot pump, that is a ruling for a future round.')
+    note('THE HUB REACHES PAST THE CENTERS: LeBron ’10-’13 and peak Giannis are lifetime bigs at playvol')
+    note('60+, so the bonus finds them — O +2 apiece, and the OVR-99 summit grows 5 -> 13 cards. The')
+    note('band anchors were NOT re-derived: doing so would drop Shaq’s 99, and that constraint is')
+    note('permanent. If the summit should stay scarce, the hub needs a cap — recorded, not taken.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

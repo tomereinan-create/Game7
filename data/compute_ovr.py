@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 54
+PIPELINE_VERSION = 55
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -188,6 +188,12 @@ def o_score(p):
             pre_off = std * 0.93
             gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
         std += base * zone_f * att_f * gate_f
+    # recal_55: THE BIG HUB. An efficient playmaking center had no channel - his assists scored
+    # through playvol's 0.17 like everyone's, and nothing priced the offense that RUNS THROUGH him.
+    # Bigs only, playvol 60 and up; the Jokic class is saturated at the band top anyway, and guards
+    # are untouched by construction.
+    if is_big(p) and a['playvol'] >= 60:
+        std += 0.05 * a['playvol']
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     return std

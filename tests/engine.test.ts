@@ -153,7 +153,10 @@ describe('player data (stats-only doctrine)', () => {
     near("Stephen Curry '16", 99, 81)
     near("LeBron James '13", 95, 96)
     near("Kawhi Leonard '17", 92, 99)
-    near("Giannis Antetokounmpo '20", 91, 93)
+    // The 91 was the spec anchor; he had drifted to 96 across the offense recals, and r55's BIG HUB
+    // is the round that finally names the channel: a lifetime big running the offense (playvol 60+)
+    // is paid for being its hub, and Giannis is exactly that shape. 98 on the card.
+    near("Giannis Antetokounmpo '20", 98, 93)
     // r44/r45 lifted him: 90 -> 98. Two rulings compound on exactly his profile. Dropping playvol from
     // the specialist bonus stopped taxing him for passing out of the double (playvol 56 in 2000), and
     // the bonus now scales with PAINT ATTEMPTS — he took 14 a hundred, the most in the pool — instead
