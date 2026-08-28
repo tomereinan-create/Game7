@@ -10,7 +10,7 @@ import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
 import { naiveAssignment, readsOf, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
-import { capBonus, duraBoost, owned, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
+import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
@@ -144,7 +144,7 @@ export function Draft({
   spinLeft?: boolean
   /** Death match: the My team plan — the sim prices it, so the odds here must too. */
   tactics?: Tactics | null
-  onSim: (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => void
+  onSim: (five: Player[], assignment: Assignment, toWin: number) => void
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
   onRoster: () => void
@@ -199,7 +199,6 @@ export function Draft({
   const [board, setBoard] = useState<number[] | null>(null)
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
-  const [sigmaPick, setSigmaPick] = useState<number | null>(null)
   const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
@@ -241,8 +240,8 @@ export function Draft({
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
   // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
-  const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players) : null
-  const sigma = sigmaPick ?? (pc ? SIGMA * pc.sigmaMult : SIGMA)
+  const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players, paceMastery(wallet)) : null
+  const sigma = pc ? SIGMA * pc.sigmaMult : SIGMA
   const open = POSITIONS.filter((x) => !slots[x])
   // Defense is a pairing: both ratings are against the other five, and change as you draft.
   const full = picks.length === DRAFT_SIZE
@@ -439,7 +438,7 @@ export function Draft({
           onClick={() => {
             // his ruling: an unspent My team change is worth a second look before the series runs
             if (spinLeft && !window.confirm('You still have a change left in My team. Sim the series without it?')) return
-            onSim(five, assignment, toWin, sigmaPick ?? undefined)
+            onSim(five, assignment, toWin)
           }}
         >
           Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
@@ -797,22 +796,11 @@ export function Draft({
           canSolve={rank(wallet, 'coach_manual') >= 2}
         />
       ) : null}
-      {full && (has('coach_manual') || has('coach_sigma')) ? (
+      {full && has('coach_manual') ? (
         <div className="card staffbar">
-          {full && has('coach_manual') ? (
-            <button className="sortb on" onClick={() => setBoardOpen(true)}>
-              Matchup board{board ? ' · set' : ''}
-            </button>
-          ) : null}
-          {full && has('coach_sigma') ? (
-            <div className="poschips">
-              {(rank(wallet, 'coach_sigma') >= 3 ? [4, 6, 8, 10, 13, 16, 20] : rank(wallet, 'coach_sigma') >= 2 ? [6, 8, 10, 13, 16] : [8, 10, 13]).map((k) => (
-                <button key={k} className={`sortb ${sigma === k ? 'on' : ''}`} onClick={() => setSigmaPick(k)}>
-                  σ {k}
-                </button>
-              ))}
-            </div>
-          ) : null}
+          <button className="sortb on" onClick={() => setBoardOpen(true)}>
+            Matchup board{board ? ' · set' : ''}
+          </button>
         </div>
       ) : null}
       {full && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
@@ -865,8 +853,14 @@ export function Draft({
           </div>
           {pc ? (
             <div className="seriesnow-note">
-              Pace: your surplus {pc.ours >= 0 ? '+' : ''}{pc.ours.toFixed(0)} vs {pc.theirs >= 0 ? '+' : ''}{pc.theirs.toFixed(0)} —{' '}
-              {Math.abs(pc.ours - pc.theirs) <= 2 ? 'a wash' : pc.ours > pc.theirs ? 'pace favors you' : 'pace favors them'}
+              {paceMastery(wallet) >= 1 ? (
+                <>
+                  Pace: your surplus {pc.ours >= 0 ? '+' : ''}{pc.ours.toFixed(0)} vs {pc.theirs >= 0 ? '+' : ''}{pc.theirs.toFixed(0)} —{' '}
+                  {Math.abs(pc.ours - pc.theirs) <= 2 ? 'a wash' : pc.ours > pc.theirs ? 'pace favors you' : 'pace favors them'}
+                </>
+              ) : (
+                <>Pace: your surplus {pc.ours >= 0 ? '+' : ''}{pc.ours.toFixed(0)} — Tempo control reads theirs</>
+              )}
               {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
             </div>
           ) : null}

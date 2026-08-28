@@ -87,16 +87,20 @@ export const TAX = {
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
-export function pace(self: Tactics['tempo'], opp: Tactics['tempo'], five: Player[], theirs: Player[]) {
-  // the caller owns 3/4 of the night's pace: the answer DRAGS the game, it does not erase the call
-  const lvl = 0.75 * TEMPO_LVL[self] + 0.25 * TEMPO_LVL[opp]
+export function pace(self: Tactics['tempo'], opp: Tactics['tempo'], five: Player[], theirs: Player[], mastery = 0) {
+  // the caller owns 3/4 of the night's pace (85% at Tempo control rank 3): the answer DRAGS the
+  // game, it does not erase the call. Rank 2 halves the deviation tax — a trained bench wastes
+  // less on the wrong night. The harness calibrates at mastery 0; ranks are paid for in stars.
+  const selfW = mastery >= 3 ? 0.85 : 0.75
+  const lvl = selfW * TEMPO_LVL[self] + (1 - selfW) * TEMPO_LVL[opp]
   const ours = usageSurplus(five)
   const others = usageSurplus(theirs)
+  const tax = (self !== 'normal' ? TAX.tempo : 0) * (mastery >= 2 ? 0.5 : 1)
   return {
     lvl,
     ours,
     theirs: others,
-    margin: clamp(lvl * 0.22 * (ours - others), -2.5, 2.5) - (self !== 'normal' ? TAX.tempo : 0),
+    margin: clamp(lvl * 0.22 * (ours - others), -2.5, 2.5) - tax,
     sigmaMult: lvl > 0 ? 0.94 : lvl < 0 ? 1.08 : 1.0,
   }
 }

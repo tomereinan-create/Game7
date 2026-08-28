@@ -3,7 +3,7 @@ import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
-import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, playbookRank, respec, subsPerRound } from './engine/tree'
+import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -99,7 +99,7 @@ export default function App() {
   }
   const teamName = prog?.team ? `${prog.team.city} ${prog.team.name}` : 'Your team'
 
-  const sim = (five: Player[], assignment: Assignment, toWin: number, sigma?: number) => {
+  const sim = (five: Player[], assignment: Assignment, toWin: number) => {
     if (!opponent || !prog || !cm) return
     // Our defense is whatever the board assigned; the AI always plays optimal. The death match
     // adds the My team plan, priced in points of spread like every other modifier.
@@ -108,10 +108,10 @@ export default function App() {
     const theirs = applyMod(compile(opponent.players, five), { bonus: opponent.handicap ?? 0 })
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
-    const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players) : null
+    const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players, paceMastery(prog)) : null
     const mine = plan ? applyMod(base, { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : base
     const seed = randomSeed()
-    const sig = sigma ?? (pc ? SIGMA * pc.sigmaMult : SIGMA)
+    const sig = pc ? SIGMA * pc.sigmaMult : SIGMA
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran.
     setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })

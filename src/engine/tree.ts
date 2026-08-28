@@ -132,8 +132,12 @@ export const NODES: Node[] = [
   {
     id: 'coach_sigma', branch: 'Coach', depth: 2, ranks: 3, requires: 'coach_manual',
     name: 'Tempo control',
-    blurb: 'Choose the night’s noise before a level, for both teams.',
-    rankBlurbs: ['Tight (σ 8), normal (10) or loose (13).', 'σ 6 and σ 16 open up.', 'σ 4 and σ 20 open up — a coin flip or a formality.'],
+    blurb: 'Pace is a read — surpluses, not noise. Master the call.',
+    rankBlurbs: [
+      'The pace readout: both surpluses show at the draft, so the call reads the matchup.',
+      'A trained bench wastes less — the tempo deviation tax is halved.',
+      'Your call carries the night: 85% of the pace is yours, however they answer.',
+    ],
   },
   {
     id: 'coach_tactics', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_sigma',
@@ -220,6 +224,8 @@ export const subsPerRound = (w: Wallet) => 1 + rank(w, 'surv_sub')
 export const duraBoost = (w: Wallet) => rank(w, 'surv_dura') * 10
 /** Death match: how much of the My team playbook is open. 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 everything. */
 export const playbookRank = (w: Wallet) => rank(w, 'coach_tactics')
+/** Tempo control (r59 repurpose): pace mastery — 1 the readout, 2 half tax, 3 an 85% call. */
+export const paceMastery = (w: Wallet) => rank(w, 'coach_sigma')
 /** Death match: durability the benched man recovers per settled series (0 = no bench at all). */
 export const benchHeal = (w: Wallet) => [0, 3, 6][rank(w, 'surv_bench')] ?? 0
 
