@@ -5,7 +5,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
-import { gateTactics, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -427,9 +427,9 @@ export function MyTeam({
             <div className="posbar">
               <span className="cap">Playstyle</span>
               <div className="poschips">
-                {(['inside', 'balanced', 'outside'] as const).map((k) => (
-                  <button key={k} className={`sortb ${tactics.style === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: k })}>
-                    {k}
+                {STYLES.map(({ key, label }) => (
+                  <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
+                    {key === 'balanced' ? label : `${label} ${Math.round(styleFit(key, five))}`}
                   </button>
                 ))}
               </div>

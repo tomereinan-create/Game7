@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
-import { pace } from '../src/engine/tactics'
+import { DEFAULT_TACTICS, pace, styleFit, stylePts, STYLES, type Style } from '../src/engine/tactics'
 import { usageSurplus } from '../src/engine/offense'
 
 const EOL = String.fromCharCode(10)
@@ -1566,6 +1566,47 @@ const ROUNDS: Record<string, () => void> = {
       note('Slow also LOWERS the pace level, so a deficit five slowing a surplus five removes the')
       note('margin term AND buys variance — both of the underdog’s levers in one call.')
     }
+  },
+  '58': () => {
+    console.log(`${EOL}recal_58 — PLAYSTYLES v2: six styles, fit-scored`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '58', /PIPELINE_VERSION = 58/.test(OVR) && /PIPELINE_VERSION = 58/.test(RATINGS))
+    src('the price', io('src/engine/tactics.ts'), /clamp\(0\.06 \* \(styleFit\(t\.style, five, theirs\) - 60\), -2\.5, 2\.5\)/, '0.06 x (fit - 60), clamped — forcing a style the roster cannot run HURTS')
+    src('the fits, his formulas', io('src/engine/tactics.ts'), /Math\.min\(\.\.\.a\.map\(\(x\) => x\['3pt'\]\)\) \* 0\.6/, 'five-out keys on the WORST shooter, exactly as written')
+    note('Two gaps the round left open, filled and documented in the source: motion’s ball-stopper')
+    note('subtraction is -12 per ISO-shaped star, and post-up’s “dominance-bonus presence” is proxied')
+    note('by min(rim, volume) — the same two facts the o_score bonus keys on. Transition’s opponent')
+    note('quarter reads neutral (50) until a matchup exists, so its full fit shows at the draft.')
+    const pick = (names: string[]) => names.map((n) => g(n))
+    const SHOOTERS = pick(["Stephen Curry '16", "Klay Thompson '15", "Kyle Korver '15", "Duncan Robinson '20", "Dāvis Bertāns '20"])
+    // the star must be a GUARD for the archetype to read: LeBron '13 at 6'9" with a 97 rim IS a
+    // legal post hub by the formula, and it (honestly) called post-up his best style. Harden it is.
+    // ...and no elite dive man either — Harden + Chandler read (correctly) as a PnR pair first.
+    const STARBENCH = pick(["James Harden '19", "Kendrick Perkins '12", "Tony Allen '13", "Ben Wallace '07", "Rajon Rondo '15"])
+    const TOWERS = pick(["Shaquille O'Neal '00", "Tim Duncan '03", "Ben Wallace '03", "Dennis Rodman '92", "Dikembe Mutombo '97"])
+    const table = (label: string, five: (typeof PLAYERS)[number][], wantBest: Style, wantWorst: Style) => {
+      const fits = STYLES.filter((x) => x.key !== 'balanced').map((x) => ({ k: x.key, f: styleFit(x.key, five) }))
+      const bySort = [...fits].sort((p2, q2) => q2.f - p2.f)
+      note(`${label}: ${fits.map((x) => `${x.k} ${Math.round(x.f)}`).join(' · ')}`)
+      // the round demands a CLEAR best and a CLEAR worst; the worst's identity follows the formulas
+      line(`${label} — best/worst`, `${bySort[0].k} ${Math.round(bySort[0].f)} / ${bySort[5].k} ${Math.round(bySort[5].f)}`, `best ${wantBest}, spread >= 25 (worst ran ${wantWorst})`, bySort[0].k === wantBest && bySort[0].f - bySort[5].f >= 25)
+      return bySort
+    }
+    const s1 = table('shooter-five', SHOOTERS, 'fiveout', 'postup')
+    table('star+bench', STARBENCH, 'helio', 'transition')
+    table('twin-towers', TOWERS, 'postup', 'fiveout')
+    // 500 series: the shooter five running its best style vs FORCED into its worst, same opponent
+    const OPP = pick(["Chauncey Billups '05", "Chris Paul '11", "Kevin Johnson '97", "Jason Terry '07", "Domantas Sabonis '24"])
+    const wp = (five: (typeof PLAYERS)[number][], st: Style) => {
+      const t = { ...DEFAULT_TACTICS, style: st }
+      const L = applyMod(compile(five, OPP), { bonus: stylePts(t, five, OPP) })
+      const R = compile(OPP, five)
+      let w = 0
+      for (let i = 0; i < 500; i++) if (simSeries(L, R, makeRng(4321 + i), 10, 4).won) w++
+      return w / 5
+    }
+    const bestW = wp(SHOOTERS, s1[0].k)
+    const worstW = wp(SHOOTERS, s1[5].k)
+    line('500 series, shooter-five: best fit vs forced worst', `${bestW}% vs ${worstW}%`, 'the wrong call costs real games', bestW - worstW >= 5)
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

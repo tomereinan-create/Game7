@@ -18,8 +18,12 @@ export interface Tactics {
   playmaker: string | null
   /** Possessions, not quality: fast raises the night's noise for BOTH teams, slow lowers it. */
   tempo: 'slow' | 'normal' | 'fast'
-  /** Where the shots come from. Priced by the five's own zone balance. */
-  style: 'inside' | 'balanced' | 'outside'
+  /**
+   * PLAYSTYLES v2 (recal_58). Each style scores a FIT 0-100 from the chosen five, and the price is
+   * 0.06 x (fit - 60), clamped +-2.5 — forcing a style the roster cannot run HURTS. Balanced is the
+   * free default: no call, no fit, no price.
+   */
+  style: Style
   /**
    * How the five defends. Matchup is the default and free. Drop pays with a tower behind it and an
    * opponent who cannot shoot; switch is only as good as the worst man caught in it.
@@ -32,6 +36,17 @@ export interface Tactics {
   /** Gang the defensive glass. Pays with rebounders, costs a little rim-running offense. */
   crashDef: boolean
 }
+
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
+export const STYLES: { key: Style; label: string }[] = [
+  { key: 'balanced', label: 'balanced' },
+  { key: 'fiveout', label: 'five-out' },
+  { key: 'pnr', label: 'pick-and-roll' },
+  { key: 'motion', label: 'motion' },
+  { key: 'postup', label: 'post-up' },
+  { key: 'helio', label: 'helio' },
+  { key: 'transition', label: 'transition' },
+]
 
 export const DEFAULT_TACTICS: Tactics = {
   scorer: null,
@@ -78,6 +93,8 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     ...t,
     scorer: t.scorer && names.includes(t.scorer) ? t.scorer : null,
     playmaker: t.playmaker && names.includes(t.playmaker) ? t.playmaker : null,
+    // a save from the inside/outside era carries a style that no longer exists
+    style: STYLES.some((x) => x.key === t.style) ? t.style : 'balanced',
   }
 }
 
@@ -104,6 +121,63 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.reduce((t, p) => t + f(p), 0) / five.length : 50)
 
 /**
+ * THE FIT of a style on a five, 0-100, his formulas verbatim (recal_58). Two gaps the round left
+ * open are filled here and documented: motion's ball-stopper subtraction is -12 per ISO-shaped star
+ * (volume >= 90 with playvol < 50), and post-up's "dominance-bonus presence" is proxied by
+ * min(rim, volume) — the same two facts the o_score bonus keys on. Transition's opponent term
+ * (their ball security, inverted) needs the matchup, so without one that quarter reads neutral (50).
+ */
+export function styleFit(style: Style, five: Player[], theirs?: Player[]): number {
+  if (!five.length || style === 'balanced') return 60 // priced to zero
+  const a = five.map((p) => p.attrs)
+  const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
+  switch (style) {
+    case 'fiveout':
+      return Math.min(...a.map((x) => x['3pt'])) * 0.6 + avg((x) => x['3pt']) * 0.4
+    case 'pnr': {
+      const handlers = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78)
+      const handler = Math.max(0, ...handlers.map((p) => Math.min(p.attrs.playvol, p.attrs.volume)))
+      const bigs = five.filter((p) => p.attrs.height >= 80)
+      const dive = Math.max(0, ...bigs.map((p) => Math.min(p.attrs.rim, p.attrs.efficiency)))
+      const hName = handlers.sort((x, y) => Math.min(y.attrs.playvol, y.attrs.volume) - Math.min(x.attrs.playvol, x.attrs.volume))[0]?.name
+      const dName = bigs.sort((x, y) => Math.min(y.attrs.rim, y.attrs.efficiency) - Math.min(x.attrs.rim, x.attrs.efficiency))[0]?.name
+      const rest = five.filter((p) => p.name !== hName && p.name !== dName)
+      return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => p.attrs['3pt'])
+    }
+    case 'motion': {
+      const stoppers = a.filter((x) => x.volume >= 90 && x.playvol < 50).length
+      return 0.5 * avg((x) => x.ballsec) + 0.3 * avg((x) => x.playvol) + 0.2 * a.filter((x) => x['3pt'] >= 60).length * 20 - 12 * stoppers
+    }
+    case 'postup': {
+      const bigs = five.filter((p) => p.attrs.height >= 81)
+      const post = Math.max(0, ...bigs.map((p) => Math.min(p.attrs.rim, p.attrs.volume)))
+      const pName = bigs.sort((x, y) => Math.min(y.attrs.rim, y.attrs.volume) - Math.min(x.attrs.rim, x.attrs.volume))[0]?.name
+      return post * 0.7 + mean(five.filter((p) => p.name !== pName), (p) => p.attrs['3pt']) * 0.3
+    }
+    case 'helio': {
+      const star = Math.max(0, ...a.map((x) => Math.min(x.volume, x.playvol)))
+      return star * 0.8 + Math.min(...a.map((x) => x.ballsec)) * 0.2
+    }
+    case 'transition': {
+      const opp = theirs?.length ? 100 - mean(theirs, (p) => p.attrs.ballsec) : 50
+      return 0.45 * avg((x) => x.perimdisrupt) + 0.3 * avg((x) => x.durability) + 0.25 * opp
+    }
+  }
+}
+
+/** The style's worth: 0.06 x (fit - 60), clamped +-2.5, plus the tempo synergies the round names. */
+export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
+  if (t.style === 'balanced') return 0
+  let pts = clamp(0.06 * (styleFit(t.style, five, theirs) - 60), -2.5, 2.5)
+  if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
+  if (t.style === 'transition') {
+    if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
+    if (t.tempo === 'slow') pts /= 2 // calling slow against your own run game halves it
+  }
+  return pts
+}
+
+/**
  * Each tactic's worth in points of spread, itemised so the screen can show its work.
  *
  * The defensive scheme and the hunt are the two calls priced against the OPPONENT as well as the
@@ -117,10 +191,8 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
   if (s) parts.push({ label: 'main scorer', pts: clamp((s.attrs.volume - 70) / 40, -0.75, 0.75) })
   const pm = five.find((p) => p.name === t.playmaker)
   if (pm) parts.push({ label: 'main playmaker', pts: clamp((pm.attrs.playvol - 65) / 40, -0.75, 0.75) })
-  if (t.style !== 'balanced') {
-    const lean = mean(five, (p) => Math.max(p.attrs.rim, p.attrs.mid)) - mean(five, (p) => p.attrs['3pt'])
-    parts.push({ label: `${t.style} game`, pts: clamp((t.style === 'inside' ? lean : -lean) * 0.02, -0.75, 0.75) })
-  }
+  if (t.style !== 'balanced')
+    parts.push({ label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs))})`, pts: stylePts(t, five, theirs) })
   if (t.scheme === 'drop') {
     let pts = clamp((Math.max(...five.map((p) => p.attrs.rimprot)) - 75) * 0.02, -0.75, 0.75)
     if (theirs?.length) pts += clamp((55 - mean(theirs, (p) => p.attrs['3pt'])) * 0.02, -0.75, 0.75)
