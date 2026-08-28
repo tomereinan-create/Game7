@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
-import { aiTempo, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
+import { aiTempo, boxContext, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
 import { PLAYERS } from './engine/pool'
 import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
+import type { BoxCtx } from './engine/boxstats'
 import {
   applyWear,
   WEAR_OUT,
@@ -51,6 +52,7 @@ export const ERAS = TIERS.map((t, ti) => ({ name: t.name, years: t.years, handic
 const TITLE = (m: CampaignMode) => (m === 'salary' ? 'Salary Cap Campaign' : 'Campaign')
 
 interface Pending {
+  boxCtx?: { us: BoxCtx; them: BoxCtx } | null
   five: Player[]
   mine: Lineup
   theirs: Lineup
@@ -113,8 +115,10 @@ export default function App() {
     const seed = randomSeed()
     const sig = pc ? SIGMA * pc.sigmaMult : SIGMA
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
-    // charged when the series settles, in finish(), one durability per game it ran.
-    setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment })
+    // charged when the series settles, in finish(), one durability per game it ran. The box scores
+    // consume the tactical state (recal_61), so the context is captured at the moment of the sim.
+    const boxCtx = plan && pc ? boxContext(plan, pc.lvl, five, opponent.players, assignment) : null
+    setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment, boxCtx })
   }
 
 
@@ -332,6 +336,7 @@ export default function App() {
         {sheet}
         {homeFab}
         <Series
+          boxCtx={pending.boxCtx ?? null}
           opponent={opponent}
           five={pending.five}
           mine={pending.mine}

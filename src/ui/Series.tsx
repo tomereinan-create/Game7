@@ -6,7 +6,7 @@ import { starsFor } from '../engine/resolver'
 import { buildTicker } from '../engine/ticker'
 import type { Lineup, Opponent, Player, SeriesResult } from '../engine/types'
 import { LINES } from './Stat'
-import { seriesBox, type PlayerBox, type SeriesBox } from '../engine/boxstats'
+import { seriesBox, type BoxCtx, type PlayerBox, type SeriesBox } from '../engine/boxstats'
 import { Analysis } from './Analysis'
 import type { Assignment } from '../engine/offense'
 
@@ -127,6 +127,7 @@ export function Series({
   seed,
   assignment = 'optimal',
   exhibition = false,
+  boxCtx = null,
   onAdvance,
 }: {
   opponent: Opponent
@@ -139,6 +140,8 @@ export function Series({
   assignment?: Assignment
   /** A one-off (custom matchup): no level line, no stars, no map. */
   exhibition?: boolean
+  /** recal_61: the tactical state the box consumes — the death match passes it, others none. */
+  boxCtx?: { us: BoxCtx; them: BoxCtx } | null
   onAdvance: () => void
 }) {
   const decider = result.games.length === 7 ? result.games[6] : null
@@ -179,7 +182,7 @@ export function Series({
 
   const done = !live
   const box = useMemo(
-    () => (done ? seriesBox(five, opponent.players, LINES, result.games, scoresOf(result, tape ? { us: tape.us, them: tape.them } : null), makeRng(seed ^ 0x2545f491)) : null),
+    () => (done ? seriesBox(five, opponent.players, LINES, result.games, scoresOf(result, tape ? { us: tape.us, them: tape.them } : null), makeRng(seed ^ 0x2545f491), boxCtx ?? undefined) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [done, result, seed, tape],
   )

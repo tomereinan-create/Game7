@@ -16,7 +16,10 @@ import { readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
-import { DEFAULT_TACTICS, pace, scorerPts, styleFit, stylePts, STYLES, type Style } from '../src/engine/tactics'
+import { aiTempo, boxContext, DEFAULT_TACTICS, pace, scorerPts, styleFit, stylePts, STYLES, tacticsMod, type Style, type Tactics } from '../src/engine/tactics'
+import { gameBoxes, splitBox, type TeamBox } from '../src/engine/boxstats'
+import { applyMod as applyMod61 } from '../src/engine/resolver'
+import { LINES as LINES61 } from '../src/ui/Stat'
 import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
@@ -1691,6 +1694,99 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '61': () => {
+    console.log(`${EOL}recal_61 — BOX SCORES CONSUME THE TACTICAL STATE`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '61', /PIPELINE_VERSION = 61/.test(OVR) && /PIPELINE_VERSION = 61/.test(RATINGS))
+    src('the context', io('src/engine/boxstats.ts'), /export interface BoxCtx/, 'pace, style, the r59 shares and brick, the board edges, the crash')
+    src('built from the SAME numbers', io('src/engine/tactics.ts'), /export function boxContext/, 'forced shares, slope brick, centered board edges — verbatim')
+    note('No py reference exists for boxstats — it is presentation-side only; recorded, not a gap.')
+    const g61 = (n: string) => PLAYERS.find((q) => q.name === n)!
+    const A5 = ["Stephen Curry '16", "Klay Thompson '15", "Kyle Korver '15", "Duncan Robinson '20", "Dāvis Bertāns '20"].map(g61)
+    const OPP = ["Chauncey Billups '05", "Chris Paul '11", "Kevin Johnson '97", "Jason Terry '07", "Domantas Sabonis '24"].map(g61)
+    const SETA: Tactics = { ...DEFAULT_TACTICS, scorer: "Stephen Curry '16", playmaker: "Stephen Curry '16", style: 'fiveout', tempo: 'fast', crashOff: true }
+    const SETB: Tactics = { ...DEFAULT_TACTICS, scorer: "Kyle Korver '15", playmaker: "Kyle Korver '15", style: 'postup', tempo: 'slow' }
+    const runSet = (t: Tactics) => {
+      const opTempo = aiTempo(OPP, A5, false)
+      const pcx = pace(t.tempo, opTempo, A5, OPP)
+      const bonus = (tacticsMod(t, A5, OPP).bonus ?? 0) + pcx.margin
+      const L = applyMod61(compile(A5, OPP), { bonus })
+      const R = compile(OPP, A5)
+      const ctx = boxContext(t, pcx.lvl, A5, OPP, 'optimal')
+      let mSum = 0
+      let games = 0
+      const boxes: TeamBox[] = []
+      const star: number[] = [0, 0, 0] // fga, fgm, pts of the named scorer
+      let usAst = 0
+      let oppHunt = 0
+      const huntIdx = ctx.them.edges ? ctx.them.edges.indexOf(Math.max(...ctx.them.edges)) : 0
+      for (let i = 0; i < 500; i++) {
+        const sr = simSeries(L, R, makeRng(6161 + i), 10 * pcx.sigmaMult, 4)
+        for (const gm of sr.games) {
+          mSum += gm.us - gm.them
+          games++
+        }
+        if (i < 120) {
+          const rng2 = makeRng(999 + i)
+          for (const gm of sr.games) {
+            const bx = gameBoxes(A5, OPP, LINES61, gm.us, gm.them, rng2, ctx.us, ctx.them)
+            boxes.push(bx.us)
+            const pl = splitBox(A5, bx.us, ctx.us)
+            const sIdx = A5.findIndex((q) => q.name === t.scorer)
+            if (sIdx >= 0) {
+              star[0] += pl[sIdx].fga
+              star[1] += pl[sIdx].fgm
+              star[2] += pl[sIdx].pts
+            }
+            usAst += bx.us.ast
+            oppHunt += splitBox(OPP, bx.them, ctx.them)[huntIdx].pts
+          }
+        }
+      }
+      const n = boxes.length || 1
+      const avg: TeamBox = boxes.reduce((acc, b) => {
+        for (const k of Object.keys(acc) as (keyof TeamBox)[]) acc[k] += b[k] / n
+        return acc
+      }, { pts: 0, poss: 0, fgm: 0, fga: 0, tpm: 0, tpa: 0, ftm: 0, fta: 0, reb: 0, ast: 0, stl: 0, blk: 0, tov: 0 })
+      return { claim: bonus, margin: mSum / games, avg, starFga: star[0] / n, starPct: star[1] / Math.max(1, star[0]), usAst: usAst / n, oppHunt: oppHunt / n, huntIdx }
+    }
+    const RA = runSet(SETA)
+    const RB = runSet(SETB)
+    const measured = RA.margin - RB.margin
+    const claimed = RA.claim - RB.claim
+    line('(a) margin differential, 500 series x games', `measured ${measured.toFixed(2)} vs claimed ${claimed.toFixed(2)}`, 'within +-10%', Math.abs(measured - claimed) <= Math.max(0.35, Math.abs(claimed) * 0.1))
+    const fmt = (b: TeamBox) => `pts ${b.pts.toFixed(1)} poss ${b.poss.toFixed(1)} fg ${b.fgm.toFixed(1)}/${b.fga.toFixed(1)} 3p ${b.tpm.toFixed(1)}/${b.tpa.toFixed(1)} ft ${b.ftm.toFixed(1)}/${b.fta.toFixed(1)} reb ${b.reb.toFixed(1)} ast ${b.ast.toFixed(1)}`
+    note(`(b) SET A (fiveout/fast/crash/Curry): ${fmt(RA.avg)}`)
+    note(`    SET B (postup/slow/Korver):       ${fmt(RB.avg)}`)
+    line('  PACE in the possessions', `${RA.avg.poss.toFixed(1)} vs ${RB.avg.poss.toFixed(1)}`, 'fast night runs more', RA.avg.poss - RB.avg.poss >= 4)
+    line('  STYLE in the 3PA share', `${((100 * RA.avg.tpa) / RA.avg.fga).toFixed(1)}% vs ${((100 * RB.avg.tpa) / RB.avg.fga).toFixed(1)}%`, 'five-out shoots it, post-up does not', RA.avg.tpa / RA.avg.fga - RB.avg.tpa / RB.avg.fga >= 0.1)
+    line('  POST-UP in the free throws', `${RB.avg.fta.toFixed(1)} vs ${RA.avg.fta.toFixed(1)}`, 'the post trades threes for the line', RB.avg.fta > RA.avg.fta)
+    line('  MAIN SCORER volume', `Curry ${RA.starFga.toFixed(1)} FGA vs Korver ${RB.starFga.toFixed(1)} FGA (of the same team total)`, 'the chosen man shoots it', RA.starFga > 0 && RB.starFga > 0)
+    // the honest brick comparison is the man against HIMSELF: same set, the option call on vs off
+    const RB0 = runSet({ ...SETB, scorer: null })
+    const kIdx = A5.findIndex((q) => q.name === "Kyle Korver '15")
+    const kOff = (() => {
+      const ctx0 = boxContext({ ...SETB, scorer: null }, 0, A5, OPP, 'optimal')
+      let fga = 0
+      let fgm = 0
+      const rng3 = makeRng(4242)
+      for (let i = 0; i < 200; i++) {
+        const sr = simSeries(applyMod61(compile(A5, OPP), { bonus: RB0.claim }), compile(OPP, A5), makeRng(6161 + i), 10, 4)
+        for (const gm of sr.games) {
+          const bx = gameBoxes(A5, OPP, LINES61, gm.us, gm.them, rng3, ctx0.us, ctx0.them)
+          const pl = splitBox(A5, bx.us, ctx0.us)
+          fga += pl[kIdx].fga
+          fgm += pl[kIdx].fgm
+        }
+      }
+      return fgm / Math.max(1, fga)
+    })()
+    line('  THE BAD PICK BRICKS', `Korver as the option: FG% ${(100 * RB.starPct).toFixed(1)} on ${RB.starFga.toFixed(1)} FGA; not the option: ${(100 * kOff).toFixed(1)}`, 'volume up, percentage down against HIMSELF', RB.starPct < kOff)
+    line('  CRASH in the boards', `${RA.avg.reb.toFixed(1)} vs ${RB.avg.reb.toFixed(1)}`, 'the dial moves the glass', RA.avg.reb > RB.avg.reb)
+    line('  THE HUNTED MAN eats', `their #${RA.huntIdx + 1} attacker ${RA.oppHunt.toFixed(1)} pts under A`, 'the board edge shows on his line', RA.oppHunt > 0)
+    note('The (a) equality is close to structural — the box reads the resolver’s own scores, so a')
+    note('margin the resolver claims lands in the PTS column by the ledger law; the check guards the')
+    note('wiring. The (b) table is the round’s point: every call is visible in the lines it moved.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)

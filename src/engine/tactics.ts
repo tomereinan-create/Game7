@@ -1,4 +1,5 @@
-import { creation, KNOBS, teamOffense, usageSurplus } from './offense'
+import { bestBoard, creation, KNOBS, naiveAssignment, pairingTable, teamOffense, usageSurplus } from './offense'
+import type { BoxCtx } from './boxstats'
 
 import type { Lineup, Player } from './types'
 
@@ -292,6 +293,70 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
   if (t.crashOff) parts.push({ label: 'crash the offensive glass', pts: clamp((mean(five, (p) => p.attrs.orb) - 50) * 0.26 - TAX.crashOff, -2.5, 2.5) })
   if (t.crashDef) parts.push({ label: 'crash the defensive glass', pts: clamp((mean(five, (p) => p.attrs.drb) - 50) * 0.19 - TAX.crashDef, -2.5, 2.5) })
   return parts
+}
+
+/**
+ * THE BOX CONSUMES THE TACTICAL STATE (recal_61): build the per-game context both boxes read.
+ * Everything here is the SAME number the margin used — the r59 forced shares and brick, the
+ * board's centered pairing edges, the resolved pace level, the style and the crash calls.
+ */
+export function boxContext(
+  plan: Tactics,
+  paceLvl: number,
+  five: Player[],
+  theirs: Player[],
+  ourMap: number[] | 'optimal' | 'naive',
+): { us: BoxCtx; them: BoxCtx } {
+  const centered = (E: number[][], map: number[], j: number): number => {
+    const n = E.length
+    let col = 0
+    for (let r = 0; r < n; r++) col += E[r][j]
+    const i = map.indexOf(j)
+    return i >= 0 ? E[i][j] - col / n : 0
+  }
+  // our attackers vs THEIR defense: the AI plays its best board
+  const usgUs = five.map((q) => q.attrs.usg_raw)
+  const Et = pairingTable(theirs, five, usgUs)
+  const theirBoard = bestBoard(Et, usgUs)
+  const usEdges = five.map((_, j) => centered(Et, theirBoard, j))
+  // their attackers vs the board WE actually played
+  const usgThem = theirs.map((q) => q.attrs.usg_raw)
+  const Eu = pairingTable(five, theirs, usgThem)
+  const ourBoard = Array.isArray(ourMap) && ourMap.length === five.length ? ourMap : ourMap === 'naive' ? naiveAssignment(five, theirs) : bestBoard(Eu, usgThem)
+  const themEdges = theirs.map((_, j) => centered(Eu, ourBoard, j))
+  // the r59 forced reallocation, verbatim
+  const base = teamOffense(five).lines.map((l) => l.usg)
+  const si = plan.scorer ? five.findIndex((q) => q.name === plan.scorer) : -1
+  let usg: number[] | undefined
+  let brick: number | undefined
+  if (si >= 0) {
+    const uc = base[si]
+    const scale = (100 - uc - 8) / (100 - uc)
+    usg = base.map((u, i) => (i === si ? u + 8 : u * scale))
+    const c = creation(five[si].attrs)
+    brick = ((KNOBS.SLOPE_UP_MAX - (KNOBS.SLOPE_UP_MAX - KNOBS.SLOPE_UP_MIN) * c) * 8) / 100
+  }
+  const pi = plan.playmaker ? five.findIndex((q) => q.name === plan.playmaker) : -1
+  return {
+    us: {
+      paceLvl,
+      style: plan.style,
+      scorerIdx: si >= 0 ? si : undefined,
+      playmakerIdx: pi >= 0 ? pi : undefined,
+      usg,
+      brick,
+      edges: usEdges,
+      crashOff: plan.crashOff,
+      crashDef: plan.crashDef,
+      leak: false,
+    },
+    them: {
+      paceLvl,
+      edges: themEdges,
+      // OUR crash costs OUR transition defense: their fast-break points show on their line
+      leak: plan.crashOff,
+    },
+  }
 }
 
 /** The whole plan as a lineup modifier — the sum of the parts, in the margin's own currency. */
