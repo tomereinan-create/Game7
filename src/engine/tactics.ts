@@ -1,4 +1,5 @@
-import { usageSurplus } from './offense'
+import { creation, KNOBS, teamOffense, usageSurplus } from './offense'
+
 import type { Lineup, Player } from './types'
 
 /**
@@ -67,16 +68,35 @@ export const DEFAULT_TACTICS: Tactics = {
  * capped at +-2.5 points of spread. Fast also shrinks the night's variance (the favorite's friend);
  * slow adds chaos, the underdog's weapon even at volume parity.
  */
+/**
+ * THE DEVIATION TAX LAW (recal_59, permanent). Balanced/default is 0, always. Every deviation
+ * carries an INTRINSIC COST plus a CONDITIONAL benefit, calibrated by the enforcement harness so
+ * the oracle-best call averages >= +0.5 margin and a BLIND call averages -0.3 to -1.5. Tactics
+ * reward READS: a player who clicks randomly must lose margin to one who leaves defaults alone.
+ * The constants below are the taxes and slopes the harness ratified — tune them ONLY through it.
+ */
+export const TAX = {
+  scorer: 0.55,
+  playmaker: 0.5,
+  tempo: 0.6,
+  style: 0.42,
+  scheme: 0.85,
+  hunt: 3.65,
+  crashOff: 0.68,
+  crashDef: 0.6,
+}
+
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
 export function pace(self: Tactics['tempo'], opp: Tactics['tempo'], five: Player[], theirs: Player[]) {
-  const lvl = (TEMPO_LVL[self] + TEMPO_LVL[opp]) / 2
+  // the caller owns 3/4 of the night's pace: the answer DRAGS the game, it does not erase the call
+  const lvl = 0.75 * TEMPO_LVL[self] + 0.25 * TEMPO_LVL[opp]
   const ours = usageSurplus(five)
   const others = usageSurplus(theirs)
   return {
     lvl,
     ours,
     theirs: others,
-    margin: clamp(lvl * 0.045 * (ours - others), -2.5, 2.5),
+    margin: clamp(lvl * 0.22 * (ours - others), -2.5, 2.5) - (self !== 'normal' ? TAX.tempo : 0),
     sigmaMult: lvl > 0 ? 0.94 : lvl < 0 ? 1.08 : 1.0,
   }
 }
@@ -165,10 +185,10 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[]): numbe
   }
 }
 
-/** The style's worth: 0.06 x (fit - 60), clamped +-2.5, plus the tempo synergies the round names. */
+/** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
-  let pts = clamp(0.06 * (styleFit(t.style, five, theirs) - 60), -2.5, 2.5)
+  let pts = clamp(0.11 * (styleFit(t.style, five, theirs) - 55) - TAX.style, -2.5, 2.5)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
   if (t.style === 'transition') {
     if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
@@ -185,28 +205,88 @@ export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number 
  * defender to be worth attacking. On the My team screen no opponent is known yet, so those terms
  * are omitted and the full price lands at the draft, where the sim uses it.
  */
+/**
+ * MAIN SCORER (recal_59): usage REALLOCATION through the skill-curve repricing the engine already
+ * runs — never a flat buff. The chosen man's natural usage rises 8; the reconciliation forces the
+ * five back to 100, shedding load off the others along their own curves; the offense is recompiled
+ * and the DELTA is the benefit, at K_MATCH like every net gap. Then the law's tax, and the matchup:
+ * their best stopper's perdef presses the term down. Positive ONLY when his curve has room and the
+ * defense cannot hold him — your third option into an elite stopper is negative by construction.
+ */
+export function scorerPts(name: string, five: Player[], theirs?: Player[]): number {
+  const i = five.findIndex((p) => p.name === name)
+  if (i < 0 || five.length < 2) return 0
+  // the engine's own reconciled solution, then the FORCED reallocation on top of it: his share +8,
+  // the others scaled down to keep the hundred, every delta repriced along the engine's own curves.
+  const { lines } = teamOffense(five)
+  const c = five.map((p) => creation(p.attrs))
+  const e = five.map((p) => p.attrs.ts_rel ?? p.attrs.ts_raw)
+  const uc = lines[i].usg
+  const scale = (100 - uc - 8) / (100 - uc)
+  let d = 0
+  for (let j = 0; j < five.length; j++) {
+    const u0 = lines[j].usg
+    const ts0 = lines[j].ts
+    if (j === i) {
+      const slope = KNOBS.SLOPE_UP_MAX - (KNOBS.SLOPE_UP_MAX - KNOBS.SLOPE_UP_MIN) * c[j]
+      d += (u0 + 8) * ts0 * (1 - (slope * 8) / 100) - u0 * ts0
+    } else {
+      const shed = u0 * (1 - scale)
+      const gate = clamp((e[j] - 0.545) / 0.1, 0, 1) // the engine's own gate: shedding helps only the efficient
+      d += u0 * scale * ts0 * (1 + (KNOBS.SLOPE_DOWN * gate * shed) / 100) - u0 * ts0
+    }
+  }
+  const stopper = theirs?.length ? (Math.max(...theirs.map((q) => q.attrs.perdef)) - 70) * 0.02 : 0
+  // +57 is the pool-mean cost of forcing the reallocation at all — the intrinsic price every
+  // pick pays; what remains is how much better or worse THIS man carries it than the average.
+  return clamp(0.05 * (d + 57) - stopper - TAX.scorer, -2.5, 2.5)
+}
+
+/** MAIN PLAYMAKER: the same architecture on CREATION share (playvol feeds the creation weights and
+ * the amplification the engine already runs); their best passing-lane pressure is the matchup tax. */
+export function playmakerPts(name: string, five: Player[], theirs?: Player[]): number {
+  const i = five.findIndex((p) => p.name === name)
+  if (i < 0 || five.length < 2) return 0
+  // the same architecture on CREATION share: the ball runs through him, so the feed the engine's
+  // amplification drinks from is re-weighted toward HIS creation — the catch-and-shoot men eat
+  // exactly as well as he can set the table — and he pays a handling tax scaled by what he is not.
+  const { lines } = teamOffense(five)
+  const c = five.map((p) => creation(p.attrs))
+  const feed0 = c.reduce((acc, ci, j) => acc + ci * lines[j].usg, 0) / KNOBS.TEAM_USG
+  const feed1 = c[i] // the table is HIS now
+  let d = 0
+  for (let j = 0; j < five.length; j++) {
+    if (j === i) {
+      d += lines[j].usg * lines[j].ts * (-(0.9 * 8) / 100) * (1 - c[j]) // handling load a non-creator cannot carry
+    } else {
+      const amp = KNOBS.AMP_MAX * Math.max(0, 1 - lines[j].usg / 30)
+      d += lines[j].usg * lines[j].ts * amp * (feed1 - feed0)
+    }
+  }
+  const lanes = theirs?.length ? (Math.max(...theirs.map((q) => q.attrs.perimdisrupt)) - 70) * 0.015 : 0
+  return clamp(0.066 * (d + 43) - lanes - TAX.playmaker, -2.5, 2.5)
+}
+
 export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { label: string; pts: number }[] {
   const parts: { label: string; pts: number }[] = []
-  const s = five.find((p) => p.name === t.scorer)
-  if (s) parts.push({ label: 'main scorer', pts: clamp((s.attrs.volume - 70) / 40, -0.75, 0.75) })
-  const pm = five.find((p) => p.name === t.playmaker)
-  if (pm) parts.push({ label: 'main playmaker', pts: clamp((pm.attrs.playvol - 65) / 40, -0.75, 0.75) })
+  if (t.scorer && five.some((p) => p.name === t.scorer)) parts.push({ label: 'main scorer', pts: scorerPts(t.scorer, five, theirs) })
+  if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
   if (t.style !== 'balanced')
     parts.push({ label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs))})`, pts: stylePts(t, five, theirs) })
   if (t.scheme === 'drop') {
-    let pts = clamp((Math.max(...five.map((p) => p.attrs.rimprot)) - 75) * 0.02, -0.75, 0.75)
-    if (theirs?.length) pts += clamp((55 - mean(theirs, (p) => p.attrs['3pt'])) * 0.02, -0.75, 0.75)
-    parts.push({ label: 'drop coverage', pts: clamp(pts, -0.75, 0.75) })
+    let pts = clamp((Math.max(...five.map((p) => p.attrs.rimprot)) - 75) * 0.055, -2.0, 2.0)
+    if (theirs?.length) pts += clamp((55 - mean(theirs, (p) => p.attrs['3pt'])) * 0.045, -1.8, 1.8)
+    parts.push({ label: 'drop coverage', pts: clamp(pts - TAX.scheme, -2.5, 2.5) })
   }
   if (t.scheme === 'switch')
-    parts.push({ label: 'switch everything', pts: clamp((Math.min(...five.map((p) => p.attrs.perdef)) - 50) * 0.025, -0.75, 0.75) })
+    parts.push({ label: 'switch everything', pts: clamp((Math.min(...five.map((p) => p.attrs.perdef)) - 45) * 0.06 - TAX.scheme, -2.5, 2.5) })
   if (t.hunt) {
-    let pts = clamp((Math.max(...five.map((p) => p.attrs.playvol)) - 55) * 0.02, -0.75, 0.4)
-    if (theirs?.length) pts += clamp((60 - Math.min(...theirs.map((p) => p.attrs.perdef))) * 0.02, -0.4, 0.4)
-    parts.push({ label: 'hunt the mismatch', pts: clamp(pts, -0.75, 0.75) })
+    let pts = clamp((Math.max(...five.map((p) => p.attrs.playvol)) - 55) * 0.15, -4.6, 4.6)
+    if (theirs?.length) pts += clamp((60 - Math.min(...theirs.map((p) => p.attrs.perdef))) * 0.05, -1.8, 1.8)
+    parts.push({ label: 'hunt the mismatch', pts: clamp(pts - TAX.hunt, -2.5, 2.5) })
   }
-  if (t.crashOff) parts.push({ label: 'crash the offensive glass', pts: clamp((mean(five, (p) => p.attrs.orb) - 55) * 0.02, -0.5, 0.5) })
-  if (t.crashDef) parts.push({ label: 'crash the defensive glass', pts: clamp((mean(five, (p) => p.attrs.drb) - 55) * 0.015, -0.4, 0.4) })
+  if (t.crashOff) parts.push({ label: 'crash the offensive glass', pts: clamp((mean(five, (p) => p.attrs.orb) - 50) * 0.26 - TAX.crashOff, -2.5, 2.5) })
+  if (t.crashDef) parts.push({ label: 'crash the defensive glass', pts: clamp((mean(five, (p) => p.attrs.drb) - 50) * 0.19 - TAX.crashDef, -2.5, 2.5) })
   return parts
 }
 

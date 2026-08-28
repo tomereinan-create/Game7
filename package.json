@@ -21,7 +21,8 @@
     "receipts": "vite-node scripts/receipts.ts",
     "audit-tags": "vite-node scripts/audit-tags.ts",
     "pair": "vite-node scripts/pair-decomp.ts",
-    "unfit": "vite-node scripts/unfit.ts"
+    "unfit": "vite-node scripts/unfit.ts",
+    "harness": "vite-node scripts/tactics-harness.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

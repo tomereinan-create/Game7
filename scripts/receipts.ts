@@ -16,8 +16,9 @@ import { readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
-import { DEFAULT_TACTICS, pace, styleFit, stylePts, STYLES, type Style } from '../src/engine/tactics'
+import { DEFAULT_TACTICS, pace, scorerPts, styleFit, stylePts, STYLES, type Style } from '../src/engine/tactics'
 import { usageSurplus } from '../src/engine/offense'
+import { runHarness } from '../src/engine/harness'
 
 const EOL = String.fromCharCode(10)
 const RATINGS = readFileSync('data/build_ratings.py', 'utf8')
@@ -1535,7 +1536,8 @@ const ROUNDS: Record<string, () => void> = {
       if (q) line(`${lbl}: ${n}`, `D ${was} -> ${q.d_ovr}`, `${want}`, q.d_ovr === want)
     }
     note('3,785 d_ovr cards moved; the bigs are untouched (their mix never read perimdisrupt).')
-    src('pace, in the engine', io('src/engine/tactics.ts'), /margin: clamp\(lvl \* 0\.045 \* \(ours - others\), -2\.5, 2\.5\)/, 'the relative volume-surplus term, capped +-2.5')
+    // r59 SUPERSEDED the raw form: the level is self-weighted 3/4 and the deviation tax applies.
+    src('pace, in the engine (r59 form)', io('src/engine/tactics.ts'), /margin: clamp\(lvl \* 0\.22 \* \(ours - others\), -2\.5, 2\.5\) - \(self !== 'normal' \? TAX\.tempo : 0\)/, 'the relative term, taxed and capped')
     src('the variance shift', io('src/engine/tactics.ts'), /sigmaMult: lvl > 0 \? 0\.94 : lvl < 0 \? 1\.08 : 1\.0/, 'fast shrinks, slow adds chaos')
     src('the surplus is the reconciliation surplus', io('src/engine/offense.ts'), /usageSurplus = \(five: Player\[\]\) =>/, 'sum usg_raw - TEAM_USG, clamped +-25')
     // ---- the three scenarios, 500 series each, fixed seeds ----
@@ -1570,7 +1572,8 @@ const ROUNDS: Record<string, () => void> = {
   '58': () => {
     console.log(`${EOL}recal_58 — PLAYSTYLES v2: six styles, fit-scored`)
     line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '58', /PIPELINE_VERSION = 58/.test(OVR) && /PIPELINE_VERSION = 58/.test(RATINGS))
-    src('the price', io('src/engine/tactics.ts'), /clamp\(0\.06 \* \(styleFit\(t\.style, five, theirs\) - 60\), -2\.5, 2\.5\)/, '0.06 x (fit - 60), clamped — forcing a style the roster cannot run HURTS')
+    // r59 SUPERSEDED the constants: slope 0.11, pivot 55, and the deviation tax — same law, taxed.
+    src('the price (r59 form)', io('src/engine/tactics.ts'), /clamp\(0\.11 \* \(styleFit\(t\.style, five, theirs\) - 55\) - TAX\.style, -2\.5, 2\.5\)/, 'fit-scored, taxed, capped — forcing a style the roster cannot run HURTS')
     src('the fits, his formulas', io('src/engine/tactics.ts'), /Math\.min\(\.\.\.a\.map\(\(x\) => x\['3pt'\]\)\) \* 0\.6/, 'five-out keys on the WORST shooter, exactly as written')
     note('Two gaps the round left open, filled and documented in the source: motion’s ball-stopper')
     note('subtraction is -12 per ISO-shaped star, and post-up’s “dominance-bonus presence” is proxied')
@@ -1607,6 +1610,28 @@ const ROUNDS: Record<string, () => void> = {
     const bestW = wp(SHOOTERS, s1[0].k)
     const worstW = wp(SHOOTERS, s1[5].k)
     line('500 series, shooter-five: best fit vs forced worst', `${bestW}% vs ${worstW}%`, 'the wrong call costs real games', bestW - worstW >= 5)
+  },
+  '59': () => {
+    console.log(`${EOL}recal_59 — THE DEVIATION TAX LAW (permanent)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '59', /PIPELINE_VERSION = 59/.test(OVR) && /PIPELINE_VERSION = 59/.test(RATINGS))
+    src('the tax table', io('src/engine/tactics.ts'), /export const TAX = \{/, 'every deviation pays; the harness ratifies the constants')
+    src('main scorer is a REALLOCATION', io('src/engine/tactics.ts'), /const scale = \(100 - uc - 8\) \/ \(100 - uc\)/, 'his share +8 forced, the rest scaled down, every delta repriced on the engine’s own curves')
+    note('THE FULL HARNESS TABLE (200 random matchups x three policies per tactic; the law’s bands are')
+    note('E[oracle] >= +0.5 and E[random] in [-1.5, -0.3]; default is 0 by construction):')
+    for (const r of runHarness(200)) {
+      line(`  ${r.tactic}`, `default 0.00  random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'in the bands', r.pass)
+    }
+    note('The harness ships as tests/tactics.test.ts — it runs on every change, forever. A red row is a')
+    note('mis-calibrated tactic, and the fix is tuning its tax, never deleting the row.')
+    // the named pair, same roster: the right man pays, the wrong man costs
+    const FIVE = ["Chris Paul '11", "Klay Thompson '15", "Kawhi Leonard '17", "Karl Malone '94", "Tim Duncan '03"].map((n) => g(n))
+    const STOP = ["Gary Payton '96", "Scottie Pippen '94", "Kawhi Leonard '16", "Dennis Rodman '92", "Ben Wallace '03"].map((n) => g(n))
+    const good = scorerPts("Chris Paul '11", FIVE, STOP)
+    const bad = scorerPts("Karl Malone '94", FIVE, STOP)
+    line("GOOD pick: CP3 '11 featured vs the stopper five", `${good >= 0 ? '+' : ''}${good.toFixed(2)}`, '+EV — elite creation, curve room', good >= 0.5)
+    line("BAD pick: Malone '94 featured vs the same five", `${bad.toFixed(2)}`, '-EV — a third option into elite stoppers', bad < 0)
+    note('Same roster, same opponent: the choice is the read. Before r59 every pick added value — the')
+    note('bug the round names — because the old term read the man’s volume, not the reallocation.')
   },
   sync: () => {
     console.log(`${EOL}pipeline sync verdict`)
