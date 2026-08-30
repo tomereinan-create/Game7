@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
+import { eligible, POSITIONS } from '../engine/positions'
 import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
@@ -11,13 +12,20 @@ import { neutral } from './Versus'
 
 const BUDGET = 20
 const SLOTS = 5
-const NAMES: [string, string] = ['Player 1', 'Player 2']
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
+/** How far down the queue the Machine (and the slot picker) looks when judging supply. */
+const HORIZON = 15
+
+type Foe = 'friend' | 'bot'
+type Skill = 'rookie' | 'pro' | 'shark'
 
 interface Buy {
   name: string
   price: number
 }
+type Side = [(Buy | null)[], (Buy | null)[]]
+
+const canSlot = (p: Player, j: number) => eligible(LINES[p.name]?.pos).includes(POSITIONS[j])
 
 /** The block never runs dry: stars first (one season per man), then starters, then the rest of the league. */
 function auctionQueue(seed: number): Player[] {
@@ -35,62 +43,103 @@ function auctionQueue(seed: number): Player[] {
 }
 
 /**
- * Hot-seat open outcry: one man on the block at a time, $20 a side, +$1 raises,
- * a pass is final for the lot. First to five men, then the campaign resolver
- * plays the best-of-seven — the same table as Player vs Friend.
+ * Hot-seat open outcry under the draft's position law: one man on the block at
+ * a time, $20 a side, +$1 raises, a pass is final, and a side may only bid on
+ * a man with a legal open slot for him. First to a full PG-C five, then the
+ * campaign resolver plays the best-of-seven — the same table as Player vs
+ * Friend. The second chair is a friend, or The Machine at three sharpnesses.
  */
 export function Auction({ onHome }: { onHome: () => void }) {
+  const [foe, setFoe] = useState<Foe>('friend')
+  const [skill, setSkill] = useState<Skill>('pro')
   const [seed, setSeed] = useState(() => (Math.random() * 0xffffffff) >>> 0)
-  const [lot, setLot] = useState(0)
+  const [lot, setLot] = useState(0) // queue pointer; the served lot may sit past it (see lotIdx)
+  const [lotN, setLotN] = useState(0) // lots actually put on the block, for the kicker
   const [price, setPrice] = useState(0)
   const [top, setTop] = useState<0 | 1 | null>(null)
   const [passed, setPassed] = useState<[boolean, boolean]>([false, false])
   const [budget, setBudget] = useState<[number, number]>([BUDGET, BUDGET])
-  const [buys, setBuys] = useState<[Buy[], Buy[]]>([[], []])
+  const [slots, setSlots] = useState<Side>([Array<Buy | null>(SLOTS).fill(null), Array<Buy | null>(SLOTS).fill(null)])
+  const [assign, setAssign] = useState<{ side: 0 | 1; name: string; price: number; opts: number[] } | null>(null)
   const [note, setNote] = useState<string | null>(null)
+  const [botSay, setBotSay] = useState<string | null>(null)
   const [info, setInfo] = useState(false)
   const [result, setResult] = useState<SeriesResult | null>(null)
 
+  const names: [string, string] = ['Player 1', foe === 'bot' ? 'The Machine' : 'Player 2']
   const queue = useMemo(() => auctionQueue(seed), [seed])
-  const man = queue[lot]
-  const full = (i: 0 | 1) => buys[i].length === SLOTS
+  /** OVR ladder over every man the block could ever serve — the honest basis for a lot's quality. */
+  const ovrs = useMemo(() => queue.map((x) => x.ovr).sort((a, b) => a - b), [queue])
+  const qtile = (p: Player) => ovrs.filter((o) => o < p.ovr).length / ovrs.length
+
+  const countOf = (i: 0 | 1) => slots[i].filter(Boolean).length
+  const full = (i: 0 | 1) => countOf(i) === SLOTS
   const done = full(0) && full(1)
   const other = (i: 0 | 1): 0 | 1 => (i === 0 ? 1 : 0)
-  /** A pass is final; a full five is out of every auction. */
-  const isOut = (i: 0 | 1) => passed[i] || full(i)
-  /** Every future slot still needs $1 held — the most this side can pay for THIS man. */
-  const ceiling = (i: 0 | 1) => budget[i] - (SLOTS - 1 - buys[i].length)
+  const legalOpen = (i: 0 | 1, p: Player) => POSITIONS.map((_, j) => j).filter((j) => !slots[i][j] && canSlot(p, j))
 
-  const five = (i: 0 | 1) => buys[i].map((b) => BY_NAME.get(b.name)).filter((p): p is Player => !!p)
+  // POSITIONAL NEVER-DEAD-END: serve the next man SOMEBODY can legally slot. The queue holds the
+  // whole league, so every open slot type is always downstream — a lot nobody can field never airs.
+  const lotIdx = useMemo(() => {
+    for (let j = lot; j < queue.length; j++) {
+      if (legalOpen(0, queue[j]).length || legalOpen(1, queue[j]).length) return j
+    }
+    return lot
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lot, queue, slots])
+  const man = queue[lotIdx]
+
+  const canPlay = (i: 0 | 1) => !!man && legalOpen(i, man).length > 0
+  /** A pass is final; a full five — or no legal open slot for this lot — is out of the auction. */
+  const outFor = (i: 0 | 1) => passed[i] || full(i) || !canPlay(i)
+  /** Every future slot still needs $1 held — the most this side can pay for THIS man. */
+  const ceiling = (i: 0 | 1) => budget[i] - (SLOTS - 1 - countOf(i))
+
+  const five = (i: 0 | 1) => slots[i].map((b) => (b ? BY_NAME.get(b.name) : undefined)).filter((p): p is Player => !!p)
   const A = five(0)
   const B = five(1)
 
   const advance = (text: string) => {
     setNote(text)
-    setLot((l) => l + 1)
+    setLot(lotIdx + 1)
+    setLotN((n) => n + 1)
     setPrice(0)
     setTop(null)
     setPassed([false, false])
+    setBotSay(null)
     setInfo(false)
   }
 
-  const sell = (i: 0 | 1, p: number) => {
-    setBudget((cur) => (i === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
-    setBuys((cur) => {
-      const next: [Buy[], Buy[]] = [[...cur[0]], [...cur[1]]]
-      next[i].push({ name: man.name, price: p })
+  /** How many men in the near queue could take slot j — the scarcity read. */
+  const supply = (j: number) => queue.slice(lotIdx + 1, lotIdx + 1 + HORIZON).filter((x) => canSlot(x, j)).length
+
+  const place = (side: 0 | 1, name: string, p: number, j: number) => {
+    setBudget((cur) => (side === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
+    setSlots((cur) => {
+      const next: Side = [[...cur[0]], [...cur[1]]]
+      next[side][j] = { name, price: p }
       return next
     })
-    advance(`${man.name} to ${NAMES[i]} · $${p}`)
+    setAssign(null)
+    advance(`${name} to ${names[side]} · $${p} · ${POSITIONS[j]}`)
+  }
+
+  const sell = (i: 0 | 1, p: number) => {
+    const opts = legalOpen(i, man)
+    if (!opts.length) return advance(`${man.name} — no chair could field him, off the block`) // defensive; the gate forbids it
+    // The Machine fills the chair the queue is least likely to fill later; a human with a choice picks.
+    if (i === 1 && foe === 'bot') place(1, man.name, p, opts.reduce((best, j) => (supply(j) < supply(best) ? j : best), opts[0]))
+    else if (opts.length === 1) place(i, man.name, p, opts[0])
+    else setAssign({ side: i, name: man.name, price: p, opts })
   }
 
   const bid = (i: 0 | 1) => {
-    if (done || result || isOut(i) || top === i) return
+    if (done || result || assign || outFor(i) || top === i) return
     const p = price + 1
     if (p > ceiling(i)) return
     const k = other(i)
     // the other chair is beaten flat — out already, or a raise would break his $1-a-slot floor: auto-pass, sold
-    if (isOut(k) || p + 1 > ceiling(k)) sell(i, p)
+    if (outFor(k) || p + 1 > ceiling(k)) sell(i, p)
     else {
       setPrice(p)
       setTop(i)
@@ -98,31 +147,109 @@ export function Auction({ onHome }: { onHome: () => void }) {
   }
 
   const pass = (i: 0 | 1) => {
-    if (done || result || isOut(i) || top === i) return
+    if (done || result || assign || outFor(i) || top === i) return
     const k = other(i)
     if (top === k) sell(k, Math.max(1, price)) // an unopposed take still costs $1
-    else if (isOut(k)) advance(`${man.name} — no takers, off the block`)
+    else if (outFor(k)) advance(`${man.name} — no takers, off the block`)
     else setPassed((cur) => (i === 0 ? [true, cur[1]] : [cur[0], true]))
   }
+
+  /**
+   * The Machine's private ceiling for the man on the block, in dollars. Quality
+   * is his OVR percentile on the full ladder: splurge-the-spare for a top-decile
+   * star, $2-4 mid, $0-1 low; a notch of urgency while the wallet is fat and the
+   * chairs are many; position need on top (a chair the queue is about to stop
+   * serving is worth paying up for). Seeded noise by level. The hard reserve
+   * arithmetic still caps it — the bot never out-borrows a human.
+   */
+  const wants = (): number => {
+    const hard = ceiling(1)
+    const spare = hard - 1
+    const q = qtile(man)
+    const rng = makeRng((seed ^ Math.imul(lot + 1, 0x9e3779b9)) >>> 0)
+    let v = q >= 0.92 ? Math.round(spare * 0.8) : q >= 0.85 ? 4 : q >= 0.75 ? 3 : q >= 0.5 ? 2 : q >= 0.25 ? 1 : 0
+    if (v > 0 && SLOTS - countOf(1) >= 3 && budget[1] > BUDGET / 2) v += 1
+    const fit = legalOpen(1, man)
+    const scarcest = fit.length ? Math.min(...fit.map(supply)) : HORIZON
+    if (skill === 'rookie') {
+      // sloppy: shrugs at stars, falls for the odd mid lot, reads no scarcity at all
+      if (q >= 0.92) v = Math.round(v * 0.6)
+      if (q >= 0.5 && q < 0.75 && rng.next() < 0.25) v += 3
+      v += rng.int(7) - 3
+    } else if (skill === 'shark') {
+      // sharp: per-position supply, star endgame, and noise that only nudges up — no bargain slips
+      if (scarcest <= 2) v += 2
+      if (SLOTS - countOf(1) === 1) v += 1
+      if (scarcest <= 1) v = Math.max(v, Math.round(spare * 0.7))
+      if (q >= 0.85) {
+        const thresh = ovrs[Math.floor(ovrs.length * 0.85)]
+        const starsAhead = queue.slice(lotIdx + 1, lotIdx + 13).filter((x) => x.ovr >= thresh).length
+        v = starsAhead < SLOTS - countOf(1) ? hard : Math.max(v, Math.round(spare * 0.5))
+      }
+      v += rng.int(2)
+    } else {
+      if (scarcest <= 2) v += 2 // pro reads the drying chair too, just without the per-position endgame
+      v += rng.int(3) - 1
+    }
+    return Math.max(0, Math.min(v, hard))
+  }
+
+  // The Machine answers on a short beat whenever the move is its: the lot just opened,
+  // or the human holds the top bid. Every other state waits on the human, so nothing locks.
+  useEffect(() => {
+    if (foe !== 'bot' || done || result || !man || assign || outFor(1) || top === 1) return
+    const t = window.setTimeout(() => {
+      const p = price + 1
+      let take = p <= wants()
+      if (skill === 'rookie' && take) {
+        const r = makeRng((seed ^ Math.imul(lot + 1, 0x85ebca6b) ^ (price * 977)) >>> 0)
+        if (price === 0 && r.next() < 0.2) take = false // sleeps on a $1 bargain
+        else if (price >= 2 && r.next() < 0.15) take = false // folds a beat too early
+      }
+      if (take && p <= ceiling(1)) {
+        setBotSay(`The Machine bids $${p}`)
+        bid(1)
+      } else {
+        setBotSay('The Machine passes')
+        pass(1)
+      }
+    }, 550 + Math.random() * 150)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foe, skill, lot, price, top, passed, budget, slots, assign, done, result])
 
   const sim = () => setResult(simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA))
 
   const reset = () => {
     setSeed((Math.random() * 0xffffffff) >>> 0)
     setLot(0)
+    setLotN(0)
     setPrice(0)
     setTop(null)
     setPassed([false, false])
     setBudget([BUDGET, BUDGET])
-    setBuys([[], []])
+    setSlots([Array<Buy | null>(SLOTS).fill(null), Array<Buy | null>(SLOTS).fill(null)])
+    setAssign(null)
     setNote(null)
+    setBotSay(null)
     setInfo(false)
     setResult(null)
   }
 
+  const pickFoe = (f: Foe) => {
+    if (f === foe) return
+    setFoe(f)
+    reset() // a new chair means a new table
+  }
+  const pickSkill = (s: Skill) => {
+    if (s === skill) return
+    setSkill(s)
+    reset()
+  }
+
   if (result) {
     const p1won = result.won
-    const w = p1won ? NAMES[0] : NAMES[1]
+    const w = p1won ? names[0] : names[1]
     const hi = Math.max(result.wins, result.losses)
     const lo = Math.min(result.wins, result.losses)
     return (
@@ -140,7 +267,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
               <span className="sc">
                 {g.us}–{g.them}
               </span>
-              <span className="note">{neutral(g.note, NAMES)}</span>
+              <span className="note">{neutral(g.note, names)}</span>
             </div>
           ))}
         </div>
@@ -156,7 +283,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
             theirs={compile(B, A)}
             title="The two fives"
             leftLabel="PLAYER 1"
-            rightLabel="PLAYER 2"
+            rightLabel={names[1].toUpperCase()}
             leftWord="P1"
             rightWord="P2"
           />
@@ -183,17 +310,39 @@ export function Auction({ onHome }: { onHome: () => void }) {
       </div>
       <div className="rule2" />
 
+      <div className="filterbar">
+        <button className={`sortb ${foe === 'friend' ? 'on' : ''}`} onClick={() => pickFoe('friend')}>
+          vs a friend
+        </button>
+        <button className={`sortb ${foe === 'bot' ? 'on' : ''}`} onClick={() => pickFoe('bot')}>
+          vs the Machine
+        </button>
+        {foe === 'bot' ? (
+          <>
+            <button className={`sortb ${skill === 'rookie' ? 'on' : ''}`} onClick={() => pickSkill('rookie')}>
+              Rookie
+            </button>
+            <button className={`sortb ${skill === 'pro' ? 'on' : ''}`} onClick={() => pickSkill('pro')}>
+              Pro
+            </button>
+            <button className={`sortb ${skill === 'shark' ? 'on' : ''}`} onClick={() => pickSkill('shark')}>
+              Shark
+            </button>
+          </>
+        ) : null}
+      </div>
+
       <div className="vs-head">
         <div className={`vs-side ${top === 0 ? 'now' : ''}`}>
-          <b>{NAMES[0]}</b>
+          <b>{names[0]}</b>
           <span className="au-cash">${budget[0]}</span>
           <span>
-            {buys[0].length}/5 men
-            {full(0) ? ' · full' : passed[0] ? ' · passed this lot' : ''}
+            {countOf(0)}/5 men
+            {full(0) ? ' · full' : passed[0] ? ' · passed this lot' : !canPlay(0) && man && !done ? ' · no slot for this lot' : ''}
           </span>
-          {buys[0].map((b) => (
-            <span key={b.name} className="au-buy">
-              {b.name} · ${b.price}
+          {POSITIONS.map((pos, j) => (
+            <span key={pos} className={`au-buy ${slots[0][j] ? '' : 'o'}`}>
+              {pos} · {slots[0][j] ? `${slots[0][j]!.name} · $${slots[0][j]!.price}` : 'open'}
             </span>
           ))}
         </div>
@@ -203,15 +352,16 @@ export function Auction({ onHome }: { onHome: () => void }) {
           OUTCRY
         </div>
         <div className={`vs-side r ${top === 1 ? 'now' : ''}`}>
-          <b>{NAMES[1]}</b>
+          <b className={foe === 'bot' ? 'au-mach' : ''}>{names[1]}</b>
           <span className="au-cash">${budget[1]}</span>
           <span>
-            {buys[1].length}/5 men
-            {full(1) ? ' · full' : passed[1] ? ' · passed this lot' : ''}
+            {foe === 'bot' ? `${skill} · ` : ''}
+            {countOf(1)}/5 men
+            {full(1) ? ' · full' : passed[1] ? ' · passed this lot' : !canPlay(1) && man && !done ? ' · no slot for this lot' : ''}
           </span>
-          {buys[1].map((b) => (
-            <span key={b.name} className="au-buy">
-              {b.name} · ${b.price}
+          {POSITIONS.map((pos, j) => (
+            <span key={pos} className={`au-buy ${slots[1][j] ? '' : 'o'}`}>
+              {pos} · {slots[1][j] ? `${slots[1][j]!.name} · $${slots[1][j]!.price}` : 'open'}
             </span>
           ))}
         </div>
@@ -222,9 +372,15 @@ export function Auction({ onHome }: { onHome: () => void }) {
       {!done && man ? (
         <>
           <div className="au-block">
-            <div className="au-kick">Lot {lot + 1} · on the block</div>
-            <div className={`au-price ${top === 0 ? 'p1' : top === 1 ? 'p2' : ''}`}>${price}</div>
-            <div className="au-why">{top !== null ? `${NAMES[top]} holds the bid` : 'no bids yet — a pass is final for this lot'}</div>
+            <div className="au-kick">
+              {assign ? `Sold to ${names[assign.side]} · $${assign.price} — pick his spot` : `Lot ${lotN + 1} · on the block`}
+            </div>
+            {!assign ? (
+              <>
+                <div className={`au-price ${top === 0 ? 'p1' : top === 1 ? 'p2' : ''}`}>${price}</div>
+                <div className="au-why">{top !== null ? `${names[top]} holds the bid` : 'no bids yet — a pass is final for this lot'}</div>
+              </>
+            ) : null}
           </div>
           <div className="pool">
             <PlayerCard
@@ -237,33 +393,56 @@ export function Auction({ onHome }: { onHome: () => void }) {
               onInfo={() => setInfo(!info)}
             />
           </div>
-          <div className="au-actions">
-            {([0, 1] as const).map((i) => {
-              const slotsAfter = SLOTS - 1 - buys[i].length
-              const why = isOut(i)
-                ? full(i)
-                  ? 'five men — out of every auction'
-                  : 'passed — final for this lot'
-                : top === i
-                  ? 'holds the bid — the other chair answers'
-                  : price + 1 > ceiling(i)
-                    ? slotsAfter > 0
-                      ? `needs $${slotsAfter} held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
-                      : `only $${budget[i]} left`
-                    : null
-              return (
-                <div className="au-panel" key={i}>
-                  <button className={`btn ${i === 1 ? 'them' : ''}`} disabled={why !== null} onClick={() => bid(i)}>
-                    {NAMES[i]} — bid ${price + 1}
-                  </button>
-                  <button className="btn ghost" disabled={isOut(i) || top === i} onClick={() => pass(i)}>
-                    Pass
-                  </button>
-                  {why ? <div className="au-why">{why}</div> : null}
+          {assign ? (
+            <div className="au-actions one">
+              <div className="au-panel">
+                <div className="au-slotrow">
+                  {assign.opts.map((j) => (
+                    <button key={j} className="sortb" onClick={() => place(assign.side, assign.name, assign.price, j)}>
+                      {POSITIONS[j]}
+                    </button>
+                  ))}
                 </div>
-              )
-            })}
-          </div>
+                <div className="au-why">the slots his card can legally take</div>
+              </div>
+            </div>
+          ) : (
+            <div className="au-actions">
+              {([0, 1] as const).map((i) => {
+                if (i === 1 && foe === 'bot')
+                  return (
+                    <div className="au-panel" key={i}>
+                      <div className="au-say">{botSay ?? (outFor(1) || top === 1 ? '' : 'The Machine is thinking')}</div>
+                    </div>
+                  )
+                const slotsAfter = SLOTS - 1 - countOf(i)
+                const why = passed[i]
+                  ? 'passed — final for this lot'
+                  : full(i)
+                    ? 'five men — out of every auction'
+                    : !canPlay(i)
+                      ? 'no open slot he can play'
+                      : top === i
+                        ? 'holds the bid — the other chair answers'
+                        : price + 1 > ceiling(i)
+                          ? slotsAfter > 0
+                            ? `needs $${slotsAfter} held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
+                            : `only $${budget[i]} left`
+                          : null
+                return (
+                  <div className="au-panel" key={i}>
+                    <button className={`btn ${i === 1 ? 'them' : ''}`} disabled={why !== null} onClick={() => bid(i)}>
+                      {names[i]} — bid ${price + 1}
+                    </button>
+                    <button className="btn ghost" disabled={outFor(i) || top === i} onClick={() => pass(i)}>
+                      Pass
+                    </button>
+                    {why ? <div className="au-why">{why}</div> : null}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </>
       ) : null}
 
@@ -272,9 +451,9 @@ export function Auction({ onHome }: { onHome: () => void }) {
           <Bars
             mine={compile(A, B)}
             theirs={compile(B, A)}
-            title="Player 1 vs Player 2"
+            title={`Player 1 vs ${names[1]}`}
             leftLabel="PLAYER 1"
-            rightLabel="PLAYER 2"
+            rightLabel={names[1].toUpperCase()}
             leftWord="P1"
             rightWord="P2"
           />
@@ -284,7 +463,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
       <div className="dock">
         <div className="dock-inner">
           <button className={`btn ${done ? '' : 'ghost'}`} onClick={done ? sim : undefined}>
-            {done ? 'Sim the series' : 'Bid to five men — every slot needs $1'}
+            {done ? 'Sim the series' : 'Bid a five into PG–C — every slot needs $1'}
           </button>
         </div>
       </div>

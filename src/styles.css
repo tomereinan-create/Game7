@@ -2066,7 +2066,11 @@ button {
 
 /* ---- 1v1 bid auction ---- */
 .au-cash { font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
+.vs-side b.au-mach { font-family: var(--serif); font-weight: 400; font-size: 16px; }
 .vs-side .au-buy { font-size: 9px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vs-side .au-buy.o { opacity: 0.45; }
+.au-say { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--them); text-align: center; padding-top: 14px; line-height: 1.6; }
+.au-slotrow { display: flex; gap: 8px; justify-content: center; }
 .au-block { text-align: center; padding: 14px 0 4px; }
 .au-kick { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
 .au-price { font-family: var(--serif); font-size: 46px; line-height: 1.1; color: var(--ink); }
@@ -2074,6 +2078,7 @@ button {
 .au-price.p2 { color: var(--them); }
 .au-why { font-family: var(--mono); font-size: 9px; line-height: 1.4; color: var(--faint); text-align: center; }
 .au-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 0 4px; }
+.au-actions.one { grid-template-columns: 1fr; }
 .au-panel { display: grid; gap: 6px; align-content: start; }
 .au-panel .btn:disabled { opacity: 0.35; cursor: default; }
 
