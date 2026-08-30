@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { seasonGauges } from '../engine/gauges'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { ratings100 } from '../engine/offense'
@@ -44,34 +45,88 @@ function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean;
 /** All-years search stops here — past this many rows the query is doing the work, not the reader. */
 const CAP = 60
 
+const YMAX = YEARS[0]
+const YMIN = YEARS[YEARS.length - 1]
+const clampYear = (n: number) => Math.min(YMAX, Math.max(YMIN, n))
+
+/** "96" → 1996, "199" → the newest 199x, "2005" → 2005; empty → Any; a lone digit keeps the current pick. */
+function resolveYear(raw: string): number | null | 'partial' {
+  const d = raw.replace(/\D/g, '')
+  if (!d) return null
+  if (d.length === 1) return 'partial'
+  if (d.length === 2) {
+    const n = Number(d)
+    return clampYear(n >= 80 ? 1900 + n : 2000 + n)
+  }
+  if (d.length === 3) return YEARS.find((y) => String(y).startsWith(d)) ?? 'partial'
+  return clampYear(Number(d.slice(0, 4)))
+}
+
+/** Season-percentile OFF/DEF of the team's best legal five, or null when the pool cannot field one. */
+type TeamGauge = { off: number; def: number } | null
+const GAUGES = new Map<TeamSeason, TeamGauge>()
+function gaugeOf(t: TeamSeason): TeamGauge {
+  const hit = GAUGES.get(t)
+  if (hit !== undefined) return hit
+  const five = startingFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
+  let g: TeamGauge = null
+  if (five.length === 5) {
+    const { off, def } = seasonGauges(five, t.y)
+    g = { off, def }
+  }
+  GAUGES.set(t, g)
+  return g
+}
+
+/** 1..99 or null; the inputs are free text, so garbage reads as no bound. */
+const bound = (s: string) => {
+  const n = Number(s)
+  return s.trim() !== '' && Number.isFinite(n) ? Math.min(99, Math.max(1, Math.round(n))) : null
+}
+
+const yy = (y: number) => `’${String(y % 100).padStart(2, '0')}`
+
 /** The team database: pick a year, pick a team, read their best five and its ratings. */
 export function TeamDb({ onBack }: { onBack: () => void }) {
-  const [year, setYear] = useState(YEARS[0])
+  const [year, setYear] = useState<number | null>(YEARS[0])
+  const [yearQ, setYearQ] = useState(String(YEARS[0]))
   const [picked, setPicked] = useState<TeamSeason | null>(null)
   const [open, setOpen] = useState<string | null>(null)
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
-  const [sort, setSort] = useState<'rec' | 'az'>('rec')
+  const [sort, setSort] = useState<'rec' | 'az' | 'off' | 'def'>('rec')
+  const [minQ, setMinQ] = useState('')
+  const [maxQ, setMaxQ] = useState('')
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  const teams = useMemo(
-    () =>
-      WHEEL.filter((t) => t.y === year && (!conf || t.c === conf)).sort((a, b) =>
-        sort === 'az' ? a.team.localeCompare(b.team) : winsOf(b.rec) - winsOf(a.rec),
-      ),
-    [year, conf, sort],
-  )
+  const rating = sort === 'off' || sort === 'def' ? sort : null
 
-  // A non-empty query leaves the year rail behind: every season of every matching franchise, newest first.
+  const teams = useMemo(() => {
+    const pool = WHEEL.filter((t) => (year === null || t.y === year) && (!conf || t.c === conf))
+    if (!rating) {
+      return pool
+        .sort((a, b) => (sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y))
+        .map((t) => ({ t, g: null as TeamGauge }))
+    }
+    // The gauges memoize for good: the first OFF/DEF sort over Any grinds every season once, then it's free.
+    const lo = bound(minQ)
+    const hi = bound(maxQ)
+    let rows = pool.map((t) => ({ t, g: gaugeOf(t) }))
+    if (lo !== null || hi !== null) rows = rows.filter((r) => r.g && (lo === null || r.g[rating] >= lo) && (hi === null || r.g[rating] <= hi))
+    const v = (r: { g: TeamGauge }) => (r.g ? r.g[rating] : 0) // no legal five reads below any real gauge
+    return rows.sort((a, b) => v(b) - v(a) || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y)
+  }, [year, conf, sort, rating, minQ, maxQ])
+
+  // A non-empty query takes over the list: every season of every matching franchise, newest first.
   const found = useMemo(() => {
     const s = q.trim().toLowerCase()
     if (!s) return null
-    return WHEEL.filter((t) => (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s))).sort(
-      (a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec),
-    )
-  }, [q, conf])
+    return WHEEL.filter(
+      (t) => (year === null || t.y === year) && (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s)),
+    ).sort((a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec))
+  }, [q, conf, year])
 
   const detail = useMemo(() => {
     if (!picked) return null
@@ -109,33 +164,76 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             />
           </label>
           <div className="filterbar">
+            <label className="dbnum">
+              <span>Year</span>
+              <input
+                inputMode="numeric"
+                placeholder="Any"
+                value={yearQ}
+                onFocus={(e) => e.currentTarget.select()}
+                onChange={(e) => {
+                  setYearQ(e.target.value)
+                  const r = resolveYear(e.target.value)
+                  if (r !== 'partial') setYear(r)
+                }}
+                autoComplete="off"
+              />
+            </label>
+            <button
+              className={`sortb ${year === null ? 'on' : ''}`}
+              onClick={() => {
+                setYearQ('')
+                setYear(null)
+              }}
+            >
+              Any
+            </button>
             <button className={`sortb ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
               East
             </button>
             <button className={`sortb ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
               West
             </button>
-            {!found ? (
-              <>
-                <button className={`sortb ${sort === 'rec' ? 'on' : ''}`} onClick={() => setSort('rec')}>
-                  Best record
-                </button>
-                <button className={`sortb ${sort === 'az' ? 'on' : ''}`} onClick={() => setSort('az')}>
-                  A–Z
-                </button>
-              </>
-            ) : (
+            {found ? (
               <span className="filtercount">
                 {found.length} season{found.length === 1 ? '' : 's'}
               </span>
-            )}
+            ) : null}
           </div>
+          {!found ? (
+            <div className="filterbar">
+              <button className={`sortb ${sort === 'rec' ? 'on' : ''}`} onClick={() => setSort('rec')}>
+                Best record
+              </button>
+              <button className={`sortb ${sort === 'az' ? 'on' : ''}`} onClick={() => setSort('az')}>
+                A–Z
+              </button>
+              <button className={`sortb ${sort === 'off' ? 'on' : ''}`} onClick={() => setSort('off')}>
+                OFF
+              </button>
+              <button className={`sortb ${sort === 'def' ? 'on' : ''}`} onClick={() => setSort('def')}>
+                DEF
+              </button>
+              {rating ? (
+                <>
+                  <label className="dbnum">
+                    <span>Min</span>
+                    <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} />
+                  </label>
+                  <label className="dbnum">
+                    <span>Max</span>
+                    <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} />
+                  </label>
+                </>
+              ) : null}
+            </div>
+          ) : null}
 
           {found ? (
             <>
               <div className="section-rule">
                 <span>
-                  All years · newest first
+                  {year === null ? 'All years' : year} · newest first
                   {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
                 </span>
                 <i />
@@ -145,7 +243,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                   <span className="lwho">
                     <b>{t.team}</b>
                     <i>
-                      ’{String(t.y % 100).padStart(2, '0')} · {t.ab}
+                      {yy(t.y)} · {t.ab}
                       {t.rec ? ` · ${t.rec}` : ''}
                     </i>
                   </span>
@@ -157,33 +255,33 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             </>
           ) : (
             <>
-              <div className="yr-rail">
-                {YEARS.map((y) => (
-                  <button key={y} className={`sortb ${y === year ? 'on' : ''}`} onClick={() => setYear(y)}>
-                    {y}
-                  </button>
-                ))}
-              </div>
               <div className="section-rule">
                 <span>
-                  {year} · {teams.length} teams · {sort === 'az' ? 'A to Z' : 'best record first'}
+                  {year === null ? 'All years' : year} · {teams.length} teams ·{' '}
+                  {sort === 'az' ? 'A to Z' : sort === 'off' ? 'best OFF first' : sort === 'def' ? 'best DEF first' : 'best record first'}
                   {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
                 </span>
                 <i />
               </div>
-              {teams.map((t) => (
+              {(year === null ? teams.slice(0, CAP) : teams).map(({ t, g }) => (
                 <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
                   <span className="lwho">
                     <b>{t.team}</b>
                     <i>
+                      {year === null ? `${yy(t.y)} · ` : ''}
                       {t.ab}
                       {t.rec ? ` · ${t.rec}` : ''}
-                      {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on the card pool
+                      {year === null ? '' : `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool`}
                     </i>
                   </span>
+                  {rating ? <span className="tdb-gauge">{g ? `${rating.toUpperCase()} ${g[rating]}` : '—'}</span> : null}
                   <span className="tdb-go">→</span>
                 </button>
               ))}
+              {year === null && teams.length > CAP ? (
+                <div className="cap hint">{(teams.length - CAP).toLocaleString()} more teams match — set a year, a conference or tighter bounds.</div>
+              ) : null}
+              {teams.length === 0 ? <div className="cap hint">No team inside those bounds.</div> : null}
             </>
           )}
         </>
