@@ -1,93 +1,73 @@
-import CAMPAIGNS from '../data/campaigns.json'
-import { WHEEL } from '../data/wheel'
-import { startingFive } from './bestfive'
 import { ratings100 } from './offense'
-import { PLAYERS } from './pool'
 import type { Player } from './types'
 
 /**
- * TEAM GAUGES, percentiled WITHIN SEASON (recal_64, design-side "62"): a 64-18
- * champion reading OFF 51 against all of history says nothing — the gauge now
- * ranks a five against the same season's teams (their best legal fives), or,
- * for a drafted five with no season, against the campaign's own opponent pool.
- * The basis is visible on the dial ("pct of 2026" / "pct of field") — it
- * names the percentile pool, never an opponent.
+ * TEAM GAUGES on the ALL-TIME SCALE (recal_71, his ruling: "Instead of scale 1-99 make it more
+ * balanced. 99 should be one of the greatest offense ever (2017 warriors)" — and, folded in,
+ * "Do the same for DEF, 99 is 2004 pistons").
+ *
+ * This supersedes recal_64's within-season percentile for BOTH dials: a team no longer reads 99
+ * for being the best of a weak season — 99 is reserved for the all-time summits, and the owner
+ * named them. OFF 99 = the 2017 Warriors' best legal five (offRaw 140.04; the six fives above it
+ * — Suns '07-class — clamp to 99, the same way the card band clamps past its summit). DEF 99 =
+ * the 2004 Pistons' best legal five (drtgRef 106.85; the five fives better than it, the '05/'06
+ * Pistons and '05/'16 Spurs among them, clamp to 99 — the old within-season summit keeps its 99).
+ *
+ * THE MAPPING is two-slope linear around the all-time median (the codebase's knee convention):
+ * [min..median] -> [1..50], [median..summit] -> [50..99], clamped 1..99. "More balanced" is the
+ * ruling's own word: the median five of 47 seasons reads 50 by construction, no era pins to a
+ * rail (every era spans widely inside the global range), and the summit is occupied by exactly
+ * the teams the owner named. Constants are FROZEN from the full 1,255-five wheel sweep
+ * (scripts/gauge71.ts re-derives them; re-run it after any engine change that moves offRaw).
+ *
+ * LAYERS, kept decoupled on purpose: this is the display/gauge scale ONLY. The resolver and
+ * defenseVs math are untouched. recal_60's REF_DRTG intercept and recal_67's card-side x1.03 /
+ * DEF_TOP live in their own layers (ratings100's 0-100 ints and the d_ovr card band) and
+ * survive there; the gauge simply no longer routes through either.
  */
 
-const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
+// frozen anchors (scripts/gauge71.ts, v66 pool, r69 wheel):
+const OFF_MIN = 105.57 // the all-time worst wheel five
+const OFF_MID = 126.89 // the all-time median five reads 50
+const OFF_TOP = 140.04 // Golden State Warriors '17 — the named OFF summit reads 99
+const DEF_WORST = 113.55 // the all-time worst defensive five
+const DEF_MID = 109.18 // the all-time median reads 50
+const DEF_TOP = 106.85 // Detroit Pistons '04 — the named DEF summit reads 99
+/** How many wheel fives froze the anchors (display only). */
+const ANCHOR_N = 1255
 
-interface Pool {
-  offs: number[]
-  drtgs: number[]
-}
-
-const seasonCache = new Map<number, Pool>()
-function seasonPool(season: number): Pool {
-  let pool = seasonCache.get(season)
-  if (pool) return pool
-  const offs: number[] = []
-  const drtgs: number[] = []
-  for (const t of WHEEL.filter((x) => x.y === season)) {
-    const five = startingFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
-    if (five.length !== 5) continue // a roster the pool cannot field does not set the bar
-    const r = ratings100(five)
-    offs.push(r.offRaw)
-    drtgs.push(r.drtgRef)
-  }
-  pool = { offs, drtgs }
-  seasonCache.set(season, pool)
-  return pool
-}
-
-let fieldPool: Pool | null = null
-function campaignPool(): Pool {
-  if (fieldPool) return fieldPool
-  const offs: number[] = []
-  const drtgs: number[] = []
-  for (const tier of CAMPAIGNS as { levels: { players: Player[] }[] }[]) {
-    for (const o of tier.levels) {
-      const r = ratings100(o.players)
-      offs.push(r.offRaw)
-      drtgs.push(r.drtgRef)
-    }
-  }
-  fieldPool = { offs, drtgs }
-  return fieldPool
-}
-
-/** Percentile -> 1..99: the best five in the pool reads 99, the worst 1. */
-const pct = (arr: number[], v: number, lowerBetter = false) => {
-  if (arr.length < 2) return 50
-  const worse = arr.filter((x) => (lowerBetter ? x > v : x < v)).length
-  const ties = arr.filter((x) => x === v).length
-  // a member team ties itself once; split remaining ties down the middle
-  const rank = worse + Math.max(0, ties - 1) / 2
-  return Math.round(1 + (98 * rank) / (arr.length - 1))
-}
+const scale71 = (v: number, min: number, mid: number, top: number) =>
+  Math.round(Math.max(1, Math.min(99, v <= mid ? 1 + (49 * (v - min)) / (mid - min) : 50 + (49 * (v - mid)) / (top - mid))))
 
 export interface Gauge {
   off: number
   def: number
   offRaw: number
   drtgRef: number
-  /** What the percentile is against, for the dial's label. */
+  /** What the scale is anchored to, for the dial's label. */
   basis: string
   n: number
 }
 
-/** A five with a season: percentiled against that season's teams. */
-export function seasonGauges(five: Player[], season: number): Gauge {
+const gauge = (five: Player[]): Gauge => {
   const r = ratings100(five)
-  const pool = seasonPool(season)
-  // The basis names the PERCENTILE POOL, never an opponent — "vs 2026" was read design-side
-  // as the team the defense was computed against, so the label says what it is: a rank.
-  if (pool.offs.length < 2) return { ...fieldGauges(five), basis: 'pct of field' }
-  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: `pct of ${season}`, n: pool.offs.length }
+  return {
+    off: scale71(r.offRaw, OFF_MIN, OFF_MID, OFF_TOP),
+    // lower drtg is better: negate so the two-slope map reads rising-is-better
+    def: scale71(-r.drtgRef, -DEF_WORST, -DEF_MID, -DEF_TOP),
+    offRaw: r.offRaw,
+    drtgRef: r.drtgRef,
+    basis: 'all-time scale',
+    n: ANCHOR_N,
+  }
 }
 
-/** A drafted five with no season of its own: percentiled against the campaign's opponents. */
+/** A five with a season: same all-time scale (the season no longer picks the pool — one scale for all). */
+export function seasonGauges(five: Player[], _season: number): Gauge {
+  return gauge(five)
+}
+
+/** A drafted five with no season of its own: the same scale — a drafted five and a wheel team read alike. */
 export function fieldGauges(five: Player[]): Gauge {
-  const r = ratings100(five)
-  const pool = campaignPool()
-  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: 'pct of field', n: pool.offs.length }
+  return gauge(five)
 }

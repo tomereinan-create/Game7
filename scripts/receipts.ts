@@ -1700,6 +1700,73 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '71': () => {
+    console.log(`${EOL}recal_71 — THE ALL-TIME GAUGE SCALE (his rulings: "make it more balanced, 99 should be one of the greatest offense ever (2017 warriors)" + "Do the same for DEF, 99 is 2004 pistons")`)
+    const V71 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `untouched · current ${V71}`, 'gauge/display layer only — zero cards moved, resolver untouched, no bump', V71 >= 66)
+    src('the two-slope all-time map', io('src/engine/gauges.ts'), /const scale71 = \(v: number/, '[min..median] -> [1..50], [median..summit] -> [50..99] — the knee convention, per side')
+    src('the OFF summit is the named one', io('src/engine/gauges.ts'), /const OFF_TOP = 140\.04 \/\/ Golden State Warriors '17/, "GSW '17's best legal five = 99")
+    src('the DEF summit is the named one', io('src/engine/gauges.ts'), /const DEF_TOP = 106\.85 \/\/ Detroit Pistons '04/, "the '04 Pistons' best legal five = 99")
+    src('one convention, both paths', io('src/engine/gauges.ts'), /export function fieldGauges[\s\S]{0,120}gauge\(five\)/, 'a drafted five and a wheel team read on one scale')
+    src('the basis label', io('src/engine/gauges.ts'), /basis: 'all-time scale'/, '"pct of <season>" retired with the percentile')
+    // ---- the named pins, live ----
+    const g71 = (y: number, nm: string) => {
+      const t = WHEEL64.find((x) => x.y === y && x.team.includes(nm))!
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      return fv.length === 5 ? gauges64(fv, y) : null
+    }
+    const gsw = g71(2017, 'Warriors')!
+    const det04 = g71(2004, 'Pistons')!
+    line("GSW '17 — the OFF summit", `OFF ${gsw.off} (offRaw ${gsw.offRaw.toFixed(2)}, all-time rank 7)`, '99 — the owner\'s pin, exactly', gsw.off === 99)
+    line("Pistons '04 — the DEF summit", `DEF ${det04.def} (drtgRef ${det04.drtgRef.toFixed(2)})`, '99 — the owner\'s pin, exactly', det04.def === 99)
+    line("Pistons '06 (the r67 CARD-summit five)", `DEF ${g71(2006, 'Pistons')!.def}`, 'still 99 — better raw than \'04, clamps at the summit', g71(2006, 'Pistons')!.def === 99)
+    note('  THE SUMMIT TIERS: 9 fives read OFF 99 (Suns \'07 142.65 leads the six above GSW — nothing')
+    note('  outranks the pin, the greater simply share it, the card band\'s own precedent). 30 fives read')
+    note('  DEF 99 — and the list is the pantheon: the Pistons run, six Duncan Spurs, five Moses Sixers,')
+    note('  the \'86 Celtics, the Giannis Bucks, the \'92/\'94 Bulls. History\'s best defenses bunch within')
+    note('  0.7 raw points. RECORDED-NOT-TAKEN: anchoring DEF 99 at the absolute best (Pistons \'05,')
+    note('  106.19) would thin the tier but read the named \'04 team 88 — contradicting the pin.')
+    // ---- named moderns and greats, before(pctl) -> after(all-time) ----
+    const den = g71(2026, 'Nuggets')!
+    const hou71 = g71(2026, 'Rockets')!
+    const okc71 = g71(2026, 'Thunder')!
+    const bos71 = g71(2026, 'Celtics')!
+    const phi71 = g71(2026, '76ers')!
+    line("Denver '26", `OFF ${den.off} · DEF ${den.def} (pctl read 96 OFF)`, 'the 2026 summit keeps its crown, honestly sized vs history', den.off >= 85 && den.off < 99)
+    line("Houston '26", `OFF ${hou71.off} (pctl read 86; 99 pre-r70)`, 'OUT of the top-value decile on the all-time scale too', hou71.off < 90)
+    note(`  Houston stays 2nd of 2026 by ordering (the scale changed, not the order). OKC ${okc71.off}/${okc71.def} (pctl`)
+    note(`  82/95 — its DEF 95 was a WEAK-SEASON percentile; all-time it is a 72). Boston '26 ${bos71.off}/${bos71.def}.`)
+    line("Philadelphia '26 DEF", `${phi71.def} (pctl read 99)`, 'the anchor-stack symptom shrinks NATURALLY on the honest scale (patient still open)', phi71.def < 80)
+    note(`  Sanity greats: Bulls '96 OFF ${g71(1996, 'Bulls')!.off} DEF ${g71(1996, 'Bulls')!.def} · Showtime '87 OFF ${g71(1987, 'Lakers')!.off} DEF ${g71(1987, 'Lakers')!.def} · Lakers '01 OFF ${g71(2001, 'Lakers')!.off}`)
+    note(`  DEF ${g71(2001, 'Lakers')!.def} · Bobcats '12 OFF ${g71(2012, 'Bobcats')!.off} DEF ${g71(2012, 'Bobcats')!.def}. Two-way legends read two-way; the doormat reads like one.`)
+    // ---- the full-wheel distribution, live ----
+    const offs71: number[] = []
+    const defs71: number[] = []
+    const eras: Map<number, number[]> = new Map()
+    for (const t of WHEEL64) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length !== 5) continue
+      const gg = gauges64(fv, t.y)
+      offs71.push(gg.off)
+      defs71.push(gg.def)
+      const e = Math.floor(t.y / 10) * 10
+      if (!eras.has(e)) eras.set(e, [])
+      eras.get(e)!.push(gg.off)
+    }
+    const med71 = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+    line('the distribution is BALANCED', `OFF median ${med71(offs71)} (at 99: ${offs71.filter((v) => v === 99).length}, at 1: ${offs71.filter((v) => v === 1).length}) · DEF median ${med71(defs71)} (at 99: ${defs71.filter((v) => v === 99).length}, at 1: ${defs71.filter((v) => v === 1).length}) over ${offs71.length} fives`, 'median 50 by construction; the rails hold anchors, not piles', med71(offs71) === 50 && med71(defs71) === 50 && offs71.filter((v) => v === 1).length <= 3)
+    note(`  Per-era OFF medians: ${[...eras].sort(([a], [b]) => a - b).map(([e, xs]) => `${e}s ${med71(xs)}`).join(' · ')} — no era pinned to a rail; the`)
+    note('  drift (80s 43 -> 2020s 57) is the era-relative TS ruling working as written, visible honestly.')
+    // ---- layers and gates ----
+    note('  LAYER RULINGS: recal_60\'s REF_DRTG intercept and recal_67\'s x1.03/DEF_TOP live in the CARD')
+    note('  and ratings100 display layers and SURVIVE there untouched; the gauge no longer routes through')
+    note('  either ("two diseases" stays two cures, each in its own body). Resolver/defenseVs untouched.')
+    note('  The r64/r66 percentile BANDS are superseded as a scale — their ledger lives on in receipt 66')
+    note('  (annotated), re-expressed here: OKC 73/72 · Boston \'26 51/55 · Knicks \'25 55/36 · Celtics')
+    note('  \'24 56/69 · Grizzlies \'13 34/70 · Wizards \'25 UNMEASURABLE.')
+    line('the 2025 wins gate, re-run', 'r_off 0.478 · r_def 0.588 — unchanged', 'scale-invariant (the correlations read offRaw/drtgRef, not the dial)', true)
+    line('discipline', 'harness untouched (no tactics math) · mono68 500/500 stands (reads ratings100) · 92 tests green', 'display-layer round', true)
+  },
   '70': () => {
     console.log(`${EOL}recal_70 — THE ORB SECOND-CHANCE CHANNEL, CORRECTED (our own round: the design side titled it "round 67" and never sent the body; Tomer's ruling "Houston still 99 OFF" opened it)`)
     const V70 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
@@ -1759,7 +1826,10 @@ const ROUNDS: Record<string, () => void> = {
     note(`  BANDS AFTER (before, from receipts 66/68): OKC ${okc.g.off} (74) band 88+ FAIL · Boston '26 ${bos.g.off} (43)`)
     note(`  band 70-85 ${bos.g.off >= 70 && bos.g.off <= 85 ? 'PASS' : 'FAIL'} · Knicks '25 ${bandPins70[2][2]} (36) FAIL · Celtics '24 ${bandPins70[3][2]} (25) FAIL · Grizzlies '13 ${bandPins70[4][2]} (8) FAIL ·`)
     note('  Wizards \'25 UNMEASURABLE (r69). Every band moved TOWARD its target; none was tuned to.')
-    line('  CALIBRATION: the r64/r66 bands', `${bandPins70.filter(([, , v, b]) => (b.startsWith('88') ? v >= 88 : b.startsWith('90') ? v >= 90 : b.startsWith('70') ? v >= 70 && v <= 85 : b.startsWith('65') ? v >= 65 && v <= 80 : v >= 40 && v <= 60)).length} of 5 in band`, 'NOT ALL REACHED — reported, not tuned', false)
+    note('  [SUPERSEDED by recal_71: the within-season percentile SCALE these bands were defined on is')
+    note('  retired — both dials read the all-time anchored scale now. Receipt 71 re-expresses the')
+    note('  verdicts; the gauge numbers this line prints are r71-scale readings against pctl-era bands.]')
+    line('  CALIBRATION: the r64/r66 bands', `${bandPins70.filter(([, , v, b]) => (b.startsWith('88') ? v >= 88 : b.startsWith('90') ? v >= 90 : b.startsWith('70') ? v >= 70 && v <= 85 : b.startsWith('65') ? v >= 65 && v <= 80 : v >= 40 && v <= 60)).length} of 5 in band`, 'NOT ALL REACHED — reported, not tuned (bands live on the retired pctl scale, see r71)', false)
     line('  the 2025 wins gate', 'r_off 0.478 (was 0.433; 0.279 at the stop) · r_def 0.588 (untouched — defense-side)', 'r_off best reading yet, still under 0.6 — the core/gauge ruling stays open', true)
     note('  Variance after: the orb term\'s sd fell 3.25 -> 2.52 (-22%); its cov-share reads 16.3% (was')
     note('  12.9%) BECAUSE the perversity used to anti-correlate the term with the core and suppress its')
@@ -2045,6 +2115,9 @@ const ROUNDS: Record<string, () => void> = {
     line('PIPELINE_VERSION', `shipped at 65 · current ${V67}`, '>= 65 (later rounds own the counter)', V67 >= 65)
     src('the multiplier deflated', OVR, /d_score\(p\) \* 1\.03/, '1.10 -> 1.03 (the fossil that floated every defender ~7 over his composite)')
     src('DEF_TOP re-derived, sanctioned', OVR, /DEF_TOP = 93\.0, 106\.36, 98\.67/, '104.5 -> 98.67 = measured max raw (Wallace 95.80 x 1.03); OFF_TOP untouched (r51 constraint distinct)')
+    note('  [ANNOTATED by recal_71: this summit is the CARD band (d_ovr) and it STANDS — Wallace \'06')
+    note('  keeps his 99. The TEAM gauge grew its own summit law in r71 (DEF 99 = the \'04 Pistons five,')
+    note('  all-time scale); the two live on different layers and neither supersedes the other.]')
     src('the unsatisfiable pin recorded at the site', OVR, /UNSATISFIABLE/, 'Gobert-99 cannot be solved; reported, not forced')
     // ---- the NAMED card ----
     const drex = g("Clyde Drexler '96")
@@ -2151,9 +2224,12 @@ const ROUNDS: Record<string, () => void> = {
     // Wizards '25 fields only FOUR pool men (band UNMEASURABLE), and the 2025 correlation sample is
     // n=26. recal_70 (the corrected ORB second-chance law — receipt 70) then moved every OFF gauge
     // toward its band without touching a band: OKC 73 -> 82, Knicks 36 -> 44, Celtics '24 25 -> 36,
-    // Grizzlies 8 -> 8. The pins below are the v66 re-measurement — each supersession printed, per
-    // the doctrine. The core/gauge ruling stays open: bands still miss, r_off 0.478 still gated.
-    const MEASURED66: Record<string, [number, number] | null> = { Thunder: [82, 95], Knicks: [44, 21], Celtics: [36, 83], Wizards: null, Grizzlies: [8, 69] }
+    // Grizzlies 8 -> 8 (within-season percentiles, v66). recal_71 (his ruling) then RETIRED the
+    // within-season percentile itself: both dials now read the ALL-TIME anchored scale (OFF 99 =
+    // GSW '17, DEF 99 = the '04 Pistons), so the round's percentile BANDS are superseded as a scale
+    // — receipt 71 re-expresses the verdicts. The pins below are the r71-scale re-measurement; the
+    // ledger keeps every prior state above. The core ruling stays open: r_off 0.478 still gated.
+    const MEASURED66: Record<string, [number, number] | null> = { Thunder: [73, 72], Knicks: [55, 36], Celtics: [56, 69], Wizards: null, Grizzlies: [34, 70] }
     let offIn = 0
     let defIn = 0
     for (const [y, nm, ob, db] of BANDS66) {
@@ -2166,7 +2242,7 @@ const ROUNDS: Record<string, () => void> = {
       const gg = gauges64(five, y)
       if (inB(gg.off, ob)) offIn++
       if (inB(gg.def, db)) defIn++
-      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (v65+r69 pin)`, gg.off === pin[0] && gg.def === pin[1])
+      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (pctl-band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (pctl-band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (r71 all-time scale; bands are the retired pctl scale)`, gg.off === pin[0] && gg.def === pin[1])
       if (!inB(gg.off, ob) || !inB(gg.def, db))
         for (const p of five)
           note(`    ${p.name.padEnd(26)} OVR ${p.ovr} O ${String(p.o_ovr).padStart(2)} D ${String(p.d_ovr).padStart(2)} ${archetype(p).padEnd(18)} eff ${p.attrs.efficiency} vol ${p.attrs.volume} playvol ${p.attrs.playvol} 3pt ${p.attrs['3pt']} perdef ${p.attrs.perdef} rimprot ${p.attrs.rimprot} disc ${p.attrs.discipline}`)
@@ -2317,7 +2393,11 @@ const ROUNDS: Record<string, () => void> = {
     const okcT = WHEEL64.find((t) => t.y === 2026 && /Thunder/.test(t.team))!
     const okc5 = bestFive64(okcT.p.map((n) => PLAYERS.find((q) => q.name === n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
     const okcG = gauges64(okc5, 2026)
-    line('(2) OKC ’26 gauge, within season', `OFF ${okcG.off} · DEF ${okcG.def} · basis "${okcG.basis}" · pool ${okcG.n}`, 'was OFF 51 vs all history, unlabeled', okcG.basis === 'vs 2026' && okcG.off > 51)
+    // [SUPERSEDED by recal_71, his ruling: the within-season percentile this round built is retired —
+    // both dials now read the ALL-TIME anchored scale (OFF 99 = GSW '17, DEF 99 = the '04 Pistons).
+    // The line below is annotated to the r71 convention; the original stop-state (OFF 62 "vs 2026",
+    // within-season) is receipt-66's ledger. Never deleted, per the doctrine.]
+    line('(2) OKC ’26 gauge [r71 scale]', `OFF ${okcG.off} · DEF ${okcG.def} · basis "${okcG.basis}"`, 'was OFF 51 vs all history unlabeled; then within-season (this round); now all-time (r71)', okcG.basis === 'all-time scale' && okcG.off > 51)
     const lb = WHEEL64.filter((t) => t.y === 2026)
       .map((t) => {
         const five = bestFive64(t.p.map((n) => PLAYERS.find((q) => q.name === n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
