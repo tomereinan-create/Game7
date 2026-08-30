@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 63   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 64   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -208,6 +208,10 @@ TRK_CATS = {'overall': 'Overall', 'rim': 'Less Than 6Ft', 'perim': 'Greater Than
 DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))   # recal_16: defended-FG% diff -> absolute card floor
 def dfg_floor(yr, name):
     # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
+    # recal_65: VERIFIED — the design side re-reported the floors as still keyed to all-shots; they are
+    # not, and have not been since recal_55. The floors consume the derived 6ft+ (diff, att) below,
+    # the SAME series the blend reads. The 15ft+ series feeds nothing here (it is what the design side
+    # mistook for 6ft+); the Overall series feeds only the blend's 0.30 corroboration (his ruling).
     row = TRACKING.get((yr, 'Outside 6Ft'), {}).get(_nrm(name))
     if not row or not row[1] or min(1.0, row[1] / 350.0) < 0.75: return None
     for _d, _card in DFG_FLOORS:

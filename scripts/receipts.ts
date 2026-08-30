@@ -1700,6 +1700,84 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '65': () => {
+    console.log(`${EOL}recal_65 — THE DFG FLOORS READ THE 6FT+ SERIES (design-side round "63"; our 63/64 were taken)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '64', /PIPELINE_VERSION = 64/.test(OVR) && /PIPELINE_VERSION = 64/.test(RATINGS))
+    // The round prescribed ONE keying change: floors consume (diff_6plus, att_6plus). Measured verdict:
+    // that keying has been the shipped code since recal_55 — the design side re-reported a retired defect.
+    src('floors consume the derived 6ft+ series', RATINGS, /def dfg_floor[\s\S]{0,800}Outside 6Ft/, 'the SAME (diff, att) the blend reads — since recal_55')
+    src('conf gate: 0.75 of a 350-att season', RATINGS, /min\(1\.0, row\[1\] \/ 350\.0\) < 0\.75: return None/, 'thin 6ft+ samples buy no floor')
+    src('tiers -1.0/-2.0/-3.5 -> 64/70/76', RATINGS, /\(\(-0\.035, 76\), \(-0\.02, 70\), \(-0\.01, 64\)\)/, 'unchanged, re-verified')
+    src('verification recorded at the site', RATINGS, /recal_65: VERIFIED/, 'zero keying changed this round')
+    // ---- the tracking series, derived here exactly as the pipeline derives them ----
+    const nrm65 = (s: string) => s.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const T65 = new Map<string, [number, number]>()
+    for (const ln of io('data/tracking_defense.csv').split(/\r?\n/).slice(1)) {
+      if (!ln.trim()) continue
+      const c = ln.split(',')
+      const diff = Number(c[5])
+      if (!Number.isFinite(diff)) continue
+      const att = Number(c[7]) * Number(c[8])
+      T65.set(`${c[0]}|${c[1]}|${nrm65(c[2])}`, [diff, Number.isFinite(att) ? att : 0])
+    }
+    for (const [k, [dO, aO]] of [...T65]) {
+      const [yr, cat, n] = k.split('|')
+      if (cat !== 'Overall') continue
+      const [dL, aL] = T65.get(`${yr}|Less Than 6Ft|${n}`) ?? [0, 0]
+      const att = Math.max(0, aO - aL)
+      if (att <= 0) continue
+      T65.set(`${yr}|Outside 6Ft|${n}`, [(dO * aO - dL * aL) / Math.max(1, att), att])
+    }
+    const floor65 = (cat: string, yr: number, who: string) => {
+      const row = T65.get(`${yr}|${cat}|${nrm65(who)}`)
+      if (!row || !row[1] || Math.min(1, row[1] / 350) < 0.75) return null
+      for (const [d, card] of [[-0.035, 76], [-0.02, 70], [-0.01, 64]] as const) if (row[0] <= d) return card
+      return null
+    }
+    // ---- the NAMED card, before-after, value in its columns ----
+    const ajay = g("Ajay Mitchell '26")
+    const s6 = T65.get(`2026|Outside 6Ft|${nrm65('Ajay Mitchell')}`)!
+    const s15 = T65.get(`2026|Greater Than 15Ft|${nrm65('Ajay Mitchell')}`)!
+    const sRim = T65.get(`2026|Less Than 6Ft|${nrm65('Ajay Mitchell')}`)!
+    const sAll = T65.get(`2026|Overall|${nrm65('Ajay Mitchell')}`)!
+    line("Ajay Mitchell '26 perdef", `${ajay.attrs.perdef} (was 76 pre-round)`, '76 — the floor is EARNED on the 6ft+ series', ajay.attrs.perdef === 76)
+    line("Ajay Mitchell '26 rimprot", `${ajay.attrs.rimprot} (was 58 pre-round)`, '58 — rim work stays where it was paid', ajay.attrs.rimprot === 58)
+    line('  his derived 6ft+ series', `${(s6[0] * 100).toFixed(1)}% on ${Math.round(s6[1])} att, conf ${Math.min(1, s6[1] / 350).toFixed(2)}`, '<= -3.5% at conf >= 0.75 — the 76 tier fires', s6[0] <= -0.035 && s6[1] / 350 >= 0.75)
+    line('  CALIBRATION TARGET: perdef -> ~40s', 'perdef 76, unchanged', '~40s — NOT REACHED (the premise misread a series)', false)
+    note(`  The design read "6ft+ DFG +1.6% BAD on 217 shots" off his card. That is the 15ft+ row — ${(s15[0] * 100).toFixed(1)}% on`)
+    note(`  ${Math.round(s15[1])} att — which nothing computes from. The DERIVED 6ft+ series (overall − rim, recal_55) is`)
+    note(`  ${(s6[0] * 100).toFixed(1)}% on ${Math.round(s6[1])} att: his 6-15ft band is elite (overall ${(sAll[0] * 100).toFixed(1)}% on ${Math.round(sAll[1])}, rim ${(sRim[0] * 100).toFixed(1)}% on ${Math.round(sRim[1])}),`)
+    note('  so the floor the round itself prescribes fires on the series it prescribes. Applying the fix')
+    note('  verbatim is a no-op: the code already reads (diff_6plus, att_6plus). No double-count exists —')
+    note('  his rim att (conf 0.36) buys no floor and no r53 cap lift; it is paid once, in rimprot 58.')
+    // ---- legit perimeter stoppers keep their floors ----
+    for (const [nm, who, yr] of [["Kawhi Leonard '16", 'Kawhi Leonard', 2016], ["Marcus Smart '19", 'Marcus Smart', 2019]] as const) {
+      const p = g(nm)
+      const f = floor65('Outside 6Ft', yr, who)
+      const r = T65.get(`${yr}|Outside 6Ft|${nrm65(who)}`)!
+      line(`stopper keeps his floor: ${nm}`, `perdef ${p.attrs.perdef}, 6ft+ ${(r[0] * 100).toFixed(1)}%, floor ${f}`, 'floor 76 intact, rating above it', f === 76 && p.attrs.perdef >= 76)
+    }
+    // ---- floor-source census ----
+    let disagree55 = 0
+    let floored65 = 0
+    for (const p of PLAYERS) {
+      const f6 = floor65('Outside 6Ft', p.peak_season, p.player)
+      if (f6) floored65++
+      if (f6 !== floor65('Overall', p.peak_season, p.player)) disagree55++
+    }
+    line('cards whose floor source changed THIS round', '0 — keying already 6ft+ since recal_55', '0', true)
+    line('  the r55 footprint, for the design side', `${disagree55} cards differ all-shots vs 6ft+ (${floored65} carry an active floor)`, '1022 and 849 (measured)', disagree55 === 1022 && floored65 === 849)
+    note('  Ajay floors 76 under EITHER keying (all-shots -4.9% on 471 att; 6ft+ -4.2% on 344) — he is in')
+    note('  neither transition class. RECORDED, NOT TUNED: the ~40s expectation is left unmet; no mechanism')
+    note('  was invented to force it. If the 76 is wrong, the argument is with the tiers, not the keying.')
+    note('  "ALL SHOTS, FOR REFERENCE": already OFF the Advanced sheet (his ruling, pre-round, this side).')
+    note('  But contra the round text, the Overall series is NOT inert: it corroborates the perdef blend at')
+    note('  0.30 weight ("all shots carry weight" — his earlier ruling). Out of this round\'s one-keying-')
+    note('  change scope; left standing and reported.')
+    note('  Rebuild true-up: marg (display-only since recal_37; OVR untouched) moved on 8546 cards by')
+    note('  -30..+8 — r64\'s shipped data predated its own fit-widen for that field. Every other field on')
+    note('  all 10000 cards is byte-identical pre/post this round: zero ratings moved, zero floors moved.')
+  },
   '64': () => {
     console.log(`${EOL}recal_64 — THE OKC PROBLEM (design-side round "62"; our 62/63 were taken)`)
     line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '63', /PIPELINE_VERSION = 63/.test(OVR) && /PIPELINE_VERSION = 63/.test(RATINGS))
