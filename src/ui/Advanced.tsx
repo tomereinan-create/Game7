@@ -5,10 +5,10 @@ import { useUserMode } from '../state/viewmode'
 
 /**
  * The "how every number is made" window. For each of the 17 attributes it shows
- * the formula (from data/build_ratings.py / RATINGS_UPDATE.md) and THIS
- * player-season's actual inputs, read from public/provenance.json — a sidecar
- * the pipeline emits alongside the ratings. Fetched lazily so the 3.8 MB never
- * enters the app bundle.
+ * THIS player-season's actual inputs, read from public/provenance.json — a
+ * sidecar the pipeline emits alongside the ratings. Fetched lazily so the
+ * 3.8 MB never enters the app bundle. The formula essays are gone by his
+ * ruling — the inputs and values stand on their own.
  */
 /** What the pipeline recorded about a card's season blend, when it has one. */
 export interface Smooth {
@@ -49,15 +49,12 @@ interface Row {
 interface Section {
   k: AttrKey
   title: string
-  formula: string
   rows: (p: Player, v: (number | null)[]) => Row[]
-  note?: (p: Player, v: (number | null)[]) => string | null
 }
 
-const single = (k: AttrKey, title: string, formula: string, label: string, fmt: (x: number | null) => string): Section => ({
+const single = (k: AttrKey, title: string, label: string, fmt: (x: number | null) => string): Section => ({
   k,
   title,
-  formula,
   rows: (_p, v) => [{ label, value: fmt(v?.[0] ?? null) }],
 })
 
@@ -65,8 +62,6 @@ const SECTIONS: Section[] = [
   {
     k: 'rim',
     title: 'paint',
-    formula:
-      'Paint scoring, 0–10 ft: 0.65 × paint-volume percentile + 0.35 × paint FG% percentile. Volume is discounted by the assisted share of 2P makes (up to −45%) — self-creators keep full credit.',
     rows: (_p, v) =>
       v[0] === 1
         ? [
@@ -82,13 +77,10 @@ const SECTIONS: Section[] = [
             { label: '2PA /100', value: n1(v[5]) },
             { label: 'usage', value: pc((v[6] ?? 0) / 100) },
           ],
-    note: (_p, v) =>
-      v[0] === 1 ? null : 'No shot-location data before 1997 — inferred by a regression fitted on 1997–2005 (R² .78).',
   },
   {
     k: 'mid',
     title: 'mid',
-    formula: 'Mid-range scoring, 10 ft to the arc: 0.65 × volume percentile + 0.35 × FG% percentile. No assisted discount.',
     rows: (_p, v) =>
       v[0] === 1
         ? [
@@ -96,13 +88,10 @@ const SECTIONS: Section[] = [
             { label: 'mid FG%', value: pc(v[2]) },
           ]
         : [],
-    note: (_p, v) => (v[0] === 1 ? null : 'Inferred with the paint regression (R² .60) — same features as paint.'),
   },
   {
     k: '3pt',
     title: '3pt',
-    formula:
-      'Max of two paths. GUNNER: 0.45 × era-adjusted 3PA volume + 0.55 × 3P% (percentiles vs the modern 2011–25 pool), chucker-gated below the season-median 3P%. DEADEYE: min(.95, 0.88 × accuracy + 0.12 × volume), needs ≥3 era-adjusted attempts/100.',
     rows: (_p, v) => [
       { label: 'path', value: v[0] === 0 ? 'GUNNER' : v[0] === 1 ? 'DEADEYE' : 'under 2 attempts/100 — FT-touch fallback' },
       { label: '3PA /100 (raw)', value: n1(v[1]) },
@@ -110,26 +99,17 @@ const SECTIONS: Section[] = [
       { label: '3P%', value: pc(v[3]) },
       { label: 'volume percentile (era-adj, modern pool)', value: ptl(v[4]) },
       { label: 'accuracy percentile (modern pool)', value: ptl(v[5]) },
+      // the gate multiplier is a season input, not an essay — it stays as a row
+      ...((v[6] ?? 1) < 1 ? [{ label: 'chucker gate', value: `×${n1(v[6])}` }] : []),
     ],
-    note: (_p, v) => ((v[6] ?? 1) < 1 ? `Chucker gate applied: ×${n1(v[6])} — 3P% below that season's median.` : null),
   },
-  single('ft', 'ft', 'The literal free-throw percentage of the season. Not a percentile.', 'FT%', (x) =>
-    x === null ? '— (shown value is the stat itself)' : 'shown value is the stat itself',
-  ),
-  single('fouldraw', 'fouldraw', 'Within-season percentile of free-throw rate (FTA per FGA).', 'FT rate', n1),
-  single(
-    'volume',
-    'volume',
-    'True shot volume: the within-season percentile of USG% × (1 − TOV%/100), hardened ^1.15. It is the share of possessions he turned into a SHOT or a trip to the line — the turnover slice is removed, because ballsec already charges him for those and counting them here priced the same possession twice.',
-    'USG% · TOV%',
-    n1,
-  ),
-  single('efficiency', 'efficiency', 'Within-season percentile of true-shooting percentage.', 'TS%', pc),
+  single('ft', 'ft', 'FT%', (x) => (x === null ? '—' : 'shown value is the stat itself')),
+  single('fouldraw', 'fouldraw', 'FT rate', n1),
+  single('volume', 'volume', 'USG% · TOV%', n1),
+  single('efficiency', 'efficiency', 'TS%', pc),
   {
     k: 'rimprot',
     title: 'rimprot',
-    formula:
-      'Rim protection is pure shot deterrence: 0.55 × block% + 0.25 × height + 0.20 × DBPM (within-season percentiles), plus a bonus when a big man holds defensive votes. From 2014 on it is blended with measured evidence: NBA tracking defended-FG% on shots inside 6 feet, where the rim is actually protected. Rebounding is its own attribute (drb) and is not counted here.',
     rows: (_p, v) => [
       { label: 'block %', value: n1(v[0]) },
       { label: 'height', value: ft(v[1]) },
@@ -141,8 +121,6 @@ const SECTIONS: Section[] = [
   {
     k: 'perdef',
     title: 'perdef',
-    formula:
-      'Perimeter/impact defense: anchored on defensive reputation (All-Defensive selections + DPOY vote shares over a career window, decaying 15%/yr), plus DBPM, the defense his team actually played, and size. Each stat counts once: steals belong to perimdisrupt, and minutes and usage are out of perdef entirely — playing time is not defense. Entry to the voted band is graded — a fading legend slides rather than falling off a cliff. Without votes the composite is shrunk toward the league middle, but from 2014 on it is replaced by measured evidence: NBA tracking defended-FG% as closest defender on shots from SIX feet out — the floater and pull-up range where slow defenders bleed, with the rim slice feeding rimprot instead. A thin sample is discounted toward neutral, and a man the league hunts every possession leans back on the composite — being targeted constantly is itself evidence.',
     rows: (_p, v) => [
       { label: 'defensive reputation (0–1)', value: n1(v[0]) },
       { label: 'DBPM', value: n1(v[1]) },
@@ -152,39 +130,23 @@ const SECTIONS: Section[] = [
       { label: 'tracking defended FG% 6 ft +', value: v[5] == null ? 'not tracked' : `${v[5] > 0 ? '+' : ''}${(100 * v[5]).toFixed(1)}%` },
       { label: 'shots defended (season)', value: v[7] ? `${v[7]} — ${Math.round(100 * Math.min(1, v[7] / 350))}% blend weight` : 'not tracked' },
     ],
-    note: (_p, v) =>
-      v[5] != null && (v[6] ?? 0) < 1
-        ? 'Measured on-ball evidence: opponents shot this much better or worse than expected against him, which replaces the no-vote shrinkage. How far it moves him depends on how many shots he actually defended.'
-        : v[4] === 1
-          ? 'No career All-D/DPOY votes — score shrunk toward the league middle.'
-          : (v[6] ?? 0) < 1
-            ? 'Partial voted-band membership: the selections are fading, so the score blends down smoothly.'
-            : null,
   },
-  single('perimdisrupt', 'perimdisrupt', 'Within-season percentile of steal rate.', 'STL%', n1),
-  single('playvol', 'playvol', 'Within-season percentile of assist rate.', 'AST%', n1),
+  single('perimdisrupt', 'perimdisrupt', 'STL%', n1),
+  single('playvol', 'playvol', 'AST%', n1),
   {
     k: 'ballsec',
     title: 'ballsec',
-    formula:
-      'Two readings of the same turnovers, blended 65/35 and inverted. The RATIO is TOV% × 25 ÷ max(10, USG% + 0.5 × AST%): turnovers measured against total responsibility — the scoring load plus half the creation load, because a passer’s turnovers belong to passes his usage never counted. The RAW is the plain TOV% percentile. The ratio alone let a big enough load excuse any number of them, so a man could cough it up sixteen times a hundred plays and still read secure because he was busy. Load excuses turnovers; it never excuses them completely.',
     rows: (_p, v) => [
       { label: 'TOV%', value: n1(v?.[0] ?? null) },
       { label: 'USG%', value: n1(v?.[1] ?? null) },
       { label: 'AST%', value: n1(v?.[2] ?? null) },
-      {
-        label: 'ratio: TOV% × 25 ÷ max(10, USG% + 0.5×AST%)',
-        value: v?.[0] == null ? '—' : n1(((v[0] ?? 13) * 25) / Math.max(10, (v[1] ?? 20) + 0.5 * (v[2] ?? 15))),
-      },
-      { label: 'blend', value: '0.65 × ratio percentile + 0.35 × TOV% percentile, inverted' },
+      { label: 'ratio', value: v?.[0] == null ? '—' : n1(((v[0] ?? 13) * 25) / Math.max(10, (v[1] ?? 20) + 0.5 * (v[2] ?? 15))) },
     ],
   },
-  single('orb', 'orb', 'Within-season percentile of offensive rebounds per 100 possessions.', 'ORB /100', n1),
-  single('drb', 'drb', 'Within-season percentile of defensive-rebound rate.', 'DRB%', n1),
-  single('discipline', 'discipline', 'Inverse within-season percentile of personal fouls per 100 possessions.', 'PF /100', n1),
-  single('durability', 'durability', 'Within-season percentile of minutes played.', 'minutes', (x) =>
-    x === null ? '—' : String(x),
-  ),
+  single('orb', 'orb', 'ORB /100', n1),
+  single('drb', 'drb', 'DRB%', n1),
+  single('discipline', 'discipline', 'PF /100', n1),
+  single('durability', 'durability', 'minutes', (x) => (x === null ? '—' : String(x))),
 ]
 
 export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
@@ -237,12 +199,6 @@ export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
             <span className="label">Season smoothing</span>
             <span className="adv-val">{mine.smooth ? `${Math.round(100 * mine.smooth.w[0])}%` : '100%'}</span>
           </div>
-          <div className="adv-formula">
-            A single season on modest volume is noisy, so every RATING on this card is a weighted blend of the season and
-            its neighbours — 60% this year, 20% the year before, 20% the year after, renormalised when a neighbour is
-            missing. An injured year is reached over — if the next season missed the minutes floor, the one after it takes that weight — so 75/25 now means there is genuinely nothing on that side. The season line below the card is never blended:
-            those are the real numbers he put up that year.
-          </div>
           {mine.smooth ? (
             <>
               <div className="adv-rows">
@@ -277,30 +233,21 @@ export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="adv-note">The neighbours agreed with this season: the blend moved nothing.</div>
-              )}
+              ) : null}
             </>
-          ) : (
-            <div className="adv-note">
-              No qualifying neighbour season — he cleared the minutes floor in {p.peak_season} and not in the years either
-              side, so this card stands alone, unblended.
-            </div>
-          )}
+          ) : null}
         </div>
       ) : null}
 
       {mine
         ? SECTIONS.map((sec) => {
             const v = mine[sec.k]
-            const note = v && sec.note ? sec.note(p, v) : null
             return (
               <div className="card adv-card" key={sec.k}>
                 <div className="card-head">
                   <span className="label">{sec.title}</span>
                   <span className="adv-val">{p.attrs[sec.k]}</span>
                 </div>
-                <div className="adv-formula">{sec.formula}</div>
                 {v && sec.rows(p, v).length ? (
                   <div className="adv-rows">
                     {sec.rows(p, v).map((r) => (
@@ -311,7 +258,6 @@ export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
                     ))}
                   </div>
                 ) : null}
-                {note ? <div className="adv-note">{note}</div> : null}
               </div>
             )
           })
