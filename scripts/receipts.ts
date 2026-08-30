@@ -24,7 +24,7 @@ import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, rati
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 import { seasonGauges as gauges64 } from '../src/engine/gauges'
-import { startingFive as bestFive64 } from '../src/engine/bestfive'
+import { startingFive as bestFive64, winsOf as winsOf66 } from '../src/engine/bestfive'
 import { WHEEL as WHEEL64 } from '../src/data/wheel'
 import { _reset as achReset, ACHIEVEMENTS, achSettleSeries, achState } from '../src/state/achievements'
 import type { Progress as Prog63 } from '../src/state/campaign'
@@ -1699,6 +1699,91 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '66': () => {
+    console.log(`${EOL}recal_66 — THE ANCHOR SUITE, MEASURED AND STOPPED (design-side round "64"; our 64/65 were taken)`)
+    note('Three items. (1) and (2) were ALREADY LAW before the round arrived; (3) is a measurement with')
+    note('its own protocol: "if a named band fails after items 1+2, print that team\'s five-man engine')
+    note('decomposition and STOP for a ruling rather than tuning blind." Bands failed. We stopped.')
+    note('No pipeline change, no version bump: this round alters nothing. Tool: scripts/anchor-suite.ts.')
+    // ---- (1) team screens compute through the engine — law since our recal_64 ----
+    src('(1) Team db renders TeamDials', io('src/ui/TeamDb.tsx'), /<TeamDials five=\{detail\.fielded\} tone="them" vs=\{picked\.y\}/, 'already law (our recal_64)')
+    src('(1) TeamDials reads the gauges', io('src/ui/MatchupPanel.tsx'), /vs === 'field' \? fieldGauges\(five\) : seasonGauges\(five, vs\)/, 'season/field basis, labeled on the dial')
+    src('(1) gauges read ratings100', io('src/engine/gauges.ts'), /ratings100\(/, 'offense.ts teamOffense/defenseVs — one engine, one math')
+    // ---- (2) the named prior rounds are live ----
+    src('(2) their "r62" = our recal_64 fit-pays', io('src/engine/offense.ts'), /FIT_WIDEN: 2\.7,/, 'live')
+    src('(2) their "r48" = the perdef 0.30 Overall blend', RATINGS, /ALLSHOT_W = 0\.30/, 'live (that round shipped no tags)')
+    src('(2) tags: Two-way big', POOL, /tag: 'Two-way big'/, 'live in pool.ts')
+    src('(2) tags: Co-star', POOL, /tag: 'Co-star'/, 'live in pool.ts')
+    const five66 = (y: number, nm: string) => {
+      const t = WHEEL64.find((x) => x.y === y && x.team.includes(nm))!
+      return { team: t.team, five: bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x) }
+    }
+    const kn = five66(2025, 'Knicks').five
+    line('(2) Knicks \'25 carry three Balanced HONESTLY', kn.map((p) => archetype(p)).join(' · '), '3x Balanced + Off. superstar + Stretch big, on their own attrs', kn.filter((p) => archetype(p) === 'Balanced').length === 3 && archetype(g("Jalen Brunson '25")) === 'Offensive superstar' && archetype(g("Karl-Anthony Towns '25")) === 'Stretch big')
+    // ---- (3) the anchor suite, measured on the post-65 pool ----
+    const BANDS66: [number, string, [number | null, number | null], [number | null, number | null]][] = [
+      [2026, 'Thunder', [88, null], [95, null]],
+      [2025, 'Knicks', [65, 80], [35, 55]],
+      [2024, 'Celtics', [90, null], [85, null]],
+      [2025, 'Wizards', [null, 24], [null, 24]],
+      [2013, 'Grizzlies', [40, 60], [85, null]],
+    ]
+    const inB = (v: number, [lo, hi]: [number | null, number | null]) => (lo === null || v >= lo) && (hi === null || v <= hi)
+    const bTxt = ([lo, hi]: [number | null, number | null]) => (lo !== null && hi !== null ? `${lo}-${hi}` : lo !== null ? `${lo}+` : `<${(hi ?? 0) + 1}`)
+    const MEASURED66: Record<string, [number, number]> = { Thunder: [62, 99], Knicks: [41, 26], Celtics: [25, 87], Wizards: [19, 1], Grizzlies: [28, 85] }
+    let offIn = 0
+    let defIn = 0
+    for (const [y, nm, ob, db] of BANDS66) {
+      const { team, five } = five66(y, nm)
+      const gg = gauges64(five, y)
+      if (inB(gg.off, ob)) offIn++
+      if (inB(gg.def, db)) defIn++
+      const pin = MEASURED66[nm]
+      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (stop-state pin)`, gg.off === pin[0] && gg.def === pin[1])
+      if (!inB(gg.off, ob) || !inB(gg.def, db))
+        for (const p of five)
+          note(`    ${p.name.padEnd(26)} OVR ${p.ovr} O ${String(p.o_ovr).padStart(2)} D ${String(p.d_ovr).padStart(2)} ${archetype(p).padEnd(18)} eff ${p.attrs.efficiency} vol ${p.attrs.volume} playvol ${p.attrs.playvol} 3pt ${p.attrs['3pt']} perdef ${p.attrs.perdef} rimprot ${p.attrs.rimprot} disc ${p.attrs.discipline}`)
+    }
+    line('  CALIBRATION TARGET: all five anchors in band', `OFF ${offIn}/5 in band · DEF ${defIn}/5 in band`, 'OFF 5/5 · DEF 5/5 — NOT REACHED, STOPPED', offIn === 5 && defIn === 5)
+    // ---- the 2025 Pearson gate ----
+    const rows66: { w: number; o: number; d: number }[] = []
+    let excl66 = 0
+    for (const t of WHEEL64.filter((x) => x.y === 2025)) {
+      const five = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (five.length !== 5) {
+        excl66++
+        continue
+      }
+      const r = ratings100(five)
+      rows66.push({ w: winsOf66(t.rec), o: r.offRaw, d: r.drtgRef })
+    }
+    const pear = (xs: number[], ys: number[]) => {
+      const n = xs.length
+      const mx = xs.reduce((s, v) => s + v, 0) / n
+      const my = ys.reduce((s, v) => s + v, 0) / n
+      let num = 0
+      let dx = 0
+      let dy = 0
+      for (let i = 0; i < n; i++) {
+        num += (xs[i] - mx) * (ys[i] - my)
+        dx += (xs[i] - mx) ** 2
+        dy += (ys[i] - my) ** 2
+      }
+      return num / Math.sqrt(dx * dy)
+    }
+    const w66 = rows66.map((r) => r.w)
+    const rOff66 = pear(rows66.map((r) => r.o), w66)
+    const rDef66 = pear(rows66.map((r) => -r.d), w66)
+    line('  2025 Pearson, defense side', `-drtgRef r = ${rDef66.toFixed(3)} (n=${rows66.length}, ${excl66} excluded)`, '>= 0.6 — PASSES', rDef66 >= 0.6)
+    line('  CALIBRATION GATE: offense side r >= 0.6', `offRaw r = ${rOff66.toFixed(3)}`, 'NOT REACHED — the offensive index is the patient', rOff66 >= 0.6)
+    // ---- THE STOP ----
+    line('THE STOP honored: zero tuning shipped', 'no constant, weight, tax or band changed by this round', 'per the round\'s own protocol', true)
+    note('  The defense side of the engine correlates with reality (r 0.607) and holds 4/5 bands; the')
+    note('  offense side holds 1/5 and correlates at 0.279. The failure is systemic to the OFFENSIVE index')
+    note('  (offRaw compresses: champions ~128-131 vs cellar ~125-127), not to any one team\'s cards. Per')
+    note('  the round: decompositions printed above; the offensive index goes back for a design-side')
+    note('  ruling. Scout\'s pre-65 baseline reproduced EXACTLY post-65 (recal_65 moved zero ratings).')
   },
   '65': () => {
     console.log(`${EOL}recal_65 — THE DFG FLOORS READ THE 6FT+ SERIES (design-side round "63"; our 63/64 were taken)`)
