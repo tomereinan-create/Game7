@@ -41,16 +41,37 @@ function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean;
   )
 }
 
+/** All-years search stops here — past this many rows the query is doing the work, not the reader. */
+const CAP = 60
+
 /** The team database: pick a year, pick a team, read their best five and its ratings. */
 export function TeamDb({ onBack }: { onBack: () => void }) {
   const [year, setYear] = useState(YEARS[0])
   const [picked, setPicked] = useState<TeamSeason | null>(null)
   const [open, setOpen] = useState<string | null>(null)
+  const [q, setQ] = useState('')
+  const [conf, setConf] = useState<'E' | 'W' | null>(null)
+  const [sort, setSort] = useState<'rec' | 'az'>('rec')
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  const teams = useMemo(() => WHEEL.filter((t) => t.y === year).sort((a, b) => winsOf(b.rec) - winsOf(a.rec)), [year])
+  const teams = useMemo(
+    () =>
+      WHEEL.filter((t) => t.y === year && (!conf || t.c === conf)).sort((a, b) =>
+        sort === 'az' ? a.team.localeCompare(b.team) : winsOf(b.rec) - winsOf(a.rec),
+      ),
+    [year, conf, sort],
+  )
+
+  // A non-empty query leaves the year rail behind: every season of every matching franchise, newest first.
+  const found = useMemo(() => {
+    const s = q.trim().toLowerCase()
+    if (!s) return null
+    return WHEEL.filter((t) => (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s))).sort(
+      (a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec),
+    )
+  }, [q, conf])
 
   const detail = useMemo(() => {
     if (!picked) return null
@@ -70,32 +91,101 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
 
       {!picked ? (
         <>
-          <div className="yr-rail">
-            {YEARS.map((y) => (
-              <button key={y} className={`sortb ${y === year ? 'on' : ''}`} onClick={() => setYear(y)}>
-                {y}
-              </button>
-            ))}
-          </div>
-          <div className="section-rule">
-            <span>
-              {year} · {teams.length} teams · best record first
-            </span>
-            <i />
-          </div>
-          {teams.map((t) => (
-            <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
-              <span className="lwho">
-                <b>{t.team}</b>
-                <i>
-                  {t.ab}
-                  {t.rec ? ` · ${t.rec}` : ''}
-                  {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on the card pool
-                </i>
-              </span>
-              <span className="tdb-go">→</span>
+          <label className="search">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <circle cx="6" cy="6" r="4.5" stroke="#6E6656" strokeWidth="1.5" />
+              <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="#6E6656" strokeWidth="1.5" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search a team…"
+              value={q}
+              onChange={(e) => {
+                setQ(e.target.value)
+                window.scrollTo(0, 0)
+              }}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </label>
+          <div className="filterbar">
+            <button className={`sortb ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
+              East
             </button>
-          ))}
+            <button className={`sortb ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
+              West
+            </button>
+            {!found ? (
+              <>
+                <button className={`sortb ${sort === 'rec' ? 'on' : ''}`} onClick={() => setSort('rec')}>
+                  Best record
+                </button>
+                <button className={`sortb ${sort === 'az' ? 'on' : ''}`} onClick={() => setSort('az')}>
+                  A–Z
+                </button>
+              </>
+            ) : (
+              <span className="filtercount">
+                {found.length} season{found.length === 1 ? '' : 's'}
+              </span>
+            )}
+          </div>
+
+          {found ? (
+            <>
+              <div className="section-rule">
+                <span>
+                  All years · newest first
+                  {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
+                </span>
+                <i />
+              </div>
+              {found.slice(0, CAP).map((t) => (
+                <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
+                  <span className="lwho">
+                    <b>{t.team}</b>
+                    <i>
+                      ’{String(t.y % 100).padStart(2, '0')} · {t.ab}
+                      {t.rec ? ` · ${t.rec}` : ''}
+                    </i>
+                  </span>
+                  <span className="tdb-go">→</span>
+                </button>
+              ))}
+              {found.length > CAP ? <div className="cap hint">{(found.length - CAP).toLocaleString()} more seasons match — keep typing to narrow it.</div> : null}
+              {found.length === 0 ? <div className="cap hint">No team by that name in the book.</div> : null}
+            </>
+          ) : (
+            <>
+              <div className="yr-rail">
+                {YEARS.map((y) => (
+                  <button key={y} className={`sortb ${y === year ? 'on' : ''}`} onClick={() => setYear(y)}>
+                    {y}
+                  </button>
+                ))}
+              </div>
+              <div className="section-rule">
+                <span>
+                  {year} · {teams.length} teams · {sort === 'az' ? 'A to Z' : 'best record first'}
+                  {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
+                </span>
+                <i />
+              </div>
+              {teams.map((t) => (
+                <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
+                  <span className="lwho">
+                    <b>{t.team}</b>
+                    <i>
+                      {t.ab}
+                      {t.rec ? ` · ${t.rec}` : ''}
+                      {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on the card pool
+                    </i>
+                  </span>
+                  <span className="tdb-go">→</span>
+                </button>
+              ))}
+            </>
+          )}
         </>
       ) : detail ? (
         <>
