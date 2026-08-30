@@ -130,7 +130,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
           <button className="pc-adv" onClick={() => setAdv(true)}>
             Advanced →
           </button>
-          <HeatHex men={[p]} size={118} />
+          <HeatHex men={[p]} size={100} />
         </div>
         )}
 

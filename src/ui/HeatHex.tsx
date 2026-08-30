@@ -69,7 +69,7 @@ export function HeatHex({ men, size = 180, labels = true, ungated = false }: { m
                 y={y + 2.5}
                 textAnchor="middle"
                 fontFamily="var(--mono)"
-                fontSize="6.5"
+                fontSize="7.4"
                 letterSpacing="0.08em"
                 fill="var(--muted)"
               >
