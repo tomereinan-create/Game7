@@ -3,6 +3,7 @@ import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
 import { Face } from './Face'
+import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
 
@@ -135,6 +136,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
           <button className="pc-adv" onClick={() => setAdv(true)}>
             Advanced →
           </button>
+          <HeatHex men={[p]} size={118} />
         </div>
         )}
 

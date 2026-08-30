@@ -2389,6 +2389,21 @@ button {
 .face { flex: none; display: block; }
 .face-tile { flex: none; display: grid; place-items: center; width: 92px; height: 92px; border-radius: 10px; background: var(--wash); border: 1px solid var(--line); overflow: hidden; }
 
+/* ---- the heat hexagon ---- */
+.heathex { display: block; }
+.pc-rail .heathex { margin: 6px auto 0; }
+.dhex { display: grid; justify-items: center; padding: 8px 0 2px; }
+.au-hex { display: grid; justify-items: center; padding: 2px 0 6px; }
+.cmp-hexwrap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; padding: 8px 0 10px; }
+.cmp-hexleg { display: grid; gap: 6px; }
+.cmp-leg { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; }
+.cmp-leg .face { border-radius: 50%; overflow: hidden; background: var(--wash); }
+.cmp-leg.t0 { color: var(--you); }
+.cmp-leg.t1 { color: var(--them); }
+.cmp-leg.t2 { color: var(--ink-2); }
+.cmp-leg.t3 { color: var(--faint); }
+.cmp-card .face { margin: 0 auto 2px; border-radius: 50%; overflow: hidden; background: var(--wash); }
+
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
 .ct-floor { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -2447,8 +2462,9 @@ button {
 
 @media (max-width: 560px) {
   .pc-body { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .pc-rail { flex-direction: row; }
+  .pc-rail { flex-direction: row; flex-wrap: wrap; justify-content: center; }
   .pc-rail .pc-big { flex: 1; }
+  .pc-rail .heathex { margin: 2px auto 0; }
   .pc-adv { margin-top: 0; flex: none; width: 76px; }
   .pc-tag { margin-left: 0; }
   .pc-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }

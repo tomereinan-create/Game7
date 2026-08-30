@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
+import { useUserMode } from '../state/viewmode'
 import type { AttrKey, Player, StatLine } from '../engine/types'
+import { Face } from './Face'
+import { HeatHex } from './HeatHex'
 import { OVR_TIP } from './MatchupPanel'
 import { GROUPS, LINES } from './Stat'
 
@@ -37,6 +40,7 @@ const ht = (h: number) => (h ? `${Math.floor(h / 12)}'${h % 12}"` : '—')
 export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: () => void }) {
   const [names, setNames] = useState<string[]>(initial.slice(0, COMPARE_MAX))
   const [q, setQ] = useState('')
+  const user = useUserMode()
 
   const five = useMemo(() => names.map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[], [names])
   const hits = useMemo(() => {
@@ -119,6 +123,7 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
                 <button className="cmp-drop" onClick={() => drop(p.name)} aria-label={`Remove ${p.name}`}>
                   ×
                 </button>
+                <Face player={p} size={48} />
                 <b>{short(p.name)}</b>
                 <span className="cmp-yr">{p.peak_season}</span>
                 <i className="cmp-tag">{archetype(p)}</i>
@@ -140,6 +145,28 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
             ))}
             {pair ? <div className="cmp-rowlabel head gapcol">GAP</div> : null}
           </div>
+
+          {/* the shapes on one grid: gold, ice, then neutral — a fourth man is listed, not drawn */}
+          {!user ? (
+            <div className="card cmp-block">
+              <div className="card-head">
+                <span className="label">The shape</span>
+                <span className="cap">fuller corner = better there</span>
+              </div>
+              <div className="cmp-hexwrap">
+                <HeatHex men={five} size={200} />
+                <div className="cmp-hexleg">
+                  {five.map((p, i) => (
+                    <span key={p.name} className={`cmp-leg t${Math.min(i, 3)}`}>
+                      <Face player={p} size={20} />
+                      {short(p.name)}
+                      {i >= 3 ? ' — not drawn' : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           {GROUPS.map((g) => (
             <div className="card cmp-block" key={g.title}>

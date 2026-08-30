@@ -2,6 +2,7 @@ import { useState } from 'react'
 import STATS from '../data/stats.json'
 import type { AttrKey, Player, StatLine } from '../engine/types'
 import { Advanced } from './Advanced'
+import { HeatHex } from './HeatHex'
 
 export const LINES = STATS as Record<string, StatLine | null>
 
@@ -132,6 +133,9 @@ export function DetailGrid({ p, mode = 'full' }: { p: Player; mode?: 'full' | 's
       ) : null}
       {mode === 'stats' ? null : (
         <>
+      <span className="dhex">
+        <HeatHex men={[p]} size={124} />
+      </span>
       {inferred ? <span className="dnote">* rim/mid inferred (pre-1997)</span> : null}
       <span className="dnote">
         Ratings below are a season blend — 60% {p.peak_season}, 20% each side. The box line above is the real season,

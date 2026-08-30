@@ -7,6 +7,7 @@ import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
+import { HeatHex } from './HeatHex'
 import { BUDGET, machineTakes, SLOTS, type MachineCtx, type Skill } from './machine'
 import { PlayerCard } from './PlayerCard'
 import { LINES } from './Stat'
@@ -363,6 +364,10 @@ export function Auction({ onHome }: { onHome: () => void }) {
               onClick={() => setInfo(!info)}
               onInfo={() => setInfo(!info)}
             />
+          </div>
+          {/* the lot's shape at a glance — ungated, same open book as the dials */}
+          <div className="au-hex">
+            <HeatHex men={[man]} size={110} ungated />
           </div>
           {assign ? (
             <div className="au-actions one">
