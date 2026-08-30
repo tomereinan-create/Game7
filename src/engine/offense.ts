@@ -34,7 +34,14 @@ export const KNOBS = {
   STACK_MIN: 0.9, // per-player combined interaction multiplier clamp — never remove
   STACK_MAX: 1.12,
   FT_POINTS: 0.06, // fouldraw × FT manufactured points
-  ORB_PER_PT: 0.0012, // second-chance multiplier per point of orb above 50
+  // recal_74 (his go: "Run 74" — the correction recal_70 recorded and recal_73 proposed): the
+  // channel's ABSOLUTE SCALE halves, 0.0012 -> 0.0006. External anchor: real second-chance scoring
+  // separates the league's best and worst crash teams by ~6 pts/100; this channel was spreading
+  // ~12-13 index points between them (Philly '88 +12.8, Houston '26 +12.4 vs quiet-glass fives at
+  // ~+1), roughly double reality. Halving the per-point price brings the measured full-wheel spread
+  // to ~6 while touching no team-specific term — the orb aggregation, pivot, and the r70 miss-share
+  // factor are all unchanged. Mirrored exactly in data/team_rating.py (the parity test gates it).
+  ORB_PER_PT: 0.0006, // second-chance multiplier per point of orb above 50
   ORB_PIVOT: 50,
   // recal_70 (our own round — the design side titled "the ORB second-chance channel" and never sent
   // the body): second chances are EXTRA POSSESSIONS. Their VALUE is the team's own conversion — the
@@ -542,7 +549,8 @@ export const REF_FIVE: Player[] = [
  * walls ~90+ DEF; bad-defense extremes compress upward a little (accepted).
  */
 export const RATING_SCALE = { K_OFF: 3.0, K_DEF: 8.0 } as const
-const REF_OFF = 128.3   // re-derived after recal_13/14: the median of the 120 campaign levels
+const REF_OFF = 124.03  // re-derived after recal_74's ORB-scale halving lowered the league level
+// (the constant's own definition below): the median of the 120 campaign levels
 // sits at 128.3 raw offense once bench rates shrink toward the middle, so that is what reads 50.
 // Mirrors data/team_rating.py (the parity test enforces the pair).
 // recal_60 PARITY CALIBRATION: the defensive evidence campaign (DFG floors, DBPM relief, voted
