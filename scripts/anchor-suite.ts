@@ -23,12 +23,17 @@ import type { Player } from '../src/engine/types'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 
-function fiveOf(year: number, name: string): { team: string; five: Player[] } {
+function fiveOf(year: number, name: string): { team: string; five: Player[] } | null {
   const t = WHEEL.find((x) => x.y === year && x.team.includes(name))
   if (!t) throw new Error(`no ${name} in ${year} on the wheel`)
   const roster = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)
   const five = startingFive(roster).five.filter((p): p is Player => !!p)
-  if (five.length !== 5) throw new Error(`${t.team} ${year}: only ${five.length} men fieldable`)
+  if (five.length !== 5) {
+    // recal_69 (the one-team-per-season data law) can shrink a seller's roster below five
+    // fieldable pool men; the band is then unmeasurable, not failed.
+    console.log(`${t.team} '${String(year % 100).padStart(2, '0')}  cannot field five (${five.length} fieldable) — band UNMEASURABLE, excluded`)
+    return null
+  }
   return { team: t.team, five }
 }
 
@@ -54,7 +59,12 @@ const bandText = ([lo, hi]: [number | null, number | null]) => (lo !== null && h
 console.log('\n=== (a) ANCHOR GAUGES, within season ===')
 let anyFail = false
 for (const b of BANDS) {
-  const { team, five } = fiveOf(b.year, b.name)
+  const r = fiveOf(b.year, b.name)
+  if (!r) {
+    anyFail = true
+    continue
+  }
+  const { team, five } = r
   const g = seasonGauges(five, b.year)
   const offOk = inBand(g.off, b.off)
   const defOk = inBand(g.def, b.def)
