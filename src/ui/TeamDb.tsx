@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { seasonGauges } from '../engine/gauges'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
@@ -97,9 +97,16 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [sort, setSort] = useState<'rec' | 'az' | 'off' | 'def'>('rec')
   const [minQ, setMinQ] = useState('')
   const [maxQ, setMaxQ] = useState('')
+  // Opening a team starts at the top of its card (his report: the list's scroll carried over);
+  // walking back restores the list right where he left it.
+  const listScroll = useRef(0)
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, picked ? 0 : listScroll.current)
+  }, [picked])
+  const pick = (t: TeamSeason) => {
+    listScroll.current = window.scrollY
+    setPicked(t)
+  }
 
   const rating = sort === 'off' || sort === 'def' ? sort : null
 
@@ -239,7 +246,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 <i />
               </div>
               {found.slice(0, CAP).map((t) => (
-                <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
+                <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
                   <span className="lwho">
                     <b>{t.team}</b>
                     <i>
@@ -264,7 +271,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 <i />
               </div>
               {(year === null ? teams.slice(0, CAP) : teams).map(({ t, g }) => (
-                <button key={t.team + t.y} className="lrow" onClick={() => setPicked(t)}>
+                <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
                   <span className="lwho">
                     <b>{t.team}</b>
                     <i>
