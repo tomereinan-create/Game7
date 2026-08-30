@@ -58,6 +58,14 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const [loadFor, setLoadFor] = useState<0 | 1 | null>(null)
   const [loadYear, setLoadYear] = useState(YEARS[0])
   const [loadSort, setLoadSort] = useState<'rec' | 'ovr'>('rec')
+  const [loadFlip, setLoadFlip] = useState(false)
+  const pickLoadSort = (k: 'rec' | 'ovr') => {
+    if (k === loadSort) setLoadFlip((f) => !f)
+    else {
+      setLoadSort(k)
+      setLoadFlip(false)
+    }
+  }
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<SeriesResult | null>(null)
 
@@ -224,17 +232,26 @@ export function Versus({ onHome }: { onHome: () => void }) {
             ))}
           </div>
           <div className="filterbar">
-            <button className={`sortb ${loadSort === 'rec' ? 'on' : ''}`} onClick={() => setLoadSort('rec')}>
+            <button className={`sortb ${loadSort === 'rec' ? (loadFlip ? 'on asc' : 'on') : ''}`} onClick={() => pickLoadSort('rec')}>
               Best record
             </button>
-            <button className={`sortb ${loadSort === 'ovr' ? 'on' : ''}`} onClick={() => setLoadSort('ovr')}>
+            <button className={`sortb ${loadSort === 'ovr' ? (loadFlip ? 'on asc' : 'on') : ''}`} onClick={() => pickLoadSort('ovr')}>
               OVR
             </button>
           </div>
           {WHEEL.filter((t) => t.y === loadYear)
-            .sort((a, b) =>
-              loadSort === 'ovr' ? (ovrOf(b) ?? 0) - (ovrOf(a) ?? 0) || winsOf(b.rec) - winsOf(a.rec) : winsOf(b.rec) - winsOf(a.rec),
-            )
+            .sort((a, b) => {
+              if (loadSort === 'ovr') {
+                const oa = ovrOf(a)
+                const ob = ovrOf(b)
+                // "—" teams stay last in both directions
+                if (oa === null || ob === null) return (oa === null ? 1 : 0) - (ob === null ? 1 : 0)
+                const d = ob - oa || winsOf(b.rec) - winsOf(a.rec)
+                return loadFlip ? -d : d
+              }
+              const d = winsOf(b.rec) - winsOf(a.rec)
+              return loadFlip ? -d : d
+            })
             .map((t) => (
               <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
                 <span className="lwho">

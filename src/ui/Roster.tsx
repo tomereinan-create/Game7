@@ -56,6 +56,16 @@ const OVERSCAN = 12
 
 export function Roster({ onBack }: { onBack: () => void }) {
   const [key, setKey] = useState<Key>('ovr')
+  // A second tap on the active chip flips the order; picking a new key starts best-first (A-first) again.
+  const [flip, setFlip] = useState(false)
+  const pickKey = (k: Key) => {
+    if (k === key) setFlip((f) => !f)
+    else {
+      setKey(k)
+      setFlip(false)
+    }
+  }
+  const chip = (k: Key) => `sortb ${key === k ? (flip ? 'on asc' : 'on') : ''}`
   const [q, setQ] = useState('')
   const [open, setOpen] = useState<string | null>(null)
   /** The comparison tray: names picked off the list, in the order they were picked. */
@@ -100,10 +110,11 @@ export function Roster({ onBack }: { onBack: () => void }) {
       }
       return true
     })
-    return list.sort((a, b) =>
-      key === 'name' ? a.name.localeCompare(b.name) : valueOf(b, key) - valueOf(a, key) || a.name.localeCompare(b.name),
-    )
-  }, [key, q, team, yrFrom, yrTo, statK, statOp, statV])
+    return list.sort((a, b) => {
+      const d = key === 'name' ? a.name.localeCompare(b.name) : valueOf(b, key) - valueOf(a, key) || a.name.localeCompare(b.name)
+      return flip ? -d : d
+    })
+  }, [key, flip, q, team, yrFrom, yrTo, statK, statOp, statV])
 
   useEffect(() => {
     const el = sheet.current
@@ -234,11 +245,11 @@ export function Roster({ onBack }: { onBack: () => void }) {
 
       <div className="rail-wrap">
         <div className="rail">
-          <button className={`sortb ${key === 'name' ? 'on' : ''}`} onClick={() => setKey('name')}>
+          <button className={chip('name')} onClick={() => pickKey('name')}>
             A–Z
           </button>
           {RAIL.map((r) => (
-            <button key={r.k} className={`sortb ${key === r.k ? 'on' : ''}`} onClick={() => setKey(r.k)}>
+            <button key={r.k} className={chip(r.k)} onClick={() => pickKey(r.k)}>
               {r.label}
             </button>
           ))}
