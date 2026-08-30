@@ -27,10 +27,11 @@ export interface Tactics {
    */
   style: Style
   /**
-   * How the five defends. Matchup is the default and free. Drop pays with a tower behind it and an
-   * opponent who cannot shoot; switch is only as good as the worst man caught in it.
+   * How the five defends (recal_75, his ruling: "add real defensive schemes with fit numbers").
+   * Matchup is the default and free; the other five each carry a FIT 0-99 off the cards and a
+   * price on the same law the playstyles use. See SCHEMES / schemeFit below.
    */
-  scheme: 'matchup' | 'drop' | 'switch'
+  scheme: Scheme
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -38,6 +39,36 @@ export interface Tactics {
   /** Gang the defensive glass. Pays with rebounders, costs a little rim-running offense. */
   crashDef: boolean
 }
+
+/**
+ * DEFENSIVE SCHEMES v2 (recal_75, his ruling: "add real defensive schemes with fit numbers").
+ * Defense was one thin control against the offense's seven playstyles; it is now the other half of
+ * the plan, on the SAME convention: every scheme scores a FIT 0-99 from the five's own cards and
+ * pays 0.11 x (fit - 55) minus the deviation tax, clamped +-2.5. Matchup is the free default.
+ *
+ * THE SET, and what each is actually reading (scripts/schemes75.ts is the design probe):
+ *   drop    a tower plays behind the action   -> best RIMPROT + team DISCIPLINE; their shooting hurts
+ *   switch  everyone guards everyone          -> WORST perdef + team perdef + uniform HEIGHT;
+ *                                                kills their pnr, dies to a post mismatch
+ *   blitz   trap the ball-handler             -> PERIMDISRUPT + DURABILITY + DISCIPLINE (fouls);
+ *                                                feasts on a loose ball-dominant star
+ *   zone    size and the glass                -> HEIGHT + DRB + best RIMPROT; dies to shooting
+ *                                                and to their offensive board
+ *   ice     no middle, force baseline         -> team PERDEF + DISCIPLINE + weak-side RIMPROT;
+ *                                                beats a pnr team, concedes the long two
+ * CASUALTIES, measured not assumed: PRESS reads as blitz (r 0.79 — hands and legs with the foul
+ * cost removed) and PACK-THE-PAINT reads as zone (r 0.86). Two names for one call is a worse panel
+ * than five honest ones, so they were cut; the probe keeps the evidence.
+ */
+export type Scheme = 'matchup' | 'drop' | 'switch' | 'blitz' | 'zone' | 'ice'
+export const SCHEMES: { key: Scheme; label: string }[] = [
+  { key: 'matchup', label: 'matchup' },
+  { key: 'drop', label: 'drop coverage' },
+  { key: 'switch', label: 'switch everything' },
+  { key: 'blitz', label: 'blitz the handler' },
+  { key: 'zone', label: 'zone' },
+  { key: 'ice', label: 'ice / no middle' },
+]
 
 export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
 export const STYLES: { key: Style; label: string }[] = [
@@ -125,6 +156,8 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     playmaker: t.playmaker && names.includes(t.playmaker) ? t.playmaker : null,
     // a save from the inside/outside era carries a style that no longer exists
     style: STYLES.some((x) => x.key === t.style) ? t.style : 'balanced',
+    // ...and a pre-recal_75 save can carry a scheme that never existed, or one since cut
+    scheme: SCHEMES.some((x) => x.key === t.scheme) ? t.scheme : 'matchup',
   }
 }
 
@@ -193,6 +226,106 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[]): numbe
       return 0.45 * avg((x) => x.perimdisrupt) + 0.3 * avg((x) => x.durability) + 0.25 * opp
     }
   }
+}
+
+/**
+ * SCHEME FIT (recal_75) — the defensive mirror of styleFit, and read the same way: 0-99, where a
+ * typical five in a typical matchup sits ~57 and the price crosses zero just above it.
+ *
+ * Each scheme is SHAPE + OPPONENT DELTA. Shape is what the five brings and is all that is known on
+ * the My team screen; the delta is signed, centred on zero, and is the scheme reading THIS opponent
+ * — the whole point of calling one (drop against shooters is not drop against a post team). With no
+ * opponent the delta is simply absent, so the number still means "how well we are built for it".
+ *
+ * The raw shapes live on different scales (a tower's rimprot runs high, a weakest-link perdef runs
+ * low), so each is centred and scaled onto the common axis by SHAPE_CAL. Those constants are
+ * MEASURED, not chosen: scripts/schemes75.ts prints the mean and p10-p90 half-span of every shape
+ * over 4,000 random fives, and the scale is 13 / half-span so all five spread alike. Without this
+ * the panel would recommend drop or zone in 98% of matchups purely because their raw numbers are
+ * bigger — the probe measured exactly that before the centring was added. Re-run it after any card
+ * change that moves the defensive attributes.
+ */
+const SHAPE_CAL: Record<Exclude<Scheme, 'matchup'>, { mean: number; scale: number; opp: number }> = {
+  drop: { mean: 73.09, scale: 1.207, opp: 4.64 },
+  switch: { mean: 48.17, scale: 1.557, opp: -4.72 },
+  blitz: { mean: 49.27, scale: 1.372, opp: -1.72 },
+  zone: { mean: 64.39, scale: 1.04, opp: 5.13 },
+  ice: { mean: 63.65, scale: 1.873, opp: -2.84 },
+}
+const heightIdx = (five: Player[]) => clamp((mean(five, (p) => p.attrs.height) - 71) * 7, 0, 100)
+
+function schemeShape(scheme: Exclude<Scheme, 'matchup'>, five: Player[]): number {
+  const a = five.map((p) => p.attrs)
+  switch (scheme) {
+    case 'drop':
+      return 0.62 * Math.max(...a.map((x) => x.rimprot)) + 0.38 * mean(five, (p) => p.attrs.discipline)
+    case 'switch': {
+      const hs = a.map((x) => x.height)
+      return (
+        0.55 * Math.min(...a.map((x) => x.perdef)) +
+        0.25 * mean(five, (p) => p.attrs.perdef) +
+        0.2 * clamp(100 - 6 * (Math.max(...hs) - Math.min(...hs)), 0, 100)
+      )
+    }
+    case 'blitz':
+      return 0.5 * mean(five, (p) => p.attrs.perimdisrupt) + 0.25 * mean(five, (p) => p.attrs.durability) + 0.25 * mean(five, (p) => p.attrs.discipline)
+    case 'zone':
+      return 0.35 * heightIdx(five) + 0.3 * mean(five, (p) => p.attrs.drb) + 0.35 * Math.max(...a.map((x) => x.rimprot))
+    case 'ice':
+      return 0.55 * mean(five, (p) => p.attrs.perdef) + 0.25 * mean(five, (p) => p.attrs.discipline) + 0.2 * Math.max(...a.map((x) => x.rimprot))
+  }
+}
+
+/** The signed opponent read. Zero when no opponent is known — never a guess dressed as a number. */
+function schemeOpp(scheme: Exclude<Scheme, 'matchup'>, theirs: Player[]): number {
+  const b = theirs.map((p) => p.attrs)
+  switch (scheme) {
+    case 'drop': // they cannot shoot -> the tower sits home; they can -> the arc is open
+      return 0.3 * (55 - mean(theirs, (p) => p.attrs['3pt']))
+    case 'switch': // switching kills a creator-heavy team, and dies to one big post mismatch
+      return 0.22 * (mean(theirs, (p) => p.attrs.playvol) - 55) - 0.16 * (Math.max(...b.map((x) => x.rim)) - 60)
+    case 'blitz': {
+      // the trap is aimed at their highest-usage man: loose handle and heavy load = the ball is ours
+      const star = theirs.reduce((m, p) => (p.attrs.usg_raw > m.attrs.usg_raw ? p : m), theirs[0])
+      return 0.28 * (55 - star.attrs.ballsec) + 0.42 * (star.attrs.usg_raw - 22)
+    }
+    case 'zone': // shooting kills a zone; so does crashing it
+      return -0.3 * (mean(theirs, (p) => p.attrs['3pt']) - 55) - 0.18 * (mean(theirs, (p) => p.attrs.orb) - 50)
+    case 'ice': // send it baseline against a pnr team; the long two is the price
+      return 0.24 * (mean(theirs, (p) => p.attrs.playvol) - 55) - 0.2 * (mean(theirs, (p) => p.attrs.mid) - 50)
+  }
+}
+
+export function schemeFit(scheme: Scheme, five: Player[], theirs?: Player[]): number {
+  if (!five.length || scheme === 'matchup') return 57 // the free default: priced to zero
+  const c = SHAPE_CAL[scheme]
+  const shaped = 57 + (schemeShape(scheme, five) - c.mean) * c.scale
+  const opp = theirs?.length ? schemeOpp(scheme, theirs) - c.opp : 0
+  return clamp(shaped + opp, 0, 99)
+}
+
+/** The scheme's worth, on the playstyles' own law: 0.11 x (fit - 55) minus the deviation tax. */
+export function schemePts(t: Tactics, five: Player[], theirs?: Player[]): number {
+  if (t.scheme === 'matchup' || !five.length) return 0
+  return clamp(0.11 * (schemeFit(t.scheme, five, theirs) - 55) - TAX.scheme, -2.5, 2.5)
+}
+
+/**
+ * The AI's defensive call, the mirror of aiTempo: a real coach plays the scheme his personnel and
+ * the matchup argue for, and leaves matchup alone when nothing clears the tax. Deterministic.
+ */
+export function aiScheme(five: Player[], theirs: Player[]): Scheme {
+  let best: Scheme = 'matchup'
+  let bestPts = 0
+  for (const s of SCHEMES) {
+    if (s.key === 'matchup') continue
+    const pts = schemePts({ ...DEFAULT_TACTICS, scheme: s.key }, five, theirs)
+    if (pts > bestPts) {
+      bestPts = pts
+      best = s.key
+    }
+  }
+  return best
 }
 
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
@@ -283,13 +416,11 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
   if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
   if (t.style !== 'balanced')
     parts.push({ label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs))})`, pts: stylePts(t, five, theirs) })
-  if (t.scheme === 'drop') {
-    let pts = clamp((Math.max(...five.map((p) => p.attrs.rimprot)) - 75) * 0.055, -2.0, 2.0)
-    if (theirs?.length) pts += clamp((55 - mean(theirs, (p) => p.attrs['3pt'])) * 0.045, -1.8, 1.8)
-    parts.push({ label: 'drop coverage', pts: clamp(pts - TAX.scheme, -2.5, 2.5) })
-  }
-  if (t.scheme === 'switch')
-    parts.push({ label: 'switch everything', pts: clamp((Math.min(...five.map((p) => p.attrs.perdef)) - 45) * 0.06 - TAX.scheme, -2.5, 2.5) })
+  if (t.scheme !== 'matchup')
+    parts.push({
+      label: `${SCHEMES.find((x) => x.key === t.scheme)?.label ?? t.scheme} (fit ${Math.round(schemeFit(t.scheme, five, theirs))})`,
+      pts: schemePts(t, five, theirs),
+    })
   if (t.hunt) {
     let pts = clamp((Math.max(...five.map((p) => p.attrs.playvol)) - 55) * 0.15, -4.6, 4.6)
     if (theirs?.length) pts += clamp((60 - Math.min(...theirs.map((p) => p.attrs.perdef))) * 0.05, -1.8, 1.8)
