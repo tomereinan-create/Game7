@@ -1729,7 +1729,7 @@ const ROUNDS: Record<string, () => void> = {
     achSettleSeries({
       mode: 'campaign', team: 'Receipt Five · Campaign', level: 1, five: F5,
       opponent: { team: 'Test Warriors', players: O5, round: 1 } as never,
-      result: { games: [mk(false, 98, 104, 1), mk(false, 99, 110, 2), mk(false, 95, 102, 3), mk(true, 108, 100, 4), mk(true, 104, 99, 5), mk(true, 111, 106, 6), mk(true, 101, 100, 7)], wins: 4, losses: 3, won: true },
+      result: { games: [mk(false, 98, 104, 1), mk(false, 99, 110, 2), mk(false, 95, 102, 3), mk(true, 108, 100, 4), mk(true, 104, 99, 5), mk(true, 111, 106, 6), mk(true, 101, 100, 7)], wins: 4, losses: 3, won: true, toWin: 4 },
       seed: 6363, pre: 0.35, plan: null, pc: null, boxCtx: null, assignment: 'optimal',
       prevProg: fresh63(z), nextProg: fresh63(z1),
     })
