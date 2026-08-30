@@ -26,14 +26,37 @@ export interface CourtSpot {
 
 type XY = readonly [number, number]
 
-/** Balanced — PG top of the key, the wings, PF at the block, C in the paint. */
-const AT: XY[] = [
-  [50, 35],
-  [16, 50],
-  [84, 50],
-  [27, 76],
-  [61, 80],
-]
+/**
+ * THE COURT'S OWN GEOMETRY (his report: formation spots ignored the drawn 3pt
+ * line). These constants mirror the floor SVG exactly — the arc is
+ * `M8 98 L8 82 A49 49 0 0 1 92 82`, so its circle centers at (50, 82+√(49²−42²))
+ * — and every perimeter spot is derived FROM that circle: `peri(deg, m)` stands
+ * a man m units BEHIND the line at the given angle (0° = straight atop the
+ * arc, ±59° are the corner breaks; beyond ±47° would leave the floor, so the
+ * corner three hugs the vertical corner lane instead). Interior spots (block,
+ * roller, elbow, dunker) are named landmarks well inside the arc. Proportional
+ * at every render size, since everything is viewBox units.
+ */
+const ARC_R = 49
+const ARC_CX = 50
+const ARC_CY = 82 + Math.sqrt(ARC_R * ARC_R - 42 * 42)
+const peri = (deg: number, m = 8): XY => {
+  const a = (deg * Math.PI) / 180
+  return [ARC_CX + (ARC_R + m) * Math.sin(a), ARC_CY - (ARC_R + m) * Math.cos(a)]
+}
+/** The corner three: on the corner lane, hugging the sideline below the break. */
+const CORNER_L: XY = [7, 88]
+const CORNER_R: XY = [93, 88]
+/** Interior landmarks — all comfortably inside the arc. */
+const BLOCK_L: XY = [28, 81]
+const PAINT_C: XY = [60, 80]
+const ROLL: XY = [57, 63]
+const ELBOW_R: XY = [66, 72]
+const DUNK_L: XY = [32, 88]
+const DUNK_R: XY = [68, 88]
+
+/** Balanced — PG above the arc, the wings behind it, PF at the block, C in the paint. */
+const AT: XY[] = [peri(0, 12), peri(-38), peri(38), BLOCK_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
 
 /** The man an index-picking formation leans on; `not` keeps the screen off the PG himself. */
@@ -60,55 +83,34 @@ function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
   }
   switch (style) {
     case 'fiveout':
-      return [
-        [50, 31],
-        [15, 45],
-        [85, 45],
-        [24, 64],
-        [76, 64],
-      ]
+      // five behind the line, following the arc: top, both wings, both corners
+      return [peri(0), peri(-32), peri(32), CORNER_L, CORNER_R]
     case 'motion':
-      return [
-        [42, 30],
-        [14, 52],
-        [86, 44],
-        [28, 66],
-        [72, 60],
-      ]
+      // staggered perimeter with one elbow man cutting
+      return [peri(-14), peri(-45), peri(45), peri(14), ELBOW_R]
     case 'transition':
-      // two men high on the half-court line, three trailing
+      // two men high on the half-court line, a trailer, two lane runners
       return [
         [30, 26],
         [70, 26],
-        [50, 55],
-        [20, 68],
-        [80, 68],
+        peri(0, 3),
+        peri(-43),
+        peri(43),
       ]
     case 'pnr': {
+      // the PG behind the arc, the screener rolling inside it; shooters spot the corners and the weak wing
       const s = best(men, (p) => (p.attrs.height >= 80 ? Math.min(p.attrs.rim, p.attrs.efficiency) : p.attrs.height), 0)
-      return fill({ 0: [44, 33], [s]: [58, 37] }, [
-        [12, 70],
-        [88, 70],
-        [80, 50],
-      ])
+      return fill({ 0: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
     }
     case 'postup': {
+      // the post man on the block, four spaced behind the line away from his side
       const s = best(men, (p) => (p.attrs.height >= 81 ? Math.min(p.attrs.rim, p.attrs.volume) : 0))
-      return fill({ [s]: [34, 80] }, [
-        [52, 30],
-        [20, 46],
-        [84, 46],
-        [76, 68],
-      ])
+      return fill({ [s]: BLOCK_L }, [peri(0), peri(-38), peri(38), CORNER_R])
     }
     case 'helio': {
+      // the engine alone above the arc; the four low — corners and the dunker spots
       const s = best(men, (p) => Math.min(p.attrs.volume, p.attrs.playvol))
-      return fill({ [s]: [50, 30] }, [
-        [10, 71],
-        [34, 80],
-        [66, 80],
-        [90, 71],
-      ])
+      return fill({ [s]: peri(0, 12) }, [CORNER_L, DUNK_L, DUNK_R, CORNER_R])
     }
   }
 }
