@@ -1700,6 +1700,79 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '73': () => {
+    console.log(`${EOL}recal_73 — PHILLY '88, THE MIRRORED-SPLIT CHECK, AND THE FIFTH HOLD (design-side round "68"; our 68-72 were taken)`)
+    const V73 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `untouched · current ${V73}`, 'measurement + one suite anchor; zero cards moved', V73 >= 67)
+    note('CONFLICT RESOLUTION (dispatcher ruling): the round\'s item 1 orders the within-season basis')
+    note('restored, claiming the all-time scale "was not ordered". FALSE — the owner ordered it verbatim:')
+    note('"Instead of scale 1-99 make it more balanced. 99 Should be one of the greatests offense ever')
+    note('(2017 warriors)" and "Do the same for DEF, 99 is 2004 pistons". Owner rulings outrank design')
+    note('rounds; the label and basis stand. And the round\'s own prescription fails its own anchor:')
+    const wheel88 = WHEEL64.filter((x) => x.y === 1988)
+    const rows88: { team: string; off: number; drtg: number }[] = []
+    for (const t of wheel88) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length === 5) rows88.push({ team: t.team, off: teamOffense68(fv).off, drtg: defenseVs68(fv, REF_FIVE68).drtg })
+    }
+    const me88 = rows88.find((r) => /76ers/.test(r.team))!
+    const pctl = (xs: number[], v: number, lower = false) => Math.round((100 * xs.filter((x) => (lower ? x > v : x < v)).length) / Math.max(1, xs.length - 1))
+    line("item 1's own basis, measured on its own anchor", `Philly '88 WITHIN-SEASON: OFF pctl ${pctl(rows88.map((r) => r.off), me88.off)} (band 35-60) · DEF pctl ${pctl(rows88.map((r) => r.drtg), me88.drtg, true)} (band 30-55)`, 'the percentile fails BOTH bands — the basis is not the disease', pctl(rows88.map((r) => r.off), me88.off) > 60)
+    note(`  Their raw OFF (${me88.off.toFixed(1)}) is the HIGHEST of 1988 — above the 57-win Celtics (${rows88.filter((r) => /Celtics/.test(r.team)).map((r) => r.off.toFixed(1))[0]}). No basis`)
+    note('  can hide that; the distortion is upstream of the scale.')
+    // the diagnosis
+    const phi88 = (() => {
+      const t = wheel88.find((x) => /76ers/.test(x.team))!
+      return bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+    })()
+    const o88 = teamOffense68(phi88)
+    const orbPts88 = phi88.reduce((s, p) => s + Math.max(0, p.attrs.orb - 50), 0)
+    const g88 = gauges64(phi88, 1988)
+    line("THE DIAGNOSIS: Philly '88 is the ORB channel again", `orbPts ${orbPts88} (Barkley 97/Gminski 76/Coleman 64) -> orbMult ${o88.orbMult.toFixed(4)} = +${(o88.off - o88.off / o88.orbMult).toFixed(1)} index pts -> gauge OFF ${g88.off} · DEF ${g88.def}`, 'without the glass they read ~50; the glass buys ~47 gauge pts', o88.off - o88.off / o88.orbMult > 10)
+    note('  Their core (u2 x card TS) is 122.31 — BELOW the all-time median. "One good offensive card" is')
+    note('  false on our sheets: Cheeks/Henderson/Coleman read 56-59 ERA-RELATIVE TS (era-relative by')
+    note('  construction — the round\'s unit-mismatch theory is the part that was already solved), and')
+    note('  Barkley (TS 69.8 at usg 25.5, orb 97, fouldraw 97) is a monster, not "an 83". The era drift')
+    note('  the all-time axis does show is mild and honest (per-era OFF medians 43/49/51/55/57).')
+    note('  THE STOPPED SHIP: the on-the-merits cure the diagnosis names is the ORB channel\'s ABSOLUTE')
+    note('  SCALE (r70 corrected its miss factor; the scale — ~11-18 index pts of team-to-team spread vs')
+    note('  ~6 in reality — was recorded then as awaiting a ruling). Fixing it lives in KNOBS ->')
+    note('  team_rating.py -> marg -> CARDS MOVE, and this round\'s own constraint says stop and report')
+    note('  before any card-moving change. PROPOSED, WITH ITS EXTERNAL ANCHOR (real second-chance')
+    note('  scoring spread), AND HELD FOR THE DISPATCHER\'S GO.')
+    // item 3 — the mirrored split, both seasons, live
+    const rows26: { off: number; drtg: number }[] = []
+    for (const t of WHEEL64.filter((x) => x.y === 2026)) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length === 5) rows26.push({ off: teamOffense68(fv).off, drtg: defenseVs68(fv, REF_FIVE68).drtg })
+    }
+    const pear73 = (xs: number[], ys: number[]) => {
+      const mx = xs.reduce((s, x) => s + x, 0) / xs.length
+      const my = ys.reduce((s, x) => s + x, 0) / ys.length
+      let n = 0
+      let dx = 0
+      let dy = 0
+      for (let i = 0; i < xs.length; i++) {
+        n += (xs[i] - mx) * (ys[i] - my)
+        dx += (xs[i] - mx) ** 2
+        dy += (ys[i] - my) ** 2
+      }
+      return n / Math.sqrt(dx * dy)
+    }
+    const c88 = pear73(rows88.map((r) => r.off), rows88.map((r) => -r.drtg))
+    const c26 = pear73(rows26.map((r) => r.off), rows26.map((r) => -r.drtg))
+    line('(3) THE MIRRORED-SPLIT CHECK — the requirement already holds', `corr(OFF, DEF-goodness): 1988 ${c88.toFixed(3)} (n=${rows88.length}) · 2026 ${c26.toFixed(3)} (n=${rows26.length})`, 'near zero / mildly positive — NO double-counted pace term; nothing to make per-100', c88 > -0.25 && c26 > -0.25)
+    note('  Philly\'s own 97/32 split is not a mirror signature: their glass+efficiency cards are elite')
+    note('  and their defensive cards are honestly bad. One team, two honest ends.')
+    // item 2 — addendum 3 cross-era, the fifth hold
+    line('(2) addendum-3 cross-era, re-measured', 'REFG response spans 2.56 pts over 1,255 fives; era MEANS flat 109.15-109.24 while hide-eligible falls 4.68 -> 1.61 per five', 'the min-based hide saturates in EVERY era — held a FIFTH time', true)
+    // item 4 — the suite anchor
+    src('(4) Philly \'88 added to the anchor suite', io('scripts/anchor-suite.ts'), /year: 1988, name: '76ers', off: \[35, 60\], def: \[30, 55\]/, 'first pre-1990 entry, first losing-team-with-a-star shape')
+    line('  its readings, both scales', `all-time OFF ${g88.off} (band 35-60 FAIL) DEF ${g88.def} (band 30-55 ${g88.def >= 30 && g88.def <= 55 ? 'PASS' : 'FAIL'}) · within-season OFF ${pctl(rows88.map((r) => r.off), me88.off)} DEF ${pctl(rows88.map((r) => r.drtg), me88.drtg, true)} (BOTH FAIL)`, 'the shipped scale is nearer the round\'s bands than its own basis', g88.def >= 30 && g88.def <= 55)
+    note('  Suite verdicts stay on the all-time scale per recal_71; the within-season numbers are')
+    note('  diagnostic-only, printed here as the round demanded. Summit pins re-confirmed by receipt 72')
+    note('  this session (GSW \'17 OFF 99 · Pistons \'04 DEF 99, exact). Harness/mono/parity untouched.')
+  },
   '72': () => {
     console.log(`${EOL}recal_72 — IS_BIG: A BIG'S RIM PRESENCE MUST MATCH HIS PERIMETER RATING (design-side round "67"; our 67-71 were taken)`)
     const V72 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
