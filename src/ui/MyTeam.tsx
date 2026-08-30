@@ -281,7 +281,8 @@ export function MyTeam({
         .filter((n) => !taken.has(bare(n)))
         .map((n) => BY_NAME.get(n)!)
         .filter(Boolean)
-        .sort((a, b) => b.ovr - a.ovr)
+        // his ruling (same as the draft wheel): the roster reads like a box score — points first, OVR the tiebreak
+        .sort((a, b) => (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0) || b.ovr - a.ovr)
     : []
 
   // One source of truth for a floor man's state: the rows and the court spots share it,
