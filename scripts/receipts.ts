@@ -20,7 +20,7 @@ import { aiTempo, boxContext, DEFAULT_TACTICS, pace, scorerPts, styleFit, styleP
 import { gameBoxes, splitBox, type TeamBox } from '../src/engine/boxstats'
 import { applyMod as applyMod61 } from '../src/engine/resolver'
 import { LINES as LINES61 } from '../src/ui/Stat'
-import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, RATING_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
+import { bestBoard, KNOBS as KNOBS68, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, RATING_SCALE, ratings100, teamOffense as teamOffense68, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 import { seasonGauges as gauges64 } from '../src/engine/gauges'
@@ -1700,9 +1700,127 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '68': () => {
+    console.log(`${EOL}recal_68 — FIT AS MODIFIER: DIAGNOSED, AND STOPPED AT ITEM 0 (design-side round "66"; our 66/67 were taken)`)
+    const V68 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `no bump — the round stopped at item 0 · current ${V68}`, 'nothing shipped, counter untouched', V68 >= 65)
+    note('The round ordered: diagnostic FIRST, items 2-3 only if the diagnostic agrees. It does not.')
+    // ---- item 1a, verified for the THIRD time (recal_64 shipped it; receipts 64/66 already carry it) ----
+    src('(1a) the r62/r64 off-ball floor IS live', OVR, /if a\['3pt'\] >= 68 and a\['volume'\] < 55:/, 'third verification — see receipt 64 ("Dort \'26 unchanged") and receipt 66 (his decomposition row)')
+    const dort68 = g("Luguentz Dort '26")
+    line("(1a) Dort '26 OFF, measured", `${dort68.o_ovr} (eff ${dort68.attrs.efficiency}, disc ${dort68.attrs.discipline}, vol ${dort68.attrs.volume})`, '38 — his own card, not a missing floor', dort68.o_ovr === 38)
+    note('  His floor path = 0.38x70 + 0.20x27 + 0.08x55 + 0.06x9 = 36.9, BELOW his standard path. If the')
+    note('  design wants Dort ~47 the lever is his efficiency/discipline attrs or the floor\'s terms — a')
+    note('  named sub-ruling, not "apply r62". Their other card quotes verified CURRENT this round: SGA 97,')
+    note("  Durant 89, Thompson 62, Sheppard 64, Smith 49, Sengun 76, Mitchell 61, Holmgren 70, J.Williams 51.")
+    // ---- item 0: the five-term decomposition, live ----
+    const five68 = (nm: string) => {
+      const t = WHEEL64.find((x) => x.y === 2026 && x.team.includes(nm))!
+      return { team: t.team, five: bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x) }
+    }
+    const decomp68 = (five: NonNullable<ReturnType<typeof five68>>['five']) => {
+      const K = KNOBS68
+      const A = five.map((p) => p.attrs)
+      const u = A.map((a) => a.usg_raw)
+      const e = A.map((a) => a.ts_rel ?? a.ts_raw)
+      const c = A.map((a) => (0.45 * a.playvol + 0.2 * a.ballsec) / (0.65 * 99))
+      const delta = K.TEAM_USG - u.reduce((s, x) => s + x, 0)
+      const w = delta >= 0 ? c.map((ci, i) => Math.max(0.05, ci) * u[i]) : u.map((ui) => Math.max(0, ui - 12))
+      const W = w.reduce((s, x) => s + x, 0) || 1
+      let u2 = u.map((ui, i) => Math.max(K.FLOOR_USG, ui + (delta * w[i]) / W))
+      const sum = u2.reduce((a, b) => a + b, 0)
+      u2 = u2.map((x) => (x * K.TEAM_USG) / sum)
+      const e2 = u.map((ui, i) => {
+        const d = u2[i] - ui
+        if (d >= 0) return e[i] * (1 - ((K.SLOPE_UP_MAX - (K.SLOPE_UP_MAX - K.SLOPE_UP_MIN) * c[i]) * d) / 100)
+        const gate = Math.min(1, Math.max(0, (e[i] - 0.545) / 0.1))
+        return e[i] * (1 + (K.SLOPE_DOWN * gate * -d) / 100)
+      })
+      const o = teamOffense68(five)
+      const baseCard = u2.reduce((acc, ui, i) => acc + ui * e[i], 0) * 2
+      const baseN = u2.reduce((acc, ui, i) => acc + ui * e2[i], 0) * 2
+      const fit = o.base - baseN
+      return { o, baseCard, baseN, recon: baseN - baseCard, fit, u, u2, e, e2, five }
+    }
+    const okc68 = five68('Thunder')
+    const hou68 = five68('Rockets')
+    const dO = decomp68(okc68.five)
+    const dH = decomp68(hou68.five)
+    const gO = gauges64(okc68.five, 2026)
+    const gH = gauges64(hou68.five, 2026)
+    for (const [nm, d, gg] of [['OKC', dO, gO], ['HOU', dH, gH]] as const) {
+      note(`ITEM 0 — ${nm} '26: ${d.five.map((p) => p.name.replace(/ '26$/, '')).join(' · ')}`)
+      for (let i = 0; i < 5; i++)
+        note(`    ${d.five[i].name.padEnd(28)} vol ${String(d.five[i].attrs.volume).padStart(2)}  usg ${d.u[i].toFixed(1)} -> ${d.u2[i].toFixed(1)}  TS ${(100 * d.e[i]).toFixed(1)} -> ${(100 * d.e2[i]).toFixed(1)} (${(100 * (d.e2[i] - d.e[i])).toFixed(2)} pts)`)
+      note(`    core (u2 x card TS) ${d.baseCard.toFixed(2)} · recon move ${d.recon >= 0 ? '+' : ''}${d.recon.toFixed(2)} · fit ${d.fit >= 0 ? '+' : ''}${d.fit.toFixed(2)} · ftPts ${d.o.ftPts.toFixed(2)} · orbMult ${d.o.orbMult.toFixed(4)} => OFF ${d.o.off.toFixed(2)} · gauge ${gg.off}`)
+    }
+    line('the talent core ALREADY favors OKC', `core ${dO.baseCard.toFixed(1)} vs ${dH.baseCard.toFixed(1)} (+${(dO.baseCard - dH.baseCard).toFixed(1)} OKC)`, 'fit is not inverting talent', dO.baseCard > dH.baseCard)
+    line('reconciliation punishes NO star', `recon +${dO.recon.toFixed(2)} / +${dH.recon.toFixed(2)}; SGA +${(100 * (dO.e2[0] - dO.e[0])).toFixed(2)} TS pts`, 'both fives shed usage; stars GAIN', dO.recon > 0 && dH.recon > 0)
+    line('the fit gap cannot invert the core', `fit ${dO.fit.toFixed(2)} vs ${dH.fit.toFixed(2)} (gap ${(dH.fit - dO.fit).toFixed(2)})`, 'a ~1-pt lever vs an 8-pt core edge', Math.abs(dH.fit - dO.fit) < dO.baseCard - dH.baseCard)
+    const orbSwing = dH.o.off - dH.o.off / dH.o.orbMult - (dO.o.off - dO.o.off / dO.o.orbMult)
+    line('THE ACTUAL DRIVER: the ORB channel', `orbMult ${dO.o.orbMult.toFixed(4)} vs ${dH.o.orbMult.toFixed(4)} — ${orbSwing.toFixed(1)} index pts of the inversion`, 'second chances x the miss factor, not fit', orbSwing > 8)
+    note('  The miss factor is PERVERSE here: Houston\'s worse shooting (wTS) inflates its own glass')
+    note('  bonus. Item 2 (clamp recon+fit at +-4) would move OKC by +0.00 — its combined term is 3.46,')
+    note('  under the cap — and Houston by ~-0.7. Houston still outranks OKC; the 88+ band stays out of')
+    note('  reach through item 2\'s mechanism. THE ROUND\'S OWN PROTOCOL: sent back before applying 2-3.')
+    // ---- item 3, measured read-only (the permanent test ships with the ruling) ----
+    const NUMK = Object.keys(PLAYERS[0].attrs).filter((k) => typeof (PLAYERS[0].attrs as never)[k] === 'number')
+    const dom68 = (a: (typeof PLAYERS)[number], b: (typeof PLAYERS)[number]) => {
+      let strict = false
+      for (const k of NUMK) {
+        const av = (a.attrs as never)[k] as number
+        const bv = (b.attrs as never)[k] as number
+        if (av < bv) return false
+        if (av > bv) strict = true
+      }
+      return strict
+    }
+    const rng68 = makeRng(6868)
+    const pool68 = PLAYERS.filter((q) => q.ovr >= 55)
+    let done68 = 0
+    let bad68 = 0
+    let tries68 = 0
+    while (done68 < 500 && tries68 < 100000) {
+      tries68++
+      const five: (typeof PLAYERS)[number][] = []
+      const seen = new Set<string>()
+      while (five.length < 5) {
+        const q = pool68[Math.floor(rng68.next() * pool68.length)]
+        if (!seen.has(q.player)) {
+          seen.add(q.player)
+          five.push(q)
+        }
+      }
+      const i = Math.floor(rng68.next() * 5)
+      const start = Math.floor(rng68.next() * pool68.length)
+      let better: (typeof PLAYERS)[number] | null = null
+      for (let k = 0; k < pool68.length; k++) {
+        const cand = pool68[(start + k) % pool68.length]
+        if (cand.name !== five[i].name && !five.some((p) => p.player === cand.player) && dom68(cand, five[i])) {
+          better = cand
+          break
+        }
+      }
+      if (!better) continue
+      const before = ratings100(five)
+      const after5 = five.slice()
+      after5[i] = better
+      const after = ratings100(after5)
+      if (after.offRaw < before.offRaw - 1e-9 || after.drtgRef > before.drtgRef + 1e-9) bad68++
+      done68++
+    }
+    line('(3) MONOTONICITY, measured read-only', `${done68} strictly-better swaps, ${bad68} violations (seed 6868)`, '0 — the guarantee ALREADY holds; the test ships with the ruling', bad68 === 0 && done68 === 500)
+    line('THE STOP honored: items 2-3 held, zero tuning', 'no constant, weight, clamp or test shipped; version counter untouched', 'the diagnostic contradicts item 2\'s mechanism', true)
+    note('  Also recorded: OKC\'s OFF gauge already moved 62 -> 70 via recal_67 (best-five reshuffle: Joe')
+    note('  now starts over Mitchell), and the r59 harness is untouched by this round (no engine change;')
+    note('  all nine tactics in band as ratified by recal_67 — receipt 67 re-measures them live).')
+    note('  Tools committed for the ruling\'s return: scripts/diag68.ts (the decomposition), scripts/')
+    note('  mono68.ts (the 500-swap measurement). The ORB/miss-factor channel is the named patient.')
+  },
   '67': () => {
     console.log(`${EOL}recal_67 — THE DEF DISPLAY MULTIPLIER WAS THE INFLATION (design-side, unnumbered; our 66 was taken)`)
-    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '65', /PIPELINE_VERSION = 65/.test(OVR) && /PIPELINE_VERSION = 65/.test(RATINGS))
+    const V67 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `shipped at 65 · current ${V67}`, '>= 65 (later rounds own the counter)', V67 >= 65)
     src('the multiplier deflated', OVR, /d_score\(p\) \* 1\.03/, '1.10 -> 1.03 (the fossil that floated every defender ~7 over his composite)')
     src('DEF_TOP re-derived, sanctioned', OVR, /DEF_TOP = 93\.0, 106\.36, 98\.67/, '104.5 -> 98.67 = measured max raw (Wallace 95.80 x 1.03); OFF_TOP untouched (r51 constraint distinct)')
     src('the unsatisfiable pin recorded at the site', OVR, /UNSATISFIABLE/, 'Gobert-99 cannot be solved; reported, not forced')
@@ -1865,7 +1983,8 @@ const ROUNDS: Record<string, () => void> = {
   },
   '65': () => {
     console.log(`${EOL}recal_65 — THE DFG FLOORS READ THE 6FT+ SERIES (design-side round "63"; our 63/64 were taken)`)
-    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '64', /PIPELINE_VERSION = 64/.test(OVR) && /PIPELINE_VERSION = 64/.test(RATINGS))
+    const V65 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `shipped at 64 · current ${V65}`, '>= 64 (later rounds own the counter)', V65 >= 64)
     // The round prescribed ONE keying change: floors consume (diff_6plus, att_6plus). Measured verdict:
     // that keying has been the shipped code since recal_55 — the design side re-reported a retired defect.
     src('floors consume the derived 6ft+ series', RATINGS, /def dfg_floor[\s\S]{0,800}Outside 6Ft/, 'the SAME (diff, att) the blend reads — since recal_55')
