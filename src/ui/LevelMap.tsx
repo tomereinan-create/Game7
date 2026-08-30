@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { ratings100 } from '../engine/offense'
@@ -78,6 +78,9 @@ export function LevelMap({
     return o.record ? `${ab} ${o.record}` : ab
   }
   const nowRef = useRef<HTMLButtonElement>(null)
+  // Destructive actions confirm IN the page (browser popups never render on his phone):
+  // the first tap arms the button, the second fires, and looking away disarms it.
+  const [armReset, setArmReset] = useState(false)
 
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
@@ -192,8 +195,18 @@ export function LevelMap({
 
       <div className="map-foot">
         <span className="cap">Tap a cleared level to replay it for a better rating</span>
-        <button className="map-link danger" onClick={onReset}>
-          Reset this campaign
+        <button
+          className="map-link danger"
+          onClick={() => {
+            if (!armReset) {
+              setArmReset(true)
+              window.setTimeout(() => setArmReset(false), 4000)
+              return
+            }
+            onReset()
+          }}
+        >
+          {armReset ? 'Every level and star starts over — tap again' : 'Reset this campaign'}
         </button>
       </div>
     </>

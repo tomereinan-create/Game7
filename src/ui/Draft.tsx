@@ -197,6 +197,9 @@ export function Draft({
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
+  /** His ruling (kept): an unspent My team change earns a second look before the sim — as a
+   * two-tap on the dock now, because window.confirm never renders on his phone. */
+  const [armSim, setArmSim] = useState(false)
   // USER MODE: every choice still works; nothing says whether it was good.
   const user = useUserMode()
   // Screens open at the top; the map's own scroll position must not carry over.
@@ -438,12 +441,17 @@ export function Draft({
         <button
           className="btn"
           onClick={() => {
-            // his ruling: an unspent My team change is worth a second look before the series runs
-            if (spinLeft && !window.confirm('You still have a change left in My team. Sim the series without it?')) return
+            if (spinLeft && !armSim) {
+              setArmSim(true)
+              window.setTimeout(() => setArmSim(false), 5000)
+              return
+            }
             onSim(five, assignment, toWin)
           }}
         >
-          Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
+          {spinLeft && armSim
+            ? 'A change is waiting in My team — sim anyway?'
+            : `Sim the series${toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}`}
         </button>
       )
     if (spinning)

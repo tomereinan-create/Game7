@@ -358,9 +358,7 @@ export default function App() {
             // and a checkpoint bought is ground you can no longer lose.
             commit(cm, death ? { ...next, lives: livesBought(next), checkpoint: checkpointLevel(next) } : next)
           }}
-          onRespec={() => {
-            if (window.confirm(`Reset your staff? All ${prog.spent} stars come back and every node is unlearned.`)) commit(cm, respec(prog))
-          }}
+          onRespec={() => commit(cm, respec(prog))}
           onBack={() => setStaff(false)}
         />
       </>
@@ -395,10 +393,9 @@ export default function App() {
               : null
           }
           onReset={() => {
-            if (window.confirm(`Reset the ${TITLE(cm)}? All 120 levels and their stars start over.`)) {
-              achResetCampaign(cm)
-              setProgress((all) => ({ ...all, [cm]: resetProgress(cm) }))
-            }
+            // the two-tap arming lives in the map's Reset button itself — no browser popup
+            achResetCampaign(cm)
+            setProgress((all) => ({ ...all, [cm]: resetProgress(cm) }))
           }}
         />
       </>
@@ -447,11 +444,9 @@ export default function App() {
         onBack={(started) => {
           // The staff tree lives on the map only. Walking out of a draft with picks on the
           // board is allowed, but it spends the attempt: the wheel reseeds, so there is no
-          // peeking at a roster, buying a node, and coming back to the same spin.
-          if (started) {
-            if (!window.confirm('Leave this draft? Your picks are lost and the wheel reseeds.')) return
-            commit(cm, { ...prog, plays: prog.plays + 1 })
-          }
+          // peeking at a roster, buying a node, and coming back to the same spin. No popup —
+          // window.confirm never renders on his phone, which froze the Map button (his report).
+          if (started) commit(cm, { ...prog, plays: prog.plays + 1 })
           setLevel(null)
         }}
         onRoster={() => setRoster(true)}

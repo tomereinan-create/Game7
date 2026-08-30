@@ -385,7 +385,6 @@ export function Series({
               <span className="sc">
                 {g.us}–{g.them}
               </span>
-              <span className="note">{g.note}</span>
             </div>
           ))}
           {decider && tape ? (
@@ -395,7 +394,6 @@ export function Series({
               <span className="sc">
                 {tape.us}–{tape.them}
               </span>
-              <span className="note">{decider.note}</span>
             </div>
           ) : null}
         </div>

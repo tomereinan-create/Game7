@@ -64,6 +64,8 @@ export function Tree({
 }) {
   const bal = balance(wallet)
   const [open, setOpen] = useState<NodeId | null>(null)
+  // in-page arming instead of a browser popup (which never renders on his phone)
+  const [armRespec, setArmRespec] = useState(false)
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -102,8 +104,19 @@ export function Tree({
             {wallet.spent} spent of {treeCost()}
           </div>
           {wallet.spent > 0 ? (
-            <button className="map-link danger" onClick={onRespec}>
-              Reset spending · refund {wallet.spent}★
+            <button
+              className="map-link danger"
+              onClick={() => {
+                if (!armRespec) {
+                  setArmRespec(true)
+                  window.setTimeout(() => setArmRespec(false), 4000)
+                  return
+                }
+                setArmRespec(false)
+                onRespec()
+              }}
+            >
+              {armRespec ? `Unlearn everything, refund ${wallet.spent}★ — tap again` : `Reset spending · refund ${wallet.spent}★`}
             </button>
           ) : null}
         </div>

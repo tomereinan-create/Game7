@@ -109,9 +109,16 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
     setJustSaved(true)
     setBump((b) => b + 1)
   }
-  /** Leaving the screen is not a save, so an unsaved draft asks before it is dropped. */
+  /** Leaving the screen is not a save, so an unsaved draft asks before it is dropped —
+   * with a two-tap on the button itself (browser popups never render on his phone). */
+  const [armLeave, setArmLeave] = useState(false)
   const leaveRanking = () => {
-    if (dirty && !window.confirm('Leave without saving? Your ranking goes back to the saved order.')) return
+    if (dirty && !armLeave) {
+      setArmLeave(true)
+      window.setTimeout(() => setArmLeave(false), 4000)
+      return
+    }
+    setArmLeave(false)
     if (dirty) discard()
     setRanking(false)
   }
@@ -182,7 +189,7 @@ export function Archetypes({ onBack }: { onBack: () => void }) {
           <span>
             Rank the tree · <b>{order.length}</b> tags
           </span>
-          <button onClick={leaveRanking}>← Tags</button>
+          <button onClick={leaveRanking}>{armLeave && dirty ? 'Drop the unsaved order? — tap again' : '← Tags'}</button>
         </div>
         <div className="rule2" />
         <div className="lede">
