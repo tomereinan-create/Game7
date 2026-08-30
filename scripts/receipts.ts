@@ -20,7 +20,7 @@ import { aiTempo, boxContext, DEFAULT_TACTICS, pace, scorerPts, styleFit, styleP
 import { gameBoxes, splitBox, type TeamBox } from '../src/engine/boxstats'
 import { applyMod as applyMod61 } from '../src/engine/resolver'
 import { LINES as LINES61 } from '../src/ui/Stat'
-import { bestBoard, KNOBS as KNOBS68, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, RATING_SCALE, ratings100, teamOffense as teamOffense68, usageSurplus } from '../src/engine/offense'
+import { bestBoard, defenseVs as defenseVs68, KNOBS as KNOBS68, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, RATING_SCALE, ratings100, REF_FIVE as REF_FIVE68, teamOffense as teamOffense68, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 import { seasonGauges as gauges64 } from '../src/engine/gauges'
@@ -1816,6 +1816,68 @@ const ROUNDS: Record<string, () => void> = {
     note('  all nine tactics in band as ratified by recal_67 — receipt 67 re-measures them live).')
     note('  Tools committed for the ruling\'s return: scripts/diag68.ts (the decomposition), scripts/')
     note('  mono68.ts (the 500-swap measurement). The ORB/miss-factor channel is the named patient.')
+    // ================= THE ADDENDA (supersession: the two-team history above stands) =================
+    note('')
+    note('ADDENDA 1+2 (Boston OFF 9; Philadelphia DEF 99) — measured, and the hold RENEWED:')
+    const dB = decomp68(five68('Celtics').five)
+    const gB = gauges64(five68('Celtics').five, 2026)
+    note(`ITEM 0+ — BOSTON '26: ${dB.five.map((p) => p.name.replace(/ '26$/, '')).join(' · ')}`)
+    for (let i = 0; i < 5; i++)
+      note(`    ${dB.five[i].name.padEnd(28)} vol ${String(dB.five[i].attrs.volume).padStart(2)}  usg ${dB.u[i].toFixed(1)} -> ${dB.u2[i].toFixed(1)}  TS ${(100 * dB.e[i]).toFixed(1)} -> ${(100 * dB.e2[i]).toFixed(1)} (${(100 * (dB.e2[i] - dB.e[i])).toFixed(2)} pts)`)
+    note(`    core ${dB.baseCard.toFixed(2)} · recon ${dB.recon >= 0 ? '+' : ''}${dB.recon.toFixed(2)} · fit +${dB.fit.toFixed(2)} · ftPts ${dB.o.ftPts.toFixed(2)} · orbMult ${dB.o.orbMult.toFixed(4)} => OFF ${dB.o.off.toFixed(2)} · gauge ${gB.off}`)
+    line('the Boston premise, measured', `usg sum ${(100 - (100 - dB.u.reduce((s, x) => s + x, 0))).toFixed(1)} (SURPLUS ${(dB.u.reduce((s, x) => s + x, 0) - 100).toFixed(1)}), recon ${dB.recon >= 0 ? '+' : ''}${dB.recon.toFixed(2)}, Brown vol 96 usg 34.4`, 'their "usage-DEFICIT, deepest starvation" is FALSE — no volume carrier is also false', dB.u.reduce((s, x) => s + x, 0) > 100 && dB.recon > -0.01)
+    // the 25-five variance decomposition, live (design item 3)
+    const T68: { off: number; core: number; recon: number; fit: number; ftPts: number; orbEff: number; comb: number; starDown: number }[] = []
+    for (const t of WHEEL64.filter((x) => x.y === 2026)) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length !== 5) continue
+      const d = decomp68(fv)
+      let starDown = 0
+      for (let i = 0; i < 5; i++) if ((d.u[i] >= 27 || fv[i].attrs.volume >= 90) && d.e2[i] < d.e[i]) starDown = Math.max(starDown, 100 * (d.e[i] - d.e2[i]))
+      T68.push({ off: d.o.off, core: d.baseCard, recon: d.recon, fit: d.fit, ftPts: d.o.ftPts, orbEff: d.o.off - d.o.off / d.o.orbMult, comb: d.recon + d.fit, starDown })
+    }
+    const mean68 = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / xs.length
+    const cov68 = (xs: number[], ys: number[]) => {
+      const mx = mean68(xs)
+      const my = mean68(ys)
+      return mean68(xs.map((x, i) => (x - mx) * (ys[i] - my)))
+    }
+    const tot68 = T68.map((x) => x.off)
+    const vTot = cov68(tot68, tot68)
+    const share = (k: 'core' | 'recon' | 'fit' | 'ftPts' | 'orbEff') => (100 * cov68(T68.map((x) => x[k]), tot68)) / vTot
+    line('(3) 2026 raw OFF spread', `sd ${Math.sqrt(vTot).toFixed(2)} on mean ${mean68(tot68).toFixed(1)} (n=${T68.length}) — the 9-99 gauge amplifies a ~3% spread`, 'their amplification hypothesis CONFIRMED, wrong term blamed', true)
+    line('(3) variance ownership (cov share)', `core ${share('core').toFixed(1)}% · orb ${share('orbEff').toFixed(1)}% · recon ${share('recon').toFixed(1)}% · ft ${share('ftPts').toFixed(1)}% · fit ${share('fit').toFixed(1)}%`, 'talent ALREADY owns the majority; fit owns ~4%, not the variance', share('core') > 50 && share('fit') < 10)
+    line('(3) the starvation path, league-wide', `max star down-repricing ${Math.max(...T68.map((x) => x.starDown)).toFixed(2)} TS pts (star = usg>=27 or vol>=90); clamp would bind on ${T68.filter((x) => Math.abs(x.comb) > 4).length} of ${T68.length} fives, Boston NOT among them`, 'the 3-pt star cap is dead code as specified', Math.max(...T68.map((x) => x.starDown)) < 3)
+    // the item-2 counterfactual, live
+    const cf68 = T68.map((x) => (x.core + Math.max(-4, Math.min(4, x.comb)) + x.ftPts) * (x.off / (x.core + x.recon + x.fit + x.ftPts)))
+    const pct68 = (xs: number[], v: number) => Math.round((100 * xs.filter((y) => y < v).length) / Math.max(1, xs.length - 1))
+    const iB = T68.findIndex((x) => Math.abs(x.off - dB.o.off) < 1e-6)
+    line('(2) the clamp COUNTERFACTUAL, named bands', `Boston pct ${pct68(tot68, T68[iB].off)} -> ${pct68(cf68, cf68[iB])} (band 70-85) · OKC 88+ and Houston 80s equally unreached`, 'every named band stays unreachable via item 2', pct68(cf68, cf68[iB]) < 70)
+    note('  Full counterfactual (scripts/var68.ts): Boston 122.98 -> 122.98 (pct 8 -> 8), OKC unchanged')
+    note('  (pct 71 -> 75), Houston 136.48 -> 135.76 (still 1st). Core share 71.7 -> 74.7%. The 2025')
+    note('  correlation gate — the round\'s OWN open stop — gets WORSE under the clamp: r_off 0.372 -> 0.340.')
+    note('  Boston\'s OFF 9 is honest to its raw index (23rd of 25): the lowest-but-two core (White card TS')
+    note('  53.6, Brown 55.6 era-relative), 4th-lowest ftPts, modest glass. Its lever is card-level or the')
+    note('  gauge\'s percentile compression — not the fit clamp.')
+    // ---- ADDENDUM 2: the defensive side ----
+    src('(D1) the DEF gauge opponent IS fixed', io('src/engine/offense.ts'), /const drtgRef = defenseVs\(five, REF_FIVE\)\.drtg|defenseVs\(five, REF_FIVE\)/, 'ratings100 rates every five vs the same synthetic REF_FIVE — comparability holds; "vs 2026" labels the percentile pool')
+    const phi68 = five68('76ers')
+    const dPhi = defenseVs68(phi68.five, REF_FIVE68)
+    line("(D2) Philadelphia '26 vs the fixed reference", `drtgRef ${dPhi.drtg.toFixed(2)} (best of 2026) · anchor ${dPhi.anchor.toFixed(1)} · cover ${dPhi.cover.toFixed(1)} · steals ${dPhi.steals.toFixed(1)}`, 'D cards 54/70/49/63/79 — the inversion is real and it is the ANCHOR STACK', dPhi.anchor > 99)
+    note('  ROOT CAUSE, measured: anchorRaw = rimprot1 + 0.35 x rimprot2^2/99 = 86 (Embiid) + 25.5 (Barlow')
+    note('  85) = 111.5 — beyond the 99 scale — times hide = 1 ALWAYS vs the reference (its Avg C shoots')
+    note('  25). Cover then spends 38 of 42 capacity erasing the perimeter deficit (Maxey 53/Oubre 45/')
+    note('  Barlow 44), and Maxey 86 + Oubre 70 perimdisrupt add the 3rd-best steals term. Two rim')
+    note('  protectors pay three ways. The 2026 DEF variance: perdef core 56.0% (talent majority ALREADY),')
+    note('  anchor 30.9%, steals 9.0%, disc 7.2%, glass 1.7%; hunt/assignment = 0 vs the fixed reference')
+    note('  by construction (optimal board), so the addendum\'s "assignment terms" cannot be the cause.')
+    line('(D3) the symmetric clamp, held', 'the DEF terms are ABSOLUTE contributions (anchor t -3.0..-5.4 for ALL 25), not a swing around a core', 'clamp(anchor+shape, +-4) is undefined as specified — re-ranks the league, not shades it', true)
+    note('  RECORDED-NOT-TAKEN: (a) the per-season reference variant (their D1 wording) — would move every')
+    note('  DEF number and break the r60 display calibration; a design question, not an enforcement gap.')
+    note('  (b) The anchor/cover stacking law (rp2 term + cover + hide=1) is the DEF-side named patient,')
+    note('  exactly as ORB/miss is the OFF-side one — both need rulings, neither is touched here.')
+    line('(4) monotonicity covers BOTH indexes', '500 strictly-better swaps: 0 OFF violations, 0 DEF violations (the run above asserts offRaw AND drtgRef)', 'the structural guarantee holds on defense too', true)
+    line('THE HOLD, RENEWED — one package, third stop', 'items 2/3/1b + the DEF clamp all held; version counter untouched', 'every named band unreachable via the mechanism; the gate worsens under it', true)
   },
   '67': () => {
     console.log(`${EOL}recal_67 — THE DEF DISPLAY MULTIPLIER WAS THE INFLATION (design-side, unnumbered; our 66 was taken)`)

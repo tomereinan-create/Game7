@@ -105,7 +105,14 @@ function decompose(team: string, five: Player[], year: number) {
 
 const okc = fiveOf(2026, 'Thunder')
 const hou = fiveOf(2026, 'Rockets')
+const bos = fiveOf(2026, 'Celtics')
 decompose(okc.team, okc.five, 2026)
 decompose(hou.team, hou.five, 2026)
+decompose(bos.team, bos.five, 2026)
+// the ADDENDUM's quoted Boston five, decomposed too when the board picked a different five
+const QUOTED = ["Derrick White '26", "Payton Pritchard '26", "Jaylen Brown '26", "Sam Hauser '26", "Nikola Vučević '26"]
+const quoted = QUOTED.map((n) => BY.get(n)).filter((p): p is Player => !!p)
+if (quoted.length === 5 && quoted.some((p) => !bos.five.includes(p))) decompose('Boston (design-quoted five)', quoted, 2026)
+else console.log(`\n(the design-quoted Boston five IS the board's best five — one decomposition covers both)`)
 console.log('\ncurrent card OFF values (post-r67 display, for the design side):')
-for (const p of [...okc.five, ...hou.five]) console.log(`  ${p.name.padEnd(28)} O ${p.o_ovr}  usg_raw ${p.attrs.usg_raw}  vol ${p.attrs.volume}  eff ${p.attrs.efficiency}  ts_rel ${p.attrs.ts_rel}`)
+for (const p of [...okc.five, ...hou.five, ...bos.five]) console.log(`  ${p.name.padEnd(28)} O ${p.o_ovr}  usg_raw ${p.attrs.usg_raw}  vol ${p.attrs.volume}  eff ${p.attrs.efficiency}  ts_rel ${p.attrs.ts_rel}`)
