@@ -448,6 +448,15 @@ export function MyTeam({
                       })()}
               </span>
             </div>
+            {/* his ruling: the panel mixed both sides of the ball in one stack — it reads as
+                two groups now. Headings only appear once the Playbook opens a control inside
+                them, so the locked state stays a bare note. */}
+            {playbook >= 1 ? (
+              <div className="section-rule tac-rule">
+                <span>Offense</span>
+                <i />
+              </div>
+            ) : null}
             {playbook >= 1 ? ([
               ['Main scorer', 'scorer'],
               ['Main playmaker', 'playmaker'],
@@ -495,7 +504,34 @@ export function MyTeam({
             </div>
             ) : null}
             {playbook >= 3 ? (
-            <>
+            <div className="posbar">
+              <span className="cap">Hunt the mismatch</span>
+              <div className="poschips">
+                <button className={`sortb ${tactics.hunt ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, hunt: !tactics.hunt })}>
+                  {tactics.hunt ? 'hunting' : 'off'}
+                </button>
+              </div>
+            </div>
+            ) : null}
+            {/* the glass is two calls, not one: sending men to the offensive boards and ganging
+                the defensive boards are priced apart, so each sits with its own side */}
+            {playbook >= 2 ? (
+            <div className="posbar">
+              <span className="cap">Crash the glass</span>
+              <div className="poschips">
+                <button className={`sortb ${tactics.crashOff ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashOff: !tactics.crashOff })}>
+                  {tactics.crashOff ? 'crashing' : 'off'}
+                </button>
+              </div>
+            </div>
+            ) : null}
+            {playbook >= 2 ? (
+              <div className="section-rule tac-rule">
+                <span>Defense</span>
+                <i />
+              </div>
+            ) : null}
+            {playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Defensive scheme</span>
               <div className="poschips">
@@ -506,25 +542,13 @@ export function MyTeam({
                 ))}
               </div>
             </div>
-            <div className="posbar">
-              <span className="cap">Hunt the mismatch</span>
-              <div className="poschips">
-                <button className={`sortb ${tactics.hunt ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, hunt: !tactics.hunt })}>
-                  {tactics.hunt ? 'hunting' : 'off'}
-                </button>
-              </div>
-            </div>
-            </>
             ) : null}
             {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
               <div className="poschips">
-                <button className={`sortb ${tactics.crashOff ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashOff: !tactics.crashOff })}>
-                  offensive
-                </button>
                 <button className={`sortb ${tactics.crashDef ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashDef: !tactics.crashDef })}>
-                  defensive
+                  {tactics.crashDef ? 'crashing' : 'off'}
                 </button>
               </div>
             </div>
