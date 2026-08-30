@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import PIPELINE from '../data/pipeline.json'
 import type { AttrKey, Player } from '../engine/types'
+import { useUserMode } from '../state/viewmode'
 
 /**
  * The "how every number is made" window. For each of the 17 attributes it shows
@@ -202,6 +203,7 @@ export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
   }, [])
 
   const mine = prov?.[p.name]
+  const user = useUserMode()
 
   return (
     <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
@@ -212,6 +214,11 @@ export function Advanced({ p, onClose }: { p: Player; onClose: () => void }) {
       <div className="rule2" />
       <div className="adv-head">
         <div className="adv-name">{p.name}</div>
+        {user ? null : (
+          <div className="adv-ovr">
+            OVR <b>{p.ovr}</b> · OFF <b>{p.o_ovr}</b> · DEF <b>{p.d_ovr}</b>
+          </div>
+        )}
         <div className="adv-sub">
           Season {p.peak_season} · every rating is a within-season percentile of real Basketball-Reference statistics —
           this player against that year's league.
