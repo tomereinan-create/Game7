@@ -2046,8 +2046,15 @@ button {
 .seriesnow-note { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.5; padding-top: 6px; border-top: 1px solid var(--divider); margin-top: 6px; }
 
 /* ---- database filters ---- */
-.filterbar { display: flex; gap: 8px; align-items: center; padding: 8px 0 2px; }
+.filterbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0 2px; }
 .filtercount { font-family: var(--mono); font-size: 10px; color: var(--you); }
+/* a small typeable bound: the year jump, the rating min/max */
+.dbnum { display: inline-flex; align-items: center; gap: 6px; }
+.dbnum > span { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.dbnum input { width: 52px; background: var(--bg); color: var(--ink); border: 1px solid var(--line-3); border-radius: 6px; padding: 5px 7px; font-family: var(--mono); font-size: 11px; -moz-appearance: textfield; appearance: textfield; }
+.dbnum input::-webkit-outer-spin-button, .dbnum input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.dbnum input::placeholder { color: var(--faint); }
+.tdb-gauge { flex: none; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--you); }
 .filters { display: grid; gap: 10px; padding: 10px 12px; margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .filt { display: grid; gap: 4px; }
 .filt > span:first-child { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
@@ -2056,6 +2063,19 @@ button {
 .filters select, .filters input { background: var(--bg); color: var(--ink); border: 1px solid var(--line-3); border-radius: 6px; padding: 6px 8px; font-family: var(--mono); font-size: 11px; min-width: 0; flex: 1; }
 .filters input::placeholder { color: var(--faint); }
 .filt-note { font-family: var(--mono); font-size: 9px; color: var(--muted); line-height: 1.5; border-top: 1px solid var(--divider); padding-top: 8px; }
+
+/* ---- 1v1 bid auction ---- */
+.au-cash { font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); }
+.vs-side .au-buy { font-size: 9px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.au-block { text-align: center; padding: 14px 0 4px; }
+.au-kick { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.au-price { font-family: var(--serif); font-size: 46px; line-height: 1.1; color: var(--ink); }
+.au-price.p1 { color: var(--you); }
+.au-price.p2 { color: var(--them); }
+.au-why { font-family: var(--mono); font-size: 9px; line-height: 1.4; color: var(--faint); text-align: center; }
+.au-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 0 4px; }
+.au-panel { display: grid; gap: 6px; align-content: start; }
+.au-panel .btn:disabled { opacity: 0.35; cursor: default; }
 
 /* ---- archetype ranking ---- */
 .arch-head-btns { display: inline-flex; gap: 10px; align-items: center; }

@@ -30,7 +30,7 @@ function versusPool(seed: number): Player[] {
 }
 
 /** The resolver's notes are written from side A's chair; on a neutral screen name the sides. */
-function neutral(note: string, [a, b]: [string, string]): string {
+export function neutral(note: string, [a, b]: [string, string]): string {
   const map: Record<string, string> = {
     'we owned the paint': `${a} owned the paint`,
     'walled off inside': `${b} walled off the paint`,

@@ -39,6 +39,7 @@ import { Series } from './ui/Series'
 import { TeamSetup } from './ui/TeamSetup'
 import { Custom } from './ui/Custom'
 import { Versus } from './ui/Versus'
+import { Auction } from './ui/Auction'
 
 interface Tier {
   id: string
@@ -271,6 +272,15 @@ export default function App() {
         {sheet}
         {homeFab}
         <Custom onHome={leave} />
+      </>
+    )
+
+  if (mode === 'auction')
+    return (
+      <>
+        {sheet}
+        {homeFab}
+        <Auction onHome={leave} />
       </>
     )
 
