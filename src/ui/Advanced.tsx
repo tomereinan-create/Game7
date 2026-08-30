@@ -150,7 +150,6 @@ const SECTIONS: Section[] = [
       { label: 'height', value: ft(v[3]) },
       { label: 'voted-band weight', value: v[6] == null ? '—' : n1(v[6]) },
       { label: 'tracking defended FG% 6 ft +', value: v[5] == null ? 'not tracked' : `${v[5] > 0 ? '+' : ''}${(100 * v[5]).toFixed(1)}%` },
-      { label: 'all shots, for reference', value: v[8] == null ? 'not tracked' : `${v[8] > 0 ? '+' : ''}${(100 * v[8]).toFixed(1)}%` },
       { label: 'shots defended (season)', value: v[7] ? `${v[7]} — ${Math.round(100 * Math.min(1, v[7] / 350))}% blend weight` : 'not tracked' },
     ],
     note: (_p, v) =>
