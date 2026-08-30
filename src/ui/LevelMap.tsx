@@ -5,6 +5,7 @@ import { ratings100 } from '../engine/offense'
 import { balance } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
+import { Ask } from './Ask'
 
 /** Path geometry, in a 375-wide coordinate space stretched to the column. */
 const W = 375
@@ -78,9 +79,8 @@ export function LevelMap({
     return o.record ? `${ab} ${o.record}` : ab
   }
   const nowRef = useRef<HTMLButtonElement>(null)
-  // Destructive actions confirm IN the page (browser popups never render on his phone):
-  // the first tap arms the button, the second fires, and looking away disarms it.
-  const [armReset, setArmReset] = useState(false)
+  // Destructive actions ask IN the game (browser popups never render on his phone).
+  const [askReset, setAskReset] = useState(false)
 
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
@@ -193,20 +193,19 @@ export function LevelMap({
         })}
       </div>
 
+      {askReset ? (
+        <Ask
+          label="The whole campaign"
+          text="Every level and every star starts over. Reset it?"
+          yes="Reset it"
+          onYes={onReset}
+          onClose={() => setAskReset(false)}
+        />
+      ) : null}
       <div className="map-foot">
         <span className="cap">Tap a cleared level to replay it for a better rating</span>
-        <button
-          className="map-link danger"
-          onClick={() => {
-            if (!armReset) {
-              setArmReset(true)
-              window.setTimeout(() => setArmReset(false), 4000)
-              return
-            }
-            onReset()
-          }}
-        >
-          {armReset ? 'Every level and star starts over — tap again' : 'Reset this campaign'}
+        <button className="map-link danger" onClick={() => setAskReset(true)}>
+          Reset this campaign
         </button>
       </div>
     </>

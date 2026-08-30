@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Ask } from './Ask'
 import {
   balance,
   canBuy,
@@ -64,8 +65,8 @@ export function Tree({
 }) {
   const bal = balance(wallet)
   const [open, setOpen] = useState<NodeId | null>(null)
-  // in-page arming instead of a browser popup (which never renders on his phone)
-  const [armRespec, setArmRespec] = useState(false)
+  // the in-game ask instead of a browser popup (which never renders on his phone)
+  const [askRespec, setAskRespec] = useState(false)
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -104,19 +105,8 @@ export function Tree({
             {wallet.spent} spent of {treeCost()}
           </div>
           {wallet.spent > 0 ? (
-            <button
-              className="map-link danger"
-              onClick={() => {
-                if (!armRespec) {
-                  setArmRespec(true)
-                  window.setTimeout(() => setArmRespec(false), 4000)
-                  return
-                }
-                setArmRespec(false)
-                onRespec()
-              }}
-            >
-              {armRespec ? `Unlearn everything, refund ${wallet.spent}★ — tap again` : `Reset spending · refund ${wallet.spent}★`}
+            <button className="map-link danger" onClick={() => setAskRespec(true)}>
+              Reset spending · refund {wallet.spent}★
             </button>
           ) : null}
         </div>
@@ -225,6 +215,18 @@ export function Tree({
             </div>
           </div>
         </div>
+      ) : null}
+      {askRespec ? (
+        <Ask
+          label="The staff tree"
+          text={`All ${wallet.spent} stars come back and every node is unlearned. Reset your staff?`}
+          yes="Reset spending"
+          onYes={() => {
+            setAskRespec(false)
+            onRespec()
+          }}
+          onClose={() => setAskRespec(false)}
+        />
       ) : null}
     </>
   )

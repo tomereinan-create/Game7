@@ -7,6 +7,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
+import { Ask } from './Ask'
 import { CardName } from './CardSheet'
 import { naiveAssignment, ratings100, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -988,20 +989,13 @@ export function Draft({
       </div>
 
       {askSim ? (
-        <div className="ask-veil" onClick={() => setAskSim(false)}>
-          <div className="ask" onClick={(e) => e.stopPropagation()}>
-            <span className="label">Before you sim</span>
-            <p>You still have a change left in My team. Sim the series without it?</p>
-            <div className="ask-btns">
-              <button className="btn ghost" onClick={() => setAskSim(false)}>
-                Go back
-              </button>
-              <button className="btn" onClick={() => onSim(five, assignment, toWin)}>
-                Sim without it
-              </button>
-            </div>
-          </div>
-        </div>
+        <Ask
+          label="Before you sim"
+          text="You still have a change left in My team. Sim the series without it?"
+          yes="Sim without it"
+          onYes={() => onSim(five, assignment, toWin)}
+          onClose={() => setAskSim(false)}
+        />
       ) : null}
       <div className="dock">
         <div className="dock-inner">{dock()}</div>
