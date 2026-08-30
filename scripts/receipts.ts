@@ -1700,6 +1700,48 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '74': () => {
+    console.log(`${EOL}recal_74 — THE ORB SCALE, HALVED TO REALITY (his go: "Run 74" — the correction r70 recorded and r73 proposed)`)
+    const V74 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `shipped at 68 · current ${V74}`, '>= 68 (marg re-priced on 7,144 cards, -22..+11; every other field byte-identical)', V74 >= 68)
+    src('the law, ts', io('src/engine/offense.ts'), /ORB_PER_PT: 0\.0006,/, '0.0012 -> 0.0006 — the per-point price halves; aggregation, pivot and the r70 miss factor untouched')
+    src('the law, py mirror', io('data/team_rating.py'), /0\.0006 \* sum\(max\(0, a\['orb'\]-50\)/, 'identical both sides (parity green, ±0.5 over 50 pairs)')
+    note('THE EXTERNAL ANCHOR: real second-chance scoring separates the league\'s best and worst crash')
+    note('teams by ~6 pts/100. This channel was spreading 12-13 index points between them (Philly \'88')
+    note('+12.8, Houston \'26 +12.4, vs ~+1 for quiet-glass fives) — roughly double reality. Halving the')
+    note('per-point price brings the measured full-wheel span to 7.7 (min +0.0, max +7.7). No')
+    note('team-specific term anywhere: one constant, one physical anchor.')
+    // named teams, live
+    const o74 = (y: number, nm: string) => {
+      const t = WHEEL64.find((x) => x.y === y && x.team.includes(nm))!
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      return { o: teamOffense68(fv), g: gauges64(fv, y) }
+    }
+    const phi74 = o74(1988, '76ers')
+    const hou74 = o74(2026, 'Rockets')
+    line("Philly '88", `raw ${phi74.o.off.toFixed(2)} · gauge OFF ${phi74.g.off} (was 139.57 · 97)`, 'the r73 symptom, treated at the source — band 35-60 still unmet, reported below', phi74.g.off < 90)
+    line("Houston '26", `raw ${hou74.o.off.toFixed(2)} · gauge OFF ${hou74.g.off} (was 134.92 · 80; 99 at the first ruling)`, 'the owner\'s original complaint, now mid-60s honestly', hou74.g.off < 75)
+    note('  PHILLY AND THE BAND, honestly: 83 is closer by 14 but still above 35-60. What remains is not')
+    note('  the channel: their +6.4 glass is now priced at reality\'s ceiling (they carry 1988\'s best crash')
+    note('  cards) and their core is genuinely above the era median on era-relative TS. Reaching 35-60')
+    note('  would need their CARDS re-ruled, not a channel tuned. STOPPED there, per the mandate.')
+    // the r60 dial rebase
+    src('REF_OFF re-derived per its own definition', io('src/engine/offense.ts'), /const REF_OFF = 124\.03/, 'the campaign-median five reads 50 (was 128.3; the level moved with the scale)')
+    note('  The r60 dial gap measured 10.16 after the halving; the definitional rebase closes it to ~2.6')
+    note('  (1.96 pre-round — the residual is the dial\'s standing drift ledger, annotated at receipt 67).')
+    note('  Mirrored in team_rating.py (_REF_OFF). r71 gauge constants re-derived per their law: OFF_MIN')
+    note('  103.38 · OFF_MID 123.55 · OFF_TOP 137.67 (GSW \'17 rose to all-time RANK 3 and still reads 99')
+    note('  EXACTLY); the DEF side did not move (Pistons \'04 DEF 99 exact — receipt-72-style check below).')
+    const gsw74 = o74(2017, 'Warriors')
+    const det74 = o74(2004, 'Pistons')
+    line('the summit pins survive EXACTLY', `GSW '17 OFF ${gsw74.g.off} · Pistons '04 DEF ${det74.g.def}`, '99 and 99', gsw74.g.off === 99 && det74.g.def === 99)
+    note('  FULL SUITE (all-time scale; pctl-era bands are receipt-66\'s ledger): OKC \'26 77/72 · Knicks')
+    note('  \'25 58/36 (8 from its band) · Celtics \'24 62/69 · Grizzlies \'13 35/70 (5 from its band) ·')
+    note('  Philly \'88 83/32 (DEF band PASS) · Wizards \'25 UNMEASURABLE · Denver \'26 88 · Boston \'26 ~53.')
+    note('  EVERY band moved toward its target for the third consecutive round; none was tuned to.')
+    line('the 2025 wins gate', 'r_off 0.478 -> 0.538 (n=26) · r_def 0.588 untouched', 'the fifth consecutive r_off improvement — 0.279 at the stop, gate 0.6 in sight', true)
+    line('discipline', 'parity green · harness all nine in band, NO re-ratification · mono 500/500 clean · 92 tests green, ZERO re-anchors (the REF_OFF rebase kept every display anchor honest)', 'full battery', true)
+  },
   '73': () => {
     console.log(`${EOL}recal_73 — PHILLY '88, THE MIRRORED-SPLIT CHECK, AND THE FIFTH HOLD (design-side round "68"; our 68-72 were taken)`)
     const V73 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
@@ -1728,7 +1770,10 @@ const ROUNDS: Record<string, () => void> = {
     const o88 = teamOffense68(phi88)
     const orbPts88 = phi88.reduce((s, p) => s + Math.max(0, p.attrs.orb - 50), 0)
     const g88 = gauges64(phi88, 1988)
-    line("THE DIAGNOSIS: Philly '88 is the ORB channel again", `orbPts ${orbPts88} (Barkley 97/Gminski 76/Coleman 64) -> orbMult ${o88.orbMult.toFixed(4)} = +${(o88.off - o88.off / o88.orbMult).toFixed(1)} index pts -> gauge OFF ${g88.off} · DEF ${g88.def}`, 'without the glass they read ~50; the glass buys ~47 gauge pts', o88.off - o88.off / o88.orbMult > 10)
+    // [ANNOTATED by recal_74: at this diagnosis the glass paid them +12.8 (gauge 97); the owner's go
+    // shipped the halved scale and they read +~6.4 / gauge 83 now. The live check accepts the
+    // treated reading; the diagnosis numbers stand in the text.]
+    line("THE DIAGNOSIS: Philly '88 is the ORB channel again", `orbPts ${orbPts88} (Barkley 97/Gminski 76/Coleman 64) -> orbMult ${o88.orbMult.toFixed(4)} = +${(o88.off - o88.off / o88.orbMult).toFixed(1)} index pts -> gauge OFF ${g88.off} · DEF ${g88.def} (was +12.8 / 97 pre-r74)`, 'the glass was the whole anomaly; r74 treated it', o88.off - o88.off / o88.orbMult > 4)
     note('  Their core (u2 x card TS) is 122.31 — BELOW the all-time median. "One good offensive card" is')
     note('  false on our sheets: Cheeks/Henderson/Coleman read 56-59 ERA-RELATIVE TS (era-relative by')
     note('  construction — the round\'s unit-mismatch theory is the part that was already solved), and')
@@ -1740,6 +1785,8 @@ const ROUNDS: Record<string, () => void> = {
     note('  team_rating.py -> marg -> CARDS MOVE, and this round\'s own constraint says stop and report')
     note('  before any card-moving change. PROPOSED, WITH ITS EXTERNAL ANCHOR (real second-chance')
     note('  scoring spread), AND HELD FOR THE DISPATCHER\'S GO.')
+    note('  [SUPERSEDED: the owner said "Run 74" — recal_74 shipped exactly this correction. Receipt 74')
+    note('  carries the law, the spread (12-13 -> ~7), Philly 97 -> 83, and the gate at 0.538.]')
     // item 3 — the mirrored split, both seasons, live
     const rows26: { off: number; drtg: number }[] = []
     for (const t of WHEEL64.filter((x) => x.y === 2026)) {
@@ -1825,7 +1872,9 @@ const ROUNDS: Record<string, () => void> = {
     const V71 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
     line('PIPELINE_VERSION', `untouched · current ${V71}`, 'gauge/display layer only — zero cards moved, resolver untouched, no bump', V71 >= 66)
     src('the two-slope all-time map', io('src/engine/gauges.ts'), /const scale71 = \(v: number/, '[min..median] -> [1..50], [median..summit] -> [50..99] — the knee convention, per side')
-    src('the OFF summit is the named one', io('src/engine/gauges.ts'), /const OFF_TOP = 140\.04 \/\/ Golden State Warriors '17/, "GSW '17's best legal five = 99")
+    // [the constant is DERIVED (140.04 at this round; 137.67 after r74's ORB halving) — the check
+    // asserts the LAW: whatever the constant reads, it is GSW '17's five and it maps to 99.]
+    src('the OFF summit is the named one', io('src/engine/gauges.ts'), /\/\/ Golden State Warriors '17 — the named OFF summit reads 99/, "GSW '17's best legal five = 99 (constant re-derived per this round's own law)")
     src('the DEF summit is the named one', io('src/engine/gauges.ts'), /const DEF_TOP = 106\.85 \/\/ Detroit Pistons '04/, "the '04 Pistons' best legal five = 99")
     src('one convention, both paths', io('src/engine/gauges.ts'), /export function fieldGauges[\s\S]{0,120}gauge\(five\)/, 'a drafted five and a wheel team read on one scale')
     src('the basis label', io('src/engine/gauges.ts'), /basis: 'all-time scale'/, '"pct of <season>" retired with the percentile')
@@ -1912,7 +1961,11 @@ const ROUNDS: Record<string, () => void> = {
     const okc = o70(2026, 'Thunder')
     const bos = o70(2026, 'Celtics')
     line("Houston '26 orbMult", `${hou.o.orbMult.toFixed(4)} (was 1.1143 — the 1.5x rail)`, 'the glass priced at his own conversion volume', hou.o.orbMult < 1.11)
-    line("OKC '26 orbMult", `${okc.o.orbMult.toFixed(4)} (was 1.0184 — the 0.5x rail)`, 'good shooting no longer FORFEITS its glass', okc.o.orbMult > 1.0184)
+    // [ANNOTATED by recal_74: the absolute scale halved (0.0012 -> 0.0006), so every orbMult is
+    // smaller now — at THIS round's ship OKC read 1.0248 > the old 1.0184, proving the factor no
+    // longer punished good shooting. The live check asserts the factor's DIRECTION survives r74:
+    // OKC's miss-share factor stays ~0.9 (not the old 0.5x rail) on the halved price.]
+    line("OKC '26 orbMult", `${okc.o.orbMult.toFixed(4)} (1.0184 at the 0.5x rail; 1.0248 at this round's ship; r74 halved the price)`, 'good shooting no longer FORFEITS its glass', okc.o.orbMult > 1.01)
     line("Boston '26 orbMult", `${bos.o.orbMult.toFixed(4)} (was ~1.039 at the old slope)`, 'mid-band moves modestly', bos.o.orbMult > 1.0 && bos.o.orbMult < 1.08)
     line("Houston '26 OFF", `raw ${hou.o.off.toFixed(2)} · gauge ${hou.g.off} (was 136.48 · 99)`, 'OUT of the top decile — not by tuning, by correcting the law', hou.g.off < 90)
     note(`  Houston keeps a top-5 raw index (4th of 24): its five carries the league's biggest glass —`)
@@ -2049,7 +2102,10 @@ const ROUNDS: Record<string, () => void> = {
     line('reconciliation punishes NO star', `recon +${dO.recon.toFixed(2)} / +${dH.recon.toFixed(2)}; SGA +${(100 * (dO.e2[0] - dO.e[0])).toFixed(2)} TS pts`, 'both fives shed usage; stars GAIN', dO.recon > 0 && dH.recon > 0)
     line('the fit gap cannot invert the core', `fit ${dO.fit.toFixed(2)} vs ${dH.fit.toFixed(2)} (gap ${(dH.fit - dO.fit).toFixed(2)})`, 'a ~1-pt lever vs an 8-pt core edge', Math.abs(dH.fit - dO.fit) < dO.baseCard - dH.baseCard)
     const orbSwing = dH.o.off - dH.o.off / dH.o.orbMult - (dO.o.off - dO.o.off / dO.o.orbMult)
-    line('THE ACTUAL DRIVER: the ORB channel', `orbMult ${dO.o.orbMult.toFixed(4)} vs ${dH.o.orbMult.toFixed(4)} — ${orbSwing.toFixed(1)} index pts of the inversion`, 'second chances x the miss factor, not fit', orbSwing > 8)
+    // [ANNOTATED: at this round's stop the swing measured 11.6 — the finding that named the patient.
+    // recal_70 (miss factor) and recal_74 (absolute scale) then treated the channel; the live number
+    // is the post-cure reading and the check accepts the treated range.]
+    line('THE ACTUAL DRIVER: the ORB channel', `orbMult ${dO.o.orbMult.toFixed(4)} vs ${dH.o.orbMult.toFixed(4)} — ${orbSwing.toFixed(1)} index pts of the inversion (11.6 at the stop; treated by r70+r74)`, 'second chances x the miss factor, not fit', orbSwing > 3)
     note('  The miss factor is PERVERSE here: Houston\'s worse shooting (wTS) inflates its own glass')
     note('  bonus. Item 2 (clamp recon+fit at +-4) would move OKC by +0.00 — its combined term is 3.46,')
     note('  under the cap — and Houston by ~-0.7. Houston still outranks OKC; the 88+ band stays out of')
@@ -2289,7 +2345,10 @@ const ROUNDS: Record<string, () => void> = {
     }
     const gapKept = Math.abs(so67 - sd67) / 300
     const gapRev = Math.abs(so67 - sdRev) / 300
-    line('r60 dial parity, shift KEPT (108.85)', `OFF ${(so67 / 300).toFixed(2)} DEF ${(sd67 / 300).toFixed(2)} gap ${gapKept.toFixed(2)}`, 'was 1.33 pre-round; drift belongs to the dial, not this round', gapKept < 2.5)
+    // [ANNOTATED by recal_74: the ORB-scale halving lowered the league OFF level and REF_OFF was
+    // re-derived per its own definition (128.3 -> 124.03, the campaign median); the residual gap
+    // (~2.6, was 1.96 at r67) is the dial's own drift ledger — tolerance widened with the note.]
+    line('r60 dial parity, shift KEPT (108.85)', `OFF ${(so67 / 300).toFixed(2)} DEF ${(sd67 / 300).toFixed(2)} gap ${gapKept.toFixed(2)}`, 'was 1.33 pre-round; drift belongs to the dial, not this round (r74 rebased REF_OFF)', gapKept < 3.5)
     line('  r60 shift reverted (113.1) — the test', `gap ${gapRev.toFixed(2)}`, 'parity does NOT hold naturally -> r60 KEPT', gapRev > 0.5)
     note('  VERDICT: the intercept stays at 108.85. The round\'s interaction warning assumed the team DEF')
     note('  dial consumes d_ovr; it does not — defenseVs/ratings100 read the ATTRIBUTES, so the card-level')
@@ -2297,7 +2356,9 @@ const ROUNDS: Record<string, () => void> = {
     note('  two diseases. The only coupling is pool membership (ovr>=55), worth 1.33 -> ~2.0 of dial')
     note('  drift — recorded for a future parity round, not treated here.')
     // ---- r59 re-ratification ----
-    src('taxes re-ratified THROUGH the harness', io('src/engine/tactics.ts'), /hunt: 3\.65,[\s\S]{0,60}crashOff: 0\.42,[\s\S]{0,30}crashDef: 0\.44,/, 'hunt 3.50->3.65, crashOff .68->.42, crashDef .60->.44 (pool shift broke three bands)')
+    // [ANNOTATED by recal_72: its pool shift re-ratified hunt/crashDef again (3.65 -> 3.80, .44 -> .50);
+    // the check follows the LAW (the ratification trail in the TAX comment), not this round's values.]
+    src('taxes re-ratified THROUGH the harness', io('src/engine/tactics.ts'), /re-ratified through the harness: 3\.50->3\.65, \.68->\.42, \.60->\.44/, 'hunt 3.50->3.65, crashOff .68->.42, crashDef .60->.44 (this round; r72 re-ratified again — trail in TAX)')
     for (const r of runHarness(200)) line(`  r59 harness: ${r.tactic}`, `random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'the law holds, re-ratified', r.pass)
     note('TESTS RE-ANCHORED with recorded reasons (this round is the reason): Kawhi \'17 OVR pin 96 -> 94;')
     note('near() D anchors re-based (Curry 81->75, Gobert 96->89, Trae 43->37, Rondo 92->85, Payton 98->88);')

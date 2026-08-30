@@ -26,11 +26,12 @@ import type { Player } from './types'
  * survive there; the gauge simply no longer routes through either.
  */
 
-// frozen anchors (scripts/gauge71.ts, v67 pool, r69 wheel; medians re-derived per the r71 law
-// after recal_72's is_big flips reshuffled a few best fives — the summit pins did not move):
-const OFF_MIN = 105.57 // the all-time worst wheel five
-const OFF_MID = 126.87 // the all-time median five reads 50
-const OFF_TOP = 140.04 // Golden State Warriors '17 — the named OFF summit reads 99
+// frozen anchors (scripts/gauge71.ts, v68 pool, r69 wheel; OFF side re-derived per the r71 law
+// after recal_74's ORB-scale halving lowered the league level — GSW '17 rose to all-time rank 3
+// and still reads 99 exactly; the DEF distribution did not move):
+const OFF_MIN = 103.38 // the all-time worst wheel five
+const OFF_MID = 123.55 // the all-time median five reads 50
+const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
 const DEF_WORST = 113.55 // the all-time worst defensive five
 const DEF_MID = 109.17 // the all-time median reads 50
 const DEF_TOP = 106.85 // Detroit Pistons '04 — the named DEF summit reads 99

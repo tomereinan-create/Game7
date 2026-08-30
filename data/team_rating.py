@@ -81,7 +81,9 @@ def team_offense(five):
     # same 0.60, rails 0.8..1.2. Mirrors offense.ts exactly (the parity test gates it).
     wTS = sum(u2i*e4i for u2i, e4i in zip(u2, e4)) / KNOBS['TEAM_USG']
     miss_factor = min(1.2, max(0.8, (1.0 - wTS) / (1.0 - 0.60)))
-    OFF *= 1 + 0.0012 * sum(max(0, a['orb']-50) for a in A) * miss_factor
+    # recal_74: the absolute scale halves (0.0012 -> 0.0006) — real second-chance scoring separates
+    # the best and worst crash teams by ~6 pts/100; this channel spread ~12-13. Mirrors offense.ts.
+    OFF *= 1 + 0.0006 * sum(max(0, a['orb']-50) for a in A) * miss_factor
     return OFF, list(zip([p['name'] for p in five], [round(x,1) for x in u2], [round(100*x,1) for x in e4]))
 
 P = {p['name']: p for p in json.load(open('players_stats.json'))}
@@ -230,7 +232,7 @@ REF_FIVE = [
 
 # EMPIRICAL anchoring: 50 = the MEDIAN of plausible drafted fives (sampled from the pool),
 # not the synthetic REF (which had no weak link -> whole population read as bad defense).
-_REF_OFF, _REF_DRTG = 128.3, 113.1
+_REF_OFF, _REF_DRTG = 124.03, 113.1   # recal_74: _REF_OFF re-derived (campaign median) after the ORB-scale halving
 RATING_SCALE = dict(K_OFF=3.0, K_DEF=8.0)
 
 def ratings_100(five):
