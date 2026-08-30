@@ -2655,6 +2655,13 @@ body.wide .cmd { margin-top: -14px; }
 .adv-ovr { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 .adv-ovr b { color: var(--you); font-weight: 700; }
 
+/* team rows carry the three mini dials; keep them tighter than the player db's */
+.lrow .pdials .dial { width: 34px; }
+.lrow .pdials .dial svg { width: 32px; height: 32px; }
+.lrow .pdials .dial text { font-size: 24px; }
+.lrow .pdials .dial .dl { font-size: 6.5px; margin-top: -2px; }
+@media (min-width: 900px) { .lrow .pdials .dial { width: 40px; } .lrow .pdials .dial svg { width: 38px; height: 38px; } }
+
 /* recal_64: the gauge's basis, visible wherever the percentile dials show */
 .gauge-basis { display: block; width: 100%; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-top: 1px; }
 .node-dials { flex-wrap: wrap; }

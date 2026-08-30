@@ -10,7 +10,7 @@ import { CourtFive } from './CourtFive'
 import { Face } from './Face'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
-import { TeamDials } from './MatchupPanel'
+import { Dial, TeamDials } from './MatchupPanel'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
@@ -102,11 +102,19 @@ function gaugeOf(t: TeamSeason): TeamGauge {
   return g
 }
 
-/** The row's right edge: OVR always, the sorted gauge value riding along when a rating sort is on. */
-const edge = (t: TeamSeason, g: TeamGauge, rating: 'off' | 'def' | null) => {
+/** The row's right edge: the team's three mini dials, same idiom as a player's (his ruling).
+ * Ice is the team tone; a ranked sort turns its own dial gold. No legal five reads "—". */
+function RowDials({ t, sorted }: { t: TeamSeason; sorted: 'ovr' | 'off' | 'def' | null }) {
   const o = ovrOf(t)
-  if (o === null) return '—'
-  return rating && g ? `${rating.toUpperCase()} ${g[rating]} · OVR ${o}` : `OVR ${o}`
+  const g = gaugeOf(t)
+  if (o === null || g === null) return <span className="tdb-gauge">—</span>
+  return (
+    <span className="pdials">
+      <Dial label="OVR" value={o} tone={sorted === 'ovr' ? 'you' : 'them'} />
+      <Dial label="OFF" value={g.off} tone={sorted === 'off' ? 'you' : 'them'} />
+      <Dial label="DEF" value={g.def} tone={sorted === 'def' ? 'you' : 'them'} />
+    </span>
+  )
 }
 
 /** 1..99 or null; the inputs are free text, so garbage reads as no bound. */
@@ -314,7 +322,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                       {t.rec ? ` · ${t.rec}` : ''}
                     </i>
                   </span>
-                  <span className="tdb-gauge">{edge(t, null, null)}</span>
+                  <RowDials t={t} sorted={null} />
                   <span className="tdb-go">→</span>
                 </button>
               ))}
@@ -337,7 +345,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 </span>
                 <i />
               </div>
-              {(year === null ? teams.slice(0, CAP) : teams).map(({ t, g }) => (
+              {(year === null ? teams.slice(0, CAP) : teams).map(({ t }) => (
                 <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
                   <span className="lwho">
                     <b>{t.team}</b>
@@ -348,7 +356,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                       {year === null ? '' : `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool`}
                     </i>
                   </span>
-                  <span className="tdb-gauge">{edge(t, g, rating)}</span>
+                  <RowDials t={t} sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)} />
                   <span className="tdb-go">→</span>
                 </button>
               ))}
