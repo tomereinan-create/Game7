@@ -126,7 +126,12 @@ describe('player data (stats-only doctrine)', () => {
     const curry = PLAYERS.find((p) => p.name === "Stephen Curry '16")!
     expect(curry.ovr).toBeGreaterThanOrEqual(92)
     expect(curry.o_ovr).toBeGreaterThanOrEqual(95)
-    for (const n of ["LeBron James '13", "Kawhi Leonard '17"]) expect(PLAYERS.find((p) => p.name === n)!.ovr).toBeGreaterThanOrEqual(96)
+    // recal_67 MOVED THIS PIN, and the move is the round working as written: the DEF display
+    // multiplier deflated 1.10 -> 1.03 (the fossil that floated every defender ~7 over his own
+    // composite), so a two-way king whose claim ran through D gives some display back — Kawhi '17
+    // D 99 -> 93, OVR 96 -> 94. LeBron '13 keeps 98 (his offence-led reading carries the OVR max).
+    expect(PLAYERS.find((p) => p.name === "LeBron James '13")!.ovr).toBeGreaterThanOrEqual(96)
+    expect(PLAYERS.find((p) => p.name === "Kawhi Leonard '17")!.ovr).toBeGreaterThanOrEqual(94)
     // flawless anchors outrank fouling rim gods: discipline keeps meaning something on the card
     // recal 5 (trust no longer zeroed at high usage) lifts Giannis's perdef: 94 vs 95 now, was 95 vs 94. Within a point.
     // r36 WIDENED THIS GAP from 2 to 3, and the reason is the round working as written. Height is now a
@@ -137,7 +142,10 @@ describe('player data (stats-only doctrine)', () => {
     // r54 WIDENED IT AGAIN, 3 -> 4, and again by design: the drep discount now keys on inches above
     // the 6'8" band edge, so Giannis (6'11, factor 0.8) keeps more of his votes than Gobert (7'1,
     // 0.53) — the round's own words are that voted wings rise relative to the tallest men.
-    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 4)
+    // recal_67 WIDENED IT AGAIN, 4 -> 5, and again by design: the display deflation (1.10 -> 1.03 with
+    // DEF_TOP re-derived 104.5 -> 98.67) leaves Giannis '20 above the 93 knee, where the re-derived band
+    // now STRETCHES (slope 6/5.67), while Gobert '19 (composite 84.1) reads identity — 92 vs 87.
+    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 5)
     // o_ovr / d_ovr on everyone, inside +-3 of the spec anchors; OVR is not rebuilt from them
     const near = (name: string, o: number, d: number) => {
       const p = PLAYERS.find((x) => x.name === name)!
@@ -150,10 +158,14 @@ describe('player data (stats-only doctrine)', () => {
     }
     // recal batch 2 anchors (spec): LeBron O95/D96, Kawhi O92/D99, Giannis O91/D93, Shaq O90/D89, Curry O99/D62,
     // Dwight O75/D97, Gobert O61/D96, Trae O91/D35, Rondo O60/D65
+    // recal_67 RE-BASED THE D ANCHORS that sat in the identity belt (below the 93 band knee): the DEF
+    // display multiplier deflated 1.10 -> 1.03, so every such anchor gives back the ~6% float it never
+    // earned. Anchors updated to the measured post-67 cards (Curry 81->75, Gobert 96->89, Trae 43->37,
+    // Rondo 92->85, Payton 98->88); orderings untouched (zero inversions measured). O anchors unmoved.
     // D 62 -> 70 (tracking as measured evidence) -> 81: recal_16's lockdown tier floors him. He is not
     // a charity case in the tracking data — opponents shot 39.6% against him in '16 against 43.2%
     // expected, on 854 shots. The floor exists precisely so percentile dilution cannot bury that.
-    near("Stephen Curry '16", 99, 81)
+    near("Stephen Curry '16", 99, 75)
     near("LeBron James '13", 95, 96)
     near("Kawhi Leonard '17", 92, 99)
     // The 91 was the spec anchor; he had drifted to 96 across the offense recals, and r55's BIG HUB
@@ -181,18 +193,18 @@ describe('player data (stats-only doctrine)', () => {
     // r51 TOOK IT: the paint bonus now ramps on volume (zero below 70, full at 80+), and Gobert at
     // volume 27 is the man the old comment named. His bonus is gone entirely: 61 -> 54. The great
     // interior scorers (volume 85+) sit on vol_f = 1.0 and never felt it.
-    near("Rudy Gobert '19", 54, 96)
+    near("Rudy Gobert '19", 54, 89)
     // This anchor has now been round-tripped by two rulings. Audit ruling 2 moved perdef to the Overall
     // slice and he read 35; recal_20 moves it BACK to shots from 15 feet out — the shots a perimeter
     // defender is responsible for — and he reads 43 on perdef 42. Ruling 2's "Trae <= 40" acceptance is
     // superseded by that later order; he grades better outside the paint than he does over all shots.
-    near("Trae Young '22", 91, 43)
+    near("Trae Young '22", 91, 37)
     // The 98 was the original spec anchor; he had drifted to the tolerance edge (92) across the
     // perdef recals, and r54 is the round that finally names why: a small guard's relative edge in
     // the voted band WAS the bug — the height factor paid guards full credit while it taxed every
     // wing. His votes still carry (D 90); the anchor records the corrected class.
-    near("Rajon Rondo '09", 60, 92) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
-    near("Gary Payton '96", 77, 98) // the Payton fix: a lifetime guard is never a big
+    near("Rajon Rondo '09", 60, 85) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
+    near("Gary Payton '96", 77, 88) // the Payton fix: a lifetime guard is never a big
     expect(Math.max(...PLAYERS.map((p) => p.ovr))).toBeGreaterThanOrEqual(97) // v2: the ceiling is no longer reached
     const five = PLAYERS.slice(0, 5)
     const l = compile(five)
