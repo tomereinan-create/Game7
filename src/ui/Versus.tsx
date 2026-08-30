@@ -6,9 +6,12 @@ import { LINES } from './Stat'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
+import { WHEEL, type TeamSeason } from './Draft'
+import { startingFive, winsOf, YEARS } from './TeamDb'
 import { PlayerCard } from './PlayerCard'
 
 const VS_POOL = 12
+const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 /** Snake order so the first pick isn't decisive: A B B A A B B A A B. */
 const ORDER: (0 | 1)[] = [0, 1, 1, 0, 0, 1, 1, 0, 0, 1]
 
@@ -48,23 +51,31 @@ function neutral(note: string, [a, b]: [string, string]): string {
  */
 export function Versus({ onHome }: { onHome: () => void }) {
   const [seed, setSeed] = useState(() => (Math.random() * 0xffffffff) >>> 0)
-  const names: [string, string] = ['Player 1', 'Player 2']
+  const [names, setNames] = useState<[string, string]>(['Player 1', 'Player 2'])
   const [picks, setPicks] = useState<[string[], string[]]>([[], []])
+  // his ruling: either player may load a real team instead of drafting - the whole five at once
+  const [loaded, setLoaded] = useState<[string[] | null, string[] | null]>([null, null])
+  const [loadFor, setLoadFor] = useState<0 | 1 | null>(null)
+  const [loadYear, setLoadYear] = useState(YEARS[0])
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<SeriesResult | null>(null)
 
   const pool = useMemo(() => versusPool(seed), [seed])
+  const countOf = (i: 0 | 1) => (loaded[i] ? DRAFT_SIZE : picks[i].length)
+  const done = countOf(0) + countOf(1) === DRAFT_SIZE * 2
+  // a loaded side is off the clock: the snake collapses to whoever still drafts
   const turn = picks[0].length + picks[1].length
-  const done = turn === DRAFT_SIZE * 2
-  const who = ORDER[Math.min(turn, ORDER.length - 1)]
+  const who: 0 | 1 = loaded[0] && !loaded[1] ? 1 : loaded[1] && !loaded[0] ? 0 : ORDER[Math.min(turn, ORDER.length - 1)]
 
-  const five = (i: 0 | 1) => pool.filter((p) => picks[i].includes(p.name))
+  const five = (i: 0 | 1) => (loaded[i] ? (loaded[i]!.map((n) => BY_NAME.get(n)).filter(Boolean) as Player[]) : pool.filter((p) => picks[i].includes(p.name)))
   const A = five(0)
   const B = five(1)
+  /** One man, one matchup - a pool card whose player is already fielded (either side) is dead. */
+  const fielded = new Set([...A, ...B].map((p) => p.player))
 
   const take = (p: Player) => {
-    if (done || result) return
-    if (picks[0].includes(p.name) || picks[1].includes(p.name)) return
+    if (done || result || loaded[who]) return
+    if (picks[0].includes(p.name) || picks[1].includes(p.name) || fielded.has(p.player)) return
     setPicks((cur) => {
       const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
       next[who].push(p.name)
@@ -72,11 +83,39 @@ export function Versus({ onHome }: { onHome: () => void }) {
     })
   }
 
+  const loadTeam = (t: TeamSeason) => {
+    if (loadFor === null) return
+    const side = loadFor
+    const other = five(side === 0 ? 1 : 0)
+    const otherMen = new Set(other.map((p) => p.player))
+    const poolCands = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !otherMen.has(p.player))
+    const names5 = startingFive(poolCands).five.filter((p): p is Player => !!p).map((p) => p.name)
+    setLoaded((cur) => {
+      const next: [string[] | null, string[] | null] = [cur[0], cur[1]]
+      next[side] = names5
+      return next
+    })
+    setPicks((cur) => {
+      const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
+      next[side] = []
+      return next
+    })
+    setNames((cur) => {
+      const next: [string, string] = [cur[0], cur[1]]
+      next[side] = `'${String(t.y).slice(2)} ${t.team.split(' ').pop()}`
+      return next
+    })
+    setLoadFor(null)
+  }
+
   const sim = () => setResult(simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA))
 
   const reset = () => {
     setSeed((Math.random() * 0xffffffff) >>> 0)
     setPicks([[], []])
+    setLoaded([null, null])
+    setNames(['Player 1', 'Player 2'])
+    setLoadFor(null)
     setInfo(null)
     setResult(null)
   }
@@ -147,24 +186,60 @@ export function Versus({ onHome }: { onHome: () => void }) {
       <div className="rule2" />
 
       <div className="vs-head">
-        <div className={`vs-side ${!done && who === 0 ? 'now' : ''}`}>
+        <div className={`vs-side ${!done && who === 0 && !loaded[0] ? 'now' : ''}`}>
           <b>{names[0]}</b>
-          <span>
-            {picks[0].length}/5 picked{!done && who === 0 ? ' · on the clock' : ''}
-          </span>
+          <span>{loaded[0] ? 'a real five, loaded' : `${picks[0].length}/5 picked${!done && who === 0 ? ' · on the clock' : ''}`}</span>
+          <button className="map-link" onClick={() => setLoadFor(loadFor === 0 ? null : 0)}>
+            {loaded[0] ? 'Swap the team →' : 'Load a real team →'}
+          </button>
         </div>
         <div className="vs-mid">
           SNAKE
           <br />
           ORDER
         </div>
-        <div className={`vs-side r ${!done && who === 1 ? 'now' : ''}`}>
+        <div className={`vs-side r ${!done && who === 1 && !loaded[1] ? 'now' : ''}`}>
           <b>{names[1]}</b>
-          <span>
-            {picks[1].length}/5 picked{!done && who === 1 ? ' · on the clock' : ''}
-          </span>
+          <span>{loaded[1] ? 'a real five, loaded' : `${picks[1].length}/5 picked${!done && who === 1 ? ' · on the clock' : ''}`}</span>
+          <button className="map-link" onClick={() => setLoadFor(loadFor === 1 ? null : 1)}>
+            {loaded[1] ? 'Swap the team →' : 'Load a real team →'}
+          </button>
         </div>
       </div>
+
+      {loadFor !== null ? (
+        <div className="card">
+          <div className="card-head">
+            <span className="label">A real team · for {names[loadFor]}</span>
+            <button className="chip-btn" onClick={() => setLoadFor(null)}>
+              Never mind
+            </button>
+          </div>
+          <div className="yr-rail">
+            {YEARS.map((y) => (
+              <button key={y} className={`sortb ${y === loadYear ? 'on' : ''}`} onClick={() => setLoadYear(y)}>
+                {y}
+              </button>
+            ))}
+          </div>
+          {WHEEL.filter((t) => t.y === loadYear)
+            .sort((a, b) => winsOf(b.rec) - winsOf(a.rec))
+            .map((t) => (
+              <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
+                <span className="lwho">
+                  <b>{t.team}</b>
+                  <i>
+                    {t.ab}
+                    {t.rec ? ` · ${t.rec}` : ''}
+                    {t.div ? ` · ${t.div}` : ''}
+                  </i>
+                </span>
+                <span className="tdb-go">→</span>
+              </button>
+            ))}
+          <div className="cap hint">Their best legal five by OVR takes the side — the draft board is the other player’s.</div>
+        </div>
+      ) : null}
 
       {A.length && B.length ? (
         <div className="card">
@@ -196,7 +271,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
               pick={null}
               owner={o}
               ownerLabel={o !== null ? names[o].toUpperCase() : undefined}
-              dimmed={false}
+              dimmed={o === null && fielded.has(p.player)}
               expanded={info === p.name}
               onClick={() => take(p)}
               onInfo={() => setInfo(info === p.name ? null : p.name)}
