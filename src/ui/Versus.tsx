@@ -29,22 +29,6 @@ function versusPool(seed: number): Player[] {
   return out
 }
 
-/** The resolver's notes are written from side A's chair; on a neutral screen name the sides. */
-export function neutral(note: string, [a, b]: [string, string]): string {
-  const map: Record<string, string> = {
-    'we owned the paint': `${a} owned the paint`,
-    'walled off inside': `${b} walled off the paint`,
-    'our threes rained': `${a} rained threes`,
-    'ice cold from deep': `${a} ice cold from deep`,
-    'their paint game died': `${b}'s paint game died`,
-    'they killed us inside': `${b} killed it inside`,
-    'we locked the arc': `${a} locked the arc`,
-    'threes rained on us': `${b} rained threes`,
-    'better players, simple': `${a} had the better players`,
-  }
-  return map[note] ?? note
-}
-
 /**
  * Hot-seat: two people, one phone. Alternate picks from one board, then the
  * two fives play a best-of-seven with the exact campaign resolver.
@@ -152,7 +136,6 @@ export function Versus({ onHome }: { onHome: () => void }) {
               <span className="sc">
                 {g.us}–{g.them}
               </span>
-              <span className="note">{neutral(g.note, names)}</span>
             </div>
           ))}
         </div>
