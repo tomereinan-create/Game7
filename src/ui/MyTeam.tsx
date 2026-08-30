@@ -230,7 +230,7 @@ export function MyTeam({
     setInfo(null)
   }
 
-  const row = (p: Player, opts: { sub: string; dim?: boolean; on?: boolean; onTap?: () => void }) => (
+  const row = (p: Player, opts: { sub: string; dim?: boolean; on?: boolean; onTap?: () => void; dur?: number; worn?: boolean }) => (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
         className={`row dr ${opts.on ? 'on' : ''} ${opts.dim ? 'off' : ''}`}
@@ -245,6 +245,13 @@ export function MyTeam({
         }}
       >
         <span className="pname">
+          {/* his report: the sub line's durability tail truncates on the phone — the number gets its own badge */}
+          {opts.dur !== undefined ? (
+            <span className={`mt-dur ${opts.worn ? 'danger' : ''}`}>
+              <b>{opts.dur}</b>
+              <i>DUR</i>
+            </span>
+          ) : null}
           <span className="who">
             <CardName p={p} />
             <i>{opts.sub}</i>
@@ -371,9 +378,12 @@ export function MyTeam({
             {five.map((p) => {
               const o = floorOpts(p)
               return row(p, {
+                // the number lives in the DUR badge now, so the sub can never truncate it away
                 sub: o.worn
                   ? `${assigned[p.name] ?? posOf(p.name)[0]} · ${archetype(p)} · WORN OUT — must be replaced`
-                  : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)} · ${left(p.name)} durability left`,
+                  : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)}`,
+                dur: left(p.name),
+                worn: o.worn,
                 dim: o.worn || o.blocked,
                 on: o.on,
                 onTap: o.onTap,
@@ -382,7 +392,8 @@ export function MyTeam({
             {benchOpen ? (
               bench ? (
                 row(bench, {
-                  sub: `BENCH · ${archetype(bench)} · resting, does not play · ${left(bench.name)} durability${heal ? ` · +${heal} a series` : ''}`,
+                  sub: `BENCH · ${archetype(bench)} · resting, does not play${heal ? ` · +${heal} a series` : ''}`,
+                  dur: left(bench.name),
                   on: resting || out === bench.name,
                   onTap: benchTap,
                 })

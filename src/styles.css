@@ -2384,6 +2384,13 @@ button {
 .pc-bar { margin: 0; flex: none; }
 .pc-head { flex: none; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 
+/* ---- my team: the durability badge (death match) ---- */
+.mt-dur { flex: none; display: grid; justify-items: center; gap: 0; min-width: 32px; padding: 3px 5px 2px; border: 1px solid var(--line-3); border-radius: 6px; }
+.mt-dur b { font-family: var(--mono); font-size: 13px; font-weight: 700; line-height: 1; color: var(--ink); }
+.mt-dur i { font-style: normal; font-family: var(--mono); font-size: 6.5px; letter-spacing: 0.14em; color: var(--muted); }
+.mt-dur.danger { border-color: var(--danger-line); background: var(--danger-tint); }
+.mt-dur.danger b, .mt-dur.danger i { color: var(--danger); }
+
 /* ---- the heat hexagon ---- */
 .heathex { display: block; }
 .pc-rail .heathex { margin: 6px auto 0; }
