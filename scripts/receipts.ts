@@ -1700,6 +1700,53 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '72': () => {
+    console.log(`${EOL}recal_72 — IS_BIG: A BIG'S RIM PRESENCE MUST MATCH HIS PERIMETER RATING (design-side round "67"; our 67-71 were taken)`)
+    const V72 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `shipped at 67 · current ${V72}`, '>= 67 (63 flags flipped, 61 d_ovr moved, marg re-percentiled on 1,521)', V72 >= 67)
+    src('the clause, verbatim, shape branch only', OVR, /a\['rimprot'\] >= 55 and a\['3pt'\] < 45 and a\['rimprot'\] >= a\['perdef'\]/, 'position branches untouched')
+    note('  WEIGHTS DISCREPANCY (third stale quote): the round prices perimeter at 0.75/0.09/0.09/0.07;')
+    note('  ours is 0.79/0.05/0.09/0.07 since recal_57/62, times the size modifier. Verified with OUR')
+    note('  weights: the named card reads ~75 on the perimeter path, 68 on the big path — matches.')
+    // the named card — position-big, unmoved, honest MISS
+    const og = g("OG Anunoby '26")
+    line("THE NAMED CARD: OG Anunoby '26", `big ${og.big} · DEF ${og.d_ovr} (was 68)`, '~76 — NOT REACHED (he is a POSITION big, not a shape big)', og.d_ovr === 76)
+    note('  ROOT CAUSE: his lifetime B-Ref positions are SF/PF, never PG/SG — the position rule the round')
+    note('  itself keeps FIRST decides him before the shape clause is consulted (his 3pt is 74; no shape')
+    note('  clause ever held him). The round\'s fix is correct for the class it describes and cannot reach')
+    note('  the card it names. If the design wants Anunoby-class wings read perimeter, the lever is the')
+    note('  POSITION branch (SF+PF-listed wings) — a named sub-ruling. Reported, not tuned.')
+    // the flips
+    src('the full flip list tool', io('scripts/flips72.ts'), /isBig\(p, false\) !== isBig\(p, true\)/, 'npx vite-node scripts/flips72.ts prints all 63')
+    note('  THE FLIPS: 63, every one True -> False, every one an SF-class stopper whose perimeter rating')
+    note('  exceeded his rim presence. d_ovr deltas -1..+18, mean +5.2. The class the round described:')
+    note("  Jimmy Butler '14 D 67->85 · Iguodala '13 74->91 · Pippen '00 80->90 · Metta '06 75->86 ·")
+    note("  M.L. Carr '80 66->79 · Sefolosha '10 74->82 · Reggie Williams '95 67->73 (the earlier")
+    note("  DEF-70-sheet case). Tony Allen himself was ALREADY perimeter — the Payton rule (lifetime")
+    note('  guard) resolved him rounds ago; the quirk that remained lived in SF-only stoppers.')
+    for (const [nm, d] of [["Jimmy Butler '14", 85], ["Andre Iguodala '13", 91], ["Scottie Pippen '00", 90], ["Metta World Peace '06", 86]] as const)
+      line(`  ${nm}`, `big ${g(nm).big} · D ${g(nm).d_ovr}`, `perimeter-classified, D ${d}`, g(nm).big === false && g(nm).d_ovr === d)
+    // the six named bigs
+    for (const [nm, d] of [["Rudy Gobert '19", 87], ["Draymond Green '16", 92], ["Kevin Garnett '04", 94], ["Tim Duncan '03", 95], ["Nikola Jokić '26", 67], ["Karl-Anthony Towns '18", 66]] as const)
+      line(`  UNCHANGED: ${nm}`, `big ${g(nm).big} · D ${g(nm).d_ovr}`, `still big, D ${d}`, g(nm).big === true && g(nm).d_ovr === d)
+    note('  DEF distribution: mean 58.74 -> 58.77 (61 cards moved). o_ovr moved on 6 cards, OVR on 51;')
+    note('  marg on 1,521 (the per-class marginal percentile pools reshuffled around the 63 movers).')
+    // gauge constants per the r71 law
+    const gsw72 = (() => {
+      const t = WHEEL64.find((x) => x.y === 2017 && /Warriors/.test(x.team))!
+      return gauges64(bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x), 2017)
+    })()
+    const det72 = (() => {
+      const t = WHEEL64.find((x) => x.y === 2004 && /Pistons/.test(x.team))!
+      return gauges64(bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x), 2004)
+    })()
+    line('r71 summit pins survive EXACTLY', `GSW '17 OFF ${gsw72.off} · Pistons '04 DEF ${det72.def}`, '99 and 99 (constants re-derived per the r71 law: OFF_MID 126.89 -> 126.87, DEF_MID 109.18 -> 109.17)', gsw72.off === 99 && det72.def === 99)
+    note('  Anchor-suite DEF readings (all-time scale; the pctl-era bands are receipt-66\'s ledger): OKC')
+    note('  \'26 72 · Knicks \'25 36 · Celtics \'24 69 · Grizzlies \'13 70 · Wizards \'25 UNMEASURABLE.')
+    note('  pool.ts isBigShape (the archetype tree\'s position-free shape law) is a TAGS-layer rule with')
+    note('  its own sweep ratification — not ordered here, left standing, recorded for a tags round.')
+    src('r59 re-ratification recorded', io('src/engine/tactics.ts'), /hunt: 3\.8,[\s\S]{0,60}crashDef: 0\.5,/, 'the 51-OVR pool shift broke hunt/crashDef; re-ratified THROUGH the harness: 3.65->3.80, .44->.50 — all nine in band')
+  },
   '71': () => {
     console.log(`${EOL}recal_71 — THE ALL-TIME GAUGE SCALE (his rulings: "make it more balanced, 99 should be one of the greatest offense ever (2017 warriors)" + "Do the same for DEF, 99 is 2004 pistons")`)
     const V71 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
