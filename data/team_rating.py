@@ -7,7 +7,9 @@ KNOBS = dict(
     SLOPE_UP_MAX  = 0.9,    # % TS lost per usage pt gained, for a zero-creation player
     SLOPE_UP_MIN  = 0.25,   # same, for a perfect creator
     SLOPE_DOWN    = 0.55,   # % TS gained per usage pt shed... but only for efficient players (see gate)
-    AMP_MAX       = 0.06,   # max TS multiplier bonus for low-usage players fed by elite creation
+    AMP_MAX       = 0.06,
+    FIT_WIDEN     = 2.7,    # recal_64: the fit gap (interactions vs repriced-only) widened
+    FIT_CAP       = 4.0,    # ...and capped: perfect fit +4, friction -4   # max TS multiplier bonus for low-usage players fed by elite creation
     FLOOR_USG     = 10.0,   # nobody can be squeezed below this share
 )
 
@@ -66,7 +68,10 @@ def team_offense(five):
                 x *= 1 + 0.05*min(1.0, spc/0.55)
         x = ei * min(1.12, max(0.90, x/ei))   # cap total interaction stack per player
         e4.append(x)
-    OFF = sum(u2i*e4i for u2i, e4i in zip(u2, e4)) * 2
+    OFF_N = sum(u2i*e2i for u2i, e2i in zip(u2, e2)) * 2   # repriced, no interaction channels
+    OFF_F = sum(u2i*e4i for u2i, e4i in zip(u2, e4)) * 2
+    fit = min(KNOBS['FIT_CAP'], max(-KNOBS['FIT_CAP'], KNOBS['FIT_WIDEN']*(OFF_F - OFF_N)))
+    OFF = OFF_N + fit
     # (3) fouldraw x FT: manufactured points (matchup-discipline interaction reserved for the matchup layer)
     OFF += sum(u2i * (a['fouldraw']/99) * (a['ft']/100) for u2i, a in zip(u2, A)) * 0.06
     # (4) ORB feeds on misses: the lower the team's shooting, the more second chances the glass reclaims

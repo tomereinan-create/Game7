@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 62
+PIPELINE_VERSION = 63
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -196,6 +196,12 @@ def o_score(p):
         std += 0.05 * a['playvol']
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
+    # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
+    # no channel below the 80-3pt specialist gate — low-usage shooters now get paid for the job
+    # they actually do: spacing, converting, not turning it over, not fouling. Volume scorers are
+    # untouched by construction (their standard path is higher than the floor).
+    if a['3pt'] >= 68 and a['volume'] < 55:
+        std = max(std, 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline'])
     return std
 def d_score(p):
     # class-dependent: bigs' defensive votes route to rimprot by design, so perdef understates them;

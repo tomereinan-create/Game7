@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import SALARIES from '../data/salaries.json'
-import TEAMSEASONS from '../data/teamseasons.json'
+import { WHEEL, type TeamSeason } from '../data/wheel'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, ROUNDS, SIGMA } from '../config'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
@@ -9,7 +9,8 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName } from './CardSheet'
-import { naiveAssignment, ratings100, type Assignment } from '../engine/offense'
+import { naiveAssignment, type Assignment } from '../engine/offense'
+import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -21,17 +22,9 @@ import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 
-export interface TeamSeason {
-  y: number
-  c: 'E' | 'W'
-  team: string
-  ab: string
-  /** Division that season (four before the 2004 realignment, six after), and the team's record. */
-  div: string | null
-  rec: string | null
-  p: string[]
-}
-export const WHEEL = TEAMSEASONS as TeamSeason[]
+// the wheel data lives in data/wheel now (the gauges need it engine-side); old importers keep working
+export { WHEEL } from '../data/wheel'
+export type { TeamSeason } from '../data/wheel'
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const SAL = SALARIES as Record<string, { sal: number; cap: number; pct: number }>
 const money = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${Math.round(n / 1e3)}K`)
@@ -595,7 +588,10 @@ export function Draft({
             ? scoutOpen
               ? '▴'
               : '▾'
-            : `OFF ${Math.round(ratings100(opponent.players).off)} · DEF ${Math.round(ratings100(opponent.players).def)} ${scoutOpen ? '▴' : '▾'}`}
+            : (() => {
+                const g = opponent.season ? seasonGauges(opponent.players, opponent.season) : fieldGauges(opponent.players)
+                return `OFF ${g.off} · DEF ${g.def} ${scoutOpen ? '▴' : '▾'}`
+              })()}
         </span>
       </button>
       {scoutOpen ? (
@@ -607,7 +603,7 @@ export function Draft({
           <span className="cap">Season lines</span>
         </div>
         <div className="opp-name">{opponent.team}</div>
-        {user ? null : <TeamDials five={opponent.players} tone="them" />}
+        {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         <div className="opp-line">
           {opponent.record ? `${opponent.record} · ` : ''}{user ? '' : <>vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}</>}
           {theirs.net > 0 ? '+' : ''}
@@ -908,7 +904,7 @@ export function Draft({
             </span>
           </div>
         ) : null}
-        {five.length ? <TeamDials five={five} tone="you" /> : null}
+        {five.length ? <TeamDials five={five} tone="you" vs="field" /> : null}
         {POSITIONS.map((x) => {
           const n = slots[x]
           const p = n ? BY_NAME.get(n) : undefined

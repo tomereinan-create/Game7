@@ -23,6 +23,9 @@ import { LINES as LINES61 } from '../src/ui/Stat'
 import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
+import { seasonGauges as gauges64 } from '../src/engine/gauges'
+import { startingFive as bestFive64 } from '../src/engine/bestfive'
+import { WHEEL as WHEEL64 } from '../src/data/wheel'
 import { _reset as achReset, ACHIEVEMENTS, achSettleSeries, achState } from '../src/state/achievements'
 import type { Progress as Prog63 } from '../src/state/campaign'
 
@@ -1696,6 +1699,47 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '64': () => {
+    console.log(`${EOL}recal_64 — THE OKC PROBLEM (design-side round "62"; our 62/63 were taken)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '63', /PIPELINE_VERSION = 63/.test(OVR) && /PIPELINE_VERSION = 63/.test(RATINGS))
+    src('(1) the off-ball floor', OVR, /if a\['3pt'\] >= 68 and a\['volume'\] < 55:/, 'low-usage shooters paid for spacing, converting, security, discipline')
+    src('(3) fit pays, ts', io('src/engine/offense.ts'), /FIT_WIDEN: 2\.7,[\s\S]{0,40}FIT_CAP: 4,/, 'the reconciliation gap widened ~2.7x, capped +-4 team offense')
+    src('(3) fit pays, py mirror', io('data/team_rating.py'), /FIT_WIDEN\s+= 2\.7,/, 'identical constants both sides (parity holds, 50 lineups +-0.5)')
+    src('(2) gauges within season', io('src/engine/gauges.ts'), /export function seasonGauges/, 'percentile vs the same season, basis labeled on the dial')
+    const g64 = (n: string) => PLAYERS.find((q) => q.name === n)!
+    // (1) the named cards — measured, not promised
+    note('(1) NAMED CARDS — the floor is live (42 cards moved: Bowen +4..+5, Snell +5..+6 O) but the')
+    note('    three named men DID NOT move, each for a reason in his own card:')
+    note(`    Dort '26 O ${g64("Luguentz Dort '26").o_ovr} (design expected ~47) — his floor is 0.38·70 + 0.20·27(eff) + 0.08·55 + 0.06·9(disc)`)
+    note('    = 36.9, BELOW his standard path: the card says eff 27, discipline 9. The design imagined a')
+    note("    cleaner Dort than the card records. Wallace '26: 3pt 45 — under the floor's own 68 gate.")
+    note("    Joe '26 O 72: his standard path already pays more than the floor. Reported, not tuned.")
+    line("  Dort '26 unchanged", `O ${g64("Luguentz Dort '26").o_ovr}`, '38 (was 38)', g64("Luguentz Dort '26").o_ovr === 38)
+    line("  Tony Snell '18 (the class the floor is FOR)", `O ${g64("Tony Snell '18").o_ovr}`, '50 (was 45)', g64("Tony Snell '18").o_ovr === 50)
+    line("  Bruce Bowen '06", `O ${g64("Bruce Bowen '06").o_ovr}`, '45 (was 40)', g64("Bruce Bowen '06").o_ovr === 45)
+    // (2)+(3): OKC gauges and the leaderboard
+    const okcT = WHEEL64.find((t) => t.y === 2026 && /Thunder/.test(t.team))!
+    const okc5 = bestFive64(okcT.p.map((n) => PLAYERS.find((q) => q.name === n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+    const okcG = gauges64(okc5, 2026)
+    line('(2) OKC ’26 gauge, within season', `OFF ${okcG.off} · DEF ${okcG.def} · basis "${okcG.basis}" · pool ${okcG.n}`, 'was OFF 51 vs all history, unlabeled', okcG.basis === 'vs 2026' && okcG.off > 51)
+    const lb = WHEEL64.filter((t) => t.y === 2026)
+      .map((t) => {
+        const five = bestFive64(t.p.map((n) => PLAYERS.find((q) => q.name === n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+        return { team: t.team, off: five.length === 5 ? ratings100(five).offRaw : -1 }
+      })
+      .filter((r) => r.off > 0)
+      .sort((x, y) => y.off - x.off)
+    const okcRank = lb.findIndex((r) => /Thunder/.test(r.team)) + 1
+    note(`(3) 2026 OFF leaderboard (best-five, post 1+3): ${lb.slice(0, 3).map((r, i) => `${i + 1} ${r.team} ${r.off.toFixed(1)}`).join(' · ')}`)
+    line('  CALIBRATION TARGET: OKC top-3', `OKC is ${okcRank} of ${lb.length} (was 11 pre-round)`, 'top-3 — NOT REACHED', okcRank <= 3)
+    note('  The target is unreachable by this mechanism at ANY widen: the cap saturates and the ordering')
+    note('  collapses to the neutral base, where OKC sits ~10th — an OFF-maximal-five reading lands 11th.')
+    note('  Root indicator for the design side: the champs’ complements rate poorly in the underlying')
+    note("  attrs (Dort eff 27 / disc 9, Wallace eff 25, Joe volume 41). The fit channels cannot outrun")
+    note('  a neutral base built on those cards. WIDEN stays 2.7 — the value at which the best-fit 2026')
+    note('  roster gains +2.6 and the cap (+4) just engages, exactly the spec’s stated range.')
+    for (const r of runHarness(200)) line(`  r59 harness: ${r.tactic}`, `random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'the law holds unre-ratified', r.pass)
   },
   '63': () => {
     console.log(`${EOL}recal_63 — ACHIEVEMENTS: 57, EVERY DETECTOR NAMED TO ITS STATE`)

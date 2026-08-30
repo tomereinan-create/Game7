@@ -2580,3 +2580,7 @@ body.wide .cmd { margin-top: -14px; }
 /* the Advanced window's own verdict line (scout mode only) */
 .adv-ovr { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 .adv-ovr b { color: var(--you); font-weight: 700; }
+
+/* recal_64: the gauge's basis, visible wherever the percentile dials show */
+.gauge-basis { display: block; width: 100%; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-top: 1px; }
+.node-dials { flex-wrap: wrap; }

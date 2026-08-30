@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
-import { ratings100 } from '../engine/offense'
+import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { balance } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
@@ -69,8 +69,13 @@ export function LevelMap({
   const total = totalStars(progress)
   const cleared = progress.stars.filter((s) => s > 0).length
   const bal = balance(progress)
-  // Opponent dials, opponent-independent by construction, so computed once per map.
-  const dials = useMemo(() => opponents.map((o) => ratings100(o.players)), [opponents])
+  // recal_64: the NEXT ticket's dials percentile within the opponent's own season — computed for
+  // that one node only (a whole map of season pools would be 47 pools for dials nobody sees).
+  const nowGauge = useMemo(() => {
+    const o = cur ? opponents[cur - 1] : null
+    if (!o) return null
+    return o.season ? seasonGauges(o.players, o.season) : fieldGauges(o.players)
+  }, [cur, opponents])
   /** How far ahead the map reveals: what you have cleared, and the one you are on. */
   const revealed = (state: string) => state !== 'locked'
   /** The ticket stub: team abbreviation (with year off the home era) and the record. */
@@ -182,10 +187,11 @@ export function LevelMap({
                   ))}
                 </span>
               ) : null}
-              {state === 'now' ? (
+              {state === 'now' && nowGauge ? (
                 <span className="node-dials">
-                  <Dial label="OFF" value={dials[i].off} tone="them" />
-                  <Dial label="DEF" value={dials[i].def} tone="them" />
+                  <Dial label="OFF" value={nowGauge.off} tone="them" />
+                  <Dial label="DEF" value={nowGauge.def} tone="them" />
+                  <span className="gauge-basis">{nowGauge.basis}</span>
                 </span>
               ) : null}
             </button>

@@ -9,42 +9,10 @@ import { TeamDials } from './MatchupPanel'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
-export const winsOf = (rec: string | null) => (rec ? parseInt(rec, 10) || 0 : 0)
+export { startingFive, winsOf } from '../engine/bestfive'
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 
-/**
- * The starting five: one man per slot, the legal PG-to-C board that maximizes
- * total OVR — the same position rules the draft plays by.
- */
-export function startingFive(roster: Player[]): { five: (Player | null)[]; bench: Player[] } {
-  const cands = roster.map((p) => ({ p, pos: eligible(LINES[p.name]?.pos) }))
-  let best: (Player | null)[] = POSITIONS.map(() => null)
-  let bestSum = -1
-  const slots: (Player | null)[] = POSITIONS.map(() => null)
-  const used = new Set<string>()
-  const walk = (i: number, sum: number) => {
-    if (i === POSITIONS.length) {
-      if (sum > bestSum) {
-        bestSum = sum
-        best = [...slots]
-      }
-      return
-    }
-    for (const c of cands) {
-      if (used.has(c.p.name) || !c.pos.includes(POSITIONS[i])) continue
-      used.add(c.p.name)
-      slots[i] = c.p
-      walk(i + 1, sum + c.p.ovr)
-      used.delete(c.p.name)
-      slots[i] = null
-    }
-    // a roster hole (nobody left for the slot) still counts as a board
-    walk(i + 1, sum)
-  }
-  walk(0, 0)
-  const picked = new Set(best.filter(Boolean).map((p) => p!.name))
-  return { five: best, bench: roster.filter((p) => !picked.has(p.name)).sort((a, b) => b.ovr - a.ovr) }
-}
+import { startingFive, winsOf } from '../engine/bestfive'
 
 function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean; onTap: () => void }) {
   const l = LINES[p.name]
@@ -141,7 +109,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <span className="cap">Best five by OVR</span>
             </div>
             <div className="opp-name">{picked.team}</div>
-            {detail.dials ? <TeamDials five={detail.fielded} tone="them" /> : null}
+            {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
             <div className="rowhead dr tdb">
               <span>Starting five</span>
               <span className="gcap">PTS · REB · AST</span>

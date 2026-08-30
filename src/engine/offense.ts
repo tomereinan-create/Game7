@@ -38,6 +38,11 @@ export const KNOBS = {
   ORB_PIVOT: 50,
   MISS_TS: 0.6, // miss_factor = 1 + (MISS_TS - wTS)/MISS_SPAN, clamped 0.5..1.5
   MISS_SPAN: 0.08,
+  // recal_64 (design-side "62"): FIT PAYS. The reconciliation channels were worth ~+-1.5 team
+  // offense; widened so perfect fit gains up to +4 and friction loses up to -4. WIDEN calibrated
+  // to the round's named target (OKC '26 top-3 among 2026 team OFF), CAP is the spec's bound.
+  FIT_WIDEN: 2.7,
+  FIT_CAP: 4,
 } as const
 
 /** 0..1: can this player create offense? */
@@ -132,7 +137,11 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
     return stackCap ? ei * stackClamp(x / ei) : x // stack cap
   })
 
-  const base = u2.reduce((acc, ui, i) => acc + ui * e4[i], 0) * 2
+  // the neutral baseline is the repriced line with NO interaction channels; the gap is the fit
+  const baseN = u2.reduce((acc, ui, i) => acc + ui * e2[i], 0) * 2
+  const baseF = u2.reduce((acc, ui, i) => acc + ui * e4[i], 0) * 2
+  const fit = clamp(K.FIT_WIDEN * (baseF - baseN), -K.FIT_CAP, K.FIT_CAP)
+  const base = baseN + fit
   // fouldraw × FT: manufactured points
   const ftPts = u2.reduce((acc, ui, i) => acc + ui * (A[i].fouldraw / 99) * (A[i].ft / 100), 0) * K.FT_POINTS
   let off = base + ftPts

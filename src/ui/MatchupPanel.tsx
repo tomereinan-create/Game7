@@ -1,4 +1,5 @@
 import { defenseVs, matchupMargin, MKNOBS, ratings100, REF_FIVE, scoreVs, type Assignment } from '../engine/offense'
+import { fieldGauges, seasonGauges } from '../engine/gauges'
 import type { Player } from '../engine/types'
 
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
@@ -39,8 +40,19 @@ export function PlayerDials({ p, tone = 'you' }: { p: Player; tone?: 'you' | 'th
   )
 }
 
-/** The two dials a team card carries, with the raw numbers underneath. */
-export function TeamDials({ five, tone }: { five: Player[]; tone: 'you' | 'them' }) {
+/** The two dials a team card carries, with the raw numbers underneath. recal_64: pass `vs`
+ * (a season, or 'field' for the campaign's opponents) to percentile WITHIN that pool — the
+ * basis rides on the dial so a 64-18 champ is never judged against all of history unlabeled. */
+export function TeamDials({ five, tone, vs }: { five: Player[]; tone: 'you' | 'them'; vs?: number | 'field' }) {
+  if (vs !== undefined) {
+    const g = vs === 'field' ? fieldGauges(five) : seasonGauges(five, vs)
+    return (
+      <div className="dials">
+        <Dial label="OFF" value={g.off} tone={tone} sub={g.basis} />
+        <Dial label="DEF" value={g.def} tone={tone} sub={g.basis} />
+      </div>
+    )
+  }
   const r = ratings100(five)
   return (
     <div className="dials">
