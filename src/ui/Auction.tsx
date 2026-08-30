@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SIGMA } from '../config'
+import { achMachineWin } from '../state/achievements'
 import { PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { compile, simSeries } from '../engine/resolver'
@@ -218,7 +219,11 @@ export function Auction({ onHome }: { onHome: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [foe, skill, lot, price, top, passed, budget, slots, assign, done, result])
 
-  const sim = () => setResult(simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA))
+  const sim = () => {
+    const r = simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA)
+    if (foe === 'bot' && r.won) achMachineWin(skill) // the human sits in the P1 chair; a Machine win banks nothing
+    setResult(r)
+  }
 
   const reset = () => {
     setSeed((Math.random() * 0xffffffff) >>> 0)
