@@ -1711,7 +1711,8 @@ const ROUNDS: Record<string, () => void> = {
     note('  the r61 boxes regenerated on the Series screen’s own seed (seed^0x2545f491) · 46-48,50')
     note('  prog.stars + camp counters + wall clock · 49 Survival branch ownership · 51-56 balance()')
     note('  and NODES ranks. SPEEDRUN N=45min — no duration telemetry exists; placeholder, recorded.')
-    note('SEVEN NAME HOOKS THE GAME DOES NOT HAVE — defined, shown, never fire, awaiting a re-aim:')
+    note(`${ACHIEVEMENTS.filter((q) => q.nohook).length} ACHIEVEMENTS NAME HOOKS THE GAME DOES NOT HAVE — defined, shown, never fire, awaiting a re-aim:`)
+    note('(the Sergeant trio was re-aimed at the map’s 26 CHAMP-flagged teams — his ruling, post-r63)')
     for (const x of ACHIEVEMENTS.filter((q) => q.nohook)) note(`  #${x.id} ${x.name} — ${x.nohook}`)
     note('#5 note: venue does not exist in the engine — "on the road" is vacuous; detector is G7 by 1.')
     note('#46/#50 map "a 30-level campaign" (stale design-side size) onto clearing 30 of the 120 levels.')
@@ -1728,7 +1729,7 @@ const ROUNDS: Record<string, () => void> = {
     const z1 = [...z]; z1[0] = 3
     achSettleSeries({
       mode: 'campaign', team: 'Receipt Five · Campaign', level: 1, five: F5,
-      opponent: { team: 'Test Warriors', players: O5, round: 1 } as never,
+      opponent: { team: 'Test Warriors', players: O5, round: 1, champion: true } as never,
       result: { games: [mk(false, 98, 104, 1), mk(false, 99, 110, 2), mk(false, 95, 102, 3), mk(true, 108, 100, 4), mk(true, 104, 99, 5), mk(true, 111, 106, 6), mk(true, 101, 100, 7)], wins: 4, losses: 3, won: true, toWin: 4 },
       seed: 6363, pre: 0.35, plan: null, pc: null, boxCtx: null, assignment: 'optimal',
       prevProg: fresh63(z), nextProg: fresh63(z1),
@@ -1739,7 +1740,9 @@ const ROUNDS: Record<string, () => void> = {
     line('manual unlock #3 — COLD BLOODED', got[5] ? `unlocked · ${got[5].campaign}` : 'MISSING', 'G7 101-100', !!got[5])
     line('  HOUDINI rode along', got[9] ? 'unlocked' : 'missing', '3 elimination saves in the same tape', !!got[9])
     line('  attribution + date carried', got[1] ? `${got[1].campaign} · ${got[1].date.slice(0, 10)}` : '—', 'team · mode · ISO date', !!got[1] && got[1].campaign.includes('Receipt Five'))
-    line('  a no-hook one cannot fire', String(!got[43]), 'true (Sergeant guard holds)', !got[43])
+    line('  GIANT SLAYER + RING THIEF', got[43] && got[44] ? 'both unlocked' : 'MISSING', 'champion beaten, as a 35% dog', !!got[43] && !!got[44])
+    line('  DYNASTY DENIED held back', String(!got[45]), 'true (4-3 is no sweep)', !got[45])
+    line('  a no-hook one cannot fire', String(!got[32]), 'true (Hack-a-X guard holds)', !got[32])
     achReset()
   },
   '62': () => {

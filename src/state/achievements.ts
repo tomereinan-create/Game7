@@ -14,11 +14,11 @@ import type { CampaignMode, Progress } from './campaign'
  * ACHIEVEMENTS (design round 63): 57 of them, every condition read from state
  * the game already tracks — series results, pre-series odds, the r61 box
  * lines, the r58 fits, the star economy, the campaign map. Hidden ones reveal
- * only on unlock. Seven of the 57 name hooks the game does not have (the
- * Sergeant was removed from campaigns by his ruling; there is no Hack-a-X, no
- * opponent draft AI, no offensive-rebound column, no "best counter" rating on
- * the draft) — they are DEFINED and shown, their detectors never fire, and the
- * receipts name each one for a design-side re-aim. Recorded, not invented.
+ * only on unlock. Four of the 57 name hooks the game does not have (there is
+ * no Hack-a-X, no opponent draft AI, no offensive-rebound column, no "best
+ * counter" rating on the draft) — they are DEFINED and shown, their detectors
+ * never fire, and the receipts name each one for a design-side re-aim. The
+ * Sergeant trio was re-aimed at the map's champion teams by his ruling.
  */
 
 export type AchTier = 'common' | 'rare' | 'legendary'
@@ -80,10 +80,10 @@ export const ACHIEVEMENTS: AchDef[] = [
   { id: 40, key: 'starved', name: 'Starved', desc: 'Win while their star takes 30+ shots for under 25 points', tier: 'legendary' },
   { id: 41, key: 'glass-eaters', name: 'Glass Eaters', desc: '20+ offensive rebounds in a game', tier: 'rare', nohook: 'the box has no offensive-rebound column (REB is total, r61 shape)' },
   { id: 42, key: 'kobe', name: 'Kobe', desc: 'A player scores 40+ on under 35% shooting — and you win anyway', tier: 'legendary', hidden: true },
-  // ---- the sergeant & campaign ----
-  { id: 43, key: 'sir-yes-sir', name: 'Sir Yes Sir', desc: 'Beat The Sergeant', tier: 'common', nohook: 'the coach personas were removed from all campaigns (his ruling)' },
-  { id: 44, key: 'insubordination', name: 'Insubordination', desc: 'Beat The Sergeant as an underdog', tier: 'rare', nohook: 'the coach personas were removed from all campaigns (his ruling)' },
-  { id: 45, key: 'court-martial', name: 'Court Martial', desc: 'Sweep The Sergeant', tier: 'rare', nohook: 'the coach personas were removed from all campaigns (his ruling)' },
+  // ---- the champions & campaign (his ruling: the Sergeant trio re-aimed at the CHAMP teams) ----
+  { id: 43, key: 'giant-slayer', name: 'Giant Slayer', desc: 'Beat a champion team', tier: 'common' },
+  { id: 44, key: 'ring-thief', name: 'Ring Thief', desc: 'Beat a champion team as an underdog', tier: 'rare' },
+  { id: 45, key: 'dynasty-denied', name: 'Dynasty Denied', desc: 'Sweep a champion team', tier: 'rare' },
   { id: 46, key: 'the-gauntlet', name: 'The Gauntlet', desc: 'Clear 30 levels of a campaign', tier: 'common' },
   { id: 47, key: 'marathon', name: 'Marathon', desc: 'Finish the 120-level campaign', tier: 'rare' },
   { id: 48, key: 'flawless', name: 'Flawless', desc: 'Finish a campaign without losing a series', tier: 'legendary' },
@@ -264,6 +264,13 @@ export function achSettleSeries(ev: SeriesEvent) {
     if (won && saves >= 3) u(9)
   }
   if (!won && g.length >= 3 && g[0].won && g[1].won && g[2].won) u(10)
+
+  // ---- the champions (the map's CHAMP-flagged 26) ----
+  if (won && ev.opponent.champion) {
+    u(43)
+    if (ev.pre < 0.4) u(44)
+    if (swept) u(45)
+  }
 
   // ---- draft & roster (all "win with...") ----
   if (won) {
