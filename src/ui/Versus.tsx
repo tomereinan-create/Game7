@@ -7,7 +7,7 @@ import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
 import { WHEEL, type TeamSeason } from './Draft'
-import { startingFive, winsOf, YEARS } from './TeamDb'
+import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
 import { PlayerCard } from './PlayerCard'
 
 const VS_POOL = 12
@@ -57,6 +57,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const [loaded, setLoaded] = useState<[string[] | null, string[] | null]>([null, null])
   const [loadFor, setLoadFor] = useState<0 | 1 | null>(null)
   const [loadYear, setLoadYear] = useState(YEARS[0])
+  const [loadSort, setLoadSort] = useState<'rec' | 'ovr'>('rec')
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<SeriesResult | null>(null)
 
@@ -222,8 +223,18 @@ export function Versus({ onHome }: { onHome: () => void }) {
               </button>
             ))}
           </div>
+          <div className="filterbar">
+            <button className={`sortb ${loadSort === 'rec' ? 'on' : ''}`} onClick={() => setLoadSort('rec')}>
+              Best record
+            </button>
+            <button className={`sortb ${loadSort === 'ovr' ? 'on' : ''}`} onClick={() => setLoadSort('ovr')}>
+              OVR
+            </button>
+          </div>
           {WHEEL.filter((t) => t.y === loadYear)
-            .sort((a, b) => winsOf(b.rec) - winsOf(a.rec))
+            .sort((a, b) =>
+              loadSort === 'ovr' ? (ovrOf(b) ?? 0) - (ovrOf(a) ?? 0) || winsOf(b.rec) - winsOf(a.rec) : winsOf(b.rec) - winsOf(a.rec),
+            )
             .map((t) => (
               <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
                 <span className="lwho">
@@ -234,6 +245,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
                     {t.div ? ` · ${t.div}` : ''}
                   </i>
                 </span>
+                <span className="tdb-gauge">{ovrOf(t) === null ? '—' : `OVR ${ovrOf(t)}`}</span>
                 <span className="tdb-go">→</span>
               </button>
             ))}

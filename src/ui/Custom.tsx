@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { WHEEL, type TeamSeason } from './Draft'
-import { startingFive, winsOf, YEARS } from './TeamDb'
+import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
@@ -34,6 +34,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
   // his ruling: any team-db team can be loaded whole — its best legal five fills the tapped card
   const [loadOpen, setLoadOpen] = useState(false)
   const [loadYear, setLoadYear] = useState(YEARS[0])
+  const [loadSort, setLoadSort] = useState<'rec' | 'ovr'>('rec')
 
   const five = (i: 0 | 1) => teams[i].map((n) => BY_NAME.get(n)!).filter(Boolean)
   const A = five(0)
@@ -178,8 +179,18 @@ export function Custom({ onHome }: { onHome: () => void }) {
                 </button>
               ))}
             </div>
+            <div className="filterbar">
+              <button className={`sortb ${loadSort === 'rec' ? 'on' : ''}`} onClick={() => setLoadSort('rec')}>
+                Best record
+              </button>
+              <button className={`sortb ${loadSort === 'ovr' ? 'on' : ''}`} onClick={() => setLoadSort('ovr')}>
+                OVR
+              </button>
+            </div>
             {WHEEL.filter((t) => t.y === loadYear)
-              .sort((a, b) => winsOf(b.rec) - winsOf(a.rec))
+              .sort((a, b) =>
+                loadSort === 'ovr' ? (ovrOf(b) ?? 0) - (ovrOf(a) ?? 0) || winsOf(b.rec) - winsOf(a.rec) : winsOf(b.rec) - winsOf(a.rec),
+              )
               .map((t) => (
                 <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
                   <span className="lwho">
@@ -190,6 +201,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
                       {t.div ? ` · ${t.div}` : ''}
                     </i>
                   </span>
+                  <span className="tdb-gauge">{ovrOf(t) === null ? '—' : `OVR ${ovrOf(t)}`}</span>
                   <span className="tdb-go">→</span>
                 </button>
               ))}

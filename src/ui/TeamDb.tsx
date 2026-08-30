@@ -62,20 +62,46 @@ function resolveYear(raw: string): number | null | 'partial' {
   return clampYear(Number(d.slice(0, 4)))
 }
 
+// The startingFive backtrack is the expensive part — cached once per team-season,
+// and the OVR and the gauges both read from it instead of re-deriving. Exported:
+// the Custom and Versus team pickers rank on the same cache.
+const FIVES = new Map<TeamSeason, Player[] | null>()
+export function fiveOf(t: TeamSeason): Player[] | null {
+  const hit = FIVES.get(t)
+  if (hit !== undefined) return hit
+  const five = startingFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
+  const out = five.length === 5 ? five : null
+  FIVES.set(t, out)
+  return out
+}
+
+/** Rounded mean OVR of the best legal five — the number the detail view's board is built on. */
+export function ovrOf(t: TeamSeason): number | null {
+  const five = fiveOf(t)
+  return five ? Math.round(five.reduce((a, p) => a + p.ovr, 0) / 5) : null
+}
+
 /** Season-percentile OFF/DEF of the team's best legal five, or null when the pool cannot field one. */
 type TeamGauge = { off: number; def: number } | null
 const GAUGES = new Map<TeamSeason, TeamGauge>()
 function gaugeOf(t: TeamSeason): TeamGauge {
   const hit = GAUGES.get(t)
   if (hit !== undefined) return hit
-  const five = startingFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
+  const five = fiveOf(t)
   let g: TeamGauge = null
-  if (five.length === 5) {
+  if (five) {
     const { off, def } = seasonGauges(five, t.y)
     g = { off, def }
   }
   GAUGES.set(t, g)
   return g
+}
+
+/** The row's right edge: OVR always, the sorted gauge value riding along when a rating sort is on. */
+const edge = (t: TeamSeason, g: TeamGauge, rating: 'off' | 'def' | null) => {
+  const o = ovrOf(t)
+  if (o === null) return '—'
+  return rating && g ? `${rating.toUpperCase()} ${g[rating]} · OVR ${o}` : `OVR ${o}`
 }
 
 /** 1..99 or null; the inputs are free text, so garbage reads as no bound. */
@@ -94,7 +120,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [open, setOpen] = useState<string | null>(null)
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
-  const [sort, setSort] = useState<'rec' | 'az' | 'off' | 'def'>('rec')
+  const [sort, setSort] = useState<'rec' | 'az' | 'ovr' | 'off' | 'def'>('rec')
   const [minQ, setMinQ] = useState('')
   const [maxQ, setMaxQ] = useState('')
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
@@ -109,22 +135,29 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   }
 
   const rating = sort === 'off' || sort === 'def' ? sort : null
+  /** OVR and the gauges share the 1-99 scale, so the same Min/Max inputs bind whichever sort is on. */
+  const ranked = rating !== null || sort === 'ovr'
 
   const teams = useMemo(() => {
     const pool = WHEEL.filter((t) => (year === null || t.y === year) && (!conf || t.c === conf))
-    if (!rating) {
+    if (!ranked) {
       return pool
         .sort((a, b) => (sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y))
         .map((t) => ({ t, g: null as TeamGauge }))
     }
-    // The gauges memoize for good: the first OFF/DEF sort over Any grinds every season once, then it's free.
+    // The caches memoize for good: the first ranked sort over Any grinds every season once, then it's free.
     const lo = bound(minQ)
     const hi = bound(maxQ)
-    let rows = pool.map((t) => ({ t, g: gaugeOf(t) }))
-    if (lo !== null || hi !== null) rows = rows.filter((r) => r.g && (lo === null || r.g[rating] >= lo) && (hi === null || r.g[rating] <= hi))
-    const v = (r: { g: TeamGauge }) => (r.g ? r.g[rating] : 0) // no legal five reads below any real gauge
-    return rows.sort((a, b) => v(b) - v(a) || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y)
-  }, [year, conf, sort, rating, minQ, maxQ])
+    const key = (t: TeamSeason) => (rating ? (gaugeOf(t)?.[rating] ?? null) : ovrOf(t))
+    let rows = pool.map((t) => ({ t, g: rating ? gaugeOf(t) : null }))
+    if (lo !== null || hi !== null)
+      rows = rows.filter((r) => {
+        const k = key(r.t)
+        return k !== null && (lo === null || k >= lo) && (hi === null || k <= hi)
+      })
+    // no legal five reads below any real value, so those rows sort last
+    return rows.sort((a, b) => (key(b.t) ?? 0) - (key(a.t) ?? 0) || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y)
+  }, [year, conf, sort, rating, ranked, minQ, maxQ])
 
   // A non-empty query takes over the list: every season of every matching franchise, newest first.
   const found = useMemo(() => {
@@ -215,13 +248,16 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <button className={`sortb ${sort === 'az' ? 'on' : ''}`} onClick={() => setSort('az')}>
                 A–Z
               </button>
+              <button className={`sortb ${sort === 'ovr' ? 'on' : ''}`} onClick={() => setSort('ovr')}>
+                OVR
+              </button>
               <button className={`sortb ${sort === 'off' ? 'on' : ''}`} onClick={() => setSort('off')}>
                 OFF
               </button>
               <button className={`sortb ${sort === 'def' ? 'on' : ''}`} onClick={() => setSort('def')}>
                 DEF
               </button>
-              {rating ? (
+              {ranked ? (
                 <>
                   <label className="dbnum">
                     <span>Min</span>
@@ -254,6 +290,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                       {t.rec ? ` · ${t.rec}` : ''}
                     </i>
                   </span>
+                  <span className="tdb-gauge">{edge(t, null, null)}</span>
                   <span className="tdb-go">→</span>
                 </button>
               ))}
@@ -265,7 +302,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <div className="section-rule">
                 <span>
                   {year === null ? 'All years' : year} · {teams.length} teams ·{' '}
-                  {sort === 'az' ? 'A to Z' : sort === 'off' ? 'best OFF first' : sort === 'def' ? 'best DEF first' : 'best record first'}
+                  {sort === 'az' ? 'A to Z' : sort === 'ovr' ? 'best OVR first' : sort === 'off' ? 'best OFF first' : sort === 'def' ? 'best DEF first' : 'best record first'}
                   {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
                 </span>
                 <i />
@@ -281,7 +318,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                       {year === null ? '' : `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool`}
                     </i>
                   </span>
-                  {rating ? <span className="tdb-gauge">{g ? `${rating.toUpperCase()} ${g[rating]}` : '—'}</span> : null}
+                  <span className="tdb-gauge">{edge(t, g, rating)}</span>
                   <span className="tdb-go">→</span>
                 </button>
               ))}
@@ -301,7 +338,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 {picked.rec ? ` · ${picked.rec}` : ''}
                 {picked.div ? ` · ${picked.div}` : ''}
               </span>
-              <span className="cap">Best five by OVR</span>
+              <span className="cap">Best five · OVR {ovrOf(picked) ?? '—'}</span>
             </div>
             <div className="opp-name">{picked.team}</div>
             {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
