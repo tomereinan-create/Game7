@@ -127,18 +127,19 @@ function callLine(plan: Tactics): string {
   return bits.join(' · ')
 }
 
-const surname = (n: string) =>
+/** Card name -> the words of his real name: season tag off, and generational suffixes
+ *  dropped so a Bagley III reads "Bagley/MB", not "III/MI". */
+const words = (n: string) =>
   n
     .replace(/ '\d\d( \([a-z]\))?$/, '')
     .split(' ')
-    .pop()
+    .filter((w) => w && !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w))
+
+const surname = (n: string) => words(n).pop()
 
 /** The ring holds initials now — the faces are gone by his ruling, the spot survives them. */
 const initials = (n: string) =>
-  n
-    .replace(/ '\d\d( \([a-z]\))?$/, '')
-    .split(' ')
-    .filter(Boolean)
+  words(n)
     .map((w) => w[0])
     .filter((_, i, a) => i === 0 || i === a.length - 1)
     .join('')

@@ -8,7 +8,8 @@ import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
-import { CardName } from './CardSheet'
+import { CardName, useCard } from './CardSheet'
+import { CourtFive } from './CourtFive'
 import { naiveAssignment, type Assignment } from '../engine/offense'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -196,6 +197,7 @@ export function Draft({
   const [askSim, setAskSim] = useState(false)
   // USER MODE: every choice still works; nothing says whether it was good.
   const user = useUserMode()
+  const openCard = useCard()
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -614,6 +616,17 @@ export function Draft({
             ? `Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`
             : 'Exact axis ratings — Scout · Exact ratings node'}
         </div>
+        {/* his ruling: read their five as a LINEUP, not a list — the same half court the team
+            db and My team draw. Their tactics are unknown pre-series, so no plan: balanced shape.
+            Names and slots are what the roster list below already shows ungated; the OVR on a tag
+            is the Scout node's reward, so it rides the same rank-2 gate as the numbers block. */}
+        <CourtFive
+          spots={opponent.players.map((p, i) => ({
+            p,
+            tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
+            onTap: () => openCard(p),
+          }))}
+        />
         {rank(wallet, 'scout_ratings') >= 2 ? (
           <div className="oppmen">
             {opponent.players.map((p) => (
