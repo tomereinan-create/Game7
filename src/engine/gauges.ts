@@ -10,7 +10,8 @@ import type { Player } from './types'
  * champion reading OFF 51 against all of history says nothing — the gauge now
  * ranks a five against the same season's teams (their best legal fives), or,
  * for a drafted five with no season, against the campaign's own opponent pool.
- * The basis is visible on the dial ("vs 2026" / "vs the field").
+ * The basis is visible on the dial ("pct of 2026" / "pct of field") — it
+ * names the percentile pool, never an opponent.
  */
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -78,13 +79,15 @@ export interface Gauge {
 export function seasonGauges(five: Player[], season: number): Gauge {
   const r = ratings100(five)
   const pool = seasonPool(season)
-  if (pool.offs.length < 2) return { ...fieldGauges(five), basis: 'vs the field' }
-  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: `vs ${season}`, n: pool.offs.length }
+  // The basis names the PERCENTILE POOL, never an opponent — "vs 2026" was read design-side
+  // as the team the defense was computed against, so the label says what it is: a rank.
+  if (pool.offs.length < 2) return { ...fieldGauges(five), basis: 'pct of field' }
+  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: `pct of ${season}`, n: pool.offs.length }
 }
 
 /** A drafted five with no season of its own: percentiled against the campaign's opponents. */
 export function fieldGauges(five: Player[]): Gauge {
   const r = ratings100(five)
   const pool = campaignPool()
-  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: 'vs the field', n: pool.offs.length }
+  return { off: pct(pool.offs, r.offRaw), def: pct(pool.drtgs, r.drtgRef, true), offRaw: r.offRaw, drtgRef: r.drtgRef, basis: 'pct of field', n: pool.offs.length }
 }
