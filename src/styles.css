@@ -2430,6 +2430,9 @@ button {
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
 .ct-floor { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* the court's side switch: one court, two states, named on the floor */
+.ct-side { position: absolute; top: 2%; left: 3%; display: flex; gap: 4px; z-index: 1; }
+.ct-side .sortb { height: 22px; padding: 0 7px; font-size: 8px; letter-spacing: 0.1em; }
 .ct-call { position: absolute; top: 2.5%; right: 3%; max-width: 60%; text-align: right; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
 .ct-spot { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; width: 86px; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
 .ct-spot:disabled { cursor: default; }

@@ -7,7 +7,7 @@ import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { CourtFive } from './CourtFive'
 import { ChipRow } from './ChipRow'
-import { gateTactics, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -536,9 +536,9 @@ export function MyTeam({
             <div className="posbar">
               <span className="cap">Defensive scheme</span>
               <ChipRow>
-                {(['matchup', 'drop', 'switch'] as const).map((k) => (
-                  <button key={k} className={`sortb ${tactics.scheme === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, scheme: k })}>
-                    {k}
+                {SCHEMES.map(({ key, label }) => (
+                  <button key={key} className={`sortb ${tactics.scheme === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, scheme: key })}>
+                    {key === 'matchup' || user ? label : `${label} ${Math.round(schemeFit(key, five))}`}
                   </button>
                 ))}
               </ChipRow>
