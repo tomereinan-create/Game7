@@ -1,5 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
+import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
+import { Achievements } from './ui/Achievements'
+import { odds } from './engine/odds'
+import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
@@ -59,6 +63,10 @@ interface Pending {
   result: SeriesResult
   seed: number
   assignment: Assignment
+  /** Achievements read the moment of the sim: the resolver's pre-series odds and the called plan. */
+  pre: number
+  plan: Tactics | null
+  pc: { ours: number; theirs: number; margin: number } | null
 }
 
 
@@ -76,6 +84,17 @@ export default function App() {
   const [myTeam, setMyTeam] = useState(false)
   const [roster, setRoster] = useState(false)
   const [archs, setArchs] = useState(false)
+  const [ach, setAch] = useState(false)
+  // unlock toasts: the trophy case speaks once, quietly, then leaves
+  const [toasts, setToasts] = useState<AchDef[]>([])
+  useEffect(
+    () =>
+      onUnlocked((d) => {
+        setToasts((t) => [...t, d])
+        window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
+      }),
+    [],
+  )
 
   const cm: CampaignMode | null = mode !== null && (MODES as string[]).includes(mode) ? (mode as CampaignMode) : null
   /** The death match runs ON the salary cap: same payroll rules, with the run on the line. */
@@ -92,6 +111,8 @@ export default function App() {
   const commit = (m: CampaignMode, p: Progress) => {
     saveProgress(m, p)
     setProgress((all) => ({ ...all, [m]: p }))
+    // the cheap achievement checks (stars banked, branches owned) fire on every save
+    achCheckMeta(p, `${p.team ? `${p.team.city} ${p.team.name}` : 'Your team'} · ${m === 'death' ? 'Death Match' : TITLE(m)}`)
   }
 
   const setTeam = (t: Team) => {
@@ -118,9 +139,42 @@ export default function App() {
     // charged when the series settles, in finish(), one durability per game it ran. The box scores
     // consume the tactical state (recal_61), so the context is captured at the moment of the sim.
     const boxCtx = plan && pc ? boxContext(plan, pc.lvl, five, opponent.players, assignment) : null
-    setPending({ five, mine, theirs, result: simSeries(mine, theirs, makeRng(seed), sig, toWin), seed, assignment, boxCtx })
+    const pre = odds(mine, theirs, sig, toWin).series
+    setPending({
+      five,
+      mine,
+      theirs,
+      result: simSeries(mine, theirs, makeRng(seed), sig, toWin),
+      seed,
+      assignment,
+      boxCtx,
+      pre,
+      plan,
+      pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+    })
   }
 
+
+  /** Achievements settle where the series does — everything they read was captured at sim time. */
+  const settleAch = (nextProg: Progress) => {
+    if (!cm || !prog || !level || !pending || !opponent) return
+    achSettleSeries({
+      mode: cm,
+      team: `${teamName} · ${cm === 'death' ? 'Death Match' : TITLE(cm)}`,
+      level,
+      five: pending.five,
+      opponent,
+      result: pending.result,
+      seed: pending.seed,
+      pre: pending.pre,
+      plan: pending.plan,
+      pc: pending.pc,
+      boxCtx: pending.boxCtx ?? null,
+      assignment: pending.assignment,
+      prevProg: prog,
+      nextProg,
+    })
+  }
 
   /** Back to the map. A win keeps the better of old and new stars; a loss costs only the attempt. */
   const finish = () => {
@@ -141,9 +195,13 @@ export default function App() {
         wear[prog.bench] = Math.min(cap, (wear[prog.bench] ?? cap) + heal)
       }
       const next = { ...prog, stars, plays: prog.plays + 1, wear, subsUsed: 0 }
-      commit(cm, pending.result.won ? { ...next, roster: names } : die(next))
+      const settled = pending.result.won ? { ...next, roster: names } : die(next)
+      commit(cm, settled)
+      settleAch(settled)
     } else {
-      commit(cm, { ...prog, stars, plays: prog.plays + 1 })
+      const settled = { ...prog, stars, plays: prog.plays + 1 }
+      commit(cm, settled)
+      settleAch(settled)
     }
     setPending(null)
     setLevel(null)
@@ -160,7 +218,21 @@ export default function App() {
 
   // The roster is an overlay, not a screen: leaving the draft to look something
   // up must not throw away the picks already made.
-  const sheet = roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : null
+  const sheet = (
+    <>
+      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : null}
+      {toasts.length ? (
+        <div className="ach-toasts">
+          {toasts.map((d) => (
+            <div className="ach-toast" key={d.id}>
+              <i>Achievement · {d.tier}</i>
+              <b>{d.name}</b>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </>
+  )
 
   if (mode === null) {
     return (
@@ -171,6 +243,7 @@ export default function App() {
           onPick={(m) => {
             if (m === 'database') setRoster(true)
             else if (m === 'archetypes') setArchs(true)
+            else if (m === 'achievements') setAch(true)
             else setMode(m)
           }}
         />
@@ -201,6 +274,7 @@ export default function App() {
   if (mode === 'versus' || !cm || !prog)
     return (
       <>
+        {sheet}
         {homeFab}
         <Versus onHome={leave} />
       </>
@@ -322,6 +396,7 @@ export default function App() {
           }
           onReset={() => {
             if (window.confirm(`Reset the ${TITLE(cm)}? All 120 levels and their stars start over.`)) {
+              achResetCampaign(cm)
               setProgress((all) => ({ ...all, [cm]: resetProgress(cm) }))
             }
           }}

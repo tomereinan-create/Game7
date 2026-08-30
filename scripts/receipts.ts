@@ -23,6 +23,8 @@ import { LINES as LINES61 } from '../src/ui/Stat'
 import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
+import { _reset as achReset, ACHIEVEMENTS, achSettleSeries, achState } from '../src/state/achievements'
+import type { Progress as Prog63 } from '../src/state/campaign'
 
 const EOL = String.fromCharCode(10)
 const RATINGS = readFileSync('data/build_ratings.py', 'utf8')
@@ -1694,6 +1696,51 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '63': () => {
+    console.log(`${EOL}recal_63 — ACHIEVEMENTS: 57, EVERY DETECTOR NAMED TO ITS STATE`)
+    line('the roster', `${ACHIEVEMENTS.length} defined, ${ACHIEVEMENTS.filter((x) => x.hidden).length} hidden`, '57 and 5', ACHIEVEMENTS.length === 57 && ACHIEVEMENTS.filter((x) => x.hidden).length === 5)
+    src('settlement hook', io('src/App.tsx'), /achSettleSeries\(\{/, 'every series settle feeds the evaluator')
+    src('sim-time capture', io('src/App.tsx'), /const pre = odds\(mine, theirs, sig, toWin\)\.series/, 'pre-series odds frozen at the moment of the sim')
+    src('meta hook', io('src/App.tsx'), /achCheckMeta\(p,/, 'star economy and branch checks fire on every save')
+    note('THE HOOK LIST — what each detector reads:')
+    note('  1-2 pending.pre (resolver odds at sim) · 3-10 result.games sequence/margins · 4,8 per-')
+    note('  campaign counters · 11-13 card OVRs · 14 archetype() union (profile) · 15-17 attrs')
+    note('  height/orb/drb · 18-19 attrs 3pt · 20-21 peak_season · 22 teamseasons rosters · 24-26,')
+    note('  30-31,33 the gated plan + styleFit/stylePts/pace surpluses (death match) · 27-29,34-40,42')
+    note('  the r61 boxes regenerated on the Series screen’s own seed (seed^0x2545f491) · 46-48,50')
+    note('  prog.stars + camp counters + wall clock · 49 Survival branch ownership · 51-56 balance()')
+    note('  and NODES ranks. SPEEDRUN N=45min — no duration telemetry exists; placeholder, recorded.')
+    note('SEVEN NAME HOOKS THE GAME DOES NOT HAVE — defined, shown, never fire, awaiting a re-aim:')
+    for (const x of ACHIEVEMENTS.filter((q) => q.nohook)) note(`  #${x.id} ${x.name} — ${x.nohook}`)
+    note('#5 note: venue does not exist in the engine — "on the road" is vacuous; detector is G7 by 1.')
+    note('#46/#50 map "a 30-level campaign" (stale design-side size) onto clearing 30 of the 120 levels.')
+    note('RARITY BASIS: sweeps/blowouts vs sigma-10 game odds — 0-3 comebacks ~p^4 (legendary),')
+    note('G7-by-1 ~2%/series (rare), roster shapes priced by pool frequency, meta/economy common.')
+    // ---- three manual unlocks through the REAL evaluator, in a test campaign ----
+    achReset()
+    const g63 = (n: string) => PLAYERS.find((q) => q.name === n)!
+    const F5 = ["Michael Jordan '88", "Magic Johnson '87", "Larry Bird '86", "Tim Duncan '03", "Hakeem Olajuwon '94"].map(g63)
+    const O5 = ["Stephen Curry '16", "Klay Thompson '15", "Draymond Green '16", "Kevin Durant '14", "Andre Iguodala '15"].map(g63)
+    const mk = (won: boolean, us: number, them: number, game: number) => ({ game, margin: us - them, won, us, them, note: '' })
+    const fresh63 = (stars: number[]): Prog63 => ({ coach: null, team: { city: 'Receipt', country: 'US', name: 'Five' }, stars, seed: 1, plays: 1, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
+    const z = Array.from({ length: 120 }, () => 0)
+    const z1 = [...z]; z1[0] = 3
+    achSettleSeries({
+      mode: 'campaign', team: 'Receipt Five · Campaign', level: 1, five: F5,
+      opponent: { team: 'Test Warriors', players: O5, round: 1 } as never,
+      result: { games: [mk(false, 98, 104, 1), mk(false, 99, 110, 2), mk(false, 95, 102, 3), mk(true, 108, 100, 4), mk(true, 104, 99, 5), mk(true, 111, 106, 6), mk(true, 101, 100, 7)], wins: 4, losses: 3, won: true },
+      seed: 6363, pre: 0.35, plan: null, pc: null, boxCtx: null, assignment: 'optimal',
+      prevProg: fresh63(z), nextProg: fresh63(z1),
+    })
+    const got = achState().unlocked
+    line('manual unlock #1 — UNDERDOG', got[1] ? `unlocked · ${got[1].campaign}` : 'MISSING', 'pre 0.35 win', !!got[1])
+    line('manual unlock #2 — NEVER GIVE UP', got[3] ? `unlocked · ${got[3].campaign}` : 'MISSING', 'won after 0-3', !!got[3])
+    line('manual unlock #3 — COLD BLOODED', got[5] ? `unlocked · ${got[5].campaign}` : 'MISSING', 'G7 101-100', !!got[5])
+    line('  HOUDINI rode along', got[9] ? 'unlocked' : 'missing', '3 elimination saves in the same tape', !!got[9])
+    line('  attribution + date carried', got[1] ? `${got[1].campaign} · ${got[1].date.slice(0, 10)}` : '—', 'team · mode · ISO date', !!got[1] && got[1].campaign.includes('Receipt Five'))
+    line('  a no-hook one cannot fire', String(!got[43]), 'true (Sergeant guard holds)', !got[43])
+    achReset()
   },
   '62': () => {
     console.log(`${EOL}recal_62 — PERIMDISRUPT TRIMMED AGAIN IN DEF (his ruling)`)

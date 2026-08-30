@@ -2,8 +2,9 @@ import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, type CampaignMode, type Progress } from '../state/campaign'
 import { setUserMode, useUserMode } from '../state/viewmode'
+import { achCount } from '../state/achievements'
 
-export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom'
+export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom' | 'achievements'
 
 export interface Era {
   name: string
@@ -112,6 +113,12 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
             <button className="slate-row half" onClick={() => onPick('archetypes')}>
               <b>Archetypes</b>
               <em>{DEFAULT_ORDER.length} TAGS →</em>
+            </button>
+            <button className="slate-row half" onClick={() => onPick('achievements')}>
+              <b>Achievements</b>
+              <em>
+                {achCount().done} OF {achCount().total} →
+              </em>
             </button>
           </div>
         </>

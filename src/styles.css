@@ -2539,3 +2539,23 @@ body.wide .cmd { margin-top: -14px; }
 .night-row.small b { font-size: 16px; }
 .night-row.small b.them { color: var(--them); }
 .night-row span { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-align: right; }
+
+/* ---- achievements: the trophy case (round 63) ---- */
+.ach-row { display: flex; align-items: baseline; gap: 12px; padding: 11px 2px 10px; border-bottom: 1px solid var(--divider); }
+.ach-row .ach-mark { flex: none; width: 20px; font-size: 15px; color: var(--line-3); }
+.ach-row.got .ach-mark { color: var(--you); }
+.ach-row .ach-who { min-width: 0; flex: 1; }
+.ach-row .ach-who b { display: block; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.ach-row.got .ach-who b { color: var(--ink); }
+.ach-row .ach-who i { display: block; font-style: normal; font-size: 12px; color: var(--muted-2); line-height: 1.45; margin-top: 3px; }
+.ach-row.got .ach-who i { color: var(--muted); }
+.ach-row .ach-who em { display: block; font-style: normal; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--you); margin-top: 4px; }
+.ach-tier { flex: none; font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.14em; border: 1px solid var(--line); border-radius: 4px; padding: 3px 7px; color: var(--faint); }
+.ach-row.got .ach-tier.common { color: var(--muted); }
+.ach-row.got .ach-tier.rare { color: var(--them); border-color: var(--them-line); background: var(--them-tint); }
+.ach-row.got .ach-tier.legendary { color: var(--you); border-color: var(--you-line); background: var(--you-tint); }
+.ach-toasts { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 90; display: grid; gap: 8px; width: min(347px, calc(100vw - 28px)); }
+.ach-toast { display: grid; gap: 2px; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--you-line); border-left: 3px solid var(--you); border-radius: 6px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); animation: ach-in 0.35s ease-out; }
+.ach-toast i { font-style: normal; font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--you); }
+.ach-toast b { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+@keyframes ach-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
