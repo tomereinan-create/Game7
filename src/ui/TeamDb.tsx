@@ -78,10 +78,17 @@ export function fiveOf(t: TeamSeason): Player[] | null {
   return out
 }
 
-/** Rounded mean OVR of the best legal five — the number the detail view's board is built on. */
+/**
+ * Team OVR — his ruling: a COMPOSITE OF THE TWO GAUGES, not the mean card OVR.
+ * The old average put a talent number (all-time card scale) beside the
+ * within-season OFF/DEF percentiles, so Spurs '07 read "OVR 78" under 92/99
+ * dials; now all three live on one scale: round((off + def) / 2). Every
+ * surface (rows, detail head, the pickers, the OVR sort and its bounds)
+ * routes through here. Unfieldable five stays null.
+ */
 export function ovrOf(t: TeamSeason): number | null {
-  const five = fiveOf(t)
-  return five ? Math.round(five.reduce((a, p) => a + p.ovr, 0) / 5) : null
+  const g = gaugeOf(t)
+  return g ? Math.round((g.off + g.def) / 2) : null
 }
 
 /** Season-percentile OFF/DEF of the team's best legal five, or null when the pool cannot field one. */
