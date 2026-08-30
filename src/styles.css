@@ -2559,3 +2559,10 @@ body.wide .cmd { margin-top: -14px; }
 .ach-toast i { font-style: normal; font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--you); }
 .ach-toast b { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
 @keyframes ach-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ---- the in-game ask (his ruling): a dialog in the game's voice, never the browser's ---- */
+.ask-veil { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 20px; background: rgba(11, 10, 8, 0.72); backdrop-filter: blur(2px); }
+.ask { width: min(347px, 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: 2px solid var(--you); border-radius: 8px; padding: 16px 16px 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
+.ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 16.5px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
+.ask-btns { display: flex; gap: 10px; margin-top: 16px; }
+.ask-btns .btn { height: 44px; font-size: 11px; }

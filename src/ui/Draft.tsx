@@ -197,9 +197,9 @@ export function Draft({
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
-  /** His ruling (kept): an unspent My team change earns a second look before the sim — as a
-   * two-tap on the dock now, because window.confirm never renders on his phone. */
-  const [armSim, setArmSim] = useState(false)
+  /** His ruling: an unspent My team change earns a second look before the sim — as an
+   * IN-GAME dialog (browser popups never render on his phone). */
+  const [askSim, setAskSim] = useState(false)
   // USER MODE: every choice still works; nothing says whether it was good.
   const user = useUserMode()
   // Screens open at the top; the map's own scroll position must not carry over.
@@ -441,17 +441,14 @@ export function Draft({
         <button
           className="btn"
           onClick={() => {
-            if (spinLeft && !armSim) {
-              setArmSim(true)
-              window.setTimeout(() => setArmSim(false), 5000)
+            if (spinLeft) {
+              setAskSim(true)
               return
             }
             onSim(five, assignment, toWin)
           }}
         >
-          {spinLeft && armSim
-            ? 'A change is waiting in My team — sim anyway?'
-            : `Sim the series${toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}`}
+          Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
         </button>
       )
     if (spinning)
@@ -990,6 +987,22 @@ export function Draft({
       </section>
       </div>
 
+      {askSim ? (
+        <div className="ask-veil" onClick={() => setAskSim(false)}>
+          <div className="ask" onClick={(e) => e.stopPropagation()}>
+            <span className="label">Before you sim</span>
+            <p>You still have a change left in My team. Sim the series without it?</p>
+            <div className="ask-btns">
+              <button className="btn ghost" onClick={() => setAskSim(false)}>
+                Go back
+              </button>
+              <button className="btn" onClick={() => onSim(five, assignment, toWin)}>
+                Sim without it
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="dock">
         <div className="dock-inner">{dock()}</div>
       </div>
