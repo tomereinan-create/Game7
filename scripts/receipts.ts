@@ -1700,6 +1700,37 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '69': () => {
+    console.log(`${EOL}recal_69 — ONE TEAM PER SEASON (his ruling, data law: a mover qualifies only for the team he played the most for)`)
+    const V69 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `untouched · current ${V69}`, 'wheel data corrected, not cards — players_stats.json is byte-identical', V69 >= 65)
+    src('the law lives at the generator', io('scripts/teams.ts'), /HIS RULING \(recal_69 data law\)/, 'scripts/teams.ts collects stints, most games wins; minutes, then abbrev, break ties')
+    // the named case, live off the shipped wheel
+    const hardenTeams = WHEEL64.filter((t) => t.y === 2026 && t.p.includes("James Harden '26"))
+    line("Harden '26 qualifies once", hardenTeams.map((t) => t.team).join(' · ') || 'NOWHERE?!', 'Los Angeles Clippers only (44 GP there, 26 for Cleveland)', hardenTeams.length === 1 && /Clippers/.test(hardenTeams[0].team))
+    // zero duplicates remain, league-wide, live
+    let dup69 = 0
+    const seen69 = new Map<string, number>()
+    for (const t of WHEEL64) for (const p of t.p) seen69.set(`${t.y}|${p}`, (seen69.get(`${t.y}|${p}`) ?? 0) + 1)
+    for (const n of seen69.values()) if (n > 1) dup69++
+    line('duplicate player-seasons on the wheel', `${dup69} (was 825, holding 844 extra roster slots)`, '0 — the sweep is total', dup69 === 0)
+    note('  Biggest roster shrinkages: 2015 BOS 15 -> 8 · 1997 DAL 14 -> 8 · 2019 PHI 12 -> 7 · 2004 NYK')
+    note('  12 -> 7. Team-season count unchanged (1314); no team dropped below the 2-man spin minimum.')
+    note('KNOCK-ONS, measured and recorded:')
+    note('  - Fieldability: teams unable to field five pool men 47 -> 59 (sellers lost their deadline')
+    note('    arrivals): newly short are ATL \'82/\'85, LAC \'94, SAC \'94, GSW \'00, CHA \'10, NJN \'12, DEN')
+    note('    \'21, BRK \'22, BRK \'25, WSH \'25, DAL \'26 — each at exactly 4. Gauge pools shrink with them')
+    note('    (2026 n=24, 2025 n=26); anchor-suite/receipt-66 handle UNMEASURABLE bands explicitly.')
+    note('  - Gauge supersessions recorded on receipt 66: OKC \'26 70 -> 73, Knicks \'25 45 -> 36/21,')
+    note('    Grizzlies \'13 28/85 -> 8/69 (they lost Ed Davis and Tayshaun Prince — deadline arrivals who')
+    note('    played more elsewhere; the five now fields Bayless), Wizards \'25 UNMEASURABLE. 2025 Pearson:')
+    note('    r_off 0.433 (best yet, honest rosters), r_def 0.588 (now under the gate; sample n=26).')
+    note('  - ONE FRANCHISE (achievement 22) reads wheel rosters: its condition TIGHTENS — a man now')
+    note('    counts for exactly one franchise per season. No detector change needed; recorded.')
+    note('  - TeamDb "N men on the card pool" counts drop where movers were double-listed; Custom/Versus/')
+    note('    TeamDb best fives reshuffle accordingly. Display-side, no code change.')
+    note('  - The resolver never reads the wheel; cards, taxes and the harness are untouched by this law.')
+  },
   '68': () => {
     console.log(`${EOL}recal_68 — FIT AS MODIFIER: DIAGNOSED, AND STOPPED AT ITEM 0 (design-side round "66"; our 66/67 were taken)`)
     const V68 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
@@ -1984,19 +2015,27 @@ const ROUNDS: Record<string, () => void> = {
     const bTxt = ([lo, hi]: [number | null, number | null]) => (lo !== null && hi !== null ? `${lo}-${hi}` : lo !== null ? `${lo}+` : `<${(hi ?? 0) + 1}`)
     // The STOP-STATE was taken on the v64 pool: Thunder 62/99 · Knicks 41/26 · Celtics 25/87 ·
     // Wizards 19/1 · Grizzlies 28/85, r_off 0.279, r_def 0.607. recal_67 (the DEF display deflation)
-    // then reshuffled best-five selection and the season percentile pools, so the pins below are the
-    // v65 re-measurement — the supersession is printed here, per the receipts doctrine. The verdict
-    // did not move: OFF still fails its bands and its gate; the STOP stands until the ruling returns.
-    const MEASURED66: Record<string, [number, number]> = { Thunder: [70, 95], Knicks: [45, 26], Celtics: [32, 83], Wizards: [5, 1], Grizzlies: [28, 85] }
+    // reshuffled best fives and percentile pools (Thunder 70/95 · Knicks 45/26 · Celtics 32/83 ·
+    // Wizards 5/1 · Grizzlies 28/85, r_off 0.372, r_def 0.631). recal_69 (the one-team-per-season
+    // wheel law, his ruling) then corrected the DATA under everything: sellers lost their deadline
+    // arrivals (Grizzlies '13 lost Ed Davis and Tayshaun Prince; their five reads 8/69 honestly),
+    // Wizards '25 fields only FOUR pool men (band UNMEASURABLE), and the 2025 correlation sample is
+    // n=26. The pins below are the v65+r69 re-measurement — supersession printed, per the doctrine.
+    // The verdict never moved: OFF fails its bands and its gate; the STOP stands until the ruling.
+    const MEASURED66: Record<string, [number, number] | null> = { Thunder: [73, 95], Knicks: [36, 21], Celtics: [25, 83], Wizards: null, Grizzlies: [8, 69] }
     let offIn = 0
     let defIn = 0
     for (const [y, nm, ob, db] of BANDS66) {
       const { team, five } = five66(y, nm)
+      const pin = MEASURED66[nm]
+      if (five.length !== 5 || pin === null) {
+        line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `${five.length} pool men fieldable — band UNMEASURABLE`, 'r69 data law: sellers lost their deadline arrivals', five.length !== 5 && pin === null)
+        continue
+      }
       const gg = gauges64(five, y)
       if (inB(gg.off, ob)) offIn++
       if (inB(gg.def, db)) defIn++
-      const pin = MEASURED66[nm]
-      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (stop-state pin)`, gg.off === pin[0] && gg.def === pin[1])
+      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (v65+r69 pin)`, gg.off === pin[0] && gg.def === pin[1])
       if (!inB(gg.off, ob) || !inB(gg.def, db))
         for (const p of five)
           note(`    ${p.name.padEnd(26)} OVR ${p.ovr} O ${String(p.o_ovr).padStart(2)} D ${String(p.d_ovr).padStart(2)} ${archetype(p).padEnd(18)} eff ${p.attrs.efficiency} vol ${p.attrs.volume} playvol ${p.attrs.playvol} 3pt ${p.attrs['3pt']} perdef ${p.attrs.perdef} rimprot ${p.attrs.rimprot} disc ${p.attrs.discipline}`)
@@ -2031,10 +2070,13 @@ const ROUNDS: Record<string, () => void> = {
     const w66 = rows66.map((r) => r.w)
     const rOff66 = pear(rows66.map((r) => r.o), w66)
     const rDef66 = pear(rows66.map((r) => -r.d), w66)
-    line('  2025 Pearson, defense side', `-drtgRef r = ${rDef66.toFixed(3)} (n=${rows66.length}, ${excl66} excluded)`, '>= 0.6 — PASSES', rDef66 >= 0.6)
+    line('  2025 Pearson, defense side', `-drtgRef r = ${rDef66.toFixed(3)} (n=${rows66.length}, ${excl66} excluded)`, '>= 0.6 — was PASS at n=28; r69 shrank the sample', rDef66 >= 0.6)
     line('  CALIBRATION GATE: offense side r >= 0.6', `offRaw r = ${rOff66.toFixed(3)}`, 'NOT REACHED — the offensive index is the patient', rOff66 >= 0.6)
     note('  (stop-state, v64 pool: r_off 0.279, r_def 0.607. recal_67 moved both — 0.372 and 0.631 at')
-    note('  v65: improved, still gated. Celtics \'24 DEF slid 87 -> 83, out of its 85+ band.)')
+    note('  v65: improved, still gated. Celtics \'24 DEF slid 87 -> 83, out of its 85+ band. recal_69\'s')
+    note('  wheel correction then shrank the sample to n=26 (BRK/WSH \'25 lost their fifth fieldable man):')
+    note('  r_off 0.433 — its best reading yet, on honest rosters — and r_def 0.588, now ALSO under the')
+    note('  gate. Both correlations belong to the open offensive-index ruling.)')
     // ---- THE STOP ----
     line('THE STOP honored: zero tuning shipped', 'no constant, weight, tax or band changed by this round', 'per the round\'s own protocol', true)
     note('  The defense side of the engine correlates with reality (r 0.607) and holds 4/5 bands; the')

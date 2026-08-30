@@ -131,6 +131,11 @@ for (const p of players) {
 
 const rosters = new Map<string, Set<string>>() // season|abbrev -> names
 const unmapped = new Map<string, number>()
+// HIS RULING (recal_69 data law): a player who suited up for more than one team in a season
+// qualifies ONLY for the team he played the most for. Stints are collected first; the team
+// with the most games wins, total minutes (g x mp_per_game) breaks a games tie, and the
+// abbreviation breaks a full tie so the output is deterministic.
+const stints = new Map<string, { team: string; g: number; min: number }[]>() // name|season -> stints
 for (const r of parseCsv(readFileSync(join(dir, 'Player Per Game.csv'), 'utf8'))) {
   if (r.lg !== 'NBA' || isTot(r.team)) continue
   const season = Number(r.season)
@@ -150,10 +155,27 @@ for (const r of parseCsv(readFileSync(join(dir, 'Player Per Game.csv'), 'utf8'))
     unmapped.set(`${r.team} ${season}`, (unmapped.get(`${r.team} ${season}`) ?? 0) + 1)
     continue
   }
-  const k = `${r.season}|${r.team}`
+  const g = Number(r.g) || 0
+  const sk = `${season}|${name}`
+  if (!stints.has(sk)) stints.set(sk, [])
+  stints.get(sk)!.push({ team: r.team, g, min: g * (Number(r.mp_per_game) || 0) })
+}
+let movers = 0
+let slotsRemoved = 0
+for (const [sk, list] of stints) {
+  const season = sk.slice(0, sk.indexOf('|'))
+  const name = sk.slice(sk.indexOf('|') + 1)
+  let best = list[0]
+  for (const s of list) if (s.g > best.g || (s.g === best.g && (s.min > best.min || (s.min === best.min && s.team < best.team)))) best = s
+  if (list.length > 1) {
+    movers++
+    slotsRemoved += list.length - 1
+  }
+  const k = `${season}|${best.team}`
   if (!rosters.has(k)) rosters.set(k, new Set())
   rosters.get(k)!.add(name)
 }
+console.log(`mid-season movers resolved to one team: ${movers} player-seasons, ${slotsRemoved} duplicate roster slots removed (most games wins; minutes, then abbrev, break ties)`)
 
 if (unmapped.size) {
   console.log('UNMAPPED abbrevs (excluded):', [...unmapped.keys()].slice(0, 20).join(' · '))

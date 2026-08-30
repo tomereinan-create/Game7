@@ -41,6 +41,10 @@ describe('salary cap campaign — the five must fit under 75% of the cap', () =>
     }
     console.log(`  ${ok} of ${tried} sampled team-seasons can field a legal five from their own roster`)
     expect(tried).toBeGreaterThan(20)
-    expect(ok / tried).toBeGreaterThan(0.85) // 88% from one roster; five separate spins make it comfortable
+    // recal_69 MOVED THIS PIN, and the move is the data law working as written: one team per season
+    // stripped the cheap deadline arrivals off sellers' rosters, so the greedy single-roster five is
+    // pricier and rarer (88% -> 83% on this sample). The game itself spins five DIFFERENT teams, so
+    // the real draft stays comfortable; the pin records the honest single-roster floor.
+    expect(ok / tried).toBeGreaterThan(0.8)
   })
 })
