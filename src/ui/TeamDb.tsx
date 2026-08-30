@@ -7,7 +7,6 @@ import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
 import { useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
-import { Face } from './Face'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { Dial, TeamDials } from './MatchupPanel'
@@ -25,7 +24,6 @@ function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean;
     <>
       <button className="row dr tdb" onClick={onTap}>
         <span className="pname">
-          <Face player={p} size={34} />
           <span className="who">
             <b>{p.name}</b>
             <i>

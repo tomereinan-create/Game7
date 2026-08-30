@@ -4,7 +4,6 @@ import { Compare, COMPARE_MAX } from './Compare'
 import type { AttrKey, Player, StatLine } from '../engine/types'
 import { PlayerDials } from './MatchupPanel'
 import { CardName } from './CardSheet'
-import { Face } from './Face'
 import { DetailGrid, LINES, SHEET } from './Stat'
 
 type AxisKey = 'peak_season' | 'ovr' | 'o_ovr' | 'd_ovr'
@@ -306,7 +305,6 @@ export function Roster({ onBack }: { onBack: () => void }) {
                 >
                   {picked.includes(p.name) ? '✓' : '+'}
                 </span>
-                <Face player={p} size={34} />
                 <span className="who">
                   <CardName p={p} />
                   <i>{archetype(p)}</i>

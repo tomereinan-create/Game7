@@ -1,6 +1,5 @@
 import { STYLES, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
-import { Face } from './Face'
 
 /**
  * THE COURT LINEUP (his ruling: a five stands on a floor, not in a list). An
@@ -132,6 +131,16 @@ const surname = (n: string) =>
     .split(' ')
     .pop()
 
+/** The ring holds initials now — the faces are gone by his ruling, the spot survives them. */
+const initials = (n: string) =>
+  n
+    .replace(/ '\d\d( \([a-z]\))?$/, '')
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .filter((_, i, a) => i === 0 || i === a.length - 1)
+    .join('')
+
 function Spot({ s, at, size, sc, pm }: { s: CourtSpot; at: XY; size: number; sc?: boolean; pm?: boolean }) {
   return (
     <button
@@ -141,7 +150,7 @@ function Spot({ s, at, size, sc, pm }: { s: CourtSpot; at: XY; size: number; sc?
       disabled={!s.onTap}
     >
       <span className="ct-bust" style={{ width: size, height: size }}>
-        {s.p ? <Face player={s.p} size={size - 2} /> : null}
+        {s.p ? <em className="ct-init">{initials(s.p.name)}</em> : null}
         {sc ? <u className="ct-mark sc">SC</u> : null}
         {pm ? <u className={`ct-mark pm ${sc ? 'lo' : ''}`}>PM</u> : null}
       </span>
