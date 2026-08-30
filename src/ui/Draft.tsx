@@ -8,7 +8,7 @@ import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { CardName } from './CardSheet'
-import { naiveAssignment, ratings100, readsOf, type Assignment } from '../engine/offense'
+import { naiveAssignment, ratings100, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -243,7 +243,6 @@ export function Draft({
     [],
   )
 
-  const reads = useMemo(() => readsOf(opponent.players), [opponent])
   const picks = POSITIONS.map((x) => slots[x]).filter((n): n is string => !!n)
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
@@ -277,12 +276,6 @@ export function Draft({
   const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
-  /** Their optimal board against your five, as [their man, your man] short names. */
-  const theirBoard = useMemo(() => {
-    if (!full) return [] as [string, string][]
-    const short = (n: string) => n.replace(/ '\d\d$/, '').split(' ').slice(-1)[0]
-    return naiveAssignment(opponent.players, five).map((j, i) => [short(opponent.players[i].name), short(five[j].name)] as [string, string])
-  }, [full, opponent, five])
   /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */
   const assignWorth = useMemo(() => {
     if (!full || !mine) return null
@@ -645,41 +638,7 @@ export function Draft({
             </div>
           </div>
         ) : null}
-        {!has('scout_reads') ? (
-          <div className="reads locked">
-            <div className="read">
-              <span className="rk">Matchup reads</span>
-              <b>Scout · 3★ node</b>
-              <i>their hunt orientation, steal target and anchor hiding spot, before you draft</i>
-            </div>
-          </div>
-        ) : null}
-        <div className="reads" hidden={!has('scout_reads')}>
-          <div className="read">
-            <span className="rk">{reads.fiveOut ? 'Five out' : 'Hide your anchor on'}</span>
-            <b>{reads.fiveOut ? `worst shooter ${reads.worstShooter.name.replace(/ '\d\d$/, '')} still out ${reads.worstShooter.out}` : reads.worstShooter.name}</b>
-            <i>{reads.fiveOut ? 'no hiding spot — rim protection loses value' : `out ${reads.worstShooter.out} · rim protection holds full value`}</i>
-          </div>
-          <div className="read">
-            <span className="rk">Steal target</span>
-            <b>{reads.star.name}</b>
-            <i>
-              usage {reads.star.usg.toFixed(1)} · ball security {reads.star.ballsec} — {reads.star.ballsec < 40 ? 'loose with it' : reads.star.ballsec < 70 ? 'average hands' : 'hard to strip'}
-            </i>
-          </div>
-          {rank(wallet, 'scout_reads') >= 2 && full ? (
-            <div className="read">
-              <span className="rk">Their board</span>
-              <b>{theirBoard.map(([d, o]) => `${d} on ${o}`).join(' · ')}</b>
-              <i>who they put on whom, if they coach it optimally</i>
-            </div>
-          ) : null}
-          <div className="read">
-            <span className="rk">They hunt</span>
-            <b>{reads.paintOrient >= 0.6 ? 'the paint' : reads.paintOrient <= 0.4 ? 'the perimeter' : 'both ways'}</b>
-            <i>{Math.round(reads.paintOrient * 100)}% of their scoring weight lives at the rim</i>
-          </div>
-        </div>
+        {/* his ruling (post-r62): the Matchup reads block is gone from the scout card. */}
         <div className="rowhead dr">
           <span>Player</span>
           <span className="gcap">PTS · REB · AST</span>

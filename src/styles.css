@@ -1871,13 +1871,16 @@ button {
 .trail-lit { stroke: var(--you); }
 .node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); }
 .node:disabled { cursor: default; }
-.node-disc { position: relative; width: 62px; height: 62px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface); border: 2px solid var(--line-3); box-shadow: 0 0 0 4px var(--bg); }
-.node-n { font-family: var(--serif); font-size: 26px; line-height: 1; }
-.node-ab { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; color: var(--muted); margin-top: 2px; }
+/* design 2d: the discs are game tickets now — the record rides on the stub. */
+.ticket { position: relative; display: block; width: 78px; border-radius: 8px; background: var(--surface); border: 2px solid var(--line-3); padding: 7px 6px 6px; box-shadow: 0 0 0 4px var(--bg); text-align: center; }
+.ticket-n { display: block; font-family: var(--serif); font-size: 24px; line-height: 1; font-weight: 400; }
+.ticket-stub { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+.ticket-next { display: block; font-family: var(--mono); font-size: 7.5px; font-weight: 700; letter-spacing: 0.16em; }
 .node.locked { opacity: 0.4; }
-.node.done .node-disc { background: var(--you); border-color: var(--you); color: var(--you-ink); }
-.node.done .node-ab { color: var(--you-ink); opacity: 0.75; }
-.node.now .node-disc { border-color: var(--you); color: var(--you); animation: pulse 1.8s ease-in-out infinite; }
+.node.done .ticket { background: var(--you); border-color: var(--you); color: var(--you-ink); }
+.node.done .ticket-stub { color: var(--you-ink); opacity: 0.8; }
+.node.now .ticket { width: 86px; padding: 8px 6px 7px; border-color: var(--you); color: var(--you); animation: pulse 1.8s ease-in-out infinite; }
+.node.now .ticket-n { font-size: 26px; margin-top: 2px; }
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--you-line); } 50% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 9px var(--you); } }
 .node-stars { display: flex; gap: 1px; font-size: 12px; line-height: 1; color: var(--line-3); }
 .node-stars i { font-style: normal; }
@@ -1886,9 +1889,11 @@ button {
 .map-foot .cap { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .who i.sal { display: block; color: var(--you); }
 @media (min-width: 900px) {
-  .node-disc { width: 84px; height: 84px; }
-  .node-n { font-size: 36px; }
-  .node-ab, .node-stars { font-size: 13px; }
+  .ticket { width: 96px; }
+  .node.now .ticket { width: 106px; }
+  .ticket-n { font-size: 32px; }
+  .ticket-stub { font-size: 10px; }
+  .node-stars { font-size: 13px; }
   .map-total { font-size: 56px; }
 }
 
@@ -2250,7 +2255,9 @@ button {
 /* ---- era campaigns ---- */
 .mode.locked { opacity: 0.55; cursor: default; }
 .node.champ .node-disc { border-color: var(--you); }
-.node-champ { font-family: var(--mono); font-size: 7px; letter-spacing: 0.14em; color: var(--you); margin-top: -2px; }
+.ticket-champ { display: block; font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.14em; margin-top: 2px; }
+.node.done .ticket-champ { color: var(--you-ink); }
+.node.now .ticket-champ, .node.locked .ticket-champ { color: var(--you); }
 
 /* ---- era banners on the map ---- */
 .era-band { position: absolute; width: 30%; pointer-events: none; }

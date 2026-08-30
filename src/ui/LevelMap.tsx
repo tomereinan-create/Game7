@@ -3,13 +3,39 @@ import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { ratings100 } from '../engine/offense'
 import { balance } from '../engine/tree'
+import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
 
+/** Path geometry, in a 375-wide coordinate space stretched to the column. */
+const W = 375
+const STEP = 170 // vertical distance between levels (ticket + stars or dials)
+const PAD = 56 // room above the top node and below the bottom one
+const H = PAD * 2 + STEP * (ROUNDS - 1)
+const xAt = (i: number) => W / 2 + 0.34 * W * Math.sin((i * 2 * Math.PI) / 7) // winds every 7 levels
+const yAt = (i: number) => H - PAD - STEP * i // level 1 at the bottom, climbing
+
+/** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
+function trail(): string {
+  const pts = Array.from({ length: ROUNDS }, (_, i) => [xAt(i), yAt(i)])
+  let d = `M ${pts[0][0]} ${pts[0][1]}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[i + 2] ?? p2
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6]
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]
+    d += ` C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${p2[0]} ${p2[1]}`
+  }
+  return d
+}
+const TRAIL = trail()
+
 /**
- * The campaign map as a season ledger (design 2c): dense ruled rows with a lit
- * spine, grouped by era, worst record first. Cleared rows carry their best star
- * rating and can be replayed; the current level is pinned gold with a PLAY chip;
- * everything beyond is dim. One total at the top — that's the score.
+ * The campaign map as a ticket trail (design 2d, his ruling over 2c): the
+ * winding trail stays, the discs become game tickets with the record on the
+ * stub. Cleared tickets are solid gold with their stars; the next one pulses
+ * and shows the opponent's OFF/DEF dials; everything beyond is dim.
  */
 export function LevelMap({
   title,
@@ -46,17 +72,20 @@ export function LevelMap({
   const dials = useMemo(() => opponents.map((o) => ratings100(o.players)), [opponents])
   /** How far ahead the map reveals: what you have cleared, and the one you are on. */
   const revealed = (state: string) => state !== 'locked'
+  /** The ticket stub: team abbreviation (with year off the home era) and the record. */
+  const stub = (o: Opponent) => {
+    const ab = o.season && o.era !== eras[0]?.name ? `'${String(o.season).slice(2)} ${o.ab ?? ''}` : (o.ab ?? '')
+    return o.record ? `${ab} ${o.record}` : ab
+  }
   const nowRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
   }, [])
 
-  /** The era blocks, each a run of consecutive levels. */
-  const blocks = eras.map((e, k) => {
-    const end = eras[k + 1] ? eras[k + 1].first - 1 : ROUNDS
-    return { era: e, list: opponents.filter((o) => o.round >= e.first && o.round <= end) }
-  })
+  // The trail is lit up to the current level, unlit beyond it.
+  const litIdx = cur ? cur - 1 : ROUNDS - 1
+  const litLen = litIdx / (ROUNDS - 1)
 
   return (
     <>
@@ -91,80 +120,75 @@ export function LevelMap({
         </div>
       </div>
 
-      {blocks.map(({ era, list }) => {
-        // The spine lights through the last row that is cleared or up now.
-        const lit = list.filter((o) => progress.stars[o.round - 1] > 0 || o.round === cur).length
-        const frac = list.length ? Math.round((100 * lit) / list.length) : 0
-        return (
-          <section key={era.name}>
-            <div className="ledger-head">
-              <span className="nm">{era.name}</span>
-              <i />
-              <span className="yr">
-                {era.years[0] === era.years[1] ? era.years[0] : `${era.years[0]}–${era.years[1]}`}
-                {era.handicap ? ` · opponents +${era.handicap}` : ''} · worst record first
+      <div className="trail" style={{ height: H }}>
+        <svg className="trail-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
+          <path className="trail-dim" d={TRAIL} pathLength={1} />
+          <path className="trail-lit" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
+        </svg>
+
+        {eras.map((e) => (
+          <div
+            className={`era-band ${xAt(e.first - 1) > W / 2 ? 'left' : 'right'}`}
+            key={e.name}
+            style={{ top: yAt(e.first - 1) - 18 }}
+          >
+            <b>{e.name}</b>
+            <i>
+              {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
+              {e.handicap ? ` · opponents +${e.handicap}` : ''}
+            </i>
+          </div>
+        ))}
+        {teamNote && cur && onMyTeam ? (
+          <button
+            className={`node-note ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`}
+            style={{ top: yAt(cur - 1) - 6 }}
+            onClick={onMyTeam}
+          >
+            {teamNote} →
+          </button>
+        ) : null}
+        {opponents.map((o) => {
+          const level = o.round
+          const i = level - 1
+          const stars = progress.stars[i]
+          const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
+          const can = playable(progress, level)
+          return (
+            <button
+              key={level}
+              ref={state === 'now' ? nowRef : undefined}
+              className={`node ${state} ${o.champion ? 'champ' : ''}`}
+              style={{ left: `${(100 * xAt(i)) / W}%`, top: yAt(i) }}
+              disabled={!can}
+              onClick={() => can && onPlay(level)}
+              aria-label={`Level ${level}${state !== 'locked' ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
+            >
+              <span className="ticket">
+                {state === 'now' ? <span className="ticket-next">NEXT</span> : null}
+                <span className="ticket-n">{level}</span>
+                <span className="ticket-stub">{revealed(state) ? stub(o) : '?'}</span>
+                {o.champion && revealed(state) ? <span className="ticket-champ">CHAMP</span> : null}
               </span>
-            </div>
-            <div className="ledger">
-              <div
-                className="ledger-spine"
-                style={{ background: `linear-gradient(to bottom, var(--you) 0, var(--you) ${frac}%, var(--line-2) ${frac}%)` }}
-              />
-              {list.map((o) => {
-                const level = o.round
-                const i = level - 1
-                const stars = progress.stars[i]
-                const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
-                const can = playable(progress, level)
-                const sub = revealed(state)
-                  ? [
-                      state === 'now' ? 'UP NEXT' : (o.ab ?? ''),
-                      o.season && state !== 'now' ? `'${String(o.season).slice(2)}` : '',
-                      o.record ?? '',
-                      `OFF ${Math.round(dials[i].off)} · DEF ${Math.round(dials[i].def)}`,
-                      o.champion ? 'CHAMP' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')
-                  : null
-                return (
-                  <div key={level} style={{ display: 'contents' }}>
-                    <button
-                      ref={state === 'now' ? nowRef : undefined}
-                      className={`lrow ${state} ${o.champion ? 'champ' : ''}`}
-                      disabled={!can}
-                      onClick={() => can && onPlay(level)}
-                      aria-label={`Level ${level}${revealed(state) ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
-                    >
-                      <span className="ln">{level}</span>
-                      <span className="lwho">
-                        <b>{revealed(state) ? o.team : '?'}</b>
-                        {sub ? <i>{sub}</i> : null}
-                      </span>
-                      {state === 'now' ? (
-                        <span className="lplay">PLAY</span>
-                      ) : (
-                        <span className="node-stars">
-                          {[1, 2, 3].map((k) => (
-                            <i key={k} className={k <= stars ? 'lit' : ''}>
-                              ★
-                            </i>
-                          ))}
-                        </span>
-                      )}
-                    </button>
-                    {state === 'now' && teamNote && onMyTeam ? (
-                      <button className="lnote" onClick={onMyTeam}>
-                        {teamNote} →
-                      </button>
-                    ) : null}
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )
-      })}
+              {state === 'done' ? (
+                <span className="node-stars">
+                  {[1, 2, 3].map((k) => (
+                    <i key={k} className={k <= stars ? 'lit' : ''}>
+                      ★
+                    </i>
+                  ))}
+                </span>
+              ) : null}
+              {state === 'now' ? (
+                <span className="node-dials">
+                  <Dial label="OFF" value={dials[i].off} tone="them" />
+                  <Dial label="DEF" value={dials[i].def} tone="them" />
+                </span>
+              ) : null}
+            </button>
+          )
+        })}
+      </div>
 
       <div className="map-foot">
         <span className="cap">Tap a cleared level to replay it for a better rating</span>
