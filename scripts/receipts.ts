@@ -1909,6 +1909,60 @@ const ROUNDS: Record<string, () => void> = {
     note('  exactly as ORB/miss is the OFF-side one — both need rulings, neither is touched here.')
     line('(4) monotonicity covers BOTH indexes', '500 strictly-better swaps: 0 OFF violations, 0 DEF violations (the run above asserts offRaw AND drtgRef)', 'the structural guarantee holds on defense too', true)
     line('THE HOLD, RENEWED — one package, third stop', 'items 2/3/1b + the DEF clamp all held; version counter untouched', 'every named band unreachable via the mechanism; the gate worsens under it', true)
+    // ================= ADDENDUM 3 (the OFF gauge needs a reference defense) =================
+    note('')
+    note('ADDENDUM 3 (Houston 99 blamed on spacing-never-fires) — measured, and the hold made a FOURTH:')
+    src('(A3) the definitional gap is REAL', io('src/engine/gauges.ts'), /ratings100\(/, 'the OFF gauge is intrinsic teamOffense; hide/matchup channels live in defenseVs — the addendum reads the code right')
+    // the candidate: offCand = off + (what a reference defense WITH A REAL ANCHOR allows) - 110
+    const REFG70 = REF_FIVE68.map((p) => (p.name === 'Avg C' ? { ...p, attrs: { ...p.attrs, rimprot: 88 } } : p))
+    const cand70 = (five: NonNullable<ReturnType<typeof five68>>['five']) => teamOffense68(five).off + defenseVs68(REFG70, five).drtg - 110
+    const rows70: { team: string; off: number; cand: number; hides: number; allows: number }[] = []
+    for (const t of WHEEL64.filter((x) => x.y === 2026)) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length !== 5) continue
+      rows70.push({ team: t.team, off: teamOffense68(fv).off, cand: cand70(fv), hides: fv.filter((p) => p.attrs['3pt'] < 45).length, allows: defenseVs68(REFG70, fv).drtg })
+    }
+    const pct70 = (xs: number[], v: number) => Math.round((100 * xs.filter((y) => y < v).length) / Math.max(1, xs.length - 1))
+    const spread70 = Math.max(...rows70.map((r) => r.allows)) - Math.min(...rows70.map((r) => r.allows))
+    line('(A3) the reference-defense response, measured', `REFG (Avg C rimprot 88) allows 2026 fives a ${spread70.toFixed(2)}-pt range — hide reads the MIN shooter, and nearly every five owns a sub-47 man (OKC's is Holmgren 47, hide 0.96)`, 'far below the ~12-pt ORB channel and the ~16-pt core spread', spread70 < 4)
+    const hou70 = rows70.find((r) => /Rockets/.test(r.team))!
+    line('(A3) NAMED TARGET: Houston out of the top decile', `intrinsic pct ${pct70(rows70.map((r) => r.off), hou70.off)} -> candidate pct ${pct70(rows70.map((r) => r.cand), hou70.cand)}`, 'NOT REACHED — his 99 is the GLASS, not unpunished non-shooters', pct70(rows70.map((r) => r.cand), hou70.cand) < 90)
+    const mean70 = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / xs.length
+    const pear70 = (xs: number[], ys: number[]) => {
+      const mx = mean70(xs)
+      const my = mean70(ys)
+      let n = 0
+      let dx = 0
+      let dy = 0
+      for (let i = 0; i < xs.length; i++) {
+        n += (xs[i] - mx) * (ys[i] - my)
+        dx += (xs[i] - mx) ** 2
+        dy += (ys[i] - my) ** 2
+      }
+      return n / Math.sqrt(dx * dy)
+    }
+    const hCorrI = pear70(rows70.map((r) => r.hides), rows70.map((r) => r.off))
+    const hCorrC = pear70(rows70.map((r) => r.hides), rows70.map((r) => r.cand))
+    line('(A3) hide-count correlation', `intrinsic ${hCorrI.toFixed(3)} -> candidate ${hCorrC.toFixed(3)}`, 'ALREADY negative before any change (clog/finisher + card quality); the candidate only nudges it', hCorrI < 0 && hCorrC < hCorrI)
+    note('  THE SPACING TABLE (scripts/spacing70.ts prints it in full): Houston — Thompson 3pt 9 (hide-')
+    note('  eligible, clog-gated: clogF 0.990 x finisherF 1.034 — the finisher credit NETS OUT his clog')
+    note('  penalty, which is rule (b)\'s complaint, measured, on the FINISHER channel); Sengun 3pt 15 —')
+    note('  hide-eligible but NOT clog-gated (his mid clears 45), so today he receives NEITHER hub credit')
+    note('  NOR clog penalty: the addendum\'s "correctly credited as a hub" is false in this engine. OKC')
+    note('  fields ZERO hide-eligible men. Boston \'26 now fields Queta (3pt 9) — the design-quoted')
+    note('  Vučević qualifies for CHICAGO under recal_69 (48 GP there, 16 in Boston).')
+    note('  RULE (a) STRUCTURAL VERDICT: the anchor hides on ONE man and minOppOut is a MIN — a second')
+    note('  sub-45 shooter changes nothing today; compounding requires a NEW hide law (engine redesign).')
+    note('  Measured in the wild (candidate): the 2nd hide-eligible man costs LESS than the 1st (0->1:')
+    note('  -2.34 mean, 1->2: -0.44). Bands under the candidate: OKC 74, Boston \'26 43, Knicks \'25 44,')
+    note('  Celtics \'24 28, Grizzlies \'13 7 — ALL still FAIL. 2025 gate: 0.433 -> 0.451, still under 0.6.')
+    line('THE HOLD, A FOURTH — addendum 3 held whole', 'gauge switch + rules (a)/(b) unshipped; no version bump; harness/parity/monotonicity untouched', 'the mechanism moves ~0.5-1 pt; every named target needs ~10; the patient is still the ORB/miss channel', true)
+    note('  The label ruling is honored as relayed: the dial keeps "pct of <season>"; the computation')
+    note('  basis (intrinsic today; vs-reference if the design re-scopes) is recorded here, not on the UI.')
+    note('  Four addenda have now named four different culprits — fit, starvation, assignments, spacing —')
+    note('  and the decomposition finds the same two owners each time: the talent core (71.7%) and the')
+    note('  ORB/miss channel (12.9%, with its perverse miss factor). The ruling the offense gauge needs')
+    note('  is on THAT channel; every other lever measured is an order of magnitude too small.')
   },
   '67': () => {
     console.log(`${EOL}recal_67 — THE DEF DISPLAY MULTIPLIER WAS THE INFLATION (design-side, unnumbered; our 66 was taken)`)
