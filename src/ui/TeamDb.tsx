@@ -8,15 +8,15 @@ import { DetailGrid, LINES } from './Stat'
 import { TeamDials } from './MatchupPanel'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
-const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
-const winsOf = (rec: string | null) => (rec ? parseInt(rec, 10) || 0 : 0)
+export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
+export const winsOf = (rec: string | null) => (rec ? parseInt(rec, 10) || 0 : 0)
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 
 /**
  * The starting five: one man per slot, the legal PG-to-C board that maximizes
  * total OVR — the same position rules the draft plays by.
  */
-function startingFive(roster: Player[]): { five: (Player | null)[]; bench: Player[] } {
+export function startingFive(roster: Player[]): { five: (Player | null)[]; bench: Player[] } {
   const cands = roster.map((p) => ({ p, pos: eligible(LINES[p.name]?.pos) }))
   let best: (Player | null)[] = POSITIONS.map(() => null)
   let bestSum = -1

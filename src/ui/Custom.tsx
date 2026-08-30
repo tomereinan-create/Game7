@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { WHEEL, type TeamSeason } from './Draft'
+import { startingFive, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
@@ -29,6 +31,9 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const [q, setQ] = useState('')
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
+  // his ruling: any team-db team can be loaded whole — its best legal five fills the tapped card
+  const [loadOpen, setLoadOpen] = useState(false)
+  const [loadYear, setLoadYear] = useState(YEARS[0])
 
   const five = (i: 0 | 1) => teams[i].map((n) => BY_NAME.get(n)!).filter(Boolean)
   const A = five(0)
@@ -80,6 +85,24 @@ export function Custom({ onHome }: { onHome: () => void }) {
         onAdvance={() => setResult(null)}
       />
     )
+  }
+
+  const loadTeam = (t: TeamSeason) => {
+    // the same man may not appear twice across the matchup, so the other side's men sit this one out
+    const other = new Set(teams[1 - side].map((n) => BY_NAME.get(n)?.player ?? n))
+    const pool = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !other.has(p.player))
+    const names5 = startingFive(pool).five.filter((p): p is Player => !!p).map((p) => p.name)
+    setTeams((cur) => {
+      const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
+      next[side] = names5
+      return next
+    })
+    setNames((cur) => {
+      const next: [string, string] = [cur[0], cur[1]]
+      next[side] = `'${String(t.y).slice(2)} ${t.team}`
+      return next
+    })
+    setLoadOpen(false)
   }
 
   const roster = (i: 0 | 1) => (
@@ -135,9 +158,45 @@ export function Custom({ onHome }: { onHome: () => void }) {
 
       <div className="card">
         <div className="card-head">
-          <span className="label">Database · picking for {names[side]}</span>
-          <span className="cap">{PLAYERS.length.toLocaleString()} player-seasons</span>
+          <span className="label">{loadOpen ? `A real team · for ${names[side]}` : `Database · picking for ${names[side]}`}</span>
+          {loadOpen ? (
+            <button className="chip-btn" onClick={() => setLoadOpen(false)}>
+              Pick by hand instead
+            </button>
+          ) : (
+            <button className="chip-btn" onClick={() => setLoadOpen(true)}>
+              Load a real team
+            </button>
+          )}
         </div>
+        {loadOpen ? (
+          <>
+            <div className="yr-rail">
+              {YEARS.map((y) => (
+                <button key={y} className={`sortb ${y === loadYear ? 'on' : ''}`} onClick={() => setLoadYear(y)}>
+                  {y}
+                </button>
+              ))}
+            </div>
+            {WHEEL.filter((t) => t.y === loadYear)
+              .sort((a, b) => winsOf(b.rec) - winsOf(a.rec))
+              .map((t) => (
+                <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
+                  <span className="lwho">
+                    <b>{t.team}</b>
+                    <i>
+                      {t.ab}
+                      {t.rec ? ` · ${t.rec}` : ''}
+                      {t.div ? ` · ${t.div}` : ''}
+                    </i>
+                  </span>
+                  <span className="tdb-go">→</span>
+                </button>
+              ))}
+            <div className="cap hint">Their best legal five by OVR fills {names[side]} — men already on the other side sit out.</div>
+          </>
+        ) : (
+          <>
         <input className="field" placeholder="Search a player…" value={q} onChange={(e) => setQ(e.target.value)} />
         {hits.map((p) => {
           const used = takenMen.has(p.player)
@@ -159,6 +218,8 @@ export function Custom({ onHome }: { onHome: () => void }) {
             </div>
           )
         })}
+          </>
+        )}
       </div>
 
       <div className="dock">
