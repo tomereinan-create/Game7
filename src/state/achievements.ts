@@ -11,11 +11,12 @@ import type { Opponent, Player, SeriesResult } from '../engine/types'
 import type { CampaignMode, Progress } from './campaign'
 
 /**
- * ACHIEVEMENTS (design round 63): 57 of them, every condition read from state
- * the game already tracks — series results, pre-series odds, the r61 box
- * lines, the r58 fits, the star economy, the campaign map. Hidden ones reveal
- * only on unlock. Four of the 57 name hooks the game does not have (there is
- * no Hack-a-X, no opponent draft AI, no offensive-rebound column, no "best
+ * ACHIEVEMENTS (design round 63): 60 of them (57 at r63; the Machine trio
+ * 58-60 added by his ruling), every condition read from state the game
+ * already tracks — series results, pre-series odds, the r61 box lines, the
+ * r58 fits, the star economy, the campaign map. Hidden ones reveal only on
+ * unlock. Four of the 57 name hooks the game does not have (there is no
+ * Hack-a-X, no opponent draft AI, no offensive-rebound column, no "best
  * counter" rating on the draft) — they are DEFINED and shown, their detectors
  * never fire, and the receipts name each one for a design-side re-aim. The
  * Sergeant trio was re-aimed at the map's champion teams by his ruling.
@@ -97,6 +98,10 @@ export const ACHIEVEMENTS: AchDef[] = [
   { id: 55, key: 'coachs-son', name: "Coach's Son", desc: 'Max the Coach branch', tier: 'common' },
   { id: 56, key: 'renaissance', name: 'Renaissance', desc: 'Own a node in Scout, Front office and Coach in one campaign', tier: 'common' },
   { id: 57, key: 'the-eye', name: 'The Eye', desc: 'Draft the rated best counter, ten times', tier: 'legendary', hidden: true, nohook: 'no screen rates a draftable player as "the best counter"' },
+  // ---- the Machine (1v1 Bid sims inline, so these fire from achMachineWin, not the settlement) ----
+  { id: 58, key: 'training-wheels', name: 'Training Wheels', desc: 'Beat The Machine on Rookie in 1v1 Bid', tier: 'common' },
+  { id: 59, key: 'turing-test', name: 'Turing Test', desc: 'Beat The Machine on Pro in 1v1 Bid', tier: 'rare' },
+  { id: 60, key: 'shark-hunter', name: 'Shark Hunter', desc: 'Beat The Machine on Shark in 1v1 Bid', tier: 'legendary' },
 ]
 
 export interface Unlock {
@@ -361,6 +366,13 @@ function metaChecks(s: AchState, prog: Progress, team: string) {
   if (maxed('Coach')) u(55)
   const has = (b: Branch) => NODES.some((n) => n.branch === b && (prog.nodes[n.id] ?? 0) > 0)
   if (has('Scout') && has('Front office') && has('Coach')) u(56)
+}
+
+/** 1v1 Bid: the human chair beats The Machine. The auction sims inline (no series settlement passes through). */
+export function achMachineWin(level: 'rookie' | 'pro' | 'shark') {
+  const s = load()
+  unlock(s, level === 'rookie' ? 58 : level === 'pro' ? 59 : 60, '1v1 Bid · The Machine')
+  save(s)
 }
 
 /** Called on every campaign progress commit (staff buys included). */

@@ -1821,7 +1821,7 @@ const ROUNDS: Record<string, () => void> = {
   },
   '63': () => {
     console.log(`${EOL}recal_63 — ACHIEVEMENTS: 57, EVERY DETECTOR NAMED TO ITS STATE`)
-    line('the roster', `${ACHIEVEMENTS.length} defined, ${ACHIEVEMENTS.filter((x) => x.hidden).length} hidden`, '57 and 5', ACHIEVEMENTS.length === 57 && ACHIEVEMENTS.filter((x) => x.hidden).length === 5)
+    line('the roster', `${ACHIEVEMENTS.length} defined, ${ACHIEVEMENTS.filter((x) => x.hidden).length} hidden`, '60 and 5 (57 -> 60: the Machine trio, his ruling)', ACHIEVEMENTS.length === 60 && ACHIEVEMENTS.filter((x) => x.hidden).length === 5)
     src('settlement hook', io('src/App.tsx'), /achSettleSeries\(\{/, 'every series settle feeds the evaluator')
     src('sim-time capture', io('src/App.tsx'), /const pre = odds\(mine, theirs, sig, toWin\)\.series/, 'pre-series odds frozen at the moment of the sim')
     src('meta hook', io('src/App.tsx'), /achCheckMeta\(p,/, 'star economy and branch checks fire on every save')
