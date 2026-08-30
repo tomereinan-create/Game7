@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 66
+PIPELINE_VERSION = 67
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -70,7 +70,12 @@ def is_big(p):
     # bigs of DeRozan, Korver, Maggette and 6'3" Mike Dunleavy - and routes Paul George '19's defense to
     # rim protection he hasn't got (D 95 -> 84). Strict on both sides or the rule leaks.
     if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos): return True
-    a = p['attrs']; return (a['rimprot'] >= 55 and a['3pt'] < 45) or (a['rim'] >= 60 and a['3pt'] < 40) or a['rimprot'] >= 80   # stretch bigs classify by deterrence, whatever their range
+    # recal_72 (design-side "67"): a big's rim presence must at least match his perimeter rating —
+    # the first shape clause was classifying SF-only stoppers (Reggie Williams-class) as bigs, halving
+    # their perdef's authority (0.79 -> 0.40) and charging guard drb at 0.17. Shape branch only; the
+    # position branches above are UNTOUCHED (and they, not this clause, hold the round's named card:
+    # Anunoby '26 is lifetime SF/PF-never-guard, so the position rule decides him first — receipt 72).
+    a = p['attrs']; return (a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']) or (a['rim'] >= 60 and a['3pt'] < 40) or a['rimprot'] >= 80   # stretch bigs classify by deterrence, whatever their range
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)

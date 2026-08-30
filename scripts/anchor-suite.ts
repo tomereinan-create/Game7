@@ -51,6 +51,12 @@ const BANDS: Band[] = [
   { year: 2024, name: 'Celtics', off: [90, null], def: [85, null] },
   { year: 2025, name: 'Wizards', off: [null, 24], def: [null, 24] },
   { year: 2013, name: 'Grizzlies', off: [40, 60], def: [85, null] },
+  // recal_73 (design-side "68"): the suite's first pre-1990 entry and first losing-team-with-a-star
+  // shape. NOTE: every band above was DEFINED on the retired within-season percentile scale (recal_71
+  // moved the dial to the all-time scale); readings print on the shipped scale, the band ledger lives
+  // in receipt 66. Philly '88's within-season DIAGNOSTIC readings are in receipt 73 (OFF 100 / DEF 5 —
+  // the percentile basis fails this round's own bands worse than the all-time scale does).
+  { year: 1988, name: '76ers', off: [35, 60], def: [30, 55] },
 ]
 
 const inBand = (v: number, [lo, hi]: [number | null, number | null]) => (lo === null || v >= lo) && (hi === null || v <= hi)

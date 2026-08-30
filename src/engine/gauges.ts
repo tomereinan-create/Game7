@@ -26,12 +26,13 @@ import type { Player } from './types'
  * survive there; the gauge simply no longer routes through either.
  */
 
-// frozen anchors (scripts/gauge71.ts, v66 pool, r69 wheel):
+// frozen anchors (scripts/gauge71.ts, v67 pool, r69 wheel; medians re-derived per the r71 law
+// after recal_72's is_big flips reshuffled a few best fives — the summit pins did not move):
 const OFF_MIN = 105.57 // the all-time worst wheel five
-const OFF_MID = 126.89 // the all-time median five reads 50
+const OFF_MID = 126.87 // the all-time median five reads 50
 const OFF_TOP = 140.04 // Golden State Warriors '17 — the named OFF summit reads 99
 const DEF_WORST = 113.55 // the all-time worst defensive five
-const DEF_MID = 109.18 // the all-time median reads 50
+const DEF_MID = 109.17 // the all-time median reads 50
 const DEF_TOP = 106.85 // Detroit Pistons '04 — the named DEF summit reads 99
 /** How many wheel fives froze the anchors (display only). */
 const ANCHOR_N = 1255
