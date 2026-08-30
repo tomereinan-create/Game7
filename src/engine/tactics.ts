@@ -75,14 +75,16 @@ export const DEFAULT_TACTICS: Tactics = {
  * the oracle-best call averages >= +0.5 margin and a BLIND call averages -0.3 to -1.5. Tactics
  * reward READS: a player who clicks randomly must lose margin to one who leaves defaults alone.
  * The constants below are the taxes and slopes the harness ratified — tune them ONLY through it.
+ * recal_62's card change (perimdisrupt trimmed in DEF) moved 1,298 OVRs and with them the harness's
+ * ovr>=55 pool, so style/scheme/hunt were re-ratified through the harness: .42->.35, .85->.90, 3.65->3.50.
  */
 export const TAX = {
   scorer: 0.55,
   playmaker: 0.5,
   tempo: 0.6,
-  style: 0.42,
-  scheme: 0.85,
-  hunt: 3.65,
+  style: 0.35,
+  scheme: 0.90,
+  hunt: 3.50,
   crashOff: 0.68,
   crashDef: 0.6,
 }

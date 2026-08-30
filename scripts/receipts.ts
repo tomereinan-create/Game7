@@ -1695,6 +1695,25 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '62': () => {
+    console.log(`${EOL}recal_62 — PERIMDISRUPT TRIMMED AGAIN IN DEF (his ruling)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '62', /PIPELINE_VERSION = 62/.test(OVR) && /PIPELINE_VERSION = 62/.test(RATINGS))
+    src('the weight line', OVR, /0\.79\*a\['perdef'\] \+ 0\.05\*a\['perimdisrupt'\] \+ 0\.09\*a\['drb'\] \+ 0\.07\*a\['discipline'\]/, 'perimdisrupt 0.09 -> 0.05, perdef takes ALL the slack (0.75 -> 0.79)')
+    const g62 = (n: string) => PLAYERS.find((q) => q.name === n)!
+    const d = (n: string) => g62(n).d_ovr
+    line('steal merchant pays', `Westbrook '17 D ${d("Russell Westbrook '17")}`, '57 (was 59 at r61)', d("Russell Westbrook '17") === 57)
+    line('lockdown, low steals, rises', `Dumars '90 D ${d("Joe Dumars '90")}`, '86 (was 83)', d("Joe Dumars '90") === 86)
+    line('elite two-way holds', `Kawhi '17 D ${d("Kawhi Leonard '17")} · Payton '96 D ${d("Gary Payton '96")}`, '96 and 92, unchanged', d("Kawhi Leonard '17") === 96 && d("Gary Payton '96") === 92)
+    line('bigs untouched by construction', `Gobert '19 D ${d("Rudy Gobert '19")} · Draymond '16 D ${d("Draymond Green '16")}`, '92 and 96, unchanged', d("Rudy Gobert '19") === 92 && d("Draymond Green '16") === 96)
+    note('3,029 perimeter cards moved (−2 to +3, mean +0.31 — perdef runs a shade higher than the')
+    note('steals it replaced); 1,298 OVRs moved with them; ZERO bigs and ZERO OFF ratings changed.')
+    note('The engine MECHANICS are untouched: steals still price through PRESS, TRANSITION and the')
+    note('steal read — the ruling is about the CARD verdict, where a gambler no longer buys DEF with')
+    note('deflections. One knock-on: the harness pool (ovr >= 55) shifted with the 1,298 OVR moves,')
+    note('so three taxes were re-ratified through the harness per the r59 law: style 0.42 -> 0.35,')
+    note('scheme 0.85 -> 0.90, hunt 3.65 -> 3.50. All nine rows back in band; the law never bent.')
+    src('re-ratified taxes', io('src/engine/tactics.ts'), /style: 0\.35,[\s\S]*scheme: 0\.9,|style: 0\.35,[\s\S]*scheme: 0\.90,/, 'the r62 constants, tuned only through the harness')
+  },
   '61': () => {
     console.log(`${EOL}recal_61 — BOX SCORES CONSUME THE TACTICAL STATE`)
     line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '61', /PIPELINE_VERSION = 61/.test(OVR) && /PIPELINE_VERSION = 61/.test(RATINGS))
