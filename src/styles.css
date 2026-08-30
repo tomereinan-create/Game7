@@ -1259,6 +1259,21 @@ button {
   display: flex;
   gap: 6px;
 }
+/* the chip row scrolls inside itself rather than widening the card (his report: the
+   tactics rows ran off a 375px phone and only body.wide let him reach them). The
+   wrapper carries the edge fades, since a fade inside the scroller would scroll away. */
+.chiprow { position: relative; flex: 0 1 auto; min-width: 0; }
+.chiprow > .poschips { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chiprow > .poschips::-webkit-scrollbar { display: none; }
+.chiprow::before, .chiprow::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22px; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
+.chiprow::before { left: 0; background: linear-gradient(to right, var(--bg), rgba(20, 18, 16, 0)); }
+.chiprow::after { right: 0; background: linear-gradient(to left, var(--bg), rgba(20, 18, 16, 0)); }
+.chiprow.fl::before, .chiprow.fr::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .chiprow::before, .chiprow::after { transition: none; }
+}
+/* the label never gives up its width to the scroller */
+.posbar > .cap { flex: none; }
 .sortb.no {
   opacity: 0.3;
   cursor: default;
@@ -2364,7 +2379,7 @@ button {
 .capbar.over .captrack i { background: var(--danger); }
 
 /* wheel-widening chips */
-.poschips.widen { padding: 6px 0 2px; flex-wrap: wrap; }
+.poschips.widen { padding: 6px 0 2px; flex-wrap: wrap; overflow-x: visible; }
 
 /* ---- custom matchup ---- */
 .cu-two { display: grid; gap: 10px; }

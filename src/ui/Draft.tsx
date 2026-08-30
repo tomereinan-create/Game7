@@ -10,6 +10,7 @@ import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
+import { ChipRow } from './ChipRow'
 import { naiveAssignment, type Assignment } from '../engine/offense'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -742,7 +743,7 @@ export function Draft({
               {sel ? (
                 <div className="posbar">
                   <span className="cap">Assign to</span>
-                  <div className="poschips">
+                  <ChipRow>
                     {POSITIONS.map((x) => {
                       const can = open.includes(x) && posOf(sel).includes(x)
                       return (
@@ -756,7 +757,7 @@ export function Draft({
                         </button>
                       )
                     })}
-                  </div>
+                  </ChipRow>
                 </div>
               ) : null}
             </>
@@ -946,7 +947,7 @@ export function Draft({
                       </button>
                     ) : null}
                   </span>
-                  <div className="poschips">
+                  <ChipRow>
                     {POSITIONS.map((y) => {
                       const can = canMove(x, y)
                       return (
@@ -962,7 +963,7 @@ export function Draft({
                         </button>
                       )
                     })}
-                  </div>
+                  </ChipRow>
                 </div>
               ) : null}
             </div>

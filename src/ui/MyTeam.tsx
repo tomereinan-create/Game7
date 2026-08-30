@@ -6,6 +6,7 @@ import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { CourtFive } from './CourtFive'
+import { ChipRow } from './ChipRow'
 import { gateTactics, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
@@ -463,7 +464,7 @@ export function MyTeam({
             ] as const).map(([label, key]) => (
               <div className="posbar" key={key}>
                 <span className="cap">{label}</span>
-                <div className="poschips">
+                <ChipRow>
                   <button className={`sortb ${tactics[key] === null ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, [key]: null })}>
                     —
                   </button>
@@ -476,41 +477,41 @@ export function MyTeam({
                       {p.name.replace(/ '\d\d( \([a-z]\))?$/, '').split(' ').slice(-1)[0]}
                     </button>
                   ))}
-                </div>
+                </ChipRow>
               </div>
             )) : null}
             {playbook >= 1 ? (
             <div className="posbar">
               <span className="cap">Tempo</span>
-              <div className="poschips">
+              <ChipRow>
                 {(['slow', 'normal', 'fast'] as const).map((k) => (
                   <button key={k} className={`sortb ${tactics.tempo === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, tempo: k })}>
                     {k}
                   </button>
                 ))}
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Playstyle</span>
-              <div className="poschips">
+              <ChipRow>
                 {STYLES.map(({ key, label }) => (
                   <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
                     {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five))}`}
                   </button>
                 ))}
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Hunt the mismatch</span>
-              <div className="poschips">
+              <ChipRow>
                 <button className={`sortb ${tactics.hunt ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, hunt: !tactics.hunt })}>
                   {tactics.hunt ? 'hunting' : 'off'}
                 </button>
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {/* the glass is two calls, not one: sending men to the offensive boards and ganging
@@ -518,11 +519,11 @@ export function MyTeam({
             {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
-              <div className="poschips">
+              <ChipRow>
                 <button className={`sortb ${tactics.crashOff ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashOff: !tactics.crashOff })}>
                   {tactics.crashOff ? 'crashing' : 'off'}
                 </button>
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {playbook >= 2 ? (
@@ -534,23 +535,23 @@ export function MyTeam({
             {playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Defensive scheme</span>
-              <div className="poschips">
+              <ChipRow>
                 {(['matchup', 'drop', 'switch'] as const).map((k) => (
                   <button key={k} className={`sortb ${tactics.scheme === k ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, scheme: k })}>
                     {k}
                   </button>
                 ))}
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
-              <div className="poschips">
+              <ChipRow>
                 <button className={`sortb ${tactics.crashDef ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, crashDef: !tactics.crashDef })}>
                   {tactics.crashDef ? 'crashing' : 'off'}
                 </button>
-              </div>
+              </ChipRow>
             </div>
             ) : null}
             {(() => {
