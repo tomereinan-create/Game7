@@ -1382,6 +1382,10 @@ button {
 .sortb.on::after {
   content: ' ▾';
 }
+/* a second tap on the active sort chip flips the order; the glyph follows */
+.sortb.on.asc::after {
+  content: ' ▴';
+}
 .rowhead.db,
 .row.db {
   grid-template-columns: minmax(0, 1fr) 126px;

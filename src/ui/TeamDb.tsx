@@ -121,6 +121,8 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
   const [sort, setSort] = useState<'rec' | 'az' | 'ovr' | 'off' | 'def'>('rec')
+  // A second tap on the active chip flips the order; picking a new sort starts best-first again.
+  const [flip, setFlip] = useState(false)
   const [minQ, setMinQ] = useState('')
   const [maxQ, setMaxQ] = useState('')
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
@@ -138,12 +140,21 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   /** OVR and the gauges share the 1-99 scale, so the same Min/Max inputs bind whichever sort is on. */
   const ranked = rating !== null || sort === 'ovr'
 
+  const pickSort = (k: typeof sort) => {
+    if (k === sort) setFlip((f) => !f)
+    else {
+      setSort(k)
+      setFlip(false)
+    }
+  }
+  const chip = (k: typeof sort) => `sortb ${sort === k ? (flip ? 'on asc' : 'on') : ''}`
+
   const teams = useMemo(() => {
     const pool = WHEEL.filter((t) => (year === null || t.y === year) && (!conf || t.c === conf))
     if (!ranked) {
-      return pool
-        .sort((a, b) => (sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y))
-        .map((t) => ({ t, g: null as TeamGauge }))
+      const cmp = (a: TeamSeason, b: TeamSeason) =>
+        sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y
+      return pool.sort((a, b) => (flip ? cmp(b, a) : cmp(a, b))).map((t) => ({ t, g: null as TeamGauge }))
     }
     // The caches memoize for good: the first ranked sort over Any grinds every season once, then it's free.
     const lo = bound(minQ)
@@ -155,9 +166,15 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
         const k = key(r.t)
         return k !== null && (lo === null || k >= lo) && (hi === null || k <= hi)
       })
-    // no legal five reads below any real value, so those rows sort last
-    return rows.sort((a, b) => (key(b.t) ?? 0) - (key(a.t) ?? 0) || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y)
-  }, [year, conf, sort, rating, ranked, minQ, maxQ])
+    return rows.sort((a, b) => {
+      const ka = key(a.t)
+      const kb = key(b.t)
+      // a pool with no legal five reads "—" and stays last in BOTH directions
+      if (ka === null || kb === null) return (ka === null ? 1 : 0) - (kb === null ? 1 : 0)
+      const d = kb - ka || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y
+      return flip ? -d : d
+    })
+  }, [year, conf, sort, rating, ranked, flip, minQ, maxQ])
 
   // A non-empty query takes over the list: every season of every matching franchise, newest first.
   const found = useMemo(() => {
@@ -242,19 +259,19 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
           </div>
           {!found ? (
             <div className="filterbar">
-              <button className={`sortb ${sort === 'rec' ? 'on' : ''}`} onClick={() => setSort('rec')}>
+              <button className={chip('rec')} onClick={() => pickSort('rec')}>
                 Best record
               </button>
-              <button className={`sortb ${sort === 'az' ? 'on' : ''}`} onClick={() => setSort('az')}>
+              <button className={chip('az')} onClick={() => pickSort('az')}>
                 A–Z
               </button>
-              <button className={`sortb ${sort === 'ovr' ? 'on' : ''}`} onClick={() => setSort('ovr')}>
+              <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
                 OVR
               </button>
-              <button className={`sortb ${sort === 'off' ? 'on' : ''}`} onClick={() => setSort('off')}>
+              <button className={chip('off')} onClick={() => pickSort('off')}>
                 OFF
               </button>
-              <button className={`sortb ${sort === 'def' ? 'on' : ''}`} onClick={() => setSort('def')}>
+              <button className={chip('def')} onClick={() => pickSort('def')}>
                 DEF
               </button>
               {ranked ? (
@@ -302,7 +319,13 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <div className="section-rule">
                 <span>
                   {year === null ? 'All years' : year} · {teams.length} teams ·{' '}
-                  {sort === 'az' ? 'A to Z' : sort === 'ovr' ? 'best OVR first' : sort === 'off' ? 'best OFF first' : sort === 'def' ? 'best DEF first' : 'best record first'}
+                  {sort === 'az'
+                    ? flip
+                      ? 'Z to A'
+                      : 'A to Z'
+                    : sort === 'rec'
+                      ? `${flip ? 'worst' : 'best'} record first`
+                      : `${flip ? 'lowest' : 'best'} ${sort.toUpperCase()} first`}
                   {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
                 </span>
                 <i />

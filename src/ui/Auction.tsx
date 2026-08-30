@@ -7,18 +7,13 @@ import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
+import { BUDGET, machineTakes, SLOTS, type MachineCtx, type Skill } from './machine'
 import { PlayerCard } from './PlayerCard'
 import { LINES } from './Stat'
-import { neutral } from './Versus'
 
-const BUDGET = 20
-const SLOTS = 5
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
-/** How far down the queue the Machine (and the slot picker) looks when judging supply. */
-const HORIZON = 15
 
 type Foe = 'friend' | 'bot'
-type Skill = 'rookie' | 'pro' | 'shark'
 
 interface Buy {
   name: string
@@ -69,9 +64,15 @@ export function Auction({ onHome }: { onHome: () => void }) {
 
   const names: [string, string] = ['Player 1', foe === 'bot' ? 'The Machine' : 'Player 2']
   const queue = useMemo(() => auctionQueue(seed), [seed])
-  /** OVR ladder over every man the block could ever serve — the honest basis for a lot's quality. */
-  const ovrs = useMemo(() => queue.map((x) => x.ovr).sort((a, b) => a - b), [queue])
-  const qtile = (p: Player) => ovrs.filter((o) => o < p.ovr).length / ovrs.length
+  // Distribution knowledge for the Machine: the generator's front-tier composition — how
+  // star-heavy it runs, how each chair's supply spreads — never the actual order ahead.
+  const compo = useMemo(() => {
+    const tier1 = queue.filter((x) => (LINES[x.name]?.ppg ?? 0) >= 18)
+    return {
+      pos: POSITIONS.map((_, j) => tier1.filter((x) => canSlot(x, j)).length / Math.max(1, tier1.length)),
+      star: tier1.filter((x) => x.ovr >= 90).length / Math.max(1, tier1.length),
+    }
+  }, [queue])
 
   const countOf = (i: 0 | 1) => slots[i].filter(Boolean).length
   const full = (i: 0 | 1) => countOf(i) === SLOTS
@@ -111,9 +112,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
     setInfo(false)
   }
 
-  /** How many men in the near queue could take slot j — the scarcity read. */
-  const supply = (j: number) => queue.slice(lotIdx + 1, lotIdx + 1 + HORIZON).filter((x) => canSlot(x, j)).length
-
   const place = (side: 0 | 1, name: string, p: number, j: number) => {
     setBudget((cur) => (side === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
     setSlots((cur) => {
@@ -128,8 +126,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const sell = (i: 0 | 1, p: number) => {
     const opts = legalOpen(i, man)
     if (!opts.length) return advance(`${man.name} — no chair could field him, off the block`) // defensive; the gate forbids it
-    // The Machine fills the chair the queue is least likely to fill later; a human with a choice picks.
-    if (i === 1 && foe === 'bot') place(1, man.name, p, opts.reduce((best, j) => (supply(j) < supply(best) ? j : best), opts[0]))
+    // The Machine fills its thinnest-supply chair (by composition, not by peeking); a human with a choice picks.
+    if (i === 1 && foe === 'bot') place(1, man.name, p, opts.reduce((best, j) => (compo.pos[j] < compo.pos[best] ? j : best), opts[0]))
     else if (opts.length === 1) place(i, man.name, p, opts[0])
     else setAssign({ side: i, name: man.name, price: p, opts })
   }
@@ -155,60 +153,29 @@ export function Auction({ onHome }: { onHome: () => void }) {
     else setPassed((cur) => (i === 0 ? [true, cur[1]] : [cur[0], true]))
   }
 
-  /**
-   * The Machine's private ceiling for the man on the block, in dollars. Quality
-   * is his OVR percentile on the full ladder: splurge-the-spare for a top-decile
-   * star, $2-4 mid, $0-1 low; a notch of urgency while the wallet is fat and the
-   * chairs are many; position need on top (a chair the queue is about to stop
-   * serving is worth paying up for). Seeded noise by level. The hard reserve
-   * arithmetic still caps it — the bot never out-borrows a human.
-   */
-  const wants = (): number => {
-    const hard = ceiling(1)
-    const spare = hard - 1
-    const q = qtile(man)
-    const rng = makeRng((seed ^ Math.imul(lot + 1, 0x9e3779b9)) >>> 0)
-    let v = q >= 0.92 ? Math.round(spare * 0.8) : q >= 0.85 ? 4 : q >= 0.75 ? 3 : q >= 0.5 ? 2 : q >= 0.25 ? 1 : 0
-    if (v > 0 && SLOTS - countOf(1) >= 3 && budget[1] > BUDGET / 2) v += 1
-    const fit = legalOpen(1, man)
-    const scarcest = fit.length ? Math.min(...fit.map(supply)) : HORIZON
-    if (skill === 'rookie') {
-      // sloppy: shrugs at stars, falls for the odd mid lot, reads no scarcity at all
-      if (q >= 0.92) v = Math.round(v * 0.6)
-      if (q >= 0.5 && q < 0.75 && rng.next() < 0.25) v += 3
-      v += rng.int(7) - 3
-    } else if (skill === 'shark') {
-      // sharp: per-position supply, star endgame, and noise that only nudges up — no bargain slips
-      if (scarcest <= 2) v += 2
-      if (SLOTS - countOf(1) === 1) v += 1
-      if (scarcest <= 1) v = Math.max(v, Math.round(spare * 0.7))
-      if (q >= 0.85) {
-        const thresh = ovrs[Math.floor(ovrs.length * 0.85)]
-        const starsAhead = queue.slice(lotIdx + 1, lotIdx + 13).filter((x) => x.ovr >= thresh).length
-        v = starsAhead < SLOTS - countOf(1) ? hard : Math.max(v, Math.round(spare * 0.5))
-      }
-      v += rng.int(2)
-    } else {
-      if (scarcest <= 2) v += 2 // pro reads the drying chair too, just without the per-position endgame
-      v += rng.int(3) - 1
-    }
-    return Math.max(0, Math.min(v, hard))
-  }
-
   // The Machine answers on a short beat whenever the move is its: the lot just opened,
   // or the human holds the top bid. Every other state waits on the human, so nothing locks.
+  // The valuation itself lives in machine.ts — pure, seeded, simulation-verified.
   useEffect(() => {
     if (foe !== 'bot' || done || result || !man || assign || outFor(1) || top === 1) return
     const t = window.setTimeout(() => {
-      const p = price + 1
-      let take = p <= wants()
-      if (skill === 'rookie' && take) {
-        const r = makeRng((seed ^ Math.imul(lot + 1, 0x85ebca6b) ^ (price * 977)) >>> 0)
-        if (price === 0 && r.next() < 0.2) take = false // sleeps on a $1 bargain
-        else if (price >= 2 && r.next() < 0.15) take = false // folds a beat too early
+      const fit = legalOpen(1, man)
+      const chairsBoth = 2 * SLOTS - countOf(0) - countOf(1)
+      const ctx: MachineCtx = {
+        seed,
+        lot,
+        price,
+        skill,
+        ovr: man.ovr,
+        hard: ceiling(1),
+        budget: budget[1],
+        bought: countOf(1),
+        chairsBoth,
+        scarcest: fit.length ? Math.min(...fit.map((j) => 3 * chairsBoth * compo.pos[j])) : 99,
+        starDensity: compo.star,
       }
-      if (take && p <= ceiling(1)) {
-        setBotSay(`The Machine bids $${p}`)
+      if (machineTakes(ctx) && price + 1 <= ceiling(1)) {
+        setBotSay(`The Machine bids $${price + 1}`)
         bid(1)
       } else {
         setBotSay('The Machine passes')
@@ -272,7 +239,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
               <span className="sc">
                 {g.us}–{g.them}
               </span>
-              <span className="note">{neutral(g.note, names)}</span>
             </div>
           ))}
         </div>

@@ -29,22 +29,6 @@ function versusPool(seed: number): Player[] {
   return out
 }
 
-/** The resolver's notes are written from side A's chair; on a neutral screen name the sides. */
-export function neutral(note: string, [a, b]: [string, string]): string {
-  const map: Record<string, string> = {
-    'we owned the paint': `${a} owned the paint`,
-    'walled off inside': `${b} walled off the paint`,
-    'our threes rained': `${a} rained threes`,
-    'ice cold from deep': `${a} ice cold from deep`,
-    'their paint game died': `${b}'s paint game died`,
-    'they killed us inside': `${b} killed it inside`,
-    'we locked the arc': `${a} locked the arc`,
-    'threes rained on us': `${b} rained threes`,
-    'better players, simple': `${a} had the better players`,
-  }
-  return map[note] ?? note
-}
-
 /**
  * Hot-seat: two people, one phone. Alternate picks from one board, then the
  * two fives play a best-of-seven with the exact campaign resolver.
@@ -58,6 +42,14 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const [loadFor, setLoadFor] = useState<0 | 1 | null>(null)
   const [loadYear, setLoadYear] = useState(YEARS[0])
   const [loadSort, setLoadSort] = useState<'rec' | 'ovr'>('rec')
+  const [loadFlip, setLoadFlip] = useState(false)
+  const pickLoadSort = (k: 'rec' | 'ovr') => {
+    if (k === loadSort) setLoadFlip((f) => !f)
+    else {
+      setLoadSort(k)
+      setLoadFlip(false)
+    }
+  }
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<SeriesResult | null>(null)
 
@@ -144,7 +136,6 @@ export function Versus({ onHome }: { onHome: () => void }) {
               <span className="sc">
                 {g.us}–{g.them}
               </span>
-              <span className="note">{neutral(g.note, names)}</span>
             </div>
           ))}
         </div>
@@ -224,17 +215,26 @@ export function Versus({ onHome }: { onHome: () => void }) {
             ))}
           </div>
           <div className="filterbar">
-            <button className={`sortb ${loadSort === 'rec' ? 'on' : ''}`} onClick={() => setLoadSort('rec')}>
+            <button className={`sortb ${loadSort === 'rec' ? (loadFlip ? 'on asc' : 'on') : ''}`} onClick={() => pickLoadSort('rec')}>
               Best record
             </button>
-            <button className={`sortb ${loadSort === 'ovr' ? 'on' : ''}`} onClick={() => setLoadSort('ovr')}>
+            <button className={`sortb ${loadSort === 'ovr' ? (loadFlip ? 'on asc' : 'on') : ''}`} onClick={() => pickLoadSort('ovr')}>
               OVR
             </button>
           </div>
           {WHEEL.filter((t) => t.y === loadYear)
-            .sort((a, b) =>
-              loadSort === 'ovr' ? (ovrOf(b) ?? 0) - (ovrOf(a) ?? 0) || winsOf(b.rec) - winsOf(a.rec) : winsOf(b.rec) - winsOf(a.rec),
-            )
+            .sort((a, b) => {
+              if (loadSort === 'ovr') {
+                const oa = ovrOf(a)
+                const ob = ovrOf(b)
+                // "—" teams stay last in both directions
+                if (oa === null || ob === null) return (oa === null ? 1 : 0) - (ob === null ? 1 : 0)
+                const d = ob - oa || winsOf(b.rec) - winsOf(a.rec)
+                return loadFlip ? -d : d
+              }
+              const d = winsOf(b.rec) - winsOf(a.rec)
+              return loadFlip ? -d : d
+            })
             .map((t) => (
               <button key={t.team + t.y} className="lrow" onClick={() => loadTeam(t)}>
                 <span className="lwho">
