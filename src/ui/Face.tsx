@@ -1,3 +1,4 @@
+import { LIKENESS } from '../data/likeness'
 import type { Player } from '../engine/types'
 
 /**
@@ -6,12 +7,16 @@ import type { Player } from '../engine/types'
  * from a hash of the bare career name, so every season of one man shares a
  * face and it never changes between sessions.
  *
- * THESE ARE DECLARED GENERIC FACES, NOT LIKENESSES. Skin tone, hair, and every
- * feature are hash bits and nothing else — never inferred from the name, the
- * era, the team, or anything about the real person.
+ * THESE ARE DECLARED GENERIC FACES, NOT LIKENESSES — with one curated
+ * exception: data/likeness.ts carries factual appearance notes for famous
+ * public figures (his ruling: the busts should read as the men), and where an
+ * entry exists its axes win, the hash filling whatever it leaves out. For
+ * EVERYONE ELSE the rule stands untouched: hash bits only, never inferred
+ * from the name, the era, the team, or anything about the real person.
  *
- * Axes: 4 face shapes × 8 skin tones × 8 hair styles × 5 hair colors ×
- * 5 facial-hair cuts × 3 brows × 4 eye spacings × 3 nose widths ≈ 230k faces.
+ * Axes: 4 face shapes × 8 skin tones × 9 hair styles (cornrows by likeness
+ * only; the hash draws 8) × 5 hair colors × 5 facial-hair cuts × 3 brows ×
+ * 4 eye spacings × 3 nose widths, plus a headband accessory ≈ 230k faces.
  * Pure SVG, no filters — these render in long lists.
  */
 
@@ -38,6 +43,7 @@ interface F {
   style: number
   beard: number
   brow: number
+  band: boolean
   hw: number
   jw: number
   chin: number
@@ -61,13 +67,24 @@ function faceOf(bare: string): F {
     h2 = Math.floor(h2 / n)
     return v
   }
-  const shape = take(4)
+  // the hash draws every axis FIRST (the stream never shifts, so unannotated faces
+  // stay exactly as they shipped); a likeness entry then wins per-axis over the draw
+  const hShape = take(4)
+  const hSkin = take(8)
+  const hHair = take(5)
+  const hStyle = take(8)
+  const hBeard = take(5)
+  const hBrow = take2(3)
+  const like = LIKENESS[bare]
+  const shape = like?.shape ?? hShape
   const f: F = {
-    skin: SKIN[take(8)],
-    hair: HAIR[take(5)],
-    style: take(8),
-    beard: take(5),
-    brow: take2(3),
+    skin: SKIN[like?.skin ?? hSkin],
+    // an annotated man's hair color is part of the known look: near-black unless the note says otherwise
+    hair: HAIR[like ? (like.hairColor ?? 0) : hHair],
+    style: like?.style ?? hStyle,
+    beard: like?.beard ?? hBeard,
+    brow: like?.brow ?? hBrow,
+    band: like?.headband ?? false,
     hw: [10.2, 11.2, 11.8, 10.6][shape],
     jw: [0.55, 0.72, 0.62, 0.82][shape],
     chin: [40.5, 40, 41, 39.5][shape],
@@ -157,6 +174,32 @@ export function Face({ player, size = 40 }: { player: Player | string; size?: nu
       ) : null}
       {f.style === 6 ? <path d={cap(hw, 18, 1.4)} fill={hair} /> : null}
       {f.style === 7 ? <path d={cap(hw, 19.5, 1)} fill={hair} /> : null}
+      {f.style === 8 ? (
+        <>
+          <path d={cap(hw, 20, 0.8)} fill={hair} />
+          {!tiny
+            ? [-3, -1.5, 0, 1.5, 3].map((k) => (
+                <path
+                  key={k}
+                  d={`M ${32 + k * (hw / 4.6)} 11.4 C ${32 + k * (hw / 3.4)} 14 ${32 + k * (hw / 3)} 16.5 ${32 + k * (hw / 2.7)} 19.2`}
+                  fill="none"
+                  stroke="#000"
+                  strokeWidth="0.7"
+                  opacity="0.35"
+                />
+              ))
+            : null}
+        </>
+      ) : null}
+      {/* the headband sits over the hairline, neutral like the jersey — never team-coded */}
+      {f.band ? (
+        <path
+          d={`M ${32 - hw - 0.5} 19.4 h ${2 * hw + 1} v 2.9 h ${-(2 * hw + 1)} Z`}
+          fill="var(--surface)"
+          stroke="var(--line-3)"
+          strokeWidth="0.5"
+        />
+      ) : null}
       {/* the face itself */}
       {f.beard === 1 && !tiny ? <path d={jawBand(hw, jw, chin)} fill={hair} opacity="0.22" /> : null}
       {f.beard === 4 ? <path d={jawBand(hw, jw, chin)} fill={hair} /> : null}
