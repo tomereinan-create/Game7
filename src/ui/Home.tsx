@@ -4,7 +4,7 @@ import { currentLevel, type CampaignMode, type Progress } from '../state/campaig
 import { setUserMode, useUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
 
-export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom' | 'achievements'
+export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'custom' | 'achievements' | 'teams'
 
 export interface Era {
   name: string
@@ -113,6 +113,10 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
             <button className="slate-row half" onClick={() => onPick('archetypes')}>
               <b>Archetypes</b>
               <em>{DEFAULT_ORDER.length} TAGS →</em>
+            </button>
+            <button className="slate-row half" onClick={() => onPick('teams')}>
+              <b>Teams</b>
+              <em>EVERY SEASON 1980–2026 →</em>
             </button>
             <button className="slate-row half" onClick={() => onPick('achievements')}>
               <b>Achievements</b>

@@ -2566,3 +2566,13 @@ body.wide .cmd { margin-top: -14px; }
 .ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 16.5px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
 .ask-btns { display: flex; gap: 10px; margin-top: 16px; }
 .ask-btns .btn { height: 44px; font-size: 11px; }
+
+/* ---- the team database: a year, a team, their best five ---- */
+.yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
+.yr-rail::-webkit-scrollbar { display: none; }
+.rowhead.dr.tdb, .row.dr.tdb { grid-template-columns: minmax(0, 1fr) 102px 60px; gap: 8px; }
+.row.dr.tdb .mini { font-size: 10px; }
+.row.dr.tdb .oppman-nums { justify-self: end; gap: 5px; font-size: 10.5px; }
+.row.dr.tdb .oppman-nums i { min-width: 16px; }
+.rowhead.dr.tdb .gcap { text-align: right; white-space: nowrap; }
+.tdb-go { flex: none; font-family: var(--mono); font-size: 12px; color: var(--faint); }

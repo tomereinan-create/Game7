@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
+import { TeamDb } from './ui/TeamDb'
 import { odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
@@ -85,6 +86,7 @@ export default function App() {
   const [roster, setRoster] = useState(false)
   const [archs, setArchs] = useState(false)
   const [ach, setAch] = useState(false)
+  const [teamDb, setTeamDb] = useState(false)
   // unlock toasts: the trophy case speaks once, quietly, then leaves
   const [toasts, setToasts] = useState<AchDef[]>([])
   useEffect(
@@ -220,7 +222,7 @@ export default function App() {
   // up must not throw away the picks already made.
   const sheet = (
     <>
-      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : null}
+      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb onBack={() => setTeamDb(false)} /> : null}
       {toasts.length ? (
         <div className="ach-toasts">
           {toasts.map((d) => (
@@ -244,6 +246,7 @@ export default function App() {
             if (m === 'database') setRoster(true)
             else if (m === 'archetypes') setArchs(true)
             else if (m === 'achievements') setAch(true)
+            else if (m === 'teams') setTeamDb(true)
             else setMode(m)
           }}
         />
