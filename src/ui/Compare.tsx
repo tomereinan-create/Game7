@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
 import { useUserMode } from '../state/viewmode'
 import type { AttrKey, Player, StatLine } from '../engine/types'
-import { Face } from './Face'
 import { HeatHex } from './HeatHex'
 import { OVR_TIP } from './MatchupPanel'
 import { GROUPS, LINES } from './Stat'
@@ -123,7 +122,6 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
                 <button className="cmp-drop" onClick={() => drop(p.name)} aria-label={`Remove ${p.name}`}>
                   ×
                 </button>
-                <Face player={p} size={48} />
                 <b>{short(p.name)}</b>
                 <span className="cmp-yr">{p.peak_season}</span>
                 <i className="cmp-tag">{archetype(p)}</i>
@@ -158,7 +156,6 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
                 <div className="cmp-hexleg">
                   {five.map((p, i) => (
                     <span key={p.name} className={`cmp-leg t${Math.min(i, 3)}`}>
-                      <Face player={p} size={20} />
                       {short(p.name)}
                       {i >= 3 ? ' — not drawn' : ''}
                     </span>

@@ -1,6 +1,5 @@
 import { archetype } from '../engine/pool'
 import { CardName } from './CardSheet'
-import { Face } from './Face'
 import type { Player } from '../engine/types'
 import { DetailGrid, Glyph } from './Stat'
 
@@ -48,7 +47,6 @@ export function PlayerCard({
       >
         <span className="pname">
           {pick && owner === undefined ? <span className="badge">{pick}</span> : null}
-          <Face player={p} size={36} />
           <span className="who">
             <CardName p={p} />
             <i>{ownerLabel ?? archetype(p)}</i>

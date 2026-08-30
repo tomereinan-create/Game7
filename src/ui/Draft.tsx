@@ -9,7 +9,6 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName } from './CardSheet'
-import { Face } from './Face'
 import { naiveAssignment, type Assignment } from '../engine/offense'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -501,7 +500,6 @@ export function Draft({
         }}
       >
         <span className="pname">
-          <Face player={p} size={36} />
           <span className="who">
             <CardName p={p} />
             <i>{opts.sub}</i>

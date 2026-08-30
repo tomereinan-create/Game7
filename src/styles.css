@@ -2382,12 +2382,7 @@ button {
 .sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 8px; overflow: hidden; padding: 10px 14px calc(8px + env(safe-area-inset-bottom)); }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 .pc-bar { margin: 0; flex: none; }
-.pc-head { flex: none; display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
-.pc-head-txt { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; min-width: 0; flex: 1; }
-
-/* ---- generic faces (hash-driven busts, never likenesses) ---- */
-.face { flex: none; display: block; }
-.face-tile { flex: none; display: grid; place-items: center; width: 92px; height: 92px; border-radius: 10px; background: var(--wash); border: 1px solid var(--line); overflow: hidden; }
+.pc-head { flex: none; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 
 /* ---- the heat hexagon ---- */
 .heathex { display: block; }
@@ -2397,12 +2392,10 @@ button {
 .cmp-hexwrap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; padding: 8px 0 10px; }
 .cmp-hexleg { display: grid; gap: 6px; }
 .cmp-leg { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; }
-.cmp-leg .face { border-radius: 50%; overflow: hidden; background: var(--wash); }
 .cmp-leg.t0 { color: var(--you); }
 .cmp-leg.t1 { color: var(--them); }
 .cmp-leg.t2 { color: var(--ink-2); }
 .cmp-leg.t3 { color: var(--faint); }
-.cmp-card .face { margin: 0 auto 2px; border-radius: 50%; overflow: hidden; background: var(--wash); }
 
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
@@ -2416,7 +2409,7 @@ button {
 .ct-spot b { font-family: var(--serif); font-weight: 400; font-size: 13px; color: var(--ink); max-width: 86px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ct-spot i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .ct-bust { position: relative; display: grid; place-items: center; border-radius: 50%; background: var(--wash); border: 1px solid var(--line-3); overflow: visible; }
-.ct-bust .face { border-radius: 50%; overflow: hidden; }
+.ct-init { font-style: normal; font-family: var(--serif); font-size: 19px; color: var(--ink-2); letter-spacing: 0.02em; }
 .ct-spot.on .ct-bust { border-color: var(--you); background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
 .ct-spot.danger .ct-bust { border-color: var(--danger); background: var(--danger-tint); box-shadow: 0 0 0 1px var(--danger); }
 .ct-spot.danger i { color: var(--danger); font-weight: 700; }
