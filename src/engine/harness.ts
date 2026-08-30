@@ -9,6 +9,7 @@ import {
   pace,
   playmakerPts,
   scorerPts,
+  SCHEMES,
   stylePts,
   STYLES,
   tacticsParts,
@@ -79,8 +80,10 @@ export function runHarness(N = 200, seed = 20260828): HarnessRow[] {
         stylePts({ ...DEFAULT_TACTICS, style: x.key as Style }, m.A, m.B),
       ),
   })
+  // recal_75: all five real schemes enter the law, not just the original two. A scheme that cannot
+  // be made harness-legal does not ship — the band is judged over the whole set the panel offers.
   push('scheme', {
-    choices: (m) => (['drop', 'switch'] as const).map((k) => evFor({ ...DEFAULT_TACTICS, scheme: k }, m.A, m.B)),
+    choices: (m) => SCHEMES.filter((x) => x.key !== 'matchup').map((x) => evFor({ ...DEFAULT_TACTICS, scheme: x.key }, m.A, m.B)),
   })
   push('hunt', { choices: (m) => [evFor({ ...DEFAULT_TACTICS, hunt: true }, m.A, m.B)] })
   push('crash off glass', { choices: (m) => [evFor({ ...DEFAULT_TACTICS, crashOff: true }, m.A, m.B)] })
