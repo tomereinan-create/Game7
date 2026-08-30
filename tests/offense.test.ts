@@ -36,8 +36,11 @@ describe('offense engine — archetype lineups', () => {
 
   it('GOAT5 and BALANCED are neck and neck, GOAT5 ahead (era-relative TS lifts the era stars)', () => {
     // Pinned at 'within 1.0' on raw TS (140.2 / 140.2); on era-relative TS it is 147.8 / 146.5.
+    // recal_70 MOVED THIS PIN, and the move is the round working as written: the ORB miss factor is
+    // now the physical miss-share ratio (rails 0.8..1.2) instead of the 3x rail ride, so the worse-
+    // shooting five's glass no longer buys back the shooting gap — the measured gap is 5.4.
     expect(off(GOAT5)).toBeGreaterThanOrEqual(off(BALANCED))
-    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(5.0) // 1.3 on raw TS, 3.4 after season smoothing
+    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(6.5) // 1.3 raw TS · 3.4 smoothed · 5.4 post recal_70
   })
 
   it('a finisher eats better next to a creator who shoots (Curry) than one who does not (Rondo)', () => {

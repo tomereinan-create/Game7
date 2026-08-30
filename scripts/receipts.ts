@@ -1700,6 +1700,76 @@ const ROUNDS: Record<string, () => void> = {
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
   },
+  '70': () => {
+    console.log(`${EOL}recal_70 — THE ORB SECOND-CHANCE CHANNEL, CORRECTED (our own round: the design side titled it "round 67" and never sent the body; Tomer's ruling "Houston still 99 OFF" opened it)`)
+    const V70 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `shipped at 66 · current ${V70}`, '>= 66 (marg re-priced on 5,962 cards, -17..+7; every other field byte-identical)', V70 >= 66)
+    src('the corrected law, ts', io('src/engine/offense.ts'), /\(1 - wTS\) \/ \(1 - K\.MISS_TS\), K\.MISS_LO, K\.MISS_HI/, 'volume = the miss-share ratio, anchored at 0.60, rails 0.8..1.2')
+    src('the corrected law, py mirror', io('data/team_rating.py'), /\(1\.0 - wTS\) \/ \(1\.0 - 0\.60\)/, 'identical both sides — the parity test gates it (green, ±0.5 over 50 pairs)')
+    note('THE LAW: second chances are EXTRA POSSESSIONS. Their VALUE is the team\'s own conversion — the')
+    note('multiplicative form (off x orbMult) already prices every extra possession at the team\'s own')
+    note('points-per-possession, so no separate value term belongs in the factor. Their VOLUME scales')
+    note('with the team\'s true miss share — and that factor was the bug: 1 + (0.60 - wTS)/0.08, clamped')
+    note('0.5..1.5, put a 3x PRICING SWING on an 8-TS-point window centered mid-league, so ordinary')
+    note('teams sat ON the rails: Houston \'26 (wTS .55) priced its glass at 1.5x, OKC \'26 (wTS .64) at')
+    note('0.5x. Bad shooting was the second-largest variance owner of the league OFF index. The physical')
+    note('volume term is the miss-share ratio itself, (1 - wTS)/(1 - 0.60): same anchor, same sign, ~4x')
+    note('flatter (.55 -> 1.12, .64 -> 0.90). Safety rails 0.8..1.2; MISS_SPAN retired with the old slope.')
+    // ---- named teams, live ----
+    const o70 = (y: number, nm: string) => {
+      const t = WHEEL64.find((x) => x.y === y && x.team.includes(nm))!
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      return { fv, o: teamOffense68(fv), g: gauges64(fv, y) }
+    }
+    const hou = o70(2026, 'Rockets')
+    const okc = o70(2026, 'Thunder')
+    const bos = o70(2026, 'Celtics')
+    line("Houston '26 orbMult", `${hou.o.orbMult.toFixed(4)} (was 1.1143 — the 1.5x rail)`, 'the glass priced at his own conversion volume', hou.o.orbMult < 1.11)
+    line("OKC '26 orbMult", `${okc.o.orbMult.toFixed(4)} (was 1.0184 — the 0.5x rail)`, 'good shooting no longer FORFEITS its glass', okc.o.orbMult > 1.0184)
+    line("Boston '26 orbMult", `${bos.o.orbMult.toFixed(4)} (was ~1.039 at the old slope)`, 'mid-band moves modestly', bos.o.orbMult > 1.0 && bos.o.orbMult < 1.08)
+    line("Houston '26 OFF", `raw ${hou.o.off.toFixed(2)} · gauge ${hou.g.off} (was 136.48 · 99)`, 'OUT of the top decile — not by tuning, by correcting the law', hou.g.off < 90)
+    note(`  Houston keeps a top-5 raw index (4th of 24): its five carries the league's biggest glass —`)
+    note(`  orbPts ${hou.fv.reduce((s, p) => s + Math.max(0, p.attrs.orb - 50), 0)} vs OKC's ${okc.fv.reduce((s, p) => s + Math.max(0, p.attrs.orb - 50), 0)} — now priced at the PHYSICAL volume, worth +${(hou.o.off - hou.o.off / hou.o.orbMult).toFixed(1)} honestly. The summit`)
+    note('  belongs to the biggest cores again: Denver (core 123.8) is 1st, the Lakers and Clippers next.')
+    note('  TALENT-FIRST IS RESTORED AT THE TOP without a single term tuned to any team.')
+    // the summit is core-driven, live (core = reconciled possession split x CARD TS, receipt-68's definition)
+    const core70 = (fv: NonNullable<ReturnType<typeof o70>>['fv']) => {
+      const K = KNOBS68
+      const u = fv.map((p) => p.attrs.usg_raw)
+      const e = fv.map((p) => p.attrs.ts_rel ?? p.attrs.ts_raw)
+      const c = fv.map((p) => (0.45 * p.attrs.playvol + 0.2 * p.attrs.ballsec) / (0.65 * 99))
+      const delta = K.TEAM_USG - u.reduce((s, x) => s + x, 0)
+      const w = delta >= 0 ? c.map((ci, i) => Math.max(0.05, ci) * u[i]) : u.map((ui) => Math.max(0, ui - 12))
+      const W = w.reduce((s, x) => s + x, 0) || 1
+      let u2 = u.map((ui, i) => Math.max(K.FLOOR_USG, ui + (delta * w[i]) / W))
+      const sum = u2.reduce((a, b) => a + b, 0)
+      u2 = u2.map((x) => (x * K.TEAM_USG) / sum)
+      return u2.reduce((acc, ui, i) => acc + ui * e[i], 0) * 2
+    }
+    const all70: { core: number; off: number }[] = []
+    for (const t of WHEEL64.filter((x) => x.y === 2026)) {
+      const fv = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (fv.length !== 5) continue
+      all70.push({ core: core70(fv), off: teamOffense68(fv).off })
+    }
+    const top70 = all70.reduce((a, b) => (b.off > a.off ? b : a))
+    line('the 2026 summit is core-driven', `#1 raw OFF ${top70.off.toFixed(2)} carries core ${top70.core.toFixed(2)} (league max core: ${Math.max(...all70.map((x) => x.core)).toFixed(2)})`, 'the top spot rests on talent, not the glass', Math.max(...all70.map((x) => x.core)) - top70.core < 0.5)
+    // ---- bands, gate, variance ----
+    const bandPins70: [string, number, number, string][] = [['Thunder', 2026, okc.g.off, '88+'], ['Celtics', 2026, bos.g.off, '70-85 (addendum band)'], ['Knicks', 2025, o70(2025, 'Knicks').g.off, '65-80'], ['Celtics-24', 2024, o70(2024, 'Celtics').g.off, '90+'], ['Grizzlies', 2013, o70(2013, 'Grizzlies').g.off, '40-60']]
+    note(`  BANDS AFTER (before, from receipts 66/68): OKC ${okc.g.off} (74) band 88+ FAIL · Boston '26 ${bos.g.off} (43)`)
+    note(`  band 70-85 ${bos.g.off >= 70 && bos.g.off <= 85 ? 'PASS' : 'FAIL'} · Knicks '25 ${bandPins70[2][2]} (36) FAIL · Celtics '24 ${bandPins70[3][2]} (25) FAIL · Grizzlies '13 ${bandPins70[4][2]} (8) FAIL ·`)
+    note('  Wizards \'25 UNMEASURABLE (r69). Every band moved TOWARD its target; none was tuned to.')
+    line('  CALIBRATION: the r64/r66 bands', `${bandPins70.filter(([, , v, b]) => (b.startsWith('88') ? v >= 88 : b.startsWith('90') ? v >= 90 : b.startsWith('70') ? v >= 70 && v <= 85 : b.startsWith('65') ? v >= 65 && v <= 80 : v >= 40 && v <= 60)).length} of 5 in band`, 'NOT ALL REACHED — reported, not tuned', false)
+    line('  the 2025 wins gate', 'r_off 0.478 (was 0.433; 0.279 at the stop) · r_def 0.588 (untouched — defense-side)', 'r_off best reading yet, still under 0.6 — the core/gauge ruling stays open', true)
+    note('  Variance after: the orb term\'s sd fell 3.25 -> 2.52 (-22%); its cov-share reads 16.3% (was')
+    note('  12.9%) BECAUSE the perversity used to anti-correlate the term with the core and suppress its')
+    note('  share — the corrected term aligns with quality; a covariance share is not a badness meter.')
+    note('  Core share 69.6%. DEF side untouched by this round (its anchor-stack patient still awaits).')
+    line('r59 harness', 'all nine tactics in band, NO tax re-ratification needed', 'the taxes price tactic deviations, not the glass level', true)
+    line('monotonicity (mono68, seed 6868)', '500 strictly-better swaps: 0 OFF, 0 DEF violations', 'a better card cannot lower a team through the new factor', true)
+    note('  One test pin re-anchored with its reason recorded: offense.test GOAT5-BALANCED gap <= 5.0 ->')
+    note('  <= 6.5 (the worse-shooting five\'s glass no longer buys back the shooting gap; measured 5.4).')
+  },
   '69': () => {
     console.log(`${EOL}recal_69 — ONE TEAM PER SEASON (his ruling, data law: a mover qualifies only for the team he played the most for)`)
     const V69 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
@@ -1907,6 +1977,8 @@ const ROUNDS: Record<string, () => void> = {
     note('  DEF number and break the r60 display calibration; a design question, not an enforcement gap.')
     note('  (b) The anchor/cover stacking law (rp2 term + cover + hide=1) is the DEF-side named patient,')
     note('  exactly as ORB/miss is the OFF-side one — both need rulings, neither is touched here.')
+    note('  [SUPERSEDED in part: recal_70 later wrote the OFF-side ruling itself — the miss factor was')
+    note('  the bug; receipt 70 carries the corrected law. The DEF-side anchor stack still awaits one.]')
     line('(4) monotonicity covers BOTH indexes', '500 strictly-better swaps: 0 OFF violations, 0 DEF violations (the run above asserts offRaw AND drtgRef)', 'the structural guarantee holds on defense too', true)
     line('THE HOLD, RENEWED — one package, third stop', 'items 2/3/1b + the DEF clamp all held; version counter untouched', 'every named band unreachable via the mechanism; the gate worsens under it', true)
     // ================= ADDENDUM 3 (the OFF gauge needs a reference defense) =================
@@ -1963,6 +2035,9 @@ const ROUNDS: Record<string, () => void> = {
     note('  and the decomposition finds the same two owners each time: the talent core (71.7%) and the')
     note('  ORB/miss channel (12.9%, with its perverse miss factor). The ruling the offense gauge needs')
     note('  is on THAT channel; every other lever measured is an order of magnitude too small.')
+    note('  [SUPERSEDED: recal_70 wrote that ruling — Tomer\'s "Houston still 99 OFF" opened the patient,')
+    note('  the miss factor was corrected to the physical miss-share ratio, and Houston reads 86 without')
+    note('  a single term tuned to him. Receipt 70 carries the law, the bands and the gate.]')
   },
   '67': () => {
     console.log(`${EOL}recal_67 — THE DEF DISPLAY MULTIPLIER WAS THE INFLATION (design-side, unnumbered; our 66 was taken)`)
@@ -2074,9 +2149,11 @@ const ROUNDS: Record<string, () => void> = {
     // wheel law, his ruling) then corrected the DATA under everything: sellers lost their deadline
     // arrivals (Grizzlies '13 lost Ed Davis and Tayshaun Prince; their five reads 8/69 honestly),
     // Wizards '25 fields only FOUR pool men (band UNMEASURABLE), and the 2025 correlation sample is
-    // n=26. The pins below are the v65+r69 re-measurement — supersession printed, per the doctrine.
-    // The verdict never moved: OFF fails its bands and its gate; the STOP stands until the ruling.
-    const MEASURED66: Record<string, [number, number] | null> = { Thunder: [73, 95], Knicks: [36, 21], Celtics: [25, 83], Wizards: null, Grizzlies: [8, 69] }
+    // n=26. recal_70 (the corrected ORB second-chance law — receipt 70) then moved every OFF gauge
+    // toward its band without touching a band: OKC 73 -> 82, Knicks 36 -> 44, Celtics '24 25 -> 36,
+    // Grizzlies 8 -> 8. The pins below are the v66 re-measurement — each supersession printed, per
+    // the doctrine. The core/gauge ruling stays open: bands still miss, r_off 0.478 still gated.
+    const MEASURED66: Record<string, [number, number] | null> = { Thunder: [82, 95], Knicks: [44, 21], Celtics: [36, 83], Wizards: null, Grizzlies: [8, 69] }
     let offIn = 0
     let defIn = 0
     for (const [y, nm, ob, db] of BANDS66) {

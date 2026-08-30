@@ -74,9 +74,13 @@ def team_offense(five):
     OFF = OFF_N + fit
     # (3) fouldraw x FT: manufactured points (matchup-discipline interaction reserved for the matchup layer)
     OFF += sum(u2i * (a['fouldraw']/99) * (a['ft']/100) for u2i, a in zip(u2, A)) * 0.06
-    # (4) ORB feeds on misses: the lower the team's shooting, the more second chances the glass reclaims
+    # (4) ORB feeds on misses — recal_70: second chances are extra possessions; their VALUE is the
+    # team's own conversion (the multiplication by OFF supplies it), their VOLUME the team's true
+    # miss share. The old 1 + (0.60-wTS)/0.08, clamped 0.5..1.5, put a 3x swing on an 8-TS-pt window
+    # (ordinary teams sat ON the rails); the physical term is the miss-share ratio, anchored at the
+    # same 0.60, rails 0.8..1.2. Mirrors offense.ts exactly (the parity test gates it).
     wTS = sum(u2i*e4i for u2i, e4i in zip(u2, e4)) / KNOBS['TEAM_USG']
-    miss_factor = min(1.5, max(0.5, (0.60 - wTS)/0.08 + 1.0))
+    miss_factor = min(1.2, max(0.8, (1.0 - wTS) / (1.0 - 0.60)))
     OFF *= 1 + 0.0012 * sum(max(0, a['orb']-50) for a in A) * miss_factor
     return OFF, list(zip([p['name'] for p in five], [round(x,1) for x in u2], [round(100*x,1) for x in e4]))
 

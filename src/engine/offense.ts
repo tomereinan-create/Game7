@@ -36,8 +36,20 @@ export const KNOBS = {
   FT_POINTS: 0.06, // fouldraw × FT manufactured points
   ORB_PER_PT: 0.0012, // second-chance multiplier per point of orb above 50
   ORB_PIVOT: 50,
-  MISS_TS: 0.6, // miss_factor = 1 + (MISS_TS - wTS)/MISS_SPAN, clamped 0.5..1.5
-  MISS_SPAN: 0.08,
+  // recal_70 (our own round — the design side titled "the ORB second-chance channel" and never sent
+  // the body): second chances are EXTRA POSSESSIONS. Their VALUE is the team's own conversion — the
+  // multiplicative form (off x orbMult) already prices every extra possession at the team's own
+  // points-per-possession, so no separate value term belongs here. Their VOLUME scales with the
+  // team's true miss share — and that was the bug: the old factor, 1 + (0.60 - wTS)/0.08 clamped
+  // 0.5..1.5, put a 3x pricing swing on an 8-TS-point window centered mid-league, so ordinary teams
+  // sat ON the rails (Houston '26 wTS .552 -> 1.5x, OKC '26 wTS .641 -> 0.5x) and bad shooting
+  // became the second-largest variance owner of the league OFF index (12.9%, receipt 68). The
+  // physical volume term is the miss-share ratio itself: (1 - wTS)/(1 - MISS_TS), = 1.0 at the same
+  // 0.60 anchor, ~4x flatter (.552 -> 1.12, .641 -> 0.90). Safety rails 0.8..1.2 replace the old
+  // clamp; MISS_SPAN retired with the old slope. Mirrored exactly in data/team_rating.py.
+  MISS_TS: 0.6, // normalization anchor: a wTS-0.60 team prices its glass at exactly 1.0
+  MISS_LO: 0.8,
+  MISS_HI: 1.2,
   // recal_64 (design-side "62"): FIT PAYS. The reconciliation channels were worth ~+-1.5 team
   // offense; widened so perfect fit gains up to +4 and friction loses up to -4. WIDEN calibrated
   // to the round's named target (OKC '26 top-3 among 2026 team OFF), CAP is the spec's bound.
@@ -147,7 +159,7 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
   let off = base + ftPts
   // ORB feeds on misses
   const wTS = u2.reduce((acc, ui, i) => acc + ui * e4[i], 0) / K.TEAM_USG
-  const miss = clamp((K.MISS_TS - wTS) / K.MISS_SPAN + 1, 0.5, 1.5)
+  const miss = clamp((1 - wTS) / (1 - K.MISS_TS), K.MISS_LO, K.MISS_HI) // recal_70: the miss-share ratio, not the 3x rail ride
   const orbMult = 1 + K.ORB_PER_PT * A.reduce((acc, a) => acc + Math.max(0, a.orb - K.ORB_PIVOT), 0) * miss
   off *= orbMult
 
