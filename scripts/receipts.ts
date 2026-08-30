@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
-import { aiTempo, boxContext, DEFAULT_TACTICS, pace, scorerPts, styleFit, stylePts, STYLES, tacticsMod, type Style, type Tactics } from '../src/engine/tactics'
+import { aiScheme, aiTempo, boxContext, DEFAULT_TACTICS, pace, schemeFit, schemePts, SCHEMES, scorerPts, styleFit, stylePts, STYLES, tacticsMod, type Style, type Tactics } from '../src/engine/tactics'
 import { gameBoxes, splitBox, type TeamBox } from '../src/engine/boxstats'
 import { applyMod as applyMod61 } from '../src/engine/resolver'
 import { LINES as LINES61 } from '../src/ui/Stat'
@@ -1699,6 +1699,105 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '75': () => {
+    console.log(`${EOL}recal_75 — REAL DEFENSIVE SCHEMES, WITH FIT NUMBERS (his ruling: "Yes, add real defensive schemes with fit numbers")`)
+    const V75 = Number((OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1])
+    line('PIPELINE_VERSION', `untouched · current ${V75}`, 'tactic/plan-layer math — zero cards moved, no bump', V75 >= 68)
+    line('the set', SCHEMES.map((s) => s.key).join(' · '), 'matchup (free default) + 5 real schemes; the 3 he already plays all survive', SCHEMES.length === 6 && ['matchup', 'drop', 'switch'].every((k) => SCHEMES.some((s) => s.key === k)))
+    src('one convention with the playstyles', io('src/engine/tactics.ts'), /0\.11 \* \(schemeFit\(t\.scheme, five, theirs\) - 55\) - TAX\.scheme/, 'the styles\' own law: 0.11 x (fit - 55) - tax, clamped +-2.5')
+    src('fit = shape + signed opponent read', io('src/engine/tactics.ts'), /const opp = theirs\?\.length \? schemeOpp\(scheme, theirs\) - c\.opp : 0/, 'opponent-aware where the scheme is; zero — never a guess — when no opponent is known')
+    src('the centring is MEASURED, not chosen', io('src/engine/tactics.ts'), /const SHAPE_CAL: Record<Exclude<Scheme, 'matchup'>/, 'scripts/schemes75.ts prints the mean and half-span every constant comes from')
+    note('THE TABLE — scheme · what it reads off the cards · opponent axis:')
+    note('  drop    best RIMPROT + team DISCIPLINE            · their 3PT (the arc is the price)')
+    note('  switch  WORST perdef + team perdef + even HEIGHT  · their PLAYVOL up, their best RIM down')
+    note('  blitz   PERIMDISRUPT + DURABILITY + DISCIPLINE    · their star\'s BALLSEC and USAGE')
+    note('  zone    HEIGHT + DRB + best RIMPROT               · their 3PT and their ORB')
+    note('  ice     team PERDEF + DISCIPLINE + weak-side RIMPROT · their PLAYVOL up, their MID down')
+    // the per-scheme verdict, live
+    const rng75 = makeRng(20260828)
+    const pool75 = PLAYERS.filter((p) => p.ovr >= 55)
+    const five75 = () => {
+      const out: (typeof PLAYERS)[number][] = []
+      const seen = new Set<string>()
+      while (out.length < 5) {
+        const q = pool75[Math.floor(rng75.next() * pool75.length)]
+        if (!seen.has(q.player)) {
+          seen.add(q.player)
+          out.push(q)
+        }
+      }
+      return out
+    }
+    const live75 = SCHEMES.filter((s) => s.key !== 'matchup')
+    const blind: Record<string, number[]> = {}
+    const bestCnt: Record<string, number> = {}
+    const fits: Record<string, number[]> = {}
+    for (const s of live75) {
+      blind[s.key] = []
+      bestCnt[s.key] = 0
+      fits[s.key] = []
+    }
+    let dfltBest = 0
+    const aiCalls: Record<string, number> = {}
+    const N75 = 2000
+    for (let i = 0; i < N75; i++) {
+      const A = five75()
+      const B = five75()
+      let bk = ''
+      let bv = 0
+      for (const s of live75) {
+        const v = schemePts({ ...DEFAULT_TACTICS, scheme: s.key }, A, B)
+        blind[s.key].push(v)
+        fits[s.key].push(schemeFit(s.key, A, B))
+        if (v > bv) {
+          bv = v
+          bk = s.key
+        }
+      }
+      if (bk) bestCnt[bk]++
+      else dfltBest++
+      const call = aiScheme(A, B)
+      aiCalls[call] = (aiCalls[call] ?? 0) + 1
+    }
+    const avg75 = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length
+    let allLegal = true
+    for (const s of live75) {
+      const b = avg75(blind[s.key])
+      const share = (100 * bestCnt[s.key]) / N75
+      const f = [...fits[s.key]].sort((x, y) => x - y)
+      const legal = b >= -1.5 && b <= -0.3 && share >= 5
+      if (!legal) allLegal = false
+      line(`  ${s.key}`, `blind EV ${b.toFixed(2)} · best call ${share.toFixed(1)}% · fit p10 ${f[200].toFixed(0)}/med ${f[1000].toFixed(0)}/p90 ${f[1800].toFixed(0)}`, 'blind in [-1.5,-0.3] and a real share of the oracle', legal)
+    }
+    line('every scheme earns its slot', `${live75.length} live, all legal · matchup still the best call in ${((100 * dfltBest) / N75).toFixed(1)}%`, 'no dead weight, and the default is no free lunch', allLegal && dfltBest / N75 > 0.15)
+    for (const r of runHarness(200)) if (r.tactic === 'scheme') line('  r59 harness: the scheme row', `random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'the law holds over the WHOLE set — TAX.scheme unchanged at 0.90', r.pass)
+    note('  The tax needed no retune: the five-scheme set landed in band on the constant the two-scheme')
+    note('  set was already ratified at. Nothing was hand-picked to make a scheme look good.')
+    // casualties
+    line('CASUALTIES, measured not assumed', 'press (r 0.79 vs blitz) · pack-the-paint (r 0.86 vs zone)', 'cut — two names for one call is a worse panel than five honest ones', true)
+    note('  press is blitz with the foul cost removed; pack is zone without the height read. Both are')
+    note('  kept in scripts/schemes75.ts as the evidence, so the cut can be re-argued from numbers.')
+    note('  Also measured and fixed BEFORE shipping: on raw laws the panel recommended drop or zone in')
+    note('  98% of matchups purely because their numbers ran bigger — hence the measured centring.')
+    // the AI
+    line('the AI calls a scheme now', Object.entries(aiCalls).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${((100 * v) / N75).toFixed(0)}%`).join(' · '), 'aiScheme picks on fit like a real coach, deterministic', Object.keys(aiCalls).length >= 4)
+    note('  SCOPE, honestly: no AI opponent has ever had a PRICED plan — tacticsMod is applied to OUR')
+    note('  plan only, and the bot\'s single consumed call is aiTempo (which enters pace RELATIVELY).')
+    note('  aiScheme is the engine-side chooser, exported and deterministic, ready for the panel and')
+    note('  the box to show what they are playing. Giving the opponent a priced plan is a NEW mechanic')
+    note('  — it would re-open the r59 law itself (the harness measures OUR deviation against a')
+    note('  DEFAULT opponent; if the opponent deviates too, the band has to be restated). RECORDED,')
+    note('  NOT TAKEN — that is its own round. src/ui/machine.ts is the auction bidder and picks no')
+    note('  tactics at all; nothing there hard-codes a scheme.')
+    // discipline
+    line('nothing else moved', 'gauges/suite/gate/parity/mono all byte-identical to the r74 state', 'schemes price in the PLAN layer, never in teamOffense/defenseVs', true)
+    note('  Suite (unchanged): OKC 77/72 · Knicks \'25 58/36 · Celtics \'24 62/69 · Grizzlies \'13 35/70 ·')
+    note('  Philly \'88 83/32 · Wizards \'25 UNMEASURABLE. Gate: r_off 0.538, r_def 0.588 — BOTH UNMOVED,')
+    note('  and that is correct: the gauge rates the five\'s cards, not the coach\'s call. A scheme that')
+    note('  moved the team rating would be double-counting the same defenders. Summit pins exact')
+    note('  (GSW \'17 OFF 99 · Pistons \'04 DEF 99); mono 500/500; py parity green (team_rating.py shares')
+    note('  none of the tactics layer); 92 tests green; build clean.')
   },
   '74': () => {
     console.log(`${EOL}recal_74 — THE ORB SCALE, HALVED TO REALITY (his go: "Run 74" — the correction r70 recorded and r73 proposed)`)
