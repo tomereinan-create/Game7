@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 64
+PIPELINE_VERSION = 65
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -227,7 +227,14 @@ for cls in (True, False):
 # Above it, the raw range is mapped onto 93-99 so the men who were tied now separate. The tops are the
 # measured maxima (OFF 108.0, DEF 104.7) so the best card in the pool lands ON 99 rather than short of
 # it; a future outlier past them simply pins at 99, which is what a ceiling is for.
-KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 104.5
+# recal_67: the DEF display multiplier deflates 1.10 -> 1.03 (a fossil from when defensive attributes
+# ran low; after the defensive evidence campaign every defender floated ~7 above his own composite).
+# DEF_TOP re-derived by the band's own standing doctrine — the measured maximum raw (Ben Wallace '06,
+# d_score 95.80 x 1.03 = 98.674) — so the summit lands ON 99 and the top ordering is untouched.
+# The round ordered "solve DEF_TOP for Gobert '19 = 99 exactly": UNSATISFIABLE here and reported, not
+# forced — his composite is 84.08, so his deflated raw (86.6) sits BELOW the knee where the band is
+# identity; no DEF_TOP reaches him, and our summit is Wallace, not Gobert (receipt 67 has the board).
+KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 98.67
 # OVR's own band: knee 93, top set to the highest raw the blend actually produces so the best card
 # lands ON 99. The run prints the measured top, so drift away from the anchor is visible immediately.
 OVR_KNEE, OVR_TOP = 93.0, 96.50
@@ -245,7 +252,7 @@ for p in players:
     _o = o_score(p) * 0.93
     _otops.append(_o)
     p['o_ovr'] = int(min(99, round(band(_o, OFF_TOP))))
-    p['d_ovr'] = int(min(99, round(band(d_score(p) * 1.10, DEF_TOP))))
+    p['d_ovr'] = int(min(99, round(band(d_score(p) * 1.03, DEF_TOP))))   # recal_67: 1.10 was the inflation
     # OVR now includes the skill mix: BPM-based talent overpaid empty-calorie profiles
     # (assist collectors at bad efficiency read 83 while the engine punished them every possession)
 

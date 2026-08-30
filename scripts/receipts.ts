@@ -20,11 +20,11 @@ import { aiTempo, boxContext, DEFAULT_TACTICS, pace, scorerPts, styleFit, styleP
 import { gameBoxes, splitBox, type TeamBox } from '../src/engine/boxstats'
 import { applyMod as applyMod61 } from '../src/engine/resolver'
 import { LINES as LINES61 } from '../src/ui/Stat'
-import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
+import { bestBoard, naiveAssignment, pairingTable, pairingTerm, PAIR_SCALE, RATING_SCALE, ratings100, usageSurplus } from '../src/engine/offense'
 import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 import { seasonGauges as gauges64 } from '../src/engine/gauges'
-import { startingFive as bestFive64 } from '../src/engine/bestfive'
+import { startingFive as bestFive64, winsOf as winsOf66 } from '../src/engine/bestfive'
 import { WHEEL as WHEEL64 } from '../src/data/wheel'
 import { _reset as achReset, ACHIEVEMENTS, achSettleSeries, achState } from '../src/state/achievements'
 import type { Progress as Prog63 } from '../src/state/campaign'
@@ -1699,6 +1699,169 @@ const ROUNDS: Record<string, () => void> = {
     note('3.52 margin points (target ~3.5), the penalty is RELATIVE TO PERFECT COACHING so the best')
     note('of all 120 boards pays nothing and scoring levels stay put, and the board shows every')
     note('pairing’s worth live. Four matchup-era tests rewritten to the new mechanism, with reasons.')
+  },
+  '67': () => {
+    console.log(`${EOL}recal_67 — THE DEF DISPLAY MULTIPLIER WAS THE INFLATION (design-side, unnumbered; our 66 was taken)`)
+    line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '65', /PIPELINE_VERSION = 65/.test(OVR) && /PIPELINE_VERSION = 65/.test(RATINGS))
+    src('the multiplier deflated', OVR, /d_score\(p\) \* 1\.03/, '1.10 -> 1.03 (the fossil that floated every defender ~7 over his composite)')
+    src('DEF_TOP re-derived, sanctioned', OVR, /DEF_TOP = 93\.0, 106\.36, 98\.67/, '104.5 -> 98.67 = measured max raw (Wallace 95.80 x 1.03); OFF_TOP untouched (r51 constraint distinct)')
+    src('the unsatisfiable pin recorded at the site', OVR, /UNSATISFIABLE/, 'Gobert-99 cannot be solved; reported, not forced')
+    // ---- the NAMED card ----
+    const drex = g("Clyde Drexler '96")
+    line("Drexler '96 DEF", `${drex.d_ovr} (was 83 pre-round)`, '~77-78 — REACHED', drex.d_ovr === 78)
+    note('  His composite here is 75.51 x 1.03 = 77.8 (the round quoted 75.7 off the 0.75/0.09 weights;')
+    note('  recal_57/62 trimmed perimdisrupt to 0.79/0.05 — stale premise, same conclusion). Below the')
+    note('  93 knee the band is identity, so the mid-band now reads its honest composite.')
+    // ---- the anchor board ----
+    const bw = g("Ben Wallace '06")
+    line('the defensive summit', `Ben Wallace '06 D ${bw.d_ovr} ('05/'03 also 99)`, 'top ordering intact, ZERO inversions measured', bw.d_ovr === 99)
+    const gob67 = g("Rudy Gobert '19")
+    line('  CALIBRATION TARGET: Gobert \'19 = 99 by construction', `D ${gob67.d_ovr} (was 92)`, 'UNSATISFIABLE — NOT REACHED', gob67.d_ovr === 99)
+    note('  The design solved DEF_TOP around a board whose summit is Gobert. Ours is not: his composite')
+    note('  is 84.08 — deflated raw 86.6, BELOW the 93 knee where the band is identity, so NO DEF_TOP')
+    note("  reaches him (the band only remaps raws above the knee). The summit here is Ben Wallace '06")
+    note("  (95.80). Their Draymond '16 96-97 likewise: he reads 92 post-cure — their board numbers ARE")
+    note('  the ~7-point float this very round removes. DEF_TOP was re-derived by the band\'s own standing')
+    note('  doctrine instead: the measured max raw, so the true summit lands ON 99. Report, not tune.')
+    line("  Draymond '16 D", `${g("Draymond Green '16").d_ovr} (was 96)`, 'the board, deflated honestly', g("Draymond Green '16").d_ovr === 92)
+    // ---- the distribution ----
+    note('DISTRIBUTION (before -> after, from the v64/v65 builds): DEF mean 62.69 -> 58.74; mid-band')
+    note('(55-85) 68.55 -> 64.19 (the round predicted ~-5; measured -4.36); top decile 89.24 -> 83.91;')
+    note('DEF 99-count 5 -> 3 (all Wallace). d_ovr moved on 9,997 cards, OVR followed on 8,766; OVR')
+    note('99-count 11 -> 2; OVR raw top 97.50 -> 96.50 (sits exactly ON the 96.5 anchor, summit occupied).')
+    note('The harness pool (ovr>=55) shrank 7,447 -> 6,798.')
+    // ---- the r60 interaction: parity verdict, measured live at both intercepts ----
+    const rng67 = makeRng(6060)
+    const pool67 = PLAYERS.filter((q) => q.ovr >= 55)
+    const r5 = () => {
+      const out: (typeof PLAYERS)[number][] = []
+      const seen = new Set<string>()
+      while (out.length < 5) {
+        const q = pool67[Math.floor(rng67.next() * pool67.length)]
+        if (!seen.has(q.player)) {
+          seen.add(q.player)
+          out.push(q)
+        }
+      }
+      return out
+    }
+    let so67 = 0
+    let sd67 = 0
+    let sdRev = 0
+    for (let k = 0; k < 300; k++) {
+      const r = ratings100(r5())
+      so67 += r.off
+      sd67 += r.def
+      sdRev += Math.round(Math.max(1, Math.min(99, 50 + (113.1 - r.drtgRef) * RATING_SCALE.K_DEF)))
+    }
+    const gapKept = Math.abs(so67 - sd67) / 300
+    const gapRev = Math.abs(so67 - sdRev) / 300
+    line('r60 dial parity, shift KEPT (108.85)', `OFF ${(so67 / 300).toFixed(2)} DEF ${(sd67 / 300).toFixed(2)} gap ${gapKept.toFixed(2)}`, 'was 1.33 pre-round; drift belongs to the dial, not this round', gapKept < 2.5)
+    line('  r60 shift reverted (113.1) — the test', `gap ${gapRev.toFixed(2)}`, 'parity does NOT hold naturally -> r60 KEPT', gapRev > 0.5)
+    note('  VERDICT: the intercept stays at 108.85. The round\'s interaction warning assumed the team DEF')
+    note('  dial consumes d_ovr; it does not — defenseVs/ratings100 read the ATTRIBUTES, so the card-level')
+    note('  deflation cannot cure the team-level symptom, and one cause did NOT get two cures: they are')
+    note('  two diseases. The only coupling is pool membership (ovr>=55), worth 1.33 -> ~2.0 of dial')
+    note('  drift — recorded for a future parity round, not treated here.')
+    // ---- r59 re-ratification ----
+    src('taxes re-ratified THROUGH the harness', io('src/engine/tactics.ts'), /hunt: 3\.65,[\s\S]{0,60}crashOff: 0\.42,[\s\S]{0,30}crashDef: 0\.44,/, 'hunt 3.50->3.65, crashOff .68->.42, crashDef .60->.44 (pool shift broke three bands)')
+    for (const r of runHarness(200)) line(`  r59 harness: ${r.tactic}`, `random ${r.random.toFixed(2)}  oracle +${r.oracle.toFixed(2)}`, 'the law holds, re-ratified', r.pass)
+    note('TESTS RE-ANCHORED with recorded reasons (this round is the reason): Kawhi \'17 OVR pin 96 -> 94;')
+    note('near() D anchors re-based (Curry 81->75, Gobert 96->89, Trae 43->37, Rondo 92->85, Payton 98->88);')
+    note('the Gobert-Giannis gap pin widened 4 -> 5 (Giannis sits above the knee where the re-derived band')
+    note('stretches, slope 6/5.67; Gobert reads identity). Orderings: zero inversions, measured.')
+  },
+  '66': () => {
+    console.log(`${EOL}recal_66 — THE ANCHOR SUITE, MEASURED AND STOPPED (design-side round "64"; our 64/65 were taken)`)
+    note('Three items. (1) and (2) were ALREADY LAW before the round arrived; (3) is a measurement with')
+    note('its own protocol: "if a named band fails after items 1+2, print that team\'s five-man engine')
+    note('decomposition and STOP for a ruling rather than tuning blind." Bands failed. We stopped.')
+    note('No pipeline change, no version bump: this round alters nothing. Tool: scripts/anchor-suite.ts.')
+    // ---- (1) team screens compute through the engine — law since our recal_64 ----
+    src('(1) Team db renders TeamDials', io('src/ui/TeamDb.tsx'), /<TeamDials five=\{detail\.fielded\} tone="them" vs=\{picked\.y\}/, 'already law (our recal_64)')
+    src('(1) TeamDials reads the gauges', io('src/ui/MatchupPanel.tsx'), /vs === 'field' \? fieldGauges\(five\) : seasonGauges\(five, vs\)/, 'season/field basis, labeled on the dial')
+    src('(1) gauges read ratings100', io('src/engine/gauges.ts'), /ratings100\(/, 'offense.ts teamOffense/defenseVs — one engine, one math')
+    // ---- (2) the named prior rounds are live ----
+    src('(2) their "r62" = our recal_64 fit-pays', io('src/engine/offense.ts'), /FIT_WIDEN: 2\.7,/, 'live')
+    src('(2) their "r48" = the perdef 0.30 Overall blend', RATINGS, /ALLSHOT_W = 0\.30/, 'live (that round shipped no tags)')
+    src('(2) tags: Two-way big', POOL, /tag: 'Two-way big'/, 'live in pool.ts')
+    src('(2) tags: Co-star', POOL, /tag: 'Co-star'/, 'live in pool.ts')
+    const five66 = (y: number, nm: string) => {
+      const t = WHEEL64.find((x) => x.y === y && x.team.includes(nm))!
+      return { team: t.team, five: bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x) }
+    }
+    const kn = five66(2025, 'Knicks').five
+    line('(2) Knicks \'25 carry three Balanced HONESTLY', kn.map((p) => archetype(p)).join(' · '), '3x Balanced + Off. superstar + Stretch big, on their own attrs', kn.filter((p) => archetype(p) === 'Balanced').length === 3 && archetype(g("Jalen Brunson '25")) === 'Offensive superstar' && archetype(g("Karl-Anthony Towns '25")) === 'Stretch big')
+    // ---- (3) the anchor suite, measured on the post-65 pool ----
+    const BANDS66: [number, string, [number | null, number | null], [number | null, number | null]][] = [
+      [2026, 'Thunder', [88, null], [95, null]],
+      [2025, 'Knicks', [65, 80], [35, 55]],
+      [2024, 'Celtics', [90, null], [85, null]],
+      [2025, 'Wizards', [null, 24], [null, 24]],
+      [2013, 'Grizzlies', [40, 60], [85, null]],
+    ]
+    const inB = (v: number, [lo, hi]: [number | null, number | null]) => (lo === null || v >= lo) && (hi === null || v <= hi)
+    const bTxt = ([lo, hi]: [number | null, number | null]) => (lo !== null && hi !== null ? `${lo}-${hi}` : lo !== null ? `${lo}+` : `<${(hi ?? 0) + 1}`)
+    // The STOP-STATE was taken on the v64 pool: Thunder 62/99 · Knicks 41/26 · Celtics 25/87 ·
+    // Wizards 19/1 · Grizzlies 28/85, r_off 0.279, r_def 0.607. recal_67 (the DEF display deflation)
+    // then reshuffled best-five selection and the season percentile pools, so the pins below are the
+    // v65 re-measurement — the supersession is printed here, per the receipts doctrine. The verdict
+    // did not move: OFF still fails its bands and its gate; the STOP stands until the ruling returns.
+    const MEASURED66: Record<string, [number, number]> = { Thunder: [70, 95], Knicks: [45, 26], Celtics: [32, 83], Wizards: [5, 1], Grizzlies: [28, 85] }
+    let offIn = 0
+    let defIn = 0
+    for (const [y, nm, ob, db] of BANDS66) {
+      const { team, five } = five66(y, nm)
+      const gg = gauges64(five, y)
+      if (inB(gg.off, ob)) offIn++
+      if (inB(gg.def, db)) defIn++
+      const pin = MEASURED66[nm]
+      line(`  ${team} '${String(y % 100).padStart(2, '0')}`, `OFF ${gg.off} (band ${bTxt(ob)} ${inB(gg.off, ob) ? 'PASS' : 'FAIL'}) · DEF ${gg.def} (band ${bTxt(db)} ${inB(gg.def, db) ? 'PASS' : 'FAIL'})`, `measured OFF ${pin[0]} · DEF ${pin[1]} (stop-state pin)`, gg.off === pin[0] && gg.def === pin[1])
+      if (!inB(gg.off, ob) || !inB(gg.def, db))
+        for (const p of five)
+          note(`    ${p.name.padEnd(26)} OVR ${p.ovr} O ${String(p.o_ovr).padStart(2)} D ${String(p.d_ovr).padStart(2)} ${archetype(p).padEnd(18)} eff ${p.attrs.efficiency} vol ${p.attrs.volume} playvol ${p.attrs.playvol} 3pt ${p.attrs['3pt']} perdef ${p.attrs.perdef} rimprot ${p.attrs.rimprot} disc ${p.attrs.discipline}`)
+    }
+    line('  CALIBRATION TARGET: all five anchors in band', `OFF ${offIn}/5 in band · DEF ${defIn}/5 in band`, 'OFF 5/5 · DEF 5/5 — NOT REACHED, STOPPED', offIn === 5 && defIn === 5)
+    // ---- the 2025 Pearson gate ----
+    const rows66: { w: number; o: number; d: number }[] = []
+    let excl66 = 0
+    for (const t of WHEEL64.filter((x) => x.y === 2025)) {
+      const five = bestFive64(t.p.map((n) => by.get(n)!).filter(Boolean)).five.filter((x): x is NonNullable<typeof x> => !!x)
+      if (five.length !== 5) {
+        excl66++
+        continue
+      }
+      const r = ratings100(five)
+      rows66.push({ w: winsOf66(t.rec), o: r.offRaw, d: r.drtgRef })
+    }
+    const pear = (xs: number[], ys: number[]) => {
+      const n = xs.length
+      const mx = xs.reduce((s, v) => s + v, 0) / n
+      const my = ys.reduce((s, v) => s + v, 0) / n
+      let num = 0
+      let dx = 0
+      let dy = 0
+      for (let i = 0; i < n; i++) {
+        num += (xs[i] - mx) * (ys[i] - my)
+        dx += (xs[i] - mx) ** 2
+        dy += (ys[i] - my) ** 2
+      }
+      return num / Math.sqrt(dx * dy)
+    }
+    const w66 = rows66.map((r) => r.w)
+    const rOff66 = pear(rows66.map((r) => r.o), w66)
+    const rDef66 = pear(rows66.map((r) => -r.d), w66)
+    line('  2025 Pearson, defense side', `-drtgRef r = ${rDef66.toFixed(3)} (n=${rows66.length}, ${excl66} excluded)`, '>= 0.6 — PASSES', rDef66 >= 0.6)
+    line('  CALIBRATION GATE: offense side r >= 0.6', `offRaw r = ${rOff66.toFixed(3)}`, 'NOT REACHED — the offensive index is the patient', rOff66 >= 0.6)
+    note('  (stop-state, v64 pool: r_off 0.279, r_def 0.607. recal_67 moved both — 0.372 and 0.631 at')
+    note('  v65: improved, still gated. Celtics \'24 DEF slid 87 -> 83, out of its 85+ band.)')
+    // ---- THE STOP ----
+    line('THE STOP honored: zero tuning shipped', 'no constant, weight, tax or band changed by this round', 'per the round\'s own protocol', true)
+    note('  The defense side of the engine correlates with reality (r 0.607) and holds 4/5 bands; the')
+    note('  offense side holds 1/5 and correlates at 0.279. The failure is systemic to the OFFENSIVE index')
+    note('  (offRaw compresses: champions ~128-131 vs cellar ~125-127), not to any one team\'s cards. Per')
+    note('  the round: decompositions printed above; the offensive index goes back for a design-side')
+    note('  ruling. Scout\'s pre-65 baseline reproduced EXACTLY post-65 (recal_65 moved zero ratings).')
   },
   '65': () => {
     console.log(`${EOL}recal_65 — THE DFG FLOORS READ THE 6FT+ SERIES (design-side round "63"; our 63/64 were taken)`)
