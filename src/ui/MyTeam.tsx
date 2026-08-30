@@ -5,6 +5,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
+import { CourtFive } from './CourtFive'
 import { gateTactics, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
@@ -276,6 +277,47 @@ export function MyTeam({
         .sort((a, b) => b.ovr - a.ovr)
     : []
 
+  // One source of truth for a floor man's state: the rows and the court spots share it,
+  // so a tap on the court IS the tap on his row — swap, rest, switch, all of it.
+  const floorOpts = (p: Player) => {
+    const worn = left(p.name) <= WEAR_OUT
+    const blocked =
+      (sel ? !replaceable(sel).includes(p.name) : false) ||
+      (resting ? !canRest(p.name) : false) ||
+      (moving !== null && moving !== p.name ? !canSwitch(moving, p.name) : false)
+    return {
+      worn,
+      blocked,
+      on: out === p.name || moving === p.name,
+      onTap: sel
+        ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
+        : resting
+          ? () => {
+              if (!canRest(p.name)) return
+              onRest?.(p.name)
+              setResting(false)
+            }
+          : moving
+            ? () => {
+                if (moving === p.name) return setMoving(null)
+                if (!canSwitch(moving, p.name)) return
+                doSwitch(moving, p.name)
+                setMoving(null)
+              }
+            : () => setMoving(p.name),
+    }
+  }
+  const benchTap = bench
+    ? sel
+      ? () => setOut(replaceable(sel).includes(bench.name) ? bench.name : out)
+      : () => {
+          setMoving(null)
+          setResting((r) => !r)
+        }
+    : undefined
+  /** The gated plan — an ungated call shows nothing on the floor, same law as the sim. */
+  const plan = gateTactics(tactics, playbook)
+
   return (
     <>
       <div className="topbar">
@@ -301,47 +343,48 @@ export function MyTeam({
                 {capUsed.toFixed(1)}% of {capMax}% cap
               </span>
             </div>
-            {five.map((p) =>
-              row(p, {
-                sub:
-                  left(p.name) <= WEAR_OUT
-                    ? `${assigned[p.name] ?? posOf(p.name)[0]} · ${archetype(p)} · WORN OUT — must be replaced`
-                    : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)} · ${left(p.name)} durability left`,
-                dim:
-                  left(p.name) <= WEAR_OUT ||
-                  (sel ? !replaceable(sel).includes(p.name) : false) ||
-                  (resting ? !canRest(p.name) : false) ||
-                  (moving && moving !== p.name ? !canSwitch(moving, p.name) : false),
-                on: out === p.name || moving === p.name,
-                onTap: sel
-                  ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
-                  : resting
-                    ? () => {
-                        if (!canRest(p.name)) return
-                        onRest?.(p.name)
-                        setResting(false)
-                      }
-                    : moving
-                      ? () => {
-                          if (moving === p.name) return setMoving(null)
-                          if (!canSwitch(moving, p.name)) return
-                          doSwitch(moving, p.name)
-                          setMoving(null)
-                        }
-                      : () => setMoving(p.name),
-              }),
-            )}
+            {/* his ruling: the five stands on the floor — same taps as the rows below, plan and all */}
+            <CourtFive
+              plan={plan}
+              spots={five.map((p, i) => {
+                const o = floorOpts(p)
+                return {
+                  p,
+                  tag: o.worn ? `${POSITIONS[i]} · worn out` : `${POSITIONS[i]} · ${left(p.name)} left`,
+                  danger: o.worn,
+                  dim: !o.worn && o.blocked,
+                  on: o.on,
+                  onTap: o.onTap,
+                }
+              })}
+              bench={
+                benchOpen && bench
+                  ? {
+                      p: bench,
+                      tag: `bench · ${left(bench.name)}${heal ? ` · +${heal}/srs` : ''}`,
+                      on: resting || out === bench.name,
+                      onTap: benchTap,
+                    }
+                  : null
+              }
+            />
+            {five.map((p) => {
+              const o = floorOpts(p)
+              return row(p, {
+                sub: o.worn
+                  ? `${assigned[p.name] ?? posOf(p.name)[0]} · ${archetype(p)} · WORN OUT — must be replaced`
+                  : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)} · ${left(p.name)} durability left`,
+                dim: o.worn || o.blocked,
+                on: o.on,
+                onTap: o.onTap,
+              })
+            })}
             {benchOpen ? (
               bench ? (
                 row(bench, {
                   sub: `BENCH · ${archetype(bench)} · resting, does not play · ${left(bench.name)} durability${heal ? ` · +${heal} a series` : ''}`,
                   on: resting || out === bench.name,
-                  onTap: sel
-                    ? () => setOut(replaceable(sel).includes(bench.name) ? bench.name : out)
-                    : () => {
-                        setMoving(null)
-                        setResting((r) => !r)
-                      },
+                  onTap: benchTap,
                 })
               ) : sel ? (
                 <button className={`sortb ${out === BENCH_SLOT ? 'on' : ''}`} style={{ margin: '6px 0 10px' }} onClick={() => setOut(BENCH_SLOT)}>

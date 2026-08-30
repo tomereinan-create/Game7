@@ -5,7 +5,11 @@ import { eligible, POSITIONS } from '../engine/positions'
 import { ratings100 } from '../engine/offense'
 import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
+import { useCard } from './CardSheet'
+import { CourtFive } from './CourtFive'
+import { Face } from './Face'
 import { DetailGrid, LINES } from './Stat'
+import { useUserMode } from '../state/viewmode'
 import { TeamDials } from './MatchupPanel'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -21,6 +25,7 @@ function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean;
     <>
       <button className="row dr tdb" onClick={onTap}>
         <span className="pname">
+          <Face player={p} size={34} />
           <span className="who">
             <b>{p.name}</b>
             <i>
@@ -125,6 +130,8 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [flip, setFlip] = useState(false)
   const [minQ, setMinQ] = useState('')
   const [maxQ, setMaxQ] = useState('')
+  const user = useUserMode()
+  const openCard = useCard()
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
   // walking back restores the list right where he left it.
   const listScroll = useRef(0)
@@ -365,27 +372,14 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             </div>
             <div className="opp-name">{picked.team}</div>
             {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
-            <div className="rowhead dr tdb">
-              <span>Starting five</span>
-              <span className="gcap">PTS · REB · AST</span>
-              <span className="gcap">OVR · O · D</span>
-            </div>
-            {detail.five.map((p, i) =>
-              p ? (
-                <Row key={p.name} p={p} slot={POSITIONS[i]} open={open === p.name} onTap={() => setOpen(open === p.name ? null : p.name)} />
-              ) : (
-                <div className="row dr tdb slot-open" key={POSITIONS[i]}>
-                  <span className="pname">
-                    <span className="who">
-                      <b>{POSITIONS[i]}</b>
-                      <i>no man on the pool for the slot</i>
-                    </span>
-                  </span>
-                  <span />
-                  <span />
-                </div>
-              ),
-            )}
+            {/* his ruling: the five stands on a floor, not in a list — tap a spot for the full card */}
+            <CourtFive
+              spots={detail.five.map((p, i) => ({
+                p,
+                tag: p ? (user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`) : `${POSITIONS[i]} · open`,
+                onTap: p ? () => openCard(p) : undefined,
+              }))}
+            />
             {detail.bench.length ? (
               <>
                 <div className="rowhead dr tdb">

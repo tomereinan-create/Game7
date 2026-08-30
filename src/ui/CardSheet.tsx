@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
+import { Face } from './Face'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
 
@@ -103,11 +104,16 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
         <button onClick={onClose}>← Back</button>
       </div>
       <div className="pc-head">
-        <div className="pc-name">{p.name}</div>
-        <div className="pc-sub">
-          Season {p.peak_season} · {who || 'no stat line on file'}
+        <span className="face-tile">
+          <Face player={p} size={84} />
+        </span>
+        <div className="pc-head-txt">
+          <div className="pc-name">{p.name}</div>
+          <div className="pc-sub">
+            Season {p.peak_season} · {who || 'no stat line on file'}
+          </div>
+          <div className="pc-tag">{archetype(p)}</div>
         </div>
-        <div className="pc-tag">{archetype(p)}</div>
       </div>
 
       <div className="pc-body">
