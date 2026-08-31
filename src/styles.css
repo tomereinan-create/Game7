@@ -2429,6 +2429,10 @@ button {
 
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
+/* the ghost ring of an unfilled slot: the position stands in for the man */
+.ct-init.ghost { color: var(--faint); font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; }
+.ct-spot.drop-ok .ct-bust { border-color: var(--you); border-style: solid; background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
+.ct-spot.drop-no .ct-bust { border-color: var(--danger); background: var(--danger-tint); }
 .ct-floor { position: absolute; inset: 0; width: 100%; height: 100%; }
 /* the court's side switch: one court, two states, named on the floor */
 .ct-side { position: absolute; top: 2%; left: 3%; display: flex; gap: 4px; z-index: 1; }

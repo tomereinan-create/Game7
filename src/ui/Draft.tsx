@@ -919,6 +919,27 @@ export function Draft({
           </div>
         ) : null}
         {five.length ? <TeamDials five={five} tone="you" vs="field" /> : null}
+        {/* his ruling: read your own side as a lineup too, the same floor the scout card draws.
+            The five fills as he spins, so an unfilled slot stands on the floor as a dashed ghost
+            ring wearing its position — the shape of the team he is building is visible from the
+            first spin. No plan exists at the draft, so the balanced set, as on the scout court.
+            Each spot publishes data-slot, which is all the existing drag hit-test needs to accept
+            a drop here; tapping a man opens his card, as every other court does. */}
+        <CourtFive
+          spots={POSITIONS.map((x) => {
+            const n = slots[x]
+            const p = n ? BY_NAME.get(n) : undefined
+            const worn = !!p && !!carried && left(p.name) <= WEAR_OUT
+            return {
+              p: p ?? null,
+              slot: x,
+              tag: p ? (worn ? `${x} · worn out` : user ? x : `${x} · ${p.ovr}`) : '',
+              danger: worn,
+              dropOk: drag && drag.over === x ? canMove(drag.from, x) : null,
+              onTap: p ? () => openCard(p) : undefined,
+            }
+          })}
+        />
         {POSITIONS.map((x) => {
           const n = slots[x]
           const p = n ? BY_NAME.get(n) : undefined
@@ -967,22 +988,9 @@ export function Draft({
                 </div>
               ) : null}
             </div>
-          ) : (
-            <div
-              className={`row dr slot-open ${drag && drag.over === x ? (canMove(drag.from, x) ? 'drop-ok' : 'drop-no') : ''}`}
-              data-slot={x}
-              key={x}
-            >
-              <span className="pname">
-                <span className="who">
-                  <b>{x}</b>
-                  <i>open</i>
-                </span>
-              </span>
-              <span />
-              <span />
-            </div>
-          )
+          ) : // an unfilled slot is a ghost ring on the floor above, which is also its drop
+          // target — a list row repeating "PG / OPEN" under it would say nothing twice
+          null
         })}
       </div>
 
