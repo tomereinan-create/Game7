@@ -33,7 +33,9 @@ interface SideState {
   slots: (Player | null)[]
 }
 
-function run(seed: number, skill: Skill) {
+type Policy = 'greedy' | 'broke' | 'reserve'
+
+function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: number = BUDGET) {
   const queue = auctionQueue(seed)
   const tier1 = queue.filter((x) => (LINES[x.name]?.ppg ?? 0) >= 18)
   const compo = {
@@ -41,7 +43,7 @@ function run(seed: number, skill: Skill) {
     star: tier1.filter((x) => x.ovr >= 90).length / Math.max(1, tier1.length),
   }
   const S: [SideState, SideState] = [
-    { budget: BUDGET, slots: Array(SLOTS).fill(null) },
+    { budget: p1Budget, slots: Array(SLOTS).fill(null) },
     { budget: BUDGET, slots: Array(SLOTS).fill(null) },
   ]
   const countOf = (i: 0 | 1) => S[i].slots.filter(Boolean).length
@@ -50,8 +52,14 @@ function run(seed: number, skill: Skill) {
   const legalOpen = (i: 0 | 1, p: Player) => POSITIONS.map((_, j) => j).filter((j) => !S[i].slots[j] && canSlot(p, j))
 
   // greedy-stars human: full reserve ceiling on 90+, $6 on 85-89, $2 on 80-84, refuses the rest
+  // BROKE human (his ruling): dumps the whole wallet on the first star he can field, and from then
+  // on can only ever bid the $1 minimum. He must still finish with five men.
   const humanCeil = (p: Player) => {
     const hard = ceiling(0)
+    // 'reserve' drains the wallet onto the very first man he can field, whoever he is, so that
+    // from lot two onward his ceiling is EXACTLY $1 — the reserve edge his ruling is about.
+    if (policy === 'reserve') return countOf(0) === 0 ? hard : Math.min(hard, 1)
+    if (policy === 'broke') return countOf(0) === 0 && p.ovr >= 88 ? hard : Math.min(hard, 1)
     return Math.min(hard, p.ovr >= 90 ? hard : p.ovr >= 85 ? 6 : p.ovr >= 80 ? 2 : 0)
   }
 
@@ -157,7 +165,18 @@ function run(seed: number, skill: Skill) {
     }
   }
   const mean = (i: 0 | 1) => S[i].slots.filter((p): p is Player => !!p).reduce((a, p) => a + p.ovr, 0) / Math.max(1, countOf(i))
-  return { seed, served, violations, p1: mean(0), mc: mean(1), spent: [BUDGET - S[0].budget, BUDGET - S[1].budget], sold }
+  return {
+    seed,
+    served,
+    violations,
+    p1: mean(0),
+    mc: mean(1),
+    spent: [p1Budget - S[0].budget, BUDGET - S[1].budget],
+    sold,
+    filled: [countOf(0), countOf(1)] as [number, number],
+    queueDry: lot >= queue.length,
+    cheapest: Math.min(...sold.filter((x) => x.startsWith('P1')).map((x) => Number(x.split(' ')[1].slice(1))), 99),
+  }
 }
 
 let totalViol = 0
@@ -176,3 +195,79 @@ console.log(`\nSHARK over 10 seeds: rule-2 violations ${totalViol}, mean gap ${(
 const tape = run(1996, 'shark')
 console.log('\nseed 1996 tape:')
 for (const line of tape.sold) console.log('  ' + line)
+
+
+// ---- HIS RULING: running out of money is not losing ----
+// "If I ran out of money I havent lost, I just take any player my opp doesnt want. I have to
+// leave at least 1$ for a spot." The broke human blows everything on one star and then bids the
+// $1 minimum forever. The property under test: he still fills five, every time, at every skill.
+console.log('\nBROKE-HUMAN SCENARIO (dumps the wallet on one star, then $1 only):')
+let shortFives = 0
+let dry = 0
+const seeds = [11, 42, 137, 1996, 2014, 31337, 777, 90210, 555, 12345, 8, 64, 512, 4096, 31, 271, 1618, 2718, 1414, 1732]
+for (const sk of ['rookie', 'pro', 'shark'] as Skill[]) {
+  let worstLots = 0
+  let filledAll = 0
+  for (const seed of seeds) {
+    const r = run(seed, sk, 'broke')
+    if (r.filled[0] < SLOTS) shortFives++
+    else filledAll++
+    if (r.queueDry) dry++
+    worstLots = Math.max(worstLots, r.served)
+  }
+  console.log(`  ${sk.padEnd(6)} filled five ${filledAll}/${seeds.length} · most lots needed ${worstLots}`)
+}
+console.log(`  short fives across ${3 * seeds.length} broke runs: ${shortFives} · queue ran dry: ${dry}`)
+
+// the RESERVE EDGE: he really is down to $1 a slot from lot two onward.
+console.log('\nRESERVE-EDGE SCENARIO (wallet emptied on lot one, ceiling exactly $1 thereafter):')
+let shortR = 0
+let dryR = 0
+let minLeft = 99
+for (const sk of ['rookie', 'pro', 'shark'] as Skill[]) {
+  let filledAll = 0
+  let worstLots = 0
+  for (const seed of seeds) {
+    const r = run(seed, sk, 'reserve')
+    if (r.filled[0] < SLOTS) shortR++
+    else filledAll++
+    if (r.queueDry) dryR++
+    worstLots = Math.max(worstLots, r.served)
+    minLeft = Math.min(minLeft, BUDGET - r.spent[0])  // reserve policy always starts on the full BUDGET
+  }
+  console.log(`  ${sk.padEnd(6)} filled five ${filledAll}/${seeds.length} · most lots needed ${worstLots}`)
+}
+console.log(`  short fives across ${3 * seeds.length} reserve runs: ${shortR} · queue ran dry: ${dryR} · least money ever left over $${minLeft}`)
+const tapeR = run(1996, 'shark', 'reserve')
+console.log(`  seed 1996 (shark) reserve tape — P1 filled ${tapeR.filled[0]}/${SLOTS}, spent $${tapeR.spent[0]}:`)
+for (const line of tapeR.sold.filter((x) => x.startsWith('P1'))) console.log('    ' + line)
+const tapeB = run(1996, 'shark', 'broke')
+console.log(`  seed 1996 (shark) broke tape — P1 filled ${tapeB.filled[0]}/${SLOTS}, spent $${tapeB.spent[0]}:`)
+for (const line of tapeB.sold.filter((x) => x.startsWith('P1'))) console.log('    ' + line)
+
+
+// ---- THE LITERAL BROKE STATE ----
+// P1 starts with exactly $1 a slot: his ceiling is $1 on every lot of the auction, for ever. This
+// is his ruling at its most adversarial — he can never outbid anyone, only take what is left.
+// The Machine holds a full $20 and plays its normal book.
+console.log('\nPENNILESS SCENARIO (P1 starts on $' + SLOTS + ' — ceiling $1 on every single lot):')
+let shortP = 0
+let dryP = 0
+let worstAll = 0
+for (const sk of ['rookie', 'pro', 'shark'] as Skill[]) {
+  let filledAll = 0
+  let worstLots = 0
+  for (const seed of seeds) {
+    const r = run(seed, sk, 'broke', SLOTS)
+    if (r.filled[0] < SLOTS) shortP++
+    else filledAll++
+    if (r.queueDry) dryP++
+    worstLots = Math.max(worstLots, r.served)
+  }
+  worstAll = Math.max(worstAll, worstLots)
+  console.log(`  ${sk.padEnd(6)} filled five ${filledAll}/${seeds.length} · most lots needed ${worstLots}`)
+}
+console.log(`  short fives across ${3 * seeds.length} penniless runs: ${shortP} · queue ran dry: ${dryP} · worst lot count ${worstAll} (queue holds hundreds)`)
+const tapeP = run(1996, 'shark', 'broke', SLOTS)
+console.log(`  seed 1996 (shark) penniless tape — P1 filled ${tapeP.filled[0]}/${SLOTS}, spent $${tapeP.spent[0]} of $${SLOTS}:`)
+for (const line of tapeP.sold.filter((x) => x.startsWith('P1'))) console.log('    ' + line)

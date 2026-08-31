@@ -98,6 +98,14 @@ export function Auction({ onHome }: { onHome: () => void }) {
   /** Every future slot still needs $1 held — the most this side can pay for THIS man. */
   const ceiling = (i: 0 | 1) => budget[i] - (SLOTS - 1 - countOf(i))
 
+  /**
+   * The block is empty: no man left in the queue that either side could legally field. The server
+   * above draws from the whole league and skips nobody-can-field lots, and the machine-sim's
+   * penniless scenario never reaches this in 60 adversarial runs — but a dead button with chairs
+   * still open would be the one way a side could be stuck short, so it is handled rather than
+   * assumed away.
+   */
+  const dry = !done && !man
   const five = (i: 0 | 1) => slots[i].map((b) => (b ? BY_NAME.get(b.name) : undefined)).filter((p): p is Player => !!p)
   const A = five(0)
   const B = five(1)
@@ -392,6 +400,9 @@ export function Auction({ onHome }: { onHome: () => void }) {
                     </div>
                   )
                 const slotsAfter = SLOTS - 1 - countOf(i)
+                // HIS RULING: running out of money is not losing. A side held to its $1-a-chair
+                // reserve cannot outbid anyone, but it still takes every man the other side passes
+                // on — so the line says that, rather than reading like defeat.
                 const why = passed[i]
                   ? 'passed — final for this lot'
                   : full(i)
@@ -401,9 +412,11 @@ export function Auction({ onHome }: { onHome: () => void }) {
                       : top === i
                         ? 'holds the bid — the other chair answers'
                         : price + 1 > ceiling(i)
-                          ? slotsAfter > 0
-                            ? `needs $${slotsAfter} held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
-                            : `only $${budget[i]} left`
+                          ? ceiling(i) <= 1
+                            ? `down to $1 a chair — you still take every man the other side passes on`
+                            : slotsAfter > 0
+                              ? `outbid here — $${slotsAfter} stays held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
+                              : `outbid here — only $${budget[i]} left`
                           : null
                 return (
                   <div className="au-panel" key={i}>
@@ -438,8 +451,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
 
       <div className="dock">
         <div className="dock-inner">
-          <button className={`btn ${done ? '' : 'ghost'}`} onClick={done ? sim : undefined}>
-            {done ? 'Sim the series' : 'Bid a five into PG–C — every slot needs $1'}
+          <button className={`btn ${done || dry ? '' : 'ghost'}`} onClick={done || dry ? sim : undefined}>
+            {done ? 'Sim the series' : dry ? 'The block is empty — play the men you have' : 'Bid a five into PG–C — every slot needs $1'}
           </button>
         </div>
       </div>
