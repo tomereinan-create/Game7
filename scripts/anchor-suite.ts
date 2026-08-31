@@ -57,10 +57,17 @@ const BANDS: Band[] = [
   // in receipt 66. Philly '88's within-season DIAGNOSTIC readings are in receipt 73 (OFF 100 / DEF 5 —
   // the percentile basis fails this round's own bands worse than the all-time scale does).
   { year: 1988, name: '76ers', off: [35, 60], def: [30, 55] },
+  // recal_77 (design-side "70"): OKC '25, the 68-14 season, added as ordered. Its bands are stated
+  // on within-season gauges, so receipt 77 reports BOTH bases side by side; the shipped verdict
+  // stays on the all-time scale per recal_71 (Tomer's own order).
+  { year: 2025, name: 'Thunder', off: [85, null], def: [95, null] },
+  // Boston '26 carries addendum 1's band, and has been measured since recal_68.
+  { year: 2026, name: 'Celtics', off: [70, 85], def: [null, null] },
 ]
 
 const inBand = (v: number, [lo, hi]: [number | null, number | null]) => (lo === null || v >= lo) && (hi === null || v <= hi)
-const bandText = ([lo, hi]: [number | null, number | null]) => (lo !== null && hi !== null ? `${lo}-${hi}` : lo !== null ? `${lo}+` : `<${(hi ?? 0) + 1}`)
+const bandText = ([lo, hi]: [number | null, number | null]) =>
+  lo === null && hi === null ? 'unspecified' : lo !== null && hi !== null ? `${lo}-${hi}` : lo !== null ? `${lo}+` : `<${(hi ?? 0) + 1}`
 
 console.log('\n=== (a) ANCHOR GAUGES, within season ===')
 let anyFail = false
