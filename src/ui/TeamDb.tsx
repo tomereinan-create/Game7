@@ -389,7 +389,8 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             <CourtFive
               spots={detail.five.map((p, i) => ({
                 p,
-                tag: p ? (user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`) : `${POSITIONS[i]} · open`,
+                slot: POSITIONS[i],
+                tag: p ? (user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`) : '',
                 onTap: p ? () => openCard(p) : undefined,
               }))}
             />

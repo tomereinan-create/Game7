@@ -23,11 +23,19 @@ export interface CourtSpot {
   on?: boolean
   dim?: boolean
   onTap?: () => void
+  /**
+   * The slot this spot stands for. It labels the ghost ring while the spot is empty, and it
+   * publishes `data-slot`, which is all the draft's existing drag needs to treat the floor as
+   * a drop target (it hit-tests with elementFromPoint().closest('[data-slot]')).
+   */
+  slot?: string
+  /** Live drag feedback: true = this drop is legal, false = it is not, null/undefined = not the target. */
+  dropOk?: boolean | null
 }
 
 type XY = readonly [number, number]
 /** Which half of the plan the court is drawing. */
-type Side = 'off' | 'def'
+export type Side = 'off' | 'def'
 
 /**
  * THE COURT'S OWN GEOMETRY (his report: formation spots ignored the drawn 3pt
@@ -61,6 +69,8 @@ const DUNK_R: XY = [68, 88]
 /** Balanced — PG above the arc, the wings behind it, PF at the block, C in the paint. */
 const AT: XY[] = [peri(0, 12), peri(-38), peri(38), BLOCK_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
+/** Units of empty floor above the half-court line, kept only when a bench man stands there. */
+const CROP = 16
 
 /**
  * DEFENSIVE SHAPES, one entry per scheme id (his ruling: the court should show the
@@ -181,33 +191,59 @@ const initials = (n: string) =>
 function Spot({ s, at, size, sc, pm }: { s: CourtSpot; at: XY; size: number; sc?: boolean; pm?: boolean }) {
   return (
     <button
-      className={`ct-spot ${s.danger ? 'danger' : ''} ${s.on ? 'on' : ''} ${s.dim ? 'dim' : ''} ${s.p ? '' : 'ct-open'}`}
+      className={`ct-spot ${s.danger ? 'danger' : ''} ${s.on ? 'on' : ''} ${s.dim ? 'dim' : ''} ${s.p ? '' : 'ct-open'} ${
+        s.dropOk === true ? 'drop-ok' : s.dropOk === false ? 'drop-no' : ''
+      }`}
       style={{ left: `${at[0]}%`, top: `${at[1]}%` }}
+      data-slot={s.slot}
       onClick={s.onTap}
       disabled={!s.onTap}
     >
       <span className="ct-bust" style={{ width: size, height: size }}>
-        {s.p ? <em className="ct-init">{initials(s.p.name)}</em> : null}
+        {s.p ? <em className="ct-init">{initials(s.p.name)}</em> : s.slot ? <em className="ct-init ghost">{s.slot}</em> : null}
         {sc ? <u className="ct-mark sc">SC</u> : null}
         {pm ? <u className={`ct-mark pm ${sc ? 'lo' : ''}`}>PM</u> : null}
       </span>
       <b>{s.p ? surname(s.p.name) : 'open'}</b>
-      <i>{s.tag}</i>
+      {s.tag ? <i>{s.tag}</i> : null}
     </button>
   )
 }
 
-export function CourtFive({ spots, bench, plan }: { spots: CourtSpot[]; bench?: CourtSpot | null; plan?: Tactics | null }) {
+export function CourtFive({
+  spots,
+  bench,
+  plan,
+  side: sideProp,
+  onSide,
+}: {
+  spots: CourtSpot[]
+  bench?: CourtSpot | null
+  plan?: Tactics | null
+  /** Lift the side out of the court when the whole screen follows it (My team's tactics panel). */
+  side?: Side
+  onSide?: (s: Side) => void
+}) {
   // One court, two states, named on the floor: you can go and LOOK at your defense without
   // touching a chip and changing the plan to see it. No plan (the scouted opponent, whose
   // call we do not know) means no toggle and the balanced shape, as before.
-  const [side, setSide] = useState<Side>('off')
+  const [own, setOwn] = useState<Side>('off')
+  const side = sideProp ?? own
+  const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
   const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan?.style, spots.map((s) => s.p))
   const call = plan ? callLine(plan, shown) : ''
+  /**
+   * The band above the half-court line only exists to stand the resting man on, so a court with
+   * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and
+   * the viewBox are cropped together and the spots are remapped into what is left, so every
+   * position stays exactly where it was relative to the floor.
+   */
+  const top = bench ? 0 : CROP
+  const y = (v: number) => ((v - top) / (100 - top)) * 100
   return (
-    <div className="court">
-      <svg className="ct-floor" viewBox="0 0 100 100" aria-hidden="true">
+    <div className="court" style={{ aspectRatio: `100 / ${100 - top}` }}>
+      <svg className="ct-floor" viewBox={`0 ${top} 100 ${100 - top}`} aria-hidden="true">
         {/* the floor: boundary, half-court circle, the paint, the arc, the rim */}
         <rect x="2" y="20" width="96" height="78" fill="var(--wash)" stroke="var(--line)" strokeWidth="0.8" />
         <path d="M39 20 A 11 11 0 0 0 61 20" fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
@@ -239,7 +275,7 @@ export function CourtFive({ spots, bench, plan }: { spots: CourtSpot[]; bench?: 
             : {})}
         />
       ))}
-      {bench ? <Spot s={bench} at={BENCH_AT} size={46} /> : null}
+      {bench ? <Spot s={bench} at={[BENCH_AT[0], y(BENCH_AT[1])]} size={46} /> : null}
     </div>
   )
 }
