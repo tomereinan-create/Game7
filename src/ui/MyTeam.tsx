@@ -5,7 +5,7 @@ import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
-import { CourtFive } from './CourtFive'
+import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { gateTactics, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
@@ -326,6 +326,15 @@ export function MyTeam({
     : undefined
   /** The gated plan — an ungated call shows nothing on the floor, same law as the sim. */
   const plan = gateTactics(tactics, playbook)
+  /**
+   * Which side of the ball he is coaching. It lives here, not in the court, because his
+   * ruling made it govern the whole screen: the floor's shape AND which half of the panel
+   * is on show. Held for as long as he is on the screen, so changing a call never bounces
+   * him back to offense.
+   */
+  const [side, setSide] = useState<Side>('off')
+  /** What each side actually has to offer at this Playbook rank. */
+  const sideHas = { off: playbook >= 1, def: playbook >= 2 }
 
   return (
     <>
@@ -355,6 +364,8 @@ export function MyTeam({
             {/* his ruling: the five stands on the floor — same taps as the rows below, plan and all */}
             <CourtFive
               plan={plan}
+              side={side}
+              onSide={setSide}
               spots={five.map((p, i) => {
                 const o = floorOpts(p)
                 return {
@@ -449,16 +460,10 @@ export function MyTeam({
                       })()}
               </span>
             </div>
-            {/* his ruling: the panel mixed both sides of the ball in one stack — it reads as
-                two groups now. Headings only appear once the Playbook opens a control inside
-                them, so the locked state stays a bare note. */}
-            {playbook >= 1 ? (
-              <div className="section-rule tac-rule">
-                <span>Offense</span>
-                <i />
-              </div>
-            ) : null}
-            {playbook >= 1 ? ([
+            {/* his ruling: the court's toggle governs the whole screen, so the panel shows one
+                side at a time. The group headings are gone with it — a rule reading OFFENSE
+                directly under a lit OFFENSE chip said the same thing twice and cost a row. */}
+            {side === 'off' && playbook >= 1 ? ([
               ['Main scorer', 'scorer'],
               ['Main playmaker', 'playmaker'],
             ] as const).map(([label, key]) => (
@@ -480,7 +485,7 @@ export function MyTeam({
                 </ChipRow>
               </div>
             )) : null}
-            {playbook >= 1 ? (
+            {side === 'off' && playbook >= 1 ? (
             <div className="posbar">
               <span className="cap">Tempo</span>
               <ChipRow>
@@ -492,7 +497,7 @@ export function MyTeam({
               </ChipRow>
             </div>
             ) : null}
-            {playbook >= 2 ? (
+            {side === 'off' && playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Playstyle</span>
               <ChipRow>
@@ -504,7 +509,7 @@ export function MyTeam({
               </ChipRow>
             </div>
             ) : null}
-            {playbook >= 3 ? (
+            {side === 'off' && playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Hunt the mismatch</span>
               <ChipRow>
@@ -516,7 +521,7 @@ export function MyTeam({
             ) : null}
             {/* the glass is two calls, not one: sending men to the offensive boards and ganging
                 the defensive boards are priced apart, so each sits with its own side */}
-            {playbook >= 2 ? (
+            {side === 'off' && playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
               <ChipRow>
@@ -526,13 +531,7 @@ export function MyTeam({
               </ChipRow>
             </div>
             ) : null}
-            {playbook >= 2 ? (
-              <div className="section-rule tac-rule">
-                <span>Defense</span>
-                <i />
-              </div>
-            ) : null}
-            {playbook >= 3 ? (
+            {side === 'def' && playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Defensive scheme</span>
               <ChipRow>
@@ -544,7 +543,7 @@ export function MyTeam({
               </ChipRow>
             </div>
             ) : null}
-            {playbook >= 2 ? (
+            {side === 'def' && playbook >= 2 ? (
             <div className="posbar">
               <span className="cap">Crash the glass</span>
               <ChipRow>
@@ -553,6 +552,13 @@ export function MyTeam({
                 </button>
               </ChipRow>
             </div>
+            ) : null}
+            {/* a side with nothing on it says what opens it, rather than going blank */}
+            {playbook >= 1 && !sideHas[side] ? (
+              <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                Nothing to call on defense yet — the next Playbook rank opens the glass, and the one after it the
+                scheme and the hunt.
+              </div>
             ) : null}
             {(() => {
               if (user) return null

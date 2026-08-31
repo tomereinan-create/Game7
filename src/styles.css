@@ -2399,12 +2399,6 @@ button {
 .pc-bar { margin: 0; flex: none; }
 .pc-head { flex: none; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 
-/* my team tactics: the offense/defense group heads. Tighter than a page section rule —
-   the panel is a card, and the phone cannot spare the usual breathing room. */
-.tac-rule { margin: 8px 0 2px; }
-.tac-rule span { font-size: 8.5px; letter-spacing: 0.16em; color: var(--you); }
-.tac-rule:first-of-type { margin-top: 4px; }
-
 /* ---- my team: the durability badge (death match) ---- */
 .mt-dur { flex: none; display: grid; justify-items: center; gap: 0; min-width: 32px; padding: 3px 5px 2px; border: 1px solid var(--line-3); border-radius: 6px; }
 .mt-dur b { font-family: var(--mono); font-size: 13px; font-weight: 700; line-height: 1; color: var(--ink); }

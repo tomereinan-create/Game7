@@ -35,7 +35,7 @@ export interface CourtSpot {
 
 type XY = readonly [number, number]
 /** Which half of the plan the court is drawing. */
-type Side = 'off' | 'def'
+export type Side = 'off' | 'def'
 
 /**
  * THE COURT'S OWN GEOMETRY (his report: formation spots ignored the drawn 3pt
@@ -210,11 +210,26 @@ function Spot({ s, at, size, sc, pm }: { s: CourtSpot; at: XY; size: number; sc?
   )
 }
 
-export function CourtFive({ spots, bench, plan }: { spots: CourtSpot[]; bench?: CourtSpot | null; plan?: Tactics | null }) {
+export function CourtFive({
+  spots,
+  bench,
+  plan,
+  side: sideProp,
+  onSide,
+}: {
+  spots: CourtSpot[]
+  bench?: CourtSpot | null
+  plan?: Tactics | null
+  /** Lift the side out of the court when the whole screen follows it (My team's tactics panel). */
+  side?: Side
+  onSide?: (s: Side) => void
+}) {
   // One court, two states, named on the floor: you can go and LOOK at your defense without
   // touching a chip and changing the plan to see it. No plan (the scouted opponent, whose
   // call we do not know) means no toggle and the balanced shape, as before.
-  const [side, setSide] = useState<Side>('off')
+  const [own, setOwn] = useState<Side>('off')
+  const side = sideProp ?? own
+  const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
   const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan?.style, spots.map((s) => s.p))
   const call = plan ? callLine(plan, shown) : ''
