@@ -33,7 +33,7 @@ interface SideState {
   slots: (Player | null)[]
 }
 
-type Policy = 'greedy' | 'broke' | 'reserve'
+type Policy = 'greedy' | 'broke' | 'reserve' | 'sprint'
 
 function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: number = BUDGET) {
   const queue = auctionQueue(seed)
@@ -58,6 +58,7 @@ function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: nu
     const hard = ceiling(0)
     // 'reserve' drains the wallet onto the very first man he can field, whoever he is, so that
     // from lot two onward his ceiling is EXACTLY $1 — the reserve edge his ruling is about.
+    if (policy === 'sprint') return hard // takes every man he can field, as fast as the block serves them
     if (policy === 'reserve') return countOf(0) === 0 ? hard : Math.min(hard, 1)
     if (policy === 'broke') return countOf(0) === 0 && p.ovr >= 88 ? hard : Math.min(hard, 1)
     return Math.min(hard, p.ovr >= 90 ? hard : p.ovr >= 85 ? 6 : p.ovr >= 80 ? 2 : 0)
@@ -66,17 +67,29 @@ function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: nu
   let violations = 0
   let lot = 0
   let served = 0
+  let deadLots = 0
+  let autoFills = 0
+  let autoFillsNot1 = 0
   const sold: string[] = []
   while (!(full(0) && full(1)) && lot < queue.length) {
     // the server: next man somebody can slot
     while (lot < queue.length && !legalOpen(0, queue[lot]).length && !legalOpen(1, queue[lot]).length) lot++
     const man = queue[lot]
     if (!man) break
+    const ordinal = served
     served++
     let price = 0
     let top: 0 | 1 | null = null
     const passed: [boolean, boolean] = [false, false]
     const outFor = (i: 0 | 1) => passed[i] || full(i) || !legalOpen(i, man).length
+    // HIS RULING: one chair is COMPELLED to open at $1 every lot, alternating by lot ordinal, the
+    // duty passing across when the first chair is full or cannot field the man. Part two needs no
+    // branch of its own: a full side is out, so the duty lands on the other chair every lot and its
+    // dollar meets a dead table.
+    const fitFor = (i: 0 | 1) => !full(i) && legalOpen(i, man).length > 0 && ceiling(i) >= 1
+    const firstDuty = (ordinal % 2) as 0 | 1
+    const compelled: 0 | 1 | null = fitFor(firstDuty) ? firstDuty : fitFor((1 - firstDuty) as 0 | 1) ? ((1 - firstDuty) as 0 | 1) : null
+    const oneSideWasFull = full(0) || full(1)
 
     const mCtx = (): MachineCtx => {
       const fit = legalOpen(1, man)
@@ -115,6 +128,25 @@ function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: nu
     // the app's turn flow: machine acts whenever top !== 1 and it is live; human answers when machine holds top
     let guard = 0
     let resolved = false
+    if (compelled === null) {
+      deadLots++ // the position law outranks the rule; the server should never air such a man
+      lot++
+      continue
+    }
+    {
+      const k = (1 - compelled) as 0 | 1
+      if (outFor(k) || 2 > ceiling(k)) {
+        if (oneSideWasFull) {
+          autoFills++
+          if (1 !== 1) autoFillsNot1++
+        }
+        sell(compelled, 1)
+        resolved = true
+      } else {
+        price = 1
+        top = compelled
+      }
+    }
     while (!resolved && guard++ < 200) {
       if (outFor(0) && outFor(1) && top === null) {
         lot++ // discard
@@ -174,6 +206,9 @@ function run(seed: number, skill: Skill, policy: Policy = 'greedy', p1Budget: nu
     spent: [p1Budget - S[0].budget, BUDGET - S[1].budget],
     sold,
     filled: [countOf(0), countOf(1)] as [number, number],
+    deadLots,
+    autoFills,
+    autoFillsNot1,
     queueDry: lot >= queue.length,
     cheapest: Math.min(...sold.filter((x) => x.startsWith('P1')).map((x) => Number(x.split(' ')[1].slice(1))), 99),
   }
@@ -271,3 +306,69 @@ console.log(`  short fives across ${3 * seeds.length} penniless runs: ${shortP} 
 const tapeP = run(1996, 'shark', 'broke', SLOTS)
 console.log(`  seed 1996 (shark) penniless tape — P1 filled ${tapeP.filled[0]}/${SLOTS}, spent $${tapeP.spent[0]} of $${SLOTS}:`)
 for (const line of tapeP.sold.filter((x) => x.startsWith('P1'))) console.log('    ' + line)
+
+
+// ---- HIS RULING: the compelled dollar ----
+// "Each turn, one player is forced to bet 1$, so a player can never be passed by both. Once a
+// player has 5 players the other one gets the auto 1$ for the following until he has 5 as well."
+console.log('\nCOMPELLED-DOLLAR VERIFICATION (alternating duty; part two falls out of part one):')
+{
+  let dead = 0
+  let shortAny = 0
+  let runs = 0
+  let auto = 0
+  let autoBad = 0
+  const gapsC: number[] = []
+  let violC = 0
+  for (const sk of ['rookie', 'pro', 'shark'] as Skill[]) {
+    for (const pol of ['greedy', 'broke', 'reserve'] as Policy[]) {
+      for (const seed of seeds) {
+        const r = run(seed, sk, pol)
+        runs++
+        dead += r.deadLots
+        auto += r.autoFills
+        autoBad += r.autoFillsNot1
+        if (r.filled[0] < SLOTS || r.filled[1] < SLOTS) shortAny++
+        if (sk === 'shark' && pol === 'greedy') {
+          gapsC.push(r.p1 - r.mc)
+          violC += r.violations
+        }
+      }
+    }
+  }
+  console.log(`  (a) dead lots across ${runs} runs (3 skills x 3 policies x ${seeds.length} seeds): ${dead}`)
+  console.log(`  (b) runs where EITHER side finished short of five: ${shortAny}`)
+  console.log(`  (e) part-two auto-fills observed: ${auto}, of which not at $1: ${autoBad}`)
+  console.log(`  (d) shark/greedy rule-2 violations ${violC} · mean OVR gap ${(gapsC.reduce((a, b) => a + b, 0) / gapsC.length).toFixed(2)} (pre-rule 4.76)`)
+}
+{
+  // (c) the penniless human still fills five under compulsion
+  let filled = 0
+  let total = 0
+  for (const sk of ['rookie', 'pro', 'shark'] as Skill[])
+    for (const seed of seeds) {
+      const r = run(seed, sk, 'broke', SLOTS)
+      total++
+      if (r.filled[0] === SLOTS) filled++
+    }
+  console.log(`  (c) penniless P1 (starts on $${SLOTS}) filled five in ${filled}/${total} runs`)
+}
+{
+  // (e) one side deliberately fills fast — part two end to end
+  let sprintRuns = 0
+  let bothFull = 0
+  let autoAll = 0
+  let autoNot1 = 0
+  for (const sk of ['rookie', 'pro', 'shark'] as Skill[])
+    for (const seed of seeds) {
+      const r = run(seed, sk, 'sprint')
+      sprintRuns++
+      if (r.filled[0] === SLOTS && r.filled[1] === SLOTS) bothFull++
+      autoAll += r.autoFills
+      autoNot1 += r.autoFillsNot1
+    }
+  console.log(`  (e) SPRINT scenario: both sides reached five in ${bothFull}/${sprintRuns} runs · auto-fill sales ${autoAll}, none above $1: ${autoNot1 === 0}`)
+  const t = run(1996, 'shark', 'sprint')
+  console.log(`      seed 1996 sprint tape — P1 ${t.filled[0]}/${SLOTS} ($${t.spent[0]}), MC ${t.filled[1]}/${SLOTS} ($${t.spent[1]}), lots ${t.served}:`)
+  for (const line of t.sold) console.log('        ' + line)
+}

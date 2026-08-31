@@ -99,6 +99,35 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const ceiling = (i: 0 | 1) => budget[i] - (SLOTS - 1 - countOf(i))
 
   /**
+   * THE COMPELLED DOLLAR (his ruling): "Each turn, one player is forced to bet 1$, so a player can
+   * never be passed by both. Once a player has 5 players the other one gets the auto 1$ for the
+   * following until he has 5 as well."
+   *
+   * The duty ALTERNATES by lot so the burden is symmetric and neither chair can game it: even lots
+   * fall to P1, odd lots to the other. A side that is full, or has no legal open slot for this man,
+   * cannot carry it and the duty passes across. If neither can field him the lot dies — the position
+   * law outranks this rule — but the server only ever airs a man somebody can field, so in practice
+   * that never happens and dead lots cease to exist.
+   *
+   * PART TWO FALLS OUT OF PART ONE, with no second branch: once a side has its five it is out for
+   * every lot, so the duty lands on the other chair every time, and its compelled dollar meets a
+   * dead table — bid() sells to it on the spot at $1. The auto-fill IS the forced opening bid with
+   * nobody left to answer.
+   */
+  const compelled: 0 | 1 | null = (() => {
+    if (!man) return null
+    // must also be ABLE to pay the dollar; the $1-a-chair reserve guarantees it, and the guard
+    // keeps the auto-bid effect from spinning if that invariant were ever broken.
+    const fit = (i: 0 | 1) => !full(i) && legalOpen(i, man).length > 0 && ceiling(i) >= 1
+    const first: 0 | 1 = ((lotN % 2) as 0 | 1)
+    if (fit(first)) return first
+    const second = other(first)
+    return fit(second) ? second : null
+  })()
+  /** The compelled dollar has not landed yet this lot — both chairs wait one render for it. */
+  const awaitingCompel = !!man && !done && !result && !assign && compelled !== null && price === 0 && top === null
+
+  /**
    * The block is empty: no man left in the queue that either side could legally field. The server
    * above draws from the whole league and skips nobody-can-field lots, and the machine-sim's
    * penniless scenario never reaches this in 60 adversarial runs — but a dead button with chairs
@@ -162,11 +191,20 @@ export function Auction({ onHome }: { onHome: () => void }) {
     else setPassed((cur) => (i === 0 ? [true, cur[1]] : [cur[0], true]))
   }
 
+  // The forced opening dollar lands the instant a lot opens, before either chair may act. It goes
+  // through bid() like any other bid, so the ordinary settlement applies: if the other chair cannot
+  // answer — full, no legal slot, or beaten flat by its own reserve — the man sells at $1 at once.
+  useEffect(() => {
+    if (!awaitingCompel || compelled === null) return
+    bid(compelled)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [awaitingCompel, compelled, lotIdx])
+
   // The Machine answers on a short beat whenever the move is its: the lot just opened,
   // or the human holds the top bid. Every other state waits on the human, so nothing locks.
   // The valuation itself lives in machine.ts — pure, seeded, simulation-verified.
   useEffect(() => {
-    if (foe !== 'bot' || done || result || !man || assign || outFor(1) || top === 1) return
+    if (foe !== 'bot' || done || result || !man || assign || outFor(1) || top === 1 || awaitingCompel) return
     const t = window.setTimeout(() => {
       const fit = legalOpen(1, man)
       const chairsBoth = 2 * SLOTS - countOf(0) - countOf(1)
@@ -193,7 +231,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
     }, 550 + Math.random() * 150)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [foe, skill, lot, price, top, passed, budget, slots, assign, done, result])
+  }, [foe, skill, lot, price, top, passed, budget, slots, assign, done, result, awaitingCompel])
 
   const sim = () => {
     const r = simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA)
@@ -409,21 +447,29 @@ export function Auction({ onHome }: { onHome: () => void }) {
                     ? 'five men — out of every auction'
                     : !canPlay(i)
                       ? 'no open slot he can play'
-                      : top === i
-                        ? 'holds the bid — the other chair answers'
-                        : price + 1 > ceiling(i)
-                          ? ceiling(i) <= 1
-                            ? `down to $1 a chair — you still take every man the other side passes on`
-                            : slotsAfter > 0
-                              ? `outbid here — $${slotsAfter} stays held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
-                              : `outbid here — only $${budget[i]} left`
-                          : null
+                      : awaitingCompel
+                        ? compelled === i
+                          ? 'compelled to open — $1'
+                          : 'the other chair opens at $1'
+                        : top === i
+                          ? compelled === i && price === 1
+                            ? full(other(i)) || !canPlay(other(i))
+                              ? 'the other chair is out — he is yours at $1'
+                              : 'compelled to open — $1 · the other chair answers'
+                            : 'holds the bid — the other chair answers'
+                          : price + 1 > ceiling(i)
+                            ? ceiling(i) <= 1
+                              ? `down to $1 a chair — you still take every man the other side passes on`
+                              : slotsAfter > 0
+                                ? `outbid here — $${slotsAfter} stays held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
+                                : `outbid here — only $${budget[i]} left`
+                            : null
                 return (
                   <div className="au-panel" key={i}>
                     <button className={`btn ${i === 1 ? 'them' : ''}`} disabled={why !== null} onClick={() => bid(i)}>
                       {names[i]} — bid ${price + 1}
                     </button>
-                    <button className="btn ghost" disabled={outFor(i) || top === i} onClick={() => pass(i)}>
+                    <button className="btn ghost" disabled={outFor(i) || top === i || awaitingCompel} onClick={() => pass(i)}>
                       Pass
                     </button>
                     {why ? <div className="au-why">{why}</div> : null}
