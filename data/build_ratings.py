@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 68   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 69   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -75,12 +75,16 @@ per100= load("Per 100 Poss.csv")
 info  = {r['player_id']: r for r in load("Player Career Info.csv")}
 teamd = {}   # (season, abbrev) -> d_rtg
 lg3ar = defaultdict(list)   # season -> team 3PA rates (from the same dataset, no web needed)
+lgpace = defaultdict(list)  # season -> team pace, for recal_78's attempt counts
 for r in load("Team Summaries.csv"):
     try: teamd[(int(r['season']), r['abbreviation'])] = float(r['d_rtg'])
     except: pass
     try: lg3ar[int(r['season'])].append(float(r['x3p_ar']))
     except: pass
+    try: lgpace[int(r['season'])].append(float(r['pace']))
+    except: pass
 lg3ar = {yr: sum(v)/len(v) for yr, v in lg3ar.items() if v}
+lgpace = {yr: sum(v)/len(v) for yr, v in lgpace.items() if v}
 MODERN_3AR = sum(lg3ar[y] for y in range(2011, 2026) if y in lg3ar) / len([y for y in range(2011, 2026) if y in lg3ar])
 def era_mult(yr):
     base = lg3ar.get(yr)
@@ -417,10 +421,21 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     if use_factor:   # HIGH-VOLUME PREMIUM (stored attributes only, never inference targets)
         rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))
         mid = min(1.0, mid + 0.07*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
+        # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.
+        # These two floors pay 85% on ACCURACY and override the volume-first composite above them, and
+        # their only gate was a RATE (2.5 attempts per 100). recal_51 already wrote the objection, for
+        # the paint bonus: "attempts are a RATE — per hundred — so a 17-minute bench finisher can post
+        # a starter's attempt rate while carrying no load." The floors never got the same treatment, so
+        # a hot 88-shot midrange bought a 0.92-capped rating. The floor's LIFT is now scaled by the
+        # real attempt COUNT against the median full-season sample in that zone (mid 105, rim 174,
+        # measured over every card with mp >= 1200). A full sample keeps the floor exactly as before;
+        # a half sample gets half the lift. No cliff (r43), and nobody with a real sample moves.
+        _poss78 = (f(r.get('mp_v')) or 0.0) * lgpace.get(int(r['season']), 100.0) / 48.0
+        _lift = lambda base, floor, att, ref: base if floor <= base else base + (floor - base) * max(0.0, min(1.0, att / ref))
         if fgp is not None and share*fga100 >= 2.5 and creation_factor(sh) >= 0.73:
-            rim = max(rim, min(0.92, 0.85*P['rimfg'](fgp) + 0.15*P['rimvol'](share*fga100)))
+            rim = _lift(rim, min(0.92, 0.85*P['rimfg'](fgp) + 0.15*P['rimvol'](share*fga100)), share*fga100*_poss78/100.0, 174.0)
         if fmid is not None and s10*fga100 >= 2.5:
-            mid = max(mid, min(0.92, 0.85*P['midfg'](fmid) + 0.15*P['midvol'](s10*fga100)))
+            mid = _lift(mid, min(0.92, 0.85*P['midfg'](fmid) + 0.15*P['midvol'](s10*fga100)), s10*fga100*_poss78/100.0, 105.0)
     return rim, mid
 
 # build fit matrices

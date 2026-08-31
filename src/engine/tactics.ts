@@ -111,6 +111,7 @@ export const DEFAULT_TACTICS: Tactics = {
  * recal_67's DEF display deflation shrank the pool again (7447 -> 6798 at ovr>=55) and three bands
  * broke; hunt/crashOff/crashDef re-ratified through the harness: 3.50->3.65, .68->.42, .60->.44.
  * recal_72's is_big flips moved 51 OVRs and the pool again; hunt/crashDef re-ratified: 3.65->3.80, .44->.50.
+ * recal_78's deadeye load ramp moved 532 o_ovrs and the pool again; crashOff/crashDef re-ratified: .42->.30, .50->.40.
  */
 export const TAX = {
   scorer: 0.55,
@@ -119,8 +120,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.90,
   hunt: 3.8,
-  crashOff: 0.42,
-  crashDef: 0.5,
+  crashOff: 0.3,
+  crashDef: 0.4,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
