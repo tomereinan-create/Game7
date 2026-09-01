@@ -115,6 +115,8 @@ export const DEFAULT_TACTICS: Tactics = {
  * recal_76's teamd removal moved 3,463 d_ovrs and the pool again; playmaker re-ratified: .50->.57.
  * recal_79's ballsec reweight moved the ovr>=55 pool again; hunt re-ratified: 3.80->3.90.
  * recal_82's graded rimprot entry moved the pool again; hunt re-ratified: 3.70->3.74.
+ * recal_80's perimeter reweight + DEF display re-solve moved every d_ovr and the ovr>=55 pool with
+ * them; crashOff/crashDef re-ratified through the harness: .30->.55, .62->.95.
  */
 export const TAX = {
   scorer: 0.55,
@@ -123,8 +125,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.90,
   hunt: 3.74,
-  crashOff: 0.3,
-  crashDef: 0.62,
+  crashOff: 0.55,
+  crashDef: 0.95,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

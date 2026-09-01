@@ -180,7 +180,10 @@ describe('player data (stats-only doctrine)', () => {
     // the specialist bonus stopped taxing him for passing out of the double (playvol 56 in 2000), and
     // the bonus now scales with PAINT ATTEMPTS — he took 14 a hundred, the most in the pool — instead
     // of with usage. A 99 rim game on ft 52 keeps the whole free-throw gate as well.
-    near("Shaquille O'Neal '00", 98, 81)
+    // recal_80 RE-BASED THE D ANCHORS AGAIN, and the move is the round working as written: the DEF
+    // display pair was re-solved for scale neutrality (multiplier 1.03 -> 1.1305, DEF_TOP 98.67 ->
+    // 107.55), which lifts every card below the 93 knee — bigs included. Shaq '00 D 81 -> 88.
+    near("Shaquille O'Neal '00", 98, 88)
     // r42 lifted him: 75 -> 85. His ruling gates the specialist bonus on the free-throw stroke, and
     // Howard at ft 58 is the exact man it is for — a 98 rim game and no touch, so he keeps ALL of a
     // bonus that volume had already multiplied. The men with a stroke (Ewing 74, Moses 76) keep a
