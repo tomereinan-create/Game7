@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
-import { balance } from '../engine/tree'
+import { balance, canBuy, NODE, NODES } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
 import { Ask } from './Ask'
@@ -49,6 +49,8 @@ export function LevelMap({
   onStaff,
   onMyTeam,
   teamNote = null,
+  salary = false,
+  death = false,
   onReset,
 }: {
   title: string
@@ -63,12 +65,28 @@ export function LevelMap({
   onMyTeam?: () => void
   /** Death match only: a nudge pinned beside the next opponent — a change waiting, or a man worn out. */
   teamNote?: string | null
+  /** Which branches this mode actually sells — the staff notice must not point at a hidden one. */
+  salary?: boolean
+  death?: boolean
   onReset: () => void
 }) {
   const cur = currentLevel(progress)
   const total = totalStars(progress)
   const cleared = progress.stars.filter((s) => s > 0).length
   const bal = balance(progress)
+  /**
+   * HIS RULING: the staff notice shows only when there is genuinely something to spend on —
+   * "(if there is something available)". Not `bal > 0`: a star he cannot place anywhere buys
+   * nothing, so this asks the tree the real question. `canBuy` already folds in the price, the
+   * node not being maxed out, and its `requires` gate; the branch test on top of it keeps the
+   * notice off branches this mode does not sell, which are the ones the staff screen hides.
+   */
+  const spendable =
+    bal > 0 &&
+    NODES.some((n) => {
+      const b = NODE[n.id].branch
+      return (b === 'Salary' ? salary : b === 'Survival' ? death : true) && canBuy(progress, n.id)
+    })
   // recal_64: the NEXT ticket's dials percentile within the opponent's own season — computed for
   // that one node only (a whole map of season pools would be 47 pools for dials nobody sees).
   const nowGauge = useMemo(() => {
@@ -114,9 +132,11 @@ export function LevelMap({
           <div className="map-kicker">
             {cleared} of {ROUNDS} cleared
           </div>
-          <button className="map-link staff" onClick={onStaff}>
-            ★ {bal} to spend · Staff →
-          </button>
+          {spendable ? (
+            <button className="map-link staff" onClick={onStaff}>
+              ★ {bal} to spend · Staff →
+            </button>
+          ) : null}
           <button className="map-link" onClick={onTeam}>
             {teamName} · rename
           </button>
