@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 75
+PIPELINE_VERSION = 76
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -252,7 +252,15 @@ for cls in (True, False):
 KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 107.55
 # OVR's own band: knee 93, top set to the highest raw the blend actually produces so the best card
 # lands ON 99. The run prints the measured top, so drift away from the anchor is visible immediately.
-OVR_KNEE, OVR_TOP = 93.0, 96.50
+# recal_84 (HIS RULING, "Fix the OVR ceiling drift"): 96.50 -> 97.10, re-derived from the measured
+# pool exactly as this doctrine specifies. THE READING TAKEN: "the highest raw the blend actually
+# produces" is the value band_ovr CONSUMES — i.e. after the empty-volume tax and the breadth term,
+# before the band and the cap. That is the only reading that makes the constant do its job, since
+# its whole function is to map band_ovr's input onto 99. Measured top: LeBron James '10 at 97.1000.
+# LINEAGE: the drift arrived with recal_80's DEF display re-solve (multiplier 1.03 -> 1.1305), which
+# lifted every d_ovr below the 93 knee and so lifted the OVR blend that reads it — an OVR constant
+# moved for a defensive round's reason, which is why it went unnoticed until recal_83 printed it.
+OVR_KNEE, OVR_TOP = 93.0, 97.10
 def band_ovr(raw):
     return raw if raw <= OVR_KNEE else OVR_KNEE + (raw - OVR_KNEE) * (99.0 - OVR_KNEE) / (OVR_TOP - OVR_KNEE)
 _tops = []
