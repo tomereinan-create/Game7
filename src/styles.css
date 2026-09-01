@@ -2457,6 +2457,8 @@ button {
 
 /* the verdict is a rail; the stats and attributes are the body. Neither grows to fill the window. */
 .pc-body { flex: 0 1 auto; min-height: 0; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
+/* no rail (user mode): the main column takes the whole width */
+.pc-body.solo { grid-template-columns: minmax(0, 1fr); }
 .pc-rail { display: flex; flex-direction: column; gap: 5px; }
 .pc-big { border: 1px solid var(--line); background: var(--surface); padding: 5px 0 7px; text-align: center; }
 .pc-big.lead { border-color: var(--you-line); }

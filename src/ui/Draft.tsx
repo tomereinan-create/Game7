@@ -12,7 +12,6 @@ import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, type Assignment } from '../engine/offense'
-import { fieldGauges, seasonGauges } from '../engine/gauges'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -225,7 +224,6 @@ export function Draft({
    * Design 2e: the opponent folds into a scout bar. His ruling: it arrives OPEN — he
    * should not have to press to see who he is playing. The bar still closes it.
    */
-  const [scoutOpen, setScoutOpen] = useState(true)
   /** No team-season on the wheel can legally fill an open slot (salary rules). */
   const [dead, setDead] = useState(false)
   // The draft is the one screen that earns the full width of a desktop.
@@ -570,25 +568,9 @@ export function Draft({
 
       <div className="draft">
       <section className="col a">
-      <button className="scoutbar" onClick={() => setScoutOpen((v) => !v)}>
-        <span className="sc-l">
-          <i>Scout the opponent</i>
-          <b>
-            {opponent.team} {opponent.record ? <span>{opponent.record}</span> : null}
-          </b>
-        </span>
-        <span className="sc-r">
-          {user
-            ? scoutOpen
-              ? '▴'
-              : '▾'
-            : (() => {
-                const g = opponent.season ? seasonGauges(opponent.players, opponent.season) : fieldGauges(opponent.players)
-                return `OFF ${g.off} · DEF ${g.def} ${scoutOpen ? '▴' : '▾'}`
-              })()}
-        </span>
-      </button>
-      {scoutOpen ? (
+      {/* The scout bar is gone by his ruling: the panel below carries the team, the
+          record and the dials, so a header that only repeated them and offered a
+          collapse he never wanted was a lid on an always-open box. */}
       <div className="card" style={{ paddingBottom: 6 }}>
         <div className="card-head">
           <span className="label">
@@ -673,7 +655,6 @@ export function Draft({
           }),
         )}
       </div>
-      ) : null}
 
       </section>
 

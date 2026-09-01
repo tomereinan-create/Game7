@@ -111,7 +111,9 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
         <div className="pc-tag">{archetype(p)}</div>
       </div>
 
-      <div className="pc-body">
+      {/* User mode drops the rail, so the body must stop reserving its column —
+          otherwise the stat grid is squeezed into 100px and the line runs together. */}
+      <div className={`pc-body${user ? ' solo' : ''}`}>
         {/* the verdict, down the side */}
         {user ? null : (
         <div className="pc-rail">
