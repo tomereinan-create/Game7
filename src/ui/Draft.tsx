@@ -118,6 +118,7 @@ export function Draft({
   carry = null,
   wear = {},
   spinLeft = false,
+  death = false,
   tactics = null,
   onSim,
   onBack,
@@ -137,6 +138,13 @@ export function Draft({
   carry?: Player[] | null
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
   wear?: Record<string, number>
+  /**
+   * HIS RULING: durability is the death match's rule and nobody else's. A man in the regular or
+   * the Salary Cap campaign plays his series and the run does not carry him, so a DUR badge there
+   * is furniture. Gated on the MODE, not on whether a wear record happens to exist — an empty wear
+   * map is also what the first level of a death run looks like, and `carry` is null there too.
+   */
+  death?: boolean
   /** Death match: a My team change is still unspent — simming now deserves a second look. */
   spinLeft?: boolean
   /** Death match: the My team plan — the sim prices it, so the odds here must too. */
@@ -192,9 +200,15 @@ export function Draft({
    * only ever uses space the layout already had.
    */
   const [band, setBand] = useState<string | null>(null)
+  /**
+   * The rectangle the band lays into, when there is one. Null means this screen at this size has
+   * no free floor — a phone, a short window, or every column tall — and the panel goes inline
+   * under the man instead, so pressing a player always shows him. Named apart from this screen's
+   * own `slot`, which is a position.
+   */
+  const [floor, setFloor] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
   /** Where the band goes: the free columns and the room under them. Named apart from this
       screen's own `slot`, which is a position. */
-  const [floor, setFloor] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
   const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
@@ -405,7 +419,12 @@ export function Draft({
       if (to) move(d.from, to)
       setMoving(null)
     } else {
-      setMoving(moving === d.from ? null : d.from) // a press without movement = the tap
+      // A press without movement is the TAP — and the row drag synthesises it here rather than
+      // calling the row's own onTap, which is why pressing a man in his five showed nothing: the
+      // showMan wired onto those rows was never reached. The tap opens him in the band too.
+      setMoving(moving === d.from ? null : d.from)
+      const n = slots[d.from]
+      if (n) showMan(n)
     }
     setDrag(null)
   }
@@ -563,6 +582,7 @@ export function Draft({
           ▾
         </button>
       </div>
+      {band === p.name && !floor ? <ManBand p={p} inline /> : null}
       {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
     </div>
   )
@@ -751,7 +771,7 @@ export function Draft({
                 const priced = overCap(p.name)
                 return scoutRow(p, {
                   sub: `${unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name)} · ${archetype(p)}`,
-                  dur: left(p.name),
+                  dur: death ? left(p.name) : undefined,
                   on: sel === p.name,
                   dim: !fits.length || priced,
                   onTap: () => {
@@ -982,7 +1002,7 @@ export function Draft({
                       : x
                 } · ${archetype(p)}`,
                 // the number lives in the DUR badge now, so the sub can never truncate it away
-                dur: left(p.name),
+                dur: death ? left(p.name) : undefined,
                 worn: carried ? left(p.name) <= WEAR_OUT : false,
                 dim: carried ? left(p.name) <= WEAR_OUT : false,
                 onTap: () => {

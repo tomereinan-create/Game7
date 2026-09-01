@@ -140,6 +140,12 @@ export function MyTeam({
   const [band, setBand] = useState<string | null>(null)
   /** A tap on a man opens him in the band; the same man again closes it. */
   const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
+  /**
+   * The rectangle the band lays into, when there is one. Null means this screen at this size has
+   * no free floor — a phone, a short window, or every column tall — and the panel goes inline
+   * under the man instead, so pressing a player always shows him.
+   */
+  const [slot, setSlot] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const user = useUserMode()
   const timer = useRef<number | null>(null)
@@ -296,6 +302,7 @@ export function MyTeam({
           ▾
         </button>
       </div>
+      {band === p.name && !slot ? <ManBand p={p} inline /> : null}
       {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
     </div>
   )
@@ -384,7 +391,6 @@ export function MyTeam({
    * room is measured from the bottom of the boxes to the dock, so the band only ever occupies
    * space the layout already had — it cannot push a box, the dock, or the page.
    */
-  const [slot, setSlot] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
   const bandMan = band ? (five.find((p) => p.name === band) ?? roster.find((p) => p.name === band) ?? (bench?.name === band ? bench : null)) : null
   const [showAnyway, setShowAnyway] = useState(false)
   /** A change is in play: the wheel has turned, or a man is picked, resting or moving. */

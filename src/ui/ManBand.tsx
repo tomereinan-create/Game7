@@ -46,13 +46,26 @@ export function bandSlot(grid: HTMLElement, cols: HTMLElement[], floorY: number,
   }
 }
 
-export function ManBand({ p, at }: { p: Player | null; at: { top: number; left: number; width: number; height: number } }) {
-  const box = { position: 'absolute' as const, ...at }
-  if (!p) return <div className="manband" style={box} aria-hidden />
+export function ManBand({
+  p,
+  at,
+  inline,
+}: {
+  p: Player | null
+  at?: { top: number; left: number; width: number; height: number }
+  /**
+   * No rectangle to lay him in — a phone, a short window, or a screen whose columns are all tall.
+   * He asked for the BEHAVIOUR, not for a particular rectangle, so the panel drops in under the
+   * man he tapped instead of silently not appearing.
+   */
+  inline?: boolean
+}) {
+  const box = inline || !at ? undefined : { position: 'absolute' as const, ...at }
+  if (!p) return inline ? null : <div className="manband" style={box} aria-hidden />
   const tag = archetype(p)
   const line = LINES[p.name] ?? null
   return (
-    <div className="manband on" style={box}>
+    <div className={`manband on ${inline ? 'inline' : ''}`} style={box}>
       <div className="mb-who">
         <span className="label">{tag}</span>
         <p>{RULE[tag] ?? 'A tag from the tree.'}</p>
