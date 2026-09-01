@@ -59,7 +59,7 @@ describe('salary data', () => {
 })
 
 describe('death match — a run, not a map', () => {
-  it('a loss spends a life if there is one, and otherwise ends the run at the checkpoint', () => {
+  it('a loss spends a life if there is one, and otherwise resets the whole campaign', () => {
     const full = zeros().map(() => 3)
     // with a life in hand the run survives untouched
     const alive = die({ ...prog(full), lives: 2, roster: ['a', 'b', 'c', 'd', 'e'] })
@@ -67,15 +67,29 @@ describe('death match — a run, not a map', () => {
     expect(alive.roster).not.toBeNull()
     expect(alive.stars).toEqual(full)
     expect(alive.deaths).toBe(0)
-    // out of lives: the five is gone and everything past the checkpoint is wiped
-    const dead = die({ ...prog(full), lives: 0, checkpoint: 20, roster: ['a', 'b', 'c', 'd', 'e'] })
+    // out of lives: HIS RULING — everything resets. No stars, no tree, no five, no plan.
+    const spent: Progress = {
+      ...prog(full),
+      lives: 0,
+      checkpoint: 20,
+      spent: 9,
+      nodes: { coach_tactics: 3 },
+      roster: ['a', 'b', 'c', 'd', 'e'],
+      wear: { a: 12 },
+      tactics: { ...DEFAULT_TACTICS, style: 'postup' },
+    }
+    const dead = die(spent)
+    expect(dead.stars.every((s) => s === 0)).toBe(true) // the checkpoint spares nothing now
+    expect(dead.nodes).toEqual({})
+    expect(dead.spent).toBe(0)
+    expect(dead.checkpoint).toBe(0)
     expect(dead.roster).toBeNull()
+    expect(dead.wear).toEqual({})
+    expect(dead.tactics).toEqual(DEFAULT_TACTICS)
     expect(dead.deaths).toBe(1)
-    expect(dead.stars.slice(0, 20).every((s) => s === 3)).toBe(true)
-    expect(dead.stars.slice(20).every((s) => s === 0)).toBe(true)
-    // no checkpoint means back to the beginning, but the stars already earned stay spent-able
-    const scratch = die({ ...prog(full), lives: 0, checkpoint: 0, roster: ['a'] })
-    expect(scratch.stars.every((s) => s === 0)).toBe(true)
+    // who he is is not progress, so it survives
+    expect(dead.coach).toBe(spent.coach)
+    expect(dead.team).toBe(spent.team)
   })
 
   it('the Survival branch prices lives, checkpoints and substitutions', () => {

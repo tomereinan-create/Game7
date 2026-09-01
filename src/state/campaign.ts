@@ -99,19 +99,20 @@ const fresh = (): Progress => ({
 })
 
 /**
- * A death-match loss. An extra life absorbs it and the run continues; otherwise the run ends — every
- * level past the checkpoint is wiped, the five is gone, and the next draft starts over from there.
- * Stars already EARNED are kept: they were paid for in blood, and the tree is the only thing that
- * makes the next run different. `checkpoint` is bought in the Survival branch, so a fresh run loses
- * everything and a well-invested one loses the last stretch.
+ * A death-match loss. An extra life absorbs it and the run continues; otherwise THE RUN ENDS AND
+ * EVERYTHING RESETS — his ruling, in his words: "Make sure that when losing a campaign everything
+ * resets". It used to keep the stars earned before the checkpoint AND the whole staff tree, which is
+ * why a "new" run arrived with tactics he had never bought in it. Now a death returns a fresh
+ * campaign: no stars, no nodes, nothing spent, no five, no plan. Only who he is (coach, team) and
+ * the count of deaths survive, because neither is progress.
+ *
+ * Consequence, recorded rather than hidden: the Survival branch's CHECKPOINT node existed to save
+ * the stars past a death, and a death no longer spares any — so that node buys nothing under this
+ * rule. Extra lives still work; they are spent inside a run. Flagged for him.
  */
 export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
-  const stars = p.stars.map((s, i) => (i < p.checkpoint ? s : 0))
-  // His ruling: a new run starts on a blank plan. The old behaviour carried tempo, style and the
-  // glass across the death, so a fresh campaign arrived with a playstyle already lit that he had
-  // never chosen for it — indistinguishable from the game picking for him.
-  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null, deaths: p.deaths + 1 }
+  return { ...fresh(), coach: p.coach, team: p.team, deaths: p.deaths + 1 }
 }
 
 export function loadProgress(m: CampaignMode): Progress {
