@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 71   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 72   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -27,7 +27,15 @@ ERA_CAP   = 3.0   # multiplier ceiling
 WEIGHTS = dict(
   IN  = dict(x2p_per_100=0.40, x2p_pct=0.35, ftr=0.25),
   OUT = dict(x3pa_rate=0.65, x3p_pct=0.35),   # volume-first: taking them at league % IS the skill
-  ID  = dict(blk=0.55, height=0.25, dbpm=0.20),   # rim protection = shot DETERRENCE; rebounding has its own attribute (was triple-counted)
+  # recal_81 (HIS RULING, completing recal_76): DBPM is REMOVED from rim protection. recal_76 closed
+  # perdef's explicit team-defence door, but DBPM carries the BPM 2.0 team adjustment too, and
+  # d_score adds perdef and rimprot — so team defence still reached a big's defensive score through
+  # this vector at ~0.068 residual. Survivors renormalised over 0.80, proportions kept.
+  # THE PRICE, measured and stated: DBPM did carry real individual rim signal — corr with the tracked
+  # rim defended-FG% diff is -0.377 over 2,972 tracked cards. But both survivors predict that same
+  # truth BETTER (BLK% -0.615, height -0.531), and DBPM is +0.442 correlated with BLK% already, so
+  # roughly half of what leaves was duplicated by the block term. The loss is real and small.
+  ID  = dict(blk=0.6875, height=0.3125),   # rim protection = shot DETERRENCE; rebounding has its own attribute
   # recal_76 (HIS RULING, verbatim: "Remove team Def rating from per def"). Team defense was counted
   # TWICE: dbpm is Basketball-Reference's DBPM, and BPM 2.0's team adjustment bakes the roster's
   # defensive quality into it before any weighting, so an explicit team-DRtg term charged the same
@@ -175,7 +183,7 @@ def score_season(r, P):
             eye = min(0.95, 0.88*acc + 0.12*vol)   # season-level deadeye: near-pure accuracy, volume nudge
         GUN_BOOST = min(1.0, gun * 1.08)   # the gunner boost and the volume premium are alternatives
         OUT = max(gun, eye)   # two ways to be a shooter
-    ID  = W['ID']['blk']*P['blk'](r['blk']) + W['ID']['height']*P['ht'](r['ht']) + W['ID']['dbpm']*P['dbpm'](r['dbpm'])
+    ID  = W['ID']['blk']*P['blk'](r['blk']) + W['ID']['height']*P['ht'](r['ht'])   # recal_81: no dbpm term
     # reputation term: All-D/DPOY votes are the only recorded measure of pre-tracking perimeter D.
     # height splits the credit: small defenders' votes -> pd, big defenders' votes -> id (rim protectors get All-D too)
     hp = P['ht'](r['ht'])

@@ -121,9 +121,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,
-  hunt: 3.9,
+  hunt: 3.7,
   crashOff: 0.3,
-  crashDef: 0.4,
+  crashDef: 0.62,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
