@@ -2483,6 +2483,12 @@ button {
 .ct-spot.danger .ct-bust { border-color: var(--danger); background: var(--danger-tint); box-shadow: 0 0 0 1px var(--danger); }
 .ct-spot.danger i { color: var(--danger); font-weight: 700; }
 .ct-spot.dim { opacity: 0.38; }
+/* Dragging a man off his own ring. The carried spot reads lifted the way a lifted row does; the
+   target already had drop-ok / drop-no above. touch-action none so a drag on the floor is a drag
+   and not the page scrolling out from under his thumb. */
+.ct-spot.grab { touch-action: none; }
+.ct-spot.lifted { opacity: 0.45; }
+.ct-spot.lifted .ct-bust { border-style: dashed; }
 .ct-open .ct-bust { border-style: dashed; }
 .ct-open b { color: var(--faint); }
 .ct-mark { position: absolute; right: -4px; font-style: normal; text-decoration: none; font-family: var(--mono); font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em; padding: 1px 3px; border-radius: 999px; }

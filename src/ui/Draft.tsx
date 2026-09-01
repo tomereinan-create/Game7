@@ -914,8 +914,12 @@ export function Draft({
             ring wearing its position — the shape of the team he is building is visible from the
             first spin. No plan exists at the draft, so the balanced set, as on the scout court.
             Each spot publishes data-slot, which is all the existing drag hit-test needs to accept
-            a drop here; tapping a man opens his card, as every other court does. */}
+            a drop here; tapping a man opens his card, as every other court does.
+            His ruling adds the pick-up: a man can be dragged off his own ring onto another spot.
+            An EMPTY ghost ring is a legal destination too — it is the same gesture and it moves a
+            man into an open chair, which canMoveSlot already allows when the target is empty. */}
         <CourtFive
+          swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
           spots={POSITIONS.map((x) => {
             const n = slots[x]
             const p = n ? BY_NAME.get(n) : undefined

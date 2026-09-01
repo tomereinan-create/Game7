@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
+import { canMoveSlot, moveSlot, type Slots } from '../engine/slots'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
 import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
@@ -180,18 +181,32 @@ export function MyTeam({
 
   /** The five arrive in SLOT ORDER (PG to C) — the saved order is the assignment. */
   const assigned: Record<string, Pos> = Object.fromEntries(five.map((p, i) => [p.name, POSITIONS[i]]))
-  /** A hand switch is legal when each man fits the other's spot. */
+  /**
+   * A hand switch is legal when each man fits the other's spot — which is exactly what
+   * canMoveSlot says, so it says it. Tapping two men and dragging one onto the other now run the
+   * same rule out of engine/slots rather than two copies of it.
+   */
+  const asSlots = (): Slots => Object.fromEntries(five.map((p, i) => [POSITIONS[i], p.name]))
   const canSwitch = (a: string, b: string) => {
     const ia = five.findIndex((p) => p.name === a)
     const ib = five.findIndex((p) => p.name === b)
-    return ia >= 0 && ib >= 0 && posOf(a).includes(POSITIONS[ib]) && posOf(b).includes(POSITIONS[ia])
+    return ia >= 0 && ib >= 0 && canMoveSlot(asSlots(), posOf, POSITIONS[ia], POSITIONS[ib])
   }
   const doSwitch = (a: string, b: string) => {
-    const next = five.map((p) => p.name)
-    const ia = next.indexOf(a)
-    const ib = next.indexOf(b)
-    ;[next[ia], next[ib]] = [next[ib], next[ia]]
-    onReorder(next)
+    const ia = five.findIndex((p) => p.name === a)
+    const ib = five.findIndex((p) => p.name === b)
+    if (ia < 0 || ib < 0) return
+    const next = moveSlot(asSlots(), posOf, POSITIONS[ia], POSITIONS[ib])
+    onReorder(POSITIONS.map((x) => next[x]).filter((n): n is string => !!n))
+  }
+  /** The court's own gesture: slot to slot, same rule, same commit. */
+  const courtSwap = {
+    can: (from: string, to: string) => canMoveSlot(asSlots(), posOf, from as Pos, to as Pos),
+    commit: (from: string, to: string) => {
+      const next = moveSlot(asSlots(), posOf, from as Pos, to as Pos)
+      onReorder(POSITIONS.map((x) => next[x]).filter((n): n is string => !!n))
+      setMoving(null)
+    },
   }
 
   const taken = new Set([...five.map((p) => bare(p.name)), ...(bench ? [bare(bench.name)] : [])])
@@ -518,10 +533,13 @@ export function MyTeam({
               plan={plan}
               side={side}
               onSide={setSide}
+              swap={courtSwap}
               spots={five.map((p, i) => {
                 const o = floorOpts(p)
                 return {
                   p,
+                  // the slot is what the drag picks him up BY, and what data-slot publishes as a target
+                  slot: POSITIONS[i],
                   tag: o.worn ? `${POSITIONS[i]} · worn out` : `${POSITIONS[i]} · ${left(p.name)} left`,
                   danger: o.worn,
                   dim: !o.worn && o.blocked,
