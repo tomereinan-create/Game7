@@ -114,6 +114,21 @@ describe('death match — wear', () => {
     expect(wornOut({}, five, () => 5)).toEqual(five)
   })
 
+  // His ruling: a new run starts on a blank plan. The old behaviour carried tempo,
+  // style and the glass across the death, so a fresh campaign arrived with a
+  // playstyle already lit that he had never chosen for it.
+  it('a dead run resets the plan, not just the named men', () => {
+    const played: Progress = {
+      ...prog(zeros()),
+      lives: 0,
+      roster: ['a', 'b', 'c', 'd', 'e'],
+      tactics: { ...DEFAULT_TACTICS, style: 'postup', tempo: 'fast', crashOff: true, scorer: 'a' },
+    }
+    expect(die(played).tactics).toEqual(DEFAULT_TACTICS)
+    // a life spent is not a new run — the plan he is mid-way through survives
+    expect(die({ ...played, lives: 1 }).tactics.style).toBe('postup')
+  })
+
   it('a dead run forgets the wear along with the five', () => {
     const p = { ...prog(zeros()), roster: ['a'], wear: { a: 9 }, lives: 0 }
     expect(die(p).wear).toEqual({})

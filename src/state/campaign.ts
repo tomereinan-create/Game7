@@ -108,8 +108,10 @@ const fresh = (): Progress => ({
 export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
   const stars = p.stars.map((s, i) => (i < p.checkpoint ? s : 0))
-  // The five is gone, so the named men reset; the plan itself (tempo, style, the glass) survives.
-  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: reconcileTactics(p.tactics, null), bench: null, deaths: p.deaths + 1 }
+  // His ruling: a new run starts on a blank plan. The old behaviour carried tempo, style and the
+  // glass across the death, so a fresh campaign arrived with a playstyle already lit that he had
+  // never chosen for it — indistinguishable from the game picking for him.
+  return { ...p, stars, roster: null, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null, deaths: p.deaths + 1 }
 }
 
 export function loadProgress(m: CampaignMode): Progress {
