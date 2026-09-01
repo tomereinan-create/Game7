@@ -114,6 +114,7 @@ export const DEFAULT_TACTICS: Tactics = {
  * recal_78's deadeye load ramp moved 532 o_ovrs and the pool again; crashOff/crashDef re-ratified: .42->.30, .50->.40.
  * recal_76's teamd removal moved 3,463 d_ovrs and the pool again; playmaker re-ratified: .50->.57.
  * recal_79's ballsec reweight moved the ovr>=55 pool again; hunt re-ratified: 3.80->3.90.
+ * recal_82's graded rimprot entry moved the pool again; hunt re-ratified: 3.70->3.74.
  */
 export const TAX = {
   scorer: 0.55,
@@ -121,7 +122,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,
-  hunt: 3.7,
+  hunt: 3.74,
   crashOff: 0.3,
   crashDef: 0.62,
 }
