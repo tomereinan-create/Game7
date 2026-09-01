@@ -101,9 +101,14 @@ export const RULES: Rule[] = [
   { tag: 'Defensive playmaker', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.perdef, 80) && c.lt(c.zone, 55) },
   { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && c.ltH(c.h, 79) },
   { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.volume, 90) },
-  { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 88) },
+  // TRIPLE-DOUBLE THREAT — his ruling: the load floor drops to 60. Filling three columns is about
+  // doing all three, not about carrying a star's usage while you do it.
+  { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 60) },
   { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) },
-  { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) },
+  // FLOOR GENERAL — his ruling: the table-setter has to take care of the ball. A lead creator
+  // who coughs it up is a floor raiser or a scorer, not the man organising the offence. (">60"
+  // is written as >= 61; ballsec is an integer percentile.)
+  { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) && c.ge(c.a.ballsec, 61) },
   { tag: 'Floor raiser', test: (c) => c.ge(c.a.playvol, 90) && c.lt(c.a.efficiency, 45) && c.ge(c.a.volume, 85) },
   { tag: 'Two-way anchor', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
   { tag: 'Unicorn', test: (c) => c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
