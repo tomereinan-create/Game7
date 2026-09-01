@@ -392,6 +392,8 @@ export default function App() {
           onPlay={setLevel}
           onTeam={() => setPickTeam(true)}
           onStaff={() => setStaff(true)}
+          salary={capped}
+          death={death}
           onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
           teamNote={
             death && prog.roster
