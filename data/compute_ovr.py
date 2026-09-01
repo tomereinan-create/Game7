@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 76
+PIPELINE_VERSION = 77
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -250,19 +250,10 @@ for cls in (True, False):
 # ON 99. That also repairs a drift: after r76/r81/r82 nothing in the pool reached 99 at all (the top
 # was Ben Wallace '04 at 98). r60's REF_DRTG intercept underneath is NOT re-opened.
 KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 107.55
-# OVR's own band: knee 93, top set to the highest raw the blend actually produces so the best card
-# lands ON 99. The run prints the measured top, so drift away from the anchor is visible immediately.
-# recal_84 (HIS RULING, "Fix the OVR ceiling drift"): 96.50 -> 97.10, re-derived from the measured
-# pool exactly as this doctrine specifies. THE READING TAKEN: "the highest raw the blend actually
-# produces" is the value band_ovr CONSUMES — i.e. after the empty-volume tax and the breadth term,
-# before the band and the cap. That is the only reading that makes the constant do its job, since
-# its whole function is to map band_ovr's input onto 99. Measured top: LeBron James '10 at 97.1000.
-# LINEAGE: the drift arrived with recal_80's DEF display re-solve (multiplier 1.03 -> 1.1305), which
-# lifted every d_ovr below the 93 knee and so lifted the OVR blend that reads it — an OVR constant
-# moved for a defensive round's reason, which is why it went unnoticed until recal_83 printed it.
-OVR_KNEE, OVR_TOP = 93.0, 97.10
-def band_ovr(raw):
-    return raw if raw <= OVR_KNEE else OVR_KNEE + (raw - OVR_KNEE) * (99.0 - OVR_KNEE) / (OVR_TOP - OVR_KNEE)
+# OVR's own band is GONE (recal_85, his ruling "Kill the band too"). It ran knee 93 with
+# OVR_TOP re-derived to 97.10 by recal_84; both that constant and band_ovr() are now DEAD CODE and
+# are removed rather than left to rot. `_tops` survives as a diagnostic only: it now records the
+# pure blend, so the run still prints the top of the board and any future drift stays visible.
 _tops = []
 _otops = []   # measured OFF raws, so the band anchor can be re-derived after any weight change
 def band(raw, top):
@@ -279,49 +270,43 @@ for p in players:
     # OVR now includes the skill mix: BPM-based talent overpaid empty-calorie profiles
     # (assist collectors at bad efficiency read 83 while the engine punished them every possession)
 
-    a = p['attrs']
     # THE CORE (recal_40, replacing r37's). Marginal value stays OUT of OVR — a card is a statement
     # about the man, and what he is worth NEXT TO FOUR OTHERS belongs to the team engine and the draft.
-    # What is left is TWO READINGS of the same player, and he is given the better of them: the league
-    # values a defensive anchor and a lead scorer differently, so each is read on the scale that suits
-    # him and the higher answer stands. 40/60 is the defence-led reading, 70/30 the offence-led one.
-    # recal_83 (HIS RULING, verbatim: "OVR = bigger of ((OFF*0.7 + DEF*0.3), (OFF*0.4 + DEF* 0.6))").
-    # The defence-led branch was ALREADY exactly 0.4/0.6; only the offence-led one moves, 0.75/0.25
-    # -> 0.70/0.30. THE ALGEBRA: the branches cross exactly where o_ovr == d_ovr (0.7o+0.3d =
-    # 0.4o+0.6d reduces to 0.3o = 0.3d), so the rule is "0.7*hi + 0.3*lo" when offence is the
-    # stronger end and "0.6*hi + 0.4*lo" when defence is. Monotone in both inputs, and still tilted
-    # toward offence. Only men whose offence exceeds their defence move, and they move DOWN by
-    # exactly 0.05*(o_ovr - d_ovr).
+    # recal_83 (HIS RULING): "OVR = bigger of ((OFF*0.7 + DEF*0.3), (OFF*0.4 + DEF* 0.6))". The
+    # branches cross exactly where o_ovr == d_ovr, so it reads "0.7*hi + 0.3*lo" when offence is the
+    # stronger end and "0.6*hi + 0.4*lo" when defence is. Monotone in both inputs.
+    #
+    # recal_85 (HIS RULINGS, verbatim: "Kill breadth and the tax", then "Kill the band too").
+    # THE BLEND IS NOW THE WHOLE OF OVR. Three shaping terms are gone, and each is named here rather
+    # than deleted from the record:
+    #   - THE EMPTY-VOLUME TAX (recal_37/r40 era): subtracted up to 5 for heavy load at poor
+    #     efficiency. SUPERSEDED BY recal_85. It was the sole cause of every card printing BELOW its
+    #     weaker end — 192 of them.
+    #   - BREADTH + BREADTH FADE (recal_14, faded by recal_17): added up to +4 for a man who did five
+    #     or six things well, fading to nothing at raw 93. SUPERSEDED BY recal_85. With the tax it
+    #     accounted for the 142 cards printing ABOVE their better end, Embiid '26 among them.
+    #   - THE TOP-BAND RESCALE for OVR (the r37-era mirror of the dial bands): stretched everything
+    #     above a 93 knee onto 93-99 so the summit was reachable. SUPERSEDED BY recal_85 on his second
+    #     ruling. Measured first: with the tax and breadth gone it was the ONLY remaining cause of a
+    #     card printing above its better end, and it did so for exactly fourteen — LeBron '08-'13,
+    #     Giannis '19-'23, Jordan '89/'90/'91. He was shown that list and ruled it out.
+    # What survives is the blend, the offence cap below, and the 99 clamp. A card can therefore never
+    # print above its higher end nor below its lower one, which is the point: OFF, DEF and OVR read
+    # on one scale.
     raw = max(0.4 * p['o_ovr'] + 0.6 * p['d_ovr'], 0.70 * p['o_ovr'] + 0.30 * p['d_ovr'])
-    # EMPTY-VOLUME TAX: the negative side of the usage x efficiency signature - extreme load at
-    # mediocre efficiency costs OVR (capped at 5)
-    raw -= min(5.0, 0.06 * max(0, a['volume'] - 72) * max(0, 58 - a['efficiency']))   # threshold 72: real load, not just max load
-    # BREADTH (recal_14): a man who does five or six things well is worth more than the sum of his
-    # best two. Seven groups, one entry each so nothing is double-counted, with an escalator at six.
-    groups = [max(a['3pt'], a['rim'], a['mid']), a['playvol'], max(a['perdef'], a['rimprot']),
-              max(a['orb'], a['drb']), a['ballsec'], a['discipline'], a['fouldraw']]
-    solid = sum(1 for g in groups if g >= 65)
-    breadth = 4.0 if solid >= 6 else (2.0 if solid >= 5 else 0.0)
-    # BREADTH FADE (recal_17): completeness lifts role players and stars, and stops mattering at the
-    # summit — the 99 tier is for men who were the best at something, not the most well-rounded.
-    # Full value below raw 90, nothing from 93 up.
-    raw += breadth * max(0.0, min(1.0, (93 - raw) / 3))
     # recal 3: offense gates the ceiling (a defense-first perimeter player stops one man), but elite
-    # defense keeps a floor; an elite anchor is a defensive SYSTEM, so bigs are effectively exempt
+    # defense keeps a floor; an elite anchor is a defensive SYSTEM, so bigs are effectively exempt.
+    # It can only ever pull OVR DOWN toward the offence, never below the weaker end (cap >= o+10).
     cap = max(p['o_ovr'] + 10, 0.80 * p['d_ovr']) if not is_big(p) else p['o_ovr'] + 40
-    # TOP-BAND RESCALE for OVR, the mirror of the one on the dials. There the raw ran PAST the ceiling
-    # and the clamp ate the separation; here it stopped SHORT of it — even Jordan '91 landed at 96.6, so
-    # the top of the scale was unreachable. Below the knee nothing changes; above it the observed range
-    # is stretched onto 93-99, so the summit is occupied and the elite tier spreads out beneath it.
     _tops.append(raw)
-    p['ovr'] = int(min(99, cap, round(band_ovr(raw))))
+    p['ovr'] = int(min(99, cap, round(raw)))
     # the marginal survives as a CARD FIELD so the draft and team screens can still read it; it simply
     # no longer moves OVR. Kept on the 1-99 scale it was already expressed in.
     p['marg'] = int(round(p['_marg']))
     del p['_raw']; del p['_marg']
 json.dump(players, io.open(path, 'w', encoding='utf-8'), separators=(',', ':'))
 print(f"pipeline version {PIPELINE_VERSION}")
-print(f"OVR raw top {max(_tops):.2f} (band anchor {OVR_TOP}) — {sum(1 for t in _tops if t > OVR_TOP)} cards above the anchor")
+print(f"OVR blend top {max(_tops):.2f} — no band, no anchor: OVR is the blend, capped and clamped (recal_85)")
 print(f"OFF raw top {max(_otops):.2f} (band anchor {OFF_TOP}) — {sum(1 for t in _otops if t > OFF_TOP)} cards above the anchor")
 
 # VERDICT 1: the smoothed export IS the shared verification base. Written once per regeneration so the
