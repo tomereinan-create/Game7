@@ -454,6 +454,7 @@ export default function App() {
         carry={carry}
         wear={prog.wear}
         spinLeft={death && !!carry && subsPerRound(prog) - prog.subsUsed > 0}
+        death={death}
         tactics={death ? prog.tactics : null}
         onSim={sim}
         onBack={(started) => {
