@@ -1196,6 +1196,32 @@ button {
 /* no OVR cell on these rows, so the name keeps the 34px the draft's rows give it */
 .myteam .row.dr,
 .myteam .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
+/* THE MAN BAND — the archetype's own sentence and the man's season line, filling the empty floor
+   the boxes leave above the dock. The screen measures that gap and hands it down as a height, so
+   this can never push a box or the dock; empty, it is just black floor. Mounted only where the gap
+   exists, which on a phone it never does. */
+/* Absolutely positioned into the rectangle the screen measured, so it cannot displace a column,
+   lengthen the row or push the dock whatever it holds. */
+.myteam, .draft { position: relative; }
+/* the stat cells reflow to whatever width the free columns give them */
+.mb-grid { grid-template-columns: repeat(auto-fit, minmax(54px, 1fr)) !important; }
+.manband.on {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 18px;
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  overflow: hidden;
+}
+.manband .label { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.mb-who { min-width: 0; display: flex; flex-direction: column; }
+.mb-who .label { color: var(--you); }
+.mb-who p { margin: 6px 0 0; font-family: var(--serif); font-size: 15px; line-height: 1.45; color: var(--ink); }
+.mb-who i { margin-top: auto; padding-top: 8px; font-style: normal; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.mb-line { min-width: 0; display: flex; flex-direction: column; }
+.mb-grid { margin-top: 8px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 10px; }
+.mb-grid .bcell { display: grid; justify-items: start; gap: 1px; }
+.mb-grid .bcell i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--muted); }
+.mb-grid .bcell b { font-family: var(--serif); font-weight: 400; font-size: 17px; color: var(--ink); }
+.mb-none { margin: 8px 0 0; font-family: var(--mono); font-size: 10px; color: var(--faint); }
+
 /* THE LANDED ROSTER. His ruling: he should not scroll the page to reach the men he is choosing
    between. The card's head, team, season line and column rule stay put; only the list moves, in a
    box measured each render to stop above the dock. The fade is the affordance, and it clears when

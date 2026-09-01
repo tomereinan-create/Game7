@@ -80,7 +80,8 @@ export const GROUPS: { title: string; keys: { k: AttrKey; label: string; mark?: 
 export const SHEET: { k: AttrKey; label: string; mark?: boolean }[] = GROUPS.flatMap((g) => g.keys)
 
 /** The real season line, as a ruled ledger row. */
-const BOX: { label: string; k: keyof StatLine }[] = [
+/** The season box line. Exported so the man-band prints the same cells the detail panel does. */
+export const BOX: { label: string; k: keyof StatLine }[] = [
   { label: 'PTS', k: 'ppg' },
   { label: 'REB', k: 'rpg' },
   { label: 'AST', k: 'apg' },
