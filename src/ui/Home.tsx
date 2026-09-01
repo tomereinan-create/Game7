@@ -39,9 +39,22 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           <br />
           Best of seven against every team in the league.
         </p>
-        <button className="sortb" onClick={() => setUserMode(!user)} style={{ marginTop: 10 }}>
-          {user ? 'USER MODE — the numbers are hidden. Tap for scout mode' : 'SCOUT MODE — every number shows. Tap for user mode'}
-        </button>
+        {/* His ruling: two options, plainly. The old control was a single button whose label
+            carried both the state and the action ("USER MODE — ... Tap for scout mode"), so
+            which half you were reading was a guess. Now the choice is the shape on screen. */}
+        <div className="modepick">
+          <div className="mode-cap">How do you want to see the game?</div>
+          <div className="mode-row">
+            <button className={`mode-opt ${user ? 'on' : ''}`} onClick={() => setUserMode(true)} aria-pressed={user}>
+              <b>User mode</b>
+              <i>Play blind. No ratings, no database, no verdict on your calls.</i>
+            </button>
+            <button className={`mode-opt ${user ? '' : 'on'}`} onClick={() => setUserMode(false)} aria-pressed={!user}>
+              <b>Scout mode</b>
+              <i>Every number shows — ratings, the database, the fits and the odds.</i>
+            </button>
+          </div>
+        </div>
         <div className="rule2" style={{ margin: '22px 0 0' }} />
       </div>
 
