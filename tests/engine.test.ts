@@ -167,7 +167,11 @@ describe('player data (stats-only doctrine)', () => {
     // expected, on 854 shots. The floor exists precisely so percentile dilution cannot bury that.
     near("Stephen Curry '16", 99, 75)
     near("LeBron James '13", 95, 96)
-    near("Kawhi Leonard '17", 92, 99)
+    // recal_76 (his ruling, "Remove team Def rating from per def") RE-BASED THE DEFENSIVE ANCHORS of
+    // the elite-defender-on-an-elite-defense class: they lose the team-DRtg credit perdef was paying
+    // them a second time through DBPM. Kawhi '17 D 99 -> 92, Shaq '00 D 89 -> 81. Their rim and
+    // perimeter numbers are untouched; what left is the double-counted team term.
+    near("Kawhi Leonard '17", 92, 92)
     // The 91 was the spec anchor; he had drifted to 96 across the offense recals, and r55's BIG HUB
     // is the round that finally names the channel: a lifetime big running the offense (playvol 60+)
     // is paid for being its hub, and Giannis is exactly that shape. 98 on the card.
@@ -176,7 +180,7 @@ describe('player data (stats-only doctrine)', () => {
     // the specialist bonus stopped taxing him for passing out of the double (playvol 56 in 2000), and
     // the bonus now scales with PAINT ATTEMPTS — he took 14 a hundred, the most in the pool — instead
     // of with usage. A 99 rim game on ft 52 keeps the whole free-throw gate as well.
-    near("Shaquille O'Neal '00", 98, 89)
+    near("Shaquille O'Neal '00", 98, 81)
     // r42 lifted him: 75 -> 85. His ruling gates the specialist bonus on the free-throw stroke, and
     // Howard at ft 58 is the exact man it is for — a 98 rim game and no touch, so he keeps ALL of a
     // bonus that volume had already multiplied. The men with a stroke (Ewing 74, Moses 76) keep a

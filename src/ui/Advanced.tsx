@@ -124,7 +124,6 @@ const SECTIONS: Section[] = [
     rows: (_p, v) => [
       { label: 'defensive reputation (0–1)', value: n1(v[0]) },
       { label: 'DBPM', value: n1(v[1]) },
-      { label: 'team def. rating', value: n1(v[2]) },
       { label: 'height', value: ft(v[3]) },
       { label: 'voted-band weight', value: v[6] == null ? '—' : n1(v[6]) },
       { label: 'tracking defended FG% 6 ft +', value: v[5] == null ? 'not tracked' : `${v[5] > 0 ? '+' : ''}${(100 * v[5]).toFixed(1)}%` },

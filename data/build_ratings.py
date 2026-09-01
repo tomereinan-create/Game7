@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 69   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 70   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -28,7 +28,13 @@ WEIGHTS = dict(
   IN  = dict(x2p_per_100=0.40, x2p_pct=0.35, ftr=0.25),
   OUT = dict(x3pa_rate=0.65, x3p_pct=0.35),   # volume-first: taking them at league % IS the skill
   ID  = dict(blk=0.55, height=0.25, dbpm=0.20),   # rim protection = shot DETERRENCE; rebounding has its own attribute (was triple-counted)
-  PD  = dict(drep=0.366, dbpm=0.192, teamd=0.192, height_inv=0.25),   # recal_36: height to a quarter, the rest renormalised x0.75/0.86
+  # recal_76 (HIS RULING, verbatim: "Remove team Def rating from per def"). Team defense was counted
+  # TWICE: dbpm is Basketball-Reference's DBPM, and BPM 2.0's team adjustment bakes the roster's
+  # defensive quality into it before any weighting, so an explicit team-DRtg term charged the same
+  # fact again. Measured on our own pool: corr(team DRtg, DBPM) = -0.387, making the EFFECTIVE team
+  # weight ~0.22-0.27 against the 0.192 this vector claimed. Survivors renormalised over 0.808 with
+  # their proportions kept. Team context still arrives, through DBPM, and is not counted separately.
+  PD  = dict(drep=0.453, dbpm=0.238, height_inv=0.309),
   PD_SHRINK_NOVOTE = 0.70,   # no All-D/DPOY votes -> compress pd toward 0.5 by this factor
 )
 
@@ -173,7 +179,6 @@ def score_season(r, P):
     # reputation term: All-D/DPOY votes are the only recorded measure of pre-tracking perimeter D.
     # height splits the credit: small defenders' votes -> pd, big defenders' votes -> id (rim protectors get All-D too)
     hp = P['ht'](r['ht'])
-    tD = 1 - P['team_drtg'](r['team_drtg']) if r['team_drtg'] is not None else 0.5   # lower d_rtg = better
     trust = P['mp_v'](r['mp_v']) * (1 - 0.6*P['usg'](r['usg']))   # heavy minutes = trust; usage discounts but never zeroes it (star wings were being punished for scoring)
     # recal_35: height is a SWEET BAND (75-80 flat, 8 inches to zero), not an inverse slope.
     # recal_54: the tall-defender discount keys on the SWEET BAND, not percentile. Percentile height
@@ -181,7 +186,7 @@ def score_season(r, P):
     # and r53's voted ceiling on rimprot made it obsolete as rim-vote protection. 6'8" and under
     # keep the full 1.2; 7'1" is ~0.53; the floor is 0.5, so true bigs' rim-vote protection stands.
     rep_hf = max(0.5, 1.2 - 0.8 * max(0.0, min(1.0, ((r['ht'] or 78) - 80.0) / 6.0)))
-    PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['teamd']*tD + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
+    PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
     ID  = ID + 0.25*(r['drep']*hp)   # big-man defensive votes reinforce rim protection

@@ -112,10 +112,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * broke; hunt/crashOff/crashDef re-ratified through the harness: 3.50->3.65, .68->.42, .60->.44.
  * recal_72's is_big flips moved 51 OVRs and the pool again; hunt/crashDef re-ratified: 3.65->3.80, .44->.50.
  * recal_78's deadeye load ramp moved 532 o_ovrs and the pool again; crashOff/crashDef re-ratified: .42->.30, .50->.40.
+ * recal_76's teamd removal moved 3,463 d_ovrs and the pool again; playmaker re-ratified: .50->.57.
  */
 export const TAX = {
   scorer: 0.55,
-  playmaker: 0.5,
+  playmaker: 0.57,
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,

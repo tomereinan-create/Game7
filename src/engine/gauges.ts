@@ -32,9 +32,9 @@ import type { Player } from './types'
 const OFF_MIN = 103.38 // the all-time worst wheel five
 const OFF_MID = 123.54 // the all-time median five reads 50
 const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
-const DEF_WORST = 113.55 // the all-time worst defensive five
-const DEF_MID = 109.17 // the all-time median reads 50
-const DEF_TOP = 106.85 // Detroit Pistons '04 — the named DEF summit reads 99
+const DEF_WORST = 113.45 // the all-time worst defensive five
+const DEF_MID = 109.18 // the all-time median reads 50
+const DEF_TOP = 107.02 // Detroit Pistons '04 — the named DEF summit reads 99
 /** How many wheel fives froze the anchors (display only). */
 const ANCHOR_N = 1255
 
