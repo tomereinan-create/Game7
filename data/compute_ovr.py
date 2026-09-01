@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 74
+PIPELINE_VERSION = 75
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -276,8 +276,15 @@ for p in players:
     # about the man, and what he is worth NEXT TO FOUR OTHERS belongs to the team engine and the draft.
     # What is left is TWO READINGS of the same player, and he is given the better of them: the league
     # values a defensive anchor and a lead scorer differently, so each is read on the scale that suits
-    # him and the higher answer stands. 40/60 is the defence-led reading, 75/25 the offence-led one.
-    raw = max(0.4 * p['o_ovr'] + 0.6 * p['d_ovr'], 0.75 * p['o_ovr'] + 0.25 * p['d_ovr'])
+    # him and the higher answer stands. 40/60 is the defence-led reading, 70/30 the offence-led one.
+    # recal_83 (HIS RULING, verbatim: "OVR = bigger of ((OFF*0.7 + DEF*0.3), (OFF*0.4 + DEF* 0.6))").
+    # The defence-led branch was ALREADY exactly 0.4/0.6; only the offence-led one moves, 0.75/0.25
+    # -> 0.70/0.30. THE ALGEBRA: the branches cross exactly where o_ovr == d_ovr (0.7o+0.3d =
+    # 0.4o+0.6d reduces to 0.3o = 0.3d), so the rule is "0.7*hi + 0.3*lo" when offence is the
+    # stronger end and "0.6*hi + 0.4*lo" when defence is. Monotone in both inputs, and still tilted
+    # toward offence. Only men whose offence exceeds their defence move, and they move DOWN by
+    # exactly 0.05*(o_ovr - d_ovr).
+    raw = max(0.4 * p['o_ovr'] + 0.6 * p['d_ovr'], 0.70 * p['o_ovr'] + 0.30 * p['d_ovr'])
     # EMPTY-VOLUME TAX: the negative side of the usage x efficiency signature - extreme load at
     # mediocre efficiency costs OVR (capped at 5)
     raw -= min(5.0, 0.06 * max(0, a['volume'] - 72) * max(0, 58 - a['efficiency']))   # threshold 72: real load, not just max load
