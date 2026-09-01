@@ -128,7 +128,10 @@ export const RULES: Rule[] = [
   // and secondary rather than absent. Closed at BOTH ends on purpose: above 95 defence he is an
   // anchor or an elite defender and keeps that name, and above 77 offence he is a two-way star.
   { tag: 'Two-way big', test: (c) => c.big && c.ge(c.p.d_ovr, 85) && c.lt(c.p.d_ovr, 96) && c.ge(c.p.o_ovr, 60) && c.lt(c.p.o_ovr, 78) },
-  { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 55) },
+  // THREE REAL LEVELS — his ruling: the arc floor rises to 65, level with the other
+  // two. A man is not a three-level scorer on a 59 from range; that is two levels
+  // and a jumper you can go under.
+  { tag: 'Three-level scorer', test: (c) => c.ge(c.a.volume, 80) && c.ge(c.a.efficiency, 75) && c.ge(c.paint, 65) && c.ge(c.mid, 65) && c.ge(c.three, 65) },
   { tag: 'Midrange maestro', test: (c) => c.ge(c.mid, 85) && c.lt(c.three, 40) && c.ge(c.a.volume, 90) },
   { tag: 'Slasher', test: (c) => c.ltH(c.h, BIG_HT) && c.ge(c.paint, 80) && c.ge(c.a.fouldraw, 85) && c.lt(c.three, 45) },
   { tag: 'Paint beast', test: (c) => c.ge(c.paint, 90) && c.ge(c.a.volume, 90) && c.lt(c.three, 25) && c.geH(c.h, 81) },
