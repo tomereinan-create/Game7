@@ -30,7 +30,7 @@ import type { Player } from './types'
 // after recal_74's ORB-scale halving lowered the league level — GSW '17 rose to all-time rank 3
 // and still reads 99 exactly; the DEF distribution did not move):
 const OFF_MIN = 103.38 // the all-time worst wheel five
-const OFF_MID = 123.54 // the all-time median five reads 50
+const OFF_MID = 123.53 // the all-time median five reads 50
 const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
 const DEF_WORST = 113.45 // the all-time worst defensive five
 const DEF_MID = 109.18 // the all-time median reads 50

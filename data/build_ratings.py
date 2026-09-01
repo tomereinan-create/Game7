@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 70   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 71   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -570,7 +570,9 @@ for yr in sorted(rows_by):
     # recal_28 volume, recal_34 ballsec v4: the two percentiles the sheet now needs
     _vol = lambda rr: (rr.get('usg') or 20) * (1 - (rr.get('tov_pct') or 13) / 100.0)
     Pvol = pctile([_vol(rr) for rr in rows])
-    _bsec = lambda rr: (rr.get('tov_pct') or 13) * 25.0 / max(10.0, (rr.get('usg') or 20) + 0.5 * (rr.get('ast') or 15))
+    # recal_79 (design-side "71") part 1: an assist that produces a made shot ENDS the possession, so
+    # it counts as more than half of one in the responsibility denominator. 0.5 -> 0.8 ast.
+    _bsec = lambda rr: (rr.get('tov_pct') or 13) * 25.0 / max(10.0, (rr.get('usg') or 20) + 0.8 * (rr.get('ast') or 15))
     Padj = pctile([_bsec(rr) for rr in rows])
     hts = sorted([x['ht'] or 78 for x in rows])
     ht_t33, ht_t67 = hts[int(0.33*len(hts))], hts[int(0.67*len(hts))]
@@ -592,6 +594,12 @@ for yr in sorted(rows_by):
         a,t = f(s100.get('ast_per_100_poss')), f(s100.get('tov_per_100_poss'))
         if a and t: ast_tov = a/t
         sc = lambda x: round(1+98*max(0,min(1,x)))
+        # recal_79 credit ramp, HIS AMENDMENT: the floor is 2.0, not the round's 1.5, and full credit
+        # still lands at 4.0 — so the span is 2.0. The round's own negative control, Westbrook '17,
+        # sits at AST/TOV 1.91 and therefore took credit 0.16 under the 1.5 floor and breached the
+        # round's <=2 red line; at 2.0 he takes ZERO and the r56 class is protected as intended.
+        _credit = 0.0 if ast_tov is None else max(0.0, min(1.0, (ast_tov - 2.0) / 2.0))
+        _wraw = 0.45 - 0.20 * _credit
         p['attrs'] = dict(
             # mid hardened globally (^1.15): the top barely moves, the 60-85 band compresses a few points
             **{'3pt': sc((p['out']/99)**1.12)}, rim=sc(ex['rim']),
@@ -601,7 +609,10 @@ for yr in sorted(rows_by):
             fouldraw=sc(P['ftr'](r['ftr'])),
             orb=sc(Pk['orb'](f(s100.get('orb_per_100_poss')))**1.15), drb=sc(Pa['drb'](r['drb'])**1.15),
             playvol=sc(0.6*Pa['ast'](r['ast'])**1.12 + 0.4*max(0.0, min(1.0, (r['ast'] or 15)/44.0))),
-            ballsec=sc(1 - (0.55*Padj(_bsec(r)) + 0.45*Pa['tov_pct'](r.get('tov_pct')))),   # recal_56: the raw side louder (was 0.65/0.35) — near-3-a-night no longer hides in a big denominator
+            # recal_79 part 2: the RAW side (r56's 0.45) is blind to assists — a passer's turnovers were
+            # charged exactly like a ball-stopper's. Its weight now shrinks for genuinely efficient
+            # passers ONLY, keyed on AST/TOV and not on passing VOLUME, so r56's class does not move.
+            ballsec=sc(1 - ((1 - _wraw) * Padj(_bsec(r)) + _wraw * Pa['tov_pct'](r.get('tov_pct')))),
             # efficiency hardened globally (^1.30): the median reads ~40, elite stays elite
             volume=sc(Pvol(_vol(r))**1.15),
             efficiency=sc(0.5*Pa['ts'](r['ts'])**1.05 + 0.5*(0.5 + ((r['ts'] or lg_ts.get(yr, 0.545)) - lg_ts.get(yr, 0.545))*6)),
