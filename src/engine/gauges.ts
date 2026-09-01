@@ -30,10 +30,10 @@ import type { Player } from './types'
 // after recal_74's ORB-scale halving lowered the league level — GSW '17 rose to all-time rank 3
 // and still reads 99 exactly; the DEF distribution did not move):
 const OFF_MIN = 104.36 // the all-time worst wheel five
-const OFF_MID = 123.27 // the all-time median five reads 50
+const OFF_MID = 123.32 // the all-time median five reads 50
 const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
 const DEF_WORST = 112.87 // the all-time worst defensive five
-const DEF_MID = 109.16 // the all-time median reads 50
+const DEF_MID = 109.14 // the all-time median reads 50
 const DEF_TOP = 107.03 // Detroit Pistons '04 — the named DEF summit reads 99
 /** How many wheel fives froze the anchors (display only). */
 const ANCHOR_N = 1255

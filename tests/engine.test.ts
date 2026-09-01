@@ -124,7 +124,11 @@ describe('player data (stats-only doctrine)', () => {
     // (0.65/0.35 -> 0.55/0.45) and Curry's 3.3-a-night eases him 74 -> 69, OVR 93 -> 92. Both
     // moves are the ball-security rounds doing to Curry exactly what they say they do.
     const curry = PLAYERS.find((p) => p.name === "Stephen Curry '16")!
-    expect(curry.ovr).toBeGreaterThanOrEqual(92)
+    // recal_83 MOVED THIS PIN, and the move is his ruling working as written: OVR's offence-led
+    // branch went 0.75/0.25 -> 0.70/0.30, so every man whose offence exceeds his defence loses
+    // exactly 0.05*(o_ovr - d_ovr). Curry '16 is O 95 / D 73, so he gives back 1.1 raw and prints
+    // 91 instead of 92. The defence-led branch was already 0.4/0.6 and did not move.
+    expect(curry.ovr).toBeGreaterThanOrEqual(91)
     expect(curry.o_ovr).toBeGreaterThanOrEqual(95)
     // recal_67 MOVED THIS PIN, and the move is the round working as written: the DEF display
     // multiplier deflated 1.10 -> 1.03 (the fossil that floated every defender ~7 over his own
