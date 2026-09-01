@@ -121,6 +121,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * the ovr>=55 pool with them; hunt/crashDef re-ratified: 3.74->3.60, .72->.46. Every other tax
  * held its band untouched. The law was applied as written: the bands broke, the taxes moved to
  * meet them, and NOTHING in the OVR chain was touched to hold a band up.
+ * recal_86's absolute tracked perdef moved 1,823 perdefs and 1,017 OVRs, and with them the ovr>=55
+ * pool again; hunt re-ratified 3.60 -> 3.72 (its BLIND penalty had gone too shallow at -0.25, the
+ * opposite failure from r85's — the tax went UP this time, not down). All nine in band. RECORDED:
+ * crash def glass now sits EXACTLY on the band edge at random -0.30. It passes, and it was not
+ * touched — moving a constant that is inside its band would be tuning for taste, not for the law.
  */
 export const TAX = {
   scorer: 0.55,
@@ -128,7 +133,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,
-  hunt: 3.60,
+  hunt: 3.72,
   crashOff: 0.42,
   crashDef: 0.46,
 }

@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 77   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 78   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -301,6 +301,19 @@ for yr, rows in seasons.items():
     # defence IS — but every shot he contested is evidence, so the Overall series corroborates at 0.30.
     ALLSHOT_W = 0.30
     Pall = _pct_for('Overall')
+    # recal_86 (design-side round "74"; their numbering collides with ours). THE TRACKED BRANCH
+    # BECOMES ABSOLUTE. It used to read 1 - percentile(diff), so the value centred wherever the
+    # tracked pool happened to sit that season and drifted as the pool changed shape. A percentile
+    # RANKS; it does not MEAN. This line anchors the tracked reading on the diff itself, in card
+    # space, so 0.0 -> 58 reads "allowed exactly what was expected" in every season ever tracked.
+    # Reading of the line: +0.8 -> 54.0 · 0.0 -> 58 · -1.0 -> 63 · -2.0 -> 68 · -3.5 -> 75.5, which
+    # sits just under the r16/r20/r55 absolute floor ladder (-1.0 -> 64, -2.0 -> 70, -3.5 -> 76)
+    # rather than fighting it: the floors still bind for the men who earn them, by 1 to 0.5 points.
+    # Same doctrine that made those floors absolute, and the same as the value-anchored efficiency
+    # and playvol rounds. Diff arrives as a FRACTION here and the line is written in percentage
+    # points, hence the x100.
+    def _abs_perdef(diff):
+        return min(84.0, max(25.0, 58.0 - 5.0 * (100.0 * diff)))
     _atts = sorted(a for _d, a in TRACKING.get((yr, PERDEF_CAT), {}).values() if a)
     TGT_MED = _atts[len(_atts) // 2] if _atts else None
     FULL_SAMPLE = 350.0
@@ -354,17 +367,26 @@ for yr, rows in seasons.items():
         # makes 0.28 + 0.60 x P less than the cap he already had, so gamblers move zero.
         if yr < 2014 and r['drep'] <= 0.05:
             novote = max(novote, min(0.80, 0.28 + 0.60 * P['dbpm'](r['dbpm'])))
-        if Pperim is not None:
+        if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])
             if dv is not None:
-                d_meas = 1 - Pperim(dv)                                        # a lower defended-FG% diff is a better defender
+                # recal_86: 1 - Pperim(dv) (a within-season percentile) -> the absolute card line.
+                d_card = _abs_perdef(dv)                                       # a lower defended-FG% diff is a better defender
                 # the rest of his workload, blended in. If he has one series and not the other, the
                 # one that exists carries the term alone rather than pulling him toward the middle.
+                # recal_86 PRESERVES this 0.30 corroboration and maps it through the SAME absolute
+                # line. The round's replacement formula reads diff_6plus ALONE, which would delete
+                # HIS OWN RULING ("all shots carry weight") as a side effect of a scaling change no
+                # part of the round argues for. An owner ruling outranks a design round, so the
+                # corroboration stays and is made absolute alongside the series it corroborates —
+                # which is the round's actual doctrine. The verbatim single-series variant was
+                # measured too; receipt 86 carries both so it is one line to flip on a ruling.
                 dv_all = _trk('Overall', r['name'])
-                if Pall is not None and dv_all is not None:
-                    d_meas = (1 - ALLSHOT_W) * d_meas + ALLSHOT_W * (1 - Pall(dv_all))
+                if dv_all is not None:
+                    d_card = (1 - ALLSHOT_W) * d_card + ALLSHOT_W * _abs_perdef(dv_all)
+                d_meas = (d_card - 1.0) / 98.0                                 # card space -> the 0..1 space this branch works in
                 wm = 0.70 * _targeting_weight(r['name']) * _sample_weight(r['name'])   # hunted men, and thin samples, lean back on the composite
-                novote = min(0.84, (1 - wm)*novote + wm*(0.17 + 0.67*d_meas))
+                novote = min(0.84, (1 - wm)*novote + wm*d_meas)
         PD2 = (1 - wv) * novote + wv * (0.55 + 0.44 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)

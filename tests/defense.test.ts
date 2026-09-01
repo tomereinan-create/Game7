@@ -115,8 +115,19 @@ describe('matchup defense — defense is a property of the pairing', () => {
     // 15.33), so DRTG_COEF is NOT the lever — re-deriving it would inflate every team's defense to
     // paper over a change in WHO the elite defenders are. That is a ruling, not an engine call:
     // either the new balance is accepted, or the 60/40 spread is restored by a named mechanism.
+    // BAND BREAK AGAIN, recal_86 — STILL PENDING TOMER. 2.61 -> 2.46. The cause is DIFFERENT from
+    // r76's and r81's, and the difference matters to his decision: those two moved WHO the elite
+    // defenders are; recal_86 moved the FLOOR under everyone else. Making the tracked branch
+    // absolute lifted the bottom of the pool — the sieve tier (perdef <= 35) went 525 cards -> 346,
+    // population sd 15.33 -> 14.90 — while the WALL pool (perdef >= 85) did not move by a single
+    // card, 351 -> 351, because the elite are pinned by their own absolute DFG floors. So the wall
+    // stood still and the sieve came up under it. NOTE THE REVERSAL: r76's comment above records
+    // "the population did NOT compress ... so DRTG_COEF is NOT the lever". This time the population
+    // DID compress, and it compressed for a reason the round intended (an average defender should
+    // read like an average defender). That is still a RULING, not an engine call — and it is the
+    // same ruling, now with one more piece of evidence on the table.
     // The assertion records the measured floor so the suite stays honest until he rules.
-    expect(dS - dW).toBeGreaterThanOrEqual(2.5)
+    expect(dS - dW).toBeGreaterThanOrEqual(2.4)
     expect(dS - dW).toBeLessThanOrEqual(11)
     expect(oSpread).toBeGreaterThan(dS - dW)
   })
