@@ -349,6 +349,14 @@ export function MyTeam({
    */
   const menBox = useRef<HTMLElement | null>(null)
   const floorBox = useRef<HTMLElement | null>(null)
+  /** The wheel's box, and the men inside it that scroll rather than pushing the page down. */
+  const wheelBox = useRef<HTMLElement | null>(null)
+  const rosterList = useRef<HTMLDivElement | null>(null)
+  const [rosterEnd, setRosterEnd] = useState(false)
+  const onRosterScroll = () => {
+    const el = rosterList.current
+    if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
+  }
   const [tight, setTight] = useState(false)
   const [showAnyway, setShowAnyway] = useState(false)
   /** A change is in play: the wheel has turned, or a man is picked, resting or moving. */
@@ -362,6 +370,31 @@ export function MyTeam({
     const dock = document.querySelector<HTMLElement>('.dock')
     const avail = window.innerHeight - top - (dock?.offsetHeight ?? 0)
     // stacked, the two heights add; side by side, the taller one governs
+    // The landed roster gets whatever is left between the top of the list and the dock, so the
+    // page never scrolls no matter how long the team is. Floor of 3 rows: below that, scroll it.
+    const list = rosterList.current
+    // Stacked on a phone the page scrolls whatever we do — four boxes never fit 812px — so the
+    // list runs its full length there rather than trapping him in a scroll inside a scroll, which
+    // is miserable with a thumb. The ordering is what saves him on that width: the wheel's men sit
+    // directly under his five. The cap is for the side-by-side layout, where the page CAN fit.
+    if (list && stacked) {
+      // overflow off too, not just the cap: a couple of rounding pixels are enough to make the box
+      // scrollable, and a 4px nested scroller eats the thumb swipe meant for the page.
+      list.style.maxHeight = ''
+      list.style.overflowY = 'visible'
+    }
+    if (list && !stacked) {
+      list.style.overflowY = 'auto'
+      // What trails the list inside its card (the card's own bottom padding) has to come out of
+      // the budget too, or the card clears the dock by exactly that much and the page scrolls.
+      const card = wheelBox.current?.querySelector('.card')
+      const lb = list.getBoundingClientRect()
+      const trail = card ? Math.max(0, card.getBoundingClientRect().bottom - lb.bottom) : 0
+      const room = window.innerHeight - lb.top - (dock?.offsetHeight ?? 0) - trail - 8
+      list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
+      setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
+    }
+    if (list && stacked) setRosterEnd(true)
     const need = stacked ? a.offsetHeight + b.offsetHeight : Math.max(a.offsetHeight, b.offsetHeight)
     // The latch only opens on a real viewport change. Dropping the plan reflows the very columns
     // this measured, so letting content alone clear it would flip the panel on and off forever.
@@ -406,7 +439,9 @@ export function MyTeam({
         <button onClick={onBack}>← Map</button>
       </div>
       <div className="ladder" />
-      <div className={`myteam ${dropTactics ? 'plan-hidden' : ''}`} style={{ paddingTop: 8 }}>
+      {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the
+          wheel is already in it, so the grid stays three across. */}
+      <div className={`myteam ${dropTactics && !display ? 'plan-hidden' : ''}`} style={{ paddingTop: 8 }}>
         {/* BOX ONE — the men. His ruling put the stats and the durability on the left, and the
             court no longer stands above them: these five rows are the first thing on the screen
             at every width, so a change never asks him to scroll to see who he is deciding about. */}
@@ -512,8 +547,11 @@ export function MyTeam({
             ) : null}
           </div>
         </section>
-        {/* BOX THREE — the plan, and the wheel when it turns. The plan is the one box his ruling
-            lets go when the men and the floor cannot both be seen; the wheel never goes with it. */}
+        {/* BOX THREE — the plan while he is planning, the landed roster while he is swapping.
+            His ruling: mid-swap the two lists he chooses between are his five and the wheel's men,
+            so the wheel takes this box outright rather than growing underneath the plan in the
+            narrowest column on the screen. */}
+        {!display ? (
         <section className="col c">
           {dropTactics ? (
             <div className="card" style={{ paddingBottom: 4 }}>
@@ -671,7 +709,10 @@ export function MyTeam({
             })()}
           </div>
           )}
-          {display ? (
+        </section>
+        ) : null}
+        {display ? (
+          <section className="col c wheel" ref={wheelBox}>
             <div className={`card ${spinning ? 'spin-live' : ''}`}>
               <div className="card-head">
                 <span className="label">{spinning ? 'The wheel is spinning' : 'It lands on'}</span>
@@ -688,6 +729,10 @@ export function MyTeam({
                     <span className="gcap">PTS · REB · AST</span>
                     <span />
                   </div>
+                  {/* The head and the column rule stay put; only the men scroll, in a box measured
+                      to stop above the dock. An edge fade says there is more below. */}
+                  <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
+                  <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
                   {roster.map((p) => {
                     const outsFor = replaceable(p.name)
                     return row(p, {
@@ -702,11 +747,13 @@ export function MyTeam({
                       },
                     })
                   })}
+                  </div>
+                  </div>
                 </>
               ) : null}
             </div>
-          ) : null}
-        </section>
+          </section>
+        ) : null}
       </div>
       <div className="dock">
         <div className="dock-inner">

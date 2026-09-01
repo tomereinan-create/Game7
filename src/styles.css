@@ -1184,11 +1184,29 @@ button {
 /* no OVR cell on these rows, so the name keeps the 34px the draft's rows give it */
 .myteam .row.dr,
 .myteam .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
+/* THE LANDED ROSTER. His ruling: he should not scroll the page to reach the men he is choosing
+   between. The card's head, team, season line and column rule stay put; only the list moves, in a
+   box measured each render to stop above the dock. The fade is the affordance, and it clears when
+   the list is at its end. Mid-swap the wheel takes the third box outright, so the roster reads at
+   a full column's width instead of growing down the narrowest one. */
+.spin-wrap { position: relative; }
+.spin-roster { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.spin-wrap::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--surface));
+  opacity: 1; transition: opacity 0.15s ease;
+}
+.spin-wrap.at-end::after { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .spin-wrap::after { transition: none; } }
 /* HIS RULING: the men lead the stack at every width. He must never scroll to reach the five
    he is deciding between, so the roster box is first on a phone and leftmost on a desk. */
 .myteam .col.a { order: 1; }
-.myteam .col.b { order: 2; }
-.myteam .col.c { order: 3; }
+.myteam .col.b { order: 3; }
+.myteam .col.c { order: 4; }
+/* The wheel's box follows his five on a phone — the two lists of the swap, adjacent, so he never
+   scrolls past the court to reach the men coming in. Must follow .col.c in the cascade: the
+   section carries both classes and they are equally specific. */
+.myteam .col.wheel { order: 2; }
 @media (min-width: 900px) {
   .myteam {
     display: grid;
@@ -1196,6 +1214,10 @@ button {
     gap: 18px;
     align-items: start;
   }
+  /* on a desk it simply takes the third box, where the plan was */
+  .myteam .col.b { order: 2; }
+  .myteam .col.c { order: 3; }
+  .myteam .col.wheel { order: 3; }
   /* the plan stepped aside: the two that must be seen take the width it was using */
   .myteam.plan-hidden {
     grid-template-columns: repeat(2, minmax(0, 1fr));
