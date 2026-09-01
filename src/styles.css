@@ -1922,6 +1922,15 @@ button {
 .map-total i { font-style: normal; font-size: 18px; color: var(--muted); }
 .map-total .star { font-size: 28px; }
 .map-side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+/* At 375 the header is at capacity: the level line takes 180 of the 347 available and TEL AVIV
+   LIONS · RENAME wants 158 of the rest. A 12px gutter left his real team name overflowing by a
+   third of a pixel — close enough that a late-loading webfont would tip it into an ellipsis. The
+   gutter gives up 4px on a phone; the desktop header is untouched. */
+@media (max-width: 899px) { .map-head { gap: 8px; } }
+/* The right column must be allowed to shrink or the name cannot truncate: a flex item defaults to
+   min-width auto, so a long team name just widened the column to 246px and squeezed the level line
+   instead of ellipsing. */
+.map-side { flex: 1 1 auto; min-width: 0; }
 .map-link { background: none; border: 0; padding: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--you); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .map-link.danger { color: var(--danger); }
 .trail { position: relative; margin: 4px 0 10px; }
@@ -2086,6 +2095,20 @@ button {
 .map-link.staff .g { margin-right: 3px; }
 .map-link.staff .d { margin: 0 3px; }
 .map-link.staff .a { margin-left: 4px; }
+/* THE TEAM LINE. One line at 375px whatever he calls the team: the name is the part that gives,
+   RENAME is the part he taps and never shrinks. Same mono caps, same weight, same colour — the
+   type is not reduced, the name is simply cut. The separator loses its two mono spaces the way
+   the staff notice did, so truncation only begins when it genuinely must. */
+/* width:0 + min-width:100% takes the team line OUT of the column's intrinsic width and then
+   stretches it to whatever the column settled on. Without it the button's own max-content sets the
+   column width, so the name can never be too wide for its container and never truncates — and a
+   long one pushes the level line off instead. The column is now sized by the notices beside it. */
+.map-link.team { display: flex; align-items: baseline; justify-content: flex-end; width: 0; min-width: 100%; }
+.map-link.team .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* the tightest line in the header, so the dot is spaced a touch closer than the staff notice's
+   and drops the trailing letter-space it does not need between two margins */
+.map-link.team i { font-style: normal; flex: none; margin: 0 2px; letter-spacing: 0; }
+.map-link.team .rn { flex: none; white-space: nowrap; }
 .map-total.small { font-size: 26px; color: var(--muted); }
 .naive-note { font-family: var(--serif); font-style: italic; font-size: 12.5px; color: var(--danger); line-height: 1.4; padding: 6px 0 8px; }
 .naive-note b { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
