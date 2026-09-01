@@ -141,8 +141,13 @@ export function LevelMap({
               {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
             </button>
           ) : null}
-          <button className="map-link" onClick={onTeam}>
-            {teamName} · rename
+          {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
+              truncates, so the name takes the flexible width and the ellipsis. The separator is
+              spaced by margin here too, which buys back ~15px before truncation can start. */}
+          <button className="map-link team" onClick={onTeam}>
+            <span className="nm">{teamName}</span>
+            <i className="d">·</i>
+            <span className="rn">rename</span>
           </button>
           {onMyTeam ? (
             <button className="map-link" onClick={onMyTeam}>
