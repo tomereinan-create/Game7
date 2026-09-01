@@ -1184,17 +1184,24 @@ button {
 /* no OVR cell on these rows, so the name keeps the 34px the draft's rows give it */
 .myteam .row.dr,
 .myteam .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
+/* HIS RULING: the men lead the stack at every width. He must never scroll to reach the five
+   he is deciding between, so the roster box is first on a phone and leftmost on a desk. */
 .myteam .col.a { order: 1; }
 .myteam .col.b { order: 2; }
+.myteam .col.c { order: 3; }
 @media (min-width: 900px) {
   .myteam {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
     align-items: start;
-    max-width: 900px;
-    margin: 0 auto;
   }
+  /* the plan stepped aside: the two that must be seen take the width it was using */
+  .myteam.plan-hidden {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* what is left of the plan drops under the pair, full width, rather than squatting in a column */
+  .myteam.plan-hidden .col.c { grid-column: 1 / -1; }
 }
 /* design 2e: the opponent is a slim scout bar now, so it leads the phone stack. */
 .draft .col.a { order: 1; }

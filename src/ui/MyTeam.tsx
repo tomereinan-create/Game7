@@ -336,6 +336,60 @@ export function MyTeam({
   /** What each side actually has to offer at this Playbook rank. */
   const sideHas = { off: playbook >= 1, def: playbook >= 2 }
 
+  /**
+   * HIS RULING — the five outrank the plan. "When making a change in my team, make sure
+   * that everything is visable and I dont have to scroll down to see the players. If there
+   * is no enough space, dont show me the tactics."
+   *
+   * So the third box is conditional, and the condition is MEASURED, not guessed at from a
+   * breakpoint: with the men's box and the floor laid out as they actually are, does the
+   * bottom of the floor still land above the dock? Stacked on a phone the two heights add;
+   * side by side on a desk the taller one governs. A 24px hysteresis band stops the panel
+   * flickering as dropping it reflows the columns that produced the measurement.
+   */
+  const menBox = useRef<HTMLElement | null>(null)
+  const floorBox = useRef<HTMLElement | null>(null)
+  const [tight, setTight] = useState(false)
+  const [showAnyway, setShowAnyway] = useState(false)
+  /** A change is in play: the wheel has turned, or a man is picked, resting or moving. */
+  const changing = !!(spun || spinning || sel || out || resting || moving)
+  const measure = (reset = false) => {
+    const a = menBox.current
+    const b = floorBox.current
+    if (!a || !b) return
+    const stacked = window.innerWidth < 900
+    const top = a.getBoundingClientRect().top + window.scrollY
+    const dock = document.querySelector<HTMLElement>('.dock')
+    const avail = window.innerHeight - top - (dock?.offsetHeight ?? 0)
+    // stacked, the two heights add; side by side, the taller one governs
+    const need = stacked ? a.offsetHeight + b.offsetHeight : Math.max(a.offsetHeight, b.offsetHeight)
+    // The latch only opens on a real viewport change. Dropping the plan reflows the very columns
+    // this measured, so letting content alone clear it would flip the panel on and off forever.
+    setTight((was) => (need > avail ? true : reset ? false : was))
+  }
+  // Re-measured on every state that changes what the two boxes are tall enough to hold, because
+  // a ResizeObserver alone does not fire in a backgrounded tab.
+  useEffect(measure)
+  useEffect(() => {
+    const onResize = () => measure(true)
+    window.addEventListener('resize', onResize)
+    const ro = new ResizeObserver(() => measure())
+    if (menBox.current) ro.observe(menBox.current)
+    if (floorBox.current) ro.observe(floorBox.current)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
+  /** The plan is only sacrificed while he is actually deciding, and never against his say-so. */
+  const dropTactics = tight && changing && !showAnyway
+  /** What the panel is worth, kept sayable even when the panel itself is gone. */
+  const worth = (() => {
+    if (user || playbook <= 0) return null
+    const w = tacticsParts(gateTactics(tactics, playbook), five).reduce((a, x) => a + x.pts, 0)
+    return `${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)}`
+  })()
+
   return (
     <>
       <div className="topbar">
@@ -352,42 +406,19 @@ export function MyTeam({
         <button onClick={onBack}>← Map</button>
       </div>
       <div className="ladder" />
-      <div className="myteam" style={{ paddingTop: 8 }}>
-        <section className="col a">
+      <div className={`myteam ${dropTactics ? 'plan-hidden' : ''}`} style={{ paddingTop: 8 }}>
+        {/* BOX ONE — the men. His ruling put the stats and the durability on the left, and the
+            court no longer stands above them: these five rows are the first thing on the screen
+            at every width, so a change never asks him to scroll to see who he is deciding about. */}
+        <section className="col a" ref={menBox}>
           <div className="card" style={{ paddingBottom: 4 }}>
             <div className="card-head">
               <span className="label">Your five</span>
+              {/* the payroll rides with the men — the salary line is printed on these rows */}
               <span className="cap">
                 {capUsed.toFixed(1)}% of {capMax}% cap
               </span>
             </div>
-            {/* his ruling: the five stands on the floor — same taps as the rows below, plan and all */}
-            <CourtFive
-              plan={plan}
-              side={side}
-              onSide={setSide}
-              spots={five.map((p, i) => {
-                const o = floorOpts(p)
-                return {
-                  p,
-                  tag: o.worn ? `${POSITIONS[i]} · worn out` : `${POSITIONS[i]} · ${left(p.name)} left`,
-                  danger: o.worn,
-                  dim: !o.worn && o.blocked,
-                  on: o.on,
-                  onTap: o.onTap,
-                }
-              })}
-              bench={
-                benchOpen && bench
-                  ? {
-                      p: bench,
-                      tag: `bench · ${left(bench.name)}${heal ? ` · +${heal}/srs` : ''}`,
-                      on: resting || out === bench.name,
-                      onTap: benchTap,
-                    }
-                  : null
-              }
-            />
             {five.map((p) => {
               const o = floorOpts(p)
               return row(p, {
@@ -433,11 +464,6 @@ export function MyTeam({
                 })()
               : null}
             {resting ? <div className="seriesnow-note">Tap the floor man who sits — the exchange is free, positions permitting.</div> : null}
-            {moving ? (
-              <div className="seriesnow-note">
-                Tap the man he switches positions with — both must fit the other’s spot. Tap him again to cancel.
-              </div>
-            ) : null}
             <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
               {broken.length
                 ? `${broken.length === 1 ? 'A man is' : `${broken.length} men are`} worn out — the spin replaces ${broken.length === 1 ? 'him' : 'them'}, and nothing else.`
@@ -445,7 +471,65 @@ export function MyTeam({
             </div>
           </div>
         </section>
-        <section className="col b">
+        {/* BOX TWO — where they stand. The court and its OFFENSE/DEFENSE toggle, which still
+            governs the whole screen; the position note rides with it, positions being its subject. */}
+        <section className="col b" ref={floorBox}>
+          <div className="card" style={{ paddingBottom: 4 }}>
+            <div className="card-head">
+              <span className="label">On the floor</span>
+            </div>
+            {/* his ruling: the five stands on the floor — same taps as the rows beside it, plan and all */}
+            <CourtFive
+              plan={plan}
+              side={side}
+              onSide={setSide}
+              spots={five.map((p, i) => {
+                const o = floorOpts(p)
+                return {
+                  p,
+                  tag: o.worn ? `${POSITIONS[i]} · worn out` : `${POSITIONS[i]} · ${left(p.name)} left`,
+                  danger: o.worn,
+                  dim: !o.worn && o.blocked,
+                  on: o.on,
+                  onTap: o.onTap,
+                }
+              })}
+              bench={
+                benchOpen && bench
+                  ? {
+                      p: bench,
+                      tag: `bench · ${left(bench.name)}${heal ? ` · +${heal}/srs` : ''}`,
+                      on: resting || out === bench.name,
+                      onTap: benchTap,
+                    }
+                  : null
+              }
+            />
+            {moving ? (
+              <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                Tap the man he switches positions with — both must fit the other’s spot. Tap him again to cancel.
+              </div>
+            ) : null}
+          </div>
+        </section>
+        {/* BOX THREE — the plan, and the wheel when it turns. The plan is the one box his ruling
+            lets go when the men and the floor cannot both be seen; the wheel never goes with it. */}
+        <section className="col c">
+          {dropTactics ? (
+            <div className="card" style={{ paddingBottom: 4 }}>
+              <div className="card-head">
+                <span className="label">Tactics</span>
+                <span className="cap">{worth ? `worth ${worth} pts of spread` : 'set'}</span>
+              </div>
+              <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                Your plan is still called and still priced — it is out of the way while you make the change, so
+                the five stay on one screen.
+              </div>
+              <button className="sortb" style={{ margin: '0 0 10px' }} onClick={() => setShowAnyway(true)}>
+                Show the tactics anyway →
+              </button>
+            </div>
+          ) : (
           <div className="card" style={{ paddingBottom: 4 }}>
             <div className="card-head">
               <span className="label">Tactics</span>
@@ -586,6 +670,7 @@ export function MyTeam({
               )
             })()}
           </div>
+          )}
           {display ? (
             <div className={`card ${spinning ? 'spin-live' : ''}`}>
               <div className="card-head">
