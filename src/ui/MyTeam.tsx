@@ -7,6 +7,7 @@ import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
+import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { gateTactics, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
@@ -132,6 +133,13 @@ export function MyTeam({
   const [resting, setResting] = useState(false)
   /** Switching mode: a floor man was tapped with nothing else pending; the next tap trades spots. */
   const [moving, setMoving] = useState<string | null>(null)
+  /**
+   * The man showing in the band. Declared up here because floorOpts shares one tap between the
+   * roster rows and the court spots, so both open him from the same place.
+   */
+  const [band, setBand] = useState<string | null>(null)
+  /** A tap on a man opens him in the band; the same man again closes it. */
+  const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
   const [info, setInfo] = useState<string | null>(null)
   const user = useUserMode()
   const timer = useRef<number | null>(null)
@@ -309,11 +317,9 @@ export function MyTeam({
       (sel ? !replaceable(sel).includes(p.name) : false) ||
       (resting ? !canRest(p.name) : false) ||
       (moving !== null && moving !== p.name ? !canSwitch(moving, p.name) : false)
-    return {
-      worn,
-      blocked,
-      on: out === p.name || moving === p.name,
-      onTap: sel
+    // his ruling: the band fills on the tap that is already there — the swap, the rest, the
+    // position switch all still happen, and the man's sentence and season line come up with them
+    const act = sel
         ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
         : resting
           ? () => {
@@ -328,8 +334,8 @@ export function MyTeam({
                 doSwitch(moving, p.name)
                 setMoving(null)
               }
-            : () => setMoving(p.name),
-    }
+            : () => setMoving(p.name)
+    return { worn, blocked, on: out === p.name || moving === p.name, onTap: () => { act(); showMan(p.name) } }
   }
   const benchTap = bench
     ? sel
@@ -373,6 +379,13 @@ export function MyTeam({
     if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
   }
   const [tight, setTight] = useState(false)
+  /**
+   * The man whose card is open in the band, and how much black floor there is to put it on. The
+   * room is measured from the bottom of the boxes to the dock, so the band only ever occupies
+   * space the layout already had — it cannot push a box, the dock, or the page.
+   */
+  const [slot, setSlot] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const bandMan = band ? (five.find((p) => p.name === band) ?? roster.find((p) => p.name === band) ?? (bench?.name === band ? bench : null)) : null
   const [showAnyway, setShowAnyway] = useState(false)
   /** A change is in play: the wheel has turned, or a man is picked, resting or moving. */
   const changing = !!(spun || spinning || sel || out || resting || moving)
@@ -410,6 +423,17 @@ export function MyTeam({
       setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
     }
     if (list && stacked) setRosterEnd(true)
+    /*
+     * THE BLACK RECTANGLE is not the strip under the grid — that is 22px. It is the floor under
+     * the two SHORT columns, beside the tall one: the wheel's box runs to the bottom of the row
+     * while the five and the floor stop well above it. So the room is the row's bottom minus
+     * whichever of those two reaches lower, and the band is laid into that rectangle end-aligned.
+     * Measured without the band in the sum, so mounting it can never feed back into the row.
+     */
+    const grid = a.parentElement
+    const rowBottom = grid ? Math.min(grid.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0)) : 0
+    const cols = grid ? ([...grid.children] as HTMLElement[]).filter((e) => e.classList.contains('col')) : []
+    setSlot(stacked || !grid ? null : bandSlot(grid, cols, rowBottom))
     const need = stacked ? a.offsetHeight + b.offsetHeight : Math.max(a.offsetHeight, b.offsetHeight)
     // The latch only opens on a real viewport change. Dropping the plan reflows the very columns
     // this measured, so letting content alone clear it would flip the panel on and off forever.
@@ -758,6 +782,7 @@ export function MyTeam({
                       dim: !outsFor.length,
                       on: sel === p.name,
                       onTap: () => {
+                        showMan(p.name)
                         if (!outsFor.length) return
                         setResting(false)
                         setSel(sel === p.name ? null : p.name)
@@ -772,6 +797,9 @@ export function MyTeam({
             </div>
           </section>
         ) : null}
+        {/* Only where the floor exists: on a phone the boxes stack, the rectangle is zero, and
+            nothing mounts — that width keeps the route it has, the row's own detail toggle. */}
+        {slot ? <ManBand p={bandMan} at={slot} /> : null}
       </div>
       <div className="dock">
         <div className="dock-inner">

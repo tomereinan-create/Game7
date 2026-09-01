@@ -11,7 +11,12 @@ import { DetailGrid } from './Stat'
  * database, not a set of overlapping filters. Tags describe STYLE, never tier;
  * quality is OVR's job, and the OVR spread inside a tag shows it.
  */
-const RULE: Record<string, string> = {
+/**
+ * The prose for every tag, under his "say what it is, not what it isn't" ruling. EXPORTED because
+ * the man-band on the swap and draft screens shows the same sentence: two copies of this would
+ * drift the moment one of them is edited.
+ */
+export const RULE: Record<string, string> = {
   'Defensive playmaker': 'He runs the offense and takes the other team’s best perimeter man. Two demanding jobs at once, and the shot is somebody else’s.',
   'Point god': 'The finest passer in the game, in a guard’s body. Everything the offense does begins with him, and he would rather it ended with somebody else.',
   'Offensive engine': 'He passes at the ceiling and shoots at the ceiling. The offense does not run through him so much as it simply is him.',

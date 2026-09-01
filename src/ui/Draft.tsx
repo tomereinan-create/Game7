@@ -10,6 +10,7 @@ import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
+import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -185,6 +186,16 @@ export function Draft({
   const [sel, setSel] = useState<string | null>(null)
   const [slot, setSlot] = useState<Pos | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  /**
+   * The man showing in the band under the boxes, and the black floor there is to put him on. Same
+   * ruling and same measurement as My team: the gap between the columns and the dock, so the band
+   * only ever uses space the layout already had.
+   */
+  const [band, setBand] = useState<string | null>(null)
+  /** Where the band goes: the free columns and the room under them. Named apart from this
+      screen's own `slot`, which is a position. */
+  const [floor, setFloor] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
@@ -244,6 +255,20 @@ export function Draft({
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
+  const gridRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    const measure = () => {
+      const g = gridRef.current
+      if (!g || window.innerWidth < 900) return setFloor(null)
+      const dock = document.querySelector<HTMLElement>('.dock')
+      const cols = ([...g.children] as HTMLElement[]).filter((e) => e.classList.contains('col'))
+      const rowBottom = Math.min(g.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0))
+      setFloor(bandSlot(g, cols, rowBottom))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  })
   // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
   const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players, paceMastery(wallet)) : null
   const sigma = pc ? SIGMA * pc.sigmaMult : SIGMA
@@ -585,7 +610,7 @@ export function Draft({
         </div>
       </div>
 
-      <div className="draft">
+      <div className="draft" ref={gridRef}>
       <section className="col a">
       {/* The scout bar is gone by his ruling: the panel below carries the team, the
           record and the dials, so a header that only repeated them and offered a
@@ -729,7 +754,10 @@ export function Draft({
                   dur: left(p.name),
                   on: sel === p.name,
                   dim: !fits.length || priced,
-                  onTap: () => select(p.name),
+                  onTap: () => {
+                    showMan(p.name)
+                    select(p.name)
+                  },
                 })
               })}
               {sel ? (
@@ -932,7 +960,9 @@ export function Draft({
               tag: p ? (worn ? `${x} · worn out` : user ? x : `${x} · ${p.ovr}`) : '',
               danger: worn,
               dropOk: drag && drag.over === x ? canMove(drag.from, x) : null,
-              onTap: p ? () => openCard(p) : undefined,
+              // his ruling: the floor opens him in the band. CardName on his row still opens the
+              // full sheet, so the card is one tap away rather than stranded.
+              onTap: p ? () => showMan(p.name) : undefined,
             }
           })}
         />
@@ -955,7 +985,10 @@ export function Draft({
                 dur: left(p.name),
                 worn: carried ? left(p.name) <= WEAR_OUT : false,
                 dim: carried ? left(p.name) <= WEAR_OUT : false,
-                onTap: () => setMoving(moving === x ? null : x),
+                onTap: () => {
+                  showMan(p.name)
+                  setMoving(moving === x ? null : x)
+                },
               })}
               {moving === x ? (
                 <div className="posbar">
@@ -1003,6 +1036,8 @@ export function Draft({
         See every player →
       </button>
       </section>
+      {/* the black floor the columns leave; nothing mounts where there is none, as on a phone */}
+      {floor ? <ManBand p={band ? (BY_NAME.get(band) ?? null) : null} at={floor} /> : null}
       </div>
 
       {askSim ? (
