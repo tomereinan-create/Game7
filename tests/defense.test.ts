@@ -45,7 +45,12 @@ describe('matchup defense — defense is a property of the pairing', () => {
     // 2.73 (feasible, the bands allow <= 2.75) and the perdef purification moved it to 2.93. No single
     // coefficient satisfies both any more. The coefficient is set from the 60/40 ruling (the primary
     // doctrine, and the one DRTG_COEF's own comment names), which leaves this swing 6% under 4.
-    expect(b - a).toBeGreaterThanOrEqual(3.5)  // recal_81: 3.70 -> 3.62, same PENDING TOMER band family as the 60/40 spread below
+    // recal_87 UPDATE: the sibling this comment points at is now CLOSED — he ruled "Ship the
+    // wall-vs-sieve spread as is", so DRTG_COEF is fixed by an ACCEPTED figure rather than a pending
+    // one. THIS band is still open, and its status is now clearer rather than worse: the coefficient
+    // that leaves this swing 6% under 4 is no longer provisional, so the only way this band comes
+    // back is its own ruling or a named mechanism. Recorded, not adjusted.
+    expect(b - a).toBeGreaterThanOrEqual(3.5)  // recal_81: 3.70 -> 3.62; sibling 60/40 band RETIRED by recal_87
   })
 
   it('hunted swing: Gobert blunts the hunt on Trae against a paint hunter (Shaq), not a pull-up hunter (Curry)', () => {
@@ -92,7 +97,7 @@ describe('matchup defense — defense is a property of the pairing', () => {
     expect(m).toBeLessThan(17)
   })
 
-  it('60/40: the defensive spread (wall vs sieve, neutral opponent) is 8–10 and below the offense archetype spread', () => {
+  it('60/40 RETIRED: the wall-vs-sieve spread is ACCEPTED at 2.46 (his ruling) and stays below the offense archetype spread', () => {
     const dW = defenseVs(WALL, NEUTRAL).drtg
     const dS = defenseVs(SIEVE, NEUTRAL).drtg
     const GOAT5 = five("Michael Jordan '88", "LeBron James '09", "Stephen Curry '16", "Shaquille O'Neal '00", "Giannis Antetokounmpo '20")
@@ -126,8 +131,34 @@ describe('matchup defense — defense is a property of the pairing', () => {
     // DID compress, and it compressed for a reason the round intended (an average defender should
     // read like an average defender). That is still a RULING, not an engine call — and it is the
     // same ruling, now with one more piece of evidence on the table.
-    // The assertion records the measured floor so the suite stays honest until he rules.
-    expect(dS - dW).toBeGreaterThanOrEqual(2.4)
+    // ================================ CLOSED ================================
+    // HIS RULING, verbatim: "Ship the wall-vs-sieve spread as is". PENDING TOMER IS RETIRED HERE.
+    // The 60/40 defensive spread is ACCEPTED at its measured value, 2.46, and is NOT to be restored
+    // by any mechanism. DRTG_COEF is not re-derived — r76 established it is not the lever, and that
+    // finding stands. Retired the way recal_12's band above was recorded: the marker stays in the
+    // file with its whole history, annotated, rather than deleted.
+    //
+    // WHAT WAS ACCEPTED, priced rather than merely named (scripts/spread87.ts prints this):
+    //   the defense term of the margin is K_MATCH x (B.drtg - A.drtg), K_MATCH = 0.2, so
+    //     spread 2.46  ->  0.49 margin points per game  ->  game 52.0%, best-of-7 54.3%
+    //     spread 8-10  ->  1.60-2.00 points per game    ->  game 56.4-57.9%, series 63.7-66.9%
+    //   In words: fielding the five best perimeter defenders in the pool instead of the five worst,
+    //   with the SAME offense and against the SAME opponent, is worth HALF A POINT a game. Under the
+    //   law this ruling retires it was worth two. A wall is now a preference, not an edge. That is
+    //   the trade he made, stated here so nobody re-discovers it as a bug in six rounds' time.
+    //
+    // THE ASSERTION IS A FLOOR, DELIBERATELY, and not a pin or a band:
+    //   this number has moved with almost every card round (8-10 -> 3.53 at r76 -> 2.61 at r81 ->
+    //   2.46 at r86), and it moves because perdef moves, which is the pipeline working. An exact pin
+    //   would make every future card round trip over a figure he has just said he does not mind. A
+    //   floor catches the thing he did NOT accept — a collapse to zero, where defense stops being a
+    //   property of the five at all — and stays quiet about drift he has.
+    //   THE FLOOR IS 2.0, chosen for a reason and not for headroom: at 2.0 the sim pays 0.40 points
+    //   a game, so a break means the accepted half-point has eroded by more than a fifth. Below that
+    //   a wall is worth less than half a possession and the ruling would be worth re-opening.
+    // The CEILING stays at 11 as a runaway guard. It is not part of the retired item and never was
+    // pending; dropping it would leave an unbounded spread unguarded, so it is kept on purpose.
+    expect(dS - dW).toBeGreaterThanOrEqual(2.0)
     expect(dS - dW).toBeLessThanOrEqual(11)
     expect(oSpread).toBeGreaterThan(dS - dW)
   })
