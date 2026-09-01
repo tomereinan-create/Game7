@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
@@ -188,16 +188,42 @@ const initials = (n: string) =>
     .filter((_, i, a) => i === 0 || i === a.length - 1)
     .join('')
 
-function Spot({ s, at, size, sc, pm }: { s: CourtSpot; at: XY; size: number; sc?: boolean; pm?: boolean }) {
+function Spot({
+  s,
+  at,
+  size,
+  sc,
+  pm,
+  drag,
+}: {
+  s: CourtSpot
+  at: XY
+  size: number
+  sc?: boolean
+  pm?: boolean
+  /** Present when this spot can be picked up: the tap is then synthesised on release. */
+  drag?: {
+    lifted: boolean
+    onDown: (e: ReactPointerEvent) => void
+    onMove: (e: ReactPointerEvent) => void
+    onUp: (e: ReactPointerEvent) => void
+    onCancel: () => void
+  }
+}) {
   return (
     <button
       className={`ct-spot ${s.danger ? 'danger' : ''} ${s.on ? 'on' : ''} ${s.dim ? 'dim' : ''} ${s.p ? '' : 'ct-open'} ${
         s.dropOk === true ? 'drop-ok' : s.dropOk === false ? 'drop-no' : ''
-      }`}
+      } ${drag?.lifted ? 'lifted' : ''} ${drag ? 'grab' : ''}`}
       style={{ left: `${at[0]}%`, top: `${at[1]}%` }}
       data-slot={s.slot}
-      onClick={s.onTap}
-      disabled={!s.onTap}
+      onPointerDown={drag?.onDown}
+      onPointerMove={drag?.onMove}
+      onPointerUp={drag?.onUp}
+      onPointerCancel={drag?.onCancel}
+      /* a draggable spot synthesises its own tap on release, so the click would double-fire */
+      onClick={drag ? undefined : s.onTap}
+      disabled={!s.onTap && !drag}
     >
       <span className="ct-bust" style={{ width: size, height: size }}>
         {s.p ? <em className="ct-init">{initials(s.p.name)}</em> : s.slot ? <em className="ct-init ghost">{s.slot}</em> : null}
@@ -216,6 +242,7 @@ export function CourtFive({
   plan,
   side: sideProp,
   onSide,
+  swap,
 }: {
   spots: CourtSpot[]
   bench?: CourtSpot | null
@@ -223,10 +250,64 @@ export function CourtFive({
   /** Lift the side out of the court when the whole screen follows it (My team's tactics panel). */
   side?: Side
   onSide?: (s: Side) => void
+  /**
+   * HIS RULING: "Allow me to switch positions of players by dragging on their halfcourt
+   * position." Press a man's ring, drag him onto another spot, and the two change places. The
+   * screen supplies the rule and the commit — this only runs the gesture — so the law stays in
+   * engine/slots and one implementation serves every court that opts in. The scouted opponent
+   * passes nothing and stays read-only.
+   */
+  swap?: { can: (from: string, to: string) => boolean; commit: (from: string, to: string) => void }
 }) {
   // One court, two states, named on the floor: you can go and LOOK at your defense without
   // touching a chip and changing the plan to see it. No plan (the scouted opponent, whose
   // call we do not know) means no toggle and the balanced shape, as before.
+  /**
+   * The same pointer semantics the draft's row drag already uses, including its 8px threshold:
+   * under 8px of travel the press is a TAP and is dispatched as one, so tapping a man still does
+   * what it always did. Pointer events throughout — no HTML5 drag, no long-press — so a finger
+   * works exactly like a mouse.
+   */
+  const dragRef = useRef<{ from: string; x0: number; y0: number; moved: boolean } | null>(null)
+  const [drag, setDrag] = useState<{ from: string; over: string | null } | null>(null)
+  const slotAt = (x: number, y: number): string | null =>
+    document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-slot]')?.dataset.slot ?? null
+  const dragFor = (s: CourtSpot) => {
+    if (!swap || !s.slot || !s.p) return undefined
+    const from = s.slot
+    return {
+      lifted: drag?.from === from,
+      onDown: (e: ReactPointerEvent) => {
+        if (e.button !== 0 && e.pointerType === 'mouse') return
+        dragRef.current = { from, x0: e.clientX, y0: e.clientY, moved: false }
+        ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+      },
+      onMove: (e: ReactPointerEvent) => {
+        const d = dragRef.current
+        if (!d) return
+        if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 8) return
+        d.moved = true
+        setDrag({ from: d.from, over: slotAt(e.clientX, e.clientY) })
+      },
+      onUp: (e: ReactPointerEvent) => {
+        const d = dragRef.current
+        dragRef.current = null
+        if (!d) return
+        if (d.moved) {
+          const to = slotAt(e.clientX, e.clientY)
+          // released on nothing, on himself, or on a spot the rule refuses: he goes back, no change
+          if (to && to !== d.from && swap.can(d.from, to)) swap.commit(d.from, to)
+        } else {
+          s.onTap?.() // under the threshold: a press is a tap, and taps still open what they opened
+        }
+        setDrag(null)
+      },
+      onCancel: () => {
+        dragRef.current = null
+        setDrag(null)
+      },
+    }
+  }
   const [own, setOwn] = useState<Side>('off')
   const side = sideProp ?? own
   const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
@@ -267,9 +348,14 @@ export function CourtFive({
       {spots.slice(0, AT.length).map((s, i) => (
         <Spot
           key={s.p ? s.p.name : `open-${i}`}
-          s={s}
+          s={
+            swap && drag && s.slot
+              ? { ...s, dropOk: drag.over === s.slot && drag.from !== s.slot ? swap.can(drag.from, s.slot) : null }
+              : s
+          }
           at={at[i]}
           size={58}
+          drag={dragFor(s)}
           {...(shown === 'off'
             ? { sc: !!plan?.scorer && s.p?.name === plan.scorer, pm: !!plan?.playmaker && s.p?.name === plan.playmaker }
             : {})}
