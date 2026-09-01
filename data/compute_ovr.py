@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 79
+PIPELINE_VERSION = 80
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -259,13 +259,47 @@ for cls in (True, False):
 # 98.67 -> 107.55 is re-derived by r67's own doctrine as the measured maximum raw, so the summit lands
 # ON 99. That also repairs a drift: after r76/r81/r82 nothing in the pool reached 99 at all (the top
 # was Ben Wallace '04 at 98). r60's REF_DRTG intercept underneath is NOT re-opened.
-KNEE, OFF_TOP, DEF_TOP = 93.0, 106.36, 107.55
+# recal_90 (HIS RULING, verbatim: "Fix the OFF band anchor"). Completes the drift recal_89 named
+# and deliberately left, and it is the SIBLING of recal_84, which did the same job for OVR_TOP.
+#
+# THE READING TAKEN, named explicitly because r84's had to be argued for: for OFF there is NO
+# ambiguity, and that is worth saying rather than glossing. The band's doctrine is "top set to the
+# highest raw the pool actually produces, so the best card lands ON 99", and the value the band
+# CONSUMES is not an intermediate that has to be reconstructed — the pipeline literally appends the
+# band's own argument to _otops one line before calling it:
+#     _o = o_score(p) * 0.93 ; _otops.append(_o) ; band(_o, OFF_TOP)
+# So the reading is o_score AFTER the standard weighted path, AFTER the volume x efficiency
+# interaction term, AFTER the zone-dominance bonus, and AFTER the 0.93 display multiplier.
+# THE ONE OTHER DEFENSIBLE READING, considered and rejected: derive from the raw BEFORE the
+# dominance bonus, so a weapon could be rewarded past the ceiling. Rejected for r84's reason — the
+# band's entire function is to map ITS OWN INPUT onto 99, so an anchor derived from anything else
+# cannot make the top card land on 99, which is the only thing the constant is for.
+# MEASURED over all 10,000 cards: 110.6400, Giannis Antetokounmpo '25. 106.36 -> 110.64.
+# WHY IT DRIFTED: recal_89's weight shift toward load and creation lifted the very top of the
+# offensive raw (110.08 -> 110.64) and carried a SECOND card past the old anchor, so Giannis '25 and
+# '24 both clamped to 99 and tied. That is the same compression r84 removed from OVR, on OFF.
+# THE 0.93 MULTIPLIER IS NOT IN CONFLICT AND IS NOT RE-SOLVED. The two constants own DISJOINT
+# regions of the scale: below the knee band() is the identity, so 0.93 alone decides where ~98% of
+# the pool sits, and OFF_TOP alone decides how the thin tail above 93 is stretched onto 93-99.
+# Changing the top cannot move a card the multiplier governs, and this round changes no weight at
+# all, so r89's grounds for amending r34's LOCKED DIAL STATE pin (total weight unchanged, therefore
+# the renormalised multiplier still holds) survive this round untouched.
+# DEF_TOP IS LEFT, and it is a decision rather than an oversight: measured 107.5558 against the
+# anchor 107.55 — ONE card (Ben Wallace '03), 0.0058 above, which already lands ON 99 through the
+# band. That is the same sub-hundredth rounding gap recal_84 measured and left, and it is NOT the
+# drift being fixed here: OFF had two cards tied at the ceiling with a 4.28-point gap behind the
+# leader. One sanctioned outlier that lands on 99 is what a ceiling is for.
+KNEE, OFF_TOP, DEF_TOP = 93.0, 110.64, 107.55
 # OVR's own band is GONE (recal_85, his ruling "Kill the band too"). It ran knee 93 with
 # OVR_TOP re-derived to 97.10 by recal_84; both that constant and band_ovr() are now DEAD CODE and
 # are removed rather than left to rot. `_tops` survives as a diagnostic only: it now records the
 # pure blend, so the run still prints the top of the board and any future drift stays visible.
 _tops = []
 _otops = []   # measured OFF raws, so the band anchor can be re-derived after any weight change
+# recal_90: DEF gets the same standing diagnostic OFF has had. recal_84 had to hand-audit the DEF
+# anchor because nothing printed it, and this is the SECOND time a band anchor has drifted unseen,
+# so the measurement is made permanent rather than repeated by hand. Same list, same print, same job.
+_dtops = []   # measured DEF raws, for exactly the same reason
 def band(raw, top):
     return raw if raw <= KNEE else KNEE + (raw - KNEE) * (99.0 - KNEE) / (top - KNEE)
 
@@ -276,7 +310,9 @@ for p in players:
     _o = o_score(p) * 0.93
     _otops.append(_o)
     p['o_ovr'] = int(min(99, round(band(_o, OFF_TOP))))
-    p['d_ovr'] = int(min(99, round(band(d_score(p) * 1.1305, DEF_TOP))))   # recal_67: 1.10 was the inflation
+    _d = d_score(p) * 1.1305
+    _dtops.append(_d)
+    p['d_ovr'] = int(min(99, round(band(_d, DEF_TOP))))   # recal_67: 1.10 was the inflation
     # OVR now includes the skill mix: BPM-based talent overpaid empty-calorie profiles
     # (assist collectors at bad efficiency read 83 while the engine punished them every possession)
 
@@ -318,6 +354,7 @@ json.dump(players, io.open(path, 'w', encoding='utf-8'), separators=(',', ':'))
 print(f"pipeline version {PIPELINE_VERSION}")
 print(f"OVR blend top {max(_tops):.2f} — no band, no anchor: OVR is the blend, capped and clamped (recal_85)")
 print(f"OFF raw top {max(_otops):.2f} (band anchor {OFF_TOP}) — {sum(1 for t in _otops if t > OFF_TOP)} cards above the anchor")
+print(f"DEF raw top {max(_dtops):.2f} (band anchor {DEF_TOP}) — {sum(1 for t in _dtops if t > DEF_TOP)} cards above the anchor")
 
 # VERDICT 1: the smoothed export IS the shared verification base. Written once per regeneration so the
 # design side calibrates against the same cards the app ships, ending the permanent single-season offset.
