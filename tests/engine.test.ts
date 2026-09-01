@@ -128,7 +128,13 @@ describe('player data (stats-only doctrine)', () => {
     // branch went 0.75/0.25 -> 0.70/0.30, so every man whose offence exceeds his defence loses
     // exactly 0.05*(o_ovr - d_ovr). Curry '16 is O 95 / D 73, so he gives back 1.1 raw and prints
     // 91 instead of 92. The defence-led branch was already 0.4/0.6 and did not move.
-    expect(curry.ovr).toBeGreaterThanOrEqual(91)
+    // recal_85 MOVED IT AGAIN, 91 -> 89, and the move is his two rulings working as written ("Kill
+    // breadth and the tax", "Kill the band too"). Curry '16 pays nothing to the empty-volume tax
+    // (efficiency 98, so the 58-efficiency term is zero) and his blend of 88.70 sits below the old
+    // 93 knee, where the band was identity — so the ENTIRE 2 points was BREADTH: he cleared five of
+    // the seven groups, which paid +2.0 at full fade value. With breadth gone he prints his blend,
+    // 0.70*95 + 0.30*74 = 88.70 -> 89. Pinned where the ruling put him, not where breadth had him.
+    expect(curry.ovr).toBeGreaterThanOrEqual(89)
     expect(curry.o_ovr).toBeGreaterThanOrEqual(95)
     // recal_67 MOVED THIS PIN, and the move is the round working as written: the DEF display
     // multiplier deflated 1.10 -> 1.03 (the fossil that floated every defender ~7 over his own

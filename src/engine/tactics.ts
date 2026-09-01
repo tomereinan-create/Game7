@@ -117,6 +117,10 @@ export const DEFAULT_TACTICS: Tactics = {
  * recal_82's graded rimprot entry moved the pool again; hunt re-ratified: 3.70->3.74.
  * recal_80's perimeter reweight + DEF display re-solve moved every d_ovr and the ovr>=55 pool with
  * them; crashOff/crashDef re-ratified through the harness: .30->.55, .62->.95.
+ * recal_85 killed the empty-volume tax, the breadth term and the top band, moving 1,860 OVRs and
+ * the ovr>=55 pool with them; hunt/crashDef re-ratified: 3.74->3.60, .72->.46. Every other tax
+ * held its band untouched. The law was applied as written: the bands broke, the taxes moved to
+ * meet them, and NOTHING in the OVR chain was touched to hold a band up.
  */
 export const TAX = {
   scorer: 0.55,
@@ -124,9 +128,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,
-  hunt: 3.74,
+  hunt: 3.60,
   crashOff: 0.42,
-  crashDef: 0.72,
+  crashDef: 0.46,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
