@@ -476,7 +476,18 @@ export function Draft({
 
   const scoutRow = (
     p: Player,
-    opts: { tone?: 'you' | 'them'; sub: string; onTap: () => void; dim?: boolean; on?: boolean; short?: boolean; slot?: Pos },
+    opts: {
+      tone?: 'you' | 'them'
+      sub: string
+      onTap: () => void
+      dim?: boolean
+      on?: boolean
+      short?: boolean
+      slot?: Pos
+      /** His ruling: durability reads next to the name on this screen too, same badge as My team. */
+      dur?: number
+      worn?: boolean
+    },
   ) => (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
@@ -500,6 +511,12 @@ export function Draft({
         }}
       >
         <span className="pname">
+          {opts.dur !== undefined ? (
+            <span className={`mt-dur ${opts.worn ? 'danger' : ''}`}>
+              <b>{opts.dur}</b>
+              <i>DUR</i>
+            </span>
+          ) : null}
           <span className="who">
             <CardName p={p} />
             <i>{opts.sub}</i>
@@ -707,6 +724,7 @@ export function Draft({
                 const priced = overCap(p.name)
                 return scoutRow(p, {
                   sub: `${unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name)} · ${archetype(p)}`,
+                  dur: left(p.name),
                   on: sel === p.name,
                   dim: !fits.length || priced,
                   onTap: () => select(p.name),
@@ -921,12 +939,15 @@ export function Draft({
                 on: true,
                 slot: x,
                 sub: `${
-                  carried
-                    ? `${x} · ${left(p.name) <= WEAR_OUT ? 'WORN OUT — must be replaced' : `${left(p.name)} durability left`}`
+                  carried && left(p.name) <= WEAR_OUT
+                    ? `${x} · WORN OUT — must be replaced`
                     : posOf(p.name).length > 1
                       ? `${x} · can play ${posOf(p.name).join(' · ')}`
                       : x
                 } · ${archetype(p)}`,
+                // the number lives in the DUR badge now, so the sub can never truncate it away
+                dur: left(p.name),
+                worn: carried ? left(p.name) <= WEAR_OUT : false,
                 dim: carried ? left(p.name) <= WEAR_OUT : false,
                 onTap: () => setMoving(moving === x ? null : x),
               })}
