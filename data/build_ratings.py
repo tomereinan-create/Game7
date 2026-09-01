@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 72   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 73   # printed every run and written to src/data/pipeline.json
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -329,7 +329,15 @@ for yr, rows in seasons.items():
         # Iverson rule) unlocks the rest. The measured tier mirrors the DFG floors: a rim-zone
         # defended-FG% diff of -4.0% or better on a real workload (2014+) lifts the cap to 92 —
         # measurement beats the cap, votes beat both.
-        _w53 = min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0
+        # recal_82 (HIS RULING, verbatim: "So lets change the bar. 0.4 != 1. The more the better").
+        # The old bar saturated: min(1, drep/0.30) handed FULL band membership to any reputation at
+        # or above 0.30, so a 0.43 fringe vote bought the identical door a unanimous DPOY got, and
+        # once inside, the uncapped top held nothing back — which is exactly why Noah '09 read 97.
+        # The entry is now GENUINELY GRADED and monotone in reputation, with no plateau below a
+        # unanimous vote: w = drep. More reputation always means more, and only 1.00 earns the whole
+        # band. Below that a man blends against his own no-vote value (min(ID2, cap), which IS his
+        # actual value whenever it sits under the r53 cap), never against a flat number.
+        _w53 = min(1.0, max(0.0, r['drep'])) if r['drep'] > 0.05 else 0.0
         _cap53 = (88 - 1) / 98.0
         _row6 = TRACKING.get((yr, 'Less Than 6Ft'), {}).get(_nrm(r['name']))
         if _row6 and _row6[1] and min(1.0, _row6[1] / 350.0) >= 0.75 and _row6[0] <= -0.040:
