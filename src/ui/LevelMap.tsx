@@ -134,7 +134,11 @@ export function LevelMap({
           </div>
           {spendable ? (
             <button className="map-link staff" onClick={onStaff}>
-              ★ {bal} to spend · Staff →
+              {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
+                  at this size a space costs a full 7.3px character, which is what pushed the line
+                  onto two at 375px. His wording is untouched. */}
+              <i className="g">★</i>
+              {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
             </button>
           ) : null}
           <button className="map-link" onClick={onTeam}>
