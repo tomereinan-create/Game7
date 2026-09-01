@@ -126,6 +126,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * opposite failure from r85's — the tax went UP this time, not down). All nine in band. RECORDED:
  * crash def glass now sits EXACTLY on the band edge at random -0.30. It passes, and it was not
  * touched — moving a constant that is inside its band would be tuning for taste, not for the law.
+ * recal_89's o_score weight shift moved 4,600 o_ovrs and 2,537 OVRs, and the ovr>=55 pool with
+ * them; hunt re-ratified 3.72 -> 3.60 — its ORACLE fell to +0.46 this time, so the tax came back
+ * DOWN. Third consecutive round in which hunt is the one band that moves, and the second time it
+ * has reversed direction; it is the most pool-sensitive tax we have, which is worth remembering
+ * before anyone reads its wandering as instability in the tactic itself. All nine in band.
+ * crash def glass reads -0.31, off the edge it sat exactly on at r86, and was again not touched.
  */
 export const TAX = {
   scorer: 0.55,
@@ -133,7 +139,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.90,
-  hunt: 3.72,
+  hunt: 3.60,
   crashOff: 0.42,
   crashDef: 0.46,
 }

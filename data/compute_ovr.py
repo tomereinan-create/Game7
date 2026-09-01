@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 78
+PIPELINE_VERSION = 79
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -101,7 +101,17 @@ def o_score(p):
     # and drawn fouls are priced as the offensive skills they are (0.06 -> 0.10, 0.05 -> 0.11); volume
     # carries the load it actually is (0.18 -> 0.24); efficiency stops being paid twice (0.13 -> 0.10 —
     # the signature term below still multiplies it by volume); the second zone recovers (0.06 -> 0.09).
-    std = (0.25*z[0] + 0.09*z[1] + 0.06*z[2] + 0.10*a['efficiency'] + 0.24*a['volume'] + 0.17*a['playvol']
+    # recal_89 (design-side round "76"; HIS RULING, verbatim: "Dont do 87, only shift the weights a
+    # little torward 88" — the same sentence DECLINED the two-level dominance round, receipt 88).
+    # "A tiny bit", not a redesign: weight comes off the three zones and goes to the load-and-
+    # conversion terms. zones 0.25/0.09/0.06 -> 0.22/0.08/0.05 (-0.05), efficiency 0.10 -> 0.11,
+    # volume 0.24 -> 0.26, playvol 0.17 -> 0.19 (+0.05). Total weight is unchanged BY CONSTRUCTION,
+    # 0.05 out and 0.05 in, so no multiplier compensation is taken. Scale neutrality is nonetheless
+    # MEASURED, not assumed: sharing a 1-99 scale is not sharing a DISTRIBUTION, and moving weight
+    # between a zone max and a volume rating can move the pool mean even at constant total weight.
+    # Receipt 89 holds the measured mean against the round's own +-0.3.
+    # The dominance bonus below reads the zone RATINGS, not these weights, and is unaffected.
+    std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*a['volume'] + 0.19*a['playvol']
         + 0.10*a['ballsec'] + 0.11*(a['fouldraw']*a['ft']/100) + 0.06*a['orb']
         # the volume x efficiency SIGNATURE keeps its volume FLOOR of 50 (recal_26): elite conversion on
         # a modest load is real scoring signal, not an accident of touches.
