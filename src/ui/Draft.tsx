@@ -424,10 +424,12 @@ export function Draft({
   const dock = () => {
     // A worn-out man cannot take the floor, and the change lives in MY TEAM on the map — the
     // draft only holds the door until he has been replaced there.
+    // His ruling: pressing it takes him there. It used to be a dead disabled button that named
+    // the problem and left him to find My team himself.
     if (full && broken.length)
       return (
-        <button className="btn" disabled>
-          {broken.length === 1 ? '1 man is worn out' : `${broken.length} men are worn out`} — replace him in My team
+        <button className="btn" onClick={onRoster}>
+          {broken.length === 1 ? '1 man is worn out' : `${broken.length} men are worn out`} — replace him in My team →
         </button>
       )
     if (full)
