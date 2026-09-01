@@ -2559,16 +2559,10 @@ button {
 .cmd-top .r { display: flex; align-items: center; gap: 12px; padding-right: 52px; }
 .cmd-top b { color: var(--you); }
 .cmd-top button { color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
-.cmd-slots { display: flex; gap: 6px; margin-top: 9px; }
-@media (max-width: 700px) { .cmd-slots { margin-right: 46px; } }
-.cslot { flex: 1; display: grid; gap: 1px; justify-items: center; padding: 6px 0 5px; border-radius: 6px; border: 1px dashed var(--line-3); }
-.cslot i { font-style: normal; font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: var(--faint); }
-.cslot b { font-family: var(--mono); font-size: 11px; color: var(--faint); }
-.cslot.full { background: var(--you-tint); border: 1px solid var(--you-line); }
-.cslot.full i, .cslot.full b { color: var(--you); }
-.cslot.pend { border: 1px dashed var(--you); box-shadow: 0 0 0 1px var(--you-line); }
-.cslot.pend i, .cslot.pend b { color: var(--you); }
-.cmd-odds { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
+/* The .cmd-slots / .cslot five-chip strip was removed on his ruling — the odds row is now
+   the header's second line, so it inherits the strip's clearance for the fixed home FAB. */
+.cmd-odds { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; margin-right: 46px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
+@media (min-width: 900px) { .cmd-odds { margin-right: 64px; } }
 .cmd-odds b.you { color: var(--you); }
 .cmd-odds b.them { color: var(--them); }
 .cmd-odds .dim { color: var(--faint); }

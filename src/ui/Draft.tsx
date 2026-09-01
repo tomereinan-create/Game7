@@ -40,10 +40,6 @@ export const capPct = (name: string): number | null => SAL[name]?.pct ?? null
 
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
-/** A slot chip's name: three letters of the man's last name (design 2e's command strip). */
-const ab3 = (n: string) =>
-  (n.replace(/ '\d\d( \([a-z]\))?$/, '').trim().split(/\s+/).pop() ?? '').replace(/\W/g, '').slice(0, 3).toUpperCase()
-
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 /** The three numbers everyone reads first. */
 const Mini = ({ name }: { name: string }) => {
@@ -225,8 +221,11 @@ export function Draft({
   const seen = has('scout_wheel') ? upcoming : null
   /** Exact ratings rank 3: which opposing man has his sheet open. */
   const [oppOpen, setOppOpen] = useState<string | null>(null)
-  /** Design 2e: the opponent folds into a scout bar; the full card opens on demand. */
-  const [scoutOpen, setScoutOpen] = useState(false)
+  /**
+   * Design 2e: the opponent folds into a scout bar. His ruling: it arrives OPEN — he
+   * should not have to press to see who he is playing. The bar still closes it.
+   */
+  const [scoutOpen, setScoutOpen] = useState(true)
   /** No team-season on the wheel can legally fill an open slot (salary rules). */
   const [dead, setDead] = useState(false)
   // The draft is the one screen that earns the full width of a desktop.
@@ -539,18 +538,10 @@ export function Draft({
             <button onClick={() => onBack(picks.length > 0)}>← Map</button>
           </span>
         </div>
-        <div className="cmd-slots">
-          {POSITIONS.map((x) => {
-            const n = slots[x]
-            const pend = !n && sel && slot === x
-            return (
-              <span key={x} className={`cslot ${n ? 'full' : pend ? 'pend' : ''}`}>
-                <i>{x}</i>
-                <b>{n ? ab3(n) : pend && sel ? `${ab3(sel)}?` : '·'}</b>
-              </span>
-            )
-          })}
-        </div>
+        {/* His ruling: the five-chip strip (PG HAR · SG SMI · …) is gone from the header. It
+            was display-only — no tap, no drag target, no assignment — and his five reads
+            properly on the half court below and in My team. The pick counter stays: it is the
+            odds row's progress readout, not a chip. */}
         <div className="cmd-odds">
           {chance && !user ? (
             <>
