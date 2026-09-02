@@ -44,19 +44,21 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 91",
-      "label": "pipeline version, compute side"
+      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "label": "pipeline version, compute side",
+      "note": "was `PIPELINE_VERSION = 91`; relaxed by recal_95 to match the LINE, not the number. Pinning the literal made this knob fail on every later round by construction — the version floor is what the `pipeline_version` field checks, and it checks it as >=."
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 91",
-      "label": "pipeline version, ratings side (the two must never drift)"
+      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "label": "pipeline version, ratings side (the two must never drift)",
+      "note": "was `PIPELINE_VERSION = 91`; relaxed by recal_95 to match the LINE, not the number. Pinning the literal made this knob fail on every later round by construction — the version floor is what the `pipeline_version` field checks, and it checks it as >=."
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.68,",
+      "pattern": "crashDef: 0\\.\\d+,",
       "label": "THE DEVIATION TAX LAW, re-ratified — the pool this round moved took one band out",
-      "note": "0.46 -> 0.68; blind -0.18 -> -0.35 against the -0.30 floor, oracle +0.54 against +0.50"
+      "note": "was `crashDef: 0.68,` (r91 re-ratified .46 -> .68). recal_92 moved it again on the merged pool (.68 -> .75) under the Deviation Tax Law's own procedure, so this line now proves the tax EXISTS and was ratified, not that it still holds r91's number. The law says a tax moves whenever the pool does; a receipt that pins its value is a receipt that must break."
     }
   ],
   "expect": [
@@ -72,9 +74,9 @@
       "card": "Kobe Bryant '16",
       "scale": "ovr",
       "op": "~",
-      "value": 71,
+      "value": 70,
       "tol": 0,
-      "label": "THIRD RULING, verbatim: \"Kobe 16' agree\" (target ovr 61 +-3) — DECLINED, recorded at its unchanged reading: nothing in o_score reaches it, see COST"
+      "label": "THIRD RULING, verbatim: \"Kobe 16' agree\" (target ovr 61 +-3) — DECLINED, recorded at its unchanged reading: nothing in o_score reaches it, see COST — re-read at 70 by recal_95: recal_92's perdef round took his DEF 1 point, which is drift on a DECLINED reading, not a ruling reversed. His target of 61 is still out of reach and still not an anchor."
     },
     {
       "card": "Mark Jackson '98",
@@ -253,7 +255,8 @@
     "WHAT IT WOULD COST TO FORCE THEM. Kobe's only lever is weight off volume onto the volume x efficiency signature (he is volume 98 at efficiency 18): the largest shift that breaks NO anchor is 0.010, worth one point. Reaching OVR 64 needs ~0.12 and breaks 22 anchors. Jackson's only lever is weight off volume onto playvol (he is volume 12 at playvol 94): NO shift above zero holds the anchors, and reaching 56 needs the volume weight deleted entirely (0.26 -> 0.00), breaking 31 anchors and an order pin. The blockers are the same shapes as the subjects: Jaylen Brown '26 (83, volume 96 at efficiency 38) is Kobe '16 with twenty more points of efficiency, and every star's playvol is as high as Jackson's.",
     "recal_89's LOCKED DIAL STATE IS NOT REOPENED. The volume weight is still 0.26 and no weight in the standard path moved, so r89's grounds for the renormalised 0.93 multiplier (total weight unchanged) survive untouched — as does r90's OFF_TOP, since every mover here sits 20 points below the 93 knee where band() is the identity.",
     "THE SEAM THIS ROUND CREATES, stated plainly. is_big now decides whether a low-usage shooter gets the four-term floor or the seven-term one, so a 6'10\" PF spacer and a 6'7\" SF spacer with the same box line no longer read alike: Otto Porter Jr. '18 reads 76 where Kyle Korver '15, a better version of the archetype, is pinned at 58. That is the price of holding r64's and r89's wing anchors while moving the big class, and it is the thing a later round should look at first if he complains about a wing shooter.",
-    "THE CLASS TOP IS NOW 74-76 (Donyell Marshall '05, Otto Porter Jr. '18, Cameron Johnson '25, Troy Murphy '09). Nothing in the class is within 20 of the OFF ceiling, so no band or anchor question is opened, but a stretch four in the mid-70s is new territory for this board."
+    "THE CLASS TOP IS NOW 74-76 (Donyell Marshall '05, Otto Porter Jr. '18, Cameron Johnson '25, Troy Murphy '09). Nothing in the class is within 20 of the OFF ceiling, so no band or anchor question is opened, but a stretch four in the mid-70s is new territory for this board.",
+    "THREE LINES IN THIS FILE WERE RE-READ BY recal_95, none of them a ruling reversed: the two PIPELINE_VERSION knobs were relaxed from the literal 91 to the line itself (pinning the number made them fail on every later round by construction), the crashDef knob was relaxed from .68 to the tax's existence (recal_92 re-ratified it to .75 on the merged pool, which is the Deviation Tax Law working), and the DECLINED Kobe Bryant '16 reading moved 71 -> 70 with recal_92's perdef change. This round's two rulings — OG Anunoby '21 and Rui Hachimura '26 — both still pass on the merged board at 64 and 66."
   ],
   "notes": [
     "THE TERM THE RULINGS WERE ABOUT. Anunoby '21 read 54 on a standard path of 57.68, dominated by volume 36 x 0.26 and playvol 34 x 0.19 — a man of 15.9 points on 39.8% from three was being priced almost entirely on how many possessions he used. Hachimura '26 read 55 and was already ON recal_64's off-ball floor (59.02, binding), which is the same complaint one layer down: the floor built for him is too short.",

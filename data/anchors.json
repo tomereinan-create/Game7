@@ -830,5 +830,14 @@
   "round": 92,
   "ruling": "Rim prot too high.. Way too high. Should be high 80's or low 90's. Its like def rep took everything",
   "note": "landed 91. The vote no longer buys the r53 ceiling without block evidence behind it (blk 2.2% = 81st pctile of 1988)."
+ },
+ {
+  "card": "Pau Gasol '04",
+  "scale": "attr:rimprot",
+  "target": 78,
+  "tol": 2,
+  "round": 95,
+  "ruling": "Grade the no-vote rim ceiling by blocks, Pau high 70s",
+  "note": "amended by him mid-round: \"Not only his blocks, his dbpm isnt even high\" (blk 3.9% = 89th pctile of 2004, DBPM +0.1). Landed 78. He was not high on votes (drep 0.00) or on height — he was sitting on recal_53's FLAT no-vote ceiling of 88, which this round grades by both."
  }
 ]
