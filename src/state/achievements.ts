@@ -295,7 +295,8 @@ export function achSettleSeries(ev: SeriesEvent) {
 
   // ---- tactics mastery (a called plan exists only in the death match) ----
   if (ev.plan) {
-    const fit = ev.plan.style === 'balanced' ? null : styleFit(ev.plan.style, ev.five, ev.opponent.players)
+    // the pnr pair he called is part of the fit, so the feat reads the number that was priced
+    const fit = ev.plan.style === 'balanced' ? null : styleFit(ev.plan.style, ev.five, ev.opponent.players, ev.plan.pnr)
     if (won && fit !== null && fit >= 75) {
       s.readRoom++
       if (s.readRoom >= 5) u(24)
@@ -307,7 +308,7 @@ export function achSettleSeries(ev: SeriesEvent) {
     // style call priced positive, and the board played was not the naive one.
     if (won && avgOvr(ev.opponent.players) > avgOvr(ev.five) && ev.pc && ev.pc.margin > 0 && stylePts(ev.plan, ev.five, ev.opponent.players) > 0 && ev.assignment !== 'naive') u(31)
     if (won && ev.pre >= 0.5 && ev.plan.tempo === 'slow' && fit !== null) {
-      const fits = STYLES.filter((x) => x.key !== 'balanced').map((x) => styleFit(x.key, ev.five, ev.opponent.players))
+      const fits = STYLES.filter((x) => x.key !== 'balanced').map((x) => styleFit(x.key, ev.five, ev.opponent.players, ev.plan!.pnr))
       if (fit <= Math.min(...fits)) u(33)
     }
   }

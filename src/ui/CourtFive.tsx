@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
+import { pnrPair, SCHEMES, STYLES, type Scheme, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -122,10 +122,12 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
 /**
  * Formations by style, index-aligned to the five's slot order (PG..C). Readable
  * spacings, not X-and-O diagrams; the special men use the same proxies the fit
- * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol),
- * the pnr screen = the dive big, min(rim, efficiency)).
+ * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol)).
+ * The pick-and-roll no longer guesses: it stands the pair the PLAN names, through
+ * the engine's own pnrPair, so the floor and the price name the same two men.
  */
-export function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
+  const style = plan?.style
   const men = five.filter((p): p is Player => !!p)
   if (!style || style === 'balanced' || men.length < 5) return [...AT]
   const fill = (picked: Record<number, XY>, rest: XY[]): XY[] => {
@@ -151,9 +153,15 @@ export function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[
         peri(43),
       ]
     case 'pnr': {
-      // the PG behind the arc, the screener rolling inside it; shooters spot the corners and the weak wing
-      const s = best(men, (p) => (p.attrs.height >= 80 ? Math.min(p.attrs.rim, p.attrs.efficiency) : p.attrs.height), 0)
-      return fill({ 0: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
+      // the handler behind the arc, the screener rolling inside it; the other three spot the
+      // corners and the weak wing. Both men come from the plan (his ruling: the pair is a call).
+      const pair = pnrPair(men, plan?.pnr)
+      const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
+      let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
+      // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
+      // the handler sets the screen, so the shape is always five men on five different spots
+      if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
+      return fill({ [h]: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
     }
     case 'postup': {
       // the post man on the block, four spaced behind the line away from his side
@@ -324,7 +332,7 @@ export function CourtFive({
   const side = sideProp ?? own
   const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
-  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan?.style, spots.map((s) => s.p))
+  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan, spots.map((s) => s.p))
   const call = plan ? callLine(plan, shown) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with

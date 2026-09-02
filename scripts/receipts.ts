@@ -1885,7 +1885,9 @@ const ROUNDS: Record<string, () => void> = {
     console.log(`${EOL}recal_58 — PLAYSTYLES v2: six styles, fit-scored`)
     line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '58', /PIPELINE_VERSION = 58/.test(OVR) && /PIPELINE_VERSION = 58/.test(RATINGS))
     // r59 SUPERSEDED the constants: slope 0.11, pivot 55, and the deviation tax — same law, taxed.
-    src('the price (r59 form)', io('src/engine/tactics.ts'), /clamp\(0\.11 \* \(styleFit\(t\.style, five, theirs\) - 55\) - TAX\.style, -2\.5, 2\.5\)/, 'fit-scored, taxed, capped — forcing a style the roster cannot run HURTS')
+    // the pnr pair (his ruling: "When selenting pnr you have to select the 2 handler and screener")
+    // rides into the FIT as a fourth argument; the price itself is the r59 form, untouched.
+    src('the price (r59 form)', io('src/engine/tactics.ts'), /clamp\(0\.11 \* \(styleFit\(t\.style, five, theirs, t\.pnr\) - 55\) - TAX\.style, -2\.5, 2\.5\)/, 'fit-scored, taxed, capped — forcing a style the roster cannot run HURTS')
     src('the fits, his formulas', io('src/engine/tactics.ts'), /Math\.min\(\.\.\.a\.map\(\(x\) => x\['3pt'\]\)\) \* 0\.6/, 'five-out keys on the WORST shooter, exactly as written')
     note('Two gaps the round left open, filled and documented in the source: motion’s ball-stopper')
     note('subtraction is -12 per ISO-shaped star, and post-up’s “dominance-bonus presence” is proxied')
