@@ -1,5 +1,41 @@
 [
  {
+  "card": "Ben Wallace '07",
+  "scale": "ovr",
+  "target": 66,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "the OVR cap's big branch gets r93's elite-defence floor: max(o+40, 0.85*d)",
+  "current": 60,
+  "superseded_by": 104,
+  "superseded_note": "SUPERSEDED BY HIS FORMULA RULING, quoted in full: \"Change OVR to raw = max(0.5 * o_ovr + 0.5 * d_ovr,  0.70 * o_ovr + 0.30 * d_ovr)\". The defence-led reading of OVR is now an even split, so every card whose DEFENCE is the stronger end falls by exactly 0.1 x (d_ovr - o_ovr). THE PIN WAS NOT WRONG AND THE ROUND THAT SET IT IS NOT REVERSED: recal_99 fixed a real defect - this card was clipped by the flat `o_ovr + 40` cap, printing 61 against a blend of 66.6 - and that cap fix still stands and no longer touches him at all. What changed is the BLEND the target was read off. His recal_99 number came from the scout measuring the 0.4/0.6 reading; under 0.5/0.5 the same card blends lower. Two rulings of his, one round apart, and the later one moves the earlier."
+ },
+ {
+  "card": "Ben Wallace '08",
+  "scale": "ovr",
+  "target": 64,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same",
+  "current": 56,
+  "superseded_by": 104,
+  "superseded_note": "SUPERSEDED BY HIS FORMULA RULING, quoted in full: \"Change OVR to raw = max(0.5 * o_ovr + 0.5 * d_ovr,  0.70 * o_ovr + 0.30 * d_ovr)\". The defence-led reading of OVR is now an even split, so every card whose DEFENCE is the stronger end falls by exactly 0.1 x (d_ovr - o_ovr). THE PIN WAS NOT WRONG AND THE ROUND THAT SET IT IS NOT REVERSED: recal_99 fixed a real defect - this card was clipped by the flat `o_ovr + 40` cap, printing 61 against a blend of 66.6 - and that cap fix still stands and no longer touches him at all. What changed is the BLEND the target was read off. His recal_99 number came from the scout measuring the 0.4/0.6 reading; under 0.5/0.5 the same card blends lower. Two rulings of his, one round apart, and the later one moves the earlier."
+ },
+ {
+  "card": "Caldwell Jones '80",
+  "scale": "ovr",
+  "target": 65,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same",
+  "current": 57,
+  "superseded_by": 104,
+  "superseded_note": "SUPERSEDED BY HIS FORMULA RULING, quoted in full: \"Change OVR to raw = max(0.5 * o_ovr + 0.5 * d_ovr,  0.70 * o_ovr + 0.30 * d_ovr)\". The defence-led reading of OVR is now an even split, so every card whose DEFENCE is the stronger end falls by exactly 0.1 x (d_ovr - o_ovr). THE PIN WAS NOT WRONG AND THE ROUND THAT SET IT IS NOT REVERSED: recal_99 fixed a real defect - this card was clipped by the flat `o_ovr + 40` cap, printing 61 against a blend of 66.6 - and that cap fix still stands and no longer touches him at all. What changed is the BLEND the target was read off. His recal_99 number came from the scout measuring the 0.4/0.6 reading; under 0.5/0.5 the same card blends lower. Two rulings of his, one round apart, and the later one moves the earlier."
+ },
+ {
   "card": "Michael Jordan '89",
   "scale": "off",
   "target": 96,

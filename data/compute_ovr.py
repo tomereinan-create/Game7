@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 105
+PIPELINE_VERSION = 106
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -698,7 +698,23 @@ for p in players:
     # What survives is the blend, the offence cap below, and the 99 clamp. A card can therefore never
     # print above its higher end nor below its lower one, which is the point: OFF, DEF and OVR read
     # on one scale.
-    raw = max(0.4 * p['o_ovr'] + 0.6 * p['d_ovr'], 0.70 * p['o_ovr'] + 0.30 * p['d_ovr'])
+    # recal_104 (HIS RULING, verbatim: "Change OVR to raw = max(0.5 * o_ovr + 0.5 * d_ovr,
+    # 0.70 * o_ovr + 0.30 * d_ovr)"). THE DEFENCE-LED READING IS AN EVEN SPLIT.
+    #
+    # recal_83's shape is untouched and is quoted here beside the new weight, because the two are
+    # his and they are one sentence apart. recal_83, verbatim: "OVR = bigger of ((OFF*0.7 + DEF*0.3),
+    # (OFF*0.4 + DEF* 0.6))". recal_104 keeps "the bigger of two role readings" and changes what the
+    # DEFENCE-led one weighs: 0.4/0.6 becomes 0.5/0.5. The offence-led reading, the cap and the 99
+    # clamp are all exactly as they were.
+    #
+    # WHAT IT DOES, arithmetically and therefore without exception. The two branches still cross where
+    # o_ovr == d_ovr, so which reading wins is unchanged for every card. Above the crossing nothing
+    # moves at all. Below it - every card whose DEFENCE is the stronger end - the reading falls by
+    # exactly 0.1 x (d_ovr - o_ovr), so the change can only ever LOWER a card and it lowers it in
+    # proportion to how one-sided he is. The largest drops on the board are therefore the men with the
+    # widest gap: Ben Wallace '07 (o 21, d 98) -7.7, Caldwell Jones '80 and Ben Wallace '08 -7.6.
+    # OFF, DEF and every attribute are untouched by construction - this line is the whole round.
+    raw = max(0.5 * p['o_ovr'] + 0.5 * p['d_ovr'], 0.70 * p['o_ovr'] + 0.30 * p['d_ovr'])
     # recal 3: offense gates the ceiling (a defense-first perimeter player stops one man), but elite
     # defense keeps a floor; an elite anchor is a defensive SYSTEM, so bigs are effectively exempt.
     # It can only ever pull OVR DOWN toward the offence, never below the weaker end (cap >= o+10).
@@ -831,10 +847,10 @@ if _CARD:
         print(f"       band -> {band(_raw2, _top):7.4f}   clamp 99 -> {_fin}"
               + (f"   ({_raw2 - _top:+.4f} vs the anchor)" if _raw2 > KNEE else ''))
 
-    _b1, _b2 = 0.4*_q['o_ovr'] + 0.6*_q['d_ovr'], 0.70*_q['o_ovr'] + 0.30*_q['d_ovr']
+    _b1, _b2 = 0.5*_q['o_ovr'] + 0.5*_q['d_ovr'], 0.70*_q['o_ovr'] + 0.30*_q['d_ovr']
     _cap = max(_q['o_ovr'] + 10, 0.85 * _q['d_ovr']) if not _q['big'] else _q['o_ovr'] + 40
     print(f"\nOVR BLEND (recal_83, the bigger of two role readings; recal_85 left nothing else in)")
-    print(f"  defence-led  0.40 x OFF {_q['o_ovr']} + 0.60 x DEF {_q['d_ovr']} = {_b1:.2f}")
+    print(f"  defence-led  0.50 x OFF {_q['o_ovr']} + 0.50 x DEF {_q['d_ovr']} = {_b1:.2f}")
     print(f"  offence-led  0.70 x OFF {_q['o_ovr']} + 0.30 x DEF {_q['d_ovr']} = {_b2:.2f}")
     print(f"  winner: {'defence-led' if _b1 >= _b2 else 'offence-led'} = {max(_b1, _b2):.2f}")
     print(f"  offence cap ({'big: o_ovr + 40' if _q['big'] else 'max(o_ovr + 10, 0.85 x d_ovr)'}) = {_cap:.2f}")
