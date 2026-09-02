@@ -1,0 +1,265 @@
+{
+  "round": 97,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting",
+  "title": "THE TOP OF THE PERDEF BAR WAS UNREACHABLE: three ceilings removed, so a perfect untracked sheet reads 99 in any era",
+  "subject": "Michael Jordan '89",
+  "scale": "attr:perdef",
+  "target": 99,
+  "tol": 1,
+  "before": 94,
+  "after": 99,
+  "pipeline_version": 98,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "THE PD CLAMP IS GONE",
+      "label": "the PD clamp is gone (the line was `ID = min(ID, 1.0); PD = min(PD, 1.0)`)",
+      "note": "109 voted cards, 8.6% of the voted pool, were pressed flat against it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "Pvot = pctile_top\\(\\[t\\[1\\]\\[3\\] for t in tmp if t\\[0\\]\\['drep'\\] >= 0\\.25\\]\\)",
+      "label": "pctile -> pctile_top, the correction recal_53 made for rimprot and never made here",
+      "note": "pctile leaves its maximum at (n-1)/n; pctile_top maps it to exactly 1.0"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PD\\)\\)",
+      "label": "the band's own top, 0.44 -> 0.45: the band now spans exactly 55 to 99",
+      "note": "with 0.44 a FULL percentile mapped to card 98.02, so 99 did not exist on this attribute"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD  = dict\\(drep=0\\.453, dbpm=0\\.238, height_inv=0\\.309\\)",
+      "label": "UNTOUCHED: recal_76's weights — not one input weight moved",
+      "note": "the round removes ceilings; it reweights nothing"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rep_hf = max\\(0\\.5, 1\\.2 - 0\\.8 \\*",
+      "label": "UNTOUCHED: recal_54's rep_hf, measured innocent — it pays MJ the full 1.2",
+      "note": "6'6\" is inside the band, so rep_hf was never the ceiling"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.60",
+      "label": "crash def glass re-ratified through the harness on the lifted pool",
+      "note": ".40 -> .60 (its blind read had gone shallow at -0.19 against the -0.30 floor)"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Michael Jordan '88",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 97,
+      "label": "THE DPOY SEASON, 93 -> 98. DBPM +4.2, the highest of the ten"
+    },
+    {
+      "card": "Michael Jordan '91",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "93 -> 99 — his prime cards all carried the same hidden sheet"
+    },
+    {
+      "card": "Michael Jordan '93",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "93 -> 99"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 95,
+      "label": "the recal_65 FLOOR holds and then some: 95 -> 99"
+    },
+    {
+      "card": "Marcus Smart '19",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 94,
+      "label": "the recal_65 FLOOR holds: 94 -> 98"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 47,
+      "tol": 1,
+      "label": "THE NEGATIVE CONTROL: a no-vote card cannot be reached by a change to the VOTED band — flat"
+    },
+    {
+      "card": "Trae Young '22",
+      "scale": "attr:perdef",
+      "op": "<=",
+      "value": 40,
+      "label": "the other end of the board is untouched too"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 59,
+      "tol": 5,
+      "label": "recal_92's ruling is untouched — he has no votes"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "recal_95's ruling is untouched — rimprot moved on ZERO cards"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "recal_92's rimprot ruling, flat"
+    },
+    {
+      "card": "Ben Wallace '06",
+      "scale": "def",
+      "op": ">=",
+      "value": 99,
+      "label": "THE DEF SUMMIT is still the man who has always held it"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": ">=",
+      "value": 96,
+      "label": "the attribute carries into DEF: 95 -> 96, which is round 98's starting point on the other lane"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "OFF is untouched by this round — o_ovr moved on ZERO cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Kawhi Leonard '17",
+      "label": "the ruling's card sits above the man it lifted with him"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Chris Paul '09",
+      "label": "perfect height beats 6'0\", on the same votes and the same top DBPM"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Domantas Sabonis '21",
+      "label": "and the voted band still sits far above the no-vote one"
+    },
+    {
+      "scale": "def",
+      "above": "Ben Wallace '06",
+      "below": "Michael Jordan '89",
+      "label": "lifting perdef's top did NOT invert the DEF summit"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 1050,
+    "max_abs": 6,
+    "top": [
+      [
+        "Michael Jordan '93",
+        93,
+        99
+      ],
+      [
+        "Michael Jordan '92",
+        93,
+        99
+      ],
+      [
+        "Michael Jordan '91",
+        93,
+        99
+      ],
+      [
+        "Michael Jordan '90",
+        93,
+        99
+      ],
+      [
+        "Scottie Pippen '98",
+        93,
+        99
+      ],
+      [
+        "Draymond Green '25",
+        91,
+        97
+      ],
+      [
+        "Michael Jordan '89",
+        94,
+        99
+      ],
+      [
+        "Michael Jordan '88",
+        93,
+        98
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Alex Caruso '23"
+    ]
+  },
+  "cost": [
+    "TEN ANCHORS ROSE OUT OF BAND AND WERE NOT RETUNED AROUND — PENDING TOMER, all ten moved to anchors_superseded.json with that note, none of them superseded by a ruling. Every single one has drep 1.00, a unanimous All-Defensive or DPOY sheet — the same sheet his ruling describes, which is why they rise with Jordan: attr:perdef Scottie Pippen '94 95 -> 99 (r54), Kawhi Leonard '17 94 -> 97 (r54), Marcus Smart '22 91 -> 97 (r55), Chris Paul '09 88 -> 91 (r55); def Scottie Pippen '94 92 -> 94 (r80), Gary Payton '96 86 -> 88 (r80), Bruce Bowen '05 85 -> 87 (r80), Marcus Smart '22 82 -> 86 (r80), Tony Allen '15 87 -> 90 (r80), Andre Iguodala '14 88 -> 93 (r93). THEY CANNOT BE HELD WITHOUT REOPENING THE ROUND: each is a full-vote card reading nearer a top that was previously unreachable, so holding one means putting the ceiling back on Jordan. Andre Iguodala '14 deserves its own line — it is recal_93's OWN ruling (\"Agree with 14 andre\"), landed days ago at 88, now 93. Tomer decides.",
+    "PIPELINE_VERSION IS THE SHIP ORDER, NOT THE ROUND NUMBER, and this round is the clearest example yet: recal_97 SHIPS AS PIPELINE 98. It was written against a main at pipeline 96 and would have been 97; recal_94 landed first and took 97, so the integration moved it to 98 in both python files and here. Round number 97, pipeline 98 — do not assume they agree. Round 96 is still in flight and takes 99 or later.",
+    "THREE CEILINGS, AND WHY IT TOOK THREE. Each alone reaches 95-96; none alone reaches 99. Ablated on the whole pool: MJ '89 base 94 -> unclamping PD alone 96 -> pctile_top alone 95 -> band top 0.45 alone 95 -> unclamp + pctile_top 98 -> all three 99. Any later round that reverts one of them puts the top of the bar out of reach again.",
+    "THE INNOCENT TERMS, measured and cleared, so a later round does not chase them: rep_hf pays Jordan the FULL 1.2 (recal_54's decay only starts above 6'8\"); the height_inv term pays its whole 0.309 (6'6\" is inside the 6'3\"-6'8\" sweet band); P['dbpm'] puts him at the 99.5th percentile of 1989; and the r16/r86 tracked branch is correctly inert in an untracked era because wv = 1.00 sends 100% of his reading through the voted band. None of these was the ceiling. The 20/60/20 season smoothing cost him exactly one point before this round (season card 95, smoothed 94) and costs him nothing now, because his neighbours reach the top with him.",
+    "crashDef .40 -> .60 in src/engine/tactics.ts, re-ratified through the harness on the lifted pool (its blind read had gone shallow at -0.19 against the -0.30 floor). Its ORACLE caps it, falling through +0.50 at about .72, so the room above .60 is roughly .12. Every other tax held; hunt held for the second round running.",
+    "recal_92 and recal_95 ARE COMPLETELY UNTOUCHED and this is checkable, not asserted: rimprot moved on ZERO cards and o_ovr on ZERO cards, and every no-vote card in the pool is unchanged, because this round only reaches the branch that a vote share of 0.25 or more opens.",
+    "HALF OF HIS RULING IS ROUND 98's, on the other lane: \"I want MJ to be 99 OFF and 99 DEF. He is good enough. Or at least 98 both.\" This round hands that lane an attribute sheet of perdef 99, and MJ '89's DEF moves 95 -> 96 on it. The remaining 2-3 points of DEF, and all of OFF (96, untouched here), are compute_ovr's to find.",
+    "INTEGRATED ONTO origin/main 8c46d7f (recal_94: team defence is the five's perdef again, plus UI merges). Base check first per _shared.md: origin/main's shipped attributes reproduce from its own code, 0 attributes moved. Resolution: build_ratings.py mine (recal_94 does not touch it), compute_ovr.py main's, anchors.json and anchors_superseded.json rebuilt programmatically from origin/main's 112/43 rather than text-merged (all 12 of recal_94's team anchors kept, MJ '89 added, the ten pending-Tomer moves applied — 103/53), rounds/93.json main's version with this round's three red lines and its COST note re-applied, tactics.ts main's with crashDef .60 re-verified on the merged pool (all nine bands pass unchanged, no further re-ratification needed), whole chain regenerated including public/provenance.json. THE FOOTPRINT IS IDENTICAL to the pre-merge measurement (perdef 1,050 all up, DEF 729, OVR 454, OFF 0, rimprot 0), which is the check that the two rounds do not interact: recal_94 moved team scales, not cards.",
+    "THE TEAM DIALS recal_94 introduced SURVIVED THIS ROUND, which was the open question going in — perdef rose on the men inside every five, so a team DEF dial could have moved. Measured before -> after: Bulls '96 defdial 99 -> 99 (the summit, tol 0), Philadelphia 76ers '26 defdial 36 -> 36, Pistons '04 defdial 83 -> 84 (tol 3), Warriors '17 offdial 99 -> 99, Thunder '26 >= 76ers '26 62/36 -> 63/36. Of the seven rank pins only CHI '05 moved at all, 16th -> 15th of 30, and it has slack to 18. All 12 pass. The dials held because the round lifts the whole voted band nearly uniformly, so a five's men and the reference five rise together."
+  ],
+  "notes": [
+    "WHAT THE PANEL HE PASTED ACTUALLY SAYS, term by term. perdef 94 · drep 1 · DBPM 3.4 · height 6'6\" · voted-band weight 1 · not tracked. Put through the formula: 0.453 x (1.00 x 1.20) = 0.5436, plus 0.238 x 0.995 = 0.2368, plus 0.309 x 1.0 = 0.309, total PD = 1.0896. That is not a good sheet, it is the HIGHEST SHEET IN THE POOL — no card of the 10,000 composites higher. He read the card correctly and the bar was lying to him.",
+    "CEILING ONE, THE CLAMP. PD = min(PD, 1.0) ran BEFORE the percentile that ranks voted defenders. A perfect sheet overshoots 1.0 by construction (full votes alone pay 0.5436 of a 1.0 scale), so 109 voted cards — 8.6% of the voted pool — were pressed flat against 1.0, and the percentile could not see a single point of difference between the best perimeter defender ever measured and the 109th.",
+    "CEILING TWO, THE PERCENTILE. Pvot was pctile, whose maximum is (n-1)/n, never 1.0. This file already contains the fix and its diagnosis: pctile_top's own docstring says \"pctile leaves the top at (n-1)/n, which quietly made a 99 unreachable for rim protection\". recal_53 wrote that for rimprot; perdef was never given the same correction. Same bug, same sentence, forty-odd rounds apart.",
+    "CEILING THREE, THE BAND. 0.55 + 0.44 x Pvot maps a FULL percentile to 0.99, i.e. card 98.02. So 99 was not merely hard on perdef — it did not exist. 0.45 makes the band span exactly 55 to 99, and the floor at 0.55 is untouched so the no-vote cap of 54 still hands over cleanly.",
+    "MEASURED CEILING, BEFORE AND AFTER: the highest band value any card could reach on the old formula was 0.9758, card 96.63 — so no sheet, however perfect, could read 97 or better from the voted branch, in any season of the 47. The best perdef on the board was 97 and it belonged to Tony Allen '11, who got there on a 0.85 vote share plus a tracked reading, not on the band.",
+    "FOOTPRINT: 1,050 perdef cards move and EVERY ONE MOVES UP — zero falls. A round that only removes ceilings must have that shape; a single faller would mean the implementation was wrong. Max +6, and only 18 cards move by 5 or more. The distribution is +1:522, +2:383, +3:96, +4:31, +5:12, +6:6 — a thin lift across the voted band and a real one at its top.",
+    "WHO RISES, and it is the class the ruling names: Michael Jordan '90-'93 all 93 -> 99, Scottie Pippen '98 93 -> 99, Draymond Green '25 91 -> 97, Michael Jordan '89 94 -> 99, '88 93 -> 98, Kawhi Leonard '16 95 -> 99, Marcus Smart '19 94 -> 98, Andre Iguodala '14 92 -> 97, Gary Payton '96 94 -> 97, Bruce Bowen '05 94 -> 97. DPOY-class perimeter men, every one with drep 1.00.",
+    "DOWNSTREAM: d_ovr moves on 729 cards (all up, max +4), ovr on 454 (all up, max +2), o_ovr on ZERO, rimprot on ZERO. 49 rank flips touch the top 50 by OVR — a large number that is entirely one thing: the perimeter defenders inside the top 50 all rose by 1-2 at once, so they reshuffle among themselves. The DEF summit did not move: Ben Wallace '02-'06 still hold 99 and Michael Jordan '89 reads 96.",
+    "TOP 12 DEF after: Ben Wallace '02-'06 99, Ben Wallace '01 98, Dan Roundfield '80 98, Dan Roundfield '82 98, Dwight Howard '09 98, Dwight Howard '10 98, Dwight Howard '11 98, Ben Wallace '07 97.",
+    "GIANNIS '25 GOT HIS OVR POINT BACK, and it is worth recording because two of this desk's rounds crossed on one card: recal_95's graded rim ceiling took him 97 -> 96 (a partially voted big whose block rate is only top-quintile), and recal_97's perdef band returns it, 96 -> 97, through the same drep 0.55 sheet on the perimeter side. The max-OVR floor in tests/engine.test.ts that recal_95 re-based to 96 now passes at 97, and recal_94's own receipt line for him was re-read 96 -> 97 with the supersession recorded."
+  ]
+}
