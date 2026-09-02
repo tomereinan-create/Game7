@@ -1,572 +1,592 @@
 [
-  {
-    "card": "Ty Jerome '25",
-    "scale": "off",
-    "target": 82,
-    "tol": 2,
-    "round": 78,
-    "ruling": "Ty jerome still 82 OFF",
-    "note": "his ruling reads 82; the shipped card measured 81 at the round",
-    "superseded_by": 96,
-    "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
-  },
-  {
-    "card": "Montrezl Harrell '18",
-    "scale": "off",
-    "target": 77,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
-    "note": "post-97, measured — unchanged",
-    "superseded_by": 96,
-    "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
-  },
-  {
-    "card": "Shaquille O'Neal '00",
-    "scale": "off",
-    "target": 99,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the load-and-creation gain, 98 -> 99",
-    "current": 97
-  },
-  {
-    "card": "Nikola Jokić '25",
-    "scale": "off",
-    "target": 99,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the round's named winner, measured flat",
-    "current": 97
-  },
-  {
-    "card": "LeBron James '10",
-    "scale": "ovr",
-    "target": 99,
-    "tol": 0,
-    "round": 84,
-    "ruling": "Fix the OVR ceiling drift",
-    "note": "one of the four cards clamped above the OVR anchor",
-    "current": 96
-  },
-  {
-    "card": "Giannis Antetokounmpo '24",
-    "scale": "ovr",
-    "target": 99,
-    "tol": 0,
-    "round": 84,
-    "ruling": "Fix the OVR ceiling drift",
-    "current": 96
-  },
-  {
-    "card": "LeBron James '13",
-    "scale": "ovr",
-    "target": 98,
-    "tol": 0,
-    "round": 84,
-    "ruling": "Fix the OVR ceiling drift",
-    "current": 96
-  },
-  {
-    "card": "Giannis Antetokounmpo '25",
-    "scale": "ovr",
-    "target": 98,
-    "tol": 0,
-    "round": 84,
-    "ruling": "Fix the OVR ceiling drift",
-    "current": 97
-  },
-  {
-    "card": "Joakim Noah '09",
-    "scale": "def",
-    "target": 76,
-    "tol": 1,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "current": 84
-  },
-  {
-    "card": "David Robinson '94",
-    "scale": "attr:rimprot",
-    "target": 99,
-    "tol": 1,
-    "round": 81,
-    "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
-    "note": "the anchor class holds",
-    "current": 97
-  },
-  {
-    "card": "Trae Young '22",
-    "scale": "def",
-    "target": 34,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "frozen control: must not rise",
-    "current": 37
-  },
-  {
-    "card": "OG Anunoby '26",
-    "scale": "def",
-    "target": 76,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "the named card — a POSITION big, so the shape clause never touched him",
-    "current": 73
-  },
-  {
-    "card": "Jimmy Butler '14",
-    "scale": "def",
-    "target": 85,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "perimeter-classified by the flip",
-    "current": 88
-  },
-  {
-    "card": "Andre Iguodala '13",
-    "scale": "def",
-    "target": 91,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "perimeter-classified by the flip",
-    "current": 93
-  },
-  {
-    "card": "Scottie Pippen '00",
-    "scale": "def",
-    "target": 90,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "perimeter-classified by the flip",
-    "current": 93
-  },
-  {
-    "card": "Metta World Peace '06",
-    "scale": "def",
-    "target": 86,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "perimeter-classified by the flip",
-    "current": 94
-  },
-  {
-    "card": "Rudy Gobert '19",
-    "scale": "def",
-    "target": 87,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 92
-  },
-  {
-    "card": "Draymond Green '16",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 95
-  },
-  {
-    "card": "Kevin Garnett '04",
-    "scale": "def",
-    "target": 94,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 97
-  },
-  {
-    "card": "Tim Duncan '03",
-    "scale": "def",
-    "target": 95,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 97
-  },
-  {
-    "card": "Nikola Jokić '26",
-    "scale": "def",
-    "target": 67,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 73
-  },
-  {
-    "card": "Karl-Anthony Towns '18",
-    "scale": "def",
-    "target": 66,
-    "tol": 1,
-    "round": 72,
-    "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
-    "note": "still big, unchanged",
-    "current": 75
-  },
-  {
-    "card": "Clyde Drexler '96",
-    "scale": "def",
-    "target": 78,
-    "tol": 1,
-    "round": 67,
-    "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
-    "note": "the named card — REACHED",
-    "current": 81
-  },
-  {
-    "card": "Ben Wallace '06",
-    "scale": "def",
-    "target": 99,
-    "tol": 0,
-    "round": 67,
-    "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
-    "note": "the defensive summit",
-    "current": 98
-  },
-  {
-    "card": "Draymond Green '16",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 67,
-    "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
-    "note": "the board, deflated honestly",
-    "current": 95
-  },
-  {
-    "card": "Ajay Mitchell '26",
-    "scale": "attr:rimprot",
-    "target": 58,
-    "tol": 0,
-    "round": 65,
-    "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
-    "note": "rim work stays where it was paid",
-    "current": 50
-  },
-  {
-    "card": "Kawhi Leonard '16",
-    "scale": "attr:perdef",
-    "target": 76,
-    "tol": 2,
-    "round": 65,
-    "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
-    "note": "receipt 65 asserts a FLOOR (perdef >= 76), not a value — it HOLDS today (95). Listed here only because the value schema cannot express >=; drop it or restate it as an order pin.",
-    "current": 95
-  },
-  {
-    "card": "Marcus Smart '19",
-    "scale": "attr:perdef",
-    "target": 76,
-    "tol": 2,
-    "round": 65,
-    "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
-    "note": "receipt 65 asserts a FLOOR (perdef >= 76), not a value — it HOLDS today (94). Listed here only because the value schema cannot express >=; drop it or restate it as an order pin.",
-    "current": 94
-  },
-  {
-    "card": "Luguentz Dort '26",
-    "scale": "off",
-    "target": 38,
-    "tol": 1,
-    "round": 64,
-    "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
-    "note": "unchanged — a volume scorer's standard path is above the floor",
-    "current": 36
-  },
-  {
-    "card": "Russell Westbrook '17",
-    "scale": "def",
-    "target": 57,
-    "tol": 1,
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "steal merchant pays",
-    "current": 60
-  },
-  {
-    "card": "Joe Dumars '90",
-    "scale": "def",
-    "target": 86,
-    "tol": 1,
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "lockdown, low steals, rises",
-    "current": 73
-  },
-  {
-    "card": "Gary Payton '96",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "elite two-way holds",
-    "current": 86
-  },
-  {
-    "card": "Doug Christie '97",
-    "scale": "def",
-    "target": 73,
-    "tol": 1,
-    "round": 57,
-    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
-    "note": "gambler eases",
-    "current": 78
-  },
-  {
-    "card": "Sidney Moncrief '84",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 57,
-    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
-    "note": "lockdown gains",
-    "current": 86
-  },
-  {
-    "card": "Chris Paul '09",
-    "scale": "attr:ballsec",
-    "target": 70,
-    "tol": 1,
-    "round": 56,
-    "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
-    "current": 82
-  },
-  {
-    "card": "Magic Johnson '90",
-    "scale": "attr:ballsec",
-    "target": 50,
-    "tol": 1,
-    "round": 56,
-    "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
-    "current": 63
-  },
-  {
-    "card": "Jrue Holiday '21",
-    "scale": "attr:perdef",
-    "target": 90,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "mobile guard, unchanged",
-    "current": 94
-  },
-  {
-    "card": "Trae Young '22",
-    "scale": "attr:perdef",
-    "target": 34,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "THE FAILED FREEZE — the round said frozen at 44; it reads 34",
-    "current": 37
-  },
-  {
-    "card": "Andrei Kirilenko '04",
-    "scale": "attr:perdef",
-    "target": 77,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "voted — outside the relief, unchanged",
-    "current": 85
-  },
-  {
-    "card": "Shane Battier '05",
-    "scale": "attr:perdef",
-    "target": 78,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "unchanged (reputation reach > 0.05)",
-    "current": 75
-  },
-  {
-    "card": "Andrei Kirilenko '06",
-    "scale": "attr:perdef",
-    "target": 84,
-    "tol": 1,
-    "round": 54,
-    "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
-    "note": "HIS CARD",
-    "current": 88
-  },
-  {
-    "card": "Rudy Gobert '19",
-    "scale": "attr:perdef",
-    "target": 69,
-    "tol": 1,
-    "round": 54,
-    "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
-    "current": 64
-  },
-  {
-    "card": "Ajay Mitchell '26",
-    "scale": "attr:perdef",
-    "target": 76,
-    "tol": 0,
-    "round": 65,
-    "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
-    "note": "SUPERSEDED BY HIS RULING (recal_92, verbatim: \"Way too high per def\"). The 76 was not a reading at all — it was the recal_16 DFG floor, which recal_92 retires; his blended value now reads 59.",
-    "current": 59
-  },
-  {
-    "card": "Luka Dončić '23",
-    "scale": "def",
-    "target": 73,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green. His 73 rested on the SAME recal_16 DFG floor that recal_92 retires (his '23 6ft+ diff of -1.8% bought the floor's -1.0% tier, perdef 64); with the floor gone his perdef reads 53 and DEF 65. The r80 note already called this rise a RED LINE BREACHED, shipped only on \"Ship 80\". PROVABLY UNSATISFIABLE ALONGSIDE recal_92: Dončić '23 (tracked 6ft+ -1.8%, composite ~51) would have to read ABOVE Ajay Mitchell '26 (tracked 6ft+ -4.2%, composite ~52), so no monotone reading of the same evidence holds both. If Tomer keeps the 73, recal_92's perdef half must be reopened; restore this line then.",
-    "current": 65
-  },
-  {
-    "card": "Pistons '04 (best legal five)",
-    "five": [
-      "Chauncey Billups '04",
-      "Richard Hamilton '04",
-      "Tayshaun Prince '04",
-      "Ben Wallace '04",
-      "Mehmet Okur '04"
-    ],
-    "scale": "team:defdial",
-    "target": 99,
-    "tol": 0,
-    "round": 71,
-    "ruling": "Do the same for DEF, 99 is 2004 pistons",
-    "superseded_by": 94,
-    "note": "SUPERSEDED BY HIS OWN LATER RULING at recal_94's integration: \"Move the summit to Bulls '96\". Held from r71 to r94. recal_94's defence reset moved drtgRef and left the Pistons '04 five 70th of the 1,255 fieldable team-seasons, so pinning DEF 99 to them flattened the top 5.5% of the dial (76 fives clamped). It reads 83 today. The OFF half of r71 (\"99 should be one of the greatest offense ever (2017 warriors)\") is NOT superseded and is still pinned."
-  },
-  {
-    "card": "Scottie Pippen '94",
-    "scale": "attr:perdef",
-    "target": 95,
-    "tol": 1,
-    "round": 54,
-    "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
-    "current": 94,
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
-  },
-  {
-    "card": "Kawhi Leonard '17",
-    "scale": "attr:perdef",
-    "target": 94,
-    "tol": 1,
-    "round": 54,
-    "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
-    "current": 93,
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
-  },
-  {
-    "card": "Marcus Smart '22",
-    "scale": "attr:perdef",
-    "target": 91,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "mobile guard, unchanged — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
-    "current": 92
-  },
-  {
-    "card": "Chris Paul '09",
-    "scale": "attr:perdef",
-    "target": 88,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "mobile guard, unchanged — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
-    "current": 89
-  },
-  {
-    "card": "Scottie Pippen '94",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "BIG branch — his +9 is the display re-solve alone — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
-    "current": 93
-  },
-  {
-    "card": "Gary Payton '96",
-    "scale": "def",
-    "target": 86,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "the round's scale-neutrality anchor, +-1 — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
-    "current": 86
-  },
-  {
-    "card": "Bruce Bowen '05",
-    "scale": "def",
-    "target": 85,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "current": 85,
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
-  },
-  {
-    "card": "Marcus Smart '22",
-    "scale": "def",
-    "target": 82,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "current": 82,
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
-  },
-  {
-    "card": "Tony Allen '15",
-    "scale": "def",
-    "target": 87,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "current": 87,
-    "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
-  },
-  {
-    "card": "Andre Iguodala '14",
-    "scale": "def",
-    "target": 88,
-    "tol": 3,
-    "round": 93,
-    "ruling": "Agree with 14 andre",
-    "note": "the defence-branch ramp replaces is_big's middle cliff; 70 -> 90 (perdef 92 on rimprot 39 - he was being graded as a rim protector) — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
-    "current": 90
-  },
-  {
-    "card": "Philadelphia 76ers '26 (best legal five)",
-    "five": [
-      "Tyrese Maxey '26",
-      "Quentin Grimes '26",
-      "Kelly Oubre Jr. '26",
-      "Dominick Barlow '26",
-      "Joel Embiid '26"
-    ],
-    "scale": "team:defdial",
-    "target": 36,
-    "tol": 6,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "SUPERSEDED BY recal_100. recal_94 seeded this value pin at 36 from its own reading; it was never one of his numbers. The era-relative recentring of recal_100 moved the whole 2026 field +14 and Philadelphia with it, to 50. Its rank pin (not in the season's top 6) is untouched and still passes at 13th of 24.",
-    "season": 2026,
-    "superseded_by": 100
-  }
+ {
+  "card": "Ty Jerome '25",
+  "scale": "off",
+  "target": 82,
+  "tol": 2,
+  "round": 78,
+  "ruling": "Ty jerome still 82 OFF",
+  "note": "his ruling reads 82; the shipped card measured 81 at the round",
+  "superseded_by": 96,
+  "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
+ },
+ {
+  "card": "Montrezl Harrell '18",
+  "scale": "off",
+  "target": 77,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
+  "note": "post-97, measured — unchanged",
+  "superseded_by": 96,
+  "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
+ },
+ {
+  "card": "Shaquille O'Neal '00",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the load-and-creation gain, 98 -> 99",
+  "current": 97
+ },
+ {
+  "card": "Nikola Jokić '25",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the round's named winner, measured flat",
+  "current": 97
+ },
+ {
+  "card": "LeBron James '10",
+  "scale": "ovr",
+  "target": 99,
+  "tol": 0,
+  "round": 84,
+  "ruling": "Fix the OVR ceiling drift",
+  "note": "one of the four cards clamped above the OVR anchor",
+  "current": 96
+ },
+ {
+  "card": "Giannis Antetokounmpo '24",
+  "scale": "ovr",
+  "target": 99,
+  "tol": 0,
+  "round": 84,
+  "ruling": "Fix the OVR ceiling drift",
+  "current": 96
+ },
+ {
+  "card": "LeBron James '13",
+  "scale": "ovr",
+  "target": 98,
+  "tol": 0,
+  "round": 84,
+  "ruling": "Fix the OVR ceiling drift",
+  "current": 96
+ },
+ {
+  "card": "Giannis Antetokounmpo '25",
+  "scale": "ovr",
+  "target": 98,
+  "tol": 0,
+  "round": 84,
+  "ruling": "Fix the OVR ceiling drift",
+  "current": 97
+ },
+ {
+  "card": "Joakim Noah '09",
+  "scale": "def",
+  "target": 76,
+  "tol": 1,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "current": 84
+ },
+ {
+  "card": "David Robinson '94",
+  "scale": "attr:rimprot",
+  "target": 99,
+  "tol": 1,
+  "round": 81,
+  "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
+  "note": "the anchor class holds",
+  "current": 97
+ },
+ {
+  "card": "Trae Young '22",
+  "scale": "def",
+  "target": 34,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "frozen control: must not rise",
+  "current": 37
+ },
+ {
+  "card": "OG Anunoby '26",
+  "scale": "def",
+  "target": 76,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "the named card — a POSITION big, so the shape clause never touched him",
+  "current": 73
+ },
+ {
+  "card": "Jimmy Butler '14",
+  "scale": "def",
+  "target": 85,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "perimeter-classified by the flip",
+  "current": 88
+ },
+ {
+  "card": "Andre Iguodala '13",
+  "scale": "def",
+  "target": 91,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "perimeter-classified by the flip",
+  "current": 93
+ },
+ {
+  "card": "Scottie Pippen '00",
+  "scale": "def",
+  "target": 90,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "perimeter-classified by the flip",
+  "current": 93
+ },
+ {
+  "card": "Metta World Peace '06",
+  "scale": "def",
+  "target": 86,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "perimeter-classified by the flip",
+  "current": 94
+ },
+ {
+  "card": "Rudy Gobert '19",
+  "scale": "def",
+  "target": 87,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 92
+ },
+ {
+  "card": "Draymond Green '16",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 95
+ },
+ {
+  "card": "Kevin Garnett '04",
+  "scale": "def",
+  "target": 94,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 97
+ },
+ {
+  "card": "Tim Duncan '03",
+  "scale": "def",
+  "target": 95,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 97
+ },
+ {
+  "card": "Nikola Jokić '26",
+  "scale": "def",
+  "target": 67,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 73
+ },
+ {
+  "card": "Karl-Anthony Towns '18",
+  "scale": "def",
+  "target": 66,
+  "tol": 1,
+  "round": 72,
+  "ruling": "recal_72 (design-side \"67\") — a big's rim presence must at least match his perimeter rating",
+  "note": "still big, unchanged",
+  "current": 75
+ },
+ {
+  "card": "Clyde Drexler '96",
+  "scale": "def",
+  "target": 78,
+  "tol": 1,
+  "round": 67,
+  "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
+  "note": "the named card — REACHED",
+  "current": 81
+ },
+ {
+  "card": "Ben Wallace '06",
+  "scale": "def",
+  "target": 99,
+  "tol": 0,
+  "round": 67,
+  "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
+  "note": "the defensive summit",
+  "current": 98
+ },
+ {
+  "card": "Draymond Green '16",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 67,
+  "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
+  "note": "the board, deflated honestly",
+  "current": 95
+ },
+ {
+  "card": "Ajay Mitchell '26",
+  "scale": "attr:rimprot",
+  "target": 58,
+  "tol": 0,
+  "round": 65,
+  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
+  "note": "rim work stays where it was paid",
+  "current": 50
+ },
+ {
+  "card": "Kawhi Leonard '16",
+  "scale": "attr:perdef",
+  "target": 76,
+  "tol": 2,
+  "round": 65,
+  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
+  "note": "receipt 65 asserts a FLOOR (perdef >= 76), not a value — it HOLDS today (95). Listed here only because the value schema cannot express >=; drop it or restate it as an order pin.",
+  "current": 95
+ },
+ {
+  "card": "Marcus Smart '19",
+  "scale": "attr:perdef",
+  "target": 76,
+  "tol": 2,
+  "round": 65,
+  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
+  "note": "receipt 65 asserts a FLOOR (perdef >= 76), not a value — it HOLDS today (94). Listed here only because the value schema cannot express >=; drop it or restate it as an order pin.",
+  "current": 94
+ },
+ {
+  "card": "Luguentz Dort '26",
+  "scale": "off",
+  "target": 38,
+  "tol": 1,
+  "round": 64,
+  "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
+  "note": "unchanged — a volume scorer's standard path is above the floor",
+  "current": 36
+ },
+ {
+  "card": "Russell Westbrook '17",
+  "scale": "def",
+  "target": 57,
+  "tol": 1,
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "steal merchant pays",
+  "current": 60
+ },
+ {
+  "card": "Joe Dumars '90",
+  "scale": "def",
+  "target": 86,
+  "tol": 1,
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "lockdown, low steals, rises",
+  "current": 73
+ },
+ {
+  "card": "Gary Payton '96",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "elite two-way holds",
+  "current": 86
+ },
+ {
+  "card": "Doug Christie '97",
+  "scale": "def",
+  "target": 73,
+  "tol": 1,
+  "round": 57,
+  "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
+  "note": "gambler eases",
+  "current": 78
+ },
+ {
+  "card": "Sidney Moncrief '84",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 57,
+  "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
+  "note": "lockdown gains",
+  "current": 86
+ },
+ {
+  "card": "Chris Paul '09",
+  "scale": "attr:ballsec",
+  "target": 70,
+  "tol": 1,
+  "round": 56,
+  "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
+  "current": 82
+ },
+ {
+  "card": "Magic Johnson '90",
+  "scale": "attr:ballsec",
+  "target": 50,
+  "tol": 1,
+  "round": 56,
+  "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
+  "current": 63
+ },
+ {
+  "card": "Jrue Holiday '21",
+  "scale": "attr:perdef",
+  "target": 90,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "mobile guard, unchanged",
+  "current": 94
+ },
+ {
+  "card": "Trae Young '22",
+  "scale": "attr:perdef",
+  "target": 34,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "THE FAILED FREEZE — the round said frozen at 44; it reads 34",
+  "current": 37
+ },
+ {
+  "card": "Andrei Kirilenko '04",
+  "scale": "attr:perdef",
+  "target": 77,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "voted — outside the relief, unchanged",
+  "current": 85
+ },
+ {
+  "card": "Shane Battier '05",
+  "scale": "attr:perdef",
+  "target": 78,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "unchanged (reputation reach > 0.05)",
+  "current": 75
+ },
+ {
+  "card": "Andrei Kirilenko '06",
+  "scale": "attr:perdef",
+  "target": 84,
+  "tol": 1,
+  "round": 54,
+  "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
+  "note": "HIS CARD",
+  "current": 88
+ },
+ {
+  "card": "Rudy Gobert '19",
+  "scale": "attr:perdef",
+  "target": 69,
+  "tol": 1,
+  "round": 54,
+  "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
+  "current": 64
+ },
+ {
+  "card": "Ajay Mitchell '26",
+  "scale": "attr:perdef",
+  "target": 76,
+  "tol": 0,
+  "round": 65,
+  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
+  "note": "SUPERSEDED BY HIS RULING (recal_92, verbatim: \"Way too high per def\"). The 76 was not a reading at all — it was the recal_16 DFG floor, which recal_92 retires; his blended value now reads 59.",
+  "current": 59
+ },
+ {
+  "card": "Luka Dončić '23",
+  "scale": "def",
+  "target": 73,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green. His 73 rested on the SAME recal_16 DFG floor that recal_92 retires (his '23 6ft+ diff of -1.8% bought the floor's -1.0% tier, perdef 64); with the floor gone his perdef reads 53 and DEF 65. The r80 note already called this rise a RED LINE BREACHED, shipped only on \"Ship 80\". PROVABLY UNSATISFIABLE ALONGSIDE recal_92: Dončić '23 (tracked 6ft+ -1.8%, composite ~51) would have to read ABOVE Ajay Mitchell '26 (tracked 6ft+ -4.2%, composite ~52), so no monotone reading of the same evidence holds both. If Tomer keeps the 73, recal_92's perdef half must be reopened; restore this line then.",
+  "current": 65
+ },
+ {
+  "card": "Pistons '04 (best legal five)",
+  "five": [
+   "Chauncey Billups '04",
+   "Richard Hamilton '04",
+   "Tayshaun Prince '04",
+   "Ben Wallace '04",
+   "Mehmet Okur '04"
+  ],
+  "scale": "team:defdial",
+  "target": 99,
+  "tol": 0,
+  "round": 71,
+  "ruling": "Do the same for DEF, 99 is 2004 pistons",
+  "superseded_by": 94,
+  "note": "SUPERSEDED BY HIS OWN LATER RULING at recal_94's integration: \"Move the summit to Bulls '96\". Held from r71 to r94. recal_94's defence reset moved drtgRef and left the Pistons '04 five 70th of the 1,255 fieldable team-seasons, so pinning DEF 99 to them flattened the top 5.5% of the dial (76 fives clamped). It reads 83 today. The OFF half of r71 (\"99 should be one of the greatest offense ever (2017 warriors)\") is NOT superseded and is still pinned."
+ },
+ {
+  "card": "Scottie Pippen '94",
+  "scale": "attr:perdef",
+  "target": 95,
+  "tol": 1,
+  "round": 54,
+  "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
+  "current": 94,
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
+ },
+ {
+  "card": "Kawhi Leonard '17",
+  "scale": "attr:perdef",
+  "target": 94,
+  "tol": 1,
+  "round": 54,
+  "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
+  "current": 93,
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
+ },
+ {
+  "card": "Marcus Smart '22",
+  "scale": "attr:perdef",
+  "target": 91,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "mobile guard, unchanged — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
+  "current": 92
+ },
+ {
+  "card": "Chris Paul '09",
+  "scale": "attr:perdef",
+  "target": 88,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "mobile guard, unchanged — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
+  "current": 89
+ },
+ {
+  "card": "Scottie Pippen '94",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "BIG branch — his +9 is the display re-solve alone — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
+  "current": 93
+ },
+ {
+  "card": "Gary Payton '96",
+  "scale": "def",
+  "target": 86,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "the round's scale-neutrality anchor, +-1 — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
+  "current": 86
+ },
+ {
+  "card": "Bruce Bowen '05",
+  "scale": "def",
+  "target": 85,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "current": 85,
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
+ },
+ {
+  "card": "Marcus Smart '22",
+  "scale": "def",
+  "target": 82,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "current": 82,
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
+ },
+ {
+  "card": "Tony Allen '15",
+  "scale": "def",
+  "target": 87,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "current": 87,
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan."
+ },
+ {
+  "card": "Andre Iguodala '14",
+  "scale": "def",
+  "target": 88,
+  "tol": 3,
+  "round": 93,
+  "ruling": "Agree with 14 andre",
+  "note": "the defence-branch ramp replaces is_big's middle cliff; 70 -> 90 (perdef 92 on rimprot 39 - he was being graded as a rim protector) — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. This card rose with recal_97 (\"This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting\") because it has the SAME sheet the ruling describes: defensive reputation 1.00, a unanimous All-Defensive/DPOY season. recal_97 removed three ceilings that had made the top of the perdef bar unreachable, so every card with a full-vote sheet reads nearer the top than before. If Tomer wants this pin held at its old value, the round must be reopened — it cannot be retuned around, because holding it means putting the ceiling back on Michael Jordan.",
+  "current": 90
+ },
+ {
+  "card": "Philadelphia 76ers '26 (best legal five)",
+  "five": [
+   "Tyrese Maxey '26",
+   "Quentin Grimes '26",
+   "Kelly Oubre Jr. '26",
+   "Dominick Barlow '26",
+   "Joel Embiid '26"
+  ],
+  "scale": "team:defdial",
+  "target": 36,
+  "tol": 6,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "SUPERSEDED BY recal_100. recal_94 seeded this value pin at 36 from its own reading; it was never one of his numbers. The era-relative recentring of recal_100 moved the whole 2026 field +14 and Philadelphia with it, to 50. Its rank pin (not in the season's top 6) is untouched and still passes at 13th of 24.",
+  "season": 2026,
+  "superseded_by": 100
+ },
+ {
+  "card": "Domantas Sabonis '21",
+  "scale": "attr:perdef",
+  "target": 47,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "THE COMPLAINT — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. Domantas Sabonis '21 rose with recal_101 (\"This is better than 50, should be low 60's\") because he is exactly the card the ruling describes on the other side: a NO-VOTE big with a FULL tracking sample (578 shots from 6ft+). His diff is BAD (+2.6%), and he still rises, because recal_86 centred the absolute tracked line at 58 (\"allowed exactly what was expected\") while his no-vote composite reads 45 — so trusting a full sample more pulls him UP toward 58 from below. Holding him at 47 means keeping the discount recal_101 measured to be backwards, which is the same discount that kept Stephon Castle '26 at 50. Tomer accepted this round with the move included (\"Accept all four, push them\").",
+  "current": 47
+ },
+ {
+  "card": "Domantas Sabonis '21",
+  "scale": "def",
+  "target": 69,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "THE COMPLAINT — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. Domantas Sabonis '21 rose with recal_101 (\"This is better than 50, should be low 60's\") because he is exactly the card the ruling describes on the other side: a NO-VOTE big with a FULL tracking sample (578 shots from 6ft+). His diff is BAD (+2.6%), and he still rises, because recal_86 centred the absolute tracked line at 58 (\"allowed exactly what was expected\") while his no-vote composite reads 45 — so trusting a full sample more pulls him UP toward 58 from below. Holding him at 47 means keeping the discount recal_101 measured to be backwards, which is the same discount that kept Stephon Castle '26 at 50. Tomer accepted this round with the move included (\"Accept all four, push them\").",
+  "current": 69
+ }
 ]

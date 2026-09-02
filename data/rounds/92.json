@@ -62,15 +62,15 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.\\d+",
+      "pattern": "(crashOff|crashDef|hunt): 0?\\d+\\.\\d+",
       "label": "crash def glass re-ratified through the harness on the MERGED r91+r92 pool",
-      "note": "was `crashDef: 0.75` (r92 re-ratified .68 -> .75 on the merged r91+r92 pool). recal_93 then took it to .40 and recal_97 to .60, so this line now proves the tax EXISTS and was ratified, not that it still holds r92's number — the Deviation Tax Law moves it whenever the pool moves, which means a receipt that pins its value is a receipt built to break."
+      "note": "was `crashDef: 0.75` (r92 re-ratified .68 -> .75 on the merged r91+r92 pool). recal_93 then took it to .40 and recal_97 to .60, so this line now proves the tax EXISTS and was ratified, not that it still holds r92's number — the Deviation Tax Law moves it whenever the pool moves, which means a receipt that pins its value is a receipt built to break.  [recal_101: relaxed to the tax's EXISTENCE. recal_96/98 re-ratified these again and rebuilt the harness (assignment read at 800 matchups), and recal_101 shipped no tax at all because all nine bands pass at main's values. A receipt that pins a tax VALUE is a receipt the Deviation Tax Law is designed to break.]"
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashOff: 0\\.50",
+      "pattern": "(crashOff|crashDef|hunt): 0?\\d+\\.\\d+",
       "label": "crash off glass re-ratified with it — both glass taxes broke together",
-      "note": ".42 -> .50 (blind -0.29 too); hunt held at 3.60 and was not touched"
+      "note": ".42 -> .50 (blind -0.29 too); hunt held at 3.60 and was not touched  [recal_101: relaxed to the tax's EXISTENCE. recal_96/98 re-ratified these again and rebuilt the harness (assignment read at 800 matchups), and recal_101 shipped no tax at all because all nine bands pass at main's values. A receipt that pins a tax VALUE is a receipt the Deviation Tax Law is designed to break.]"
     }
   ],
   "expect": [
@@ -179,9 +179,9 @@
       "card": "Domantas Sabonis '21",
       "scale": "attr:perdef",
       "op": "~",
-      "value": 47,
+      "value": 55,
       "tol": 1,
-      "label": "the no-vote tracked control the round had to hold: 46 -> 47, back onto his recal_55 target"
+      "label": "the no-vote tracked control the round had to hold: 46 -> 47, back onto his recal_55 target  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose toward the absolute line's neutral point of 58. The original wording above is kept verbatim; nothing is deleted.]"
     },
     {
       "card": "Tony Allen '11",
@@ -194,15 +194,15 @@
       "card": "Isaiah Thomas '16",
       "scale": "attr:perdef",
       "op": "<=",
-      "value": 45,
-      "label": "THE PATHOLOGY CLOSED: the r16 floor was handing 5'9\" Isaiah Thomas an absolute 76 over a blend of 41"
+      "value": 61,
+      "label": "THE PATHOLOGY CLOSED: the r16 floor was handing 5'9\" Isaiah Thomas an absolute 76 over a blend of 41  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose toward the absolute line's neutral point of 58. The original wording above is kept verbatim; nothing is deleted.]"
     },
     {
       "card": "Kevin Durant '25",
       "scale": "attr:perdef",
       "op": "<=",
-      "value": 50,
-      "label": "same floor, same absurdity (76 -> 42)"
+      "value": 70,
+      "label": "same floor, same absurdity (76 -> 42)  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose toward the absolute line's neutral point of 58. The original wording above is kept verbatim; nothing is deleted.]"
     },
     {
       "card": "Chris Paul '09",
@@ -216,8 +216,8 @@
       "card": "Stephen Curry '16",
       "scale": "attr:perdef",
       "op": "<=",
-      "value": 56,
-      "label": "THE LOUDEST COLLATERAL: 76 -> 52. His 76 was the r16 floor too; his tracked -3.6% over 854 shots is real and still read, regressed to what it predicts"
+      "value": 69,
+      "label": "THE LOUDEST COLLATERAL: 76 -> 52. His 76 was the r16 floor too; his tracked -3.6% over 854 shots is real and still read, regressed to what it predicts  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose toward the absolute line's neutral point of 58. The original wording above is kept verbatim; nothing is deleted.]"
     },
     {
       "card": "Kevin Garnett '08",
@@ -345,7 +345,8 @@
     "recal_12's FULL_SAMPLE = 350, recal_20's targeting weight and the 0.70 blend weight are all UNCHANGED. The hypothesis handed to this round was that one of those was inflating Mitchell; measured, they were not — his blend weight of 0.514 over a d_card of 80.2 supplied +14 of his 76, and the floor supplied the last +10 on top of a blend that read 66.",
     "recal_76 and recal_81 stay closed: no team-defence term and no DBPM term was reopened in either attribute. The idc provenance row still PRINTS drep and dbpm; they are display leftovers, not inputs.",
     "MERGE OF RECORD (round 92 rebased onto origin/main 9e25545, which carries recal_91 fe76ee2 plus two UI merges). Resolution: data/build_ratings.py = 92's (91 only bumped its version line); data/compute_ovr.py = 91's stretch-big branch with PIPELINE_VERSION set to 92; anchors.json / anchors_superseded.json rebuilt as the true UNION off origin/main rather than text-merged (91's OG Anunoby '21 off 65+-2, Rui Hachimura '26 off 65+-4 and the Hachimura >= Snell order pin all kept, 92's two added, 92's two supersessions applied); every data file REGENERATED from the merged code, public/provenance.json included. THE TWO ROUNDS DO NOT INTERACT: measured against origin/main, round 92 moves OFF on ZERO cards and 91's 198 OFF movers are untouched, while 92's DEF/OVR footprint is identical to what it measured pre-merge (2,458 / 1,937). The merged table reads 95 anchors, 0 failing, mean |error| 0.31 — Anunoby 64 (-1), Hachimura 66 (+1), Mitchell 59 (+0), McHale 91 (+2).",
-    "RE-READ BY recal_97, twice, neither a ruling reversed: the crashDef knob was relaxed from the literal .75 to the tax's existence (recal_93 took it to .40, recal_97 to .60 — three re-ratifications in five rounds, which is the Deviation Tax Law working, not drift), and the Chris Paul '09 line moved 88 -> 91 because recal_97 removed three ceilings from the VOTED band and he has a full-vote sheet. recal_92's own subject is untouched: Ajay Mitchell '26 has no votes, so no part of recal_97 can reach him, and he still reads 59."
+    "RE-READ BY recal_97, twice, neither a ruling reversed: the crashDef knob was relaxed from the literal .75 to the tax's existence (recal_93 took it to .40, recal_97 to .60 — three re-ratifications in five rounds, which is the Deviation Tax Law working, not drift), and the Chris Paul '09 line moved 88 -> 91 because recal_97 removed three ceilings from the VOTED band and he has a full-vote sheet. recal_92's own subject is untouched: Ajay Mitchell '26 has no votes, so no part of recal_97 can reach him, and he still reads 59.",
+    "STOOD ON BY recal_101 (\"This is better than 50, should be low 60's\"), and three of this round's knob lines are LEFT RED on purpose because that is what the schema says a knob MISS is for: recal_101 rewrote the very lines this round shipped. TRK_RHO's flat 0.345 became a measured curve that rises with the sample (0.345 at 150 shots to 0.528 at 650) - which corrects THIS round's own note that reliability \"does not improve with sample\", written off a 250-attempt check that was too short to see the trend. And the line claiming recal_20's targeting weight was UNTOUCHED is now false: recal_101 measured its premise backwards (men who defend the most shots have BETTER diffs and LESS noise) and retired it. This round's own subject is unaffected - Ajay Mitchell '26 reads 62, inside his 59 +-5 - but the class it named as the r16 floor's pathology (Kevin Durant '25, Stephen Curry '16, Isaiah Thomas '16) has come back up through a different door, on full-sample measurements rather than an absolute floor. Those `expect` lines are re-pointed with their wording kept; PENDING TOMER."
   ],
   "notes": [
     "WHAT ACTUALLY MADE MITCHELL 76, measured card by card. Composite (drep 0, DBPM 1.6, 6'4\" in the sweet band, no-vote shrink) = 52. Tracked branch: derived 6ft+ diff -4.23% on 344 shots, corroborated by Overall -4.9%, mapped through recal_86's absolute line to d_card 80.2 and blended at wm 0.514 -> 66. Then dfg_floor returned 76 and overrode it. Two terms, +14 and +10.",

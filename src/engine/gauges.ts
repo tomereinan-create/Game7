@@ -68,19 +68,21 @@ import type { Player } from './types'
 const OFF_MIN = 104.36 // the all-time worst wheel five
 const OFF_MID = 123.32 // the all-time median five reads 50 (today's sweep reads 123.25 — see recal_94's COST)
 const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
-// DEF side RE-FROZEN by recal_100 on the ERA-RELATIVE index (scripts/gauge100.ts re-derives this
+// DEF side RE-FROZEN by recal_100 on the ERA-RELATIVE index and RE-DERIVED by recal_101 (scripts/gauge100.ts re-derives this
 // whole block, table included; re-run it after any change that moves drtgRef). The three anchors are
 // quoted in DEF_LEVEL_REF's league, so they are ADJUSTED drtgRef, not raw drtgRef. The summit is
 // still where recal_94's ruling put it ("Move the summit to Bulls '96") and is still the only five
 // on the board that reads 99.
-const DEF_WORST = 113.2 // the all-time worst defensive five, era-adjusted
-const DEF_MID = 110.12 // the all-time median reads 50
-const DEF_TOP = 107.54 // Chicago Bulls '96 (adjusted 107.5372) — the named DEF summit reads 99
+const DEF_WORST = 113.03 // the all-time worst defensive five, era-adjusted
+const DEF_MID = 109.95 // the all-time median reads 50
+const DEF_TOP = 107.36 // Chicago Bulls '96 (adjusted 107.3638) — the named DEF summit reads 99
 
 /**
  * THE LEAGUE'S OWN DEFENSIVE LEVEL, season by season: the mean drtgRef of that season's fieldable
  * best-fives, frozen from the same 1,255-five sweep. Subtracting it is the whole of recal_100.
- * Flat at ~109.9 for thirty-four seasons, then a step at 2014 and a climb to 110.95.
+ * RE-DERIVED by recal_101: its perdef round lifted the tracked half of every modern card, so the
+ * 2014+ levels fell by ~0.6 (2026 110.950 -> 110.246) and the pre-tracking seasons barely moved.
+ * Flat at ~109.9 for thirty-four seasons, then a gentle climb from 2018 to 110.33.
  */
 const DEF_LEVEL: Record<number, number> = {
   1980: 109.818, 1981: 110.026, 1982: 109.855, 1983: 109.852, 1984: 109.923, 1985: 109.913,
@@ -88,12 +90,12 @@ const DEF_LEVEL: Record<number, number> = {
   1992: 109.924, 1993: 109.698, 1994: 109.819, 1995: 109.794, 1996: 109.937, 1997: 109.925,
   1998: 109.964, 1999: 109.976, 2000: 109.957, 2001: 109.941, 2002: 109.918, 2003: 109.913,
   2004: 109.998, 2005: 110.056, 2006: 110.003, 2007: 109.953, 2008: 109.957, 2009: 109.968,
-  2010: 109.951, 2011: 109.912, 2012: 109.982, 2013: 110.099, 2014: 110.515, 2015: 110.487,
-  2016: 110.508, 2017: 110.582, 2018: 110.793, 2019: 110.709, 2020: 110.733, 2021: 110.830,
-  2022: 110.792, 2023: 110.890, 2024: 110.811, 2025: 110.941, 2026: 110.950,
+  2010: 109.951, 2011: 109.912, 2012: 109.978, 2013: 109.959, 2014: 109.905, 2015: 109.850,
+  2016: 109.864, 2017: 109.959, 2018: 110.153, 2019: 110.096, 2020: 110.192, 2021: 110.315,
+  2022: 110.194, 2023: 110.240, 2024: 110.197, 2025: 110.326, 2026: 110.246,
 }
 /** The league every DEF dial is quoted in: the mean of the 47 season levels. */
-const DEF_LEVEL_REF = 110.1397
+const DEF_LEVEL_REF = 109.9663
 /** A five with no season of its own is a five in TODAY's league — the one the campaign is played in. */
 const DEF_LEVEL_FIELD = DEF_LEVEL[2026]
 

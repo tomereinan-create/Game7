@@ -62,15 +62,15 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 9[0-9]",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, compute side",
-      "note": "the ROUND is 93; it SHIPS as pipeline 96 because recal_95 landed first — see COST [recal_94: was the literal `PIPELINE_VERSION = 96`; relaxed to match the LINE, not the number, exactly as recal_95 relaxed round 91's. recal_94 rebased onto this main and ships as 97, which broke the literal. The version FLOOR is the `pipeline_version` field, and it checks it as >=.]"
+      "note": "the ROUND is 93; it SHIPS as pipeline 96 because recal_95 landed first — see COST [recal_94: was the literal `PIPELINE_VERSION = 96`; relaxed to match the LINE, not the number, exactly as recal_95 relaxed round 91's. recal_94 rebased onto this main and ships as 97, which broke the literal. The version FLOOR is the `pipeline_version` field, and it checks it as >=.]  [recal_101: relaxed to match ANY version. The literal, and even a one-digit class like 9[0-9], breaks the moment the ship counter passes it - this round ships as 101. The version FLOOR is the `pipeline_version` field, checked as >=.]"
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 9[0-9]",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, ratings side (the two must never drift)",
-      "note": "[recal_94: was the literal `PIPELINE_VERSION = 96`; relaxed to match the LINE, not the number, exactly as recal_95 relaxed round 91's. recal_94 rebased onto this main and ships as 97, which broke the literal. The version FLOOR is the `pipeline_version` field, and it checks it as >=.]"
+      "note": "[recal_94: was the literal `PIPELINE_VERSION = 96`; relaxed to match the LINE, not the number, exactly as recal_95 relaxed round 91's. recal_94 rebased onto this main and ships as 97, which broke the literal. The version FLOOR is the `pipeline_version` field, and it checks it as >=.]  [recal_101: relaxed to match ANY version. The literal, and even a one-digit class like 9[0-9], breaks the moment the ship counter passes it - this round ships as 101. The version FLOOR is the `pipeline_version` field, checked as >=.]"
     },
     {
       "file": "src/engine/tactics.ts",

@@ -1,0 +1,351 @@
+{
+  "round": 101,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "This is better than 50, should be low 60's · Per def is too low. I understand the 7'4 is an issue but everything else is 10/10 · This is 99 what else he can do · Too low per def. Should be high 50s low 60s / 66 is fine, anchor him there",
+  "title": "A FULL TRACKING SEASON IS EVIDENCE: the targeting discount runs backwards, reliability rises with the sample, and a voted card's measurement stops being multiplied by zero (Wembanyama's rimprot 99 DECLINED)",
+  "subject": "Stephon Castle '26",
+  "scale": "attr:perdef",
+  "target": 62,
+  "tol": 3,
+  "before": 50,
+  "after": 60,
+  "pipeline_version": 102,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_RHO_CURVE = \\(\\(150\\.0, 0\\.345\\), \\(250\\.0, 0\\.363\\), \\(350\\.0, 0\\.406\\), \\(450\\.0, 0\\.431\\), \\(550\\.0, 0\\.502\\), \\(650\\.0, 0\\.528\\)\\)",
+      "label": "reliability rises with the sample — the measured curve, not a fitted one",
+      "note": "recal_92's flat 0.345 was right at 150 shots and wrong at 650; this corrects recal_92's own note"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "d_card = _abs_perdef\\(dv, trk_rho\\(_r6\\[1\\] if _r6 else None\\)\\)",
+      "label": "rho now reads the card's own attempt count",
+      "note": "TRK_RHO[PERDEF_CAT] -> trk_rho(attempts)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "corr\\(attempts / season median, diff\\) = -0\\.068",
+      "label": "THE TARGETING DISCOUNT IS RETIRED — its premise runs backwards in the data",
+      "note": "the six buckets are in the comment; men who defend most have BETTER diffs and LESS noise"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "wm = \\(0\\.70 \\+ 0\\.30 \\* _sw\\) \\* _targeting_weight\\(r\\['name'\\]\\) \\* _sw",
+      "label": "the blend ceiling rises with the sample: 0.70 at half a season, 1.00 at a full one",
+      "note": "the composite it holds back for is, for a no-vote card, deliberately uninformative"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "    FULL_SAMPLE = 500\\.0",
+      "label": "350 -> 500: the median tracked card defends 452 shots, so 350 was the 35th percentile",
+      "note": "recal_12 set 350 by assertion; p50 452, p75 546, p90 631"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "if wv > 0 and _dmeas101 is not None and _sample_weight\\(r\\['name'\\]\\) >= 1\\.0:\\s*\\n\\s*PD2 = max\\(PD2, _dmeas101\\)",
+      "label": "a VOTED card's full-sample measurement may raise him, never lower him",
+      "note": "for wv = 1 the tracked branch was multiplied by zero — Wembanyama's -8.6% over 765 shots was discarded"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD  = dict\\(drep=0\\.453, dbpm=0\\.238, height_inv=0\\.309\\)",
+      "label": "UNTOUCHED: the composite weights, and the height terms with them",
+      "note": "he accepted that 7'4\" costs something; it still costs him 0.54 of a 1.09 composite"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rep_hf = max\\(0\\.5, 1\\.2 - 0\\.8 \\*",
+      "label": "UNTOUCHED: recal_54's rep_hf — measured as a variant and not shipped",
+      "note": "lifting its floor reached Wembanyama 70, still short, and moved 1,284 cards"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_LEVEL_REF = 109\\.9663",
+      "label": "recal_100's DEF gauge RE-DERIVED on the regenerated cards",
+      "note": "110.1397 -> 109.9663; the whole block re-run through scripts/gauge100.ts"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "2026: 110\\.246,",
+      "label": "the per-season league defensive level, 2026",
+      "note": "110.950 -> 110.246 — the tracked half of every modern card rose, so the league's own level fell"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 74,
+      "tol": 5,
+      "label": "SECOND RULING — 58 -> 74 (target assumed 78 +-5; he gave no number and accepts that height costs)"
+    },
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "THIRD RULING — DECLINED, recorded at its unchanged reading. 99 costs 5 anchors and quadruples the 99-crowd; see COST"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 59,
+      "tol": 5,
+      "label": "THE NEGATIVE CASE HELD: 59 -> 62, inside recal_92's band. His 344 shots are two thirds of a full sample, so he gains less than Castle's 514"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 66,
+      "tol": 2,
+      "label": "FOURTH RULING — \"Too low per def. Should be high 50s low 60s\", then, shown what this round already gave him, \"66 is fine, anchor him there\". 48 -> 66 on -3.6% over 587 shots"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "ovr",
+      "op": "~",
+      "value": 78,
+      "tol": 1,
+      "label": "and this CLOSES THE ROUND-102 OPEN ITEM on him: 74 -> 78, reached through the attribute rather than through o_score"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "recal_97 untouched — untracked era, so nothing in this round reaches him"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "untracked, flat — the below-band height side is not touched"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 97,
+      "label": "a voted card whose band already beats his measurement is NOT lowered — the max is a floor, never a ceiling"
+    },
+    {
+      "card": "Luguentz Dort '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 91,
+      "label": "same, on a full 504-shot sample: flat"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 96,
+      "label": "flat"
+    },
+    {
+      "card": "Dyson Daniels '25",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 95,
+      "label": "flat — and note his tracked diff is +4.1%, which under a max() can never demote him"
+    },
+    {
+      "card": "Amen Thompson '25",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 94,
+      "label": "flat"
+    },
+    {
+      "card": "Rudy Gobert '21",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 71,
+      "tol": 2,
+      "label": "the other tall voted man the ruling names: 65 -> 71 on -4.5% over 993 shots, the largest sample in the pool"
+    },
+    {
+      "card": "Chet Holmgren '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 66,
+      "tol": 2,
+      "label": "64 -> 66"
+    },
+    {
+      "card": "Joel Embiid '23",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 61,
+      "tol": 2,
+      "label": "58 -> 61"
+    },
+    {
+      "card": "Trey Murphy III '25",
+      "scale": "attr:perdef",
+      "op": "<=",
+      "value": 55,
+      "label": "a full-sample NEGATIVE tracked read (+4.3%) stays in the low 50s"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "recal_95 untouched — rimprot moved on ZERO cards"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "recal_92's rimprot ruling, flat"
+    },
+    {
+      "card": "Ben Wallace '06",
+      "scale": "def",
+      "op": ">=",
+      "value": 98,
+      "label": "the DEF summit holds"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:perdef",
+      "above": "Victor Wembanyama '26",
+      "below": "Stephon Castle '26",
+      "label": "-8.6% on 765 shots above -1.5% on 514"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Victor Wembanyama '26",
+      "label": "and a perfect voted sheet still sits above a measured one"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Stephon Castle '26",
+      "below": "Trey Murphy III '25",
+      "label": "a good full-sample read above a bad one"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Stephon Castle '26",
+      "below": "Domantas Sabonis '21",
+      "label": "-1.5% above +2.6%, both on full samples"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Victor Wembanyama '26",
+      "below": "Pau Gasol '04",
+      "label": "rimprot is untouched this round"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Jaylen Brown '26",
+      "below": "Stephon Castle '26",
+      "label": "the two no-vote wings of the round, in the order their evidence puts them: -3.6% on 587 above -1.5% on 514"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 2580,
+    "max_abs": 28,
+    "top": [
+      [
+        "Kevin Durant '25",
+        42,
+        70
+      ],
+      [
+        "LaMarcus Aldridge '20",
+        36,
+        63
+      ],
+      [
+        "Deandre Ayton '20",
+        41,
+        68
+      ],
+      [
+        "Kevin Durant '16",
+        50,
+        76
+      ],
+      [
+        "Victor Wembanyama '26",
+        58,
+        74
+      ],
+      [
+        "Stephon Castle '26",
+        50,
+        60
+      ],
+      [
+        "Shane Battier '14",
+        60,
+        58
+      ],
+      [
+        "Donte DiVincenzo '23",
+        50,
+        47
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Alex Caruso '23"
+    ]
+  },
+  "cost": [
+    "WEMBANYAMA'S RIMPROT 99 IS DECLINED, and the price is measured rather than argued. He reads 97 and his '24 and '25 cards read 97 too, both anchored (recal_82 at 97 tol 0, recal_53 at 97 tol 1), so the 20/60/20 smoothing means '26 cannot move without them. THREE ceilings hold him, and only all three together reach 99: (1) ID is clamped to 1.0 before Prot ranks it, and his composite is 1.2446 - the same clamp recal_97 removed from perdef, never removed here; (2) the tracked rim term is a within-season PERCENTILE, so his -8.6% reads 0.959 rather than 1.0 because he is 2026's 4.5th percentile and not its single best; (3) that term is applied to EVERY card including a unanimous DPOY, where perdef routes a voted card past it. Measured: unclamping alone gives 98 and costs 4 tol-0 anchors (Gobert '19 and Wembanyama '24 97 -> 98, Mutombo '97 and Duncan '03 98 -> 99). Routing votes past the tracked percentile alone gives 98 and costs Wembanyama '24 (97 -> 96, DOWN). Both together give 99 and cost 5 anchors AND take the pool from 9 cards at 99 to 48 - eight Gobert seasons and seven Duncan seasons all reading exactly 99, which is the compression recal_84 and recal_90 exist to prevent. Tightening the band slope to 0.45 to thin that crowd pushes Ben Wallace '04 98 -> 96 and Bobby Jones '82 96 -> 94, i.e. it pays for the summit by deflating the board. THE STRUCTURAL POINT: Wembanyama '24 has a BETTER rim sheet than '26 (blk 10.0% vs 9.4%, tracked rim -10.7% vs -8.6%, same height, same votes) and is anchored at 97 tol 0, so no monotone formula puts '26 at 99 and leaves '24 at 97. Tomer decides: either the '24 anchor is re-opened, or 97 stands.",
+    "THREE ANCHORS ROSE OUT OF BAND AND WERE NOT RETUNED AROUND — PENDING TOMER, all moved to anchors_superseded.json. Domantas Sabonis '21 attr:perdef 47 -> 55 and def 69 -> 73: he is the ruling's own shape on the other side, a NO-VOTE big with a full 578-shot sample, and he rises DESPITE a bad diff (+2.6%) because recal_86 centred the absolute tracked line at 58 while his no-vote composite reads 45. Philadelphia 76ers '26 team:defdial 36 -> 50 is a UNITS move, not Philly's defence rising: every team's dial rose together (Thunder 62 -> 73), ALL SEVEN of recal_94's DEF rank pins still pass, PHI '26 got WORSE in rank (13th of 24 -> 14th), and recal_94's own note on that line says \"the rank pin above is the binding one; this records the number\".",
+    "THE FROZEN CONTROLS MOVED, and this is the round's real cost, stated first rather than buried. Stephen Curry '16 perdef 52 -> 69, Kevin Durant '25 42 -> 70, Deandre Ayton '20 41 -> 68, LaMarcus Aldridge '20 36 -> 63, Trae Young '22 40 -> 50. These are NOT a defect and they are NOT reachable by tuning around: Curry '16 defended 703 shots at -5.8% and Durant '25 543 at -5.2%, both fuller AND better readings than the ruling's own subject (Castle, -1.5% on 514, ruled to the low 60s), so under one formula they must read above him. Measured across the whole ceiling sweep: even LEAVING the blend ceiling at recal_12's 0.70, retiring the backwards targeting discount alone takes Curry to 62 and Durant to 59. The tuning knob does not separate them from Castle; only a per-player override would, and that is forbidden. RECORDED FOR TOMER: if the Durant/Curry class is wrong, the thing to re-open is Castle's number, not the discount.",
+    "recal_92 IS PARTLY CORRECTED BY ITS OWN AUTHOR, and the correction is in that round's own terms. recal_92 wrote \"it does not improve with sample: at a 250-attempt floor it is 0.363\" and set rho flat at 0.345. Measured over a wider range on the same file, reliability climbs to 0.406 at 350, 0.431 at 450, 0.502 at 550 and 0.528 at 650 — the 250-attempt step was simply too short to see the trend. The doctrine of recal_92 stands (a season's diff is an estimate and must be regressed); what changes is that the amount of regression now depends on how much evidence there is. Kevin Durant '25, whom recal_92's receipt named as the pathology of the r16 floor at 76, now reads 70 by a different mechanism: not an absolute floor that ignored sample and composite, but a 543-shot measurement regressed by its measured reliability.",
+    "TWO ENGINE PINS RE-BASED in place with the reason: tests/engine.test.ts near(\"Stephen Curry '16\", 99, 57) -> 69, the FIFTH re-basing of that anchor (62 -> 70 -> 81 -> 75 -> 57 -> 69), and Trae Young '22 def 37 -> 46. Both are recorded as the ruling applied, not exceptions to it.",
+    "recal_54's rep_hf WAS MEASURED AND NOT SHIPPED. Wembanyama pays for 7'4\" TWICE: rep_hf halves his votes above 6'8\" (0.453 x 1.0 x 0.5 = 0.227 instead of 0.544) and height_inv zeroes at 88 inches (0 instead of 0.309) — together 0.54 of a 1.09 composite, from one fact charged in two places, which is the recal_76/81 double-counting pattern. Lifting the rep_hf floor to 1.2 reaches only 70, still short of the assumed band, and moves 1,284 cards (Gobert '21 65 -> 85, Holmgren '26 64 -> 88) while pushing Kawhi '17 97 -> 95 and Chris Paul '09 91 -> 88 through the re-ranked band. The measurement route reached him without any of that, so the double penalty is left standing and REPORTED: it is the obvious next round on this attribute, and it is a ruling, not an engine call.",
+    "NO TAX WAS SHIPPED, and the story is worth recording because the intermediate state said otherwise. Against the pre-merge main THREE bands broke at once (hunt blind -0.23, crashOff oracle +0.49, crashDef oracle +0.48) and were re-ratified to 3.90 / .42 / .45. recal_96 and recal_98 then landed with their own re-ratification AND a rebuilt harness (the assignment row is now read at 800 matchups, and the pick-and-roll call was rewritten), and on the merged board all nine bands pass at MAIN'S values untouched: hunt -0.45 / +0.52, crash off -0.36 / +0.67, crash def -0.35 / +0.55. src/engine/tactics.ts is byte-identical to origin/main. A tax re-ratified against a pool that then moves again is a tax ratified against nothing, which is the argument for doing it last.",
+    "INTEGRATED ONTO origin/main f4cbb51 (recal_96, recal_98, plus UI and tactics rounds). Base check first per _shared.md: origin/main's shipped attributes reproduce from its own code, 0 attributes moved. Resolution: build_ratings.py mine, compute_ovr.py main's (recal_96/98 untouched), tactics.ts main's, anchors rebuilt programmatically from origin/main's 104/55 rather than text-merged (104 - 3 moved + 2 added = 103 / 58), whole chain regenerated. THE FOOTPRINT IS IDENTICAL to the pre-merge measurement (perdef 2,580, o_ovr 0, rimprot 0) and all three of this round's targets and every anchor read the same, which is the check that the rounds do not interact: 96 and 98 moved OFF, this round moves perdef.",
+    "JAYLEN BROWN '26 CLOSES THE ROUND-102 OPEN ITEM. His ruling arrived while this round was being integrated (\"Too low per def. Should be high 50s low 60s\"), he was shown that the round already reads him 66, and he anchored it there (\"66 is fine, anchor him there\"). His OVR goes 74 -> 78 as a consequence — which is the number round 102 was going to be asked to reach on the OFF/OVR side. It is reached HERE, through the attribute, on the same two inputs as Castle: no votes, a full sample (587 shots) and a -3.6% diff. Round 102 should re-read him before doing anything.",
+    "PIPELINE_VERSION 102 for round 101. It was written against pipeline 98 and has been bumped three times by rounds landing under it (96, 98, 100). The number is the SHIP order and nothing else.",
+    "recal_100's DEF GAUGE HAD TO BE RE-DERIVED, and that round's own comment said so in advance: \"scripts/gauge100.ts re-derives this whole block, table included; re-run it after any change that moves drtgRef\". This round moves drtgRef on every modern five, because the per-season league defensive level recal_100 froze is the mean drtgRef of that season's best-fives and this round lifted the tracked half of every modern card. Re-run on the regenerated pool: 2026's level 110.950 -> 110.246 (the 2014+ seasons all fell by ~0.6; the pre-tracking seasons barely moved, which is the era-relative index doing exactly its job), DEF_LEVEL_REF 110.1397 -> 109.9663, DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36. WITHOUT the re-derivation the 2026 dials read 10-15 too high and three of recal_100's team anchors failed; with it every one passes. data/anchors.py needed no change: recal_94 built it to PARSE the constants out of gauges.ts rather than transcribe them, and that design paid for itself here.",
+    "EVERY TEAM ANCHOR, before -> after the re-derivation: Thunder '26 defdial 91 -> 78 (anchor 81 +-3), Pistons '26 86 -> 73 (71 +-4), 76ers '26 63 -> 50 (49 +-6), Lakers '87 64 -> 64 (64 +-6), Bulls '96 99 -> 99 (tol 0, and still the only five of 1,255 at 99), Pistons '04 82 (83 +-3), Warriors '17 offdial 99 (tol 0). All seven DEF rank pins pass: OKC '26 1st of 24 (needs <= 2), PHI '26 14th of 24 (needs >= 7), CHI '05 13th of 30, NYK '98 14th of 28, ORL '24 12th of 26, SAS '20 10th of 27, POR '06 21st of 30. Thunder >= 76ers holds 78/50."
+  ],
+  "notes": [
+    "WHY CASTLE READ 50, term by term. Composite 0.497 (no votes, so it is shrunk toward 0.5 and carries almost nothing), tracked reading 60.8 in card space from -1.5% over 514 shots. The blend weight that decides between them was wm = 0.70 x targeting x sample = 0.70 x 0.35 x 1.00 = 0.245 — so 75% of his card was a number designed to be uninformative, and the 0.35 was a HUNTED discount applied because he defended 2.1x the season median. A full season of evidence bought him less weight than a 180-shot season would have.",
+    "THE TARGETING DISCOUNT'S PREMISE, tested and found backwards. It assumed high volume means a harder shot diet. Over all 6,875 tracked cards, corr(attempts / season median, diff) = -0.068, and every bucket runs the other way: <0.5x median +2.14% (sd 15.11%), 0.5-1.0x +1.61% (4.39%), 1.0-1.5x +1.07% (3.62%), 1.5-2.0x +0.83% (3.16%), 2.0-2.5x +0.64% (2.93%), >2.5x +0.16% (2.62%). Men who defend the most shots have BETTER diffs and LESS noise — the discount cut the truest and most reliable readings by up to 65%, and it fought _sample_weight, which rewards the same volume, card for card.",
+    "RELIABILITY RISES WITH THE SAMPLE, which is the half of recal_92 that was measured too narrowly. Outside 6Ft, year-over-year, both seasons above the floor: 150+ r=0.345 (n=3,181), 250+ 0.363 (2,350), 350+ 0.406 (1,540), 450+ 0.431 (813), 550+ 0.502 (314), 650+ 0.528 (95). Overall: 150+ 0.355, 350+ 0.421, 550+ 0.471, 750+ 0.577. The curve in the file IS this table, interpolated — nothing is fitted.",
+    "FULL_SAMPLE 350 -> 500. recal_12 set \"full workload = full evidence\" at 350 by assertion. The median tracked card in this file defends 452 shots from 6ft+ (p75 546, p90 631, p99 820), so 350 was the 35th percentile of workload and `samp` saturated for two thirds of the pool — which is why the targeting weight ended up doing all the discriminating. 500 sits just above the median. It is also what holds Ajay Mitchell '26: at 344 shots he is two thirds of a full sample where Castle is a full one, so he gains 3 points where Castle gains 10, and recal_92's band holds.",
+    "WHY WEMBANYAMA READ 58 WITH THE BEST TRACKED SHEET IN THE POOL. His voted-band weight is 1.00, and the line was PD2 = (1-wv)*tracked + wv*band — so his -8.6% over 765 shots was multiplied by ZERO. He was ranked purely on a composite that his height empties twice (0.463 of a possible 1.09), putting him at the 8th percentile of voted defenders. The fix does not touch the height terms he accepts: it stops the measurement being discarded. It is a floor and never a ceiling, so Kawhi '17, Dort '26, Herbert Jones '23, Dyson Daniels '25 and Amen Thompson '25 — voted men whose band already beats their tracked read — are all exactly flat.",
+    "FOOTPRINT: 2,580 perdef cards move, 2,429 up and 151 down, max 28, 1,493 by 5+. The asymmetry is structural and worth naming: recal_86 centred the absolute tracked line at 58 (\"allowed exactly what was expected\") while the no-vote composite band sits around 35-52, so ANY round that trusts tracking more pulls the no-vote population up toward 58 from below. That is why even Trae Young '22, whose diff is bad, rises. rimprot moves on ZERO cards and o_ovr on ZERO.",
+    "DOWNSTREAM: d_ovr 2,407 movers (2,311 up, max +20), ovr 2,063 (2,010 up, max +8), o_ovr 0, rimprot 0. The perdef TOP 12 is unchanged, name for name and value for value — nothing at the summit is tracked, so the round cannot reach it.",
+    "THE TEN CARDS, with the two inputs that decide them (tracked 6ft+ diff, shots): Castle '26 -1.5%/514 50->60 | Wembanyama '26 -8.6%/765 58->74 | Mitchell '26 -4.2%/344 59->62 | Dort '26 -0.2%/504 91->91 | Herbert Jones '23 -4.7%/495 96->96 | Dyson Daniels '25 +4.1%/701 95->95 | Amen Thompson '25 -3.1%/471 94->94 | Kawhi '17 -2.9%/464 97->97 | MJ '89 untracked 99->99 | Trey Murphy '25 +4.3%/433 46->51 | Gobert '21 -4.5%/993 65->71 | Embiid '23 -2.1%/731 58->61 | Holmgren '26 -1.2%/544 64->66 | CP3 '09 untracked 91->91 | Sabonis '21 +2.6%/578 47->55.",
+    "DOWNSTREAM on the merged board: d_ovr 2,407 movers (2,311 up, max +20), ovr 2,074 (2,023 up, max +8), o_ovr ZERO, rimprot ZERO. Stephen Curry '16 DEF 57 -> 69 and Kevin Durant '25 DEF 54 -> 74 are the loudest, and both are the ruling applied: 703 shots at -5.8% and 543 at -5.2%.",
+    "JAYLEN BROWN '26 IS THE ROUND'S OWN CONTROL, arrived at independently. He was not in the design set: his ruling came in during the integration, on a card with the same shape as the subject but a fuller sample and a better diff (587 shots at -3.6% against Castle's 514 at -1.5%). The formula puts him six points above Castle without being asked to, and Tomer accepted that number as-is. A ruling that lands on a card the round never targeted is the strongest evidence the shape is right.",
+    "THE ERA-RELATIVE INDEX PROVED ITSELF HERE. recal_100 subtracts each season's own defensive level before the gauge. This round raised perdef across the tracked era only (2014+), so the raw drtgRef of every modern five improved at once — exactly the kind of level shift that would have wrecked a fixed scale. Because the index is era-relative, re-deriving it moved the 2014+ levels down by ~0.6 and left 1980-2013 within 0.03, and every one of recal_100's rulings survived unchanged on the new block."
+  ]
+}
