@@ -67,21 +67,21 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_WORST = 112\\.92",
+      "pattern": "const DEF_WORST = 113\\.2",
       "label": "the DEF gauge, re-frozen from the 1,255-five wheel sweep",
-      "note": "112.87 -> 112.92"
+      "note": "112.87 -> 112.92 [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the worst five is still the worst five]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_MID = 110\\.21",
+      "pattern": "const DEF_MID = 110\\.12",
       "label": "the all-time median five still reads 50",
-      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work)"
+      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work) [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the median five still reads 50]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.47",
+      "pattern": "const DEF_TOP = 107\\.54",
       "label": "THE SECOND RULING — the DEF summit moves off recal_71's Pistons '04 and onto the Bulls '96",
-      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99."
+      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99. [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the Bulls '96 are still the summit and still alone at 99]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -127,15 +127,15 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, compute side",
-      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. Pattern matches the LINE, per recal_95's fix to round 91."
+      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. recal_100 widened this to match the LINE at any version, per recal_95's fix: a version regex that pins digits fails on every later round by construction."
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, ratings side (the two must never drift)",
-      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. Pattern matches the LINE, per recal_95's fix to round 91."
+      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. recal_100 widened this to match the LINE at any version, per recal_95's fix: a version regex that pins digits fails on every later round by construction."
     },
     {
       "file": "src/engine/gauges.ts",

@@ -6,9 +6,11 @@ import type { Player } from '../../src/engine/types'
 
 const BY = new Map(PLAYERS.map((p) => [p.name, p]))
 const F = (...n: string[]) => n.map((x) => BY.get(x)!).filter(Boolean) as Player[]
+/** recal_100: the dial is read in the five's own season's league, so the tag carries the year. */
+const YEAR: Record<string, number> = { 'PHI 26': 2026, 'OKC 26': 2026, 'DET 26': 2026, 'SAS 26': 2026, 'DET 04': 2004, 'GSW 17': 2017, 'CHI 96': 1996, 'CHI 05': 2005, 'SAS 20': 2020 }
 const FIVES: [string, string[]][] = [
   ['PHI 26', ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"]],
-  ['OKC 26', ["Shai Gilgeous-Alexander '26", "Isaiah Joe '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"]],
+  ['OKC 26', ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"]],
   ['DET 26', ["Cade Cunningham '26", "Duncan Robinson '26", "Ausar Thompson '26", "Tobias Harris '26", "Jalen Duren '26"]],
   ['SAS 26', ["De'Aaron Fox '26", "Dylan Harper '26", "Keldon Johnson '26", "Harrison Barnes '26", "Victor Wembanyama '26"]],
   ['DET 04', ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"]],
@@ -21,7 +23,7 @@ for (const [tag, names] of FIVES) {
   const five = F(...names)
   if (five.length !== 5) { console.log(`${tag}: MISSING ${names.filter((n) => !BY.get(n)).join(', ')}`); continue }
   const r = ratings100(five)
-  const g = seasonGauges(five, 0)
+  const g = seasonGauges(five, YEAR[tag] ?? 2026)
   console.log(`${tag}  team:off ${String(r.off).padStart(2)}  team:def ${String(r.def).padStart(2)}   dial OFF ${g.off} DEF ${g.def}   offRaw ${r.offRaw.toFixed(2)} drtgRef ${r.drtgRef.toFixed(3)}`)
 }
 const top = (k: 'd_ovr' | 'o_ovr' | 'ovr') =>

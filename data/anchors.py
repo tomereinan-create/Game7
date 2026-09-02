@@ -36,6 +36,9 @@ TEAM ANCHORS (recal_94 — "Philly 2026 def too high ... OFF DEF feels off for t
     team:offdial / team:defdial  the 1-99 ALL-TIME dial the team screen shows — src/ui/TeamDb.tsx's
                                  gaugeOf through src/engine/gauges.ts. The frozen constants are READ
                                  OUT OF gauges.ts, never copied here, so the two cannot drift.
+                                 recal_100: a team:defdial pin also takes a `season`, because the DEF
+                                 dial now reads a five in its own season's league. Omit it and the
+                                 five is read in today's, which is what a drafted five gets.
 
     {"kind": "team_rank", "season": 2026, "ab": "PHI", "scale": "team:def",
      "min_rank": 7, "round": 94, "ruling": "..."}
@@ -113,13 +116,30 @@ def _gauge_consts():
         path = os.path.join(_HERE, '..', 'src', 'engine', 'gauges.ts')
         src = io.open(path, encoding='utf-8').read()
         g = {}
-        for k in ('OFF_MIN', 'OFF_MID', 'OFF_TOP', 'DEF_WORST', 'DEF_MID', 'DEF_TOP'):
+        for k in ('OFF_MIN', 'OFF_MID', 'OFF_TOP', 'DEF_WORST', 'DEF_MID', 'DEF_TOP', 'DEF_LEVEL_REF'):
             m = re.search(r'^const %s = ([0-9.]+)' % k, src, re.M)
             if not m:
                 return None
             g[k] = float(m.group(1))
+        # recal_100's era table, read from the same file for the same reason
+        blk = re.search(r'^const DEF_LEVEL: Record<number, number> = \{(.*?)^\}', src, re.M | re.S)
+        if not blk:
+            return None
+        g['DEF_LEVEL'] = {int(y): float(v) for y, v in re.findall(r'(\d{4}):\s*([0-9.]+)', blk.group(1))}
+        if len(g['DEF_LEVEL']) < 40:
+            return None
         _GAUGE = g
     return _GAUGE
+
+
+def _def_adj(drtg, season=None):
+    """recal_100: drtgRef re-expressed in DEF_LEVEL_REF's league. Mirrors defAdj in gauges.ts —
+    an unknown season falls back to today's, exactly as fieldGauges does."""
+    g = _gauge_consts()
+    lvl = g['DEF_LEVEL'].get(season) if season else None
+    if lvl is None:
+        lvl = g['DEF_LEVEL'][max(g['DEF_LEVEL'])]
+    return drtg - lvl + g['DEF_LEVEL_REF']
 
 
 def _scale71(v, mn, mid, top):
@@ -136,14 +156,16 @@ def team_raw(five):
     return off, drtg
 
 
-def team_dials(five):
-    """The 1-99 ALL-TIME dials the app's team screen shows (src/ui/TeamDb.tsx gaugeOf -> gauges.ts)."""
+def team_dials(five, season=None):
+    """The 1-99 ALL-TIME dials the app's team screen shows (src/ui/TeamDb.tsx gaugeOf -> gauges.ts).
+    recal_100: the DEF dial is read in the five's own season's league, so a team:defdial pin carries
+    a `season`. Without one it is read in today's, which is what a drafted five gets."""
     g = _gauge_consts()
     if g is None:
         return None
     off, drtg = team_raw(five)
     return (_scale71(off, g['OFF_MIN'], g['OFF_MID'], g['OFF_TOP']),
-            _scale71(-drtg, -g['DEF_WORST'], -g['DEF_MID'], -g['DEF_TOP']))
+            _scale71(-_def_adj(drtg, season), -g['DEF_WORST'], -g['DEF_MID'], -g['DEF_TOP']))
 
 
 # ---- the season board: every fieldable team-season's OVR-max legal five, as bestfive.ts picks it ----
@@ -271,7 +293,7 @@ def read_scale(players, a):
         if len(five) != 5 or any(p is None for p in five):
             return None
         if scale in ('team:offdial', 'team:defdial'):
-            d = team_dials(five)
+            d = team_dials(five, a.get('season'))
             return None if d is None else (d[0] if scale == 'team:offdial' else d[1])
         off100, def100 = _team_ns()['ratings_100'](five)
         return off100 if scale == 'team:off' else def100
@@ -333,8 +355,10 @@ def grade(players, anchors_path=None):
                 r['ok'] = (lo is None or rk <= lo) and (hi is None or rk >= hi)
                 r['verdict'] = 'PASS' if r['ok'] else 'FAIL'
         elif kind == 'order':
-            hi = read_scale(players, dict(scale=a['scale'], card=a['above'], five=a.get('five_above', a.get('five'))))
-            lo = read_scale(players, dict(scale=a['scale'], card=a['below'], five=a.get('five_below', a.get('five'))))
+            hi = read_scale(players, dict(scale=a['scale'], card=a['above'], five=a.get('five_above', a.get('five')),
+                                          season=a.get('season_above', a.get('season'))))
+            lo = read_scale(players, dict(scale=a['scale'], card=a['below'], five=a.get('five_below', a.get('five')),
+                                          season=a.get('season_below', a.get('season'))))
             if hi is None or lo is None:
                 r['verdict'] = 'MISSING'
             else:
