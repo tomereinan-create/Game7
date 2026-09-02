@@ -19,7 +19,19 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 91   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 92   # printed every run and written to src/data/pipeline.json
+# recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
+# OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
+# and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
+# pair a player appears in (min 150 attempts defended in the slice), the year-to-year correlation is
+#   Outside 6Ft (what perdef reads)  r = 0.345  (n = 3,181)
+#   Overall     (the 0.30 corroborator) r = 0.355  (n = 3,705)
+#   Less Than 6Ft (what rimprot reads)  r = 0.558  (n = 2,052)   <- and rimprot already weights it 0.35
+#   Greater Than 15Ft                    r = 0.140  (n = 2,632)
+# recal_86 anchored the tracked branch in card space but read the raw season diff as if it were the
+# truth, so one season bought (or cost) ~20 points of perdef. The best estimate of the true diff is
+# the observed deviation from neutral shrunk by the series' reliability; that is all this dict does.
+TRK_RHO = {'Outside 6Ft': 0.345, 'Overall': 0.355}
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -222,7 +234,18 @@ import unicodedata as _ud
 def _nrm(n): return ''.join(c for c in _ud.normalize('NFKD', (n or '').lower()) if c.isalnum())
 TRACKING = {}          # (season, category) -> {norm name: (diff_pct, attempts)}
 TRK_CATS = {'overall': 'Overall', 'rim': 'Less Than 6Ft', 'perim': 'Greater Than 15Ft', 'three': '3 Pointers'}
-DFG_FLOORS = ((-0.035, 76), (-0.02, 70), (-0.01, 64))   # recal_16: defended-FG% diff -> absolute card floor
+# recal_92: THE r16 FLOOR LADDER IS RETIRED (it was ((-0.035, 76), (-0.02, 70), (-0.01, 64))).
+# recal_16 wrote an absolute floor because the tracked branch was a within-season PERCENTILE and
+# could not say what a diff MEANT. recal_86 made that branch absolute and value-anchored, and its
+# own comment records that the two lines now sit within 0.5-1.0 card points of each other. So the
+# ladder had become the same reading taken a second time with every evidential discount switched
+# off - no sample weight, no targeting weight, no corroboration, no composite base - and it OVERRODE
+# the discounted one. That is what handed a hard 76 to Isaiah Thomas '16 (blend 41), Kevin Durant '25
+# (46), Deandre Ayton '20, Carmelo Anthony '18 and 535 other cards. One line to restore on a ruling.
+DFG_FLOORS = ()   # recal_16 -> recal_92: defended-FG% diff no longer sets an absolute card floor
+BLK_BAR, BLK_FULL = 0.80, 0.86   # recal_92: the block-evidence band the voted rim ceiling unlocks on
+def _blk_evidence(blk_pctile):
+    return max(0.0, min(1.0, (blk_pctile - BLK_BAR) / (BLK_FULL - BLK_BAR)))
 def dfg_floor(yr, name):
     # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
     # recal_65: VERIFIED — the design side re-reported the floors as still keyed to all-shots; they are
@@ -312,8 +335,10 @@ for yr, rows in seasons.items():
     # Same doctrine that made those floors absolute, and the same as the value-anchored efficiency
     # and playvol rounds. Diff arrives as a FRACTION here and the line is written in percentage
     # points, hence the x100.
-    def _abs_perdef(diff):
-        return min(84.0, max(25.0, 58.0 - 5.0 * (100.0 * diff)))
+    def _abs_perdef(diff, rho=1.0):
+        # recal_92: rho regresses the observed diff to the series' measured season-to-season
+        # reliability (TRK_RHO at the top of the file) before recal_86's absolute line reads it.
+        return min(84.0, max(25.0, 58.0 - 5.0 * (100.0 * diff * rho)))
     _atts = sorted(a for _d, a in TRACKING.get((yr, PERDEF_CAT), {}).values() if a)
     TGT_MED = _atts[len(_atts) // 2] if _atts else None
     FULL_SAMPLE = 350.0
@@ -350,7 +375,17 @@ for yr, rows in seasons.items():
         # unanimous vote: w = drep. More reputation always means more, and only 1.00 earns the whole
         # band. Below that a man blends against his own no-vote value (min(ID2, cap), which IS his
         # actual value whenever it sits under the r53 cap), never against a flat number.
-        _w53 = min(1.0, max(0.0, r['drep'])) if r['drep'] > 0.05 else 0.0
+        # recal_92 (HIS RULING, verbatim: "Rim prot too high.. Way too high. Should be high 80's or
+        # low 90's. Its like def rep took everything"). VOTES CERTIFY A RIM PROTECTOR, THEY CANNOT
+        # INVENT ONE. recal_53 built the voted ceiling and recal_82 graded its entry by vote share,
+        # but a vote still bought the whole band with no rim evidence behind it at all: All-Defensive
+        # teams are awarded for TOTAL defence, and a 6'10" forward can earn them on post and help
+        # work while blocking shots at the 81st percentile of his season (McHale '88, blk 2.2%). The
+        # unlock is now the vote share TIMES the block evidence: nothing below the 80th percentile of
+        # the season's block rate, the whole band at the 86th and above. Below the bar the man keeps
+        # exactly what he had without the vote - min(ID2, cap) - which is his own measured value.
+        # The r53 measured tier is untouched: elite tracked rim defence still lifts the cap to 92.
+        _w53 = min(1.0, max(0.0, r['drep'])) * _blk_evidence(P['blk'](r['blk'])) if r['drep'] > 0.05 else 0.0
         _cap53 = (88 - 1) / 98.0
         _row6 = TRACKING.get((yr, 'Less Than 6Ft'), {}).get(_nrm(r['name']))
         if _row6 and _row6[1] and min(1.0, _row6[1] / 350.0) >= 0.75 and _row6[0] <= -0.040:
@@ -371,7 +406,7 @@ for yr, rows in seasons.items():
             dv = _trk(PERDEF_CAT, r['name'])
             if dv is not None:
                 # recal_86: 1 - Pperim(dv) (a within-season percentile) -> the absolute card line.
-                d_card = _abs_perdef(dv)                                       # a lower defended-FG% diff is a better defender
+                d_card = _abs_perdef(dv, TRK_RHO[PERDEF_CAT])                                       # a lower defended-FG% diff is a better defender
                 # the rest of his workload, blended in. If he has one series and not the other, the
                 # one that exists carries the term alone rather than pulling him toward the middle.
                 # recal_86 PRESERVES this 0.30 corroboration and maps it through the SAME absolute
@@ -383,7 +418,7 @@ for yr, rows in seasons.items():
                 # measured too; receipt 86 carries both so it is one line to flip on a ruling.
                 dv_all = _trk('Overall', r['name'])
                 if dv_all is not None:
-                    d_card = (1 - ALLSHOT_W) * d_card + ALLSHOT_W * _abs_perdef(dv_all)
+                    d_card = (1 - ALLSHOT_W) * d_card + ALLSHOT_W * _abs_perdef(dv_all, TRK_RHO['Overall'])
                 d_meas = (d_card - 1.0) / 98.0                                 # card space -> the 0..1 space this branch works in
                 wm = 0.70 * _targeting_weight(r['name']) * _sample_weight(r['name'])   # hunted men, and thin samples, lean back on the composite
                 novote = min(0.84, (1 - wm)*novote + wm*d_meas)
