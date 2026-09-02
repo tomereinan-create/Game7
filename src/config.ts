@@ -6,6 +6,7 @@
  *          + N(0, SIGMA)
  * Do not scatter copies of these numbers anywhere else.
  */
+import CAMPAIGNS from './data/campaigns.json'
 /**
  * Weight on the average-talent gap — BAND-DERIVED, ratified and re-locked by the
  * audit verdict. The integration spec wrote 0.25, but at σ 10 that makes a
@@ -41,8 +42,13 @@ export const DRAFT_SIZE = 5
 export const CAP_LIMIT = 75
 /** Salary Cap campaign: room held back for every slot still to fill, so a five never ends up short. */
 export const CAP_RESERVE = 5
-/** One campaign: 30 levels from last season, then the 2020s, the 2010s, the 2000s — 120 in all. */
-export const ROUNDS = 120
-/** Levels per era block. */
-export const ERA_LEVELS = 30
+/**
+ * ONE CAMPAIGN, four tiers, and its length is whatever the ladder is — DERIVED, not typed.
+ * His ruling ("After you finish the 30 teams, you start going by champions or other elite teams
+ * until these are finished. Then you start playing vs all time "Team"…") made the tiers different
+ * lengths — 30 · 60 · 30 · 30 — and a hand-kept 120 here was the number that used to size the star
+ * array, the map and the trophy case. scripts/campaigns.ts decides the ladder; this counts it, so
+ * adding a level to a tier can never again leave the save file a different shape from the map.
+ */
+export const ROUNDS = (CAMPAIGNS as { levels: unknown[] }[]).reduce((a, t) => a + t.levels.length, 0)
 

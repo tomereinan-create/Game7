@@ -137,6 +137,11 @@ export interface Opponent {
   handicap?: number
   /** Regular-season record the level is built from, e.g. "17–65". */
   record?: string
+  /**
+   * What a five that never played a season says where a record would go: "all-time", "the 1990s".
+   * The All-Time and Customs tiers have no season and no record — this is the line that names them.
+   */
+  tag?: string
   /** Team abbreviation, for the level map tiles. */
   ab?: string
   players: Player[]

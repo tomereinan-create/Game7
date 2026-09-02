@@ -26,7 +26,8 @@
     "anchors": "python data/anchors.py src/data/players_stats.json",
     "explain": "cd data && python compute_ovr.py --explain",
     "read": "cd data && python compute_ovr.py --read",
-    "scout": "vite-node scripts/scout.ts"
+    "scout": "vite-node scripts/scout.ts",
+    "balance": "vite-node scripts/balance.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

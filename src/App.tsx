@@ -50,11 +50,19 @@ interface Tier {
   levels: Opponent[]
 }
 const TIERS = CAMPAIGNS as unknown as Tier[]
-/** One campaign: the four era blocks in order, levels renumbered 1..120, each carrying its era and handicap. */
+/**
+ * One campaign: the four tiers in order, levels renumbered 1..ROUNDS, each carrying its tier name
+ * and handicap. THE TIERS ARE NOT THE SAME LENGTH any more — his ruling put sixty champions in the
+ * middle of a ladder of thirties — so the offsets are a running total. They used to be `ti *
+ * t.levels.length`, which is only right while every tier is thirty and silently overlaps levels
+ * the moment one is not.
+ */
+const FIRST: number[] = []
+TIERS.reduce((n, t) => (FIRST.push(n + 1), n + t.levels.length), 0)
 export const LEVELS: Opponent[] = TIERS.flatMap((t, ti) =>
-  t.levels.map((o, i) => ({ ...o, round: ti * t.levels.length + i + 1, era: t.name, handicap: t.handicap })),
+  t.levels.map((o, i) => ({ ...o, round: FIRST[ti] + i, era: t.name, handicap: t.handicap })),
 )
-export const ERAS = TIERS.map((t, ti) => ({ name: t.name, years: t.years, handicap: t.handicap, first: ti * t.levels.length + 1 }))
+export const ERAS = TIERS.map((t, ti) => ({ name: t.name, years: t.years, handicap: t.handicap, first: FIRST[ti] }))
 /** The one place a mode becomes a label — every screen (map, team setup, achievements) reads it. */
 export const TITLE = (m: CampaignMode) => (m === 'salary' ? 'Salary Cap Campaign' : m === 'death' ? 'Death Match' : 'Campaign')
 
