@@ -134,7 +134,16 @@ describe('player data (stats-only doctrine)', () => {
     // 93 knee, where the band was identity — so the ENTIRE 2 points was BREADTH: he cleared five of
     // the seven groups, which paid +2.0 at full fade value. With breadth gone he prints his blend,
     // 0.70*95 + 0.30*74 = 88.70 -> 89. Pinned where the ruling put him, not where breadth had him.
-    expect(curry.ovr).toBeGreaterThanOrEqual(89)
+    // recal_92 MOVES IT AGAIN, 89 -> 84, and the move is the SAME arithmetic this comment already
+    // states, with a new D. Curry '16 was reading perdef 76, and the 76 was not a reading at all —
+    // it was the recal_16 DFG floor, which recal_92 retires (his ruling: "Way too high per def").
+    // His blend, once the tracked diff is regressed to the series' measured season-to-season
+    // reliability, is 52, so DEF goes 74 -> 57 and the pinned blend goes 0.70*95 + 0.30*57 = 83.6
+    // -> 84. OFF is untouched (o_ovr moved on zero cards this round). RECORDED, PENDING TOMER: this
+    // is the most visible single card in the round's 2,614-card perdef footprint, and it is the same
+    // correction he ordered for Ajay Mitchell '26 — a guard with no defensive reputation reading in
+    // the 70s off one season of defended-FG% differential.
+    expect(curry.ovr).toBeGreaterThanOrEqual(84)
     expect(curry.o_ovr).toBeGreaterThanOrEqual(95)
     // recal_67 MOVED THIS PIN, and the move is the round working as written: the DEF display
     // multiplier deflated 1.10 -> 1.03 (the fossil that floated every defender ~7 over his own
@@ -175,7 +184,19 @@ describe('player data (stats-only doctrine)', () => {
     // D 62 -> 70 (tracking as measured evidence) -> 81: recal_16's lockdown tier floors him. He is not
     // a charity case in the tracking data — opponents shot 39.6% against him in '16 against 43.2%
     // expected, on 854 shots. The floor exists precisely so percentile dilution cannot bury that.
-    near("Stephen Curry '16", 99, 75)
+    // recal_92 RE-BASES IT AGAIN, 75 -> 57, and it is the fourth re-basing of the same anchor
+    // (62 -> 70 -> 81 -> 75 -> 57). The paragraph above is the round's own case answered: the floor
+    // was defended on Curry '16 because "opponents shot 39.6% against him against 43.2% expected, on
+    // 854 shots". That number is real and it is still read — what changed is how much of it we are
+    // entitled to believe. Measured on our own tracking file over every consecutive-season pair a
+    // player appears in, a defended-FG% differential repeats at r = 0.345 (6ft+) and 0.355 (overall),
+    // and the reliability does not improve with sample: at a 250-attempt floor it is 0.363. So -3.6%
+    // observed is an estimate of about -1.3% true, which the absolute line reads as 64 rather than
+    // 84, and Curry's blend lands at 52 instead of the 76 the r16 ladder was pinning him to. The
+    // FLOOR was never the reading — it overrode the reading, discounts and all. RECORDED, PENDING
+    // TOMER: this is the loudest single card in the round and it is the same correction he ordered
+    // on Ajay Mitchell '26 ("Way too high per def").
+    near("Stephen Curry '16", 99, 57)
     near("LeBron James '13", 95, 96)
     // recal_76 (his ruling, "Remove team Def rating from per def") RE-BASED THE DEFENSIVE ANCHORS of
     // the elite-defender-on-an-elite-defense class: they lose the team-DRtg credit perdef was paying

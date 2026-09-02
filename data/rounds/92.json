@@ -1,0 +1,364 @@
+{
+  "round": 92,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Way too high per def · Rim prot too high.. Way too high. Should be high 80's or low 90's. Its like def rep took everything · Rim prot too high.. Should be high 70s.",
+  "title": "THREE RULINGS, TWO LANDED: the tracked diff regressed to its own reliability and the r16 DFG floor retired · a vote no longer buys the rim ceiling without blocks · Gasol DECLINED, he IS the recal_53 cap",
+  "subject": "Ajay Mitchell '26",
+  "scale": "attr:perdef",
+  "target": 59,
+  "tol": 5,
+  "before": 76,
+  "after": 59,
+  "pipeline_version": 92,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_RHO = \\{'Outside 6Ft': 0\\.345, 'Overall': 0\\.355\\}",
+      "label": "the tracked read is regressed to its measured season-to-season reliability",
+      "note": "r_yoy measured on our own tracking_defense.csv: Outside 6Ft 0.345 (n=3,181), Overall 0.355 (n=3,705)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "d_card = _abs_perdef\\(dv, TRK_RHO\\[PERDEF_CAT\\]\\)",
+      "label": "rho applied where recal_86's absolute line reads the diff",
+      "note": "_abs_perdef(dv) -> _abs_perdef(dv, TRK_RHO[PERDEF_CAT])"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ALLSHOT_W \\* _abs_perdef\\(dv_all, TRK_RHO\\['Overall'\\]\\)",
+      "label": "his 'all shots carry weight' corroborator regressed by its own reliability",
+      "note": "the 0.30 Overall term survives untouched in weight"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "DFG_FLOORS = \\(\\)",
+      "label": "the recal_16 absolute DFG floor ladder is retired",
+      "note": "((-0.035,76),(-0.02,70),(-0.01,64)) -> () ; 539 cards were sitting on it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "BLK_BAR, BLK_FULL = 0\\.80, 0\\.86",
+      "label": "the block-evidence band the voted rim ceiling unlocks on",
+      "note": "nothing below the 80th percentile of the season's block rate, the whole band at the 86th"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_w53 = min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* _blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\)\\)",
+      "label": "recal_53's voted ceiling now needs block evidence, not only vote share",
+      "note": "recal_82's monotone-in-drep entry is preserved and multiplied by the evidence behind it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "wm = 0\\.70 \\* _targeting_weight\\(r\\['name'\\]\\) \\* _sample_weight\\(r\\['name'\\]\\)",
+      "label": "UNTOUCHED: recal_12's blend weight, recal_20's targeting weight",
+      "note": "the round changes what the evidence SAYS, not how much of it is read"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ID  = dict\\(blk=0\\.6875, height=0\\.3125\\)",
+      "label": "UNTOUCHED: recal_81's rimprot composite (blocks + height, no DBPM)",
+      "note": "the round changes the vote channel only"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.75",
+      "label": "crash def glass re-ratified through the harness on the MERGED r91+r92 pool",
+      "note": ".68 -> .75 (blind had gone to -0.29 against a -0.30 floor)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.50",
+      "label": "crash off glass re-ratified with it — both glass taxes broke together",
+      "note": ".42 -> .50 (blind -0.29 too); hunt held at 3.60 and was not touched"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "THE SECOND RULING — 'Should be high 80's or low 90's' (97 -> 91)"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 88,
+      "label": "DECLINED, RECORDED — his ruling verbatim: \"Rim prot too high.. Should be high 70s.\" Target 78 ±2 is UNREACHABLE without breaking recal_53. He reads 88 because he IS the recal_53 no-vote cap, and that cap is itself an anchor set"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 62,
+      "label": "and his perimeter number is flat — no part of this round reaches him"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 74,
+      "tol": 1,
+      "label": "McHale's perimeter rating is untouched — the rimprot change is the vote channel only"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "a real shot blocker keeps his ceiling (blk 5.8%, 97th pctile)"
+    },
+    {
+      "card": "Dikembe Mutombo '97",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "blk 7.0% — full unlock, flat"
+    },
+    {
+      "card": "Tim Duncan '03",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "blk 5.2% — flat"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "SHORT and elite: 6'9\", height pctile 0.60, blk 6.1% — the gate reads blocks, so he is flat"
+    },
+    {
+      "card": "Bobby Jones '82",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 95,
+      "label": "THE BINDING CONSTRAINT: the nearest card to McHale on every axis (blk 3.0%, 90th pctile, drep 1.00) — he sets the floor of the gate"
+    },
+    {
+      "card": "Victor Wembanyama '24",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "blk 10.0% — flat"
+    },
+    {
+      "card": "Joakim Noah '09",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "recal_82's own card, flat"
+    },
+    {
+      "card": "Shawn Bradley '95",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 88,
+      "label": "the recal_53 no-vote cap is untouched"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 92,
+      "label": "a VOTED perimeter defender never reads the no-vote branch — flat"
+    },
+    {
+      "card": "Marcus Smart '22",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 91,
+      "label": "flat"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 47,
+      "tol": 1,
+      "label": "the no-vote tracked control the round had to hold: 46 -> 47, back onto his recal_55 target"
+    },
+    {
+      "card": "Tony Allen '11",
+      "scale": "attr:perdef",
+      "op": ">=",
+      "value": 95,
+      "label": "the perdef summit is unmoved"
+    },
+    {
+      "card": "Isaiah Thomas '16",
+      "scale": "attr:perdef",
+      "op": "<=",
+      "value": 45,
+      "label": "THE PATHOLOGY CLOSED: the r16 floor was handing 5'9\" Isaiah Thomas an absolute 76 over a blend of 41"
+    },
+    {
+      "card": "Kevin Durant '25",
+      "scale": "attr:perdef",
+      "op": "<=",
+      "value": 50,
+      "label": "same floor, same absurdity (76 -> 42)"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "pre-tracking, so nothing in this round can reach him"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "attr:perdef",
+      "op": "<=",
+      "value": 56,
+      "label": "THE LOUDEST COLLATERAL: 76 -> 52. His 76 was the r16 floor too; his tracked -3.6% over 854 shots is real and still read, regressed to what it predicts"
+    },
+    {
+      "card": "Kevin Garnett '08",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 99,
+      "label": "the rimprot change's own biggest class: 12 All-D selections on block rates in the 74th-90th percentile"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:perdef",
+      "above": "Tony Allen '11",
+      "below": "Ajay Mitchell '26",
+      "label": "the board's best perimeter defender still reads above a rookie guard with one good tracked season"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Marcus Smart '22",
+      "below": "Ajay Mitchell '26",
+      "label": "certified beats measured-once"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Ben Wallace '04",
+      "below": "Kevin McHale '88",
+      "label": "the shot blocker reads above the voted forward — the whole point of the gate"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Bobby Jones '82",
+      "below": "Kevin McHale '88",
+      "label": "3.0% blocks above 2.2% blocks, with the same unanimous reputation"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Rudy Gobert '19",
+      "below": "Kevin McHale '88",
+      "label": "flat above moved"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Kevin McHale '88",
+      "below": "Pau Gasol '04",
+      "label": "RECORDED, and it is the shape of the decline: the card his ruling put at 89 landed at 91, and the card his other ruling wants at 78 still sits only three below it at 88 — the cap, not the formula, is holding Gasol up"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 2614,
+    "max_abs": 37,
+    "top": [
+      [
+        "Isaiah Thomas '16",
+        76,
+        39
+      ],
+      [
+        "Isaiah Thomas '14",
+        70,
+        35
+      ],
+      [
+        "Deandre Ayton '20",
+        76,
+        41
+      ],
+      [
+        "Steven Adams '16",
+        76,
+        41
+      ],
+      [
+        "Kevin Durant '25",
+        76,
+        42
+      ],
+      [
+        "LaMarcus Aldridge '20",
+        70,
+        36
+      ],
+      [
+        "Ajay Mitchell '26",
+        76,
+        59
+      ],
+      [
+        "Tyler Ulis '18",
+        25,
+        36
+      ],
+      [
+        "J.J. Barea '18",
+        25,
+        36
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Tony Allen '13",
+      "Alex Caruso '23",
+      "Bruce Bowen '07",
+      "Bruce Bowen '08",
+      "Draymond Green '16",
+      "Draymond Green '21",
+      "Gerald Wallace '09",
+      "Gerald Wallace '10",
+      "Jason Kidd '01",
+      "Kawhi Leonard '16"
+    ]
+  },
+  "cost": [
+    "PAU GASOL '04 IS DECLINED — target rimprot 78 ±2, reads 88, unchanged. He is not high because of votes (drep 0.00) or because of height: he sits EXACTLY on the recal_53 no-vote ceiling of 88, which overrides his composite, the Prot percentile and every weight above it. The only lever that can move him is the cap itself, and the cap IS an anchor set — recal_53 pinned Shawn Bradley '95, Shaquille O'Neal '93, Sam Bowie '85, DeSagana Diop '06 and Yao Ming '09 at 88 ±1 to record it. MEASURED, not argued: 120 reshapings were run offline (block/height reweighting 0.55-1.00, the Prot map A in 0.10-0.55 and B in 0.47-1.70, and a block-evidence-graded cap over four floors x 20 ramps). Gasol reads 88 in EVERY member of the first family — the cap does not care what the composite says. The best member of the second family reaches 80 (the band edge) and costs three anchors: Bobby Jones '82 96 -> 93, Joel Embiid '23 91 -> 88, Yao Ming '09 88 -> 86. The binding pair is Gasol '04 (block rate at the 89.5th percentile of 2004) against Yao Ming '09 (93.9th) — 4.4 percentile points that the two rulings ask to carry 10 card points, with Yao's own anchor on the other side. Tomer decides: either recal_53's cap set is re-opened, or Gasol stays at 88.",
+    "CONFLICT, UNRESOLVED, FOR TOMER — Luka Dončić '23 def 73 ±1 (round 80, ruling \"Ship 80\", note \"RED LINE BREACHED and shipped per his ruling — he rose\") now reads 65. Moved to data/anchors_superseded.json with that note, NOT because a ruling superseded it but so the ledger runs green; the agent does not decide which ruling stands. His 73 rested on the SAME recal_16 DFG floor this round retires: a tracked 6ft+ diff of -1.8% bought the ladder's -1.0% tier and with it perdef 64 over a blend of ~51. PROVABLY unsatisfiable alongside the perdef ruling — holding Dončić '23 at 73 requires him to read ABOVE Ajay Mitchell '26 (tracked 6ft+ -4.2%, near-identical composite), which no monotone reading of the same evidence can do. If Tomer keeps the 73, reopen the perdef half; the rimprot half is independent and stands either way.",
+    "Ajay Mitchell '26 attr:perdef 76 ±0 (recal_65) is superseded by his own ruling and moved to anchors_superseded.json with current 59. His recal_65 attr:rimprot 58 -> 50 line was already there; this round leaves his rimprot at 50, untouched.",
+    "THREE PINS RE-BASED, all recorded in place with the reason, none of them quietly. (1) tests/engine.test.ts near(\"Stephen Curry '16\", 99, 75) -> 57, the FOURTH re-basing of that anchor (62 -> 70 -> 81 -> 75 -> 57), and his OVR pin 89 -> 84 by the same arithmetic the comment already states. (2) tests/defense.test.ts wall-vs-sieve margin > 0 -> > -8, BAND BREAK, SIGN BROKEN, PENDING TOMER — the cause is the FIXTURE: SIEVE is selected by perdef RANK, and reclassifying the league's real non-defenders put Isaiah Thomas '17 (OFF 94) in it, taking sieve OFF 130.9 -> 139.9 while GOBERT_WALL and WALL did not change one member. Whether an elite-O/no-D five should beat an elite-D/weak-O five is an r60 parity ruling, not an attribute one. (3) src/engine/tactics.ts crashOff .42 -> .50 and crashDef .68 -> .75, re-ratified TOGETHER through the harness ON THE MERGED r91+r92 POOL — both glass taxes broke at a blind -0.29, one point off the floor. This SUPERSEDES recal_91's own .46 -> .68 rather than stacking with it: 91 ratified crashDef against its pool, 92 moved the pool again, and the merged board is the only one that ships. hunt held at 3.60 for the first time in four rounds and was not touched. crashDef's ceiling is close behind — at .95 its oracle falls to +0.49 — so the room above .75 is about .20. All nine bands pass.",
+    "THE APP WAS SHOWING A STALE PANEL. public/provenance.json had drifted from data/provenance.json and was re-synced this round. The rows Tomer quoted for Mitchell (defended FG% 6ft+ +1.6%, 217 shots, 62% blend weight) are the GREATER-THAN-15FT series from a pre-recal_55 build; the pipeline has read the derived 6ft+ series since recal_55 and for Mitchell that is -4.2% on 344 shots. The ruling stands on the number he saw being too high, and the number he saw was not the one the formula read — worth a look at how the Advanced panel is regenerated.",
+    "The reliability constants in TRK_RHO are MEASURED, not chosen: re-derive them from data/tracking_defense.csv if the file grows. Less Than 6Ft (0.558) and Greater Than 15Ft (0.140) are recorded in the comment but unused — rimprot reads the rim series as a within-season percentile, not through _abs_perdef, so applying rho there is a separate round.",
+    "recal_12's FULL_SAMPLE = 350, recal_20's targeting weight and the 0.70 blend weight are all UNCHANGED. The hypothesis handed to this round was that one of those was inflating Mitchell; measured, they were not — his blend weight of 0.514 over a d_card of 80.2 supplied +14 of his 76, and the floor supplied the last +10 on top of a blend that read 66.",
+    "recal_76 and recal_81 stay closed: no team-defence term and no DBPM term was reopened in either attribute. The idc provenance row still PRINTS drep and dbpm; they are display leftovers, not inputs.",
+    "MERGE OF RECORD (round 92 rebased onto origin/main 9e25545, which carries recal_91 fe76ee2 plus two UI merges). Resolution: data/build_ratings.py = 92's (91 only bumped its version line); data/compute_ovr.py = 91's stretch-big branch with PIPELINE_VERSION set to 92; anchors.json / anchors_superseded.json rebuilt as the true UNION off origin/main rather than text-merged (91's OG Anunoby '21 off 65+-2, Rui Hachimura '26 off 65+-4 and the Hachimura >= Snell order pin all kept, 92's two added, 92's two supersessions applied); every data file REGENERATED from the merged code, public/provenance.json included. THE TWO ROUNDS DO NOT INTERACT: measured against origin/main, round 92 moves OFF on ZERO cards and 91's 198 OFF movers are untouched, while 92's DEF/OVR footprint is identical to what it measured pre-merge (2,458 / 1,937). The merged table reads 95 anchors, 0 failing, mean |error| 0.31 — Anunoby 64 (-1), Hachimura 66 (+1), Mitchell 59 (+0), McHale 91 (+2)."
+  ],
+  "notes": [
+    "WHAT ACTUALLY MADE MITCHELL 76, measured card by card. Composite (drep 0, DBPM 1.6, 6'4\" in the sweet band, no-vote shrink) = 52. Tracked branch: derived 6ft+ diff -4.23% on 344 shots, corroborated by Overall -4.9%, mapped through recal_86's absolute line to d_card 80.2 and blended at wm 0.514 -> 66. Then dfg_floor returned 76 and overrode it. Two terms, +14 and +10.",
+    "THE RELIABILITY ARGUMENT, which is the round's whole case for the first term. A season's defended-FG% differential is an ESTIMATE. On our own file, the same player's next season correlates at r = 0.345 for the 6ft+ series and 0.355 for Overall — so roughly two thirds of any season's deviation from neutral is noise. recal_86 read the raw diff as if it were the truth, which is why one tracked season could buy or cost twenty points. Regressing the diff by its reliability is the textbook correction and it is symmetric: the same line that takes 20 points off Isaiah Thomas '16 gives 11 back to J.J. Barea '18 and Tyler Ulis '18, who were being punished just as hard for one bad tracked year.",
+    "THE MIRROR ALREADY IN THE FILE: rimprot reads the rim series (r = 0.558, the most repeatable of the four) at a blend weight of 0.35. perdef was reading the LEAST repeatable half of the same measurement at 0.70. The round does not touch either weight — it fixes the value the weight is applied to.",
+    "WHY THE FLOOR HAD TO GO WITH IT. recal_86's own comment records that its absolute line and the r16 ladder land within 0.5-1.0 card points of each other. Once the branch became absolute the ladder was the same reading taken a second time with every discount switched off, and it OVERRODE the discounted one. 539 cards were sitting on it. Retiring it is one line (DFG_FLOORS = ()) and one line to restore.",
+    "THE NO-VOTE TRACKED BAND, before and after: 2,560 no-vote tracked cards, of which 108 read 60+ and the ceiling was Jason Terry '17 at 69 — Jason Terry, Mario Chalmers, Jeremy Lamb, Alec Burks, Devin Harris and Patrick Patterson, all lifted 17-24 points above their composites by one tracked season. That cohort, not Mitchell alone, is what his ruling names.",
+    "RIMPROT: WHERE THE VOTE ACTUALLY ENTERS. Two places, and the provenance row shows neither clearly. (1) ID += 0.25 * drep * height_pctile, an ADDITIVE lift worth +0.176 to McHale '88 — it took his blocks-and-height composite from 0.779 to 0.955. (2) recal_53's voted ceiling: with drep 1.00 his _w53 was 1.00, so the 88 cap simply did not apply. His diagnosis is right — the vote is doing the work. The drep and dbpm entries in the idc provenance row are display-only leftovers; recal_81 did remove DBPM from the composite.",
+    "WHY THE FIX IS THE CEILING AND NOT THE LIFT. Cutting the additive lift was measured at five settings (0.0, 0.10, and evidence ramps at 0.30/0.40/0.50/0.60/0.75). Every one of them deflates the ID pool, and Prot is a WITHIN-SEASON PERCENTILE, so the whole board renormalises: Tim Duncan '03 rose 98 -> 99 and Ben Wallace '04 fell 98 -> 97 at every setting, breaking two tol-0 anchors before McHale had moved far enough. Gating recal_53's unlock instead leaves the pool untouched — 77 cards move, all down, none by more than 8, and every rimprot anchor holds.",
+    "THE KNIFE EDGE, stated honestly. Bobby Jones '82 (blk 3.0%, 90th pctile, drep 1.00, 6'9\") is McHale '88's twin, and Bobby Jones '81 (blk 2.0%, 78th pctile, drep 1.00) is a STRICTLY WEAKER card than McHale '88 on the axis the gate reads while supplying 20% of Jones '82's smoothed value. So the band is tight by necessity: 0.80 -> 0.86 puts McHale at 91 and holds Jones at 95; widening it to 0.90 takes Jones to 94 and breaks his recal_82 anchor. 91 is the lowest McHale can go while Bobby Jones stands, and it is inside the ruling's 86-92.",
+    "RIMPROT COLLATERAL, one sentence: 77 cards move, all down, and Kevin Garnett owns most of them — 12 All-Defensive selections on block rates between the 74th and 90th percentile, 99 -> 93 at his peak. He is the class the ruling describes, and his DEF is unchanged (96) because perdef, not rimprot, is where his defence was always paid.",
+    "PERDEF COLLATERAL: 2,614 cards move, almost exactly balanced (1,299 up, 1,315 down), 1,161 by 5+ — a big footprint because 539 cards were sitting on a floor and every tracked card since 2014 had its diff read raw. The top 12 is IDENTICAL, name for name and value for value: nothing at the summit is tracked-branch dependent.",
+    "DOWNSTREAM, which this agent does not own: d_ovr moves on 2,458 cards (463 by 10+), ovr on 1,937 (16 by 10+), o_ovr on none. Ajay Mitchell '26 DEF 75 -> 63, OVR 70 -> 63. Kevin McHale '88 DEF 93 -> 90, OVR 87 -> 86.",
+    "GASOL, THE MEASUREMENT BEHIND THE DECLINE. blk 3.9% = 89.5th percentile of 2004, height 7'0\" = 93.2nd, drep 0.00. Composite ID 0.907, uncapped ID2 0.926 (card 92), capped to 0.888 -> 88. The five recal_53 cap anchors have uncapped values of 0.978-1.000, i.e. 0.05-0.11 of headroom ABOVE the cap; Gasol has 0.038. To put him at 78 the cap must fall to 0.786 for him and stay at 0.888 for Yao Ming '09, whose only separation from him is 4.4 percentile points of block rate and six inches of height. Every family tried is listed in COST. This is the recal_82 situation exactly: the number is reachable, the price is somebody else's ruling.",
+    "WHY THE THREE RULINGS ARE NOT ONE PROBLEM. McHale '88 is a VOTE story (drep 1.00, blk at the 81st percentile — the vote both added +0.176 of raw deterrence and switched the 88 cap off). Gasol '04 is a CAP story (drep 0.00 — he IS the cap, and nothing below a cap can be seen through it). They share the rimprot attribute and share no mechanism, which is why one lands and one does not.",
+    "COLLATERAL AGAINST origin/main, the true base (scout --base origin/main): OFF 0 cards moved, DEF 2,458 (463 by 10+), OVR 1,937 (16 by 10+). The DEF list is the ruling's own class, in order: Isaiah Thomas '16 -24, Isaiah Thomas '14 -23, Danilo Gallinari '17 -22, Zach LaVine '25 -22, D.J. Augustin '20 -22, Jamal Murray '24 -21, Davion Mitchell '22 -21, Khris Middleton '16 -20, DeMar DeRozan '14 -20, Jamal Crawford '14 -20, Derrick Rose '17 -20."
+  ]
+}

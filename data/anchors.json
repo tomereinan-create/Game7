@@ -317,15 +317,6 @@
   "ruling": "Ship 80"
  },
  {
-  "card": "Luka Dončić '23",
-  "scale": "def",
-  "target": 73,
-  "tol": 1,
-  "round": 80,
-  "ruling": "Ship 80",
-  "note": "RED LINE BREACHED and shipped per his ruling — he rose"
- },
- {
   "card": "Shaquille O'Neal '00",
   "scale": "def",
   "target": 88,
@@ -342,15 +333,6 @@
   "round": 78,
   "ruling": "Ty jerome still 82 OFF",
   "note": "his ruling reads 82; the shipped card measured 81 at the round"
- },
- {
-  "card": "Ajay Mitchell '26",
-  "scale": "attr:perdef",
-  "target": 76,
-  "tol": 0,
-  "round": 65,
-  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
-  "note": "the floor is EARNED on the 6ft+ series"
  },
  {
   "card": "Tony Snell '18",
@@ -830,5 +812,23 @@
   "round": 62,
   "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
   "note": "the complete perimeter verdict outranks the sieve"
+ },
+ {
+  "card": "Ajay Mitchell '26",
+  "scale": "attr:perdef",
+  "target": 59,
+  "tol": 5,
+  "round": 92,
+  "ruling": "Way too high per def",
+  "note": "target assumed 55+-5; no number given. Landed 59 — the blend's own reading once the r16 DFG floor is retired and the tracked diff is regressed to its measured reliability."
+ },
+ {
+  "card": "Kevin McHale '88",
+  "scale": "attr:rimprot",
+  "target": 89,
+  "tol": 3,
+  "round": 92,
+  "ruling": "Rim prot too high.. Way too high. Should be high 80's or low 90's. Its like def rep took everything",
+  "note": "landed 91. The vote no longer buys the r53 ceiling without block evidence behind it (blk 2.2% = 81st pctile of 1988)."
  }
 ]

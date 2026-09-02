@@ -141,6 +141,15 @@ export const DEFAULT_TACTICS: Tactics = {
  * touched to hold a band up. .68 is chosen off the harness sweep for margin at BOTH edges (blind
  * -0.35 against the -0.30 floor, oracle +0.54 against the +0.50 one); the oracle is what caps it,
  * and it falls through +0.50 by about .78. Every other tax held its band untouched. All nine pass.
+ * recal_92's perdef round (the r16 DFG floor retired, the tracked diff regressed to its measured
+ * reliability) moved 2,614 perdefs, ~2,450 d_ovrs and ~1,900 OVRs, and the ovr>=55 pool with them
+ * again; BOTH glass taxes broke together at a blind -0.29, a point off the floor, and were
+ * re-ratified crashOff .42 -> .50 and crashDef .68 -> .75. Chosen off the harness sweep as the
+ * SMALLEST move that clears both edges (blind -0.68 against the -0.30 floor, oracle +1.14 against
+ * the +0.50 one); crashDef's own ceiling is close behind — at .95 its oracle falls to +0.49 — so
+ * the room above .75 is about .20, not more. hunt held at 3.60 for the first time in four rounds
+ * and was not touched. NOTE for the next round: this figure was ratified on the MERGED r91+r92
+ * pool, so it supersedes r91's .46 -> .68 rather than stacking with it. All nine in band.
  */
 export const TAX = {
   scorer: 0.55,
@@ -149,8 +158,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.90,
   hunt: 3.60,
-  crashOff: 0.42,
-  crashDef: 0.68,
+  crashOff: 0.50,
+  crashDef: 0.75,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

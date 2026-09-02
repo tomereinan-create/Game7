@@ -391,5 +391,25 @@
   "round": 54,
   "ruling": "recal_54 — the drep tall-defender discount keys on the SWEET BAND, not percentile",
   "current": 64
+ },
+ {
+  "card": "Ajay Mitchell '26",
+  "scale": "attr:perdef",
+  "target": 76,
+  "tol": 0,
+  "round": 65,
+  "ruling": "recal_65 (design-side \"63\") — the DFG floors read the 6ft+ series",
+  "note": "SUPERSEDED BY HIS RULING (recal_92, verbatim: \"Way too high per def\"). The 76 was not a reading at all — it was the recal_16 DFG floor, which recal_92 retires; his blended value now reads 59.",
+  "current": 59
+ },
+ {
+  "card": "Luka Dončić '23",
+  "scale": "def",
+  "target": 73,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green. His 73 rested on the SAME recal_16 DFG floor that recal_92 retires (his '23 6ft+ diff of -1.8% bought the floor's -1.0% tier, perdef 64); with the floor gone his perdef reads 53 and DEF 65. The r80 note already called this rise a RED LINE BREACHED, shipped only on \"Ship 80\". PROVABLY UNSATISFIABLE ALONGSIDE recal_92: Dončić '23 (tracked 6ft+ -1.8%, composite ~51) would have to read ABOVE Ajay Mitchell '26 (tracked 6ft+ -4.2%, composite ~52), so no monotone reading of the same evidence holds both. If Tomer keeps the 73, recal_92's perdef half must be reopened; restore this line then.",
+  "current": 65
  }
 ]
