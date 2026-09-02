@@ -1,0 +1,280 @@
+{
+  "round": 100,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
+  "title": "THE ALL-TIME DEF DIAL READS EVERY ERA AT ITS OWN LEVEL — one subtraction before the gauge, and two decades of card-pool drift stop being priced as bad defence",
+  "subject": "Thunder '26 (best legal five)",
+  "five": [
+    "Shai Gilgeous-Alexander '26",
+    "Ajay Mitchell '26",
+    "Luguentz Dort '26",
+    "Chet Holmgren '26",
+    "Jaylin Williams '26"
+  ],
+  "season": 2026,
+  "scale": "team:defdial",
+  "target": 79,
+  "tol": 3,
+  "before": 67,
+  "after": 81,
+  "pipeline_version": 101,
+  "knobs": [
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const defAdj = \\(drtg: number, season\\?: number\\) =>\\s*\\n\\s*drtg - \\(DEF_LEVEL\\[season \\?\\? -1\\] \\?\\? DEF_LEVEL_FIELD\\) \\+ DEF_LEVEL_REF",
+      "label": "THE ROUND'S ONE LINE — drtgRef re-expressed in the reference league before the gauge sees it",
+      "note": "nothing else changed: defenseVs, teamOffense, ratings100 and the resolver are untouched"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "def: scale71\\(-defAdj\\(r\\.drtgRef, season\\), -DEF_WORST, -DEF_MID, -DEF_TOP\\)",
+      "label": "and the one place it is applied",
+      "note": "the OFF line beside it is untouched — scale71(r.offRaw, OFF_MIN, OFF_MID, OFF_TOP)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 110\\.950,",
+      "label": "THE ERA TABLE — the league's own defensive level, season by season, frozen from the 1,255-five sweep",
+      "note": "flat at ~109.9 from 1980 to 2013, then a step at 2014 and a climb to 110.950"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_LEVEL_REF = 110\\.1397",
+      "label": "the league every DEF dial is quoted in: the mean of the 47 season levels"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_LEVEL_FIELD = DEF_LEVEL\\[2026\\]",
+      "label": "a drafted five has no season, so it is a five in TODAY's league — the one the campaign is played in"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_WORST = 113\\.2",
+      "label": "the DEF gauge, re-frozen on the era-adjusted index",
+      "note": "112.92 -> 113.2 (adjusted units)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_MID = 110\\.12",
+      "label": "the all-time median five still reads 50",
+      "note": "110.21 -> 110.12 (adjusted units)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.54",
+      "label": "recal_94's DEF summit HELD: the Bulls '96 still read 99, and still alone",
+      "note": "107.47 -> 107.54 (adjusted units); 1 five of 1,255 reads 99, same as before"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_MIN = 104\\.36",
+      "label": "THE OFF DIAL IS NOT TOUCHED — its three constants are exactly as recal_71/74 left them",
+      "note": "0 of 1,255 OFF dial readings moved, and 0 offRaw readings moved"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "export function seasonGauges\\(five: Player\\[\\], season: number\\): Gauge \\{\\s*\\n\\s*return gauge\\(five, season\\)",
+      "label": "the season stops being ignored — it names the league, it does NOT pick the pool",
+      "note": "recal_71's \"one scale for all\" survives: 99 is still an all-time 99"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def _def_adj\\(drtg, season=None\\):",
+      "label": "the anchor grader mirrors it, reading DEF_LEVEL out of gauges.ts rather than copying it",
+      "note": "a team:defdial pin now carries a `season`; recal_94's five dial pins were given theirs"
+    },
+    {
+      "file": "scripts/receipts.ts",
+      "pattern": "scale === 'team:offdial' \\? g!\\.off : scale === 'team:defdial' \\? g!\\.def : null",
+      "label": "NEW: the ledger can grade the number the TEAM SCREEN shows, not only ratings100's older ints",
+      "note": "this round's ruling is about the dial, so the receipt is read on the dial"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "didx = 0\\.55\\*eff_di \\+ 0\\.13\\*min\\(99, anchor\\)\\*0\\.9 \\+ 0\\.12\\*min\\(99, steals\\)\\*0\\.9 \\+ 0\\.12\\*max\\(0, 60 \\+ glass/4\\)",
+      "label": "THE DEFENCE FORMULA IS UNTOUCHED, python side — recal_94's line, unchanged",
+      "note": "parity with the port is therefore trivial this round: neither side moved"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const didx = 0\\.55 \\* effDi \\+ 0\\.13 \\* Math\\.min\\(99, anchor\\) \\* 0\\.9 \\+ 0\\.12 \\* Math\\.min\\(99, steals\\) \\* 0\\.9 \\+ 0\\.12 \\* Math\\.max\\(0, 60 \\+ glass / 4\\)",
+      "label": "and the port, also unchanged — the cure is in the SCALE, never in the engine",
+      "note": "so the resolver's matchup margins are bit-identical; no cross-era game changed"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 10[0-9]",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 100; it SHIPS as pipeline 101 because recal_96/98 landed first"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 10[0-9]",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    }
+  ],
+  "expect": [
+    {
+      "five": [
+        "Cade Cunningham '26",
+        "Duncan Robinson '26",
+        "Ausar Thompson '26",
+        "Tobias Harris '26",
+        "Jalen Duren '26"
+      ],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 71,
+      "tol": 3,
+      "label": "Detroit '26, the season's real 2nd-best defence — the other half of \"no 2026 team having more than 61 DEF is insane\": 57 -> 71"
+    },
+    {
+      "five": [
+        "Tyrese Maxey '26",
+        "Quentin Grimes '26",
+        "Kelly Oubre Jr. '26",
+        "Dominick Barlow '26",
+        "Joel Embiid '26"
+      ],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 49,
+      "tol": 4,
+      "label": "Philadelphia '26 — 36 -> 49, and STILL 13th of the 24 fieldable 2026 teams against a real 14th. recal_94's 36 +-6 value pin was mine, not his; it is superseded, its RANK pin is not"
+    },
+    {
+      "five": [
+        "Ron Harper '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "THE SUMMIT HELD, tol 0 — recal_94's ruling (\"Move the summit to Bulls '96\") survives the rescale, and the Bulls are still the only five of 1,255 that reads 99"
+    },
+    {
+      "five": [
+        "Chauncey Billups '04",
+        "Richard Hamilton '04",
+        "Tayshaun Prince '04",
+        "Ben Wallace '04",
+        "Mehmet Okur '04"
+      ],
+      "season": 2004,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "Pistons '04 — 84 -> 82. THE POINT OF THE ROUND: the '04 Pistons and the '26 Thunder are now comparable as defences on one dial (82 and 81), which is what an all-time scale is for"
+    },
+    {
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
+      "season": 1987,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 64,
+      "tol": 5,
+      "label": "THE GUARD ON THE OTHER SIDE — the 80s were RECENTRED, not lifted with the moderns: Showtime reads 70 -> 64, the 1980s mean 56.1 -> 50.9 and its median five 51"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_71's OFF summit, untouched — the OFF dial did not move on ANY of the 1,255 fives this round"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '26",
+      "scale": "def",
+      "op": "==",
+      "value": 67,
+      "label": "NO CARD MOVED: this round changes a display SCALE, not a card and not the engine — d_ovr, o_ovr, ovr and marg are byte-identical on all 10,000"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "the card-side DEF summit, undisturbed"
+    },
+    {
+      "card": "Chet Holmgren '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 64,
+      "label": "the subject's anchor as a CARD is unchanged — what changed is the league his five is quoted against"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Victor Wembanyama '26",
+      "label": "the card-side DEF summit is undisturbed"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Ben Wallace '01",
+      "Dan Roundfield '80",
+      "Dan Roundfield '82",
+      "Dwight Howard '09",
+      "Dwight Howard '10",
+      "Dwight Howard '11",
+      "Ben Wallace '07"
+    ]
+  },
+  "cost": [
+    "THE OFF DIAL SHOWS THE SAME DRIFT AND WAS LEFT ALONE — this is the first thing to put to him after this round. Shipped OFF decade means are 42.9 · 48.6 · 52.6 · 54.3 · 56.5, the same card-pool effect with the opposite sign (modern cards score more and defend less). The identical one-line subtraction applied to offRaw flattens them to ~52.6 in every decade, leaves the Warriors '17 at 99 and the Suns '07 clamped above them, and moves the OFF fit 0.711 -> 0.712. It was NOT applied: he ruled on DEF, and doctrine says an unruled dial does not move. But note what leaving it does — a 2026 five now reads OFF 56.5 / DEF 50.6 against an 80s five's OFF 42.9 / DEF 50.9, so the modern era reads uniformly stronger where before the two drifts cancelled. That imbalance is new and it is the price of a DEF-only fix.",
+    "THE ROUND IS 100, IT SHIPS AS PIPELINE 101. recal_96 and recal_98 landed on main while this round was measuring (the base was rebased twice: a0c705e -> f4cbb51), taking the shipped version to 100. The version is the SHIP order, not the round number — the same note recal_93 and recal_94 carry. Its knob patterns match `PIPELINE_VERSION = 10[0-9]`, the line rather than the number, per recal_95's fix.",
+    "NOTHING IN THE ENGINE MOVED, SO NOTHING DOWNSTREAM DID. data/team_rating.py and src/engine/offense.ts are byte-identical to main — the parity requirement is trivially met because neither side moved — and `marg` therefore did not move either (0 of 10,000, where recal_94 moved 7,830). The whole round is src/engine/gauges.ts plus the two files that must mirror it: data/anchors.py (which reads DEF_LEVEL out of gauges.ts rather than copying it) and scripts/receipts.ts (which learned the two dial scales). o_ovr, d_ovr, ovr, marg, big and every attribute are byte-identical to origin/main — asserted, not assumed.",
+    "A `team:defdial` PIN NOW NEEDS A SEASON, and recal_94's five were given theirs. Without one a five is read in TODAY's league, which is right for a drafted five and wrong for the Pistons '04 — graded seasonless they read 99 instead of 82. data/anchors.py's `_def_adj` mirrors gauges.ts's `defAdj` exactly, including the fallback. Any future team dial pin must carry `season`.",
+    "recal_94's PHILADELPHIA '26 VALUE PIN IS SUPERSEDED, its RANK pin is not. The 36 +-6 was a reading recal_94 recorded as a pin, never one of his numbers; the recentring moved the whole 2026 field +13 and Philadelphia with it, to 49. It is in data/anchors_superseded.json with the reason. The pin that carries his actual ruling — Philadelphia not in the season's top 6 — is untouched and still reads 13th of 24.",
+    "THE ERA TABLE IS A FROZEN CONSTANT LIKE ANY OTHER and drifts when the pool does. scripts/gauge100.ts re-derives the whole block — the 47-season table, DEF_LEVEL_REF, and the three anchors, in that order, with the table rounded to 3dp FIRST so the shipped constants are self-consistent. Re-run it after any round that moves drtgRef, exactly as scripts/gauge71.ts is re-run after one that moves offRaw. Between a0c705e and f4cbb51 the table moved in the third decimal and OKC '26 went 78 -> 81 on it; that is the size of the sensitivity.",
+    "WHAT IS STILL WRONG UNDERNEATH, and belongs to ratings-to-off-def rather than here. The drift this round cancels is real and it is in the CARDS: league-wide mean perdef falls 58.1 (80s) to 50.4 (20s) over all 9,665 rostered card-seasons, and its spread narrows with it (sd 16.4 -> 12.9). 94% of the 80s-to-20s drtgRef drift is that one channel. The scale now absorbs it, which is the right layer for a DISPLAY problem, but a round that wanted to fix the cause would look at how perdef is built across eras.",
+    "THREE EARLIER ROUND FILES WERE REPOINTED, none weakened in substance. recal_94 pinned the three DEF gauge constants this round re-froze (112.92 / 110.21 / 107.47 -> 113.2 / 110.12 / 107.54); its knobs now point at the current values with the supersession written into each note, exactly as recal_94 itself repointed the r60 and r68 lines it moved. recal_96 and recal_98 pinned the literal PIPELINE_VERSION and broke on the bump to 101; all six version knobs across 94/96/98 now match `PIPELINE_VERSION = \\d+`, the LINE rather than the number, which is recal_95's standing fix and the third time it has had to be applied. scripts/receipts.ts's recal_64 pin on fieldGauges' body was repointed for the same reason (the body now passes an explicit season). `npm run receipts` over all rounds: 376 MISS lines on origin/main, 372 after this round.",
+    "THE 2026 SPREAD IS WIDER THAN ITS SEASON DESERVES, and a later round may want to look. 2026 now runs OKC 81 down to Utah 25 while the real DRtg spread of those 24 teams is 107.7 to 122.7. The recentring fixed the LEVEL and deliberately did not touch the SPREAD: rescaling every season to a common within-season sd was measured as variant (a') and rejected — it put OKC at 93 and seven fives at 99, manufacturing variance the modern card pool does not have (its within-season sd of drtgRef is 0.75 against the 80s' 1.10, and that narrowing is real). If he ever says the 2026 tail is too low, that is the knob, and the measurement is in this file's notes."
+  ],
+  "notes": [
+    "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg per team-season, 1980-2026); fit is the Spearman of the shipped dial against real rating WITHIN each season, averaged over the 47 seasons carrying the 1,255 fieldable team-seasons of src/data/teamseasons.json. Everything below is scripts/diag-team: era100.py (where the drift is), drivers100.py (which channel owns it), variants100.py (the three cures), gauge100.ts (the freeze), ba100.py (before/after).",
+    "WHAT HE WAS LOOKING AT. Mean DEF dial by decade: 80s 56.1 · 90s 56.0 · 00s 54.3 · 10s 47.2 · 20s 38.5, and the entire 2026 field topped out at 67. The within-season FIT was already good (0.764) — the ORDER inside a season was right and the LEVEL of the modern era was not, which is exactly the shape of a complaint about one team reading 59 while nobody in its league reads above 61.",
+    "THE CAUSE, measured before choosing a cure. The league's own defensive level on this index is flat at ~109.9 from 1980 to 2013 and then climbs every season to 110.95 in 2026 — 1.1 raw points, and the DEF dial magnifies its input about 19 points per raw point, so ~20 dial points of pure era. Decomposed by didx channel over the 80s-to-20s gap: perdef +0.92 DRtg of the +0.98 total (94%), steals +0.06, anchor +0.01, glass -0.00. And it is not the FIVE, it is the POOL: mean perdef across every rostered card-season falls 58.1 -> 50.4.",
+    "THE THREE CURES, measured side by side. (a) ERA-RELATIVE RECENTRING — subtract the season's league level before the gauge: decade means 51.2/51.2/51.2/51.2/50.9, OKC 78, one five at 99, fit 0.764 -> 0.765. (a') RECENTRE AND RESCALE to the all-time within-season spread: overshoots badly — OKC 93, seven fives at 99 including the Spurs '05, and it manufactures variance the modern league does not have. (c) A GAUGE TRIPLE PER DECADE: OKC 81 but five fives at 99 and every decade gets its own summit, which destroys precisely the cross-era comparability the ruling asks for (the Warriors '17 fall to 65 while the Heat '13 read 78). (b) AN ERA TERM INSIDE defenseVs was rejected without measurement: it would leak into the RESOLVER and hand a 2026 five a fake defensive bonus in a cross-era game — a display problem paid for out of the simulation's pocket.",
+    "WHY (a). It is the only one of the three that is monotone WITHIN a season by construction, so the within-season fit cannot fall except through integer rounding; it keeps ONE summit and one scale, so the Pistons '04 (82) and the Thunder '26 (81) are directly comparable, which is what the dispatch asked the dial to preserve; and it is one subtraction in the display layer, leaving defenseVs, the resolver, the cards and every matchup margin bit-identical.",
+    "AFTER: decade means 80s 50.9 · 90s 50.9 · 00s 51.0 · 10s 50.9 · 20s 50.6, medians 51/51/51/49/48. The 2026 board reads OKC 81 · DET 71 · ATL 65 · HOU 62 · NYK 62 · TOR 61 · BOS 59 · LAC 58, with a median of 53, against a truth top 8 of OKC, DET, SAS, BOS, TOR, HOU, NYK, ATL — six of the eight names, and the top two exact.",
+    "FIT, per era, before -> after: ALL +0.764 -> +0.764 · 80s +0.780 -> +0.776 · 90s +0.799 -> +0.801 · 00s +0.814 -> +0.813 · 10s +0.717 -> +0.716 · 20s +0.690 -> +0.696. The moves are integer-rounding noise on a monotone transform, largest in the 80s (-0.004) where the recentring merges a few ties. The 10s and 20s sat below 0.76 before this round and still do; that is a fit question the round did not open and did not worsen.",
+    "OFF: 0 of 1,255 dial readings moved and 0 offRaw readings moved. The OFF constants are exactly as recal_71/74 froze them and the Warriors '17 still read 99."
+  ]
+}

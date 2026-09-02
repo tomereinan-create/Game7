@@ -71,7 +71,7 @@ const note = (s: string) => console.log(`        ${s}`)
 // ---------------------------------------------------------------------------
 type RoundOp = '>=' | '<=' | '==' | '~'
 interface RoundKnob { file: string; pattern: string; label?: string; note?: string }
-interface RoundExpect { card?: string; five?: string[]; scale: string; op: RoundOp; value: number; tol?: number; label?: string }
+interface RoundExpect { card?: string; five?: string[]; season?: number; scale: string; op: RoundOp; value: number; tol?: number; label?: string }
 interface RoundOrder { scale: string; above: string; below: string; label?: string }
 interface RoundMovers { scale: string; count: number; max_abs: number; top?: [string, number, number][] }
 interface RoundTop12 { scale: string; cards: string[] }
@@ -84,6 +84,8 @@ interface RoundFile {
   subject?: string
   scale: string
   five?: string[]
+  /** recal_100: which season's league a `team:*dial` five is read in. Omitted = today's. */
+  season?: number
   target?: number
   before?: number
   after?: number
@@ -121,15 +123,22 @@ const cardScale = (p: Card, scale: string): number | null => {
   return null
 }
 /** One reading on one scale: a card, or the engine's 1-99 team dials for a five. */
-const readScale = (scale: string, cardName?: string, five?: string[]): { v: number | null; who: string; why?: string } => {
+const readScale = (scale: string, cardName?: string, five?: string[], season?: number): { v: number | null; who: string; why?: string } => {
   if (scale.startsWith('team:')) {
     if (!five || five.length !== 5) return { v: null, who: cardName ?? 'team', why: 'a team scale needs a five of exactly 5 names' }
     const ps = five.map((n) => cardOf(n))
     const miss = five.filter((_, i) => !ps[i])
     if (miss.length) return { v: null, who: cardName ?? five.join(' / '), why: `MISSING from the pool: ${miss.join(', ')}` }
     const r = ratings100(ps as Card[])
-    const v = scale === 'team:off' ? r.off : scale === 'team:def' ? r.def : null
-    return { v, who: cardName ?? (ps as Card[]).map((p) => p.name).join(' / '), why: v === null ? `unknown team scale ${scale}` : `offRaw ${r.offRaw.toFixed(2)} · drtg vs REF_FIVE ${r.drtgRef.toFixed(2)}` }
+    // recal_100: the two DIAL scales are what the team screen shows — src/engine/gauges.ts, read in
+    // the five's own season's league. `team:off`/`team:def` stay ratings100's older display ints.
+    const g = scale.endsWith('dial') ? gauges64(ps as Card[], season ?? 2026) : null
+    const v = scale === 'team:off' ? r.off : scale === 'team:def' ? r.def
+      : scale === 'team:offdial' ? g!.off : scale === 'team:defdial' ? g!.def : null
+    const why = v === null ? `unknown team scale ${scale}`
+      : g ? `offRaw ${r.offRaw.toFixed(2)} · drtgRef ${r.drtgRef.toFixed(2)} · read in ${season ?? 2026}'s league`
+        : `offRaw ${r.offRaw.toFixed(2)} · drtg vs REF_FIVE ${r.drtgRef.toFixed(2)}`
+    return { v, who: cardName ?? (ps as Card[]).map((p) => p.name).join(' / '), why }
   }
   if (!cardName) return { v: null, who: '(no card named)', why: 'a card scale needs a card name' }
   const p = cardOf(cardName)
@@ -175,7 +184,7 @@ const roundBlock = (r: RoundFile) => () => {
     src(label, hay, re, k.note ?? k.pattern)
   }
   // ---- the subject: against the ruling's target, then against what the round shipped ----
-  const cur = readScale(r.scale, r.subject, r.five)
+  const cur = readScale(r.scale, r.subject, r.five, r.season)
   const moved = r.before != null && r.after != null ? `${r.before} -> ${r.after} · reads ${cur.v ?? 'MISSING'} now` : `reads ${cur.v ?? 'MISSING'} now`
   if (cur.v === null) {
     line(`SUBJECT ${cur.who} ${r.scale}`, 'MISSING', r.target != null ? String(r.target) : 'a reading', false)
@@ -194,7 +203,7 @@ const roundBlock = (r: RoundFile) => () => {
     note('  A round whose own number has moved is not a broken round: a later ruling stood on top of it.')
   }
   for (const e of r.expect ?? []) {
-    const rd = readScale(e.scale, e.card, e.five ?? (e.scale.startsWith('team:') ? r.five : undefined))
+    const rd = readScale(e.scale, e.card, e.five ?? (e.scale.startsWith('team:') ? r.five : undefined), e.season ?? r.season)
     const tol = e.tol ?? 0
     const want = e.op === '~' ? `~ ${e.value} ± ${tol}` : `${e.op} ${e.value}`
     const label = `${e.label ? `${e.label} — ` : ''}${rd.who} ${e.scale}`
@@ -207,8 +216,8 @@ const roundBlock = (r: RoundFile) => () => {
     line(label, rd.v, want, ok)
   }
   for (const o of r.order ?? []) {
-    const a = readScale(o.scale, o.above, r.five)
-    const b = readScale(o.scale, o.below, r.five)
+    const a = readScale(o.scale, o.above, r.five, r.season)
+    const b = readScale(o.scale, o.below, r.five, r.season)
     const label = `${o.label ? `${o.label} — ` : 'order — '}${a.who} above ${b.who} (${o.scale})`
     if (a.v === null || b.v === null) {
       line(label, `${a.v ?? 'MISSING'} vs ${b.v ?? 'MISSING'}`, 'both readable', false)
@@ -221,7 +230,7 @@ const roundBlock = (r: RoundFile) => () => {
     line(`FOOTPRINT on ${m.scale}, as the round measured it`, `${m.count} cards moved · largest |move| ${m.max_abs}`, 'recorded at the time — this ledger re-reads the movers, not the count', true)
     for (const mv of m.top ?? []) {
       const [n, was, now] = mv
-      const rd = readScale(m.scale, n, r.five)
+      const rd = readScale(m.scale, n, r.five, r.season)
       if (rd.v === null) {
         line(`  mover ${n}`, 'MISSING', `${was} -> ${now}`, false)
         continue
@@ -3309,7 +3318,7 @@ const ROUNDS: Record<string, () => void> = {
     // asserts the LAW: whatever the constant reads, it is GSW '17's five and it maps to 99.]
     src('the OFF summit is the named one', io('src/engine/gauges.ts'), /\/\/ Golden State Warriors '17 — the named OFF summit reads 99/, "GSW '17's best legal five = 99 (constant re-derived per this round's own law)")
     src('the DEF summit is the named one', io('src/engine/gauges.ts'), /const DEF_TOP = 106\.85 \/\/ Detroit Pistons '04/, "the '04 Pistons' best legal five = 99")
-    src('one convention, both paths', io('src/engine/gauges.ts'), /export function fieldGauges[\s\S]{0,120}gauge\(five\)/, 'a drafted five and a wheel team read on one scale')
+    src('one convention, both paths', io('src/engine/gauges.ts'), /export function fieldGauges[\s\S]{0,120}gauge\(five, undefined\)/, 'a drafted five and a wheel team read on one scale')
     src('the basis label', io('src/engine/gauges.ts'), /basis: 'all-time scale'/, '"pct of <season>" retired with the percentile')
     // ---- the named pins, live ----
     const g71 = (y: number, nm: string) => {
