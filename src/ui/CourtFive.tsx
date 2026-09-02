@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { pnrPair, SCHEMES, STYLES, type Scheme, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, pnrPair, SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -10,8 +10,13 @@ import type { Player } from '../engine/types'
  *
  * A gated plan moves the formation (his ruling: call five-out and the team
  * SHOWS five-out): the style arranges the spots, the named scorer/playmaker
- * wear microtags, and a quiet mono caption names the non-default calls. No
- * plan — the team db, an ungated call — stands balanced. Pure layout beyond
+ * wear microtags, and a quiet mono caption names the non-default calls.
+ *
+ * A five with NO plan — every scouted opponent, the team db, the draft floor
+ * — no longer stands balanced by default (his ruling: "Assign each team on
+ * the court by using their best tactic"). It stands in the shape of the style
+ * it is BEST at, the engine's bestStyle, and the caption says the shape was
+ * inferred rather than called ("motion · best fit 74"). Pure layout beyond
  * that: every spot's tag, tone and tap come from the caller.
  */
 
@@ -68,9 +73,12 @@ const DUNK_R: XY = [68, 88]
 
 /**
  * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
- * PG above the arc, both wings behind it, the PF out in the corner, and the C alone inside.
- * The default set used to stand the PF on the block beside him, which put two men inside; the PF
- * moves out to the corner, so the C is the only man inside the arc and the other four ring it.
+ * One man above the arc, two on the wings behind it, one in the corner, one alone inside.
+ * The default set used to stand the PF on the block beside the C, which put two men inside; the
+ * fourth man moves out to the corner, so exactly one man is inside the arc and the other four ring
+ * it. Written in slot order (PG..C) and used as-is only while the five is INCOMPLETE — the draft's
+ * ghost floor, which has no shooting to sort by. A full five is stood by `stand` instead, which
+ * keeps the same five spots and gives the inside one to the man who cannot shoot.
  */
 const AT: XY[] = [peri(0, 12), peri(-38), peri(38), CORNER_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
@@ -120,38 +128,110 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
 }
 
 /**
+ * WHO STANDS WHERE, once the shape is chosen (his ruling: "Why is Ayton out and James in? Makes no
+ * sense"). Every spot a formation is not holding for a featured man carries a SPACING RANK: 0 is
+ * inside — the dunker spot, the weak-side block, the elbow, the paint — 1 is above the break, 2 is
+ * the corner, the shooter's spot. The men who are not featured are then stood by their shooting,
+ * closest to the rim first: the worst shooter takes the lowest rank, the best takes the corner. A
+ * big who cannot shoot is never sent out to space the floor he cannot space.
+ */
+type Rank = 0 | 1 | 2
+type Rest = readonly [XY, Rank]
+
+/**
+ * Stand the unfeatured men. `swap` is the shape's reserve of extra INSIDE spots: when more men
+ * cannot shoot than the set has inside spots, the set gives up its most spacer-y spot (the corner
+ * first) for one of them, which is how post-up seats a second big on the dunker spot rather than
+ * in the weak-side corner. A set with no reserve (five-out, which is five men behind the line by
+ * definition) simply keeps its non-shooters off the corners.
+ */
+function stand(men: Player[], picked: Record<number, XY>, rest: Rest[], swap: XY[] = []): XY[] {
+  const idx = men.map((_, i) => i).filter((i) => !(i in picked))
+  const spots: Rest[] = [...rest]
+  let need = idx.filter((i) => !canSpace(men[i])).length - spots.filter(([, r]) => r === 0).length
+  for (const s of swap) {
+    if (need <= 0) break
+    let w = 0
+    for (let k = 1; k < spots.length; k++) if (spots[k][1] >= spots[w][1]) w = k
+    if (spots[w][1] === 0) break
+    spots[w] = [s, 0]
+    need--
+  }
+  const order = [...idx].sort((a, b) => men[a].attrs['3pt'] - men[b].attrs['3pt'])
+  const by = [...spots].sort((a, b) => a[1] - b[1])
+  const out: XY[] = []
+  for (let i = 0; i < men.length; i++) if (i in picked) out[i] = picked[i]
+  order.forEach((i, k) => (out[i] = by[k][0]))
+  return out
+}
+
+/**
  * Formations by style, index-aligned to the five's slot order (PG..C). Readable
  * spacings, not X-and-O diagrams; the special men use the same proxies the fit
  * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol)).
  * The pick-and-roll no longer guesses: it stands the pair the PLAN names, through
  * the engine's own pnrPair, so the floor and the price name the same two men.
+ *
+ * With no plan the style is INFERRED from the five itself (his ruling: "Assign each
+ * team on the court by using their best tactic") — the engine's bestStyle — so a
+ * scouted opponent stands the way it actually plays instead of standing balanced
+ * because nobody told the floor anything. A five that is still being filled has no
+ * best tactic yet, so it keeps the balanced set.
  */
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
-  const style = plan?.style
+export function inferredStyle(five: (Player | null)[]): { style: Style; fit: number } | null {
   const men = five.filter((p): p is Player => !!p)
-  if (!style || style === 'balanced' || men.length < 5) return [...AT]
-  const fill = (picked: Record<number, XY>, rest: XY[]): XY[] => {
-    const out: XY[] = []
-    let r = 0
-    for (let i = 0; i < 5; i++) out[i] = picked[i] ?? rest[r++]
-    return out
-  }
+  return men.length < 5 ? null : bestStyle(men)
+}
+
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
+  const men = five.filter((p): p is Player => !!p)
+  const style = plan ? plan.style : inferredStyle(five)?.style
+  if (!style || men.length < 5) return [...AT]
   switch (style) {
+    case 'balanced':
+      // four out, one in — and the one in is the man who cannot shoot, not whoever wears the C
+      return stand(men, {}, [
+        [PAINT_C, 0],
+        [peri(0, 12), 1],
+        [peri(-38), 1],
+        [peri(38), 1],
+        [CORNER_L, 2],
+      ])
     case 'fiveout':
-      // five behind the line, following the arc: top, both wings, both corners
-      return [peri(0), peri(-32), peri(32), CORNER_L, CORNER_R]
+      // five behind the line, following the arc: top, both wings, both corners. The only set with
+      // no inside spot to give — a called five-out SHOWS five out — so a man who cannot shoot
+      // stands at the top or on a wing and the corners go to the shooters.
+      return stand(men, {}, [
+        [peri(0), 1],
+        [peri(-32), 1],
+        [peri(32), 1],
+        [CORNER_L, 2],
+        [CORNER_R, 2],
+      ])
     case 'motion':
-      // staggered perimeter with one elbow man cutting
-      return [peri(-14), peri(-45), peri(45), peri(14), ELBOW_R]
+      // staggered perimeter with one elbow man cutting; the elbow is the non-shooter's spot
+      return stand(men, {}, [
+        [ELBOW_R, 0],
+        [peri(-14), 1],
+        [peri(14), 1],
+        [peri(-45), 1],
+        [peri(45), 1],
+      ])
     case 'transition':
-      // two men high on the half-court line, a trailer, two lane runners
-      return [
-        [30, 26],
-        [70, 26],
-        peri(0, 3),
-        peri(-43),
-        peri(43),
-      ]
+      // two men high on the half-court line, a trailer, two men spotting the break — and a big who
+      // cannot shoot runs the lane to the rim instead of spotting up
+      return stand(
+        men,
+        {},
+        [
+          [[30, 26], 1],
+          [[70, 26], 1],
+          [peri(0, 3), 1],
+          [peri(-43), 2],
+          [peri(43), 2],
+        ],
+        [DUNK_R],
+      )
     case 'pnr': {
       // the handler behind the arc, the screener rolling inside it; the other three spot the
       // corners and the weak wing. Both men come from the plan (his ruling: the pair is a call).
@@ -161,17 +241,19 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
       // the handler sets the screen, so the shape is always five men on five different spots
       if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
-      return fill({ [h]: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
+      return stand(men, { [h]: peri(-6, 10), [s]: ROLL }, [[peri(38), 1], [CORNER_L, 2], [CORNER_R, 2]], [DUNK_L])
     }
     case 'postup': {
-      // the post man on the block, four spaced behind the line away from his side
+      // the post man on the block, the others spaced behind the line away from his side — and a
+      // second big who cannot shoot takes the dunker spot, the set's other inside spot
       const s = best(men, (p) => (p.attrs.height >= 81 ? Math.min(p.attrs.rim, p.attrs.volume) : 0))
-      return fill({ [s]: BLOCK_L }, [peri(0), peri(-38), peri(38), CORNER_R])
+      return stand(men, { [s]: BLOCK_L }, [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]], [DUNK_R])
     }
     case 'helio': {
-      // the engine alone above the arc; the four low — corners and the dunker spots
+      // the engine alone above the arc; the four low — the corners for the shooters, the two
+      // dunker spots for the men who cannot space
       const s = best(men, (p) => Math.min(p.attrs.volume, p.attrs.playvol))
-      return fill({ [s]: peri(0, 12) }, [CORNER_L, DUNK_L, DUNK_R, CORNER_R])
+      return stand(men, { [s]: peri(0, 12) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
   }
 }
@@ -189,6 +271,16 @@ function callLine(plan: Tactics, side: Side): string {
     if (plan.crashDef) bits.push('crash D')
   }
   return bits.join(' · ')
+}
+
+/**
+ * The caption for a five nobody called a plan for: the style it was READ as, in the caption's own
+ * idiom, with the fit that won so the reader can see it was inferred and not called. A five that
+ * nothing fits better than the free default says exactly that, rather than pretending 60 is a fit.
+ */
+function fitLine(inf: { style: Style; fit: number }): string {
+  const label = STYLES.find((s) => s.key === inf.style)?.label ?? inf.style
+  return inf.style === 'balanced' ? `${label} · no better fit` : `${label} · best fit ${Math.round(inf.fit)}`
 }
 
 /** Card name -> the words of his real name: season tag off, and generational suffixes
@@ -332,8 +424,12 @@ export function CourtFive({
   const side = sideProp ?? own
   const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
-  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan, spots.map((s) => s.p))
-  const call = plan ? callLine(plan, shown) : ''
+  const men = spots.map((s) => s.p)
+  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan, men)
+  // no plan: the shape was read off the five, and the caption says so (his ruling: "Assign each
+  // team on the court by using their best tactic")
+  const inferred = plan ? null : inferredStyle(men)
+  const call = plan ? callLine(plan, shown) : inferred ? fitLine(inferred) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with
    * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and

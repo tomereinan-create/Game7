@@ -439,6 +439,47 @@ export function aiScheme(five: Player[], theirs: Player[]): Scheme {
   return best
 }
 
+/**
+ * THE STYLE A FIVE ALREADY IS (his ruling: "Assign each team on the court by using their best
+ * tactic"). The argmax of styleFit over the real styles, kept only when it BEATS balanced's
+ * priced-to-zero 60 — a five that fits nothing better than the free default is balanced, and says
+ * so. The pnr entry reads the engine's own auto-pair, the same two men an unplanned five would run
+ * it with, because no pair is named.
+ *
+ * A READ, not a call. Nothing in the sim consults it today: the AI picks a tempo (aiTempo) and a
+ * scheme (aiScheme) and runs balanced offense, so there is no chosen style for the floor to
+ * contradict. It lives here beside its two siblings so that the day the AI does call a style, the
+ * floor and the sim are one function and cannot name different shapes.
+ */
+/**
+ * THE SHOOTING LINE (his ruling: "Why is Ayton out and James in? Makes no sense"). A man stands in
+ * a spacing spot only if he can shoot from there. The line is the pool's own class rule —
+ * BIG_RULE reads a big as `rim >= 60 AND 3pt < 40` — so 40 is where this game already stops calling
+ * a man a shooter, and the floor uses the same number the classifier does. One number, exported,
+ * because the drawing and the style inference must agree about who can space.
+ */
+export const SHOOT_3PT = 40
+export const canSpace = (p: Player) => p.attrs['3pt'] >= SHOOT_3PT
+
+export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fit: number } {
+  let best: Style = 'balanced'
+  let bestFit = 60
+  // FIVE-OUT DEMANDS SHOOTERS (his ruling). Every other set owns an inside spot to stand a
+  // non-shooter on; five-out owns none, so a five carrying two men who cannot shoot is never READ
+  // as five-out however the fit lands. Called five-out is untouched — a call is a call.
+  const shy = five.filter((p) => !canSpace(p)).length
+  for (const s of STYLES) {
+    if (s.key === 'balanced') continue
+    if (s.key === 'fiveout' && shy >= 2) continue
+    const fit = styleFit(s.key, five, theirs)
+    if (fit > bestFit) {
+      bestFit = fit
+      best = s.key
+    }
+  }
+  return { style: best, fit: bestFit }
+}
+
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
