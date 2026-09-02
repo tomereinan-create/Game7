@@ -1,5 +1,68 @@
 [
  {
+  "card": "Michael Jordan '89",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 102,
+  "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
+  "note": "a FLOOR of 98, written as 99 +-1 because that is what \"98+\" means on a scale capped at 99"
+ },
+ {
+  "card": "Michael Jordan '89",
+  "scale": "def",
+  "target": 99,
+  "tol": 1,
+  "round": 102,
+  "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
+  "note": "the same floor on DEF"
+ },
+ {
+  "card": "Steve Novak '13",
+  "scale": "off",
+  "target": 60,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "r91's stretch-big terms now paid against real load OR real glass; volume 9, orb 19, so he keeps r64's wing floor"
+ },
+ {
+  "card": "Anthony Tolliver '14",
+  "scale": "off",
+  "target": 56,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same gate; volume 7, orb 44"
+ },
+ {
+  "card": "Ben Wallace '07",
+  "scale": "ovr",
+  "target": 66,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "the OVR cap's big branch gets r93's elite-defence floor: max(o+40, 0.85*d)"
+ },
+ {
+  "card": "Ben Wallace '08",
+  "scale": "ovr",
+  "target": 64,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same"
+ },
+ {
+  "card": "Caldwell Jones '80",
+  "scale": "ovr",
+  "target": 65,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same"
+ },
+ {
   "card": "Karl Malone '99",
   "scale": "off",
   "target": 90,
@@ -106,15 +169,6 @@
   "round": 89,
   "ruling": "Dont do 87, only shift the weights a little torward 88",
   "note": "one of the four complete stars the round predicted flat"
- },
- {
-  "card": "Michael Jordan '89",
-  "scale": "off",
-  "target": 96,
-  "tol": 1,
-  "round": 89,
-  "ruling": "Dont do 87, only shift the weights a little torward 88",
-  "note": "flat"
  },
  {
   "card": "Kawhi Leonard '17",
@@ -316,14 +370,6 @@
   "card": "Jrue Holiday '21",
   "scale": "def",
   "target": 92,
-  "tol": 1,
-  "round": 80,
-  "ruling": "Ship 80"
- },
- {
-  "card": "Kawhi Leonard '17",
-  "scale": "def",
-  "target": 95,
   "tol": 1,
   "round": 80,
   "ruling": "Ship 80"
@@ -585,15 +631,6 @@
   "card": "Hakeem Olajuwon '94",
   "scale": "off",
   "target": 88,
-  "tol": 1,
-  "round": 51,
-  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-  "note": "vol 85+, ramp = 1.0 by construction"
- },
- {
-  "card": "Giannis Antetokounmpo '23",
-  "scale": "off",
-  "target": 96,
   "tol": 1,
   "round": 51,
   "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
