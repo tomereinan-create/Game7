@@ -33,6 +33,7 @@ down"), and they survive a rescale that a value pin cannot:
 TEAM ANCHORS (recal_94 — "Philly 2026 def too high ... OFF DEF feels off for too many teams"):
 
     team:off / team:def          ratings_100's display ints (recal_60's layer)
+    team:ovrdial                 the team screen's OVR: round((offdial + defdial) / 2), TeamDb.tsx ovrOf
     team:offdial / team:defdial  the 1-99 ALL-TIME dial the team screen shows — src/ui/TeamDb.tsx's
                                  gaugeOf through src/engine/gauges.ts. The frozen constants are READ
                                  OUT OF gauges.ts, never copied here, so the two cannot drift.
@@ -116,18 +117,20 @@ def _gauge_consts():
         path = os.path.join(_HERE, '..', 'src', 'engine', 'gauges.ts')
         src = io.open(path, encoding='utf-8').read()
         g = {}
-        for k in ('OFF_MIN', 'OFF_MID', 'OFF_TOP', 'DEF_WORST', 'DEF_MID', 'DEF_TOP', 'DEF_LEVEL_REF'):
+        for k in ('OFF_MIN', 'OFF_MID', 'OFF_TOP', 'DEF_WORST', 'DEF_MID', 'DEF_TOP',
+                  'DEF_LEVEL_REF', 'OFF_LEVEL_REF'):
             m = re.search(r'^const %s = ([0-9.]+)' % k, src, re.M)
             if not m:
                 return None
             g[k] = float(m.group(1))
         # recal_100's era table, read from the same file for the same reason
-        blk = re.search(r'^const DEF_LEVEL: Record<number, number> = \{(.*?)^\}', src, re.M | re.S)
-        if not blk:
-            return None
-        g['DEF_LEVEL'] = {int(y): float(v) for y, v in re.findall(r'(\d{4}):\s*([0-9.]+)', blk.group(1))}
-        if len(g['DEF_LEVEL']) < 40:
-            return None
+        for k in ('DEF_LEVEL', 'OFF_LEVEL'):
+            blk = re.search(r'^const %s: Record<number, number> = \{(.*?)^\}' % k, src, re.M | re.S)
+            if not blk:
+                return None
+            g[k] = {int(y): float(v) for y, v in re.findall(r'(\d{4}):\s*([0-9.]+)', blk.group(1))}
+            if len(g[k]) < 40:
+                return None
         _GAUGE = g
     return _GAUGE
 
@@ -140,6 +143,15 @@ def _def_adj(drtg, season=None):
     if lvl is None:
         lvl = g['DEF_LEVEL'][max(g['DEF_LEVEL'])]
     return drtg - lvl + g['DEF_LEVEL_REF']
+
+
+def _off_adj(off, season=None):
+    """recal_105: offRaw re-expressed in OFF_LEVEL_REF's league. Mirrors offAdj in gauges.ts."""
+    g = _gauge_consts()
+    lvl = g['OFF_LEVEL'].get(season) if season else None
+    if lvl is None:
+        lvl = g['OFF_LEVEL'][max(g['OFF_LEVEL'])]
+    return off - lvl + g['OFF_LEVEL_REF']
 
 
 def _scale71(v, mn, mid, top):
@@ -158,13 +170,14 @@ def team_raw(five):
 
 def team_dials(five, season=None):
     """The 1-99 ALL-TIME dials the app's team screen shows (src/ui/TeamDb.tsx gaugeOf -> gauges.ts).
-    recal_100: the DEF dial is read in the five's own season's league, so a team:defdial pin carries
-    a `season`. Without one it is read in today's, which is what a drafted five gets."""
+    recal_100/105: BOTH dials are read in the five's own season's league, so a team:offdial,
+    team:defdial or team:ovrdial pin carries a `season`. Without one a five is read in today's,
+    which is what a drafted five gets."""
     g = _gauge_consts()
     if g is None:
         return None
     off, drtg = team_raw(five)
-    return (_scale71(off, g['OFF_MIN'], g['OFF_MID'], g['OFF_TOP']),
+    return (_scale71(_off_adj(off, season), g['OFF_MIN'], g['OFF_MID'], g['OFF_TOP']),
             _scale71(-_def_adj(drtg, season), -g['DEF_WORST'], -g['DEF_MID'], -g['DEF_TOP']))
 
 
@@ -292,9 +305,13 @@ def read_scale(players, a):
         five = [find_card(players, n) for n in a.get('five', [])]
         if len(five) != 5 or any(p is None for p in five):
             return None
-        if scale in ('team:offdial', 'team:defdial'):
+        if scale in ('team:offdial', 'team:defdial', 'team:ovrdial'):
             d = team_dials(five, a.get('season'))
-            return None if d is None else (d[0] if scale == 'team:offdial' else d[1])
+            if d is None:
+                return None
+            # recal_105: team:ovrdial is src/ui/TeamDb.tsx's ovrOf — the plain mean of the two dials,
+            # which is the number his ruling ("Bulls 96 only 75 OVR") is actually about.
+            return d[0] if scale == 'team:offdial' else d[1] if scale == 'team:defdial' else int(round((d[0] + d[1]) / 2.0))
         off100, def100 = _team_ns()['ratings_100'](five)
         return off100 if scale == 'team:off' else def100
     p = find_card(players, a['card'])

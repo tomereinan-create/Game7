@@ -133,8 +133,11 @@ const readScale = (scale: string, cardName?: string, five?: string[], season?: n
     // recal_100: the two DIAL scales are what the team screen shows — src/engine/gauges.ts, read in
     // the five's own season's league. `team:off`/`team:def` stay ratings100's older display ints.
     const g = scale.endsWith('dial') ? gauges64(ps as Card[], season ?? 2026) : null
+    // recal_105: team:ovrdial is the Team DB's own OVR — src/ui/TeamDb.tsx's ovrOf, the plain mean of
+    // the two dials. His ruling ("Bulls 96 only 75 OVR") is about that number, so it is gradable.
     const v = scale === 'team:off' ? r.off : scale === 'team:def' ? r.def
-      : scale === 'team:offdial' ? g!.off : scale === 'team:defdial' ? g!.def : null
+      : scale === 'team:offdial' ? g!.off : scale === 'team:defdial' ? g!.def
+        : scale === 'team:ovrdial' ? Math.round((g!.off + g!.def) / 2) : null
     const why = v === null ? `unknown team scale ${scale}`
       : g ? `offRaw ${r.offRaw.toFixed(2)} · drtgRef ${r.drtgRef.toFixed(2)} · read in ${season ?? 2026}'s league`
         : `offRaw ${r.offRaw.toFixed(2)} · drtg vs REF_FIVE ${r.drtgRef.toFixed(2)}`

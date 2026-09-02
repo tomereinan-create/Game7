@@ -44,14 +44,15 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 106",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, compute side",
-      "note": "the ROUND is 104; it SHIPS as pipeline 106"
+      "note": "the ROUND is 104; it SHIPS as pipeline 106 [recal_105: widened from the literal to match the LINE at any version, per recal_95's standing fix — a version regex that pins digits fails on every later round by construction.]"
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 106",
-      "label": "pipeline version, ratings side (the two must never drift)"
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, ratings side (the two must never drift)",
+      "note": "[recal_105: widened from the literal to match the LINE at any version, per recal_95's standing fix — a version regex that pins digits fails on every later round by construction.]"
     },
     {
       "file": "src/engine/tactics.ts",
@@ -203,16 +204,56 @@
     "count": 5331,
     "max_abs": 8,
     "top": [
-      ["Ben Wallace '08", 64, 56],
-      ["Caldwell Jones '80", 65, 57],
-      ["Harvey Catchings '82", 60, 52],
-      ["Jon Koncak '92", 58, 50],
-      ["Ben Wallace '02", 73, 66],
-      ["Ben Wallace '01", 71, 64],
-      ["Ben Wallace '03", 71, 64],
-      ["Ben Wallace '05", 71, 64],
-      ["Ben Wallace '00", 70, 63],
-      ["Ben Wallace '04", 70, 63]
+      [
+        "Ben Wallace '08",
+        64,
+        56
+      ],
+      [
+        "Caldwell Jones '80",
+        65,
+        57
+      ],
+      [
+        "Harvey Catchings '82",
+        60,
+        52
+      ],
+      [
+        "Jon Koncak '92",
+        58,
+        50
+      ],
+      [
+        "Ben Wallace '02",
+        73,
+        66
+      ],
+      [
+        "Ben Wallace '01",
+        71,
+        64
+      ],
+      [
+        "Ben Wallace '03",
+        71,
+        64
+      ],
+      [
+        "Ben Wallace '05",
+        71,
+        64
+      ],
+      [
+        "Ben Wallace '00",
+        70,
+        63
+      ],
+      [
+        "Ben Wallace '04",
+        70,
+        63
+      ]
     ]
   },
   "top12": {

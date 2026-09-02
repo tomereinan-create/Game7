@@ -62,15 +62,15 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_LEVEL_REF = 109\\.9663",
+      "pattern": "const DEF_LEVEL_REF = 110\\.0319",
       "label": "recal_100's DEF gauge RE-DERIVED on the regenerated cards",
-      "note": "110.1397 -> 109.9663; the whole block re-run through scripts/gauge100.ts"
+      "note": "110.1397 -> 109.9663; the whole block re-run through scripts/gauge100.ts [recal_105 re-pointed it: recal_104's OVR blend moved the best-five picker, so the population this table is frozen from moved with it and his recal_94 summit ruling had silently stopped holding (the Bulls '96 CURRENT five read DEF 95). scripts/gauge100.ts was re-run on the current pool — DEF_LEVEL_REF 109.9663 -> 110.0319, 2026 110.246 -> 110.254 — and the summit reads 99 again. recal_101's own finding, that a perdef round moves this table, is exactly what happened again for a different input.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "2026: 110\\.246,",
+      "pattern": "2026: 110\\.254,",
       "label": "the per-season league defensive level, 2026",
-      "note": "110.950 -> 110.246 — the tracked half of every modern card rose, so the league's own level fell"
+      "note": "110.950 -> 110.246 — the tracked half of every modern card rose, so the league's own level fell [recal_105 re-pointed it: recal_104's OVR blend moved the best-five picker, so the population this table is frozen from moved with it and his recal_94 summit ruling had silently stopped holding (the Bulls '96 CURRENT five read DEF 95). scripts/gauge100.ts was re-run on the current pool — DEF_LEVEL_REF 109.9663 -> 110.0319, 2026 110.246 -> 110.254 — and the summit reads 99 again. recal_101's own finding, that a perdef round moves this table, is exactly what happened again for a different input.]"
     }
   ],
   "expect": [

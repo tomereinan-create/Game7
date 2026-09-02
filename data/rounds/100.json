@@ -34,15 +34,15 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 110\\.246,",
+      "pattern": "const DEF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 110\\.254,",
       "label": "THE ERA TABLE — the league's own defensive level, season by season, frozen from the 1,255-five sweep",
-      "note": "flat at ~109.9 from 1980 to 2013, then a step at 2014 and a climb to 110.950  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "flat at ~109.9 from 1980 to 2013, then a step at 2014 and a climb to 110.950  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again. recal_104's OVR blend changed which five the OVR-max picker takes, so the table's own population moved and his recal_94 summit ruling had silently stopped holding — the Bulls '96 CURRENT five read DEF 95. scripts/gauge100.ts was re-run on the current pool: DEF_WORST 113.03 -> 113, DEF_MID 109.95 -> 110.04, DEF_TOP 107.36 -> 107.58, DEF_LEVEL_REF 109.9663 -> 110.0319, and the summit reads 99 again. recal_100's findings are untouched: every decade's DEF mean is ~51, the Thunder '26 are at 80, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_LEVEL_REF = 109\\.9663",
+      "pattern": "const DEF_LEVEL_REF = 110\\.0319",
       "label": "the league every DEF dial is quoted in: the mean of the 47 season levels",
-      "note": "  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again. recal_104's OVR blend changed which five the OVR-max picker takes, so the table's own population moved and his recal_94 summit ruling had silently stopped holding — the Bulls '96 CURRENT five read DEF 95. scripts/gauge100.ts was re-run on the current pool: DEF_WORST 113.03 -> 113, DEF_MID 109.95 -> 110.04, DEF_TOP 107.36 -> 107.58, DEF_LEVEL_REF 109.9663 -> 110.0319, and the summit reads 99 again. recal_100's findings are untouched: every decade's DEF mean is ~51, the Thunder '26 are at 80, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -51,27 +51,27 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_WORST = 113\\.03",
+      "pattern": "const DEF_WORST = 113\\b",
       "label": "the DEF gauge, re-frozen on the era-adjusted index",
-      "note": "112.92 -> 113.2 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "112.92 -> 113.2 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again. recal_104's OVR blend changed which five the OVR-max picker takes, so the table's own population moved and his recal_94 summit ruling had silently stopped holding — the Bulls '96 CURRENT five read DEF 95. scripts/gauge100.ts was re-run on the current pool: DEF_WORST 113.03 -> 113, DEF_MID 109.95 -> 110.04, DEF_TOP 107.36 -> 107.58, DEF_LEVEL_REF 109.9663 -> 110.0319, and the summit reads 99 again. recal_100's findings are untouched: every decade's DEF mean is ~51, the Thunder '26 are at 80, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_MID = 109\\.95",
+      "pattern": "const DEF_MID = 110\\.04",
       "label": "the all-time median five still reads 50",
-      "note": "110.21 -> 110.12 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "110.21 -> 110.12 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again. recal_104's OVR blend changed which five the OVR-max picker takes, so the table's own population moved and his recal_94 summit ruling had silently stopped holding — the Bulls '96 CURRENT five read DEF 95. scripts/gauge100.ts was re-run on the current pool: DEF_WORST 113.03 -> 113, DEF_MID 109.95 -> 110.04, DEF_TOP 107.36 -> 107.58, DEF_LEVEL_REF 109.9663 -> 110.0319, and the summit reads 99 again. recal_100's findings are untouched: every decade's DEF mean is ~51, the Thunder '26 are at 80, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.36",
+      "pattern": "const DEF_TOP = 107\\.58",
       "label": "recal_94's DEF summit HELD: the Bulls '96 still read 99, and still alone",
-      "note": "107.47 -> 107.54 (adjusted units); 1 five of 1,255 reads 99, same as before  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "107.47 -> 107.54 (adjusted units); 1 five of 1,255 reads 99, same as before  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again. recal_104's OVR blend changed which five the OVR-max picker takes, so the table's own population moved and his recal_94 summit ruling had silently stopped holding — the Bulls '96 CURRENT five read DEF 95. scripts/gauge100.ts was re-run on the current pool: DEF_WORST 113.03 -> 113, DEF_MID 109.95 -> 110.04, DEF_TOP 107.36 -> 107.58, DEF_LEVEL_REF 109.9663 -> 110.0319, and the summit reads 99 again. recal_100's findings are untouched: every decade's DEF mean is ~51, the Thunder '26 are at 80, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 104\\.36",
-      "label": "THE OFF DIAL IS NOT TOUCHED — its three constants are exactly as recal_71/74 left them",
-      "note": "0 of 1,255 OFF dial readings moved, and 0 offRaw readings moved"
+      "pattern": "const OFF_MIN = 104\\.12",
+      "label": "the OFF dial WAS untouched by recal_100 — recal_105 is the round that moved it, on his later ruling \"Teams rating is still off. Bulls 96 only 75 OVR\"",
+      "note": "recal_100 measured the OFF era drift (decade means 42.9 / 48.4 / 52.6 / 54.1 / 56.4) and left it alone because he had ruled on DEF only; its COST named that as the first thing to put to him. He ruled on the composite five rounds later and recal_105 applied the same subtraction: OFF_MIN 104.36 -> 104.12, OFF_MID 123.32 -> 123.02, OFF_TOP 137.67 -> 135.94, all in adjusted units, with the Warriors '17 still 99."
     },
     {
       "file": "src/engine/gauges.ts",
@@ -87,9 +87,9 @@
     },
     {
       "file": "scripts/receipts.ts",
-      "pattern": "scale === 'team:offdial' \\? g!\\.off : scale === 'team:defdial' \\? g!\\.def : null",
+      "pattern": "scale === 'team:offdial' \\? g!\\.off : scale === 'team:defdial' \\? g!\\.def",
       "label": "NEW: the ledger can grade the number the TEAM SCREEN shows, not only ratings100's older ints",
-      "note": "this round's ruling is about the dial, so the receipt is read on the dial"
+      "note": "this round's ruling is about the dial, so the receipt is read on the dial [recal_105 extended the same line with team:ovrdial, the Team DB's own OVR, and re-pointed this pattern at the part it actually proves.]"
     },
     {
       "file": "data/team_rating.py",
@@ -127,9 +127,9 @@
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
-      "value": 71,
-      "tol": 3,
-      "label": "Detroit '26, the season's real 2nd-best defence — the other half of \"no 2026 team having more than 61 DEF is insane\": 57 -> 71"
+      "value": 75,
+      "tol": 5,
+      "label": "Detroit '26, the season's real 2nd-best defence — the other half of \"no 2026 team having more than 61 DEF is insane\": 57 -> 71, and 75 after recal_105 re-derived the DEF table"
     },
     {
       "five": [
