@@ -6,12 +6,21 @@ import type { Player } from './types'
  * balanced. 99 should be one of the greatest offense ever (2017 warriors)" — and, folded in,
  * "Do the same for DEF, 99 is 2004 pistons").
  *
+ * THE DEF SUMMIT MOVED AT recal_94. His ruling, verbatim: "Move the summit to Bulls '96". It
+ * supersedes the DEF half of recal_71 quoted above ("Do the same for DEF, 99 is 2004 pistons"),
+ * which he had held since r71 and which recal_94 kept until he ruled. The reason it was put to
+ * him: recal_94's defence reset (anchor capped at 99 inside didx, the `cover` refund and the
+ * discipline penalty removed) moved drtgRef, and on the new scale the Pistons '04 five read 70th
+ * of the 1,255 fieldable team-seasons, so pinning 99 to them flattened the top 5.5% of the dial —
+ * 76 fives clamped there. With the summit on the Bulls '96, NOTHING clamps: the dial's top is a
+ * single five again and the Pistons '04 read what the honest scale gives them (DEF 83).
+ * The OFF half of recal_71 is untouched: 99 is still the 2017 Warriors.
+ *
  * This supersedes recal_64's within-season percentile for BOTH dials: a team no longer reads 99
  * for being the best of a weak season — 99 is reserved for the all-time summits, and the owner
- * named them. OFF 99 = the 2017 Warriors' best legal five (offRaw 140.04; the six fives above it
- * — Suns '07-class — clamp to 99, the same way the card band clamps past its summit). DEF 99 =
- * the 2004 Pistons' best legal five (drtgRef 106.85; the five fives better than it, the '05/'06
- * Pistons and '05/'16 Spurs among them, clamp to 99 — the old within-season summit keeps its 99).
+ * named them. OFF 99 = the 2017 Warriors' best legal five (offRaw 137.67; the one five above it,
+ * Suns '07, clamps to 99, the same way the card band clamps past its summit). DEF 99 = the 1996
+ * Bulls' best legal five (drtgRef 107.4739, the all-time best — nothing clamps).
  *
  * THE MAPPING is two-slope linear around the all-time median (the codebase's knee convention):
  * [min..median] -> [1..50], [median..summit] -> [50..99], clamped 1..99. "More balanced" is the
@@ -30,11 +39,17 @@ import type { Player } from './types'
 // after recal_74's ORB-scale halving lowered the league level — GSW '17 rose to all-time rank 3
 // and still reads 99 exactly; the DEF distribution did not move):
 const OFF_MIN = 104.36 // the all-time worst wheel five
-const OFF_MID = 123.32 // the all-time median five reads 50
+const OFF_MID = 123.32 // the all-time median five reads 50 (today's sweep reads 123.25 — see recal_94's COST)
 const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
-const DEF_WORST = 112.87 // the all-time worst defensive five
-const DEF_MID = 109.14 // the all-time median reads 50
-const DEF_TOP = 107.03 // Detroit Pistons '04 — the named DEF summit reads 99
+// DEF side RE-FROZEN by recal_94 (scripts/gauge71.ts / scripts/diag-team/gauge94.ts, same 1,255-five
+// wheel sweep) after the defenseVs reset moved drtgRef: the anchor is capped at 99 inside didx, the
+// `cover` refund and the discipline penalty are gone, and the weights are 0.55/0.13/0.12/0.12.
+// Taken on the MERGED pool (recal_92/93/95's card-side DEF work landed first, which moved the median
+// 109.99 -> 110.21 and every five's drtgRef with it). His ruling "Move the summit to Bulls '96" put
+// DEF_TOP on the all-time best five, so unlike every DEF freeze since r71 nothing clamps.
+const DEF_WORST = 112.92 // the all-time worst defensive five
+const DEF_MID = 110.21 // the all-time median reads 50
+const DEF_TOP = 107.47 // Chicago Bulls '96 (drtgRef 107.4739) — the named DEF summit reads 99
 /** How many wheel fives froze the anchors (display only). */
 const ANCHOR_N = 1255
 

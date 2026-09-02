@@ -220,7 +220,7 @@ export const transitionBonus = (five: Player[]) => DKNOBS.TRANSITION * five.redu
 /** Matchup defense knobs (team_rating.py MKNOBS). */
 export const MKNOBS = {
   HIDE_OUT: 45, // opponent with out below this = credible hiding spot for the anchor
-  ANCHOR_CAP: 37.5, // protection capacity: ~1.5 bad defenders' worth of perdef deficit
+  // ANCHOR_CAP (37.5) is GONE — recal_94 removed the `cover` refund it sized. See defenseVs.
   ONBALL_SPLIT: 0.6, // steals: 60% on-ball (matchup-driven), 40% team/passing-lane
   HUNT_SCALE: 0.1, // DRtg pts per unit of hunted-man exposure
   DRTG_COEF: 0.181, // calibrated to the 60/40 offense/defense ruling; re-derived after recal_12's
@@ -245,12 +245,11 @@ export interface DefenseVs {
   // display-only internals
   anchorIdx: number
   weakIdx: number
-  cover: number
+  /** The five's mean perdef. recal_94: the `cover` refund that used to be added here is gone. */
   effDi: number
   onball: number
   team: number
   glass: number
-  discPts: number
   didx: number
   /** The matchups scored, when assigned (map[i] = opponent index guarded by us[i]); null for optimal. */
   map: number[] | null
@@ -421,12 +420,13 @@ export function defenseVs(us: Player[], them: Player[], assignment: Assignment =
   const minOppOut = B.length ? B[anchorOn]['3pt'] : 0
   const hide = minOppOut < K.HIDE_OUT ? 1 : Math.max(0.15, 1 - (minOppOut - K.HIDE_OUT) / 50)
   const anchor = anchorRaw * hide
-  // PROTECTION: covers holes up to capacity, only against paint-hunting offense.
-  // Assigned: the anchor protects from where he stands, so his man's paint share gates it.
-  const deficit = A.reduce((s, a, i) => (i === anchorIdx ? s : s + Math.max(0, 60 - a.perdef)), 0)
-  const guardedPaint = map && B[anchorOn] ? B[anchorOn].rim / (B[anchorOn].rim + B[anchorOn]['3pt'] + 1e-9) : paintOrient
-  const cover = Math.min(deficit, K.ANCHOR_CAP * (anchor / 99)) * Math.min(1, Math.min(paintOrient, guardedPaint) * 2)
-  const effDi = (A.reduce((s, a) => s + a.perdef, 0) + cover) / 5
+  // recal_94: PROTECTION (`cover`) IS GONE. It refunded the perdef deficit of the four non-anchor
+  // defenders whenever the five had a rim anchor — so a bad perimeter five with a big read as a
+  // good perimeter five. Measured on the 1,255 fieldable team-seasons, removing it alone took the
+  // within-season DEF fit from rho +0.587 to +0.654. The comment it replaced claimed the term was
+  // gated by paint-hunting, but the gate min(1, paintOrient*2) is 1.00 against the reference five
+  // and against every real offense in the wheel, so it never gated anything.
+  const effDi = A.reduce((s, a) => s + a.perdef, 0) / 5
   // EVERY PAIRING GENERATES EDGE (recal_60, replacing the lone hunted-man term): the board —
   // naive, the player's own, or the best of all 120 — decides who absorbs whom, and the whole
   // usage-weighted table lands on the DRtg. The hunt is now simply the star's row of the table.
@@ -455,12 +455,47 @@ export function defenseVs(us: Player[], them: Player[], assignment: Assignment =
   const o = B.map((b) => b.orb).sort((x, y) => y - x)
   const sumFrom = (xs: number[], k: number) => xs.slice(k).reduce((s, x) => s + x, 0)
   const glass = (d[0] ?? 0) + 0.5 * (d[1] ?? 0) + 0.1 * sumFrom(d, 2) - ((o[0] ?? 0) + 0.5 * (o[1] ?? 0) + 0.25 * sumFrom(o, 2))
-  const didx = 0.42 * effDi + 0.26 * anchor * 0.9 + 0.2 * Math.min(99, steals) * 0.9 + 0.12 * Math.max(0, 60 + glass / 4)
-  let drtg = 110 - K.DRTG_COEF * (didx - 55) + huntPen
-  const discPts = (0.03 * A.reduce((s, a) => s + Math.max(0, 55 - a.discipline), 0) / 5) * 3
-  drtg += discPts
+  /**
+   * TEAM DEFENCE IS THE FIVE'S PERDEF AGAIN (recal_94, his ruling: "Philly 2026 def too high, I
+   * dont understand the system it needs a full reset. OFF DEF feels off for too many teams" —
+   * and, on the diagnosis, "Run it").
+   *
+   * MEASURED, not guessed. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg), fit is the
+   * Spearman of the dial against real DRtg WITHIN each season, averaged over the 47 seasons of
+   * the 1,255 fieldable team-seasons on the wheel. The shipped formula scored DEF rho +0.587
+   * while the bare sum of the five's perdef scored +0.763 — every term stacked on top of perdef
+   * was subtracting signal. Three of them are the reason:
+   *
+   *   1. THE ANCHOR WAS UNCAPPED. `teamDefense` (the standalone lineup path) has always written
+   *      `min(99, anchor)`; this line did not, and anchorRaw = rimprot1 + 0.35*rimprot2^2/99 runs
+   *      past 99 on 902 of the 1,255 fives (max 131.3, Bucks '21). Two rim protectors paid twice,
+   *      off the top of a 1-99 scale. Capped here exactly as teamDefense caps it.
+   *   2. `cover` — see above, removed.
+   *   3. `discPts`, the discipline penalty, was the LARGEST variance channel of drtgRef (sd 0.588
+   *      against a 5.84-point all-time range, i.e. up to ~73 dial points) and it pointed the WRONG
+   *      WAY: mean discipline of the five correlates +0.075 (Spearman) with BAD real defence.
+   *      Fouling is how good defences play. Removed from the matchup path. DKNOBS.DISC_FREEPTS,
+   *      the standalone `teamDefense` version, is untouched — it is a different layer.
+   *
+   * WEIGHTS. With the anchor capped and cover gone, the anchor's remaining weight still overpaid:
+   * 0.26 -> 0.13, the 0.13 moved onto perdef (0.42 -> 0.55) so the didx level is held. Steals
+   * 0.20 -> 0.12 on the same measurement (+0.004; the term is real but small, and its transition
+   * value is priced separately in scoreVs via STEAL_PTS).
+   *
+   * WHAT IT COST. Nothing on offense — `teamOffense` is untouched and OFF rho is +0.712 before
+   * and after (all 1,255 offRaw readings bit-identical). DEF rho +0.588 -> +0.763 overall; per era
+   * 80s .536->.777, 90s .599->.799, 00s .597->.791, 10s .641->.730, 20s .557->.697. Philadelphia '26
+   * (real DRtg 14th of the 24 fieldable 2026 teams) goes from DEF 80 / 1st to DEF 50 / 9th. DEF_WORST/DEF_MID/DEF_TOP in
+   * src/engine/gauges.ts were re-frozen from the wheel sweep in the same commit, per recal_71's law.
+   *
+   * STILL DEAD, recorded and NOT touched this round: `huntPen` is 0 and `hide` is 1 for all 1,255
+   * gauge readings (assignment 'optimal' makes board === bestB; REF_FIVE's worst shooter is 3pt 25,
+   * below HIDE_OUT 45). They are live in the resolver, where the board is not the best board.
+   */
+  const didx = 0.55 * effDi + 0.13 * Math.min(99, anchor) * 0.9 + 0.12 * Math.min(99, steals) * 0.9 + 0.12 * Math.max(0, 60 + glass / 4)
+  const drtg = 110 - K.DRTG_COEF * (didx - 55) + huntPen
   void nA
-  return { drtg, steals: Math.min(99, steals), star, worstShooter: anchorOn, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, anchorIdx, weakIdx, cover, effDi, onball, team, glass, discPts, didx, map }
+  return { drtg, steals: Math.min(99, steals), star, worstShooter: anchorOn, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, anchorIdx, weakIdx, effDi, onball, team, glass, didx, map }
 }
 
 /** OFF + transition − DRtg, against this opponent. 1:1 with score_vs. */
@@ -557,7 +592,14 @@ const REF_OFF = 124.03  // re-derived after recal_74's ORB-scale halving lowered
 // ceilings, the 6ft+ feed) inflated the defensive pool and the display dials drifted 23 points
 // apart (OFF mean 45.6, DEF mean 69.1 over 300 random fives). One dial moves: the display DRtg
 // reference, until the two means match. Orderings within each side are untouched by construction.
-const REF_DRTG = 108.85
+// recal_94 RE-DERIVED IT BY THAT SAME RULE, because the defenceVs reset moved the DRtg level:
+// solved against recal_60's OWN sample and OWN gate (receipt 60's "PARITY over 300 random fives",
+// means within 0.5): the OFF mean is 46.54 there and 109.83 is the DEF reference that matches it,
+// which also holds receipt 67's wider gap check. data/team_rating.py's _REF_DRTG had drifted much
+// further — it still carried recal_60's PRE-calibration 113.1, 4.25 points off this port — and is
+// corrected to 109.83 in the same commit, so the pair is 1:1 again. Display only: nothing in the
+// resolver reads these ints.
+const REF_DRTG = 109.83
 
 /** Opponent-independent OFF and DEF, 1–99. 50 = a median drafted five. Display only. */
 export function ratings100(five: Player[]): { off: number; def: number; offRaw: number; drtgRef: number } {

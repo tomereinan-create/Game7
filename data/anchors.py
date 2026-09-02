@@ -27,7 +27,24 @@ down"), and they survive a rescale that a value pin cannot:
 
     {"kind": "order", "scale": "off", "above": "A", "below": "B", "round": N}
 
-  meaning A must read >= B on that scale.
+  meaning A must read >= B on that scale. For a team:* scale an order pin may name a DIFFERENT five
+  on each side with `five_above` / `five_below` (recal_94); `five` alone still means both.
+
+TEAM ANCHORS (recal_94 — "Philly 2026 def too high ... OFF DEF feels off for too many teams"):
+
+    team:off / team:def          ratings_100's display ints (recal_60's layer)
+    team:offdial / team:defdial  the 1-99 ALL-TIME dial the team screen shows — src/ui/TeamDb.tsx's
+                                 gaugeOf through src/engine/gauges.ts. The frozen constants are READ
+                                 OUT OF gauges.ts, never copied here, so the two cannot drift.
+
+    {"kind": "team_rank", "season": 2026, "ab": "PHI", "scale": "team:def",
+     "min_rank": 7, "round": 94, "ruling": "..."}
+
+  A RANK pin: where a team-season sits among the fieldable fives OF ITS OWN SEASON, 1 = best. The
+  five is picked exactly as src/engine/bestfive.ts picks it (max total OVR over legal PG..C boards)
+  from src/data/teamseasons.json. `max_rank` = at least this good; `min_rank` = no better than this;
+  both may be given. A rank pin survives a rescale that a value pin cannot, which is why his DEF
+  rulings are seeded this way — the complaint was about ORDER, not about a dial number.
 
 CARD LOOKUP: exact match on `name` first (names carry the year — season is the unit). A name with no
 year resolves to the PEAK card: highest `talent`, then highest `ovr`. An unknown card is reported as
@@ -83,6 +100,169 @@ def find_card(players, name, _cache={}):
     return sorted(same, key=lambda p: (p.get('talent', 0), p.get('ovr', 0)))[-1]
 
 
+_GAUGE = None
+
+
+def _gauge_consts():
+    """The frozen gauge anchors, READ OUT OF src/engine/gauges.ts rather than copied here.
+    recal_94 added this on purpose: a fourth transcription of OFF_MIN/DEF_TOP is a fourth thing that
+    can drift, and the whole point of an anchor file is that drift prints. If the regex ever stops
+    matching, every gauge anchor reports MISSING — loudly — instead of grading against a stale number."""
+    global _GAUGE
+    if _GAUGE is None:
+        path = os.path.join(_HERE, '..', 'src', 'engine', 'gauges.ts')
+        src = io.open(path, encoding='utf-8').read()
+        g = {}
+        for k in ('OFF_MIN', 'OFF_MID', 'OFF_TOP', 'DEF_WORST', 'DEF_MID', 'DEF_TOP'):
+            m = re.search(r'^const %s = ([0-9.]+)' % k, src, re.M)
+            if not m:
+                return None
+            g[k] = float(m.group(1))
+        _GAUGE = g
+    return _GAUGE
+
+
+def _scale71(v, mn, mid, top):
+    """recal_71's two-slope map, mirroring scale71 in src/engine/gauges.ts exactly."""
+    x = 1 + 49.0 * (v - mn) / (mid - mn) if v <= mid else 50 + 49.0 * (v - mid) / (top - mid)
+    return int(round(max(1.0, min(99.0, x))))
+
+
+def team_raw(five):
+    """(offRaw, drtgRef) for a five, through team_rating.py — the same two numbers gauges.ts maps."""
+    ns = _team_ns()
+    off, _ = ns['team_offense'](five)
+    drtg, _ = ns['defense_vs'](five, ns['REF_FIVE'])
+    return off, drtg
+
+
+def team_dials(five):
+    """The 1-99 ALL-TIME dials the app's team screen shows (src/ui/TeamDb.tsx gaugeOf -> gauges.ts)."""
+    g = _gauge_consts()
+    if g is None:
+        return None
+    off, drtg = team_raw(five)
+    return (_scale71(off, g['OFF_MIN'], g['OFF_MID'], g['OFF_TOP']),
+            _scale71(-drtg, -g['DEF_WORST'], -g['DEF_MID'], -g['DEF_TOP']))
+
+
+# ---- the season board: every fieldable team-season's OVR-max legal five, as bestfive.ts picks it ----
+_STATS = None
+_WHEEL = None
+_BOARDS = {}
+_POSITIONS = ('PG', 'SG', 'SF', 'PF', 'C')
+
+
+def _pos_of(name):
+    """src/engine/positions.ts eligible(): every position bref ever listed; empty means anywhere."""
+    global _STATS
+    if _STATS is None:
+        _STATS = json.load(io.open(os.path.join(_HERE, '..', 'src', 'data', 'stats.json'), encoding='utf-8'))
+    line = _STATS.get(name) or {}
+    out = [p for p in _POSITIONS if p in (line.get('pos') or [])]
+    return out or list(_POSITIONS)
+
+
+def starting_five(roster):
+    """A 1:1 port of startingFive() in src/engine/bestfive.ts, for the SET it picks (team ratings are
+    order-invariant, so the assist tie-break on slot order cannot move a number). Max total OVR over
+    legal PG..C boards; among boards of equal total, the one that walk() reaches first — slot 0's
+    lowest roster index, then slot 1's, and so on, with an empty slot ordered last."""
+    n = len(roster)
+    elig = [_pos_of(p['name']) for p in roster]
+    NEG = float('-inf')
+    # dp[i][mask] = best total using players i.. to fill exactly the slots in `mask`
+    dp = [[NEG] * 32 for _ in range(n + 1)]
+    dp[n][0] = 0.0
+    for i in range(n - 1, -1, -1):
+        for mask in range(32):
+            best = dp[i + 1][mask]
+            for s in range(5):
+                if not (mask >> s) & 1 or _POSITIONS[s] not in elig[i]:
+                    continue
+                sub = dp[i + 1][mask ^ (1 << s)]
+                if sub > NEG:
+                    best = max(best, sub + roster[i].get('ovr', 0))
+            dp[i][mask] = best
+    target = max(dp[0])
+    # reconstruct walk()'s first-found board: slot 0 first, candidates in roster order
+    left = max((m for m in range(32) if dp[0][m] == target), key=lambda m: bin(m).count('1'))
+    chosen, used, got = [], [False] * n, 0.0
+    for s in range(5):
+        if not (left >> s) & 1:
+            continue
+        for i in range(n):
+            if used[i] or _POSITIONS[s] not in elig[i]:
+                continue
+            rest = left ^ (1 << s)
+            # can the slots still open be filled to target by the players not yet used?
+            if _fill(roster, elig, used, i, rest, target - got - roster[i].get('ovr', 0)):
+                used[i] = True
+                got += roster[i].get('ovr', 0)
+                chosen.append(roster[i])
+                left = rest
+                break
+    return chosen
+
+
+def _fill(roster, elig, used, taken, mask, need):
+    """Is `mask` fillable from the unused players (excluding `taken`) for exactly `need` more OVR?"""
+    if mask == 0:
+        return abs(need) < 1e-9
+    free = [i for i in range(len(roster)) if not used[i] and i != taken]
+    best = {0: 0.0}
+    for i in free:
+        nxt = dict(best)
+        for m, v in best.items():
+            for s in range(5):
+                if (mask >> s) & 1 and not (m >> s) & 1 and _POSITIONS[s] in elig[i]:
+                    mm = m | (1 << s)
+                    if nxt.get(mm, float('-inf')) < v + roster[i].get('ovr', 0):
+                        nxt[mm] = v + roster[i].get('ovr', 0)
+        best = nxt
+    return abs(best.get(mask, float('-inf')) - need) < 1e-9
+
+
+def season_board(players, season):
+    """[(ab, team, five)] for every team of `season` that can field a legal five, from the wheel."""
+    global _WHEEL
+    if season in _BOARDS:
+        return _BOARDS[season]
+    if _WHEEL is None:
+        _WHEEL = json.load(io.open(os.path.join(_HERE, '..', 'src', 'data', 'teamseasons.json'), encoding='utf-8'))
+    idx = {}
+    for p in players:
+        idx.setdefault(p['name'], p)
+    out = []
+    for t in _WHEEL:
+        if t['y'] != season:
+            continue
+        roster = [idx[n] for n in t['p'] if n in idx]
+        if len(roster) < 5:
+            continue
+        five = starting_five(roster)
+        if len(five) != 5:
+            continue
+        off, drtg = team_raw(five)
+        out.append(dict(ab=t['ab'], team=t['team'], five=five, off=off, drtg=drtg))
+    _BOARDS[season] = out
+    return out
+
+
+def team_rank(players, a):
+    """(rank, n) of one team-season on `scale` within its own season. 1 = best. Ties share the rank."""
+    board = season_board(players, a['season'])
+    me = [x for x in board if x['ab'] == a.get('ab') or x['team'] == a.get('team')]
+    if not me or len(board) < 2:
+        return None
+    me = me[0]
+    if a['scale'] in ('team:def', 'team:defdial'):
+        better = sum(1 for x in board if x['drtg'] < me['drtg'])
+    else:
+        better = sum(1 for x in board if x['off'] > me['off'])
+    return better + 1, len(board)
+
+
 def read_scale(players, a):
     """The measured value an anchor is about, or None if it cannot be read."""
     scale = a['scale']
@@ -90,6 +270,9 @@ def read_scale(players, a):
         five = [find_card(players, n) for n in a.get('five', [])]
         if len(five) != 5 or any(p is None for p in five):
             return None
+        if scale in ('team:offdial', 'team:defdial'):
+            d = team_dials(five)
+            return None if d is None else (d[0] if scale == 'team:offdial' else d[1])
         off100, def100 = _team_ns()['ratings_100'](five)
         return off100 if scale == 'team:off' else def100
     p = find_card(players, a['card'])
@@ -103,6 +286,9 @@ def read_scale(players, a):
 
 
 def _label(a):
+    if a.get('kind') == 'team_rank':
+        return "%s '%02d %s rank" % (a.get('ab') or a.get('team'), a['season'] % 100,
+                                     'DEF' if 'def' in a['scale'] else 'OFF')
     if a.get('kind') == 'order':
         return "%s >= %s" % (a['above'], a['below'])
     if a['scale'].startswith('team:'):
@@ -126,9 +312,29 @@ def grade(players, anchors_path=None):
                  ruling=a.get('ruling', ''), note=a.get('note', ''),
                  tol=a.get('tol', 2), target=None, current=None, error=None, ok=False,
                  verdict='FAIL')
-        if kind == 'order':
-            hi = read_scale(players, dict(scale=a['scale'], card=a['above'], five=a.get('five')))
-            lo = read_scale(players, dict(scale=a['scale'], card=a['below'], five=a.get('five')))
+        if kind == 'team_rank':
+            # recal_94: a RANK pin. The dial is a scale that a later round can legitimately re-freeze;
+            # where a team-season SITS INSIDE ITS OWN SEASON is the thing his ruling was actually
+            # about, and it survives any rescale. max_rank = "at least this good", min_rank = "no
+            # better than this" (that is the shape of "Philly 2026 def too high").
+            got = None
+            try:
+                got = team_rank(players, a)
+            except Exception:
+                got = None
+            if got is None:
+                r['verdict'] = 'MISSING'
+            else:
+                rk, n = got
+                lo, hi = a.get('max_rank'), a.get('min_rank')
+                r['target'] = ('<=%s' % lo) if hi is None else (('>=%s' % hi) if lo is None else '%s-%s' % (hi, lo))
+                r['current'] = '%d/%d' % (rk, n)
+                r['error'] = (rk - lo) if (lo is not None and rk > lo) else ((rk - hi) if (hi is not None and rk < hi) else 0)
+                r['ok'] = (lo is None or rk <= lo) and (hi is None or rk >= hi)
+                r['verdict'] = 'PASS' if r['ok'] else 'FAIL'
+        elif kind == 'order':
+            hi = read_scale(players, dict(scale=a['scale'], card=a['above'], five=a.get('five_above', a.get('five'))))
+            lo = read_scale(players, dict(scale=a['scale'], card=a['below'], five=a.get('five_below', a.get('five'))))
             if hi is None or lo is None:
                 r['verdict'] = 'MISSING'
             else:

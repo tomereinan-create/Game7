@@ -1948,7 +1948,7 @@ const ROUNDS: Record<string, () => void> = {
   '60': () => {
     console.log(`${EOL}recal_60 — offense-defense parity + matchups with teeth`)
     line('PIPELINE_VERSION', `${(OVR.match(/PIPELINE_VERSION = (\d+)/) ?? [])[1]}`, '60', /PIPELINE_VERSION = 60/.test(OVR) && /PIPELINE_VERSION = 60/.test(RATINGS))
-    src('the parity dial', io('src/engine/offense.ts'), /const REF_DRTG = 108\.85/, 'ONE constant moved; orderings untouched')
+    src('the parity dial', io('src/engine/offense.ts'), /const REF_DRTG = 109\.83/, 'ONE constant moved; orderings untouched — 108.85, re-solved to 109.83 by recal_94 against THIS block’s own sample after the defenceVs reset moved the DRtg level')
     src('every pairing generates edge', io('src/engine/offense.ts'), /export function pairingEdge/, 'perdef outside, rimprot inside, size against height, usage-gated')
     src('mirrored in the pipeline', RATINGS.includes('def pairing_edge') ? RATINGS : io('data/team_rating.py'), /def pairing_edge/, 'team_rating.py runs the same table (the parity test enforces it)')
     // parity harness, live
@@ -3652,7 +3652,10 @@ const ROUNDS: Record<string, () => void> = {
     src('(D1) the DEF gauge opponent IS fixed', io('src/engine/offense.ts'), /const drtgRef = defenseVs\(five, REF_FIVE\)\.drtg|defenseVs\(five, REF_FIVE\)/, 'ratings100 rates every five vs the same synthetic REF_FIVE — comparability holds; "vs 2026" labels the percentile pool')
     const phi68 = five68('76ers')
     const dPhi = defenseVs68(phi68.five, REF_FIVE68)
-    line("(D2) Philadelphia '26 vs the fixed reference", `drtgRef ${dPhi.drtg.toFixed(2)} (best of 2026) · anchor ${dPhi.anchor.toFixed(1)} · cover ${dPhi.cover.toFixed(1)} · steals ${dPhi.steals.toFixed(1)}`, 'D cards 54/70/49/63/79 — the inversion is real and it is the ANCHOR STACK', dPhi.anchor > 99)
+    line("(D2) Philadelphia '26 vs the fixed reference", `drtgRef ${dPhi.drtg.toFixed(2)} · anchor ${dPhi.anchor.toFixed(1)} (capped to 99 in didx since recal_94) · steals ${dPhi.steals.toFixed(1)}`, 'D cards 54/70/49/63/79 — the inversion is real and it is the ANCHOR STACK', dPhi.anchor > 99)
+    note('  [SUPERSEDED by recal_94: `cover` no longer exists, so this line can no longer print it, and')
+    note('  Philadelphia is no longer "best of 2026". The anchor stack this addendum named as the DEF-side')
+    note('  patient was the diagnosis recal_94 acted on — the anchor is now capped at 99 inside didx.]')
     note('  ROOT CAUSE, measured: anchorRaw = rimprot1 + 0.35 x rimprot2^2/99 = 86 (Embiid) + 25.5 (Barlow')
     note('  85) = 111.5 — beyond the 99 scale — times hide = 1 ALWAYS vs the reference (its Avg C shoots')
     note('  25). Cover then spends 38 of 42 capacity erasing the perimeter deficit (Maxey 53/Oubre 45/')
@@ -3790,7 +3793,7 @@ const ROUNDS: Record<string, () => void> = {
     // [ANNOTATED by recal_74: the ORB-scale halving lowered the league OFF level and REF_OFF was
     // re-derived per its own definition (128.3 -> 124.03, the campaign median); the residual gap
     // (~2.6, was 1.96 at r67) is the dial's own drift ledger — tolerance widened with the note.]
-    line('r60 dial parity, shift KEPT (108.85)', `OFF ${(so67 / 300).toFixed(2)} DEF ${(sd67 / 300).toFixed(2)} gap ${gapKept.toFixed(2)}`, 'was 1.33 pre-round; drift belongs to the dial, not this round (r74 rebased REF_OFF)', gapKept < 3.5)
+    line('r60 dial parity, shift KEPT (109.83 since recal_94)', `OFF ${(so67 / 300).toFixed(2)} DEF ${(sd67 / 300).toFixed(2)} gap ${gapKept.toFixed(2)}`, 'was 1.33 pre-round; drift belongs to the dial, not this round (r74 rebased REF_OFF)', gapKept < 3.5)
     line('  r60 shift reverted (113.1) — the test', `gap ${gapRev.toFixed(2)}`, 'parity does NOT hold naturally -> r60 KEPT', gapRev > 0.5)
     note('  VERDICT: the intercept stays at 108.85. The round\'s interaction warning assumed the team DEF')
     note('  dial consumes d_ovr; it does not — defenseVs/ratings100 read the ATTRIBUTES, so the card-level')

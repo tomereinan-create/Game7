@@ -1,0 +1,347 @@
+{
+  "round": 94,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "title": "TEAM DEFENCE IS THE FIVE'S PERDEF AGAIN — the anchor is capped, the cover refund and the discipline penalty are gone, and the DEF gauge is re-frozen with its summit on the Bulls '96",
+  "subject": "Philadelphia 76ers '26 (best legal five)",
+  "five": [
+    "Tyrese Maxey '26",
+    "Quentin Grimes '26",
+    "Kelly Oubre Jr. '26",
+    "Dominick Barlow '26",
+    "Joel Embiid '26"
+  ],
+  "scale": "team:def",
+  "target": 41,
+  "tol": 4,
+  "before": 47,
+  "after": 41,
+  "pipeline_version": 97,
+  "knobs": [
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const didx = 0\\.55 \\* effDi \\+ 0\\.13 \\* Math\\.min\\(99, anchor\\) \\* 0\\.9 \\+ 0\\.12 \\* Math\\.min\\(99, steals\\) \\* 0\\.9 \\+ 0\\.12 \\* Math\\.max\\(0, 60 \\+ glass / 4\\)",
+      "label": "THE ROUND'S ONE LINE — defenseVs' defensive index, port side",
+      "note": "0.42/0.26(uncapped)/0.20/0.12 -> 0.55/0.13(min 99)/0.12/0.12"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "didx = 0\\.55\\*eff_di \\+ 0\\.13\\*min\\(99, anchor\\)\\*0\\.9 \\+ 0\\.12\\*min\\(99, steals\\)\\*0\\.9 \\+ 0\\.12\\*max\\(0, 60 \\+ glass/4\\)",
+      "label": "the same line, source-of-truth side — the two must never drift",
+      "note": "data/parity_check.py + tests/parity.test.ts gate the pair"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const effDi = A\\.reduce\\(\\(s, a\\) => s \\+ a\\.perdef, 0\\) / 5",
+      "label": "COVER IS GONE, port side — effDi is now literally the five's mean perdef",
+      "note": "was (sum perdef + cover)/5, where cover refunded up to 37.5 x anchor/99 of the deficit"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "eff_di = sum\\(a\\['perdef'\\] for a in A\\)/5",
+      "label": "COVER IS GONE, python side",
+      "note": "removing it alone: DEF rho +0.587 -> +0.654"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const drtg = 110 - K\\.DRTG_COEF \\* \\(didx - 55\\) \\+ huntPen\\s*\\n\\s*void nA",
+      "label": "THE DISCIPLINE PENALTY IS GONE, port side — nothing stands between drtg and the return",
+      "note": "drtg += discPts deleted; the pattern spans the two lines that used to sandwich it"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "drtg = 110 - MKNOBS\\['DRTG_COEF'\\]\\*\\(didx - 55\\) \\+ hunt_pen[^\\n]*\\n\\s*return drtg, min\\(99, steals\\)",
+      "label": "THE DISCIPLINE PENALTY IS GONE, python side — same proof by adjacency",
+      "note": "mean discipline of a five correlates +0.075 with WORSE real defence"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "// ANCHOR_CAP \\(37\\.5\\) is GONE — recal_94 removed the `cover` refund it sized",
+      "label": "MKNOBS.ANCHOR_CAP retired with the term it sized, port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "# ANCHOR_CAP \\(37\\.5\\) is GONE — recal_94 removed the `cover` refund it sized",
+      "label": "MKNOBS['ANCHOR_CAP'] retired, python side"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_WORST = 112\\.92",
+      "label": "the DEF gauge, re-frozen from the 1,255-five wheel sweep",
+      "note": "112.87 -> 112.92"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_MID = 110\\.21",
+      "label": "the all-time median five still reads 50",
+      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.47",
+      "label": "THE SECOND RULING — the DEF summit moves off recal_71's Pistons '04 and onto the Bulls '96",
+      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99."
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_TOP = 137\\.67",
+      "label": "the OFF gauge is NOT re-frozen — teamOffense is untouched by this round",
+      "note": "unchanged; all 1,255 offRaw readings are bit-identical before and after"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const REF_DRTG = 109\\.83",
+      "label": "ratings100's display intercept, re-derived by recal_60's own rule",
+      "note": "108.85 -> 109.83, re-solved on the merged pool against receipt 60's OWN 300-five sample and its means-within-0.5 gate"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "_REF_OFF, _REF_DRTG = 124\\.03, 109\\.83",
+      "label": "the SAME intercept python side — it had carried recal_60's pre-calibration 113.1 for 34 rounds",
+      "note": "113.1 -> 109.83; parity_check.py never compared ratings_100, so the drift never printed"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def team_rank\\(players, a\\):",
+      "label": "NEW: rank anchors, so a DEF ruling cannot be undone by a rescale",
+      "note": "the five is picked exactly as src/engine/bestfive.ts picks it (verified on all 1,255 team-seasons)"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def _gauge_consts\\(\\):",
+      "label": "NEW: team:offdial / team:defdial read the frozen constants OUT of gauges.ts",
+      "note": "no fourth transcription of OFF_MIN/DEF_TOP, so the anchor file cannot drift from the app"
+    },
+    {
+      "file": "tests/defense.test.ts",
+      "pattern": "expect\\(b - a\\)\\.toBeGreaterThanOrEqual\\(1\\.2\\)",
+      "label": "THE ANCHOR-ISOLATION BAND, re-set — this round is the named mechanism its comment was waiting for",
+      "note": "3.62 -> 1.32: the band measures the anchor channel, and the anchor channel is what halved"
+    },
+    {
+      "file": "tests/box.test.ts",
+      "pattern": "expect\\(md\\)\\.toBeGreaterThanOrEqual\\(45\\)",
+      "label": "the display-int sanity rail, HELD at 45 - re-deriving the intercept was the right cure, not lowering the rail",
+      "note": "the 10-level campaign sample reads DEF 47 (it would have read 42 on the old intercept)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "label": "pipeline version, compute side",
+      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. Pattern matches the LINE, per recal_95's fix to round 91."
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 9[1-9]",
+      "label": "pipeline version, ratings side (the two must never drift)",
+      "note": "94 ships as pipeline 97 — the version is the SHIP order, not the round number. Pattern matches the LINE, per recal_95's fix to round 91."
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "Move the summit to Bulls '96",
+      "label": "the ruling that supersedes recal_71's DEF half, quoted verbatim in the file's own history",
+      "note": "r71's \"Do the same for DEF, 99 is 2004 pistons\" is quoted beside it and moved to data/anchors_superseded.json"
+    }
+  ],
+  "expect": [
+    {
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Isaiah Joe '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
+      "scale": "team:def",
+      "op": ">=",
+      "value": 50,
+      "label": "OKC '26 — the season's ACTUAL best defence (real DRtg 1st of the 24 fieldable) reads 1st: dial 59 -> 62. Its five is the merged pool's board — recal_92 took Ajay Mitchell '26 out of it."
+    },
+    {
+      "five": [
+        "Cade Cunningham '26",
+        "Duncan Robinson '26",
+        "Ausar Thompson '26",
+        "Tobias Harris '26",
+        "Jalen Duren '26"
+      ],
+      "scale": "team:def",
+      "op": ">=",
+      "value": 46,
+      "label": "Detroit '26 — real DRtg 2nd of 24, and 2nd on the dial too (dial 43 -> 56)"
+    },
+    {
+      "five": [
+        "Chauncey Billups '04",
+        "Richard Hamilton '04",
+        "Tayshaun Prince '04",
+        "Ben Wallace '04",
+        "Mehmet Okur '04"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 62,
+      "label": "recal_71's OLD DEF SUMMIT, now read on the honest scale: dial 98 -> 83, all-time DEF rank 70 of 1,255. SUPERSEDED by his ruling \"Move the summit to Bulls '96\" — see COST and data/anchors_superseded.json.",
+      "tol": 1
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "recal_71's OFF SUMMIT UNTOUCHED: the Warriors '17 five is bit-identical on offence (all-time dial still 99). Only the DEF half of r71 was superseded."
+    },
+    {
+      "five": [
+        "Kirk Hinrich '05",
+        "Ben Gordon '05",
+        "Luol Deng '05",
+        "Eddy Curry '05",
+        "Othella Harrington '05"
+      ],
+      "scale": "team:def",
+      "op": ">=",
+      "value": 45,
+      "label": "Bulls '05, the worst DEF mismatch on the whole wheel (real DRtg 2nd of 30, dial had it 30th of 30): dial 19 -> 52, rank 30th -> 16th"
+    },
+    {
+      "five": [
+        "Dejounte Murray '20",
+        "Patty Mills '20",
+        "DeMar DeRozan '20",
+        "Rudy Gay '20",
+        "LaMarcus Aldridge '20"
+      ],
+      "scale": "team:def",
+      "op": "<=",
+      "value": 45,
+      "label": "the OTHER direction — Spurs '20 (real DRtg 25th of 27) had read 3rd in its season: dial 44 -> 37, rank 3rd -> 9th"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "NO CARD MOVED: d_ovr is identical on all 10,000 cards — this round changes how five cards COMBINE, never a card"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit, untouched (o_ovr identical on all 10,000)"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "ovr",
+      "op": "==",
+      "value": 96,
+      "label": "and OVR — marg is the only card field this round moved, and recal_37/40 took marg out of OVR (96 since recal_93's ramp)"
+    },
+    {
+      "card": "Joel Embiid '26",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 80,
+      "label": "the subject's anchor is unchanged as a CARD by THIS round — what changed is that an 80 and a 76 beside it no longer add past 99 (recal_92 moved the rimprot scale itself; it was 90/85 when this round first landed)"
+    },
+    {
+      "card": "Dominick Barlow '26",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 76,
+      "label": "the second rim protector whose 0.35 x r^2/99 pushed Philadelphia's anchor past 99 — still does, and is still capped"
+    },
+    {
+      "five": [
+        "Ron Harper '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "scale": "team:def",
+      "op": ">=",
+      "value": 66,
+      "label": "THE NEW DEF SUMMIT (his ruling: \"Move the summit to Bulls '96\") — the Bulls '96 best legal five is the all-time best drtgRef, 107.4739, and reads 99 on the dial with nothing above it"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 59,
+      "label": "REBASE MARKER: recal_92 moved this card's perdef 76 -> 59, which is why OKC '26's OVR-max five changed under this round's feet"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Victor Wembanyama '26",
+      "label": "the card-side DEF summit is undisturbed"
+    },
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Shaquille O'Neal '00",
+      "label": "the card-side OFF summit is undisturbed"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '01",
+      "Ben Wallace '06",
+      "Dwight Howard '10",
+      "Ben Wallace '07",
+      "Dan Roundfield '80",
+      "Dan Roundfield '81",
+      "Dan Roundfield '82",
+      "Dwight Howard '09"
+    ]
+  },
+  "cost": [
+    "THE SUMMIT MOVED, BY HIS OWN SECOND RULING. recal_71 said \"Do the same for DEF, 99 is 2004 pistons\" and this round held it through its first landing. On the reset scale the Pistons '04 five read 70th of the 1,255 fieldable team-seasons, so pinning 99 to them put 76 fives at 99 and flattened the top 5.5% of the dial. Put to him at the integration, he ruled: \"Move the summit to Bulls '96\". DEF_TOP is now 107.47, the Bulls '96 best legal five's own drtgRef (107.4739, all-time rank 1), so EXACTLY ONE five of 1,255 reads 99 and nothing clamps — the first DEF freeze since r71 with an empty clamp list. Pistons '04 read 83. r71's DEF half is in data/anchors_superseded.json with both rulings quoted; its OFF half (Warriors '17 = 99) stands.",
+    "THE PYTHON ratings_100 DEF INTERCEPT HAD BEEN WRONG SINCE recal_60. data/team_rating.py carried _REF_DRTG = 113.1 while src/engine/offense.ts carried 108.85 — 4.25 points apart, i.e. 34 display points on a 1-99 dial, for 34 rounds. data/parity_check.py compares off / drtg / steals / net / margin and never ratings_100, so nothing printed. Both sides now read 109.83, re-solved on the MERGED pool against recal_60's OWN sample and OWN gate (receipt 60's \"PARITY over 300 random fives\", means within 0.5). A later round should add ratings_100 to the parity harness.",
+    "ONE TEST BAND WAS RE-SET, recorded in `knobs` above: tests/defense.test.ts's anchor-isolation swing, 3.62 -> 1.32. That band measures the size of the anchor channel and this round halved the anchor channel, so it cannot be held without undoing the round; its own comment said the only thing that would move it was \"its own ruling or a named mechanism\", and this is the named mechanism. tests/box.test.ts's display-int rail was NOT moved: the first cut of this round lowered it 45 -> 40, and re-deriving REF_DRTG properly (see above) put the 10-level sample at 47 instead of 42, so the rail was restored. A display drift is fixed at the intercept, not at the rail. The tactics harness passed unchanged: no Deviation Tax band moved this round.",
+    "marg MOVED ON 7,830 OF 10,000 CARDS (max 12, mean 2.70 over the movers) because data/compute_ovr.py exec's team_rating.py for it. o_ovr, d_ovr and ovr are byte-identical on all 10,000 — asserted, not assumed — because recal_37/40 took marg out of OVR. The direction is the round's own claim: perimeter defenders up (Patrick Beverley '17 69 -> 81, Tony Allen '12 63 -> 74, Raja Bell '04 60 -> 71), rim-protector-only bigs down (Marcus Camby '08 74 -> 62, Nerlens Noel '15 70 -> 59). Anything reading marg — the draft and team screens — will look different.",
+    "THE OFF GAUGE MEDIAN HAS DRIFTED AND WAS DELIBERATELY LEFT ALONE. gauges.ts carries OFF_MID = 123.32; today's sweep reads 123.24. It is stale from an older pool, not from this round (all 1,255 offRaw readings are bit-identical before and after), and re-freezing it would move OFF dials in a round whose whole claim is that offence is untouched. Noted in the file. A later OFF round should re-run scripts/gauge71.ts and take it.",
+    "TWO TERMS ARE PROVABLY DEAD IN THE GAUGE AND WERE NOT TOUCHED. Against REF_FIVE with assignment 'optimal', huntPen is exactly 0 for all 1,255 fives (the board IS the best board) and hide is exactly 1 (REF_FIVE's worst shooter is 3pt 25, under HIDE_OUT 45). Both are live in the resolver, where the board is whatever the coach chose — deleting them would be a resolver change wearing a gauge change's clothes. Recorded for whoever opens the assignment layer next.",
+    "THE FIVE-PICKER WAS INVESTIGATED AND CLEARED. Re-picking each team's five to maximise d_ovr instead of ovr moves the DEF fit only +0.011 and costs OFF; the wrong number was the formula, not the men it was fed. src/engine/bestfive.ts is untouched, and data/anchors.py now carries a python port of it that agrees with the TypeScript on all 1,255 fieldable team-seasons (scripts/diag-team/pickcheck94.py).",
+    "PIPELINE_VERSION IS 97, NOT 94. Round 94 was written against a main at pipeline 91 and rebased onto one at 96 (recal_92, 93 and 95 shipped in between), so it ships as 97 — the version is the SHIP order, not the round number, exactly as recal_93 shipped as 96. Its knob patterns now match `PIPELINE_VERSION = 9[1-9]`, the form recal_95 introduced after this round's first landing broke round 91's literal pin.",
+    "THE REBASE MOVED THE NUMBERS, and every one below was re-measured on the merged pool, not carried over. recal_92/93/95 changed card perdef, rimprot and d_ovr, so drtgRef moved for every five: the all-time median went 109.99 -> 110.21, Philadelphia '26 read DEF 49 on main's engine (not 80 — 92/93/95 had already taken most of the symptom out) and 36 after, and OKC '26's OVR-max five changed (Ajay Mitchell '26 out, Isaiah Joe '26 in) because r92 cut Mitchell's perdef 76 -> 59. The DEF fit on the merged pool is +0.620 -> +0.765; the pre-rebase measurement was +0.588 -> +0.763. The base commit was verified first: origin/main regenerates its own shipped board exactly (0 attributes, 0 o_ovr/d_ovr/ovr/marg moved).",
+    "OLD RECEIPTS NOW PRINT THE SUMMIT SUPERSESSION, which is what a ledger is for. Three lines in the hand-written r71/r74-era blocks assert \"Pistons '04 DEF 99\" and now read 83: \"Pistons '04 — the DEF summit\", \"r71 summit pins survive EXACTLY\" and \"the summit pins survive EXACTLY\". They were left standing rather than edited: his later ruling is recorded in data/anchors_superseded.json and in the gauges.ts history, and a MISS on the pin it replaced is the honest print. The GSW '17 OFF 99 half of each of those lines still passes.",
+    "ROUND 93's VERSION KNOBS WERE RELAXED, by recal_95's own precedent. data/rounds/93.json pinned the literal `PIPELINE_VERSION = 96`, which this rebase to 97 broke — the same wall recal_95 had already hit on round 91 and fixed by matching the LINE (`9[1-9]`) with the note \"Pinning the literal made this knob fail on every later round by construction\". Same fix applied to 93 (`9[0-9]`), its own notes kept. `npm run receipts` (all rounds) went 350 MISS lines -> 347: those two came back, receipt 60's \"PARITY over 300 random fives\" now passes (the re-solved intercept), recal_69's monotonicity sweep went 1 violation -> 0, and recal_71's \"the distribution is BALANCED\" line passes for the first time since the summit moved (16 fives at DEF 99 -> 1)."
+  ],
+  "notes": [
+    "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg per team-season, 1980-2026). Fit is the Spearman of the SHIPPED DIAL against real rating WITHIN each season — raw ORtg/DRtg drift ~15 points across eras, so only ranking inside a year is a fair test — averaged over the 47 seasons that carry the 1,255 fieldable team-seasons of src/data/teamseasons.json. Everything below is one script: scripts/diag-team/sweep.ts -> fit.py -> ba94.py.",
+    "DEF rho +0.620 -> +0.765 on the merged pool. Per era: 80s +0.579 -> +0.781 · 90s +0.648 -> +0.804 · 00s +0.642 -> +0.805 · 10s +0.640 -> +0.720 · 20s +0.576 -> +0.690. OFF rho +0.713 -> +0.713, unchanged in every era, and all 1,255 offRaw readings bit-identical: teamOffense is not in this round's path. (Pre-rebase, against a main at pipeline 91, the same measurement read +0.588 -> +0.763 — recal_92/93/95's card-side DEF work had already taken the `before` from .588 to .620.)",
+    "WHAT WAS WRONG, in one line: the sum of the five's perdef ALONE scored +0.763, and the shipped formula scored +0.587. Every term stacked on top of perdef was subtracting signal. THREE were doing it. (1) The anchor was UNCAPPED in defenseVs' didx — teamDefense has always written min(99, anchor), this line did not, and anchorRaw = rimprot1 + 0.35 x rimprot2^2/99 runs past 99 on 902 of the 1,255 fives (max 131.3, Bucks '21). (2) `cover` refunded the perdef deficit of the four non-anchor defenders whenever the five had a big, so a bad perimeter five WITH a big read as a good perimeter five; its supposed paint-hunting gate, min(1, paintOrient x 2), is 1.00 against the reference five and against every real offense. (3) The discipline penalty was the LARGEST variance channel of drtgRef (sd 0.588 on a 5.84-point all-time range, i.e. up to ~73 dial points) and it pointed the wrong way: mean discipline of a five correlates +0.075 with WORSE real defence. Fouling is how good defences play.",
+    "THE PACKAGE, MEASURED STEP BY STEP before it was applied (mean within-season rho): shipped +0.587 · cap the anchor alone +0.568 · cover x0 alone +0.654 · discipline off alone +0.668 · cap + cover + discipline +0.742 · plus anchor 0.26 -> 0.13 onto perdef 0.42 -> 0.55 +0.758 · plus steals 0.20 -> 0.12 +0.762. Capping the anchor ALONE makes things slightly worse — which is why it is a package and not three rounds: the cap only pays once the refund it was propping up is gone.",
+    "PHILADELPHIA '26, the subject. Real DRtg 115.5, 14th of the 24 fieldable 2026 teams. It read DEF 80 and 1st in its season. Its index was 39.4% uncapped Embiid-plus-Barlow anchor (115.5, off a 1-99 scale) and 10.2% cover (35.0 of perdef deficit refunded, the whole of Maxey 52 / Oubre 48 / Barlow 45). After: dial 50, 9th of 24, drtgRef 107.860 -> 110.013. The decomposition is now 0.55 x 58.20 mean perdef = 32.01, 0.13 x min(99, 115.5) x 0.9 = 11.58, 0.12 x 39.63 x 0.9 = 4.28, 0.12 x 58.80 glass = 7.06 — perdef is 60% of the index and the anchor 22%, where it used to be 40% anchor and the perdef core was being paid for holes it did not have.",
+    "THE TWO DEF SCALES, kept straight. `team:def` (this receipt's scale) is ratings100's 1-99 display int, 50 = a median drafted five: Philadelphia 58 -> 46. The DIAL the team screen shows is gauges.ts's all-time scale, 99 = the Pistons '04: Philadelphia 80 -> 50. They are different layers and both moved; the rank - 1st of 24 -> 9th of 24 - is the same on either, which is why the anchors this round seeds are rank pins.",
+    "THE TWO DEF SCALES, kept straight. `team:def` (this receipt's scale) is ratings100's 1-99 display int, 50 = a median drafted five: Philadelphia 47 -> 41. The DIAL the team screen shows is gauges.ts's all-time scale, 99 = the Bulls '96: Philadelphia 49 -> 36. They are different layers and both moved; the rank — 4th of 24 -> 13th of 24, against a real 14th — is the same on either, which is why the anchors this round seeds are rank pins.",
+    "PHILADELPHIA '26, the subject. Real DRtg 115.5, 14th of the 24 fieldable 2026 teams. On the base this round rebased onto it read DEF 49 and 4th in its season (it read 80 and 1st before recal_92/93/95 landed). Its index was the uncapped Embiid-plus-Barlow anchor plus the `cover` refund of the whole Maxey / Oubre / Barlow perimeter deficit. After: dial 36, 13th of 24, drtgRef 109.185 -> 110.968 — one rank off the truth.",
+    "THE 2026 BOARD AFTER, with the real DRtg rank beside each: OKC 1(1) · DET 2(2) · ATL 3(8) · NYK 4(7) · TOR 5(5) · HOU 6(6) · LAC 7(15) · BOS 8(4). Truth's top 8 is OKC, DET, SAS, BOS, TOR, HOU, NYK, ATL — six of the eight names now match, and the top three are exact.",
+    "THE ERA SPOT CHECKS, all seeded as rank anchors, measured on the merged pool: Bulls '05 (real 2nd of 30) 30th -> 16th · Knicks '98 (real 4th of 28) 27th -> 14th · Magic '24 (real 2nd of 26) 26th -> 14th · Spurs '20 (real 25th of 27) 3rd -> 9th · Blazers '06 (real 28th of 30) 7th -> 21st.",
+    "THE ALL-TIME DEF TOP 10 AFTER, with dials: Bulls '96 99 · Pistons '89 97 · Celtics '10 97 · Pistons '90 97 · Bulls '97 96 · Bucks '85 94 · Bucks '86 94 · Bucks '84 94 · Pistons '91 94 · Bulls '98 93. One five reads 99. Pistons '04, r71's summit, read 83 at all-time rank 70."
+  ]
+}

@@ -48,7 +48,7 @@ function spacingTable(team: string, five: Player[]) {
   }
   const d = defenseVs(REFG, five)
   const o = teamOffense(five)
-  console.log(`  REFG response: anchor ${d.anchor.toFixed(1)} hides on ${five[d.worstShooter]?.name ?? '?'} (his 3pt ${d.minOppOut}, hide ${d.hide.toFixed(2)}) · cover ${d.cover.toFixed(1)} x paintOrient ${d.paintOrient.toFixed(2)} · steals ${d.steals.toFixed(1)} · allows ${d.drtg.toFixed(2)}`)
+  console.log(`  REFG response: anchor ${d.anchor.toFixed(1)} hides on ${five[d.worstShooter]?.name ?? '?'} (his 3pt ${d.minOppOut}, hide ${d.hide.toFixed(2)}) · paintOrient ${d.paintOrient.toFixed(2)} · steals ${d.steals.toFixed(1)} · allows ${d.drtg.toFixed(2)}`)
   console.log(`  intrinsic OFF ${o.off.toFixed(2)}  ->  candidate (off + allows - 110) ${offCand(five).toFixed(2)}`)
 }
 

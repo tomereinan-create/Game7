@@ -40,18 +40,18 @@ function offTerms(five: Player[]) {
   return { off: o.off, core, recon, fit, ftPts: o.ftPts, orbEff, combined: recon + fit, delta, starDown }
 }
 
-/** DEF terms in DRtg points (negative = better defense): drtg = 110 + perdefT + coverT + anchorT + stealsT + glassT + discPts (+huntPen 0 vs REF). */
+/** DEF terms in DRtg points (negative = better defense): drtg = 110 + perdefT + anchorT + stealsT + glassT (+huntPen 0 vs REF).
+ *  recal_94 removed coverT and discPts and re-weighted the rest; the shares printed below are the CURRENT formula's. */
 function defTerms(five: Player[]) {
   const d = defenseVs(five, REF_FIVE)
   const C = MKNOBS.DRTG_COEF
   const A = five.map((p) => p.attrs)
   const perdefCore = A.reduce((s, a) => s + a.perdef, 0) / 5
-  const coverT = -C * 0.42 * (d.cover / 5)
-  const perdefT = -C * (0.42 * perdefCore - 0.42 * 55) // centered on the 55 rebase with the rest folded into constants
-  const anchorT = -C * 0.26 * d.anchor * 0.9
-  const stealsT = -C * 0.2 * Math.min(99, d.steals) * 0.9
+  const perdefT = -C * (0.55 * perdefCore - 0.55 * 55) // centered on the 55 rebase with the rest folded into constants
+  const anchorT = -C * 0.13 * Math.min(99, d.anchor) * 0.9
+  const stealsT = -C * 0.12 * Math.min(99, d.steals) * 0.9
   const glassT = -C * 0.12 * Math.max(0, 60 + d.glass / 4)
-  return { drtg: d.drtg, perdefCore, perdefT, coverT, anchorT, stealsT, glassT, discPts: d.discPts, huntPen: d.huntPen, anchor: d.anchor, cover: d.cover, steals: d.steals, glass: d.glass, hide: d.hide }
+  return { drtg: d.drtg, perdefCore, perdefT, anchorT, stealsT, glassT, huntPen: d.huntPen, anchor: d.anchor, steals: d.steals, glass: d.glass, hide: d.hide }
 }
 
 const mean = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / xs.length
@@ -96,11 +96,11 @@ const dtot = D.map((x) => x.drtg)
 console.log('\n=== DEF raw drtgRef, 2026 (vs the FIXED reference five; lower = better) ===')
 for (const x of [...D].sort((a, b) => a.drtg - b.drtg))
   console.log(
-    `  ${x.team.padEnd(24)} drtg ${x.drtg.toFixed(2)}  perdefCore ${x.perdefCore.toFixed(1)}  anchor ${x.anchor.toFixed(1)} (t ${x.anchorT.toFixed(2)})  cover ${x.cover.toFixed(1)}  steals ${x.steals.toFixed(1)} (t ${x.stealsT.toFixed(2)})  glass ${x.glass.toFixed(0)} (t ${x.glassT.toFixed(2)})  disc +${x.discPts.toFixed(2)}  hunt ${x.huntPen.toFixed(2)}`,
+    `  ${x.team.padEnd(24)} drtg ${x.drtg.toFixed(2)}  perdefCore ${x.perdefCore.toFixed(1)}  anchor ${x.anchor.toFixed(1)} (t ${x.anchorT.toFixed(2)})  steals ${x.steals.toFixed(1)} (t ${x.stealsT.toFixed(2)})  glass ${x.glass.toFixed(0)} (t ${x.glassT.toFixed(2)})  hunt ${x.huntPen.toFixed(2)}`,
   )
 console.log(`\n  DEF total: mean ${mean(dtot).toFixed(2)}  sd ${sd(dtot).toFixed(2)}  span ${Math.min(...dtot).toFixed(1)}-${Math.max(...dtot).toFixed(1)}`)
 const vD = cov(dtot, dtot)
-for (const k of ['perdefT', 'coverT', 'anchorT', 'stealsT', 'glassT', 'discPts'] as const) {
+for (const k of ['perdefT', 'anchorT', 'stealsT', 'glassT'] as const) {
   const xs = D.map((x) => x[k])
   console.log(`  ${k.padEnd(8)} sd ${sd(xs).toFixed(3)}  variance share ${((100 * cov(xs, dtot)) / vD).toFixed(1)}%`)
 }
@@ -148,5 +148,5 @@ for (const nm of ['76ers', 'Thunder', 'Celtics']) {
   console.log(`\n=== ${f.team} '26 — defense vs the fixed reference ===`)
   for (const p of f.five)
     console.log(`    ${p.name.padEnd(28)} D ${String(p.d_ovr).padStart(2)}  perdef ${p.attrs.perdef}  rimprot ${p.attrs.rimprot}  perimdisrupt ${p.attrs.perimdisrupt}  drb ${p.attrs.drb}  disc ${p.attrs.discipline}`)
-  console.log(`    perdefCore ${x.perdefCore.toFixed(1)} · anchor ${x.anchor.toFixed(1)} (hide ${x.hide}) · cover ${x.cover.toFixed(1)} · steals ${x.steals.toFixed(1)} · glass ${x.glass.toFixed(0)} · disc +${x.discPts.toFixed(2)} => drtgRef ${x.drtg.toFixed(2)} (${g} teams better)`)
+  console.log(`    perdefCore ${x.perdefCore.toFixed(1)} · anchor ${x.anchor.toFixed(1)} (hide ${x.hide}) · steals ${x.steals.toFixed(1)} · glass ${x.glass.toFixed(0)} => drtgRef ${x.drtg.toFixed(2)} (${g} teams better)`)
 }
