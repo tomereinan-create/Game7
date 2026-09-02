@@ -36,5 +36,8 @@ export function useUserMode(): boolean {
       return () => subs.delete(cb)
     },
     () => cur,
+    // outside a browser (a static render in a test) the store still has an answer: the default,
+    // since localStorage was unreachable when `cur` was read
+    () => cur,
   )
 }

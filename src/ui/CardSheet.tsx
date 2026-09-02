@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { archetype } from '../engine/pool'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { archetype, PLAYERS } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
 import { RULE } from './Archetypes'
+import { ChipRow } from './ChipRow'
 import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
@@ -33,7 +34,9 @@ export function CardProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       {children}
-      {p ? <CardSheet p={p} onClose={() => setP(null)} /> : null}
+      {/* keyed on the card that was OPENED: the sheet carries its own season state, and opening
+          a different man (or a different season of him from a row) must start that state over. */}
+      {p ? <CardSheet key={p.name} p={p} onClose={() => setP(null)} /> : null}
     </Ctx.Provider>
   )
 }
@@ -87,8 +90,105 @@ const BOX = [
   ['BPM', 'bpm'],
 ] as const
 
-export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
+/**
+ * Every card of one man, oldest season first — the spine of the season strip.
+ *
+ * The pool is one row per player-SEASON ("Marcus Smart '19", "'20", "'22"), `player` is the man.
+ * Built once, on the first card opened, and never rebuilt: 10,000 rows is a few milliseconds and
+ * it must not cost anything at import time.
+ */
+let INDEX: Map<string, Player[]> | null = null
+export function careerOf(p: Player): Player[] {
+  if (!INDEX) {
+    INDEX = new Map()
+    for (const x of PLAYERS) {
+      const a = INDEX.get(x.player)
+      if (a) a.push(x)
+      else INDEX.set(x.player, [x])
+    }
+    for (const a of INDEX.values()) a.sort((x, y) => x.peak_season - y.peak_season)
+  }
+  const all = INDEX.get(p.player)
+  // a card the pool does not hold (and a man with one season) has nothing to step between
+  if (!all || all.length < 2 || !all.some((x) => x.name === p.name)) return []
+  return all
+}
+
+/** The season the draft uses: the man's highest OVR — the last of them when a band of years ties. */
+export const peakOf = (all: Player[]) => all.reduce((best, x) => (x.ovr >= best.ovr ? x : best), all[0])
+
+/**
+ * HIS RULING: "In the player page add option to navigate between years".
+ *
+ * The man's seasons as mono chips under the name — the open one lit, ‹ › at the ends — in the same
+ * chip language as the sort rail and the tactics row, and in the same self-scrolling row (LeBron is
+ * 23 chips and the card must never scroll sideways). The chip the draft uses is marked PEAK.
+ *
+ * It is a VIEWER, not a picker: stepping a year re-reads the whole sheet for the other card and
+ * changes nothing about the slot, the five or the row the card was opened from — which is why BACK
+ * and CLOSE behave exactly as they did.
+ */
+function SeasonStrip({ all, cur, go }: { all: Player[]; cur: Player; go: (x: Player) => void }) {
+  const i = all.findIndex((x) => x.name === cur.name)
+  const peak = peakOf(all)
+  return (
+    <div className="pc-years">
+      <button className="yr-arrow" onClick={() => go(all[i - 1])} disabled={i <= 0} aria-label="Earlier season">
+        ‹
+      </button>
+      <ChipRow className="yrchips">
+        {all.map((x) => (
+          <button
+            key={x.name}
+            className={`sortb yrchip${x.name === cur.name ? ' on' : ''}`}
+            aria-current={x.name === cur.name ? 'true' : undefined}
+            aria-label={`Season ${x.peak_season}${x.name === peak.name ? ', peak season' : ''}`}
+            onClick={() => go(x)}
+          >
+            <span>&rsquo;{String(x.peak_season).slice(2)}</span>
+            {x.name === peak.name ? <i>peak</i> : null}
+          </button>
+        ))}
+      </ChipRow>
+      <button
+        className="yr-arrow"
+        onClick={() => go(all[i + 1])}
+        disabled={i < 0 || i >= all.length - 1}
+        aria-label="Later season"
+      >
+        ›
+      </button>
+    </div>
+  )
+}
+
+export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => void }) {
   const [adv, setAdv] = useState(false)
+  // The season being READ. It starts at the card that was opened and never leaves the man; the
+  // whole sheet below — name, season line, badge, sentence, boxes, radar, stats, bars, Advanced —
+  // is drawn from it, so a year step re-renders this same sheet and nothing re-opens.
+  const [season, setSeason] = useState(opened)
+  const all = useMemo(() => careerOf(opened), [opened])
+  const p = season
+
+  // ← → step the years on a desktop, unless something is being typed into.
+  useEffect(() => {
+    if (all.length < 2) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      const t = e.target as HTMLElement | null
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+      e.preventDefault()
+      // read the season off the setter, not off this closure: a held-down arrow must not
+      // step twice from the same year
+      setSeason((cur) => {
+        const at = all.findIndex((x) => x.name === cur.name) + (e.key === 'ArrowRight' ? 1 : -1)
+        return at < 0 || at >= all.length ? cur : all[at]
+      })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [all])
   // USER MODE: the card is the man and his real season line — no verdict rail, no attribute
   // sheet, no Advanced. The engine keeps every number; the card just stops showing its hand.
   const user = useUserMode()
@@ -116,6 +216,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
             it too — the same sentence, read from the one table that holds it. A man the tree
             cannot name shows the badge alone, not a placeholder. */}
         {RULE[tag] ? <p className="pc-what">{RULE[tag]}</p> : null}
+        {all.length > 1 ? <SeasonStrip all={all} cur={p} go={setSeason} /> : null}
       </div>
 
       {/* User mode drops the rail, so the body must stop reserving its column —

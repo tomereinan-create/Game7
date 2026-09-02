@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
+/** A layout effect is a browser thing; on a static render (the tests) it is an effect that never runs. */
+const useReveal = typeof window === 'undefined' ? useEffect : useLayoutEffect
+
 /**
  * A .posbar's chip row, made phone-usable (his report: at 375px the Main scorer
  * row ran 692px wide and the page itself scrolled sideways to reach the chips).
@@ -52,7 +55,7 @@ export function ChipRow({ children, className = '' }: { children: React.ReactNod
     [measure],
   )
 
-  useLayoutEffect(() => {
+  useReveal(() => {
     if (ref.current) reveal(ref.current)
   }, [children, reveal])
 
