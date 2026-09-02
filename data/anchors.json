@@ -1,5 +1,41 @@
 [
  {
+  "card": "Andre Iguodala '14",
+  "scale": "def",
+  "target": 88,
+  "tol": 3,
+  "round": 93,
+  "ruling": "Agree with 14 andre",
+  "note": "the defence-branch ramp replaces is_big's middle cliff; 70 -> 90 (perdef 92 on rimprot 39 - he was being graded as a rim protector)"
+ },
+ {
+  "card": "Jimmy Butler '16",
+  "scale": "def",
+  "target": 85,
+  "tol": 3,
+  "round": 93,
+  "ruling": "Agree with 16 Jimmy",
+  "note": "same ramp; 71 -> 85, and the '15/'16/'17 sequence reads 89/85/83 instead of 89/71/83"
+ },
+ {
+  "card": "Scottie Pippen '03",
+  "scale": "def",
+  "target": 76,
+  "tol": 1,
+  "round": 93,
+  "ruling": "Scotty 03 maybe around 75-77",
+  "note": "same ramp; 70 -> 76. rim touched EXACTLY 60 at 3pt 23 - only a blend reaches a number between the two formulas"
+ },
+ {
+  "card": "Kawhi Leonard '14",
+  "scale": "ovr",
+  "target": 80,
+  "tol": 2,
+  "round": 93,
+  "ruling": "Kawhi 14 agree",
+  "note": "the elite-defence floor inside the OVR cap, 0.80 -> 0.85 x d_ovr; 76 -> 80 against a blend of 83"
+ },
+ {
   "card": "OG Anunoby '21",
   "scale": "off",
   "target": 65,

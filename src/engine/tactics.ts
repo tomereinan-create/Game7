@@ -150,16 +150,35 @@ export const DEFAULT_TACTICS: Tactics = {
  * the room above .75 is about .20, not more. hunt held at 3.60 for the first time in four rounds
  * and was not touched. NOTE for the next round: this figure was ratified on the MERGED r91+r92
  * pool, so it supersedes r91's .46 -> .68 rather than stacking with it. All nine in band.
+ * recal_93's defence-branch ramp + elite-defence cap, ratified on the MERGED r92+r95+r93 pool,
+ * moved 220 d_ovrs and 683 OVRs and the ovr>=55 sample with them; THREE taxes broke at once, the
+ * most in any single round, and on BOTH edges: scheme .90 -> .60 (oracle +0.498, four
+ * thousandths under the floor), crashDef .75 -> .40 (oracle +0.455 — the tax r92 had just RAISED
+ * to .75 now comes back down past its old .68, because r92 raised it to answer a blind edge and
+ * this pool moves the oracle one), and hunt 3.60 -> 3.70 (blind -0.255 against the -0.30 floor:
+ * hunt's tax went UP, the other two DOWN, in the same round). Each is chosen off the harness sweep
+ * at the point of GREATEST margin to whichever edge is nearer. RECORDED, because it is the
+ * narrowest window this file has yet held: hunt is feasible only on 3.66-3.78, twelve thousandths
+ * wide, and 3.70 has 0.037 of headroom. It is the fifth round in six that hunt has moved and the
+ * comment above already calls it the most pool-sensitive tax we have; the next round should expect
+ * to re-ratify it again rather than read the movement as instability in the tactic. scheme is
+ * comfortable by comparison (feasible .40-.85, best at .60 with 0.206) and crashOff held at .50
+ * untouched. The law was applied as written: the bands broke, the taxes moved to meet them, and
+ * NOTHING in the OVR chain was touched to hold a band up. All nine in band.
+ * SUPERSEDED WITHIN recal_93 ITSELF, recorded so the round file and this comment agree: before the
+ * rebase onto r92+r95 this round had re-ratified scheme .90 -> .62 against r91's attributes. That
+ * measurement is void — the merged pool is a different sample and was re-swept from origin/main's
+ * constants, not from .62.
  */
 export const TAX = {
   scorer: 0.55,
   playmaker: 0.57,
   tempo: 0.6,
   style: 0.35,
-  scheme: 0.90,
-  hunt: 3.60,
+  scheme: 0.60,
+  hunt: 3.70,
   crashOff: 0.50,
-  crashDef: 0.75,
+  crashDef: 0.40,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
