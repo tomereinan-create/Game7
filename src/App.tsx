@@ -55,7 +55,8 @@ export const LEVELS: Opponent[] = TIERS.flatMap((t, ti) =>
   t.levels.map((o, i) => ({ ...o, round: ti * t.levels.length + i + 1, era: t.name, handicap: t.handicap })),
 )
 export const ERAS = TIERS.map((t, ti) => ({ name: t.name, years: t.years, handicap: t.handicap, first: ti * t.levels.length + 1 }))
-const TITLE = (m: CampaignMode) => (m === 'salary' ? 'Salary Cap Campaign' : 'Campaign')
+/** The one place a mode becomes a label — every screen (map, team setup, achievements) reads it. */
+export const TITLE = (m: CampaignMode) => (m === 'salary' ? 'Salary Cap Campaign' : m === 'death' ? 'Death Match' : 'Campaign')
 
 interface Pending {
   boxCtx?: { us: BoxCtx; them: BoxCtx } | null
@@ -115,7 +116,7 @@ export default function App() {
     saveProgress(m, p)
     setProgress((all) => ({ ...all, [m]: p }))
     // the cheap achievement checks (stars banked, branches owned) fire on every save
-    achCheckMeta(p, `${p.team ? `${p.team.city} ${p.team.name}` : 'Your team'} · ${m === 'death' ? 'Death Match' : TITLE(m)}`)
+    achCheckMeta(p, `${p.team ? `${p.team.city} ${p.team.name}` : 'Your team'} · ${TITLE(m)}`)
   }
 
   const setTeam = (t: Team) => {
@@ -163,7 +164,7 @@ export default function App() {
     if (!cm || !prog || !level || !pending || !opponent) return
     achSettleSeries({
       mode: cm,
-      team: `${teamName} · ${cm === 'death' ? 'Death Match' : TITLE(cm)}`,
+      team: `${teamName} · ${TITLE(cm)}`,
       level,
       five: pending.five,
       opponent,
