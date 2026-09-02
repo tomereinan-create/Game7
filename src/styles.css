@@ -2590,9 +2590,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .pc-name { font-family: var(--serif); font-size: clamp(19px, 3.4vw, 26px); line-height: 1.05; }
 .pc-sub { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
 .pc-tag { margin-left: auto; padding: 3px 8px; border: 1px solid var(--line); font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); white-space: nowrap; }
+/* what the badge above it means — the same serif sentence the draft's archetype card prints, on
+   its own line under the head so neither the name nor the badge has to give up any width */
+.pc-what { flex: 1 0 100%; margin: 2px 0 0; font-family: var(--serif); font-size: 13px; line-height: 1.35; color: var(--ink-2); }
 
 /* the verdict is a rail; the stats and attributes are the body. Neither grows to fill the window. */
-.pc-body { flex: 0 1 auto; min-height: 0; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
+/* overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
+   and on the shortest phones the scout sheet can then come out taller than the screen. The body
+   takes the strain instead of letting the last attributes slide under the CLOSE button. */
+.pc-body { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
 /* no rail (user mode): the main column takes the whole width */
 .pc-body.solo { grid-template-columns: minmax(0, 1fr); }
 .pc-rail { display: flex; flex-direction: column; gap: 5px; }
@@ -2631,6 +2637,11 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
   .pc-rail .heathex { width: 128px; height: auto; margin: 2px auto 0; }
   .pc-adv { margin-top: 0; flex: none; width: 76px; }
   .pc-tag { margin-left: 0; }
+  /* The card is one screen and does not scroll (his ruling), and on a phone the archetype's
+     sentence now takes a line or three of it. The scout sheet pays for them the way a short
+     window already pays: the attribute BAR goes, the number it decorates stays. */
+  .pc-what { font-size: 12px; }
+  .pc-cell.attr .statt { display: none; }
   .pc-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .pc-gcells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
