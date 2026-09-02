@@ -1,0 +1,282 @@
+{
+  "round": 98,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "How is Karl Malone 99 is 93 OFF? 24ppg with mid passing and 3.3 tov cant be this high. Eff is good but nothing crazy..",
+  "title": "THE BIG HUB IS A RAMP, NOT A CLIFF — a big who passes a little stops collecting a premium built for the men the offence runs through; and MJ 99/99 is DECLINED with the frontier",
+  "subject": "Karl Malone '99",
+  "scale": "off",
+  "target": 90,
+  "tol": 2,
+  "before": 93,
+  "after": 90,
+  "pipeline_version": 100,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "HUB_GATE, HUB_FULL = 60, 80",
+      "label": "THE ROUND'S ONE CHANGE — recal_55's big hub, made continuous",
+      "note": "the gate stays at 60; full credit now arrives at playvol 80 instead of instantly"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_hub = 0\\.05 \\* a\\['playvol'\\] \\* min\\(1\\.0, \\(a\\['playvol'\\] - HUB_GATE\\) / \\(HUB_FULL - HUB_GATE\\)\\)",
+      "label": "the ramp itself",
+      "note": "r55's weight 0.05 and its class function is_big are UNTOUCHED"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if is_big\\(p\\) and a\\['playvol'\\] >= HUB_GATE:",
+      "label": "recal_55's own gate, reused — no new class is created",
+      "note": "a big below playvol 60 is unreachable by this round, exactly as before"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 110\\.64, 107\\.55",
+      "label": "THE BAND ANCHORS ARE NOT TOUCHED — this is the MJ decline, stated as a knob",
+      "note": "reaching MJ '89 99 needs OFF_TOP <= 101.0 and DEF_TOP <= 102.0; see COST for what that costs"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "base = 0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*a\\['rimprot'\\] \\+ 0\\.11\\*a\\['perimdisrupt'\\]",
+      "label": "recal_80's perimeter defensive vector, also untouched — the other route to MJ",
+      "note": "shifting weight onto perdef reaches MJ DEF 99 but breaks four of his own DEF anchors"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — NOT reopened; no weight moved this round",
+      "note": "the volume weight his Malone ruling points at is still 0.26; see NOTES for why"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_vol, _pvol = a\\['volume'\\] \\* _load, a\\['playvol'\\] \\* _load",
+      "label": "recal_96's load term, untouched and still upstream of the hub",
+      "note": "Malone '99 plays 37.4 mpg, so his load share is 1.0 and the load term is not what moves him"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 100",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 98; it SHIPS as pipeline 100 — see COST"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 100",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
+      "label": "SECOND RULING, verbatim: \"I want MJ to be 99 OFF and 99 DEF. He is good enough. Or at least 98 both.\" — DECLINED on OFF, recorded at its unchanged reading. 98 costs two of his own anchors, 99 costs six and ties 23 cards at the summit; see COST"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
+      "label": "the same ruling on DEF — DECLINED, recorded unchanged. 98 costs Kawhi Leonard '17 by either route, 99 costs him and ties 31 cards"
+    },
+    {
+      "card": "Karl Malone '97",
+      "scale": "off",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "the same man's better season comes down ONE, not three — playvol 67 against '99's 62, which is the whole point of a ramp"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "THE CLASS THE HUB WAS BUILT FOR (playvol 97): moves by ZERO — full credit at 80 and above"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "playvol 86: flat, and the OFF summit is untouched"
+    },
+    {
+      "card": "LeBron James '10",
+      "scale": "off",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "playvol 93: flat"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 1,
+      "label": "recal_55's OWN named card DOES move, and it is the closest call in the round: playvol 69 puts him inside the ramp, so 72 -> 70. His r55 pin is off 71 +-1 and 70 holds it, but one more point of ramp would have broken it - he is the binding constraint on HUB_FULL"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "off",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "playvol 56 — BELOW r55's gate, so he never had the hub and cannot lose it"
+    },
+    {
+      "card": "Kobe Bryant '16",
+      "scale": "off",
+      "op": "~",
+      "value": 74,
+      "tol": 0,
+      "label": "playvol 61 but PERIMETER, so is_big keeps the hub away from him: flat. recal_91 declined his OVR ruling and this round does not reopen it"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "off",
+      "op": "~",
+      "value": 83,
+      "tol": 1,
+      "label": "playvol 68, also perimeter: flat. r89's anchor holds"
+    },
+    {
+      "card": "Michael Jordan '88",
+      "scale": "off",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "perimeter, flat — the MJ decline moves nothing at all"
+    },
+    {
+      "card": "Michael Jordan '91",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "and his best DEF season already reads 97, one above the card the ruling names"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards — d_score is not in this round's path"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Karl Malone '99",
+      "label": "the hub the premium was built for now outranks the man who was borrowing it"
+    },
+    {
+      "scale": "off",
+      "above": "Karl Malone '97",
+      "below": "Karl Malone '99",
+      "label": "the better passing season of the same man reads higher, which it did not before by as much"
+    },
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Karl Malone '99",
+      "label": "the summit is untouched"
+    },
+    {
+      "scale": "def",
+      "above": "Ben Wallace '03",
+      "below": "Michael Jordan '89",
+      "label": "the DEF summit is still Ben Wallace by recal_67's ruling — the MJ decline leaves it where it was"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 186,
+    "max_abs": 3,
+    "top": [
+      [
+        "Alex English '84",
+        88,
+        85
+      ],
+      [
+        "Alex English '87",
+        85,
+        82
+      ],
+      [
+        "Alex English '88",
+        82,
+        79
+      ],
+      [
+        "Al Horford '17",
+        66,
+        63
+      ],
+      [
+        "Alperen Şengün '23",
+        64,
+        61
+      ],
+      [
+        "Karl Malone '99",
+        93,
+        90
+      ],
+      [
+        "Karl Malone '96",
+        93,
+        90
+      ],
+      [
+        "Karl Malone '97",
+        95,
+        94
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '25",
+      "Giannis Antetokounmpo '24",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shaquille O'Neal '00",
+      "Shaquille O'Neal '01",
+      "Shaquille O'Neal '02",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22"
+    ]
+  },
+  "cost": [
+    "THE MJ RULING IS DECLINED IN FULL, and here is the frontier, measured on the whole pool rather than argued. \"I want MJ to be 99 OFF and 99 DEF. He is good enough. Or at least 98 both.\" Michael Jordan '89 reads OFF 96 (raw 100.49, 22 cards above him) and DEF 96 (raw 101.44, 28 above). THE BAND ROUTE, exact: OFF_TOP 110.64 -> 105.75 puts him on 97 and breaks Giannis '23; -> 102.75 puts him on 98 and breaks Giannis '23 and Embiid '23; -> 101.00 puts him on 99, breaks SIX (Curry '16, LeBron '13, SGA '25, Harden '19, Giannis '23, Embiid '23) and ties TWENTY-THREE cards at the summit. DEF_TOP 107.55 -> 107.25 puts him on 97 and breaks NOTHING; -> 104.25 puts him on 98 and breaks Kawhi Leonard '17; -> 102.00 puts him on 99, breaks Kawhi '17 and ties THIRTY-ONE cards. THE FORMULA ROUTE, also measured: shifting the perimeter defensive vector's weight from rimprot and drb onto perdef reaches DEF 98 and 99, but breaks four of his own anchors at both (Butler '16, Jrue Holiday '21, Kawhi '17, Pippen '03) and reverses recal_80's ruling \"Ship 80\" outright; on OFF no reweighting of o_score reaches even 97 without breaking thirteen or more. So 99/99 and 98/98 are both unreachable, and the only free move is DEF 97 — which is below his own stated floor and, worse, contradicts the band's own doctrine (see the next note). Doctrine 1 and the rule that HE decides which ruling stands: this is recorded, not forced.",
+    "WHAT MJ 99 WOULD ACTUALLY UNDO, said plainly because it is the real cost and it is not an anchor count. recal_84 and recal_90 exist because the band tops had drifted and the summit had compressed — \"51 offensive seasons and 30 defensive ones all printed 99, so Curry '16, Harden '19 and Shai '25 were indistinguishable\". Putting MJ on 99 by lowering OFF_TOP to 101 rebuilds exactly that: 23 cards indistinguishable at the top of the offensive scale, including the four men r90 separated. His ruling and those two rounds cannot both stand, and that is his call, not the agent's.",
+    "THE DEF BAND ANCHOR HAS DRIFTED, and this round deliberately does NOT fix it, which is worth flagging on its own. The band's standing doctrine (recal_67/80/84/90) is that the top is the MEASURED MAXIMUM RAW, so the best card lands ON 99. The measured DEF maximum is now 108.4602 (Ben Wallace '03) against an anchor of 107.55 — a drift of +0.91 opened by recal_97's perdef lift — and FIVE cards now clamp at 99 where the doctrine wants one. Re-deriving DEF_TOP to 108.46 would restore the doctrine and drop the count to four, but it would ALSO push Michael Jordan '89 from 96 to 95, straight against the ruling that is open on this very card. Fixing a drift in the same round that declines a ruling about the same constant would be answering him with a number he has not seen. It is left, and it is the first thing the next round on DEF should decide.",
+    "MALONE LANDS AT 90 AND 90 IS THE FRONTIER, not a preference. Tomer gave NO number - \"cant be this high\" - and the orchestrator assumed 87 +-3, which makes 90 the top edge of the band. It is also the LOWEST value the card can take with every standing anchor held: searching the hub ramp jointly against the volume weight, the efficiency weight, the ball-security weight and the volume x efficiency signature, fifteen settings are feasible and every one of them reads Malone '99 at 90 or above. Taking the volume weight itself down - the knob his ruling most directly points at - breaks Moses Malone '82 at 0.24, and by 0.22 it is five anchors and Malone has only reached 92. If he wants high 80s, an anchor has to give, and the first one in the way is Moses Malone '82.",
+    "THE ROUND IS 98 AND THE PIPELINE IS 100. PIPELINE_VERSION is the SHIP order, not the round number (_shared.md, Integration): recal_96 ships as 99 immediately below this commit, so this one takes 100. That is the fourth time the two have diverged.",
+    "THE ASSIGNMENT ROW OF THE DEVIATION TAX TEST IS STILL RED, carried in from recal_96 and NOT caused by this round. This round moves 158 OVRs (against r96's 2,160) and no tax band moved at all - the nine harness readings are identical before and after. The assignment row has no constant to tune and its n=200 reading is a sampling artefact; the measurement is in data/rounds/96.json and it needs the engine agent's or his call.",
+    "THE TOP 50 BY OVR MOVES, and every mover is the round's own claim. Four cards leave (Karl Malone '96 and '99, Joel Embiid '22, Kevin Garnett '06) and four enter (Anthony Davis '19 and '20, Dwyane Wade '09 and '10) - the entrants at UNCHANGED OVR, displaced upward by the leavers falling. Six members changed OVR and all six are bigs sitting just over r55's gate: Malone '97 95 -> 94, Malone '96 and '99 94 -> 92, Garnett '03 94 -> 93, Embiid '22 and Garnett '06 93 -> 92. The 67 order flips the scout counts are those six sliding down through a dense tie block, not the board reordering around them.",
+    "THE OLDER RECEIPTS THIS ROUND TURNS RED, named rather than left to be found. TWO lines, both version pins: receipt 96 asserts PIPELINE_VERSION = 99 in each python file and this round bumps both to 100. That is what every version bump has done to its predecessor for seventy rounds, and it is what a knob check is for. Receipt 97 was already red before this round (its crashDef tax knob, re-ratified by recal_96) and is unchanged by it. Nothing else moved: no anchor was superseded this round and no earlier expect line changed value."
+  ],
+  "notes": [
+    "WHAT THE MALONE RULING IS ABOUT, in his own words: \"mid passing and 3.3 tov\". Karl Malone '99 is playvol 62 and ballsec 76, and recal_55's big hub is a CLIFF at playvol 60 whose premium is 0.05 x playvol - so a big who clears the gate by two points collects 3.10, nearly the whole of a bonus designed for the man the offence runs through. He was being paid for his passing twice: 11.78 through playvol's own 0.19, and 3.10 again through a hub he is not. That is the same shape recal_93 found in is_big's middle clause, one term further down the same file, and it gets the same answer.",
+    "WHY THE HUB AND NOT THE VOLUME WEIGHT. His sentence names three things - the scoring load, the passing and the turnovers - and the volume weight is the obvious target. It was measured first and it fails: 0.26 -> 0.24 (the residual to efficiency) already breaks Moses Malone '82, 0.22 breaks five anchors and still leaves Malone '99 at 92, 0.20 breaks eleven. That is the same wall recal_91 measured when Kobe '16 and Mark Jackson '98 were declined - the volume weight is load-bearing for two dozen anchored cards and cannot move far. The hub, by contrast, touches 186 cards and none of them by more than three, because it is a narrow term that was being paid on a cliff.",
+    "WHY 80 IS THE TOP OF THE RAMP. r55's own description is \"the offense that RUNS THROUGH him\", and the Jokic class it was built for sits at playvol 90+ (Jokic '25 is 97, Giannis '25 86, LeBron '10 93) - all byte-identical. The movers stop at playvol 78 by construction. 80 is also where the ramp stops being free: r55's OWN named card, Domantas Sabonis '21, is playvol 69 and comes down 72 -> 70 against a 71 +-1 pin, so he is the binding constraint and a top above ~85 breaks him. That is the honest edge of this round - it does not leave r55's class untouched, it leaves r55's PURPOSE untouched and clips its nearest neighbour by two.",
+    "MEASURED BEFORE APPLYING, on the whole pool: OFF moves on 186 of 10,000 cards, every one of them DOWN and none by more than 3 (mean -2.13); the movers' playvol runs 60 to 78 and stops; DEF moves on ZERO cards and no attribute moves. The top 12 by OFF is identical name for name. All 104 anchors pass with mean |error| 0.28, r55's own named card included (Sabonis '21 at 70 against 71 +-1, the tightest reading in the round). No tax band moved.",
+    "THE SEASON SHAPE THE RAMP RESTORES. Karl Malone reads '96 90, '97 94, '99 90 where he read 93 / 95 / 93 - his best passing season is now clearly his best offensive one, which a cliff at 60 had flattened. Alex English '84 88 -> 85 and Al Horford '17 66 -> 63 are the same correction on other cards.",
+    "MJ MOVES BY NOTHING AT ALL. The decline is total: OFF 96, DEF 96, OVR 96, and his '88 and '91 cards are untouched too. Nothing was half-applied to make the report look better."
+  ]
+}

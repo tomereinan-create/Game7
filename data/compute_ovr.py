@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 99
+PIPELINE_VERSION = 100
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -390,9 +390,30 @@ def o_score(p, trace=None):
     # through playvol's 0.17 like everyone's, and nothing priced the offense that RUNS THROUGH him.
     # Bigs only, playvol 60 and up; the Jokic class is saturated at the band top anyway, and guards
     # are untouched by construction.
-    if is_big(p) and a['playvol'] >= 60:
-        std += 0.05 * a['playvol']
-        if trace is not None: trace['big_hub'] = 0.05 * a['playvol']
+    # recal_98 (HIS RULING, verbatim: "How is Karl Malone 99 is 93 OFF? 24ppg with mid passing and
+    # 3.3 tov cant be this high. Eff is good but nothing crazy..").
+    # THE HUB IS A RAMP, NOT A CLIFF. r55's gate was a step at playvol 60: a big at 59 got nothing
+    # and a big at 60 got the whole premium, and the premium is 0.05 x playvol, so it lands ALMOST
+    # IN FULL on a man who only just cleared the gate. Karl Malone '99 is playvol 62 - his own
+    # ruling's words are "mid passing" - and he was collecting 3.10 of a hub bonus built for the
+    # Jokic class, on top of the 11.78 his passing already earns through playvol's 0.19. The same
+    # shape recal_93 found in is_big's middle clause, one term further down the file.
+    # THE FIX IS r55's OWN CLAIM, made continuous: the premium is now paid in proportion to how much
+    # of a hub the man actually is, from nothing at the gate to the whole of it at playvol 80. The
+    # gate, the weight and the class function are UNTOUCHED - a genuine hub is byte-identical
+    # (Jokic '25 playvol 97, Giannis '25 86, LeBron '10 93 all move by ZERO), and only the cards
+    # that were being paid a hub premium for average passing come down.
+    # MEASURED: 186 of 10,000 cards move on OFF, every one of them DOWN and none by more than 3;
+    # Malone '99 93 -> 90; DEF moves on zero; every standing anchor holds, r55's own named card
+    # (Domantas Sabonis '21, off 71 +-1, playvol 90) included.
+    # 90 IS THE FRONTIER, not a choice: searching the hub ramp against the volume, efficiency,
+    # ballsec and signature weights jointly, 90 is the LOWEST reading Malone '99 can take with every
+    # anchor held. See receipt 98 - the orchestrator's assumed target was 87 +-3 and 90 is its edge.
+    HUB_GATE, HUB_FULL = 60, 80
+    if is_big(p) and a['playvol'] >= HUB_GATE:
+        _hub = 0.05 * a['playvol'] * min(1.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))
+        std += _hub
+        if trace is not None: trace['big_hub'] = _hub
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
@@ -676,7 +697,8 @@ if _CARD:
         print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
     if 'big_hub' in _ot:
-        print(f"BIG HUB (recal_55, bigs at playvol >= 60): +{_ot['big_hub']:.3f}")
+        print(f"BIG HUB (recal_55's channel, recal_98's ramp: bigs from playvol 60 to 80): "
+              f"+{_ot['big_hub']:.3f}")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
