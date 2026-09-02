@@ -50,12 +50,13 @@ cd data
 python build_ratings.py                    # writes data/players_stats.json + provenance.json (10,000 cards)
 python compute_ovr.py players_stats.json   # o_ovr/d_ovr/ovr in place, export/, src/data/pipeline.json
 cp players_stats.json ../src/data/players_stats.json
+cp provenance.json ../public/provenance.json     # the app's Advanced panel reads THIS copy; it had drifted from data/ before 2026-09-02
 ```
 Check `data/compute_ovr.py` and `package.json` for the exact current invocation before running;
 if the scripts have moved on, follow the scripts, not this note. Bump `PIPELINE_VERSION` in BOTH
-python files to `N`. The four copies that must all change together: `data/players_stats.json`,
+python files to `N`. The copies that must all change together: `data/players_stats.json`,
 `src/data/players_stats.json`, `data/export/players_stats_smoothed.json` (+ MANIFEST.json),
-`src/data/pipeline.json`.
+`src/data/pipeline.json`, and after a build_ratings.py run also `public/provenance.json`.
 
 ## Receipt
 The receipt is `data/rounds/<N>.json` (see Report back). Rounds up to 90 are hand-written blocks
