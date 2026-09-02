@@ -5,9 +5,9 @@ import { eligible, POSITIONS } from '../engine/positions'
 import { ratings100 } from '../engine/offense'
 import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
-import { useCard } from './CardSheet'
+import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
-import { DetailGrid, LINES } from './Stat'
+import { LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { Dial, TeamDials } from './MatchupPanel'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
@@ -19,30 +19,34 @@ const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 
 import { startingFive, winsOf } from '../engine/bestfive'
 
-function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean; onTap: () => void }) {
+/**
+ * A man on the rest of the roster — his ruling: "Also pressing on a bench player will open this
+ * page same as starters". The row used to unfold a grid of attributes under itself while the five
+ * on the floor opened the player card; now the whole row opens the card, and the name carries the
+ * same dotted underline it has on every other roster row in the app.
+ */
+export function RosterRow({ p, slot }: { p: Player; slot: string }) {
   const l = LINES[p.name]
+  const openCard = useCard()
   return (
-    <>
-      <button className="row dr tdb" onClick={onTap}>
-        <span className="pname">
-          <span className="who">
-            <b>{p.name}</b>
-            <i>
-              {slot} · {archetype(p)}
-            </i>
-          </span>
+    <button className="row dr tdb" onClick={() => openCard(p)}>
+      <span className="pname">
+        <span className="who">
+          <CardName p={p} />
+          <i>
+            {slot} · {archetype(p)}
+          </i>
         </span>
-        <span className="mini">
-          {f1(l?.ppg)} <i>·</i> {f1(l?.rpg)} <i>·</i> {f1(l?.apg)}
-        </span>
-        <span className="oppman-nums">
-          <i>{p.ovr}</i>
-          <i>{p.o_ovr}</i>
-          <i>{p.d_ovr}</i>
-        </span>
-      </button>
-      {open ? <DetailGrid p={p} /> : null}
-    </>
+      </span>
+      <span className="mini">
+        {f1(l?.ppg)} <i>·</i> {f1(l?.rpg)} <i>·</i> {f1(l?.apg)}
+      </span>
+      <span className="oppman-nums">
+        <i>{p.ovr}</i>
+        <i>{p.o_ovr}</i>
+        <i>{p.d_ovr}</i>
+      </span>
+    </button>
   )
 }
 
@@ -217,7 +221,6 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [fromQ, setFromQ] = useState(() => String(span[0]))
   const [toQ, setToQ] = useState(() => String(span[1]))
   const [picked, setPicked] = useState<TeamSeason | null>(null)
-  const [open, setOpen] = useState<string | null>(null)
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
   const [sort, setSort] = useState<'rec' | 'az' | 'ovr' | 'off' | 'def'>('rec')
@@ -376,7 +379,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     <div className="sheetcard">
       <div className="topbar">
         <span>Team database</span>
-        <button onClick={() => (picked ? (setPicked(null), setOpen(null)) : onBack())}>{picked ? '← Teams' : '← Back'}</button>
+        <button onClick={() => (picked ? setPicked(null) : onBack())}>{picked ? '← Teams' : '← Back'}</button>
       </div>
       <div className="rule2" />
 
@@ -573,7 +576,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                   <span className="gcap">OVR · O · D</span>
                 </div>
                 {detail.bench.map((p) => (
-                  <Row key={p.name} p={p} slot={eligible(LINES[p.name]?.pos).join(' · ')} open={open === p.name} onTap={() => setOpen(open === p.name ? null : p.name)} />
+                  <RosterRow key={p.name} p={p} slot={eligible(LINES[p.name]?.pos).join(' · ')} />
                 ))}
               </>
             ) : null}
