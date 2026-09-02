@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 104
+PIPELINE_VERSION = 105
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -163,14 +163,49 @@ def is_big(p):
 DEF_RP_LO, DEF_RP_HI = 45.0, 80.0   # the ramp on rim protection; 80 is clause 3's own bar
 DEF_3P_LO, DEF_3P_HI = 30.0, 40.0   # the fade on the clause's own `3pt < 40` line
 DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp, on rimprot alone
+# recal_103 (HIS RULING, verbatim: "Herb jones DEF way too low all seasons"). THE POSITION RULE
+# ITSELF, which is the third and last place a man's SHOT DIET was deciding his defensive formula.
+#
+# WHERE THE DEFECT ACTUALLY WAS. The scout put Herbert Jones on is_big's first shape clause; he is
+# not on it. That clause already carries `rimprot >= perdef` and fails for him (65 against 96), and
+# it is never reached anyway: `pos` is ['SF', 'PF'], so the POSITION branch returns 1.0 on the line
+# above and no shape test runs at all. One season logged at power forward made a 6'7" wing a big for
+# life, and the big mix then graded the best perimeter sheet in the pool on rim protection 65 and
+# defensive rebounding 16 — 0.57 of the weight on his two worst bars, and 0.00 on the perimeter
+# disruption of 87 that is most of what he does. His perimeter vector reads 80.2 against a big
+# vector of 67.4, and he printed DEF 76.
+#
+# THE OVERRIDE, and why it is this quantity. A position big stays a big BY DEFAULT — recal_72's
+# warning holds and is not reopened ("_POS is the UNION of every position B-Ref ever listed... Strict
+# on both sides or the rule leaks"). What is new is that his own sheet may CONTRADICT the listing,
+# and the contradiction is measured on the one act that is unambiguously a big's defensive job:
+# DEFENSIVE REBOUNDING. A man whose perimeter disruption runs far ahead of his rebounding is not
+# playing the position he is listed at, whatever a box score once called him. `perimdisrupt - drb`
+# separates the two populations cleanly and with room to spare: Herbert Jones reads +79 / +71 / +69
+# / +54 across his four seasons, while every genuine big is NEGATIVE — Tim Duncan '03 -92, Dennis
+# Rodman '90 -74, Rudy Gobert '19 -73, Domantas Sabonis '21 -53, Kevin Garnett '04 -40, Ben Wallace
+# '04 -18, Draymond Green '16 -8. Rodman and Draymond are the proof that the OBVIOUS quantity would
+# not have worked: both have perdef ABOVE rimprot (-21 and -14 on that difference, the same side as
+# Jones), so a rimprot-vs-perdef test cannot tell them apart from him, and both are anchored.
+#
+# NOT is_big. Only d_score's branch is affected, exactly as recal_93 did it: the boolean still labels
+# the card, still gates the big hub and the stretch-big floor, still picks the OVR cap branch. OFF
+# therefore moves on ZERO cards. MEASURED: 26 cards move on DEF, Jones reads 90 / 91 / 91 / 81, every
+# anchor holds, the top 12 by DEF is identical and the top 50 by OVR does not move at all. The other
+# movers are the same archetype found by the same test — Luc Mbah a Moute '17, Thaddeus Young,
+# OG Anunoby '25, Gerald Wallace: wings a box score once listed at power forward.
+POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed big is graded as a wing
 def d_bigness(p):
     """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
-    verdict, 1 = the whole big verdict. The position branches and the first/third shape clauses are
-    is_big's, byte for byte; only the middle clause is a ramp."""
+    verdict, 1 = the whole big verdict. The lifetime-guard branch and the first/third shape clauses
+    are is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
+    recal_99's, and the position-big branch is recal_103's shape override."""
     pos = _POS.get(p['name'], [])
-    if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
-    if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos): return 1.0
     a = p['attrs']
+    if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
+    if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos):
+        _gap = a['perimdisrupt'] - a['drb']
+        return 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))
     if a['rimprot'] >= 80: return 1.0
     if a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']: return 1.0
     w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))

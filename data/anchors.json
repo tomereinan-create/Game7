@@ -1,5 +1,14 @@
 [
  {
+  "card": "Herbert Jones '23",
+  "scale": "def",
+  "target": 91,
+  "tol": 4,
+  "round": 103,
+  "ruling": "Herb jones DEF way too low all seasons",
+  "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 88 +-4 and 91 is what the fix lands. The position branch of d_bigness now yields to the card own defensive shape: a listed big whose perimeter disruption runs far ahead of his defensive rebounding is graded as the wing he is. 76 -> 91."
+ },
+ {
   "card": "Michael Jordan '89",
   "scale": "off",
   "target": 99,
