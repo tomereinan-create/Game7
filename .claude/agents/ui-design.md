@@ -37,6 +37,9 @@ screen has them.
 5. **Prove it.** Before reporting, `npm test` passes, `npx tsc -b` is clean, and you took a
    screenshot of the changed screen at 375px (describe it; the orchestrator relays it).
 
+## Ports
+NEVER bind port 5178 (or 5177): 5178 is Tomer's own game server (`serve.mjs` from the Desktop shortcut) and a dev server there shows him uncommitted work as if it were live. Start your dev server on a free high port (5300+), confirm `location.href` in the Browser pane, and stop it when done.
+
 ## Report back
 - RULING (verbatim) · SCREEN(S) touched · WHAT CHANGED (two sentences, user's-eye view)
 - VERIFIED: viewport(s), theme(s), tests

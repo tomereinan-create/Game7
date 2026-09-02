@@ -36,6 +36,9 @@ the same way — the orchestrator tells you which. Commit on that branch; do NOT
   the polish to ui-design in the report.
 - Saved runs in localStorage are sacred: a fix must not reset or corrupt an in-progress run.
 
+## Ports
+NEVER bind port 5178 (or 5177): 5178 is Tomer's own game server (`serve.mjs` from the Desktop shortcut) and a dev server there shows him uncommitted work as if it were live. Start your dev server on a free high port (5300+), confirm `location.href` in the Browser pane, and stop it when done.
+
 ## Report back
 - REPORT (verbatim) · REPRODUCED: how · CAUSE: file:line and the commit that introduced it
 - FIX: two sentences · TEST added · VERIFIED: how
