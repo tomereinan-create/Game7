@@ -50,10 +50,7 @@ export function RosterRow({ p, slot }: { p: Player; slot: string }) {
   )
 }
 
-/** All-years search stops here — past this many rows the query is doing the work, not the reader. */
-const CAP = 60
-
-/** How many team-seasons the range list lays down at once; the rest arrive as you reach them. */
+/** How many team-seasons the list lays down at once; the rest arrive as you reach them. */
 const PAGE = 60
 
 const YMAX = YEARS[0]
@@ -176,6 +173,27 @@ const bound = (s: string) => {
 
 const yy = (y: number) => `’${String(y % 100).padStart(2, '0')}`
 
+export type Sort = 'rec' | 'az' | 'ovr' | 'off' | 'def'
+
+/**
+ * The line over the list, in the order the filters were applied — his ruling: "I want to still be
+ * able to filter even after searching team", so the search is simply the first term of it:
+ * "celtics · 1980–1990 · 11 seasons · best DEF first · East only".
+ */
+export function listCaption({ query, span, n, sort, flip, conf }: { query: string; span: Span; n: number; sort: Sort; flip: boolean; conf: 'E' | 'W' | null }) {
+  const order =
+    sort === 'az' ? (flip ? 'Z to A' : 'A to Z') : sort === 'rec' ? `${flip ? 'worst' : 'best'} record first` : `${flip ? 'lowest' : 'best'} ${sort.toUpperCase()} first`
+  const what = (query ? 'season' : 'team') + (n === 1 ? '' : 's')
+  return (
+    (query ? `${query} · ` : '') +
+    `${spanLabel(span)} · ${n.toLocaleString()} ${what} · ${order}` +
+    (conf ? (conf === 'E' ? ' · East only' : ' · West only') : '')
+  )
+}
+
+/** The search box is a filter like the others: a franchise by name or by its abbreviation. */
+export const named = (t: TeamSeason, query: string) => !query || t.team.toLowerCase().includes(query) || t.ab.toLowerCase().includes(query)
+
 /**
  * THE FRANCHISE LINEAGE — forty abbreviations in the book, thirty franchises today. The same table
  * the campaign script merges its all-time fives by (`scripts/campaigns.ts`), so the Thunder's strip
@@ -223,7 +241,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [picked, setPicked] = useState<TeamSeason | null>(null)
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
-  const [sort, setSort] = useState<'rec' | 'az' | 'ovr' | 'off' | 'def'>('rec')
+  const [sort, setSort] = useState<Sort>('rec')
   // A second tap on the active chip flips the order; picking a new sort starts best-first again.
   const [flip, setFlip] = useState(false)
   const [minQ, setMinQ] = useState('')
@@ -317,8 +335,14 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   }
   const chip = (k: typeof sort) => `sortb ${sort === k ? (flip ? 'on asc' : 'on') : ''}`
 
+  /**
+   * HIS RULING: "I want to still be able to filter even after searching team". The query used to
+   * TAKE OVER the list — all years, newest first, the sort row gone. It is a filter like the
+   * others now: name, then years, then conference, then the sort, all at once.
+   */
+  const query = q.trim().toLowerCase()
   const teams = useMemo(() => {
-    const pool = WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf))
+    const pool = WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf) && named(t, query))
     if (!ranked) {
       const cmp = (a: TeamSeason, b: TeamSeason) =>
         sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y
@@ -342,22 +366,13 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
       const d = kb - ka || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y
       return flip ? -d : d
     })
-  }, [from, to, conf, sort, rating, ranked, flip, minQ, maxQ])
-
-  // A non-empty query takes over the list: every season of every matching franchise, newest first.
-  const found = useMemo(() => {
-    const s = q.trim().toLowerCase()
-    if (!s) return null
-    return WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s))).sort(
-      (a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec),
-    )
-  }, [q, conf, from, to])
+  }, [query, from, to, conf, sort, rating, ranked, flip, minQ, maxQ])
 
   // A wide range is 1,300 team-seasons and 3,900 dials — more DOM than a phone will paint in one
   // go — so the list lays down a page at a time and grows as the bottom comes near. The SORT still
   // runs over the whole range: what you see is the true top of the list, just not all of its tail.
   const [shown, setShown] = useState(PAGE)
-  useEffect(() => setShown(PAGE), [teams, found])
+  useEffect(() => setShown(PAGE), [teams])
   const more = useRef<HTMLButtonElement | null>(null)
   useEffect(() => {
     const el = more.current
@@ -442,108 +457,65 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 West
               </button>
             </div>
-            {found ? (
-              <span className="filtercount">
-                {found.length} season{found.length === 1 ? '' : 's'}
-              </span>
+          </div>
+          {/* the sort row stays put while you search — his ruling: a query is a filter, not a mode */}
+          <div className="filterbar">
+            <button className={chip('rec')} onClick={() => pickSort('rec')}>
+              Best record
+            </button>
+            <button className={chip('az')} onClick={() => pickSort('az')}>
+              A–Z
+            </button>
+            <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
+              OVR
+            </button>
+            <button className={chip('off')} onClick={() => pickSort('off')}>
+              OFF
+            </button>
+            <button className={chip('def')} onClick={() => pickSort('def')}>
+              DEF
+            </button>
+            {ranked ? (
+              <>
+                <label className="dbnum">
+                  <span>Min</span>
+                  <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} />
+                </label>
+                <label className="dbnum">
+                  <span>Max</span>
+                  <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} />
+                </label>
+              </>
             ) : null}
           </div>
-          {!found ? (
-            <div className="filterbar">
-              <button className={chip('rec')} onClick={() => pickSort('rec')}>
-                Best record
-              </button>
-              <button className={chip('az')} onClick={() => pickSort('az')}>
-                A–Z
-              </button>
-              <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
-                OVR
-              </button>
-              <button className={chip('off')} onClick={() => pickSort('off')}>
-                OFF
-              </button>
-              <button className={chip('def')} onClick={() => pickSort('def')}>
-                DEF
-              </button>
-              {ranked ? (
-                <>
-                  <label className="dbnum">
-                    <span>Min</span>
-                    <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} />
-                  </label>
-                  <label className="dbnum">
-                    <span>Max</span>
-                    <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} />
-                  </label>
-                </>
-              ) : null}
-            </div>
-          ) : null}
 
-          {found ? (
-            <>
-              <div className="section-rule">
-                <span>
-                  {spanLabel(span)} · newest first
-                  {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
+            <div className="section-rule">
+              <span>{listCaption({ query, span, n: teams.length, sort, flip, conf })}</span>
+              <i />
+            </div>
+            {teams.slice(0, shown).map(({ t }) => (
+              <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
+                <span className="lwho">
+                  <b>{t.team}</b>
+                  <i>
+                    {from === to ? '' : `${yy(t.y)} · `}
+                    {t.ab}
+                    {t.rec ? ` · ${t.rec}` : ''}
+                    {from === to ? `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool` : ''}
+                  </i>
                 </span>
-                <i />
-              </div>
-              {found.slice(0, CAP).map((t) => (
-                <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
-                  <span className="lwho">
-                    <b>{t.team}</b>
-                    <i>
-                      {yy(t.y)} · {t.ab}
-                      {t.rec ? ` · ${t.rec}` : ''}
-                    </i>
-                  </span>
-                  <RowDials t={t} sorted={null} />
-                  <span className="tdb-go">→</span>
-                </button>
-              ))}
-              {found.length > CAP ? <div className="cap hint">{(found.length - CAP).toLocaleString()} more seasons match — keep typing to narrow it.</div> : null}
-              {found.length === 0 ? <div className="cap hint">No team by that name in the book.</div> : null}
-            </>
-          ) : (
-            <>
-              <div className="section-rule">
-                <span>
-                  {spanLabel(span)} · {teams.length.toLocaleString()} teams ·{' '}
-                  {sort === 'az'
-                    ? flip
-                      ? 'Z to A'
-                      : 'A to Z'
-                    : sort === 'rec'
-                      ? `${flip ? 'worst' : 'best'} record first`
-                      : `${flip ? 'lowest' : 'best'} ${sort.toUpperCase()} first`}
-                  {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
-                </span>
-                <i />
-              </div>
-              {teams.slice(0, shown).map(({ t }) => (
-                <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
-                  <span className="lwho">
-                    <b>{t.team}</b>
-                    <i>
-                      {from === to ? '' : `${yy(t.y)} · `}
-                      {t.ab}
-                      {t.rec ? ` · ${t.rec}` : ''}
-                      {from === to ? `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool` : ''}
-                    </i>
-                  </span>
-                  <RowDials t={t} sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)} />
-                  <span className="tdb-go">→</span>
-                </button>
-              ))}
-              {teams.length > shown ? (
-                <button ref={more} className="morebtn" onClick={() => setShown((s) => s + PAGE)}>
-                  {(teams.length - shown).toLocaleString()} more seasons · show {Math.min(PAGE, teams.length - shown)}
-                </button>
-              ) : null}
-              {teams.length === 0 ? <div className="cap hint">No team inside those bounds.</div> : null}
-            </>
-          )}
+                <RowDials t={t} sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)} />
+                <span className="tdb-go">→</span>
+              </button>
+            ))}
+            {teams.length > shown ? (
+              <button ref={more} className="morebtn" onClick={() => setShown((s) => s + PAGE)}>
+                {(teams.length - shown).toLocaleString()} more seasons · show {Math.min(PAGE, teams.length - shown)}
+              </button>
+            ) : null}
+            {teams.length === 0 ? (
+              <div className="cap hint">{query ? 'No team by that name inside those bounds.' : 'No team inside those bounds.'}</div>
+            ) : null}
         </>
       ) : detail ? (
         <>
