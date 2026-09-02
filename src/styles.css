@@ -1220,8 +1220,13 @@ button {
 .mb-who p { margin: 6px 0 0; font-family: var(--serif); font-size: 15px; line-height: 1.45; color: var(--ink); }
 .mb-who i { margin-top: auto; padding-top: 8px; font-style: normal; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
 .mb-line { min-width: 0; display: flex; flex-direction: column; }
+/* the season's own header line — positions, height, team, games, minutes — folded in from the
+   stat grid his ruling removed from under this card */
+.mb-when { margin-top: 3px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .mb-grid { margin-top: 8px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 10px; }
-.mb-grid .bcell { display: grid; justify-items: start; gap: 1px; }
+/* align-content keeps every number in a row on one baseline now that the TS cell carries the
+   league line under it */
+.mb-grid .bcell { display: grid; align-content: start; justify-items: start; gap: 1px; }
 .mb-grid .bcell i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--muted); }
 .mb-grid .bcell b { font-family: var(--serif); font-weight: 400; font-size: 17px; color: var(--ink); }
 .mb-none { margin: 8px 0 0; font-family: var(--mono); font-size: 10px; color: var(--faint); }

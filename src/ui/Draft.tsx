@@ -534,7 +534,17 @@ export function Draft({
       dur?: number
       worn?: boolean
     },
-  ) => (
+  ) => {
+    /**
+     * HIS RULING: "Remove what Ive marked, no need for duplicates". Tapping a man in the wheel's
+     * roster opened his archetype card AND, right under it, the tap-open grid — the same season,
+     * the same fourteen numbers, twice. The card is the one that stays (it carries the tag's
+     * sentence as well), so while it is up the grid does not print, and the row's chevron closes
+     * the card rather than doing nothing. Everything the grid alone used to say — who he was that
+     * season, and the league's TS — now reads on the card.
+     */
+    const carded = band === p.name
+    return (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
         className={`row dr ${opts.short ? 'short' : ''} ${opts.on ? 'on' : ''} ${opts.dim ? 'off' : ''} ${opts.slot ? 'grab' : ''} ${
@@ -571,21 +581,23 @@ export function Draft({
         </span>
         <Mini name={p.name} />
         <button
-          className={`pinfo ${info === p.name ? 'open' : ''}`}
+          className={`pinfo ${carded || info === p.name ? 'open' : ''}`}
           aria-label={`${p.name} season line`}
-          aria-expanded={info === p.name}
+          aria-expanded={carded || info === p.name}
           onClick={(e) => {
             e.stopPropagation()
-            setInfo(info === p.name ? null : p.name)
+            if (carded) setBand(null)
+            else setInfo(info === p.name ? null : p.name)
           }}
         >
           ▾
         </button>
       </div>
-      {band === p.name && !floor ? <ManBand p={p} inline /> : null}
-      {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
+      {carded && !floor ? <ManBand p={p} inline /> : null}
+      {info === p.name && !carded ? <DetailGrid p={p} mode="stats" /> : null}
     </div>
-  )
+    )
+  }
 
   return (
     <>
