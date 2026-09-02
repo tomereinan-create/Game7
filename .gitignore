@@ -18,3 +18,4 @@ android/
 # python
 __pycache__/
 .claude/worktrees/
+tsconfig.tsbuildinfo
