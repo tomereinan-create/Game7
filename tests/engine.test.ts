@@ -243,7 +243,18 @@ describe('player data (stats-only doctrine)', () => {
     // wing. His votes still carry (D 90); the anchor records the corrected class.
     near("Rajon Rondo '09", 60, 85) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
     near("Gary Payton '96", 77, 88) // the Payton fix: a lifetime guard is never a big
-    expect(Math.max(...PLAYERS.map((p) => p.ovr))).toBeGreaterThanOrEqual(97) // v2: the ceiling is no longer reached
+    // recal_95 MOVED THIS FLOOR, 97 -> 96, and it is one card and one point. The pool's OVR summit
+    // was Giannis '25 alone at 97; grading the no-vote rim ceiling by blocks AND DBPM (his ruling)
+    // took his rimprot 93 -> 92, DEF 91 -> 90, OVR 97 -> 96, and he now shares the summit with
+    // Giannis '20/'22 and the three LeBron cards that were already there. He is a PARTIALLY voted big
+    // (drep 0.55) with an elite DBPM of +2.5 and a block rate that is only top-quintile, not
+    // top-decile — so the ceiling grades him at his vote share rather than at a full 88, which is
+    // exactly what "grade the ceiling by blocks" means for a man whose blocks are the soft half of
+    // his case. RECORDED, PENDING TOMER, but note this floor has been drifting down for eleven
+    // rounds by his own rulings: every recal_84 OVR anchor (LeBron '10 99, Giannis '24 99, LeBron
+    // '13 98, Giannis '25 98) already sits in anchors_superseded.json, so 97 was a leftover of the
+    // same ceiling those anchors recorded, not a pin any live ruling defends.
+    expect(Math.max(...PLAYERS.map((p) => p.ovr))).toBeGreaterThanOrEqual(96) // v2: the ceiling is no longer reached
     const five = PLAYERS.slice(0, 5)
     const l = compile(five)
     expect(l.talent).toBeCloseTo(talentEff(five), 9)

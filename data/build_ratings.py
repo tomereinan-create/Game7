@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 92   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 95   # printed every run and written to src/data/pipeline.json
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -246,6 +246,37 @@ DFG_FLOORS = ()   # recal_16 -> recal_92: defended-FG% diff no longer sets an ab
 BLK_BAR, BLK_FULL = 0.80, 0.86   # recal_92: the block-evidence band the voted rim ceiling unlocks on
 def _blk_evidence(blk_pctile):
     return max(0.0, min(1.0, (blk_pctile - BLK_BAR) / (BLK_FULL - BLK_BAR)))
+
+# recal_95 (HIS RULING, verbatim: "Grade the no-vote rim ceiling by blocks, Pau high 70s", amended
+# "Not only his blocks, his dbpm isnt even high"). THE NO-VOTE CEILING IS NO LONGER FLAT.
+# recal_53 gave every big with no defensive votes the SAME ceiling, 88, whatever his evidence, and
+# recal_92 measured what that costs: a 7'0" man at the 89th percentile of his season's block rate
+# with a DBPM of +0.1 (Gasol '04) read the identical 88 as Shawn Bradley '95 at the 99.5th on +1.6.
+# A flat ceiling is a floor for everyone who reaches it, and Gasol was reaching it on size.
+# The ceiling now READS THE SAME TWO THINGS THE RULING NAMES, and both must be there:
+#   ev = max(drep, blk_ramp x dbpm_ramp)      blk_ramp = (blk_pctile - 0.80)/0.06, clamped
+#                                             dbpm_ramp = (DBPM - 0.0)/1.0,       clamped
+#   cap = NOVOTE_FLOOR + (r53 tier - NOVOTE_FLOOR) * ev
+# In card points: 75 at no evidence, 88 at full, and 92 at full where recal_53's MEASURED tier
+# already applied (elite tracked rim defence on a real workload). Reading of the line: a no-vote big
+# keeps the whole 88 only with a top-quintile block rate AND a genuinely positive DBPM; with one of
+# them he lands in between; with neither he is held to 75.
+# THE drep TERM IS WHY THIS IS STILL THE NO-VOTE CEILING. Votes raise the ceiling exactly as far as
+# they go, so a voted big is held to the same cap he was held to before this round and NOTHING in
+# recal_82's graded entry or recal_92's block gate is touched. It is monotone in reputation and in
+# evidence, and it is smooth at drep = 0 — no cliff between a trace vote and none (the Iverson rule).
+# DBPM, AND THE recal_76/81 LINE THIS DOES NOT CROSS. recal_81 removed DBPM from the rim-protection
+# COMPOSITE because BPM 2.0 bakes the roster's defensive quality into it and d_score was charging
+# team defence twice. That door stays shut: DBPM is NOT back in ID, it does not add a single point to
+# any card, and no card rises through it. It enters only here, as one of two gates on HOW HIGH a big
+# with no votes may be READ — a ceiling, which can only ever subtract. His ruling named it.
+NOVOTE_FLOOR = (75 - 1) / 98.0   # recal_95: the ceiling with no block and no DBPM evidence behind it
+DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0.0, 1.0   # DBPM band the ceiling grades on; the BLOCK band is
+# recal_92's own BLK_BAR/BLK_FULL, reused deliberately - there is ONE definition of "block evidence"
+# in this file and both rim gates read it, so a later ruling moves one number, not two.
+def _ceiling_evidence(blk_pctile, dbpm, drep):
+    dbp = max(0.0, min(1.0, ((dbpm if dbpm is not None else 0.0) - DBPM_CEIL_BAR) / (DBPM_CEIL_FULL - DBPM_CEIL_BAR)))
+    return max(min(1.0, max(0.0, drep)), _blk_evidence(blk_pctile) * dbp)
 def dfg_floor(yr, name):
     # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
     # recal_65: VERIFIED — the design side re-reported the floors as still keyed to all-shots; they are
@@ -390,6 +421,9 @@ for yr, rows in seasons.items():
         _row6 = TRACKING.get((yr, 'Less Than 6Ft'), {}).get(_nrm(r['name']))
         if _row6 and _row6[1] and min(1.0, _row6[1] / 350.0) >= 0.75 and _row6[0] <= -0.040:
             _cap53 = (92 - 1) / 98.0
+        # recal_95: the tier above is the CEILING A BIG CAN EARN; what he is actually held to is that
+        # tier graded by the evidence behind it (blocks and DBPM), or by his votes, whichever is more.
+        _cap53 = NOVOTE_FLOOR + (_cap53 - NOVOTE_FLOOR) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'])
         ID2 = (1 - _w53) * min(ID2, _cap53) + _w53 * ID2
         # GRADED entry to the voted band (the Kawhi-'26 cliff fix): membership is a weight, not a switch.
         # Full selections (drep>=0.35) sit purely in the voted band; fading legends blend down SMOOTHLY;

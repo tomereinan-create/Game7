@@ -1,0 +1,266 @@
+{
+  "round": 95,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Grade the no-vote rim ceiling by blocks, Pau high 70s · Not only his blocks, his dbpm isnt even high",
+  "title": "THE NO-VOTE RIM CEILING STOPS BEING FLAT: 88 for every big with no votes becomes 75 + 13 x (blocks x DBPM), and Gasol reads what his evidence says",
+  "subject": "Pau Gasol '04",
+  "scale": "attr:rimprot",
+  "target": 78,
+  "tol": 2,
+  "before": 88,
+  "after": 78,
+  "pipeline_version": 95,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "NOVOTE_FLOOR = \\(75 - 1\\) / 98\\.0",
+      "label": "the ceiling with no block and no DBPM evidence behind it",
+      "note": "recal_53's flat 88 -> a floor of 75 that evidence climbs out of"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0\\.0, 1\\.0",
+      "label": "the DBPM band the ceiling grades on (HIS AMENDMENT)",
+      "note": "nothing at DBPM 0.0, the whole band at +1.0"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "return max\\(min\\(1\\.0, max\\(0\\.0, drep\\)\\), _blk_evidence\\(blk_pctile\\) \\* dbp\\)",
+      "label": "ev = max(votes, blocks x DBPM) — votes raise the ceiling exactly as far as they go",
+      "note": "so a VOTED big is held to the same cap as before; this is still the NO-VOTE ceiling"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_cap53 = NOVOTE_FLOOR \\+ \\(_cap53 - NOVOTE_FLOOR\\) \\* _ceiling_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\), r\\['dbpm'\\], r\\['drep'\\]\\)",
+      "label": "the one line that grades it, applied after recal_53's measured tier is chosen",
+      "note": "so the 92 tier grades too: 75 + 17 x ev where elite tracked rim defence earned it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "BLK_BAR, BLK_FULL = 0\\.80, 0\\.86",
+      "label": "ONE definition of block evidence in the file — recal_92's band, reused by the ceiling",
+      "note": "a later ruling moves one number, not two"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ID  = dict\\(blk=0\\.6875, height=0\\.3125\\)",
+      "label": "recal_81's COMPOSITE is untouched — DBPM is still not in it",
+      "note": "DBPM enters as a ceiling gate only, where it can subtract and never add"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "THE RULING — 88 -> 78. blk 3.9% (89th pctile of 2004), DBPM +0.1, drep 0.00"
+    },
+    {
+      "card": "Yao Ming '09",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "THE BINDING PAIR, and it now separates cleanly: same no-vote status, 4.2% blocks and DBPM +1.6, so he KEEPS the whole 88 while Gasol does not"
+    },
+    {
+      "card": "Shawn Bradley '95",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "the recal_53 cap set holds, all five of it: blk 8.5% (99.5th) on DBPM +1.6"
+    },
+    {
+      "card": "Shaquille O'Neal '93",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "5.7% on +1.5 — one point of drift inside tolerance, not a supersession"
+    },
+    {
+      "card": "Sam Bowie '85",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "5.0% on +2.3"
+    },
+    {
+      "card": "DeSagana Diop '06",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "7.4% on +2.8"
+    },
+    {
+      "card": "Walker Kessler '23",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "recal_53's MEASURED tier grades with the rest and still lands on 92 — 8.6% on +1.5 is full evidence"
+    },
+    {
+      "card": "Joel Embiid '23",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "partially voted (drep 0.42) and elite on both gates — flat"
+    },
+    {
+      "card": "Bobby Jones '82",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 95,
+      "label": "the recal_92 knife edge is untouched: a VOTED big's ceiling is his vote share, so nothing here reaches him"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "recal_92's own ruling holds at 91 — and note his DBPM is -0.5, so without the drep term in ev this round would have undone it"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "flat"
+    },
+    {
+      "card": "Dikembe Mutombo '01",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "flat"
+    },
+    {
+      "card": "Victor Wembanyama '24",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "flat"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "flat"
+    },
+    {
+      "card": "Kristaps Porziņģis '18",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 78,
+      "label": "THE BIGGEST MOVER, 92 -> 75: 6.4% blocks is real, DBPM -0.1 is not, and the ruling says both"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 59,
+      "tol": 5,
+      "label": "recal_92's perdef ruling is untouched — perdef moved on ZERO cards this round"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 65,
+      "tol": 2,
+      "label": "recal_91's ruling still holds on the merged board"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:rimprot",
+      "above": "Yao Ming '09",
+      "below": "Pau Gasol '04",
+      "label": "THE POINT OF THE ROUND: two no-vote 7-footers, and the one with the DBPM now reads above the one without"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Shawn Bradley '95",
+      "below": "Pau Gasol '04",
+      "label": "99.5th-percentile blocks above 89th"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Walker Kessler '23",
+      "below": "Yao Ming '09",
+      "label": "the measured tier still sits above the ordinary one"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Rudy Gobert '19",
+      "below": "Walker Kessler '23",
+      "label": "votes beat measurement beats the cap — recal_53's ladder, intact"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Kevin McHale '88",
+      "below": "Pau Gasol '04",
+      "label": "and recal_92's card still sits above recal_95's, by 13"
+    }
+  ],
+  "movers": {
+    "scale": "attr:rimprot",
+    "count": 1549,
+    "max_abs": 17,
+    "top": [
+      ["Kristaps Porziņģis '18", 92, 75],
+      ["Robin Lopez '16", 92, 75],
+      ["Timofey Mozgov '14", 92, 75],
+      ["Kristaps Porziņģis '20", 92, 76],
+      ["LaMarcus Aldridge '20", 91, 75],
+      ["Alex Sarr '26", 91, 75],
+      ["Pau Gasol '04", 88, 78],
+      ["Kevin Durant '19", 88, 78]
+    ]
+  },
+  "top12": {
+    "scale": "attr:rimprot",
+    "cards": [
+      "Ben Wallace '03",
+      "David Robinson '95",
+      "Hakeem Olajuwon '94",
+      "Marcus Camby '07",
+      "Marcus Camby '08",
+      "Rudy Gobert '21",
+      "Tim Duncan '01",
+      "Tim Duncan '07",
+      "Tim Duncan '08",
+      "Andrei Kirilenko '06",
+      "Ben Wallace '04",
+      "Caldwell Jones '80"
+    ]
+  },
+  "cost": [
+    "NO ANCHOR WAS SUPERSEDED AND NONE HAD TO BE. The brief authorised moving the five recal_53 flat-ceiling anchors (Shawn Bradley '95, Shaquille O'Neal '93, Sam Bowie '85, DeSagana Diop '06, Yao Ming '09, all 88 +-1) to anchors_superseded.json if the graded ceiling broke them. It does not: they read 88, 87, 88, 88, 88. That is the round's strongest single result — those five are not held up by a flat ceiling, they EARN it, on block rates from the 94th to the 99.5th percentile and DBPMs from +1.5 to +2.8. Gasol '04 was the one card in the set that could not, and separating him from them is exactly what his ruling asked for. All 96 anchors pass, 0 failing.",
+    "WHY THE drep TERM IS IN ev, and it is not a hedge. Without it this round would have UNDONE recal_92 three days after it landed: Kevin McHale '88 has a DBPM of -0.5, so a ceiling graded on blocks x DBPM alone would have sent a unanimous All-Defensive selection to the 75 floor and taken his 91 to 82, and Bobby Jones '82 96 -> 93. Writing ev = max(drep, blocks x DBPM) makes the grading what the ruling actually says — the NO-VOTE ceiling — while staying monotone in reputation and smooth at drep = 0, so recal_82's \"0.4 != 1, the more the better\" and the Iverson rule both survive untouched.",
+    "recal_76/81 STAY CLOSED FOR THE COMPOSITE, and this is the tension his amendment creates, stated plainly. recal_81 REMOVED DBPM from rim protection because BPM 2.0 bakes the roster's defensive quality into it and d_score was charging team defence twice. His amendment (\"Not only his blocks, his dbpm isnt even high\") brings DBPM back — but ONLY as a gate on the no-vote CEILING, never into ID. The consequence is asymmetric by construction and that is the safeguard: a ceiling can only ever hold a card DOWN, so no card gains a single point from DBPM anywhere in the pipeline, and the double-counting recal_81 closed cannot reopen through this door. If a later round wants DBPM back in the composite, that is recal_81's ruling to revisit, not this one's.",
+    "THE OVR SUMMIT LOST A POINT, and it is one card. Giannis Antetokounmpo '25 was the pool's only 97; rimprot 93 -> 92 took DEF 91 -> 90 and OVR 97 -> 96, and he now shares the summit with Giannis '20/'22 and the three LeBron cards. He is a PARTIALLY voted big (drep 0.55) whose DBPM is elite (+2.5) but whose block rate is only top-quintile, so the ceiling grades him at his vote share. tests/engine.test.ts's max-OVR floor was re-based 97 -> 96 in place with that reason. Worth knowing: every recal_84 OVR anchor (LeBron '10 99, Giannis '24 99, LeBron '13 98, Giannis '25 98) already sits in anchors_superseded.json, so this floor was a leftover of a ceiling his own later rulings had already walked down, not a live pin.",
+    "KEVIN DURANT IS THE LOUDEST COLLATERAL and he is not a mistake. Six KD cards lose 15-19 DEF (KD '19 72 -> 53, '25 73 -> 54, '26 72 -> 54, '24 74 -> 56, '22 74 -> 57, '16 78 -> 63): 6'11\", no defensive votes, blocks around the 85th percentile and DBPMs between -0.7 and +1.6, so he was reading the flat 88 as a rim protector. He is the same card as Gasol with a jump shot. Note the knock-on: FOUR o_ovrs move too (KD '16 95 -> 94, '19 94 -> 93, '22 94 -> 92, '24 91 -> 88) because recal_91's stretch-big branch classifies through is_big(), which reads rimprot — the only OFF movement in the round, and it is r91's gate seeing a corrected rating, not this round touching offence.",
+    "NO TAX WAS RE-RATIFIED. The harness was run on the final merged board and all nine bands pass at the values recal_92 left (scheme 0.90, hunt 3.60, crashOff 0.50, crashDef 0.75) — scheme +0.51 and crash def glass -0.40/+0.53 are the tightest. RECORDED because an intermediate variant of this round (block band 0.80-0.90 instead of recal_92's 0.80-0.86) took THREE bands out at once; the shipped band is the one that leaves the tax table alone, and that was a reason to prefer it, not an accident.",
+    "THE CEILING AS A FUNCTION, for the next round to read off: cap(card points) = 75 + (T - 75) x ev, where T = 88, or 92 where recal_53's measured tier applies (elite tracked rim defence, diff <= -4.0% on >= 75% of a full workload), and ev = max(drep, clamp((blk_pctile - 0.80)/0.06) x clamp(DBPM/1.0)). Worked: Gasol '04 (0.895, +0.1) ev = 0.10 -> cap 76; Yao '09 (0.939, +1.6) ev = 1.00 -> cap 88; Porzingis '18 (0.97, -0.1) ev = 0.00 -> cap 75; Giannis '25 (drep 0.55) ev = 0.55 -> cap 82."
+  ],
+  "notes": [
+    "WHAT recal_92 COULD NOT DO AND THIS ROUND CAN. Round 92 declined this exact card and said why: Gasol sits ON the recal_53 ceiling, so no reweighting of blocks and height, no reshaping of the Prot map and no change to the vote unlock can reach him — 120 variants were measured there and he read 88 in every member of the first family. The decline named the only lever that could work (the cap itself) and named the price (it is an anchor set). His ruling paid that price by naming the cap directly. The price then turned out to be zero, because the cap set earns its 88.",
+    "WHY BOTH GATES, IN HIS OWN WORDS. The first ruling was \"grade by blocks\", and blocks alone do NOT separate the binding pair: Gasol '04 is at the 89.5th percentile of 2004 and Yao '09 at the 93.9th of 2009, four percentile points asked to carry ten card points. His amendment is what makes it work — DBPM +0.1 against +1.6 — and multiplying the two gates rather than averaging them is what makes 'both' mean both: Porzingis '18 has 6.4% blocks (97th percentile) and still lands on the floor, because his DBPM is -0.1.",
+    "THE FLOOR OF 75 IS THE FITTED NUMBER and it is the only one. With the two ramps fixed at recal_92's block band and DBPM 0.0-1.0, the floor is what sets Gasol: 74 -> 77, 75 -> 78, 76 -> 79. 75 was chosen because it lands his target exactly, not because it is round; the band 74-76 all sit inside his 76-80.",
+    "FOOTPRINT: 1,549 rimprot cards move, ALL DOWN (0 rises), max 17, 682 by 5+ and 251 by 10+. A ceiling can only subtract, so a one-directional footprint is the shape this change must have — if any card had risen, the implementation would be wrong. The top 12 is IDENTICAL, name for name and value for value: nothing at the summit was ever held up by the no-vote cap, because everyone there has votes.",
+    "DOWNSTREAM: d_ovr moves on 1,292 cards (7 by 15+, all Kevin Durant plus Austin Daye '11), ovr on 1,089 (10 by 5+, max 9), o_ovr on 4 (all KD, through r91's is_big gate). perdef moves on ZERO cards — recal_92's ruling is completely untouched.",
+    "THE CLASS THIS ROUND CORRECTS, in one sentence: tall men with a respectable block rate and nothing else, who were reading 88-92 as rim protectors on a ceiling that asked them for nothing — Kristaps Porzingis, Robin Lopez, Timofey Mozgov, LaMarcus Aldridge, Alex Len, Alex Sarr, Kevin Durant."
+  ]
+}
