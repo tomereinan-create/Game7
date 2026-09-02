@@ -10,6 +10,7 @@ import { CourtFive } from './CourtFive'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { Dial, TeamDials } from './MatchupPanel'
+import { SeasonStrip, useYearKeys } from './SeasonStrip'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
@@ -171,6 +172,44 @@ const bound = (s: string) => {
 
 const yy = (y: number) => `’${String(y % 100).padStart(2, '0')}`
 
+/**
+ * THE FRANCHISE LINEAGE — forty abbreviations in the book, thirty franchises today. The same table
+ * the campaign script merges its all-time fives by (`scripts/campaigns.ts`), so the Thunder's strip
+ * walks back into the Sonics years and the Charlotte line (Hornets · Bobcats · Hornets) is one team.
+ */
+const FRANCHISE: Record<string, string> = {
+  NJN: 'BRK',
+  CHH: 'CHO',
+  CHA: 'CHO',
+  NOH: 'NOP',
+  NOK: 'NOP',
+  KCK: 'SAC',
+  SDC: 'LAC',
+  VAN: 'MEM',
+  SEA: 'OKC',
+  WSB: 'WAS',
+}
+export const franchiseOf = (ab: string) => FRANCHISE[ab] ?? ab
+/** One team-season, named: the chip's id and the key a row is found by. */
+export const seasonId = (t: TeamSeason) => `${t.ab}${t.y}`
+
+/** Every season this franchise ever played, oldest first, with its best by team OVR marked. */
+export function franchiseYears(t: TeamSeason): { all: TeamSeason[]; best: TeamSeason | null } {
+  const fr = franchiseOf(t.ab)
+  const all = WHEEL.filter((x) => franchiseOf(x.ab) === fr).sort((a, b) => a.y - b.y)
+  let best: TeamSeason | null = null
+  let top = -1
+  for (const x of all) {
+    const o = ovrOf(x)
+    // a season the pool cannot field a five for has no OVR, so it cannot be the best one
+    if (o !== null && o > top) {
+      top = o
+      best = x
+    }
+  }
+  return { all, best }
+}
+
 /** The team database: pick a span of years, pick a team, read their best five and its ratings. */
 export function TeamDb({ onBack }: { onBack: () => void }) {
   const [span, setSpanState] = useState<Span>(loadSpan)
@@ -191,13 +230,49 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
   // walking back restores the list right where he left it.
   const listScroll = useRef(0)
+  // …but stepping a YEAR on the strip is not opening a team: it redraws the page you are already
+  // reading, so the scroll must stay exactly where it is (his ruling: "no scroll jump").
+  const stepping = useRef(false)
   useEffect(() => {
+    if (stepping.current) {
+      stepping.current = false
+      return
+    }
     window.scrollTo(0, picked ? 0 : listScroll.current)
   }, [picked])
   const pick = (t: TeamSeason) => {
     listScroll.current = window.scrollY
     setPicked(t)
   }
+
+  /**
+   * HIS RULING: "You can navigate here as well between years" — the franchise's seasons as the same
+   * strip the player card has, marked BEST at its best team OVR. It follows the LINEAGE, not the
+   * abbreviation, so the Thunder's strip walks back into the Seattle years.
+   */
+  const franchise = useMemo(() => (picked ? franchiseYears(picked) : null), [picked])
+  const stripYears = useMemo(
+    () => franchise?.all.map((t) => ({ id: seasonId(t), y: t.y, mark: t === franchise.best })) ?? [],
+    [franchise],
+  )
+  const step = (id: string) => {
+    const next = franchise?.all.find((t) => seasonId(t) === id)
+    if (!next) return
+    stepping.current = true
+    setPicked(next)
+  }
+  // ← → walk the franchise's years — but not while a player card is open on top of the page,
+  // because that sheet is stepping its own man's seasons with the same two keys.
+  useYearKeys(!!picked && stripYears.length > 1, (d) => {
+    if (document.querySelector('.sheet')) return
+    setPicked((cur) => {
+      if (!cur || !franchise) return cur
+      const at = franchise.all.indexOf(cur) + d
+      if (at < 0 || at >= franchise.all.length) return cur
+      stepping.current = true
+      return franchise.all[at]
+    })
+  })
 
   const setSpan = (next: Span) => {
     setSpanState(next)
@@ -479,6 +554,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <span className="cap">Best five · OVR {ovrOf(picked) ?? '—'}</span>
             </div>
             <div className="opp-name">{picked.team}</div>
+            {stripYears.length > 1 ? <SeasonStrip years={stripYears} cur={seasonId(picked)} go={step} mark="best" /> : null}
             {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
             {/* his ruling: the five stands on a floor, not in a list — tap a spot for the full card */}
             <CourtFive
