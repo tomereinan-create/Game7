@@ -1,0 +1,278 @@
+{
+  "round": 106,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "reduce by a little discipline impact on DEF",
+  "title": "DISCIPLINE WEIGHS A LITTLE LESS IN DEFENCE — a tenth off both vectors, and 'a little' is bounded by Caron Butler '08 rather than chosen",
+  "subject": "Andre Drummond '16",
+  "scale": "def",
+  "target": 77,
+  "tol": 1,
+  "before": 76,
+  "after": 77,
+  "pipeline_version": 108,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+      "label": "THE ROUND — both discipline weights lose a tenth",
+      "note": "big 0.03 -> 0.027, perimeter 0.06 -> 0.054; the 2:1 relationship recal_80 set is kept"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_kb = \\(1\\.0 - DISC_BIG\\) / 0\\.97",
+      "label": "the big vector's survivors, renormalised back to 1.00",
+      "note": "recal_76 / recal_81's convention — the freed weight is spread proportionally, not reassigned"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_kp = \\(1\\.0 - DISC_PER\\) / 0\\.94",
+      "label": "the perimeter vector's survivors, likewise"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_big = _kb\\*\\(0\\.40\\*a\\['perdef'\\] \\+ 0\\.40\\*a\\['rimprot'\\] \\+ 0\\.17\\*a\\['drb'\\]\\) \\+ DISC_BIG\\*a\\['discipline'\\]",
+      "label": "the big vector — every other weight is untouched, only rescaled",
+      "note": "0.40 / 0.40 / 0.17 are exactly the numbers that stood before"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "base = \\(_kp\\*\\(0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*a\\['rimprot'\\] \\+ 0\\.11\\*a\\['perimdisrupt'\\] \\+ 0\\.07\\*a\\['drb'\\]\\)",
+      "label": "and the perimeter vector, recal_80's ratios preserved",
+      "note": "0.63 / 0.13 / 0.11 / 0.07 unchanged"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "o_score untouched — OFF moves on ZERO cards",
+      "note": "the ruling is about DEF and the round touches nothing else"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 108",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 106; it SHIPS as pipeline 108 after the rebase onto recal_105"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 108",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.80,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — two taxes broke, in opposite directions",
+      "note": "hunt 3.62 -> 3.80 (blind edge) and crashDef .80 -> .54 (oracle edge)"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Caron Butler '08",
+      "scale": "def",
+      "op": "~",
+      "value": 72,
+      "tol": 1,
+      "label": "THE CARD THAT SET THE SIZE. recal_57 pins him at def 73 +-1 and he already read 72, sitting ON his edge; he leaves the band the moment the perimeter discipline weight reaches 0.052. He is why 'a little' is a tenth and not a third"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "THE ONE ANCHOR THIS ROUND MOVES TO ITS EDGE: 94 -> 95 against recal_57's 94 +-1. It passes, and it is reported rather than left to be found — his discipline is 59 and the round lifts the low-discipline half of the board"
+    },
+    {
+      "card": "Tim Duncan '03",
+      "scale": "def",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "a HIGH-discipline big (90): unmoved, because a tenth of 0.03 is not enough to cost him a printed point"
+    },
+    {
+      "card": "Andre Drummond '16",
+      "scale": "def",
+      "op": "~",
+      "value": 77,
+      "tol": 1,
+      "label": "a FOUL-PRONE big (discipline 40): 76 -> 77, which is the direction the ruling asks for"
+    },
+    {
+      "card": "Joel Embiid '18",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "the other foul-prone big named (discipline 29): unmoved. A one-point ceiling means most cards do not cross a rounding line at all"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "recal_62's anchor, discipline 37: unmoved and still one inside its band"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "recal_62's other anchor, discipline 49: unmoved"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "the DEF summit, discipline 96 — the highest-discipline card in the top 12 and it does not move, because it is clamped at 99"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "recal_102's floor, discipline 81: unmoved at 98"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "discipline 90: unmoved"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 4,
+      "label": "recal_103's card and the lowest discipline in the ten (10): unmoved, and his anchor holds"
+    },
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "discipline 57: unmoved"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "def",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "recal_55's card, discipline 41: unmoved"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "OFF moved on ZERO of 10,000 cards, and no attribute moved"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Dennis Rodman '90",
+      "label": "the DEF summit still holds over the card this round lifts to its edge"
+    },
+    {
+      "scale": "def",
+      "above": "Tim Duncan '03",
+      "below": "Andre Drummond '16",
+      "label": "a disciplined big still reads far above a foul-prone one — the round narrows the gap, it does not invert it"
+    },
+    {
+      "scale": "def",
+      "above": "Draymond Green '16",
+      "below": "Rudy Gobert '19",
+      "label": "recal_62's pair keeps its order"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 1368,
+    "max_abs": 1,
+    "top": [
+      [
+        "Andre Drummond '16",
+        76,
+        77
+      ],
+      [
+        "Alton Lister '91",
+        79,
+        80
+      ],
+      [
+        "Clifford Ray '80",
+        75,
+        76
+      ],
+      [
+        "Andrew DeClercq '03",
+        66,
+        67
+      ],
+      [
+        "Dennis Rodman '90",
+        94,
+        95
+      ],
+      [
+        "Allen Iverson '07",
+        45,
+        44
+      ],
+      [
+        "Chris Mullin '92",
+        68,
+        67
+      ],
+      [
+        "Antonio Daniels '04",
+        43,
+        42
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '01",
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Dan Roundfield '80",
+      "Dan Roundfield '81",
+      "Dan Roundfield '82",
+      "Dwight Howard '09",
+      "Dwight Howard '10",
+      "Dwight Howard '11"
+    ]
+  },
+  "cost": [
+    "WHAT 'A LITTLE' WAS TAKEN TO MEAN, and it is the orchestrator's reading, stated so he can correct it. A TENTH off both discipline weights: the big vector 0.03 -> 0.027 and the perimeter vector 0.06 -> 0.054, survivors renormalised proportionally so each vector still totals 1.00. THE SIZE IS BOUNDED, NOT CHOSEN. The perimeter side cannot go far: CARON BUTLER '08 is pinned at def 73 +-1 by recal_57 and already read 72, exactly ON his edge, and he leaves the band the moment that weight reaches 0.052 - so the largest cut the anchors permit there is about an EIGHTH. A tenth is the round number strictly inside it, with roughly a sixth of the remaining margin to spare. The BIG vector would tolerate far more - it holds every anchor even with discipline deleted entirely - but a ruling about 'discipline impact on DEF' is one statement about one attribute, so the same tenth is applied to both and the 2:1 relationship recal_80 set between them survives.",
+    "IF HE WANTS MORE THAN A TENTH, the frontier is now measured and it is Caron Butler '08 alone. At an eighth he still holds; at a sixth (perimeter 0.050) he reads 71 against 73 +-1 and would have to be superseded. Nothing else on the board is close: at a THIRD only one further anchor moves (Scottie Pippen '03, 77 -> 78 against 76 +-1), and even with discipline deleted from both vectors only four anchors fail in total. So this is a single-card constraint and a single ruling from him would lift it.",
+    "ONE ANCHOR MOVES TO ITS EDGE and is reported rather than left to be found: DENNIS RODMAN '90, recal_57's def 94 +-1, goes 94 -> 95. He passes, but he now sits ON the boundary, which is the same position Caron Butler '08 was in before this round and is the thing that will bite the next round that touches DEF. FIVE OTHERS were already at their edge before this round and did not move: Michael Jordan '89 def (98 vs 99 +-1), Scottie Pippen '03 (77 vs 76 +-1), Jrue Holiday '21 (93 vs 92 +-1), Draymond Green '16 (97 vs 96 +-1) and Caron Butler '08 (72 vs 73 +-1).",
+    "THE TACTICS BANDS THIS ROUND BROKE, and they broke in OPPOSITE directions, which is worth recording because it has not happened before. hunt went shallow on its BLIND edge (-0.21 against the -0.30 ceiling) and had to go UP, 3.62 -> 3.80; crash def glass went short on its ORACLE edge (+0.45 against the +0.50 floor) and had to come DOWN, .80 -> .54. Both are chosen at the point of greatest margin (hunt: blind -0.36 / oracle +0.56, feasible about 3.72 to 3.94; crashDef: blind -0.35 / oracle +0.53, feasible about .47 to .63). scheme, crash off glass, tempo, playstyle, scorer, playmaker and assignment all held. That is the fifth consecutive round in which hunt has moved.",
+    "THE ROUND IS 106 AND THE PIPELINE IS 108. It was built at 107 and recal_105 took that number while it sat on his desk. Rebased onto 68d69f1; the base check passed (0 attributes, 0 talents differing) and ALL SEVENTEEN TEAM ANCHORS pass at zero error against recal_105 re-derived dials, including its two new Bulls 96 pins and Thunder 26 defdial, which read -3 on the old base and now reads exactly 80."
+  ],
+  "notes": [
+    "WHAT THE RULING IS ABOUT. `discipline` is the inverse of fouls per 100 possessions, taken WITHIN size class (recal_-era note: 'a big's job generates fouls, so \"disciplined for his role\" is the question'). It carried 0.03 of the big defensive vector and 0.06 of the perimeter one - twice as much on the perimeter side, which recal_80 set when it rebuilt that vector. His ruling asks for less of it in both.",
+    "WHY RENORMALISE RATHER THAN REASSIGN. recal_76 and recal_81 both faced this and both spread the freed weight over the surviving terms in proportion, rather than handing it to a chosen one. That keeps the change to a single claim - discipline matters slightly less - instead of smuggling in a second claim about which term matters more. So perdef, rimprot, perimdisrupt and drb all rise by the same factor and their RATIOS to each other are byte-identical.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 1,368 of 10,000 cards move on DEF and EVERY ONE OF THEM moves by exactly one point - 703 up, 665 down, an almost even split. OVR follows on 563, also all by one. OFF moves on ZERO cards and no attribute moves. The top 12 by DEF is identical name for name, and the top 50 by OVR has no entrant, no leaver and no rank flip.",
+    "THE MOVERS ARE EXACTLY THE TWO POPULATIONS THE RULING NAMES. Down: Allen Iverson '07, Antonio Daniels '04, Chris Mullin '92 and '93, Damon Jones '01 - every one of them discipline 99, the cleanest defenders on the board. Up: Aaron Nesmith '23, Alton Lister '91, Andrew DeClercq '03, Clifford Ray '80, Jae'Sean Tate '22 - every one of them discipline 2. A tenth of a small weight only crosses a rounding line for cards at the extremes, which is why 8,632 cards do not move at all.",
+    "WHY THE TEN CARDS MOSTLY DO NOT MOVE, and it is the honest answer rather than a disappointing one. A tenth of 0.03 is 0.003, so a big has to be about 300 discipline-points from the mean before the change is worth a printed point - which is impossible on a 1-99 scale. The perimeter side is twice as sensitive and still only bites at the extremes. Of the ten named cards only Andre Drummond '16 crosses a line (76 -> 77). That IS 'a little'."
+  ]
+}

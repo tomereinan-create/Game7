@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 107
+PIPELINE_VERSION = 108
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -536,14 +536,34 @@ def d_score(p, trace=None):
     a = p['attrs']
     w = d_bigness(p)
     # drb weight up: rebounding credit now lives here, not inside rimprot
-    _big = 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']
+    # recal_106 (HIS RULING, verbatim: "reduce by a little discipline impact on DEF"). BOTH
+    # DEFENSIVE VECTORS LOSE A TENTH OF THEIR DISCIPLINE WEIGHT, and the survivors are renormalised
+    # proportionally so each vector still totals 1.00 — the convention recal_76 and recal_81 used.
+    #
+    # HOW MUCH "A LITTLE" IS, and it is bounded rather than chosen. The perimeter side cannot go far:
+    # CARON BUTLER '08 is pinned at def 73 +-1 by recal_57 and already reads 72, sitting ON his edge,
+    # and he leaves the band the moment the perimeter weight reaches 0.052 — the largest cut the
+    # anchors permit there is about a EIGHTH. A TENTH is the round number strictly inside that, and
+    # applying the same tenth to both keeps the 2:1 relationship recal_80 set between the two
+    # discipline weights rather than inventing a new one. The big vector alone would tolerate far
+    # more (it holds every anchor even with discipline deleted), but a ruling about "discipline
+    # impact on DEF" is one statement about one attribute, not two different ones.
+    # MEASURED: 1,368 cards move on DEF, every single one by exactly ONE point, and the split is
+    # near even — 703 up, 665 down. OFF and every attribute move on ZERO. The top 12 by DEF is
+    # identical and the top 50 by OVR has no entrant and no leaver.
+    DISC_BIG, DISC_PER = 0.027, 0.054
+    _kb = (1.0 - DISC_BIG) / 0.97    # the big vector's surviving 0.97, renormalised back to 1.00
+    _kp = (1.0 - DISC_PER) / 0.94    # the perimeter vector's surviving 0.94, likewise
+    # drb weight up: rebounding credit now lives here, not inside rimprot
+    _big = _kb*(0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb']) + DISC_BIG*a['discipline']
     # recal_57 trimmed perimdisrupt 0.15 -> 0.09; recal_62 (his ruling) trims it again 0.09 -> 0.05.
     # Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict).
     # recal_80 (design-side round, HIS RULING "Ship 80"): rim protection counted ZERO on the
     # perimeter branch, so a wing who genuinely contests at the rim got nothing for it. New vector,
     # sums to 1.00. NOTE the raise to perimdisrupt is 0.05 -> 0.11 on OUR real vector (the round
     # quotes 0.09 -> 0.11), a 2.2x raise that SUPERSEDES recal_62 — see the annotation in receipt 80.
-    base = 0.63*a['perdef'] + 0.13*a['rimprot'] + 0.11*a['perimdisrupt'] + 0.07*a['drb'] + 0.06*a['discipline']
+    base = (_kp*(0.63*a['perdef'] + 0.13*a['rimprot'] + 0.11*a['perimdisrupt'] + 0.07*a['drb'])
+            + DISC_PER*a['discipline'])
     # size modifier: a 6'0 defender guards one matchup; tall stoppers switch. Guard-quota All-D
     # selections are real evidence, but size caps the ceiling. Bites only truly small defenders.
     # It belongs to the PERIMETER vector alone, exactly as it always has: a man is only shrunk for
@@ -554,11 +574,16 @@ def d_score(p, trace=None):
     if trace is not None:
         trace['branch'] = ('big' if w >= 1.0 else ('perimeter' if w <= 0.0 else f'blend w={w:.4f}'))
         trace['bigness'] = w
-        trace['terms'] = [('perdef', a['perdef'], 0.40*w + 0.63*(1-w)*_size, (0.40*w + 0.63*(1-w)*_size)*a['perdef']),
-                          ('rimprot', a['rimprot'], 0.40*w + 0.13*(1-w)*_size, (0.40*w + 0.13*(1-w)*_size)*a['rimprot']),
-                          ('perimdisrupt', a['perimdisrupt'], 0.11*(1-w)*_size, 0.11*(1-w)*_size*a['perimdisrupt']),
-                          ('drb', a['drb'], 0.17*w + 0.07*(1-w)*_size, (0.17*w + 0.07*(1-w)*_size)*a['drb']),
-                          ('discipline', a['discipline'], 0.03*w + 0.06*(1-w)*_size, (0.03*w + 0.06*(1-w)*_size)*a['discipline'])]
+        _wpd = _kb*0.40*w + _kp*0.63*(1-w)*_size
+        _wrp = _kb*0.40*w + _kp*0.13*(1-w)*_size
+        _wpx = _kp*0.11*(1-w)*_size
+        _wdr = _kb*0.17*w + _kp*0.07*(1-w)*_size
+        _wdi = DISC_BIG*w + DISC_PER*(1-w)*_size
+        trace['terms'] = [('perdef', a['perdef'], _wpd, _wpd*a['perdef']),
+                          ('rimprot', a['rimprot'], _wrp, _wrp*a['rimprot']),
+                          ('perimdisrupt', a['perimdisrupt'], _wpx, _wpx*a['perimdisrupt']),
+                          ('drb', a['drb'], _wdr, _wdr*a['drb']),
+                          ('discipline', a['discipline'], _wdi, _wdi*a['discipline'])]
         trace['base'] = base
         trace['big_vector'] = _big
         trace['perim_vector'] = _perim
