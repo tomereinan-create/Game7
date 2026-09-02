@@ -66,9 +66,21 @@ const ELBOW_R: XY = [66, 72]
 const DUNK_L: XY = [32, 88]
 const DUNK_R: XY = [68, 88]
 
-/** Balanced — PG above the arc, the wings behind it, PF at the block, C in the paint. */
-const AT: XY[] = [peri(0, 12), peri(-38), peri(38), BLOCK_L, PAINT_C]
+/**
+ * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
+ * PG above the arc, both wings behind it, the PF out in the corner, and the C alone inside.
+ * The default set used to stand the PF on the block beside him, which put two men inside; the PF
+ * moves out to the corner, so the C is the only man inside the arc and the other four ring it.
+ */
+const AT: XY[] = [peri(0, 12), peri(-38), peri(38), CORNER_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
+/**
+ * Is a spot BEHIND the three-point line? Above the break the line IS the arc; below it the line is
+ * the straight corner lane the floor draws at x=8 / x=92, so a corner man stands behind the line
+ * while sitting inside the arc's circle. Exported because "four out, one in" is a claim about the
+ * drawn floor, and tests/court.test.ts holds the balanced set to it.
+ */
+export const outsideLine = ([x, y]: XY): boolean => (y >= 82 ? x <= 8 || x >= 92 : Math.hypot(x - ARC_CX, y - ARC_CY) >= ARC_R)
 /** Units of empty floor above the half-court line, kept only when a bench man stands there. */
 const CROP = 16
 
@@ -113,7 +125,7 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
  * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol),
  * the pnr screen = the dive big, min(rim, efficiency)).
  */
-function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   if (!style || style === 'balanced' || men.length < 5) return [...AT]
   const fill = (picked: Record<number, XY>, rest: XY[]): XY[] => {
