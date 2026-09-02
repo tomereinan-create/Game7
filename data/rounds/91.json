@@ -1,0 +1,266 @@
+{
+  "round": 91,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Too low OFF 54. Should be mid 60s",
+  "title": "THE STRETCH BIG — recal_64's off-ball floor grows its big branch (orb + rim + volume), so a big who shoots stops being priced as a wing who only shoots",
+  "subject": "OG Anunoby '21",
+  "scale": "off",
+  "target": 65,
+  "tol": 2,
+  "before": 54,
+  "after": 64,
+  "pipeline_version": 91,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_fl \\+= 0\\.17\\*\\(a\\['orb'\\] \\+ a\\['rim'\\]\\) \\+ 0\\.10\\*a\\['volume'\\]",
+      "label": "THE ROUND'S ONE CHANGE — the big branch of the off-ball floor",
+      "note": "new: the three terms r64's wing floor drops, added for is_big only"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['3pt'\\] >= 68 and a\\['volume'\\] < 55:",
+      "label": "r64's OWN gate, reused untouched — no new class is created",
+      "note": "212 of 10,000 cards are bigs inside it; nothing outside r64's class is reachable"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_fl = 0\\.38\\*a\\['3pt'\\] \\+ 0\\.20\\*a\\['efficiency'\\] \\+ 0\\.08\\*a\\['ballsec'\\] \\+ 0\\.06\\*a\\['discipline'\\]",
+      "label": "recal_64's wing floor, unchanged",
+      "note": "0.38/0.20/0.08/0.06 — Snell '18, Bowen '06 and Korver '15 still ride exactly this"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*a\\['volume'\\] \\+ 0\\.19\\*a\\['playvol'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — NOT reopened by this round",
+      "note": "the volume weight stays 0.26; see COST for why the empty-volume rulings could not use it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 110\\.64, 107\\.55",
+      "label": "recal_90's band anchors, untouched",
+      "note": "every mover this round is far below the 93 knee, so the band is the identity for all of them"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 91",
+      "label": "pipeline version, compute side"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 91",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.68,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — the pool this round moved took one band out",
+      "note": "0.46 -> 0.68; blind -0.18 -> -0.35 against the -0.30 floor, oracle +0.54 against +0.50"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Rui Hachimura '26",
+      "scale": "off",
+      "op": "~",
+      "value": 65,
+      "tol": 4,
+      "label": "SECOND RULING, verbatim: \"OFF should be low 60s, or high 60s. Not 55\" — 55 -> 66"
+    },
+    {
+      "card": "Kobe Bryant '16",
+      "scale": "ovr",
+      "op": "~",
+      "value": 71,
+      "tol": 0,
+      "label": "THIRD RULING, verbatim: \"Kobe 16' agree\" (target ovr 61 +-3) — DECLINED, recorded at its unchanged reading: nothing in o_score reaches it, see COST"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "ovr",
+      "op": "~",
+      "value": 48,
+      "tol": 0,
+      "label": "FOURTH RULING, verbatim: \"Mark jackson 98 agree\" (target ovr 57 +-3) — DECLINED, recorded at its unchanged reading, see COST"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 0,
+      "label": "the wing floor's own man is UNTOUCHED — Korver is lifetime SF/SG, so is_big is false and the big branch cannot reach him"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 0,
+      "label": "same, r89's specialist pin: flat"
+    },
+    {
+      "card": "Tony Snell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 50,
+      "tol": 0,
+      "label": "r64's named card, the class the WING floor is for: flat"
+    },
+    {
+      "card": "Bruce Bowen '06",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 0,
+      "label": "r64's other named card: flat"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "a BIG below the gate (3pt 2): the branch is unreachable without a real jumper"
+    },
+    {
+      "card": "Detlef Schrempf '98",
+      "scale": "off",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "INSIDE the class and STILL FLAT — his standard path already clears the taller floor, which is what a max() is for"
+    },
+    {
+      "card": "OG Anunoby '26",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 2,
+      "label": "the same man's late card lands beside his early one (57 -> 66) — the round is about the archetype, not the season"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched — no mover this round is within 20 of the knee"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "def",
+      "op": "~",
+      "value": 77,
+      "tol": 0,
+      "label": "DEF moved on ZERO cards: d_score is not in this round's path"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Giannis Antetokounmpo '24",
+      "label": "r90's summit pair survives"
+    },
+    {
+      "scale": "off",
+      "above": "Shaquille O'Neal '00",
+      "below": "OG Anunoby '21",
+      "label": "a mid-60s stretch four stays a long way under the summit"
+    },
+    {
+      "scale": "off",
+      "above": "Rui Hachimura '26",
+      "below": "Tony Snell '18",
+      "label": "the shooting big now outranks the wing spacer, which is the whole claim of the round"
+    },
+    {
+      "scale": "off",
+      "above": "OG Anunoby '21",
+      "below": "Kyle Korver '15",
+      "label": "the seam this round creates, stated rather than hidden — see COST"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 198,
+    "max_abs": 17,
+    "top": [
+      [
+        "Dorian Finney-Smith '21",
+        45,
+        62
+      ],
+      [
+        "Dorian Finney-Smith '22",
+        43,
+        59
+      ],
+      [
+        "Harrison Barnes '25",
+        58,
+        73
+      ],
+      [
+        "Omri Casspi '16",
+        56,
+        71
+      ],
+      [
+        "Marvin Williams '16",
+        52,
+        67
+      ],
+      [
+        "Al Horford '24",
+        52,
+        67
+      ],
+      [
+        "Rui Hachimura '26",
+        55,
+        66
+      ],
+      [
+        "OG Anunoby '21",
+        54,
+        64
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '25",
+      "Giannis Antetokounmpo '24",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shaquille O'Neal '00",
+      "Shaquille O'Neal '01",
+      "Shaquille O'Neal '02",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22"
+    ]
+  },
+  "cost": [
+    "TWO OF THE FOUR RULINGS IN THIS BATCH ARE DECLINED and roll forward. \"Kobe 16' agree\" (Kobe Bryant '16, ovr 61 +-3) and \"Mark jackson 98 agree\" (Mark Jackson '98, ovr 57 +-3) are NOT in data/anchors.json, because an anchor is a pin that HOLDS and neither of these does; putting them there would make `npm run anchors` exit non-zero on every future round. They are recorded here instead, with the measurement, and belong in anchors.json the round that lands them.",
+    "THE TACTICS BAND THIS ROUND BROKE, and the standing procedure that answers it. The harness draws its random fives from PLAYERS with ovr >= 55, so any round that moves OVR moves the SAMPLE. This one carried 37 cards up across that line (7,526 -> 7,563) and took `crash def glass` from a blind -0.31 to -0.18, outside recal_59's [-1.5, -0.3] band. Per the law's own instruction (\"tune them ONLY through it\") and the precedent of recal_67/72/78/80/85, the TAX was re-ratified through the harness rather than the ratings being bent to hold the band: TAX.crashDef 0.46 -> 0.68. It is the third round in a row this particular tax has been recorded on or over its edge, and the first on which it moved; the oracle side (+0.50 floor) is what caps it, at about 0.78.",
+    "WHY THEY ARE INFEASIBLE, measured not asserted. Both are OVR rulings, and recal_83/85 left OVR as nothing but the blend of OFF and DEF, so each is really an OFF ruling. Kobe '16 has DEF 64, so his OVR can never fall below 0.4*OFF + 38.4 — reaching 61 needs OFF 74 -> 56 (-18). Mark Jackson '98 has DEF 52, so reaching 57 needs OFF 43 -> 59 (+16). Searching the whole 10-weight o_score simplex at fixed total weight (so the 0.93 multiplier holds), with every existing anchor required to pass: Kobe's minimum reachable OVR is 69 (needs <= 64) and Jackson's maximum is 49-50 (needs >= 54). Neither target is inside the feasible region at all.",
+    "WHAT IT WOULD COST TO FORCE THEM. Kobe's only lever is weight off volume onto the volume x efficiency signature (he is volume 98 at efficiency 18): the largest shift that breaks NO anchor is 0.010, worth one point. Reaching OVR 64 needs ~0.12 and breaks 22 anchors. Jackson's only lever is weight off volume onto playvol (he is volume 12 at playvol 94): NO shift above zero holds the anchors, and reaching 56 needs the volume weight deleted entirely (0.26 -> 0.00), breaking 31 anchors and an order pin. The blockers are the same shapes as the subjects: Jaylen Brown '26 (83, volume 96 at efficiency 38) is Kobe '16 with twenty more points of efficiency, and every star's playvol is as high as Jackson's.",
+    "recal_89's LOCKED DIAL STATE IS NOT REOPENED. The volume weight is still 0.26 and no weight in the standard path moved, so r89's grounds for the renormalised 0.93 multiplier (total weight unchanged) survive untouched — as does r90's OFF_TOP, since every mover here sits 20 points below the 93 knee where band() is the identity.",
+    "THE SEAM THIS ROUND CREATES, stated plainly. is_big now decides whether a low-usage shooter gets the four-term floor or the seven-term one, so a 6'10\" PF spacer and a 6'7\" SF spacer with the same box line no longer read alike: Otto Porter Jr. '18 reads 76 where Kyle Korver '15, a better version of the archetype, is pinned at 58. That is the price of holding r64's and r89's wing anchors while moving the big class, and it is the thing a later round should look at first if he complains about a wing shooter.",
+    "THE CLASS TOP IS NOW 74-76 (Donyell Marshall '05, Otto Porter Jr. '18, Cameron Johnson '25, Troy Murphy '09). Nothing in the class is within 20 of the OFF ceiling, so no band or anchor question is opened, but a stretch four in the mid-70s is new territory for this board."
+  ],
+  "notes": [
+    "THE TERM THE RULINGS WERE ABOUT. Anunoby '21 read 54 on a standard path of 57.68, dominated by volume 36 x 0.26 and playvol 34 x 0.19 — a man of 15.9 points on 39.8% from three was being priced almost entirely on how many possessions he used. Hachimura '26 read 55 and was already ON recal_64's off-ball floor (59.02, binding), which is the same complaint one layer down: the floor built for him is too short.",
+    "WHY THE FLOOR AND NOT THE WEIGHTS. Both men are worse than Kyle Korver '15 on 3pt (75 and 88 against 95) and on efficiency (59 and 71 against 94), and Korver is pinned at 58 by recal_89. Every lever that pays shooting or efficiency therefore moves Korver MORE than it moves the subjects, and Kerr '96 (62), Snell '18 (50) and Bowen '06 (45) sit on the same wall. The one thing the subjects have and those four do not is that they are bigs. That is not a name check — is_big is this file's own class function, it decides d_score's whole branch and recal_55's big hub, and the gate reused here is recal_64's own.",
+    "THE CLAIM. r64's floor pays a low-usage shooter for spacing, converting, holding the ball and not fouling — the whole of what a standstill WING specialist does, which is why its weight sums to 0.72 against the standard path's 1.26. A stretch four does all of that AND crashes the offensive glass, finishes at the rim, and carries a real share of the possessions. Adding exactly those three terms brings the big branch to 1.16, in line with the path it stands in for.",
+    "WHY 0.17 AND 0.10, and not one coefficient. On (orb + rim) alone the two subjects land almost exactly (114 against 56 is the 2.15 ratio the two targets need), but with no load term the floor cannot tell Anunoby '21 (volume 36) from Dorian Finney-Smith '21 (volume 7) and put them both on 65. The 0.10 on volume is what recal_51 called the load question the rate cannot ask; it pulls the pure bench spacers back three to four points and costs the subjects nothing.",
+    "REJECTED, and why. (1) An ADDITIVE stretch-big bonus scaled by 3pt: it lands both subjects but adds the same lump to men whose standard path is already high, sending Channing Frye '17 to 81 and Bertans '21 to 79 — above Ty Jerome '25's 82 pin, on 4.8 points a game. A floor lifts only where the pricing is actually wrong, which is why Schrempf '98 and Bertans '20 do not move at all. (2) Widening r64's floor for EVERYONE instead of branching: reaching Anunoby needs +23.7 on his floor while Snell '18 has +2.06 of headroom and Bowen '06 has +1.51; no coefficient on any shared term clears that. (3) A two-level dominance term, which is Hachimura's real shape (3pt 88 and mid 83): that is recal_88, and his own ruling declined it.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 198 of 10,000 cards move on OFF, every one of them a big inside r64's gate; DEF moves on zero; no attribute moves; and `npm run scout -- --base HEAD` reports zero rank flips touching the top 50 by OVR. All 92 standing anchors pass with mean |error| 0.26."
+  ]
+}

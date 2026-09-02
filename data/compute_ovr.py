@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 80
+PIPELINE_VERSION = 91
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -264,10 +264,34 @@ def o_score(p, trace=None):
     # they actually do: spacing, converting, not turning it over, not fouling. Volume scorers are
     # untouched by construction (their standard path is higher than the floor).
     if a['3pt'] >= 68 and a['volume'] < 55:
-        std = max(std, 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline'])
+        _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
+        # recal_91 (HIS RULINGS, verbatim: "Too low OFF 54. Should be mid 60s" for OG Anunoby '21,
+        # and "OFF should be low 60s, or high 60s. Not 55" for Rui Hachimura '26).
+        # THE STRETCH BIG GETS THE OTHER HALF OF THE FLOOR. r64 built this floor for the low-usage
+        # WING shooter — the Dort/Snell/Bowen class — and its four terms are the whole of what a
+        # standstill wing specialist does: space, convert, hold the ball, don't foul. Its weight sums
+        # to 0.72 against the standard path's 1.26, and that thinness is CORRECT for a wing, because
+        # there is nothing else to pay him for. The big who shoots was routed onto the same floor,
+        # and for him the same thinness is a 43% discount on work he actually does: he crashes the
+        # offensive glass, he finishes at the rim, and he carries a real share of the possessions.
+        # The big branch therefore adds exactly the three terms the wing branch drops — orb, rim and
+        # volume — bringing this branch's weight to 1.16, in line with the standard path it stands in
+        # for. It is the SIBLING of recal_55's big hub: same idea (a big's channel that the guard
+        # formula had no room for), same class function (is_big, which lives at the top of this file).
+        # NOT A NEW GATE: the branch reuses r64's own gate (3pt >= 68 and volume < 55) untouched, so
+        # the class is 212 cards of 10,000 and no card outside r64's class is touched at all.
+        # NOTHING ABOVE IS RE-WEIGHTED. The standard path, the dominance bonus, the big hub, the 0.93
+        # multiplier and OFF_TOP are all byte-identical — this is a max() against a taller floor, so
+        # a card whose standard path already exceeds it (Schrempf '98, Bertans '20) does not move.
+        # MEASURED: Anunoby '21 54 -> 64, Hachimura '26 55 -> 66, 198 cards move, max +17, every one
+        # of them inside r64's gate. The wing floor's own anchors are untouched BY CONSTRUCTION —
+        # Korver '15 58, Kerr '96 62, Snell '18 50, Bowen '06 45 are all perimeter, not bigs.
+        if is_big(p):
+            _fl += 0.17*(a['orb'] + a['rim']) + 0.10*a['volume']
+        std = max(std, _fl)
         if trace is not None:
-            _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
-            trace['offball_floor'] = dict(value=_fl, binding=std == _fl)
+            trace['offball_floor'] = dict(value=_fl, binding=std == _fl,
+                                          branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):
@@ -488,7 +512,7 @@ if _CARD:
         print(f"BIG HUB (recal_55, bigs at playvol >= 60): +{_ot['big_hub']:.3f}")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
-        print(f"OFF-BALL FLOOR (recal_64): {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+        print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
     _table(f"D_SCORE — the {_dt['branch']} branch", _dt['terms'])
     if _dt['branch'] == 'perimeter':

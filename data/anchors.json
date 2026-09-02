@@ -1,5 +1,32 @@
 [
  {
+  "card": "OG Anunoby '21",
+  "scale": "off",
+  "target": 65,
+  "tol": 2,
+  "round": 91,
+  "ruling": "Too low OFF 54. Should be mid 60s",
+  "note": "the stretch-big branch of r64's off-ball floor; 54 -> 64"
+ },
+ {
+  "card": "Rui Hachimura '26",
+  "scale": "off",
+  "target": 65,
+  "tol": 4,
+  "round": 91,
+  "ruling": "OFF should be low 60s, or high 60s. Not 55",
+  "note": "same branch, same round; 55 -> 66"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Rui Hachimura '26",
+  "below": "Tony Snell '18",
+  "round": 91,
+  "ruling": "OFF should be low 60s, or high 60s. Not 55",
+  "note": "the shooting big outranks the wing spacer — the claim of the round"
+ },
+ {
   "card": "Giannis Antetokounmpo '25",
   "scale": "off",
   "target": 99,

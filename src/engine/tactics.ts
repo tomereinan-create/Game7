@@ -132,6 +132,15 @@ export const DEFAULT_TACTICS: Tactics = {
  * has reversed direction; it is the most pool-sensitive tax we have, which is worth remembering
  * before anyone reads its wandering as instability in the tactic itself. All nine in band.
  * crash def glass reads -0.31, off the edge it sat exactly on at r86, and was again not touched.
+ * recal_91's stretch-big floor moved 198 o_ovrs and 195 OVRs, and carried 37 cards up across the
+ * harness's ovr>=55 line (7,526 -> 7,563), the pool again; crash def glass re-ratified .46 -> .68.
+ * THE THIRD TIME OF ASKING for this one tax, and the round it finally broke on is a small one:
+ * r86 recorded it sitting EXACTLY on the band edge at -0.30, r89 recorded it at -0.31 and left it,
+ * and thirty-seven new fives in the sample were enough to take its blind read to -0.18. The law was
+ * applied as written — the band broke, the tax moved to meet it, and NOTHING in the OVR chain was
+ * touched to hold a band up. .68 is chosen off the harness sweep for margin at BOTH edges (blind
+ * -0.35 against the -0.30 floor, oracle +0.54 against the +0.50 one); the oracle is what caps it,
+ * and it falls through +0.50 by about .78. Every other tax held its band untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -141,7 +150,7 @@ export const TAX = {
   scheme: 0.90,
   hunt: 3.60,
   crashOff: 0.42,
-  crashDef: 0.46,
+  crashDef: 0.68,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
