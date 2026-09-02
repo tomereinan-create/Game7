@@ -2417,10 +2417,17 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 
 /* ---- era banners on the map ---- */
 .era-band { position: absolute; width: 30%; pointer-events: none; }
-/* the my-team nudge, pinned beside the next opponent's node */
-.node-note { position: absolute; z-index: 5; max-width: 34%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
-.node-note.left { left: 2%; }
-.node-note.right { right: 2%; }
+/* The nudges pinned beside the next opponent's node — a change waiting in my team, stars to spend.
+   They stack in one column on the far side of the trail from the ticket and centre on it, so the
+   trail and the ticket's dials stay clear whether there is one of them or two. */
+.node-notes { position: absolute; z-index: 5; width: 34%; display: flex; flex-direction: column; gap: 6px; transform: translateY(-50%); }
+.node-notes.left { left: 2%; align-items: flex-start; }
+.node-notes.right { right: 2%; align-items: flex-end; }
+.node-note { max-width: 100%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.node-note i { font-style: normal; }
+.node-note .g { margin-right: 3px; }
+.node-note .d { margin: 0 3px; }
+.node-note .a { margin-left: 4px; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); }

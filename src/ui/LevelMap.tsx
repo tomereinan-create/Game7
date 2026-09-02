@@ -192,14 +192,29 @@ export function LevelMap({
             </i>
           </div>
         ))}
-        {teamNote && cur && onMyTeam ? (
-          <button
-            className={`node-note ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`}
-            style={{ top: yAt(cur - 1) - 6 }}
-            onClick={onMyTeam}
-          >
-            {teamNote} →
-          </button>
+        {/**
+         * HIS RULING: "Same as I have a change possible in my team, add a star notification that
+         * says that I have stars to spend(only if there is samething available to buy)". So the
+         * my-team nudge gets a twin: same shape, same corner, beside the NEXT ticket, and it asks
+         * the same question the header notice asks — `spendable`, not a balance. The change note
+         * is the death match's; this one belongs to every mode. When both are up they stack, on
+         * the far side of the trail from the ticket, centred on it.
+         */}
+        {cur && (spendable || (teamNote && onMyTeam)) ? (
+          <div className={`node-notes ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`} style={{ top: yAt(cur - 1) }}>
+            {spendable ? (
+              <button className="node-note" onClick={onStaff}>
+                {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
+                <i className="g">★</i>
+                {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
+              </button>
+            ) : null}
+            {teamNote && onMyTeam ? (
+              <button className="node-note" onClick={onMyTeam}>
+                {teamNote} →
+              </button>
+            ) : null}
+          </div>
         ) : null}
         {opponents.map((o) => {
           const level = o.round
