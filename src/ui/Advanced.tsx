@@ -110,10 +110,13 @@ const SECTIONS: Section[] = [
   {
     k: 'rimprot',
     title: 'rimprot',
+    // recal_81 took DBPM out of the rim composite (it carried BPM 2.0's team adjustment, and
+    // d_score already adds rimprot to perdef). The sidecar still records it at v[2] for the
+    // receipts; the panel does not, because this window lists what the number is MADE of.
+    // The reputation term survives — build_ratings.py still adds 0.25 * drep * height percentile.
     rows: (_p, v) => [
       { label: 'block %', value: n1(v[0]) },
       { label: 'height', value: ft(v[1]) },
-      { label: 'DBPM', value: n1(v[2]) },
       { label: 'defensive reputation (votes, decayed)', value: n1(v[3]) },
       { label: 'tracking defended FG% inside 6 ft', value: v[4] == null ? 'not tracked' : `${v[4] > 0 ? '+' : ''}${(100 * v[4]).toFixed(1)}%` },
     ],
