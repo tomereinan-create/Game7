@@ -1,0 +1,294 @@
+{
+  "round": 103,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Herb jones DEF way too low all seasons",
+  "title": "A WING IS SCORED AS A WING WHATEVER HIS SHOT DIET — the position rule yields to the card's own defensive shape, and the third and last place a listing decided a formula is closed",
+  "subject": "Herbert Jones '23",
+  "scale": "def",
+  "target": 91,
+  "tol": 4,
+  "before": 76,
+  "after": 91,
+  "pipeline_version": 105,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+      "label": "THE ROUND'S ONE CHANGE — the gap over which a listed big is graded as a wing",
+      "note": "perimdisrupt - drb; every genuine big in the pool is NEGATIVE on it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_gap = a\\['perimdisrupt'\\] - a\\['drb'\\]\\s*\\n\\s*return 1\\.0 - min\\(1\\.0, max\\(0\\.0, \\(_gap - POS_GAP_LO\\) / \\(POS_GAP_HI - POS_GAP_LO\\)\\)\\)",
+      "label": "the override itself, inside the position-big branch of d_bigness",
+      "note": "a position big is still a big BY DEFAULT; only his own sheet can argue otherwise"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if pos and \\('PG' in pos or 'SG' in pos\\) and not \\('C' in pos or 'PF' in pos\\): return 0\\.0",
+      "label": "the lifetime-guard branch, untouched — recal_72's rule is not reopened",
+      "note": "the leak r72 warned about is in the other direction and this round does not go near it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "return \\(a\\['rimprot'\\] >= 55 and a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\]\\)",
+      "label": "is_big itself is UNCHANGED — the class label, the big hub, the stretch-big floor and the OVR cap branch all still read it",
+      "note": "OFF therefore moves on ZERO cards, exactly as recal_93 arranged it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+      "label": "recal_99's deterrence ramp, untouched",
+      "note": "the three shot-diet defects are now closed in three separate places, all still standing"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+      "label": "recal_102's band anchors, untouched",
+      "note": "Herbert Jones lands at 91, below the 93 knee, so the band is the identity for him"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 105",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 103; it SHIPS as pipeline 105"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 105",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.40,\\s*\\n\\s*crashDef: 0\\.60,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — both glass taxes broke on their blind edges again",
+      "note": "crashOff .10 -> .40 and crashDef .48 -> .60"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Herbert Jones '22",
+      "scale": "def",
+      "op": "~",
+      "value": 90,
+      "tol": 1,
+      "label": "\"all seasons\" — 77 -> 90 (perimdisrupt 91 against drb 12, a gap of +79)"
+    },
+    {
+      "card": "Herbert Jones '24",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "79 -> 91 (gap +69)"
+    },
+    {
+      "card": "Herbert Jones '26",
+      "scale": "def",
+      "op": "~",
+      "value": 81,
+      "tol": 1,
+      "label": "74 -> 81 — the weakest of the four sheets (perdef 84, gap +54) and it lands lowest, which is the ramp doing its job rather than a flat switch"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "THE CONTROL THAT DECIDED THE QUANTITY. His perdef (98) is ABOVE his rimprot (84), the same side of that comparison as Jones — so a rimprot-vs-perdef test could not have told them apart. On perimdisrupt - drb he is -8 and Jones is +71. Untouched"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "the same trap and the same answer: perdef 97 over rimprot 76, but -74 on the gap. Untouched"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "a genuine big at -73: untouched"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "the DEF summit at -18: untouched"
+    },
+    {
+      "card": "Tim Duncan '03",
+      "scale": "def",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "the most negative card in the pool at -92: untouched"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "def",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "a big who rebounds and disrupts nothing, -53: untouched"
+    },
+    {
+      "card": "Andre Iguodala '14",
+      "scale": "def",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "recal_93's anchor. He is +36 on the gap but is NOT a position big (SG/SF/PF), so the override cannot reach him — held, as the dispatch required"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "same: +31 on the gap, SF-only, untouched"
+    },
+    {
+      "card": "Tony Allen '12",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "the wing the scout compared Jones to: already perimeter by the lifetime-guard branch, so nothing to fix"
+    },
+    {
+      "card": "Bruce Bowen '07",
+      "scale": "def",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "SF-only, falls through to the shape clauses, all of which fail: already perimeter"
+    },
+    {
+      "card": "Paul George '19",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "recal_72's OWN warning card — the one it said would fall to 84 if the position rule leaked. It does not leak: he is not a position big and reads 96 before and after"
+    },
+    {
+      "card": "Rui Hachimura '26",
+      "scale": "def",
+      "op": "~",
+      "value": 50,
+      "tol": 1,
+      "label": "a listed PF who really is one on this test (-19): untouched"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "off",
+      "op": "~",
+      "value": 36,
+      "tol": 1,
+      "label": "OFF moved on ZERO of 10,000 cards — is_big is untouched, so o_score is not in this round's path"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Herbert Jones '23",
+      "label": "the DEF summit still holds over him"
+    },
+    {
+      "scale": "def",
+      "above": "Draymond Green '16",
+      "below": "Herbert Jones '23",
+      "label": "and so does the anchored big whose shape is the mirror of his"
+    },
+    {
+      "scale": "def",
+      "above": "Herbert Jones '24",
+      "below": "Herbert Jones '26",
+      "label": "his own season order follows his sheets: the 96-perdef seasons above the 84 one"
+    },
+    {
+      "scale": "def",
+      "above": "Herbert Jones '23",
+      "below": "Bruce Bowen '07",
+      "label": "the best perimeter sheet in the pool now reads above a very good one, which it did not before"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 26,
+    "max_abs": 15,
+    "top": [
+      [
+        "Herbert Jones '23",
+        76,
+        91
+      ],
+      [
+        "Herbert Jones '22",
+        77,
+        90
+      ],
+      [
+        "Herbert Jones '24",
+        79,
+        91
+      ],
+      [
+        "Herbert Jones '26",
+        74,
+        81
+      ],
+      [
+        "Luc Mbah a Moute '17",
+        64,
+        70
+      ],
+      [
+        "Thaddeus Young '14",
+        56,
+        61
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '01",
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Dan Roundfield '80",
+      "Dan Roundfield '81",
+      "Dan Roundfield '82",
+      "Dwight Howard '09",
+      "Dwight Howard '10",
+      "Dwight Howard '11"
+    ]
+  },
+  "cost": [
+    "THE SCOUT'S DIAGNOSIS WAS WRONG AND THE ROUND SAYS SO. The shortlist put all four Jones cards on is_big's FIRST shape clause and proposed adding `rimprot >= perdef` to it. That clause ALREADY carries that test, it already fails for him (rimprot 65 against perdef 96), and it is never evaluated: `pos` is ['SF', 'PF'], so the POSITION branch returns 1.0 on the line above and no shape test runs. The proposed fix would have been a no-op. The defect is one layer up, in the position rule itself, and that is what this round changes.",
+    "NO NUMBER WAS GIVEN. \"Herb jones DEF way too low all seasons\" is directional; the orchestrator assumed 88 +-4 for '23. He lands on 91, inside that band, and the anchor is written at the landed value +-4. '22 and '24 land at 90 and 91, '26 at 81 on its weaker sheet.",
+    "WHY THE OBVIOUS QUANTITY WOULD NOT HAVE WORKED, and this is the round's real finding. The natural test is rim protection against perimeter defence - it is what clause 1 and recal_99's deterrence guard both use. It CANNOT separate Herbert Jones from two anchored genuine bigs: Dennis Rodman '90 (perdef 97 over rimprot 76, a difference of -21) and Draymond Green '16 (98 over 84, -14) sit on the same side of it as Jones '22 (-21) and Jones '26 (-15). Defensive rebounding is what separates them, and it separates them with a wide margin: Jones reads +79 / +71 / +69 / +54 on perimdisrupt - drb while every genuine big is negative - Duncan '03 -92, Rodman -74, Gobert -73, Sabonis -53, Garnett -40, Ben Wallace -18, Draymond -8. The gap between the highest big (-8) and the lowest Jones (+54) is sixty-two points, which is why a 30-to-60 ramp holds every anchor with room on both sides.",
+    "recal_72's WARNING IS NOT REOPENED. It hardened this rule and said 'Strict on both sides or the rule leaks', naming DeRozan, Korver, Maggette and Dunleavy as the cards that become bigs if the 'never PG/SG' half is dropped, and Paul George '19 as the card whose defence gets routed to rim protection he has not got. This round touches NEITHER half of the position test - it leaves the branch's condition exactly as it was and only changes what the branch RETURNS. All five named cards are unmoved, Paul George '19 included at 96 before and after, and none of them is a position big in the first place.",
+    "THE THIRD AND LAST OF THE SHOT-DIET DEFECTS. recal_93 fixed the middle shape clause (rim and 3pt deciding the branch), recal_99 fixed the deterrence clause (which still cliffed for shooters), and this round fixes the position branch. All three are the same complaint - a man's OFFENSIVE profile, or a listing derived from it, deciding which defensive formula grades him - and all three are now ramps keyed on defensive evidence. What remains a hard switch is the LIFETIME-GUARD branch (a PG/SG who is never listed at PF or C returns 0.0 with no shape test), and it is the next place to look if he complains about a guard-listed big.",
+    "THE TACTICS BANDS THIS ROUND BROKE. Both glass taxes went shallow on their BLIND edges again - crash off -0.22 and crash def -0.27 against a -0.30 ceiling - and were re-ratified through the harness: crashOff .10 -> .40, crashDef .48 -> .60. Chosen at the point of greatest margin (off: blind -0.41 / oracle +0.64, feasible .30 to ~.75; def: blind -0.36 / oracle +0.57, feasible .55 to ~.85). That is the third round running in which this pair has moved together, and the second in which they moved in the same direction as each other but the OPPOSITE direction to the round before. A round that moves any DEF at all should budget for re-ratifying them.",
+    "THE ROUND IS 103 AND THE PIPELINE IS 105. recal_99 and recal_102 took 103 and 104 immediately below this commit."
+  ],
+  "notes": [
+    "WHAT THE RULING IS ABOUT, in one line. Herbert Jones has the best perimeter defensive sheet in the pool - perdef 96, perimdisrupt 87 - and was graded by the BIG mix, where rim protection 65 and defensive rebounding 16 carry 0.57 of the weight and perimeter disruption carries 0.00. His perimeter vector reads 80.2 against a big vector of 67.4. He printed DEF 76.",
+    "WHY A LISTING SHOULD YIELD TO A SHEET. The position rule is a good prior and stays one: _POS is the union of every position Basketball-Reference ever recorded, so it is stable, cheap and usually right. But it is a PRIOR, and one season logged at power forward is thin evidence against four seasons of a man's own defensive numbers. The override does not overrule the listing on a whim - it requires the card to disagree with it by a wide margin on the single act that is least ambiguous about which job a defender is doing.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 26 of 10,000 cards move on DEF, mean +4.00, max +15; OVR follows on 24; OFF moves on ZERO and no attribute moves. The top 12 by DEF is identical name for name and the top 50 by OVR has no entrant, no leaver, no rank flip and not one member whose OVR changed. All 113 anchors pass.",
+    "THE OTHER MOVERS ARE THE SAME ARCHETYPE, found by the same test and not by a name: Luc Mbah a Moute '17 (64 -> 70), Thaddeus Young '14 and '18, OG Anunoby '25, Gerald Wallace - wings a box score once listed at power forward, every one of them lifted by being graded on the job he actually did.",
+    "NOTHING IS HALF-APPLIED. is_big is untouched, so Herbert Jones is still LABELLED a big on his card, still takes the big's o_ovr+40 cap branch and still sits in the bigs' marginal percentile class. That is the same seam recal_93 opened and named, and it is the price of keeping this round to the defect the ruling is about."
+  ]
+}

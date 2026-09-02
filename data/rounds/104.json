@@ -1,0 +1,251 @@
+{
+  "round": 104,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Change OVR to raw = max(0.5 * o_ovr + 0.5 * d_ovr,  0.70 * o_ovr + 0.30 * d_ovr)",
+  "title": "THE DEFENCE-LED READING OF OVR IS AN EVEN SPLIT — one line, 5,331 cards, and every one of them moves down or not at all",
+  "subject": "Ben Wallace '04",
+  "scale": "ovr",
+  "target": 63,
+  "tol": 1,
+  "before": 70,
+  "after": 63,
+  "pipeline_version": 106,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "raw = max\\(0\\.5 \\* p\\['o_ovr'\\] \\+ 0\\.5 \\* p\\['d_ovr'\\], 0\\.70 \\* p\\['o_ovr'\\] \\+ 0\\.30 \\* p\\['d_ovr'\\]\\)",
+      "label": "THE ROUND — his ruling applied verbatim, and it is the whole of the change",
+      "note": "0.4/0.6 -> 0.5/0.5 on the defence-led reading; the offence-led one is untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ \\(40 if is_big\\(p\\) else 10\\), 0\\.85 \\* p\\['d_ovr'\\]\\)",
+      "label": "the cap is UNCHANGED — recal_93's and recal_99's work stands",
+      "note": "it is why Kawhi Leonard '14 holds his pin: the cap, not the blend, decides him"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "p\\['ovr'\\] = int\\(min\\(99, cap, round\\(raw\\)\\)\\)",
+      "label": "and so are the 99 clamp and the shape recal_83 ruled",
+      "note": "\"the bigger of two role readings\" survives; only the defensive reading's weight moved"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "o_score untouched — OFF moves on ZERO cards",
+      "note": "asserted by construction and measured: 0 movers on o_ovr"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+      "label": "recal_103's position override, untouched — DEF moves on ZERO cards",
+      "note": "d_score is not in this round's path at all"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 106",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 104; it SHIPS as pipeline 106"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 106",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "scheme: 0\\.80,\\s*\\n\\s*hunt: 3\\.62,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — three taxes broke on the largest OVR move any round has made",
+      "note": "scheme .60 -> .80, hunt 3.50 -> 3.62, crashDef .60 -> .80"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Kawhi Leonard '14",
+      "scale": "ovr",
+      "op": "~",
+      "value": 80,
+      "tol": 2,
+      "label": "recal_93's pin HOLDS, against the dispatch's expectation. His blend falls 83.6 -> 80.5, but the CAP (81.6) was the binding term all along, so he still reads 80. The cap fix is why this pin survives the blend change"
+    },
+    {
+      "card": "Ben Wallace '08",
+      "scale": "ovr",
+      "op": "~",
+      "value": 56,
+      "tol": 1,
+      "label": "SUPERSEDED (recal_99's ovr 64 +-2): the biggest drop on the board, -8. o 18 against d 95 is the widest gap there is"
+    },
+    {
+      "card": "Caldwell Jones '80",
+      "scale": "ovr",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "SUPERSEDED (recal_99's ovr 65 +-2): -8"
+    },
+    {
+      "card": "Ben Wallace '07",
+      "scale": "ovr",
+      "op": "~",
+      "value": 60,
+      "tol": 1,
+      "label": "SUPERSEDED (recal_99's ovr 66 +-2): -7. He now reads BELOW the 61 he printed before recal_99 ran — see COST, this is the one a reader will trip over"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "ovr",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "77 -> 73 (o 54, d 92): the defence-first class, priced by the new split"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "ovr",
+      "op": "~",
+      "value": 77,
+      "tol": 1,
+      "label": "81 -> 77 (o 57, d 97)"
+    },
+    {
+      "card": "Tony Allen '12",
+      "scale": "ovr",
+      "op": "~",
+      "value": 66,
+      "tol": 1,
+      "label": "71 -> 66 (o 42, d 91)"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "ovr",
+      "op": "~",
+      "value": 64,
+      "tol": 1,
+      "label": "the card recal_103 just lifted, one commit below: 69 -> 64. His DEF is untouched at 91; only the blend moved"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "ovr",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's card: o 98 = d 98, so both readings agree and he cannot move. UNCHANGED"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "offence-led (o 99 over d 91), so his reading is the 0.70/0.30 one and is untouched"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "the same, and the strongest case for it: o 99 against d 73"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "ovr",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "o 94 and d 97 are close, so 0.1 x (d - o) is 0.3 and he does not move"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "and OFF on ZERO — this round touches one line and it is downstream of both"
+    }
+  ],
+  "order": [
+    {
+      "scale": "ovr",
+      "above": "Michael Jordan '89",
+      "below": "Ben Wallace '04",
+      "label": "the two-way summit pulls further clear of the defensive specialist, which is what the ruling asks for"
+    },
+    {
+      "scale": "ovr",
+      "above": "Kawhi Leonard '17",
+      "below": "Kawhi Leonard '14",
+      "label": "the peak card still reads above the young one"
+    },
+    {
+      "scale": "ovr",
+      "above": "Draymond Green '16",
+      "below": "Rudy Gobert '19",
+      "label": "the order inside the defence-first class is preserved: both fall, neither passes the other"
+    },
+    {
+      "scale": "ovr",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Herbert Jones '23",
+      "label": "and the summit is untouched"
+    }
+  ],
+  "movers": {
+    "scale": "ovr",
+    "count": 5331,
+    "max_abs": 8,
+    "top": [
+      ["Ben Wallace '08", 64, 56],
+      ["Caldwell Jones '80", 65, 57],
+      ["Harvey Catchings '82", 60, 52],
+      ["Jon Koncak '92", 58, 50],
+      ["Ben Wallace '02", 73, 66],
+      ["Ben Wallace '01", 71, 64],
+      ["Ben Wallace '03", 71, 64],
+      ["Ben Wallace '05", 71, 64],
+      ["Ben Wallace '00", 70, 63],
+      ["Ben Wallace '04", 70, 63]
+    ]
+  },
+  "top12": {
+    "scale": "ovr",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "LeBron James '13",
+      "Michael Jordan '89",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '22",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '11"
+    ]
+  },
+  "cost": [
+    "THIS ROUND MOVES THE THREE NUMBERS recal_99 LANDED TWO ROUNDS AGO, and he accepted recal_99 before he issued this ruling, so he may not have connected them. Ben Wallace '07 66 -> 60, Ben Wallace '08 64 -> 56, Caldwell Jones '80 65 -> 57. All three pins are superseded by this ruling and moved to anchors_superseded.json quoting it. BE PRECISE ABOUT WHAT DID AND DID NOT SURVIVE: recal_99 fixed a real defect - those cards were CLIPPED by the flat `o_ovr + 40` cap, Ben Wallace '07 printing 61 against a blend of 66.6 - and that fix still stands and no longer touches him at all (his cap is now 83.3). What changed is the BLEND the targets were read off: they came from the scout measuring the 0.4/0.6 reading, and under 0.5/0.5 the same cards blend seven to eight points lower. The round is not reversed; it is re-priced.",
+    "THE ONE A READER WILL TRIP OVER: Ben Wallace '07 now reads 60, which is BELOW the 61 he printed before recal_99 ran at all. That is not a bug and not a round undoing itself - the cap that held him at 61 is gone, and the blend beneath it has since been re-weighted by a later ruling. Both rulings are his and the later one wins. If 60 is not what he meant for that card, the lever is the cap or a fresh target, not this line.",
+    "KAWHI LEONARD '14 HOLDS, against the dispatch's expectation that he would be superseded. His blend falls 83.6 -> 80.5 but the CAP was binding at 81.6, so he still reads 80 and his recal_93 pin (80 +-2) survives untouched. It is worth naming why: recal_93 and recal_99 loosened that cap, and a loosened cap is what lets a card ride its blend down without the pin breaking.",
+    "THE LARGEST OVR MOVE ANY ROUND HAS MADE: 5,331 of 10,000 cards, every one of them DOWN or unchanged, mean -2.53, max -8. That is guaranteed by the arithmetic rather than observed: the two branches cross where o_ovr == d_ovr, so which reading wins is unchanged for every card, and below the crossing the reading falls by exactly 0.1 x (d_ovr - o_ovr). Distribution: -1 on 1,737 cards, -2 on 1,250, -3 on 1,021, -4 on 687, -5 on 432, -6 on 144, -7 on 56, -8 on 4. OFF, DEF and every attribute move on ZERO cards.",
+    "THE TOP OF THE BOARD IS UNTOUCHED and that is the ruling working as intended. The top 12 by OVR is identical name for name, because every card in it is either offence-led (Giannis, Jokic) or balanced (Michael Jordan '89 at o 98 = d 98, who cannot move at all). Three cards enter the top 50 and three leave - Kevin Durant '14 and '16 and Kobe Bryant '07 in, Anthony Davis '18 and '19 and Karl Malone '96 out - and 11 of the original 50 changed OVR. Every one of those is a two-way or offence-led card rising past a defence-first one, which is the shape the ruling asks for.",
+    "THE CAMPAIGN LADDER IS UNMOVED, checked because OVR drives both the player's pool and the opponents' fives. `npm run balance` before and after: The League median bare 62.6% -> 65.1%, staffed 96.3% -> 96.1%; The Champions 20.0/72.2 -> 20.7/72.6; All-Time 7.5/41.5 -> 7.6/42.2; The Customs 1.2/19.5 -> 1.1/19.4. Last level of each tier within a point. The ramp is intact because the change is close to uniform on both sides of every matchup - it lowers the player's defensive specialists and the opponents' alike.",
+    "THE TACTICS BANDS THIS ROUND BROKE - THREE OF THEM, on the largest sample move the harness has seen. The pool is PLAYERS with ovr >= 55 and this round pushed 5,331 OVRs down, so the sample shrank hard. scheme (blind -0.25), hunt (-0.26) and crash def glass (-0.26) all went shallow against the -0.30 ceiling and were re-ratified through the harness: scheme .60 -> .80, hunt 3.50 -> 3.62, crashDef .60 -> .80. crash off glass held at .40. RECORD: hunt's feasible window here is about 3.57 to 3.73 - sixteen hundredths - and it has now moved in four of the last five rounds; scheme's is .62 to 1.16 and crashDef's .66 to .96, both comfortable by comparison.",
+    "THE ROUND IS 104 AND THE PIPELINE IS 106."
+  ],
+  "notes": [
+    "HIS RULING IS THE WHOLE ROUND, applied verbatim and nothing else touched. recal_83's shape - \"OVR = bigger of ((OFF*0.7 + DEF*0.3), (OFF*0.4 + DEF* 0.6))\" - survives; what changed is the weight of the defence-led reading, from 0.4/0.6 to 0.5/0.5. The offence-led reading, the offence cap and the 99 clamp are byte-identical.",
+    "WHY NOTHING ABOVE THE CROSSING MOVES. The two readings are equal exactly where o_ovr == d_ovr, both before and after, so no card changes which branch decides it. An offence-led card (o > d) is read by 0.70/0.30 in both versions and cannot move. A balanced card cannot move either. Only the defence-led half of the board is repriced, and it is repriced by a quantity that is zero at the crossing and grows with the gap - which is why the biggest drops are the men with almost no offence at all.",
+    "MEASURED BEFORE APPLYING: OVR moves on 5,331 cards, all down, max -8; OFF and DEF on ZERO; no attribute moves; the top 12 by OVR is identical. All 110 anchors pass after the three this ruling supersedes are moved out.",
+    "THE CLASS THIS IS ABOUT, in one row: Ben Wallace's nine seasons all fall six or seven, Rudy Gobert '19 77 -> 73, Draymond Green '16 81 -> 77, Tony Allen '12 71 -> 66, Herbert Jones '23 69 -> 64 one commit after recal_103 lifted his DEF to 91. A defensive specialist is now worth half his defence rather than three fifths of it, and a two-way star is worth what he always was."
+  ]
+}

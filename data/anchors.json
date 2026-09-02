@@ -1,5 +1,14 @@
 [
  {
+  "card": "Herbert Jones '23",
+  "scale": "def",
+  "target": 91,
+  "tol": 4,
+  "round": 103,
+  "ruling": "Herb jones DEF way too low all seasons",
+  "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 88 +-4 and 91 is what the fix lands. The position branch of d_bigness now yields to the card own defensive shape: a listed big whose perimeter disruption runs far ahead of his defensive rebounding is graded as the wing he is. 76 -> 91."
+ },
+ {
   "card": "Michael Jordan '89",
   "scale": "off",
   "target": 99,
@@ -34,33 +43,6 @@
   "round": 99,
   "ruling": "Agree with 1-7",
   "note": "same gate; volume 7, orb 44"
- },
- {
-  "card": "Ben Wallace '07",
-  "scale": "ovr",
-  "target": 66,
-  "tol": 2,
-  "round": 99,
-  "ruling": "Agree with 1-7",
-  "note": "the OVR cap's big branch gets r93's elite-defence floor: max(o+40, 0.85*d)"
- },
- {
-  "card": "Ben Wallace '08",
-  "scale": "ovr",
-  "target": 64,
-  "tol": 2,
-  "round": 99,
-  "ruling": "Agree with 1-7",
-  "note": "same"
- },
- {
-  "card": "Caldwell Jones '80",
-  "scale": "ovr",
-  "target": 65,
-  "tol": 2,
-  "round": 99,
-  "ruling": "Agree with 1-7",
-  "note": "same"
  },
  {
   "card": "Karl Malone '99",
