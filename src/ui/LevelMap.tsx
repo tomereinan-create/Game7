@@ -96,10 +96,15 @@ export function LevelMap({
   }, [cur, opponents])
   /** How far ahead the map reveals: what you have cleared, and the one you are on. */
   const revealed = (state: string) => state !== 'locked'
-  /** The ticket stub: team abbreviation (with year off the home era) and the record. */
+  /**
+   * The ticket stub: team abbreviation (with year off the home era) and the record — or, for a
+   * five that never played a season, what it is instead ("all-time", "the 1990s"). Without the
+   * tag every All-Time and Customs ticket read as a bare three letters.
+   */
   const stub = (o: Opponent) => {
     const ab = o.season && o.era !== eras[0]?.name ? `'${String(o.season).slice(2)} ${o.ab ?? ''}` : (o.ab ?? '')
-    return o.record ? `${ab} ${o.record}` : ab
+    const line = o.record ?? o.tag
+    return line ? `${ab} ${line}` : ab
   }
   const nowRef = useRef<HTMLButtonElement>(null)
   // Destructive actions ask IN the game (browser popups never render on his phone).

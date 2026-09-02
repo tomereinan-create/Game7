@@ -86,7 +86,8 @@ export const ACHIEVEMENTS: AchDef[] = [
   { id: 44, key: 'ring-thief', name: 'Ring Thief', desc: 'Beat a champion team as an underdog', tier: 'rare' },
   { id: 45, key: 'dynasty-denied', name: 'Dynasty Denied', desc: 'Sweep a champion team', tier: 'rare' },
   { id: 46, key: 'the-gauntlet', name: 'The Gauntlet', desc: 'Clear 30 levels of a campaign', tier: 'common' },
-  { id: 47, key: 'marathon', name: 'Marathon', desc: 'Finish the 120-level campaign', tier: 'rare' },
+  // the ladder's length is derived now (his ruling made the tiers different sizes), so the copy reads it
+  { id: 47, key: 'marathon', name: 'Marathon', desc: `Finish the ${ROUNDS}-level campaign`, tier: 'rare' },
   { id: 48, key: 'flawless', name: 'Flawless', desc: 'Finish a campaign without losing a series', tier: 'legendary' },
   { id: 49, key: 'iron-five', name: 'Iron Five', desc: 'Win a death-match series owning nothing in the Survival branch', tier: 'common' },
   { id: 50, key: 'speedrun', name: 'Speedrun', desc: 'Clear 30 levels in under 45 minutes', tier: 'rare' },

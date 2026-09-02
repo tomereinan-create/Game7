@@ -805,14 +805,14 @@ export function Draft({
       <div className="card" style={{ paddingBottom: 6 }}>
         <div className="card-head">
           <span className="label">
-            Level {opponent.round} opponent{opponent.record ? ` · ${opponent.record}` : ''}
+            Level {opponent.round} opponent{opponent.record ?? opponent.tag ? ` · ${opponent.record ?? opponent.tag}` : ''}
           </span>
           <span className="cap">Season lines</span>
         </div>
         <div className="opp-name">{opponent.team}</div>
         {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         <div className="opp-line">
-          {opponent.record ? `${opponent.record} · ` : ''}{user ? '' : <>vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}</>}
+          {opponent.record ?? opponent.tag ? `${opponent.record ?? opponent.tag} · ` : ''}{user ? '' :<>vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}</>}
           {theirs.net > 0 ? '+' : ''}
           {theirs.net.toFixed(1)}
         </div>

@@ -203,9 +203,16 @@ export interface Wallet {
   stars: number[]
   spent: number
   nodes: Partial<Record<NodeId, number>>
+  /**
+   * Stars earned on a LADDER THAT NO LONGER EXISTS, kept as credit. When the campaign was rebuilt
+   * around his ruling the levels past the first thirty became different opponents, so their stars
+   * could not stay on the map — but they were won, and they had already been spent in the staff
+   * tree. Carrying them here is what keeps a bought node bought. Nothing else adds to it.
+   */
+  credit?: number
 }
 
-export const earned = (w: Wallet) => w.stars.reduce((a, b) => a + b, 0)
+export const earned = (w: Wallet) => w.stars.reduce((a, b) => a + b, 0) + (w.credit ?? 0)
 export const balance = (w: Wallet) => earned(w) - w.spent
 /** Ranks held in a node, 0 if untouched. */
 export const rank = (w: Wallet, id: NodeId) => Math.min(w.nodes[id] ?? 0, NODE[id]?.ranks ?? 0)

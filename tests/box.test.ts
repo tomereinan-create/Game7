@@ -105,8 +105,19 @@ describe('box scores — shape follows the score and the identity', () => {
   })
 
   it('ratings anchored empirically: the median in-game opponent sits 45–58 on both dials; opponent changes never move a dial', () => {
-    // ten levels spread across the whole 120-level campaign (the first ten are the league's worst by construction)
-    const all = (CAMPAIGNS as unknown as { levels: Opponent[] }[]).flatMap((t) => t.levels)
+    /**
+     * Ten levels spread across the campaign's REAL TEAM-SEASONS — tier 1 (last season's thirty)
+     * and tier 2 (the champions), 90 levels, the first ten of which are the league's worst by
+     * construction. It used to be the whole ladder, which was 120 real team-seasons and so the
+     * same thing. His ruling put two tiers of CONSTRUCTED fives on top (the all-time franchise
+     * teams and the custom sides), and those are not what an anchor band describes: the all-time
+     * Suns are five franchise summits who never shared a floor, and they read OFF 99 by design.
+     * Folding them in moved the sample median to OFF 69 and would have had this band re-derived
+     * to describe a fiction. The band is recal_94's and is untouched; the SAMPLE is back to the
+     * population it always meant — the real fives the wheel and the anchors were frozen on.
+     */
+    const tiers = CAMPAIGNS as unknown as { id: string; levels: Opponent[] }[]
+    const all = tiers.filter((t) => t.id === 'c2026' || t.id === 'champs').flatMap((t) => t.levels)
     const sample = Array.from({ length: 10 }, (_, i) => all[Math.floor((i * (all.length - 1)) / 9)]).map((o) => ratings100(o.players))
     const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
     const mo = med(sample.map((s) => s.off))

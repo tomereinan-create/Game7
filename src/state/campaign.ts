@@ -64,7 +64,29 @@ export interface Progress {
   tactics: Tactics
   /** Death match: the sixth man, resting. He does not play, and resting heals (The bench node). */
   bench: string | null
+  /** Which shape of the ladder this save was written against. See LADDER below. */
+  ladder?: number
+  /** Stars won on an older ladder whose levels are gone. Spendable, but not cleared levels. */
+  credit?: number
 }
+
+/**
+ * THE LADDER'S VERSION. 1 was the four era blocks of thirty (last season, the 2020s, the 2010s,
+ * the 2000s). 2 is his ruling — "After you finish the 30 teams, you start going by champions or
+ * other elite teams until these are finished. Then you start playing vs all time "Team"…" — which
+ * kept the first thirty EXACTLY and replaced everything above them.
+ *
+ * WHAT A SAVE FROM LADDER 1 KEEPS, and this is the whole of it: levels 1–30 are the same thirty
+ * teams in the same order, so their stars stay where they are, untouched. Levels 31 and up were
+ * '00s / '10s / '20s teams and are now champions, all-time franchise fives and custom sides — a
+ * star there was won against an opponent that is no longer at that address, so THOSE LEVELS GO
+ * BACK TO UNCLEARED and their stars move to `credit`, which still counts as earned. That is the
+ * one thing this migration cannot do honestly: a run past level 30 loses its progress on the map.
+ * It does not lose the stars, the tree, or anything bought with them.
+ */
+const LADDER = 2
+/** Levels the two ladders share, exactly: tier 1 is byte-for-byte the same thirty. */
+const LADDER1_KEPT = 30
 
 /** What a series cost each man who played it: one point of durability per game. */
 export function applyWear(wear: Record<string, number>, five: string[], games: number, dur: (name: string) => number): Record<string, number> {
@@ -96,6 +118,8 @@ const fresh = (): Progress => ({
   subsUsed: 0,
   tactics: DEFAULT_TACTICS,
   bench: null,
+  ladder: LADDER,
+  credit: 0,
 })
 
 /**
@@ -122,6 +146,16 @@ export function loadProgress(m: CampaignMode): Progress {
     const p = JSON.parse(raw) as Partial<Progress>
     const stars = Array.isArray(p.stars) ? p.stars.slice(0, ROUNDS) : []
     while (stars.length < ROUNDS) stars.push(0)
+    // The ladder migration (see LADDER above): everything past the shared first thirty becomes
+    // credit, and its levels go back to uncleared. A save already on this ladder passes straight
+    // through, and a run inside the first thirty — his, on level 5 — never notices this ran.
+    let credit = typeof p.credit === 'number' ? p.credit : 0
+    if ((typeof p.ladder === 'number' ? p.ladder : 1) < LADDER) {
+      for (let i = LADDER1_KEPT; i < stars.length; i++) {
+        credit += stars[i]
+        stars[i] = 0
+      }
+    }
     // A wallet saved before the tree was ranked can hold nodes that no longer exist.
     return migrate({
       coach: p.coach ?? null,
@@ -142,6 +176,8 @@ export function loadProgress(m: CampaignMode): Progress {
         Array.isArray(p.roster) ? p.roster : null,
       ),
       bench: typeof p.bench === 'string' ? p.bench : null,
+      ladder: LADDER,
+      credit,
     })
   } catch {
     return fresh()
@@ -162,7 +198,7 @@ export function resetProgress(m: CampaignMode): Progress {
   return p
 }
 
-/** The level to play next (1-based); null when all thirty are cleared. */
+/** The level to play next (1-based); null when the whole ladder is cleared. */
 export function currentLevel(p: Progress): number | null {
   const i = p.stars.findIndex((s) => s === 0)
   return i === -1 ? null : i + 1
@@ -174,7 +210,8 @@ export function playable(p: Progress, level: number): boolean {
   return p.stars[level - 1] > 0 || level === cur
 }
 
-export const totalStars = (p: Progress) => p.stars.reduce((a, b) => a + b, 0)
+/** Every star the campaign has earned: the map's, plus any carried off a retired ladder. */
+export const totalStars = (p: Progress) => p.stars.reduce((a, b) => a + b, 0) + (p.credit ?? 0)
 
 /** Deterministic per attempt: same level replayed spins a different wheel. */
 export function levelSeed(p: Progress, level: number): number {
