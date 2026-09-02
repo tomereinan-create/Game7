@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 97   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 98   # printed every run and written to src/data/pipeline.json
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -210,7 +210,15 @@ def score_season(r, P):
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
     ID  = ID + 0.25*(r['drep']*hp)   # big-man defensive votes reinforce rim protection
-    ID  = min(ID, 1.0); PD = min(PD, 1.0)
+    # recal_97 (HIS RULING, verbatim: "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting").
+    # THE PD CLAMP IS GONE. PD was clamped to 1.0 BEFORE Pvot percentiled it, and a perfect sheet
+    # overshoots 1.0 by construction: full votes at height <= 6'8" pay 0.453 x 1.2 = 0.5436, the
+    # height term pays its whole 0.309, and a top DBPM percentile pays ~0.237 - which is 1.0896, the
+    # highest sheet in the pool and Michael Jordan '89's exactly. 109 voted cards (8.6% of the voted
+    # pool) sat on that clamp, so the percentile whose entire job is to separate them could not see
+    # a single point of difference between the best perimeter defender ever measured and the 109th.
+    # ID keeps its clamp: recal_92 measured removing it and it moves nobody rimprot cares about.
+    ID  = min(ID, 1.0)
     TAL = 0.72*P['bpm'](r['bpm']) + 0.28*P['usg'](r['usg'])   # dominance x volume: kills the low-usage-specialist BPM bias
     # provenance: which OUT path won, and the raw defensive components (display only)
     path = 2 if (r['x3pa_per_100'] or 0) < 2 else (1 if eye > gun else 0)
@@ -332,7 +340,11 @@ for yr, rows in seasons.items():
     # max recorded evidence reaches the max. NO-VOTE players keep their shrunk composite, capped at 54
     # (percentiling the shrunk clump re-inflated Luka/Gobert; stray vote shares don't buy the floor).
     tmp = [(r, score_season(r, P)) for r in rows]
-    Pvot = pctile([t[1][3] for t in tmp if t[0]['drep'] >= 0.25])
+    # recal_97: pctile -> pctile_top, the SAME correction recal_53 made for rim protection and never
+    # made here. pctile leaves its maximum at (n-1)/n, so the top of the voted band was unreachable
+    # by arithmetic: the best-measured voted defender of a season could not be read as the best one.
+    # pctile_top maps the maximum to exactly 1.0. (Read pctile_top's own docstring - it says this.)
+    Pvot = pctile_top([t[1][3] for t in tmp if t[0]['drep'] >= 0.25])
     # two-stage deterrent scale: a real rim protector (composite >= RIM_GATE) is percentiled WITHIN that
     # class onto 55-99; everyone below caps at 54, so tall men with decent blocks stop riding global
     # percentiles into the high 80s. The anchor term sharpens with it (protection scales anchor/99).
@@ -456,7 +468,12 @@ for yr, rows in seasons.items():
                 d_meas = (d_card - 1.0) / 98.0                                 # card space -> the 0..1 space this branch works in
                 wm = 0.70 * _targeting_weight(r['name']) * _sample_weight(r['name'])   # hunted men, and thin samples, lean back on the composite
                 novote = min(0.84, (1 - wm)*novote + wm*d_meas)
-        PD2 = (1 - wv) * novote + wv * (0.55 + 0.44 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)
+        # recal_97: the band's own top, 0.44 -> 0.45. With 0.44 a FULL percentile mapped to 0.99, i.e.
+        # card 98.02 - so 99 was not merely hard to reach on perdef, it did not exist. The band now
+        # spans exactly 55 to 99: a perfect untracked sheet (full votes, DBPM at the top of its
+        # season, height inside the 6'3"-6'8" band) reads 99 in ANY era, which is the ruling.
+        # The floor is untouched at 0.55, so the no-vote cap of 54 and its 55 handoff still meet.
+        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)
         out_players[(r['pid'], yr)] = dict(

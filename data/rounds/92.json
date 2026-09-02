@@ -62,9 +62,9 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.75",
+      "pattern": "crashDef: 0\\.\\d+",
       "label": "crash def glass re-ratified through the harness on the MERGED r91+r92 pool",
-      "note": ".68 -> .75 (blind had gone to -0.29 against a -0.30 floor)"
+      "note": "was `crashDef: 0.75` (r92 re-ratified .68 -> .75 on the merged r91+r92 pool). recal_93 then took it to .40 and recal_97 to .60, so this line now proves the tax EXISTS and was ratified, not that it still holds r92's number — the Deviation Tax Law moves it whenever the pool moves, which means a receipt that pins its value is a receipt built to break."
     },
     {
       "file": "src/engine/tactics.ts",
@@ -208,9 +208,9 @@
       "card": "Chris Paul '09",
       "scale": "attr:perdef",
       "op": "~",
-      "value": 88,
+      "value": 91,
       "tol": 1,
-      "label": "pre-tracking, so nothing in this round can reach him"
+      "label": "pre-tracking, so nothing in RECAL_92 could reach him — and nothing did. Re-read at 91 after recal_97 (\"This is 99 per def...\"), which lifted every full-vote sheet: his drep is 1.00 and his DBPM percentile 0.996, so he rose 88 -> 91 with Jordan. His recal_55 anchor moved to anchors_superseded.json in that round, PENDING TOMER."
     },
     {
       "card": "Stephen Curry '16",
@@ -344,7 +344,8 @@
     "The reliability constants in TRK_RHO are MEASURED, not chosen: re-derive them from data/tracking_defense.csv if the file grows. Less Than 6Ft (0.558) and Greater Than 15Ft (0.140) are recorded in the comment but unused — rimprot reads the rim series as a within-season percentile, not through _abs_perdef, so applying rho there is a separate round.",
     "recal_12's FULL_SAMPLE = 350, recal_20's targeting weight and the 0.70 blend weight are all UNCHANGED. The hypothesis handed to this round was that one of those was inflating Mitchell; measured, they were not — his blend weight of 0.514 over a d_card of 80.2 supplied +14 of his 76, and the floor supplied the last +10 on top of a blend that read 66.",
     "recal_76 and recal_81 stay closed: no team-defence term and no DBPM term was reopened in either attribute. The idc provenance row still PRINTS drep and dbpm; they are display leftovers, not inputs.",
-    "MERGE OF RECORD (round 92 rebased onto origin/main 9e25545, which carries recal_91 fe76ee2 plus two UI merges). Resolution: data/build_ratings.py = 92's (91 only bumped its version line); data/compute_ovr.py = 91's stretch-big branch with PIPELINE_VERSION set to 92; anchors.json / anchors_superseded.json rebuilt as the true UNION off origin/main rather than text-merged (91's OG Anunoby '21 off 65+-2, Rui Hachimura '26 off 65+-4 and the Hachimura >= Snell order pin all kept, 92's two added, 92's two supersessions applied); every data file REGENERATED from the merged code, public/provenance.json included. THE TWO ROUNDS DO NOT INTERACT: measured against origin/main, round 92 moves OFF on ZERO cards and 91's 198 OFF movers are untouched, while 92's DEF/OVR footprint is identical to what it measured pre-merge (2,458 / 1,937). The merged table reads 95 anchors, 0 failing, mean |error| 0.31 — Anunoby 64 (-1), Hachimura 66 (+1), Mitchell 59 (+0), McHale 91 (+2)."
+    "MERGE OF RECORD (round 92 rebased onto origin/main 9e25545, which carries recal_91 fe76ee2 plus two UI merges). Resolution: data/build_ratings.py = 92's (91 only bumped its version line); data/compute_ovr.py = 91's stretch-big branch with PIPELINE_VERSION set to 92; anchors.json / anchors_superseded.json rebuilt as the true UNION off origin/main rather than text-merged (91's OG Anunoby '21 off 65+-2, Rui Hachimura '26 off 65+-4 and the Hachimura >= Snell order pin all kept, 92's two added, 92's two supersessions applied); every data file REGENERATED from the merged code, public/provenance.json included. THE TWO ROUNDS DO NOT INTERACT: measured against origin/main, round 92 moves OFF on ZERO cards and 91's 198 OFF movers are untouched, while 92's DEF/OVR footprint is identical to what it measured pre-merge (2,458 / 1,937). The merged table reads 95 anchors, 0 failing, mean |error| 0.31 — Anunoby 64 (-1), Hachimura 66 (+1), Mitchell 59 (+0), McHale 91 (+2).",
+    "RE-READ BY recal_97, twice, neither a ruling reversed: the crashDef knob was relaxed from the literal .75 to the tax's existence (recal_93 took it to .40, recal_97 to .60 — three re-ratifications in five rounds, which is the Deviation Tax Law working, not drift), and the Chris Paul '09 line moved 88 -> 91 because recal_97 removed three ceilings from the VOTED band and he has a full-vote sheet. recal_92's own subject is untouched: Ajay Mitchell '26 has no votes, so no part of recal_97 can reach him, and he still reads 59."
   ],
   "notes": [
     "WHAT ACTUALLY MADE MITCHELL 76, measured card by card. Composite (drep 0, DBPM 1.6, 6'4\" in the sweet band, no-vote shrink) = 52. Tracked branch: derived 6ft+ diff -4.23% on 344 shots, corroborated by Overall -4.9%, mapped through recal_86's absolute line to d_card 80.2 and blended at wm 0.514 -> 66. Then dfg_floor returned 76 and overrode it. Two terms, +14 and +10.",

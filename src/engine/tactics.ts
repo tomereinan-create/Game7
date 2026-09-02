@@ -169,6 +169,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * rebase onto r92+r95 this round had re-ratified scheme .90 -> .62 against r91's attributes. That
  * measurement is void — the merged pool is a different sample and was re-swept from origin/main's
  * constants, not from .62.
+ * recal_97's perdef band (the PD clamp removed, pctile -> pctile_top, band top 0.44 -> 0.45) lifted
+ * 1,050 perdefs, 729 d_ovrs and 454 OVRs — every one of them UP, since the round only removes
+ * ceilings — and the ovr>=55 pool with them; crash def glass alone broke, its BLIND read gone
+ * shallow at -0.19, and was re-ratified .40 -> .60. Chosen off the harness sweep for margin at
+ * both edges (blind -0.35 against the -0.30 floor, oracle +0.54 against +0.50); its oracle caps
+ * it, falling through +0.50 at about .72. Every other tax held its band untouched, hunt included
+ * for the second round running. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -178,7 +185,7 @@ export const TAX = {
   scheme: 0.60,
   hunt: 3.70,
   crashOff: 0.50,
-  crashDef: 0.40,
+  crashDef: 0.60,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
