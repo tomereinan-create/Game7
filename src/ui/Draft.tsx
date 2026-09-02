@@ -54,6 +54,19 @@ const Mini = ({ name }: { name: string }) => {
 const posOf = (name: string) => eligible(LINES[name]?.pos)
 const posLine = (name: string) => posOf(name).join(' · ')
 
+/**
+ * HIS RULING: "Add the ability to draft a player by dragging him to the court". The drop's law,
+ * kept out of the component so it can be read and tested on its own. A man carried off the wheel's
+ * roster may land on a ring that is OPEN and that he can play — this is DRAFTING, not swapping, so
+ * an occupied ring is never a target and neither is a position he cannot fill.
+ */
+export const canDropAt = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
+  !slots[to] && at(name).includes(to)
+
+/** The drop that drafts: exactly the five the "Draft … at …" button would have left behind. */
+export const dropDraft = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
+  canDropAt(slots, at, name, to) ? { ...slots, [to]: name } : slots
+
 /** Bare-name index: the same man in a different year is still the same man. */
 const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
 export const bare = (name: string) => PLAYER_OF.get(name) ?? name
@@ -237,6 +250,16 @@ export function Draft({
   /** A drafted player being dragged to another slot (press and drag). */
   const [drag, setDrag] = useState<{ from: Pos; x: number; y: number; over: Pos | null } | null>(null)
   const dragRef = useRef<{ from: Pos; x0: number; y0: number; moved: boolean } | null>(null)
+  /**
+   * HIS RULING: "Add the ability to draft a player by dragging him to the court". A man from the
+   * wheel's roster, lifted off his row and carried to the floor. Kept apart from `drag` above,
+   * which moves a man ALREADY drafted between his own rings — this one IS the pick.
+   */
+  const [pull, setPull] = useState<{ name: string; x: number; y: number; over: Pos | null } | null>(null)
+  const pullRef = useRef<{ name: string; x0: number; y0: number; lifted: boolean } | null>(null)
+  /** The press-and-hold timer, and the live finger position the edge-scroll loop reads. */
+  const holdRef = useRef<number | null>(null)
+  const pullXY = useRef({ x: 0, y: 0 })
   const rng = useRef(makeRng(seed))
   const avoidRef = useRef<TeamSeason | null>(null)
   /** Decided ahead of the spin so the Wheel whisperer can show it; the spin just lands there. */
@@ -261,6 +284,7 @@ export function Draft({
   useEffect(
     () => () => {
       if (timer.current) window.clearTimeout(timer.current)
+      if (holdRef.current) window.clearTimeout(holdRef.current)
     },
     [],
   )
@@ -429,6 +453,127 @@ export function Draft({
     setDrag(null)
   }
 
+  /**
+   * THE DRAG THAT DRAFTS (his ruling: "Add the ability to draft a player by dragging him to the
+   * court"). The roster list scrolls vertically under the same finger, so a press only becomes a
+   * lift when it STAYS PUT for a moment or when it travels sideways; a vertical swipe hands the
+   * gesture straight back to the page, and a press that never lifts is still the tap it always
+   * was. Pointer events throughout — no HTML5 drag — so a mouse does exactly what a finger does.
+   *
+   * The rule and the commit are the ones the dock button already uses: `canDropAt` is the same
+   * eligibility the "Assign to" chips offer, `overCap` is the same cap gate, and the drop leaves
+   * the screen in the same state `confirm()` does.
+   */
+  const HOLD_MS = 300
+  const canDrop = (name: string, to: Pos) => canDropAt(slots, posOf, name, to) && !overCap(name)
+  /** Only the FLOOR is a target: a drafted man's row publishes data-slot too, and it is not one. */
+  const courtSlotAt = (x: number, y: number): Pos | null => {
+    const s = document.elementFromPoint(x, y)?.closest<HTMLElement>('.ct-spot[data-slot]')?.dataset.slot as Pos | undefined
+    return s && POSITIONS.includes(s) ? s : null
+  }
+  /** The drop IS the pick — same transition as confirm(), which is what the dock button calls. */
+  const draftAt = (name: string, to: Pos) => {
+    if (!canDrop(name, to)) return
+    setSlots((cur) => dropDraft(cur, posOf, name, to))
+    setSpun(null)
+    setDisplay(null)
+    setSel(null)
+    setSlot(null)
+    setInfo(null)
+  }
+  const unhold = () => {
+    if (holdRef.current) window.clearTimeout(holdRef.current)
+    holdRef.current = null
+  }
+  const pullCancel = () => {
+    unhold()
+    pullRef.current = null
+    setPull(null)
+  }
+  const lift = (x: number, y: number) => {
+    const d = pullRef.current
+    if (!d || d.lifted) return
+    unhold()
+    d.lifted = true
+    pullXY.current = { x, y }
+    setPull({ name: d.name, x, y, over: courtSlotAt(x, y) })
+  }
+  const pullStart = (name: string) => (e: PointerEvent) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return
+    // the name opens his card and the chevron opens his line: both are controls, not handles
+    if ((e.target as HTMLElement).closest('.cardname, .pinfo')) return
+    // nowhere for him to land — no open ring he can play, or the cap refuses him
+    if (!POSITIONS.some((x) => canDrop(name, x))) return
+    pullRef.current = { name, x0: e.clientX, y0: e.clientY, lifted: false }
+    // capture so the man keeps following a finger that has left his row; a pointer the browser
+    // will not give us is not a reason to refuse the drag
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      /* no capture available — the move handlers still fire on the captured-by-default touch */
+    }
+    const [x, y] = [e.clientX, e.clientY]
+    unhold()
+    holdRef.current = window.setTimeout(() => lift(x, y), HOLD_MS)
+  }
+  const pullMove = (e: PointerEvent) => {
+    const d = pullRef.current
+    if (!d) return
+    if (!d.lifted) {
+      const dx = e.clientX - d.x0
+      const dy = e.clientY - d.y0
+      // a vertical swipe is the list scrolling, and it stays the list's
+      if (Math.abs(dy) > 8 && Math.abs(dy) >= Math.abs(dx)) return pullCancel()
+      if (Math.abs(dx) <= 8) return
+      lift(e.clientX, e.clientY)
+    }
+    pullXY.current = { x: e.clientX, y: e.clientY }
+    setPull({ name: d.name, x: e.clientX, y: e.clientY, over: courtSlotAt(e.clientX, e.clientY) })
+  }
+  const pullEnd = (onTap?: () => void) => (e: PointerEvent) => {
+    const d = pullRef.current
+    unhold()
+    pullRef.current = null
+    if (!d) return
+    if (d.lifted) {
+      // released on a legal open ring he is drafted there; on anything else he goes back, no change
+      const to = courtSlotAt(e.clientX, e.clientY)
+      if (to) draftAt(d.name, to)
+    } else {
+      onTap?.() // under the threshold and inside the hold: a press is a tap, and taps still scout
+    }
+    setPull(null)
+  }
+  /**
+   * While a man is in the air the page holds still under him — and on a phone it has to be able to
+   * TRAVEL, because the floor he is going to sits below the roster he came from. A finger held near
+   * an edge scrolls the page that way, and the ring under it is re-read as the floor arrives.
+   */
+  const lifted = !!pull
+  useEffect(() => {
+    if (!lifted) return
+    const hold = (ev: TouchEvent) => ev.preventDefault()
+    document.addEventListener('touchmove', hold, { passive: false })
+    const EDGE = 84
+    let raf = 0
+    const step = () => {
+      const { x, y } = pullXY.current
+      const h = window.innerHeight
+      const v = y < EDGE ? -Math.ceil(((EDGE - y) / EDGE) * 16) : y > h - EDGE ? Math.ceil(((y - (h - EDGE)) / EDGE) * 16) : 0
+      if (v) {
+        window.scrollBy(0, v)
+        setPull((cur) => (cur ? { ...cur, over: courtSlotAt(x, y) } : cur))
+      }
+      raf = window.requestAnimationFrame(step)
+    }
+    raf = window.requestAnimationFrame(step)
+    return () => {
+      document.removeEventListener('touchmove', hold)
+      window.cancelAnimationFrame(raf)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lifted])
+
   /** Front office: respin the team the wheel landed on (one charge). */
   const respinTeam = () => {
     if (!spun || spinning || charges('fo_spin') <= 0) return
@@ -530,6 +675,12 @@ export function Draft({
       on?: boolean
       short?: boolean
       slot?: Pos
+      /**
+       * His ruling: this man can be dragged from the list onto the court and drafted there. Only
+       * the wheel's roster sets it — the opponent's men are not yours to take, and a man already
+       * on your floor is moved by `slot` above, not drafted again.
+       */
+      pull?: boolean
       /** His ruling: durability reads next to the name on this screen too, same badge as My team. */
       dur?: number
       worn?: boolean
@@ -548,17 +699,21 @@ export function Draft({
     <div key={p.name} style={{ display: 'contents' }}>
       <div
         className={`row dr ${opts.short ? 'short' : ''} ${opts.on ? 'on' : ''} ${opts.dim ? 'off' : ''} ${opts.slot ? 'grab' : ''} ${
-          drag && opts.slot && drag.over === opts.slot ? (canMove(drag.from, opts.slot) ? 'drop-ok' : 'drop-no') : ''
-        } ${drag && opts.slot === drag.from ? 'lifted' : ''}`}
+          opts.pull ? 'pull' : ''
+        } ${drag && opts.slot && drag.over === opts.slot ? (canMove(drag.from, opts.slot) ? 'drop-ok' : 'drop-no') : ''} ${
+          (drag && opts.slot === drag.from) || pull?.name === p.name ? 'lifted' : ''
+        }`}
         role="button"
         tabIndex={0}
         aria-pressed={!!opts.on}
         data-slot={opts.slot}
-        onPointerDown={opts.slot ? dragStart(opts.slot) : undefined}
-        onPointerMove={opts.slot ? dragMove : undefined}
-        onPointerUp={opts.slot ? dragEnd : undefined}
-        onPointerCancel={opts.slot ? () => { dragRef.current = null; setDrag(null) } : undefined}
-        onClick={opts.slot ? undefined : opts.onTap}
+        onPointerDown={opts.slot ? dragStart(opts.slot) : opts.pull ? pullStart(p.name) : undefined}
+        onPointerMove={opts.slot ? dragMove : opts.pull ? pullMove : undefined}
+        onPointerUp={opts.slot ? dragEnd : opts.pull ? pullEnd(opts.onTap) : undefined}
+        onPointerCancel={opts.slot ? () => { dragRef.current = null; setDrag(null) } : opts.pull ? pullCancel : undefined}
+        /* a held press must not raise the phone's own long-press menu over the man being carried */
+        onContextMenu={opts.pull ? (e) => { if (pullRef.current) e.preventDefault() } : undefined}
+        onClick={opts.slot || opts.pull ? undefined : opts.onTap}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
@@ -778,6 +933,8 @@ export function Draft({
                 <span className="gcap">PTS · REB · AST</span>
                 <span />
               </div>
+              {/* his ruling: the drag is the other way to draft, so the list says so */}
+              <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
               {roster.map((p) => {
                 const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
@@ -786,6 +943,8 @@ export function Draft({
                   dur: death ? left(p.name) : undefined,
                   on: sel === p.name,
                   dim: !fits.length || priced,
+                  // his ruling: he can be carried out of this list and onto an open ring
+                  pull: fits.length > 0 && !priced,
                   onTap: () => {
                     showMan(p.name)
                     select(p.name)
@@ -991,7 +1150,9 @@ export function Draft({
               slot: x,
               tag: p ? (worn ? `${x} · worn out` : user ? x : `${x} · ${p.ovr}`) : '',
               danger: worn,
-              dropOk: drag && drag.over === x ? canMove(drag.from, x) : null,
+              // one ring at a time lights: the man being drafted onto the floor, or the man
+              // already on it being moved across it
+              dropOk: pull ? (pull.over === x ? canDrop(pull.name, x) : null) : drag && drag.over === x ? canMove(drag.from, x) : null,
               // his ruling: the floor opens him in the band. CardName on his row still opens the
               // full sheet, so the card is one tap away rather than stranded.
               onTap: p ? () => showMan(p.name) : undefined,
@@ -1062,6 +1223,13 @@ export function Draft({
       {drag ? (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }}>
           {slots[drag.from]}
+        </div>
+      ) : null}
+      {/* his ruling: a ghost of the man rides the finger, and names the ring he is about to take */}
+      {pull ? (
+        <div className={`drag-ghost ${pull.over && !canDrop(pull.name, pull.over) ? 'no' : ''}`} style={{ left: pull.x, top: pull.y }}>
+          {pull.name}
+          {pull.over ? <em>{canDrop(pull.name, pull.over) ? `→ ${pull.over}` : `not ${pull.over}`}</em> : null}
         </div>
       ) : null}
       <button className="linkb" onClick={onRoster}>
