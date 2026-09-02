@@ -86,6 +86,10 @@ commit, and `npm run anchors` must pass. Then report, in this order:
 - SUBJECT(S): card, SCALE, TARGET, BEFORE -> AFTER (one line per target in a batch)
 - WHAT CHANGED: the formula change in one or two sentences, with the knob names
 - ANCHORS: all pass, or the list that fail and why you stopped
+- TEN CARDS (his rule: "Before asking to me accept or push, show me 10 players and how they changed"):
+  a markdown table of ~10 named cards, before → after on every scale the round touched: the
+  subjects, the 3 biggest drops and 2 biggest rises, any card in an anchor conflict, and 2-3
+  stars that should not have moved. Columns: card, pos, mpg, changed bars, OFF/DEF, OVR.
 - COLLATERAL: from `npm run scout -- --base HEAD`: cards moved / biggest movers / top-12 after
 - COMMIT: hash, branch
 - COST: anything a later round should know (superseded pins, anchors re-derived)
