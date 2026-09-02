@@ -2140,6 +2140,15 @@ button {
 .map-link.team i { font-style: normal; flex: none; margin: 0 2px; letter-spacing: 0; }
 .map-link.team .rn { flex: none; white-space: nowrap; }
 .map-total.small { font-size: 26px; color: var(--muted); }
+/* THE COUNTER IS THE DOOR TO THE STAFF TREE (his report: "where is my skill tree to spend stars?").
+   The notice under it only shows when a star can actually be placed, which is his ruling, so with a
+   balance of zero the map had no way into the tree at all. Tapping the stars opens it — the natural
+   place to go and spend them. Scoped to the button so the four screens that still read this counter
+   as a div are untouched, and nothing about the type changes: same serif, same size, same colour.
+   The margin becomes padding, so the block sits exactly where it did and the tap target is 44px. */
+button.map-total { display: block; background: none; border: 0; text-align: left; cursor: pointer; margin-top: 0; padding: 4px 0 0; }
+/* the same gold arrow the other map links end on, at the counter's scale */
+button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .naive-note { font-family: var(--serif); font-style: italic; font-size: 12.5px; color: var(--danger); line-height: 1.4; padding: 6px 0 8px; }
 .naive-note b { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
 .reads.locked { opacity: 0.6; }

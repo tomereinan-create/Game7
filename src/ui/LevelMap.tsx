@@ -123,10 +123,18 @@ export function LevelMap({
       <div className="map-head sticky">
         <div>
           <div className="map-kicker">{cur ? `Level ${cur} is up · ${opponents[cur - 1]?.era ?? ''}` : 'All cleared'}</div>
-          <div className="map-total">
+          {/**
+           * HIS REPORT: "where is my skill tree to spend stars?" — the notice below is the only
+           * door the map had, and his ruling keeps it shut when nothing is affordable, so a
+           * balance spent to zero took the whole tree off the screen while the counter still
+           * read ★ 10. The counter is the door now: you tap your stars to go and spend them.
+           * The notice is untouched and still obeys the ruling.
+           */}
+          <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
             <span className="star">★</span> {total}
             <i> / {ROUNDS * 3}</i>
-          </div>
+            <i className="a">→</i>
+          </button>
         </div>
         <div className="map-side">
           <div className="map-kicker">
