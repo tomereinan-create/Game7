@@ -24,7 +24,22 @@ exec(head); exec(tail)
 # see the core below. The constants are kept only so an older receipt can still name what it replaced.
 W_OFF, W_DEF, W_MARG = 0.45, 0.20, 0.35   # SUPERSEDED by recal_37; nothing reads them
 
-path = sys.argv[1] if len(sys.argv) > 1 else 'players_stats.json'
+# CARD MODES — two READ-ONLY inspections of a single card, added so a round can be dispatched (and
+# argued about) without anyone re-deriving the arithmetic by hand:
+#     python compute_ovr.py --read    "Shaquille O'Neal '00"   one line: OVR/OFF/DEF + every attribute
+#     python compute_ovr.py --explain "Shaquille O'Neal '00"   every weighted term, the bonus, the
+#                                                              band, the blend, and his ranks
+# Both compute the WHOLE board (the ranks need it) and both exit BEFORE anything is written — no
+# players_stats.json, no export/, no pipeline.json. They also skip the marginal-value loop, which is
+# the only slow step in the run and feeds nothing but p['marg'], a field neither mode prints.
+# NOTHING IN THE NORMAL PATH IS CHANGED: the tracing below is opt-in per call and adds no arithmetic.
+_argv, _EXPLAIN, _READ, _rest, _i = sys.argv[1:], None, None, [], 0
+while _i < len(_argv):
+    if _argv[_i] == '--explain' and _i + 1 < len(_argv): _EXPLAIN = _argv[_i + 1]; _i += 2
+    elif _argv[_i] == '--read' and _i + 1 < len(_argv): _READ = _argv[_i + 1]; _i += 2
+    else: _rest.append(_argv[_i]); _i += 1
+_CARD = _EXPLAIN or _READ
+path = _rest[0] if _rest else 'players_stats.json'
 players = json.load(io.open(path, encoding='utf-8'))
 
 # ATTEMPT RATES (recal_45). The specialist bonus scales with how often a man fires HIS OWN shot, and
@@ -38,16 +53,21 @@ try:
         _r, _t = _m.get('rim'), _m.get('3pt')
         _ATT[_n] = ((_r[1] if _r and len(_r) > 1 and _r[1] is not None else 0.0),
                     (_t[1] if _t and len(_t) > 1 and _t[1] is not None else 0.0))
-    print(f"attempt rates loaded for {len(_ATT):,} cards")
+    if not _CARD: print(f"attempt rates loaded for {len(_ATT):,} cards")
 except Exception as _e:
     print(f"WARNING: no attempt rates ({_e}) — the specialist bonus falls back to its floor")
-for p in players:
-    best = -99
-    for i in range(5):
-        L = REF_FIVE[:i] + [p] + REF_FIVE[i + 1:]
-        m = matchup_margin(L, REF_FIVE)
-        if m > best: best = m
-    p['_raw'] = best
+if _CARD:
+    # the card modes never print or write marg, so the 10,000-card matchup sweep is skipped whole;
+    # a constant leaves the percentile below well-defined and costs nothing that is read again.
+    for p in players: p['_raw'] = 0.0
+else:
+    for p in players:
+        best = -99
+        for i in range(5):
+            L = REF_FIVE[:i] + [p] + REF_FIVE[i + 1:]
+            m = matchup_margin(L, REF_FIVE)
+            if m > best: best = m
+        p['_raw'] = best
 
 import os
 _here = os.path.dirname(os.path.abspath(__file__))
@@ -79,7 +99,10 @@ def is_big(p):
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)
-def o_score(p):
+def o_score(p, trace=None):
+    # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the
+    # terms it just computed into it. Every write is guarded by `if trace is not None`, no expression
+    # that feeds `std` is rearranged, and the default None path is byte-for-byte the old function.
     # recal batch 2: orb IS offense (second chances); fouldraw only scores through FT (multiplicative,
     # the clank tax); passing weights eased so scoring bigs aren't taxed for a skill their shape never used;
     # volume x efficiency is a SIGNATURE, not two facts (the interaction term restores Curry's O99)
@@ -116,6 +139,21 @@ def o_score(p):
         # the volume x efficiency SIGNATURE keeps its volume FLOOR of 50 (recal_26): elite conversion on
         # a modest load is real scoring signal, not an accident of touches.
         + 0.08*(max(a['volume'],50)*a['efficiency']/100))
+    if trace is not None:
+        trace['terms'] = [
+            ('z[0] best zone',      z[0],                             0.22, 0.22*z[0]),
+            ('z[1] second zone',    z[1],                             0.08, 0.08*z[1]),
+            ('z[2] third zone',     z[2],                             0.05, 0.05*z[2]),
+            ('efficiency',          a['efficiency'],                  0.11, 0.11*a['efficiency']),
+            ('volume',              a['volume'],                      0.26, 0.26*a['volume']),
+            ('playvol',             a['playvol'],                     0.19, 0.19*a['playvol']),
+            ('ballsec',             a['ballsec'],                     0.10, 0.10*a['ballsec']),
+            ('fouldraw x ft/100',   a['fouldraw']*a['ft']/100,        0.11, 0.11*(a['fouldraw']*a['ft']/100)),
+            ('orb',                 a['orb'],                         0.06, 0.06*a['orb']),
+            ('signature vol x eff', max(a['volume'],50)*a['efficiency']/100, 0.08, 0.08*(max(a['volume'],50)*a['efficiency']/100)),
+        ]
+        trace['std_base'] = std
+        trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
     # EVERY FLOOR IS DELETED (recal_37). Specialist, maestro and creator each REPLACED the sum for
     # whoever cleared a gate, so three scoring laws ran at once and a card's own law depended on a
     # threshold it happened to pass. (Their round lists four; this side never had a FINISHER floor.)
@@ -203,12 +241,22 @@ def o_score(p):
             pre_off = std * 0.93
             gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
         std += base * zone_f * att_f * gate_f
+        if trace is not None:
+            trace['bonus'] = dict(
+                kind='paint' if a['rim'] >= max(a['3pt'], a['mid']) else 'shooter',
+                base=base, zone_f=zone_f, att_f=att_f, gate_f=gate_f,
+                paint_att_per100=_two, three_att_per100=_three,
+                rim_mid_measured=bool(a.get('rim_mid_measured')),
+                added=base * zone_f * att_f * gate_f)
+    elif trace is not None:
+        trace['bonus'] = None   # the shape gate did not fire: no weapon towering over the diet
     # recal_55: THE BIG HUB. An efficient playmaking center had no channel - his assists scored
     # through playvol's 0.17 like everyone's, and nothing priced the offense that RUNS THROUGH him.
     # Bigs only, playvol 60 and up; the Jokic class is saturated at the band top anyway, and guards
     # are untouched by construction.
     if is_big(p) and a['playvol'] >= 60:
         std += 0.05 * a['playvol']
+        if trace is not None: trace['big_hub'] = 0.05 * a['playvol']
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
@@ -217,12 +265,24 @@ def o_score(p):
     # untouched by construction (their standard path is higher than the floor).
     if a['3pt'] >= 68 and a['volume'] < 55:
         std = max(std, 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline'])
+        if trace is not None:
+            _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
+            trace['offball_floor'] = dict(value=_fl, binding=std == _fl)
+    if trace is not None: trace['o_score'] = std
     return std
-def d_score(p):
+def d_score(p, trace=None):
     # class-dependent: bigs' defensive votes route to rimprot by design, so perdef understates them;
     # perimeter keeps the round-1 perdef-heavy mix (perdef IS the complete defensive verdict)
     a = p['attrs']
     if is_big(p):
+        if trace is not None:
+            trace['branch'] = 'big'
+            trace['terms'] = [('perdef', a['perdef'], 0.40, 0.40*a['perdef']),
+                              ('rimprot', a['rimprot'], 0.40, 0.40*a['rimprot']),
+                              ('drb', a['drb'], 0.17, 0.17*a['drb']),
+                              ('discipline', a['discipline'], 0.03, 0.03*a['discipline'])]
+            trace['size_mod'] = 1.0
+            trace['d_score'] = 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']
         return 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']   # drb weight up: rebounding credit now lives here, not inside rimprot
     # recal_57 trimmed perimdisrupt 0.15 -> 0.09; recal_62 (his ruling) trims it again 0.09 -> 0.05.
     # Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict).
@@ -233,6 +293,16 @@ def d_score(p):
     base = 0.63*a['perdef'] + 0.13*a['rimprot'] + 0.11*a['perimdisrupt'] + 0.07*a['drb'] + 0.06*a['discipline']
     # size modifier: a 6'0 defender guards one matchup; tall stoppers switch. Guard-quota All-D
     # selections are real evidence, but size caps the ceiling. Bites only truly small defenders.
+    if trace is not None:
+        trace['branch'] = 'perimeter'
+        trace['terms'] = [('perdef', a['perdef'], 0.63, 0.63*a['perdef']),
+                          ('rimprot', a['rimprot'], 0.13, 0.13*a['rimprot']),
+                          ('perimdisrupt', a['perimdisrupt'], 0.11, 0.11*a['perimdisrupt']),
+                          ('drb', a['drb'], 0.07, 0.07*a['drb']),
+                          ('discipline', a['discipline'], 0.06, 0.06*a['discipline'])]
+        trace['base'] = base
+        trace['size_mod'] = min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
+        trace['d_score'] = base * min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
     return base * min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
 for cls in (True, False):
     grp = sorted(p['_raw'] for p in players if is_big(p) == cls)
@@ -350,6 +420,106 @@ for p in players:
     # no longer moves OVR. Kept on the 1-99 scale it was already expressed in.
     p['marg'] = int(round(p['_marg']))
     del p['_raw']; del p['_marg']
+
+# ---------------------------------------------------------------- CARD MODES (read-only, then exit)
+def _resolve_card(nm):
+    """Season is the unit and names carry the year, so an exact match wins. A name with NO year is
+    the peak card: highest talent, then highest ovr — the same rule data/anchors.py uses."""
+    for q in players:
+        if q['name'] == nm: return q
+    same = [q for q in players if q.get('player') == nm] or [q for q in players if q['name'].startswith(nm + " '")]
+    return sorted(same, key=lambda q: (q.get('talent', 0), q.get('ovr', 0)))[-1] if same else None
+
+def _ranks(q, field):
+    v = q[field]
+    cls = [x for x in players if x['big'] == q['big']]
+    return (1 + sum(1 for x in players if x[field] > v), len(players),
+            1 + sum(1 for x in cls if x[field] > v), len(cls))
+
+if _CARD:
+    try: sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception: pass
+    _q = _resolve_card(_CARD)
+    if _q is None:
+        print(f"no card matches {_CARD!r} (names carry the year, e.g. \"Shaquille O'Neal '00\"; a bare "
+              f"name resolves to the peak season)")
+        raise SystemExit(2)
+    _a = _q['attrs']
+    _attrs = ' '.join(f"{k} {_a[k]}" for k in sorted(_a))
+    if _READ:
+        print(f"{_q['name']}  OVR {_q['ovr']}  OFF {_q['o_ovr']}  DEF {_q['d_ovr']}  |  {_attrs}")
+        raise SystemExit(0)
+    # ---- --explain: the whole derivation, in the order the pipeline computes it ----
+    _ot, _dt = {}, {}
+    _oraw = o_score(_q, _ot) * 0.93
+    _draw = d_score(_q, _dt) * 1.1305
+    W = 78
+    print('=' * W)
+    print(f"{_q['name']}   OVR {_q['ovr']}   OFF {_q['o_ovr']}   DEF {_q['d_ovr']}"
+          f"   [{'big' if _q['big'] else 'perimeter'}]   pipeline v{PIPELINE_VERSION}")
+    print('=' * W)
+    print('ATTRIBUTES')
+    _ks = sorted(_a)
+    for _i2 in range(0, len(_ks), 4):
+        print('  ' + '  '.join(f"{k:>16s} {_a[k]!s:>8s}" for k in _ks[_i2:_i2 + 4]))
+    print(f"  {'talent':>16s} {_q.get('talent')!s:>8s}")
+    print('  marg is not computed in card mode (the 10,000-card sweep is skipped) and recal_40 took it out of OVR anyway')
+
+    def _table(title, terms):
+        print(f"\n{title}")
+        print(f"  {'term':<22s}{'attr value':>12s}{'weight':>10s}{'contribution':>16s}")
+        for nm2, val, w, c in terms:
+            print(f"  {nm2:<22s}{val:>12.2f}{w:>10.2f}{c:>16.3f}")
+        print(f"  {'':<22s}{'':>12s}{'sum':>10s}{sum(c for _, _, _, c in terms):>16.3f}")
+
+    _table('O_SCORE — the standard weighted path', _ot['terms'])
+    _b = _ot.get('bonus')
+    if _b:
+        print(f"\nZONE-DOMINANCE BONUS ({_b['kind']}) — the shape gate FIRED")
+        print(f"  zones sorted {_ot['zones']['z']}  (rim {_ot['zones']['rim']} / mid {_ot['zones']['mid']} / 3pt {_ot['zones']['three']})")
+        print(f"  base {_b['base']:.2f}  x  zone_f {_b['zone_f']:.4f}  x  att_f {_b['att_f']:.4f}  x  gate_f {_b['gate_f']:.4f}"
+              f"  =  +{_b['added']:.3f}")
+        print(f"  inputs: paint attempts/100 {_b['paint_att_per100']:.2f} · three attempts/100 {_b['three_att_per100']:.2f}"
+              f" · rim_mid_measured {_b['rim_mid_measured']}")
+    else:
+        print('\nZONE-DOMINANCE BONUS — did NOT fire (no single weapon towering over the rest of the diet,'
+              '\n  or the weapon is a midrange one, which recal_38 ruled is not the same threat)')
+    if 'big_hub' in _ot:
+        print(f"BIG HUB (recal_55, bigs at playvol >= 60): +{_ot['big_hub']:.3f}")
+    if 'offball_floor' in _ot:
+        _f = _ot['offball_floor']
+        print(f"OFF-BALL FLOOR (recal_64): {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+    print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
+    _table(f"D_SCORE — the {_dt['branch']} branch", _dt['terms'])
+    if _dt['branch'] == 'perimeter':
+        print(f"  size modifier x{_dt['size_mod']:.4f} (height {_a.get('height', 76)})  ->  {_dt['d_score']:.4f}")
+    print(f"  d_score {_dt['d_score']:.4f}  x 1.1305 display multiplier  =  raw {_draw:.4f}")
+
+    print(f"\nBAND POSITION (knee {KNEE}, OFF_TOP {OFF_TOP}, DEF_TOP {DEF_TOP})")
+    for _lbl, _raw2, _top, _fin in (('OFF', _oraw, OFF_TOP, _q['o_ovr']), ('DEF', _draw, DEF_TOP, _q['d_ovr'])):
+        _side = 'ABOVE the knee — stretched onto 93-99' if _raw2 > KNEE else 'below the knee — band() is the identity'
+        print(f"  {_lbl}: raw {_raw2:7.4f}  {_side}")
+        print(f"       band -> {band(_raw2, _top):7.4f}   clamp 99 -> {_fin}"
+              + (f"   ({_raw2 - _top:+.4f} vs the anchor)" if _raw2 > KNEE else ''))
+
+    _b1, _b2 = 0.4*_q['o_ovr'] + 0.6*_q['d_ovr'], 0.70*_q['o_ovr'] + 0.30*_q['d_ovr']
+    _cap = max(_q['o_ovr'] + 10, 0.80 * _q['d_ovr']) if not _q['big'] else _q['o_ovr'] + 40
+    print(f"\nOVR BLEND (recal_83, the bigger of two role readings; recal_85 left nothing else in)")
+    print(f"  defence-led  0.40 x OFF {_q['o_ovr']} + 0.60 x DEF {_q['d_ovr']} = {_b1:.2f}")
+    print(f"  offence-led  0.70 x OFF {_q['o_ovr']} + 0.30 x DEF {_q['d_ovr']} = {_b2:.2f}")
+    print(f"  winner: {'defence-led' if _b1 >= _b2 else 'offence-led'} = {max(_b1, _b2):.2f}")
+    print(f"  offence cap ({'big: o_ovr + 40' if _q['big'] else 'max(o_ovr + 10, 0.80 x d_ovr)'}) = {_cap:.2f}")
+    print(f"  OVR = min(99, cap, round(raw)) = {_q['ovr']}")
+
+    print('\nRANKS')
+    _cls = 'bigs' if _q['big'] else 'perimeter'
+    for _lbl, _f2 in (('OFF', 'o_ovr'), ('DEF', 'd_ovr'), ('OVR', 'ovr')):
+        _ra, _na, _rc, _nc = _ranks(_q, _f2)
+        print(f"  {_lbl}  #{_ra:,} of {_na:,} all cards   ·   #{_rc:,} of {_nc:,} among {_cls}")
+    print('=' * W)
+    raise SystemExit(0)
+# ------------------------------------------------------------------- end card modes; normal path on
+
 json.dump(players, io.open(path, 'w', encoding='utf-8'), separators=(',', ':'))
 print(f"pipeline version {PIPELINE_VERSION}")
 print(f"OVR blend top {max(_tops):.2f} — no band, no anchor: OVR is the blend, capped and clamped (recal_85)")
@@ -377,3 +547,16 @@ print("\nARCHETYPE CHECKS:")
 for nm in ["Dennis Rodman '92", "Trae Young '22", "Steve Kerr '96", "Shane Battier '06", "Dereck Lively II '24", "Rudy Gobert '19", "Draymond Green '16", "Carmelo Anthony '14", "Stephen Curry '16", "LeBron James '13", "Michael Jordan '88", "Kareem Abdul-Jabbar '80"]:
     m = [p for p in players if p['name'] == nm]
     if m: p = m[0]; print(f"  {p['name']:28s} OVR {p['ovr']}  O {p['o_ovr']}  D {p['d_ovr']}  paint {p['attrs']['rim']} mid {p['attrs']['mid']}")
+
+# THE STANDING PINS, printed on every regeneration. recal_90 re-derived OFF_TOP and Shaq '00 fell
+# 99 -> 97 while four earlier receipts still carried him at 99 — and nothing said so until someone
+# went looking. data/anchors.json holds the rulings that are still meant to hold; anchors.py grades
+# them against the cards this run just produced. It is a REPORT, never a gate on the write: the file
+# is already on disk above, and a failing pin is a fact for the round to answer, not a crash.
+print()
+try:
+    sys.dont_write_bytecode = True   # no data/__pycache__ left in the tree by a regeneration
+    import anchors as _anchors
+    print(_anchors.report(_anchors.grade(players)))
+except Exception as _e:
+    print(f"ANCHORS: not graded ({type(_e).__name__}: {_e})")

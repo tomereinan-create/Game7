@@ -22,7 +22,11 @@
     "audit-tags": "vite-node scripts/audit-tags.ts",
     "pair": "vite-node scripts/pair-decomp.ts",
     "unfit": "vite-node scripts/unfit.ts",
-    "harness": "vite-node scripts/tactics-harness.ts"
+    "harness": "vite-node scripts/tactics-harness.ts",
+    "anchors": "python data/anchors.py src/data/players_stats.json",
+    "explain": "cd data && python compute_ovr.py --explain",
+    "read": "cd data && python compute_ovr.py --read",
+    "scout": "vite-node scripts/scout.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

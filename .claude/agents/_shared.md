@@ -21,6 +21,28 @@ The ruling text is the contract. Quote it verbatim in the commit message and the
 4. **Nothing is re-derived outside the pipeline.** `data/build_ratings.py` -> `data/compute_ovr.py`
    is the only path to a number on a card. `src/engine/offense.ts` is a 1:1 port of
    `data/team_rating.py`; change both together or neither.
+5. **The anchors file is the whole record of his rulings.** `data/anchors.json` holds every ruling
+   that still stands (card, scale, target, tolerance, round). Every regeneration prints the anchor
+   table; `npm run anchors` prints it on demand and exits non-zero if any anchor fails. A round
+   that breaks an anchor is not done. If the ruling you were given can only land by breaking an
+   older anchor, stop and report the conflict — Tomer decides which ruling stands, not you.
+   When your round lands, ADD its ruling to `data/anchors.json` (and, if it supersedes an older
+   anchor by his explicit ruling, move that one to `data/anchors_superseded.json` with the note).
+
+## Batches
+A dispatch may carry SEVERAL rulings for your stage at once. Treat them as one fit: find the
+single formula change (or the smallest set) that brings every target inside its tolerance while
+holding all existing anchors. Do not land them as serial rounds that undo each other. Report a
+table: every target and every anchor, before / after / error. If the set is jointly infeasible,
+say which subset is reachable and what the rest would cost — that is a decline for the rest.
+
+## Reading a card (do this first, it costs seconds)
+```
+npm run read -- "Shaquille O'Neal '00"       # one line: OVR, OFF, DEF, every attribute
+npm run explain -- "Shaquille O'Neal '00"    # every weighted term, bonus, band position, blend, ranks
+npm run scout                                # the detector: suspicious cards, grouped by check
+npm run scout -- --base HEAD                 # after regenerating: movers vs the last commit (collateral)
+```
 
 ## Regeneration (run from `data/`, python 3)
 ```
@@ -36,14 +58,14 @@ python files to `N`. The four copies that must all change together: `data/player
 `src/data/pipeline.json`.
 
 ## Receipt
-Add a `'N': () => { ... }` block to `scripts/receipts.ts` in the style of the existing rounds:
-`line(...)` for each acceptance check (source regex on the python, and the subject's numbers read
-from the SHIPPED data), `note(...)` for what it cost and why. Then run:
+The receipt is `data/rounds/<N>.json` (see Report back). Rounds up to 90 are hand-written blocks
+in `scripts/receipts.ts`; do not add new hand-written blocks. Then run:
 ```
 npm run receipts -- N
+npm run anchors
 npm test
 ```
-Both must pass. A receipt is a reading taken from the data, never a claim from memory.
+All three must pass. A receipt is a reading taken from the data, never a claim from memory.
 
 ## Commit
 One commit, message exactly in this form (past rounds are the model):
@@ -54,10 +76,15 @@ For a decline: `recal_N declined — <why, one line> (his ruling: "...")` with t
 still added, recording the measurement. Do NOT merge or push; the orchestrator merges to main
 and pushes immediately after your report.
 
-## Report back (this is what reaches the dashboard)
+## Report back
+Write `data/rounds/<N>.json` (schema in `data/rounds/SCHEMA.md`; `EXAMPLE.json` is a worked one).
+That file IS the receipt: `scripts/receipts.ts` reads it and prints the round from the shipped data,
+so you no longer hand-write a receipt block — but `npm run receipts -- N` must pass before you
+commit, and `npm run anchors` must pass. Then report, in this order:
 - ROUND: N, AGENT: your name, STATUS: done | declined
-- SUBJECT: card name, SCALE, TARGET, BEFORE -> AFTER
+- SUBJECT(S): card, SCALE, TARGET, BEFORE -> AFTER (one line per target in a batch)
 - WHAT CHANGED: the formula change in one or two sentences, with the knob names
-- COLLATERAL: cards moved / biggest movers / top-12 after
+- ANCHORS: all pass, or the list that fail and why you stopped
+- COLLATERAL: from `npm run scout -- --base HEAD`: cards moved / biggest movers / top-12 after
 - COMMIT: hash, branch
 - COST: anything a later round should know (superseded pins, anchors re-derived)

@@ -14,3 +14,6 @@ Thumbs.db
 
 # the Android project is generated from capacitor.config.json on demand
 android/
+
+# python
+__pycache__/

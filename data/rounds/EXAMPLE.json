@@ -1,0 +1,152 @@
+{
+  "round": 0,
+  "agent": "example",
+  "status": "done",
+  "ruling": "This is the worked example of the round-file format, not one of his rulings.",
+  "title": "THE ROUND FILE, RUN AS A RECEIPT (a worked example — every field of SCHEMA.md, exercised against the shipped pool)",
+  "subject": "Shaquille O'Neal '00",
+  "scale": "off",
+  "target": 97,
+  "before": 94,
+  "after": 97,
+  "tol": 2,
+  "pipeline_version": 80,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 110\\.64, 107\\.55",
+      "label": "the OFF band anchor, re-derived by recal_90",
+      "note": "106.36 -> 110.64, DEF untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_o = o_score\\(p\\) \\* 0\\.93",
+      "label": "the 0.93 display multiplier the band consumes",
+      "note": "the band's own argument, one line before it is called"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "FULL_SAMPLE = 350\\.0",
+      "label": "full workload = full evidence (recal_12)",
+      "note": "the tracking blend's sample weight"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": ">=",
+      "value": 97,
+      "label": "the man on the OFF anchor stays on top"
+    },
+    {
+      "card": "Shaquille O'Neal",
+      "scale": "off",
+      "op": "==",
+      "value": 97,
+      "label": "BARE NAME resolves to the peak card (talent 99, then ovr, then name: '01), which reads the same OFF as '00"
+    },
+    {
+      "card": "Michael Jordan '90",
+      "scale": "ovr",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "a ~ check with its own tolerance"
+    },
+    {
+      "card": "Rudy Gobert '21",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 95,
+      "label": "an attribute scale"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 40,
+      "label": "the other direction on the same attribute"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Andre Iguodala '17"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 85,
+      "tol": 1,
+      "label": "a TEAM scale, through ratings100 — Warriors '17 OFF dial"
+    },
+    {
+      "five": [
+        "Chauncey Billups '04",
+        "Richard Hamilton '04",
+        "Tayshaun Prince '04",
+        "Rasheed Wallace '04",
+        "Ben Wallace '04"
+      ],
+      "scale": "team:def",
+      "op": ">=",
+      "value": 60,
+      "label": "a TEAM scale on defence — Pistons '04 DEF dial vs REF_FIVE"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Shaquille O'Neal '00",
+      "label": "the OFF summit"
+    },
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Victor Wembanyama '26",
+      "label": "the DEF summit is still the man who has always held it"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 48,
+    "max_abs": 2,
+    "top": [
+      ["Giannis Antetokounmpo '25", 99, 99],
+      ["Giannis Antetokounmpo '24", 99, 98],
+      ["Shaquille O'Neal '00", 98, 97],
+      ["LeBron James '10", 98, 97],
+      ["Nikola Jokić '25", 98, 97]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '25",
+      "Giannis Antetokounmpo '24",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shaquille O'Neal '00",
+      "Shaquille O'Neal '01",
+      "Shaquille O'Neal '02",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22"
+    ]
+  },
+  "cost": [
+    "Nothing. Round 0 changes no knob — the three `knobs` entries above are patterns other rounds shipped, re-read here only to show what a source check prints.",
+    "The all-rounds run SKIPS round 0 on purpose. Ask for it by name: `npm run receipts -- 0`."
+  ],
+  "notes": [
+    "READ THIS FILE BESIDE data/rounds/SCHEMA.md. Every field the schema documents appears above at least once, so the printed block is also a tour of what the synthesiser can check.",
+    "THE POINT OF THE FORMAT: the file supplies the QUESTIONS (which card, which scale, which target, which knob), and the ledger supplies the ANSWERS by re-reading the shipped data at run time. Nothing above is a number this receipt trusts — `before`/`after`/`movers`/`top12` are snapshots of the moment, and where the board has moved on, the block prints the drift as a SUPERSESSION rather than a failure.",
+    "WHAT WOULD FAIL, and should: the PIPELINE_VERSION floor, a knob pattern that no longer matches its file, the subject missing its target band, any `expect`, any `order`, and any named card that has left the pool (MISSING).",
+    "WHAT WOULD NOT FAIL: the subject drifting off its recorded `after`, a mover no longer sitting on its recorded value, or the top 12 reshuffling. Those are later rulings standing on top of this one, which is what the header of scripts/receipts.ts says a receipt records."
+  ]
+}

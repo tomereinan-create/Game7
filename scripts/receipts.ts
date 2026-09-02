@@ -12,7 +12,7 @@
  * A round whose numbers no longer match its prompt is not a failure of this script; it means
  * a later ruling superseded it, and that supersession is printed alongside.
  */
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { ALL_TAGS, archetype, PLAYERS, ruleText, RULES } from '../src/engine/pool'
 import { applyMod, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
@@ -52,6 +52,228 @@ const line = (label: string, got: string | number, want: string, ok: boolean) =>
 }
 const src = (label: string, hay: string, re: RegExp, want: string) => line(label, re.test(hay) ? 'present in source' : 'ABSENT', want, re.test(hay))
 const note = (s: string) => console.log(`        ${s}`)
+
+// ---------------------------------------------------------------------------
+// ROUND FILES (data/rounds/*.json) — the data-driven half of this ledger.
+//
+// Rounds 9-90 are hand-written blocks below, because each one argued something
+// different. From here on a round may instead ship a JSON file describing what it
+// changed and what it measured, and this section SYNTHESISES the same shape of
+// block from it: header, PIPELINE_VERSION, one source check per knob, the
+// subject against its target, the expectations, the orderings, the footprint, the
+// top 12 as they read NOW, then cost and notes. Every number is still a reading
+// taken from the shipped data at run time — the file supplies the QUESTIONS, never
+// the answers. data/rounds/SCHEMA.md documents every field, and
+// data/rounds/EXAMPLE.json is round 0, a worked example that runs.
+//
+// A hand-written block always wins over a file claiming the same round; that is
+// warned about, not silently resolved. Round 0 is skipped by the all-rounds run.
+// ---------------------------------------------------------------------------
+type RoundOp = '>=' | '<=' | '==' | '~'
+interface RoundKnob { file: string; pattern: string; label?: string; note?: string }
+interface RoundExpect { card?: string; five?: string[]; scale: string; op: RoundOp; value: number; tol?: number; label?: string }
+interface RoundOrder { scale: string; above: string; below: string; label?: string }
+interface RoundMovers { scale: string; count: number; max_abs: number; top?: [string, number, number][] }
+interface RoundTop12 { scale: string; cards: string[] }
+interface RoundFile {
+  round: number
+  agent: string
+  status: 'done' | 'declined'
+  ruling: string
+  title: string
+  subject?: string
+  scale: string
+  five?: string[]
+  target?: number
+  before?: number
+  after?: number
+  tol?: number
+  pipeline_version?: number
+  knobs?: RoundKnob[]
+  expect?: RoundExpect[]
+  order?: RoundOrder[]
+  movers?: RoundMovers
+  top12?: RoundTop12
+  cost?: string[]
+  notes?: string[]
+}
+
+type Card = (typeof PLAYERS)[number]
+/** Deterministic tie-break for every "read the board now" listing (no locale involved). */
+const cmpName = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+/** Exact card name first; a bare player name resolves to his peak card (talent, then ovr). */
+const cardOf = (name: string): Card | null => {
+  const exact = by.get(name)
+  if (exact) return exact
+  const seasons = PLAYERS.filter((p) => p.player === name)
+  if (!seasons.length) return null
+  return [...seasons].sort((a, b) => b.talent - a.talent || b.ovr - a.ovr || cmpName(a.name, b.name))[0]
+}
+/** The card scales a round file may name. Team scales are read separately, from a five. */
+const cardScale = (p: Card, scale: string): number | null => {
+  if (scale === 'off') return p.o_ovr
+  if (scale === 'def') return p.d_ovr
+  if (scale === 'ovr') return p.ovr
+  if (scale.startsWith('attr:')) {
+    const v = (p.attrs as unknown as Record<string, unknown>)[scale.slice(5)]
+    return typeof v === 'number' ? v : null
+  }
+  return null
+}
+/** One reading on one scale: a card, or the engine's 1-99 team dials for a five. */
+const readScale = (scale: string, cardName?: string, five?: string[]): { v: number | null; who: string; why?: string } => {
+  if (scale.startsWith('team:')) {
+    if (!five || five.length !== 5) return { v: null, who: cardName ?? 'team', why: 'a team scale needs a five of exactly 5 names' }
+    const ps = five.map((n) => cardOf(n))
+    const miss = five.filter((_, i) => !ps[i])
+    if (miss.length) return { v: null, who: cardName ?? five.join(' / '), why: `MISSING from the pool: ${miss.join(', ')}` }
+    const r = ratings100(ps as Card[])
+    const v = scale === 'team:off' ? r.off : scale === 'team:def' ? r.def : null
+    return { v, who: cardName ?? (ps as Card[]).map((p) => p.name).join(' / '), why: v === null ? `unknown team scale ${scale}` : `offRaw ${r.offRaw.toFixed(2)} · drtg vs REF_FIVE ${r.drtgRef.toFixed(2)}` }
+  }
+  if (!cardName) return { v: null, who: '(no card named)', why: 'a card scale needs a card name' }
+  const p = cardOf(cardName)
+  if (!p) return { v: null, who: `${cardName} (MISSING)`, why: 'no such card in the shipped pool' }
+  const v = cardScale(p, scale)
+  return { v, who: p.name, why: v === null ? `unknown scale ${scale}` : undefined }
+}
+
+const warnings: string[] = []
+
+/** Build the receipt block for one round file. Runs at print time, never at load time. */
+const roundBlock = (r: RoundFile) => () => {
+  const tag = r.status === 'declined' ? ' — DECLINED' : ''
+  console.log(`${EOL}recal_${r.round}${tag} — ${r.title} (${r.agent}; his ruling, verbatim: "${r.ruling}")`)
+  if (r.pipeline_version != null) {
+    let cur = Number.NaN
+    try {
+      cur = Number(JSON.parse(io('src/data/pipeline.json')).version)
+    } catch {
+      /* reported by the line below */
+    }
+    line('PIPELINE_VERSION', `shipped at ${r.pipeline_version} · current ${Number.isFinite(cur) ? cur : 'UNREADABLE'} (src/data/pipeline.json — what the app reads)`, `>= ${r.pipeline_version}`, Number.isFinite(cur) && cur >= r.pipeline_version)
+  }
+  for (const k of r.knobs ?? []) {
+    const label = `${k.label ?? 'knob'} (${k.file})`
+    let hay: string | null = null
+    try {
+      hay = io(k.file)
+    } catch {
+      hay = null
+    }
+    if (hay === null) {
+      line(label, 'FILE UNREADABLE', k.file, false)
+      continue
+    }
+    let re: RegExp | null = null
+    try {
+      re = new RegExp(k.pattern)
+    } catch (e) {
+      line(label, `BAD PATTERN: ${(e as Error).message}`, k.pattern, false)
+      continue
+    }
+    src(label, hay, re, k.note ?? k.pattern)
+  }
+  // ---- the subject: against the ruling's target, then against what the round shipped ----
+  const cur = readScale(r.scale, r.subject, r.five)
+  const moved = r.before != null && r.after != null ? `${r.before} -> ${r.after} · reads ${cur.v ?? 'MISSING'} now` : `reads ${cur.v ?? 'MISSING'} now`
+  if (cur.v === null) {
+    line(`SUBJECT ${cur.who} ${r.scale}`, 'MISSING', r.target != null ? String(r.target) : 'a reading', false)
+    if (cur.why) note(`  ${cur.why}`)
+  } else if (r.target != null) {
+    const tol = r.tol ?? 0
+    const hit = Math.abs(cur.v - r.target) <= tol
+    if (r.status === 'declined') {
+      line(`SUBJECT ${cur.who} ${r.scale}`, moved, `${r.target} ± ${tol} — DECLINED, so the target is RECORDED, not required`, true)
+      note(`  the closest reachable value was ${r.after ?? cur.v}; the round declined rather than special-case the card.`)
+    } else line(`SUBJECT ${cur.who} ${r.scale}`, moved, `${r.target} ± ${tol}`, hit)
+    if (cur.why) note(`  ${cur.why}`)
+  } else line(`SUBJECT ${cur.who} ${r.scale}`, moved, 'a reading, no target given', true)
+  if (cur.v !== null && r.after != null && cur.v !== r.after) {
+    line(`  ${cur.who} against what THIS round shipped`, `shipped ${r.after} · reads ${cur.v}`, 'SUPERSEDED by a later round — recorded, not a failure', true)
+    note('  A round whose own number has moved is not a broken round: a later ruling stood on top of it.')
+  }
+  for (const e of r.expect ?? []) {
+    const rd = readScale(e.scale, e.card, e.five ?? (e.scale.startsWith('team:') ? r.five : undefined))
+    const tol = e.tol ?? 0
+    const want = e.op === '~' ? `~ ${e.value} ± ${tol}` : `${e.op} ${e.value}`
+    const label = `${e.label ? `${e.label} — ` : ''}${rd.who} ${e.scale}`
+    if (rd.v === null) {
+      line(label, 'MISSING', want, false)
+      if (rd.why) note(`  ${rd.why}`)
+      continue
+    }
+    const ok = e.op === '>=' ? rd.v >= e.value : e.op === '<=' ? rd.v <= e.value : e.op === '==' ? rd.v === e.value : Math.abs(rd.v - e.value) <= tol
+    line(label, rd.v, want, ok)
+  }
+  for (const o of r.order ?? []) {
+    const a = readScale(o.scale, o.above, r.five)
+    const b = readScale(o.scale, o.below, r.five)
+    const label = `${o.label ? `${o.label} — ` : 'order — '}${a.who} above ${b.who} (${o.scale})`
+    if (a.v === null || b.v === null) {
+      line(label, `${a.v ?? 'MISSING'} vs ${b.v ?? 'MISSING'}`, 'both readable', false)
+      continue
+    }
+    line(label, `${a.v} vs ${b.v}`, 'above > below', a.v > b.v)
+  }
+  if (r.movers) {
+    const m = r.movers
+    line(`FOOTPRINT on ${m.scale}, as the round measured it`, `${m.count} cards moved · largest |move| ${m.max_abs}`, 'recorded at the time — this ledger re-reads the movers, not the count', true)
+    for (const mv of m.top ?? []) {
+      const [n, was, now] = mv
+      const rd = readScale(m.scale, n, r.five)
+      if (rd.v === null) {
+        line(`  mover ${n}`, 'MISSING', `${was} -> ${now}`, false)
+        continue
+      }
+      const drift = rd.v !== now
+      line(`  mover ${rd.who} ${m.scale}`, `${was} -> ${now}${drift ? ` · reads ${rd.v} NOW` : ''}`, drift ? 'SUPERSEDED by a later round — recorded, not a failure' : `still ${now}`, true)
+    }
+  }
+  if (r.top12) {
+    const t = r.top12
+    if (t.scale.startsWith('team:')) note(`top12 skipped: "${t.scale}" is a team scale and the board is a list of cards.`)
+    else {
+      const board = PLAYERS.filter((p) => cardScale(p, t.scale) !== null).sort((a, b) => cardScale(b, t.scale)! - cardScale(a, t.scale)! || cmpName(a.name, b.name)).slice(0, 12)
+      note(`TOP 12 BY ${t.scale.toUpperCase()}, read NOW (the round recorded a different name at a marked position):`)
+      let same = 0
+      board.forEach((p, i) => {
+        const was = t.cards[i]
+        if (p.name === was) same++
+        note(`  ${String(i + 1).padStart(2)}. ${p.name.padEnd(30)} ${cardScale(p, t.scale)}${p.name === was ? '' : `   <- the round recorded ${was ?? '(nothing)'} here`}`)
+      })
+      line(`top 12 by ${t.scale}, positions still as the round left them`, `${same}/12`, same === t.cards.length ? `${t.cards.length}/12 — unchanged` : 'differences marked above — a later round moved them; recorded, not a failure', true)
+    }
+  }
+  if (r.cost?.length) {
+    note('COST — what a later round should know:')
+    for (const c of r.cost) note(`  ${c}`)
+  }
+  for (const n of r.notes ?? []) note(n)
+}
+
+const ROUND_DIR = 'data/rounds'
+const FILE_ROUNDS: Record<string, () => void> = {}
+try {
+  for (const f of readdirSync(ROUND_DIR).filter((n) => n.toLowerCase().endsWith('.json')).sort()) {
+    let parsed: RoundFile
+    try {
+      parsed = JSON.parse(readFileSync(`${ROUND_DIR}/${f}`, 'utf8')) as RoundFile
+    } catch (e) {
+      warnings.push(`${ROUND_DIR}/${f} is not valid JSON and was skipped: ${(e as Error).message}`)
+      continue
+    }
+    if (typeof parsed?.round !== 'number' || typeof parsed?.scale !== 'string') {
+      warnings.push(`${ROUND_DIR}/${f} has no numeric "round" / string "scale" — skipped (see data/rounds/SCHEMA.md)`)
+      continue
+    }
+    const key = String(parsed.round)
+    if (FILE_ROUNDS[key]) warnings.push(`two round files both claim round ${key}; ${f} is the one that wins`)
+    FILE_ROUNDS[key] = roundBlock(parsed)
+  }
+} catch {
+  /* no data/rounds directory yet — the hand-written blocks are the whole ledger */
+}
 
 const ROUNDS: Record<string, () => void> = {
   '9': () => {
@@ -3998,9 +4220,22 @@ const ROUNDS: Record<string, () => void> = {
   },
 }
 
+// Hand-written wins over a round file claiming the same number, loudly.
+for (const [k, fn] of Object.entries(FILE_ROUNDS)) {
+  if (ROUNDS[k]) {
+    warnings.push(`round ${k} has BOTH a hand-written block and a file in ${ROUND_DIR}/ — the hand-written block wins and the file is ignored`)
+    continue
+  }
+  ROUNDS[k] = fn
+}
+
 const want = process.argv.slice(2).filter((a) => !a.startsWith('-'))
-const rounds = want.length ? want : Object.keys(ROUNDS)
+// Round 0 is data/rounds/EXAMPLE.json, the worked example of the file format. It is a
+// real, passing receipt, but it is not a ruling, so the all-rounds run leaves it out;
+// `npm run receipts -- 0` asks for it by name.
+const rounds = want.length ? want : Object.keys(ROUNDS).filter((r) => r !== '0')
 console.log(`verification receipts — rounds ${rounds.join(', ')} — read from the shipped players_stats.json`)
+for (const w of warnings) console.log(`  WARNING  ${w}`)
 for (const r of rounds) {
   const fn = ROUNDS[r]
   if (!fn) throw new Error(`no receipts defined for round ${r} (have: ${Object.keys(ROUNDS).join(', ')})`)
