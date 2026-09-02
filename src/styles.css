@@ -2022,6 +2022,14 @@ button {
 .row.drop-ok { background: var(--you-tint); box-shadow: inset 0 0 0 1px var(--you); border-radius: 6px; }
 .row.drop-no { background: var(--danger-tint); box-shadow: inset 0 0 0 1px var(--danger-line); border-radius: 6px; }
 .drag-ghost { position: fixed; z-index: 50; transform: translate(-50%, -140%); pointer-events: none; padding: 6px 10px; border-radius: 6px; background: var(--you); color: var(--you-ink); font-family: var(--mono); font-size: 12px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+/* THE DRAG THAT DRAFTS (his ruling: "Add the ability to draft a player by dragging him to the
+   court"). Unlike a floor row, a ROSTER row sits in a list the finger still has to scroll, so it
+   keeps pan-y: the page owns a vertical swipe outright, and only a press that stays put or travels
+   sideways lifts the man. The page is held still in JS for as long as he is in the air. */
+.row.pull { touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+/* the ghost says where he lands; over a ring he cannot take it turns and says he cannot */
+.drag-ghost em { font-style: normal; margin-left: 7px; opacity: 0.72; }
+.drag-ghost.no { background: var(--danger); color: var(--bg); }
 .cap.hint { display: block; padding: 8px 2px 0; color: var(--faint); }
 
 /* ---- series stats ---- */
