@@ -43,33 +43,51 @@ type XY = readonly [number, number]
 export type Side = 'off' | 'def'
 
 /**
- * THE COURT'S OWN GEOMETRY (his report: formation spots ignored the drawn 3pt
- * line). These constants mirror the floor SVG exactly — the arc is
- * `M8 98 L8 82 A49 49 0 0 1 92 82`, so its circle centers at (50, 82+√(49²−42²))
- * — and every perimeter spot is derived FROM that circle: `peri(deg, m)` stands
- * a man m units BEHIND the line at the given angle (0° = straight atop the
- * arc, ±59° are the corner breaks; beyond ±47° would leave the floor, so the
- * corner three hugs the vertical corner lane instead). Interior spots (block,
- * roller, elbow, dunker) are named landmarks well inside the arc. Proportional
- * at every render size, since everything is viewBox units.
+ * THE COURT'S OWN GEOMETRY, IN FEET (his ruling: "The ft line is cutting the ft line, fix it for
+ * irl proportions"). The floor used to be drawn by eye — an arc whose circle sat below the
+ * baseline and a free-throw circle nine units wide — so the free-throw circle cut across the top
+ * of the key instead of sitting centred on the free-throw line.
+ *
+ * Now there is ONE scale, `FT` viewBox units per foot, and every line and every spot is stated in
+ * NBA feet through it: the court 50 wide and the halfcourt 47 deep (which is what fixes `FT`), the
+ * key 16 x 19 with the free-throw line as its far edge, the free-throw circle radius 6 CENTRED on
+ * that line, the restricted arc 4 from the basket, the basket centre 5.25 off the baseline, the
+ * three straight at 22 in the corners and 23.75 around, the centre circle radius 6 at the
+ * half-court line. `at(x, y)` is a point in feet — x from the middle of the floor, y from the
+ * baseline — and `peri(deg, m)` stands a man m FEET behind the arc at that angle off the middle,
+ * measured from the basket like the line itself. The viewBox is square, so a circle is round and a
+ * foot is a foot in both directions at every render size.
  */
-const ARC_R = 49
-const ARC_CX = 50
-const ARC_CY = 82 + Math.sqrt(ARC_R * ARC_R - 42 * 42)
-const peri = (deg: number, m = 8): XY => {
+const FT = 78 / 47
+const BASE = 98
+const HALF = BASE - 47 * FT
+const SIDE = 25 * FT
+const at = (x: number, y: number): XY => [50 + x * FT, BASE - y * FT]
+const RIM_Y = 5.25
+const KEY_W = 16
+const KEY_D = 19
+const FT_LINE = BASE - KEY_D * FT
+const ARC = 23.75
+const CORNER_X = 22
+/** Where the corner line meets the arc — the break, √(23.75² − 22²) up from the basket. */
+const BREAK_Y = RIM_Y + Math.sqrt(ARC * ARC - CORNER_X * CORNER_X)
+const peri = (deg: number, m = 4): XY => {
   const a = (deg * Math.PI) / 180
-  return [ARC_CX + (ARC_R + m) * Math.sin(a), ARC_CY - (ARC_R + m) * Math.cos(a)]
+  return at((ARC + m) * Math.sin(a), RIM_Y + (ARC + m) * Math.cos(a))
 }
-/** The corner three: on the corner lane, hugging the sideline below the break. */
-const CORNER_L: XY = [7, 88]
-const CORNER_R: XY = [93, 88]
-/** Interior landmarks — all comfortably inside the arc. */
-const BLOCK_L: XY = [28, 81]
-const PAINT_C: XY = [60, 80]
-const ROLL: XY = [57, 63]
-const ELBOW_R: XY = [66, 72]
-const DUNK_L: XY = [32, 88]
-const DUNK_R: XY = [68, 88]
+/** The corner three: a foot behind the corner line, eight feet up from the baseline. */
+const CORNER_L: XY = at(-23, 8)
+const CORNER_R: XY = at(23, 8)
+/** Interior landmarks, in feet: the block on the lane line, the dunker spots in the short corners. */
+const BLOCK_L: XY = at(-8, 7)
+const PAINT_C: XY = at(4, 10)
+const ROLL: XY = at(3, 15)
+const ELBOW_R: XY = at(8, KEY_D)
+const DUNK_L: XY = at(-10, 5)
+const DUNK_R: XY = at(10, 5)
+/** Two men filling the lanes on the break, five feet short of the half-court line. */
+const RUN_L: XY = at(-12, 42)
+const RUN_R: XY = at(12, 42)
 
 /**
  * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
@@ -80,15 +98,34 @@ const DUNK_R: XY = [68, 88]
  * ghost floor, which has no shooting to sort by. A full five is stood by `stand` instead, which
  * keeps the same five spots and gives the inside one to the man who cannot shoot.
  */
-const AT: XY[] = [peri(0, 12), peri(-38), peri(38), CORNER_L, PAINT_C]
+const AT: XY[] = [peri(0, 6), peri(-38), peri(38), CORNER_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
 /**
- * Is a spot BEHIND the three-point line? Above the break the line IS the arc; below it the line is
- * the straight corner lane the floor draws at x=8 / x=92, so a corner man stands behind the line
- * while sitting inside the arc's circle. Exported because "four out, one in" is a claim about the
- * drawn floor, and tests/court.test.ts holds the balanced set to it.
+ * Is a spot BEHIND the three-point line — the REAL one? Below the break the line is straight, 22
+ * feet from the basket either side; above it the line is the 23.75-foot arc around the basket.
+ * Exported because "four out, one in" is a claim about the drawn floor, and tests/court.test.ts
+ * holds the balanced set to it.
  */
-export const outsideLine = ([x, y]: XY): boolean => (y >= 82 ? x <= 8 || x >= 92 : Math.hypot(x - ARC_CX, y - ARC_CY) >= ARC_R)
+export const outsideLine = ([x, y]: XY): boolean => {
+  const fx = (x - 50) / FT
+  const fy = (BASE - y) / FT
+  return fy <= BREAK_Y ? Math.abs(fx) >= CORNER_X : Math.hypot(fx, fy - RIM_Y) >= ARC
+}
+/** ...and is it one of the two CORNERS, the spots only a shooter may stand in? */
+export const inCorner = (xy: XY): boolean => outsideLine(xy) && (BASE - xy[1]) / FT <= BREAK_Y
+/**
+ * The drawn floor's own numbers, so tests/court.test.ts can hold the lines to real feet and every
+ * spot to the floor they are drawn on.
+ */
+export const FLOOR = {
+  ft: FT,
+  left: 50 - SIDE,
+  right: 50 + SIDE,
+  half: HALF,
+  base: BASE,
+  ftLine: FT_LINE,
+  rimY: BASE - RIM_Y * FT,
+} as const
 /** Units of empty floor above the half-court line, kept only when a bench man stands there. */
 const CROP = 16
 
@@ -105,18 +142,18 @@ const CROP = 16
  */
 const DEF_AT: Record<Scheme, XY[]> = {
   // honest man spacing: the wings pick their men up at the line, the bigs sit on the blocks
-  matchup: [peri(0, 0), peri(-34, 1), peri(34, 1), [30, 88], [60, 86]],
+  matchup: [peri(0, 0), peri(-34, 0.5), peri(34, 0.5), at(-10, 6), at(5, 7)],
   // the guard stays over the screen, the big is already home at the rim, the rest wall the middle
-  drop: [peri(-3, 4), peri(-37, 0), peri(36, -1), [33, 85], [55, 88]],
+  drop: [peri(-3, 2), peri(-37, 0), peri(36, -0.5), at(-9, 8), at(3, 6)],
   // level and symmetric: five men on one line, every one of them able to take any man
-  switch: [peri(-54, -3), peri(-27, -7), peri(0, -8), peri(27, -7), peri(54, -3)],
+  switch: [peri(-54, -1.5), peri(-27, -3.5), peri(0, -4), peri(27, -3.5), peri(54, -1.5)],
   // two hard onto the ball up top, the other three rotating behind them
-  blitz: [peri(-11, 3), peri(11, 3), peri(-42, -4), peri(42, -4), [50, 84]],
+  blitz: [peri(-11, 1.5), peri(11, 1.5), peri(-42, -2), peri(42, -2), at(0, 8.5)],
   // a true 2-3: two at the elbows extended, three across the lane and the corners
-  zone: [peri(-19, -5), peri(19, -5), peri(-56, -8), [50, 88], peri(56, -8)],
+  zone: [peri(-19, -2.5), peri(19, -2.5), peri(-56, -4), at(0, 6), peri(56, -4)],
   // turn him down the sideline: the on-ball man sits on his inside shoulder, the big shows at
   // the level of the screen, and the last three load the weak side
-  ice: [peri(-26, -3), peri(-55, -12), peri(31, 1), [42, 90], [60, 76]],
+  ice: [peri(-26, -1.5), peri(-55, -6), peri(31, 0.5), at(-4, 5), at(5, 13)],
 }
 
 
@@ -192,7 +229,7 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // four out, one in — and the one in is the man who cannot shoot, not whoever wears the C
       return stand(men, {}, [
         [PAINT_C, 0],
-        [peri(0, 12), 1],
+        [peri(0, 6), 1],
         [peri(-38), 1],
         [peri(38), 1],
         [CORNER_L, 2],
@@ -224,9 +261,9 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
         men,
         {},
         [
-          [[30, 26], 1],
-          [[70, 26], 1],
-          [peri(0, 3), 1],
+          [RUN_L, 1],
+          [RUN_R, 1],
+          [peri(0, 1.5), 1],
           [peri(-43), 2],
           [peri(43), 2],
         ],
@@ -241,7 +278,7 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
       // the handler sets the screen, so the shape is always five men on five different spots
       if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
-      return stand(men, { [h]: peri(-6, 10), [s]: ROLL }, [[peri(38), 1], [CORNER_L, 2], [CORNER_R, 2]], [DUNK_L])
+      return stand(men, { [h]: peri(-6, 5), [s]: ROLL }, [[peri(38), 1], [CORNER_L, 2], [CORNER_R, 2]], [DUNK_L])
     }
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a
@@ -253,7 +290,7 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // the engine alone above the arc; the four low — the corners for the shooters, the two
       // dunker spots for the men who cannot space
       const s = best(men, (p) => Math.min(p.attrs.volume, p.attrs.playvol))
-      return stand(men, { [s]: peri(0, 12) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
+      return stand(men, { [s]: peri(0, 6) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
   }
 }
@@ -434,21 +471,55 @@ export function CourtFive({
    * The band above the half-court line only exists to stand the resting man on, so a court with
    * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and
    * the viewBox are cropped together and the spots are remapped into what is left, so every
-   * position stays exactly where it was relative to the floor.
+   * position stays exactly where it was relative to the floor. EVERY spot: the remap used to be
+   * applied to the bench man alone, which stood the five up to 11% of the box BELOW its own floor
+   * — the top of the arc sat inside the arc — and that only showed once the floor was drawn to
+   * real proportions and the line was where it says it is.
    */
   const top = bench ? 0 : CROP
   const y = (v: number) => ((v - top) / (100 - top)) * 100
   return (
     <div className="court" style={{ aspectRatio: `100 / ${100 - top}` }}>
       <svg className="ct-floor" viewBox={`0 ${top} 100 ${100 - top}`} aria-hidden="true">
-        {/* the floor: boundary, half-court circle, the paint, the arc, the rim */}
-        <rect x="2" y="20" width="96" height="78" fill="var(--wash)" stroke="var(--line)" strokeWidth="0.8" />
-        <path d="M39 20 A 11 11 0 0 0 61 20" fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
-        <rect x="34" y="64" width="32" height="34" fill="var(--surface)" stroke="var(--line-2)" strokeWidth="0.7" />
-        <circle cx="50" cy="64" r="9" fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
-        <path d="M8 98 L8 82 A 49 49 0 0 1 92 82 L92 98" fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
-        <path d="M43.5 95.6 h13" stroke="var(--line-3)" strokeWidth="1" />
-        <circle cx="50" cy="92.6" r="2.3" fill="none" stroke="var(--line-3)" strokeWidth="0.8" />
+        {/* THE FLOOR, in feet through FT (his ruling: "fix it for irl proportions"): the boundary,
+            the centre circle at the half-court line, the key with the free-throw circle centred ON
+            the free-throw line — its far half solid and its near half dashed, as on a real floor —
+            the restricted arc, the three, the backboard and the rim. */}
+        <rect x={50 - SIDE} y={HALF} width={2 * SIDE} height={BASE - HALF} fill="var(--wash)" stroke="var(--line)" strokeWidth="0.8" />
+        <path d={`M${50 - 6 * FT} ${HALF} A ${6 * FT} ${6 * FT} 0 0 0 ${50 + 6 * FT} ${HALF}`} fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
+        <rect
+          x={50 - (KEY_W / 2) * FT}
+          y={FT_LINE}
+          width={KEY_W * FT}
+          height={BASE - FT_LINE}
+          fill="var(--surface)"
+          stroke="var(--line-2)"
+          strokeWidth="0.7"
+        />
+        <path d={`M${50 - 6 * FT} ${FT_LINE} A ${6 * FT} ${6 * FT} 0 0 1 ${50 + 6 * FT} ${FT_LINE}`} fill="none" stroke="var(--line-2)" strokeWidth="0.7" />
+        <path
+          d={`M${50 - 6 * FT} ${FT_LINE} A ${6 * FT} ${6 * FT} 0 0 0 ${50 + 6 * FT} ${FT_LINE}`}
+          fill="none"
+          stroke="var(--line-2)"
+          strokeWidth="0.7"
+          strokeDasharray="1.6 1.6"
+        />
+        <path
+          d={`M${50 - CORNER_X * FT} ${BASE} L${50 - CORNER_X * FT} ${BASE - BREAK_Y * FT} A ${ARC * FT} ${ARC * FT} 0 0 1 ${
+            50 + CORNER_X * FT
+          } ${BASE - BREAK_Y * FT} L${50 + CORNER_X * FT} ${BASE}`}
+          fill="none"
+          stroke="var(--line-2)"
+          strokeWidth="0.7"
+        />
+        <path
+          d={`M${50 - 4 * FT} ${BASE - RIM_Y * FT} A ${4 * FT} ${4 * FT} 0 0 1 ${50 + 4 * FT} ${BASE - RIM_Y * FT}`}
+          fill="none"
+          stroke="var(--line-3)"
+          strokeWidth="0.6"
+        />
+        <path d={`M${50 - 3 * FT} ${BASE - 4 * FT} h${6 * FT}`} stroke="var(--line-3)" strokeWidth="1" />
+        <circle cx="50" cy={BASE - RIM_Y * FT} r={0.75 * FT} fill="none" stroke="var(--line-3)" strokeWidth="0.8" />
         {bench ? <path d="M5 16.5 h17" stroke="var(--line-2)" strokeWidth="0.7" /> : null}
       </svg>
       {plan ? (
@@ -469,7 +540,7 @@ export function CourtFive({
               ? { ...s, dropOk: drag.over === s.slot && drag.from !== s.slot ? swap.can(drag.from, s.slot) : null }
               : s
           }
-          at={at[i]}
+          at={[at[i][0], y(at[i][1])]}
           size={58}
           drag={dragFor(s)}
           {...(shown === 'off'

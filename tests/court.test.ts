@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { inferredStyle, outsideLine, spotsFor } from '../src/ui/CourtFive'
+import { FLOOR, inCorner, inferredStyle, outsideLine, spotsFor } from '../src/ui/CourtFive'
 import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
@@ -164,20 +164,19 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     g("Deandre Ayton '26"),
   ]
   const AYTON = 4
-  const corner = ([x, y]: readonly [number, number]) => y >= 82 && (x <= 8 || x >= 92)
 
   it('the Lakers five stands Ayton inside, not in the corner', () => {
     expect(canSpace(LAKERS[AYTON])).toBe(false)
     const at = spotsFor(null, LAKERS)
     expect(inferredStyle(LAKERS)!.style).toBe('postup')
     expect(outsideLine(at[AYTON])).toBe(false)
-    expect(corner(at[AYTON])).toBe(false)
+    expect(inCorner(at[AYTON])).toBe(false)
   })
 
   it('holds in every shape, called or inferred', () => {
     for (const s of STYLES) {
       const at = spotsFor({ style: s.key, pnr: null }, LAKERS)
-      expect(corner(at[AYTON])).toBe(false)
+      expect(inCorner(at[AYTON])).toBe(false)
       // every set but five-out owns an inside spot, and it is his
       if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
     }
@@ -202,5 +201,49 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     expect(bigs).toHaveLength(2)
     expect(at[3]).not.toEqual(at[AYTON])
     expect(outsideLine(at[3])).toBe(false) // LeBron '26 on the block
+  })
+})
+
+/**
+ * HIS RULING: "The ft line is cutting the ft line, fix it for irl proportions" — the free-throw
+ * circle was drawn across the top of the key instead of centred on the free-throw line, because
+ * the floor was drawn by eye. It is now one scale of NBA feet, and every spot stands in it.
+ */
+describe('the floor is drawn to real proportions, and every spot stands on it', () => {
+  const F = FLOOR
+  const ft = (u: number) => u / F.ft
+
+  it('the court is 50 feet by 47, and the key 16 by 19 with the circle centred on the line', () => {
+    expect(ft(F.right - F.left)).toBeCloseTo(50, 6)
+    expect(ft(F.base - F.half)).toBeCloseTo(47, 6)
+    // the free-throw line is the far edge of a 19-foot key, and the 6-foot circle is centred ON it
+    expect(ft(F.base - F.ftLine)).toBeCloseTo(19, 6)
+    // the basket sits 5.25 feet off the baseline, so the circle cannot reach the rim
+    expect(ft(F.base - F.rimY)).toBeCloseTo(5.25, 6)
+    expect(F.ftLine + 6 * F.ft).toBeLessThan(F.rimY) // the circle's near half stops short of the rim
+  })
+
+  it('the line is the real line: 22 feet in the corner, 23.75 around', () => {
+    const at = (x: number, y: number) => [50 + x * F.ft, F.base - y * F.ft] as const
+    expect(outsideLine(at(22.5, 6))).toBe(true) // half a foot behind the corner line
+    expect(outsideLine(at(21.5, 6))).toBe(false) // and a foot in front of it
+    expect(inCorner(at(23, 7))).toBe(true)
+    expect(outsideLine(at(0, 5.25 + 23.8))).toBe(true) // straight out from the basket, behind the arc
+    expect(outsideLine(at(0, 5.25 + 23.7))).toBe(false)
+    expect(inCorner(at(0, 5.25 + 23.8))).toBe(false) // the top of the arc is not a corner
+  })
+
+  it('no shape stands a man off the floor', () => {
+    const fives = [FIVE, PLAYERS.slice(0, 5), PLAYERS.slice(300, 305)]
+    for (const five of fives) {
+      for (const s of STYLES) {
+        for (const [x, y] of spotsFor({ style: s.key, pnr: null }, five)) {
+          expect(x).toBeGreaterThan(F.left)
+          expect(x).toBeLessThan(F.right)
+          expect(y).toBeGreaterThan(F.half)
+          expect(y).toBeLessThanOrEqual(F.base)
+        }
+      }
+    }
   })
 })
