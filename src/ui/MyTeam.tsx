@@ -260,7 +260,17 @@ export function MyTeam({
     setInfo(null)
   }
 
-  const row = (p: Player, opts: { sub: string; dim?: boolean; on?: boolean; onTap?: () => void; dur?: number; worn?: boolean }) => (
+  const row = (p: Player, opts: { sub: string; dim?: boolean; on?: boolean; onTap?: () => void; dur?: number; worn?: boolean }) => {
+    /**
+     * HIS RULING: "Remove what Ive marked, no need for duplicates". The same duplicate the draft
+     * had: pressing a man here opened his archetype card AND, right under it, the tap-open grid —
+     * the same season, the same fourteen numbers, twice. The card is the one that stays (it carries
+     * the tag's sentence too), so while it is up the grid does not print, and the row's chevron
+     * closes the card rather than doing nothing. Everything the grid alone used to say — who he was
+     * that season, and the league's TS — reads on the card, via seasonWho() / leagueTS().
+     */
+    const carded = band === p.name && !slot
+    return (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
         className={`row dr ${opts.on ? 'on' : ''} ${opts.dim ? 'off' : ''}`}
@@ -292,20 +302,23 @@ export function MyTeam({
           {f1(LINES[p.name]?.ppg)} <i>·</i> {f1(LINES[p.name]?.rpg)} <i>·</i> {f1(LINES[p.name]?.apg)}
         </span>
         <button
-          className={`pinfo ${info === p.name ? 'open' : ''}`}
+          className={`pinfo ${carded || info === p.name ? 'open' : ''}`}
           aria-label={`${p.name} season line`}
+          aria-expanded={carded || info === p.name}
           onClick={(e) => {
             e.stopPropagation()
-            setInfo(info === p.name ? null : p.name)
+            if (carded) setBand(null)
+            else setInfo(info === p.name ? null : p.name)
           }}
         >
           ▾
         </button>
       </div>
-      {band === p.name && !slot ? <ManBand p={p} inline /> : null}
-      {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
+      {carded ? <ManBand p={p} inline /> : null}
+      {info === p.name && !carded ? <DetailGrid p={p} mode="stats" /> : null}
     </div>
-  )
+    )
+  }
 
   const roster = spun
     ? spun.p
