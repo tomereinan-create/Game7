@@ -114,25 +114,25 @@
       "card": "Ty Jerome '25",
       "scale": "off",
       "op": "~",
-      "value": 81,
+      "value": 71,
       "tol": 0,
-      "label": "FIFTH RULING, verbatim: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\" (target off 71 +-4) — DECLINED, recorded at its unchanged reading; provably infeasible, see COST"
+      "label": "FIFTH RULING, verbatim: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\" (target off 71 +-4) — DECLINED, recorded at its unchanged reading; provably infeasible, see COST  [SUPERSEDED BY recal_96, which LANDED the ruling this round declined (\"Montrezl Harrell '18 is too high OFF as well\" reopened the blocker): recorded here at 81, reads 71 now]"
     },
     {
       "card": "Nick Young '10",
       "scale": "off",
       "op": "~",
-      "value": 65,
+      "value": 56,
       "tol": 0,
-      "label": "the card his fifth ruling said should \"come down with him\": flat, because the load term declined"
+      "label": "the card his fifth ruling said should \"come down with him\": flat, because the load term declined  [SUPERSEDED BY recal_96, which LANDED the ruling this round declined (\"Montrezl Harrell '18 is too high OFF as well\" reopened the blocker): recorded here at 65, reads 56 now]"
     },
     {
       "card": "Montrezl Harrell '18",
       "scale": "off",
       "op": "~",
-      "value": 77,
+      "value": 63,
       "tol": 1,
-      "label": "THE CARD THAT MAKES DEFECT C INFEASIBLE — recal_52's anchor, OFF 77 on 17.0 mpg, BELOW Ty Jerome '25's 19.9"
+      "label": "THE CARD THAT MAKES DEFECT C INFEASIBLE — recal_52's anchor, OFF 77 on 17.0 mpg, BELOW Ty Jerome '25's 19.9  [SUPERSEDED BY recal_96, which LANDED the ruling this round declined (\"Montrezl Harrell '18 is too high OFF as well\" reopened the blocker): recorded here at 77, reads 63 now]"
     },
     {
       "card": "Scottie Pippen '94",
@@ -208,9 +208,9 @@
       "card": "Ty Jerome '25",
       "scale": "ovr",
       "op": "~",
-      "value": 72,
+      "value": 65,
       "tol": 0,
-      "label": "the loosened cap does not reach an offence-led card: his cap is o+10 = 91 against a blend of 72. 72 is recal_92/95's reading (they took his DEF 46 -> 51); this round leaves him exactly there"
+      "label": "the loosened cap does not reach an offence-led card: his cap is o+10 = 91 against a blend of 72. 72 is recal_92/95's reading (they took his DEF 46 -> 51); this round leaves him exactly there  [SUPERSEDED BY recal_96, which LANDED the ruling this round declined (\"Montrezl Harrell '18 is too high OFF as well\" reopened the blocker): recorded here at 72, reads 65 now]"
     },
     {
       "card": "LeBron James '07",

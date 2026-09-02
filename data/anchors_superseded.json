@@ -1,5 +1,27 @@
 [
  {
+  "card": "Ty Jerome '25",
+  "scale": "off",
+  "target": 82,
+  "tol": 2,
+  "round": 78,
+  "ruling": "Ty jerome still 82 OFF",
+  "note": "his ruling reads 82; the shipped card measured 81 at the round",
+  "superseded_by": 96,
+  "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
+ },
+ {
+  "card": "Montrezl Harrell '18",
+  "scale": "off",
+  "target": 77,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
+  "note": "post-97, measured — unchanged",
+  "superseded_by": 96,
+  "superseded_note": "SUPERSEDED BY HIS OWN LATER RULING, quoted in full. For Montrezl Harrell '18: \"Montrezl Harrell '18 is too high OFF as well\". For Ty Jerome '25: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\". recal_93 proved these two pins jointly blocked any minutes-load term - Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no term monotone in minutes could exist. He ruled on the blocker rather than on the round, and recal_96 is that round."
+ },
+ {
   "card": "Shaquille O'Neal '00",
   "scale": "off",
   "target": 99,

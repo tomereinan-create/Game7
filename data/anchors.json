@@ -1,5 +1,23 @@
 [
  {
+  "card": "Ty Jerome '25",
+  "scale": "off",
+  "target": 71,
+  "tol": 4,
+  "round": 96,
+  "ruling": "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81",
+  "note": "the load term: volume and playvol paid in proportion to minutes share; 81 -> 71 on 19.9 mpg"
+ },
+ {
+  "card": "Montrezl Harrell '18",
+  "scale": "off",
+  "target": 63,
+  "tol": 2,
+  "round": 96,
+  "ruling": "Montrezl Harrell '18 is too high OFF as well",
+  "note": "NO NUMBER WAS GIVEN - directional (\"too high\"), so the pin is where the same load term lands him, 77 -> 63 on 17.0 mpg, at +-2. Accepted by him at this value (\"As is, accept both\")."
+ },
+ {
   "card": "Jimmy Butler '16",
   "scale": "def",
   "target": 85,
@@ -311,15 +329,6 @@
   "note": "the one test pin re-anchored by this round: D 81 -> 88"
  },
  {
-  "card": "Ty Jerome '25",
-  "scale": "off",
-  "target": 82,
-  "tol": 2,
-  "round": 78,
-  "ruling": "Ty jerome still 82 OFF",
-  "note": "his ruling reads 82; the shipped card measured 81 at the round"
- },
- {
   "card": "Tony Snell '18",
   "scale": "off",
   "target": 50,
@@ -553,15 +562,6 @@
   "tol": 1,
   "round": 52,
   "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
- },
- {
-  "card": "Montrezl Harrell '18",
-  "scale": "off",
-  "target": 77,
-  "tol": 1,
-  "round": 52,
-  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
-  "note": "post-97, measured — unchanged"
  },
  {
   "card": "Dwight Howard '11",

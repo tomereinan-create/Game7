@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 98
+PIPELINE_VERSION = 99
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -74,7 +74,26 @@ _here = os.path.dirname(os.path.abspath(__file__))
 _cands = [os.path.join(os.path.dirname(os.path.abspath(path)), 'stats.json'), os.path.join(_here, '..', 'src', 'data', 'stats.json')]
 _stats_path = next((c for c in _cands if os.path.exists(c)), None)
 if not _stats_path: raise SystemExit('stats.json (lifetime positions) not found - the guard rule needs it')
-_POS = {k: (v or {}).get('pos') or [] for k, v in json.load(io.open(_stats_path, encoding='utf-8')).items()}
+_STATS_RAW = json.load(io.open(_stats_path, encoding='utf-8'))
+_POS = {k: (v or {}).get('pos') or [] for k, v in _STATS_RAW.items()}
+# recal_96 (HIS RULINGS, verbatim: "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81" and
+# "Montrezl Harrell '18 is too high OFF as well"). THE LOAD TERM — read from the SAME sheet the
+# position rule already reads, so no new input is introduced to the pipeline.
+_MPG = {k: (v or {}).get('mpg') for k, v in _STATS_RAW.items()}
+
+# LOAD_FULL: the minutes at which a per-possession profile is paid in full. LOAD_FOOT: the minutes
+# below which the load terms earn nothing. Both are stated in COST and derived, not chosen by taste:
+# see the long comment at the load term itself, inside o_score.
+LOAD_FOOT, LOAD_FULL = 12.0, 24.0
+def load_share(p):
+    """How much of a full workload this card actually carried, in [0, 1]. 1.0 = full price, and the
+    card is byte-identical to what it was. MEASURED, OR NOT AT ALL: a card with no minutes on the
+    sheet takes 1.0 — no discount, no boost — which is recal_52's rule for the attempt rates, applied
+    to the same kind of gap for the same reason."""
+    m = _MPG.get(p['name'])
+    if m is None: return 1.0
+    return min(1.0, max(0.0, (m - LOAD_FOOT) / (LOAD_FULL - LOAD_FOOT)))
+
 def is_big(p):
     # compound: rim protection alone doesn't make you a big (long-armed wings tripped the old threshold),
     # and a lifetime guard (PG/SG by Basketball-Reference, never PF/C) is never a big whatever his shape -
@@ -192,7 +211,51 @@ def o_score(p, trace=None):
     # between a zone max and a volume rating can move the pool mean even at constant total weight.
     # Receipt 89 holds the measured mean against the round's own +-0.3.
     # The dominance bonus below reads the zone RATINGS, not these weights, and is unaffected.
-    std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*a['volume'] + 0.19*a['playvol']
+    # recal_96 (HIS RULINGS, verbatim: "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81"
+    # and "Montrezl Harrell '18 is too high OFF as well"). THE LOAD TERM, and it applies to EVERY
+    # card in the file.
+    #
+    # THE DEFECT. Every bar on this sheet is a RATE. `volume` is a usage percentile, `playvol` an
+    # assist percentile — both are "per possession he was on the floor for", and o_score never asked
+    # how much of a game the man was on the floor. So Ty Jerome '25 (usage 23.6, 12.5 points, in
+    # 19.9 minutes off the bench) was priced at OFF 81, beside starters who carried the same rate
+    # for forty minutes; Montrezl Harrell '18 at 77 on 17.0. recal_51 already named this problem —
+    # "attempts are a RATE ... a 17-minute bench finisher can post a starter's attempt rate while
+    # carrying no load" — but answered it with a ramp on `volume`, which is itself a rate. This is
+    # the same question asked of the clock instead.
+    #
+    # WHAT IS DISCOUNTED, and what is deliberately NOT. Only the two LOAD terms: `volume` (how much
+    # of the offence ran through him) and `playvol` (how much of it he created). They are the two
+    # bars that claim "he carried this much", and a claim about how much is exactly the claim that
+    # minutes qualify. Everything else on the card is a SKILL rate — the three zones, efficiency,
+    # ball security, free throws, the offensive glass — and how well a man shoots is true whether he
+    # shoots for nineteen minutes or thirty-nine. Those are untouched. The volume x efficiency
+    # SIGNATURE is untouched too, because recal_26 gave it a volume FLOOR of 50 for precisely this
+    # reason ("elite conversion on a modest load is real scoring signal"), and so are recal_64's
+    # off-ball floor and recal_51's own attempt ramp, which read the raw ratings and decide class
+    # membership rather than price.
+    #
+    # MEASURED, NOT CHOSEN — where the two constants come from.
+    # LOAD_FULL = 24 is LOCATED BY HIS OWN STANDING ANCHORS, not picked. Clint Capela '17 is pinned
+    # at off 58 +-1 (recal_51) and reads 57, so he has ZERO room, and he played 23.9 mpg. Every
+    # full-load line above 24 takes him under: 26 -> 56, 28 -> 55, 30 -> 54, and by 32 it has taken
+    # Clint Capela '18, Shaquille O'Neal '08 and '09 with it, and by 36 even Shai Gilgeous-Alexander
+    # '25 and Giannis '25. The board's own ratified position is therefore that twenty-four minutes
+    # is already a full workload for PRICING, whatever it is for a rotation, and the discount belongs
+    # strictly below it. (A "real" starter's 32-36 is unreachable and is reported, not forced.)
+    # LOAD_FOOT = 12 is set by the subject's own target and is exactly half of LOAD_FULL: Ty Jerome
+    # '25 lands on 71 — the centre of "high 60's to mid 70's" — at a foot of 12.5, and 12 is the
+    # round number inside that. Half a rotation earns no load credit; the ramp between is linear.
+    #
+    # WHY THE LOAD TERMS AND NOT THE WHOLE SCORE, measured on the whole pool. Discounting the whole
+    # o_score by the same share CANNOT reach the number: at every foot from 0 to 16 the depth that
+    # puts Jerome on 71 also puts Steve Kerr '96 on 60 against his 62 +-1 (recal_89). The reason is
+    # the one the round is about — Kerr's load terms are 15.8% of his o_score (volume 8, playvol 44:
+    # a spot-up shooter uses nothing) while Jerome's are 34.3% (volume 70, playvol 61). A man who
+    # carries nothing has nothing to discount, and only the narrow instrument can tell them apart.
+    _load = load_share(p)
+    _vol, _pvol = a['volume'] * _load, a['playvol'] * _load
+    std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*_vol + 0.19*_pvol
         + 0.10*a['ballsec'] + 0.11*(a['fouldraw']*a['ft']/100) + 0.06*a['orb']
         # the volume x efficiency SIGNATURE keeps its volume FLOOR of 50 (recal_26): elite conversion on
         # a modest load is real scoring signal, not an accident of touches.
@@ -203,8 +266,8 @@ def o_score(p, trace=None):
             ('z[1] second zone',    z[1],                             0.08, 0.08*z[1]),
             ('z[2] third zone',     z[2],                             0.05, 0.05*z[2]),
             ('efficiency',          a['efficiency'],                  0.11, 0.11*a['efficiency']),
-            ('volume',              a['volume'],                      0.26, 0.26*a['volume']),
-            ('playvol',             a['playvol'],                     0.19, 0.19*a['playvol']),
+            ('volume x load',       _vol,                             0.26, 0.26*_vol),
+            ('playvol x load',      _pvol,                            0.19, 0.19*_pvol),
             ('ballsec',             a['ballsec'],                     0.10, 0.10*a['ballsec']),
             ('fouldraw x ft/100',   a['fouldraw']*a['ft']/100,        0.11, 0.11*(a['fouldraw']*a['ft']/100)),
             ('orb',                 a['orb'],                         0.06, 0.06*a['orb']),
@@ -212,6 +275,9 @@ def o_score(p, trace=None):
         ]
         trace['std_base'] = std
         trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
+        trace['load'] = dict(share=_load, mpg=_MPG.get(p['name']), foot=LOAD_FOOT, full=LOAD_FULL,
+                             volume_raw=a['volume'], volume_paid=_vol,
+                             playvol_raw=a['playvol'], playvol_paid=_pvol)
     # EVERY FLOOR IS DELETED (recal_37). Specialist, maestro and creator each REPLACED the sum for
     # whoever cleared a gate, so three scoring laws ran at once and a card's own law depended on a
     # threshold it happened to pass. (Their round lists four; this side never had a FINISHER floor.)
@@ -603,6 +669,12 @@ if _CARD:
     else:
         print('\nZONE-DOMINANCE BONUS — did NOT fire (no single weapon towering over the rest of the diet,'
               '\n  or the weapon is a midrange one, which recal_38 ruled is not the same threat)')
+    _l = _ot.get('load')
+    if _l:
+        print(f"LOAD SHARE (recal_96) - {_l['mpg']} mpg against the {_l['full']:.0f}-minute full-load "
+              f"line (foot {_l['foot']:.0f}): share {_l['share']:.4f}")
+        print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
+              f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
     if 'big_hub' in _ot:
         print(f"BIG HUB (recal_55, bigs at playvol >= 60): +{_ot['big_hub']:.3f}")
     if 'offball_floor' in _ot:
