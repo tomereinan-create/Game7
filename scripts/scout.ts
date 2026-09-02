@@ -329,7 +329,7 @@ function offBallFloor(p: Player): { eligible: boolean; value: number; binds: boo
 /** The OVR cap (recal_3): o+10 on the perimeter, o+40 for a big. Returns the cap and whether it bit. */
 function capOf(p: Player) {
   const raw = Math.max(0.4 * p.o_ovr + 0.6 * p.d_ovr, 0.7 * p.o_ovr + 0.3 * p.d_ovr)
-  const cap = p.big ? p.o_ovr + 40 : Math.max(p.o_ovr + 10, 0.8 * p.d_ovr)
+  const cap = p.big ? p.o_ovr + 40 : Math.max(p.o_ovr + 10, 0.85 * p.d_ovr)
   return { cap, binds: Math.round(raw) > cap, raw }
 }
 /** The size modifier on the perimeter d_score branch: bites only truly small defenders. */
@@ -870,7 +870,7 @@ if (wanted('5')) {
   const bigs = capped.filter((c) => c.p.big).length
   lines.push(
     `  OVR cap binds on ${capped.length} cards (${bigs} big at o_ovr+40, ${capped.length - bigs} perimeter at ` +
-      'max(o_ovr+10, 0.8*d_ovr)) — for these OVR is a clamp, not a blend',
+      'max(o_ovr+10, 0.85*d_ovr)) — for these OVR is a clamp, not a blend',
   )
   for (const c of capped.sort((a, b) => capOf(b.p).raw - capOf(b.p).cap - (capOf(a.p).raw - capOf(a.p).cap)).slice(0, 8)) {
     const { cap, raw } = capOf(c.p)

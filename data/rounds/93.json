@@ -1,0 +1,355 @@
+{
+  "round": 93,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Agree with 14 andre",
+  "title": "THE DEFENCE-BRANCH CLIFF BECOMES A RAMP, and the elite-defence floor stops clipping the blend by seven — four of five landed, the load term declined as provably infeasible",
+  "subject": "Andre Iguodala '14",
+  "scale": "def",
+  "target": 88,
+  "tol": 3,
+  "before": 70,
+  "after": 90,
+  "pipeline_version": 96,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DEF_RP_LO, DEF_RP_HI = 45\\.0, 80\\.0",
+      "label": "DEFECT A, the ramp on the clause's own DEFENSIVE bar",
+      "note": "new: rimprot replaces the rim SCORING rating, and 80 is clause 3's own 'elite deterrent' bar, so that clause becomes the ramp's ceiling instead of a second cliff"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DEF_3P_LO, DEF_3P_HI = 30\\.0, 40\\.0",
+      "label": "DEFECT A, the fade on the clause's own `3pt < 40` line",
+      "note": "new: the step at 40 is now a ten-point fade from 40 down to 30"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_rp = min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - DEF_RP_LO\\) / \\(DEF_RP_HI - DEF_RP_LO\\)\\)\\)",
+      "label": "d_bigness — the branch weight, continuous in [0, 1]",
+      "note": "the product of the two ramps; the position branches and clauses 1 and 3 above it are is_big's, byte for byte"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "out = w \\* _big \\+ \\(1\\.0 - w\\) \\* _perim",
+      "label": "d_score BLENDS the two vectors instead of switching between them",
+      "note": "at w == 1 and w == 0 the arithmetic is byte-identical to what stood before"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ 10, 0\\.85 \\* p\\['d_ovr'\\]\\) if not is_big\\(p\\) else p\\['o_ovr'\\] \\+ 40",
+      "label": "DEFECT B, the elite-defence floor inside the OVR cap",
+      "note": "0.80 -> 0.85; the OTHER half of recal 3 (the o_ovr + 10 offence gate) is untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "att_f \\*= max\\(0\\.0, min\\(1\\.0, \\(a\\['volume'\\] - 70\\) / 10\\.0\\)\\)",
+      "label": "DEFECT C, DECLINED — recal_51's volume ramp is still the ONLY load question o_score asks",
+      "note": "and it asks it of `volume`, a usage RATE, which is exactly what his ruling says is not a load. See COST for the infeasibility proof."
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*a\\['volume'\\] \\+ 0\\.19\\*a\\['playvol'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — NOT reopened; o_score moved on ZERO cards this round",
+      "note": "the whole of OFF is byte-identical to round 91"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 110\\.64, 107\\.55",
+      "label": "recal_90's band anchors, untouched",
+      "note": "the DEF raw top is unmoved: no mover this round is near the ceiling, and Ben Wallace still holds it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 96",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 93; it SHIPS as pipeline 96 because recal_95 landed first — see COST"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 96",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "scheme: 0\\.60,\\s*\\n\\s*hunt: 3\\.70,\\s*\\n\\s*crashOff: 0\\.50,\\s*\\n\\s*crashDef: 0\\.40,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — THREE taxes broke at once on the merged pool",
+      "note": "scheme .90 -> .60, hunt 3.60 -> 3.70, crashDef .75 -> .40; crashOff held at .50"
+    },
+    {
+      "file": "scripts/scout.ts",
+      "pattern": "Math\\.max\\(p\\.o_ovr \\+ 10, 0\\.85 \\* p\\.d_ovr\\)",
+      "label": "the scout's own copy of the cap, kept in step",
+      "note": "CHECK 5 reports which cards the cap decides; a stale 0.80 there would have mis-stated the shipped pipeline from this round on"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Jimmy Butler '16",
+      "scale": "def",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "SECOND RULING, verbatim: \"Agree with 16 Jimmy\" — 71 -> 85"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "THIRD RULING, verbatim: \"Scotty 03 maybe around 75-77\" — 70 -> 76"
+    },
+    {
+      "card": "Kawhi Leonard '14",
+      "scale": "ovr",
+      "op": "~",
+      "value": 80,
+      "tol": 2,
+      "label": "FOURTH RULING, verbatim: \"Kawhi 14 agree\" — 76 -> 80 against a blend of 83"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "off",
+      "op": "~",
+      "value": 81,
+      "tol": 0,
+      "label": "FIFTH RULING, verbatim: \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\" (target off 71 +-4) — DECLINED, recorded at its unchanged reading; provably infeasible, see COST"
+    },
+    {
+      "card": "Nick Young '10",
+      "scale": "off",
+      "op": "~",
+      "value": 65,
+      "tol": 0,
+      "label": "the card his fifth ruling said should \"come down with him\": flat, because the load term declined"
+    },
+    {
+      "card": "Montrezl Harrell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 77,
+      "tol": 1,
+      "label": "THE CARD THAT MAKES DEFECT C INFEASIBLE — recal_52's anchor, OFF 77 on 17.0 mpg, BELOW Ty Jerome '25's 19.9"
+    },
+    {
+      "card": "Scottie Pippen '94",
+      "scale": "def",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "THE HARDEST CONSTRAINT ON THE RAMP: the same man, nine years earlier, at rimprot 74 — he must STAY a big while '03 at rimprot 56 must not. 92 -> 93, inside r80's 92 +-1"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "the 3pt half of the ramp is load-bearing: at rimprot 60 he would be half a big without it, and read 91"
+    },
+    {
+      "card": "Andre Iguodala '13",
+      "scale": "def",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "the neighbour season the scout cited as the CORRECT reading — the ramp leaves it where it was, so the sequence is now 93/90/88 instead of 93/70/88"
+    },
+    {
+      "card": "Andre Iguodala '15",
+      "scale": "def",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "the other side of the same seam: flat"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "A GENUINE BIG, decided by the POSITION branch: zero movement. All 4,307 position-decided bigs are untouched by construction"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "same — the round does not move bigs. 91 is recal_92's reading of him, not this round's; he read 92 before r92 and this round leaves him exactly where r92 put him"
+    },
+    {
+      "card": "Gary Payton '96",
+      "scale": "def",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "r80's named anchor, decided by the lifetime-guard branch: flat"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "r62's anchor: flat"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "OFF moved on ZERO of 10,000 cards — o_score is not in this round's path at all"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 72,
+      "tol": 0,
+      "label": "the loosened cap does not reach an offence-led card: his cap is o+10 = 91 against a blend of 72. 72 is recal_92/95's reading (they took his DEF 46 -> 51); this round leaves him exactly there"
+    },
+    {
+      "card": "LeBron James '07",
+      "scale": "def",
+      "op": "~",
+      "value": 90,
+      "tol": 1,
+      "label": "THE ONE CARD THAT ENTERS THE TOP 50 BY OVR — 3pt 39, one point under the cliff, on rimprot 74 against perdef 82; DEF 86 -> 90 and OVR 92 -> 93, so his '06-'10 line reads 84/90/94/95/94 instead of 84/86/94/95/94"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Andre Iguodala '14",
+      "label": "the DEF summit is still the man who has always held it"
+    },
+    {
+      "scale": "def",
+      "above": "Scottie Pippen '94",
+      "below": "Scottie Pippen '03",
+      "label": "the two Pippens are the round in one line: prime stays a big, the 37-year-old blends"
+    },
+    {
+      "scale": "def",
+      "above": "Andre Iguodala '13",
+      "below": "Andre Iguodala '14",
+      "label": "the season order the cliff had inverted is restored"
+    },
+    {
+      "scale": "def",
+      "above": "Jimmy Butler '15",
+      "below": "Jimmy Butler '16",
+      "label": "same, on the second subject"
+    },
+    {
+      "scale": "ovr",
+      "above": "Kawhi Leonard '17",
+      "below": "Kawhi Leonard '14",
+      "label": "the loosened cap does not lift the young card past the peak one"
+    },
+    {
+      "scale": "def",
+      "above": "LeBron James '08",
+      "below": "LeBron James '07",
+      "label": "the whiplash is removed, not inverted: '08 still reads above '07"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 220,
+    "max_abs": 20,
+    "top": [
+      [
+        "Andre Iguodala '14",
+        70,
+        90
+      ],
+      [
+        "Jimmy Butler '18",
+        66,
+        83
+      ],
+      [
+        "Jimmy Butler '23",
+        65,
+        80
+      ],
+      [
+        "Corey Brewer '14",
+        47,
+        62
+      ],
+      [
+        "Magic Johnson '88",
+        63,
+        77
+      ],
+      [
+        "Jimmy Butler '16",
+        71,
+        85
+      ],
+      [
+        "Magic Johnson '89",
+        67,
+        80
+      ],
+      [
+        "Dominique Wilkins '97",
+        55,
+        47
+      ],
+      [
+        "Mike Mitchell '83",
+        53,
+        45
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '01",
+      "Ben Wallace '06",
+      "Dwight Howard '10",
+      "Ben Wallace '07",
+      "Dan Roundfield '80",
+      "Dan Roundfield '81",
+      "Dan Roundfield '82",
+      "Dwight Howard '09"
+    ]
+  },
+  "cost": [
+    "THE ROUND IS 93 AND THE PIPELINE IS 96. recal_95 shipped at PIPELINE_VERSION 95 while this round was on Tomer's desk, so 93 could not ship as 93 without going backwards. Both python files carry 96 and this file's `pipeline_version` is 96 — the receipt checks the SHIPPED version, not the round number. A later reader should not expect round N to equal pipeline N from here on.",
+    "ONE OF THE FIVE RULINGS IS DECLINED and rolls forward. \"Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81\" (off 71 +-4) is NOT in data/anchors.json, on recal_91's precedent: an anchor is a pin that HOLDS, and this one does not. It is recorded here with its measurement and belongs in anchors.json the round that lands it.",
+    "WHY IT IS INFEASIBLE, and this one is a PROOF rather than a search. The blocker is MONTREZL HARRELL '18, recal_52's own anchor: OFF 77 +-1 earned in 17.0 mpg — a SMALLER load than Ty Jerome '25's 19.9 on every measure there is (1,292 season minutes to 1,393; 11.0 ppg to 12.5; usage 23.8 to 23.6; BPM 3.3 to 4.3). Before the round Harrell reads 76.96 and Jerome 80.86 on the same scale. The two rulings together require Harrell >= 76 and Jerome <= 75 — that is, the transform must INVERT them. But any load term T(score, load) that is non-decreasing in BOTH arguments (more score out for more score in, more score out for more load — which every discount toward a bench footprint is, multiplicative, additive or a ceiling alike) satisfies T(76.96, 17.0) <= T(80.86, 19.9). No such term exists. It is not a matter of parameters.",
+    "WHAT IS ACTUALLY REACHABLE, measured on the whole pool. Sweeping a minutes ramp (lo, hi, depth) with every standing anchor required to pass: the largest discount that breaks NOTHING moves Ty Jerome '25 81 -> 80, one point, and Harrell 77 -> 76. Push it far enough to reach the top of his band (75) and SEVEN anchors break at once — Harrell '18 by 6, Steve Kerr '96 (23.4 mpg, 62 +-1) by 5, Tony Snell '18, Clint Capela '17 and '18, and at greater depth Korver '15, Hachimura '26, Anunoby '21 and SGA '25. The closest reachable value is therefore OFF 80.",
+    "THE OTHER HALF OF THE SAME CONFLICT, which only he can settle. His fifth ruling contradicts HIS OWN recal_78 ruling, which pinned Ty Jerome '25 at off 82 +-2 — the pin the card currently satisfies at 81. That anchor is LEFT IN PLACE and still passes, because it is the ruling that holds on the shipped data and doctrine says he decides which of two rulings stands, not the agent. If he confirms the new number, r78's pin moves to anchors_superseded.json and the load question comes back with Harrell '18 reopened alongside it — those two must be answered together or not at all.",
+    "THE SEAM THIS ROUND CREATES, stated plainly. is_big is UNCHANGED. Only d_score's branch is now a weight; the boolean still labels the card (p['big']), still gates recal_55's big hub and recal_91's stretch-big floor inside o_score, still splits the marginal percentile classes, and still chooses the OVR cap branch. So Andre Iguodala '14 is now graded on defence as the wing he is, while still being LABELLED a big and still taking the big's o_ovr+40 cap. Nothing currently reads wrong because of it, but a later round that wants the label fixed must change is_big itself, and that WILL move OFF and the cap — which is precisely why this round did not.",
+    "THE TACTICS BANDS THIS ROUND BROKE, and the standing procedure that answers them. The harness draws its random fives from PLAYERS with ovr >= 55, so any round that moves OVR moves the SAMPLE. This one moved 683 OVRs on the merged pool and THREE taxes broke at once — the most in any single round — and on BOTH edges: scheme (oracle +0.498 against the +0.50 floor), crashDef (oracle +0.455), and hunt (blind -0.255 against the -0.30 floor). Per the law's own instruction (\"tune them ONLY through it\") and the precedent of recal_67/72/78/80/85/86/89/91/92, all three were re-ratified through the harness rather than the ratings being bent: scheme .90 -> .60, crashDef .75 -> .40, hunt 3.60 -> 3.70. crashOff held at .50 untouched. Two came DOWN and one went UP in the same round, which is the first time that has happened. RECORD FOR THE NEXT ROUND: hunt's feasible window on this pool is only 3.66-3.78 — twelve thousandths wide — and it has now moved in five of the last six rounds; expect to re-ratify it again and do not read the movement as instability in the tactic. crashDef is the other one to watch: r92 RAISED it .68 -> .75 to answer a blind edge, and this pool moves its ORACLE edge instead, so it comes back down past where r92 found it.",
+    "THE CAP IS STILL A CAP. It binds on 532 perimeter cards after the change (813 before) and still pulls Kawhi Leonard '14 DOWN from his 83 blend to 80. recal 3's offence gate — o_ovr + 10 — is untouched, which is the half that governs every perimeter card whose defence is ordinary. What moved is only the elite-defence FLOOR, which is what was actually deciding the subject.",
+    "THE OLDER RECEIPTS THIS ROUND TURNS RED, named rather than left to be found. All three are knobs this round deliberately moved: recal_23's and recal_37's \"the offence-gates-ceiling cap + big exemption stands, unchanged\" (both regex the literal `0.80 * d_ovr`, which his \"Kawhi 14 agree\" amends — both blocks already carried a note saying two of their three ratified modifiers had been superseded by recal_85, and this is the third), and recal_62's \"re-ratified taxes\" (which regexes `scheme: 0.90`, re-ratified here through the harness exactly as r67/72/78/80/85/86/89/91/92 each re-ratified one). Additionally the `PIPELINE_VERSION = N` knob lines of rounds 91, 92 and 95 now miss, which is what every version bump has done to its predecessors for seventy rounds. recal_92's own tax knob also misses now (it regexes crashDef 0.75, which this round re-ratified to 0.40 through the harness on the merged pool) - exactly as recal_91's crashDef knob was superseded by recal_92 one round earlier. Nothing was rewritten to hide any of it: a hand-written block is the record, not a thing a later round edits.",
+    "MAGIC JOHNSON IS THE LARGEST UNASKED-FOR MOVE, and it should be looked at before anything else. Eight of his seasons rise 9 to 14 points on DEF ('86 63 -> 75, '88 63 -> 77, '89 67 -> 80) because he is listed at every position from PG to C, so the position branches cannot decide him and he fell through to the shape clause. Under the cliff a 6'9\" point guard with rim 60+ and no three was graded as a rim protector on rimprot in the 40s; under the ramp he is graded mostly on perdef, like the perimeter defender he was. The direction is right and the anchors all hold, but nobody ruled on it.",
+    "SUPERSEDED WITHIN THIS ROUND'S OWN LIFETIME, recorded rather than quietly dropped. Before the rebase onto recal_92 and recal_95, this round measured its collateral against recal_91's attributes and re-ratified TAX.scheme .90 -> .62 there. That measurement is VOID: the merged pool is a different sample, and every number in this file — the movers, the top 12, the tax constants — was re-taken from scratch on the merged data with the sweep starting from origin/main's constants, not from .62. The four LANDED targets and the declined one are unchanged to the point: 90 / 85 / 76 / 80 / 81, identical on both bases, because recal_92 and recal_95 moved neither rimprot nor perdef nor 3pt nor rim on any of the five cards or on Scottie Pippen '94, the ramp's tightest constraint.",
+    "A PIPELINE-SYNC FACT FOUND DURING THE REBASE, now moot but worth the line. Rebasing first onto 22356fb (recal_92 alone), a clean run of THAT commit's own build_ratings.py did not reproduce THAT commit's own shipped attributes: rimprot differed on 1,549 cards. Rebasing onto 13bde1b (recal_92 + recal_95) it reproduces EXACTLY — zero attributes and zero talents differ. So r92's commit shipped data that already contained r95's rim-ceiling change while its code did not yet, and r95 landing closed the gap. Nothing to do now; the check is worth repeating at the head of any future rebase, because a round that regenerates on a commit in that state would silently ship a different board.",
+    "SEVEN RANK FLIPS TOUCH THE TOP 50 BY OVR ON THE MERGED BOARD, where the pre-rebase measurement had zero, and they are ONE event rather than seven. NO card already in the top 50 changed its OVR at all. LeBron James '07 goes 92 -> 93 and INSERTS above six cards, each of which slides down exactly one place; Dwyane Wade '09 is displaced from 50 to 51 at an unchanged OVR 92. The 19-place jump the scout prints (rank 64 -> 45) is a TIE-CLUSTER artefact and not a reordering: 22 cards share OVR 92 and 11 share 93, so one point carries him over the whole block. He is the dispatch's own stated exception — a card that was clearly clipped: 3pt 39, ONE point under the `3pt < 40` cliff, routed through the big d_score mix on rimprot 74 against perdef 82, which read him at DEF 86 in a career line of 84/86/94/95/94. He now reads 90. The round did this on recal_91's attributes too (92 -> 93 there as well); what changed is only that the merged board's tie block sits differently, so the same +1 now crosses the 50th line. NOTHING WAS TUNED to avoid it and DEF_RP_LO was not touched — reported for Tomer, per the dispatch."
+  ],
+  "notes": [
+    "WHAT THE FIRST THREE RULINGS ARE ABOUT, in one sentence: is_big's middle shape clause reads a SHOT DIET. `rim` and `3pt` are the offensive zone ratings o_score sorts as z[0..2], so how a man SCORED was choosing which of two very different formulas graded his DEFENCE — and the two formulas are 15 to 23 printed points apart. Andre Iguodala '14 took the big mix, whose largest term is 0.40 x rim protection, on rimprot 39.",
+    "WHY A RAMP AND NOT A BETTER CLIFF. His dispatch asked that both be measured, and they were, over the whole (threshold, slack) grid. Branching from DEFENSIVE SHAPE as a cliff (rimprot against perdef) reads Scottie Pippen '03 at either 70 — still a big — or 79, and never 75-77, because a cliff can only ever return one of the two formulas. Worse, every setting that routes '03 to the perimeter also routes Scottie Pippen '94 there, and his r80 anchor of 92 +-1 breaks at 96. The two Pippens are the proof: '94 at rimprot 74 must STAY a big, '03 at rimprot 56 must land between the two, and no threshold on any single quantity separates them. Only a blend can produce a number that is not one of the two formulas.",
+    "WHY THESE FOUR CONSTANTS. Every one is the clause's own. The ramp on rim protection tops out at 80, which IS the third clause's \"an elite deterrent is a big whatever his shape\" bar — so that clause stops being a separate cliff and becomes this ramp's ceiling. The fade runs from the clause's own `3pt < 40` line down to 30. The bottom of the rimprot ramp, 45, is the only free number, and it is set by the measurement: 45 is the widest foot that keeps Pippen '94 at 93 while bringing '03 to 76. The 3pt half is load-bearing and not decoration — without it Kawhi Leonard '17 (rimprot 60) becomes half a big and his 95 +-1 anchor breaks at 91.",
+    "NO GENUINE BIG MOVES, measured rather than claimed, on the merged board. The position branches are untouched, so all 4,307 cards decided by \"PF or C and never a guard\" have d_bigness exactly 1.0 and identical arithmetic; the same holds for every lifetime guard at 0.0. Zero of the 4,307 moved. The 220 movers are all cards the POSITION rules could not decide — SF-only men and the mixed guard-and-big listings — which is exactly the population the shape clause exists for.",
+    "DEFECT B, DECOMPOSED BEFORE IT WAS CHANGED. Kawhi Leonard '14 blends to 83 and printed 76. The binding term was NOT the offence gate (o_ovr + 10 = 75) but the elite-defence FLOOR, 0.80 x 95 = 76 — so the round loosens exactly the half that decided him. Two alternatives that also reach 80 were measured and rejected: widening the gap to o_ovr + 15 (613 cards move, max +5) and a defence-proportional gap o_ovr + 10 + 0.17 x (d - o) (584, max +4). Both rewrite the offence gate for every perimeter card on the board, including the ones whose defence is ordinary and whose cap was never the complaint.",
+    "MEASURED BEFORE APPLYING, on the whole pool, each defect separately and then combined — and RE-MEASURED from scratch on the merged recal_92 + recal_95 board after the rebase; these are the merged numbers. DEFECT A alone: DEF moves on 220 of 10,000 (max +20 Andre Iguodala '14, max -8 Dominique Wilkins '97, mean signed +1.75), OVR on 174, OFF on 0. DEFECT B alone: OVR on 541, every one of them UP because a cap can only be loosened, max +5; DEF and OFF on 0. COMBINED: DEF 220, OVR 683 (mean signed +2.19), OFF 0, attributes 0. The cap decided 739 perimeter cards before and decides 433 after. All 100 anchors pass.",
+    "THE SEQUENCES THE SCOUT FLAGGED, after. Iguodala '13/'14/'15 reads 93/90/88 where it read 93/70/88. Butler '15/'16/'17 reads 89/85/83 where it read 89/71/83. That is the whole claim of the round: a career is a curve, and a one-point move in a shooting rating should not put a step in it.",
+    "REBASED ONTO recal_92 AND recal_95, and the round survives them without a constant changing. Those two rounds rewrote perdef (the r16 DFG floor retired, the tracked diff regressed to reliability 0.345) and rimprot (the no-vote rim ceiling graded by blocks x DBPM) — the two attributes this round's ramp and both d_score vectors are built on, so the exposure was real and was checked card by card. It moved NEITHER on the five subjects nor on Scottie Pippen '94: Iguodala '14 rimprot 39 / perdef 92, Butler '16 51 / 84, Pippen '03 56 / 74, Pippen '94 74 / 94, Kawhi '14 66 / 92, Kawhi '17 60 / 93 — identical before and after. DEF_RP_LO stays 45 and DEF_3P_LO/HI stay 30/40; nothing was retuned to hold a target."
+  ]
+}

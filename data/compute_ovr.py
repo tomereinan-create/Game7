@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 95
+PIPELINE_VERSION = 96
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -96,6 +96,64 @@ def is_big(p):
     # position branches above are UNTOUCHED (and they, not this clause, hold the round's named card:
     # Anunoby '26 is lifetime SF/PF-never-guard, so the position rule decides him first — receipt 72).
     a = p['attrs']; return (a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']) or (a['rim'] >= 60 and a['3pt'] < 40) or a['rimprot'] >= 80   # stretch bigs classify by deterrence, whatever their range
+
+# recal_93 (HIS RULINGS, verbatim: "Agree with 14 andre", "Agree with 16 Jimmy",
+# "Scotty 03 maybe around 75-77"). THE DEFENCE-BRANCH CLIFF.
+#
+# THE DEFECT, stated as the scout found it. is_big's MIDDLE shape clause — `rim >= 60 and 3pt < 40` —
+# decides which of the two d_score formulas a card is graded by, and it is a CLIFF: one point of
+# either bar swaps a man from the perimeter mix (0.63 perdef / 0.13 rimprot / 0.11 perimdisrupt /
+# 0.07 drb / 0.06 discipline, x the size modifier) to the big mix (0.40 perdef / 0.40 rimprot /
+# 0.17 drb / 0.03 discipline), and DEF moves 15 to 23 points in one step. 76 adjacent-season pairs
+# flip across it. The three cards he ruled on are all the same accident:
+#   Andre Iguodala '14  3pt 42 -> 38 across the line, DEF 93 ('13) -> 70 ('14) -> 88 ('15) on perdef 92
+#   Jimmy Butler '16    3pt 45 -> 36 -> 42 across '15/'16/'17, DEF 89 -> 71 -> 83 on perdef 88/84/79
+#   Scottie Pippen '03  rim touched EXACTLY 60 with 3pt 23
+# The deeper complaint is that the clause reads a SHOT DIET: `rim` and `3pt` are the offensive zone
+# ratings (o_score sorts them as z[0..2]), so how a man SCORES was deciding how he is GRADED on
+# defence. A wing who stopped shooting threes was re-graded as a rim protector he never was —
+# Iguodala '14 took the big mix on rimprot 39.
+#
+# THE FIX: A RAMP, ON THE CLAUSE'S OWN DEFENSIVE BAR. d_score's branch weight is now continuous in
+# [0, 1] and the two mixes are BLENDED, so no card can move more than a fraction of the 15-23 gap
+# for one point of anything. Two changes of substance, both inside this one clause:
+#   1. the rim SCORING rating is replaced by RIMPROT, the defensive claim the branch is actually
+#      about — a big's defensive votes routing to rim protection is the whole reason the big mix
+#      exists, and a man with rimprot 39 has no such votes to route.
+#   2. both bars ramp instead of stepping, between the clause's OWN numbers: rimprot 45 -> 80, where
+#      80 is the third clause's own "an elite deterrent is a big whatever his shape" bar (so that
+#      clause stops being a separate cliff and becomes the top of this ramp), and 3pt 40 -> 30, so
+#      the `3pt < 40` line is a ten-point fade rather than a step.
+# The first two clauses are UNTOUCHED and still return a hard 1.0: clause 1 already reads defensive
+# shape (rimprot >= perdef), and clause 3 is the ramp's own ceiling. The POSITION branches above are
+# untouched, so all 4,307 position-decided bigs (PF/C, never a guard) move by exactly ZERO — no
+# genuine big is touched by this round, measured, not asserted.
+#
+# WHAT IT DOES NOT TOUCH: is_big itself. The boolean still labels the card (p['big']), still picks
+# recal_55's big hub and recal_91's stretch-big floor inside o_score, still splits the marginal
+# percentile classes, and still chooses the OVR cap branch. OFF therefore moves on ZERO cards.
+# MEASURED: DEF moves on 222 of 10,000; Iguodala '14 70 -> 90, Butler '16 71 -> 85, Pippen '03
+# 70 -> 76; every standing anchor passes, Pippen '94 (the hardest, 92 +-1) included at 93.
+# THE ALTERNATIVE HE ASKED BE MEASURED — branch from the man's defensive shape as a CLIFF
+# (rimprot vs perdef instead of rim vs 3pt) — is INFEASIBLE and was measured over the whole
+# (threshold, slack) grid: it reads Pippen '03 at either 70 (still big) or 79 (perimeter) and never
+# 75-77, and every setting that routes him to the perimeter also routes Pippen '94 there and breaks
+# his 92 +-1 anchor at 96. Only a blend reaches a number BETWEEN the two formulas. See receipt 93.
+DEF_RP_LO, DEF_RP_HI = 45.0, 80.0   # the ramp on rim protection; 80 is clause 3's own bar
+DEF_3P_LO, DEF_3P_HI = 30.0, 40.0   # the fade on the clause's own `3pt < 40` line
+def d_bigness(p):
+    """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
+    verdict, 1 = the whole big verdict. The position branches and the first/third shape clauses are
+    is_big's, byte for byte; only the middle clause is a ramp."""
+    pos = _POS.get(p['name'], [])
+    if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
+    if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos): return 1.0
+    a = p['attrs']
+    if a['rimprot'] >= 80: return 1.0
+    if a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']: return 1.0
+    w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))
+    w_3p = min(1.0, max(0.0, (DEF_3P_HI - a['3pt']) / (DEF_3P_HI - DEF_3P_LO)))
+    return w_rp * w_3p
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)
@@ -220,6 +278,18 @@ def o_score(p, trace=None):
             # definitionally low-volume and the Korver class would re-collapse. Stacks with r49's
             # creation gate — they multiply. Shaq/Zion/Hakeem/Giannis/Embiid all sit at a full ramp
             # by construction (volume 85+), so the permanent constraint holds untouched.
+            # recal_93 DECLINED a general minutes-load term here (HIS RULING, verbatim: "Ty Jerome
+            # '25 OFF should be high 60's to mid 70's. Not 81"). It is PROVABLY INFEASIBLE against
+            # Montrezl Harrell '18, recal_52's own anchor: Harrell reads OFF 77 +-1 on 17.0 mpg,
+            # BELOW Ty Jerome '25's 19.9, and every load measure agrees (1,292 season minutes to
+            # 1,393; 11.0 ppg to 12.5; BPM 3.3 to 4.3). Any load term T(score, load) that is
+            # non-decreasing in both of its arguments — which every discount toward a bench
+            # footprint is — must therefore leave Harrell at or below Jerome, while the two rulings
+            # together require Harrell >= 76 and Jerome <= 75. No parameterisation exists, and the
+            # sweep confirms it: the largest discount that breaks NO anchor moves Jerome 81 -> 80.
+            # This clause, recal_51's, remains the only load question o_score asks, and it asks it
+            # of `volume` — a usage RATE, which is exactly the thing his ruling says is not a load.
+            # Receipt 93 carries the measurement and the conflict; anchors.json is unchanged.
             att_f *= max(0.0, min(1.0, (a['volume'] - 70) / 10.0))
         else:
             base = 5.0
@@ -297,17 +367,14 @@ def o_score(p, trace=None):
 def d_score(p, trace=None):
     # class-dependent: bigs' defensive votes route to rimprot by design, so perdef understates them;
     # perimeter keeps the round-1 perdef-heavy mix (perdef IS the complete defensive verdict)
+    #
+    # recal_93: the class is now a WEIGHT, not a switch (see d_bigness above). Both vectors are
+    # computed and blended; at w == 1.0 and w == 0.0 the arithmetic is byte-identical to what stood
+    # before, so 4,307 position-decided bigs and every lifetime guard are unmoved by construction.
     a = p['attrs']
-    if is_big(p):
-        if trace is not None:
-            trace['branch'] = 'big'
-            trace['terms'] = [('perdef', a['perdef'], 0.40, 0.40*a['perdef']),
-                              ('rimprot', a['rimprot'], 0.40, 0.40*a['rimprot']),
-                              ('drb', a['drb'], 0.17, 0.17*a['drb']),
-                              ('discipline', a['discipline'], 0.03, 0.03*a['discipline'])]
-            trace['size_mod'] = 1.0
-            trace['d_score'] = 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']
-        return 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']   # drb weight up: rebounding credit now lives here, not inside rimprot
+    w = d_bigness(p)
+    # drb weight up: rebounding credit now lives here, not inside rimprot
+    _big = 0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb'] + 0.03*a['discipline']
     # recal_57 trimmed perimdisrupt 0.15 -> 0.09; recal_62 (his ruling) trims it again 0.09 -> 0.05.
     # Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict).
     # recal_80 (design-side round, HIS RULING "Ship 80"): rim protection counted ZERO on the
@@ -317,17 +384,25 @@ def d_score(p, trace=None):
     base = 0.63*a['perdef'] + 0.13*a['rimprot'] + 0.11*a['perimdisrupt'] + 0.07*a['drb'] + 0.06*a['discipline']
     # size modifier: a 6'0 defender guards one matchup; tall stoppers switch. Guard-quota All-D
     # selections are real evidence, but size caps the ceiling. Bites only truly small defenders.
+    # It belongs to the PERIMETER vector alone, exactly as it always has: a man is only shrunk for
+    # his height on the share of him that is being graded as a perimeter defender.
+    _size = min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
+    _perim = base * _size
+    out = w * _big + (1.0 - w) * _perim
     if trace is not None:
-        trace['branch'] = 'perimeter'
-        trace['terms'] = [('perdef', a['perdef'], 0.63, 0.63*a['perdef']),
-                          ('rimprot', a['rimprot'], 0.13, 0.13*a['rimprot']),
-                          ('perimdisrupt', a['perimdisrupt'], 0.11, 0.11*a['perimdisrupt']),
-                          ('drb', a['drb'], 0.07, 0.07*a['drb']),
-                          ('discipline', a['discipline'], 0.06, 0.06*a['discipline'])]
+        trace['branch'] = ('big' if w >= 1.0 else ('perimeter' if w <= 0.0 else f'blend w={w:.4f}'))
+        trace['bigness'] = w
+        trace['terms'] = [('perdef', a['perdef'], 0.40*w + 0.63*(1-w)*_size, (0.40*w + 0.63*(1-w)*_size)*a['perdef']),
+                          ('rimprot', a['rimprot'], 0.40*w + 0.13*(1-w)*_size, (0.40*w + 0.13*(1-w)*_size)*a['rimprot']),
+                          ('perimdisrupt', a['perimdisrupt'], 0.11*(1-w)*_size, 0.11*(1-w)*_size*a['perimdisrupt']),
+                          ('drb', a['drb'], 0.17*w + 0.07*(1-w)*_size, (0.17*w + 0.07*(1-w)*_size)*a['drb']),
+                          ('discipline', a['discipline'], 0.03*w + 0.06*(1-w)*_size, (0.03*w + 0.06*(1-w)*_size)*a['discipline'])]
         trace['base'] = base
-        trace['size_mod'] = min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
-        trace['d_score'] = base * min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
-    return base * min(1.0, 0.94 + 0.06*(a.get('height', 76) - 71)/7)
+        trace['big_vector'] = _big
+        trace['perim_vector'] = _perim
+        trace['size_mod'] = _size
+        trace['d_score'] = out
+    return out
 for cls in (True, False):
     grp = sorted(p['_raw'] for p in players if is_big(p) == cls)
     for p in players:
@@ -437,7 +512,27 @@ for p in players:
     # recal 3: offense gates the ceiling (a defense-first perimeter player stops one man), but elite
     # defense keeps a floor; an elite anchor is a defensive SYSTEM, so bigs are effectively exempt.
     # It can only ever pull OVR DOWN toward the offence, never below the weaker end (cap >= o+10).
-    cap = max(p['o_ovr'] + 10, 0.80 * p['d_ovr']) if not is_big(p) else p['o_ovr'] + 40
+    #
+    # recal_93 (HIS RULING, verbatim: "Kawhi 14 agree"). THE ELITE-DEFENCE FLOOR, 0.80 -> 0.85.
+    # THE DEFECT: this cap, not the blend, was deciding OVR on 813 perimeter cards, and for the best
+    # perimeter defenders on the board it was clipping the blend by SEVEN — Kawhi Leonard '14
+    # (o 65, d 95) blends to 83 and printed 76; Paul George '13, Metta World Peace '07, Jason Kidd
+    # '01 and Ben Simmons '20 were clipped by the same 7. recal_83/85 left OVR as nothing but the
+    # bigger of the two role blends, and a shaping term that overrides the blend by seven points on
+    # the very cards the blend exists to describe is no longer a gate, it is a second formula.
+    # WHICH HALF WAS BINDING, measured rather than guessed: for Kawhi '14 the binding term is NOT
+    # `o_ovr + 10` (75) but the elite-defence FLOOR, 0.80 x 95 = 76. So the round loosens exactly
+    # the half that decided him, and nothing else: an ELITE defender's floor rises with how elite he
+    # is, while a card whose defence is ordinary is governed by `o_ovr + 10` and does not move at all.
+    # recal 3's intent is intact and is still doing work: 0.85 x 95 = 80.75 still pulls Kawhi '14
+    # DOWN from his 83 blend, and the cap still binds on 532 cards after the change.
+    # REJECTED, both measured on the whole pool and both able to hit the number: widening the gap to
+    # `o_ovr + 15` (613 cards move, max +5) and a defence-proportional gap `o_ovr + 10 + 0.17*(d-o)`
+    # (584, max +4). Each reaches Kawhi '14 = 80 with no anchor broken, but each rewrites the half of
+    # recal 3 that was NOT the cause — the offence gate — for every perimeter card on the board.
+    # MEASURED: 606 cards move on OVR, every one of them UP (a cap can only ever be loosened), max
+    # +5; DEF and OFF move on zero; no card enters, leaves or reorders the top 50 by OVR.
+    cap = max(p['o_ovr'] + 10, 0.85 * p['d_ovr']) if not is_big(p) else p['o_ovr'] + 40
     _tops.append(raw)
     p['ovr'] = int(min(99, cap, round(raw)))
     # the marginal survives as a CARD FIELD so the draft and team screens can still read it; it simply
@@ -514,9 +609,11 @@ if _CARD:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
-    _table(f"D_SCORE — the {_dt['branch']} branch", _dt['terms'])
-    if _dt['branch'] == 'perimeter':
-        print(f"  size modifier x{_dt['size_mod']:.4f} (height {_a.get('height', 76)})  ->  {_dt['d_score']:.4f}")
+    _table(f"D_SCORE — the {_dt['branch']} branch (effective weights; recal_93 blends the two vectors)", _dt['terms'])
+    print(f"  big vector {_dt['big_vector']:.4f}   perimeter vector {_dt['perim_vector']:.4f}"
+          f" (base {_dt['base']:.4f} x size {_dt['size_mod']:.4f}, height {_a.get('height', 76)})")
+    print(f"  d_bigness {_dt['bigness']:.4f}  ->  {_dt['bigness']:.4f} x big + {1-_dt['bigness']:.4f} x perimeter"
+          f"  =  {_dt['d_score']:.4f}")
     print(f"  d_score {_dt['d_score']:.4f}  x 1.1305 display multiplier  =  raw {_draw:.4f}")
 
     print(f"\nBAND POSITION (knee {KNEE}, OFF_TOP {OFF_TOP}, DEF_TOP {DEF_TOP})")
@@ -527,12 +624,12 @@ if _CARD:
               + (f"   ({_raw2 - _top:+.4f} vs the anchor)" if _raw2 > KNEE else ''))
 
     _b1, _b2 = 0.4*_q['o_ovr'] + 0.6*_q['d_ovr'], 0.70*_q['o_ovr'] + 0.30*_q['d_ovr']
-    _cap = max(_q['o_ovr'] + 10, 0.80 * _q['d_ovr']) if not _q['big'] else _q['o_ovr'] + 40
+    _cap = max(_q['o_ovr'] + 10, 0.85 * _q['d_ovr']) if not _q['big'] else _q['o_ovr'] + 40
     print(f"\nOVR BLEND (recal_83, the bigger of two role readings; recal_85 left nothing else in)")
     print(f"  defence-led  0.40 x OFF {_q['o_ovr']} + 0.60 x DEF {_q['d_ovr']} = {_b1:.2f}")
     print(f"  offence-led  0.70 x OFF {_q['o_ovr']} + 0.30 x DEF {_q['d_ovr']} = {_b2:.2f}")
     print(f"  winner: {'defence-led' if _b1 >= _b2 else 'offence-led'} = {max(_b1, _b2):.2f}")
-    print(f"  offence cap ({'big: o_ovr + 40' if _q['big'] else 'max(o_ovr + 10, 0.80 x d_ovr)'}) = {_cap:.2f}")
+    print(f"  offence cap ({'big: o_ovr + 40' if _q['big'] else 'max(o_ovr + 10, 0.85 x d_ovr)'}) = {_cap:.2f}")
     print(f"  OVR = min(99, cap, round(raw)) = {_q['ovr']}")
 
     print('\nRANKS')
