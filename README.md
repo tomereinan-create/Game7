@@ -61,8 +61,16 @@ keeping them as history would add that to the repo on every push.
 
 There is a **Game7** shortcut on the Desktop. Double-clicking it runs
 `launch.vbs`, which starts `serve.mjs` hidden (no console window) on port 5178 and
-opens the browser. It serves `dist/`, building first if that folder is missing, and
-a second double-click just reopens the tab instead of starting a rival server.
+opens the browser. It serves `dist/`, and a second double-click just reopens the
+tab instead of starting a rival server.
+
+It builds first when `dist/` is missing **or** when anything under `src/`,
+`public/`, `index.html`, `package.json` or `vite.config.ts` is newer than
+`dist/index.html` — checked on start and again on each request for the page, so
+the double-click after a merge shows the merge and not the last build anyone
+happened to run. The page waits the ~8 seconds rather than being handed the old
+one. It is still a static server, not a dev server: nothing watches, nothing
+hot-reloads.
 
 It binds `0.0.0.0`, so the phone URL it prints works too.
 
