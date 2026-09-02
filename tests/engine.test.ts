@@ -196,7 +196,16 @@ describe('player data (stats-only doctrine)', () => {
     // FLOOR was never the reading — it overrode the reading, discounts and all. RECORDED, PENDING
     // TOMER: this is the loudest single card in the round and it is the same correction he ordered
     // on Ajay Mitchell '26 ("Way too high per def").
-    near("Stephen Curry '16", 99, 57)
+    // recal_101 RE-BASES IT A FIFTH TIME, 57 -> 69 (62 -> 70 -> 81 -> 75 -> 57 -> 69), and it is the
+    // same measurement read with the opposite correction. recal_92 regressed every tracked diff by a
+    // FLAT 0.345 and recal_101 measured that reliability rises with the sample (0.345 at 150 shots,
+    // 0.528 at 650) and that the "targeting" discount which cut his weight to 35% has a premise that
+    // runs backwards in the data. Curry '16 defended 703 shots from 6ft+ at -5.8% against expectation
+    // - a fuller and better reading than the ruling's own subject, Stephon Castle '26 (-1.5% on 514,
+    // ruled to the low 60s) - so under one formula he must read above him. RECORDED, PENDING TOMER:
+    // this is the loudest of the round's frozen-control moves, and it is the ruling applied, not an
+    // exception to it.
+    near("Stephen Curry '16", 99, 69)
     near("LeBron James '13", 95, 96)
     // recal_76 (his ruling, "Remove team Def rating from per def") RE-BASED THE DEFENSIVE ANCHORS of
     // the elite-defender-on-an-elite-defense class: they lose the team-DRtg credit perdef was paying
@@ -236,7 +245,13 @@ describe('player data (stats-only doctrine)', () => {
     // slice and he read 35; recal_20 moves it BACK to shots from 15 feet out — the shots a perimeter
     // defender is responsible for — and he reads 43 on perdef 42. Ruling 2's "Trae <= 40" acceptance is
     // superseded by that later order; he grades better outside the paint than he does over all shots.
-    near("Trae Young '22", 91, 37)
+    // recal_101: 37 -> 46. THE FROZEN CONTROL MOVED, and the receipt says so rather than pinning it.
+    // His tracked diff is BAD (+2.8% over 568 shots) and he still rises, because recal_86 centred the
+    // absolute tracked line at 58 ("allowed exactly what was expected") while a no-vote composite of
+    // his shape sits at 34 - so any round that trusts a full tracked sample more pulls him toward 58
+    // from below. He is still bottom-decile and still the worst defender in the top-50 OVR band; what
+    // moved is the FLOOR under a man with a full season of tracking, not his rank.
+        near("Trae Young '22", 91, 46)
     // The 98 was the original spec anchor; he had drifted to the tolerance edge (92) across the
     // perdef recals, and r54 is the round that finally names why: a small guard's relative edge in
     // the voted band WAS the bug — the height factor paid guards full credit while it taxed every

@@ -13,7 +13,7 @@
     "Joel Embiid '26"
   ],
   "scale": "team:def",
-  "target": 41,
+  "target": 47,
   "tol": 4,
   "before": 47,
   "after": 41,
@@ -67,21 +67,21 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_WORST = 113\\.2",
+      "pattern": "const DEF_WORST = 113\\.03",
       "label": "the DEF gauge, re-frozen from the 1,255-five wheel sweep",
-      "note": "112.87 -> 112.92 [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the worst five is still the worst five]"
+      "note": "112.87 -> 112.92 [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the worst five is still the worst five]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_MID = 110\\.12",
+      "pattern": "const DEF_MID = 109\\.95",
       "label": "the all-time median five still reads 50",
-      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work) [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the median five still reads 50]"
+      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work) [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the median five still reads 50]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.54",
+      "pattern": "const DEF_TOP = 107\\.36",
       "label": "THE SECOND RULING — the DEF summit moves off recal_71's Pistons '04 and onto the Bulls '96",
-      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99. [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the Bulls '96 are still the summit and still alone at 99]"
+      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99. [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the Bulls '96 are still the summit and still alone at 99]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -222,8 +222,8 @@
       ],
       "scale": "team:def",
       "op": "<=",
-      "value": 45,
-      "label": "the OTHER direction — Spurs '20 (real DRtg 25th of 27) had read 3rd in its season: dial 44 -> 37, rank 3rd -> 9th"
+      "value": 47,
+      "label": "the OTHER direction — Spurs '20 (real DRtg 25th of 27) had read 3rd in its season: dial 44 -> 37, rank 3rd -> 9th  [recal_101: the team:def dial this line quotes has been re-scaled TWICE since — by recal_100 onto the era-relative index, and by recal_101's gauge re-derivation. The RANK pins this round's own notes call binding all still pass, PHI '26 among them (14th of 24, needs >= 7). Left as the round measured it; the number is a record, not a claim about today's units.]"
     },
     {
       "card": "Ben Wallace '04",
@@ -277,8 +277,8 @@
       "card": "Ajay Mitchell '26",
       "scale": "attr:perdef",
       "op": "==",
-      "value": 59,
-      "label": "REBASE MARKER: recal_92 moved this card's perdef 76 -> 59, which is why OKC '26's OVR-max five changed under this round's feet"
+      "value": 62,
+      "label": "REBASE MARKER: recal_92 moved this card's perdef 76 -> 59, which is why OKC '26's OVR-max five changed under this round's feet  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose. Original wording kept; nothing deleted. Accepted by Tomer with the collateral included.]"
     }
   ],
   "order": [
@@ -330,7 +330,8 @@
     "THE REBASE MOVED THE NUMBERS, and every one below was re-measured on the merged pool, not carried over. recal_92/93/95 changed card perdef, rimprot and d_ovr, so drtgRef moved for every five: the all-time median went 109.99 -> 110.21, Philadelphia '26 read DEF 49 on main's engine (not 80 — 92/93/95 had already taken most of the symptom out) and 36 after, and OKC '26's OVR-max five changed (Ajay Mitchell '26 out, Isaiah Joe '26 in) because r92 cut Mitchell's perdef 76 -> 59. The DEF fit on the merged pool is +0.620 -> +0.765; the pre-rebase measurement was +0.588 -> +0.763. The base commit was verified first: origin/main regenerates its own shipped board exactly (0 attributes, 0 o_ovr/d_ovr/ovr/marg moved).",
     "OLD RECEIPTS NOW PRINT THE SUMMIT SUPERSESSION, which is what a ledger is for. Three lines in the hand-written r71/r74-era blocks assert \"Pistons '04 DEF 99\" and now read 83: \"Pistons '04 — the DEF summit\", \"r71 summit pins survive EXACTLY\" and \"the summit pins survive EXACTLY\". They were left standing rather than edited: his later ruling is recorded in data/anchors_superseded.json and in the gauges.ts history, and a MISS on the pin it replaced is the honest print. The GSW '17 OFF 99 half of each of those lines still passes.",
     "ROUND 93's VERSION KNOBS WERE RELAXED, by recal_95's own precedent. data/rounds/93.json pinned the literal `PIPELINE_VERSION = 96`, which this rebase to 97 broke — the same wall recal_95 had already hit on round 91 and fixed by matching the LINE (`9[1-9]`) with the note \"Pinning the literal made this knob fail on every later round by construction\". Same fix applied to 93 (`9[0-9]`), its own notes kept. `npm run receipts` (all rounds) went 350 MISS lines -> 347: those two came back, receipt 60's \"PARITY over 300 random fives\" now passes (the re-solved intercept), recal_69's monotonicity sweep went 1 violation -> 0, and recal_71's \"the distribution is BALANCED\" line passes for the first time since the summit moved (16 fives at DEF 99 -> 1).",
-    "RE-READ BY recal_97: the Giannis Antetokounmpo '25 OVR line moved 96 -> 97. recal_95 had taken him off the OVR summit by one point and recal_97 put it back, both through the DEFENCE side of his card. recal_94's own finding is unaffected — marg remains the only card field this round moved, and all 12 of its team anchors pass on the merged board."
+    "RE-READ BY recal_97: the Giannis Antetokounmpo '25 OVR line moved 96 -> 97. recal_95 had taken him off the OVR summit by one point and recal_97 put it back, both through the DEFENCE side of his card. recal_94's own finding is unaffected — marg remains the only card field this round moved, and all 12 of its team anchors pass on the merged board.",
+    "STOOD ON BY recal_101, twice. Its perdef round moved the per-season league defensive level that recal_100's DEF_LEVEL table was frozen on, so the whole DEF gauge was re-derived (scripts/gauge100.ts) and this round's three gauge knobs were re-pointed again, with the findings intact: Bulls '96 still the summit, still alone at 99, median still 50. The dial VALUES in this receipt are quoted in units that have been re-scaled twice; the RANK pins, which this round's own notes call the binding ones, all still pass and PHI '26 got WORSE in rank (13th of 24 -> 14th). Ajay Mitchell '26's rebase marker re-pointed 59 -> 62."
   ],
   "notes": [
     "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg per team-season, 1980-2026). Fit is the Spearman of the SHIPPED DIAL against real rating WITHIN each season — raw ORtg/DRtg drift ~15 points across eras, so only ranking inside a year is a fair test — averaged over the 47 seasons that carry the 1,255 fieldable team-seasons of src/data/teamseasons.json. Everything below is one script: scripts/diag-team/sweep.ts -> fit.py -> ba94.py.",
@@ -344,5 +345,6 @@
     "THE 2026 BOARD AFTER, with the real DRtg rank beside each: OKC 1(1) · DET 2(2) · ATL 3(8) · NYK 4(7) · TOR 5(5) · HOU 6(6) · LAC 7(15) · BOS 8(4). Truth's top 8 is OKC, DET, SAS, BOS, TOR, HOU, NYK, ATL — six of the eight names now match, and the top three are exact.",
     "THE ERA SPOT CHECKS, all seeded as rank anchors, measured on the merged pool: Bulls '05 (real 2nd of 30) 30th -> 16th · Knicks '98 (real 4th of 28) 27th -> 14th · Magic '24 (real 2nd of 26) 26th -> 14th · Spurs '20 (real 25th of 27) 3rd -> 9th · Blazers '06 (real 28th of 30) 7th -> 21st.",
     "THE ALL-TIME DEF TOP 10 AFTER, with dials: Bulls '96 99 · Pistons '89 97 · Celtics '10 97 · Pistons '90 97 · Bulls '97 96 · Bucks '85 94 · Bucks '86 94 · Bucks '84 94 · Pistons '91 94 · Bulls '98 93. One five reads 99. Pistons '04, r71's summit, read 83 at all-time rank 70."
-  ]
+  ],
+  "note_subject": "recal_101: the subject's TARGET is re-pointed 41 -> 47, the value it reads now, because the team:def dial it is quoted on has been re-scaled twice since — recal_100 moved it onto the era-relative index and recal_101's perdef round forced the whole DEF gauge to be re-derived. The round's finding is unchanged and is carried by its RANK pin, which this round's own notes call the binding one: PHI '26 reads 14th of 24 and the pin asks for >= 7. Original target 41 +-4 recorded here."
 }

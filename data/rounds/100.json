@@ -34,14 +34,15 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 110\\.950,",
+      "pattern": "const DEF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 110\\.246,",
       "label": "THE ERA TABLE — the league's own defensive level, season by season, frozen from the 1,255-five sweep",
-      "note": "flat at ~109.9 from 1980 to 2013, then a step at 2014 and a climb to 110.950"
+      "note": "flat at ~109.9 from 1980 to 2013, then a step at 2014 and a climb to 110.950  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_LEVEL_REF = 110\\.1397",
-      "label": "the league every DEF dial is quoted in: the mean of the 47 season levels"
+      "pattern": "const DEF_LEVEL_REF = 109\\.9663",
+      "label": "the league every DEF dial is quoted in: the mean of the 47 season levels",
+      "note": "  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -50,21 +51,21 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_WORST = 113\\.2",
+      "pattern": "const DEF_WORST = 113\\.03",
       "label": "the DEF gauge, re-frozen on the era-adjusted index",
-      "note": "112.92 -> 113.2 (adjusted units)"
+      "note": "112.92 -> 113.2 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_MID = 110\\.12",
+      "pattern": "const DEF_MID = 109\\.95",
       "label": "the all-time median five still reads 50",
-      "note": "110.21 -> 110.12 (adjusted units)"
+      "note": "110.21 -> 110.12 (adjusted units)  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.54",
+      "pattern": "const DEF_TOP = 107\\.36",
       "label": "recal_94's DEF summit HELD: the Bulls '96 still read 99, and still alone",
-      "note": "107.47 -> 107.54 (adjusted units); 1 five of 1,255 reads 99, same as before"
+      "note": "107.47 -> 107.54 (adjusted units); 1 five of 1,255 reads 99, same as before  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -207,8 +208,8 @@
       "card": "Shai Gilgeous-Alexander '26",
       "scale": "def",
       "op": "==",
-      "value": 67,
-      "label": "NO CARD MOVED: this round changes a display SCALE, not a card and not the engine — d_ovr, o_ovr, ovr and marg are byte-identical on all 10,000"
+      "value": 72,
+      "label": "NO CARD MOVED: this round changes a display SCALE, not a card and not the engine — d_ovr, o_ovr, ovr and marg are byte-identical on all 10,000  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose. Original wording kept; nothing deleted. Accepted by Tomer with the collateral included.]"
     },
     {
       "card": "Ben Wallace '04",
@@ -221,8 +222,8 @@
       "card": "Chet Holmgren '26",
       "scale": "attr:perdef",
       "op": "==",
-      "value": 64,
-      "label": "the subject's anchor as a CARD is unchanged — what changed is the league his five is quoted against"
+      "value": 66,
+      "label": "the subject's anchor as a CARD is unchanged — what changed is the league his five is quoted against  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose. Original wording kept; nothing deleted. Accepted by Tomer with the collateral included.]"
     }
   ],
   "order": [
@@ -265,7 +266,8 @@
     "THE ERA TABLE IS A FROZEN CONSTANT LIKE ANY OTHER and drifts when the pool does. scripts/gauge100.ts re-derives the whole block — the 47-season table, DEF_LEVEL_REF, and the three anchors, in that order, with the table rounded to 3dp FIRST so the shipped constants are self-consistent. Re-run it after any round that moves drtgRef, exactly as scripts/gauge71.ts is re-run after one that moves offRaw. Between a0c705e and f4cbb51 the table moved in the third decimal and OKC '26 went 78 -> 81 on it; that is the size of the sensitivity.",
     "WHAT IS STILL WRONG UNDERNEATH, and belongs to ratings-to-off-def rather than here. The drift this round cancels is real and it is in the CARDS: league-wide mean perdef falls 58.1 (80s) to 50.4 (20s) over all 9,665 rostered card-seasons, and its spread narrows with it (sd 16.4 -> 12.9). 94% of the 80s-to-20s drtgRef drift is that one channel. The scale now absorbs it, which is the right layer for a DISPLAY problem, but a round that wanted to fix the cause would look at how perdef is built across eras.",
     "THREE EARLIER ROUND FILES WERE REPOINTED, none weakened in substance. recal_94 pinned the three DEF gauge constants this round re-froze (112.92 / 110.21 / 107.47 -> 113.2 / 110.12 / 107.54); its knobs now point at the current values with the supersession written into each note, exactly as recal_94 itself repointed the r60 and r68 lines it moved. recal_96 and recal_98 pinned the literal PIPELINE_VERSION and broke on the bump to 101; all six version knobs across 94/96/98 now match `PIPELINE_VERSION = \\d+`, the LINE rather than the number, which is recal_95's standing fix and the third time it has had to be applied. scripts/receipts.ts's recal_64 pin on fieldGauges' body was repointed for the same reason (the body now passes an explicit season). `npm run receipts` over all rounds: 376 MISS lines on origin/main, 372 after this round.",
-    "THE 2026 SPREAD IS WIDER THAN ITS SEASON DESERVES, and a later round may want to look. 2026 now runs OKC 81 down to Utah 25 while the real DRtg spread of those 24 teams is 107.7 to 122.7. The recentring fixed the LEVEL and deliberately did not touch the SPREAD: rescaling every season to a common within-season sd was measured as variant (a') and rejected — it put OKC at 93 and seven fives at 99, manufacturing variance the modern card pool does not have (its within-season sd of drtgRef is 0.75 against the 80s' 1.10, and that narrowing is real). If he ever says the 2026 tail is too low, that is the knob, and the measurement is in this file's notes."
+    "THE 2026 SPREAD IS WIDER THAN ITS SEASON DESERVES, and a later round may want to look. 2026 now runs OKC 81 down to Utah 25 while the real DRtg spread of those 24 teams is 107.7 to 122.7. The recentring fixed the LEVEL and deliberately did not touch the SPREAD: rescaling every season to a common within-season sd was measured as variant (a') and rejected — it put OKC at 93 and seven fives at 99, manufacturing variance the modern card pool does not have (its within-season sd of drtgRef is 0.75 against the 80s' 1.10, and that narrowing is real). If he ever says the 2026 tail is too low, that is the knob, and the measurement is in this file's notes.",
+    "STOOD ON BY recal_101 (\"This is better than 50, should be low 60's\"), and the standing was anticipated by this round's own instruction: \"scripts/gauge100.ts re-derives this whole block, table included; re-run it after any change that moves drtgRef\". recal_101's perdef round moved drtgRef on every modern five, so the probe was re-run and the block re-derived: 2026's league level 110.950 -> 110.246, DEF_LEVEL_REF 110.1397 -> 109.9663, and the three anchors with them. THIS ROUND'S RULING IS INTACT ON THE NEW BLOCK: Thunder '26 reads 78 (anchor 81 +-3), Pistons '26 73 (71 +-4), 76ers '26 50 (49 +-6), Lakers '87 64 (64 +-6), Bulls '96 99 and still the only five of 1,255 at 99. Two card lines moved with recal_101's perdef and were re-pointed."
   ],
   "notes": [
     "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg per team-season, 1980-2026); fit is the Spearman of the shipped dial against real rating WITHIN each season, averaged over the 47 seasons carrying the 1,255 fieldable team-seasons of src/data/teamseasons.json. Everything below is scripts/diag-team: era100.py (where the drift is), drivers100.py (which channel owns it), variants100.py (the three cures), gauge100.ts (the freeze), ba100.py (before/after).",

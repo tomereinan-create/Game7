@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 101   # printed every run and written to src/data/pipeline.json
+PIPELINE_VERSION = 102   # printed every run and written to src/data/pipeline.json
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -31,7 +31,24 @@ PIPELINE_VERSION = 101   # printed every run and written to src/data/pipeline.js
 # recal_86 anchored the tracked branch in card space but read the raw season diff as if it were the
 # truth, so one season bought (or cost) ~20 points of perdef. The best estimate of the true diff is
 # the observed deviation from neutral shrunk by the series' reliability; that is all this dict does.
-TRK_RHO = {'Outside 6Ft': 0.345, 'Overall': 0.355}
+# recal_101 (HIS RULING, verbatim: "This is better than 50, should be low 60's"). RHO SCALES WITH
+# THE SAMPLE, and this corrects recal_92's own note. That round wrote "it does not improve with
+# sample: at a 250-attempt floor it is 0.363" - true, and measured over too short a range to see
+# the trend. Re-measured on the same file over consecutive-season pairs, with BOTH seasons above an
+# attempt floor:
+#   Outside 6Ft  150+ 0.345 (n=3181) | 250+ 0.363 | 350+ 0.406 | 450+ 0.431 | 550+ 0.502 | 650+ 0.528
+#   Overall      150+ 0.355 (n=3705) | 350+ 0.421 | 550+ 0.471 | 750+ 0.577
+# Reliability rises by half again between a thin sample and a full season, so a flat 0.345 regressed
+# a FULL tracking season as hard as a 150-shot one. The table below is the measurement itself,
+# linearly interpolated and flat outside it - not a fitted curve.
+TRK_RHO_CURVE = ((150.0, 0.345), (250.0, 0.363), (350.0, 0.406), (450.0, 0.431), (550.0, 0.502), (650.0, 0.528))
+def trk_rho(att):
+    if att is None: return TRK_RHO_CURVE[0][1]
+    a = max(TRK_RHO_CURVE[0][0], min(TRK_RHO_CURVE[-1][0], att))
+    for i in range(len(TRK_RHO_CURVE) - 1):
+        a0, r0 = TRK_RHO_CURVE[i]; a1, r1 = TRK_RHO_CURVE[i + 1]
+        if a <= a1: return r0 + (r1 - r0) * (a - a0) / (a1 - a0)
+    return TRK_RHO_CURVE[-1][1]
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -384,11 +401,27 @@ for yr, rows in seasons.items():
         return min(84.0, max(25.0, 58.0 - 5.0 * (100.0 * diff * rho)))
     _atts = sorted(a for _d, a in TRACKING.get((yr, PERDEF_CAT), {}).values() if a)
     TGT_MED = _atts[len(_atts) // 2] if _atts else None
-    FULL_SAMPLE = 350.0
+    # recal_101: 350 -> 500. recal_12 set "full workload = full evidence" at 350 by assertion; the
+    # MEDIAN tracked card in this file defends 452 shots from 6ft+ (p75 = 546, p90 = 631), so 350 was
+    # the 35th percentile of workload and `samp` saturated for two thirds of the pool. 500 sits just
+    # above the median, and it is where the measured reliability curve above has climbed to ~0.47.
+    FULL_SAMPLE = 500.0
     def _targeting_weight(name):
-        row = TRACKING.get((yr, PERDEF_CAT), {}).get(_nrm(name))
-        if not row or not TGT_MED: return 1.0
-        return min(1.0, max(0.35, 1 - 0.6 * max(0.0, row[1] / TGT_MED - 1)))
+        # recal_101: RETIRED, and retired because its premise is measurably BACKWARDS. It assumed a
+        # man who defends far more shots than the season median is being HUNTED, so his diff is
+        # earned against a harder diet and should be discounted - down to 0.35 at 2.08x the median.
+        # Measured over all 6,875 tracked cards, corr(attempts / season median, diff) = -0.068, and
+        # the buckets run the wrong way for the assumption at every step:
+        #   < 0.5x median  n=2201  mean diff +2.14%  sd 15.11%
+        #   0.5-1.0x       n=1233        +1.61%      sd  4.39%
+        #   1.0-1.5x       n=1245        +1.07%      sd  3.62%
+        #   1.5-2.0x       n=1120        +0.83%      sd  3.16%
+        #   2.0-2.5x       n= 725        +0.64%      sd  2.93%
+        #   > 2.5x         n= 351        +0.16%      sd  2.62%
+        # Men who defend the most shots have BETTER diffs and LESS noise. The term discounted the
+        # readings that were both the truest and the most reliable, by up to 65%, and it fought
+        # _sample_weight - which rewards the same volume - card for card. One line to restore.
+        return 1.0
     def _sample_weight(name):
         row = TRACKING.get((yr, PERDEF_CAT), {}).get(_nrm(name))
         return min(1.0, row[1] / FULL_SAMPLE) if row and row[1] else 0.0
@@ -448,11 +481,13 @@ for yr, rows in seasons.items():
         # makes 0.28 + 0.60 x P less than the cap he already had, so gamblers move zero.
         if yr < 2014 and r['drep'] <= 0.05:
             novote = max(novote, min(0.80, 0.28 + 0.60 * P['dbpm'](r['dbpm'])))
+        _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])
             if dv is not None:
                 # recal_86: 1 - Pperim(dv) (a within-season percentile) -> the absolute card line.
-                d_card = _abs_perdef(dv, TRK_RHO[PERDEF_CAT])                                       # a lower defended-FG% diff is a better defender
+                _r6 = TRACKING.get((yr, PERDEF_CAT), {}).get(_nrm(r['name']))
+                d_card = _abs_perdef(dv, trk_rho(_r6[1] if _r6 else None))                                       # a lower defended-FG% diff is a better defender
                 # the rest of his workload, blended in. If he has one series and not the other, the
                 # one that exists carries the term alone rather than pulling him toward the middle.
                 # recal_86 PRESERVES this 0.30 corroboration and maps it through the SAME absolute
@@ -464,9 +499,19 @@ for yr, rows in seasons.items():
                 # measured too; receipt 86 carries both so it is one line to flip on a ruling.
                 dv_all = _trk('Overall', r['name'])
                 if dv_all is not None:
-                    d_card = (1 - ALLSHOT_W) * d_card + ALLSHOT_W * _abs_perdef(dv_all, TRK_RHO['Overall'])
+                    _rov = TRACKING.get((yr, 'Overall'), {}).get(_nrm(r['name']))
+                    d_card = (1 - ALLSHOT_W) * d_card + ALLSHOT_W * _abs_perdef(dv_all, trk_rho(_rov[1] if _rov else None))
                 d_meas = (d_card - 1.0) / 98.0                                 # card space -> the 0..1 space this branch works in
-                wm = 0.70 * _targeting_weight(r['name']) * _sample_weight(r['name'])   # hunted men, and thin samples, lean back on the composite
+                # recal_101 (HIS RULING): A FULL TRACKING SEASON IS EVIDENCE, so the ceiling on how
+                # much of it is read rises with the sample instead of standing at 0.70 for everyone.
+                # The composite it blends against is, for a no-vote card, deliberately uninformative -
+                # shrunk toward 0.5 by PD_SHRINK_NOVOTE and capped at 0.62 - so holding 30% back for
+                # it at a full sample was holding back for noise. At half a sample the weight is
+                # 0.43, at a full one it is 1.00; thin samples still lean on the composite exactly as
+                # recal_12 intended.
+                _sw = _sample_weight(r['name'])
+                wm = (0.70 + 0.30 * _sw) * _targeting_weight(r['name']) * _sw
+                _dmeas101 = d_meas
                 novote = min(0.84, (1 - wm)*novote + wm*d_meas)
         # recal_97: the band's own top, 0.44 -> 0.45. With 0.44 a FULL percentile mapped to 0.99, i.e.
         # card 98.02 - so 99 was not merely hard to reach on perdef, it did not exist. The band now
@@ -474,6 +519,18 @@ for yr, rows in seasons.items():
         # season, height inside the 6'3"-6'8" band) reads 99 in ANY era, which is the ruling.
         # The floor is untouched at 0.55, so the no-vote cap of 54 and its 55 handoff still meet.
         PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)
+        # recal_101 (HIS RULING on Wembanyama '26, verbatim: "Per def is too low. I understand the
+        # 7'4 is an issue but everything else is 10/10"). A VOTED CARD'S FULL-SAMPLE MEASUREMENT MAY
+        # RAISE HIM, NEVER LOWER HIM. For wv = 1 the tracked branch was multiplied by zero, so the
+        # single best tracked perimeter reading in the pool - Wembanyama '26 at -8.6% over 765 shots
+        # - was DISCARDED, and he was ranked purely on a composite that charges his height twice
+        # (rep_hf halves his votes above 6'8" AND height_inv zeroes at 7'4"). The band ranks a PROXY
+        # built from votes, DBPM and height; the tracked line MEASURES the same thing. Where the
+        # measurement is full-sample and says more than the proxy's rank, it is not thrown away.
+        # It is a floor, never a ceiling: no voted card is demoted by a tracked reading, so recal_54,
+        # recal_82 and recal_97's voted band are untouched for everyone the measurement does not lift.
+        if wv > 0 and _dmeas101 is not None and _sample_weight(r['name']) >= 1.0:
+            PD2 = max(PD2, _dmeas101)
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)
         out_players[(r['pid'], yr)] = dict(
