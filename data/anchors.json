@@ -1,5 +1,50 @@
 [
  {
+  "card": "Steve Novak '13",
+  "scale": "off",
+  "target": 60,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "r91's stretch-big terms now paid against real load OR real glass; volume 9, orb 19, so he keeps r64's wing floor"
+ },
+ {
+  "card": "Anthony Tolliver '14",
+  "scale": "off",
+  "target": 56,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same gate; volume 7, orb 44"
+ },
+ {
+  "card": "Ben Wallace '07",
+  "scale": "ovr",
+  "target": 66,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "the OVR cap's big branch gets r93's elite-defence floor: max(o+40, 0.85*d)"
+ },
+ {
+  "card": "Ben Wallace '08",
+  "scale": "ovr",
+  "target": 64,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same"
+ },
+ {
+  "card": "Caldwell Jones '80",
+  "scale": "ovr",
+  "target": 65,
+  "tol": 2,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same"
+ },
+ {
   "card": "Karl Malone '99",
   "scale": "off",
   "target": 90,

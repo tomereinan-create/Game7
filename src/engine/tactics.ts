@@ -200,7 +200,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.60,
-  hunt: 3.70,
+  hunt: 3.50,
   crashOff: 0.10,
   crashDef: 0.48,
 }

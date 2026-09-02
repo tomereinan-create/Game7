@@ -1,0 +1,326 @@
+{
+  "round": 99,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Agree with 1-7",
+  "title": "THREE CLIFFS, ONE ROUND — the deterrence clause gets its own ramp, recal_91's stretch-big terms must be earned, and the OVR cap's big branch finally gets the floor recal_93 gave the perimeter one",
+  "subject": "Steve Novak '13",
+  "scale": "off",
+  "target": 60,
+  "tol": 3,
+  "before": 70,
+  "after": 62,
+  "pipeline_version": 103,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+      "label": "DEFECT A — the deterrence clause's own ramp, on rim protection alone",
+      "note": "80 is clause 3's own bar, so nothing at or above it moves; the cliff below it becomes twelve points of ramp"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_det = \\(min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - DET_LO\\) / \\(DET_HI - DET_LO\\)\\)\\)\\s*\\n\\s*if a\\['rimprot'\\] >= a\\['perdef'\\] else 0\\.0\\)",
+      "label": "and its GUARD — clause 1's own test, reused verbatim",
+      "note": "without it the ramp also DEMOTES elite perimeter defenders; with it the term can only ever lift"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['rimprot'\\] >= 80: return 1\\.0",
+      "label": "recal_72's absolute-deterrence clause, kept byte-identical above the ramp",
+      "note": "every card at rimprot 80+ reads exactly what it read before"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8\\.0, 22\\.0, 45\\.0, 65\\.0",
+      "label": "DEFECT B — the evidence recal_91's stretch-big terms are now paid against",
+      "note": "real load (volume 8->22) OR real glass (orb 45->65), whichever is the better claim"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_fl \\+= _g \\* \\(0\\.17\\*\\(a\\['orb'\\] \\+ a\\['rim'\\]\\) \\+ 0\\.10\\*a\\['volume'\\]\\)",
+      "label": "and the gate applied — r91's three terms, unchanged in weight",
+      "note": "0.17 and 0.10 are r91's own; only the entitlement to them is new"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ \\(40 if is_big\\(p\\) else 10\\), 0\\.85 \\* p\\['d_ovr'\\]\\)",
+      "label": "DEFECT C — one cap, two gates, the same elite-defence floor underneath both",
+      "note": "the big branch was the flat o_ovr+40; it now carries recal_93's 0.85 x d_ovr floor too"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "att_f \\*= max\\(0\\.0, min\\(1\\.0, \\(a\\['volume'\\] - 70\\) / 10\\.0\\)\\)",
+      "label": "recal_51's volume ramp, MEASURED AND LEFT — the Zubac decline",
+      "note": "retiring it in favour of recal_96's load share gains Zubac nothing and breaks five anchors"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — no weight moved this round",
+      "note": "every one of the four changes is a gate or a floor, not a weight"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 103",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 99; it SHIPS as pipeline 103 after the rebase onto recal_100/101 - see COST"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 103",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.50,",
+      "label": "THE DEVIATION TAX LAW, re-ratified on the merged recal_101 + recal_99 pool",
+      "note": "hunt 3.70 -> 3.50; round 99's own crashOff/crashDef move is VOID, see COST"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Kevin Durant '19",
+      "scale": "def",
+      "op": "~",
+      "value": 79,
+      "tol": 1,
+      "label": "HIS TARGET IS NOW STALE, not missed by the fix. recal_101 raised this card's perdef 40 -> 65, so the whole Durant family rose before this round ran: on origin/main alone he already reads 70, not 53. The scout's 75 +-3 was written against the old sheet. The ramp takes him 70 -> 79 and the '18/'19 sawtooth closes from 14 points to 5"
+    },
+    {
+      "card": "Kevin Durant '18",
+      "scale": "def",
+      "op": "~",
+      "value": 84,
+      "tol": 1,
+      "label": "the reference season, now 84 on recal_101's perdef (was 75): untouched by the ramp, which tops out at clause 3's own 80"
+    },
+    {
+      "card": "Kevin Durant '23",
+      "scale": "def",
+      "op": "~",
+      "value": 83,
+      "tol": 1,
+      "label": "same, now 83: untouched"
+    },
+    {
+      "card": "Steve Novak '13",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 3,
+      "label": "DEFECT B, first target: 70 -> 62 (target 60 +-3). volume 9, rim 27, orb 19 — he shows neither load nor glass, so he keeps recal_64's wing floor, which is the whole of what he does"
+    },
+    {
+      "card": "Anthony Tolliver '14",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "DEFECT B, second target: 66 -> 55 (target 56 +-3). volume 7, orb 44 — just under the glass foot"
+    },
+    {
+      "card": "Ben Wallace '07",
+      "scale": "ovr",
+      "op": "~",
+      "value": 67,
+      "tol": 2,
+      "label": "DEFECT C: 61 -> 67 against a blend of 66.6. o 21, d 97 — the flat o_ovr+40 was capping him at 61"
+    },
+    {
+      "card": "Ben Wallace '08",
+      "scale": "ovr",
+      "op": "~",
+      "value": 64,
+      "tol": 2,
+      "label": "same: 58 -> 64 against a blend of 63.6"
+    },
+    {
+      "card": "Caldwell Jones '80",
+      "scale": "ovr",
+      "op": "~",
+      "value": 65,
+      "tol": 2,
+      "label": "same: 59 -> 65 against a blend of 64.6"
+    },
+    {
+      "card": "Ivica Zubac '26",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 0,
+      "label": "HIS EIGHTH RULING, verbatim: \"Zubac at 58 OFF is a touch too low, should be mid 60's\" (target 65 +-3) — DECLINED, recorded at its unchanged reading. Clint Capela '17 is the blocker; see COST"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "THE CARD THAT MAKES ZUBAC INFEASIBLE — the same OFF 57 on the same orb 81 and a BETTER sheet (rim 88 vs 75, efficiency 79 vs 72), pinned at 58 +-1 by recal_51"
+    },
+    {
+      "card": "Rui Hachimura '26",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 1,
+      "label": "recal_91's own anchor, volume 22: HELD at the top of the load gate, which is what sets its ceiling"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 1,
+      "label": "recal_91's other anchor, volume 36 and orb 57: held on both halves of the gate"
+    },
+    {
+      "card": "Harrison Barnes '25",
+      "scale": "off",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "one of r91's own movers, volume 24: held, as the dispatch asked"
+    },
+    {
+      "card": "Dorian Finney-Smith '21",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "THE CARD THAT DECIDED THE 'OR': volume 7 but orb 71. On a load-only gate he fell 62 -> 45; the glass half holds him exactly"
+    },
+    {
+      "card": "Andre Iguodala '14",
+      "scale": "def",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "recal_93's own card: untouched. The new ramp is guarded by rimprot >= perdef and he is 39 against 92"
+    },
+    {
+      "card": "Kawhi Leonard '14",
+      "scale": "ovr",
+      "op": "~",
+      "value": 80,
+      "tol": 2,
+      "label": "recal_93's cap ruling: the perimeter branch is unchanged by the big-branch fix"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched; no band anchor is reopened this round"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "and the DEF summit"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Kevin Durant '18",
+      "below": "Kevin Durant '19",
+      "label": "the season order survives the fix — '19 rises to 67 but does not pass '18's 75"
+    },
+    {
+      "scale": "def",
+      "above": "Kevin Durant '23",
+      "below": "Kevin Durant '24",
+      "label": "same on the later pair, 74 over 68"
+    },
+    {
+      "scale": "off",
+      "above": "Rui Hachimura '26",
+      "below": "Steve Novak '13",
+      "label": "the stretch four now outranks the standstill shooter, which is the claim of defect B"
+    },
+    {
+      "scale": "off",
+      "above": "Dorian Finney-Smith '21",
+      "below": "Anthony Tolliver '14",
+      "label": "and the glass worker outranks the man who only shoots"
+    },
+    {
+      "scale": "ovr",
+      "above": "Ben Wallace '04",
+      "below": "Ben Wallace '07",
+      "label": "the peak Wallace still reads above the late one after the cap is loosened"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 63,
+    "max_abs": 12,
+    "top": [
+      [
+        "Anthony Tolliver '17",
+        62,
+        50
+      ],
+      [
+        "Anthony Tolliver '14",
+        66,
+        55
+      ],
+      [
+        "Anthony Tolliver '16",
+        60,
+        49
+      ],
+      [
+        "Steve Novak '13",
+        70,
+        62
+      ],
+      [
+        "Anthony Tolliver '18",
+        65,
+        59
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Ben Wallace '01",
+      "Dan Roundfield '80",
+      "Dan Roundfield '82",
+      "Dwight Howard '09",
+      "Dwight Howard '10",
+      "Dwight Howard '11",
+      "Ben Wallace '07"
+    ]
+  },
+  "cost": [
+    "REBASED ONTO recal_100 AND recal_101, AND TWO OF THE EIGHT TARGETS WENT STALE UNDER recal_101 - reported, not retuned, per _shared.md Integration. recal_101 rebuilt the tracked perdef term and moved 2,580 perdef bars; it raised THIS ROUND'S OWN DEFECT-A SUBJECTS by 22 to 25 points each: Kevin Durant '18 44 -> 65, '19 40 -> 65, '23 46 -> 64, '24 43 -> 67. On origin/main ALONE, before this round runs at all, Durant '19 already reads DEF 70 (not the 53 the scout measured) and '24 reads 73 (not 56). The scout's targets - 75 +-3 and 65 +-3 - were written against the OLD sheet and no longer describe these cards. WITH the ramp they read 79 and 80. THE FIX IS STILL RIGHT AND IS KEPT: the cliff it removes is real on the new attributes too, because '18 (rimprot 84) and '19 (rimprot 78) still read 84 and 70 on main - a 14-point step on six points of rim protection. The ramp closes it to five: the family now reads 84 / 79 / 83 / 80 where main reads 84 / 70 / 83 / 73. WHAT IS NOT DONE: neither Durant is anchored. Anchoring them at 79 and 80 would be inventing numbers Tomer never gave, and retuning the ramp to hit stale targets is exactly what the Integration rule forbids. They need his eye.",
+    "THE ROUND IS 99 AND THE PIPELINE IS 103. It was built at 101, and recal_100 and recal_101 shipped while it sat on his desk. Sixth divergence.",
+    "SIX OF THE EIGHT TARGETS LAND. Kevin Durant '24 (def 56 -> 68), Steve Novak '13 (off 70 -> 62), Anthony Tolliver '14 (66 -> 55), Ben Wallace '07 (ovr 61 -> 67), Ben Wallace '08 (58 -> 64) and Caldwell Jones '80 (59 -> 65) are anchored at round 99. TWO DECLINE and are recorded here rather than in anchors.json, on recal_91's precedent: Kevin Durant '19 and Ivica Zubac '26.",
+    "KEVIN DURANT '19 IS DECLINED, and the ceiling is arithmetic rather than a tuning question. The branch weight can only blend the two d_score vectors, so his reading is bounded by the BIG vector itself: 0.40 x perdef 40 + 0.40 x rimprot 78 + 0.17 x drb 67 + 0.03 x discipline 96 = 61.47, which is DEF 69 at full big weight. The target is 75 +-3 and needs 72. His '18 card reaches 75 because its sheet is genuinely better - perdef 44 against 40, drb 71 against 67, perimdisrupt 14 against 7 - so the scout's estimate carried '18's number to a card that cannot hold it. He lands at 67, which is the most the ramp can give while Durant '24 stays inside ITS band: the two are both rimprot 78, so a rimprot-only ramp must give them the same weight, and '24's band caps that weight at 0.87. Reaching 69 for '19 means putting '24 on 70, two outside his own target. 67 is the joint frontier.",
+    "IVICA ZUBAC '26 IS DECLINED, and this one is close to provable. He and CLINT CAPELA '17 read the SAME OFF (57) on near-identical sheets - orb 81 both, volume 40 against 43 - and Capela's is BETTER on every term o_score actually pays a big: rim 88 against 75, efficiency 79 against 72, fouldraw 71 against 59. Capela '17 is pinned at off 58 +-1 by recal_51. So reaching 65 for Zubac requires roughly SEVEN points of separation in favour of the card with the weaker sheet. Every lever was swept: the second-zone weight (Zubac's mid 45 against Capela's 21) reaches 62 only at 0.20, breaking 30 anchors; the orb weight reaches 63 at 0.15, breaking 22; the efficiency weight reaches 63 at 0.20, breaking 34; the volume weight moves him the WRONG way. The only free lift on the board is the signature term's volume floor (recal_26's max(volume, 50)) raised to 70 or 80, worth exactly ONE point - Zubac 57 -> 58 - and it was NOT shipped, because changing a global constant for one point on a declined target is the kind of half-measure a receipt should not have to explain. CLOSEST REACHABLE: 58.",
+    "WHAT THE DISPATCH GUESSED AND THE MEASUREMENT SAID, on Zubac. The suggested lever was recal_51's attempt ramp - the one that zeroes the paint bonus below volume 70 - now that recal_96 asks the load question of the clock instead. Replacing it with recal_96's load share was measured and does BOTH of the wrong things: it gains Zubac NOTHING (his paint bonus is throttled by the free-throw gate, not by the ramp) and it breaks five anchors at once (Clint Capela '17 and '18, Andre Drummond '20, Shaquille O'Neal '08, Montrezl Harrell '18), because those are exactly the high-minute low-usage bigs the ramp was holding down. r51's ramp is left standing and the reason is now on the record.",
+    "THE GUARD ON THE DETERRENCE RAMP IS LOAD-BEARING, not decoration. Without `rimprot >= perdef` the ramp pulls elite PERIMETER defenders toward the big mix, where their own vector is lower: LeBron James '11 97 -> 94, Kawhi Leonard '16 95 -> 94, LeBron James '07 93 -> 92, and 10 of 38 movers went DOWN. With it, 27 cards move and every one of them moves UP, the top 12 by DEF is identical, and the top 50 by OVR has no entrant, no leaver and no member whose OVR changed. The guard is clause 1's own test, so no new idea enters the file.",
+    "THE STRETCH-BIG GATE IS AN 'OR' AND THAT IS THE WHOLE DESIGN. Gating r91's three terms on LOAD alone reaches both named cards but costs the genuine glass workers r91 was built for: Dorian Finney-Smith '21 (volume 7, orb 71) 62 -> 45 and Al Horford '24 (volume 5, orb 60) 67 -> 52. Adding the glass half holds DFS at 62 exactly and leaves Horford at 63, a fall of four - which is the 'hold or fall a little' the dispatch asked for. The Tolliver seasons are the biggest movers on the board (-12 on '17), and that is the round working: four cards of one man, all volume 7 or less and orb in the 40s, all priced as stretch fours.",
+    "THE ROUND IS 99 AND THE PIPELINE IS 101. PIPELINE_VERSION is the SHIP order, not the round number (_shared.md, Integration): recal_98 shipped as 100, so this takes 101. Fifth divergence.",
+    "THE OLDER RECEIPT THIS ROUND TURNS RED: receipt 98 s two PIPELINE_VERSION pins (it asserts 100 in each python file; this round bumps both to 101). That is what every version bump has done to its predecessor for seventy rounds. Nothing else moved - no anchor was superseded this round and no earlier expect line changed value.",
+    "THE TACTICS BAND THIS ROUND BREAKS ON THE MERGED POOL, and the earlier re-ratification is VOID. Built against the pre-101 board this round re-ratified crashOff .10 -> .40 and crashDef .48 -> .74; on the merged pool those two are BACK IN BAND at origin/main's own values (.10 and .48) and were left there, and HUNT is the one that breaks instead - oracle +0.46 against the +0.50 floor. Re-ratified through the harness 3.70 -> 3.50. RECORD: hunt's feasible window on this pool is about 3.33 to 3.63, thirty hundredths, and 3.50 sits near its middle with 0.043 of headroom. The measurement taken before the rebase is superseded in full - a tax swept against a different pool is not a reading of this one."
+  ],
+  "notes": [
+    "THREE CLIFFS, AND THEY ARE THE SAME CLIFF. Defect A is recal_93's own ramp failing to engage for shooters, because its 3pt factor is zero above 40 and the product is therefore zero - so the branch fell back to the single line `rimprot >= 80`. Defect B is recal_91's stretch-big terms paid to every big inside recal_64's gate regardless of whether he does the work they name. Defect C is recal_93's cap fix applied to the perimeter branch and not to its sibling. Each is a threshold that decides a card's formula rather than describing the card, which is the shape this file has been working through since round 93.",
+    "WHAT DEFECT A ACTUALLY COSTS A CARD, in one line: Kevin Durant '19 read DEF 53 with perdef 40 and rimprot 78, graded as a perimeter defender he is not, while '18 at rimprot 84 read 75. Six points of rim protection, twenty-two printed points, and no ramp between them because he shoots threes.",
+    "MEASURED BEFORE APPLYING, each defect separately then combined. A alone: 27 cards move on DEF, ALL of them up, OFF and OVR follow only through the blend. B alone: 63 cards move on OFF, all down, max -12, and DEF moves on zero. C alone: 33 cards move on OVR, all UP, max +6, and OFF and DEF move on zero. COMBINED: OFF 63, DEF 27, OVR 109, attributes 0. The top 12 by OFF and by DEF are identical name for name, and the top 50 by OVR has zero entrants, zero leavers, zero rank flips and not one member whose OVR moved. All 110 anchors pass.",
+    "THE SEQUENCES THE SCOUT FLAGGED, after. Durant reads '18 75, '19 67, '23 74, '24 68 where he read 75 / 53 / 74 / 56 - the two dips are gone and the two peaks are untouched, because the ramp tops out at clause 3's own bar and cannot move a card that was already above it.",
+    "NOTHING WAS HALF-APPLIED. The two declined cards move by exactly nothing: Kevin Durant '19 moves only as the shared ramp carries him (53 -> 67, still six short of his band), and Ivica Zubac '26 reads 57 before and after."
+  ]
+}

@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 102
+PIPELINE_VERSION = 103
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -85,6 +85,8 @@ _MPG = {k: (v or {}).get('mpg') for k, v in _STATS_RAW.items()}
 # below which the load terms earn nothing. Both are stated in COST and derived, not chosen by taste:
 # see the long comment at the load term itself, inside o_score.
 LOAD_FOOT, LOAD_FULL = 12.0, 24.0
+# recal_99: the evidence recal_91's stretch-big terms are paid against - load, or glass.
+SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8.0, 22.0, 45.0, 65.0
 def load_share(p):
     """How much of a full workload this card actually carried, in [0, 1]. 1.0 = full price, and the
     card is byte-identical to what it was. MEASURED, OR NOT AT ALL: a card with no minutes on the
@@ -160,6 +162,7 @@ def is_big(p):
 # his 92 +-1 anchor at 96. Only a blend reaches a number BETWEEN the two formulas. See receipt 93.
 DEF_RP_LO, DEF_RP_HI = 45.0, 80.0   # the ramp on rim protection; 80 is clause 3's own bar
 DEF_3P_LO, DEF_3P_HI = 30.0, 40.0   # the fade on the clause's own `3pt < 40` line
+DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp, on rimprot alone
 def d_bigness(p):
     """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
     verdict, 1 = the whole big verdict. The position branches and the first/third shape clauses are
@@ -172,7 +175,25 @@ def d_bigness(p):
     if a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']: return 1.0
     w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))
     w_3p = min(1.0, max(0.0, (DEF_3P_HI - a['3pt']) / (DEF_3P_HI - DEF_3P_LO)))
-    return w_rp * w_3p
+    # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE RAMP STILL CLIFFED FOR SHOOTERS.
+    # recal_93 replaced the middle clause's step with the product above, but the 3pt factor is ZERO
+    # for any card at 3pt >= 40 - so for a real shooter the whole product is zero and the branch was
+    # still decided by the single line `rimprot >= 80`, the very cliff r93 was written to remove.
+    # Kevin Durant is the case: '18 rimprot 84 -> DEF 75 and '19 rimprot 78 -> DEF 53, twenty-two
+    # points on six points of rim protection; '23 83 -> 74 and '24 78 -> 56.
+    # THE FIX: the absolute-deterrence clause gets its OWN ramp, on rim protection alone, so it
+    # engages for a shooter exactly as it does for anyone else. It runs from 68 to 80 - 80 being
+    # clause 3's own bar, which is therefore left byte-identical above - and it is GUARDED by
+    # clause 1's own test, `rimprot >= perdef`: deterrence may pull a man toward the big mix only
+    # when his rim protection is at least his perimeter defence. Without that guard the ramp also
+    # DEMOTES elite perimeter defenders whose big vector is lower than their perimeter one (LeBron
+    # '11 97 -> 94, Kawhi '16 95 -> 94); with it, the term can only ever lift, which is what a
+    # clause called "an elite deterrent is a big whatever his shape" should do. MEASURED: 27 cards
+    # move on DEF, every one of them UP, none of r93's own anchors moves, and Durant '18 and '23
+    # hold at 75 and 74 exactly.
+    w_det = (min(1.0, max(0.0, (a['rimprot'] - DET_LO) / (DET_HI - DET_LO)))
+             if a['rimprot'] >= a['perdef'] else 0.0)
+    return max(w_rp * w_3p, w_det)
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)
@@ -444,7 +465,26 @@ def o_score(p, trace=None):
         # of them inside r64's gate. The wing floor's own anchors are untouched BY CONSTRUCTION —
         # Korver '15 58, Kerr '96 62, Snell '18 50, Bowen '06 45 are all perimeter, not bigs.
         if is_big(p):
-            _fl += 0.17*(a['orb'] + a['rim']) + 0.10*a['volume']
+            # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE STRETCH-BIG TERMS ARE EARNED,
+            # NOT GIVEN. r91 added orb, rim and volume for bigs because "he crashes the offensive
+            # glass, he finishes at the rim, and he carries a real share of the possessions" - but
+            # it paid them to EVERY big inside r64's gate, at their raw level and with no floor. So
+            # Steve Novak '13 (volume 9, rim 27, orb 19) and Anthony Tolliver '14 (volume 7, rim 21)
+            # collected 8.7 and 11.8 for work they do not do, and read OFF 70 and 66 as standstill
+            # shooters in a power forward's body.
+            # THE GATE IS r91's OWN SENTENCE, made a condition: the three terms are paid in
+            # proportion to the evidence of EITHER real load OR real glass - volume from 8 to 22, or
+            # offensive rebounding from 45 to 65, whichever is the better claim. A card that shows
+            # neither is a wing spacer and keeps r64's wing floor, which is the whole of what he does.
+            # WHY "OR" AND NOT "AND", measured: gating on load alone reaches the two named cards but
+            # takes Dorian Finney-Smith '21 (volume 7 but orb 71) from 62 to 45 and Al Horford '24
+            # (volume 5, orb 60) from 67 to 52 - both genuine glass workers, both cards r91 moved on
+            # purpose. With the glass half in place they read 62 and 63.
+            # MEASURED: 63 cards move on OFF, Novak 70 -> 62 and Tolliver 66 -> 55; r91's own anchors
+            # hold (Hachimura '26 66, Anunoby '21 64) and so does Harrison Barnes '25 at 73.
+            _g = max(min(1.0, max(0.0, (a['volume'] - SB_V_LO) / (SB_V_HI - SB_V_LO))),
+                     min(1.0, max(0.0, (a['orb'] - SB_ORB_LO) / (SB_ORB_HI - SB_ORB_LO))))
+            _fl += _g * (0.17*(a['orb'] + a['rim']) + 0.10*a['volume'])
         std = max(std, _fl)
         if trace is not None:
             trace['offball_floor'] = dict(value=_fl, binding=std == _fl,
@@ -619,7 +659,18 @@ for p in players:
     # recal 3 that was NOT the cause — the offence gate — for every perimeter card on the board.
     # MEASURED: 606 cards move on OVR, every one of them UP (a cap can only ever be loosened), max
     # +5; DEF and OFF move on zero; no card enters, leaves or reorders the top 50 by OVR.
-    cap = max(p['o_ovr'] + 10, 0.85 * p['d_ovr']) if not is_big(p) else p['o_ovr'] + 40
+    # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE BIG BRANCH IS THE UNTOUCHED SIBLING.
+    # recal_93 loosened the perimeter branch's ELITE-DEFENCE FLOOR from 0.80 to 0.85 x d_ovr because
+    # it was clipping Kawhi Leonard '14's blend by seven. The big branch never had that floor at all
+    # - it is the flat `o_ovr + 40` - so a big whose offence is genuinely nil is capped by his
+    # offence with nothing to catch him: Ben Wallace '07 (o 21, d 97) blends to 66.6 and printed 61,
+    # '08 blends to 63.6 and printed 58, Caldwell Jones '80 blends to 64.6 and printed 59. The same
+    # defect, on the branch r93 did not touch.
+    # The two branches now read the same shape - an offence gate, and the same elite-defence floor
+    # underneath it - and differ only in the gate, which is r3's own distinction ("an elite anchor is
+    # a defensive SYSTEM, so bigs are effectively exempt"). MEASURED: 33 cards move on OVR, every one
+    # of them UP, max +6, and no anchor moves at all.
+    cap = max(p['o_ovr'] + (40 if is_big(p) else 10), 0.85 * p['d_ovr'])
     _tops.append(raw)
     p['ovr'] = int(min(99, cap, round(raw)))
     # the marginal survives as a CARD FIELD so the draft and team screens can still read it; it simply
