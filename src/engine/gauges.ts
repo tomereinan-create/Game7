@@ -37,6 +37,21 @@ import type { Player } from './types'
  * for. Recentring is also the only one of the three that is monotone WITHIN a season by
  * construction, so the within-season fit cannot fall: 0.766 -> 0.767, and no era below its old value.
  *
+ * BOTH DIALS NOW READ EVERY ERA AT ITS OWN LEVEL. recal_105 finished what recal_100 started, on his
+ * ruling "Teams rating is still off. Bulls 96 only 75 OVR" — the Team DB's OVR is the plain mean of
+ * these two dials, and a DEF dial recentred beside an OFF dial that was not is half a scale. OFF
+ * decade means were 43.5 · 49.4 · 52.8 · 54.7 · 56.4 and are ~50 in every decade after. The 2017
+ * Warriors are still 99.
+ *
+ * WHAT recal_105 COULD NOT REACH, recorded because it is the more important finding. The Bulls '96
+ * came out at OFF 68 / DEF 95, an OVR of 82 against the ~92 the round was aiming at, and the scale
+ * is not what is stopping it: teamOffense ranks that five EIGHTH of the 29 fieldable 1996 teams on
+ * offence (offRaw 128.27, z +0.75) while the real 1996 board has them FIRST (ORtg 115.2). A
+ * per-season shift is monotone inside a season, so no recentring can move them past the seven fives
+ * the engine puts above them. Reaching OVR 92 needs OFF 89, which needs the offence engine to rank
+ * them near the top of their own year. That is data/team_rating.py's team_offense, not this file.
+ *
+ * THE OLD NOTE, kept for the record:
  * THE OFF DIAL IS NOT TOUCHED. It drifts too — decade means 43.1 · 48.4 · 52.6 · 54.1 · 56.4, the
  * same card-pool effect with the opposite sign — and the same one-line subtraction would flatten it
  * to ~52.6 everywhere with the Warriors '17 still 99 and the fit unmoved. He has not ruled on it, so
@@ -62,40 +77,75 @@ import type { Player } from './types'
  * survive there; the gauge simply no longer routes through either.
  */
 
-// frozen anchors (scripts/gauge71.ts, v68 pool, r69 wheel; OFF side re-derived per the r71 law
-// after recal_74's ORB-scale halving lowered the league level — GSW '17 rose to all-time rank 3
-// and still reads 99 exactly; the DEF distribution did not move):
-const OFF_MIN = 104.36 // the all-time worst wheel five
-const OFF_MID = 123.32 // the all-time median five reads 50 (today's sweep reads 123.25 — see recal_94's COST)
-const OFF_TOP = 137.67 // Golden State Warriors '17 — the named OFF summit reads 99
+// OFF side RE-FROZEN by recal_105 on the ERA-RELATIVE index, the treatment recal_100 gave DEF
+// (scripts/gauge105.ts re-derives this whole block, table included). His ruling: "Teams rating is
+// still off. Bulls 96 only 75 OVR" — and the Team DB's OVR is the plain mean of these two dials, so
+// a DEF dial read at each era's own level beside an OFF dial that was not is half a scale. The three
+// anchors are quoted in OFF_LEVEL_REF's league: ADJUSTED offRaw, not raw offRaw. The summit is still
+// where recal_71's ruling put it ("99 should be one of the greatest offense ever (2017 warriors)").
+const OFF_MIN = 104.12 // the all-time worst offensive five, era-adjusted
+const OFF_MID = 123.02 // the all-time median reads 50
+const OFF_TOP = 135.94 // Golden State Warriors '17 (adjusted 135.9369) — the named OFF summit reads 99
+
+/**
+ * THE LEAGUE'S OWN OFFENSIVE LEVEL, season by season: the mean offRaw of that season's fieldable
+ * best-fives, frozen from the same 1,255-five sweep. Subtracting it is the whole of recal_105.
+ *
+ * It climbs about five raw points from 1985 to 2019 — offence really did improve, and the card pool
+ * says so twice over: the same era shift that made modern fives read WORSE on defence (recal_100's
+ * DEF_LEVEL) makes them read BETTER here. League ORtg and league DRtg are the same number, so
+ * recentring one and not the other was never self-consistent; this is the other half.
+ */
+const OFF_LEVEL: Record<number, number> = {
+  1980: 120.447, 1981: 119.766, 1982: 120.116, 1983: 120.254, 1984: 120.769, 1985: 119.558,
+  1986: 119.558, 1987: 120.488, 1988: 120.586, 1989: 123.081, 1990: 122.820, 1991: 122.529,
+  1992: 121.624, 1993: 122.574, 1994: 122.219, 1995: 122.954, 1996: 123.442, 1997: 122.372,
+  1998: 122.178, 1999: 120.226, 2000: 122.820, 2001: 122.138, 2002: 122.657, 2003: 122.407,
+  2004: 123.585, 2005: 124.621, 2006: 123.591, 2007: 125.396, 2008: 125.680, 2009: 124.460,
+  2010: 123.674, 2011: 123.842, 2012: 122.781, 2013: 123.960, 2014: 123.961, 2015: 124.290,
+  2016: 124.824, 2017: 124.746, 2018: 124.354, 2019: 126.072, 2020: 124.399, 2021: 124.370,
+  2022: 124.332, 2023: 125.654, 2024: 125.636, 2025: 124.806, 2026: 124.914,
+}
+/** The league every OFF dial is quoted in: the mean of the 47 season levels. */
+const OFF_LEVEL_REF = 123.0113
+/** A five with no season of its own is a five in TODAY's league, exactly as on the DEF side. */
+const OFF_LEVEL_FIELD = OFF_LEVEL[2026]
+
+/** offRaw re-expressed in OFF_LEVEL_REF's league. An unknown season falls back to today's. */
+const offAdj = (off: number, season?: number) =>
+  off - (OFF_LEVEL[season ?? -1] ?? OFF_LEVEL_FIELD) + OFF_LEVEL_REF
 // DEF side RE-FROZEN by recal_100 on the ERA-RELATIVE index and RE-DERIVED by recal_101 (scripts/gauge100.ts re-derives this
 // whole block, table included; re-run it after any change that moves drtgRef). The three anchors are
 // quoted in DEF_LEVEL_REF's league, so they are ADJUSTED drtgRef, not raw drtgRef. The summit is
 // still where recal_94's ruling put it ("Move the summit to Bulls '96") and is still the only five
 // on the board that reads 99.
-const DEF_WORST = 113.03 // the all-time worst defensive five, era-adjusted
-const DEF_MID = 109.95 // the all-time median reads 50
-const DEF_TOP = 107.36 // Chicago Bulls '96 (adjusted 107.3638) — the named DEF summit reads 99
+const DEF_WORST = 113 // the all-time worst defensive five, era-adjusted
+const DEF_MID = 110.04 // the all-time median reads 50
+const DEF_TOP = 107.58 // Chicago Bulls '96 (adjusted 107.5844) — the named DEF summit reads 99
 
 /**
  * THE LEAGUE'S OWN DEFENSIVE LEVEL, season by season: the mean drtgRef of that season's fieldable
  * best-fives, frozen from the same 1,255-five sweep. Subtracting it is the whole of recal_100.
- * RE-DERIVED by recal_101: its perdef round lifted the tracked half of every modern card, so the
- * 2014+ levels fell by ~0.6 (2026 110.950 -> 110.246) and the pre-tracking seasons barely moved.
- * Flat at ~109.9 for thirty-four seasons, then a gentle climb from 2018 to 110.33.
+ * RE-DERIVED by recal_101 (its perdef round lifted the tracked half of every modern card) and again
+ * by recal_105. The second re-derivation was NOT a choice: recal_104's OVR blend changed which five
+ * the OVR-max picker takes for many teams — the Bulls '96 went from Ron Harper to Steve Kerr at the
+ * one guard slot — so the table's own population moved under it and his recal_94 summit ruling had
+ * silently stopped holding (the Bulls' CURRENT five read DEF 95, not 99). A gauge table frozen from
+ * the picker's output has to be re-run whenever the picker's input moves, OVR included.
+ * Flat at ~110.0 for thirty-eight seasons, then a gentle climb from 2018 to 110.35.
  */
 const DEF_LEVEL: Record<number, number> = {
-  1980: 109.818, 1981: 110.026, 1982: 109.855, 1983: 109.852, 1984: 109.923, 1985: 109.913,
-  1986: 109.777, 1987: 109.854, 1988: 109.778, 1989: 109.890, 1990: 109.802, 1991: 109.891,
-  1992: 109.924, 1993: 109.698, 1994: 109.819, 1995: 109.794, 1996: 109.937, 1997: 109.925,
-  1998: 109.964, 1999: 109.976, 2000: 109.957, 2001: 109.941, 2002: 109.918, 2003: 109.913,
-  2004: 109.998, 2005: 110.056, 2006: 110.003, 2007: 109.953, 2008: 109.957, 2009: 109.968,
-  2010: 109.951, 2011: 109.912, 2012: 109.978, 2013: 109.959, 2014: 109.905, 2015: 109.850,
-  2016: 109.864, 2017: 109.959, 2018: 110.153, 2019: 110.096, 2020: 110.192, 2021: 110.315,
-  2022: 110.194, 2023: 110.240, 2024: 110.197, 2025: 110.326, 2026: 110.246,
+  1980: 109.962, 1981: 110.079, 1982: 109.953, 1983: 110.007, 1984: 110.010, 1985: 110.062,
+  1986: 109.898, 1987: 109.909, 1988: 109.830, 1989: 109.980, 1990: 109.931, 1991: 109.981,
+  1992: 110.031, 1993: 109.731, 1994: 109.890, 1995: 109.878, 1996: 110.012, 1997: 110.035,
+  1998: 110.091, 1999: 109.976, 2000: 110.058, 2001: 109.972, 2002: 110.014, 2003: 109.971,
+  2004: 110.020, 2005: 110.158, 2006: 110.078, 2007: 110.021, 2008: 110.037, 2009: 110.042,
+  2010: 110.033, 2011: 110.006, 2012: 110.003, 2013: 110.017, 2014: 109.973, 2015: 109.877,
+  2016: 109.899, 2017: 109.987, 2018: 110.173, 2019: 110.126, 2020: 110.198, 2021: 110.336,
+  2022: 110.206, 2023: 110.245, 2024: 110.204, 2025: 110.347, 2026: 110.254,
 }
 /** The league every DEF dial is quoted in: the mean of the 47 season levels. */
-const DEF_LEVEL_REF = 109.9663
+const DEF_LEVEL_REF = 110.0319
 /** A five with no season of its own is a five in TODAY's league — the one the campaign is played in. */
 const DEF_LEVEL_FIELD = DEF_LEVEL[2026]
 
@@ -122,7 +172,7 @@ export interface Gauge {
 const gauge = (five: Player[], season?: number): Gauge => {
   const r = ratings100(five)
   return {
-    off: scale71(r.offRaw, OFF_MIN, OFF_MID, OFF_TOP),
+    off: scale71(offAdj(r.offRaw, season), OFF_MIN, OFF_MID, OFF_TOP),
     // lower drtg is better: negate so the two-slope map reads rising-is-better
     def: scale71(-defAdj(r.drtgRef, season), -DEF_WORST, -DEF_MID, -DEF_TOP),
     offRaw: r.offRaw,

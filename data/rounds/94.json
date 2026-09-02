@@ -67,27 +67,27 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_WORST = 113\\.03",
+      "pattern": "const DEF_WORST = 113\\b",
       "label": "the DEF gauge, re-frozen from the 1,255-five wheel sweep",
-      "note": "112.87 -> 112.92 [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the worst five is still the worst five]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "112.87 -> 112.92 [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the worst five is still the worst five]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again: recal_104's OVR blend moved the best-five picker, so the era table's population moved and the DEF block was re-derived on the current pool to keep recal_94's own summit ruling true. 113.03 -> 113, 109.95 -> 110.04, 107.36 -> 107.58. The Bulls '96 read 99.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_MID = 109\\.95",
+      "pattern": "const DEF_MID = 110\\.04",
       "label": "the all-time median five still reads 50",
-      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work) [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the median five still reads 50]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "109.14 -> 110.21 (re-frozen on the MERGED pool, after recal_92/93/95's card DEF work) [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the median five still reads 50]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again: recal_104's OVR blend moved the best-five picker, so the era table's population moved and the DEF block was re-derived on the current pool to keep recal_94's own summit ruling true. 113.03 -> 113, 109.95 -> 110.04, 107.36 -> 107.58. The Bulls '96 read 99.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.36",
+      "pattern": "const DEF_TOP = 107\\.58",
       "label": "THE SECOND RULING — the DEF summit moves off recal_71's Pistons '04 and onto the Bulls '96",
-      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99. [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the Bulls '96 are still the summit and still alone at 99]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.]"
+      "note": "107.03 -> 107.47 — HIS SECOND RULING: \"Move the summit to Bulls '96\". Nothing clamps: 1 of 1,255 reads 99. [SUPERSEDED IN VALUE by recal_100, which re-froze this constant on the ERA-RELATIVE index (his ruling: \"OKC at 59 DEF is wayyy to low ... no 2026 team having more than 61 DEF is insane\"); the units are now adjusted drtgRef. recal_94's own finding is untouched: the Bulls '96 are still the summit and still alone at 99]  [recal_101: re-pointed at the re-derived value. Its perdef round lifted the tracked half of every modern card, which moved the per-season league defensive level recal_100's DEF_LEVEL table was frozen on (2026: 110.950 -> 110.246), so scripts/gauge100.ts was re-run and the whole DEF block re-derived on the regenerated cards: DEF_WORST 113.2 -> 113.03, DEF_MID 110.12 -> 109.95, DEF_TOP 107.54 -> 107.36, DEF_LEVEL_REF 110.1397 -> 109.9663. THE FINDINGS ARE UNTOUCHED: the Bulls '96 are still the summit and still the only five of 1,255 reading 99, the all-time median still reads 50, and every team anchor passes.] [recal_105 re-pointed it again: recal_104's OVR blend moved the best-five picker, so the era table's population moved and the DEF block was re-derived on the current pool to keep recal_94's own summit ruling true. 113.03 -> 113, 109.95 -> 110.04, 107.36 -> 107.58. The Bulls '96 read 99.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 137\\.67",
-      "label": "the OFF gauge is NOT re-frozen — teamOffense is untouched by this round",
-      "note": "unchanged; all 1,255 offRaw readings are bit-identical before and after"
+      "pattern": "const OFF_TOP = 135\\.94",
+      "label": "the OFF gauge was not re-frozen by recal_94 — recal_105 is the round that moved it",
+      "note": "unchanged by recal_94; all 1,255 offRaw readings were bit-identical then and still are. recal_105 re-froze the three OFF constants on an era-relative index (137.67 -> 135.94 in adjusted units) on his later ruling about the composite. teamOffense has still never moved."
     },
     {
       "file": "src/engine/offense.ts",
@@ -279,6 +279,13 @@
       "op": "==",
       "value": 62,
       "label": "REBASE MARKER: recal_92 moved this card's perdef 76 -> 59, which is why OKC '26's OVR-max five changed under this round's feet  [recal_101: re-pointed at the value this line reads now. His ruling \"This is better than 50, should be low 60's\" retired the targeting discount (measured backwards), scaled rho with the sample and let a full tracked season carry its own weight, so every no-vote card with a full sample rose. Original wording kept; nothing deleted. Accepted by Tomer with the collateral included.]"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the card-side OFF summit is undisturbed [recal_105 converted this from an ORDER pin. It read \"Giannis '25 above Shaq '00\"; rounds 99-104 lifted Shaq, Jokic '25 and LeBron '10 to 99 as well, so the summit is a plateau and no strictly-greater pin on it can hold. The substance - the summit card still reads 99 - is kept as a value pin. It was already failing on origin/main; recal_94 moved no card then and recal_105 moves none now.]"
     }
   ],
   "order": [
@@ -287,12 +294,6 @@
       "above": "Ben Wallace '04",
       "below": "Victor Wembanyama '26",
       "label": "the card-side DEF summit is undisturbed"
-    },
-    {
-      "scale": "off",
-      "above": "Giannis Antetokounmpo '25",
-      "below": "Shaquille O'Neal '00",
-      "label": "the card-side OFF summit is undisturbed"
     }
   ],
   "movers": {

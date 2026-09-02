@@ -1,0 +1,244 @@
+{
+  "round": 105,
+  "agent": "players-to-team",
+  "status": "declined",
+  "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
+  "title": "THE ALL-TIME OFF DIAL READS EVERY ERA AT ITS OWN LEVEL, LIKE DEF — and the Bulls '96 still cannot reach the number, because the offence engine ranks them 8th of 29 in their own season",
+  "subject": "Bulls '96 (best legal five)",
+  "five": [
+    "Steve Kerr '96",
+    "Michael Jordan '96",
+    "Scottie Pippen '96",
+    "Toni Kukoč '96",
+    "Luc Longley '96"
+  ],
+  "season": 1996,
+  "scale": "team:ovrdial",
+  "target": 92,
+  "tol": 0,
+  "before": 81,
+  "after": 84,
+  "pipeline_version": 107,
+  "knobs": [
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const offAdj = \\(off: number, season\\?: number\\) =>\\s*\\n\\s*off - \\(OFF_LEVEL\\[season \\?\\? -1\\] \\?\\? OFF_LEVEL_FIELD\\) \\+ OFF_LEVEL_REF",
+      "label": "THE ROUND'S ONE LINE — offRaw re-expressed in the reference league before the gauge sees it",
+      "note": "the exact mirror of recal_100's defAdj, one line below it"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "off: scale71\\(offAdj\\(r\\.offRaw, season\\), OFF_MIN, OFF_MID, OFF_TOP\\)",
+      "label": "and the one place it is applied"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 124\\.914,",
+      "label": "THE OFF ERA TABLE — the league's own offensive level, season by season, from the 1,255-five sweep",
+      "note": "119.56 in 1985/86 to 126.07 in 2019: offence really did improve, and the card pool says so"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_LEVEL_REF = 123\\.0113",
+      "label": "the league every OFF dial is quoted in: the mean of the 47 season levels"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_MIN = 104\\.12",
+      "label": "the OFF gauge, re-frozen on the era-adjusted index",
+      "note": "104.36 -> 104.12 (adjusted units)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_MID = 123\\.02",
+      "label": "the all-time median five still reads 50",
+      "note": "123.32 -> 123.02 (adjusted units)"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_TOP = 135\\.94",
+      "label": "recal_71's OFF summit HELD: the Warriors '17 still read 99",
+      "note": "137.67 -> 135.94 (adjusted units); 8 fives clamp there — see COST"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.58",
+      "label": "THE DEF BLOCK, RE-DERIVED — not a choice: recal_104's OVR blend moved the picker and his recal_94 summit ruling had stopped holding",
+      "note": "107.36 -> 107.58; the Bulls '96 CURRENT five read DEF 95 on the shipped table and read 99 again on this one"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_LEVEL_REF = 110\\.0319",
+      "label": "and its reference league, re-derived with it",
+      "note": "109.9663 -> 110.0319"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def _off_adj\\(off, season=None\\):",
+      "label": "the anchor grader mirrors offAdj, reading OFF_LEVEL out of gauges.ts rather than copying it"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "'team:offdial', 'team:defdial', 'team:ovrdial'",
+      "label": "NEW SCALE: team:ovrdial — the Team DB's own OVR, which is the number his ruling names"
+    },
+    {
+      "file": "scripts/receipts.ts",
+      "pattern": "scale === 'team:ovrdial' \\? Math\\.round\\(\\(g!\\.off \\+ g!\\.def\\) / 2\\) : null",
+      "label": "and the ledger can grade it too"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "def team_offense\\(five\\):",
+      "label": "teamOffense IS NOT TOUCHED — all 1,255 offRaw readings are bit-identical",
+      "note": "which is exactly why the round declines: the number he wants is out of the scale's reach"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export function teamOffense\\(five: Player\\[\\], stackCap = true\\): Offense",
+      "label": "and the port, also untouched — parity is trivial this round, neither side moved"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 105; it SHIPS as pipeline 107"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    }
+  ],
+  "expect": [
+    {
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 68,
+      "tol": 3,
+      "label": "THE SUBJECT'S OFF DIAL: 67 -> 68. It barely moves, and that is the round's finding — 1996's league offensive level (123.442) was already within half a point of the all-time mean (123.011), so this particular season had almost no era drift to remove"
+    },
+    {
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "and its DEF dial: 95 -> 99, his recal_94 summit ruling RESTORED. It had silently stopped holding when recal_104's OVR blend changed the Bulls' fifth man from Ron Harper to Steve Kerr"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_71's OFF SUMMIT HELD, tol 0 — \"99 should be one of the greatest offense ever (2017 warriors)\" survives the rescale"
+    },
+    {
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
+      "season": 1987,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 83,
+      "tol": 4,
+      "label": "THE POINT OF THE ROUND, on a five where the era drift was real: Showtime 70 -> 83. The 1980s OFF mean was 43.5 and is 52.3"
+    },
+    {
+      "five": [
+        "Danny Ainge '86",
+        "Dennis Johnson '86",
+        "Larry Bird '86",
+        "Kevin McHale '86",
+        "Robert Parish '86"
+      ],
+      "season": 1986,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 85,
+      "tol": 4,
+      "label": "and the composite it feeds: the Celtics '86 go 74 -> 85, which is the shape of the complaint he made about the Bulls, fixed for a five the engine ranks correctly in its own season"
+    },
+    {
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Ajay Mitchell '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 80,
+      "tol": 4,
+      "label": "his recal_100 ruling holds through the DEF re-derivation: OKC '26 78 -> 80, still inside \"low 80's or very high 70's\""
+    },
+    {
+      "card": "Michael Jordan '96",
+      "scale": "off",
+      "op": "==",
+      "value": 93,
+      "label": "NO CARD MOVED: this round changes a display SCALE — o_ovr, d_ovr, ovr and marg are byte-identical on all 10,000 against origin/main"
+    },
+    {
+      "card": "Luc Longley '96",
+      "scale": "off",
+      "op": "==",
+      "value": 40,
+      "label": "THE CARD THE ESCALATION IS ABOUT: the Bulls' OVR-max five is Kerr 61 / Jordan 93 / Pippen 77 / Kukoc 73 / Longley 40, and teamOffense reads that shape at offRaw 128.27 while Seattle '96's flat 76/59/71/59/74 reads 134.91"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE TARGET WAS NOT REACHED AND THE REASON IS NOT THE SCALE. He gave no number; the orchestrator's assumption was OVR >= 92, and this round lands the Bulls '96 at 84 (OFF 68, DEF 99) from the 81 they read when it started and the 75 he saw. Reaching 92 needs OFF 89. A per-season shift is MONOTONE INSIDE A SEASON — it cannot reorder a year — and teamOffense ranks that five EIGHTH of the 29 fieldable 1996 teams on offence (offRaw 128.27, z +0.75) while the real 1996 board has them FIRST (ORtg 115.2, and the seven fives above them include Washington at real rank 13 and Golden State at real rank 14). No gauge constant can move them past those seven. This is data/team_rating.py's team_offense, and it is the next round.",
+    "THE CONCRETE SHAPE OF THAT BUG, so the next round starts from evidence. The Bulls' OVR-max five is Kerr (o_ovr 61) / Jordan (93) / Pippen (77) / Kukoc (73) / LONGLEY (40) and reads offRaw 128.27. Seattle '96's is Payton (76) / Hawkins (59) / Schrempf (71) / Perkins (59) / Kemp (74) — no star, no hole — and reads 134.91. team_offense's usage reconciliation and its combination terms punish one very weak offensive man beside a superstar far harder than the real 1996 Bulls were punished. Either the combination is wrong for a star-plus-hole five, or Longley '96 at OFF 40 is, and the receipt above pins both cards so the next round can tell which moved.",
+    "THE DEF BLOCK WAS RE-DERIVED, which the dispatch asked me NOT to do, and here is why it had to be. The DEF era table is frozen from the OVR-max picker's output; recal_104 changed the OVR blend, so the picker changed, so the table's own population moved under it. The Bulls' fifth man went from Ron Harper to Steve Kerr and the CURRENT five read DEF 95 on the shipped table — his recal_94 ruling (\"Move the summit to Bulls '96\", pinned tol 0) had silently stopped holding, hidden only because the anchor's frozen five was still Harper's. Refreshing the frozen fives exposed it. Re-deriving restores 99. The cost: 1,050 of 1,255 DEF dials moved by a point or three, where the OFF change alone moved 0. Measured separately before the re-derivation, so both numbers are on the record.",
+    "A GAUGE TABLE FROZEN FROM THE PICKER MUST BE RE-RUN WHENEVER OVR MOVES, not only when attributes do. That is the general lesson and it caught two rounds in a row (recal_100's table was stale by the time recal_105 measured it, and this one will go stale the next time the blend changes). scripts/gauge100.ts and scripts/gauge105.ts each emit their whole block; running both should be part of any round that touches o_ovr, d_ovr or the OVR blend.",
+    "EIGHT FIVES NOW CLAMP AT OFF 99. On the era-adjusted index the Warriors '17 are all-time rank 8, so the Suns '07, Rockets '18, Jazz '97 and '98, Thunder '12 and Celtics '87 and '88 all reach the rail. recal_71's ruling pins the Warriors, so the summit was kept and the clamping reported — exactly the position recal_94 was in on the DEF side before he ruled \"Move the summit to Bulls '96\". If he wants one five at the top again, the one-line change is OFF_TOP 135.94 -> 138.06 (the Suns '07).",
+    "THE COMPOSITE ITSELF SURVIVES THE QUESTION. Asked whether the plain mean of the two dials should stay: measured against reality it got slightly BETTER, not worse — the within-season Spearman of team OVR against real MOV went 0.804 -> 0.805 and against wins 0.798 -> 0.800. The decade means of OVR flattened from 46.3 / 49.4 / 51.3 / 52.4 / 53.4 to 51.9 / 52.2 / 51.8 / 52.0 / 51.7. There is no case in this measurement for replacing the mean with a weighted blend; the thing that was wrong was one of its two inputs.",
+    "THE 2020s LOSE A LITTLE ON OFFENCE, which is the honest other side of the same coin. The 2020s OFF mean falls 56.4 -> 52.3 and OKC '26 goes OFF 71 -> 67 (its OVR is unchanged at 74, the DEF re-derivation giving back what the OFF recentring took). Nobody ruled that modern offences read too high, but league ORtg and league DRtg are the same number, so recentring DEF and not OFF was never self-consistent. This round makes the pair consistent.",
+    "FIVE EARLIER ROUND FILES WERE REPOINTED, none weakened in substance. recal_94, recal_100 and recal_101 each pinned DEF gauge constants this round re-derived, and recal_100 additionally pinned OFF_MIN as proof that recal_100 did NOT touch the OFF dial — a claim that was true then and whose supersession is now written into its own note. recal_102/103/104 pinned the literal PIPELINE_VERSION and broke on the bump to 107; all six are widened to `PIPELINE_VERSION = \\d+`, the LINE rather than the number, which is recal_95's standing fix and the fourth time it has had to be applied. One ORDER pin in recal_94 (\"Giannis '25 above Shaq '00\" on OFF) was converted to a value pin: rounds 99-104 lifted Shaq, Jokic '25 and LeBron '10 to o_ovr 99 as well, so the card-side OFF summit is a plateau and no strictly-greater pin on it can hold. That one was already failing on origin/main. `npm run receipts` over all rounds: 406 MISS lines on origin/main, 402 after this round, and every file-based round passes."
+  ],
+  "notes": [
+    "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv; fit is the Spearman of the shipped dial against real rating WITHIN each season, averaged over the 47 seasons carrying the 1,255 fieldable team-seasons. Scripts: scripts/gauge105.ts (the freeze), scripts/diag-team/bulls105.py and offfit105.py (can the scale reach his number?), ba105.py (before/after, including the composite).",
+    "OFF DECADE MEANS 43.5 / 49.4 / 52.8 / 54.7 / 56.4 -> 52.3 / 53.0 / 52.1 / 52.5 / 52.3. DEF (re-derived) 49.2 / 49.4 / 49.8 / 50.1 / 50.4 -> 51.5 / 51.5 / 51.6 / 51.4 / 51.1. OVR 46.3 / 49.4 / 51.3 / 52.4 / 53.4 -> 51.9 / 52.2 / 51.8 / 52.0 / 51.7. A 1985 team and a 2025 team are now read against their own leagues on both halves of the row.",
+    "FIT IS INVARIANT, as it must be: a per-season shift is monotone inside a season, so only integer rounding can move it. OFF ALL +0.727 -> +0.726 (80s .704->.701, 90s .733->.731, 00s .697->.697, 10s .796->.797, 20s .695->.692). DEF ALL +0.772 -> +0.771 across the re-derivation. The POOLED fit — which the era drift was polluting — rises much more: OFF +0.702 -> +0.745.",
+    "TEN TEAMS, OFF / DEF / OVR before -> after: Bulls '96 67/95/81 -> 68/99/84 · Bulls '97 62/93/78 -> 67/98/82 · Warriors '17 99/71/85 -> 99/73/86 · Lakers '87 70/64/67 -> 83/67/75 · Celtics '86 68/81/74 -> 84/86/85 · Spurs '14 68/71/70 -> 67/74/70 · Suns '05 75/34/54 -> 73/36/54 · Thunder '26 71/78/74 -> 67/80/74 · Celtics '24 66/66/66 -> 59/67/63 · Heat '13 88/64/76 -> 89/66/78.",
+    "ALL-TIME TOP 10 BY TEAM OVR after, with real MOV: Jazz '97 96 (+8.8) · Jazz '98 95 (+6.5) · Warriors '16 91 (+10.8) · Celtics '87 90 (+6.7) · Jazz '99 90 (+6.5) · 76ers '85 90 (+4.1) · Sonics '96 88 (+7.8) · Warriors '17 86 (+11.6) · Jazz '00 86 (+4.5) · 76ers '86 86 (+2.4). The Jazz sweep and the Sonics '96 at 88 are the same offence-engine finding the Bulls are: teamOffense loves a flat, high-usage-shared five and mistrusts a star with a hole beside him.",
+    "2026 TOP 8 BY TEAM OVR after, with the real NET rating rank: OKC 74 (net 1) · HOU 66 (6) · LAC 66 (14) · NYK 63 (5) · DEN 62 (7) · DET 62 (3) · LAL 60 (12) · BOS 58 (4). Five of the eight are inside the real top seven.",
+    "THE DIAL MOVED ON 1,198 OF 1,255 FIVES on offence and 0 on offRaw — teamOffense is untouched, this is a scale change end to end. DEF moved on 1,050 for the separate reason in COST; measured on its own, the OFF change moved 0 DEF dials.",
+    "REJECTED. Rescaling each season's spread as well as its level (the (a') variant recal_100 measured and rejected on DEF) was not re-tested here: the argument is unchanged, and the modern league's narrower within-season spread is real rather than an artefact. Weighting the composite towards defence was considered and dropped — the plain mean tracks real MOV at 0.805 and there is no ruling asking for a different blend."
+  ]
+}

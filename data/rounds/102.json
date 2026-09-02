@@ -50,14 +50,15 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 104",
+      "pattern": "PIPELINE_VERSION = \\d+",
       "label": "pipeline version, compute side",
-      "note": "the ROUND is 102; it SHIPS as pipeline 104 after the rebase - see COST"
+      "note": "the ROUND is 102; it SHIPS as pipeline 104 after the rebase - see COST [recal_105: widened from the literal to match the LINE at any version, per recal_95's standing fix — a version regex that pins digits fails on every later round by construction.]"
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 104",
-      "label": "pipeline version, ratings side (the two must never drift)"
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, ratings side (the two must never drift)",
+      "note": "[recal_105: widened from the literal to match the LINE at any version, per recal_95's standing fix — a version regex that pins digits fails on every later round by construction.]"
     },
     {
       "file": "src/engine/tactics.ts",
