@@ -1,0 +1,344 @@
+{
+  "round": 96,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81",
+  "title": "A BENCH PROFILE IS PRICED AT BENCH LOAD — volume and playvol are rates, and a rate is now paid in proportion to the minutes it was earned in",
+  "subject": "Ty Jerome '25",
+  "scale": "off",
+  "target": 71,
+  "tol": 4,
+  "before": 81,
+  "after": 71,
+  "pipeline_version": 99,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+      "label": "THE ROUND'S TWO CONSTANTS — the ramp's foot and the full-load line",
+      "note": "24 is located by his own anchors (Capela '17, 23.9 mpg, zero room); 12 is half of it, set by the subject's target"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "return min\\(1\\.0, max\\(0\\.0, \\(m - LOAD_FOOT\\) / \\(LOAD_FULL - LOAD_FOOT\\)\\)\\)",
+      "label": "load_share() — how much of a full workload the card actually carried, in [0, 1]",
+      "note": "a card with no minutes on the sheet takes 1.0: measured, or not at all (recal_52's rule)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_vol, _pvol = a\\['volume'\\] \\* _load, a\\['playvol'\\] \\* _load",
+      "label": "THE LOAD TERM — the two LOAD bars are paid in proportion to minutes share",
+      "note": "volume and playvol only; every SKILL rate on the card is untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
+      "label": "and where it lands in the standard path",
+      "note": "recal_89's weights 0.26 / 0.19 are UNCHANGED; only their inputs are now load-adjusted"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50\\)\\*a\\['efficiency'\\]/100\\)",
+      "label": "the volume x efficiency SIGNATURE reads the RAW volume, deliberately",
+      "note": "recal_26 gave it a volume floor of 50 for exactly this reason; discounting it would tax efficiency"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['3pt'\\] >= 68 and a\\['volume'\\] < 55:",
+      "label": "recal_64's off-ball floor still gates on the RAW volume",
+      "note": "the gate is a class definition, not a price; no card changes class this round"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "att_f \\*= max\\(0\\.0, min\\(1\\.0, \\(a\\['volume'\\] - 70\\) / 10\\.0\\)\\)",
+      "label": "recal_51's own load ramp, left exactly as it was",
+      "note": "it asks the load question of `volume`, a rate; this round asks it of the clock instead"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — no weight moved this round",
+      "note": "the zones, efficiency, ballsec, fouldraw and orb are byte-identical"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 110\\.64, 107\\.55",
+      "label": "recal_90's band anchors, untouched",
+      "note": "every mover is far below the 93 knee — the OFF raw top is a 34-mpg card and does not move"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ 10, 0\\.85 \\* p\\['d_ovr'\\]\\)",
+      "label": "recal_93's elite-defence floor, untouched",
+      "note": "d_score is not in this round's path at all: DEF moved on ZERO cards"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 99",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 96; it SHIPS as pipeline 99 - see COST"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 99",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.10,\\s*\\n\\s*crashDef: 0\\.48,",
+      "label": "THE DEVIATION TAX LAW, re-ratified on the merged recal_97 + recal_96 pool",
+      "note": "crashOff .50 -> .10 and crashDef .60 -> .48; both oracle edges had broken"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Montrezl Harrell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 63,
+      "tol": 2,
+      "label": "SECOND RULING, verbatim: \"Montrezl Harrell '18 is too high OFF as well\" — NO NUMBER GIVEN, so the same term sets him: 77 -> 63 on 17.0 mpg. FLAGGED in COST as possibly further than he meant"
+    },
+    {
+      "card": "Nick Young '10",
+      "scale": "off",
+      "op": "~",
+      "value": 56,
+      "tol": 1,
+      "label": "the card the dispatch said should come down with them: 65 -> 56 on 19.2 mpg"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "THE CARD THAT DECIDES THE INSTRUMENT — 23.4 mpg, pinned 62 +-1. Any WHOLE-SCORE discount deep enough to reach Jerome puts him on 60; discounting only the load terms costs him one point, because his volume is 8"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "THE CARD THAT LOCATES THE FULL-LOAD LINE — 23.9 mpg, pinned 58 +-1 and already reading 57, so ZERO room. He is why LOAD_FULL is 24 and not a real starter's 32"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 1,
+      "label": "33.3 mpg (NOT the 25.8 the dispatch carried — see COST): FLAT, as every card above 24 minutes is"
+    },
+    {
+      "card": "Rui Hachimura '26",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 1,
+      "label": "28.3 mpg: FLAT. Mid-20s minutes are not taxed like 17 — nothing at or above 24 moves at all"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "37.9 mpg: a full-load star is unchanged BY CONSTRUCTION, the round's first requirement"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "34.2 mpg: the same, on the card the dispatch named"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "off",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "40.0 mpg: the same"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is a 34.2-mpg card and does not move — the band anchor is not reopened"
+    },
+    {
+      "card": "Latrell Sprewell '94",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "the 30+ mpg ROLE PLAYER the dispatch asked for (43.1 mpg, OFF 57): flat. The term discounts bench load, not modest talent"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "def",
+      "op": "~",
+      "value": 51,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards — d_score is not in this round's path"
+    },
+    {
+      "card": "Billy Ray Bates '82",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 1,
+      "label": "THE BIGGEST SINGLE MOVE ON THE BOARD, 75 -> 55: a 16.4-mpg bench guard who was priced as a starting scorer"
+    },
+    {
+      "card": "Marreese Speights '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "76 -> 58 on 15.9 mpg — the same archetype in the modern game, and the class the round exists for"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "LeBron James '13",
+      "below": "Ty Jerome '25",
+      "label": "a full-load star is not touched while a bench profile comes down"
+    },
+    {
+      "scale": "off",
+      "above": "Ty Jerome '25",
+      "below": "Montrezl Harrell '18",
+      "label": "Jerome still reads above Harrell, as he did before: 81/77 becomes 71/63"
+    },
+    {
+      "scale": "off",
+      "above": "Ty Jerome '25",
+      "below": "Nick Young '10",
+      "label": "and above Nick Young, who came down with him"
+    },
+    {
+      "scale": "off",
+      "above": "Rui Hachimura '26",
+      "below": "Nick Young '10",
+      "label": "28.3 minutes now outranks 19.2, which is the whole claim of the round"
+    },
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Ty Jerome '25",
+      "label": "the summit is untouched"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 2482,
+    "max_abs": 20,
+    "top": [
+      [
+        "Billy Ray Bates '82",
+        75,
+        55
+      ],
+      [
+        "Darrell Walker '84",
+        56,
+        37
+      ],
+      [
+        "Marcus Williams '07",
+        62,
+        43
+      ],
+      [
+        "Marreese Speights '15",
+        76,
+        58
+      ],
+      [
+        "Danny Ferry '95",
+        70,
+        53
+      ],
+      [
+        "Marreese Speights '17",
+        73,
+        56
+      ],
+      [
+        "Ricky Sobers '86",
+        56,
+        39
+      ],
+      [
+        "Rod Foster '85",
+        61,
+        44
+      ],
+      [
+        "Rod Strickland '89",
+        60,
+        43
+      ],
+      [
+        "Jerryd Bayless '10",
+        61,
+        45
+      ],
+      [
+        "Montrezl Harrell '18",
+        77,
+        63
+      ],
+      [
+        "Ty Jerome '25",
+        81,
+        71
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '25",
+      "Giannis Antetokounmpo '24",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shaquille O'Neal '00",
+      "Shaquille O'Neal '01",
+      "Shaquille O'Neal '02",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22"
+    ]
+  },
+  "cost": [
+    "THE ROUND IS 96 AND THE PIPELINE IS 99. PIPELINE_VERSION is the SHIP order, not the round number (_shared.md, Integration). This round was cut at 97, re-cut at 98 when recal_94 took 97, and re-cut again at 99 when recal_97 took 98. Both python files and this file's `pipeline_version` carry 99, checked against origin/main's src/data/pipeline.json at commit time. Round number and pipeline number have now diverged three times.",
+    "MONTREZL HARRELL '18 LANDS AT 63, AND THE DISPATCH ASKED TO BE TOLD IF HE WENT UNDER ~65. He does. His ruling carried no number — \"too high\" — so the same term set him, as instructed, and 77 -> 63 is what a 17.0-mpg profile is worth once volume and playvol are paid at 17 minutes. THE TRADE-OFF IS REAL AND IS ONE KNOB: the ramp's foot. At foot 12 (shipped) Jerome lands 71, the exact centre of \"high 60's to mid 70's\", and Harrell 63. At foot 10 Jerome is 73 and Harrell 65; at foot 8 Jerome is 74 and Harrell 66. All three hold every standing anchor and all three keep Jerome inside his stated range, so this is HIS choice and not a formula question. The shipped setting is the one that lands the ruling that carries a number; if 63 is further than he meant, foot 10 is a one-line change and the whole board moves with it.",
+    "HIS TWO SUPERSEDED PINS, moved rather than deleted. recal_52's Montrezl Harrell '18 off 77 +-1 and recal_78's Ty Jerome '25 off 82 +-2 are now in data/anchors_superseded.json, each carrying the verbatim ruling that overturned it and the value it reads today. recal_93 proved these two pins were jointly the whole blocker: Harrell reads a SMALLER load than Jerome on every measure (17.0 mpg to 19.9, 1,292 season minutes to 1,393, 11.0 ppg to 12.5, BPM 3.3 to 4.3) yet was pinned six points ABOVE him, so no load term monotone in minutes could exist. He ruled on the blocker instead of on the round, and this is the round.",
+    "THE FULL-LOAD LINE IS 24 MINUTES, AND THAT IS A FINDING, NOT A CHOICE. A starter plays 32-36, and the honest term would pay full price there — but his own standing anchors will not allow it, and the measurement is flat: Clint Capela '17 is pinned off 58 +-1 (recal_51) on 23.9 mpg and already reads 57, so he has ZERO room. Move the line to 26 and he goes to 56; 28 -> 55; 30 -> 54 and Clint Capela '18 breaks too; 32 adds Shaquille O'Neal '08 and '09; 36 breaks Shai Gilgeous-Alexander '25 and Giannis '25. So the board's ratified position is that twenty-four minutes is ALREADY a full workload for pricing. A later round that wants a true starter's line must reopen Capela '17 first, and should expect to reopen four or five more behind him.",
+    "THE 24-MINUTE EDGE IS A SEAM AND IS NOT HIDDEN. A card at 24.0 mpg is paid in full and a card at 20.0 loses a third of its load credit; nothing above the line moves at all, so the discount is concentrated in 3,264 cards and lands hardest on the 1,075 under twenty. The ramp is linear rather than a step, which is recal_43's rule, but the TOP of the ramp is still a corner: two team-mates a minute apart across 24.0 are priced differently by about 3% of their load terms. That is the price of holding Capela '17 and Kerr '96, and it is where a complaint about a 23-minute player will come from.",
+    "THE OFF-BALL FLOOR IS A HOLE IN THE TERM, deliberately left. recal_64's floor and recal_91's stretch-big branch are built from SKILL rates (3pt, efficiency, ball security, discipline; plus orb, rim and volume for bigs) and are a max() against the standard path, so a low-minute card that RIDES the floor keeps its floor value undiscounted. That is right for the wing branch — a standstill shooter's value is his shooting, which minutes do not dilute — but the big branch does carry a raw `0.10 * volume`, so a sub-24-minute stretch big keeps a small load credit the rest of the file no longer pays. No anchor sits there and nothing currently reads wrong, but it is the second place to look if a bench big reads high.",
+    "THE TACTICS BANDS THIS ROUND BROKE, re-ratified on the merged recal_97 + recal_96 pool. The harness draws its random fives from PLAYERS with ovr >= 55, and this round moves 2,160 OVRs, every one DOWN - the largest sample move any round has made, and the first that SHRANK the pool. BOTH glass taxes broke on their ORACLE edges (crash off +0.486, crash def +0.467 against the +0.50 floor) and were re-ratified through the harness: crashOff .50 -> .10, crashDef .60 -> .48. RECORD FOR THE NEXT ROUND: crashDef's feasible window on this pool is only .47 to .50 - three hundredths, the narrowest this file has ever held - and crashOff's is .05 to .40 with the best margin at .10. Both were chosen at the point of greatest margin to the nearer edge. scheme, hunt, tempo, playstyle, scorer and playmaker all held untouched.",
+    "THE DISPATCH'S MINUTES FOR OG ANUNOBY '21 WERE WRONG, and it matters because he was named as a sensitivity check. It carried 25.8 mpg; src/data/stats.json has 33.3 (43 games, 2020-21 Toronto). He is therefore nowhere near the ramp and is flat by construction, not by fit. The genuinely sensitive mid-20s cards are Rui Hachimura '26 at 28.3 (also flat) and, below him, Clint Capela '17 at 23.9 and Steve Kerr '96 at 23.4 — those two are the real edge and both are held, at 57 and 61.",
+    "MINUTES ARE NOW A PIPELINE INPUT TO compute_ovr. `mpg` is read from src/data/stats.json — the same sheet the position rule has always read, so no new file enters the chain — but o_score now depends on it. A card missing from that sheet takes share 1.0 and no discount, which is recal_52's \"measured, or not at all\" rule; all 10,000 cards currently have an entry, so nothing is on that path today.",
+    "REBASED ONTO recal_94 MID-ROUND, and it changed none of this round's numbers. r94 rebuilt TEAM defence (data/team_rating.py and its 1:1 port src/engine/offense.ts, the anchor cap, the cover refund, the discipline penalty) and moved the DEF summit to the Bulls '96. compute_ovr.py execs team_rating.py, so the round was re-measured from scratch on the merged board: every card's OFF, DEF and OVR is identical to the pre-rebase reading, because r94 touches the five's rating and not the card's - the only field of ours it can reach is `marg`, which recal_40 took out of OVR. The base check required by _shared.md was run on 8c46d7f first: its shipped attributes reproduce from its own code, 0 differing. The harness was re-run on the merged pool and r94's rebuild changed none of the nine tax readings either, so crash def glass breaking is recal_96's doing alone. anchors.json was rebuilt programmatically from origin/main's 112 pins (r94 added twelve team pins, including the new team:defdial scale) minus the two his rulings supersede, plus this round's two.",
+    "WHAT THIS ROUND DOES TO RECEIPT 93, named rather than left to be found. recal_93 DECLINED this ruling and recorded the decline as four `expect` lines pinned at the unchanged readings (Ty Jerome '25 off 81 and ovr 72, Montrezl Harrell '18 off 77, Nick Young '10 off 65). The round-file format FAILS an `expect` rather than printing it as a supersession, so those four were re-pointed at the values they read now (71 / 65 / 63 / 56) with their ORIGINAL wording kept verbatim in front of a bracketed supersession note - the decline and the ruling that overturned it both stay on the record, and nothing was deleted. TWO knob lines in receipt 93 are left RED on purpose, because a knob MISS is precisely what the schema says it is: \"if a later round reverts or rewrites the knob, this line goes MISS\". They are r93's claim that o_score was byte-identical to round 91 (this round rewrites that very line) and its tax knob (crashDef, now .48). Both are true statements about r93 that r96 has made false, which is the ledger working rather than failing.",
+    "THE ASSIGNMENT ROW OF THE DEVIATION TAX TEST FAILS AT THE HARNESS'S OWN SAMPLE SIZE, and it is a RESOLUTION artefact, not a board change - reported rather than papered over, because assignment is the one row with NO constant to tune (harness.ts: \"the tax is structural - a bad board concedes real edges - so no separate constant exists\"). Its ratified rule is the sign pair `random < 0 && oracle >= 0.5`. At the test's n=200 the merged board reads random +0.019 and fails. Measured against sample size on the SAME board: n=100 +0.084, n=200 +0.019, n=300 +0.024, n=400 -0.308, n=600 -0.173, n=800 -0.175, n=1200 -0.129, n=1600 -0.179, n=3200 -0.228. origin/main's own board on the same sweep: -0.574, -0.183, -0.047, -0.223, -0.172, -0.359, -0.326, -0.377, -0.236. At n=3200 the two boards are indistinguishable (-0.228 against -0.236), so the STRUCTURAL sign is negative and UNCHANGED by this round; main itself reads only -0.047 at n=300, which is the same knife-edge. NOTHING WAS DONE ABOUT IT: the harness sample size is the law's own instrument and belongs to the engine agent, and bending a rating to move a harness row is what the law forbids. It needs his or the engine agent's call - either raise the test's n, or accept that this row is not resolvable at 200 matchups."
+  ],
+  "notes": [
+    "WHAT THE RULING IS ABOUT, in one sentence. Every bar on this sheet is a RATE: `volume` is a usage percentile and `playvol` an assist percentile, both per possession the man was on the floor for, and o_score never asked how much of a game that was. Ty Jerome '25 posted usage 23.6 and 12.5 points in 19.9 minutes off a 64-win bench and was priced at OFF 81, beside starters carrying the same rate for forty minutes.",
+    "WHY THE TWO LOAD BARS AND NOT THE WHOLE CARD, measured rather than argued. Discounting the whole o_score by the same minutes share CANNOT reach the number: at every ramp foot from 0 to 16, the depth that puts Jerome on 71 also puts Steve Kerr '96 on 60 against his 62 +-1 (recal_89). The reason IS the round's own claim — Kerr's load terms are 15.8% of his o_score (volume 8, playvol 44: a spot-up shooter carries nothing) while Jerome's are 34.3% (volume 70, playvol 61). A man who carried nothing has nothing to discount, and only the narrow instrument can tell those two 20-minute cards apart. That is also why the term is not the blunt one the earlier rounds reached for.",
+    "WHAT IS DELIBERATELY UNTOUCHED. The three zones, efficiency, ball security, free throws and the offensive glass are SKILL rates — how well a man shoots is true whether he shoots for nineteen minutes or thirty-nine — and they keep their full price. So does the volume x efficiency signature, which recal_26 gave a volume FLOOR of 50 precisely to say that elite conversion on a modest load is real signal. So do recal_64's floor gate and recal_51's attempt ramp, which read the raw ratings to decide CLASS rather than price, so no card changes class this round.",
+    "MEASURED BEFORE APPLYING, on the whole pool. OFF moves on 2,482 of 10,000 cards, every one of them DOWN (a load term can only discount; there are ZERO rises), mean -4.47, max -20. 978 cards move 5 or more, and every one of them is under 25 minutes: 715 under 20 and 263 between 20 and 25, against ZERO in the 25-30 and 30+ buckets. Mean OFF change by bucket: <20 -6.47 (1,029 of 1,075 moved), 20-25 -1.89 (1,453 of 2,189), 25-30 +0.00 (none moved), 30+ +0.00 (none moved). DEF moves on ZERO cards and no attribute moves — this is a compute_ovr-only round.",
+    "THE BOARD'S SHAPE IS UNCHANGED WHERE IT MATTERS. The top 12 by OFF is identical name for name; the top 50 by OVR has zero entrants, zero leavers, zero rank flips, and not one of its members changed OVR at all. Everything this round touched sits below the fiftieth card, which is what a bench-load correction should look like.",
+    "THE BIGGEST MOVES ARE THE ARCHETYPE, not collateral. Billy Ray Bates '82 (16.4 mpg) 75 -> 55, Marreese Speights '15 (15.9) 76 -> 58, Danny Ferry '95 (15.7) 70 -> 53, Marcus Williams '07 (16.6) 62 -> 43: sixteen-minute bench scorers who posted a starter's usage rate for a quarter of a game and were priced as if they had carried it. Each keeps every point of his shooting and his efficiency; what he loses is the claim that the offence ran through him."
+  ]
+}
