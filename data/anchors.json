@@ -1050,5 +1050,23 @@
   "round": 101,
   "ruling": "Too low per def. Should be high 50s low 60s\" — \"66 is fine, anchor him there",
   "note": "48 -> 66. No votes, DBPM -0.1, 6'6\", and -3.6% over 587 shots at a 100% blend weight — the same shape as Stephon Castle '26 with a fuller sample and a better diff, which is why he reads six above him. He asked for high 50s / low 60s, was shown the 66 this round already gave him, and anchored it there."
+ },
+ {
+  "card": "Kevin Durant '19",
+  "scale": "def",
+  "target": 79,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
+ },
+ {
+  "card": "Kevin Durant '24",
+  "scale": "def",
+  "target": 80,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
  }
 ]
