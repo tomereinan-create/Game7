@@ -58,6 +58,22 @@ python files to `N`. The copies that must all change together: `data/players_sta
 `src/data/players_stats.json`, `data/export/players_stats_smoothed.json` (+ MANIFEST.json),
 `src/data/pipeline.json`, and after a build_ratings.py run also `public/provenance.json`.
 
+## Integration (rebasing a landed round onto a main that moved)
+- FIRST regenerate on the base commit and assert its shipped attributes reproduce from its own
+  code (0 attributes moved). A commit whose data is ahead of its code has happened (recal_92
+  shipped data that already carried recal_95's ceiling); a round regenerating on such a base
+  would silently ship a different board.
+- `data/anchors.json` / `anchors_superseded.json`: never trust git's text merge of these — rebuild
+  programmatically from origin/main plus the round's own additions.
+- `PIPELINE_VERSION` is the SHIP order, not the round number: set it to (last shipped version + 1)
+  in both python files and put the same number in the round file's `pipeline_version`; note it
+  in COST when the two differ (recal_93 shipped as pipeline 96).
+- Taxes in `src/engine/tactics.ts`: take main's values, re-run the harness on the merged pool,
+  re-ratify what breaks, record the prior values.
+- Data files: take either side, regenerate the whole chain on the merged code, then re-verify
+  every target and every anchor on the merged data; if one leaves its band, STOP and report the
+  numbers — do not retune during an integration.
+
 ## Receipt
 The receipt is `data/rounds/<N>.json` (see Report back). Rounds up to 90 are hand-written blocks
 in `scripts/receipts.ts`; do not add new hand-written blocks. Then run:
