@@ -2429,9 +2429,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .ptal, .row .ovr { font-family: var(--serif); }
 .pool .row .ovr, .row.db .ovr { font-size: 18px; color: var(--ink); }
 
-/* the map header (stars, staff, team, coach) stays on screen while the long trail scrolls */
-.map-head.sticky { position: sticky; top: 0; z-index: 6; background: var(--bg); margin: 0 -14px; padding-left: 14px; padding-right: 14px; border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0,0,0,0.6); }
-@media (min-width: 900px) { .map-head.sticky { margin: 0 -21px; padding-left: 21px; padding-right: 21px; } }
+/* The map's top (title, rule, header — stars, staff, team, coach) stays on screen while the long
+   trail scrolls. It pins as ONE block, title included: the home button is fixed to the window's
+   top-right corner, and the topbar's 44px gutter is the only room this screen reserves for it.
+   Pinning the header alone put its right column — N OF 120 CLEARED, the staff notice — under the
+   button, which clipped both. The negative top margin and the matching padding reproduce the
+   page's own top inset inside the block, so what stays on screen is exactly what you see at the
+   top of the page, button and all. */
+.map-top { position: sticky; top: 0; z-index: 6; background: var(--bg); margin: -14px -14px 0; padding: 14px 14px 0; border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0,0,0,0.6); }
+@media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
 
 /* ---- home icon, always there ---- */
 .home-fab { position: fixed; top: 10px; right: 10px; z-index: 80; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line-3); background: var(--surface-2); color: var(--you); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
