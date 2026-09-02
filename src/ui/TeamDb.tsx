@@ -48,11 +48,52 @@ function Row({ p, slot, open, onTap }: { p: Player; slot: string; open: boolean;
 /** All-years search stops here — past this many rows the query is doing the work, not the reader. */
 const CAP = 60
 
+/** How many team-seasons the range list lays down at once; the rest arrive as you reach them. */
+const PAGE = 60
+
 const YMAX = YEARS[0]
 const YMIN = YEARS[YEARS.length - 1]
 const clampYear = (n: number) => Math.min(YMAX, Math.max(YMIN, n))
 
-/** "96" → 1996, "199" → the newest 199x, "2005" → 2005; empty → Any; a lone digit keeps the current pick. */
+/**
+ * THE YEAR RANGE (his ruling: "Make the year from to"). Two boxes, FROM and TO, and the list is
+ * every team-season in [from, to] — the point being that one sort then runs across seasons, so the
+ * '96 Bulls and the '17 Warriors stand in the same ranked list. from === to is the old single year.
+ */
+export type Span = [number, number]
+export const inSpan = (y: number, [from, to]: Span) => y >= from && y <= to
+/** "2026" for one season, "1996–2017" for a range — the caption and nothing else. */
+export const spanLabel = ([from, to]: Span) => (from === to ? String(from) : `${from}–${to}`)
+/** The box you touched wins: a FROM above the TO pulls TO up to meet it, so a backwards range
+ *  reads as that one season rather than as nothing at all. Clamp, not swap. */
+export const spanFrom = (a: number, [, to]: Span): Span => [a, Math.max(a, to)]
+export const spanTo = (b: number, [from]: Span): Span => [Math.min(from, b), b]
+
+/** The range outlives the visit, the way the user mode does: same try/catch, same game7. key. */
+const SPAN_KEY = 'game7.teamdb.years'
+export function loadSpan(): Span {
+  try {
+    const raw = localStorage.getItem(SPAN_KEY)
+    const m = raw?.match(/^(\d{4})-(\d{4})$/)
+    if (m) {
+      const a = clampYear(Number(m[1]))
+      const b = clampYear(Number(m[2]))
+      if (a <= b) return [a, b]
+    }
+  } catch {
+    /* private mode — the range still works for the session */
+  }
+  return [YMAX, YMAX]
+}
+function saveSpan([from, to]: Span) {
+  try {
+    localStorage.setItem(SPAN_KEY, `${from}-${to}`)
+  } catch {
+    /* private mode */
+  }
+}
+
+/** "96" → 1996, "199" → the newest 199x, "2005" → 2005; empty → the end of the book; a lone digit keeps the current pick. */
 function resolveYear(raw: string): number | null | 'partial' {
   const d = raw.replace(/\D/g, '')
   if (!d) return null
@@ -130,10 +171,12 @@ const bound = (s: string) => {
 
 const yy = (y: number) => `’${String(y % 100).padStart(2, '0')}`
 
-/** The team database: pick a year, pick a team, read their best five and its ratings. */
+/** The team database: pick a span of years, pick a team, read their best five and its ratings. */
 export function TeamDb({ onBack }: { onBack: () => void }) {
-  const [year, setYear] = useState<number | null>(YEARS[0])
-  const [yearQ, setYearQ] = useState(String(YEARS[0]))
+  const [span, setSpanState] = useState<Span>(loadSpan)
+  const [from, to] = span
+  const [fromQ, setFromQ] = useState(() => String(span[0]))
+  const [toQ, setToQ] = useState(() => String(span[1]))
   const [picked, setPicked] = useState<TeamSeason | null>(null)
   const [open, setOpen] = useState<string | null>(null)
   const [q, setQ] = useState('')
@@ -156,6 +199,33 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     setPicked(t)
   }
 
+  const setSpan = (next: Span) => {
+    setSpanState(next)
+    setFromQ(String(next[0]))
+    setToQ(String(next[1]))
+    saveSpan(next)
+  }
+  // An empty box is not a hole in the range: it reads as that end of the book, which is what the
+  // placeholder says. A lone digit is still being typed and changes nothing.
+  const editFrom = (v: string) => {
+    setFromQ(v)
+    const r = resolveYear(v)
+    if (r === 'partial') return
+    const next = spanFrom(r ?? YMIN, span)
+    setSpanState(next)
+    if (next[1] !== to) setToQ(String(next[1]))
+    saveSpan(next)
+  }
+  const editTo = (v: string) => {
+    setToQ(v)
+    const r = resolveYear(v)
+    if (r === 'partial') return
+    const next = spanTo(r ?? YMAX, span)
+    setSpanState(next)
+    if (next[0] !== from) setFromQ(String(next[0]))
+    saveSpan(next)
+  }
+
   const rating = sort === 'off' || sort === 'def' ? sort : null
   /** OVR and the gauges share the 1-99 scale, so the same Min/Max inputs bind whichever sort is on. */
   const ranked = rating !== null || sort === 'ovr'
@@ -170,7 +240,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const chip = (k: typeof sort) => `sortb ${sort === k ? (flip ? 'on asc' : 'on') : ''}`
 
   const teams = useMemo(() => {
-    const pool = WHEEL.filter((t) => (year === null || t.y === year) && (!conf || t.c === conf))
+    const pool = WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf))
     if (!ranked) {
       const cmp = (a: TeamSeason, b: TeamSeason) =>
         sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y
@@ -194,16 +264,30 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
       const d = kb - ka || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y
       return flip ? -d : d
     })
-  }, [year, conf, sort, rating, ranked, flip, minQ, maxQ])
+  }, [from, to, conf, sort, rating, ranked, flip, minQ, maxQ])
 
   // A non-empty query takes over the list: every season of every matching franchise, newest first.
   const found = useMemo(() => {
     const s = q.trim().toLowerCase()
     if (!s) return null
-    return WHEEL.filter(
-      (t) => (year === null || t.y === year) && (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s)),
-    ).sort((a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec))
-  }, [q, conf, year])
+    return WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf) && (t.team.toLowerCase().includes(s) || t.ab.toLowerCase().includes(s))).sort(
+      (a, b) => b.y - a.y || winsOf(b.rec) - winsOf(a.rec),
+    )
+  }, [q, conf, from, to])
+
+  // A wide range is 1,300 team-seasons and 3,900 dials — more DOM than a phone will paint in one
+  // go — so the list lays down a page at a time and grows as the bottom comes near. The SORT still
+  // runs over the whole range: what you see is the true top of the list, just not all of its tail.
+  const [shown, setShown] = useState(PAGE)
+  useEffect(() => setShown(PAGE), [teams, found])
+  const more = useRef<HTMLButtonElement | null>(null)
+  useEffect(() => {
+    const el = more.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && setShown((s) => s + PAGE), { rootMargin: '600px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [shown, teams, picked])
 
   const detail = useMemo(() => {
     if (!picked) return null
@@ -241,36 +325,45 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             />
           </label>
           <div className="filterbar">
-            <label className="dbnum">
-              <span>Year</span>
-              <input
-                inputMode="numeric"
-                placeholder="Any"
-                value={yearQ}
-                onFocus={(e) => e.currentTarget.select()}
-                onChange={(e) => {
-                  setYearQ(e.target.value)
-                  const r = resolveYear(e.target.value)
-                  if (r !== 'partial') setYear(r)
-                }}
-                autoComplete="off"
-              />
-            </label>
-            <button
-              className={`sortb ${year === null ? 'on' : ''}`}
-              onClick={() => {
-                setYearQ('')
-                setYear(null)
-              }}
-            >
-              Any
-            </button>
-            <button className={`sortb ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
-              East
-            </button>
-            <button className={`sortb ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
-              West
-            </button>
+            {/* the span and its reset stay one atom, so at 375px the conference chips wrap under
+                them in a pair rather than splitting East from West */}
+            <div className="filtergrp">
+              <label className="dbnum">
+                <span>From</span>
+                <input
+                  inputMode="numeric"
+                  placeholder={String(YMIN)}
+                  value={fromQ}
+                  onFocus={(e) => e.currentTarget.select()}
+                  onChange={(e) => editFrom(e.target.value)}
+                  onBlur={() => setFromQ(String(from))}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="dbnum">
+                <span>To</span>
+                <input
+                  inputMode="numeric"
+                  placeholder={String(YMAX)}
+                  value={toQ}
+                  onFocus={(e) => e.currentTarget.select()}
+                  onChange={(e) => editTo(e.target.value)}
+                  onBlur={() => setToQ(String(to))}
+                  autoComplete="off"
+                />
+              </label>
+              <button className={`sortb ${from === YMIN && to === YMAX ? 'on' : ''}`} onClick={() => setSpan([YMIN, YMAX])}>
+                Any
+              </button>
+            </div>
+            <div className="filtergrp">
+              <button className={`sortb ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
+                East
+              </button>
+              <button className={`sortb ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
+                West
+              </button>
+            </div>
             {found ? (
               <span className="filtercount">
                 {found.length} season{found.length === 1 ? '' : 's'}
@@ -313,7 +406,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             <>
               <div className="section-rule">
                 <span>
-                  {year === null ? 'All years' : year} · newest first
+                  {spanLabel(span)} · newest first
                   {conf ? (conf === 'E' ? ' · East only' : ' · West only') : ''}
                 </span>
                 <i />
@@ -338,7 +431,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             <>
               <div className="section-rule">
                 <span>
-                  {year === null ? 'All years' : year} · {teams.length} teams ·{' '}
+                  {spanLabel(span)} · {teams.length.toLocaleString()} teams ·{' '}
                   {sort === 'az'
                     ? flip
                       ? 'Z to A'
@@ -350,23 +443,25 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 </span>
                 <i />
               </div>
-              {(year === null ? teams.slice(0, CAP) : teams).map(({ t }) => (
+              {teams.slice(0, shown).map(({ t }) => (
                 <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
                   <span className="lwho">
                     <b>{t.team}</b>
                     <i>
-                      {year === null ? `${yy(t.y)} · ` : ''}
+                      {from === to ? '' : `${yy(t.y)} · `}
                       {t.ab}
                       {t.rec ? ` · ${t.rec}` : ''}
-                      {year === null ? '' : `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool`}
+                      {from === to ? `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool` : ''}
                     </i>
                   </span>
                   <RowDials t={t} sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)} />
                   <span className="tdb-go">→</span>
                 </button>
               ))}
-              {year === null && teams.length > CAP ? (
-                <div className="cap hint">{(teams.length - CAP).toLocaleString()} more teams match — set a year, a conference or tighter bounds.</div>
+              {teams.length > shown ? (
+                <button ref={more} className="morebtn" onClick={() => setShown((s) => s + PAGE)}>
+                  {(teams.length - shown).toLocaleString()} more seasons · show {Math.min(PAGE, teams.length - shown)}
+                </button>
               ) : null}
               {teams.length === 0 ? <div className="cap hint">No team inside those bounds.</div> : null}
             </>

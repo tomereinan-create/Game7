@@ -2192,13 +2192,23 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* ---- database filters ---- */
 .filterbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 0 2px; }
 .filtercount { font-family: var(--mono); font-size: 10px; color: var(--you); }
-/* a small typeable bound: the year jump, the rating min/max */
-.dbnum { display: inline-flex; align-items: center; gap: 6px; }
+/* one atom inside the wrapping bar: the year span and its reset never break apart */
+.filtergrp { display: flex; align-items: center; gap: 8px; }
+/* a small typeable bound: the year range from/to, the rating min/max.
+   the label is inside the <label>, so the whole 40px box is the tap target that focuses the box */
+.dbnum { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; }
 .dbnum > span { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
-.dbnum input { width: 52px; background: var(--bg); color: var(--ink); border: 1px solid var(--line-3); border-radius: 6px; padding: 5px 7px; font-family: var(--mono); font-size: 11px; -moz-appearance: textfield; appearance: textfield; }
+.dbnum input { box-sizing: border-box; width: 48px; height: 30px; background: var(--bg); color: var(--ink); border: 1px solid var(--line-3); border-radius: 6px; padding: 0 7px; font-family: var(--mono); font-size: 11px; -moz-appearance: textfield; appearance: textfield; }
 .dbnum input::-webkit-outer-spin-button, .dbnum input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .dbnum input::placeholder { color: var(--faint); }
+/* on a wide screen the chips grow to 45px — the typed bounds beside them grow with them */
+@media (min-width: 900px) {
+  .dbnum > span { font-size: 11px; }
+  .dbnum input { height: 45px; width: 68px; font-size: 15px; padding: 0 10px; }
+}
 .tdb-gauge { flex: none; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--you); }
+/* the range list pages in: the foot of the list is both the notice and the tap that adds the next 60 */
+.morebtn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--you); font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 .filters { display: grid; gap: 10px; padding: 10px 12px; margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .filt { display: grid; gap: 4px; }
 .filt > span:first-child { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
