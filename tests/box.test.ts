@@ -114,6 +114,11 @@ describe('box scores — shape follows the score and the identity', () => {
     console.log(`  10-level sample: median OFF ${mo} DEF ${md}; ref five ${ratings100(REF_FIVE).off}/${ratings100(REF_FIVE).def}`)
     expect(mo).toBeGreaterThanOrEqual(40) // 45 before season smoothing, 41 after (anchor 132.0 kept)
     expect(mo).toBeLessThanOrEqual(58)
+    // recal_94 HELD this floor at 45. The defenceVs reset raised drtgRef about 1 point across the
+    // league and would have dropped the 10-level sample to 42; re-deriving REF_DRTG by recal_60's own
+    // rule (108.85 -> 109.49, the DEF display mean back on the OFF display mean over receipt 60's own
+    // 300-five sample) puts it at 47, so the rail did not have to move. Recorded because the first cut
+    // of that round DID lower it, and the lesson is that a display drift is fixed at the intercept.
     expect(md).toBeGreaterThanOrEqual(45)
     expect(md).toBeLessThanOrEqual(82) // 58 -> 60 (smoothing) -> 65 (recal 5) -> 77 (tracking defense lifts no-vote defenders); anchor 113.1 kept
     const mine = opp[10].players

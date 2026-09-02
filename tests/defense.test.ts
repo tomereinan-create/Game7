@@ -50,7 +50,15 @@ describe('matchup defense — defense is a property of the pairing', () => {
     // one. THIS band is still open, and its status is now clearer rather than worse: the coefficient
     // that leaves this swing 6% under 4 is no longer provisional, so the only way this band comes
     // back is its own ruling or a named mechanism. Recorded, not adjusted.
-    expect(b - a).toBeGreaterThanOrEqual(3.5)  // recal_81: 3.70 -> 3.62; sibling 60/40 band RETIRED by recal_87
+    // recal_94 IS the named mechanism this comment was waiting for. His ruling ("Philly 2026 def too
+    // high, I dont understand the system it needs a full reset. OFF DEF feels off for too many
+    // teams") landed as: cap the anchor at 99 inside didx, delete the `cover` refund, delete the
+    // discipline penalty, and halve the anchor's weight 0.26 -> 0.13 onto perdef. This band measures
+    // exactly the size of the anchor channel - `hide` erodes the anchor against a five-out offense -
+    // so halving that channel necessarily halves the swing. The band cannot be held without undoing
+    // the round, and the round is measured (within-season DEF fit vs bref o_rtg/d_rtg over 1,255
+    // team-seasons: rho +0.588 -> +0.763). Floor re-set to the reading it now takes.
+    expect(b - a).toBeGreaterThanOrEqual(1.2)  // recal_81: 3.70 -> 3.62; recal_94: 3.62 -> 1.3 (anchor weight halved)
   })
 
   it('hunted swing: Gobert blunts the hunt on Trae against a paint hunter (Shaq), not a pull-up hunter (Curry)', () => {

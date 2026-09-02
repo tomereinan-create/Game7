@@ -192,10 +192,6 @@ export function Matchups({
           <b>{cur.anchor.toFixed(1)}</b>
         </div>
         <div className="an-kv">
-          <span>Protection cover</span>
-          <b>{cur.cover.toFixed(1)}</b>
-        </div>
-        <div className="an-kv">
           <span>Hunted man penalty</span>
           <b>{cur.huntPen.toFixed(2)}</b>
         </div>

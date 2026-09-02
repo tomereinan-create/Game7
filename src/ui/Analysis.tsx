@@ -114,11 +114,7 @@ export function Analysis({
           hidden on {hide ? short(hide.name) : '—'} (out {d.minOppOut}) · holds {Math.round(100 * d.hide)}% of its value
           {d.hide < 1 ? ' — five-out erodes it' : ''}
         </div>
-        <div className="an-kv">
-          <span>Protection — perdef deficit the anchor covers</span>
-          <b>{sgn(d.cover)}</b>
-        </div>
-        <div className="an-sub">they hunt the paint {Math.round(100 * d.paintOrient)}% → cover scales ×{Math.min(1, d.paintOrient * 2).toFixed(2)}</div>
+        <div className="an-sub">they hunt the paint {Math.round(100 * d.paintOrient)}%</div>
         <div className="an-kv">
           <span>Hunted man {weak ? `— ${short(weak.name)} (perdef ${weak.attrs.perdef})` : ''}</span>
           <b className="bad">{sgn(d.huntPen)} pts</b>
@@ -139,15 +135,11 @@ export function Analysis({
           <b>{sgn(d.glass)}</b>
         </div>
         <div className="an-kv">
-          <span>Fouls → free points</span>
-          <b className="bad">{sgn(d.discPts)}</b>
-        </div>
-        <div className="an-kv">
           <span>Defensive index</span>
           <b>{f1(d.didx)}</b>
         </div>
         <div className="an-sub">
-          DRtg = 110 − {MKNOBS.DRTG_COEF} × (Didx − 55) + hunted + fouls
+          DRtg = 110 − {MKNOBS.DRTG_COEF} × (Didx − 55) + hunted
         </div>
       </div>
     )

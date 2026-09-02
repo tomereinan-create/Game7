@@ -141,7 +141,7 @@ for name, L in LINEUPS.items():
 # ---------- MATCHUP DEFENSE: defense is a property of a PAIRING, not a lineup ----------
 MKNOBS = dict(
     HIDE_OUT=45,        # opponent with out below this = credible hiding spot for the anchor
-    ANCHOR_CAP=37.5,    # protection capacity: ~1.5 bad defenders' worth of perdef deficit
+    # ANCHOR_CAP (37.5) is GONE — recal_94 removed the `cover` refund it sized. See defense_vs.
     ONBALL_SPLIT=0.6,   # steals: 60% on-ball (matchup-driven), 40% team/passing-lane
     HUNT_SCALE=0.10,    # DRtg pts per unit of hunted-man exposure
     DRTG_COEF=0.181,     # calibrated to his 60/40 offense/defense ruling (see calibration below)
@@ -184,11 +184,13 @@ def defense_vs(us, them):
     min_opp_out = min(b['3pt'] for b in B)
     hide = 1.0 if min_opp_out < MKNOBS['HIDE_OUT'] else max(0.15, 1 - (min_opp_out - MKNOBS['HIDE_OUT'])/50)
     anchor = anchor_raw * hide
-    # PROTECTION: covers multiple holes up to capacity, but ONLY against paint-hunting offense
-    others = [a['perdef'] for i, a in enumerate(A) if i != rp[0][1]]
-    deficit = sum(max(0, 60-d) for d in others)
-    cover = min(deficit, MKNOBS['ANCHOR_CAP']*(anchor/99)) * min(1.0, paint_orient*2)
-    eff_di = (sum(a['perdef'] for a in A) + cover)/5
+    # recal_94: PROTECTION (`cover`) IS GONE. It refunded the perdef deficit of the four non-anchor
+    # defenders whenever the five had a rim anchor — so a bad perimeter five with a big read as a
+    # good perimeter five. Measured on the 1,255 fieldable team-seasons, removing it alone took the
+    # within-season DEF fit from rho +0.587 to +0.654. The comment it replaced claimed the term was
+    # gated by paint-hunting, but min(1, paint_orient*2) is 1.00 against the reference five and
+    # against every real offense in the wheel, so it never gated anything.
+    eff_di = sum(a['perdef'] for a in A)/5
     # recal_60: the lone hunted-man term is generalized — every pairing generates edge, the board is
     # the best of all 120, and the penalty is RELATIVE TO PERFECT COACHING (the best board pays 0).
     E = pairing_table(A, B, b_usg)
@@ -201,9 +203,39 @@ def defense_vs(us, them):
     # GLASS: our top-2 DRB (diminishing) vs their ORB crash (counts deeper vs crash teams)
     d = sorted((a['drb'] for a in A), reverse=True); o = sorted((b['orb'] for b in B), reverse=True)
     glass = (d[0] + 0.5*d[1] + 0.1*sum(d[2:])) - (o[0] + 0.5*o[1] + 0.25*sum(o[2:]))
-    didx = 0.42*eff_di + 0.26*anchor*0.9 + 0.20*min(99, steals)*0.9 + 0.12*max(0, 60 + glass/4)
+    # TEAM DEFENCE IS THE FIVE'S PERDEF AGAIN (recal_94, his ruling: "Philly 2026 def too high, I
+    # dont understand the system it needs a full reset. OFF DEF feels off for too many teams" —
+    # and, on the diagnosis, "Run it").
+    #
+    # MEASURED, not guessed. Truth is data/bref/Team Summaries.csv (o_rtg / d_rtg), fit is the
+    # Spearman of the dial against real DRtg WITHIN each season, averaged over the 47 seasons of
+    # the 1,255 fieldable team-seasons on the wheel. The shipped formula scored DEF rho +0.587
+    # while the bare sum of the five's perdef scored +0.763 — every term stacked on top of perdef
+    # was subtracting signal. Three of them are the reason:
+    #
+    #   1. THE ANCHOR WAS UNCAPPED. team_defense (the standalone lineup path) has always written
+    #      min(99, anchor); this line did not, and anchor_raw = rimprot1 + 0.35*rimprot2^2/99 runs
+    #      past 99 on 902 of the 1,255 fives (max 131.3, Bucks '21). Two rim protectors paid twice,
+    #      off the top of a 1-99 scale. Capped here exactly as team_defense caps it.
+    #   2. `cover` — see above, removed.
+    #   3. the discipline penalty was the LARGEST variance channel of drtg_ref (sd 0.588 against a
+    #      5.84-point all-time range, i.e. up to ~73 dial points) and it pointed the WRONG WAY:
+    #      mean discipline of the five correlates +0.075 (Spearman) with BAD real defence. Fouling
+    #      is how good defences play. Removed from the matchup path. DKNOBS['DISC_FREEPTS'], the
+    #      standalone team_defense version, is untouched — it is a different layer.
+    #
+    # WEIGHTS. With the anchor capped and cover gone, the anchor's remaining weight still overpaid:
+    # 0.26 -> 0.13, the 0.13 moved onto perdef (0.42 -> 0.55) so the didx level is held. Steals
+    # 0.20 -> 0.12 on the same measurement (+0.004; the term is real but small, and its transition
+    # value is priced separately in score_vs via the 0.024 coefficient).
+    #
+    # WHAT IT COST. Nothing on offense — team_offense is untouched and OFF rho is +0.712 before and
+    # after (all 1,255 offRaw readings bit-identical). DEF rho +0.588 -> +0.763 overall; per era 80s
+    # .536->.777, 90s .599->.799, 00s .597->.791, 10s .641->.730, 20s .557->.697. Philadelphia '26
+    # (real DRtg 14th of the 24 fieldable 2026 teams) goes from DEF 80 / 1st to DEF 50 / 9th. DEF_WORST/DEF_MID/DEF_TOP in
+    # src/engine/gauges.ts were re-frozen from the wheel sweep in the same commit, per recal_71.
+    didx = 0.55*eff_di + 0.13*min(99, anchor)*0.9 + 0.12*min(99, steals)*0.9 + 0.12*max(0, 60 + glass/4)
     drtg = 110 - MKNOBS['DRTG_COEF']*(didx - 55) + hunt_pen   # rebased: coef scales DIFFERENCES
-    drtg += 0.030*sum(max(0, 55-a['discipline']) for a in A)/5*3
     return drtg, min(99, steals)
 
 def score_vs(us, them):
@@ -232,7 +264,12 @@ REF_FIVE = [
 
 # EMPIRICAL anchoring: 50 = the MEDIAN of plausible drafted fives (sampled from the pool),
 # not the synthetic REF (which had no weak link -> whole population read as bad defense).
-_REF_OFF, _REF_DRTG = 124.03, 113.1   # recal_74: _REF_OFF re-derived (campaign median) after the ORB-scale halving
+# recal_94: _REF_DRTG was 113.1 — recal_60's PRE-calibration value, left behind when that round moved
+# the port's REF_DRTG to 108.85 and never mirrored here. The two dials had been 4.25 points apart for
+# 34 rounds (parity_check.py compares off/drtg/steals/net/margin, never ratings_100, so nothing
+# printed). Both sides now carry 108.96, re-derived by recal_60's own rule — the OFF and DEF display
+# means match over recal_60's own 300-five sample (scripts/diag-team/ref94d.ts).
+_REF_OFF, _REF_DRTG = 124.03, 109.83   # recal_74: _REF_OFF re-derived (campaign median) after the ORB-scale halving
 RATING_SCALE = dict(K_OFF=3.0, K_DEF=8.0)
 
 def ratings_100(five):
