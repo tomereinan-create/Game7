@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, pnrPair, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -41,6 +41,8 @@ export function orderFive(names: string[]): string[] {
   return POSITIONS.map((x) => at[x]!)
 }
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
+/** The name a chip wears: the season tag off, and the surname alone. */
+const shortName = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '').split(' ').slice(-1)[0]
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
 /**
@@ -662,7 +664,7 @@ export function MyTeam({
                       className={`sortb ${tactics[key] === p.name ? 'on' : ''}`}
                       onClick={() => onTactics({ ...tactics, [key]: p.name })}
                     >
-                      {p.name.replace(/ '\d\d( \([a-z]\))?$/, '').split(' ').slice(-1)[0]}
+                      {shortName(p.name)}
                     </button>
                   ))}
                 </ChipRow>
@@ -686,12 +688,44 @@ export function MyTeam({
               <ChipRow>
                 {STYLES.map(({ key, label }) => (
                   <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
-                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five))}`}
+                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five, undefined, tactics.pnr))}`}
                   </button>
                 ))}
               </ChipRow>
             </div>
             ) : null}
+            {/* HIS RULING: "When selenting pnr you have to select the 2 handler and screener". The
+                pick-and-roll is two calls, so calling it opens two more rows — the same chips as
+                Main scorer, the same five men. They open lit on the pair the engine would pick
+                itself, so the call is never blank and never a mystery; naming a man who already
+                holds the other job trades the two rather than putting one man in both. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'pnr'
+              ? (() => {
+                  const pair = pnrPair(five, tactics.pnr)
+                  const at = { handler: pair.handler?.name ?? '', screener: pair.screener?.name ?? '' }
+                  const call = (role: 'handler' | 'screener', name: string) => {
+                    const other = role === 'handler' ? 'screener' : 'handler'
+                    const next = { ...at, [role]: name }
+                    if (next[other] === name) next[other] = at[role] && at[role] !== name ? at[role] : (five.find((q) => q.name !== name)?.name ?? name)
+                    onTactics({ ...tactics, pnr: { handler: next.handler, screener: next.screener } })
+                  }
+                  return ([
+                    ['Handler', 'handler'],
+                    ['Screener', 'screener'],
+                  ] as const).map(([label, role]) => (
+                    <div className="posbar" key={role}>
+                      <span className="cap">{label}</span>
+                      <ChipRow>
+                        {five.map((p) => (
+                          <button key={p.name} className={`sortb ${at[role] === p.name ? 'on' : ''}`} onClick={() => call(role, p.name)}>
+                            {shortName(p.name)}
+                          </button>
+                        ))}
+                      </ChipRow>
+                    </div>
+                  ))
+                })()
+              : null}
             {side === 'off' && playbook >= 3 ? (
             <div className="posbar">
               <span className="cap">Hunt the mismatch</span>

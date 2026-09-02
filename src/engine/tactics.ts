@@ -32,6 +32,16 @@ export interface Tactics {
    * price on the same law the playstyles use. See SCHEMES / schemeFit below.
    */
   scheme: Scheme
+  /**
+   * THE PICK-AND-ROLL PAIR (his ruling: "When selenting pnr you have to select the 2 handler and
+   * screener"). Calling the pnr is now TWO calls: the style, and the two men who run it. Name-keyed
+   * like the rest of the plan, so a swap on the floor cannot leave it pointing at a stranger.
+   *
+   * ABSENT is legal and means the same thing it always did: an old save, an AI opponent, or a plan
+   * that has never been to the panel picks its pair the way the engine used to pick it, off the
+   * cards (see pnrPair). Only `pnr` as a style ever reads it.
+   */
+  pnr?: PnrPair | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -70,6 +80,12 @@ export const SCHEMES: { key: Scheme; label: string }[] = [
   { key: 'ice', label: 'ice / no middle' },
 ]
 
+/** The two men the pick-and-roll runs through, by card name. Two different men, both on the five. */
+export interface PnrPair {
+  handler: string
+  screener: string
+}
+
 export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
@@ -87,6 +103,7 @@ export const DEFAULT_TACTICS: Tactics = {
   tempo: 'normal',
   style: 'balanced',
   scheme: 'matchup',
+  pnr: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -223,7 +240,15 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     style: STYLES.some((x) => x.key === t.style) ? t.style : 'balanced',
     // ...and a pre-recal_75 save can carry a scheme that never existed, or one since cut
     scheme: SCHEMES.some((x) => x.key === t.scheme) ? t.scheme : 'matchup',
+    // the pnr pair is two DIFFERENT men, both still on the five; anything else is dropped and the
+    // engine picks the pair itself again, exactly as it does for a plan that never named one
+    pnr: legalPair(t.pnr, names) ? t.pnr : null,
   }
+}
+
+/** A pair is legal when it names two different men who are both on the five. */
+export function legalPair(pair: PnrPair | null | undefined, names: string[]): boolean {
+  return !!pair && pair.handler !== pair.screener && names.includes(pair.handler) && names.includes(pair.screener)
 }
 
 /**
@@ -238,6 +263,8 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     playmaker: rank >= 1 ? t.playmaker : null,
     tempo: rank >= 1 ? t.tempo : 'normal',
     style: rank >= 2 ? t.style : 'balanced',
+    // the pair rides with the style it belongs to: below rank 2 the call is not heard at all
+    pnr: rank >= 2 ? t.pnr : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -255,7 +282,28 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  * min(rim, volume) — the same two facts the o_score bonus keys on. Transition's opponent term
  * (their ball security, inverted) needs the matchup, so without one that quarter reads neutral (50).
  */
-export function styleFit(style: Style, five: Player[], theirs?: Player[]): number {
+/**
+ * WHO RUNS THE PICK-AND-ROLL. The plan's own two men when it names a legal pair (his ruling: "When
+ * selenting pnr you have to select the 2 handler and screener"); otherwise the AUTO-PICK the engine
+ * has always used — the best small handler by min(playvol, volume) and the best big dive man by
+ * min(rim, efficiency) — so an AI opponent, an old save, and a plan made before the panel existed
+ * all price exactly as they did. Every reader of the pair (the fit, the court) comes through here,
+ * so the number and the drawing can never name different men.
+ */
+export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
+  if (legalPair(pick, five.map((p) => p.name))) {
+    const handler = five.find((p) => p.name === pick!.handler) ?? null
+    const screener = five.find((p) => p.name === pick!.screener) ?? null
+    return { handler, screener, chosen: true }
+  }
+  const hScore = (p: Player) => Math.min(p.attrs.playvol, p.attrs.volume)
+  const dScore = (p: Player) => Math.min(p.attrs.rim, p.attrs.efficiency)
+  const handler = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78).sort((x, y) => hScore(y) - hScore(x))[0] ?? null
+  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => dScore(y) - dScore(x))[0] ?? null
+  return { handler, screener, chosen: false }
+}
+
+export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: PnrPair | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
@@ -263,13 +311,11 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[]): numbe
     case 'fiveout':
       return Math.min(...a.map((x) => x['3pt'])) * 0.6 + avg((x) => x['3pt']) * 0.4
     case 'pnr': {
-      const handlers = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78)
-      const handler = Math.max(0, ...handlers.map((p) => Math.min(p.attrs.playvol, p.attrs.volume)))
-      const bigs = five.filter((p) => p.attrs.height >= 80)
-      const dive = Math.max(0, ...bigs.map((p) => Math.min(p.attrs.rim, p.attrs.efficiency)))
-      const hName = handlers.sort((x, y) => Math.min(y.attrs.playvol, y.attrs.volume) - Math.min(x.attrs.playvol, x.attrs.volume))[0]?.name
-      const dName = bigs.sort((x, y) => Math.min(y.attrs.rim, y.attrs.efficiency) - Math.min(x.attrs.rim, x.attrs.efficiency))[0]?.name
-      const rest = five.filter((p) => p.name !== hName && p.name !== dName)
+      // his two men when he named them, the engine's own pair when he did not — same three terms
+      const { handler: h, screener: d } = pnrPair(five, pnr)
+      const handler = h ? Math.min(h.attrs.playvol, h.attrs.volume) : 0
+      const dive = d ? Math.min(d.attrs.rim, d.attrs.efficiency) : 0
+      const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
       return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => p.attrs['3pt'])
     }
     case 'motion': {
@@ -396,7 +442,7 @@ export function aiScheme(five: Player[], theirs: Player[]): Scheme {
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
-  let pts = clamp(0.11 * (styleFit(t.style, five, theirs) - 55) - TAX.style, -2.5, 2.5)
+  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t.pnr) - 55) - TAX.style, -2.5, 2.5)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
   if (t.style === 'transition') {
     if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
@@ -480,7 +526,10 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
   if (t.scorer && five.some((p) => p.name === t.scorer)) parts.push({ label: 'main scorer', pts: scorerPts(t.scorer, five, theirs) })
   if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
   if (t.style !== 'balanced')
-    parts.push({ label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs))})`, pts: stylePts(t, five, theirs) })
+    parts.push({
+      label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t.pnr))})`,
+      pts: stylePts(t, five, theirs),
+    })
   if (t.scheme !== 'matchup')
     parts.push({
       label: `${SCHEMES.find((x) => x.key === t.scheme)?.label ?? t.scheme} (fit ${Math.round(schemeFit(t.scheme, five, theirs))})`,

@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
+import { pnrPair, SCHEMES, STYLES, type Scheme, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -66,9 +66,21 @@ const ELBOW_R: XY = [66, 72]
 const DUNK_L: XY = [32, 88]
 const DUNK_R: XY = [68, 88]
 
-/** Balanced — PG above the arc, the wings behind it, PF at the block, C in the paint. */
-const AT: XY[] = [peri(0, 12), peri(-38), peri(38), BLOCK_L, PAINT_C]
+/**
+ * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
+ * PG above the arc, both wings behind it, the PF out in the corner, and the C alone inside.
+ * The default set used to stand the PF on the block beside him, which put two men inside; the PF
+ * moves out to the corner, so the C is the only man inside the arc and the other four ring it.
+ */
+const AT: XY[] = [peri(0, 12), peri(-38), peri(38), CORNER_L, PAINT_C]
 const BENCH_AT: XY = [14, 9]
+/**
+ * Is a spot BEHIND the three-point line? Above the break the line IS the arc; below it the line is
+ * the straight corner lane the floor draws at x=8 / x=92, so a corner man stands behind the line
+ * while sitting inside the arc's circle. Exported because "four out, one in" is a claim about the
+ * drawn floor, and tests/court.test.ts holds the balanced set to it.
+ */
+export const outsideLine = ([x, y]: XY): boolean => (y >= 82 ? x <= 8 || x >= 92 : Math.hypot(x - ARC_CX, y - ARC_CY) >= ARC_R)
 /** Units of empty floor above the half-court line, kept only when a bench man stands there. */
 const CROP = 16
 
@@ -110,10 +122,12 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
 /**
  * Formations by style, index-aligned to the five's slot order (PG..C). Readable
  * spacings, not X-and-O diagrams; the special men use the same proxies the fit
- * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol),
- * the pnr screen = the dive big, min(rim, efficiency)).
+ * formulas key on (post = min(rim, volume), helio engine = min(volume, playvol)).
+ * The pick-and-roll no longer guesses: it stands the pair the PLAN names, through
+ * the engine's own pnrPair, so the floor and the price name the same two men.
  */
-function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
+  const style = plan?.style
   const men = five.filter((p): p is Player => !!p)
   if (!style || style === 'balanced' || men.length < 5) return [...AT]
   const fill = (picked: Record<number, XY>, rest: XY[]): XY[] => {
@@ -139,9 +153,15 @@ function spotsFor(style: Style | undefined, five: (Player | null)[]): XY[] {
         peri(43),
       ]
     case 'pnr': {
-      // the PG behind the arc, the screener rolling inside it; shooters spot the corners and the weak wing
-      const s = best(men, (p) => (p.attrs.height >= 80 ? Math.min(p.attrs.rim, p.attrs.efficiency) : p.attrs.height), 0)
-      return fill({ 0: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
+      // the handler behind the arc, the screener rolling inside it; the other three spot the
+      // corners and the weak wing. Both men come from the plan (his ruling: the pair is a call).
+      const pair = pnrPair(men, plan?.pnr)
+      const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
+      let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
+      // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
+      // the handler sets the screen, so the shape is always five men on five different spots
+      if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
+      return fill({ [h]: peri(-6, 10), [s]: ROLL }, [CORNER_L, CORNER_R, peri(38)])
     }
     case 'postup': {
       // the post man on the block, four spaced behind the line away from his side
@@ -312,7 +332,7 @@ export function CourtFive({
   const side = sideProp ?? own
   const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
-  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan?.style, spots.map((s) => s.p))
+  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan, spots.map((s) => s.p))
   const call = plan ? callLine(plan, shown) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with
