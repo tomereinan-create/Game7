@@ -1,5 +1,14 @@
 [
  {
+  "card": "Karl Malone '99",
+  "scale": "off",
+  "target": 90,
+  "tol": 2,
+  "round": 98,
+  "ruling": "How is Karl Malone 99 is 93 OFF? 24ppg with mid passing and 3.3 tov cant be this high. Eff is good but nothing crazy..",
+  "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 87 +-3 and 90 is the FRONTIER: the lowest reading this card can take with every standing anchor held, searched over the hub ramp against the volume, efficiency, ballsec and signature weights jointly. 93 -> 90 by ramping recal_55's big hub from a cliff at playvol 60 to full credit at 80, so \"mid passing\" stops collecting a hub premium."
+ },
+ {
   "card": "Ty Jerome '25",
   "scale": "off",
   "target": 71,
