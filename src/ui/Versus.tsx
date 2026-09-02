@@ -9,6 +9,7 @@ import { Bars } from './Bars'
 import { WHEEL, type TeamSeason } from './Draft'
 import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
 import { PlayerCard } from './PlayerCard'
+import { Series } from './Series'
 
 const VS_POOL = 12
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -51,7 +52,8 @@ export function Versus({ onHome }: { onHome: () => void }) {
     }
   }
   const [info, setInfo] = useState<string | null>(null)
-  const [result, setResult] = useState<SeriesResult | null>(null)
+  // the seed rides along with the series: the box scores and the Game 7 tape are drawn from it
+  const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
 
   const pool = useMemo(() => versusPool(seed), [seed])
   const countOf = (i: 0 | 1) => (loaded[i] ? DRAFT_SIZE : picks[i].length)
@@ -101,7 +103,10 @@ export function Versus({ onHome }: { onHome: () => void }) {
     setLoadFor(null)
   }
 
-  const sim = () => setResult(simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA))
+  const sim = () => {
+    const s = (Math.random() * 0xffffffff) >>> 0
+    setResult({ r: simSeries(compile(A), compile(B), makeRng(s), SIGMA), seed: s })
+  }
 
   const reset = () => {
     setSeed((Math.random() * 0xffffffff) >>> 0)
@@ -116,57 +121,27 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const owner = (p: Player): 0 | 1 | null =>
     picks[0].includes(p.name) ? 0 : picks[1].includes(p.name) ? 1 : null
 
+  // HIS RULING: the hot seat is treated the same as a campaign — the campaign's own series
+  // screen, full box scores and Game 7 on the ticker. A loaded real team keeps its own short
+  // name on the scorebug; a drafted chair stays P1 / P2.
   if (result) {
-    const p1won = result.won
-    const w = p1won ? names[0] : names[1]
-    const hi = Math.max(result.wins, result.losses)
-    const lo = Math.min(result.wins, result.losses)
+    const opponent = { round: 1, team: names[1], ab: loaded[1] ? undefined : 'P2', players: B, positions: [] as string[] }
     return (
-      <>
-        <div className="topbar">
-          <span>Player vs Friend</span>
-          <span>Final</span>
-        </div>
-        <div className="rule2" />
-        <div className="card gcard">
-          {result.games.map((g) => (
-            <div className="gline" key={g.game}>
-              <span className="g">G{g.game}</span>
-              <span className={`wl ${g.won ? 'w' : 'p2'}`}>{g.won ? 'P1' : 'P2'}</span>
-              <span className="sc">
-                {g.us}–{g.them}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="verdict">
-          <h1 className={p1won ? 'w' : 'p2'}>
-            {w} wins {hi}–{lo}
-          </h1>
-          <p>{lo === 0 ? 'A sweep.' : lo === 3 ? 'It went the distance.' : `${w} takes the series.`}</p>
-        </div>
-        <div className="card">
-          <Bars
-            mine={compile(A, B)}
-            theirs={compile(B, A)}
-            title="The two fives"
-            leftLabel="PLAYER 1"
-            rightLabel="PLAYER 2"
-            leftWord="P1"
-            rightWord="P2"
-          />
-        </div>
-        <div className="dock">
-          <div className="dock-inner two">
-            <button className="btn ghost" onClick={onHome}>
-              Home
-            </button>
-            <button className="btn" onClick={reset}>
-              Rematch
-            </button>
-          </div>
-        </div>
-      </>
+      <Series
+        opponent={opponent}
+        five={A}
+        mine={compile(A, B)}
+        theirs={compile(B, A)}
+        teamName={names[0]}
+        teamAb={loaded[0] ? undefined : 'P1'}
+        result={result.r}
+        seed={result.seed}
+        exhibition
+        kicker="Player vs Friend"
+        advanceLabel="Rematch"
+        onHome={onHome}
+        onAdvance={reset}
+      />
     )
   }
 

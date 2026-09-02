@@ -10,6 +10,7 @@ import { Bars } from './Bars'
 import { HeatHex } from './HeatHex'
 import { BUDGET, machineTakes, SLOTS, type MachineCtx, type Skill } from './machine'
 import { PlayerCard } from './PlayerCard'
+import { Series } from './Series'
 import { LINES } from './Stat'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -61,7 +62,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const [note, setNote] = useState<string | null>(null)
   const [botSay, setBotSay] = useState<string | null>(null)
   const [info, setInfo] = useState(false)
-  const [result, setResult] = useState<SeriesResult | null>(null)
+  // the seed rides along with the series: the box scores and the Game 7 tape are drawn from it
+  const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
 
   const names: [string, string] = ['Player 1', foe === 'bot' ? 'The Machine' : 'Player 2']
   const queue = useMemo(() => auctionQueue(seed), [seed])
@@ -234,9 +236,10 @@ export function Auction({ onHome }: { onHome: () => void }) {
   }, [foe, skill, lot, price, top, passed, budget, slots, assign, done, result, awaitingCompel])
 
   const sim = () => {
-    const r = simSeries(compile(A), compile(B), makeRng((Math.random() * 0xffffffff) >>> 0), SIGMA)
+    const s = (Math.random() * 0xffffffff) >>> 0
+    const r = simSeries(compile(A), compile(B), makeRng(s), SIGMA)
     if (foe === 'bot' && r.won) achMachineWin(skill) // the human sits in the P1 chair; a Machine win banks nothing
-    setResult(r)
+    setResult({ r, seed: s })
   }
 
   const reset = () => {
@@ -266,57 +269,26 @@ export function Auction({ onHome }: { onHome: () => void }) {
     reset()
   }
 
+  // HIS RULING: the bid is treated the same as a campaign — the campaign's own series screen,
+  // with the full box scores and Game 7 played out on the ticker. The chairs keep their names.
   if (result) {
-    const p1won = result.won
-    const w = p1won ? names[0] : names[1]
-    const hi = Math.max(result.wins, result.losses)
-    const lo = Math.min(result.wins, result.losses)
+    const opponent = { round: 1, team: names[1], ab: foe === 'bot' ? 'MACHINE' : 'P2', players: B, positions: [] as string[] }
     return (
-      <>
-        <div className="topbar">
-          <span>1v1 Bid</span>
-          <span>Final</span>
-        </div>
-        <div className="rule2" />
-        <div className="card gcard">
-          {result.games.map((g) => (
-            <div className="gline" key={g.game}>
-              <span className="g">G{g.game}</span>
-              <span className={`wl ${g.won ? 'w' : 'p2'}`}>{g.won ? 'P1' : 'P2'}</span>
-              <span className="sc">
-                {g.us}–{g.them}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="verdict">
-          <h1 className={p1won ? 'w' : 'p2'}>
-            {w} wins {hi}–{lo}
-          </h1>
-          <p>{lo === 0 ? 'A sweep.' : lo === 3 ? 'It went the distance.' : `${w} takes the series.`}</p>
-        </div>
-        <div className="card">
-          <Bars
-            mine={compile(A, B)}
-            theirs={compile(B, A)}
-            title="The two fives"
-            leftLabel="PLAYER 1"
-            rightLabel={names[1].toUpperCase()}
-            leftWord="P1"
-            rightWord="P2"
-          />
-        </div>
-        <div className="dock">
-          <div className="dock-inner two">
-            <button className="btn ghost" onClick={onHome}>
-              Home
-            </button>
-            <button className="btn" onClick={reset}>
-              Rematch
-            </button>
-          </div>
-        </div>
-      </>
+      <Series
+        opponent={opponent}
+        five={A}
+        mine={compile(A, B)}
+        theirs={compile(B, A)}
+        teamName={names[0]}
+        teamAb="P1"
+        result={result.r}
+        seed={result.seed}
+        exhibition
+        kicker="1v1 Bid"
+        advanceLabel="Rematch"
+        onHome={onHome}
+        onAdvance={reset}
+      />
     )
   }
 
