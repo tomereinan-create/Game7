@@ -1,0 +1,275 @@
+{
+  "round": 102,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
+  "title": "HIS REAFFIRMATION, APPLIED — both band anchors come off their measured maxima to put Michael Jordan '89 on 98 and 98, and the summit compression that buys it is measured rather than hidden",
+  "subject": "Michael Jordan '89",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "before": 96,
+  "after": 98,
+  "pipeline_version": 104,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+      "label": "THE ROUND'S ONE CHANGE — both band anchors, moved off their measured maxima",
+      "note": "OFF 110.64 -> 102.75 and DEF 107.55 -> 104.25; the knee is untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "def band\\(raw, top\\):\\s*\\n\\s*return raw if raw <= KNEE else KNEE \\+ \\(raw - KNEE\\) \\* \\(99\\.0 - KNEE\\) / \\(top - KNEE\\)",
+      "label": "the band itself is UNCHANGED and still linear",
+      "note": "the concave alternative that would keep the summit distinct was measured and not taken — see COST"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_o = o_score\\(p\\) \\* 0\\.93",
+      "label": "the 0.93 display multiplier, untouched",
+      "note": "it governs everything BELOW the knee, which this round does not reach"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\]",
+      "label": "recal_89's LOCKED DIAL STATE — no weight moved, on either scale",
+      "note": "no card's RAW changed this round; only how the raws above 93 are mapped onto 93-99"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "base = 0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*a\\['rimprot'\\] \\+ 0\\.11\\*a\\['perimdisrupt'\\]",
+      "label": "recal_80's perimeter defensive vector, untouched — the Jaylen Brown decline",
+      "note": "every reweight of it moves Brown DOWN, because perdef 48 is his second-best bar"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+      "label": "recal_99's deterrence ramp, untouched and shipped one round earlier",
+      "note": "this round changes no branch, gate or weight at all"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 104",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 102; it SHIPS as pipeline 104 after the rebase - see COST"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 104",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.50,",
+      "label": "recal_99's re-ratified hunt tax, carried up — this round re-ratifies nothing",
+      "note": "all nine bands held on the merged pool; the round moves only cards far above ovr 55"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "THE OTHER HALF OF THE RULING: DEF 96 -> 98, the floor of \"98+\""
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "ovr",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "and his OVR follows the blend to 98"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "recal_90's OFF anchor HOLDS — he is still 99. He is no longer ALONE at 99, which is this round's cost and is stated in COST"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "the DEF summit is still Ben Wallace; Michael Jordan ties nothing here, he reads 98"
+    },
+    {
+      "card": "Giannis Antetokounmpo '23",
+      "scale": "off",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "SUPERSEDED by this ruling (was recal_51's off 96 +-1): 96 -> 99. He rises, he is not clipped"
+    },
+    {
+      "card": "Joel Embiid '23",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "NO LONGER SUPERSEDED. Pre-rebase this pin (recal_51's off 95 +-1) went out of band at 97; on recal_101's attributes it reads 96 and HOLDS, so his ruling costs three pins here, not four"
+    },
+    {
+      "card": "Kawhi Leonard '17",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "SUPERSEDED (was recal_80's def 95 +-1): 96 -> 97"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "ovr",
+      "op": "~",
+      "value": 78,
+      "tol": 1,
+      "label": "HIS SECOND RULING, CLOSED BY recal_101 RATHER THAN BY THIS ROUND: \"we need to find a way to increase Jaylen Brown a bit\" (assumed OVR 78 +-2). This round STOPPED on him and named `perdef` as the only honest lever, an attribute in the stats lane. recal_101 then rebuilt exactly that term and took him perdef 48 -> 66, DEF 54 -> 66, OVR 74 -> 78 - the assumed target, hit by the lane that owns it"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "off",
+      "op": "~",
+      "value": 83,
+      "tol": 1,
+      "label": "his recal_89 OFF anchor still stands and is untouched — the OFF route to 78 would have to break it"
+    },
+    {
+      "card": "Michael Jordan '88",
+      "scale": "ovr",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "his neighbouring seasons rise with him but stay below: '88 95 -> 96"
+    },
+    {
+      "card": "Michael Jordan '91",
+      "scale": "def",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "'91 was already his best defensive card at 97 and now reads 98 beside '89"
+    },
+    {
+      "card": "LeBron James '10",
+      "scale": "off",
+      "op": "~",
+      "value": 99,
+      "tol": 0,
+      "label": "the collateral of a lowered OFF_TOP, in one card: 97 -> 99, and he is one of the sixteen now tied with Giannis"
+    },
+    {
+      "card": "Kevin Durant '24",
+      "scale": "def",
+      "op": "~",
+      "value": 80,
+      "tol": 3,
+      "label": "recal_99's anchor: untouched, because it is far below the 93 knee"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 4,
+      "label": "recal_96's anchor: the same, and 98% of the board is below the knee where band() is the identity"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Michael Jordan '89",
+      "label": "HIS OWN recal_67 SUMMIT: Ben Wallace still reads above Jordan on defence, 99 to 98"
+    },
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Michael Jordan '89",
+      "label": "and Giannis still reads above him on offence, 99 to 98"
+    },
+    {
+      "scale": "ovr",
+      "above": "Michael Jordan '89",
+      "below": "Michael Jordan '88",
+      "label": "his own season order is preserved"
+    },
+    {
+      "scale": "ovr",
+      "above": "Michael Jordan '89",
+      "below": "Michael Jordan '91",
+      "label": "same"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 110,
+    "max_abs": 2,
+    "top": [
+      [
+        "Michael Jordan '89",
+        96,
+        98
+      ],
+      [
+        "Michael Jordan '92",
+        96,
+        98
+      ],
+      [
+        "Kawhi Leonard '17",
+        96,
+        97
+      ],
+      [
+        "Kawhi Leonard '16",
+        97,
+        99
+      ],
+      [
+        "Dan Roundfield '81",
+        97,
+        99
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '01",
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Dan Roundfield '80",
+      "Dan Roundfield '81",
+      "Dan Roundfield '82",
+      "Dwight Howard '09",
+      "Dwight Howard '10",
+      "Dwight Howard '11"
+    ]
+  },
+  "cost": [
+    "REBASED ONTO recal_100 AND recal_101, and it costs ONE FEWER of his pins than it did when it was built. recal_101's perdef rebuild moved the cards this ruling passes through, and Joel Embiid '23 - which went out of band at 97 on the old board - now reads 96 and HOLDS his recal_51 pin. So the ruling supersedes THREE, not four: Giannis Antetokounmpo '23 off (96 +-1, reads 99), Kawhi Leonard '17 def (95 +-1, reads 97) and recal_89's own Michael Jordan '89 off (96 +-1, reads 98). Michael Jordan '89 lands on 98/98/98 exactly as before, and the tie blocks are unchanged: 1 -> 17 cards on 99 for OFF, 5 -> 13 for DEF.",
+    "THIS ROUND'S OPEN ITEM IS CLOSED, AND NOT BY THIS ROUND. It stopped on Jaylen Brown '26 and named `perdef` as the only honest lever - an ATTRIBUTE, owned by build_ratings.py and the stats lane, not by this file. recal_101 then rebuilt the tracked perdef term and took him from perdef 48 to 66: DEF 54 -> 66 and OVR 74 -> 78, which is the assumed target. The referral was right and the lane that owned it delivered it. Nothing in compute_ovr.py was changed for him.",
+    "WHAT THIS ROUND BUYS AND WHAT IT PAYS, in one line each. BUYS: Michael Jordan '89 reads 98 OFF and 98 DEF, the floor of his ruling. PAYS: cards printing 99 go from 1 to 17 on OFF and from 5 to 13 on DEF. Giannis Antetokounmpo '25 is still 99 and recal_90's anchor still holds — but he is no longer ALONE there, and neither is Ben Wallace. That is the compression recal_84 and recal_90 were written to remove, reinstated by his instruction on a card he has now ruled on twice.",
+    "FOUR OF HIS OWN PINS ARE SUPERSEDED BY THIS ONE, all four moved to anchors_superseded.json quoting the ruling in full. THREE were named in the dispatch and all three now read HIGHER than their pin, not lower - the band was loosened at the top, so nothing was clipped: Giannis Antetokounmpo '23 off 96 +-1 (recal_51) now reads 99; Joel Embiid '23 off 95 +-1 (recal_51) now reads 96; Kawhi Leonard '17 def 95 +-1 (recal_80) now reads 97. THE FOURTH was not named and is unavoidable: recal_89's own MICHAEL JORDAN '89 off 96 +-1, which is this ruling's direct contradiction on the same card and scale. The later ruling wins; the earlier one is recorded with the value it reads today.",
+    "99/99 IS REACHABLE AND WAS NOT TAKEN, because his ruling says \"98+\" and 98 is the smaller move. The frontier, measured: OFF 99 needs OFF_TOP 101.00 and breaks FOUR further anchors he has not superseded (Stephen Curry '16, LeBron James '13, Shai Gilgeous-Alexander '25, James Harden '19), taking the cards on 99 from 17 to 23. DEF 99 needs DEF_TOP 102.00, breaks NOTHING, but takes the cards on 99 from 13 to 31. If he wants the 99s he can have the defensive one for free and the offensive one for four more numbers - that is his call and the measurement is here for it.",
+    "THE SETTING THAT KEEPS THE SUMMIT DISTINCT, measured and NOT taken because he has not seen it. The band is linear, and the reason a lowered top ties seventeen cards is that everything above the constant clamps. Making the band CONCAVE instead - KNEE + 6*x**g with g < 1 - stretches the middle and leaves the tops at their measured maxima, so the summit stays where recal_90 put it. At g = 0.33 on OFF, Michael Jordan '89 reads 98 and EXACTLY ONE card prints 99: Giannis '25, alone. It costs five further anchors (Curry '16, Harden '19, Kawhi '17 off, Luka Doncic '23, Shaquille O'Neal '95). On DEF, g = 0.50 gives him 98 with 8 on 99 instead of 13, and costs one (Dennis Rodman '90). So the choice in front of him is: seventeen cards tied at the offensive summit, or five more of his own numbers moved to keep it a summit. This round took the option that breaks only what he authorised.",
+    "JAYLEN BROWN '26 IS STOPPED, NOT DECLINED ON THE MERITS, and the dispatch asked for exactly this call. \"we need to find a way to increase Jaylen Brown a bit\", assumed OVR 78 +-2. He reads OVR 74 = 0.70 x OFF 83 + 0.30 x DEF 54, so 78 needs either DEF 66 (+12) or OFF 88 (+5). THE DEF ROUTE IS NOT AVAILABLE IN THIS FILE: his defensive sheet is perdef 48, perimdisrupt 33, rimprot 47, drb 69, discipline 42, and perdef carries 0.63 of the perimeter vector. Every reweight of that vector moves him DOWN, not up - shifting 0.09 onto perimdisrupt takes him to DEF 52, shifting 0.19 takes him to 50 - because perdef is his SECOND-BEST bar and the one with the weight. Only defensive rebounding is higher, and making drb the whole of perimeter defence is not a formula anyone would defend. THE OFF ROUTE reaches OVR 78 only at a ballsec weight of 0.18, which breaks 24 anchors including HIS OWN recal_89 pin on this very card (off 83 +-1). So the honest lever is `perdef` itself, an ATTRIBUTE built in data/build_ratings.py, and it belongs to the stats-to-ratings lane. Reported and stopped, per doctrine 'if the ruling can only land by moving an attribute, report that and stop'.",
+    "WHAT MOVED, and it is all at the top. No card's RAW changed this round - only how the raws above the 93 knee are mapped onto 93-99 - so ~98% of the board is byte-identical. OFF moves on 67 cards, DEF on 110, OVR on 109, every one of them UP, none by more than 3. The top 50 by OVR is where it lands: 5 cards enter (Shaquille O'Neal '98, Joel Embiid '22 and '23, Karl Malone '96, Kobe Bryant '03), 5 leave (LeBron James '07 and '15, Anthony Davis '20, Dwyane Wade '09 and '10), and 33 of the original 50 changed OVR. That is a real reshuffle of the top of the board and it is the direct consequence of compressing 17 points of offensive raw into 6 printed points.",
+    "NO TAX WAS RE-RATIFIED, and that is worth recording after four consecutive rounds that moved one. The harness draws from PLAYERS with ovr >= 55; this round moves 109 OVRs but every one of them is a card already far above that line, so the SAMPLE barely changes. All nine bands passed untouched on the first reading.",
+    "THE ROUND IS 102 AND THE PIPELINE IS 104. It was built at 102 when that was the next free number; recal_100 and recal_101 shipped while it sat on his desk, and recal_99 takes 103 immediately below this commit. Seventh divergence - round number and pipeline number should never be assumed equal."
+  ],
+  "notes": [
+    "THIS IS HIS SECOND RULING ON THE SAME CARD, and that is why the round exists. recal_98 measured the frontier and DECLINED: OFF 99 cost six anchors and a 23-way tie, DEF 99 cost Kawhi '17, and 98/98 cost three. It printed the cost table rather than acting on it, because doctrine says he decides which ruling stands. He read it and said \"Jordan still too low. I want him 98+ OFF and DEF\". So the same measurement is now applied instead of reported, and the three anchors recal_98 named are superseded by name.",
+    "WHY THE BAND AND NOTHING ELSE. Michael Jordan '89's OFF raw is 100.4922, 23rd on the board, and his DEF raw is 101.4398, 29th. recal_98 measured the alternative route in full: no reweighting of o_score reaches even OFF 97 without breaking thirteen anchors, and shifting the perimeter defensive vector onto perdef reaches DEF 98 only by breaking four and reversing recal_80's ruling outright. The band is the only instrument that reaches a card ranked 23rd, and the band's cost is compression - there is no version of this that is free.",
+    "THE SMALLEST MOVE THAT SATISFIES THE RULING. 102.75 is the LARGEST OFF_TOP that puts him on 98 and 104.25 the largest DEF_TOP; a quarter of a point higher on either and he reads 97. Choosing the largest is choosing the smallest tie block, which is the only part of the cost this round could control.",
+    "MEASURED BEFORE APPLYING, on the whole pool. OFF: 67 cards move, all up, max +3, and the count on 99 goes 1 -> 17 (on 98, 1 -> 7). DEF: 110 move, all up, max +2, count on 99 goes 5 -> 13 (on 98, 6 -> 16). OVR: 109 move, all up, max +2. No attribute moves and no weight moves. All 108 standing anchors pass, and the two order anchors this ruling could have broken - Ben Wallace above Jordan on defence, Giannis above him on offence - both hold at 99 to 98.",
+    "HIS SEASON SHAPE, after. Michael Jordan reads '88 95/97/96, '89 98/98/98, '91 95/98/97, '92 94/98/96 - '89 is now clearly his peak card on all three scales, which it was not before (it tied '91 on OVR at 96)."
+  ]
+}

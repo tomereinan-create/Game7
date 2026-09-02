@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 103
+PIPELINE_VERSION = 104
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -585,7 +585,35 @@ for cls in (True, False):
 # band. That is the same sub-hundredth rounding gap recal_84 measured and left, and it is NOT the
 # drift being fixed here: OFF had two cards tied at the ceiling with a 4.28-point gap behind the
 # leader. One sanctioned outlier that lands on 99 is what a ceiling is for.
-KNEE, OFF_TOP, DEF_TOP = 93.0, 110.64, 107.55
+# recal_102 (HIS RULING, verbatim: "Jordan still too low. I want him 98+ OFF and DEF"). HIS
+# REAFFIRMATION, AFTER THE COST TABLE. recal_98 declined this ruling and printed the frontier: MJ
+# '89 reads OFF 96 on a raw of 100.49 (23rd on the board) and DEF 96 on 101.44 (29th), and the only
+# instrument that reaches him is the band. He was shown that, and he ruled again. So this round does
+# what recal_98 would not do on its own authority, and the cost is his, not the agent's.
+#
+# WHAT THIS OVERTURNS, said plainly. The band's standing doctrine since recal_67 is "the top is the
+# MEASURED MAXIMUM RAW, so the best card lands ON 99, and a future outlier simply pins at 99". Both
+# constants below now sit BELOW their measured maxima on purpose: OFF 102.75 against a measured
+# 110.6400 (Giannis '25) and DEF 104.25 against a measured 108.4602 (Ben Wallace '03). Everything
+# above the constant clamps, so the doctrine's own consequence follows and is measured, not hidden:
+# cards printing 99 go from 1 to 17 on OFF and from 5 to 13 on DEF. That is the compression recal_84
+# and recal_90 were written to remove, reinstated by his instruction on a card he has now ruled on
+# twice. recal_90's Giannis '25 anchor still holds at 99 — but he is no longer ALONE there.
+#
+# WHY THESE TWO NUMBERS AND NOT LOWER. 102.75 is the largest OFF_TOP that puts MJ on 98, and 104.25
+# the largest DEF_TOP: his ruling is "98+", so the round takes the SMALLEST move that satisfies it
+# and therefore the smallest tie block. Going further to 99/99 costs more: OFF 99 needs 101.00 and
+# breaks four anchors he has NOT superseded (Curry '16, LeBron '13, SGA '25, Harden '19); DEF 99
+# needs 102.00, breaks nothing, but takes the cards on 99 from 13 to 31.
+#
+# THE ALTERNATIVE THAT KEEPS THE SUMMIT DISTINCT, measured and NOT taken because he has not seen it.
+# The band is linear by construction; making it CONCAVE (KNEE + 6*x**g, g < 1) stretches the middle
+# instead of clamping the top, so the tops can stay at their measured maxima. At g = 0.33 on OFF, MJ
+# reads 98 and exactly ONE card prints 99 — Giannis '25, alone, as recal_90 left him. It costs five
+# further anchors (Curry '16, Harden '19, Kawhi '17 off, Luka '23, Shaq '95). On DEF, g = 0.50 gives
+# MJ 98 with 8 on 99 and costs one (Rodman '90). That is the trade the receipt puts in front of him:
+# seventeen cards tied at the offensive summit, or five more of his own numbers moved.
+KNEE, OFF_TOP, DEF_TOP = 93.0, 102.75, 104.25
 # OVR's own band is GONE (recal_85, his ruling "Kill the band too"). It ran knee 93 with
 # OVR_TOP re-derived to 97.10 by recal_84; both that constant and band_ovr() are now DEAD CODE and
 # are removed rather than left to rot. `_tops` survives as a diagnostic only: it now records the
