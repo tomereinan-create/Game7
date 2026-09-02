@@ -157,11 +157,15 @@ export function Series({
   mine,
   theirs,
   teamName,
+  teamAb,
   result,
   seed,
   assignment = 'optimal',
   exhibition = false,
   boxCtx = null,
+  kicker,
+  advanceLabel,
+  onHome,
   onAdvance,
 }: {
   opponent: Opponent
@@ -169,6 +173,8 @@ export function Series({
   mine: Lineup
   theirs: Lineup
   teamName: string
+  /** Our scorebug abbreviation, the mirror of opponent.ab. Defaults to the last word of teamName. */
+  teamAb?: string
   result: SeriesResult
   seed: number
   assignment?: Assignment
@@ -176,8 +182,15 @@ export function Series({
   exhibition?: boolean
   /** recal_61: the tactical state the box consumes — the death match passes it, others none. */
   boxCtx?: { us: BoxCtx; them: BoxCtx } | null
+  /** What the topbar calls this table; a campaign level names itself. */
+  kicker?: string
+  /** The right-hand dock button's word, when it is not "back to the map". */
+  advanceLabel?: string
+  /** A hot-seat table keeps its HOME / REMATCH pair: Home sits left of the advance button. */
+  onHome?: () => void
   onAdvance: () => void
 }) {
+  const myAb = teamAb ?? bug(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
   const shown = decider ? result.games.slice(0, 6) : result.games
 
@@ -228,13 +241,13 @@ export function Series({
     <>
       <div className="topbar">
         <span>
-          {exhibition ? (
+          {kicker ?? (exhibition ? (
             'Exhibition'
           ) : (
             <>
               Level <b>{opponent.round}</b> of {ROUNDS}
             </>
-          )}
+          ))}
         </span>
         <span>
           {teamName} · {opponent.team}
@@ -247,7 +260,7 @@ export function Series({
         <div className="scorebug">
           <div className="sb-grid">
             <div className="sb-side you">
-              <i>{bug(teamName)}</i>
+              <i>{myAb}</i>
               <b>{head!.us}</b>
             </div>
             <div className="sb-mid">
@@ -263,7 +276,7 @@ export function Series({
             </div>
           </div>
           <div className="sb-foot">
-            <span className="you">{runLine(tape.ticks, i, bug(teamName), opponent.ab ?? bug(opponent.team)) ?? ''}</span>
+            <span className="you">{runLine(tape.ticks, i, myAb, opponent.ab ?? bug(opponent.team)) ?? ''}</span>
             <span>Series 3–3</span>
           </div>
         </div>
@@ -291,7 +304,7 @@ export function Series({
         <div className="verdict final">
           <div className="v-kick">Series · best of seven</div>
           <div className="v-row">
-            <span className="v-side you">{bug(teamName)}</span>
+            <span className="v-side you">{myAb}</span>
             <h1 className={result.won ? 'w' : 'l'}>
               <span className="u">{result.wins}</span>
               <span className="d">–</span>
@@ -435,10 +448,15 @@ export function Series({
       ) : null}
 
       <div className="dock">
-        <div className="dock-inner">
+        <div className={done && onHome ? 'dock-inner two' : 'dock-inner'}>
+          {done && onHome ? (
+            <button className="btn ghost" onClick={onHome}>
+              Home
+            </button>
+          ) : null}
           {done ? (
-            <button className={`btn ${result.won ? '' : 'ghost'}`} onClick={onAdvance}>
-              {exhibition ? 'Back to the board' : result.won ? (opponent.round === ROUNDS ? 'Claim the title' : 'Back to the map') : 'Back to the map'}
+            <button className={`btn ${advanceLabel || result.won ? '' : 'ghost'}`} onClick={onAdvance}>
+              {advanceLabel ?? (exhibition ? 'Back to the board' : result.won ? (opponent.round === ROUNDS ? 'Claim the title' : 'Back to the map') : 'Back to the map')}
             </button>
           ) : (
             <button className="btn ghost" onClick={skip}>
