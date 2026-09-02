@@ -1220,8 +1220,13 @@ button {
 .mb-who p { margin: 6px 0 0; font-family: var(--serif); font-size: 15px; line-height: 1.45; color: var(--ink); }
 .mb-who i { margin-top: auto; padding-top: 8px; font-style: normal; font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
 .mb-line { min-width: 0; display: flex; flex-direction: column; }
+/* the season's own header line — positions, height, team, games, minutes — folded in from the
+   stat grid his ruling removed from under this card */
+.mb-when { margin-top: 3px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .mb-grid { margin-top: 8px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 10px; }
-.mb-grid .bcell { display: grid; justify-items: start; gap: 1px; }
+/* align-content keeps every number in a row on one baseline now that the TS cell carries the
+   league line under it */
+.mb-grid .bcell { display: grid; align-content: start; justify-items: start; gap: 1px; }
 .mb-grid .bcell i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--muted); }
 .mb-grid .bcell b { font-family: var(--serif); font-weight: 400; font-size: 17px; color: var(--ink); }
 .mb-none { margin: 8px 0 0; font-family: var(--mono); font-size: 10px; color: var(--faint); }
@@ -2417,10 +2422,17 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 
 /* ---- era banners on the map ---- */
 .era-band { position: absolute; width: 30%; pointer-events: none; }
-/* the my-team nudge, pinned beside the next opponent's node */
-.node-note { position: absolute; z-index: 5; max-width: 34%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
-.node-note.left { left: 2%; }
-.node-note.right { right: 2%; }
+/* The nudges pinned beside the next opponent's node — a change waiting in my team, stars to spend.
+   They stack in one column on the far side of the trail from the ticket and centre on it, so the
+   trail and the ticket's dials stay clear whether there is one of them or two. */
+.node-notes { position: absolute; z-index: 5; width: 34%; display: flex; flex-direction: column; gap: 6px; transform: translateY(-50%); }
+.node-notes.left { left: 2%; align-items: flex-start; }
+.node-notes.right { right: 2%; align-items: flex-end; }
+.node-note { max-width: 100%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+.node-note i { font-style: normal; }
+.node-note .g { margin-right: 3px; }
+.node-note .d { margin: 0 3px; }
+.node-note .a { margin-left: 4px; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); }
@@ -2429,9 +2441,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .ptal, .row .ovr { font-family: var(--serif); }
 .pool .row .ovr, .row.db .ovr { font-size: 18px; color: var(--ink); }
 
-/* the map header (stars, staff, team, coach) stays on screen while the long trail scrolls */
-.map-head.sticky { position: sticky; top: 0; z-index: 6; background: var(--bg); margin: 0 -14px; padding-left: 14px; padding-right: 14px; border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0,0,0,0.6); }
-@media (min-width: 900px) { .map-head.sticky { margin: 0 -21px; padding-left: 21px; padding-right: 21px; } }
+/* The map's top (title, rule, header — stars, staff, team, coach) stays on screen while the long
+   trail scrolls. It pins as ONE block, title included: the home button is fixed to the window's
+   top-right corner, and the topbar's 44px gutter is the only room this screen reserves for it.
+   Pinning the header alone put its right column — N OF 120 CLEARED, the staff notice — under the
+   button, which clipped both. The negative top margin and the matching padding reproduce the
+   page's own top inset inside the block, so what stays on screen is exactly what you see at the
+   top of the page, button and all. */
+.map-top { position: sticky; top: 0; z-index: 6; background: var(--bg); margin: -14px -14px 0; padding: 14px 14px 0; border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0,0,0,0.6); }
+@media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
 
 /* ---- home icon, always there ---- */
 .home-fab { position: fixed; top: 10px; right: 10px; z-index: 80; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line-3); background: var(--surface-2); color: var(--you); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
@@ -2572,9 +2590,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .pc-name { font-family: var(--serif); font-size: clamp(19px, 3.4vw, 26px); line-height: 1.05; }
 .pc-sub { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
 .pc-tag { margin-left: auto; padding: 3px 8px; border: 1px solid var(--line); font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); white-space: nowrap; }
+/* what the badge above it means — the same serif sentence the draft's archetype card prints, on
+   its own line under the head so neither the name nor the badge has to give up any width */
+.pc-what { flex: 1 0 100%; margin: 2px 0 0; font-family: var(--serif); font-size: 13px; line-height: 1.35; color: var(--ink-2); }
 
 /* the verdict is a rail; the stats and attributes are the body. Neither grows to fill the window. */
-.pc-body { flex: 0 1 auto; min-height: 0; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
+/* overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
+   and on the shortest phones the scout sheet can then come out taller than the screen. The body
+   takes the strain instead of letting the last attributes slide under the CLOSE button. */
+.pc-body { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
 /* no rail (user mode): the main column takes the whole width */
 .pc-body.solo { grid-template-columns: minmax(0, 1fr); }
 .pc-rail { display: flex; flex-direction: column; gap: 5px; }
@@ -2613,6 +2637,11 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
   .pc-rail .heathex { width: 128px; height: auto; margin: 2px auto 0; }
   .pc-adv { margin-top: 0; flex: none; width: 76px; }
   .pc-tag { margin-left: 0; }
+  /* The card is one screen and does not scroll (his ruling), and on a phone the archetype's
+     sentence now takes a line or three of it. The scout sheet pays for them the way a short
+     window already pays: the attribute BAR goes, the number it decorates stays. */
+  .pc-what { font-size: 12px; }
+  .pc-cell.attr .statt { display: none; }
   .pc-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .pc-gcells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }

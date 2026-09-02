@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
+import { RULE } from './Archetypes'
 import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
@@ -92,6 +93,7 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
   // sheet, no Advanced. The engine keeps every number; the card just stops showing its hand.
   const user = useUserMode()
   const line = LINES[p.name] ?? null
+  const tag = archetype(p)
   const inferred = !p.attrs.rim_mid_measured
   const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
   const who = [line?.pos?.join('/'), ht, line?.team, line?.gp ? `${line.gp} G` : null, line?.mpg !== undefined ? `${line.mpg} MPG` : null]
@@ -108,7 +110,12 @@ export function CardSheet({ p, onClose }: { p: Player; onClose: () => void }) {
         <div className="pc-sub">
           Season {p.peak_season} · {who || 'no stat line on file'}
         </div>
-        <div className="pc-tag">{archetype(p)}</div>
+        <div className="pc-tag">{tag}</div>
+        {/* HIS RULING: "Add the archetype description here". The badge named the tag and stopped;
+            the draft's archetype card has always printed the sentence under it, so the card says
+            it too — the same sentence, read from the one table that holds it. A man the tree
+            cannot name shows the badge alone, not a placeholder. */}
+        {RULE[tag] ? <p className="pc-what">{RULE[tag]}</p> : null}
       </div>
 
       {/* User mode drops the rail, so the body must stop reserving its column —

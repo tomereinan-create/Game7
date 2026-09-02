@@ -99,6 +99,28 @@ export const BOX: { label: string; k: keyof StatLine }[] = [
 ]
 
 /**
+ * Who he was that season, in one line: positions, height, team, games, minutes. Falls back to the
+ * height alone when no stat line is on file. Exported because the man band prints the same season
+ * and has to say the same things about it — one source, not two.
+ */
+export function seasonWho(p: Player) {
+  const line = LINES[p.name] ?? null
+  const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
+  return line
+    ? [line.pos?.join('/'), ht, line.team, `${line.gp} G`, line.mpg !== undefined ? `${line.mpg} MPG` : null].filter(Boolean).join(' · ')
+    : (ht ?? 'No stat line on file')
+}
+
+/**
+ * The league's true shooting that season, recovered from the card. The efficiency RATING is
+ * era-relative by doctrine, so a raw TS on its own reads wrong in a high-efficiency league:
+ * ts_rel recentres ts_raw on .570, so league = ts_raw - ts_rel + .570.
+ */
+export function leagueTS(p: Player) {
+  return p.attrs.ts_rel ? (p.attrs.ts_raw - p.attrs.ts_rel + 0.57).toFixed(3).replace(/^0/, '') : null
+}
+
+/**
  * The tap-open panel. `full` = season line + the 17 attributes by category +
  * the Advanced window; `stats` = the season line only (the draft scouts on
  * what a player actually did, not on his ratings).
@@ -107,14 +129,8 @@ export function DetailGrid({ p, mode = 'full' }: { p: Player; mode?: 'full' | 's
   const inferred = !p.attrs.rim_mid_measured
   const line = LINES[p.name] ?? null
   const [adv, setAdv] = useState(false)
-  const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
-  // The efficiency RATING is era-relative by doctrine, so the raw TS on its own reads wrong in a
-  // high-efficiency league. The season's league TS is recoverable from the card: ts_rel recentres
-  // ts_raw on .570, so league = ts_raw - ts_rel + .570.
-  const lgTS = p.attrs.ts_rel ? (p.attrs.ts_raw - p.attrs.ts_rel + 0.57).toFixed(3).replace(/^0/, '') : null
-  const who = line
-    ? [line.pos?.join('/'), ht, line.team, `${line.gp} G`, line.mpg !== undefined ? `${line.mpg} MPG` : null].filter(Boolean).join(' · ')
-    : (ht ?? 'No stat line on file')
+  const lgTS = leagueTS(p)
+  const who = seasonWho(p)
   return (
     <span className="pdetail">
       <span className="dhead">

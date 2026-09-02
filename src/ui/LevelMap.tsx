@@ -115,53 +115,61 @@ export function LevelMap({
 
   return (
     <>
-      <div className="topbar">
-        <span>{title}</span>
-      </div>
-      <div className="rule2" />
-
-      <div className="map-head sticky">
-        <div>
-          <div className="map-kicker">{cur ? `Level ${cur} is up · ${opponents[cur - 1]?.era ?? ''}` : 'All cleared'}</div>
-          {/**
-           * HIS REPORT: "where is my skill tree to spend stars?" — the notice below is the only
-           * door the map had, and his ruling keeps it shut when nothing is affordable, so a
-           * balance spent to zero took the whole tree off the screen while the counter still
-           * read ★ 10. The counter is the door now: you tap your stars to go and spend them.
-           * The notice is untouched and still obeys the ruling.
-           */}
-          <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
-            <span className="star">★</span> {total}
-            <i> / {ROUNDS * 3}</i>
-            <i className="a">→</i>
-          </button>
+      {/**
+       * The title, the rule and the header pin as ONE block. The home button is fixed to the
+       * window's top-right corner, and the topbar's 44px gutter is the only room on this screen
+       * reserved for it; pinning the header on its own slid the right column — the cleared count,
+       * the staff notice — straight under the button.
+       */}
+      <div className="map-top">
+        <div className="topbar">
+          <span>{title}</span>
         </div>
-        <div className="map-side">
-          <div className="map-kicker">
-            {cleared} of {ROUNDS} cleared
+        <div className="rule2" />
+
+        <div className="map-head">
+          <div>
+            <div className="map-kicker">{cur ? `Level ${cur} is up · ${opponents[cur - 1]?.era ?? ''}` : 'All cleared'}</div>
+            {/**
+             * HIS REPORT: "where is my skill tree to spend stars?" — the notice below is the only
+             * door the map had, and his ruling keeps it shut when nothing is affordable, so a
+             * balance spent to zero took the whole tree off the screen while the counter still
+             * read ★ 10. The counter is the door now: you tap your stars to go and spend them.
+             * The notice is untouched and still obeys the ruling.
+             */}
+            <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
+              <span className="star">★</span> {total}
+              <i> / {ROUNDS * 3}</i>
+              <i className="a">→</i>
+            </button>
           </div>
-          {spendable ? (
-            <button className="map-link staff" onClick={onStaff}>
-              {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
-                  at this size a space costs a full 7.3px character, which is what pushed the line
-                  onto two at 375px. His wording is untouched. */}
-              <i className="g">★</i>
-              {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
+          <div className="map-side">
+            <div className="map-kicker">
+              {cleared} of {ROUNDS} cleared
+            </div>
+            {spendable ? (
+              <button className="map-link staff" onClick={onStaff}>
+                {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
+                    at this size a space costs a full 7.3px character, which is what pushed the line
+                    onto two at 375px. His wording is untouched. */}
+                <i className="g">★</i>
+                {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
+              </button>
+            ) : null}
+            {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
+                truncates, so the name takes the flexible width and the ellipsis. The separator is
+                spaced by margin here too, which buys back ~15px before truncation can start. */}
+            <button className="map-link team" onClick={onTeam}>
+              <span className="nm">{teamName}</span>
+              <i className="d">·</i>
+              <span className="rn">rename</span>
             </button>
-          ) : null}
-          {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
-              truncates, so the name takes the flexible width and the ellipsis. The separator is
-              spaced by margin here too, which buys back ~15px before truncation can start. */}
-          <button className="map-link team" onClick={onTeam}>
-            <span className="nm">{teamName}</span>
-            <i className="d">·</i>
-            <span className="rn">rename</span>
-          </button>
-          {onMyTeam ? (
-            <button className="map-link" onClick={onMyTeam}>
-              My team →
-            </button>
-          ) : null}
+            {onMyTeam ? (
+              <button className="map-link" onClick={onMyTeam}>
+                My team →
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -184,14 +192,29 @@ export function LevelMap({
             </i>
           </div>
         ))}
-        {teamNote && cur && onMyTeam ? (
-          <button
-            className={`node-note ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`}
-            style={{ top: yAt(cur - 1) - 6 }}
-            onClick={onMyTeam}
-          >
-            {teamNote} →
-          </button>
+        {/**
+         * HIS RULING: "Same as I have a change possible in my team, add a star notification that
+         * says that I have stars to spend(only if there is samething available to buy)". So the
+         * my-team nudge gets a twin: same shape, same corner, beside the NEXT ticket, and it asks
+         * the same question the header notice asks — `spendable`, not a balance. The change note
+         * is the death match's; this one belongs to every mode. When both are up they stack, on
+         * the far side of the trail from the ticket, centred on it.
+         */}
+        {cur && (spendable || (teamNote && onMyTeam)) ? (
+          <div className={`node-notes ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`} style={{ top: yAt(cur - 1) }}>
+            {spendable ? (
+              <button className="node-note" onClick={onStaff}>
+                {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
+                <i className="g">★</i>
+                {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
+              </button>
+            ) : null}
+            {teamNote && onMyTeam ? (
+              <button className="node-note" onClick={onMyTeam}>
+                {teamNote} →
+              </button>
+            ) : null}
+          </div>
         ) : null}
         {opponents.map((o) => {
           const level = o.round

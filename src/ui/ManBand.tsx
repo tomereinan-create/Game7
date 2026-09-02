@@ -1,7 +1,7 @@
 import { archetype } from '../engine/pool'
 import type { Player } from '../engine/types'
 import { RULE } from './Archetypes'
-import { BOX, LINES } from './Stat'
+import { BOX, LINES, leagueTS, seasonWho } from './Stat'
 
 /**
  * THE MAN BAND (his ruling: "When pressing on a player show in the black space the description of
@@ -64,6 +64,7 @@ export function ManBand({
   if (!p) return inline ? null : <div className="manband" style={box} aria-hidden />
   const tag = archetype(p)
   const line = LINES[p.name] ?? null
+  const lgTS = leagueTS(p)
   return (
     <div className={`manband on ${inline ? 'inline' : ''}`} style={box}>
       <div className="mb-who">
@@ -71,14 +72,19 @@ export function ManBand({
         <p>{RULE[tag] ?? 'A tag from the tree.'}</p>
         <i>{p.name}</i>
       </div>
+      {/* HIS RULING: "Remove what Ive marked, no need for duplicates" — the tap-open stat grid no
+          longer repeats this panel under the card, so everything that grid said has to be said
+          here: who he was that season, and the league he shot against. */}
       <div className="mb-line">
         <span className="label">Season {p.peak_season}</span>
+        <span className="mb-when">{seasonWho(p)}</span>
         {line ? (
           <div className="mb-grid">
             {BOX.map((b) => (
               <span className="bcell" key={b.label}>
                 <i>{b.label}</i>
                 <b>{line[b.k] === undefined ? '—' : String(line[b.k])}</b>
+                {b.k === 'ts' && lgTS ? <span className="bvs">vs league {lgTS}</span> : null}
               </span>
             ))}
           </div>
