@@ -7,7 +7,9 @@ KNOBS = dict(
     SLOPE_UP_MAX  = 0.9,    # % TS lost per usage pt gained, for a zero-creation player
     SLOPE_UP_MIN  = 0.25,   # same, for a perfect creator
     SLOPE_DOWN    = 0.55,   # % TS gained per usage pt shed... but only for efficient players (see gate)
-    AMP_MAX       = 0.06,
+    AMP_MAX       = 0.22,   # recal_110: 0.06 -> 0.22, un-throttled, CENTRED, and moved into the BASELINE
+    FEED_REF      = 0.515,  # recal_110: the league's own mean feed — the term redistributes around it
+    CLOG_FREE     = 0.71,   # recal_110: a man who creates at this level makes his own space
     FIT_WIDEN     = 2.7,    # recal_64: the fit gap (interactions vs repriced-only) widened
     FIT_CAP       = 4.0,    # ...and capped: perfect fit +4, friction -4   # max TS multiplier bonus for low-usage players fed by elite creation
     FLOOR_USG     = 10.0,   # nobody can be squeezed below this share
@@ -46,13 +48,35 @@ def team_offense(five):
             # refund scales with baseline efficiency above league-mediocre TS .530
             gate = min(1.0, max(0.0, (ei - 0.545)/0.10))   # gate recentered for the era-relative scale
             e2.append(ei * (1 + KNOBS['SLOPE_DOWN']*gate*(-d)/100))
-    # creation amplification: catch-and-shoot players eat better next to great table-setters
+    # CREATION AMPLIFICATION — recal_110, his ruling: "there is more work to do" (on the Bulls '96
+    # reading 8th of 29 on offence while the real 1996 board has them 1st) and "How is this team 47
+    # OFF with 2 all time great players" (Lakers '00). Three things were wrong with this one line.
+    #
+    #   (1) IT WAS THROTTLED BY max(0, 1 - u2/30), so a five's creation was credited only to its
+    #       LOW-usage men. That is backwards: a great table-setter's passing raises the quality of
+    #       every shot on the floor, and most of a team's shots are taken by its high-usage men.
+    #       The Bulls '96 feed is 0.640 against Seattle '96's 0.517 — the widest gap on that board —
+    #       and Jordan at 28.7 usage was allowed 4% of it.
+    #   (2) IT WAS IN THE WRONG PLACE. OFF_N (below) is built from e2 and nothing else, and e3/e4
+    #       reach OFF only through `fit`, which is clamped to +-4. Shot quality created by the five's
+    #       passers is part of the BASELINE, not a +-4 fit bonus, so e3 is what OFF_N now reads.
+    #       Measured on all 1,255 fieldable team-seasons, that one move is most of the round.
+    #   (3) 0.06 WAS TOO SMALL to separate a creator-led five from five average men, and as a bare
+    #       multiplier it INFLATED rather than redistributed: at (1 + AMP*feed) the fives with the
+    #       most offence and the most creation gained the most absolute points, the Warriors '17
+    #       summit ran away, and the Bulls rose from 8th to 5th of 1996 while their DIAL FELL 68 ->
+    #       66. Centring on the league's own mean feed (FEED_REF, the mean over all 1,255 fieldable
+    #       fives) holds the level and the spread and lets only the differential land. 0.22 was
+    #       chosen on the fit, not on the two named cases: the within-season Spearman of offRaw
+    #       against real ORtg over 47 seasons goes 0.726 -> 0.762, the largest OFF fit gain in the
+    #       ledger. It is still rising at 0.28 (+0.004); 0.22 is where the named cases land and the
+    #       knob stays a ~3% TS swing across the league's whole feed range.
     feed = sum(ci*u2i for ci, u2i in zip(c, u2)) / KNOBS['TEAM_USG']   # usage-weighted team creation
-    e3 = [e2i * (1 + KNOBS['AMP_MAX']*feed*max(0.0, 1 - u2i/30)) for e2i, u2i in zip(e2, u2)]
+    e3 = [e2i * (1 + KNOBS['AMP_MAX']*(feed - KNOBS['FEED_REF'])) for e2i in e2]
     # ---- Tomer's offense interactions ----
     outs = [a['3pt'] for a in A]
     e4 = []
-    for i, (a, u2i, ei) in enumerate(zip(A, u2, e3)):
+    for i, (a, u2i, ei, ci) in enumerate(zip(A, u2, e3, c)):
         x = ei
         # (1) usage is bad at BOTH extremes: squeezed players can't express skill; overloaded ones degrade
         if u2i < 13: x *= 1 - 0.010*(13 - u2i)
@@ -60,7 +84,13 @@ def team_offense(five):
         # (2) paint logic — paint-DEPENDENT means diet, not rating: no outside game
         if a['3pt'] < 40 and a['mid'] < 45:
             spc = sum(max(0, outs[j]-55) for j in range(5) if j != i) / (4*44)     # teammates' spacing 0..1
-            x *= 1 - 0.07*(1 - min(1.0, spc/0.55))                                  # (2a) low spacing clogs the paint
+            # (2a) low spacing clogs the paint — but recal_110: only for a man who NEEDS the space.
+            # A paint diet is not the same as a paint dependency. Shaquille O'Neal '00 was taking the
+            # full -7% for Harper's and Horry's shooting while creating his own shot at 31.5 usage,
+            # and the Lakers' raw fit was -8.07 against a -4 clamp. Scaled by how much of his own
+            # advantage the man makes: at CLOG_FREE creation the penalty is gone entirely.
+            free = max(0.0, 1.0 - ci/KNOBS['CLOG_FREE'])
+            x *= 1 - 0.07*free*(1 - min(1.0, spc/0.55))
             if a['usg_raw'] < 20:   # (2b-i) finisher: needs a creator who shoots (pull-up gravity opens the roll)
                 best_feed = max(creation(A[j]) * outs[j]/99 for j in range(5) if j != i)
                 x *= 1 + 0.06*best_feed
@@ -68,7 +98,7 @@ def team_offense(five):
                 x *= 1 + 0.05*min(1.0, spc/0.55)
         x = ei * min(1.12, max(0.90, x/ei))   # cap total interaction stack per player
         e4.append(x)
-    OFF_N = sum(u2i*e2i for u2i, e2i in zip(u2, e2)) * 2   # repriced, no interaction channels
+    OFF_N = sum(u2i*e3i for u2i, e3i in zip(u2, e3)) * 2   # repriced + created; no interaction channels
     OFF_F = sum(u2i*e4i for u2i, e4i in zip(u2, e4)) * 2
     fit = min(KNOBS['FIT_CAP'], max(-KNOBS['FIT_CAP'], KNOBS['FIT_WIDEN']*(OFF_F - OFF_N)))
     OFF = OFF_N + fit

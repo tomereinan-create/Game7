@@ -16,7 +16,9 @@ export const KNOBS = {
   SLOPE_UP_MAX: 0.9, // % TS lost per usage pt gained, for a zero-creation player
   SLOPE_UP_MIN: 0.25, // same, for a perfect creator
   SLOPE_DOWN: 0.55, // % TS gained per usage pt shed — only for efficient players (gate)
-  AMP_MAX: 0.06, // max TS multiplier bonus for low-usage players fed by elite creation
+  AMP_MAX: 0.22, // recal_110: 0.06 -> 0.22, un-throttled, CENTRED, and moved into the BASELINE
+  FEED_REF: 0.515, // recal_110: the league's own mean feed — the term redistributes around it
+  CLOG_FREE: 0.71, // recal_110: a man who creates at this level makes his own space
   FLOOR_USG: 10.0, // nobody can be squeezed below this share
   // interactions
   USG_LOW: 13, // below this reconciled usage, skill can't express: -1.0% TS per point
@@ -129,9 +131,31 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
     return e[i] * (1 + (K.SLOPE_DOWN * gate * -d) / 100)
   })
 
-  // creation amplification: catch-and-shoot players eat better next to great table-setters
+  /**
+    * CREATION AMPLIFICATION — recal_110, his ruling: "there is more work to do" (on the Bulls '96
+    * reading 8th of 29 on offence while the real 1996 board has them 1st) and "How is this team 47
+    * OFF with 2 all time great players" (Lakers '00). Three things were wrong with this one line.
+    *
+    *   (1) IT WAS THROTTLED BY max(0, 1 - u2/30), so a five's creation was credited only to its
+    *       LOW-usage men. That is backwards: a great table-setter's passing raises the quality of
+    *       every shot on the floor, and most of a team's shots are taken by its high-usage men. The
+    *       Bulls '96 feed is 0.640 against Seattle '96's 0.517 — the widest gap on that board — and
+    *       Jordan at 28.7 usage was allowed 4% of it.
+    *   (2) IT WAS IN THE WRONG PLACE. baseN below was built from e2 and nothing else, and e3/e4
+    *       reached `off` only through `fit`, which is clamped to +-4. Shot quality created by the
+    *       five's passers is part of the BASELINE, not a +-4 fit bonus, so baseN now reads e3.
+    *   (3) 0.06 WAS TOO SMALL, and as a bare multiplier it INFLATED rather than redistributed: at
+    *       (1 + AMP*feed) the fives with the most offence and the most creation gained the most
+    *       absolute points, the Warriors '17 summit ran away, and the Bulls rose from 8th to 5th of
+    *       1996 while their DIAL FELL 68 -> 66. Centring on the league's own mean feed (FEED_REF,
+    *       the mean over all 1,255 fieldable fives) holds the level and the spread and lets only the
+    *       differential land. 0.22 was chosen on the fit, not on the two named cases: the
+    *       within-season Spearman of offRaw against real ORtg over 47 seasons goes 0.726 -> 0.762.
+    *
+    * 1:1 with data/team_rating.py; data/parity_check.py and tests/parity.test.ts gate the pair.
+    */
   const feed = c.reduce((acc, ci, i) => acc + ci * u2[i], 0) / K.TEAM_USG
-  const e3 = e2.map((x, i) => x * (1 + K.AMP_MAX * feed * Math.max(0, 1 - u2[i] / 30)))
+  const e3 = e2.map((x) => x * (1 + K.AMP_MAX * (feed - K.FEED_REF)))
 
   // interactions
   const outs = A.map((a) => a['3pt'])
@@ -144,7 +168,12 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
       let spc = 0
       for (let j = 0; j < n; j++) if (j !== i) spc += Math.max(0, outs[j] - 55)
       spc /= 4 * 44
-      x *= 1 - K.CLOG_MAX * (1 - Math.min(1, spc / K.SPACING_FULL))
+      // low spacing clogs the paint — but recal_110: only for a man who NEEDS the space. A paint
+      // diet is not a paint dependency. Shaquille O'Neal '00 was taking the full -7% for Harper's
+      // and Horry's shooting while creating his own shot at 31.5 usage, and the Lakers' raw fit was
+      // -8.07 against a -4 clamp. At CLOG_FREE creation the penalty is gone entirely.
+      const free = Math.max(0, 1 - c[i] / K.CLOG_FREE)
+      x *= 1 - K.CLOG_MAX * free * (1 - Math.min(1, spc / K.SPACING_FULL))
       if (a.usg_raw < K.FINISHER_USG) {
         let best = -Infinity
         for (let j = 0; j < n; j++) if (j !== i) best = Math.max(best, (c[j] * outs[j]) / 99)
@@ -157,7 +186,7 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
   })
 
   // the neutral baseline is the repriced line with NO interaction channels; the gap is the fit
-  const baseN = u2.reduce((acc, ui, i) => acc + ui * e2[i], 0) * 2
+  const baseN = u2.reduce((acc, ui, i) => acc + ui * e3[i], 0) * 2 // recal_110: repriced + created
   const baseF = u2.reduce((acc, ui, i) => acc + ui * e4[i], 0) * 2
   const fit = clamp(K.FIT_WIDEN * (baseF - baseN), -K.FIT_CAP, K.FIT_CAP)
   const base = baseN + fit

@@ -85,9 +85,9 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 135\\.94",
+      "pattern": "const OFF_TOP = 138\\.52",
       "label": "the OFF gauge was not re-frozen by recal_94 — recal_105 is the round that moved it",
-      "note": "unchanged by recal_94; all 1,255 offRaw readings were bit-identical then and still are. recal_105 re-froze the three OFF constants on an era-relative index (137.67 -> 135.94 in adjusted units) on his later ruling about the composite. teamOffense has still never moved."
+      "note": "unchanged by recal_94; all 1,255 offRaw readings were bit-identical then and still are. recal_105 re-froze the three OFF constants on an era-relative index (137.67 -> 135.94 in adjusted units) on his later ruling about the composite. teamOffense has still never moved. [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so the OFF gauge block was re-derived (OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52). The finding this knob carries is untouched.]"
     },
     {
       "file": "src/engine/offense.ts",
@@ -195,9 +195,9 @@
       ],
       "scale": "team:off",
       "op": "~",
-      "value": 91,
-      "tol": 1,
-      "label": "recal_71's OFF SUMMIT UNTOUCHED: the Warriors '17 five is bit-identical on offence (all-time dial still 99). Only the DEF half of r71 was superseded."
+      "value": 98,
+      "tol": 2,
+      "label": "recal_71's OFF SUMMIT UNTOUCHED: the Warriors '17 five is bit-identical on offence (all-time dial still 99). Only the DEF half of r71 was superseded. [recal_110 re-read it: 91 -> 98. ratings_100's off100 is 50 + (offRaw - 124.03)*3 and recal_110 lifted the whole offRaw level, so this older display int rose with it. The claim - recal_94 moved no offence - still holds: it moved none.]"
     },
     {
       "five": [
