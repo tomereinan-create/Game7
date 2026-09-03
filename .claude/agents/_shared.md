@@ -58,27 +58,29 @@ python files to `N`. The copies that must all change together: `data/players_sta
 `src/data/players_stats.json`, `data/export/players_stats_smoothed.json` (+ MANIFEST.json),
 `src/data/pipeline.json`, and after a build_ratings.py run also `public/provenance.json`.
 
-## Integration (rebasing a landed round onto a main that moved)
-- FIRST regenerate on the base commit and assert its shipped attributes reproduce from its own
-  code (0 attributes moved). A commit whose data is ahead of its code has happened (recal_92
-  shipped data that already carried recal_95's ceiling); a round regenerating on such a base
-  would silently ship a different board.
-- `data/anchors.json` / `anchors_superseded.json`: never trust git's text merge of these — rebuild
-  programmatically from origin/main plus the round's own additions.
-- `PIPELINE_VERSION` is the SHIP order, not the round number: set it to (last shipped version + 1)
-  in both python files and put the same number in the round file's `pipeline_version`; note it
-  in COST when the two differ (recal_93 shipped as pipeline 96).
-- Taxes in `src/engine/tactics.ts`: take main's values, re-run the harness on the merged pool,
-  re-ratify what breaks, record the prior values.
-- Data files: take either side, regenerate the whole chain on the merged code, then re-verify
-  every target and every anchor on the merged data; if one leaves its band, STOP and report the
-  numbers — do not retune during an integration.
+## Integration — the agent does NOT rebase (his rule 2026-09-03: "Fixes in general are taking too long")
+- Start every round from a FRESH origin/main (`git fetch && reset --hard origin/main` in your worktree).
+  Do the round, regenerate on your branch to measure and to fill the round file, verify YOUR round's
+  receipt + `npm run anchors` + `npm test` + the harness, commit, report. Then STOP. Do not rebase
+  onto a moved main, do not renumber, do not re-regenerate: the INTEGRATOR does that once for every
+  accepted round in a batch.
+- `PIPELINE_VERSION`: leave the constant at whatever main has. The integrator stamps
+  `src/data/pipeline.json` and both python constants with the HIGHEST round number in the batch
+  after the single merged regeneration. A round file's `pipeline_version` is therefore the number
+  the integrator will stamp — write your own round number and the integrator fixes it up.
+- Data files, anchors.json, tactics taxes: commit yours (they prove the round on your branch); the
+  integrator discards data conflicts by regenerating, rebuilds anchors.json programmatically from
+  main + every batched round's additions/supersessions, and re-sweeps the taxes ONCE on the merged
+  pool. You never hand-merge those files.
+- Measure ONE fix, not fifteen: land the first defensible change that reaches the target and holds
+  the anchors; try variants only when the first breaks an anchor, and cap at three. Report tersely.
+- Base-reproduces check is the integrator's job, once per batch.
 
 ## Receipt
 The receipt is `data/rounds/<N>.json` (see Report back). Rounds up to 90 are hand-written blocks
-in `scripts/receipts.ts`; do not add new hand-written blocks. Then run:
+in `scripts/receipts.ts`; do not add new hand-written blocks. Then run, on YOUR branch only:
 ```
-npm run receipts -- N
+npm run receipts -- N      # your round only — the integrator runs the whole ledger
 npm run anchors
 npm test
 ```
