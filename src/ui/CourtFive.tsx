@@ -16,7 +16,14 @@ import type { Player } from '../engine/types'
  * — no longer stands balanced by default (his ruling: "Assign each team on
  * the court by using their best tactic"). It stands in the shape of the style
  * it is BEST at, the engine's bestStyle, and the caption says the shape was
- * inferred rather than called ("motion · best fit 74"). Pure layout beyond
+ * inferred rather than called ("motion · best fit 74").
+ *
+ * HIS five drawn beside a plan he set somewhere else — the campaign prep
+ * screen's "Your five", which reads the My team plan but does not edit it —
+ * takes `tactic` (his ruling: "If I put 5 out on my tactics it should be shown
+ * here as well"): the floor stands in the style he called and the caption
+ * says whose call it is ("five-out · your tactic"). Balanced is no call, so
+ * a balanced plan leaves the best-fit read in place. Pure layout beyond
  * that: every spot's tag, tone and tap come from the caller.
  */
 
@@ -320,6 +327,15 @@ function fitLine(inf: { style: Style; fit: number }): string {
   return inf.style === 'balanced' ? `${label} · no better fit` : `${label} · best fit ${Math.round(inf.fit)}`
 }
 
+/**
+ * The caption for the style HE CALLED on a court that does not edit the plan (his ruling: "If I
+ * put 5 out on my tactics it should be shown here as well"): the label the tactics panel uses,
+ * and whose call it is — so "five-out · your tactic" cannot be mistaken for a best-fit read.
+ */
+function setLine(style: Style): string {
+  return `${STYLES.find((s) => s.key === style)?.label ?? style} · your tactic`
+}
+
 /** Card name -> the words of his real name: season tag off, and generational suffixes
  *  dropped so a Bagley III reads "Bagley/MB", not "III/MI". */
 const words = (n: string) =>
@@ -389,6 +405,7 @@ export function CourtFive({
   spots,
   bench,
   plan,
+  tactic,
   side: sideProp,
   onSide,
   swap,
@@ -396,6 +413,16 @@ export function CourtFive({
   spots: CourtSpot[]
   bench?: CourtSpot | null
   plan?: Tactics | null
+  /**
+   * THE TACTIC HE SET, for a court that draws his five beside a plan it does not edit — the
+   * campaign prep screen (his ruling: "If I put 5 out on my tactics it should be shown here as
+   * well"). The floor stands in the called style — five-out shows five out, the pick-and-roll
+   * stands his named pair — and the caption says whose call it is. No offense/defense toggle and
+   * no microtags: the plan is turned in My team, not here. Balanced is the free default, no call,
+   * so a balanced plan keeps the best-fit read and its caption exactly as before. `plan` wins
+   * when both are given.
+   */
+  tactic?: Pick<Tactics, 'style' | 'pnr'> | null
   /** Lift the side out of the court when the whole screen follows it (My team's tactics panel). */
   side?: Side
   onSide?: (s: Side) => void
@@ -462,11 +489,15 @@ export function CourtFive({
   const setSide = (s: Side) => (onSide ? onSide(s) : setOwn(s))
   const shown: Side = plan ? side : 'off'
   const men = spots.map((s) => s.p)
-  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan, men)
-  // no plan: the shape was read off the five, and the caption says so (his ruling: "Assign each
-  // team on the court by using their best tactic")
-  const inferred = plan ? null : inferredStyle(men)
-  const call = plan ? callLine(plan, shown) : inferred ? fitLine(inferred) : ''
+  // THE STYLE HE SET, when this court is not the one that sets it (his ruling: "If I put 5 out on
+  // my tactics it should be shown here as well"). Balanced is no call, and a five still being
+  // filled has no shape to call, so both keep reading the five as before.
+  const set = !plan && tactic && tactic.style !== 'balanced' && men.filter(Boolean).length >= AT.length ? tactic : null
+  const at = plan && shown === 'def' ? DEF_AT[plan.scheme] : spotsFor(plan ?? set, men)
+  // no plan and no call: the shape was read off the five, and the caption says so (his ruling:
+  // "Assign each team on the court by using their best tactic")
+  const inferred = plan || set ? null : inferredStyle(men)
+  const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with
    * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and
