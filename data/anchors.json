@@ -332,15 +332,6 @@
     "note": "the round's named winner, measured flat"
   },
   {
-    "card": "Russell Westbrook '17",
-    "scale": "off",
-    "target": 91,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the round's named winner, measured flat"
-  },
-  {
     "card": "Joakim Noah '09",
     "scale": "attr:rimprot",
     "target": 92,
@@ -1247,5 +1238,23 @@
     "round": 119,
     "ruling": "For the scout, I agree with 3,4,5,6,7",
     "note": "THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket. recal_119 moved 0 of 1,255 DEF dials and drtgRef is bit-identical on all of them; this records that the Celtics '24 DEF dial read 65 before and after."
+  },
+  {
+    "card": "Russell Westbrook '15",
+    "scale": "off",
+    "target": 85,
+    "tol": 2,
+    "round": 121,
+    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+    "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named."
+  },
+  {
+    "kind": "order",
+    "scale": "off",
+    "above": "Russell Westbrook '15",
+    "below": "Russell Westbrook '17",
+    "round": 121,
+    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+    "note": "the released pin's condition: '17 is the more turnover-prone, less efficient season at the same usage, so he must not read above the season Tomer ruled on."
   }
 ]

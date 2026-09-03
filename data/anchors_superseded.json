@@ -716,5 +716,15 @@
     "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
     "note": "superseded by recal_116: Tomer reaffirmed Westbrook '15 ballsec after the 108 decline named this pin. recal_108 declined the Westbrook ruling BECAUSE of this anchor and said so (\"If he wants Westbrook at 56, the thing to re-open is Harden '19's 61\"); he saw the decline with the blocker named and repeated the ruling, which is the explicit release. Westbrook '15 is AT LEAST AS GOOD AS Harden '19 on every input ballsec reads - TOV% 14.3 vs 14.5, AST/TOV 1.95 vs 1.52, AST% 47.0 vs 39.5 - so no monotone formula separates them; Harden now reads what the formula gives.",
     "current": 56
+  },
+  {
+    "card": "Russell Westbrook '17",
+    "scale": "off",
+    "target": 91,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "superseded by recal_121: Tomer reaffirmed Westbrook '15 OFF 85 after the 111 decline named this pin. recal_111 declined the Westbrook '15 ruling BECAUSE of this anchor and said so (\"release RUSSELL WESTBROOK '17's 91 +-1 pin - it is the binding one\"); he saw the decline with the blocker named and repeated the ruling, which is the explicit release. '17 is the WORSE season on both faults the ruling names - efficiency 48 against '15's 51, ball security 54 against 60, at the same volume 98 - so no charge that is non-increasing in either can take '15 to 85 and leave '17 at 91. He now reads what the formula gives, at or below '15.",
+    "current": 85
   }
 ]

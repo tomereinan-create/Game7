@@ -46,28 +46,7 @@ export interface Tactics {
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
   crashOff: boolean
-  /** Gang the defensive glass. Pays with rebounders, costs a little rim-running offense. * recal_117's elite-passer ramp (679 o_ovrs and 560 OVRs, every one of them through compute_ovr; 0
- * d_ovrs, no attribute) moved the ovr>=55 pool again, and TWO taxes broke — the first round since r95
- * in which more than one did. HUNT went shallow on its BLIND edge (-0.10 against the -0.30 floor) and
- * was re-ratified 3.80 -> 4.10; its window is eleven thousandths wide (4.04 reads blind -0.300 exactly,
- * 4.15 oracle +0.50) and 4.10 is its midpoint, with 0.049 of blind headroom and 0.021 of oracle. This is
- * hunt's ninth move and it is always the same shape: the tax is large (a 4-point subtraction) and the
- * pool it is measured on is the ovr>=55 sample, so any round that lifts a class of guards into or up
- * that sample moves it. CRASH OFF GLASS broke on the ORACLE edge (+0.45 against +0.50) and was
- * re-ratified .40 -> .10. Its feasible interval is about -0.32 to .21, whose own midpoint is NEGATIVE —
- * a call that pays to make, which is not a tax at all — so the value is the midpoint of the POSITIVE
- * half instead: .10 clears the oracle floor by 0.029 and the blind ceiling by 0.285. Recorded because
- * it is the first time this file has had to choose inside a half-interval rather than a whole one.
- * The seven others held their bands untouched, crash def glass included. All nine pass.
- * recal_118's off-ball ramp (499 more o_ovrs and 374 more OVRs, all UP, on top of r117's) moved the
- * ovr>=55 pool a second time in two rounds, and HUNT alone broke again — this time on the ORACLE edge
- * (+0.37), the opposite side from r117's. Re-ratified 4.10 -> 3.71, the midpoint of a window running
- * about 3.655 (blind -0.300) to 3.761 (oracle +0.500). r117's 4.10 was measured on a pool WITHOUT this
- * round's cards and is SUPERSEDED by this figure rather than stacked with it; the integrator re-sweeps
- * once from main's constant, as the law requires. crash off glass held its re-ratified .10 (oracle
- * +0.64, blind -0.48) and the other seven held their bands. All nine pass.
- */
- */
+  /** Gang the defensive glass. Pays with rebounders, costs a little rim-running offense. */
   crashDef: boolean
 }
 
@@ -246,6 +225,26 @@ export const DEFAULT_TACTICS: Tactics = {
  * in which this one tax is the one that moves, and the fourth time it has reversed direction; the
  * cause is the same every time — it is the tax whose benefit reads a DEFENSIVE attribute off a pool
  * that an OFFENSIVE round reshuffles. Eight others untouched.
+ * recal_117's elite-passer ramp (679 o_ovrs and 560 OVRs, every one of them through compute_ovr; 0
+ * d_ovrs, no attribute) moved the ovr>=55 pool again, and TWO taxes broke — the first round since r95
+ * in which more than one did. HUNT went shallow on its BLIND edge (-0.10 against the -0.30 floor) and
+ * was re-ratified 3.80 -> 4.10; its window is eleven thousandths wide (4.04 reads blind -0.300 exactly,
+ * 4.15 oracle +0.50) and 4.10 is its midpoint, with 0.049 of blind headroom and 0.021 of oracle. This is
+ * hunt's ninth move and it is always the same shape: the tax is large (a 4-point subtraction) and the
+ * pool it is measured on is the ovr>=55 sample, so any round that lifts a class of guards into or up
+ * that sample moves it. CRASH OFF GLASS broke on the ORACLE edge (+0.45 against +0.50) and was
+ * re-ratified .40 -> .10. Its feasible interval is about -0.32 to .21, whose own midpoint is NEGATIVE —
+ * a call that pays to make, which is not a tax at all — so the value is the midpoint of the POSITIVE
+ * half instead: .10 clears the oracle floor by 0.029 and the blind ceiling by 0.285. Recorded because
+ * it is the first time this file has had to choose inside a half-interval rather than a whole one.
+ * The seven others held their bands untouched, crash def glass included. All nine pass.
+ * recal_118's off-ball ramp (499 more o_ovrs and 374 more OVRs, all UP, on top of r117's) moved the
+ * ovr>=55 pool a second time in two rounds, and HUNT alone broke again — this time on the ORACLE edge
+ * (+0.37), the opposite side from r117's. Re-ratified 4.10 -> 3.71, the midpoint of a window running
+ * about 3.655 (blind -0.300) to 3.761 (oracle +0.500). r117's 4.10 was measured on a pool WITHOUT this
+ * round's cards and is SUPERSEDED by this figure rather than stacked with it; the integrator re-sweeps
+ * once from main's constant, as the law requires. crash off glass held its re-ratified .10 (oracle
+ * +0.64, blind -0.48) and the other seven held their bands. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,

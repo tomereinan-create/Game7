@@ -750,6 +750,103 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
+    # recal_121 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone guy.
+    # In addition to the OFF being a touch heigher than Id like it to be.. More around 85"; and, on
+    # the round's first cut, HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
+    # concerns. If there is a way to keep them, its more ideal").
+    # THE HANDLER'S TURNOVER CHARGE — the OFF half of the sentence recal_116 answered on the bar.
+    #
+    # THE HISTORY, because this term was DECLINED once and the decline is what makes it legitimate
+    # now. recal_111 measured this ruling and refused it: three of his own pins stood in the way of
+    # any charge on inefficient, turnover-prone load, and the binding one was RUSSELL WESTBROOK '17
+    # at off 91 +-1 — the same man one season later, WORSE on both faults at the same usage, so no
+    # charge that is non-increasing in efficiency and security could take '15 down four points and
+    # leave '17 inside one. He was shown that decline with the blockers named, and he REPEATED the
+    # ruling. So '17's pin is released to anchors_superseded.json BY HIS REAFFIRMATION and '17 now
+    # reads what the formula gives; the other two blockers, JAYLEN BROWN '26 (off 83 +-1) and JAMES
+    # HARDEN '19 (off 95 +-1), still stand, and they are held by this term's own gates rather than
+    # by luck — see WHO IS SPARED. Both move by EXACTLY zero.
+    #
+    # THIS IS NOT recal_85's EMPTY-VOLUME TAX, and the difference is structural, not a matter of
+    # degree. That tax lived in the OVR CORE, after o_ovr and d_ovr were fixed, and subtracted from
+    # the BLEND: it was "the sole cause of every card printing BELOW its weaker end — 192 of them".
+    # This charge is inside o_score, so what falls is OFF ITSELF and the blend still reads between a
+    # card's two ends; no card can print below its weaker end from it, by construction. It is also
+    # gated on TWO faults and on handling load, where the tax read heavy load at poor efficiency
+    # alone: 48 cards move here against that tax's 192.
+    #
+    # THE TERM. Every constant is a quantile of the class the ruling names, or a measured frontier.
+    # THE CLASS is the man the offence RUNS THROUGH: handling load, the mean of o_score's own two
+    # load bars (recal_96 named exactly these two — "the two bars that claim he carried this much").
+    # Westbrook '15 is (98 + 93)/2 = 95.5. The gate opens at 85 and pays in full at 95; H >= 85 is
+    # 218 cards of 10,000, and those 218 ARE the population every other constant below is read off.
+    #   efficiency 51 -> 60  full charge at or below the class's LOWER TERCILE of conversion
+    #                        (measured: 51) and NOTHING at its MEDIAN (measured: 60).
+    #                        HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
+    #                        concerns. If there is a way to keep them, its more ideal". The leg first
+    #                        ran from the median to the class's UPPER QUARTILE (60 -> 75), which
+    #                        charged men who convert at or above the class's middle: LeBron '20
+    #                        (efficiency 59) -4 and Luka '22 (54) -6. Pulling the fade back to the
+    #                        MEDIAN is the whole amendment, and efficiency is the only quantity that
+    #                        can carry it — ball security cannot spare either man, because 58 and 55
+    #                        are WORSE than the subject's 60. At the median LeBron '20 sits on the
+    #                        leg's foot (gate 0.11) and keeps all but a point; Luka '22 halves.
+    #                        K DID NOT HAVE TO MOVE and the ceiling did not rise: the subject sits AT
+    #                        the floor of the new leg, so his own gate is 1.00 either way. A leg cut
+    #                        to the class's lower QUARTILE instead (46 -> 60) spares the same two men
+    #                        but needs K = 9.8 and takes Westbrook '18 to 75 and '19 to 70 — measured
+    #                        and rejected: it buys nothing and deepens the tail by three.
+    #   ballsec 58 -> 65     full charge at or below the class's LOWER QUARTILE of ball security
+    #                        (measured: 58, the 24th percentile). Westbrook '15 is 60.
+    #                        65 IS A FRONTIER, not a taste. A WIDER fade needs a SMALLER K to put the
+    #                        subject on his number, and therefore leaves a shallower tail, so the
+    #                        round takes the widest fade the ORDERING permits: at 66 and above the
+    #                        term can no longer put Westbrook '17 at or BELOW '15, which is the
+    #                        condition his reaffirmation carries — '17 is the worse season on both
+    #                        faults and must not read above the season he ruled on.
+    #   K = 6.3              solved for the subject: 89.2313 raw - 0.93 x 6.3 x 0.7143 = 85.05 -> 85.
+    #                        It is also the CEILING of the whole charge, so no card on the board can
+    #                        lose more than 6 printed points to it.
+    #
+    # WHO IS SPARED, and each by a gate rather than by a threshold drawn around him:
+    #   JAMES HARDEN '19  — efficiency 87, far above the class's median, so the efficiency gate is
+    #                       0.00 and his ball security of 56 costs him nothing. Held at 96.
+    #   LEBRON '20, TRAE '22 — his amendment's two names and the class they stand for: a man who
+    #                       converts at the class's middle or better is at or near the leg's foot.
+    #                       Trae '22 (efficiency 64) is at 0.00 and does not move at all; LeBron '20
+    #                       (59) is at 0.11 and moves one point. Trae '21, Wade '08, Cassell '98,
+    #                       Booker '19, Grant Hill '99, Deron Williams '11 and four more LeBron
+    #                       seasons left the footprint entirely with them.
+    #   JAYLEN BROWN '26  — twice over: handling load (96 + 68)/2 = 82, below the gate, AND ball
+    #                       security 64. Inefficient but careful, and he does not create. Held at 83.
+    #   KOBE '16, IVERSON '02, CARMELO '13 — the inefficient-but-CAREFUL class the ruling does not
+    #                       name: ball security 84, 87 and 91, all at gate 0.00, all unmoved. DeMar
+    #                       DeRozan '17 is the sharpest control on the board — efficiency 51, EXACTLY
+    #                       Westbrook '15's, at volume 97 — and ball security 90 leaves him at 86.
+    #   LUKA '23, GIANNIS '24, EWING '90, ZION '21 — poor ball security is not enough on its own:
+    #                       all four convert, so the efficiency gate holds them at or near zero.
+    # MEASURED on the whole pool, at the amended cut: 35 of 10,000 cards move on OFF, every one of
+    # them DOWN, max -6; DEF moves on ZERO and no attribute moves at all; OVR moves on 32, max -4.
+    # The top 12 by OFF is identical. THE CEILING IS UNCHANGED AT 6.3 — the men who take the whole
+    # charge are Westbrook '17 and '18, handling load 98, and nobody loses more than six printed
+    # points. The 35 are one class and read like it: Westbrook '11-'21, Trae Young '19-'25, John
+    # Wall '13-'18, Cade Cunningham '24-'26, Luka '19-'22, D'Angelo Russell '19, LaMelo Ball '25 —
+    # high-usage creators who neither convert nor keep the ball. Against the first cut (60 -> 75)
+    # this sheds 103 printed points across 35 cards rather than 148 across 48.
+    TC_H_LO, TC_H_HI = 85.0, 95.0
+    TC_E_LO, TC_E_HI = 51.0, 60.0
+    TC_B_LO, TC_B_HI = 58.0, 65.0
+    TC_K = 6.3
+    _hl = 0.5 * (a['volume'] + a['playvol'])
+    _th = min(1.0, max(0.0, (_hl - TC_H_LO) / (TC_H_HI - TC_H_LO)))
+    _te = min(1.0, max(0.0, (TC_E_HI - a['efficiency']) / (TC_E_HI - TC_E_LO)))
+    _tb = min(1.0, max(0.0, (TC_B_HI - a['ballsec']) / (TC_B_HI - TC_B_LO)))
+    if _th * _te * _tb > 0.0:
+        _tc = TC_K * _th * _te * _tb
+        std -= _tc
+        if trace is not None:
+            trace['turnover_charge'] = dict(handling=_hl, h=_th, e=_te, b=_tb,
+                                            gate=_th * _te * _tb, taken=_tc)
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):
@@ -1089,6 +1186,11 @@ if _CARD:
         _t2 = _ot['two_level']
         print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "
               f"second zone {_t2['z1']} paid at the first zone's rate: +{_t2['added']:.3f}")
+    if 'turnover_charge' in _ot:
+        _t3 = _ot['turnover_charge']
+        print(f"HANDLER'S TURNOVER CHARGE (recal_121) - handling load {_t3['handling']:.1f} "
+              f"(gate {_t3['h']:.2f}) x efficiency gate {_t3['e']:.2f} x ball-security gate "
+              f"{_t3['b']:.2f} = {_t3['gate']:.3f}: -{_t3['taken']:.3f}")
     if 'big_hub' in _ot:
         print(f"BIG HUB (recal_55's channel, recal_98's ramp: bigs from playvol 60 to 80): "
               f"+{_ot['big_hub']:.3f}")
