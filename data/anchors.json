@@ -1256,5 +1256,22 @@
     "round": 121,
     "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
     "note": "the released pin's condition: '17 is the more turnover-prone, less efficient season at the same usage, so he must not read above the season Tomer ruled on."
+  },
+  {
+    "card": "Warriors '17 (best legal five)",
+    "five": [
+      "Stephen Curry '17",
+      "Kevin Durant '17",
+      "Klay Thompson '17",
+      "Draymond Green '17",
+      "Zaza Pachulia '17"
+    ],
+    "season": 2017,
+    "scale": "team:defdial",
+    "target": 81,
+    "tol": 5,
+    "round": 122,
+    "ruling": "2 Elite defenders, 3 decent. how 72 def?",
+    "note": "THE SUBJECT. 72 -> 76, the FLOOR of the dispatch's 81+-5 band (the 81 was the orchestrator's number, not his). The last five points are reachable only through a top-heavy PERDEF aggregation, which 47 seasons of within-season Spearman refuse (the five's best defender is its LEAST predictive order statistic, +0.076 against +0.19..+0.23; a top-2 premium beside the mean carries a NEGATIVE partial in both eras), or by moving Zaza Pachulia '17's perdef 45, which is a card and not this agent's. The pin has ZERO SLACK by construction: if he re-rules the number, re-cut it to what he says. See data/rounds/122.json."
   }
 ]

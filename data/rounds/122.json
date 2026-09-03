@@ -1,0 +1,226 @@
+{
+  "round": 122,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "2 Elite defenders, 3 decent. how 72 def?",
+  "title": "THE FIVE'S DEFENCE IS READ THROUGH THE LOADS ITS MEN DEFEND, and the rim anchor's cap becomes a knee — a top-heavy PERDEF aggregation is what his sentence asks for and 47 seasons refuse it, so the elite credit is bought where the evidence pays it: the best rim protector",
+  "subject": "Warriors '17 (best legal five)",
+  "five": [
+    "Stephen Curry '17",
+    "Kevin Durant '17",
+    "Klay Thompson '17",
+    "Draymond Green '17",
+    "Zaza Pachulia '17"
+  ],
+  "season": 2017,
+  "scale": "team:defdial",
+  "target": 81,
+  "tol": 5,
+  "before": 72,
+  "after": 76,
+  "pipeline_version": 122,
+  "knobs": [
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "for \\(let i = 0; i < Math\\.min\\(pdDesc\\.length, load\\.length\\); i\\+\\+\\) effDi \\+= pdDesc\\[i\\] \\* \\(load\\[i\\] / totLoad\\)",
+      "label": "THE ROUND'S FIRST LINE — effDi is the five's perdef weighted by the load each man defends, port side",
+      "note": "was `A.reduce((s, a) => s + a.perdef, 0) / 5`, the flat mean; the weights are the opponent's own usage shares, assortatively assigned — against REF_FIVE .24/.22/.20/.18/.16"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "eff_di = sum\\(p\\*\\(u/tot_load\\) for p, u in zip\\(pd_desc, load\\)\\)",
+      "label": "the same line, source-of-truth side — the two must never drift",
+      "note": "was `sum(a['perdef'] for a in A)/5`; data/parity_check.py + tests/parity.test.ts gate the pair"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const anc = anchor <= K\\.ANCHOR_KNEE \\? anchor : K\\.ANCHOR_KNEE \\+ \\(anchor - K\\.ANCHOR_KNEE\\) \\* K\\.ANCHOR_SOFT",
+      "label": "THE ROUND'S SECOND LINE — recal_94's hard cap becomes a knee, port side",
+      "note": "min(99, anchor) -> 99 below, 99 + (anchor-99)*0.5 above; 626 of the 1,255 fives were tied at exactly 99"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "anc = \\(anchor if anchor <= MKNOBS\\['ANCHOR_KNEE'\\]",
+      "label": "the knee, source-of-truth side",
+      "note": "MKNOBS ANCHOR_KNEE 99.0 / ANCHOR_SOFT 0.5, new this round"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "0\\.12 \\* Math\\.max\\(0, 60 \\+ glass / 4\\) - K\\.DIDX_HOLD",
+      "label": "the level hold, port side — the DEF gauge block in gauges.ts is frozen and this round does not re-derive it",
+      "note": "DIDX_HOLD 1.0773 didx points = the 0.195 DRtg the two changes read the 1,255-five pool better; pool mean drtgRef 110.0462 before and after"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "- MKNOBS\\['DIDX_HOLD'\\]\\)",
+      "label": "the level hold, source-of-truth side",
+      "note": "same constant, same order of operations"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.58",
+      "label": "THE DEF GAUGE BLOCK IS UNTOUCHED — recal_108 froze it and this round does not re-derive it",
+      "note": "DEF_WORST 113 / DEF_MID 110.04 / DEF_TOP 107.58 and the 47-season DEF_LEVEL table are byte-identical to main"
+    }
+  ],
+  "expect": [
+    {
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "season": 2017,
+      "label": "NO OFF DIAL MOVED. teamOffense is byte-identical, the diff is confined to MKNOBS (additive keys) and defenseVs, and 0 of the 1,255 fieldable fives changed offRaw — the subject's own OFF summit among them"
+    },
+    {
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "season": 2017,
+      "label": "the subject's Team DB OVR, the mean of the two dials: 86 -> 88"
+    },
+    {
+      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "THE SUMMIT HOLDS, tol 0 (recal_94, \"Move the summit to Bulls '96\"): drtgRef 107.565 -> 107.568, dial 99 -> 99"
+    },
+    {
+      "five": ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"],
+      "season": 2004,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 84,
+      "tol": 4,
+      "label": "Pistons '04 84±4 (recal_94): 83 -> 87. Ben Wallace's rimprot 98 was being paid the same 99 as everyone else's 85"
+    },
+    {
+      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 80,
+      "tol": 4,
+      "label": "Thunder '26 80±4 (recal_100): 80 -> 84, at the top of its band — the tightest anchor in the round, and the one a later DEF round must look at first"
+    },
+    {
+      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 51,
+      "tol": 6,
+      "label": "76ers '26 51±6 (recal_100): 51 -> 49, and still 14th of the 24 fieldable 2026 teams against a real DRtg rank of 14th"
+    },
+    {
+      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": ">=",
+      "value": 50,
+      "label": "recal_94's ORDER pin, Thunder '26 above 76ers '26: 84 vs 49 (the strict pair is checked in data/anchors.json, which passes 129/129)"
+    },
+    {
+      "five": ["Cade Cunningham '26", "Duncan Robinson '26", "Ausar Thompson '26", "Tobias Harris '26", "Jalen Duren '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 75,
+      "tol": 6,
+      "label": "Pistons '26 75±6 (recal_100): 74 -> 76"
+    },
+    {
+      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "season": 1987,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 67,
+      "tol": 6,
+      "label": "Lakers '87 67±6 (recal_100): 67 -> 67, unmoved"
+    },
+    {
+      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "season": 2024,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 65,
+      "tol": 3,
+      "label": "Celtics '24 65±3 (recal_119): 65 -> 65, unmoved"
+    },
+    {
+      "five": ["Rajon Rondo '10", "Paul Pierce '10", "Kevin Garnett '10", "Rasheed Wallace '10", "Kendrick Perkins '10"],
+      "season": 2010,
+      "scale": "team:defdial",
+      "op": "<=",
+      "value": 99,
+      "label": "THE FLAT-FIVE PROBLEM IS NOT FIXED, recorded rather than claimed: Celtics '10 read 99 before and 99 after (real DRtg 4th of 28). It is the half of the dispatch this round declines — see notes"
+    },
+    {
+      "five": ["John Stockton '98", "Jeff Hornacek '98", "Bryon Russell '98", "Karl Malone '98", "Greg Ostertag '98"],
+      "season": 1998,
+      "scale": "team:defdial",
+      "op": "<=",
+      "value": 91,
+      "label": "the same, and the worse of the two: Jazz '98 91 -> 91, 2nd in its season against a real DRtg rank of 18th of 28"
+    },
+    {
+      "five": ["Stephen Curry '16", "Andre Iguodala '16", "Klay Thompson '16", "Draymond Green '16", "Andrew Bogut '16"],
+      "season": 2016,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 94,
+      "tol": 2,
+      "label": "the subject's own neighbours: Warriors '16 90 -> 94 (Bogut rimprot 95 + Green 84 was a capped pair)"
+    },
+    {
+      "five": ["Ron Harper '00", "Kobe Bryant '00", "Glen Rice '00", "Robert Horry '00", "Shaquille O'Neal '00"],
+      "season": 2000,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 64,
+      "tol": 4,
+      "label": "recal_110's LAKERS '00 OFF pin, untouched by a defence-only round: 65"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "NO CARD MOVED. d_ovr, o_ovr, ovr and every attribute are byte-identical on all 10,000 cards (scout --base HEAD: 0/10000 on each). Only `marg` moved, on 2,451 cards, and recal_40 took marg out of OVR"
+    },
+    {
+      "card": "Draymond Green '17",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 96,
+      "label": "the subject's elite defender, unmoved — this round changes how five cards COMBINE, never a card"
+    }
+  ],
+  "movers": {
+    "scale": "team:defdial",
+    "count": 966,
+    "max_abs": 8,
+    "top": []
+  },
+  "cost": [
+    "THE NUMBER LANDS AT THE FLOOR OF ITS BAND AND THE RULE IS ONLY HALF HIS. The dispatch asked for 81±5 and the subject reads 76. The other five points are reachable only through a top-heavy PERDEF aggregation, and that is the one thing the 47 seasons refuse (see notes) — or by moving Zaza Pachulia '17's perdef 45, which is a CARD and belongs to the ratings-to-off-def agent, not here. Recorded as an anchor at 81±5 with zero slack: if Tomer re-rules the number down, this pin should be re-cut to what he says.",
+    "THE FLAT-FIVE HALF OF THE DISPATCH IS DECLINED. Celtics '10 (99, real 4th) and Jazz '98 (91, real 18th) are unmoved. The dispatch's theory was that one aggregation fixes both ends — 'the same mean is both problems'. It does not: a top-heavy read lifts the subject and lowers the flat fives together, and the measurement says the lowering is wrong. The Jazz '98 miss is the larger one (16 ranks) and it is a card story, not a combination story: Karl Malone reads perdef 92 and Greg Ostertag 76 on a team that finished 18th of 28 on defence.",
+    "THE THUNDER '26 ANCHOR IS AT THE TOP OF ITS BAND (84 against 80±4, zero slack) and the Pistons '04 at +3 of ±4. Both are the same effect — the knee finally pays a 98 rim protector more than an 85 — and both are the first thing a later DEF round will break. If either has to move, the knob is MKNOBS ANCHOR_SOFT, not a name.",
+    "THE FIVES AT 99 WENT FROM 4 TO 6: before BOS '10, MIL '85, CHI '96, CHI '98; after the same four plus PHI '80 and SAS '05. The summit is still the Bulls '96 on the frozen gauge (their adjusted drtgRef 107.5849 -> 107.5878 against DEF_TOP 107.58) but it is a shared ceiling, as it already was.",
+    "marg MOVED ON 2,451 OF 10,000 CARDS (biggest: Ben Wallace '07 67 -> 70, Ben Wallace '03 77 -> 80, Tony Allen '15 68 -> 70 — rim protectors and stoppers, which is the round working). ovr / o_ovr / d_ovr / big moved on ZERO. compute_ovr.py's marginal term exec's team_rating.py's matchup_margin, so any defenceVs change reaches it; recal_40 took marg out of OVR, so nothing downstream of the card moved.",
+    "THE LADDER WAS REGENERATED (npm run opponents) because every five's DRtg moved. All 30 tier-1 rounds keep their team AND their season, and no round changed position — the eight campaign rounds are not reordered. tests/campaigns.test.ts fails against a stale campaigns.json until the regeneration is run; it passes after."
+  ],
+  "notes": [
+    "THE SUBJECT, TERM BY TERM, BEFORE. Warriors '17 perdef 96 (Green) / 71 (Durant) / 66 (Thompson) / 62 (Curry) / 45 (Pachulia), mean 68.0 — the lowest mean of any five in the 2017 top five. didx 61.19 = 0.55*68.00 (37.40) + anchor 11.58 + steals 4.38 + glass 7.83. The anchor line is the tell: 0.13 * min(99, 112.54) * 0.9 = 11.583, the SAME number the Bulls '96, the Pistons '04, the Celtics '10, the Jazz '98, the Spurs '14 and the Thunder '26 all read. Durant's rimprot 87 bought exactly nothing.",
+    "WHAT THE 47 SEASONS SAY ABOUT 'ELITE DEFENDERS CARRY IT'. Truth is data/bref/Team Summaries.csv; the instrument is the within-season Spearman of the dial against real DRtg over the 1,255 fieldable team-seasons, the same one rounds 94, 100 and 110 used. Season-z-scored and entered as five order statistics, the five's perdef pays: pd_1 +0.076, pd_2 +0.230, pd_3 +0.209, pd_4 +0.194, pd_5 +0.220 (R2 0.634). The BEST defender is the LEAST predictive of the five. A top-2 premium entered beside the mean carries a NEGATIVE partial: -0.272 all-time, -0.226 on 1980-2013, -0.433 on 2014-2026. The finding survives the card-pool break at 2014, so it is not an artefact of the tracking era. Measured as a dial: every tilt past the usage profile costs fit monotonically (tilt +0.5 rho 0.762, +1.0 0.748, +1.5 0.731, +2.0 0.713 against 0.774 shipped). A literal reading of his sentence is not defensible and is DECLINED here rather than quietly fitted.",
+    "WHAT THEY DO SAY. The same regression pays the five's best rim protector +0.155 beside the mean perdef, and the SHIPPED capped anchor only +0.076 — because the cap ties 626 of the 1,255 fives at exactly 99. Swapping the capped anchor for the uncapped best rim protector lifts R2 from 0.629 to 0.644. That is 'let the elite defender carry it', in the one channel where the evidence pays for it, and it is where this round's fit comes from.",
+    "THE TWO CHANGES. (1) eff_di is USAGE-WEIGHTED: our men sorted by perdef, theirs by usage, paired assortatively, each defender weighted by the share of the opponent's load he takes. Against REF_FIVE (usg 24/22/20/18/16) that is .24/.22/.20/.18/.16 — nothing is fitted, the weights ARE the reference five's own usage, and against a real offence the profile sharpens by itself when one man carries everything. (2) min(99, anchor) becomes a KNEE at 99 with slope 0.5: identical below, half rate above, so a five with two 98s still reads above a five with two 85s. (3) One constant, DIDX_HOLD = 1.0773 didx points, holds the pool's mean drtgRef at 110.0462 exactly, because src/engine/gauges.ts's DEF block is frozen (recal_108) and this round does not re-derive it. Without the hold every dial rises about 4 points and the summit crowds.",
+    "FIT, before -> after (mean of the 47 within-season Spearmans): ALL +0.7742 -> +0.7767. Per decade: 80s +0.8016 -> +0.8044, 90s +0.8050 -> +0.8010, 00s +0.8061 -> +0.8050, 10s +0.7227 -> +0.7302, 20s +0.7190 -> +0.7282. The round pays a little in the 90s and 00s and buys more back in the two decades that fit worst, which is where recal_94's own note said to look. The 2016 and 2020 seasons are still the worst two.",
+    "THE SUBJECT AFTER. didx 62.13 = 0.55 * 70.22 (usage-weighted, 38.62) + anchor 11.58 -> the knee lifts it, + steals 4.38 + glass 7.83, minus the hold. drtgRef 108.879 -> 108.709, dial 72 -> 76, season DEF rank 3rd of 30 both before and after against a real DRtg rank of 2nd. His two elite men are now worth 4 dial points more than they were; his three decent ones still cost what they cost.",
+    "MEASURED AND NOT TAKEN, in the order they were tried. (a) A pure top-2 perdef premium sized to reach 81: it reaches it (LIFT 1.26) and takes the fit to +0.663, a fifth of everything recal_94 bought. (b) The anchor rewritten as a linear 0.85*rp1 + 0.15*rp2: the best fit of the round (+0.7881) but it re-levels the whole rim channel, breaks the Bulls '96 tol-0 summit by a point and puts three anchors on zero slack at once. (c) The knee plus a tilt past the usage profile: reaches 77-78 and costs 0.010-0.023 of fit for every point past 76. The landed pair is the only one measured that reaches the band AND improves the fit AND holds all 129 anchors.",
+    "A FINDING THIS ROUND DID NOT ACT ON, because it is not a combination and not mine. The within-season SPREAD of the dial collapses at 2014: the sd across teams of the five's mean perdef runs 9.5-10.3 from 1990 to 2013 and 5.1-6.4 from 2014 on, while the real DRtg spread is flat at 2.4-3.8 throughout. The cause is in the card pool, not in the combination: the perdef of the 5 x n starters has sd 15.5-17.0 for 1980-2013 and 10.0-12.0 for 2014-2026, p10 41 -> 50 and p90 76 -> 72, with the break exactly where the tracking data begins. That is why the whole 2017 board runs 30..77 while the 2010 board runs 15..99, and it is half of why the subject reads 76 rather than 81. It belongs to the agent that owns perdef's tracked/voted blend (recal_86, 92, 101), not to team_rating.py.",
+    "PARITY. data/parity_check.py against src/engine/offense.ts on the subject five and five reference fives (Warriors '17, Bulls '96, Pistons '04, Celtics '10, Jazz '98, Thunder '26, each defending the next): worst disagreement 5.7e-14 points on off / drtg / steals / net. tests/parity.test.ts's own 50 random lineup pairs: worst 0.0000."
+  ]
+}
