@@ -1,0 +1,310 @@
+{
+  "round": 118,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "title": "THE OFF-BALL FLOOR IS A RAMP, NOT A GATE — a man is paid the share of the floor his shooting has earned, on recal_64's own number and with no new constant",
+  "subject": "Dorian Finney-Smith '20",
+  "scale": "off",
+  "target": 55,
+  "tol": 3,
+  "before": 38,
+  "after": 53,
+  "pipeline_version": 118,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "OB_3P_FULL = 68\\.0",
+      "label": "ITEM 5 — recal_64's OWN NUMBER, kept and repurposed",
+      "note": "68 stops being a threshold and becomes the point of SATURATION; the round introduces no new constant at all"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_f3 = min\\(1\\.0, max\\(0\\.0, a\\['3pt'\\] / OB_3P_FULL\\)\\)",
+      "label": "THE RAMP — the share of the floor a man's shooting has earned",
+      "note": "`3pt >= 68` (a cliff worth up to 24 printed OFF points) -> min(1, 3pt/68), continuous"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if _f3 > 0\\.0 and a\\['volume'\\] < 55:",
+      "label": "r64's USAGE gate is UNTOUCHED — every volume scorer is outside the branch by construction",
+      "note": "volume < 55 stands exactly as r64 wrote it; 0 of the 499 movers has volume >= 55"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_flr = std \\+ _f3 \\* \\(_fl - std\\)",
+      "label": "THE SHARE IS OF THE CORRECTION, NOT OF THE FLOOR — the whole reason this reaches the card",
+      "note": "at _f3 == 1.0 this is `max(std, _fl)` byte for byte; scaling the floor itself reaches only 46, and the shortlist's own foot-at-50 form only 45"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_fl = 0\\.38\\*a\\['3pt'\\] \\+ 0\\.20\\*a\\['efficiency'\\] \\+ 0\\.08\\*a\\['ballsec'\\] \\+ 0\\.06\\*a\\['discipline'\\]",
+      "label": "recal_64's wing floor, untouched — not one weight moves"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8\\.0, 22\\.0, 45\\.0, 65\\.0",
+      "label": "recal_99's load-or-glass evidence gate on recal_91's big branch, untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge",
+      "label": "recal_117's elite passer, one round old and untouched here",
+      "note": "the two rounds are disjoint: 117 moves no card inside r64's gate and 118 moves no passer"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.71,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke on the ORACLE edge this time",
+      "note": "4.10 -> 3.71, the midpoint of a window running about 3.655 (blind -0.300) to 3.761 (oracle +0.500); recal_117's 4.10 is SUPERSEDED, not stacked"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Dorian Finney-Smith '21",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "THE OTHER HALF OF THE PAIR, and recal_99's pin: 3pt 72, so his share is 1.00 and he moves by EXACTLY zero. The gap between the two seasons closes from 24 to 9 without touching the higher one"
+    },
+    {
+      "card": "Dorian Finney-Smith '23",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 2,
+      "label": "the same man's third under-gate season, 3pt 59: 33 -> 45. The round is about the archetype, not the season"
+    },
+    {
+      "card": "Keegan Murray '25",
+      "scale": "off",
+      "op": "~",
+      "value": 52,
+      "tol": 2,
+      "label": "the scan's second named pair: '24 (3pt 72) 60 and '25 (3pt 59) 41, a 19-point step on one bar. '25 41 -> 52 and '24 does not move"
+    },
+    {
+      "card": "Keegan Murray '24",
+      "scale": "off",
+      "op": "~",
+      "value": 60,
+      "tol": 1,
+      "label": "3pt 72: above the saturation point, unmoved"
+    },
+    {
+      "card": "DeMarre Carroll '14",
+      "scale": "off",
+      "op": "~",
+      "value": 56,
+      "tol": 2,
+      "label": "the scan's third pair: 3pt 58 against '15's 69, 48 -> 56, and the 16-point step becomes 8"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_64's own named card, 3pt 95: share 1.00, unmoved BY CONSTRUCTION"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "r64's other named card, 3pt 93: the same"
+    },
+    {
+      "card": "Tony Snell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 50,
+      "tol": 1,
+      "label": "3pt 80: unmoved, r64's pin holds"
+    },
+    {
+      "card": "Bruce Bowen '06",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 1,
+      "label": "3pt 81: unmoved, r64's pin holds"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 2,
+      "label": "3pt 75: recal_91's subject, unmoved"
+    },
+    {
+      "card": "Rui Hachimura '26",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 4,
+      "label": "3pt 88: recal_91's other subject, unmoved"
+    },
+    {
+      "card": "Steve Novak '13",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 3,
+      "label": "3pt 99: recal_99's own card, unmoved"
+    },
+    {
+      "card": "Anthony Tolliver '14",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "3pt 95: the same"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "3pt 2 — a share of 0.03 on a floor far below his standard path, so the max() keeps his own line and he does not move. The ramp can only ever LIFT"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "3pt 4: recal_107's card, unmoved"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "3pt 7: recal_112's card, unmoved"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "3pt 72 but volume 89 — outside r64's usage gate, which this round does not touch. The summit is untouched"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "volume 95: the same, unmoved"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "off",
+      "op": "~",
+      "value": 53,
+      "tol": 3,
+      "label": "recal_117's subject, one commit old: 3pt 37 but his standard path already exceeds the ramped floor, so this round leaves him exactly where 117 left him"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "recal_117's second subject, unmoved here"
+    },
+    {
+      "card": "Dorian Finney-Smith '20",
+      "scale": "def",
+      "op": "~",
+      "value": 67,
+      "tol": 1,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Dorian Finney-Smith '21",
+      "below": "Dorian Finney-Smith '20",
+      "label": "the better shooting season still reads higher — by 9 where it read by 24"
+    },
+    {
+      "scale": "off",
+      "above": "Keegan Murray '24",
+      "below": "Keegan Murray '25",
+      "label": "the same, on the scan's second pair: 8 points apart where they were 19"
+    },
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Dorian Finney-Smith '20",
+      "label": "the summit reads far above the spacer, which is the point of a floor"
+    },
+    {
+      "scale": "off",
+      "above": "OG Anunoby '21",
+      "below": "Dorian Finney-Smith '20",
+      "label": "recal_91's pinned stretch big still reads above the man the ramp lifts"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 499,
+    "max_abs": 16,
+    "top": [
+      ["Kel'el Ware '26", 51, 67],
+      ["Jordan Walsh '26", 38, 54],
+      ["Trey Lyles '23", 41, 56],
+      ["Brook Lopez '23", 54, 67],
+      ["Torrey Craig '23", 37, 52],
+      ["Dorian Finney-Smith '20", 38, 53],
+      ["Mo Bamba '22", 49, 63],
+      ["Maxi Kleber '20", 43, 57],
+      ["Omri Casspi '14", 40, 53],
+      ["Raef LaFrentz '02", 56, 68],
+      ["Keegan Murray '25", 41, 52],
+      ["DeMarre Carroll '14", 48, 56]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE SUBJECT LANDS AT 53 AGAINST 55 +-3, AND THE TWO POINTS ARE THE RAMP ITSELF. 55 is exactly what the FULL floor pays Dorian Finney-Smith '20 (raw 55.37) - the target is the reading he would take if he CLEARED the gate outright. A ramp by definition does not give a man at 3pt 57 the whole of it: his share is 57/68 = 0.84 of the correction, and that is 53. Landing him on 55 would require the share to be about 0.98 at 3pt 57, which is a threshold at 57 rather than a ramp - the same cliff, moved down, with the same seventeen-pair problem underneath it. Recorded because a later round asking why he is not on 55 should find the answer here.",
+    "THREE FORMS WERE MEASURED AND ONLY ONE REACHES HIM, which is the cap of three the doctrine allows. (1) SCALE THE FLOOR, `max(std, f x floor)`, foot 0: he reads 46 - the scaled floor sinks below his own standard path long before it reaches him, and 89 cards move. (2) SCALE THE CORRECTION with the shortlist's own foot at 3pt 50: he reads 45. (3) SCALE THE CORRECTION with no foot, f = min(1, 3pt/68): 53, and no constant to choose. The first two are recorded rather than argued away.",
+    "THE BY-CONSTRUCTION CLAIMS WERE VERIFIED, NOT ASSUMED, as the dispatch required. Of the 499 cards that move: ZERO have 3pt >= 68 (the ramp is 1.00 there and the arithmetic is byte-identical), ZERO have volume >= 55 (r64's usage gate is untouched), ZERO have 3pt of 0, and ZERO move DOWN (the branch is a max() against a floor that only rises with the share). Every wing pin the floor was built on sits above the saturation point: Korver '15 3pt 95, Kerr '96 93, Bowen '06 81, Snell '18 80, Novak '13 99, Tolliver '14 95, Anunoby '21 75, Hachimura '26 88, Finney-Smith '21 72.",
+    "THE CLIFF IS SMALLER, NOT GONE: adjacent-season pairs of the same man that straddle 3pt 68 with both seasons under volume 55, the floor binding on the high side, and a gap of 10 or more OFF points, fall from 45 to 20. What remains is the ramp's own slope where the two seasons are far apart on the bar (Ersan Ilyasova '11 3pt 46 to '12 78 is still 17), which is a difference in shooting rather than a threshold crossing.",
+    "THE BIGGEST MOVERS ARE THE STRETCH BIG WHO IS NOT QUITE A SPECIALIST, found by the ramp and not by a name: Kel'el Ware '26 51 -> 67, Brook Lopez '23 54 -> 67, Mo Bamba '22 49 -> 63, Trey Lyles '23 41 -> 56, Maxi Kleber '20 43 -> 57, Raef LaFrentz '02 56 -> 68, Jordan Walsh '26 38 -> 54, Torrey Craig '23 37 -> 52. Every one is a low-usage big at 3pt 57-67 who crashes the glass - the class recal_91 built the big branch for, one rating point outside the gate that let him in. None is anchored.",
+    "ONE TAX RE-RATIFIED, AND IT IS THE SECOND CONSECUTIVE ROUND FOR THE SAME BAND. hunt broke again, this time on the ORACLE edge (+0.37 against +0.50) where recal_117 had it on the blind edge, and was re-ratified 4.10 -> 3.71 - the midpoint of a window running about 3.655 to 3.761. recal_117's 4.10 was measured on a pool WITHOUT this round's 499 cards and is SUPERSEDED by this figure, not stacked with it; the integrator re-sweeps once from main's own constant on the merged pool, as the law requires. crash off glass held the .10 recal_117 gave it (oracle +0.64, blind -0.48) and the other seven bands never moved.",
+    "RECEIPT 117'S TAX KNOB IS REPOINTED BY THIS ROUND, and the edit is in this commit rather than hidden in an amend. It named the constant `hunt: 4.10`, which this round moves to 3.71; it now names the ledger LINE in src/engine/tactics.ts that records what recal_117 measured (\"re-ratified 3.80 -> 4.10\"), which is permanent text. Nothing else in 117.json changes and its subject, expects, orders and movers all still read as it left them.",
+    "THE TWO ROUNDS ON THIS BRANCH ARE DISJOINT, measured: recal_117 moves no card inside recal_64's gate and recal_118 moves no card the passer term reaches. Mark Jackson '99, John Stockton '90 and Steve Nash '05 read exactly what 117 left them; Dorian Finney-Smith '20 reads 38 before this round with 117 already in.",
+    "THE ROUND NUMBER IS 118 AND THE PIPELINE VERSION IS LEFT ALONE, per the doctrine of 2026-09-03: PIPELINE_VERSION stays at what main shipped (114) and this file's `pipeline_version` carries the round number for the integrator to stamp."
+  ],
+  "notes": [
+    "WHAT THE DEFECT WAS. recal_64's off-ball floor is gated `3pt >= 68 and volume < 55`, and since recal_91 added the big branch behind that gate the thing it withholds is worth up to TWENTY-FOUR printed OFF points. One rating point of 3pt therefore decided a fifth of a card. Dorian Finney-Smith is the case on two seasons of the same job: '20 (3pt 57) 38 and '21 (3pt 72) 62, on usage 12.9 and 12.2, true shooting .595 and .609, 37.6% and 39.4% from the arc, BPM -0.2 and +0.1.",
+    "WHY THE SHARE IS OF THE CORRECTION AND NOT OF THE FLOOR. The floor is not a rival score to the standard path - it is a CORRECTION to it, the claim that a man who spaces, converts and holds the ball is worth more than his own weighted line says, because the standard path prices him on possessions he never uses. So the share he has earned is applied to that correction: `std + f x (floor - std)`. A man with no jumper has earned none of it and keeps his own line; a man at 3pt 68 has earned all of it and the branch is byte-identical to what stood before.",
+    "NO NEW CONSTANT, AND THAT IS THE ARGUMENT FOR 68. The saturation point is recal_64's own threshold, doing the job it was chosen for: 68 was always this file's statement of what a shooter is. The round does not move it, re-fit it or add a foot beneath it - it stops treating it as a door and starts treating it as a scale.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 499 of 10,000 cards move on OFF, every one of them UP, max +16, mean +3.50. DEF moves on ZERO cards and no attribute moves. OVR follows on 374. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip. All 126 anchors pass."
+  ]
+}

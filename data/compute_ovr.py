@@ -546,18 +546,69 @@ def o_score(p, trace=None):
     #     It is a HALF-floor, not a gate: a pure non-scorer who is also inefficient (Mark Jackson '98
     #     is efficiency 36) still keeps half the term, because his ruling is about the ball he moves,
     #     not about his jumper. Without the floor the group-B cards fall back to where they were.
-    # THE SIZE IS 0.32 AND IT IS HIS CHOICE, not the fit's: 0.36 put Nash on 86 and both Jacksons
-    # exactly on target, but carried John Stockton '97 to 93. 0.32 puts Nash on his stated floor of
-    # 85, keeps both Jacksons inside tolerance, and caps Stockton at 91. See the round file.
-    PD_PV_LO, PD_PV_HI = 80.0, 95.0
-    PD_V_LO, PD_V_HI = 10.0, 65.0
+    # THE SIZE WAS 0.32 AND IT WAS HIS CHOICE, not the fit's: 0.36 put Nash on 86 and both Jacksons
+    # exactly on target, but carried John Stockton '97 to 93. 0.32 put Nash on his stated floor of
+    # 85, kept both Jacksons inside tolerance, and capped Stockton at 91. See the round file.
+    #
+    # recal_117 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). BOTH GATES ARE
+    # RAMPED, AND VOLUME IS READ ONCE. Items 3 and 4 of the scan's shortlist are the two halves of
+    # one defect: r109 built the class correctly and then priced it with two cliffs.
+    #
+    # ITEM 3, THE PLAYVOL CLIFF. 80 -> 95 is 1/15 of the term per playvol point, and playvol is a
+    # PERCENTILE inside its own season pool, so a 50-game lockout year re-ranks a man who did the
+    # same job. MARK JACKSON '99 is the case: 7.6 assists on .513 shooting at BPM 3.0, an assist
+    # share of 46.7% - HIGHER than his own '98 (45.4) and '00 (45.0), both of which HE pinned - and
+    # his box sits between the two. His playvol reads 86 against 94 and 91, and the gate turned that
+    # eight-point percentile wobble into SEVEN OFF points: 47 against 54 and 57.
+    # THE RAMP IS RE-CUT ON THE POOL, not on his card. 80 -> 95 spans the top 6.5% of the 10,000
+    # cards down to the top 0.8%: full credit was reserved for EIGHTY-FOUR seasons in history, which
+    # is not a ramp, it is a needle. 70 -> 85 spans the top 14.7% to the top 4.0% - the same fifteen
+    # rating points covering nearly TWICE the population, because playvol's density climbs steeply
+    # as you come down the scale. The foot stops AT 70 and not below it because recal_112's
+    # efficient interior scorer is gated `playvol <= 70`: at exactly 70 both gates are 0, so the two
+    # terms stay disjoint BY CONSTRUCTION and no card can take both. (Measured: at a foot of 65 one
+    # card - Jeff Hornacek '97, playvol 66 - takes both, which is why the foot is 70.)
+    #
+    # ITEM 4, THE DOUBLE CHARGE. Volume was read TWICE: once by the gate and once again by the
+    # `(1 - volume/100)` discount, and the product of two decreasing factors is steeper than either.
+    # The consequence was an INVERTED ARC - inside the band, scoring more LOWERED a passer's OFF at
+    # about 0.28 of a point per volume point, net of the 0.26 the standard path pays for the same
+    # volume. JOHN STOCKTON '90 is the case: his best season by BPM (8.9, 17.2 points and 14.5
+    # assists on .607 true shooting) read 79, BELOW his own '88 (82) whose only advantage is that he
+    # scored less. The gate charged him 0.53 where '88 pays 0.91 and '97 0.76.
+    # THE RULE: VOLUME IS READ ONCE, BY THE GATE. The `(1 - volume/100)` factor is gone and the
+    # constant absorbs its value at the band's foot (0.32 x 0.90 = 0.288 -> 0.245). The band itself
+    # widens 65 -> 68, set just clear of the nearest star it must exclude rather than on top of him:
+    # Magic Johnson '89 is volume 70 and '87 is 71, and both still sit at gate 0.00 exactly, as do
+    # Chris Paul '09 (82), LeBron '13 (97), Harden '19 (99) and Jokic '25 (89).
+    # WHAT THAT BUYS, measured: the net charge per volume point falls from -0.28 to -0.16 and
+    # Stockton's arc turns the right way up - '88 80, '89 83, '90 82, '91 80, '92 83, where it read
+    # 82, 82, 79, 78, 81. ZERO IS INFEASIBLE AND THAT IS ARITHMETIC, not a choice: a net charge of
+    # zero needs the term's own slope to be at most the standard path's 0.26, i.e. a volume band 93
+    # points wide, which starves the pure non-scorer this same round has to lift (Mark Jackson '99
+    # falls to 49). The compounding is what is removable; the gate's own slope is what the gate is.
+    #
+    # THE SIZE IS 0.245 AND IT IS FIXED BY HIS OWN CAP, not chosen. He capped John Stockton '97 at
+    # 91 when he took 0.32 over 0.36 ("K=0.32 not 0.36"), and '97 is the largest term on the board,
+    # so the cap prices everything: 0.245 puts him on 91.06 with the next display point at 91.50.
+    # THE FRONTIER, and it is why the two subjects land where they do rather than on their numbers.
+    # Stockton '90 (volume 36) and Steve Nash '05 (volume 42) differ by SIX volume points and by
+    # nothing else the term reads - playvol 99 against 97, efficiency 94 against 96, both at gate
+    # 1.00 on playvol. Reaching 84 for Stockton needs the volume response to fall 26% across those
+    # six points while falling no more than 20% across the thirteen points from '97 (23) to '90 (36)
+    # - an accelerating decline that no single monotone gate of this family has, and the search
+    # confirms it: every parameterisation that puts Stockton '90 above 82 puts Nash '05 above 88 and
+    # out of his own recal_109 band. So both subjects land INSIDE tolerance and neither lands on its
+    # centre: Jackson '99 53 against 54 +-3, Stockton '90 82 against 84 +-3.
+    PD_PV_LO, PD_PV_HI = 70.0, 85.0
+    PD_V_LO, PD_V_HI = 10.0, 68.0
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
     if _gpv * _gv > 0.0:
         _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
               (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
-        _pd = 0.32 * a['playvol'] * (1.0 - a['volume'] / 100.0) * _gpv * _gv * _ge
+        _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge
         std += _pd
         if trace is not None:
             trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, added=_pd)
@@ -610,7 +661,45 @@ def o_score(p, trace=None):
         std += _ef
         if trace is not None:
             trace['interior'] = dict(gate=_ee * _ev * _ep * _e3, added=_ef)
-    if a['3pt'] >= 68 and a['volume'] < 55:
+    # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
+    # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
+    #
+    # THE DEFECT. r64's gate is `3pt >= 68 and volume < 55`, and since recal_91 grew the big branch
+    # the thing behind that gate is worth up to TWENTY-FOUR printed OFF points. One rating point of
+    # `3pt` therefore decides a fifth of a card. DORIAN FINNEY-SMITH is the case, on two seasons of
+    # the same job: '20 (3pt 57) reads 38 and '21 (3pt 72) reads 62, on usage 12.9 and 12.2, true
+    # shooting .595 and .609, 37.6% and 39.4% from the arc, BPM -0.2 and +0.1. Across the whole pool
+    # 45 adjacent-season pairs of the same man jump 10 or more OFF points across this one flip.
+    #
+    # THE RAMP, and it introduces NO NEW CONSTANT. The share of the floor a man has earned is his
+    # own shooting measured against r64's own number: `min(1, 3pt / 68)`. At 3pt 68 and above it is
+    # 1.0 and the branch is byte-identical to what stood before; below it the man is paid in
+    # proportion to how much of a spacer he actually is. 68 stops being a threshold and becomes the
+    # point of saturation - the same number, doing the job it was chosen for.
+    #
+    # WHAT THE SHARE IS APPLIED TO, which is the whole of why this reaches the card. The floor is
+    # not a rival score: it is a CORRECTION to the standard path - the claim that a man who spaces,
+    # converts and holds the ball is worth more than his own weighted line says. So the share is
+    # applied to the CORRECTION and not to the floor: `std + f x (floor - std)`, which at f = 1 is
+    # `max(std, floor)` exactly. MEASURED, all three forms, on the whole pool:
+    #   floor x f, foot 0     Finney-Smith '20 reads 46 - the scaled floor sinks below his own
+    #                         standard path long before it reaches him
+    #   correction x f, foot 50 (the shortlist's own example)  he reads 45
+    #   correction x f, foot 0                                 he reads 53
+    # Only the last one reaches his band, and it is also the only one with no constant to choose.
+    #
+    # UNTOUCHED BY CONSTRUCTION, and verified rather than assumed - of the 499 cards that move,
+    # ZERO have 3pt >= 68, ZERO have volume >= 55 and ZERO have 3pt of 0. Every wing pin the floor
+    # was built on is above the saturation point (Korver '15 95, Kerr '96 93, Bowen '06 81, Snell
+    # '18 80, Novak '13 99, Tolliver '14 95, Anunoby '21 75, Hachimura '26 88, Finney-Smith '21 72)
+    # and every volume scorer is outside r64's usage gate, which this round does not touch.
+    # MEASURED: 499 of 10,000 cards move on OFF, every one of them UP, max +16, mean +3.50; DEF and
+    # every attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no
+    # entrant, no leaver and no rank flip. The cliff pairs fall from 45 to 20 and Finney-Smith's own
+    # gap closes from 24 to 9.
+    OB_3P_FULL = 68.0
+    _f3 = min(1.0, max(0.0, a['3pt'] / OB_3P_FULL))
+    if _f3 > 0.0 and a['volume'] < 55:
         _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
         # recal_91 (HIS RULINGS, verbatim: "Too low OFF 54. Should be mid 60s" for OG Anunoby '21,
         # and "OFF should be low 60s, or high 60s. Not 55" for Rui Hachimura '26).
@@ -654,9 +743,12 @@ def o_score(p, trace=None):
             _g = max(min(1.0, max(0.0, (a['volume'] - SB_V_LO) / (SB_V_HI - SB_V_LO))),
                      min(1.0, max(0.0, (a['orb'] - SB_ORB_LO) / (SB_ORB_HI - SB_ORB_LO))))
             _fl += _g * (0.17*(a['orb'] + a['rim']) + 0.10*a['volume'])
-        std = max(std, _fl)
+        # recal_118: the share of the CORRECTION he has earned, not the whole of it. At _f3 == 1.0
+        # this line is `max(std, _fl)` byte for byte, which is what every card above 3pt 68 gets.
+        _flr = std + _f3 * (_fl - std)
+        std = max(std, _flr)
         if trace is not None:
-            trace['offball_floor'] = dict(value=_fl, binding=std == _fl,
+            trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     if trace is not None: trace['o_score'] = std
     return std
