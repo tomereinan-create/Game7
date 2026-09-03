@@ -1,7 +1,7 @@
 import { bestBoard, creation, KNOBS, naiveAssignment, pairingTable, teamOffense, usageSurplus } from './offense'
 import type { BoxCtx } from './boxstats'
 
-import type { Lineup, Player } from './types'
+import type { Attrs, Lineup, Player } from './types'
 
 /**
  * DEATH MATCH TACTICS, picked on the My team screen. Every choice is priced the way the engine
@@ -207,6 +207,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * again and crash def glass broke on the ORACLE edge at .74 (+0.40). Swept .40/.44/.47/.50/.58/.66:
  * the window is one value wide — .44 reads blind -0.32 / oracle +0.50, .40 fails blind (-0.28), .47
  * fails oracle (+0.49). Re-ratified .74 -> .44, on the edge, the way r86 sat. Eight others untouched.
+ * recal_115 rewrote three of the seven STYLE fit formulas (five-out, post-up, helio) and is the
+ * first round since r58 to move what the playstyle row is actually measuring rather than the pool
+ * it measures on. The band was re-read and HELD: playstyle random -1.09 -> -1.15 (floor -1.50) and
+ * oracle +0.71 -> +0.68 (floor +0.50), both inside, and the other eight rows did not move at all.
+ * NO TAX WAS TOUCHED. Recorded because it is the narrowest playstyle has read since it was
+ * ratified — the oracle has 0.18 of headroom — and a further widening of any style's fit range
+ * should expect to re-ratify TAX.style rather than read a break as a fault in the new formula.
  */
 export const TAX = {
   scorer: 0.55,
@@ -317,13 +324,81 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
   return { handler, screener, chosen: false }
 }
 
+/**
+ * THE SHOOTING LINE (his ruling: "Why is Ayton out and James in? Makes no sense"). A man stands in
+ * a spacing spot only if he can shoot from there. The line is the pool's own class rule —
+ * BIG_RULE reads a big as `rim >= 60 AND 3pt < 40` — so 40 is where this game already stops calling
+ * a man a shooter, and the floor uses the same number the classifier does. One number, exported,
+ * because the drawing and the style inference must agree about who can space.
+ *
+ * SHOOT_3PT_HI (recal_115) is the OTHER line, and it is a different question: 40 is "may stand
+ * behind the arc at all", 60 is "the defence must close out on him". A set that owns an inside spot
+ * only needs the first; five-out, which owns none, is judged on the second (his ruling: "How come
+ * Boston post up and not 5 out?" — five-out wants four or five men a defence has to guard out
+ * there). The same 60 is where a big stops being an interior hub in the post-up read.
+ */
+export const SHOOT_3PT = 40
+export const SHOOT_3PT_HI = 60
+export const canSpace = (p: Player) => p.attrs['3pt'] >= SHOOT_3PT
+/** Is he a big the defence can leave at the rim — the man five-out has nowhere to stand? */
+const shyBig = (x: Attrs) => x.height >= 81 && x['3pt'] < SHOOT_3PT
+/** How much of a big's game is INTERIOR: 1 at 3pt <= 20, falling to 0 once he shoots like a shooter. */
+const interior = (x: Attrs) => clamp((SHOOT_3PT_HI - x['3pt']) / 40, 0, 1)
+
+/**
+ * THE SCORER-CREATOR (recal_115, his ruling: "Why is the system helio for rus when KD is a better
+ * scorrer?"). Helio used to key on min(volume, playvol) — pure play VOLUME, which asks only how much
+ * of the offence a man touches and nothing about whether the touches are worth having. Westbrook '16
+ * (volume 95, playvol 98, efficiency 56) beat Durant '16 (volume 92, playvol 70, efficiency 98) on
+ * that measure, which is exactly the complaint.
+ *
+ * The composite is SCORING LOAD x EFFICIENCY x CREATION, in the engine's own currencies: `volume`
+ * is the load, `efficiency` is what the load is worth, and `creation` is the offense engine's own
+ * creation term (offense.ts — playvol and ball security, 0..1) scaled onto the 0-100 axis the
+ * attributes live on. It is the same three facts o_score weighs, read off the sheet rather than off
+ * the card, so the tactic picker stays a pure function of `attrs` like every other fit in this file.
+ * Durant '16 reads 88.3 to Westbrook's 81.5.
+ */
+export const scorerCreator = (x: Attrs) => 0.45 * x.volume + 0.3 * x.efficiency + 25 * creation(x)
+
+/**
+ * TWO SUPERSTARS (his ruling: "why Helio when they have 2 superstars?"). Helio is one man being the
+ * whole offence; two men who are both that man is a different team, and the read must say so.
+ * General, no names: the five's top two by scorerCreator, both over STAR_LINE and within DUO_GAP of
+ * each other. 78 is roughly the 99.5th percentile of the composite over the card pool — a genuine
+ * number one — and 8 points is the width inside which neither is the other's helper.
+ *
+ * Two men that close at that height are rare: over the 1,255 team-seasons on the wheel the test
+ * fires on 31 of them (2.5%, scripts/tactics115.ts) — Thunder '16 (Durant 88.3 / Westbrook 81.5),
+ * Warriors '17 (Curry 89.7 / Durant 86.7), Lakers '01 (O'Neal 87.7 / Bryant 82.8) — and never on a
+ * five with one star and a good second man (Cavaliers '16 read James 89.0 / Irving 77.2, which
+ * misses the star line by 0.8 and the gap by 3.8).
+ */
+export const STAR_LINE = 78
+export const DUO_GAP = 8
+export function twoStars(five: Player[]): boolean {
+  const e = five.map((p) => scorerCreator(p.attrs)).sort((x, y) => y - x)
+  return e.length >= 2 && e[1] >= STAR_LINE && e[0] - e[1] <= DUO_GAP
+}
+
 export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: PnrPair | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
   switch (style) {
-    case 'fiveout':
-      return Math.min(...a.map((x) => x['3pt'])) * 0.6 + avg((x) => x['3pt']) * 0.4
+    case 'fiveout': {
+      // FIVE-OUT IS A COUNT, NOT AN AVERAGE (recal_115, his ruling: "How come Boston post up and not
+      // 5 out?"). It used to be 0.6 x the WORST shooter + 0.4 x the mean, which is a formula about
+      // the weakest link: one 52 in a five of 80s held the fit under the free default, and five-out
+      // won on ONE of the 1,255 team-seasons on the wheel. What the set actually needs is four or
+      // five men the defence must close out on (SHOOT_3PT_HI) and NO big it can leave at the rim,
+      // since five-out is the one set with no inside spot to stand him in. So: the shooter count
+      // carries it, the mean and the floor shade it, and every non-shooting big is a 25-point hole
+      // in the middle of the floor. Boston '25 reads 73 (four shooters, no shy big); Houston '18,
+      // four shooters and Capela, reads 36.
+      const shooters = a.filter((x) => x['3pt'] >= SHOOT_3PT_HI).length
+      return 0.3 * avg((x) => x['3pt']) + 0.2 * Math.min(...a.map((x) => x['3pt'])) + 10 * shooters - 25 * a.filter(shyBig).length
+    }
     case 'pnr': {
       // his two men when he named them, the engine's own pair when he did not — same three terms
       const { handler: h, screener: d } = pnrPair(five, pnr)
@@ -337,14 +412,31 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       return 0.5 * avg((x) => x.ballsec) + 0.3 * avg((x) => x.playvol) + 0.2 * a.filter((x) => x['3pt'] >= 60).length * 20 - 12 * stoppers
     }
     case 'postup': {
+      // A POST HUB WORKS INSIDE (recal_115). The hub term was min(rim, volume) on any man 6'9" or
+      // taller, which made a post team of every five with a tall high-volume scorer however he got
+      // his points: Durant '17 (3pt 74) read post-up 81, Porzingis '25 (3pt 86) read 69 and beat
+      // Boston's five-out. Two corrections, both general: the hub scores from the BLOCK, so his
+      // post score is his best interior shot — the rim or the turnaround, min(max(rim, mid), volume),
+      // which is what stops a mid-post game like Malone's from reading as no post game at all — and
+      // it is scaled by how INTERIOR his own game is, so a big who lives behind the arc is not a
+      // hub at any volume. O'Neal '00 (3pt 2) is untouched at 77; Porzingis '25 falls to 0.
       const bigs = five.filter((p) => p.attrs.height >= 81)
-      const post = Math.max(0, ...bigs.map((p) => Math.min(p.attrs.rim, p.attrs.volume)))
-      const pName = bigs.sort((x, y) => Math.min(y.attrs.rim, y.attrs.volume) - Math.min(x.attrs.rim, x.attrs.volume))[0]?.name
+      const hub = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.volume) * interior(x)
+      const post = Math.max(0, ...bigs.map((p) => hub(p.attrs)))
+      const pName = bigs.sort((x, y) => hub(y.attrs) - hub(x.attrs))[0]?.name
       return post * 0.7 + mean(five.filter((p) => p.name !== pName), (p) => p.attrs['3pt']) * 0.3
     }
     case 'helio': {
-      const star = Math.max(0, ...a.map((x) => Math.min(x.volume, x.playvol)))
-      return star * 0.8 + Math.min(...a.map((x) => x.ballsec)) * 0.2
+      // HELIO IS ONE MAN ALONE (recal_115, his ruling: "why Helio when they have 2 superstars?").
+      // Two changes. The engine is the five's best SCORER-CREATOR, not its highest play-volume man
+      // (scorerCreator above), so Durant '16 is Oklahoma City's featured man and not Westbrook. And
+      // the fit now reads the SEPARATION: a helio offence is a man who towers over the four beside
+      // him, so the term is his composite plus what he has on the second-best man on the floor. A
+      // five with two stars scores low here by construction and bestStyle will not read it as helio
+      // at all. The ball-security floor survives at a lighter weight — one man carrying an offence
+      // still needs four who do not turn it over. Thunder '22 (Gilgeous-Alexander alone) reads 65.
+      const e = a.map(scorerCreator).sort((x, y) => y - x)
+      return 0.7 * e[0] + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
     }
     case 'transition': {
       const opp = theirs?.length ? 100 - mean(theirs, (p) => p.attrs.ballsec) : 50
@@ -465,16 +557,6 @@ export function aiScheme(five: Player[], theirs: Player[]): Scheme {
  * contradict. It lives here beside its two siblings so that the day the AI does call a style, the
  * floor and the sim are one function and cannot name different shapes.
  */
-/**
- * THE SHOOTING LINE (his ruling: "Why is Ayton out and James in? Makes no sense"). A man stands in
- * a spacing spot only if he can shoot from there. The line is the pool's own class rule —
- * BIG_RULE reads a big as `rim >= 60 AND 3pt < 40` — so 40 is where this game already stops calling
- * a man a shooter, and the floor uses the same number the classifier does. One number, exported,
- * because the drawing and the style inference must agree about who can space.
- */
-export const SHOOT_3PT = 40
-export const canSpace = (p: Player) => p.attrs['3pt'] >= SHOOT_3PT
-
 export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fit: number } {
   let best: Style = 'balanced'
   let bestFit = 60
@@ -482,9 +564,16 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
   // non-shooter on; five-out owns none, so a five carrying two men who cannot shoot is never READ
   // as five-out however the fit lands. Called five-out is untouched — a call is a call.
   const shy = five.filter((p) => !canSpace(p)).length
+  // ...and HELIO DEMANDS ONE STAR (recal_115, his ruling: "why Helio when they have 2 superstars?").
+  // The same shape of rule, on the other end: a five whose top two scorer-creators are both over
+  // STAR_LINE and within DUO_GAP of each other is never READ as helio, whatever the fit lands on.
+  // What it reads instead is whatever else fits the pair — usually the pick-and-roll between them,
+  // and the caption names both men (see featured). A call is still a call.
+  const duo = twoStars(five)
   for (const s of STYLES) {
     if (s.key === 'balanced') continue
     if (s.key === 'fiveout' && shy >= 2) continue
+    if (s.key === 'helio' && duo) continue
     const fit = styleFit(s.key, five, theirs)
     if (fit > bestFit) {
       bestFit = fit
@@ -492,6 +581,30 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
     }
   }
   return { style: best, fit: bestFit }
+}
+
+/**
+ * WHO THE SHAPE IS FOR (recal_115, his ruling: "Why is the system helio for rus when KD is a better
+ * scorrer?"). The men a style stands its featured spots on — the helio engine, the post hub, the two
+ * men of the pick-and-roll — in the order the caption should name them. Empty for the sets that
+ * feature nobody. ONE function, so the drawing (CourtFive.spotsFor), the fit above and the caption
+ * can never name different men; the scores are the fit formulas' own.
+ */
+export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Player[] {
+  if (five.length < 2) return []
+  const top = (score: (x: Attrs) => number) => five.reduce((m, p) => (score(p.attrs) > score(m.attrs) ? p : m), five[0])
+  switch (style) {
+    case 'helio':
+      return [top(scorerCreator)]
+    case 'postup':
+      return [top((x) => (x.height >= 81 ? Math.min(Math.max(x.rim, x.mid), x.volume) * interior(x) : -1))]
+    case 'pnr': {
+      const { handler, screener } = pnrPair(five, pnr)
+      return [handler, screener].filter((p): p is Player => !!p)
+    }
+    default:
+      return []
+  }
 }
 
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
