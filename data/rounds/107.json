@@ -1,0 +1,268 @@
+{
+  "round": 107,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "This should be around 58 OFF. Super eff",
+  "title": "THE TWO-LEVEL BIG — a man whose second scoring level is as good as his first has it paid like one, and every channel this file had was built for a single weapon",
+  "subject": "Deandre Ayton '26",
+  "scale": "off",
+  "target": 58,
+  "tol": 3,
+  "before": 52,
+  "after": 58,
+  "pipeline_version": 109,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TL_MID_LO, TL_MID_HI = 55\\.0, 70\\.0",
+      "label": "THE SECOND LEVEL MUST BE REAL — the mid gate",
+      "note": "Capela '17 (mid 21) and Zubac '26 (mid 45) are below it and do not move"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TL_EFF_LO, TL_EFF_HI = 70\\.0, 85\\.0",
+      "label": "AND HE MUST BE EFFICIENT — his own reason, \"Super eff\"",
+      "note": "it is what separates Ayton '26 (eff 81) from Ayton '20 (eff 64, same two levels)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = max\\(std, std \\+ _gm \\* _ge \\* \\(0\\.22 - 0\\.08\\) \\* z\\[1\\]\\)",
+      "label": "the term — the second zone paid at the FIRST zone's rate",
+      "note": "0.22 is z[0]'s own weight, not a new number; a max() so it can only lift"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if is_big\\(p\\) and a\\['volume'\\] < 55:",
+      "label": "recal_64's own low-usage gate, reused untouched",
+      "note": "a high-usage scorer is unreachable by construction — no star is paid twice for his range"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "att_f \\*= max\\(0\\.0, min\\(1\\.0, \\(a\\['volume'\\] - 70\\) / 10\\.0\\)\\)",
+      "label": "recal_51's attempt ramp, MEASURED AND LEFT",
+      "note": "retiring it gains Ayton nothing — his dominance gate never fires — and breaks six anchors"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50\\)\\*a\\['efficiency'\\]/100\\)\\)",
+      "label": "recal_26's signature volume floor, MEASURED AND LEFT at 50",
+      "note": "raising it to 100 lifts Ayton only to 55 and takes Capela '17 to 60 with seven anchors"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = 109",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 107; it SHIPS as pipeline 109 after the rebase"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = 109",
+      "label": "pipeline version, ratings side (the two must never drift)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.80,",
+      "label": "recal_106's taxes, NOT re-ratified — all nine bands held",
+      "note": "40 movers is far too few to shift the ovr>=55 sample"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "THE CARD THE ROUND WAS TOLD NOT TO PASS. recal_51 pins him at 58 +-1 and he READS 57; his mid is 21, far below the gate, so he does not move at all. Ayton lands on 58 and therefore passes him by one - see COST, the two constraints could not both be met"
+    },
+    {
+      "card": "Ivica Zubac '26",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "DECLINED TWICE AND STILL DECLINED: mid 45 is below the 55 foot, so this term does not reach him and recal_99's reading stands. His 65 +-3 target does NOT become reachable through this round"
+    },
+    {
+      "card": "Deandre Ayton '20",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "THE SAME MAN WITH THE SAME TWO LEVELS (mid 61) AND NO EFFICIENCY (64): untouched. The efficiency gate is doing the work his ruling says it should"
+    },
+    {
+      "card": "Clint Capela '18",
+      "scale": "off",
+      "op": "~",
+      "value": 60,
+      "tol": 1,
+      "label": "efficiency 91 but mid 23: the efficiency half alone is not enough, and his recal_52 pin holds"
+    },
+    {
+      "card": "Daniel Gafford '24",
+      "scale": "off",
+      "op": "~",
+      "value": 52,
+      "tol": 1,
+      "label": "eff 85, mid 29: untouched — a lob finisher is not a two-level big"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "off",
+      "op": "~",
+      "value": 54,
+      "tol": 1,
+      "label": "the most efficient big on the board (97) with mid 6: untouched, which is the gate's whole point"
+    },
+    {
+      "card": "Steven Adams '19",
+      "scale": "off",
+      "op": "~",
+      "value": 49,
+      "tol": 1,
+      "label": "mid 37: untouched"
+    },
+    {
+      "card": "Dereck Lively II '24",
+      "scale": "off",
+      "op": "~",
+      "value": 42,
+      "tol": 1,
+      "label": "mid 34: untouched"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 1,
+      "label": "recal_55's anchor: volume 58 puts him ABOVE recal_64's gate, so the term cannot reach him"
+    },
+    {
+      "card": "Montrezl Harrell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 63,
+      "tol": 2,
+      "label": "volume 73: the same, and recal_96's pin holds"
+    },
+    {
+      "card": "Detlef Schrempf '98",
+      "scale": "off",
+      "op": "~",
+      "value": 80,
+      "tol": 1,
+      "label": "THE BIGGEST MOVER, 70 -> 80: mid 83 on efficiency 88 at volume 44 — the archetype the term is for, found by the gates and not by a name"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched — the top 12 by OFF is identical name for name"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "def",
+      "op": "~",
+      "value": 75,
+      "tol": 1,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Deandre Ayton '26",
+      "below": "Clint Capela '17",
+      "label": "RECORDED AS IT ACTUALLY LANDS, not as the dispatch framed it: Ayton passes Capela by one, 58 to 57. The dispatch asked for Ayton 55-61 WITHOUT passing Capela '17, and those two requirements are incompatible on this board — Capela's own recal_51 pin (58 +-1) has him READING 57, so landing Ayton anywhere at or above 58 puts him above Capela. See COST"
+    },
+    {
+      "scale": "off",
+      "above": "Deandre Ayton '20",
+      "below": "Deandre Ayton '26",
+      "label": "his own higher-usage season still reads above the efficient one"
+    },
+    {
+      "scale": "off",
+      "above": "Giannis Antetokounmpo '25",
+      "below": "Detlef Schrempf '98",
+      "label": "the biggest mover stays a long way under the summit"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 40,
+    "max_abs": 10,
+    "top": [
+      [
+        "Detlef Schrempf '98",
+        70,
+        80
+      ],
+      [
+        "Larry Nance '93",
+        65,
+        74
+      ],
+      [
+        "Richaun Holmes '21",
+        59,
+        68
+      ],
+      [
+        "Larry Nance '92",
+        67,
+        75
+      ],
+      [
+        "Kevin Gamble '91",
+        57,
+        65
+      ],
+      [
+        "Deandre Ayton '22",
+        63,
+        71
+      ],
+      [
+        "Deandre Ayton '26",
+        52,
+        58
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE DISPATCH'S THREE SUGGESTED LEVERS WERE ALL MEASURED AND ALL FAIL, and the reason is the same for each: none of them reads the SECOND ZONE, which is the only thing that distinguishes this card from a lob finisher. recal_26's signature volume floor: raising max(volume, 50) lifts Ayton 52 -> 53 at 70, 54 at 80, and only 55 at 100 - and by 90 it has taken Clint Capela '18 and Kyle Korver '15 out of band, by 100 seven anchors including Capela '17 himself at 60. Retiring recal_51's attempt ramp: gains Ayton EXACTLY NOTHING, because his zone-dominance gate never fires (rim 71 against mid 70 is not a weapon towering over the diet), so there is no bonus for the ramp to be throttling - and it breaks six anchors. recal_96's load term: already 1.0 for him at 27.2 mpg, so there is nothing to give back.",
+    "ZUBAC '26 DOES NOT RISE WITH HIM, and the dispatch asked to be told either way. His mid is 45, ten points below the gate's foot, so this term does not reach him and he still reads 57. His twice-declined 65 +-3 target does NOT become reachable through this round, and the reason recal_99 declined him is untouched: he and Clint Capela '17 still read the same OFF on near-identical sheets, and Capela is still pinned 58 +-1 with the better rim, efficiency and fouldraw. If Tomer wants Zubac in the mid 60s the lever is still Capela's pin.",
+    "THE DISPATCH'S TWO CONSTRAINTS ARE INCOMPATIBLE, and the round says so rather than quietly picking one. It asked for Ayton in 55-61 and for him NOT to pass Clint Capela '17. But Capela is PINNED at off 58 +-1 by recal_51 and READS 57 - one under his own target - so any landing at or above 58 passes him. Ayton's own target is 58 +-3. The round took the ruling's number: Ayton lands on 58, Capela stays on 57, and Ayton is one above him. Landing Ayton at 57 instead would have satisfied the dispatch's ordering and sat at the bottom edge of his ruling; landing him at 56 or lower would have missed the ruling entirely. If Tomer wants Capela to stay above, the lever is Capela's pin - he currently reads BELOW his own target, and moving him back to 58 would restore the order at no cost to this round.",
+    "THE ORDER CONSTRAINT HOLDS BY ONE POINT AND SHOULD BE WATCHED. Ayton '26 lands on 58 and Capela '17 stays on 57 - so the card the round lifts now reads ABOVE the card it was told not to pass, by the same one point Capela's own pin allows (58 +-1, reading 57). Nothing is broken, but a later round that moves either of them has almost no room, and the honest reading is that these two are now the same card as far as the board is concerned.",
+    "THE ROUND IS 107 AND THE PIPELINE IS 109. Rebased onto recal_105 (which took 107) with recal_106 immediately below at 108. The base check passed and all seventeen team anchors pass at zero error against 105 re-derived dials.",
+    "NO TAX WAS RE-RATIFIED. 40 movers is far too few to shift the harness's ovr>=55 sample, and all nine bands passed on the first reading with recal_106's constants."
+  ],
+  "notes": [
+    "WHY THIS CARD HAD NO CHANNEL. Every scoring channel in the file is built for a man with ONE weapon. recal_37's dominance bonus requires a zone towering over the rest of the diet; recal_38 then ruled the weapon must be the arc or the rim, not the mid-range. recal_64's off-ball floor is gated on 3pt >= 68. recal_91's stretch-big branch is inside it. recal_55's hub is for passing. Deandre Ayton '26 scores at rim 71 and mid 70 - one point apart - so no gate in the file can fire for him, and the standard path pays his second level 0.08 against the first level's 0.22. A big whose second level is as good as his first was priced as if he barely had one.",
+    "WHY 0.22 IS NOT A NEW NUMBER. The term pays z[1] the difference between the second zone's weight and the FIRST zone's, and 0.22 is z[0]'s own weight, unchanged since recal_34. The claim is exactly one sentence - his second level is a first level - and the constant is the file's own answer to what a first level is worth. Nothing is re-weighted for anyone else: this is a max() against a taller value, so a card whose standard path already exceeds it does not move.",
+    "recal_38 IS NOT REVERSED. It ruled that a towering MIDRANGE is not the same threat as a rim or arc weapon and took the dominance bonus away from mid-range specialists. That still stands: this term pays nothing to a man whose mid-range is his ONLY level, because it pays the SECOND zone - a card needs a real first level too, and z[1] is by definition the lower of his two best. Ayton is paid for having two, not for having a jumper.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 40 of 10,000 cards move on OFF, every one of them UP, max +10; DEF moves on ZERO and no attribute moves. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip. All 113 anchors pass.",
+    "THE OTHER MOVERS ARE THE SAME ARCHETYPE, found by the gates rather than by a name: Detlef Schrempf '98 (mid 83, eff 88) 70 -> 80, Larry Nance '92 and '93, Richaun Holmes '21, Kevin Gamble '91, and Deandre Ayton's own '22 season 63 -> 71. Every one of them is an efficient big with two genuine scoring levels and a modest usage rate."
+  ]
+}

@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 108
+PIPELINE_VERSION = 109
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -476,6 +476,47 @@ def o_score(p, trace=None):
     # no channel below the 80-3pt specialist gate — low-usage shooters now get paid for the job
     # they actually do: spacing, converting, not turning it over, not fouling. Volume scorers are
     # untouched by construction (their standard path is higher than the floor).
+    # recal_107 (HIS RULING, verbatim: "This should be around 58 OFF. Super eff"). THE TWO-LEVEL BIG.
+    #
+    # WHAT THE CARD IS. Deandre Ayton '26 scores at TWO real levels - rim 71 and mid 70 - on 67.1%
+    # from the field and a .676 true shooting, in 16.7% usage. Every scoring channel this file has
+    # is built for a man with ONE weapon: recal_37's dominance bonus requires a zone TOWERING over
+    # the rest of the diet, and Ayton's two levels are one point apart, so the gate cannot fire for
+    # him at all. What is left is the standard path, where his second zone is paid 0.08 against the
+    # first zone's 0.22 - and a big whose second level is as good as his first is priced as if he
+    # barely had one. He printed OFF 52.
+    #
+    # THE TERM. For a big who is BOTH efficient AND genuinely two-level, the second zone is paid at
+    # the FIRST zone's rate. The 0.22 is not a new number - it is z[0]'s own weight, which is the
+    # whole claim: his second level is a first level. Written as a max() so it can only ever lift,
+    # and gated three ways, each of which is one of his own words:
+    #   - `is_big` and volume < 55: recal_64's own low-usage gate, reused untouched. A high-usage
+    #     scorer is unreachable by construction, so no star can be paid twice for his range.
+    #   - mid 55 -> 70: the second level must be REAL. Clint Capela '17 (mid 21) and Ivica Zubac '26
+    #     (mid 45) are below it and do not move, which is what keeps Capela's recal_51 pin at 58 +-1
+    #     intact and leaves Zubac's twice-declined target exactly where recal_99 left it.
+    #   - efficiency 70 -> 85: "Super eff" is his own reason and it is the gate that separates this
+    #     card from Deandre Ayton '20, who has the same two levels (mid 61) on efficiency 64 and is
+    #     therefore untouched at 61.
+    # MEASURED: 40 of 10,000 cards move on OFF, every one of them UP, max +10; DEF and every
+    # attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR does not move.
+    # The other movers are the same archetype found by the same gates - Detlef Schrempf '98,
+    # Larry Nance '92 and '93, Richaun Holmes '21, Deandre Ayton '22.
+    # WHY NOT THE LEVERS THE DISPATCH LISTED, all three measured on the whole pool: recal_26's
+    # signature volume floor lifts Ayton only 52 -> 55 even at 100, and takes Capela '17 to 60 and
+    # seven anchors with it; retiring recal_51's attempt ramp gains Ayton NOTHING (his dominance
+    # gate never fires, so there is no bonus to un-throttle) and breaks six anchors; recal_96's load
+    # term is already 1.0 for him at 27.2 mpg. None of them can tell a two-level big from a lob
+    # finisher, because none of them reads the second zone.
+    TL_MID_LO, TL_MID_HI = 55.0, 70.0
+    TL_EFF_LO, TL_EFF_HI = 70.0, 85.0
+    if is_big(p) and a['volume'] < 55:
+        _gm = min(1.0, max(0.0, (a['mid'] - TL_MID_LO) / (TL_MID_HI - TL_MID_LO)))
+        _ge = min(1.0, max(0.0, (a['efficiency'] - TL_EFF_LO) / (TL_EFF_HI - TL_EFF_LO)))
+        if _gm * _ge > 0.0:
+            std = max(std, std + _gm * _ge * (0.22 - 0.08) * z[1])
+            if trace is not None:
+                trace['two_level'] = dict(gm=_gm, ge=_ge, z1=z[1], added=_gm * _ge * 0.14 * z[1])
     if a['3pt'] >= 68 and a['volume'] < 55:
         _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
         # recal_91 (HIS RULINGS, verbatim: "Too low OFF 54. Should be mid 60s" for OG Anunoby '21,
@@ -851,6 +892,10 @@ if _CARD:
               f"line (foot {_l['foot']:.0f}): share {_l['share']:.4f}")
         print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
+    if 'two_level' in _ot:
+        _t2 = _ot['two_level']
+        print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "
+              f"second zone {_t2['z1']} paid at the first zone's rate: +{_t2['added']:.3f}")
     if 'big_hub' in _ot:
         print(f"BIG HUB (recal_55's channel, recal_98's ramp: bigs from playvol 60 to 80): "
               f"+{_ot['big_hub']:.3f}")
