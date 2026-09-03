@@ -50,14 +50,15 @@
     },
     {
       "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = 109",
+      "pattern": "PIPELINE_VERSION = 113",
       "label": "pipeline version, compute side",
-      "note": "the ROUND is 107; it SHIPS as pipeline 109 after the rebase"
+      "note": "the ROUND is 107; it SHIPS as pipeline 109 after the rebase [pipeline-113 integration: the batch recal_109 / 110 / 111 (declined) / 112 / 113 ships as pipeline 113.]"
     },
     {
       "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = 109",
-      "label": "pipeline version, ratings side (the two must never drift)"
+      "pattern": "PIPELINE_VERSION = 113",
+      "label": "pipeline version, ratings side (the two must never drift)",
+      "note": "[pipeline-113 integration: the batch recal_109 / 110 / 111 (declined) / 112 / 113 ships as pipeline 113.]"
     },
     {
       "file": "src/engine/tactics.ts",
@@ -95,9 +96,9 @@
       "card": "Clint Capela '18",
       "scale": "off",
       "op": "~",
-      "value": 60,
+      "value": 62,
       "tol": 1,
-      "label": "efficiency 91 but mid 23: the efficiency half alone is not enough, and his recal_52 pin holds"
+      "label": "efficiency 91 but mid 23: the efficiency half alone is not enough, and his recal_52 pin holds [re-read at 62 after the pipeline-113 integration: recal_112's efficient-interior-scorer term reaches him part-way up its gates (efficiency 91 at volume 45), 60 -> 62; his recal_52 pin (61 +-1) holds.]"
     },
     {
       "card": "Daniel Gafford '24",
@@ -111,9 +112,9 @@
       "card": "Rudy Gobert '19",
       "scale": "off",
       "op": "~",
-      "value": 54,
+      "value": 64,
       "tol": 1,
-      "label": "the most efficient big on the board (97) with mid 6: untouched, which is the gate's whole point"
+      "label": "the most efficient big on the board (97) with mid 6: untouched, which is the gate's whole point [re-read at 64 after the pipeline-113 integration: recal_112's efficient-interior-scorer term pays him in full (efficiency 97 at volume 27, playvol 22), 54 -> 64, and re-based the engine spec anchor to match. The two-level gate of THIS round still does not reach him: mid 6.]"
     },
     {
       "card": "Steven Adams '19",

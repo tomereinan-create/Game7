@@ -193,6 +193,16 @@ export const DEFAULT_TACTICS: Tactics = {
  * both edges (blind -0.35 against the -0.30 floor, oracle +0.54 against +0.50); its oracle caps
  * it, falling through +0.50 at about .72. Every other tax held its band untouched, hunt included
  * for the second round running. All nine pass.
+ * THE PIPELINE-113 INTEGRATION (recal_109's elite-passer term and recal_112's efficient-interior-scorer
+ * term, merged with recal_110's team-offence round) moved 376 o_ovrs and 310 OVRs on the MERGED pool, 0
+ * d_ovrs and no attribute, and the ovr>=55 sample with them; crash def glass alone broke, its BLIND read
+ * gone shallow at -0.23 against the -0.30 floor, and was re-ratified .54 -> .74. recal_112 had found the
+ * same failure on its own branch and answered it with the same .74; that figure was measured on a pool
+ * without recal_110 and is SUPERSEDED by this one rather than stacked with it — the integrator re-swept
+ * from main's .54, as the law requires. Chosen off the harness sweep at the point of greatest margin to
+ * the nearer edge (blind -0.37 against the -0.30 floor, oracle +0.58 against the +0.50 one; .70 has 0.04
+ * of blind headroom, .78 has 0.07 of oracle headroom, .74 has 0.07 on both) inside a feasible interval
+ * of .66 to .98. Every other tax held its band untouched, hunt included. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,

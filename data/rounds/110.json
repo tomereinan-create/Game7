@@ -18,7 +18,7 @@
   "tol": 0,
   "before": 84,
   "after": 84,
-  "pipeline_version": 108,
+  "pipeline_version": 113,
   "knobs": [
     {
       "file": "data/team_rating.py",
@@ -87,15 +87,15 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.52",
+      "pattern": "const OFF_TOP = 138\\.53",
       "label": "the OFF gauge, re-frozen — and the Warriors '17 are now all-time rank 1 on the adjusted index",
-      "note": "135.94 -> 138.52; ONE five reads 99 where 8 clamped there before"
+      "note": "135.94 -> 138.52; ONE five reads 99 where 8 clamped there before [pipeline-113 integration re-pointed it: recal_109 and recal_112 moved 376 cards' OFF under recal_110's table, so scripts/gauge105.ts was re-run once more on the merged pool and the OFF block re-frozen — OFF_MIN 102.39 -> 102.4, OFF_MID 121.67 -> 121.69, OFF_TOP 138.52 -> 138.53, OFF_LEVEL_REF 121.7822 -> 121.8; the season table moved by hundredths and 2026 is unchanged, so the DEF block was not touched. The Warriors '17 still read 99 and are still the only five of 1,255 that does. The finding this knob carries is untouched.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 121\\.7822",
+      "pattern": "const OFF_LEVEL_REF = 121\\.8\\b",
       "label": "and its reference league",
-      "note": "123.0113 -> 121.7822"
+      "note": "123.0113 -> 121.7822 [pipeline-113 integration re-pointed it: recal_109 and recal_112 moved 376 cards' OFF under recal_110's table, so scripts/gauge105.ts was re-run once more on the merged pool and the OFF block re-frozen — OFF_MIN 102.39 -> 102.4, OFF_MID 121.67 -> 121.69, OFF_TOP 138.52 -> 138.53, OFF_LEVEL_REF 121.7822 -> 121.8; the season table moved by hundredths and 2026 is unchanged, so the DEF block was not touched. The Warriors '17 still read 99 and are still the only five of 1,255 that does. The finding this knob carries is untouched.]"
     },
     {
       "file": "src/engine/gauges.ts",

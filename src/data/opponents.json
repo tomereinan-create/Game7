@@ -407,8 +407,8 @@
         },
         "big": true,
         "o_ovr": 46,
-        "d_ovr": 80,
-        "ovr": 63,
+        "d_ovr": 81,
+        "ovr": 64,
         "marg": 67
       }
     ]
@@ -500,7 +500,7 @@
         },
         "big": false,
         "o_ovr": 41,
-        "d_ovr": 46,
+        "d_ovr": 47,
         "ovr": 44,
         "marg": 56
       },
@@ -745,7 +745,7 @@
         },
         "big": true,
         "o_ovr": 79,
-        "d_ovr": 47,
+        "d_ovr": 46,
         "ovr": 69,
         "marg": 78
       },
@@ -1404,7 +1404,7 @@
         },
         "big": false,
         "o_ovr": 67,
-        "d_ovr": 54,
+        "d_ovr": 53,
         "ovr": 63,
         "marg": 44
       },
@@ -1611,7 +1611,7 @@
         },
         "big": true,
         "o_ovr": 52,
-        "d_ovr": 79,
+        "d_ovr": 80,
         "ovr": 66,
         "marg": 72
       },
@@ -1742,7 +1742,7 @@
         },
         "big": false,
         "o_ovr": 63,
-        "d_ovr": 54,
+        "d_ovr": 53,
         "ovr": 60,
         "marg": 84
       },
@@ -2194,8 +2194,8 @@
         },
         "big": false,
         "o_ovr": 35,
-        "d_ovr": 47,
-        "ovr": 41,
+        "d_ovr": 48,
+        "ovr": 42,
         "marg": 63
       },
       {
@@ -2477,7 +2477,7 @@
         },
         "big": true,
         "o_ovr": 42,
-        "d_ovr": 82,
+        "d_ovr": 83,
         "ovr": 62,
         "marg": 51
       }
@@ -2532,8 +2532,8 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 72,
-        "ovr": 67,
+        "d_ovr": 71,
+        "ovr": 66,
         "marg": 75
       },
       {
@@ -2739,7 +2739,7 @@
         },
         "big": false,
         "o_ovr": 45,
-        "d_ovr": 46,
+        "d_ovr": 47,
         "ovr": 46,
         "marg": 56
       },
@@ -2815,8 +2815,8 @@
         },
         "big": true,
         "o_ovr": 58,
-        "d_ovr": 60,
-        "ovr": 59,
+        "d_ovr": 59,
+        "ovr": 58,
         "marg": 64
       },
       {
@@ -3360,7 +3360,7 @@
         },
         "big": false,
         "o_ovr": 83,
-        "d_ovr": 63,
+        "d_ovr": 62,
         "ovr": 77,
         "marg": 94
       },
@@ -3567,8 +3567,8 @@
         },
         "big": false,
         "o_ovr": 66,
-        "d_ovr": 55,
-        "ovr": 63,
+        "d_ovr": 54,
+        "ovr": 62,
         "marg": 68
       },
       {
@@ -3681,7 +3681,7 @@
         },
         "big": true,
         "o_ovr": 38,
-        "d_ovr": 78,
+        "d_ovr": 79,
         "ovr": 58,
         "marg": 84
       },
@@ -3812,7 +3812,7 @@
         },
         "big": false,
         "o_ovr": 66,
-        "d_ovr": 49,
+        "d_ovr": 48,
         "ovr": 61,
         "marg": 76
       },
@@ -3981,7 +3981,7 @@
         },
         "big": false,
         "o_ovr": 34,
-        "d_ovr": 46,
+        "d_ovr": 47,
         "ovr": 40,
         "marg": 44
       },
@@ -4339,9 +4339,9 @@
           "ts_rel": 0.657
         },
         "big": true,
-        "o_ovr": 45,
+        "o_ovr": 55,
         "d_ovr": 93,
-        "ovr": 69,
+        "ovr": 74,
         "marg": 92
       }
     ]
@@ -4809,8 +4809,8 @@
         },
         "big": false,
         "o_ovr": 94,
-        "d_ovr": 70,
-        "ovr": 87,
+        "d_ovr": 69,
+        "ovr": 86,
         "marg": 98
       },
       {
@@ -4960,9 +4960,9 @@
           "ts_rel": 0.64
         },
         "big": true,
-        "o_ovr": 52,
+        "o_ovr": 58,
         "d_ovr": 75,
-        "ovr": 64,
+        "ovr": 66,
         "marg": 91
       }
     ]
@@ -5261,7 +5261,7 @@
         },
         "big": false,
         "o_ovr": 65,
-        "d_ovr": 48,
+        "d_ovr": 47,
         "ovr": 60,
         "marg": 68
       },
@@ -5337,7 +5337,7 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 53,
+        "d_ovr": 52,
         "ovr": 64,
         "marg": 74
       },
@@ -5581,9 +5581,9 @@
           "ts_rel": 0.66
         },
         "big": true,
-        "o_ovr": 50,
+        "o_ovr": 54,
         "d_ovr": 86,
-        "ovr": 68,
+        "ovr": 70,
         "marg": 95
       }
     ]
@@ -5882,7 +5882,7 @@
         },
         "big": false,
         "o_ovr": 60,
-        "d_ovr": 57,
+        "d_ovr": 56,
         "ovr": 59,
         "marg": 55
       },
@@ -5920,8 +5920,8 @@
         },
         "big": false,
         "o_ovr": 52,
-        "d_ovr": 59,
-        "ovr": 56,
+        "d_ovr": 58,
+        "ovr": 55,
         "marg": 57
       },
       {

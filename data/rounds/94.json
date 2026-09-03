@@ -85,9 +85,9 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.52",
+      "pattern": "const OFF_TOP = 138\\.53",
       "label": "the OFF gauge was not re-frozen by recal_94 — recal_105 is the round that moved it",
-      "note": "unchanged by recal_94; all 1,255 offRaw readings were bit-identical then and still are. recal_105 re-froze the three OFF constants on an era-relative index (137.67 -> 135.94 in adjusted units) on his later ruling about the composite. teamOffense has still never moved. [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so the OFF gauge block was re-derived (OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52). The finding this knob carries is untouched.]"
+      "note": "unchanged by recal_94; all 1,255 offRaw readings were bit-identical then and still are. recal_105 re-froze the three OFF constants on an era-relative index (137.67 -> 135.94 in adjusted units) on his later ruling about the composite. teamOffense has still never moved. [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so the OFF gauge block was re-derived (OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52). The finding this knob carries is untouched.] [pipeline-113 integration re-pointed it: recal_109 and recal_112 moved 376 cards' OFF under recal_110's table, so scripts/gauge105.ts was re-run once more on the merged pool and the OFF block re-frozen — OFF_MIN 102.39 -> 102.4, OFF_MID 121.67 -> 121.69, OFF_TOP 138.52 -> 138.53, OFF_LEVEL_REF 121.7822 -> 121.8; the season table moved by hundredths and 2026 is unchanged, so the DEF block was not touched. The Warriors '17 still read 99 and are still the only five of 1,255 that does. The finding this knob carries is untouched.]"
     },
     {
       "file": "src/engine/offense.ts",
