@@ -1184,5 +1184,14 @@
   "round": 105,
   "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
   "note": "THE NUMBER HE NAMED, pinned at what it actually reads: 75 when he ruled, 81 by the time this round measured (recal_101/102/103/104 moved it), 84 after (68 on offence, 99 on defence). The round's assumed target of >=92 was NOT reached and is NOT pinned here, because an anchor is a pin that holds: reaching 92 needs OFF 89, and teamOffense ranks this five 8th of the 29 fieldable 1996 teams on offence while the real 1996 board has them 1st. A per-season shift cannot reorder a season. The next round on this belongs in data/team_rating.py's team_offense."
+ },
+ {
+  "card": "Dan Roundfield '82",
+  "scale": "def",
+  "target": 91,
+  "tol": 3,
+  "round": 114,
+  "ruling": "Dan rounfield too high for def 99. 91 is fine.",
+  "note": "99 -> 94, the band edge. He is 6'8\" exactly, so perdef paid his All-Defensive votes at the full wing rate (rep_hf 1.2, height_inv 1.0) while recal_53's rim ceiling had already cashed the same votes into a rimprot of 92 on a BLK% of 2.6. perdef now keeps only the share of a double-paid vote that DBPM supports, and his DBPM percentile is 0.713 - the lowest of any card that read DEF 95+. perdef alone cannot take him below 94; the other half of the double-pay is rimprot's ceiling, which is load-bearing for McHale '88, Gasol '04 and Bobby Jones '82."
  }
 ]

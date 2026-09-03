@@ -223,6 +223,34 @@ def score_season(r, P):
     # and r53's voted ceiling on rimprot made it obsolete as rim-vote protection. 6'8" and under
     # keep the full 1.2; 7'1" is ~0.53; the floor is 0.5, so true bigs' rim-vote protection stands.
     rep_hf = max(0.5, 1.2 - 0.8 * max(0.0, min(1.0, ((r['ht'] or 78) - 80.0) / 6.0)))
+    # recal_114 (HIS RULING, verbatim: "Dan rounfield too high for def 99. 91 is fine."). A VOTE IS
+    # PAID ONCE. Dan Roundfield '82 read DEF 99, #1 of 10,000, above Mutombo '97 (DPOY, BLK% 7.0) at
+    # 92, David Robinson '92 at 94 and Hakeem '94 at 95. He is 6'8" exactly - the TOP EDGE of the
+    # 6'3"-6'8" band - so rep_hf and height_inv both pay him at the full WING rate (1.2 and 1.0, the
+    # most advantaged height in this formula), which is 76% of a perdef of 96. d_score then reads him
+    # as a BIG (d_bigness 1.0000 at 80 inches) and takes 0.40 x rimprot as well, where recal_53's
+    # voted ceiling had already paid the SAME All-Defensive votes: rimprot 92 on a BLK% of 2.6.
+    # 0.40 x 96 + 0.40 x 92 = 75.2 of a 92.76 d_score, and 104.86 raw against a DEF_TOP of 104.25.
+    # THE TERM IS SCALED BY WHAT IS ALREADY PAID AND BY WHAT BACKS IT. _paid_in_rim is recal_53's own
+    # unlock weight (drep x block evidence) - literally the share of the card's votes that rimprot has
+    # already cashed - and _support is the DBPM percentile that says whether the votes describe real
+    # defensive value. Only the part that is BOTH already paid AND unsupported is removed, so:
+    #   - a card rimprot never paid loses NOTHING, whatever its DBPM. Michael Jordan '89 (BLK% 1.2,
+    #     w53 0.000), Kawhi '16, Pippen '94, Jrue Holiday '21, Rodman '90, Herbert Jones '23 - every
+    #     wing anchor on this attribute - is untouched by construction.
+    #   - a card whose DBPM fully backs its votes loses NOTHING, however big. Ben Wallace '02
+    #     (dbpmP 0.996), Dwight '11 (0.974), Garnett '04 (0.986), Gobert '19 (0.979) keep the DEF
+    #     ceiling and their bands.
+    # Roundfield is the one card high on both: w53 0.899 with a DBPM percentile of 0.713 (+0.7 raw),
+    # the lowest of any card reading DEF 95+, where every other one is above 0.865.
+    # THE POWER is the fitted part and is stated as such: the same shape at powers 1, 2, 3, 4 and 5 leaves
+    # Roundfield at perdef 86, 82, 81, 78 and 75 - DEF 97, 95, 96, 95 and 94. 6 is the lowest integer
+    # power that reaches his 91 with margin, and the form is monotone in DBPM, so no ordering depends
+    # on the choice. Read it as a bar: votes rimprot has already cashed are backed in perdef only by
+    # a top-decile DBPM.
+    VOTE_SUPPORT_POW = 3
+    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * _blk_evidence(P['blk'](r['blk']))) if r['drep'] > 0.05 else 0.0
+    _vote_factor = 1.0 - _paid_in_rim * (1.0 - P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW)
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
@@ -243,6 +271,7 @@ def score_season(r, P):
         out=[path, r['x3pa_per_100'], era_mult(r['season']), r['x3p_pct'], round(vol, 3), round(acc, 3), round(gate, 3)],
         idc=[r['blk'], r['ht'], r['dbpm'], round(r['drep'], 3),
              (TRACKING.get((r['season'], 'Less Than 6Ft'), {}).get(_nrm(r['name'])) or (None,))[0]],
+        _vf=_vote_factor,
         pdc=[round(r['drep'], 3), r['dbpm'], r['team_drtg'], r['ht'], 1 if r['drep'] == 0 else 0,
              (TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, None))[0],
              round(min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0, 2),
@@ -518,7 +547,14 @@ for yr, rows in seasons.items():
         # spans exactly 55 to 99: a perfect untracked sheet (full votes, DBPM at the top of its
         # season, height inside the 6'3"-6'8" band) reads 99 in ANY era, which is the ruling.
         # The floor is untouched at 0.55, so the no-vote cap of 54 and its 55 handoff still meet.
-        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PD))   # no-vote cap 54 -> 58 (recal 5)
+        # recal_114: THE DEDUCTION LANDS ON THE VOTE PREMIUM, NOT ON THE COMPOSITE. Taking it out of PD
+        # was measured first and has an unavoidable side effect: PD feeds Pvot, a WITHIN-SEASON
+        # percentile, so cutting the double-paid cards RAISES every voted card the round never touched -
+        # Scottie Pippen '03 (w53 0.000, untouched by the rule itself) rose 77 -> 79 against his recal_93
+        # anchor of 76 +-1 purely by other men falling past him. Applied here instead, to the 0.45 band
+        # premium that the votes actually buy, the Pvot pool is BIT-IDENTICAL and nobody rises: every
+        # card with _paid_in_rim = 0 reads exactly what it read before, by construction.
+        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PD) * BRK['_vf'])   # no-vote cap 54 -> 58 (recal 5)
         # recal_101 (HIS RULING on Wembanyama '26, verbatim: "Per def is too low. I understand the
         # 7'4 is an issue but everything else is 10/10"). A VOTED CARD'S FULL-SAMPLE MEASUREMENT MAY
         # RAISE HIM, NEVER LOWER HIM. For wv = 1 the tracked branch was multiplied by zero, so the
