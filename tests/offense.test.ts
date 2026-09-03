@@ -52,8 +52,14 @@ describe('offense engine — archetype lineups', () => {
     expect(off(GOAT5)).toBeGreaterThanOrEqual(off(BALANCED))
     // recal_110: 5.4 -> 7.9. GOAT5 is five all-time creators and BALANCED is two of them beside three
     // role players, so the round that makes creation matter necessarily widens this gap — the band was
-    // written when creation was worth a +-4 fit bonus. Widened to 9.0, the fourth re-pin of this line.
-    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(9.0) // 1.3 raw TS · 3.4 smoothed · 5.4 post recal_70 · 7.9 post recal_110
+    // written when creation was worth a +-4 fit bonus.
+    // recal_119: 7.9 -> 9.25, and the whole 1.35 is this round's one term. GOAT5's usage-weighted ball
+    // security is 81.2 (Jordan 95, Shaq 93, LeBron 84) against BALANCED's 59.0, because BALANCED buys
+    // its efficiency with Korver at 26 and Gobert at 25 — so a round that prices KEEPING the ball
+    // separates them by construction: GOAT5's possession multiplier is 1.0090 (+1.39 index pts) and
+    // BALANCED's is 1.0003 (+0.05). Widened to 9.5, the fifth re-pin of this line; the four ordering
+    // assertions above, which carry the real claim, all still hold.
+    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(9.5) // 1.3 raw TS · 3.4 smoothed · 5.4 post recal_70 · 7.9 post recal_110 · 9.25 post recal_119
   })
 
   it('a finisher eats better next to a creator who shoots (Curry) than one who does not (Rondo)', () => {

@@ -80,14 +80,20 @@ import type { Player } from './types'
 // OFF side RE-FROZEN by recal_105 on the ERA-RELATIVE index, the treatment recal_100 gave DEF
 // — RE-FROZEN AGAIN at the pipeline-113 integration: recal_109 and recal_112 moved 376 cards' OFF (0 DEF)
 // under recal_110's table, so every five's offRaw moved with them. The DEF block below is untouched.
+// — AND AGAIN BY recal_119, which added the possession-loss channel to team_offense: every one of
+// the 1,255 fives' offRaw moved with it (the term is centred on the league's own mean turnover rate,
+// so it redistributes rather than inflates, and the level barely moves). The Warriors '17 are still
+// all-time rank 1 on the adjusted index and still the named summit; the Rockets '18 now round to 99
+// beside them at 0.05 adjusted points behind, which is the constraint that sized recal_119's knob.
+// THE DEF BLOCK IS UNTOUCHED — 0 of 1,255 DEF dials moved.
 // (scripts/gauge105.ts re-derives this whole block, table included). His ruling: "Teams rating is
 // still off. Bulls 96 only 75 OVR" — and the Team DB's OVR is the plain mean of these two dials, so
 // a DEF dial read at each era's own level beside an OFF dial that was not is half a scale. The three
 // anchors are quoted in OFF_LEVEL_REF's league: ADJUSTED offRaw, not raw offRaw. The summit is still
 // where recal_71's ruling put it ("99 should be one of the greatest offense ever (2017 warriors)").
-const OFF_MIN = 102.4 // the all-time worst offensive five, era-adjusted
-const OFF_MID = 121.69 // the all-time median reads 50
-const OFF_TOP = 138.53 // Golden State Warriors '17 (adjusted 138.5335, all-time rank 1) — the named OFF summit reads 99
+const OFF_MIN = 101.71 // the all-time worst offensive five, era-adjusted
+const OFF_MID = 121.76 // the all-time median reads 50
+const OFF_TOP = 138.4 // Golden State Warriors '17 (adjusted 138.4025, all-time rank 1) — the named OFF summit reads 99
 
 /**
  * THE LEAGUE'S OWN OFFENSIVE LEVEL, season by season: the mean offRaw of that season's fieldable
@@ -102,17 +108,17 @@ const OFF_TOP = 138.53 // Golden State Warriors '17 (adjusted 138.5335, all-time
  * recentring one and not the other was never self-consistent; this is the other half.
  */
 const OFF_LEVEL: Record<number, number> = {
-  1980: 120.467, 1981: 119.325, 1982: 119.645, 1983: 119.797, 1984: 119.860, 1985: 119.089,
-  1986: 119.040, 1987: 119.741, 1988: 120.840, 1989: 121.760, 1990: 121.893, 1991: 121.782,
-  1992: 120.966, 1993: 121.471, 1994: 121.308, 1995: 121.688, 1996: 121.983, 1997: 121.420,
-  1998: 120.784, 1999: 118.785, 2000: 121.160, 2001: 121.147, 2002: 121.489, 2003: 121.561,
-  2004: 122.241, 2005: 122.882, 2006: 122.079, 2007: 123.626, 2008: 123.629, 2009: 123.086,
-  2010: 121.849, 2011: 122.516, 2012: 121.544, 2013: 122.231, 2014: 122.881, 2015: 122.686,
-  2016: 123.261, 2017: 123.363, 2018: 122.452, 2019: 124.408, 2020: 122.375, 2021: 122.698,
-  2022: 122.752, 2023: 123.905, 2024: 124.631, 2025: 123.529, 2026: 122.973,
+  1980: 120.520, 1981: 119.531, 1982: 119.719, 1983: 119.951, 1984: 119.953, 1985: 119.080,
+  1986: 119.072, 1987: 119.789, 1988: 120.861, 1989: 121.818, 1990: 121.948, 1991: 121.822,
+  1992: 120.983, 1993: 121.472, 1994: 121.246, 1995: 121.671, 1996: 121.904, 1997: 121.434,
+  1998: 120.761, 1999: 118.607, 2000: 121.184, 2001: 121.175, 2002: 121.613, 2003: 121.578,
+  2004: 122.309, 2005: 122.973, 2006: 122.172, 2007: 123.637, 2008: 123.651, 2009: 123.048,
+  2010: 121.802, 2011: 122.539, 2012: 121.466, 2013: 122.217, 2014: 122.859, 2015: 122.699,
+  2016: 123.348, 2017: 123.434, 2018: 122.408, 2019: 124.337, 2020: 122.268, 2021: 122.570,
+  2022: 122.591, 2023: 123.831, 2024: 124.647, 2025: 123.521, 2026: 122.970,
 }
 /** The league every OFF dial is quoted in: the mean of the 47 season levels. */
-const OFF_LEVEL_REF = 121.8
+const OFF_LEVEL_REF = 121.8083
 /** A five with no season of its own is a five in TODAY's league, exactly as on the DEF side. */
 const OFF_LEVEL_FIELD = OFF_LEVEL[2026]
 

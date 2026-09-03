@@ -35,3 +35,47 @@ The `.json` files are gitignored: they are megabytes and one command remakes the
 | `pickcheck94.py` | proves `data/anchors.py`'s python five-picker IS `src/engine/bestfive.ts`, on all 1,255 team-seasons |
 | `seed94.py` | the readings recal_94's anchors were seeded from, taken through `data/anchors.py` itself |
 | `receipt94.ts` | the exact numbers `data/rounds/94.json` records, read the way `scripts/receipts.ts` reads them |
+
+## recal_119 — the possession-loss channel
+
+`team_offense` had no way to price a turnover: the baseline is usage-weighted repriced TS and
+nothing else, so a five that keeps the ball is worth exactly what a five that coughs it up is worth.
+The channel prices it physically — `OFF *= (1 - tov/100) / (1 - TOV_REF/100)` — with the turnover
+rate predicted from the five's usage-weighted ball security. Run in this order; the `.json` dumps
+are gitignored and one command remakes each.
+
+```
+python scripts/diag-team/tov119.py tov119_before.json   # ON THE OLD ENGINE: the board + wball + bref truth
+python scripts/diag-team/fit119.py                      # the OLS fit and the first frontier
+python scripts/diag-team/pred119.py                     # which weighting of ball security predicts TOV% best
+python scripts/diag-team/var119.py                      # era drift, pooled vs within-season slope, second predictors
+python scripts/diag-team/sweep119.py                    # the frontier, gauge re-frozen at every size
+python scripts/diag-team/anch119.py                     # every OFF-side anchor, graded at every size
+python scripts/diag-team/edge119.py                     # the same, CONTINUOUS, so the size is not chosen on a rail
+python scripts/diag-team/oracle119.py                   # the ceiling: what a channel reading the REAL TOV% would buy
+# ... apply the change, re-run scripts/gauge105.ts, paste the OFF block ...
+python scripts/diag-team/tov119.py tov119_after.json    # ON THE NEW ENGINE
+python scripts/diag-team/ba119.py                       # before/after: ten teams, fit per decade, movers
+npx vite-node scripts/diag-team/ten119.ts               # the same table through the APP's own functions
+npx vite-node scripts/diag-team/parity119.ts            # python vs port ON THE SUBJECT FIVE
+npx vite-node scripts/diag-team/bands119.ts             # the four archetype lineups the offense test pins
+```
+
+| file | what it answers |
+| --- | --- |
+| `lib119.py` | the shared bench: board, OLS fit, gauge re-freeze (mirrors `gauge105.ts`), within-season Spearman |
+| `tov119.py` | dumps every fieldable five with `offRaw`, `drtgRef`, usage-weighted ball security and the bref truth |
+| `fit119.py` | fits real TOV% on ball security and sweeps the size, with the gauge re-frozen at each one |
+| `pred119.py` | eight weightings of the five's ball security, scored against real TOV% within season |
+| `var119.py` | the era drift, the pooled vs fixed-effects slope, and whether a second predictor earns a term |
+| `sweep119.py` / `anch119.py` / `edge119.py` | **the frontier** — size vs fit vs every pin, rounded and continuous |
+| `oracle119.py` | the honest ceiling: the same channel reading each team's REAL turnover rate |
+| `resid119.py` | who the channel moves and whether it moves them for the right reason |
+| `dec119.py` | the subject five term by term, and the 2024 board it sits in |
+| `ba119.py` | before/after — ten teams, fit per decade, dial movers, both gauge blocks read from git |
+| `ten119.ts` | the ten teams through the app's own `seasonGauges` / `ratings100` path |
+| `parity119.ts` | the python and the port on the SUBJECT five, figure by figure |
+| `bands119.ts` | the four archetype lineups `tests/offense.test.ts` pins, with `tovMult` broken out |
+| `cards119.py` | proves no card moved on `o_ovr` / `d_ovr` / `ovr` / attrs, and sizes the `marg` move |
+| `ladder119.py` | proves the campaign ladder's League tier did not reorder |
+| `pin119.py` | adds the round's two pins to `data/anchors.json` programmatically |

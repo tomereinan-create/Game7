@@ -13,6 +13,16 @@ KNOBS = dict(
     FIT_WIDEN     = 2.7,    # recal_64: the fit gap (interactions vs repriced-only) widened
     FIT_CAP       = 4.0,    # ...and capped: perfect fit +4, friction -4   # max TS multiplier bonus for low-usage players fed by elite creation
     FLOOR_USG     = 10.0,   # nobody can be squeezed below this share
+    # recal_119 — POSSESSION LOSS. TOVhat = TOV_INT - TOV_SLOPE*wball, the OLS of every fieldable
+    # five's real team TOV% on its usage-weighted ball security (1,255 fives, pooled r -0.500,
+    # within-season rho -0.718). TOV_REF is the league's own mean, so the channel redistributes
+    # around it exactly as FEED_REF does for creation.
+    TOV_INT       = 18.10,  # % turnovers at ball security 0
+    TOV_SLOPE     = 0.0744, # % turnovers shed per point of usage-weighted ball security
+    TOV_REF       = 13.78,  # the league's own mean TOV% over all 1,255 fives — the pivot
+    TOV_SIZE      = 0.45,   # HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen
+    TOV_LO        = 9.0,    # rails, just outside the observed league range (9.9 .. 18.7)
+    TOV_HI        = 19.0,
 )
 
 def creation(a):   # 0..1: can this player create offense?
@@ -104,7 +114,38 @@ def team_offense(five):
     OFF = OFF_N + fit
     # (3) fouldraw x FT: manufactured points (matchup-discipline interaction reserved for the matchup layer)
     OFF += sum(u2i * (a['fouldraw']/99) * (a['ft']/100) for u2i, a in zip(u2, A)) * 0.06
-    # (4) ORB feeds on misses — recal_70: second chances are extra possessions; their VALUE is the
+    # (4) POSSESSION LOSS — recal_119, his ruling: "For the scout, I agree with 3,4,5,6,7" (item 7:
+    # "Boston Celtics '24 (best five) team OFF 55 -> near 72"). THE CHANNEL DID NOT EXIST. Everything
+    # above prices what a five does WITH a possession — usage reconciliation, repriced TS, creation,
+    # the interactions, the free throws — and nothing priced whether the five KEEPS the possession.
+    # A trip that ends in a turnover scores zero no matter how efficient the shooters are, and real
+    # offensive ratings know it: across all 1,255 fieldable fives real ORtg correlates +0.548 with
+    # -TOV% while offRaw correlated only +0.256, and the rank residual ran -0.40 with TOV%. The
+    # Celtics '24 are the case that showed it — real ORtg 123.2 (1st of 30), real TS 1st, TOV% 10.8
+    # (2nd), MOV +11.3 (1st) — and the engine read them 12th of the 26 fieldable 2024 fives with a
+    # usage-weighted TS of .6077 that is exactly right. What was missing was the possessions.
+    #
+    # THE FORM IS PHYSICAL, not a bonus: ORtg = (points per scoring chance) x (chances kept), so the
+    # whole of OFF is multiplied by the kept share (1 - tov) normalised at the league's own mean, the
+    # same shape recal_70 gave the glass. TOVhat comes from the CARDS — the five's usage-weighted
+    # ball security, which is the aggregate that carries the signal (within-season rho +0.718 with
+    # -TOV%, against +0.666 for the plain mean, +0.550 for the top two handlers and +0.278 for the
+    # weakest link; playmaking volume adds nothing, residual r +0.03). Fitted by OLS over all 1,255.
+    #
+    # TOV_SIZE IS AN ANCHOR BOUND, AND THE ROUND SAYS SO. On fit alone the term wants to be ~2x the
+    # fitted slope (within-season Spearman of offRaw vs real ORtg peaks at 0.799 there, from 0.761);
+    # at 1.0x it is 0.789. It ships at 0.45 because the pins bind first: past ~0.54 the Rockets '18
+    # pass the Warriors '17 on the adjusted index and recal_71's named OFF summit stops being the
+    # summit, and past ~0.69 the Bulls '96 leave recal_105's 68+-3. At 0.45 the fit is 0.777 and the
+    # Celtics '24 read 56, 9th of 26 — the round therefore DECLINES the 72 (see data/rounds/119.json
+    # for the full frontier; no size of this term reaches it, 65 at 3x with six pins broken).
+    # Mirrors offense.ts exactly (the parity test gates it).
+    wball = sum(u2i * a['ballsec'] for u2i, a in zip(u2, A)) / KNOBS['TEAM_USG']
+    tovhat = KNOBS['TOV_INT'] - KNOBS['TOV_SLOPE']*wball
+    tov = min(KNOBS['TOV_HI'], max(KNOBS['TOV_LO'],
+              KNOBS['TOV_REF'] + KNOBS['TOV_SIZE']*(tovhat - KNOBS['TOV_REF'])))
+    OFF *= (1 - tov/100.0) / (1 - KNOBS['TOV_REF']/100.0)
+    # (5) ORB feeds on misses — recal_70: second chances are extra possessions; their VALUE is the
     # team's own conversion (the multiplication by OFF supplies it), their VOLUME the team's true
     # miss share. The old 1 + (0.60-wTS)/0.08, clamped 0.5..1.5, put a 3x swing on an 8-TS-pt window
     # (ordinary teams sat ON the rails); the physical term is the miss-share ratio, anchored at the
