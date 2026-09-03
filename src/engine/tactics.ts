@@ -203,6 +203,10 @@ export const DEFAULT_TACTICS: Tactics = {
  * the nearer edge (blind -0.37 against the -0.30 floor, oracle +0.58 against the +0.50 one; .70 has 0.04
  * of blind headroom, .78 has 0.07 of oracle headroom, .74 has 0.07 on both) inside a feasible interval
  * of .66 to .98. Every other tax held its band untouched, hunt included. All nine pass.
+ * recal_114's vote discount (perdef 343 down, 230 d_ovrs down; pipeline 114) moved the ovr>=55 pool
+ * again and crash def glass broke on the ORACLE edge at .74 (+0.40). Swept .40/.44/.47/.50/.58/.66:
+ * the window is one value wide — .44 reads blind -0.32 / oracle +0.50, .40 fails blind (-0.28), .47
+ * fails oracle (+0.49). Re-ratified .74 -> .44, on the edge, the way r86 sat. Eight others untouched.
  */
 export const TAX = {
   scorer: 0.55,
@@ -212,7 +216,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.80,
   crashOff: 0.40,
-  crashDef: 0.74,
+  crashDef: 0.44,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
