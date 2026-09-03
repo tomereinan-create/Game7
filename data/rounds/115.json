@@ -51,9 +51,9 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(Math\\.max\\(x\\.rim, x\\.mid\\), x\\.volume\\) \\* interior\\(x\\)",
-      "label": "the post hub scores from the block (rim or turnaround) and only as far as his game is interior",
-      "note": "min(rim, volume) -> min(max(rim,mid), volume) x interior"
+      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
+      "label": "the post-up hub is scaled by how INTERIOR the big's own game is",
+      "note": "HALF SUPERSEDED by recal_120 and re-pointed at what survives: the interior() scaling is this round's and stands; the max(rim, mid) half of the same line is gone, the mid-range having moved to the pick-and-roll screener's pop"
     },
     {
       "file": "src/engine/tactics.ts",
@@ -150,6 +150,7 @@
     "NOTHING in data/ was regenerated and neither python file was touched: src/engine/offense.ts, data/team_rating.py and data/compute_ovr.py are byte-identical to origin/main, so no OVR, no OFF/DEF dial and no `marg` moved. The receipt's subject and every expect line is a team dial read back unchanged for exactly that reason.",
     "TAX.style was NOT re-ratified. The playstyle row moved random -1.09 -> -1.15 and oracle +0.71 -> +0.68 and stayed in band; it is the narrowest playstyle has read since recal_58, with 0.18 of oracle headroom. The next round that widens any style's fit range should expect to re-ratify it.",
     "tests/court.test.ts's two Thunder '24 / Lakers '26 fixtures asserted a style the old formulas produced. Both fives now read helio (Gilgeous-Alexander '24, Doncic '26) and the assertions were updated with the reason; the RULINGS those tests hold (a non-shooter never stands in a corner; the screen is set beside the ball) are asserted against the called shape and are untouched.",
+    "SUPERSEDED IN PART BY recal_120 (his ruling: \"Jazz 97' pnr Stockton and Malone is more fitting\"). This round put max(rim, mid) into the post-up hub so that a mid-post game would not read as no post game at all; recal_120 took it back out and gave the mid-range to the pick-and-roll SCREENER instead, which is a better home for the same fact. The interior() scaling — the half of the knob that answers \"How come Boston post up and not 5 out?\" — is untouched, and this round's post-up knob above was re-pointed at it. Post-up on the wheel: 323 before recal_115, 341 after it, 239 after recal_120.",
     "The Thunder '24 court now draws the helio shape, which stands TWO men on the dunker spots. That shape is 3d5af81's and was not touched here, but it is the shape he complained about in b4c50a4's ruling and the design agent should look at it.",
     "NO ANCHOR WAS ADDED to data/anchors.json and none could be. Every scale data/anchors.py can read is a rating off the python pipeline (off / def / ovr / attr:* / team:*dial) and this ruling is about which of seven TypeScript fit formulas wins on a five — python would have to re-implement styleFit to check it, which is the duplication doctrine 4 exists to forbid. The ruling is pinned instead in tests/tactics.test.ts (four describe blocks, thirteen assertions naming the Thunder '16, the Thunder '22, the Celtics '25, the Warriors '17, the Cavaliers '16, the Rockets '18, the Lakers '00 and the Rockets '94), which npm test runs forever — the same place recal-era commits 3d5af81 and b4c50a4 pinned their court rulings. If a later round wants these in anchors.json, anchors.py needs a scale that shells out to vite-node first."
   ],

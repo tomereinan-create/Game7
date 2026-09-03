@@ -7,12 +7,17 @@ import {
   DEFAULT_TACTICS,
   DUO_GAP,
   featured,
+  ELITE_LIFT,
+  ELITE_PV,
   gateTactics,
+  handlerFit,
   pnrPair,
   reconcileTactics,
   scorerCreator,
+  screenFit,
   STAR_LINE,
   styleFit,
+  STYLES,
   stylePts,
   twoStars,
   type PnrPair,
@@ -85,9 +90,11 @@ describe('the pick-and-roll pair he calls', () => {
     // LeBron is 6'9": the auto-pick may never hand him the ball (height <= 78), a call can
     const pick: PnrPair = { handler: "LeBron James '13", screener: "Rudy Gobert '17" }
     const rest = FIVE.filter((p) => p.name !== pick.handler && p.name !== pick.screener)
+    // recal_120: the two-man terms are handlerFit (playvol-led, with the elite-passer ramp) and
+    // screenFit (the best finish off the screen, roll OR pop); the three weights are recal_58's
     const want =
-      0.4 * Math.min(g(pick.handler).attrs.playvol, g(pick.handler).attrs.volume) +
-      0.35 * Math.min(g(pick.screener).attrs.rim, g(pick.screener).attrs.efficiency) +
+      0.4 * handlerFit(g(pick.handler).attrs) +
+      0.35 * screenFit(g(pick.screener).attrs) +
       0.25 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
     expect(styleFit('pnr', FIVE, undefined, pick)).toBeCloseTo(want, 10)
   })
@@ -239,5 +246,62 @@ describe('post-up still fits a true post hub, and only one', () => {
     expect(styleFit('postup', CELTICS_25)).toBeLessThan(60)
     // O'Neal, who shoots 2, is untouched by the same term
     expect(styleFit('postup', LAKERS_00)).toBeGreaterThan(70)
+  })
+})
+
+/**
+ * THE TWO-MAN GAME (recal_120, his ruling: "Jazz 97' pnr Stockton and Malone is more fitting").
+ * The pick-and-roll's two terms were minima — min(playvol, volume) for the handler, min(rim,
+ * efficiency) for the screener — so the most famous pick-and-roll in the league's history read
+ * post-up 81 / pnr 46. The handler is now playvol-led with an elite-passer ramp, the screener is
+ * credited for the POP as well as the roll, and the mid-range left the post-up hub to pay for it.
+ */
+const JAZZ_97 = cut("John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97")
+const SUNS_05 = cut("Steve Nash '05", "Joe Johnson '05", "Quentin Richardson '05", "Shawn Marion '05", "Amar'e Stoudemire '05")
+
+describe('an elite passer and a big who pops are a pick-and-roll, not a post-up', () => {
+  it("the Jazz '97 read the pick-and-roll between Stockton and Malone", () => {
+    const b = bestStyle(JAZZ_97)
+    expect(b.style).toBe('pnr')
+    expect(featured('pnr', JAZZ_97).map((p) => p.name)).toEqual(["John Stockton '97", "Karl Malone '97"])
+    // it beats the post-up built around the same big, and everything else on that floor
+    expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('postup', JAZZ_97))
+    for (const s of STYLES) if (s.key !== 'pnr' && s.key !== 'balanced') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
+  })
+
+  it('the handler is led by his passing, not capped by his scoring', () => {
+    const js = g("John Stockton '97").attrs
+    // the OLD term: a pass-first guard with 23 volume read 23, which said he cannot run the play
+    expect(Math.min(js.playvol, js.volume)).toBe(js.volume)
+    expect(handlerFit(js)).toBeGreaterThan(80)
+    // and the elite ramp is what separates him from a good-but-not-elite passer at the same volume
+    expect(ELITE_PV).toBe(80)
+    expect(handlerFit({ ...js, playvol: ELITE_PV })).toBeLessThan(handlerFit(js) - ELITE_LIFT / 2)
+  })
+
+  it('the screener is paid for the pop as well as the roll, and the block is not', () => {
+    const km = g("Karl Malone '97").attrs
+    expect(km.mid).toBeGreaterThan(km.rim) // an elbow/mid-post big
+    expect(screenFit(km)).toBeGreaterThan(Math.min(km.rim, km.efficiency))
+    // the mid-range MOVED: the post-up hub reads the rim alone, so the same card is worth less there
+    expect(styleFit('postup', JAZZ_97)).toBeLessThan(styleFit('pnr', JAZZ_97))
+  })
+
+  it("the Suns '05 are the same shape and read it too — Nash and Stoudemire", () => {
+    expect(bestStyle(SUNS_05).style).toBe('pnr')
+    expect(featured('pnr', SUNS_05).map((p) => p.name)).toEqual(["Steve Nash '05", "Amar'e Stoudemire '05"])
+  })
+
+  it('a true post hub whose handler is not an elite passer keeps the post-up', () => {
+    // O'Neal and Olajuwon: no man on either five clears the handler gate at all
+    for (const f of [LAKERS_00, ROCKETS_94]) {
+      expect(pnrPair(f, null).handler).toBe(null)
+      expect(bestStyle(f).style).toBe('postup')
+    }
+    // ...and the low-playvol hubs recal_115 protected are still post-ups
+    const hornets95 = cut("Muggsy Bogues '95", "Hersey Hawkins '95", "Larry Johnson '95", "Scott Burrell '95", "Alonzo Mourning '95")
+    expect(bestStyle(hornets95).style).toBe('postup')
+    const magic11 = cut("Jameer Nelson '11", "Jason Richardson '11", "Hedo Türkoğlu '11", "Ryan Anderson '11", "Dwight Howard '11")
+    expect(bestStyle(magic11).style).toBe('postup')
   })
 })

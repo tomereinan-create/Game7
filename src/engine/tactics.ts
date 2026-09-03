@@ -305,22 +305,63 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  */
 /**
  * WHO RUNS THE PICK-AND-ROLL. The plan's own two men when it names a legal pair (his ruling: "When
- * selenting pnr you have to select the 2 handler and screener"); otherwise the AUTO-PICK the engine
- * has always used — the best small handler by min(playvol, volume) and the best big dive man by
- * min(rim, efficiency) — so an AI opponent, an old save, and a plan made before the panel existed
- * all price exactly as they did. Every reader of the pair (the fit, the court) comes through here,
- * so the number and the drawing can never name different men.
+ * selenting pnr you have to select the 2 handler and screener"); otherwise the AUTO-PICK: the best
+ * small HANDLER and the best big SCREENER, by the two terms the fit itself is built on (handlerFit
+ * and screenFit below). Every reader of the pair — the fit, the court, the caption — comes through
+ * here, so the number and the drawing can never name different men.
  */
+/**
+ * THE TWO MEN OF THE TWO-MAN GAME (recal_120, his ruling: "Jazz 97' pnr Stockton and Malone is more
+ * fitting"). Both terms were MINIMA, and a minimum asks a man to be two things at once:
+ *
+ *   handler  min(playvol, volume)  — Stockton '97 (playvol 96, volume 23) read 23 and Nash '05
+ *          (97, 42) read 42, so the measure said a pass-first point guard cannot run a
+ *          pick-and-roll. That is the opposite of true: the pick-and-roll is the play a passer
+ *          runs, and the two most famous of them were run by these two men. It is now PLAYVOL-LED,
+ *          with scoring load as a THREAT that adds to him rather than a cap that holds him down,
+ *          plus an explicit elite-passer ramp — his own words, "playvol in the ~90s" — worth up to
+ *          ELITE_LIFT and shaped the way recal_109 gave o_score its elite-passer term. Clamped to
+ *          99 so the handler stays on the 0-100 axis every other fit term lives on.
+ *          Stockton '97 87.1 (was 23), Nash '05 92.3 (was 42), Harden '18 99 (was 97),
+ *          Murray '23 63.1 (was 74) — a scorer who passes some loses a little, which is the point.
+ *          The ramp is deliberately NARROW, 80 to 95: measured at 78-to-90 it also lifts Muggsy
+ *          Bogues (92) far enough to take Mourning's Hornets '95 off the post, and a rule for
+ *          elite passers must not reach that far down. The cost is recorded — Stockton '99, whose
+ *          playvol fell to 86, is the one Stockton/Malone year that does not read pick-and-roll.
+ *   screener min(rim, efficiency)  — the ROLL only. A screener who POPS is the other half of the
+ *          action and was worth nothing for it: Malone '97 (rim 77, mid 94) read 77. It is now his
+ *          best finish off the screen, roll or pop: min(max(rim, mid), efficiency) — Malone 89.
+ *
+ * The mid-range MOVED here, it was not invented: recal_115 had put max(rim, mid) into the POST-UP
+ * hub to stop a mid-post game reading as no post game at all. That was the wrong home for it. A big
+ * who scores from the elbow is being screened free by a guard, not fed on the block, so the post hub
+ * goes back to min(rim, volume) and the mid-range belongs to the pop. Both halves of this round
+ * point the same way and neither reaches the ruling alone: Jazz '97 is pnr 76 / post-up 69, where
+ * recal_115 left it at pnr 46 / post-up 81.
+ *
+ * The three WEIGHTS of the pnr fit (0.40 handler / 0.35 screener / 0.25 spacing) are recal_58's and
+ * were deliberately not touched — the ruling names the two terms, not their shares, and moving the
+ * shares toward the pair was measured to cost the well-spaced pick-and-roll fives (Nuggets '25,
+ * Thunder '25) their read.
+ */
+export const ELITE_PV = 80
+export const ELITE_LIFT = 24
+const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
+export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
+export const screenFit = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.efficiency)
+
 export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
   if (legalPair(pick, five.map((p) => p.name))) {
     const handler = five.find((p) => p.name === pick!.handler) ?? null
     const screener = five.find((p) => p.name === pick!.screener) ?? null
     return { handler, screener, chosen: true }
   }
-  const hScore = (p: Player) => Math.min(p.attrs.playvol, p.attrs.volume)
-  const dScore = (p: Player) => Math.min(p.attrs.rim, p.attrs.efficiency)
+  const hScore = (p: Player) => handlerFit(p.attrs)
+  const dScore = (p: Player) => screenFit(p.attrs)
   const handler = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78).sort((x, y) => hScore(y) - hScore(x))[0] ?? null
-  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => dScore(y) - dScore(x))[0] ?? null
+  // ties on screenFit are real — two bigs can be capped by the same efficiency — and they are broken
+  // by the ROLL: of two men who finish the same off the screen, the one who can get to the rim sets it
+  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => dScore(y) - dScore(x) || y.attrs.rim - x.attrs.rim)[0] ?? null
   return { handler, screener, chosen: false }
 }
 
@@ -400,10 +441,15 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       return 0.3 * avg((x) => x['3pt']) + 0.2 * Math.min(...a.map((x) => x['3pt'])) + 10 * shooters - 25 * a.filter(shyBig).length
     }
     case 'pnr': {
-      // his two men when he named them, the engine's own pair when he did not — same three terms
+      // his two men when he named them, the engine's own pair when he did not — the same three
+      // terms and the same three weights, but since recal_120 the two-man terms are handlerFit and
+      // screenFit (see pnrPair): the handler led by his PLAY VOLUME instead of capped by his
+      // scoring, the screener credited for the pop as well as the roll. Jazz '97 (Stockton 87.1,
+      // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
+      // against 80.5 before the round.
       const { handler: h, screener: d } = pnrPair(five, pnr)
-      const handler = h ? Math.min(h.attrs.playvol, h.attrs.volume) : 0
-      const dive = d ? Math.min(d.attrs.rim, d.attrs.efficiency) : 0
+      const handler = h ? handlerFit(h.attrs) : 0
+      const dive = d ? screenFit(d.attrs) : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
       return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => p.attrs['3pt'])
     }
@@ -412,16 +458,21 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       return 0.5 * avg((x) => x.ballsec) + 0.3 * avg((x) => x.playvol) + 0.2 * a.filter((x) => x['3pt'] >= 60).length * 20 - 12 * stoppers
     }
     case 'postup': {
-      // A POST HUB WORKS INSIDE (recal_115). The hub term was min(rim, volume) on any man 6'9" or
-      // taller, which made a post team of every five with a tall high-volume scorer however he got
-      // his points: Durant '17 (3pt 74) read post-up 81, Porzingis '25 (3pt 86) read 69 and beat
-      // Boston's five-out. Two corrections, both general: the hub scores from the BLOCK, so his
-      // post score is his best interior shot — the rim or the turnaround, min(max(rim, mid), volume),
-      // which is what stops a mid-post game like Malone's from reading as no post game at all — and
-      // it is scaled by how INTERIOR his own game is, so a big who lives behind the arc is not a
-      // hub at any volume. O'Neal '00 (3pt 2) is untouched at 77; Porzingis '25 falls to 0.
+      // A POST HUB WORKS INSIDE (recal_115), AND HE WORKS AT THE RIM (recal_120). The term was
+      // min(rim, volume) on any man 6'9" or taller, which made a post team of every five with a tall
+      // high-volume scorer however he got his points: Durant '17 (3pt 74) read post-up 81, Porzingis
+      // '25 (3pt 86) read 69 and beat Boston's five-out. recal_115 scaled it by how INTERIOR his own
+      // game is, so a big who lives behind the arc is not a hub at any volume, and that stands.
+      //
+      // recal_115 ALSO read the hub as his best interior shot, min(max(rim, mid), volume), to keep a
+      // mid-post game from reading as no post game at all. recal_120 takes the mid-range back out
+      // (his ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): a big who scores from the
+      // elbow is being screened free by a guard, not fed on the block, so the mid-range belongs to
+      // the pick-and-POP — it is in screenFit now — and the block keeps the rim. Malone '97 (rim 77,
+      // mid 94) falls from 94 to 77 here and rises from 77 to 89 there, which is the whole round in
+      // one card. O'Neal '00 (rim 99) and Olajuwon '94 (rim 95) do not move at all.
       const bigs = five.filter((p) => p.attrs.height >= 81)
-      const hub = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.volume) * interior(x)
+      const hub = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
       const post = Math.max(0, ...bigs.map((p) => hub(p.attrs)))
       const pName = bigs.sort((x, y) => hub(y.attrs) - hub(x.attrs))[0]?.name
       return post * 0.7 + mean(five.filter((p) => p.name !== pName), (p) => p.attrs['3pt']) * 0.3
@@ -597,7 +648,7 @@ export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Pl
     case 'helio':
       return [top(scorerCreator)]
     case 'postup':
-      return [top((x) => (x.height >= 81 ? Math.min(Math.max(x.rim, x.mid), x.volume) * interior(x) : -1))]
+      return [top((x) => (x.height >= 81 ? Math.min(x.rim, x.volume) * interior(x) : -1))]
     case 'pnr': {
       const { handler, screener } = pnrPair(five, pnr)
       return [handler, screener].filter((p): p is Player => !!p)

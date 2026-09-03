@@ -185,7 +185,9 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
       const at = spotsFor({ style: s.key, pnr: null }, LAKERS)
       expect(inCorner(at[AYTON])).toBe(false)
       // every set but five-out stands him inside — the pick-and-roll as its screener (his
-      // ruling: the rest stand outside), every other set on the inside spot it holds for him
+      // ruling: the rest stand outside), every other set on the inside spot it holds for him.
+      // recal_120 note: Ayton '26 and Hachimura '26 BOTH cap at screenFit 71 off their efficiency,
+      // and the tie is broken by the roll (rim 71 to 27), so the screen is still Ayton's.
       if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
     }
   })
@@ -277,7 +279,7 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
     // read used to name a shape and no man. The Thunder '16 read the pnr between their two stars,
     // and the caption names both; the Thunder '22 read helio and it names the one man.
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toBe('pick-and-roll · best fit 76 · Westbrook + Durant')
+    expect(caption(draw(null, okc16))).toBe('pick-and-roll · best fit 80 · Westbrook + Durant')
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
     expect(caption(draw(null, okc22))).toBe('helio · best fit 65 · Gilgeous-Alexander')
     // ...and a shape that features nobody names nobody, rather than picking a starter at random
