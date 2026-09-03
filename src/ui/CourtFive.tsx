@@ -96,18 +96,19 @@ const PAINT_C: XY = at(4, 10)
  * rest outside the 3pt line"; then "move handler a little bit more to the opposite wing of sg, and
  * screener close by towards middle" — the weak-side wing sits at negative angles, so the handler
  * moved off to the positive/right side and the screener sits between him and the middle of the
- * floor, on the other side of the middle from the handler). The pair keeps the same 15-by-6 spread
- * as before — just mirrored — so the rings still stand shoulder to shoulder without colliding.
- * The ball two feet behind the arc; the screen a foot inside the line at the crown of the
- * free-throw circle. The two stand PAIR_FT apart — the number is exported so tests/court.test.ts
- * can hold the screen to the ball. The other three stand behind the line, every one of them at
- * least a ring further from the pair than the pair is from each other: the weak-side wing and both
- * corners, which is all the arc holds beside the pair without two rings colliding. The wing stands
- * six feet behind the line rather than four so that his tag clears the corner man's ring on a phone.
+ * floor, on the other side of the middle from the handler; then "move malone a bit closer to
+ * stockton" — the pair pulled in from a 15-foot spread to 9, still short of the tighter spread that
+ * let their rings touch). The ball two feet behind the arc; the screen a foot inside the line at
+ * the crown of the free-throw circle. The two stand PAIR_FT apart — the number is exported so
+ * tests/court.test.ts can hold the screen to the ball. The other three stand behind the line, every
+ * one of them at least a ring further from the pair than the pair is from each other: the
+ * weak-side wing and both corners, which is all the arc holds beside the pair without two rings
+ * colliding. The wing stands six feet behind the line rather than four so that his tag clears the
+ * corner man's ring on a phone.
  */
 const BALL: XY = at(12, 31)
-const SCREEN: XY = at(-3, 25)
-export const PAIR_FT = Math.hypot(15, 6)
+const SCREEN: XY = at(3, 25)
+export const PAIR_FT = Math.hypot(9, 6)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
