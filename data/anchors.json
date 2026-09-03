@@ -1,5 +1,32 @@
 [
  {
+  "card": "Steve Nash '05",
+  "scale": "off",
+  "target": 85,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol",
+  "note": "the elite-passer term: playvol x (1 - volume/100), gated playvol 80->95 and volume 65->10, scaled by an efficiency factor 0.5->1.0 across 70->90. 78 -> 85, ON the floor his ruling states. Size 0.32 is HIS choice over the fit's 0.36 - see receipt 109."
+ },
+ {
+  "card": "Mark Jackson '00",
+  "scale": "off",
+  "target": 58,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Agree with both",
+  "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 48 -> 57. The efficiency factor's 0.5 FLOOR is what keeps him: his efficiency is 52."
+ },
+ {
+  "card": "Mark Jackson '98",
+  "scale": "off",
+  "target": 55,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Agree with both",
+  "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 43 -> 54 at efficiency 36, on the floor."
+ },
+ {
   "card": "Deandre Ayton '26",
   "scale": "off",
   "target": 58,
