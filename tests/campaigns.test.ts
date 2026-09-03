@@ -17,11 +17,15 @@ const pct = (r: string) => {
   const [w, l] = r.split('–').map(Number)
   return w / (w + l)
 }
-/** Where a five sits on the all-time dial — the number the tiers are ordered by. */
+/** Where a five sits on the all-time dial — the number tiers 1, 2 and 4 are ordered by. */
 const net = (o: Opponent) => {
   const r = ratings100(o.players as Player[])
   return r.offRaw - r.drtgRef
 }
+/** The talent a side puts on the floor — the key tier 3 climbs by (recal_113). */
+const sumOvr = (o: Opponent) => (o.players as Player[]).reduce((a, p) => a + p.ovr, 0)
+/** The men on a level, by bare name. */
+const menOf = (o: Opponent) => new Set((o.players as Player[]).map((p) => p.player))
 
 /**
  * HIS RULING: "Lets change the campaign a little. After you finish the 30 teams, you start going by
@@ -98,7 +102,15 @@ describe('one ladder of four tiers', () => {
       expect(o.season).toBeUndefined()
       expect(o.tag).toBe('all-time')
     }
-    expect(t.levels.every((o, i) => i === 0 || net(o) >= net(t.levels[i - 1]))).toBe(true)
+    /**
+     * HIS RULING: "Lal prob the hardest". recal_113 orders this tier by the TALENT each franchise
+     * puts on the floor — the same sum-OVR pickFive() maximised to build every side in it — with the
+     * raw net as the tie-break. The raw net alone had the Lakers 29th of 30 behind a 76ers five
+     * carrying 22 fewer points of OVR, because the usage reconciliation discounts a five of alphas.
+     */
+    expect(t.levels.every((o, i) => i === 0 || sumOvr(o) >= sumOvr(t.levels[i - 1]))).toBe(true)
+    expect(t.levels[29].team).toBe('All-time Lakers')
+    expect(sumOvr(t.levels[29])).toBe(Math.max(...t.levels.map(sumOvr)))
   })
 
   it('tier 4 is thirty distinct custom sides and ends on the All-Time First Team', () => {
@@ -108,13 +120,32 @@ describe('one ladder of four tiers', () => {
     const fives = t.levels.map((o) => o.players.map((p) => p.name).sort().join('|'))
     expect(new Set(fives).size).toBe(30)
     expect(t.levels[29].team).toBe('All-Time First Team')
-    expect(t.levels[28].team).toBe('All-Time Second Team')
     // nothing on the ladder out-tops the summit
     const boss = net(t.levels[29])
     for (const o of t.levels) expect(net(o)).toBeLessThanOrEqual(boss)
-    // the twenty-eight before the ending climb by net
-    const body = t.levels.slice(0, 28)
-    expect(body.every((o, i) => i === 0 || net(o) >= net(body[i - 1]))).toBe(true)
+    /**
+     * recal_113: difficulty climbs monotonically through the WHOLE tier, not just the 28 before a
+     * pinned ending. The All-Time Second Team used to sit at level 29 whatever it read — a side
+     * weaker than eighteen of the levels before it, second from the end. It now lands where its
+     * strength puts it, and the First Team is last on the same measurement rather than by a pin.
+     */
+    expect(t.levels.every((o, i) => i === 0 || net(o) >= net(t.levels[i - 1]))).toBe(true)
+    expect(t.levels.some((o) => o.team === 'All-Time Second Team')).toBe(true)
     for (const o of t.levels) expect(o.season).toBeUndefined()
+  })
+
+  /**
+   * THE DISTINCTNESS RULE (recal_113): a Customs side is built only from men no earlier side has
+   * taken, so no two levels of that tier share a single man. Before the round 46 men filled the
+   * tier's 150 slots and 22 of the 30 sides shared three or more men with another side — "All-MVPs"
+   * and "All-NBA First Team" were four-fifths the same side under two names.
+   */
+  it('no two Customs sides share a man, and the tier fields 150 different men', () => {
+    const t = tiers[3]
+    const men = t.levels.map(menOf)
+    for (let i = 0; i < men.length; i++)
+      for (let j = 0; j < i; j++)
+        expect([...men[i]].filter((m) => men[j].has(m))).toEqual([])
+    expect(new Set(t.levels.flatMap((o) => [...menOf(o)])).size).toBe(150)
   })
 })

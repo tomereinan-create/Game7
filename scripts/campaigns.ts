@@ -243,6 +243,35 @@ const netOf = (five: P[]) => {
 }
 const dial = (five: P[]) => ratings100(five)
 
+/**
+ * HOW TIERS 3 AND 4 CLIMB (recal_113, his ruling "Lal prob the hardest"): the five's TOTAL OVR,
+ * with the raw net as the tie-break.
+ *
+ * Every side in these two tiers is BUILT by maximising sum-OVR — allTime() calls pickFive(list, ovr)
+ * for each franchise and theCustoms() calls it for each themed pool — so sum-OVR is the tier's own
+ * construction principle, and ordering a tier by the quantity that assembled each of its levels is
+ * the only key under which "this level is harder" and "this level has more of the franchise's best"
+ * are the same sentence. It settles both of his ordering rulings without naming anyone: the all-time
+ * Lakers field the tier's most talented five (455, the highest of the thirty) and therefore end
+ * tier 3, and the All-Time First Team IS the five best cards in the pool by construction, so nothing
+ * in tier 4 can out-total it and it ends the ladder without being pinned there.
+ *
+ * WHY NOT THE RAW NET, which ordered these tiers before: it is a FIT reading, not a talent reading.
+ * The usage reconciliation sheds possessions from every alpha in a five of alphas, so the more
+ * stacked a side is the more the net discounts it — the all-time Lakers (Magic, Kobe, LeBron, Davis,
+ * O'Neal) came 29th of 30 behind a 76ers five carrying 22 fewer points of OVR. recal_110 fixed part
+ * of that inside team_offense and recorded the rest; a LADDER should not wait on it.
+ *
+ * WHY NOT THE DIAL PAIR, which is what the Team DB shows: OFF and DEF are clamped at 99 and these
+ * two tiers are exactly where constructed super-fives pile against that rail — nine of the thirty
+ * all-time sides read OFF 99 and six of them tie on off+def, so the dial cannot order the top of the
+ * climb at all. The tie-break below is the dial's own raw material (offRaw − drtgRef, the two
+ * numbers gauges.ts scales), which is strictly ordered on both tiers, so where two franchises field
+ * equal talent the five that actually plays better is the harder level.
+ */
+const sumOvr = (five: P[]) => five.reduce((a, p) => a + p.ovr, 0)
+const ladderCmp = (a: P[], b: P[]) => sumOvr(a) - sumOvr(b) || netOf(a) - netOf(b)
+
 /** NBA champions by season (the year the Finals were played), dataset abbreviations. */
 const CHAMPS: Record<number, string> = {
   1980: 'LAL', 1981: 'BOS', 1982: 'LAL', 1983: 'PHI', 1984: 'BOS', 1985: 'LAL', 1986: 'BOS', 1987: 'LAL', 1988: 'LAL', 1989: 'DET',
@@ -424,7 +453,7 @@ function allTime(): Level[] {
     }
     out.push({ team: `All-time ${NICKNAME[ab] ?? ab}`, ab, champion: false, tag: 'all-time', five })
   }
-  return out.sort((a, b) => netOf(a.five) - netOf(b.five))
+  return out.sort((a, b) => ladderCmp(a.five, b.five))
 }
 
 // ------------------------------------------------------------- tier 4 · THE CUSTOMS
@@ -466,9 +495,9 @@ const INTERNATIONAL = [
 /** College on record, by bare player name; "NA" for the men who never went. */
 const collegeOf = new Map(career.map((r) => [r.player, r.colleges]))
 
-const decade = (from: number, to: number) => players.filter((p) => p.peak_season >= from && p.peak_season <= to)
+const decade = (from: number, to: number, pool: P[] = players) => pool.filter((p) => p.peak_season >= from && p.peak_season <= to)
 /** Cards of men who satisfy a bare-name test. */
-const men = (has: (player: string) => boolean) => players.filter((p) => has(p.player))
+const men = (has: (player: string) => boolean, pool: P[] = players) => pool.filter((p) => has(p.player))
 /**
  * A specialist five: the best five (by OVR — a specialist team is still a team)
  * among men who clear a floor on the attribute the team is named for. The floor
@@ -477,9 +506,9 @@ const men = (has: (player: string) => boolean) => players.filter((p) => has(p.pl
  * durability) so these read as specialist sides and not as "the best five in the
  * game with a filter" — at 85 they were drawing from most of the top of the pool.
  */
-function specialists(key: string, floor: number): P[] | null {
+function specialists(key: string, floor: number, pool: P[] = players): P[] | null {
   for (let f = floor; f >= 0; f -= 5) {
-    const five = pickFive(players.filter((p) => Number((p.attrs as unknown as Record<string, unknown>)[key] ?? 0) >= f), (p) => p.ovr)
+    const five = pickFive(pool.filter((p) => Number((p.attrs as unknown as Record<string, unknown>)[key] ?? 0) >= f), (p) => p.ovr)
     if (five) return five
   }
   return null
@@ -489,9 +518,14 @@ interface Custom {
   name: string
   ab: string
   tag: string
-  five: P[] | null
+  /**
+   * recal_113: a side is no longer a fixed five — it is a RECIPE, evaluated against the men still
+   * unclaimed when its turn comes. See THE DISTINCTNESS RULE in theCustoms().
+   */
+  build: (pool: P[]) => P[] | null
 }
-/** The same five men, however the set was described. */
+/** The same five men, however the set was described. recal_113 keeps it as the belt-and-braces
+ *  check on the distinctness rule: with no man shared, no two fives can be equal either. */
 const sig = (five: P[]) => five.map((p) => p.name).sort().join('|')
 
 function theCustoms(): Level[] {
@@ -505,98 +539,127 @@ function theCustoms(): Level[] {
   const roy = winnersOf('nba roy')
   const allNba1 = namedTo('All-NBA', '1st')
   const allDef1 = namedTo('All-Defense', '1st')
-  const school = (s: string) => pickFive(men((n) => collegeOf.get(n) === s), (p) => p.ovr)
+  const school = (s: string, pool: P[]) => pickFive(men((n) => collegeOf.get(n) === s, pool), (p) => p.ovr)
 
   const first = pickFive(players, (p) => p.ovr)
   const firstMen = new Set((first ?? []).map((p) => p.player))
   const second = pickFive(players.filter((p) => !firstMen.has(p.player)), (p) => p.ovr)
 
   /**
-   * The bench of candidate sides, MOST WANTED FIRST — the order is the tie-break,
-   * not the ladder. Many of these member sets contain the same handful of men
-   * (every one of the five best cards in the game is an MVP, an All-NBA first
-   * teamer AND an All-Defensive first teamer), so a set that lands on a five
-   * already claimed is dropped and the next one down the bench takes the slot.
-   * The first 28 survivors make the tier; the two All-Time teams are the ending.
+   * The bench of candidate RECIPES, MOST WANTED FIRST — the order decides who gets first call on
+   * the pool, not where a side lands on the ladder. See THE DISTINCTNESS RULE below.
    */
   const bench: Custom[] = [
-    { name: 'All-1980s', ab: '80s', tag: 'the 1980s', five: pickFive(decade(1980, 1989), (p) => p.ovr) },
-    { name: 'All-1990s', ab: '90s', tag: 'the 1990s', five: pickFive(decade(1990, 1999), (p) => p.ovr) },
-    { name: 'All-2000s', ab: '00s', tag: 'the 2000s', five: pickFive(decade(2000, 2009), (p) => p.ovr) },
-    { name: 'All-2010s', ab: '10s', tag: 'the 2010s', five: pickFive(decade(2010, 2019), (p) => p.ovr) },
-    { name: 'All-2020s', ab: '20s', tag: 'the 2020s', five: pickFive(decade(2020, SEASON), (p) => p.ovr) },
-    { name: 'East All-Stars', ab: 'EAST', tag: 'all-time', five: pickFive(players.filter((p) => east.has(p.name)), (p) => p.ovr) },
-    { name: 'West All-Stars', ab: 'WEST', tag: 'all-time', five: pickFive(players.filter((p) => west.has(p.name)), (p) => p.ovr) },
-    { name: 'All-International', ab: 'INTL', tag: 'all-time', five: pickFive(men((n) => INTERNATIONAL.includes(n)), (p) => p.ovr) },
-    { name: 'All-MVPs', ab: 'MVP', tag: 'all-time', five: pickFive(men((n) => mvp.has(n)), (p) => p.ovr) },
-    { name: 'All-DPOYs', ab: 'DPOY', tag: 'all-time', five: pickFive(men((n) => dpoy.has(n)), (p) => p.ovr) },
-    { name: 'All-Defense', ab: 'DEF', tag: 'all-time', five: pickFive(players, (p) => p.d_ovr) },
-    { name: 'All-Offense', ab: 'OFF', tag: 'all-time', five: pickFive(players, (p) => p.o_ovr) },
-    { name: 'All-Rookies', ab: 'ROOK', tag: 'rookie years', five: pickFive(players.filter((p) => firstSeason.get(p.player) === p.peak_season), (p) => p.ovr) },
-    { name: 'All-Sophomores', ab: 'SOPH', tag: 'second years', five: pickFive(players.filter((p) => (firstSeason.get(p.player) ?? -9) + 1 === p.peak_season), (p) => p.ovr) },
-    { name: 'All-Sixth-Men', ab: '6MOY', tag: 'all-time', five: pickFive(men((n) => smoy.has(n)), (p) => p.ovr) },
-    { name: 'All-Most-Improved', ab: 'MIP', tag: 'all-time', five: pickFive(men((n) => mip.has(n)), (p) => p.ovr) },
-    { name: 'All-Rookies-of-the-Year', ab: 'ROY', tag: 'all-time', five: pickFive(men((n) => roy.has(n)), (p) => p.ovr) },
-    { name: 'All-Hall-of-Fame', ab: 'HOF', tag: 'all-time', five: pickFive(men((n) => hallOfFame.has(n)), (p) => p.ovr) },
-    { name: 'All-NBA First Team', ab: 'ANBA', tag: 'all-time', five: pickFive(men((n) => allNba1.has(n)), (p) => p.ovr) },
-    { name: 'All-Defensive First Team', ab: 'ADEF', tag: 'all-time', five: pickFive(men((n) => allDef1.has(n)), (p) => p.ovr) },
-    { name: 'All-Shooters', ab: '3PT', tag: 'all-time', five: specialists('3pt', 90) },
-    { name: 'All-Rim-Runners', ab: 'RIM', tag: 'all-time', five: specialists('rim', 90) },
-    { name: 'All-Mid-Range', ab: 'MID', tag: 'all-time', five: specialists('mid', 90) },
-    { name: 'All-Glass', ab: 'GLAS', tag: 'all-time', five: specialists('drb', 90) },
-    { name: 'All-Playmakers', ab: 'PASS', tag: 'all-time', five: specialists('playvol', 90) },
-    { name: 'All-Rim-Protection', ab: 'BLK', tag: 'all-time', five: specialists('rimprot', 90) },
-    { name: 'All-Stoppers', ab: 'STOP', tag: 'all-time', five: specialists('perdef', 90) },
-    { name: 'All-Iron', ab: 'IRON', tag: 'all-time', five: specialists('durability', 95) },
-    { name: 'All-Efficiency', ab: 'EFF', tag: 'all-time', five: specialists('efficiency', 90) },
-    { name: 'All-Kentucky', ab: 'UK', tag: 'all-time', five: school('Kentucky') },
-    { name: 'All-Duke', ab: 'DUKE', tag: 'all-time', five: school('Duke') },
-    { name: 'All-North-Carolina', ab: 'UNC', tag: 'all-time', five: school('UNC') },
-    { name: 'All-UCLA', ab: 'UCLA', tag: 'all-time', five: school('UCLA') },
-    { name: 'All-Kansas', ab: 'KU', tag: 'all-time', five: school('Kansas') },
+    { name: 'All-1980s', ab: '80s', tag: 'the 1980s', build: (pool) => pickFive(decade(1980, 1989, pool), (p) => p.ovr) },
+    { name: 'All-1990s', ab: '90s', tag: 'the 1990s', build: (pool) => pickFive(decade(1990, 1999, pool), (p) => p.ovr) },
+    { name: 'All-2000s', ab: '00s', tag: 'the 2000s', build: (pool) => pickFive(decade(2000, 2009, pool), (p) => p.ovr) },
+    { name: 'All-2010s', ab: '10s', tag: 'the 2010s', build: (pool) => pickFive(decade(2010, 2019, pool), (p) => p.ovr) },
+    { name: 'All-2020s', ab: '20s', tag: 'the 2020s', build: (pool) => pickFive(decade(2020, SEASON, pool), (p) => p.ovr) },
+    { name: 'East All-Stars', ab: 'EAST', tag: 'all-time', build: (pool) => pickFive(pool.filter((p) => east.has(p.name)), (p) => p.ovr) },
+    { name: 'West All-Stars', ab: 'WEST', tag: 'all-time', build: (pool) => pickFive(pool.filter((p) => west.has(p.name)), (p) => p.ovr) },
+    { name: 'All-International', ab: 'INTL', tag: 'all-time', build: (pool) => pickFive(men((n) => INTERNATIONAL.includes(n), pool), (p) => p.ovr) },
+    { name: 'All-MVPs', ab: 'MVP', tag: 'all-time', build: (pool) => pickFive(men((n) => mvp.has(n), pool), (p) => p.ovr) },
+    { name: 'All-DPOYs', ab: 'DPOY', tag: 'all-time', build: (pool) => pickFive(men((n) => dpoy.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Defense', ab: 'DEF', tag: 'all-time', build: (pool) => pickFive(pool, (p) => p.d_ovr) },
+    { name: 'All-Offense', ab: 'OFF', tag: 'all-time', build: (pool) => pickFive(pool, (p) => p.o_ovr) },
+    { name: 'All-Rookies', ab: 'ROOK', tag: 'rookie years', build: (pool) => pickFive(pool.filter((p) => firstSeason.get(p.player) === p.peak_season), (p) => p.ovr) },
+    { name: 'All-Sophomores', ab: 'SOPH', tag: 'second years', build: (pool) => pickFive(pool.filter((p) => (firstSeason.get(p.player) ?? -9) + 1 === p.peak_season), (p) => p.ovr) },
+    { name: 'All-Sixth-Men', ab: '6MOY', tag: 'all-time', build: (pool) => pickFive(men((n) => smoy.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Most-Improved', ab: 'MIP', tag: 'all-time', build: (pool) => pickFive(men((n) => mip.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Rookies-of-the-Year', ab: 'ROY', tag: 'all-time', build: (pool) => pickFive(men((n) => roy.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Hall-of-Fame', ab: 'HOF', tag: 'all-time', build: (pool) => pickFive(men((n) => hallOfFame.has(n), pool), (p) => p.ovr) },
+    { name: 'All-NBA First Team', ab: 'ANBA', tag: 'all-time', build: (pool) => pickFive(men((n) => allNba1.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Defensive First Team', ab: 'ADEF', tag: 'all-time', build: (pool) => pickFive(men((n) => allDef1.has(n), pool), (p) => p.ovr) },
+    { name: 'All-Shooters', ab: '3PT', tag: 'all-time', build: (pool) => specialists('3pt', 90, pool) },
+    { name: 'All-Rim-Runners', ab: 'RIM', tag: 'all-time', build: (pool) => specialists('rim', 90, pool) },
+    { name: 'All-Mid-Range', ab: 'MID', tag: 'all-time', build: (pool) => specialists('mid', 90, pool) },
+    { name: 'All-Glass', ab: 'GLAS', tag: 'all-time', build: (pool) => specialists('drb', 90, pool) },
+    { name: 'All-Playmakers', ab: 'PASS', tag: 'all-time', build: (pool) => specialists('playvol', 90, pool) },
+    { name: 'All-Rim-Protection', ab: 'BLK', tag: 'all-time', build: (pool) => specialists('rimprot', 90, pool) },
+    { name: 'All-Stoppers', ab: 'STOP', tag: 'all-time', build: (pool) => specialists('perdef', 90, pool) },
+    { name: 'All-Iron', ab: 'IRON', tag: 'all-time', build: (pool) => specialists('durability', 95, pool) },
+    { name: 'All-Efficiency', ab: 'EFF', tag: 'all-time', build: (pool) => specialists('efficiency', 90, pool) },
+    { name: 'All-Kentucky', ab: 'UK', tag: 'all-time', build: (pool) => school('Kentucky', pool) },
+    { name: 'All-Duke', ab: 'DUKE', tag: 'all-time', build: (pool) => school('Duke', pool) },
+    { name: 'All-North-Carolina', ab: 'UNC', tag: 'all-time', build: (pool) => school('UNC', pool) },
+    { name: 'All-UCLA', ab: 'UCLA', tag: 'all-time', build: (pool) => school('UCLA', pool) },
+    { name: 'All-Kansas', ab: 'KU', tag: 'all-time', build: (pool) => school('Kansas', pool) },
   ]
 
-  const BODY = 28 // the tier is 30: this many climb by net, then the two All-Time teams
   /**
-   * NOTHING ON THE LADDER OUT-TOPS THE SUMMIT. The All-Time First Team is the five best CARDS,
-   * and the best five cards are five alphas who share one ball — so a couple of specialist sides
-   * (All-Efficiency, All-Stoppers) actually read a few points of net ABOVE it, which would leave
-   * the last level of the game not the hardest. A side that out-nets the boss is put back on the
-   * bench and the next name takes its place; the bench is deep enough to absorb it.
+   * THE DISTINCTNESS RULE (recal_113). Before this round 46 men filled the tier's 150 player slots
+   * and 22 of the 30 sides shared three or more men with another side, because sig() deduped only
+   * EXACT fives: every one of the five best cards in the game is an MVP, an All-NBA first teamer and
+   * an All-Defensive first teamer, so "All-MVPs" and "All-NBA First Team" were four-fifths the same
+   * side under two names.
+   *
+   * The rule chosen: A SIDE IS BUILT ONLY FROM MEN NO EARLIER SIDE HAS TAKEN. Every side on the
+   * tier is therefore fully distinct — no two share a man at all, which is the strongest reading of
+   * "mostly distinct" and the only one with nothing to tune. A recipe that cannot field a legal
+   * PG-to-C five from what is left is dropped and the next name on the bench takes the slot, exactly
+   * as before; the bench is longer than the tier for this reason.
+   *
+   * WHO GETS FIRST CALL: the two All-Time teams, because they are the ladder's ending and must be
+   * the five and second-five best cards in the pool, not the best of what a themed side left behind.
+   * Then the bench in its own order. The consequence is deliberate and worth naming: "All-MVPs" is
+   * now the best MVP five among men not already on the ladder, so the themed sides read weaker than
+   * they did and land earlier. That is what makes them separate levels rather than the same level
+   * relabelled.
    */
-  const ceiling = first ? netOf(first) : Infinity
-  const claimed = new Set<string>()
-  if (first) claimed.add(sig(first))
-  if (second) claimed.add(sig(second))
-  const picked: Custom[] = []
+  const claimedMen = new Set<string>()
+  const claim = (five: P[]) => five.forEach((p) => claimedMen.add(p.player))
+  if (first) claim(first)
+  if (second) claim(second)
+
+  const BODY = 28 // the tier is 30: this many climb by the ladder key, then the two All-Time teams
+  const picked: { name: string; ab: string; tag: string; five: P[] }[] = []
   for (const c of bench) {
-    if (!c.five || c.five.length !== 5) {
-      console.warn(`  ${c.name}: no legal five, dropped`)
+    const free = players.filter((p) => !claimedMen.has(p.player))
+    const five = c.build(free)
+    if (!five || five.length !== 5) {
+      console.warn(`  ${c.name}: no legal five from the men still unclaimed, dropped`)
       continue
     }
-    const s = sig(c.five)
-    if (claimed.has(s)) {
-      console.warn(`  ${c.name}: the same five as a side already on the ladder, dropped`)
+    if (picked.some((q) => sig(q.five) === sig(five))) {
+      console.warn(`  ${c.name}: the same five as a side already on the ladder — impossible under the distinctness rule`)
       continue
     }
-    if (netOf(c.five) > ceiling) {
-      console.warn(`  ${c.name}: net ${netOf(c.five).toFixed(2)} tops the All-Time First Team, dropped`)
-      continue
-    }
-    claimed.add(s)
-    picked.push(c)
+    claim(five)
+    picked.push({ name: c.name, ab: c.ab, tag: c.tag, five })
     if (picked.length === BODY) break
   }
   if (picked.length < BODY) console.warn(`  only ${picked.length} distinct custom sides; the bench needs more names`)
 
-  const level = (c: Custom): Level => ({ team: c.name, ab: c.ab, champion: false, tag: c.tag, five: c.five! })
-  const body = picked.sort((a, b) => netOf(a.five!) - netOf(b.five!)).map(level)
-  // THE ENDING, fixed whatever the net says: the All-Time Second Team, then the All-Time First
-  // Team — the five best cards in the pool, legal by position — as the last level of the game.
-  const ending: Level[] = []
-  if (second) ending.push(level({ name: 'All-Time Second Team', ab: '2ND', tag: 'all-time', five: second }))
-  if (first) ending.push(level({ name: 'All-Time First Team', ab: '1ST', tag: 'all-time', five: first }))
-  return [...body, ...ending]
+  const level = (c: { name: string; ab: string; tag: string; five: P[] }): Level => ({
+    team: c.name, ab: c.ab, champion: false, tag: c.tag, five: c.five,
+  })
+  /**
+   * THE ORDER (recal_113). This tier climbs by the RAW NET, not by the ladder key tier 3 uses, and
+   * the difference is the tier's own question. Tier 3 asks which FRANCHISE is deepest — every side
+   * there is the most talent one shirt can put on the floor, so talent orders it. Tier 4 asks how
+   * hard a SHAPE is to beat: its sides are deliberately lopsided (All-Stoppers reads OFF 32, DEF 77)
+   * and ordering them by talent would march the player past an easy 90-OVR side and into a hard 80.
+   * Difficulty here is what he faces across the table, which is the net.
+   *
+   * Everything but the boss climbs, INCLUDING the All-Time Second Team — it used to be pinned at
+   * level 29 whatever it read, which put a side weaker than eighteen of the levels before it second
+   * from the end. It now lands where its strength puts it.
+   *
+   * The All-Time First Team is last and no longer needs the ceiling filter that used to bench any
+   * side out-netting it: the distinctness rule below means a specialist side can no longer draw the
+   * top cards, so nothing on the tier comes near the boss's net. The check stays as a warning.
+   */
+  const climbing = [...picked]
+  if (second) climbing.push({ name: 'All-Time Second Team', ab: '2ND', tag: 'all-time', five: second })
+  climbing.sort((a, b) => netOf(a.five) - netOf(b.five))
+  const out = climbing.map(level)
+  if (first) {
+    const boss = netOf(first)
+    const over = climbing.filter((c) => netOf(c.five) > boss)
+    if (over.length) console.warn(`  ${over.length} sides out-net the All-Time First Team; the ending is no longer the hardest`)
+    out.push(level({ name: 'All-Time First Team', ab: '1ST', tag: 'all-time', five: first }))
+  }
+  return out
 }
 
 // ------------------------------------------------------------------------- the ladder
