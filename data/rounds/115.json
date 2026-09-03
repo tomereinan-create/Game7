@@ -1,0 +1,172 @@
+{
+  "round": 115,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Why is the system helio for rus when KD is a better scorrer? And in general, why Helio when they have 2 superstars? Other find a more fitting one, adjust the bonuses, or create a new system. | How come Boston post up and not 5 out?",
+  "title": "the best-fit tactic reads the SCORER-CREATOR, refuses helio for a five with two stars, counts five-out's shooters and stops calling a stretch big a post hub",
+  "scale": "team:off",
+  "subject": "Celtics '25 (best legal five)",
+  "five": [
+    "Derrick White '25",
+    "Jaylen Brown '25",
+    "Jayson Tatum '25",
+    "Kristaps Porziņģis '25",
+    "Al Horford '25"
+  ],
+  "target": 50,
+  "tol": 0,
+  "before": 50,
+  "after": 50,
+  "pipeline_version": 114,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const scorerCreator = \\(x: Attrs\\) => 0\\.45 \\* x\\.volume \\+ 0\\.3 \\* x\\.efficiency \\+ 25 \\* creation\\(x\\)",
+      "label": "the scorer-creator composite (scoring load x efficiency x creation)",
+      "note": "new — helio's engine was min(volume, playvol)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return 0\\.7 \\* e\\[0\\] \\+ 0\\.3 \\* \\(e\\[0\\] - \\(e\\[1\\] \\?\\? 0\\)\\) \\+ 0\\.12 \\* Math\\.min",
+      "label": "helio fit = the star's composite + his SEPARATION from the second man + the ballsec floor",
+      "note": "star*0.8 + min(ballsec)*0.2 -> 0.70/0.30 separation/0.12"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const STAR_LINE = 78\\s*\\nexport const DUO_GAP = 8",
+      "label": "two superstars: both top-two scorer-creators over 78 and within 8 of each other",
+      "note": "new gate — 31 of 1,255 wheel fives"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "if \\(s\\.key === 'helio' && duo\\) continue",
+      "label": "bestStyle never READS a two-star five as helio",
+      "note": "new — mirrors the five-out shooters gate"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "0\\.3 \\* avg\\(\\(x\\) => x\\['3pt'\\]\\) \\+ 0\\.2 \\* Math\\.min\\(\\.\\.\\.a\\.map\\(\\(x\\) => x\\['3pt'\\]\\)\\) \\+ 10 \\* shooters - 25 \\* a\\.filter\\(shyBig\\)\\.length",
+      "label": "five-out fit = shooter COUNT, shaded by the mean and the floor, minus 25 per non-shooting big",
+      "note": "min3*0.6 + avg3*0.4 -> the count form"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(Math\\.max\\(x\\.rim, x\\.mid\\), x\\.volume\\) \\* interior\\(x\\)",
+      "label": "the post hub scores from the block (rim or turnaround) and only as far as his game is interior",
+      "note": "min(rim, volume) -> min(max(rim,mid), volume) x interior"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export function featured\\(style: Style, five: Player\\[\\], pnr\\?: PnrPair \\| null\\): Player\\[\\]",
+      "label": "one function names the featured man/pair for the fit, the floor and the caption",
+      "note": "new export, read by CourtFive.spotsFor and fitLine"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "style: 0\\.35,",
+      "label": "TAX.style untouched — the playstyle band held at random -1.15 / oracle +0.68",
+      "note": "0.35 -> 0.35 (no tax re-ratified in this round)"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: Thunder '16 offence dial",
+      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 75
+    },
+    {
+      "label": "the round moves NO rating: Thunder '16 defence dial",
+      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "scale": "team:def",
+      "op": "==",
+      "value": 54
+    },
+    {
+      "label": "the round moves NO rating: Thunder '22 (the five that must keep reading helio)",
+      "five": ["Josh Giddey '22", "Shai Gilgeous-Alexander '22", "Luguentz Dort '22", "Aleksej Pokusevski '22", "Darius Bazley '22"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 1
+    },
+    {
+      "label": "the round moves NO rating: Lakers '00 offence dial (recal_110's anchor)",
+      "five": ["Ron Harper '00", "Kobe Bryant '00", "Glen Rice '00", "Robert Horry '00", "Shaquille O'Neal '00"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "Celtics '25 defence dial unmoved",
+      "scale": "team:def",
+      "op": "==",
+      "value": 52
+    },
+    {
+      "label": "Durant '16 still the better card, which is the whole premise of the ruling",
+      "card": "Kevin Durant '16",
+      "scale": "off",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "Westbrook '16 untouched by a round that only changed who the FLOOR features",
+      "card": "Russell Westbrook '16",
+      "scale": "off",
+      "op": ">=",
+      "value": 88
+    },
+    {
+      "label": "Porzingis '25 is a shooting big — the fact the post-up gate reads",
+      "card": "Kristaps Porziņģis '25",
+      "scale": "attr:3pt",
+      "op": ">=",
+      "value": 60
+    },
+    {
+      "label": "O'Neal '00 is not — the same gate leaves him at 1.0",
+      "card": "Shaquille O'Neal '00",
+      "scale": "attr:3pt",
+      "op": "<=",
+      "value": 20
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Kevin Durant '16",
+      "below": "Russell Westbrook '16",
+      "label": "\"KD is a better scorrer\" — the cards already agreed; only the tactic picker did not"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "cost": [
+    "NOTHING in data/ was regenerated and neither python file was touched: src/engine/offense.ts, data/team_rating.py and data/compute_ovr.py are byte-identical to origin/main, so no OVR, no OFF/DEF dial and no `marg` moved. The receipt's subject and every expect line is a team dial read back unchanged for exactly that reason.",
+    "TAX.style was NOT re-ratified. The playstyle row moved random -1.09 -> -1.15 and oracle +0.71 -> +0.68 and stayed in band; it is the narrowest playstyle has read since recal_58, with 0.18 of oracle headroom. The next round that widens any style's fit range should expect to re-ratify it.",
+    "tests/court.test.ts's two Thunder '24 / Lakers '26 fixtures asserted a style the old formulas produced. Both fives now read helio (Gilgeous-Alexander '24, Doncic '26) and the assertions were updated with the reason; the RULINGS those tests hold (a non-shooter never stands in a corner; the screen is set beside the ball) are asserted against the called shape and are untouched.",
+    "The Thunder '24 court now draws the helio shape, which stands TWO men on the dunker spots. That shape is 3d5af81's and was not touched here, but it is the shape he complained about in b4c50a4's ruling and the design agent should look at it.",
+    "NO ANCHOR WAS ADDED to data/anchors.json and none could be. Every scale data/anchors.py can read is a rating off the python pipeline (off / def / ovr / attr:* / team:*dial) and this ruling is about which of seven TypeScript fit formulas wins on a five — python would have to re-implement styleFit to check it, which is the duplication doctrine 4 exists to forbid. The ruling is pinned instead in tests/tactics.test.ts (four describe blocks, thirteen assertions naming the Thunder '16, the Thunder '22, the Celtics '25, the Warriors '17, the Cavaliers '16, the Rockets '18, the Lakers '00 and the Rockets '94), which npm test runs forever — the same place recal-era commits 3d5af81 and b4c50a4 pinned their court rulings. If a later round wants these in anchors.json, anchors.py needs a scale that shells out to vite-node first."
+  ],
+  "notes": [
+    "THE READ, over all 1,255 wheel team-seasons that can field a five (scripts/tactics115.ts).",
+    "  before  balanced 461 · fiveout 1 · pnr 160 · motion 9 · postup 323 · helio 291 · transition 10",
+    "  after   balanced 457 · fiveout 17 · pnr 224 · motion 5 · postup 341 · helio 203 · transition 8",
+    "  464 of 1,255 fives changed style; 18 of the 311 that kept helio or post-up changed featured man.",
+    "HIS THREE CASES.",
+    "  Thunder '16   helio 82 (Westbrook)  ->  pick-and-roll 76 (Westbrook + Durant)   [two stars]",
+    "  Celtics '25   post-up 69 (Porzingis) ->  five-out 73",
+    "  Thunder '22   helio 64 (Gilgeous-Alexander) -> helio 65 (Gilgeous-Alexander)  — survives, as required",
+    "WHY THE COMPOSITE. Helio keyed on min(volume, playvol), which asks how much of the offence a man touches and nothing about whether the touches are worth having: Westbrook '16 read 95 to Durant's 70. scorerCreator reads 0.45 x volume + 0.30 x efficiency + 25 x creation (the offense engine's OWN creation term, playvol and ball security) and puts Durant at 88.3 to Westbrook's 81.5. It is a function of `attrs` only, like every other fit in the file, so the picker does not become a consumer of the ratings pipeline.",
+    "WHY THE SEPARATION TERM. 'Why helio when they have 2 superstars' is answered twice over: the fit now pays for the star's GAP over the second-best man on the floor, so a two-star five scores low by construction, and bestStyle refuses to read helio for a two-star five at all (STAR_LINE 78, DUO_GAP 8 — 31 of 1,255 fives). No new style was added: the ruling's own first option, 'find a more fitting one', lands the Thunder '16 and the Warriors '17 on the pick-and-roll between their two men, and the caption now names both.",
+    "WHY FIVE-OUT WAS A COUNT ALL ALONG. 0.6 x the WORST shooter + 0.4 x the mean is a formula about the weakest link: Boston '25 has four men over 75 from three and one at 52, and read 62. Five-out needs four or five men a defence must close out on and no big it can leave at the rim, which is a count and a veto, so it is written as one. It appears on 17 fives now instead of 1 — Mavericks '03/'16/'22, Nuggets '18/'26, Celtics '23/'24/'25, Knicks '25, Bulls '25, Heat '26 among them — all of them 2003 or later, which is what five-out is.",
+    "WHY A STRETCH BIG IS NOT A POST HUB. The hub term ran on any man 6'9\" or taller by min(rim, volume), so Durant '17 (3pt 74) made the Warriors a post team at fit 81 and Porzingis '25 (3pt 86) beat Boston's five-out. It is now his best INTERIOR shot — min(max(rim, mid), volume), which is what keeps a mid-post game like Malone's from reading as no post game at all — scaled by how interior his own game is (1 at 3pt <= 20, 0 at 60). O'Neal '00 is untouched at 77 and Olajuwon '94 at 79; the Lakers '20-'24 post hub moves from LeBron James to Anthony Davis, and the Rockets '26 from Durant to Sengun.",
+    "REJECTED, on the measurement. A second post-up gate on the hub's PLAYVOL — 'a hub is fed and passes out of the post' — would have moved the Suns '05 off Stoudemire and onto the Nash pick-and-roll, but the probe showed it also disqualifies Moses Malone (playvol 9-12), Alonzo Mourning (10-19), Dwight Howard (16-19) and Yao Ming (17), who are the post hubs the ruling says must survive. Dropped.",
+    "OPEN. The Warriors '17 read pick-and-roll (Curry + Durant), not five-out or motion: their max-OVR five starts Pachulia (3pt 12) beside Green (34), which is two men who cannot shoot — the five-out veto he ratified himself. The Death Lineup is not the five the Team DB fields."
+  ]
+}

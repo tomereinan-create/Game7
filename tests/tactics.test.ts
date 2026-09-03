@@ -1,7 +1,23 @@
 import { describe, expect, it } from 'vitest'
 import { harnessTable, runHarness } from '../src/engine/harness'
 import { PLAYERS } from '../src/engine/pool'
-import { DEFAULT_TACTICS, gateTactics, pnrPair, reconcileTactics, styleFit, stylePts, type PnrPair, type Tactics } from '../src/engine/tactics'
+import {
+  bestStyle,
+  canSpace,
+  DEFAULT_TACTICS,
+  DUO_GAP,
+  featured,
+  gateTactics,
+  pnrPair,
+  reconcileTactics,
+  scorerCreator,
+  STAR_LINE,
+  styleFit,
+  stylePts,
+  twoStars,
+  type PnrPair,
+  type Tactics,
+} from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 
 /**
@@ -106,5 +122,122 @@ describe('the pick-and-roll pair he calls', () => {
     expect(gateTactics(called, 1).style).toBe('balanced')
     expect(gateTactics(called, 1).pnr).toBe(null)
     expect(gateTactics(called, 2).pnr).toEqual(called.pnr)
+  })
+})
+
+/**
+ * THE BEST-FIT TACTIC (recal_115, his rulings: "Why is the system helio for rus when KD is a better
+ * scorrer? And in general, why Helio when they have 2 superstars? Other find a more fitting one,
+ * adjust the bonuses, or create a new system." · "How come Boston post up and not 5 out?").
+ *
+ * Three general rules, held here on the fives he named: the helio engine is the five's best
+ * SCORER-CREATOR and not its highest play-volume man; a five with two superstars is never read as
+ * helio; and five-out is a count of shooters with no non-shooting big, not an average dragged down
+ * by the worst man on the floor.
+ */
+const cut = (...names: string[]) => names.map(g)
+const THUNDER_16 = cut("Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16")
+const THUNDER_22 = cut("Josh Giddey '22", "Shai Gilgeous-Alexander '22", "Luguentz Dort '22", "Aleksej Pokusevski '22", "Darius Bazley '22")
+const CELTICS_25 = cut("Derrick White '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25", "Al Horford '25")
+const LAKERS_00 = cut("Ron Harper '00", "Kobe Bryant '00", "Glen Rice '00", "Robert Horry '00", "Shaquille O'Neal '00")
+const ROCKETS_94 = cut("Kenny Smith '94", "Mario Elie '94", "Robert Horry '94", "Otis Thorpe '94", "Hakeem Olajuwon '94")
+
+describe('the helio engine is the best scorer-creator, not the busiest man', () => {
+  it("Durant '16 outranks Westbrook '16, though Westbrook touches more of the offense", () => {
+    const kd = g("Kevin Durant '16").attrs
+    const rw = g("Russell Westbrook '16").attrs
+    // the OLD measure — pure play volume — put Westbrook first, which is the complaint
+    expect(Math.min(rw.volume, rw.playvol)).toBeGreaterThan(Math.min(kd.volume, kd.playvol))
+    // the composite reads scoring load x efficiency x creation, and Durant wins it
+    expect(scorerCreator(kd)).toBeGreaterThan(scorerCreator(rw))
+    expect(featured('helio', THUNDER_16)[0].name).toBe("Kevin Durant '16")
+  })
+
+  it('the featured man of a set is the man the fit is built on, one function for floor and caption', () => {
+    // post-up features the interior hub, the pick-and-roll features BOTH of its men, and the sets
+    // that feature nobody say so rather than naming an arbitrary starter
+    expect(featured('postup', LAKERS_00)[0].name).toBe("Shaquille O'Neal '00")
+    expect(featured('pnr', THUNDER_16).map((p) => p.name)).toEqual(["Russell Westbrook '16", "Kevin Durant '16"])
+    expect(featured('fiveout', CELTICS_25)).toEqual([])
+    expect(featured('balanced', CELTICS_25)).toEqual([])
+  })
+})
+
+describe('two superstars are never read as helio', () => {
+  it("the Thunder '16 read the pick-and-roll between their two, not one man's offense", () => {
+    expect(twoStars(THUNDER_16)).toBe(true)
+    const e = THUNDER_16.map((p) => scorerCreator(p.attrs)).sort((a, b) => b - a)
+    expect(e[1]).toBeGreaterThanOrEqual(STAR_LINE)
+    expect(e[0] - e[1]).toBeLessThanOrEqual(DUO_GAP)
+    expect(bestStyle(THUNDER_16).style).toBe('pnr')
+    // ...and the pair the caption names is the two of them
+    expect(
+      featured('pnr', THUNDER_16)
+        .map((p) => p.name)
+        .sort(),
+    ).toEqual(["Kevin Durant '16", "Russell Westbrook '16"])
+  })
+
+  it("a five with ONE clear star still reads helio: the Thunder '22 survive untouched", () => {
+    expect(twoStars(THUNDER_22)).toBe(false)
+    const b = bestStyle(THUNDER_22)
+    expect(b.style).toBe('helio')
+    expect(b.fit).toBeGreaterThan(60)
+    expect(featured('helio', THUNDER_22)[0].name).toBe("Shai Gilgeous-Alexander '22")
+  })
+
+  it('the gate is general: two men above the line and inside the gap, whoever they are', () => {
+    // the same test on another roster, so the rule is not a fact about one five
+    const pair = cut("Stephen Curry '17", "Klay Thompson '17", "Kevin Durant '17", "Draymond Green '17", "Zaza Pachulia '17")
+    expect(twoStars(pair)).toBe(true)
+    expect(bestStyle(pair).style).not.toBe('helio')
+    // and a star beside a good second man is NOT two superstars
+    const solo = cut("LeBron James '16", "Kyrie Irving '16", "J.R. Smith '16", "Kevin Love '16", "Timofey Mozgov '16")
+    expect(twoStars(solo)).toBe(false)
+  })
+})
+
+describe('five-out is a count of shooters, and a non-shooting big is a hole in it', () => {
+  it('Boston 2025 reads five-out, and beats every other set on that floor', () => {
+    expect(bestStyle(CELTICS_25).style).toBe('fiveout')
+    // four men over the closeout line, and nobody the defence can leave at the rim
+    expect(CELTICS_25.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
+    expect(CELTICS_25.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(0)
+    expect(styleFit('fiveout', CELTICS_25)).toBeGreaterThan(styleFit('postup', CELTICS_25))
+  })
+
+  it('a non-shooting big costs the set 25 points, so a four-out team is not read five-out', () => {
+    const rockets = cut("Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18")
+    expect(rockets.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
+    expect(rockets.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(1) // Capela
+    expect(styleFit('fiveout', rockets)).toBeLessThan(60)
+    expect(bestStyle(rockets).style).toBe('pnr')
+  })
+
+  it('and two men who cannot shoot are never read five-out, however the fit lands', () => {
+    const two = cut("Stephen Curry '16", "Klay Thompson '15", "LeBron James '13", "Draymond Green '18", "Rudy Gobert '17")
+    expect(two.filter((p) => !canSpace(p))).toHaveLength(2)
+    expect(bestStyle(two).style).not.toBe('fiveout')
+  })
+})
+
+describe('post-up still fits a true post hub, and only one', () => {
+  it("the Lakers '00 and the Rockets '94 read post-up, on O'Neal and on Olajuwon", () => {
+    for (const [f, man] of [
+      [LAKERS_00, "Shaquille O'Neal '00"],
+      [ROCKETS_94, "Hakeem Olajuwon '94"],
+    ] as const) {
+      expect(bestStyle(f).style).toBe('postup')
+      expect(featured('postup', f)[0].name).toBe(man)
+    }
+  })
+
+  it('a big who shoots is not a hub: the post term is scaled by how interior his own game is', () => {
+    // Porzingis '25 is 7'2" and shoots 86 from three; the old term made Boston a post team on him.
+    // The five's post fit is now under the free default.
+    expect(g("Kristaps Porziņģis '25").attrs['3pt']).toBeGreaterThanOrEqual(60)
+    expect(styleFit('postup', CELTICS_25)).toBeLessThan(60)
+    // O'Neal, who shoots 2, is untouched by the same term
+    expect(styleFit('postup', LAKERS_00)).toBeGreaterThan(70)
   })
 })

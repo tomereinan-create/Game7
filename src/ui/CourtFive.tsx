@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { bestStyle, canSpace, pnrPair, SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, featured, pnrPair, SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -16,7 +16,10 @@ import type { Player } from '../engine/types'
  * — no longer stands balanced by default (his ruling: "Assign each team on
  * the court by using their best tactic"). It stands in the shape of the style
  * it is BEST at, the engine's bestStyle, and the caption says the shape was
- * inferred rather than called ("motion · best fit 74").
+ * inferred rather than called AND names the man or the pair it runs through
+ * ("helio · best fit 65 · Gilgeous-Alexander", "pick-and-roll · best fit 76 ·
+ * Westbrook + Durant" — recal_115, his ruling: "Why is the system helio for
+ * rus when KD is a better scorrer?").
  *
  * HIS five drawn beside a plan he set somewhere else — the campaign prep
  * screen's "Your five", which reads the My team plan but does not edit it —
@@ -183,6 +186,11 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
   for (let i = 0; i < five.length; i++) if (i !== not && (k < 0 || score(five[i]) > score(five[k]))) k = i
   return k
 }
+/** The index of the man a featured set is built around, through the engine's own `featured`. */
+const who = (men: Player[], style: Style): number => {
+  const p = featured(style, men)[0]
+  return p ? men.findIndex((q) => q.name === p.name) : 0
+}
 
 /**
  * WHO STANDS WHERE, once the shape is chosen (his ruling: "Why is Ayton out and James in? Makes no
@@ -307,14 +315,18 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
     }
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a
-      // second big who cannot shoot takes the dunker spot, the set's other inside spot
-      const s = best(men, (p) => (p.attrs.height >= 81 ? Math.min(p.attrs.rim, p.attrs.volume) : 0))
+      // second big who cannot shoot takes the dunker spot, the set's other inside spot. The hub is
+      // the engine's own (recal_115): a big who works INSIDE, so a stretch five is not stood on the
+      // block because he is the tallest man in the picture.
+      const s = who(men, 'postup')
       return stand(men, { [s]: BLOCK_L }, [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]], [DUNK_R])
     }
     case 'helio': {
       // the engine alone above the arc; the four low — the corners for the shooters, the two
-      // dunker spots for the men who cannot space
-      const s = best(men, (p) => Math.min(p.attrs.volume, p.attrs.playvol))
+      // dunker spots for the men who cannot space. The engine is the five's best SCORER-CREATOR
+      // (recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?"),
+      // read through the same function the fit and the caption read.
+      const s = who(men, 'helio')
       return stand(men, { [s]: peri(0, 6) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
   }
@@ -340,9 +352,15 @@ function callLine(plan: Tactics, side: Side): string {
  * idiom, with the fit that won so the reader can see it was inferred and not called. A five that
  * nothing fits better than the free default says exactly that, rather than pretending 60 is a fit.
  */
-function fitLine(inf: { style: Style; fit: number }): string {
+function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
   const label = STYLES.find((s) => s.key === inf.style)?.label ?? inf.style
-  return inf.style === 'balanced' ? `${label} · no better fit` : `${label} · best fit ${Math.round(inf.fit)}`
+  if (inf.style === 'balanced') return `${label} · no better fit`
+  // WHO IT RUNS THROUGH (recal_115, his ruling: "Why is the system helio for rus when KD is a better
+  // scorrer?"). The read used to name a shape and no man, so the only way to see whose offense the
+  // engine thought it was, was to find him standing at the top of the arc. The caption names him —
+  // and for the pick-and-roll it names BOTH men, which is what a five with two stars reads as.
+  const men2 = featured(inf.style, men).map((p) => surname(p.name))
+  return `${label} · best fit ${Math.round(inf.fit)}${men2.length ? ` · ${men2.join(' + ')}` : ''}`
 }
 
 /**
@@ -515,7 +533,7 @@ export function CourtFive({
   // no plan and no call: the shape was read off the five, and the caption says so (his ruling:
   // "Assign each team on the court by using their best tactic")
   const inferred = plan || set ? null : inferredStyle(men)
-  const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred) : ''
+  const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with
    * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and

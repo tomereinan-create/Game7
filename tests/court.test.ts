@@ -170,7 +170,12 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
   it('the Lakers five stands Ayton inside, not in the corner', () => {
     expect(canSpace(LAKERS[AYTON])).toBe(false)
     const at = spotsFor(null, LAKERS)
-    expect(inferredStyle(LAKERS)!.style).toBe('postup')
+    // recal_115 moved this five's READ from post-up to helio: LeBron '26 shoots 38 from three, so
+    // the post-up hub term (which is now scaled by how interior a big's own game is) no longer
+    // makes a post team of the Lakers, and Doncic is the five's best scorer-creator by 10 points.
+    // The RULING under test is unchanged and is about the spot, not the shape: whatever the five is
+    // read as, the man who cannot shoot stands inside and never in a corner.
+    expect(inferredStyle(LAKERS)!.style).toBe('helio')
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
@@ -267,6 +272,19 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
     expect(caption(draw(null))).toContain(inferredStyle(FIVE)!.style === 'balanced' ? 'no better fit' : 'best fit')
   })
 
+  it('the best-fit caption names the man, or the pair, the shape runs through', () => {
+    // recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?" — the
+    // read used to name a shape and no man. The Thunder '16 read the pnr between their two stars,
+    // and the caption names both; the Thunder '22 read helio and it names the one man.
+    const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
+    expect(caption(draw(null, okc16))).toBe('pick-and-roll · best fit 76 · Westbrook + Durant')
+    const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
+    expect(caption(draw(null, okc22))).toBe('helio · best fit 65 · Gilgeous-Alexander')
+    // ...and a shape that features nobody names nobody, rather than picking a starter at random
+    const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
+    expect(caption(draw(null, bos25))).toBe('five-out · best fit 73')
+  })
+
   it('a five still being filled keeps the ghost floor, and claims no shape', () => {
     const four = [...FIVE.slice(0, 4), null]
     expect(draw({ style: 'fiveout', pnr: null }, four)).toBe(draw(null, four))
@@ -334,13 +352,24 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
   }
 
   it("the Thunder '24: Holmgren beside Gilgeous-Alexander at the top, the other three behind the line", () => {
-    expect(inferredStyle(THUNDER)!.style).toBe('pnr')
+    // recal_115 moved this five's READ to helio — Gilgeous-Alexander '24 out-scores the next man on
+    // the floor by 27 points of scorer-creator, which is what a helio offence is — so the pair is
+    // asserted against the CALL, which is what the ruling was about ("If its pnr, ..."). The
+    // inference is checked below on a five that is read as a pick-and-roll.
+    expect(inferredStyle(THUNDER)!.style).toBe('helio')
     const pair = pnrPair(THUNDER, null)
     expect(pair.handler!.name).toBe("Shai Gilgeous-Alexander '24")
     expect(pair.screener!.name).toBe("Chet Holmgren '24")
     holds(THUNDER, null)
-    // and the read is the call: the inferred floor is the called floor
-    expect(spotsFor(null, THUNDER)).toEqual(spotsFor({ style: 'pnr', pnr: null }, THUNDER))
+  })
+
+  it('a five that IS read as a pick-and-roll draws the called floor, spot for spot', () => {
+    // the Thunder '16 (his ruling: "why Helio when they have 2 superstars?") — two stars inside
+    // DUO_GAP of each other, so the read is the pnr between them and the caption names both
+    const okc = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
+    expect(inferredStyle(okc)!.style).toBe('pnr')
+    expect(spotsFor(null, okc)).toEqual(spotsFor({ style: 'pnr', pnr: null }, okc))
+    holds(okc, null)
   })
 
   it('holds for every five the pool can cut, auto-paired', () => {
