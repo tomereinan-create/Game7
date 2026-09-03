@@ -1,6 +1,8 @@
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { FLOOR, inCorner, inferredStyle, outsideLine, spotsFor } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style } from '../src/engine/tactics'
+import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, spotsFor, type CourtSpot } from '../src/ui/CourtFive'
+import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -201,6 +203,80 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     expect(bigs).toHaveLength(2)
     expect(at[3]).not.toEqual(at[AYTON])
     expect(outsideLine(at[3])).toBe(false) // LeBron '26 on the block
+  })
+})
+
+/**
+ * HIS RULING: "If I put 5 out on my tactics it should be shown here as well" — the campaign prep
+ * screen drew his five in its best-fit shape while the plan he had set in My team said five-out.
+ * A court handed the set tactic draws THAT shape, and its caption says whose call it is. Balanced
+ * is no call, so a balanced plan leaves the best-fit read, and its caption, exactly as they were.
+ */
+describe('a five drawn beside a set tactic stands in that tactic', () => {
+  const POS = ['PG', 'SG', 'SF', 'PF', 'C']
+  const spots = (five: (Player | null)[]): CourtSpot[] => five.map((p, i) => ({ p, tag: p ? `${POS[i]} · ${p.ovr}` : '', slot: POS[i] }))
+  const draw = (tactic: Pick<Tactics, 'style' | 'pnr'> | null, five: (Player | null)[] = FIVE) =>
+    renderToStaticMarkup(createElement(CourtFive, { spots: spots(five), tactic }))
+  /** Where the markup stood each man, index-aligned, as the box positions them (percent of the cropped court). */
+  const stood = (html: string) =>
+    [...html.matchAll(/class="ct-spot[^"]*" style="left:([\d.]+)%;top:([\d.]+)%"/g)].map(([, x, y]) => [Number(x), Number(y)] as const)
+  /** The same remap the court applies with no bench: 16 units of empty floor cropped off the top. */
+  const drawn = (at: readonly (readonly [number, number])[]) => at.map(([x, y]) => [x, ((y - 16) / 84) * 100] as const)
+  const same = (a: readonly (readonly [number, number])[], b: readonly (readonly [number, number])[]) => {
+    expect(a).toHaveLength(b.length)
+    a.forEach(([x, y], i) => {
+      expect(x).toBeCloseTo(b[i][0], 6)
+      expect(y).toBeCloseTo(b[i][1], 6)
+    })
+  }
+  const caption = (html: string) => html.match(/class="ct-call">([^<]*)</)?.[1] ?? ''
+
+  it('a called five-out shows five out, and says it is his call', () => {
+    const html = draw({ style: 'fiveout', pnr: null })
+    const at = stood(html)
+    expect(at).toHaveLength(5)
+    same(at, drawn(spotsFor({ style: 'fiveout', pnr: null }, FIVE)))
+    expect(spotsFor({ style: 'fiveout', pnr: null }, FIVE).filter((xy) => !outsideLine(xy))).toHaveLength(0)
+    expect(caption(html)).toBe('five-out · your tactic')
+    // the best-fit read is gone from the caption, and there is no toggle: the plan is turned elsewhere
+    expect(html).not.toContain('best fit')
+    expect(html).not.toContain('ct-side')
+  })
+
+  it('every style he can call is drawn as called, with its own label', () => {
+    for (const s of STYLES) {
+      if (s.key === 'balanced') continue
+      const html = draw({ style: s.key, pnr: null })
+      same(stood(html), drawn(spotsFor({ style: s.key, pnr: null }, FIVE)))
+      expect(caption(html)).toBe(`${s.label} · your tactic`)
+    }
+  })
+
+  it('the pick-and-roll stands the pair he named, as the plan would', () => {
+    const chosen: PnrPair = { handler: "Klay Thompson '15", screener: "Draymond Green '16" }
+    const at = stood(draw({ style: 'pnr', pnr: chosen }))
+    same(at, drawn(spotsFor({ style: 'pnr', pnr: chosen }, FIVE)))
+    const auto = drawn(spotsFor({ style: 'pnr', pnr: null }, FIVE))
+    expect(at.some(([x, y], i) => Math.abs(x - auto[i][0]) > 1e-6 || Math.abs(y - auto[i][1]) > 1e-6)).toBe(true)
+  })
+
+  it('balanced is no call: the best-fit read and its caption stay exactly as they were', () => {
+    expect(draw({ style: 'balanced', pnr: null })).toBe(draw(null))
+    expect(caption(draw(null))).not.toContain('your tactic')
+    expect(caption(draw(null))).toContain(inferredStyle(FIVE)!.style === 'balanced' ? 'no better fit' : 'best fit')
+  })
+
+  it('a five still being filled keeps the ghost floor, and claims no shape', () => {
+    const four = [...FIVE.slice(0, 4), null]
+    expect(draw({ style: 'fiveout', pnr: null }, four)).toBe(draw(null, four))
+    expect(caption(draw({ style: 'fiveout', pnr: null }, four))).toBe('')
+  })
+
+  it('a court with a plan of its own is untouched by the prop', () => {
+    const plan: Tactics = { ...DEFAULT_TACTICS, style: 'postup' }
+    const a = renderToStaticMarkup(createElement(CourtFive, { spots: spots(FIVE), plan }))
+    const b = renderToStaticMarkup(createElement(CourtFive, { spots: spots(FIVE), plan, tactic: { style: 'fiveout', pnr: null } }))
+    expect(b).toBe(a)
   })
 })
 

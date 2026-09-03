@@ -1134,13 +1134,18 @@ export function Draft({
         {/* his ruling: read your own side as a lineup too, the same floor the scout card draws.
             The five fills as he spins, so an unfilled slot stands on the floor as a dashed ghost
             ring wearing its position — the shape of the team he is building is visible from the
-            first spin. No plan exists at the draft, so the balanced set, as on the scout court.
+            first spin. A full five stands in its best-fit shape, as on the scout court — unless
+            this is the death match and he CALLED a style in My team, in which case it stands in
+            THAT, captioned as his (his ruling: "If I put 5 out on my tactics it should be shown
+            here as well"). The gated plan goes through, so a call the playbook has not opened is
+            drawn the way it is priced: not at all.
             Each spot publishes data-slot, which is all the existing drag hit-test needs to accept
             a drop here; tapping a man opens his card, as every other court does.
             His ruling adds the pick-up: a man can be dragged off his own ring onto another spot.
             An EMPTY ghost ring is a legal destination too — it is the same gesture and it moves a
             man into an open chair, which canMoveSlot already allows when the target is empty. */}
         <CourtFive
+          tactic={plan}
           swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
           spots={POSITIONS.map((x) => {
             const n = slots[x]
