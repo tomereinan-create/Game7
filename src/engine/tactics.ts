@@ -220,6 +220,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * half instead: .10 clears the oracle floor by 0.029 and the blind ceiling by 0.285. Recorded because
  * it is the first time this file has had to choose inside a half-interval rather than a whole one.
  * The seven others held their bands untouched, crash def glass included. All nine pass.
+ * recal_118's off-ball ramp (499 more o_ovrs and 374 more OVRs, all UP, on top of r117's) moved the
+ * ovr>=55 pool a second time in two rounds, and HUNT alone broke again — this time on the ORACLE edge
+ * (+0.37), the opposite side from r117's. Re-ratified 4.10 -> 3.71, the midpoint of a window running
+ * about 3.655 (blind -0.300) to 3.761 (oracle +0.500). r117's 4.10 was measured on a pool WITHOUT this
+ * round's cards and is SUPERSEDED by this figure rather than stacked with it; the integrator re-sweeps
+ * once from main's constant, as the law requires. crash off glass held its re-ratified .10 (oracle
+ * +0.64, blind -0.48) and the other seven held their bands. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -227,7 +234,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.10,
+  hunt: 3.71,
   crashOff: 0.10,
   crashDef: 0.44,
 }

@@ -661,7 +661,45 @@ def o_score(p, trace=None):
         std += _ef
         if trace is not None:
             trace['interior'] = dict(gate=_ee * _ev * _ep * _e3, added=_ef)
-    if a['3pt'] >= 68 and a['volume'] < 55:
+    # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
+    # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
+    #
+    # THE DEFECT. r64's gate is `3pt >= 68 and volume < 55`, and since recal_91 grew the big branch
+    # the thing behind that gate is worth up to TWENTY-FOUR printed OFF points. One rating point of
+    # `3pt` therefore decides a fifth of a card. DORIAN FINNEY-SMITH is the case, on two seasons of
+    # the same job: '20 (3pt 57) reads 38 and '21 (3pt 72) reads 62, on usage 12.9 and 12.2, true
+    # shooting .595 and .609, 37.6% and 39.4% from the arc, BPM -0.2 and +0.1. Across the whole pool
+    # 45 adjacent-season pairs of the same man jump 10 or more OFF points across this one flip.
+    #
+    # THE RAMP, and it introduces NO NEW CONSTANT. The share of the floor a man has earned is his
+    # own shooting measured against r64's own number: `min(1, 3pt / 68)`. At 3pt 68 and above it is
+    # 1.0 and the branch is byte-identical to what stood before; below it the man is paid in
+    # proportion to how much of a spacer he actually is. 68 stops being a threshold and becomes the
+    # point of saturation - the same number, doing the job it was chosen for.
+    #
+    # WHAT THE SHARE IS APPLIED TO, which is the whole of why this reaches the card. The floor is
+    # not a rival score: it is a CORRECTION to the standard path - the claim that a man who spaces,
+    # converts and holds the ball is worth more than his own weighted line says. So the share is
+    # applied to the CORRECTION and not to the floor: `std + f x (floor - std)`, which at f = 1 is
+    # `max(std, floor)` exactly. MEASURED, all three forms, on the whole pool:
+    #   floor x f, foot 0     Finney-Smith '20 reads 46 - the scaled floor sinks below his own
+    #                         standard path long before it reaches him
+    #   correction x f, foot 50 (the shortlist's own example)  he reads 45
+    #   correction x f, foot 0                                 he reads 53
+    # Only the last one reaches his band, and it is also the only one with no constant to choose.
+    #
+    # UNTOUCHED BY CONSTRUCTION, and verified rather than assumed - of the 499 cards that move,
+    # ZERO have 3pt >= 68, ZERO have volume >= 55 and ZERO have 3pt of 0. Every wing pin the floor
+    # was built on is above the saturation point (Korver '15 95, Kerr '96 93, Bowen '06 81, Snell
+    # '18 80, Novak '13 99, Tolliver '14 95, Anunoby '21 75, Hachimura '26 88, Finney-Smith '21 72)
+    # and every volume scorer is outside r64's usage gate, which this round does not touch.
+    # MEASURED: 499 of 10,000 cards move on OFF, every one of them UP, max +16, mean +3.50; DEF and
+    # every attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no
+    # entrant, no leaver and no rank flip. The cliff pairs fall from 45 to 20 and Finney-Smith's own
+    # gap closes from 24 to 9.
+    OB_3P_FULL = 68.0
+    _f3 = min(1.0, max(0.0, a['3pt'] / OB_3P_FULL))
+    if _f3 > 0.0 and a['volume'] < 55:
         _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
         # recal_91 (HIS RULINGS, verbatim: "Too low OFF 54. Should be mid 60s" for OG Anunoby '21,
         # and "OFF should be low 60s, or high 60s. Not 55" for Rui Hachimura '26).
@@ -705,9 +743,12 @@ def o_score(p, trace=None):
             _g = max(min(1.0, max(0.0, (a['volume'] - SB_V_LO) / (SB_V_HI - SB_V_LO))),
                      min(1.0, max(0.0, (a['orb'] - SB_ORB_LO) / (SB_ORB_HI - SB_ORB_LO))))
             _fl += _g * (0.17*(a['orb'] + a['rim']) + 0.10*a['volume'])
-        std = max(std, _fl)
+        # recal_118: the share of the CORRECTION he has earned, not the whole of it. At _f3 == 1.0
+        # this line is `max(std, _fl)` byte for byte, which is what every card above 3pt 68 gets.
+        _flr = std + _f3 * (_fl - std)
+        std = max(std, _flr)
         if trace is not None:
-            trace['offball_floor'] = dict(value=_fl, binding=std == _fl,
+            trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     if trace is not None: trace['o_score'] = std
     return std

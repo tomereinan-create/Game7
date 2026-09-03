@@ -55,9 +55,9 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 4\\.10,",
+      "pattern": "re-ratified 3\\.80 -> 4\\.10",
       "label": "THE DEVIATION TAX LAW, re-ratified (1 of 2) — hunt went shallow on its BLIND edge",
-      "note": "3.80 -> 4.10 (blind -0.10 against the -0.30 floor); the midpoint of a window eleven thousandths wide, 4.04 to 4.15"
+      "note": "3.80 -> 4.10 (blind -0.10 against the -0.30 floor), the midpoint of a window eleven thousandths wide (4.04 to 4.15). The knob points at the LEDGER LINE and not at the constant, because recal_118 - the next round on the same branch - moved the same band again and supersedes this figure; the line recording what THIS round measured is permanent"
     },
     {
       "file": "src/engine/tactics.ts",

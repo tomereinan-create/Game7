@@ -1211,5 +1211,14 @@
   "round": 117,
   "ruling": "For the scout, I agree with 3,4,5,6,7",
   "note": "scan item 4, the double charge. Volume was read twice - by the gate and again by (1 - volume/100) - so inside the band scoring MORE lowered a passer's OFF by about 0.28 a point, and his best season by BPM (8.9, 17.2/14.5 on .607 TS) read 79, three below his own '88. Volume is now read ONCE, by the gate, and the band widens 65 -> 68. 79 -> 82, and the arc turns the right way up ('88 80, '89 83, '90 82, '91 80, '92 83). 84 is not reachable: Steve Nash '05 is six volume points away and identical on everything else the term reads, so every parameterisation that puts '90 above 82 puts Nash above his own 85 +-3."
+ },
+ {
+  "card": "Dorian Finney-Smith '20",
+  "scale": "off",
+  "target": 55,
+  "tol": 3,
+  "round": 118,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 5, the off-ball floor's 3pt gate. `3pt >= 68` was a cliff worth up to 24 printed OFF points after recal_91 grew the big branch: '20 (3pt 57) read 38 and '21 (3pt 72, pinned 62) read 62 on the same job - usage 12.9/12.2, TS .595/.609, 37.6%/39.4% from the arc, BPM -0.2/+0.1 - and 45 adjacent-season pairs jumped 10+ OFF across the flip. The gate is now a RAMP with no new constant: the share min(1, 3pt/68) of the floor's CORRECTION to the standard path, `std + f x (floor - std)`, which at 3pt 68 and above is `max(std, floor)` byte for byte. 38 -> 53; 55 is what the FULL floor pays him and a ramp gives a man at 3pt 57 eight tenths of it. Cliff pairs 45 -> 20."
  }
 ]
