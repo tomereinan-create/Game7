@@ -1,5 +1,23 @@
 [
  {
+  "card": "Russell Westbrook '15",
+  "scale": "off",
+  "target": 85,
+  "tol": 2,
+  "round": 121,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named."
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Russell Westbrook '15",
+  "below": "Russell Westbrook '17",
+  "round": 121,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "the released pin's condition: '17 is the more turnover-prone, less efficient season at the same usage, so he must not read above the season Tomer ruled on."
+ },
+ {
   "card": "Cedric Maxwell '80",
   "scale": "off",
   "target": 67,
@@ -326,15 +344,6 @@
   "card": "James Harden '19",
   "scale": "off",
   "target": 95,
-  "tol": 1,
-  "round": 89,
-  "ruling": "Dont do 87, only shift the weights a little torward 88",
-  "note": "the round's named winner, measured flat"
- },
- {
-  "card": "Russell Westbrook '17",
-  "scale": "off",
-  "target": 91,
   "tol": 1,
   "round": 89,
   "ruling": "Dont do 87, only shift the weights a little torward 88",
