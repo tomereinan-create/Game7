@@ -90,17 +90,20 @@ const BLOCK_L: XY = at(-8, 7)
 const PAINT_C: XY = at(4, 10)
 /**
  * THE HIGH PICK-AND-ROLL (his ruling: "If its pnr, put the screener next to the handler, and the
- * rest outside the 3pt line"). The ball a step left of the middle, two feet behind the arc; the
- * screen set right beside him at the top of the key, a foot inside the line at the crown of the
- * free-throw circle. The two stand PAIR_FT apart — one ring on a phone, so the rings sit shoulder
- * to shoulder without overlapping — and the number is exported so tests/court.test.ts can hold
- * the screen to the ball. The other three stand behind the line, every one of them at least a
- * ring further from the pair than the pair is from each other: the weak-side wing and both
+ * rest outside the 3pt line"; then "move handler a little bit more to the opposite wing of sg, and
+ * screener close by towards middle" — the weak-side wing sits at negative angles, so the handler
+ * moved off to the positive/right side and the screener sits between him and the middle of the
+ * floor, on the other side of the middle from the handler). The pair keeps the same 15-by-6 spread
+ * as before — just mirrored — so the rings still stand shoulder to shoulder without colliding.
+ * The ball two feet behind the arc; the screen a foot inside the line at the crown of the
+ * free-throw circle. The two stand PAIR_FT apart — the number is exported so tests/court.test.ts
+ * can hold the screen to the ball. The other three stand behind the line, every one of them at
+ * least a ring further from the pair than the pair is from each other: the weak-side wing and both
  * corners, which is all the arc holds beside the pair without two rings colliding. The wing stands
  * six feet behind the line rather than four so that his tag clears the corner man's ring on a phone.
  */
-const BALL: XY = at(-4, 31)
-const SCREEN: XY = at(11, 25)
+const BALL: XY = at(12, 31)
+const SCREEN: XY = at(-3, 25)
 export const PAIR_FT = Math.hypot(15, 6)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
@@ -202,7 +205,7 @@ type Rest = readonly [XY, Rank]
  * in the weak-side corner. A set with no reserve (five-out, which is five men behind the line by
  * definition) simply keeps its non-shooters off the corners.
  */
-function stand(men: Player[], picked: Record<number, XY>, rest: Rest[], swap: XY[] = []): XY[] {
+function stand(men: Player[], picked: Record<number, XY>, rest: Rest[], swap: XY[] = [], sortKey: (p: Player) => number = (p) => p.attrs['3pt']): XY[] {
   const idx = men.map((_, i) => i).filter((i) => !(i in picked))
   const spots: Rest[] = [...rest]
   let need = idx.filter((i) => !canSpace(men[i])).length - spots.filter(([, r]) => r === 0).length
@@ -214,7 +217,7 @@ function stand(men: Player[], picked: Record<number, XY>, rest: Rest[], swap: XY
     spots[w] = [s, 0]
     need--
   }
-  const order = [...idx].sort((a, b) => men[a].attrs['3pt'] - men[b].attrs['3pt'])
+  const order = [...idx].sort((a, b) => sortKey(men[a]) - sortKey(men[b]))
   const by = [...spots].sort((a, b) => a[1] - b[1])
   const out: XY[] = []
   for (let i = 0; i < men.length; i++) if (i in picked) out[i] = picked[i]
@@ -246,14 +249,9 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
   if (!style || men.length < 5) return [...AT]
   switch (style) {
     case 'balanced':
-      // four out, one in — and the one in is the man who cannot shoot, not whoever wears the C
-      return stand(men, {}, [
-        [PAINT_C, 0],
-        [peri(0, 6), 1],
-        [peri(-38), 1],
-        [peri(38), 1],
-        [CORNER_L, 2],
-      ])
+      // slot order, not a shooting sort (his ruling: "In balanced, pg top sg and sf wings PF
+      // corner C paint") — PG at the top, SG and SF on the wings, PF in the corner, C in the paint
+      return [peri(0, 6), peri(-38), peri(38), CORNER_L, PAINT_C]
     case 'fiveout':
       // five behind the line, following the arc: top, both wings, both corners. The only set with
       // no inside spot to give — a called five-out SHOWS five out — so a man who cannot shoot
@@ -293,17 +291,23 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // the ball at the top, the screen set right beside him at the top of the key, and the other
       // three OUTSIDE the line — the weak-side wing and both corners (his ruling: "If its pnr, put
       // the screener next to the handler, and the rest outside the 3pt line"). No inside spot in
-      // reserve any more: the screener is the one man inside the arc, so the worst shooter of the
-      // three takes the wing and the corners go to the better two — a second man who cannot shoot
-      // stands in a corner rather than inside, because the call says outside. Both men come from
-      // the plan (his ruling: the pair is a call).
+      // reserve any more: the screener is the one man inside the arc, so the shortest of the three
+      // (his ruling: "smallest not handler guy on the wing, the other 2 corners") takes the wing
+      // and the corners go to the other two. Both men come from the plan (his ruling: the pair is
+      // a call).
       const pair = pnrPair(men, plan?.pnr)
       const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
       let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
       // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
       // the handler sets the screen, so the shape is always five men on five different spots
       if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
-      return stand(men, { [h]: BALL, [s]: SCREEN }, [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]])
+      return stand(
+        men,
+        { [h]: BALL, [s]: SCREEN },
+        [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]],
+        [],
+        (p) => p.attrs.height,
+      )
     }
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a

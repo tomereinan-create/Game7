@@ -285,8 +285,9 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
  * HIS RULING: "If its pnr, put the screener next to the handler, and the rest outside the 3pt
  * line" — the Thunder '24 court stood Holmgren on the block and Dort and Giddey low inside the arc.
  * The screen is now set beside the ball at the top of the key, one ring apart, and the other three
- * stand behind the line — the weak-side wing and both corners, the corners to the shooters. It
- * holds everywhere the shape is drawn: a five read as pick-and-roll, a called one, a named pair.
+ * stand behind the line — the weak-side wing and both corners, the wing going to the shortest of
+ * the three (his ruling: "smallest not handler guy on the wing, the other 2 corners"). It holds
+ * everywhere the shape is drawn: a five read as pick-and-roll, a called one, a named pair.
  */
 describe('the pick-and-roll stands the screen beside the ball, and the rest behind the line', () => {
   const THUNDER = [g("Shai Gilgeous-Alexander '24"), g("Josh Giddey '24"), g("Luguentz Dort '24"), g("Jalen Williams '24"), g("Chet Holmgren '24")]
@@ -322,13 +323,13 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     expect(outsideLine(at[s])).toBe(false)
     expect(feet(at[s])[1]).toBeGreaterThan(19)
     // and nobody else is inside the arc: the other three stand behind the line — one wing and
-    // two corners — and the corners go to the shooters: the worst shooter of the three is the
-    // man on the wing
+    // two corners — and the shortest of the three is the man on the wing (his ruling: "smallest
+    // not handler guy on the wing, the other 2 corners")
     const rest = [0, 1, 2, 3, 4].filter((i) => i !== h && i !== s)
     for (const i of rest) expect(outsideLine(at[i])).toBe(true)
     const wing = rest.filter((i) => !inCorner(at[i]))
     expect(wing).toHaveLength(1)
-    for (const i of rest) if (i !== wing[0]) expect(five[i].attrs['3pt']).toBeGreaterThanOrEqual(five[wing[0]].attrs['3pt'])
+    for (const i of rest) if (i !== wing[0]) expect(five[i].attrs.height).toBeGreaterThanOrEqual(five[wing[0]].attrs.height)
     // five different spots, whatever the pair
     expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
   }
