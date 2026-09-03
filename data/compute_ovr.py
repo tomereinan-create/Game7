@@ -517,6 +517,99 @@ def o_score(p, trace=None):
             std = max(std, std + _gm * _ge * (0.22 - 0.08) * z[1])
             if trace is not None:
                 trace['two_level'] = dict(gm=_gm, ge=_ge, z1=z[1], added=_gm * _ge * 0.14 * z[1])
+    # recal_109 (HIS RULINGS, verbatim: "Agree with both" on the scout's group B, and on Steve Nash
+    # '05: "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol").
+    # THE ELITE PASSER.
+    #
+    # THE SCOUT'S SENTENCE IS THE DIAGNOSIS: "o_score's volume weight (0.26) dominates playvol (0.19)
+    # badly enough that an elite pure-distributor with near-zero individual scoring load (volume
+    # 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM
+    # rank sits in the top decile". Mark Jackson '00 ran 8.0 assists at BPM 3.1 and printed 48.
+    # Steve Nash '05 is the same complaint one class up: an MVP at 11.5 assists on .606 true
+    # shooting, printing 78.
+    #
+    # WHY A TERM AND NOT A WEIGHT, and it is settled rather than argued: recal_91 and recal_98 both
+    # measured the reweight and both DECLINED it. Every star's playvol matches these men's - Magic
+    # '89 is 98, Chris Paul '09 96, Stockton 99, against Jackson's 91-97 and Nash's 97 - so any hand
+    # from volume to playvol lifts the stars as much as the passer and breaks 22 to 31 anchors before
+    # the subject moves. The two populations cannot be separated by a RATIO of the two weights. They
+    # can only be separated by the fact that one of them takes almost no shots.
+    #
+    # THE TERM, and each factor is one of the two rulings:
+    #   playvol x (1 - volume/100)  - an assist rate discounted by the share of the offence the man
+    #     used himself. Largest for a passer who shoots least; it vanishes for a passer who scores.
+    #   gate on playvol 80 -> 95    - this is for ELITE distribution, not for anyone who passes.
+    #   gate on volume 65 -> 10     - the half that makes the stars unreachable. LeBron '13 (volume
+    #     97), Harden '19 (99), Jokic '25 (89), Chris Paul '09 (82) and Magic '89 (70) all sit at
+    #     gate 0.00 and move by EXACTLY zero.
+    #   efficiency factor 0.5 -> 1.0 across efficiency 70 -> 90 - "Amazing eff" is Nash's own reason.
+    #     It is a HALF-floor, not a gate: a pure non-scorer who is also inefficient (Mark Jackson '98
+    #     is efficiency 36) still keeps half the term, because his ruling is about the ball he moves,
+    #     not about his jumper. Without the floor the group-B cards fall back to where they were.
+    # THE SIZE IS 0.32 AND IT IS HIS CHOICE, not the fit's: 0.36 put Nash on 86 and both Jacksons
+    # exactly on target, but carried John Stockton '97 to 93. 0.32 puts Nash on his stated floor of
+    # 85, keeps both Jacksons inside tolerance, and caps Stockton at 91. See the round file.
+    PD_PV_LO, PD_PV_HI = 80.0, 95.0
+    PD_V_LO, PD_V_HI = 10.0, 65.0
+    PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
+    _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
+    _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
+    if _gpv * _gv > 0.0:
+        _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
+              (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
+        _pd = 0.32 * a['playvol'] * (1.0 - a['volume'] / 100.0) * _gpv * _gv * _ge
+        std += _pd
+        if trace is not None:
+            trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, added=_pd)
+    # recal_112 (HIS RULING, verbatim: "I think in general eff is getting undervalued. 17pgg on 68
+    # ts(on a bad era). Has to show mid to high 60's at least. Even low 70's"). THE EFFICIENT
+    # INTERIOR SCORER — the mirror of recal_64's off-ball floor, for the man whose efficiency comes
+    # from inside instead of from the arc.
+    #
+    # THE CARD. Cedric Maxwell '80: 16.9 points on .679 true shooting in a league that shot .526,
+    # at 17.7% usage. His efficiency attribute is 99 - the top of the scale - and he printed OFF 55,
+    # because the standard path pays efficiency 0.11 while it pays volume 0.26 and he has volume 27.
+    #
+    # HIS LEVER WAS MEASURED FIRST AND IT DOES NOT WORK. "In general eff is getting undervalued"
+    # points at the efficiency weight, so that was tried first, shifting weight from volume to
+    # efficiency with the total held constant (recal_89's rule, so no multiplier compensation is
+    # owed). It cannot be done: 0.11 -> 0.12 is worth ONE point to Maxwell, 0.13 already breaks
+    # Moses Malone '82, and reaching the bottom of his band needs 0.25 against volume 0.12 - which
+    # breaks TWENTY-FIVE anchors and moves 9,064 cards. The global dial is the same wall recal_91
+    # and recal_98 hit; the efficiency of a low-usage man cannot be paid through a weight that every
+    # high-usage anchor also rides.
+    #
+    # THE TERM, and why it is gated the way it is. It pays elite efficiency where the standard path
+    # cannot see it - at low usage - and every gate excludes a class that already has a channel:
+    #   efficiency 85 -> 99   the claim is about ELITE conversion, not about being adequate.
+    #   volume 55 -> 25       recal_64's own low-usage idea. Every star is at 0.00 by construction:
+    #                         LeBron '13 (volume 97), SGA '25 (98), Giannis '25 (98), Jokic '25 (89).
+    #   playvol 70 -> 40      recal_109's elite passer is paid for the ball he moves and is excluded
+    #                         here. The two terms are DISJOINT: 109 needs playvol >= 80, this needs
+    #                         <= 70, so no card can take both and dropping either leaves the other
+    #                         untouched. John Stockton '96 (playvol 99) and Steve Nash '05 (97) do
+    #                         not move.
+    #   3pt 68 -> 40          THE MIRROR OF recal_64. That floor is gated `3pt >= 68` and exists for
+    #                         the low-usage SHOOTER; its own named cards are Kyle Korver '15 and
+    #                         Steve Kerr '96, both pinned. Without this gate they take this term too
+    #                         and both leave their bands. With it, efficiency earned at the rim and
+    #                         the line is paid here and efficiency earned from the arc is paid there.
+    # MEASURED: 154 of 10,000 cards move on OFF, every one of them UP, max +13; DEF and every
+    # attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no entrant
+    # and no leaver. All 118 anchors hold at every size tested from 0.10 to 0.20.
+    EF_E_LO, EF_E_HI = 85.0, 99.0
+    EF_V_LO, EF_V_HI = 25.0, 55.0
+    EF_PV_LO, EF_PV_HI = 40.0, 70.0
+    EF_3P_LO, EF_3P_HI = 40.0, 68.0
+    _ee = min(1.0, max(0.0, (a['efficiency'] - EF_E_LO) / (EF_E_HI - EF_E_LO)))
+    _ev = min(1.0, max(0.0, (EF_V_HI - a['volume']) / (EF_V_HI - EF_V_LO)))
+    _ep = min(1.0, max(0.0, (EF_PV_HI - a['playvol']) / (EF_PV_HI - EF_PV_LO)))
+    _e3 = min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO)))
+    if _ee * _ev * _ep * _e3 > 0.0:
+        _ef = 0.14 * a['efficiency'] * _ee * _ev * _ep * _e3
+        std += _ef
+        if trace is not None:
+            trace['interior'] = dict(gate=_ee * _ev * _ep * _e3, added=_ef)
     if a['3pt'] >= 68 and a['volume'] < 55:
         _fl = 0.38*a['3pt'] + 0.20*a['efficiency'] + 0.08*a['ballsec'] + 0.06*a['discipline']
         # recal_91 (HIS RULINGS, verbatim: "Too low OFF 54. Should be mid 60s" for OG Anunoby '21,
@@ -892,6 +985,14 @@ if _CARD:
               f"line (foot {_l['foot']:.0f}): share {_l['share']:.4f}")
         print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
+    if 'interior' in _ot:
+        _i2 = _ot['interior']
+        print(f"EFFICIENT INTERIOR SCORER (recal_112) - gate {_i2['gate']:.2f}: "
+              f"+{_i2['added']:.3f}")
+    if 'passer' in _ot:
+        _p2 = _ot['passer']
+        print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
+              f"{_p2['eff_factor']:.2f}: +{_p2['added']:.3f}")
     if 'two_level' in _ot:
         _t2 = _ot['two_level']
         print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "

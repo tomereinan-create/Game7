@@ -1,0 +1,254 @@
+{
+  "round": 109,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol",
+  "title": "THE ELITE PASSER — playmaking discounted by the share of the offence a man used himself, so the ball he moves is paid and the shots he does not take stop counting against him",
+  "subject": "Steve Nash '05",
+  "scale": "off",
+  "target": 85,
+  "tol": 3,
+  "before": 78,
+  "after": 85,
+  "pipeline_version": 109,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_PV_LO, PD_PV_HI = 80\\.0, 95\\.0",
+      "label": "THE ELITE-DISTRIBUTION GATE — this is not for anyone who passes",
+      "note": "full credit at playvol 95; nothing below 80"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 65\\.0",
+      "label": "THE LOW-SCORING GATE — the half that makes the stars unreachable",
+      "note": "full credit below volume 10, nothing at 65 and above; widened from the pure-non-scorer band so Nash (42) is reached"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 70\\.0, 90\\.0, 0\\.5",
+      "label": "AND THE EFFICIENCY FACTOR — \"Amazing eff\" is Nash's own reason",
+      "note": "a HALF-floor, not a gate: Mark Jackson '98 at efficiency 36 still keeps half the term"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.32 \\* a\\['playvol'\\] \\* \\(1\\.0 - a\\['volume'\\] / 100\\.0\\) \\* _gpv \\* _gv \\* _ge",
+      "label": "the term — an assist rate discounted by the share of the offence he used himself",
+      "note": "0.32 is HIS choice over the fit's 0.36; see COST"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — the volume and playvol weights are UNTOUCHED",
+      "note": "0.26 and 0.19 stand; recal_91 and recal_98 proved the reweight cannot reach these cards"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TL_MID_LO, TL_MID_HI = 55\\.0, 70\\.0",
+      "label": "recal_107's two-level big, untouched",
+      "note": "the two terms are disjoint: one needs a second scoring level, the other needs almost none"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+      "label": "recal_106's discipline weights, untouched — DEF moves on ZERO cards"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 3,
+      "label": "HIS OTHER RULING, \"Agree with both\" on the scout's group B: 48 -> 57 against a target of 58 +-3. The efficiency factor's 0.5 FLOOR is what keeps him — his efficiency is 52"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 54,
+      "tol": 3,
+      "label": "the second group-B card: 43 -> 54 against 55 +-3, at efficiency 36 — the floor doing all the work"
+    },
+    {
+      "card": "Steve Nash '06",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 1,
+      "label": "his other MVP season, volume 54 so gate 0.20: 82 -> 85, landing beside '05 rather than above it"
+    },
+    {
+      "card": "Steve Nash '07",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 1,
+      "label": "the same: 82 -> 85"
+    },
+    {
+      "card": "Magic Johnson '89",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "playvol 98 — HIGHER than Nash's — and volume 70: gate 0.00, moves by EXACTLY zero. This is why no reweight could ever have done this round"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "playvol 96, volume 82: gate 0.00, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "volume 97: gate 0.00, unmoved"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "volume 99: gate 0.00, unmoved"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "playvol 97 at volume 89: gate 0.00, and the OFF summit is untouched"
+    },
+    {
+      "card": "John Stockton '97",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "THE COST OF THE ROUND, and the reason the size is 0.32 rather than 0.36: 74 -> 91. His sheet dominates Nash's on every quantity the term reads, so he gains more at any size. Nobody has ruled on this card"
+    },
+    {
+      "card": "John Stockton '88",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 1,
+      "label": "the largest single move on the board, 60 -> 82: playvol 97 at volume 15 and efficiency 93"
+    },
+    {
+      "card": "Jason Kidd '99",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "playvol 90, volume 38, efficiency 44: gate 0.33 and the efficiency floor, worth three points"
+    },
+    {
+      "card": "Rajon Rondo '12",
+      "scale": "off",
+      "op": "~",
+      "value": 51,
+      "tol": 1,
+      "label": "efficiency 24 — the floor is the whole of his factor: 47 -> 51"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 2,
+      "label": "playvol 34: nowhere near the gate, unmoved, and recal_91's pin holds"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "def",
+      "op": "~",
+      "value": 39,
+      "tol": 1,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Steve Nash '05",
+      "label": "the OFF summit still reads far above him"
+    },
+    {
+      "scale": "off",
+      "above": "Chris Paul '09",
+      "below": "Steve Nash '05",
+      "label": "the star distributor the term cannot reach still reads above the one it lifts"
+    },
+    {
+      "scale": "off",
+      "above": "Steve Nash '05",
+      "below": "Mark Jackson '00",
+      "label": "the MVP passer reads above the pure one, which is the point of the efficiency factor"
+    },
+    {
+      "scale": "off",
+      "above": "Mark Jackson '00",
+      "below": "Mark Jackson '98",
+      "label": "his own season order is preserved: the better shooting year reads higher"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 222,
+    "max_abs": 22,
+    "top": [
+      ["John Stockton '88", 60, 82],
+      ["John Stockton '96", 71, 89],
+      ["John Stockton '97", 74, 91],
+      ["John Stockton '95", 70, 87],
+      ["John Stockton '94", 66, 82],
+      ["John Stockton '89", 67, 82],
+      ["José Calderón '09", 67, 80],
+      ["Mark Jackson '97", 44, 57],
+      ["Muggsy Bogues '90", 39, 51],
+      ["Steve Nash '05", 78, 85]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "JOHN STOCKTON IS THE COST OF THIS ROUND AND IT IS FORCED, NOT TUNABLE. Six of his seasons move +15 to +22 - '88 60 -> 82, '89 67 -> 82, '94 66 -> 82, '95 70 -> 87, '96 71 -> 89, '97 74 -> 91 - and nobody has ruled on any of them. The reason is arithmetic rather than a choice: his sheet DOMINATES Steve Nash '05 on every quantity the term reads. Playvol 96-99 against 97, efficiency 93-99 against 96, and above all VOLUME 15-27 against 42, which is what the gate is built on. There is no parameterisation of this shape in which the man who was ruled on is the biggest gainer, because there is no input on which Nash beats Stockton. Measured across the whole size range: at 0.28 Stockton '97 reads 89, at 0.32 he reads 91, at 0.36 he reads 93.",
+    "THE SIZE IS 0.32 AND IT IS HIS CHOICE, recorded so the ledger shows what was traded. The fit's own best was 0.36: it put Steve Nash '05 on 86 and BOTH Mark Jackson targets exactly on their numbers (58 and 55), at the price of Stockton '97 reading 93. He was shown that table and chose 0.32, which puts Nash on 85 - the exact floor his ruling states, \"85+ OFF\" - keeps both Jacksons inside tolerance rather than on it (57 against 58 +-3, 54 against 55 +-3), and caps Stockton at 91. The two Jackson targets are therefore each one point off centre BY HIS INSTRUCTION, and that is the whole of what the smaller size costs.",
+    "WHY A TERM AND NOT A WEIGHT, settled by two earlier rounds rather than argued again here. recal_91 and recal_98 both measured moving weight from volume (0.26) to playvol (0.19) and both DECLINED it: every star's playvol matches these men's - Magic '89 is 98, Chris Paul '09 96, Stockton 99, against Jackson's 91-97 and Nash's 97 - so the reweight lifts the stars as fast as the passer and breaks 22 to 31 anchors before the subject moves a point. The two populations differ in what they SHOOT, not in how much they pass, and only a term that reads volume can see that.",
+    "THE EFFICIENCY FACTOR IS A HALF-FLOOR AND THAT IS LOAD-BEARING. His Nash ruling says \"Amazing eff\", which argues for an efficiency gate; his group-B ruling covers Mark Jackson '98 at efficiency 36, which a gate would zero. The factor therefore runs 0.5 to 1.0 across efficiency 70 to 90 rather than 0 to 1.0: an elite passer who also scores efficiently is paid in full, and one who only passes still keeps half, because that ruling is about the ball he moves and not about his jumper. Without the floor both Jackson cards fall straight back to 48 and 43.",
+    "JOSÉ CALDERÓN IS THE THIRD FAMILY THE GATES FIND, by measurement and not by name: '09 67 -> 80 and '08 65 -> 74. An elite, efficient, low-usage passer is exactly what the term describes, and he was reading in the mid-60s.",
+    "THE ROUND NUMBER IS 109 AND THE PIPELINE VERSION IS LEFT ALONE. Under the doctrine of 2026-09-03 this agent does not stamp versions: PIPELINE_VERSION stays where main left it and this file's `pipeline_version` carries the round number for the integrator to fix up. Round 110 is the team agent's teamOffense round; Westbrook is 111 and Maxwell 112.",
+    "NO TAX WAS RE-RATIFIED AND NO ANCHOR WAS SUPERSEDED. All nine harness bands passed on the first reading and all 118 anchors hold."
+  ],
+  "notes": [
+    "TWO RULINGS, ONE CLASS, ONE TERM. The scout's group B named the pure non-scorer - Mark Jackson at volume 10-12, printing in the bottom decile of his class on a top-decile BPM - and his Nash ruling named the same underrating one class up: an MVP at 11.5 assists on .606 true shooting, printing 78. They are the same defect at different volumes, so they get one term with a volume gate wide enough to hold both.",
+    "THE TERM IS THE MIRROR OF recal_64's OFF-BALL FLOOR, deliberately. That floor pays a SHOOTER only when his usage is low - spacing, converting, not turning it over - because the standard path prices him on possessions he never uses. This one pays a PASSER on the same condition and for the same reason: `playvol x (1 - volume/100)` is an assist rate discounted by the share of the offence the man used himself.",
+    "WHY BOTH GATES ARE NEEDED. The playvol gate alone would pay Chris Paul and Magic Johnson, who pass as much as Nash and Jackson do; the volume gate alone would pay every low-usage role player who does not pass. Together they describe one thing - a man who runs an offence without shooting in it - and every one of the five stars in the class table sits at gate 0.00 and moves by exactly zero.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 222 of 10,000 cards move on OFF, every one of them UP, max +22, mean +4.08. DEF moves on ZERO cards and no attribute moves. OVR follows on 184. The top 12 by OFF is identical name for name, and the top 50 by OVR has no entrant, no leaver and no rank flip. All 118 anchors pass.",
+    "STEVE NASH'S THREE MVP-ERA SEASONS NOW READ TOGETHER: '05 85, '06 85, '07 85, where they read 78, 82 and 82. The '05 card rises most because its volume is lowest (42 against 54), which is the term saying the same thing his ruling does - the year he shot least while creating most was the year the card was furthest wrong."
+  ]
+}

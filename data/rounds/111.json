@@ -1,0 +1,182 @@
+{
+  "round": 111,
+  "agent": "ratings-to-off-def",
+  "status": "declined",
+  "ruling": "Also 90 OFF where so ineffitient and turnover prone is too much. 85 is fine",
+  "title": "DECLINED — the charge he asks for is the empty-volume tax his own recal_85 ruling deleted, and it is separately infeasible: Westbrook '17 is pinned one point above and is WORSE on both faults the ruling names",
+  "subject": "Russell Westbrook '15",
+  "scale": "off",
+  "target": 85,
+  "tol": 2,
+  "before": 90,
+  "after": 90,
+  "pipeline_version": 111,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "THE EMPTY-VOLUME TAX \\(recal_37/r40 era\\): subtracted up to 5 for heavy load at poor",
+      "label": "THE TERM THIS RULING ASKS FOR, still on the record as deleted",
+      "note": "recal_85, his ruling \"Kill breadth and the tax\" — it subtracted up to 5 for heavy load at poor efficiency, which is exactly the 5 points asked for here"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — nothing was changed by this round",
+      "note": "o_score is byte-identical; the round declines rather than half-applying"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50\\)\\*a\\['efficiency'\\]/100\\)\\)",
+      "label": "recal_26's volume x efficiency signature, measured and left",
+      "note": "deleting it entirely moves Westbrook '15 only 90 -> 86 and takes '17 to 87 against his 91 +-1 pin"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_PV_LO, PD_PV_HI = 80\\.0, 95\\.0",
+      "label": "recal_109's elite-passer term is INDEPENDENT of this round and untouched",
+      "note": "Westbrook is volume 98, so its volume gate is 0.00 for him; if 109 is dropped this round is unaffected"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 0,
+      "label": "DECLINED, recorded at its unchanged reading. The target was 85 +-2; the closest reachable value with every anchor held is 89, worth one printed point — see COST"
+    },
+    {
+      "card": "Russell Westbrook '17",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "THE BLOCKER, and it is a proof rather than a search. recal_89 pins him at 91 +-1, and at the SAME volume 98 he is WORSE than '15 on both faults the ruling names — efficiency 48 against 51, ball security 61 against 66"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "off",
+      "op": "~",
+      "value": 83,
+      "tol": 1,
+      "label": "THE SECOND, INDEPENDENT BLOCKER: recal_89 pins him at 83 +-1 and his efficiency is 38, thirteen points worse than Westbrook '15's 51, at volume 96"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "volume 99 and ball security 62 — as turnover-prone as Westbrook and pinned at 95 +-1; a third card in the way of any charge keyed on ball security"
+    },
+    {
+      "card": "Kobe Bryant '16",
+      "scale": "off",
+      "op": "~",
+      "value": 74,
+      "tol": 0,
+      "label": "the class the ruling did NOT name: efficiency 18 at volume 98, but ball security 86 — inefficient and CAREFUL. recal_91 already declined a ruling on this card for the same knob"
+    },
+    {
+      "card": "Allen Iverson '02",
+      "scale": "off",
+      "op": "~",
+      "value": 79,
+      "tol": 0,
+      "label": "the same shape: efficiency 32, ball security 88. Any charge that reaches Westbrook on efficiency alone reaches these two harder"
+    },
+    {
+      "card": "Carmelo Anthony '13",
+      "scale": "off",
+      "op": "~",
+      "value": 89,
+      "tol": 0,
+      "label": "efficiency 62 and ball security 93 — outside any threshold that catches Westbrook, and unmoved"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "recal_98's pin, reached through the big hub and not through this knob: untouched"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "the efficient high-usage star the round had to protect: efficiency 88, ball security 94, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "the same, and unmoved"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched — nothing in the file changed this round"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Russell Westbrook '17",
+      "below": "Russell Westbrook '15",
+      "label": "THE WHOLE PROBLEM IN ONE LINE: the pinned season reads ABOVE the one he wants lowered, and it is the worse card on both faults he names"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      [
+        "Russell Westbrook '15",
+        90,
+        90
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE RULING ASKS FOR A TERM HIS OWN RULING DELETED, and that is the first thing he should see. recal_85, verbatim: \"Kill breadth and the tax\". The tax it killed is described in compute_ovr.py to this day: \"THE EMPTY-VOLUME TAX (recal_37/r40 era): subtracted up to 5 for heavy load at poor efficiency\". This ruling asks for exactly five points subtracted from a card for heavy load at poor efficiency. It is the same term, on the same card class, at the same magnitude. recal_85 removed it because it was \"the sole cause of every card printing BELOW its weaker end - 192 of them\". Reinstating it in any form re-opens that, and the two rulings cannot both stand.",
+    "IT IS SEPARATELY INFEASIBLE, AND THIS ONE IS A PROOF RATHER THAN A SEARCH. RUSSELL WESTBROOK '17 is pinned at off 91 +-1 by recal_89. At the SAME volume (98 for both) he is WORSE than '15 on both faults the ruling names: efficiency 48 against 51, ball security 61 against 66. Any charge C(volume, efficiency, ball security) that is non-decreasing in volume and non-increasing in the other two - which every 'charge the inefficient, turnover-prone high-usage load' term is - therefore satisfies C('17) >= C('15). The ruling requires C('15) >= 3 printed points (90 -> 87 at the top of its band) while the pin requires C('17) <= 1. No such function exists. It is not a matter of parameters.",
+    "A SECOND, INDEPENDENT BLOCKER: JAYLEN BROWN '26, pinned off 83 +-1 by recal_89, is efficiency 38 at volume 96 - THIRTEEN points worse than Westbrook '15 on the very quantity the charge reads. And a third: JAMES HARDEN '19, pinned 95 +-1, is ball security 62 at volume 99, more turnover-prone than Westbrook '15 at higher usage. Three of his own pins stand between this card and the number.",
+    "THE MEASURED FRONTIER, on the whole pool. The charge he asked for - K x volume x gate(volume 85->95) x gate(efficiency 60->40) x gate(ball security 75->55) - was swept: the largest size that breaks NO anchor is K = 0.04 and it is worth ONE printed point, Westbrook '15 90 -> 89. At K = 0.06 Westbrook '17 leaves his band; at 0.08 Jaylen Brown '26 leaves his too; and even at K = 0.14, with two of his pins broken, Westbrook '15 has only reached 87 - the very top of his target band. CLOSEST REACHABLE WITH EVERY ANCHOR HELD: 89.",
+    "THE RELIEF VARIANT WAS MEASURED TOO, and it trades one blocker for another. Relieving the charge by playmaking - so a creator's turnovers cost less - does protect Westbrook '17 (his playvol is 99 against '15's 93) and at full relief he holds 91 up to K = 0.30. But Jaylen Brown '26's playvol is 68, below any relief ramp, so he takes the charge undiminished and breaks at EVERY size: 80 at K = 0.10 against his 83 +-1. And Westbrook '15 still only reaches 89. Two variants tested, both fail, and the doctrine's cap of three is not needed - the third would have to gate on three-point range to separate the cards, which is not in his sentence and would be a per-player override wearing a formula's clothes.",
+    "WHAT WOULD MAKE IT REACHABLE, stated so he can rule rather than be told no. Exactly one of these: (a) release RUSSELL WESTBROOK '17's 91 +-1 pin - it is the binding one, and it is arguably the same complaint, since '17 is the more inefficient and more turnover-prone season of the two; or (b) accept 89 rather than 85, which is one point and breaks nothing; or (c) re-open recal_85 and reinstate the empty-volume tax as a general term, accepting that 192 cards printed below their weaker end the last time it existed. This round takes none of them on its own authority.",
+    "NOTHING WAS HALF-APPLIED. o_score is byte-identical to the commit below this one: 0 cards move on OFF, DEF or OVR, no attribute moves, no anchor was superseded and no tax was re-ratified. The round is a measurement and a decline.",
+    "INDEPENDENCE FROM recal_109, as instructed: this round adds no term and touches nothing, so it survives a drop of the elite-passer round trivially. Westbrook is volume 98, which puts him at gate 0.00 of 109's term in any case."
+  ],
+  "notes": [
+    "THE CARD. Russell Westbrook '15: volume 98, efficiency 51, ball security 66, playvol 93, 38.4% usage, 4.4 turnovers, .541 true shooting against a .576 era-relative mark, BPM 8.1. He prints OFF 90 and his ruling says 85.",
+    "WHY THE SHAPE HAD TO BE efficiency x ball security AT HIGH USAGE, and why that was still not enough. His sentence names two faults, and the second is what separates the class: Kobe Bryant '16 (efficiency 18) and Allen Iverson '02 (efficiency 32) are far more inefficient than Westbrook but CAREFUL - ball security 86 and 88 - and Carmelo Anthony '13 is 62 and 93. Westbrook '15 is the only card in the class that is poor at BOTH. That is why a charge on efficiency alone was never viable, and it is why the two-fault shape was the right instrument to test. It fails not on the class but on his own two Westbrook pins.",
+    "THE ONE INPUT THAT WOULD SEPARATE THEM, named and rejected. Westbrook '15 is three-point 38 against '17's 56 and Jaylen Brown '26's 54, so a charge that grows as outside range falls would catch him and spare both. It is rejected: 'cannot shoot threes' is not in his sentence, and a fourth gate tuned until exactly one card is caught is a per-player override, which doctrine 1 forbids however it is written.",
+    "MEASURED BEFORE DECLINING, and the lab reproduces the shipped board to zero mismatches before any change is applied, so every number above is a reading of the real pipeline rather than a model of it."
+  ]
+}
