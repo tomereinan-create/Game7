@@ -706,5 +706,15 @@
   "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
   "note": "THE COMPLAINT — NOT superseded by a ruling — PENDING TOMER, recorded here so the ledger runs green; the agent does not decide which ruling stands. Domantas Sabonis '21 rose with recal_101 (\"This is better than 50, should be low 60's\") because he is exactly the card the ruling describes on the other side: a NO-VOTE big with a FULL tracking sample (578 shots from 6ft+). His diff is BAD (+2.6%), and he still rises, because recal_86 centred the absolute tracked line at 58 (\"allowed exactly what was expected\") while his no-vote composite reads 45 — so trusting a full sample more pulls him UP toward 58 from below. Holding him at 47 means keeping the discount recal_101 measured to be backwards, which is the same discount that kept Stephon Castle '26 at 50. Tomer accepted this round with the move included (\"Accept all four, push them\").",
   "current": 69
+ },
+ {
+  "card": "James Harden '19",
+  "scale": "attr:ballsec",
+  "target": 61,
+  "tol": 1,
+  "round": 56,
+  "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card",
+  "note": "superseded by recal_116: Tomer reaffirmed Westbrook '15 ballsec after the 108 decline named this pin. recal_108 declined the Westbrook ruling BECAUSE of this anchor and said so (\"If he wants Westbrook at 56, the thing to re-open is Harden '19's 61\"); he saw the decline with the blocker named and repeated the ruling, which is the explicit release. Westbrook '15 is AT LEAST AS GOOD AS Harden '19 on every input ballsec reads - TOV% 14.3 vs 14.5, AST/TOV 1.95 vs 1.52, AST% 47.0 vs 39.5 - so no monotone formula separates them; Harden now reads what the formula gives.",
+  "current": 56
  }
 ]

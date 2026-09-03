@@ -510,14 +510,6 @@
   "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card"
  },
  {
-  "card": "James Harden '19",
-  "scale": "attr:ballsec",
-  "target": 61,
-  "tol": 1,
-  "round": 56,
-  "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card"
- },
- {
   "card": "Domantas Sabonis '21",
   "scale": "off",
   "target": 71,
@@ -1193,5 +1185,14 @@
   "round": 114,
   "ruling": "Dan rounfield too high for def 99. 91 is fine.",
   "note": "99 -> 94, the band edge. He is 6'8\" exactly, so perdef paid his All-Defensive votes at the full wing rate (rep_hf 1.2, height_inv 1.0) while recal_53's rim ceiling had already cashed the same votes into a rimprot of 92 on a BLK% of 2.6. perdef now keeps only the share of a double-paid vote that DBPM supports, and his DBPM percentile is 0.713 - the lowest of any card that read DEF 95+. perdef alone cannot take him below 94; the other half of the double-pay is rimprot's ceiling, which is load-bearing for McHale '88, Gasol '04 and Bobby Jones '82."
+ },
+ {
+  "card": "Russell Westbrook '15",
+  "scale": "attr:ballsec",
+  "target": 56,
+  "tol": 4,
+  "round": 116,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "HIS THIRD RULING ON THIS CARD (rounds 108 and 111 declined; he repeated it with both blockers named). Landed at 60, the TOP EDGE of the band: 0.54 is the frontier of the raw-leg ceiling, because 0.55 puts Michael Jordan '89 OFF at 97 against r102's 99 +-1 and 0.60 puts Sabonis '21 OFF at 69 against r55's 71 +-1. 56 exactly needs one of those two OFF pins re-opened, which is compute_ovr's lane, not this one. The OFF half of the ruling is a separate round; his card reads OFF 89 here."
  }
 ]

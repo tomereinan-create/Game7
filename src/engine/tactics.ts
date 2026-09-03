@@ -214,6 +214,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * NO TAX WAS TOUCHED. Recorded because it is the narrowest playstyle has read since it was
  * ratified — the oracle has 0.18 of headroom — and a further widening of any style's fit range
  * should expect to re-ratify TAX.style rather than read a break as a fault in the new formula.
+ * recal_116's ballsec reweight (the raw turnover leg's ceiling 0.45 -> 0.54) moved 7,911 ballsecs,
+ * 1,498 o_ovrs and 832 OVRs — none by more than a point of OVR — and the ovr>=55 sample with them;
+ * crash def glass alone broke, on the BLIND edge again, gone shallow at -0.18 against the -0.30
+ * floor. Swept .50/.55/.60/.62/.66/.68/.70/.74/.80/.84: the feasible interval is .62 to about .84
+ * (.60 reads blind -0.29 and fails; .84 reads oracle +0.50 EXACTLY and is the last passing value),
+ * and it is wide for once, which is the opposite of r114's one-value window. Re-ratified .44 -> .70,
+ * the point of greatest margin to the NEARER edge (blind -0.37 against -0.30, oracle +0.55 against
+ * +0.50 — .05 of room on the tight side, where .66 has .04 and .74 has .03). SEVENTH round running
+ * in which this one tax is the one that moves, and the fourth time it has reversed direction; the
+ * cause is the same every time — it is the tax whose benefit reads a DEFENSIVE attribute off a pool
+ * that an OFFENSIVE round reshuffles. Eight others untouched.
  */
 export const TAX = {
   scorer: 0.55,
@@ -223,7 +234,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.80,
   crashOff: 0.40,
-  crashDef: 0.44,
+  crashDef: 0.70,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
