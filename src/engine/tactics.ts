@@ -207,6 +207,19 @@ export const DEFAULT_TACTICS: Tactics = {
  * again and crash def glass broke on the ORACLE edge at .74 (+0.40). Swept .40/.44/.47/.50/.58/.66:
  * the window is one value wide — .44 reads blind -0.32 / oracle +0.50, .40 fails blind (-0.28), .47
  * fails oracle (+0.49). Re-ratified .74 -> .44, on the edge, the way r86 sat. Eight others untouched.
+ * recal_117's elite-passer ramp (679 o_ovrs and 560 OVRs, every one of them through compute_ovr; 0
+ * d_ovrs, no attribute) moved the ovr>=55 pool again, and TWO taxes broke — the first round since r95
+ * in which more than one did. HUNT went shallow on its BLIND edge (-0.10 against the -0.30 floor) and
+ * was re-ratified 3.80 -> 4.10; its window is eleven thousandths wide (4.04 reads blind -0.300 exactly,
+ * 4.15 oracle +0.50) and 4.10 is its midpoint, with 0.049 of blind headroom and 0.021 of oracle. This is
+ * hunt's ninth move and it is always the same shape: the tax is large (a 4-point subtraction) and the
+ * pool it is measured on is the ovr>=55 sample, so any round that lifts a class of guards into or up
+ * that sample moves it. CRASH OFF GLASS broke on the ORACLE edge (+0.45 against +0.50) and was
+ * re-ratified .40 -> .10. Its feasible interval is about -0.32 to .21, whose own midpoint is NEGATIVE —
+ * a call that pays to make, which is not a tax at all — so the value is the midpoint of the POSITIVE
+ * half instead: .10 clears the oracle floor by 0.029 and the blind ceiling by 0.285. Recorded because
+ * it is the first time this file has had to choose inside a half-interval rather than a whole one.
+ * The seven others held their bands untouched, crash def glass included. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -214,8 +227,8 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
-  crashOff: 0.40,
+  hunt: 4.10,
+  crashOff: 0.10,
   crashDef: 0.44,
 }
 

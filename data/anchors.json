@@ -1193,5 +1193,23 @@
   "round": 114,
   "ruling": "Dan rounfield too high for def 99. 91 is fine.",
   "note": "99 -> 94, the band edge. He is 6'8\" exactly, so perdef paid his All-Defensive votes at the full wing rate (rep_hf 1.2, height_inv 1.0) while recal_53's rim ceiling had already cashed the same votes into a rimprot of 92 on a BLK% of 2.6. perdef now keeps only the share of a double-paid vote that DBPM supports, and his DBPM percentile is 0.713 - the lowest of any card that read DEF 95+. perdef alone cannot take him below 94; the other half of the double-pay is rimprot's ceiling, which is load-bearing for McHale '88, Gasol '04 and Bobby Jones '82."
+ },
+ {
+  "card": "Mark Jackson '99",
+  "scale": "off",
+  "target": 54,
+  "tol": 3,
+  "round": 117,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 3, the playvol cliff. His assist share (46.7%) is HIGHER than his own pinned '98 (45.4) and '00 (45.0) and his box sits between them, but 1999 was a 50-game lockout year and playvol is a percentile inside its own season pool: 86 against 94 and 91. An 80->95 ramp turned that eight-point wobble into seven OFF points. Ramp re-cut to 70->85 - the top 14.7% down to the top 4.0% of the pool, where it ran 6.5% down to 0.8% - and all three seasons now sit at gate 1.00. 47 -> 53."
+ },
+ {
+  "card": "John Stockton '90",
+  "scale": "off",
+  "target": 84,
+  "tol": 3,
+  "round": 117,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 4, the double charge. Volume was read twice - by the gate and again by (1 - volume/100) - so inside the band scoring MORE lowered a passer's OFF by about 0.28 a point, and his best season by BPM (8.9, 17.2/14.5 on .607 TS) read 79, three below his own '88. Volume is now read ONCE, by the gate, and the band widens 65 -> 68. 79 -> 82, and the arc turns the right way up ('88 80, '89 83, '90 82, '91 80, '92 83). 84 is not reachable: Steve Nash '05 is six volume points away and identical on everything else the term reads, so every parameterisation that puts '90 above 82 puts Nash above his own 85 +-3."
  }
 ]

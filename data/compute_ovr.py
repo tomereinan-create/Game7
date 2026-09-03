@@ -546,18 +546,69 @@ def o_score(p, trace=None):
     #     It is a HALF-floor, not a gate: a pure non-scorer who is also inefficient (Mark Jackson '98
     #     is efficiency 36) still keeps half the term, because his ruling is about the ball he moves,
     #     not about his jumper. Without the floor the group-B cards fall back to where they were.
-    # THE SIZE IS 0.32 AND IT IS HIS CHOICE, not the fit's: 0.36 put Nash on 86 and both Jacksons
-    # exactly on target, but carried John Stockton '97 to 93. 0.32 puts Nash on his stated floor of
-    # 85, keeps both Jacksons inside tolerance, and caps Stockton at 91. See the round file.
-    PD_PV_LO, PD_PV_HI = 80.0, 95.0
-    PD_V_LO, PD_V_HI = 10.0, 65.0
+    # THE SIZE WAS 0.32 AND IT WAS HIS CHOICE, not the fit's: 0.36 put Nash on 86 and both Jacksons
+    # exactly on target, but carried John Stockton '97 to 93. 0.32 put Nash on his stated floor of
+    # 85, kept both Jacksons inside tolerance, and capped Stockton at 91. See the round file.
+    #
+    # recal_117 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). BOTH GATES ARE
+    # RAMPED, AND VOLUME IS READ ONCE. Items 3 and 4 of the scan's shortlist are the two halves of
+    # one defect: r109 built the class correctly and then priced it with two cliffs.
+    #
+    # ITEM 3, THE PLAYVOL CLIFF. 80 -> 95 is 1/15 of the term per playvol point, and playvol is a
+    # PERCENTILE inside its own season pool, so a 50-game lockout year re-ranks a man who did the
+    # same job. MARK JACKSON '99 is the case: 7.6 assists on .513 shooting at BPM 3.0, an assist
+    # share of 46.7% - HIGHER than his own '98 (45.4) and '00 (45.0), both of which HE pinned - and
+    # his box sits between the two. His playvol reads 86 against 94 and 91, and the gate turned that
+    # eight-point percentile wobble into SEVEN OFF points: 47 against 54 and 57.
+    # THE RAMP IS RE-CUT ON THE POOL, not on his card. 80 -> 95 spans the top 6.5% of the 10,000
+    # cards down to the top 0.8%: full credit was reserved for EIGHTY-FOUR seasons in history, which
+    # is not a ramp, it is a needle. 70 -> 85 spans the top 14.7% to the top 4.0% - the same fifteen
+    # rating points covering nearly TWICE the population, because playvol's density climbs steeply
+    # as you come down the scale. The foot stops AT 70 and not below it because recal_112's
+    # efficient interior scorer is gated `playvol <= 70`: at exactly 70 both gates are 0, so the two
+    # terms stay disjoint BY CONSTRUCTION and no card can take both. (Measured: at a foot of 65 one
+    # card - Jeff Hornacek '97, playvol 66 - takes both, which is why the foot is 70.)
+    #
+    # ITEM 4, THE DOUBLE CHARGE. Volume was read TWICE: once by the gate and once again by the
+    # `(1 - volume/100)` discount, and the product of two decreasing factors is steeper than either.
+    # The consequence was an INVERTED ARC - inside the band, scoring more LOWERED a passer's OFF at
+    # about 0.28 of a point per volume point, net of the 0.26 the standard path pays for the same
+    # volume. JOHN STOCKTON '90 is the case: his best season by BPM (8.9, 17.2 points and 14.5
+    # assists on .607 true shooting) read 79, BELOW his own '88 (82) whose only advantage is that he
+    # scored less. The gate charged him 0.53 where '88 pays 0.91 and '97 0.76.
+    # THE RULE: VOLUME IS READ ONCE, BY THE GATE. The `(1 - volume/100)` factor is gone and the
+    # constant absorbs its value at the band's foot (0.32 x 0.90 = 0.288 -> 0.245). The band itself
+    # widens 65 -> 68, set just clear of the nearest star it must exclude rather than on top of him:
+    # Magic Johnson '89 is volume 70 and '87 is 71, and both still sit at gate 0.00 exactly, as do
+    # Chris Paul '09 (82), LeBron '13 (97), Harden '19 (99) and Jokic '25 (89).
+    # WHAT THAT BUYS, measured: the net charge per volume point falls from -0.28 to -0.16 and
+    # Stockton's arc turns the right way up - '88 80, '89 83, '90 82, '91 80, '92 83, where it read
+    # 82, 82, 79, 78, 81. ZERO IS INFEASIBLE AND THAT IS ARITHMETIC, not a choice: a net charge of
+    # zero needs the term's own slope to be at most the standard path's 0.26, i.e. a volume band 93
+    # points wide, which starves the pure non-scorer this same round has to lift (Mark Jackson '99
+    # falls to 49). The compounding is what is removable; the gate's own slope is what the gate is.
+    #
+    # THE SIZE IS 0.245 AND IT IS FIXED BY HIS OWN CAP, not chosen. He capped John Stockton '97 at
+    # 91 when he took 0.32 over 0.36 ("K=0.32 not 0.36"), and '97 is the largest term on the board,
+    # so the cap prices everything: 0.245 puts him on 91.06 with the next display point at 91.50.
+    # THE FRONTIER, and it is why the two subjects land where they do rather than on their numbers.
+    # Stockton '90 (volume 36) and Steve Nash '05 (volume 42) differ by SIX volume points and by
+    # nothing else the term reads - playvol 99 against 97, efficiency 94 against 96, both at gate
+    # 1.00 on playvol. Reaching 84 for Stockton needs the volume response to fall 26% across those
+    # six points while falling no more than 20% across the thirteen points from '97 (23) to '90 (36)
+    # - an accelerating decline that no single monotone gate of this family has, and the search
+    # confirms it: every parameterisation that puts Stockton '90 above 82 puts Nash '05 above 88 and
+    # out of his own recal_109 band. So both subjects land INSIDE tolerance and neither lands on its
+    # centre: Jackson '99 53 against 54 +-3, Stockton '90 82 against 84 +-3.
+    PD_PV_LO, PD_PV_HI = 70.0, 85.0
+    PD_V_LO, PD_V_HI = 10.0, 68.0
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
     if _gpv * _gv > 0.0:
         _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
               (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
-        _pd = 0.32 * a['playvol'] * (1.0 - a['volume'] / 100.0) * _gpv * _gv * _ge
+        _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge
         std += _pd
         if trace is not None:
             trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, added=_pd)

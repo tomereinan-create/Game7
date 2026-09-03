@@ -1,0 +1,300 @@
+{
+  "round": 117,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "title": "THE ELITE-PASSER GATES ARE RAMPS, NOT CLIFFS — the playvol gate is re-cut on the pool it ranks, and volume is read ONCE instead of twice",
+  "subject": "Mark Jackson '99",
+  "scale": "off",
+  "target": 54,
+  "tol": 3,
+  "before": 47,
+  "after": 53,
+  "pipeline_version": 117,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_PV_LO, PD_PV_HI = 70\\.0, 85\\.0",
+      "label": "ITEM 3 — THE PLAYVOL CLIFF, re-cut on the pool rather than on the card",
+      "note": "80/95 -> 70/85: the ramp spans the top 14.7% down to the top 4.0% of 10,000 cards, where it spanned 6.5% down to 0.8% (84 seasons in history at full credit)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
+      "label": "ITEM 4 — THE VOLUME BAND, widened just clear of the nearest star it must exclude",
+      "note": "65 -> 68; Magic Johnson '89 (volume 70) and '87 (71) still sit at gate 0.00 exactly, with margin instead of on the edge"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge",
+      "label": "THE GENERAL RULE — volume is read ONCE, by the gate. The `(1 - volume/100)` charge is GONE",
+      "note": "0.32 x (1 - volume/100) -> 0.245, the old factor's value at the band's foot; the size is fixed by HIS cap on John Stockton '97 (91), not chosen"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 70\\.0, 90\\.0, 0\\.5",
+      "label": "recal_109's efficiency HALF-FLOOR, untouched",
+      "note": "the third gate is not ramped: no ruling touches it and Mark Jackson '98 still keeps half the term at efficiency 36"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_PV_LO, EF_PV_HI = 40\\.0, 70\\.0",
+      "label": "recal_112's playvol gate — why the new foot stops AT 70 and not below it",
+      "note": "112 needs playvol <= 70 and this needs >= 70, so the two terms stay disjoint BY CONSTRUCTION; at a foot of 65 one card (Jeff Hornacek '97, playvol 66) takes both"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — the volume and playvol weights are UNTOUCHED",
+      "note": "0.26 and 0.19 stand; recal_91 and recal_98 proved the reweight cannot separate these cards from the stars"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+      "label": "recal_106's discipline weights, untouched — DEF moves on ZERO cards"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 4\\.10,",
+      "label": "THE DEVIATION TAX LAW, re-ratified (1 of 2) — hunt went shallow on its BLIND edge",
+      "note": "3.80 -> 4.10 (blind -0.10 against the -0.30 floor); the midpoint of a window eleven thousandths wide, 4.04 to 4.15"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.10,",
+      "label": "THE DEVIATION TAX LAW, re-ratified (2 of 2) — crash off glass broke on the ORACLE edge",
+      "note": ".40 -> .10 (oracle +0.45 against the +0.50 floor); the interval is about -0.32 to .21 and its own midpoint is NEGATIVE, so the value is the midpoint of the POSITIVE half"
+    }
+  ],
+  "expect": [
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "THE SECOND SUBJECT, item 4: 79 -> 82 against a target of 84 +-3. His best season by BPM (8.9) read BELOW his own '88, whose only advantage is that he scored less"
+    },
+    {
+      "card": "John Stockton '88",
+      "scale": "off",
+      "op": "~",
+      "value": 80,
+      "tol": 1,
+      "label": "THE ARC TURNS THE RIGHT WAY UP: 82 -> 80, so the low-volume year no longer reads above the great one. This is the whole of item 4, measured on one man"
+    },
+    {
+      "card": "John Stockton '97",
+      "scale": "off",
+      "op": "<=",
+      "value": 91,
+      "label": "HIS CAP, from recal_109 (\"K=0.32 not 0.36\"): the largest term on the board, and it is what fixes the size at 0.245. Raw 91.06, next display point 91.50"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 88,
+      "tol": 3,
+      "label": "THE FRONTIER AND THE COST: 85 -> 88, the top edge of his own recal_109 band. He is six volume points from Stockton '90 and identical on everything else the term reads, so no parameterisation lifts one without the other"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "his pinned neighbour, 54 -> 53: the flattening costs the pure non-scorers a point where it pays the wobble"
+    },
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "the other pinned neighbour, 57 -> 58 — dead on his number now"
+    },
+    {
+      "card": "Magic Johnson '89",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "volume 70 against a band top of 68: gate 0.00, moves by EXACTLY zero"
+    },
+    {
+      "card": "Magic Johnson '87",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 1,
+      "label": "volume 71: the same, and the reason the band stops at 68 rather than 70"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "playvol 96 at volume 82: gate 0.00, unmoved"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "volume 99: gate 0.00, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "volume 97: gate 0.00, unmoved"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched"
+    },
+    {
+      "card": "Jeff Hornacek '97",
+      "scale": "off",
+      "op": "~",
+      "value": 75,
+      "tol": 1,
+      "label": "THE CARD THAT SET THE NEW FOOT. playvol 66: at a foot of 65 he is the one card in 10,000 that takes BOTH this term and recal_112's; at 70 he takes neither and the two stay disjoint by construction"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "recal_112's subject, playvol 24 — nowhere near either gate, unmoved"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 2,
+      "label": "playvol 34: unmoved, and recal_91's pin holds"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "volume 66, the only anchored card inside the band's new three points: gate 0.034, worth 0.74 of raw, and he does not move a display point"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "playvol 40: below the new foot, unmoved, recal_89's pin holds"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "def",
+      "op": "~",
+      "value": 48,
+      "tol": 1,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Steve Nash '05",
+      "label": "the OFF summit still reads far above the class"
+    },
+    {
+      "scale": "off",
+      "above": "Chris Paul '09",
+      "below": "Steve Nash '05",
+      "label": "the star distributor the term cannot reach still reads above the one it lifts"
+    },
+    {
+      "scale": "off",
+      "above": "John Stockton '97",
+      "below": "John Stockton '90",
+      "label": "his own best-shooting year still reads above his best passing one"
+    },
+    {
+      "scale": "off",
+      "above": "John Stockton '90",
+      "below": "John Stockton '88",
+      "label": "ITEM 4's WHOLE POINT: the season with more scoring in it now reads HIGHER, where it read three lower"
+    },
+    {
+      "scale": "off",
+      "above": "Mark Jackson '00",
+      "below": "Mark Jackson '99",
+      "label": "the shooting year still reads above the lockout one — but by five points, not by ten"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 679,
+    "max_abs": 12,
+    "top": [
+      ["Brad Davis '83", 53, 65],
+      ["Maurice Cheeks '80", 50, 61],
+      ["José Calderón '13", 69, 78],
+      ["Maurice Cheeks '86", 55, 64],
+      ["Brad Davis '81", 52, 61],
+      ["Micheal Williams '92", 62, 70],
+      ["John Stockton '98", 80, 86],
+      ["Terry Porter '91", 74, 80],
+      ["Mark Jackson '99", 47, 53],
+      ["John Stockton '90", 79, 82],
+      ["Mark Jackson '97", 57, 55],
+      ["John Stockton '88", 82, 80]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "STEVE NASH '05 IS ON THE EDGE OF HIS OWN ANCHOR AND A LATER ROUND SHOULD KNOW IT. 85 -> 88 against 85 +-3, so the pin passes at its limit and any further ramp of this term breaks it. It is FORCED, not chosen: Stockton '90 (volume 36) and Nash '05 (volume 42) differ by six volume points and by nothing else the term reads - playvol 99 against 97, efficiency 94 against 96, both at gate 1.00 on playvol - so the two move together. Reaching Stockton's centre (84) requires the volume response to fall 26% across those six points while falling no more than 20% across the thirteen from Stockton '97 (23) to '90 (36); no single monotone gate of this family accelerates like that, and the sweep confirms every parameterisation putting '90 above 82 puts Nash above 88. His own recal_109 ruling reads \"This is 85+ OFF\", so 88 is inside its letter as well as its tolerance.",
+    "BOTH SUBJECTS LAND INSIDE TOLERANCE AND NEITHER LANDS ON ITS CENTRE, for the reason above: Mark Jackson '99 53 against 54 +-3, John Stockton '90 82 against 84 +-3. Recorded rather than hidden, because it is the shape of the constraint and not a tuning failure.",
+    "THE NET CHARGE PER VOLUME POINT IS SMALLER, NOT ZERO: -0.28 -> -0.16, measured on Stockton's own sheet. Zero is provably unreachable here - a net charge of zero needs the term's slope to be at most the standard path's 0.26, i.e. a volume band 93 rating points wide, which starves the pure non-scorer the same round has to lift (Mark Jackson '99 falls to 49). What was removable is the COMPOUNDING of two decreasing factors; the gate's own slope is what a gate is. The visible test is the arc, and it passes: Stockton reads '88 80, '89 83, '90 82, '91 80, '92 83 where he read 82, 82, 79, 78, 81.",
+    "THE SIZE IS NOT A TASTE. 0.245 is what HIS cap on John Stockton '97 permits ('97 is the largest term on the board, and he chose 0.32 over 0.36 in recal_109 to hold him at 91): at 0.245 '97 reads raw 91.06 with the next display point at 91.50, at 0.25 he reads 91.41, at 0.26 he reads 91.82 and leaves the cap. The two subjects, Nash and Stockton '97 are one degree of freedom between them.",
+    "THE FOOT OF THE PLAYVOL RAMP IS 70 AND THAT IS recal_112's NUMBER, NOT A ROUND ONE. 112's efficient interior scorer is gated `playvol <= 70` and its receipt states the two terms are disjoint BY CONSTRUCTION. Measured on the pool: at a foot of 65 exactly ONE card of 10,000 takes both (Jeff Hornacek '97, playvol 66, volume 51, efficiency 91), so 65 would have cost that property for one card. 70 keeps it whole - at playvol exactly 70 both gates are 0.",
+    "THE CLASS IS THREE TIMES LARGER THAN recal_109's AND THE NEW NAMES ARE THE SAME ARCHETYPE, found by the gates and not by a name: 679 cards move where 109 moved 222. Brad Davis '83 53 -> 65, Maurice Cheeks '80 50 -> 61 (and six more Cheeks seasons), Jose Calderon '13 69 -> 78, Micheal Williams '92 62 -> 70, Terry Porter '88-'91, Scott Skiles '95, Dana Barros '95, Steve Nash '01/'12/'13. Every one is an efficient low-usage distributor in the top sixth of the pool by playvol. None of them is anchored.",
+    "SEVEN CARDS GO DOWN AND THEY ARE THE PUREST NON-SCORERS: Mark Jackson '97 57 -> 55, '01 57 -> 55, '98 54 -> 53, Stockton '88 82 -> 80, Muggsy Bogues '90 51 -> 50, Brevin Knight '98 63 -> 62, Jason Kidd '08 61 -> 60. That is the flattening working as stated - a man at volume 10 was paid 0.32 x 0.90 and is now paid 0.245, while a man at volume 36 is paid far more than before. The two pinned Jackson cards stay inside their bands (53 against 55 +-3, 58 against 58 +-3).",
+    "RECEIPT 109 WILL PRINT SUPERSESSIONS AND THEY ARE THIS ROUND'S DOING, not a fault: its knob patterns name 80/95, 10/65 and the 0.32 x (1 - volume/100) form, and its movers list carries Stockton '88 at 82, '96 at 89, '95 at 87, '94 at 82, '89 at 82, Calderon '09 at 80, Mark Jackson '97 at 57, Bogues '90 at 51 and Nash '05 at 85. All of those are readings of a term this round ramps by his instruction. No ANCHOR is superseded - all 123 pass.",
+    "THE ROUND NUMBER IS 117 AND THE PIPELINE VERSION IS LEFT ALONE, per the doctrine of 2026-09-03: PIPELINE_VERSION stays at what main shipped (114) and this file's `pipeline_version` carries the round number for the integrator to stamp.",
+    "TWO TAXES RE-RATIFIED, the first round since recal_95 in which more than one broke. HUNT went shallow on its BLIND edge (-0.10 against the -0.30 floor) and was re-ratified 3.80 -> 4.10, the midpoint of a window eleven thousandths wide (4.04 reads blind -0.300 exactly, 4.15 oracle +0.50). CRASH OFF GLASS broke on the ORACLE edge (+0.45 against +0.50) and was re-ratified .40 -> .10; its feasible interval is about -0.32 to .21, whose own midpoint is NEGATIVE - a call that pays to make, which is not a tax at all - so the value is the midpoint of the POSITIVE half, and that is the first time this file has had to choose inside a half-interval. The other seven bands held, crash def glass included. All nine pass. DEF moved on zero cards and no attribute moved - build_ratings.py was not run."
+  ],
+  "notes": [
+    "TWO SCAN ITEMS, ONE TERM, ONE FIT. Item 3 is the playvol gate and item 4 is the volume gate, and they are the two cliffs recal_109 left on a class it otherwise built correctly. They are fitted together rather than as serial rounds, because the size that satisfies one is the size the other pays.",
+    "ITEM 3, WHAT THE CARD IS. Mark Jackson '99: 7.6 points and 7.9 assists on .513 shooting at BPM 3.0, an assist share of 46.7% - HIGHER than his own '98 (45.4) and '00 (45.0), the two seasons HE pinned. His box sits between them and he printed 47 against their 54 and 57. The cause is that playvol is a PERCENTILE inside its own season pool and 1999 was a 50-game lockout year: his playvol reads 86 against 94 and 91, and an 80 -> 95 ramp turns an eight-point percentile wobble into seven OFF points.",
+    "WHY 70 -> 85 IS THE RIGHT RE-CUT AND NOT A FIT TO HIS CARD. The old ramp reserves full credit for playvol 95+, which is 84 seasons out of 10,000 - the top 0.8% - and pays NOTHING below 80, the top 6.5%. The new one runs the top 14.7% to the top 4.0%: the same fifteen rating points covering nearly twice the population, because playvol's density climbs steeply as you come down the scale. Every one of Jackson's three seasons now sits at gate 1.00, so the wobble is worth exactly zero.",
+    "ITEM 4, THE DOUBLE CHARGE. Volume was read TWICE - once by the gate and once again by `(1 - volume/100)` - and the product of two decreasing factors is steeper than either. Inside the band, scoring more LOWERED a passer's OFF. John Stockton '90 is the case: his best season by BPM (8.9, 17.2 points and 14.5 assists on .607 true shooting) read 79, three BELOW his own '88, and the gate charged him 0.53 where '88 pays 0.91 and '97 0.76.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 679 of 10,000 cards move on OFF, 672 up and 7 down, max +12, mean +2.51. DEF moves on ZERO cards and no attribute moves. OVR follows on 560. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip. All 123 anchors pass, worst error Steve Nash '05 at +3."
+  ]
+}
