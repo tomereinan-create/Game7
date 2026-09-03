@@ -1,0 +1,244 @@
+{
+  "round": 114,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Dan rounfield too high for def 99. 91 is fine.",
+  "title": "A VOTE IS PAID ONCE: where recal_53's rim ceiling has already cashed a card's All-Defensive votes, perdef's vote premium keeps only the share DBPM independently supports",
+  "subject": "Dan Roundfield '82",
+  "scale": "def",
+  "target": 91,
+  "tol": 3,
+  "before": 99,
+  "after": 94,
+  "pipeline_version": 114,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "VOTE_SUPPORT_POW = 3",
+      "label": "the DBPM support exponent — the fitted part, and the only one",
+      "note": "powers 1 and 2 leave him at DEF 97 and 95; 3 reaches his 91 band"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_paid_in_rim = \\(min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* _blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\)\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+      "label": "recal_53's OWN unlock weight, re-read as 'how much of this card's votes rimprot already cashed'",
+      "note": "Roundfield 0.899; Jordan '89, Kawhi '16, Jrue '21, Rodman '90, Herb Jones '23, Pippen '94/'03 all 0.000"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_vote_factor = 1\\.0 - _paid_in_rim \\* \\(1\\.0 - P\\['dbpm'\\]\\(r\\['dbpm'\\]\\) \\*\\* VOTE_SUPPORT_POW\\)",
+      "label": "only the part that is BOTH already paid AND unsupported is removed",
+      "note": "double-paid but DBPM-backed (Ben Wallace 0.996, Dwight 0.974, Garnett 0.986) keeps ~all of it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PD\\) \\* BRK\\['_vf'\\]\\)",
+      "label": "the deduction lands on the vote PREMIUM, not on PD — so the Pvot pool is bit-identical",
+      "note": "taking it out of PD instead lifted Pippen '03 77 -> 79 against his recal_93 anchor; see notes"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rep_hf = max\\(0\\.5, 1\\.2 - 0\\.8 \\*",
+      "label": "UNTOUCHED: recal_54's height band, as instructed",
+      "note": "the <=6'8\" rate is unchanged, so Jordan '89 and every wing anchor is bit-identical"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "BIT-IDENTICAL by construction: BLK% 1.2, so rimprot never cashed his votes and _paid_in_rim is 0.000"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "his recal_102 def anchor, untouched"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "untouched"
+    },
+    {
+      "card": "Jrue Holiday '21",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "THE NEAREST NEIGHBOUR ON DBPM (0.738 against Roundfield's 0.713) and untouched — because rimprot never paid him"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "same: dbpmP 0.775, _paid_in_rim 0.000, bit-identical"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 4,
+      "label": "recal_103, untouched"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "the card the PD-side variant broke; on the premium side he is bit-identical"
+    },
+    {
+      "card": "Ben Wallace '06",
+      "scale": "def",
+      "op": ">=",
+      "value": 98,
+      "label": "the DEF ceiling holds (recal_67 doctrine)"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 91,
+      "tol": 3,
+      "label": "rimprot moved on ZERO cards this round"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "same"
+    },
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 74,
+      "tol": 5,
+      "label": "dbpmP 0.996 — fully supported, so nothing is deducted"
+    },
+    {
+      "card": "Dikembe Mutombo '97",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "THE COMPARISON HIS RULING MAKES: the DPOY with BLK% 7.0 now reads ABOVE Roundfield, not below"
+    },
+    {
+      "card": "David Robinson '92",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "same — 94, untouched"
+    },
+    {
+      "card": "Hakeem Olajuwon '94",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "same — 95, untouched"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Hakeem Olajuwon '94",
+      "below": "Dan Roundfield '82",
+      "label": "THE RULING: the 5.7-BLK% Hall of Fame centre now reads above the 2.6-BLK% forward"
+    },
+    {
+      "scale": "def",
+      "above": "Ben Wallace '02",
+      "below": "Dan Roundfield '82",
+      "label": "and the DEF summit is a long way clear again"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Dan Roundfield '82",
+      "label": "a wing whose DBPM backs his votes, above one whose does not"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 343,
+    "max_abs": 21,
+    "top": [
+      [
+        "Dan Roundfield '82",
+        96,
+        75
+      ],
+      [
+        "Dan Roundfield '81",
+        94,
+        74
+      ],
+      [
+        "Kevin McHale '86",
+        85,
+        66
+      ],
+      [
+        "Dan Roundfield '80",
+        97,
+        78
+      ],
+      [
+        "Kevin McHale '87",
+        85,
+        67
+      ],
+      [
+        "Derrick White '26",
+        95,
+        78
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Alex Caruso '23"
+    ]
+  },
+  "cost": [
+    "THE DEDUCTION LANDS ON THE VOTE PREMIUM, NOT ON PD, and the difference is the whole reason this round works. Scaling the drep term inside PD was measured first, at powers 3, 4, 5 and 6. It reaches the subject (DEF 96, 95, 94, 93) but PD feeds Pvot, a WITHIN-SEASON percentile, so cutting the double-paid cards RAISES every voted card the rule never touched: Scottie Pippen '03 (_paid_in_rim 0.000) rose 77 -> 79 against his recal_93 anchor of 76 +-1 purely by other men falling past him, at powers 5 and 6. Applied to the 0.45 band premium instead, the Pvot pool is bit-identical and nothing can rise: every card with _paid_in_rim = 0 reads exactly what it read before. Measured: 343 perdef cards move and ALL 343 move DOWN, zero rises, on any power.",
+    "THE POWER IS THE ONLY FITTED NUMBER. On the premium side, powers 3, 4 and 5 leave Roundfield '82 at perdef 75, 72 and 70 — and DEF 94 at all three, because rimprot (92, untouched) and drb (91) carry the rest of his big branch. 3 is taken as the smallest footprint that reaches the band. HIS 94 IS THE BAND EDGE (91 +-3): perdef alone cannot take him lower, because the remaining half of the double-pay is rimprot's own voted ceiling on a BLK% of 2.6, and that ceiling is load-bearing for Kevin McHale '88 (91 +-3), Pau Gasol '04, Bobby Jones '82 (96 +-1) and Wembanyama. If Tomer wants him nearer 91 than 94, THAT is the next round and it is a rimprot ruling, not a perdef one.",
+    "COLLATERAL, one sentence: the men who lose are the ones paid twice on thin blocks — Kevin McHale '86/'87 (85 -> 66/67, BLK% ~2.2 on a DBPM percentile of 0.33), Derrick White '26 (95 -> 78), Serge Ibaka '14 and Jaren Jackson Jr. '22 (DEF -6 each). McHale '88's own rimprot anchor is untouched at 91 and his DEF moves 91 -> 87, which no anchor pins.",
+    "rimprot AND o_ovr MOVED ON ZERO CARDS. The round touches one term in one attribute; d_ovr moves on 230 cards and ovr on 142, all downward, max 12 and 6.",
+    "ORDER PIN DROPPED, recorded rather than asserted: David Robinson '92 reads 94 and Roundfield '82 now reads 94 too, so 'Robinson above Roundfield' is a TIE, not a pass. Hakeem '94 (95) and Ben Wallace '02 (99) do clear him and those pins stand. It is the same edge the COST above names - perdef alone cannot take Roundfield under 94, because the second half of his double-pay is rimprot's voted ceiling."
+  ],
+  "notes": [
+    "WHY HE READ 99, verified with npm run explain before anything was touched. Dan Roundfield '82 is 6'8\" EXACTLY — the top edge of recal_35's 6'3\"-6'8\" band — so rep_hf pays 1.2 and height_inv pays 1.0, both at the full WING rate, the single most advantaged height in the perdef formula. That is 76% of a perdef of 96. d_score then classifies him a BIG (d_bigness 1.0000 at 80 inches) and takes 0.40 x rimprot as well, where recal_53's voted ceiling had already cashed the SAME All-Defensive votes into a rimprot of 92 on a BLK% of 2.6. 0.40 x 96 + 0.40 x 92 = 75.2 of a 92.76 d_score; x 1.1305 = 104.86 raw against a DEF_TOP of 104.25, which the band stretches to 99.33. #1 of 10,000, above Mutombo '97 (DPOY, BLK% 7.0) at 92, Robinson '92 at 94 and Hakeem '94 at 95.",
+    "THE SEPARATOR IS _paid_in_rim, NOT DBPM ALONE. DBPM support on its own cannot do this job and the measurement says so plainly: Roundfield '82 sits at a DBPM percentile of 0.713, and his two nearest neighbours on that axis are Jrue Holiday '21 at 0.738 (def 92 +-1) and Dennis Rodman '90 at 0.775 (def 94 +-1) — both anchored, both needing to stay put. A 0.025 gap in DBPM percentile cannot be asked to carry 7 DEF points. What separates them is that rimprot never paid Jrue or Rodman anything (_paid_in_rim 0.000, BLK% 1.7 and 1.6) while it paid Roundfield 0.899. The rule reads both, and only the product moves.",
+    "THE SAFETY PROPERTY IS STRUCTURAL, not tuned. A card with _paid_in_rim = 0 has _vote_factor = 1.0 exactly, so its band term is unchanged, and because the deduction never touches PD its Pvot rank is unchanged too. Michael Jordan '89, Kawhi '16, Pippen '94, Pippen '03, Jrue '21, Rodman '90 and Herbert Jones '23 are therefore bit-identical at every power tested — not 'within tolerance', identical.",
+    "recal_101 SAW THIS AND LEFT IT: its receipt records the double-pay as \"the obvious next round on this attribute, and it is a ruling, not an engine call\". The ruling arrived."
+  ]
+}
