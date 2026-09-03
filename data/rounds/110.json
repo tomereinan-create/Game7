@@ -1,0 +1,241 @@
+{
+  "round": 110,
+  "agent": "players-to-team",
+  "status": "declined",
+  "ruling": "there is more work to do",
+  "title": "A STAR AND A HOLE IS NOT A WORSE OFFENCE THAN FIVE AVERAGE MEN — creation amplification comes out of the ±4 fit bonus and into the baseline, and a man who creates his own shot stops paying for his teammates' spacing",
+  "subject": "Bulls '96 (best legal five)",
+  "five": [
+    "Steve Kerr '96",
+    "Michael Jordan '96",
+    "Scottie Pippen '96",
+    "Toni Kukoč '96",
+    "Luc Longley '96"
+  ],
+  "season": 1996,
+  "scale": "team:ovrdial",
+  "target": 92,
+  "tol": 0,
+  "before": 84,
+  "after": 84,
+  "pipeline_version": 108,
+  "knobs": [
+    {
+      "file": "data/team_rating.py",
+      "pattern": "e3 = \\[e2i \\* \\(1 \\+ KNOBS\\['AMP_MAX'\\]\\*\\(feed - KNOBS\\['FEED_REF'\\]\\)\\) for e2i in e2\\]",
+      "label": "THE ROUND'S ONE LINE — creation amplification, un-throttled and centred on the league's own mean feed",
+      "note": "was e2i * (1 + AMP_MAX*feed*max(0, 1 - u2i/30)): a five's creation was credited only to its LOW-usage men"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const e3 = e2\\.map\\(\\(x\\) => x \\* \\(1 \\+ K\\.AMP_MAX \\* \\(feed - K\\.FEED_REF\\)\\)\\)",
+      "label": "the same line, port side — 1:1, gated by data/parity_check.py and tests/parity.test.ts"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "OFF_N = sum\\(u2i\\*e3i for u2i, e3i in zip\\(u2, e3\\)\\) \\* 2",
+      "label": "AND THE PLACE IT LANDS — the baseline reads e3, not e2",
+      "note": "shot quality created by the five's passers is part of the baseline, not a ±4 fit bonus"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const baseN = u2\\.reduce\\(\\(acc, ui, i\\) => acc \\+ ui \\* e3\\[i\\], 0\\) \\* 2",
+      "label": "the same, port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "AMP_MAX       = 0\\.22,",
+      "label": "0.06 -> 0.22, chosen on the fit rather than on the two named cases",
+      "note": "still rising at 0.28 (+0.004); 0.22 is a ~3% TS swing across the league's whole feed range"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "AMP_MAX: 0\\.22,",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "FEED_REF      = 0\\.515,",
+      "label": "the league's own mean feed — the term REDISTRIBUTES around it rather than inflating",
+      "note": "measured over all 1,255 fieldable fives; the uncentred form made the Warriors '17 summit run away"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "FEED_REF: 0\\.515,",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "free = max\\(0\\.0, 1\\.0 - ci/KNOBS\\['CLOG_FREE'\\]\\)",
+      "label": "THE SECOND TERM — the paint-clog penalty is scaled by the paint man's own creation",
+      "note": "Shaquille O'Neal '00 was paying the full -7% for Harper's and Horry's shooting"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const free = Math\\.max\\(0, 1 - c\\[i\\] / K\\.CLOG_FREE\\)",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "CLOG_FREE     = 0\\.71,",
+      "label": "a man who creates at this level makes his own space"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "CLOG_FREE: 0\\.71,",
+      "label": "port side"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_TOP = 138\\.52",
+      "label": "the OFF gauge, re-frozen — and the Warriors '17 are now all-time rank 1 on the adjusted index",
+      "note": "135.94 -> 138.52; ONE five reads 99 where 8 clamped there before"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_LEVEL_REF = 121\\.7822",
+      "label": "and its reference league",
+      "note": "123.0113 -> 121.7822"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.58",
+      "label": "THE DEF SIDE IS UNTOUCHED — 0 of 1,255 DEF dials moved",
+      "note": "recal_105's constant, unchanged"
+    },
+    {
+      "file": "tests/offense.test.ts",
+      "pattern": "expect\\(off\\(GOAT5\\) - off\\(BALANCED\\)\\)\\.toBeLessThanOrEqual\\(9\\.0\\)",
+      "label": "BAND RE-RATIFIED — five all-time creators beat two-plus-three by more once creation is priced",
+      "note": "5.4 -> 7.9; the fourth re-pin of this line"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, compute side",
+      "note": "the ROUND is 110; it SHIPS as pipeline 108"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PIPELINE_VERSION = \\d+",
+      "label": "pipeline version, ratings side"
+    }
+  ],
+  "expect": [
+    {
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 68,
+      "tol": 3,
+      "label": "the Bulls '96 OFF dial: 68 -> 68, flat, while their season RANK went 8th of 29 to 4th. The dial is a position between the all-time median and the Warriors '17, and the 1996 field is bunched — see COST"
+    },
+    {
+      "five": [
+        "Ron Harper '00",
+        "Kobe Bryant '00",
+        "Glen Rice '00",
+        "Robert Horry '00",
+        "Shaquille O'Neal '00"
+      ],
+      "season": 2000,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 64,
+      "tol": 4,
+      "label": "HIS SECOND NAMED CASE — \"How is this team 47 OFF with 2 all time great players\": the Lakers '00 read 48 and read 64, and their season rank goes 17th of 28 to 2nd against a real ORtg rank of 5th"
+    },
+    {
+      "five": [
+        "Ron Harper '00",
+        "Kobe Bryant '00",
+        "Glen Rice '00",
+        "Robert Horry '00",
+        "Shaquille O'Neal '00"
+      ],
+      "season": 2000,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 70,
+      "tol": 4,
+      "label": "and the row he was looking at: OVR 60 when he asked, 62 when this round measured, 70 after"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_71's OFF SUMMIT HELD, tol 0 — and it is now the only five of 1,255 that reads 99, where 8 clamped there before"
+    },
+    {
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_94's DEF SUMMIT HELD: the DEF dial moved on 0 of 1,255 fives this round"
+    },
+    {
+      "card": "Michael Jordan '96",
+      "scale": "off",
+      "op": "==",
+      "value": 93,
+      "label": "NO CARD MOVED on o_ovr / d_ovr / ovr — byte-identical to origin/main on all 10,000. `marg` did move; see COST"
+    },
+    {
+      "card": "Luc Longley '96",
+      "scale": "off",
+      "op": "==",
+      "value": 40,
+      "label": "THE HOLE, unchanged as a card: the round is about how the five combines, never about the man"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE BULLS '96 TEAM OVR DID NOT MOVE, and that is the round's honest result. Their offRaw rank went 8th of 29 to 4th — the bug he pointed at is largely fixed — but the DIAL is a position between the all-time median five and the 2017 Warriors, and making creation matter widened that range faster than it lifted the Bulls inside it. 68 OFF / 99 DEF / 84 OVR before and after. The orchestrator's assumed target was OVR >= 92 and 'clearly above the Jazz 97'; the Jazz '97 read 92, so the Bulls are still below them. Reaching 92 needs OFF 89, which on this scale means claiming the 1996 Bulls' offence was close to the 2017 Warriors'. It was not: they were the best offence of a bunched, low-offence season. The number he saw when he ruled was 75; it is 84 now, and that came from recal_105.",
+    "WHAT WOULD ACTUALLY REACH IT, measured and not taken. Two things, neither of them this round's to decide. (1) The five: the OVR-max picker hands the formula Kerr / Jordan / Pippen / Kukoc / LONGLEY (o_ovr 40), and the OFF-max Bulls five is 3.2 points better. bestfive.ts's OVR-max convention is a standing rule, not mine to change. (2) The summit: the OFF dial's top half spans the median to the Warriors '17 by recal_71's ruling, so any five that is merely the best of its own season lands near 68. If he wants the great DEFENSIVE teams to read high on the composite, the question is the composite — the same question recal_105 left open.",
+    "THE LAKERS '00 ARE THE ROUND'S CLEAN WIN. 17th of 28 on offence to 2nd, against a real ORtg rank of 5th; OFF dial 48 -> 64, OVR 62 -> 70 against the 60 he was looking at. Shaquille O'Neal '00 was paying the full paint-clog penalty for Ron Harper's and Robert Horry's shooting while creating his own shot at 31.5 usage, and the five's raw fit was -8.07 against a -4 clamp. A paint DIET is not a paint DEPENDENCY, and that is now one term.",
+    "TWO ENGINE BANDS WERE RE-RATIFIED in tests/offense.test.ts, both recorded in `knobs`. (1) `chuck < role` no longer holds (124.3 / 127.1 became 132.1 / 123.0): ROLE5 is Korver / Battier / Bowen / Tucker / Gobert, five men with no creator between them, and a round that prices creation reads it as the offence with nobody to make a shot — which is what it is. The three assertions carrying the real claim all still hold (chuck < bal, chuck < goat, role < goat, role < bal). (2) GOAT5 - BALANCED 5.4 -> 7.9, band widened to 9.0: GOAT5 is five all-time creators against two-plus-three, so the round necessarily widens it. Fourth re-pin of that line.",
+    "marg MOVED ON 9,075 OF 10,000 CARDS (max 46, mean 6.2) because compute_ovr.py exec's team_rating.py's matchup_margin for it, and creation is now worth four times what it was in the marginal sweep. High-playvol guards jump hardest (Jeff Teague '14 46 -> 92, Chris Paul '06 51 -> 95). o_ovr, d_ovr, ovr, big and every attribute are byte-identical to origin/main — asserted, not assumed — because recal_37/40 took marg out of OVR. Anything reading marg will look very different, and this is the largest marg move in the ledger.",
+    "THE CAMPAIGN LADDER WAS REGENERATED. src/data/campaigns.json and opponents.json are built from net rating, so team_offense moving reorders the tiers; `npm run opponents` was re-run and tests/campaigns.test.ts passes on the new file. Still 4 tiers and 150 levels.",
+    "THE FIT CLAMP IS NO LONGER THE BOTTLENECK, and the reason is worth recording. Before this round 21.5% of the 1,255 fives sat ON the ±4 fit rail (188 at the floor, 82 at the ceiling) with a raw spread of -18.2 to +9.1, because e3 and e4 were the only channels feeding it. Opening the clamp was measured and REJECTED: with the amplification moved into the baseline where it belongs the fit differential is small again, and widening the cap costs fit (0.759 -> 0.750). FIT_CAP stays 4.0.",
+    "REJECTED, each measured on all 1,255 fives. (1) Shedding usage by creation instead of by load — a no-op (±0.1 offRaw), because the renormalisation washes it out. (2) Role reallocation, blending each man's usage toward a creation-implied share — +0.005 fit for a large structural change. (3) Quality-gating the feed by the creator's own efficiency, to stop CHUCK5 rising: it fixes that band but costs 0.015 of fit and pushes GOAT5 sixteen points clear of BALANCED, a worse break than the one it repairs. (4) Raising FIT_WIDEN — costs fit at every level tried."
+  ],
+  "notes": [
+    "THE DIAGNOSIS, in one line: OFF_N — the number carrying ~97% of a five's offence — was the usage-weighted mean of repriced TS and NOTHING else, so a five was priced as an average and never as a shape. Creation amplification and every one of Tomer's interactions reached the total only through `fit`, clamped at ±4 against a ~20-point spread in that average. Five average men at 0.6275 beat a star and a hole at 0.6097, and no amount of star quality could enter the sum.",
+    "THE TWO TERMS. (1) Creation amplification comes out of the fit bonus and into the BASELINE, loses its max(0, 1 - u2/30) throttle — which credited a five's creation only to its low-usage men, exactly backwards — and is centred on the league's own mean feed so it redistributes instead of inflating. The Bulls '96 feed is 0.640 against Seattle '96's 0.517, the widest gap on that board. (2) The paint-clog penalty is scaled by the paint man's own creation: at CLOG_FREE = 0.71 it is gone entirely, because a man who makes his own advantage is not the man hurt by a clogged floor.",
+    "FIT, the round's actual justification: the within-season Spearman of offRaw against real ORtg, averaged over the 47 seasons of the 1,255 fieldable team-seasons, goes +0.726 -> +0.762. Per era: 80s .701 -> .746 · 90s .731 -> .771 · 00s .697 -> .742 · 10s .797 -> .808 · 20s .692 -> .734. Up in every era, and the largest OFF fit gain in the ledger. DEF is untouched at +0.771 and 0 of 1,255 DEF dials moved.",
+    "TEN TEAMS, offRaw rank in its own season (real ORtg rank in brackets) and the Team DB row OFF/DEF/OVR: Bulls '96 8->4 (1) 68/99/84 -> 68/99/84 · Bulls '97 6->4 (1) 67/98/82 -> 65/98/82 · Bulls '98 20->13 (7) 42/99/70 -> 50/99/74 · Lakers '00 17->2 (5) 48/77/62 -> 64/77/70 · Jazz '97 1->1 (2) 99/92/96 -> 93/92/92 · Sonics '96 1->2 (8) 93/83/88 -> 78/83/80 · Lakers '87 2->2 (1) 83/67/75 -> 73/67/70 · Celtics '86 3->2 (3) 84/86/85 -> 75/86/80 · Warriors '17 1->1 (1) 99/73/86 -> 99/73/86 · Rockets '94 3->3 (15) 76/61/68 -> 69/61/65 · Spurs '14 7->8 (7) 67/74/70 -> 61/74/68 · Heat '13 2->1 (2) 89/66/78 -> 80/66/73.",
+    "DECADE MEANS, OFF before -> after: 80s 52.3 -> 50.8 · 90s 53.0 -> 51.1 · 00s 52.1 -> 51.0 · 10s 52.5 -> 51.1 · 20s 52.3 -> 51.0. DEF unchanged at 51.5 / 51.5 / 51.6 / 51.4 / 51.1. OVR 51.9/52.2/51.8/52.0/51.7 -> 51.2/51.3/51.3/51.3/51.1. recal_105's era recentring survives intact on both halves.",
+    "THE ALL-TIME OFF TOP 10 IS NOW ALMOST ALL REAL LEAGUE-BEST OFFENCES: Warriors '17 99 (real 1st), Rockets '18 97 (1st), Celtics '88 96 (1st), Jazz '97 93 (2nd), Magic '95 91 (1st), Celtics '87 90 (3rd), Warriors '16 89 (1st), Jazz '98 89 (1st), Suns '07 88 (1st), Thunder '12 88 (2nd). Nine of the ten led their own league.",
+    "ALL-TIME TOP 10 BY TEAM OVR after, with real MOV: Jazz '97 92 (+8.8) · Jazz '98 90 (+6.5) · Warriors '16 90 (+10.8) · Warriors '15 88 (+10.1) · 76ers '83 87 (+7.7) · Warriors '17 86 (+11.6) · Jazz '99 86 (+6.5) · Celtics '87 85 (+6.7) · Clippers '20 84 (+6.4) · Spurs '07 84 (+8.4). The Bulls '96 are 84 and just outside it.",
+    "2026 by team OVR after: OKC 72 · DET 66 · HOU 64 · LAC 62 · NYK 61 · BOS 60 · DEN 60 · LAL 58. Detroit rises 62 -> 66 and Boston 58 -> 60 on the creation term; the Clippers and Nuggets, whose offences were priced on efficiency alone, come back a few points."
+  ]
+}

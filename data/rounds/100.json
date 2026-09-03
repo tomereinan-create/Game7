@@ -69,9 +69,9 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 104\\.12",
+      "pattern": "const OFF_MIN = 102\\.39",
       "label": "the OFF dial WAS untouched by recal_100 — recal_105 is the round that moved it, on his later ruling \"Teams rating is still off. Bulls 96 only 75 OVR\"",
-      "note": "recal_100 measured the OFF era drift (decade means 42.9 / 48.4 / 52.6 / 54.1 / 56.4) and left it alone because he had ruled on DEF only; its COST named that as the first thing to put to him. He ruled on the composite five rounds later and recal_105 applied the same subtraction: OFF_MIN 104.36 -> 104.12, OFF_MID 123.32 -> 123.02, OFF_TOP 137.67 -> 135.94, all in adjusted units, with the Warriors '17 still 99."
+      "note": "recal_100 measured the OFF era drift (decade means 42.9 / 48.4 / 52.6 / 54.1 / 56.4) and left it alone because he had ruled on DEF only; its COST named that as the first thing to put to him. He ruled on the composite five rounds later and recal_105 applied the same subtraction: OFF_MIN 104.36 -> 104.12, OFF_MID 123.32 -> 123.02, OFF_TOP 137.67 -> 135.94, all in adjusted units, with the Warriors '17 still 99. [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so the OFF gauge block was re-derived (OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52). The finding this knob carries is untouched.]"
     },
     {
       "file": "src/engine/gauges.ts",

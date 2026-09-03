@@ -33,32 +33,33 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 124\\.914,",
+      "pattern": "const OFF_LEVEL: Record<number, number> = \\{[\\s\\S]{200,2000}?2026: 122\\.973,",
       "label": "THE OFF ERA TABLE — the league's own offensive level, season by season, from the 1,255-five sweep",
-      "note": "119.56 in 1985/86 to 126.07 in 2019: offence really did improve, and the card pool says so"
+      "note": "119.56 in 1985/86 to 126.07 in 2019: offence really did improve, and the card pool says so [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so scripts/gauge105.ts was re-run and the whole OFF block re-derived — OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52, OFF_LEVEL_REF 123.0113 -> 121.7822. recal_105's findings are untouched: every decade's OFF mean is ~51, and the Warriors '17 still read 99 — and are now the ONLY five of 1,255 that does, where 8 clamped there before.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 123\\.0113",
-      "label": "the league every OFF dial is quoted in: the mean of the 47 season levels"
+      "pattern": "const OFF_LEVEL_REF = 121\\.7822",
+      "label": "the league every OFF dial is quoted in: the mean of the 47 season levels",
+      "note": " [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so scripts/gauge105.ts was re-run and the whole OFF block re-derived — OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52, OFF_LEVEL_REF 123.0113 -> 121.7822. recal_105's findings are untouched: every decade's OFF mean is ~51, and the Warriors '17 still read 99 — and are now the ONLY five of 1,255 that does, where 8 clamped there before.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 104\\.12",
+      "pattern": "const OFF_MIN = 102\\.39",
       "label": "the OFF gauge, re-frozen on the era-adjusted index",
-      "note": "104.36 -> 104.12 (adjusted units)"
+      "note": "104.36 -> 104.12 (adjusted units) [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so scripts/gauge105.ts was re-run and the whole OFF block re-derived — OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52, OFF_LEVEL_REF 123.0113 -> 121.7822. recal_105's findings are untouched: every decade's OFF mean is ~51, and the Warriors '17 still read 99 — and are now the ONLY five of 1,255 that does, where 8 clamped there before.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MID = 123\\.02",
+      "pattern": "const OFF_MID = 121\\.67",
       "label": "the all-time median five still reads 50",
-      "note": "123.32 -> 123.02 (adjusted units)"
+      "note": "123.32 -> 123.02 (adjusted units) [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so scripts/gauge105.ts was re-run and the whole OFF block re-derived — OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52, OFF_LEVEL_REF 123.0113 -> 121.7822. recal_105's findings are untouched: every decade's OFF mean is ~51, and the Warriors '17 still read 99 — and are now the ONLY five of 1,255 that does, where 8 clamped there before.]"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 135\\.94",
+      "pattern": "const OFF_TOP = 138\\.52",
       "label": "recal_71's OFF summit HELD: the Warriors '17 still read 99",
-      "note": "137.67 -> 135.94 (adjusted units); 8 fives clamp there — see COST"
+      "note": "137.67 -> 135.94 (adjusted units); 8 fives clamp there — see COST [recal_110 re-pointed it: that round's creation-amplification repair moved every five's offRaw, so scripts/gauge105.ts was re-run and the whole OFF block re-derived — OFF_MIN 104.12 -> 102.39, OFF_MID 123.02 -> 121.67, OFF_TOP 135.94 -> 138.52, OFF_LEVEL_REF 123.0113 -> 121.7822. recal_105's findings are untouched: every decade's OFF mean is ~51, and the Warriors '17 still read 99 — and are now the ONLY five of 1,255 that does, where 8 clamped there before.]"
     },
     {
       "file": "src/engine/gauges.ts",
@@ -149,9 +150,9 @@
       "season": 1987,
       "scale": "team:offdial",
       "op": "~",
-      "value": 83,
-      "tol": 4,
-      "label": "THE POINT OF THE ROUND, on a five where the era drift was real: Showtime 70 -> 83. The 1980s OFF mean was 43.5 and is 52.3"
+      "value": 73,
+      "tol": 5,
+      "label": "THE POINT OF THE ROUND, on a five where the era drift was real: Showtime 70 -> 83, and 73 after recal_110 re-froze the OFF block. The 1980s OFF mean was 43.5 and is 52.3"
     },
     {
       "five": [

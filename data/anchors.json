@@ -1102,5 +1102,42 @@
     "round": 105,
     "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
     "note": "THE NUMBER HE NAMED, pinned at what it actually reads: 75 when he ruled, 81 by the time this round measured (recal_101/102/103/104 moved it), 84 after (68 on offence, 99 on defence). The round's assumed target of >=92 was NOT reached and is NOT pinned here, because an anchor is a pin that holds: reaching 92 needs OFF 89, and teamOffense ranks this five 8th of the 29 fieldable 1996 teams on offence while the real 1996 board has them 1st. A per-season shift cannot reorder a season. The next round on this belongs in data/team_rating.py's team_offense."
+  },
+  {
+    "card": "Lakers '00 (best legal five)",
+    "five": [
+      "Ron Harper '00",
+      "Kobe Bryant '00",
+      "Glen Rice '00",
+      "Robert Horry '00",
+      "Shaquille O'Neal '00"
+    ],
+    "season": 2000,
+    "scale": "team:offdial",
+    "target": 64,
+    "tol": 4,
+    "round": 110,
+    "ruling": "How is this team 47 OFF with 2 all time great players",
+    "note": "HIS SECOND NAMED CASE. The '00 Lakers read OFF 47 when he asked; 48 when this round measured, 17th of the 28 fieldable 2000 teams against a real ORtg rank of 5th. Shaquille O'Neal was taking the full paint-clog penalty for Harper's and Horry's shooting while creating his own shot at 31.5 usage, and the five's raw fit was -8.07 against a -4 clamp."
+  },
+  {
+    "kind": "team_rank",
+    "season": 2000,
+    "ab": "LAL",
+    "scale": "team:off",
+    "max_rank": 5,
+    "round": 110,
+    "ruling": "How is this team 47 OFF with 2 all time great players",
+    "note": "the rank is the thing he was pointing at, and it survives any rescale: 17th of 28 -> 2nd, against a real ORtg rank of 5th."
+  },
+  {
+    "kind": "team_rank",
+    "season": 1996,
+    "ab": "CHI",
+    "scale": "team:off",
+    "max_rank": 6,
+    "round": 110,
+    "ruling": "there is more work to do",
+    "note": "THE ROUND'S OWN FINDING, pinned. The Bulls '96 read 8th of the 29 fieldable 1996 teams on offence against a real ORtg rank of 1st; they read 4th now. The bound is 6 rather than 2 because 4th is where the formula honestly puts them — see data/rounds/110.json for why 1st or 2nd is not reachable without claiming their offence was near the 2017 Warriors'."
   }
 ]
