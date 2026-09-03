@@ -163,7 +163,13 @@ const roundBlock = (r: RoundFile) => () => {
     } catch {
       /* reported by the line below */
     }
-    line('PIPELINE_VERSION', `shipped at ${r.pipeline_version} · current ${Number.isFinite(cur) ? cur : 'UNREADABLE'} (src/data/pipeline.json — what the app reads)`, `>= ${r.pipeline_version}`, Number.isFinite(cur) && cur >= r.pipeline_version)
+    // Since 2026-09-03 agents no longer stamp the version; the integrator stamps the highest round
+    // of a batch when it lands on main. A round whose number runs ahead of the shipped version is
+    // therefore PENDING integration, not a miss — the line reads OK and says so.
+    const pending = Number.isFinite(cur) && cur < r.pipeline_version
+    line('PIPELINE_VERSION', pending
+      ? `round ${r.pipeline_version} · shipped ${cur} — PENDING, the integrator stamps it on merge (src/data/pipeline.json)`
+      : `shipped at ${r.pipeline_version} · current ${Number.isFinite(cur) ? cur : 'UNREADABLE'} (src/data/pipeline.json — what the app reads)`, `>= ${r.pipeline_version} or pending`, Number.isFinite(cur))
   }
   for (const k of r.knobs ?? []) {
     const label = `${k.label ?? 'knob'} (${k.file})`
