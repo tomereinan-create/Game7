@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, spotsFor, type CourtSpot } from '../src/ui/CourtFive'
+import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, type CourtSpot } from '../src/ui/CourtFive'
 import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
@@ -179,7 +179,8 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     for (const s of STYLES) {
       const at = spotsFor({ style: s.key, pnr: null }, LAKERS)
       expect(inCorner(at[AYTON])).toBe(false)
-      // every set but five-out owns an inside spot, and it is his
+      // every set but five-out stands him inside — the pick-and-roll as its screener (his
+      // ruling: the rest stand outside), every other set on the inside spot it holds for him
       if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
     }
   })
@@ -277,6 +278,83 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
     const a = renderToStaticMarkup(createElement(CourtFive, { spots: spots(FIVE), plan }))
     const b = renderToStaticMarkup(createElement(CourtFive, { spots: spots(FIVE), plan, tactic: { style: 'fiveout', pnr: null } }))
     expect(b).toBe(a)
+  })
+})
+
+/**
+ * HIS RULING: "If its pnr, put the screener next to the handler, and the rest outside the 3pt
+ * line" — the Thunder '24 court stood Holmgren on the block and Dort and Giddey low inside the arc.
+ * The screen is now set beside the ball at the top of the key, one ring apart, and the other three
+ * stand behind the line — the weak-side wing and both corners, the corners to the shooters. It
+ * holds everywhere the shape is drawn: a five read as pick-and-roll, a called one, a named pair.
+ */
+describe('the pick-and-roll stands the screen beside the ball, and the rest behind the line', () => {
+  const THUNDER = [g("Shai Gilgeous-Alexander '24"), g("Josh Giddey '24"), g("Luguentz Dort '24"), g("Jalen Williams '24"), g("Chet Holmgren '24")]
+  const POOL: Player[][] = []
+  for (let i = 0; i + 5 <= PLAYERS.length && POOL.length < 60; i += 37) POOL.push(PLAYERS.slice(i, i + 5))
+  const feet = ([x, y]: readonly [number, number]) => [(x - 50) / FLOOR.ft, (FLOOR.base - y) / FLOOR.ft] as const
+  const dist = (a: readonly [number, number], b: readonly [number, number]) => {
+    const [ax, ay] = feet(a)
+    const [bx, by] = feet(b)
+    return Math.hypot(ax - bx, ay - by)
+  }
+  /** The two men the floor stands as the pair: the plan's, or the court's own fallback for a pair it cannot honour. */
+  const pairOf = (five: Player[], pick: PnrPair | null) => {
+    const pair = pnrPair(five, pick)
+    const h = pair.handler ? five.findIndex((p) => p.name === pair.handler!.name) : 0
+    let s = pair.screener ? five.findIndex((p) => p.name === pair.screener!.name) : -1
+    if (s < 0 || s === h) s = five.reduce((k, p, i) => (i !== h && (k < 0 || p.attrs.height > five[k].attrs.height) ? i : k), -1)
+    return { h, s }
+  }
+  const holds = (five: Player[], pick: PnrPair | null) => {
+    const at = spotsFor({ style: 'pnr', pnr: pick }, five)
+    const { h, s } = pairOf(five, pick)
+    // the screen is set beside the ball: one ring apart, and nearer to him than anyone else is
+    expect(dist(at[h], at[s])).toBeLessThanOrEqual(PAIR_FT + 1e-9)
+    for (let i = 0; i < 5; i++) {
+      if (i === h || i === s) continue
+      expect(dist(at[h], at[i])).toBeGreaterThan(dist(at[h], at[s]))
+      expect(dist(at[s], at[i])).toBeGreaterThan(dist(at[h], at[s]))
+    }
+    // the ball is behind the line, the screen inside it at the top of the key — above the
+    // free-throw line, not on a block
+    expect(outsideLine(at[h])).toBe(true)
+    expect(outsideLine(at[s])).toBe(false)
+    expect(feet(at[s])[1]).toBeGreaterThan(19)
+    // and nobody else is inside the arc: the other three stand behind the line — one wing and
+    // two corners — and the corners go to the shooters: the worst shooter of the three is the
+    // man on the wing
+    const rest = [0, 1, 2, 3, 4].filter((i) => i !== h && i !== s)
+    for (const i of rest) expect(outsideLine(at[i])).toBe(true)
+    const wing = rest.filter((i) => !inCorner(at[i]))
+    expect(wing).toHaveLength(1)
+    for (const i of rest) if (i !== wing[0]) expect(five[i].attrs['3pt']).toBeGreaterThanOrEqual(five[wing[0]].attrs['3pt'])
+    // five different spots, whatever the pair
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  }
+
+  it("the Thunder '24: Holmgren beside Gilgeous-Alexander at the top, the other three behind the line", () => {
+    expect(inferredStyle(THUNDER)!.style).toBe('pnr')
+    const pair = pnrPair(THUNDER, null)
+    expect(pair.handler!.name).toBe("Shai Gilgeous-Alexander '24")
+    expect(pair.screener!.name).toBe("Chet Holmgren '24")
+    holds(THUNDER, null)
+    // and the read is the call: the inferred floor is the called floor
+    expect(spotsFor(null, THUNDER)).toEqual(spotsFor({ style: 'pnr', pnr: null }, THUNDER))
+  })
+
+  it('holds for every five the pool can cut, auto-paired', () => {
+    for (const five of [FIVE, ...POOL]) holds(five, null)
+  })
+
+  it('holds for the pair he names, and stands HIS two men as the pair', () => {
+    const chosen: PnrPair = { handler: "Klay Thompson '15", screener: "Draymond Green '16" }
+    holds(FIVE, chosen)
+    const at = spotsFor({ style: 'pnr', pnr: chosen }, FIVE)
+    const h = FIVE.findIndex((p) => p.name === chosen.handler)
+    const s = FIVE.findIndex((p) => p.name === chosen.screener)
+    expect(outsideLine(at[h])).toBe(true)
+    expect(outsideLine(at[s])).toBe(false)
   })
 })
 
