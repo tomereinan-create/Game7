@@ -1,105 +1,236 @@
 {
- "round": 116,
- "agent": "stats-to-ratings",
- "status": "done",
- "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
- "title": "the creation allowance may soften a man's turnover record, not delete it — the raw leg's ceiling rises to 0.54 and the credit ramp deepens with it",
- "scale": "attr:ballsec",
- "subject": "Russell Westbrook '15",
- "target": 56,
- "tol": 4,
- "before": 66,
- "after": 60,
- "pipeline_version": 116,
- "knobs": [
-  {
-   "file": "data/build_ratings.py",
-   "pattern": "_wraw = 0\\.54 - 0\\.29 \\* _credit",
-   "label": "ballsec raw-leg weight: ceiling and ramp",
-   "note": "0.45 - 0.20*credit -> 0.54 - 0.29*credit (floor at credit=1 stays 0.25, recal_79's number)"
-  },
-  {
-   "file": "data/build_ratings.py",
-   "pattern": "_credit = 0\\.0 if ast_tov is None else max\\(0\\.0, min\\(1\\.0, \\(ast_tov - 2\\.0\\) / 2\\.0\\)\\)",
-   "label": "recal_79's AST/TOV credit ramp, untouched",
-   "note": "floor 2.0, full credit 4.0 — his amendment, unchanged"
-  },
-  {
-   "file": "data/build_ratings.py",
-   "pattern": "\\+ 0\\.8 \\* \\(rr\\.get\\('ast'\\) or 15\\)",
-   "label": "the 0.8 assist coefficient, untouched",
-   "note": "shrinking it destroys the passer class — measured, see notes"
-  }
- ],
- "expect": [
-  {"card": "Michael Jordan '88", "scale": "attr:ballsec", "op": "~", "value": 95, "tol": 1, "label": "r56 anchor holds"},
-  {"card": "Michael Jordan '89", "scale": "off", "op": ">=", "value": 98, "label": "r102 anchor — the binding constraint at 0.55"},
-  {"card": "Domantas Sabonis '21", "scale": "off", "op": ">=", "value": 70, "label": "r55 anchor — the binding constraint at 0.60"},
-  {"card": "James Harden '19", "scale": "off", "op": ">=", "value": 94, "label": "r89 anchor, OFF side (his ballsec pin is released)"},
-  {"card": "Russell Westbrook '17", "scale": "off", "op": "~", "value": 91, "tol": 1, "label": "r89 anchor holds while his ballsec falls 7"},
-  {"card": "Luka Dončić '23", "scale": "off", "op": ">=", "value": 93, "label": "r89 anchor"},
-  {"card": "John Stockton '90", "scale": "attr:ballsec", "op": "~", "value": 62, "tol": 1, "label": "the elite-AST/TOV floor is byte-identical"},
-  {"card": "Chris Paul '09", "scale": "attr:ballsec", "op": ">=", "value": 80, "label": "the passer class is not the payer"},
-  {"card": "Jason Kidd '99", "scale": "attr:ballsec", "op": ">=", "value": 53, "label": "the passer class is not the payer"},
-  {"card": "Magic Johnson '89", "scale": "attr:ballsec", "op": ">=", "value": 61, "label": "the passer class is not the payer"},
-  {"card": "Russell Westbrook '15", "scale": "off", "op": "<=", "value": 89, "label": "the OFF half of the ruling is the next lane's — recorded, not landed"}
- ],
- "order": [
-  {"scale": "attr:ballsec", "above": "Michael Jordan '88", "below": "Russell Westbrook '15", "label": "the secure high-usage scorer stays above"},
-  {"scale": "attr:ballsec", "above": "Chris Paul '09", "below": "Russell Westbrook '15"},
-  {"scale": "attr:ballsec", "above": "John Stockton '90", "below": "Russell Westbrook '15"},
-  {"scale": "attr:ballsec", "above": "Luka Dončić '23", "below": "Russell Westbrook '15"},
-  {"scale": "attr:ballsec", "above": "Russell Westbrook '15", "below": "Russell Westbrook '17", "label": "the worse turnover season still reads worse"},
-  {"scale": "attr:ballsec", "above": "Russell Westbrook '15", "below": "James Harden '17"}
- ],
- "movers": {
+  "round": 116,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "title": "the creation allowance may soften a man's turnover record, not delete it — the raw leg's ceiling rises to 0.54 and the credit ramp deepens with it",
   "scale": "attr:ballsec",
-  "count": 7911,
-  "max_abs": 7,
-  "top": [
-   ["James Harden '18", 60, 53],
-   ["Russell Westbrook '17", 61, 54],
-   ["Luka Dončić '22", 62, 55],
-   ["Russell Westbrook '18", 59, 52],
-   ["James Harden '17", 53, 46],
-   ["James Harden '16", 56, 49],
-   ["Javonte Green '22", 51, 58],
-   ["Hot Rod Williams '98", 43, 50],
-   ["Bruce Bowen '08", 42, 49]
+  "subject": "Russell Westbrook '15",
+  "target": 56,
+  "tol": 4,
+  "before": 66,
+  "after": 60,
+  "pipeline_version": 116,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_wraw = 0\\.54 - 0\\.29 \\* _credit",
+      "label": "ballsec raw-leg weight: ceiling and ramp",
+      "note": "0.45 - 0.20*credit -> 0.54 - 0.29*credit (floor at credit=1 stays 0.25, recal_79's number)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_credit = 0\\.0 if ast_tov is None else max\\(0\\.0, min\\(1\\.0, \\(ast_tov - 2\\.0\\) / 2\\.0\\)\\)",
+      "label": "recal_79's AST/TOV credit ramp, untouched",
+      "note": "floor 2.0, full credit 4.0 — his amendment, unchanged"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "\\+ 0\\.8 \\* \\(rr\\.get\\('ast'\\) or 15\\)",
+      "label": "the 0.8 assist coefficient, untouched",
+      "note": "shrinking it destroys the passer class — measured, see notes"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Michael Jordan '88",
+      "scale": "attr:ballsec",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "r56 anchor holds"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": ">=",
+      "value": 98,
+      "label": "r102 anchor — the binding constraint at 0.55"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": ">=",
+      "value": 70,
+      "label": "r55 anchor — the binding constraint at 0.60"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": ">=",
+      "value": 94,
+      "label": "r89 anchor, OFF side (his ballsec pin is released)"
+    },
+    {
+      "card": "Russell Westbrook '17",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "r89 anchor holds while his ballsec falls 7"
+    },
+    {
+      "card": "Luka Dončić '23",
+      "scale": "off",
+      "op": ">=",
+      "value": 93,
+      "label": "r89 anchor"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "attr:ballsec",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "the elite-AST/TOV floor is byte-identical"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "attr:ballsec",
+      "op": ">=",
+      "value": 80,
+      "label": "the passer class is not the payer"
+    },
+    {
+      "card": "Jason Kidd '99",
+      "scale": "attr:ballsec",
+      "op": ">=",
+      "value": 53,
+      "label": "the passer class is not the payer"
+    },
+    {
+      "card": "Magic Johnson '89",
+      "scale": "attr:ballsec",
+      "op": ">=",
+      "value": 61,
+      "label": "the passer class is not the payer"
+    },
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "off",
+      "op": "<=",
+      "value": 89,
+      "label": "the OFF half of the ruling is the next lane's — recorded, not landed"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:ballsec",
+      "above": "Michael Jordan '88",
+      "below": "Russell Westbrook '15",
+      "label": "the secure high-usage scorer stays above"
+    },
+    {
+      "scale": "attr:ballsec",
+      "above": "Chris Paul '09",
+      "below": "Russell Westbrook '15"
+    },
+    {
+      "scale": "attr:ballsec",
+      "above": "John Stockton '90",
+      "below": "Russell Westbrook '15"
+    },
+    {
+      "scale": "attr:ballsec",
+      "above": "Luka Dončić '23",
+      "below": "Russell Westbrook '15"
+    },
+    {
+      "scale": "attr:ballsec",
+      "above": "Russell Westbrook '15",
+      "below": "Russell Westbrook '17",
+      "label": "the worse turnover season still reads worse"
+    },
+    {
+      "scale": "attr:ballsec",
+      "above": "Russell Westbrook '15",
+      "below": "James Harden '17"
+    }
+  ],
+  "movers": {
+    "scale": "attr:ballsec",
+    "count": 7911,
+    "max_abs": 7,
+    "top": [
+      [
+        "James Harden '18",
+        60,
+        53
+      ],
+      [
+        "Russell Westbrook '17",
+        61,
+        54
+      ],
+      [
+        "Luka Dončić '22",
+        62,
+        55
+      ],
+      [
+        "Russell Westbrook '18",
+        59,
+        52
+      ],
+      [
+        "James Harden '17",
+        53,
+        46
+      ],
+      [
+        "James Harden '16",
+        56,
+        49
+      ],
+      [
+        "Javonte Green '22",
+        51,
+        58
+      ],
+      [
+        "Hot Rod Williams '98",
+        43,
+        50
+      ],
+      [
+        "Bruce Bowen '08",
+        42,
+        49
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:ballsec",
+    "cards": [
+      "Al Jefferson '12",
+      "Michael Jordan '97",
+      "Michael Jordan '98",
+      "Mike Mitchell '88",
+      "Steve Novak '13",
+      "Al Jefferson '13",
+      "Al Jefferson '14",
+      "Al Jefferson '15",
+      "Alex English '88",
+      "Alex English '89",
+      "Dirk Nowitzki '16",
+      "Dirk Nowitzki '17"
+    ]
+  },
+  "cost": [
+    "James Harden '19 attr:ballsec 61 +-1 (r56) IS RELEASED and moved to data/anchors_superseded.json with the note. He now reads 56, what the formula gives. His OFF pin (95 +-1, r89) still stands and still passes at 96.",
+    "Russell Westbrook '17 has NO ballsec pin — checked; nothing to release there. His OFF pin (91 +-1, r89) stands and holds at 91 even though his ballsec falls 61 -> 54.",
+    "THE SUBJECT LANDED AT 60, THE TOP EDGE OF 56 +-4. The frontier is set by two OFF anchors, not by this stage: 0.55 puts Michael Jordan '89 OFF at 97 against r102's 99 +-1, and 0.60 puts Domantas Sabonis '21 OFF at 69 against r55's 71 +-1. Michael Jordan '89 was ALREADY reading 98 on origin/main, so there was exactly one point of slack in the whole board. 56 exactly needs one of those pins re-opened — compute_ovr's lane.",
+    "The OFF half of his ruling ('more around 85') is NOT landed here. Westbrook '15 reads OFF 89 after this change (was 90). The remaining 4 points are the next lane's round.",
+    "ballsec now moves on 7,911 of 10,000 cards (3,549 down, 4,362 up, max 7 either way). Any later round that touches ballsec inherits a board where the raw TOV% leg carries up to 0.54 rather than 0.45."
+  ],
+  "notes": [
+    "THE DEFECT: TOV% is ALREADY turnovers per play used, and Padj divides it by usage + 0.8*AST% a second time. At USG 38.4 / AST% 47 the allowance nearly doubles the denominator, so Westbrook '15 sits on the 1.2nd percentile of 2015's adjusted rate while turning it over 4.4 times a night.",
+    "MEASURED, the whole argument in one line: on the adjusted leg Westbrook '15 reads 0.012 and Michael Jordan '89 reads 0.005 — the leg cannot tell them apart. On the RAW leg they read 0.653 and 0.250. Only the raw leg carries the fact his ruling names, so the raw leg's ceiling is what moves.",
+    "THE FLOOR DID NOT MOVE. At credit = 1 (AST/TOV >= 4.0) the raw weight is 0.54 - 0.29 = 0.25, exactly recal_79's number. John Stockton '90 reads 62 -> 62, byte-identical. Chris Paul '09 82 -> 82.",
+    "REJECTED (a): the raw leg re-read as turnovers per 100 POSSESSIONS, the literal '4.4 a game'. Reaches Westbrook 54 but is not usage-relative at all, so it charges every man who touches the ball — Michael Jordan '88 95 -> 65, and the ballsec top 12 becomes low-usage spot-up shooters (Novak, Bonner, Kerr, Trent).",
+    "REJECTED (b): the same substitution inside Padj's numerator (tov/100 over the responsibility denominator, one division instead of two). 17 anchors fail, Michael Jordan '88 ballsec 92 among them.",
+    "REJECTED (c): shrinking the 0.8 assist coefficient, the axis recal_108 swept. At 0.30 Westbrook only reaches 64 and John Stockton '90 falls 62 -> 41; at 0.00 he reaches 58 and Stockton falls to 17, Jason Kidd '99 55 -> 24, Magic Johnson '89 64 -> 35.",
+    "REJECTED (d) without a run, on the measurement: a cap on how far the allowance may improve a man's raw reading dies the same way — the passers' raw-minus-adjusted gaps are LARGER than Westbrook's, Stockton +0.799, Magic +0.771, Jason Kidd +0.683 against Westbrook's +0.640.",
+    "FOOTPRINT beyond ballsec: o_ovr moves on 1,498 cards and ovr on 832, never by more than 1 point either way. d_ovr moves on ZERO cards."
   ]
- },
- "top12": {
-  "scale": "attr:ballsec",
-  "cards": [
-   "Al Jefferson '12",
-   "Michael Jordan '97",
-   "Michael Jordan '98",
-   "Mike Mitchell '88",
-   "Steve Novak '13",
-   "Al Jefferson '13",
-   "Al Jefferson '14",
-   "Al Jefferson '15",
-   "Alex English '88",
-   "Alex English '89",
-   "Dirk Nowitzki '16",
-   "Dirk Nowitzki '17"
-  ]
- },
- "cost": [
-  "James Harden '19 attr:ballsec 61 +-1 (r56) IS RELEASED and moved to data/anchors_superseded.json with the note. He now reads 56, what the formula gives. His OFF pin (95 +-1, r89) still stands and still passes at 96.",
-  "Russell Westbrook '17 has NO ballsec pin — checked; nothing to release there. His OFF pin (91 +-1, r89) stands and holds at 91 even though his ballsec falls 61 -> 54.",
-  "THE SUBJECT LANDED AT 60, THE TOP EDGE OF 56 +-4. The frontier is set by two OFF anchors, not by this stage: 0.55 puts Michael Jordan '89 OFF at 97 against r102's 99 +-1, and 0.60 puts Domantas Sabonis '21 OFF at 69 against r55's 71 +-1. Michael Jordan '89 was ALREADY reading 98 on origin/main, so there was exactly one point of slack in the whole board. 56 exactly needs one of those pins re-opened — compute_ovr's lane.",
-  "The OFF half of his ruling ('more around 85') is NOT landed here. Westbrook '15 reads OFF 89 after this change (was 90). The remaining 4 points are the next lane's round.",
-  "ballsec now moves on 7,911 of 10,000 cards (3,549 down, 4,362 up, max 7 either way). Any later round that touches ballsec inherits a board where the raw TOV% leg carries up to 0.54 rather than 0.45."
- ],
- "notes": [
-  "THE DEFECT: TOV% is ALREADY turnovers per play used, and Padj divides it by usage + 0.8*AST% a second time. At USG 38.4 / AST% 47 the allowance nearly doubles the denominator, so Westbrook '15 sits on the 1.2nd percentile of 2015's adjusted rate while turning it over 4.4 times a night.",
-  "MEASURED, the whole argument in one line: on the adjusted leg Westbrook '15 reads 0.012 and Michael Jordan '89 reads 0.005 — the leg cannot tell them apart. On the RAW leg they read 0.653 and 0.250. Only the raw leg carries the fact his ruling names, so the raw leg's ceiling is what moves.",
-  "THE FLOOR DID NOT MOVE. At credit = 1 (AST/TOV >= 4.0) the raw weight is 0.54 - 0.29 = 0.25, exactly recal_79's number. John Stockton '90 reads 62 -> 62, byte-identical. Chris Paul '09 82 -> 82.",
-  "REJECTED (a): the raw leg re-read as turnovers per 100 POSSESSIONS, the literal '4.4 a game'. Reaches Westbrook 54 but is not usage-relative at all, so it charges every man who touches the ball — Michael Jordan '88 95 -> 65, and the ballsec top 12 becomes low-usage spot-up shooters (Novak, Bonner, Kerr, Trent).",
-  "REJECTED (b): the same substitution inside Padj's numerator (tov/100 over the responsibility denominator, one division instead of two). 17 anchors fail, Michael Jordan '88 ballsec 92 among them.",
-  "REJECTED (c): shrinking the 0.8 assist coefficient, the axis recal_108 swept. At 0.30 Westbrook only reaches 64 and John Stockton '90 falls 62 -> 41; at 0.00 he reaches 58 and Stockton falls to 17, Jason Kidd '99 55 -> 24, Magic Johnson '89 64 -> 35.",
-  "REJECTED (d) without a run, on the measurement: a cap on how far the allowance may improve a man's raw reading dies the same way — the passers' raw-minus-adjusted gaps are LARGER than Westbrook's, Stockton +0.799, Magic +0.771, Jason Kidd +0.683 against Westbrook's +0.640.",
-  "FOOTPRINT beyond ballsec: o_ovr moves on 1,498 cards and ovr on 832, never by more than 1 point either way. d_ovr moves on ZERO cards."
- ]
 }

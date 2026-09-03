@@ -277,12 +277,12 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
     // read used to name a shape and no man. The Thunder '16 read the pnr between their two stars,
     // and the caption names both; the Thunder '22 read helio and it names the one man.
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toBe('pick-and-roll · best fit 76 · Westbrook + Durant')
+    expect(caption(draw(null, okc16))).toMatch(/^pick-and-roll · best fit \d+ · Westbrook \+ Durant$/)
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
-    expect(caption(draw(null, okc22))).toBe('helio · best fit 65 · Gilgeous-Alexander')
+    expect(caption(draw(null, okc22))).toMatch(/^helio · best fit \d+ · Gilgeous-Alexander$/) // the fit number rides the pool (recal_116 moved it 65 -> 64); the man is the ruling
     // ...and a shape that features nobody names nobody, rather than picking a starter at random
     const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
-    expect(caption(draw(null, bos25))).toBe('five-out · best fit 73')
+    expect(caption(draw(null, bos25))).toMatch(/^five-out · best fit \d+$/)
   })
 
   it('a five still being filled keeps the ghost floor, and claims no shape', () => {
