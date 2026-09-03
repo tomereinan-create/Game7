@@ -1,0 +1,285 @@
+{
+  "round": 112,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "I think in general eff is getting undervalued. 17pgg on 68 ts(on a bad era). Has to show mid to high 60's at least. Even low 70's",
+  "title": "THE EFFICIENT INTERIOR SCORER — the mirror of recal_64's off-ball floor, for the man whose efficiency comes from inside instead of from the arc",
+  "subject": "Cedric Maxwell '80",
+  "scale": "off",
+  "target": 67,
+  "tol": 4,
+  "before": 55,
+  "after": 67,
+  "pipeline_version": 112,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_E_LO, EF_E_HI = 85\\.0, 99\\.0",
+      "label": "THE CLAIM IS ABOUT ELITE CONVERSION — the efficiency gate",
+      "note": "not about being adequate; full credit only at the top of the scale"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_V_LO, EF_V_HI = 25\\.0, 55\\.0",
+      "label": "AT LOW USAGE — recal_64's own idea, and what makes every star unreachable",
+      "note": "LeBron '13 (volume 97), SGA '25 (98), Giannis '25 (98), Jokic '25 (89) are all at gate 0.00"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_PV_LO, EF_PV_HI = 40\\.0, 70\\.0",
+      "label": "AND NOT A PASSER — the gate that makes this DISJOINT from recal_109",
+      "note": "109 needs playvol >= 80, this needs <= 70; no card takes both and dropping either leaves the other untouched"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_3P_LO, EF_3P_HI = 40\\.0, 68\\.0",
+      "label": "THE MIRROR OF recal_64 — its floor is gated `3pt >= 68` for the low-usage SHOOTER",
+      "note": "without this gate Kyle Korver '15 and Steve Kerr '96, r64's own named cards, both leave their bands"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_ef = 0\\.14 \\* a\\['efficiency'\\] \\* _ee \\* _ev \\* _ep \\* _e3",
+      "label": "the term itself, one size",
+      "note": "every anchor holds across 0.10 to 0.20; 0.14 lands the middle of his stated range"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol",
+      "label": "recal_89's LOCKED DIAL STATE — the efficiency and volume weights are UNTOUCHED",
+      "note": "0.11 and 0.26 stand; his own lever was measured and breaks 25 anchors, so the round adds a term instead"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['3pt'\\] >= 68 and a\\['volume'\\] < 55:",
+      "label": "recal_64's off-ball floor, untouched — the term this one mirrors",
+      "note": "3pt >= 68 there, 3pt <= 68 here: the two split the low-usage efficient class between them"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.74,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — crash def glass went shallow on its blind edge",
+      "note": ".54 -> .74 (blind -0.23 against the -0.30 ceiling); chosen at the point of greatest margin"
+    },
+    {
+      "file": "tests/engine.test.ts",
+      "pattern": "near\\(\"Rudy Gobert '19\", 64, 89\\)",
+      "label": "THE ENGINE TEST SPEC, re-based — the first O anchor in that list ever to move",
+      "note": "54 -> 64, with the round and the reason recorded beside it, as recal_67/92/101 did for the D anchors"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "THE CARD THAT FORCED THE THIRD GATE. efficiency 94 at volume 10 and playvol 40 — he passes the first three gates completely. Without the 3pt gate he takes the term and leaves his recal_89 pin; with it he moves by ZERO, because his efficiency comes from the arc and recal_64's floor already pays him for it"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "the same, and recal_64's other named card: efficiency 90, volume 8, 3pt 93 — unmoved"
+    },
+    {
+      "card": "John Stockton '96",
+      "scale": "off",
+      "op": "~",
+      "value": 89,
+      "tol": 1,
+      "label": "efficiency 99 at volume 22 — he passes the efficiency and volume gates outright, and is excluded by playvol 99. recal_109 pays him; this term does not, and the two cannot both reach a card"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "the same: recal_109's subject, playvol 97, untouched here"
+    },
+    {
+      "card": "Cedric Maxwell '81",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 2,
+      "label": "the same man's next season, 54 -> 66: efficiency 98 at volume 25. The round is about the archetype, not the season"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 2,
+      "label": "efficiency 97 at volume 27 and playvol 22: 54 -> 64. His recal_62 DEF anchor is on the other scale and untouched"
+    },
+    {
+      "card": "DeAndre Jordan '17",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 2,
+      "label": "efficiency 99 at volume 16 — the purest case in the pool, 48 -> 61"
+    },
+    {
+      "card": "Clint Capela '18",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "efficiency 91 at volume 45 sits part-way up both gates: 60 -> 62, and his recal_52 pin (61 +-1) holds"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "efficiency 79 is BELOW the gate's foot: unmoved, and his recal_51 pin holds"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "recal_107's card at efficiency 81, also below the foot: unmoved, so the two rounds do not stack on him"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "efficiency 88 but volume 98: gate 0.00, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "efficiency 98 and volume 97: the highest-efficiency star on the board, and the volume gate keeps him at zero"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "def",
+      "op": "~",
+      "value": 71,
+      "tol": 1,
+      "label": "DEF moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Cedric Maxwell '80",
+      "label": "the summit still reads far above him"
+    },
+    {
+      "scale": "off",
+      "above": "Cedric Maxwell '80",
+      "below": "Rudy Gobert '19",
+      "label": "the man ruled on reads above the other elite-efficiency low-usage big"
+    },
+    {
+      "scale": "off",
+      "above": "Cedric Maxwell '80",
+      "below": "Cedric Maxwell '81",
+      "label": "his own season order is preserved: the better year reads higher"
+    },
+    {
+      "scale": "off",
+      "above": "Steve Nash '05",
+      "below": "Cedric Maxwell '80",
+      "label": "recal_109's passer still reads above recal_112's finisher, and neither term reaches the other's card"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 154,
+    "max_abs": 13,
+    "top": [
+      [
+        "Nenê '10",
+        57,
+        70
+      ],
+      [
+        "James Donaldson '85",
+        41,
+        54
+      ],
+      [
+        "DeAndre Jordan '17",
+        48,
+        61
+      ],
+      [
+        "DeAndre Jordan '16",
+        47,
+        60
+      ],
+      [
+        "Artis Gilmore '87",
+        47,
+        60
+      ],
+      [
+        "Cedric Maxwell '80",
+        55,
+        67
+      ],
+      [
+        "Rudy Gobert '25",
+        46,
+        58
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "HIS OWN LEVER WAS TRIED FIRST AND IT CANNOT BE DONE, which is the finding this round rests on. \"In general eff is getting undervalued\" points straight at the efficiency weight, so that was measured first: weight shifted from volume to efficiency with the total held constant, per recal_89's rule that a constant total owes no multiplier compensation. 0.11 -> 0.12 is worth ONE point to Maxwell and moves 2,527 cards. 0.13 already breaks Moses Malone '82. 0.15 breaks five. Reaching the BOTTOM of his band needs efficiency 0.25 against volume 0.12 - twenty-five anchors broken and 9,064 cards moved. It is the same wall recal_91 and recal_98 hit from the other side: the efficiency of a low-usage man cannot be paid through a weight that every high-usage anchor also rides.",
+    "THREE VARIANTS WERE TRIED, WHICH IS THE CAP, and each failure named the next gate. (1) The global efficiency weight: 25 anchors. (2) A low-usage efficiency term gated on efficiency, volume and playvol: it reaches Maxwell cleanly and leaves every star and every passer alone, but it breaks KYLE KORVER '15 and STEVE KERR '96 - efficiency 94 and 90 at volume 10 and 8, both pinned by recal_89, both of whom pass the first three gates completely. (3) The same term with a 3pt gate mirroring recal_64: zero anchors broken at every size from 0.10 to 0.20.",
+    "WHY THE 3PT GATE IS THE RIGHT ANSWER RATHER THAN A FOURTH FUDGE. recal_64's off-ball floor is gated `3pt >= 68` and exists precisely for the low-usage man whose efficiency comes from the arc - its own named cards are Korver '15 and Kerr '96. This term is gated the other way, `3pt` fading out from 40 to 68, and exists for the low-usage man whose efficiency comes from the rim and the line. Between them the two split the efficient low-usage class along the line recal_64 itself drew. The gate is not tuned until one card is caught: it is r64's own number, used in the opposite direction.",
+    "THE SIZE IS 0.14 AND IT IS THE ONLY ONE TRIED. Every anchor holds from 0.10 to 0.20, so the size was chosen against his sentence rather than against a constraint: \"mid to high 60's at least. Even low 70's\". 0.14 puts Maxwell '80 on 67 - the middle of \"mid to high 60s\" - with 0.16 giving 69 and 0.20 giving 72 if he wants the top of his range.",
+    "WHAT ELSE THE TERM FINDS, by the gates and not by a name: Nenê '10 57 -> 70, James Donaldson '85 41 -> 54, DeAndre Jordan '15/'16/'17 up 11 to 13, Artis Gilmore '87 47 -> 60, and four Rudy Gobert seasons. Every one is an elite-efficiency, low-usage interior scorer - the class the file had no channel for. None of them is anchored.",
+    "INDEPENDENCE FROM recal_109, as instructed. The two terms are DISJOINT BY CONSTRUCTION: 109's elite passer requires playvol >= 80 and this one requires playvol <= 70, so no card can take both and dropping either leaves the other exactly as it is. John Stockton '96 (playvol 99, efficiency 99, volume 22) passes this term's efficiency and volume gates outright and is excluded only by playvol - he moves by zero here.",
+    "THE ROUND NUMBER IS 112 AND THE PIPELINE VERSION IS LEFT ALONE, per the doctrine of 2026-09-03. PIPELINE_VERSION stays where main left it and this file's `pipeline_version` carries the round number for the integrator to stamp.",
+    "ONE TAX RE-RATIFIED: crash def glass went shallow on its BLIND edge (-0.23 against the -0.30 ceiling) and was re-ratified through the harness .54 -> .74, chosen at the point of greatest margin (blind -0.37, oracle +0.58) inside a feasible interval of about .62 to 1.02. The other eight bands held.",
+    "THE ENGINE TEST SPEC HAD TO BE RE-BASED, and it is the first O anchor in that list ever to move. tests/engine.test.ts carries a recal batch 2 spec list at +-6, and RUDY GOBERT 19 sits in it at O54. He is the same card as Maxwell on every input this term reads - efficiency 97 against 99, volume 27 against 27, playvol 22 against 24, 3pt 2 against 7 - so he moves with him, 54 -> 64. NO SIZE SATISFIES BOTH: Maxwell reaches the floor of his band (64) at K = 0.10, where Gobert is already 61, one past the spec tolerance; at K = 0.09 Gobert is exactly on 60 and Maxwell is 63, still short. The two differ only on mid-range (33 against 6) and free-throw stroke (79 against 65), neither of which the term reads, and a gate on either would exist purely to exclude one card. So the spec was re-based to the measured card rather than the ruling being bent - the same move recal_67, recal_92 and recal_101 each made for D anchors in the same list, with the reason written beside it. FLAGGED because it is the O side of that list, which had not moved since recal batch 2."
+  ],
+  "notes": [
+    "THE CARD. Cedric Maxwell '80: 16.9 points on .679 true shooting in a league that shot .526, at 17.7% usage, 34.3 minutes a game, BPM 3.5. His efficiency attribute is 99 - the top of the scale - and he printed OFF 55, because the standard path pays efficiency 0.11 and volume 0.26, and his volume is 27.",
+    "WHY THE FILE HAD NO CHANNEL FOR HIM. Every low-usage channel in o_score is for a shooter or a passer: recal_64's off-ball floor is gated `3pt >= 68`, recal_91's stretch-big branch sits inside it, recal_109's elite passer needs playvol >= 80, recal_55's hub needs playvol >= 60, recal_107's two-level big needs a real mid-range. A man who takes few shots, makes almost all of them at the rim, and draws fouls at the top of the scale passes none of those gates.",
+    "MEASURED BEFORE APPLYING, on the whole pool: 154 of 10,000 cards move on OFF, every one of them UP, max +13, mean +4.46. DEF moves on ZERO cards and no attribute moves. OVR follows on 126. The top 12 by OFF is identical name for name, and the top 50 by OVR has no entrant, no leaver and no rank flip. All 119 anchors pass.",
+    "THE TWO CARDS THAT PROVE THE GATES WORK. Kyle Korver '15 is efficiency 94 at volume 10 and playvol 40 - he clears the efficiency, volume and playvol gates outright, and only the 3pt gate stops him. John Stockton '96 is efficiency 99 at volume 22 - he clears efficiency, volume and 3pt, and only the playvol gate stops him. Each is held out by exactly one gate, and each already has a channel of his own."
+  ]
+}

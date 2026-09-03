@@ -240,7 +240,18 @@ describe('player data (stats-only doctrine)', () => {
     // r51 TOOK IT: the paint bonus now ramps on volume (zero below 70, full at 80+), and Gobert at
     // volume 27 is the man the old comment named. His bonus is gone entirely: 61 -> 54. The great
     // interior scorers (volume 85+) sit on vol_f = 1.0 and never felt it.
-    near("Rudy Gobert '19", 54, 89)
+    // recal_112 RE-BASES THE O ANCHOR, 54 -> 64, and it is the FIRST time an O anchor in this list
+    // has moved (recal_67, recal_92 and recal_101 each re-based D anchors here; the O side had been
+    // untouched since recal batch 2). His ruling, verbatim: "I think in general eff is getting
+    // undervalued. 17pgg on 68 ts(on a bad era). Has to show mid to high 60's at least. Even low
+    // 70's" — the subject is Cedric Maxwell '80 and the round pays elite efficiency at low usage.
+    // Gobert '19 is the same card on every input the term reads: efficiency 97 against Maxwell's 99,
+    // volume 27 against 27, playvol 22 against 24, 3pt 2 against 7. They differ only on mid-range
+    // (6 against 33) and free-throw stroke (65 against 79), neither of which the term reads, and a
+    // gate on either would exist only to exclude one card. So no size of the term satisfies both
+    // this spec and the ruling: Maxwell reaches the floor of his band at K = 0.10, where Gobert is
+    // already 61. The spec is re-based to the measured card rather than the ruling being bent.
+    near("Rudy Gobert '19", 64, 89)
     // This anchor has now been round-tripped by two rulings. Audit ruling 2 moved perdef to the Overall
     // slice and he read 35; recal_20 moves it BACK to shots from 15 feet out — the shots a perimeter
     // defender is responsible for — and he reads 43 on perdef 42. Ruling 2's "Trae <= 40" acceptance is

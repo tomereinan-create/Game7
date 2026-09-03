@@ -1,5 +1,14 @@
 [
  {
+  "card": "Cedric Maxwell '80",
+  "scale": "off",
+  "target": 67,
+  "tol": 4,
+  "round": 112,
+  "ruling": "I think in general eff is getting undervalued. 17pgg on 68 ts(on a bad era). Has to show mid to high 60's at least. Even low 70's",
+  "note": "the efficient interior scorer, the mirror of recal_64's off-ball floor: elite efficiency paid at low usage, gated on efficiency 85->99, volume 55->25, playvol 70->40 and 3pt 68->40. 55 -> 67, the middle of the \"mid to high 60's\" his ruling states. His own lever, the global efficiency weight, was measured first and breaks 25 anchors before reaching the band."
+ },
+ {
   "card": "Steve Nash '05",
   "scale": "off",
   "target": 85,
