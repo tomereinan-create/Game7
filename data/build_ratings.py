@@ -816,7 +816,33 @@ for yr in sorted(rows_by):
         # sits at AST/TOV 1.91 and therefore took credit 0.16 under the 1.5 floor and breached the
         # round's <=2 red line; at 2.0 he takes ZERO and the r56 class is protected as intended.
         _credit = 0.0 if ast_tov is None else max(0.0, min(1.0, (ast_tov - 2.0) / 2.0))
-        _wraw = 0.45 - 0.20 * _credit
+        # recal_116 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone
+        # guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85").
+        # THE CREATION ALLOWANCE WAS DIVIDING THE SAME FACT OUT TWICE. TOV% is already turnovers per
+        # play USED; Padj then divides that by usage + 0.8*AST% a second time. At USG 38.4 / AST% 47
+        # the allowance nearly DOUBLES the denominator, so Westbrook '15 lands on the 1.2nd percentile
+        # of 2015's adjusted rate while turning it over 4.4 times a night — and on that leg he is
+        # indistinguishable from Jordan '89 (0.012 vs 0.005). The adjusted leg cannot tell those two
+        # apart at all; only the raw leg can (0.653 vs 0.250). So the RAW LEG'S CEILING rises,
+        # 0.45 -> 0.54, and the credit ramp deepens with it, 0.20 -> 0.29, which leaves the FLOOR at
+        # 0.25 EXACTLY where recal_79 put it: a passer whose AST/TOV clears 4.0 reads byte-identical,
+        # and the whole move is charged to the man whose assists do not cover his turnovers.
+        # 0.54 IS THE FRONTIER, NOT A CHOSEN NUMBER. Swept 0.52 / 0.53 / 0.54 / 0.545 / 0.55 / 0.60 /
+        # 0.65 / 0.70 / 0.75 with the floor pinned. At 0.55 Jordan '89 OFF reads 97 against r102's
+        # 99 +-1 and at 0.60 Sabonis '21 OFF reads 69 against r55's 71 +-1; 0.545 buys Westbrook
+        # nothing over 0.54. This is the largest step with every standing anchor intact.
+        # THREE OTHER SHAPES WERE MEASURED AND FAIL. (a) The raw leg re-read as turnovers per 100
+        # POSSESSIONS (the literal "4.4 a game") reaches Westbrook 54, but it is not usage-relative at
+        # all, so it charges every man who touches the ball: Jordan '88 95 -> 65 and the ballsec top
+        # 12 becomes low-usage spot-up shooters. (b) The same substitution inside Padj's NUMERATOR
+        # breaks 17 anchors, Jordan '88 ballsec included. (c) Shrinking the 0.8 assist coefficient,
+        # which recal_108 also swept: at 0.30 Westbrook only reaches 64 and Stockton '90 falls
+        # 62 -> 41; at 0.00 he reaches 58 and Stockton falls to 17, Kidd '99 55 -> 24, Magic '89
+        # 64 -> 35. A gap cap on the allowance dies the same way — the passers' raw-minus-adjusted
+        # gaps (Stockton +0.799, Magic +0.771, Kidd +0.683) are LARGER than Westbrook's +0.640.
+        # The allowance is right for the passers it was built for; what was wrong was how loud it
+        # was against the raw fact.
+        _wraw = 0.54 - 0.29 * _credit
         p['attrs'] = dict(
             # mid hardened globally (^1.15): the top barely moves, the 60-85 band compresses a few points
             **{'3pt': sc((p['out']/99)**1.12)}, rim=sc(ex['rim']),

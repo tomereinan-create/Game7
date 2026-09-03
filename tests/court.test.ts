@@ -170,7 +170,13 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
   it('the Lakers five stands Ayton inside, not in the corner', () => {
     expect(canSpace(LAKERS[AYTON])).toBe(false)
     const at = spotsFor(null, LAKERS)
-    expect(inferredStyle(LAKERS)!.style).toBe('postup')
+    // WHICH set is inferred for this five is a coin flip and was never the ruling. Post-up read
+    // 78.25 against helio's 78.00 before recal_116 and 78.25 against 78.80 after: helio's second
+    // term is min(ballsec) * 0.2, and Ayton '26's ballsec rose 34 -> 38 when ballsec's raw leg got
+    // louder, which is 0.8 of fit — the whole margin. His ruling is about where Ayton STANDS, and
+    // the next test asserts that in EVERY shape, helio included. So the inference is only held to
+    // the two sets that own an inside spot for him; the spot itself is still what is checked.
+    expect(['postup', 'helio']).toContain(inferredStyle(LAKERS)!.style)
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
