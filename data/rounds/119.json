@@ -1,0 +1,250 @@
+{
+  "round": 119,
+  "agent": "players-to-team",
+  "status": "declined",
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "title": "A TURNOVER SCORES ZERO HOWEVER GOOD THE SHOOTERS ARE — team_offense gets a possession-loss channel, priced off the five's ball security, and the Celtics '24 rise 12th of 26 to 9th (DECLINED on the 72: no size of the term reaches it, and the frontier is in COST)",
+  "subject": "Celtics '24 (best legal five)",
+  "five": [
+    "Derrick White '24",
+    "Jaylen Brown '24",
+    "Jayson Tatum '24",
+    "Kristaps Porziņģis '24",
+    "Al Horford '24"
+  ],
+  "season": 2024,
+  "scale": "team:offdial",
+  "target": 72,
+  "tol": 4,
+  "before": 55,
+  "after": 56,
+  "pipeline_version": 119,
+  "knobs": [
+    {
+      "file": "data/team_rating.py",
+      "pattern": "OFF \\*= \\(1 - tov/100\\.0\\) / \\(1 - KNOBS\\['TOV_REF'\\]/100\\.0\\)",
+      "label": "THE ROUND'S ONE LINE — the possession-loss channel, a physical multiplier on the whole of OFF",
+      "note": "new: ORtg = (points per scoring chance) x (chances kept), and only the first factor existed"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const tovMult = \\(1 - tov / 100\\) / \\(1 - K\\.TOV_REF / 100\\)",
+      "label": "the same line, port side — 1:1, gated by data/parity_check.py and tests/parity.test.ts"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "wball = sum\\(u2i \\* a\\['ballsec'\\] for u2i, a in zip\\(u2, A\\)\\) / KNOBS\\['TEAM_USG'\\]",
+      "label": "THE PREDICTOR — the five's USAGE-WEIGHTED ball security, chosen on the measurement",
+      "note": "in-season rho with -TOV%: 0.718 usage-weighted · 0.666 plain mean · 0.550 top-2 handlers · 0.278 weakest link"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const wball = u2\\.reduce\\(\\(acc, ui, i\\) => acc \\+ ui \\* A\\[i\\]\\.ballsec, 0\\) / K\\.TEAM_USG",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "tovhat = KNOBS\\['TOV_INT'\\] - KNOBS\\['TOV_SLOPE'\\]\\*wball",
+      "label": "the fitted line: real team TOV% on the five's ball security, OLS over all 1,255 fieldable fives",
+      "note": "TOVhat = 18.10 - 0.0744 x wball; pooled r -0.500, residual sd 1.14 against a raw sd of 1.32"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const tovHat = K\\.TOV_INT - K\\.TOV_SLOPE \\* wball",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "TOV_REF       = 13\\.78,",
+      "label": "the league's own mean TOV% — the channel REDISTRIBUTES around it rather than inflating",
+      "note": "the same treatment recal_110 gave creation with FEED_REF; the mean multiplier is 1.0000 by construction"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "TOV_REF: 13\\.78,",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "TOV_SIZE      = 0\\.45,",
+      "label": "THE SIZE, AND IT IS AN ANCHOR BOUND — the fit wants ~2.0, the pins allow 0.54",
+      "note": "fit peaks at 0.799 at 2.0x and reads 0.789 at 1.0x; 0.45 is the largest size at which every pin holds with margin"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "TOV_SIZE: 0\\.45,",
+      "label": "port side"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "TOV_LO: 9\\.0,",
+      "label": "rails just outside the observed league range (real TOV% spans 9.9 .. 18.7); they never bind, even for a drafted five of five 99-ballsec men"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_TOP = 138\\.4 ",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so gauge105.ts was re-run",
+      "note": "138.53 -> 138.4; the Warriors '17 are still all-time rank 1 of 1,255 on the adjusted index"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_LEVEL_REF = 121\\.8083",
+      "label": "and its reference league",
+      "note": "121.8 -> 121.8083; the 47-season table moved by hundredths, the level is held by TOV_REF's centring"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.58",
+      "label": "THE DEF SIDE IS UNTOUCHED — 0 of 1,255 DEF dials moved and drtgRef is bit-identical on all 1,255",
+      "note": "recal_94's constant, unchanged; DEF fit +0.772 before and after"
+    },
+    {
+      "file": "tests/offense.test.ts",
+      "pattern": "toBeLessThanOrEqual\\(9\\.5\\)",
+      "label": "BAND RE-RATIFIED — GOAT5 - BALANCED 7.9 -> 9.25, and the whole 1.35 is this round's term",
+      "note": "GOAT5's usage-weighted ball security is 81.2 against BALANCED's 59.0 (Korver 26, Gobert 25); the fifth re-pin of this line"
+    }
+  ],
+  "expect": [
+    {
+      "scale": "team:off",
+      "op": "==",
+      "value": 58,
+      "label": "THE SUBJECT on ratings100's older display int too: 56 -> 58, offRaw 126.10 -> 126.64"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 68,
+      "tol": 3,
+      "label": "recal_105's BULLS '96 OFF PIN HELD: 68 -> 70, error +2 of a +-3 tolerance. This is the pin that sizes the knob — at 0.70x they read 72 and it fails"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 84,
+      "tol": 3,
+      "label": "and recal_105's Bulls '96 OVR pin: 84 -> 85 (the OFF half rose 68 -> 70 and the DEF half held at 99), error +1 of a +-3 tolerance"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_94's DEF SUMMIT HELD, tol 0 — the DEF dial moved on 0 of 1,255 fives this round"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_71's OFF SUMMIT HELD, tol 0 — and still all-time rank 1 of 1,255 on the adjusted index, 0.105 points clear of the Rockets '18. That margin is what sized TOV_SIZE"
+    },
+    {
+      "five": [
+        "Ron Harper '00",
+        "Kobe Bryant '00",
+        "Glen Rice '00",
+        "Robert Horry '00",
+        "Shaquille O'Neal '00"
+      ],
+      "season": 2000,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 64,
+      "tol": 4,
+      "label": "recal_110's LAKERS '00 PIN HELD: 64 -> 65, and their season OFF rank is still 2nd of 28"
+    },
+    {
+      "card": "Jayson Tatum '24",
+      "scale": "off",
+      "op": "==",
+      "value": 86,
+      "label": "NO CARD MOVED on o_ovr / d_ovr / ovr / talent / any attribute — byte-identical on all 10,000, asserted against the pre-round file. `marg` did move; see COST"
+    },
+    {
+      "card": "Al Horford '24",
+      "scale": "off",
+      "op": "==",
+      "value": 63,
+      "label": "the subject's fifth man, unchanged as a card: the round is about how the five combines, never about the man"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "DECLINED ON THE NUMBER, AND THE FRONTIER IS THE ROUND'S REAL OUTPUT. The target was team:offdial 72 +-4 (i.e. >= 68). The Celtics '24 read 55 and read 56. Every size of this channel, measured on all 1,255 fives with the OFF gauge re-frozen at each size exactly as scripts/gauge105.ts freezes it — size · fit · BOS'24 dial and rank · CHI'96 · GSW'17 · HOU'18 · LAL'00 · what breaks: 0.00 · .761 · 55 (12/26) · 68 · 99 · 97 · 64 · nothing || 0.30 · .771 · 55 (10/26) · 69 · 99 · 98 · 65 · nothing || 0.45 SHIPPED · .777 · 56 (9/26) · 70 · 99 · 99 · 65 · nothing || 0.54 · .780 · 56 (9/26) · 71 · 99 · 99 · 65 · nothing, but the Bulls sit ON the 68+3 rail and the summit margin is 0.005 || 0.55 · .780 · 56 (9/26) · 71 · 99 · 99 · 66 · THE ROCKETS '18 PASS THE WARRIORS '17 || 0.70 · .783 · 57 (9/26) · 72 · 99 · 99 · 66 · + the BULLS '96 LEAVE 68+-3 || 1.00 · .789 · 58 (8/26) · 74 · 99 · 99 · 67 · both, and 4 fives clamp at 99 || 1.30 · .795 · 59 (8/26) · 76 · 99 · 99 · 68 · + the Magic '95 and Celtics '88 pass the Warriors too || 2.00 · .799 (the fit maximum) · 61 (7/26) · 80 · 99 · 99 · 70 · + the Bulls '96 OVR leaves 84+-3 || 3.00 · .796 · 65 (6/26) · 87 · 99 · 99 · 73 · 9 fives clamp at 99. THE TARGET IS NOT ON THIS CURVE AT ALL: at SEVEN TIMES the shipped size, with six pins broken and the all-time board destroyed, the Celtics reach 65. 72 needs them 2nd or 3rd of 2024, and possessions do not carry them there.",
+    "WHAT THE 72 WOULD ACTUALLY COST, if he wants to re-rule. The binding pin is not the Bulls: it is recal_71's OFF SUMMIT. The Warriors '17 and the Rockets '18 were already within 0.61 adjusted points of each other before this round, and any possession channel closes that (the Rockets kept the ball better). At 0.55x the Rockets pass them and 'the 2017 Warriors are the 99' stops being true — the gauge would still PRINT 99 for the Warriors, because OFF_TOP is pinned to their own adjusted value, which is exactly why this has to be reported rather than left to the anchor file to catch. The second pin, the Bulls '96 68+-3, breaks at 0.70x. Both are HIS rulings and neither is mine to move.",
+    "THE CEILING OF THE WHOLE IDEA, measured. An ORACLE channel that reads each team's REAL turnover rate instead of predicting it from the cards takes the within-season fit to 0.824 at 1.0x and 0.833 at 2.0x. The card-based channel reaches 0.789 at 1.0x. So the cards carry about 45% of the available possession signal, and the missing half is not a knob — it is that a five's ball security predicts its team's turnover rate at rho 0.718 within a season and no better. Even the ORACLE at 1.0x puts the Celtics '24 nowhere near 72.",
+    "THE OFF GAUGE WAS RE-FROZEN and the DEF BLOCK WAS NOT TOUCHED. Every one of the 1,255 fives' offRaw moved (the channel multiplies all of OFF), so scripts/gauge105.ts was re-run per its own instruction — 'Constants are FROZEN from the full 1,255-five wheel sweep; re-run it after any engine change that moves offRaw'. OFF_MIN 102.4 -> 101.71, OFF_MID 121.69 -> 121.76, OFF_TOP 138.53 -> 138.4, OFF_LEVEL_REF 121.8 -> 121.8083, and the 47-season OFF_LEVEL table by hundredths. DEF_WORST / DEF_MID / DEF_TOP and DEF_LEVEL are byte-identical, drtgRef is bit-identical on all 1,255 fives, and 0 DEF dials moved.",
+    "TWO FIVES NOW READ OFF 99 WHERE ONE DID. The Rockets '18 (real ORtg 1st of 1993-2026 in their own year, and the second-best adjusted offence on the board before this round at 97) round up to 99 at 0.105 adjusted points behind the Warriors '17. Nothing CLAMPS — the Rockets are genuinely below the summit — but recal_110's 'the only five of 1,255 that reads 99' no longer holds, and the ORDER does. If a later round moves offRaw again, CHECK THAT ORDER FIRST: 0.105 adjusted points is the whole margin, and it is why TOV_SIZE is 0.45 and not the 0.54 the anchors would literally allow.",
+    "marg MOVED ON 7,093 OF 10,000 CARDS (max 6, mean 1.26) because compute_ovr.py exec's team_rating.py's matchup_margin for it. o_ovr, d_ovr, ovr, talent and every one of the 17 attributes are byte-identical to origin/main on all 10,000 — asserted against the pre-round file, not assumed — because recal_37/40 took marg out of OVR. This is a far gentler marg move than recal_110's (max 46, mean 6.2): the channel's whole range is a ~2% multiplier.",
+    "THE CAMPAIGN LADDER WAS REGENERATED (npm run opponents). All 30 LEAGUE rounds in src/data/opponents.json are unchanged, in the same order, with the same opponents. src/data/campaigns.json's later tiers reshuffle by a level or two (53 of 150 levels swap neighbours — the Champions tier is sorted by net rating and offence moved), exactly as recal_110's regeneration did; tests/campaigns.test.ts passes on the new file.",
+    "REJECTED, each measured on all 1,255 fives. (1) A SECOND PREDICTOR: playmaking volume on the residual of the ball-security fit reads r +0.032, and offRaw itself +0.084 — neither earns a term. (2) THE WITHIN-SEASON (fixed-effects) SLOPE instead of the pooled one: it is 1.12x the pooled slope, so it is the same knob under another name and it buys 0.12 of size against a budget of 0.54. (3) USAGE-SQUARED WEIGHTING of ball security: marginally better in-season (rho 0.726 vs 0.718) and worse pooled (0.485 vs 0.500), and it breaks the codebase's own convention that every team aggregate is weighted by reconciled usage. (4) WEIGHTING BY THE WORST BALL-HANDLER, the intuitive 'weak link' form: rho 0.278, by far the worst of the eight forms tried — turnovers are not a weakest-link property, they are a volume-weighted one."
+  ],
+  "notes": [
+    "THE DIAGNOSIS, in one line: everything in team_offense priced what a five does WITH a possession and nothing priced whether it KEEPS one. Across all 1,255 fieldable fives, real ORtg correlates +0.548 with -TOV% while offRaw correlated +0.256, and the rank residual ran -0.40 with TOV%. The Celtics '24 are the case that shows it: real ORtg 123.2 (1st of 30), real TS 1st, TOV% 10.8 (2nd), MOV +11.3 (1st), and the engine read them 12th of the 26 fieldable 2024 fives off a usage-weighted TS of .6077 that is EXACTLY RIGHT. The missing number was possessions.",
+    "THE TERM. wball = the five's usage-weighted ball security. TOVhat = 18.10 - 0.0744 x wball, the OLS of real team TOV% on wball over all 1,255 fives. tov = TOV_REF + TOV_SIZE x (TOVhat - TOV_REF), railed to 9..19. OFF x= (1 - tov/100) / (1 - TOV_REF/100). Centring on the league's own mean turnover rate is the same move recal_110 made with FEED_REF: the mean multiplier is 1.0000 by construction, so the channel redistributes and does not inflate. It is placed after the free throws and before the glass, and multiplication commutes, so the order is a reading aid rather than a choice.",
+    "FIT, the round's justification: the within-season Spearman of offRaw against real ORtg over the 47 seasons of the 1,255 fieldable team-seasons goes +0.761 -> +0.777. Per era: 80s .740 -> .748 · 90s .775 -> .786 · 00s .741 -> .764 · 10s .804 -> .817 · 20s .738 -> .765. Up in every era, second only to recal_110 in the ledger, and it is up MOST in the 2000s and 2020s, the two eras where turnover rate separates teams most. DEF is untouched at +0.772 and 0 of 1,255 DEF dials moved.",
+    "TEN TEAMS, OFF/DEF/OVR before -> after with the engine's offRaw rank in its own season (real ORtg rank in brackets). Celtics '24 55/65/60 -> 56/65/60, rank 12 -> 9 of 26 (real 1) · Celtics '23 50/59/54 -> 52/59/56, 15 -> 15 of 29 (real 2) · Celtics '25 51/65/58 -> 53/65/59, 14 -> 12 of 26 (real 2) · Knicks '23 46/49/48 -> 48/49/48, 20 -> 17 of 29 (real 3) · Kings '05 50/58/54 -> 51/58/54, 19 -> 15 of 30 (real 3) · Celtics '08 71/80/76 -> 72/80/76, 3 -> 2 of 30 (real 9) · Bulls '96 68/99/84 -> 70/99/84, 4 -> 4 of 29 (real 1) · Warriors '17 99/72/86 -> 99/72/86, 1 -> 1 of 30 (real 1) · Lakers '00 64/77/70 -> 65/77/71, 2 -> 2 of 28 (real 5) · Rockets '18 97/61/79 -> 99/61/80, 1 -> 1 of 29 (real 1) · Nuggets '24 76/46/61 -> 78/46/62, 1 -> 1 of 26 (real 5).",
+    "THE FOUR TEAMS THE SCAN NAMED ALL MOVE THE RIGHT WAY AND NONE OF THEM MOVES ENOUGH. Celtics '23 15th (real 2nd), Celtics '25 12th (real 2nd), Knicks '23 17th (real 3rd), Kings '05 15th (real 3rd). The Celtics '08 — the scan's counter-example, real TOV% 29th of 30 and engine 3rd against a real 9th — go the OTHER way as they should, but only to 2nd, because their ball security (60.99, 24th of 30) is nowhere near as bad as their real turnover rate was. That asymmetry IS the 45% ceiling: the cards under-state both tails.",
+    "THE FOOTPRINT: offRaw moved on all 1,255 fives, the OFF dial on 851 of them, max +4 / -3. The biggest risers are the ball-secure fives whose real turnover rate really was low — Magic '95 91 -> 95 (real TOV 6th, real ORtg 1st), Magic '96 85 -> 89 (real TOV 2nd), Mavericks '03 70 -> 74 (real TOV 1st), Nuggets '82-'84 +3 each (real TOV 2nd-5th). The biggest fallers are the loose ones — Rockets '15 56 -> 53 (real TOV 27th of 30), Bucks '15 48 -> 45 (28th), Timberwolves '23-'25 -2 each (19th-27th). Every one of the sixteen largest movers moves in the direction its real turnover rate says.",
+    "DECADE MEANS after, OFF / DEF / OVR: 80s 51.1 / 51.0 / 51.1 · 90s 51.4 / 51.4 / 51.4 · 00s 51.1 / 51.4 / 51.2 · 10s 51.2 / 51.2 / 51.2 · 20s 51.2 / 50.7 / 50.9. recal_105's era recentring survives intact on both halves — the channel is centred, so it moves no era's level.",
+    "THE ALL-TIME OFF TOP 10 IS NOW TEN REAL LEAGUE-BEST-OR-NEAR-BEST OFFENCES: Warriors '17 99 (real 1st), Rockets '18 99 (1st), Celtics '88 97 (1st), Magic '95 95 (1st), Jazz '97 94 (2nd), Celtics '87 92 (3rd), Jazz '98 90 (1st), Warriors '16 89 (1st), Magic '96 89 (3rd), Suns '07 88 (1st). Seven of the ten led their own league and the other three were 2nd or 3rd.",
+    "ALL-TIME TOP 10 BY TEAM OVR after, with real MOV: Jazz '97 93 (+8.8) · Jazz '98 91 (+6.5) · Warriors '16 90 (+10.8) · Warriors '15 87 (+10.1) · Jazz '99 86 (+6.5) · Warriors '17 86 (+11.6) · Clippers '20 85 (+6.4) · Bulls '96 85 (+12.2) · 76ers '83 84 (+7.7) · Spurs '07 84 (+8.4). The Bulls '96 rise 84 -> 85 and into the top 10.",
+    "2026 by team OVR after: OKC 73 · DET 65 · HOU 64 · LAC 62 · DEN 61 · NYK 61 · BOS 59 · LAL 59. Boston '26 reads OFF 56 — the same reading as their '24 five, and for the same reason.",
+    "PARITY ON THE SUBJECT FIVE, read rather than claimed: the Celtics '24 five through data/parity_check.py (which exec's data/team_rating.py) and through src/engine/offense.ts, against the Nuggets '24 — off 126.643244 / 126.643244, drtg 109.654432 / 109.654432, steals 27.131636 / 27.131636, net 17.639971 / 17.639971, margin -6.130373 / -6.130373. Worst |python - port| across all ten figures: 8.5e-14. tests/parity.test.ts's 50 random pairs: worst disagreement 0.0000.",
+    "THE SUBJECT'S DECOMPOSITION after: base 121.22 (usage-reconciled, repriced, creation-amplified, fit -0.26) + 2.91 free throws, x 1.0043 possessions kept, x 1.0159 second chances = offRaw 126.64. The new factor is worth +0.54 index points to Boston and -0.60 to the loosest fives on the 2024 board; the whole channel spans about 2% of OFF at the shipped size."
+  ]
+}

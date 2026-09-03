@@ -59,6 +59,16 @@ export const KNOBS = {
   MISS_TS: 0.6, // normalization anchor: a wTS-0.60 team prices its glass at exactly 1.0
   MISS_LO: 0.8,
   MISS_HI: 1.2,
+  // recal_119 — POSSESSION LOSS. TOVhat = TOV_INT - TOV_SLOPE × wball, the OLS of every fieldable
+  // five's real team TOV% on its usage-weighted ball security (1,255 fives, pooled r -0.500,
+  // within-season rho -0.718). TOV_REF is the league's own mean, so the channel redistributes
+  // around it exactly as FEED_REF does for creation. Mirrors data/team_rating.py (parity test).
+  TOV_INT: 18.1, // % turnovers at ball security 0
+  TOV_SLOPE: 0.0744, // % turnovers shed per point of usage-weighted ball security
+  TOV_REF: 13.78, // the league's own mean TOV% over all 1,255 fives — the pivot
+  TOV_SIZE: 0.45, // HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen
+  TOV_LO: 9.0, // rails, just outside the observed league range (9.9 .. 18.7)
+  TOV_HI: 19.0,
   // recal_64 (design-side "62"): FIT PAYS. The reconciliation channels were worth ~+-1.5 team
   // offense; widened so perfect fit gains up to +4 and friction loses up to -4. WIDEN calibrated
   // to the round's named target (OKC '26 top-3 among 2026 team OFF), CAP is the spec's bound.
@@ -85,6 +95,8 @@ export interface Offense {
   /** Σ usage × TS × 2, before fouls and the glass (display). */
   base: number
   ftPts: number
+  /** recal_119: the share of possessions the five keeps, priced off its ball security. */
+  tovMult: number
   orbMult: number
 }
 
@@ -193,6 +205,29 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
   // fouldraw × FT: manufactured points
   const ftPts = u2.reduce((acc, ui, i) => acc + ui * (A[i].fouldraw / 99) * (A[i].ft / 100), 0) * K.FT_POINTS
   let off = base + ftPts
+  /**
+   * POSSESSION LOSS — recal_119, his ruling: "For the scout, I agree with 3,4,5,6,7" (item 7:
+   * "Boston Celtics '24 (best five) team OFF 55 -> near 72"). THE CHANNEL DID NOT EXIST. Everything
+   * above prices what a five does WITH a possession — usage reconciliation, repriced TS, creation,
+   * the interactions, the free throws — and nothing priced whether the five KEEPS the possession. A
+   * trip that ends in a turnover scores zero however efficient the shooters are, and real offensive
+   * ratings know it: across all 1,255 fieldable fives real ORtg correlates +0.548 with -TOV% while
+   * offRaw correlated only +0.256. The Celtics '24 are the case that showed it — real ORtg 123.2
+   * (1st of 30), real TS 1st, TOV% 10.8 (2nd), MOV +11.3 (1st) — and the engine read them 12th of
+   * the 26 fieldable 2024 fives off a usage-weighted TS of .6077 that is exactly right.
+   *
+   * THE FORM IS PHYSICAL: ORtg = (points per scoring chance) × (chances kept), so all of `off` is
+   * multiplied by the kept share, normalised at the league's own mean — the shape recal_70 gave the
+   * glass. TOVhat comes from the CARDS: the five's usage-weighted ball security, the aggregate that
+   * carries the signal (within-season rho +0.718 with -TOV%, against +0.666 for the plain mean and
+   * +0.278 for the weakest link). TOV_SIZE ships at 0.45 because the PINS bind long before the fit
+   * does — see the frontier in data/rounds/119.json, and the round's decline of the 72.
+   */
+  const wball = u2.reduce((acc, ui, i) => acc + ui * A[i].ballsec, 0) / K.TEAM_USG
+  const tovHat = K.TOV_INT - K.TOV_SLOPE * wball
+  const tov = clamp(K.TOV_REF + K.TOV_SIZE * (tovHat - K.TOV_REF), K.TOV_LO, K.TOV_HI)
+  const tovMult = (1 - tov / 100) / (1 - K.TOV_REF / 100)
+  off *= tovMult
   // ORB feeds on misses
   const wTS = u2.reduce((acc, ui, i) => acc + ui * e4[i], 0) / K.TEAM_USG
   const miss = clamp((1 - wTS) / (1 - K.MISS_TS), K.MISS_LO, K.MISS_HI) // recal_70: the miss-share ratio, not the 3x rail ride
@@ -203,6 +238,7 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
     off,
     base,
     ftPts,
+    tovMult,
     orbMult,
     lines: five.map((p, i) => ({ name: p.name, usg: Math.round(u2[i] * 10) / 10, ts: Math.round(1000 * e4[i]) / 10 })),
   }

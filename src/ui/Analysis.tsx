@@ -82,6 +82,10 @@ export function Analysis({
         <b>{sgn(s.off.ftPts)}</b>
       </div>
       <div className="an-kv">
+        <span>Possessions kept (ball security)</span>
+        <b>×{s.off.tovMult.toFixed(3)}</b>
+      </div>
+      <div className="an-kv">
         <span>Second chances (ORB × misses)</span>
         <b>×{s.off.orbMult.toFixed(3)}</b>
       </div>
