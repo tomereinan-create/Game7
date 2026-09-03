@@ -245,10 +245,18 @@ export const DEFAULT_TACTICS: Tactics = {
  * round's cards and is SUPERSEDED by this figure rather than stacked with it; the integrator re-sweeps
  * once from main's constant, as the law requires. crash off glass held its re-ratified .10 (oracle
  * +0.64, blind -0.48) and the other seven held their bands. All nine pass.
+ * pipeline-121 integration (recal_117 passer ramps, recal_118 off-ball ramp, recal_119 possession-loss
+ * channel, recal_121 turnover-prone-load charge, landed together on top of recal_116): the merged pool
+ * moved 1,200-odd o_ovrs and every five's offRaw. hunt, crashOff and crashDef were re-read from MAIN's
+ * constants (3.80 / .40 / .70) rather than the branches' interim figures (4.10, 3.71, .10) and all three
+ * HELD their bands on the merged pool — those interim re-ratifications are superseded, not stacked. The
+ * one break was MAIN PLAYMAKER, for the first time since r76: blind -0.16 against the -0.30 floor. Swept
+ * .70 (-0.21) / .85 (-0.27) / 1.00 (-0.33) / 1.10 (-0.37, oracle +2.25); re-ratified .57 -> 1.10, the
+ * first passing value with room on the blind side, the oracle having 1.75 of headroom. Eight others held.
  */
 export const TAX = {
   scorer: 0.55,
-  playmaker: 0.57,
+  playmaker: 1.10,
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,

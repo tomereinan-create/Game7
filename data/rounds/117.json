@@ -10,7 +10,7 @@
   "tol": 3,
   "before": 47,
   "after": 53,
-  "pipeline_version": 117,
+  "pipeline_version": 121,
   "knobs": [
     {
       "file": "data/compute_ovr.py",
@@ -61,8 +61,8 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashOff: 0\\.10,",
-      "label": "THE DEVIATION TAX LAW, re-ratified (2 of 2) — crash off glass broke on the ORACLE edge",
+      "pattern": "crashOff: 0\\.40,",
+      "label": "THE DEVIATION TAX LAW, re-ratified (2 of 2) — crash off glass broke on the ORACLE edge [pipeline-121 integration: re-swept on the merged pool; main's value holds]",
       "note": ".40 -> .10 (oracle +0.45 against the +0.50 floor); the interval is about -0.32 to .21 and its own midpoint is NEGATIVE, so the value is the midpoint of the POSITIVE half"
     }
   ],
@@ -247,18 +247,66 @@
     "count": 679,
     "max_abs": 12,
     "top": [
-      ["Brad Davis '83", 53, 65],
-      ["Maurice Cheeks '80", 50, 61],
-      ["José Calderón '13", 69, 78],
-      ["Maurice Cheeks '86", 55, 64],
-      ["Brad Davis '81", 52, 61],
-      ["Micheal Williams '92", 62, 70],
-      ["John Stockton '98", 80, 86],
-      ["Terry Porter '91", 74, 80],
-      ["Mark Jackson '99", 47, 53],
-      ["John Stockton '90", 79, 82],
-      ["Mark Jackson '97", 57, 55],
-      ["John Stockton '88", 82, 80]
+      [
+        "Brad Davis '83",
+        53,
+        65
+      ],
+      [
+        "Maurice Cheeks '80",
+        50,
+        61
+      ],
+      [
+        "José Calderón '13",
+        69,
+        78
+      ],
+      [
+        "Maurice Cheeks '86",
+        55,
+        64
+      ],
+      [
+        "Brad Davis '81",
+        52,
+        61
+      ],
+      [
+        "Micheal Williams '92",
+        62,
+        70
+      ],
+      [
+        "John Stockton '98",
+        80,
+        86
+      ],
+      [
+        "Terry Porter '91",
+        74,
+        80
+      ],
+      [
+        "Mark Jackson '99",
+        47,
+        53
+      ],
+      [
+        "John Stockton '90",
+        79,
+        82
+      ],
+      [
+        "Mark Jackson '97",
+        57,
+        55
+      ],
+      [
+        "John Stockton '88",
+        82,
+        80
+      ]
     ]
   },
   "top12": {

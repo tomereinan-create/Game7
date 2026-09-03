@@ -10,7 +10,7 @@
   "tol": 3,
   "before": 38,
   "after": 53,
-  "pipeline_version": 118,
+  "pipeline_version": 121,
   "knobs": [
     {
       "file": "data/compute_ovr.py",
@@ -54,8 +54,8 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.71,",
-      "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke on the ORACLE edge this time",
+      "pattern": "hunt: 3\\.80,",
+      "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke on the ORACLE edge this time [pipeline-121 integration: re-swept on the merged pool; main's value holds]",
       "note": "4.10 -> 3.71, the midpoint of a window running about 3.655 (blind -0.300) to 3.761 (oracle +0.500); recal_117's 4.10 is SUPERSEDED, not stacked"
     }
   ],
@@ -259,18 +259,66 @@
     "count": 499,
     "max_abs": 16,
     "top": [
-      ["Kel'el Ware '26", 51, 67],
-      ["Jordan Walsh '26", 38, 54],
-      ["Trey Lyles '23", 41, 56],
-      ["Brook Lopez '23", 54, 67],
-      ["Torrey Craig '23", 37, 52],
-      ["Dorian Finney-Smith '20", 38, 53],
-      ["Mo Bamba '22", 49, 63],
-      ["Maxi Kleber '20", 43, 57],
-      ["Omri Casspi '14", 40, 53],
-      ["Raef LaFrentz '02", 56, 68],
-      ["Keegan Murray '25", 41, 52],
-      ["DeMarre Carroll '14", 48, 56]
+      [
+        "Kel'el Ware '26",
+        51,
+        67
+      ],
+      [
+        "Jordan Walsh '26",
+        38,
+        54
+      ],
+      [
+        "Trey Lyles '23",
+        41,
+        56
+      ],
+      [
+        "Brook Lopez '23",
+        54,
+        67
+      ],
+      [
+        "Torrey Craig '23",
+        37,
+        52
+      ],
+      [
+        "Dorian Finney-Smith '20",
+        38,
+        53
+      ],
+      [
+        "Mo Bamba '22",
+        49,
+        63
+      ],
+      [
+        "Maxi Kleber '20",
+        43,
+        57
+      ],
+      [
+        "Omri Casspi '14",
+        40,
+        53
+      ],
+      [
+        "Raef LaFrentz '02",
+        56,
+        68
+      ],
+      [
+        "Keegan Murray '25",
+        41,
+        52
+      ],
+      [
+        "DeMarre Carroll '14",
+        48,
+        56
+      ]
     ]
   },
   "top12": {

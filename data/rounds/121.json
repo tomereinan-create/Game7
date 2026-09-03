@@ -1,373 +1,373 @@
 {
- "round": 121,
- "agent": "ratings-to-off-def",
- "status": "done",
- "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85 · I agree that Luka and Lebron are the only concerns. If there is a way to keep them, its more ideal",
- "title": "the handler's turnover charge — the man the offence runs through pays for the load he neither converts nor keeps, and the efficiency leg fades out at his class's MEDIAN, so a man who converts at the middle keeps his card",
- "subject": "Russell Westbrook '15",
- "scale": "off",
- "target": 85,
- "tol": 2,
- "before": 89,
- "after": 85,
- "pipeline_version": 121,
- "knobs": [
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "_hl = 0\\.5 \\* \\(a\\['volume'\\] \\+ a\\['playvol'\\]\\)",
-   "label": "THE CLASS — handling load, the mean of o_score's own two load bars",
-   "note": "recal_96 named exactly these two as \"the two bars that claim he carried this much\"; Westbrook '15 is (98 + 93)/2 = 95.5, Jaylen Brown '26 is (96 + 68)/2 = 82"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "TC_H_LO, TC_H_HI = 85\\.0, 95\\.0",
-   "label": "the handling gate: 218 cards of 10,000 clear its foot",
-   "note": "the population every other constant in the term is read off"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "TC_E_LO, TC_E_HI = 51\\.0, 60\\.0",
-   "label": "the efficiency leg, RE-CUT BY HIS AMENDMENT — the class's LOWER TERCILE (measured 51) to its MEDIAN (measured 60)",
-   "note": "60 -> 75 in the first cut, which charged LeBron '20 (efficiency 59) -4 and Luka '22 -6; at the median LeBron sits on the leg's foot. James Harden '19 is 87 and still at gate 0.00"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "TC_B_LO, TC_B_HI = 58\\.0, 65\\.0",
-   "label": "the ball-security leg — full at the class's LOWER QUARTILE (measured 58), nothing by 65",
-   "note": "65 is the FRONTIER: at 66 and above the term can no longer put Westbrook '17 at or below '15"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "TC_K = 6\\.3",
-   "label": "the size, solved for the subject AND the ceiling of the whole charge",
-   "note": "89.2313 raw - 0.93 x 6.3 x 0.7143 = 85.05 -> 85. UNCHANGED by the re-cut, because the subject now sits AT the floor of the efficiency leg: his gate is 1.00 either way, so the ceiling did not rise and no card loses more than 6 printed points"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
-   "label": "recal_89's LOCKED DIAL STATE is untouched — not one weight moved",
-   "note": "the round adds a gated term and re-weights nothing, so r34's renormalised 0.93 multiplier still holds"
-  },
-  {
-   "file": "data/compute_ovr.py",
-   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
-   "label": "THE BAND ANCHORS ARE NOT RE-DERIVED (recal_90's warning)",
-   "note": "the subject is below the knee, where band() is the identity; nothing above the knee moves"
-  }
- ],
- "expect": [
-  {
-   "card": "Russell Westbrook '17",
-   "scale": "off",
-   "op": "<=",
-   "value": 85,
-   "label": "THE RELEASED PIN. r89 held him at 91 +-1 and r111 declined this ruling because of it. He is the WORSE season on both faults at the same volume — efficiency 48 to 51, ball security 54 to 60 — so the charge must reach him harder, and it does"
-  },
-  {
-   "card": "LeBron James '20",
-   "scale": "off",
-   "op": ">=",
-   "value": 87,
-   "label": "HIS AMENDMENT, NAME ONE. Efficiency 59 — the class's median is 60 — so he sits on the leg's foot at gate 0.11 and keeps all but a point. He was -4 on the first cut, 88 -> 84"
-  },
-  {
-   "card": "Luka Dončić '22",
-   "scale": "off",
-   "op": ">=",
-   "value": 87,
-   "label": "HIS AMENDMENT, NAME TWO. Efficiency 54, ball security 55 — WORSE than the subject's 60, so no re-cut of the security leg could spare him and only the efficiency leg could. 91 -> 87, where the first cut had him at 85"
-  },
-  {
-   "card": "Trae Young '22",
-   "scale": "off",
-   "op": "==",
-   "value": 93,
-   "label": "the class the amendment stands for, and the cleanest case: efficiency 64, above the class median, gate 0.00, NOT MOVED AT ALL (the first cut took him to 89)"
-  },
-  {
-   "card": "LeBron James '19",
-   "scale": "off",
-   "op": "==",
-   "value": 91,
-   "label": "four more LeBron seasons left the footprint entirely with the re-cut ('19, '21, '24, '25)"
-  },
-  {
-   "card": "Dwyane Wade '08",
-   "scale": "off",
-   "op": "==",
-   "value": 89,
-   "label": "efficiency 62: out of the footprint with the re-cut, where the first cut had him -4"
-  },
-  {
-   "card": "Jaylen Brown '26",
-   "scale": "off",
-   "op": "~",
-   "value": 83,
-   "tol": 1,
-   "label": "BLOCKER 1, HELD AND UNMOVED. Inefficient (38) but CAREFUL (ball security 64) and he does not create: handling load 82, below the gate. Spared twice"
-  },
-  {
-   "card": "James Harden '19",
-   "scale": "off",
-   "op": "~",
-   "value": 95,
-   "tol": 1,
-   "label": "BLOCKER 2, HELD AND UNMOVED. Ball security 56 — WORSE than the subject's 60 — but efficiency 87 puts him at gate 0.00. The efficiency leg is what separates them"
-  },
-  {
-   "card": "DeMar DeRozan '17",
-   "scale": "off",
-   "op": "==",
-   "value": 86,
-   "label": "THE SHARPEST CONTROL ON THE BOARD: efficiency 51, EXACTLY the subject's, at volume 97 — and ball security 90. Unmoved, and he now reads ABOVE Westbrook '15"
-  },
-  {
-   "card": "Kobe Bryant '16",
-   "scale": "off",
-   "op": "==",
-   "value": 73,
-   "label": "the inefficient-but-careful class the ruling does NOT name: efficiency 18, ball security 84. Gate 0.00"
-  },
-  {
-   "card": "Allen Iverson '02",
-   "scale": "off",
-   "op": "==",
-   "value": 79,
-   "label": "the same: efficiency 32, ball security 87. Gate 0.00"
-  },
-  {
-   "card": "Carmelo Anthony '13",
-   "scale": "off",
-   "op": "==",
-   "value": 89,
-   "label": "the same: efficiency 62, ball security 91, handling load 73.5. Gate 0.00 three times over"
-  },
-  {
-   "card": "Luka Dončić '23",
-   "scale": "off",
-   "op": "~",
-   "value": 94,
-   "tol": 1,
-   "label": "r89's pin. Ball security 67, just outside the leg, and he converts: unmoved, while his '20-'22 seasons — the ones that do not — come down"
-  },
-  {
-   "card": "Giannis Antetokounmpo '24",
-   "scale": "off",
-   "op": "~",
-   "value": 98,
-   "tol": 1,
-   "label": "ball security 62, INSIDE the security leg, and untouched: efficiency 82 holds him at gate 0.00. Poor security alone is never enough"
-  },
-  {
-   "card": "Patrick Ewing '90",
-   "scale": "off",
-   "op": "~",
-   "value": 85,
-   "tol": 1,
-   "label": "the same shape one era back — ball security 62, efficiency 87, unmoved"
-  },
-  {
-   "card": "Zion Williamson '21",
-   "scale": "off",
-   "op": "~",
-   "value": 90,
-   "tol": 1,
-   "label": "ball security 60, EXACTLY the subject's, and efficiency 87: unmoved"
-  },
-  {
-   "card": "Hakeem Olajuwon '90",
-   "scale": "off",
-   "op": "~",
-   "value": 73,
-   "tol": 1,
-   "label": "r52's pin and the tightest of the near misses: ball security 50 and efficiency 57, but he creates nothing — handling load 67 — so the handling gate keeps him whole"
-  },
-  {
-   "card": "Shai Gilgeous-Alexander '25",
-   "scale": "off",
-   "op": "==",
-   "value": 98,
-   "label": "the efficient high-usage star the round had to protect: efficiency 88, ball security 94, unmoved"
-  },
-  {
-   "card": "LeBron James '13",
-   "scale": "off",
-   "op": "==",
-   "value": 98,
-   "label": "unmoved"
-  },
-  {
-   "card": "Giannis Antetokounmpo '25",
-   "scale": "off",
-   "op": "==",
-   "value": 99,
-   "label": "the OFF summit is untouched"
-  },
-  {
-   "card": "Michael Jordan '89",
-   "scale": "off",
-   "op": ">=",
-   "value": 98,
-   "label": "r102's pin, untouched"
-  },
-  {
-   "card": "Russell Westbrook '15",
-   "scale": "def",
-   "op": "==",
-   "value": 60,
-   "label": "DEF moves on ZERO cards — the term is inside o_score and nothing else was touched"
-  },
-  {
-   "card": "Russell Westbrook '15",
-   "scale": "attr:ballsec",
-   "op": "==",
-   "value": 60,
-   "label": "no attribute moves: build_ratings.py was not run and not changed. recal_116 set this bar and this round reads it"
-  },
-  {
-   "card": "Russell Westbrook '15",
-   "scale": "ovr",
-   "op": "==",
-   "value": 78,
-   "label": "OVR follows the blend and nothing else (recal_85): 0.70 x 85 + 0.30 x 60 = 77.5"
-  }
- ],
- "order": [
-  {
-   "scale": "off",
-   "above": "DeMar DeRozan '17",
-   "below": "Russell Westbrook '15",
-   "label": "THE ROUND IN ONE LINE: same efficiency, same enormous usage, and the man who does not turn it over now reads higher"
-  },
-  {
-   "scale": "off",
-   "above": "Russell Westbrook '15",
-   "below": "Jaylen Brown '26",
-   "label": "the subject still reads above the pinned card below him — the charge did not invert them"
-  },
-  {
-   "scale": "off",
-   "above": "James Harden '19",
-   "below": "Russell Westbrook '15",
-   "label": "the efficient handler with WORSE ball security stays eleven points clear"
-  },
-  {
-   "scale": "off",
-   "above": "Luka Dončić '23",
-   "below": "Luka Dončić '22",
-   "label": "the season he converted over the season he did not"
-  },
-  {
-   "scale": "off",
-   "above": "Russell Westbrook '15",
-   "below": "Russell Westbrook '19",
-   "label": "the ruled-on season still reads above his worst"
-  }
- ],
- "movers": {
+  "round": 121,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85 · I agree that Luka and Lebron are the only concerns. If there is a way to keep them, its more ideal",
+  "title": "the handler's turnover charge — the man the offence runs through pays for the load he neither converts nor keeps, and the efficiency leg fades out at his class's MEDIAN, so a man who converts at the middle keeps his card",
+  "subject": "Russell Westbrook '15",
   "scale": "off",
-  "count": 35,
-  "max_abs": 6,
-  "top": [
-   [
-    "Russell Westbrook '17",
-    91,
-    85
-   ],
-   [
-    "Russell Westbrook '18",
-    84,
-    78
-   ],
-   [
-    "Trae Young '23",
-    88,
-    82
-   ],
-   [
-    "Russell Westbrook '19",
-    78,
-    73
-   ],
-   [
-    "Cade Cunningham '25",
-    82,
-    77
-   ],
-   [
-    "Russell Westbrook '15",
-    89,
-    85
-   ],
-   [
-    "Luka Dončić '22",
-    91,
-    87
-   ],
-   [
-    "Luka Dončić '20",
-    89,
-    85
-   ],
-   [
-    "John Wall '17",
-    78,
-    74
-   ],
-   [
-    "Luka Dončić '21",
-    91,
-    88
-   ],
-   [
-    "Russell Westbrook '16",
-    90,
-    88
-   ],
-   [
-    "LeBron James '20",
-    88,
-    87
-   ]
+  "target": 85,
+  "tol": 2,
+  "before": 89,
+  "after": 85,
+  "pipeline_version": 121,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_hl = 0\\.5 \\* \\(a\\['volume'\\] \\+ a\\['playvol'\\]\\)",
+      "label": "THE CLASS — handling load, the mean of o_score's own two load bars",
+      "note": "recal_96 named exactly these two as \"the two bars that claim he carried this much\"; Westbrook '15 is (98 + 93)/2 = 95.5, Jaylen Brown '26 is (96 + 68)/2 = 82"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TC_H_LO, TC_H_HI = 85\\.0, 95\\.0",
+      "label": "the handling gate: 218 cards of 10,000 clear its foot",
+      "note": "the population every other constant in the term is read off"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TC_E_LO, TC_E_HI = 51\\.0, 60\\.0",
+      "label": "the efficiency leg, RE-CUT BY HIS AMENDMENT — the class's LOWER TERCILE (measured 51) to its MEDIAN (measured 60)",
+      "note": "60 -> 75 in the first cut, which charged LeBron '20 (efficiency 59) -4 and Luka '22 -6; at the median LeBron sits on the leg's foot. James Harden '19 is 87 and still at gate 0.00"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TC_B_LO, TC_B_HI = 58\\.0, 65\\.0",
+      "label": "the ball-security leg — full at the class's LOWER QUARTILE (measured 58), nothing by 65",
+      "note": "65 is the FRONTIER: at 66 and above the term can no longer put Westbrook '17 at or below '15"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TC_K = 6\\.3",
+      "label": "the size, solved for the subject AND the ceiling of the whole charge",
+      "note": "89.2313 raw - 0.93 x 6.3 x 0.7143 = 85.05 -> 85. UNCHANGED by the re-cut, because the subject now sits AT the floor of the efficiency leg: his gate is 1.00 either way, so the ceiling did not rise and no card loses more than 6 printed points"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE is untouched — not one weight moved",
+      "note": "the round adds a gated term and re-weights nothing, so r34's renormalised 0.93 multiplier still holds"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED (recal_90's warning)",
+      "note": "the subject is below the knee, where band() is the identity; nothing above the knee moves"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Russell Westbrook '17",
+      "scale": "off",
+      "op": "<=",
+      "value": 85,
+      "label": "THE RELEASED PIN. r89 held him at 91 +-1 and r111 declined this ruling because of it. He is the WORSE season on both faults at the same volume — efficiency 48 to 51, ball security 54 to 60 — so the charge must reach him harder, and it does"
+    },
+    {
+      "card": "LeBron James '20",
+      "scale": "off",
+      "op": ">=",
+      "value": 87,
+      "label": "HIS AMENDMENT, NAME ONE. Efficiency 59 — the class's median is 60 — so he sits on the leg's foot at gate 0.11 and keeps all but a point. He was -4 on the first cut, 88 -> 84"
+    },
+    {
+      "card": "Luka Dončić '22",
+      "scale": "off",
+      "op": ">=",
+      "value": 87,
+      "label": "HIS AMENDMENT, NAME TWO. Efficiency 54, ball security 55 — WORSE than the subject's 60, so no re-cut of the security leg could spare him and only the efficiency leg could. 91 -> 87, where the first cut had him at 85"
+    },
+    {
+      "card": "Trae Young '22",
+      "scale": "off",
+      "op": "==",
+      "value": 93,
+      "label": "the class the amendment stands for, and the cleanest case: efficiency 64, above the class median, gate 0.00, NOT MOVED AT ALL (the first cut took him to 89)"
+    },
+    {
+      "card": "LeBron James '19",
+      "scale": "off",
+      "op": "==",
+      "value": 91,
+      "label": "four more LeBron seasons left the footprint entirely with the re-cut ('19, '21, '24, '25)"
+    },
+    {
+      "card": "Dwyane Wade '08",
+      "scale": "off",
+      "op": "==",
+      "value": 89,
+      "label": "efficiency 62: out of the footprint with the re-cut, where the first cut had him -4"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "off",
+      "op": "~",
+      "value": 83,
+      "tol": 1,
+      "label": "BLOCKER 1, HELD AND UNMOVED. Inefficient (38) but CAREFUL (ball security 64) and he does not create: handling load 82, below the gate. Spared twice"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "BLOCKER 2, HELD AND UNMOVED. Ball security 56 — WORSE than the subject's 60 — but efficiency 87 puts him at gate 0.00. The efficiency leg is what separates them"
+    },
+    {
+      "card": "DeMar DeRozan '17",
+      "scale": "off",
+      "op": "==",
+      "value": 86,
+      "label": "THE SHARPEST CONTROL ON THE BOARD: efficiency 51, EXACTLY the subject's, at volume 97 — and ball security 90. Unmoved, and he now reads ABOVE Westbrook '15"
+    },
+    {
+      "card": "Kobe Bryant '16",
+      "scale": "off",
+      "op": "==",
+      "value": 73,
+      "label": "the inefficient-but-careful class the ruling does NOT name: efficiency 18, ball security 84. Gate 0.00"
+    },
+    {
+      "card": "Allen Iverson '02",
+      "scale": "off",
+      "op": "==",
+      "value": 79,
+      "label": "the same: efficiency 32, ball security 87. Gate 0.00"
+    },
+    {
+      "card": "Carmelo Anthony '13",
+      "scale": "off",
+      "op": "==",
+      "value": 89,
+      "label": "the same: efficiency 62, ball security 91, handling load 73.5. Gate 0.00 three times over"
+    },
+    {
+      "card": "Luka Dončić '23",
+      "scale": "off",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "r89's pin. Ball security 67, just outside the leg, and he converts: unmoved, while his '20-'22 seasons — the ones that do not — come down"
+    },
+    {
+      "card": "Giannis Antetokounmpo '24",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "ball security 62, INSIDE the security leg, and untouched: efficiency 82 holds him at gate 0.00. Poor security alone is never enough"
+    },
+    {
+      "card": "Patrick Ewing '90",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 1,
+      "label": "the same shape one era back — ball security 62, efficiency 87, unmoved"
+    },
+    {
+      "card": "Zion Williamson '21",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 1,
+      "label": "ball security 60, EXACTLY the subject's, and efficiency 87: unmoved"
+    },
+    {
+      "card": "Hakeem Olajuwon '90",
+      "scale": "off",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "r52's pin and the tightest of the near misses: ball security 50 and efficiency 57, but he creates nothing — handling load 67 — so the handling gate keeps him whole"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "==",
+      "value": 98,
+      "label": "the efficient high-usage star the round had to protect: efficiency 88, ball security 94, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "==",
+      "value": 98,
+      "label": "unmoved"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": ">=",
+      "value": 98,
+      "label": "r102's pin, untouched"
+    },
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "def",
+      "op": "==",
+      "value": 60,
+      "label": "DEF moves on ZERO cards — the term is inside o_score and nothing else was touched"
+    },
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "attr:ballsec",
+      "op": "==",
+      "value": 60,
+      "label": "no attribute moves: build_ratings.py was not run and not changed. recal_116 set this bar and this round reads it"
+    },
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "ovr",
+      "op": "==",
+      "value": 78,
+      "label": "OVR follows the blend and nothing else (recal_85): 0.70 x 85 + 0.30 x 60 = 77.5"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "DeMar DeRozan '17",
+      "below": "Russell Westbrook '15",
+      "label": "THE ROUND IN ONE LINE: same efficiency, same enormous usage, and the man who does not turn it over now reads higher"
+    },
+    {
+      "scale": "off",
+      "above": "Russell Westbrook '15",
+      "below": "Jaylen Brown '26",
+      "label": "the subject still reads above the pinned card below him — the charge did not invert them"
+    },
+    {
+      "scale": "off",
+      "above": "James Harden '19",
+      "below": "Russell Westbrook '15",
+      "label": "the efficient handler with WORSE ball security stays eleven points clear"
+    },
+    {
+      "scale": "off",
+      "above": "Luka Dončić '23",
+      "below": "Luka Dončić '22",
+      "label": "the season he converted over the season he did not"
+    },
+    {
+      "scale": "off",
+      "above": "Russell Westbrook '15",
+      "below": "Russell Westbrook '19",
+      "label": "the ruled-on season still reads above his worst"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 35,
+    "max_abs": 6,
+    "top": [
+      [
+        "Russell Westbrook '17",
+        91,
+        85
+      ],
+      [
+        "Russell Westbrook '18",
+        84,
+        78
+      ],
+      [
+        "Trae Young '23",
+        88,
+        82
+      ],
+      [
+        "Russell Westbrook '19",
+        78,
+        73
+      ],
+      [
+        "Cade Cunningham '25",
+        82,
+        77
+      ],
+      [
+        "Russell Westbrook '15",
+        89,
+        85
+      ],
+      [
+        "Luka Dončić '22",
+        91,
+        87
+      ],
+      [
+        "Luka Dončić '20",
+        89,
+        85
+      ],
+      [
+        "John Wall '17",
+        78,
+        74
+      ],
+      [
+        "Luka Dončić '21",
+        91,
+        88
+      ],
+      [
+        "Russell Westbrook '16",
+        90,
+        88
+      ],
+      [
+        "LeBron James '20",
+        88,
+        87
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "RUSSELL WESTBROOK '17 off 91 +-1 (r89) IS RELEASED and moved to data/anchors_superseded.json with the note. He now reads 85 — what the formula gives — level with the season Tomer ruled on and never above it. THE RELEASE IS HIS, NOT THE AGENT'S: recal_111 declined this exact ruling, printed the three blockers by name, and said what would make it reachable — \"release RUSSELL WESTBROOK '17's 91 +-1 pin - it is the binding one\". He was shown that and repeated the ruling verbatim. The proof recal_111 gave still stands and is why no other release was needed: '17 is worse than '15 on BOTH faults at the same volume, so no charge that is non-increasing in efficiency and ball security can take '15 to 85 and leave '17 at 91.",
+    "THE OTHER TWO BLOCKERS WERE NOT RELEASED AND DID NOT MOVE. Jaylen Brown '26 (83 +-1) is spared twice — handling load 82, below the gate, and ball security 64, outside the leg. James Harden '19 (95 +-1) is spared by the efficiency leg alone, at 87. Both read EXACTLY what they read before this round. A later round that widens either leg should check these two first.",
+    "A NEW ANCHOR AND A NEW ORDER PIN. anchors.json gains Russell Westbrook '15 off 85 +-2 (r121) and the order pin Westbrook '15 >= Westbrook '17 on off — the released pin's condition, so no later round can quietly put the worse season back on top. 124 anchors, 0 failing.",
+    "THE BAND ANCHORS ARE NOT RE-DERIVED. OFF_TOP stays 102.75 and the subject is below the knee, where band() is the identity, so recal_90's warning (a re-derived top moves every card above the knee) does not apply. Nothing above the knee moves at all.",
+    "NO WEIGHT MOVED. recal_89's LOCKED DIAL STATE is byte-identical, so recal_34's renormalised 0.93 multiplier still holds on its own grounds and no scale-neutrality compensation is owed.",
+    "THE FOOTPRINT A LATER ROUND INHERITS: 35 cards of 10,000 move on OFF, every one of them DOWN, max -6; 32 on OVR, max -4; DEF and every attribute move on ZERO. The 35 are one class — Westbrook '11-'21, Trae Young '19-'25, John Wall '13-'18, Cade Cunningham '24-'26, Luka '19-'22, D'Angelo Russell '19, LaMelo Ball '25, Ja Morant '22, Jason Kidd '03, Deron Williams '12, Allen Iverson '97 — high-usage creators who neither convert nor keep the ball. Any round that touches ballsec, efficiency or playvol now moves OFF through this term as well as through the standard path.",
+    "HIS AMENDMENT IS IN THE SHIPPED CUT, not in a later round. He accepted 121 with one reservation, verbatim: \"I agree that Luka and Lebron are the only concerns. If there is a way to keep them, its more ideal\". The efficiency leg was re-cut from median->upper-quartile (60 -> 75) to lower-tercile->median (51 -> 60) and nothing else moved — not K, not the ceiling, not the handling gate, not the security leg. Ball security COULD NOT have carried it: LeBron '20 is 58 and Luka '22 is 55, both WORSE than the subject's 60, so any widening there spares the subject first. RESULT: LeBron '20 88 -> 87 (was 84), Luka '22 91 -> 87 (was 85), Luka '21 -> 88 (was 85), Trae '22 unmoved at 93 (was 89); the footprint fell from 48 cards and 148 printed points to 35 and 103, and the deepest single drop is unchanged at 6."
+  ],
+  "notes": [
+    "THE CARD. Russell Westbrook '15: 28.1 points, 7.3 rebounds, 8.6 assists on 4.4 turnovers, .541 true shooting against a .576 era mark, 38.4% usage. On the sheet: volume 98, playvol 93, efficiency 51, ball security 60 (recal_116 brought that bar down from 66 on the first half of this same sentence). He printed OFF 89 and the ruling says 85.",
+    "THIS ROUND ANSWERS THE SECOND HALF OF A SENTENCE recal_116 ANSWERED THE FIRST HALF OF. Same verbatim ruling, two stages: 116 fixed what the ball-security BAR reads, this fixes what o_score DOES with it. 116's own receipt recorded the hand-off — \"the OFF half of his ruling is NOT landed here ... the remaining 4 points are the next lane's round\".",
+    "WHY A NEW TERM AND NOT THE BALLSEC WEIGHT, settled by measurement before anything was written. Moving weight from volume (0.26) to ballsec (0.10) charges the subject 38 points of gap per unit of weight — but it charges James Harden '19 FORTY-THREE (volume 99, ball security 56), so his 95 +-1 pin breaks before the subject has moved four. The global dial cannot separate them; only a term that also reads efficiency can. That is the same wall recal_91, recal_98 and recal_112 hit on the efficiency weight, on the neighbouring bar.",
+    "THE RE-CUT IS THE SMALLEST ONE THAT DOES THE JOB, and three were measured. (a) efficiency 51 -> 60, the class's lower tercile to its median: K stays 6.3 because the subject sits AT the new floor, 35 cards move, 103 printed points shed, max -6 — SHIPPED. (b) 46 -> 60, its lower QUARTILE to the median: spares the same two men but K must rise to 9.8, and the ceiling with it — 39 cards, 148 points, max -9, Westbrook '18 to 75 and '19 to 70. Rejected: it buys nothing and deepens the tail. (c) 54 -> 60, which would put the SUBJECT inside the leg rather than at its floor: it BREAKS the round's own order pin, because Westbrook '17 (48) and '15 (51) then take the same full efficiency gate and '17 finishes ABOVE '15, 87 to 86. The floor of the leg has to sit at or below the subject, and the highest quantile that does is the lower tercile.",
+    "WHY THE TERM IS GATED ON HANDLING LOAD AND NOT ON VOLUME ALONE, and this is the load-bearing choice. His sentence is about a man with the ball in his hands — usage AND creation. Read on volume alone, Jaylen Brown '26 (96) sits at three-quarters of the gate and drifts to 82; read on the mean of volume and playvol, he is 82 and OUTSIDE it, because he does not create. Westbrook '15 is 95.5. It also disposes of the whole low-creation half of the board for free: Kobe '16 (79.5) and Carmelo '13 (73.5) never reach the gate at all, on top of their ball security already ending it.",
+    "WHAT MAKES THIS NARROW WHERE recal_85's TAX WAS NOT, stated because his own ruling deleted that tax and recal_111 refused this ruling on exactly that ground. Three differences, all structural. (1) POSITION: the tax lived in the OVR core, AFTER o_ovr and d_ovr were fixed, and subtracted from the blend — which is why it made 192 cards print BELOW their weaker end. This charge is inside o_score, so what falls is OFF itself and the blend still reads between a card's two ends; no card can print below its weaker end from it, by construction. (2) SHAPE: the tax read heavy load at poor efficiency, one fault. This needs BOTH, and the second is what spares the Kobe/Iverson/Carmelo class the ruling does not name. (3) SIZE: 48 cards move, against the tax's 192, and every one of them is a high-usage creator who neither converts nor keeps the ball.",
+    "EVERY CONSTANT IS A QUANTILE OF THE CLASS OR A MEASURED FRONTIER, none is taste. Of the 218 cards at handling load >= 85: efficiency median 60 and upper quartile 76 (the leg runs 60 -> 75); ball-security lower quartile 58 (the leg is full at 58 and below). The subject sits at the class's 33rd percentile of efficiency and its 32nd of ball security — poor at both, which is the whole claim. The ball-security leg's TOP, 65, is a frontier rather than a quantile: a WIDER fade needs a SMALLER size for the same subject and therefore leaves a shallower tail, so the round takes the widest fade the ordering permits, and at 66 the term can no longer put Westbrook '17 at or below '15.",
+    "REJECTED (a): reading the charge off efficiency ALONE, at any size. Jaylen Brown '26 is efficiency 38 against the subject's 51, so every such charge reaches HIM harder — this is recal_111's proof and it survives untouched. Rejected (b): the ball-security leg alone, at any size — James Harden '19 is ball security 56 against the subject's 60 and would break first, and Harden '17 (46) and '18 (53) with him. The two legs are only defensible multiplied.",
+    "REJECTED (c), and it is worth naming because it looked cheapest: a steeper VOLUME gate (90 -> 98) instead of the handling gate. It reaches the number and holds every anchor, but it puts Jaylen Brown '26 on 82 — inside his tolerance by one point and for no reason his ruling gives, since Brown's fault is conversion, not the ball. The handling gate leaves him at 83, exactly where recal_89 put him.",
+    "MEASURED, AND THE LAB REPRODUCES THE SHIPPED BOARD TO ZERO MISMATCHES ON ALL 10,000 CARDS BEFORE ANY CHANGE WAS APPLIED, so every number here is a reading of the real pipeline rather than a model of it.",
+    "WHO TAKES THE WHOLE CHARGE NOW, asked because a narrower leg usually needs a bigger size: nobody new. K is still 6.3 and it is still the ceiling — the full charge needs handling load >= 95, efficiency <= 51 AND ball security <= 58, which is Westbrook '17 and Westbrook '18 (handling load 98.5 and 98.0). No card on the board loses more than six printed points, exactly as before the amendment."
   ]
- },
- "top12": {
-  "scale": "off",
-  "cards": [
-   "Giannis Antetokounmpo '20",
-   "Giannis Antetokounmpo '23",
-   "Giannis Antetokounmpo '24",
-   "Giannis Antetokounmpo '25",
-   "LeBron James '09",
-   "LeBron James '10",
-   "LeBron James '12",
-   "Nikola Jokić '22",
-   "Nikola Jokić '24",
-   "Nikola Jokić '25",
-   "Nikola Jokić '26",
-   "Shai Gilgeous-Alexander '26"
-  ]
- },
- "cost": [
-  "RUSSELL WESTBROOK '17 off 91 +-1 (r89) IS RELEASED and moved to data/anchors_superseded.json with the note. He now reads 85 — what the formula gives — level with the season Tomer ruled on and never above it. THE RELEASE IS HIS, NOT THE AGENT'S: recal_111 declined this exact ruling, printed the three blockers by name, and said what would make it reachable — \"release RUSSELL WESTBROOK '17's 91 +-1 pin - it is the binding one\". He was shown that and repeated the ruling verbatim. The proof recal_111 gave still stands and is why no other release was needed: '17 is worse than '15 on BOTH faults at the same volume, so no charge that is non-increasing in efficiency and ball security can take '15 to 85 and leave '17 at 91.",
-  "THE OTHER TWO BLOCKERS WERE NOT RELEASED AND DID NOT MOVE. Jaylen Brown '26 (83 +-1) is spared twice — handling load 82, below the gate, and ball security 64, outside the leg. James Harden '19 (95 +-1) is spared by the efficiency leg alone, at 87. Both read EXACTLY what they read before this round. A later round that widens either leg should check these two first.",
-  "A NEW ANCHOR AND A NEW ORDER PIN. anchors.json gains Russell Westbrook '15 off 85 +-2 (r121) and the order pin Westbrook '15 >= Westbrook '17 on off — the released pin's condition, so no later round can quietly put the worse season back on top. 124 anchors, 0 failing.",
-  "THE BAND ANCHORS ARE NOT RE-DERIVED. OFF_TOP stays 102.75 and the subject is below the knee, where band() is the identity, so recal_90's warning (a re-derived top moves every card above the knee) does not apply. Nothing above the knee moves at all.",
-  "NO WEIGHT MOVED. recal_89's LOCKED DIAL STATE is byte-identical, so recal_34's renormalised 0.93 multiplier still holds on its own grounds and no scale-neutrality compensation is owed.",
-  "THE FOOTPRINT A LATER ROUND INHERITS: 35 cards of 10,000 move on OFF, every one of them DOWN, max -6; 32 on OVR, max -4; DEF and every attribute move on ZERO. The 35 are one class — Westbrook '11-'21, Trae Young '19-'25, John Wall '13-'18, Cade Cunningham '24-'26, Luka '19-'22, D'Angelo Russell '19, LaMelo Ball '25, Ja Morant '22, Jason Kidd '03, Deron Williams '12, Allen Iverson '97 — high-usage creators who neither convert nor keep the ball. Any round that touches ballsec, efficiency or playvol now moves OFF through this term as well as through the standard path.",
-  "HIS AMENDMENT IS IN THE SHIPPED CUT, not in a later round. He accepted 121 with one reservation, verbatim: \"I agree that Luka and Lebron are the only concerns. If there is a way to keep them, its more ideal\". The efficiency leg was re-cut from median->upper-quartile (60 -> 75) to lower-tercile->median (51 -> 60) and nothing else moved — not K, not the ceiling, not the handling gate, not the security leg. Ball security COULD NOT have carried it: LeBron '20 is 58 and Luka '22 is 55, both WORSE than the subject's 60, so any widening there spares the subject first. RESULT: LeBron '20 88 -> 87 (was 84), Luka '22 91 -> 87 (was 85), Luka '21 -> 88 (was 85), Trae '22 unmoved at 93 (was 89); the footprint fell from 48 cards and 148 printed points to 35 and 103, and the deepest single drop is unchanged at 6."
- ],
- "notes": [
-  "THE CARD. Russell Westbrook '15: 28.1 points, 7.3 rebounds, 8.6 assists on 4.4 turnovers, .541 true shooting against a .576 era mark, 38.4% usage. On the sheet: volume 98, playvol 93, efficiency 51, ball security 60 (recal_116 brought that bar down from 66 on the first half of this same sentence). He printed OFF 89 and the ruling says 85.",
-  "THIS ROUND ANSWERS THE SECOND HALF OF A SENTENCE recal_116 ANSWERED THE FIRST HALF OF. Same verbatim ruling, two stages: 116 fixed what the ball-security BAR reads, this fixes what o_score DOES with it. 116's own receipt recorded the hand-off — \"the OFF half of his ruling is NOT landed here ... the remaining 4 points are the next lane's round\".",
-  "WHY A NEW TERM AND NOT THE BALLSEC WEIGHT, settled by measurement before anything was written. Moving weight from volume (0.26) to ballsec (0.10) charges the subject 38 points of gap per unit of weight — but it charges James Harden '19 FORTY-THREE (volume 99, ball security 56), so his 95 +-1 pin breaks before the subject has moved four. The global dial cannot separate them; only a term that also reads efficiency can. That is the same wall recal_91, recal_98 and recal_112 hit on the efficiency weight, on the neighbouring bar.",
-  "THE RE-CUT IS THE SMALLEST ONE THAT DOES THE JOB, and three were measured. (a) efficiency 51 -> 60, the class's lower tercile to its median: K stays 6.3 because the subject sits AT the new floor, 35 cards move, 103 printed points shed, max -6 — SHIPPED. (b) 46 -> 60, its lower QUARTILE to the median: spares the same two men but K must rise to 9.8, and the ceiling with it — 39 cards, 148 points, max -9, Westbrook '18 to 75 and '19 to 70. Rejected: it buys nothing and deepens the tail. (c) 54 -> 60, which would put the SUBJECT inside the leg rather than at its floor: it BREAKS the round's own order pin, because Westbrook '17 (48) and '15 (51) then take the same full efficiency gate and '17 finishes ABOVE '15, 87 to 86. The floor of the leg has to sit at or below the subject, and the highest quantile that does is the lower tercile.",
-  "WHY THE TERM IS GATED ON HANDLING LOAD AND NOT ON VOLUME ALONE, and this is the load-bearing choice. His sentence is about a man with the ball in his hands — usage AND creation. Read on volume alone, Jaylen Brown '26 (96) sits at three-quarters of the gate and drifts to 82; read on the mean of volume and playvol, he is 82 and OUTSIDE it, because he does not create. Westbrook '15 is 95.5. It also disposes of the whole low-creation half of the board for free: Kobe '16 (79.5) and Carmelo '13 (73.5) never reach the gate at all, on top of their ball security already ending it.",
-  "WHAT MAKES THIS NARROW WHERE recal_85's TAX WAS NOT, stated because his own ruling deleted that tax and recal_111 refused this ruling on exactly that ground. Three differences, all structural. (1) POSITION: the tax lived in the OVR core, AFTER o_ovr and d_ovr were fixed, and subtracted from the blend — which is why it made 192 cards print BELOW their weaker end. This charge is inside o_score, so what falls is OFF itself and the blend still reads between a card's two ends; no card can print below its weaker end from it, by construction. (2) SHAPE: the tax read heavy load at poor efficiency, one fault. This needs BOTH, and the second is what spares the Kobe/Iverson/Carmelo class the ruling does not name. (3) SIZE: 48 cards move, against the tax's 192, and every one of them is a high-usage creator who neither converts nor keeps the ball.",
-  "EVERY CONSTANT IS A QUANTILE OF THE CLASS OR A MEASURED FRONTIER, none is taste. Of the 218 cards at handling load >= 85: efficiency median 60 and upper quartile 76 (the leg runs 60 -> 75); ball-security lower quartile 58 (the leg is full at 58 and below). The subject sits at the class's 33rd percentile of efficiency and its 32nd of ball security — poor at both, which is the whole claim. The ball-security leg's TOP, 65, is a frontier rather than a quantile: a WIDER fade needs a SMALLER size for the same subject and therefore leaves a shallower tail, so the round takes the widest fade the ordering permits, and at 66 the term can no longer put Westbrook '17 at or below '15.",
-  "REJECTED (a): reading the charge off efficiency ALONE, at any size. Jaylen Brown '26 is efficiency 38 against the subject's 51, so every such charge reaches HIM harder — this is recal_111's proof and it survives untouched. Rejected (b): the ball-security leg alone, at any size — James Harden '19 is ball security 56 against the subject's 60 and would break first, and Harden '17 (46) and '18 (53) with him. The two legs are only defensible multiplied.",
-  "REJECTED (c), and it is worth naming because it looked cheapest: a steeper VOLUME gate (90 -> 98) instead of the handling gate. It reaches the number and holds every anchor, but it puts Jaylen Brown '26 on 82 — inside his tolerance by one point and for no reason his ruling gives, since Brown's fault is conversion, not the ball. The handling gate leaves him at 83, exactly where recal_89 put him.",
-  "MEASURED, AND THE LAB REPRODUCES THE SHIPPED BOARD TO ZERO MISMATCHES ON ALL 10,000 CARDS BEFORE ANY CHANGE WAS APPLIED, so every number here is a reading of the real pipeline rather than a model of it.",
-  "WHO TAKES THE WHOLE CHARGE NOW, asked because a narrower leg usually needs a bigger size: nobody new. K is still 6.3 and it is still the ceiling — the full charge needs handling load >= 95, efficiency <= 51 AND ball security <= 58, which is Westbrook '17 and Westbrook '18 (handling load 98.5 and 98.0). No card on the board loses more than six printed points, exactly as before the amendment."
- ]
 }

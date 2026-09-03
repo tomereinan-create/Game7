@@ -91,9 +91,9 @@ import type { Player } from './types'
 // a DEF dial read at each era's own level beside an OFF dial that was not is half a scale. The three
 // anchors are quoted in OFF_LEVEL_REF's league: ADJUSTED offRaw, not raw offRaw. The summit is still
 // where recal_71's ruling put it ("99 should be one of the greatest offense ever (2017 warriors)").
-const OFF_MIN = 101.71 // the all-time worst offensive five, era-adjusted
-const OFF_MID = 121.76 // the all-time median reads 50
-const OFF_TOP = 138.4 // Golden State Warriors '17 (adjusted 138.4025, all-time rank 1) — the named OFF summit reads 99
+const OFF_MIN = 101.75 // the all-time worst offensive five, era-adjusted
+const OFF_MID = 121.75 // the all-time median reads 50
+const OFF_TOP = 138.17 // Golden State Warriors '17 (adjusted 138.1742, all-time rank 1) — the named OFF summit reads 99
 
 /**
  * THE LEAGUE'S OWN OFFENSIVE LEVEL, season by season: the mean offRaw of that season's fieldable
@@ -108,17 +108,17 @@ const OFF_TOP = 138.4 // Golden State Warriors '17 (adjusted 138.4025, all-time 
  * recentring one and not the other was never self-consistent; this is the other half.
  */
 const OFF_LEVEL: Record<number, number> = {
-  1980: 120.520, 1981: 119.531, 1982: 119.719, 1983: 119.951, 1984: 119.953, 1985: 119.080,
-  1986: 119.072, 1987: 119.789, 1988: 120.861, 1989: 121.818, 1990: 121.948, 1991: 121.822,
-  1992: 120.983, 1993: 121.472, 1994: 121.246, 1995: 121.671, 1996: 121.904, 1997: 121.434,
-  1998: 120.761, 1999: 118.607, 2000: 121.184, 2001: 121.175, 2002: 121.613, 2003: 121.578,
-  2004: 122.309, 2005: 122.973, 2006: 122.172, 2007: 123.637, 2008: 123.651, 2009: 123.048,
-  2010: 121.802, 2011: 122.539, 2012: 121.466, 2013: 122.217, 2014: 122.859, 2015: 122.699,
-  2016: 123.348, 2017: 123.434, 2018: 122.408, 2019: 124.337, 2020: 122.268, 2021: 122.570,
-  2022: 122.591, 2023: 123.831, 2024: 124.647, 2025: 123.521, 2026: 122.970,
+  1980: 120.549, 1981: 119.764, 1982: 119.690, 1983: 119.942, 1984: 120.168, 1985: 119.054,
+  1986: 119.062, 1987: 119.789, 1988: 120.681, 1989: 121.934, 1990: 121.937, 1991: 121.802,
+  1992: 120.965, 1993: 121.450, 1994: 121.000, 1995: 121.851, 1996: 121.878, 1997: 121.463,
+  1998: 120.790, 1999: 118.637, 2000: 121.152, 2001: 121.149, 2002: 121.587, 2003: 121.483,
+  2004: 122.213, 2005: 122.943, 2006: 122.127, 2007: 123.565, 2008: 123.588, 2009: 122.965,
+  2010: 121.702, 2011: 122.619, 2012: 121.337, 2013: 122.297, 2014: 122.787, 2015: 122.572,
+  2016: 123.079, 2017: 123.353, 2018: 122.388, 2019: 123.961, 2020: 122.257, 2021: 122.457,
+  2022: 122.263, 2023: 123.634, 2024: 124.523, 2025: 123.413, 2026: 123.124,
 }
 /** The league every OFF dial is quoted in: the mean of the 47 season levels. */
-const OFF_LEVEL_REF = 121.8083
+const OFF_LEVEL_REF = 121.7648
 /** A five with no season of its own is a five in TODAY's league, exactly as on the DEF side. */
 const OFF_LEVEL_FIELD = OFF_LEVEL[2026]
 

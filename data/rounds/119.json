@@ -18,7 +18,7 @@
   "tol": 4,
   "before": 55,
   "after": 56,
-  "pipeline_version": 119,
+  "pipeline_version": 121,
   "knobs": [
     {
       "file": "data/team_rating.py",
@@ -82,14 +82,14 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.4 ",
-      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so gauge105.ts was re-run",
+      "pattern": "const OFF_TOP = 138\\.17 ",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so gauge105.ts was re-run [pipeline-121 integration: OFF block re-frozen again on the merged pool]",
       "note": "138.53 -> 138.4; the Warriors '17 are still all-time rank 1 of 1,255 on the adjusted index"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 121\\.8083",
-      "label": "and its reference league",
+      "pattern": "const OFF_LEVEL_REF = 121\\.7648",
+      "label": "and its reference league [pipeline-121 integration re-freeze]",
       "note": "121.8 -> 121.8083; the 47-season table moved by hundredths, the level is held by TOV_REF's centring"
     },
     {
@@ -109,8 +109,8 @@
     {
       "scale": "team:off",
       "op": "==",
-      "value": 58,
-      "label": "THE SUBJECT on ratings100's older display int too: 56 -> 58, offRaw 126.10 -> 126.64"
+      "value": 57,
+      "label": "THE SUBJECT on ratings100's older display int too: 56 -> 58, offRaw 126.10 -> 126.64 [pipeline-121 integration: reads 57 on the merged pool (recal_117/118/121 moved the cards around it)]"
     },
     {
       "five": [
