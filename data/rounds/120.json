@@ -1,0 +1,183 @@
+{
+  "round": 120,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Jazz 97' pnr Stockton and Malone is more fitting",
+  "title": "the pick-and-roll is led by the handler's passing and pays the screener for the pop, and the mid-range leaves the post-up hub to pay for it",
+  "scale": "team:off",
+  "subject": "Jazz '97 (best legal five)",
+  "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+  "target": 86,
+  "tol": 0,
+  "before": 86,
+  "after": 86,
+  "pipeline_version": 114,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const handlerFit = \\(x: Attrs\\) => clamp\\(0\\.6 \\* x\\.playvol \\+ 0\\.24 \\* x\\.volume \\+ ELITE_LIFT \\* elitePass\\(x\\), 0, 99\\)",
+      "label": "the pnr handler is led by his PLAY VOLUME, with scoring as a threat and an elite-passer ramp",
+      "note": "min(playvol, volume) -> 0.60 playvol + 0.24 volume + up to 24; Stockton '97 23 -> 87.1"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ELITE_PV = 80\\s*\\nexport const ELITE_LIFT = 24",
+      "label": "the elite-passer line and lift — his words, \"playvol in the ~90s\"",
+      "note": "new; the ramp runs 80 -> 95 and is worth up to 24"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const screenFit = \\(x: Attrs\\) => Math\\.min\\(Math\\.max\\(x\\.rim, x\\.mid\\), x\\.efficiency\\)",
+      "label": "the screener is paid for the POP as well as the roll",
+      "note": "min(rim, efficiency) -> min(max(rim, mid), efficiency); Malone '97 77 -> 89"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
+      "label": "the post-up hub keeps the rim and gives up the mid-range",
+      "note": "recal_115's min(max(rim,mid), volume) -> min(rim, volume), interior() untouched; Malone '97 94 -> 77"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return 0\\.4 \\* handler \\+ 0\\.35 \\* dive \\+ 0\\.25 \\* mean\\(rest, \\(p\\) => p\\.attrs\\['3pt'\\]\\)",
+      "label": "the three pnr WEIGHTS are recal_58's and were deliberately not touched",
+      "note": "0.40 / 0.35 / 0.25 -> unchanged"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "style: 0\\.35,",
+      "label": "TAX.style untouched — the playstyle band held at random -1.14 / oracle +0.66",
+      "note": "0.35 -> 0.35 (no tax re-ratified in this round)"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: Jazz '97 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 65
+    },
+    {
+      "label": "the round moves NO rating: Suns '05, the five that flips with it",
+      "five": ["Steve Nash '05", "Joe Johnson '05", "Quentin Richardson '05", "Shawn Marion '05", "Amar'e Stoudemire '05"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 60
+    },
+    {
+      "label": "the round moves NO rating: Lakers '00 offence dial (recal_110's anchor)",
+      "five": ["Ron Harper '00", "Kobe Bryant '00", "Glen Rice '00", "Robert Horry '00", "Shaquille O'Neal '00"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "the round moves NO rating: Rockets '94, a post hub that must not move",
+      "five": ["Kenny Smith '94", "Mario Elie '94", "Robert Horry '94", "Otis Thorpe '94", "Hakeem Olajuwon '94"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 62
+    },
+    {
+      "label": "the round moves NO rating: Rockets '18 offence dial",
+      "five": ["Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 94
+    },
+    {
+      "label": "Stockton '97 is the elite passer the round is about",
+      "card": "John Stockton '97",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "...and his scoring load is what the old minimum capped him at",
+      "card": "John Stockton '97",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 30
+    },
+    {
+      "label": "Malone '97 works from the elbow: mid over rim, which is the pop the screener is now paid for",
+      "card": "Karl Malone '97",
+      "scale": "attr:mid",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "O'Neal '00 is the other kind of big, and the hub term still reads him whole",
+      "card": "Shaquille O'Neal '00",
+      "scale": "attr:rim",
+      "op": ">=",
+      "value": 95
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:playvol",
+      "above": "John Stockton '97",
+      "below": "Karl Malone '97",
+      "label": "the passer and the big, in the order the caption names them"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "cost": [
+    "NOTHING in data/ was regenerated and neither python file was touched: src/engine/offense.ts, data/team_rating.py and data/compute_ovr.py are byte-identical to origin/main, so no OVR, no OFF/DEF dial and no `marg` moved. The subject and every expect line is a team dial read back unchanged for exactly that reason.",
+    "recal_115's post-up knob in data/rounds/115.json was RE-POINTED, not deleted: this round takes the max(rim, mid) half of that line back out, so the receipt now pins the interior() half, which is what recal_115's own ruling was about and which stands. Its round file records the supersession. Nothing else in the ledger moved.",
+    "TAX.style was NOT re-ratified. playstyle moved random -1.15 -> -1.14 and oracle +0.68 -> +0.66 and stayed in band; the oracle headroom is now 0.16, the narrowest it has been. Two rounds running have widened what the playstyle row measures. The next one should expect to re-ratify it.",
+    "tests/court.test.ts's Ayton fixture is now decided by a TIE: Ayton '26 and Hachimura '26 both cap at screenFit 71 off their efficiency, and pnrPair breaks it on the roll (rim 71 to 27) so the screen stays Ayton's. That tie-break is new in this round and the test records why it exists."
+  ],
+  "notes": [
+    "THE READ, over all 1,255 wheel team-seasons that can field a five (scripts/tactics115.ts).",
+    "  before  balanced 457 · fiveout 17 · pnr 224 · motion 5 · postup 341 · helio 203 · transition 8",
+    "  after   balanced 439 · fiveout 17 · pnr 332 · motion 6 · postup 239 · helio 214 · transition 8",
+    "  222 of 1,255 fives changed style; 64 of them post-up to pick-and-roll, 27 post-up to balanced,",
+    "  15 post-up to helio, and 62 balanced to pick-and-roll.",
+    "HIS CASE. Jazz '97 post-up 81 (Malone) -> PICK-AND-ROLL 76 (Stockton + Malone). The post-up on",
+    "the same big now reads 69 and helio reads 72, so the pair wins the floor outright.",
+    "WHY IT WAS WRONG. Both two-man terms were MINIMA, and a minimum asks a man to be two things at",
+    "once. min(playvol, volume) read Stockton '97 (playvol 96, volume 23) as 23 and Nash '05 (97, 42)",
+    "as 42 — the measure said a pass-first point guard cannot run a pick-and-roll, which is the",
+    "opposite of true. min(rim, efficiency) read the ROLL only, so a screener who pops was paid",
+    "nothing for it and Malone '97 (rim 77, mid 94) read 77.",
+    "WHAT REPLACED THEM. handlerFit = 0.60 playvol + 0.24 volume + up to ELITE_LIFT 24 on a ramp from",
+    "ELITE_PV 80 to 95 — his words, \"playvol in the ~90s\" — clamped to 99. screenFit = min(max(rim,",
+    "mid), efficiency), the best finish off the screen, roll or pop. And the mid-range MOVED rather",
+    "than being invented twice: recal_115 had put max(rim, mid) into the post-up hub, and a big who",
+    "scores from the elbow is being screened free by a guard, not fed on the block, so the hub goes",
+    "back to min(rim, volume) x interior. Neither half reaches the ruling alone — the handler term",
+    "alone leaves Jazz '97 at pnr 70 against post-up 81.",
+    "WHY THE RAMP IS NARROW. Measured at 78-to-90 instead of 80-to-95, the elite ramp also lifts",
+    "Muggsy Bogues (playvol 92) far enough to take Alonzo Mourning's Hornets '95 off the post — one",
+    "of the four hub families the ruling protects. The narrow ramp holds all 23 of the protected",
+    "post-up fives and all seven of the protected pick-and-rolls. Its one cost is recorded: Stockton",
+    "'99, whose playvol fell to 86, is the only Stockton/Malone year that does not read pick-and-roll",
+    "(pnr 69.1, helio 69.4 — a quarter of a point), and widening the ramp to catch it is not worth a",
+    "protected hub.",
+    "THE WEIGHTS WERE NOT TOUCHED. Moving the three pnr shares toward the pair (0.44/0.36/0.20) was",
+    "measured first: it reaches the ruling too, but it costs the well-spaced pick-and-roll fives",
+    "their read — Nuggets '25 (Murray + Jokic) and Thunder '25 (Gilgeous-Alexander + Hartenstein)",
+    "both fall to helio. The ruling names the two terms, not their shares, so the shares stand.",
+    "WHAT ELSE CAME WITH IT, and it is the argument for the round. Every Stockton/Malone Jazz year",
+    "except '99 now reads the pick-and-roll; so do Hardaway + Mourning ('97, '98), Mark Jackson +",
+    "Ewing ('88, '89), Nash + Nowitzki ('02, '04), Jason Williams + Gasol ('03), Van Exel + McDyess",
+    "('00, '01), Strickland + Webber ('98) and Parker + Duncan ('12). Those are the canonical",
+    "pick-and-roll teams of their eras and every one of them was reading post-up.",
+    "WHAT IT COST. LaMarcus Aldridge's fives lose the post: Spurs '17 (post-up 82) and '16, Blazers",
+    "'10 and '15 now read helio on Leonard, Roy and Lillard — no man on those fives clears the",
+    "handler gate, so the pick-and-roll cannot pick them up. Kevin Garnett's Timberwolves ('00, '03,",
+    "'06, '07) go the same way, which is arguably a better read of a five that was one man. Late",
+    "Olajuwon ('98, '99) and late Duncan ('15) fall to balanced.",
+    "OPEN. The handler gate is still playvol >= 70 AND height <= 78, recal_58's, and it is what",
+    "leaves Spurs '17 and Blazers '15 with no handler at all. A six-foot-nine primary creator",
+    "(Doncic '26, James '16) can never be read as one. That is the next thing to look at in this",
+    "file, and it is not this round's ruling."
+  ]
+}

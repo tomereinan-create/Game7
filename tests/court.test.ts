@@ -185,7 +185,9 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
       const at = spotsFor({ style: s.key, pnr: null }, LAKERS)
       expect(inCorner(at[AYTON])).toBe(false)
       // every set but five-out stands him inside — the pick-and-roll as its screener (his
-      // ruling: the rest stand outside), every other set on the inside spot it holds for him
+      // ruling: the rest stand outside), every other set on the inside spot it holds for him.
+      // recal_120 note: Ayton '26 and Hachimura '26 BOTH cap at screenFit 71 off their efficiency,
+      // and the tie is broken by the roll (rim 71 to 27), so the screen is still Ayton's.
       if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
     }
   })
