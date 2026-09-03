@@ -40,7 +40,7 @@ self.addEventListener('fetch', (e) => {
   // worker left behind by an earlier build serves yesterday's modules on top of today's server
   // (2026-09-03: a stray vite on 5178 showed Tomer the old Team DB for a day).
   const immutable =
-    url.origin === self.location.origin && /\/assets\/[^/?]+-[A-Za-z0-9_-]{6,}\.[a-z0-9]+$/.test(url.pathname)
+    url.origin === self.location.origin && /\/assets\/[^/?]+-[A-Za-z0-9_-]{3,}\.[a-z0-9]+$/.test(url.pathname)
 
   e.respondWith(shell ? fromNetwork(req) : immutable ? fromCache(req) : fromNetworkThenCache(req))
 })
@@ -52,8 +52,9 @@ async function fromNetworkThenCache(req) {
     if (res.ok || res.type === 'opaque') {
       const cache = await caches.open(CACHE)
       await cache.put(req, res.clone())
+      return res
     }
-    return res
+    return (await caches.match(req)) ?? res
   } catch {
     return (await caches.match(req)) ?? Response.error()
   }
