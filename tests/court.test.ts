@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, postMan, styleFit, STYLES, twoStars, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, popPair, postMan, styleFit, STYLES, twoStars, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -196,7 +196,10 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
       // ruling: the rest stand outside), every other set on the inside spot it holds for him.
       // recal_120 note: Ayton '26 and Hachimura '26 BOTH cap at screenFit 71 off their efficiency,
       // and the tie is broken by the roll (rim 71 to 27), so the screen is still Ayton's.
-      if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
+      // recal_129: pick-and-pop is the second set with NO inside spot — the whole point of the
+      // call is that the screener steps out instead of rolling — so it joins five-out here. The
+      // corner check above still holds in both: a man who cannot shoot never takes a shooter's spot.
+      if (s.key !== 'fiveout' && s.key !== 'pickpop') expect(outsideLine(at[AYTON])).toBe(false)
     }
   })
 
@@ -561,5 +564,41 @@ describe('the triangle stands three men on the strong side and two on the weak',
     const plan = { ...DEFAULT_TACTICS, style: 'triangle' as const }
     expect(cap(shot({ spots: spotsOf(BULLS), tactic: plan }))).toBe('triangle · Jordan · your tactic')
     expect(cap(shot({ spots: spotsOf(BULLS) }))).toContain('triangle · best fit')
+  })
+})
+
+/**
+ * THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll floor with the screen
+ * released: the ball where it always is, the screener stepping BACK behind the arc instead of
+ * rolling to the top of the key, and nobody inside the line at all.
+ */
+describe('the pick-and-pop stands the screener behind the line, not rolling', () => {
+  const SPURS = [g("Tony Parker '11"), g("Manu Ginóbili '11"), g("Richard Jefferson '11"), g("Matt Bonner '11"), g("Tim Duncan '11")]
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it('every man is behind the three-point line — the roll man does not roll', () => {
+    const at = spotsFor({ style: 'pickpop', pnr: null }, SPURS)
+    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(0)
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  })
+
+  it('the popper is the shooter, and the roll would have picked someone else', () => {
+    expect(popPair(SPURS, null).screener!.name).toBe("Matt Bonner '11")
+    expect(pnrPair(SPURS, null).screener!.name).not.toBe("Matt Bonner '11")
+    // the two sets therefore stand different men in different places
+    expect(spotsFor({ style: 'pickpop', pnr: null }, SPURS)).not.toEqual(spotsFor({ style: 'pnr', pnr: null }, SPURS))
+  })
+
+  it('a named pair is honoured, and the caption names both men', () => {
+    const chosen: PnrPair = { handler: "Manu Ginóbili '11", screener: "Tim Duncan '11" }
+    const at = spotsFor({ style: 'pickpop', pnr: chosen }, SPURS)
+    const h = SPURS.findIndex((p) => p.name === chosen.handler)
+    const s = SPURS.findIndex((p) => p.name === chosen.screener)
+    expect(outsideLine(at[h])).toBe(true)
+    expect(outsideLine(at[s])).toBe(true)
+    const plan = { ...DEFAULT_TACTICS, style: 'pickpop' as const }
+    expect(cap(shot({ spots: spotsOf(SPURS), tactic: plan }))).toBe('pick-and-pop · Parker + Bonner · your tactic')
   })
 })

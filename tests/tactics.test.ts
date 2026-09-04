@@ -17,6 +17,8 @@ import {
   screenFit,
   STAR_LINE,
   heliMan,
+  popFit,
+  popPair,
   postFit,
   postOption,
   postMan,
@@ -276,7 +278,14 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
     expect(featured('pnr', JAZZ_97).map((p) => p.name)).toEqual(["John Stockton '97", "Karl Malone '97"])
     // it beats the post-up built around the same big, and everything else on that floor
     expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('postup', JAZZ_97))
-    for (const s of STYLES) if (s.key !== 'pnr' && s.key !== 'balanced') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
+    // recal_129 added pick-and-pop, which is worth EXACTLY the same on this five — Malone's mid is
+    // both his roll and his pop — so the bar is >= there and the tie is broken by set order, which
+    // is what keeps his ruling standing. Every other style is still strictly behind.
+    for (const s of STYLES) {
+      if (s.key === 'pnr' || s.key === 'balanced') continue
+      if (s.key === 'pickpop') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThanOrEqual(styleFit(s.key, JAZZ_97))
+      else expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
+    }
   })
 
   it('the handler is led by his passing, not capped by his scoring', () => {
@@ -492,8 +501,8 @@ describe('transition is removed, and a save that still names it loads as balance
   const NAMES5 = FIVE5.map((p) => p.name)
 
   it('the style is not in the union, the list, or anything that enumerates them', () => {
-    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle'])
-    expect(STYLES).toHaveLength(7)
+    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop'])
+    expect(STYLES).toHaveLength(8)
     expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
   })
 
@@ -582,8 +591,57 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
 
   it('it is in the set, the panel and the tax law like any other style', () => {
     expect(STYLES.map((s) => s.key)).toContain('triangle')
-    expect(STYLES).toHaveLength(7)
+    expect(STYLES).toHaveLength(8)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97)).toBeGreaterThan(0)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)).toBeLessThan(0)
+  })
+})
+
+/**
+ * PICK-AND-POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll with the screener
+ * stepping out: the same pair, the same handler term, the same three weights, and the ROLL swapped
+ * for the JUMPER. It must beat the roll exactly when the screener shoots better than he finishes,
+ * and lose to it when he is a diver.
+ */
+describe('pick-and-pop is the roll with the screener stepping out', () => {
+  const SPURS_11 = cut("Tony Parker '11", "Manu Ginóbili '11", "Richard Jefferson '11", "Matt Bonner '11", "Tim Duncan '11")
+  const ROCKETS_18 = cut("Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18")
+
+  it('a stretch big reads pick-and-pop, and the pair is the pick-and-roll pair', () => {
+    expect(bestStyle(SPURS_11).style).toBe('pickpop')
+    const pair = popPair(SPURS_11, null)
+    expect(pair.screener!.name).toBe("Matt Bonner '11")
+    expect(featured('pickpop', SPURS_11).map((p) => p.name)).toEqual([pair.handler!.name, "Matt Bonner '11"])
+    // the same `pnr` field carries the call, so naming two men serves both styles
+    const named: PnrPair = { handler: "Tony Parker '11", screener: "Tim Duncan '11" }
+    expect(popPair(SPURS_11, named).chosen).toBe(true)
+    expect(popPair(SPURS_11, named).screener!.name).toBe("Tim Duncan '11")
+    expect(popPair(SPURS_11, named)).toEqual(pnrPair(SPURS_11, named))
+  })
+
+  it('it beats the roll only when the THREE is the screener best shot', () => {
+    const bonner = g("Matt Bonner '11").attrs
+    expect(bonner['3pt']).toBeGreaterThan(Math.max(bonner.rim, bonner.mid))
+    expect(popFit(bonner)).toBeGreaterThan(screenFit(bonner))
+    expect(styleFit('pickpop', SPURS_11)).toBeGreaterThan(styleFit('pnr', SPURS_11))
+  })
+
+  it('a ROLLER keeps the roll: Capela and Stoudemire are not poppers', () => {
+    for (const n of ["Clint Capela '18", "Amar'e Stoudemire '05"]) {
+      expect(popFit(g(n).attrs)).toBeLessThan(screenFit(g(n).attrs))
+    }
+    for (const f of [ROCKETS_18, SUNS_05]) {
+      expect(styleFit('pnr', f)).toBeGreaterThan(styleFit('pickpop', f))
+      expect(bestStyle(f).style).toBe('pnr')
+    }
+  })
+
+  it("a MID-RANGE popper ties, and the tie keeps his ruling: the Jazz '97 stay pick-and-roll", () => {
+    const km = g("Karl Malone '97").attrs
+    expect(km.mid).toBeGreaterThan(km.rim)
+    // recal_120 already put the mid into the roll term, so the two calls are worth the same man
+    expect(popFit(km)).toBeCloseTo(screenFit(km), 10)
+    expect(styleFit('pickpop', JAZZ_97)).toBeCloseTo(styleFit('pnr', JAZZ_97), 10)
+    expect(bestStyle(JAZZ_97).style).toBe('pnr')
   })
 })

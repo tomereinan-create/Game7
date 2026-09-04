@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, heliMan, pnrPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, heliMan, pnrPair, popPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -709,9 +709,11 @@ export function MyTeam({
                 Main scorer, the same five men. They open lit on the pair the engine would pick
                 itself, so the call is never blank and never a mystery; naming a man who already
                 holds the other job trades the two rather than putting one man in both. */}
-            {side === 'off' && playbook >= 2 && tactics.style === 'pnr'
+            {side === 'off' && playbook >= 2 && (tactics.style === 'pnr' || tactics.style === 'pickpop')
               ? (() => {
-                  const pair = pnrPair(five, tactics.pnr)
+                  // recal_129: pick-and-pop is the same two men, so it opens the same two rows and
+                  // reads the same `pnr` field — only the engine's default screener differs
+                  const pair = tactics.style === 'pickpop' ? popPair(five, tactics.pnr) : pnrPair(five, tactics.pnr)
                   const at = { handler: pair.handler?.name ?? '', screener: pair.screener?.name ?? '' }
                   const call = (role: 'handler' | 'screener', name: string) => {
                     const other = role === 'handler' ? 'screener' : 'handler'
@@ -762,6 +764,14 @@ export function MyTeam({
                   )
                 })()
               : null}
+            {/* HIS RULING: "Add pick n pop". One line so the difference from the roll is on the
+                screen and not only in the number: the screener shoots instead of diving. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'pickpop' ? (
+              <div className="posbar superseded">
+                <span className="cap">Pick-and-pop</span>
+                <span className="tnote">the screener steps out — his jumper, not his roll</span>
+              </div>
+            ) : null}
             {/* HIS RULING: "Add Triangle". The triangle names nobody — it is a read, not a call on a
                 man — so instead of a chip row it says what the engine found: who the entry pass
                 goes to, and how many men on the floor can play out of it. */}

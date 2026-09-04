@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { bestStyle, canSpace, featured, pnrPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -109,6 +109,12 @@ const PAINT_C: XY = at(4, 10)
 const BALL: XY = at(12, 31)
 const SCREEN: XY = at(3, 25)
 export const PAIR_FT = Math.hypot(9, 6)
+/**
+ * THE POP SPOT (recal_129, his ruling: "Add pick n pop"). The same screen, released: the screener
+ * steps BACK rather than rolling, so he stands behind the arc on the far side of the ball, a stride
+ * further from the middle than the screen was. Nobody is inside the line in this set.
+ */
+const POP: XY = at(-2, 33)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
@@ -302,6 +308,24 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
         [],
         (p) => p.attrs.height,
       )
+    }
+    case 'pickpop': {
+      // THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll shape with the screen
+      // released: the ball where it always is, and the screener stepping BACK behind the arc on the
+      // other side of him instead of rolling to the top of the key. Nobody is inside the line at
+      // all — the whole point of the call is that the roll man does not roll — and the other three
+      // keep b4c50a4's spacing, the shortest on the weak-side wing and the corners to the rest.
+      const pair = popPair(men, plan?.pnr)
+      const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
+      let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
+      if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
+      // the three off-ball men are ordered by SHOOTING here, not by height as the roll orders them
+      // (his ruling: "smallest not handler guy on the wing"). The roll can afford that because its
+      // screener is almost always the five's non-shooting big; the pop's screener is a shooter by
+      // definition, so a second man who cannot shoot would otherwise be sent to a CORNER, which is
+      // the one thing his other ruling forbids ("Why is Ayton out and James in?"). The worst
+      // shooter of the three takes the weak-side wing and the corners go to the better two.
+      return stand(men, { [h]: BALL, [s]: POP }, [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]])
     }
     case 'triangle': {
       // THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). The three men who make the

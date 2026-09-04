@@ -127,7 +127,7 @@ export interface StyleCall {
  * points over the free default. A save that still says `transition` loads as `balanced`; see
  * reconcileTactics, which has always dropped a style that no longer exists.
  */
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle'
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -136,6 +136,7 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'postup', label: 'post-up' },
   { key: 'helio', label: 'helio' },
   { key: 'triangle', label: 'triangle' },
+  { key: 'pickpop', label: 'pick-and-pop' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -309,6 +310,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * scorer-creator now earns both role benefits, which is the ruling's whole point. The scorer and
  * playmaker rows did not move at all: they call scorerPts and playmakerPts directly, on a balanced
  * plan, and the override only exists while helio is the style. All nine in band, nothing tuned.
+ * recal_128 added the TRIANGLE and recal_129 the PICK-AND-POP; the playstyle row is eight choices
+ * wide now. Blind -0.90 (128) then -1.12 (129) against the -0.30 ceiling, oracle +1.73 against the
+ * +0.50 floor. No tax moved for either. Adding a style makes the blind pick a little worse and
+ * can only help the oracle, so the row drifts toward its floor edge and away from its ceiling —
+ * the failure to watch for is the OTHER direction, a style so good it lifts the blind read.
  * recal_127 removed the TRANSITION style (his ruling: "Remove transition entirely from the db."),
  * so the playstyle row now picks its blind deviation from six choices instead of seven. Its blind
  * read went from -0.99 to -1.09 against the -0.30 ceiling and the oracle held at +1.68 against the
@@ -473,6 +479,35 @@ export const ELITE_LIFT = 24
 const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
 export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
 export const screenFit = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.efficiency)
+
+/**
+ * THE POP (recal_129, his ruling: "Add pick n pop"). Pick-and-roll where the screener steps OUT, so
+ * the term is his JUMPER — the better of his mid-range and his three, capped by his efficiency the
+ * way every screener term is — and the roll is not in it at all.
+ *
+ * Read against screenFit, which is min(max(rim, mid), efficiency), this says exactly one thing: the
+ * pop is worth more than the roll ONLY when the screener's THREE is his best shot. A mid-range
+ * popper scores identically in both, because recal_120 already put the mid into the pick-and-roll's
+ * screener term when it took the mid-range out of the post-up hub — Malone '97 reads 89 either way,
+ * Nowitzki '02 reads 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
+ * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tie on the same man,
+ * and a tie goes to the style that was already there. The fives pick-and-pop actually wins are the
+ * stretch fours and fives whose three beats both — Bonner, Bertans, Lewis, Murphy, Gallinari.
+ */
+export const popFit = (x: Attrs) => Math.min(Math.max(x.mid, x['3pt']), x.efficiency)
+
+/**
+ * THE PICK-AND-POP PAIR. It IS the pick-and-roll pair — the same `pnr` field on the plan, so a man
+ * who names his two and then switches the call between roll and pop keeps them, and no new field
+ * exists to reconcile, gate or migrate. Only the AUTO screener differs: with nobody named, the roll
+ * picks the best finisher off the screen and the pop picks the best shooter.
+ */
+export function popPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
+  if (legalPair(pick, five.map((p) => p.name))) return pnrPair(five, pick)
+  const handler = pnrPair(five, null).handler
+  const screener = five.filter((p) => p.attrs.height >= 80).slice().sort((x, y) => popFit(y.attrs) - popFit(x.attrs))[0] ?? null
+  return { handler, screener, chosen: false }
+}
 
 export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
   if (legalPair(pick, five.map((p) => p.name))) {
@@ -702,6 +737,14 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       const post = hub ? Math.max(0, postFit(hub.attrs)) : 0
       return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => p.attrs['3pt']) * 0.3
     }
+    case 'pickpop': {
+      // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
+      // (recal_129). Identical weights on purpose: the two calls are then separated by the screener
+      // and by nothing else, so pick-and-pop wins exactly when the pop is worth more than the roll.
+      const { handler: ph, screener: pd } = popPair(five, call?.pnr)
+      const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
+      return 0.4 * (ph ? handlerFit(ph.attrs) : 0) + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
+    }
     case 'triangle': {
       const post = postOption(five)
       const readers = Math.min(triangleReaders(five).length, 4)
@@ -889,6 +932,10 @@ export function featured(style: Style, five: Player[], call?: StyleCall | null):
       return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
     case 'triangle':
       return [postOption(five)].filter((p): p is Player => !!p)
+    case 'pickpop': {
+      const { handler, screener } = popPair(five, call?.pnr)
+      return [handler, screener].filter((p): p is Player => !!p)
+    }
     case 'pnr': {
       const { handler, screener } = pnrPair(five, call?.pnr)
       return [handler, screener].filter((p): p is Player => !!p)
