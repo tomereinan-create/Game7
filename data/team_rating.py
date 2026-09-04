@@ -223,11 +223,27 @@ MKNOBS = dict(
     # above it a point of raw anchor is still worth half a point.
     ANCHOR_KNEE=99.0,
     ANCHOR_SOFT=0.5,
+    # recal_133 — THE SECOND RIM PROTECTOR'S SHARE, and the first time this constant was measured
+    # against the outcome it is supposed to produce. His ruling: "I agree with Philadelphia 76ers '85
+    # being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+."
+    # anchor_raw = rimprot1 + ANCHOR_2ND * rimprot2^2/99, and 0.35 was inherited from DKNOBS in the
+    # very first defence build; nothing ever tested it. bref carries the channel's own truth column,
+    # opp_e_fg_percent — the anchor exists to hold the opponent's shooting down — and the
+    # within-season Spearman of anchor_raw against it over the 1,255 fieldable team-seasons peaks
+    # flat across 0.15-0.20 (+0.5289 / +0.5275) and falls away on both sides: 0.10 +0.5228,
+    # 0.25 +0.5240, 0.35 +0.5180 (shipped), 0.45 +0.5087, 0.60 +0.4871, 0.00 +0.5086. Two bigs cannot
+    # both protect the same rim on the same possession; the redundancy discount was too generous by
+    # about half. 0.20 is the conservative end of the plateau, and it is the only value on it that
+    # holds the Warriors '17 anchor (recal_122, at its floor). Whole-dial fit rises with it:
+    # within-season DEF rho +0.7764 -> +0.7781.
+    ANCHOR_2ND=0.20,
     # The two recal_122 changes read the 1,255-five pool 0.195 DRtg points better, and the DEF gauge
     # block in src/engine/gauges.ts is FROZEN (recal_108: do not re-derive it). This constant holds
     # the pool's mean drtgRef exactly where recal_101 froze the gauge on it, so the round re-shapes
     # the board without lifting it. Without it every dial rises ~4 points and the summit crowds.
-    DIDX_HOLD=1.0773,
+    # RE-DERIVED by recal_133 (1.0773 -> 0.4523) on the same rule: the pool's mean drtgRef is held
+    # at 110.047736 to six places, because a smaller second-anchor credit lowers the whole board.
+    DIDX_HOLD=0.4523,
 )
 # recal_60: EVERY PAIRING GENERATES EDGE — mirrors offense.ts pairingEdge/pairingTable/pairingTerm/bestBoard.
 def pairing_edge(a, b, atk_usg):
@@ -263,7 +279,7 @@ def defense_vs(us, them):
     paint_orient = sum(b['rim']*u for b, u in zip(B, b_usg)) / max(1, sum((b['rim']+b['3pt'])*u for b, u in zip(B, b_usg)))
     # ANCHOR: hidden on their least-shooting player (defense chooses matchups); degrades vs 5-out
     rp = sorted(((a['rimprot'], i) for i, a in enumerate(A)), reverse=True)
-    anchor_raw = rp[0][0] + 0.35*rp[1][0]*(rp[1][0]/99)
+    anchor_raw = rp[0][0] + MKNOBS['ANCHOR_2ND']*rp[1][0]*(rp[1][0]/99)   # recal_133: 0.35 -> 0.20
     min_opp_out = min(b['3pt'] for b in B)
     hide = 1.0 if min_opp_out < MKNOBS['HIDE_OUT'] else max(0.15, 1 - (min_opp_out - MKNOBS['HIDE_OUT'])/50)
     anchor = anchor_raw * hide

@@ -1291,5 +1291,22 @@
     "round": 130,
     "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
     "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
+  },
+  {
+    "card": "76ers '85 (best legal five)",
+    "five": [
+      "Maurice Cheeks '85",
+      "Julius Erving '85",
+      "Bobby Jones '85",
+      "Charles Barkley '85",
+      "Moses Malone '85"
+    ],
+    "season": 1985,
+    "scale": "team:defdial",
+    "target": 93,
+    "tol": 2,
+    "round": 133,
+    "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
+    "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
   }
 ]
