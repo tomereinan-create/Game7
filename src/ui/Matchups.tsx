@@ -112,7 +112,7 @@ export function Matchups({
           <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent. Lower is better.</div>
         </>
       )}
-      {canSolve ? (
+      {canSolve && !user ? (
         <div className="solvebar">
           <button className="sortb on" onClick={() => onChange(solveBoard(mine, theirs))}>
             Solve the board
@@ -144,9 +144,9 @@ export function Matchups({
               <div className="mo">
                 <b>{short(t.name)}</b>
                 <i>
-                  usage {t.attrs.usg_raw.toFixed(1)} · 3pt {t.attrs['3pt']} · rim {t.attrs.rim}
-                  {j === cur.star ? ' · their star' : ''}
-                  {j === opt.worstShooter ? ' · worst shooter' : ''}
+                  {user ? '' : `usage ${t.attrs.usg_raw.toFixed(1)} · 3pt ${t.attrs['3pt']} · rim ${t.attrs.rim}`}
+                  {j === cur.star ? `${user ? '' : ' · '}their star` : ''}
+                  {j === opt.worstShooter ? `${user ? '' : ' · '}worst shooter` : ''}
                 </i>
               </div>
               <span className="arrow">←</span>
