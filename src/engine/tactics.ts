@@ -118,7 +118,16 @@ export interface StyleCall {
   helio?: string | null
 }
 
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
+/**
+ * THE SET (recal_58, six of them since recal_127). TRANSITION IS GONE, by his ruling: "Remove
+ * transition entirely from the db." It was the one style that was not a half-court SHAPE — its fit
+ * read disruption, durability and the opponent's ball security, which is a description of how a
+ * team gets the ball rather than what it does with it, and the floor had to draw two men on the
+ * half-court line to show it. On the wheel it won 8 of 1,255 fives and never by more than five
+ * points over the free default. A save that still says `transition` loads as `balanced`; see
+ * reconcileTactics, which has always dropped a style that no longer exists.
+ */
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -126,7 +135,6 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'motion', label: 'motion' },
   { key: 'postup', label: 'post-up' },
   { key: 'helio', label: 'helio' },
-  { key: 'transition', label: 'transition' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -300,6 +308,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * scorer-creator now earns both role benefits, which is the ruling's whole point. The scorer and
  * playmaker rows did not move at all: they call scorerPts and playmakerPts directly, on a balanced
  * plan, and the override only exists while helio is the style. All nine in band, nothing tuned.
+ * recal_127 removed the TRANSITION style (his ruling: "Remove transition entirely from the db."),
+ * so the playstyle row now picks its blind deviation from six choices instead of seven. Its blind
+ * read went from -0.99 to -1.09 against the -0.30 ceiling and the oracle held at +1.68 against the
+ * +0.50 floor: transition was a middling call, so dropping it makes the average random pick a
+ * little worse and leaves the best pick alone. No tax moved, and none was close to an edge.
  */
 export const TAX = {
   scorer: 0.55,
@@ -343,7 +356,10 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     ...t,
     scorer: t.scorer && names.includes(t.scorer) ? t.scorer : null,
     playmaker: t.playmaker && names.includes(t.playmaker) ? t.playmaker : null,
-    // a save from the inside/outside era carries a style that no longer exists
+    // A SAVE THAT NAMES A STYLE THAT NO LONGER EXISTS LOADS AS BALANCED, and has since the
+    // inside/outside era. recal_127 leans on exactly this for his ruling "Remove transition
+    // entirely from the db.": a run in progress whose plan says `transition` opens on balanced —
+    // the free default, no call and no price — rather than crashing or resetting the run.
     style: STYLES.some((x) => x.key === t.style) ? t.style : 'balanced',
     // ...and a pre-recal_75 save can carry a scheme that never existed, or one since cut
     scheme: SCHEMES.some((x) => x.key === t.scheme) ? t.scheme : 'matchup',
@@ -403,8 +419,12 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  * THE FIT of a style on a five, 0-100, his formulas verbatim (recal_58). Two gaps the round left
  * open are filled here and documented: motion's ball-stopper subtraction is -12 per ISO-shaped star
  * (volume >= 90 with playvol < 50), and post-up's "dominance-bonus presence" is proxied by
- * min(rim, volume) — the same two facts the o_score bonus keys on. Transition's opponent term
- * (their ball security, inverted) needs the matchup, so without one that quarter reads neutral (50).
+ * min(rim, volume) — the same two facts the o_score bonus keys on.
+ *
+ * `theirs` is UNREAD since recal_127 removed transition, which was the only style whose fit asked
+ * anything about the opponent. The parameter stays: it is the third positional slot every caller
+ * already passes and the defensive mirror (schemeFit) still reads its own, so a style that wants
+ * the matchup back has somewhere to put it. It is not a leftover, it is a socket.
  */
 /**
  * WHO RUNS THE PICK-AND-ROLL. The plan's own two men when it names a legal pair (his ruling: "When
@@ -580,7 +600,7 @@ export function twoStars(five: Player[]): boolean {
   return e.length >= 2 && e[1] >= STAR_LINE && e[0] - e[1] <= DUO_GAP
 }
 
-export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
+export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
@@ -648,10 +668,6 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], call?:
       // still needs four who do not turn it over. Thunder '22 (Gilgeous-Alexander alone) reads 65.
       const e = a.map(scorerCreator).sort((x, y) => y - x)
       return 0.7 * e[0] + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
-    }
-    case 'transition': {
-      const opp = theirs?.length ? 100 - mean(theirs, (p) => p.attrs.ballsec) : 50
-      return 0.45 * avg((x) => x.perimdisrupt) + 0.3 * avg((x) => x.durability) + 0.25 * opp
     }
   }
 }
@@ -822,10 +838,7 @@ export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number 
   if (t.style === 'balanced') return 0
   let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -2.5, 2.5)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
-  if (t.style === 'transition') {
-    if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
-    if (t.tempo === 'slow') pts /= 2 // calling slow against your own run game halves it
-  }
+  // recal_127 removed transition and its two tempo synergies with it; post-up's is the only one left
   return pts
 }
 

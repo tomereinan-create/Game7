@@ -1918,16 +1918,18 @@ const ROUNDS: Record<string, () => void> = {
     // ...and no elite dive man either — Harden + Chandler read (correctly) as a PnR pair first.
     const STARBENCH = pick(["James Harden '19", "Kendrick Perkins '12", "Tony Allen '13", "Ben Wallace '07", "Rajon Rondo '15"])
     const TOWERS = pick(["Shaquille O'Neal '00", "Tim Duncan '03", "Ben Wallace '03", "Dennis Rodman '92", "Dikembe Mutombo '97"])
-    const table = (label: string, five: (typeof PLAYERS)[number][], wantBest: Style, wantWorst: Style) => {
+    // wantWorst is a NOTE of what recal_58 measured, never an assertion — recal_127 removed the
+    // style that used to run last on the star+bench five, so it is a string now, not a Style
+    const table = (label: string, five: (typeof PLAYERS)[number][], wantBest: Style, wantWorst: string) => {
       const fits = STYLES.filter((x) => x.key !== 'balanced').map((x) => ({ k: x.key, f: styleFit(x.key, five) }))
       const bySort = [...fits].sort((p2, q2) => q2.f - p2.f)
       note(`${label}: ${fits.map((x) => `${x.k} ${Math.round(x.f)}`).join(' · ')}`)
       // the round demands a CLEAR best and a CLEAR worst; the worst's identity follows the formulas
-      line(`${label} — best/worst`, `${bySort[0].k} ${Math.round(bySort[0].f)} / ${bySort[5].k} ${Math.round(bySort[5].f)}`, `best ${wantBest}, spread >= 25 (worst ran ${wantWorst})`, bySort[0].k === wantBest && bySort[0].f - bySort[5].f >= 25)
+      line(`${label} — best/worst`, `${bySort[0].k} ${Math.round(bySort[0].f)} / ${bySort[bySort.length - 1].k} ${Math.round(bySort[bySort.length - 1].f)}`, `best ${wantBest}, spread >= 25 (worst ran ${wantWorst})`, bySort[0].k === wantBest && bySort[0].f - bySort[bySort.length - 1].f >= 25)
       return bySort
     }
     const s1 = table('shooter-five', SHOOTERS, 'fiveout', 'postup')
-    table('star+bench', STARBENCH, 'helio', 'transition')
+    table('star+bench', STARBENCH, 'helio', 'transition — the style recal_127 removed')
     table('twin-towers', TOWERS, 'postup', 'fiveout')
     // 500 series: the shooter five running its best style vs FORCED into its worst, same opponent
     const OPP = pick(["Chauncey Billups '05", "Chris Paul '11", "Kevin Johnson '97", "Jason Terry '07", "Domantas Sabonis '24"])

@@ -104,7 +104,7 @@ export function shapeOf(five: Player[], lines: Record<string, StatLine | null>, 
   const tovBase = lerp(16, 10, (ballsec - 20) / 60)
   // THE STYLE SHIFTS THE DIET (recal_61) — the same calls the margin priced, visible in the mix:
   // five-out lifts the three-point share, post-up trades it for free throws and fewer assists,
-  // motion raises the assist table and spreads the threes, transition converts to rim twos.
+  // and motion raises the assist table and spreads the threes. (recal_127 removed transition.)
   let outShift = 0
   let fdShift = 0
   let pvShift = 0
@@ -120,9 +120,6 @@ export function shapeOf(five: Player[], lines: Record<string, StatLine | null>, 
     case 'motion':
       pvShift = 12
       outShift = 0.03
-      break
-    case 'transition':
-      outShift = -0.04
       break
   }
   return {

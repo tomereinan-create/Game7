@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, postMan, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, postMan, styleFit, STYLES, twoStars, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -90,12 +90,20 @@ describe('a five with no plan stands in the shape of its best tactic', () => {
   const SAMPLE: Player[][] = [FIVE]
   for (let i = 0; i + 5 <= PLAYERS.length && SAMPLE.length < 60; i += 37) SAMPLE.push(PLAYERS.slice(i, i + 5))
 
-  /** The ruling's own definition, written out longhand so the test does not lean on the engine. */
+  /** The ruling's own definition, written out longhand so the test does not lean on the engine —
+   *  including the two VETOES it has grown since: five-out is never read for a five with two men
+   *  who cannot shoot (recal_115), and helio is never read for a five with two stars (recal_115).
+   *  They were missing here and the test agreed by luck until recal_127 removed transition, which
+   *  had been winning outright on the sample five where the two answers diverge. */
   const argmax = (five: Player[]): { style: Style; fit: number } => {
     let style: Style = 'balanced'
     let fit = 60
+    const shy = five.filter((p) => !canSpace(p)).length
+    const duo = twoStars(five)
     for (const s of STYLES) {
       if (s.key === 'balanced') continue
+      if (s.key === 'fiveout' && shy >= 2) continue
+      if (s.key === 'helio' && duo) continue
       const f = styleFit(s.key, five)
       if (f > fit) {
         fit = f

@@ -1095,7 +1095,7 @@ export function Draft({
           ) : null}
           {plan && five.length === DRAFT_SIZE && !user ? (
             <div className="seriesnow-note">
-              {/* the full fits, opponent included — transition's matchup quarter prices HERE */}
+              {/* the full fits, opponent included — the scheme's matchup delta prices HERE */}
               Style fits vs {opponent.team}:{' '}
               {STYLES.filter((x) => x.key !== 'balanced')
                 /* the pnr fit is the fit of HIS pair when he named one, so this list and the price agree */

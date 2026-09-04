@@ -112,9 +112,8 @@ export const PAIR_FT = Math.hypot(9, 6)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
-/** Two men filling the lanes on the break, five feet short of the half-court line. */
-const RUN_L: XY = at(-12, 42)
-const RUN_R: XY = at(12, 42)
+/* the two break lanes RUN_L/RUN_R went with the transition set (recal_127, his ruling:
+   "Remove transition entirely from the db.") — no shape stands a man on the half-court line now */
 
 /**
  * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
@@ -282,21 +281,6 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
         [peri(-45), 1],
         [peri(45), 1],
       ])
-    case 'transition':
-      // two men high on the half-court line, a trailer, two men spotting the break — and a big who
-      // cannot shoot runs the lane to the rim instead of spotting up
-      return stand(
-        men,
-        {},
-        [
-          [RUN_L, 1],
-          [RUN_R, 1],
-          [peri(0, 1.5), 1],
-          [peri(-43), 2],
-          [peri(43), 2],
-        ],
-        [DUNK_R],
-      )
     case 'pnr': {
       // the ball at the top, the screen set right beside him at the top of the key, and the other
       // three OUTSIDE the line — the weak-side wing and both corners (his ruling: "If its pnr, put

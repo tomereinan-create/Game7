@@ -27,6 +27,7 @@ import {
   stylePts,
   twoStars,
   type PnrPair,
+  type Style,
   type Tactics,
 } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
@@ -474,5 +475,53 @@ describe('the helio creator he calls', () => {
     expect(reconcileTactics(helio(SGA), names.filter((n) => n !== SGA)).helio).toBe(null)
     expect(gateTactics(helio(SGA), 1).helio).toBe(null)
     expect(gateTactics(helio(SGA), 2).helio).toBe(SGA)
+  })
+})
+
+/**
+ * TRANSITION IS GONE (recal_127, his ruling: "Remove transition entirely from the db."). The set is
+ * six styles now, and the only thing that matters more than the removal is that A RUN IN PROGRESS
+ * SURVIVES IT: a save whose plan says `transition` must open on balanced — no call, no price — and
+ * never crash, never reset, never carry a style the panel cannot show.
+ */
+describe('transition is removed, and a save that still names it loads as balanced', () => {
+  const FIVE5 = THUNDER_22
+  const NAMES5 = FIVE5.map((p) => p.name)
+
+  it('the style is not in the union, the list, or anything that enumerates them', () => {
+    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio'])
+    expect(STYLES).toHaveLength(6)
+    expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
+  })
+
+  it("a saved plan that says 'transition' reconciles to balanced, priced to zero", () => {
+    // exactly the shape a save from before this round carries
+    const save = { ...DEFAULT_TACTICS, style: 'transition' as unknown as Style, tempo: 'fast' as const, crashOff: true }
+    const loaded = reconcileTactics(save, NAMES5)
+    expect(loaded.style).toBe('balanced')
+    // the REST of his plan survives the migration — only the dead style is dropped
+    expect(loaded.tempo).toBe('fast')
+    expect(loaded.crashOff).toBe(true)
+    expect(stylePts(loaded, FIVE5)).toBe(0)
+    // ...and it prices as balanced does, rather than throwing on the way through the parts list
+    expect(tacticsParts(loaded, FIVE5).some((x) => x.label.includes('transition'))).toBe(false)
+  })
+
+  it('nothing reads it any more: the fit, the shape and the read are all six-style', () => {
+    expect(styleFit('transition' as unknown as Style, FIVE5)).toBeUndefined()
+    for (const f of [THUNDER_16, THUNDER_22, CELTICS_25, LAKERS_00, ROCKETS_94]) {
+      expect(bestStyle(f).style).not.toBe('transition')
+      expect(STYLES.some((s) => s.key === bestStyle(f).style) || bestStyle(f).style === 'balanced').toBe(true)
+    }
+  })
+
+  it('the tempo synergy went with it: only post-up still reads the night', () => {
+    const slow = (style: Style): Tactics => ({ ...DEFAULT_TACTICS, style, tempo: 'slow' })
+    const fast = (style: Style): Tactics => ({ ...DEFAULT_TACTICS, style, tempo: 'fast' })
+    for (const s of STYLES) {
+      if (s.key === 'balanced' || s.key === 'postup') continue
+      expect(stylePts(slow(s.key), FIVE5)).toBeCloseTo(stylePts(fast(s.key), FIVE5), 10)
+    }
+    expect(stylePts(slow('postup'), FIVE5)).toBeGreaterThan(stylePts(fast('postup'), FIVE5))
   })
 })
