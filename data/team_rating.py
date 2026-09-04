@@ -216,6 +216,18 @@ MKNOBS = dict(
     ONBALL_SPLIT=0.6,   # steals: 60% on-ball (matchup-driven), 40% team/passing-lane
     HUNT_SCALE=0.10,    # DRtg pts per unit of hunted-man exposure
     DRTG_COEF=0.181,     # calibrated to his 60/40 offense/defense ruling (see calibration below)
+    # recal_122 — the rim anchor's CAP becomes a KNEE. recal_94 capped anchor_raw at 99 (it ran to
+    # 131 and paid a second big twice off the top of a 1-99 scale) and the cap was right, but it is
+    # a DEAD CEILING: 626 of the 1,255 fieldable fives sit at exactly 99, so half the board has the
+    # same rim reading and a five's best rim protector earns nothing. Unchanged below the knee;
+    # above it a point of raw anchor is still worth half a point.
+    ANCHOR_KNEE=99.0,
+    ANCHOR_SOFT=0.5,
+    # The two recal_122 changes read the 1,255-five pool 0.195 DRtg points better, and the DEF gauge
+    # block in src/engine/gauges.ts is FROZEN (recal_108: do not re-derive it). This constant holds
+    # the pool's mean drtgRef exactly where recal_101 froze the gauge on it, so the round re-shapes
+    # the board without lifting it. Without it every dial rises ~4 points and the summit crowds.
+    DIDX_HOLD=1.0773,
 )
 # recal_60: EVERY PAIRING GENERATES EDGE — mirrors offense.ts pairingEdge/pairingTable/pairingTerm/bestBoard.
 def pairing_edge(a, b, atk_usg):
@@ -255,13 +267,25 @@ def defense_vs(us, them):
     min_opp_out = min(b['3pt'] for b in B)
     hide = 1.0 if min_opp_out < MKNOBS['HIDE_OUT'] else max(0.15, 1 - (min_opp_out - MKNOBS['HIDE_OUT'])/50)
     anchor = anchor_raw * hide
+    # recal_122: the cap is a KNEE, not a ceiling — see MKNOBS ANCHOR_KNEE / ANCHOR_SOFT.
+    anc = (anchor if anchor <= MKNOBS['ANCHOR_KNEE']
+           else MKNOBS['ANCHOR_KNEE'] + (anchor - MKNOBS['ANCHOR_KNEE'])*MKNOBS['ANCHOR_SOFT'])
     # recal_94: PROTECTION (`cover`) IS GONE. It refunded the perdef deficit of the four non-anchor
     # defenders whenever the five had a rim anchor — so a bad perimeter five with a big read as a
     # good perimeter five. Measured on the 1,255 fieldable team-seasons, removing it alone took the
     # within-season DEF fit from rho +0.587 to +0.654. The comment it replaced claimed the term was
     # gated by paint-hunting, but min(1, paint_orient*2) is 1.00 against the reference five and
     # against every real offense in the wheel, so it never gated anything.
-    eff_di = sum(a['perdef'] for a in A)/5
+    # recal_122: THE FIVE'S PERDEF IS WEIGHTED BY THE LOAD EACH MAN DEFENDS, not averaged flat.
+    # His ruling: "2 Elite defenders, 3 decent. how 72 def?" — the flat mean is why two elite men are
+    # averaged away by three ordinary ones. The weights are not fitted: they are the OPPONENT'S OWN
+    # usage shares, assigned assortatively (our best defender takes their biggest load), which
+    # against REF_FIVE is .24/.22/.20/.18/.16. Defence is a property of the pairing, so the profile
+    # sharpens by itself against a five that runs everything through one man.
+    pd_desc = sorted((a['perdef'] for a in A), reverse=True)
+    load = sorted(b_usg, reverse=True)
+    tot_load = sum(b_usg) or 1.0
+    eff_di = sum(p*(u/tot_load) for p, u in zip(pd_desc, load))
     # recal_60: the lone hunted-man term is generalized — every pairing generates edge, the board is
     # the best of all 120, and the penalty is RELATIVE TO PERFECT COACHING (the best board pays 0).
     E = pairing_table(A, B, b_usg)
@@ -305,7 +329,25 @@ def defense_vs(us, them):
     # .536->.777, 90s .599->.799, 00s .597->.791, 10s .641->.730, 20s .557->.697. Philadelphia '26
     # (real DRtg 14th of the 24 fieldable 2026 teams) goes from DEF 80 / 1st to DEF 50 / 9th. DEF_WORST/DEF_MID/DEF_TOP in
     # src/engine/gauges.ts were re-frozen from the wheel sweep in the same commit, per recal_71.
-    didx = 0.55*eff_di + 0.13*min(99, anchor)*0.9 + 0.12*min(99, steals)*0.9 + 0.12*max(0, 60 + glass/4)
+    #
+    # recal_122 (his ruling: "2 Elite defenders, 3 decent. how 72 def?"). TWO CHANGES, both measured
+    # on the same 47-season within-season Spearman this block is built on, and both level-held:
+    #   1. eff_di is USAGE-WEIGHTED (see above): the five's perdef read through the loads its men
+    #      actually defend rather than a flat mean.
+    #   2. min(99, anchor) becomes a KNEE (MKNOBS ANCHOR_KNEE/ANCHOR_SOFT): the cap was tying 626
+    #      of the 1,255 fives at exactly 99, so the five's best rim protector was worth nothing.
+    #      Beside the five's mean perdef, a season-z regression over the 1,255 pays the uncapped
+    #      best rim protector +0.155 and the capped anchor only +0.076 — the ceiling was eating a
+    #      live channel, and un-tying it is where this round's fit comes from.
+    # FIT: within-season rho +0.7742 -> +0.7767 (80s .739, 90s .703, 00s .719, 10s .674, 20s .601).
+    # WHAT WAS DECLINED, and why it is written down here: a genuinely TOP-HEAVY perdef aggregation
+    # (a top-2 premium, or any tilt past the usage profile) is what his sentence literally asks for
+    # and the 47 seasons refuse it. Entered as five order statistics, the five's BEST defender is
+    # the LEAST predictive of them (+0.076 against +0.19..+0.23 for the other four), and a top-2
+    # premium entered beside the mean carries a NEGATIVE partial (-0.27 all-time, -0.23 pre-2014,
+    # -0.43 in the tracking era). Every tilt past .24/.22/.20/.18/.16 costs fit monotonically.
+    didx = (0.55*eff_di + 0.13*anc*0.9 + 0.12*min(99, steals)*0.9 + 0.12*max(0, 60 + glass/4)
+            - MKNOBS['DIDX_HOLD'])
     drtg = 110 - MKNOBS['DRTG_COEF']*(didx - 55) + hunt_pen   # rebased: coef scales DIFFERENCES
     return drtg, min(99, steals)
 
