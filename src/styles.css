@@ -33,23 +33,19 @@
   --rail-2: rgba(239, 231, 214, 0.05);
   --wash: rgba(239, 231, 214, 0.03);
 
-  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --sans: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'Spline Sans Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-
   /**
-   * HIS RULING, pointing at the player card's stats and archetype block: that face, throughout.
-   * The block is three faces doing three jobs, and the app now keeps all three straight:
-   *   --mono  every LABEL and caption — PTS, SEASON 1992 · SF/PF, OPEN PG SG.
-   *   --serif every reading the app SAYS in prose or in one big display number — the name, the
-   *           tagline, the archetype paragraph, the dials, the spread, the scoreboard.
-   *   --num   every STAT: a figure printed under its own label, in a grid or a row. Archivo bold,
-   *           tabular, which is what his card's stat grid was already doing by accident while the
-   *           attributes beside it, the ManBand's line and the compare table each did something
-   *           else. Now they all read as the same ledger.
-   * A number is --num when it has a label of its own; it is --serif when it IS the headline.
+   * HIS RULING: "Change EVERYTHING in the app to this font" — pointing at the italic serif lede
+   * on the matchup board. --sans, --mono and --num used to name three different faces (Archivo,
+   * Spline Sans Mono, Archivo again) for three different jobs — labels, prose/headlines, stats —
+   * see recal history below for that doctrine. They now all alias the one face he pointed at, so
+   * every label, every stat and every line of prose reads in Instrument Serif. The names stay
+   * (dozens of call sites still say `var(--mono)` etc.) so this is the one line that has to change
+   * if that ever reverses; the sizes, weights and letter-spacing tuned for each face are untouched.
    */
-  --num: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans: var(--serif);
+  --mono: var(--serif);
+  --num: var(--serif);
 
   color-scheme: dark;
 }
