@@ -547,11 +547,15 @@ const BULLS_97 = cut("Steve Kerr '97", "Michael Jordan '97", "Scottie Pippen '97
 const LAKERS_09 = cut("Derek Fisher '09", "Kobe Bryant '09", "Lamar Odom '09", "Pau Gasol '09", "Andrew Bynum '09")
 
 describe('the triangle is a read, and reads best where the passing and the mid-range are', () => {
-  it("Jordan's second three-peat Bulls and the Kobe-Gasol Lakers read it", () => {
-    for (const f of [BULLS_97, LAKERS_09]) {
-      expect(bestStyle(f).style).toBe('triangle')
-      expect(triangleReaders(f)).toHaveLength(3)
-    }
+  it("Jordan's second three-peat Bulls read it; the Kobe-Gasol Lakers lost their third reader to recal_126", () => {
+    expect(bestStyle(BULLS_97).style).toBe('triangle')
+    expect(triangleReaders(BULLS_97)).toHaveLength(3)
+    // recal_126 (the zone deadeye DIET ramp) took Pau Gasol '09's mid from 64 to 45 — a big whose
+    // mid-range diet is a small share of his shots no longer keeps a full floor — so the '09 Lakers
+    // have two readers (Fisher, Bryant) and read helio through Kobe. The read is the rule; which
+    // five clears it rides the cards, and this pins what the pipeline-126 board says.
+    expect(triangleReaders(LAKERS_09)).toHaveLength(2)
+    expect(bestStyle(LAKERS_09).style).toBe('helio')
   })
 
   it('the featured man is the post option — the entry pass, not the best player', () => {

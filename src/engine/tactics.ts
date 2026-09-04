@@ -334,7 +334,6 @@ export const DEFAULT_TACTICS: Tactics = {
  * its true midpoint: .70 -> .51, oracle +0.543 and blind -0.395, 0.043 and 0.095 of room. The seven
  * others held their bands untouched. All nine pass.
  */
- */
 export const TAX = {
   scorer: 0.55,
   playmaker: 1.10,
@@ -342,8 +341,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.80,
   hunt: 3.80,
-  crashOff: 0.40,
-  crashDef: 0.70,
+  crashOff: 0.17,
+  crashDef: 0.51,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

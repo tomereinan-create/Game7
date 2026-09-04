@@ -26,7 +26,7 @@
         "attrs": {
           "3pt": 76,
           "rim": 2,
-          "mid": 88,
+          "mid": 87,
           "rim_mid_measured": true,
           "ft": 75,
           "fouldraw": 18,
@@ -63,7 +63,7 @@
         "pd": 50,
         "attrs": {
           "3pt": 30,
-          "rim": 43,
+          "rim": 40,
           "mid": 34,
           "rim_mid_measured": true,
           "ft": 75,
@@ -101,7 +101,7 @@
         "pd": 43,
         "attrs": {
           "3pt": 37,
-          "rim": 50,
+          "rim": 40,
           "mid": 42,
           "rim_mid_measured": true,
           "ft": 80,
@@ -123,9 +123,9 @@
           "ts_rel": 0.534
         },
         "big": false,
-        "o_ovr": 47,
+        "o_ovr": 45,
         "d_ovr": 48,
-        "ovr": 48,
+        "ovr": 46,
         "marg": 41
       },
       {
@@ -232,7 +232,7 @@
         "pd": 47,
         "attrs": {
           "3pt": 48,
-          "rim": 37,
+          "rim": 24,
           "mid": 83,
           "rim_mid_measured": true,
           "ft": 81,
@@ -254,9 +254,9 @@
           "ts_rel": 0.547
         },
         "big": false,
-        "o_ovr": 66,
+        "o_ovr": 65,
         "d_ovr": 45,
-        "ovr": 60,
+        "ovr": 59,
         "marg": 66
       },
       {
@@ -346,7 +346,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 55,
-          "rim": 75,
+          "rim": 74,
           "mid": 75,
           "rim_mid_measured": true,
           "ft": 70,
@@ -477,7 +477,7 @@
         "pd": 48,
         "attrs": {
           "3pt": 48,
-          "rim": 33,
+          "rim": 22,
           "mid": 53,
           "rim_mid_measured": true,
           "ft": 76,
@@ -540,7 +540,7 @@
         "o_ovr": 78,
         "d_ovr": 51,
         "ovr": 70,
-        "marg": 90
+        "marg": 89
       },
       {
         "name": "Noah Clowney '26",
@@ -578,7 +578,7 @@
         "o_ovr": 51,
         "d_ovr": 57,
         "ovr": 54,
-        "marg": 43
+        "marg": 44
       },
       {
         "name": "Nic Claxton '26",
@@ -684,7 +684,7 @@
         "pd": 49,
         "attrs": {
           "3pt": 34,
-          "rim": 17,
+          "rim": 14,
           "mid": 53,
           "rim_mid_measured": true,
           "ft": 72,
@@ -722,7 +722,7 @@
         "pd": 45,
         "attrs": {
           "3pt": 20,
-          "rim": 64,
+          "rim": 32,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 87,
@@ -743,11 +743,11 @@
           "ts_raw": 0.588,
           "ts_rel": 0.575
         },
-        "big": true,
-        "o_ovr": 79,
+        "big": false,
+        "o_ovr": 77,
         "d_ovr": 46,
-        "ovr": 69,
-        "marg": 82
+        "ovr": 68,
+        "marg": 88
       },
       {
         "name": "Precious Achiuwa '26",
@@ -1061,7 +1061,7 @@
         "attrs": {
           "3pt": 65,
           "rim": 15,
-          "mid": 73,
+          "mid": 72,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 46,
@@ -1136,7 +1136,7 @@
         "pd": 55,
         "attrs": {
           "3pt": 52,
-          "rim": 68,
+          "rim": 67,
           "mid": 44,
           "rim_mid_measured": true,
           "ft": 84,
@@ -1267,7 +1267,7 @@
         "pd": 55,
         "attrs": {
           "3pt": 78,
-          "rim": 21,
+          "rim": 16,
           "mid": 40,
           "rim_mid_measured": true,
           "ft": 89,
@@ -1343,7 +1343,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 18,
-          "rim": 77,
+          "rim": 74,
           "mid": 51,
           "rim_mid_measured": true,
           "ft": 77,
@@ -1719,7 +1719,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 76,
-          "rim": 63,
+          "rim": 62,
           "mid": 44,
           "rim_mid_measured": true,
           "ft": 86,
@@ -2002,7 +2002,7 @@
         "pd": 37,
         "attrs": {
           "3pt": 84,
-          "rim": 32,
+          "rim": 31,
           "mid": 91,
           "rim_mid_measured": true,
           "ft": 74,
@@ -2095,7 +2095,7 @@
         "pd": 53,
         "attrs": {
           "3pt": 68,
-          "rim": 59,
+          "rim": 31,
           "mid": 62,
           "rim_mid_measured": true,
           "ft": 79,
@@ -2117,7 +2117,7 @@
           "ts_rel": 0.564
         },
         "big": false,
-        "o_ovr": 60,
+        "o_ovr": 59,
         "d_ovr": 58,
         "ovr": 59,
         "marg": 68
@@ -2302,7 +2302,7 @@
         "pd": 65,
         "attrs": {
           "3pt": 51,
-          "rim": 41,
+          "rim": 23,
           "mid": 32,
           "rim_mid_measured": true,
           "ft": 74,
@@ -2324,9 +2324,9 @@
           "ts_rel": 0.556
         },
         "big": false,
-        "o_ovr": 35,
+        "o_ovr": 34,
         "d_ovr": 64,
-        "ovr": 50,
+        "ovr": 49,
         "marg": 51
       },
       {
@@ -2378,7 +2378,7 @@
         "pd": 58,
         "attrs": {
           "3pt": 86,
-          "rim": 79,
+          "rim": 75,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 89,
@@ -2509,7 +2509,7 @@
         "pd": 74,
         "attrs": {
           "3pt": 78,
-          "rim": 44,
+          "rim": 37,
           "mid": 60,
           "rim_mid_measured": true,
           "ft": 86,
@@ -2661,7 +2661,7 @@
         "pd": 64,
         "attrs": {
           "3pt": 30,
-          "rim": 70,
+          "rim": 69,
           "mid": 29,
           "rim_mid_measured": true,
           "ft": 66,
@@ -2683,9 +2683,9 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 52,
+        "o_ovr": 51,
         "d_ovr": 86,
-        "ovr": 69,
+        "ovr": 68,
         "marg": 90
       }
     ]
@@ -2716,7 +2716,7 @@
         "pd": 55,
         "attrs": {
           "3pt": 73,
-          "rim": 45,
+          "rim": 30,
           "mid": 36,
           "rim_mid_measured": true,
           "ft": 66,
@@ -2738,7 +2738,7 @@
           "ts_rel": 0.567
         },
         "big": false,
-        "o_ovr": 46,
+        "o_ovr": 45,
         "d_ovr": 47,
         "ovr": 46,
         "marg": 54
@@ -2830,7 +2830,7 @@
         "pd": 64,
         "attrs": {
           "3pt": 82,
-          "rim": 45,
+          "rim": 40,
           "mid": 54,
           "rim_mid_measured": true,
           "ft": 78,
@@ -2893,7 +2893,7 @@
         "o_ovr": 69,
         "d_ovr": 90,
         "ovr": 80,
-        "marg": 88
+        "marg": 89
       }
     ]
   },
@@ -2999,7 +2999,7 @@
         "pd": 60,
         "attrs": {
           "3pt": 99,
-          "rim": 37,
+          "rim": 28,
           "mid": 52,
           "rim_mid_measured": true,
           "ft": 86,
@@ -3269,7 +3269,7 @@
         "o_ovr": 74,
         "d_ovr": 71,
         "ovr": 73,
-        "marg": 62
+        "marg": 63
       },
       {
         "name": "Wendell Carter Jr. '26",
@@ -3376,7 +3376,7 @@
         "attrs": {
           "3pt": 55,
           "rim": 23,
-          "mid": 75,
+          "mid": 74,
           "rim_mid_measured": true,
           "ft": 82,
           "fouldraw": 25,
@@ -3413,7 +3413,7 @@
         "pd": 52,
         "attrs": {
           "3pt": 45,
-          "rim": 58,
+          "rim": 49,
           "mid": 39,
           "rim_mid_measured": true,
           "ft": 76,
@@ -3435,7 +3435,7 @@
           "ts_rel": 0.56
         },
         "big": false,
-        "o_ovr": 48,
+        "o_ovr": 46,
         "d_ovr": 61,
         "ovr": 54,
         "marg": 55
@@ -3489,7 +3489,7 @@
         "pd": 49,
         "attrs": {
           "3pt": 9,
-          "rim": 54,
+          "rim": 35,
           "mid": 19,
           "rim_mid_measured": true,
           "ft": 71,
@@ -3511,9 +3511,9 @@
           "ts_rel": 0.624
         },
         "big": true,
-        "o_ovr": 35,
+        "o_ovr": 31,
         "d_ovr": 69,
-        "ovr": 52,
+        "ovr": 50,
         "marg": 61
       }
     ]
@@ -3582,7 +3582,7 @@
         "pd": 55,
         "attrs": {
           "3pt": 52,
-          "rim": 37,
+          "rim": 34,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 88,
@@ -3604,7 +3604,7 @@
           "ts_rel": 0.573
         },
         "big": false,
-        "o_ovr": 87,
+        "o_ovr": 86,
         "d_ovr": 51,
         "ovr": 76,
         "marg": 91
@@ -3789,7 +3789,7 @@
         "pd": 44,
         "attrs": {
           "3pt": 88,
-          "rim": 28,
+          "rim": 27,
           "mid": 58,
           "rim_mid_measured": true,
           "ft": 87,
@@ -3814,7 +3814,7 @@
         "o_ovr": 66,
         "d_ovr": 48,
         "ovr": 61,
-        "marg": 76
+        "marg": 75
       },
       {
         "name": "Zaccharie Risacher '26",
@@ -3996,7 +3996,7 @@
         "pd": 57,
         "attrs": {
           "3pt": 80,
-          "rim": 34,
+          "rim": 24,
           "mid": 77,
           "rim_mid_measured": true,
           "ft": 82,
@@ -4072,7 +4072,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 64,
-          "rim": 32,
+          "rim": 23,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 82,
@@ -4165,7 +4165,7 @@
         "pd": 53,
         "attrs": {
           "3pt": 91,
-          "rim": 8,
+          "rim": 7,
           "mid": 33,
           "rim_mid_measured": true,
           "ft": 75,
@@ -4241,7 +4241,7 @@
         "pd": 59,
         "attrs": {
           "3pt": 94,
-          "rim": 71,
+          "rim": 68,
           "mid": 86,
           "rim_mid_measured": true,
           "ft": 81,
@@ -4435,7 +4435,7 @@
         "o_ovr": 62,
         "d_ovr": 63,
         "ovr": 62,
-        "marg": 86
+        "marg": 85
       },
       {
         "name": "Sam Merrill '26",
@@ -4579,7 +4579,7 @@
         "pd": 91,
         "attrs": {
           "3pt": 9,
-          "rim": 79,
+          "rim": 77,
           "mid": 42,
           "rim_mid_measured": true,
           "ft": 76,
@@ -4617,7 +4617,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 97,
-          "rim": 18,
+          "rim": 14,
           "mid": 84,
           "rim_mid_measured": true,
           "ft": 80,
@@ -4655,7 +4655,7 @@
         "pd": 68,
         "attrs": {
           "3pt": 87,
-          "rim": 82,
+          "rim": 41,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 86,
@@ -4677,9 +4677,9 @@
           "ts_rel": 0.629
         },
         "big": false,
-        "o_ovr": 87,
+        "o_ovr": 85,
         "d_ovr": 76,
-        "ovr": 84,
+        "ovr": 82,
         "marg": 96
       },
       {
@@ -4693,7 +4693,7 @@
         "pd": 53,
         "attrs": {
           "3pt": 64,
-          "rim": 35,
+          "rim": 31,
           "mid": 64,
           "rim_mid_measured": true,
           "ft": 79,
@@ -4715,7 +4715,7 @@
           "ts_rel": 0.555
         },
         "big": true,
-        "o_ovr": 56,
+        "o_ovr": 55,
         "d_ovr": 73,
         "ovr": 64,
         "marg": 54
@@ -4786,7 +4786,7 @@
         "pd": 58,
         "attrs": {
           "3pt": 88,
-          "rim": 80,
+          "rim": 72,
           "mid": 92,
           "rim_mid_measured": true,
           "ft": 78,
@@ -4824,7 +4824,7 @@
         "pd": 71,
         "attrs": {
           "3pt": 48,
-          "rim": 9,
+          "rim": 7,
           "mid": 56,
           "rim_mid_measured": true,
           "ft": 82,
@@ -4900,7 +4900,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 44,
-          "rim": 29,
+          "rim": 28,
           "mid": 16,
           "rim_mid_measured": true,
           "ft": 74,
@@ -5200,7 +5200,7 @@
         "pd": 56,
         "attrs": {
           "3pt": 91,
-          "rim": 36,
+          "rim": 34,
           "mid": 97,
           "rim_mid_measured": true,
           "ft": 89,
@@ -5263,7 +5263,7 @@
         "o_ovr": 65,
         "d_ovr": 47,
         "ovr": 60,
-        "marg": 72
+        "marg": 71
       },
       {
         "name": "Bruce Brown '26",
@@ -5276,7 +5276,7 @@
         "pd": 65,
         "attrs": {
           "3pt": 63,
-          "rim": 29,
+          "rim": 23,
           "mid": 26,
           "rim_mid_measured": true,
           "ft": 76,
@@ -5314,7 +5314,7 @@
         "pd": 53,
         "attrs": {
           "3pt": 90,
-          "rim": 42,
+          "rim": 34,
           "mid": 44,
           "rim_mid_measured": true,
           "ft": 85,
@@ -5336,9 +5336,9 @@
           "ts_rel": 0.617
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 68,
         "d_ovr": 52,
-        "ovr": 64,
+        "ovr": 63,
         "marg": 75
       },
       {
@@ -5353,7 +5353,7 @@
         "attrs": {
           "3pt": 68,
           "rim": 92,
-          "mid": 89,
+          "mid": 86,
           "rim_mid_measured": true,
           "ft": 82,
           "fouldraw": 86,
@@ -5407,7 +5407,7 @@
         "pd": 78,
         "attrs": {
           "3pt": 73,
-          "rim": 30,
+          "rim": 19,
           "mid": 65,
           "rim_mid_measured": true,
           "ft": 88,
@@ -5445,7 +5445,7 @@
         "pd": 58,
         "attrs": {
           "3pt": 88,
-          "rim": 71,
+          "rim": 40,
           "mid": 74,
           "rim_mid_measured": true,
           "ft": 88,
@@ -5467,9 +5467,9 @@
           "ts_rel": 0.584
         },
         "big": false,
-        "o_ovr": 72,
+        "o_ovr": 70,
         "d_ovr": 50,
-        "ovr": 65,
+        "ovr": 64,
         "marg": 84
       },
       {
@@ -5715,7 +5715,7 @@
         "o_ovr": 44,
         "d_ovr": 94,
         "ovr": 69,
-        "marg": 81
+        "marg": 82
       },
       {
         "name": "Tobias Harris '26",
@@ -5728,7 +5728,7 @@
         "pd": 61,
         "attrs": {
           "3pt": 48,
-          "rim": 36,
+          "rim": 30,
           "mid": 63,
           "rim_mid_measured": true,
           "ft": 87,
@@ -5821,7 +5821,7 @@
         "pd": 59,
         "attrs": {
           "3pt": 49,
-          "rim": 72,
+          "rim": 70,
           "mid": 93,
           "rim_mid_measured": true,
           "ft": 78,
@@ -5859,7 +5859,7 @@
         "pd": 52,
         "attrs": {
           "3pt": 82,
-          "rim": 16,
+          "rim": 12,
           "mid": 95,
           "rim_mid_measured": true,
           "ft": 81,
@@ -5935,7 +5935,7 @@
         "pd": 57,
         "attrs": {
           "3pt": 78,
-          "rim": 38,
+          "rim": 32,
           "mid": 24,
           "rim_mid_measured": true,
           "ft": 82,
@@ -6028,7 +6028,7 @@
         "pd": 63,
         "attrs": {
           "3pt": 65,
-          "rim": 83,
+          "rim": 82,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 88,
@@ -6066,7 +6066,7 @@
         "pd": 85,
         "attrs": {
           "3pt": 45,
-          "rim": 26,
+          "rim": 21,
           "mid": 29,
           "rim_mid_measured": true,
           "ft": 81,
@@ -6088,9 +6088,9 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 33,
+        "o_ovr": 32,
         "d_ovr": 82,
-        "ovr": 58,
+        "ovr": 57,
         "marg": 53
       },
       {
