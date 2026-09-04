@@ -600,18 +600,66 @@ def o_score(p, trace=None):
     # confirms it: every parameterisation that puts Stockton '90 above 82 puts Nash '05 above 88 and
     # out of his own recal_109 band. So both subjects land INSIDE tolerance and neither lands on its
     # centre: Jackson '99 53 against 54 +-3, Stockton '90 82 against 84 +-3.
+    #
+    # recal_130 (HIS RULING, verbatim: "Stockton became overrated, on OFF" and, on the number, "01'
+    # is currently at 92. 80+-4 sounds about right"). THE SECOND PAYMENT CARRIES ITS OWN LOAD LINE.
+    #
+    # THE DEFECT, decomposed on the card the ruling names. John Stockton '01 is 29.2 minutes, 11.5
+    # points and 18.8% usage, and of his o_score of 92.98 the creation rate is paid TWICE: playvol 99
+    # x 0.19 = 18.81 on the standard path AND 15.47 more from this term - 34.3 points of a 93 for one
+    # fact, an assist rate. recal_126 fixed his zone bars (mid 86 -> 67, rim 72 -> 49) and measured
+    # that the attribute stage saturates at OFF 86; the rest is here.
+    #
+    # WHY A LOAD LINE AND NOT A SMALLER TERM, and it is arithmetic rather than a preference.
+    # recal_123 proved that no flat factor g on this term can work, and the post-126 board says the
+    # same with new numbers: the subject needs g <= 0.863 and John Stockton '90 - pinned 84 +-3 and
+    # reading 82 - needs g >= 0.916. The two cards are playvol 99 apiece, volume 31 against 36 and
+    # efficiency 97 against 94, so NOTHING this term reads separates them. What separates them is
+    # MINUTES: 29.2 against 37.4.
+    #
+    # AND MINUTES IS NOT A NEW FACT, IT IS recal_96's OWN DOCTRINE APPLIED TO THE SECOND PAYMENT.
+    # recal_96 ruled that a per-possession profile must be scaled by the load that produced it, and
+    # discounts BOTH standard-path load bars by `load_share` - but its full-load line is 24 minutes,
+    # located by Clint Capela '17 (23.9 mpg) and Ty Jerome '25, i.e. cut to answer "did this man play
+    # at all". This term is a SECOND payment of the same rate, and it took the raw percentile with no
+    # load reading whatever (recal_123's COST recorded the omission: "a passer under 24 minutes is
+    # paid his creation rate twice at full price"). A rate paid twice has to be scaled twice, and the
+    # second line is not the bench boundary: it is the minutes at which a distributor has actually
+    # carried a season's creation.
+    # THE LINE IS THE CLASS'S OWN UPPER QUARTILE, MEASURED, NOT CHOSEN. Of the 834 cards this term
+    # pays, the 75th percentile of minutes is 34.7 (median 31.6, p90 36.8), so PD_MIN_FULL = 34.7 and
+    # the factor is the flat share `min(1, mpg / 34.7)` - a creation RATE turned into a season's
+    # worth of created offence. A card with no minutes on the sheet takes 1.0, which is recal_96's
+    # own rule ("measured, or not at all"). It is also inside the window his standing anchors leave:
+    # every value from 33.9 to 35.2 puts the subject on 84 with every anchor held (33.8 leaves him
+    # on 85, 35.3 takes Mark Jackson '98 below his band), and 34.7 sits in it with room either side.
+    #
+    # WHERE IT LANDS AND WHERE IT STOPS. John Stockton '01 off 86 -> 84, inside his 80 +-4 band at
+    # its top edge, and 84 IS THE FLOOR OF WHAT IS REACHABLE. The frontier is Mark Jackson '98, who
+    # is pinned 55 +-3, reads 53, and played 29.4 minutes - two tenths MORE than the subject. Any
+    # factor monotone in minutes therefore pays the subject at least what it pays Jackson, and
+    # Jackson can lose at most 16.6% of his term while the subject must lose 13.7% to reach 84 and
+    # 26.3% to reach 83. MEASURED, not argued: 13,236 parameterisations of the whole floor-plus-ramp
+    # family (floor 0.00 to 1.00, foot 15.0 to 39.5, width 0.5 to 25) hold every OFF anchor on the
+    # board - value and order, the only scale this round can move - and the
+    # LOWEST reading any of them gives the subject is 84. The only shape that would separate two
+    # cards two tenths of a minute apart is a cliff at 29.3 mpg, and Mark Jackson '00 (27.0 mpg,
+    # pinned 58 +-3) closes that door: a ramp steep enough to split them zeroes his whole term.
     PD_PV_LO, PD_PV_HI = 70.0, 85.0
     PD_V_LO, PD_V_HI = 10.0, 68.0
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
+    PD_MIN_FULL = 34.7
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
     if _gpv * _gv > 0.0:
         _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
               (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
-        _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge
+        _mp = _MPG.get(p['name'])
+        _gl = 1.0 if _mp is None else min(1.0, _mp / PD_MIN_FULL)
+        _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge * _gl
         std += _pd
         if trace is not None:
-            trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, added=_pd)
+            trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, mpg=_mp, load=_gl, added=_pd)
     # recal_112 (HIS RULING, verbatim: "I think in general eff is getting undervalued. 17pgg on 68
     # ts(on a bad era). Has to show mid to high 60's at least. Even low 70's"). THE EFFICIENT
     # INTERIOR SCORER — the mirror of recal_64's off-ball floor, for the man whose efficiency comes
@@ -1181,7 +1229,9 @@ if _CARD:
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
-              f"{_p2['eff_factor']:.2f}: +{_p2['added']:.3f}")
+              f"{_p2['eff_factor']:.2f} x load {_p2['load']:.3f} (recal_130: "
+              f"{_p2['mpg'] if _p2['mpg'] is not None else 'no'} mpg against the class's own 34.7-minute "
+              f"full-creation line): +{_p2['added']:.3f}")
     if 'two_level' in _ot:
         _t2 = _ot['two_level']
         print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "

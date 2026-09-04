@@ -1,0 +1,467 @@
+{
+  "round": 130,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+  "title": "the elite-passer term is a SECOND payment of the same creation rate, so it now carries its own load line — `min(1, mpg / 34.7)`, the class's own upper-quartile minutes — and John Stockton '01 off 86 -> 84, inside his 80 +-4 band; 84 is the FLOOR of what is reachable, and the frontier is Mark Jackson '98 at 29.4 minutes against the subject's 29.2",
+  "subject": "John Stockton '01",
+  "scale": "off",
+  "target": 80,
+  "tol": 4,
+  "before": 86,
+  "after": 84,
+  "pipeline_version": 126,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_MIN_FULL = 34\\.7",
+      "label": "recal_130 — THE SECOND PAYMENT'S OWN LOAD LINE, measured on the class and not chosen",
+      "note": "new: the 75th percentile of minutes among the 834 cards this term pays (median 31.6, p90 36.8). Every value from 33.9 to 35.2 puts the subject on 84 with every anchor this round can move held"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge \\* _gl",
+      "label": "the term itself — a creation RATE turned into a season's worth of created offence",
+      "note": "was `0.245 * a['playvol'] * _gpv * _gv * _ge`; recal_109's size 0.245 and all three gates are BYTE-IDENTICAL"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_gl = 1\\.0 if _mp is None else min\\(1\\.0, _mp / PD_MIN_FULL\\)",
+      "label": "recal_96's rule for a missing measurement, applied here: measured, or not at all",
+      "note": "a card with no minutes on the sheet takes 1.0 — no discount, no boost"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+      "label": "recal_96's STANDARD-PATH line, UNTOUCHED — and the reason this term needed its own",
+      "note": "24 minutes was located by Clint Capela '17 (23.9 mpg) and Ty Jerome '25; it answers 'did he play at all', not 'did he carry a season's creation'. Capela reads 57 and Jerome 71, both unmoved"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_PV_LO, PD_PV_HI = 70\\.0, 85\\.0",
+      "label": "recal_117's playvol ramp, untouched",
+      "note": "the class this round prices is exactly the class recal_109/117 built; no card enters or leaves it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
+      "label": "recal_117's volume band, untouched — every star still sits at gate 0.00 and moves by ZERO",
+      "note": "Magic '89 (volume 70), Chris Paul '09 (82), LeBron '13 (97), Jokic '25 (89), Harden '19 (99)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 70\\.0, 90\\.0, 0\\.5",
+      "label": "recal_109's efficiency HALF-FLOOR, untouched",
+      "note": "it is what keeps the pure non-scorers alive at all, and it is doing exactly that on the two Jackson cards that set this round's frontier"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — the volume and playvol weights are UNTOUCHED",
+      "note": "0.26 and 0.19 stand; recal_91, recal_98 and recal_123 each measured the reweight and each declined it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED — no card above the knee moves at all",
+      "note": "every mover is below the 93 knee, so band() is the identity for all 224 of them and recal_90's warning does not apply"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+      "label": "recal_106's discipline weights, untouched — DEF moves on ZERO cards"
+    }
+  ],
+  "expect": [
+    {
+      "card": "John Stockton '01",
+      "scale": "ovr",
+      "op": "~",
+      "value": 77,
+      "tol": 0,
+      "label": "the subject's OVR follows: 78 -> 77 (recal_126 took it 83 -> 78)"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "THE FIRST BLOCKER, recal_117's pin at 84 +-3 with one point of room: 37.4 mpg is past the line, so his load factor is 1.000 and he moves by EXACTLY zero. Any flat shrink of the term needs g >= 0.916 from him and g <= 0.863 from the subject — that is why the fix had to read minutes"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 52,
+      "tol": 3,
+      "label": "THE FRONTIER, recal_109's pin at 55 +-3: 53 -> 52, on his floor. He played 29.4 minutes against the subject's 29.2, so no factor monotone in minutes can take the subject below him"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "off",
+      "op": "~",
+      "value": 51,
+      "tol": 3,
+      "label": "recal_117's pin at 54 +-3: 53 -> 51, on his floor (28.2 mpg, load 0.813)"
+    },
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 56,
+      "tol": 3,
+      "label": "recal_109's pin at 58 +-3: 58 -> 56 (27.0 mpg, load 0.778). He is the card that closes the CLIFF: a ramp steep enough to split two men two tenths of a minute apart zeroes his whole term"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 3,
+      "label": "recal_109's pin at 85 +-3, unmoved: 34.3 mpg is four tenths short of the line, load 0.988, worth 0.11 of raw"
+    },
+    {
+      "card": "Steve Nash '06",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "35.4 mpg — past the line, load 1.000, moves by exactly zero"
+    },
+    {
+      "card": "Steve Nash '07",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "the same: 35.3 mpg, unmoved"
+    },
+    {
+      "card": "John Stockton '97",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
+      "label": "HIS CAP (recal_109, 'K=0.32 not 0.36') and recal_126's ORDER PIN: 35.3 mpg, load 1.000, unmoved at 87 — still under the 91 cap and now three clear of the subject rather than one"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "ovr",
+      "op": "~",
+      "value": 79,
+      "tol": 0,
+      "label": "and his OVR with it — the pre-1997 seasons this ruling is NOT about are untouched"
+    },
+    {
+      "card": "John Stockton '88",
+      "scale": "off",
+      "op": "~",
+      "value": 80,
+      "tol": 1,
+      "label": "34.7 mpg — the line itself, load 1.000 exactly: unmoved at 80"
+    },
+    {
+      "card": "John Stockton '95",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "35.0 mpg, unmoved"
+    },
+    {
+      "card": "John Stockton '87",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "THE BIGGEST MOVER ON THE BOARD and the defect in its purest form: 62 -> 57 on a 22.7-minute BACKUP season whose creation rate was being paid as a full one"
+    },
+    {
+      "card": "Magic Johnson '89",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "volume 70 against a band top of 68: gate 0.00, moves by EXACTLY zero"
+    },
+    {
+      "card": "Chris Paul '09",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "playvol 96 at volume 82: gate 0.00, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "gate 0.00, unmoved"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "recal_98's pin: playvol 62, below the term's foot, unmoved — and the Utah pair reads 90 > 84"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "recal_51/96's pin with zero room, and the card that fixes recal_96's OWN line at 24: playvol 23, nowhere near this term, unmoved"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 4,
+      "label": "recal_96's subject, the other end of that same line: unmoved"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_89's pin, playvol 40 — below the term's foot, unmoved"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "recal_89's pin, playvol 44 at 23.4 mpg: he would have been the round's worst casualty if the term reached him, and it does not"
+    },
+    {
+      "card": "OG Anunoby '21",
+      "scale": "off",
+      "op": "~",
+      "value": 63,
+      "tol": 2,
+      "label": "recal_91's pin, playvol 34, unmoved"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "recal_112's subject, playvol 24 — disjoint from this term by construction, unmoved"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "recal_89's pin, the only anchored card inside the volume band's top three points: gate 0.034 and 36.1 mpg, unmoved"
+    },
+    {
+      "card": "Bruce Bowen '06",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 1,
+      "label": "recal_64's pin and recal_126's blocker on the 3PT route: playvol 18, far below the term's foot"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's pin, unmoved"
+    },
+    {
+      "card": "José Calderón '13",
+      "scale": "off",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "the third family recal_109 found, unpinned and recorded: 78 -> 76 at 29.6 mpg"
+    },
+    {
+      "card": "Muggsy Bogues '90",
+      "scale": "off",
+      "op": "~",
+      "value": 49,
+      "tol": 1,
+      "label": "the purest non-scorer in the class, 33.9 mpg: 50 -> 49, one point"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "def",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards and no attribute moved — build_ratings.py was not run"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "attr:playvol",
+      "op": "~",
+      "value": 99,
+      "tol": 0,
+      "label": "and the bar itself is untouched: this round changes what the rate is PAID, not what it reads"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "John Stockton '97",
+      "below": "John Stockton '01",
+      "label": "recal_126's ORDER PIN, now with room: 87 > 84 where it was 87 > 86"
+    },
+    {
+      "scale": "off",
+      "above": "Karl Malone '99",
+      "below": "John Stockton '01",
+      "label": "the Utah pair: 90 > 84"
+    },
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Steve Nash '05",
+      "label": "the OFF summit still reads far above the class"
+    },
+    {
+      "scale": "off",
+      "above": "Chris Paul '09",
+      "below": "Steve Nash '05",
+      "label": "the star distributor the term cannot reach still reads above the one it lifts"
+    },
+    {
+      "scale": "off",
+      "above": "Mark Jackson '00",
+      "below": "Mark Jackson '99",
+      "label": "his own season order survives the load line: 56 > 51"
+    },
+    {
+      "scale": "off",
+      "above": "John Stockton '01",
+      "below": "John Stockton '87",
+      "label": "the starter's season still reads above the backup's, by more than it did: 84 > 57 where it was 86 > 62"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 224,
+    "max_abs": 5,
+    "top": [
+      [
+        "John Stockton '87",
+        62,
+        57
+      ],
+      [
+        "Muggsy Bogues '89",
+        42,
+        38
+      ],
+      [
+        "Mark Jackson '03",
+        40,
+        36
+      ],
+      [
+        "John Stockton '03",
+        84,
+        81
+      ],
+      [
+        "Mark Jackson '91",
+        55,
+        52
+      ],
+      [
+        "John Stockton '86",
+        54,
+        51
+      ],
+      [
+        "Ennis Whatley '85",
+        34,
+        31
+      ],
+      [
+        "John Stockton '00",
+        83,
+        81
+      ],
+      [
+        "John Stockton '98",
+        81,
+        79
+      ],
+      [
+        "John Stockton '01",
+        86,
+        84
+      ],
+      [
+        "José Calderón '08",
+        82,
+        80
+      ],
+      [
+        "Johnny Moore '84",
+        52,
+        50
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE SUBJECT LANDS ON THE TOP EDGE OF HIS BAND AND THAT EDGE IS A WALL, NOT A TUNING CHOICE. 84 against 80 +-4. The frontier is MARK JACKSON '98: pinned 55 +-3 by recal_109, reading 53, and he played 29.4 minutes against John Stockton '01's 29.2. Any factor monotone in minutes therefore pays the subject at least what it pays Jackson, and the two men's room is not compatible below 84 — Jackson can lose 16.6% of his term and the subject must lose 13.7% to reach 84 and 26.3% to reach 83. MEASURED rather than argued: 13,236 parameterisations of the whole floor-plus-ramp minutes family (floor 0.00 to 1.00 in steps of 0.02, foot 15.0 to 39.5 in half-minutes, width 0.5 to 25 minutes) hold every OFF anchor on the board - value and order, the only scale this round can move - and the LOWEST reading any of them gives the subject is 84. The only shape that separates two cards two tenths of a minute apart is a cliff at 29.3 mpg, which is a name check wearing a gate, and Mark Jackson '00 (27.0 mpg, pinned 58 +-3) closes it independently: a ramp that steep zeroes his whole term.",
+    "THE SIZE IS THE CLASS'S OWN UPPER QUARTILE AND IT IS MEASURED, NOT FITTED TO STOCKTON. Of the 834 cards the term pays, the 75th percentile of minutes is 34.7 (p10 22.8, median 31.6, p90 36.8) — the minutes at which a distributor in this class has carried a full season's creation. It also sits inside the window his own standing anchors leave: 33.9 to 35.2 all put the subject on 84 with every anchor held (33.8 leaves him on 85; 35.3 takes Mark Jackson '98 below his band), and 34.7 has 0.8 of a minute below it and 0.5 above.",
+    "recal_123's RECORDED CONSISTENCY DEFECT IS HALF-FIXED, ON PURPOSE. Its COST named it: 'the passer term reads the RAW playvol percentile and not recal_96's load-discounted _pv, so a passer under 24 minutes is paid his creation rate twice at full price'. The term now reads minutes through its OWN line, which is STRICTER than recal_96's above 18.4 mpg and LOOSER below it — a 13-minute card keeps 37% of the second payment where the standard path pays him 8%. Composing the two shares was built and measured: it holds all 132 anchors too, at nine more movers and a worst move of -6 instead of -5 (Mark Jackson '03 40 -> 34, T.J. McConnell '16 43 -> 39, John Stockton '85 37 -> 33). The single factor was taken because it is one constant and less collateral; the composed variant is the obvious next step if a ruling ever lands on a sub-20-minute distributor.",
+    "THE BAND ANCHORS ARE NOT TOUCHED AND recal_90's WARNING DOES NOT APPLY. Every one of the 224 movers is below the 93 knee, where band() is the identity, so OFF_TOP (102.75) and DEF_TOP (104.25) are byte-identical and not one card above the knee moves. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip.",
+    "COLLATERAL IS 224 CARDS ON OFF, EVERY ONE OF THEM DOWN, mean -1.24, max -5, and the shape of it is the doctrine made visible. Only SEVEN cards move by 3 or more and SIX of them are seasons under 24 minutes: Mark Jackson '03 40 -> 36 (17.9 mpg), Ennis Whatley '85 34 -> 31 (19.8), Mark Jackson '91 55 -> 52 (22.2), Muggsy Bogues '89 42 -> 38 (22.2), John Stockton '87 62 -> 57 (22.7), John Stockton '86 54 -> 51 (23.6). The seventh is John Stockton '03 at 27.7. Forty-two cards move by 2 or more. Nobody has ruled on any of them. OVR follows on 153 cards, max -2. DEF moves on ZERO cards and no attribute moves.",
+    "EIGHT MORE STOCKTON SEASONS COME DOWN WITH THE SUBJECT and none of them is pinned: '87 62 -> 57, '03 84 -> 81, '00 83 -> 81, '98 81 -> 79, '86 54 -> 51, '02 86 -> 85, '99 74 -> 73, '85 37 -> 35. Every one is a season under 32 minutes; every season of his at 34.7 minutes or more - '88 (34.7), '89, '90, '91, '92, '95, '96, '97 - is byte-identical. That is the ruling's own shape — the seasons he called overrated are the short ones.",
+    "WHAT THE ROUND DOES NOT FIX, and a later ruling would have to name it. John Stockton '01 (84) still reads ABOVE his own '90 (82), the 37-minute 17.2-point 14.5-assist season at BPM 8.9. recal_123 decomposed why and it is not this stage's to move: the gap is 10.6 raw points of ZONE ratings (mid 67 / 3pt 66 / rim 49 against 47 / 26 / 56), the pre-1997 seasons are on the INFERRED side of build_ratings.py's FIT_YEARS seam, and data/RATINGS_UPDATE.md ratifies that compression as a known accepted property. Only Tomer can say which end of that seam moves.",
+    "THE VALUE ANCHOR recal_126 LEFT OUT IS NOW IN. data/anchors.json gains John Stockton '01 off 80 +-4 (round 130); recal_126's order pin John Stockton '97 >= John Stockton '01 stands unchanged and now reads 87 > 84. Nothing is superseded. 132 anchors, 0 failing, mean |error| 0.66.",
+    "PIPELINE_VERSION IS LEFT AT 126, per the doctrine of 2026-09-03: the integrator stamps the highest round number in the batch after the single merged regeneration. This file's `pipeline_version` records what the round actually shipped against.",
+    "NO TACTIC TAX WAS RE-RATIFIED. All nine harness bands passed on the first reading with main's constants (crashOff .17 / crashDef .51 since recal_126, playmaker 1.10). The pool shift is small and entirely below the knee, so the oracle's five did not change."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: a creation RATE was paid twice — 0.19 x playvol on the standard path and 0.245 x playvol again from recal_109/117's elite-passer term, 34.3 of John Stockton '01's 93-point o_score for one fact — and the second payment carried no reading of the load that produced it at all.",
+    "recal_96 IS THE DOCTRINE THIS ROUND APPLIES, NOT A NEW IDEA. It ruled that a per-possession profile must be scaled by the load that produced it and discounts BOTH standard-path load bars by `load_share`. Its full-load line is 24 minutes and it was located by Clint Capela '17 (23.9 mpg) and Ty Jerome '25 — cards on the bench/starter boundary, answering 'did this man play at all'. The second payment of the same rate needs a second line, and it is not the bench boundary: it is the minutes at which a distributor has carried a season's creation.",
+    "WHY NOT A SMALLER TERM, settled by arithmetic on two cards rather than by search. John Stockton '90 is pinned 84 +-3 and reads 82: he needs the term to keep g >= 0.916. The subject needs g <= 0.863. The two are playvol 99 apiece, volume 31 against 36, efficiency 97 against 94 and both at gate 1.00 on playvol — NOTHING the term reads separates them. What separates them is 29.2 minutes against 37.4, and that is the only input at this stage that can see it.",
+    "WHY NOT THE OTHER HALF OF THE 'READ IT ONCE' FIX, measured and rejected. Fading the standard path's own 0.19 playvol weight as the passer gate opens was built first and it is WORSE, not better: the two Stockton cards have identical playvol (99) and gates within 0.09 of each other, so the fade hits '90 at 86% of the rate it hits '01 — at the largest fade '90's pin permits the subject falls by ONE point, to 85. Against Mark Jackson '98 it is worse still: his gate is 0.966 against the subject's 0.638, so a gate-proportional fade takes 17.3 raw points off him and 12.0 off the subject. The fact IS read twice; what makes the two readings separable is not the fact, it is the load.",
+    "MEASURED BEFORE APPLYING, on the whole pool at twelve settings of the line - 33.0, 33.5, 34.0, 34.3, 34.5, 34.7, 35.0, 35.3, 35.6, 36.0, 37.0, 38.0 - the subject reads 85, 85, 84, 84, 84, 84, 84, 84, 84, 84, 83, 83, and the first anchor breaks at 35.3 (Mark Jackson '98), the second at 36.0 (Mark Jackson '99); John Stockton '90 does not move at all until 38.0, and even there he only goes 82 -> 81, still on his floor. 224 of 10,000 cards move on OFF, every one DOWN, max -5, mean -1.24; 153 on OVR, max -2; ZERO on DEF and zero attributes. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip.",
+    "THE CLASS IS UNCHANGED — THIS IS A PRICE, NOT A GATE. 834 cards take the term before the round and 834 after it. No card enters the class, none leaves it, and recal_112's efficient interior scorer stays disjoint by construction (its gate is playvol <= 70, this one's foot is 70).",
+    "STOCKTON'S ARC STILL TURNS THE RIGHT WAY UP, which is recal_117's own visible test: '88 80, '89 83, '90 82, '91 80, '92 83, '95 86, '96 87, '97 87, '98 79, '00 81, '01 84, '02 85, '03 81. The seasons that fall are the short ones and they fall in minute order."
+  ]
+}
