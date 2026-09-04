@@ -303,6 +303,16 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
         (p) => p.attrs.height,
       )
     }
+    case 'triangle': {
+      // THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). The three men who make the
+      // shape stand on the left: the post option on the block, a wing behind the arc above him, a
+      // guard in the corner. The weak side is the two-man game that reads off it — a man at the
+      // right elbow (the high post, the set's other entry) and the point at the top. Everyone who
+      // is not the post man or the elbow man is behind the line, his spacing rule; the elbow is the
+      // one inside spot the shape holds, so the worst shooter of the four takes it.
+      const s = who(men, 'triangle', plan)
+      return stand(men, { [s]: BLOCK_L }, [[ELBOW_R, 0], [CORNER_L, 2], [peri(-38), 1], [peri(0, 6), 1]])
+    }
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a
       // second big who cannot shoot takes the dunker spot, the set's other inside spot. The hub is

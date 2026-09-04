@@ -127,7 +127,7 @@ export interface StyleCall {
  * points over the free default. A save that still says `transition` loads as `balanced`; see
  * reconcileTactics, which has always dropped a style that no longer exists.
  */
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio'
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -135,6 +135,7 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'motion', label: 'motion' },
   { key: 'postup', label: 'post-up' },
   { key: 'helio', label: 'helio' },
+  { key: 'triangle', label: 'triangle' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -600,6 +601,50 @@ export function twoStars(five: Player[]): boolean {
   return e.length >= 2 && e[1] >= STAR_LINE && e[0] - e[1] <= DUO_GAP
 }
 
+/**
+ * THE TRIANGLE (recal_128, his ruling: "Add Triangle") — the first style added since recal_58's set,
+ * and it is not a play, it is a READ. Three facts, and no creator term at all:
+ *
+ *   POST OPTION   a man who can be fed on the block: the best max(rim, mid) on the floor. TRI_POST
+ *                 70 is the gate — under it there is no entry pass and bestStyle will not read the
+ *                 five as a triangle however the rest lands. It is a low bar on purpose (the wheel's
+ *                 p10 is 72): the post option is what makes the set POSSIBLE, not what makes it good.
+ *   READERS       men who can BOTH pass and shoot the mid-range: playvol >= TRI_PV 50 and
+ *                 mid >= TRI_MID 60. This is the discriminator and it carries the fit. Over the
+ *                 1,255 wheel fives the median is ONE and the 90th percentile is two, so the third
+ *                 reader is the rare thing and is paid like it: TRI_READ 8 for each of the first
+ *                 two, TRI_READ3 16 for the third and fourth. A convex term, because the triangle
+ *                 needs three men who can play out of it and two is a different offense.
+ *   SEPARATION    recal_115's scorerCreator, INVERTED. The gap between the best man and the mean of
+ *                 the other four, charged at TRI_SEP 0.8 for every point over TRI_SEP_FREE 22 (the
+ *                 wheel's median gap, so an ordinary five pays nothing). A five that leans on one
+ *                 creator is running that man's offense, not a read-and-react one.
+ *
+ * Plus the team's ball security at 0.15 — the set dies on a bad pass — and a 14 base so the whole
+ * thing sits on the same 0-100 axis the other six do. An ordinary five reads about 50 and loses to
+ * the free default; it wins 72 of the 1,255 wheel fives (5.7%).
+ *
+ * MEASURED, and reported rather than tuned away: of the fives his ruling named, the ones the CARDS
+ * agree with are Jordan's second three-peat Bulls ('96 73, '97 75) and the Kobe-Gasol Lakers ('09
+ * 70). The first three-peat Bulls and the Shaq-Kobe Lakers do not have the readers — Pippen's mid
+ * was 46-55 then, Grant 28-30, Cartwright 23; Harper '00 reads mid 8, Horry 40, Shaw 28 — so they
+ * read helio and post-up, which is what a superstar plus role players is. Loosening the reader
+ * thresholds far enough to catch them was measured first and takes the triangle to 205 of 1,255,
+ * which is not a signature system, it is a default.
+ */
+export const TRI_POST = 70
+export const TRI_PV = 50
+export const TRI_MID = 60
+export const TRI_READ = 8
+export const TRI_READ3 = 16
+export const TRI_SEP = 0.8
+export const TRI_SEP_FREE = 22
+/** The best man on the floor to feed on the block — the triangle's post option, and its featured man. */
+export const postOption = (five: Player[]): Player | null =>
+  five.length ? five.reduce((m, p) => (Math.max(p.attrs.rim, p.attrs.mid) > Math.max(m.attrs.rim, m.attrs.mid) ? p : m), five[0]) : null
+/** Men who can both pass and shoot the mid-range — the ones the triangle actually reads through. */
+export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => p.attrs.playvol >= TRI_PV && p.attrs.mid >= TRI_MID)
+
 export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
@@ -656,6 +701,20 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       const { hub } = postMan(five, call?.post)
       const post = hub ? Math.max(0, postFit(hub.attrs)) : 0
       return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => p.attrs['3pt']) * 0.3
+    }
+    case 'triangle': {
+      const post = postOption(five)
+      const readers = Math.min(triangleReaders(five).length, 4)
+      const e = a.map(scorerCreator).sort((x, y) => y - x)
+      const sep = e[0] - (e.length > 1 ? e.slice(1).reduce((t, v) => t + v, 0) / (e.length - 1) : 0)
+      return (
+        14 +
+        0.25 * (post ? Math.max(post.attrs.rim, post.attrs.mid) : 0) +
+        TRI_READ * Math.min(readers, 2) +
+        TRI_READ3 * Math.max(0, readers - 2) +
+        0.15 * avg((x) => x.ballsec) -
+        TRI_SEP * Math.max(0, sep - TRI_SEP_FREE)
+      )
     }
     case 'helio': {
       // HELIO IS ONE MAN ALONE (recal_115, his ruling: "why Helio when they have 2 superstars?").
@@ -797,10 +856,14 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
   // What it reads instead is whatever else fits the pair — usually the pick-and-roll between them,
   // and the caption names both men (see featured). A call is still a call.
   const duo = twoStars(five)
+  const hasPost = five.some((p) => Math.max(p.attrs.rim, p.attrs.mid) >= TRI_POST)
   for (const s of STYLES) {
     if (s.key === 'balanced') continue
     if (s.key === 'fiveout' && shy >= 2) continue
     if (s.key === 'helio' && duo) continue
+    // ...and THE TRIANGLE NEEDS AN ENTRY PASS (recal_128): a five with nobody who can be fed on the
+    // block has no triangle to run, whatever the rest of the fit lands on. Called is still called.
+    if (s.key === 'triangle' && !hasPost) continue
     const fit = styleFit(s.key, five, theirs)
     if (fit > bestFit) {
       bestFit = fit
@@ -824,6 +887,8 @@ export function featured(style: Style, five: Player[], call?: StyleCall | null):
       return [heliMan(five, call?.helio).creator].filter((p): p is Player => !!p)
     case 'postup':
       return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
+    case 'triangle':
+      return [postOption(five)].filter((p): p is Player => !!p)
     case 'pnr': {
       const { handler, screener } = pnrPair(five, call?.pnr)
       return [handler, screener].filter((p): p is Player => !!p)

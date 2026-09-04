@@ -522,3 +522,44 @@ describe('the helio court runs through the creator he called', () => {
     expect(cap(shot({ spots: spotsOf(OKC), tactic: { ...DEFAULT_TACTICS, style: 'helio' as const } }))).toBe('helio · Gilgeous-Alexander · your tactic')
   })
 })
+
+/**
+ * THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). Three men on the strong side —
+ * the post option on the block, a wing behind the arc, a guard in the corner — and the weak side is
+ * a man at the elbow with the point at the top. His spacing rule holds: everyone who is not the
+ * post man or the elbow man stands behind the line, and the corner is a shooter's spot.
+ */
+describe('the triangle stands three men on the strong side and two on the weak', () => {
+  const BULLS = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Toni Kukoč '97"), g("Luc Longley '97")]
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it('the five it is read for draws it, and the post option is on the block', () => {
+    expect(inferredStyle(BULLS)!.style).toBe('triangle')
+    const at = spotsFor(null, BULLS)
+    expect(at).toEqual(spotsFor({ style: 'triangle', pnr: null }, BULLS))
+    const post = BULLS.findIndex((p) => p.name === featured('triangle', BULLS)[0].name)
+    expect(outsideLine(at[post])).toBe(false)
+    expect(inCorner(at[post])).toBe(false)
+  })
+
+  it('exactly two men are inside the arc — the block and the elbow — and both corners are shooters', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(2)
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+    for (let i = 0; i < 5; i++) if (inCorner(at[i])) expect(canSpace(BULLS[i])).toBe(true)
+  })
+
+  it('a man who cannot shoot takes the elbow rather than a spacing spot', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    const shy = BULLS.map((p, i) => [p, i] as const).filter(([p]) => !canSpace(p))
+    for (const [, i] of shy) expect(inCorner(at[i])).toBe(false)
+  })
+
+  it('the caption names the post option', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'triangle' as const }
+    expect(cap(shot({ spots: spotsOf(BULLS), tactic: plan }))).toBe('triangle · Jordan · your tactic')
+    expect(cap(shot({ spots: spotsOf(BULLS) }))).toContain('triangle · best fit')
+  })
+})

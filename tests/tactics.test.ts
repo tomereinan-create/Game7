@@ -18,6 +18,7 @@ import {
   STAR_LINE,
   heliMan,
   postFit,
+  postOption,
   postMan,
   POST_HEIGHT,
   roleMen,
@@ -25,6 +26,8 @@ import {
   styleFit,
   STYLES,
   stylePts,
+  triangleReaders,
+  TRI_POST,
   twoStars,
   type PnrPair,
   type Style,
@@ -489,8 +492,8 @@ describe('transition is removed, and a save that still names it loads as balance
   const NAMES5 = FIVE5.map((p) => p.name)
 
   it('the style is not in the union, the list, or anything that enumerates them', () => {
-    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio'])
-    expect(STYLES).toHaveLength(6)
+    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle'])
+    expect(STYLES).toHaveLength(7)
     expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
   })
 
@@ -523,5 +526,64 @@ describe('transition is removed, and a save that still names it loads as balance
       expect(stylePts(slow(s.key), FIVE5)).toBeCloseTo(stylePts(fast(s.key), FIVE5), 10)
     }
     expect(stylePts(slow('postup'), FIVE5)).toBeGreaterThan(stylePts(fast('postup'), FIVE5))
+  })
+})
+
+/**
+ * THE TRIANGLE (recal_128, his ruling: "Add Triangle"). The first style added since recal_58's set.
+ * It is a READ, not a call on a man: a post option to feed, men who can pass and shoot the
+ * mid-range to play out of it, and no one creator the whole thing runs through.
+ */
+const BULLS_97 = cut("Steve Kerr '97", "Michael Jordan '97", "Scottie Pippen '97", "Toni Kukoč '97", "Luc Longley '97")
+const LAKERS_09 = cut("Derek Fisher '09", "Kobe Bryant '09", "Lamar Odom '09", "Pau Gasol '09", "Andrew Bynum '09")
+
+describe('the triangle is a read, and reads best where the passing and the mid-range are', () => {
+  it("Jordan's second three-peat Bulls and the Kobe-Gasol Lakers read it", () => {
+    for (const f of [BULLS_97, LAKERS_09]) {
+      expect(bestStyle(f).style).toBe('triangle')
+      expect(triangleReaders(f)).toHaveLength(3)
+    }
+  })
+
+  it('the featured man is the post option — the entry pass, not the best player', () => {
+    expect(featured('triangle', BULLS_97)[0].name).toBe("Michael Jordan '97")
+    // it is the best BLOCK option, not the biggest man: Bryant '09 (mid 96) is fed ahead of
+    // Gasol (rim 82), which is what the Lakers actually did with him
+    expect(postOption(LAKERS_09)!.name).toBe("Kobe Bryant '09")
+    // ...and the post option is the best max(rim, mid) on the floor, whoever that is
+    for (const f of [BULLS_97, LAKERS_09, LAKERS_00]) {
+      const p = postOption(f)!
+      for (const q of f) expect(Math.max(p.attrs.rim, p.attrs.mid)).toBeGreaterThanOrEqual(Math.max(q.attrs.rim, q.attrs.mid))
+    }
+  })
+
+  it('THE THIRD READER is what it pays for: two is a different offense', () => {
+    // the Bulls '92 are the same franchise, a Pippen mid-range short of the same set
+    const bulls92 = cut("B.J. Armstrong '92", "Michael Jordan '92", "Scottie Pippen '92", "Horace Grant '92", "Stacey King '92")
+    expect(triangleReaders(bulls92)).toHaveLength(2)
+    expect(styleFit('triangle', bulls92)).toBeLessThan(styleFit('triangle', BULLS_97))
+    expect(bestStyle(bulls92).style).not.toBe('triangle')
+  })
+
+  it('A LONE CREATOR costs it: the separation term is recal_115 inverted', () => {
+    // the Shaq-Kobe Lakers have the post option and the ball security, and one reader
+    expect(triangleReaders(LAKERS_00)).toHaveLength(1)
+    expect(styleFit('triangle', LAKERS_00)).toBeLessThan(60)
+    expect(bestStyle(LAKERS_00).style).toBe('postup')
+  })
+
+  it('a five with nobody to feed on the block is never READ as a triangle', () => {
+    const noPost = cut("Steve Kerr '96", "Danny Green '14", "Bryon Russell '97", "Andre Roberson '16", "J.R. Smith '16")
+    expect(noPost.some((p) => Math.max(p.attrs.rim, p.attrs.mid) >= TRI_POST)).toBe(false)
+    expect(bestStyle(noPost).style).not.toBe('triangle')
+    // ...but a CALL is still a call, and still prices
+    expect(styleFit('triangle', noPost)).toBeGreaterThan(0)
+  })
+
+  it('it is in the set, the panel and the tax law like any other style', () => {
+    expect(STYLES.map((s) => s.key)).toContain('triangle')
+    expect(STYLES).toHaveLength(7)
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97)).toBeGreaterThan(0)
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)).toBeLessThan(0)
   })
 })

@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, heliMan, pnrPair, postMan, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, heliMan, pnrPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -758,6 +758,23 @@ export function MyTeam({
                           </button>
                         ))}
                       </ChipRow>
+                    </div>
+                  )
+                })()
+              : null}
+            {/* HIS RULING: "Add Triangle". The triangle names nobody — it is a read, not a call on a
+                man — so instead of a chip row it says what the engine found: who the entry pass
+                goes to, and how many men on the floor can play out of it. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'triangle'
+              ? (() => {
+                  const post = postOption(five)
+                  const readers = triangleReaders(five).length
+                  return (
+                    <div className="posbar superseded">
+                      <span className="cap">Triangle</span>
+                      <span className="tnote">
+                        {post ? `${shortName(post.name)} on the block · ${readers} read${readers === 1 ? 'er' : 'ers'}` : 'no post option'}
+                      </span>
                     </div>
                   )
                 })()
