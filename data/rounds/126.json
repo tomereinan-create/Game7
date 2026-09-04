@@ -1,0 +1,388 @@
+{
+  "round": 126,
+  "agent": "stats-to-ratings",
+  "status": "declined",
+  "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+  "title": "the rim/mid DEADEYE FLOORS now pay for a SHOT DIET and not for a lucky sample — the lift ramps on the card's own in-zone attempt-rate percentile (0.40 -> 0.90) on top of recal_78's shot count. Stockton '01 off 92 -> 86 and OVR 83 -> 78 with all 130 anchors held and '97 strictly above '01; DECLINED on the last two points, which the attributes cannot reach: with BOTH floors deleted outright he still prints 86",
+  "subject": "John Stockton '01",
+  "scale": "off",
+  "target": 80,
+  "tol": 4,
+  "before": 92,
+  "after": 86,
+  "pipeline_version": 122,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "DEYE_LO, DEYE_HI = 0\\.40, 0\\.90",
+      "label": "recal_126 — the in-zone DIET band the deadeye floor's lift is scaled by",
+      "note": "new: below the 40th percentile of that zone's attempt rate the floor pays nothing, at the 90th it pays in full"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_lift = lambda base, floor, att, ref, pv: base if floor <= base else base \\+ \\(floor - base\\) \\* max\\(0\\.0, min\\(1\\.0, att / ref\\)\\) \\* _diet\\(pv\\)",
+      "label": "the lift itself: recal_78's COUNT ramp times recal_126's RATE ramp",
+      "note": "was _lift(base, floor, att, ref) — count only; the rate side was a CLIFF at 2.5 attempts per 100"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rim = _lift\\(rim, min\\(0\\.92, 0\\.85\\*P\\['rimfg'\\]\\(fgp\\) \\+ 0\\.15\\*P\\['rimvol'\\]\\(share\\*fga100\\)\\), share\\*fga100\\*_poss78/100\\.0, 174\\.0, P\\['rimvol'\\]\\(share\\*fga100\\)\\)",
+      "label": "the PAINT floor reads its own attempt-rate percentile",
+      "note": "Kevin Durant '26 took rim 82 on an 18th-percentile paint diet; he now reads 41"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mid = _lift\\(mid, min\\(0\\.92, 0\\.85\\*P\\['midfg'\\]\\(fmid\\) \\+ 0\\.15\\*P\\['midvol'\\]\\(s10\\*fga100\\)\\), s10\\*fga100\\*_poss78/100\\.0, 105\\.0, P\\['midvol'\\]\\(s10\\*fga100\\)\\)",
+      "label": "recal_78's MIDRANGE floor, the one recal_123 named, reads its own attempt-rate percentile",
+      "note": "Stockton '01's 3.28 midrange attempts per 100 rank 42nd — the floor now pays him 5% of it, and his mid reads 67 rather than 86"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "FIT_YEARS = range\\(1997, 2006\\)",
+      "label": "the 1997 measured/inferred seam, UNTOUCHED as the dispatch required",
+      "note": "RATINGS_UPDATE.md ratifies the pre-97 compression; every Stockton card before 1997 reads byte-identical"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge",
+      "label": "recal_109/117's elite-passer term, UNTOUCHED — recal_123 proved it cannot move",
+      "note": "0.245 stands; compute_ovr.py is byte-identical to origin/main this round"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.17,\n  crashDef: 0\\.51,",
+      "label": "the two tactic taxes the round's pool shift broke, re-ratified THROUGH the harness",
+      "note": "crashOff .40 -> .17 and crashDef .70 -> .51 — both broke on the ORACLE edge (+0.488 and +0.478 against +0.50); the trail is in the file's own comment block"
+    }
+  ],
+  "expect": [
+    {
+      "card": "John Stockton '01",
+      "scale": "ovr",
+      "op": "~",
+      "value": 78,
+      "tol": 0,
+      "label": "the subject's OVR follows the two zone bars down: 83 -> 78"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "attr:mid",
+      "op": "~",
+      "value": 67,
+      "tol": 0,
+      "label": "THE BAR THE ROUND IS ABOUT: 86 -> 67, the floor's lift cut from 100% to 5% by a 42nd-percentile midrange diet"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "attr:rim",
+      "op": "~",
+      "value": 49,
+      "tol": 0,
+      "label": "the paint bar the same way: 72 -> 49 on a 45th-percentile paint diet"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "attr:3pt",
+      "op": "~",
+      "value": 66,
+      "tol": 0,
+      "label": "UNMOVED, and it is why the round declines: the 3PT deadeye is the same cliff (era-adjusted 3PA/100 >= 3.0, 88% on accuracy) but Bruce Bowen '06 sits at vol 0.449 against Stockton's 0.276, so the SAME band takes Bowen to 41 against his 45 +-1 pin"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "recal_117's anchor, INERT by construction — his zone bars are inferred (pre-97) and no inferred card touches these floors"
+    },
+    {
+      "card": "John Stockton '97",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
+      "label": "91 -> 87, 'may fall a little' and strictly above the subject: the diet ramp is a within-season PERCENTILE, so his 3.13 midrange attempts in 1997 (55th) outrank the subject's 3.28 in 2001 (42nd)"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "recal_109's pin: 88 -> 86, mid 90 -> 86 on a 79th-percentile midrange diet"
+    },
+    {
+      "card": "Steve Nash '07",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 0,
+      "label": "the same class one season on, unpinned and recorded: 87 -> 86"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 53,
+      "tol": 3,
+      "label": "recal_109's pin, UNMOVED — 1.15 midrange attempts per 100 never cleared the 2.5 gate, so there is no floor to ramp"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "off",
+      "op": "~",
+      "value": 54,
+      "tol": 3,
+      "label": "recal_117's pin, unmoved for the same reason"
+    },
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "recal_109's pin, unmoved"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "recal_98's pin and recal_123's blocker on the zone route — INERT: his midrange floor (0.667) is BELOW his volume-first composite (0.881), so the floor never paid him anything"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "~",
+      "value": 97,
+      "tol": 1,
+      "label": "the same, one class up: mid composite 0.996 against a floor of 0.845 — untouched, mid 99, rim 84"
+    },
+    {
+      "card": "DeMar DeRozan '17",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 2,
+      "label": "recal_89's pin: the midrange archetype, 99th-percentile diet, mid 93 unmoved"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_51's pin with zero room, unmoved: 99.6th-percentile paint diet, rim 88 held"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_89's pin: mid 61 -> 55, OFF unmoved — 2.01 midrange attempts per 100 is below the gate on the 2015 pool"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "recal_89's pin, unmoved: an 83rd-percentile midrange diet keeps 82% of a floor that was worth 0.008 to him"
+    },
+    {
+      "card": "Bruce Bowen '06",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 1,
+      "label": "recal_64's pin, unmoved — and the card that closes the 3PT route: the same band on the 3PT deadeye reads him 41"
+    },
+    {
+      "card": "Ty Jerome '25",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 4,
+      "label": "recal_96's pin and recal_78's own subject, unmoved: mid 93 held on a top-decile midrange diet"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "recal_102's pin, unmoved on every bar"
+    },
+    {
+      "card": "Reggie Miller '97",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 1,
+      "label": "recal_89's pin at 88 +-1: rim 42 -> 29 on a 41st-percentile paint diet, OFF 88 -> 87, inside"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "recal_89's pin, unmoved"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "recal_112's subject — inferred zones, inert"
+    },
+    {
+      "card": "Kevin Durant '26",
+      "scale": "attr:rim",
+      "op": "~",
+      "value": 41,
+      "tol": 0,
+      "label": "THE DEFECT IN ITS PUREST FORM, unpinned and recorded: PAINT 82 on a rim-attempt rate at the 18th percentile of 2026. His OFF falls 87 -> 85 only, because mid 99 is still his z[0]"
+    },
+    {
+      "card": "Nicolas Batum '14",
+      "scale": "attr:rim",
+      "op": "~",
+      "value": 37,
+      "tol": 0,
+      "label": "the same: rim 72 on a 15th-percentile paint diet -> 37"
+    },
+    {
+      "card": "Anthony Carter '08",
+      "scale": "attr:mid",
+      "op": "~",
+      "value": 46,
+      "tol": 0,
+      "label": "the midrange twin: mid 76 on 2.64 attempts per 100 (29th percentile) -> 46"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "def",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "no defensive attribute is touched: d_ovr moved on ZERO of 10,000 cards"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "John Stockton '97",
+      "below": "John Stockton '01",
+      "label": "HIS ORDER PIN, added to anchors.json this round: 87 > 86, strict"
+    },
+    {
+      "scale": "off",
+      "above": "Karl Malone '99",
+      "below": "John Stockton '01",
+      "label": "the Utah pair the right way round for the first time: 90 > 86 (was 90 against 92)"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "DeMar DeRozan '17",
+      "below": "John Stockton '01",
+      "label": "the midrange archetype above the part-time midrange sample: 93 > 67 (was 93 against 86)"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 1935,
+    "max_abs": 11,
+    "top": [
+      [
+        "Mikki Moore '07",
+        62,
+        51
+      ],
+      [
+        "Carlos Boozer '03",
+        66,
+        56
+      ],
+      [
+        "Brad Miller '03",
+        73,
+        64
+      ],
+      [
+        "Andre Iguodala '10",
+        68,
+        60
+      ],
+      [
+        "Andre Iguodala '11",
+        63,
+        55
+      ],
+      [
+        "Brice Sensabaugh '25",
+        57,
+        64
+      ],
+      [
+        "Kevin Martin '06",
+        68,
+        61
+      ],
+      [
+        "Andre Iguodala '13",
+        53,
+        46
+      ],
+      [
+        "John Stockton '01",
+        92,
+        86
+      ],
+      [
+        "Anthony Carter '08",
+        43,
+        37
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "THE NUMBER IS NOT REACHED AND THE WALL IS ARITHMETIC, NOT A FAILED SEARCH. Delete BOTH zone deadeye floors outright — set the diet factor to zero for every card in the pool — and John Stockton '01 still prints OFF 86: his mid falls only to his own volume-first composite (0.65 x a 42nd-percentile attempt rate + 0.35 x a 94th-percentile .451, which is mid 65 after smoothing) and his rim to 46. The band top is 84. Measured across seven settings (0.25/0.75, 0.30/0.80, 0.35/0.85, 0.40/0.80, 0.40/0.90, 0.50/0.90, 0.50/1.00) the subject reads 88, 88, 87, 87, 86, 86, 86 — he SATURATES at 86 for every foot at or above 0.40, so 0.40/0.90 is the saturation point and not a pair fitted to him.",
+    "WHERE THE LAST TWO POINTS LIVE, decomposed on the shipped card. o_score is 98.49 before the round and would have to be 90.86 for OFF 84. The three zone terms are 0.22 x z[0] + 0.08 x z[1] + 0.05 x z[2] = 27.98 before and 21.87 after (mid 67 / 3pt 66 / rim 49), which is the whole 6 points the round delivers. What is left is playvol 99 x 0.19 = 18.81 and recal_109/117's elite-passer term at +15.47 — 34.3 of a 92.4 o_score paid for the SAME fact, an assist rate — and recal_123 proved by two-card arithmetic that the passer term cannot shrink (the subject needs g <= 0.507, Mark Jackson '98 needs g >= 0.833). That is compute_ovr.py's stage, not this one; this round stops at the attribute, as the brief requires.",
+    "THE 3PT DEADEYE IS THE SAME CLIFF AND IS ANCHOR-BLOCKED. eye = min(0.95, 0.88*acc + 0.12*vol) switches on at era-adjusted 3PA/100 >= 3.0 and then pays 88% on accuracy — structurally identical to the two floors this round fixed, and Stockton '01 clears it by 0.7 attempts (2.9 x 1.281 = 3.72, volume percentile 0.276). Built and measured on the whole pool with the SAME 0.40/0.90 band: the subject reaches 87 in combination and FOUR anchors break — Steve Kerr '96 59 against 62 +-1, Tony Snell '18, Bruce Bowen '06 41 against 45 +-1, and the BOS '24 team OFF rank. Bowen sits at vol 0.449 and Snell at 0.523 against the subject's 0.276, so only a second, narrower band fitted between them would separate them, which is a name check wearing a gate. Left alone; a later ruling on Bowen or Kerr would unlock it.",
+    "TWO ANCHORS ARE INERT BY CONSTRUCTION, AND THAT IS WHY THE ZONE ROUTE IS LEGAL AT ALL where recal_123 measured a flat midrange discount breaking 27. Karl Malone '99's midrange FLOOR is 0.667 against a volume-first composite of 0.881; SGA '25's floor is 0.845 against 0.996; DeRozan '17's is 0.800 against 0.981. The floor never paid any of them, so scaling the floor cannot touch them. The floor's LARGEST payouts all go to thin diets — the top 25 lifts in the pool sit between the 28th and 47th percentile of in-zone attempt rate — which is the same statement as the defect.",
+    "THE ANCHOR HE RULED IS NOT ADDED, because it would fail. data/anchors.json gains only the ORDER pin John Stockton '97 >= John Stockton '01 on off (87 > 86, strict). The value pin John Stockton '01 off 80 +-4 is left out on purpose: adding it makes npm run anchors exit non-zero on the very round that added it. It should go in the moment a compute_ovr round reaches the band.",
+    "COLLATERAL IS LARGE AND IT IS THE FIX, NOT A SIDE EFFECT. 1,935 cards moved on OFF (mean -1.41, 114 by more than 3, worst -11 Mikki Moore '07) and 1,311 on OVR (max 6). Nobody moved on DEF. The rim bar is the noisiest — 2,739 cards, worst -41 — because the paint floor was the more broken of the two: Kevin Durant '24/'25/'26 read PAINT 82/81/82 on paint-attempt rates at the 18th, 35th and 18th percentile, and each costs 2 OFF points because midrange is still their z[0]. THE ONE PERVERSE DIRECTION: 30 cards RISE, up to +7 (Brice Sensabaugh '25 57 -> 64, Patty Mills '20, J.R. Smith '08, Buddy Hield '20). None of them gained a bar — they LOST one, and recal_38's zone-dominance bonus in compute_ovr.py then fires because their best weapon finally towers over the rest of the diet. That is compute_ovr's shape doing what it was built to do; recorded here rather than patched from this stage.",
+    "WHAT A LATER ROUND SHOULD NOT REDO. The 2.5-attempts-per-100 gate is still underneath both floors and still matters: it is what keeps Mark Jackson '98/'99/'00 (1.15 midrange attempts per 100), Clint Capela '17 (0.10) and Kyle Korver '15 (2.01) out of the floor entirely, and all four are pinned. recal_78's COUNT ramp (105 mid / 174 rim shots) is untouched and multiplies with the new rate ramp — raising the count reference buys nothing for the subject, whose 149.7 midrange shots clear 105 whole and whose rate factor is already 0.05.",
+    "TWO TACTIC TAXES WERE RE-RATIFIED, and it is the pool that moved rather than the rebound bars. crash off glass and crash def glass are the only two taxes whose BENEFIT reads a rebounding attribute (orb, drb), and this round touched neither — what changed is the five the oracle picks once 1,935 offensive scores move. Both broke on the ORACLE edge together (+0.488 and +0.478 against the +0.50 floor), the first time since recal_117 that more than one broke. crashOff .40 -> .17 (feasible about -.39 to .34, midpoint NEGATIVE, so recal_117's positive-half rule applies again) and crashDef .70 -> .51 (a whole feasible interval, .381 to .633, so its true midpoint). The seven others held. These are BRANCH figures measured on this branch's pool: the integrator re-sweeps ONCE from main's constants (.40 / .70) on the merged pool, as the law requires, and these two are superseded rather than stacked if they hold there."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: recal_78 scaled the deadeye floors' lift by the real shot COUNT and left the other half of the question — whether the card lives in that zone at all — as a CLIFF at 2.5 attempts per 100. Clear it by a tenth of a shot and 85%-on-accuracy was paid in full, so a bottom-quintile diet bought a specialist's bar.",
+    "MEASURED ON THE POOL BEFORE ANYTHING WAS APPLIED: 1,122 of 6,748 measured cards were taking a lift, 726 of them worth more than 0.05, and the twenty-five largest lifts in the whole pool ALL sit between the 28th and 47th percentile of in-zone attempt rate. Anthony Carter '08 mid 76 on 2.64 attempts per 100 at .523; Fred Hoiberg '01 mid 82 on 2.86; Shane Battier '03 mid 74 on 2.57; Nicolas Batum '14 rim 72 on a 15th-percentile paint diet; Payton Pritchard '25 rim 75 on a 16th.",
+    "WHY A PERCENTILE AND NOT THE RAW RATE, which is the one design choice in the round. The raw rate is era-bound: 3.13 midrange attempts per 100 in 1997 is a HEAVIER diet than 3.28 in 2001, because the league moved. Ramping on the raw rate would have paid Stockton '01 MORE than Stockton '97 and inverted the exact order his ruling asks for. The within-season, per-zone percentile is era-neutral by construction and is the same object the floor's own 0.15 volume term already reads.",
+    "THE ORDER HE ASKED FOR, AND ONE HE DID NOT. Stockton '97 87 > '01 86 is the pin. Karl Malone '99 90 > Stockton '01 86 is new this round and was inverted before it (90 against 92). The subject is still ABOVE his own '90 card (86 against 82), which is the shape the ruling is really about and which this stage cannot finish.",
+    "THE SEAM WAS NOT REOPENED. FIT_YEARS stays 1997-2005 and no inferred (pre-1997) card touches these floors, so every Stockton season from '85 to '96 reads byte-identical — '88 off 80, '90 off 82, both untouched. RATINGS_UPDATE.md's ratified property (Inferred (pre-97) rim/mid compress superstars toward the mean) stands exactly as it was.",
+    "ONE FIX, MEASURED AT SEVEN SETTINGS, and no anchor was ever broken by the zone version — the settings differ only in collateral (52, 66, 95, 104, 114, 147 and 151 cards moving more than 3 on OFF) and in whether Stockton '97 stays STRICTLY above '01 (it ties at 0.35/0.85 and at 0.50/0.90, and is strict at 0.40/0.90). 0.40/0.90 is the least collateral that reaches the subject's saturation point with the order strict."
+  ]
+}
