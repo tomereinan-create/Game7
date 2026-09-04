@@ -53,6 +53,15 @@ export interface Tactics {
    * so nothing that exists today prices differently. Only `postup` as a style ever reads it.
    */
   post?: string | null
+  /**
+   * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator. Helio will
+   * overtake main playmaker and scorrer, as helio becomes both"). The third name-keyed call, and
+   * the only one that reaches OUT of its own style: calling helio on a man makes him the main
+   * scorer AND the main playmaker, so `scorer` and `playmaker` stop being heard while it is called
+   * (see roleMen). Absent/null is the engine's own featured man, so an old save, an AI opponent and
+   * a plan that has never been to the panel are untouched. Only `helio` as a style reads it.
+   */
+  helio?: string | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -106,6 +115,7 @@ export interface PnrPair {
 export interface StyleCall {
   pnr?: PnrPair | null
   post?: string | null
+  helio?: string | null
 }
 
 export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
@@ -127,6 +137,7 @@ export const DEFAULT_TACTICS: Tactics = {
   scheme: 'matchup',
   pnr: null,
   post: null,
+  helio: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -276,6 +287,19 @@ export const DEFAULT_TACTICS: Tactics = {
  * one break was MAIN PLAYMAKER, for the first time since r76: blind -0.16 against the -0.30 floor. Swept
  * .70 (-0.21) / .85 (-0.27) / 1.00 (-0.33) / 1.10 (-0.37, oracle +2.25); re-ratified .57 -> 1.10, the
  * first passing value with room on the blind side, the oracle having 1.75 of headroom. Eight others held.
+ * recal_124 added the post-up TARGET and recal_125 the helio CREATOR, and neither moved a tax.
+ * 124 could not: the harness builds every playstyle deviation from DEFAULT_TACTICS, whose `post` is
+ * null, so it prices the engine's own hub exactly as before. 125 DID change what the playstyle row
+ * measures, and deliberately — helio now overtakes the main scorer and the main playmaker (his
+ * ruling: "Helio will overtake main playmaker and scorrer, as helio becomes both"), so calling it
+ * carries two more taxed terms, and a row built on stylePts alone would have been calibrating a
+ * price nobody pays. The row now prices the WHOLE plan a style implies (harness.ts, evFor), which
+ * is the same number it always was for the other six. The band absorbed it without a constant
+ * moving: playstyle random -1.17 -> -0.99 against the -0.30 ceiling and oracle +0.55 -> +1.68
+ * against the +0.50 floor — the oracle rose because a helio five whose creator is its best
+ * scorer-creator now earns both role benefits, which is the ruling's whole point. The scorer and
+ * playmaker rows did not move at all: they call scorerPts and playmakerPts directly, on a balanced
+ * plan, and the override only exists while helio is the style. All nine in band, nothing tuned.
  */
 export const TAX = {
   scorer: 0.55,
@@ -328,7 +352,9 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     pnr: legalPair(t.pnr, names) ? t.pnr : null,
     // ...and the post-up target is ONE man who is still on the five (recal_124), dropped the same
     // way and to the same effect: the engine picks the hub itself again
-    post: legalPost(t.post, names) ? t.post : null,
+    post: legalMan(t.post, names) ? t.post : null,
+    // ...and so is the helio creator (recal_125), on the same rule
+    helio: legalMan(t.helio, names) ? t.helio : null,
   }
 }
 
@@ -337,9 +363,13 @@ export function legalPair(pair: PnrPair | null | undefined, names: string[]): bo
   return !!pair && pair.handler !== pair.screener && names.includes(pair.handler) && names.includes(pair.screener)
 }
 
-/** A post target is legal when it names one man who is on the five. */
-export function legalPost(post: string | null | undefined, names: string[]): boolean {
-  return !!post && names.includes(post)
+/**
+ * A ONE-MAN CALL is legal when it names a man who is on the five. The post-up target (recal_124)
+ * and the helio creator (recal_125) are the same shape, so they share the test — legalPair is the
+ * two-man version of exactly this.
+ */
+export function legalMan(name: string | null | undefined, names: string[]): boolean {
+  return !!name && names.includes(name)
 }
 
 /**
@@ -358,6 +388,7 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     pnr: rank >= 2 ? t.pnr : null,
     // ...and so does the post-up target: it is part of calling the style, not a call of its own
     post: rank >= 2 ? t.post : null,
+    helio: rank >= 2 ? t.helio : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -454,9 +485,42 @@ export const POST_HEIGHT = 81
 export const postFit = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
 
 export function postMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
-  if (legalPost(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (legalMan(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
   const bigs = five.filter((p) => p.attrs.height >= POST_HEIGHT)
   return { hub: bigs.slice().sort((x, y) => postFit(y.attrs) - postFit(x.attrs))[0] ?? null, chosen: false }
+}
+
+/**
+ * WHO THE OFFENSE RUNS THROUGH (recal_125, his ruling: "In helio, allow me to pick a creator. Helio
+ * will overtake main playmaker and scorrer, as helio becomes both"). The third of the same shape:
+ * the plan's man when it names one who is on the five, the engine's own otherwise — and the
+ * engine's own is scorerCreator's argmax, the same man recal_115 made the featured one, so a plan
+ * that names nobody features and prices exactly as it did.
+ */
+export function heliMan(five: Player[], pick?: string | null): { creator: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { creator: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (!five.length) return { creator: null, chosen: false }
+  return { creator: five.reduce((m, p) => (scorerCreator(p.attrs) > scorerCreator(m.attrs) ? p : m), five[0]), chosen: false }
+}
+
+/**
+ * HELIO OVERTAKES THE TWO ROLES (recal_125, his ruling: "Helio will overtake main playmaker and
+ * scorrer, as helio becomes both"). While helio is CALLED, the creator holds both jobs and the
+ * plan's own `scorer` and `playmaker` are not heard — one man being the whole offense is what the
+ * style means, and letting the panel point the three calls at three different men would be three
+ * offenses at once. The saved names survive untouched underneath and come back the moment the
+ * style changes, exactly the way a pnr pair survives a style he is not currently calling.
+ *
+ * It is not free. Helio now pays BOTH role taxes and earns both role benefits, so calling it on the
+ * wrong man loses on the scorer term and the playmaker term at once — which is the deviation tax
+ * law doing the work his ruling asks of it, with no new constant.
+ */
+export function roleMen(t: Tactics, five: Player[]): { scorer: string | null; playmaker: string | null; helio: string | null } {
+  if (t.style === 'helio') {
+    const c = heliMan(five, t.helio).creator
+    if (c) return { scorer: c.name, playmaker: c.name, helio: c.name }
+  }
+  return { scorer: t.scorer, playmaker: t.playmaker, helio: null }
 }
 
 /**
@@ -739,10 +803,9 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
  */
 export function featured(style: Style, five: Player[], call?: StyleCall | null): Player[] {
   if (five.length < 2) return []
-  const top = (score: (x: Attrs) => number) => five.reduce((m, p) => (score(p.attrs) > score(m.attrs) ? p : m), five[0])
   switch (style) {
     case 'helio':
-      return [top(scorerCreator)]
+      return [heliMan(five, call?.helio).creator].filter((p): p is Player => !!p)
     case 'postup':
       return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
     case 'pnr': {
@@ -838,8 +901,14 @@ export function playmakerPts(name: string, five: Player[], theirs?: Player[]): n
 
 export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { label: string; pts: number }[] {
   const parts: { label: string; pts: number }[] = []
-  if (t.scorer && five.some((p) => p.name === t.scorer)) parts.push({ label: 'main scorer', pts: scorerPts(t.scorer, five, theirs) })
-  if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
+  // HELIO IS BOTH ROLES (recal_125). roleMen hands back the creator for both jobs while helio is
+  // called, and the plan's own two names otherwise; the labels say which it is, so a reader of the
+  // itemised points is never left wondering why a scorer he did not pick is being priced.
+  const roles = roleMen(t, five)
+  const tag = roles.helio ? ' (helio)' : ''
+  if (roles.scorer && five.some((p) => p.name === roles.scorer)) parts.push({ label: `main scorer${tag}`, pts: scorerPts(roles.scorer, five, theirs) })
+  if (roles.playmaker && five.some((p) => p.name === roles.playmaker))
+    parts.push({ label: `main playmaker${tag}`, pts: playmakerPts(roles.playmaker, five, theirs) })
   if (t.style !== 'balanced')
     parts.push({
       label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t))})`,
@@ -891,7 +960,8 @@ export function boxContext(
   const themEdges = theirs.map((_, j) => centered(Eu, ourBoard, j))
   // the r59 forced reallocation, verbatim
   const base = teamOffense(five).lines.map((l) => l.usg)
-  const si = plan.scorer ? five.findIndex((q) => q.name === plan.scorer) : -1
+  const roles = roleMen(plan, five)
+  const si = roles.scorer ? five.findIndex((q) => q.name === roles.scorer) : -1
   let usg: number[] | undefined
   let brick: number | undefined
   if (si >= 0) {
@@ -901,7 +971,7 @@ export function boxContext(
     const c = creation(five[si].attrs)
     brick = ((KNOBS.SLOPE_UP_MAX - (KNOBS.SLOPE_UP_MAX - KNOBS.SLOPE_UP_MIN) * c) * 8) / 100
   }
-  const pi = plan.playmaker ? five.findIndex((q) => q.name === plan.playmaker) : -1
+  const pi = roles.playmaker ? five.findIndex((q) => q.name === roles.playmaker) : -1
   return {
     us: {
       paceLvl,

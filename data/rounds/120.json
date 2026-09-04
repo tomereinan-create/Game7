@@ -33,7 +33,7 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
+      "pattern": "export const postFit = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
       "label": "the post-up hub keeps the rim and gives up the mid-range",
       "note": "recal_115's min(max(rim,mid), volume) -> min(rim, volume), interior() untouched; Malone '97 94 -> 77"
     },

@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, featured, pnrPair, postMan, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, postMan, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -475,5 +475,42 @@ describe('the post-up stands the man he called on the block', () => {
     expect(cap(shot({ spots: spotsOf(LAK), tactic: plan }))).toBe('post-up · Rice · your tactic')
     // with nobody named it says the engine's hub, which is the man it draws
     expect(cap(shot({ spots: spotsOf(LAK), tactic: { ...DEFAULT_TACTICS, style: 'postup' as const } }))).toBe("post-up · O'Neal · your tactic")
+  })
+})
+
+/**
+ * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator."). The same
+ * mechanism again: the man the plan names stands alone above the arc, and the caption says so.
+ */
+describe('the helio court runs through the creator he called', () => {
+  const OKC = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
+  const SGA = 1
+  const DORT = 2
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it("with nobody named it is the engine's man, and the shape is the one it always drew", () => {
+    expect(heliMan(OKC, null).creator!.name).toBe("Shai Gilgeous-Alexander '22")
+    const at = spotsFor({ style: 'helio', pnr: null, helio: null }, OKC)
+    expect(at).toEqual(spotsFor({ style: 'helio', pnr: null }, OKC))
+    // the engine stands alone behind the arc, above the break
+    expect(outsideLine(at[SGA])).toBe(true)
+    expect(inCorner(at[SGA])).toBe(false)
+  })
+
+  it('the man he names takes the ball, and the engine goes back into the spacing', () => {
+    const auto = spotsFor({ style: 'helio', pnr: null }, OKC)
+    const at = spotsFor({ style: 'helio', pnr: null, helio: "Luguentz Dort '22" }, OKC)
+    expect(at[DORT]).toEqual(auto[SGA])
+    expect(at[SGA]).not.toEqual(auto[SGA])
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  })
+
+  it('the caption names him', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'helio' as const, helio: "Luguentz Dort '22" }
+    expect(cap(shot({ spots: spotsOf(OKC), plan }))).toContain('helio · Dort')
+    expect(cap(shot({ spots: spotsOf(OKC), tactic: plan }))).toBe('helio · Dort · your tactic')
+    expect(cap(shot({ spots: spotsOf(OKC), tactic: { ...DEFAULT_TACTICS, style: 'helio' as const } }))).toBe('helio · Gilgeous-Alexander · your tactic')
   })
 })

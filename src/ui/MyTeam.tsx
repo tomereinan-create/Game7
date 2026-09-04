@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, pnrPair, postMan, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, heliMan, pnrPair, postMan, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -648,12 +648,21 @@ export function MyTeam({
             {/* his ruling: the court's toggle governs the whole screen, so the panel shows one
                 side at a time. The group headings are gone with it — a rule reading OFFENSE
                 directly under a lit OFFENSE chip said the same thing twice and cost a row. */}
+            {/* HIS RULING: "Helio will overtake main playmaker and scorrer, as helio becomes both".
+                While helio is called, the creator holds both jobs, so the two rows stop taking a
+                call: they grey out and say who has it instead. The saved names are untouched
+                underneath and come back the moment the style changes. */}
             {side === 'off' && playbook >= 1 ? ([
               ['Main scorer', 'scorer'],
               ['Main playmaker', 'playmaker'],
-            ] as const).map(([label, key]) => (
-              <div className="posbar" key={key}>
+            ] as const).map(([label, key]) => {
+              const heliMans = tactics.style === 'helio' && playbook >= 2 ? heliMan(five, tactics.helio).creator : null
+              return (
+              <div className={`posbar ${heliMans ? 'superseded' : ''}`} key={key}>
                 <span className="cap">{label}</span>
+                {heliMans ? (
+                  <span className="tnote">helio · {shortName(heliMans.name)} runs everything</span>
+                ) : (
                 <ChipRow>
                   <button className={`sortb ${tactics[key] === null ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, [key]: null })}>
                     —
@@ -668,8 +677,9 @@ export function MyTeam({
                     </button>
                   ))}
                 </ChipRow>
+                )}
               </div>
-            )) : null}
+            )}) : null}
             {side === 'off' && playbook >= 1 ? (
             <div className="posbar">
               <span className="cap">Tempo</span>
@@ -744,6 +754,26 @@ export function MyTeam({
                             className={`sortb ${hub === p.name ? 'on' : ''}`}
                             onClick={() => onTactics({ ...tactics, post: p.name })}
                           >
+                            {shortName(p.name)}
+                          </button>
+                        ))}
+                      </ChipRow>
+                    </div>
+                  )
+                })()
+              : null}
+            {/* HIS RULING: "In helio, allow me to pick a creator." The third one-man call, opening
+                lit on the man the engine would run the offense through — and the row above it has
+                just told him this same man is now his scorer and his playmaker too. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'helio'
+              ? (() => {
+                  const c = heliMan(five, tactics.helio).creator?.name ?? ''
+                  return (
+                    <div className="posbar">
+                      <span className="cap">Creator</span>
+                      <ChipRow>
+                        {five.map((p) => (
+                          <button key={p.name} className={`sortb ${c === p.name ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, helio: p.name })}>
                             {shortName(p.name)}
                           </button>
                         ))}

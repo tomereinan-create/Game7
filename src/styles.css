@@ -1350,6 +1350,19 @@ button {
 }
 /* the label never gives up its width to the scroller */
 .posbar > .cap { flex: none; }
+/* A ROW WHOSE CALL HAS BEEN TAKEN OVER (recal_125, his ruling: "Helio will overtake main playmaker
+   and scorrer, as helio becomes both"). The row stays where it is so the panel does not jump when
+   he changes style; it dims and says who holds the job instead of offering chips. */
+.posbar.superseded > .cap { opacity: 0.4; }
+.posbar > .tnote {
+  flex: 0 1 auto;
+  min-width: 0;
+  text-align: right;
+  font: 11px/1.35 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--them);
+  opacity: 0.75;
+}
 .sortb.no {
   opacity: 0.3;
   cursor: default;

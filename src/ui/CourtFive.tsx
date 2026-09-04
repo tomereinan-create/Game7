@@ -253,7 +253,7 @@ export function inferredStyle(five: (Player | null)[]): { style: Style; fit: num
   return men.length < 5 ? null : bestStyle(men)
 }
 
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post'> | null | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'> | null | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   const style = plan ? plan.style : inferredStyle(five)?.style
   if (!style || men.length < 5) return [...AT]
@@ -332,8 +332,9 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post'> | null | 
       // the engine alone above the arc; the four low — the corners for the shooters, the two
       // dunker spots for the men who cannot space. The engine is the five's best SCORER-CREATOR
       // (recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?"),
-      // read through the same function the fit and the caption read.
-      const s = who(men, 'helio')
+      // or HIS creator when the plan names one (recal_125, his ruling: "In helio, allow me to pick
+      // a creator"), read through the same function the fit and the caption read.
+      const s = who(men, 'helio', plan)
       return stand(men, { [s]: peri(0, 6) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
   }
@@ -380,7 +381,7 @@ function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
  * put 5 out on my tactics it should be shown here as well"): the label the tactics panel uses,
  * and whose call it is — so "five-out · your tactic" cannot be mistaken for a best-fit read.
  */
-function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post'>, men: Player[]): string {
+function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>, men: Player[]): string {
   const label = STYLES.find((s) => s.key === set.style)?.label ?? set.style
   // ...and it names the men the call runs through, the same way the best-fit read does: a post-up
   // he called on a man is "post-up · O'Neal · your tactic" (recal_124).

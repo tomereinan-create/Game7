@@ -16,9 +16,12 @@ import {
   scorerCreator,
   screenFit,
   STAR_LINE,
+  heliMan,
   postFit,
   postMan,
   POST_HEIGHT,
+  roleMen,
+  tacticsParts,
   styleFit,
   STYLES,
   stylePts,
@@ -382,5 +385,94 @@ describe('the post-up target he calls', () => {
     expect(gateTactics(called, 1).style).toBe('balanced')
     expect(gateTactics(called, 1).post).toBe(null)
     expect(gateTactics(called, 2).post).toBe("Glen Rice '00")
+  })
+})
+
+/**
+ * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator. Helio will
+ * overtake main playmaker and scorrer, as helio becomes both"). The third one-man call, and the
+ * only one that reaches out of its own style: while helio is called, the creator IS the main
+ * scorer and the main playmaker, the plan's own two names are not heard, and the style pays both
+ * role taxes for the privilege.
+ */
+describe('the helio creator he calls', () => {
+  const helio = (name: string | null): Tactics => ({ ...DEFAULT_TACTICS, style: 'helio', helio: name })
+  const OKC = THUNDER_22
+  const SGA = "Shai Gilgeous-Alexander '22"
+
+  it("with nobody named the creator is the engine's own featured man, and nothing prices differently", () => {
+    expect(DEFAULT_TACTICS.helio).toBe(null)
+    const auto = heliMan(OKC, null)
+    expect(auto.chosen).toBe(false)
+    expect(auto.creator!.name).toBe(SGA)
+    // recal_115's featured man and the creator are the same man by construction
+    expect(featured('helio', OKC)[0].name).toBe(SGA)
+    expect(featured('helio', OKC, helio(null))[0].name).toBe(SGA)
+    // a plan from before the field existed resolves and prices identically
+    const old = { ...DEFAULT_TACTICS, style: 'helio' } as Tactics
+    delete (old as { helio?: unknown }).helio
+    expect(old.helio).toBeUndefined()
+    expect(heliMan(OKC, old.helio).chosen).toBe(false)
+    expect(tacticsParts(old, OKC).reduce((a, x) => a + x.pts, 0)).toBeCloseTo(tacticsParts(helio(null), OKC).reduce((a, x) => a + x.pts, 0), 10)
+  })
+
+  it('the man he names is the creator, and the floor and the caption follow him', () => {
+    const pick = "Luguentz Dort '22"
+    expect(heliMan(OKC, pick).chosen).toBe(true)
+    expect(featured('helio', OKC, helio(pick))[0].name).toBe(pick)
+  })
+
+  it('helio OVERTAKES the two roles: the creator is the scorer and the playmaker', () => {
+    // ...whatever the plan's own two names say
+    const t: Tactics = { ...helio("Luguentz Dort '22"), scorer: SGA, playmaker: "Josh Giddey '22" }
+    const roles = roleMen(t, OKC)
+    expect(roles.helio).toBe("Luguentz Dort '22")
+    expect(roles.scorer).toBe("Luguentz Dort '22")
+    expect(roles.playmaker).toBe("Luguentz Dort '22")
+    // the itemised points say so rather than pricing a scorer he never picked in silence
+    const labels = tacticsParts(t, OKC).map((x) => x.label)
+    expect(labels).toContain('main scorer (helio)')
+    expect(labels).toContain('main playmaker (helio)')
+    // the saved names survive underneath and come back the moment the style changes
+    const off: Tactics = { ...t, style: 'balanced' }
+    expect(roleMen(off, OKC)).toEqual({ scorer: SGA, playmaker: "Josh Giddey '22", helio: null })
+    expect(off.helio).toBe("Luguentz Dort '22")
+  })
+
+  it('every other style leaves the two roles exactly where they were', () => {
+    for (const s of STYLES) {
+      if (s.key === 'helio') continue
+      const t: Tactics = { ...DEFAULT_TACTICS, style: s.key, scorer: SGA, playmaker: "Josh Giddey '22", helio: "Luguentz Dort '22" }
+      expect(roleMen(t, OKC)).toEqual({ scorer: SGA, playmaker: "Josh Giddey '22", helio: null })
+    }
+  })
+
+  it('a creator who is not the five best scorer-creator COSTS, on both role terms at once', () => {
+    const auto = tacticsParts(helio(null), OKC).reduce((a, x) => a + x.pts, 0)
+    for (const worse of ["Luguentz Dort '22", "Aleksej Pokusevski '22", "Darius Bazley '22"]) {
+      expect(scorerCreator(g(worse).attrs)).toBeLessThan(scorerCreator(g(SGA).attrs))
+      expect(tacticsParts(helio(worse), OKC).reduce((a, x) => a + x.pts, 0)).toBeLessThan(auto)
+    }
+    // and naming the engine's own man by hand is worth exactly what leaving it alone is worth
+    expect(tacticsParts(helio(SGA), OKC).reduce((a, x) => a + x.pts, 0)).toBeCloseTo(auto, 10)
+  })
+
+  it('calling helio is not free: it pays both role taxes as well as the style tax', () => {
+    const labels = tacticsParts(helio(null), OKC).map((x) => x.label)
+    // three terms, not one: the two roles it overtook, and the style itself
+    expect(labels).toHaveLength(3)
+    expect(labels.filter((l) => l.endsWith('(helio)'))).toHaveLength(2)
+    expect(labels.some((l) => l.startsWith('helio (fit'))).toBe(true)
+    // ...and a five-out plan on the same five is one term, as it always was
+    expect(tacticsParts({ ...DEFAULT_TACTICS, style: 'fiveout' }, OKC)).toHaveLength(1)
+  })
+
+  it('a creator who has left the five is dropped, and the target rides with the style', () => {
+    const names = OKC.map((p) => p.name)
+    expect(reconcileTactics(helio(SGA), names).helio).toBe(SGA)
+    expect(reconcileTactics(helio("Bill Russell '62"), names).helio).toBe(null)
+    expect(reconcileTactics(helio(SGA), names.filter((n) => n !== SGA)).helio).toBe(null)
+    expect(gateTactics(helio(SGA), 1).helio).toBe(null)
+    expect(gateTactics(helio(SGA), 2).helio).toBe(SGA)
   })
 })
