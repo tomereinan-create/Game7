@@ -1282,5 +1282,14 @@
     "round": 126,
     "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
     "note": "HIS ORDER PIN. 87 > 86, strict. The VALUE pin he also ruled - John Stockton '01 off 80 +-4 - is deliberately NOT added: the attribute stage reaches 86 and cannot reach the band (delete BOTH zone deadeye floors outright and he still prints 86, because his mid falls only to his own volume-first composite), so the pin would fail on the round that wrote it. Add it when a compute_ovr round lands the band. See data/rounds/126.json."
+  },
+  {
+    "card": "John Stockton '01",
+    "scale": "off",
+    "target": 80,
+    "tol": 4,
+    "round": 130,
+    "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+    "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
   }
 ]
