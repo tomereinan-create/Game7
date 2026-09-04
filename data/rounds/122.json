@@ -80,7 +80,13 @@
       "label": "the subject's Team DB OVR, the mean of the two dials: 86 -> 88"
     },
     {
-      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
       "season": 1996,
       "scale": "team:defdial",
       "op": "==",
@@ -88,7 +94,13 @@
       "label": "THE SUMMIT HOLDS, tol 0 (recal_94, \"Move the summit to Bulls '96\"): drtgRef 107.565 -> 107.568, dial 99 -> 99"
     },
     {
-      "five": ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"],
+      "five": [
+        "Chauncey Billups '04",
+        "Richard Hamilton '04",
+        "Tayshaun Prince '04",
+        "Ben Wallace '04",
+        "Mehmet Okur '04"
+      ],
       "season": 2004,
       "scale": "team:defdial",
       "op": "~",
@@ -97,7 +109,13 @@
       "label": "Pistons '04 84±4 (recal_94): 83 -> 87. Ben Wallace's rimprot 98 was being paid the same 99 as everyone else's 85"
     },
     {
-      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Ajay Mitchell '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -106,7 +124,13 @@
       "label": "Thunder '26 80±4 (recal_100): 80 -> 84, at the top of its band — the tightest anchor in the round, and the one a later DEF round must look at first"
     },
     {
-      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "five": [
+        "Tyrese Maxey '26",
+        "Quentin Grimes '26",
+        "Kelly Oubre Jr. '26",
+        "Dominick Barlow '26",
+        "Joel Embiid '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -115,7 +139,13 @@
       "label": "76ers '26 51±6 (recal_100): 51 -> 49, and still 14th of the 24 fieldable 2026 teams against a real DRtg rank of 14th"
     },
     {
-      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Ajay Mitchell '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": ">=",
@@ -123,7 +153,13 @@
       "label": "recal_94's ORDER pin, Thunder '26 above 76ers '26: 84 vs 49 (the strict pair is checked in data/anchors.json, which passes 129/129)"
     },
     {
-      "five": ["Cade Cunningham '26", "Duncan Robinson '26", "Ausar Thompson '26", "Tobias Harris '26", "Jalen Duren '26"],
+      "five": [
+        "Cade Cunningham '26",
+        "Duncan Robinson '26",
+        "Ausar Thompson '26",
+        "Tobias Harris '26",
+        "Jalen Duren '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -132,7 +168,13 @@
       "label": "Pistons '26 75±6 (recal_100): 74 -> 76"
     },
     {
-      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
       "season": 1987,
       "scale": "team:defdial",
       "op": "~",
@@ -141,7 +183,13 @@
       "label": "Lakers '87 67±6 (recal_100): 67 -> 67, unmoved"
     },
     {
-      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "five": [
+        "Derrick White '24",
+        "Jaylen Brown '24",
+        "Jayson Tatum '24",
+        "Kristaps Porziņģis '24",
+        "Al Horford '24"
+      ],
       "season": 2024,
       "scale": "team:defdial",
       "op": "~",
@@ -150,7 +198,13 @@
       "label": "Celtics '24 65±3 (recal_119): 65 -> 65, unmoved"
     },
     {
-      "five": ["Rajon Rondo '10", "Paul Pierce '10", "Kevin Garnett '10", "Rasheed Wallace '10", "Kendrick Perkins '10"],
+      "five": [
+        "Rajon Rondo '10",
+        "Paul Pierce '10",
+        "Kevin Garnett '10",
+        "Rasheed Wallace '10",
+        "Kendrick Perkins '10"
+      ],
       "season": 2010,
       "scale": "team:defdial",
       "op": "<=",
@@ -158,7 +212,13 @@
       "label": "THE FLAT-FIVE PROBLEM IS NOT FIXED, recorded rather than claimed: Celtics '10 read 99 before and 99 after (real DRtg 4th of 28). It is the half of the dispatch this round declines — see notes"
     },
     {
-      "five": ["John Stockton '98", "Jeff Hornacek '98", "Bryon Russell '98", "Karl Malone '98", "Greg Ostertag '98"],
+      "five": [
+        "John Stockton '98",
+        "Jeff Hornacek '98",
+        "Bryon Russell '98",
+        "Karl Malone '98",
+        "Greg Ostertag '98"
+      ],
       "season": 1998,
       "scale": "team:defdial",
       "op": "<=",
@@ -166,7 +226,13 @@
       "label": "the same, and the worse of the two: Jazz '98 91 -> 91, 2nd in its season against a real DRtg rank of 18th of 28"
     },
     {
-      "five": ["Stephen Curry '16", "Andre Iguodala '16", "Klay Thompson '16", "Draymond Green '16", "Andrew Bogut '16"],
+      "five": [
+        "Stephen Curry '16",
+        "Andre Iguodala '16",
+        "Klay Thompson '16",
+        "Draymond Green '16",
+        "Andrew Bogut '16"
+      ],
       "season": 2016,
       "scale": "team:defdial",
       "op": "~",
@@ -175,7 +241,13 @@
       "label": "the subject's own neighbours: Warriors '16 90 -> 94 (Bogut rimprot 95 + Green 84 was a capped pair)"
     },
     {
-      "five": ["Ron Harper '00", "Kobe Bryant '00", "Glen Rice '00", "Robert Horry '00", "Shaquille O'Neal '00"],
+      "five": [
+        "Ron Harper '00",
+        "Kobe Bryant '00",
+        "Glen Rice '00",
+        "Robert Horry '00",
+        "Shaquille O'Neal '00"
+      ],
       "season": 2000,
       "scale": "team:offdial",
       "op": "~",
