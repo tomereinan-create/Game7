@@ -277,6 +277,9 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [flip, setFlip] = useState(false)
   const [minQ, setMinQ] = useState('')
   const [maxQ, setMaxQ] = useState('')
+  // The filters live behind one chip (his ruling: "Change everything to filters … not all these
+  // words in the main page") — the same drawer the player database opens.
+  const [filtering, setFiltering] = useState(false)
   const user = useUserMode()
   const openCard = useCard()
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
@@ -366,6 +369,18 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   }
   const chip = (k: typeof sort) => `sortb ${sort === k ? (flip ? 'on asc' : 'on') : ''}`
 
+  /** How many bounds are narrowing the list right now — the number on the FILTERS chip. */
+  const anyYears = from === YMIN && to === YMAX
+  const activeFilters = [!anyYears, !!conf, !!tactic, !!(minQ.trim() || maxQ.trim())].filter(Boolean).length
+  /** Clear means no bound at all: the whole book, both conferences, every shape, no rating floor. */
+  const clearFilters = () => {
+    setSpan([YMIN, YMAX])
+    setConf(null)
+    setTactic(null)
+    setMinQ('')
+    setMaxQ('')
+  }
+
   /**
    * HIS RULING: "I want to still be able to filter even after searching team". The query used to
    * TAKE OVER the list — all years, newest first, the sort row gone. It is a filter like the
@@ -448,85 +463,113 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               spellCheck={false}
             />
           </label>
+          {/* ONE LINE OF CONTROLS, not three: the years, the conference, the tactic and the rating
+              bounds all live behind FILTERS now, and the caption under it says in words which of
+              them are on. Only the search box and the list are always on the page. */}
           <div className="filterbar">
-            {/* the span and its reset stay one atom, so at 375px the conference chips wrap under
-                them in a pair rather than splitting East from West */}
-            <div className="filtergrp">
-              <label className="dbnum">
-                <span>From</span>
-                <input
-                  inputMode="numeric"
-                  placeholder={String(YMIN)}
-                  value={fromQ}
-                  onFocus={(e) => e.currentTarget.select()}
-                  onChange={(e) => editFrom(e.target.value)}
-                  onBlur={() => setFromQ(String(from))}
-                  autoComplete="off"
-                />
-              </label>
-              <label className="dbnum">
-                <span>To</span>
-                <input
-                  inputMode="numeric"
-                  placeholder={String(YMAX)}
-                  value={toQ}
-                  onFocus={(e) => e.currentTarget.select()}
-                  onChange={(e) => editTo(e.target.value)}
-                  onBlur={() => setToQ(String(to))}
-                  autoComplete="off"
-                />
-              </label>
-              <button className={`sortb ${from === YMIN && to === YMAX ? 'on' : ''}`} onClick={() => setSpan([YMIN, YMAX])}>
-                Any
+            <button className={`sortb pick ${filtering || activeFilters ? 'on' : ''}`} onClick={() => setFiltering((f) => !f)} aria-expanded={filtering}>
+              Filters{activeFilters ? ` · ${activeFilters}` : ''} {filtering ? '▴' : '▾'}
+            </button>
+            {activeFilters ? (
+              <button className="sortb pick" onClick={clearFilters}>
+                Clear
               </button>
-            </div>
-            <div className="filtergrp">
-              <button className={`sortb ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
-                East
-              </button>
-              <button className={`sortb ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
-                West
-              </button>
-            </div>
-          </div>
-          {/* best tactic fit — the same read the floor infers a scouted five's shape from
-              (bestStyle), offered as a filter so a set can be found by how it actually plays */}
-          <div className="filterbar">
-            {STYLES.map((s) => (
-              <button key={s.key} className={`sortb ${tactic === s.key ? 'on' : ''}`} onClick={() => setTactic(tactic === s.key ? null : s.key)}>
-                {s.label}
-              </button>
-            ))}
-          </div>
-          {/* the sort row stays put while you search — his ruling: a query is a filter, not a mode */}
-          <div className="filterbar">
-            <button className={chip('rec')} onClick={() => pickSort('rec')}>
-              Best record
-            </button>
-            <button className={chip('az')} onClick={() => pickSort('az')}>
-              A–Z
-            </button>
-            <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
-              OVR
-            </button>
-            <button className={chip('off')} onClick={() => pickSort('off')}>
-              OFF
-            </button>
-            <button className={chip('def')} onClick={() => pickSort('def')}>
-              DEF
-            </button>
-            {ranked ? (
-              <>
-                <label className="dbnum">
-                  <span>Min</span>
-                  <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} />
-                </label>
-                <label className="dbnum">
-                  <span>Max</span>
-                  <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} />
-                </label>
-              </>
             ) : null}
+          </div>
+          {filtering ? (
+            <div className="filters">
+              <label className="filt">
+                <span>Seasons</span>
+                <span className="filt-pair">
+                  <input
+                    inputMode="numeric"
+                    placeholder={String(YMIN)}
+                    value={fromQ}
+                    onFocus={(e) => e.currentTarget.select()}
+                    onChange={(e) => editFrom(e.target.value)}
+                    onBlur={() => setFromQ(String(from))}
+                    autoComplete="off"
+                    aria-label="From year"
+                  />
+                  <i>to</i>
+                  <input
+                    inputMode="numeric"
+                    placeholder={String(YMAX)}
+                    value={toQ}
+                    onFocus={(e) => e.currentTarget.select()}
+                    onChange={(e) => editTo(e.target.value)}
+                    onBlur={() => setToQ(String(to))}
+                    autoComplete="off"
+                    aria-label="To year"
+                  />
+                  <button className={`sortb pick ${anyYears ? 'on' : ''}`} onClick={() => setSpan([YMIN, YMAX])}>
+                    All
+                  </button>
+                </span>
+              </label>
+              <div className="filt">
+                <span>Conference</span>
+                <span className="filt-chips">
+                  <button className={`sortb pick ${!conf ? 'on' : ''}`} onClick={() => setConf(null)}>
+                    Both
+                  </button>
+                  <button className={`sortb pick ${conf === 'E' ? 'on' : ''}`} onClick={() => setConf(conf === 'E' ? null : 'E')}>
+                    East
+                  </button>
+                  <button className={`sortb pick ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
+                    West
+                  </button>
+                </span>
+              </div>
+              {/* best tactic fit — the same read the floor infers a scouted five's shape from
+                  (bestStyle), offered as a filter so a set can be found by how it actually plays */}
+              <div className="filt">
+                <span>Plays like</span>
+                <span className="filt-chips">
+                  <button className={`sortb pick ${!tactic ? 'on' : ''}`} onClick={() => setTactic(null)}>
+                    Any
+                  </button>
+                  {STYLES.map((s) => (
+                    <button key={s.key} className={`sortb pick ${tactic === s.key ? 'on' : ''}`} onClick={() => setTactic(tactic === s.key ? null : s.key)}>
+                      {s.label}
+                    </button>
+                  ))}
+                </span>
+              </div>
+              {/* the rating bounds bind whichever ranked sort is on, so they only exist while one is */}
+              {ranked ? (
+                <label className="filt">
+                  <span>{sort.toUpperCase()} between</span>
+                  <span className="filt-pair">
+                    <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} aria-label="Lowest rating" />
+                    <i>and</i>
+                    <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} aria-label="Highest rating" />
+                  </span>
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+          {/* the sort stays on the page — it is how you read a ranked list, not a bound on it — but
+              as one scrolling rail, the way the player database sorts. A second tap flips it. */}
+          <div className="rail-wrap">
+            <div className="rail">
+              <button className={chip('rec')} onClick={() => pickSort('rec')}>
+                Record
+              </button>
+              <button className={chip('az')} onClick={() => pickSort('az')}>
+                A–Z
+              </button>
+              <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
+                OVR
+              </button>
+              <button className={chip('off')} onClick={() => pickSort('off')}>
+                OFF
+              </button>
+              <button className={chip('def')} onClick={() => pickSort('def')}>
+                DEF
+              </button>
+            </div>
+            <div className="rail-fade" />
           </div>
 
             <div className="section-rule">

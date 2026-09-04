@@ -53,10 +53,16 @@ describe('the caption follows every filter, in the order they were applied', () 
 })
 
 describe('the sort row does not go away', () => {
-  it('the screen has both filter bars — the years and conference, and the five sorts', () => {
+  it('one control bar and the five sorts; the bounds wait behind FILTERS', () => {
     store.set('game7.teamdb.years', '2026-2026')
     const html = renderToStaticMarkup(createElement(TeamDb, { onBack: () => {} }))
-    expect(html.split('class="filterbar"').length - 1).toBe(2)
-    for (const chip of ['Best record', 'A–Z', 'OVR', 'OFF', 'DEF']) expect(html).toContain(`>${chip}</button>`)
+    // his ruling: "not all these words in the main page" — the three stacked bars are one bar now
+    expect(html.split('class="filterbar"').length - 1).toBe(1)
+    // five sorts, on one rail that fits 375px without scrolling — the caption spells the order out
+    for (const chip of ['Record', 'A–Z', 'OVR', 'OFF', 'DEF']) expect(html).toContain(`>${chip}</button>`)
+    // the drawer is shut, so no conference or tactic chip is on the page until it is opened
+    expect(html).not.toContain('class="filters"')
+    expect(html).not.toContain('>East</button>')
+    expect(html).not.toContain('>five-out</button>')
   })
 })
