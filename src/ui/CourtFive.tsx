@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { bestStyle, canSpace, featured, pnrPair, SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -109,12 +109,17 @@ const PAINT_C: XY = at(4, 10)
 const BALL: XY = at(12, 31)
 const SCREEN: XY = at(3, 25)
 export const PAIR_FT = Math.hypot(9, 6)
+/**
+ * THE POP SPOT (recal_129, his ruling: "Add pick n pop"). The same screen, released: the screener
+ * steps BACK rather than rolling, so he stands behind the arc on the far side of the ball, a stride
+ * further from the middle than the screen was. Nobody is inside the line in this set.
+ */
+const POP: XY = at(-2, 33)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
-/** Two men filling the lanes on the break, five feet short of the half-court line. */
-const RUN_L: XY = at(-12, 42)
-const RUN_R: XY = at(12, 42)
+/* the two break lanes RUN_L/RUN_R went with the transition set (recal_127, his ruling:
+   "Remove transition entirely from the db.") — no shape stands a man on the half-court line now */
 
 /**
  * Balanced — FOUR OUT, ONE IN (his ruling: "Balanced should be 4 out 1 in not 3 out 1 in").
@@ -198,9 +203,10 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
   for (let i = 0; i < five.length; i++) if (i !== not && (k < 0 || score(five[i]) > score(five[k]))) k = i
   return k
 }
-/** The index of the man a featured set is built around, through the engine's own `featured`. */
-const who = (men: Player[], style: Style): number => {
-  const p = featured(style, men)[0]
+/** The index of the man a featured set is built around, through the engine's own `featured`. The
+ *  plan rides with it, so a called post target stands on the block and not the engine's hub. */
+const who = (men: Player[], style: Style, call?: StyleCall | null): number => {
+  const p = featured(style, men, call)[0]
   return p ? men.findIndex((q) => q.name === p.name) : 0
 }
 
@@ -260,7 +266,7 @@ export function inferredStyle(five: (Player | null)[]): { style: Style; fit: num
   return men.length < 5 ? null : bestStyle(men)
 }
 
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'> | null | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   const style = plan ? plan.style : inferredStyle(five)?.style
   if (!style || men.length < 5) return [...AT]
@@ -285,21 +291,6 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
         [peri(-45), 1],
         [peri(45), 1],
       ])
-    case 'transition':
-      // two men high on the half-court line, a trailer, two men spotting the break — and a big who
-      // cannot shoot runs the lane to the rim instead of spotting up
-      return stand(
-        men,
-        {},
-        [
-          [RUN_L, 1],
-          [RUN_R, 1],
-          [peri(0, 1.5), 1],
-          [peri(-43), 2],
-          [peri(43), 2],
-        ],
-        [DUNK_R],
-      )
     case 'pnr': {
       // the ball at the top, the screen set right beside him at the top of the key, and the other
       // three OUTSIDE the line — the weak-side wing and both corners (his ruling: "If its pnr, put
@@ -322,30 +313,65 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
         (p) => p.attrs.height,
       )
     }
+    case 'pickpop': {
+      // THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll shape with the screen
+      // released: the ball where it always is, and the screener stepping BACK behind the arc on the
+      // other side of him instead of rolling to the top of the key. Nobody is inside the line at
+      // all — the whole point of the call is that the roll man does not roll — and the other three
+      // keep b4c50a4's spacing, the shortest on the weak-side wing and the corners to the rest.
+      const pair = popPair(men, plan?.pnr)
+      const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
+      let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
+      if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
+      // the three off-ball men are ordered by SHOOTING here, not by height as the roll orders them
+      // (his ruling: "smallest not handler guy on the wing"). The roll can afford that because its
+      // screener is almost always the five's non-shooting big; the pop's screener is a shooter by
+      // definition, so a second man who cannot shoot would otherwise be sent to a CORNER, which is
+      // the one thing his other ruling forbids ("Why is Ayton out and James in?"). The worst
+      // shooter of the three takes the weak-side wing and the corners go to the better two.
+      return stand(men, { [h]: BALL, [s]: POP }, [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]])
+    }
+    case 'triangle': {
+      // THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). The three men who make the
+      // shape stand on the left: the post option on the block, a wing behind the arc above him, a
+      // guard in the corner. The weak side is the two-man game that reads off it — a man at the
+      // right elbow (the high post, the set's other entry) and the point at the top. Everyone who
+      // is not the post man or the elbow man is behind the line, his spacing rule; the elbow is the
+      // one inside spot the shape holds, so the worst shooter of the four takes it.
+      const s = who(men, 'triangle', plan)
+      return stand(men, { [s]: BLOCK_L }, [[ELBOW_R, 0], [CORNER_L, 2], [peri(-38), 1], [peri(0, 6), 1]])
+    }
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a
       // second big who cannot shoot takes the dunker spot, the set's other inside spot. The hub is
-      // the engine's own (recal_115): a big who works INSIDE, so a stretch five is not stood on the
-      // block because he is the tallest man in the picture.
-      const s = who(men, 'postup')
+      // HIS when the plan names one (recal_124, his ruling: "In post up playstyle, there need to be
+      // a post up target."), the engine's own when it does not: a big who works INSIDE, so a
+      // stretch five is not stood on the block because he is the tallest man in the picture.
+      const s = who(men, 'postup', plan)
       return stand(men, { [s]: BLOCK_L }, [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]], [DUNK_R])
     }
     case 'helio': {
       // the engine alone above the arc; the four low — the corners for the shooters, the two
       // dunker spots for the men who cannot space. The engine is the five's best SCORER-CREATOR
       // (recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?"),
-      // read through the same function the fit and the caption read.
-      const s = who(men, 'helio')
+      // or HIS creator when the plan names one (recal_125, his ruling: "In helio, allow me to pick
+      // a creator"), read through the same function the fit and the caption read.
+      const s = who(men, 'helio', plan)
       return stand(men, { [s]: peri(0, 6) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
   }
 }
 
 /** The caption: every non-default call, mono caps, quiet. */
-function callLine(plan: Tactics, side: Side): string {
+function callLine(plan: Tactics, side: Side, men: Player[]): string {
   const bits: string[] = []
   if (side === 'off') {
-    if (plan.style !== 'balanced') bits.push(STYLES.find((s) => s.key === plan.style)?.label ?? plan.style)
+    if (plan.style !== 'balanced') {
+      const label = STYLES.find((s) => s.key === plan.style)?.label ?? plan.style
+      // the style names the men it is called on — the pair, or the post target (recal_124)
+      const named = men.length >= 2 ? featured(plan.style, men, plan).map((p) => surname(p.name)) : []
+      bits.push(`${label}${named.length ? ` · ${named.join(' + ')}` : ''}`)
+    }
     if (plan.tempo !== 'normal') bits.push(`${plan.tempo} night`)
     if (plan.hunt) bits.push('hunt on')
     if (plan.crashOff) bits.push('crash O')
@@ -377,8 +403,12 @@ function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
  * put 5 out on my tactics it should be shown here as well"): the label the tactics panel uses,
  * and whose call it is — so "five-out · your tactic" cannot be mistaken for a best-fit read.
  */
-function setLine(style: Style): string {
-  return `${STYLES.find((s) => s.key === style)?.label ?? style} · your tactic`
+function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>, men: Player[]): string {
+  const label = STYLES.find((s) => s.key === set.style)?.label ?? set.style
+  // ...and it names the men the call runs through, the same way the best-fit read does: a post-up
+  // he called on a man is "post-up · O'Neal · your tactic" (recal_124).
+  const named = featured(set.style, men, set).map((p) => surname(p.name))
+  return `${label}${named.length ? ` · ${named.join(' + ')}` : ''} · your tactic`
 }
 
 /** Card name -> the words of his real name: season tag off, and generational suffixes
@@ -389,7 +419,8 @@ const words = (n: string) =>
     .split(' ')
     .filter((w) => w && !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w))
 
-const surname = (n: string) => words(n).pop()
+/** Exported so tests/court.test.ts can build the caption's own strings rather than restate them. */
+export const surname = (n: string) => words(n).pop()
 
 /** The ring holds initials now — the faces are gone by his ruling, the spot survives them. */
 const initials = (n: string) =>
@@ -542,7 +573,7 @@ export function CourtFive({
   // no plan and no call: the shape was read off the five, and the caption says so (his ruling:
   // "Assign each team on the court by using their best tactic")
   const inferred = plan || set ? null : inferredStyle(men)
-  const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
+  const call = plan ? callLine(plan, shown, men.filter((p): p is Player => !!p)) : set ? setLine(set, men.filter((p): p is Player => !!p)) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
   /**
    * The empty band above the half-court line pays ~65px of dead space for nothing, so it stays
    * cropped whether or not a bench man is drawn (his ruling moved the resting man to the baseline

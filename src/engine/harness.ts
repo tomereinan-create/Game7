@@ -10,7 +10,6 @@ import {
   playmakerPts,
   scorerPts,
   SCHEMES,
-  stylePts,
   STYLES,
   tacticsParts,
   type Style,
@@ -74,11 +73,13 @@ export function runHarness(N = 200, seed = 20260828): HarnessRow[] {
       return (['slow', 'fast'] as const).map((k) => pace(k, aiTempo(m.B, m.A, dog), m.A, m.B).margin)
     },
   })
+  // recal_125: the row prices the WHOLE plan the style implies, not the style term alone. For six
+  // of the seven that is the same number stylePts returned — a default plan names no scorer and no
+  // playmaker — but helio now overtakes both roles (his ruling: "Helio will overtake main playmaker
+  // and scorrer, as helio becomes both"), so calling it carries two more taxed terms and the band
+  // has to see them or it would be calibrating a price nobody pays.
   push('playstyle', {
-    choices: (m) =>
-      STYLES.filter((x) => x.key !== 'balanced').map((x) =>
-        stylePts({ ...DEFAULT_TACTICS, style: x.key as Style }, m.A, m.B),
-      ),
+    choices: (m) => STYLES.filter((x) => x.key !== 'balanced').map((x) => evFor({ ...DEFAULT_TACTICS, style: x.key as Style }, m.A, m.B)),
   })
   // recal_75: all five real schemes enter the law, not just the original two. A scheme that cannot
   // be made harness-legal does not ship — the band is judged over the whole set the panel offers.

@@ -51,13 +51,13 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "const hub = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
+      "pattern": "export const postFit = \\(x: Attrs\\) => Math\\.min\\(x\\.rim, x\\.volume\\) \\* interior\\(x\\)",
       "label": "the post-up hub is scaled by how INTERIOR the big's own game is",
       "note": "HALF SUPERSEDED by recal_120 and re-pointed at what survives: the interior() scaling is this round's and stands; the max(rim, mid) half of the same line is gone, the mid-range having moved to the pick-and-roll screener's pop"
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "export function featured\\(style: Style, five: Player\\[\\], pnr\\?: PnrPair \\| null\\): Player\\[\\]",
+      "pattern": "export function featured\\(style: Style, five: Player\\[\\], call\\?: StyleCall \\| null\\): Player\\[\\]",
       "label": "one function names the featured man/pair for the fit, the floor and the caption",
       "note": "new export, read by CourtFive.spotsFor and fitLine"
     },

@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, pnrPair, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, heliMan, pnrPair, popPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -648,12 +648,21 @@ export function MyTeam({
             {/* his ruling: the court's toggle governs the whole screen, so the panel shows one
                 side at a time. The group headings are gone with it — a rule reading OFFENSE
                 directly under a lit OFFENSE chip said the same thing twice and cost a row. */}
+            {/* HIS RULING: "Helio will overtake main playmaker and scorrer, as helio becomes both".
+                While helio is called, the creator holds both jobs, so the two rows stop taking a
+                call: they grey out and say who has it instead. The saved names are untouched
+                underneath and come back the moment the style changes. */}
             {side === 'off' && playbook >= 1 ? ([
               ['Main scorer', 'scorer'],
               ['Main playmaker', 'playmaker'],
-            ] as const).map(([label, key]) => (
-              <div className="posbar" key={key}>
+            ] as const).map(([label, key]) => {
+              const heliMans = tactics.style === 'helio' && playbook >= 2 ? heliMan(five, tactics.helio).creator : null
+              return (
+              <div className={`posbar ${heliMans ? 'superseded' : ''}`} key={key}>
                 <span className="cap">{label}</span>
+                {heliMans ? (
+                  <span className="tnote">helio · {shortName(heliMans.name)} runs everything</span>
+                ) : (
                 <ChipRow>
                   <button className={`sortb ${tactics[key] === null ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, [key]: null })}>
                     —
@@ -668,8 +677,9 @@ export function MyTeam({
                     </button>
                   ))}
                 </ChipRow>
+                )}
               </div>
-            )) : null}
+            )}) : null}
             {side === 'off' && playbook >= 1 ? (
             <div className="posbar">
               <span className="cap">Tempo</span>
@@ -688,7 +698,7 @@ export function MyTeam({
               <ChipRow>
                 {STYLES.map(({ key, label }) => (
                   <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
-                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five, undefined, tactics.pnr))}`}
+                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five, undefined, tactics))}`}
                   </button>
                 ))}
               </ChipRow>
@@ -699,9 +709,11 @@ export function MyTeam({
                 Main scorer, the same five men. They open lit on the pair the engine would pick
                 itself, so the call is never blank and never a mystery; naming a man who already
                 holds the other job trades the two rather than putting one man in both. */}
-            {side === 'off' && playbook >= 2 && tactics.style === 'pnr'
+            {side === 'off' && playbook >= 2 && (tactics.style === 'pnr' || tactics.style === 'pickpop')
               ? (() => {
-                  const pair = pnrPair(five, tactics.pnr)
+                  // recal_129: pick-and-pop is the same two men, so it opens the same two rows and
+                  // reads the same `pnr` field — only the engine's default screener differs
+                  const pair = tactics.style === 'pickpop' ? popPair(five, tactics.pnr) : pnrPair(five, tactics.pnr)
                   const at = { handler: pair.handler?.name ?? '', screener: pair.screener?.name ?? '' }
                   const call = (role: 'handler' | 'screener', name: string) => {
                     const other = role === 'handler' ? 'screener' : 'handler'
@@ -724,6 +736,77 @@ export function MyTeam({
                       </ChipRow>
                     </div>
                   ))
+                })()
+              : null}
+            {/* HIS RULING: "In post up playstyle, there need to be a post up target." The mirror of
+                the pair, for one man: calling post-up opens one more row, the same chips as Main
+                scorer and the same five men. It opens lit on the hub the engine would feed itself,
+                so the call is never blank; tapping the lit man is a no-op rather than a way to
+                un-call it, exactly as the pair's rows behave. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'postup'
+              ? (() => {
+                  const hub = postMan(five, tactics.post).hub?.name ?? ''
+                  return (
+                    <div className="posbar">
+                      <span className="cap">Post target</span>
+                      <ChipRow>
+                        {five.map((p) => (
+                          <button
+                            key={p.name}
+                            className={`sortb ${hub === p.name ? 'on' : ''}`}
+                            onClick={() => onTactics({ ...tactics, post: p.name })}
+                          >
+                            {shortName(p.name)}
+                          </button>
+                        ))}
+                      </ChipRow>
+                    </div>
+                  )
+                })()
+              : null}
+            {/* HIS RULING: "Add pick n pop". One line so the difference from the roll is on the
+                screen and not only in the number: the screener shoots instead of diving. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'pickpop' ? (
+              <div className="posbar superseded">
+                <span className="cap">Pick-and-pop</span>
+                <span className="tnote">the screener steps out — his jumper, not his roll</span>
+              </div>
+            ) : null}
+            {/* HIS RULING: "Add Triangle". The triangle names nobody — it is a read, not a call on a
+                man — so instead of a chip row it says what the engine found: who the entry pass
+                goes to, and how many men on the floor can play out of it. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'triangle'
+              ? (() => {
+                  const post = postOption(five)
+                  const readers = triangleReaders(five).length
+                  return (
+                    <div className="posbar superseded">
+                      <span className="cap">Triangle</span>
+                      <span className="tnote">
+                        {post ? `${shortName(post.name)} on the block · ${readers} read${readers === 1 ? 'er' : 'ers'}` : 'no post option'}
+                      </span>
+                    </div>
+                  )
+                })()
+              : null}
+            {/* HIS RULING: "In helio, allow me to pick a creator." The third one-man call, opening
+                lit on the man the engine would run the offense through — and the row above it has
+                just told him this same man is now his scorer and his playmaker too. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'helio'
+              ? (() => {
+                  const c = heliMan(five, tactics.helio).creator?.name ?? ''
+                  return (
+                    <div className="posbar">
+                      <span className="cap">Creator</span>
+                      <ChipRow>
+                        {five.map((p) => (
+                          <button key={p.name} className={`sortb ${c === p.name ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, helio: p.name })}>
+                            {shortName(p.name)}
+                          </button>
+                        ))}
+                      </ChipRow>
+                    </div>
+                  )
                 })()
               : null}
             {side === 'off' && playbook >= 3 ? (

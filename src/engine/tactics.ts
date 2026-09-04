@@ -42,6 +42,26 @@ export interface Tactics {
    * cards (see pnrPair). Only `pnr` as a style ever reads it.
    */
   pnr?: PnrPair | null
+  /**
+   * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+   * target."). The mirror of the pair, for one man: calling post-up is two calls, the style and the
+   * man it is fed to. Name-keyed like the rest of the plan, so a swap on the floor cannot leave it
+   * pointing at a stranger.
+   *
+   * ABSENT is legal and means what an absent pair means — an old save, an AI opponent, or a plan
+   * that has never been to the panel is fed to the hub the engine picks off the cards (see postMan),
+   * so nothing that exists today prices differently. Only `postup` as a style ever reads it.
+   */
+  post?: string | null
+  /**
+   * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator. Helio will
+   * overtake main playmaker and scorrer, as helio becomes both"). The third name-keyed call, and
+   * the only one that reaches OUT of its own style: calling helio on a man makes him the main
+   * scorer AND the main playmaker, so `scorer` and `playmaker` stop being heard while it is called
+   * (see roleMen). Absent/null is the engine's own featured man, so an old save, an AI opponent and
+   * a plan that has never been to the panel are untouched. Only `helio` as a style reads it.
+   */
+  helio?: string | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -86,7 +106,28 @@ export interface PnrPair {
   screener: string
 }
 
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
+/**
+ * THE MEN A STYLE IS CALLED ON (recal_124). Two of the seven styles are a call on the SHAPE plus a
+ * call on WHO: the pick-and-roll's pair, and now the post-up's target. `styleFit` and `featured`
+ * take this rather than a bare pair, so that adding the next one is a field and not a parameter.
+ * A whole `Tactics` satisfies it structurally, so every caller simply passes the plan.
+ */
+export interface StyleCall {
+  pnr?: PnrPair | null
+  post?: string | null
+  helio?: string | null
+}
+
+/**
+ * THE SET (recal_58, six of them since recal_127). TRANSITION IS GONE, by his ruling: "Remove
+ * transition entirely from the db." It was the one style that was not a half-court SHAPE — its fit
+ * read disruption, durability and the opponent's ball security, which is a description of how a
+ * team gets the ball rather than what it does with it, and the floor had to draw two men on the
+ * half-court line to show it. On the wheel it won 8 of 1,255 fives and never by more than five
+ * points over the free default. A save that still says `transition` loads as `balanced`; see
+ * reconcileTactics, which has always dropped a style that no longer exists.
+ */
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -94,7 +135,8 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'motion', label: 'motion' },
   { key: 'postup', label: 'post-up' },
   { key: 'helio', label: 'helio' },
-  { key: 'transition', label: 'transition' },
+  { key: 'triangle', label: 'triangle' },
+  { key: 'pickpop', label: 'pick-and-pop' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -104,6 +146,8 @@ export const DEFAULT_TACTICS: Tactics = {
   style: 'balanced',
   scheme: 'matchup',
   pnr: null,
+  post: null,
+  helio: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -253,6 +297,29 @@ export const DEFAULT_TACTICS: Tactics = {
  * one break was MAIN PLAYMAKER, for the first time since r76: blind -0.16 against the -0.30 floor. Swept
  * .70 (-0.21) / .85 (-0.27) / 1.00 (-0.33) / 1.10 (-0.37, oracle +2.25); re-ratified .57 -> 1.10, the
  * first passing value with room on the blind side, the oracle having 1.75 of headroom. Eight others held.
+ * recal_124 added the post-up TARGET and recal_125 the helio CREATOR, and neither moved a tax.
+ * 124 could not: the harness builds every playstyle deviation from DEFAULT_TACTICS, whose `post` is
+ * null, so it prices the engine's own hub exactly as before. 125 DID change what the playstyle row
+ * measures, and deliberately — helio now overtakes the main scorer and the main playmaker (his
+ * ruling: "Helio will overtake main playmaker and scorrer, as helio becomes both"), so calling it
+ * carries two more taxed terms, and a row built on stylePts alone would have been calibrating a
+ * price nobody pays. The row now prices the WHOLE plan a style implies (harness.ts, evFor), which
+ * is the same number it always was for the other six. The band absorbed it without a constant
+ * moving: playstyle random -1.17 -> -0.99 against the -0.30 ceiling and oracle +0.55 -> +1.68
+ * against the +0.50 floor — the oracle rose because a helio five whose creator is its best
+ * scorer-creator now earns both role benefits, which is the ruling's whole point. The scorer and
+ * playmaker rows did not move at all: they call scorerPts and playmakerPts directly, on a balanced
+ * plan, and the override only exists while helio is the style. All nine in band, nothing tuned.
+ * recal_128 added the TRIANGLE and recal_129 the PICK-AND-POP; the playstyle row is eight choices
+ * wide now. Blind -0.90 (128) then -1.12 (129) against the -0.30 ceiling, oracle +1.73 against the
+ * +0.50 floor. No tax moved for either. Adding a style makes the blind pick a little worse and
+ * can only help the oracle, so the row drifts toward its floor edge and away from its ceiling —
+ * the failure to watch for is the OTHER direction, a style so good it lifts the blind read.
+ * recal_127 removed the TRANSITION style (his ruling: "Remove transition entirely from the db."),
+ * so the playstyle row now picks its blind deviation from six choices instead of seven. Its blind
+ * read went from -0.99 to -1.09 against the -0.30 ceiling and the oracle held at +1.68 against the
+ * +0.50 floor: transition was a middling call, so dropping it makes the average random pick a
+ * little worse and leaves the best pick alone. No tax moved, and none was close to an edge.
  */
 export const TAX = {
   scorer: 0.55,
@@ -296,19 +363,36 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     ...t,
     scorer: t.scorer && names.includes(t.scorer) ? t.scorer : null,
     playmaker: t.playmaker && names.includes(t.playmaker) ? t.playmaker : null,
-    // a save from the inside/outside era carries a style that no longer exists
+    // A SAVE THAT NAMES A STYLE THAT NO LONGER EXISTS LOADS AS BALANCED, and has since the
+    // inside/outside era. recal_127 leans on exactly this for his ruling "Remove transition
+    // entirely from the db.": a run in progress whose plan says `transition` opens on balanced —
+    // the free default, no call and no price — rather than crashing or resetting the run.
     style: STYLES.some((x) => x.key === t.style) ? t.style : 'balanced',
     // ...and a pre-recal_75 save can carry a scheme that never existed, or one since cut
     scheme: SCHEMES.some((x) => x.key === t.scheme) ? t.scheme : 'matchup',
     // the pnr pair is two DIFFERENT men, both still on the five; anything else is dropped and the
     // engine picks the pair itself again, exactly as it does for a plan that never named one
     pnr: legalPair(t.pnr, names) ? t.pnr : null,
+    // ...and the post-up target is ONE man who is still on the five (recal_124), dropped the same
+    // way and to the same effect: the engine picks the hub itself again
+    post: legalMan(t.post, names) ? t.post : null,
+    // ...and so is the helio creator (recal_125), on the same rule
+    helio: legalMan(t.helio, names) ? t.helio : null,
   }
 }
 
 /** A pair is legal when it names two different men who are both on the five. */
 export function legalPair(pair: PnrPair | null | undefined, names: string[]): boolean {
   return !!pair && pair.handler !== pair.screener && names.includes(pair.handler) && names.includes(pair.screener)
+}
+
+/**
+ * A ONE-MAN CALL is legal when it names a man who is on the five. The post-up target (recal_124)
+ * and the helio creator (recal_125) are the same shape, so they share the test — legalPair is the
+ * two-man version of exactly this.
+ */
+export function legalMan(name: string | null | undefined, names: string[]): boolean {
+  return !!name && names.includes(name)
 }
 
 /**
@@ -325,6 +409,9 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     style: rank >= 2 ? t.style : 'balanced',
     // the pair rides with the style it belongs to: below rank 2 the call is not heard at all
     pnr: rank >= 2 ? t.pnr : null,
+    // ...and so does the post-up target: it is part of calling the style, not a call of its own
+    post: rank >= 2 ? t.post : null,
+    helio: rank >= 2 ? t.helio : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -339,8 +426,12 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  * THE FIT of a style on a five, 0-100, his formulas verbatim (recal_58). Two gaps the round left
  * open are filled here and documented: motion's ball-stopper subtraction is -12 per ISO-shaped star
  * (volume >= 90 with playvol < 50), and post-up's "dominance-bonus presence" is proxied by
- * min(rim, volume) — the same two facts the o_score bonus keys on. Transition's opponent term
- * (their ball security, inverted) needs the matchup, so without one that quarter reads neutral (50).
+ * min(rim, volume) — the same two facts the o_score bonus keys on.
+ *
+ * `theirs` is UNREAD since recal_127 removed transition, which was the only style whose fit asked
+ * anything about the opponent. The parameter stays: it is the third positional slot every caller
+ * already passes and the defensive mirror (schemeFit) still reads its own, so a style that wants
+ * the matchup back has somewhere to put it. It is not a leftover, it is a socket.
  */
 /**
  * WHO RUNS THE PICK-AND-ROLL. The plan's own two men when it names a legal pair (his ruling: "When
@@ -389,6 +480,35 @@ const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
 export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
 export const screenFit = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.efficiency)
 
+/**
+ * THE POP (recal_129, his ruling: "Add pick n pop"). Pick-and-roll where the screener steps OUT, so
+ * the term is his JUMPER — the better of his mid-range and his three, capped by his efficiency the
+ * way every screener term is — and the roll is not in it at all.
+ *
+ * Read against screenFit, which is min(max(rim, mid), efficiency), this says exactly one thing: the
+ * pop is worth more than the roll ONLY when the screener's THREE is his best shot. A mid-range
+ * popper scores identically in both, because recal_120 already put the mid into the pick-and-roll's
+ * screener term when it took the mid-range out of the post-up hub — Malone '97 reads 89 either way,
+ * Nowitzki '02 reads 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
+ * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tie on the same man,
+ * and a tie goes to the style that was already there. The fives pick-and-pop actually wins are the
+ * stretch fours and fives whose three beats both — Bonner, Bertans, Lewis, Murphy, Gallinari.
+ */
+export const popFit = (x: Attrs) => Math.min(Math.max(x.mid, x['3pt']), x.efficiency)
+
+/**
+ * THE PICK-AND-POP PAIR. It IS the pick-and-roll pair — the same `pnr` field on the plan, so a man
+ * who names his two and then switches the call between roll and pop keeps them, and no new field
+ * exists to reconcile, gate or migrate. Only the AUTO screener differs: with nobody named, the roll
+ * picks the best finisher off the screen and the pop picks the best shooter.
+ */
+export function popPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
+  if (legalPair(pick, five.map((p) => p.name))) return pnrPair(five, pick)
+  const handler = pnrPair(five, null).handler
+  const screener = five.filter((p) => p.attrs.height >= 80).slice().sort((x, y) => popFit(y.attrs) - popFit(x.attrs))[0] ?? null
+  return { handler, screener, chosen: false }
+}
+
 export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
   if (legalPair(pick, five.map((p) => p.name))) {
     const handler = five.find((p) => p.name === pick!.handler) ?? null
@@ -402,6 +522,61 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
   // by the ROLL: of two men who finish the same off the screen, the one who can get to the rim sets it
   const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => dScore(y) - dScore(x) || y.attrs.rim - x.attrs.rim)[0] ?? null
   return { handler, screener, chosen: false }
+}
+
+/**
+ * WHO THE BALL GOES TO ON THE BLOCK (recal_124, his ruling: "In post up playstyle, there need to be
+ * a post up target."). The post-up's mirror of pnrPair, and it works the same way: the plan's own
+ * man when it names one who is on the five, otherwise the engine's own pick. Every reader of the
+ * target — the fit, the price, the court, the caption — comes through here, so the number and the
+ * drawing can never name different men.
+ *
+ * `postFit` carries NO height term. Height decides who the ENGINE will nominate, not what a man the
+ * CALLER names is worth: a six-foot-six back-to-the-basket scorer is a real post-up and is priced
+ * as one if you call him, and a guard who cannot finish inside prices at nothing, which is the
+ * deviation tax paying for itself. The engine still only ever nominates a man POST_HEIGHT or taller,
+ * so no five's unplanned reading moves by a thousandth.
+ */
+export const POST_HEIGHT = 81
+export const postFit = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
+
+export function postMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
+  const bigs = five.filter((p) => p.attrs.height >= POST_HEIGHT)
+  return { hub: bigs.slice().sort((x, y) => postFit(y.attrs) - postFit(x.attrs))[0] ?? null, chosen: false }
+}
+
+/**
+ * WHO THE OFFENSE RUNS THROUGH (recal_125, his ruling: "In helio, allow me to pick a creator. Helio
+ * will overtake main playmaker and scorrer, as helio becomes both"). The third of the same shape:
+ * the plan's man when it names one who is on the five, the engine's own otherwise — and the
+ * engine's own is scorerCreator's argmax, the same man recal_115 made the featured one, so a plan
+ * that names nobody features and prices exactly as it did.
+ */
+export function heliMan(five: Player[], pick?: string | null): { creator: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { creator: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (!five.length) return { creator: null, chosen: false }
+  return { creator: five.reduce((m, p) => (scorerCreator(p.attrs) > scorerCreator(m.attrs) ? p : m), five[0]), chosen: false }
+}
+
+/**
+ * HELIO OVERTAKES THE TWO ROLES (recal_125, his ruling: "Helio will overtake main playmaker and
+ * scorrer, as helio becomes both"). While helio is CALLED, the creator holds both jobs and the
+ * plan's own `scorer` and `playmaker` are not heard — one man being the whole offense is what the
+ * style means, and letting the panel point the three calls at three different men would be three
+ * offenses at once. The saved names survive untouched underneath and come back the moment the
+ * style changes, exactly the way a pnr pair survives a style he is not currently calling.
+ *
+ * It is not free. Helio now pays BOTH role taxes and earns both role benefits, so calling it on the
+ * wrong man loses on the scorer term and the playmaker term at once — which is the deviation tax
+ * law doing the work his ruling asks of it, with no new constant.
+ */
+export function roleMen(t: Tactics, five: Player[]): { scorer: string | null; playmaker: string | null; helio: string | null } {
+  if (t.style === 'helio') {
+    const c = heliMan(five, t.helio).creator
+    if (c) return { scorer: c.name, playmaker: c.name, helio: c.name }
+  }
+  return { scorer: t.scorer, playmaker: t.playmaker, helio: null }
 }
 
 /**
@@ -461,7 +636,51 @@ export function twoStars(five: Player[]): boolean {
   return e.length >= 2 && e[1] >= STAR_LINE && e[0] - e[1] <= DUO_GAP
 }
 
-export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: PnrPair | null): number {
+/**
+ * THE TRIANGLE (recal_128, his ruling: "Add Triangle") — the first style added since recal_58's set,
+ * and it is not a play, it is a READ. Three facts, and no creator term at all:
+ *
+ *   POST OPTION   a man who can be fed on the block: the best max(rim, mid) on the floor. TRI_POST
+ *                 70 is the gate — under it there is no entry pass and bestStyle will not read the
+ *                 five as a triangle however the rest lands. It is a low bar on purpose (the wheel's
+ *                 p10 is 72): the post option is what makes the set POSSIBLE, not what makes it good.
+ *   READERS       men who can BOTH pass and shoot the mid-range: playvol >= TRI_PV 50 and
+ *                 mid >= TRI_MID 60. This is the discriminator and it carries the fit. Over the
+ *                 1,255 wheel fives the median is ONE and the 90th percentile is two, so the third
+ *                 reader is the rare thing and is paid like it: TRI_READ 8 for each of the first
+ *                 two, TRI_READ3 16 for the third and fourth. A convex term, because the triangle
+ *                 needs three men who can play out of it and two is a different offense.
+ *   SEPARATION    recal_115's scorerCreator, INVERTED. The gap between the best man and the mean of
+ *                 the other four, charged at TRI_SEP 0.8 for every point over TRI_SEP_FREE 22 (the
+ *                 wheel's median gap, so an ordinary five pays nothing). A five that leans on one
+ *                 creator is running that man's offense, not a read-and-react one.
+ *
+ * Plus the team's ball security at 0.15 — the set dies on a bad pass — and a 14 base so the whole
+ * thing sits on the same 0-100 axis the other six do. An ordinary five reads about 50 and loses to
+ * the free default; it wins 72 of the 1,255 wheel fives (5.7%).
+ *
+ * MEASURED, and reported rather than tuned away: of the fives his ruling named, the ones the CARDS
+ * agree with are Jordan's second three-peat Bulls ('96 73, '97 75) and the Kobe-Gasol Lakers ('09
+ * 70). The first three-peat Bulls and the Shaq-Kobe Lakers do not have the readers — Pippen's mid
+ * was 46-55 then, Grant 28-30, Cartwright 23; Harper '00 reads mid 8, Horry 40, Shaw 28 — so they
+ * read helio and post-up, which is what a superstar plus role players is. Loosening the reader
+ * thresholds far enough to catch them was measured first and takes the triangle to 205 of 1,255,
+ * which is not a signature system, it is a default.
+ */
+export const TRI_POST = 70
+export const TRI_PV = 50
+export const TRI_MID = 60
+export const TRI_READ = 8
+export const TRI_READ3 = 16
+export const TRI_SEP = 0.8
+export const TRI_SEP_FREE = 22
+/** The best man on the floor to feed on the block — the triangle's post option, and its featured man. */
+export const postOption = (five: Player[]): Player | null =>
+  five.length ? five.reduce((m, p) => (Math.max(p.attrs.rim, p.attrs.mid) > Math.max(m.attrs.rim, m.attrs.mid) ? p : m), five[0]) : null
+/** Men who can both pass and shoot the mid-range — the ones the triangle actually reads through. */
+export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => p.attrs.playvol >= TRI_PV && p.attrs.mid >= TRI_MID)
+
+export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
@@ -486,7 +705,7 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       // scoring, the screener credited for the pop as well as the roll. Jazz '97 (Stockton 87.1,
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
-      const { handler: h, screener: d } = pnrPair(five, pnr)
+      const { handler: h, screener: d } = pnrPair(five, call?.pnr)
       const handler = h ? handlerFit(h.attrs) : 0
       const dive = d ? screenFit(d.attrs) : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
@@ -510,11 +729,35 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       // the pick-and-POP — it is in screenFit now — and the block keeps the rim. Malone '97 (rim 77,
       // mid 94) falls from 94 to 77 here and rises from 77 to 89 there, which is the whole round in
       // one card. O'Neal '00 (rim 99) and Olajuwon '94 (rim 95) do not move at all.
-      const bigs = five.filter((p) => p.attrs.height >= 81)
-      const hub = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
-      const post = Math.max(0, ...bigs.map((p) => hub(p.attrs)))
-      const pName = bigs.sort((x, y) => hub(y.attrs) - hub(x.attrs))[0]?.name
-      return post * 0.7 + mean(five.filter((p) => p.name !== pName), (p) => p.attrs['3pt']) * 0.3
+      // HIS man when the plan names one, the engine's hub when it does not (recal_124) — one
+      // function, postMan, so the fit and the floor are fed to the same player. A called target who
+      // is a worse post man than the engine's pick scores less here and the style is worth less,
+      // which is the deviation tax law applied to the second half of the call.
+      const { hub } = postMan(five, call?.post)
+      const post = hub ? Math.max(0, postFit(hub.attrs)) : 0
+      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => p.attrs['3pt']) * 0.3
+    }
+    case 'pickpop': {
+      // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
+      // (recal_129). Identical weights on purpose: the two calls are then separated by the screener
+      // and by nothing else, so pick-and-pop wins exactly when the pop is worth more than the roll.
+      const { handler: ph, screener: pd } = popPair(five, call?.pnr)
+      const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
+      return 0.4 * (ph ? handlerFit(ph.attrs) : 0) + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
+    }
+    case 'triangle': {
+      const post = postOption(five)
+      const readers = Math.min(triangleReaders(five).length, 4)
+      const e = a.map(scorerCreator).sort((x, y) => y - x)
+      const sep = e[0] - (e.length > 1 ? e.slice(1).reduce((t, v) => t + v, 0) / (e.length - 1) : 0)
+      return (
+        14 +
+        0.25 * (post ? Math.max(post.attrs.rim, post.attrs.mid) : 0) +
+        TRI_READ * Math.min(readers, 2) +
+        TRI_READ3 * Math.max(0, readers - 2) +
+        0.15 * avg((x) => x.ballsec) -
+        TRI_SEP * Math.max(0, sep - TRI_SEP_FREE)
+      )
     }
     case 'helio': {
       // HELIO IS ONE MAN ALONE (recal_115, his ruling: "why Helio when they have 2 superstars?").
@@ -527,10 +770,6 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       // still needs four who do not turn it over. Thunder '22 (Gilgeous-Alexander alone) reads 65.
       const e = a.map(scorerCreator).sort((x, y) => y - x)
       return 0.7 * e[0] + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
-    }
-    case 'transition': {
-      const opp = theirs?.length ? 100 - mean(theirs, (p) => p.attrs.ballsec) : 50
-      return 0.45 * avg((x) => x.perimdisrupt) + 0.3 * avg((x) => x.durability) + 0.25 * opp
     }
   }
 }
@@ -660,10 +899,14 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
   // What it reads instead is whatever else fits the pair — usually the pick-and-roll between them,
   // and the caption names both men (see featured). A call is still a call.
   const duo = twoStars(five)
+  const hasPost = five.some((p) => Math.max(p.attrs.rim, p.attrs.mid) >= TRI_POST)
   for (const s of STYLES) {
     if (s.key === 'balanced') continue
     if (s.key === 'fiveout' && shy >= 2) continue
     if (s.key === 'helio' && duo) continue
+    // ...and THE TRIANGLE NEEDS AN ENTRY PASS (recal_128): a five with nobody who can be fed on the
+    // block has no triangle to run, whatever the rest of the fit lands on. Called is still called.
+    if (s.key === 'triangle' && !hasPost) continue
     const fit = styleFit(s.key, five, theirs)
     if (fit > bestFit) {
       bestFit = fit
@@ -680,16 +923,21 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
  * feature nobody. ONE function, so the drawing (CourtFive.spotsFor), the fit above and the caption
  * can never name different men; the scores are the fit formulas' own.
  */
-export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Player[] {
+export function featured(style: Style, five: Player[], call?: StyleCall | null): Player[] {
   if (five.length < 2) return []
-  const top = (score: (x: Attrs) => number) => five.reduce((m, p) => (score(p.attrs) > score(m.attrs) ? p : m), five[0])
   switch (style) {
     case 'helio':
-      return [top(scorerCreator)]
+      return [heliMan(five, call?.helio).creator].filter((p): p is Player => !!p)
     case 'postup':
-      return [top((x) => (x.height >= 81 ? Math.min(x.rim, x.volume) * interior(x) : -1))]
+      return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
+    case 'triangle':
+      return [postOption(five)].filter((p): p is Player => !!p)
+    case 'pickpop': {
+      const { handler, screener } = popPair(five, call?.pnr)
+      return [handler, screener].filter((p): p is Player => !!p)
+    }
     case 'pnr': {
-      const { handler, screener } = pnrPair(five, pnr)
+      const { handler, screener } = pnrPair(five, call?.pnr)
       return [handler, screener].filter((p): p is Player => !!p)
     }
     default:
@@ -700,12 +948,9 @@ export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Pl
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
-  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t.pnr) - 55) - TAX.style, -2.5, 2.5)
+  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -2.5, 2.5)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
-  if (t.style === 'transition') {
-    if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
-    if (t.tempo === 'slow') pts /= 2 // calling slow against your own run game halves it
-  }
+  // recal_127 removed transition and its two tempo synergies with it; post-up's is the only one left
   return pts
 }
 
@@ -781,11 +1026,17 @@ export function playmakerPts(name: string, five: Player[], theirs?: Player[]): n
 
 export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { label: string; pts: number }[] {
   const parts: { label: string; pts: number }[] = []
-  if (t.scorer && five.some((p) => p.name === t.scorer)) parts.push({ label: 'main scorer', pts: scorerPts(t.scorer, five, theirs) })
-  if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
+  // HELIO IS BOTH ROLES (recal_125). roleMen hands back the creator for both jobs while helio is
+  // called, and the plan's own two names otherwise; the labels say which it is, so a reader of the
+  // itemised points is never left wondering why a scorer he did not pick is being priced.
+  const roles = roleMen(t, five)
+  const tag = roles.helio ? ' (helio)' : ''
+  if (roles.scorer && five.some((p) => p.name === roles.scorer)) parts.push({ label: `main scorer${tag}`, pts: scorerPts(roles.scorer, five, theirs) })
+  if (roles.playmaker && five.some((p) => p.name === roles.playmaker))
+    parts.push({ label: `main playmaker${tag}`, pts: playmakerPts(roles.playmaker, five, theirs) })
   if (t.style !== 'balanced')
     parts.push({
-      label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t.pnr))})`,
+      label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t))})`,
       pts: stylePts(t, five, theirs),
     })
   if (t.scheme !== 'matchup')
@@ -834,7 +1085,8 @@ export function boxContext(
   const themEdges = theirs.map((_, j) => centered(Eu, ourBoard, j))
   // the r59 forced reallocation, verbatim
   const base = teamOffense(five).lines.map((l) => l.usg)
-  const si = plan.scorer ? five.findIndex((q) => q.name === plan.scorer) : -1
+  const roles = roleMen(plan, five)
+  const si = roles.scorer ? five.findIndex((q) => q.name === roles.scorer) : -1
   let usg: number[] | undefined
   let brick: number | undefined
   if (si >= 0) {
@@ -844,7 +1096,7 @@ export function boxContext(
     const c = creation(five[si].attrs)
     brick = ((KNOBS.SLOPE_UP_MAX - (KNOBS.SLOPE_UP_MAX - KNOBS.SLOPE_UP_MIN) * c) * 8) / 100
   }
-  const pi = plan.playmaker ? five.findIndex((q) => q.name === plan.playmaker) : -1
+  const pi = roles.playmaker ? five.findIndex((q) => q.name === roles.playmaker) : -1
   return {
     us: {
       paceLvl,

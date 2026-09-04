@@ -16,11 +16,23 @@ import {
   scorerCreator,
   screenFit,
   STAR_LINE,
+  heliMan,
+  popFit,
+  popPair,
+  postFit,
+  postOption,
+  postMan,
+  POST_HEIGHT,
+  roleMen,
+  tacticsParts,
   styleFit,
   STYLES,
   stylePts,
+  triangleReaders,
+  TRI_POST,
   twoStars,
   type PnrPair,
+  type Style,
   type Tactics,
 } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
@@ -82,7 +94,7 @@ describe('the pick-and-roll pair he calls', () => {
     expect(stylePts(plan({ handler: auto.handler!.name, screener: auto.screener!.name }), FIVE)).toBeCloseTo(stylePts(plan(null), FIVE), 10)
     // a worse pair off the same five is worth less, and the fit says so in the same direction
     const bad: PnrPair = { handler: "Klay Thompson '15", screener: "Draymond Green '16" }
-    expect(styleFit('pnr', FIVE, undefined, bad)).toBeLessThan(styleFit('pnr', FIVE))
+    expect(styleFit('pnr', FIVE, undefined, { pnr: bad })).toBeLessThan(styleFit('pnr', FIVE))
     expect(stylePts(plan(bad), FIVE)).toBeLessThan(stylePts(plan(null), FIVE))
   })
 
@@ -96,7 +108,7 @@ describe('the pick-and-roll pair he calls', () => {
       0.4 * handlerFit(g(pick.handler).attrs) +
       0.35 * screenFit(g(pick.screener).attrs) +
       0.25 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
-    expect(styleFit('pnr', FIVE, undefined, pick)).toBeCloseTo(want, 10)
+    expect(styleFit('pnr', FIVE, undefined, { pnr: pick })).toBeCloseTo(want, 10)
   })
 
   it('an old plan with no pair at all still resolves, and prices as it always did', () => {
@@ -266,7 +278,14 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
     expect(featured('pnr', JAZZ_97).map((p) => p.name)).toEqual(["John Stockton '97", "Karl Malone '97"])
     // it beats the post-up built around the same big, and everything else on that floor
     expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('postup', JAZZ_97))
-    for (const s of STYLES) if (s.key !== 'pnr' && s.key !== 'balanced') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
+    // recal_129 added pick-and-pop, which is worth EXACTLY the same on this five — Malone's mid is
+    // both his roll and his pop — so the bar is >= there and the tie is broken by set order, which
+    // is what keeps his ruling standing. Every other style is still strictly behind.
+    for (const s of STYLES) {
+      if (s.key === 'pnr' || s.key === 'balanced') continue
+      if (s.key === 'pickpop') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThanOrEqual(styleFit(s.key, JAZZ_97))
+      else expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
+    }
   })
 
   it('the handler is led by his passing, not capped by his scoring', () => {
@@ -303,5 +322,326 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
     expect(bestStyle(hornets95).style).toBe('postup')
     const magic11 = cut("Jameer Nelson '11", "Jason Richardson '11", "Hedo Türkoğlu '11", "Ryan Anderson '11", "Dwight Howard '11")
     expect(bestStyle(magic11).style).toBe('postup')
+  })
+})
+
+/**
+ * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+ * target."). The mirror of the pick-and-roll pair, for one man, and it must behave like the pair in
+ * every respect that matters: the plan's man is honoured whoever he is, an absent call prices
+ * EXACTLY as it did before the field existed, and a target who is a worse post man than the
+ * engine's hub costs rather than pays.
+ */
+describe('the post-up target he calls', () => {
+  const post = (name: string | null): Tactics => ({ ...DEFAULT_TACTICS, style: 'postup', post: name })
+
+  it("with nobody named, the hub is the engine's own and the fit is the number it always was", () => {
+    expect(DEFAULT_TACTICS.post).toBe(null)
+    const auto = postMan(LAKERS_00, null)
+    expect(auto.chosen).toBe(false)
+    expect(auto.hub!.name).toBe("Shaquille O'Neal '00")
+    // the fit written out longhand, the way recal_115/120 left it: the best big's post score, and
+    // the other four men's shooting around him
+    const rest = LAKERS_00.filter((p) => p.name !== auto.hub!.name)
+    const want = 0.7 * postFit(auto.hub!.attrs) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    expect(styleFit('postup', LAKERS_00)).toBeCloseTo(want, 10)
+    expect(styleFit('postup', LAKERS_00, undefined, post(null))).toBeCloseTo(want, 10)
+    // ...and a plan from before the field existed prices identically
+    const old = { ...DEFAULT_TACTICS, style: 'postup' } as Tactics
+    delete (old as { post?: unknown }).post
+    expect(old.post).toBeUndefined()
+    expect(stylePts(old, LAKERS_00)).toBeCloseTo(stylePts(post(null), LAKERS_00), 10)
+  })
+
+  it('reads the fit off the man he named, whoever he is', () => {
+    const pick = "Glen Rice '00"
+    expect(postMan(LAKERS_00, pick).chosen).toBe(true)
+    expect(featured('postup', LAKERS_00, post(pick))[0].name).toBe(pick)
+    const rest = LAKERS_00.filter((p) => p.name !== pick)
+    const want = 0.7 * Math.max(0, postFit(g(pick).attrs)) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    expect(styleFit('postup', LAKERS_00, undefined, post(pick))).toBeCloseTo(want, 10)
+  })
+
+  it('a worse post man than the engine would pick COSTS — the deviation tax law, on the second half of the call', () => {
+    const auto = stylePts(post(null), LAKERS_00)
+    for (const worse of ["Glen Rice '00", "Ron Harper '00", "Robert Horry '00", "Kobe Bryant '00"]) {
+      expect(postFit(g(worse).attrs)).toBeLessThan(postFit(g("Shaquille O'Neal '00").attrs))
+      expect(stylePts(post(worse), LAKERS_00)).toBeLessThan(auto)
+    }
+    // and the engine's own hub, named by hand, is worth exactly what leaving it alone is worth
+    expect(stylePts(post("Shaquille O'Neal '00"), LAKERS_00)).toBeCloseTo(auto, 10)
+  })
+
+  it('height decides who the ENGINE nominates, not what a man the CALLER names is worth', () => {
+    // postFit carries no height term, so a short back-to-the-basket scorer prices as one...
+    expect(postFit(g("Shaquille O'Neal '00").attrs)).toBeGreaterThan(0)
+    // ...but the engine only ever nominates a man POST_HEIGHT or taller, so no unplanned five moved
+    expect(POST_HEIGHT).toBe(81)
+    for (const f of [LAKERS_00, ROCKETS_94, CELTICS_25]) {
+      const hub = postMan(f, null).hub
+      if (hub) expect(hub.attrs.height).toBeGreaterThanOrEqual(POST_HEIGHT)
+    }
+  })
+
+  it('a target who has left the five is dropped, and the engine picks the hub again', () => {
+    const names = LAKERS_00.map((p) => p.name)
+    expect(reconcileTactics(post("Glen Rice '00"), names).post).toBe("Glen Rice '00")
+    expect(reconcileTactics(post("Bill Russell '62"), names).post).toBe(null)
+    expect(reconcileTactics(post("Glen Rice '00"), names.filter((n) => n !== "Glen Rice '00")).post).toBe(null)
+    // a dropped target prices as an unnamed one, so no saved run resets underneath its owner
+    const dropped = reconcileTactics(post('nobody at all'), names)
+    expect(stylePts(dropped, LAKERS_00)).toBeCloseTo(stylePts(post(null), LAKERS_00), 10)
+  })
+
+  it('the target rides with the style: below Playbook rank 2 it is not heard', () => {
+    const called = post("Glen Rice '00")
+    expect(gateTactics(called, 1).style).toBe('balanced')
+    expect(gateTactics(called, 1).post).toBe(null)
+    expect(gateTactics(called, 2).post).toBe("Glen Rice '00")
+  })
+})
+
+/**
+ * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator. Helio will
+ * overtake main playmaker and scorrer, as helio becomes both"). The third one-man call, and the
+ * only one that reaches out of its own style: while helio is called, the creator IS the main
+ * scorer and the main playmaker, the plan's own two names are not heard, and the style pays both
+ * role taxes for the privilege.
+ */
+describe('the helio creator he calls', () => {
+  const helio = (name: string | null): Tactics => ({ ...DEFAULT_TACTICS, style: 'helio', helio: name })
+  const OKC = THUNDER_22
+  const SGA = "Shai Gilgeous-Alexander '22"
+
+  it("with nobody named the creator is the engine's own featured man, and nothing prices differently", () => {
+    expect(DEFAULT_TACTICS.helio).toBe(null)
+    const auto = heliMan(OKC, null)
+    expect(auto.chosen).toBe(false)
+    expect(auto.creator!.name).toBe(SGA)
+    // recal_115's featured man and the creator are the same man by construction
+    expect(featured('helio', OKC)[0].name).toBe(SGA)
+    expect(featured('helio', OKC, helio(null))[0].name).toBe(SGA)
+    // a plan from before the field existed resolves and prices identically
+    const old = { ...DEFAULT_TACTICS, style: 'helio' } as Tactics
+    delete (old as { helio?: unknown }).helio
+    expect(old.helio).toBeUndefined()
+    expect(heliMan(OKC, old.helio).chosen).toBe(false)
+    expect(tacticsParts(old, OKC).reduce((a, x) => a + x.pts, 0)).toBeCloseTo(tacticsParts(helio(null), OKC).reduce((a, x) => a + x.pts, 0), 10)
+  })
+
+  it('the man he names is the creator, and the floor and the caption follow him', () => {
+    const pick = "Luguentz Dort '22"
+    expect(heliMan(OKC, pick).chosen).toBe(true)
+    expect(featured('helio', OKC, helio(pick))[0].name).toBe(pick)
+  })
+
+  it('helio OVERTAKES the two roles: the creator is the scorer and the playmaker', () => {
+    // ...whatever the plan's own two names say
+    const t: Tactics = { ...helio("Luguentz Dort '22"), scorer: SGA, playmaker: "Josh Giddey '22" }
+    const roles = roleMen(t, OKC)
+    expect(roles.helio).toBe("Luguentz Dort '22")
+    expect(roles.scorer).toBe("Luguentz Dort '22")
+    expect(roles.playmaker).toBe("Luguentz Dort '22")
+    // the itemised points say so rather than pricing a scorer he never picked in silence
+    const labels = tacticsParts(t, OKC).map((x) => x.label)
+    expect(labels).toContain('main scorer (helio)')
+    expect(labels).toContain('main playmaker (helio)')
+    // the saved names survive underneath and come back the moment the style changes
+    const off: Tactics = { ...t, style: 'balanced' }
+    expect(roleMen(off, OKC)).toEqual({ scorer: SGA, playmaker: "Josh Giddey '22", helio: null })
+    expect(off.helio).toBe("Luguentz Dort '22")
+  })
+
+  it('every other style leaves the two roles exactly where they were', () => {
+    for (const s of STYLES) {
+      if (s.key === 'helio') continue
+      const t: Tactics = { ...DEFAULT_TACTICS, style: s.key, scorer: SGA, playmaker: "Josh Giddey '22", helio: "Luguentz Dort '22" }
+      expect(roleMen(t, OKC)).toEqual({ scorer: SGA, playmaker: "Josh Giddey '22", helio: null })
+    }
+  })
+
+  it('a creator who is not the five best scorer-creator COSTS, on both role terms at once', () => {
+    const auto = tacticsParts(helio(null), OKC).reduce((a, x) => a + x.pts, 0)
+    for (const worse of ["Luguentz Dort '22", "Aleksej Pokusevski '22", "Darius Bazley '22"]) {
+      expect(scorerCreator(g(worse).attrs)).toBeLessThan(scorerCreator(g(SGA).attrs))
+      expect(tacticsParts(helio(worse), OKC).reduce((a, x) => a + x.pts, 0)).toBeLessThan(auto)
+    }
+    // and naming the engine's own man by hand is worth exactly what leaving it alone is worth
+    expect(tacticsParts(helio(SGA), OKC).reduce((a, x) => a + x.pts, 0)).toBeCloseTo(auto, 10)
+  })
+
+  it('calling helio is not free: it pays both role taxes as well as the style tax', () => {
+    const labels = tacticsParts(helio(null), OKC).map((x) => x.label)
+    // three terms, not one: the two roles it overtook, and the style itself
+    expect(labels).toHaveLength(3)
+    expect(labels.filter((l) => l.endsWith('(helio)'))).toHaveLength(2)
+    expect(labels.some((l) => l.startsWith('helio (fit'))).toBe(true)
+    // ...and a five-out plan on the same five is one term, as it always was
+    expect(tacticsParts({ ...DEFAULT_TACTICS, style: 'fiveout' }, OKC)).toHaveLength(1)
+  })
+
+  it('a creator who has left the five is dropped, and the target rides with the style', () => {
+    const names = OKC.map((p) => p.name)
+    expect(reconcileTactics(helio(SGA), names).helio).toBe(SGA)
+    expect(reconcileTactics(helio("Bill Russell '62"), names).helio).toBe(null)
+    expect(reconcileTactics(helio(SGA), names.filter((n) => n !== SGA)).helio).toBe(null)
+    expect(gateTactics(helio(SGA), 1).helio).toBe(null)
+    expect(gateTactics(helio(SGA), 2).helio).toBe(SGA)
+  })
+})
+
+/**
+ * TRANSITION IS GONE (recal_127, his ruling: "Remove transition entirely from the db."). The set is
+ * six styles now, and the only thing that matters more than the removal is that A RUN IN PROGRESS
+ * SURVIVES IT: a save whose plan says `transition` must open on balanced — no call, no price — and
+ * never crash, never reset, never carry a style the panel cannot show.
+ */
+describe('transition is removed, and a save that still names it loads as balanced', () => {
+  const FIVE5 = THUNDER_22
+  const NAMES5 = FIVE5.map((p) => p.name)
+
+  it('the style is not in the union, the list, or anything that enumerates them', () => {
+    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop'])
+    expect(STYLES).toHaveLength(8)
+    expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
+  })
+
+  it("a saved plan that says 'transition' reconciles to balanced, priced to zero", () => {
+    // exactly the shape a save from before this round carries
+    const save = { ...DEFAULT_TACTICS, style: 'transition' as unknown as Style, tempo: 'fast' as const, crashOff: true }
+    const loaded = reconcileTactics(save, NAMES5)
+    expect(loaded.style).toBe('balanced')
+    // the REST of his plan survives the migration — only the dead style is dropped
+    expect(loaded.tempo).toBe('fast')
+    expect(loaded.crashOff).toBe(true)
+    expect(stylePts(loaded, FIVE5)).toBe(0)
+    // ...and it prices as balanced does, rather than throwing on the way through the parts list
+    expect(tacticsParts(loaded, FIVE5).some((x) => x.label.includes('transition'))).toBe(false)
+  })
+
+  it('nothing reads it any more: the fit, the shape and the read are all six-style', () => {
+    expect(styleFit('transition' as unknown as Style, FIVE5)).toBeUndefined()
+    for (const f of [THUNDER_16, THUNDER_22, CELTICS_25, LAKERS_00, ROCKETS_94]) {
+      expect(bestStyle(f).style).not.toBe('transition')
+      expect(STYLES.some((s) => s.key === bestStyle(f).style) || bestStyle(f).style === 'balanced').toBe(true)
+    }
+  })
+
+  it('the tempo synergy went with it: only post-up still reads the night', () => {
+    const slow = (style: Style): Tactics => ({ ...DEFAULT_TACTICS, style, tempo: 'slow' })
+    const fast = (style: Style): Tactics => ({ ...DEFAULT_TACTICS, style, tempo: 'fast' })
+    for (const s of STYLES) {
+      if (s.key === 'balanced' || s.key === 'postup') continue
+      expect(stylePts(slow(s.key), FIVE5)).toBeCloseTo(stylePts(fast(s.key), FIVE5), 10)
+    }
+    expect(stylePts(slow('postup'), FIVE5)).toBeGreaterThan(stylePts(fast('postup'), FIVE5))
+  })
+})
+
+/**
+ * THE TRIANGLE (recal_128, his ruling: "Add Triangle"). The first style added since recal_58's set.
+ * It is a READ, not a call on a man: a post option to feed, men who can pass and shoot the
+ * mid-range to play out of it, and no one creator the whole thing runs through.
+ */
+const BULLS_97 = cut("Steve Kerr '97", "Michael Jordan '97", "Scottie Pippen '97", "Toni Kukoč '97", "Luc Longley '97")
+const LAKERS_09 = cut("Derek Fisher '09", "Kobe Bryant '09", "Lamar Odom '09", "Pau Gasol '09", "Andrew Bynum '09")
+
+describe('the triangle is a read, and reads best where the passing and the mid-range are', () => {
+  it("Jordan's second three-peat Bulls and the Kobe-Gasol Lakers read it", () => {
+    for (const f of [BULLS_97, LAKERS_09]) {
+      expect(bestStyle(f).style).toBe('triangle')
+      expect(triangleReaders(f)).toHaveLength(3)
+    }
+  })
+
+  it('the featured man is the post option — the entry pass, not the best player', () => {
+    expect(featured('triangle', BULLS_97)[0].name).toBe("Michael Jordan '97")
+    // it is the best BLOCK option, not the biggest man: Bryant '09 (mid 96) is fed ahead of
+    // Gasol (rim 82), which is what the Lakers actually did with him
+    expect(postOption(LAKERS_09)!.name).toBe("Kobe Bryant '09")
+    // ...and the post option is the best max(rim, mid) on the floor, whoever that is
+    for (const f of [BULLS_97, LAKERS_09, LAKERS_00]) {
+      const p = postOption(f)!
+      for (const q of f) expect(Math.max(p.attrs.rim, p.attrs.mid)).toBeGreaterThanOrEqual(Math.max(q.attrs.rim, q.attrs.mid))
+    }
+  })
+
+  it('THE THIRD READER is what it pays for: two is a different offense', () => {
+    // the Bulls '92 are the same franchise, a Pippen mid-range short of the same set
+    const bulls92 = cut("B.J. Armstrong '92", "Michael Jordan '92", "Scottie Pippen '92", "Horace Grant '92", "Stacey King '92")
+    expect(triangleReaders(bulls92)).toHaveLength(2)
+    expect(styleFit('triangle', bulls92)).toBeLessThan(styleFit('triangle', BULLS_97))
+    expect(bestStyle(bulls92).style).not.toBe('triangle')
+  })
+
+  it('A LONE CREATOR costs it: the separation term is recal_115 inverted', () => {
+    // the Shaq-Kobe Lakers have the post option and the ball security, and one reader
+    expect(triangleReaders(LAKERS_00)).toHaveLength(1)
+    expect(styleFit('triangle', LAKERS_00)).toBeLessThan(60)
+    expect(bestStyle(LAKERS_00).style).toBe('postup')
+  })
+
+  it('a five with nobody to feed on the block is never READ as a triangle', () => {
+    const noPost = cut("Steve Kerr '96", "Danny Green '14", "Bryon Russell '97", "Andre Roberson '16", "J.R. Smith '16")
+    expect(noPost.some((p) => Math.max(p.attrs.rim, p.attrs.mid) >= TRI_POST)).toBe(false)
+    expect(bestStyle(noPost).style).not.toBe('triangle')
+    // ...but a CALL is still a call, and still prices
+    expect(styleFit('triangle', noPost)).toBeGreaterThan(0)
+  })
+
+  it('it is in the set, the panel and the tax law like any other style', () => {
+    expect(STYLES.map((s) => s.key)).toContain('triangle')
+    expect(STYLES).toHaveLength(8)
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97)).toBeGreaterThan(0)
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)).toBeLessThan(0)
+  })
+})
+
+/**
+ * PICK-AND-POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll with the screener
+ * stepping out: the same pair, the same handler term, the same three weights, and the ROLL swapped
+ * for the JUMPER. It must beat the roll exactly when the screener shoots better than he finishes,
+ * and lose to it when he is a diver.
+ */
+describe('pick-and-pop is the roll with the screener stepping out', () => {
+  const SPURS_11 = cut("Tony Parker '11", "Manu Ginóbili '11", "Richard Jefferson '11", "Matt Bonner '11", "Tim Duncan '11")
+  const ROCKETS_18 = cut("Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18")
+
+  it('a stretch big reads pick-and-pop, and the pair is the pick-and-roll pair', () => {
+    expect(bestStyle(SPURS_11).style).toBe('pickpop')
+    const pair = popPair(SPURS_11, null)
+    expect(pair.screener!.name).toBe("Matt Bonner '11")
+    expect(featured('pickpop', SPURS_11).map((p) => p.name)).toEqual([pair.handler!.name, "Matt Bonner '11"])
+    // the same `pnr` field carries the call, so naming two men serves both styles
+    const named: PnrPair = { handler: "Tony Parker '11", screener: "Tim Duncan '11" }
+    expect(popPair(SPURS_11, named).chosen).toBe(true)
+    expect(popPair(SPURS_11, named).screener!.name).toBe("Tim Duncan '11")
+    expect(popPair(SPURS_11, named)).toEqual(pnrPair(SPURS_11, named))
+  })
+
+  it('it beats the roll only when the THREE is the screener best shot', () => {
+    const bonner = g("Matt Bonner '11").attrs
+    expect(bonner['3pt']).toBeGreaterThan(Math.max(bonner.rim, bonner.mid))
+    expect(popFit(bonner)).toBeGreaterThan(screenFit(bonner))
+    expect(styleFit('pickpop', SPURS_11)).toBeGreaterThan(styleFit('pnr', SPURS_11))
+  })
+
+  it('a ROLLER keeps the roll: Capela and Stoudemire are not poppers', () => {
+    for (const n of ["Clint Capela '18", "Amar'e Stoudemire '05"]) {
+      expect(popFit(g(n).attrs)).toBeLessThan(screenFit(g(n).attrs))
+    }
+    for (const f of [ROCKETS_18, SUNS_05]) {
+      expect(styleFit('pnr', f)).toBeGreaterThan(styleFit('pickpop', f))
+      expect(bestStyle(f).style).toBe('pnr')
+    }
+  })
+
+  it("a MID-RANGE popper ties, and the tie keeps his ruling: the Jazz '97 stay pick-and-roll", () => {
+    const km = g("Karl Malone '97").attrs
+    expect(km.mid).toBeGreaterThan(km.rim)
+    // recal_120 already put the mid into the roll term, so the two calls are worth the same man
+    expect(popFit(km)).toBeCloseTo(screenFit(km), 10)
+    expect(styleFit('pickpop', JAZZ_97)).toBeCloseTo(styleFit('pnr', JAZZ_97), 10)
+    expect(bestStyle(JAZZ_97).style).toBe('pnr')
   })
 })

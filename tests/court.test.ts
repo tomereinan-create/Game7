@@ -1,8 +1,8 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, popPair, postMan, styleFit, STYLES, twoStars, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -90,12 +90,20 @@ describe('a five with no plan stands in the shape of its best tactic', () => {
   const SAMPLE: Player[][] = [FIVE]
   for (let i = 0; i + 5 <= PLAYERS.length && SAMPLE.length < 60; i += 37) SAMPLE.push(PLAYERS.slice(i, i + 5))
 
-  /** The ruling's own definition, written out longhand so the test does not lean on the engine. */
+  /** The ruling's own definition, written out longhand so the test does not lean on the engine —
+   *  including the two VETOES it has grown since: five-out is never read for a five with two men
+   *  who cannot shoot (recal_115), and helio is never read for a five with two stars (recal_115).
+   *  They were missing here and the test agreed by luck until recal_127 removed transition, which
+   *  had been winning outright on the sample five where the two answers diverge. */
   const argmax = (five: Player[]): { style: Style; fit: number } => {
     let style: Style = 'balanced'
     let fit = 60
+    const shy = five.filter((p) => !canSpace(p)).length
+    const duo = twoStars(five)
     for (const s of STYLES) {
       if (s.key === 'balanced') continue
+      if (s.key === 'fiveout' && shy >= 2) continue
+      if (s.key === 'helio' && duo) continue
       const f = styleFit(s.key, five)
       if (f > fit) {
         fit = f
@@ -190,7 +198,10 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
       // ruling: the rest stand outside), every other set on the inside spot it holds for him.
       // recal_120 note: Ayton '26 and Hachimura '26 BOTH cap at screenFit 71 off their efficiency,
       // and the tie is broken by the roll (rim 71 to 27), so the screen is still Ayton's.
-      if (s.key !== 'fiveout') expect(outsideLine(at[AYTON])).toBe(false)
+      // recal_129: pick-and-pop is the second set with NO inside spot — the whole point of the
+      // call is that the screener steps out instead of rolling — so it joins five-out here. The
+      // corner check above still holds in both: a man who cannot shoot never takes a shooter's spot.
+      if (s.key !== 'fiveout' && s.key !== 'pickpop') expect(outsideLine(at[AYTON])).toBe(false)
     }
   })
 
@@ -259,7 +270,10 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
       if (s.key === 'balanced') continue
       const html = draw({ style: s.key, pnr: null })
       same(stood(html), drawn(spotsFor({ style: s.key, pnr: null }, FIVE)))
-      expect(caption(html)).toBe(`${s.label} · your tactic`)
+      // recal_124: a called style names the men it runs through, the same way the best-fit read
+      // does — the pair, or the post target — and then says whose call it is
+      const named = featured(s.key, FIVE, { style: s.key, pnr: null } as Tactics).map((p) => surnameOf(p.name))
+      expect(caption(html)).toBe(`${s.label}${named.length ? ` · ${named.join(' + ')}` : ''} · your tactic`)
     }
   })
 
@@ -434,5 +448,160 @@ describe('the floor is drawn to real proportions, and every spot stands on it', 
         }
       }
     }
+  })
+})
+
+/**
+ * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+ * target."). The floor mirror of the pick-and-roll pair: the man the plan names stands on the
+ * block, the caption says his name, and a plan that names nobody draws exactly as it always did.
+ */
+describe('the post-up stands the man he called on the block', () => {
+  const LAK = [g("Ron Harper '00"), g("Kobe Bryant '00"), g("Glen Rice '00"), g("Robert Horry '00"), g("Shaquille O'Neal '00")]
+  const SHAQ = 4
+  const RICE = 2
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+
+  it("with no target named it is the engine's hub, and the shape is the one it always drew", () => {
+    expect(postMan(LAK, null).hub!.name).toBe("Shaquille O'Neal '00")
+    expect(postMan(LAK, null).chosen).toBe(false)
+    const at = spotsFor({ style: 'postup', pnr: null, post: null }, LAK)
+    expect(at).toEqual(spotsFor({ style: 'postup', pnr: null }, LAK))
+    expect(outsideLine(at[SHAQ])).toBe(false)
+  })
+
+  it('the man he names takes the block, whoever he is', () => {
+    expect(postMan(LAK, "Glen Rice '00").chosen).toBe(true)
+    const at = spotsFor({ style: 'postup', pnr: null, post: "Glen Rice '00" }, LAK)
+    expect(outsideLine(at[RICE])).toBe(false)
+    // ...and the engine's hub is off it: he cannot shoot, so he takes the set's other inside spot
+    expect(at[SHAQ]).not.toEqual(at[RICE])
+    expect(inCorner(at[SHAQ])).toBe(false)
+    expect(outsideLine(at[SHAQ])).toBe(false)
+  })
+
+  it('the caption names him, on a called court and on a set-tactic court alike', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'postup' as const, post: "Glen Rice '00" }
+    const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+    // the markup is HTML-escaped, so O'Neal comes back as O&#x27;Neal
+    const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+    expect(cap(shot({ spots: spotsOf(LAK), plan }))).toContain('post-up · Rice')
+    expect(cap(shot({ spots: spotsOf(LAK), tactic: plan }))).toBe('post-up · Rice · your tactic')
+    // with nobody named it says the engine's hub, which is the man it draws
+    expect(cap(shot({ spots: spotsOf(LAK), tactic: { ...DEFAULT_TACTICS, style: 'postup' as const } }))).toBe("post-up · O'Neal · your tactic")
+  })
+})
+
+/**
+ * THE HELIO CREATOR (recal_125, his ruling: "In helio, allow me to pick a creator."). The same
+ * mechanism again: the man the plan names stands alone above the arc, and the caption says so.
+ */
+describe('the helio court runs through the creator he called', () => {
+  const OKC = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
+  const SGA = 1
+  const DORT = 2
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it("with nobody named it is the engine's man, and the shape is the one it always drew", () => {
+    expect(heliMan(OKC, null).creator!.name).toBe("Shai Gilgeous-Alexander '22")
+    const at = spotsFor({ style: 'helio', pnr: null, helio: null }, OKC)
+    expect(at).toEqual(spotsFor({ style: 'helio', pnr: null }, OKC))
+    // the engine stands alone behind the arc, above the break
+    expect(outsideLine(at[SGA])).toBe(true)
+    expect(inCorner(at[SGA])).toBe(false)
+  })
+
+  it('the man he names takes the ball, and the engine goes back into the spacing', () => {
+    const auto = spotsFor({ style: 'helio', pnr: null }, OKC)
+    const at = spotsFor({ style: 'helio', pnr: null, helio: "Luguentz Dort '22" }, OKC)
+    expect(at[DORT]).toEqual(auto[SGA])
+    expect(at[SGA]).not.toEqual(auto[SGA])
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  })
+
+  it('the caption names him', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'helio' as const, helio: "Luguentz Dort '22" }
+    expect(cap(shot({ spots: spotsOf(OKC), plan }))).toContain('helio · Dort')
+    expect(cap(shot({ spots: spotsOf(OKC), tactic: plan }))).toBe('helio · Dort · your tactic')
+    expect(cap(shot({ spots: spotsOf(OKC), tactic: { ...DEFAULT_TACTICS, style: 'helio' as const } }))).toBe('helio · Gilgeous-Alexander · your tactic')
+  })
+})
+
+/**
+ * THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). Three men on the strong side —
+ * the post option on the block, a wing behind the arc, a guard in the corner — and the weak side is
+ * a man at the elbow with the point at the top. His spacing rule holds: everyone who is not the
+ * post man or the elbow man stands behind the line, and the corner is a shooter's spot.
+ */
+describe('the triangle stands three men on the strong side and two on the weak', () => {
+  const BULLS = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Toni Kukoč '97"), g("Luc Longley '97")]
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it('the five it is read for draws it, and the post option is on the block', () => {
+    expect(inferredStyle(BULLS)!.style).toBe('triangle')
+    const at = spotsFor(null, BULLS)
+    expect(at).toEqual(spotsFor({ style: 'triangle', pnr: null }, BULLS))
+    const post = BULLS.findIndex((p) => p.name === featured('triangle', BULLS)[0].name)
+    expect(outsideLine(at[post])).toBe(false)
+    expect(inCorner(at[post])).toBe(false)
+  })
+
+  it('exactly two men are inside the arc — the block and the elbow — and both corners are shooters', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(2)
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+    for (let i = 0; i < 5; i++) if (inCorner(at[i])) expect(canSpace(BULLS[i])).toBe(true)
+  })
+
+  it('a man who cannot shoot takes the elbow rather than a spacing spot', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    const shy = BULLS.map((p, i) => [p, i] as const).filter(([p]) => !canSpace(p))
+    for (const [, i] of shy) expect(inCorner(at[i])).toBe(false)
+  })
+
+  it('the caption names the post option', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'triangle' as const }
+    expect(cap(shot({ spots: spotsOf(BULLS), tactic: plan }))).toBe('triangle · Jordan · your tactic')
+    expect(cap(shot({ spots: spotsOf(BULLS) }))).toContain('triangle · best fit')
+  })
+})
+
+/**
+ * THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll floor with the screen
+ * released: the ball where it always is, the screener stepping BACK behind the arc instead of
+ * rolling to the top of the key, and nobody inside the line at all.
+ */
+describe('the pick-and-pop stands the screener behind the line, not rolling', () => {
+  const SPURS = [g("Tony Parker '11"), g("Manu Ginóbili '11"), g("Richard Jefferson '11"), g("Matt Bonner '11"), g("Tim Duncan '11")]
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+  const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+  const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+
+  it('every man is behind the three-point line — the roll man does not roll', () => {
+    const at = spotsFor({ style: 'pickpop', pnr: null }, SPURS)
+    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(0)
+    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  })
+
+  it('the popper is the shooter, and the roll would have picked someone else', () => {
+    expect(popPair(SPURS, null).screener!.name).toBe("Matt Bonner '11")
+    expect(pnrPair(SPURS, null).screener!.name).not.toBe("Matt Bonner '11")
+    // the two sets therefore stand different men in different places
+    expect(spotsFor({ style: 'pickpop', pnr: null }, SPURS)).not.toEqual(spotsFor({ style: 'pnr', pnr: null }, SPURS))
+  })
+
+  it('a named pair is honoured, and the caption names both men', () => {
+    const chosen: PnrPair = { handler: "Manu Ginóbili '11", screener: "Tim Duncan '11" }
+    const at = spotsFor({ style: 'pickpop', pnr: chosen }, SPURS)
+    const h = SPURS.findIndex((p) => p.name === chosen.handler)
+    const s = SPURS.findIndex((p) => p.name === chosen.screener)
+    expect(outsideLine(at[h])).toBe(true)
+    expect(outsideLine(at[s])).toBe(true)
+    const plan = { ...DEFAULT_TACTICS, style: 'pickpop' as const }
+    expect(cap(shot({ spots: spotsOf(SPURS), tactic: plan }))).toBe('pick-and-pop · Parker + Bonner · your tactic')
   })
 })
