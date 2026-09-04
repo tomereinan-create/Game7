@@ -16,6 +16,9 @@ import {
   scorerCreator,
   screenFit,
   STAR_LINE,
+  postFit,
+  postMan,
+  POST_HEIGHT,
   styleFit,
   STYLES,
   stylePts,
@@ -82,7 +85,7 @@ describe('the pick-and-roll pair he calls', () => {
     expect(stylePts(plan({ handler: auto.handler!.name, screener: auto.screener!.name }), FIVE)).toBeCloseTo(stylePts(plan(null), FIVE), 10)
     // a worse pair off the same five is worth less, and the fit says so in the same direction
     const bad: PnrPair = { handler: "Klay Thompson '15", screener: "Draymond Green '16" }
-    expect(styleFit('pnr', FIVE, undefined, bad)).toBeLessThan(styleFit('pnr', FIVE))
+    expect(styleFit('pnr', FIVE, undefined, { pnr: bad })).toBeLessThan(styleFit('pnr', FIVE))
     expect(stylePts(plan(bad), FIVE)).toBeLessThan(stylePts(plan(null), FIVE))
   })
 
@@ -96,7 +99,7 @@ describe('the pick-and-roll pair he calls', () => {
       0.4 * handlerFit(g(pick.handler).attrs) +
       0.35 * screenFit(g(pick.screener).attrs) +
       0.25 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
-    expect(styleFit('pnr', FIVE, undefined, pick)).toBeCloseTo(want, 10)
+    expect(styleFit('pnr', FIVE, undefined, { pnr: pick })).toBeCloseTo(want, 10)
   })
 
   it('an old plan with no pair at all still resolves, and prices as it always did', () => {
@@ -303,5 +306,81 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
     expect(bestStyle(hornets95).style).toBe('postup')
     const magic11 = cut("Jameer Nelson '11", "Jason Richardson '11", "Hedo Türkoğlu '11", "Ryan Anderson '11", "Dwight Howard '11")
     expect(bestStyle(magic11).style).toBe('postup')
+  })
+})
+
+/**
+ * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+ * target."). The mirror of the pick-and-roll pair, for one man, and it must behave like the pair in
+ * every respect that matters: the plan's man is honoured whoever he is, an absent call prices
+ * EXACTLY as it did before the field existed, and a target who is a worse post man than the
+ * engine's hub costs rather than pays.
+ */
+describe('the post-up target he calls', () => {
+  const post = (name: string | null): Tactics => ({ ...DEFAULT_TACTICS, style: 'postup', post: name })
+
+  it("with nobody named, the hub is the engine's own and the fit is the number it always was", () => {
+    expect(DEFAULT_TACTICS.post).toBe(null)
+    const auto = postMan(LAKERS_00, null)
+    expect(auto.chosen).toBe(false)
+    expect(auto.hub!.name).toBe("Shaquille O'Neal '00")
+    // the fit written out longhand, the way recal_115/120 left it: the best big's post score, and
+    // the other four men's shooting around him
+    const rest = LAKERS_00.filter((p) => p.name !== auto.hub!.name)
+    const want = 0.7 * postFit(auto.hub!.attrs) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    expect(styleFit('postup', LAKERS_00)).toBeCloseTo(want, 10)
+    expect(styleFit('postup', LAKERS_00, undefined, post(null))).toBeCloseTo(want, 10)
+    // ...and a plan from before the field existed prices identically
+    const old = { ...DEFAULT_TACTICS, style: 'postup' } as Tactics
+    delete (old as { post?: unknown }).post
+    expect(old.post).toBeUndefined()
+    expect(stylePts(old, LAKERS_00)).toBeCloseTo(stylePts(post(null), LAKERS_00), 10)
+  })
+
+  it('reads the fit off the man he named, whoever he is', () => {
+    const pick = "Glen Rice '00"
+    expect(postMan(LAKERS_00, pick).chosen).toBe(true)
+    expect(featured('postup', LAKERS_00, post(pick))[0].name).toBe(pick)
+    const rest = LAKERS_00.filter((p) => p.name !== pick)
+    const want = 0.7 * Math.max(0, postFit(g(pick).attrs)) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    expect(styleFit('postup', LAKERS_00, undefined, post(pick))).toBeCloseTo(want, 10)
+  })
+
+  it('a worse post man than the engine would pick COSTS — the deviation tax law, on the second half of the call', () => {
+    const auto = stylePts(post(null), LAKERS_00)
+    for (const worse of ["Glen Rice '00", "Ron Harper '00", "Robert Horry '00", "Kobe Bryant '00"]) {
+      expect(postFit(g(worse).attrs)).toBeLessThan(postFit(g("Shaquille O'Neal '00").attrs))
+      expect(stylePts(post(worse), LAKERS_00)).toBeLessThan(auto)
+    }
+    // and the engine's own hub, named by hand, is worth exactly what leaving it alone is worth
+    expect(stylePts(post("Shaquille O'Neal '00"), LAKERS_00)).toBeCloseTo(auto, 10)
+  })
+
+  it('height decides who the ENGINE nominates, not what a man the CALLER names is worth', () => {
+    // postFit carries no height term, so a short back-to-the-basket scorer prices as one...
+    expect(postFit(g("Shaquille O'Neal '00").attrs)).toBeGreaterThan(0)
+    // ...but the engine only ever nominates a man POST_HEIGHT or taller, so no unplanned five moved
+    expect(POST_HEIGHT).toBe(81)
+    for (const f of [LAKERS_00, ROCKETS_94, CELTICS_25]) {
+      const hub = postMan(f, null).hub
+      if (hub) expect(hub.attrs.height).toBeGreaterThanOrEqual(POST_HEIGHT)
+    }
+  })
+
+  it('a target who has left the five is dropped, and the engine picks the hub again', () => {
+    const names = LAKERS_00.map((p) => p.name)
+    expect(reconcileTactics(post("Glen Rice '00"), names).post).toBe("Glen Rice '00")
+    expect(reconcileTactics(post("Bill Russell '62"), names).post).toBe(null)
+    expect(reconcileTactics(post("Glen Rice '00"), names.filter((n) => n !== "Glen Rice '00")).post).toBe(null)
+    // a dropped target prices as an unnamed one, so no saved run resets underneath its owner
+    const dropped = reconcileTactics(post('nobody at all'), names)
+    expect(stylePts(dropped, LAKERS_00)).toBeCloseTo(stylePts(post(null), LAKERS_00), 10)
+  })
+
+  it('the target rides with the style: below Playbook rank 2 it is not heard', () => {
+    const called = post("Glen Rice '00")
+    expect(gateTactics(called, 1).style).toBe('balanced')
+    expect(gateTactics(called, 1).post).toBe(null)
+    expect(gateTactics(called, 2).post).toBe("Glen Rice '00")
   })
 })

@@ -9,7 +9,7 @@ import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { gateTactics, pnrPair, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
+import { gateTactics, pnrPair, postMan, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
 import { DetailGrid, LINES } from './Stat'
@@ -688,7 +688,7 @@ export function MyTeam({
               <ChipRow>
                 {STYLES.map(({ key, label }) => (
                   <button key={key} className={`sortb ${tactics.style === key ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, style: key })}>
-                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five, undefined, tactics.pnr))}`}
+                    {key === 'balanced' || user ? label : `${label} ${Math.round(styleFit(key, five, undefined, tactics))}`}
                   </button>
                 ))}
               </ChipRow>
@@ -724,6 +724,32 @@ export function MyTeam({
                       </ChipRow>
                     </div>
                   ))
+                })()
+              : null}
+            {/* HIS RULING: "In post up playstyle, there need to be a post up target." The mirror of
+                the pair, for one man: calling post-up opens one more row, the same chips as Main
+                scorer and the same five men. It opens lit on the hub the engine would feed itself,
+                so the call is never blank; tapping the lit man is a no-op rather than a way to
+                un-call it, exactly as the pair's rows behave. */}
+            {side === 'off' && playbook >= 2 && tactics.style === 'postup'
+              ? (() => {
+                  const hub = postMan(five, tactics.post).hub?.name ?? ''
+                  return (
+                    <div className="posbar">
+                      <span className="cap">Post target</span>
+                      <ChipRow>
+                        {five.map((p) => (
+                          <button
+                            key={p.name}
+                            className={`sortb ${hub === p.name ? 'on' : ''}`}
+                            onClick={() => onTactics({ ...tactics, post: p.name })}
+                          >
+                            {shortName(p.name)}
+                          </button>
+                        ))}
+                      </ChipRow>
+                    </div>
+                  )
                 })()
               : null}
             {side === 'off' && playbook >= 3 ? (

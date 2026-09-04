@@ -1,5 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { bestStyle, canSpace, featured, pnrPair, SCHEMES, STYLES, type Scheme, type Style, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, featured, pnrPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 
 /**
@@ -190,9 +190,10 @@ const best = (five: Player[], score: (p: Player) => number, not = -1) => {
   for (let i = 0; i < five.length; i++) if (i !== not && (k < 0 || score(five[i]) > score(five[k]))) k = i
   return k
 }
-/** The index of the man a featured set is built around, through the engine's own `featured`. */
-const who = (men: Player[], style: Style): number => {
-  const p = featured(style, men)[0]
+/** The index of the man a featured set is built around, through the engine's own `featured`. The
+ *  plan rides with it, so a called post target stands on the block and not the engine's hub. */
+const who = (men: Player[], style: Style, call?: StyleCall | null): number => {
+  const p = featured(style, men, call)[0]
   return p ? men.findIndex((q) => q.name === p.name) : 0
 }
 
@@ -252,7 +253,7 @@ export function inferredStyle(five: (Player | null)[]): { style: Style; fit: num
   return men.length < 5 ? null : bestStyle(men)
 }
 
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post'> | null | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   const style = plan ? plan.style : inferredStyle(five)?.style
   if (!style || men.length < 5) return [...AT]
@@ -321,9 +322,10 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
     case 'postup': {
       // the post man on the block, the others spaced behind the line away from his side — and a
       // second big who cannot shoot takes the dunker spot, the set's other inside spot. The hub is
-      // the engine's own (recal_115): a big who works INSIDE, so a stretch five is not stood on the
-      // block because he is the tallest man in the picture.
-      const s = who(men, 'postup')
+      // HIS when the plan names one (recal_124, his ruling: "In post up playstyle, there need to be
+      // a post up target."), the engine's own when it does not: a big who works INSIDE, so a
+      // stretch five is not stood on the block because he is the tallest man in the picture.
+      const s = who(men, 'postup', plan)
       return stand(men, { [s]: BLOCK_L }, [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]], [DUNK_R])
     }
     case 'helio': {
@@ -338,10 +340,15 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
 }
 
 /** The caption: every non-default call, mono caps, quiet. */
-function callLine(plan: Tactics, side: Side): string {
+function callLine(plan: Tactics, side: Side, men: Player[]): string {
   const bits: string[] = []
   if (side === 'off') {
-    if (plan.style !== 'balanced') bits.push(STYLES.find((s) => s.key === plan.style)?.label ?? plan.style)
+    if (plan.style !== 'balanced') {
+      const label = STYLES.find((s) => s.key === plan.style)?.label ?? plan.style
+      // the style names the men it is called on — the pair, or the post target (recal_124)
+      const named = men.length >= 2 ? featured(plan.style, men, plan).map((p) => surname(p.name)) : []
+      bits.push(`${label}${named.length ? ` · ${named.join(' + ')}` : ''}`)
+    }
     if (plan.tempo !== 'normal') bits.push(`${plan.tempo} night`)
     if (plan.hunt) bits.push('hunt on')
     if (plan.crashOff) bits.push('crash O')
@@ -373,8 +380,12 @@ function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
  * put 5 out on my tactics it should be shown here as well"): the label the tactics panel uses,
  * and whose call it is — so "five-out · your tactic" cannot be mistaken for a best-fit read.
  */
-function setLine(style: Style): string {
-  return `${STYLES.find((s) => s.key === style)?.label ?? style} · your tactic`
+function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post'>, men: Player[]): string {
+  const label = STYLES.find((s) => s.key === set.style)?.label ?? set.style
+  // ...and it names the men the call runs through, the same way the best-fit read does: a post-up
+  // he called on a man is "post-up · O'Neal · your tactic" (recal_124).
+  const named = featured(set.style, men, set).map((p) => surname(p.name))
+  return `${label}${named.length ? ` · ${named.join(' + ')}` : ''} · your tactic`
 }
 
 /** Card name -> the words of his real name: season tag off, and generational suffixes
@@ -385,7 +396,8 @@ const words = (n: string) =>
     .split(' ')
     .filter((w) => w && !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w))
 
-const surname = (n: string) => words(n).pop()
+/** Exported so tests/court.test.ts can build the caption's own strings rather than restate them. */
+export const surname = (n: string) => words(n).pop()
 
 /** The ring holds initials now — the faces are gone by his ruling, the spot survives them. */
 const initials = (n: string) =>
@@ -538,7 +550,7 @@ export function CourtFive({
   // no plan and no call: the shape was read off the five, and the caption says so (his ruling:
   // "Assign each team on the court by using their best tactic")
   const inferred = plan || set ? null : inferredStyle(men)
-  const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
+  const call = plan ? callLine(plan, shown, men.filter((p): p is Player => !!p)) : set ? setLine(set, men.filter((p): p is Player => !!p)) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
   /**
    * The band above the half-court line only exists to stand the resting man on, so a court with
    * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and

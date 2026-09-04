@@ -1099,7 +1099,7 @@ export function Draft({
               Style fits vs {opponent.team}:{' '}
               {STYLES.filter((x) => x.key !== 'balanced')
                 /* the pnr fit is the fit of HIS pair when he named one, so this list and the price agree */
-                .map((x) => `${x.label} ${Math.round(styleFit(x.key, five, opponent.players, plan.pnr))}${plan.style === x.key ? ' ← called' : ''}`)
+                .map((x) => `${x.label} ${Math.round(styleFit(x.key, five, opponent.players, plan))}${plan.style === x.key ? ' ← called' : ''}`)
                 .join(' · ')}
               {plan.style === 'balanced' ? ' · no call — the style is picked in My team' : ''}
             </div>

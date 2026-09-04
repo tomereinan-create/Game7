@@ -1,8 +1,8 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, pnrPair, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, pnrPair, postMan, styleFit, STYLES, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -256,7 +256,10 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
       if (s.key === 'balanced') continue
       const html = draw({ style: s.key, pnr: null })
       same(stood(html), drawn(spotsFor({ style: s.key, pnr: null }, FIVE)))
-      expect(caption(html)).toBe(`${s.label} · your tactic`)
+      // recal_124: a called style names the men it runs through, the same way the best-fit read
+      // does — the pair, or the post target — and then says whose call it is
+      const named = featured(s.key, FIVE, { style: s.key, pnr: null } as Tactics).map((p) => surnameOf(p.name))
+      expect(caption(html)).toBe(`${s.label}${named.length ? ` · ${named.join(' + ')}` : ''} · your tactic`)
     }
   })
 
@@ -431,5 +434,46 @@ describe('the floor is drawn to real proportions, and every spot stands on it', 
         }
       }
     }
+  })
+})
+
+/**
+ * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+ * target."). The floor mirror of the pick-and-roll pair: the man the plan names stands on the
+ * block, the caption says his name, and a plan that names nobody draws exactly as it always did.
+ */
+describe('the post-up stands the man he called on the block', () => {
+  const LAK = [g("Ron Harper '00"), g("Kobe Bryant '00"), g("Glen Rice '00"), g("Robert Horry '00"), g("Shaquille O'Neal '00")]
+  const SHAQ = 4
+  const RICE = 2
+  const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
+
+  it("with no target named it is the engine's hub, and the shape is the one it always drew", () => {
+    expect(postMan(LAK, null).hub!.name).toBe("Shaquille O'Neal '00")
+    expect(postMan(LAK, null).chosen).toBe(false)
+    const at = spotsFor({ style: 'postup', pnr: null, post: null }, LAK)
+    expect(at).toEqual(spotsFor({ style: 'postup', pnr: null }, LAK))
+    expect(outsideLine(at[SHAQ])).toBe(false)
+  })
+
+  it('the man he names takes the block, whoever he is', () => {
+    expect(postMan(LAK, "Glen Rice '00").chosen).toBe(true)
+    const at = spotsFor({ style: 'postup', pnr: null, post: "Glen Rice '00" }, LAK)
+    expect(outsideLine(at[RICE])).toBe(false)
+    // ...and the engine's hub is off it: he cannot shoot, so he takes the set's other inside spot
+    expect(at[SHAQ]).not.toEqual(at[RICE])
+    expect(inCorner(at[SHAQ])).toBe(false)
+    expect(outsideLine(at[SHAQ])).toBe(false)
+  })
+
+  it('the caption names him, on a called court and on a set-tactic court alike', () => {
+    const plan = { ...DEFAULT_TACTICS, style: 'postup' as const, post: "Glen Rice '00" }
+    const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
+    // the markup is HTML-escaped, so O'Neal comes back as O&#x27;Neal
+    const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+    expect(cap(shot({ spots: spotsOf(LAK), plan }))).toContain('post-up · Rice')
+    expect(cap(shot({ spots: spotsOf(LAK), tactic: plan }))).toBe('post-up · Rice · your tactic')
+    // with nobody named it says the engine's hub, which is the man it draws
+    expect(cap(shot({ spots: spotsOf(LAK), tactic: { ...DEFAULT_TACTICS, style: 'postup' as const } }))).toBe("post-up · O'Neal · your tactic")
   })
 })

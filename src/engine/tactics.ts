@@ -42,6 +42,17 @@ export interface Tactics {
    * cards (see pnrPair). Only `pnr` as a style ever reads it.
    */
   pnr?: PnrPair | null
+  /**
+   * THE POST-UP TARGET (recal_124, his ruling: "In post up playstyle, there need to be a post up
+   * target."). The mirror of the pair, for one man: calling post-up is two calls, the style and the
+   * man it is fed to. Name-keyed like the rest of the plan, so a swap on the floor cannot leave it
+   * pointing at a stranger.
+   *
+   * ABSENT is legal and means what an absent pair means — an old save, an AI opponent, or a plan
+   * that has never been to the panel is fed to the hub the engine picks off the cards (see postMan),
+   * so nothing that exists today prices differently. Only `postup` as a style ever reads it.
+   */
+  post?: string | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -86,6 +97,17 @@ export interface PnrPair {
   screener: string
 }
 
+/**
+ * THE MEN A STYLE IS CALLED ON (recal_124). Two of the seven styles are a call on the SHAPE plus a
+ * call on WHO: the pick-and-roll's pair, and now the post-up's target. `styleFit` and `featured`
+ * take this rather than a bare pair, so that adding the next one is a field and not a parameter.
+ * A whole `Tactics` satisfies it structurally, so every caller simply passes the plan.
+ */
+export interface StyleCall {
+  pnr?: PnrPair | null
+  post?: string | null
+}
+
 export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'transition'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
@@ -104,6 +126,7 @@ export const DEFAULT_TACTICS: Tactics = {
   style: 'balanced',
   scheme: 'matchup',
   pnr: null,
+  post: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -303,12 +326,20 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     // the pnr pair is two DIFFERENT men, both still on the five; anything else is dropped and the
     // engine picks the pair itself again, exactly as it does for a plan that never named one
     pnr: legalPair(t.pnr, names) ? t.pnr : null,
+    // ...and the post-up target is ONE man who is still on the five (recal_124), dropped the same
+    // way and to the same effect: the engine picks the hub itself again
+    post: legalPost(t.post, names) ? t.post : null,
   }
 }
 
 /** A pair is legal when it names two different men who are both on the five. */
 export function legalPair(pair: PnrPair | null | undefined, names: string[]): boolean {
   return !!pair && pair.handler !== pair.screener && names.includes(pair.handler) && names.includes(pair.screener)
+}
+
+/** A post target is legal when it names one man who is on the five. */
+export function legalPost(post: string | null | undefined, names: string[]): boolean {
+  return !!post && names.includes(post)
 }
 
 /**
@@ -325,6 +356,8 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     style: rank >= 2 ? t.style : 'balanced',
     // the pair rides with the style it belongs to: below rank 2 the call is not heard at all
     pnr: rank >= 2 ? t.pnr : null,
+    // ...and so does the post-up target: it is part of calling the style, not a call of its own
+    post: rank >= 2 ? t.post : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -405,6 +438,28 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
 }
 
 /**
+ * WHO THE BALL GOES TO ON THE BLOCK (recal_124, his ruling: "In post up playstyle, there need to be
+ * a post up target."). The post-up's mirror of pnrPair, and it works the same way: the plan's own
+ * man when it names one who is on the five, otherwise the engine's own pick. Every reader of the
+ * target — the fit, the price, the court, the caption — comes through here, so the number and the
+ * drawing can never name different men.
+ *
+ * `postFit` carries NO height term. Height decides who the ENGINE will nominate, not what a man the
+ * CALLER names is worth: a six-foot-six back-to-the-basket scorer is a real post-up and is priced
+ * as one if you call him, and a guard who cannot finish inside prices at nothing, which is the
+ * deviation tax paying for itself. The engine still only ever nominates a man POST_HEIGHT or taller,
+ * so no five's unplanned reading moves by a thousandth.
+ */
+export const POST_HEIGHT = 81
+export const postFit = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
+
+export function postMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
+  if (legalPost(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
+  const bigs = five.filter((p) => p.attrs.height >= POST_HEIGHT)
+  return { hub: bigs.slice().sort((x, y) => postFit(y.attrs) - postFit(x.attrs))[0] ?? null, chosen: false }
+}
+
+/**
  * THE SHOOTING LINE (his ruling: "Why is Ayton out and James in? Makes no sense"). A man stands in
  * a spacing spot only if he can shoot from there. The line is the pool's own class rule —
  * BIG_RULE reads a big as `rim >= 60 AND 3pt < 40` — so 40 is where this game already stops calling
@@ -461,7 +516,7 @@ export function twoStars(five: Player[]): boolean {
   return e.length >= 2 && e[1] >= STAR_LINE && e[0] - e[1] <= DUO_GAP
 }
 
-export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: PnrPair | null): number {
+export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
@@ -486,7 +541,7 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       // scoring, the screener credited for the pop as well as the roll. Jazz '97 (Stockton 87.1,
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
-      const { handler: h, screener: d } = pnrPair(five, pnr)
+      const { handler: h, screener: d } = pnrPair(five, call?.pnr)
       const handler = h ? handlerFit(h.attrs) : 0
       const dive = d ? screenFit(d.attrs) : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
@@ -510,11 +565,13 @@ export function styleFit(style: Style, five: Player[], theirs?: Player[], pnr?: 
       // the pick-and-POP — it is in screenFit now — and the block keeps the rim. Malone '97 (rim 77,
       // mid 94) falls from 94 to 77 here and rises from 77 to 89 there, which is the whole round in
       // one card. O'Neal '00 (rim 99) and Olajuwon '94 (rim 95) do not move at all.
-      const bigs = five.filter((p) => p.attrs.height >= 81)
-      const hub = (x: Attrs) => Math.min(x.rim, x.volume) * interior(x)
-      const post = Math.max(0, ...bigs.map((p) => hub(p.attrs)))
-      const pName = bigs.sort((x, y) => hub(y.attrs) - hub(x.attrs))[0]?.name
-      return post * 0.7 + mean(five.filter((p) => p.name !== pName), (p) => p.attrs['3pt']) * 0.3
+      // HIS man when the plan names one, the engine's hub when it does not (recal_124) — one
+      // function, postMan, so the fit and the floor are fed to the same player. A called target who
+      // is a worse post man than the engine's pick scores less here and the style is worth less,
+      // which is the deviation tax law applied to the second half of the call.
+      const { hub } = postMan(five, call?.post)
+      const post = hub ? Math.max(0, postFit(hub.attrs)) : 0
+      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => p.attrs['3pt']) * 0.3
     }
     case 'helio': {
       // HELIO IS ONE MAN ALONE (recal_115, his ruling: "why Helio when they have 2 superstars?").
@@ -680,16 +737,16 @@ export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fi
  * feature nobody. ONE function, so the drawing (CourtFive.spotsFor), the fit above and the caption
  * can never name different men; the scores are the fit formulas' own.
  */
-export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Player[] {
+export function featured(style: Style, five: Player[], call?: StyleCall | null): Player[] {
   if (five.length < 2) return []
   const top = (score: (x: Attrs) => number) => five.reduce((m, p) => (score(p.attrs) > score(m.attrs) ? p : m), five[0])
   switch (style) {
     case 'helio':
       return [top(scorerCreator)]
     case 'postup':
-      return [top((x) => (x.height >= 81 ? Math.min(x.rim, x.volume) * interior(x) : -1))]
+      return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
     case 'pnr': {
-      const { handler, screener } = pnrPair(five, pnr)
+      const { handler, screener } = pnrPair(five, call?.pnr)
       return [handler, screener].filter((p): p is Player => !!p)
     }
     default:
@@ -700,7 +757,7 @@ export function featured(style: Style, five: Player[], pnr?: PnrPair | null): Pl
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
-  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t.pnr) - 55) - TAX.style, -2.5, 2.5)
+  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -2.5, 2.5)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
   if (t.style === 'transition') {
     if (t.tempo === 'fast') pts += 0.5 // the run game and the fast night are one call
@@ -785,7 +842,7 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
   if (t.playmaker && five.some((p) => p.name === t.playmaker)) parts.push({ label: 'main playmaker', pts: playmakerPts(t.playmaker, five, theirs) })
   if (t.style !== 'balanced')
     parts.push({
-      label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t.pnr))})`,
+      label: `${STYLES.find((x) => x.key === t.style)?.label ?? t.style} (fit ${Math.round(styleFit(t.style, five, theirs, t))})`,
       pts: stylePts(t, five, theirs),
     })
   if (t.scheme !== 'matchup')
