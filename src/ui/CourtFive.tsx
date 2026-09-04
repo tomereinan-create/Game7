@@ -342,13 +342,21 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
       return stand(men, { [s]: BLOCK_L }, [[ELBOW_R, 0], [CORNER_L, 2], [peri(-38), 1], [peri(0, 6), 1]])
     }
     case 'postup': {
-      // the post man on the block, the others spaced behind the line away from his side — and a
-      // second big who cannot shoot takes the dunker spot, the set's other inside spot. The hub is
-      // HIS when the plan names one (recal_124, his ruling: "In post up playstyle, there need to be
-      // a post up target."), the engine's own when it does not: a big who works INSIDE, so a
-      // stretch five is not stood on the block because he is the tallest man in the picture.
+      // the post man on the block, and a second big who cannot shoot takes the dunker spot, the
+      // set's other inside spot. The hub is HIS when the plan names one (recal_124, his ruling:
+      // "In post up playstyle, there need to be a post up target."), the engine's own when it does
+      // not: a big who works INSIDE, so a stretch five is not stood on the block because he is the
+      // tallest man in the picture. The point guard plays the two-man game beside him, on his side
+      // of the floor, and the other three space the OTHER side — corner, wing, and the middle
+      // (his ruling: "the main post player is inside, the pg is on the wing with him, and the
+      // other 3 are on the other side of the court, corner, wing, and middle"). A post man who IS
+      // the point guard (the plan can name anyone) falls back to the ordinary spacing sort for all
+      // four of the others, same as before this ruling.
       const s = who(men, 'postup', plan)
-      return stand(men, { [s]: BLOCK_L }, [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]], [DUNK_R])
+      const picked: Record<number, XY> = { [s]: BLOCK_L }
+      if (s !== 0) picked[0] = peri(-38)
+      const rest: Rest[] = s === 0 ? [[peri(0), 1], [peri(-38), 1], [peri(38), 1], [CORNER_R, 2]] : [[peri(0), 1], [peri(38), 1], [CORNER_R, 2]]
+      return stand(men, picked, rest, [DUNK_R])
     }
     case 'helio': {
       // the engine alone above the arc; the four low — the corners for the shooters, the two
