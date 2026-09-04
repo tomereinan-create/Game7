@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { seasonGauges } from '../engine/gauges'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
@@ -188,6 +188,13 @@ const yy = (y: number) => `’${String(y % 100).padStart(2, '0')}`
 
 export type Sort = 'rec' | 'az' | 'ovr' | 'off' | 'def'
 
+/** The sort, said short, for the SORT BY row's hint: "Record · best first", "OVR · lowest first". */
+export const sortHint = (s: Sort, flip: boolean) =>
+  s === 'az' ? (flip ? 'Z to A' : 'A to Z') : s === 'rec' ? `Record · ${flip ? 'worst' : 'best'} first` : `${s.toUpperCase()} · ${flip ? 'lowest' : 'best'} first`
+
+/** The four things behind FILTERS. One opens at a time (his ruling: "dont show all the options"). */
+type Cat = 'seasons' | 'conf' | 'style' | 'sort'
+
 /**
  * The line over the list, in the order the filters were applied — his ruling: "I want to still be
  * able to filter even after searching team", so the search is simply the first term of it:
@@ -280,6 +287,19 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   // The filters live behind one chip (his ruling: "Change everything to filters … not all these
   // words in the main page") — the same drawer the player database opens.
   const [filtering, setFiltering] = useState(false)
+  // …and inside the drawer only ONE category's options are on screen at a time (his ruling: "when
+  // pressing filters, dont show all the options … you hover over(or press to lock) playstyle and
+  // the playstyle list opens"). A tap locks a category open — that is the phone's whole story. A
+  // mouse may also just hover one to peek at it; the lock is what it falls back to on the way out.
+  const [locked, setLocked] = useState<Cat | null>(null)
+  const [hovered, setHovered] = useState<Cat | null>(null)
+  const [canHover] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(hover: hover) and (pointer: fine)').matches)
+  const openCat = hovered ?? locked
+  const tapCat = (k: Cat) => {
+    setHovered(null)
+    setLocked((c) => (c === k ? null : k))
+  }
+  const peekCat = (k: Cat) => canHover && setHovered(k)
   const user = useUserMode()
   const openCard = useCard()
   // Opening a team starts at the top of its card (his report: the list's scroll carried over);
@@ -368,6 +388,20 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     }
   }
   const chip = (k: typeof sort) => `sortb ${sort === k ? (flip ? 'on asc' : 'on') : ''}`
+
+  /** One shut category inside the drawer: its name, what it is set to right now, and — only when it
+   *  is the open one — its options under it. A plain function, not a component, so the year boxes
+   *  inside a body keep their focus across a keystroke. */
+  const group = (k: Cat, name: string, hint: string, on: boolean, body: ReactNode) => (
+    <div className={`fcat ${openCat === k ? 'open' : ''}`} onMouseEnter={() => peekCat(k)}>
+      <button className="fcat-head" onClick={() => tapCat(k)} aria-expanded={openCat === k}>
+        <span className="fcat-name">{name}</span>
+        <span className={`fcat-val ${on ? 'on' : ''}`}>{hint}</span>
+        <i aria-hidden="true">{openCat === k ? '▴' : '▾'}</i>
+      </button>
+      {openCat === k ? <div className="fcat-body">{body}</div> : null}
+    </div>
+  )
 
   /** How many bounds are narrowing the list right now — the number on the FILTERS chip. */
   const anyYears = from === YMIN && to === YMAX
@@ -463,9 +497,10 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               spellCheck={false}
             />
           </label>
-          {/* ONE LINE OF CONTROLS, not three: the years, the conference, the tactic and the rating
-              bounds all live behind FILTERS now, and the caption under it says in words which of
-              them are on. Only the search box and the list are always on the page. */}
+          {/* ONE LINE OF CONTROLS (his ruling: "Put everything under filters"): the years, the
+              conference, the playstyle, the rating bounds AND the sort all live behind FILTERS now.
+              Only the search box and the list are always on the page — and the caption under them
+              says in words which bounds are on and which way the list is ordered. */}
           <div className="filterbar">
             <button className={`sortb pick ${filtering || activeFilters ? 'on' : ''}`} onClick={() => setFiltering((f) => !f)} aria-expanded={filtering}>
               Filters{activeFilters ? ` · ${activeFilters}` : ''} {filtering ? '▴' : '▾'}
@@ -477,38 +512,46 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             ) : null}
           </div>
           {filtering ? (
-            <div className="filters">
-              <label className="filt">
-                <span>Seasons</span>
-                <span className="filt-pair">
-                  <input
-                    inputMode="numeric"
-                    placeholder={String(YMIN)}
-                    value={fromQ}
-                    onFocus={(e) => e.currentTarget.select()}
-                    onChange={(e) => editFrom(e.target.value)}
-                    onBlur={() => setFromQ(String(from))}
-                    autoComplete="off"
-                    aria-label="From year"
-                  />
-                  <i>to</i>
-                  <input
-                    inputMode="numeric"
-                    placeholder={String(YMAX)}
-                    value={toQ}
-                    onFocus={(e) => e.currentTarget.select()}
-                    onChange={(e) => editTo(e.target.value)}
-                    onBlur={() => setToQ(String(to))}
-                    autoComplete="off"
-                    aria-label="To year"
-                  />
-                  <button className={`sortb pick ${anyYears ? 'on' : ''}`} onClick={() => setSpan([YMIN, YMAX])}>
-                    All
-                  </button>
-                </span>
-              </label>
-              <div className="filt">
-                <span>Conference</span>
+            <div className="filters" onMouseLeave={() => setHovered(null)}>
+              {group(
+                'seasons',
+                'Seasons',
+                anyYears ? 'All' : spanLabel(span),
+                !anyYears,
+                <label className="filt">
+                  <span className="filt-pair">
+                    <input
+                      inputMode="numeric"
+                      placeholder={String(YMIN)}
+                      value={fromQ}
+                      onFocus={(e) => e.currentTarget.select()}
+                      onChange={(e) => editFrom(e.target.value)}
+                      onBlur={() => setFromQ(String(from))}
+                      autoComplete="off"
+                      aria-label="From year"
+                    />
+                    <i>to</i>
+                    <input
+                      inputMode="numeric"
+                      placeholder={String(YMAX)}
+                      value={toQ}
+                      onFocus={(e) => e.currentTarget.select()}
+                      onChange={(e) => editTo(e.target.value)}
+                      onBlur={() => setToQ(String(to))}
+                      autoComplete="off"
+                      aria-label="To year"
+                    />
+                    <button className={`sortb pick ${anyYears ? 'on' : ''}`} onClick={() => setSpan([YMIN, YMAX])}>
+                      All
+                    </button>
+                  </span>
+                </label>,
+              )}
+              {group(
+                'conf',
+                'Conference',
+                conf === 'E' ? 'East' : conf === 'W' ? 'West' : 'Both',
+                !!conf,
                 <span className="filt-chips">
                   <button className={`sortb pick ${!conf ? 'on' : ''}`} onClick={() => setConf(null)}>
                     Both
@@ -519,12 +562,15 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                   <button className={`sortb pick ${conf === 'W' ? 'on' : ''}`} onClick={() => setConf(conf === 'W' ? null : 'W')}>
                     West
                   </button>
-                </span>
-              </div>
+                </span>,
+              )}
               {/* best tactic fit — the same read the floor infers a scouted five's shape from
                   (bestStyle), offered as a filter so a set can be found by how it actually plays */}
-              <div className="filt">
-                <span>Plays like</span>
+              {group(
+                'style',
+                'Playstyle',
+                tactic ? tacticLabel(tactic) : 'Any',
+                !!tactic,
                 <span className="filt-chips">
                   <button className={`sortb pick ${!tactic ? 'on' : ''}`} onClick={() => setTactic(null)}>
                     Any
@@ -534,43 +580,49 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                       {s.label}
                     </button>
                   ))}
-                </span>
-              </div>
-              {/* the rating bounds bind whichever ranked sort is on, so they only exist while one is */}
-              {ranked ? (
-                <label className="filt">
-                  <span>{sort.toUpperCase()} between</span>
-                  <span className="filt-pair">
-                    <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} aria-label="Lowest rating" />
-                    <i>and</i>
-                    <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} aria-label="Highest rating" />
+                </span>,
+              )}
+              {/* HIS RULING: "Add sort by option" — the five sorts came off the page and became a
+                  category like the rest. A second tap on the one that is on still flips the order,
+                  and the rating bounds ride under it, because they bind whichever ranked sort is on. */}
+              {group(
+                'sort',
+                'Sort by',
+                sortHint(sort, flip),
+                false,
+                <>
+                  <span className="filt-chips">
+                    <button className={chip('rec')} onClick={() => pickSort('rec')}>
+                      Record
+                    </button>
+                    <button className={chip('az')} onClick={() => pickSort('az')}>
+                      A–Z
+                    </button>
+                    <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
+                      OVR
+                    </button>
+                    <button className={chip('off')} onClick={() => pickSort('off')}>
+                      OFF
+                    </button>
+                    <button className={chip('def')} onClick={() => pickSort('def')}>
+                      DEF
+                    </button>
                   </span>
-                </label>
-              ) : null}
+                  {ranked ? (
+                    <label className="filt">
+                      <span>{sort.toUpperCase()} between</span>
+                      <span className="filt-pair">
+                        <input type="number" min={1} max={99} placeholder="1" value={minQ} onChange={(e) => setMinQ(e.target.value)} aria-label="Lowest rating" />
+                        <i>and</i>
+                        <input type="number" min={1} max={99} placeholder="99" value={maxQ} onChange={(e) => setMaxQ(e.target.value)} aria-label="Highest rating" />
+                      </span>
+                    </label>
+                  ) : null}
+                  <div className="filt-note">Tap the sort that is already on to turn it around.</div>
+                </>,
+              )}
             </div>
           ) : null}
-          {/* the sort stays on the page — it is how you read a ranked list, not a bound on it — but
-              as one scrolling rail, the way the player database sorts. A second tap flips it. */}
-          <div className="rail-wrap">
-            <div className="rail">
-              <button className={chip('rec')} onClick={() => pickSort('rec')}>
-                Record
-              </button>
-              <button className={chip('az')} onClick={() => pickSort('az')}>
-                A–Z
-              </button>
-              <button className={chip('ovr')} onClick={() => pickSort('ovr')}>
-                OVR
-              </button>
-              <button className={chip('off')} onClick={() => pickSort('off')}>
-                OFF
-              </button>
-              <button className={chip('def')} onClick={() => pickSort('def')}>
-                DEF
-              </button>
-            </div>
-            <div className="rail-fade" />
-          </div>
 
             <div className="section-rule">
               <span>{listCaption({ query, span, n: teams.length, sort, flip, conf, tactic })}</span>

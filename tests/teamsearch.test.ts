@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { WHEEL } from '../src/data/wheel'
-import { inSpan, listCaption, named, TeamDb, type Span } from '../src/ui/TeamDb'
+import { inSpan, listCaption, named, sortHint, TeamDb, type Span } from '../src/ui/TeamDb'
 
 /**
  * HIS RULING: "I want to still be able to filter even after searching team". The query used to take
@@ -52,17 +52,41 @@ describe('the caption follows every filter, in the order they were applied', () 
   })
 })
 
-describe('the sort row does not go away', () => {
-  it('one control bar and the five sorts; the bounds wait behind FILTERS', () => {
+/**
+ * HIS RULING: "Put everything under filters. Add sort by option. Then, when pressing filters, dont
+ * show all the options. You press filters then you hover over(or press to lock) playstyle and the
+ * the playstyle list opens to you."
+ */
+describe('everything is under FILTERS, and the drawer opens one category at a time', () => {
+  const shut = () => {
     store.set('game7.teamdb.years', '2026-2026')
-    const html = renderToStaticMarkup(createElement(TeamDb, { onBack: () => {} }))
-    // his ruling: "not all these words in the main page" — the three stacked bars are one bar now
+    return renderToStaticMarkup(createElement(TeamDb, { onBack: () => {} }))
+  }
+
+  it('the page carries the search and the FILTERS chip and nothing else — the sort rail is gone', () => {
+    const html = shut()
     expect(html.split('class="filterbar"').length - 1).toBe(1)
-    // five sorts, on one rail that fits 375px without scrolling — the caption spells the order out
-    for (const chip of ['Record', 'A–Z', 'OVR', 'OFF', 'DEF']) expect(html).toContain(`>${chip}</button>`)
-    // the drawer is shut, so no conference or tactic chip is on the page until it is opened
+    // the five sorts used to live on a rail outside the drawer; now they are behind FILTERS with the rest
+    expect(html).not.toContain('class="rail"')
+    for (const chip of ['Record', 'A–Z', 'OVR', 'OFF', 'DEF']) expect(html).not.toContain(`>${chip}</button>`)
+    // the drawer is shut, so no category row and no option is on the page until FILTERS is pressed
     expect(html).not.toContain('class="filters"')
     expect(html).not.toContain('>East</button>')
     expect(html).not.toContain('>five-out</button>')
+  })
+
+  it('the order still reaches the reader: the caption over the list says it in words', () => {
+    expect(shut()).toContain('best record first')
+  })
+})
+
+describe('the SORT BY row says what it is set to', () => {
+  it('his five sorts, each with the direction a second tap turns around', () => {
+    expect(sortHint('rec', false)).toBe('Record · best first')
+    expect(sortHint('rec', true)).toBe('Record · worst first')
+    expect(sortHint('az', false)).toBe('A to Z')
+    expect(sortHint('az', true)).toBe('Z to A')
+    expect(sortHint('ovr', false)).toBe('OVR · best first')
+    expect(sortHint('def', true)).toBe('DEF · lowest first')
   })
 })

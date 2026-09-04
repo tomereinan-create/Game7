@@ -2222,7 +2222,21 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .tdb-gauge { flex: none; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--you); }
 /* the range list pages in: the foot of the list is both the notice and the tap that adds the next 60 */
 .morebtn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--you); font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-.filters { display: grid; gap: 10px; padding: 10px 12px; margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.filters { display: grid; gap: 6px; padding: 8px; margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+/* ONE CATEGORY AT A TIME (his ruling: "when pressing filters, dont show all the options"). The
+   drawer is a stack of shut rows — name on the left, what it is set to on the right — and the row
+   you press unfolds its own options under itself. A mouse may peek by hovering; a thumb presses. */
+.fcat { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); min-width: 0; }
+.fcat.open { border-color: var(--line-3); }
+.fcat-head { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 0 10px; background: none; border: 0; text-align: left; min-width: 0; }
+.fcat-name { flex: none; font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.fcat.open .fcat-name { color: var(--ink); }
+/* the row says its own value while shut, so nothing has to be opened to be read */
+.fcat-val { flex: 1; min-width: 0; text-align: right; font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fcat-val.on { color: var(--you); }
+.fcat-head > i { flex: none; font-style: normal; font-size: 9px; color: var(--faint); }
+.fcat-body { display: grid; gap: 8px; padding: 2px 10px 10px; min-width: 0; }
+.fcat-body .filt-note { border-top: 0; padding-top: 0; }
 .filt { display: grid; gap: 4px; min-width: 0; }
 .filt > span:first-child { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
 .filt-pair { display: flex; gap: 6px; align-items: center; min-width: 0; }
@@ -2890,3 +2904,7 @@ body.wide .cmd { margin-top: -14px; }
 /* recal_64: the gauge's basis, visible wherever the percentile dials show */
 .gauge-basis { display: block; width: 100%; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-top: 1px; }
 .node-dials { flex-wrap: wrap; }
+
+.freshness-probe-64410 {
+  color: #123456;
+}
