@@ -24,7 +24,6 @@ import {
   MODES,
   resetProgress,
   saveProgress,
-  totalStars,
   type CampaignMode,
   type Progress,
   type Team,
@@ -456,7 +455,6 @@ export default function App() {
         opponent={opponent}
         seed={levelSeed(prog, level)}
         handicap={opponent.handicap ?? 0}
-        stars={totalStars(prog)}
         teamName={teamName}
         salary={capped}
         wallet={prog}

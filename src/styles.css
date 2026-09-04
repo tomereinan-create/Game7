@@ -37,6 +37,20 @@
   --sans: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'Spline Sans Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /**
+   * HIS RULING, pointing at the player card's stats and archetype block: that face, throughout.
+   * The block is three faces doing three jobs, and the app now keeps all three straight:
+   *   --mono  every LABEL and caption — PTS, SEASON 1992 · SF/PF, OPEN PG SG.
+   *   --serif every reading the app SAYS in prose or in one big display number — the name, the
+   *           tagline, the archetype paragraph, the dials, the spread, the scoreboard.
+   *   --num   every STAT: a figure printed under its own label, in a grid or a row. Archivo bold,
+   *           tabular, which is what his card's stat grid was already doing by accident while the
+   *           attributes beside it, the ManBand's line and the compare table each did something
+   *           else. Now they all read as the same ledger.
+   * A number is --num when it has a label of its own; it is --serif when it IS the headline.
+   */
+  --num: Archivo, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
   color-scheme: dark;
 }
 
@@ -579,6 +593,7 @@ button {
 }
 .dcell b {
   display: block;
+  font-family: var(--num);
   font-size: 13px;
   font-weight: 700;
   margin-top: 2px;
@@ -622,6 +637,7 @@ button {
 }
 .bcell b {
   display: block;
+  font-family: var(--num);
   font-size: 12px;
   font-weight: 700;
   margin-top: 4px;
@@ -1096,6 +1112,7 @@ button {
   color: var(--muted);
 }
 .stat b {
+  font-family: var(--num);
   font-size: 15px;
   font-weight: 700;
 }
@@ -1165,7 +1182,8 @@ button {
 .row.dr { grid-template-columns: minmax(0, 1fr) 34px 96px 28px; }
 .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
 .mini {
-  font-family: var(--mono);
+  font-family: var(--num);
+  font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.02em;
   text-align: right;
@@ -1174,6 +1192,9 @@ button {
 }
 .mini i {
   font-style: normal;
+  /* the ledger face sets tighter spaces than the mono did — the dots keep their own air */
+  padding: 0 2px;
+  font-weight: 400;
   color: var(--faint);
 }
 .row.on .mini {
@@ -1183,9 +1204,14 @@ button {
   font-size: 9px;
   margin-left: 2px;
 }
+/* THE DRAFT COLUMNS, with the command strip gone (his ruling: "move everything else … higher").
+   All that is left above them is the home/map button pair, so the columns start directly under it
+   instead of under a sixty-pixel header: the band is exactly as tall as the buttons are, and the
+   opponent, the wheel and your five each move up by that much. */
 .draft {
   display: flex;
   flex-direction: column;
+  padding-top: 30px;
 }
 /* MY TEAM (death match): the five and the wheel, two columns on a desk, five first on a phone. */
 .myteam {
@@ -1228,7 +1254,7 @@ button {
    league line under it */
 .mb-grid .bcell { display: grid; align-content: start; justify-items: start; gap: 1px; }
 .mb-grid .bcell i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--muted); }
-.mb-grid .bcell b { font-family: var(--serif); font-weight: 400; font-size: 17px; color: var(--ink); }
+.mb-grid .bcell b { font-family: var(--num); font-weight: 700; font-size: 15px; color: var(--ink); }
 .mb-none { margin: 8px 0 0; font-family: var(--mono); font-size: 10px; color: var(--faint); }
 
 /* THE LANDED ROSTER. His ruling: he should not scroll the page to reach the men he is choosing
@@ -1583,6 +1609,7 @@ button {
   color: var(--faint);
 }
 .adv-row b {
+  font-family: var(--num);
   font-size: 12.5px;
   font-weight: 700;
   white-space: nowrap;
@@ -1676,12 +1703,14 @@ button {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
     align-items: start;
+    /* the bigger buttons on a desk need a taller band, and the right-hand column runs under them */
+    padding-top: 42px;
   }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
   .draft .col.c { order: 3; }
-  .draft .card:first-child { margin-top: 18px; }
+  .draft .col > :first-child { margin-top: 18px; }
   .rowhead.db.x,
   .row.db.x {
     grid-template-columns: minmax(0, 1fr) 160px 66px;
@@ -2052,7 +2081,7 @@ button {
 .sstats .sh span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
 .sstats .sh .you { color: var(--you); }
 .sstats .sh .them { color: var(--them); text-align: right; }
-.sstats .sr .you, .sstats .sr .them { font-family: var(--mono); font-size: 14px; color: var(--ink-2); }
+.sstats .sr .you, .sstats .sr .them { font-family: var(--num); font-size: 14px; color: var(--ink-2); }
 .sstats .sr .them { text-align: right; }
 .sstats .sr .lead { font-weight: 700; color: var(--ink); }
 .sstats .sr .you.lead { color: var(--you); }
@@ -2120,7 +2149,7 @@ button {
 .an-row .v b { color: var(--ink); }
 .an-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 5px 0 1px; }
 .an-kv span { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
-.an-kv b { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.an-kv b { font-family: var(--num); font-size: 13px; white-space: nowrap; }
 .an-kv b.bad { color: var(--danger); }
 .an-sub { font-family: var(--serif); font-style: italic; font-size: 12.5px; color: var(--ink-2); line-height: 1.4; padding-bottom: 4px; border-bottom: 1px solid var(--divider); }
 .an-key { display: grid; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--divider); }
@@ -2306,6 +2335,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .cmp-rowlabel { font-family: var(--mono); font-size: 9.5px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
 .cmp-rowlabel.head { min-height: 1px; }
 .cmp-rowlabel.gapcol { text-align: right; color: var(--ink-2); }
+/* the gap column prints a figure, not a label — the head above it keeps the label face */
+.cmp-rowlabel.gapcol:not(.head) { font-family: var(--num); font-weight: 700; letter-spacing: 0; text-transform: none; }
 .cmp-card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px 10px; display: grid; gap: 3px; min-width: 0; }
 .cmp-card b { font-family: var(--serif); font-size: 16px; font-weight: 400; line-height: 1.1; padding-right: 14px; }
 .cmp-yr { font-family: var(--mono); font-size: 10px; color: var(--faint); }
@@ -2314,11 +2345,11 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .cmp-drop:hover { color: var(--danger); }
 .cmp-dials { display: flex; gap: 10px; padding-top: 5px; }
 .cmp-dial { font-family: var(--mono); font-size: 8px; letter-spacing: 0.08em; color: var(--faint); display: grid; }
-.cmp-dial em { font-style: normal; font-size: 17px; letter-spacing: 0; color: var(--ink); }
+.cmp-dial em { font-style: normal; font-family: var(--num); font-weight: 700; font-size: 17px; letter-spacing: 0; color: var(--ink); }
 .cmp-dial.you em { color: var(--you); }
 .cmp-meta { font-family: var(--mono); font-size: 9px; color: var(--muted-2); padding-top: 4px; border-top: 1px solid var(--divider); margin-top: 5px; }
 .cmp-block { padding: 10px 14px 12px; }
-.cmp-val { position: relative; font-family: var(--mono); font-size: 13px; color: var(--ink-2); padding: 5px 0 7px; }
+.cmp-val { position: relative; font-family: var(--num); font-weight: 700; font-size: 13px; color: var(--ink-2); padding: 5px 0 7px; }
 .cmp-val.plain { padding-bottom: 5px; }
 .cmp-val.best { color: var(--you); }
 .cmp-bar { position: absolute; left: 0; bottom: 2px; height: 2px; background: var(--line-3); border-radius: 2px; }
@@ -2340,13 +2371,13 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .oppman-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; background: none; border: 0; border-top: 1px solid var(--divider); padding: 6px 0; color: inherit; cursor: pointer; }
 .oppman-row:disabled { cursor: default; }
 .oppman-name { font-family: var(--serif); font-size: 13.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.oppman-nums { display: flex; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--ink-2); }
+.oppman-nums { display: flex; gap: 10px; font-family: var(--num); font-weight: 700; font-size: 11px; color: var(--ink-2); }
 .oppman-nums i { font-style: normal; min-width: 20px; text-align: right; }
 .oppmen-cap { font-family: var(--mono); font-size: 9px; color: var(--faint); letter-spacing: 0.06em; text-transform: uppercase; padding-top: 4px; }
 .whisper-roster { font-family: var(--mono); font-size: 9.5px; color: var(--muted); line-height: 1.5; padding: 8px 2px 0; }
 .card.assignworth { display: flex; align-items: baseline; gap: 10px; padding: 10px 14px; }
 .card.assignworth .label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
-.card.assignworth b { font-family: var(--mono); font-size: 18px; color: var(--you); }
+.card.assignworth b { font-family: var(--num); font-weight: 700; font-size: 18px; color: var(--you); }
 .card.assignworth i { font-family: var(--mono); font-size: 10px; font-style: normal; color: var(--muted); }
 .solvebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 0 0 10px; }
 .solvebar i { font-family: var(--mono); font-size: 10px; font-style: normal; color: var(--muted); }
@@ -2502,11 +2533,24 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 @media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
 
 /* ---- home icon, always there ---- */
-.home-fab { position: fixed; top: 10px; right: 10px; z-index: 80; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line-3); background: var(--surface-2); color: var(--you); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
-.home-fab svg { width: 24px; height: 24px; display: block; }
-.home-fab:hover { border-color: var(--you); }
+.home-fab, .map-fab { position: fixed; top: 10px; right: 10px; z-index: 80; width: 44px; height: 44px; padding: 0; border-radius: 50%; border: 1px solid var(--line-3); background: var(--surface-2); color: var(--you); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+.home-fab svg, .map-fab svg { width: 24px; height: 24px; display: block; }
+.home-fab:hover, .map-fab:hover { border-color: var(--you); }
+/* HIS RULING: "Move the map next to home, change it to a map icon". The way back to the level map
+   is the same round button as home, one place to its left — the draft screen mounts it, because
+   only that screen knows whether picks are on the board. */
+.map-fab { right: 62px; }
+/* A full-screen sheet — a player card, the database, the trophy case — covers the draft. The way
+   back to the map must not float over it: a press there would leave the level with the sheet still
+   standing. Home stays, because going home from anywhere is the same thing wherever you are. */
+body:has(.sheet) .map-fab { display: none; }
 .topbar { padding-right: 44px; }
-@media (min-width: 900px) { .cmd-top .r { padding-right: 64px; } .home-fab { top: 14px; right: 14px; width: 52px; height: 52px; } .home-fab svg { width: 28px; height: 28px; } }
+@media (min-width: 900px) {
+  .home-fab, .map-fab { top: 14px; width: 52px; height: 52px; }
+  .home-fab svg, .map-fab svg { width: 28px; height: 28px; }
+  .home-fab { right: 14px; }
+  .map-fab { right: 76px; }
+}
 
 /* O / D beside OVR */
 .row.dr .ovr, .pool .row .ovr { display: grid; justify-items: end; line-height: 1; }
@@ -2552,7 +2596,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .capbar { padding: 8px 0 4px; border-bottom: 1px solid var(--divider); }
 .capline { display: flex; justify-content: space-between; align-items: baseline; }
 .capline span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-.capline b { font-family: var(--mono); font-size: 13px; color: var(--you); }
+.capline b { font-family: var(--num); font-size: 13px; color: var(--you); }
 .captrack { height: 5px; border-radius: 3px; background: var(--surface-2); margin: 5px 0 4px; overflow: hidden; }
 .captrack i { display: block; height: 100%; background: var(--you); }
 .capbar.over .capline b, .capbar.over .cap { color: var(--danger); }
@@ -2581,7 +2625,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 
 /* ---- my team: the durability badge (death match) ---- */
 .mt-dur { flex: none; display: grid; justify-items: center; gap: 0; min-width: 32px; padding: 3px 5px 2px; border: 1px solid var(--line-3); border-radius: 6px; }
-.mt-dur b { font-family: var(--mono); font-size: 13px; font-weight: 700; line-height: 1; color: var(--ink); }
+.mt-dur b { font-family: var(--num); font-size: 13px; font-weight: 700; line-height: 1; color: var(--ink); }
 .mt-dur i { font-style: normal; font-family: var(--mono); font-size: 6.5px; letter-spacing: 0.14em; color: var(--muted); }
 .mt-dur.danger { border-color: var(--danger-line); background: var(--danger-tint); }
 .mt-dur.danger b, .mt-dur.danger i { color: var(--danger); }
@@ -2675,7 +2719,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .pc-big { border: 1px solid var(--line); background: var(--surface); padding: 5px 0 7px; text-align: center; }
 .pc-big.lead { border-color: var(--you-line); }
 .pc-big i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; color: var(--muted-2); }
-.pc-big b { display: block; font-size: 30px; line-height: 1.05; margin-top: 1px; }
+.pc-big b { display: block; font-family: var(--num); font-weight: 700; font-size: 30px; line-height: 1.05; margin-top: 1px; }
 .pc-big.lead b { color: var(--you); }
 .pc-adv { margin-top: 3px; padding: 7px 0; background: none; border: 1px solid var(--line); color: var(--you); font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
 
@@ -2688,8 +2732,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .pc-gcells { display: grid; grid-template-columns: repeat(5, minmax(0, 92px)); gap: 2px 8px; }
 .pc-cell { display: block; min-width: 0; padding: 2px 0; }
 .pc-cell i { display: block; font-style: normal; font-family: var(--mono); font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-cell b { display: block; font-size: 15px; line-height: 1.2; }
-.pc-cell.attr b { font-family: var(--mono); font-size: 14px; }
+.pc-cell b { display: block; font-family: var(--num); font-weight: 700; font-size: 15px; line-height: 1.2; }
+.pc-cell.attr b { font-size: 14px; }
 .pc-cell.attr .statt { display: block; height: 2px; margin-top: 2px; background: var(--line); }
 .pc-cell.attr .statf { display: block; height: 100%; background: var(--you); }
 .pc-attrs { display: grid; gap: 2px; }
@@ -2772,26 +2816,18 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .lrow .node-stars { font-size: 13px; }
 .lnote { display: block; width: calc(100% + 18px); margin: 0 -10px 0 -8px; padding: 8px 10px; border-bottom: 1px solid var(--divider); background: var(--you-tint); color: var(--you); font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* ---- 2e: the command strip and the scout bar ---- */
-.cmd { position: sticky; top: 0; z-index: 30; margin: -14px -14px 0; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0, 0, 0, 0.6); }
-.cmd-top { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.cmd-top .r { display: flex; align-items: center; gap: 12px; padding-right: 52px; }
-.cmd-top b { color: var(--you); }
-.cmd-top button { color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
-/* The .cmd-slots / .cslot five-chip strip was removed on his ruling — the odds row is now
-   the header's second line, so it inherits the strip's clearance for the fixed home FAB. */
-.cmd-odds { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; margin-right: 46px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
-@media (min-width: 900px) { .cmd-odds { margin-right: 64px; } }
-.cmd-odds b.you { color: var(--you); }
-.cmd-odds b.them { color: var(--them); }
-.cmd-odds .dim { color: var(--faint); }
+/* ---- 2e: the scout bar ---- */
+/* HIS RULING: "Move the map next to home, change it to a map icon, and move everything else
+   (heat lakers your 5) higher." The .cmd / .cmd-top / .cmd-odds command strip is gone — the level
+   line, the star count, the OPEN slots and the pick counter all read on the cards below, and the
+   three odds numbers moved onto the pre-sim card. What is left of the header is the pair of round
+   buttons, so the draft's columns start where the strip used to. */
 .scoutbar { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; background: var(--them-tint); border: 1px solid var(--them-line); border-radius: 8px; }
 .scoutbar .sc-l { min-width: 0; }
 .scoutbar .sc-l i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--them); }
 .scoutbar .sc-l b { display: block; font-family: var(--serif); font-size: 17px; font-weight: 400; margin-top: 2px; }
 .scoutbar .sc-l b span { font-family: var(--mono); font-size: 9px; color: var(--muted); }
 .scoutbar .sc-r { flex: none; font-family: var(--mono); font-size: 10px; color: var(--them); }
-body.wide .cmd { margin-top: -14px; }
 
 /* ---- 2h: the scorebug ---- */
 .scorebug { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }

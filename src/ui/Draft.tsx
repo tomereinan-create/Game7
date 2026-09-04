@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
-import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, ROUNDS, SIGMA } from '../config'
+import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, SIGMA } from '../config'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
@@ -123,7 +123,6 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
 export function Draft({
   opponent,
   seed,
-  stars,
   teamName,
   salary = false,
   wallet,
@@ -139,7 +138,6 @@ export function Draft({
 }: {
   opponent: Opponent
   seed: number
-  stars: number
   teamName: string
   /** Salary Cap campaign: every row also shows that season's salary and share of the cap. */
   salary?: boolean
@@ -756,46 +754,23 @@ export function Draft({
 
   return (
     <>
-      {/* The command strip (design 2e): the five and the odds pinned as a scoreboard. */}
-      <div className="cmd">
-        <div className="cmd-top">
-          <span>
-            Level {opponent.round} of {ROUNDS} · vs {opponent.team.split(' ').pop()}
-          </span>
-          <span className="r">
-            <b>★ {stars}</b>
-            <button onClick={() => onBack(picks.length > 0)}>← Map</button>
-          </span>
-        </div>
-        {/* His ruling: the five-chip strip (PG HAR · SG SMI · …) is gone from the header. It
-            was display-only — no tap, no drag target, no assignment — and his five reads
-            properly on the half court below and in My team. The pick counter stays: it is the
-            odds row's progress readout, not a chip. */}
-        <div className="cmd-odds">
-          {chance && !user ? (
-            <>
-              <span>
-                SPREAD{' '}
-                <b className={chance.spread >= 0 ? 'you' : 'them'}>
-                  {chance.spread >= 0 ? '−' : '+'}
-                  {Math.abs(chance.spread).toFixed(1)}
-                </b>
-              </span>
-              <span>
-                GAME <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
-              </span>
-              <span>
-                SERIES <b className={chance.series >= 0.5 ? 'you' : 'them'}>{(100 * chance.series).toFixed(0)}%</b>
-              </span>
-            </>
-          ) : (
-            <span className="dim">{open.length ? `OPEN ${open.join(' ')}` : 'FIVE SET'}</span>
-          )}
-          <span className="dim">
-            {picks.length} OF {DRAFT_SIZE}
-          </span>
-        </div>
-      </div>
+      {/*
+        HIS RULING: "Move the map next to home, change it to a map icon, and move everything else
+        (heat lakers your 5) higher." The command strip is gone with everything it carried — the
+        level line, the star count, the OPEN slots and the pick counter all read again on the cards
+        below (the opponent card names the level and the record, the wheel card names the open
+        slots and the spin, the Your five card counts the picks). The three odds numbers were the
+        one thing the strip alone said, so they moved down to the card that already explains them.
+        The way back to the map is this button, pinned beside the global home button — it lives in
+        THIS screen because only this screen knows whether picks are on the board, which is what
+        spends the attempt.
+      */}
+      <button className="map-fab" onClick={() => onBack(picks.length > 0)} aria-label="Level map" title="Back to the level map">
+        <svg viewBox="0 0 24 24" aria-hidden>
+          <path d="M9 5 3 7.5v12L9 17l6 2.5 6-2.5v-12L15 7 9 5Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M9 5v12M15 7v12.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
 
       <div className="draft" ref={gridRef}>
       <section className="col a">
@@ -1065,7 +1040,26 @@ export function Draft({
             <span className="label">Before you sim</span>
             <span className="cap">noise σ {sigma}</span>
           </div>
-          {/* The three headline numbers live on the command strip now (design 2e); this card keeps the why. */}
+          {/* The three headline numbers came back down here when the command strip went (his
+              ruling), onto the card that already carried the why — one read, in one place, right
+              above the Sim button. */}
+          <div className="odds-grid">
+            <div>
+              <b className={chance.spread >= 0 ? 'you' : 'them'}>
+                {chance.spread >= 0 ? '−' : '+'}
+                {Math.abs(chance.spread).toFixed(1)}
+              </b>
+              <i>Spread</i>
+            </div>
+            <div>
+              <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
+              <i>A game</i>
+            </div>
+            <div>
+              <b className={chance.series >= 0.5 ? 'you' : 'them'}>{(100 * chance.series).toFixed(0)}%</b>
+              <i>The series</i>
+            </div>
+          </div>
           <div className="decomp">
             <span>
               talent <b>{chance.parts.talent >= 0 ? '+' : '−'}{Math.abs(chance.parts.talent).toFixed(1)}</b>
