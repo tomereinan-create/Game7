@@ -320,6 +320,20 @@ export const DEFAULT_TACTICS: Tactics = {
  * read went from -0.99 to -1.09 against the -0.30 ceiling and the oracle held at +1.68 against the
  * +0.50 floor: transition was a middling call, so dropping it makes the average random pick a
  * little worse and leaves the best pick alone. No tax moved, and none was close to an edge.
+ * recal_126's zone deadeye DIET ramp moved 1,935 o_ovrs and 1,311 OVRs (0 d_ovrs) and reshuffled the
+ * ovr>=55 pool, and BOTH CRASH taxes broke together on the ORACLE edge — crash off glass +0.488 and
+ * crash def glass +0.478 against the +0.50 floor. They are the two taxes whose BENEFIT reads a
+ * rebounding attribute (orb, drb) that this round did not touch at all, so what moved was the pool the
+ * benefit is averaged over: the fives the oracle picks changed when 1,935 offensive scores did.
+ * crashOff swept .40 (+0.488) / .35 (+0.499) / .34 (+0.502) / .30 (+0.512) / .20 (+0.538) / .10 (+0.565)
+ * / .00 (+0.592) / -.10 (+0.620) / -.20 (+0.648, blind -0.416) — feasible about -.39 to .34, whose
+ * midpoint is NEGATIVE again, so r117's rule stands and the value is the midpoint of the POSITIVE half:
+ * .40 -> .17, oracle +0.546 with 0.046 of headroom and blind -0.641 with 0.341. crashDef swept .70
+ * (+0.478) / .63 (+0.501) / .60 (+0.511) / .51 (+0.543) / .50 (+0.546) / .40 (+0.582, blind -0.314) /
+ * .38 (blind -0.299, the floor exactly) — a WHOLE feasible interval of about .381 to .633, so it takes
+ * its true midpoint: .70 -> .51, oracle +0.543 and blind -0.395, 0.043 and 0.095 of room. The seven
+ * others held their bands untouched. All nine pass.
+ */
  */
 export const TAX = {
   scorer: 0.55,

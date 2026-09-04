@@ -1273,5 +1273,14 @@
     "round": 122,
     "ruling": "2 Elite defenders, 3 decent. how 72 def?",
     "note": "THE SUBJECT. 72 -> 76, the FLOOR of the dispatch's 81+-5 band (the 81 was the orchestrator's number, not his). The last five points are reachable only through a top-heavy PERDEF aggregation, which 47 seasons of within-season Spearman refuse (the five's best defender is its LEAST predictive order statistic, +0.076 against +0.19..+0.23; a top-2 premium beside the mean carries a NEGATIVE partial in both eras), or by moving Zaza Pachulia '17's perdef 45, which is a card and not this agent's. The pin has ZERO SLACK by construction: if he re-rules the number, re-cut it to what he says. See data/rounds/122.json."
+  },
+  {
+    "kind": "order",
+    "scale": "off",
+    "above": "John Stockton '97",
+    "below": "John Stockton '01",
+    "round": 126,
+    "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+    "note": "HIS ORDER PIN. 87 > 86, strict. The VALUE pin he also ruled - John Stockton '01 off 80 +-4 - is deliberately NOT added: the attribute stage reaches 86 and cannot reach the band (delete BOTH zone deadeye floors outright and he still prints 86, because his mid falls only to his own volume-first composite), so the pin would fail on the round that wrote it. Add it when a compute_ovr round lands the band. See data/rounds/126.json."
   }
 ]

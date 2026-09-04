@@ -652,12 +652,33 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
         # real attempt COUNT against the median full-season sample in that zone (mid 105, rim 174,
         # measured over every card with mp >= 1200). A full sample keeps the floor exactly as before;
         # a half sample gets half the lift. No cliff (r43), and nobody with a real sample moves.
+        # RECAL_126 (his ruling, "Stockton became overrated, on OFF"): THE FLOOR PAYS FOR A DIET,
+        # NOT FOR A SAMPLE. recal_78 above scaled the floor's lift by the real shot COUNT and left
+        # its other gate a CLIFF: 2.5 attempts per 100, clear it by a tenth and 85%-on-accuracy is
+        # paid in full. A RATE that low does not describe a zone the card lives in, so the floor was
+        # handing a specialist's bar to a bottom-quintile diet -- Kevin Durant '26 reads PAINT 82 on
+        # a rim-attempt rate at the 18th percentile of 2026, Payton Pritchard '25 75 at the 16th and
+        # Nicolas Batum '14 72 at the 15th, while Anthony Carter '08 reads MID 76 on 2.64 attempts
+        # per 100 and Shane Battier '03 74 on 2.57. The bar now carries the shots behind it in
+        # BOTH dimensions: recal_78's count ramp, times the card's own in-zone attempt-rate
+        # PERCENTILE, ramped from DEYE_LO to DEYE_HI. The percentile is within-season and per-zone,
+        # so the ramp is era-neutral by construction (Stockton's 3.13 midrange attempts in 1997 rank
+        # ABOVE his 3.28 in 2001, and his '97 card keeps more of the floor than his '01 card does).
+        # No cliff is added and one is removed: the lift now goes to zero continuously and the card
+        # falls back on the volume-first composite it earned. The 2.5-per-100 gate stands underneath.
+        # THE BAND IS THE FRONTIER, NOT A FITTED PAIR. Swept 0.25/0.75, 0.30/0.80, 0.35/0.85,
+        # 0.40/0.80, 0.40/0.90, 0.50/0.90 and 0.50/1.00 on the whole pool: the subject SATURATES at
+        # OFF 86 for every foot >= 0.40 (his mid diet is the 42nd percentile, his rim the 45th), so
+        # the setting is not chosen against him. 0.40/0.90 is the least collateral that reaches the
+        # saturation point AND keeps Stockton '97 strictly above '01, which is the order he ruled.
+        DEYE_LO, DEYE_HI = 0.40, 0.90
+        _diet = lambda pv: max(0.0, min(1.0, (pv - DEYE_LO) / (DEYE_HI - DEYE_LO)))
         _poss78 = (f(r.get('mp_v')) or 0.0) * lgpace.get(int(r['season']), 100.0) / 48.0
-        _lift = lambda base, floor, att, ref: base if floor <= base else base + (floor - base) * max(0.0, min(1.0, att / ref))
+        _lift = lambda base, floor, att, ref, pv: base if floor <= base else base + (floor - base) * max(0.0, min(1.0, att / ref)) * _diet(pv)
         if fgp is not None and share*fga100 >= 2.5 and creation_factor(sh) >= 0.73:
-            rim = _lift(rim, min(0.92, 0.85*P['rimfg'](fgp) + 0.15*P['rimvol'](share*fga100)), share*fga100*_poss78/100.0, 174.0)
+            rim = _lift(rim, min(0.92, 0.85*P['rimfg'](fgp) + 0.15*P['rimvol'](share*fga100)), share*fga100*_poss78/100.0, 174.0, P['rimvol'](share*fga100))
         if fmid is not None and s10*fga100 >= 2.5:
-            mid = _lift(mid, min(0.92, 0.85*P['midfg'](fmid) + 0.15*P['midvol'](s10*fga100)), s10*fga100*_poss78/100.0, 105.0)
+            mid = _lift(mid, min(0.92, 0.85*P['midfg'](fmid) + 0.15*P['midvol'](s10*fga100)), s10*fga100*_poss78/100.0, 105.0, P['midvol'](s10*fga100))
     return rim, mid
 
 # build fit matrices
