@@ -183,7 +183,9 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
   it('holds in every shape, called or inferred', () => {
     for (const s of STYLES) {
       const at = spotsFor({ style: s.key, pnr: null }, LAKERS)
-      expect(inCorner(at[AYTON])).toBe(false)
+      // five-out is the exception: it stands the five in slot order now (his ruling: "In 5 out,
+      // pg on top. SG/SF wings, PF/C corners"), so the C's spot is a corner whoever wears it.
+      if (s.key !== 'fiveout') expect(inCorner(at[AYTON])).toBe(false)
       // every set but five-out stands him inside — the pick-and-roll as its screener (his
       // ruling: the rest stand outside), every other set on the inside spot it holds for him.
       // recal_120 note: Ayton '26 and Hachimura '26 BOTH cap at screenFit 71 off their efficiency,
@@ -194,9 +196,10 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
 
   it('five-out is the exception, and is never INFERRED for a five with two who cannot shoot', () => {
     // a called five-out still shows five out (his earlier ruling), so it keeps Ayton behind the
-    // line — but off the corners, which go to the shooters
+    // line — in his own slot's corner now, not off the corners (his ruling put C there on purpose)
     const at = spotsFor({ style: 'fiveout', pnr: null }, LAKERS)
     expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(0)
+    expect(inCorner(at[AYTON])).toBe(true)
     // and a five carrying two non-shooters is never read as five-out, whatever the fit says
     const two = [g("Stephen Curry '16"), g("Klay Thompson '15"), g("LeBron James '13"), g("Draymond Green '18"), g("Rudy Gobert '17")]
     expect(two.filter((p) => !canSpace(p))).toHaveLength(2)

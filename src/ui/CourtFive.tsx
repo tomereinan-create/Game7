@@ -126,7 +126,13 @@ const RUN_R: XY = at(12, 42)
  * keeps the same five spots and gives the inside one to the man who cannot shoot.
  */
 const AT: XY[] = [peri(0, 6), peri(-38), peri(38), CORNER_L, PAINT_C]
-const BENCH_AT: XY = [14, 9]
+/**
+ * The resting man's spot (his ruling: "Move the bench player to the bottom") — an out-of-bounds
+ * strip below the baseline now, the same CROP units deep as the strip above the half-court line
+ * used to be, and the same distance in from its outer edge (9 of 16) so the move is a mirror, not
+ * a redesign.
+ */
+const BENCH_AT: XY = [14, BASE + 7]
 /**
  * Is a spot BEHIND the three-point line — the REAL one? Below the break the line is straight, 22
  * feet from the basket either side; above it the line is the 23.75-foot arc around the basket.
@@ -153,8 +159,10 @@ export const FLOOR = {
   ftLine: FT_LINE,
   rimY: BASE - RIM_Y * FT,
 } as const
-/** Units of empty floor above the half-court line, kept only when a bench man stands there. */
+/** Units of empty floor above the half-court line, always cropped off — nobody stands there any more. */
 const CROP = 16
+/** Units of out-of-bounds floor below the baseline, kept only when a bench man stands there. */
+const BENCH_BAND = 16
 
 /**
  * DEFENSIVE SHAPES, one entry per scheme id (his ruling: the court should show the
@@ -262,16 +270,12 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr'> | null | undefined
       // corner C paint") — PG at the top, SG and SF on the wings, PF in the corner, C in the paint
       return [peri(0, 6), peri(-38), peri(38), CORNER_L, PAINT_C]
     case 'fiveout':
-      // five behind the line, following the arc: top, both wings, both corners. The only set with
-      // no inside spot to give — a called five-out SHOWS five out — so a man who cannot shoot
-      // stands at the top or on a wing and the corners go to the shooters.
-      return stand(men, {}, [
-        [peri(0), 1],
-        [peri(-32), 1],
-        [peri(32), 1],
-        [CORNER_L, 2],
-        [CORNER_R, 2],
-      ])
+      // slot order, not a shooting sort (his ruling: "In 5 out, pg on top. SG/SF wings, PF/C
+      // corners. And a little bit more to the wings. Make it spaced out") — PG at the top, SG
+      // and SF on the wings (40 degrees off middle, up from 32, for the wider spacing he called
+      // for), PF and C in the corners. The only set with no inside spot at all — a called
+      // five-out SHOWS five out, whoever is out there.
+      return [peri(0), peri(-40), peri(40), CORNER_L, CORNER_R]
     case 'motion':
       // staggered perimeter with one elbow man cutting; the elbow is the non-shooter's spot
       return stand(men, {}, [
@@ -540,19 +544,21 @@ export function CourtFive({
   const inferred = plan || set ? null : inferredStyle(men)
   const call = plan ? callLine(plan, shown) : set ? setLine(set.style) : inferred ? fitLine(inferred, men.filter((p): p is Player => !!p)) : ''
   /**
-   * The band above the half-court line only exists to stand the resting man on, so a court with
-   * no bench crops it away instead of paying ~65px of empty floor for it on a phone. The box and
-   * the viewBox are cropped together and the spots are remapped into what is left, so every
-   * position stays exactly where it was relative to the floor. EVERY spot: the remap used to be
-   * applied to the bench man alone, which stood the five up to 11% of the box BELOW its own floor
-   * — the top of the arc sat inside the arc — and that only showed once the floor was drawn to
-   * real proportions and the line was where it says it is.
+   * The empty band above the half-court line pays ~65px of dead space for nothing, so it stays
+   * cropped whether or not a bench man is drawn (his ruling moved the resting man to the baseline
+   * end: "Move the bench player to the bottom"). A court WITH a bench instead grows a strip below
+   * the baseline to stand him on. The box and the viewBox grow together and the spots are remapped
+   * into what is there, so every position stays exactly where it was relative to the floor. EVERY
+   * spot: the remap used to be applied to the bench man alone, which stood the five up to 11% of
+   * the box below its own floor — the top of the arc sat inside the arc — and that only showed
+   * once the floor was drawn to real proportions and the line was where it says it is.
    */
-  const top = bench ? 0 : CROP
-  const y = (v: number) => ((v - top) / (100 - top)) * 100
+  const top = CROP
+  const bottom = bench ? BASE + BENCH_BAND : 100
+  const y = (v: number) => ((v - top) / (bottom - top)) * 100
   return (
-    <div className="court" style={{ aspectRatio: `100 / ${100 - top}` }}>
-      <svg className="ct-floor" viewBox={`0 ${top} 100 ${100 - top}`} aria-hidden="true">
+    <div className="court" style={{ aspectRatio: `100 / ${bottom - top}` }}>
+      <svg className="ct-floor" viewBox={`0 ${top} 100 ${bottom - top}`} aria-hidden="true">
         {/* THE FLOOR, in feet through FT (his ruling: "fix it for irl proportions"): the boundary,
             the centre circle at the half-court line, the key with the free-throw circle centred ON
             the free-throw line — its far half solid and its near half dashed, as on a real floor —
@@ -592,7 +598,7 @@ export function CourtFive({
         />
         <path d={`M${50 - 3 * FT} ${BASE - 4 * FT} h${6 * FT}`} stroke="var(--line-3)" strokeWidth="1" />
         <circle cx="50" cy={BASE - RIM_Y * FT} r={0.75 * FT} fill="none" stroke="var(--line-3)" strokeWidth="0.8" />
-        {bench ? <path d="M5 16.5 h17" stroke="var(--line-2)" strokeWidth="0.7" /> : null}
+        {bench ? <path d={`M5 ${BASE + 0.5} h17`} stroke="var(--line-2)" strokeWidth="0.7" /> : null}
       </svg>
       {plan ? (
         <span className="ct-side">
