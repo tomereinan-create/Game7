@@ -115,6 +115,7 @@ export const PAIR_FT = Math.hypot(9, 6)
  * further from the middle than the screen was. Nobody is inside the line in this set.
  */
 const POP: XY = at(-2, 33)
+const ELBOW_L: XY = at(-8, KEY_D)
 const ELBOW_R: XY = at(8, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
@@ -332,14 +333,12 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
       return stand(men, { [h]: BALL, [s]: POP }, [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]])
     }
     case 'triangle': {
-      // THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). The three men who make the
-      // shape stand on the left: the post option on the block, a wing behind the arc above him, a
-      // guard in the corner. The weak side is the two-man game that reads off it — a man at the
-      // right elbow (the high post, the set's other entry) and the point at the top. Everyone who
-      // is not the post man or the elbow man is behind the line, his spacing rule; the elbow is the
-      // one inside spot the shape holds, so the worst shooter of the four takes it.
-      const s = who(men, 'triangle', plan)
-      return stand(men, { [s]: BLOCK_L }, [[ELBOW_R, 0], [CORNER_L, 2], [peri(-38), 1], [peri(0, 6), 1]])
+      // THE TWO-GUARD-FRONT SETUP (recal_128, his ruling: "Add Triangle"; then his ruling: "Change
+      // the triangle to be like the 2nd picture" — the standard teaching diagram: the point at the
+      // top, a guard spread to each wing, and the two bigs together inside at the two elbows, ready
+      // to relocate into the strong-side triangle once the ball enters. Slot order, not a shooting
+      // sort or a featured post man: PG top, SG and SF the wings, PF and C the two elbows.
+      return [peri(0, 6), peri(-38), peri(38), ELBOW_L, ELBOW_R]
     }
     case 'postup': {
       // the post man on the block, and a second big who cannot shoot takes the dunker spot, the

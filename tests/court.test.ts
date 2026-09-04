@@ -530,37 +530,44 @@ describe('the helio court runs through the creator he called', () => {
 })
 
 /**
- * THE STRONG-SIDE TRIANGLE (recal_128, his ruling: "Add Triangle"). Three men on the strong side —
- * the post option on the block, a wing behind the arc, a guard in the corner — and the weak side is
- * a man at the elbow with the point at the top. His spacing rule holds: everyone who is not the
- * post man or the elbow man stands behind the line, and the corner is a shooter's spot.
+ * THE TWO-GUARD-FRONT SETUP (recal_128, his ruling: "Add Triangle"; then his ruling: "Change the
+ * triangle to be like the 2nd picture" — the standard teaching diagram, not a strong-side read: the
+ * point at the top, a guard on each wing, and the two bigs together inside at the two elbows,
+ * slot order rather than a shooting sort or a featured post man).
  */
-describe('the triangle stands three men on the strong side and two on the weak', () => {
+describe('the triangle stands the point up top, the guards on the wings, and the bigs at the elbows', () => {
   const BULLS = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Toni Kukoč '97"), g("Luc Longley '97")]
   const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
   const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
   const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
 
-  it('the five it is read for draws it, and the post option is on the block', () => {
+  it('the five it is read for draws it, and the two bigs are inside at the elbows', () => {
     expect(inferredStyle(BULLS)!.style).toBe('triangle')
     const at = spotsFor(null, BULLS)
     expect(at).toEqual(spotsFor({ style: 'triangle', pnr: null }, BULLS))
-    const post = BULLS.findIndex((p) => p.name === featured('triangle', BULLS)[0].name)
-    expect(outsideLine(at[post])).toBe(false)
-    expect(inCorner(at[post])).toBe(false)
+    // PF and C (Kukoč, Longley) hold the two inside spots, whoever the engine's featured post option is
+    expect(outsideLine(at[3])).toBe(false)
+    expect(outsideLine(at[4])).toBe(false)
   })
 
-  it('exactly two men are inside the arc — the block and the elbow — and both corners are shooters', () => {
+  it('exactly two men are inside the arc — the two elbows — and the point and both wings are outside', () => {
     const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
     expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(2)
     expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
-    for (let i = 0; i < 5; i++) if (inCorner(at[i])) expect(canSpace(BULLS[i])).toBe(true)
+    expect(outsideLine(at[0])).toBe(true) // PG at the top
+    expect(outsideLine(at[1])).toBe(true) // SG on the wing
+    expect(outsideLine(at[2])).toBe(true) // SF on the wing
   })
 
-  it('a man who cannot shoot takes the elbow rather than a spacing spot', () => {
-    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
-    const shy = BULLS.map((p, i) => [p, i] as const).filter(([p]) => !canSpace(p))
-    for (const [, i] of shy) expect(inCorner(at[i])).toBe(false)
+  it('the elbows are slot spots, not a shooting sort: PF and C stand there whether or not they can shoot', () => {
+    // a five where the PF can space the floor and the C cannot — the elbow is theirs by slot
+    // either way, not earned or lost by shooting
+    const MIXED = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Draymond Green '16"), g("Rudy Gobert '17")]
+    expect(canSpace(MIXED[3])).toBe(true)
+    expect(canSpace(MIXED[4])).toBe(false)
+    const at = spotsFor({ style: 'triangle', pnr: null }, MIXED)
+    expect(outsideLine(at[3])).toBe(false)
+    expect(outsideLine(at[4])).toBe(false)
   })
 
   it('the caption names the post option', () => {
