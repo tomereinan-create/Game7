@@ -798,6 +798,72 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
+    # recal_131 (HIS RULING, verbatim: "What I dont like, is Malone being 69 OFF with 25 ppg on not
+    # bad eff"). THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK.
+    #
+    # THE CARD. Moses Malone '85: 24.6 points at 26.9% usage on .570 true shooting in a .543 league,
+    # the offensive rebounding and foul-drawing leader of his era, and he printed OFF 69. His own
+    # '82 card, the same man on the same shape, prints 85. The whole of the sixteen points is the
+    # ZONE BLOCK: rim 95 -> 60 and mid 67 -> 50 between the two seasons, worth 6.1 of o_score with
+    # nothing else on the sheet moving by more than a couple (usage 28.7 -> 26.9, true shooting
+    # .578 -> .570).
+    #
+    # WHERE THAT COMES FROM, and it is not a bar this file may touch. `rim` and `mid` are MEASURED
+    # from the shot-location tables only from 1997; before that build_ratings.py INFERS them from a
+    # model fitted on 1997-2005 and regressed toward each season's own mean — the compression of
+    # pre-1997 superstars toward the mean that RATINGS_UPDATE.md ratifies and that recal_52 already
+    # named ("MEASURED, OR INFERRED BY MODEL — NEVER ASSUMED"). So for an inferred card z[0] and
+    # z[1] are one model output, not two facts, and a one-year wobble in the model's inputs costs
+    # 0.30 of the weight vector. The third zone is not in the claim: three-point shooting is on the
+    # sheet from 1980 and is measured in every era this file carries.
+    #
+    # WHAT IS MISSING, and it is general rather than era-specific. z[0] at 0.22 is the ONLY channel
+    # that answers "does this man score inside". The two facts that constitute an interior scorer's
+    # damage — the fouls he draws and converts, and the offensive glass — are on the sheet in EVERY
+    # era, straight out of the box score, and o_score prices them as side skills at 0.11 and 0.06.
+    # recal_46 wrote the diagnosis itself, one term up the file: "A paint weapon's damage is mostly
+    # OFF the shot — fouls drawn, offensive boards, the defence he collapses — and the standard path
+    # prices almost none of it." Its answer was the paint half of recal_37's dominance bonus, which
+    # is reachable ONLY through a SHAPE gate on the zone vector (z[0] must tower over the other two
+    # and be 91+). A man whose paint damage is real but whose zone BAR is not is therefore locked
+    # out of the one channel built for him, by the very number that is wrong about him.
+    #
+    # THE TERM. The zone block is FLOORED at the paint damage the card measurably did:
+    #   PZ_EVIDENCE = half the standard path's own free-throw term, half the offensive glass. Evenly,
+    #     because it takes BOTH: a foul-drawing guard has no glass and a putback specialist draws no
+    #     fouls, so the pair is the interior scorer's signature and no position gate is needed.
+    #   0.30 is not a new number. It is z[0]'s 0.22 plus z[1]'s 0.08 — the weight of exactly the two
+    #     zones the pre-1997 model infers — which is the same move recal_107 made with the 0.22.
+    #   volume 55 -> 80. 55 is this file's own low-usage line, the gate recal_64, recal_107 and
+    #     recal_112 all read as `volume < 55`; this term begins where those three end, so it and they
+    #     are DISJOINT by construction and no card is paid twice. 80 is a top-sixth load (usage 24.8).
+    #   efficiency 45 -> 65. 45 IS the league's own conversion rate — median ts_rel .566 against a
+    #     league mean of .570 — so a man who scores at his league's rate earns nothing here, and the
+    #     ramp is full three points of true shooting above it (.598). This is "not bad eff", his own
+    #     phrase, made a number: Hakeem Olajuwon '90 carries the same load (volume 89 to 88) on
+    #     efficiency 57 and his floor lands BELOW his standard path, so he does not move at all.
+    # Written as a max() so it can only ever LIFT, and every card whose zone block already exceeds
+    # the evidence is untouched BY CONSTRUCTION — which is the whole of the protection for the class:
+    # Moses '82 (rim 95), Ewing '90 (97), Kareem '80 (98), Barkley '90 (97), Robinson '92 (97),
+    # Shaq '00 (99) and Hakeem '90 (85) all move by EXACTLY zero.
+    # MEASURED: 103 of 10,000 cards move on OFF, every one of them UP, max +9; DEF, every attribute
+    # and the top 12 by OFF move on ZERO, and the top 50 by OVR has no entrant and no leaver. The
+    # movers are one archetype and read like it — Moses '84-'90, Zydrunas Ilgauskas '04-'06, Shawn
+    # Kemp '96-'99, Kevin Love '11/'12, Karl-Anthony Towns '26, Brook Lopez '10, Corey Maggette '07,
+    # Jimmy Butler '20 — men who live at the line and on the offensive glass. 66 of the 103 are
+    # MEASURED-era cards (max +6), so this is not an era patch: the inference is why the defect bites
+    # hardest before 1997, not what the defect is.
+    PZ_V_LO, PZ_V_HI = 55.0, 80.0
+    PZ_E_LO, PZ_E_HI = 45.0, 65.0
+    _pz = (min(1.0, max(0.0, (_vol - PZ_V_LO) / (PZ_V_HI - PZ_V_LO)))
+           * min(1.0, max(0.0, (a['efficiency'] - PZ_E_LO) / (PZ_E_HI - PZ_E_LO))))
+    if _pz > 0.0:
+        _pe = 0.5 * (a['fouldraw'] * a['ft'] / 100) + 0.5 * a['orb']
+        _pblk = 0.22 * z[0] + 0.08 * z[1]
+        std = max(std, std + _pz * (0.30 * _pe - _pblk))
+        if trace is not None:
+            trace['paint_floor'] = dict(share=_pz, evidence=_pe, block=_pblk,
+                                        added=max(0.0, _pz * (0.30 * _pe - _pblk)))
     # recal_121 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone guy.
     # In addition to the OFF being a touch heigher than Id like it to be.. More around 85"; and, on
     # the round's first cut, HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
@@ -1247,6 +1313,12 @@ if _CARD:
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+    if 'paint_floor' in _ot:
+        _pf = _ot['paint_floor']
+        print(f"PAINT-EVIDENCE FLOOR (recal_131) - share {_pf['share']:.2f} (volume 55->80 x efficiency "
+              f"45->65); evidence {_pf['evidence']:.2f} (half the free-throw term, half the offensive "
+              f"glass) x 0.30 = {0.30 * _pf['evidence']:.2f} against zone block {_pf['block']:.2f}: "
+              f"+{_pf['added']:.3f}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
     _table(f"D_SCORE — the {_dt['branch']} branch (effective weights; recal_93 blends the two vectors)", _dt['terms'])
     print(f"  big vector {_dt['big_vector']:.4f}   perimeter vector {_dt['perim_vector']:.4f}"

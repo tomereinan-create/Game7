@@ -1291,5 +1291,14 @@
     "round": 130,
     "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
     "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
+  },
+  {
+    "card": "Moses Malone '85",
+    "scale": "off",
+    "target": 80,
+    "tol": 4,
+    "round": 131,
+    "ruling": "What I dont like, is Malone being 69 OFF with 25 ppg on not bad eff.",
+    "note": "THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK. The fouls a man draws and converts and the offensive glass he owns are PAINT DAMAGE, and o_score priced them only as side skills (0.11 and 0.06) while z[0]'s 0.22 was the only channel that answered \"does this man score inside\" - and recal_37's paint bonus, which recal_46 built for exactly that damage, is reachable only through a SHAPE gate on the zone vector, the very number that is wrong about this card. The block 0.22*z[0] + 0.08*z[1] (the two zones the pre-1997 model INFERS; the arc is measured in every era) is now floored at 0.30 x (half the free-throw term + half the offensive glass), ramped on volume 55->80 and efficiency 45->65. 69 -> 78, inside the band. Written as a max(), so every card whose zone block already exceeds the evidence is unmoved BY CONSTRUCTION - Moses '82 (rim 95, his own 86 +-1 pin), Ewing '90, Kareem '80, Barkley '90, Robinson '92, Shaq '00 and Hakeem '90 all move by exactly zero. The ratified pre-1997 zone compression is NOT touched: no attribute moves on any of the 10,000 cards."
   }
 ]
