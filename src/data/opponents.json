@@ -1120,7 +1120,7 @@
           "ts_rel": 0.635
         },
         "big": false,
-        "o_ovr": 75,
+        "o_ovr": 74,
         "d_ovr": 43,
         "ovr": 65,
         "marg": 91
@@ -3980,9 +3980,9 @@
           "ts_rel": 0.48
         },
         "big": false,
-        "o_ovr": 36,
+        "o_ovr": 35,
         "d_ovr": 47,
-        "ovr": 42,
+        "ovr": 41,
         "marg": 43
       },
       {
