@@ -3,6 +3,7 @@ import { seasonGauges } from '../engine/gauges'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { ratings100 } from '../engine/offense'
+import { bestStyle, STYLES, type Style } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
 import { CardName, useCard } from './CardSheet'
@@ -150,6 +151,18 @@ function gaugeOf(t: TeamSeason): TeamGauge {
   return g
 }
 
+/** The five's best tactic fit (five-out, pick-and-roll, ...), cached the same way as the gauges. */
+const TACTICS = new Map<TeamSeason, Style | null>()
+function tacticOf(t: TeamSeason): Style | null {
+  const hit = TACTICS.get(t)
+  if (hit !== undefined) return hit
+  const five = fiveOf(t)
+  const out = five ? bestStyle(five).style : null
+  TACTICS.set(t, out)
+  return out
+}
+const tacticLabel = (s: Style) => STYLES.find((x) => x.key === s)?.label ?? s
+
 /** The row's right edge: the team's three mini dials, same idiom as a player's (his ruling).
  * Ice is the team tone; a ranked sort turns its own dial gold. No legal five reads "—". */
 function RowDials({ t, sorted }: { t: TeamSeason; sorted: 'ovr' | 'off' | 'def' | null }) {
@@ -180,14 +193,31 @@ export type Sort = 'rec' | 'az' | 'ovr' | 'off' | 'def'
  * able to filter even after searching team", so the search is simply the first term of it:
  * "celtics · 1980–1990 · 11 seasons · best DEF first · East only".
  */
-export function listCaption({ query, span, n, sort, flip, conf }: { query: string; span: Span; n: number; sort: Sort; flip: boolean; conf: 'E' | 'W' | null }) {
+export function listCaption({
+  query,
+  span,
+  n,
+  sort,
+  flip,
+  conf,
+  tactic,
+}: {
+  query: string
+  span: Span
+  n: number
+  sort: Sort
+  flip: boolean
+  conf: 'E' | 'W' | null
+  tactic?: Style | null
+}) {
   const order =
     sort === 'az' ? (flip ? 'Z to A' : 'A to Z') : sort === 'rec' ? `${flip ? 'worst' : 'best'} record first` : `${flip ? 'lowest' : 'best'} ${sort.toUpperCase()} first`
   const what = (query ? 'season' : 'team') + (n === 1 ? '' : 's')
   return (
     (query ? `${query} · ` : '') +
     `${spanLabel(span)} · ${n.toLocaleString()} ${what} · ${order}` +
-    (conf ? (conf === 'E' ? ' · East only' : ' · West only') : '')
+    (conf ? (conf === 'E' ? ' · East only' : ' · West only') : '') +
+    (tactic ? ` · ${tacticLabel(tactic)}` : '')
   )
 }
 
@@ -241,6 +271,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   const [picked, setPicked] = useState<TeamSeason | null>(null)
   const [q, setQ] = useState('')
   const [conf, setConf] = useState<'E' | 'W' | null>(null)
+  const [tactic, setTactic] = useState<Style | null>(null)
   const [sort, setSort] = useState<Sort>('rec')
   // A second tap on the active chip flips the order; picking a new sort starts best-first again.
   const [flip, setFlip] = useState(false)
@@ -342,7 +373,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
    */
   const query = q.trim().toLowerCase()
   const teams = useMemo(() => {
-    const pool = WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf) && named(t, query))
+    const pool = WHEEL.filter((t) => inSpan(t.y, span) && (!conf || t.c === conf) && (!tactic || tacticOf(t) === tactic) && named(t, query))
     if (!ranked) {
       const cmp = (a: TeamSeason, b: TeamSeason) =>
         sort === 'az' ? a.team.localeCompare(b.team) || b.y - a.y : winsOf(b.rec) - winsOf(a.rec) || b.y - a.y
@@ -366,7 +397,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
       const d = kb - ka || winsOf(b.t.rec) - winsOf(a.t.rec) || b.t.y - a.t.y
       return flip ? -d : d
     })
-  }, [query, from, to, conf, sort, rating, ranked, flip, minQ, maxQ])
+  }, [query, from, to, conf, tactic, sort, rating, ranked, flip, minQ, maxQ])
 
   // A wide range is 1,300 team-seasons and 3,900 dials — more DOM than a phone will paint in one
   // go — so the list lays down a page at a time and grows as the bottom comes near. The SORT still
@@ -458,6 +489,15 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               </button>
             </div>
           </div>
+          {/* best tactic fit — the same read the floor infers a scouted five's shape from
+              (bestStyle), offered as a filter so a set can be found by how it actually plays */}
+          <div className="filterbar">
+            {STYLES.map((s) => (
+              <button key={s.key} className={`sortb ${tactic === s.key ? 'on' : ''}`} onClick={() => setTactic(tactic === s.key ? null : s.key)}>
+                {s.label}
+              </button>
+            ))}
+          </div>
           {/* the sort row stays put while you search — his ruling: a query is a filter, not a mode */}
           <div className="filterbar">
             <button className={chip('rec')} onClick={() => pickSort('rec')}>
@@ -490,7 +530,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
           </div>
 
             <div className="section-rule">
-              <span>{listCaption({ query, span, n: teams.length, sort, flip, conf })}</span>
+              <span>{listCaption({ query, span, n: teams.length, sort, flip, conf, tactic })}</span>
               <i />
             </div>
             {teams.slice(0, shown).map(({ t }) => (
