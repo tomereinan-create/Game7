@@ -163,6 +163,40 @@ def is_big(p):
 DEF_RP_LO, DEF_RP_HI = 45.0, 80.0   # the ramp on rim protection; 80 is clause 3's own bar
 DEF_3P_LO, DEF_3P_HI = 30.0, 40.0   # the fade on the clause's own `3pt < 40` line
 DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp, on rimprot alone
+# recal_136 (HIS RULING, verbatim: "Ken Norman Agree"). THE LAST UNRAMPED CLAUSE.
+#
+# THE DEFECT, decomposed on the card the ruling names. Ken Norman '94 reads DEF 46 where his own
+# '93 reads 61, on a quiet decline: rim protection 61 -> 53, perimeter defence 43 -> 38, defensive
+# rebounding 61 -> 62 — nothing on the sheet moves by fifteen points and the printed number moves by
+# fifteen. The whole of it is d_bigness clause 1, `rimprot >= 55 and 3pt < 45 and rimprot >= perdef`,
+# which returns a hard 1.0: at rimprot 61 he takes the WHOLE big verdict and at 53 he takes 0.09 of
+# it, so the formula he is graded by changed underneath him for eight points of one bar. His own big
+# vector still reads 48.79 x 1.1305 = 55.2 against a perimeter vector of 45.2, and the ruling's
+# number is his big vector.
+#
+# WHY THIS CLAUSE AND NOT ANOTHER. recal_93 replaced the MIDDLE shape clause's step with a product
+# of two ramps and recal_99 gave the DETERRENCE clause its own; both rounds explicitly left clause 1
+# alone ("the first two clauses are UNTOUCHED and still return a hard 1.0: clause 1 already reads
+# defensive shape (rimprot >= perdef)"). Reading defensive shape is why the clause is right; it is
+# not why the clause may STEP. It is the last hard 1.0 in the function, and the pool shows the step
+# exactly where the constant is: of the shape-decided cards with 3pt < 45 and rimprot >= perdef,
+# the 27 at rimprot 52-54 average d_bigness 0.17 and DEF 52.4, and the 12 at 55-57 average 1.00
+# and DEF 57.8. Five rating points, five and a half printed points, and nothing between them.
+#
+# THE RAMP, AND IT INTRODUCES NO NEW CONSTANT. The clause's own bar 55 becomes the point of
+# SATURATION and its foot is DEF_RP_LO — 45, the middle clause's own rim-protection foot, one line
+# above. The two rim-protection ramps therefore start together and the function has one story about
+# where a rim-protection claim begins, not two. The clause's other two tests are BYTE-IDENTICAL and
+# still hard: `3pt < 45` (the clause is about a man who does not shoot) and `rimprot >= perdef`
+# (recal_99's own guard, and the reason this ramp is a class statement rather than a bonus).
+# At rimprot >= 55 the clause returns 1.0 exactly as it did, so no card the clause already decided
+# moves by anything — verified, not asserted: Jared Dudley '19 sits ON 55 and reads 56 either way.
+# MEASURED: 32 of 10,000 cards move on DEF, 30 up and 2 down, max +7 and max -2; OFF and every
+# attribute move on ZERO (is_big is untouched, so the boolean, the big hub, the stretch-big floor
+# and the OVR cap branch are all byte-identical); OVR follows on 20 cards, max +3. Every anchor
+# holds. The movers are one archetype — scoring forwards with real size and no perimeter sheet:
+# Dominique Wilkins '97, Mike Mitchell '81-'84, Glenn Robinson '97-'02, Alex English '85.
+C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55.0   # recal_136: clause 1's own step, made a ramp; both ends already existed
 # recal_103 (HIS RULING, verbatim: "Herb jones DEF way too low all seasons"). THE POSITION RULE
 # ITSELF, which is the third and last place a man's SHOT DIET was deciding his defensive formula.
 #
@@ -197,9 +231,10 @@ DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp
 POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed big is graded as a wing
 def d_bigness(p):
     """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
-    verdict, 1 = the whole big verdict. The lifetime-guard branch and the first/third shape clauses
-    are is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
-    recal_99's, and the position-big branch is recal_103's shape override."""
+    verdict, 1 = the whole big verdict. The lifetime-guard branch and the third shape clause are
+    is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
+    recal_99's, clause 1 is recal_136's ramp (identical to is_big's at rimprot 55 and above), and
+    the position-big branch is recal_103's shape override."""
     pos = _POS.get(p['name'], [])
     a = p['attrs']
     if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
@@ -207,7 +242,11 @@ def d_bigness(p):
         _gap = a['perimdisrupt'] - a['drb']
         return 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))
     if a['rimprot'] >= 80: return 1.0
-    if a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']: return 1.0
+    # recal_136: clause 1 is a RAMP on its own rim-protection bar, from DEF_RP_LO to its own 55.
+    # Above 55 this is the hard 1.0 it always was; below it, the man is graded as a big in
+    # proportion to the rim-protection claim he actually has. Its other two tests are untouched.
+    w_c1 = (min(1.0, max(0.0, (a['rimprot'] - C1_RP_LO) / (C1_RP_HI - C1_RP_LO)))
+            if a['3pt'] < 45 and a['rimprot'] >= a['perdef'] else 0.0)
     w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))
     w_3p = min(1.0, max(0.0, (DEF_3P_HI - a['3pt']) / (DEF_3P_HI - DEF_3P_LO)))
     # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE RAMP STILL CLIFFED FOR SHOOTERS.
@@ -228,7 +267,7 @@ def d_bigness(p):
     # hold at 75 and 74 exactly.
     w_det = (min(1.0, max(0.0, (a['rimprot'] - DET_LO) / (DET_HI - DET_LO)))
              if a['rimprot'] >= a['perdef'] else 0.0)
-    return max(w_rp * w_3p, w_det)
+    return max(w_rp * w_3p, w_det, w_c1)
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)

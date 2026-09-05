@@ -1317,5 +1317,14 @@
     "round": 133,
     "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
     "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
+  },
+  {
+    "card": "Ken Norman '94",
+    "scale": "def",
+    "target": 55,
+    "tol": 3,
+    "round": 136,
+    "ruling": "Ken Norman Agree.",
+    "note": "46 -> 53. d_bigness CLAUSE 1 — `rimprot >= 55 and 3pt < 45 and rimprot >= perdef` — was the last hard 1.0 left in the function after recal_93 ramped the middle clause and recal_99 the deterrence one, and it stepped underneath him: '93 -> '94 rim protection 61 -> 53 on a quiet decline took his branch weight 1.00 -> 0.09 and DEF 61 -> 46. The clause is now a RAMP on its own rim-protection bar, from DEF_RP_LO (45, the middle clause's own foot — no new constant) to its own 55, where it is the hard 1.0 it always was; its other two tests are byte-identical. 53 is the FLOOR of the band and the ramp cannot reach further without a new number: his own big vector is 48.79 x 1.1305 = 55.2, so full weight would read 55, and the foot that gives it to him (42) takes the board's worst move to +8. Jared Dudley '19 sits ON rimprot 55 and reads 56 either way."
   }
 ]
