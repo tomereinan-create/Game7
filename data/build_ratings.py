@@ -507,9 +507,22 @@ for yr, rows in seasons.items():
         # recal_55: PRE-2014 NO-REP DBPM RELIEF, at his "big increase" size. Before tracking exists
         # a no-vote defender had no way past the cap no matter what DBPM said; elite-DBPM unvoted
         # men now reach ~78-80. The negative control holds by construction: a bad DBPM percentile
-        # makes 0.28 + 0.60 x P less than the cap he already had, so gamblers move zero.
+        # makes 0.28 + 0.52 x P less than the cap he already had, so gamblers move zero.
+        # recal_141 (HIS RULING on Ginobili '11, "This should be low 70s not high", and on the pins
+        # recal_134 declined against, "Agree with Manu"): THE SLOPE RETIRES ITS OWN PLATEAU, 0.60 ->
+        # 0.52. At 0.60 the line hit the 0.80 ceiling at P = 0.867, so EVERY no-vote pre-2014 card in
+        # the top 13% of its season's DBPM read the identical maximum - Ginobili '11 (P 0.848, DBPM
+        # +1.3), Ron Harper '88, Brent Barry '02, Craig Ehlo '89 and Carlos Delfino '11 all at 78,
+        # a plateau, not a ranking. 0.52 reaches the same ceiling only at P = 1.0, so the ceiling is
+        # now a single point rather than the top eighth of every season and the class is ordered
+        # again. This is recal_82's repair of the voted band applied to the no-vote channel; the gate
+        # (pre-2014, no votes) and the 0.80 top are untouched, so no voted card and no 2015+ card can
+        # move by construction (the only 2014+ movers are 83 peak_season-2014 cards, through the
+        # 20/60/20 season blend's reach back into 2013). recal_57's Caron Butler '08 def 73 +-1 and
+        # recal_55's own Vlade Divac '95 perdef 78 +-1 were RELEASED by that ruling and now sit in
+        # anchors_superseded.json; they were the two pins recal_134 declined against.
         if yr < 2014 and r['drep'] <= 0.05:
-            novote = max(novote, min(0.80, 0.28 + 0.60 * P['dbpm'](r['dbpm'])))
+            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])))
         _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])

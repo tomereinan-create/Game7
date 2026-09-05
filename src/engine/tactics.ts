@@ -333,6 +333,21 @@ export const DEFAULT_TACTICS: Tactics = {
  * .38 (blind -0.299, the floor exactly) — a WHOLE feasible interval of about .381 to .633, so it takes
  * its true midpoint: .70 -> .51, oracle +0.543 and blind -0.395, 0.043 and 0.095 of room. The seven
  * others held their bands untouched. All nine pass.
+ * recal_141's no-vote DBPM relief re-cut (slope 0.60 -> 0.52) moved 5,184 perdefs, 4,832 d_ovrs and
+ * 3,423 OVRs — ALL of them down — and so reshuffled the ovr>=55 pool harder than any recent round;
+ * TWO taxes broke, and they are the two the file already names as the pool-sensitive pair. HUNT went
+ * shallow on its ORACLE edge (+0.481 against the +0.50 floor, blind a healthy -0.601): swept 3.80
+ * (+0.481) / 3.755 (+0.499) / 3.75 (+0.500) / 3.70 (+0.521) / 3.60 / 3.50 (blind -0.365) / 3.42
+ * (blind -0.301) / 3.415 (blind -0.297) — a whole feasible interval of about 3.420 to 3.750, so it
+ * takes its true midpoint: 3.80 -> 3.59, oracle +0.565 and blind -0.436, 0.065 and 0.136 of room.
+ * That is hunt's tenth move and its cause is the usual one, except mirrored: this is a DEFENSIVE
+ * round, and hunt is the tax whose benefit reads a defensive attribute, so a round that lowers a
+ * whole class of perimeter defenders moves the mismatch it is priced on. CRASH DEF GLASS broke on
+ * the BLIND edge (-0.271 against the -0.30 ceiling): swept .51 / .55 (-0.299, the ceiling by one
+ * thousandth) / .552 (-0.301) / .60 / .70 / .80 / .90 (+0.501) / .903 (+0.500) / .906 (+0.499) —
+ * feasible about .552 to .904, true midpoint .73. Re-ratified .51 -> .73, oracle +0.549 and blind
+ * -0.427, 0.049 and 0.127 of room. crash off glass held its r126 value of .17 (oracle +0.64, blind
+ * -0.42) and the six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -340,9 +355,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
+  hunt: 3.59,
   crashOff: 0.17,
-  crashDef: 0.51,
+  crashDef: 0.73,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
