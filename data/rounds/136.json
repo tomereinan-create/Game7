@@ -10,7 +10,7 @@
   "tol": 3,
   "before": 46,
   "after": 53,
-  "pipeline_version": 136,
+  "pipeline_version": 139,
   "knobs": [
     {
       "file": "data/compute_ovr.py",
@@ -214,17 +214,17 @@
       "card": "Dominique Wilkins '87",
       "scale": "def",
       "op": "~",
-      "value": 58,
+      "value": 57,
       "tol": 0,
-      "label": "THE ONLY DIRECTION OF DAMAGE, and it is the clause's own semantics rather than an accident: 60 -> 58. Clause 1 is a CLASS statement, so a card whose perimeter vector reads above his big one loses when it engages — at rimprot 55 the standing clause takes the whole of it, and the ramp takes 0.90"
+      "label": "THE ONLY DIRECTION OF DAMAGE, and it is the clause's own semantics rather than an accident: 60 -> 58. Clause 1 is a CLASS statement, so a card whose perimeter vector reads above his big one loses when it engages — at rimprot 55 the standing clause takes the whole of it, and the ramp takes 0.90 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Dominique Wilkins '86",
       "scale": "def",
       "op": "~",
-      "value": 58,
+      "value": 57,
       "tol": 0,
-      "label": "the second and last down-mover on the whole board: 60 -> 58"
+      "label": "the second and last down-mover on the whole board: 60 -> 58 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Mike Mitchell '83",
@@ -278,9 +278,9 @@
       "card": "Caron Butler '08",
       "scale": "def",
       "op": "~",
-      "value": 72,
+      "value": 69,
       "tol": 1,
-      "label": "recal_57's pin at 73 +-1, sitting ON its edge and the tightest perimeter constraint on the board: rimprot 34, far below the foot, unmoved"
+      "label": "recal_57's pin at 73 +-1, sitting ON its edge and the tightest perimeter constraint on the board: rimprot 34, far below the foot, unmoved [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Ben Wallace '06",

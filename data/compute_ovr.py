@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 142
+PIPELINE_VERSION = 139
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -320,7 +320,7 @@ def d_bigness(p):
 # MEASURED: 267 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +2.41, max +8; DEF and every
 # attribute move on ZERO; OVR follows on 208. All 137 anchors hold.
 HUB_GATE, HUB_FULL = 60, 80
-HUB_K = 0.07                       # recal_138: the load weight 0.26 minus the creation weight 0.19
+HUB_K = 0.05                       # recal_138 derived 0.07 (load 0.26 minus creation 0.19); shipped at 0.05, the measured fallback, on his word "138 at 93" — Magic '90 reads 93 with no card moving more than 6
 PD_V_LO, PD_V_HI = 10.0, 68.0      # recal_117's band; the hub's floor is its top, so the two are disjoint
 def o_score(p, trace=None):
     # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the

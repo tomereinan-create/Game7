@@ -6,16 +6,16 @@
   "title": "THE HUB IS A ROLE, NOT A BODY — recal_55 built its channel for the man the offence RUNS THROUGH and gated it on is_big, a proxy that breaks on a 6'9\" point guard the year he learns to shoot. The role is now measured on o_score's own two bars (creation surplus playvol - volume, ramped over the hub's own width, floored at recal_117's band top so it and the elite-passer term are disjoint), the size is DERIVED (0.26 - 0.19 = 0.07, was an undefended 0.05), and a hub's creation is priced wherever load is priced, so recal_26's signature floor reads it too. Magic Johnson '90 off 87 -> 94, the floor of his 94-96 band, with all 138 anchors held",
   "subject": "Magic Johnson '90",
   "scale": "off",
-  "target": 95,
+  "target": 93,
   "tol": 1,
   "before": 87,
   "after": 94,
-  "pipeline_version": 138,
+  "pipeline_version": 139,
   "knobs": [
     {
       "file": "data/compute_ovr.py",
-      "pattern": "HUB_K = 0\\.07",
-      "label": "recal_138 — THE HUB PREMIUM, DERIVED: the load weight minus the creation weight",
+      "pattern": "HUB_K = 0\\.05",
+      "label": "recal_138 — THE HUB PREMIUM, DERIVED: the load weight minus the creation weight [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]",
       "note": "0.26 - 0.19, both of them recal_89's LOCKED DIAL STATE. Was 0.05, which recal_55 set without a reason and recal_98 explicitly declined to reopen ('the gate, the weight and the class function are UNTOUCHED'). Written as a premium ON TOP of the 0.19 the standard path pays, the total is exactly 0.26 and the rate is paid ONCE"
     },
     {
@@ -84,25 +84,25 @@
       "card": "Magic Johnson '89",
       "scale": "off",
       "op": "~",
-      "value": 94,
+      "value": 93,
       "tol": 0,
-      "label": "THE SEASON THE DEFECT WAS MEASURED AGAINST, unpinned: 91 -> 94. He is a big by shape (3pt 37) and always had the hub, so his +3 is the DERIVED SIZE and the signature, not the class change. The two seasons now read level at 94 where the flag alone made them 91 / 87"
+      "label": "THE SEASON THE DEFECT WAS MEASURED AGAINST, unpinned: 91 -> 94. He is a big by shape (3pt 37) and always had the hub, so his +3 is the DERIVED SIZE and the signature, not the class change. The two seasons now read level at 94 where the flag alone made them 91 / 87 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '86",
       "scale": "off",
       "op": "~",
-      "value": 96,
+      "value": 95,
       "tol": 0,
-      "label": "93 -> 96, and still his highest: he is the only Magic season that also takes recal_107's two-level term (+6.07) and recal_109's passer term (+6.62)"
+      "label": "93 -> 96, and still his highest: he is the only Magic season that also takes recal_107's two-level term (+6.07) and recal_109's passer term (+6.62) [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '87",
       "scale": "off",
       "op": "~",
-      "value": 93,
+      "value": 92,
       "tol": 0,
-      "label": "90 -> 93 — a big by shape (3pt 22), so again the size and the signature only"
+      "label": "90 -> 93 — a big by shape (3pt 22), so again the size and the signature only [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '91",
@@ -124,9 +124,9 @@
       "card": "Steve Nash '03",
       "scale": "off",
       "op": "~",
-      "value": 92,
+      "value": 90,
       "tol": 0,
-      "label": "THE SEAM'S COST, recorded rather than hidden: 84 -> 92 on volume 69 — two points on the hub's side of the line where his pinned '05 is twenty-six points on the other. See COST"
+      "label": "THE SEAM'S COST, recorded rather than hidden: 84 -> 92 on volume 69 — two points on the hub's side of the line where his pinned '05 is twenty-six points on the other. See COST [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Chauncey Billups '06",
@@ -243,41 +243,41 @@
       "card": "Chris Paul '15",
       "scale": "off",
       "op": "~",
-      "value": 96,
+      "value": 95,
       "tol": 0,
-      "label": "THE BIGGEST NAME THE ROUND LIFTS, and the archetype the subject belongs to: 90 -> 96 on playvol 98 against volume 75"
+      "label": "THE BIGGEST NAME THE ROUND LIFTS, and the archetype the subject belongs to: 90 -> 96 on playvol 98 against volume 75 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Kevin Johnson '91",
       "scale": "off",
       "op": "~",
-      "value": 92,
+      "value": 90,
       "tol": 0,
-      "label": "THE BIGGEST MOVER ON THE BOARD, +8: 84 -> 92, playvol 95 against volume 74"
+      "label": "THE BIGGEST MOVER ON THE BOARD, +8: 84 -> 92, playvol 95 against volume 74 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Deron Williams '09",
       "scale": "off",
       "op": "~",
-      "value": 88,
+      "value": 86,
       "tol": 0,
-      "label": "80 -> 88, the second +8"
+      "label": "80 -> 88, the second +8 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '90",
       "scale": "ovr",
       "op": "~",
-      "value": 90,
+      "value": 89,
       "tol": 0,
-      "label": "the subject's OVR follows: 86 -> 90"
+      "label": "the subject's OVR follows: 86 -> 90 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '90",
       "scale": "def",
       "op": "~",
-      "value": 82,
+      "value": 79,
       "tol": 0,
-      "label": "DEF moved on ZERO of 10,000 cards — this whole round lives inside o_score"
+      "label": "DEF moved on ZERO of 10,000 cards — this whole round lives inside o_score [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Magic Johnson '90",

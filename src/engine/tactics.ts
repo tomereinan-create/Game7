@@ -396,6 +396,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * feasible about .510 to .830, midpoint .67. Both take their true midpoints by r126's rule:
  * hunt 3.80 -> 3.89, crashDef .48 -> .67. crashOff held at .17 and the six others held their bands
  * untouched. All nine pass.
+ * pipeline-139 integration (recal_136 clause-1 ramp, 137 zone-dominance gate ramp, 138 hub-as-a-role at the
+ * fallback size, 139 interior-term ramps, landed together on pipeline 142): the merged pool broke HUNT on
+ * the BLIND edge (-0.06 at 3.59) and crash def glass on the ORACLE edge (+0.50 at .73). Re-swept once from
+ * main's constants: 3.89/.67 (blind -0.31, +0.51 — both on the rail), 4.00/.62 (-0.39/+0.53, -0.45/+0.53),
+ * 4.10 (oracle +0.49, fails). Re-ratified hunt 3.59 -> 4.00 and crashDef .73 -> .62, the pair with room on
+ * both edges. The branch figures (137 .18, 138 .48, 139 3.89/.67) are superseded, not stacked. Seven others held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -403,9 +409,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.59,
+  hunt: 4.00,
   crashOff: 0.17,
-  crashDef: 0.73,
+  crashDef: 0.62,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

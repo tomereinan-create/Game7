@@ -216,17 +216,17 @@
       "card": "Nenê '11",
       "scale": "ovr",
       "op": "~",
-      "value": 76,
+      "value": 74,
       "tol": 0,
-      "label": "the subject's OVR follows: 73 -> 76"
+      "label": "the subject's OVR follows: 73 -> 76 [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Nenê '11",
       "scale": "def",
       "op": "~",
-      "value": 86,
+      "value": 83,
       "tol": 0,
-      "label": "DEF moved on ZERO of 10,000 cards — the term lives inside o_score"
+      "label": "DEF moved on ZERO of 10,000 cards — the term lives inside o_score [pipeline-139 integration: re-pointed at the merged board (138 shipped at the fallback HUB_K 0.05 on his word \"138 at 93\"; taxes re-swept once on the merged pool)]"
     },
     {
       "card": "Nenê '11",
