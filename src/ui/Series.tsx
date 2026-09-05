@@ -9,6 +9,8 @@ import { LINES } from './Stat'
 import { seriesBox, type BoxCtx, type PlayerBox, type SeriesBox } from '../engine/boxstats'
 import { Analysis } from './Analysis'
 import type { Assignment } from '../engine/offense'
+import { useLayout } from './useLayout'
+import type { Skin } from './LevelMap'
 
 const FAST_MS = 75
 const SLOW_MS = 240
@@ -165,6 +167,7 @@ export function Series({
   boxCtx = null,
   kicker,
   advanceLabel,
+  skin = null,
   onHome,
   onAdvance,
 }: {
@@ -186,6 +189,13 @@ export function Series({
   kicker?: string
   /** The right-hand dock button's word, when it is not "back to the map". */
   advanceLabel?: string
+  /**
+   * HIS RULING: "The post series screen should also be the same design as the stage." Which block
+   * of the ladder this level belongs to — the night is played in that room, so the scorebug, the
+   * tape and the box wear its floor and its ink. Null off the ladder: an exhibition and a hot-seat
+   * table belong to no block, and keep the house colours.
+   */
+  skin?: Skin | null
   /** A hot-seat table keeps its HOME / REMATCH pair: Home sits left of the advance button. */
   onHome?: () => void
   onAdvance: () => void
@@ -206,6 +216,13 @@ export function Series({
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+  /* The skin is a body class for the same reason the map's, the draft's and the tunnel's are: it
+     has to reach the page's own ground, which is outside anything this screen renders. */
+  useLayout(() => {
+    if (!skin) return
+    document.body.classList.add(`sk-${skin}`)
+    return () => document.body.classList.remove(`sk-${skin}`)
+  }, [skin])
   const [live, setLive] = useState(!!decider)
   const timer = useRef<number | null>(null)
 

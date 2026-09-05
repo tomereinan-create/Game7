@@ -278,7 +278,15 @@ export default function App() {
 
   // One home icon, pinned top-right on every screen but Home.
   const homeFab = (
-    <button className="home-fab" onClick={leave} aria-label="Home" title="Home">
+    /* HIS RULING: "The home and map icons should be the same design as the stage." The two fabs
+       are painted out of --you / --surface-2 / --line-3, which the skinned screens already
+       re-point on the body — but the MAP itself is not a skinned body (it paints a floor per
+       block, not one for the page), so on the one screen the icon is read against four different
+       floors it stayed house gold. It carries the block's own skin as a class instead, which
+       works on every screen whether the body is skinned or not — and only inside a CAMPAIGN: a
+       custom matchup, a hot-seat table and the auction stand on no block of the ladder, so an
+       ember or a mint disc there would be naming a room they are not in. */
+    <button className={`home-fab ${cm ? skin : ''}`} onClick={leave} aria-label="Home" title="Home">
       <svg viewBox="0 0 24 24" aria-hidden>
         <path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M5.5 10.5V20h13v-9.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
@@ -453,6 +461,7 @@ export default function App() {
           teamName={teamName}
           result={pending.result}
           seed={pending.seed}
+          skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
         />

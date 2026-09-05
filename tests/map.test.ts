@@ -109,6 +109,10 @@ describe('the campaign map always has a door to the staff tree', () => {
  * whole point of the change. Two: consecutive levels are NEIGHBOURS — one lane apart along a row,
  * or directly above each other at a turn — so the trail never jumps the screen. Three: the turn is
  * vertical, which is what makes it read as a U-turn rather than a kink.
+ *
+ * And the fourth, from his ruling "a snake going slightly up, not rows on rows": EVERY level is
+ * higher than the one before it. A row is not a shelf — it climbs as it runs, at a few degrees off
+ * level — so the whole trail gains height rather than standing still between lifts.
  */
 describe('the trail snakes across whatever width it is given', () => {
   it('a wider window puts more levels in a row and fewer rows on the screen', () => {
@@ -146,8 +150,8 @@ describe('the trail snakes across whatever width it is given', () => {
           expect(dy).toBeGreaterThan(100)
         } else {
           expect(dx).toBeCloseTo(lane, 6)
-          // along a row the climb is only the row's own bow, never a whole row
-          expect(dy).toBeLessThan(60)
+          // along a row the climb is the row's own tilt, never a whole row's worth
+          expect(dy).toBeLessThan(130)
         }
       }
     }
@@ -159,6 +163,34 @@ describe('the trail snakes across whatever width it is given', () => {
       expect(y(0)).toBeGreaterThan(y(ROUNDS - 1))
       expect(y(0)).toBeLessThanOrEqual(heightOf(colW))
       expect(y(ROUNDS - 1)).toBeGreaterThanOrEqual(0)
+    }
+  })
+
+  /**
+   * HIS RULING: "a snake going slightly up, not rows on rows." The rows used to be level, which
+   * made the map a stack of shelves with a lift at each end — every level in a row stood at exactly
+   * the same height. A row climbs across its own length now, so this is the claim to hold down:
+   * there is no step anywhere on the ladder that does not gain height, at either wall or in between.
+   */
+  it('no level anywhere on the ladder stands level with the one before it', () => {
+    for (const colW of [375, 562, 900, 1438, 1900]) {
+      const y = yOf(colW)
+      for (let i = 0; i < ROUNDS - 1; i++) {
+        expect(y(i + 1), `level ${i + 2} must stand above level ${i + 1} at ${colW}px`).toBeLessThan(y(i))
+      }
+    }
+  })
+
+  it('and the climb along a row is a slight one — the same slight one at every width', () => {
+    // the tilt is stated as an angle, not a rise: a fixed rise is gentle across a desk's ten-ticket
+    // row and a staircase across a phone's two, and his ruling was about what the eye reads
+    for (const colW of [375, 562, 900, 1438, 1900]) {
+      const x = xOf(colW)
+      const y = yOf(colW)
+      const cols = perRow(colW)
+      // the tilt of a whole row, end to end, in degrees off level
+      const deg = (Math.atan2(y(0) - y(cols - 1), Math.abs(x(cols - 1) - x(0))) * 180) / Math.PI
+      expect(deg).toBeCloseTo(4.9, 0)
     }
   })
 })

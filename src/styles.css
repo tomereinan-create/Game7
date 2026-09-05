@@ -2393,11 +2393,25 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 
 /* ---- staff tree: hex trellis ---- */
 .treewrap { overflow-x: auto; overflow-y: hidden; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; }
-.treesvg { display: block; height: auto; max-width: 100%; }
-/* THE TRELLIS keeps a size, even though its page went full screen: the hexes are drawn in a 512
-   unit space, and stretched to a 1900px window one node is the size of a hand. The room around it
-   is the skin's, which is the point of the ruling — the trellis itself is capped and centred. */
-@media (min-width: 900px) { .treewrap { display: flex; justify-content: center; } .treesvg { max-width: 1020px; } }
+.treesvg { display: block; width: auto; height: auto; max-width: 100%; margin: 0 auto; }
+/**
+ * THE TRELLIS, ZOOMED OUT (his ruling: "Make staff skill tree zoomed out"). It used to be drawn at
+ * no less than its own 512-unit size and the page scrolled around it; on a desk, stretched to a
+ * full-screen column, one hexagon was the size of a hand. It is sized to the WINDOW now — bounded
+ * by the height left under the header and the lede, not by the width — so the whole tree, every
+ * branch and every depth, is on screen at once and the reading is the shape of it rather than one
+ * node at a time. The room around it belongs to the skin, which is the point of that ruling.
+ */
+@media (min-width: 900px) {
+  .treewrap { display: flex; justify-content: center; overflow: visible; }
+  .treesvg { max-width: min(100%, 900px); max-height: 62vh; }
+  /* the staff room's own header, cut back so the zoomed-out trellis has the screen it needs. The
+     68px star count is the MAP's — it counts 450 there; here it counts what is left to spend. */
+  body[class*='sk-'] .map-total { font-size: 48px; }
+  body[class*='sk-'] .map-total .star { font-size: 32px; }
+  body[class*='sk-'] .map-total i { font-size: 19px; }
+  .tree-lede { max-width: 1000px; margin: 0 auto; font-size: 19px; }
+}
 .treeline { stroke: var(--line-2); stroke-width: 3; stroke-linecap: round; }
 .treeline.half { stroke: var(--line-3); }
 .treeline.lit { stroke: var(--you-line); stroke-width: 4; }
@@ -2428,6 +2442,26 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* the rank sheet */
 .ranksheet { position: fixed; inset: 0; z-index: 60; background: rgba(10, 9, 7, 0.72); display: flex; align-items: center; justify-content: center; padding: 18px; }
 .card.ranks { width: min(460px, 100%); max-height: 86vh; overflow: auto; margin: 0; }
+/**
+ * THE RANK SHEET, READ AT ARM'S LENGTH (his ruling: "When pressing on a skill, the font has to be
+ * way bigger"). This is the one screen in the staff room that is actually prose — what a rank does,
+ * and what the next one would do — and it was set at the 10.5px of a label. The sheet is the thing
+ * the zoomed-out trellis hands you: the trellis is the map, this is the reading, so it takes the
+ * size the trellis gave up.
+ */
+@media (min-width: 900px) {
+  .card.ranks { width: min(760px, 100%); padding: 30px 30px 26px; }
+  .card.ranks .card-head .label { font-size: 30px; letter-spacing: 0.04em; }
+  .card.ranks .card-head .cap { font-size: 15px; max-width: none; }
+  .card.ranks .lede { font-size: 22px; line-height: 1.45; }
+  .card.ranks .ranklock { font-size: 15px; padding: 6px 0 8px; }
+  .card.ranks .ranklist { gap: 4px; margin-top: 14px; }
+  .card.ranks .ranklist li { grid-template-columns: 34px minmax(0, 1fr); gap: 16px; padding: 14px 0; }
+  .card.ranks .ranklist i { font-size: 19px; line-height: 1.45; }
+  .card.ranks .ranklist .pip { width: 32px; height: 32px; font-size: 16px; }
+  .card.ranks .rankfoot { padding-top: 20px; gap: 12px; }
+  .card.ranks .rankfoot .sortb { height: auto; padding: 14px 18px; font-size: 17px; letter-spacing: 0.06em; }
+}
 .lede.tight { padding: 6px 0 2px; }
 .ranklock { font-family: var(--mono); font-size: 10px; color: var(--danger); padding: 2px 0 6px; }
 .ranklist { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px; }
@@ -3774,6 +3808,20 @@ body.sk-dusk {
 }
 /* the staff tree's own header pins the same way the map's does, so the skin reaches the top rule */
 body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
+
+/* THE TWO FABS, in the block's own ink (his ruling: "The home and map icons should be the same
+   design as the stage"). On a skinned body they would follow --you on their own; the map is the
+   screen that needs this, because it paints a floor per block rather than one for the page, and a
+   gold disc on a hardwood floor or a dusk sky was the one thing on it still wearing house colours.
+   Stated per skin so it holds on every screen, skinned body or not. */
+.home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(20,27,40,0.92); border-color: rgba(255,138,77,0.45); }
+.home-fab.arena:hover, .map-fab.arena:hover { border-color: #ff8a4d; }
+.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(50,32,14,0.94); border-color: rgba(255,207,125,0.5); }
+.home-fab.wood:hover, .map-fab.wood:hover { border-color: #ffcf7d; }
+.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(36,20,9,0.94); border-color: rgba(242,215,155,0.45); }
+.home-fab.hall:hover, .map-fab.hall:hover { border-color: #f2d79b; }
+.home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(16,44,54,0.92); border-color: rgba(62,230,176,0.45); }
+.home-fab.dusk:hover, .map-fab.dusk:hover { border-color: #3ee6b0; }
 
 /* ==========================================================================
    THE FRONT PAGE, FULL SCREEN (his ruling: "Make the home screen full screen as well"). The three

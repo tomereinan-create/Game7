@@ -775,7 +775,7 @@ export function Draft({
         THIS screen because only this screen knows whether picks are on the board, which is what
         spends the attempt.
       */}
-      <button className="map-fab" onClick={() => onBack(picks.length > 0)} aria-label="Level map" title="Back to the level map">
+      <button className={`map-fab ${skin}`} onClick={() => onBack(picks.length > 0)} aria-label="Level map" title="Back to the level map">
         <svg viewBox="0 0 24 24" aria-hidden>
           <path d="M9 5 3 7.5v12L9 17l6 2.5 6-2.5v-12L15 7 9 5Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
           <path d="M9 5v12M15 7v12.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

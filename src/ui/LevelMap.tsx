@@ -19,6 +19,12 @@ import { teamColor } from './teamColors'
  * right to left, climbing. The width decides how many stand in a row, so the trail fills the
  * screen it is given instead of ignoring it, and 150 levels come down to a dozen rows.
  *
+ * AND EVERY ROW CLIMBS AS IT RUNS (his ruling: "I want it to be a snake going slightly up, not rows
+ * on rows"). A row used to be level, which made the map a stack of shelves with a lift at each end;
+ * each row now rises as it runs, in the direction it is walked, so the trail gains
+ * height the whole way and the U-turn is a turn in a climb rather than the only place any climbing
+ * happened. It is a switchback up a hill, ~4 degrees off level — slightly up, as he asked.
+ *
  * Everything below is REAL SCREEN PIXELS, not a stretched 375-wide space. A snake cannot survive
  * `preserveAspectRatio="none"`: the U-turns would be squashed ellipses on a desk and circles on a
  * phone. The trail is measured and drawn 1:1, and the fallback before the first measure is a
@@ -27,14 +33,25 @@ import { teamColor } from './teamColors'
 const W = 375
 /** Horizontal distance between two levels standing in the same row. */
 const LANE = 176
-/** Vertical distance between one row and the row above it. */
-const ROW = 236
+/**
+ * Vertical clearance at the wall where two rows meet — the one place a row and the row above it
+ * stand at the same x, and so the one distance that has to clear a ticket. A ticket with its stars
+ * under it is ~142px tall.
+ */
+const TURN = 190
+/**
+ * How steeply a row climbs as it runs, as a SLOPE rather than a fixed rise. Stated as an angle
+ * because that is what his ruling is about: "a snake going slightly up" is something the eye reads
+ * off the picture, and a fixed hundred-pixel rise is a gentle 5 degrees across a desk's ten-ticket
+ * row and a 26-degree staircase across a phone's two. 0.085 is ~4.9 degrees at every width.
+ */
+const TILT = 0.085
 /** Room at each end of a row — the U-turn needs somewhere to turn. */
 const SIDEMAX = 84
 /** Room above the top row and below the bottom one — the foot also carries era I's banner. */
 const PAD = 132
-/** How far a row bows away from level: a row is a wave, not a ruler. */
-const BOB = 22
+/** How far a row bows away from its own slope: a row is a wave, not a ruled line. */
+const BOB = 12
 
 const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
 /** How many levels stand in one row at this width. Two is the floor — a phone still snakes. */
@@ -43,8 +60,6 @@ export const perRow = (colW: number) => {
   return Math.max(2, Math.floor(usable / LANE) + 1)
 }
 export const rowsOf = (colW: number) => Math.ceil(ROUNDS / perRow(colW))
-/** The trail's full height at this width — what the scroll actually costs. */
-export const heightOf = (colW: number) => PAD * 2 + ROW * (rowsOf(colW) - 1)
 
 /** The pitch a row actually uses, and where its first column stands, so rows sit centred. */
 function lanes(colW: number) {
@@ -58,10 +73,30 @@ function lanes(colW: number) {
   return { cols, pitch, x0: (w - pitch * (cols - 1)) / 2 }
 }
 
+/**
+ * The vertical half of the geometry, and both parts of it fall out of the tilt: how far a row
+ * climbs end to end, and therefore how far apart two rows have to start. A wide row climbs further
+ * than a narrow one at the same angle, and the rows move apart to keep the turn between them clear.
+ */
+function climbOf(colW: number) {
+  const { cols, pitch } = lanes(colW)
+  const rise = TILT * pitch * (cols - 1)
+  return { rise, step: TURN + rise }
+}
+
+/**
+ * The trail's full height at this width — what the scroll actually costs. The last row's climb is
+ * part of it: the top ticket sits a full rise above its own row's start.
+ */
+export const heightOf = (colW: number) => {
+  const { rise, step } = climbOf(colW)
+  return PAD * 2 + step * (rowsOf(colW) - 1) + rise
+}
+
 /** Which row a level index (0-based) stands in, counting up from the bottom. */
 export const rowOf = (colW: number) => (i: number) => Math.floor(i / perRow(colW))
-/** The y of a whole row's baseline. Row 0 — level 1 — is at the bottom; the ladder climbs. */
-export const yRowOf = (colW: number) => (r: number) => heightOf(colW) - PAD - ROW * r
+/** The y a row STARTS at. Row 0 — level 1 — is at the bottom; the ladder climbs from there. */
+export const yRowOf = (colW: number) => (r: number) => heightOf(colW) - PAD - climbOf(colW).step * r
 
 /**
  * The visual column a level stands in: rows alternate direction, so the last ticket of one row and
@@ -81,19 +116,32 @@ export const xOf =
   }
 
 /**
- * The y of one ticket: its row's baseline, plus the row's own bow. The bow is zero at both walls,
- * which is where the U-turns happen, so a turn is never a kink — and it flips sign every row, so
- * the whole trail reads as one long wave rather than a stack of identical scallops.
+ * The y of one ticket: where its row starts, MINUS how far along the row it stands (the climb),
+ * minus the row's own bow. The climb is measured in walking order, so it does not matter which
+ * wall the row runs from — every level is higher than the one before it.
+ *
+ * The bow is zero at both walls, which is where the U-turns happen, so a turn is a clean vertical
+ * and never a kink; it flips sign every row, so the rows read as one long wave rather than a stack
+ * of identical scallops.
  */
 export const yOf =
   (colW: number) =>
   (i: number): number => {
     const { cols } = lanes(colW)
     const r = Math.floor(i / cols)
+    const j = i % cols // how far along its own row this level is, in walking order
     const c = colAt(cols, i)
+    const climb = cols > 1 ? (climbOf(colW).rise * j) / (cols - 1) : 0
     const bow = cols > 1 ? Math.sin((Math.PI * c) / (cols - 1)) : 0
-    return yRowOf(colW)(r) - (r % 2 === 0 ? 1 : -1) * BOB * bow
+    return yRowOf(colW)(r) - climb - (r % 2 === 0 ? 1 : -1) * BOB * bow
   }
+
+/**
+ * The seam between the row a level stands in and the row below it — where a skin block changes
+ * floor and where the era rule is drawn. Halfway between the two rows AT THE WALL THEY TURN ON,
+ * which is where they come closest: a horizontal line drawn any lower would cross a ticket.
+ */
+export const seamOf = (colW: number) => (level: number) => yRowOf(colW)(rowOf(colW)(level - 1)) + TURN / 2
 
 /** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
 function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {
@@ -165,12 +213,10 @@ const TRAIL_INK: Record<Skin, readonly string[]> = {
  */
 function bands(rounds: number, colW: number) {
   const H = heightOf(colW)
-  const row = rowOf(colW)
-  const yRow = yRowOf(colW)
   // A seam is drawn at a ROW boundary, never mid-row: a block that begins in the middle of a row
   // takes the whole of that row's floor with it, or the ground would change colour under four
   // tickets standing side by side on the same shelf.
-  const seam = (first: number) => yRow(row(first - 1)) + ROW / 2
+  const seam = seamOf(colW)
   const live = SKINS.filter((b) => b.first <= rounds)
   return live.map((b, i) => {
     const nextFirst = live[i + 1]?.first ?? rounds + 1
@@ -319,8 +365,7 @@ export function LevelMap({
   }, [])
   const xAt = useMemo(() => xOf(colW), [colW])
   const yAt = useMemo(() => yOf(colW), [colW])
-  const row = useMemo(() => rowOf(colW), [colW])
-  const yRow = useMemo(() => yRowOf(colW), [colW])
+  const seam = useMemo(() => seamOf(colW), [colW])
   const H = useMemo(() => heightOf(colW), [colW])
   const BANDS = useMemo(() => bands(ROUNDS, colW), [colW])
   const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
@@ -436,7 +481,7 @@ export function LevelMap({
              * the era changed and the floor that changes are one and the same. The bottom era has
              * no gap under it — its rule sits in the foot the map leaves below the first row.
              */
-            style={{ top: Math.min(yRow(row(e.first - 1)) + ROW / 2, H - 34) }}
+            style={{ top: Math.min(seam(e.first), H - 34) }}
           >
             {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
                 beside the year. Same three parts either way — the skin decides the order. */}
@@ -459,7 +504,7 @@ export function LevelMap({
           <div
             className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
             /* pinned above tonight's ticket, and kept off both walls */
-            style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 128 }}
+            style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
           >
             {spendable ? (
               <button className={`node-note ${skin}`} onClick={onStaff}>

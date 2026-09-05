@@ -131,13 +131,17 @@ export function Tree({
           </div>
         </div>
       </div>
-      <div className="lede">
+      <div className="lede tree-lede">
         Stars come from the map — three for a sweep, two for a shorter win, one for going the distance. No skill is a one-time skill: every node holds
         several ranks, one star each, and every rank widens it further.
       </div>
 
       <div className="treewrap">
-        <svg className="treesvg" viewBox={`0 0 ${W} ${H}`} style={{ minWidth: W }} role="group" aria-label="Staff tree">
+        {/* HIS RULING: "Make staff skill tree zoomed out." The svg used to carry a minWidth of its
+            own 512-unit drawing, which is what stopped it shrinking to fit — the trellis was always
+            at least full size and the screen scrolled around it. It is a plain scalable drawing
+            now, and the CSS sizes it to the window it is in. */}
+        <svg className="treesvg" viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Staff tree">
           {/* connectors first, so the hexes sit on top of them */}
           {cols.map((list, c) =>
             list.map((n) => {
