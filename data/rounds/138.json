@@ -1,0 +1,452 @@
+{
+  "round": 138,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Magic agree a lot, maybe even 94-6.",
+  "title": "THE HUB IS A ROLE, NOT A BODY — recal_55 built its channel for the man the offence RUNS THROUGH and gated it on is_big, a proxy that breaks on a 6'9\" point guard the year he learns to shoot. The role is now measured on o_score's own two bars (creation surplus playvol - volume, ramped over the hub's own width, floored at recal_117's band top so it and the elite-passer term are disjoint), the size is DERIVED (0.26 - 0.19 = 0.07, was an undefended 0.05), and a hub's creation is priced wherever load is priced, so recal_26's signature floor reads it too. Magic Johnson '90 off 87 -> 94, the floor of his 94-96 band, with all 138 anchors held",
+  "subject": "Magic Johnson '90",
+  "scale": "off",
+  "target": 95,
+  "tol": 1,
+  "before": 87,
+  "after": 94,
+  "pipeline_version": 138,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "HUB_K = 0\\.07",
+      "label": "recal_138 — THE HUB PREMIUM, DERIVED: the load weight minus the creation weight",
+      "note": "0.26 - 0.19, both of them recal_89's LOCKED DIAL STATE. Was 0.05, which recal_55 set without a reason and recal_98 explicitly declined to reopen ('the gate, the weight and the class function are UNTOUCHED'). Written as a premium ON TOP of the 0.19 the standard path pays, the total is exactly 0.26 and the rate is paid ONCE"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_role = \\(1\\.0 if is_big\\(p\\) else",
+      "label": "THE CLASS FUNCTION — a big is a hub unconditionally, and recal_55's class is BYTE-IDENTICAL",
+      "note": "this round only ADDS a second way in; no big's role changes and no big leaves the class"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "\\(min\\(1\\.0, max\\(0\\.0, \\(a\\['playvol'\\] - a\\['volume'\\]\\) / \\(HUB_FULL - HUB_GATE\\)\\)\\)",
+      "label": "the ROLE itself: more of the offence goes through his hands as CREATION than as his own SHOT",
+      "note": "ramped over the hub's OWN width (HUB_FULL - HUB_GATE = 20, no new constant), so it is a fade and not a step — which is what holds recal_121's order pin: Russell Westbrook '17's surplus is ONE point (playvol 99, volume 98) and he takes 0.05 of the term"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['volume'\\] >= PD_V_HI else 0\\.0\\)\\)",
+      "label": "AND HE MUST CARRY A REAL SHARE HIMSELF — recal_117's own band top, 68",
+      "note": "68 is the volume ABOVE which recal_109's elite-passer term pays nothing at all, so the two creation channels are DISJOINT BY CONSTRUCTION and no card can be paid twice for one assist rate. Stockton (volume 36), Nash '05 (42), all three Mark Jacksons and Chauncey Billups '06 (66) are on the other side and move by EXACTLY zero"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50,_hubload\\)\\*a\\['efficiency'\\]/100\\)\\)",
+      "label": "AND WHEREVER LOAD IS PRICED — recal_26's SIGNATURE floor reads the hub's load too",
+      "note": "was `max(a['volume'],50)`. o_score prices load in exactly two places, the 0.26 weight and this interaction; a hub's load is his creation, so it enters both. max() can only lift and _hubload is 0.0 for every card outside the class"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_hub = HUB_K \\* _hubload",
+      "label": "the premium and the signature floor are THE SAME QUANTITY, computed once",
+      "note": "was `0.05 * a['playvol'] * min(1.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))`; _hubload is that expression times _role"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "HUB_GATE, HUB_FULL = 60, 80",
+      "label": "recal_98's ramp, UNTOUCHED and now at module scope",
+      "note": "the class function reads it before `std` is built, so the two constants are hoisted; both keep their values and recal_98's fix to Karl Malone '99 stands (playvol 62, ramp 0.10, he reads 90)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
+      "label": "recal_117's volume band, UNTOUCHED and now at module scope for the same reason",
+      "note": "recal_117 set the top at 68 'just clear of the nearest star it must exclude' — Magic Johnson '89 at volume 70 and '87 at 71. The subject is volume 69, in the one-point gap between the two terms, which is the whole of why he was unreachable by either"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "a = p\\['attrs'\\]; return \\(a\\['rimprot'\\] >= 55 and a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\]\\)",
+      "label": "is_big ITSELF IS NOT TOUCHED — the seam is answered by not depending on it",
+      "note": "recal_103 recorded the seam as open and recal_72 warned what happens when the flag is loosened. Rather than widen it, the hub stops asking it: 4,307 position-decided bigs and every shape-decided card keep their label, their OVR cap branch and their marginal class"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — no weight in the standard path moves",
+      "note": "0.26 and 0.19 stand exactly as they are; the round reads the GAP between them, it does not change either"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED, and this is the round where that matters most",
+      "note": "the subject himself lands ABOVE the 93 knee (raw 95.27) and is stretched by the band, which is why 94 is the floor of what the derivation reaches: each raw point above the knee is worth 0.615 printed. OFF_TOP stays at recal_102's 102.75"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Magic Johnson '89",
+      "scale": "off",
+      "op": "~",
+      "value": 94,
+      "tol": 0,
+      "label": "THE SEASON THE DEFECT WAS MEASURED AGAINST, unpinned: 91 -> 94. He is a big by shape (3pt 37) and always had the hub, so his +3 is the DERIVED SIZE and the signature, not the class change. The two seasons now read level at 94 where the flag alone made them 91 / 87"
+    },
+    {
+      "card": "Magic Johnson '86",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
+      "label": "93 -> 96, and still his highest: he is the only Magic season that also takes recal_107's two-level term (+6.07) and recal_109's passer term (+6.62)"
+    },
+    {
+      "card": "Magic Johnson '87",
+      "scale": "off",
+      "op": "~",
+      "value": 93,
+      "tol": 0,
+      "label": "90 -> 93 — a big by shape (3pt 22), so again the size and the signature only"
+    },
+    {
+      "card": "Magic Johnson '91",
+      "scale": "off",
+      "op": "~",
+      "value": 84,
+      "tol": 0,
+      "label": "UNMOVED at 84, and it is the disjointness working: volume 58 is BELOW the hub's floor of 68, so recal_109's elite passer pays him (+4.14) and this term does not"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 3,
+      "label": "recal_109's pinned card, volume 42: on the elite passer's side of the line, unmoved at 86"
+    },
+    {
+      "card": "Steve Nash '03",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 0,
+      "label": "THE SEAM'S COST, recorded rather than hidden: 84 -> 92 on volume 69 — two points on the hub's side of the line where his pinned '05 is twenty-six points on the other. See COST"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin and the closest card to the floor on the low side: volume 66, TWO points below 68, unmoved"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "recal_117's pin: volume 36, unmoved"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "off",
+      "op": "~",
+      "value": 84,
+      "tol": 4,
+      "label": "recal_130's pin: volume 31, unmoved"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 52,
+      "tol": 3,
+      "label": "recal_109's pin: volume 12, unmoved"
+    },
+    {
+      "card": "Russell Westbrook '15",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 0,
+      "label": "THE CARD THE ROLE RAMP EXISTS FOR: volume 98 with playvol 93, so his surplus is NEGATIVE and his role is 0.00. Unmoved"
+    },
+    {
+      "card": "Russell Westbrook '17",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 0,
+      "label": "and the other half of recal_121's order pin: playvol 99 against volume 98, a surplus of ONE, role 0.05, worth nothing printed. A hard `playvol > volume` test would have put him ABOVE '15 and broken the pin — that is why the role is a ramp"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 1,
+      "label": "recal_55's own named card, a big at playvol 69: the hub ramp gives him 0.45 of the term and the derived size moves him by less than a point. Unmoved at 70"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "recal_98's subject and the reason the hub is a ramp at all: playvol 62, ramp 0.10, so even the derived size is worth 0.12 of raw to him. Unmoved at 90"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the class recal_55 built the channel for: already on the ceiling, unmoved"
+    },
+    {
+      "card": "LeBron James '13",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin, and the card that killed the OBVIOUS fix: widening is_big so the rim-leading forward is a big takes him to 99 and breaks this. He is volume 97 with playvol 87 — a negative surplus, role 0.00 — so the ROLE reading leaves him alone"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's pin: playvol 83 against volume 98, role 0.00, unmoved"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin, unmoved"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 2,
+      "label": "recal_121's pin, unmoved"
+    },
+    {
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin, unmoved"
+    },
+    {
+      "card": "Chris Paul '15",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
+      "label": "THE BIGGEST NAME THE ROUND LIFTS, and the archetype the subject belongs to: 90 -> 96 on playvol 98 against volume 75"
+    },
+    {
+      "card": "Kevin Johnson '91",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 0,
+      "label": "THE BIGGEST MOVER ON THE BOARD, +8: 84 -> 92, playvol 95 against volume 74"
+    },
+    {
+      "card": "Deron Williams '09",
+      "scale": "off",
+      "op": "~",
+      "value": 88,
+      "tol": 0,
+      "label": "80 -> 88, the second +8"
+    },
+    {
+      "card": "Magic Johnson '90",
+      "scale": "ovr",
+      "op": "~",
+      "value": 90,
+      "tol": 0,
+      "label": "the subject's OVR follows: 86 -> 90"
+    },
+    {
+      "card": "Magic Johnson '90",
+      "scale": "def",
+      "op": "~",
+      "value": 82,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards — this whole round lives inside o_score"
+    },
+    {
+      "card": "Magic Johnson '90",
+      "scale": "attr:3pt",
+      "op": "~",
+      "value": 60,
+      "tol": 0,
+      "label": "and the bar that caused it is untouched: build_ratings.py was not run and no attribute moved on any card. The round changes what the flag COSTS, not what it reads"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "the tightest big pin on the board, playvol 23 — far below the hub gate, unmoved"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "recal_112's subject, unmoved"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Magic Johnson '86",
+      "below": "Magic Johnson '90",
+      "label": "his own seasons keep their order and the '89/'90 cliff is gone: '86 96, '89 94, '90 94, '87 93, '91 84"
+    },
+    {
+      "scale": "off",
+      "above": "Magic Johnson '90",
+      "below": "Magic Johnson '87",
+      "label": "94 > 93 — the best box season now reads above the flag-decided ones instead of four below"
+    },
+    {
+      "scale": "off",
+      "above": "Magic Johnson '90",
+      "below": "Magic Johnson '91",
+      "label": "94 > 84, the decline still reads as a decline"
+    },
+    {
+      "scale": "off",
+      "above": "Michael Jordan '89",
+      "below": "Magic Johnson '90",
+      "label": "98 > 94 — the untouched all-time card still reads above the one the round lifts. (recal_121's own order pin, Westbrook '15 >= '17, is held at 85 / 85 by the role RAMP; a hard surplus test puts '17 above '15 and breaks it, which is why the role is a ramp. It is graded by npm run anchors, whose order test is >=)"
+    },
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Magic Johnson '90",
+      "label": "the hub class's own summit still reads above the card the round lifts: 99 > 94"
+    },
+    {
+      "scale": "off",
+      "above": "LeBron James '13",
+      "below": "Chris Paul '15",
+      "label": "98 > 96 — the round does not put a lifted playmaker above an untouched all-time card"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 267,
+    "max_abs": 8,
+    "top": [
+      [
+        "Kevin Johnson '91",
+        84,
+        92
+      ],
+      [
+        "Steve Nash '03",
+        84,
+        92
+      ],
+      [
+        "Kevin Johnson '90",
+        83,
+        91
+      ],
+      [
+        "Deron Williams '09",
+        80,
+        88
+      ],
+      [
+        "Deron Williams '10",
+        78,
+        86
+      ],
+      [
+        "Chris Paul '14",
+        88,
+        95
+      ],
+      [
+        "Chris Paul '13",
+        88,
+        95
+      ],
+      [
+        "Magic Johnson '90",
+        87,
+        94
+      ],
+      [
+        "Chris Paul '12",
+        87,
+        94
+      ],
+      [
+        "Jason Kidd '03",
+        73,
+        80
+      ],
+      [
+        "Isiah Thomas '86",
+        73,
+        80
+      ],
+      [
+        "Tim Hardaway '96",
+        73,
+        80
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '21",
+      "Nikola Jokić '22",
+      "Nikola Jokić '23",
+      "Nikola Jokić '24"
+    ]
+  },
+  "cost": [
+    "FLAGGED, BECAUSE HE DECLINED recal_132 FOR EXACTLY THIS: FIVE CARDS RISE BY 8. Kevin Johnson '91 84 -> 92, Steve Nash '03 84 -> 92, Kevin Johnson '90 83 -> 91, Deron Williams '09 80 -> 88, Deron Williams '10 78 -> 86. Nothing on the board moves by 9 or more and nothing moves DOWN at all. This is not avoidable and the arithmetic says so: the ruling itself asks for +7 on the subject (87 -> 94), and every card that rises 6 or more is the SAME ARCHETYPE as the subject — a pass-first point guard at volume 68-80 whose creation runs far ahead of his own shot. If the subject may rise 7 for that reason, so may they. THE FULL LIST AT 6 OR MORE is 24 cards and three families: Chris Paul '07-'15, Kevin Johnson '90-'96, Deron Williams '09-'11, Jason Kidd '03/'04, Isiah Thomas '85/'86, Tim Hardaway '91-'96, Rod Strickland '95-'97, Kenny Anderson '95, Nick Van Exel '00, Steve Nash '03, Magic '85/'90.",
+    "THE SEAM COSTS ONE VISIBLE INVERSION AND IT IS RECORDED, NOT HIDDEN: STEVE NASH '03 (92) NOW READS ABOVE HIS OWN '05 (86), which is his pinned MVP season. The cause is structural and it is recal_109's line, not this round's: '03 is volume 69 and '05 is volume 42, so '03 is on the hub's side of the 68 line and '05 is on the elite passer's. The two channels pay different amounts at the seam — recal_109's term is worth 10.5 raw to Nash '05 and the hub is worth 6.3 + 2.4 to '03 — but '03 also carries 7 more points of usage on the standard path, and that is what puts him ahead. NO PARAMETERISATION OF THIS TERM SEPARATES THEM: Magic Johnson '90 and Steve Nash '03 are volume 69 apiece, playvol 98 and 90, efficiency 99 and 91 — nothing the round reads distinguishes the subject from the card the inversion is about, so reaching one reaches the other. A ruling on Nash '03 would have to be answered by making the two creation channels continuous across volume 68, which is a bigger round than this one and is named here so it can be dispatched.",
+    "THE SIZE MOVED AND THAT IS THE HALF OF THIS ROUND A LATER ROUND SHOULD ARGUE WITH FIRST. recal_55 set the premium at 0.05 x playvol and gave no derivation; recal_98 ramped the gate and wrote that 'the gate, the weight and the class function are UNTOUCHED'. This round changes the weight, and the reason is that the claim now states its own price: a hub's creation IS his load, so it is paid at the load weight (0.26) rather than the creation weight (0.19) and the premium is the 0.07 gap. THE ALTERNATIVE, MEASURED AND AVAILABLE: keeping 0.05 lands the subject on 93 — ONE below his band — with 171 movers instead of 267, a worst move of +6 instead of +8, NO card at 8 or more, the OFF 99-block unchanged at 17 and the top 50 by OVR untouched. That is the round to fall back to if he does not want the size moved.",
+    "THE SUMMIT COMPRESSES BY THREE AND THAT IS A REAL COST. Cards printing 99 on OFF go from 17 to 20 — Nikola Jokić '21 and '23 and Giannis Antetokounmpo '22 join the tie block, all three of them bigs whose hub premium grew with the derived size. recal_84 and recal_90 were written to REMOVE exactly this compression and recal_102 reinstated it by his own instruction (1 -> 17). This adds three more. The top 12 by OFF is a pure tie-block reshuffle: every name in it prints 99 before and after.",
+    "THE TOP 50 BY OVR CHURNS BY THREE: Joel Embiid '22, Kevin Garnett '03 and Nikola Jokić '21 enter; Kobe Bryant '07, Shaquille O'Neal '97 and '98 leave. Every entrant is a hub whose premium grew; nobody leaves because he fell, they leave because the list is fifty long. OVR moves on 208 cards, max +6, none down.",
+    "COLLATERAL IS 267 CARDS ON OFF, EVERY ONE OF THEM UP, mean +2.41, max +8: 134 move by 1, 41 by 2, 53 by 3-4, 39 by 5-9. DEF moves on ZERO cards and every attribute on ZERO. The movers are exactly two populations and nothing else — perimeter cards that entered the hub class (creation surplus at volume >= 68) and bigs that were already in it and whose premium grew from 0.05 to 0.07.",
+    "WHAT THE ROUND DELIBERATELY DID NOT DO, and each was built and measured first. (1) WIDEN is_big so a rim-leading forward is a big: reaches the subject at 91, moves only 26 cards — and takes LeBron James '13 to 99 against his 97 +-1 pin, LeBron up on fifteen seasons, and Justin Champagnie '25 up THIRTEEN. It also changes the OVR cap branch and the marginal class of every card it flips, which recal_72 warned about at length. (2) DROP the hub's flag entirely: 1,944 movers and NINE anchors broken including Steve Nash '05 at 91. (3) GATE the hub on height >= 79: 139 movers but still breaks LeBron '13 and Luka '23. (4) WIDEN recal_117's volume band to 85 so the elite passer reaches the subject: he reads 92 and it breaks Nash '05, Billups '06 and Stockton '01, because widening the top raises the gate for every card below it. Only the ROLE reading leaves LeBron alone, and it does it for a reason rather than by luck: he is volume 97 with playvol 87, a NEGATIVE creation surplus.",
+    "THE SUBJECT LANDS ON THE FLOOR OF HIS BAND AND THE BAND'S KNEE IS WHY. His raw is 95.27, above the 93 knee, where each raw point is worth only 0.615 printed (recal_102's OFF_TOP of 102.75). 94 needs raw 94.63 and 95 needs 96.25 — a further 1.0 of raw, which is HUB_K = 0.104. There is no derivation for 0.104; 0.07 is the gap between two weights that are already in the file. So the round takes the derived number and lands on 94, inside 95 +-1.",
+    "data/anchors.json GAINS Magic Johnson '90 off 95 +-1 (round 138), which reads 94 and passes at its floor. Nothing is superseded. 138 anchors, 0 failing.",
+    "PIPELINE_VERSION IS LEFT AT 133, per the doctrine of 2026-09-03.",
+    "ONE TACTIC TAX WAS RE-RATIFIED AND THE INTEGRATOR MUST RE-SWEEP IT. CRASH DEF GLASS broke on the BLIND edge this time (-0.186 against the -0.30 ceiling): the round pushed a whole class of playmakers across the harness's `ovr >= 55` pool line, so the fives are stronger and a blind glass call costs less against them. Swept .18 (blind -0.186) / .30 (-0.272) / .338 (-0.2996) / .339 (-0.3003, the ceiling exactly) / .40 (oracle +0.583) / .48 (+0.554, blind -0.403) / .60 (+0.510) / .629 (+0.5003, the floor exactly) / .630 (under) — a feasible interval of about .3385 to .6295, WIDE again at 0.29 where recal_137's was 0.059, so it takes its true midpoint by recal_126's rule: crashDef .18 -> .48. crashOff held at .17 (oracle +0.664), playmaker at 1.10, and the seven other bands were untouched. All nine pass.",
+    "THE FULL CHAIN WAS NOT RUN. build_ratings.py was not run and provenance.json is unchanged: this round is compute_ovr.py only, plus the one tax constant the harness law requires be re-read whenever the ovr>=55 pool moves."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: recal_55's hub channel is a claim about a ROLE — 'nothing priced the offense that RUNS THROUGH him' — and it was gated on a BODY, so the best box season of the best passer in the file lost it the year his three-point rating went 37 -> 60 and flipped is_big's middle shape clause off.",
+    "THE SUBJECT DECOMPOSED, and the flag is the whole of it. Magic Johnson '90: BPM 10.1, OBPM 8.3, .622 true shooting, 22.3 points and 11.5 assists in 37.2 minutes, and it printed OFF 87 — FOUR BELOW his own '89 (91). Their raw o_scores are 93.28 [perimeter] and 93.45 + 4.90 [big]. Nothing else on the two sheets differs by anything that matters.",
+    "THE ROLE IS MEASURED ON BARS THE FILE ALREADY HAS, and it separates the subject from every star it must not touch. Creation surplus, playvol - volume: Magic '90 +29, Chris Paul '15 +23, Kevin Johnson '91 +21 — and LeBron '13 -10, Michael Jordan '89 -15, SGA '25 -28, Harden '19 -6, Westbrook '15 -5. The men the round lifts are the men through whom the offence actually ran.",
+    "THE TWO CREATION CHANNELS ARE DISJOINT BY CONSTRUCTION, which is this file's own way of adding a term (recal_109 vs recal_112 across playvol 70; recal_131 vs recal_64/107/112 across volume 55). recal_109's elite passer pays nothing above volume 68; the hub's role pays nothing below it. No card can be paid twice for one assist rate, and the whole pure-distributor class — Stockton, Nash '05, the three Mark Jacksons, Billups '06 — moves by exactly zero.",
+    "recal_117 DREW THE LINE AROUND THIS EXACT CARD, which is worth stating because it is why he was unreachable. Its own comment: 'the band widens 65 -> 68, set just clear of the nearest star it must exclude rather than on top of him: Magic Johnson '89 is volume 70 and '87 is 71'. The subject is volume 69 — inside the one-point gap between the elite-passer term's ceiling and the hub's floor, paid by neither.",
+    "MEASURED BEFORE APPLYING, over the whole family: at HUB_K 0.05 / 0.06 / 0.07 / 0.08 / 0.09 / 0.10 with the role class in place the subject reads 91 / 92 / 93 / 94 / 94 / 95 without the signature and 93 / — / 94 / — / — / 96 with it, and every one of those settings holds all 138 anchors. The binding constraint is not an anchor, it is the worst move on the board: it crosses +8 exactly where the derived size sits.",
+    "DEF MOVES ON ZERO CARDS BY CONSTRUCTION. d_score does not read the hub, is_big is not modified, d_bigness is not touched, and build_ratings.py was not run."
+  ]
+}

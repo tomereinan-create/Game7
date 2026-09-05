@@ -362,6 +362,40 @@ export const DEFAULT_TACTICS: Tactics = {
  * although its oracle sits on +0.54, and hunt held at 3.80 for the third round running. The law was
  * applied as written: the band broke, the tax moved to meet it, and NOTHING in the OVR chain was
  * touched to hold a band up. All nine pass.
+ * recal_137's zone-dominance shape ramp moved 70 o_ovrs and 58 OVRs (0 d_ovrs), which is a small
+ * round — but SEVEN of those OVRs cross the harness's own `ovr >= 55` pool line (Alec Burks '24,
+ * Eric Piatkowski '01, Walt Williams '01, Buddy Hield '25, Toney Douglas '16, Wayne Ellington '17,
+ * Craig Hodges '87), so the fives the
+ * benefit is averaged over changed and CRASH DEF GLASS alone broke on the ORACLE edge: +0.418
+ * against the +0.50 floor. Same shape as r126's break and for the same reason: this tax's benefit
+ * reads `drb`, an attribute the round did not touch at all. crashDef swept .51 (+0.418) / .40
+ * (+0.446) / .30 (+0.474) / .25 (+0.488) / .21 (+0.500, the floor exactly) / .20 (+0.503) /
+ * .18 (+0.509) / .16 (+0.516) / .155 (blind -0.3035) / .151 (blind -0.3004, the ceiling exactly) —
+ * a WHOLE feasible interval of about .1505 to .2095, so it takes its true midpoint by r126's rule:
+ * .51 -> .18, oracle +0.509 and blind -0.323, 0.009 and 0.023 of room. It is a NARROW interval and
+ * that is worth recording: the two edges are 0.059 apart where r126's were 0.25, so the next round
+ * that moves this pool at all will almost certainly have to re-read this tax again. crashOff held
+ * at .17 and the seven others held their bands untouched. All nine pass.
+ * recal_138's hub-as-a-role round moved 267 o_ovrs and 208 OVRs (0 d_ovrs) and pushed a whole
+ * class of playmakers across the ovr>=55 pool line, and — exactly as the note above predicted —
+ * CRASH DEF GLASS broke again, this time on the OTHER edge: blind -0.186 against the -0.30 ceiling,
+ * because the fives are stronger and a blind glass call costs less against them. Swept .18
+ * (blind -0.186) / .30 (-0.272) / .338 (-0.2996, a thousandth under) / .339 (-0.3003, the ceiling
+ * exactly) / .40 (oracle +0.583) / .48 (+0.554, blind -0.403) / .60 (+0.510) / .629 (+0.5003, the
+ * floor exactly) / .630 (+0.5000, under) — a feasible interval of about .3385 to .6295, and it is
+ * WIDE again (0.29, where r137's was 0.059), so it takes its true midpoint by r126's rule:
+ * .18 -> .48, oracle +0.554 and blind -0.403, 0.054 and 0.103 of room either way. crashOff held at
+ * .17 (oracle +0.664) and the seven others held their bands untouched. All nine pass.
+ * recal_139's efficient-interior re-cut moved 152 o_ovrs and 134 OVRs (0 d_ovrs) and reshuffled the
+ * ovr>=55 pool again, and TWO taxes broke on the BLIND edge together: hunt -0.2993 and crash def
+ * glass -0.2788, both against the -0.30 ceiling, and both for the same reason as the round before
+ * — the fives got stronger, so a blind call costs less against them. hunt swept 3.80 (-0.2993) /
+ * 3.808 (-0.3054) / 3.85 (-0.3380) / 3.95 (oracle +0.515) / 3.98 (+0.5005) / 3.99 (+0.4957, under)
+ * — feasible about 3.801 to 3.981, midpoint 3.89. crashDef swept .48 (-0.2788) / .502 (-0.2943) /
+ * .53 (-0.3141) / .67 (+0.549, -0.414) / .80 (+0.509) / .829 (+0.5001) / .831 (+0.4995, under) —
+ * feasible about .510 to .830, midpoint .67. Both take their true midpoints by r126's rule:
+ * hunt 3.80 -> 3.89, crashDef .48 -> .67. crashOff held at .17 and the six others held their bands
+ * untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,

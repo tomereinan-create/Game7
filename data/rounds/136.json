@@ -1,0 +1,436 @@
+{
+  "round": 136,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Ken Norman Agree.",
+  "title": "d_bigness clause 1 — the last hard 1.0 in the function — is a RAMP on its own rim-protection bar, from DEF_RP_LO (45, the middle clause's own foot; no new constant) to its own 55. Ken Norman '94 def 46 -> 53, inside his 55 +-3 band, with all 135 anchors held; 53 is the FLOOR of what the ramp can reach because his own big vector reads 55.2 and the foot that pays it in full takes the board's worst move to +8",
+  "subject": "Ken Norman '94",
+  "scale": "def",
+  "target": 55,
+  "tol": 3,
+  "before": 46,
+  "after": 53,
+  "pipeline_version": 136,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55\\.0",
+      "label": "recal_136 — CLAUSE 1's OWN STEP, MADE A RAMP, and both ends already existed",
+      "note": "55 is the clause's own bar and becomes the point of saturation; the foot is DEF_RP_LO, the middle clause's own rim-protection foot one line above, so the function now has ONE story about where a rim-protection claim begins instead of two"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_c1 = \\(min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - C1_RP_LO\\) / \\(C1_RP_HI - C1_RP_LO\\)\\)\\)",
+      "label": "the ramp itself — replacing `if a['rimprot'] >= 55 and ... : return 1.0`",
+      "note": "at rimprot 55 and above it is 1.0 exactly, so every card the clause already decided is byte-identical"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\] else 0\\.0",
+      "label": "the clause's OTHER TWO TESTS ARE BYTE-IDENTICAL AND STILL HARD",
+      "note": "`3pt < 45` (the clause is about a man who does not shoot) and `rimprot >= perdef` (recal_99's own guard, and what makes this a class statement rather than a bonus)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "return max\\(w_rp \\* w_3p, w_det, w_c1\\)",
+      "label": "the three shape claims still combine by max(), so the ramp can only ever RAISE the big share",
+      "note": "was `max(w_rp * w_3p, w_det)`"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DEF_RP_LO, DEF_RP_HI = 45\\.0, 80\\.0",
+      "label": "recal_93's middle-clause ramp, UNTOUCHED — and the source of this round's foot",
+      "note": "45 is not a new number: it is the rim-protection foot recal_93 already chose for the same bar"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+      "label": "recal_99's deterrence ramp, untouched",
+      "note": "the Durants are held by it and by nothing this round changes: '18 84, '19 79, '23 82, '24 80, all unmoved"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+      "label": "recal_103's position-big override, untouched — Herbert Jones does not move",
+      "note": "the position branches return before any shape clause is reached, so all 4,307 position-decided bigs move by EXACTLY zero"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "a = p\\['attrs'\\]; return \\(a\\['rimprot'\\] >= 55 and a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\]\\)",
+      "label": "is_big ITSELF IS UNTOUCHED, exactly as recal_93 and recal_103 left it",
+      "note": "the boolean still labels the card, still gates the big hub and the stretch-big floor, still picks the OVR cap branch and still splits the marginal percentile classes — so OFF moves on ZERO cards"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+      "label": "recal_106's discipline weights and both d_score vectors, untouched",
+      "note": "this round changes WHICH VERDICT a card is graded by, never what either verdict weighs"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED — recal_90's warning does not apply",
+      "note": "every one of the 32 movers is below the 93 knee, where band() is the identity; the top 12 by DEF is identical name for name"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Ken Norman '94",
+      "scale": "ovr",
+      "op": "~",
+      "value": 51,
+      "tol": 0,
+      "label": "the subject's OVR follows his defence: 48 -> 51"
+    },
+    {
+      "card": "Ken Norman '94",
+      "scale": "off",
+      "op": "~",
+      "value": 49,
+      "tol": 0,
+      "label": "OFF moved on ZERO of 10,000 cards — is_big is untouched and build_ratings.py was not run"
+    },
+    {
+      "card": "Ken Norman '94",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 53,
+      "tol": 0,
+      "label": "and the bar itself is untouched: this round changes what a rim-protection claim BUYS, not what it reads"
+    },
+    {
+      "card": "Ken Norman '93",
+      "scale": "def",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "THE SEASON THE CLIFF WAS MEASURED AGAINST: rimprot 61 is past the clause's own 55, so he is byte-identical at 61 and the two seasons now read 61 / 53 where they read 61 / 46"
+    },
+    {
+      "card": "Ken Norman '95",
+      "scale": "def",
+      "op": "~",
+      "value": 45,
+      "tol": 0,
+      "label": "the third season, unmoved at 45: 3pt 53 fails the clause's `3pt < 45` test outright, which this round does not touch"
+    },
+    {
+      "card": "Jared Dudley '19",
+      "scale": "def",
+      "op": "~",
+      "value": 56,
+      "tol": 0,
+      "label": "THE CARD SITTING ON THE CONSTANT — rimprot 55 EXACTLY, no pin. The ramp saturates at 55, so he takes the same hard 1.0 he always did and reads 56 either way"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "def",
+      "op": "~",
+      "value": 66,
+      "tol": 1,
+      "label": "recal_116's pin: rimprot 37, below the ramp's foot, unmoved"
+    },
+    {
+      "card": "Stephon Castle '25",
+      "scale": "def",
+      "op": "~",
+      "value": 55,
+      "tol": 2,
+      "label": "his DEF pin, unmoved — a lifetime guard, decided by the position branch before any shape clause runs"
+    },
+    {
+      "card": "Herbert Jones '24",
+      "scale": "def",
+      "op": "~",
+      "value": 90,
+      "tol": 3,
+      "label": "recal_103's subject: decided by the position-big override, which returns before clause 1 is reached. Unmoved"
+    },
+    {
+      "card": "Dan Roundfield '80",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 3,
+      "label": "his 91 +-3 DEF pin's card, a position big — unmoved at 95"
+    },
+    {
+      "card": "Kevin Durant '18",
+      "scale": "def",
+      "op": "~",
+      "value": 84,
+      "tol": 2,
+      "label": "recal_99's own named card, held by the deterrence ramp this round does not touch: unmoved"
+    },
+    {
+      "card": "Kevin Durant '19",
+      "scale": "def",
+      "op": "~",
+      "value": 79,
+      "tol": 3,
+      "label": "the other end of recal_99's pair: unmoved at 79"
+    },
+    {
+      "card": "Andre Iguodala '14",
+      "scale": "def",
+      "op": "~",
+      "value": 93,
+      "tol": 0,
+      "label": "recal_93's subject, on the MIDDLE clause: rimprot 39 is below this ramp's foot, unmoved"
+    },
+    {
+      "card": "Jimmy Butler '16",
+      "scale": "def",
+      "op": "~",
+      "value": 86,
+      "tol": 0,
+      "label": "recal_93's second subject, unmoved"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 77,
+      "tol": 0,
+      "label": "recal_93's third, and the card whose 75-77 band forced a blend rather than a cliff: unmoved. His rimprot 56 IS past the clause's 55, but the guard `rimprot >= perdef` fails him at 56 against 76, so clause 1 never reached him before this round and does not now"
+    },
+    {
+      "card": "Scottie Pippen '94",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 0,
+      "label": "the hardest of recal_93's anchors (92 +-1 as it was written, now 93 +-3), unmoved"
+    },
+    {
+      "card": "Dominique Wilkins '97",
+      "scale": "def",
+      "op": "~",
+      "value": 54,
+      "tol": 0,
+      "label": "THE BIGGEST MOVER, tied with the subject: 47 -> 54 at rimprot 54 / perdef 37 / 3pt 37 — the same archetype found by the same clause"
+    },
+    {
+      "card": "Dominique Wilkins '87",
+      "scale": "def",
+      "op": "~",
+      "value": 58,
+      "tol": 0,
+      "label": "THE ONLY DIRECTION OF DAMAGE, and it is the clause's own semantics rather than an accident: 60 -> 58. Clause 1 is a CLASS statement, so a card whose perimeter vector reads above his big one loses when it engages — at rimprot 55 the standing clause takes the whole of it, and the ramp takes 0.90"
+    },
+    {
+      "card": "Dominique Wilkins '86",
+      "scale": "def",
+      "op": "~",
+      "value": 58,
+      "tol": 0,
+      "label": "the second and last down-mover on the whole board: 60 -> 58"
+    },
+    {
+      "card": "Mike Mitchell '83",
+      "scale": "def",
+      "op": "~",
+      "value": 50,
+      "tol": 0,
+      "label": "45 -> 50, the third biggest move: a 6'7\" scoring forward at rimprot 52 with perimdisrupt 5"
+    },
+    {
+      "card": "Alex English '85",
+      "scale": "def",
+      "op": "~",
+      "value": 50,
+      "tol": 0,
+      "label": "47 -> 50, and the only mover with a familiar name above OVR 70 (72 -> 73)"
+    },
+    {
+      "card": "Glenn Robinson '01",
+      "scale": "def",
+      "op": "~",
+      "value": 54,
+      "tol": 0,
+      "label": "51 -> 54"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 2,
+      "label": "recal_62's pin — a position big, unmoved"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 2,
+      "label": "unmoved"
+    },
+    {
+      "card": "Gary Payton '96",
+      "scale": "def",
+      "op": "~",
+      "value": 88,
+      "tol": 2,
+      "label": "recal_80's scale-neutrality card, a lifetime guard: unmoved at 88"
+    },
+    {
+      "card": "Caron Butler '08",
+      "scale": "def",
+      "op": "~",
+      "value": 72,
+      "tol": 1,
+      "label": "recal_57's pin at 73 +-1, sitting ON its edge and the tightest perimeter constraint on the board: rimprot 34, far below the foot, unmoved"
+    },
+    {
+      "card": "Ben Wallace '06",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "the DEF summit is untouched"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's pin, unmoved"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Ken Norman '93",
+      "below": "Ken Norman '94",
+      "label": "his own season order survives and is no longer a cliff: 61 > 53 where it was 61 > 46"
+    },
+    {
+      "scale": "def",
+      "above": "Ken Norman '94",
+      "below": "Ken Norman '95",
+      "label": "and the decline still reads as a decline: 53 > 45"
+    },
+    {
+      "scale": "def",
+      "above": "Herbert Jones '24",
+      "below": "Ken Norman '94",
+      "label": "the best perimeter sheet in the pool still reads far above the round's subject"
+    },
+    {
+      "scale": "def",
+      "above": "Jared Dudley '19",
+      "below": "Ken Norman '94",
+      "label": "THE CARD ON THE CONSTANT still reads above the card below it: 56 > 53, and the gap is three where the clause used to make it ten"
+    },
+    {
+      "scale": "def",
+      "above": "Kevin Durant '18",
+      "below": "Dominique Wilkins '97",
+      "label": "the deterrence clause's own card still reads far above the ramp's biggest beneficiary"
+    }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 32,
+    "max_abs": 7,
+    "top": [
+      [
+        "Dominique Wilkins '97",
+        47,
+        54
+      ],
+      [
+        "Ken Norman '94",
+        46,
+        53
+      ],
+      [
+        "Mike Mitchell '83",
+        45,
+        50
+      ],
+      [
+        "Willie Burton '92",
+        48,
+        52
+      ],
+      [
+        "Sylvester Gray '89",
+        54,
+        57
+      ],
+      [
+        "Glenn Robinson '01",
+        51,
+        54
+      ],
+      [
+        "Greg Kelser '80",
+        49,
+        52
+      ],
+      [
+        "Alex English '85",
+        47,
+        50
+      ],
+      [
+        "Mike Mitchell '81",
+        45,
+        48
+      ],
+      [
+        "Mike Mitchell '84",
+        44,
+        47
+      ],
+      [
+        "Dominique Wilkins '87",
+        60,
+        58
+      ],
+      [
+        "Dominique Wilkins '86",
+        60,
+        58
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '01",
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Dwight Howard '10",
+      "Kawhi Leonard '16",
+      "Ben Wallace '07",
+      "Dwight Howard '09",
+      "Dwight Howard '11",
+      "Kawhi Leonard '15"
+    ]
+  },
+  "cost": [
+    "THE SUBJECT LANDS ON THE FLOOR OF HIS BAND AND THE CEILING IS HIS OWN BIG VECTOR. 53 against 55 +-3. Ken Norman '94's big verdict is 48.7862 x 1.1305 = 55.15, so even at d_bigness 1.00 he prints 55 and not a point more — the number his ruling names is EXACTLY his big vector, which is why the round is a class question and not a weight question. At the foot this round takes (45) his share is 0.80 and he reads 53. Measured over the whole family: foot 52 -> 49, 50 -> 51, 48 -> 52, 46 -> 53, 45 -> 53, 42 -> 54, 40 -> 54, 35 -> 54. Every foot from 54 down to 35 holds all 135 anchors, so the anchors are NOT what stops the round at 45 — the worst move on the board is. At 42 and below a second card (Dominique Wilkins '97) reaches +8, and he DECLINED recal_132 for two cards rising 10+. 45 is the last foot at which nothing on the board moves by 8.",
+    "45 IS NOT A NEW NUMBER AND THAT IS THE ROUND'S WHOLE DEFENCE OF IT. DEF_RP_LO = 45 is recal_93's own rim-protection foot for the MIDDLE clause, chosen there for the same bar and the same question. Clause 1's own 55 becomes the point of saturation, exactly as recal_118 made r64's 68 a saturation point rather than a threshold. Two constants in, zero constants added.",
+    "THE TWO CARDS THAT FALL ARE THE CLAUSE'S OWN SEMANTICS, NOT COLLATERAL. Dominique Wilkins '86 and '87 go 60 -> 58, and they are the only down-movers on the board. Clause 1 is a CLASS statement — it says which of the two d_score verdicts grades this man — so when it engages on a card whose PERIMETER vector reads above his big one (Wilkins '87: perimdisrupt 56, drb 41), the card falls. That is what the standing clause already does to him at rimprot 55; the ramp only means he meets it earlier and gently. recal_99's lift-only guard was NOT reused here because it belongs to a clause that is a claim about deterrence; this one is a claim about class, and a class statement that only ever lifts is not a class statement.",
+    "COLLATERAL IS 32 CARDS ON DEF, 30 UP and 2 DOWN, mean +2.06, max +7 and max -2. NOTHING ON THE BOARD MOVES BY 8 OR MORE ON ANY SCALE. Only three cards move by 5 or more (Dominique Wilkins '97 +7, Ken Norman '94 +7, Mike Mitchell '83 +5) and seven by 3 or 4. OVR follows on 20 cards, max +3 (the subject) and max -1. OFF moves on ZERO cards, every attribute moves on ZERO, and the top 50 by OVR has no entrant, no leaver and no rank flip. The movers are ONE archetype and read like it: scoring forwards with real size, no perimeter sheet and no jumper — Dominique Wilkins '86-'97, Mike Mitchell '81-'84, Glenn Robinson '97-'02, Alex English '85/'91, Orlando Woolridge '91/'92, Lamond Murray, Greg Kelser.",
+    "WHAT THE ROUND DOES NOT FIX, and a later ruling would have to name it. Clause 1's other two tests are still HARD. `3pt < 45` is the sharper of them: Ken Norman '95 is rimprot 46 with 3pt 53 and reads 45, so one bar the clause is not about still switches his class outright — the same defect recal_99 found on the deterrence clause and answered with a ramp there. It is left because his ruling is about '94 and because a fade on that test moves a much larger population (every shooting forward with size) than the ruling justifies. `rimprot >= perdef` is left on purpose: it is recal_99's own guard and it is what keeps this a class statement.",
+    "THE BAND ANCHORS ARE NOT TOUCHED AND recal_90's WARNING DOES NOT APPLY. Every one of the 32 movers is below the 93 knee, where band() is the identity, so DEF_TOP (104.25) and OFF_TOP (102.75) are byte-identical and not one card above the knee moves. The top 12 by DEF is identical name for name.",
+    "data/anchors.json GAINS Ken Norman '94 def 55 +-3 (round 136). Nothing is superseded. 135 anchors, 0 failing, mean |error| 0.70.",
+    "PIPELINE_VERSION IS LEFT AT 133, per the doctrine of 2026-09-03: the integrator stamps the highest round number in the batch after the single merged regeneration. This file's `pipeline_version` records the round's own number.",
+    "NO TACTIC TAX WAS RE-RATIFIED. All nine harness bands passed on the first reading with main's constants (crashOff .17 / crashDef .51, playmaker 1.10). The pool shift is 32 cards, all below the knee, none of them in the oracle's fives."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: after recal_93 ramped d_bigness's middle clause and recal_99 the deterrence clause, CLAUSE 1 was the last hard 1.0 left in the function — and it decides which of two d_score formulas grades a card, a gap of 15 to 23 printed points, on the word `>=`.",
+    "IT IS THE SAME DEFECT THOSE TWO ROUNDS NAMED, ON THE CLAUSE THEY BOTH DECLINED TO OPEN. recal_93: 'the first two clauses are UNTOUCHED and still return a hard 1.0: clause 1 already reads defensive shape (rimprot >= perdef)'. Reading defensive shape is why the clause is RIGHT; it is not why the clause may STEP. recal_99 then found the identical step one clause down and wrote the identical fix.",
+    "THE STEP IS VISIBLE IN THE POOL AND NOT ONLY ON THE SUBJECT. Of the cards this clause actually decides — shape-path, 3pt < 45, rimprot >= perdef — the 27 at rimprot 52-54 average d_bigness 0.17 and DEF 52.4, and the 12 at 55-57 average 1.00 and DEF 57.8. Five rating points of one bar, five and a half printed points, and nothing in between.",
+    "THE SUBJECT DECOMPOSED. Ken Norman '93 -> '94 is a quiet decline: rimprot 61 -> 53, perdef 43 -> 38, drb 61 -> 62, perimdisrupt 14 -> 11, 3pt 16 -> 36. Nothing on his sheet moves by fifteen and DEF moves by fifteen (61 -> 46), because at rimprot 61 clause 1 gave him the WHOLE big verdict and at 53 he fell through to the middle clause's product, which reads 0.0914 for him. His big vector is 48.79 x 1.1305 = 55.2 and his perimeter vector 45.2 — the ruling's number is his big vector, to a tenth.",
+    "MEASURED BEFORE APPLYING, on the whole pool at ten settings of the foot — 54, 52, 50, 48, 46, 45, 42, 40, 38, 35 — the subject reads 46, 49, 51, 52, 53, 53, 54, 54, 54, 54 and the mover count runs 0, 12, 18, 25, 31, 32, 46, 48, 48, 52. All 135 anchors hold at every one of them; the binding constraint is the worst move on the board, which crosses +8 at a foot of 42.",
+    "OFF MOVES ON ZERO CARDS BY CONSTRUCTION, and it is verified rather than asserted. is_big() is untouched, so p['big'], recal_55's big hub, recal_91's stretch-big floor, the OVR cap branch and the marginal percentile classes all read exactly what they read before — the same separation recal_93 and recal_103 established when they moved d_bigness and left the boolean alone."
+  ]
+}

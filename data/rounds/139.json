@@ -1,0 +1,391 @@
+{
+  "round": 139,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Nene maybe around 66.",
+  "title": "recal_112's gate ASKED ONE CLAIM TWICE and one of its two ramps was a needle: the efficiency and volume shares are now combined by their GEOMETRIC MEAN rather than their product, the efficiency ramp's top comes off the top of the scale (99 = eleven cards of the class) onto the class's own upper quartile of conversion (93, measured), and the volume band is 35-45 — not chosen, but what Clint Capela '18's standing pin leaves. Nenê '11 off 60 -> 65, inside his 66 +-2 band, with all 139 anchors held",
+  "subject": "Nenê '11",
+  "scale": "off",
+  "target": 66,
+  "tol": 2,
+  "before": 60,
+  "after": 65,
+  "pipeline_version": 139,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_ef = 0\\.14 \\* a\\['efficiency'\\] \\* \\(\\(_ee \\* _ev\\) \\*\\* 0\\.5\\) \\* _ep \\* _e3",
+      "label": "recal_139 — THE CLAIM IS READ ONCE: the two shares are combined by their GEOMETRIC MEAN",
+      "note": "was `_ee * _ev`. recal_117's item 4 one term down the file, in its own words: 'the product of two decreasing factors is steeper than either'. The geometric mean is the single share whose square is the product, and it is ZERO whenever either factor is zero, so every exclusion the term depends on is byte-identical"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_E_LO, EF_E_HI = 85\\.0, 93\\.0",
+      "label": "THE EFFICIENCY RAMP WAS A NEEDLE — the top comes off the top of the scale onto the class's own upper quartile",
+      "note": "was 85.0, 99.0. Of the 4,256 cards in this term's class (3pt < 68, playvol < 70, volume < 55), efficiency 85 is the top 4.42% and efficiency 99 the top 0.26% — full credit was reserved for ELEVEN cards. 93 is the measured UPPER QUARTILE of the 188 that clear the foot (median 89, p25 87), which is recal_130's own way of setting a saturation point"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_V_LO, EF_V_HI = 35\\.0, 45\\.0",
+      "label": "THE VOLUME BAND IS NOT CHOSEN — it is what Clint Capela '18's pin leaves",
+      "note": "was 25.0, 55.0. Solving the two constraints jointly (the subject's term must reach about 8.4 and Capela '18's must not exceed about 2.4) forces any linear volume factor to have its top at or below ~47 and its foot at or above ~35; 35 and 45 are the round numbers inside that window"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_PV_LO, EF_PV_HI = 40\\.0, 70\\.0",
+      "label": "recal_112's DISJOINTNESS gate, UNTOUCHED and still a hard multiplier",
+      "note": "recal_109's elite passer needs playvol >= 80 and this needs <= 70, so no card can take both. John Stockton '96 (playvol 99) moves by exactly zero"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_3P_LO, EF_3P_HI = 40\\.0, 68\\.0",
+      "label": "recal_64's mirror gate, UNTOUCHED and still a hard multiplier",
+      "note": "efficiency earned from the arc is paid by the off-ball floor and efficiency earned at the rim is paid here. Kyle Korver '15 (3pt 95) and Steve Kerr '96 (93) move by exactly zero"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TL_EFF_LO, TL_EFF_HI = 70\\.0, 85\\.0",
+      "label": "recal_107's two-level big, untouched — Deandre Ayton '26 is held by his own term and by this one's foot",
+      "note": "his efficiency is 81, below this term's foot of 85, so the round cannot reach him: unmoved at 59 against his 58 +-3"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PZ_V_LO, PZ_V_HI = 55\\.0, 80\\.0",
+      "label": "recal_131's paint-evidence floor, untouched — and still disjoint from this term",
+      "note": "it begins at volume 55 where this one used to end; now this one ends at 45, so the two are further apart than before and no card is paid twice"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+      "label": "recal_89's LOCKED DIAL STATE — the efficiency weight is NOT touched",
+      "note": "recal_112 measured the global efficiency dial first and it does not work: 0.13 already breaks Moses Malone '82 and reaching the band needs 0.25 against volume 0.12, which breaks 25 anchors. This round changes the narrow instrument, not the dial"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED — recal_90's warning does not apply",
+      "note": "every one of the 152 movers is below the 93 knee, where band() is the identity; the top 12 by OFF is identical name for name"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Nenê '10",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 0,
+      "label": "THE SEASON THE GAP WAS MEASURED AGAINST: unmoved at 70. His gate was already 1.00 (efficiency 99, volume 25) and it still is, so the pair now reads 70 / 65 where it read 70 / 60"
+    },
+    {
+      "card": "Nenê '09",
+      "scale": "off",
+      "op": "~",
+      "value": 68,
+      "tol": 0,
+      "label": "67 -> 68: efficiency 99 at volume 28, so his volume share rises from 0.90 to 1.00 and the geometric mean gives back the last tenth"
+    },
+    {
+      "card": "Clint Capela '18",
+      "scale": "off",
+      "op": "~",
+      "value": 60,
+      "tol": 1,
+      "label": "THE BINDING ANCHOR AND THE WHOLE COST OF THE ROUND — recal_52's pin at 61 +-1. He read 62 with ZERO room up and is the SAME CARD as the subject at this term's inputs (ts_rel .664 against .660, usage 19.3 against 19.3, efficiency 91 against 88). Only volume separates them, 45 against 38, so the band's top had to fall below 45: he loses the term entirely and lands on 60, the FLOOR of his band"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "recal_51's pin: efficiency 79, below the term's untouched foot of 85. Unmoved"
+    },
+    {
+      "card": "Clint Capela '19",
+      "scale": "off",
+      "op": "~",
+      "value": 65,
+      "tol": 0,
+      "label": "59 -> 65, and he is the reason the round is not a name check: the SAME MAN one season later at volume 37 instead of 45 rises by six on the same rule that costs '18 two"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 68,
+      "tol": 4,
+      "label": "recal_112's own subject: efficiency 99 at volume 27, both shares 1.00 before and after, +1 from the rounding. 67 -> 68"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "off",
+      "op": "~",
+      "value": 66,
+      "tol": 3,
+      "label": "64 -> 66: efficiency 97 at volume 27 — his efficiency share goes 0.857 -> 1.00 on the re-cut top"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "off",
+      "op": "~",
+      "value": 59,
+      "tol": 3,
+      "label": "recal_107's pin: efficiency 81, below the foot. Unmoved — the foot is what keeps him out and it is byte-identical"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 1,
+      "label": "recal_55's card: efficiency 70, far below the foot. Unmoved"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin: 3pt 95, so recal_112's mirror gate is 0.00 and the geometric mean cannot revive him. Unmoved"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin: 3pt 93, same gate, unmoved"
+    },
+    {
+      "card": "John Stockton '96",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 1,
+      "label": "the playvol gate: 99 against a ceiling of 70, so his share is 0.00. Unmoved"
+    },
+    {
+      "card": "Jarrett Allen '23",
+      "scale": "off",
+      "op": "~",
+      "value": 69,
+      "tol": 0,
+      "label": "THE BIGGEST MOVER, +7: 62 -> 69 on efficiency 93 at volume 30 — the archetype the term was built for, previously paid 0.36 of it"
+    },
+    {
+      "card": "Artis Gilmore '81",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 0,
+      "label": "64 -> 70, efficiency 96 at volume 36"
+    },
+    {
+      "card": "Tyson Chandler '11",
+      "scale": "off",
+      "op": "~",
+      "value": 56,
+      "tol": 0,
+      "label": "50 -> 56, efficiency 93 at volume 7 — his volume share was already 1.00 and the whole move is the efficiency re-cut and the mean"
+    },
+    {
+      "card": "Andre Drummond '20",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 2,
+      "label": "recal_51's pin: efficiency 39, nowhere near the foot. Unmoved"
+    },
+    {
+      "card": "Dwight Howard '11",
+      "scale": "off",
+      "op": "~",
+      "value": 77,
+      "tol": 2,
+      "label": "recal_52's pin: efficiency 92 but volume 79, far above the band's top. Unmoved"
+    },
+    {
+      "card": "Shaquille O'Neal '09",
+      "scale": "off",
+      "op": "~",
+      "value": 70,
+      "tol": 2,
+      "label": "recal_51's pin: volume 72, above the band. Unmoved"
+    },
+    {
+      "card": "Nenê '11",
+      "scale": "ovr",
+      "op": "~",
+      "value": 76,
+      "tol": 0,
+      "label": "the subject's OVR follows: 73 -> 76"
+    },
+    {
+      "card": "Nenê '11",
+      "scale": "def",
+      "op": "~",
+      "value": 86,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards — the term lives inside o_score"
+    },
+    {
+      "card": "Nenê '11",
+      "scale": "attr:efficiency",
+      "op": "~",
+      "value": 88,
+      "tol": 0,
+      "label": "and the bar is untouched: build_ratings.py was not run. His ts_rel is .660 against his own '10's .668, so the efficiency drop is REAL — what was wrong is what the gate charged him for it"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's pin, unmoved"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF summit is untouched"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Nenê '10",
+      "below": "Nenê '11",
+      "label": "his own seasons keep their order and the ten-point gap closes to five: 70 > 65, and what is left is a real efficiency difference (ts_rel .668 against .660) at a real usage difference (17.3 against 19.3)"
+    },
+    {
+      "scale": "off",
+      "above": "Nenê '11",
+      "below": "Clint Capela '18",
+      "label": "THE ROUND'S WHOLE POINT, and it is his own two rulings put beside each other: 65 > 60, where the board read 60 < 62 before"
+    },
+    {
+      "scale": "off",
+      "above": "Clint Capela '19",
+      "below": "Clint Capela '17",
+      "label": "Capela's own seasons still read in order: 65 > 57"
+    },
+    {
+      "scale": "off",
+      "above": "Nenê '10",
+      "below": "Rudy Gobert '19",
+      "label": "70 > 66 — the efficient interior class keeps its shape"
+    },
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Nenê '11",
+      "label": "99 > 65"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 152,
+    "max_abs": 7,
+    "top": [
+      [
+        "Jarrett Allen '23",
+        62,
+        69
+      ],
+      [
+        "Tom Boswell '80",
+        59,
+        66
+      ],
+      [
+        "Darryl Dawkins '83",
+        57,
+        64
+      ],
+      [
+        "Kevin Gamble '91",
+        70,
+        76
+      ],
+      [
+        "Jarrett Allen '24",
+        67,
+        73
+      ],
+      [
+        "Artis Gilmore '81",
+        64,
+        70
+      ],
+      [
+        "Otis Thorpe '91",
+        61,
+        67
+      ],
+      [
+        "Clint Capela '19",
+        59,
+        65
+      ],
+      [
+        "Danny Schayes '88",
+        57,
+        63
+      ],
+      [
+        "Buck Williams '82",
+        55,
+        61
+      ],
+      [
+        "Rudy Gobert '17",
+        54,
+        60
+      ],
+      [
+        "Nenê '11",
+        60,
+        65
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '22",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '21",
+      "Nikola Jokić '22",
+      "Nikola Jokić '23",
+      "Nikola Jokić '24"
+    ]
+  },
+  "cost": [
+    "THE ROUND IS A CONFLICT BETWEEN TWO OF HIS OWN RULINGS AND IT IS RESOLVED IN THE SUBJECT'S FAVOUR — HE SHOULD KNOW THAT. CLINT CAPELA '18 is pinned off 61 +-1 by recal_52, read 62, and now reads 60: he keeps his pin but lands on its FLOOR instead of its ceiling, a two-point fall, and he loses recal_112's term entirely. He is not collateral, he is the SAME CARD as the subject at everything this term reads — true shooting relative to the league .664 against .660, usage 19.3 against 19.3, and a HIGHER efficiency rating (91 against 88), so his gate before the round (0.143) was already ABOVE the subject's (0.121). The only quantity that separates them is volume, 45 against 38. That is why the band's top had to come below 45, and it is why the two constants are FORCED rather than chosen: with his pin held, any linear volume factor that reaches the subject must have its top at or below ~47 and its foot at or above ~35. If he would rather Capela '18 stayed at 62, this round cannot land at all — measured, not asserted: of 720 parameterisations of this gate's whole family, exactly ONE holds every anchor with the subject unmoved, and it is the shipped one.",
+    "THE FRONTIER, MEASURED. 720 parameterisations of the gate (efficiency foot 82/85, top 86 to 99; volume foot 25/35, top 45 to 70; size 0.14 and 0.20; product, geometric mean and fourth root), each graded against every standing anchor: 83 hold the whole board and the highest reading any of them gives the subject is 69. The setting taken reaches his band at the SMALLEST worst-case move: 65 with a max of +7. The settings that read 66, 67 and 68 all take the board's worst move to +9 or +10, and he declined recal_132 for two cards rising 10+.",
+    "COLLATERAL IS 152 CARDS ON OFF, 138 up and 14 down, mean +3.78, max +7 and max -3. NOTHING MOVES BY 8 OR MORE. The 14 that fall are the cards between volume 45 and 55 that the band's top no longer reaches, and the largest of them is Clint Capela '18 at -3 raw (-2 printed). DEF moves on ZERO cards and every attribute on ZERO. OVR follows on 134, max +5 and max -2. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant and no leaver.",
+    "THE MOVERS ARE ONE ARCHETYPE AND READ LIKE IT: the efficient low-usage interior man recal_112 was built for and was paying an eighth of what it claimed — Jarrett Allen '22-'25, Rudy Gobert '17/'18, Artis Gilmore '81-'84, Otis Thorpe '91/'92, Buck Williams '82/'83, Danny Schayes '88/'89, Darryl Dawkins '83, Nic Claxton '23, Jalen Duren '25, Neemias Queta '26, Tyson Chandler '11/'12, Dikembe Mutombo '00.",
+    "WHAT IS NOT FIXED, and a later ruling would have to name it. The subject lands at 65 against 66 +-2, one below his number, and the reason is the same pin: every setting that reads him at 66 or above takes some card on the board up by 9 or more. His own '10 still reads 5 above him (70 to 65) and that gap is now made of things the formula should price — ts_rel .668 against .660 at usage 17.3 against 19.3 — rather than of a product compounding two small slides.",
+    "THE THREE OTHER CHANNELS WERE MEASURED AND NONE OF THEM REACHES THIS CARD. recal_131's paint-evidence floor is gated volume 55->80 and he is 38, and even at a full gate his evidence beats his zone block by only 1.1 raw. recal_37's PAINT DOMINANCE BONUS does fire on his shape (rim 73 against mid 28 and 3pt 7, so z[0] > 1.5 x the rest) but recal_51's volume ramp zeroes his attempt factor below volume 70 and recal_44's free-throw gate would clamp him to 0.25 anyway — his 71 FT stroke is what the standard path already pays him for. Opening either would pay Clint Capela '18 MORE than the subject, not less, because Capela's rim bar is 89 to the subject's 73 and his FT stroke is 57 to the subject's 71.",
+    "data/anchors.json GAINS Nenê '11 off 66 +-2 (round 139), reading 65. Nothing is superseded — Clint Capela '18's recal_52 pin still stands and still passes, at its floor. 139 anchors, 0 failing.",
+    "PIPELINE_VERSION IS LEFT AT 133, per the doctrine of 2026-09-03.",
+    "TWO TACTIC TAXES WERE RE-RATIFIED AND THE INTEGRATOR MUST RE-SWEEP THEM. HUNT and CRASH DEF GLASS both broke on the BLIND edge together (-0.2993 and -0.2788 against the -0.30 ceiling) because the round pushed another block of bigs across the harness's `ovr >= 55` pool line, so the fives are stronger and a blind call costs less against them. hunt swept 3.80 (-0.2993) / 3.808 (-0.3054) / 3.85 (-0.3380) / 3.95 (oracle +0.515) / 3.98 (+0.5005) / 3.99 (+0.4957, under) — feasible about 3.801 to 3.981, midpoint 3.89. crashDef swept .48 (-0.2788) / .502 (-0.2943) / .53 (-0.3141) / .67 (+0.549, blind -0.414) / .80 (+0.509) / .829 (+0.5001) / .831 (under) — feasible about .510 to .830, midpoint .67. Both take their true midpoints by recal_126's rule: hunt 3.80 -> 3.89, crashDef .48 -> .67. crashOff held at .17, playmaker at 1.10, and the six other bands were untouched. All nine pass.",
+    "THE FULL CHAIN WAS NOT RUN. build_ratings.py was not run and provenance.json is unchanged: this round is compute_ovr.py only, plus the two tax constants the harness law requires be re-read whenever the ovr>=55 pool moves."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: recal_112's gate is the PRODUCT of two ramps that are two readings of ONE claim — 'his conversion is elite FOR his usage' — so a card that slides a little on both loses far more than either slide justifies, and one of the two ramps saturated at the top of the scale, where eleven cards live.",
+    "THE SUBJECT DECOMPOSED. Nenê '11 reads 60 and his own '10 reads 70, and the whole ten points is this one term: '10 takes it at gate 1.00 (+13.86) and '11 at 0.12 (+1.50). Efficiency 99 -> 88 and volume 25 -> 38 are both real and both modest; 0.21 x 0.57 = 0.12 is not. Nothing else on the two sheets moves — rim 72/73, orb 67/65, free throws identical, playvol 33/38.",
+    "IT IS recal_117's ITEM 4, ONE TERM DOWN THE FILE. Its words: 'Volume was read TWICE ... and the product of two decreasing factors is steeper than either.' Its rule was READ THE FACT ONCE. Here the two factors are different facts but one claim, so the fix is the same in kind: the geometric mean is the single share whose square is the product.",
+    "THE GEOMETRIC MEAN CHANGES NO EXCLUSION, and that is verified rather than assumed. It is zero whenever either share is zero, so the efficiency foot of 85 still excludes Deandre Ayton '26 (81), Clint Capela '17 (79) and Domantas Sabonis '21 (70); the playvol ceiling of 70 still excludes John Stockton '96 (99) and keeps this term disjoint from recal_109's elite passer; and the 3pt ceiling of 68 still excludes Kyle Korver '15 (95) and Steve Kerr '96 (93) and keeps it disjoint from recal_64's off-ball floor. All five move by exactly zero.",
+    "THE NEEDLE, MEASURED THE WAY recal_117 MEASURED ITS OWN. Inside this term's class — 4,256 cards at 3pt < 68, playvol < 70, volume < 55 — efficiency 85 is the top 4.42% (188 cards) and efficiency 99 is the top 0.26% (ELEVEN cards). Only SIX cards on the whole board had a gate of 1.00, and the median gate among the 172 with any gate at all was 0.256. The re-cut top, 93, is the measured UPPER QUARTILE of the 188 that clear the foot.",
+    "CLINT CAPELA '19 IS THE PROOF THIS IS A RULE AND NOT A NAME CHECK. The same man one season later — efficiency 90, volume 37 — rises 59 -> 65 on the very rule that takes his '18 from 62 to 60, because '18 is volume 45 and '19 is volume 37. The band reads usage, not names."
+  ]
+}

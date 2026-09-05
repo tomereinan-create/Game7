@@ -1344,5 +1344,50 @@
     "round": 140,
     "ruling": "Suns 05 agree.",
     "note": "the reached value, pinned so a later round cannot quietly give it back: 65 when the round measured, 67 after the feed became a property of the SHOOTER rather than of the five. His number was 85 and this round declines it; the pin records what the formula honestly gives, exactly as recal_110 pinned the Lakers '00 at 64."
+  },
+  {
+    "card": "Ken Norman '94",
+    "scale": "def",
+    "target": 55,
+    "tol": 3,
+    "round": 136,
+    "ruling": "Ken Norman Agree.",
+    "note": "46 -> 53. d_bigness CLAUSE 1 — `rimprot >= 55 and 3pt < 45 and rimprot >= perdef` — was the last hard 1.0 left in the function after recal_93 ramped the middle clause and recal_99 the deterrence one, and it stepped underneath him: '93 -> '94 rim protection 61 -> 53 on a quiet decline took his branch weight 1.00 -> 0.09 and DEF 61 -> 46. The clause is now a RAMP on its own rim-protection bar, from DEF_RP_LO (45, the middle clause's own foot — no new constant) to its own 55, where it is the hard 1.0 it always was; its other two tests are byte-identical. 53 is the FLOOR of the band and the ramp cannot reach further without a new number: his own big vector is 48.79 x 1.1305 = 55.2, so full weight would read 55, and the foot that gives it to him (42) takes the board's worst move to +8. Jared Dudley '19 sits ON rimprot 55 and reads 56 either way."
+  },
+  {
+    "card": "Malik Beasley '23",
+    "scale": "off",
+    "target": 58,
+    "tol": 3,
+    "round": 137,
+    "ruling": "Beasley agree.",
+    "note": "51 -> 56. recal_37's ZONE-DOMINANCE SHAPE GATE was the last cliff left in the bonus: recal_43 ruled 'NO CLIFFS' and made every factor INSIDE the gate a line, but whether a 5-to-8-point bonus was paid AT ALL was still two hard tests. Beasley '22 (92/40/17) collects +7.98 and reads 64; '23 (89/44/16) collects nothing and reads 51 — one point short of his own bar, 1.5 x (44 + 16) = 90. Each clause now keeps ITS OWN bar as a point of SATURATION and earns its share over the same width of z[0] beneath it (ZD_W = 3.0, the round number inside the class's measured lower-quartile deficit of 3.25 across its 217 adjacent-season flip pairs), and the card takes the better of the two. At or above either bar the bonus is BYTE-IDENTICAL to ten decimals — verified on Korver '15, Kerr '96, Reggie Miller '97, Curry '16, Novak '13, Shaq '00, Capela '17, Zion '21 and Giannis '25."
+  },
+  {
+    "card": "Buddy Hield '25",
+    "scale": "off",
+    "target": 58,
+    "tol": 3,
+    "round": 137,
+    "ruling": "Hield agree, similar to Beasley.",
+    "note": "53 -> 58, on the SAME term as Malik Beasley '23 and one round with him. '24 (93/40/23) collects +6.80 and reads 63; '25 (90/38/27) collects nothing and reads 53 — one point short of the clause's own flat bar of 91. recal_137's ramp gives him 0.667 of the bonus. The remaining gap to his '24 season is recal_96's load share: 22.7 minutes against 25.7, worth about 2 raw points, and that is a MEASURED load difference rather than a cliff."
+  },
+  {
+    "card": "Magic Johnson '90",
+    "scale": "off",
+    "target": 95,
+    "tol": 1,
+    "round": 138,
+    "ruling": "Magic agree a lot, maybe even 94-6.",
+    "note": "87 -> 94, the FLOOR of his band. THE HUB IS A ROLE, NOT A BODY. His best box season (BPM 10.1, OBPM 8.3, TS .622, 22.3/11.5) read FOUR BELOW his own '89 because his three-point rating went 37 -> 60, which flips is_big's middle shape clause `rim >= 60 and 3pt < 40` off and takes recal_55's BIG HUB with it: 93.28 [perimeter] against 93.45 + 4.90 [big], the same man, the flag being the whole difference. recal_55's own words are 'an efficient playmaking CENTER ... nothing priced the offense that RUNS THROUGH him' - a claim about a ROLE, with is_big as its proxy. The role is now measured on the two bars o_score already carries: more of the offence goes through his hands as CREATION than as his own shot (playvol - volume, ramped over the hub's own 20-point width, so Westbrook '17's surplus of ONE keeps recal_121's order pin), floored at volume >= PD_V_HI = 68 so this and recal_109's elite passer are DISJOINT by construction. Every big keeps role 1.00 and recal_55's class is untouched. The SIZE is derived rather than inherited: a hub's creation IS his load, so it is paid at the load weight instead of the creation weight and the premium is the gap, 0.26 - 0.19 = 0.07 (was 0.05, never defended); and it is paid wherever load is paid, so recal_26's signature floor reads max(volume, 50, hub load) too. 94 is the FLOOR of what this reaches and 95 needs K = 0.104, which is not derivable from anything in the file."
+  },
+  {
+    "card": "Nenê '11",
+    "scale": "off",
+    "target": 66,
+    "tol": 2,
+    "round": 139,
+    "ruling": "Nene maybe around 66.",
+    "note": "60 -> 65. recal_112's gate ASKED ONE CLAIM TWICE and one of its two ramps was a needle. His '10 takes the term whole (gate 1.00, +13.86) and his '11 at 0.12 (+1.50), because BOTH ramps slid at once - efficiency 99 -> 88 (ts_rel .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3) - and the gate is their PRODUCT: 0.21 x 0.57 = 0.12, an eighth of the term for a card still in the top 3% of his class on conversion. recal_117's item 4 in its own words, one term down the file: 'the product of two decreasing factors is steeper than either'. The two ramps are two readings of ONE statement, so they are now combined by their GEOMETRIC MEAN (zero whenever either is zero, so every exclusion is byte-identical); the efficiency ramp's top comes off the top of the scale - 99 is ELEVEN cards of the 4,256 in this class - onto the class's own upper quartile of conversion, 93 (measured; median 89); and the volume band is 35-45, which is NOT chosen but is what CLINT CAPELA '18's pin leaves. He is the same card at this term's inputs (ts_rel .664 vs .660, usage 19.3 vs 19.3, efficiency 91 vs 88, so his gate was ALREADY higher), pinned 61 +-1 with zero room up, and only volume separates them: 45 against 38. He loses the term entirely and goes 62 -> 60, the floor of his own band. Measured over 720 parameterisations of the whole gate family graded against every anchor: 83 hold the board and the highest reading any gives the subject is 69."
   }
 ]

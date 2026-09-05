@@ -163,6 +163,40 @@ def is_big(p):
 DEF_RP_LO, DEF_RP_HI = 45.0, 80.0   # the ramp on rim protection; 80 is clause 3's own bar
 DEF_3P_LO, DEF_3P_HI = 30.0, 40.0   # the fade on the clause's own `3pt < 40` line
 DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp, on rimprot alone
+# recal_136 (HIS RULING, verbatim: "Ken Norman Agree"). THE LAST UNRAMPED CLAUSE.
+#
+# THE DEFECT, decomposed on the card the ruling names. Ken Norman '94 reads DEF 46 where his own
+# '93 reads 61, on a quiet decline: rim protection 61 -> 53, perimeter defence 43 -> 38, defensive
+# rebounding 61 -> 62 — nothing on the sheet moves by fifteen points and the printed number moves by
+# fifteen. The whole of it is d_bigness clause 1, `rimprot >= 55 and 3pt < 45 and rimprot >= perdef`,
+# which returns a hard 1.0: at rimprot 61 he takes the WHOLE big verdict and at 53 he takes 0.09 of
+# it, so the formula he is graded by changed underneath him for eight points of one bar. His own big
+# vector still reads 48.79 x 1.1305 = 55.2 against a perimeter vector of 45.2, and the ruling's
+# number is his big vector.
+#
+# WHY THIS CLAUSE AND NOT ANOTHER. recal_93 replaced the MIDDLE shape clause's step with a product
+# of two ramps and recal_99 gave the DETERRENCE clause its own; both rounds explicitly left clause 1
+# alone ("the first two clauses are UNTOUCHED and still return a hard 1.0: clause 1 already reads
+# defensive shape (rimprot >= perdef)"). Reading defensive shape is why the clause is right; it is
+# not why the clause may STEP. It is the last hard 1.0 in the function, and the pool shows the step
+# exactly where the constant is: of the shape-decided cards with 3pt < 45 and rimprot >= perdef,
+# the 27 at rimprot 52-54 average d_bigness 0.17 and DEF 52.4, and the 12 at 55-57 average 1.00
+# and DEF 57.8. Five rating points, five and a half printed points, and nothing between them.
+#
+# THE RAMP, AND IT INTRODUCES NO NEW CONSTANT. The clause's own bar 55 becomes the point of
+# SATURATION and its foot is DEF_RP_LO — 45, the middle clause's own rim-protection foot, one line
+# above. The two rim-protection ramps therefore start together and the function has one story about
+# where a rim-protection claim begins, not two. The clause's other two tests are BYTE-IDENTICAL and
+# still hard: `3pt < 45` (the clause is about a man who does not shoot) and `rimprot >= perdef`
+# (recal_99's own guard, and the reason this ramp is a class statement rather than a bonus).
+# At rimprot >= 55 the clause returns 1.0 exactly as it did, so no card the clause already decided
+# moves by anything — verified, not asserted: Jared Dudley '19 sits ON 55 and reads 56 either way.
+# MEASURED: 32 of 10,000 cards move on DEF, 30 up and 2 down, max +7 and max -2; OFF and every
+# attribute move on ZERO (is_big is untouched, so the boolean, the big hub, the stretch-big floor
+# and the OVR cap branch are all byte-identical); OVR follows on 20 cards, max +3. Every anchor
+# holds. The movers are one archetype — scoring forwards with real size and no perimeter sheet:
+# Dominique Wilkins '97, Mike Mitchell '81-'84, Glenn Robinson '97-'02, Alex English '85.
+C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55.0   # recal_136: clause 1's own step, made a ramp; both ends already existed
 # recal_103 (HIS RULING, verbatim: "Herb jones DEF way too low all seasons"). THE POSITION RULE
 # ITSELF, which is the third and last place a man's SHOT DIET was deciding his defensive formula.
 #
@@ -197,9 +231,10 @@ DET_LO, DET_HI = 68.0, 80.0         # recal_99: the deterrence clause's own ramp
 POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed big is graded as a wing
 def d_bigness(p):
     """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
-    verdict, 1 = the whole big verdict. The lifetime-guard branch and the first/third shape clauses
-    are is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
-    recal_99's, and the position-big branch is recal_103's shape override."""
+    verdict, 1 = the whole big verdict. The lifetime-guard branch and the third shape clause are
+    is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
+    recal_99's, clause 1 is recal_136's ramp (identical to is_big's at rimprot 55 and above), and
+    the position-big branch is recal_103's shape override."""
     pos = _POS.get(p['name'], [])
     a = p['attrs']
     if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
@@ -207,7 +242,11 @@ def d_bigness(p):
         _gap = a['perimdisrupt'] - a['drb']
         return 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))
     if a['rimprot'] >= 80: return 1.0
-    if a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef']: return 1.0
+    # recal_136: clause 1 is a RAMP on its own rim-protection bar, from DEF_RP_LO to its own 55.
+    # Above 55 this is the hard 1.0 it always was; below it, the man is graded as a big in
+    # proportion to the rim-protection claim he actually has. Its other two tests are untouched.
+    w_c1 = (min(1.0, max(0.0, (a['rimprot'] - C1_RP_LO) / (C1_RP_HI - C1_RP_LO)))
+            if a['3pt'] < 45 and a['rimprot'] >= a['perdef'] else 0.0)
     w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))
     w_3p = min(1.0, max(0.0, (DEF_3P_HI - a['3pt']) / (DEF_3P_HI - DEF_3P_LO)))
     # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE RAMP STILL CLIFFED FOR SHOOTERS.
@@ -228,10 +267,61 @@ def d_bigness(p):
     # hold at 75 and 74 exactly.
     w_det = (min(1.0, max(0.0, (a['rimprot'] - DET_LO) / (DET_HI - DET_LO)))
              if a['rimprot'] >= a['perdef'] else 0.0)
-    return max(w_rp * w_3p, w_det)
+    return max(w_rp * w_3p, w_det, w_c1)
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)
+# recal_138 (HIS RULING, verbatim: "Magic agree a lot, maybe even 94-6"). THE HUB IS A ROLE, NOT A
+# BODY — and a hub's creation is his team's LOAD, so it is priced wherever load is priced.
+#
+# THE CARD, decomposed. Magic Johnson '90 is his best box season — BPM 10.1, OBPM 8.3, .622 true
+# shooting, 22.3 points and 11.5 assists in 37.2 minutes — and it printed OFF 87, FOUR BELOW his own
+# '89 (91). Nothing in the box explains four points; one attribute does. His three-point rating went
+# 37 -> 60 (he shot 38% from the arc that year), which flips is_big's middle shape clause
+# `rim >= 60 and 3pt < 40` OFF, and recal_55's BIG HUB (+4.90) goes with it. His two seasons' raw
+# o_scores are 93.28 [perimeter] and 93.45 + 4.90 [big]: the man is identical and the FLAG is the
+# difference. recal_103 recorded this seam as open; recal_93 wrote the diagnosis for the defensive
+# side of it in one sentence — "how a man SCORES was deciding how he is GRADED".
+#
+# WHY THE FLAG WAS THERE, AND WHY IT IS THE WRONG QUESTION. recal_55's own words are "an efficient
+# playmaking CENTER had no channel — his assists scored through playvol's 0.19 like everyone's, and
+# nothing priced the offense that RUNS THROUGH him." The claim is about a ROLE. `is_big` was a proxy
+# for it, and in 2019 it was a good one, because the only unpriced hubs anybody was arguing about
+# were centres. It is not a good proxy for a 6'9" point guard, and it breaks on a shot he learned.
+#
+# THE CLASS FUNCTION, and every number in it already existed.
+#   A BIG IS STILL A HUB, unconditionally: `is_big` returns _role = 1.0 and recal_55's own class is
+#     BYTE-IDENTICAL. This round only ADDS a second way in.
+#   THE ROLE ITSELF is measurable on the two bars o_score already carries: more of the offence goes
+#     through his hands as CREATION than as his own SHOT. `playvol - volume`, ramped over the hub's
+#     OWN ramp width (HUB_FULL - HUB_GATE = 20), so it is a fade and not a step — which is what keeps
+#     Russell Westbrook '17 (playvol 99, volume 98, surplus ONE) at 0.05 of the term and holds
+#     recal_121's order pin '15 >= '17. Magic '90's surplus is 29 and he is at 1.00.
+#   AND HE MUST CARRY A REAL SHARE HIMSELF: volume >= PD_V_HI. That is recal_117's own band top, 68,
+#     which is the volume ABOVE which recal_109's elite-passer term pays nothing at all. So the two
+#     creation channels are DISJOINT BY CONSTRUCTION and no card can be paid twice for one assist
+#     rate — the same construction recal_112 and recal_109 use across playvol 70, and recal_131 and
+#     recal_64/107/112 use across volume 55. John Stockton (volume 36), Steve Nash '05 (42) and all
+#     three Mark Jacksons are on recal_109's side of the line and move by EXACTLY zero.
+#
+# THE SIZE, and it is DERIVED rather than inherited. recal_55 set the premium at 0.05 x playvol and
+# never said why; recal_98 ramped the gate and explicitly left "the weight and the class function"
+# alone. The claim now states its own price: a hub's creation IS his team's load, so it is paid at
+# the LOAD weight instead of the CREATION weight, and the premium is the gap between them —
+# 0.26 - 0.19 = 0.07, both of them recal_89's LOCKED DIAL STATE. Written as a premium ON TOP of the
+# 0.19 the standard path already pays, the total is exactly 0.26 and the rate is paid ONCE.
+#
+# AND WHEREVER LOAD IS PRICED, which is the third consequence of the same sentence and not a fourth
+# idea. o_score prices load in exactly TWO places: the 0.26 weight, and recal_26's SIGNATURE
+# interaction `0.08 x max(volume, 50) x efficiency / 100` — "elite conversion on a modest load is
+# real scoring signal". A hub's load is his creation, so the signature's floor reads
+# max(volume, 50, hub load) and an efficient hub is paid for converting the offence he runs. It can
+# only ever LIFT (it is a max) and it is zero for every card outside the hub class.
+# MEASURED: 267 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +2.41, max +8; DEF and every
+# attribute move on ZERO; OVR follows on 208. All 137 anchors hold.
+HUB_GATE, HUB_FULL = 60, 80
+HUB_K = 0.07                       # recal_138: the load weight 0.26 minus the creation weight 0.19
+PD_V_LO, PD_V_HI = 10.0, 68.0      # recal_117's band; the hub's floor is its top, so the two are disjoint
 def o_score(p, trace=None):
     # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the
     # terms it just computed into it. Every write is guarded by `if trace is not None`, no expression
@@ -311,11 +401,24 @@ def o_score(p, trace=None):
     # carries nothing has nothing to discount, and only the narrow instrument can tell them apart.
     _load = load_share(p)
     _vol, _pvol = a['volume'] * _load, a['playvol'] * _load
+    # recal_138: THE HUB'S CLASS AND HIS LOAD, computed here because BOTH the signature term below
+    # and recal_55's hub premium further down read them. See the block above o_score for the whole
+    # argument. `_role` is 1.0 for every big (recal_55's class, byte-identical), and for a perimeter
+    # card it is the share of the offence that goes through him as CREATION rather than as his own
+    # shot, ramped over the hub's own width and floored at recal_117's band top so this term and
+    # recal_109's elite passer cannot both pay the same assist rate. `_hubload` is the load that
+    # creation constitutes: the same quantity the hub premium is charged on, computed once.
+    _role = (1.0 if is_big(p) else
+             (min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
+              if a['volume'] >= PD_V_HI else 0.0))
+    _hubload = a['playvol'] * min(1.0, max(0.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))) * _role
     std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*_vol + 0.19*_pvol
         + 0.10*a['ballsec'] + 0.11*(a['fouldraw']*a['ft']/100) + 0.06*a['orb']
         # the volume x efficiency SIGNATURE keeps its volume FLOOR of 50 (recal_26): elite conversion on
         # a modest load is real scoring signal, not an accident of touches.
-        + 0.08*(max(a['volume'],50)*a['efficiency']/100))
+        # recal_138: and a HUB's load is his creation, so the floor reads it too. max() only lifts,
+        # and _hubload is 0.0 for every card outside the hub class, so nobody else moves.
+        + 0.08*(max(a['volume'],50,_hubload)*a['efficiency']/100))
     if trace is not None:
         trace['terms'] = [
             ('z[0] best zone',      z[0],                             0.22, 0.22*z[0]),
@@ -327,7 +430,7 @@ def o_score(p, trace=None):
             ('ballsec',             a['ballsec'],                     0.10, 0.10*a['ballsec']),
             ('fouldraw x ft/100',   a['fouldraw']*a['ft']/100,        0.11, 0.11*(a['fouldraw']*a['ft']/100)),
             ('orb',                 a['orb'],                         0.06, 0.06*a['orb']),
-            ('signature vol x eff', max(a['volume'],50)*a['efficiency']/100, 0.08, 0.08*(max(a['volume'],50)*a['efficiency']/100)),
+            ('signature vol x eff', max(a['volume'],50,_hubload)*a['efficiency']/100, 0.08, 0.08*(max(a['volume'],50,_hubload)*a['efficiency']/100)),
         ]
         trace['std_base'] = std
         trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
@@ -345,7 +448,56 @@ def o_score(p, trace=None):
     # the rim weapon collapses a defence inward and the shooter stretches it out, while the mid-range
     # is the shot a defence concedes on purpose. Shape alone was paying all three the same. Ties go to
     # the bonus — an equal rim or three IS a paint or perimeter weapon.
-    if max(a['3pt'], a['rim']) >= a['mid'] and ((z[0] > z[1] + z[2] and z[0] >= 91) or (z[0] > 1.5 * (z[1] + z[2]))):
+    # recal_137 (HIS RULINGS, verbatim: "Beasley agree" and "Hield agree, similar to Beasley").
+    # THE SHAPE GATE ITSELF IS A RAMP — the last cliff left in the dominance bonus.
+    #
+    # THE DEFECT, and it is the same sentence recal_43 wrote about the factors INSIDE this gate,
+    # applied to the gate. r43 ruled "NO CLIFFS" and made zone_f, att_f and gate_f lines instead of
+    # bands, so the LEVEL of the bonus stopped stepping — but the bonus is worth 5 to 8 raw points
+    # and whether it is paid AT ALL was still decided by two hard tests. One point of one zone
+    # rating therefore decided seven printed OFF points.
+    #   Malik Beasley '22 (92/40/17) collects +7.98 and reads 64; '23 (89/44/16) collects NOTHING
+    #     and reads 51. He is one point short: his bar is 1.5 x (44 + 16) = 90 and he is 89.
+    #   Buddy Hield '24 (93/40/23) collects +6.80 and reads 63; '25 (90/38/27) collects NOTHING and
+    #     reads 53. He is one point short too: 90 against the clause's own 91.
+    # Both subjects sit ONE POINT below their own bar, which is the defect in its purest form.
+    # It is not two cards: of the 217 adjacent-season pairs of the same SHOOTER where the gate fires
+    # on one season and not the other, 65 flip on a three-point move of 4 or less.
+    #
+    # THE RAMP, AND IT IS ONE CONSTANT IN THE UNIT THE GATE IS ALREADY WRITTEN IN. Both clauses say
+    # the same thing — the weapon must REACH A BAR — and they differ only in where the bar is:
+    # clause 1's bar is the flat 91 (and it also demands the weapon tower over the other two zones,
+    # `z[0] > z[1] + z[2]`), clause 2's is 1.5 x (z[1] + z[2]), the narrow specialist whose zone is
+    # not yet 91. So each clause keeps ITS OWN BAR as a point of SATURATION and earns its share over
+    # the same width of z[0] beneath it, and the card takes the better of the two. At or above
+    # either bar the share is 1.0 and the bonus is BYTE-IDENTICAL to what it was — verified to ten
+    # decimals on every tol-1 shooter pin (Korver '15, Kerr '96, Reggie Miller '97, Curry '16,
+    # Novak '13) and on Shaq '00, Capela '17, Zion '21 and Giannis '25. Below it, the term can only
+    # ADD: `_shape` multiplies a bonus that was previously zero.
+    #
+    # WHY THREE POINTS WIDE, measured on the class and not chosen. For each of those 217 flip pairs,
+    # the DEFICIT of the non-firing season below its own nearest bar has a lower quartile of 3.25
+    # points (median 9.0, p75 32.5, p90 54.0) — so a width of three absorbs the quarter of the flips
+    # that are genuinely on the line and leaves the other three quarters exactly where they are,
+    # because a season nine points from its bar is a different shape and not a wobble. 3 is the
+    # round number inside 3.25, which is recal_96's own way of rounding a measured constant. The
+    # paint class agrees independently: its own lower quartile is 2.50 over 295 pairs.
+    # THE WIDTH IS NOT SET BY THE ANCHORS, and that is said plainly: every width from 2 to 10 holds
+    # all 135 pins AND puts both subjects inside their bands. What sets it is the collateral, which
+    # runs 42 movers at 2, 70 at 3, 97 at 4, 131 at 5 and 264 at 10 — so the round takes the
+    # narrowest width that reaches both numbers.
+    #
+    # WHAT IS NOT RAMPED, on purpose. `max(3pt, rim) >= mid` is recal_38's ruling that a towering
+    # MIDRANGE is not the same threat, and it is a statement about WHICH zone, not about how much;
+    # and `z[0] > z[1] + z[2]` inside clause 1 is the towering claim itself. Both stay hard.
+    # MEASURED: 70 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, max +5, mean +1.93; DEF and
+    # every attribute move on ZERO; OVR follows on 58, max +3. Every anchor holds and the top 12 by
+    # OFF is identical. The movers are one class and read like it — Lonzo Ball '21, Allen Crabbe
+    # '18, Alec Burks '24, Gary Trent Jr. '21, Mike Conley '21, Brent Barry '04, Craig Hodges '87.
+    ZD_W = 3.0
+    _shape = max(min(1.0, max(0.0, (z[0] - (91.0 - ZD_W)) / ZD_W)) if z[0] > z[1] + z[2] else 0.0,
+                 min(1.0, max(0.0, (z[0] - (1.5 * (z[1] + z[2]) - ZD_W)) / ZD_W)))
+    if max(a['3pt'], a['rim']) >= a['mid'] and _shape > 0.0:
         # HOW MUCH OF IT HE KEEPS. The shape says he HAS one weapon; these factors say whether the
         # weapon is worth fearing and whether he is really a specialist at all.
         #
@@ -432,14 +584,15 @@ def o_score(p, trace=None):
         else:
             pre_off = std * 0.93
             gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
-        std += base * zone_f * att_f * gate_f
+        std += base * zone_f * att_f * gate_f * _shape
         if trace is not None:
             trace['bonus'] = dict(
                 kind='paint' if a['rim'] >= max(a['3pt'], a['mid']) else 'shooter',
-                base=base, zone_f=zone_f, att_f=att_f, gate_f=gate_f,
+                base=base, zone_f=zone_f, att_f=att_f, gate_f=gate_f, shape_f=_shape,
+                bar_a=(91.0 if z[0] > z[1] + z[2] else None), bar_b=1.5 * (z[1] + z[2]), width=ZD_W,
                 paint_att_per100=_two, three_att_per100=_three,
                 rim_mid_measured=bool(a.get('rim_mid_measured')),
-                added=base * zone_f * att_f * gate_f)
+                added=base * zone_f * att_f * gate_f * _shape)
     elif trace is not None:
         trace['bonus'] = None   # the shape gate did not fire: no weapon towering over the diet
     # recal_55: THE BIG HUB. An efficient playmaking center had no channel - his assists scored
@@ -465,11 +618,16 @@ def o_score(p, trace=None):
     # 90 IS THE FRONTIER, not a choice: searching the hub ramp against the volume, efficiency,
     # ballsec and signature weights jointly, 90 is the LOWEST reading Malone '99 can take with every
     # anchor held. See receipt 98 - the orchestrator's assumed target was 87 +-3 and 90 is its edge.
-    HUB_GATE, HUB_FULL = 60, 80
-    if is_big(p) and a['playvol'] >= HUB_GATE:
-        _hub = 0.05 * a['playvol'] * min(1.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))
+    # recal_138: HUB_GATE/HUB_FULL and PD_V_LO/PD_V_HI are hoisted to module scope (just above
+    # o_score) because the hub's own class function now reads them BEFORE `std` is built. The lines
+    # are otherwise byte-identical and every constant keeps its value.
+    if _role > 0.0 and a['playvol'] >= HUB_GATE:
+        _hub = HUB_K * _hubload
         std += _hub
-        if trace is not None: trace['big_hub'] = _hub
+        if trace is not None:
+            trace['big_hub'] = _hub
+            trace['hub_role'] = dict(role=_role, hubload=_hubload, k=HUB_K, big=is_big(p),
+                                     surplus=a['playvol'] - a['volume'], v_floor=PD_V_HI)
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
@@ -646,7 +804,8 @@ def o_score(p, trace=None):
     # cards two tenths of a minute apart is a cliff at 29.3 mpg, and Mark Jackson '00 (27.0 mpg,
     # pinned 58 +-3) closes that door: a ramp steep enough to split them zeroes his whole term.
     PD_PV_LO, PD_PV_HI = 70.0, 85.0
-    PD_V_LO, PD_V_HI = 10.0, 68.0
+    # recal_138 hoisted `PD_V_LO, PD_V_HI = 10.0, 68.0` to module scope — the band top is now read
+    # by the hub's class function too, and the two terms are DISJOINT across it by construction.
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
     PD_MIN_FULL = 34.7
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
@@ -696,8 +855,54 @@ def o_score(p, trace=None):
     # MEASURED: 154 of 10,000 cards move on OFF, every one of them UP, max +13; DEF and every
     # attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no entrant
     # and no leaver. All 118 anchors hold at every size tested from 0.10 to 0.20.
-    EF_E_LO, EF_E_HI = 85.0, 99.0
-    EF_V_LO, EF_V_HI = 25.0, 55.0
+    # recal_139 (HIS RULING, verbatim: "Nene maybe around 66"). THE GATE ASKED ONE CLAIM TWICE, AND
+    # ONE OF ITS TWO RAMPS WAS A NEEDLE.
+    #
+    # THE CARD. Nenê '11 reads OFF 60 and his own '10 reads 70, and the whole ten points is this
+    # term: '10 takes it at gate 1.00 (+13.86) and '11 at gate 0.12 (+1.50). Nothing else on the two
+    # sheets moves by anything - rim 72/73, orb 67/65, free throws identical, playvol 33/38. What
+    # moved is that BOTH of the gate's ramps slid at once: efficiency 99 -> 88 (his true shooting
+    # relative to the league went .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3). Neither
+    # slide is large. Their PRODUCT is: 0.21 x 0.57 = 0.12, an eighth of the term for a card that is
+    # still in the top 3% of his class on conversion.
+    # This is recal_117's item 4 one term down the file, in its own words: "the product of two
+    # decreasing factors is steeper than either", and the fix is the same in kind - READ THE CLAIM
+    # ONCE. The two ramps are two readings of ONE statement, "his conversion is elite FOR HIS
+    # USAGE"; multiplying them asks it twice. The gate now takes their GEOMETRIC MEAN, which is the
+    # single share whose square is the product. It is ZERO whenever either factor is zero, so every
+    # exclusion the term depends on is byte-identical: Deandre Ayton '26 (efficiency 81), Clint
+    # Capela '17 (79) and Domantas Sabonis '21 (70) are still below the efficiency foot and take
+    # nothing, Kyle Korver '15 and Steve Kerr '96 are still stopped by the 3pt gate, and John
+    # Stockton '96 by the playvol gate.
+    #
+    # THE EFFICIENCY RAMP WAS A NEEDLE, and this is recal_117's OTHER complaint, measured the same
+    # way. Of the 4,256 cards inside this term's own class (3pt < 68, playvol < 70, volume < 55),
+    # efficiency 85 is the top 4.42% and efficiency 99 is the top 0.26% - full credit was reserved
+    # for ELEVEN CARDS. The FOOT IS UNTOUCHED at 85, because it is what "ELITE conversion" means and
+    # it is what excludes Ayton, Capela '17 and Sabonis. The TOP is re-cut to the class's own UPPER
+    # QUARTILE of conversion among the 188 cards that clear the foot - measured 93 (median 89, p25
+    # 87) - which is recal_130's own way of setting a saturation point from the class it prices.
+    #
+    # THE VOLUME BAND IS NOT CHOSEN, IT IS WHAT HIS OWN STANDING PIN LEAVES, and that is stated
+    # plainly because it is the whole cost of this round. CLINT CAPELA '18 is pinned off 61 +-1 by
+    # recal_52, reads 62, and has ZERO room upward - and he is the SAME CARD as the subject at this
+    # term's inputs: true shooting relative to the league .664 against .660, usage 19.3 against
+    # 19.3, and a HIGHER efficiency rating (91 against 88), so his gate today (0.143) is already
+    # ABOVE the subject's (0.121). Any softening that is monotone in efficiency and volume therefore
+    # pays him at least what it pays the subject, and only the VOLUME side can separate them: he is
+    # volume 45 and the subject is 38. Solving the two constraints - the subject's term must reach
+    # about 8.4 and Capela's must not exceed about 2.4 - forces any linear volume factor to have its
+    # top at or below ~47 and its foot at or above ~35. 35 and 45 are the round numbers inside that
+    # window. The consequence is honest and is not hidden: Capela '18 loses this term entirely and
+    # goes 62 -> 60, which is the FLOOR of his own band.
+    # MEASURED, over 720 parameterisations of this gate's whole family (both feet, both tops, the
+    # size from 0.14 to 0.20, and three ways of combining the two shares), each graded against every
+    # standing anchor: 83 hold the whole board and the highest reading any of them gives the subject
+    # is 69. The setting taken is the one that reaches his band with the smallest worst-case move.
+    # MEASURED on the pool: 152 of 10,000 cards move on OFF, 138 up and 14 down, max +7 and max -3,
+    # mean +3.78; DEF and every attribute move on ZERO; OVR follows on 134. Every anchor holds.
+    EF_E_LO, EF_E_HI = 85.0, 93.0
+    EF_V_LO, EF_V_HI = 35.0, 45.0
     EF_PV_LO, EF_PV_HI = 40.0, 70.0
     EF_3P_LO, EF_3P_HI = 40.0, 68.0
     _ee = min(1.0, max(0.0, (a['efficiency'] - EF_E_LO) / (EF_E_HI - EF_E_LO)))
@@ -705,10 +910,14 @@ def o_score(p, trace=None):
     _ep = min(1.0, max(0.0, (EF_PV_HI - a['playvol']) / (EF_PV_HI - EF_PV_LO)))
     _e3 = min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO)))
     if _ee * _ev * _ep * _e3 > 0.0:
-        _ef = 0.14 * a['efficiency'] * _ee * _ev * _ep * _e3
+        # recal_139: the two halves of ONE claim are combined by their GEOMETRIC MEAN, not their
+        # product. The two EXCLUSION gates (_ep for recal_109's passers, _e3 for recal_64's
+        # shooters) stay hard multipliers — they decide class membership, not degree.
+        _ef = 0.14 * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3
         std += _ef
         if trace is not None:
-            trace['interior'] = dict(gate=_ee * _ev * _ep * _e3, added=_ef)
+            trace['interior'] = dict(gate=((_ee * _ev) ** 0.5) * _ep * _e3, added=_ef,
+                                     eff_share=_ee, vol_share=_ev, product=_ee * _ev)
     # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
     # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
     #
@@ -1273,10 +1482,14 @@ if _CARD:
     _table('O_SCORE — the standard weighted path', _ot['terms'])
     _b = _ot.get('bonus')
     if _b:
-        print(f"\nZONE-DOMINANCE BONUS ({_b['kind']}) — the shape gate FIRED")
+        print(f"\nZONE-DOMINANCE BONUS ({_b['kind']}) — the shape gate FIRED"
+              + ('' if _b['shape_f'] >= 1.0 else f" IN PART (recal_137's ramp: share {_b['shape_f']:.4f})"))
         print(f"  zones sorted {_ot['zones']['z']}  (rim {_ot['zones']['rim']} / mid {_ot['zones']['mid']} / 3pt {_ot['zones']['three']})")
+        print(f"  bars (recal_137, width {_b['width']:.1f} of z[0] beneath each): flat "
+              f"{_b['bar_a'] if _b['bar_a'] is not None else 'n/a (zone does not tower)'}"
+              f" · 1.5 x (z[1]+z[2]) = {_b['bar_b']:.1f}  -> shape_f {_b['shape_f']:.4f}")
         print(f"  base {_b['base']:.2f}  x  zone_f {_b['zone_f']:.4f}  x  att_f {_b['att_f']:.4f}  x  gate_f {_b['gate_f']:.4f}"
-              f"  =  +{_b['added']:.3f}")
+              f"  x  shape_f {_b['shape_f']:.4f}  =  +{_b['added']:.3f}")
         print(f"  inputs: paint attempts/100 {_b['paint_att_per100']:.2f} · three attempts/100 {_b['three_att_per100']:.2f}"
               f" · rim_mid_measured {_b['rim_mid_measured']}")
     else:
@@ -1290,8 +1503,10 @@ if _CARD:
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
     if 'interior' in _ot:
         _i2 = _ot['interior']
-        print(f"EFFICIENT INTERIOR SCORER (recal_112) - gate {_i2['gate']:.2f}: "
-              f"+{_i2['added']:.3f}")
+        print(f"EFFICIENT INTERIOR SCORER (recal_112; recal_139 reads the claim ONCE) - efficiency "
+              f"share {_i2['eff_share']:.3f} and volume share {_i2['vol_share']:.3f}, combined by "
+              f"their geometric mean {(_i2['product'] ** 0.5):.3f} rather than their product "
+              f"{_i2['product']:.3f} -> gate {_i2['gate']:.2f}: +{_i2['added']:.3f}")
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
@@ -1308,8 +1523,11 @@ if _CARD:
               f"(gate {_t3['h']:.2f}) x efficiency gate {_t3['e']:.2f} x ball-security gate "
               f"{_t3['b']:.2f} = {_t3['gate']:.3f}: -{_t3['taken']:.3f}")
     if 'big_hub' in _ot:
-        print(f"BIG HUB (recal_55's channel, recal_98's ramp: bigs from playvol 60 to 80): "
-              f"+{_ot['big_hub']:.3f}")
+        _hr = _ot['hub_role']
+        print(f"HUB (recal_55's channel, recal_98's ramp playvol 60->80, recal_138's ROLE class) - "
+              f"{'big (role 1.00 by recal_55s own class)' if _hr['big'] else f'''perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, volume floor {_hr['v_floor']:.0f} -> role {_hr['role']:.4f}'''}")
+        print(f"  hub load {_hr['hubload']:.2f} x K {_hr['k']:.2f} (the load weight 0.26 minus the "
+              f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
