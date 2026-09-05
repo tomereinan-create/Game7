@@ -1,0 +1,444 @@
+{
+  "round": 137,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Beasley agree. Hield agree, similar to Beasley.",
+  "title": "recal_37's zone-dominance SHAPE GATE was the last cliff left in the bonus — recal_43 made every factor inside it a line and left the gate itself two hard tests worth 5 to 8 raw points. Each clause now keeps ITS OWN bar as a point of SATURATION and earns its share over the same width of z[0] beneath it (ZD_W = 3.0, the round number inside the class's measured lower-quartile deficit of 3.25). Malik Beasley '23 off 51 -> 56 and Buddy Hield '25 off 53 -> 58, both inside 58 +-3, with all 137 anchors held and every whole-firing shooter pin byte-identical to ten decimals",
+  "subject": "Malik Beasley '23",
+  "scale": "off",
+  "target": 58,
+  "tol": 3,
+  "before": 51,
+  "after": 56,
+  "pipeline_version": 137,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "ZD_W = 3\\.0",
+      "label": "recal_137 — THE WIDTH OF THE SHAPE RAMP, in points of z[0], MEASURED on the class",
+      "note": "new: of the 217 adjacent-season pairs of the same SHOOTER where the gate fires on one season and not the other, the non-firing season's deficit below its own nearest bar has a lower quartile of 3.25 (median 9.0, p75 32.5, p90 54.0). 3 is the round number inside 3.25 — recal_96's own way of rounding a measured constant. The paint class agrees independently at 2.50 over 295 pairs"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_shape = max\\(min\\(1\\.0, max\\(0\\.0, \\(z\\[0\\] - \\(91\\.0 - ZD_W\\)\\) / ZD_W\\)\\) if z\\[0\\] > z\\[1\\] \\+ z\\[2\\] else 0\\.0,",
+      "label": "clause 1's bar (the flat 91) becomes a point of SATURATION, and the towering test stays HARD",
+      "note": "`z[0] > z[1] + z[2]` is the dominance claim itself and is not ramped; at z[0] >= 91 the share is 1.0 exactly"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "min\\(1\\.0, max\\(0\\.0, \\(z\\[0\\] - \\(1\\.5 \\* \\(z\\[1\\] \\+ z\\[2\\]\\) - ZD_W\\)\\) / ZD_W\\)\\)\\)",
+      "label": "clause 2's bar (1.5 x the rest of the diet) becomes the second point of saturation",
+      "note": "the two clauses always said the same thing — the weapon must REACH A BAR — and differed only in where the bar is. Both are now ramps in the SAME unit, points of z[0], so one constant governs both"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std \\+= base \\* zone_f \\* att_f \\* gate_f \\* _shape",
+      "label": "the share multiplies a bonus that was previously ZERO — the term can only ADD",
+      "note": "was `std += base * zone_f * att_f * gate_f`. At _shape == 1.0 this is byte-identical, verified to ten decimals rather than asserted"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if max\\(a\\['3pt'\\], a\\['rim'\\]\\) >= a\\['mid'\\] and _shape > 0\\.0:",
+      "label": "recal_38's ZONE-IDENTITY test is UNTOUCHED and still hard",
+      "note": "a towering MIDRANGE is not the same threat — that is a statement about WHICH zone, not about how much, so it does not ramp"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "zone_f = min\\(1\\.10, max\\(0\\.35, 0\\.50 \\+ \\(z\\[0\\] - 75\\) \\* 0\\.025\\)\\)",
+      "label": "recal_43's own 'NO CLIFFS' line, untouched — and the round's whole precedent",
+      "note": "r43 made every factor INSIDE the gate a line and left the gate itself a step; this round finishes the same job on the same term"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "att_f \\*= max\\(0\\.0, min\\(1\\.0, \\(a\\['volume'\\] - 70\\) / 10\\.0\\)\\)",
+      "label": "recal_51's PAINT-branch load ramp, untouched — and what keeps the paint collateral small",
+      "note": "a low-volume interior card newly inside the ramp still earns nothing, because his attempt factor is zeroed by his own load"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "base = 5\\.0",
+      "label": "recal_46's SHOOTER base, untouched at 5 against the paint man's 6.5",
+      "note": "this round changes WHO is inside the gate and by how much, never what the bonus is worth to a man who was already inside it"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+      "label": "recal_96's load share, untouched — and the rest of Buddy Hield's own season gap",
+      "note": "'25 is 22.7 minutes against '24's 25.7, worth about 2 raw points. That is a MEASURED load difference, which is why he lands at 58 and '24 at 63 rather than level"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP",
+      "label": "THE BAND ANCHORS ARE NOT RE-DERIVED — recal_90's warning does not apply",
+      "note": "every one of the 70 movers is below the 93 knee, where band() is the identity; the top 12 by OFF is identical name for name and every card on 99 is byte-identical"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Buddy Hield '25",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "THE SECOND SUBJECT, same round and same term: 53 -> 58, dead on his target"
+    },
+    {
+      "card": "Malik Beasley '22",
+      "scale": "off",
+      "op": "~",
+      "value": 64,
+      "tol": 0,
+      "label": "THE SEASON THE CLIFF WAS MEASURED AGAINST: 3pt 92 with z[1]+z[2] = 57, so his bar is 85.5 and he clears it whole. Byte-identical at 64, and the pair now reads 64 / 56 where it read 64 / 51"
+    },
+    {
+      "card": "Buddy Hield '24",
+      "scale": "off",
+      "op": "~",
+      "value": 63,
+      "tol": 0,
+      "label": "the other half of the second pair: 3pt 93, past the flat bar of 91, unmoved at 63"
+    },
+    {
+      "card": "Kyle Korver '15",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin and the first of the five that MUST be byte-identical: 3pt 95, share 1.0000, o_score raw 61.9200000000 before and after"
+    },
+    {
+      "card": "Steve Kerr '96",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 1,
+      "label": "recal_89's tol-1 pin: 3pt 93, raw 65.6246231250 both sides"
+    },
+    {
+      "card": "Reggie Miller '97",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 1,
+      "label": "tol-1: 3pt 95, raw 93.7618000000 both sides"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "tol-1: 3pt 99, raw 104.9130000000 both sides"
+    },
+    {
+      "card": "Steve Novak '13",
+      "scale": "off",
+      "op": "~",
+      "value": 62,
+      "tol": 1,
+      "label": "tol-1: 3pt 99, raw 67.1228571429 both sides. All five fire WHOLE and all five are identical to ten decimals"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the paint half of the same gate: raw 113.7656370155 both sides, the OFF summit untouched"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 1,
+      "label": "recal_51/96's pin with ZERO room: raw 61.6535166667 both sides, unmoved"
+    },
+    {
+      "card": "Zion Williamson '21",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "raw 96.8846305220 both sides, unmoved"
+    },
+    {
+      "card": "Giannis Antetokounmpo '25",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "raw 118.5676998812 both sides — the card OFF_TOP was derived from does not move, so the band anchor is not reopened"
+    },
+    {
+      "card": "Bruce Bowen '06",
+      "scale": "off",
+      "op": "~",
+      "value": 45,
+      "tol": 1,
+      "label": "recal_64's pin, 3pt 81 with z[1]+z[2] = 43: his bar is 64.5 and he was already whole. Unmoved"
+    },
+    {
+      "card": "Anthony Tolliver '14",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 2,
+      "label": "recal_99's pin, unmoved at 55"
+    },
+    {
+      "card": "Tony Snell '18",
+      "scale": "off",
+      "op": "~",
+      "value": 50,
+      "tol": 2,
+      "label": "recal_64's second wing pin, unmoved"
+    },
+    {
+      "card": "Lonzo Ball '21",
+      "scale": "off",
+      "op": "~",
+      "value": 57,
+      "tol": 0,
+      "label": "THE BIGGEST MOVER, tied with the two subjects: 52 -> 57 at 3pt 88 with z[1]+z[2] = 59, so his bar is 88.5 and he was HALF A POINT short"
+    },
+    {
+      "card": "Alec Burks '24",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "57 -> 61: 3pt 90, one point under the flat bar"
+    },
+    {
+      "card": "Gary Trent Jr. '21",
+      "scale": "off",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "57 -> 61, the same shape one point under the same bar"
+    },
+    {
+      "card": "Allen Crabbe '18",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 0,
+      "label": "54 -> 58"
+    },
+    {
+      "card": "Tim Duncan '04",
+      "scale": "off",
+      "op": "~",
+      "value": 88,
+      "tol": 0,
+      "label": "THE ONLY STAR THE ROUND MOVES, and it is the same defect on the PAINT half: rim 90 against the flat bar of 91, so he was one point short of a bonus recal_46 built for exactly him. 85 -> 88, OVR 91 -> 92"
+    },
+    {
+      "card": "Chris Webber '95",
+      "scale": "off",
+      "op": "~",
+      "value": 75,
+      "tol": 0,
+      "label": "72 -> 75, rim 89 with z[1]+z[2] = 60: two points under the flat bar. OVR 79 -> 80"
+    },
+    {
+      "card": "Mike Conley '21",
+      "scale": "off",
+      "op": "~",
+      "value": 72,
+      "tol": 0,
+      "label": "69 -> 72, and the highest-OFF perimeter mover"
+    },
+    {
+      "card": "Malik Beasley '23",
+      "scale": "ovr",
+      "op": "~",
+      "value": 54,
+      "tol": 0,
+      "label": "the first subject's OVR follows: 51 -> 54"
+    },
+    {
+      "card": "Buddy Hield '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 56,
+      "tol": 0,
+      "label": "and the second's: 53 -> 56"
+    },
+    {
+      "card": "Malik Beasley '23",
+      "scale": "def",
+      "op": "~",
+      "value": 51,
+      "tol": 0,
+      "label": "DEF moved on ZERO of 10,000 cards — this term lives inside o_score alone"
+    },
+    {
+      "card": "Buddy Hield '25",
+      "scale": "attr:3pt",
+      "op": "~",
+      "value": 90,
+      "tol": 0,
+      "label": "and the bar itself is untouched: build_ratings.py was not run and no attribute moved on any card"
+    },
+    {
+      "card": "James Harden '19",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 2,
+      "label": "recal_121's pin, unmoved"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "off",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "recal_102's pin, unmoved"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Malik Beasley '22",
+      "below": "Malik Beasley '23",
+      "label": "his own season order survives and is no longer a cliff: 64 > 56 where it was 64 > 51"
+    },
+    {
+      "scale": "off",
+      "above": "Buddy Hield '24",
+      "below": "Buddy Hield '25",
+      "label": "the same for the second subject: 63 > 58 where it was 63 > 53, and what is left is his measured load"
+    },
+    {
+      "scale": "off",
+      "above": "Steve Novak '13",
+      "below": "Kyle Korver '15",
+      "label": "the whole-firing shooter class is untouched and still in the order it was already in: 62 > 58, unchanged by this round"
+    },
+    {
+      "scale": "off",
+      "above": "Reggie Miller '97",
+      "below": "Malik Beasley '23",
+      "label": "the elite volume shooter still reads far above the specialist the round lifts: 87 > 56"
+    },
+    {
+      "scale": "off",
+      "above": "Stephen Curry '16",
+      "below": "Buddy Hield '25",
+      "label": "96 > 58"
+    },
+    {
+      "scale": "off",
+      "above": "Shaquille O'Neal '00",
+      "below": "Tim Duncan '04",
+      "label": "the paint half of the gate keeps its order: 99 > 88"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 70,
+    "max_abs": 5,
+    "top": [
+      [
+        "Buddy Hield '25",
+        53,
+        58
+      ],
+      [
+        "Lonzo Ball '21",
+        52,
+        57
+      ],
+      [
+        "Malik Beasley '23",
+        51,
+        56
+      ],
+      [
+        "Alec Burks '24",
+        57,
+        61
+      ],
+      [
+        "Gary Trent Jr. '21",
+        57,
+        61
+      ],
+      [
+        "Allen Crabbe '18",
+        54,
+        58
+      ],
+      [
+        "Tim Duncan '04",
+        85,
+        88
+      ],
+      [
+        "Chris Webber '95",
+        72,
+        75
+      ],
+      [
+        "Mike Conley '21",
+        69,
+        72
+      ],
+      [
+        "J.R. Smith '14",
+        64,
+        67
+      ],
+      [
+        "Brent Barry '04",
+        57,
+        60
+      ],
+      [
+        "Craig Hodges '87",
+        55,
+        58
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "BOTH SUBJECTS LAND INSIDE THEIR BANDS AND NEITHER LANDS ON ITS CENTRE, and the reason is not the ramp. Malik Beasley '23 reads 56 against 58 +-3 and Buddy Hield '25 reads 58 against 58 +-3. Beasley '23's remaining gap to his own '22 is NOT a cliff any more: it is three points of the weapon (89 against 92, worth 0.075 of zone_f) plus seven points of usage and a ball-security fall of ten. Hield's is recal_96's load share — 22.7 minutes against 25.7. Both are measured differences that the formula is supposed to price, which is why the round stops at the gate.",
+    "THE WIDTH IS NOT SET BY THE ANCHORS, AND THAT IS SAID PLAINLY. Every width from 2 to 10 holds all 137 pins AND puts both subjects inside their bands (Beasley reads 55, 56, 56, 57, 57, 57, 57 and Hield 57, 58, 59, 59, 59, 59, 60 at widths 2, 3, 4, 5, 6, 8, 10). What sets it is the collateral, which runs 42 movers at 2, 70 at 3, 97 at 4, 131 at 5, 156 at 6, 213 at 8, 264 at 10 — so the round takes the NARROWEST width that reaches both numbers, and the derivation (the class's own lower-quartile deficit of 3.25) sits inside that choice rather than being reverse-engineered from it.",
+    "COLLATERAL IS 70 CARDS ON OFF, EVERY ONE OF THEM UP, mean +1.93, max +5. NOTHING ON THE BOARD MOVES BY 8 OR MORE ON ANY SCALE. Three cards move by 5 (the two subjects and Lonzo Ball '21), three by 4, eleven by 3. OVR follows on 58, max +3. DEF moves on ZERO cards and every attribute on ZERO. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant and no leaver — the only card in it that moves at all is Tim Duncan '04, 91 -> 92.",
+    "THE ONE STAR THE ROUND TOUCHES IS TIM DUNCAN '04, and he is the defect rather than the collateral. rim 90 against the gate's flat bar of 91: one point short of the paint bonus recal_46 built for exactly his damage, and he printed 85. He now reads 88 and OVR 92. Chris Webber '95 (rim 89) is the same card one notch down, 72 -> 75. They are the only two paint cards in the top 25 movers, because recal_51's own volume ramp zeroes the attempt factor for every low-usage interior man newly inside the ramp.",
+    "WHAT IS STILL A CLIFF, and a later ruling would have to name it. TWO tests inside this gate are deliberately left hard. `max(3pt, rim) >= mid` is recal_38's ruling that a towering MIDRANGE is not the same threat — a statement about WHICH zone, which has no 'how much' to ramp. `z[0] > z[1] + z[2]` inside clause 1 is the towering claim itself: a card at z[0] = 91 whose second and third zones sum to 91 gets nothing from clause 1 and must go through clause 2. Both are shape identity rather than degree, which is why r43's 'no cliffs' does not reach them.",
+    "BYTE-IDENTITY IS VERIFIED, NOT ASSERTED. Every card at or above either bar has its o_score raw compared to ten decimal places before and after: Korver '15 61.9200000000, Kerr '96 65.6246231250, Reggie Miller '97 93.7618000000, Curry '16 104.9130000000, Novak '13 67.1228571429, Shaq '00 113.7656370155, Capela '17 61.6535166667, Zion '21 96.8846305220, Giannis '25 118.5676998812, Tolliver '14, Bowen '06, Snell '18 — all identical. The five tol-1 shooter pins the dispatch named are the first five of that list.",
+    "THE BAND ANCHORS ARE NOT TOUCHED. Every one of the 70 movers is below the 93 knee, where band() is the identity, so OFF_TOP (102.75) and DEF_TOP (104.25) are byte-identical and no card above the knee moves at all — including Giannis '25, the card recal_90 derived OFF_TOP from.",
+    "data/anchors.json GAINS TWO PINS: Malik Beasley '23 off 58 +-3 and Buddy Hield '25 off 58 +-3 (round 137). Nothing is superseded. 137 anchors, 0 failing, mean |error| 0.70.",
+    "PIPELINE_VERSION IS LEFT AT 133, per the doctrine of 2026-09-03: the integrator stamps the highest round number in the batch after the single merged regeneration.",
+    "ONE TACTIC TAX WAS RE-RATIFIED AND THE INTEGRATOR MUST RE-SWEEP IT. CRASH DEF GLASS broke on the ORACLE edge (+0.418 against the +0.50 floor) because seven of the round's 58 OVR movers cross the harness's own `ovr >= 55` pool line — Alec Burks '24, Eric Piatkowski '01, Walt Williams '01, Buddy Hield '25, Toney Douglas '16, Wayne Ellington '17, Craig Hodges '87 — so the fives the benefit is averaged over changed. The tax's benefit reads `drb`, which this round did not touch at all; it is the pool that moved, exactly as in recal_126. Swept: .51 (+0.418) / .40 (+0.446) / .30 (+0.474) / .25 (+0.488) / .21 (+0.500) / .20 (+0.503) / .18 (+0.509) / .16 (+0.516) / .155 (blind -0.3035) / .151 (blind -0.3004) — a WHOLE feasible interval of about .1505 to .2095, so it takes its true midpoint by recal_126's own rule: crashDef .51 -> .18, oracle +0.509 and blind -0.323. THE INTERVAL IS NARROW (0.059 wide against r126's 0.25), so any later round that moves this pool will have to re-read this tax again. crashOff held at .17, playmaker at 1.10, and the seven other bands were untouched. All nine pass.",
+    "THE FULL CHAIN WAS NOT RUN. build_ratings.py was not run and provenance.json is unchanged: this round is compute_ovr.py only, plus the one tax constant in src/engine/tactics.ts that the harness law requires be re-read whenever the ovr>=55 pool moves."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: recal_43 ruled 'NO CLIFFS' and turned every factor INSIDE the zone-dominance bonus into a line, but whether a bonus worth 5 to 8 raw points was paid AT ALL was still decided by two hard tests — so one point of one zone rating decided seven printed OFF points.",
+    "BOTH SUBJECTS ARE EXACTLY ONE POINT SHORT, which is the defect in its purest form. Malik Beasley '23's zones are 89 / 44 / 16, and clause 2's bar for him is 1.5 x (44 + 16) = 90. Buddy Hield '25's are 90 / 38 / 27, and clause 1's bar is the flat 91. Neither man is a different player from the season beside him; each is one rating point on the wrong side of a `>`.",
+    "IT IS NOT TWO CARDS. Of the 217 adjacent-season pairs of the same SHOOTER where this gate fires on one season and not the other, 65 flip on a three-point move of 4 or less; the paint class has 295 such pairs of its own, 238 of them on a 3pt move of 4 or less.",
+    "THE TWO CLAUSES ALWAYS SAID THE SAME THING, and that is what makes ONE constant enough. Both are 'the weapon must reach a bar'; they differ only in where the bar is — the flat 91 for the man whose zone is elite outright, and 1.5 x (z[1] + z[2]) for recal_37's 'true narrow specialist whose zone is not yet 91'. Writing both ramps in the SAME unit (points of z[0] beneath the card's own bar) means the round adds one number rather than four, and the two clauses cannot drift apart.",
+    "MEASURED BEFORE APPLYING, on the whole pool at seven widths — 2, 3, 4, 5, 6, 8, 10 — Beasley reads 55, 56, 56, 57, 57, 57, 57 and Hield 57, 58, 59, 59, 59, 59, 60, with 42, 70, 97, 131, 156, 213, 264 movers. All 137 anchors hold at every one of them and every mover is UP at every one of them.",
+    "TWO EARLIER SHAPES WERE BUILT AND MEASURED FIRST, and both are worse. Ramping ONLY the ratio clause, from the dominance line 1.0 up to its own 1.5, reaches both numbers (Beasley 58, Hield 59) but moves 419 cards — six times the collateral for the same two rulings, because it pays a partial bonus to every card whose best zone merely leads. Ramping the two clauses on their OWN units instead (z[0] over 87 -> 91 and the ratio over 1.4 -> 1.5) reaches 57 and 59 at 106 movers, but it needs TWO constants in two different units and neither of them is measured on anything.",
+    "DEF MOVES ON ZERO CARDS BY CONSTRUCTION. The bonus is a term inside o_score; d_score does not read it, is_big does not read it, and build_ratings.py was not run, so no attribute on any of the 10,000 cards changed."
+  ]
+}

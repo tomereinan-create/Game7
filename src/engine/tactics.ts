@@ -333,6 +333,20 @@ export const DEFAULT_TACTICS: Tactics = {
  * .38 (blind -0.299, the floor exactly) — a WHOLE feasible interval of about .381 to .633, so it takes
  * its true midpoint: .70 -> .51, oracle +0.543 and blind -0.395, 0.043 and 0.095 of room. The seven
  * others held their bands untouched. All nine pass.
+ * recal_137's zone-dominance shape ramp moved 70 o_ovrs and 58 OVRs (0 d_ovrs), which is a small
+ * round — but SEVEN of those OVRs cross the harness's own `ovr >= 55` pool line (Alec Burks '24,
+ * Eric Piatkowski '01, Walt Williams '01, Buddy Hield '25, Toney Douglas '16, Wayne Ellington '17,
+ * Craig Hodges '87), so the fives the
+ * benefit is averaged over changed and CRASH DEF GLASS alone broke on the ORACLE edge: +0.418
+ * against the +0.50 floor. Same shape as r126's break and for the same reason: this tax's benefit
+ * reads `drb`, an attribute the round did not touch at all. crashDef swept .51 (+0.418) / .40
+ * (+0.446) / .30 (+0.474) / .25 (+0.488) / .21 (+0.500, the floor exactly) / .20 (+0.503) /
+ * .18 (+0.509) / .16 (+0.516) / .155 (blind -0.3035) / .151 (blind -0.3004, the ceiling exactly) —
+ * a WHOLE feasible interval of about .1505 to .2095, so it takes its true midpoint by r126's rule:
+ * .51 -> .18, oracle +0.509 and blind -0.323, 0.009 and 0.023 of room. It is a NARROW interval and
+ * that is worth recording: the two edges are 0.059 apart where r126's were 0.25, so the next round
+ * that moves this pool at all will almost certainly have to re-read this tax again. crashOff held
+ * at .17 and the seven others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -342,7 +356,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.80,
   crashOff: 0.17,
-  crashDef: 0.51,
+  crashDef: 0.18,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

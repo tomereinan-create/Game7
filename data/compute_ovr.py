@@ -384,7 +384,56 @@ def o_score(p, trace=None):
     # the rim weapon collapses a defence inward and the shooter stretches it out, while the mid-range
     # is the shot a defence concedes on purpose. Shape alone was paying all three the same. Ties go to
     # the bonus — an equal rim or three IS a paint or perimeter weapon.
-    if max(a['3pt'], a['rim']) >= a['mid'] and ((z[0] > z[1] + z[2] and z[0] >= 91) or (z[0] > 1.5 * (z[1] + z[2]))):
+    # recal_137 (HIS RULINGS, verbatim: "Beasley agree" and "Hield agree, similar to Beasley").
+    # THE SHAPE GATE ITSELF IS A RAMP — the last cliff left in the dominance bonus.
+    #
+    # THE DEFECT, and it is the same sentence recal_43 wrote about the factors INSIDE this gate,
+    # applied to the gate. r43 ruled "NO CLIFFS" and made zone_f, att_f and gate_f lines instead of
+    # bands, so the LEVEL of the bonus stopped stepping — but the bonus is worth 5 to 8 raw points
+    # and whether it is paid AT ALL was still decided by two hard tests. One point of one zone
+    # rating therefore decided seven printed OFF points.
+    #   Malik Beasley '22 (92/40/17) collects +7.98 and reads 64; '23 (89/44/16) collects NOTHING
+    #     and reads 51. He is one point short: his bar is 1.5 x (44 + 16) = 90 and he is 89.
+    #   Buddy Hield '24 (93/40/23) collects +6.80 and reads 63; '25 (90/38/27) collects NOTHING and
+    #     reads 53. He is one point short too: 90 against the clause's own 91.
+    # Both subjects sit ONE POINT below their own bar, which is the defect in its purest form.
+    # It is not two cards: of the 217 adjacent-season pairs of the same SHOOTER where the gate fires
+    # on one season and not the other, 65 flip on a three-point move of 4 or less.
+    #
+    # THE RAMP, AND IT IS ONE CONSTANT IN THE UNIT THE GATE IS ALREADY WRITTEN IN. Both clauses say
+    # the same thing — the weapon must REACH A BAR — and they differ only in where the bar is:
+    # clause 1's bar is the flat 91 (and it also demands the weapon tower over the other two zones,
+    # `z[0] > z[1] + z[2]`), clause 2's is 1.5 x (z[1] + z[2]), the narrow specialist whose zone is
+    # not yet 91. So each clause keeps ITS OWN BAR as a point of SATURATION and earns its share over
+    # the same width of z[0] beneath it, and the card takes the better of the two. At or above
+    # either bar the share is 1.0 and the bonus is BYTE-IDENTICAL to what it was — verified to ten
+    # decimals on every tol-1 shooter pin (Korver '15, Kerr '96, Reggie Miller '97, Curry '16,
+    # Novak '13) and on Shaq '00, Capela '17, Zion '21 and Giannis '25. Below it, the term can only
+    # ADD: `_shape` multiplies a bonus that was previously zero.
+    #
+    # WHY THREE POINTS WIDE, measured on the class and not chosen. For each of those 217 flip pairs,
+    # the DEFICIT of the non-firing season below its own nearest bar has a lower quartile of 3.25
+    # points (median 9.0, p75 32.5, p90 54.0) — so a width of three absorbs the quarter of the flips
+    # that are genuinely on the line and leaves the other three quarters exactly where they are,
+    # because a season nine points from its bar is a different shape and not a wobble. 3 is the
+    # round number inside 3.25, which is recal_96's own way of rounding a measured constant. The
+    # paint class agrees independently: its own lower quartile is 2.50 over 295 pairs.
+    # THE WIDTH IS NOT SET BY THE ANCHORS, and that is said plainly: every width from 2 to 10 holds
+    # all 135 pins AND puts both subjects inside their bands. What sets it is the collateral, which
+    # runs 42 movers at 2, 70 at 3, 97 at 4, 131 at 5 and 264 at 10 — so the round takes the
+    # narrowest width that reaches both numbers.
+    #
+    # WHAT IS NOT RAMPED, on purpose. `max(3pt, rim) >= mid` is recal_38's ruling that a towering
+    # MIDRANGE is not the same threat, and it is a statement about WHICH zone, not about how much;
+    # and `z[0] > z[1] + z[2]` inside clause 1 is the towering claim itself. Both stay hard.
+    # MEASURED: 70 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, max +5, mean +1.93; DEF and
+    # every attribute move on ZERO; OVR follows on 58, max +3. Every anchor holds and the top 12 by
+    # OFF is identical. The movers are one class and read like it — Lonzo Ball '21, Allen Crabbe
+    # '18, Alec Burks '24, Gary Trent Jr. '21, Mike Conley '21, Brent Barry '04, Craig Hodges '87.
+    ZD_W = 3.0
+    _shape = max(min(1.0, max(0.0, (z[0] - (91.0 - ZD_W)) / ZD_W)) if z[0] > z[1] + z[2] else 0.0,
+                 min(1.0, max(0.0, (z[0] - (1.5 * (z[1] + z[2]) - ZD_W)) / ZD_W)))
+    if max(a['3pt'], a['rim']) >= a['mid'] and _shape > 0.0:
         # HOW MUCH OF IT HE KEEPS. The shape says he HAS one weapon; these factors say whether the
         # weapon is worth fearing and whether he is really a specialist at all.
         #
@@ -471,14 +520,15 @@ def o_score(p, trace=None):
         else:
             pre_off = std * 0.93
             gate_f = min(1.00, max(0.25, 1.00 - (pre_off - 55) * 0.025))
-        std += base * zone_f * att_f * gate_f
+        std += base * zone_f * att_f * gate_f * _shape
         if trace is not None:
             trace['bonus'] = dict(
                 kind='paint' if a['rim'] >= max(a['3pt'], a['mid']) else 'shooter',
-                base=base, zone_f=zone_f, att_f=att_f, gate_f=gate_f,
+                base=base, zone_f=zone_f, att_f=att_f, gate_f=gate_f, shape_f=_shape,
+                bar_a=(91.0 if z[0] > z[1] + z[2] else None), bar_b=1.5 * (z[1] + z[2]), width=ZD_W,
                 paint_att_per100=_two, three_att_per100=_three,
                 rim_mid_measured=bool(a.get('rim_mid_measured')),
-                added=base * zone_f * att_f * gate_f)
+                added=base * zone_f * att_f * gate_f * _shape)
     elif trace is not None:
         trace['bonus'] = None   # the shape gate did not fire: no weapon towering over the diet
     # recal_55: THE BIG HUB. An efficient playmaking center had no channel - his assists scored
@@ -1312,10 +1362,14 @@ if _CARD:
     _table('O_SCORE — the standard weighted path', _ot['terms'])
     _b = _ot.get('bonus')
     if _b:
-        print(f"\nZONE-DOMINANCE BONUS ({_b['kind']}) — the shape gate FIRED")
+        print(f"\nZONE-DOMINANCE BONUS ({_b['kind']}) — the shape gate FIRED"
+              + ('' if _b['shape_f'] >= 1.0 else f" IN PART (recal_137's ramp: share {_b['shape_f']:.4f})"))
         print(f"  zones sorted {_ot['zones']['z']}  (rim {_ot['zones']['rim']} / mid {_ot['zones']['mid']} / 3pt {_ot['zones']['three']})")
+        print(f"  bars (recal_137, width {_b['width']:.1f} of z[0] beneath each): flat "
+              f"{_b['bar_a'] if _b['bar_a'] is not None else 'n/a (zone does not tower)'}"
+              f" · 1.5 x (z[1]+z[2]) = {_b['bar_b']:.1f}  -> shape_f {_b['shape_f']:.4f}")
         print(f"  base {_b['base']:.2f}  x  zone_f {_b['zone_f']:.4f}  x  att_f {_b['att_f']:.4f}  x  gate_f {_b['gate_f']:.4f}"
-              f"  =  +{_b['added']:.3f}")
+              f"  x  shape_f {_b['shape_f']:.4f}  =  +{_b['added']:.3f}")
         print(f"  inputs: paint attempts/100 {_b['paint_att_per100']:.2f} · three attempts/100 {_b['three_att_per100']:.2f}"
               f" · rim_mid_measured {_b['rim_mid_measured']}")
     else:
