@@ -18,7 +18,7 @@
   "tol": 3,
   "before": 66,
   "after": 68,
-  "pipeline_version": 142,
+  "pipeline_version": 143,
   "knobs": [
     {
       "file": "data/team_rating.py",
@@ -61,26 +61,26 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.18",
-      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run per its own instruction",
+      "pattern": "const OFF_TOP = 138\\.19",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run per its own instruction [pipeline-143 integration: the OFF gauge was re-frozen on the merged pool; re-pointed at the current constant]",
       "note": "138.39 -> 138.18; the Warriors '17 are still all-time rank 2 of 1,255, behind the Rockets '18 and ahead of everyone else, exactly as recal_119 and recal_140 left them"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 100\\.47",
-      "label": "the era-adjusted floor",
+      "pattern": "const OFF_MIN = 100\\.42",
+      "label": "the era-adjusted floor [pipeline-143 integration: the OFF gauge was re-frozen on the merged pool; re-pointed at the current constant]",
       "note": "101.05 -> 100.47"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MID = 121\\.67",
-      "label": "the all-time median five reads 50",
+      "pattern": "const OFF_MID = 121\\.68",
+      "label": "the all-time median five reads 50 [pipeline-143 integration: the OFF gauge was re-frozen on the merged pool; re-pointed at the current constant]",
       "note": "121.76 -> 121.67"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 121\\.7882",
-      "label": "and its reference league",
+      "pattern": "const OFF_LEVEL_REF = 121\\.7957",
+      "label": "and its reference league [pipeline-143 integration: the OFF gauge was re-frozen on the merged pool; re-pointed at the current constant]",
       "note": "121.8003 -> 121.7882; the 47-season OFF_LEVEL table moved by hundredths"
     },
     {
