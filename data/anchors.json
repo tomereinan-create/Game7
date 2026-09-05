@@ -475,15 +475,6 @@
     "note": "bigs untouched by construction"
   },
   {
-    "card": "Caron Butler '08",
-    "scale": "def",
-    "target": 73,
-    "tol": 1,
-    "round": 57,
-    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
-    "note": "gambler eases"
-  },
-  {
     "card": "Dennis Rodman '90",
     "scale": "def",
     "target": 94,
@@ -508,15 +499,6 @@
     "round": 55,
     "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
     "note": "THE COMPLAINT"
-  },
-  {
-    "card": "Vlade Divac '95",
-    "scale": "attr:perdef",
-    "target": 78,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "the pre-2014 relief, as ordered"
   },
   {
     "card": "Arvydas Sabonis '96",
@@ -1317,5 +1299,14 @@
     "round": 133,
     "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
     "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
+  },
+  {
+    "card": "Manu Ginóbili '11",
+    "scale": "attr:perdef",
+    "target": 72,
+    "tol": 2,
+    "round": 141,
+    "ruling": "This should be low 70s not high.",
+    "note": "recal_141: the pre-2014 no-vote DBPM relief's slope 0.60 -> 0.52, which retires the 0.80 plateau (reached at P = 0.867 before, at P = 1.0 now). The subject read 78 purely because his DBPM percentile 0.848 cleared that plateau. Landed with recal_57's Caron Butler '08 def 73 +-1 and recal_55's Vlade Divac '95 perdef 78 +-1 released by his \"Agree with Manu\"."
   }
 ]

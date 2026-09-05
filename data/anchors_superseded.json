@@ -726,5 +726,25 @@
     "ruling": "Dont do 87, only shift the weights a little torward 88",
     "note": "superseded by recal_121: Tomer reaffirmed Westbrook '15 OFF 85 after the 111 decline named this pin. recal_111 declined the Westbrook '15 ruling BECAUSE of this anchor and said so (\"release RUSSELL WESTBROOK '17's 91 +-1 pin - it is the binding one\"); he saw the decline with the blocker named and repeated the ruling, which is the explicit release. '17 is the WORSE season on both faults the ruling names - efficiency 48 against '15's 51, ball security 54 against 60, at the same volume 98 - so no charge that is non-increasing in either can take '15 to 85 and leave '17 at 91. He now reads what the formula gives, at or below '15.",
     "current": 85
+  },
+  {
+    "card": "Caron Butler '08",
+    "scale": "def",
+    "target": 73,
+    "tol": 1,
+    "round": 57,
+    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
+    "note": "superseded by recal_141: Tomer reaffirmed Ginóbili '11 perdef low 70s after the 134 decline named this pin. recal_134 declined the Ginóbili '11 ruling BECAUSE of this pin and said so: Butler sits BELOW the subject on the only input the pre-2014 no-vote relief reads (DBPM percentile 0.826 vs 0.848) and on every other perdef input, so any monotone re-cut that lowers Ginóbili lowers Butler by at least as much. He was standing on the floor of his own band (raw DEF 71.5123) before this round; he now reads what the formula gives.",
+    "current": 69
+  },
+  {
+    "card": "Vlade Divac '95",
+    "scale": "attr:perdef",
+    "target": 78,
+    "tol": 1,
+    "round": 55,
+    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+    "note": "superseded by recal_141: Tomer reaffirmed Ginóbili '11 perdef low 70s after the 134 decline named this pin. This is recal_55's OWN relief anchor and recal_55 is the round being amended: holding Divac '95 at 77+ while taking the subject to 74 or less needs a nine-point cliff across 0.032 of DBPM percentile (he is smoothed 0.6/0.2/0.2 against '94 at P 0.761 and '96 at P 0.898), i.e. exactly the plateau-with-a-cliff shape recal_20 and recal_82 exist to remove.",
+    "current": 75
   }
 ]
