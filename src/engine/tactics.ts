@@ -357,6 +357,16 @@ export const DEFAULT_TACTICS: Tactics = {
  * WIDE again (0.29, where r137's was 0.059), so it takes its true midpoint by r126's rule:
  * .18 -> .48, oracle +0.554 and blind -0.403, 0.054 and 0.103 of room either way. crashOff held at
  * .17 (oracle +0.664) and the seven others held their bands untouched. All nine pass.
+ * recal_139's efficient-interior re-cut moved 152 o_ovrs and 134 OVRs (0 d_ovrs) and reshuffled the
+ * ovr>=55 pool again, and TWO taxes broke on the BLIND edge together: hunt -0.2993 and crash def
+ * glass -0.2788, both against the -0.30 ceiling, and both for the same reason as the round before
+ * — the fives got stronger, so a blind call costs less against them. hunt swept 3.80 (-0.2993) /
+ * 3.808 (-0.3054) / 3.85 (-0.3380) / 3.95 (oracle +0.515) / 3.98 (+0.5005) / 3.99 (+0.4957, under)
+ * — feasible about 3.801 to 3.981, midpoint 3.89. crashDef swept .48 (-0.2788) / .502 (-0.2943) /
+ * .53 (-0.3141) / .67 (+0.549, -0.414) / .80 (+0.509) / .829 (+0.5001) / .831 (+0.4995, under) —
+ * feasible about .510 to .830, midpoint .67. Both take their true midpoints by r126's rule:
+ * hunt 3.80 -> 3.89, crashDef .48 -> .67. crashOff held at .17 and the six others held their bands
+ * untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -364,9 +374,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
+  hunt: 3.89,
   crashOff: 0.17,
-  crashDef: 0.48,
+  crashDef: 0.67,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

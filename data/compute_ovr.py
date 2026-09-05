@@ -855,8 +855,54 @@ def o_score(p, trace=None):
     # MEASURED: 154 of 10,000 cards move on OFF, every one of them UP, max +13; DEF and every
     # attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no entrant
     # and no leaver. All 118 anchors hold at every size tested from 0.10 to 0.20.
-    EF_E_LO, EF_E_HI = 85.0, 99.0
-    EF_V_LO, EF_V_HI = 25.0, 55.0
+    # recal_139 (HIS RULING, verbatim: "Nene maybe around 66"). THE GATE ASKED ONE CLAIM TWICE, AND
+    # ONE OF ITS TWO RAMPS WAS A NEEDLE.
+    #
+    # THE CARD. Nenê '11 reads OFF 60 and his own '10 reads 70, and the whole ten points is this
+    # term: '10 takes it at gate 1.00 (+13.86) and '11 at gate 0.12 (+1.50). Nothing else on the two
+    # sheets moves by anything - rim 72/73, orb 67/65, free throws identical, playvol 33/38. What
+    # moved is that BOTH of the gate's ramps slid at once: efficiency 99 -> 88 (his true shooting
+    # relative to the league went .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3). Neither
+    # slide is large. Their PRODUCT is: 0.21 x 0.57 = 0.12, an eighth of the term for a card that is
+    # still in the top 3% of his class on conversion.
+    # This is recal_117's item 4 one term down the file, in its own words: "the product of two
+    # decreasing factors is steeper than either", and the fix is the same in kind - READ THE CLAIM
+    # ONCE. The two ramps are two readings of ONE statement, "his conversion is elite FOR HIS
+    # USAGE"; multiplying them asks it twice. The gate now takes their GEOMETRIC MEAN, which is the
+    # single share whose square is the product. It is ZERO whenever either factor is zero, so every
+    # exclusion the term depends on is byte-identical: Deandre Ayton '26 (efficiency 81), Clint
+    # Capela '17 (79) and Domantas Sabonis '21 (70) are still below the efficiency foot and take
+    # nothing, Kyle Korver '15 and Steve Kerr '96 are still stopped by the 3pt gate, and John
+    # Stockton '96 by the playvol gate.
+    #
+    # THE EFFICIENCY RAMP WAS A NEEDLE, and this is recal_117's OTHER complaint, measured the same
+    # way. Of the 4,256 cards inside this term's own class (3pt < 68, playvol < 70, volume < 55),
+    # efficiency 85 is the top 4.42% and efficiency 99 is the top 0.26% - full credit was reserved
+    # for ELEVEN CARDS. The FOOT IS UNTOUCHED at 85, because it is what "ELITE conversion" means and
+    # it is what excludes Ayton, Capela '17 and Sabonis. The TOP is re-cut to the class's own UPPER
+    # QUARTILE of conversion among the 188 cards that clear the foot - measured 93 (median 89, p25
+    # 87) - which is recal_130's own way of setting a saturation point from the class it prices.
+    #
+    # THE VOLUME BAND IS NOT CHOSEN, IT IS WHAT HIS OWN STANDING PIN LEAVES, and that is stated
+    # plainly because it is the whole cost of this round. CLINT CAPELA '18 is pinned off 61 +-1 by
+    # recal_52, reads 62, and has ZERO room upward - and he is the SAME CARD as the subject at this
+    # term's inputs: true shooting relative to the league .664 against .660, usage 19.3 against
+    # 19.3, and a HIGHER efficiency rating (91 against 88), so his gate today (0.143) is already
+    # ABOVE the subject's (0.121). Any softening that is monotone in efficiency and volume therefore
+    # pays him at least what it pays the subject, and only the VOLUME side can separate them: he is
+    # volume 45 and the subject is 38. Solving the two constraints - the subject's term must reach
+    # about 8.4 and Capela's must not exceed about 2.4 - forces any linear volume factor to have its
+    # top at or below ~47 and its foot at or above ~35. 35 and 45 are the round numbers inside that
+    # window. The consequence is honest and is not hidden: Capela '18 loses this term entirely and
+    # goes 62 -> 60, which is the FLOOR of his own band.
+    # MEASURED, over 720 parameterisations of this gate's whole family (both feet, both tops, the
+    # size from 0.14 to 0.20, and three ways of combining the two shares), each graded against every
+    # standing anchor: 83 hold the whole board and the highest reading any of them gives the subject
+    # is 69. The setting taken is the one that reaches his band with the smallest worst-case move.
+    # MEASURED on the pool: 152 of 10,000 cards move on OFF, 138 up and 14 down, max +7 and max -3,
+    # mean +3.78; DEF and every attribute move on ZERO; OVR follows on 134. Every anchor holds.
+    EF_E_LO, EF_E_HI = 85.0, 93.0
+    EF_V_LO, EF_V_HI = 35.0, 45.0
     EF_PV_LO, EF_PV_HI = 40.0, 70.0
     EF_3P_LO, EF_3P_HI = 40.0, 68.0
     _ee = min(1.0, max(0.0, (a['efficiency'] - EF_E_LO) / (EF_E_HI - EF_E_LO)))
@@ -864,10 +910,14 @@ def o_score(p, trace=None):
     _ep = min(1.0, max(0.0, (EF_PV_HI - a['playvol']) / (EF_PV_HI - EF_PV_LO)))
     _e3 = min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO)))
     if _ee * _ev * _ep * _e3 > 0.0:
-        _ef = 0.14 * a['efficiency'] * _ee * _ev * _ep * _e3
+        # recal_139: the two halves of ONE claim are combined by their GEOMETRIC MEAN, not their
+        # product. The two EXCLUSION gates (_ep for recal_109's passers, _e3 for recal_64's
+        # shooters) stay hard multipliers — they decide class membership, not degree.
+        _ef = 0.14 * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3
         std += _ef
         if trace is not None:
-            trace['interior'] = dict(gate=_ee * _ev * _ep * _e3, added=_ef)
+            trace['interior'] = dict(gate=((_ee * _ev) ** 0.5) * _ep * _e3, added=_ef,
+                                     eff_share=_ee, vol_share=_ev, product=_ee * _ev)
     # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
     # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
     #
@@ -1453,8 +1503,10 @@ if _CARD:
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
     if 'interior' in _ot:
         _i2 = _ot['interior']
-        print(f"EFFICIENT INTERIOR SCORER (recal_112) - gate {_i2['gate']:.2f}: "
-              f"+{_i2['added']:.3f}")
+        print(f"EFFICIENT INTERIOR SCORER (recal_112; recal_139 reads the claim ONCE) - efficiency "
+              f"share {_i2['eff_share']:.3f} and volume share {_i2['vol_share']:.3f}, combined by "
+              f"their geometric mean {(_i2['product'] ** 0.5):.3f} rather than their product "
+              f"{_i2['product']:.3f} -> gate {_i2['gate']:.2f}: +{_i2['added']:.3f}")
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
