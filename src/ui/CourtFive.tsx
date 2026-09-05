@@ -109,14 +109,26 @@ const PAINT_C: XY = at(4, 10)
 const BALL: XY = at(12, 31)
 const SCREEN: XY = at(3, 25)
 export const PAIR_FT = Math.hypot(9, 6)
-/**
- * THE POP SPOT (recal_129, his ruling: "Add pick n pop"). The same screen, released: the screener
- * steps BACK rather than rolling, so he stands behind the arc on the far side of the ball, a stride
- * further from the middle than the screen was. Nobody is inside the line in this set.
- */
-const POP: XY = at(-2, 33)
-const ELBOW_L: XY = at(-8, KEY_D)
 const ELBOW_R: XY = at(8, KEY_D)
+/**
+ * THE TRIANGLE'S FIVE SPOTS (recal_128, his ruling: "Add Triangle"; then "Change the triangle to be
+ * like the 2nd picture"; now his ruling: "Fix triangle to look like this", over the teaching diagram
+ * that draws a 15-18-20-feet line between every neighbouring pair). What stood here was a two-guard
+ * front — point, two wings, and the bigs side by side at the elbows — which is a SETUP and has no
+ * triangle in it at all. The diagram's shape does: a SIDELINE TRIANGLE on the strong side, the post
+ * on the lane line with the corner and the wing above him on the sideline, and the two-man game on
+ * the weak side, the point at the top of the key and the pinch post at the weak-side elbow extended.
+ * Walk the pentagon and four of its five sides land in the 15-to-20 the diagram labels: point to
+ * pinch 15.6 feet, pinch to post 19.3, post to corner 15.5, corner to wing 16.8. The fifth, the
+ * point's skip across the top to the wing, is 24.3 and cannot be 20 — an NBA arc is wider than the
+ * diagram's, and pulling that pair together would either drag the point off the key or drag the
+ * wing off the sideline. Nothing crowds: the closest two men stand 15.5 feet apart, half again the
+ * pick-and-roll's own PAIR_FT, which is the tightest this floor ever draws two rings.
+ */
+const TRI_POST: XY = at(8, 12)
+const TRI_WING: XY = peri(46, 4)
+const TRI_TOP: XY = peri(-6, 4)
+const TRI_PINCH: XY = at(-10, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
 /* the two break lanes RUN_L/RUN_R went with the transition set (recal_127, his ruling:
@@ -292,54 +304,58 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
         [peri(-45), 1],
         [peri(45), 1],
       ])
-    case 'pnr': {
-      // the ball at the top, the screen set right beside him at the top of the key, and the other
-      // three OUTSIDE the line — the weak-side wing and both corners (his ruling: "If its pnr, put
-      // the screener next to the handler, and the rest outside the 3pt line"). No inside spot in
-      // reserve any more: the screener is the one man inside the arc, so the shortest of the three
-      // (his ruling: "smallest not handler guy on the wing, the other 2 corners") takes the wing
-      // and the corners go to the other two. Both men come from the plan (his ruling: the pair is
-      // a call).
-      const pair = pnrPair(men, plan?.pnr)
+    case 'pnr':
+    case 'pickpop': {
+      // ONE SHAPE, TWO CALLS (his ruling: "If its pnr, put the screener next to the handler, and
+      // the rest outside the 3pt line"; then, for the pop, "Make pick n pop to be the same as pick
+      // n roll in terms of design"). The ball at the top, the screen set right beside him at the
+      // top of the key, and the other three OUTSIDE the line — the weak-side wing and both corners.
+      // No inside spot in reserve: the screener is the one man inside the arc, so the shortest of
+      // the three (his ruling: "smallest not handler guy on the wing, the other 2 corners") takes
+      // the wing and the corners go to the other two.
+      //
+      // The pop used to draw its own floor — a POP spot behind the arc and a shooting sort for the
+      // other three — which made the shape the tell. It is not: the roll and the pop set the SAME
+      // screen and the difference is which big walks into it, so the two cases share one body and
+      // part only on the pair the engine names, pnrPair against popPair. Written as fallthrough
+      // rather than as a copy so the two can never drift apart again.
+      const pair = (style === 'pnr' ? pnrPair : popPair)(men, plan?.pnr)
       const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
       let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
       // a five with no big at all, or a pair the floor cannot honour: the tallest man who is not
       // the handler sets the screen, so the shape is always five men on five different spots
       if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
+      // the other three by HEIGHT, the shortest onto the wing and the corners to the other two (his
+      // ruling: "smallest not handler guy on the wing, the other 2 corners") — except in the POP,
+      // where a man who cannot shoot sorts BELOW every man who can, worst shooter lowest, so the
+      // wing is his and the corners go to shooters. The roll does not need that clause: ITS
+      // screener is the non-shooting big, so the three left over are shooters already. The pop's
+      // screener is the SHOOTING big by definition, which leaves the man who cannot space still
+      // standing out there, and a straight height sort walks him into a CORNER — the one thing his
+      // older ruling forbids ("Why is Ayton out and James in? Makes no sense"). A five carrying TWO
+      // men who cannot shoot still seats one of them in a corner, because this shape holds one wing
+      // and two corners and nothing else; the sort at least sends the worse shooter to the wing,
+      // which is what the pop's old floor did too. That clause and the pair are the whole of the
+      // difference between the two sets, and both are differences of WHO, never of WHERE.
+      const tall = (p: Player) => p.attrs.height
       return stand(
         men,
         { [h]: BALL, [s]: SCREEN },
         [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]],
         [],
-        (p) => p.attrs.height,
+        style === 'pnr' ? tall : (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),
       )
     }
-    case 'pickpop': {
-      // THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll shape with the screen
-      // released: the ball where it always is, and the screener stepping BACK behind the arc on the
-      // other side of him instead of rolling to the top of the key. Nobody is inside the line at
-      // all — the whole point of the call is that the roll man does not roll — and the other three
-      // keep b4c50a4's spacing, the shortest on the weak-side wing and the corners to the rest.
-      const pair = popPair(men, plan?.pnr)
-      const h = pair.handler ? men.findIndex((p) => p.name === pair.handler!.name) : 0
-      let s = pair.screener ? men.findIndex((p) => p.name === pair.screener!.name) : -1
-      if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
-      // the three off-ball men are ordered by SHOOTING here, not by height as the roll orders them
-      // (his ruling: "smallest not handler guy on the wing"). The roll can afford that because its
-      // screener is almost always the five's non-shooting big; the pop's screener is a shooter by
-      // definition, so a second man who cannot shoot would otherwise be sent to a CORNER, which is
-      // the one thing his other ruling forbids ("Why is Ayton out and James in?"). The worst
-      // shooter of the three takes the weak-side wing and the corners go to the better two.
-      return stand(men, { [h]: BALL, [s]: POP }, [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]])
-    }
-    case 'triangle': {
-      // THE TWO-GUARD-FRONT SETUP (recal_128, his ruling: "Add Triangle"; then his ruling: "Change
-      // the triangle to be like the 2nd picture" — the standard teaching diagram: the point at the
-      // top, a guard spread to each wing, and the two bigs together inside at the two elbows, ready
-      // to relocate into the strong-side triangle once the ball enters. Slot order, not a shooting
-      // sort or a featured post man: PG top, SG and SF the wings, PF and C the two elbows.
-      return [peri(0, 6), peri(-38), peri(38), ELBOW_L, ELBOW_R]
-    }
+    case 'triangle':
+      // THE SIDELINE TRIANGLE (his ruling: "Fix triangle to look like this", over the teaching
+      // diagram). The strong side carries the triangle the set is named for — the post on the lane
+      // line, the corner, and the wing on the sideline above him — and the weak side carries the
+      // two-man game, the point at the top of the key and the pinch post at the elbow extended.
+      // Slot order, not a shooting sort and not a featured post man, the same way balanced and
+      // five-out are stood: PG at the point, SG on the wing, SF in the corner under him, PF at the
+      // pinch post, C on the post. Two men inside the arc and three ringing it, as before — but
+      // the two inside are now the two ENDS of the read rather than a pair of bigs side by side.
+      return [TRI_TOP, TRI_WING, CORNER_R, TRI_PINCH, TRI_POST]
     case 'postup': {
       // the post man on the block, and a second big who cannot shoot takes the dunker spot, the
       // set's other inside spot. The hub is HIS when the plan names one (recal_124, his ruling:
