@@ -3164,6 +3164,31 @@ body:has(.sheet) .map-fab { display: none; }
 .node.wood .ticket-next { display: none; }
 
 /* ==========================================================================
+   THE DESK MAP (his ruling: "Widen it, needs to be full screen"). The map now takes the same
+   body.wide opt-in the draft and My team take, so the trail is handed the whole window rather
+   than a 560px column, and the tickets are read from much further across the screen — they grow
+   with it. This sits BELOW both skins and names them, because a ticket's width is set by the skin
+   (.node.arena .ticket, .node.wood.now .ticket) at the same specificity a plain .trail .ticket
+   would have: written above them it lost the cascade and every ticket stayed its phone size.
+   ========================================================================== */
+@media (min-width: 900px) {
+  .node.arena .ticket,
+  .node.wood .ticket { width: 104px; padding: 9px 8px 8px; }
+  .node.arena.now .ticket { width: 118px; padding: 10px 8px 9px; }
+  .node.wood.now .ticket { width: 122px; padding: 22px 0 9px; }
+  .node.wood.locked .ticket { padding: 9px 8px 8px; }
+  .node .ticket-n { font-size: 30px; }
+  .node.arena.now .ticket-n,
+  .node.wood.now .ticket-n { font-size: 34px; }
+  .node .ticket-stub { font-size: 9.5px; }
+  .node .ticket-next { font-size: 9px; }
+  .node .ticket-champ { font-size: 9px; }
+  .node .node-stars { font-size: 15px; gap: 2px; }
+  .node.wood .ticket-stub .ab { height: 21px; line-height: 21px; }
+  .node.wood.now .ticket-stub .ab { height: 21px; line-height: 21px; }
+}
+
+/* ==========================================================================
    THE CHROME — header, era banners, notices and foot, in whichever skin the
    level you are on belongs to.
    ========================================================================== */
@@ -3246,3 +3271,7 @@ body:has(.sheet) .map-fab { display: none; }
 .node.arena.done .ticket-stub, .node.wood.done .ticket-stub { opacity: 1; }
 .node.arena.locked { opacity: 0.5; }
 .node.wood.locked { opacity: 0.55; }
+
+.freshness-probe-53503 {
+  color: #123456;
+}

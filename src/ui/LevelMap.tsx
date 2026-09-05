@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
@@ -13,11 +13,26 @@ const W = 375
 const STEP = 170 // vertical distance between levels (ticket + stars or dials)
 const PAD = 56 // room above the top node and below the bottom one
 const H = PAD * 2 + STEP * (ROUNDS - 1)
-const xAt = (i: number) => W / 2 + 0.34 * W * Math.sin((i * 2 * Math.PI) / 7) // winds every 7 levels
 const yAt = (i: number) => H - PAD - STEP * i // level 1 at the bottom, climbing
 
+/**
+ * THE WIND, in levels per full swing (his ruling: "Widen it, needs to be full screen"). The trail
+ * is drawn in the 375-wide space above and stretched to whatever column it is given, so its
+ * amplitude is always 34% of that width — on a desk that is now the whole screen rather than a
+ * phone column. Held at the fixed 7 levels it used to wind at, that much wider swing over the same
+ * 170px step would flatten the path into a near-horizontal zigzag, so the period stretches with the
+ * width instead: the trail sweeps the whole screen in long arcs, and the horizontal travel per
+ * level stays the ~114px it is on a phone, which is the angle this trail was drawn at. A phone is
+ * the floor of the clamp and keeps the 7 it always had.
+ */
+export const windOf = (colW: number) => Math.max(7, (7 * colW) / W)
+export const xOf =
+  (colW: number) =>
+  (i: number): number =>
+    W / 2 + 0.34 * W * Math.sin((i * 2 * Math.PI) / windOf(colW))
+
 /** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
-function trail(): string {
+function trail(xAt: (i: number) => number): string {
   const pts = Array.from({ length: ROUNDS }, (_, i) => [xAt(i), yAt(i)])
   let d = `M ${pts[0][0]} ${pts[0][1]}`
   for (let i = 0; i < pts.length - 1; i++) {
@@ -31,7 +46,6 @@ function trail(): string {
   }
   return d
 }
-const TRAIL = trail()
 
 /** Roman numerals for the era kicker — the ladder is four tiers and will not outgrow this. */
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
@@ -140,6 +154,42 @@ export function LevelMap({
   // Destructive actions ask IN the game (browser popups never render on his phone).
   const [askReset, setAskReset] = useState(false)
 
+  /**
+   * THE DESK MAP (his ruling: "Widen it, needs to be full screen"). The map used to be the one
+   * campaign screen still boxed into the phone column while the draft and My team already spread
+   * out, so on a desk it drew a 560px ribbon of tickets down the middle of a black window. It
+   * takes the SAME opt-in they take rather than inventing a third width.
+   */
+  // A LAYOUT effect, and declared above the measure below, because the two are ordered: this class
+  // is what takes #root from the 562px column to the full window, so measuring the trail before it
+  // lands reads the OLD width and winds the whole map to a column it is no longer in.
+  useLayoutEffect(() => {
+    document.body.classList.add('wide')
+    return () => document.body.classList.remove('wide')
+  }, [])
+
+  /**
+   * The width the trail is actually handed, so the wind can be cut to it. It is read STRAIGHT off
+   * the box in a layout effect and then again on every window resize — deliberately not through a
+   * ResizeObserver, which only delivers callbacks as part of the rendering lifecycle: a tab that is
+   * not painting (a background tab, an off-screen preview) never fires one, and the map would draw
+   * its whole trail at the 375 fallback while measuring 1438 to anyone who asked. The column only
+   * changes width when the window does, so a resize listener covers everything a container
+   * observer would, and the first value is synchronous. 375 is the fallback before layout and on
+   * the server: the phone geometry this map has always drawn, so a first paint is never wrong,
+   * only narrow.
+   */
+  const trailRef = useRef<HTMLDivElement>(null)
+  const [colW, setColW] = useState(W)
+  useLayoutEffect(() => {
+    const measure = () => setColW(trailRef.current?.getBoundingClientRect().width || W)
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+  const xAt = useMemo(() => xOf(colW), [colW])
+  const TRAIL = useMemo(() => trail(xAt), [xAt])
+
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
   }, [])
@@ -208,7 +258,7 @@ export function LevelMap({
         </div>
       </div>
 
-      <div className="trail" style={{ height: H, '--split': `${seamPct}%` } as React.CSSProperties}>
+      <div ref={trailRef} className="trail" style={{ height: H, '--split': `${seamPct}%` } as React.CSSProperties}>
         <svg className="trail-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
           {/* The lit trail is ONE stroke in two colours. userSpaceOnUse pins the stops to the
               viewBox, so the painted cream line becomes the ember line at exactly the y the floor

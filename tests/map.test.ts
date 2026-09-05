@@ -7,7 +7,7 @@ import { balance, buy, canBuy, NODE, NODES, type NodeId } from '../src/engine/tr
 import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
-import { LevelMap } from '../src/ui/LevelMap'
+import { LevelMap, windOf, xOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
 const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], handicap: 0, first: 1 }]
@@ -95,5 +95,59 @@ describe('the campaign map always has a door to the staff tree', () => {
     expect(hasNotice(map(p))).toBe(false) // plain campaign does not sell payroll room
     expect(hasNotice(map(p, { salary: true }))).toBe(true)
     expect(hasDoor(map(p))).toBe(true) // and the door is there either way
+  })
+})
+
+/**
+ * THE DESK MAP (his ruling: "Widen it, needs to be full screen"). The trail is drawn in a 375-wide
+ * space stretched to whatever column it is handed, so its amplitude is ALWAYS 34% of that width —
+ * widening the map widens the swing for free. What does not come for free is the angle: held at
+ * the 7-level period it wound at on a phone, a swing four times as wide over the same 170px step
+ * would lay the trail down into a near-horizontal zigzag. So the period stretches with the width
+ * and the horizontal travel per level stays put. That is the whole claim, and it is arithmetic, so
+ * it is tested here rather than by looking at a screenshot.
+ */
+describe('the trail keeps its angle at any width', () => {
+  const STEP = 170
+  /** The widest gap between two neighbouring levels, in px, on a column this wide. */
+  const travel = (colW: number) => {
+    const x = xOf(colW)
+    let worst = 0
+    for (let i = 0; i < 60; i++) worst = Math.max(worst, (Math.abs(x(i + 1) - x(i)) * colW) / 375)
+    return worst
+  }
+
+  it('winds every 7 levels on a phone, and slower the wider the column gets', () => {
+    expect(windOf(347)).toBe(7)
+    expect(windOf(375)).toBe(7)
+    expect(windOf(1438)).toBeCloseTo(26.84, 1)
+    // never tighter than the phone's 7, however narrow the box is measured
+    expect(windOf(0)).toBe(7)
+    expect(windOf(120)).toBe(7)
+  })
+
+  it('the swing still fills the column — the amplitude is 34% of it at every width', () => {
+    for (const colW of [375, 562, 1438]) {
+      const x = xOf(colW)
+      const xs = Array.from({ length: 200 }, (_, i) => x(i))
+      const spread = (Math.max(...xs) - Math.min(...xs)) / 375
+      expect(spread).toBeGreaterThan(0.66)
+      expect(spread).toBeLessThanOrEqual(0.68)
+    }
+  })
+
+  it('and the step between neighbours stays the angle it was drawn at, not a flat zigzag', () => {
+    const phone = travel(375)
+    for (const colW of [562, 900, 1438, 1900]) {
+      // within a couple of pixels of the phone's own travel, so the slope never lies down
+      expect(Math.abs(travel(colW) - phone)).toBeLessThan(24)
+      // and stated as an angle off vertical: the trail was drawn at ~30 degrees and stays there
+      expect((Math.atan2(travel(colW), STEP) * 180) / Math.PI).toBeLessThan(38)
+    }
+    // the bug this guards: a fixed 7-level wind on a desk column lays the trail nearly flat
+    const flat = (i: number) => 375 / 2 + 0.34 * 375 * Math.sin((i * 2 * Math.PI) / 7)
+    let flatTravel = 0
+    for (let i = 0; i < 60; i++) flatTravel = Math.max(flatTravel, (Math.abs(flat(i + 1) - flat(i)) * 1438) / 375)
+    expect((Math.atan2(flatTravel, STEP) * 180) / Math.PI).toBeGreaterThan(60)
   })
 })
