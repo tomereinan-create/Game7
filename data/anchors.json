@@ -1,1321 +1,1348 @@
 [
-  {
-    "card": "Cedric Maxwell '80",
-    "scale": "off",
-    "target": 67,
-    "tol": 4,
-    "round": 112,
-    "ruling": "I think in general eff is getting undervalued. 17pgg on 68 ts(on a bad era). Has to show mid to high 60's at least. Even low 70's",
-    "note": "the efficient interior scorer, the mirror of recal_64's off-ball floor: elite efficiency paid at low usage, gated on efficiency 85->99, volume 55->25, playvol 70->40 and 3pt 68->40. 55 -> 67, the middle of the \"mid to high 60's\" his ruling states. His own lever, the global efficiency weight, was measured first and breaks 25 anchors before reaching the band."
-  },
-  {
-    "card": "Lakers '00 (best legal five)",
-    "five": [
-      "Ron Harper '00",
-      "Kobe Bryant '00",
-      "Glen Rice '00",
-      "Robert Horry '00",
-      "Shaquille O'Neal '00"
-    ],
-    "season": 2000,
-    "scale": "team:offdial",
-    "target": 64,
-    "tol": 4,
-    "round": 110,
-    "ruling": "How is this team 47 OFF with 2 all time great players",
-    "note": "HIS SECOND NAMED CASE. The '00 Lakers read OFF 47 when he asked; 48 when this round measured, 17th of the 28 fieldable 2000 teams against a real ORtg rank of 5th. Shaquille O'Neal was taking the full paint-clog penalty for Harper's and Horry's shooting while creating his own shot at 31.5 usage, and the five's raw fit was -8.07 against a -4 clamp."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2000,
-    "ab": "LAL",
-    "scale": "team:off",
-    "max_rank": 5,
-    "round": 110,
-    "ruling": "How is this team 47 OFF with 2 all time great players",
-    "note": "the rank is the thing he was pointing at, and it survives any rescale: 17th of 28 -> 2nd, against a real ORtg rank of 5th."
-  },
-  {
-    "kind": "team_rank",
-    "season": 1996,
-    "ab": "CHI",
-    "scale": "team:off",
-    "max_rank": 6,
-    "round": 110,
-    "ruling": "there is more work to do",
-    "note": "THE ROUND'S OWN FINDING, pinned. The Bulls '96 read 8th of the 29 fieldable 1996 teams on offence against a real ORtg rank of 1st; they read 4th now. The bound is 6 rather than 2 because 4th is where the formula honestly puts them — see data/rounds/110.json for why 1st or 2nd is not reachable without claiming their offence was near the 2017 Warriors'."
-  },
-  {
-    "card": "Steve Nash '05",
-    "scale": "off",
-    "target": 85,
-    "tol": 3,
-    "round": 109,
-    "ruling": "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol",
-    "note": "the elite-passer term: playvol x (1 - volume/100), gated playvol 80->95 and volume 65->10, scaled by an efficiency factor 0.5->1.0 across 70->90. 78 -> 85, ON the floor his ruling states. Size 0.32 is HIS choice over the fit's 0.36 - see receipt 109."
-  },
-  {
-    "card": "Mark Jackson '00",
-    "scale": "off",
-    "target": 58,
-    "tol": 3,
-    "round": 109,
-    "ruling": "Agree with both",
-    "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 48 -> 57. The efficiency factor's 0.5 FLOOR is what keeps him: his efficiency is 52."
-  },
-  {
-    "card": "Mark Jackson '98",
-    "scale": "off",
-    "target": 55,
-    "tol": 3,
-    "round": 109,
-    "ruling": "Agree with both",
-    "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 43 -> 54 at efficiency 36, on the floor."
-  },
-  {
-    "card": "Deandre Ayton '26",
-    "scale": "off",
-    "target": 58,
-    "tol": 3,
-    "round": 107,
-    "ruling": "This should be around 58 OFF. Super eff",
-    "note": "the two-level big: for an efficient big with a genuine second scoring level, the second zone is paid at the FIRST zone rate (0.22, z[0] own weight). 52 -> 58. Gated on is_big and volume < 55 (recal_64 own gate), mid 55->70 and efficiency 70->85 - the last being his own reason, Super eff."
-  },
-  {
-    "card": "Herbert Jones '23",
-    "scale": "def",
-    "target": 91,
-    "tol": 4,
-    "round": 103,
-    "ruling": "Herb jones DEF way too low all seasons",
-    "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 88 +-4 and 91 is what the fix lands. The position branch of d_bigness now yields to the card own defensive shape: a listed big whose perimeter disruption runs far ahead of his defensive rebounding is graded as the wing he is. 76 -> 91."
-  },
-  {
-    "card": "Michael Jordan '89",
-    "scale": "off",
-    "target": 99,
-    "tol": 1,
-    "round": 102,
-    "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
-    "note": "a FLOOR of 98, written as 99 +-1 because that is what \"98+\" means on a scale capped at 99"
-  },
-  {
-    "card": "Michael Jordan '89",
-    "scale": "def",
-    "target": 99,
-    "tol": 1,
-    "round": 102,
-    "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
-    "note": "the same floor on DEF"
-  },
-  {
-    "card": "Steve Novak '13",
-    "scale": "off",
-    "target": 60,
-    "tol": 3,
-    "round": 99,
-    "ruling": "Agree with 1-7",
-    "note": "r91's stretch-big terms now paid against real load OR real glass; volume 9, orb 19, so he keeps r64's wing floor"
-  },
-  {
-    "card": "Anthony Tolliver '14",
-    "scale": "off",
-    "target": 56,
-    "tol": 3,
-    "round": 99,
-    "ruling": "Agree with 1-7",
-    "note": "same gate; volume 7, orb 44"
-  },
-  {
-    "card": "Karl Malone '99",
-    "scale": "off",
-    "target": 90,
-    "tol": 2,
-    "round": 98,
-    "ruling": "How is Karl Malone 99 is 93 OFF? 24ppg with mid passing and 3.3 tov cant be this high. Eff is good but nothing crazy..",
-    "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 87 +-3 and 90 is the FRONTIER: the lowest reading this card can take with every standing anchor held, searched over the hub ramp against the volume, efficiency, ballsec and signature weights jointly. 93 -> 90 by ramping recal_55's big hub from a cliff at playvol 60 to full credit at 80, so \"mid passing\" stops collecting a hub premium."
-  },
-  {
-    "card": "Ty Jerome '25",
-    "scale": "off",
-    "target": 71,
-    "tol": 4,
-    "round": 96,
-    "ruling": "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81",
-    "note": "the load term: volume and playvol paid in proportion to minutes share; 81 -> 71 on 19.9 mpg"
-  },
-  {
-    "card": "Montrezl Harrell '18",
-    "scale": "off",
-    "target": 63,
-    "tol": 2,
-    "round": 96,
-    "ruling": "Montrezl Harrell '18 is too high OFF as well",
-    "note": "NO NUMBER WAS GIVEN - directional (\"too high\"), so the pin is where the same load term lands him, 77 -> 63 on 17.0 mpg, at +-2. Accepted by him at this value (\"As is, accept both\")."
-  },
-  {
-    "card": "Jimmy Butler '16",
-    "scale": "def",
-    "target": 85,
-    "tol": 3,
-    "round": 93,
-    "ruling": "Agree with 16 Jimmy",
-    "note": "same ramp; 71 -> 85, and the '15/'16/'17 sequence reads 89/85/83 instead of 89/71/83"
-  },
-  {
-    "card": "Scottie Pippen '03",
-    "scale": "def",
-    "target": 76,
-    "tol": 1,
-    "round": 93,
-    "ruling": "Scotty 03 maybe around 75-77",
-    "note": "same ramp; 70 -> 76. rim touched EXACTLY 60 at 3pt 23 - only a blend reaches a number between the two formulas"
-  },
-  {
-    "card": "Kawhi Leonard '14",
-    "scale": "ovr",
-    "target": 80,
-    "tol": 2,
-    "round": 93,
-    "ruling": "Kawhi 14 agree",
-    "note": "the elite-defence floor inside the OVR cap, 0.80 -> 0.85 x d_ovr; 76 -> 80 against a blend of 83"
-  },
-  {
-    "card": "OG Anunoby '21",
-    "scale": "off",
-    "target": 65,
-    "tol": 2,
-    "round": 91,
-    "ruling": "Too low OFF 54. Should be mid 60s",
-    "note": "the stretch-big branch of r64's off-ball floor; 54 -> 64"
-  },
-  {
-    "card": "Rui Hachimura '26",
-    "scale": "off",
-    "target": 65,
-    "tol": 4,
-    "round": 91,
-    "ruling": "OFF should be low 60s, or high 60s. Not 55",
-    "note": "same branch, same round; 55 -> 66"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Rui Hachimura '26",
-    "below": "Tony Snell '18",
-    "round": 91,
-    "ruling": "OFF should be low 60s, or high 60s. Not 55",
-    "note": "the shooting big outranks the wing spacer — the claim of the round"
-  },
-  {
-    "card": "Giannis Antetokounmpo '25",
-    "scale": "off",
-    "target": 99,
-    "tol": 0,
-    "round": 90,
-    "ruling": "Fix the OFF band anchor",
-    "note": "the raw IS the band anchor, so he maps to exactly 99.000"
-  },
-  {
-    "card": "Giannis Antetokounmpo '24",
-    "scale": "off",
-    "target": 98,
-    "tol": 1,
-    "round": 90,
-    "ruling": "Fix the OFF band anchor",
-    "note": "106.4581 maps to 97.58 and rounds to 98"
-  },
-  {
-    "card": "Stephen Curry '16",
-    "scale": "off",
-    "target": 95,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "one of the four complete stars the round predicted flat"
-  },
-  {
-    "card": "Kawhi Leonard '17",
-    "scale": "off",
-    "target": 94,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "flat"
-  },
-  {
-    "card": "LeBron James '13",
-    "scale": "off",
-    "target": 97,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "flat"
-  },
-  {
-    "card": "Kyle Korver '15",
-    "scale": "off",
-    "target": 58,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the specialist eases by one"
-  },
-  {
-    "card": "Steve Kerr '96",
-    "scale": "off",
-    "target": 62,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the specialist eases by one"
-  },
-  {
-    "card": "Reggie Miller '97",
-    "scale": "off",
-    "target": 88,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "flat"
-  },
-  {
-    "card": "DeMar DeRozan '17",
-    "scale": "off",
-    "target": 86,
-    "tol": 2,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88"
-  },
-  {
-    "card": "Chauncey Billups '06",
-    "scale": "off",
-    "target": 86,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the load-and-creation gain, 85 -> 86"
-  },
-  {
-    "card": "Jaylen Brown '26",
-    "scale": "off",
-    "target": 83,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88"
-  },
-  {
-    "card": "Shai Gilgeous-Alexander '25",
-    "scale": "off",
-    "target": 97,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the round's named winner, measured flat"
-  },
-  {
-    "card": "Luka Dončić '23",
-    "scale": "off",
-    "target": 94,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the round's named winner, measured flat"
-  },
-  {
-    "card": "James Harden '19",
-    "scale": "off",
-    "target": 95,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the round's named winner, measured flat"
-  },
-  {
-    "card": "Joakim Noah '09",
-    "scale": "attr:rimprot",
-    "target": 92,
-    "tol": 1,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 0.43 buys 43% of the band, not all of it"
-  },
-  {
-    "card": "Rudy Gobert '19",
-    "scale": "attr:rimprot",
-    "target": 97,
-    "tol": 0,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 1.00 — his rule leaves the five anchors untouched"
-  },
-  {
-    "card": "Victor Wembanyama '24",
-    "scale": "attr:rimprot",
-    "target": 97,
-    "tol": 0,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 1.00"
-  },
-  {
-    "card": "Dikembe Mutombo '97",
-    "scale": "attr:rimprot",
-    "target": 98,
-    "tol": 0,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 1.00"
-  },
-  {
-    "card": "Tim Duncan '03",
-    "scale": "attr:rimprot",
-    "target": 98,
-    "tol": 0,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 1.00"
-  },
-  {
-    "card": "Ben Wallace '04",
-    "scale": "attr:rimprot",
-    "target": 98,
-    "tol": 0,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "drep 1.00"
-  },
-  {
-    "card": "Bobby Jones '82",
-    "scale": "attr:rimprot",
-    "target": 96,
-    "tol": 1,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "target held"
-  },
-  {
-    "card": "Caldwell Jones '82",
-    "scale": "attr:rimprot",
-    "target": 97,
-    "tol": 2,
-    "round": 82,
-    "ruling": "So lets change the bar. 0.4 != 1. The more the better",
-    "note": "target 94-96; reads 97 — a one-point miss recorded at the round"
-  },
-  {
-    "card": "Dikembe Mutombo '01",
-    "scale": "attr:rimprot",
-    "target": 99,
-    "tol": 1,
-    "round": 81,
-    "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
-    "note": "the anchor class holds"
-  },
-  {
-    "card": "Joel Embiid '23",
-    "scale": "attr:rimprot",
-    "target": 91,
-    "tol": 1,
-    "round": 81,
-    "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
-    "note": "the anchor class holds"
-  },
-  {
-    "card": "Jrue Holiday '21",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80"
-  },
-  {
-    "card": "Shaquille O'Neal '00",
-    "scale": "def",
-    "target": 88,
-    "tol": 1,
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "the one test pin re-anchored by this round: D 81 -> 88"
-  },
-  {
-    "card": "Tony Snell '18",
-    "scale": "off",
-    "target": 50,
-    "tol": 1,
-    "round": 64,
-    "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
-    "note": "the class the floor is FOR: 45 -> 50"
-  },
-  {
-    "card": "Bruce Bowen '06",
-    "scale": "off",
-    "target": 45,
-    "tol": 1,
-    "round": 64,
-    "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
-    "note": "40 -> 45"
-  },
-  {
-    "card": "Rudy Gobert '19",
-    "scale": "def",
-    "target": 92,
-    "tol": 1,
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "bigs untouched by construction"
-  },
-  {
-    "card": "Draymond Green '16",
-    "scale": "def",
-    "target": 96,
-    "tol": 1,
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "bigs untouched by construction"
-  },
-  {
-    "card": "Caron Butler '08",
-    "scale": "def",
-    "target": 73,
-    "tol": 1,
-    "round": 57,
-    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
-    "note": "gambler eases"
-  },
-  {
-    "card": "Dennis Rodman '90",
-    "scale": "def",
-    "target": 94,
-    "tol": 1,
-    "round": 57,
-    "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
-    "note": "lockdown holds"
-  },
-  {
-    "card": "Michael Jordan '88",
-    "scale": "attr:ballsec",
-    "target": 95,
-    "tol": 1,
-    "round": 56,
-    "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card"
-  },
-  {
-    "card": "Domantas Sabonis '21",
-    "scale": "off",
-    "target": 71,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "THE COMPLAINT"
-  },
-  {
-    "card": "Vlade Divac '95",
-    "scale": "attr:perdef",
-    "target": 78,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "the pre-2014 relief, as ordered"
-  },
-  {
-    "card": "Arvydas Sabonis '96",
-    "scale": "attr:perdef",
-    "target": 79,
-    "tol": 1,
-    "round": 55,
-    "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
-    "note": "the pre-2014 relief, as ordered"
-  },
-  {
-    "card": "Shawn Bradley '95",
-    "scale": "attr:rimprot",
-    "target": 88,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "no-vote cap"
-  },
-  {
-    "card": "Shaquille O'Neal '93",
-    "scale": "attr:rimprot",
-    "target": 88,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "no-vote cap"
-  },
-  {
-    "card": "Sam Bowie '85",
-    "scale": "attr:rimprot",
-    "target": 88,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "no-vote cap"
-  },
-  {
-    "card": "DeSagana Diop '06",
-    "scale": "attr:rimprot",
-    "target": 88,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "no-vote cap"
-  },
-  {
-    "card": "Yao Ming '09",
-    "scale": "attr:rimprot",
-    "target": 88,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "no-vote cap"
-  },
-  {
-    "card": "Walker Kessler '23",
-    "scale": "attr:rimprot",
-    "target": 92,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "the measured tier"
-  },
-  {
-    "card": "Victor Wembanyama '25",
-    "scale": "attr:rimprot",
-    "target": 97,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "voted, unchanged"
-  },
-  {
-    "card": "Ben Wallace '03",
-    "scale": "attr:rimprot",
-    "target": 98,
-    "tol": 1,
-    "round": 53,
-    "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
-    "note": "voted, unchanged"
-  },
-  {
-    "card": "Shaquille O'Neal '94",
-    "scale": "off",
-    "target": 92,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Shaquille O'Neal '95",
-    "scale": "off",
-    "target": 93,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Shaquille O'Neal '96",
-    "scale": "off",
-    "target": 91,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Hakeem Olajuwon '90",
-    "scale": "off",
-    "target": 73,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Moses Malone '82",
-    "scale": "off",
-    "target": 86,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Patrick Ewing '90",
-    "scale": "off",
-    "target": 85,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
-  },
-  {
-    "card": "Dwight Howard '11",
-    "scale": "off",
-    "target": 78,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
-    "note": "post-97, measured — unchanged"
-  },
-  {
-    "card": "Clint Capela '18",
-    "scale": "off",
-    "target": 61,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
-    "note": "post-97, measured — unchanged"
-  },
-  {
-    "card": "Zion Williamson '21",
-    "scale": "off",
-    "target": 90,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-    "note": "vol 85+, ramp = 1.0 by construction"
-  },
-  {
-    "card": "Hakeem Olajuwon '94",
-    "scale": "off",
-    "target": 88,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-    "note": "vol 85+, ramp = 1.0 by construction"
-  },
-  {
-    "card": "Joel Embiid '23",
-    "scale": "off",
-    "target": 95,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-    "note": "vol 85+, ramp = 1.0 by construction"
-  },
-  {
-    "card": "Shaquille O'Neal '08",
-    "scale": "off",
-    "target": 64,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Shaquille O'Neal '09",
-    "scale": "off",
-    "target": 71,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Clint Capela '17",
-    "scale": "off",
-    "target": 58,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Andre Drummond '20",
-    "scale": "off",
-    "target": 58,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Hakeem Olajuwon '93",
-    "scale": "off",
-    "target": 88,
-    "tol": 1,
-    "round": 50,
-    "ruling": "the creation floor drops 0.55 -> 0.35",
-    "note": "87 at r50, then r52 lifted the inferred-season clamp"
-  },
-  {
-    "card": "Shaquille O'Neal '02",
-    "scale": "off",
-    "target": 98,
-    "tol": 1,
-    "round": 49,
-    "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work"
-  },
-  {
-    "card": "Shaquille O'Neal '01",
-    "scale": "off",
-    "target": 98,
-    "tol": 1,
-    "round": 49,
-    "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Giannis Antetokounmpo '25",
-    "below": "Giannis Antetokounmpo '24",
-    "round": 90,
-    "ruling": "Fix the OFF band anchor",
-    "note": "the top-20 union kept every pair's order"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Giannis Antetokounmpo '24",
-    "below": "Nikola Jokić '25",
-    "round": 90,
-    "ruling": "Fix the OFF band anchor",
-    "note": "the top-20 union kept every pair's order"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Nikola Jokić '25",
-    "below": "Shaquille O'Neal '00",
-    "round": 90,
-    "ruling": "Fix the OFF band anchor",
-    "note": "the top-20 union kept every pair's order"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Shaquille O'Neal '00",
-    "below": "Dwight Howard '11",
-    "round": 47,
-    "ruling": "Shaq holds or rises, the rest come down",
-    "note": "Shaq holds or rises, the rest come down"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Shaquille O'Neal '00",
-    "below": "Clint Capela '17",
-    "round": 47,
-    "ruling": "Shaq holds or rises, the rest come down",
-    "note": "Shaq holds or rises, the rest come down"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Shaquille O'Neal '00",
-    "below": "JaVale McGee '13",
-    "round": 47,
-    "ruling": "Shaq holds or rises, the rest come down",
-    "note": "Shaq holds or rises, the rest come down"
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Shaquille O'Neal '00",
-    "below": "Shaquille O'Neal '02",
-    "round": 49,
-    "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work",
-    "note": "'00 99, '02 98, '01 98"
-  },
-  {
-    "kind": "order",
-    "scale": "def",
-    "above": "Ben Wallace '06",
-    "below": "Rudy Gobert '19",
-    "round": 67,
-    "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
-    "note": "the defensive summit is Wallace, not Gobert"
-  },
-  {
-    "kind": "order",
-    "scale": "def",
-    "above": "Kawhi Leonard '17",
-    "below": "Luka Dončić '23",
-    "round": 80,
-    "ruling": "Ship 80",
-    "note": "the elite two-way sits above the hunted man"
-  },
-  {
-    "kind": "order",
-    "scale": "def",
-    "above": "Gary Payton '96",
-    "below": "Trae Young '22",
-    "round": 62,
-    "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
-    "note": "the complete perimeter verdict outranks the sieve"
-  },
-  {
-    "card": "Ajay Mitchell '26",
-    "scale": "attr:perdef",
-    "target": 59,
-    "tol": 5,
-    "round": 92,
-    "ruling": "Way too high per def",
-    "note": "target assumed 55+-5; no number given. Landed 59 — the blend's own reading once the r16 DFG floor is retired and the tracked diff is regressed to its measured reliability."
-  },
-  {
-    "card": "Kevin McHale '88",
-    "scale": "attr:rimprot",
-    "target": 89,
-    "tol": 3,
-    "round": 92,
-    "ruling": "Rim prot too high.. Way too high. Should be high 80's or low 90's. Its like def rep took everything",
-    "note": "landed 91. The vote no longer buys the r53 ceiling without block evidence behind it (blk 2.2% = 81st pctile of 1988)."
-  },
-  {
-    "card": "Pau Gasol '04",
-    "scale": "attr:rimprot",
-    "target": 78,
-    "tol": 2,
-    "round": 95,
-    "ruling": "Grade the no-vote rim ceiling by blocks, Pau high 70s",
-    "note": "amended by him mid-round: \"Not only his blocks, his dbpm isnt even high\" (blk 3.9% = 89th pctile of 2004, DBPM +0.1). Landed 78. He was not high on votes (drep 0.00) or on height — he was sitting on recal_53's FLAT no-vote ceiling of 88, which this round grades by both."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2026,
-    "ab": "PHI",
-    "scale": "team:def",
-    "min_rank": 7,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "THE SUBJECT. Real DRtg 14th of the 24 fieldable 2026 teams; the dial had it 1st. Now 9th. This pin says only what his ruling said: not in the season's top 6."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2026,
-    "ab": "OKC",
-    "scale": "team:def",
-    "max_rank": 2,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "the other half of the same ruling: the season's actual best defence (real DRtg 1st of 24) must read at the top. Was 2nd, now 1st."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2005,
-    "ab": "CHI",
-    "scale": "team:def",
-    "max_rank": 18,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "00s spot check - real DRtg 2nd of 30, the shipped dial had it 30th of 30 (the worst DEF mismatch on the whole wheel). 16th on the merged pool. The bound is 18 rather than 16 because this five sits within two ranks of it and a rank pin with no slack is a pin that breaks on someone else's round."
-  },
-  {
-    "kind": "team_rank",
-    "season": 1998,
-    "ab": "NYK",
-    "scale": "team:def",
-    "max_rank": 16,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "90s spot check - real DRtg 4th of 28, the dial had it 27th. Now 14th."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2024,
-    "ab": "ORL",
-    "scale": "team:def",
-    "max_rank": 21,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "20s spot check - real DRtg 2nd of 26, the dial had it 26th. Now 19th: the least-improved of the five, and the one a later round should look at first."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2020,
-    "ab": "SAS",
-    "scale": "team:def",
-    "min_rank": 6,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "the OTHER direction - real DRtg 25th of 27 and the dial had it 3rd. Now 8th. A bottom-three real defence must never read top five."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2006,
-    "ab": "POR",
-    "scale": "team:def",
-    "min_rank": 15,
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "same direction, 00s - real DRtg 28th of 30, the dial had it 7th. Now 20th."
-  },
-  {
-    "card": "Bulls '96 (best legal five)",
-    "five": [
-      "Steve Kerr '96",
-      "Michael Jordan '96",
-      "Scottie Pippen '96",
-      "Toni Kukoč '96",
-      "Luc Longley '96"
-    ],
-    "scale": "team:defdial",
-    "target": 99,
-    "tol": 0,
-    "round": 94,
-    "ruling": "Move the summit to Bulls '96",
-    "note": "THE DEF SUMMIT. This supersedes recal_71's \"Do the same for DEF, 99 is 2004 pistons\" by his own later ruling, taken at recal_94's integration once the defence reset showed Pistons '04 reading 70th of 1,255 on the new scale (76 fives clamped at 99). With the summit on the all-time best five NOTHING clamps: exactly 1 of 1,255 reads 99.",
-    "season": 1996
-  },
-  {
-    "card": "Pistons '04 (best legal five)",
-    "five": [
-      "Chauncey Billups '04",
-      "Richard Hamilton '04",
-      "Tayshaun Prince '04",
-      "Ben Wallace '04",
-      "Mehmet Okur '04"
-    ],
-    "scale": "team:defdial",
-    "target": 84,
-    "tol": 4,
-    "round": 94,
-    "ruling": "Move the summit to Bulls '96",
-    "note": "recal_71's old summit, kept as a pin at what the honest scale gives it (drtgRef 108.3893, all-time rank 70 of 1,255). The '04 Pistons are still an elite defence on this dial; they are no longer the definition of 99. Its superseded form is in anchors_superseded.json. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]",
-    "season": 2004
-  },
-  {
-    "card": "Warriors '17 (best legal five)",
-    "five": [
-      "Stephen Curry '17",
-      "Kevin Durant '17",
-      "Klay Thompson '17",
-      "Draymond Green '17",
-      "Zaza Pachulia '17"
-    ],
-    "scale": "team:offdial",
-    "target": 99,
-    "tol": 0,
-    "round": 94,
-    "ruling": "Instead of scale 1-99 make it more balanced. 99 should be one of the greatest offense ever (2017 warriors)",
-    "note": "recal_71's OFF summit, seeded now because recal_94 is the first round to grade team dials at all. teamOffense is untouched this round: all 1,255 offRaw readings are bit-identical.",
-    "season": 2017
-  },
-  {
-    "card": "Philadelphia 76ers '26 (best legal five)",
-    "five": [
-      "Tyrese Maxey '26",
-      "Quentin Grimes '26",
-      "Kelly Oubre Jr. '26",
-      "Dominick Barlow '26",
-      "Joel Embiid '26"
-    ],
-    "scale": "team:defdial",
-    "target": 51,
-    "tol": 6,
-    "round": 100,
-    "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
-    "note": "SUPERSEDES the 36 +-6 recal_94 seeded here. That number was mine, not his — a reading recorded as a pin — and recal_100's era-relative recentring moved every 2026 five by +14. Philadelphia's RANK, which is the thing he ruled on, is unchanged at 13th of 24 against a real 14th; the rank pin above is still the binding one. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]",
-    "season": 2026
-  },
-  {
-    "kind": "order",
-    "scale": "team:defdial",
-    "above": "Thunder '26",
-    "below": "76ers '26",
-    "five_above": [
-      "Shai Gilgeous-Alexander '26",
-      "Ajay Mitchell '26",
-      "Luguentz Dort '26",
-      "Chet Holmgren '26",
-      "Jaylin Williams '26"
-    ],
-    "five_below": [
-      "Tyrese Maxey '26",
-      "Quentin Grimes '26",
-      "Kelly Oubre Jr. '26",
-      "Dominick Barlow '26",
-      "Joel Embiid '26"
-    ],
-    "round": 94,
-    "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
-    "note": "the single comparison his ruling is really about, stated as an order pin so no rescale can hide it. The Thunder five is the merged pool's OVR-max board: recal_92's perdef round took Ajay Mitchell '26 out of it and put Isaiah Joe '26 in.",
-    "season_above": 2026,
-    "season_below": 2026
-  },
-  {
-    "card": "Michael Jordan '89",
-    "scale": "attr:perdef",
-    "target": 99,
-    "tol": 1,
-    "round": 97,
-    "ruling": "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting",
-    "note": "the perfect untracked sheet: drep 1.00, DBPM +3.4 (99.5th percentile of 1989), height 6'6\" (inside the 6'3\"-6'8\" band, so the full height term and the full 1.2 rep multiplier). His composite of 1.0896 is the HIGHEST in the pool; three ceilings were hiding it."
-  },
-  {
-    "card": "Thunder '26 (best legal five)",
-    "five": [
-      "Shai Gilgeous-Alexander '26",
-      "Ajay Mitchell '26",
-      "Luguentz Dort '26",
-      "Chet Holmgren '26",
-      "Jaylin Williams '26"
-    ],
-    "season": 2026,
-    "scale": "team:defdial",
-    "target": 80,
-    "tol": 4,
-    "round": 100,
-    "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
-    "note": "THE RULING. 63 -> 81 on the era-relative dial, inside his \"low 80's or very high 70's\". The 2026 field went from topping out at 63 to OKC 81 / DET 71 / ATL 65, and its median five reads 49 instead of 40. The five is the current OVR-max board — recal_96/98 moved OVR and put Ajay Mitchell '26 back in it. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
-  },
-  {
-    "card": "Pistons '26 (best legal five)",
-    "five": [
-      "Cade Cunningham '26",
-      "Duncan Robinson '26",
-      "Ausar Thompson '26",
-      "Tobias Harris '26",
-      "Jalen Duren '26"
-    ],
-    "season": 2026,
-    "scale": "team:defdial",
-    "target": 75,
-    "tol": 6,
-    "round": 100,
-    "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
-    "note": "the second half of \"no 2026 team having more than 61 DEF is insane\": the season's real 2nd-best defence reads 72, not 57. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
-  },
-  {
-    "card": "Lakers '87 (best legal five)",
-    "five": [
-      "Byron Scott '87",
-      "Michael Cooper '87",
-      "James Worthy '87",
-      "Magic Johnson '87",
-      "Kareem Abdul-Jabbar '87"
-    ],
-    "season": 1987,
-    "scale": "team:defdial",
-    "target": 67,
-    "tol": 6,
-    "round": 100,
-    "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
-    "note": "THE OTHER SIDE OF THE SAME RULING, and the reason the cure is a RECENTRING rather than a lift of the modern era: lifting 2026 alone would have dragged every era up with it. The Showtime Lakers were a good defence (Cooper, Kareem) and read 65 before and 65 after — the 1980s decade mean moved 56.0 -> 51.1 and its median five reads 52, so the era was recentred on 50, not pushed to 70. Decade means after: 51.1 / 51.2 / 51.2 / 51.2 / 50.9. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
-  },
-  {
-    "card": "Stephon Castle '26",
-    "scale": "attr:perdef",
-    "target": 62,
-    "tol": 3,
-    "round": 101,
-    "ruling": "This is better than 50, should be low 60's",
-    "note": "landed 60. A no-vote guard with a FULL tracking sample (514 shots from 6ft+ at -1.5%) whose reading was cut to 35% by a targeting discount whose premise runs backwards in the data."
-  },
-  {
-    "card": "Victor Wembanyama '26",
-    "scale": "attr:perdef",
-    "target": 74,
-    "tol": 5,
-    "round": 101,
-    "ruling": "Per def is too low. I understand the 7'4 is an issue but everything else is 10/10",
-    "note": "target assumed 78+-5; no number given. Landed 74. His height still costs him both terms (rep_hf 0.5 and height_inv 0.0, together 0.54 of a 1.09 composite) — what changed is that his tracked reading, the best in the pool at -8.6% over 765 shots, is no longer multiplied by zero because he has votes."
-  },
-  {
-    "card": "Jaylen Brown '26",
-    "scale": "attr:perdef",
-    "target": 66,
-    "tol": 2,
-    "round": 101,
-    "ruling": "Too low per def. Should be high 50s low 60s\" — \"66 is fine, anchor him there",
-    "note": "48 -> 66. No votes, DBPM -0.1, 6'6\", and -3.6% over 587 shots at a 100% blend weight — the same shape as Stephon Castle '26 with a fuller sample and a better diff, which is why he reads six above him. He asked for high 50s / low 60s, was shown the 66 this round already gave him, and anchored it there."
-  },
-  {
-    "card": "Kevin Durant '19",
-    "scale": "def",
-    "target": 79,
-    "tol": 3,
-    "round": 99,
-    "ruling": "Agree with 1-7",
-    "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
-  },
-  {
-    "card": "Kevin Durant '24",
-    "scale": "def",
-    "target": 80,
-    "tol": 3,
-    "round": 99,
-    "ruling": "Agree with 1-7",
-    "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
-  },
-  {
-    "card": "Bulls '96 (best legal five)",
-    "five": [
-      "Steve Kerr '96",
-      "Michael Jordan '96",
-      "Scottie Pippen '96",
-      "Toni Kukoč '96",
-      "Luc Longley '96"
-    ],
-    "season": 1996,
-    "scale": "team:offdial",
-    "target": 68,
-    "tol": 3,
-    "round": 105,
-    "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
-    "note": "THE RULING'S OWN FIVE on the era-relative OFF dial: 67 -> 68. It barely moves, and that is the round's finding rather than its failure — 1996's league offensive level (123.442) is already within half a point of the all-time mean (123.011), so there was almost no era drift to take out of this particular season. See the team:ovrdial pin below."
-  },
-  {
-    "card": "Bulls '96 (best legal five)",
-    "five": [
-      "Steve Kerr '96",
-      "Michael Jordan '96",
-      "Scottie Pippen '96",
-      "Toni Kukoč '96",
-      "Luc Longley '96"
-    ],
-    "season": 1996,
-    "scale": "team:ovrdial",
-    "target": 84,
-    "tol": 3,
-    "round": 105,
-    "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
-    "note": "THE NUMBER HE NAMED, pinned at what it actually reads: 75 when he ruled, 81 by the time this round measured (recal_101/102/103/104 moved it), 84 after (68 on offence, 99 on defence). The round's assumed target of >=92 was NOT reached and is NOT pinned here, because an anchor is a pin that holds: reaching 92 needs OFF 89, and teamOffense ranks this five 8th of the 29 fieldable 1996 teams on offence while the real 1996 board has them 1st. A per-season shift cannot reorder a season. The next round on this belongs in data/team_rating.py's team_offense."
-  },
-  {
-    "card": "Dan Roundfield '82",
-    "scale": "def",
-    "target": 91,
-    "tol": 3,
-    "round": 114,
-    "ruling": "Dan rounfield too high for def 99. 91 is fine.",
-    "note": "99 -> 94, the band edge. He is 6'8\" exactly, so perdef paid his All-Defensive votes at the full wing rate (rep_hf 1.2, height_inv 1.0) while recal_53's rim ceiling had already cashed the same votes into a rimprot of 92 on a BLK% of 2.6. perdef now keeps only the share of a double-paid vote that DBPM supports, and his DBPM percentile is 0.713 - the lowest of any card that read DEF 95+. perdef alone cannot take him below 94; the other half of the double-pay is rimprot's ceiling, which is load-bearing for McHale '88, Gasol '04 and Bobby Jones '82."
-  },
-  {
-    "card": "Russell Westbrook '15",
-    "scale": "attr:ballsec",
-    "target": 56,
-    "tol": 4,
-    "round": 116,
-    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
-    "note": "HIS THIRD RULING ON THIS CARD (rounds 108 and 111 declined; he repeated it with both blockers named). Landed at 60, the TOP EDGE of the band: 0.54 is the frontier of the raw-leg ceiling, because 0.55 puts Michael Jordan '89 OFF at 97 against r102's 99 +-1 and 0.60 puts Sabonis '21 OFF at 69 against r55's 71 +-1. 56 exactly needs one of those two OFF pins re-opened, which is compute_ovr's lane, not this one. The OFF half of the ruling is a separate round; his card reads OFF 89 here."
-  },
-  {
-    "card": "Mark Jackson '99",
-    "scale": "off",
-    "target": 54,
-    "tol": 3,
-    "round": 117,
-    "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "scan item 3, the playvol cliff. His assist share (46.7%) is HIGHER than his own pinned '98 (45.4) and '00 (45.0) and his box sits between them, but 1999 was a 50-game lockout year and playvol is a percentile inside its own season pool: 86 against 94 and 91. An 80->95 ramp turned that eight-point wobble into seven OFF points. Ramp re-cut to 70->85 - the top 14.7% down to the top 4.0% of the pool, where it ran 6.5% down to 0.8% - and all three seasons now sit at gate 1.00. 47 -> 53."
-  },
-  {
-    "card": "John Stockton '90",
-    "scale": "off",
-    "target": 84,
-    "tol": 3,
-    "round": 117,
-    "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "scan item 4, the double charge. Volume was read twice - by the gate and again by (1 - volume/100) - so inside the band scoring MORE lowered a passer's OFF by about 0.28 a point, and his best season by BPM (8.9, 17.2/14.5 on .607 TS) read 79, three below his own '88. Volume is now read ONCE, by the gate, and the band widens 65 -> 68. 79 -> 82, and the arc turns the right way up ('88 80, '89 83, '90 82, '91 80, '92 83). 84 is not reachable: Steve Nash '05 is six volume points away and identical on everything else the term reads, so every parameterisation that puts '90 above 82 puts Nash above his own 85 +-3."
-  },
-  {
-    "card": "Dorian Finney-Smith '20",
-    "scale": "off",
-    "target": 55,
-    "tol": 3,
-    "round": 118,
-    "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "scan item 5, the off-ball floor's 3pt gate. `3pt >= 68` was a cliff worth up to 24 printed OFF points after recal_91 grew the big branch: '20 (3pt 57) read 38 and '21 (3pt 72, pinned 62) read 62 on the same job - usage 12.9/12.2, TS .595/.609, 37.6%/39.4% from the arc, BPM -0.2/+0.1 - and 45 adjacent-season pairs jumped 10+ OFF across the flip. The gate is now a RAMP with no new constant: the share min(1, 3pt/68) of the floor's CORRECTION to the standard path, `std + f x (floor - std)`, which at 3pt 68 and above is `max(std, floor)` byte for byte. 38 -> 53; 55 is what the FULL floor pays him and a ramp gives a man at 3pt 57 eight tenths of it. Cliff pairs 45 -> 20."
-  },
-  {
-    "kind": "team_rank",
-    "season": 2024,
-    "ab": "BOS",
-    "scale": "team:off",
-    "max_rank": 10,
-    "round": 119,
-    "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His item 7 asked for team OFF 55 -> near 72; recal_119 reached 56 and DECLINED the rest (data/rounds/119.json carries the full size frontier). What the round DID move is the rank the complaint was really about: the Celtics '24 read 12th of the 26 fieldable 2024 fives on offence against a real ORtg rank of 1st, and they read 9th now. The bound is 10 rather than 3 because 9th is where the possession-loss channel honestly puts them - the cards carry only ~45% of the turnover signal, measured against an oracle channel reading the real TOV%."
-  },
-  {
-    "five": [
-      "Derrick White '24",
-      "Jaylen Brown '24",
-      "Jayson Tatum '24",
-      "Kristaps Porziņģis '24",
-      "Al Horford '24"
-    ],
-    "season": 2024,
-    "scale": "team:defdial",
-    "target": 65,
-    "tol": 3,
-    "round": 119,
-    "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket. recal_119 moved 0 of 1,255 DEF dials and drtgRef is bit-identical on all of them; this records that the Celtics '24 DEF dial read 65 before and after."
-  },
-  {
-    "card": "Russell Westbrook '15",
-    "scale": "off",
-    "target": 85,
-    "tol": 2,
-    "round": 121,
-    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
-    "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named."
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "Russell Westbrook '15",
-    "below": "Russell Westbrook '17",
-    "round": 121,
-    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
-    "note": "the released pin's condition: '17 is the more turnover-prone, less efficient season at the same usage, so he must not read above the season Tomer ruled on."
-  },
-  {
-    "card": "Warriors '17 (best legal five)",
-    "five": [
-      "Stephen Curry '17",
-      "Kevin Durant '17",
-      "Klay Thompson '17",
-      "Draymond Green '17",
-      "Zaza Pachulia '17"
-    ],
-    "season": 2017,
-    "scale": "team:defdial",
-    "target": 81,
-    "tol": 5,
-    "round": 122,
-    "ruling": "2 Elite defenders, 3 decent. how 72 def?",
-    "note": "THE SUBJECT. 72 -> 76, the FLOOR of the dispatch's 81+-5 band (the 81 was the orchestrator's number, not his). The last five points are reachable only through a top-heavy PERDEF aggregation, which 47 seasons of within-season Spearman refuse (the five's best defender is its LEAST predictive order statistic, +0.076 against +0.19..+0.23; a top-2 premium beside the mean carries a NEGATIVE partial in both eras), or by moving Zaza Pachulia '17's perdef 45, which is a card and not this agent's. The pin has ZERO SLACK by construction: if he re-rules the number, re-cut it to what he says. See data/rounds/122.json."
-  },
-  {
-    "kind": "order",
-    "scale": "off",
-    "above": "John Stockton '97",
-    "below": "John Stockton '01",
-    "round": 126,
-    "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
-    "note": "HIS ORDER PIN. 87 > 86, strict. The VALUE pin he also ruled - John Stockton '01 off 80 +-4 - is deliberately NOT added: the attribute stage reaches 86 and cannot reach the band (delete BOTH zone deadeye floors outright and he still prints 86, because his mid falls only to his own volume-first composite), so the pin would fail on the round that wrote it. Add it when a compute_ovr round lands the band. See data/rounds/126.json."
-  },
-  {
-    "card": "John Stockton '01",
-    "scale": "off",
-    "target": 80,
-    "tol": 4,
-    "round": 130,
-    "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
-    "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
-  },
-  {
-    "card": "Moses Malone '85",
-    "scale": "off",
-    "target": 80,
-    "tol": 4,
-    "round": 131,
-    "ruling": "What I dont like, is Malone being 69 OFF with 25 ppg on not bad eff.",
-    "note": "THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK. The fouls a man draws and converts and the offensive glass he owns are PAINT DAMAGE, and o_score priced them only as side skills (0.11 and 0.06) while z[0]'s 0.22 was the only channel that answered \"does this man score inside\" - and recal_37's paint bonus, which recal_46 built for exactly that damage, is reachable only through a SHAPE gate on the zone vector, the very number that is wrong about this card. The block 0.22*z[0] + 0.08*z[1] (the two zones the pre-1997 model INFERS; the arc is measured in every era) is now floored at 0.30 x (half the free-throw term + half the offensive glass), ramped on volume 55->80 and efficiency 45->65. 69 -> 78, inside the band. Written as a max(), so every card whose zone block already exceeds the evidence is unmoved BY CONSTRUCTION - Moses '82 (rim 95, his own 86 +-1 pin), Ewing '90, Kareem '80, Barkley '90, Robinson '92, Shaq '00 and Hakeem '90 all move by exactly zero. The ratified pre-1997 zone compression is NOT touched: no attribute moves on any of the 10,000 cards."
-  },
-  {
-    "card": "76ers '85 (best legal five)",
-    "five": [
-      "Maurice Cheeks '85",
-      "Julius Erving '85",
-      "Bobby Jones '85",
-      "Charles Barkley '85",
-      "Moses Malone '85"
-    ],
-    "season": 1985,
-    "scale": "team:defdial",
-    "target": 93,
-    "tol": 2,
-    "round": 133,
-    "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
-    "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
-  }
+ {
+  "card": "Cedric Maxwell '80",
+  "scale": "off",
+  "target": 67,
+  "tol": 4,
+  "round": 112,
+  "ruling": "I think in general eff is getting undervalued. 17pgg on 68 ts(on a bad era). Has to show mid to high 60's at least. Even low 70's",
+  "note": "the efficient interior scorer, the mirror of recal_64's off-ball floor: elite efficiency paid at low usage, gated on efficiency 85->99, volume 55->25, playvol 70->40 and 3pt 68->40. 55 -> 67, the middle of the \"mid to high 60's\" his ruling states. His own lever, the global efficiency weight, was measured first and breaks 25 anchors before reaching the band."
+ },
+ {
+  "card": "Lakers '00 (best legal five)",
+  "five": [
+   "Ron Harper '00",
+   "Kobe Bryant '00",
+   "Glen Rice '00",
+   "Robert Horry '00",
+   "Shaquille O'Neal '00"
+  ],
+  "season": 2000,
+  "scale": "team:offdial",
+  "target": 64,
+  "tol": 4,
+  "round": 110,
+  "ruling": "How is this team 47 OFF with 2 all time great players",
+  "note": "HIS SECOND NAMED CASE. The '00 Lakers read OFF 47 when he asked; 48 when this round measured, 17th of the 28 fieldable 2000 teams against a real ORtg rank of 5th. Shaquille O'Neal was taking the full paint-clog penalty for Harper's and Horry's shooting while creating his own shot at 31.5 usage, and the five's raw fit was -8.07 against a -4 clamp."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2000,
+  "ab": "LAL",
+  "scale": "team:off",
+  "max_rank": 5,
+  "round": 110,
+  "ruling": "How is this team 47 OFF with 2 all time great players",
+  "note": "the rank is the thing he was pointing at, and it survives any rescale: 17th of 28 -> 2nd, against a real ORtg rank of 5th."
+ },
+ {
+  "kind": "team_rank",
+  "season": 1996,
+  "ab": "CHI",
+  "scale": "team:off",
+  "max_rank": 6,
+  "round": 110,
+  "ruling": "there is more work to do",
+  "note": "THE ROUND'S OWN FINDING, pinned. The Bulls '96 read 8th of the 29 fieldable 1996 teams on offence against a real ORtg rank of 1st; they read 4th now. The bound is 6 rather than 2 because 4th is where the formula honestly puts them — see data/rounds/110.json for why 1st or 2nd is not reachable without claiming their offence was near the 2017 Warriors'."
+ },
+ {
+  "card": "Steve Nash '05",
+  "scale": "off",
+  "target": 85,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol",
+  "note": "the elite-passer term: playvol x (1 - volume/100), gated playvol 80->95 and volume 65->10, scaled by an efficiency factor 0.5->1.0 across 70->90. 78 -> 85, ON the floor his ruling states. Size 0.32 is HIS choice over the fit's 0.36 - see receipt 109."
+ },
+ {
+  "card": "Mark Jackson '00",
+  "scale": "off",
+  "target": 58,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Agree with both",
+  "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 48 -> 57. The efficiency factor's 0.5 FLOOR is what keeps him: his efficiency is 52."
+ },
+ {
+  "card": "Mark Jackson '98",
+  "scale": "off",
+  "target": 55,
+  "tol": 3,
+  "round": 109,
+  "ruling": "Agree with both",
+  "note": "the scout's group B: o_score's volume weight (0.26) dominates playvol (0.19) badly enough that an elite pure-distributor with near-zero individual scoring load (volume 10-12) still prints OFF in the bottom decile of his own class even when his class-adjusted BPM rank sits in the top decile | same term; 43 -> 54 at efficiency 36, on the floor."
+ },
+ {
+  "card": "Deandre Ayton '26",
+  "scale": "off",
+  "target": 58,
+  "tol": 3,
+  "round": 107,
+  "ruling": "This should be around 58 OFF. Super eff",
+  "note": "the two-level big: for an efficient big with a genuine second scoring level, the second zone is paid at the FIRST zone rate (0.22, z[0] own weight). 52 -> 58. Gated on is_big and volume < 55 (recal_64 own gate), mid 55->70 and efficiency 70->85 - the last being his own reason, Super eff."
+ },
+ {
+  "card": "Herbert Jones '23",
+  "scale": "def",
+  "target": 91,
+  "tol": 4,
+  "round": 103,
+  "ruling": "Herb jones DEF way too low all seasons",
+  "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 88 +-4 and 91 is what the fix lands. The position branch of d_bigness now yields to the card own defensive shape: a listed big whose perimeter disruption runs far ahead of his defensive rebounding is graded as the wing he is. 76 -> 91."
+ },
+ {
+  "card": "Michael Jordan '89",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 102,
+  "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
+  "note": "a FLOOR of 98, written as 99 +-1 because that is what \"98+\" means on a scale capped at 99"
+ },
+ {
+  "card": "Michael Jordan '89",
+  "scale": "def",
+  "target": 99,
+  "tol": 1,
+  "round": 102,
+  "ruling": "Jordan still too low. I want him 98+ OFF and DEF",
+  "note": "the same floor on DEF"
+ },
+ {
+  "card": "Steve Novak '13",
+  "scale": "off",
+  "target": 60,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "r91's stretch-big terms now paid against real load OR real glass; volume 9, orb 19, so he keeps r64's wing floor"
+ },
+ {
+  "card": "Anthony Tolliver '14",
+  "scale": "off",
+  "target": 56,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "same gate; volume 7, orb 44"
+ },
+ {
+  "card": "Karl Malone '99",
+  "scale": "off",
+  "target": 90,
+  "tol": 2,
+  "round": 98,
+  "ruling": "How is Karl Malone 99 is 93 OFF? 24ppg with mid passing and 3.3 tov cant be this high. Eff is good but nothing crazy..",
+  "note": "NO NUMBER WAS GIVEN - the orchestrator assumed 87 +-3 and 90 is the FRONTIER: the lowest reading this card can take with every standing anchor held, searched over the hub ramp against the volume, efficiency, ballsec and signature weights jointly. 93 -> 90 by ramping recal_55's big hub from a cliff at playvol 60 to full credit at 80, so \"mid passing\" stops collecting a hub premium."
+ },
+ {
+  "card": "Ty Jerome '25",
+  "scale": "off",
+  "target": 71,
+  "tol": 4,
+  "round": 96,
+  "ruling": "Ty Jerome '25 OFF should be high 60's to mid 70's. Not 81",
+  "note": "the load term: volume and playvol paid in proportion to minutes share; 81 -> 71 on 19.9 mpg"
+ },
+ {
+  "card": "Montrezl Harrell '18",
+  "scale": "off",
+  "target": 63,
+  "tol": 2,
+  "round": 96,
+  "ruling": "Montrezl Harrell '18 is too high OFF as well",
+  "note": "NO NUMBER WAS GIVEN - directional (\"too high\"), so the pin is where the same load term lands him, 77 -> 63 on 17.0 mpg, at +-2. Accepted by him at this value (\"As is, accept both\")."
+ },
+ {
+  "card": "Jimmy Butler '16",
+  "scale": "def",
+  "target": 85,
+  "tol": 3,
+  "round": 93,
+  "ruling": "Agree with 16 Jimmy",
+  "note": "same ramp; 71 -> 85, and the '15/'16/'17 sequence reads 89/85/83 instead of 89/71/83"
+ },
+ {
+  "card": "Scottie Pippen '03",
+  "scale": "def",
+  "target": 76,
+  "tol": 1,
+  "round": 93,
+  "ruling": "Scotty 03 maybe around 75-77",
+  "note": "same ramp; 70 -> 76. rim touched EXACTLY 60 at 3pt 23 - only a blend reaches a number between the two formulas"
+ },
+ {
+  "card": "Kawhi Leonard '14",
+  "scale": "ovr",
+  "target": 80,
+  "tol": 2,
+  "round": 93,
+  "ruling": "Kawhi 14 agree",
+  "note": "the elite-defence floor inside the OVR cap, 0.80 -> 0.85 x d_ovr; 76 -> 80 against a blend of 83"
+ },
+ {
+  "card": "OG Anunoby '21",
+  "scale": "off",
+  "target": 65,
+  "tol": 2,
+  "round": 91,
+  "ruling": "Too low OFF 54. Should be mid 60s",
+  "note": "the stretch-big branch of r64's off-ball floor; 54 -> 64"
+ },
+ {
+  "card": "Rui Hachimura '26",
+  "scale": "off",
+  "target": 65,
+  "tol": 4,
+  "round": 91,
+  "ruling": "OFF should be low 60s, or high 60s. Not 55",
+  "note": "same branch, same round; 55 -> 66"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Rui Hachimura '26",
+  "below": "Tony Snell '18",
+  "round": 91,
+  "ruling": "OFF should be low 60s, or high 60s. Not 55",
+  "note": "the shooting big outranks the wing spacer — the claim of the round"
+ },
+ {
+  "card": "Giannis Antetokounmpo '25",
+  "scale": "off",
+  "target": 99,
+  "tol": 0,
+  "round": 90,
+  "ruling": "Fix the OFF band anchor",
+  "note": "the raw IS the band anchor, so he maps to exactly 99.000"
+ },
+ {
+  "card": "Giannis Antetokounmpo '24",
+  "scale": "off",
+  "target": 98,
+  "tol": 1,
+  "round": 90,
+  "ruling": "Fix the OFF band anchor",
+  "note": "106.4581 maps to 97.58 and rounds to 98"
+ },
+ {
+  "card": "Stephen Curry '16",
+  "scale": "off",
+  "target": 95,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "one of the four complete stars the round predicted flat"
+ },
+ {
+  "card": "Kawhi Leonard '17",
+  "scale": "off",
+  "target": 94,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "flat"
+ },
+ {
+  "card": "LeBron James '13",
+  "scale": "off",
+  "target": 97,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "flat"
+ },
+ {
+  "card": "Kyle Korver '15",
+  "scale": "off",
+  "target": 58,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the specialist eases by one"
+ },
+ {
+  "card": "Steve Kerr '96",
+  "scale": "off",
+  "target": 62,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the specialist eases by one"
+ },
+ {
+  "card": "Reggie Miller '97",
+  "scale": "off",
+  "target": 88,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "flat"
+ },
+ {
+  "card": "DeMar DeRozan '17",
+  "scale": "off",
+  "target": 86,
+  "tol": 2,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88"
+ },
+ {
+  "card": "Chauncey Billups '06",
+  "scale": "off",
+  "target": 86,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the load-and-creation gain, 85 -> 86"
+ },
+ {
+  "card": "Jaylen Brown '26",
+  "scale": "off",
+  "target": 83,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88"
+ },
+ {
+  "card": "Shai Gilgeous-Alexander '25",
+  "scale": "off",
+  "target": 97,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the round's named winner, measured flat"
+ },
+ {
+  "card": "Luka Dončić '23",
+  "scale": "off",
+  "target": 94,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the round's named winner, measured flat"
+ },
+ {
+  "card": "James Harden '19",
+  "scale": "off",
+  "target": 95,
+  "tol": 1,
+  "round": 89,
+  "ruling": "Dont do 87, only shift the weights a little torward 88",
+  "note": "the round's named winner, measured flat"
+ },
+ {
+  "card": "Joakim Noah '09",
+  "scale": "attr:rimprot",
+  "target": 92,
+  "tol": 1,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 0.43 buys 43% of the band, not all of it"
+ },
+ {
+  "card": "Rudy Gobert '19",
+  "scale": "attr:rimprot",
+  "target": 97,
+  "tol": 0,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 1.00 — his rule leaves the five anchors untouched"
+ },
+ {
+  "card": "Victor Wembanyama '24",
+  "scale": "attr:rimprot",
+  "target": 97,
+  "tol": 0,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 1.00"
+ },
+ {
+  "card": "Dikembe Mutombo '97",
+  "scale": "attr:rimprot",
+  "target": 98,
+  "tol": 0,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 1.00"
+ },
+ {
+  "card": "Tim Duncan '03",
+  "scale": "attr:rimprot",
+  "target": 98,
+  "tol": 0,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 1.00"
+ },
+ {
+  "card": "Ben Wallace '04",
+  "scale": "attr:rimprot",
+  "target": 98,
+  "tol": 0,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "drep 1.00"
+ },
+ {
+  "card": "Bobby Jones '82",
+  "scale": "attr:rimprot",
+  "target": 96,
+  "tol": 1,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "target held"
+ },
+ {
+  "card": "Caldwell Jones '82",
+  "scale": "attr:rimprot",
+  "target": 97,
+  "tol": 2,
+  "round": 82,
+  "ruling": "So lets change the bar. 0.4 != 1. The more the better",
+  "note": "target 94-96; reads 97 — a one-point miss recorded at the round"
+ },
+ {
+  "card": "Dikembe Mutombo '01",
+  "scale": "attr:rimprot",
+  "target": 99,
+  "tol": 1,
+  "round": 81,
+  "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
+  "note": "the anchor class holds"
+ },
+ {
+  "card": "Joel Embiid '23",
+  "scale": "attr:rimprot",
+  "target": 91,
+  "tol": 1,
+  "round": 81,
+  "ruling": "his ruling, completing recal_76 (\"Remove team Def rating from per def\")",
+  "note": "the anchor class holds"
+ },
+ {
+  "card": "Jrue Holiday '21",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80"
+ },
+ {
+  "card": "Shaquille O'Neal '00",
+  "scale": "def",
+  "target": 88,
+  "tol": 1,
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "the one test pin re-anchored by this round: D 81 -> 88"
+ },
+ {
+  "card": "Tony Snell '18",
+  "scale": "off",
+  "target": 50,
+  "tol": 1,
+  "round": 64,
+  "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
+  "note": "the class the floor is FOR: 45 -> 50"
+ },
+ {
+  "card": "Bruce Bowen '06",
+  "scale": "off",
+  "target": 45,
+  "tol": 1,
+  "round": 64,
+  "ruling": "recal_64 (design-side \"62\") — the OKC problem: the off-ball floor",
+  "note": "40 -> 45"
+ },
+ {
+  "card": "Rudy Gobert '19",
+  "scale": "def",
+  "target": 92,
+  "tol": 1,
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "bigs untouched by construction"
+ },
+ {
+  "card": "Draymond Green '16",
+  "scale": "def",
+  "target": 96,
+  "tol": 1,
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "bigs untouched by construction"
+ },
+ {
+  "card": "Caron Butler '08",
+  "scale": "def",
+  "target": 73,
+  "tol": 1,
+  "round": 57,
+  "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
+  "note": "gambler eases"
+ },
+ {
+  "card": "Dennis Rodman '90",
+  "scale": "def",
+  "target": 94,
+  "tol": 1,
+  "round": 57,
+  "ruling": "recal_57 — the perimdisrupt trim, and PACE (Tomer's design, ratified)",
+  "note": "lockdown holds"
+ },
+ {
+  "card": "Michael Jordan '88",
+  "scale": "attr:ballsec",
+  "target": 95,
+  "tol": 1,
+  "round": 56,
+  "ruling": "recal_56 — ballsec's raw side louder, and the 6ft+ feed reaches the card"
+ },
+ {
+  "card": "Domantas Sabonis '21",
+  "scale": "off",
+  "target": 71,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "THE COMPLAINT"
+ },
+ {
+  "card": "Vlade Divac '95",
+  "scale": "attr:perdef",
+  "target": 78,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "the pre-2014 relief, as ordered"
+ },
+ {
+  "card": "Arvydas Sabonis '96",
+  "scale": "attr:perdef",
+  "target": 79,
+  "tol": 1,
+  "round": 55,
+  "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
+  "note": "the pre-2014 relief, as ordered"
+ },
+ {
+  "card": "Shawn Bradley '95",
+  "scale": "attr:rimprot",
+  "target": 88,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "no-vote cap"
+ },
+ {
+  "card": "Shaquille O'Neal '93",
+  "scale": "attr:rimprot",
+  "target": 88,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "no-vote cap"
+ },
+ {
+  "card": "Sam Bowie '85",
+  "scale": "attr:rimprot",
+  "target": 88,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "no-vote cap"
+ },
+ {
+  "card": "DeSagana Diop '06",
+  "scale": "attr:rimprot",
+  "target": 88,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "no-vote cap"
+ },
+ {
+  "card": "Yao Ming '09",
+  "scale": "attr:rimprot",
+  "target": 88,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "no-vote cap"
+ },
+ {
+  "card": "Walker Kessler '23",
+  "scale": "attr:rimprot",
+  "target": 92,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "the measured tier"
+ },
+ {
+  "card": "Victor Wembanyama '25",
+  "scale": "attr:rimprot",
+  "target": 97,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "voted, unchanged"
+ },
+ {
+  "card": "Ben Wallace '03",
+  "scale": "attr:rimprot",
+  "target": 98,
+  "tol": 1,
+  "round": 53,
+  "ruling": "recal_53 — rimprot gets the VOTED CEILING (perdef's architecture, mirrored)",
+  "note": "voted, unchanged"
+ },
+ {
+  "card": "Shaquille O'Neal '94",
+  "scale": "off",
+  "target": 92,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Shaquille O'Neal '95",
+  "scale": "off",
+  "target": 93,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Shaquille O'Neal '96",
+  "scale": "off",
+  "target": 91,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Hakeem Olajuwon '90",
+  "scale": "off",
+  "target": 73,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Moses Malone '82",
+  "scale": "off",
+  "target": 86,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Patrick Ewing '90",
+  "scale": "off",
+  "target": 85,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons"
+ },
+ {
+  "card": "Dwight Howard '11",
+  "scale": "off",
+  "target": 78,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
+  "note": "post-97, measured — unchanged"
+ },
+ {
+  "card": "Clint Capela '18",
+  "scale": "off",
+  "target": 61,
+  "tol": 1,
+  "round": 52,
+  "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
+  "note": "post-97, measured — unchanged"
+ },
+ {
+  "card": "Zion Williamson '21",
+  "scale": "off",
+  "target": 90,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
+  "note": "vol 85+, ramp = 1.0 by construction"
+ },
+ {
+  "card": "Hakeem Olajuwon '94",
+  "scale": "off",
+  "target": 88,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
+  "note": "vol 85+, ramp = 1.0 by construction"
+ },
+ {
+  "card": "Joel Embiid '23",
+  "scale": "off",
+  "target": 95,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
+  "note": "vol 85+, ramp = 1.0 by construction"
+ },
+ {
+  "card": "Shaquille O'Neal '08",
+  "scale": "off",
+  "target": 64,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
+ },
+ {
+  "card": "Shaquille O'Neal '09",
+  "scale": "off",
+  "target": 71,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
+ },
+ {
+  "card": "Clint Capela '17",
+  "scale": "off",
+  "target": 58,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
+ },
+ {
+  "card": "Andre Drummond '20",
+  "scale": "off",
+  "target": 58,
+  "tol": 1,
+  "round": 51,
+  "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
+ },
+ {
+  "card": "Hakeem Olajuwon '93",
+  "scale": "off",
+  "target": 88,
+  "tol": 1,
+  "round": 50,
+  "ruling": "the creation floor drops 0.55 -> 0.35",
+  "note": "87 at r50, then r52 lifted the inferred-season clamp"
+ },
+ {
+  "card": "Shaquille O'Neal '02",
+  "scale": "off",
+  "target": 98,
+  "tol": 1,
+  "round": 49,
+  "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work"
+ },
+ {
+  "card": "Shaquille O'Neal '01",
+  "scale": "off",
+  "target": 98,
+  "tol": 1,
+  "round": 49,
+  "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Giannis Antetokounmpo '25",
+  "below": "Giannis Antetokounmpo '24",
+  "round": 90,
+  "ruling": "Fix the OFF band anchor",
+  "note": "the top-20 union kept every pair's order"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Giannis Antetokounmpo '24",
+  "below": "Nikola Jokić '25",
+  "round": 90,
+  "ruling": "Fix the OFF band anchor",
+  "note": "the top-20 union kept every pair's order"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Nikola Jokić '25",
+  "below": "Shaquille O'Neal '00",
+  "round": 90,
+  "ruling": "Fix the OFF band anchor",
+  "note": "the top-20 union kept every pair's order"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Shaquille O'Neal '00",
+  "below": "Dwight Howard '11",
+  "round": 47,
+  "ruling": "Shaq holds or rises, the rest come down",
+  "note": "Shaq holds or rises, the rest come down"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Shaquille O'Neal '00",
+  "below": "Clint Capela '17",
+  "round": 47,
+  "ruling": "Shaq holds or rises, the rest come down",
+  "note": "Shaq holds or rises, the rest come down"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Shaquille O'Neal '00",
+  "below": "JaVale McGee '13",
+  "round": 47,
+  "ruling": "Shaq holds or rises, the rest come down",
+  "note": "Shaq holds or rises, the rest come down"
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Shaquille O'Neal '00",
+  "below": "Shaquille O'Neal '02",
+  "round": 49,
+  "ruling": "recal_49 — the dominance bonus counts SELF-CREATED paint work",
+  "note": "'00 99, '02 98, '01 98"
+ },
+ {
+  "kind": "order",
+  "scale": "def",
+  "above": "Ben Wallace '06",
+  "below": "Rudy Gobert '19",
+  "round": 67,
+  "ruling": "recal_67 — the DEF display multiplier was the inflation (design-side, unnumbered)",
+  "note": "the defensive summit is Wallace, not Gobert"
+ },
+ {
+  "kind": "order",
+  "scale": "def",
+  "above": "Kawhi Leonard '17",
+  "below": "Luka Dončić '23",
+  "round": 80,
+  "ruling": "Ship 80",
+  "note": "the elite two-way sits above the hunted man"
+ },
+ {
+  "kind": "order",
+  "scale": "def",
+  "above": "Gary Payton '96",
+  "below": "Trae Young '22",
+  "round": 62,
+  "ruling": "Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict)",
+  "note": "the complete perimeter verdict outranks the sieve"
+ },
+ {
+  "card": "Ajay Mitchell '26",
+  "scale": "attr:perdef",
+  "target": 59,
+  "tol": 5,
+  "round": 92,
+  "ruling": "Way too high per def",
+  "note": "target assumed 55+-5; no number given. Landed 59 — the blend's own reading once the r16 DFG floor is retired and the tracked diff is regressed to its measured reliability."
+ },
+ {
+  "card": "Kevin McHale '88",
+  "scale": "attr:rimprot",
+  "target": 89,
+  "tol": 3,
+  "round": 92,
+  "ruling": "Rim prot too high.. Way too high. Should be high 80's or low 90's. Its like def rep took everything",
+  "note": "landed 91. The vote no longer buys the r53 ceiling without block evidence behind it (blk 2.2% = 81st pctile of 1988)."
+ },
+ {
+  "card": "Pau Gasol '04",
+  "scale": "attr:rimprot",
+  "target": 78,
+  "tol": 2,
+  "round": 95,
+  "ruling": "Grade the no-vote rim ceiling by blocks, Pau high 70s",
+  "note": "amended by him mid-round: \"Not only his blocks, his dbpm isnt even high\" (blk 3.9% = 89th pctile of 2004, DBPM +0.1). Landed 78. He was not high on votes (drep 0.00) or on height — he was sitting on recal_53's FLAT no-vote ceiling of 88, which this round grades by both."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2026,
+  "ab": "PHI",
+  "scale": "team:def",
+  "min_rank": 7,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "THE SUBJECT. Real DRtg 14th of the 24 fieldable 2026 teams; the dial had it 1st. Now 9th. This pin says only what his ruling said: not in the season's top 6."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2026,
+  "ab": "OKC",
+  "scale": "team:def",
+  "max_rank": 2,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "the other half of the same ruling: the season's actual best defence (real DRtg 1st of 24) must read at the top. Was 2nd, now 1st."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2005,
+  "ab": "CHI",
+  "scale": "team:def",
+  "max_rank": 18,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "00s spot check - real DRtg 2nd of 30, the shipped dial had it 30th of 30 (the worst DEF mismatch on the whole wheel). 16th on the merged pool. The bound is 18 rather than 16 because this five sits within two ranks of it and a rank pin with no slack is a pin that breaks on someone else's round."
+ },
+ {
+  "kind": "team_rank",
+  "season": 1998,
+  "ab": "NYK",
+  "scale": "team:def",
+  "max_rank": 16,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "90s spot check - real DRtg 4th of 28, the dial had it 27th. Now 14th."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2024,
+  "ab": "ORL",
+  "scale": "team:def",
+  "max_rank": 21,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "20s spot check - real DRtg 2nd of 26, the dial had it 26th. Now 19th: the least-improved of the five, and the one a later round should look at first."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2020,
+  "ab": "SAS",
+  "scale": "team:def",
+  "min_rank": 6,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "the OTHER direction - real DRtg 25th of 27 and the dial had it 3rd. Now 8th. A bottom-three real defence must never read top five."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2006,
+  "ab": "POR",
+  "scale": "team:def",
+  "min_rank": 15,
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "same direction, 00s - real DRtg 28th of 30, the dial had it 7th. Now 20th."
+ },
+ {
+  "card": "Bulls '96 (best legal five)",
+  "five": [
+   "Steve Kerr '96",
+   "Michael Jordan '96",
+   "Scottie Pippen '96",
+   "Toni Kukoč '96",
+   "Luc Longley '96"
+  ],
+  "scale": "team:defdial",
+  "target": 99,
+  "tol": 0,
+  "round": 94,
+  "ruling": "Move the summit to Bulls '96",
+  "note": "THE DEF SUMMIT. This supersedes recal_71's \"Do the same for DEF, 99 is 2004 pistons\" by his own later ruling, taken at recal_94's integration once the defence reset showed Pistons '04 reading 70th of 1,255 on the new scale (76 fives clamped at 99). With the summit on the all-time best five NOTHING clamps: exactly 1 of 1,255 reads 99.",
+  "season": 1996
+ },
+ {
+  "card": "Pistons '04 (best legal five)",
+  "five": [
+   "Chauncey Billups '04",
+   "Richard Hamilton '04",
+   "Tayshaun Prince '04",
+   "Ben Wallace '04",
+   "Mehmet Okur '04"
+  ],
+  "scale": "team:defdial",
+  "target": 84,
+  "tol": 4,
+  "round": 94,
+  "ruling": "Move the summit to Bulls '96",
+  "note": "recal_71's old summit, kept as a pin at what the honest scale gives it (drtgRef 108.3893, all-time rank 70 of 1,255). The '04 Pistons are still an elite defence on this dial; they are no longer the definition of 99. Its superseded form is in anchors_superseded.json. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]",
+  "season": 2004
+ },
+ {
+  "card": "Warriors '17 (best legal five)",
+  "five": [
+   "Stephen Curry '17",
+   "Kevin Durant '17",
+   "Klay Thompson '17",
+   "Draymond Green '17",
+   "Zaza Pachulia '17"
+  ],
+  "scale": "team:offdial",
+  "target": 99,
+  "tol": 0,
+  "round": 94,
+  "ruling": "Instead of scale 1-99 make it more balanced. 99 should be one of the greatest offense ever (2017 warriors)",
+  "note": "recal_71's OFF summit, seeded now because recal_94 is the first round to grade team dials at all. teamOffense is untouched this round: all 1,255 offRaw readings are bit-identical.",
+  "season": 2017
+ },
+ {
+  "card": "Philadelphia 76ers '26 (best legal five)",
+  "five": [
+   "Tyrese Maxey '26",
+   "Quentin Grimes '26",
+   "Kelly Oubre Jr. '26",
+   "Dominick Barlow '26",
+   "Joel Embiid '26"
+  ],
+  "scale": "team:defdial",
+  "target": 51,
+  "tol": 6,
+  "round": 100,
+  "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
+  "note": "SUPERSEDES the 36 +-6 recal_94 seeded here. That number was mine, not his — a reading recorded as a pin — and recal_100's era-relative recentring moved every 2026 five by +14. Philadelphia's RANK, which is the thing he ruled on, is unchanged at 13th of 24 against a real 14th; the rank pin above is still the binding one. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]",
+  "season": 2026
+ },
+ {
+  "kind": "order",
+  "scale": "team:defdial",
+  "above": "Thunder '26",
+  "below": "76ers '26",
+  "five_above": [
+   "Shai Gilgeous-Alexander '26",
+   "Ajay Mitchell '26",
+   "Luguentz Dort '26",
+   "Chet Holmgren '26",
+   "Jaylin Williams '26"
+  ],
+  "five_below": [
+   "Tyrese Maxey '26",
+   "Quentin Grimes '26",
+   "Kelly Oubre Jr. '26",
+   "Dominick Barlow '26",
+   "Joel Embiid '26"
+  ],
+  "round": 94,
+  "ruling": "Philly 2026 def too high, I dont understand the system it needs a full reset. OFF DEF feels off for too many teams",
+  "note": "the single comparison his ruling is really about, stated as an order pin so no rescale can hide it. The Thunder five is the merged pool's OVR-max board: recal_92's perdef round took Ajay Mitchell '26 out of it and put Isaiah Joe '26 in.",
+  "season_above": 2026,
+  "season_below": 2026
+ },
+ {
+  "card": "Michael Jordan '89",
+  "scale": "attr:perdef",
+  "target": 99,
+  "tol": 1,
+  "round": 97,
+  "ruling": "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting",
+  "note": "the perfect untracked sheet: drep 1.00, DBPM +3.4 (99.5th percentile of 1989), height 6'6\" (inside the 6'3\"-6'8\" band, so the full height term and the full 1.2 rep multiplier). His composite of 1.0896 is the HIGHEST in the pool; three ceilings were hiding it."
+ },
+ {
+  "card": "Thunder '26 (best legal five)",
+  "five": [
+   "Shai Gilgeous-Alexander '26",
+   "Ajay Mitchell '26",
+   "Luguentz Dort '26",
+   "Chet Holmgren '26",
+   "Jaylin Williams '26"
+  ],
+  "season": 2026,
+  "scale": "team:defdial",
+  "target": 80,
+  "tol": 4,
+  "round": 100,
+  "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
+  "note": "THE RULING. 63 -> 81 on the era-relative dial, inside his \"low 80's or very high 70's\". The 2026 field went from topping out at 63 to OKC 81 / DET 71 / ATL 65, and its median five reads 49 instead of 40. The five is the current OVR-max board — recal_96/98 moved OVR and put Ajay Mitchell '26 back in it. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
+ },
+ {
+  "card": "Pistons '26 (best legal five)",
+  "five": [
+   "Cade Cunningham '26",
+   "Duncan Robinson '26",
+   "Ausar Thompson '26",
+   "Tobias Harris '26",
+   "Jalen Duren '26"
+  ],
+  "season": 2026,
+  "scale": "team:defdial",
+  "target": 75,
+  "tol": 6,
+  "round": 100,
+  "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
+  "note": "the second half of \"no 2026 team having more than 61 DEF is insane\": the season's real 2nd-best defence reads 72, not 57. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
+ },
+ {
+  "card": "Lakers '87 (best legal five)",
+  "five": [
+   "Byron Scott '87",
+   "Michael Cooper '87",
+   "James Worthy '87",
+   "Magic Johnson '87",
+   "Kareem Abdul-Jabbar '87"
+  ],
+  "season": 1987,
+  "scale": "team:defdial",
+  "target": 67,
+  "tol": 6,
+  "round": 100,
+  "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
+  "note": "THE OTHER SIDE OF THE SAME RULING, and the reason the cure is a RECENTRING rather than a lift of the modern era: lifting 2026 alone would have dragged every era up with it. The Showtime Lakers were a good defence (Cooper, Kareem) and read 65 before and 65 after — the 1980s decade mean moved 56.0 -> 51.1 and its median five reads 52, so the era was recentred on 50, not pushed to 70. Decade means after: 51.1 / 51.2 / 51.2 / 51.2 / 50.9. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
+ },
+ {
+  "card": "Stephon Castle '26",
+  "scale": "attr:perdef",
+  "target": 62,
+  "tol": 3,
+  "round": 101,
+  "ruling": "This is better than 50, should be low 60's",
+  "note": "landed 60. A no-vote guard with a FULL tracking sample (514 shots from 6ft+ at -1.5%) whose reading was cut to 35% by a targeting discount whose premise runs backwards in the data."
+ },
+ {
+  "card": "Victor Wembanyama '26",
+  "scale": "attr:perdef",
+  "target": 74,
+  "tol": 5,
+  "round": 101,
+  "ruling": "Per def is too low. I understand the 7'4 is an issue but everything else is 10/10",
+  "note": "target assumed 78+-5; no number given. Landed 74. His height still costs him both terms (rep_hf 0.5 and height_inv 0.0, together 0.54 of a 1.09 composite) — what changed is that his tracked reading, the best in the pool at -8.6% over 765 shots, is no longer multiplied by zero because he has votes."
+ },
+ {
+  "card": "Jaylen Brown '26",
+  "scale": "attr:perdef",
+  "target": 66,
+  "tol": 2,
+  "round": 101,
+  "ruling": "Too low per def. Should be high 50s low 60s\" — \"66 is fine, anchor him there",
+  "note": "48 -> 66. No votes, DBPM -0.1, 6'6\", and -3.6% over 587 shots at a 100% blend weight — the same shape as Stephon Castle '26 with a fuller sample and a better diff, which is why he reads six above him. He asked for high 50s / low 60s, was shown the 66 this round already gave him, and anchored it there."
+ },
+ {
+  "card": "Kevin Durant '19",
+  "scale": "def",
+  "target": 79,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
+ },
+ {
+  "card": "Kevin Durant '24",
+  "scale": "def",
+  "target": 80,
+  "tol": 3,
+  "round": 99,
+  "ruling": "Agree with 1-7",
+  "note": "Tomer: \"anchor the Durants\" (2026-09-03) — pinned at the reading the ramp gives on recal_101's attributes; the scout's original targets (75 / 65) were measured on the old perdef"
+ },
+ {
+  "card": "Bulls '96 (best legal five)",
+  "five": [
+   "Steve Kerr '96",
+   "Michael Jordan '96",
+   "Scottie Pippen '96",
+   "Toni Kukoč '96",
+   "Luc Longley '96"
+  ],
+  "season": 1996,
+  "scale": "team:offdial",
+  "target": 68,
+  "tol": 3,
+  "round": 105,
+  "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
+  "note": "THE RULING'S OWN FIVE on the era-relative OFF dial: 67 -> 68. It barely moves, and that is the round's finding rather than its failure — 1996's league offensive level (123.442) is already within half a point of the all-time mean (123.011), so there was almost no era drift to take out of this particular season. See the team:ovrdial pin below."
+ },
+ {
+  "card": "Bulls '96 (best legal five)",
+  "five": [
+   "Steve Kerr '96",
+   "Michael Jordan '96",
+   "Scottie Pippen '96",
+   "Toni Kukoč '96",
+   "Luc Longley '96"
+  ],
+  "season": 1996,
+  "scale": "team:ovrdial",
+  "target": 84,
+  "tol": 3,
+  "round": 105,
+  "ruling": "Teams rating is still off. Bulls 96 only 75 OVR",
+  "note": "THE NUMBER HE NAMED, pinned at what it actually reads: 75 when he ruled, 81 by the time this round measured (recal_101/102/103/104 moved it), 84 after (68 on offence, 99 on defence). The round's assumed target of >=92 was NOT reached and is NOT pinned here, because an anchor is a pin that holds: reaching 92 needs OFF 89, and teamOffense ranks this five 8th of the 29 fieldable 1996 teams on offence while the real 1996 board has them 1st. A per-season shift cannot reorder a season. The next round on this belongs in data/team_rating.py's team_offense."
+ },
+ {
+  "card": "Dan Roundfield '82",
+  "scale": "def",
+  "target": 91,
+  "tol": 3,
+  "round": 114,
+  "ruling": "Dan rounfield too high for def 99. 91 is fine.",
+  "note": "99 -> 94, the band edge. He is 6'8\" exactly, so perdef paid his All-Defensive votes at the full wing rate (rep_hf 1.2, height_inv 1.0) while recal_53's rim ceiling had already cashed the same votes into a rimprot of 92 on a BLK% of 2.6. perdef now keeps only the share of a double-paid vote that DBPM supports, and his DBPM percentile is 0.713 - the lowest of any card that read DEF 95+. perdef alone cannot take him below 94; the other half of the double-pay is rimprot's ceiling, which is load-bearing for McHale '88, Gasol '04 and Bobby Jones '82."
+ },
+ {
+  "card": "Russell Westbrook '15",
+  "scale": "attr:ballsec",
+  "target": 56,
+  "tol": 4,
+  "round": 116,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "HIS THIRD RULING ON THIS CARD (rounds 108 and 111 declined; he repeated it with both blockers named). Landed at 60, the TOP EDGE of the band: 0.54 is the frontier of the raw-leg ceiling, because 0.55 puts Michael Jordan '89 OFF at 97 against r102's 99 +-1 and 0.60 puts Sabonis '21 OFF at 69 against r55's 71 +-1. 56 exactly needs one of those two OFF pins re-opened, which is compute_ovr's lane, not this one. The OFF half of the ruling is a separate round; his card reads OFF 89 here."
+ },
+ {
+  "card": "Mark Jackson '99",
+  "scale": "off",
+  "target": 54,
+  "tol": 3,
+  "round": 117,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 3, the playvol cliff. His assist share (46.7%) is HIGHER than his own pinned '98 (45.4) and '00 (45.0) and his box sits between them, but 1999 was a 50-game lockout year and playvol is a percentile inside its own season pool: 86 against 94 and 91. An 80->95 ramp turned that eight-point wobble into seven OFF points. Ramp re-cut to 70->85 - the top 14.7% down to the top 4.0% of the pool, where it ran 6.5% down to 0.8% - and all three seasons now sit at gate 1.00. 47 -> 53."
+ },
+ {
+  "card": "John Stockton '90",
+  "scale": "off",
+  "target": 84,
+  "tol": 3,
+  "round": 117,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 4, the double charge. Volume was read twice - by the gate and again by (1 - volume/100) - so inside the band scoring MORE lowered a passer's OFF by about 0.28 a point, and his best season by BPM (8.9, 17.2/14.5 on .607 TS) read 79, three below his own '88. Volume is now read ONCE, by the gate, and the band widens 65 -> 68. 79 -> 82, and the arc turns the right way up ('88 80, '89 83, '90 82, '91 80, '92 83). 84 is not reachable: Steve Nash '05 is six volume points away and identical on everything else the term reads, so every parameterisation that puts '90 above 82 puts Nash above his own 85 +-3."
+ },
+ {
+  "card": "Dorian Finney-Smith '20",
+  "scale": "off",
+  "target": 55,
+  "tol": 3,
+  "round": 118,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "scan item 5, the off-ball floor's 3pt gate. `3pt >= 68` was a cliff worth up to 24 printed OFF points after recal_91 grew the big branch: '20 (3pt 57) read 38 and '21 (3pt 72, pinned 62) read 62 on the same job - usage 12.9/12.2, TS .595/.609, 37.6%/39.4% from the arc, BPM -0.2/+0.1 - and 45 adjacent-season pairs jumped 10+ OFF across the flip. The gate is now a RAMP with no new constant: the share min(1, 3pt/68) of the floor's CORRECTION to the standard path, `std + f x (floor - std)`, which at 3pt 68 and above is `max(std, floor)` byte for byte. 38 -> 53; 55 is what the FULL floor pays him and a ramp gives a man at 3pt 57 eight tenths of it. Cliff pairs 45 -> 20."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2024,
+  "ab": "BOS",
+  "scale": "team:off",
+  "max_rank": 10,
+  "round": 119,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His item 7 asked for team OFF 55 -> near 72; recal_119 reached 56 and DECLINED the rest (data/rounds/119.json carries the full size frontier). What the round DID move is the rank the complaint was really about: the Celtics '24 read 12th of the 26 fieldable 2024 fives on offence against a real ORtg rank of 1st, and they read 9th now. The bound is 10 rather than 3 because 9th is where the possession-loss channel honestly puts them - the cards carry only ~45% of the turnover signal, measured against an oracle channel reading the real TOV%."
+ },
+ {
+  "five": [
+   "Derrick White '24",
+   "Jaylen Brown '24",
+   "Jayson Tatum '24",
+   "Kristaps Porziņģis '24",
+   "Al Horford '24"
+  ],
+  "season": 2024,
+  "scale": "team:defdial",
+  "target": 65,
+  "tol": 3,
+  "round": 119,
+  "ruling": "For the scout, I agree with 3,4,5,6,7",
+  "note": "THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket. recal_119 moved 0 of 1,255 DEF dials and drtgRef is bit-identical on all of them; this records that the Celtics '24 DEF dial read 65 before and after."
+ },
+ {
+  "card": "Russell Westbrook '15",
+  "scale": "off",
+  "target": 85,
+  "tol": 2,
+  "round": 121,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named."
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "Russell Westbrook '15",
+  "below": "Russell Westbrook '17",
+  "round": 121,
+  "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+  "note": "the released pin's condition: '17 is the more turnover-prone, less efficient season at the same usage, so he must not read above the season Tomer ruled on."
+ },
+ {
+  "card": "Warriors '17 (best legal five)",
+  "five": [
+   "Stephen Curry '17",
+   "Kevin Durant '17",
+   "Klay Thompson '17",
+   "Draymond Green '17",
+   "Zaza Pachulia '17"
+  ],
+  "season": 2017,
+  "scale": "team:defdial",
+  "target": 81,
+  "tol": 5,
+  "round": 122,
+  "ruling": "2 Elite defenders, 3 decent. how 72 def?",
+  "note": "THE SUBJECT. 72 -> 76, the FLOOR of the dispatch's 81+-5 band (the 81 was the orchestrator's number, not his). The last five points are reachable only through a top-heavy PERDEF aggregation, which 47 seasons of within-season Spearman refuse (the five's best defender is its LEAST predictive order statistic, +0.076 against +0.19..+0.23; a top-2 premium beside the mean carries a NEGATIVE partial in both eras), or by moving Zaza Pachulia '17's perdef 45, which is a card and not this agent's. The pin has ZERO SLACK by construction: if he re-rules the number, re-cut it to what he says. See data/rounds/122.json."
+ },
+ {
+  "kind": "order",
+  "scale": "off",
+  "above": "John Stockton '97",
+  "below": "John Stockton '01",
+  "round": 126,
+  "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+  "note": "HIS ORDER PIN. 87 > 86, strict. The VALUE pin he also ruled - John Stockton '01 off 80 +-4 - is deliberately NOT added: the attribute stage reaches 86 and cannot reach the band (delete BOTH zone deadeye floors outright and he still prints 86, because his mid falls only to his own volume-first composite), so the pin would fail on the round that wrote it. Add it when a compute_ovr round lands the band. See data/rounds/126.json."
+ },
+ {
+  "card": "John Stockton '01",
+  "scale": "off",
+  "target": 80,
+  "tol": 4,
+  "round": 130,
+  "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
+  "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
+ },
+ {
+  "card": "Moses Malone '85",
+  "scale": "off",
+  "target": 80,
+  "tol": 4,
+  "round": 131,
+  "ruling": "What I dont like, is Malone being 69 OFF with 25 ppg on not bad eff.",
+  "note": "THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK. The fouls a man draws and converts and the offensive glass he owns are PAINT DAMAGE, and o_score priced them only as side skills (0.11 and 0.06) while z[0]'s 0.22 was the only channel that answered \"does this man score inside\" - and recal_37's paint bonus, which recal_46 built for exactly that damage, is reachable only through a SHAPE gate on the zone vector, the very number that is wrong about this card. The block 0.22*z[0] + 0.08*z[1] (the two zones the pre-1997 model INFERS; the arc is measured in every era) is now floored at 0.30 x (half the free-throw term + half the offensive glass), ramped on volume 55->80 and efficiency 45->65. 69 -> 78, inside the band. Written as a max(), so every card whose zone block already exceeds the evidence is unmoved BY CONSTRUCTION - Moses '82 (rim 95, his own 86 +-1 pin), Ewing '90, Kareem '80, Barkley '90, Robinson '92, Shaq '00 and Hakeem '90 all move by exactly zero. The ratified pre-1997 zone compression is NOT touched: no attribute moves on any of the 10,000 cards."
+ },
+ {
+  "card": "76ers '85 (best legal five)",
+  "five": [
+   "Maurice Cheeks '85",
+   "Julius Erving '85",
+   "Bobby Jones '85",
+   "Charles Barkley '85",
+   "Moses Malone '85"
+  ],
+  "season": 1985,
+  "scale": "team:defdial",
+  "target": 93,
+  "tol": 2,
+  "round": 133,
+  "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
+  "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2005,
+  "ab": "PHO",
+  "scale": "team:off",
+  "max_rank": 3,
+  "round": 140,
+  "ruling": "Suns 05 agree.",
+  "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His agreement asked the Suns '05 best five (Nash / J.Johnson / Q.Richardson / Marion / Stoudemire) to go team OFF 65 -> near 85; recal_140 reached 67 and DECLINED the rest (data/rounds/140.json carries the frontier: no creation-feed form reaches 81 with the pins held). What the round DID establish is that the five is a top-3 offence of its own season on the engine's reading, against a real ORtg rank of 1st of 30."
+ },
+ {
+  "card": "Phoenix Suns '05 (best legal five)",
+  "five": [
+   "Steve Nash '05",
+   "Joe Johnson '05",
+   "Quentin Richardson '05",
+   "Shawn Marion '05",
+   "Amar'e Stoudemire '05"
+  ],
+  "season": 2005,
+  "scale": "team:offdial",
+  "target": 67,
+  "tol": 4,
+  "round": 140,
+  "ruling": "Suns 05 agree.",
+  "note": "the reached value, pinned so a later round cannot quietly give it back: 65 when the round measured, 67 after the feed became a property of the SHOOTER rather than of the five. His number was 85 and this round declines it; the pin records what the formula honestly gives, exactly as recal_110 pinned the Lakers '00 at 64."
+ }
 ]

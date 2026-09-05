@@ -7,8 +7,10 @@ KNOBS = dict(
     SLOPE_UP_MAX  = 0.9,    # % TS lost per usage pt gained, for a zero-creation player
     SLOPE_UP_MIN  = 0.25,   # same, for a perfect creator
     SLOPE_DOWN    = 0.55,   # % TS gained per usage pt shed... but only for efficient players (see gate)
-    AMP_MAX       = 0.22,   # recal_110: 0.06 -> 0.22, un-throttled, CENTRED, and moved into the BASELINE
-    FEED_REF      = 0.515,  # recal_110: the league's own mean feed — the term redistributes around it
+    AMP_MAX       = 0.26,   # recal_140: 0.22 -> 0.26, now applied to each man's RECEIVED feed
+    FEED_REF      = 0.5502, # recal_140: re-derived pool mean of the usage-weighted RECEIVED feed
+    CREATE_SHARE  = 0.20,   # recal_140: the share of a man's shot quality set by the best creator
+                            # BESIDE him rather than by himself — the pass-through. See the block below.
     CLOG_FREE     = 0.71,   # recal_110: a man who creates at this level makes his own space
     FIT_WIDEN     = 2.7,    # recal_64: the fit gap (interactions vs repriced-only) widened
     FIT_CAP       = 4.0,    # ...and capped: perfect fit +4, friction -4   # max TS multiplier bonus for low-usage players fed by elite creation
@@ -81,8 +83,39 @@ def team_offense(five):
     #       against real ORtg over 47 seasons goes 0.726 -> 0.762, the largest OFF fit gain in the
     #       ledger. It is still rising at 0.28 (+0.004); 0.22 is where the named cases land and the
     #       knob stays a ~3% TS swing across the league's whole feed range.
-    feed = sum(ci*u2i for ci, u2i in zip(c, u2)) / KNOBS['TEAM_USG']   # usage-weighted team creation
-    e3 = [e2i * (1 + KNOBS['AMP_MAX']*(feed - KNOBS['FEED_REF'])) for e2i in e2]
+    #
+    # recal_140 — THE FEED IS RECEIVED, NOT AVERAGED. His ruling: "Suns 05 agree" (the '05 Suns,
+    # real ORtg 114.5 and 1st of 30, reading team OFF 65). recal_110 left the amplification as ONE
+    # number for the whole five: the usage-weighted MEAN creation. That aggregate is diluted by the
+    # men a creator sets UP — Nash '05 creates at .827 on 20.9 usage while Stoudemire finishes at
+    # .328 on 27.6, so the five's feed came out .510, BELOW the league mean, and the term charged
+    # the best passing offence of 2005 a small penalty for having a finisher. A finisher's shots are
+    # the creator's shots; his shot quality is not his own passing rate.
+    #
+    # So the feed is now a PROPERTY OF THE SHOOTER, not of the five: each man is amplified by
+    #     recv_i = (1 - CREATE_SHARE)*c_i + CREATE_SHARE*max_{j != i} c_j
+    # — part his own creation, part the best creation available BESIDE him. FEED_REF is re-derived
+    # as the pool mean of the usage-weighted recv over all 1,255 fieldable fives, so the term still
+    # redistributes around the league and the mean multiplier is 1.0000 by construction.
+    #
+    # WHAT WAS MEASURED, AND WHAT WAS REFUTED. The ruling's stronger reading — "let the TOP creator
+    # anchor the feed" — is refuted by the data twice over. (a) On the amplification term's own
+    # truth column (bref ts_percent minus the five's usage-weighted ts_raw, season-centred over
+    # 1,255 fives) the shipped feed reads r +0.086 and the TOP creator's rate reads r -0.046: the
+    # five's mean carries the signal, the maximum carries none. (b) On the within-season residual of
+    # offRaw against real ORtg the top creator reads +0.023 — the engine already, if anything,
+    # OVER-pays a lone great creator. Sharpening the feed toward the maximum (weights c^G u2,
+    # G = 1..12) costs fit at every G: 0.7764 -> 0.7585 at G=2, 0.7529 at G=8. A small pass-through
+    # is what the fit will carry, and CREATE_SHARE = 0.20 is inside the flat top of that curve.
+    #
+    # 0.26 replaces 0.22 because the predictor changed; both were chosen the same way, on the
+    # within-season Spearman of offRaw against real ORtg over the 47 seasons: 0.7764 -> 0.7782.
+    # Everything larger breaks a pin — see data/rounds/140.json for the frontier and the decline.
+    n = len(A)
+    recv = [(1 - KNOBS['CREATE_SHARE'])*ci
+            + KNOBS['CREATE_SHARE']*max([c[j] for j in range(n) if j != i] or [0.0])
+            for i, ci in enumerate(c)]
+    e3 = [e2i * (1 + KNOBS['AMP_MAX']*(ri - KNOBS['FEED_REF'])) for e2i, ri in zip(e2, recv)]
     # ---- Tomer's offense interactions ----
     outs = [a['3pt'] for a in A]
     e4 = []
