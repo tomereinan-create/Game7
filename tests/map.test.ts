@@ -198,9 +198,10 @@ describe('the trail snakes across whatever width it is given', () => {
 })
 
 /**
- * THE FOUR SKINS, off the Campaign Map design board (his ruling: "Use 2b for 61-90, and 2a for
- * 91-120", and for the tier above it, "carry the 91-120 skin on"): 1b ARENA NIGHTS 1-30, 1c
- * HARDWOOD PRIME 31-60, 2b BANNER HALL 61-90, 2a TWILIGHT DYNASTY 91 to the top.
+ * THE FOUR SKINS, in the order his latest ruling puts them ("Make the 31-60 theme the same as the
+ * 61-90, and the 91-120 the same as the current 31-60"): 1b ARENA NIGHTS 1-30, 2b BANNER HALL
+ * 31-60, 2a TWILIGHT DYNASTY 61-90, 1c HARDWOOD PRIME 91 to the top. Four blocks, four floors —
+ * the permutation changes which board a block wears, not how many there are.
  *
  * The block edges are WRITTEN as levels rather than derived from the tiers, because they no longer
  * agree: the design draws five blocks of thirty and The Champions alone runs 31-90, so the 61 seam
@@ -220,25 +221,25 @@ describe('the map wears four skins, one per block of thirty', () => {
     }
     expect(runs).toEqual([
       { skin: 'arena', from: 1, to: 30 },
-      { skin: 'wood', from: 31, to: 60 },
-      { skin: 'hall', from: 61, to: 90 },
-      { skin: 'dusk', from: 91, to: ROUNDS },
+      { skin: 'hall', from: 31, to: 60 },
+      { skin: 'dusk', from: 61, to: 90 },
+      { skin: 'wood', from: 91, to: ROUNDS },
     ])
   })
 
   it('the top tier carries the 91-120 skin on rather than falling back to one already passed', () => {
     // The Customs has no board of its own in the design; it must not look like an earlier block
-    expect(skinAt(first(3))).toBe('dusk')
-    expect(skinAt(ROUNDS)).toBe('dusk')
+    expect(skinAt(first(3))).toBe('wood')
+    expect(skinAt(ROUNDS)).toBe('wood')
   })
 
   it('the seams that CAN follow the tiers still do — 31 and 91 are tier boundaries', () => {
     expect(first(1)).toBe(31) // The League ends, The Champions begin: arena -> wood
     expect(first(3)).toBe(121) // The Customs begin inside the dusk block, by his ruling
     expect(skinAt(first(1) - 1)).toBe('arena')
-    expect(skinAt(first(1))).toBe('wood')
-    expect(skinAt(first(2) - 1)).toBe('hall')
-    expect(skinAt(first(2))).toBe('dusk') // All-Time begins at 91: hall -> dusk
+    expect(skinAt(first(1))).toBe('hall')
+    expect(skinAt(first(2) - 1)).toBe('dusk')
+    expect(skinAt(first(2))).toBe('wood') // All-Time begins at 91: dusk -> wood
   })
 
   it('and the one that CANNOT is inside a tier, which is why it is written and not derived', () => {
@@ -247,7 +248,7 @@ describe('the map wears four skins, one per block of thirty', () => {
     expect(champions.levels.length).toBe(60)
     expect(first(1)).toBeLessThan(61)
     expect(first(2)).toBeGreaterThan(61)
-    expect(skinAt(60)).toBe('wood')
-    expect(skinAt(61)).toBe('hall')
+    expect(skinAt(60)).toBe('hall')
+    expect(skinAt(61)).toBe('dusk')
   })
 })

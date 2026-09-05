@@ -105,7 +105,7 @@ export function Tree({
 
   return (
     <>
-      <div className={`map-top ${skin}`}>
+      <div className={`map-top staff ${skin}`}>
         <div className="topbar">
           <span>Staff</span>
           <button onClick={onBack}>← Map</button>

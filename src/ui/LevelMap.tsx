@@ -67,6 +67,15 @@ const SIDEMAX = 84
 /** Room above the top row and below the bottom one — the foot also carries era I's banner. */
 const PAD = 132
 /**
+ * How far the TOP block's floor is carried up past the head of the trail — far enough to run the
+ * whole way behind the sticky header and off the top of the page. His ruling ("the header should
+ * continue the design not cut it") is only true if there is floor under the header to continue:
+ * the header is a translucent pane, and at the very top of the map the strip behind it was the
+ * page's own ground rather than the trail's, so the two met in a line exactly where the header
+ * ended. The top band starts above the window now, and nothing can be scrolled above zero.
+ */
+const HEAD_BLEED = 340
+/**
  * How far a row bows away from its own slope, as a fraction of that row's climb. A row used to be
  * a ruled line with a 12px wobble on it, which read as a row; at 0.3 it is an ARC — it leaves the
  * wall, swings out well above its own straight line and comes back down to the next turn, and the
@@ -192,10 +201,19 @@ function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
 
 /**
- * THE FOUR SKINS, by the level each one starts at — from the Campaign Map design board and his
- * ruling on it: "Use 2b for 61-90, and 2a for 91-120", and for the tier above that, carry the
- * 91-120 skin on. 1b ARENA NIGHTS 1-30, 1c HARDWOOD PRIME 31-60, 2b BANNER HALL 61-90, and 2a
- * TWILIGHT DYNASTY 91 to the top of the ladder.
+ * THE FOUR SKINS, by the level each one starts at. His latest ruling reorders them: "Make the
+ * 31-60 theme the same as the 61-90, and the 91-120 the same as the current 31-60." That is a
+ * PERMUTATION of the four boards, not a merge — he names two of the three moves and the third
+ * falls out, because there is only one board left for the block he does not name:
+ *
+ *   1-30    1b ARENA NIGHTS      unchanged
+ *   31-60   2b BANNER HALL       was 1c — "the same as the 61-90"
+ *   61-90   2a TWILIGHT DYNASTY  the one board left over
+ *   91-150  1c HARDWOOD PRIME    was 2a — "the same as the current 31-60"
+ *
+ * Every block keeps a floor of its own, which is the rule the four skins were drawn for. The top
+ * tier still has no board and still carries the block below it on (his earlier ruling), so The
+ * Customs is hardwood rather than a floor the ladder already passed.
  *
  * WRITTEN AS LEVELS, not read off the tiers, and that is a deliberate reversal of how the first
  * seam worked. It used to derive from `eras[1].first` so that a tier resized in scripts/campaigns.ts
@@ -211,9 +229,9 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
  */
 const SKINS = [
   { skin: 'arena', first: 1 },
-  { skin: 'wood', first: 31 },
-  { skin: 'hall', first: 61 },
-  { skin: 'dusk', first: 91 },
+  { skin: 'hall', first: 31 },
+  { skin: 'dusk', first: 61 },
+  { skin: 'wood', first: 91 },
 ] as const
 export type Skin = (typeof SKINS)[number]['skin']
 /** Which skin a level wears: the last block that has started by then. */
@@ -313,7 +331,11 @@ export function LevelMap({
    * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). A mode,
    * not a button: while it is on, every ticket on the trail is tappable and tapping one clears
    * the whole ladder up to it at one star. That is the shortest honest route to a block a hundred
-   * levels up — tap level 91 and the dusk floor is there to look at.
+   * levels up — tap level 91 and the top floor is there to look at.
+   *
+   * It BORROWS the ladder (his ruling: "When moving the auto mode to off, clear back all the
+   * completed stages and return to normal"): switching it off puts back exactly the stars you had
+   * when you switched it on. App holds the real ones while it runs.
    */
   auto?: boolean
   onToggleAuto?: () => void
@@ -381,10 +403,18 @@ export function LevelMap({
    * tactics board both want every pixel. A trail of tickets does not: at 1480 it sprawled. `map`
    * pulls this screen alone back to 1150 without touching the two screens that were never too big.
    */
+  /**
+   * ...AND THE BLOCK'S OWN FLOOR ON THE PAGE (his ruling: "Make the header the same design as the
+   * stage, it should continue the design not cut it"). The header is a translucent scrim now
+   * rather than a panel, so what shows through it has to BE the floor — and the strip it sits on,
+   * above the trail, is the page's own ground, which the trail's bands never reached. The map
+   * takes the same `sk-` body class the draft and the staff room take, so the room starts at the
+   * top of the window and the header is a pane of it rather than a lid on it.
+   */
   useLayout(() => {
-    document.body.classList.add('wide', 'map')
-    return () => document.body.classList.remove('wide', 'map')
-  }, [])
+    document.body.classList.add('wide', 'map', `sk-${skin}`)
+    return () => document.body.classList.remove('wide', 'map', `sk-${skin}`)
+  }, [skin])
 
   /**
    * The width the trail is actually handed, so the wind can be cut to it. It is read STRAIGHT off
@@ -510,7 +540,12 @@ export function LevelMap({
             exactly two grounds and no more; four skins do not fit in two, so each block paints its
             own band and every one of them fades into the block below at its own top edge. */}
         {BANDS.map((b) => (
-          <div key={b.skin} className={`ground ${b.skin}`} style={{ top: b.top, height: b.height }} />
+          <div
+            key={b.skin}
+            className={`ground ${b.skin}`}
+            /* the topmost block runs up behind the header — see HEAD_BLEED */
+            style={b.top === 0 ? { top: -HEAD_BLEED, height: b.height + HEAD_BLEED } : { top: b.top, height: b.height }}
+          />
         ))}
         {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
         <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
@@ -668,7 +703,9 @@ export function LevelMap({
       ) : null}
       <div className={`map-foot ${skin}`}>
         <span className="cap">
-          {auto ? 'Auto-complete is on — tap any level to clear the ladder up to it' : 'Tap a cleared level to replay it for a better rating'}
+          {auto
+            ? 'Auto-complete is on — tap any level to clear the ladder up to it. Turning it off puts your real progress back.'
+            : 'Tap a cleared level to replay it for a better rating'}
         </span>
         {onToggleAuto ? (
           <button className={`map-link auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>

@@ -101,11 +101,16 @@ export default function App() {
   const [ach, setAch] = useState(false)
   const [teamDb, setTeamDb] = useState(false)
   /**
-   * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). Session
-   * state, deliberately: it is a way of LOOKING at the ladder, not a setting, and it should not
-   * still be on tomorrow waiting for a mis-tap. The stars it writes are real and do persist.
+   * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). A way of
+   * LOOKING at the ladder, and his second ruling makes that literal: "When moving the auto mode to
+   * off, clear back all the completed stages and return to normal." So it BORROWS the ladder
+   * rather than spending it — the real stars are kept here the moment it is switched on and put
+   * back the moment it is switched off, and walking out of the campaign puts them back too.
+   *
+   * The mode itself is session state: it is a lens, not a setting, and it must not still be on
+   * tomorrow waiting for a mis-tap.
    */
-  const [auto, setAuto] = useState(false)
+  const [auto, setAuto] = useState<{ mode: CampaignMode; stars: number[] } | null>(null)
   // unlock toasts: the trophy case speaks once, quietly, then leaves
   const [toasts, setToasts] = useState<AchDef[]>([])
   useEffect(
@@ -237,7 +242,19 @@ export default function App() {
     setLevel(null)
   }
 
+  /** Put the real ladder back. Called when auto is switched off, and on the way out of a campaign. */
+  const autoOff = (a: { mode: CampaignMode; stars: number[] }) => {
+    setProgress((all) => {
+      const p = { ...all[a.mode], stars: a.stars }
+      saveProgress(a.mode, p)
+      return { ...all, [a.mode]: p }
+    })
+    setAuto(null)
+  }
+
   const leave = () => {
+    // walking home with auto still on would leave a borrowed ladder in the save
+    if (auto) autoOff(auto)
     setMode(null)
     setLevel(null)
     setPending(null)
@@ -430,8 +447,8 @@ export default function App() {
           onStaff={() => setStaff(true)}
           salary={capped}
           death={death}
-          auto={auto}
-          onToggleAuto={() => setAuto((a) => !a)}
+          auto={!!auto}
+          onToggleAuto={() => (auto ? autoOff(auto) : setAuto({ mode: cm, stars: prog.stars }))}
           onAutoTo={(level) => {
             // one star for every level up to the one tapped, and never less than already earned
             commit(cm, { ...prog, stars: prog.stars.map((s, i) => (i < level ? Math.max(s, 1) : s)) })

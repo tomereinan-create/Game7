@@ -2413,9 +2413,11 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
   .treesvg { max-width: min(100%, 900px); max-height: 62vh; }
   /* the staff room's own header, cut back so the zoomed-out trellis has the screen it needs. The
      68px star count is the MAP's — it counts 450 there; here it counts what is left to spend. */
-  body[class*='sk-'] .map-total { font-size: 48px; }
-  body[class*='sk-'] .map-total .star { font-size: 32px; }
-  body[class*='sk-'] .map-total i { font-size: 19px; }
+  /* the STAFF header only — the map's own star count keeps its 68px, and the map is a skinned
+     body too now, so this cannot be hung off the body class the way it first was */
+  .map-top.staff .map-total { font-size: 48px; }
+  .map-top.staff .map-total .star { font-size: 32px; }
+  .map-top.staff .map-total i { font-size: 19px; }
   .tree-lede { max-width: 1000px; margin: 0 auto; font-size: 19px; }
 }
 .treeline { stroke: var(--line-2); stroke-width: 3; stroke-linecap: round; }
@@ -2582,7 +2584,44 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
    button, which clipped both. The negative top margin and the matching padding reproduce the
    page's own top inset inside the block, so what stays on screen is exactly what you see at the
    top of the page, button and all. */
-.map-top { position: sticky; top: 0; z-index: 6; background: var(--bg); margin: -14px -14px 0; padding: 14px 14px 0; border-bottom: 1px solid var(--line); box-shadow: 0 8px 16px -12px rgba(0,0,0,0.6); }
+/**
+ * THE HEADER CONTINUES THE ROOM (his ruling: "Make the header the same design as the stage, it
+ * should continue the design not cut it"). It used to be an opaque panel with a ruled bottom edge
+ * and a drop shadow under it — a lid: the floor ran up to it and stopped, and the line across the
+ * window was the first thing the eye found. It is a PANE now. The block's own floor is painted on
+ * the page behind it (the map takes an `sk-` body class), the bar is a thin scrim of that block's
+ * base colour with the floor blurred through it, and the bottom edge is a fade rather than a rule
+ * — the room carries on under the header and dissolves out of it.
+ *
+ * The scrim is NEUTRAL, not the block's colour, and that is the whole trick: the header wears the
+ * skin of the level you are ON, but the floor it happens to be sitting over is whichever block you
+ * have scrolled to, and at the head of the ladder those are not the same block. A tinted pane
+ * would announce that mismatch as a coloured bar over the wrong floor. A pane that only DARKENS
+ * cannot: whatever is behind it supplies the colour, at any scroll position, in every block.
+ */
+.map-top {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--top-scrim, rgba(0, 0, 0, 0.52));
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+  margin: -14px -14px 0;
+  padding: 14px 14px 0;
+  border-bottom: 0;
+  box-shadow: none;
+}
+/* the fade the rule used to be: the scrim thins out into the map over 40px rather than ending */
+.map-top::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 40px;
+  background: linear-gradient(180deg, var(--top-scrim, rgba(0, 0, 0, 0.52)), transparent);
+  pointer-events: none;
+}
 @media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
 
 /* ---- home icon, always there ---- */
@@ -3102,8 +3141,9 @@ body.tunnel .rung { background: #1c1a16; }
 @media (min-width: 900px) { .ground { left: -21px; right: -21px; } }
 /* the block level 1 stands in: no fade, and it runs past the foot of the trail */
 .ground.arena { margin-bottom: -10px; -webkit-mask-image: none; mask-image: none; }
-/* ...and whichever block reaches the head of the ladder runs past the top of it */
-.ground:last-of-type { margin-top: -14px; padding-top: 14px; }
+/* ...and whichever block reaches the head of the ladder runs past the top of it — far past it now:
+   its own top is set in LevelMap (HEAD_BLEED) so the floor carries on up behind the sticky header
+   instead of stopping at it. Nothing is needed here beyond letting it paint. */
 
 /* 1c HARDWOOD PRIME — lacquered boards, a vignette, and the painted lane of a floor seen from above */
 .ground.wood {
@@ -3488,13 +3528,7 @@ body.tunnel .rung { background: #1c1a16; }
    THE CHROME for the two new skins — header, era banner, notice and foot, same three parts the
    arena and the hardwood already dress.
    ========================================================================== */
-.map-top.hall {
-  background-color: rgba(16,9,4,0.95);
-  background-image:
-    radial-gradient(420px 260px at 30% 140%, rgba(255,220,160,0.16), transparent 72%),
-    radial-gradient(420px 260px at 82% 150%, rgba(255,220,160,0.11), transparent 72%);
-  border-bottom-color: rgba(244,232,207,0.16);
-}
+.map-top.hall { --top-scrim: rgba(8,4,1,0.52); }
 .map-top.hall .map-kicker { color: #b3a184; }
 .map-top.hall .map-total { color: #f4e8cf; text-shadow: 0 0 18px rgba(255,220,160,0.35); }
 .map-top.hall .map-total .star { color: #d9a441; }
@@ -3507,14 +3541,7 @@ body.tunnel .rung { background: #1c1a16; }
 .era-band.hall i { color: #b3a184; }
 .node-note.hall { border-color: rgba(244,232,207,0.6); background: rgba(26,15,7,0.94); color: #f4e8cf; }
 
-.map-top.dusk {
-  background-color: rgba(7,20,24,0.95);
-  background-image:
-    linear-gradient(180deg, rgba(27,20,64,0.55), transparent 70%),
-    radial-gradient(560px 240px at 78% 140%, rgba(62,230,176,0.20), transparent 70%),
-    radial-gradient(520px 240px at 8% 150%, rgba(157,123,255,0.16), transparent 72%);
-  border-bottom-color: rgba(62,230,176,0.16);
-}
+.map-top.dusk { --top-scrim: rgba(1,8,12,0.5); }
 .map-top.dusk .map-kicker { color: #8fb4ab; }
 .map-top.dusk .map-total { color: #3ee6b0; text-shadow: 0 0 22px rgba(62,230,176,0.4); }
 .map-top.dusk .map-total .star { color: #3ee6b0; }
@@ -3592,13 +3619,7 @@ body.tunnel .rung { background: #1c1a16; }
  * block's own floor: the arena's house light, the hardwood's boards, the hall's rafter spots, the
  * dusk sky. Darkened, because a sticky header has type on it and the trail runs under it.
  */
-.map-top.arena {
-  background-color: rgba(9,13,22,0.96);
-  background-image:
-    radial-gradient(520px 220px at 74% 120%, rgba(96,140,255,0.20), transparent 70%),
-    radial-gradient(420px 200px at 10% 130%, rgba(255,116,52,0.10), transparent 70%);
-  border-bottom-color: rgba(160,180,220,0.14);
-}
+.map-top.arena { --top-scrim: rgba(2,5,12,0.52); }
 .map-top.arena .map-kicker { color: #93a0b4; }
 .map-top.arena .map-total { color: #ff8a4d; text-shadow: 0 0 22px rgba(255,116,52,0.35); }
 .map-top.arena .map-total i { color: #93a0b4; }
@@ -3606,14 +3627,7 @@ body.tunnel .rung { background: #1c1a16; }
 .map-top.arena .map-link.danger { color: #ff5d6c; }
 .map-top.arena .rule2 { background: linear-gradient(90deg, #ff7434, rgba(255,116,52,0.15) 60%, transparent); }
 
-.map-top.wood {
-  background-color: rgba(20,11,4,0.95);
-  background-image:
-    linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.72)),
-    repeating-linear-gradient(90deg, rgba(255,205,150,0.05) 0 2px, transparent 2px 47px),
-    repeating-linear-gradient(90deg, #2b1a0c 0 47px, #251507 47px 94px, #2f1d0e 94px 141px);
-  border-bottom-color: rgba(246,238,221,0.16);
-}
+.map-top.wood { --top-scrim: rgba(10,5,1,0.55); }
 .map-top.wood .map-kicker { color: #b39f83; }
 .map-top.wood .map-total { color: #f6eedd; text-shadow: 0 0 18px rgba(255,207,125,0.4); }
 .map-top.wood .map-total .star { color: #ffcf7d; }
@@ -3865,13 +3879,16 @@ body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
    screen that needs this, because it paints a floor per block rather than one for the page, and a
    gold disc on a hardwood floor or a dusk sky was the one thing on it still wearing house colours.
    Stated per skin so it holds on every screen, skinned body or not. */
-.home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(9,13,22,0.96); border-color: rgba(255,138,77,0.45); }
+/* and the fabs float ON that scrim, so they are the same pane: the block's base colour thinned
+   right down, with the floor blurred through them */
+.home-fab, .map-fab { -webkit-backdrop-filter: blur(14px) saturate(1.25); backdrop-filter: blur(14px) saturate(1.25); }
+.home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(2,5,12,0.45); border-color: rgba(255,138,77,0.45); }
 .home-fab.arena:hover, .map-fab.arena:hover { border-color: #ff8a4d; }
-.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(30,18,7,0.95); border-color: rgba(255,207,125,0.5); }
+.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(10,5,1,0.45); border-color: rgba(255,207,125,0.5); }
 .home-fab.wood:hover, .map-fab.wood:hover { border-color: #ffcf7d; }
-.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(21,12,6,0.95); border-color: rgba(242,215,155,0.45); }
+.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(8,4,1,0.45); border-color: rgba(242,215,155,0.45); }
 .home-fab.hall:hover, .map-fab.hall:hover { border-color: #f2d79b; }
-.home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(7,20,24,0.95); border-color: rgba(62,230,176,0.45); }
+.home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(1,8,12,0.45); border-color: rgba(62,230,176,0.45); }
 .home-fab.dusk:hover, .map-fab.dusk:hover { border-color: #3ee6b0; }
 
 /* ==========================================================================
