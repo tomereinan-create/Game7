@@ -160,12 +160,19 @@ export function LevelMap({
    * out, so on a desk it drew a 560px ribbon of tickets down the middle of a black window. It
    * takes the SAME opt-in they take rather than inventing a third width.
    */
-  // A LAYOUT effect, and declared above the measure below, because the two are ordered: this class
-  // is what takes #root from the 562px column to the full window, so measuring the trail before it
-  // lands reads the OLD width and winds the whole map to a column it is no longer in.
+  /**
+   * A LAYOUT effect, and declared above the measure below, because the two are ordered: these
+   * classes are what take #root from the 562px column out to the desk, so measuring the trail
+   * before they land reads the OLD width and winds the whole map to a column it is no longer in.
+   *
+   * TWO classes, not one (his ruling: "Now its a little bit too big"). `wide` is the shared opt-in
+   * the draft and My team also take, and its 1480px is THEIR width — a table of players and a
+   * tactics board both want every pixel. A trail of tickets does not: at 1480 it sprawled. `map`
+   * pulls this screen alone back to 1150 without touching the two screens that were never too big.
+   */
   useLayoutEffect(() => {
-    document.body.classList.add('wide')
-    return () => document.body.classList.remove('wide')
+    document.body.classList.add('wide', 'map')
+    return () => document.body.classList.remove('wide', 'map')
   }, [])
 
   /**

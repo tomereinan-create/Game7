@@ -3172,6 +3172,9 @@ body:has(.sheet) .map-fab { display: none; }
    would have: written above them it lost the cascade and every ticket stayed its phone size.
    ========================================================================== */
 @media (min-width: 900px) {
+  /* The map's own ceiling, under body.wide's 1480 (his ruling: "Now its a little bit too big").
+     The draft and My team keep the full 1480 — this narrows the ONE screen that sprawled at it. */
+  body.wide.map #root { max-width: 1150px; }
   .node.arena .ticket,
   .node.wood .ticket { width: 104px; padding: 9px 8px 8px; }
   .node.arena.now .ticket { width: 118px; padding: 10px 8px 9px; }
