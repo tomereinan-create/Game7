@@ -3,6 +3,7 @@ import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, SIGMA } from '../config'
 import { archetype, PLAYERS } from '../engine/pool'
+import { useLayout } from './useLayout'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
@@ -283,7 +284,19 @@ export function Draft({
    * outside anything this screen renders; it re-tints every token, so the wheel, the pool and the
    * board come with it rather than needing a skinned copy each.
    */
-  useEffect(() => {
+  /**
+   * A LAYOUT effect, not a passive one, and the difference is a bug he reported: "Pressing on the
+   * stage then on map leads me here instead of the normal map" — the map came back drawn in a
+   * 562px column with its tickets scattered across the window and off the right edge.
+   *
+   * Leaving this screen for the map is ONE commit. React runs every layout-effect cleanup in it
+   * before any layout-effect create, so a layout cleanup here lands before the map adds its own
+   * classes; a PASSIVE cleanup lands after, and it was tearing `wide` back off the body a beat
+   * after the map had put it on. The map measures its width in a layout effect, so it measured the
+   * full window, then the stale cleanup shrank #root back to the phone column underneath it — a
+   * trail laid out for 1878px inside a box 562px wide.
+   */
+  useLayout(() => {
     document.body.classList.add('wide', `sk-${skin}`)
     return () => document.body.classList.remove('wide', `sk-${skin}`)
   }, [skin])

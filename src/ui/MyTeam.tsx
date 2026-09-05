@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
+import { useLayout } from './useLayout'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot, type Slots } from '../engine/slots'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
@@ -122,7 +123,19 @@ export function MyTeam({
     : [...five.map((p) => p.name), ...(bench ? [bench.name] : []), ...(benchOpen && !bench ? [BENCH_SLOT] : [])]
 
   // Like the draft, this screen earns the full width of a desktop.
-  useEffect(() => {
+  /**
+   * A LAYOUT effect, not a passive one, and the difference is a bug he reported: "Pressing on the
+   * stage then on map leads me here instead of the normal map" — the map came back drawn in a
+   * 562px column with its tickets scattered across the window and off the right edge.
+   *
+   * Leaving this screen for the map is ONE commit. React runs every layout-effect cleanup in it
+   * before any layout-effect create, so a layout cleanup here lands before the map adds its own
+   * classes; a PASSIVE cleanup lands after, and it was tearing `wide` back off the body a beat
+   * after the map had put it on. The map measures its width in a layout effect, so it measured the
+   * full window, then the stale cleanup shrank #root back to the phone column underneath it — a
+   * trail laid out for 1878px inside a box 562px wide.
+   */
+  useLayout(() => {
     document.body.classList.add('wide')
     return () => document.body.classList.remove('wide')
   }, [])

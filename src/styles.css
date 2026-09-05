@@ -2019,6 +2019,12 @@ button {
 .map-side { flex: 1 1 auto; min-width: 0; }
 .map-link { background: none; border: 0; padding: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--you); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .map-link.danger { color: var(--danger); }
+/* AUTO-COMPLETE. Off it is a plain foot link; on, it is lit and says so, and the trail behind it
+   brings its locked tickets most of the way up — every one of them is a live target now. */
+.map-link.auto.on { color: var(--you); font-weight: 700; }
+.trail.auto .node.locked { opacity: 0.8; cursor: pointer; }
+.trail.auto .node.arena.locked { opacity: 0.8; }
+.trail.auto .node.wood.locked { opacity: 0.8; }
 .trail { position: relative; margin: 4px 0 10px; }
 .trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .trail-dim, .trail-lit { fill: none; stroke-width: 3px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
@@ -3482,7 +3488,13 @@ body.tunnel .rung { background: #1c1a16; }
    THE CHROME for the two new skins — header, era banner, notice and foot, same three parts the
    arena and the hardwood already dress.
    ========================================================================== */
-.map-top.hall { background: rgba(16,9,4,0.94); border-bottom-color: rgba(244,232,207,0.16); }
+.map-top.hall {
+  background-color: rgba(16,9,4,0.95);
+  background-image:
+    radial-gradient(420px 260px at 30% 140%, rgba(255,220,160,0.16), transparent 72%),
+    radial-gradient(420px 260px at 82% 150%, rgba(255,220,160,0.11), transparent 72%);
+  border-bottom-color: rgba(244,232,207,0.16);
+}
 .map-top.hall .map-kicker { color: #b3a184; }
 .map-top.hall .map-total { color: #f4e8cf; text-shadow: 0 0 18px rgba(255,220,160,0.35); }
 .map-top.hall .map-total .star { color: #d9a441; }
@@ -3495,7 +3507,14 @@ body.tunnel .rung { background: #1c1a16; }
 .era-band.hall i { color: #b3a184; }
 .node-note.hall { border-color: rgba(244,232,207,0.6); background: rgba(26,15,7,0.94); color: #f4e8cf; }
 
-.map-top.dusk { background: linear-gradient(180deg, rgba(7,20,24,0.95), rgba(7,20,24,0.86)); border-bottom-color: rgba(62,230,176,0.16); }
+.map-top.dusk {
+  background-color: rgba(7,20,24,0.95);
+  background-image:
+    linear-gradient(180deg, rgba(27,20,64,0.55), transparent 70%),
+    radial-gradient(560px 240px at 78% 140%, rgba(62,230,176,0.20), transparent 70%),
+    radial-gradient(520px 240px at 8% 150%, rgba(157,123,255,0.16), transparent 72%);
+  border-bottom-color: rgba(62,230,176,0.16);
+}
 .map-top.dusk .map-kicker { color: #8fb4ab; }
 .map-top.dusk .map-total { color: #3ee6b0; text-shadow: 0 0 22px rgba(62,230,176,0.4); }
 .map-top.dusk .map-total .star { color: #3ee6b0; }
@@ -3565,7 +3584,21 @@ body.tunnel .rung { background: #1c1a16; }
    THE CHROME — header, era banners, notices and foot, in whichever skin the
    level you are on belongs to.
    ========================================================================== */
-.map-top.arena { background: rgba(9,13,22,0.96); border-bottom-color: rgba(160,180,220,0.14); }
+/**
+ * THE HEADER IS PART OF THE ROOM (his ruling: "I want the header, the home button, to fit the
+ * current stage theme design"). Each skin's bar was a flat near-black panel with the block's ink
+ * on it — the colours belonged to the block but the SURFACE did not, so the strip across the top
+ * read as chrome laid over the map rather than the top of the same room. Each one now carries the
+ * block's own floor: the arena's house light, the hardwood's boards, the hall's rafter spots, the
+ * dusk sky. Darkened, because a sticky header has type on it and the trail runs under it.
+ */
+.map-top.arena {
+  background-color: rgba(9,13,22,0.96);
+  background-image:
+    radial-gradient(520px 220px at 74% 120%, rgba(96,140,255,0.20), transparent 70%),
+    radial-gradient(420px 200px at 10% 130%, rgba(255,116,52,0.10), transparent 70%);
+  border-bottom-color: rgba(160,180,220,0.14);
+}
 .map-top.arena .map-kicker { color: #93a0b4; }
 .map-top.arena .map-total { color: #ff8a4d; text-shadow: 0 0 22px rgba(255,116,52,0.35); }
 .map-top.arena .map-total i { color: #93a0b4; }
@@ -3573,7 +3606,14 @@ body.tunnel .rung { background: #1c1a16; }
 .map-top.arena .map-link.danger { color: #ff5d6c; }
 .map-top.arena .rule2 { background: linear-gradient(90deg, #ff7434, rgba(255,116,52,0.15) 60%, transparent); }
 
-.map-top.wood { background: rgba(20,11,4,0.93); border-bottom-color: rgba(246,238,221,0.16); }
+.map-top.wood {
+  background-color: rgba(20,11,4,0.95);
+  background-image:
+    linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.72)),
+    repeating-linear-gradient(90deg, rgba(255,205,150,0.05) 0 2px, transparent 2px 47px),
+    repeating-linear-gradient(90deg, #2b1a0c 0 47px, #251507 47px 94px, #2f1d0e 94px 141px);
+  border-bottom-color: rgba(246,238,221,0.16);
+}
 .map-top.wood .map-kicker { color: #b39f83; }
 .map-top.wood .map-total { color: #f6eedd; text-shadow: 0 0 18px rgba(255,207,125,0.4); }
 .map-top.wood .map-total .star { color: #ffcf7d; }
@@ -3613,16 +3653,27 @@ body.tunnel .rung { background: #1c1a16; }
 .node-note.arena { border-color: rgba(255,138,77,0.7); background: rgba(24,30,46,0.92); color: #ff8a4d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
 .node-note.wood { border-color: rgba(255,207,125,0.75); background: rgba(28,17,7,0.94); color: #ffcf7d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
 
+/* The foot, one floor per block. Two of the four never had one — on the hall and the dusk blocks
+   the strip under the trail fell back to the page's own brown and the room stopped at the last
+   ticket. And the bleed is written for every skin now rather than named two at a time. */
 .map-foot.arena { background: #0a0e17; }
 .map-foot.arena .cap { color: #93a0b4; }
 .map-foot.arena .map-link.danger { color: #ff5d6c; }
 .map-foot.wood { background: #261608; }
 .map-foot.wood .cap { color: #b39f83; }
 .map-foot.wood .map-link.danger { color: #ff6a5c; }
+.map-foot.hall { background: #150c06; }
+.map-foot.hall .cap { color: #b3a184; }
+.map-foot.hall .map-link.danger { color: #ff6a5c; }
+.map-foot.dusk { background: #0a1f2a; }
+.map-foot.dusk .cap { color: #8fb4ab; }
+.map-foot.dusk .map-link.danger { color: #ff6a5c; }
 /* The foot sits under the ground layers, which bleed to the screen edge — so it bleeds too, or a
    14px strip of the page background shows down each side of it. */
-.map-foot.arena, .map-foot.wood { margin: 0 -14px; padding: 4px 14px 24px; }
-@media (min-width: 900px) { .map-foot.arena, .map-foot.wood { margin: 0 -21px; padding: 4px 21px 24px; } }
+.map-foot.arena, .map-foot.wood, .map-foot.hall, .map-foot.dusk { margin: 0 -14px; padding: 4px 14px 24px; }
+@media (min-width: 900px) {
+  .map-foot.arena, .map-foot.wood, .map-foot.hall, .map-foot.dusk { margin: 0 -21px; padding: 4px 21px 24px; }
+}
 
 /* The dials on tonight's ticket read cold in both skins; only their label and basis change. */
 .node.arena .node-dials .dl, .node.arena .gauge-basis { color: #93a0b4; }
@@ -3814,13 +3865,13 @@ body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
    screen that needs this, because it paints a floor per block rather than one for the page, and a
    gold disc on a hardwood floor or a dusk sky was the one thing on it still wearing house colours.
    Stated per skin so it holds on every screen, skinned body or not. */
-.home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(20,27,40,0.92); border-color: rgba(255,138,77,0.45); }
+.home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(9,13,22,0.96); border-color: rgba(255,138,77,0.45); }
 .home-fab.arena:hover, .map-fab.arena:hover { border-color: #ff8a4d; }
-.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(50,32,14,0.94); border-color: rgba(255,207,125,0.5); }
+.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(30,18,7,0.95); border-color: rgba(255,207,125,0.5); }
 .home-fab.wood:hover, .map-fab.wood:hover { border-color: #ffcf7d; }
-.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(36,20,9,0.94); border-color: rgba(242,215,155,0.45); }
+.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(21,12,6,0.95); border-color: rgba(242,215,155,0.45); }
 .home-fab.hall:hover, .map-fab.hall:hover { border-color: #f2d79b; }
-.home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(16,44,54,0.92); border-color: rgba(62,230,176,0.45); }
+.home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(7,20,24,0.95); border-color: rgba(62,230,176,0.45); }
 .home-fab.dusk:hover, .map-fab.dusk:hover { border-color: #3ee6b0; }
 
 /* ==========================================================================

@@ -31,8 +31,13 @@ import { teamColor } from './teamColors'
  * phone's 375.
  */
 const W = 375
-/** Horizontal distance between two levels standing in the same row. */
-const LANE = 176
+/**
+ * Horizontal distance between two levels standing in the same row. Wider than it needs to be for
+ * the tickets, on purpose: fewer levels per row means more rows, and a turn at the end of each one
+ * — the turns are what make it a snake rather than a table (his ruling, "even more snake, less
+ * rowy").
+ */
+const LANE = 208
 /**
  * Vertical clearance at the wall where two rows meet — the one place a row and the row above it
  * stand at the same x, and so the one distance that has to clear a ticket. A ticket with its stars
@@ -43,15 +48,38 @@ const TURN = 190
  * How steeply a row climbs as it runs, as a SLOPE rather than a fixed rise. Stated as an angle
  * because that is what his ruling is about: "a snake going slightly up" is something the eye reads
  * off the picture, and a fixed hundred-pixel rise is a gentle 5 degrees across a desk's ten-ticket
- * row and a 26-degree staircase across a phone's two. 0.085 is ~4.9 degrees at every width.
+ * row and a 26-degree staircase across a phone's two. 0.12 is ~6.8 degrees at every width — his
+ * second ruling on it, "even more snake", steepened it from the 4.9 it first shipped at.
  */
-const TILT = 0.085
+const TILT = 0.12
+/**
+ * THE WANDER. Every ticket is nudged off its lane by up to this much, by a rule that depends only
+ * on the level number — so a ticket does not move between renders, and a level is always in the
+ * same place. It is here because the arc alone still left the tickets in tidy VERTICAL columns,
+ * one under the other, and a grid is what "rowy" looks like even when the rows themselves curve.
+ * 2.39996 radians per level is the golden angle: the offsets never fall into a short repeating
+ * pattern, so no column ever comes back.
+ */
+export const WOBBLE = 13
+const wanderOf = (i: number) => WOBBLE * Math.sin(i * 2.3999632)
 /** Room at each end of a row — the U-turn needs somewhere to turn. */
 const SIDEMAX = 84
 /** Room above the top row and below the bottom one — the foot also carries era I's banner. */
 const PAD = 132
-/** How far a row bows away from its own slope: a row is a wave, not a ruled line. */
-const BOB = 12
+/**
+ * How far a row bows away from its own slope, as a fraction of that row's climb. A row used to be
+ * a ruled line with a 12px wobble on it, which read as a row; at 0.3 it is an ARC — it leaves the
+ * wall, swings out well above its own straight line and comes back down to the next turn, and the
+ * rows below and above it arc the other way. That is the journey (his ruling: "should have a
+ * journey esque feeling") — a path that wanders, not a table of contents.
+ *
+ * 0.3 is as far as it can go and still CLIMB the whole way, which was the previous ruling and
+ * still holds: coming down off the top of the arc costs height, and it has to cost less than the
+ * step along the row gains. That ceiling is rise / pi ~= 0.318 of the rise, at any row length.
+ * (Clearance is the looser limit: two rows come closest in the MIDDLE, where one bows up and the
+ * other bows down, and that gap is step - 2 * bow, which only bites at bow = rise / 2.)
+ */
+const BOW = 0.3
 
 const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
 /** How many levels stand in one row at this width. Two is the floor — a phone still snakes. */
@@ -81,7 +109,7 @@ function lanes(colW: number) {
 function climbOf(colW: number) {
   const { cols, pitch } = lanes(colW)
   const rise = TILT * pitch * (cols - 1)
-  return { rise, step: TURN + rise }
+  return { rise, bow: BOW * rise, step: TURN + rise }
 }
 
 /**
@@ -112,7 +140,7 @@ export const xOf =
   (colW: number) =>
   (i: number): number => {
     const { cols, pitch, x0 } = lanes(colW)
-    return x0 + pitch * colAt(cols, i)
+    return x0 + pitch * colAt(cols, i) + wanderOf(i)
   }
 
 /**
@@ -131,9 +159,10 @@ export const yOf =
     const r = Math.floor(i / cols)
     const j = i % cols // how far along its own row this level is, in walking order
     const c = colAt(cols, i)
-    const climb = cols > 1 ? (climbOf(colW).rise * j) / (cols - 1) : 0
-    const bow = cols > 1 ? Math.sin((Math.PI * c) / (cols - 1)) : 0
-    return yRowOf(colW)(r) - climb - (r % 2 === 0 ? 1 : -1) * BOB * bow
+    const { rise, bow } = climbOf(colW)
+    const climb = cols > 1 ? (rise * j) / (cols - 1) : 0
+    const arc = cols > 1 ? Math.sin((Math.PI * c) / (cols - 1)) : 0
+    return yRowOf(colW)(r) - climb - (r % 2 === 0 ? 1 : -1) * bow * arc
   }
 
 /**
@@ -260,6 +289,9 @@ export function LevelMap({
   teamNote = null,
   salary = false,
   death = false,
+  auto = false,
+  onToggleAuto,
+  onAutoTo,
   onReset,
 }: {
   title: string
@@ -277,6 +309,16 @@ export function LevelMap({
   /** Which branches this mode actually sells — the staff notice must not point at a hidden one. */
   salary?: boolean
   death?: boolean
+  /**
+   * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). A mode,
+   * not a button: while it is on, every ticket on the trail is tappable and tapping one clears
+   * the whole ladder up to it at one star. That is the shortest honest route to a block a hundred
+   * levels up — tap level 91 and the dusk floor is there to look at.
+   */
+  auto?: boolean
+  onToggleAuto?: () => void
+  /** Clear everything up to and including this level, at one star. Auto mode only. */
+  onAutoTo?: (level: number) => void
   onReset: () => void
 }) {
   const cur = currentLevel(progress)
@@ -361,7 +403,25 @@ export function LevelMap({
     const measure = () => setColW(trailRef.current?.getBoundingClientRect().width || W)
     measure()
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    /**
+     * AND a container observer on top of the window listener — belt and braces, after the bug he
+     * reported ("Pressing on the stage then on map leads me here instead of the normal map"): the
+     * trail's box can change width without the window doing anything, because the width is set by
+     * a class on the body, and if that happens after the measure the whole trail is laid out for a
+     * column it is no longer in. The root cause of that one is fixed where it belongs (the draft's
+     * body class is a layout effect now, so its cleanup cannot land after the map's), but a trail
+     * measured against the wrong box is a bad enough failure to be worth a second net.
+     *
+     * The window listener STAYS, and is not redundant: a ResizeObserver only delivers as part of
+     * the rendering lifecycle, so a tab that is not painting — a background tab, an off-screen
+     * preview — never fires one, and this screen would draw its whole trail at the 375 fallback.
+     */
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
+    if (ro && trailRef.current) ro.observe(trailRef.current)
+    return () => {
+      window.removeEventListener('resize', measure)
+      ro?.disconnect()
+    }
   }, [])
   const xAt = useMemo(() => xOf(colW), [colW])
   const yAt = useMemo(() => yOf(colW), [colW])
@@ -434,11 +494,18 @@ export function LevelMap({
                 My team →
               </button>
             ) : null}
+            {/* HIS RULING: "Move Reset this campaign next to the home page." It sat in the foot,
+                three thousand pixels below the fold — the one control on the map you had to go
+                looking for. It is the last line of the header's right column now, which is the
+                corner the home button is pinned to. It still asks before it does anything. */}
+            <button className="map-link danger" onClick={() => setAskReset(true)}>
+              Reset this campaign
+            </button>
           </div>
         </div>
       </div>
 
-      <div ref={trailRef} className="trail" style={{ height: H }}>
+      <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
         {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
             exactly two grounds and no more; four skins do not fit in two, so each block paints its
             own band and every one of them fades into the block below at its own top edge. */}
@@ -525,7 +592,8 @@ export function LevelMap({
           const i = level - 1
           const stars = progress.stars[i]
           const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
-          const can = playable(progress, level)
+          // Auto mode opens the whole trail: a locked level is exactly what you would be tapping.
+          const can = auto ? true : playable(progress, level)
           const nodeSkin = skinOf(level)
           const c = teamColor(o.ab)
           const s = stub(o)
@@ -547,7 +615,7 @@ export function LevelMap({
                 } as React.CSSProperties
               }
               disabled={!can}
-              onClick={() => can && onPlay(level)}
+              onClick={() => (auto ? onAutoTo?.(level) : can && onPlay(level))}
               aria-label={`Level ${level}${state !== 'locked' ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
             >
               <span className="ticket">
@@ -599,10 +667,14 @@ export function LevelMap({
         />
       ) : null}
       <div className={`map-foot ${skin}`}>
-        <span className="cap">Tap a cleared level to replay it for a better rating</span>
-        <button className="map-link danger" onClick={() => setAskReset(true)}>
-          Reset this campaign
-        </button>
+        <span className="cap">
+          {auto ? 'Auto-complete is on — tap any level to clear the ladder up to it' : 'Tap a cleared level to replay it for a better rating'}
+        </span>
+        {onToggleAuto ? (
+          <button className={`map-link auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
+            Auto-complete · {auto ? 'ON' : 'OFF'}
+          </button>
+        ) : null}
       </div>
     </>
   )

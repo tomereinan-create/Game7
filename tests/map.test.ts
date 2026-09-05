@@ -8,7 +8,7 @@ import { balance, buy, canBuy, NODE, NODES, type NodeId } from '../src/engine/tr
 import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
-import { heightOf, LevelMap, perRow, rowsOf, skinAt, xOf, yOf } from '../src/ui/LevelMap'
+import { heightOf, LevelMap, perRow, rowsOf, skinAt, WOBBLE, xOf, yOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
 const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], first: 1 }]
@@ -121,7 +121,7 @@ describe('the trail snakes across whatever width it is given', () => {
     expect(perRow(1900)).toBeGreaterThan(perRow(900))
     // and the scroll shrinks with it: the old climbing column was ~25,000px for 150 levels
     expect(heightOf(1900)).toBeLessThan(heightOf(900))
-    expect(heightOf(1900)).toBeLessThan(6000)
+    expect(heightOf(1900)).toBeLessThan(9000)
     expect(rowsOf(1900) * perRow(1900)).toBeGreaterThanOrEqual(ROUNDS)
   })
 
@@ -135,23 +135,25 @@ describe('the trail snakes across whatever width it is given', () => {
     }
   })
 
-  it('neighbours are always one lane apart, or straight above each other at a turn', () => {
+  it('neighbours are always one lane apart, or all but above each other at a turn', () => {
     for (const colW of [375, 900, 1438, 1900]) {
       const x = xOf(colW)
       const y = yOf(colW)
       const cols = perRow(colW)
+      // the lane, with the wander taken back out of it — every level is nudged off its lane by up
+      // to WOBBLE, so no two gaps are exactly equal and there is nothing exact to compare to
       const lane = Math.abs(x(1) - x(0))
       for (let i = 0; i < ROUNDS - 1; i++) {
         const dx = Math.abs(x(i + 1) - x(i))
         const dy = Math.abs(y(i + 1) - y(i))
         if ((i + 1) % cols === 0) {
-          // the turn: same column, one row up
-          expect(dx).toBeLessThan(0.01)
+          // the turn: the same column, one row up, give or take the wander on either ticket
+          expect(dx).toBeLessThanOrEqual(2 * WOBBLE + 0.01)
           expect(dy).toBeGreaterThan(100)
         } else {
-          expect(dx).toBeCloseTo(lane, 6)
+          expect(Math.abs(dx - lane)).toBeLessThanOrEqual(4 * WOBBLE + 0.01)
           // along a row the climb is the row's own tilt, never a whole row's worth
-          expect(dy).toBeLessThan(130)
+          expect(dy).toBeLessThan(200)
         }
       }
     }
@@ -190,7 +192,7 @@ describe('the trail snakes across whatever width it is given', () => {
       const cols = perRow(colW)
       // the tilt of a whole row, end to end, in degrees off level
       const deg = (Math.atan2(y(0) - y(cols - 1), Math.abs(x(cols - 1) - x(0))) * 180) / Math.PI
-      expect(deg).toBeCloseTo(4.9, 0)
+      expect(deg).toBeCloseTo(6.8, 0)
     }
   })
 })
