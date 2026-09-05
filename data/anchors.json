@@ -1319,33 +1319,6 @@
     "note": "DEF 95 -> 89. He tied Hakeem '94 (DPOY) and outranked Mutombo '97 (DPOY, BLK% 7.0, same season, 92) on 0.6 blocks a game, DBPM +1.2 and no rim deterrence: at 6'9\" perdef paid his All-Defensive votes at 89% of the full WING rate (rep_hf 1.067, height_inv 0.875) while rimprot's own vote line, ID + 0.25*(drep*hp) - gated on nothing but height - had already cashed the same votes for 18 points of rim protection (56 -> 74 with that line zeroed). recal_114's meter saw only the OTHER rim channel, drep x block evidence, which is 0.000 at BLK% 1.3, so its verdict was that rimprot had cashed nothing. The meter now takes the larger of the two channels; outside the 75-80 inch wing band the vote credit keeps only the share DBPM supports. 89 is the top half of the band: the floor of what perdef alone can reach is 87 at VOTE_SUPPORT_POW 4, which reopens recal_114's fitted constant and is not this round's to spend."
   },
   {
-    "kind": "team_rank",
-    "season": 2005,
-    "ab": "PHO",
-    "scale": "team:off",
-    "max_rank": 4,
-    "round": 140,
-    "ruling": "Suns 05 agree.",
-    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His agreement asked the Suns '05 best five (Nash / J.Johnson / Q.Richardson / Marion / Stoudemire) to go team OFF 65 -> near 85; recal_140 reached 67 and DECLINED the rest (data/rounds/140.json carries the frontier: no creation-feed form reaches 81 with the pins held). What the round DID establish is that the five is a top-3 offence of its own season on the engine's reading, against a real ORtg rank of 1st of 30. [pipeline-142 integration: re-cut to the merged reading; recal_143 re-pins the Suns at his low-70s word.]"
-  },
-  {
-    "card": "Phoenix Suns '05 (best legal five)",
-    "five": [
-      "Steve Nash '05",
-      "Joe Johnson '05",
-      "Quentin Richardson '05",
-      "Shawn Marion '05",
-      "Amar'e Stoudemire '05"
-    ],
-    "season": 2005,
-    "scale": "team:offdial",
-    "target": 67,
-    "tol": 4,
-    "round": 140,
-    "ruling": "Suns 05 agree.",
-    "note": "the reached value, pinned so a later round cannot quietly give it back: 65 when the round measured, 67 after the feed became a property of the SHOOTER rather than of the five. His number was 85 and this round declines it; the pin records what the formula honestly gives, exactly as recal_110 pinned the Lakers '00 at 64."
-  },
-  {
     "card": "Ken Norman '94",
     "scale": "def",
     "target": 55,
@@ -1389,5 +1362,32 @@
     "round": 139,
     "ruling": "Nene maybe around 66.",
     "note": "60 -> 65. recal_112's gate ASKED ONE CLAIM TWICE and one of its two ramps was a needle. His '10 takes the term whole (gate 1.00, +13.86) and his '11 at 0.12 (+1.50), because BOTH ramps slid at once - efficiency 99 -> 88 (ts_rel .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3) - and the gate is their PRODUCT: 0.21 x 0.57 = 0.12, an eighth of the term for a card still in the top 3% of his class on conversion. recal_117's item 4 in its own words, one term down the file: 'the product of two decreasing factors is steeper than either'. The two ramps are two readings of ONE statement, so they are now combined by their GEOMETRIC MEAN (zero whenever either is zero, so every exclusion is byte-identical); the efficiency ramp's top comes off the top of the scale - 99 is ELEVEN cards of the 4,256 in this class - onto the class's own upper quartile of conversion, 93 (measured; median 89); and the volume band is 35-45, which is NOT chosen but is what CLINT CAPELA '18's pin leaves. He is the same card at this term's inputs (ts_rel .664 vs .660, usage 19.3 vs 19.3, efficiency 91 vs 88, so his gate was ALREADY higher), pinned 61 +-1 with zero room up, and only volume separates them: 45 against 38. He loses the term entirely and goes 62 -> 60, the floor of his own band. Measured over 720 parameterisations of the whole gate family graded against every anchor: 83 hold the board and the highest reading any gives the subject is 69."
+  },
+  {
+    "kind": "team_rank",
+    "season": 2005,
+    "ab": "PHO",
+    "scale": "team:off",
+    "max_rank": 4,
+    "round": 140,
+    "ruling": "Suns 05 agree.",
+    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His agreement asked the Suns '05 best five (Nash / J.Johnson / Q.Richardson / Marion / Stoudemire) to go team OFF 65 -> near 85; recal_140 reached 67 and DECLINED the rest. [recal_143: the bound is UNCHANGED at 4 and the reading improved to 3rd of the 30 fieldable 2005 fives against a real ORtg rank of 1st. It is left at 4 rather than re-cut to 3 for the reason recal_110 gave the Bulls: a rank pin with no slack is a pin that breaks on someone else's round.]"
+  },
+  {
+    "card": "Phoenix Suns '05 (best legal five)",
+    "five": [
+      "Steve Nash '05",
+      "Joe Johnson '05",
+      "Quentin Richardson '05",
+      "Shawn Marion '05",
+      "Amar'e Stoudemire '05"
+    ],
+    "season": 2005,
+    "scale": "team:offdial",
+    "target": 68,
+    "tol": 4,
+    "round": 143,
+    "ruling": "Suns dont have to be 85, but can be heigher, low 70s",
+    "note": "THE REACHED VALUE, PINNED, AND THE 72 +-3 IS DECLINED. His word after recal_140 asked for the low 70s. recal_143 raised the creation pass-through (CREATE_SHARE 0.20 -> 0.30) and the possession channel (TOV_SIZE 0.45 -> 0.66) together and reached 68 from 66 — the LARGEST reading any (CREATE_SHARE, TOV_SIZE, AMP_MAX) setting produces with every pin held. 69 needs either the Celtics '24 past recal_119's team-OFF rank <=10 or a THIRD five past the Warriors '17 on the all-time adjusted index; 72 needs TOV_SIZE ~1.3 and CREATE_SHARE ~0.6, which puts FOUR fives above the Warriors. The frontier is in data/rounds/143.json. The band is +-4 for the same reason recal_140 used +-4: the OFF gauge is re-frozen on the pool every time teamOffense changes, so a team dial carries pool noise a card does not."
   }
 ]

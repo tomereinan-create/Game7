@@ -1,0 +1,263 @@
+{
+  "round": 143,
+  "agent": "players-to-team",
+  "status": "declined",
+  "ruling": "Suns dont have to be 85, but can be heigher, low 70s",
+  "title": "THE PASS-THROUGH AND THE POSSESSION CHANNEL, RAISED TOGETHER TO THE LAST SETTING EVERY PIN SURVIVES — CREATE_SHARE 0.20 -> 0.30 and TOV_SIZE 0.45 -> 0.66, the Suns '05 team OFF 66 -> 68 with the 47-season fit UP in all five eras (DECLINED on the low 70s: 69 costs either the Celtics '24 rank pin or a THIRD five past the Warriors '17, and 72 costs four)",
+  "subject": "Suns '05 (best legal five)",
+  "five": [
+    "Steve Nash '05",
+    "Joe Johnson '05",
+    "Quentin Richardson '05",
+    "Shawn Marion '05",
+    "Amar'e Stoudemire '05"
+  ],
+  "season": 2005,
+  "scale": "team:offdial",
+  "target": 72,
+  "tol": 3,
+  "before": 66,
+  "after": 68,
+  "pipeline_version": 142,
+  "knobs": [
+    {
+      "file": "data/team_rating.py",
+      "pattern": "CREATE_SHARE  = 0\\.30,",
+      "label": "THE FIRST OF THE ROUND'S TWO CONSTANTS — the pass-through: the share of a man's shot quality set by the best creator BESIDE him",
+      "note": "0.20 -> 0.30. ANCHOR-BOUND, not fit-chosen: at 0.35 the Celtics '24 fall to 12th of 26 against recal_119's team-OFF rank <=10"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "CREATE_SHARE: 0\\.3,",
+      "label": "port side — 1:1, gated by data/parity_check.py and tests/parity.test.ts"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "TOV_SIZE      = 0\\.66,",
+      "label": "THE SECOND — recal_119's possession-loss channel, how much of the fitted TOV differential is priced",
+      "note": "0.45 -> 0.66. The fit optimum is ~2.0 and the wall is the SUMMIT ORDER: at 0.72 the Celtics '88 pass the Warriors '17 on the all-time adjusted index"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "TOV_SIZE: 0\\.66,",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "FEED_REF      = 0\\.5688,",
+      "label": "re-derived, exactly as recal_140 re-derived it: the pool mean of the usage-weighted RECEIVED feed over all 1,255 fieldable fives at the new CREATE_SHARE",
+      "note": "0.5502 -> 0.5688; the term still redistributes around the league and the mean multiplier is 1.0000 by construction. On the pipeline-142 pool the OLD 0.20 reads 0.5506, so 4 of the 186 ten-thousandths are the pool's own drift"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "FEED_REF: 0\\.5688,",
+      "label": "port side"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "AMP_MAX       = 0\\.26,",
+      "label": "AMP_MAX IS UNCHANGED — the round moves two constants, not three",
+      "note": "0.26, recal_140's value. Sweeping it 0.14..0.34 beside the other two never raises the subject above 68 with the pins held"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_TOP = 138\\.18",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run per its own instruction",
+      "note": "138.39 -> 138.18; the Warriors '17 are still all-time rank 2 of 1,255, behind the Rockets '18 and ahead of everyone else, exactly as recal_119 and recal_140 left them"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_MIN = 100\\.47",
+      "label": "the era-adjusted floor",
+      "note": "101.05 -> 100.47"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_MID = 121\\.67",
+      "label": "the all-time median five reads 50",
+      "note": "121.76 -> 121.67"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const OFF_LEVEL_REF = 121\\.7882",
+      "label": "and its reference league",
+      "note": "121.8003 -> 121.7882; the 47-season OFF_LEVEL table moved by hundredths"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.82",
+      "label": "THE DEF SIDE IS UNTOUCHED — 0 of 1,255 DEF dials moved and drtgRef is bit-identical",
+      "note": "recal_94's constant, unchanged. defenseVs does not read teamOffense and no DEF constant is in the diff, so this is true by construction and not only by measurement"
+    }
+  ],
+  "expect": [
+    {
+      "scale": "team:off",
+      "op": "==",
+      "value": 65,
+      "label": "THE SUBJECT on ratings100's older all-time display int (no season, so it reads today's league): 64 -> 65, offRaw 128.56 -> 129.08"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 68,
+      "tol": 3,
+      "label": "recal_105's BULLS '96 OFF PIN HELD, AT ITS CEILING: 70 -> 71, error +3 of a +-3 tolerance. This is now a BINDING wall — TOV_SIZE 0.68 puts them at 72 and it fails"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 84,
+      "tol": 3,
+      "label": "and recal_105's Bulls '96 OVR pin: 84 -> 85, error +1 (71 on offence, 99 on defence)"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_94's DEF SUMMIT HELD, tol 0 — the DEF dial moved on 0 of 1,255 fives this round"
+    },
+    {
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "recal_71's OFF SUMMIT HELD, tol 0 — and the adjusted ORDER at the top is unchanged: exactly one five (the Rockets '18) is above them, as recal_119 left it. The Celtics '88 close from 0.384 behind to 0.073 behind and that gap is the round's real cost"
+    },
+    {
+      "five": [
+        "Chris Paul '18",
+        "James Harden '18",
+        "Eric Gordon '18",
+        "Ryan Anderson '18",
+        "Clint Capela '18"
+      ],
+      "season": 2018,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99,
+      "label": "the Rockets '18 still tie the summit and still sit above it on the adjusted index (0.514 -> 1.124) — the same one-five inversion recal_119 recorded, neither widened into a second nor quietly reversed"
+    },
+    {
+      "five": [
+        "Ron Harper '00",
+        "Kobe Bryant '00",
+        "Glen Rice '00",
+        "Robert Horry '00",
+        "Shaquille O'Neal '00"
+      ],
+      "season": 2000,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 64,
+      "tol": 4,
+      "label": "recal_110's LAKERS '00 PIN HELD: 65 -> 65, and their season OFF rank 3rd of 28 against recal_110's <=5"
+    },
+    {
+      "five": [
+        "Derrick White '24",
+        "Jaylen Brown '24",
+        "Jayson Tatum '24",
+        "Kristaps Porziņģis '24",
+        "Al Horford '24"
+      ],
+      "season": 2024,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 65,
+      "tol": 3,
+      "label": "recal_119's Celtics '24 DEF pin, untouched at 66 — the round never enters the DEF block"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "THE NASH '05 CARD ANCHOR HELD at 86, and it could not have moved: o_ovr / d_ovr / ovr / talent and every one of the 21 attributes are byte-identical on all 10,000 cards against the pre-round file"
+    },
+    {
+      "card": "Amar'e Stoudemire '05",
+      "scale": "off",
+      "op": "==",
+      "value": 82,
+      "label": "the finisher the round is about, unchanged as a card: a team ruling is about the COMBINATION, never the man"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "DECLINED ON THE NUMBER, AND THE FRONTIER IS THE ROUND'S REAL OUTPUT. His word after recal_140 was \"Suns dont have to be 85, but can be heigher, low 70s\"; the dispatch read that as team:offdial 72 +-3, i.e. >= 69. The Suns '05 read 66 and read 68. 315 settings of (CREATE_SHARE, TOV_SIZE, AMP_MAX) were graded on all 1,255 fieldable fives, each with FEED_REF re-derived on the pool and the OFF gauge re-frozen exactly as scripts/gauge105.ts freezes it (scripts/sweep143.ts, grid143.ts, hunt143.ts, ridge143.ts, front143.ts). THE FRONTIER, bound by bound: with EVERY pin held the maximum is 68 (unrounded 68.4 at share 0.40 / tov 0.68 / amp 0.28) · with the Celtics '24 team-OFF rank bound dropped, 69 · with the summit ORDER dropped as well, 72-73 (share 0.6-0.8, tov 1.0-1.3) AND THE FIT RISES to .7803-.7829 · with the Bulls '96 OFF dial dropped too, 76-77 · with nothing held at all, 79 at fit .7513. THE LOW 70s ARE REACHABLE AND THEY ARE NOT EXPENSIVE IN FIT — they are expensive in the SUMMIT ORDER. That is the one sentence a later round needs.",
+    "WHAT ACTUALLY BLOCKS 69, stated flat so it is not re-measured. Two walls, and they pull in opposite directions. (1) CREATE_SHARE: a pass-through pays fives with ONE dominant distributor and taxes fives with five middling ones. The Celtics '24 have no dominant creator, so they slide — 9th of 26 at 0.20, 10th at 0.30, 11th at 0.38, 12th at 0.40, 13th at 0.45 — and recal_119's team-OFF rank <=10 binds at 0.30-0.40. (2) TOV_SIZE: the possession channel pays BALL SECURITY, and the Warriors '17 are the least secure of the all-time top four (real TOV% 14.4) while the Celtics '88 are among the most. Their gap on the all-time adjusted index closes at ~0.385 points per unit of TOV_SIZE: 0.384 behind at 0.45, 0.073 behind at 0.66, PAST at 0.72. Every cell that reaches 69 crosses one wall or the other. The Bulls '96 OFF dial is the third wall and it is now ON its ceiling at 71 of recal_105's 68 +-3, because they too are a secure five.",
+    "THE TWO CONSTANTS WERE CHOSEN AS A PAIR AND NEITHER ALONE MOVES THE SUBJECT. CREATE_SHARE alone (tov held at 0.45) breaks the Celtics '24 rank at 0.25 and never leaves the subject at 66-67. TOV_SIZE alone (share held at 0.20) breaks the Bulls '96 OFF dial at 0.65 and never leaves the subject above 66. Only together do they clear a ridge: the share pulls the Bulls DOWN (their feed is the pool's widest, so a pass-through compresses their edge) while the tov pushes them up, and the share pushes the Celtics '24 down while the tov pulls them up. 0.30 / 0.66 sits on that ridge with the widest remaining summit margin (0.073 index points) of any cell that reads 68.",
+    "THE OFF GAUGE WAS RE-FROZEN AND THE DEF BLOCK WAS NOT TOUCHED. All 1,255 offRaw moved, so scripts/gauge105.ts was re-run. OFF_MIN 101.05 -> 100.47, OFF_MID 121.76 -> 121.67, OFF_TOP 138.39 -> 138.18, OFF_LEVEL_REF 121.8003 -> 121.7882, and the 47-season OFF_LEVEL table by hundredths. DEF_WORST / DEF_MID / DEF_TOP and DEF_LEVEL are byte-identical and no line of the DEFENSE v2 block or the pairing table is in the diff; defenseVs does not call teamOffense, so drtgRef is bit-identical by construction and 0 of 1,255 DEF dials moved. The decade mean DEF dial is unchanged to a tenth in all five eras (51.3 / 51.3 / 51.4 / 51.3 / 51.0).",
+    "marg MOVED ON 4,754 OF 10,000 CARDS (max 4, mean 1.15) because compute_ovr.py exec's team_rating.py's matchup_margin for it. o_ovr, d_ovr, ovr, talent and every one of the 21 attributes are byte-identical to origin/main on all 10,000 — asserted against the pre-round file, not assumed — because recal_37/40 took marg out of OVR. `npm run scout --base HEAD` reads 0/10000 moved on OVR, OFF and DEF and \"attributes: NOTHING moved\". The biggest marg risers are the distributors the pass-through now pays more of: Pooh Richardson '91 79 -> 83, Gus Williams '86 55 -> 59, Tracy McGrady '08 83 -> 86.",
+    "THE CAMPAIGN LADDER WAS REGENERATED (npm run opponents). All 30 LEAGUE rounds in src/data/opponents.json are unchanged and IN THE SAME ORDER, so the eight campaign rounds are not reordered. src/data/campaigns.json's later tiers reshuffle by a level or two — 38 of 150 levels swap neighbours, 33 in the champs tier and 5 in customs, both of which are sorted by net rating; tests/campaigns.test.ts passes on the new file.",
+    "WALL MARGINS AFTER, because three pins are now at or near their edge and a later round must know it. Bulls '96 OFF dial 71 against 68 +-3 — ZERO SLACK. Celtics '24 team-OFF rank 10 of 26 against recal_119's <=10 — ZERO SLACK. The Celtics '88 sit 0.073 adjusted points below the Warriors '17 against a required margin > 0 — 0.073 of the 0.384 they started with. The pins with room left: Lakers '00 65 against 64 +-4 and rank 3 against <=5, Bulls '96 rank 4 against <=6, Bulls '96 OVR 85 against 84 +-3, Suns '05 rank 3 against <=4.",
+    "REJECTED, each measured on all 1,255 fives. (1) CREATE_SHARE ALONE at its largest pin-holding value — recal_140's lever (a). On the pipeline-142 pool it is DEAD: 0.25 already puts the Celtics '24 11th. recal_140 measured 0.50 -> 70 with only the Bulls rank as casualty; that was the pipeline-140 pool, and after recal_135/141/142 moved the cards it is no longer true. The Bulls '96 rank pin was NOT the casualty this time and was not re-cut. (2) TOV_SIZE ALONE at its fit optimum ~2.0: the subject reaches 72, and five fives pass the Warriors while the Bulls '96 read 80. (3) MOVING AMP_MAX as a third knob (0.14 .. 0.34 across the whole grid): it buys nothing — lowering it frees Bulls headroom but costs the subject one-for-one, and no cell anywhere in the 315 reads 69 with the pins held. (4) A HARD FLOOR and the SHARPENED (c^G) feed: both refuted by recal_140 on the term's own truth column; not re-measured."
+  ],
+  "notes": [
+    "THE ROUND IN ONE LINE: recal_140 gave the creation feed to the SHOOTER and left the pass-through at the small end of its flat top; recal_143 pushes that pass-through and recal_119's possession channel together to the last setting at which every one of Tomer's team pins survives, and the Suns '05 go 66 -> 68 with the 47-season fit UP in all five eras.",
+    "FIT, the round's justification: the within-season Spearman of offRaw against real ORtg over the 47 seasons of the 1,255 fieldable team-seasons goes +0.7731 -> +0.7784, +0.0053. Per era: 80s .749 -> .757 · 90s .777 -> .786 · 00s .754 -> .755 · 10s .823 -> .824 · 20s .758 -> .766. UP IN ALL FIVE. NOTE ON THE BASELINE: recal_140 reported .7782 for this statistic, measured on the pipeline-140 pool. On the pipeline-142 pool that recal_135/141 left behind, the SAME shipped constants read .7731 — the drop is the pool's, not a regression, and the dispatch's floor of \"140's .7782 less .003\" is met against the honest baseline (.7731 - .003 = .7701) with +0.0083 of room. The port's own reimplementation reproduces the engine to 0 at the shipped setting (scripts/sweep143.ts asserts it).",
+    "TWELVE TEAMS, OFF dial before -> after with the engine's offRaw rank in its own season (real ORtg rank in brackets). Suns '05 66 -> 68, 4th -> 3rd of 30 (real 1st) · Suns '06 69 -> 70, 2nd -> 2nd (real 2nd) · Suns '07 90 -> 92, 1st -> 1st (real 1st) · Heat '05 81 -> 81, 1st -> 1st (real 5th) · Pacers '00 54 -> 54, 14th -> 14th of 28 (real 1st) · Jazz '97 96 -> 97, 1st -> 1st of 29 (real 2nd) · Rockets '18 99 -> 99, 1st -> 1st (real 1st) · Nuggets '23 76 -> 77, 2nd -> 2nd of 29 (real 5th) · Warriors '17 99 -> 99, 1st -> 1st (real 1st) · Bulls '96 70 -> 71, 4th -> 4th of 29 (real 1st) · Lakers '00 65 -> 65, 3rd -> 3rd of 28 (real 4th) · Celtics '24 55 -> 55, 9th -> 10th of 26 (real 1st).",
+    "THE TEAM DB ROWS after, OFF / DEF / OVR: Suns '05 68/35/52 · Suns '06 70/60/65 · Suns '07 92/49/71 · Heat '05 81/62/72 · Pacers '00 54/29/42 · Jazz '97 97/83/90 · Rockets '18 99/62/81 · Nuggets '23 77/43/60 · Warriors '17 99/77/88 · Bulls '96 71/99/85 · Lakers '00 65/84/75 · Celtics '24 55/66/61.",
+    "THE SUBJECT'S DECOMPOSITION after: base 123.59 (usage-reconciled, repriced, received-feed-amplified, fit included) + 1.82 free throws, x 1.0068 possessions kept (was 1.0046), x 1.0224 second chances = offRaw 129.08, from 128.56. The five's received feeds at CREATE_SHARE 0.30: Nash .754 (own .828), Johnson .656 (own .582), Richardson .557 (own .441), Marion .550 (own .430), Stoudemire .478 (own .328), against FEED_REF .5688. Three of the five are now at or above the league reference where two were before; Nash gives up .024 of his own rate and every man beside him gains between .039 and .050.",
+    "PARITY ON THE SUBJECT FIVE, read rather than claimed (scripts/parity143.ts, which runs data/parity_check.py against src/engine/offense.ts on five pairings): the Suns '05 against the Heat '05 — off 129.081643 / 129.081643, drtg 111.092904 / 111.092904, steals 46.683636 / 46.683636, net 19.109147 / 19.109147, margin -5.396836 / -5.396836. Worst |python - port| across five pairings x five figures: 2.84e-14. tests/parity.test.ts's random pairs pass.",
+    "THE FOOTPRINT: offRaw moved on all 1,255 fives, the OFF dial on 671 of them, max +3 / -2. The biggest risers are the ball-secure fives with one clear distributor — Mavericks '03 74 -> 77 (Nash again), Hornets '08 64 -> 67 and Hornets '10 66 -> 69 (Chris Paul), Clippers '15 82 -> 85, Blazers '20 59 -> 62, Pacers '24 54 -> 57. The biggest fallers are the loose-handed ones — Kings '09 43 -> 41, Warriors '97 55 -> 53, Wizards '26 33 -> 32, Rockets '26 60 -> 59.",
+    "DECADE MEAN OFF DIAL, before -> after: 80s 51.3 -> 51.7 · 90s 51.5 -> 51.9 · 00s 51.2 -> 51.5 · 10s 51.4 -> 51.8 · 20s 51.3 -> 51.7. recal_105's era recentring survives intact — both terms are centred, so no era's level moves relative to another.",
+    "THE ALL-TIME ADJUSTED OFF ORDER, after, with the dial: Rockets '18 139.307 (99) · Warriors '17 138.183 (99) · Celtics '88 138.110 (99) · Jazz '97 137.601 (97) · Magic '95 136.856 (95) · Jazz '98 135.928 (92) · Celtics '87 135.890 (92) · Suns '07 135.852 (92). Exactly ONE five is above the Warriors and it is the same one recal_119 recorded. THREE fives now read 99 where two did — the Celtics '88 round up to the summit from 0.073 below it. The dial is unchanged in ORDER; only the rounding at the very top gained a third member.",
+    "THE TACTICS HARNESS was re-run and all nine levers PASS unchanged (main scorer +1.39, main playmaker +2.28, tempo +0.67, playstyle +2.08, scheme +0.64, hunt +0.58, crash off glass +0.70, crash def glass +0.56, assignment +3.46); no tax needed re-ratifying. npm run ticker-check: 0 / 3000 path integrity failures. npm run anchors: 136 anchors, 0 failing. TWO TEST FILES FAIL AND NEITHER IS THIS ROUND'S: tests/court.test.ts's four pick-and-pop cases fail identically on a pristine origin/main (38bd1fa) with the three engine files checked out from it — the pnr-shape WIP landed its test without its implementation — and tests/serve.test.ts fails with ECONNRESET, the same pre-existing dev-server environment failure recal_140 recorded."
+  ]
+}

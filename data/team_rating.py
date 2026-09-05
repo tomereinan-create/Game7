@@ -8,9 +8,13 @@ KNOBS = dict(
     SLOPE_UP_MIN  = 0.25,   # same, for a perfect creator
     SLOPE_DOWN    = 0.55,   # % TS gained per usage pt shed... but only for efficient players (see gate)
     AMP_MAX       = 0.26,   # recal_140: 0.22 -> 0.26, now applied to each man's RECEIVED feed
-    FEED_REF      = 0.5502, # recal_140: re-derived pool mean of the usage-weighted RECEIVED feed
-    CREATE_SHARE  = 0.20,   # recal_140: the share of a man's shot quality set by the best creator
-                            # BESIDE him rather than by himself — the pass-through. See the block below.
+    FEED_REF      = 0.5688, # recal_143: re-derived pool mean of the usage-weighted RECEIVED feed at
+                            # CREATE_SHARE 0.30 (0.5502 was recal_140's value at 0.20; on the
+                            # pipeline-142 pool the same 0.20 reads 0.5506)
+    CREATE_SHARE  = 0.30,   # recal_143: 0.20 -> 0.30, the share of a man's shot quality set by the
+                            # best creator BESIDE him rather than by himself — the pass-through.
+                            # ANCHOR-BOUND, not fit-chosen: 0.35+ pushes the Celtics '24 past
+                            # recal_119's team-OFF rank <=10. See the block below and rounds/143.json.
     CLOG_FREE     = 0.71,   # recal_110: a man who creates at this level makes his own space
     FIT_WIDEN     = 2.7,    # recal_64: the fit gap (interactions vs repriced-only) widened
     FIT_CAP       = 4.0,    # ...and capped: perfect fit +4, friction -4   # max TS multiplier bonus for low-usage players fed by elite creation
@@ -22,7 +26,11 @@ KNOBS = dict(
     TOV_INT       = 18.10,  # % turnovers at ball security 0
     TOV_SLOPE     = 0.0744, # % turnovers shed per point of usage-weighted ball security
     TOV_REF       = 13.78,  # the league's own mean TOV% over all 1,255 fives — the pivot
-    TOV_SIZE      = 0.45,   # HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen
+    TOV_SIZE      = 0.66,   # HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen.
+                            # recal_143: 0.45 -> 0.66. The fit optimum is ~2.0; the binding wall is the
+                            # SUMMIT ORDER — the possession channel lifts ball-secure fives, and the
+                            # Celtics '88 close on the Warriors '17 at 0.385 adjusted points per unit.
+                            # At 0.72 they pass, and recal_71's summit is no longer one of the two.
     TOV_LO        = 9.0,    # rails, just outside the observed league range (9.9 .. 18.7)
     TOV_HI        = 19.0,
 )
