@@ -746,5 +746,23 @@
     "ruling": "recal_55 — the 6ft+ feed, the big hub, and the boosted pre-2014 relief",
     "note": "superseded by recal_141: Tomer reaffirmed Ginóbili '11 perdef low 70s after the 134 decline named this pin. This is recal_55's OWN relief anchor and recal_55 is the round being amended: holding Divac '95 at 77+ while taking the subject to 74 or less needs a nine-point cliff across 0.032 of DBPM percentile (he is smoothed 0.6/0.2/0.2 against '94 at P 0.761 and '96 at P 0.898), i.e. exactly the plateau-with-a-cliff shape recal_20 and recal_82 exist to remove.",
     "current": 75
+  },
+  {
+    "card": "Phoenix Suns '05 (best legal five)",
+    "five": [
+      "Steve Nash '05",
+      "Joe Johnson '05",
+      "Quentin Richardson '05",
+      "Shawn Marion '05",
+      "Amar'e Stoudemire '05"
+    ],
+    "season": 2005,
+    "scale": "team:offdial",
+    "target": 67,
+    "tol": 4,
+    "round": 140,
+    "ruling": "Suns 05 agree.",
+    "note": "superseded by recal_143 on his own later word, \"Suns dont have to be 85, but can be heigher, low 70s\". recal_140 pinned the reached 67 +-4 against a dispatch target of 85; recal_143 re-cut the target to 72 +-3, DECLINED it, and re-pinned at what the formula honestly gives (68). the reached value, pinned so a later round cannot quietly give it back: 65 when the round measured, 67 after the feed became a property of the SHOOTER rather than of the five. His number was 85 and this round declines it; the pin records what the formula honestly gives, exactly as recal_110 pinned the Lakers '00 at 64.",
+    "current": 68
   }
 ]

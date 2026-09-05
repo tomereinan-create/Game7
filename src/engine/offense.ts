@@ -17,9 +17,16 @@ export const KNOBS = {
   SLOPE_UP_MIN: 0.25, // same, for a perfect creator
   SLOPE_DOWN: 0.55, // % TS gained per usage pt shed — only for efficient players (gate)
   AMP_MAX: 0.26, // recal_140: 0.22 -> 0.26, now applied to each man's RECEIVED feed
-  FEED_REF: 0.5502, // recal_140: re-derived pool mean of the usage-weighted RECEIVED feed
-  /** recal_140: the share of a man's shot quality set by the best creator BESIDE him. */
-  CREATE_SHARE: 0.2,
+  // recal_143: re-derived pool mean of the usage-weighted RECEIVED feed at CREATE_SHARE 0.30
+  // (0.5502 was recal_140's value at 0.20; on the pipeline-142 pool the same 0.20 reads 0.5506)
+  FEED_REF: 0.5688,
+  /**
+   * recal_140: the share of a man's shot quality set by the best creator BESIDE him.
+   * recal_143: 0.20 -> 0.30. ANCHOR-BOUND, not fit-chosen: at 0.35 and above the Celtics '24 fall
+   * past recal_119's team-OFF rank <=10, because a pass-through pays fives with one dominant
+   * distributor and Boston '24 has none. See data/rounds/143.json.
+   */
+  CREATE_SHARE: 0.3,
   CLOG_FREE: 0.71, // recal_110: a man who creates at this level makes his own space
   FLOOR_USG: 10.0, // nobody can be squeezed below this share
   // interactions
@@ -68,7 +75,11 @@ export const KNOBS = {
   TOV_INT: 18.1, // % turnovers at ball security 0
   TOV_SLOPE: 0.0744, // % turnovers shed per point of usage-weighted ball security
   TOV_REF: 13.78, // the league's own mean TOV% over all 1,255 fives — the pivot
-  TOV_SIZE: 0.45, // HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen
+  // HOW MUCH of the fitted differential is priced — ANCHOR-BOUND, not fit-chosen. recal_143:
+  // 0.45 -> 0.66. The fit optimum is ~2.0; the binding wall is the SUMMIT ORDER — the possession
+  // channel lifts ball-secure fives and the Celtics '88 close on the Warriors '17 at 0.385 adjusted
+  // points per unit of TOV_SIZE. At 0.72 they pass, and recal_71's summit is no longer one of two.
+  TOV_SIZE: 0.66,
   TOV_LO: 9.0, // rails, just outside the observed league range (9.9 .. 18.7)
   TOV_HI: 19.0,
   // recal_64 (design-side "62"): FIT PAYS. The reconciliation channels were worth ~+-1.5 team
