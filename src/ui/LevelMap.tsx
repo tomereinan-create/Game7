@@ -6,6 +6,7 @@ import { balance, canBuy, NODE, NODES } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
 import { Ask } from './Ask'
+import { teamColor } from './teamColors'
 
 /** Path geometry, in a 375-wide coordinate space stretched to the column. */
 const W = 375
@@ -32,11 +33,29 @@ function trail(): string {
 }
 const TRAIL = trail()
 
+/** Roman numerals for the era kicker — the ladder is four tiers and will not outgrow this. */
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+
+/**
+ * Each paper ticket lies at its own angle on the hardwood. Deterministic from the level, so a
+ * ticket does not jump to a new angle every time the map re-renders — ±1.8°, never 0, because a
+ * ticket that happens to hang straight reads as tonight's game.
+ */
+const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toFixed(1)}deg`
+
 /**
  * The campaign map as a ticket trail (design 2d, his ruling over 2c): the
  * winding trail stays, the discs become game tickets with the record on the
  * stub. Cleared tickets are solid gold with their stars; the next one pulses
  * and shows the opponent's OFF/DEF dials; everything beyond is dim.
+ *
+ * HIS RULING on the Campaign Map canvas: "I want the first 30 games to be 1b, and then we move to
+ * 1c." The first 30 games are exactly the first tier, so the seam is derived from the tiers
+ * (`eras[1].first`), never typed — config.ts derives ROUNDS from the ladder for the same reason,
+ * and a tier resized in scripts/campaigns.ts must not leave the skin line behind. Level 1 sits at
+ * the bottom and the map climbs, so the two skins are a vertical band split rather than a mode
+ * switch: 1b ARENA NIGHTS below the seam, 1c HARDWOOD PRIME above it, both on screen together
+ * where they meet. The sticky header wears the skin of the level you are on.
  */
 export function LevelMap({
   title,
@@ -103,9 +122,20 @@ export function LevelMap({
    */
   const stub = (o: Opponent) => {
     const ab = o.season && o.era !== eras[0]?.name ? `'${String(o.season).slice(2)} ${o.ab ?? ''}` : (o.ab ?? '')
-    const line = o.record ?? o.tag
-    return line ? `${ab} ${line}` : ab
+    return { ab, line: o.record ?? o.tag ?? '' }
   }
+  /**
+   * THE SEAM. The first tier is 1b, everything after is 1c — read off the tiers, not typed. With
+   * one tier only (or none passed) the whole map stays in the arena, which is what a mode with no
+   * second era should look like rather than a map skinned half in a floor it never reaches.
+   */
+  const seamLevel = eras[1]?.first ?? ROUNDS + 1
+  const skinOf = (level: number) => (level < seamLevel ? 'arena' : 'wood')
+  /** Halfway between the last arena ticket and the first hardwood one, as a % of the trail. */
+  const seamY = seamLevel > ROUNDS ? -PAD : yAt(seamLevel - 1) + STEP / 2
+  const seamPct = (100 * seamY) / H
+  /** The skin of the level you are ON — what the sticky header, the notices and the foot wear. */
+  const skin = skinOf(cur ?? ROUNDS)
   const nowRef = useRef<HTMLButtonElement>(null)
   // Destructive actions ask IN the game (browser popups never render on his phone).
   const [askReset, setAskReset] = useState(false)
@@ -126,7 +156,7 @@ export function LevelMap({
        * reserved for it; pinning the header on its own slid the right column — the cleared count,
        * the staff notice — straight under the button.
        */}
-      <div className="map-top">
+      <div className={`map-top ${skin}`}>
         <div className="topbar">
           <span>{title}</span>
         </div>
@@ -178,18 +208,33 @@ export function LevelMap({
         </div>
       </div>
 
-      <div className="trail" style={{ height: H }}>
+      <div className="trail" style={{ height: H, '--split': `${seamPct}%` } as React.CSSProperties}>
         <svg className="trail-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
-          <path className="trail-dim" d={TRAIL} pathLength={1} />
-          <path className="trail-lit" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
+          {/* The lit trail is ONE stroke in two colours. userSpaceOnUse pins the stops to the
+              viewBox, so the painted cream line becomes the ember line at exactly the y the floor
+              changes — the seam is never a couple of pixels off from the ground behind it. */}
+          <defs>
+            <linearGradient id="trailSplit" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={H}>
+              <stop offset="0" stopColor="rgba(246,238,221,0.82)" />
+              <stop offset={Math.max(0, seamPct / 100 - 0.006)} stopColor="rgba(246,238,221,0.82)" />
+              <stop offset={Math.min(1, seamPct / 100 + 0.006)} stopColor="#ff6a2e" />
+              <stop offset="1" stopColor="#ffb36b" />
+            </linearGradient>
+          </defs>
+          <path className="trail-dim split" d={TRAIL} pathLength={1} />
+          <path className="trail-glow" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
+          <path className="trail-lit split" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
         </svg>
 
-        {eras.map((e) => (
+        {eras.map((e, ei) => (
           <div
-            className={`era-band ${xAt(e.first - 1) > W / 2 ? 'left' : 'right'}`}
+            className={`era-band ${skinOf(e.first)} ${xAt(e.first - 1) > W / 2 ? 'left' : 'right'}`}
             key={e.name}
             style={{ top: yAt(e.first - 1) - 18 }}
           >
+            {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
+                beside the year. Same three parts either way — the skin decides the order. */}
+            <em>Era {ROMAN[ei] ?? ei + 1}</em>
             <b>{e.name}</b>
             <i>
               {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
@@ -208,14 +253,14 @@ export function LevelMap({
         {cur && (spendable || (teamNote && onMyTeam)) ? (
           <div className={`node-notes ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`} style={{ top: yAt(cur - 1) }}>
             {spendable ? (
-              <button className="node-note" onClick={onStaff}>
+              <button className={`node-note ${skin}`} onClick={onStaff}>
                 {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
                 <i className="g">★</i>
                 {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
               </button>
             ) : null}
             {teamNote && onMyTeam ? (
-              <button className="node-note" onClick={onMyTeam}>
+              <button className={`node-note ${skin}`} onClick={onMyTeam}>
                 {teamNote} →
               </button>
             ) : null}
@@ -227,12 +272,26 @@ export function LevelMap({
           const stars = progress.stars[i]
           const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
           const can = playable(progress, level)
+          const nodeSkin = skinOf(level)
+          const c = teamColor(o.ab)
+          const s = stub(o)
           return (
             <button
               key={level}
               ref={state === 'now' ? nowRef : undefined}
-              className={`node ${state} ${o.champion ? 'champ' : ''}`}
-              style={{ left: `${(100 * xAt(i)) / W}%`, top: yAt(i) }}
+              className={`node ${nodeSkin} ${state} ${o.champion ? 'champ' : ''}`}
+              style={
+                {
+                  left: `${(100 * xAt(i)) / W}%`,
+                  top: yAt(i),
+                  // Both skins are cut from the same four club colours; only the shape differs.
+                  '--tc': c.primary,
+                  '--td': c.deep,
+                  '--ta': c.accent,
+                  '--ti': c.ink,
+                  '--tilt': tiltOf(level),
+                } as React.CSSProperties
+              }
               disabled={!can}
               onClick={() => can && onPlay(level)}
               aria-label={`Level ${level}${state !== 'locked' ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
@@ -240,7 +299,19 @@ export function LevelMap({
               <span className="ticket">
                 {state === 'now' ? <span className="ticket-next">NEXT</span> : null}
                 <span className="ticket-n">{level}</span>
-                <span className="ticket-stub">{revealed(state) ? stub(o) : '?'}</span>
+                {/* The abbreviation and the record are two elements, not one string: 1b reads them
+                    as one line under the number ("WAS 17–65"), 1c lifts the abbreviation out into
+                    the club band printed across the head of the paper ticket. */}
+                <span className="ticket-stub">
+                  {revealed(state) ? (
+                    <>
+                      <b className="ab">{s.ab}</b>
+                      {s.line ? <i className="ln">{s.line}</i> : null}
+                    </>
+                  ) : (
+                    '?'
+                  )}
+                </span>
                 {o.champion && revealed(state) ? <span className="ticket-champ">CHAMP</span> : null}
               </span>
               {state === 'done' ? (
@@ -273,7 +344,7 @@ export function LevelMap({
           onClose={() => setAskReset(false)}
         />
       ) : null}
-      <div className="map-foot">
+      <div className={`map-foot ${skin}`}>
         <span className="cap">Tap a cleared level to replay it for a better rating</span>
         <button className="map-link danger" onClick={() => setAskReset(true)}>
           Reset this campaign

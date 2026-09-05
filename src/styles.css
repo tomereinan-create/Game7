@@ -2947,3 +2947,302 @@ body:has(.sheet) .map-fab { display: none; }
 .freshness-probe-64410 {
   color: #123456;
 }
+
+/* ==========================================================================
+   THE CAMPAIGN MAP'S TWO SKINS — his ruling on the Campaign Map canvas:
+   "I want the first 30 games to be 1b, and then we move to 1c."
+
+   The first 30 games are exactly the first tier (The League), so the boundary is NOT a typed 30 —
+   LevelMap derives it from `eras[1].first` the way config.ts derives ROUNDS from the ladder. Resize
+   a tier in scripts/campaigns.ts and the skin line follows it.
+
+   The map is one column with level 1 at the BOTTOM climbing to 150 at the top, so the two skins are
+   a vertical band split, not a mode switch: you start the night in the arena and climb out onto the
+   hardwood. Both grounds are on screen together across the seam, which is the one place the trail
+   changes colour under you. The sticky header takes the skin of the level you are ON.
+
+   1b ARENA NIGHTS — team-color tickets under the lights, ember for gold.
+   1c HARDWOOD PRIME — paper tickets on a lacquered floor, painted trail.
+
+   Every ticket reads its four colours from src/ui/teamColors.ts as --tc / --td / --ta / --ti,
+   set inline per node, so both skins are driven by one table.
+   ========================================================================== */
+
+@keyframes embHalo { 0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.14); } }
+@keyframes embRing { 0%, 100% { box-shadow: 0 0 0 4px #0a0e17, 0 0 14px 2px rgba(255,116,52,0.35); } 50% { box-shadow: 0 0 0 4px #0a0e17, 0 0 26px 6px rgba(255,116,52,0.6); } }
+@keyframes sweep { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(240%) skewX(-18deg); } }
+@keyframes drift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(26px, -18px) scale(1.08); } }
+@keyframes bulb { 0%, 100% { box-shadow: 0 0 0 4px #241408, 0 0 16px 2px rgba(255,207,125,0.35); } 50% { box-shadow: 0 0 0 4px #241408, 0 0 30px 7px rgba(255,207,125,0.65); } }
+
+/* ---- the two grounds, split at --split (the y of the first level of tier two) ---- */
+/* Both layers bleed past the 14px page gutter the way .map-top does, so the floor reaches the
+   screen edge. They sit under the trail and the tickets; .node-notes keeps its own z-index 5. */
+.trail::before,
+.trail::after {
+  content: '';
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  z-index: 0;
+  pointer-events: none;
+}
+@media (min-width: 900px) { .trail::before, .trail::after { left: -21px; right: -21px; } }
+
+/* HARDWOOD, from the top of the map down to the seam: lacquered boards, a vignette, and the
+   painted circle and lane of a floor seen from above. */
+.trail::before {
+  top: -14px;
+  height: calc(var(--split) + 14px);
+  background-color: #261608;
+  background-image:
+    radial-gradient(150% 90% at 50% 30%, transparent 55%, rgba(0,0,0,0.42)),
+    linear-gradient(180deg, rgba(255,190,120,0.09), transparent 26%, rgba(0,0,0,0.4) 100%),
+    repeating-linear-gradient(90deg, rgba(255,205,150,0.05) 0 2px, transparent 2px 47px),
+    repeating-linear-gradient(90deg, #2b1a0c 0 47px, #251507 47px 94px, #2f1d0e 94px 141px);
+}
+/* ARENA NIGHT, from the seam to the foot: cold blue house light with an ember wash drifting in it.
+   The mask is the seam — 110px of arena fading up into the boards, so the handoff is a walk out of
+   the tunnel rather than a line ruled across the screen. */
+.trail::after {
+  top: var(--split);
+  bottom: -10px;
+  background-color: #0a0e17;
+  background-image:
+    radial-gradient(420px 300px at 72% 40px, rgba(96,140,255,0.18), transparent 70%),
+    radial-gradient(360px 280px at 12% 30%, rgba(96,140,255,0.08), transparent 70%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 110px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 110px);
+}
+/* The trail and its tickets ride above both grounds. */
+.trail-svg { z-index: 1; }
+.node { z-index: 2; }
+
+/* ---- the trail itself ---- */
+/* One stroke, two colours: the gradient is defined in LevelMap with a hard stop at the seam, so the
+   painted cream line becomes the ember line exactly where the floor does. */
+.trail-lit.split { stroke: url(#trailSplit); stroke-width: 4px; }
+.trail-glow { fill: none; stroke: url(#trailSplit); stroke-width: 10px; stroke-linecap: round; opacity: 0.4; filter: blur(6px); vector-effect: non-scaling-stroke; }
+.trail-dim.split { stroke: rgba(170,190,230,0.2); }
+
+/* ==========================================================================
+   1b ARENA NIGHTS
+   ========================================================================== */
+.node.arena .ticket {
+  width: 80px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.22);
+  padding: 7px 6px 6px 9px;
+  background: linear-gradient(150deg, var(--tc), var(--td) 92%);
+  box-shadow: 0 0 0 4px #0a0e17, 0 8px 22px rgba(0,0,0,0.55);
+  color: #fff;
+  overflow: hidden;
+}
+/* the club's second colour, down the stub's torn edge */
+.node.arena .ticket::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--ta);
+}
+.node.arena .ticket-stub { color: rgba(255,255,255,0.85); }
+.node.arena .ticket-champ { color: var(--ta); }
+.node.arena .node-stars { color: rgba(190,205,235,0.3); }
+.node.arena .node-stars i.lit { color: #ffb36b; }
+
+.node.arena.locked .ticket {
+  background: rgba(18,24,38,0.8);
+  border: 1px solid rgba(160,180,220,0.14);
+  padding: 8px 6px 7px;
+  box-shadow: 0 0 0 4px #0a0e17;
+  color: #eef2f8;
+}
+.node.arena.locked .ticket::before { display: none; }
+.node.arena.locked .ticket-stub { color: #93a0b4; }
+
+/* TONIGHT'S GAME. The ember ring breathes, a house light sweeps the ticket, and the halo behind it
+   is what your eye lands on when the map scrolls itself to the level you are on. */
+.node.arena.now .ticket {
+  width: 90px;
+  padding: 8px 6px 7px;
+  border: 2px solid #ff7434;
+  background: linear-gradient(160deg, var(--td), rgba(20,16,34,0.92) 80%);
+  color: #ffd9bd;
+  animation: embRing 2.6s ease-in-out infinite;
+}
+.node.arena.now .ticket::before { display: none; }
+.node.arena.now .ticket::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 34px;
+  background: linear-gradient(105deg, transparent, rgba(255,225,190,0.22), transparent);
+  animation: sweep 5.5s ease-in-out infinite;
+}
+.node.arena.now .ticket-next { color: #ff8a4d; }
+.node.arena.now .ticket-n { color: #fff; }
+.node.arena.now .ticket-stub { color: var(--ta); }
+.node.arena.now::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 28px;
+  width: 170px;
+  height: 170px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255,116,52,0.32), transparent 70%);
+  animation: embHalo 2.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ==========================================================================
+   1c HARDWOOD PRIME
+   ========================================================================== */
+/* Paper tickets dropped on the floor: cream stock, a club band printed across the head, and each
+   one lying at its own slight angle. The rake comes from --tilt, set per node in LevelMap. */
+.node.wood { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)); }
+.node.wood .ticket {
+  width: 82px;
+  border-radius: 6px;
+  border: 0;
+  padding: 17px 0 6px;
+  background: #f6eedd;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.5);
+  color: #241408;
+  overflow: hidden;
+}
+.node.wood .ticket-n { color: #241408; margin-top: 5px; }
+.node.wood .ticket-stub { color: #7d6c54; margin-top: 2px; }
+/* The abbreviation leaves the stub line and becomes the printed band across the head. */
+.node.wood .ticket-stub .ab {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 17px;
+  line-height: 17px;
+  background: linear-gradient(90deg, var(--tc), var(--td));
+  color: var(--ti);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  font-weight: 400;
+}
+.node.wood .ticket-stub .ab::after { content: none; }
+.node.wood .ticket-champ { color: var(--tc); }
+.node.wood .node-stars { color: rgba(246,238,221,0.28); }
+.node.wood .node-stars i.lit { color: #ffcf7d; }
+
+.node.wood.locked .ticket {
+  background: #1c1207;
+  border: 1px solid rgba(246,238,221,0.14);
+  padding: 8px 6px 7px;
+  box-shadow: none;
+  color: #f6eedd;
+}
+.node.wood.locked .ticket-stub { color: #b39f83; }
+
+/* TIP-OFF. Brighter stock under the bulbs, and it hangs straight while everything around it lies
+   at an angle — the one ticket that has not been dropped on the floor yet. */
+.node.wood.now { transform: translate(-50%, -50%); }
+.node.wood.now .ticket {
+  width: 92px;
+  padding: 18px 0 7px;
+  background: #fdf6e6;
+  animation: bulb 2.4s ease-in-out infinite;
+}
+.node.wood.now .ticket-n { font-size: 26px; }
+.node.wood.now .ticket-stub .ab { height: 18px; line-height: 18px; }
+/* 1c gives tonight's ticket its own words on the band and the line. */
+.node.wood.now .ticket-stub .ab::after { content: ' · TONIGHT'; }
+.node.wood.now .ticket-stub .ln::after { content: ' · TIP-OFF'; }
+/* NEXT is 1b's badge; 1c says it on the band instead. */
+.node.wood .ticket-next { display: none; }
+
+/* ==========================================================================
+   THE CHROME — header, era banners, notices and foot, in whichever skin the
+   level you are on belongs to.
+   ========================================================================== */
+.map-top.arena { background: rgba(9,13,22,0.96); border-bottom-color: rgba(160,180,220,0.14); }
+.map-top.arena .map-kicker { color: #93a0b4; }
+.map-top.arena .map-total { color: #ff8a4d; text-shadow: 0 0 22px rgba(255,116,52,0.35); }
+.map-top.arena .map-total i { color: #93a0b4; }
+.map-top.arena .map-link { color: #ff8a4d; }
+.map-top.arena .map-link.danger { color: #ff5d6c; }
+.map-top.arena .rule2 { background: linear-gradient(90deg, #ff7434, rgba(255,116,52,0.15) 60%, transparent); }
+
+.map-top.wood { background: rgba(20,11,4,0.93); border-bottom-color: rgba(246,238,221,0.16); }
+.map-top.wood .map-kicker { color: #b39f83; }
+.map-top.wood .map-total { color: #f6eedd; text-shadow: 0 0 18px rgba(255,207,125,0.4); }
+.map-top.wood .map-total .star { color: #ffcf7d; }
+.map-top.wood .map-total i { color: #b39f83; }
+.map-top.wood .map-link { color: #ffcf7d; }
+.map-top.wood .map-link.danger { color: #ff6a5c; }
+.map-top.wood .rule2 { background: #f6eedd; opacity: 0.85; }
+
+/* The era banner is a lit caption in the arena and a printed flag on the floor. */
+.era-band { z-index: 3; }
+.era-band em { display: block; font-family: var(--mono); font-size: 8.5px; font-style: normal; letter-spacing: 0.2em; text-transform: uppercase; }
+.era-band.arena em { color: #ff8a4d; }
+.era-band.arena b { font-size: 19px; color: #eef2f8; }
+.era-band.arena i { color: #93a0b4; }
+.era-band.arena::after { content: ''; display: block; height: 1px; margin-top: 5px; background: linear-gradient(270deg, #ff7434, transparent); }
+.era-band.arena.left::after { background: linear-gradient(90deg, #ff7434, transparent); }
+
+/* The flag: cream card, a notch cut out of the edge that faces the trail. */
+.era-band.wood {
+  width: auto;
+  max-width: 46%;
+  background: #f6eedd;
+  color: #241408;
+  padding: 7px 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 4px;
+}
+.era-band.wood.right { padding-right: 18px; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10% 50%); justify-content: flex-end; }
+.era-band.wood.left { padding-left: 18px; clip-path: polygon(0 0, 100% 0, 90% 50%, 100% 100%, 0 100%); }
+.era-band.wood b { width: 100%; font-size: 15px; line-height: 1.1; color: #241408; }
+.era-band.wood i { order: 2; color: #7d6c54; font-size: 8.5px; letter-spacing: 0.14em; }
+.era-band.wood em { order: 3; display: inline; color: #7d6c54; font-size: 8.5px; letter-spacing: 0.14em; }
+.era-band.wood em::before { content: '· '; }
+
+.node-note.arena { border-color: rgba(255,138,77,0.7); background: rgba(24,30,46,0.92); color: #ff8a4d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+.node-note.wood { border-color: rgba(255,207,125,0.75); background: rgba(28,17,7,0.94); color: #ffcf7d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+
+.map-foot.arena { background: #0a0e17; }
+.map-foot.arena .cap { color: #93a0b4; }
+.map-foot.arena .map-link.danger { color: #ff5d6c; }
+.map-foot.wood { background: #261608; }
+.map-foot.wood .cap { color: #b39f83; }
+.map-foot.wood .map-link.danger { color: #ff6a5c; }
+/* The foot sits under the ground layers, which bleed to the screen edge — so it bleeds too, or a
+   14px strip of the page background shows down each side of it. */
+.map-foot.arena, .map-foot.wood { margin: 0 -14px; padding: 4px 14px 24px; }
+@media (min-width: 900px) { .map-foot.arena, .map-foot.wood { margin: 0 -21px; padding: 4px 21px 24px; } }
+
+/* The dials on tonight's ticket read cold in both skins; only their label and basis change. */
+.node.arena .node-dials .dl, .node.arena .gauge-basis { color: #93a0b4; }
+.node.wood .node-dials .dl { color: #b39f83; }
+.node.wood .gauge-basis { color: #7d6c54; }
+
+/* His phone respects reduced motion; the skins' idle animation is decoration, not information. */
+@media (prefers-reduced-motion: reduce) {
+  .node.arena.now .ticket, .node.arena.now::before, .node.arena.now .ticket::after, .node.wood.now .ticket { animation: none; }
+}
+
+/* The stub's two halves. 1b reads them as one line under the number; 1c lifts .ab out into the
+   band. Neither wants the browser's default bold/italic on <b>/<i> — those tags are there so the
+   two halves are addressable, not for emphasis. */
+.ticket-stub .ab { font-weight: 400; }
+.ticket-stub .ln { font-style: normal; }
+.node.arena .ticket-stub .ab { margin-right: 3px; }
+/* the old gold ticket faded its stub; the skinned ones carry their own contrast */
+.node.arena.done .ticket-stub, .node.wood.done .ticket-stub { opacity: 1; }
+.node.arena.locked { opacity: 0.5; }
+.node.wood.locked { opacity: 0.55; }
