@@ -16,8 +16,10 @@ export const KNOBS = {
   SLOPE_UP_MAX: 0.9, // % TS lost per usage pt gained, for a zero-creation player
   SLOPE_UP_MIN: 0.25, // same, for a perfect creator
   SLOPE_DOWN: 0.55, // % TS gained per usage pt shed — only for efficient players (gate)
-  AMP_MAX: 0.22, // recal_110: 0.06 -> 0.22, un-throttled, CENTRED, and moved into the BASELINE
-  FEED_REF: 0.515, // recal_110: the league's own mean feed — the term redistributes around it
+  AMP_MAX: 0.26, // recal_140: 0.22 -> 0.26, now applied to each man's RECEIVED feed
+  FEED_REF: 0.5502, // recal_140: re-derived pool mean of the usage-weighted RECEIVED feed
+  /** recal_140: the share of a man's shot quality set by the best creator BESIDE him. */
+  CREATE_SHARE: 0.2,
   CLOG_FREE: 0.71, // recal_110: a man who creates at this level makes his own space
   FLOOR_USG: 10.0, // nobody can be squeezed below this share
   // interactions
@@ -166,8 +168,28 @@ export function teamOffense(five: Player[], stackCap = true): Offense {
     *
     * 1:1 with data/team_rating.py; data/parity_check.py and tests/parity.test.ts gate the pair.
     */
-  const feed = c.reduce((acc, ci, i) => acc + ci * u2[i], 0) / K.TEAM_USG
-  const e3 = e2.map((x) => x * (1 + K.AMP_MAX * (feed - K.FEED_REF)))
+  /**
+   * recal_140 — THE FEED IS RECEIVED, NOT AVERAGED. His ruling: "Suns 05 agree" (the '05 Suns,
+   * real ORtg 114.5 and 1st of 30, reading team OFF 65). recal_110 left the amplification as ONE
+   * number for the whole five: the usage-weighted MEAN creation. That aggregate is diluted by the
+   * men a creator sets UP — Nash '05 creates at .827 on 20.9 usage while Stoudemire finishes at
+   * .328 on 27.6, so the five's feed came out .510, BELOW the league mean, and the term charged the
+   * best passing offence of 2005 a small penalty for having a finisher. A finisher's shots are the
+   * creator's shots; his shot quality is not his own passing rate. So the feed is a property of the
+   * SHOOTER now: recv_i = (1 - CREATE_SHARE)·c_i + CREATE_SHARE·max_{j≠i} c_j, and FEED_REF is the
+   * re-derived pool mean of the usage-weighted recv, so the term still redistributes around the
+   * league. The stronger reading — "let the TOP creator anchor the feed" — was measured and
+   * REFUTED: on the term's own truth column the five's mean reads r +0.086 and the maximum r
+   * -0.046, and sharpening toward the maximum costs fit at every size. See data/rounds/140.json.
+   *
+   * 1:1 with data/team_rating.py; data/parity_check.py and tests/parity.test.ts gate the pair.
+   */
+  const recv = c.map((ci, i) => {
+    let best = 0
+    for (let j = 0; j < n; j++) if (j !== i) best = Math.max(best, c[j])
+    return (1 - K.CREATE_SHARE) * ci + K.CREATE_SHARE * best
+  })
+  const e3 = e2.map((x, i) => x * (1 + K.AMP_MAX * (recv[i] - K.FEED_REF)))
 
   // interactions
   const outs = A.map((a) => a['3pt'])
