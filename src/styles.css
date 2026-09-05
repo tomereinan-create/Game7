@@ -1367,6 +1367,13 @@ button {
 .chiprow::before { left: 0; background: linear-gradient(to right, var(--bg), rgba(20, 18, 16, 0)); }
 .chiprow::after { right: 0; background: linear-gradient(to left, var(--bg), rgba(20, 18, 16, 0)); }
 .chiprow.fl::before, .chiprow.fr::after { opacity: 1; }
+/* his ruling: "Make arrows here for every option" — a small ‹ › pair sits ON the fade, not
+   beside the row, so no posbar gets any wider for holding them. z-index clears the chips
+   themselves, which are transparent buttons and would otherwise eat the click first. */
+.chiprow-arrow { position: absolute; top: 0; bottom: 0; z-index: 1; width: 18px; padding: 0; border: 0; background: none; color: var(--ink-2); font-family: var(--mono); font-size: 13px; line-height: 1; cursor: pointer; }
+.chiprow-arrow.l { left: 0; }
+.chiprow-arrow.r { right: 0; }
+.chiprow-arrow:hover { color: var(--you); }
 @media (prefers-reduced-motion: reduce) {
   .chiprow::before, .chiprow::after { transition: none; }
 }

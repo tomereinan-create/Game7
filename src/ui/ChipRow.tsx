@@ -14,10 +14,17 @@ const useReveal = typeof window === 'undefined' ? useEffect : useLayoutEffect
  * selected chip is revealed on mount, after every change, and on any resize,
  * so the current call is never stranded off-edge.
  *
+ * HIS RULING: "Make arrows here for every option" — the fade alone told a mouse user
+ * something was there without giving him anything to press. A small ‹ › pair now sits ON
+ * the fade itself (absolutely positioned, not flanking the row — the row must not widen a
+ * phone card just to hold them), one arrow per edge that actually has more to show, each
+ * paging the row by 80% of its own width. `arrows` defaults on; SeasonStrip turns it off,
+ * since its own ‹ › pair already steps a year at a time and a second pair would be noise.
+ *
  * Shrink-to-fit (flex 0 1 auto): when the chips fit they sit hard right exactly
  * as before, so nothing moves on a desktop.
  */
-export function ChipRow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function ChipRow({ children, className = '', arrows = true }: { children: React.ReactNode; className?: string; arrows?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const [edge, setEdge] = useState({ l: false, r: false })
 
@@ -85,11 +92,28 @@ export function ChipRow({ children, className = '' }: { children: React.ReactNod
     }
   }, [reveal])
 
+  const page = (dir: -1 | 1) => {
+    const el = ref.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    el.scrollTo({ left: Math.max(0, Math.min(el.scrollLeft + dir * el.clientWidth * 0.8, max)), behavior: 'smooth' })
+  }
+
   return (
     <div className={`chiprow ${edge.l ? 'fl' : ''} ${edge.r ? 'fr' : ''}`}>
+      {arrows && edge.l ? (
+        <button className="chiprow-arrow l" onClick={() => page(-1)} aria-label="Scroll options left" tabIndex={-1}>
+          ‹
+        </button>
+      ) : null}
       <div className={`poschips ${className}`} ref={ref} onScroll={(e) => measure(e.currentTarget)}>
         {children}
       </div>
+      {arrows && edge.r ? (
+        <button className="chiprow-arrow r" onClick={() => page(1)} aria-label="Scroll options right" tabIndex={-1}>
+          ›
+        </button>
+      ) : null}
     </div>
   )
 }

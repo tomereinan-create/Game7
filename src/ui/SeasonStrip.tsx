@@ -34,7 +34,7 @@ export function SeasonStrip({
       <button className="yr-arrow" onClick={() => go(years[i - 1].id)} disabled={i <= 0} aria-label="Earlier season">
         ‹
       </button>
-      <ChipRow className="yrchips">
+      <ChipRow className="yrchips" arrows={false}>
         {years.map((x) => (
           <button
             key={x.id}
