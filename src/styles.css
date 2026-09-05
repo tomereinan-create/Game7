@@ -2977,22 +2977,28 @@ body:has(.sheet) .map-fab { display: none; }
 /* ---- the two grounds, split at --split (the y of the first level of tier two) ---- */
 /* Both layers bleed past the 14px page gutter the way .map-top does, so the floor reaches the
    screen edge. They sit under the trail and the tickets; .node-notes keeps its own z-index 5. */
-.trail::before,
-.trail::after {
-  content: '';
+/* THE GROUND, one band per skin block. This was two pseudo-elements on .trail, which is exactly
+   two grounds and no more; the map wears four skins now, so each block paints its own band. Every
+   band fades in over its top 110px, which is the seam: the block below shows through the fade, so
+   crossing one is a walk into the next room rather than a line ruled across the screen. The bottom
+   band needs no fade — there is nothing under it — and it is the one that reaches past the foot. */
+.ground {
   position: absolute;
   left: -14px;
   right: -14px;
   z-index: 0;
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 110px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 110px);
 }
-@media (min-width: 900px) { .trail::before, .trail::after { left: -21px; right: -21px; } }
+@media (min-width: 900px) { .ground { left: -21px; right: -21px; } }
+/* the block level 1 stands in: no fade, and it runs past the foot of the trail */
+.ground.arena { margin-bottom: -10px; -webkit-mask-image: none; mask-image: none; }
+/* ...and whichever block reaches the head of the ladder runs past the top of it */
+.ground:last-of-type { margin-top: -14px; padding-top: 14px; }
 
-/* HARDWOOD, from the top of the map down to the seam: lacquered boards, a vignette, and the
-   painted circle and lane of a floor seen from above. */
-.trail::before {
-  top: -14px;
-  height: calc(var(--split) + 14px);
+/* 1c HARDWOOD PRIME — lacquered boards, a vignette, and the painted lane of a floor seen from above */
+.ground.wood {
   background-color: #261608;
   background-image:
     radial-gradient(150% 90% at 50% 30%, transparent 55%, rgba(0,0,0,0.42)),
@@ -3000,18 +3006,28 @@ body:has(.sheet) .map-fab { display: none; }
     repeating-linear-gradient(90deg, rgba(255,205,150,0.05) 0 2px, transparent 2px 47px),
     repeating-linear-gradient(90deg, #2b1a0c 0 47px, #251507 47px 94px, #2f1d0e 94px 141px);
 }
-/* ARENA NIGHT, from the seam to the foot: cold blue house light with an ember wash drifting in it.
-   The mask is the seam — 110px of arena fading up into the boards, so the handoff is a walk out of
-   the tunnel rather than a line ruled across the screen. */
-.trail::after {
-  top: var(--split);
-  bottom: -10px;
+/* 1b ARENA NIGHTS — cold blue house light with an ember wash drifting in it */
+.ground.arena {
   background-color: #0a0e17;
   background-image:
     radial-gradient(420px 300px at 72% 40px, rgba(96,140,255,0.18), transparent 70%),
     radial-gradient(360px 280px at 12% 30%, rgba(96,140,255,0.08), transparent 70%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 110px);
-  mask-image: linear-gradient(180deg, transparent 0, #000 110px);
+}
+/* 2b BANNER HALL — an unlit hall under the rafters, two spotlights down from the roof */
+.ground.hall {
+  background-color: #150c06;
+  background-image:
+    radial-gradient(300px 480px at 30% 0%, rgba(255,220,160,0.10), transparent 72%),
+    radial-gradient(300px 520px at 82% 6%, rgba(255,220,160,0.07), transparent 72%),
+    linear-gradient(180deg, #120a05 0%, #1c0f07 60%, #241209 100%);
+}
+/* 2a TWILIGHT DYNASTY — dusk over the arena, mint low and violet high */
+.ground.dusk {
+  background-color: #0a1f2a;
+  background-image:
+    radial-gradient(430px 300px at 78% -70px, rgba(62,230,176,0.14), transparent 70%),
+    radial-gradient(420px 360px at 8% 62%, rgba(157,123,255,0.12), transparent 72%),
+    linear-gradient(180deg, #071518 0%, #0a1f2a 45%, #1b1440 100%);
 }
 /* The trail and its tickets ride above both grounds. */
 .trail-svg { z-index: 1; }
@@ -3162,6 +3178,233 @@ body:has(.sheet) .map-fab { display: none; }
 .node.wood.now .ticket-stub .ln::after { content: ' · TIP-OFF'; }
 /* NEXT is 1b's badge; 1c says it on the band instead. */
 .node.wood .ticket-next { display: none; }
+
+/* ==========================================================================
+   2b BANNER HALL (levels 61-90) — the tickets are BANNERS in the rafters: a rod, a pennant in the
+   club's colours notched to a V at the foot, and tonight's one hanging lower on a gold rod with a
+   spotlight on it. The rod is the ticket's ::before and the notch is a clip-path, so the markup is
+   the same five spans every other skin uses.
+   ========================================================================== */
+.node.hall .ticket {
+  width: 66px;
+  border: 0;
+  border-radius: 0;
+  margin-top: 7px;
+  padding: 18px 4px 12px;
+  background: linear-gradient(165deg, var(--tc), var(--td) 85%);
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  color: #fff;
+  overflow: visible;
+}
+/* THE ROD it hangs from — on the NODE, not on the ticket. The banner's notch is a clip-path, and a
+   clip-path clips the element's pseudo-elements too: hung off .ticket::before at top:-7px the rod
+   was cut away by the very shape that makes the banner a banner. On the node it sits above the
+   ticket's own 7px of margin, and tonight's banner can swing under a rod that does not move. */
+.node.hall::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 2px;
+  width: 46px;
+  height: 3px;
+  border-radius: 2px;
+  background: #8a6b3a;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.node.hall .ticket-n { font-size: 22px; color: #fff; }
+.node.hall .ticket-stub { color: rgba(255,255,255,0.85); margin-top: 2px; font-size: 7.5px; letter-spacing: 0.1em; }
+/* the club and year leave the stub line and are printed across the head of the banner */
+.node.hall .ticket-stub .ab {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  font-size: 7.5px;
+  letter-spacing: 0.16em;
+  opacity: 0.9;
+  font-weight: 400;
+}
+.node.hall .ticket-stub .ab::after { content: none; }
+.node.hall .ticket-champ { color: #f4e8cf; font-size: 7.5px; }
+/* NEXT is only rendered on tonight's ticket, and on a banner it reads ABOVE the club line. Both it
+   and the club line are lifted out of flow — the markup order is NEXT, number, then the stub that
+   carries the club — so the banner's padding-top is what reserves the two of them their rows. */
+.node.hall .ticket-next {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  color: #f4e8cf;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.node.hall .node-stars { color: rgba(244,232,207,0.28); }
+.node.hall .node-stars i.lit { color: #f4e8cf; }
+.node.hall.locked .ticket { background: #241811; box-shadow: none; }
+.node.hall.locked::after { background: rgba(138,107,58,0.6); }
+/* TONIGHT: a wider banner on a gold rod, swinging under its own spotlight. */
+.node.hall.now .ticket {
+  width: 76px;
+  padding: 25px 4px 14px;
+  background: linear-gradient(165deg, var(--tc), var(--td) 85%);
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+  transform-origin: top center;
+  animation: swing 5.5s ease-in-out infinite;
+}
+.node.hall.now::after { width: 54px; background: #d9a441; }
+.node.hall.now .ticket-n { font-size: 25px; margin-top: 0; }
+.node.hall.now .ticket-stub .ab { top: 16px; }
+/* the spotlight, behind the banner and outside its clip */
+.node.hall.now::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 36px;
+  width: 190px;
+  height: 190px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(255,220,160,0.22), transparent 70%);
+  animation: embHalo 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ==========================================================================
+   2a TWILIGHT DYNASTY (levels 91-150) — foil tickets under a dusk sky: a mint-to-violet foil edge
+   around a near-black card, the club's colours as a printed band across the head, and tonight's
+   card catching a slow sweep of light across the foil.
+   ========================================================================== */
+.node.dusk .ticket {
+  width: 78px;
+  border: 0;
+  border-radius: 12px;
+  padding: 2px;
+  background: linear-gradient(130deg, #3ee6b0, #9d7bff 45%, #63b3ff 80%, #3ee6b0);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+  color: #fff;
+  overflow: hidden;
+}
+/* the card inside the foil — an inset rather than a second element, so the markup is unchanged */
+.node.dusk .ticket::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 10px;
+  background: rgba(8,18,26,0.95);
+  z-index: 0;
+}
+/* Lift the card's own content above the ::after inset — but NAME the parts, never `.ticket > *`.
+   That shorthand makes .ticket-stub a positioned ancestor, and the club band inside it is absolute:
+   it stopped anchoring to the card and started anchoring to the stub, which printed the band across
+   the FOOT of every ticket instead of its head. .ticket-stub stays static; its .ln is lifted. */
+.node.dusk .ticket-n,
+.node.dusk .ticket-stub .ln,
+.node.dusk .ticket-champ { position: relative; z-index: 1; }
+.node.dusk .ticket-n { font-size: 23px; margin-top: 17px; color: #fff; }
+.node.dusk .ticket-stub { color: #8fb4ab; font-size: 8px; letter-spacing: 0.1em; margin-top: 2px; }
+/* A CLEARED ticket dims its stub with `.node.done .ticket-stub { opacity: .8 }`, and an opacity
+   under 1 opens a STACKING CONTEXT. That trapped the club band inside it: the band is absolute with
+   z-index 2 so it can sit over the card's inset face, but inside its own context it could only
+   climb to the top of a stub that paints below that face — so every cleared ticket showed the band
+   at 5% and only tonight's, which has no opacity, printed it. The dimming is not worth the trap. */
+.node.dusk .ticket-stub { opacity: 1; }
+.node.dusk .ticket-stub .ab {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  height: 15px;
+  line-height: 15px;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(90deg, var(--tc), var(--td));
+  color: var(--ti);
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  font-weight: 400;
+  z-index: 2;
+}
+.node.dusk .ticket-stub .ab::after { content: none; }
+.node.dusk .ticket-champ { color: #3ee6b0; font-size: 8px; }
+/* the club band is painted over the head of the card, so NEXT sits just under it rather than in
+   the flow slot the markup gives it, which is behind the band */
+.node.dusk .ticket-next {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 19px;
+  z-index: 2;
+  color: #3ee6b0;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.node.dusk .node-stars { color: rgba(150,200,190,0.28); }
+.node.dusk .node-stars i.lit { color: #3ee6b0; }
+.node.dusk.locked .ticket {
+  background: rgba(12,24,30,0.85);
+  border: 1px solid rgba(150,200,190,0.16);
+  box-shadow: none;
+}
+.node.dusk.locked .ticket::after { background: transparent; }
+/* TONIGHT: a wider card, its own halo, and a slow sweep across the foil. */
+.node.dusk.now .ticket { width: 86px; animation: none; }
+.node.dusk.now .ticket-n { font-size: 26px; margin-top: 29px; }
+.node.dusk.now .ticket::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 32px;
+  z-index: 2;
+  background: linear-gradient(105deg, transparent, rgba(220,255,240,0.2), transparent);
+  animation: sweep 6s ease-in-out infinite;
+}
+.node.dusk.now::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 32px;
+  width: 180px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(62,230,176,0.28), transparent 70%);
+  animation: embHalo 2.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ==========================================================================
+   THE CHROME for the two new skins — header, era banner, notice and foot, same three parts the
+   arena and the hardwood already dress.
+   ========================================================================== */
+.map-top.hall { background: rgba(16,9,4,0.94); border-bottom-color: rgba(244,232,207,0.16); }
+.map-top.hall .map-kicker { color: #b3a184; }
+.map-top.hall .map-total { color: #f4e8cf; text-shadow: 0 0 18px rgba(255,220,160,0.35); }
+.map-top.hall .map-total .star { color: #d9a441; }
+.map-top.hall .map-total i { color: #b3a184; }
+.map-top.hall .map-link { color: #f4e8cf; }
+.map-top.hall .map-link.danger { color: #ff6a5c; }
+.map-top.hall .rule2 { background: linear-gradient(90deg, #f4e8cf, rgba(244,232,207,0.35) 60%, transparent); }
+.era-band.hall em { color: #d9a441; }
+.era-band.hall b { color: #f4e8cf; }
+.era-band.hall i { color: #b3a184; }
+.node-note.hall { border-color: rgba(244,232,207,0.6); background: rgba(26,15,7,0.94); color: #f4e8cf; }
+
+.map-top.dusk { background: linear-gradient(180deg, rgba(7,20,24,0.95), rgba(7,20,24,0.86)); border-bottom-color: rgba(62,230,176,0.16); }
+.map-top.dusk .map-kicker { color: #8fb4ab; }
+.map-top.dusk .map-total { color: #3ee6b0; text-shadow: 0 0 22px rgba(62,230,176,0.4); }
+.map-top.dusk .map-total .star { color: #3ee6b0; }
+.map-top.dusk .map-total i { color: #8fb4ab; }
+.map-top.dusk .map-link { color: #3ee6b0; }
+.map-top.dusk .map-link.danger { color: #ff6a5c; }
+.map-top.dusk .rule2 { background: linear-gradient(90deg, #3ee6b0, #9d7bff 60%, transparent); }
+.era-band.dusk em { color: rgba(62,230,176,0.75); }
+.era-band.dusk b { color: #eefaf4; }
+.era-band.dusk i { color: #8fb4ab; }
+.node-note.dusk { border-color: rgba(62,230,176,0.65); background: rgba(9,26,30,0.92); color: #3ee6b0; }
 
 /* ==========================================================================
    THE DESK MAP (his ruling: "Widen it, needs to be full screen"). The map now takes the same

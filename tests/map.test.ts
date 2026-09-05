@@ -2,15 +2,16 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import OPP from '../src/data/opponents.json'
+import CAMPAIGNS from '../src/data/campaigns.json'
 import { ROUNDS } from '../src/config'
 import { balance, buy, canBuy, NODE, NODES, type NodeId } from '../src/engine/tree'
 import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
-import { LevelMap, windOf, xOf } from '../src/ui/LevelMap'
+import { LevelMap, skinAt, windOf, xOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
-const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], handicap: 0, first: 1 }]
+const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], first: 1 }]
 
 const progress = (over: Partial<Progress> = {}): Progress => ({
   coach: null,
@@ -149,5 +150,60 @@ describe('the trail keeps its angle at any width', () => {
     let flatTravel = 0
     for (let i = 0; i < 60; i++) flatTravel = Math.max(flatTravel, (Math.abs(flat(i + 1) - flat(i)) * 1438) / 375)
     expect((Math.atan2(flatTravel, STEP) * 180) / Math.PI).toBeGreaterThan(60)
+  })
+})
+
+/**
+ * THE FOUR SKINS, off the Campaign Map design board (his ruling: "Use 2b for 61-90, and 2a for
+ * 91-120", and for the tier above it, "carry the 91-120 skin on"): 1b ARENA NIGHTS 1-30, 1c
+ * HARDWOOD PRIME 31-60, 2b BANNER HALL 61-90, 2a TWILIGHT DYNASTY 91 to the top.
+ *
+ * The block edges are WRITTEN as levels rather than derived from the tiers, because they no longer
+ * agree: the design draws five blocks of thirty and The Champions alone runs 31-90, so the 61 seam
+ * is inside a tier. That is exactly why it is tested. Two of the three seams should still land on a
+ * tier boundary, and if a tier is ever resized in scripts/campaigns.ts this is what says so.
+ */
+describe('the map wears four skins, one per block of thirty', () => {
+  const first = (t: number) => CAMPAIGNS.slice(0, t).reduce((a, c) => a + c.levels.length, 0) + 1
+
+  it('every level from 1 to the top of the ladder has a skin, and they change only at the blocks', () => {
+    const runs: { skin: string; from: number; to: number }[] = []
+    for (let l = 1; l <= ROUNDS; l++) {
+      const skin = skinAt(l)
+      const last = runs[runs.length - 1]
+      if (last && last.skin === skin) last.to = l
+      else runs.push({ skin, from: l, to: l })
+    }
+    expect(runs).toEqual([
+      { skin: 'arena', from: 1, to: 30 },
+      { skin: 'wood', from: 31, to: 60 },
+      { skin: 'hall', from: 61, to: 90 },
+      { skin: 'dusk', from: 91, to: ROUNDS },
+    ])
+  })
+
+  it('the top tier carries the 91-120 skin on rather than falling back to one already passed', () => {
+    // The Customs has no board of its own in the design; it must not look like an earlier block
+    expect(skinAt(first(3))).toBe('dusk')
+    expect(skinAt(ROUNDS)).toBe('dusk')
+  })
+
+  it('the seams that CAN follow the tiers still do — 31 and 91 are tier boundaries', () => {
+    expect(first(1)).toBe(31) // The League ends, The Champions begin: arena -> wood
+    expect(first(3)).toBe(121) // The Customs begin inside the dusk block, by his ruling
+    expect(skinAt(first(1) - 1)).toBe('arena')
+    expect(skinAt(first(1))).toBe('wood')
+    expect(skinAt(first(2) - 1)).toBe('hall')
+    expect(skinAt(first(2))).toBe('dusk') // All-Time begins at 91: hall -> dusk
+  })
+
+  it('and the one that CANNOT is inside a tier, which is why it is written and not derived', () => {
+    // The Champions runs 31-90 in one piece; the 61 seam splits it, so nothing derives it
+    const champions = CAMPAIGNS[1]
+    expect(champions.levels.length).toBe(60)
+    expect(first(1)).toBeLessThan(61)
+    expect(first(2)).toBeGreaterThan(61)
+    expect(skinAt(60)).toBe('wood')
+    expect(skinAt(61)).toBe('hall')
   })
 })

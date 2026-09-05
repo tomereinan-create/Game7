@@ -1,4 +1,11 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+
+/**
+ * useLayoutEffect, except on the server, where it does nothing and React says so loudly. The map
+ * is server-rendered by tests/map.test.ts, and both of the effects below are pure measurement and
+ * body classes — there is nothing for a server pass to do — so it falls back to useEffect there.
+ */
+const useLayout = typeof window === 'undefined' ? useEffect : useLayoutEffect
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
@@ -51,6 +58,65 @@ function trail(xAt: (i: number) => number): string {
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
 
 /**
+ * THE FOUR SKINS, by the level each one starts at — from the Campaign Map design board and his
+ * ruling on it: "Use 2b for 61-90, and 2a for 91-120", and for the tier above that, carry the
+ * 91-120 skin on. 1b ARENA NIGHTS 1-30, 1c HARDWOOD PRIME 31-60, 2b BANNER HALL 61-90, and 2a
+ * TWILIGHT DYNASTY 91 to the top of the ladder.
+ *
+ * WRITTEN AS LEVELS, not read off the tiers, and that is a deliberate reversal of how the first
+ * seam worked. It used to derive from `eras[1].first` so that a tier resized in scripts/campaigns.ts
+ * could not leave the skin line behind. That only worked while a skin change WAS a tier change, and
+ * it no longer is: the design draws the ladder as five blocks of thirty, but the tiers are 30 / 60 /
+ * 30 / 30 — The Champions alone runs 31-90 — so the 61 seam falls in the MIDDLE of a tier and there
+ * is nothing to derive it from. The blocks are the design's unit, so they are stated as the design
+ * states them, and every seam that still coincides with a tier (31, 91) is checked against the tiers
+ * by tests/map.test.ts rather than by being computed from them.
+ *
+ * 2a covers 91-150 rather than 91-120 (his ruling, on the top tier having no board of its own:
+ * "Carry the 91-120 skin on") — The Customs never falls back to a skin the ladder already passed.
+ */
+const SKINS = [
+  { skin: 'arena', first: 1 },
+  { skin: 'wood', first: 31 },
+  { skin: 'hall', first: 61 },
+  { skin: 'dusk', first: 91 },
+] as const
+export type Skin = (typeof SKINS)[number]['skin']
+/** Which skin a level wears: the last block that has started by then. */
+export const skinAt = (level: number): Skin => {
+  let out: Skin = SKINS[0].skin
+  for (const b of SKINS) if (level >= b.first) out = b.skin
+  return out
+}
+/**
+ * The lit trail's colour per skin, bottom of the block first. Two entries paint a gradient WITHIN
+ * the block (the arena's ember warms as it drops to the foot; the dynasty's mint cools up into
+ * purple, which is the 2a board's own trail); one entry paints the block flat.
+ */
+const TRAIL_INK: Record<Skin, readonly string[]> = {
+  arena: ['#ffb36b', '#ff6a2e'],
+  wood: ['rgba(246,238,221,0.82)'],
+  hall: ['rgba(244,232,207,0.75)'],
+  dusk: ['#3ee6b0', '#9d7bff'],
+}
+/**
+ * Every block as a band of trail, in the trail's own px: `bottom` is the seam below it and `top`
+ * the seam above, each halfway between the last ticket of one block and the first of the next. The
+ * bottom block runs to the very foot and the top block to the very head, so no sliver of floor is
+ * left unpainted at either end. A ladder shorter than a block's first level drops that block
+ * entirely — a five-level test campaign is all arena, not a map skinned in floors it never reaches.
+ */
+function bands(rounds: number) {
+  const live = SKINS.filter((b) => b.first <= rounds)
+  return live.map((b, i) => {
+    const nextFirst = live[i + 1]?.first ?? rounds + 1
+    const bottom = b.first <= 1 ? H : yAt(b.first - 1) + STEP / 2
+    const top = nextFirst > rounds ? 0 : yAt(nextFirst - 1) + STEP / 2
+    return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: TRAIL_INK[b.skin] }
+  })
+}
+
+/**
  * Each paper ticket lies at its own angle on the hardwood. Deterministic from the level, so a
  * ticket does not jump to a new angle every time the map re-renders — ±1.8°, never 0, because a
  * ticket that happens to hang straight reads as tonight's game.
@@ -89,7 +155,7 @@ export function LevelMap({
   title: string
   progress: Progress
   opponents: Opponent[]
-  eras: { name: string; years: [number, number]; handicap: number; first: number }[]
+  eras: { name: string; years: [number, number]; first: number }[]
   teamName: string
   onPlay: (level: number) => void
   onTeam: () => void
@@ -138,16 +204,9 @@ export function LevelMap({
     const ab = o.season && o.era !== eras[0]?.name ? `'${String(o.season).slice(2)} ${o.ab ?? ''}` : (o.ab ?? '')
     return { ab, line: o.record ?? o.tag ?? '' }
   }
-  /**
-   * THE SEAM. The first tier is 1b, everything after is 1c — read off the tiers, not typed. With
-   * one tier only (or none passed) the whole map stays in the arena, which is what a mode with no
-   * second era should look like rather than a map skinned half in a floor it never reaches.
-   */
-  const seamLevel = eras[1]?.first ?? ROUNDS + 1
-  const skinOf = (level: number) => (level < seamLevel ? 'arena' : 'wood')
-  /** Halfway between the last arena ticket and the first hardwood one, as a % of the trail. */
-  const seamY = seamLevel > ROUNDS ? -PAD : yAt(seamLevel - 1) + STEP / 2
-  const seamPct = (100 * seamY) / H
+  /** THE BLOCKS: which skin each level wears, and the band of trail each one paints. */
+  const skinOf = skinAt
+  const BANDS = useMemo(() => bands(ROUNDS), [])
   /** The skin of the level you are ON — what the sticky header, the notices and the foot wear. */
   const skin = skinOf(cur ?? ROUNDS)
   const nowRef = useRef<HTMLButtonElement>(null)
@@ -170,7 +229,7 @@ export function LevelMap({
    * tactics board both want every pixel. A trail of tickets does not: at 1480 it sprawled. `map`
    * pulls this screen alone back to 1150 without touching the two screens that were never too big.
    */
-  useLayoutEffect(() => {
+  useLayout(() => {
     document.body.classList.add('wide', 'map')
     return () => document.body.classList.remove('wide', 'map')
   }, [])
@@ -188,7 +247,7 @@ export function LevelMap({
    */
   const trailRef = useRef<HTMLDivElement>(null)
   const [colW, setColW] = useState(W)
-  useLayoutEffect(() => {
+  useLayout(() => {
     const measure = () => setColW(trailRef.current?.getBoundingClientRect().width || W)
     measure()
     window.addEventListener('resize', measure)
@@ -265,17 +324,30 @@ export function LevelMap({
         </div>
       </div>
 
-      <div ref={trailRef} className="trail" style={{ height: H, '--split': `${seamPct}%` } as React.CSSProperties}>
+      <div ref={trailRef} className="trail" style={{ height: H }}>
+        {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
+            exactly two grounds and no more; four skins do not fit in two, so each block paints its
+            own band and every one of them fades into the block below at its own top edge. */}
+        {BANDS.map((b) => (
+          <div key={b.skin} className={`ground ${b.skin}`} style={{ top: b.top, height: b.height }} />
+        ))}
         <svg className="trail-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
-          {/* The lit trail is ONE stroke in two colours. userSpaceOnUse pins the stops to the
-              viewBox, so the painted cream line becomes the ember line at exactly the y the floor
-              changes — the seam is never a couple of pixels off from the ground behind it. */}
+          {/* The lit trail is ONE stroke in every skin's colour. userSpaceOnUse pins the stops to
+              the viewBox, so the painted line changes colour at exactly the y the floor does — a
+              seam is never a couple of pixels off from the ground behind it. The stops are emitted
+              top-of-the-map first, because the gradient runs y=0 down while the LADDER runs up. */}
           <defs>
             <linearGradient id="trailSplit" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={H}>
-              <stop offset="0" stopColor="rgba(246,238,221,0.82)" />
-              <stop offset={Math.max(0, seamPct / 100 - 0.006)} stopColor="rgba(246,238,221,0.82)" />
-              <stop offset={Math.min(1, seamPct / 100 + 0.006)} stopColor="#ff6a2e" />
-              <stop offset="1" stopColor="#ffb36b" />
+              {[...BANDS].reverse().flatMap((b) => {
+                // a hair inside each seam either way, so two blocks meet in a line and not a blend
+                const a = Math.min(1, Math.max(0, b.top / H + (b.top > 0 ? 0.0008 : 0)))
+                const z = Math.min(1, Math.max(0, (b.top + b.height) / H - 0.0008))
+                const ink = b.ink
+                return [
+                  <stop key={`${b.skin}-a`} offset={a} stopColor={ink[ink.length - 1]} />,
+                  <stop key={`${b.skin}-z`} offset={z} stopColor={ink[0]} />,
+                ]
+              })}
             </linearGradient>
           </defs>
           <path className="trail-dim split" d={TRAIL} pathLength={1} />
@@ -295,7 +367,6 @@ export function LevelMap({
             <b>{e.name}</b>
             <i>
               {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
-              {e.handicap ? ` · opponents +${e.handicap}` : ''}
             </i>
           </div>
         ))}
