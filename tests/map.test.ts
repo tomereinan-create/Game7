@@ -8,7 +8,7 @@ import { balance, buy, canBuy, NODE, NODES, type NodeId } from '../src/engine/tr
 import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
-import { LevelMap, skinAt, windOf, xOf } from '../src/ui/LevelMap'
+import { heightOf, LevelMap, perRow, rowsOf, skinAt, xOf, yOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
 const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], first: 1 }]
@@ -100,56 +100,66 @@ describe('the campaign map always has a door to the staff tree', () => {
 })
 
 /**
- * THE DESK MAP (his ruling: "Widen it, needs to be full screen"). The trail is drawn in a 375-wide
- * space stretched to whatever column it is handed, so its amplitude is ALWAYS 34% of that width —
- * widening the map widens the swing for free. What does not come for free is the angle: held at
- * the 7-level period it wound at on a phone, a swing four times as wide over the same 170px step
- * would lay the trail down into a near-horizontal zigzag. So the period stretches with the width
- * and the horizontal travel per level stays put. That is the whole claim, and it is arithmetic, so
- * it is tested here rather than by looking at a screenshot.
+ * THE SNAKE (his ruling: "instead of only going up, make it go like a snake to fill the screen").
+ * The trail is a boustrophedon now: a row of levels left to right, a U-turn at the wall, the next
+ * row right to left, climbing. Three claims are worth holding down, and all three are arithmetic
+ * rather than something to check on a screenshot.
+ *
+ * One: the width decides how many stand in a row, so a wider window is a shorter map — that is the
+ * whole point of the change. Two: consecutive levels are NEIGHBOURS — one lane apart along a row,
+ * or directly above each other at a turn — so the trail never jumps the screen. Three: the turn is
+ * vertical, which is what makes it read as a U-turn rather than a kink.
  */
-describe('the trail keeps its angle at any width', () => {
-  const STEP = 170
-  /** The widest gap between two neighbouring levels, in px, on a column this wide. */
-  const travel = (colW: number) => {
-    const x = xOf(colW)
-    let worst = 0
-    for (let i = 0; i < 60; i++) worst = Math.max(worst, (Math.abs(x(i + 1) - x(i)) * colW) / 375)
-    return worst
-  }
-
-  it('winds every 7 levels on a phone, and slower the wider the column gets', () => {
-    expect(windOf(347)).toBe(7)
-    expect(windOf(375)).toBe(7)
-    expect(windOf(1438)).toBeCloseTo(26.84, 1)
-    // never tighter than the phone's 7, however narrow the box is measured
-    expect(windOf(0)).toBe(7)
-    expect(windOf(120)).toBe(7)
+describe('the trail snakes across whatever width it is given', () => {
+  it('a wider window puts more levels in a row and fewer rows on the screen', () => {
+    expect(perRow(375)).toBe(2) // a phone still snakes, two at a time
+    expect(perRow(900)).toBeGreaterThan(perRow(375))
+    expect(perRow(1900)).toBeGreaterThan(perRow(900))
+    // and the scroll shrinks with it: the old climbing column was ~25,000px for 150 levels
+    expect(heightOf(1900)).toBeLessThan(heightOf(900))
+    expect(heightOf(1900)).toBeLessThan(6000)
+    expect(rowsOf(1900) * perRow(1900)).toBeGreaterThanOrEqual(ROUNDS)
   })
 
-  it('the swing still fills the column — the amplitude is 34% of it at every width', () => {
-    for (const colW of [375, 562, 1438]) {
+  it('every level stands inside the width it was handed', () => {
+    for (const colW of [375, 562, 900, 1438, 1900]) {
       const x = xOf(colW)
-      const xs = Array.from({ length: 200 }, (_, i) => x(i))
-      const spread = (Math.max(...xs) - Math.min(...xs)) / 375
-      expect(spread).toBeGreaterThan(0.66)
-      expect(spread).toBeLessThanOrEqual(0.68)
+      for (let i = 0; i < ROUNDS; i++) {
+        expect(x(i)).toBeGreaterThanOrEqual(0)
+        expect(x(i)).toBeLessThanOrEqual(colW)
+      }
     }
   })
 
-  it('and the step between neighbours stays the angle it was drawn at, not a flat zigzag', () => {
-    const phone = travel(375)
-    for (const colW of [562, 900, 1438, 1900]) {
-      // within a couple of pixels of the phone's own travel, so the slope never lies down
-      expect(Math.abs(travel(colW) - phone)).toBeLessThan(24)
-      // and stated as an angle off vertical: the trail was drawn at ~30 degrees and stays there
-      expect((Math.atan2(travel(colW), STEP) * 180) / Math.PI).toBeLessThan(38)
+  it('neighbours are always one lane apart, or straight above each other at a turn', () => {
+    for (const colW of [375, 900, 1438, 1900]) {
+      const x = xOf(colW)
+      const y = yOf(colW)
+      const cols = perRow(colW)
+      const lane = Math.abs(x(1) - x(0))
+      for (let i = 0; i < ROUNDS - 1; i++) {
+        const dx = Math.abs(x(i + 1) - x(i))
+        const dy = Math.abs(y(i + 1) - y(i))
+        if ((i + 1) % cols === 0) {
+          // the turn: same column, one row up
+          expect(dx).toBeLessThan(0.01)
+          expect(dy).toBeGreaterThan(100)
+        } else {
+          expect(dx).toBeCloseTo(lane, 6)
+          // along a row the climb is only the row's own bow, never a whole row
+          expect(dy).toBeLessThan(60)
+        }
+      }
     }
-    // the bug this guards: a fixed 7-level wind on a desk column lays the trail nearly flat
-    const flat = (i: number) => 375 / 2 + 0.34 * 375 * Math.sin((i * 2 * Math.PI) / 7)
-    let flatTravel = 0
-    for (let i = 0; i < 60; i++) flatTravel = Math.max(flatTravel, (Math.abs(flat(i + 1) - flat(i)) * 1438) / 375)
-    expect((Math.atan2(flatTravel, STEP) * 180) / Math.PI).toBeGreaterThan(60)
+  })
+
+  it('and it climbs: level 1 is at the foot, the last level at the head', () => {
+    for (const colW of [375, 1438]) {
+      const y = yOf(colW)
+      expect(y(0)).toBeGreaterThan(y(ROUNDS - 1))
+      expect(y(0)).toBeLessThanOrEqual(heightOf(colW))
+      expect(y(ROUNDS - 1)).toBeGreaterThanOrEqual(0)
+    }
   })
 })
 

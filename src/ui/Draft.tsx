@@ -23,6 +23,7 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
+import type { Skin } from './LevelMap'
 
 // the wheel data lives in data/wheel now (the gauges need it engine-side); old importers keep working
 export { WHEEL } from '../data/wheel'
@@ -130,6 +131,7 @@ export function Draft({
   wear = {},
   spinLeft = false,
   death = false,
+  skin = 'arena',
   tactics = null,
   onSim,
   onBack,
@@ -153,6 +155,11 @@ export function Draft({
    * map is also what the first level of a death run looks like, and `carry` is null there too.
    */
   death?: boolean
+  /**
+   * HIS RULING: "Make the skill tree and the drafting (spin) the same design as your current
+   * stage." Which block of the ladder the campaign is standing in — the draft wears its skin.
+   */
+  skin?: Skin
   /** Death match: a My team change is still unspent — simming now deserves a second look. */
   spinLeft?: boolean
   /** Death match: the My team plan — the sim prices it, so the odds here must too. */
@@ -269,11 +276,17 @@ export function Draft({
    */
   /** No team-season on the wheel can legally fill an open slot (salary rules). */
   const [dead, setDead] = useState(false)
-  // The draft is the one screen that earns the full width of a desktop.
+  /**
+   * The draft takes the full width of a desktop — and, by his ruling ("Make the skill tree and the
+   * drafting (spin) the same design as your current stage"), the SKIN of the block the campaign is
+   * standing in. The skin is a body class because it has to reach the page's own ground, which is
+   * outside anything this screen renders; it re-tints every token, so the wheel, the pool and the
+   * board come with it rather than needing a skinned copy each.
+   */
   useEffect(() => {
-    document.body.classList.add('wide')
-    return () => document.body.classList.remove('wide')
-  }, [])
+    document.body.classList.add('wide', `sk-${skin}`)
+    return () => document.body.classList.remove('wide', `sk-${skin}`)
+  }, [skin])
   const timer = useRef<number | null>(null)
 
   useEffect(

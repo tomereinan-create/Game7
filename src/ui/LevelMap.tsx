@@ -9,31 +9,94 @@ import { currentLevel, playable, totalStars, type Progress } from '../state/camp
 import { Ask } from './Ask'
 import { teamColor } from './teamColors'
 
-/** Path geometry, in a 375-wide coordinate space stretched to the column. */
+/**
+ * THE SNAKE (his ruling: "instead of only going up, make it go like a snake to fill the screen").
+ * The ladder used to be one climbing column: a sine wave 375 units wide, stretched to whatever
+ * column it was handed, one level every 170px. On a full-screen desk that spent the whole window
+ * on a ribbon of tickets and 25,000px of scrolling for 150 levels.
+ *
+ * It is a boustrophedon now — a row of levels left to right, a U-turn at the wall, the next row
+ * right to left, climbing. The width decides how many stand in a row, so the trail fills the
+ * screen it is given instead of ignoring it, and 150 levels come down to a dozen rows.
+ *
+ * Everything below is REAL SCREEN PIXELS, not a stretched 375-wide space. A snake cannot survive
+ * `preserveAspectRatio="none"`: the U-turns would be squashed ellipses on a desk and circles on a
+ * phone. The trail is measured and drawn 1:1, and the fallback before the first measure is a
+ * phone's 375.
+ */
 const W = 375
-const STEP = 170 // vertical distance between levels (ticket + stars or dials)
-const PAD = 56 // room above the top node and below the bottom one
-const H = PAD * 2 + STEP * (ROUNDS - 1)
-const yAt = (i: number) => H - PAD - STEP * i // level 1 at the bottom, climbing
+/** Horizontal distance between two levels standing in the same row. */
+const LANE = 176
+/** Vertical distance between one row and the row above it. */
+const ROW = 236
+/** Room at each end of a row — the U-turn needs somewhere to turn. */
+const SIDEMAX = 84
+/** Room above the top row and below the bottom one — the foot also carries era I's banner. */
+const PAD = 132
+/** How far a row bows away from level: a row is a wave, not a ruler. */
+const BOB = 22
+
+const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
+/** How many levels stand in one row at this width. Two is the floor — a phone still snakes. */
+export const perRow = (colW: number) => {
+  const usable = Math.max(0, (colW || W) - sideOf(colW || W) * 2)
+  return Math.max(2, Math.floor(usable / LANE) + 1)
+}
+export const rowsOf = (colW: number) => Math.ceil(ROUNDS / perRow(colW))
+/** The trail's full height at this width — what the scroll actually costs. */
+export const heightOf = (colW: number) => PAD * 2 + ROW * (rowsOf(colW) - 1)
+
+/** The pitch a row actually uses, and where its first column stands, so rows sit centred. */
+function lanes(colW: number) {
+  const w = colW || W
+  const cols = perRow(w)
+  const usable = Math.max(0, w - sideOf(w) * 2)
+  // Never spread much wider than a lane. Without the cap a phone, which fits exactly two to a row,
+  // would push one ticket to each wall with 150px of empty floor between them; a desk is already
+  // under the cap (eight to a row is ~196px of pitch), so this only bites where it has to.
+  const pitch = cols > 1 ? Math.min(LANE * 1.15, usable / (cols - 1)) : 0
+  return { cols, pitch, x0: (w - pitch * (cols - 1)) / 2 }
+}
+
+/** Which row a level index (0-based) stands in, counting up from the bottom. */
+export const rowOf = (colW: number) => (i: number) => Math.floor(i / perRow(colW))
+/** The y of a whole row's baseline. Row 0 — level 1 — is at the bottom; the ladder climbs. */
+export const yRowOf = (colW: number) => (r: number) => heightOf(colW) - PAD - ROW * r
 
 /**
- * THE WIND, in levels per full swing (his ruling: "Widen it, needs to be full screen"). The trail
- * is drawn in the 375-wide space above and stretched to whatever column it is given, so its
- * amplitude is always 34% of that width — on a desk that is now the whole screen rather than a
- * phone column. Held at the fixed 7 levels it used to wind at, that much wider swing over the same
- * 170px step would flatten the path into a near-horizontal zigzag, so the period stretches with the
- * width instead: the trail sweeps the whole screen in long arcs, and the horizontal travel per
- * level stays the ~114px it is on a phone, which is the angle this trail was drawn at. A phone is
- * the floor of the clamp and keeps the 7 it always had.
+ * The visual column a level stands in: rows alternate direction, so the last ticket of one row and
+ * the first of the next share a column and the turn between them is a clean vertical.
  */
-export const windOf = (colW: number) => Math.max(7, (7 * colW) / W)
+const colAt = (cols: number, i: number) => {
+  const r = Math.floor(i / cols)
+  const j = i % cols
+  return r % 2 === 0 ? j : cols - 1 - j
+}
+
 export const xOf =
   (colW: number) =>
-  (i: number): number =>
-    W / 2 + 0.34 * W * Math.sin((i * 2 * Math.PI) / windOf(colW))
+  (i: number): number => {
+    const { cols, pitch, x0 } = lanes(colW)
+    return x0 + pitch * colAt(cols, i)
+  }
+
+/**
+ * The y of one ticket: its row's baseline, plus the row's own bow. The bow is zero at both walls,
+ * which is where the U-turns happen, so a turn is never a kink — and it flips sign every row, so
+ * the whole trail reads as one long wave rather than a stack of identical scallops.
+ */
+export const yOf =
+  (colW: number) =>
+  (i: number): number => {
+    const { cols } = lanes(colW)
+    const r = Math.floor(i / cols)
+    const c = colAt(cols, i)
+    const bow = cols > 1 ? Math.sin((Math.PI * c) / (cols - 1)) : 0
+    return yRowOf(colW)(r) - (r % 2 === 0 ? 1 : -1) * BOB * bow
+  }
 
 /** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
-function trail(xAt: (i: number) => number): string {
+function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {
   const pts = Array.from({ length: ROUNDS }, (_, i) => [xAt(i), yAt(i)])
   let d = `M ${pts[0][0]} ${pts[0][1]}`
   for (let i = 0; i < pts.length - 1; i++) {
@@ -100,12 +163,19 @@ const TRAIL_INK: Record<Skin, readonly string[]> = {
  * left unpainted at either end. A ladder shorter than a block's first level drops that block
  * entirely — a five-level test campaign is all arena, not a map skinned in floors it never reaches.
  */
-function bands(rounds: number) {
+function bands(rounds: number, colW: number) {
+  const H = heightOf(colW)
+  const row = rowOf(colW)
+  const yRow = yRowOf(colW)
+  // A seam is drawn at a ROW boundary, never mid-row: a block that begins in the middle of a row
+  // takes the whole of that row's floor with it, or the ground would change colour under four
+  // tickets standing side by side on the same shelf.
+  const seam = (first: number) => yRow(row(first - 1)) + ROW / 2
   const live = SKINS.filter((b) => b.first <= rounds)
   return live.map((b, i) => {
     const nextFirst = live[i + 1]?.first ?? rounds + 1
-    const bottom = b.first <= 1 ? H : yAt(b.first - 1) + STEP / 2
-    const top = nextFirst > rounds ? 0 : yAt(nextFirst - 1) + STEP / 2
+    const bottom = b.first <= 1 ? H : seam(b.first)
+    const top = nextFirst > rounds ? 0 : seam(nextFirst)
     return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: TRAIL_INK[b.skin] }
   })
 }
@@ -200,7 +270,7 @@ export function LevelMap({
   }
   /** THE BLOCKS: which skin each level wears, and the band of trail each one paints. */
   const skinOf = skinAt
-  const BANDS = useMemo(() => bands(ROUNDS), [])
+  // BANDS depend on the width now — how many levels stand in a row decides where a seam falls.
   /** The skin of the level you are ON — what the sticky header, the notices and the foot wear. */
   const skin = skinOf(cur ?? ROUNDS)
   const nowRef = useRef<HTMLButtonElement>(null)
@@ -248,7 +318,12 @@ export function LevelMap({
     return () => window.removeEventListener('resize', measure)
   }, [])
   const xAt = useMemo(() => xOf(colW), [colW])
-  const TRAIL = useMemo(() => trail(xAt), [xAt])
+  const yAt = useMemo(() => yOf(colW), [colW])
+  const row = useMemo(() => rowOf(colW), [colW])
+  const yRow = useMemo(() => yRowOf(colW), [colW])
+  const H = useMemo(() => heightOf(colW), [colW])
+  const BANDS = useMemo(() => bands(ROUNDS, colW), [colW])
+  const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
 
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
@@ -325,7 +400,8 @@ export function LevelMap({
         {BANDS.map((b) => (
           <div key={b.skin} className={`ground ${b.skin}`} style={{ top: b.top, height: b.height }} />
         ))}
-        <svg className="trail-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
+        {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
+        <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
           {/* The lit trail is ONE stroke in every skin's colour. userSpaceOnUse pins the stops to
               the viewBox, so the painted line changes colour at exactly the y the floor does — a
               seam is never a couple of pixels off from the ground behind it. The stops are emitted
@@ -351,9 +427,16 @@ export function LevelMap({
 
         {eras.map((e, ei) => (
           <div
-            className={`era-band ${skinOf(e.first)} ${xAt(e.first - 1) > W / 2 ? 'left' : 'right'}`}
+            className={`era-band ${skinOf(e.first)}`}
             key={e.name}
-            style={{ top: yAt(e.first - 1) - 18 }}
+            /**
+             * THE SNAKE took the sides away — a row runs wall to wall now, so an era banner pinned
+             * to a margin would stand on a ticket. It is a full-width rule across the gap between
+             * two rows instead, drawn at the SAME seam the floor changes at, so the line that says
+             * the era changed and the floor that changes are one and the same. The bottom era has
+             * no gap under it — its rule sits in the foot the map leaves below the first row.
+             */
+            style={{ top: Math.min(yRow(row(e.first - 1)) + ROW / 2, H - 34) }}
           >
             {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
                 beside the year. Same three parts either way — the skin decides the order. */}
@@ -373,7 +456,11 @@ export function LevelMap({
          * the far side of the trail from the ticket, centred on it.
          */}
         {cur && (spendable || (teamNote && onMyTeam)) ? (
-          <div className={`node-notes ${xAt(cur - 1) > W / 2 ? 'left' : 'right'}`} style={{ top: yAt(cur - 1) }}>
+          <div
+            className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
+            /* pinned above tonight's ticket, and kept off both walls */
+            style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 128 }}
+          >
             {spendable ? (
               <button className={`node-note ${skin}`} onClick={onStaff}>
                 {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
@@ -404,7 +491,7 @@ export function LevelMap({
               className={`node ${nodeSkin} ${state} ${o.champion ? 'champ' : ''}`}
               style={
                 {
-                  left: `${(100 * xAt(i)) / W}%`,
+                  left: xAt(i),
                   top: yAt(i),
                   // Both skins are cut from the same four club colours; only the shape differs.
                   '--tc': c.primary,

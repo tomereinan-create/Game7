@@ -17,5 +17,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "tests", "scripts", "vite.config.ts"]
+  "include": ["src", "tests", "scripts", "vite.config.ts"],
+  "//exclude": "scripts/_tmp is the scratch drawer for one-off debug scripts — throwaway probes written against whatever shape the engine had that hour. Typechecking them meant a stale scratch file could fail `npm run build`, which is what serves localhost:5178, so a UI change could not be built because of a ratings probe nobody was running.",
+  "exclude": ["scripts/_tmp"]
 }

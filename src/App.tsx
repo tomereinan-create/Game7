@@ -18,19 +18,21 @@ import type { BoxCtx } from './engine/boxstats'
 import {
   applyWear,
   WEAR_OUT,
+  currentLevel,
   die,
   levelSeed,
   loadProgress,
   MODES,
   resetProgress,
   saveProgress,
+  starsFromUrl,
   type CampaignMode,
   type Progress,
   type Team,
 } from './state/campaign'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
-import { LevelMap } from './ui/LevelMap'
+import { LevelMap, skinAt } from './ui/LevelMap'
 import { MyTeam, orderFive } from './ui/MyTeam'
 import { Archetypes } from './ui/Archetypes'
 import { Roster } from './ui/Roster'
@@ -83,9 +85,12 @@ export default function App() {
   // Which front-door mode is active. The two campaigns share every screen
   // after Home; only the save slot and the salary line differ.
   const [mode, setMode] = useState<Mode | null>(null)
-  const [progress, setProgress] = useState<Record<CampaignMode, Progress>>(
-    () => Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>,
-  )
+  const [progress, setProgress] = useState<Record<CampaignMode, Progress>>(() => {
+    const all = Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>
+    // `?stars=1` marks the whole ladder cleared at one star — his door onto the later blocks.
+    starsFromUrl(all)
+    return all
+  })
   const [level, setLevel] = useState<number | null>(null)
   const [pending, setPending] = useState<Pending | null>(null)
   const [pickTeam, setPickTeam] = useState(false)
@@ -113,6 +118,15 @@ export default function App() {
   const opponents = LEVELS
   const prog = cm ? progress[cm] : null
   const opponent = level ? opponents[Math.min(level, ROUNDS) - 1] : null
+  /**
+   * WHICH BLOCK THE CAMPAIGN IS STANDING IN, as a skin. The map has worn one per block of thirty
+   * since the four-skins ruling; his ruling here — "Make the skill tree and the drafting (spin) the
+   * same design as your current stage" — hands the same skin to the two screens the map opens into,
+   * so a level, its draft and the staff room between them are all one room. A draft opened on a
+   * level takes THAT level's skin (replaying level 4 from the dusk block is still an arena night);
+   * with no level open it is wherever the ladder has got to, and a cleared ladder keeps the top.
+   */
+  const skin = skinAt(level ?? (prog ? (currentLevel(prog) ?? ROUNDS) : 1))
   /** Death match: last level's five, ready to be carried in. Null at the start of a run. */
   // the roster is kept in SLOT ORDER (PG to C); a saved order that no longer fields re-derives here
   const carried = death && prog?.roster ? (orderFive(prog.roster).map((n) => PLAYERS.find((p) => p.name === n)).filter(Boolean) as Player[]) : null
@@ -371,6 +385,7 @@ export default function App() {
           wallet={prog}
           salary={capped}
           death={death}
+          skin={skin}
           onBuy={(id) => {
             const next = buy(prog, id)
             if (!next) return
@@ -455,6 +470,7 @@ export default function App() {
         seed={levelSeed(prog, level)}
         teamName={teamName}
         salary={capped}
+        skin={skin}
         wallet={prog}
         carry={carry}
         wear={prog.wear}

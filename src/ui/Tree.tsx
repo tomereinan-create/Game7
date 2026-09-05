@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Ask } from './Ask'
+import { useLayout } from './useLayout'
+import type { Skin } from './LevelMap'
 import {
   balance,
   canBuy,
@@ -51,6 +53,7 @@ export function Tree({
   wallet,
   salary = false,
   death = false,
+  skin = 'arena',
   onBuy,
   onRespec,
   onBack,
@@ -59,6 +62,12 @@ export function Tree({
   salary?: boolean
   /** Death match: the Survival branch replaces the Salary one. */
   death?: boolean
+  /**
+   * HIS RULING: "Make the skill tree and the drafting (spin) the same design as your current
+   * stage." The staff room is not a separate building any more — it wears the skin of the block
+   * the campaign is standing in, so walking off the map into it is the same room, not a new one.
+   */
+  skin?: Skin
   onBuy: (id: NodeId) => void
   onRespec: () => void
   onBack: () => void
@@ -70,6 +79,15 @@ export function Tree({
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+  /**
+   * The skin reaches the page's own ground, which sits outside anything this screen renders, so it
+   * is stated as a body class the way the map, the draft and the tunnel state theirs — and `wide`
+   * comes with it, so the trellis gets the same full window the map does.
+   */
+  useLayout(() => {
+    document.body.classList.add('wide', `sk-${skin}`)
+    return () => document.body.classList.remove('wide', `sk-${skin}`)
+  }, [skin])
 
   const branches = BRANCHES.filter((b) => (b.key === 'Salary' ? salary : b.key === 'Survival' ? death : true))
   const cols = branches.map((b) => NODES.filter((n) => n.branch === b.key).sort((a, c) => a.depth - c.depth))
@@ -87,28 +105,30 @@ export function Tree({
 
   return (
     <>
-      <div className="topbar">
-        <span>Staff</span>
-        <button onClick={onBack}>← Map</button>
-      </div>
-      <div className="rule2" />
-      <div className="map-head">
-        <div>
-          <div className="map-kicker">Stars to spend</div>
-          <div className="map-total">
-            <span className="star">★</span> {bal}
-            <i> of {earned(wallet)} earned</i>
-          </div>
+      <div className={`map-top ${skin}`}>
+        <div className="topbar">
+          <span>Staff</span>
+          <button onClick={onBack}>← Map</button>
         </div>
-        <div className="map-side">
-          <div className="map-kicker">
-            {wallet.spent} spent of {treeCost()}
+        <div className="rule2" />
+        <div className="map-head">
+          <div>
+            <div className="map-kicker">Stars to spend</div>
+            <div className="map-total">
+              <span className="star">★</span> {bal}
+              <i> of {earned(wallet)} earned</i>
+            </div>
           </div>
-          {wallet.spent > 0 ? (
-            <button className="map-link danger" onClick={() => setAskRespec(true)}>
-              Reset spending · refund {wallet.spent}★
-            </button>
-          ) : null}
+          <div className="map-side">
+            <div className="map-kicker">
+              {wallet.spent} spent of {treeCost()}
+            </div>
+            {wallet.spent > 0 ? (
+              <button className="map-link danger" onClick={() => setAskRespec(true)}>
+                Reset spending · refund {wallet.spent}★
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
       <div className="lede">

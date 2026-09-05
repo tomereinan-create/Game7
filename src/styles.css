@@ -1632,7 +1632,9 @@ button {
 @media (min-width: 900px) {
   html,
   body {
-    font-size: 18.75px;
+    /* His ruling: "Make the font bigger." The desk multiplier was 1.5x the phone's 12.5px; it is
+       1.76x now, and every screen that sizes its own type in px is scaled to match below. */
+    font-size: 22px;
   }
   #root,
   .sheet > *,
@@ -1694,8 +1696,12 @@ button {
   .mini {
     font-size: 14px;
   }
-  body.wide #root {
-    max-width: 1480px;
+  /* FULL SCREEN (his ruling, on the map: "Make it full screen", and on the front door: "Make the
+     home screen full screen as well"). The desk column was 1480px with black gutters either side;
+     `wide` now means the window, and the screens that opt in lay themselves out across it. */
+  body.wide #root,
+  body.tunnel #root {
+    max-width: none;
   }
   body.wide .topbar,
   body.wide .ladder {
@@ -2388,6 +2394,10 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* ---- staff tree: hex trellis ---- */
 .treewrap { overflow-x: auto; overflow-y: hidden; padding: 2px 0 6px; -webkit-overflow-scrolling: touch; }
 .treesvg { display: block; height: auto; max-width: 100%; }
+/* THE TRELLIS keeps a size, even though its page went full screen: the hexes are drawn in a 512
+   unit space, and stretched to a 1900px window one node is the size of a hand. The room around it
+   is the skin's, which is the point of the ruling — the trellis itself is capped and centred. */
+@media (min-width: 900px) { .treewrap { display: flex; justify-content: center; } .treesvg { max-width: 1020px; } }
 .treeline { stroke: var(--line-2); stroke-width: 3; stroke-linecap: round; }
 .treeline.half { stroke: var(--line-3); }
 .treeline.lit { stroke: var(--you-line); stroke-width: 4; }
@@ -3473,24 +3483,49 @@ body.tunnel .rung { background: #1c1a16; }
    would have: written above them it lost the cascade and every ticket stayed its phone size.
    ========================================================================== */
 @media (min-width: 900px) {
-  /* The map's own ceiling, under body.wide's 1480 (his ruling: "Now its a little bit too big").
-     The draft and My team keep the full 1480 — this narrows the ONE screen that sprawled at it. */
-  body.wide.map #root { max-width: 1150px; }
+  /* THE SNAKE'S TICKETS. A row is ~190px of pitch wide per level, so the paper grows to fill it —
+     and his ruling "Make the font bigger" is spent here first: this is the type he actually reads
+     off the map. Everything below is one step up from the 1150px column these were cut for. */
   .node.arena .ticket,
-  .node.wood .ticket { width: 104px; padding: 9px 8px 8px; }
-  .node.arena.now .ticket { width: 118px; padding: 10px 8px 9px; }
-  .node.wood.now .ticket { width: 122px; padding: 22px 0 9px; }
-  .node.wood.locked .ticket { padding: 9px 8px 8px; }
-  .node .ticket-n { font-size: 30px; }
+  .node.wood .ticket { width: 132px; padding: 12px 10px 10px; }
+  .node.arena.now .ticket { width: 148px; padding: 13px 10px 11px; }
+  .node.wood.now .ticket { width: 152px; padding: 26px 0 11px; }
+  .node.wood.locked .ticket { padding: 12px 10px 10px; }
+  .node .ticket-n { font-size: 40px; }
   .node.arena.now .ticket-n,
-  .node.wood.now .ticket-n { font-size: 34px; }
-  .node .ticket-stub { font-size: 9.5px; }
-  .node .ticket-next { font-size: 9px; }
-  .node .ticket-champ { font-size: 9px; }
-  .node .node-stars { font-size: 15px; gap: 2px; }
-  .node.wood .ticket-stub .ab { height: 21px; line-height: 21px; }
-  .node.wood.now .ticket-stub .ab { height: 21px; line-height: 21px; }
+  .node.wood.now .ticket-n { font-size: 45px; }
+  .node .ticket-stub { font-size: 12.5px; }
+  .node .ticket-next { font-size: 11px; }
+  .node .ticket-champ { font-size: 11px; }
+  .node .node-stars { font-size: 20px; gap: 3px; }
+  .node.wood .ticket-stub .ab { height: 26px; line-height: 26px; }
+  .node.wood.now .ticket-stub .ab { height: 26px; line-height: 26px; }
+  /* the map's own chrome, one step up with them */
+  .map-kicker { font-size: 14px; }
+  .map-link { font-size: 14px; }
+  .map-total { font-size: 68px; }
+  .map-total i { font-size: 24px; }
+  .map-total .star { font-size: 44px; }
+  button.map-total .a { font-size: 26px; }
+  .map-foot .cap { font-size: 14px; }
+  .node-note { font-size: 13px; padding: 9px 13px; }
+  .era-band em { font-size: 11px; }
+  .era-band b { font-size: 26px; }
+  .era-band i { font-size: 11.5px; }
+  .era-band.arena b { font-size: 26px; }
+  .era-band.wood b { font-size: 21px; }
+  .era-band.wood i, .era-band.wood em { font-size: 11px; }
 }
+
+.node-notes {
+  width: auto;
+  max-width: 340px;
+  left: auto;
+  right: auto;
+  transform: translate(-50%, 0);
+  align-items: center;
+}
+.node-notes.left, .node-notes.right { left: auto; right: auto; align-items: center; }
 
 /* ==========================================================================
    THE CHROME — header, era banners, notices and foot, in whichever skin the
@@ -3576,6 +3611,198 @@ body.tunnel .rung { background: #1c1a16; }
 .node.arena.locked { opacity: 0.5; }
 .node.wood.locked { opacity: 0.55; }
 
-.freshness-probe-53503 {
-  color: #123456;
+/* ==========================================================================
+   THE SNAKE'S FURNITURE. The trail used to climb one column and leave both margins empty, which
+   is where the era banners and the star notice lived. A row runs wall to wall now, so both are
+   planted at the level they belong to instead of pinned to a wall: the banner in the empty band
+   above its era's first ticket, the notice above tonight's.
+   ========================================================================== */
+/* The banner is a rule ACROSS the map now, drawn on the seam where the floor changes skin: era,
+   name and years on one line in the middle of it, a hairline running out to both walls. The old
+   per-skin shapes — the arena's lit caption, the hardwood's notched cream flag — were cut for a
+   free margin beside a climbing column, and there is no margin any more. */
+.era-band {
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: none;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0 12px;
+  padding: 0 4px;
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  text-align: center;
+  flex-wrap: nowrap;
 }
+.era-band.left, .era-band.right { left: 0; right: 0; padding: 0 4px; }
+.era-band em, .era-band b, .era-band i { display: inline; width: auto; order: 0; line-height: 1.1; }
+.era-band em::before { content: none; }
+/* the hardwood flag was a cream card with a notch cut toward the trail — it is the same rule as
+   every other block now, in the hardwood's own cream ink */
+.era-band.wood { max-width: none; flex-wrap: nowrap; padding: 0 4px; background: none; box-shadow: none; }
+.era-band.wood.left, .era-band.wood.right { padding: 0 4px; clip-path: none; justify-content: center; }
+.era-band.wood b { width: auto; color: #f6eedd; text-align: center; }
+.era-band.wood i, .era-band.wood em { color: #b39f83; }
+/* the two hairlines. .arena already spent its ::after on a rule under the caption — it is the
+   right-hand half of this one now, and ::before is its mirror. */
+.era-band::before,
+.era-band::after {
+  content: '';
+  display: block;
+  flex: 1 1 auto;
+  height: 1px;
+  margin: 0;
+  min-width: 24px;
+  background: currentColor;
+  opacity: 0.3;
+}
+.era-band.arena::before { margin: 0; background: linear-gradient(90deg, transparent, #ff7434); opacity: 0.6; }
+.era-band.arena::after { margin: 0; background: linear-gradient(270deg, transparent, #ff7434); opacity: 0.6; }
+
+/* ==========================================================================
+   THE SKIN, WORN OFF THE MAP (his ruling: "Make the skill tree and the drafting (spin) the same
+   design as your current stage"). The map has worn one skin per block of thirty since the four
+   skins landed; the two screens it opens into — the staff tree and the draft — now wear the same
+   one, so walking off a ticket into a draft is the same room and not a new building.
+
+   Stated as TOKENS on the body rather than as a skinned copy of each screen. Every card, rule,
+   label and dial on those screens is already painted out of --bg / --surface / --ink / --you, so
+   re-pointing those eight variables re-skins the whole screen at once and nothing has to be kept
+   in sync. The page's own ground comes with it, fixed, so it does not slide under a long scroll.
+   ========================================================================== */
+body[class*='sk-'] { background-attachment: fixed; background-repeat: no-repeat; background-size: cover; }
+
+/* 1b ARENA NIGHTS — cold blue house light, ember ink */
+body.sk-arena {
+  --bg: #0a0e17;
+  --surface: #141b28;
+  --surface-2: #1b2334;
+  --line: #232d40;
+  --line-2: #2d3850;
+  --line-3: #41506e;
+  --divider: #1a2231;
+  --ink: #eef2f8;
+  --ink-2: #c6d0e0;
+  --muted: #93a0b4;
+  --muted-2: #8592a6;
+  --faint: #6b788c;
+  --you: #ff8a4d;
+  --you-tint: #24160c;
+  --you-line: #6b3a1c;
+  --you-ink: #1a0c03;
+  --danger: #ff5d6c;
+  background-color: #0a0e17;
+  background-image:
+    radial-gradient(880px 620px at 72% 8%, rgba(96,140,255,0.18), transparent 70%),
+    radial-gradient(760px 580px at 12% 62%, rgba(255,116,52,0.09), transparent 70%);
+}
+/* 1c HARDWOOD PRIME — lacquered boards under the house lights, cream ink */
+body.sk-wood {
+  --bg: #261608;
+  --surface: #32200e;
+  --surface-2: #3c2712;
+  --line: #4a3118;
+  --line-2: #5a3d20;
+  --line-3: #75512c;
+  --divider: #33210f;
+  --ink: #f6eedd;
+  --ink-2: #e0cfb0;
+  --muted: #b39f83;
+  --muted-2: #a08d73;
+  --faint: #7d6c54;
+  --you: #ffcf7d;
+  --you-tint: #2e1d0a;
+  --you-line: #7a5824;
+  --you-ink: #241408;
+  background-color: #261608;
+  background-image:
+    radial-gradient(150% 90% at 50% 20%, transparent 55%, rgba(0,0,0,0.42)),
+    repeating-linear-gradient(90deg, rgba(255,205,150,0.05) 0 2px, transparent 2px 47px),
+    repeating-linear-gradient(90deg, #2b1a0c 0 47px, #251507 47px 94px, #2f1d0e 94px 141px);
+}
+/* 2b BANNER HALL — an unlit hall under the rafters, two spotlights down from the roof */
+body.sk-hall {
+  --bg: #150c06;
+  --surface: #241409;
+  --surface-2: #2e1b0c;
+  --line: #3a2412;
+  --line-2: #4a2f18;
+  --line-3: #644023;
+  --divider: #26160a;
+  --ink: #f4e8cf;
+  --ink-2: #dbc9a6;
+  --muted: #b19a76;
+  --muted-2: #9c8768;
+  --faint: #7a6549;
+  --you: #f2d79b;
+  --you-tint: #2b1c0b;
+  --you-line: #6f5427;
+  --you-ink: #1d1206;
+  background-color: #150c06;
+  background-image:
+    radial-gradient(600px 900px at 30% 0%, rgba(255,220,160,0.10), transparent 72%),
+    radial-gradient(600px 940px at 82% 4%, rgba(255,220,160,0.07), transparent 72%),
+    linear-gradient(180deg, #120a05 0%, #1c0f07 60%, #241209 100%);
+}
+/* 2a TWILIGHT DYNASTY — dusk over the arena, mint low and violet high */
+body.sk-dusk {
+  --bg: #0a1f2a;
+  --surface: #102c36;
+  --surface-2: #163643;
+  --line: #1d4351;
+  --line-2: #245264;
+  --line-3: #336d81;
+  --divider: #12303b;
+  --ink: #eefaf4;
+  --ink-2: #c3ded6;
+  --muted: #8fb4ab;
+  --muted-2: #7ea49b;
+  --faint: #648a83;
+  --you: #3ee6b0;
+  --you-tint: #0b2a26;
+  --you-line: #1f6e5b;
+  --you-ink: #04231b;
+  background-color: #0a1f2a;
+  background-image:
+    radial-gradient(860px 620px at 78% -6%, rgba(62,230,176,0.14), transparent 70%),
+    radial-gradient(840px 720px at 8% 62%, rgba(157,123,255,0.12), transparent 72%),
+    linear-gradient(180deg, #071518 0%, #0a1f2a 45%, #1b1440 100%);
+}
+/* the staff tree's own header pins the same way the map's does, so the skin reaches the top rule */
+body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
+
+/* ==========================================================================
+   THE FRONT PAGE, FULL SCREEN (his ruling: "Make the home screen full screen as well"). The three
+   campaigns stop being three full-width rules stacked down a 1900px window and become the slate
+   they are named after — one column each, read across.
+   ========================================================================== */
+.mast { justify-content: flex-end; }
+.slate-main { display: grid; gap: 0; }
+@media (min-width: 900px) {
+  .slate-main { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; align-items: start; }
+  .slate-main .slate-row { height: 100%; }
+  .slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; }
+  .slate-grid.book { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* the masthead and the hero keep a readable measure inside the full-width page */
+  body.tunnel .hero.front { max-width: 1100px; }
+  body.tunnel .hero.front p { max-width: 720px; }
+  .hero.front h1 { font-size: 108px; }
+  body.tunnel .hero.front h1 { font-size: 108px; }
+  .hero.front p { font-size: 21px; }
+  .slate-name b { font-size: 30px; }
+  .slate-sub { font-size: 15px; }
+  .slate-tag, .slate-status, .slate-n { font-size: 12.5px; }
+  .slate-row.half b { font-size: 24px; }
+  .slate-row.half em { font-size: 12px; }
+  .mast { font-size: 12px; }
+  .alltime { font-size: 12px; }
+  .section-rule span { font-size: 13px; }
+  .mode-opt b { font-size: 13px; }
+  .mode-opt i { font-size: 14px; }
+  .mode-cap { font-size: 12px; }
+}
+

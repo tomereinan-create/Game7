@@ -192,6 +192,33 @@ export function saveProgress(m: CampaignMode, p: Progress) {
   }
 }
 
+/**
+ * THE STARS DOOR (his ruling: "Win all the games with 1 star so I can see the design of the latter
+ * stages"). Load the game with `?stars=1` and every level of every campaign is marked cleared at
+ * one star, which unlocks the whole ladder and lets the map be walked to the top — the blocks at
+ * 61 and 91 are otherwise a hundred levels of play away from being seen at all.
+ *
+ * A URL FLAG rather than a button on the map: the map has one destructive control already (Reset
+ * this campaign) and a second one that overwrites every save is not furniture the game should
+ * carry around. `?stars=0` puts the ladder back to uncleared, and the flag is written into the
+ * save, so it survives the reload and does not have to be typed twice.
+ *
+ * Returns true when it fired, so the caller knows the saves it just read are stale.
+ */
+export function starsFromUrl(all: Record<CampaignMode, Progress>): boolean {
+  if (typeof window === 'undefined') return false
+  const raw = new URLSearchParams(window.location.search).get('stars')
+  if (raw === null) return false
+  const n = Math.max(0, Math.min(3, Math.round(Number(raw))))
+  if (!Number.isFinite(n)) return false
+  for (const m of MODES) {
+    const p = { ...all[m], stars: all[m].stars.map(() => n) }
+    saveProgress(m, p)
+    all[m] = p
+  }
+  return true
+}
+
 export function resetProgress(m: CampaignMode): Progress {
   const p = fresh()
   saveProgress(m, p)

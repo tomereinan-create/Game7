@@ -38,8 +38,8 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
   }, [])
   return (
     <>
+      {/* His ruling: the roguelike line goes. The masthead keeps the years and nothing else. */}
       <div className="mast">
-        <span>A basketball draft roguelike</span>
         <i>1980–2026</i>
       </div>
       <div className="hero front">
@@ -75,43 +75,47 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
         <i />
       </div>
 
-      <button className="slate-row" onClick={() => onPick('campaign')}>
-        <div className="slate-top">
-          <span className="slate-name">
-            <span className="slate-n">01</span>
-            <b>Campaign</b>
-          </span>
-          <em className="slate-tag">{tally(progress.campaign) ?? 'PLAY →'}</em>
-        </div>
-        <div className="ladder slate-ladder">
-          {Array.from({ length: ROUNDS }, (_, i) => (
-            <span key={i} className={`rung ${progress.campaign.stars[i] > 0 ? 'done' : i + 1 === cur ? 'now' : ''}`} />
-          ))}
-        </div>
-        <span className="slate-status">{cur ? `Level ${cur} is up` : 'All cleared'}</span>
-      </button>
+      {/* THE SLATE, three across on a desk (his ruling: the front page goes full screen too). One
+          campaign per column rather than three full-width rules stacked down a 1900px window. */}
+      <div className="slate-main">
+        <button className="slate-row" onClick={() => onPick('campaign')}>
+          <div className="slate-top">
+            <span className="slate-name">
+              <span className="slate-n">01</span>
+              <b>Campaign</b>
+            </span>
+            <em className="slate-tag">{tally(progress.campaign) ?? 'PLAY →'}</em>
+          </div>
+          <div className="ladder slate-ladder">
+            {Array.from({ length: ROUNDS }, (_, i) => (
+              <span key={i} className={`rung ${progress.campaign.stars[i] > 0 ? 'done' : i + 1 === cur ? 'now' : ''}`} />
+            ))}
+          </div>
+          <span className="slate-status">{cur ? `Level ${cur} is up` : 'All cleared'}</span>
+        </button>
 
-      <button className="slate-row" onClick={() => onPick('salary')}>
-        <div className="slate-top">
-          <span className="slate-name">
-            <span className="slate-n">02</span>
-            <b>Salary Cap Campaign</b>
-          </span>
-          <em className="slate-tag">{tally(progress.salary) ?? 'PLAY →'}</em>
-        </div>
-        <span className="slate-sub">The same {ROUNDS} levels — every card priced that year, the five held under the cap.</span>
-      </button>
+        <button className="slate-row" onClick={() => onPick('salary')}>
+          <div className="slate-top">
+            <span className="slate-name">
+              <span className="slate-n">02</span>
+              <b>Salary Cap Campaign</b>
+            </span>
+            <em className="slate-tag">{tally(progress.salary) ?? 'PLAY →'}</em>
+          </div>
+          <span className="slate-sub">The same {ROUNDS} levels — every card priced that year, the five held under the cap.</span>
+        </button>
 
-      <button className="slate-row" onClick={() => onPick('death')}>
-        <div className="slate-top">
-          <span className="slate-name">
-            <span className="slate-n">03</span>
-            <b>Death Match Campaign</b>
-          </span>
-          <em className="slate-tag danger">{tally(progress.death) ?? 'ONE LIFE'}</em>
-        </div>
-        <span className="slate-sub">One five, carried the whole way — change a single man before each level. Lose and the run is over.</span>
-      </button>
+        <button className="slate-row" onClick={() => onPick('death')}>
+          <div className="slate-top">
+            <span className="slate-name">
+              <span className="slate-n">03</span>
+              <b>Death Match Campaign</b>
+            </span>
+            <em className="slate-tag danger">{tally(progress.death) ?? 'ONE LIFE'}</em>
+          </div>
+          <span className="slate-sub">One five, carried the whole way — change a single man before each level. Lose and the run is over.</span>
+        </button>
+      </div>
 
       <div className="slate-grid">
         <button className="slate-row half" onClick={() => onPick('custom')}>
