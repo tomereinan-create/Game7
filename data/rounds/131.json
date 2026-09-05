@@ -1,0 +1,130 @@
+{
+  "round": 131,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "What I dont like, is Malone being 69 OFF with 25 ppg on not bad eff.",
+  "title": "the fouls a man draws and the offensive glass he owns are PAINT DAMAGE, and o_score priced them only as side skills — the zone block is now floored at that evidence, and Moses Malone '85 off 69 -> 78, inside his 80 +-4 band, with all 132 anchors held and every high-rim card in the class unmoved BY CONSTRUCTION",
+  "subject": "Moses Malone '85",
+  "scale": "off",
+  "target": 80,
+  "tol": 4,
+  "before": 69,
+  "after": 78,
+  "pipeline_version": 131,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pe = 0\\.5 \\* \\(a\\['fouldraw'\\] \\* a\\['ft'\\] / 100\\) \\+ 0\\.5 \\* a\\['orb'\\]",
+      "label": "recal_131 — THE PAINT EVIDENCE: half the standard path's own free-throw term, half the offensive glass",
+      "note": "new. Evenly, because it takes BOTH — a foul-drawing guard has no glass and a putback man draws no fouls, so the pair is the interior scorer's signature and no position gate is needed"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pblk = 0\\.22 \\* z\\[0\\] \\+ 0\\.08 \\* z\\[1\\]",
+      "label": "the zone block that is floored — z[0]'s own 0.22 plus z[1]'s own 0.08, the two zones the pre-1997 model INFERS",
+      "note": "new. 0.30 is not a new number; the third zone is excluded because three-point shooting is measured in every era this file carries"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = max\\(std, std \\+ _pz \\* \\(0\\.30 \\* _pe - _pblk\\)\\)",
+      "label": "a max(), so it can only ever LIFT — every card whose zone block already exceeds the evidence is untouched",
+      "note": "new. Moses '82 (rim 95), Ewing '90 (97), Kareem '80 (98), Barkley '90 (97), Robinson '92 (97), Shaq '00 (99) and Hakeem '90 (85) all move by EXACTLY zero"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PZ_V_LO, PZ_V_HI = 55\\.0, 80\\.0",
+      "label": "the load ramp — this term begins exactly where the file's low-usage terms end",
+      "note": "new. recal_64, recal_107 and recal_112 are all gated `volume < 55`, so this term and those three are DISJOINT by construction and no card is paid twice"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PZ_E_LO, PZ_E_HI = 45\\.0, 65\\.0",
+      "label": "the conversion ramp — 45 IS the league's own rate, measured on the pool, not chosen",
+      "note": "new. efficiency 45 has median ts_rel .566 against a league mean of .570; efficiency 65 is .598, three points of true shooting above it. Hakeem '90 carries the same load on efficiency 57 and does not move"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
+      "label": "recal_89's LOCKED DIAL STATE — the standard path is BYTE-IDENTICAL",
+      "note": "no weight moved; this round adds a floor and nothing else"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "TL_MID_LO, TL_MID_HI = 55\\.0, 70\\.0",
+      "label": "recal_107's two-level big, untouched",
+      "note": "its `volume < 55` gate is the other side of this round's 55 hinge"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+      "label": "the band anchors are UNTOUCHED — no card above the knee moved and nothing was re-derived",
+      "note": "recal_90's cost is not paid by this round"
+    }
+  ],
+  "expect": [
+    { "card": "Moses Malone '82", "scale": "off", "op": "~", "value": 86, "tol": 1, "label": "the same man, the same shape, rim 95 — his zone block already exceeds the evidence" },
+    { "card": "Hakeem Olajuwon '90", "scale": "off", "op": "~", "value": 73, "tol": 1, "label": "the same load (volume 89) on efficiency 57 — the conversion ramp and his own low free-throw draw hold him" },
+    { "card": "Patrick Ewing '90", "scale": "off", "op": "~", "value": 85, "tol": 1, "label": "rim 97, orb 63 — unmoved" },
+    { "card": "Shaquille O'Neal '00", "scale": "off", "op": "==", "value": 99, "label": "the pinned summit of the class" },
+    { "card": "Cedric Maxwell '80", "scale": "off", "op": "~", "value": 67, "tol": 4, "label": "recal_112's subject: fouldraw 98 and orb 84, but volume 27 puts him at share 0.00" },
+    { "card": "Deandre Ayton '26", "scale": "off", "op": "~", "value": 58, "tol": 3, "label": "recal_107's subject, on the other side of the 55 hinge" },
+    { "card": "Clint Capela '17", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "recal_51's pin" },
+    { "card": "Domantas Sabonis '21", "scale": "off", "op": "~", "value": 71, "tol": 1, "label": "recal_55's pin" },
+    { "card": "Rudy Gobert '19", "scale": "def", "op": "~", "value": 92, "tol": 1, "label": "DEF moves on zero cards" },
+    { "card": "Moses Malone '85", "scale": "def", "op": "==", "value": 88, "label": "the subject's own defence is untouched" },
+    { "card": "Moses Malone '85", "scale": "attr:rim", "op": "==", "value": 60, "label": "no attribute moved: the ratified pre-1997 zone compression is NOT touched" }
+  ],
+  "order": [
+    { "scale": "off", "above": "Moses Malone '82", "below": "Moses Malone '85", "label": "the 31-point season still reads above the 24-point one" },
+    { "scale": "off", "above": "Shaquille O'Neal '00", "below": "Moses Malone '85" },
+    { "scale": "off", "above": "Patrick Ewing '90", "below": "Moses Malone '85" },
+    { "scale": "off", "above": "Moses Malone '85", "below": "Hakeem Olajuwon '90", "label": "the ruling's own sentence: 25 ppg on not bad eff outranks 24 ppg on bad eff" }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 103,
+    "max_abs": 9,
+    "top": [
+      ["Moses Malone '85", 69, 78],
+      ["Moses Malone '87", 70, 77],
+      ["Moses Malone '86", 68, 75],
+      ["Moses Malone '88", 70, 76],
+      ["Moses Malone '84", 71, 77],
+      ["Zydrunas Ilgauskas '05", 64, 70],
+      ["Shawn Kemp '97", 70, 75],
+      ["Jimmy Butler '20", 76, 79],
+      ["Karl-Anthony Towns '26", 76, 79],
+      ["Kevin Love '11", 75, 78]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "OFF_TOP and DEF_TOP are NOT re-derived: every mover is below the knee, so recal_90's cost is not paid here.",
+    "The 55-volume hinge is now load-bearing on BOTH sides. recal_64, recal_107 and recal_112 pay below it and this term pays above it; a later round that moves 55 in either term must move it in the other or the two populations overlap.",
+    "The paint evidence reads `fouldraw`, `ft` and `orb`, which are also standard-path terms at 0.11 and 0.06. A later round that reweights any of those three changes the floor as well as the path.",
+    "78 is inside 80 +-4 but is not the centre. The reachable ceiling on the honest form of this term is ~79 (tilting the evidence toward the glass); reaching 80+ needs the floor to claim the THIRD zone as well, which takes Moses Malone '82 to 87, the outer edge of his 86 +-1 pin. Reported, not applied."
+  ],
+  "notes": [
+    "WHY HE READ 69, decomposed: o_score 74.64 x 0.93 = 69.4. The zone block is the whole of it — rim 60 at 0.22 = 13.20 and mid 50 at 0.08 = 4.00, against his own '82 card's 20.90 + 5.36 on the same usage (26.9 against 28.7) and the same true shooting (.570 against .578). recal_37's dominance bonus cannot fire for him either: its shape gate needs z[0] > z[1] + z[2] AND z[0] >= 91, and his best zone is 60.",
+    "The bar is not this agent's to move. rim and mid are MEASURED from the shot tables only from 1997; before that build_ratings.py infers them from a model fitted on 1997-2005 and regressed toward each season's mean — the compression RATINGS_UPDATE.md ratifies. Nothing in this round touches an attribute; the attribute sheet is byte-identical on all 10,000 cards.",
+    "The defect the round fixes is general, not an era patch: recal_46 already wrote it down one term up the file — 'A paint weapon's damage is mostly OFF the shot — fouls drawn, offensive boards, the defence he collapses — and the standard path prices almost none of it' — but paid it only through recal_37's SHAPE gate on the zone vector, which is exactly the number that is wrong about this card. 66 of the 103 movers are MEASURED-era cards.",
+    "REJECTED, measured on the whole pool. (1) A re-weighted POST-SCORER floor (0.34 volume + 0.26 efficiency + 0.26 free throws + 0.18 orb + 0.12 ballsec, r91's 1.16 total) reaches Moses '85 at 77 but takes Moses '82 from 85 to 90 and breaks his recal_52 pin, because '82 leads '85 on every input the floor reads. (2) Flooring z[0] ALONE at the evidence tops out at +8.0 of o_score even at z0 = 99 and cannot honestly claim a 99 rim bar. (3) Lifting the global efficiency weight is the same wall recal_91, recal_98 and recal_112 all hit and is recorded there.",
+    "The class was read before the term was chosen: Moses '82/'83/'85, Kareem '80/'85, Hakeem '90, Ewing '90, Robinson '92, Shaq '00, Karl Malone '97, Barkley '90. Every one of them except the subject and Moses '83 (77 -> 79) is unmoved, and each is unmoved for the same reason — his zone block already stands above what his free throws and his offensive glass can claim."
+  ]
+}
