@@ -66,7 +66,8 @@ python files to `N`. The copies that must all change together: `data/players_sta
   accepted round in a batch.
 - `PIPELINE_VERSION`: leave the constant at whatever main has. The integrator stamps
   `src/data/pipeline.json` and both python constants with the HIGHEST round number in the batch
-  after the single merged regeneration. A round file's `pipeline_version` is therefore the number
+  after the single merged regeneration — and never lower than the previous stamp (a late batch of
+  lower-numbered rounds keeps the current version, so the stamp is monotonic and older receipts hold). A round file's `pipeline_version` is therefore the number
   the integrator will stamp — write your own round number and the integrator fixes it up.
 - Data files, anchors.json, tactics taxes: commit yours (they prove the round on your branch); the
   integrator discards data conflicts by regenerating, rebuilds anchors.json programmatically from

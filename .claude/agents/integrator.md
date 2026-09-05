@@ -27,8 +27,8 @@ guarantees nobody else is editing it) — or in the worktree named.
    supersessions (the round files record them) — never git's text merge.
 5. `npm run harness`; re-ratify only the taxes that break, in the file's own comment style, listing
    the prior values.
-6. Stamp `PIPELINE_VERSION` in both python files and `src/data/pipeline.json` with the highest round
-   number in the batch; set each batched round file's `pipeline_version` to that number.
+6. Stamp `PIPELINE_VERSION` in both python files and `src/data/pipeline.json` with max(previous stamp,
+   highest round number in the batch) — monotonic, so older rounds' `>=` receipt lines keep passing; set each batched round file's `pipeline_version` to that number.
 7. Verify: `npm run anchors` (0 failing), `npm run receipts` (whole ledger — every batched round
    must be clean; pre-existing MISS lines in old hand-written blocks are known), `npm test`,
    `npx tsc -b`, `npm run ticker-check`, `npm run scout -- --base origin/main` (the batch's true
