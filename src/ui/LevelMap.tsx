@@ -1,11 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-
-/**
- * useLayoutEffect, except on the server, where it does nothing and React says so loudly. The map
- * is server-rendered by tests/map.test.ts, and both of the effects below are pure measurement and
- * body classes — there is nothing for a server pass to do — so it falls back to useEffect there.
- */
-const useLayout = typeof window === 'undefined' ? useEffect : useLayoutEffect
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLayout } from './useLayout'
 import { ROUNDS } from '../config'
 import type { Opponent } from '../engine/types'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
