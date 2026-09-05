@@ -119,7 +119,7 @@ describe('defensive assignment — naive vs optimal', () => {
     }
   })
 
-  it('differs by ≥ 3 DRtg against a five-out opponent and ≤ 1 against a paint opponent', () => {
+  it('differs by ≥ 3 DRtg against a five-out opponent, and several times less against a paint opponent', () => {
     // Five-out: LAC (every starter out ≥ 59); the man the naive coach parks the anchor on is a shooter.
     const lac = opp.find((o) => o.ab === 'LAC')!.players
     const map = naiveAssignment(wall, lac)
@@ -128,16 +128,32 @@ describe('defensive assignment — naive vs optimal', () => {
     expect(Math.min(...fiveOut.map((p) => p.attrs['3pt']))).toBeGreaterThanOrEqual(45)
     const a = defenseVs(wall, fiveOut, 'optimal').drtg
     const b = defenseVs(wall, fiveOut, 'naive').drtg
-    // Paint: WAS (worst shooter out 31) — the anchor's man is the non-shooter either way.
+    // Paint: WAS, level 1 — the anchor's man is the board's non-shooter under either assignment.
     const was = opp[0].players
     const c = defenseVs(wall, was, 'optimal').drtg
     const d = defenseVs(wall, was, 'naive').drtg
     console.log(`  five-out  optimal ${a.toFixed(2)} naive ${b.toFixed(2)} gap ${(b - a).toFixed(2)} | paint  optimal ${c.toFixed(2)} naive ${d.toFixed(2)} gap ${(d - c).toFixed(2)}`)
     expect(b - a).toBeGreaterThanOrEqual(3)
-    // r60: EVERY pairing generates edge, so naive pays a little against paint fives too — the old
-    // <= 1 recorded a world where only the anchor's spot mattered. Still far below the five-out gap.
-    expect(Math.abs(d - c)).toBeLessThanOrEqual(2.5)
-    expect(b - a).toBeGreaterThan(Math.abs(d - c))
+    /**
+     * r60: EVERY pairing generates edge, so naive pays a little against paint fives too — the old
+     * <= 1 recorded a world where only the anchor's spot mattered. Still far below the five-out gap.
+     *
+     * recal_142 RE-RECORDED THIS RAIL, 2.5 -> 6, and the reason is the round's own doing: the ladder
+     * now fields each team's BEST LEGAL FIVE (bestfive.ts's startingFive, what the Team DB shows)
+     * instead of its five highest-minute men, and the Wizards' board picked up Kyshawn George and
+     * Justin Champagnie for Bilal Coulibaly and Will Riley. Their worst shooter went from out 31 to
+     * 3pt 35 and the naive/optimal gap went 0.08 -> 5.45.
+     *
+     * It is a finding about the naive board, not about the level, and it is worth the next round's
+     * attention: under the minutes rule four of the thirty levels had a gap under 0.4 (MIA 0.00, WAS
+     * 0.08, TOR 0.11, CHI 0.33), because the naive slot-order board happened to agree with the
+     * optimal one. Under the best-five rule NONE do — the smallest gap on the whole tier is Miami's
+     * 4.30 and the median is 18.46 — because a coherent best five is more lopsided, so parking the
+     * anchor by slot order costs real points against everyone. The claim the test exists to make
+     * survives intact and by a wide margin: 35.21 against a five-out board, 5.45 against this one.
+     */
+    expect(Math.abs(d - c)).toBeLessThanOrEqual(6)
+    expect(b - a).toBeGreaterThan(3 * Math.abs(d - c))
   })
 
   it('a broken manual map is scored as the naive board, never as optimal', () => {

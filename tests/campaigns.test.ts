@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import CAMPAIGNS from '../src/data/campaigns.json'
+import PLAYERS from '../src/data/players_stats.json'
+import WHEEL from '../src/data/teamseasons.json'
 import { ROUNDS } from '../src/config'
 import { LEVELS, ERAS } from '../src/App'
+import { startingFive } from '../src/engine/bestfive'
+import { seasonGauges } from '../src/engine/gauges'
 import { ratings100 } from '../src/engine/offense'
 import type { Opponent, Player } from '../src/engine/types'
 
@@ -17,10 +21,24 @@ const pct = (r: string) => {
   const [w, l] = r.split('–').map(Number)
   return w / (w + l)
 }
-/** Where a five sits on the all-time dial — the number tiers 1, 2 and 4 are ordered by. */
+/** Where a five sits on the all-time dial — the number tier 4 is ordered by, and tier 2's tie-break. */
 const net = (o: Opponent) => {
   const r = ratings100(o.players as Player[])
   return r.offRaw - r.drtgRef
+}
+/**
+ * The Team DB's own OVR (TeamDb.tsx ovrOf): the mean of the era-relative OFF and DEF dials, read in
+ * the five's own season. recal_142 makes it the key tier 2 climbs by.
+ */
+const dialOvr = (o: Opponent) => {
+  const g = seasonGauges(o.players as Player[], o.season!)
+  return Math.round((g.off + g.def) / 2)
+}
+/** The roster the Team DB feeds startingFive for a real team-season. */
+const BY_NAME = new Map((PLAYERS as unknown as Player[]).map((p) => [p.name, p]))
+const rosterOf = (o: Opponent) => {
+  const t = (WHEEL as { y: number; ab: string; p: string[] }[]).find((x) => x.y === o.season && x.ab === o.ab)
+  return (t?.p ?? []).map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)
 }
 /** The talent a side puts on the floor — the key tier 3 climbs by (recal_113). */
 const sumOvr = (o: Opponent) => (o.players as Player[]).reduce((a, p) => a + p.ovr, 0)
@@ -65,14 +83,51 @@ describe('one ladder of four tiers', () => {
     for (const l of LEVELS) expect(l.era).toBeTruthy()
   })
 
-  it('tier 1 is last season, worst record first — unchanged by the new ladder', () => {
+  it('tier 1 is last season, worst REAL record first — its own key, not a reading off the engine', () => {
     const t = tiers[0]
     const yr = Math.max(...t.levels.map((o) => o.season!))
     for (const o of t.levels) expect(o.season).toBe(yr)
     expect(t.levels.every((o, i) => i === 0 || pct(o.record!) >= pct(t.levels[i - 1].record!))).toBe(true)
   })
 
-  it('tier 2 is every champion 1980–2025 plus the elite that never won, weakest net first', () => {
+  /**
+   * recal_142, ORCHESTRATOR'S DEFAULT on his "Dont ask me about campaigns order, do whatever you
+   * want there": a tier-1 or tier-2 level fields THE FIVE THE TEAM DB SHOWS — bestfive.ts's
+   * startingFive() over the whole roster, the legal PG-to-C board that maximizes total OVR — instead
+   * of the five highest-minute men. 58 of the 90 levels changed men: the Heat '06 opened the
+   * Champions tier without Shaquille O'Neal, the Bulls '98 without Scottie Pippen.
+   *
+   * Seven rosters (six of last season's thirty and the Warriors '18) have a slot no rostered card is
+   * listed at, so the strict board cannot be filled and the ladder relaxes positions one step, the
+   * way it always has. Those are the only levels allowed to differ from startingFive.
+   */
+  it('tiers 1 and 2 field the Team DB five — startingFive over the whole roster', () => {
+    let matched = 0
+    let relaxed = 0
+    for (const t of [tiers[0], tiers[1]]) {
+      for (const o of t.levels) {
+        const roster = rosterOf(o)
+        expect(roster.length).toBeGreaterThanOrEqual(5)
+        const sf = startingFive(roster).five.filter((p): p is Player => !!p)
+        const shown = (o.players as Player[]).map((p) => p.name).sort().join('|')
+        if (sf.length === 5) {
+          expect(sf.map((p) => p.name).sort().join('|')).toBe(shown)
+          // and the slot order too: the ladder lists the same board, PG to C
+          expect(sf.map((p) => p.name)).toEqual((o.players as Player[]).map((p) => p.name))
+          matched++
+        } else {
+          // the fit ladder took over; the five must still be five different men off that roster
+          expect(new Set(o.players.map((p) => p.name)).size).toBe(5)
+          for (const p of o.players) expect(roster.some((r) => r.name === p.name)).toBe(true)
+          relaxed++
+        }
+      }
+    }
+    expect(matched + relaxed).toBe(90)
+    expect(relaxed).toBe(7)
+  })
+
+  it('tier 2 is every champion 1980–2025 plus the elite that never won, weakest Team-DB OVR first', () => {
     const t = tiers[1]
     const champs = t.levels.filter((o) => o.champion)
     expect(champs).toHaveLength(46) // 1980 through 2025, one each
@@ -85,8 +140,20 @@ describe('one ladder of four tiers', () => {
       expect(o.team).toMatch(/ '\d\d$/) // "Chicago Bulls '96", his naming
       expect(new Set(o.players.map((p) => p.peak_season)).size).toBe(1)
     }
-    expect(t.levels.every((o, i) => i === 0 || net(o) >= net(t.levels[i - 1]))).toBe(true)
-    expect(t.levels[t.levels.length - 1].team).toBe('Golden State Warriors ’17'.replace('’', "'"))
+    /**
+     * recal_142: the tier climbs by the OVR the Team DB shows — the mean of the era-relative OFF
+     * and DEF dials, read in the five's own season — ascending, with the raw net as the tie-break.
+     * The raw net it used before passes through no era table at all: over the sixty levels
+     * Spearman(level, offRaw) was .963 against .230 for (level, −drtgRef), so the "difficulty" climb
+     * was an offence climb and the Bulls '98 (DEF 94) sat at level 2. On the dial the two channels
+     * read .624 and .718, and the order tracks the seasons' own SRS better (.450 against .353).
+     */
+    expect(t.levels.every((o, i) => i === 0 || dialOvr(o) >= dialOvr(t.levels[i - 1]))).toBe(true)
+    expect(
+      t.levels.every((o, i) => i === 0 || dialOvr(o) > dialOvr(t.levels[i - 1]) || net(o) >= net(t.levels[i - 1])),
+    ).toBe(true)
+    expect(t.levels[t.levels.length - 1].team).toBe('Golden State Warriors ’16'.replace('’', "'"))
+    expect(dialOvr(t.levels[59])).toBe(Math.max(...t.levels.map(dialOvr)))
   })
 
   it('tier 3 is one all-time five per franchise, thirty franchises, relocations merged', () => {

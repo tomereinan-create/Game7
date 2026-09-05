@@ -115,14 +115,23 @@ describe('box scores — shape follows the score and the identity', () => {
      * Folding them in moved the sample median to OFF 69 and would have had this band re-derived
      * to describe a fiction. The band is recal_94's and is untouched; the SAMPLE is back to the
      * population it always meant — the real fives the wheel and the anchors were frozen on.
+     *
+     * ALL NINETY, NOT A TEN-LEVEL STRIDE (recal_142). The sample used to be ten levels taken at an
+     * even stride through the concatenated tiers, and a stride reads the ORDER of the ladder as much
+     * as its population: recal_142 re-sorted tier 2 (Team-DB OVR instead of the raw net) and the
+     * stride landed on ten stronger offences, so the sampled median jumped OFF 55 -> 62 and broke the
+     * rail while the population it claims to describe barely moved — the median over all ninety real
+     * team-seasons went OFF 55 -> 57, DEF 55 -> 55, both inside the band. The test says "the median
+     * in-game opponent", so it now takes the median in-game opponent and no longer depends on how
+     * the ladder happens to be ordered.
      */
     const tiers = CAMPAIGNS as unknown as { id: string; levels: Opponent[] }[]
     const all = tiers.filter((t) => t.id === 'c2026' || t.id === 'champs').flatMap((t) => t.levels)
-    const sample = Array.from({ length: 10 }, (_, i) => all[Math.floor((i * (all.length - 1)) / 9)]).map((o) => ratings100(o.players))
+    const sample = all.map((o) => ratings100(o.players))
     const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
     const mo = med(sample.map((s) => s.off))
     const md = med(sample.map((s) => s.def))
-    console.log(`  10-level sample: median OFF ${mo} DEF ${md}; ref five ${ratings100(REF_FIVE).off}/${ratings100(REF_FIVE).def}`)
+    console.log(`  ${all.length} real team-seasons: median OFF ${mo} DEF ${md}; ref five ${ratings100(REF_FIVE).off}/${ratings100(REF_FIVE).def}`)
     expect(mo).toBeGreaterThanOrEqual(40) // 45 before season smoothing, 41 after (anchor 132.0 kept)
     expect(mo).toBeLessThanOrEqual(58)
     // recal_94 HELD this floor at 45. The defenceVs reset raised drtgRef about 1 point across the
