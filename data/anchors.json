@@ -1308,5 +1308,14 @@
     "round": 141,
     "ruling": "This should be low 70s not high.",
     "note": "recal_141: the pre-2014 no-vote DBPM relief's slope 0.60 -> 0.52, which retires the 0.80 plateau (reached at P = 0.867 before, at P = 1.0 now). The subject read 78 purely because his DBPM percentile 0.848 cleared that plateau. Landed with recal_57's Caron Butler '08 def 73 +-1 and recal_55's Vlade Divac '95 perdef 78 +-1 released by his \"Agree with Manu\"."
+  },
+  {
+    "card": "Karl Malone '97",
+    "scale": "def",
+    "target": 87,
+    "tol": 3,
+    "round": 135,
+    "ruling": "Karl Malone agree a lot.",
+    "note": "DEF 95 -> 89. He tied Hakeem '94 (DPOY) and outranked Mutombo '97 (DPOY, BLK% 7.0, same season, 92) on 0.6 blocks a game, DBPM +1.2 and no rim deterrence: at 6'9\" perdef paid his All-Defensive votes at 89% of the full WING rate (rep_hf 1.067, height_inv 0.875) while rimprot's own vote line, ID + 0.25*(drep*hp) - gated on nothing but height - had already cashed the same votes for 18 points of rim protection (56 -> 74 with that line zeroed). recal_114's meter saw only the OTHER rim channel, drep x block evidence, which is 0.000 at BLK% 1.3, so its verdict was that rimprot had cashed nothing. The meter now takes the larger of the two channels; outside the 75-80 inch wing band the vote credit keeps only the share DBPM supports. 89 is the top half of the band: the floor of what perdef alone can reach is 87 at VOTE_SUPPORT_POW 4, which reopens recal_114's fitted constant and is not this round's to spend."
   }
 ]

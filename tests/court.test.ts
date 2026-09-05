@@ -530,18 +530,22 @@ describe('the helio court runs through the creator he called', () => {
 })
 
 /**
- * THE TWO-GUARD-FRONT SETUP (recal_128, his ruling: "Add Triangle"; then his ruling: "Change the
- * triangle to be like the 2nd picture" — the standard teaching diagram, not a strong-side read: the
- * point at the top, a guard on each wing, and the two bigs together inside at the two elbows,
- * slot order rather than a shooting sort or a featured post man).
+ * THE SIDELINE TRIANGLE (recal_128, his ruling: "Add Triangle"; then "Change the triangle to be like
+ * the 2nd picture"; now his ruling: "Fix triangle to look like this", over the teaching diagram with
+ * the 15-18-20-feet lines drawn between neighbours). What stood here was a two-guard front — point,
+ * two wings, the bigs side by side at the elbows — a SETUP with no triangle in it. The strong side
+ * now carries the triangle the set is named for, post + corner + wing, and the weak side carries the
+ * two-man game, point + pinch post. Slot order still: PG point, SG wing, SF corner, PF pinch, C post.
  */
-describe('the triangle stands the point up top, the guards on the wings, and the bigs at the elbows', () => {
+describe('the triangle stands a triangle on the strong side and the two-man game on the weak', () => {
   const BULLS = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Toni Kukoč '97"), g("Luc Longley '97")]
   const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
   const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
   const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+  const MID = (FLOOR.left + FLOOR.right) / 2
+  const feet = (a: readonly [number, number], b: readonly [number, number]) => Math.hypot(a[0] - b[0], a[1] - b[1]) / FLOOR.ft
 
-  it('the five it is read for draws it, and the two bigs are inside at the elbows', () => {
+  it('the five it is read for draws it, and the post and the pinch post are the two men inside', () => {
     expect(inferredStyle(BULLS)!.style).toBe('triangle')
     const at = spotsFor(null, BULLS)
     expect(at).toEqual(spotsFor({ style: 'triangle', pnr: null }, BULLS))
@@ -550,18 +554,40 @@ describe('the triangle stands the point up top, the guards on the wings, and the
     expect(outsideLine(at[4])).toBe(false)
   })
 
-  it('exactly two men are inside the arc — the two elbows — and the point and both wings are outside', () => {
+  it('the triangle itself is on ONE side: the wing, the corner and the post share a half of the floor', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    // SG on the wing, SF in the corner, C on the post — the three corners of the triangle, all strong side
+    for (const i of [1, 2, 4]) expect(at[i][0]).toBeGreaterThan(MID)
+    // and the two-man game is the other side: PG at the point, PF at the pinch post
+    for (const i of [0, 3]) expect(at[i][0]).toBeLessThan(MID)
+  })
+
+  it('a man stands in the CORNER — which is what makes it a triangle and not a two-guard front', () => {
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    expect(inCorner(at[2])).toBe(true)
+    expect(at.filter(inCorner)).toHaveLength(1)
+  })
+
+  it('exactly two men are inside the arc, and the point, the wing and the corner are outside', () => {
     const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
     expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(2)
     expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
-    expect(outsideLine(at[0])).toBe(true) // PG at the top
+    expect(outsideLine(at[0])).toBe(true) // PG at the point
     expect(outsideLine(at[1])).toBe(true) // SG on the wing
-    expect(outsideLine(at[2])).toBe(true) // SF on the wing
+    expect(outsideLine(at[2])).toBe(true) // SF in the corner
   })
 
-  it('the elbows are slot spots, not a shooting sort: PF and C stand there whether or not they can shoot', () => {
-    // a five where the PF can space the floor and the C cannot — the elbow is theirs by slot
-    // either way, not earned or lost by shooting
+  it('nobody crowds: every pair stands at least a pick-and-roll pair apart', () => {
+    // the diagram's whole point is the 15-to-20 feet between neighbours; the floor cannot honour it
+    // on the point's skip to the wing (an NBA arc is wider than the diagram's), but no two rings may
+    // ever sit closer than the tightest pair this court draws anywhere, the pnr's own ball-to-screen
+    const at = spotsFor({ style: 'triangle', pnr: null }, BULLS)
+    for (let i = 0; i < at.length; i++) for (let j = i + 1; j < at.length; j++) expect(feet(at[i], at[j])).toBeGreaterThan(PAIR_FT)
+  })
+
+  it('the inside spots are slot spots, not a shooting sort: PF and C stand there whether or not they can shoot', () => {
+    // a five where the PF can space the floor and the C cannot — the pinch post and the post are
+    // theirs by slot either way, not earned or lost by shooting
     const MIXED = [g("Steve Kerr '97"), g("Michael Jordan '97"), g("Scottie Pippen '97"), g("Draymond Green '16"), g("Rudy Gobert '17")]
     expect(canSpace(MIXED[3])).toBe(true)
     expect(canSpace(MIXED[4])).toBe(false)

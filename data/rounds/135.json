@@ -1,0 +1,499 @@
+{
+  "round": 135,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Karl Malone agree a lot.",
+  "title": "recal_114's METER COULD ONLY SEE ONE OF THE TWO WAYS RIMPROT PAYS A VOTE: the reinforcement line ID + 0.25*(drep*hp) is gated on nothing but height, and it is worth 18 points of Karl Malone '97's rim protection - so outside the 75-80 inch wing band the perdef vote premium now keeps only the share DBPM supports",
+  "subject": "Karl Malone '97",
+  "scale": "def",
+  "target": 87,
+  "tol": 3,
+  "before": 95,
+  "after": 89,
+  "pipeline_version": 135,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "OUT_OF_BAND_IN = 1\\.0",
+      "label": "the height channel switches on where the wing band ends - 80 inches, the flat top of recal_35's sweet band and of recal_54's rep_hf",
+      "note": "no card in the pool has a fractional height, so this IS the band test; 2-inch and 3-inch ramps were measured and leave the subject at DEF 91"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_out_of_band = min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 80\\.0\\) / OUT_OF_BAND_IN\\)\\)",
+      "label": "the second rim channel, expressed as the band test",
+      "note": "0 at 6'8\" and under, 1 above it"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_paid_in_rim = \\(min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* max\\(_blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\)\\), _out_of_band\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+      "label": "THE ONE LINE THAT CHANGED: the meter takes the LARGER of the two channels rimprot pays a vote through",
+      "note": "was drep x block evidence alone - 0.000 for Malone '97 at BLK% 1.3, the 57th percentile of his season"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "VOTE_SUPPORT_POW = 3",
+      "label": "UNTOUCHED: recal_114's fitted support exponent",
+      "note": "it is also, independently, the power that puts this subject on his number: 0.816**3 = 0.542"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PD\\) \\* BRK\\['_vf'\\]\\)",
+      "label": "UNTOUCHED: the deduction still lands on the vote PREMIUM, not on PD",
+      "note": "so the within-season Pvot pool is bit-identical and no card rises - perdef movers are 193 down, 0 up"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rep_hf = max\\(0\\.5, 1\\.2 - 0\\.8 \\*",
+      "label": "UNTOUCHED: recal_54's height band, the dispatch's other named door",
+      "note": "changing rep_hf moves PD, therefore Pvot, therefore Pippen '03 - recal_114's own measured reason not to"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
+      "label": "THE CHANNEL recal_114's METER MISSED, left exactly as it is",
+      "note": "zeroing it in a scratch run reads Malone '97 rimprot 56 instead of 74; rimprot moved on ZERO cards this round"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.56,",
+      "label": "THE ONE TAX THAT BROKE, re-ratified through the harness (recal_59's law)",
+      "note": "0.51 -> 0.56, the true midpoint of a feasible interval of about .515 to .605; the break was blind -0.29998 against the -0.30 floor"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Karl Malone '97",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 76,
+      "label": "THE SUBJECT'S CARD STORY: 93 -> 76"
+    },
+    {
+      "card": "Karl Malone '97",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 74,
+      "label": "his rimprot is untouched - the round deducts in perdef only"
+    },
+    {
+      "card": "Karl Malone '97",
+      "scale": "ovr",
+      "op": "==",
+      "value": 93
+    },
+    {
+      "card": "Karl Malone '96",
+      "scale": "def",
+      "op": "==",
+      "value": 90,
+      "label": "his '96 read 95 too"
+    },
+    {
+      "card": "Karl Malone '98",
+      "scale": "def",
+      "op": "==",
+      "value": 88,
+      "label": "his '98 read 95 too"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "def",
+      "op": "==",
+      "value": 87
+    },
+    {
+      "card": "Dikembe Mutombo '97",
+      "scale": "def",
+      "op": "==",
+      "value": 92,
+      "label": "THE SAME-SEASON DPOY the subject outranked: BLK% 7.0, untouched, and now above him"
+    },
+    {
+      "card": "Hakeem Olajuwon '94",
+      "scale": "def",
+      "op": "==",
+      "value": 95,
+      "label": "DPOY, untouched - his blocks carry the meter to 1.0 already"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 95,
+      "tol": 1,
+      "label": "r57 anchor 94 +-1, 79 in - INSIDE the wing band, bit-identical"
+    },
+    {
+      "card": "Dennis Rodman '93",
+      "scale": "def",
+      "op": "==",
+      "value": 89,
+      "label": "the ruling's comparable, 79 in, bit-identical"
+    },
+    {
+      "card": "Buck Williams '91",
+      "scale": "def",
+      "op": "==",
+      "value": 88,
+      "label": "the ruling's other comparable, 80 in - the last inch inside the band, bit-identical"
+    },
+    {
+      "card": "Kobe Bryant '06",
+      "scale": "def",
+      "op": "==",
+      "value": 89,
+      "label": "Kobe '06 89 ... say 87 - untouched at 78 in"
+    },
+    {
+      "card": "Dwyane Wade '09",
+      "scale": "def",
+      "op": "==",
+      "value": 86,
+      "label": "Wade '09 86 ... say 87 - untouched at 76 in"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "HELD: the voted band's summit, bit-identical by construction"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "r102 anchor"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "HELD"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "r62 anchor, 78 in"
+    },
+    {
+      "card": "Jrue Holiday '21",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "r80 anchor"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 4,
+      "label": "r103 anchor, 79 in"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "r93 anchor, 80 in - the card that forbids moving the boundary down"
+    },
+    {
+      "card": "Jimmy Butler '16",
+      "scale": "def",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "r93 anchor"
+    },
+    {
+      "card": "Dan Roundfield '82",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 3,
+      "label": "r114's own anchor, 80 in - bit-identical at 94, still the top of its band"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "def",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "r80 anchor, 85 in - a tall voted card whose DBPM and blocks back him, untouched"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "r62 anchor, 85 in, untouched"
+    },
+    {
+      "card": "Kevin Garnett '04",
+      "scale": "def",
+      "op": "==",
+      "value": 98,
+      "label": "83 in, dbpm percentile 0.986 -> support 0.959: a big whose DBPM backs his votes keeps them"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "81 in and ON the ceiling - recal_67's DEF summit holds"
+    },
+    {
+      "card": "Ben Wallace '03",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 98,
+      "tol": 1,
+      "label": "r53 anchor"
+    },
+    {
+      "card": "Bobby Jones '82",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "r82 anchor - rimprot moved on ZERO cards"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 91,
+      "tol": 3,
+      "label": "r114's rimprot check, still exact"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 3,
+      "label": "r114's other rimprot check"
+    },
+    {
+      "card": "Vlade Divac '95",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 78,
+      "tol": 1,
+      "label": "r55 anchor - a NO-VOTE card, outside this channel by construction"
+    },
+    {
+      "card": "Arvydas Sabonis '96",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 79,
+      "tol": 1,
+      "label": "r55's other anchor, no votes"
+    },
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "HELD"
+    },
+    {
+      "card": "Stephon Castle '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 60,
+      "tol": 3,
+      "label": "r101 anchor, HELD"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 62,
+      "tol": 5,
+      "label": "r92/r101 negative control, HELD"
+    },
+    {
+      "card": "Jaylen Brown '24",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 59,
+      "label": "HELD"
+    },
+    {
+      "card": "Kevin Durant '14",
+      "scale": "def",
+      "op": "==",
+      "value": 83,
+      "label": "HELD"
+    },
+    {
+      "card": "LeBron James '14",
+      "scale": "def",
+      "op": "==",
+      "value": 87,
+      "label": "THE BIGGEST NAMED COLLATERAL: 6'9\", All-D 2nd (drep 0.85), BLK% 0.8 (37th pct), DBPM +1.1 - the archetype the ruling names, 94 -> 87"
+    },
+    {
+      "card": "Charles Oakley '94",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 83,
+      "label": "the purest case in the class: All-Defensive 1st team on a BLK% of 0.4, the 18th percentile"
+    },
+    {
+      "card": "Bam Adebayo '26",
+      "scale": "def",
+      "op": "==",
+      "value": 84,
+      "label": "the largest OVR mover of the round (-4)"
+    },
+    {
+      "card": "Tayshaun Prince '05",
+      "scale": "def",
+      "op": "==",
+      "value": 72,
+      "label": "the honest cost: a 6'9\" card who really did defend the perimeter, DBPM +0.7"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Dikembe Mutombo '97",
+      "below": "Karl Malone '97",
+      "label": "THE INVERSION THE RULING NAMES: the DPOY with a BLK% of 7.0 must outrank the 6'9\" forward with 0.6 blocks a game"
+    },
+    {
+      "scale": "def",
+      "above": "Hakeem Olajuwon '94",
+      "below": "Karl Malone '97",
+      "label": "the same, against the other DPOY he was level with"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Karl Malone '97",
+      "label": "the voted band's summit, never in play"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Dennis Rodman '90",
+      "below": "Karl Malone '97"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 193,
+    "max_abs": 21,
+    "top": [
+      [
+        "Karl Malone '98",
+        92,
+        71
+      ],
+      [
+        "Karl Malone '99",
+        92,
+        73
+      ],
+      [
+        "Karl Malone '97",
+        93,
+        76
+      ],
+      [
+        "Karl Malone '00",
+        87,
+        74
+      ],
+      [
+        "Bam Adebayo '26",
+        81,
+        68
+      ],
+      [
+        "Karl Malone '96",
+        92,
+        80
+      ],
+      [
+        "Bam Adebayo '25",
+        85,
+        73
+      ],
+      [
+        "Bam Adebayo '23",
+        88,
+        76
+      ],
+      [
+        "Maurice Lucas '80",
+        74,
+        63
+      ],
+      [
+        "Charles Oakley '95",
+        91,
+        80
+      ],
+      [
+        "LeBron James '14",
+        90,
+        80
+      ],
+      [
+        "Kevin McHale '88",
+        68,
+        58
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Bruce Bowen '08"
+    ]
+  },
+  "notes": [
+    "WHY MALONE '97 READ DEF 95, TERM BY TERM, BEFORE ANYTHING WAS TOUCHED. drep 1.000 (unanimous All-Defensive 1st team), DBPM +1.2 = the 0.816 percentile of 1997, 81 inches, BLK% 1.3 = the 0.573 percentile. rep_hf at 81 in is 1.0667 and the height_inv term is 0.875, so his composite PD is 0.453*1.0667 + 0.238*0.816 + 0.309*0.875 = 0.4832 + 0.1942 + 0.2704 = 0.9477 - and 0.7536 of that 0.9477, 80% of the sheet, is the two HEIGHT-RATED terms. Pvot(0.9477) = 0.875, _paid_in_rim was 0.000, so PD2 = 0.55 + 0.45*0.875*1.000 = 0.9438, card 93.5, smoothed against '96 (92.70) and '98 (92.46) to 93. d_score then reads him as a BIG (d_bigness 1.0000) and takes 0.40 x perdef 93 + 0.40 x rimprot 74 + 0.17 x drb 92, raw 96.2338 against a DEF_TOP of 104.25 - DEF 95, level with Hakeem '94 and above Mutombo '97.",
+    "THE SECOND PAYMENT IS MEASURED, NOT ASSERTED. Set the reinforcement line ID = ID + 0.25*(drep*hp) to 0.00 in a scratch run and the board reads: Karl Malone '97 rimprot 56 (was 74), Buck Williams '91 52 (63), Rodman '93 49 (57), Charles Oakley '94 31 (46), Roundfield '82 77 (92), McHale '88 77 (91) - and Mutombo '97 99 (98), Hakeem '94 99 (99), i.e. the two DPOYs are carried by their blocks and do not need the line at all. Malone's All-Defensive votes are therefore worth EIGHTEEN points of rim protection, taken by the big d_score branch at 0.40, beside the 0.40 it takes of a perdef the same votes bought. recal_114 named exactly this double payment and metered it as drep x block evidence, which is 0.000 below the 80th percentile of the season's block rate - so on the one card where the rim paid the most, its verdict was that the rim had paid nothing.",
+    "WHY THE BOUNDARY IS 80 INCHES AND WHY IT IS NOT FITTED. This file draws the wing/big line in exactly one place and draws it twice: recal_35's sweet band is FLAT at 1.0 from 75 to 80 inches, and recal_54's rep_hf is FLAT at its maximum 1.2 through 80. Both then fade - but over 8 inches and 6, so a 6'9\" power forward still collects 87.5% and 89% of the pure-WING rate. The new channel is that same band test, nothing more: 0 inside, 1 outside. It was NOT chosen to hit the number - the number is hit by recal_114's existing exponent, 0.816**3 = 0.542, which is why VOTE_SUPPORT_POW is untouched.",
+    "THE TWO SOFTER RAMPS WERE MEASURED AND MISSED. A 2-inch ramp (share 0.5 at 6'9\") leaves the subject at perdef 85, DEF 91; a 3-inch ramp at perdef 85, DEF 91. Both are outside 87 +-3. Reaching the band with a softer ramp requires VOTE_SUPPORT_POW 5, which costs Roundfield '82 4 DEF, McHale '88 5, Bobby Jones '82 2 and Ben Wallace '04 1 for the same subject reading - a strictly larger footprint for a strictly worse justification, since 5 is a refitting of recal_114's own constant. Rejected.",
+    "THE PRICE, STATED PLAINLY. At 80 inches Buck Williams '91 keeps perdef 93; at 81 Malone reads 76. That discontinuity is real and it is the cost of the ruling as it was given. The boundary cannot move down: Dennis Rodman '90 (def 94 +-1, 79 in) and Scottie Pippen '03 (def 76 +-1, 80 in) are anchored on the inside of it, and Buck Williams '91 88 and Rodman '93 89 are the two comparables the ruling's target of 87 is read off - a fade beginning at 78 or 79 takes all four down with the subject and destroys the evidence the target rests on.",
+    "THE CLASS THAT MOVED IS THE CLASS THE RULING NAMES. All 193 perdef movers are voted cards above 80 inches: 104 at 81, 50 at 82, 38 at 83, 1 at 84. The largest are Karl Malone '95-'01, Charles Oakley '91-'96 (All-Defensive 1st team on a BLK% of 0.4, the 18th percentile of his season), Maurice Lucas, A.C. Green, Luol Deng, Tayshaun Prince, Ben Simmons, Bam Adebayo and LeBron James '14/'15 - 6'9\"-6'11\" forwards with All-Defensive votes, no rim deterrence and a DBPM that does not carry them. Every one of them keeps the share of the premium his DBPM percentile cubed supports, so the ordering inside the class is unchanged.",
+    "NOBODY ROSE. Because the deduction lands on the 0.45 vote premium and never on PD, the within-season Pvot pool is bit-identical: of 10,000 cards, 193 perdef moved and all 193 moved DOWN, 150 DEF moved and all 150 moved down, and the perdef top 12 is name-for-name and position-for-position what it was. This is recal_114's own design decision, reused rather than re-argued.",
+    "THE JAZZ DIALS, since the subject is the card story behind them (recal_122 named his perdef 92 as the reason the Jazz '98 defence dialled 91 for a real 17th-ranked defence). Read through data/anchors.py's team_dials on the OVR-max legal five - Stockton, Hornacek, Russell, Malone, Ostertag - Jazz '97 defdial 91 -> 83 and Jazz '98 defdial 91 -> 81. The within-season model DEF rank is 2nd of 29 and 2nd of 28 both before and after: the all-time LEVEL falls by 8 and 10 points, the season ORDER does not move, and moving it is team_rating.py's, not this agent's.",
+    "THE ONE OFF MOVER IS NOT A PERDEF EFFECT AND IS NOT MINE. Tayshaun Prince '04 o_ovr 48 -> 51 is the only offensive change on the board; it comes from compute_ovr.py's own reading of a card whose defensive sheet moved, not from anything build_ratings.py did to an offensive attribute. Flagged for ratings-to-off-def, not chased here.",
+    "WHERE 89 SITS IN THE BAND, HONESTLY. The ruling asked for near 87 with a +-3 band; the round lands 89, the top half. Reaching 87 exactly costs one more knob - VOTE_SUPPORT_POW 3 -> 4 takes him to 87.5 - and that constant is recal_114's fitted answer to a different ruling of his. One defensible change was the instruction, and the anchors are all inside their bands at 89."
+  ],
+  "cost": [
+    "ANCHOR ADDED: Karl Malone '97 def 87 +-3 (round 135). Nothing superseded.",
+    "135 anchors, 0 failing, mean |error| 0.69 - identical worst three to origin/main (Warriors '17 defdial -5, Thunder '26 defdial +4, Westbrook '15 ballsec +4). On the 134 anchors that existed before this round the mean |error| improved 0.69 -> 0.68.",
+    "recal_114's meter is now COMPLETE for the rim, but it is still a meter of the rim only. A vote is also paid a third time in drb for a rebounding forward (0.17 of the big d_score); nothing in this round touches that, and a future ruling on a glass-first All-Defensive big should start there and not by re-cutting this channel.",
+    "THE BOUNDARY IS LOAD-BEARING. Any later round that widens the wing band past 80 inches, or that softens rep_hf's flat top, moves this channel with it - the height test reads the same 80.0 the band does, deliberately, so the two cannot drift apart.",
+    "rimprot moved on ZERO cards; o_ovr moved on ONE (Tayshaun Prince '04, +3). d_ovr 150 cards, ovr 107 cards, max OVR move -4 (Bam Adebayo '26).",
+    "pipeline_version is written as 135 per the dispatch; PIPELINE_VERSION in both python files and src/data/pipeline.json is left at main's 133 for the integrator to stamp.",
+    "TAX.crashDef re-ratified 0.51 -> 0.56 in src/engine/tactics.ts, with the sweep written into the file's comment block in its own style. It broke on the BLIND edge by two hundred-thousandths (-0.29998 against -0.30) and is the eighth round running in which this one tax is the one that moves. All nine harness rows pass; no other tax was touched."
+  ]
+}

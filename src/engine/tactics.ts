@@ -348,6 +348,20 @@ export const DEFAULT_TACTICS: Tactics = {
  * feasible about .552 to .904, true midpoint .73. Re-ratified .51 -> .73, oracle +0.549 and blind
  * -0.427, 0.049 and 0.127 of room. crash off glass held its r126 value of .17 (oracle +0.64, blind
  * -0.42) and the six others held their bands untouched. All nine pass.
+ * recal_135's out-of-band vote meter (perdef 193 down, 150 d_ovrs and 107 OVRs down, 0 attributes
+ * up; pipeline 133) moved the ovr>=55 sample again, and crash def glass alone broke - on the BLIND
+ * edge, by two hundred-thousandths: random -0.29998 against the -0.30 floor, the shallowest break
+ * this tax has ever recorded and the closest any row has come to holding. Swept .52 (blind -0.31,
+ * oracle +0.53) / .53 (-0.32, +0.53) / .55 (-0.33, +0.52) / .57 (-0.35, +0.51) / .60 (-0.37, +0.50)
+ * / .61 (-0.38, +0.4996, FAIL) / .63 (-0.40, +0.49, FAIL) / .66 (-0.42, +0.48, FAIL): the feasible
+ * interval is about .515 to .605, bounded below by the blind edge and above by the oracle one, and
+ * it takes its true midpoint the way r126 did - .51 -> .56, blind -0.34 with 0.04 of room and
+ * oracle +0.52 with 0.02. EIGHTH round in which this one tax is the one that moves; the cause is
+ * the one the r116 entry already names - its benefit reads drb, a DEFENSIVE attribute, off a pool
+ * this round reshuffled by moving 150 defensive scores. crash off glass held at .17 untouched
+ * although its oracle sits on +0.54, and hunt held at 3.80 for the third round running. The law was
+ * applied as written: the band broke, the tax moved to meet it, and NOTHING in the OVR chain was
+ * touched to hold a band up. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
