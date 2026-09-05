@@ -77,20 +77,20 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.39",
-      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
+      "pattern": "const OFF_TOP = 138\\.4",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived] [pipeline-142 (recal_136-139) integration: the OFF gauge was re-frozen again; re-pointed at the current constant/reading]",
       "note": "137.94 -> 138.38; the Warriors '17 are still all-time rank 2 of 1,255, behind the Rockets '18 and ahead of everyone else, exactly as recal_119 left them"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 121\\.8003",
-      "label": "and its reference league [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
+      "pattern": "const OFF_LEVEL_REF = 121\\.8079",
+      "label": "and its reference league [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived] [pipeline-142 (recal_136-139) integration: the OFF gauge was re-frozen again; re-pointed at the current constant/reading]",
       "note": "121.7626 -> 121.7929; the 47-season OFF_LEVEL table moved by hundredths"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 101\\.05",
-      "label": "the era-adjusted floor [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
+      "pattern": "const OFF_MIN = 100\\.99",
+      "label": "the era-adjusted floor [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived] [pipeline-142 (recal_136-139) integration: the OFF gauge was re-frozen again; re-pointed at the current constant/reading]",
       "note": "101.75 -> 100.98"
     },
     {
