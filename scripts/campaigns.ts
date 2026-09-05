@@ -11,12 +11,11 @@
  *   3. ALL-TIME      30 — one best-ever five per franchise, relocations merged.
  *   4. THE CUSTOMS   30 — decades, awards, specialists, and the All-Time First Team.
  *
- * A team-season's five (tiers 1 and 2) is its five highest-minute qualified
- * players that season that can cover PG · SG · SF · PF · C by their lifetime
- * Basketball-Reference positions — its actual rotation, numbers straight from
- * the pool, listed PG to C. An all-time or custom five (tiers 3 and 4) is the
- * best LEGAL five over a member set, one card per man, by whichever number that
- * five is about — the same law bestfive.ts plays by, with a pluggable score.
+ * A team-season's five (tiers 1 and 2) is THE FIVE THE TEAM DB SHOWS: bestfive.ts's
+ * startingFive() over the whole roster, the legal PG-to-C board that maximizes total
+ * OVR — see THE LADDER FIELDS THE TEAM DB'S FIVE below. An all-time or custom five
+ * (tiers 3 and 4) is the best LEGAL five over a member set, one card per man, by
+ * whichever number that five is about — the same law, with a pluggable score.
  *
  * src/data/opponents.json keeps the first tier for the tests.
  *
@@ -25,6 +24,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { startingFive } from '../src/engine/bestfive'
+import { seasonGauges, fieldGauges } from '../src/engine/gauges'
 import { eligible } from '../src/engine/positions'
 import { ratings100 } from '../src/engine/offense'
 import type { Player } from '../src/engine/types'
@@ -102,11 +103,6 @@ for (const r of bref('Team Summaries.csv')) {
   if (Number.isFinite(w) && Number.isFinite(l)) summary.set(rk(Number(r.season), r.abbreviation), { w, l, srs: Number(r.srs) })
 }
 
-const minutes = (n: string) => {
-  const s = stats[n]
-  return s && s.gp && s.mpg ? s.gp * s.mpg : 0
-}
-
 const POS = ['PG', 'SG', 'SF', 'PF', 'C'] as const
 type P5 = (typeof POS)[number]
 const strict = (n: string): P5[] => eligible(stats[n]?.pos)
@@ -124,54 +120,97 @@ const loose = (n: string): P5[] => {
 const any = (): P5[] => [...POS]
 
 /**
- * The highest-minute five that can cover every position, in PG..C order.
- * Walks the rotation from the top: among fives drawn from the first k players
- * (k = 5, 6, 7, ...) takes the one with the most minutes that has a perfect
- * position matching. Returns null only if the whole roster can't cover.
+ * THE LADDER FIELDS THE TEAM DB'S FIVE (recal_142). ORCHESTRATOR'S DEFAULT, on his
+ * "Dont ask me about campaigns order, do whatever you want there".
+ *
+ * A tier-1 or tier-2 level is a real team-season, and until this round its five was its five
+ * HIGHEST-MINUTE men that could cover PG-to-C. The Team DB — the screen he browses those same
+ * team-seasons on, and the screen the Versus and Custom pickers rank from — shows something else:
+ * bestfive.ts's startingFive(), the legal board that maximizes total OVR over the whole roster.
+ * Two different fives under one team name is one too many, so the ladder now fields the Team DB's.
+ *
+ * What the minutes rule was doing, measured before the swap: 54 of the 90 tier-1/2 levels fielded a
+ * different five from the one the Team DB shows for the same team-season. The Heat '06 opened the
+ * Champions tier WITHOUT Shaquille O'Neal (Payton/Wade/Posey/Walker/Haslem, dial 44/49 = 47, against
+ * 76/64 = 70 with him); the Bulls '98 benched Scottie Pippen for Luc Longley's minutes; Chris Paul
+ * '18, Kyrie Irving '16, Kristaps Porzingis '24 and '25, Draymond Green '22 and Tiago Splitter '14
+ * all lost their place to a healthier role man. A season's minutes are an availability record, not a
+ * statement about who the team is, and the ladder was reading them as the latter.
+ *
+ * NO MINUTES FLOOR, for the same reason: the Team DB applies none — it feeds every rostered card
+ * into startingFive and shows "—" when the pool cannot cover a slot — and consistency with the Team
+ * DB is the whole point of the round. gp x mpg no longer appears in this file.
+ *
+ * THE SEVEN ROSTERS THE STRICT BOARD CANNOT FILL keep the fit ladder this file has always had, now
+ * with OVR as the objective instead of minutes: strict positions first, then one step over, then
+ * anywhere. Six of last season's thirty and the Warriors '18 have a slot no rostered card is listed
+ * at (no centre on the '18 Warriors or the '26 Warriors, no point guard on the '26 Timberwolves),
+ * and the Team DB is allowed to print "—" for them where a ladder of thirty teams is not.
  */
-function lineup(ranked: string[]): { names: string[]; fit: 'strict' | 'loose' | 'any' } | null {
-  for (const [fit, canPlay] of [['strict', strict], ['loose', loose], ['any', any]] as const) {
-    const got = lineupWith(ranked, canPlay)
-    if (got) return { names: got, fit }
+function lineup(names: string[]): { five: P[]; fit: 'strict' | 'loose' | 'any' } | null {
+  const roster = names.map((n) => byName.get(n)).filter((p): p is P => !!p)
+  // strict = the Team DB's own call, not a re-implementation of it
+  const sf = startingFive(roster).five.filter((p): p is P => !!p)
+  if (sf.length === 5) return { five: sf, fit: 'strict' }
+  for (const [fit, canPlay] of [['loose', loose], ['any', any]] as const) {
+    const got = ovrBoard(roster, canPlay)
+    if (got) return { five: got, fit }
   }
   return null
 }
-function lineupWith(ranked: string[], canPlay: (n: string) => P5[]): string[] | null {
-  const assign = (names: string[]): string[] | null => {
-    const order = new Array<string>(5)
-    const used = new Set<string>()
-    const go = (i: number): boolean => {
-      if (i === 5) return true
-      for (const n of names) {
-        if (used.has(n) || !canPlay(n).includes(POS[i])) continue
-        used.add(n)
-        order[i] = n
-        if (go(i + 1)) return true
-        used.delete(n)
+/**
+ * startingFive()'s law with the eligibility test made a parameter — the same max-total-OVR
+ * backtrack over one man per slot, and the same post-recal_74 tie-break ("If 2 players can play
+ * pg/sg, the one with more ast gets the pg position") among arrangements of the chosen five.
+ */
+function ovrBoard(roster: P[], canPlay: (n: string) => P5[]): P[] | null {
+  const slots: (P | null)[] = POS.map(() => null)
+  const used = new Set<string>()
+  let best: (P | null)[] = POS.map(() => null)
+  let bestSum = -1
+  const walk = (i: number, sum: number) => {
+    if (i === 5) {
+      if (sum > bestSum) {
+        bestSum = sum
+        best = [...slots]
       }
-      return false
+      return
     }
-    return go(0) ? order : null
+    for (const c of roster) {
+      if (used.has(c.name) || !canPlay(c.name).includes(POS[i])) continue
+      used.add(c.name)
+      slots[i] = c
+      walk(i + 1, sum + c.ovr)
+      used.delete(c.name)
+      slots[i] = null
+    }
+    walk(i + 1, sum) // a roster hole still counts as a board
   }
-  for (let k = 5; k <= ranked.length; k++) {
-    const head = ranked.slice(0, k)
-    // all 5-subsets of head that include the k-th player (new ones only), best minutes first
-    const subsets: string[][] = []
-    const pick = (start: number, acc: string[]) => {
-      if (acc.length === 5) {
-        subsets.push(acc)
-        return
+  walk(0, 0)
+  const chosen = best.filter((p): p is P => !!p)
+  if (chosen.length !== 5) return null
+  const apg = (p: P | null) => (p ? (stats[p.name]?.apg ?? 0) : -1)
+  const board: (P | null)[] = POS.map(() => null)
+  let out: (P | null)[] = best
+  let bestKey = -Infinity
+  const place = (idx: number) => {
+    if (idx === chosen.length) {
+      if (apg(board[0]) > bestKey) {
+        bestKey = apg(board[0])
+        out = [...board]
       }
-      for (let j = start; j < head.length; j++) pick(j + 1, [...acc, head[j]])
+      return
     }
-    pick(0, [])
-    subsets.sort((a, b) => b.reduce((s, n) => s + minutes(n), 0) - a.reduce((s, n) => s + minutes(n), 0))
-    for (const s of subsets) {
-      const a = assign(s)
-      if (a) return a
+    const can = canPlay(chosen[idx].name)
+    for (let s = 0; s < 5; s++) {
+      if (board[s] || !can.includes(POS[s])) continue
+      board[s] = chosen[idx]
+      place(idx + 1)
+      board[s] = null
     }
   }
-  return null
+  place(0)
+  return out.filter((p): p is P => !!p)
 }
 
 /**
@@ -241,7 +280,16 @@ const netOf = (five: P[]) => {
   const r = ratings100(five)
   return r.offRaw - r.drtgRef
 }
-const dial = (five: P[]) => ratings100(five)
+/** The OFF/DEF pair the Team DB and the level map show — era-relative, gauges.ts. */
+const dial = (five: P[], season?: number) => (season ? seasonGauges(five, season) : fieldGauges(five))
+/**
+ * THE TEAM DB'S OWN OVR (TeamDb.tsx ovrOf): the mean of the era-relative OFF and DEF dials,
+ * read in the five's own season. The number the round-2 tier climbs by, see theChampions().
+ */
+const dialOvr = (five: P[], season?: number) => {
+  const g = dial(five, season)
+  return Math.round((g.off + g.def) / 2)
+}
 
 /**
  * HOW TIERS 3 AND 4 CLIMB (recal_113, his ruling "Lal prob the hardest"): the five's TOTAL OVR,
@@ -320,6 +368,21 @@ interface Tier {
  *   All-Time     41%       65% -> 25%
  *   Customs      17%       30% -> 12%     the All-Time First Team, last, at 12%
  *
+ * RE-MEASURED AT recal_142, after the ladder went to the Team DB's five and tier 2 to the Team DB's
+ * OVR (the pool has also moved five pipelines since the table above). Staffed median, then first
+ * level to last, and the value at each tier seam:
+ *
+ *   The League   96.5%     99.8% -> 70.6%     (bare: 51.7% median)
+ *   Champions    76.9%     80.0% -> 52.4%
+ *   All-Time     43.1%     71.2% -> 31.8%
+ *   Customs      46.9%     75.6% ->  8.1%     the All-Time First Team, last, at 8.1%
+ *
+ * Every seam still steps UP into the new tier (70.6 -> 80.0, 52.4 -> 71.2, 31.8 -> 75.6): a tier
+ * opens softer than the one before it closed and climbs again, which is the shape a ladder wants and
+ * the opposite of a cliff. The round improved the worst seam it had: under the minutes rule the
+ * Champions opened at 98.2% (the Heat '06 without Shaquille O'Neal), a free level after a 76.2%
+ * tier-1 boss; it now opens at 80.0%. The two constructed tiers are untouched by the round.
+ *
  * — one long ramp with no cliff at a tier seam and a final boss that takes several attempts. The
  * model is deliberately pessimistic (no respins, no extra spins, naive assignments, no tactics),
  * so real play sits above these numbers. Move a value and re-run the script before shipping it.
@@ -372,10 +435,9 @@ interface Built {
 function build(t: TS): Built | null {
   const s = summary.get(rk(t.y, t.ab))
   if (!s) return null
-  const ranked = [...t.p].filter((n) => byName.has(n)).sort((a, b) => minutes(b) - minutes(a))
-  const lined = lineup(ranked)
+  const lined = lineup(t.p)
   if (!lined) return null
-  return { team: t.team, ab: t.ab, y: t.y, five: lined.names.map((n) => byName.get(n)!), w: s.w, l: s.l, srs: s.srs, champ: CHAMPS[t.y] === t.ab }
+  return { team: t.team, ab: t.ab, y: t.y, five: lined.five, w: s.w, l: s.l, srs: s.srs, champ: CHAMPS[t.y] === t.ab }
 }
 const pct = (b: Built) => b.w / (b.w + b.l)
 
@@ -392,7 +454,12 @@ interface Level {
 }
 
 // ---------------------------------------------------------------- tier 1 · THE LEAGUE
-/** Last season's thirty, worst record first. Untouched by the new ladder. */
+/**
+ * Last season's thirty, WORST REAL RECORD FIRST. recal_142 leaves this key alone: tier 1's order
+ * is the standings, not a reading off the engine at all, so it is not the raw `offRaw − drtgRef`
+ * that tier 2 was ordered by and there is nothing to make consistent with the dial. Last season's
+ * league is the one tier where the player already knows who is supposed to be bad.
+ */
 function theLeague(): Level[] {
   return wheel
     .filter((t) => t.y === SEASON)
@@ -403,7 +470,26 @@ function theLeague(): Level[] {
 }
 
 // ------------------------------------------------------------ tier 2 · THE CHAMPIONS
-/** Every champion 1980–2025, plus the elite that never won, weakest net first. */
+/**
+ * Every champion 1980–2025, plus the elite that never won, WEAKEST TEAM-DB OVR FIRST.
+ *
+ * HOW THIS TIER CLIMBS (recal_142). ORCHESTRATOR'S DEFAULT, on his "Dont ask me about campaigns
+ * order, do whatever you want there". The key is `dialOvr` — TeamDb.tsx's ovrOf, the mean of the
+ * era-relative OFF and DEF dials from gauges.ts read in the five's own season — ascending, with the
+ * raw net as the tie-break.
+ *
+ * WHY NOT THE RAW NET, which ordered this tier before. offRaw − drtgRef passes through no era table
+ * at all, and on a tier that spans 1980 to 2025 that is most of the key: measured over the sixty
+ * levels, Spearman(level, offRaw) = .965 and Spearman(level, −drtgRef) = .238 — the "difficulty"
+ * climb was an offence climb with the defence along for the ride, so the Bulls '98 (DEF 94) sat at
+ * level 2 and the Nuggets '23 at level 44. Against the seasons' own SRS the raw net ranks .345 and
+ * the dial .451. The dial is also the only key on this tier the player can SEE: it is the number
+ * printed on the team's row in the Team DB and on its ticket in the level map.
+ *
+ * The clamp objection that kept tiers 3 and 4 off the dial (recal_113: nine all-time sides read
+ * OFF 99) does not bite here — no two of these sixty real team-seasons pile on the rail, 30 distinct
+ * OVR values across 60 levels and the largest tie group is 6, all of them broken by the raw net.
+ */
 function theChampions(): Level[] {
   const built = wheel
     .filter((t) => t.y >= 1980 && t.y <= 2025)
@@ -420,7 +506,7 @@ function theChampions(): Level[] {
     picked.push(b)
   }
   return picked
-    .sort((a, b) => netOf(a.five) - netOf(b.five))
+    .sort((a, b) => dialOvr(a.five, a.y) - dialOvr(b.five, b.y) || netOf(a.five) - netOf(b.five))
     .map((b) => ({
       team: `${b.team} '${String(b.y).slice(2)}`,
       ab: b.ab,
@@ -680,10 +766,12 @@ const campaigns = TIERS.map((tier) => {
   }))
   console.log(`\n${tier.name} · ${levels.length} levels · ${levels.filter((l) => l.champion).length} champions · opponents +${tier.handicap}`)
   for (const l of levels) {
-    const g = dial(l.players as P[])
+    // the dial printed here is the era-relative one the Team DB and the level map show
+    const g = dial(l.players as P[], l.season)
     console.log(
       `  L${String(l.round).padStart(3)} ${l.team.padEnd(28)} ${(l.record ?? l.tag ?? '').padEnd(12)}` +
-        ` net ${(g.offRaw - g.drtgRef).toFixed(2).padStart(7)}  OFF ${String(g.off).padStart(2)} DEF ${String(g.def).padStart(2)} ${l.champion ? '★' : ''}`,
+        ` net ${(g.offRaw - g.drtgRef).toFixed(2).padStart(7)}  OVR ${String(Math.round((g.off + g.def) / 2)).padStart(2)}` +
+        ` OFF ${String(g.off).padStart(2)} DEF ${String(g.def).padStart(2)} ${l.champion ? '★' : ''}`,
     )
   }
   return { ...tier, levels }

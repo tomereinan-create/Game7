@@ -1,0 +1,247 @@
+{
+  "round": 142,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Dont ask me about campaigns order, do whatever you want there.",
+  "title": "THE LADDER STOPS FIELDING A ROTATION AND FIELDS THE TEAM. Tiers 1 and 2 now put out the five the Team DB shows (bestfive.ts startingFive, the OVR-max legal board) instead of the five highest-minute men, and the Champions tier climbs by the OVR the Team DB shows (the mean of the era-relative OFF/DEF dials, seasonGauges) instead of the raw offRaw - drtgRef. 58 of 90 fives changed men; the Heat '06 no longer open the tier without Shaquille O'Neal. No engine change: tiers 3 and 4 are byte-identical.",
+  "subject": "Miami Heat '06 (the level the Champions tier used to open on)",
+  "five": [
+    "Jason Williams '06",
+    "Dwyane Wade '06",
+    "James Posey '06",
+    "Alonzo Mourning '06",
+    "Shaquille O'Neal '06"
+  ],
+  "season": 2006,
+  "scale": "team:ovrdial",
+  "target": 71,
+  "tol": 0,
+  "before": 47,
+  "after": 71,
+  "pipeline_version": 133,
+  "knobs": [
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "import \\{ startingFive \\} from '\\.\\./src/engine/bestfive'",
+      "label": "RULE 1 — the ladder calls the Team DB's own five-picker instead of re-implementing a minutes rule",
+      "note": "gp x mpg is gone from this file; `minutes()` no longer exists"
+    },
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "if \\(sf\\.length === 5\\) return \\{ five: sf, fit: 'strict' \\}",
+      "label": "the strict board IS startingFive's output, taken whole",
+      "note": "seven rosters cannot fill it and fall to ovrBoard() under loose then any positions"
+    },
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "const dialOvr = \\(five: P\\[\\], season\\?: number\\) => \\{",
+      "label": "RULE 2 — TeamDb.tsx's ovrOf, ported: the mean of the two era-relative gauges",
+      "note": "dial() is seasonGauges(five, season), the era table gauges.ts freezes"
+    },
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "\\.sort\\(\\(a, b\\) => dialOvr\\(a\\.five, a\\.y\\) - dialOvr\\(b\\.five, b\\.y\\) \\|\\| netOf\\(a\\.five\\) - netOf\\(b\\.five\\)\\)",
+      "label": "the Champions tier's key: dial OVR ascending, raw net as the tie-break",
+      "note": "was `.sort((a, b) => netOf(a.five) - netOf(b.five))`"
+    },
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "const ladderCmp = \\(a: P\\[\\], b: P\\[\\]\\) => sumOvr\\(a\\) - sumOvr\\(b\\) \\|\\| netOf\\(a\\) - netOf\\(b\\)",
+      "label": "recal_113's tier-3 key is UNTOUCHED",
+      "note": "and theCustoms() still sorts on netOf, and the distinctness rule is unchanged"
+    },
+    {
+      "file": "scripts/campaigns.ts",
+      "pattern": "\\.sort\\(\\(a, b\\) => pct\\(a\\) - pct\\(b\\)\\)",
+      "label": "tier 1 keeps its own key — the real standings, worst record first",
+      "note": "not a reading off the engine at all, so there was no raw key to make consistent with the dial"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export function ratings100",
+      "label": "NO ENGINE CHANGE — team_rating.py / offense.ts are untouched by this round",
+      "note": "the round is scripts/campaigns.ts, its two regenerated data files and three tests"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the Heat '06 fielded Shaquille O'Neal's team: the OFF dial the Team DB shows",
+      "scale": "team:offdial",
+      "season": 2006,
+      "op": "==",
+      "value": 77
+    },
+    {
+      "label": "and its DEF dial",
+      "scale": "team:defdial",
+      "season": 2006,
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "the Bulls '98 field Scottie Pippen again (was Luc Longley's minutes over him): OVR 70 -> 75",
+      "five": [
+        "Ron Harper '98",
+        "Michael Jordan '98",
+        "Scottie Pippen '98",
+        "Toni Kukoč '98",
+        "Luc Longley '98"
+      ],
+      "season": 1998,
+      "scale": "team:ovrdial",
+      "op": "==",
+      "value": 75
+    },
+    {
+      "label": "the Champions tier's new boss, L60: Golden State Warriors '16, the highest dial OVR on the tier",
+      "five": [
+        "Stephen Curry '16",
+        "Andre Iguodala '16",
+        "Klay Thompson '16",
+        "Draymond Green '16",
+        "Andrew Bogut '16"
+      ],
+      "season": 2016,
+      "scale": "team:ovrdial",
+      "op": "==",
+      "value": 92
+    },
+    {
+      "label": "nothing on the tier out-reads the boss: the Warriors '17 at L58",
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:ovrdial",
+      "op": "<=",
+      "value": 92
+    },
+    {
+      "label": "the Warriors '17 OFF summit still reads 99 through the ladder's own five (recal_71 / recal_94)",
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "the Bulls '96 DEF summit still reads 99 through the ladder's own five (recal_94, 'Move the summit to Bulls '96')",
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "the ladder's Bulls '96 five IS the anchor five the gauge was frozen on — OVR 85 at L54",
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:ovrdial",
+      "op": "==",
+      "value": 85
+    },
+    {
+      "label": "the Rockets '18 get Chris Paul back and stop reading like a mid-tier level: 59 -> 80",
+      "five": [
+        "Chris Paul '18",
+        "James Harden '18",
+        "Eric Gordon '18",
+        "Ryan Anderson '18",
+        "Clint Capela '18"
+      ],
+      "season": 2018,
+      "scale": "team:ovrdial",
+      "op": "==",
+      "value": 80
+    },
+    {
+      "label": "the order holds where it matters: the Heat '06 (L27) sit below the Bulls '98 (L37)",
+      "five": [
+        "Jason Williams '06",
+        "Dwyane Wade '06",
+        "James Posey '06",
+        "Alonzo Mourning '06",
+        "Shaquille O'Neal '06"
+      ],
+      "season": 2006,
+      "scale": "team:ovrdial",
+      "op": "<=",
+      "value": 75
+    },
+    {
+      "label": "tier 1 level 1 is still the Wizards, and still the softest board on the ladder",
+      "five": [
+        "Bub Carrington '26",
+        "Kyshawn George '26",
+        "Justin Champagnie '26",
+        "Marvin Bagley III '26",
+        "Alex Sarr '26"
+      ],
+      "season": 2026,
+      "scale": "team:ovrdial",
+      "op": "<=",
+      "value": 40
+    },
+    {
+      "label": "no card moved — this is a ladder round, not a ratings round: Shaquille O'Neal '06 OFF",
+      "card": "Shaquille O'Neal '06",
+      "scale": "off",
+      "op": "==",
+      "value": 87
+    },
+    {
+      "label": "no card moved: Scottie Pippen '98 DEF",
+      "card": "Scottie Pippen '98",
+      "scale": "def",
+      "op": "==",
+      "value": 96
+    }
+  ],
+  "movers": {
+    "scale": "team:ovrdial",
+    "count": 58,
+    "max_abs": 24,
+    "top": []
+  },
+  "cost": [
+    "TWO TESTS OUTSIDE tests/campaigns.test.ts HAD TO MOVE, and both are collateral of the new fives rather than of any engine change. Reported loudly because the dispatch scoped this round to campaigns.ts.",
+    "tests/box.test.ts 'ratings anchored empirically' — the band (median in-game opponent OFF 40-58, DEF 45-82) is recal_94's and is UNTOUCHED. What changed is the SAMPLE: it was ten levels at an even stride through the concatenated tiers 1 and 2, and a stride reads the ORDER of the ladder as much as its population, so re-sorting tier 2 landed it on ten stronger offences and the sampled median jumped OFF 55 -> 62. The population the test names barely moved: over all ninety real team-seasons the median went OFF 55 -> 57 and DEF 55 -> 55, both inside the band. The test now takes the median of all ninety, which is what its own sentence says, and no rail moved.",
+    "tests/tree.test.ts 'naive vs optimal' — this one IS a re-recorded rail: |naive - optimal| against the paint level, 2.5 -> 6. The Wizards' board picked up Kyshawn George and Justin Champagnie for Bilal Coulibaly and Will Riley, their worst shooter went from out 31 to 3pt 35, and the gap went 0.08 -> 5.45. The finding underneath is worth a round of its own: under the minutes rule four of the thirty levels had a naive/optimal gap under 0.4 (MIA 0.00, WAS 0.08, TOR 0.11, CHI 0.33) because the slot-order board happened to agree with the optimal one; under the best-five rule NONE do — smallest 4.30, median 18.46 — because a coherent best five is more lopsided, so parking the anchor by slot order costs real points against every level. The claim the test exists to make is intact and wider than before (35.21 five-out against 5.45 paint), and the assertion was strengthened from `b-a > |d-c|` to `b-a > 3*|d-c|`.",
+    "THE TEAM DB PRINTS '-' FOR SEVEN OF THESE LEVELS and the ladder cannot. Six of last season's thirty (MEM, DAL, NOP, GSW, MIN, CLE '26) and the Warriors '18 have a slot no rostered card is listed at — no centre on either Warriors side, no point guard on the '26 Timberwolves, no small forward on the '26 Cavaliers. Those seven keep this file's own fit ladder (strict, then one position over, then anywhere) with OVR as the objective instead of minutes. They are the only levels where the ladder's five is not literally startingFive's output, and tests/campaigns.test.ts pins the count at exactly 7.",
+    "PIPELINE_VERSION is left at 133 per the dispatch — no regeneration, no data/*.json change, no anchors.json change. `npm run anchors` reads 134 anchors, 0 failing, before and after.",
+    "src/data/opponents.json is NOT byte-identical this time (it was at recal_113 and recal_133): 24 of the 30 tier-1 levels changed men. Anything downstream that memorised a tier-1 five by index is now reading a different five — tests/tree.test.ts was one such reader and is fixed above."
+  ],
+  "notes": [
+    "RULE 1, AS WRITTEN: a tier-1 or tier-2 level fields the five the Team DB shows for that team-season — bestfive.ts's startingFive over the WHOLE roster, the legal PG-to-C board that maximizes total OVR, listed PG to C with the post-recal_74 assists tie-break. No minutes floor, because the Team DB applies none; consistency with the Team DB is the point of the rule.",
+    "RULE 2, AS WRITTEN: the Champions tier is sorted by TeamDb.tsx's ovrOf — round((off + def) / 2) of seasonGauges(five, the five's own season) — ascending, with the raw offRaw - drtgRef as the tie-break. Tier 1 keeps the real standings (worst record first); tiers 3 and 4 keep recal_113's keys exactly.",
+    "WHAT THE MINUTES RULE WAS DOING, measured before the swap: 54 of 90 levels fielded a different five from the Team DB's, and after the seven relaxed boards are counted the final figure is 58 of 90. The Heat '06 opened the Champions tier WITHOUT Shaquille O'Neal (Payton/Wade/Posey/Walker/Haslem, 44/49 = 47, against 77/64 = 71 with him); the Bulls '98 benched Scottie Pippen for Luc Longley; Chris Paul '18, Kyrie Irving '16, Kristaps Porzingis '24 and '25, Draymond Green '22, Andre Iguodala '15 and '16, Manu Ginobili '03 and Tiago Splitter '14 all lost their place to a healthier role man. A season's minutes are an availability record, not a statement about who the team is.",
+    "WHY THE RAW NET HAD TO GO, measured over the sixty Champions levels. It passes through no era table at all, and on a tier spanning 1980-2025 that is most of the key: Spearman(level, offRaw) = .963 against Spearman(level, -drtgRef) = .238, so the 'difficulty' climb was an offence climb with the defence along for the ride — the Bulls '98 (DEF 94) sat at level 2 and the Nuggets '23 at level 44. On the dial the two channels read .624 and .718. Against the seasons' own SRS from bref the order improves .353 -> .450. And the dial is the only key on this tier the player can SEE: it is the number on the team's row in the Team DB and on its ticket in the level map.",
+    "THE CLAMP OBJECTION THAT KEPT TIERS 3 AND 4 OFF THE DIAL (recal_113: nine all-time sides read OFF 99, six tie on off+def) does not bite on sixty real team-seasons: 30 distinct OVR values across 60 levels, largest tie group 6, every tie broken by the raw net. The tier is non-decreasing in the dial and strictly ordered under the compound key, and tests/campaigns.test.ts asserts both.",
+    "THE CHAMPIONS TIER, first ten before -> after (team, dial OVR): L1 Heat '06 47 -> Jazz '21 58 · L2 Bulls '98 70 -> Cavaliers '16 59 · L3 Spurs '03 64 -> Nuggets '23 59 · L4 Celtics '24 57 -> Rockets '95 60 · L5 Celtics '25 53 -> Celtics '25 60 · L6 Lakers '20 59 -> Rockets '94 61 · L7 Jazz '21 52 -> Celtics '24 61 · L8 Rockets '95 55 -> Mavericks '11 62 · L9 Lakers '80 57 -> Lakers '88 64 · L10 Pistons '90 69 -> Lakers '20 66. Last ten: L51 Spurs '07 83 -> Lakers '02 82 · L52 Mavericks '07 71 -> Bulls '97 83 · L53 Thunder '13 72 -> Warriors '18 83 · L54 Heat '13 77 -> Bulls '96 85 · L55 Lakers '02 77 -> Heat '12 85 · L56 76ers '83 87 -> Spurs '07 86 · L57 Warriors '15 77 -> 76ers '83 87 · L58 Warriors '18 83 -> Warriors '17 88 · L59 Warriors '16 82 -> Warriors '15 89 · L60 Warriors '17 88 -> Warriors '16 92. 57 of the 60 levels moved rung.",
+    "THE BALANCE RAMP, re-measured with npm run balance (staffed median, first level -> last): League 96.5%, 99.8 -> 70.6 · Champions 76.9%, 80.0 -> 52.4 · All-Time 43.1%, 71.2 -> 31.8 · Customs 46.9%, 75.6 -> 8.1, the All-Time First Team last and hardest. Every seam steps UP into the new tier (70.6 -> 80.0, 52.4 -> 71.2, 31.8 -> 75.6) — a tier opens softer than the one before it closed and climbs again, which is the shape a ladder wants and the opposite of a cliff. The round FIXED the worst seam it had: under the minutes rule the Champions opened at 98.2% (the Heat '06 without Shaq), a free level after a 76.2% tier-1 boss.",
+    "TIERS 3 AND 4 ARE UNTOUCHED, checked and not assumed: 0 of 60 levels changed a man, 0 changed rung, and campaigns.json's tier-3 and tier-4 blocks are identical before and after. They are built by pickFive over card pools and never went through the minutes lineup.",
+    "THE EIGHT CAMPAIGN ROUNDS DID NOT SILENTLY REORDER: tier membership is unchanged everywhere (+0 / -0 on all four tiers), ROUNDS is still 150, the tier bands still start at 1 / 31 / 91 / 121, and the only tier whose ORDER moved is the one the ruling is about."
+  ]
+}
