@@ -40,10 +40,11 @@ const W = 375
 const LANE = 208
 /**
  * Vertical clearance at the wall where two rows meet — the one place a row and the row above it
- * stand at the same x, and so the one distance that has to clear a ticket. A ticket with its stars
- * under it is ~142px tall.
+ * stand at the same x, and so the one distance that has to clear a ticket. The tallest ticket on
+ * the map is the banner: a rod, a pennant, the notch cut out of its foot and three stars under it,
+ * ~161px on a desk now that the hall is drawn at the same size as the other three blocks.
  */
-const TURN = 190
+const TURN = 212
 /**
  * How steeply a row climbs as it runs, as a SLOPE rather than a fixed rise. Stated as an angle
  * because that is what his ruling is about: "a snake going slightly up" is something the eye reads
@@ -91,10 +92,28 @@ const HEAD_BLEED = 340
 const BOW = 0.3
 
 const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
-/** How many levels stand in one row at this width. Two is the floor — a phone still snakes. */
+/**
+ * THE BLOCK IS THIRTY LEVELS, AND A ROW MAY NOT STRADDLE ONE (his ruling: "Make the stages cut in
+ * 30, 60, 90, 120 — 31 and 30 can't be the same line as the design is different"). A row used to
+ * be as many tickets as the width would take, and the floor changed at whichever ROW the new block
+ * began in — so with nine to a row, levels 28, 29 and 30 stood on the same shelf as 31 to 36 and
+ * took the new block's floor with them. An arena night printed on hardwood.
+ *
+ * The fix is upstream of the seam: a row only ever holds a DIVISOR OF THIRTY, so level 31 always
+ * begins a row and every block is a whole number of rows. (150 is divisible by all of them too, so
+ * the top of the ladder is never a part-row either.) The widest one that still leaves a lane wide
+ * enough for a ticket wins — ten to a row on a desk, six on a laptop, two on a phone.
+ */
+const BLOCK_DIVISORS = [15, 10, 6, 5, 3, 2] as const
+/** Narrowest lane a ticket is legible in: the widest ticket on the map is ~152px on a desk. */
+const MIN_PITCH = 162
 export const perRow = (colW: number) => {
-  const usable = Math.max(0, (colW || W) - sideOf(colW || W) * 2)
-  return Math.max(2, Math.floor(usable / LANE) + 1)
+  const w = colW || W
+  const usable = Math.max(0, w - sideOf(w) * 2)
+  const natural = Math.max(2, Math.floor(usable / LANE) + 1)
+  // widest divisor of thirty that both fits the width and is not more than the lanes would allow
+  const fits = BLOCK_DIVISORS.find((c) => usable / (c - 1) >= MIN_PITCH && c <= natural + 1)
+  return fits ?? 2
 }
 export const rowsOf = (colW: number) => Math.ceil(ROUNDS / perRow(colW))
 

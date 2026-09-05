@@ -125,6 +125,31 @@ describe('the trail snakes across whatever width it is given', () => {
     expect(rowsOf(1900) * perRow(1900)).toBeGreaterThanOrEqual(ROUNDS)
   })
 
+  /**
+   * HIS RULING: "Make the stages cut in 30, 60, 90, 120 — 31 and 30 can't be the same line as the
+   * design is different." The floor changes at a ROW boundary (a horizontal line cannot cross a
+   * row of tickets standing side by side), so the only way a block of thirty can have a floor of
+   * its own is for a row never to straddle one. That is a property of how many levels stand in a
+   * row, not of the seam, which is why it is tested here.
+   */
+  it('a row never straddles a block of thirty, at any width', () => {
+    for (let colW = 320; colW <= 2600; colW += 17) {
+      const cols = perRow(colW)
+      expect(30 % cols, `${cols} to a row at ${colW}px puts level 30 and level 31 on the same line`).toBe(0)
+      // and every block is a whole number of rows, so the ladder has no part-row at its head either
+      expect(ROUNDS % cols).toBe(0)
+    }
+  })
+
+  it('and so every block begins on a row of its own', () => {
+    for (const colW of [375, 562, 900, 1438, 1900]) {
+      const cols = perRow(colW)
+      for (const first of [1, 31, 61, 91, 121]) {
+        expect((first - 1) % cols, `level ${first} must start a row at ${colW}px`).toBe(0)
+      }
+    }
+  })
+
   it('every level stands inside the width it was handed', () => {
     for (const colW of [375, 562, 900, 1438, 1900]) {
       const x = xOf(colW)

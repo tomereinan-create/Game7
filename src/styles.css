@@ -3580,6 +3580,44 @@ body.tunnel .rung { background: #1c1a16; }
   .node .node-stars { font-size: 20px; gap: 3px; }
   .node.wood .ticket-stub .ab { height: 26px; line-height: 26px; }
   .node.wood.now .ticket-stub .ab { height: 26px; line-height: 26px; }
+
+  /**
+   * THE OTHER TWO BLOCKS, AT THE SAME SIZE (his ruling: "Make 61-150 as big as 1-60. It's too
+   * small"). The desk scale-up above was written when only two skins existed and never named the
+   * banner or the foil card, and it could not reach them by accident: every size in those two is
+   * set on `.node.hall X` / `.node.dusk X`, which outranks the plain `.node X` rules above no
+   * matter what order they are in. So half the ladder stayed at its phone size on a desk — two
+   * blocks of thirty-odd tickets a third smaller than the two either side of them.
+   *
+   * Everything below is the same ~1.66x the arena and the hardwood take, applied part by part:
+   * the banner and its rod, the foil card and its inset, and every number, band and caption on
+   * them. Nothing changes shape — a banner is still a pennant, the dynasty card is still foil.
+   */
+  .node.hall .ticket { width: 110px; margin-top: 11px; padding: 30px 7px 20px; }
+  .node.hall.now .ticket { width: 126px; padding: 41px 7px 23px; }
+  .node.hall.locked .ticket { padding: 30px 7px 20px; }
+  .node.hall::after { top: 3px; width: 76px; height: 5px; }
+  .node.hall.now::after { width: 90px; }
+  .node.hall .ticket-n { font-size: 36px; }
+  .node.hall.now .ticket-n { font-size: 41px; }
+  .node.hall .ticket-stub { font-size: 12.5px; }
+  .node.hall .ticket-stub .ab { top: 10px; font-size: 12.5px; }
+  .node.hall.now .ticket-stub .ab { top: 26px; }
+  .node.hall .ticket-champ { font-size: 12.5px; }
+  .node.hall .ticket-next { top: 10px; }
+  .node.hall.now::before { top: 58px; width: 300px; height: 300px; }
+
+  .node.dusk .ticket { width: 130px; border-radius: 16px; padding: 3px; }
+  .node.dusk .ticket::after { inset: 3px; border-radius: 13px; }
+  .node.dusk.now .ticket { width: 144px; }
+  .node.dusk .ticket-n { font-size: 38px; margin-top: 28px; }
+  .node.dusk.now .ticket-n { font-size: 43px; margin-top: 48px; }
+  .node.dusk .ticket-stub { font-size: 13px; }
+  .node.dusk .ticket-stub .ab { left: 3px; right: 3px; top: 3px; height: 25px; line-height: 25px; border-radius: 13px 13px 0 0; font-size: 12px; }
+  .node.dusk .ticket-champ { font-size: 13px; }
+  .node.dusk .ticket-next { top: 32px; }
+  .node.dusk.now .ticket::before { top: 3px; bottom: 3px; left: 3px; width: 53px; }
+  .node.dusk.now::before { top: 53px; width: 300px; height: 300px; }
   /* the map's own chrome, one step up with them */
   .map-kicker { font-size: 14px; }
   .map-link { font-size: 14px; }
