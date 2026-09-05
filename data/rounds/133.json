@@ -1,0 +1,245 @@
+{
+  "round": 133,
+  "agent": "players-to-team",
+  "status": "declined",
+  "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
+  "title": "THE SECOND RIM PROTECTOR WAS PAID DOUBLE WHAT HE EARNS — ANCHOR_2ND 0.35 -> 0.20, the first value this constant has ever been given by the outcome it is supposed to produce (bref opp_e_fg_percent). 76ers '85 team DEF 96 -> 95, and 92 +-2 is DECLINED: the Warriors '17 anchor sits ON its floor and every lever that moves a top-heavy five moves them together",
+  "subject": "Philadelphia 76ers '85 (best legal five)",
+  "five": [
+    "Maurice Cheeks '85",
+    "Julius Erving '85",
+    "Bobby Jones '85",
+    "Charles Barkley '85",
+    "Moses Malone '85"
+  ],
+  "season": 1985,
+  "scale": "team:defdial",
+  "target": 92,
+  "tol": 2,
+  "before": 96,
+  "after": 95,
+  "pipeline_version": 130,
+  "knobs": [
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "ANCHOR_2ND: 0\\.2,",
+      "label": "THE ROUND'S ONE CONSTANT — the second rim protector's share of the anchor, port side",
+      "note": "0.35 -> 0.20"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const anchorRaw = \\(rp\\[0\\]\\?\\.\\[0\\] \\?\\? 0\\) \\+ K\\.ANCHOR_2ND \\* rp1 \\* \\(rp1 / 99\\)",
+      "label": "the line it feeds — the hard-coded 0.35 is gone and the knob is named",
+      "note": "was `+ 0.35 * rp1 * (rp1 / 99)`"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "ANCHOR_2ND=0\\.20,",
+      "label": "the same constant, source-of-truth side — the two must never drift",
+      "note": "data/parity_check.py + tests/parity.test.ts gate the pair; scripts/diag-team/parity133.ts proves it on the subject five"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "anchor_raw = rp\\[0\\]\\[0\\] \\+ MKNOBS\\['ANCHOR_2ND'\\]\\*rp\\[1\\]\\[0\\]\\*\\(rp\\[1\\]\\[0\\]/99\\)",
+      "label": "the same line, python side",
+      "note": "was `+ 0.35*rp[1][0]*(rp[1][0]/99)`"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "DIDX_HOLD: 0\\.4523,",
+      "label": "the level hold, RE-DERIVED — the pool's mean drtgRef stays at 110.047736 to six places",
+      "note": "1.0773 -> 0.4523 (recal_122's rule: the DEF gauge block in gauges.ts is frozen, so the round re-shapes the board without lifting it)"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "DIDX_HOLD=0\\.4523,",
+      "label": "the same hold, python side",
+      "note": "1.0773 -> 0.4523"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const DEF_TOP = 107\\.58",
+      "label": "THE DEF GAUGE IS UNTOUCHED — recal_108 froze it and this round did not re-derive it",
+      "note": "DEF_WORST 113 / DEF_MID 110.04 / DEF_TOP 107.58 and the whole DEF_LEVEL table are as recal_101 left them"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the summit, tol 0 (recal_94: 'Move the summit to Bulls '96')",
+      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "Warriors '17 — recal_122's anchor, sitting ON its floor; this is the pin that binds the round",
+      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "season": 2017,
+      "scale": "team:defdial",
+      "op": ">=",
+      "value": 76
+    },
+    {
+      "label": "Pistons '04 (recal_94, 84 +-4)",
+      "five": ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"],
+      "season": 2004,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 84,
+      "tol": 4
+    },
+    {
+      "label": "Thunder '26 (recal_100, 80 +-4) — zero slack upward, may not rise past 84",
+      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 80,
+      "tol": 4
+    },
+    {
+      "label": "76ers '26 (recal_100, 51 +-6)",
+      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 51,
+      "tol": 6
+    },
+    {
+      "label": "Lakers '87 (recal_100, 67 +-6)",
+      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "season": 1987,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 67,
+      "tol": 6
+    },
+    {
+      "label": "Celtics '24 (recal_119, 65 +-3)",
+      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "season": 2024,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 65,
+      "tol": 3
+    },
+    {
+      "label": "Pistons '26 (recal_100, 75 +-6)",
+      "five": ["Cade Cunningham '26", "Duncan Robinson '26", "Ausar Thompson '26", "Tobias Harris '26", "Jalen Duren '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 75,
+      "tol": 6
+    },
+    {
+      "label": "NO OFF DIAL MOVED — teamOffense is not on this round's path; the Bulls '96 OFF pin (recal_105, 68 +-3)",
+      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "season": 1996,
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 68,
+      "tol": 3
+    },
+    {
+      "label": "the Bulls '96 OVR pin (recal_105, 84 +-3) — the DEF half is the one that could have moved",
+      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "season": 1996,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 84,
+      "tol": 3
+    },
+    {
+      "label": "the Warriors '17 OFF pin, tol 0 (recal_94)",
+      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "the subject's OFF is untouched — this is a DEF round",
+      "five": ["Maurice Cheeks '85", "Julius Erving '85", "Bobby Jones '85", "Charles Barkley '85", "Moses Malone '85"],
+      "season": 1985,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 71
+    },
+    {
+      "label": "the subject still reads well clear of the 1985 field's third team (Celtics '85)",
+      "five": ["Dennis Johnson '85", "Danny Ainge '85", "Larry Bird '85", "Kevin McHale '85", "Robert Parish '85"],
+      "season": 1985,
+      "scale": "team:defdial",
+      "op": "<=",
+      "value": 85
+    },
+    {
+      "label": "no card moved: the subject's own men keep their DEF cards (this is a team round, not a card round)",
+      "card": "Bobby Jones '85",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 88
+    },
+    {
+      "label": "no card moved: Moses Malone '85 rimprot",
+      "card": "Moses Malone '85",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 90
+    },
+    {
+      "label": "no card moved: Maurice Cheeks '85 perdef",
+      "card": "Maurice Cheeks '85",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 93
+    },
+    {
+      "label": "recal_94's order pin as a pair of bounds (the `order` block reads cards, not fives): the 76ers '26 stay well under the Thunder '26",
+      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": "<=",
+      "value": 70
+    },
+    {
+      "label": "the other half of the same pin: the Thunder '26 stay above it",
+      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "season": 2026,
+      "scale": "team:defdial",
+      "op": ">=",
+      "value": 76
+    }
+  ],
+  "movers": {
+    "scale": "team:defdial",
+    "count": 631,
+    "max_abs": 2,
+    "top": []
+  },
+  "cost": [
+    "THE TARGET IS NOT REACHED AND THE ROUND SAYS SO. 92 +-2 was asked for; 95 is what the board gives with every pin held. Doctrine 1: the closest reachable value is landed and the rest is declined with the frontier below, rather than reached by a per-team override.",
+    "THE FRONTIER, measured on the whole 1,255-five wheel (scripts/diag-team/front133.py, 9,000 sampled points over the four channel weights, ANCHOR_SOFT, ANCHOR_2ND, the load profile and the glass shape, every point graded against all fifteen DEF pins and the 47-season within-season Spearman): with the fit held at or above shipped the subject's floor is 95. 94 costs rho +0.7764 -> +0.7712 and six simultaneous knobs. 93 costs +0.7657. 92 costs +0.7544 (-0.022) and a full seven-knob refit of the didx. There is no single-knob path to 92.",
+    "THE PIN THAT BINDS IS THE WARRIORS '17 (recal_122, 81 +-5, reading 76 — ON its floor, unrounded 75.55). The subject is a top-heavy five (perdef 93/90/69/68/59) and so are the Warriors (96/71/66/62/45), and the subject beats them at EVERY slot except the best defender. So no monotone re-reading of the five's perdef can lower one without lowering the other: the required ratio is 33:1 in relative didx loss and the best channel ratio available is 3.7:1. That is the whole reason 92 is out of reach, and it is a conflict between two of his own rulings, not a modelling gap.",
+    "DIDX_HOLD is re-derived, not re-tuned: 1.0773 -> 0.4523, chosen so the pool's mean drtgRef is 110.047736 before and after, to six decimal places. The DEF gauge block in src/engine/gauges.ts (DEF_WORST/DEF_MID/DEF_TOP + the 47-season DEF_LEVEL table) is FROZEN by recal_108 and was NOT re-derived.",
+    "DKNOBS.ANCHOR_2ND (0.35) — the standalone `teamDefense` path — is deliberately UNTOUCHED, on recal_94's precedent for DISC_FREEPTS: it is a different layer, off the gauge path and off the resolver's path, read only by tests/offense.test.ts.",
+    "MEASURED AND NOT TAKEN, written down so a later round does not re-measure it: the GLASS channel's shape is wrong too. `glass` reads the five's defensive board as d0 + 0.5*d1 + 0.1*(d2+d3+d4) — the top two men take 83% of the credit, the pre-recal_122 top-heavy stack. Against the channel's own truth column (bref drb_percent, within-season Spearman over the same 1,255) the shipped stack scores +0.3124 and [1, .5, .35, .35, .35] scores +0.3476. Fixing it is right, but it is worth ~0 on the subject once the channel's spread is held, and it costs the whole-dial rho ~0.004 — so it is not this round's lever and it is not smuggled in. Its own round should take it, with the opponent side (o0 + 0.5*o1 + 0.25*rest) checked against orb_percent at the same time.",
+    "The campaign ladder was regenerated (npm run opponents). The League tier — src/data/opponents.json, all 30 levels — is bit-identical in order and in every five. Across the other 120 levels six ADJACENT pairs swapped (|rank move| 1 everywhere: Lakers '00/Bucks '20, Spurs '16/Raptors '19, Blazers '91/Nuggets '23, Spurs '07/Celtics '08, Lakers '02/Heat '13, All-Mid-Range/All-Most-Improved) and no level's five changed.",
+    "compute_ovr.py was re-run: 0 of 10,000 cards moved on o_ovr / d_ovr / ovr / talent / attrs; 2,144 cards moved on `marg` by exactly +-1 (marg has been out of OVR since recal_37 and is a display field). PIPELINE_VERSION is left at 130 per the dispatch — the integrator stamps the batch, so this file records 130, the version it actually shipped at, and not 133.",
+    "ONE OLD LINE IN THE LEDGER FLIPS, and it is a symptom that no longer exists. The whole ledger goes 463 misses -> 458 (this round's six knob lines go green); the single line that newly misses is recal_68's DEF addendum (D2) in scripts/receipts.ts, a hand-written block already annotated '[SUPERSEDED by recal_94]', whose live assertion is `dPhi.anchor > 99` — the 76ers '26 raw anchor was 100.4 and is now 91.7, so the anchor stack that addendum named as the DEF-side patient has stopped overflowing. It is a hand-written block (rounds <= 90) and this agent does not edit those; the owner or the integrator decides whether to retire the line."
+  ],
+  "notes": [
+    "THE MEASUREMENT. Truth is data/bref/Team Summaries.csv; the instrument is the within-season Spearman of the shipped dial against real DRtg over the 1,255 fieldable team-seasons of src/data/teamseasons.json, averaged over 47 seasons — the same instrument rounds 94, 100, 110 and 122 used. The whole round is scripts/diag-team: lab133.py (the bench: recomputes every five's didx/drtgRef/dial under a parametrised didx, re-holds the pool mean and grades all fifteen pins), scan133*.py (one knob family at a time), reg133.py + drb133.py + four133.py (the channels against their OWN truth columns), opt133.py / front133.py / grid133.py (the frontier), final133.py + fine133.py (the landing), parity133.ts (py/ts on the subject five), ten133.ts (the ten teams through the app's own seasonGauges).",
+    "THE SUBJECT, TERM BY TERM, BEFORE. 76ers '85 perdef 93 (Cheeks) / 90 (Bobby Jones) / 69 (Erving) / 68 (Barkley) / 59 (Moses), rimprot 90 and 88. didx 67.277 = 0.55 x effDi 77.60 (42.680) + anchor 12.658 + steals 4.805 + glass 8.211 - hold 1.077. drtgRef 107.778, DEF 96, all-time #11, 2nd of the 22 fieldable 1985 fives. Real DRtg 107.3 — 10th of 22, with a league-average shot defence. The anchor line is the tell: anchorRaw = 90 + 0.35 x 88 x 88/99 = 117.38, so Bobby Jones standing next to Moses Malone was worth +27.4 raw rim points, more than a quarter of the whole channel, off a scale whose top is 99.",
+    "WHAT WAS NEVER TESTED. ANCHOR_2ND has been 0.35 since the first defence build; recal_94 capped the anchor, recal_122 turned the cap into a knee, and neither ever asked what the second rim protector is actually worth. bref carries the channel's own truth column — the rim anchor exists to hold the opponent's SHOOTING down, so its outcome is opp_e_fg_percent — and the within-season Spearman of anchorRaw against it over the same 1,255 team-seasons is a clean single-peaked curve: 0.00 +0.5086 · 0.10 +0.5228 · 0.15 +0.5289 · 0.20 +0.5275 · 0.25 +0.5240 · 0.30 +0.5246 · 0.35 +0.5180 (shipped) · 0.45 +0.5087 · 0.60 +0.4871. The plateau is 0.15-0.20 and the shipped value is off it on the generous side by about a factor of two. Two bigs cannot protect the same rim on the same possession, and 47 seasons of shot defence say so.",
+    "WHY 0.20 AND NOT 0.15. 0.15 is the peak (+0.5289 against +0.5275) and it is a flat one — the two are inside each other's noise. 0.15 drops the Warriors '17 to an unrounded 75.40 and breaks recal_122's anchor at its floor; 0.20 leaves them at 75.55, which is the only value on the plateau that holds every pin. So 0.20 is the conservative end of an evidence-picked plateau, chosen by a pin rather than by the subject.",
+    "FIT, before -> after (mean of the 47 within-season Spearmans of the DEF dial against real DRtg): +0.7764 -> +0.7781. Per decade: 80s +0.8044 -> +0.8044 · 90s +0.8024 -> +0.8057 · 00s +0.8062 -> +0.8091 · 10s +0.7267 -> +0.7270 · 20s +0.7276 -> +0.7300. The round is fit-POSITIVE in four decades and flat in the fifth. This is not a round that spends accuracy to satisfy a ruling; it is a round that found an untested constant sitting off its own evidence, and the ruling is what made anyone look.",
+    "WHAT MOVED. 631 of the 1,255 DEF dials, max |move| 2. 0 of the 1,255 OFF dials, and all 1,255 offRaw readings bit-identical — teamOffense is not on this round's path. The pool's mean drtgRef is 110.047736 before and after. The all-time DEF top 15 keeps its six 99s (Celtics '10, Bucks '85, 76ers '80, Bulls '96, Spurs '05 and — newly — Bucks '84 at 98 as the Bulls '98 slip 99 -> 98); the Bulls '98 are the only named five that changed a rank band, and they fall because Luc Longley and Dennis Rodman were the pair the old constant paid twice.",
+    "WHY THE SUBJECT ONLY MOVES ONE POINT, stated plainly. Near the summit the DEF gauge runs about 19.9 dial points per raw DRtg point, and 0.181 DRtg per didx point, so a dial point costs 0.28 didx. The subject's anchor loses 0.13 x 0.9 x 0.5 x (117.38 - 105.64) = 0.687 didx from the change, but the POOL mean loses 0.35 of that too and DIDX_HOLD gives it back, so the subject's net loss is 0.34 didx — 1.2 dial points, 96 -> 95. The rim anchor is a 0.117-weighted channel with a ~20-point live range; it cannot pay for four dial points on its own no matter what the constant is set to. Setting ANCHOR_2ND to 0.00 — the second rim protector worth literally nothing, past the truth column's own optimum in the wrong direction — reaches 94 and breaks the Warriors.",
+    "WHAT WAS TRIED AND REJECTED, each measured on the whole wheel before being dropped. (a) Flattening recal_122's load profile toward the mean: fit-positive (+0.7832 at flat) but it lowers the Warriors '17 harder than the subject — they are the more top-heavy five — and breaks them at once. (b) Tilting the load profile ONTO the best defender: raises the Warriors, raises the subject too, and costs the subject nothing. (c) ANCHOR_SOFT 0.5 -> 0.2: reaches 94 but the Warriors go to 74.50. (d) Moving the glass or steals weight onto perdef: the subject RISES (they are rich on both). (e) A knee on the glass stack, the same law the anchor got: the subject loses 0.15 didx at best. (f) A top-2 perdef premium, i.e. the literal reading of 'with 2 great': recal_122 already measured and declined it, and re-measuring it here reproduced the same verdict.",
+    "HIS SENTENCE, ANSWERED HONESTLY. 'They have 5 good defenders, with 2 great' is exactly right about the roster and it is exactly why the engine reads them high: the five's usage-weighted perdef is 77.60, seventh-best of the 1,255. What the engine was ALSO doing was paying Bobby Jones's rim protection a second time, on top of Moses's, at a rate no season of shot defence supports. That double payment is now gone. What is left — 95, all-time #11 — is the honest reading of a five that really did have Cheeks, Jones, Erving, Barkley and Moses on the floor together, measured as a five and not as a rotation. If he wants the low 90s, the next lever is not on this side of the ledger: it is either the Warriors '17 anchor being re-opened (they are what pins the top-heavy shape in place) or the perdef cards of Erving/Barkley/Moses, which belong to the ratings-to-off-def agent."
+  ]
+}
