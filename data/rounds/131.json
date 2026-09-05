@@ -10,7 +10,7 @@
   "tol": 4,
   "before": 69,
   "after": 78,
-  "pipeline_version": 131,
+  "pipeline_version": 133,
   "knobs": [
     {
       "file": "data/compute_ovr.py",
@@ -62,39 +62,171 @@
     }
   ],
   "expect": [
-    { "card": "Moses Malone '82", "scale": "off", "op": "~", "value": 86, "tol": 1, "label": "the same man, the same shape, rim 95 — his zone block already exceeds the evidence" },
-    { "card": "Hakeem Olajuwon '90", "scale": "off", "op": "~", "value": 73, "tol": 1, "label": "the same load (volume 89) on efficiency 57 — the conversion ramp and his own low free-throw draw hold him" },
-    { "card": "Patrick Ewing '90", "scale": "off", "op": "~", "value": 85, "tol": 1, "label": "rim 97, orb 63 — unmoved" },
-    { "card": "Shaquille O'Neal '00", "scale": "off", "op": "==", "value": 99, "label": "the pinned summit of the class" },
-    { "card": "Cedric Maxwell '80", "scale": "off", "op": "~", "value": 67, "tol": 4, "label": "recal_112's subject: fouldraw 98 and orb 84, but volume 27 puts him at share 0.00" },
-    { "card": "Deandre Ayton '26", "scale": "off", "op": "~", "value": 58, "tol": 3, "label": "recal_107's subject, on the other side of the 55 hinge" },
-    { "card": "Clint Capela '17", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "recal_51's pin" },
-    { "card": "Domantas Sabonis '21", "scale": "off", "op": "~", "value": 71, "tol": 1, "label": "recal_55's pin" },
-    { "card": "Rudy Gobert '19", "scale": "def", "op": "~", "value": 92, "tol": 1, "label": "DEF moves on zero cards" },
-    { "card": "Moses Malone '85", "scale": "def", "op": "==", "value": 88, "label": "the subject's own defence is untouched" },
-    { "card": "Moses Malone '85", "scale": "attr:rim", "op": "==", "value": 60, "label": "no attribute moved: the ratified pre-1997 zone compression is NOT touched" }
+    {
+      "card": "Moses Malone '82",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "the same man, the same shape, rim 95 — his zone block already exceeds the evidence"
+    },
+    {
+      "card": "Hakeem Olajuwon '90",
+      "scale": "off",
+      "op": "~",
+      "value": 73,
+      "tol": 1,
+      "label": "the same load (volume 89) on efficiency 57 — the conversion ramp and his own low free-throw draw hold him"
+    },
+    {
+      "card": "Patrick Ewing '90",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 1,
+      "label": "rim 97, orb 63 — unmoved"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the pinned summit of the class"
+    },
+    {
+      "card": "Cedric Maxwell '80",
+      "scale": "off",
+      "op": "~",
+      "value": 67,
+      "tol": 4,
+      "label": "recal_112's subject: fouldraw 98 and orb 84, but volume 27 puts him at share 0.00"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "recal_107's subject, on the other side of the 55 hinge"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_51's pin"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 1,
+      "label": "recal_55's pin"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "DEF moves on zero cards"
+    },
+    {
+      "card": "Moses Malone '85",
+      "scale": "def",
+      "op": "==",
+      "value": 88,
+      "label": "the subject's own defence is untouched"
+    },
+    {
+      "card": "Moses Malone '85",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 60,
+      "label": "no attribute moved: the ratified pre-1997 zone compression is NOT touched"
+    }
   ],
   "order": [
-    { "scale": "off", "above": "Moses Malone '82", "below": "Moses Malone '85", "label": "the 31-point season still reads above the 24-point one" },
-    { "scale": "off", "above": "Shaquille O'Neal '00", "below": "Moses Malone '85" },
-    { "scale": "off", "above": "Patrick Ewing '90", "below": "Moses Malone '85" },
-    { "scale": "off", "above": "Moses Malone '85", "below": "Hakeem Olajuwon '90", "label": "the ruling's own sentence: 25 ppg on not bad eff outranks 24 ppg on bad eff" }
+    {
+      "scale": "off",
+      "above": "Moses Malone '82",
+      "below": "Moses Malone '85",
+      "label": "the 31-point season still reads above the 24-point one"
+    },
+    {
+      "scale": "off",
+      "above": "Shaquille O'Neal '00",
+      "below": "Moses Malone '85"
+    },
+    {
+      "scale": "off",
+      "above": "Patrick Ewing '90",
+      "below": "Moses Malone '85"
+    },
+    {
+      "scale": "off",
+      "above": "Moses Malone '85",
+      "below": "Hakeem Olajuwon '90",
+      "label": "the ruling's own sentence: 25 ppg on not bad eff outranks 24 ppg on bad eff"
+    }
   ],
   "movers": {
     "scale": "off",
     "count": 103,
     "max_abs": 9,
     "top": [
-      ["Moses Malone '85", 69, 78],
-      ["Moses Malone '87", 70, 77],
-      ["Moses Malone '86", 68, 75],
-      ["Moses Malone '88", 70, 76],
-      ["Moses Malone '84", 71, 77],
-      ["Zydrunas Ilgauskas '05", 64, 70],
-      ["Shawn Kemp '97", 70, 75],
-      ["Jimmy Butler '20", 76, 79],
-      ["Karl-Anthony Towns '26", 76, 79],
-      ["Kevin Love '11", 75, 78]
+      [
+        "Moses Malone '85",
+        69,
+        78
+      ],
+      [
+        "Moses Malone '87",
+        70,
+        77
+      ],
+      [
+        "Moses Malone '86",
+        68,
+        75
+      ],
+      [
+        "Moses Malone '88",
+        70,
+        76
+      ],
+      [
+        "Moses Malone '84",
+        71,
+        77
+      ],
+      [
+        "Zydrunas Ilgauskas '05",
+        64,
+        70
+      ],
+      [
+        "Shawn Kemp '97",
+        70,
+        75
+      ],
+      [
+        "Jimmy Butler '20",
+        76,
+        79
+      ],
+      [
+        "Karl-Anthony Towns '26",
+        76,
+        79
+      ],
+      [
+        "Kevin Love '11",
+        75,
+        78
+      ]
     ]
   },
   "top12": {

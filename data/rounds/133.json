@@ -18,7 +18,7 @@
   "tol": 2,
   "before": 96,
   "after": 95,
-  "pipeline_version": 130,
+  "pipeline_version": 133,
   "knobs": [
     {
       "file": "src/engine/offense.ts",
@@ -66,7 +66,13 @@
   "expect": [
     {
       "label": "the summit, tol 0 (recal_94: 'Move the summit to Bulls '96')",
-      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
       "season": 1996,
       "scale": "team:defdial",
       "op": "==",
@@ -74,7 +80,13 @@
     },
     {
       "label": "Warriors '17 — recal_122's anchor, sitting ON its floor; this is the pin that binds the round",
-      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
       "season": 2017,
       "scale": "team:defdial",
       "op": ">=",
@@ -82,7 +94,13 @@
     },
     {
       "label": "Pistons '04 (recal_94, 84 +-4)",
-      "five": ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"],
+      "five": [
+        "Chauncey Billups '04",
+        "Richard Hamilton '04",
+        "Tayshaun Prince '04",
+        "Ben Wallace '04",
+        "Mehmet Okur '04"
+      ],
       "season": 2004,
       "scale": "team:defdial",
       "op": "~",
@@ -91,7 +109,13 @@
     },
     {
       "label": "Thunder '26 (recal_100, 80 +-4) — zero slack upward, may not rise past 84",
-      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Ajay Mitchell '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -100,7 +124,13 @@
     },
     {
       "label": "76ers '26 (recal_100, 51 +-6)",
-      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "five": [
+        "Tyrese Maxey '26",
+        "Quentin Grimes '26",
+        "Kelly Oubre Jr. '26",
+        "Dominick Barlow '26",
+        "Joel Embiid '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -109,7 +139,13 @@
     },
     {
       "label": "Lakers '87 (recal_100, 67 +-6)",
-      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
       "season": 1987,
       "scale": "team:defdial",
       "op": "~",
@@ -118,7 +154,13 @@
     },
     {
       "label": "Celtics '24 (recal_119, 65 +-3)",
-      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "five": [
+        "Derrick White '24",
+        "Jaylen Brown '24",
+        "Jayson Tatum '24",
+        "Kristaps Porziņģis '24",
+        "Al Horford '24"
+      ],
       "season": 2024,
       "scale": "team:defdial",
       "op": "~",
@@ -127,7 +169,13 @@
     },
     {
       "label": "Pistons '26 (recal_100, 75 +-6)",
-      "five": ["Cade Cunningham '26", "Duncan Robinson '26", "Ausar Thompson '26", "Tobias Harris '26", "Jalen Duren '26"],
+      "five": [
+        "Cade Cunningham '26",
+        "Duncan Robinson '26",
+        "Ausar Thompson '26",
+        "Tobias Harris '26",
+        "Jalen Duren '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "~",
@@ -136,7 +184,13 @@
     },
     {
       "label": "NO OFF DIAL MOVED — teamOffense is not on this round's path; the Bulls '96 OFF pin (recal_105, 68 +-3)",
-      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
       "season": 1996,
       "scale": "team:offdial",
       "op": "~",
@@ -145,7 +199,13 @@
     },
     {
       "label": "the Bulls '96 OVR pin (recal_105, 84 +-3) — the DEF half is the one that could have moved",
-      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
       "season": 1996,
       "scale": "team:ovrdial",
       "op": "~",
@@ -154,7 +214,13 @@
     },
     {
       "label": "the Warriors '17 OFF pin, tol 0 (recal_94)",
-      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
       "season": 2017,
       "scale": "team:offdial",
       "op": "==",
@@ -162,7 +228,13 @@
     },
     {
       "label": "the subject's OFF is untouched — this is a DEF round",
-      "five": ["Maurice Cheeks '85", "Julius Erving '85", "Bobby Jones '85", "Charles Barkley '85", "Moses Malone '85"],
+      "five": [
+        "Maurice Cheeks '85",
+        "Julius Erving '85",
+        "Bobby Jones '85",
+        "Charles Barkley '85",
+        "Moses Malone '85"
+      ],
       "season": 1985,
       "scale": "team:offdial",
       "op": "==",
@@ -170,7 +242,13 @@
     },
     {
       "label": "the subject still reads well clear of the 1985 field's third team (Celtics '85)",
-      "five": ["Dennis Johnson '85", "Danny Ainge '85", "Larry Bird '85", "Kevin McHale '85", "Robert Parish '85"],
+      "five": [
+        "Dennis Johnson '85",
+        "Danny Ainge '85",
+        "Larry Bird '85",
+        "Kevin McHale '85",
+        "Robert Parish '85"
+      ],
       "season": 1985,
       "scale": "team:defdial",
       "op": "<=",
@@ -199,7 +277,13 @@
     },
     {
       "label": "recal_94's order pin as a pair of bounds (the `order` block reads cards, not fives): the 76ers '26 stay well under the Thunder '26",
-      "five": ["Tyrese Maxey '26", "Quentin Grimes '26", "Kelly Oubre Jr. '26", "Dominick Barlow '26", "Joel Embiid '26"],
+      "five": [
+        "Tyrese Maxey '26",
+        "Quentin Grimes '26",
+        "Kelly Oubre Jr. '26",
+        "Dominick Barlow '26",
+        "Joel Embiid '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": "<=",
@@ -207,7 +291,13 @@
     },
     {
       "label": "the other half of the same pin: the Thunder '26 stay above it",
-      "five": ["Shai Gilgeous-Alexander '26", "Ajay Mitchell '26", "Luguentz Dort '26", "Chet Holmgren '26", "Jaylin Williams '26"],
+      "five": [
+        "Shai Gilgeous-Alexander '26",
+        "Ajay Mitchell '26",
+        "Luguentz Dort '26",
+        "Chet Holmgren '26",
+        "Jaylin Williams '26"
+      ],
       "season": 2026,
       "scale": "team:defdial",
       "op": ">=",
