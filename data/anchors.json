@@ -1317,5 +1317,14 @@
     "round": 133,
     "ruling": "I agree with Philadelphia 76ers '85 being lower, but not 55. They have 5 good defenders, with 2 great. This is for sure 90+.",
     "note": "96 -> 95, and the BAND IS THE FRONTIER, NOT HIS NUMBER. His verbatim words are 'lower' and 'for sure 90+'; the dispatch's reading of them was 92 +-2, which is NOT reachable. 93 +-2 = [91, 95] is the narrowest band that both obeys his sentence and contains what the board can actually produce, and it is written here so `npm run anchors` states the true position instead of failing. THE PIN THAT BLOCKS THE REST is the Warriors '17 (recal_122, 81 +-5, reading 76 = ON its floor, unrounded 75.55): the subject and the Warriors are both top-heavy fives and the subject beats them at every perdef slot except the best defender, so no monotone re-reading of the five's defence lowers one without lowering the other - the ratio needed is 33:1 and the best channel available gives 3.7:1. Measured frontier over 9,000 parameterisations of the whole didx (scripts/diag-team/front133.py), every point graded against all fifteen DEF pins: 95 with the 47-season fit held at or above shipped, 94 at rho -0.005 and six simultaneous knobs, 92 only at rho -0.022 and a full seven-knob refit. If he re-rules the Warriors, re-cut this band to what he says. See data/rounds/133.json."
+  },
+  {
+    "card": "Karl Malone '97",
+    "scale": "def",
+    "target": 87,
+    "tol": 3,
+    "round": 135,
+    "ruling": "Karl Malone agree a lot.",
+    "note": "DEF 95 -> 89. He tied Hakeem '94 (DPOY) and outranked Mutombo '97 (DPOY, BLK% 7.0, same season, 92) on 0.6 blocks a game, DBPM +1.2 and no rim deterrence: at 6'9\" perdef paid his All-Defensive votes at 89% of the full WING rate (rep_hf 1.067, height_inv 0.875) while rimprot's own vote line, ID + 0.25*(drep*hp) - gated on nothing but height - had already cashed the same votes for 18 points of rim protection (56 -> 74 with that line zeroed). recal_114's meter saw only the OTHER rim channel, drep x block evidence, which is 0.000 at BLK% 1.3, so its verdict was that rimprot had cashed nothing. The meter now takes the larger of the two channels; outside the 75-80 inch wing band the vote credit keeps only the share DBPM supports. 89 is the top half of the band: the floor of what perdef alone can reach is 87 at VOTE_SUPPORT_POW 4, which reopens recal_114's fitted constant and is not this round's to spend."
   }
 ]

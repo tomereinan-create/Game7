@@ -249,7 +249,40 @@ def score_season(r, P):
     # on the choice. Read it as a bar: votes rimprot has already cashed are backed in perdef only by
     # a top-decile DBPM.
     VOTE_SUPPORT_POW = 3
-    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * _blk_evidence(P['blk'](r['blk']))) if r['drep'] > 0.05 else 0.0
+    # recal_135 (HIS RULING, verbatim: "Karl Malone agree a lot."). recal_114's METER WAS INCOMPLETE:
+    # IT COULD ONLY SEE ONE OF THE TWO WAYS RIMPROT PAYS A VOTE. Karl Malone '97 read DEF 95 - level
+    # with Hakeem '94 (DPOY) and above Dikembe Mutombo '97 (DPOY, BLK% 7.0, the same season) at 92 -
+    # on 0.6 blocks a game, BLK% 1.3, DBPM +1.2 and no rim deterrence of any kind. recal_114's rule
+    # never touched him because its meter, drep x block evidence, is 0.000 at the 57th percentile of
+    # the season's block rate: its verdict was "rimprot never cashed these votes". It had.
+    # THE SECOND CHANNEL, MEASURED. Rim protection reads All-Defensive votes TWICE. recal_53's voted
+    # ceiling is the gated one (_w53, block evidence required since recal_92) - and there is also the
+    # reinforcement line ID = ID + 0.25*(drep*hp), which is gated on NOTHING but height. Zero that one
+    # line in a scratch run and Malone '97's rimprot reads 56 instead of 74: his votes are worth 18
+    # points of rim protection, which the big d_score branch takes at 0.40 BESIDE the 0.40 it takes of
+    # perdef. Mutombo '97 and Hakeem '94 read 99 with the line and 99 without it - their blocks carry
+    # them - which is exactly why the deduction belongs on the man whose blocks do not.
+    # WHERE IT SWITCHES ON, AND WHY IT IS NOT A FITTED NUMBER. This file has exactly one place where a
+    # card stops being a perimeter defender and it is 80 inches: recal_35's sweet band is FLAT at 1.0
+    # across 75-80 and recal_54's rep_hf is FLAT at its maximum 1.2 through 80. Past it both fade, but
+    # over 8 inches and 6 - so a 6'9" power forward still collects 87.5% and 89% of the pure-WING rate
+    # (0.2704 + 0.4832 of Malone's 0.9477 composite, 80% of his sheet) for votes his blocks and his
+    # DBPM do not back. The height channel is therefore the band test itself: 0 at 6'8" and under,
+    # 1 above it. No card in the pool has a fractional height, so OUT_OF_BAND_IN = 1.0 IS that test;
+    # the 2-inch and 3-inch ramps were measured and leave the subject at DEF 91 and 91, out of band.
+    # NOTHING ELSE OF recal_114 MOVES. The deduction still lands on the 0.45 vote premium, so Pvot is
+    # bit-identical and no card rises; VOTE_SUPPORT_POW stays 3 (it is also, independently, the power
+    # that puts this subject on his number: 0.816**3 = 0.542); a card whose DBPM backs its votes keeps
+    # them at ANY height (Garnett '04 0.959, Ben Wallace '04, Gobert '19, Shaq '00 all untouched); and
+    # every card inside the wing band is untouched by construction - Jordan '89, Kawhi '16, Draymond
+    # '16, Rodman '90 and '93, Buck Williams '91, Roundfield '82, Pippen '03, Herb Jones '23.
+    # THE PRICE, STATED: at 80 inches Buck Williams '91 keeps perdef 93 and at 81 Malone reads 76.
+    # The boundary cannot move down - Rodman '90 (def 94 +-1, 79 in) and Pippen '03 (def 76 +-1, 80 in)
+    # are anchored on it, and Buck '91 88 and Rodman '93 89 are the comparables the ruling's own target
+    # is read off. A fade that starts at 78 or 79 costs all four.
+    OUT_OF_BAND_IN = 1.0
+    _out_of_band = min(1.0, max(0.0, ((r['ht'] or 78) - 80.0) / OUT_OF_BAND_IN))
+    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk'])), _out_of_band)) if r['drep'] > 0.05 else 0.0
     _vote_factor = 1.0 - _paid_in_rim * (1.0 - P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW)
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
