@@ -176,7 +176,11 @@ describe('one ladder of four tiers', () => {
      * carrying 22 fewer points of OVR, because the usage reconciliation discounts a five of alphas.
      */
     expect(t.levels.every((o, i) => i === 0 || sumOvr(o) >= sumOvr(t.levels[i - 1]))).toBe(true)
-    expect(t.levels[29].team).toBe('All-time Lakers')
+    // The tier ends on whichever franchise puts the most OVR on the floor — a rule, not a name. At
+    // pipeline 142 (recal_135 and recal_141 lowered the votes-and-height credit of the Lakers' bigs)
+    // the Heat edge the Lakers 454 to 453; his later word on the ladder was "do whatever you want
+    // there", so the name follows the cards and only the rule is pinned.
+    expect(['All-time Lakers', 'All-time Heat']).toContain(t.levels[29].team)
     expect(sumOvr(t.levels[29])).toBe(Math.max(...t.levels.map(sumOvr)))
   })
 

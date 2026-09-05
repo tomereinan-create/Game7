@@ -202,7 +202,7 @@
         "o_ovr": 62,
         "d_ovr": 69,
         "ovr": 66,
-        "marg": 57
+        "marg": 58
       }
     ]
   },
@@ -257,7 +257,7 @@
         "o_ovr": 65,
         "d_ovr": 45,
         "ovr": 59,
-        "marg": 66
+        "marg": 68
       },
       {
         "name": "Bennedict Mathurin '26",
@@ -295,7 +295,7 @@
         "o_ovr": 63,
         "d_ovr": 46,
         "ovr": 58,
-        "marg": 53
+        "marg": 54
       },
       {
         "name": "Aaron Nesmith '26",
@@ -371,7 +371,7 @@
         "o_ovr": 78,
         "d_ovr": 63,
         "ovr": 74,
-        "marg": 82
+        "marg": 84
       },
       {
         "name": "Jay Huff '26",
@@ -671,7 +671,7 @@
         "o_ovr": 60,
         "d_ovr": 53,
         "ovr": 58,
-        "marg": 45
+        "marg": 46
       },
       {
         "name": "DeMar DeRozan '26",
@@ -747,7 +747,7 @@
         "o_ovr": 72,
         "d_ovr": 48,
         "ovr": 65,
-        "marg": 84
+        "marg": 83
       },
       {
         "name": "Precious Achiuwa '26",
@@ -785,7 +785,7 @@
         "o_ovr": 46,
         "d_ovr": 78,
         "ovr": 62,
-        "marg": 73
+        "marg": 74
       },
       {
         "name": "Maxime Raynaud '26",
@@ -823,7 +823,7 @@
         "o_ovr": 53,
         "d_ovr": 73,
         "ovr": 63,
-        "marg": 82
+        "marg": 83
       }
     ]
   },
@@ -878,7 +878,7 @@
         "o_ovr": 76,
         "d_ovr": 48,
         "ovr": 68,
-        "marg": 82
+        "marg": 83
       },
       {
         "name": "Cody Williams '26",
@@ -1085,7 +1085,7 @@
         "o_ovr": 74,
         "d_ovr": 43,
         "ovr": 65,
-        "marg": 91
+        "marg": 92
       },
       {
         "name": "Cedric Coward '26",
@@ -1123,7 +1123,7 @@
         "o_ovr": 61,
         "d_ovr": 60,
         "ovr": 61,
-        "marg": 78
+        "marg": 77
       },
       {
         "name": "Jaylen Wells '26",
@@ -1199,7 +1199,7 @@
         "o_ovr": 68,
         "d_ovr": 83,
         "ovr": 76,
-        "marg": 64
+        "marg": 65
       },
       {
         "name": "Jock Landale '26",
@@ -1292,7 +1292,7 @@
         "o_ovr": 63,
         "d_ovr": 50,
         "ovr": 59,
-        "marg": 63
+        "marg": 64
       },
       {
         "name": "Cooper Flagg '26",
@@ -1330,7 +1330,7 @@
         "o_ovr": 72,
         "d_ovr": 75,
         "ovr": 74,
-        "marg": 63
+        "marg": 65
       },
       {
         "name": "Klay Thompson '26",
@@ -1368,7 +1368,7 @@
         "o_ovr": 67,
         "d_ovr": 53,
         "ovr": 63,
-        "marg": 45
+        "marg": 46
       },
       {
         "name": "Naji Marshall '26",
@@ -1444,7 +1444,7 @@
         "o_ovr": 47,
         "d_ovr": 72,
         "ovr": 60,
-        "marg": 46
+        "marg": 47
       }
     ]
   },
@@ -1537,7 +1537,7 @@
         "o_ovr": 67,
         "d_ovr": 55,
         "ovr": 63,
-        "marg": 87
+        "marg": 86
       },
       {
         "name": "Trey Murphy III '26",
@@ -1575,7 +1575,7 @@
         "o_ovr": 73,
         "d_ovr": 57,
         "ovr": 68,
-        "marg": 86
+        "marg": 85
       },
       {
         "name": "Derik Queen '26",
@@ -1613,7 +1613,7 @@
         "o_ovr": 52,
         "d_ovr": 80,
         "ovr": 66,
-        "marg": 67
+        "marg": 68
       },
       {
         "name": "Zion Williamson '26",
@@ -1651,7 +1651,7 @@
         "o_ovr": 82,
         "d_ovr": 66,
         "ovr": 77,
-        "marg": 96
+        "marg": 97
       }
     ]
   },
@@ -1744,7 +1744,7 @@
         "o_ovr": 75,
         "d_ovr": 45,
         "ovr": 66,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "Josh Giddey '26",
@@ -1782,7 +1782,7 @@
         "o_ovr": 64,
         "d_ovr": 60,
         "ovr": 63,
-        "marg": 73
+        "marg": 75
       },
       {
         "name": "Matas Buzelis '26",
@@ -1820,7 +1820,7 @@
         "o_ovr": 55,
         "d_ovr": 71,
         "ovr": 63,
-        "marg": 49
+        "marg": 50
       },
       {
         "name": "Nikola Vučević '26",
@@ -1858,7 +1858,7 @@
         "o_ovr": 65,
         "d_ovr": 76,
         "ovr": 70,
-        "marg": 87
+        "marg": 88
       }
     ]
   },
@@ -1913,7 +1913,7 @@
         "o_ovr": 68,
         "d_ovr": 63,
         "ovr": 66,
-        "marg": 68
+        "marg": 69
       },
       {
         "name": "Kevin Porter Jr. '26",
@@ -1951,7 +1951,7 @@
         "o_ovr": 68,
         "d_ovr": 62,
         "ovr": 66,
-        "marg": 58
+        "marg": 59
       },
       {
         "name": "Kyle Kuzma '26",
@@ -1989,7 +1989,7 @@
         "o_ovr": 56,
         "d_ovr": 68,
         "ovr": 62,
-        "marg": 48
+        "marg": 49
       },
       {
         "name": "Bobby Portis '26",
@@ -2027,7 +2027,7 @@
         "o_ovr": 71,
         "d_ovr": 53,
         "ovr": 66,
-        "marg": 70
+        "marg": 71
       },
       {
         "name": "Myles Turner '26",
@@ -2065,7 +2065,7 @@
         "o_ovr": 59,
         "d_ovr": 72,
         "ovr": 66,
-        "marg": 57
+        "marg": 58
       }
     ]
   },
@@ -2648,7 +2648,7 @@
         "o_ovr": 64,
         "d_ovr": 53,
         "ovr": 61,
-        "marg": 59
+        "marg": 60
       },
       {
         "name": "Donovan Clingan '26",
@@ -2741,7 +2741,7 @@
         "o_ovr": 45,
         "d_ovr": 47,
         "ovr": 46,
-        "marg": 54
+        "marg": 55
       },
       {
         "name": "Norman Powell '26",
@@ -2817,7 +2817,7 @@
         "o_ovr": 63,
         "d_ovr": 62,
         "ovr": 63,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "Bam Adebayo '26",
@@ -2827,7 +2827,7 @@
         "in": 59,
         "out": 44,
         "id": 73,
-        "pd": 81,
+        "pd": 68,
         "attrs": {
           "3pt": 42,
           "rim": 51,
@@ -2845,7 +2845,7 @@
           "rimprot": 73,
           "perimdisrupt": 48,
           "height": 81,
-          "perdef": 81,
+          "perdef": 68,
           "discipline": 92,
           "usg_raw": 24.6,
           "ts_raw": 0.553,
@@ -2853,9 +2853,9 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 90,
-        "ovr": 80,
-        "marg": 88
+        "d_ovr": 84,
+        "ovr": 76,
+        "marg": 87
       },
       {
         "name": "Kel'el Ware '26",
@@ -2948,7 +2948,7 @@
         "o_ovr": 79,
         "d_ovr": 51,
         "ovr": 71,
-        "marg": 64
+        "marg": 70
       },
       {
         "name": "Collin Sexton '26",
@@ -3024,7 +3024,7 @@
         "o_ovr": 77,
         "d_ovr": 59,
         "ovr": 72,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "Miles Bridges '26",
@@ -3062,7 +3062,7 @@
         "o_ovr": 65,
         "d_ovr": 73,
         "ovr": 69,
-        "marg": 63
+        "marg": 65
       },
       {
         "name": "Ryan Kalkbrenner '26",
@@ -3155,7 +3155,7 @@
         "o_ovr": 59,
         "d_ovr": 80,
         "ovr": 69,
-        "marg": 64
+        "marg": 65
       },
       {
         "name": "Desmond Bane '26",
@@ -3193,7 +3193,7 @@
         "o_ovr": 73,
         "d_ovr": 63,
         "ovr": 70,
-        "marg": 89
+        "marg": 88
       },
       {
         "name": "Tristan Da Silva '26",
@@ -3269,7 +3269,7 @@
         "o_ovr": 74,
         "d_ovr": 71,
         "ovr": 73,
-        "marg": 62
+        "marg": 64
       },
       {
         "name": "Wendell Carter Jr. '26",
@@ -3307,7 +3307,7 @@
         "o_ovr": 47,
         "d_ovr": 77,
         "ovr": 62,
-        "marg": 82
+        "marg": 83
       }
     ]
   },
@@ -3362,7 +3362,7 @@
         "o_ovr": 83,
         "d_ovr": 62,
         "ovr": 77,
-        "marg": 94
+        "marg": 95
       },
       {
         "name": "VJ Edgecombe '26",
@@ -3438,7 +3438,7 @@
         "o_ovr": 46,
         "d_ovr": 61,
         "ovr": 54,
-        "marg": 54
+        "marg": 55
       },
       {
         "name": "Dominick Barlow '26",
@@ -3514,7 +3514,7 @@
         "o_ovr": 87,
         "d_ovr": 76,
         "ovr": 84,
-        "marg": 94
+        "marg": 95
       }
     ]
   },
@@ -3569,7 +3569,7 @@
         "o_ovr": 66,
         "d_ovr": 54,
         "ovr": 62,
-        "marg": 68
+        "marg": 70
       },
       {
         "name": "Devin Booker '26",
@@ -3607,7 +3607,7 @@
         "o_ovr": 86,
         "d_ovr": 51,
         "ovr": 76,
-        "marg": 91
+        "marg": 92
       },
       {
         "name": "Dillon Brooks '26",
@@ -3645,7 +3645,7 @@
         "o_ovr": 64,
         "d_ovr": 56,
         "ovr": 62,
-        "marg": 48
+        "marg": 49
       },
       {
         "name": "Oso Ighodaro '26",
@@ -3814,7 +3814,7 @@
         "o_ovr": 74,
         "d_ovr": 54,
         "ovr": 68,
-        "marg": 71
+        "marg": 72
       },
       {
         "name": "Zaccharie Risacher '26",
@@ -3890,7 +3890,7 @@
         "o_ovr": 76,
         "d_ovr": 69,
         "ovr": 74,
-        "marg": 72
+        "marg": 75
       },
       {
         "name": "Onyeka Okongwu '26",
@@ -3983,7 +3983,7 @@
         "o_ovr": 69,
         "d_ovr": 59,
         "ovr": 66,
-        "marg": 83
+        "marg": 86
       },
       {
         "name": "RJ Barrett '26",
@@ -4021,7 +4021,7 @@
         "o_ovr": 73,
         "d_ovr": 53,
         "ovr": 67,
-        "marg": 77
+        "marg": 78
       },
       {
         "name": "Brandon Ingram '26",
@@ -4059,7 +4059,7 @@
         "o_ovr": 74,
         "d_ovr": 73,
         "ovr": 74,
-        "marg": 62
+        "marg": 63
       },
       {
         "name": "Scottie Barnes '26",
@@ -4097,7 +4097,7 @@
         "o_ovr": 73,
         "d_ovr": 93,
         "ovr": 83,
-        "marg": 88
+        "marg": 89
       },
       {
         "name": "Sandro Mamukelashvili '26",
@@ -4200,7 +4200,7 @@
         "in": 53,
         "out": 71,
         "id": 82,
-        "pd": 69,
+        "pd": 65,
         "attrs": {
           "3pt": 69,
           "rim": 35,
@@ -4218,7 +4218,7 @@
           "rimprot": 82,
           "perimdisrupt": 53,
           "height": 81,
-          "perdef": 69,
+          "perdef": 65,
           "discipline": 26,
           "usg_raw": 17.9,
           "ts_raw": 0.599,
@@ -4226,9 +4226,9 @@
         },
         "big": true,
         "o_ovr": 56,
-        "d_ovr": 75,
-        "ovr": 66,
-        "marg": 64
+        "d_ovr": 74,
+        "ovr": 65,
+        "marg": 63
       },
       {
         "name": "Julius Randle '26",
@@ -4266,7 +4266,7 @@
         "o_ovr": 76,
         "d_ovr": 61,
         "ovr": 72,
-        "marg": 85
+        "marg": 86
       },
       {
         "name": "Naz Reid '26",
@@ -4342,7 +4342,7 @@
         "o_ovr": 55,
         "d_ovr": 93,
         "ovr": 74,
-        "marg": 92
+        "marg": 91
       }
     ]
   },
@@ -4397,7 +4397,7 @@
         "o_ovr": 78,
         "d_ovr": 47,
         "ovr": 69,
-        "marg": 78
+        "marg": 80
       },
       {
         "name": "Donovan Mitchell '26",
@@ -4473,7 +4473,7 @@
         "o_ovr": 62,
         "d_ovr": 63,
         "ovr": 62,
-        "marg": 85
+        "marg": 84
       },
       {
         "name": "Evan Mobley '26",
@@ -4604,7 +4604,7 @@
         "o_ovr": 62,
         "d_ovr": 93,
         "ovr": 78,
-        "marg": 97
+        "marg": 96
       },
       {
         "name": "Reed Sheppard '26",
@@ -4642,7 +4642,7 @@
         "o_ovr": 63,
         "d_ovr": 59,
         "ovr": 62,
-        "marg": 61
+        "marg": 62
       },
       {
         "name": "Kevin Durant '26",
@@ -4680,7 +4680,7 @@
         "o_ovr": 85,
         "d_ovr": 76,
         "ovr": 82,
-        "marg": 96
+        "marg": 95
       },
       {
         "name": "Jabari Smith Jr. '26",
@@ -4718,7 +4718,7 @@
         "o_ovr": 55,
         "d_ovr": 73,
         "ovr": 64,
-        "marg": 53
+        "marg": 54
       },
       {
         "name": "Alperen Şengün '26",
@@ -4756,7 +4756,7 @@
         "o_ovr": 76,
         "d_ovr": 75,
         "ovr": 76,
-        "marg": 90
+        "marg": 91
       }
     ]
   },
@@ -4849,7 +4849,7 @@
         "o_ovr": 77,
         "d_ovr": 53,
         "ovr": 70,
-        "marg": 94
+        "marg": 93
       },
       {
         "name": "LeBron James '26",
@@ -4887,7 +4887,7 @@
         "o_ovr": 85,
         "d_ovr": 67,
         "ovr": 80,
-        "marg": 84
+        "marg": 87
       },
       {
         "name": "Rui Hachimura '26",
@@ -4963,7 +4963,7 @@
         "o_ovr": 59,
         "d_ovr": 75,
         "ovr": 67,
-        "marg": 91
+        "marg": 90
       }
     ]
   },
@@ -5018,7 +5018,7 @@
         "o_ovr": 88,
         "d_ovr": 46,
         "ovr": 75,
-        "marg": 94
+        "marg": 95
       },
       {
         "name": "Josh Hart '26",
@@ -5056,7 +5056,7 @@
         "o_ovr": 52,
         "d_ovr": 60,
         "ovr": 56,
-        "marg": 83
+        "marg": 82
       },
       {
         "name": "Mikal Bridges '26",
@@ -5225,7 +5225,7 @@
         "o_ovr": 88,
         "d_ovr": 54,
         "ovr": 78,
-        "marg": 96
+        "marg": 97
       },
       {
         "name": "Peyton Watson '26",
@@ -5301,7 +5301,7 @@
         "o_ovr": 65,
         "d_ovr": 47,
         "ovr": 60,
-        "marg": 72
+        "marg": 71
       },
       {
         "name": "Cameron Johnson '26",
@@ -5432,7 +5432,7 @@
         "o_ovr": 62,
         "d_ovr": 78,
         "ovr": 70,
-        "marg": 69
+        "marg": 71
       },
       {
         "name": "Payton Pritchard '26",
@@ -5470,7 +5470,7 @@
         "o_ovr": 70,
         "d_ovr": 50,
         "ovr": 64,
-        "marg": 84
+        "marg": 85
       },
       {
         "name": "Jaylen Brown '26",
@@ -5508,7 +5508,7 @@
         "o_ovr": 83,
         "d_ovr": 66,
         "ovr": 78,
-        "marg": 80
+        "marg": 81
       },
       {
         "name": "Jordan Walsh '26",
@@ -5639,7 +5639,7 @@
         "o_ovr": 78,
         "d_ovr": 68,
         "ovr": 75,
-        "marg": 85
+        "marg": 88
       },
       {
         "name": "Duncan Robinson '26",
@@ -5677,7 +5677,7 @@
         "o_ovr": 63,
         "d_ovr": 52,
         "ovr": 60,
-        "marg": 74
+        "marg": 73
       },
       {
         "name": "Ausar Thompson '26",
@@ -5846,7 +5846,7 @@
         "o_ovr": 77,
         "d_ovr": 57,
         "ovr": 71,
-        "marg": 82
+        "marg": 83
       },
       {
         "name": "Devin Vassell '26",
@@ -5884,7 +5884,7 @@
         "o_ovr": 60,
         "d_ovr": 56,
         "ovr": 59,
-        "marg": 58
+        "marg": 59
       },
       {
         "name": "Keldon Johnson '26",
@@ -5960,7 +5960,7 @@
         "o_ovr": 61,
         "d_ovr": 46,
         "ovr": 56,
-        "marg": 64
+        "marg": 63
       },
       {
         "name": "Victor Wembanyama '26",
@@ -6205,7 +6205,7 @@
         "o_ovr": 46,
         "d_ovr": 85,
         "ovr": 66,
-        "marg": 64
+        "marg": 63
       }
     ]
   }

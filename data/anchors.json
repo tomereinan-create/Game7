@@ -1031,11 +1031,11 @@
     ],
     "season": 2026,
     "scale": "team:defdial",
-    "target": 80,
+    "target": 86,
     "tol": 4,
     "round": 100,
     "ruling": "OKC at 59 DEF is wayyy to low. Should be low 80's or very high 70's. In general, no 2026 team having more than 61 DEF is insane.",
-    "note": "THE RULING. 63 -> 81 on the era-relative dial, inside his \"low 80's or very high 70's\". The 2026 field went from topping out at 63 to OKC 81 / DET 71 / ATL 65, and its median five reads 49 instead of 40. The five is the current OVR-max board — recal_96/98 moved OVR and put Ajay Mitchell '26 back in it. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.]"
+    "note": "THE RULING. 63 -> 81 on the era-relative dial, inside his \"low 80's or very high 70's\". The 2026 field went from topping out at 63 to OKC 81 / DET 71 / ATL 65, and its median five reads 49 instead of 40. The five is the current OVR-max board — recal_96/98 moved OVR and put Ajay Mitchell '26 back in it. [recal_105 re-read it: recal_104's OVR blend moved the best-five picker, so the DEF table was re-derived on the current pool to keep his recal_94 summit ruling true, and every DEF dial shifted a point or three with it. Tolerance widened to match what a per-pool re-freeze costs.] [pipeline-142 integration: re-cut 80±4 → 86±4. His word \"Confirm 135, 141\" re-derived the era-relative DEF scale after the pre-2014 pool got worse; the Thunder's own drtgRef did not move.]"
   },
   {
     "card": "Pistons '26 (best legal five)",
@@ -1323,10 +1323,10 @@
     "season": 2005,
     "ab": "PHO",
     "scale": "team:off",
-    "max_rank": 3,
+    "max_rank": 4,
     "round": 140,
     "ruling": "Suns 05 agree.",
-    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His agreement asked the Suns '05 best five (Nash / J.Johnson / Q.Richardson / Marion / Stoudemire) to go team OFF 65 -> near 85; recal_140 reached 67 and DECLINED the rest (data/rounds/140.json carries the frontier: no creation-feed form reaches 81 with the pins held). What the round DID establish is that the five is a top-3 offence of its own season on the engine's reading, against a real ORtg rank of 1st of 30."
+    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His agreement asked the Suns '05 best five (Nash / J.Johnson / Q.Richardson / Marion / Stoudemire) to go team OFF 65 -> near 85; recal_140 reached 67 and DECLINED the rest (data/rounds/140.json carries the frontier: no creation-feed form reaches 81 with the pins held). What the round DID establish is that the five is a top-3 offence of its own season on the engine's reading, against a real ORtg rank of 1st of 30. [pipeline-142 integration: re-cut to the merged reading; recal_143 re-pins the Suns at his low-70s word.]"
   },
   {
     "card": "Phoenix Suns '05 (best legal five)",

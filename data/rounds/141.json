@@ -10,7 +10,7 @@
   "tol": 2,
   "before": 78,
   "after": 73,
-  "pipeline_version": 141,
+  "pipeline_version": 142,
   "knobs": [
     {
       "file": "data/build_ratings.py",

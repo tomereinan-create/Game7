@@ -18,7 +18,7 @@
   "tol": 0,
   "before": 47,
   "after": 71,
-  "pipeline_version": 133,
+  "pipeline_version": 142,
   "knobs": [
     {
       "file": "scripts/campaigns.ts",
@@ -65,18 +65,18 @@
   ],
   "expect": [
     {
-      "label": "the Heat '06 fielded Shaquille O'Neal's team: the OFF dial the Team DB shows",
+      "label": "the Heat '06 fielded Shaquille O'Neal's team: the OFF dial the Team DB shows [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "scale": "team:offdial",
       "season": 2006,
       "op": "==",
-      "value": 77
+      "value": 76
     },
     {
-      "label": "and its DEF dial",
+      "label": "and its DEF dial [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "scale": "team:defdial",
       "season": 2006,
       "op": "==",
-      "value": 64
+      "value": 66
     },
     {
       "label": "the Bulls '98 field Scottie Pippen again (was Luc Longley's minutes over him): OVR 70 -> 75",
@@ -93,7 +93,7 @@
       "value": 75
     },
     {
-      "label": "the Champions tier's new boss, L60: Golden State Warriors '16, the highest dial OVR on the tier",
+      "label": "the Champions tier's new boss, L60: Golden State Warriors '16, the highest dial OVR on the tier [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "five": [
         "Stephen Curry '16",
         "Andre Iguodala '16",
@@ -104,7 +104,7 @@
       "season": 2016,
       "scale": "team:ovrdial",
       "op": "==",
-      "value": 92
+      "value": 93
     },
     {
       "label": "nothing on the tier out-reads the boss: the Warriors '17 at L58",
@@ -163,7 +163,7 @@
       "value": 85
     },
     {
-      "label": "the Rockets '18 get Chris Paul back and stop reading like a mid-tier level: 59 -> 80",
+      "label": "the Rockets '18 get Chris Paul back and stop reading like a mid-tier level: 59 -> 80 [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "five": [
         "Chris Paul '18",
         "James Harden '18",
@@ -174,7 +174,7 @@
       "season": 2018,
       "scale": "team:ovrdial",
       "op": "==",
-      "value": 80
+      "value": 81
     },
     {
       "label": "the order holds where it matters: the Heat '06 (L27) sit below the Bulls '98 (L37)",

@@ -604,26 +604,35 @@ describe('the triangle stands a triangle on the strong side and the two-man game
 })
 
 /**
- * THE POP (recal_129, his ruling: "Add pick n pop"). The pick-and-roll floor with the screen
- * released: the ball where it always is, the screener stepping BACK behind the arc instead of
- * rolling to the top of the key, and nobody inside the line at all.
+ * THE POP (recal_129, his ruling: "Add pick n pop"; then his ruling: "Make pick n pop to be the same
+ * as pick n roll in terms of design"). The pop used to draw its own floor — the screener stepping
+ * BACK behind the arc, nobody inside the line, and the other three sorted by shooting rather than by
+ * height — which made the SHAPE the tell. It is not the tell: the roll and the pop set the same
+ * screen, and what differs is which big walks into it. So the two sets now draw one floor, and part
+ * only on the pair the engine names.
  */
-describe('the pick-and-pop stands the screener behind the line, not rolling', () => {
+describe('the pick-and-pop draws the pick-and-roll floor, and parts from it only on the men', () => {
   const SPURS = [g("Tony Parker '11"), g("Manu Ginóbili '11"), g("Richard Jefferson '11"), g("Matt Bonner '11"), g("Tim Duncan '11")]
   const spotsOf = (five: (Player | null)[]): CourtSpot[] => five.map((p) => ({ p, tag: '' }))
   const shot = (props: Record<string, unknown>) => renderToStaticMarkup(createElement(CourtFive, props as never))
   const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
+  const key = (at: readonly (readonly [number, number])[]) => [...at].map((xy) => xy.join(',')).sort()
 
-  it('every man is behind the three-point line — the roll man does not roll', () => {
-    const at = spotsFor({ style: 'pickpop', pnr: null }, SPURS)
-    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(0)
-    expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
+  it('it stands on the SAME five spots the roll does — the screener is inside the arc, not behind it', () => {
+    const pop = spotsFor({ style: 'pickpop', pnr: null }, SPURS)
+    const roll = spotsFor({ style: 'pnr', pnr: null }, SPURS)
+    expect(key(pop)).toEqual(key(roll))
+    expect(new Set(key(pop)).size).toBe(5)
+    // one man inside the line in both, and he is the screener
+    expect(pop.filter((xy) => !outsideLine(xy))).toHaveLength(1)
+    const s = SPURS.findIndex((p) => p.name === popPair(SPURS, null).screener!.name)
+    expect(outsideLine(pop[s])).toBe(false)
   })
 
   it('the popper is the shooter, and the roll would have picked someone else', () => {
     expect(popPair(SPURS, null).screener!.name).toBe("Matt Bonner '11")
     expect(pnrPair(SPURS, null).screener!.name).not.toBe("Matt Bonner '11")
-    // the two sets therefore stand different men in different places
+    // same spots, different men on them: the two sets therefore still differ, on WHO and not on WHERE
     expect(spotsFor({ style: 'pickpop', pnr: null }, SPURS)).not.toEqual(spotsFor({ style: 'pnr', pnr: null }, SPURS))
   })
 
@@ -632,8 +641,13 @@ describe('the pick-and-pop stands the screener behind the line, not rolling', ()
     const at = spotsFor({ style: 'pickpop', pnr: chosen }, SPURS)
     const h = SPURS.findIndex((p) => p.name === chosen.handler)
     const s = SPURS.findIndex((p) => p.name === chosen.screener)
+    // the handler has the ball behind the line and the named screener is beside him, inside it —
+    // the same two spots the roll gives the same named pair
     expect(outsideLine(at[h])).toBe(true)
-    expect(outsideLine(at[s])).toBe(true)
+    expect(outsideLine(at[s])).toBe(false)
+    const roll = spotsFor({ style: 'pnr', pnr: chosen }, SPURS)
+    expect(at[h]).toEqual(roll[h])
+    expect(at[s]).toEqual(roll[s])
     const plan = { ...DEFAULT_TACTICS, style: 'pickpop' as const }
     expect(cap(shot({ spots: spotsOf(SPURS), tactic: plan }))).toBe('pick-and-pop · Parker + Bonner · your tactic')
   })

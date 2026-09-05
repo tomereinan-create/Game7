@@ -18,7 +18,7 @@
   "tol": 4,
   "before": 65,
   "after": 67,
-  "pipeline_version": 140,
+  "pipeline_version": 142,
   "knobs": [
     {
       "file": "data/team_rating.py",
@@ -77,26 +77,26 @@
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_TOP = 138\\.38",
-      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run",
+      "pattern": "const OFF_TOP = 138\\.39",
+      "label": "the OFF gauge, RE-FROZEN — every one of the 1,255 fives' offRaw moved, so scripts/gauge105.ts was re-run [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "note": "137.94 -> 138.38; the Warriors '17 are still all-time rank 2 of 1,255, behind the Rockets '18 and ahead of everyone else, exactly as recal_119 left them"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_LEVEL_REF = 121\\.7929",
-      "label": "and its reference league",
+      "pattern": "const OFF_LEVEL_REF = 121\\.8003",
+      "label": "and its reference league [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "note": "121.7626 -> 121.7929; the 47-season OFF_LEVEL table moved by hundredths"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const OFF_MIN = 100\\.98",
-      "label": "the era-adjusted floor",
+      "pattern": "const OFF_MIN = 101\\.05",
+      "label": "the era-adjusted floor [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "note": "101.75 -> 100.98"
     },
     {
       "file": "src/engine/gauges.ts",
-      "pattern": "const DEF_TOP = 107\\.58",
-      "label": "THE DEF SIDE IS UNTOUCHED — 0 of 1,255 DEF dials moved and drtgRef is bit-identical",
+      "pattern": "const DEF_TOP = 107\\.82",
+      "label": "THE DEF SIDE IS UNTOUCHED — 0 of 1,255 DEF dials moved and drtgRef is bit-identical [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]",
       "note": "recal_94's constant, unchanged; defenseVs does not read teamOffense, so this is true by construction and not only by measurement"
     }
   ],

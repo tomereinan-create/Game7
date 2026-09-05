@@ -91,9 +91,9 @@ import type { Player } from './types'
 // a DEF dial read at each era's own level beside an OFF dial that was not is half a scale. The three
 // anchors are quoted in OFF_LEVEL_REF's league: ADJUSTED offRaw, not raw offRaw. The summit is still
 // where recal_71's ruling put it ("99 should be one of the greatest offense ever (2017 warriors)").
-const OFF_MIN = 100.98 // the all-time worst offensive five, era-adjusted
-const OFF_MID = 121.8 // the all-time median reads 50
-const OFF_TOP = 138.38 // Golden State Warriors '17 (adjusted 138.3821, all-time rank 2) — the named OFF summit reads 99
+const OFF_MIN = 101.05 // the all-time worst offensive five, era-adjusted
+const OFF_MID = 121.76 // the all-time median reads 50
+const OFF_TOP = 138.39 // Golden State Warriors '17 (adjusted 138.3895, all-time rank 2) — the named OFF summit reads 99
 
 /**
  * THE LEAGUE'S OWN OFFENSIVE LEVEL, season by season: the mean offRaw of that season's fieldable
@@ -111,31 +111,32 @@ const OFF_TOP = 138.38 // Golden State Warriors '17 (adjusted 138.3821, all-time
  * recentring one and not the other was never self-consistent; this is the other half.
  */
 const OFF_LEVEL: Record<number, number> = {
-  1980: 120.386, 1981: 119.634, 1982: 119.694, 1983: 119.933, 1984: 120.172, 1985: 119.097,
-  1986: 119.191, 1987: 119.853, 1988: 121.024, 1989: 121.951, 1990: 122.126, 1991: 121.919,
-  1992: 121.049, 1993: 121.620, 1994: 121.079, 1995: 121.652, 1996: 122.044, 1997: 121.626,
-  1998: 120.694, 1999: 118.476, 2000: 121.230, 2001: 121.349, 2002: 121.780, 2003: 121.898,
-  2004: 122.171, 2005: 122.964, 2006: 122.260, 2007: 123.663, 2008: 123.699, 2009: 123.021,
-  2010: 121.635, 2011: 122.526, 2012: 121.225, 2013: 122.343, 2014: 122.778, 2015: 122.553,
+  1980: 120.339, 1981: 119.693, 1982: 119.842, 1983: 120.058, 1984: 120.045, 1985: 119.066,
+  1986: 118.780, 1987: 120.013, 1988: 120.683, 1989: 121.924, 1990: 122.068, 1991: 121.891,
+  1992: 121.049, 1993: 121.688, 1994: 121.340, 1995: 121.596, 1996: 122.101, 1997: 121.626,
+  1998: 120.863, 1999: 118.476, 2000: 121.170, 2001: 121.383, 2002: 121.677, 2003: 121.881,
+  2004: 122.196, 2005: 123.232, 2006: 122.447, 2007: 123.638, 2008: 123.660, 2009: 123.180,
+  2010: 121.649, 2011: 122.573, 2012: 121.127, 2013: 122.458, 2014: 122.696, 2015: 122.553,
   2016: 123.037, 2017: 123.623, 2018: 122.267, 2019: 123.893, 2020: 122.045, 2021: 122.161,
   2022: 122.172, 2023: 123.633, 2024: 124.643, 2025: 123.424, 2026: 123.054,
 }
 /** The league every OFF dial is quoted in: the mean of the 47 season levels. */
-const OFF_LEVEL_REF = 121.7929
+const OFF_LEVEL_REF = 121.8003
 /** A five with no season of its own is a five in TODAY's league, exactly as on the DEF side. */
 const OFF_LEVEL_FIELD = OFF_LEVEL[2026]
 
 /** offRaw re-expressed in OFF_LEVEL_REF's league. An unknown season falls back to today's. */
 const offAdj = (off: number, season?: number) =>
   off - (OFF_LEVEL[season ?? -1] ?? OFF_LEVEL_FIELD) + OFF_LEVEL_REF
+// DEF side RE-FROZEN AGAIN at the pipeline-142 integration (his word: "Confirm 135, 141"): recal_141 lowered the no-vote perdef relief and recal_135 the 81"+ vote credit, so the pre-2014 pool got worse and the whole era-relative scale was re-derived with scripts/gauge100.ts; the Bulls '96 are the summit by construction and three team pins were re-cut to their new readings (Thunder '26, Pistons '04, 76ers '85)
 // DEF side RE-FROZEN by recal_100 on the ERA-RELATIVE index and RE-DERIVED by recal_101 (scripts/gauge100.ts re-derives this
 // whole block, table included; re-run it after any change that moves drtgRef). The three anchors are
 // quoted in DEF_LEVEL_REF's league, so they are ADJUSTED drtgRef, not raw drtgRef. The summit is
 // still where recal_94's ruling put it ("Move the summit to Bulls '96") and is still the only five
 // on the board that reads 99.
-const DEF_WORST = 113 // the all-time worst defensive five, era-adjusted
-const DEF_MID = 110.04 // the all-time median reads 50
-const DEF_TOP = 107.58 // Chicago Bulls '96 (adjusted 107.5844) — the named DEF summit reads 99
+const DEF_WORST = 113.1 // the all-time worst defensive five, era-adjusted
+const DEF_MID = 110.26 // the all-time median reads 50
+const DEF_TOP = 107.82 // Chicago Bulls '96 (adjusted 107.8214) — the named DEF summit reads 99
 
 /**
  * THE LEAGUE'S OWN DEFENSIVE LEVEL, season by season: the mean drtgRef of that season's fieldable
@@ -149,17 +150,17 @@ const DEF_TOP = 107.58 // Chicago Bulls '96 (adjusted 107.5844) — the named DE
  * Flat at ~110.0 for thirty-eight seasons, then a gentle climb from 2018 to 110.35.
  */
 const DEF_LEVEL: Record<number, number> = {
-  1980: 109.962, 1981: 110.079, 1982: 109.953, 1983: 110.007, 1984: 110.010, 1985: 110.062,
-  1986: 109.898, 1987: 109.909, 1988: 109.830, 1989: 109.980, 1990: 109.931, 1991: 109.981,
-  1992: 110.031, 1993: 109.731, 1994: 109.890, 1995: 109.878, 1996: 110.012, 1997: 110.035,
-  1998: 110.091, 1999: 109.976, 2000: 110.058, 2001: 109.972, 2002: 110.014, 2003: 109.971,
-  2004: 110.020, 2005: 110.158, 2006: 110.078, 2007: 110.021, 2008: 110.037, 2009: 110.042,
-  2010: 110.033, 2011: 110.006, 2012: 110.003, 2013: 110.017, 2014: 109.973, 2015: 109.877,
-  2016: 109.899, 2017: 109.987, 2018: 110.173, 2019: 110.126, 2020: 110.198, 2021: 110.336,
-  2022: 110.206, 2023: 110.245, 2024: 110.204, 2025: 110.347, 2026: 110.254,
+  1980: 110.231, 1981: 110.396, 1982: 110.268, 1983: 110.341, 1984: 110.246, 1985: 110.216,
+  1986: 110.148, 1987: 110.157, 1988: 110.081, 1989: 110.206, 1990: 110.199, 1991: 110.266,
+  1992: 110.289, 1993: 110.016, 1994: 110.207, 1995: 110.181, 1996: 110.310, 1997: 110.305,
+  1998: 110.384, 1999: 110.269, 2000: 110.333, 2001: 110.287, 2002: 110.262, 2003: 110.291,
+  2004: 110.281, 2005: 110.427, 2006: 110.367, 2007: 110.324, 2008: 110.312, 2009: 110.365,
+  2010: 110.307, 2011: 110.256, 2012: 110.294, 2013: 110.299, 2014: 110.075, 2015: 109.926,
+  2016: 109.970, 2017: 110.041, 2018: 110.240, 2019: 110.169, 2020: 110.266, 2021: 110.400,
+  2022: 110.265, 2023: 110.282, 2024: 110.249, 2025: 110.408, 2026: 110.337,
 }
 /** The league every DEF dial is quoted in: the mean of the 47 season levels. */
-const DEF_LEVEL_REF = 110.0319
+const DEF_LEVEL_REF = 110.25
 /** A five with no season of its own is a five in TODAY's league — the one the campaign is played in. */
 const DEF_LEVEL_FIELD = DEF_LEVEL[2026]
 

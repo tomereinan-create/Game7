@@ -10,7 +10,7 @@
   "tol": 3,
   "before": 95,
   "after": 89,
-  "pipeline_version": 135,
+  "pipeline_version": 142,
   "knobs": [
     {
       "file": "data/build_ratings.py",
@@ -56,8 +56,8 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.56,",
-      "label": "THE ONE TAX THAT BROKE, re-ratified through the harness (recal_59's law)",
+      "pattern": "crashDef: 0\\.73,",
+      "label": "THE ONE TAX THAT BROKE, re-ratified through the harness (recal_59's law) [pipeline-142 integration: re-swept once on the merged pool from main's constant]",
       "note": "0.51 -> 0.56, the true midpoint of a feasible interval of about .515 to .605; the break was blind -0.29998 against the -0.30 floor"
     }
   ],
@@ -288,9 +288,9 @@
       "card": "Vlade Divac '95",
       "scale": "attr:perdef",
       "op": "~",
-      "value": 78,
+      "value": 75,
       "tol": 1,
-      "label": "r55 anchor - a NO-VOTE card, outside this channel by construction"
+      "label": "r55 anchor - a NO-VOTE card, outside this channel by construction [pipeline-142 integration: re-pointed at the merged board — recal_135/141 moved the perdef pool and the DEF scale was re-derived]"
     },
     {
       "card": "Arvydas Sabonis '96",
