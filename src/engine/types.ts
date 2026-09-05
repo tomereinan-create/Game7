@@ -132,9 +132,8 @@ export interface Opponent {
   /** The team-season's year and whether it won the title. */
   season?: number
   champion?: boolean
-  /** Era block the level belongs to, and the points of spread its opponents carry. */
+  /** Era block the level belongs to. */
   era?: string
-  handicap?: number
   /** Regular-season record the level is built from, e.g. "17–65". */
   record?: string
   /**

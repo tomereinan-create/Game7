@@ -6,7 +6,7 @@ import type { Attrs, Lineup, Player } from './types'
 /**
  * DEATH MATCH TACTICS, picked on the My team screen. Every choice is priced the way the engine
  * prices everything: points of spread, added to the margin as `bonus` (the same term the coach
- * personas and the era handicap use — lineup axes are display, bonus is what the sim feels).
+ * personas and the pace margin use — lineup axes are display, bonus is what the sim feels).
  *
  * THE HOUSE RULES APPLY. No cliffs: every price is a LINE through the personnel, so calling
  * "inside" with an inside five pays and calling it with a shooting five costs, continuously.

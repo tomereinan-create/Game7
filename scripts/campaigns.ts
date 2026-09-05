@@ -345,53 +345,34 @@ interface Tier {
   id: string
   name: string
   years: [number, number]
-  /** Points of spread the opponent gets, the tier's difficulty. */
-  handicap: number
   blurb: string
 }
 /**
- * HANDICAPS — 0 · 1 · 1 · 2, MEASURED, not guessed (`npm run balance`, which was written for this
- * and reports the series odds a competent draft holds at every level of the ladder).
+ * NO HANDICAP — HIS RULING: "Remove the + that teams get further down the road. The teams are good
+ * enough. No need for the boost." The ladder used to hand its opponents points of spread, 0/1/1/2 by
+ * tier, and every tier above the first leaned on them. It carries none now: THE FIVES do the whole
+ * climb, which is what they were rebuilt to do when tiers 2-4 stopped being ordinary teams from older
+ * decades and became champions, franchise summits and the All-Time First Team.
  *
- * Tier 1 keeps its zero: last season's league is the game as it has always been, and a bare draft
- * still wins about 59% of those series. Above it the old law was "the handicap does the climbing",
- * because the old tiers 2-4 were ordinary teams from older decades and needed the points to stay
- * ahead of the pool. That is no longer true: these tiers are champions, franchise summits and the
- * All-Time First Team, so THE FIVES do the climbing and the spread only leans on it. The first
- * draft of this file rose 0/2/3/4 in the old spirit and measured out at a median of 8% for the
- * whole Customs tier and 5% on the last level — a wall, not a climb. At 0/1/1/2 the same model
- * reads (median, then first level to last, for a player with the Front-office branch bought, which
- * everyone reaching tier 3 has):
+ * MEASURED WITHOUT IT (`npm run balance`, 40 drafts a level, on the pipeline-143 pool). Staffed
+ * median, then first level to last — the spread's old reading in brackets:
  *
- *   The League   96%      100% -> 65%     (bare, with nothing bought: 59% median)
- *   Champions    71%       74% -> 47%
- *   All-Time     41%       65% -> 25%
- *   Customs      17%       30% -> 12%     the All-Time First Team, last, at 12%
+ *   The League   96.7%     99.9% -> 65.9%     (bare: 54.1% median)   unchanged, tier 1 never had any
+ *   Champions    82.7%     95.5% -> 59.0%     (was 76.9%, 80.0% -> 52.4%)
+ *   All-Time     53.9%     75.6% -> 35.7%     (was 43.1%, 71.2% -> 31.8%)
+ *   Customs      63.2%     68.5% -> 17.9%     (was 46.9%, 75.6% ->  8.1%)
  *
- * RE-MEASURED AT recal_142, after the ladder went to the Team DB's five and tier 2 to the Team DB's
- * OVR (the pool has also moved five pipelines since the table above). Staffed median, then first
- * level to last, and the value at each tier seam:
- *
- *   The League   96.5%     99.8% -> 70.6%     (bare: 51.7% median)
- *   Champions    76.9%     80.0% -> 52.4%
- *   All-Time     43.1%     71.2% -> 31.8%
- *   Customs      46.9%     75.6% ->  8.1%     the All-Time First Team, last, at 8.1%
- *
- * Every seam still steps UP into the new tier (70.6 -> 80.0, 52.4 -> 71.2, 31.8 -> 75.6): a tier
+ * Every seam still steps UP into the next tier (65.9 -> 95.5, 59.0 -> 75.6, 35.7 -> 68.5): a tier
  * opens softer than the one before it closed and climbs again, which is the shape a ladder wants and
- * the opposite of a cliff. The round improved the worst seam it had: under the minutes rule the
- * Champions opened at 98.2% (the Heat '06 without Shaquille O'Neal), a free level after a 76.2%
- * tier-1 boss; it now opens at 80.0%. The two constructed tiers are untouched by the round.
- *
- * — one long ramp with no cliff at a tier seam and a final boss that takes several attempts. The
- * model is deliberately pessimistic (no respins, no extra spins, naive assignments, no tactics),
- * so real play sits above these numbers. Move a value and re-run the script before shipping it.
+ * the opposite of a cliff. The All-Time First Team still closes it, last, at 17.9% — several attempts,
+ * not a wall. The model is deliberately pessimistic (no respins, no extra spins, naive assignments, no
+ * tactics), so real play sits above these numbers.
  */
 const TIERS: Tier[] = [
-  { id: 'c2026', name: 'The League', years: [SEASON, SEASON], handicap: 0, blurb: "Last season's league, worst record first." },
-  { id: 'champs', name: 'The Champions', years: [1980, 2025], handicap: 1, blurb: 'Every champion since 1980, and the elite that never won — weakest first.' },
-  { id: 'alltime', name: 'All-Time', years: [1980, SEASON], handicap: 1, blurb: 'The best five a franchise ever had, thirty of them, weakest first.' },
-  { id: 'customs', name: 'The Customs', years: [1980, SEASON], handicap: 2, blurb: 'Decades, awards, specialists — and the All-Time First Team, last.' },
+  { id: 'c2026', name: 'The League', years: [SEASON, SEASON], blurb: "Last season's league, worst record first." },
+  { id: 'champs', name: 'The Champions', years: [1980, 2025], blurb: 'Every champion since 1980, and the elite that never won — weakest first.' },
+  { id: 'alltime', name: 'All-Time', years: [1980, SEASON], blurb: 'The best five a franchise ever had, thirty of them, weakest first.' },
+  { id: 'customs', name: 'The Customs', years: [1980, SEASON], blurb: 'Decades, awards, specialists — and the All-Time First Team, last.' },
 ]
 
 /**
@@ -764,7 +745,7 @@ const campaigns = TIERS.map((tier) => {
     positions: [...POS],
     players: b.five,
   }))
-  console.log(`\n${tier.name} · ${levels.length} levels · ${levels.filter((l) => l.champion).length} champions · opponents +${tier.handicap}`)
+  console.log(`\n${tier.name} · ${levels.length} levels · ${levels.filter((l) => l.champion).length} champions`)
   for (const l of levels) {
     // the dial printed here is the era-relative one the Team DB and the level map show
     const g = dial(l.players as P[], l.season)

@@ -126,7 +126,6 @@ export function Draft({
   teamName,
   salary = false,
   wallet,
-  handicap = 0,
   carry = null,
   wear = {},
   spinLeft = false,
@@ -143,8 +142,6 @@ export function Draft({
   salary?: boolean
   /** The campaign's staff tree: what's owned gates what this screen can do. */
   wallet: Progress
-  /** Points of spread the opponent carries in this campaign. */
-  handicap?: number
   /** Death match: the five carried in from the last level, already in their slots. */
   carry?: Player[] | null
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
@@ -331,7 +328,7 @@ export function Draft({
   // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
-  const theirs = useMemo(() => applyMod(compile(opponent.players, five.length ? five : undefined), { bonus: handicap }), [opponent, five, handicap])
+  const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */

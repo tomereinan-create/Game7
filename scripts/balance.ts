@@ -19,7 +19,7 @@ import CAMPAIGNS from '../src/data/campaigns.json'
 import { WHEEL, type TeamSeason } from '../src/data/wheel'
 import { SIGMA } from '../src/config'
 import { odds } from '../src/engine/odds'
-import { applyMod, compile } from '../src/engine/resolver'
+import { compile } from '../src/engine/resolver'
 import { PLAYERS } from '../src/engine/pool'
 import { eligible, POSITIONS, type Pos } from '../src/engine/positions'
 import { makeRng } from '../src/engine/rng'
@@ -85,28 +85,20 @@ const N = process.argv.slice(2).map(Number).find((n) => Number.isFinite(n) && n 
 interface Tier {
   id: string
   name: string
-  handicap: number
   levels: Opponent[]
 }
 const tiers = CAMPAIGNS as unknown as Tier[]
-/** `npm run balance -- 24 0,2,1,0` tries other handicaps without regenerating the ladder. */
-const override = process.argv.slice(2).find((a) => /^-?\d+(,-?\d+)+$/.test(a))
-if (override) {
-  const hs = override.split(',').map(Number)
-  tiers.forEach((t, i) => (t.handicap = hs[i] ?? t.handicap))
-  console.log(`handicaps overridden: ${tiers.map((t) => `${t.name} +${t.handicap}`).join(' · ')}`)
-}
 const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]
 const pctS = (v: number) => `${(100 * v).toFixed(1)}%`
 
-const winrate = (o: Opponent, handicap: number, round: number, profile: Profile) => {
+const winrate = (o: Opponent, round: number, profile: Profile) => {
   let sum = 0
   let n = 0
   for (let k = 0; k < N; k++) {
     const five = draft(round * 1_000_003 + k * 7919 + 1, profile)
     if (five.length !== 5) continue
     const mine = compile(five, o.players as Player[], 'naive')
-    const theirs = applyMod(compile(o.players as Player[], five), { bonus: handicap })
+    const theirs = compile(o.players as Player[], five)
     sum += odds(mine, theirs, SIGMA, 4).series
     n++
   }
@@ -120,11 +112,11 @@ for (const t of tiers) {
   const per: { level: number; team: string; bare: number; staffed: number }[] = []
   for (const o of t.levels) {
     round++
-    per.push({ level: round, team: o.team, bare: winrate(o, t.handicap, round, 'bare'), staffed: winrate(o, t.handicap, round, 'staffed') })
+    per.push({ level: round, team: o.team, bare: winrate(o, round, 'bare'), staffed: winrate(o, round, 'staffed') })
   }
   const soft = [...per].sort((a, b) => b.staffed - a.staffed).slice(0, 3)
   const hard = [...per].sort((a, b) => a.staffed - b.staffed).slice(0, 3)
-  console.log(`${t.name}  L${per[0].level}-${per[per.length - 1].level}  opponents +${t.handicap}`)
+  console.log(`${t.name}  L${per[0].level}-${per[per.length - 1].level}`)
   console.log(`  median  bare ${pctS(med(per.map((p) => p.bare)))}   staffed ${pctS(med(per.map((p) => p.staffed)))}`)
   console.log(`  first L${per[0].level} staffed ${pctS(per[0].staffed)}   last L${per[per.length - 1].level} staffed ${pctS(per[per.length - 1].staffed)}`)
   console.log(`  softest ${soft.map((s) => `L${s.level} ${s.team} ${pctS(s.staffed)}`).join(' · ')}`)

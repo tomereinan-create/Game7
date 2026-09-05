@@ -3,13 +3,13 @@ import { ROUNDS } from '../config'
 import { currentLevel, type CampaignMode, type Progress } from '../state/campaign'
 import { setUserMode, useUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
+import { useLayout } from './useLayout'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
 export interface Era {
   name: string
   years: [number, number]
-  handicap: number
   first: number
 }
 
@@ -24,6 +24,18 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
     return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : null
   }
   const cur = currentLevel(progress.campaign)
+  /**
+   * THE TUNNEL (design board 4b, his ruling: "Make the tunnel the front page"). The front door is
+   * its own room — black, one overhead light, warm-white ink — and it is stated as a BODY CLASS for
+   * the same reason the draft, My team and the map state theirs: this screen is a fragment with no
+   * wrapper of its own, and the skin has to reach the page's own ground and the light above it,
+   * both of which sit outside anything Home renders. It comes off on the way out, so the tunnel is
+   * the front door and nowhere else.
+   */
+  useLayout(() => {
+    document.body.classList.add('tunnel')
+    return () => document.body.classList.remove('tunnel')
+  }, [])
   return (
     <>
       <div className="mast">

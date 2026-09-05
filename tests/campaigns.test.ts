@@ -13,7 +13,6 @@ interface Tier {
   id: string
   name: string
   years: [number, number]
-  handicap: number
   levels: Opponent[]
 }
 const tiers = CAMPAIGNS as unknown as Tier[]
@@ -59,10 +58,8 @@ describe('one ladder of four tiers', () => {
     expect(ROUNDS).toBe(150)
   })
 
-  it('the handicap never falls as the ladder climbs, and tier 1 carries none', () => {
-    expect(tiers[0].handicap).toBe(0) // tier 1 is the game as it always was
-    for (let i = 1; i < tiers.length; i++) expect(tiers[i].handicap).toBeGreaterThanOrEqual(tiers[i - 1].handicap)
-    expect(tiers[tiers.length - 1].handicap).toBeGreaterThan(0)
+  it('no tier hands its opponents a spread — the fives do the climbing (HIS RULING)', () => {
+    for (const t of tiers) expect(t).not.toHaveProperty('handicap')
   })
 
   it('every level fields a legal, complete five', () => {
