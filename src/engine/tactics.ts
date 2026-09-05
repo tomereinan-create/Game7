@@ -347,6 +347,16 @@ export const DEFAULT_TACTICS: Tactics = {
  * that is worth recording: the two edges are 0.059 apart where r126's were 0.25, so the next round
  * that moves this pool at all will almost certainly have to re-read this tax again. crashOff held
  * at .17 and the seven others held their bands untouched. All nine pass.
+ * recal_138's hub-as-a-role round moved 267 o_ovrs and 208 OVRs (0 d_ovrs) and pushed a whole
+ * class of playmakers across the ovr>=55 pool line, and — exactly as the note above predicted —
+ * CRASH DEF GLASS broke again, this time on the OTHER edge: blind -0.186 against the -0.30 ceiling,
+ * because the fives are stronger and a blind glass call costs less against them. Swept .18
+ * (blind -0.186) / .30 (-0.272) / .338 (-0.2996, a thousandth under) / .339 (-0.3003, the ceiling
+ * exactly) / .40 (oracle +0.583) / .48 (+0.554, blind -0.403) / .60 (+0.510) / .629 (+0.5003, the
+ * floor exactly) / .630 (+0.5000, under) — a feasible interval of about .3385 to .6295, and it is
+ * WIDE again (0.29, where r137's was 0.059), so it takes its true midpoint by r126's rule:
+ * .18 -> .48, oracle +0.554 and blind -0.403, 0.054 and 0.103 of room either way. crashOff held at
+ * .17 (oracle +0.664) and the seven others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -356,7 +366,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.80,
   crashOff: 0.17,
-  crashDef: 0.18,
+  crashDef: 0.48,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

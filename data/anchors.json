@@ -1344,5 +1344,14 @@
     "round": 137,
     "ruling": "Hield agree, similar to Beasley.",
     "note": "53 -> 58, on the SAME term as Malik Beasley '23 and one round with him. '24 (93/40/23) collects +6.80 and reads 63; '25 (90/38/27) collects nothing and reads 53 — one point short of the clause's own flat bar of 91. recal_137's ramp gives him 0.667 of the bonus. The remaining gap to his '24 season is recal_96's load share: 22.7 minutes against 25.7, worth about 2 raw points, and that is a MEASURED load difference rather than a cliff."
+  },
+  {
+    "card": "Magic Johnson '90",
+    "scale": "off",
+    "target": 95,
+    "tol": 1,
+    "round": 138,
+    "ruling": "Magic agree a lot, maybe even 94-6.",
+    "note": "87 -> 94, the FLOOR of his band. THE HUB IS A ROLE, NOT A BODY. His best box season (BPM 10.1, OBPM 8.3, TS .622, 22.3/11.5) read FOUR BELOW his own '89 because his three-point rating went 37 -> 60, which flips is_big's middle shape clause `rim >= 60 and 3pt < 40` off and takes recal_55's BIG HUB with it: 93.28 [perimeter] against 93.45 + 4.90 [big], the same man, the flag being the whole difference. recal_55's own words are 'an efficient playmaking CENTER ... nothing priced the offense that RUNS THROUGH him' - a claim about a ROLE, with is_big as its proxy. The role is now measured on the two bars o_score already carries: more of the offence goes through his hands as CREATION than as his own shot (playvol - volume, ramped over the hub's own 20-point width, so Westbrook '17's surplus of ONE keeps recal_121's order pin), floored at volume >= PD_V_HI = 68 so this and recal_109's elite passer are DISJOINT by construction. Every big keeps role 1.00 and recal_55's class is untouched. The SIZE is derived rather than inherited: a hub's creation IS his load, so it is paid at the load weight instead of the creation weight and the premium is the gap, 0.26 - 0.19 = 0.07 (was 0.05, never defended); and it is paid wherever load is paid, so recal_26's signature floor reads max(volume, 50, hub load) too. 94 is the FLOOR of what this reaches and 95 needs K = 0.104, which is not derivable from anything in the file."
   }
 ]

@@ -271,6 +271,57 @@ def d_bigness(p):
 
 # offensive / defensive sub-ratings: SKILL composites from the attribute sheet
 # (marginal-in-average-team measures fit value, not end-skill - wrong tool for display)
+# recal_138 (HIS RULING, verbatim: "Magic agree a lot, maybe even 94-6"). THE HUB IS A ROLE, NOT A
+# BODY — and a hub's creation is his team's LOAD, so it is priced wherever load is priced.
+#
+# THE CARD, decomposed. Magic Johnson '90 is his best box season — BPM 10.1, OBPM 8.3, .622 true
+# shooting, 22.3 points and 11.5 assists in 37.2 minutes — and it printed OFF 87, FOUR BELOW his own
+# '89 (91). Nothing in the box explains four points; one attribute does. His three-point rating went
+# 37 -> 60 (he shot 38% from the arc that year), which flips is_big's middle shape clause
+# `rim >= 60 and 3pt < 40` OFF, and recal_55's BIG HUB (+4.90) goes with it. His two seasons' raw
+# o_scores are 93.28 [perimeter] and 93.45 + 4.90 [big]: the man is identical and the FLAG is the
+# difference. recal_103 recorded this seam as open; recal_93 wrote the diagnosis for the defensive
+# side of it in one sentence — "how a man SCORES was deciding how he is GRADED".
+#
+# WHY THE FLAG WAS THERE, AND WHY IT IS THE WRONG QUESTION. recal_55's own words are "an efficient
+# playmaking CENTER had no channel — his assists scored through playvol's 0.19 like everyone's, and
+# nothing priced the offense that RUNS THROUGH him." The claim is about a ROLE. `is_big` was a proxy
+# for it, and in 2019 it was a good one, because the only unpriced hubs anybody was arguing about
+# were centres. It is not a good proxy for a 6'9" point guard, and it breaks on a shot he learned.
+#
+# THE CLASS FUNCTION, and every number in it already existed.
+#   A BIG IS STILL A HUB, unconditionally: `is_big` returns _role = 1.0 and recal_55's own class is
+#     BYTE-IDENTICAL. This round only ADDS a second way in.
+#   THE ROLE ITSELF is measurable on the two bars o_score already carries: more of the offence goes
+#     through his hands as CREATION than as his own SHOT. `playvol - volume`, ramped over the hub's
+#     OWN ramp width (HUB_FULL - HUB_GATE = 20), so it is a fade and not a step — which is what keeps
+#     Russell Westbrook '17 (playvol 99, volume 98, surplus ONE) at 0.05 of the term and holds
+#     recal_121's order pin '15 >= '17. Magic '90's surplus is 29 and he is at 1.00.
+#   AND HE MUST CARRY A REAL SHARE HIMSELF: volume >= PD_V_HI. That is recal_117's own band top, 68,
+#     which is the volume ABOVE which recal_109's elite-passer term pays nothing at all. So the two
+#     creation channels are DISJOINT BY CONSTRUCTION and no card can be paid twice for one assist
+#     rate — the same construction recal_112 and recal_109 use across playvol 70, and recal_131 and
+#     recal_64/107/112 use across volume 55. John Stockton (volume 36), Steve Nash '05 (42) and all
+#     three Mark Jacksons are on recal_109's side of the line and move by EXACTLY zero.
+#
+# THE SIZE, and it is DERIVED rather than inherited. recal_55 set the premium at 0.05 x playvol and
+# never said why; recal_98 ramped the gate and explicitly left "the weight and the class function"
+# alone. The claim now states its own price: a hub's creation IS his team's load, so it is paid at
+# the LOAD weight instead of the CREATION weight, and the premium is the gap between them —
+# 0.26 - 0.19 = 0.07, both of them recal_89's LOCKED DIAL STATE. Written as a premium ON TOP of the
+# 0.19 the standard path already pays, the total is exactly 0.26 and the rate is paid ONCE.
+#
+# AND WHEREVER LOAD IS PRICED, which is the third consequence of the same sentence and not a fourth
+# idea. o_score prices load in exactly TWO places: the 0.26 weight, and recal_26's SIGNATURE
+# interaction `0.08 x max(volume, 50) x efficiency / 100` — "elite conversion on a modest load is
+# real scoring signal". A hub's load is his creation, so the signature's floor reads
+# max(volume, 50, hub load) and an efficient hub is paid for converting the offence he runs. It can
+# only ever LIFT (it is a max) and it is zero for every card outside the hub class.
+# MEASURED: 267 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +2.41, max +8; DEF and every
+# attribute move on ZERO; OVR follows on 208. All 137 anchors hold.
+HUB_GATE, HUB_FULL = 60, 80
+HUB_K = 0.07                       # recal_138: the load weight 0.26 minus the creation weight 0.19
+PD_V_LO, PD_V_HI = 10.0, 68.0      # recal_117's band; the hub's floor is its top, so the two are disjoint
 def o_score(p, trace=None):
     # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the
     # terms it just computed into it. Every write is guarded by `if trace is not None`, no expression
@@ -350,11 +401,24 @@ def o_score(p, trace=None):
     # carries nothing has nothing to discount, and only the narrow instrument can tell them apart.
     _load = load_share(p)
     _vol, _pvol = a['volume'] * _load, a['playvol'] * _load
+    # recal_138: THE HUB'S CLASS AND HIS LOAD, computed here because BOTH the signature term below
+    # and recal_55's hub premium further down read them. See the block above o_score for the whole
+    # argument. `_role` is 1.0 for every big (recal_55's class, byte-identical), and for a perimeter
+    # card it is the share of the offence that goes through him as CREATION rather than as his own
+    # shot, ramped over the hub's own width and floored at recal_117's band top so this term and
+    # recal_109's elite passer cannot both pay the same assist rate. `_hubload` is the load that
+    # creation constitutes: the same quantity the hub premium is charged on, computed once.
+    _role = (1.0 if is_big(p) else
+             (min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
+              if a['volume'] >= PD_V_HI else 0.0))
+    _hubload = a['playvol'] * min(1.0, max(0.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))) * _role
     std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*_vol + 0.19*_pvol
         + 0.10*a['ballsec'] + 0.11*(a['fouldraw']*a['ft']/100) + 0.06*a['orb']
         # the volume x efficiency SIGNATURE keeps its volume FLOOR of 50 (recal_26): elite conversion on
         # a modest load is real scoring signal, not an accident of touches.
-        + 0.08*(max(a['volume'],50)*a['efficiency']/100))
+        # recal_138: and a HUB's load is his creation, so the floor reads it too. max() only lifts,
+        # and _hubload is 0.0 for every card outside the hub class, so nobody else moves.
+        + 0.08*(max(a['volume'],50,_hubload)*a['efficiency']/100))
     if trace is not None:
         trace['terms'] = [
             ('z[0] best zone',      z[0],                             0.22, 0.22*z[0]),
@@ -366,7 +430,7 @@ def o_score(p, trace=None):
             ('ballsec',             a['ballsec'],                     0.10, 0.10*a['ballsec']),
             ('fouldraw x ft/100',   a['fouldraw']*a['ft']/100,        0.11, 0.11*(a['fouldraw']*a['ft']/100)),
             ('orb',                 a['orb'],                         0.06, 0.06*a['orb']),
-            ('signature vol x eff', max(a['volume'],50)*a['efficiency']/100, 0.08, 0.08*(max(a['volume'],50)*a['efficiency']/100)),
+            ('signature vol x eff', max(a['volume'],50,_hubload)*a['efficiency']/100, 0.08, 0.08*(max(a['volume'],50,_hubload)*a['efficiency']/100)),
         ]
         trace['std_base'] = std
         trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
@@ -554,11 +618,16 @@ def o_score(p, trace=None):
     # 90 IS THE FRONTIER, not a choice: searching the hub ramp against the volume, efficiency,
     # ballsec and signature weights jointly, 90 is the LOWEST reading Malone '99 can take with every
     # anchor held. See receipt 98 - the orchestrator's assumed target was 87 +-3 and 90 is its edge.
-    HUB_GATE, HUB_FULL = 60, 80
-    if is_big(p) and a['playvol'] >= HUB_GATE:
-        _hub = 0.05 * a['playvol'] * min(1.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))
+    # recal_138: HUB_GATE/HUB_FULL and PD_V_LO/PD_V_HI are hoisted to module scope (just above
+    # o_score) because the hub's own class function now reads them BEFORE `std` is built. The lines
+    # are otherwise byte-identical and every constant keeps its value.
+    if _role > 0.0 and a['playvol'] >= HUB_GATE:
+        _hub = HUB_K * _hubload
         std += _hub
-        if trace is not None: trace['big_hub'] = _hub
+        if trace is not None:
+            trace['big_hub'] = _hub
+            trace['hub_role'] = dict(role=_role, hubload=_hubload, k=HUB_K, big=is_big(p),
+                                     surplus=a['playvol'] - a['volume'], v_floor=PD_V_HI)
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
@@ -735,7 +804,8 @@ def o_score(p, trace=None):
     # cards two tenths of a minute apart is a cliff at 29.3 mpg, and Mark Jackson '00 (27.0 mpg,
     # pinned 58 +-3) closes that door: a ramp steep enough to split them zeroes his whole term.
     PD_PV_LO, PD_PV_HI = 70.0, 85.0
-    PD_V_LO, PD_V_HI = 10.0, 68.0
+    # recal_138 hoisted `PD_V_LO, PD_V_HI = 10.0, 68.0` to module scope — the band top is now read
+    # by the hub's class function too, and the two terms are DISJOINT across it by construction.
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
     PD_MIN_FULL = 34.7
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
@@ -1401,8 +1471,11 @@ if _CARD:
               f"(gate {_t3['h']:.2f}) x efficiency gate {_t3['e']:.2f} x ball-security gate "
               f"{_t3['b']:.2f} = {_t3['gate']:.3f}: -{_t3['taken']:.3f}")
     if 'big_hub' in _ot:
-        print(f"BIG HUB (recal_55's channel, recal_98's ramp: bigs from playvol 60 to 80): "
-              f"+{_ot['big_hub']:.3f}")
+        _hr = _ot['hub_role']
+        print(f"HUB (recal_55's channel, recal_98's ramp playvol 60->80, recal_138's ROLE class) - "
+              f"{'big (role 1.00 by recal_55s own class)' if _hr['big'] else f'''perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, volume floor {_hr['v_floor']:.0f} -> role {_hr['role']:.4f}'''}")
+        print(f"  hub load {_hr['hubload']:.2f} x K {_hr['k']:.2f} (the load weight 0.26 minus the "
+              f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
