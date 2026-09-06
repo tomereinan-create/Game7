@@ -110,7 +110,13 @@
     },
     {
       "label": "the Celtics '08 now read 2nd of 2008 on defence, behind the Spurs '08 only — the Spurs are unmoved",
-      "five": ["Tony Parker '08", "Manu Ginóbili '08", "Bruce Bowen '08", "Ime Udoka '08", "Tim Duncan '08"],
+      "five": [
+        "Tony Parker '08",
+        "Manu Ginóbili '08",
+        "Bruce Bowen '08",
+        "Ime Udoka '08",
+        "Tim Duncan '08"
+      ],
       "season": 2008,
       "scale": "team:defdial",
       "op": "==",
@@ -118,7 +124,13 @@
     },
     {
       "label": "and above the Rockets '08, who are unmoved (89): the reordering the scan asked for is real",
-      "five": ["Rafer Alston '08", "Shane Battier '08", "Tracy McGrady '08", "Luis Scola '08", "Yao Ming '08"],
+      "five": [
+        "Rafer Alston '08",
+        "Shane Battier '08",
+        "Tracy McGrady '08",
+        "Luis Scola '08",
+        "Yao Ming '08"
+      ],
       "season": 2008,
       "scale": "team:defdial",
       "op": "==",
@@ -126,7 +138,13 @@
     },
     {
       "label": "the same core's '09 did not move — its five was never tied",
-      "five": ["Rajon Rondo '09", "Ray Allen '09", "Paul Pierce '09", "Kevin Garnett '09", "Kendrick Perkins '09"],
+      "five": [
+        "Rajon Rondo '09",
+        "Ray Allen '09",
+        "Paul Pierce '09",
+        "Kevin Garnett '09",
+        "Kendrick Perkins '09"
+      ],
       "season": 2009,
       "scale": "team:defdial",
       "op": "==",
@@ -134,7 +152,13 @@
     },
     {
       "label": "and neither did its '10",
-      "five": ["Rajon Rondo '10", "Paul Pierce '10", "Kevin Garnett '10", "Rasheed Wallace '10", "Kendrick Perkins '10"],
+      "five": [
+        "Rajon Rondo '10",
+        "Paul Pierce '10",
+        "Kevin Garnett '10",
+        "Rasheed Wallace '10",
+        "Kendrick Perkins '10"
+      ],
       "season": 2010,
       "scale": "team:defdial",
       "op": "==",
@@ -142,7 +166,13 @@
     },
     {
       "label": "THE DEF SUMMIT IS WHERE HIS recal_94 RULING PUT IT — the Bulls '96 five did not change a man",
-      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
       "season": 1996,
       "scale": "team:defdial",
       "op": "==",
@@ -150,7 +180,13 @@
     },
     {
       "label": "THE OFF SUMMIT likewise — the Warriors '17 five did not change a man (recal_71 / recal_94)",
-      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "five": [
+        "Stephen Curry '17",
+        "Kevin Durant '17",
+        "Klay Thompson '17",
+        "Draymond Green '17",
+        "Zaza Pachulia '17"
+      ],
       "season": 2017,
       "scale": "team:offdial",
       "op": "==",
@@ -158,7 +194,13 @@
     },
     {
       "label": "THE KEY'S OWN TEST, and the reason the raw net was rejected: the Bad Boys keep Bill Laimbeer '92",
-      "five": ["Isiah Thomas '92", "Joe Dumars '92", "Dennis Rodman '92", "John Salley '92", "Bill Laimbeer '92"],
+      "five": [
+        "Isiah Thomas '92",
+        "Joe Dumars '92",
+        "Dennis Rodman '92",
+        "John Salley '92",
+        "Bill Laimbeer '92"
+      ],
       "season": 1992,
       "scale": "team:defdial",
       "op": "==",
@@ -166,7 +208,13 @@
     },
     {
       "label": "and the Spurs '04 keep Bruce Bowen '04 (a raw-net key benched him, DEF 92 -> 85)",
-      "five": ["Tony Parker '04", "Manu Ginóbili '04", "Bruce Bowen '04", "Hedo Türkoğlu '04", "Tim Duncan '04"],
+      "five": [
+        "Tony Parker '04",
+        "Manu Ginóbili '04",
+        "Bruce Bowen '04",
+        "Hedo Türkoğlu '04",
+        "Tim Duncan '04"
+      ],
       "season": 2004,
       "scale": "team:defdial",
       "op": "==",
@@ -174,7 +222,13 @@
     },
     {
       "label": "the biggest single mover: the Pistons '06 stop benching Ben Wallace '06 for Antonio McDyess '06",
-      "five": ["Chauncey Billups '06", "Richard Hamilton '06", "Tayshaun Prince '06", "Rasheed Wallace '06", "Ben Wallace '06"],
+      "five": [
+        "Chauncey Billups '06",
+        "Richard Hamilton '06",
+        "Tayshaun Prince '06",
+        "Rasheed Wallace '06",
+        "Ben Wallace '06"
+      ],
       "season": 2006,
       "scale": "team:defdial",
       "op": "==",
@@ -182,7 +236,13 @@
     },
     {
       "label": "the Celtics '24 field Jrue Holiday '24: the five the Team DB rates 65 instead of the one it rates 61",
-      "five": ["Derrick White '24", "Jrue Holiday '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24"],
+      "five": [
+        "Derrick White '24",
+        "Jrue Holiday '24",
+        "Jaylen Brown '24",
+        "Jayson Tatum '24",
+        "Kristaps Porziņģis '24"
+      ],
       "season": 2024,
       "scale": "team:ovrdial",
       "op": "==",
@@ -190,7 +250,13 @@
     },
     {
       "label": "recal_119's five still reads exactly what recal_119 left it reading — the pin is pinned to it",
-      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "five": [
+        "Derrick White '24",
+        "Jaylen Brown '24",
+        "Jayson Tatum '24",
+        "Kristaps Porziņģis '24",
+        "Al Horford '24"
+      ],
       "season": 2024,
       "scale": "team:off",
       "op": "==",
