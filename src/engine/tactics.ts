@@ -450,6 +450,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * feasible window is about 3.78 to 3.87 and 3.83 is its middle, the value with room at BOTH edges
  * by r126's rule. Re-ratified hunt 4.00 -> 3.83. crashOff .17, crashDef .62, playmaker 1.10 and the
  * five others held their bands untouched. All nine pass.
+ * pipeline-149 integration (recal_145 mid premium load share, 146 relief fade re-cut, 149 tracked band, landed
+ * together on pipeline 147): from main's 4.00 / .62 both hunt and crash def glass broke on the ORACLE edge
+ * (+0.45, +0.48). Swept 3.82/.57 (crashDef +0.49 fails), 3.76/.52 (both pass, thin), 3.86/.60 (fails),
+ * 3.78/.48; re-ratified hunt 4.00 -> 3.78, crashDef .62 -> 0.48. The branches' interim figures (145 3.67/.95,
+ * 146 3.89/.57 then 3.82, 149 3.83) are superseded, not stacked. Seven others held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -457,9 +462,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.82,
+  hunt: 3.78,
   crashOff: 0.17,
-  crashDef: 0.62,
+  crashDef: 0.48,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

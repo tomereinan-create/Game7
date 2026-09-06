@@ -26,7 +26,7 @@
         "attrs": {
           "3pt": 76,
           "rim": 2,
-          "mid": 87,
+          "mid": 86,
           "rim_mid_measured": true,
           "ft": 75,
           "fouldraw": 18,
@@ -233,7 +233,7 @@
         "attrs": {
           "3pt": 48,
           "rim": 24,
-          "mid": 83,
+          "mid": 82,
           "rim_mid_measured": true,
           "ft": 81,
           "fouldraw": 62,
@@ -271,7 +271,7 @@
         "attrs": {
           "3pt": 37,
           "rim": 32,
-          "mid": 65,
+          "mid": 64,
           "rim_mid_measured": true,
           "ft": 86,
           "fouldraw": 84,
@@ -516,7 +516,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 63,
-          "mid": 74,
+          "mid": 73,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 43,
@@ -930,7 +930,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 37,
-          "mid": 79,
+          "mid": 78,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 40,
@@ -1171,7 +1171,7 @@
         "in": 66,
         "out": 60,
         "id": 92,
-        "pd": 63,
+        "pd": 70,
         "attrs": {
           "3pt": 58,
           "rim": 63,
@@ -1189,7 +1189,7 @@
           "rimprot": 92,
           "perimdisrupt": 51,
           "height": 82,
-          "perdef": 63,
+          "perdef": 70,
           "discipline": 10,
           "usg_raw": 26.7,
           "ts_raw": 0.58,
@@ -1197,9 +1197,9 @@
         },
         "big": true,
         "o_ovr": 68,
-        "d_ovr": 83,
-        "ovr": 76,
-        "marg": 66
+        "d_ovr": 86,
+        "ovr": 77,
+        "marg": 68
       },
       {
         "name": "Jock Landale '26",
@@ -1306,7 +1306,7 @@
         "attrs": {
           "3pt": 20,
           "rim": 61,
-          "mid": 77,
+          "mid": 76,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 64,
@@ -1344,7 +1344,7 @@
         "attrs": {
           "3pt": 96,
           "rim": 9,
-          "mid": 71,
+          "mid": 69,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 17,
@@ -1927,7 +1927,7 @@
         "attrs": {
           "3pt": 28,
           "rim": 43,
-          "mid": 88,
+          "mid": 87,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 59,
@@ -2003,7 +2003,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 31,
-          "mid": 91,
+          "mid": 88,
           "rim_mid_measured": true,
           "ft": 74,
           "fouldraw": 20,
@@ -2206,7 +2206,7 @@
         "in": 35,
         "out": 45,
         "id": 77,
-        "pd": 93,
+        "pd": 95,
         "attrs": {
           "3pt": 42,
           "rim": 23,
@@ -2224,7 +2224,7 @@
           "rimprot": 77,
           "perimdisrupt": 48,
           "height": 78,
-          "perdef": 93,
+          "perdef": 95,
           "discipline": 10,
           "usg_raw": 16,
           "ts_raw": 0.538,
@@ -2232,7 +2232,7 @@
         },
         "big": true,
         "o_ovr": 36,
-        "d_ovr": 92,
+        "d_ovr": 93,
         "ovr": 64,
         "marg": 50
       },
@@ -2327,7 +2327,7 @@
         "o_ovr": 84,
         "d_ovr": 63,
         "ovr": 78,
-        "marg": 93
+        "marg": 92
       },
       {
         "name": "Nicolas Batum '26",
@@ -2506,7 +2506,7 @@
         "in": 36,
         "out": 79,
         "id": 34,
-        "pd": 74,
+        "pd": 75,
         "attrs": {
           "3pt": 78,
           "rim": 37,
@@ -2524,7 +2524,7 @@
           "rimprot": 34,
           "perimdisrupt": 48,
           "height": 76,
-          "perdef": 74,
+          "perdef": 75,
           "discipline": 92,
           "usg_raw": 21.6,
           "ts_raw": 0.571,
@@ -2532,9 +2532,9 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 71,
-        "ovr": 66,
-        "marg": 72
+        "d_ovr": 72,
+        "ovr": 67,
+        "marg": 73
       },
       {
         "name": "Shaedon Sharpe '26",
@@ -2548,7 +2548,7 @@
         "attrs": {
           "3pt": 60,
           "rim": 70,
-          "mid": 77,
+          "mid": 76,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 42,
@@ -2827,7 +2827,7 @@
         "in": 59,
         "out": 44,
         "id": 73,
-        "pd": 68,
+        "pd": 72,
         "attrs": {
           "3pt": 42,
           "rim": 51,
@@ -2845,7 +2845,7 @@
           "rimprot": 73,
           "perimdisrupt": 48,
           "height": 81,
-          "perdef": 68,
+          "perdef": 72,
           "discipline": 92,
           "usg_raw": 24.6,
           "ts_raw": 0.553,
@@ -2853,8 +2853,8 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 84,
-        "ovr": 76,
+        "d_ovr": 86,
+        "ovr": 78,
         "marg": 88
       },
       {
@@ -3683,7 +3683,7 @@
         "o_ovr": 38,
         "d_ovr": 79,
         "ovr": 58,
-        "marg": 80
+        "marg": 79
       },
       {
         "name": "Mark Williams '26",
@@ -3790,7 +3790,7 @@
         "attrs": {
           "3pt": 82,
           "rim": 36,
-          "mid": 92,
+          "mid": 91,
           "rim_mid_measured": true,
           "ft": 76,
           "fouldraw": 32,
@@ -4073,7 +4073,7 @@
         "attrs": {
           "3pt": 19,
           "rim": 62,
-          "mid": 85,
+          "mid": 84,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 59,
@@ -4411,7 +4411,7 @@
         "attrs": {
           "3pt": 85,
           "rim": 72,
-          "mid": 92,
+          "mid": 91,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 67,
@@ -4432,7 +4432,7 @@
           "ts_rel": 0.591
         },
         "big": false,
-        "o_ovr": 90,
+        "o_ovr": 89,
         "d_ovr": 58,
         "ovr": 80,
         "marg": 96
@@ -4576,7 +4576,7 @@
         "in": 80,
         "out": 10,
         "id": 69,
-        "pd": 91,
+        "pd": 98,
         "attrs": {
           "3pt": 9,
           "rim": 77,
@@ -4594,7 +4594,7 @@
           "rimprot": 69,
           "perimdisrupt": 69,
           "height": 79,
-          "perdef": 91,
+          "perdef": 98,
           "discipline": 72,
           "usg_raw": 19.4,
           "ts_raw": 0.596,
@@ -4602,8 +4602,8 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 93,
-        "ovr": 78,
+        "d_ovr": 96,
+        "ovr": 79,
         "marg": 96
       },
       {
@@ -4618,7 +4618,7 @@
         "attrs": {
           "3pt": 97,
           "rim": 14,
-          "mid": 84,
+          "mid": 83,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 7,
@@ -4732,7 +4732,7 @@
         "attrs": {
           "3pt": 15,
           "rim": 77,
-          "mid": 55,
+          "mid": 54,
           "rim_mid_measured": true,
           "ft": 69,
           "fouldraw": 80,
@@ -5018,7 +5018,7 @@
         "o_ovr": 88,
         "d_ovr": 46,
         "ovr": 75,
-        "marg": 96
+        "marg": 95
       },
       {
         "name": "Josh Hart '26",
@@ -5104,7 +5104,7 @@
         "in": 56,
         "out": 76,
         "id": 62,
-        "pd": 79,
+        "pd": 90,
         "attrs": {
           "3pt": 74,
           "rim": 50,
@@ -5122,7 +5122,7 @@
           "rimprot": 62,
           "perimdisrupt": 79,
           "height": 79,
-          "perdef": 79,
+          "perdef": 90,
           "discipline": 59,
           "usg_raw": 19.7,
           "ts_raw": 0.613,
@@ -5130,9 +5130,9 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 76,
-        "ovr": 71,
-        "marg": 75
+        "d_ovr": 83,
+        "ovr": 74,
+        "marg": 77
       },
       {
         "name": "Karl-Anthony Towns '26",
@@ -5446,7 +5446,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 40,
-          "mid": 74,
+          "mid": 73,
           "rim_mid_measured": true,
           "ft": 88,
           "fouldraw": 11,
@@ -5484,7 +5484,7 @@
         "attrs": {
           "3pt": 54,
           "rim": 72,
-          "mid": 91,
+          "mid": 90,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 76,
@@ -5687,7 +5687,7 @@
         "in": 68,
         "out": 12,
         "id": 89,
-        "pd": 95,
+        "pd": 97,
         "attrs": {
           "3pt": 10,
           "rim": 59,
@@ -5705,7 +5705,7 @@
           "rimprot": 89,
           "perimdisrupt": 86,
           "height": 79,
-          "perdef": 95,
+          "perdef": 97,
           "discipline": 9,
           "usg_raw": 17.4,
           "ts_raw": 0.551,
@@ -5715,7 +5715,7 @@
         "o_ovr": 44,
         "d_ovr": 94,
         "ovr": 69,
-        "marg": 81
+        "marg": 82
       },
       {
         "name": "Tobias Harris '26",
@@ -5729,7 +5729,7 @@
         "attrs": {
           "3pt": 48,
           "rim": 30,
-          "mid": 63,
+          "mid": 62,
           "rim_mid_measured": true,
           "ft": 87,
           "fouldraw": 45,
@@ -5750,9 +5750,9 @@
           "ts_rel": 0.561
         },
         "big": true,
-        "o_ovr": 54,
+        "o_ovr": 53,
         "d_ovr": 73,
-        "ovr": 64,
+        "ovr": 63,
         "marg": 62
       },
       {
@@ -5970,7 +5970,7 @@
         "in": 84,
         "out": 69,
         "id": 97,
-        "pd": 74,
+        "pd": 77,
         "attrs": {
           "3pt": 66,
           "rim": 78,
@@ -5988,7 +5988,7 @@
           "rimprot": 97,
           "perimdisrupt": 45,
           "height": 88,
-          "perdef": 74,
+          "perdef": 77,
           "discipline": 57,
           "usg_raw": 31.9,
           "ts_raw": 0.618,
@@ -6101,7 +6101,7 @@
         "in": 8,
         "out": 73,
         "id": 59,
-        "pd": 91,
+        "pd": 92,
         "attrs": {
           "3pt": 70,
           "rim": 7,
@@ -6119,7 +6119,7 @@
           "rimprot": 59,
           "perimdisrupt": 42,
           "height": 76,
-          "perdef": 91,
+          "perdef": 92,
           "discipline": 9,
           "usg_raw": 14,
           "ts_raw": 0.539,
@@ -6127,7 +6127,7 @@
         },
         "big": false,
         "o_ovr": 36,
-        "d_ovr": 80,
+        "d_ovr": 81,
         "ovr": 58,
         "marg": 48
       },
@@ -6139,7 +6139,7 @@
         "in": 85,
         "out": 50,
         "id": 98,
-        "pd": 66,
+        "pd": 69,
         "attrs": {
           "3pt": 47,
           "rim": 71,
@@ -6157,7 +6157,7 @@
           "rimprot": 98,
           "perimdisrupt": 9,
           "height": 85,
-          "perdef": 66,
+          "perdef": 69,
           "discipline": 60,
           "usg_raw": 21.9,
           "ts_raw": 0.653,
@@ -6165,8 +6165,8 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 93,
-        "ovr": 81,
+        "d_ovr": 94,
+        "ovr": 82,
         "marg": 96
       },
       {
