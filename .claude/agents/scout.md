@@ -125,3 +125,6 @@ Not a rule, an observation from the checks that earn their place:
   that card is really a ruling about the term.
 - **CHECK 3 is a prover, not a hunting ground.** Its rules are near-tautological by construction and
   are mostly empty; a hit there is a real surprise and should be ranked high when it happens.
+
+## Never regenerate in place
+A scout or refuter NEVER runs `python build_ratings.py` / `compute_ovr.py` inside the checkout's `data/` directory (it dirties the shared checkout's data file and the next integration must discard it). Measure on a COPY: copy `data/` to a scratch directory under the session scratchpad and regenerate there, or read the shipped JSON. Temp scripts go in the scratchpad, not `scripts/_tmp/`.
