@@ -26,7 +26,7 @@ import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { CoachSays, DraftProgress, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
 import { teamColor } from './teamColors'
-import { JerseyFive, LegsLeft } from './JerseyFive'
+import { CrowdBar, JerseyFive, LegsLeft, bugFor } from './JerseyFive'
 import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
 
@@ -126,6 +126,17 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
  * confirm in the dock. The spin's decelerating shuffle is the app's one
  * motion besides the Game 7 ticker.
  */
+/** The scorebug name: the last word of the team, the way Series.tsx sets one. */
+const bugName = (n: string) => (n.trim().split(' ').pop() ?? n).toUpperCase()
+/** Whether this machine has asked for less motion. Read at press time, not cached. */
+const reduceMotion = () => {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  } catch {
+    return false
+  }
+}
+
 export function Draft({
   opponent,
   seed,
@@ -236,6 +247,18 @@ export function Draft({
   /** His ruling: an unspent My team change earns a second look before the sim — as an
    * IN-GAME dialog (browser popups never render on his phone). */
   const [askSim, setAskSim] = useState(false)
+  /**
+   * THE SHOT (the design bundle, screen 5). In user mode "Take the floor" does not cut straight to
+   * the result: the ball goes up, the bug ticks two and the night settles behind it. `shooting` is
+   * the ball in flight, `bump` the two points once they are in, `flash` the "+2" coming off the
+   * board. All three are presentation — the series is simmed by the same call, 2.5s later — and
+   * all three are dropped if the machine asks for less motion.
+   */
+  const [shooting, setShooting] = useState(false)
+  const [bump, setBump] = useState(0)
+  const [flash, setFlash] = useState(false)
+  const shotTimers = useRef<number[]>([])
+  useEffect(() => () => shotTimers.current.forEach(clearTimeout), [])
   // USER MODE: every choice still works; nothing says whether it was good.
   const user = useUserMode()
   const openCard = useCard()
@@ -246,6 +269,8 @@ export function Draft({
   const [board, setBoard] = useState<number[] | null>(null)
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
+  /** Tonight's invented fourth quarter — the same one every time this level is played. */
+  const bug = useMemo(() => bugFor(opponent.round), [opponent.round])
   const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
@@ -649,6 +674,26 @@ export function Draft({
         .sort((a, b) => (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0) || b.ovr - a.ovr)
     : []
 
+  /**
+   * TAKE THE FLOOR. Scout mode sims and goes; user mode watches the last shot go in first. The
+   * timings are the bundle's own — the two points land at 1520ms, the night settles at 2500ms —
+   * and every one of them is a timeout this component owns and clears. A machine that has asked
+   * for less motion gets the sim it always got.
+   */
+  const takeTheFloor = () => {
+    if (!user || reduceMotion()) {
+      onSim(five, assignment, toWin)
+      return
+    }
+    setShooting(true)
+    shotTimers.current.push(
+      window.setTimeout(() => {
+        setBump(2)
+        setFlash(true)
+      }, 1520),
+      window.setTimeout(() => onSim(five, assignment, toWin), 2500),
+    )
+  }
   const dock = () => {
     // A worn-out man cannot take the floor, and the change lives in MY TEAM on the map — the
     // draft only holds the door until he has been replaced there.
@@ -664,12 +709,13 @@ export function Draft({
       return (
         <button
           className="btn"
+          disabled={shooting}
           onClick={() => {
             if (spinLeft) {
               setAskSim(true)
               return
             }
-            onSim(five, assignment, toWin)
+            takeTheFloor()
           }}
         >
           {/* The bundle's own label for the button that starts the night. Scout mode says what the
@@ -1205,7 +1251,20 @@ export function Draft({
             and once the five is set in the mode that plays blind there is nothing left to decide
             on it. The man rows underneath still move a man, so nothing is lost but the drag. */}
         {user && full ? (
+          <>
+          {/* THE HOUSE, ABOVE THE FLOOR — the bundle's crowd band with the night named across it
+              and the bug carrying the score. The score is theatre and says so in JerseyFive; what
+              is true on this bar is the two teams and the level. */}
+          <CrowdBar
+            bug={bug}
+            us={bugName(teamName)}
+            them={opponent.ab ?? bugName(opponent.team)}
+            step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
+            bump={bump}
+            flash={flash}
+          />
           <JerseyFive
+            shooting={shooting}
             spots={POSITIONS.map((x) => {
               const n = slots[x]
               const p = n ? BY_NAME.get(n) : undefined
@@ -1216,6 +1275,7 @@ export function Draft({
               }
             })}
           />
+          </>
         ) : (
         <CourtFive
           tactic={plan}
@@ -1362,7 +1422,10 @@ export function Draft({
           label="Before you sim"
           text="You still have a change left in My team. Sim the series without it?"
           yes="Sim without it"
-          onYes={() => onSim(five, assignment, toWin)}
+          onYes={() => {
+            setAskSim(false)
+            takeTheFloor()
+          }}
           onClose={() => setAskSim(false)}
         />
       ) : null}

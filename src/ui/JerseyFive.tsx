@@ -1,4 +1,5 @@
 import type { Player } from '../engine/types'
+import { Ball } from './Ball'
 import { LINES } from './Stat'
 
 /**
@@ -35,7 +36,7 @@ export interface JerseySpot {
   onTap?: () => void
 }
 
-export function JerseyFive({ spots }: { spots: JerseySpot[] }) {
+export function JerseyFive({ spots, shooting = false }: { spots: JerseySpot[]; shooting?: boolean }) {
   return (
     <div className="jf">
       {/* THE FLOOR. Hardwood raked back under the eye, with the house lights pooled at centre
@@ -51,6 +52,15 @@ export function JerseyFive({ spots }: { spots: JerseySpot[] }) {
         <span className="jf-rim" />
         <span className="jf-net" />
       </div>
+      {/* THE SHOT. The mark itself is the ball: it comes in over the near corner, arcs the length
+          of the floor and drops through the net at the rig — the bundle's `shoot`, which never
+          rotates, because the 7 has to stay upright the whole way. Mounted only while the shot is
+          in the air, so the animation starts from its own first frame every time. */}
+      {shooting ? (
+        <div className="jf-shot" aria-hidden>
+          <Ball size={26} />
+        </div>
+      ) : null}
       <div className="jf-row">
         {spots.map((s) => {
           const line = s.p ? (LINES[s.p.name] ?? null) : null
@@ -103,6 +113,72 @@ export function LegsLeft({ five, wear }: { five: Player[]; wear?: (name: string)
           )
         })}
       </div>
+    </div>
+  )
+}
+
+
+/**
+ * THE CROWD BAND AND THE SCOREBUG (the design bundle, screen 5) — user mode only.
+ *
+ * A dotted house in the dark with two cameras going off in it, the night named across the top, and
+ * a bug carrying the score. THE SCORE IS THEATRE and nothing else: the engine sims a whole series
+ * in one call, so there is no game in progress for it to read, and a bug driven by the projected
+ * margin would hand the mode that plays blind the very verdict it exists to withhold. So it is
+ * invented — deterministically, from the level, and always inside a possession or two either way,
+ * which is the one shape that says nothing about who is better. It is the closing minutes of a
+ * game, drawn the way a broadcast draws them; the result comes from the sim, as it always has.
+ */
+export interface Bug {
+  ours: number
+  theirs: number
+  clock: string
+}
+/** One hash, four numbers off it — the same night every time this level is played. */
+export function bugFor(level: number): Bug {
+  const h = Math.imul(level || 1, 2654435761) >>> 0
+  const base = 88 + (h % 21)
+  // −4 to +4: a one-possession game either way, so the bug can be read for tension and for
+  // nothing else. The two-point bucket is skipped so the shot below always changes the lead.
+  const edge = (((h >>> 5) % 9) - 4) || 3
+  return {
+    ours: base + Math.max(0, edge),
+    theirs: base - Math.min(0, edge),
+    clock: `${3 + ((h >>> 11) % 7)}:${String((h >>> 17) % 60).padStart(2, '0')}`,
+  }
+}
+
+export function CrowdBar({
+  bug,
+  us,
+  them,
+  step,
+  bump,
+  flash,
+}: {
+  bug: Bug
+  us: string
+  them: string
+  step: string
+  bump: number
+  flash: boolean
+}) {
+  return (
+    <div className="jf-crowd">
+      <span className="jf-house" aria-hidden />
+      <span className="jf-flash one" aria-hidden />
+      <span className="jf-flash two" aria-hidden />
+      {/* one row, the bundle's order: your score, the two names, their score, then the clock
+          behind a rule. You are gold and they are red, here as everywhere else. */}
+      <div className="jf-bug">
+        <b className="us">{bug.ours + bump}</b>
+        <i>{us}</i>
+        <em>{them}</em>
+        <b className="them">{bug.theirs}</b>
+        <span className="jf-clock">4th · {bug.clock}</span>
+        {flash ? <span className="jf-plus">+2</span> : null}
+      </div>
+      <span className="jf-step">{step}</span>
     </div>
   )
 }

@@ -331,6 +331,13 @@ const TRAIL_INK: Record<Skin, readonly string[]> = {
   dusk: ['#3ee6b0', '#9d7bff'],
 }
 /**
+ * USER MODE CLIMBS ONE TRAIL, NOT FOUR (his ruling, the handoff's second pass). The four inks
+ * above are the four boards' own, and user mode no longer stands on a board: the bundle draws the
+ * cleared stretch in a single lit gold the whole way up. Flat, so a block paints no gradient
+ * within itself and the seams stop showing on the line as well as on the floor.
+ */
+const TRAIL_GOLD = ['#f0b323'] as const
+/**
  * Every block as a band of trail, in the trail's own px: `bottom` is the seam below it and `top`
  * the seam above, each halfway between the last ticket of one block and the first of the next. The
  * bottom block runs to the very foot and the top block to the very head, so no sliver of floor is
@@ -348,7 +355,7 @@ function bands(rounds: number, colW: number) {
     const nextFirst = live[i + 1]?.first ?? rounds + 1
     const bottom = b.first <= 1 ? H : seam(b.first)
     const top = nextFirst > rounds ? 0 : seam(nextFirst)
-    return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: TRAIL_INK[b.skin] }
+    return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: isUserMode() ? TRAIL_GOLD : TRAIL_INK[b.skin] }
   })
 }
 

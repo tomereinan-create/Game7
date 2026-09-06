@@ -4598,3 +4598,264 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    thing that needs naming is the initials, which sit on the club's primary rather than on the
    court's black plates and so take the club's own lettering. */
 .court.clubbed .ct-init { color: var(--club-ink, var(--ink)); }
+
+/* ==========================================================================
+   USER MODE STANDS ON THE BUNDLE'S GROUND, NOT ON THE BLOCK'S
+   ==========================================================================
+   His ruling on the handoff, second pass: user mode drops the four era skins and takes the
+   bundle's own room everywhere — one wash, gold and franchise blue, hardwood where there is a
+   floor. Scout mode keeps all four skins, which is the whole of the earlier ruling and is not
+   touched by anything below.
+
+   THE SKINS ARE TOKENS, so this is a token block and not a rewrite. `body.sk-dusk` and its three
+   siblings re-point --bg / --surface / --ink / --you and paint the body; every one of them is put
+   back to the value :root already holds, which IS the bundle's palette, and the body's own paint
+   comes off so the lit arena wash on <html> shows through again. The `sk-` class itself stays on
+   the body — the map's sticky header is keyed on it — it just stops meaning a colour.
+   ========================================================================== */
+body.um[class*='sk-'] {
+  --bg: #0b0a09;
+  --surface: #12100e;
+  --surface-2: #1d1916;
+  --line: #241f1a;
+  --line-2: #2a2320;
+  --line-3: #4a4038;
+  --divider: #1c1815;
+  --ink: #f6f4ef;
+  --ink-2: #d6d0c8;
+  --muted: #a39a91;
+  --muted-2: #8a8178;
+  --faint: #8a8178;
+  --you: #f0b323;
+  --you-tint: #241f1a;
+  --you-line: #8f6512;
+  --you-ink: #16130f;
+  --danger: #ef4a63;
+  background: none;
+}
+
+/* --------------------------------------------------------------------------
+   THE LADDER'S FOUR GROUNDS, in the bundle's own four
+   --------------------------------------------------------------------------
+   The design keeps a band per block — it names them Arena nights, Hardwood prime, Banner hall and
+   Twilight dynasty — but paints all four as near-blacks a shade apart, so the climb changes
+   temperature rather than changing rooms. That is the difference between the bundle's ladder and
+   the app's: not whether the blocks are painted, but how far apart. Each carries one faint light
+   pool and the floorboards at 3%, and the fade into the block below is the mask .ground already
+   has. The four values are the bundle's, in the order user mode's blocks run.
+   -------------------------------------------------------------------------- */
+body.um .ground {
+  background-image:
+    radial-gradient(420px 300px at var(--pool, 70%) 6%, rgba(246, 244, 239, 0.05), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(246, 244, 239, 0.03) 0 2px, transparent 2px 46px);
+}
+body.um .ground.arena { background-color: #1a0f07; --pool: 72%; }  /* era I   · arena nights */
+body.um .ground.hall  { background-color: #1b1409; --pool: 26%; }  /* era II  · hardwood prime */
+body.um .ground.dusk  { background-color: #0d1119; --pool: 68%; }  /* era III · banner hall */
+body.um .ground.wood  { background-color: #120d1e; --pool: 32%; }  /* era IV  · twilight dynasty */
+
+/* The era rule is the bundle's: the numeral in gold, the block's name in cream, the years in the
+   caption grey. One rule for all four, because in this room there is only one palette. */
+body.um .era-band em { color: var(--you); }
+body.um .era-band b { color: var(--ink); }
+body.um .era-band i { color: var(--muted-2); }
+/* the arena's two hairlines are an ember gradient; in one palette they are the same hairline the
+   other three blocks draw */
+body.um .era-band.arena::before,
+body.um .era-band.arena::after { background: currentColor; opacity: 0.3; }
+
+/* The two fabs come off the block and back onto the house: gold on near-black, which is what the
+   front door this mode opens from wears. */
+body.um .home-fab,
+body.um .map-fab {
+  color: var(--you);
+  background: rgba(11, 10, 9, 0.55);
+  border-color: rgba(240, 179, 35, 0.45);
+}
+body.um .home-fab:hover,
+body.um .map-fab:hover { border-color: var(--you); }
+
+/* --------------------------------------------------------------------------
+   THE WHEEL'S COURT PANEL — darkened hardwood (the bundle, screen 4)
+   --------------------------------------------------------------------------
+   CourtFive paints its floor out of --wash / --surface / --line, so the panel is re-skinned by
+   re-pointing those five inside the court and nothing else. The boards are the bundle's own
+   `--hardwood-panel`, darkened by a wash over them so the cream plates on the busts still read;
+   the painted lines are cream at half strength, which is the design's court-line value.
+
+   The name and mono plates under each bust were cut for this floor and have been carrying their
+   own near-black grounds since they were written — they need nothing here.
+   -------------------------------------------------------------------------- */
+body.um .court {
+  background-color: #2b2521;
+  background-image: linear-gradient(rgba(11, 10, 9, 0.26), rgba(11, 10, 9, 0.26)), var(--hardwood-panel);
+  border-radius: 4px;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.45);
+  --wash: rgba(246, 239, 226, 0.07);
+  --surface: rgba(11, 10, 9, 0.2);
+  --line: rgba(246, 239, 226, 0.32);
+  --line-2: rgba(246, 239, 226, 0.42);
+  --line-3: rgba(246, 239, 226, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   GAME NIGHT'S CROWD BAND, BUG AND SHOT (the bundle, screen 5) — user mode only
+   --------------------------------------------------------------------------
+   A dark house over the floor: dotted heads, two cameras going off on their own clocks, the night
+   named at the left and the bug at the right. The bug's own numbers are theatre and are built in
+   JerseyFive, which says so; what this block owns is that YOU are gold and THEY are red, which is
+   the same mapping every other screen in the room holds.
+   -------------------------------------------------------------------------- */
+.jf-crowd {
+  position: relative;
+  height: 70px;
+  margin: 0 0 6px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #040303 0%, #0b0a09 100%);
+  border-bottom: 1px solid var(--um-hair);
+}
+/* the house: two staggered rows of heads, drawn as dots rather than as an image */
+.jf-house {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(circle at 4px 4px, #241f1a 3px, transparent 3.5px),
+    radial-gradient(circle at 8px 12px, #1c1815 3px, transparent 3.5px);
+  background-size: 16px 20px, 16px 20px;
+}
+.jf-flash {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 12px 5px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: jfflash 2.6s linear infinite;
+}
+.jf-flash.one { left: 22%; top: 16px; }
+.jf-flash.two { left: 68%; top: 30px; animation-duration: 4.1s; animation-delay: 1.2s; }
+@keyframes jfflash {
+  0%, 93% { opacity: 0; }
+  94% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* the bug, on its own near-black plate at the head of the band, and the night named under it */
+.jf-bug {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(4, 3, 3, 0.9);
+  border: 1px solid var(--um-hair);
+  border-radius: 3px;
+}
+.jf-bug b { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1; }
+.jf-bug b.us { color: var(--um-gold); }
+.jf-bug b.them { color: var(--um-them-hi); }
+.jf-bug i,
+.jf-bug em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.jf-bug i { color: var(--um-cap); }
+.jf-bug em { color: var(--um-them-hi); }
+/* the clock stands behind a rule, the way a broadcast's does */
+.jf-clock {
+  padding-left: 9px;
+  border-left: 1px solid var(--um-hair);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--um-them-hi);
+  white-space: nowrap;
+}
+/* the night, under the bug — anchored to the foot of the band so it never rides into it as the
+   bug's own numerals grow at the desk */
+.jf-step {
+  position: absolute;
+  left: 12px;
+  bottom: 7px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--um-gold);
+}
+/* the two points, coming off the board */
+.jf-plus {
+  position: absolute;
+  right: 8px;
+  top: -6px;
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--um-gold);
+  pointer-events: none;
+  animation: jfscorepop 1s ease-out forwards;
+}
+@keyframes jfscorepop {
+  from { transform: translateY(10px); opacity: 0; }
+  35% { transform: translateY(-16px) scale(1.25); opacity: 1; }
+  to { transform: translateY(-34px) scale(1); opacity: 0; }
+}
+
+/* THE SHOT. The landing point is the rim's own, stated as two variables on .jf so the desk's
+   larger rig retunes the flight without a second set of keyframes. The ball never rotates. */
+.jf { --rim-x: 41px; --rim-y: 15px; --floor-y: 108px; }
+.jf-shot { position: absolute; z-index: 6; animation: jfshoot 1.6s cubic-bezier(0.3, 0, 0.55, 1) forwards; }
+@keyframes jfshoot {
+  0% { right: 86%; top: var(--floor-y); opacity: 0; }
+  8% { opacity: 1; }
+  62% { right: 46%; top: -6px; opacity: 1; }
+  88% { right: var(--rim-x); top: var(--rim-y); opacity: 1; }
+  100% { right: var(--rim-x); top: calc(var(--rim-y) + 48px); opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jf-flash, .jf-shot, .jf-plus { animation: none; }
+  .jf-flash { display: none; }
+}
+@media (min-width: 900px) {
+  .jf { --rim-x: 67px; --rim-y: 17px; --floor-y: 152px; }
+  .jf-crowd { height: 76px; }
+  .jf-bug { gap: 10px; padding: 5px 12px; left: 14px; top: 10px; }
+  .jf-bug b { font-size: 32px; }
+  .jf-bug i, .jf-bug em { font-size: 9.5px; }
+  .jf-clock { font-size: 10px; }
+  .jf-step { font-size: 9.5px; left: 16px; bottom: 9px; }
+}
+
+/* --------------------------------------------------------------------------
+   THE MAP'S CHROME, off the block and onto the house
+   --------------------------------------------------------------------------
+   The header, the foot and the rule under them are dressed per board — the hall's cream, the
+   dusk's mint, the arena's ember — because on a board that is what reads. In one room there is
+   one palette: the star count and the links are gold, the kicker and the captions are the
+   caption grey, reset stays red, and the scrim over the header is the ground's own black.
+   -------------------------------------------------------------------------- */
+body.um .map-top { --top-scrim: rgba(4, 3, 3, 0.55); }
+body.um .map-top .map-kicker,
+body.um .map-top .map-total i,
+body.um .map-foot .cap { color: var(--muted-2); }
+body.um .map-top .map-total,
+body.um .map-top .map-total .star,
+body.um .map-top .map-link { color: var(--you); text-shadow: 0 0 22px rgba(240, 179, 35, 0.3); }
+body.um .map-top .map-link { text-shadow: none; }
+body.um .map-top .map-link.danger,
+body.um .map-foot .map-link.danger { color: var(--danger); }
+body.um .map-top .rule2 { background: linear-gradient(90deg, var(--you), rgba(240, 179, 35, 0.25) 60%, transparent); }
+body.um .map-foot { background: var(--bg); }
+/* The dim stretch of trail — the part not yet climbed — is the arena's cold blue on a board and
+   the bundle's own cream-at-a-tenth in this room. The lit stretch is the gold TRAIL_GOLD emits. */
+body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
