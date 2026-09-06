@@ -1389,5 +1389,14 @@
     "round": 143,
     "ruling": "Suns dont have to be 85, but can be heigher, low 70s",
     "note": "THE REACHED VALUE, PINNED, AND THE 72 +-3 IS DECLINED. His word after recal_140 asked for the low 70s. recal_143 raised the creation pass-through (CREATE_SHARE 0.20 -> 0.30) and the possession channel (TOV_SIZE 0.45 -> 0.66) together and reached 68 from 66 — the LARGEST reading any (CREATE_SHARE, TOV_SIZE, AMP_MAX) setting produces with every pin held. 69 needs either the Celtics '24 past recal_119's team-OFF rank <=10 or a THIRD five past the Warriors '17 on the all-time adjusted index; 72 needs TOV_SIZE ~1.3 and CREATE_SHARE ~0.6, which puts FOUR fives above the Warriors. The frontier is in data/rounds/143.json. The band is +-4 for the same reason recal_140 used +-4: the OFF gauge is re-frozen on the pool every time teamOffense changes, so a team dial carries pool noise a card does not."
+  },
+  {
+    "card": "Jamal Crawford '19",
+    "scale": "attr:mid",
+    "target": 93,
+    "tol": 3,
+    "round": 145,
+    "ruling": "Confirm 5",
+    "note": "99 -> 95. THE MIDRANGE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD. The +0.07 bonus on top of the zone composite was keyed on nothing but the in-zone attempt-rate PERCENTILE, a per-100 RATE, so an 18.9-mpg gunner on 7.9 ppg / 39.7% FG / TS .522 / BPM -3.9 collected the same premium a 36-minute first option collects and printed mid 99 -- one of 73 cards on 99, six above his own 20-ppg '13. That is recal_51's objection, which recal_78 and recal_126 applied to the two deadeye floors directly underneath and never to the bonus above them. The premium is now scaled by a load ramp with recal_96's 12-minute foot and recal_117's line for a SECOND payment of a rate -- the class's own upper quartile of minutes, measured on this term's own class: 35.7 mpg over the 2,005 cards it pays (mp >= 1200, 1997+; median 32.5, p25 27.6). Against recal_96's own 24-minute bench line the subject reads 97, one point outside this band, which is the recorded frontier of the bench-boundary shape. Nothing rises on mid by construction, 0 rim bars and 0 DEF move, and the PAINT premium is deliberately left unloaded: the symmetric variant costs Ayton '26 rim 71 -> 70 and Dampier '07 58 -> 57, which breaks recal_120's screen tie-break and recal_142's Mavs '07 ladder five for a term this ruling never named."
   }
 ]

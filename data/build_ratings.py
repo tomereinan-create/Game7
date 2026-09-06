@@ -162,7 +162,7 @@ for r in adv:
         x3pa_per_100=f(s['x3pa_per_100_poss']), x3p_pct=f(s['x3p_percent']),
         ft_pct=f(s['ft_percent']), ht=ht,
         drep=career_rep(r['player_id'], int(r['season'])),
-        team_drtg=teamd.get((int(r['season']), r['team'])), mp_v=mp,
+        team_drtg=teamd.get((int(r['season']), r['team'])), mp_v=mp, g_v=f(r['g']),
     ))
 
 def pctile_top(vals):
@@ -687,8 +687,53 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     # Applies only to stored attributes (use_factor=True), never to inference training targets;
     # rim deadeye also requires self-creation (assisted-heavy finishing is not shot-making).
     if use_factor:   # HIGH-VOLUME PREMIUM (stored attributes only, never inference targets)
+        # RECAL_145 (his ruling, "Confirm 5"): THE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD.
+        # This is the SAME objection recal_51 wrote and recal_78/126 applied to the two deadeye
+        # floors, arriving at last at the bonus sitting directly above them: "attempts are a RATE --
+        # per hundred -- so a 17-minute bench finisher can post a starter's attempt rate while
+        # carrying no load." The midrange premium is keyed on nothing but the in-zone attempt-rate
+        # PERCENTILE, so an 18.9-minute gunner whose whole job is to launch reads the 95th percentile
+        # of midrange rate and collects the same full 0.07 a 36-minute first option collects --
+        # Jamal Crawford '19 (7.9 ppg, 39.7% FG, TS .522, BPM -3.9) printed mid 99, one of 73 cards
+        # on 99 and SIX ABOVE his own 20-ppg '13. It is now scaled by a LOAD SHARE in [0, 1]: a card
+        # that carried a full workload keeps the premium whole and is byte-identical, a half load
+        # gets half of it, and nothing can rise. No cliff. The minutes come from the `mp` and `g`
+        # columns of the Advanced sheet this file already loads (Crawford '19: 1211 / 64 = 18.92),
+        # which is the same number recal_96's load_share reads off Player Per Game, so no new input
+        # enters the pipeline. The composite and both deadeye floors underneath are untouched: this
+        # taxes only the top-quintile-RATE bonus that sits on top of them.
+        #
+        # THE FULL-LOAD LINE IS NOT THE BENCH BOUNDARY -- recal_117 already ruled this, for the same
+        # shape of mistake. recal_96's ramp runs 12 -> 24 minutes because it was cut to answer "did
+        # this man play at all" (Capela '17 at 23.9). recal_117 found the creation rate being paid a
+        # SECOND time with no load reading and ruled that "a rate paid twice has to be scaled twice,
+        # and the second line is not the bench boundary: it is the minutes at which a distributor has
+        # actually carried a season's creation" -- then MEASURED that line as the class's own upper
+        # quartile of minutes (34.7 of the 834 cards the term pays). This premium is the same object:
+        # the composite already pays P['midvol'] at weight 0.65, and the premium pays the TOP of that
+        # same percentile AGAIN. So it takes recal_96's SHAPE (a ramp with the 12-minute foot, below
+        # which a load term earns nothing) and recal_117's LINE, measured on this term's own class:
+        # of the 2,005 cards this premium pays (midrange rate percentile > 0.70, mp >= 1200, 1997+),
+        # the 75th percentile of minutes per game is 35.69 (median 32.52, p25 27.61), so PREM_FULL =
+        # 35.7. Against recal_96's own 24-minute bench line the subject reads mid 97, ONE POINT
+        # outside his band: 24 minutes is not what "high volume" means, and that reading is the
+        # frontier of the bench-boundary shape, recorded in data/rounds/145.json.
+        #
+        # WHY THE PAINT PREMIUM ON THE NEXT LINE IS LEFT ALONE. The objection applies to it word for
+        # word and the symmetric change was measured first (942 rim bars fall, none by more than 5).
+        # It is NOT taken here because it is not this ruling and it does not pay for itself: the two
+        # cards it moves by a single point are Deandre Ayton '26 (27.2 mpg, rim 71 -> 70) and Erick
+        # Dampier '07 (25.2 mpg, 58 -> 57), and those two points re-decide a screen tie-break and a
+        # starting five that two of his OWN earlier rulings pinned in tests/court.test.ts (recal_120,
+        # "Why is Ayton out and James in? Makes no sense") and tests/campaigns.test.ts (recal_142).
+        # A round does not spend an old ruling to buy tidiness in a term the new ruling never named.
+        # The paint premium keeps the unloaded rate and its class line is measured and on the record
+        # (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line.
+        PREM_FOOT, PREM_FULL = 12.0, 35.7
+        _pmpg = ((f(r.get('mp_v')) or 0.0) / (f(r.get('g_v')) or 0.0)) if (f(r.get('g_v')) or 0) > 0 else None
+        _pload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - PREM_FOOT) / (PREM_FULL - PREM_FOOT)))
         rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))
-        mid = min(1.0, mid + 0.07*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
+        mid = min(1.0, mid + 0.07*_pload*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
         # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.
         # These two floors pay 85% on ACCURACY and override the volume-first composite above them, and
         # their only gate was a RATE (2.5 attempts per 100). recal_51 already wrote the objection, for

@@ -26,7 +26,7 @@
         "attrs": {
           "3pt": 76,
           "rim": 2,
-          "mid": 87,
+          "mid": 86,
           "rim_mid_measured": true,
           "ft": 75,
           "fouldraw": 18,
@@ -233,7 +233,7 @@
         "attrs": {
           "3pt": 48,
           "rim": 24,
-          "mid": 83,
+          "mid": 82,
           "rim_mid_measured": true,
           "ft": 81,
           "fouldraw": 62,
@@ -271,7 +271,7 @@
         "attrs": {
           "3pt": 37,
           "rim": 32,
-          "mid": 65,
+          "mid": 64,
           "rim_mid_measured": true,
           "ft": 86,
           "fouldraw": 84,
@@ -516,7 +516,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 63,
-          "mid": 74,
+          "mid": 73,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 43,
@@ -930,7 +930,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 37,
-          "mid": 79,
+          "mid": 78,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 40,
@@ -1306,7 +1306,7 @@
         "attrs": {
           "3pt": 20,
           "rim": 61,
-          "mid": 77,
+          "mid": 76,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 64,
@@ -1344,7 +1344,7 @@
         "attrs": {
           "3pt": 96,
           "rim": 9,
-          "mid": 71,
+          "mid": 69,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 17,
@@ -1927,7 +1927,7 @@
         "attrs": {
           "3pt": 28,
           "rim": 43,
-          "mid": 88,
+          "mid": 87,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 59,
@@ -2003,7 +2003,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 31,
-          "mid": 91,
+          "mid": 88,
           "rim_mid_measured": true,
           "ft": 74,
           "fouldraw": 20,
@@ -2548,7 +2548,7 @@
         "attrs": {
           "3pt": 60,
           "rim": 70,
-          "mid": 77,
+          "mid": 76,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 42,
@@ -3790,7 +3790,7 @@
         "attrs": {
           "3pt": 82,
           "rim": 36,
-          "mid": 92,
+          "mid": 91,
           "rim_mid_measured": true,
           "ft": 76,
           "fouldraw": 32,
@@ -4073,7 +4073,7 @@
         "attrs": {
           "3pt": 19,
           "rim": 62,
-          "mid": 85,
+          "mid": 84,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 59,
@@ -4411,7 +4411,7 @@
         "attrs": {
           "3pt": 85,
           "rim": 72,
-          "mid": 92,
+          "mid": 91,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 67,
@@ -4432,7 +4432,7 @@
           "ts_rel": 0.591
         },
         "big": false,
-        "o_ovr": 90,
+        "o_ovr": 89,
         "d_ovr": 58,
         "ovr": 80,
         "marg": 96
@@ -4618,7 +4618,7 @@
         "attrs": {
           "3pt": 97,
           "rim": 14,
-          "mid": 84,
+          "mid": 83,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 7,
@@ -4732,7 +4732,7 @@
         "attrs": {
           "3pt": 15,
           "rim": 77,
-          "mid": 55,
+          "mid": 54,
           "rim_mid_measured": true,
           "ft": 69,
           "fouldraw": 80,
@@ -5446,7 +5446,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 40,
-          "mid": 74,
+          "mid": 73,
           "rim_mid_measured": true,
           "ft": 88,
           "fouldraw": 11,
@@ -5484,7 +5484,7 @@
         "attrs": {
           "3pt": 54,
           "rim": 72,
-          "mid": 91,
+          "mid": 90,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 76,
@@ -5729,7 +5729,7 @@
         "attrs": {
           "3pt": 48,
           "rim": 30,
-          "mid": 63,
+          "mid": 62,
           "rim_mid_measured": true,
           "ft": 87,
           "fouldraw": 45,
@@ -5750,9 +5750,9 @@
           "ts_rel": 0.561
         },
         "big": true,
-        "o_ovr": 54,
+        "o_ovr": 53,
         "d_ovr": 73,
-        "ovr": 64,
+        "ovr": 63,
         "marg": 62
       },
       {
@@ -5860,7 +5860,7 @@
         "attrs": {
           "3pt": 82,
           "rim": 12,
-          "mid": 95,
+          "mid": 94,
           "rim_mid_measured": true,
           "ft": 81,
           "fouldraw": 26,
