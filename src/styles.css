@@ -170,12 +170,14 @@ button {
   color: inherit;
 }
 
+/* THE CARD. Square, in this room: the bundle's panels are all right angles, and a rounded card
+   inside a square action bar reads as two design languages arguing. */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 14px 12px;
-  margin-top: 12px;
+  border-radius: 0;
+  padding: 12px;
+  margin-top: 10px;
 }
 .card-head {
   display: flex;
@@ -1278,11 +1280,17 @@ button {
 .draft .col.a { order: 1; }
 .draft .col.b { order: 2; }
 .draft .col.c { order: 3; }
-.wheel-idle .spin-team.dim { color: var(--muted); }
-.spin-live .spin-team,
-.spin-live .spin-sub {
-  color: var(--muted);
+/* THE WHEEL CARD (Game7 Flow, screen 4). The one gold-bordered box on the draft: whatever state
+   it is in — waiting, shuffling, landed — it is the thing being watched, so it wears the border
+   the primary button wears. Idle, the words inside it go grey; spinning, they go gold. */
+.card.wheel-idle,
+.card.wheel-card {
+  border: 2px solid var(--you);
+  background: var(--surface);
 }
+.wheel-idle .spin-team.dim { color: #6e665e; }
+.spin-live .spin-team { color: var(--you); }
+.spin-live .spin-sub { color: var(--muted); }
 
 .mode.spin .bar {
   background: linear-gradient(90deg, var(--you), var(--them));
@@ -1295,12 +1303,11 @@ button {
   padding: 44px 8px 10px;
 }
 .spin-kicker {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--you);
 }
 .spin-title {
   font-family: var(--serif);
@@ -1311,17 +1318,15 @@ button {
 .spin-team {
   font-family: var(--serif);
   font-size: 34px;
-  line-height: 1.1;
-  margin-top: 10px;
+  line-height: 0.9;
+  text-transform: uppercase;
+  margin-top: 6px;
 }
 .spin-sub {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--them);
-  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 4px;
 }
 
 /* position assignment + open slots + stars */
@@ -2737,7 +2742,7 @@ body:has(.sheet) .map-fab { display: none; }
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
 /* the ghost ring of an unfilled slot: the position stands in for the man */
-.ct-init.ghost { color: var(--faint); font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; }
+.ct-init.ghost { color: var(--ink-2); font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; }
 .ct-spot.drop-ok .ct-bust { border-color: var(--you); border-style: solid; background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
 .ct-spot.drop-no .ct-bust { border-color: var(--danger); background: var(--danger-tint); }
 .ct-floor { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -2750,10 +2755,15 @@ body:has(.sheet) .map-fab { display: none; }
 @media (prefers-reduced-motion: no-preference) {
   .ct-spot { transition: left 0.35s ease, top 0.35s ease; }
 }
-.ct-spot b { font-family: var(--serif); font-weight: 400; font-size: 13px; color: var(--ink); max-width: 86px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ct-spot i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.ct-bust { position: relative; display: grid; place-items: center; border-radius: 50%; background: var(--wash); border: 1px solid var(--line-3); overflow: visible; }
-.ct-init { font-style: normal; font-family: var(--serif); font-size: 19px; color: var(--ink-2); letter-spacing: 0.02em; }
+/* THE NAME AND THE LINE SIT ON PLATES (Game7 Flow, screen 4). Cream type on hardwood is the one
+   place in the app where the floor is lighter than the ink is dark, and unplated it disappears
+   into the boards. Both lines carry their own near-black ground, sized to the words. */
+.ct-spot b { justify-self: center; font-family: var(--serif); font-weight: 400; font-size: 15px; line-height: 1.15; text-transform: uppercase; color: var(--ink); background: rgba(11, 10, 9, 0.82); padding: 0 4px; max-width: 86px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ct-spot i { justify-self: center; font-style: normal; font-size: 9px; line-height: 1.25; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); background: rgba(11, 10, 9, 0.82); padding: 0 4px; white-space: nowrap; }
+/* A man on the floor wears the franchise: blue inside a gold ring. An open spot is a hole cut in
+   the floor with a dashed cream edge — the same two states the bundle draws. */
+.ct-bust { position: relative; display: grid; place-items: center; border-radius: 50%; background: var(--mine); border: 2px solid var(--you); overflow: visible; }
+.ct-init { font-style: normal; font-family: var(--serif); font-size: 19px; color: var(--ink); letter-spacing: 0.02em; }
 .ct-spot.on .ct-bust { border-color: var(--you); background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
 .ct-spot.danger .ct-bust { border-color: var(--danger); background: var(--danger-tint); box-shadow: 0 0 0 1px var(--danger); }
 .ct-spot.danger i { color: var(--danger); font-weight: 700; }
@@ -2764,8 +2774,8 @@ body:has(.sheet) .map-fab { display: none; }
 .ct-spot.grab { touch-action: none; }
 .ct-spot.lifted { opacity: 0.45; }
 .ct-spot.lifted .ct-bust { border-style: dashed; }
-.ct-open .ct-bust { border-style: dashed; }
-.ct-open b { color: var(--faint); }
+.ct-open .ct-bust { background: rgba(11, 10, 9, 0.78); border: 2px dashed var(--ink-2); }
+.ct-open b { color: var(--ink-2); }
 .ct-mark { position: absolute; right: -4px; font-style: normal; text-decoration: none; font-family: var(--mono); font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em; padding: 1px 3px; border-radius: 999px; }
 .ct-mark.sc { top: -2px; background: var(--you); color: var(--you-ink); }
 .ct-mark.pm { top: -2px; background: none; border: 1px solid var(--you); color: var(--you); }
@@ -2939,9 +2949,16 @@ body.tunnel #root { position: relative; z-index: 1; }
 .slate-status { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mine-tint); }
 .chip-gold { margin-left: auto; font-family: var(--serif); font-size: 18px; background: var(--you); color: var(--bg); padding: 2px 10px 0; white-space: nowrap; }
 
-/* 02 and 03 — one rule each, the whole row on one baseline. */
+/* 02 and 03 — the names on one baseline, and under them the same 150 rungs the campaign card
+   carries (his ruling: every campaign shows its progress in its bar). The row is a column for
+   that reason; the line inside it is what keeps the three names on one baseline. */
 .slate-main { display: block; }
-.slate-row { display: flex; width: 100%; align-items: baseline; gap: 8px; border: 1px solid var(--line-2); padding: 7px 12px; margin-top: 8px; }
+.slate-row { display: block; width: 100%; border: 1px solid var(--line-2); padding: 7px 12px 8px; margin-top: 8px; }
+.slate-row .slate-top { display: flex; align-items: baseline; gap: 8px; }
+/* The card's ladder has the foot line under it to breathe against; a row's has the row's own
+   border, so it takes a little less room and none underneath. */
+.slate-row .slate-ladder { padding-bottom: 0; margin-top: 6px; }
+.slate-row .rung { height: 10px; }
 .slate-row:hover { border-color: var(--you); }
 .slate-row.death:hover { border-color: var(--them-deep); }
 .slate-row .slate-n { font-family: var(--serif); font-size: 14px; color: var(--muted-2); }
@@ -3943,10 +3960,17 @@ body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
 .home-fab, .map-fab { -webkit-backdrop-filter: blur(14px) saturate(1.25); backdrop-filter: blur(14px) saturate(1.25); }
 .home-fab.arena, .map-fab.arena { color: #ff8a4d; background: rgba(2,5,12,0.45); border-color: rgba(255,138,77,0.45); }
 .home-fab.arena:hover, .map-fab.arena:hover { border-color: #ff8a4d; }
-.home-fab.wood, .map-fab.wood { color: #ffcf7d; background: rgba(10,5,1,0.45); border-color: rgba(255,207,125,0.5); }
-.home-fab.wood:hover, .map-fab.wood:hover { border-color: #ffcf7d; }
-.home-fab.hall, .map-fab.hall { color: #f2d79b; background: rgba(8,4,1,0.45); border-color: rgba(242,215,155,0.45); }
-.home-fab.hall:hover, .map-fab.hall:hover { border-color: #f2d79b; }
+/* HARDWOOD and the HALL used to be two shades of gold on near-black, which is the house disc his
+   ruling took off the map in the first place — "not the yellow black icon that we used to have".
+   Arena and dusk read right because each is its OWN room twice over: the block's ink over the
+   block's own ground. These two now follow the same construction. Hardwood is the cream of its
+   paper tickets over the lacquer of its boards (#261608); the hall is the cream its banners are
+   lettered in, over the unlit brown of the hall itself (#150c06). Neither is gold, and neither is
+   black — each one is the floor it is standing on. */
+.home-fab.wood, .map-fab.wood { color: #f6eedd; background: rgba(38,22,8,0.55); border-color: rgba(246,238,221,0.45); }
+.home-fab.wood:hover, .map-fab.wood:hover { border-color: #f6eedd; }
+.home-fab.hall, .map-fab.hall { color: #f4e8cf; background: rgba(21,12,6,0.55); border-color: rgba(244,232,207,0.42); }
+.home-fab.hall:hover, .map-fab.hall:hover { border-color: #f4e8cf; }
 .home-fab.dusk, .map-fab.dusk { color: #3ee6b0; background: rgba(1,8,12,0.45); border-color: rgba(62,230,176,0.45); }
 .home-fab.dusk:hover, .map-fab.dusk:hover { border-color: #3ee6b0; }
 
@@ -3978,3 +4002,570 @@ body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
   .mode-opt i { font-size: 13px; }
   .mode-cap { font-size: 11px; }
 }
+
+/* ==========================================================================
+   USER MODE — THE ROOM YOU PLAY BLIND IN
+   ==========================================================================
+   His ruling on the design bundle: user mode gets the bundle's own design, scout mode keeps the
+   app as it is. Everything below hangs off `body.um`, set once in App.tsx from state/viewmode, so
+   nothing here can reach scout mode by accident.
+
+   The bundle's tokens, stated once and used the whole way down. They are NOT the app's own
+   variables — user mode is a different room, and re-pointing --you or --surface here would repaint
+   scout mode's furniture too.
+   ========================================================================== */
+body.um {
+  --um-gold: #f0b323;
+  --um-gold-hi: #ffd15c;
+  --um-gold-lo: #8f6512;
+  --um-you: #17408b;
+  --um-you-tint: #c3d3ea;
+  --um-them: #c9082a;
+  --um-them-hi: #ef4a63;
+  --um-them-tint: #ffc2cb;
+  --um-panel: #0f0d0b;
+  --um-raised: #12100e;
+  --um-inset: #1d1916;
+  --um-hair: #241f1a;
+  --um-cream: #f6f4ef;
+  --um-body: #d6d0c8;
+  --um-dim: #b3aaa1;
+  --um-cap: #8a8178;
+  --um-paper: #f1ece3;
+  --um-ink: #16130f;
+}
+
+/* --------------------------------------------------------------------------
+   THE LADDER — one club card for all 150 levels (the bundle's option B)
+   --------------------------------------------------------------------------
+   The whole ticket is the club's gradient with its second colour down the left edge, the
+   abbreviation on a band across the head and the level number over a scrim so type reads on any
+   club. The node carries `club` instead of its block skin (LevelMap), so none of the four paper
+   treatments are in play here — only the bare `.node` rules, which these answer.
+   -------------------------------------------------------------------------- */
+.node.club {
+  gap: 0;
+  /* every ticket lies at its own slight angle, deterministic from the level */
+  transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
+}
+.node.club .ticket {
+  width: 116px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-left: 5px solid var(--te, #f2ece0);
+  border-radius: 8px;
+  /* 21px of head is the club band; the scrim starts below it so the band keeps its own weight */
+  padding: 24px 8px 6px;
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24), rgba(0, 0, 0, 0.46)),
+    linear-gradient(150deg, var(--tc), var(--td));
+  background-size: 100% calc(100% - 21px), 100% 100%;
+  background-position: 0 21px, 0 0;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+  color: #f8f5ee;
+  overflow: hidden;
+}
+.node.club .ticket-n { font-family: var(--serif); font-size: 34px; line-height: 0.92; color: #f8f5ee; }
+.node.club .ticket-stub { font-family: var(--sans); font-size: 10px; letter-spacing: 0.02em; color: rgba(248, 245, 238, 0.86); margin-top: 0; }
+/* The abbreviation leaves the stub line and becomes the band across the head of the card. */
+.node.club .ticket-stub .ab {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 21px;
+  line-height: 22px;
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--ti);
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.node.club .ticket-stub .ln { font-style: normal; }
+.node.club .node-stars { justify-content: center; font-size: 12px; letter-spacing: 0.12em; color: rgba(0, 0, 0, 0.35); min-height: 15px; }
+.node.club .node-stars i.lit { color: var(--ta); }
+/* The two chips ride the right end of the band. */
+.node.club .ticket-next,
+.node.club .ticket-champ {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  margin: 0;
+  padding: 1px 4px 0;
+  border-radius: 2px;
+  font-family: var(--serif);
+  font-size: 11px;
+  line-height: 13px;
+  letter-spacing: 0.04em;
+}
+.node.club .ticket-champ { background: rgba(0, 0, 0, 0.55); color: #f4efe4; }
+.node.club .ticket-next { background: #ffd76b; color: #16130f; }
+
+/* A club that letters in near-black takes a LIGHT scrim and dark type — the one card where the
+   bundle's dark scrim would bury its own lettering (San Antonio). */
+.node.club.lit-ink .ticket {
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.62)),
+    linear-gradient(150deg, var(--tc), var(--td));
+  color: #0c0d10;
+}
+.node.club.lit-ink .ticket-stub .ab { background: rgba(255, 255, 255, 0.28); }
+.node.club.lit-ink .ticket-n { color: #0c0d10; }
+.node.club.lit-ink .ticket-stub { color: rgba(12, 13, 16, 0.82); }
+.node.club.lit-ink .node-stars { color: rgba(12, 13, 16, 0.28); }
+.node.club.lit-ink .node-stars i.lit { color: #6b4c05; }
+
+/* TONIGHT. Scaled up inside an unbroken gold ring, the club's stripe kept as a 5px inset inside
+   it, and a gold glow so the eye finds it the moment the map recentres. */
+.node.club.now { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.12); z-index: 3; }
+.node.club.now .ticket {
+  width: 116px;
+  border: 2px solid #ffd76b;
+  animation: none;
+  box-shadow:
+    inset 5px 0 0 var(--te, #f2ece0),
+    0 0 0 4px rgba(255, 215, 107, 0.3),
+    0 14px 30px rgba(0, 0, 0, 0.65);
+  color: #f8f5ee;
+}
+.node.club.now .ticket-n { font-size: 34px; margin-top: 0; }
+
+/* AHEAD. The same card with nothing on it yet — a result belongs only to a level you have played,
+   and the opponent is not named until you get there. */
+.node.club.locked .ticket {
+  background-image: none;
+  background-color: rgba(18, 16, 14, 0.85);
+  border: 1px solid rgba(246, 244, 239, 0.14);
+  border-left: 1px solid rgba(246, 244, 239, 0.14);
+  box-shadow: none;
+  color: #cfc7bd;
+}
+.node.club.locked .ticket-stub { color: #8a8178; }
+
+/* The ladder's control row — four era chips and the auto door, then staff and rename.
+   Nothing here is under 44px: it is the top of the map and it is all thumb. */
+.um-mapbar { display: flex; flex-direction: column; gap: 6px; padding: 0 14px 8px; }
+.um-eras { display: flex; gap: 5px; }
+.um-era {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 0 4px;
+  border: 1px solid #2a2320;
+  border-radius: 5px;
+  background: var(--um-raised);
+  color: var(--um-body);
+  font-family: var(--sans);
+  font-size: 8px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.um-era b { font-family: var(--serif); font-size: 15px; line-height: 1; font-weight: 400; }
+.um-era i { font-style: normal; font-size: 8px; letter-spacing: 0.02em; color: var(--um-cap); }
+.um-era.on { border-color: var(--um-gold); background: #241f1a; color: var(--um-gold); }
+.um-era.on i { color: var(--um-gold); }
+.um-maprow { display: flex; gap: 8px; }
+.um-staff {
+  flex: 2;
+  min-height: 44px;
+  border: 1px solid var(--um-gold);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--um-gold);
+  font-family: var(--serif);
+  font-size: 17px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.um-staff:hover { background: #241f1a; }
+.um-rename {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid #2a2320;
+  border-radius: 5px;
+  background: transparent;
+  color: #a39a91;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.um-rename:hover { border-color: var(--um-cream); color: var(--um-cream); }
+
+/* --------------------------------------------------------------------------
+   USER MODE'S RAILS — the wheel and game night
+   -------------------------------------------------------------------------- */
+.um-rail { padding: 0 !important; overflow: hidden; }
+/* THE BLUE HEAD. Franchise blue, the kicker above, the three numbers at headline size. It is the
+   one block on the rail that is a colour rather than a panel, because it is the one that names
+   who you are looking at. */
+.um-head { background: var(--um-you); padding: 12px 16px; }
+.um-head .um-kick { display: block; font-family: var(--sans); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--um-you-tint); }
+.um-head b { display: block; font-family: var(--serif); font-size: 40px; line-height: 0.9; font-weight: 400; color: #fff; }
+.um-head i { display: block; font-style: normal; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--um-you-tint); margin-top: 3px; }
+.um-head.quiet { background: var(--um-inset); }
+.um-head.quiet b { color: var(--um-body); }
+.um-head.quiet .um-kick, .um-head.quiet i { color: var(--um-cap); }
+
+.um-cap { font-family: var(--sans); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--um-cap); }
+.um-word { padding: 12px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+.um-word p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--um-body); }
+
+/* HOW FAR THROUGH THE DRAFT — five segments, the same three states the rings wear. */
+.um-foot { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+.um-footline { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.um-footline b { font-family: var(--serif); font-size: 26px; font-weight: 400; color: var(--um-gold); }
+.um-seg { display: flex; gap: 4px; height: 12px; }
+.um-seg span { flex: 1; background: var(--um-hair); }
+.um-seg span.in { background: var(--um-you); }
+.um-seg span.now { background: var(--um-gold); }
+.um-foot p { margin: 0; font-size: 12px; line-height: 1.45; color: var(--um-dim); }
+
+/* TALE OF THE TAPE — their three biggest men, and what they really did. */
+.um-tape { padding: 12px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+.um-tapehead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.um-tapehead span { font-family: var(--serif); font-size: 28px; text-transform: uppercase; color: var(--um-cream); }
+.um-tapehead i { font-style: normal; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--um-cap); white-space: nowrap; }
+.um-taperow { display: flex; align-items: baseline; gap: 8px; border-bottom: 1px solid var(--um-hair); padding-bottom: 5px; }
+.um-taperow:last-child { border-bottom: 0; }
+.um-taperow b { font-family: var(--serif); font-size: 20px; font-weight: 400; text-transform: uppercase; color: var(--um-them-hi); white-space: nowrap; }
+.um-taperow span { font-size: 11px; color: var(--um-body); }
+
+/* WHAT YOUR COACH SAYS — three sentences, no number in any of them. */
+.um-coach { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+.um-coach .um-h { font-family: var(--serif); font-size: 28px; text-transform: uppercase; color: var(--um-cream); }
+.um-coach p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--um-body); }
+
+/* --------------------------------------------------------------------------
+   GAME NIGHT'S FLOOR — the five as jerseys under the rig (user mode only)
+   -------------------------------------------------------------------------- */
+.jf { position: relative; height: 176px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
+/* The boards, raked back under the eye. left/right run past the box so the vanishing edges are
+   never in shot, and the origin is the FOOT of the panel so the near boards stay the widest. */
+.jf-floor {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  top: -170px;
+  bottom: 0;
+  transform: perspective(700px) rotateX(52deg);
+  transform-origin: bottom center;
+  background: repeating-linear-gradient(90deg, #b5793d 0 22px, #a96f36 22px 44px);
+}
+.jf-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(255, 225, 180, 0.3), transparent 62%); }
+.jf-rig { position: absolute; top: 14px; right: 4px; width: 84px; height: 96px; z-index: 3; }
+.jf-post { position: absolute; right: 0; top: 0; width: 10px; height: 38px; background: linear-gradient(90deg, #6e655c, #241f1a); }
+.jf-board { position: absolute; right: 10px; top: 0; width: 18px; height: 30px; border: 2px solid var(--um-cream); border-right: 0; background: rgba(235, 242, 255, 0.1); }
+.jf-rim { position: absolute; right: 22px; top: 10px; width: 56px; height: 8px; border: 3px solid #e2571f; border-radius: 50%; }
+.jf-net {
+  position: absolute;
+  right: 30px;
+  top: 15px;
+  width: 44px;
+  height: 32px;
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 22% 100%);
+  background-image:
+    repeating-linear-gradient(96deg, rgba(246, 244, 239, 0.9) 0 2px, transparent 2px 8px),
+    repeating-linear-gradient(84deg, rgba(246, 244, 239, 0.9) 0 2px, transparent 2px 8px);
+  transform-origin: top center;
+  animation: swish 2.8s ease-in-out infinite;
+}
+@keyframes swish {
+  0%, 100% { transform: scaleY(1) skewX(0deg); }
+  50% { transform: scaleY(1.5) skewX(3deg); }
+}
+
+.jf-row { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 5; display: flex; justify-content: center; gap: 5px; padding: 0 10px; }
+.jf-card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: block;
+  padding: 0;
+  text-align: center;
+  background: #2b2521;
+  border: 1px solid #4a4038;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+.jf-card:disabled { cursor: default; }
+.jf-card.open { opacity: 0.6; }
+.jf-head { display: flex; align-items: center; justify-content: flex-start; background: var(--um-inset); padding: 2px 4px 1px; }
+.jf-head i { font-family: var(--serif); font-style: normal; font-size: 12px; line-height: 1.1; background: var(--um-gold); color: #0b0a09; padding: 0 3px; }
+.jf-shirt { display: flex; align-items: center; justify-content: center; height: 58px; background: var(--um-inset); }
+/* THE JERSEY — the bundle's own cut: shoulders, a V at the neck, the sleeves out and the hem
+   straight. It is a clip-path so the shirt is one element and the number sits inside it. */
+.jf-jersey {
+  width: 84%;
+  height: 52px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+  background: linear-gradient(#1c4c9e, #17408b);
+  clip-path: polygon(22% 12%, 36% 2%, 44% 9%, 56% 9%, 64% 2%, 78% 12%, 100% 30%, 88% 46%, 88% 100%, 12% 100%, 12% 46%, 0% 30%);
+}
+.jf-jersey b { font-family: var(--serif); font-size: 24px; line-height: 0.8; font-weight: 400; color: #fff; text-shadow: 0 2px 0 #0d2a5e; }
+.jf-card.open .jf-jersey { background: linear-gradient(#2a2622, #1d1916); }
+.jf-plate { display: block; background: var(--um-paper); color: var(--um-ink); padding: 3px 4px 4px; }
+.jf-plate b { display: block; font-family: var(--serif); font-size: 13px; line-height: 1; font-weight: 400; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
+.jf-plate i { display: block; font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.1; color: #17408b; white-space: nowrap; overflow: hidden; }
+
+/* LEGS LEFT — five bars keyed to the shirts above them. */
+.um-legs { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+.um-legrow { display: flex; gap: 6px; height: 44px; }
+.um-leg { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: flex-end; background: var(--um-hair); }
+.um-leg i { display: block; background: var(--um-gold); }
+.um-leg i.low { background: var(--um-them-hi); }
+.um-leg em { position: absolute; left: 0; right: 0; bottom: 2px; font-family: var(--serif); font-style: normal; font-size: 11px; text-align: center; color: rgba(11, 10, 9, 0.75); }
+
+@media (min-width: 900px) {
+  .jf { height: 230px; }
+  .jf-floor { top: -230px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
+  .jf-rig { width: 150px; height: 190px; top: 10px; }
+  .jf-post { width: 15px; height: 58px; }
+  .jf-board { right: 15px; width: 26px; height: 46px; border-width: 3px; }
+  .jf-rim { right: 30px; top: 14px; width: 92px; height: 12px; border-width: 5px; }
+  .jf-net { right: 40px; top: 22px; width: 74px; height: 52px; }
+  .jf-row { gap: 8px; padding: 0 16px; }
+  .jf-card { max-width: 168px; }
+  .jf-shirt { height: 74px; }
+  .jf-jersey { height: 66px; }
+  .jf-jersey b { font-size: 34px; }
+  .jf-plate b { font-size: 16px; }
+  .jf-plate i { font-size: 17px; }
+}
+
+/* --------------------------------------------------------------------------
+   SERIES SETTLED — the rafters (user mode only)
+   --------------------------------------------------------------------------
+   The verdict, the filmstrip and the duels are facts, and the bundle leaves them alone. What it
+   adds is the room: boards under the score, the level's banner rising in the rafters, and paper
+   coming down. It sits BEHIND the verdict plate, which is why the plate takes its own ground.
+   -------------------------------------------------------------------------- */
+/* The band sits between the verdict and the filmstrip, as the bundle's phone lays it out: the score
+   is read first, then the room it was won in — boards, paper coming down, and the level's banner
+   going up in the rafters. */
+.um-rafters { position: relative; height: 128px; margin: 8px 0 0; overflow: hidden; }
+.um-boards {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  top: 40px;
+  bottom: 0;
+  transform: perspective(700px) rotateX(58deg);
+  transform-origin: bottom center;
+  background: repeating-linear-gradient(90deg, #b5793d 0 22px, #a96f36 22px 44px);
+}
+.um-banner {
+  position: absolute;
+  right: 16px;
+  top: 4px;
+  width: 44px;
+  height: 62px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+  background: linear-gradient(165deg, var(--um-gold), var(--um-gold-lo) 88%);
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+  animation: rafter 0.9s ease-out both;
+}
+.um-banner i { font-family: var(--serif); font-style: normal; font-size: 26px; line-height: 1; color: var(--um-ink); }
+@keyframes rafter { from { transform: translateY(26px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.um-conf {
+  position: absolute;
+  top: -14px;
+  width: 6px;
+  height: 11px;
+  background: var(--um-gold);
+  animation-name: umdrop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.um-conf.c1 { background: var(--um-you); }
+.um-conf.c2 { background: var(--um-cream); }
+.um-conf.c3 { background: var(--um-them-hi); }
+@keyframes umdrop {
+  from { transform: translateY(-24px) rotate(0deg); opacity: 1; }
+  to { transform: translateY(142px) rotate(240deg); opacity: 0; }
+}
+/* The plate has to carry its own ground now that there is a floor behind it. */
+.verdict.um-on { background: rgba(11, 10, 9, 0.88); }
+@media (prefers-reduced-motion: reduce) {
+  .um-conf, .um-banner, .jf-net { animation: none; }
+  .um-conf { display: none; }
+}
+
+/* The bundle's control row carries the staff door and rename as buttons, so the header's own two
+   links would say both things twice — and the second copy is the one that truncates the team name
+   to "Salt Lake Cit…". Only the pair the new row replaces comes off; the cleared count and Reset
+   this campaign are still the header's. */
+body.um .map-side .map-link.staff,
+body.um .map-side .map-link.team { display: none; }
+
+/* One chip, not two. The bundle's card carries a single badge — NEXT while it is tonight's, CHAMP
+   once it is played — and the app renders both spans, which stack on the same corner. */
+.node.club.now .ticket-champ { display: none; }
+/* The unlit stars have to read on the scrim they sit on: near-black on a dark card is the same as
+   not drawing them, and a played level with one star has to look different from one with three. */
+.node.club .node-stars { color: rgba(255, 255, 255, 0.3); }
+.node.club.lit-ink .node-stars { color: rgba(12, 13, 16, 0.3); }
+/* The staff door is a button in the control row now; the note pinned beside tonight's ticket said
+   the same sentence a second time, over the trail. */
+body.um .node-notes { display: none; }
+
+/* ==========================================================================
+   TWILIGHT DYNASTY — THE CONFETTI (scout mode only)
+   ==========================================================================
+   His ruling on Campaign Map.dc.html: "Dont forget the dusk sky, confetti, foil tickets." The sky
+   is the block's ground and the foil is its ticket; this is the third. Five flecks in the board's
+   own four colours, each falling the height of the block on its own clock. Purely decorative and
+   pointer-transparent — they lie over the floor and under the trail.
+   ========================================================================== */
+.ground.dusk { overflow: hidden; }
+.fleck {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  opacity: 0.4;
+  pointer-events: none;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.fleck.f0 { background: #3ee6b0; }
+.fleck.f1 { background: #9d7bff; }
+.fleck.f2 { background: #eefaf4; width: 5px; height: 5px; opacity: 0.35; }
+.fleck.f3 { background: #63b3ff; }
+/* One fall is FALL_SPAN in LevelMap — the two have to agree or the paper leaves gaps between the
+   slots it is seeded into. */
+@keyframes fall {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(1000px) rotate(320deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fleck { display: none; }
+}
+
+/* ==========================================================================
+   4b · THE TUNNEL — scout mode's front door
+   ==========================================================================
+   His ruling on Campaign Map.dc.html: "The Tunnel", scout mode only. The board is 4b of turn 4
+   ("Home, darker — four takes"): black, one spotlight from above, warm white ink. The room the app
+   already had was the lit arena wash with gold and franchise blue on it; this one has no gold and
+   no blue at all — the only colour in the tunnel is the light coming down it, and everything the
+   front door prints is cut from that one cream.
+
+   It is stated as TOKENS rather than as a rule per element, which is how the four map skins work
+   too: `body.tunnel` is added by Home and removed on the way out, so re-pointing --you inside it
+   cannot reach any other screen. `:not(.um)` is the scout-only gate — user mode keeps the front
+   door it has.
+   ========================================================================== */
+body.tunnel:not(.um) {
+  --ink: #f5efe2;
+  --ink-2: #ece7db;
+  --muted: #8f887a;
+  --muted-2: #5f594c;
+  --line: #26231e;
+  --line-2: #26231e;
+  --line-3: #2b2822;
+  --divider: #211e19;
+  --surface: #100f0d;
+  --surface-2: #141210;
+  /* THE ACCENT IS THE LIGHT. Gold is the arena's colour and there is no arena here, so --you is
+     re-pointed to the spotlight's own cream: the 7, the cleared rungs, the Play chip and the star
+     counts all come out of it without a single one of them needing its own rule. */
+  --you: #f5efe2;
+  --you-tint: #141210;
+  --mine: #100f0d;
+  --mine-tint: #8f887a;
+  --them: #b5ae9f;
+  --danger: #e2584b;
+}
+/* THE TUNNEL ITSELF: black end to end, with one lamp hung above the mouth of it. The wash is on
+   #root's own ::before so it sits under everything the screen prints and over the page's ground,
+   and it is fixed rather than scrolled — you do not walk out from under a spotlight by scrolling. */
+body.tunnel:not(.um) { background: #0a0908; }
+body.tunnel:not(.um) #root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(340px 460px at 50% -60px, rgba(244, 238, 225, 0.11), transparent 70%),
+    #0a0908;
+}
+/* The wordmark stands in the light rather than beside it. */
+body.tunnel:not(.um) .hero.front h1 { text-shadow: 0 0 34px rgba(244, 238, 225, 0.25); }
+/* The campaign card is the one lit thing on the slate, but in this room "lit" is a cream hairline
+   on black — a filled panel would be a second light source. */
+body.tunnel:not(.um) .slate-card { background: #100f0d; border-width: 1px; }
+/* THE UNLIT RUNG, and only the unlit one. Written as a bare `.rung` this out-specified `.rung.done`
+   — three classes and an element beat two classes — and quietly unlit the whole ladder: 77 levels
+   cleared and a bar that read as none. Every state the ladder has is restated here rather than
+   left to lose. */
+body.tunnel:not(.um) .rung { background: rgba(245, 239, 226, 0.14); }
+body.tunnel:not(.um) .rung.done { background: var(--you); }
+body.tunnel:not(.um) .rung.now { background: #fff; }
+body.tunnel:not(.um) .rung.lost { background: rgba(226, 88, 75, 0.35); box-shadow: inset 0 0 0 1px var(--danger); }
+/* The Play chip is the only inverted thing in the tunnel: cream ground, ink type. */
+body.tunnel:not(.um) .chip-gold { background: #f5efe2; color: #12100d; }
+
+/* ==========================================================================
+   SCOUT MODE — ONE TICKET BOX FOR ALL 150
+   ==========================================================================
+   Two of his rulings meet here: "Make the size of the scout campaign tickets to be the same as
+   user mode", and "Make sure all tickets are the same size in scout mode (currently Utah 21 is
+   smaller than celtics 24)."
+
+   They were never the same size, in three separate ways. Each of the four boards was drawn to its
+   own width — the banner 66px, the arena 80, the paper 82, the foil 78, and every one of them
+   wider again for tonight's. On a desk they stepped up to four more widths, 110 to 152. And within
+   a single block a CHAMPION was 14px taller than a team that never won, because the CHAMP line is
+   an extra row in the flow: that is Utah 21 against Boston 24 exactly.
+
+   The fix is to stop letting the contents decide. One box — user mode's own 116 x 94 — at every
+   width, for every board, in every state, and each skin keeps its own paddings and bands to
+   arrange itself inside it. A champion now fills more of the same ticket rather than growing one.
+
+   `body:not(.um)` is the scout gate, and it is what carries the specificity: every skin rule this
+   has to beat is four classes deep (`.node.arena.now .ticket`), so the same four are named here
+   plus the body element, which settles the cascade without a single !important.
+   ========================================================================== */
+body:not(.um) .node .ticket,
+body:not(.um) .node.now .ticket,
+body:not(.um) .node.locked .ticket {
+  box-sizing: border-box;
+  width: 116px;
+  min-height: 94px;
+}
+/* The banner hangs from a rod and the rod is on the node, so the hall alone keeps a top margin —
+   the BOX is the same 116 x 94, it just starts 11px lower than the other three. */
+body:not(.um) .node.hall .ticket,
+body:not(.um) .node.hall.now .ticket,
+body:not(.um) .node.hall.locked .ticket { margin-top: 9px; }
+/* Tonight's ticket is the same box, lifted — the way user mode's is. Emphasis comes from the ring,
+   the halo and the sweep each board already draws, not from a ticket a size larger. */
+body:not(.um) .node.now { z-index: 3; }
+body:not(.um) .node.arena.now,
+body:not(.um) .node.wood.now,
+body:not(.um) .node.hall.now,
+body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.12); }
+
+/* The opponent's five in the opponent's colours (his ruling). The court sets the club's four as
+   its own --mine / --you / --you-tint, so every rule that already reads those follows; the one
+   thing that needs naming is the initials, which sit on the club's primary rather than on the
+   court's black plates and so take the club's own lettering. */
+.court.clubbed .ct-init { color: var(--club-ink, var(--ink)); }

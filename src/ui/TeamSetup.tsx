@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Team } from '../state/campaign'
 import { useTicker } from './Ticker'
+import { useUserMode } from '../state/viewmode'
 
 /** [name, ISO country code, population], sorted by population desc (GeoNames cities15000). */
 type City = [string, string, number]
@@ -70,6 +71,7 @@ export function TeamSetup({
     setCity({ city: c[0], country: c[1], name: name.trim() })
     setQ(c[0])
   }
+  const user = useUserMode()
   const ready = !!city && name.trim().length > 0
   useTicker('Any city in the world')
 
@@ -147,7 +149,10 @@ export function TeamSetup({
             ← Back
           </button>
           <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim() })}>
-            {ready ? `Play as the ${name.trim()}` : 'Pick a city and a name'}
+            {/* The bundle names the whole franchise on the button — "Play as the Salt Lake City
+                Sevens", the thing that goes on the jersey — where the app names only the nickname.
+                User mode takes the bundle's wording; scout mode's label is untouched. */}
+            {ready ? (user ? `Play as the ${city!.city} ${name.trim()}` : `Play as the ${name.trim()}`) : 'Pick a city and a name'}
           </button>
         </div>
       </div>

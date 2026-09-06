@@ -30,6 +30,7 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
+import { useUserMode } from './state/viewmode'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
@@ -121,6 +122,19 @@ export default function App() {
       }),
     [],
   )
+
+  /**
+   * USER MODE IS A ROOM, NOT A FILTER (his ruling: the design bundle's user mode). It used to be
+   * subtractive — every screen deleted its ratings and left the hole. The bundle gives user mode
+   * its own skin and its own copy, so the difference has to reach CSS that no component owns: the
+   * ladder's club tickets, the jersey floor, the dockside rails. One class on the body says which
+   * room we are in, and every `body.um` rule hangs off it.
+   */
+  const userMode = useUserMode()
+  useEffect(() => {
+    document.body.classList.toggle('um', userMode)
+    return () => document.body.classList.remove('um')
+  }, [userMode])
 
   const cm: CampaignMode | null = mode !== null && (MODES as string[]).includes(mode) ? (mode as CampaignMode) : null
   /** The death match runs ON the salary cap: same payroll rules, with the run on the line. */

@@ -24,6 +24,10 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
+import { CoachSays, DraftProgress, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
+import { teamColor } from './teamColors'
+import { JerseyFive, LegsLeft } from './JerseyFive'
+import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
 
 // the wheel data lives in data/wheel now (the gauges need it engine-side); old importers keep working
@@ -314,6 +318,20 @@ export function Draft({
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
+  /**
+   * WHOSE SEASON THE USER-MODE RAIL IS SHOWING. The bundle's rail heads on one man; the app has
+   * three ways of pointing at one, so they are read in the order he touched them: the card he has
+   * opened, then the man he has selected off the wheel, and failing both the last man he actually
+   * drafted — so the rail says something the moment the first pick lands and never goes blank
+   * again mid-draft.
+   */
+  const focus = (() => {
+    for (const n of [band, sel, picks[picks.length - 1]]) {
+      const p = n ? BY_NAME.get(n) : null
+      if (p) return p
+    }
+    return null
+  })()
   const gridRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const measure = () => {
@@ -654,7 +672,9 @@ export function Draft({
             onSim(five, assignment, toWin)
           }}
         >
-          Sim the series{toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}
+          {/* The bundle's own label for the button that starts the night. Scout mode says what the
+              engine does ("sim the series"); user mode says what the team does. */}
+          {user ? 'Take the floor →' : `Sim the series${toWin !== 4 ? ` · best of ${toWin * 2 - 1}` : ''}`}
         </button>
       )
     if (spinning)
@@ -810,20 +830,32 @@ export function Draft({
         <div className="opp-name">{opponent.team}</div>
         {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         <div className="opp-line">
-          {opponent.record ?? opponent.tag ? `${opponent.record ?? opponent.tag} · ` : ''}{user ? '' :<>vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET{' '}</>}
-          {theirs.net > 0 ? '+' : ''}
-          {theirs.net.toFixed(1)}
+          {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
+              an advert for the node that sells them. User mode plays blind, so the line stops at
+              what the team actually was: its record, or what a five that never played a season is. */}
+          {opponent.record ?? opponent.tag ? `${opponent.record ?? opponent.tag}${user ? '' : ' · '}` : ''}
+          {user ? null : (
+            <>
+              vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET {theirs.net > 0 ? '+' : ''}
+              {theirs.net.toFixed(1)}
+            </>
+          )}
         </div>
-        <div className="opp-line">
-          {has('scout_ratings')
-            ? `Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`
-            : 'Exact axis ratings — Scout · Exact ratings node'}
-        </div>
+        {user ? null : (
+          <div className="opp-line">
+            {has('scout_ratings')
+              ? `Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`
+              : 'Exact axis ratings — Scout · Exact ratings node'}
+          </div>
+        )}
         {/* his ruling: read their five as a LINEUP, not a list — the same half court the team
             db and My team draw. Their tactics are unknown pre-series, so no plan: balanced shape.
             Names and slots are what the roster list below already shows ungated; the OVR on a tag
             is the Scout node's reward, so it rides the same rank-2 gate as the numbers block. */}
         <CourtFive
+          /* His ruling: the opponent's five stand in the opponent's colours. Scout mode only —
+             user mode's floor is the one the bundle drew, and the bundle draws it in blue. */
+          club={user ? null : teamColor(opponent.ab)}
           spots={opponent.players.map((p, i) => ({
             p,
             tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
@@ -889,7 +921,7 @@ export function Draft({
 
       <section className="col b">
       {display ? (
-        <div className={`card ${spinning ? 'spin-live' : ''}`} style={{ paddingBottom: spun ? 4 : 14 }}>
+        <div className={`card wheel-card ${spinning ? 'spin-live' : ''}`} style={{ paddingBottom: spun ? 4 : 14 }}>
           <div className="card-head">
             <span className="label">
               {spinning ? 'The wheel is spinning' : `Spin ${picks.length + 1} of ${DRAFT_SIZE} — it lands on`}
@@ -1021,6 +1053,11 @@ export function Draft({
       </section>
 
       <section className="col c">
+      {/* USER MODE'S RAIL (the design bundle, screen 4). Everything below this in scout mode —
+          the analysis door, the matchup panel, the odds card, the assignment's price — is a
+          judgement on the pick, and user mode takes all of it off. What it used to leave behind
+          was a gap; the bundle puts the man himself there instead: whose season is in front of
+          you, what the tree says his shape is, and how many chairs are still empty. */}
       {analysis ? (
         <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
       ) : null}
@@ -1147,7 +1184,9 @@ export function Draft({
             </span>
           </div>
         ) : null}
-        {five.length ? <TeamDials five={five} tone="you" vs="field" /> : null}
+        {/* Your own five's OFF and DEF are engine ratings, the same two the opponent's dials show —
+            and those already come off in user mode. Both sides go, or neither does. */}
+        {five.length && !user ? <TeamDials five={five} tone="you" vs="field" /> : null}
         {/* his ruling: read your own side as a lineup too, the same floor the scout card draws.
             The five fills as he spins, so an unfilled slot stands on the floor as a dashed ghost
             ring wearing its position — the shape of the team he is building is visible from the
@@ -1161,6 +1200,23 @@ export function Draft({
             His ruling adds the pick-up: a man can be dragged off his own ring onto another spot.
             An EMPTY ghost ring is a legal destination too — it is the same gesture and it moves a
             man into an open chair, which canMoveSlot already allows when the target is empty. */}
+        {/* USER MODE'S GAME NIGHT stands the same five as jerseys under the rig, in place of the
+            working half-court. The court is a diagram for deciding — rings, fits, who is on whom —
+            and once the five is set in the mode that plays blind there is nothing left to decide
+            on it. The man rows underneath still move a man, so nothing is lost but the drag. */}
+        {user && full ? (
+          <JerseyFive
+            spots={POSITIONS.map((x) => {
+              const n = slots[x]
+              const p = n ? BY_NAME.get(n) : undefined
+              return {
+                p: p ?? null,
+                slot: x,
+                onTap: p ? () => showMan(p.name) : undefined,
+              }
+            })}
+          />
+        ) : (
         <CourtFive
           tactic={plan}
           swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
@@ -1182,6 +1238,7 @@ export function Draft({
             }
           })}
         />
+        )}
         {POSITIONS.map((x) => {
           const n = slots[x]
           const p = n ? BY_NAME.get(n) : undefined
@@ -1258,6 +1315,43 @@ export function Draft({
       <button className="linkb" onClick={onRoster}>
         See every player →
       </button>
+      {/* THE FIVE IS SET, SO THE ROOM CHANGES. Up to here the rail has been scouting one man at a
+          time; a full five turns this screen into the bundle's game night, and the rail turns with
+          it — who you are playing, what their three biggest men really did, what a coach would say
+          out loud, and how much is left in your own legs. */}
+      {user && full ? (
+        <div className="card um-rail">
+          <div className="um-head">
+            <span className="um-kick">
+              Level {opponent.round} · best of {toWin * 2 - 1}
+            </span>
+            <b>{opponent.record ?? opponent.tag ?? opponent.team}</b>
+            <i>
+              {opponent.team}
+              {opponent.champion ? ' · champions' : ''}
+            </i>
+          </div>
+          <TaleOfTheTape theirs={opponent.players} />
+          <CoachSays lines={coachSays(five, opponent.players, assignment)} />
+          <LegsLeft five={five} wear={carried ? (n) => left(n) : undefined} />
+        </div>
+      ) : user ? (
+        <div className="card um-rail">
+          {focus ? (
+            <>
+              <ManHead p={focus} />
+              <ScoutsWord p={focus} />
+            </>
+          ) : (
+            <div className="um-head quiet">
+              <span className="um-kick">Spin {picks.length + 1} of {DRAFT_SIZE}</span>
+              <b>The wheel</b>
+              <i>Tap a man to read his season</i>
+            </div>
+          )}
+          <DraftProgress taken={picks.length} size={DRAFT_SIZE} />
+        </div>
+      ) : null}
       </section>
       {/* the black floor the columns leave; nothing mounts where there is none, as on a phone */}
       {floor ? <ManBand p={band ? (BY_NAME.get(band) ?? null) : null} at={floor} /> : null}

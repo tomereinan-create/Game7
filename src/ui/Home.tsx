@@ -28,6 +28,22 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
   }
   const cur = currentLevel(progress.campaign)
   /**
+   * THE LADDER, FOR ANY OF THE THREE (his ruling: "Have all the campaigns show the progress in
+   * their bar"). It used to be printed on the campaign card alone, so the two rules under it named
+   * a star total with nothing to read it against — 32 of 450 says how many, never how far. Each
+   * mode keeps its own save, so each one gets its own 150 rungs off its own progress.
+   */
+  const rungs = (p: Progress) => {
+    const at = currentLevel(p)
+    return (
+      <div className="ladder slate-ladder">
+        {Array.from({ length: ROUNDS }, (_, i) => (
+          <span key={i} className={`rung ${p.stars[i] > 0 ? 'done' : i + 1 === at ? 'now' : ''}`} />
+        ))}
+      </div>
+    )
+  }
+  /**
    * THE FRONT DOOR IS ITS OWN ROOM — stated as a body class for the same reason the draft, My
    * team and the map state theirs: this screen is a fragment with no wrapper of its own, and the
    * skin has to reach the page's own ground and the crowd lights above it, both of which sit
@@ -88,27 +104,32 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           <b>Campaign</b>
           <em className="slate-tag">{tally(progress.campaign) ?? 'PLAY →'}</em>
         </div>
-        <div className="ladder slate-ladder">
-          {Array.from({ length: ROUNDS }, (_, i) => (
-            <span key={i} className={`rung ${progress.campaign.stars[i] > 0 ? 'done' : i + 1 === cur ? 'now' : ''}`} />
-          ))}
-        </div>
+        {rungs(progress.campaign)}
         <div className="slate-foot">
           <span className="slate-status">{cur ? `Level ${cur} is up` : 'All cleared'}</span>
           <span className="chip-gold">Play →</span>
         </div>
       </button>
 
+      {/* 02 and 03 carry the same ladder the campaign card does. The row is a column now — the
+          names on one line, the 150 rungs under them — so the star count above has something to
+          be read against. */}
       <div className="slate-main">
         <button className="slate-row" onClick={() => onPick('salary')}>
-          <span className="slate-n">02</span>
-          <b>Salary cap</b>
-          <em className="slate-tag">{tally(progress.salary) ?? 'Under the cap →'}</em>
+          <span className="slate-top">
+            <span className="slate-n">02</span>
+            <b>Salary cap</b>
+            <em className="slate-tag">{tally(progress.salary) ?? 'Under the cap →'}</em>
+          </span>
+          {rungs(progress.salary)}
         </button>
         <button className="slate-row death" onClick={() => onPick('death')}>
-          <span className="slate-n">03</span>
-          <b>Death match</b>
-          <em className="slate-tag danger">{tally(progress.death) ?? 'One life →'}</em>
+          <span className="slate-top">
+            <span className="slate-n">03</span>
+            <b>Death match</b>
+            <em className="slate-tag danger">{tally(progress.death) ?? 'One life →'}</em>
+          </span>
+          {rungs(progress.death)}
         </button>
       </div>
 

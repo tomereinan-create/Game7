@@ -7,7 +7,8 @@ import { balance, canBuy, NODE, NODES } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
 import { Ask } from './Ask'
-import { teamColor } from './teamColors'
+import { cardInk, teamColor } from './teamColors'
+import { isUserMode, useUserMode } from '../state/viewmode'
 
 /**
  * THE SNAKE (his ruling: "instead of only going up, make it go like a snake to fill the screen").
@@ -252,11 +253,43 @@ const SKINS = [
   { skin: 'dusk', first: 61 },
   { skin: 'wood', first: 91 },
 ] as const
+/**
+ * SCOUT MODE'S ORDER (his ruling on Campaign Map.dc.html, 2026-09-06): "For levels 61-90, I want
+ * it to be the banner hall. For levels 121-150, I want it to be the Twilight Dynasty" — and, on
+ * the same breath, "all these changes are for scout mode only". So the boards are re-dealt for the
+ * mode that scouts, and the row above is left exactly as it was for the mode that plays blind.
+ *
+ *   1-30     1b ARENA NIGHTS      unchanged
+ *   31-90    2b BANNER HALL       his ruling names 61-90; his second ruling brings 31-60 into it
+ *   91-120   1c HARDWOOD PRIME    his second ruling: "Switch 91-120 with 31-60"
+ *   121-150  2a TWILIGHT DYNASTY  his ruling — dusk sky, confetti, foil tickets
+ *
+ * The second ruling swapped the boards those two blocks wore, and the swap is worth more than it
+ * looks: 31-60 had Hardwood Prime and 91-120 was carrying Banner Hall on from the block below,
+ * because the doc has no drawn board for it. Trading them gives EVERY block a board of its own —
+ * the hall now runs 31-90 as one long room rather than repeating itself across a seam, and the
+ * hardwood stands alone at 91-120 instead of being passed over.
+ */
+const SKINS_SCOUT = [
+  { skin: 'arena', first: 1 },
+  { skin: 'hall', first: 31 },
+  { skin: 'wood', first: 91 },
+  { skin: 'dusk', first: 121 },
+] as const
 export type Skin = (typeof SKINS)[number]['skin']
+/**
+ * WHICH LIST IS IN PLAY. Read at call time rather than passed down: `skinAt` is called from App,
+ * the map, the draft and the series, and threading a boolean through four screens to say something
+ * every one of them could ask for itself is four chances to forget. The store is synchronous and
+ * App subscribes to it with `useUserMode`, so a flip of the switch re-renders everything below.
+ */
+const blocks = () => (isUserMode() ? SKINS : SKINS_SCOUT)
+export type Block = { readonly skin: Skin; readonly first: number }
 /** Which skin a level wears: the last block that has started by then. */
 export const skinAt = (level: number): Skin => {
-  let out: Skin = SKINS[0].skin
-  for (const b of SKINS) if (level >= b.first) out = b.skin
+  const list = blocks()
+  let out: Skin = list[0].skin
+  for (const b of list) if (level >= b.first) out = b.skin
   return out
 }
 /**
@@ -264,6 +297,33 @@ export const skinAt = (level: number): Skin => {
  * the block (the arena's ember warms as it drops to the foot; the dynasty's mint cools up into
  * purple, which is the 2a board's own trail); one entry paints the block flat.
  */
+/**
+ * WHERE THE PAPER FALLS. The design board draws five flecks over a 962px artboard; the real block
+ * is thirty levels of trail and runs several thousand pixels, so five would be a handful of paper
+ * at the ceiling and nothing the whole way down. The count comes off the block's own height
+ * instead — one every FALL_PITCH — and each fleck is placed by a rule that depends only on its
+ * index, so the scatter is the SAME scatter every time this block is drawn. Confetti that
+ * reshuffles on a resize reads as a glitch rather than as a celebration.
+ *
+ * The x uses the golden angle for the same reason the tickets' wander does: it never falls into a
+ * short repeating pattern, so no column of paper ever lines up under another.
+ */
+const FALL_PITCH = 300
+const FALL_SPAN = 1000
+const confettiFor = (height: number) =>
+  Array.from({ length: Math.max(5, Math.round(height / FALL_PITCH)) }, (_, i) => {
+    const dur = 12 + (i % 6)
+    return {
+      // 6-92% keeps a fleck off both edges at every width
+      x: 6 + 86 * ((i * 0.6180339887 + 0.17) % 1),
+      // seeded a fall's worth above its own slot, so the block is papered from its ceiling down
+      y: Math.round((i + 0.5) * (height / Math.max(5, Math.round(height / FALL_PITCH)))) - FALL_SPAN,
+      dur,
+      // a whole number of seconds back into its own cycle: every fleck is mid-fall on first paint
+      delay: -((i * 3.7) % dur),
+    }
+  })
+
 const TRAIL_INK: Record<Skin, readonly string[]> = {
   arena: ['#ffb36b', '#ff6a2e'],
   wood: ['rgba(246,238,221,0.82)'],
@@ -283,7 +343,7 @@ function bands(rounds: number, colW: number) {
   // takes the whole of that row's floor with it, or the ground would change colour under four
   // tickets standing side by side on the same shelf.
   const seam = seamOf(colW)
-  const live = SKINS.filter((b) => b.first <= rounds)
+  const live = (blocks() as readonly Block[]).filter((b) => b.first <= rounds)
   return live.map((b, i) => {
     const nextFirst = live[i + 1]?.first ?? rounds + 1
     const bottom = b.first <= 1 ? H : seam(b.first)
@@ -388,6 +448,8 @@ export function LevelMap({
   }, [cur, opponents])
   /** How far ahead the map reveals: what you have cleared, and the one you are on. */
   const revealed = (state: string) => state !== 'locked'
+  const starGlyphs = (n: number) => [1, 2, 3].map((k) => <i key={k} className={k <= n ? 'lit' : ''}>★</i>)
+
   /**
    * The ticket stub: team abbreviation (with year off the home era) and the record — or, for a
    * five that never played a season, what it is instead ("all-time", "the 1990s"). Without the
@@ -402,6 +464,8 @@ export function LevelMap({
   // BANDS depend on the width now — how many levels stand in a row decides where a seam falls.
   /** The skin of the level you are ON — what the sticky header, the notices and the foot wear. */
   const skin = skinOf(cur ?? ROUNDS)
+  /** User mode plays blind: the design's mode table takes the dials off tonight's ticket. */
+  const user = useUserMode()
   const nowRef = useRef<HTMLButtonElement>(null)
   // Destructive actions ask IN the game (browser popups never render on his phone).
   const [askReset, setAskReset] = useState(false)
@@ -476,12 +540,22 @@ export function LevelMap({
   const yAt = useMemo(() => yOf(colW), [colW])
   const seam = useMemo(() => seamOf(colW), [colW])
   const H = useMemo(() => heightOf(colW), [colW])
-  const BANDS = useMemo(() => bands(ROUNDS, colW), [colW])
+  // `bands` reads the block list for the mode, so a flip of the switch has to re-band the trail
+  const BANDS = useMemo(() => bands(ROUNDS, colW), [colW, user])
   const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
 
   useEffect(() => {
     nowRef.current?.scrollIntoView({ block: 'center' })
   }, [])
+  /**
+   * Take the eye to a block without taking the campaign there. The trail is laid out in the page's
+   * own scroll (not a pane of its own), so the y a level sits at is the trail's top plus that
+   * level's own y — half a window up, so the block opens centred rather than at its foot.
+   */
+  const jumpTo = (level: number) => {
+    const top = (trailRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY
+    window.scrollTo({ top: Math.max(0, top + yAt(level - 1) - window.innerHeight / 2), behavior: 'smooth' })
+  }
 
   // The trail is lit up to the current level, unlit beyond it.
   const litIdx = cur ? cur - 1 : ROUNDS - 1
@@ -552,6 +626,43 @@ export function LevelMap({
             </button>
           </div>
         </div>
+
+        {/* USER MODE'S CONTROL ROW (the design bundle). Four era chips and the auto door, each a
+            44px target, then the staff button and rename side by side underneath. They scroll the
+            map without moving where the campaign is — jumping to era III is a way of LOOKING at the
+            ladder, and it must never be mistaken for having got there. Scout mode's header is the
+            one it has always had: these three rows are additions to user mode only. */}
+        {user ? (
+          <div className="um-mapbar">
+            <div className="um-eras">
+              {eras.map((e, i) => (
+                <button
+                  key={e.name}
+                  className={`um-era ${cur && cur >= e.first && (!eras[i + 1] || cur < eras[i + 1].first) ? 'on' : ''}`}
+                  onClick={() => jumpTo(e.first)}
+                >
+                  <b>{ROMAN[i] ?? i + 1}</b>
+                  <i>
+                    {e.first}–{(eras[i + 1]?.first ?? ROUNDS + 1) - 1}
+                  </i>
+                </button>
+              ))}
+              {onToggleAuto ? (
+                <button className={`um-era auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
+                  Auto · {auto ? 'ON' : 'OFF'}
+                </button>
+              ) : null}
+            </div>
+            <div className="um-maprow">
+              <button className="um-staff" onClick={onStaff}>
+                ★ {bal} to spend · Staff →
+              </button>
+              <button className="um-rename" onClick={onTeam}>
+                Rename
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
@@ -564,7 +675,22 @@ export function LevelMap({
             className={`ground ${b.skin}`}
             /* the topmost block runs up behind the header — see HEAD_BLEED */
             style={b.top === 0 ? { top: -HEAD_BLEED, height: b.height + HEAD_BLEED } : { top: b.top, height: b.height }}
-          />
+          >
+            {/* THE CONFETTI (his ruling on the design doc: "Dont forget the dusk sky, confetti,
+                foil tickets"). The sky and the foil this block already had; this is the third
+                thing, and it cannot be pseudo-elements — a ::before and an ::after are two flecks
+                and the board wants a scatter. Scout mode only, like the rest of the ruling. */}
+            {b.skin === 'dusk' && !user
+              ? confettiFor(b.height).map((c, k) => (
+                  <span
+                    key={k}
+                    className={`fleck f${k % 4}`}
+                    style={{ left: `${c.x}%`, top: c.y, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }}
+                    aria-hidden
+                  />
+                ))
+              : null}
+          </div>
         ))}
         {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
         <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
@@ -650,12 +776,21 @@ export function LevelMap({
           const can = auto ? true : playable(progress, level)
           const nodeSkin = skinOf(level)
           const c = teamColor(o.ab)
+          // User mode paints the whole ticket in the club's gradient, so it needs the two colours
+          // the paper skins never had to ask for: which way the scrim runs, and what the stripe is.
+          const cin = cardInk(c)
           const s = stub(o)
           return (
             <button
               key={level}
               ref={state === 'now' ? nowRef : undefined}
-              className={`node ${nodeSkin} ${state} ${o.champion ? 'champ' : ''}`}
+              /* USER MODE WEARS ONE TICKET, NOT FOUR (the design bundle's option B). The four block
+                 skins — arena card, paper, banner, dusk — are scout mode's, and each one is a whole
+                 sheet of rules hung off `.node.arena` and friends. Naming the node `club` instead of
+                 its block takes every one of them off in a single stroke, so the club card below has
+                 only the bare `.node` rules to answer, and the FLOOR each block stands on (which the
+                 design keeps) is untouched — that is painted by the band, not by the ticket. */
+              className={`node ${user ? 'club' : nodeSkin} ${state} ${o.champion ? 'champ' : ''} ${cin.darkInk ? 'lit-ink' : ''}`}
               style={
                 {
                   left: xAt(i),
@@ -665,6 +800,7 @@ export function LevelMap({
                   '--td': c.deep,
                   '--ta': c.accent,
                   '--ti': c.ink,
+                  '--te': cin.edge,
                   '--tilt': tiltOf(level),
                 } as React.CSSProperties
               }
@@ -689,17 +825,12 @@ export function LevelMap({
                   )}
                 </span>
                 {o.champion && revealed(state) ? <span className="ticket-champ">CHAMP</span> : null}
+                {/* The club card prints its stars ON the ticket, inside the scrim, where the four
+                    paper skins hang them under it. Same three glyphs either way. */}
+                {user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
               </span>
-              {state === 'done' ? (
-                <span className="node-stars">
-                  {[1, 2, 3].map((k) => (
-                    <i key={k} className={k <= stars ? 'lit' : ''}>
-                      ★
-                    </i>
-                  ))}
-                </span>
-              ) : null}
-              {state === 'now' && nowGauge ? (
+              {!user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
+              {state === 'now' && nowGauge && !user ? (
                 <span className="node-dials">
                   <Dial label="OFF" value={nowGauge.off} tone="them" />
                   <Dial label="DEF" value={nowGauge.def} tone="them" />

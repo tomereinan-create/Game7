@@ -1,6 +1,7 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
+import { cardInk, type TeamColor } from './teamColors'
 
 /**
  * THE COURT LINEUP (his ruling: a five stands on a floor, not in a list). An
@@ -508,6 +509,7 @@ export function CourtFive({
   side: sideProp,
   onSide,
   swap,
+  club,
 }: {
   spots: CourtSpot[]
   bench?: CourtSpot | null
@@ -525,6 +527,17 @@ export function CourtFive({
   /** Lift the side out of the court when the whole screen follows it (My team's tactics panel). */
   side?: Side
   onSide?: (s: Side) => void
+  /**
+   * WHOSE FIVE THIS IS, as a club (his ruling: "Have the players in scout mode to be the color of
+   * their team"). Every court on the app draws its men in franchise blue, which is right for YOUR
+   * five and wrong for the team across from you — scouting the Kings on a floor full of your own
+   * colours makes them look like a lineup you already own.
+   *
+   * Given, the club's four colours are stated as the court's own --mine / --you / --you-tint, so
+   * every rule that already reads those (the bust, its ring, the lit state, the drop targets)
+   * follows without one of them needing a club-aware copy. Omitted, nothing changes.
+   */
+  club?: TeamColor | null
   /**
    * HIS RULING: "Allow me to switch positions of players by dragging on their halfcourt
    * position." Press a man's ring, drag him onto another spot, and the two change places. The
@@ -611,7 +624,28 @@ export function CourtFive({
   const bottom = bench ? BASE + BENCH_BAND : 100
   const y = (v: number) => ((v - top) / (bottom - top)) * 100
   return (
-    <div className="court" style={{ aspectRatio: `100 / ${bottom - top}` }}>
+    <div
+      className={`court ${club ? 'clubbed' : ''}`}
+      style={
+        {
+          aspectRatio: `100 / ${bottom - top}`,
+          /*
+           * The bust takes the club's primary and its ring takes the club's second colour — put
+           * through `cardInk`, which is the ladder's own rule for the two clubs that letter in
+           * near-black: Chicago's #111 and San Antonio's #000 would be a ring you cannot see
+           * against a dark floor, so those swap to cream.
+           *
+           * --ink is deliberately NOT re-pointed. The surname under each man sits on its own
+           * near-black plate so it can be read over the floor, and San Antonio's ink is #0c0d10 —
+           * handing it to --ink would print black on black. The club's lettering goes to the
+           * initials inside the bust, where it has the primary behind it, and nowhere else.
+           */
+          ...(club
+            ? { '--mine': club.primary, '--you': cardInk(club).edge, '--you-tint': club.deep, '--club-ink': club.ink }
+            : null),
+        } as React.CSSProperties
+      }
+    >
       <svg className="ct-floor" viewBox={`0 ${top} 100 ${bottom - top}`} aria-hidden="true">
         {/* THE FLOOR, in feet through FT (his ruling: "fix it for irl proportions"): the boundary,
             the centre circle at the half-court line, the key with the free-throw circle centred ON

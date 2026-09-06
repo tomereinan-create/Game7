@@ -94,3 +94,32 @@ const TEAMS: Record<string, TeamColor> = {
 
 /** The ticket's colours, by the abbreviation the level map already prints on the stub. */
 export const teamColor = (ab: string | undefined): TeamColor => (ab ? (TEAMS[ab] ?? NEUTRAL) : NEUTRAL)
+
+/**
+ * Relative luminance of a #rrggbb, 0 (black) to 1 (white). Only ever asked about club colours,
+ * so the sRGB gamma step is skipped: the two questions below are "is this near-black", and a
+ * linear ramp answers that as well as the exact curve does.
+ */
+const lum = (hex: string) => {
+  const h = hex.replace('#', '')
+  const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+  const v = parseInt(n, 16)
+  return (0.2126 * ((v >> 16) & 255) + 0.7152 * ((v >> 8) & 255) + 0.0722 * (v & 255)) / 255
+}
+
+/**
+ * USER MODE'S CLUB CARD (the design bundle's option B): the whole ticket is the club gradient, so
+ * the two things printed on it — the lettering and the stripe down its edge — have to survive
+ * clubs whose own colours are near-black.
+ *
+ * `darkInk` is a club that letters in near-black (San Antonio). Its card flips to a LIGHT scrim
+ * with ink type instead of the dark scrim with cream type every other club takes.
+ * `edge` is the stripe. A near-black accent (Chicago's `#111`, San Antonio's `#000`) is invisible
+ * against the floor and against its own deep, so it swaps to cream — or, on a light-scrim card,
+ * to the same near-black the type is set in.
+ */
+export function cardInk(c: TeamColor): { darkInk: boolean; edge: string } {
+  const darkInk = lum(c.ink) < 0.35
+  const edge = lum(c.accent) < 0.06 ? (darkInk ? '#0c0d10' : '#f2ece0') : c.accent
+  return { darkInk, edge }
+}

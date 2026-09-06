@@ -11,6 +11,7 @@ import { Analysis } from './Analysis'
 import type { Assignment } from '../engine/offense'
 import { useLayout } from './useLayout'
 import type { Skin } from './LevelMap'
+import { useUserMode } from '../state/viewmode'
 
 const FAST_MS = 75
 const SLOW_MS = 240
@@ -212,6 +213,7 @@ export function Series({
   const [i, setI] = useState(0)
   const [analysis, setAnalysis] = useState(false)
   const [boxOpen, setBoxOpen] = useState(false)
+  const user = useUserMode()
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -318,7 +320,7 @@ export function Series({
 
       {done ? (
         /* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */
-        <div className="verdict final">
+        <div className={`verdict final ${user ? 'um-on' : ''}`}>
           <div className="v-kick">Series · best of seven</div>
           <div className="v-row">
             <span className="v-side you">{myAb}</span>
@@ -339,6 +341,29 @@ export function Series({
         </div>
       ) : null}
 
+      {/* USER MODE'S RAFTERS (the design bundle, screen 6). The verdict, the filmstrip and the
+          duels below are FACTS and the bundle leaves all three alone in both modes — what it adds
+          for user mode is the room they are read in: confetti over the boards, and the banner for
+          the level going up in the rafters behind them. Scout mode reads the verdict on black. */}
+      {done && user ? (
+        <div className="um-rafters" aria-hidden>
+          <span className="um-boards" />
+          {result.won ? (
+            <span className="um-banner">
+              <i>{opponent.round}</i>
+            </span>
+          ) : null}
+          {result.won
+            ? Array.from({ length: 14 }, (_, k) => (
+                <span
+                  key={k}
+                  className={`um-conf c${k % 4}`}
+                  style={{ left: `${(k * 7.3 + 4) % 96}%`, animationDelay: `${(k % 7) * 0.31}s`, animationDuration: `${2.2 + (k % 5) * 0.22}s` }}
+                />
+              ))
+            : null}
+        </div>
+      ) : null}
       {done ? (
         <div className="strip">
           {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {

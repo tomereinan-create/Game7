@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Ask } from './Ask'
 import { useLayout } from './useLayout'
 import type { Skin } from './LevelMap'
+import { useUserMode } from '../state/viewmode'
 import {
   balance,
   canBuy,
@@ -72,6 +73,7 @@ export function Tree({
   onRespec: () => void
   onBack: () => void
 }) {
+  const user = useUserMode()
   const bal = balance(wallet)
   const [open, setOpen] = useState<NodeId | null>(null)
   // the in-game ask instead of a browser popup (which never renders on his phone)
@@ -105,10 +107,23 @@ export function Tree({
 
   return (
     <>
+      {/* HIS RULING (Campaign Map.dc.html, scout mode): "pressing on skill tree, returning to the
+          map should be a map icon, not map text." The draft already leaves by a pinned map fab —
+          the folded-map glyph, beside the home button — and the staff room is the same room by his
+          earlier ruling, so it leaves the same way. It is pinned to the window rather than sitting
+          in the topbar, which is where the icon lives on every other screen that has one. */}
+      {user ? null : (
+        <button className={`map-fab ${skin}`} onClick={onBack} aria-label="Level map" title="Back to the level map">
+          <svg viewBox="0 0 24 24" aria-hidden>
+            <path d="M9 5 3 7.5v12L9 17l6 2.5 6-2.5v-12L15 7 9 5Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M9 5v12M15 7v12.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
       <div className={`map-top staff ${skin}`}>
         <div className="topbar">
           <span>Staff</span>
-          <button onClick={onBack}>← Map</button>
+          {user ? <button onClick={onBack}>← Map</button> : null}
         </div>
         <div className="rule2" />
         <div className="map-head">
