@@ -1449,5 +1449,32 @@
     "round": 146,
     "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
     "note": "47 -> 71 -> 64. ADDED BY HIS AMENDMENT of recal_146 on the bar the round actually moves. The relief line for this card is 0.767 (DBPM 3.2 in 2013) and his band membership wv = 0.248, so the amendment's slice costs him 0.248*0.752*0.375 = 0.070 of no-vote space, 6.9 perdef points, and he lands at the bottom of this band. A later ruling that widens RELIEF_BAND_CUT should expect this anchor to be the first to fail."
+  },
+  {
+    "card": "Amen Thompson '25",
+    "scale": "def",
+    "target": 96,
+    "tol": 2,
+    "round": 149,
+    "ruling": "Decline Amen as well. He is elite defender. His 25/26 seasons are even underrated defensively",
+    "note": "reads 95. recal_148's forward-only reputation window was DECLINED by him, so the reputation channel is untouched and the lift comes from the tracked one: the voted band is now ranked on the card's own regressed defended-FG% differential as well as on the votes/DBPM/height proxy (TRK_BAND_LO/TOP 62.5/72.8, TRK_BAND_W 0.32). His raw perdef is held at 93 by recal_114's vote factor (0.867) and 95 rather than 96 by d_score: rimprot 84 puts him over the `rimprot >= 80` line in compute_ovr's d_bigness, so perdef carries 0.40 of his DEF on the BIG vector instead of 0.63 on the perimeter one. That last point is compute_ovr's, not this attribute's."
+  },
+  {
+    "card": "Amen Thompson '26",
+    "scale": "def",
+    "target": 97,
+    "tol": 2,
+    "round": 149,
+    "ruling": "Decline Amen as well. He is elite defender. His 25/26 seasons are even underrated defensively",
+    "note": "reads 96. perdef 91 -> 98 on -3.2% over 517 tracked 6ft+ attempts, a full sample; he grades perimeter in '26 (rimprot 69) so perdef carries 0.63 of his DEF."
+  },
+  {
+    "card": "Amen Thompson '24",
+    "scale": "def",
+    "target": 94,
+    "tol": 1,
+    "round": 149,
+    "ruling": "Decline Amen as well. He is elite defender. His 25/26 seasons are even underrated defensively",
+    "note": "THE NEGATIVE CONTROL, recorded because his ruling named '24 as not a subject and it must not rise: it does not. 94 -> 94. His rookie tracked sheet is +1.4% over 285 6ft+ attempts, i.e. below recal_86's neutral point AND at 0.57 of a full sample, so the measured term is exactly zero for him; perdef moves 92 -> 93 only through the 20/60/20 season blend's reach into '25, and 0.40 x 1 point of perdef on the big vector does not carry a DEF point."
   }
 ]
