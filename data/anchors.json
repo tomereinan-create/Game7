@@ -1402,10 +1402,28 @@
   {
     "card": "Shaquille O'Neal '94",
     "scale": "def",
-    "target": 85,
+    "target": 83,
+    "tol": 2,
+    "round": 146,
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "78 -> 86 -> 84. RE-CUT BY HIS AMENDMENT of recal_146, which re-cut this anchor from 85 +-3 to 83 +-2 in the same breath. THE GATE STAYS DELETED (recal_146's finding stands: `drep <= 0.05` gated recal_55's no-vote DBPM relief, but drep is a CAREER reputation decayed 15% a year in BOTH directions, so Shaq '94 -- no 1994 ballot at all -- carried 0.0687 from his 2000 All-D 2nd six years later, crossed by 0.019 and forfeited the WHOLE relief, printing 45 / DEF 78 against his own '93 at 64 / 89; Larry Sanders '13 was the same gate from the other side, one DPOY ballot LOWERING his card by 24). WHAT THE AMENDMENT CHANGES is that the relief's SIZE now fades with its weight instead of only its weight: the line is min(0.80, 0.28 + 0.52*P) - 0.375*wv, one constant, so a card already partly graded by its votes is offered proportionally less of the compensation for having none. Carried at the line's own weight (1 - wv) the cut costs wv*(1-wv)*0.375, which is exactly zero at drep <= 0.05 (the 5,933 no-vote cards recal_141 set stay byte-identical), exactly zero at drep >= 0.30 (860 full-vote cards, byte-identical) and deepest at wv = 0.5. 220 perdef bars come back down, NONE below its recal_145 reading; 0 rimprot, 0 OFF."
+  },
+  {
+    "card": "Larry Sanders '13",
+    "scale": "def",
+    "target": 87,
     "tol": 3,
     "round": 146,
-    "ruling": "Confirm 7",
-    "note": "78 -> 86 (perdef 45 -> 63). THE PRE-2014 RELIEF'S GATE WAS A CLIFF, AND A CARD COULD BE PUNISHED FOR HAVING BEEN VOTED FOR. `drep <= 0.05` gated recal_55's no-vote DBPM relief, but drep is a CAREER reputation decayed 15% a year in BOTH directions, so a man with no 1994 ballot carries a tail from a vote six years later: Shaq '94 reads 0.0687 (his 2000 All-D 2nd + DPOY credit, 0.687, x 0.10 at six years out), crosses the line by 0.019, forfeits the whole relief and enters the voted band at wv 0.23 — 45 / DEF 78 against his own '93 (drep exactly 0.0, DBPM 1.5) at 64 / 89. Larry Sanders '13 is the same gate from the other side: ONE DPOY ballot, share 0.149, halves to 0.0745, crosses by 0.024, and one more ballot LOWERED his card by 24. The gate is DELETED rather than moved: the relief now applies to the no-vote channel for every pre-tracking season and what fades it is that channel's OWN weight, 1 - wv, so it is paid in full at drep <= 0.05 (byte-identical), fades continuously across 0.05 -> 0.30 exactly as real vote weight takes over, and is worth nothing at drep >= 0.30 (byte-identical). No new constant: the band is recal_20's own. 220 perdef bars move, ALL UP, and nothing outside 0.05 < drep < 0.30 can move by construction."
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "79 -> 90 -> 86. ADDED BY HIS AMENDMENT of recal_146 at the amended reading. Sanders is the cleanest proof of the defect recal_146 removed, because there is no decay in it at all: ONE DPOY ballot, share 0.149, halved to 0.0745 by the award rule, crossed the old relief gate by 0.024, and his card read perdef 47 where the relief line gives 71 -- one more ballot LOWERED the card by 24 points. With the gate deleted and the relief's size re-cut inside the faded band (- 0.375*wv), he reads perdef 64 / DEF 86: still 12 under his own no-vote counterfactual instead of 29, and no longer below the man he would be with the ballot struck off by more than the band's own hand-off costs."
+  },
+  {
+    "card": "Larry Sanders '13",
+    "scale": "attr:perdef",
+    "target": 67,
+    "tol": 3,
+    "round": 146,
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "47 -> 71 -> 64. ADDED BY HIS AMENDMENT of recal_146 on the bar the round actually moves. The relief line for this card is 0.767 (DBPM 3.2 in 2013) and his band membership wv = 0.248, so the amendment's slice costs him 0.248*0.752*0.375 = 0.070 of no-vote space, 6.9 perdef points, and he lands at the bottom of this band. A later ruling that widens RELIEF_BAND_CUT should expect this anchor to be the first to fail."
   }
 ]

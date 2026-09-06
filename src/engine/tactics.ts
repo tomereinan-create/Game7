@@ -429,6 +429,19 @@ export const DEFAULT_TACTICS: Tactics = {
  * (-0.3008, the ceiling exactly) / .450 (-0.3441) / .650 (oracle +0.5311) / .750 (+0.5001) / .751
  * (+0.4998, under) — feasible about .391 to .750, a WIDE 0.359, midpoint .95 -> .57 (blind -0.432,
  * oracle +0.557). crashOff held at .17 and the six others held their bands untouched. All nine pass.
+ * recal_146 AMENDED re-cut the same relief 2-4 DEF points back down (191 d_ovrs, 137 OVRs, all but one
+ * DOWN), so the ovr>=55 pool moved a THIRD time in three rounds — and, exactly as the law requires,
+ * both rows were re-read from MAIN's constants (4.00 / .62) rather than from r146's interim 3.89 / .57,
+ * which are SUPERSEDED by this sweep and not stacked with it. crash def glass HELD main's .62 untouched
+ * (blind -0.31, oracle +0.59, inside on both edges): the pool it reads gave back most of what r146 had
+ * given it, which is why r145's and r146's opposite re-ratifications of this row cancelled rather than
+ * compounded. hunt alone broke, on the ORACLE edge at 4.00 (+0.45 against the +0.50 floor). Swept 3.60
+ * (blind -0.17) / 3.72 (-0.27) / 3.76 (-0.30, the ceiling exactly) / 3.80 (-0.33, oracle +0.54) / 3.82
+ * (-0.35, +0.53) / 3.84 (-0.37, +0.52) / 3.90 (+0.49, under) / 4.00 (+0.45, under) — feasible about
+ * 3.76 to 3.88, a NARROW 0.12, true midpoint by r126's rule: 4.00 -> 3.82 (blind -0.35, oracle +0.53,
+ * 0.05 and 0.03 of room). Hunt's eleventh move and the third round running that it is one of the rows
+ * that breaks; the cause is unchanged — it is the largest tax on the board and it is measured on the
+ * ovr>=55 sample, which every DEF round of this size reshuffles. The seven others held. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -436,9 +449,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.89,
+  hunt: 3.82,
   crashOff: 0.17,
-  crashDef: 0.57,
+  crashDef: 0.62,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

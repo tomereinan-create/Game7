@@ -358,6 +358,12 @@ def _blk_evidence(blk_pctile):
 # any card, and no card rises through it. It enters only here, as one of two gates on HOW HIGH a big
 # with no votes may be READ — a ceiling, which can only ever subtract. His ruling named it.
 NOVOTE_FLOOR = (75 - 1) / 98.0   # recal_95: the ceiling with no block and no DBPM evidence behind it
+RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
+# (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
+# relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
+# card can take is 0.375/4 = 0.094, i.e. 9.2 perdef points, and it lands at wv = 0.5 exactly - the
+# point where the two channels are most evenly split. Zero at wv = 0 and zero at wv = 1, both ends
+# byte-identical by construction.
 DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0.0, 1.0   # DBPM band the ceiling grades on; the BLOCK band is
 # recal_92's own BLK_BAR/BLK_FULL, reused deliberately - there is ONE definition of "block evidence"
 # in this file and both rim gates read it, so a later ruling moves one number, not two.
@@ -575,8 +581,32 @@ for yr, rows in seasons.items():
         # continuously instead of one of them switching off 0.25 before the other switches on.
         # By construction NOTHING outside 0.05 < drep < 0.30 can move, and nothing can fall: the
         # relief enters through a max() and only ever raises the no-vote channel.
+        # recal_146 AMENDED (HIS RULING on the whole of 146, verbatim: "A touch too high for all in
+        # 146, try to aim a 2-4 points lower, but in general its better"): THE RELIEF'S SIZE FADES
+        # WITH ITS WEIGHT, NOT ONLY ITS WEIGHT. 146 deleted the gate and let recal_114's hand-off do
+        # all the fading, but it faded only HOW MUCH OF THE LINE IS READ (1 - wv) and never WHAT THE
+        # LINE SAYS. So a card one tick over the Iverson line was still offered the whole relief a
+        # man with no certification at all is offered, and the band's readings came out a touch high
+        # across the board. The relief is compensation for having no vote to be graded by; the more
+        # of the card the votes already grade, the less there is to compensate. The line is therefore
+        # re-cut inside the faded band by a single slice proportional to band membership:
+        #   min(0.80, 0.28 + 0.52 * P) - RELIEF_BAND_CUT * wv
+        # ONE constant, applied to every card in every pre-tracking season by the same rule. Because
+        # the cut is carried at the line's own weight (1 - wv), the cost to a card is proportional to
+        # wv*(1 - wv): it is exactly zero at wv = 0 (the 5,933 drep <= 0.05 cards recal_141 set stay
+        # BYTE-IDENTICAL), exactly zero at wv >= 0.30 (the 860 full-vote cards, byte-identical),
+        # and deepest at wv = 0.5, where the two channels are most evenly split and the hand-off is
+        # most ambiguous. recal_141's slope (0.52) and ceiling (0.80) are untouched; nothing about
+        # WHO the line is offered to changes, only how much of it survives the band.
+        # THE MULTIPLICATIVE VARIANT HE ALSO OFFERED was measured on the same pool: line * (1 - k*wv)
+        # at k = 0.48 (matched to the same mean cut) is IDENTICAL on Sanders '13, Bol '92, Chandler
+        # '05, Mourning '06 and Mutombo '07 and MISSES the two cards he named that sit low on the
+        # line - Shaq '94 reads 85 against his re-cut 83 +-2, and Shaq '09 76 against his ~75 -
+        # because scaling by the line pays back least where the line is smallest (Shaq '94's relief
+        # is 0.643, Shaq '09's 0.488, against 0.78-0.80 for the rest of the band). A card's debt to
+        # the band is its band membership, not the size of the favour, so the slice is absolute.
         if yr < 2014:
-            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])))
+            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])) - RELIEF_BAND_CUT * wv)
         _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])
