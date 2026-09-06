@@ -171,8 +171,11 @@ const defAdj = (drtg: number, season?: number) =>
 /** How many wheel fives froze the anchors (display only). */
 const ANCHOR_N = 1255
 
-const scale71 = (v: number, min: number, mid: number, top: number) =>
-  Math.round(Math.max(1, Math.min(99, v <= mid ? 1 + (49 * (v - min)) / (mid - min) : 50 + (49 * (v - mid)) / (top - mid))))
+/** The two-slope map itself, BEFORE the display rounding. */
+const scale71raw = (v: number, min: number, mid: number, top: number) =>
+  Math.max(1, Math.min(99, v <= mid ? 1 + (49 * (v - min)) / (mid - min) : 50 + (49 * (v - mid)) / (top - mid)))
+
+const scale71 = (v: number, min: number, mid: number, top: number) => Math.round(scale71raw(v, min, mid, top))
 
 export interface Gauge {
   off: number
@@ -209,4 +212,31 @@ export function seasonGauges(five: Player[], season: number): Gauge {
 /** A drafted five with no season of its own: the same scale — a drafted five and a wheel team read alike. */
 export function fieldGauges(five: Player[]): Gauge {
   return gauge(five, undefined)
+}
+
+/**
+ * THE FIVE'S OWN OVR, UNROUNDED — the Team DB's OVR column before it is rounded for display, and
+ * recal_147's key for choosing between max-OVR fives that TIE (bestfive.ts). It is the same
+ * quantity recal_142 made the Champions tier climb by, one layer down: the mean of the two
+ * era-relative gauge channels. Unrounded because the rounded value ties on 23 of the 142 tied
+ * team-seasons and a tie-break that ties is not a tie-break.
+ *
+ * The season is the five's OWN, which the five knows: every card carries `peak_season`, and a
+ * team-season's five all carry the same one. A five of mixed years is a five with no season, and
+ * reads in today's league — gauges.ts's own convention, unchanged.
+ */
+export function dialOvrRaw(five: Player[], season?: number): number {
+  const r = ratings100(five)
+  return (
+    (scale71raw(offAdj(r.offRaw, season), OFF_MIN, OFF_MID, OFF_TOP) +
+      scale71raw(-defAdj(r.drtgRef, season), -DEF_WORST, -DEF_MID, -DEF_TOP)) /
+    2
+  )
+}
+
+/** The season a five belongs to: its own, if all five men share one; otherwise none (today's league). */
+export function seasonOf(five: Player[]): number | undefined {
+  if (!five.length) return undefined
+  const y = five[0].peak_season
+  return five.every((p) => p.peak_season === y) ? y : undefined
 }

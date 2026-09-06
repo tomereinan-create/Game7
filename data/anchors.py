@@ -154,10 +154,33 @@ def _off_adj(off, season=None):
     return off - lvl + g['OFF_LEVEL_REF']
 
 
+def _scale71raw(v, mn, mid, top):
+    """recal_71's two-slope map BEFORE the display rounding — mirrors scale71raw in gauges.ts."""
+    x = 1 + 49.0 * (v - mn) / (mid - mn) if v <= mid else 50 + 49.0 * (v - mid) / (top - mid)
+    return max(1.0, min(99.0, x))
+
+
 def _scale71(v, mn, mid, top):
     """recal_71's two-slope map, mirroring scale71 in src/engine/gauges.ts exactly."""
-    x = 1 + 49.0 * (v - mn) / (mid - mn) if v <= mid else 50 + 49.0 * (v - mid) / (top - mid)
-    return int(round(max(1.0, min(99.0, x))))
+    return int(round(_scale71raw(v, mn, mid, top)))
+
+
+def _dial_ovr_raw(five, season=None):
+    """The five's own Team-DB OVR, UNROUNDED — recal_147's tie-break key. Mirrors dialOvrRaw()
+    in src/engine/gauges.ts."""
+    g = _gauge_consts()
+    off, drtg = team_raw(five)
+    return (_scale71raw(_off_adj(off, season), g['OFF_MIN'], g['OFF_MID'], g['OFF_TOP']) +
+            _scale71raw(-_def_adj(drtg, season), -g['DEF_WORST'], -g['DEF_MID'], -g['DEF_TOP'])) / 2.0
+
+
+def _season_of(five):
+    """The season a five belongs to: its own if all five men share one, else None (today's league).
+    Mirrors seasonOf() in src/engine/gauges.ts."""
+    if not five:
+        return None
+    y = five[0].get('peak_season')
+    return y if all(p.get('peak_season') == y for p in five) else None
 
 
 def team_raw(five):
@@ -201,8 +224,9 @@ def _pos_of(name):
 def starting_five(roster):
     """A 1:1 port of startingFive() in src/engine/bestfive.ts, for the SET it picks (team ratings are
     order-invariant, so the assist tie-break on slot order cannot move a number). Max total OVR over
-    legal PG..C boards; among boards of equal total, the one that walk() reaches first — slot 0's
-    lowest roster index, then slot 1's, and so on, with an empty slot ordered last."""
+    legal PG..C boards; among the DISTINCT max-OVR sets, recal_147's key — the highest unrounded
+    Team-DB OVR (_dial_ovr_raw in the five's own season), raw net as the tie-break, and the board
+    walk() reaches first if both tie or if the boards cannot fill five slots."""
     n = len(roster)
     elig = [_pos_of(p['name']) for p in roster]
     NEG = float('-inf')
@@ -220,42 +244,48 @@ def starting_five(roster):
                     best = max(best, sub + roster[i].get('ovr', 0))
             dp[i][mask] = best
     target = max(dp[0])
-    # reconstruct walk()'s first-found board: slot 0 first, candidates in roster order
     left = max((m for m in range(32) if dp[0][m] == target), key=lambda m: bin(m).count('1'))
-    chosen, used, got = [], [False] * n, 0.0
-    for s in range(5):
-        if not (left >> s) & 1:
-            continue
-        for i in range(n):
-            if used[i] or _POSITIONS[s] not in elig[i]:
+    sets = _optimal_sets(roster, elig, dp, left, target)
+    if len(sets) < 2 or any(len(s) != 5 for s in sets):
+        return sets[0]
+    best, best_key, best_net = sets[0], NEG, NEG
+    for five in sets:
+        key = _dial_ovr_raw(five, _season_of(five))
+        off, drtg = team_raw(five)
+        net = off - drtg
+        if key > best_key or (key == best_key and net > best_net):
+            best, best_key, best_net = five, key, net
+    return best
+
+
+def _optimal_sets(roster, elig, dp, left, target):
+    """Every DISTINCT max-OVR set, in walk() order (the first-found board first). The dp table is the
+    oracle: a branch survives only if the men still to come can still reach `target`."""
+    n = len(roster)
+    out, seen = [], set()
+
+    def rec(i, mask, need, picked):
+        if len(out) > 64:            # a pathological roster cannot be worth more than this
+            return
+        if mask == 0:
+            if abs(need) < 1e-9:
+                key = frozenset(id(p) for p in picked)
+                if key not in seen:
+                    seen.add(key)
+                    out.append(list(picked))
+            return
+        if i >= n or dp[i][mask] < need - 1e-9:
+            return
+        for s in range(5):
+            if not (mask >> s) & 1 or _POSITIONS[s] not in elig[i]:
                 continue
-            rest = left ^ (1 << s)
-            # can the slots still open be filled to target by the players not yet used?
-            if _fill(roster, elig, used, i, rest, target - got - roster[i].get('ovr', 0)):
-                used[i] = True
-                got += roster[i].get('ovr', 0)
-                chosen.append(roster[i])
-                left = rest
-                break
-    return chosen
+            picked.append(roster[i])
+            rec(i + 1, mask ^ (1 << s), need - roster[i].get('ovr', 0), picked)
+            picked.pop()
+        rec(i + 1, mask, need, picked)
 
-
-def _fill(roster, elig, used, taken, mask, need):
-    """Is `mask` fillable from the unused players (excluding `taken`) for exactly `need` more OVR?"""
-    if mask == 0:
-        return abs(need) < 1e-9
-    free = [i for i in range(len(roster)) if not used[i] and i != taken]
-    best = {0: 0.0}
-    for i in free:
-        nxt = dict(best)
-        for m, v in best.items():
-            for s in range(5):
-                if (mask >> s) & 1 and not (m >> s) & 1 and _POSITIONS[s] in elig[i]:
-                    mm = m | (1 << s)
-                    if nxt.get(mm, float('-inf')) < v + roster[i].get('ovr', 0):
-                        nxt[mm] = v + roster[i].get('ovr', 0)
-        best = nxt
-    return abs(best.get(mask, float('-inf')) - need) < 1e-9
+    rec(0, left, target, [])
+    return out or [[]]
 
 
 def season_board(players, season):
@@ -285,12 +315,29 @@ def season_board(players, season):
 
 
 def team_rank(players, a):
-    """(rank, n) of one team-season on `scale` within its own season. 1 = best. Ties share the rank."""
+    """(rank, n) of one team-season on `scale` within its own season. 1 = best. Ties share the rank.
+
+    A rank pin MAY name its five by its men (`five`), exactly as a team:* value pin may. Then that
+    five stands in for the team on its season's board and the pin grades the same five forever —
+    a pin that says "this team's offence ranks here" keeps meaning what it meant when it was cut,
+    even after a later round re-rules which five the team fields (recal_147). Without `five` the
+    pin grades whatever bestfive.ts picks today, which is the original behaviour."""
     board = season_board(players, a['season'])
-    me = [x for x in board if x['ab'] == a.get('ab') or x['team'] == a.get('team')]
-    if not me or len(board) < 2:
+    if a.get('five'):
+        cards = [find_card(players, n) for n in a['five']]
+        if any(c is None for c in cards) or len(cards) != 5:
+            return None
+        off, drtg = team_raw(cards)
+        rest = [x for x in board if x['ab'] != a.get('ab') and x['team'] != a.get('team')]
+        me = dict(ab=a.get('ab'), team=a.get('team'), off=off, drtg=drtg)
+        board = rest + [me]
+    else:
+        me = [x for x in board if x['ab'] == a.get('ab') or x['team'] == a.get('team')]
+        if not me:
+            return None
+        me = me[0]
+    if len(board) < 2:
         return None
-    me = me[0]
     if a['scale'] in ('team:def', 'team:defdial'):
         better = sum(1 for x in board if x['drtg'] < me['drtg'])
     else:
