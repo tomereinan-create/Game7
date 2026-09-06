@@ -2880,7 +2880,8 @@ body:has(.sheet) .map-fab { display: none; }
    is the front door's furniture and not a new theme for the app.
    ========================================================================== */
 body.tunnel { --divider: #241f1a; }
-body.tunnel #root { position: relative; z-index: 1; }
+body.tunnel #root,
+body.offstage #root { position: relative; z-index: 1; }
 
 /* ---------- the mark ---------- */
 /* Leather in a radial gradient; four seams gradient-faded through the middle so the 7 reads
@@ -4472,7 +4473,20 @@ body.um .node-notes { display: none; }
    cannot reach any other screen. `:not(.um)` is the scout-only gate — user mode keeps the front
    door it has.
    ========================================================================== */
-body.tunnel:not(.um) {
+/*
+ * THE ROOM, shared by the front door and by every screen that stands on no block of the ladder
+ * (his ruling: "No more yellow and black. Anywhere black and yellow change to either the according
+ * stage, or to black in 1 (home page theme)"). A custom matchup, a hot-seat table, the auction and
+ * the record book are not standing in an arena, a hall, on hardwood or under a dusk sky — they had
+ * nothing to wear and so they wore the house: gold on near-black, which is the one combination the
+ * ruling names. They wear the front door instead, which is the room they were opened from.
+ *
+ * `offstage` is set in App on exactly the condition the home fab already used to decide whether to
+ * take a skin — no campaign in play. The record book opened FROM the front door is already inside
+ * `tunnel`; opened from the draft it is standing on a block, and it keeps that block.
+ */
+body.tunnel:not(.um),
+body.offstage:not(.um) {
   --ink: #f5efe2;
   --ink-2: #ece7db;
   --muted: #8f887a;
@@ -4484,10 +4498,23 @@ body.tunnel:not(.um) {
   --surface: #100f0d;
   --surface-2: #141210;
   /* THE ACCENT IS THE LIGHT. Gold is the arena's colour and there is no arena here, so --you is
-     re-pointed to the spotlight's own cream: the 7, the cleared rungs, the Play chip and the star
-     counts all come out of it without a single one of them needing its own rule. */
+     re-pointed to the spotlight's own cream: the 7, the cleared rungs, the Play chip, the star
+     counts, and off the front door every OVR dial, chip and field rule, all come out of it without
+     a single one of them needing its own rule. */
   --you: #f5efe2;
+  --you-hi: #ffffff;
   --you-tint: #141210;
+  --you-line: #4a463d;
+  --you-ink: #12100d;
+}
+/*
+ * --them, --mine and --danger are deliberately NOT re-pointed off the front door. Cream is the
+ * light in this room, and the room is only half the law: the other half is that YOU are one colour
+ * and THEY are another. A custom matchup is two fives side by side and the auction is two bidders;
+ * greying their half out to match the walls would cost the screen the very thing it is for. On the
+ * front door itself there is no opponent, so it keeps taking them too.
+ */
+body.tunnel:not(.um) {
   --mine: #100f0d;
   --mine-tint: #8f887a;
   --them: #b5ae9f;
@@ -4496,8 +4523,10 @@ body.tunnel:not(.um) {
 /* THE TUNNEL ITSELF: black end to end, with one lamp hung above the mouth of it. The wash is on
    #root's own ::before so it sits under everything the screen prints and over the page's ground,
    and it is fixed rather than scrolled — you do not walk out from under a spotlight by scrolling. */
-body.tunnel:not(.um) { background: #0a0908; }
-body.tunnel:not(.um) #root::before {
+body.tunnel:not(.um),
+body.offstage:not(.um) { background: #0a0908; }
+body.tunnel:not(.um) #root::before,
+body.offstage:not(.um) #root::before {
   content: '';
   position: fixed;
   inset: 0;

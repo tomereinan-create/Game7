@@ -137,6 +137,22 @@ export default function App() {
   }, [userMode])
 
   const cm: CampaignMode | null = mode !== null && (MODES as string[]).includes(mode) ? (mode as CampaignMode) : null
+  /**
+   * A SCREEN THAT STANDS ON NO BLOCK (his ruling: "No more yellow and black. Anywhere black and
+   * yellow change to either the according stage, or to black in 1 — home page theme"). A custom
+   * matchup, the hot-seat table and the auction are not on the ladder, so they have no arena, hall,
+   * hardwood or dusk to wear — and what they wore instead was the house: gold on near-black. They
+   * take the front door's room instead, which is the room they were opened from.
+   *
+   * The condition is the one the home fab already used to decide whether to take a skin at all: no
+   * campaign in play. The front door itself is `tunnel` and is not counted here.
+   */
+  useEffect(() => {
+    const off = mode !== null && cm === null
+    document.body.classList.toggle('offstage', off)
+    return () => document.body.classList.remove('offstage')
+  }, [mode, cm])
+
   /** The death match runs ON the salary cap: same payroll rules, with the run on the line. */
   const death = cm === 'death'
   const capped = cm === 'salary' || death
