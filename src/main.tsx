@@ -2,12 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { CardProvider } from './ui/CardSheet'
+import { Ticker } from './ui/Ticker'
 import './styles.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <CardProvider>
       <App />
+      <Ticker />
     </CardProvider>
   </StrictMode>,
 )

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Team } from '../state/campaign'
+import { useTicker } from './Ticker'
 
 /** [name, ISO country code, population], sorted by population desc (GeoNames cities15000). */
 type City = [string, string, number]
@@ -70,17 +71,17 @@ export function TeamSetup({
     setQ(c[0])
   }
   const ready = !!city && name.trim().length > 0
+  useTicker('Any city in the world')
 
   return (
     <>
-      <div className="topbar">
-        <span>{title}</span>
-        <button onClick={onBack}>← Back</button>
+      <div className="setup-head">
+        <span className="kicker">{title}</span>
+        <h2>Name your team</h2>
+        <p>Your team plays out of any city in the world. Pick the city, then the name.</p>
       </div>
-      <div className="rule2" />
-      <div className="lede">Your team plays out of any city in the world. Pick the city, then the name.</div>
 
-      <div className="card setup">
+      <div className="setup">
         <label className="label" htmlFor="city">
           City
         </label>
@@ -97,8 +98,8 @@ export function TeamSetup({
         />
         {hits.length ? (
           <div className="hits">
-            {hits.map((c) => (
-              <button key={`${c[0]}|${c[1]}`} className="hit" onClick={() => pick(c)}>
+            {hits.map((c, i) => (
+              <button key={`${c[0]}|${c[1]}`} className={`hit ${i === 0 ? 'lead' : ''}`} onClick={() => pick(c)}>
                 <b>{c[0]}</b>
                 <span>
                   {countryName(c[1])} · {Math.round(c[2] / 1000).toLocaleString()}k
@@ -107,13 +108,9 @@ export function TeamSetup({
             ))}
           </div>
         ) : null}
-        {city ? (
-          <div className="cap chosen">
-            {city.city}, {countryName(city.country)}
-          </div>
-        ) : null}
+        <div className="cap chosen">{city ? `${city.city}, ${countryName(city.country)}` : '34,000 cities, population 15,000 and up'}</div>
 
-        <label className="label" htmlFor="tname" style={{ marginTop: 16 }}>
+        <label className="label" htmlFor="tname">
           Team name
         </label>
         <input
@@ -124,24 +121,33 @@ export function TeamSetup({
           maxLength={24}
           onChange={(e) => setName(e.target.value)}
         />
-        <div className="preview">
-          {city && name.trim() ? (
-            <>
-              <span className="kicker">You are</span>
-              <b>
-                {city.city} {name.trim()}
-              </b>
-            </>
-          ) : (
-            <span className="cap">City and name make the team.</span>
-          )}
-        </div>
+
+        {/* THE PLATE — the one thing on this screen that is already the franchise: blue, and the
+            name at the size it will be worn. Empty until both halves are in, because half a
+            nameplate reads as a bug rather than as a prompt. */}
+        {city && name.trim() ? (
+          <div className="plate">
+            <span className="kicker">You are</span>
+            <b>
+              {city.city} {name.trim()}
+            </b>
+          </div>
+        ) : (
+          <div className="plate empty">
+            <span className="kicker">You are</span>
+            <b>City and name make the team</b>
+          </div>
+        )}
+        <div className="setup-note">It goes on the jersey, the banners and every result you bank.</div>
       </div>
 
       <div className="dock">
-        <div className="dock-inner">
+        <div className="dock-inner two">
+          <button className="btn ghost" onClick={onBack}>
+            ← Back
+          </button>
           <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim() })}>
-            {ready ? `Play as the ${city!.city} ${name.trim()}` : 'Pick a city and a name'}
+            {ready ? `Play as the ${name.trim()}` : 'Pick a city and a name'}
           </button>
         </div>
       </div>

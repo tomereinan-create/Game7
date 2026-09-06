@@ -1,51 +1,77 @@
 /* ==========================================================================
-   Game7 — "The box-score, promoted to a broadcast."
-   Tokens and components from the Claude Design redesign. Editorial sports,
-   dark only. Serif carries identity and drama; mono carries every label and
-   clock; Archivo carries names and numbers. You are gold, they are ice; red
-   means exactly one thing — the run is over.
+   Game7 — "The arena, lit." Tokens from the Game7 Flow design bundle
+   (design_handoff_game7_flow). Arcade-loud on a black ground with one lit
+   wash behind every screen. THE COLOUR LAW: blue is you, red is them, gold
+   is what you win — and in any head-to-head bar or duel, gold takes your
+   side and red takes theirs.
    ========================================================================== */
 
 :root {
-  --bg: #141210;
-  --surface: #1d1a16;
-  --surface-2: #27221b;
-  --line: #302a22;
-  --line-2: #3a332a;
-  --line-3: #57503f;
-  --divider: #262119;
-  --ink: #efe7d6;
-  --ink-2: #c9bda6;
-  --muted: #9a9080;
-  --muted-2: #8a8172;
-  --faint: #6e6656;
-  --you: #e7b54f;
-  --you-tint: #241e10;
-  --you-line: #5a4a22;
-  --you-ink: #241a05;
-  --them: #a6cbe9;
-  --them-tint: #161e26;
-  --them-line: #31465a;
-  --danger: #e2584b;
-  --danger-tint: #2b1613;
-  --danger-line: #5a2b24;
-  --rail: rgba(239, 231, 214, 0.06);
-  --rail-2: rgba(239, 231, 214, 0.05);
-  --wash: rgba(239, 231, 214, 0.03);
+  /* --- the room --- */
+  --bg: #0b0a09;                 /* ground */
+  --wash-lit: radial-gradient(ellipse at 50% -6%, #241f33 0%, #0b0a09 56%);
+  --panel: #0f0d0b;              /* header, rails, action bars */
+  --surface: #12100e;            /* panel raised — cards */
+  --surface-2: #1d1916;          /* panel inset — key rows, roster lists */
+  --line: #241f1a;               /* hairline */
+  --line-2: #2a2320;
+  --line-3: #4a4038;
+  --divider: #1c1815;
+
+  /* --- ink --- */
+  --ink: #f6f4ef;                /* cream — primary text on dark */
+  --ink-2: #d6d0c8;
+  --muted: #a39a91;
+  --muted-2: #8a8178;
+  /* The design's floor for a caption on black: never below #8a8178 (4.5:1). --faint used to be
+     dimmer than that and is pinned here rather than deleted — 60-odd call sites still name it. */
+  --faint: #8a8178;
+  --paper: #f1ece3;              /* nameplates, cleared tickets */
+  --paper-ink: #16130f;          /* text on light or gold grounds */
+
+  /* --- you / them / silverware ---
+     "You" in a comparison is GOLD (the odds bar, the duel bars, your share of everything);
+     your FRANCHISE — the jersey, the plate, the rail head — is BLUE. They are red throughout. */
+  --you: #f0b323;
+  --you-hi: #ffd15c;
+  --you-tint: #241f1a;
+  --you-line: #8f6512;
+  --you-ink: #16130f;
+  --mine: #17408b;               /* franchise blue */
+  --mine-hi: #1c4c9e;
+  --mine-deep: #0d2a5e;
+  --mine-tint: #c3d3ea;
+  --them: #ef4a63;               /* red, bright enough to read on black */
+  --them-deep: #c9082a;
+  --them-tint: #2a1114;
+  --them-line: #5a2028;
+  --them-ink: #ffc2cb;
+  --danger: #ef4a63;
+  --danger-tint: #2a1114;
+  --danger-line: #5a2028;
+
+  --rail: rgba(246, 244, 239, 0.06);
+  --rail-2: rgba(246, 244, 239, 0.05);
+  --wash: rgba(246, 244, 239, 0.03);
+
+  /* --- the floor --- */
+  --hardwood-panel: repeating-linear-gradient(90deg, #4b3520 0 22px, #43301d 22px 44px);
+  --hardwood-arena: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px);
+  --court-card: #2b2521;
+  --court-edge: #4a4038;
 
   /**
-   * HIS RULING: "Change EVERYTHING in the app to this font" — pointing at the italic serif lede
-   * on the matchup board. --sans, --mono and --num used to name three different faces (Archivo,
-   * Spline Sans Mono, Archivo again) for three different jobs — labels, prose/headlines, stats —
-   * see recal history below for that doctrine. They now all alias the one face he pointed at, so
-   * every label, every stat and every line of prose reads in Instrument Serif. The names stay
-   * (dozens of call sites still say `var(--mono)` etc.) so this is the one line that has to change
-   * if that ever reverses; the sizes, weights and letter-spacing tuned for each face are untouched.
+   * TWO FACES, four names. League Gothic carries every heading and every numeral (condensed,
+   * uppercase, tight); Space Grotesk carries all copy, labels and captions. The four token names
+   * are older than this pass — dozens of call sites still say `var(--mono)` — so they are aliased
+   * rather than renamed: --serif/--num are the heading face, --sans/--mono the copy face. This
+   * reverses the earlier one-face ruling ("change EVERYTHING to this font", Instrument Serif) in
+   * favour of the Game7 Flow bundle, and these four lines are where that reverses again.
    */
-  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --sans: var(--serif);
-  --mono: var(--serif);
+  --serif: 'League Gothic', 'Arial Narrow', Impact, sans-serif;
   --num: var(--serif);
+  --sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --mono: var(--sans);
 
   color-scheme: dark;
 }
@@ -58,18 +84,26 @@
 html,
 body {
   margin: 0;
-  background: var(--bg);
+  background: transparent;
   color: var(--ink);
-  font: 12.5px/1.45 var(--sans);
+  font: 13px/1.5 var(--sans);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
+/* THE LIT ARENA WASH behind every screen — one overhead pool at the top of the ground, the
+   bundle's `radial-gradient(ellipse at 50% -6%, ...)`. Fixed so it lights the window rather than
+   scrolling away with the page, and painted on <html> so the wash survives the body classes
+   (.tunnel, .wide, the four map skins) that restate the ground under them. */
+html {
+  background: var(--wash-lit) fixed;
+}
+
 #root {
-  max-width: 375px;
+  max-width: 390px;
   margin: 0 auto;
-  padding: 14px 14px calc(120px + env(safe-area-inset-bottom));
+  padding: 14px 14px calc(120px + var(--foot));
 }
 
 button {
@@ -178,21 +212,22 @@ button {
 /* ---------- ladder ---------- */
 .ladder {
   display: flex;
-  gap: 4px;
+  gap: 1px;
   padding-bottom: 10px;
 }
+/* One span per level, all 150 of them, printed across the campaign card: cleared rungs in gold,
+   tonight's in white so it can be found at a glance, the rest of the ladder a whisper of the
+   card's own blue. No radius — at 1px wide a rounded rung is a smudge. */
 .rung {
   flex: 1;
-  height: 5px;
-  border-radius: 2px;
-  background: var(--surface-2);
+  height: 14px;
+  background: rgba(255, 255, 255, 0.16);
 }
 .rung.done {
   background: var(--you);
 }
 .rung.now {
-  background: rgba(231, 181, 79, 0.22);
-  box-shadow: inset 0 0 0 1px var(--you);
+  background: #fff;
 }
 .rung.lost {
   background: var(--danger-tint);
@@ -674,17 +709,44 @@ button {
   text-transform: uppercase;
   color: var(--faint);
 }
-.dock {
+/* THE FOOT (Game7 Flow): the blue crawl is pinned to the very bottom of the window and the action
+   bar sits on top of it, so every screen ends in the same two bands. --foot is the crawl's height
+   plus the phone's own inset, and it is the one number the dock and the page's bottom padding
+   both read. */
+:root { --foot: calc(24px + env(safe-area-inset-bottom)); }
+.ticker-foot {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 12px 14px calc(20px + env(safe-area-inset-bottom));
-  background: linear-gradient(to top, var(--bg) 68%, rgba(20, 18, 16, 0));
+  z-index: 30;
+  height: var(--foot);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--mine);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.ticker-foot span {
+  font-family: var(--serif);
+  font-size: 15px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--mine-tint);
+  padding-left: 14px;
+}
+
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--foot);
+  padding: 12px 14px 14px;
+  background: linear-gradient(to top, var(--bg) 68%, rgba(11, 10, 9, 0));
   z-index: 20;
 }
 .dock-inner {
-  max-width: 347px;
+  max-width: 362px;
   margin: 0 auto;
 }
 .dock-inner.two {
@@ -692,149 +754,67 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+/* THE ARCADE BUTTON — 2px border and a hard shadow under it rather than a soft one, and a press
+   that actually travels: the button falls the height of its own shadow and lands flat. No
+   transition on the way down, so the press is instant and the release is the only easing. */
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 52px;
+  min-height: 52px;
   border-radius: 6px;
   background: var(--you);
   color: var(--you-ink);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
-  border: 1px solid var(--you);
+  border: 2px solid var(--you);
+  box-shadow: 0 7px 0 var(--you-line);
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
 }
+.btn:hover { background: var(--you-hi); border-color: var(--you-hi); }
+.btn:active { transform: translateY(6px); box-shadow: 0 1px 0 var(--you-line); transition: none; }
 .btn:disabled {
   background: var(--surface-2);
   color: var(--muted);
   border-color: var(--line);
+  box-shadow: 0 7px 0 #0a0908;
   cursor: default;
 }
+.btn:disabled:active { transform: none; box-shadow: 0 7px 0 #0a0908; }
 .btn.ghost {
   background: var(--surface);
   color: var(--ink);
-  border-color: var(--line);
+  border-color: var(--line-3);
+  box-shadow: 0 7px 0 #080706;
 }
+.btn.ghost:hover { background: var(--surface); border-color: var(--ink); }
+.btn.ghost:active { box-shadow: 0 1px 0 #080706; }
 .btn.them {
   background: var(--surface);
   color: var(--them);
   border-color: var(--them-line);
+  box-shadow: 0 7px 0 #080706;
 }
+.btn.them:hover { background: var(--surface); border-color: var(--them); }
+.btn.them:active { box-shadow: 0 1px 0 #080706; }
 
 /* ---------- home ---------- */
-.hero {
-  text-align: center;
-  padding: 56px 6px 0;
-}
-.hero .kicker {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.hero h1 {
-  font-family: var(--serif);
-  font-size: 66px;
-  line-height: 1;
-  margin: 14px 0 0;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
-.hero h1 em {
-  font-style: normal;
-  color: var(--you);
-}
-.hero p {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 16.5px;
-  color: var(--muted);
-  margin: 10px 0 0;
-}
 /* THE MODE CHOICE (his ruling) — two options side by side (own class prefix: .mp- belongs to the matchup panel), the live one lit, so which
    mode you are in is the shape of the control rather than a sentence to parse. */
-.modepick { margin-top: 16px; }
-.mode-cap { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
-.mode-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 7px; }
-.mode-opt { display: block; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink-2); cursor: pointer; }
-.mode-opt b { display: block; font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-.mode-opt i { display: block; font-style: normal; font-size: 11.5px; line-height: 1.35; margin-top: 4px; color: var(--muted); }
+.modepick { margin-top: 12px; }
+.mode-cap { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 6px; }
+.mode-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mode-opt { display: block; text-align: left; padding: 7px 9px; border: 2px solid var(--line-2); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.mode-opt b { display: block; font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1; text-transform: uppercase; color: var(--ink-2); }
+.mode-opt i { display: block; font-style: normal; font-size: 10px; line-height: 1.35; margin-top: 2px; color: var(--muted); }
 .mode-opt.on { background: var(--you-tint); border-color: var(--you); color: var(--ink); }
 .mode-opt.on b { color: var(--you); }
-@media (max-width: 460px) { .mode-row { grid-template-columns: minmax(0, 1fr); } }
-
-.hero .rule2 {
-  margin: 28px 0 10px;
-}
-.mode {
-  display: block;
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  margin-top: 12px;
-  overflow: hidden;
-}
-.mode .bar {
-  height: 2px;
-  background: var(--line-3);
-}
-.mode.you .bar {
-  background: var(--you);
-}
-.mode.them .bar {
-  background: var(--them);
-}
-.mode .in {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-}
-.mode b {
-  display: block;
-  font-family: var(--serif);
-  font-size: 23px;
-  line-height: 1.1;
-  font-weight: 400;
-}
-.mode span {
-  display: block;
-  font-size: 12.5px;
-  color: var(--muted);
-  line-height: 1.45;
-  margin-top: 5px;
-}
-.mode em {
-  font-style: normal;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  white-space: nowrap;
-  color: var(--muted);
-}
-.mode.you em {
-  color: var(--you);
-}
-.mode.them em {
-  color: var(--them);
-}
-.alltime {
-  text-align: center;
-  font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-top: 28px;
-}
+.mode-opt:hover { border-color: var(--ink); }
+.mode-opt.on:hover { border-color: var(--you); }
 
 /* ---------- coach ---------- */
 .lede {
@@ -2105,18 +2085,35 @@ button {
 .sstats .sr.head { margin-top: 8px; border-bottom: 1px solid var(--divider); }
 .sstats .sr.head .rl { color: var(--muted); }
 
-/* ---- team setup ---- */
-.setup .label { display: block; margin-bottom: 6px; }
-.field { width: 100%; box-sizing: border-box; font: inherit; font-size: 16px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--line-3); background: var(--surface-2); color: var(--ink); }
-.field:focus { outline: none; border-color: var(--you); }
-.hits { display: grid; margin-top: 6px; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
-.hit { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 12px; background: var(--surface); border: 0; border-bottom: 1px solid var(--divider); color: var(--ink); text-align: left; cursor: pointer; }
+/* ---- team setup (Game7 Flow, screen 2) ---- */
+/* The two fields are the loud things on this screen: gold-bordered, and the typing itself set in
+   the heading face, because what is being typed IS the nameplate. The hit list hangs off the
+   city field with no gap and no radius, so it reads as the field growing rather than as a popup. */
+.setup-head { padding: 6px 0 0; }
+.setup-head .kicker { display: block; font-family: var(--sans); font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--you); }
+.setup-head h2 { font-family: var(--serif); font-size: 40px; line-height: 0.9; font-weight: 400; text-transform: uppercase; margin: 2px 0 0; }
+.setup-head p { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 6px 0 0; }
+.setup .label { display: block; font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-2); margin: 14px 0 5px; }
+.field { width: 100%; box-sizing: border-box; font-family: var(--serif); font-size: 26px; line-height: 1.1; text-transform: uppercase; padding: 7px 11px; border-radius: 0; border: 2px solid var(--you); background: var(--surface); color: var(--ink); }
+.field::placeholder { color: var(--muted-2); text-transform: none; font-family: var(--sans); font-size: 13px; }
+.field:focus { outline: none; border-color: var(--you-hi); }
+.hits { display: grid; border: 1px solid var(--line); border-top: 0; background: var(--panel); }
+.hit { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 6px 11px; background: transparent; border: 0; border-bottom: 1px solid var(--divider); color: var(--ink); text-align: left; cursor: pointer; }
 .hit:last-child { border-bottom: 0; }
-.hit b { font-family: var(--serif); font-size: 17px; }
-.hit span { font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
-.cap.chosen { display: block; margin-top: 8px; color: var(--you); }
-.preview { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); min-height: 40px; }
-.preview b { display: block; font-family: var(--serif); font-size: 30px; line-height: 1.05; }
+.hit b { font-family: var(--serif); font-size: 20px; font-weight: 400; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.hit span { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
+/* the first hit is the one Enter would take, so it is already wearing the franchise's blue */
+.hit.lead { background: var(--mine); }
+.hit.lead b { color: var(--ink); }
+.hit.lead span { color: var(--mine-tint); }
+.cap.chosen { display: block; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-2); margin-top: 6px; }
+.plate { background: var(--mine); padding: 10px 13px; margin-top: 14px; }
+.plate .kicker { display: block; font-family: var(--sans); font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mine-tint); }
+.plate b { display: block; font-family: var(--serif); font-size: 34px; line-height: 0.9; font-weight: 400; text-transform: uppercase; color: var(--ink); }
+.plate.empty { background: var(--surface-2); }
+.plate.empty .kicker { color: var(--muted-2); }
+.plate.empty b { font-size: 24px; color: var(--muted); }
+.setup-note { font-size: 11px; color: var(--muted); line-height: 1.45; margin-top: 8px; }
 
 /* ---- opponent reads ---- */
 .reads { display: grid; gap: 8px; margin: 8px 0 4px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -2865,83 +2862,107 @@ body:has(.sheet) .map-fab { display: none; }
 
 /* ---- 2a: the front page ---- */
 /* ==========================================================================
-   THE TUNNEL — the front page (design board 4b, his ruling: "Make the tunnel the front page").
-   Black, one overhead light, warm-white ink. Written almost entirely as a RE-TOKENISATION rather
-   than a pile of overrides: every part of the front door already draws its colour from the token
-   set — the masthead from --muted, the slate rows from --divider, the mode pick from --surface-2
-   and --you, the ladder rungs from --you — so restating the tokens under one body class moves the
-   whole room at once and leaves the markup untouched. Only the three things the tokens cannot say
-   are spelled out below: the light, the lit title, and the unlit rung.
+   THE FRONT DOOR (Game7 Flow, screen 1). The room is the app's own ground —
+   the lit arena wash on <html> — so this class carries only what the tokens
+   cannot say: the mark, the lockup, the lit campaign card, and the crowd.
 
-   The class is scoped to this screen and comes off when you leave it, so this is the front door's
-   palette and not a new theme for the app.
+   The class is scoped to this screen and comes off when you leave it, so this
+   is the front door's furniture and not a new theme for the app.
    ========================================================================== */
-body.tunnel {
-  --bg: #0a0908;
-  --surface: #100f0d;
-  --surface-2: #100f0d;
-  --line: #211e19;
-  --line-2: #26231e;
-  --line-3: #2b2822;
-  --divider: #211e19;
-  --ink: #ece7db;
-  --ink-2: #b5ae9f;
-  --muted: #8f887a;
-  --muted-2: #8f887a;
-  --faint: #5f594c;
-  /* the accent is the light itself — warm white, not the house gold */
-  --you: #f5efe2;
-  --you-tint: #141210;
-  --you-line: #f5efe2;
-  --you-ink: #12100d;
-  --them: #b5ae9f;
-  --them-tint: #141210;
-  --them-line: #2b2822;
-  --rail: rgba(244,238,225,0.06);
-  --rail-2: rgba(244,238,225,0.05);
-  --wash: rgba(244,238,225,0.03);
-}
-/* THE ONE OVERHEAD LIGHT. Absolute rather than fixed: it hangs over the top of the page and you
-   walk out from under it as you scroll, which a light that followed the viewport would not do. */
-body.tunnel::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 520px;
-  pointer-events: none;
-  background: radial-gradient(340px 460px at 50% -60px, rgba(244,238,225,0.11), transparent 70%);
-}
+body.tunnel { --divider: #241f1a; }
 body.tunnel #root { position: relative; z-index: 1; }
-/* the title stands in the light */
-body.tunnel .hero.front h1 { font-size: 78px; color: #f5efe2; text-shadow: 0 0 34px rgba(244,238,225,0.25); }
-body.tunnel .hero.front h1 em { color: #f5efe2; }
-/* the rule under the mode pick is a plain line here, not the house gradient */
-body.tunnel .hero .rule2 { background: #2b2822; }
-/* an unlit rung is darker than a surface in this room, so it is the one token that cannot be shared */
-body.tunnel .rung { background: #1c1a16; }
 
-.mast { display: flex; justify-content: space-between; padding: 6px 2px 0; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
-.mast i { font-style: normal; color: var(--faint); }
-.hero.front { padding-top: 26px; }
-.hero.front h1 { font-size: 76px; line-height: 0.95; margin: 0; }
-.hero.front p { font-size: 16px; margin-top: 10px; }
-.slate-row { display: block; width: 100%; padding: 14px 2px 12px; border-bottom: 1px solid var(--divider); }
-.slate-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.slate-name { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
-.slate-n { font-family: var(--mono); font-size: 10px; color: var(--faint); }
-.slate-name b { font-family: var(--serif); font-size: 24px; font-weight: 400; }
-.slate-tag { font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--you); white-space: nowrap; }
+/* ---------- the mark ---------- */
+/* Leather in a radial gradient; four seams gradient-faded through the middle so the 7 reads
+   across them; and no rotation anywhere — the 7 has to stay upright, which is why the dribble
+   only moves it on y. Every measure is in em of the span's own font-size, which is its width. */
+.ball7 {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 32% 26%, #f39a4a 0%, #de7326 42%, #b2521a 78%, #8a3d12 100%);
+  box-shadow: inset -0.11em -0.15em 0.26em rgba(0, 0, 0, 0.45);
+}
+.ball7 i { position: absolute; }
+.ball7 .seam-v { left: 50%; top: 0; bottom: 0; width: 0.048em; margin-left: -0.024em; background: linear-gradient(180deg, #5c2a0b 0 26%, transparent 34%, transparent 66%, #5c2a0b 74%); }
+.ball7 .seam-h { top: 50%; left: 0; right: 0; height: 0.048em; margin-top: -0.024em; background: linear-gradient(90deg, #5c2a0b 0 24%, transparent 33%, transparent 67%, #5c2a0b 76%); }
+.ball7 .seam-c { top: -6%; bottom: -6%; left: 12%; right: 12%; border-radius: 50%; border-left: 0.048em solid #5c2a0b; border-right: 0.048em solid #5c2a0b; }
+.ball7 b {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 0.78em;
+  font-weight: 400;
+  color: #fff;
+  padding-top: 0.05em;
+}
+.ball7.dribble { animation: dribble 1.7s cubic-bezier(0.3, 0, 0.7, 1) infinite; }
+@keyframes dribble {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-24px); }
+}
+/* the crowd, two cameras deep in the dark */
+.flashbulb { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 5px rgba(255, 255, 255, 0.8); opacity: 0; pointer-events: none; }
+.flashbulb.one { left: 62%; top: 4px; animation: flashbulb 2.9s linear infinite; }
+.flashbulb.two { left: 86%; top: 52px; animation: flashbulb 3.8s linear infinite; }
+@keyframes flashbulb {
+  0%, 93% { opacity: 0; }
+  94% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------- the lockup ---------- */
+.hero.front { position: relative; display: flex; align-items: center; gap: 14px; text-align: left; padding: 8px 0 0; }
+.hero.front .lockup { min-width: 0; }
+.hero.front h1 { font-family: var(--serif); font-size: 62px; line-height: 0.8; margin: 0; font-weight: 400; letter-spacing: 0; text-transform: uppercase; color: var(--ink); }
+.hero.front h1 em { font-style: normal; color: var(--you); }
+.years { display: block; font-style: normal; font-family: var(--sans); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-2); margin-top: 8px; }
+.hero-lede { font-size: 12px; color: var(--ink-2); line-height: 1.45; margin: 12px 0 0; }
+
+/* ---------- tonight's slate ---------- */
+.section-rule { margin-top: 14px; }
+.section-rule span { font-family: var(--serif); font-size: 20px; font-weight: 400; letter-spacing: 0; text-transform: uppercase; color: var(--ink); }
+
+/* 01 — the lit card. Franchise blue inside a gold border: the only saturated block on the
+   screen, and the only one carrying a Play chip. */
+.slate-card { display: block; width: 100%; background: var(--mine); border: 2px solid var(--you); padding: 9px 12px 10px; margin-top: 8px; }
+.slate-card .slate-top { display: flex; align-items: baseline; gap: 8px; }
+.slate-card .slate-n { font-family: var(--serif); font-size: 16px; color: var(--you); }
+.slate-card b { font-family: var(--serif); font-size: 30px; line-height: 0.9; font-weight: 400; text-transform: uppercase; color: var(--ink); }
+.slate-card .slate-tag { margin-left: auto; font-style: normal; font-family: var(--serif); font-size: 17px; letter-spacing: 0; color: var(--you); white-space: nowrap; }
+.slate-foot { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.slate-status { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mine-tint); }
+.chip-gold { margin-left: auto; font-family: var(--serif); font-size: 18px; background: var(--you); color: var(--bg); padding: 2px 10px 0; white-space: nowrap; }
+
+/* 02 and 03 — one rule each, the whole row on one baseline. */
+.slate-main { display: block; }
+.slate-row { display: flex; width: 100%; align-items: baseline; gap: 8px; border: 1px solid var(--line-2); padding: 7px 12px; margin-top: 8px; }
+.slate-row:hover { border-color: var(--you); }
+.slate-row.death:hover { border-color: var(--them-deep); }
+.slate-row .slate-n { font-family: var(--serif); font-size: 14px; color: var(--muted-2); }
+.slate-row b { font-family: var(--serif); font-size: 24px; font-weight: 400; text-transform: uppercase; }
+.slate-tag { margin-left: auto; font-style: normal; font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); white-space: nowrap; }
 .slate-tag.danger { color: var(--danger); }
-.slate-sub { display: block; font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 5px; }
-.slate-status { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-top: 6px; }
-.ladder.slate-ladder { padding: 8px 0 0; gap: 1px; }
-.slate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-.slate-row.half b { display: block; font-family: var(--serif); font-size: 19px; font-weight: 400; }
-.slate-row.half b.them { color: var(--them); }
-.slate-row.half em { font-style: normal; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--muted); }
-.slate-grid.book .slate-row { border-bottom: 0; padding: 12px 2px; }
+
+/* the three side modes, and the record book Scout mode alone is given */
+.slate-grid { display: grid; gap: 6px; margin-top: 8px; }
+.slate-grid.side { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.side-mode { border: 1px solid var(--line); padding: 6px 8px; text-align: center; }
+.side-mode:hover { border-color: var(--ink); }
+.side-mode b { display: block; font-family: var(--serif); font-size: 17px; font-weight: 400; text-transform: uppercase; color: var(--them); white-space: nowrap; }
+.side-mode em { display: block; font-style: normal; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); }
+.slate-grid.book { grid-template-columns: 1fr 1fr; }
+.book-row { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; border: 1px solid var(--line); padding: 6px 9px; }
+.book-row:hover { border-color: var(--ink); }
+.book-row b { font-family: var(--serif); font-size: 17px; font-weight: 400; text-transform: uppercase; white-space: nowrap; }
+.book-row em { font-style: normal; font-size: 9px; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; }
+
+.alltime { text-align: left; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-2); margin-top: 16px; }
 
 /* ---- 2c: the season ledger ---- */
 .ledger-head { display: flex; align-items: center; gap: 8px; padding: 16px 0 4px; }
@@ -3930,33 +3951,30 @@ body[class*='sk-'] .map-top { position: sticky; top: 0; z-index: 6; }
 .home-fab.dusk:hover, .map-fab.dusk:hover { border-color: #3ee6b0; }
 
 /* ==========================================================================
-   THE FRONT PAGE, FULL SCREEN (his ruling: "Make the home screen full screen as well"). The three
-   campaigns stop being three full-width rules stacked down a 1900px window and become the slate
-   they are named after — one column each, read across.
+   THE FRONT PAGE, FULL SCREEN (his ruling: "Make the home screen full screen as well"). The
+   phone's stack becomes the bundle's desk layout: the campaign card keeps the whole width and
+   02/03 read across beside it, with every size stepped up to the desk's scale.
    ========================================================================== */
-.mast { justify-content: flex-end; }
-.slate-main { display: grid; gap: 0; }
 @media (min-width: 900px) {
-  .slate-main { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; align-items: start; }
-  .slate-main .slate-row { height: 100%; }
-  .slate-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; }
-  .slate-grid.book { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  /* the masthead and the hero keep a readable measure inside the full-width page */
-  body.tunnel .hero.front { max-width: 1100px; }
-  body.tunnel .hero.front p { max-width: 720px; }
+  .slate-main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; align-items: start; }
+  .slate-grid.side { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 20px; }
+  .slate-grid.book { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 20px; }
+  .hero.front { max-width: 1100px; gap: 26px; }
   .hero.front h1 { font-size: 108px; }
-  body.tunnel .hero.front h1 { font-size: 108px; }
-  .hero.front p { font-size: 21px; }
-  .slate-name b { font-size: 30px; }
-  .slate-sub { font-size: 15px; }
-  .slate-tag, .slate-status, .slate-n { font-size: 12.5px; }
-  .slate-row.half b { font-size: 24px; }
-  .slate-row.half em { font-size: 12px; }
-  .mast { font-size: 12px; }
+  .hero-lede { font-size: 19px; max-width: 720px; }
+  .years { font-size: 12px; }
+  .slate-card b { font-size: 46px; }
+  .slate-card .slate-n { font-size: 24px; }
+  .slate-card .slate-tag { font-size: 26px; }
+  .chip-gold { font-size: 26px; }
+  .slate-row b { font-size: 34px; }
+  .slate-row .slate-n { font-size: 20px; }
+  .slate-tag, .slate-status { font-size: 12.5px; }
+  .side-mode b, .book-row b { font-size: 24px; }
+  .side-mode em, .book-row em { font-size: 12px; }
   .alltime { font-size: 12px; }
-  .section-rule span { font-size: 13px; }
-  .mode-opt b { font-size: 13px; }
-  .mode-opt i { font-size: 14px; }
-  .mode-cap { font-size: 12px; }
+  .section-rule span { font-size: 28px; }
+  .mode-opt b { font-size: 32px; }
+  .mode-opt i { font-size: 13px; }
+  .mode-cap { font-size: 11px; }
 }
-
