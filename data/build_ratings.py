@@ -162,7 +162,7 @@ for r in adv:
         x3pa_per_100=f(s['x3pa_per_100_poss']), x3p_pct=f(s['x3p_percent']),
         ft_pct=f(s['ft_percent']), ht=ht,
         drep=career_rep(r['player_id'], int(r['season'])),
-        team_drtg=teamd.get((int(r['season']), r['team'])), mp_v=mp,
+        team_drtg=teamd.get((int(r['season']), r['team'])), mp_v=mp, g_v=f(r['g']),
     ))
 
 def pctile_top(vals):
@@ -358,6 +358,12 @@ def _blk_evidence(blk_pctile):
 # any card, and no card rises through it. It enters only here, as one of two gates on HOW HIGH a big
 # with no votes may be READ — a ceiling, which can only ever subtract. His ruling named it.
 NOVOTE_FLOOR = (75 - 1) / 98.0   # recal_95: the ceiling with no block and no DBPM evidence behind it
+RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
+# (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
+# relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
+# card can take is 0.375/4 = 0.094, i.e. 9.2 perdef points, and it lands at wv = 0.5 exactly - the
+# point where the two channels are most evenly split. Zero at wv = 0 and zero at wv = 1, both ends
+# byte-identical by construction.
 DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0.0, 1.0   # DBPM band the ceiling grades on; the BLOCK band is
 # recal_92's own BLK_BAR/BLK_FULL, reused deliberately - there is ONE definition of "block evidence"
 # in this file and both rim gates read it, so a later ruling moves one number, not two.
@@ -554,8 +560,53 @@ for yr, rows in seasons.items():
         # 20/60/20 season blend's reach back into 2013). recal_57's Caron Butler '08 def 73 +-1 and
         # recal_55's own Vlade Divac '95 perdef 78 +-1 were RELEASED by that ruling and now sit in
         # anchors_superseded.json; they were the two pins recal_134 declined against.
-        if yr < 2014 and r['drep'] <= 0.05:
-            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])))
+        # recal_146 (HIS RULING on Shaquille O'Neal '94, verbatim: "Confirm 7"): THE RELIEF'S GATE WAS
+        # A CLIFF, AND A CARD COULD BE PUNISHED FOR HAVING BEEN VOTED FOR. `drep <= 0.05` is not a
+        # statement about a season -- drep is a CAREER reputation, decayed 15% a year in both
+        # directions, so a man with no 1994 ballot at all can carry a tail from a vote six years
+        # LATER. Shaq '94 carries 0.069 (his 2000 All-D 2nd plus DPOY credit, 0.687, x 0.10 at six
+        # years out): 0.019 over the line, which FORFEITED the whole relief line and put him in the
+        # voted band at wv 0.23 instead. His '93 -- the same player, a WORSE box line (DBPM 1.5 vs
+        # 0.6 is better, but BPM 3.5 against 6.8) -- has drep exactly 0.0, keeps the relief, and reads
+        # perdef 64 / DEF 89 against his '94's 45 / 78. Larry Sanders '13 is the same gate from the
+        # other side: ONE DPOY ballot, share 0.149, halves to 0.0745, crosses by 0.024, and his card
+        # reads perdef 47 where the relief line gives ~71 -- one more ballot LOWERED him by 24.
+        # THE FIX IS TO DELETE THE GATE, NOT TO MOVE IT. The relief now applies to the NO-VOTE
+        # CHANNEL WHENEVER THE ERA HAS NO TRACKING, and what fades it is the channel's OWN WEIGHT:
+        # PD2 = (1 - wv)*novote + wv*(voted band), with wv = min(1, drep/0.30) above the Iverson line.
+        # So the relief is paid IN FULL at drep <= 0.05 (wv = 0, byte-identical to before), fades
+        # smoothly across 0.05 -> 0.30 exactly as real vote weight takes over, and is worth nothing
+        # at drep >= 0.30 (wv = 1, byte-identical again). There is no new constant: the band is the
+        # one recal_20 already drew for the voted channel, and the two channels now hand off
+        # continuously instead of one of them switching off 0.25 before the other switches on.
+        # By construction NOTHING outside 0.05 < drep < 0.30 can move, and nothing can fall: the
+        # relief enters through a max() and only ever raises the no-vote channel.
+        # recal_146 AMENDED (HIS RULING on the whole of 146, verbatim: "A touch too high for all in
+        # 146, try to aim a 2-4 points lower, but in general its better"): THE RELIEF'S SIZE FADES
+        # WITH ITS WEIGHT, NOT ONLY ITS WEIGHT. 146 deleted the gate and let recal_114's hand-off do
+        # all the fading, but it faded only HOW MUCH OF THE LINE IS READ (1 - wv) and never WHAT THE
+        # LINE SAYS. So a card one tick over the Iverson line was still offered the whole relief a
+        # man with no certification at all is offered, and the band's readings came out a touch high
+        # across the board. The relief is compensation for having no vote to be graded by; the more
+        # of the card the votes already grade, the less there is to compensate. The line is therefore
+        # re-cut inside the faded band by a single slice proportional to band membership:
+        #   min(0.80, 0.28 + 0.52 * P) - RELIEF_BAND_CUT * wv
+        # ONE constant, applied to every card in every pre-tracking season by the same rule. Because
+        # the cut is carried at the line's own weight (1 - wv), the cost to a card is proportional to
+        # wv*(1 - wv): it is exactly zero at wv = 0 (the 5,933 drep <= 0.05 cards recal_141 set stay
+        # BYTE-IDENTICAL), exactly zero at wv >= 0.30 (the 860 full-vote cards, byte-identical),
+        # and deepest at wv = 0.5, where the two channels are most evenly split and the hand-off is
+        # most ambiguous. recal_141's slope (0.52) and ceiling (0.80) are untouched; nothing about
+        # WHO the line is offered to changes, only how much of it survives the band.
+        # THE MULTIPLICATIVE VARIANT HE ALSO OFFERED was measured on the same pool: line * (1 - k*wv)
+        # at k = 0.48 (matched to the same mean cut) is IDENTICAL on Sanders '13, Bol '92, Chandler
+        # '05, Mourning '06 and Mutombo '07 and MISSES the two cards he named that sit low on the
+        # line - Shaq '94 reads 85 against his re-cut 83 +-2, and Shaq '09 76 against his ~75 -
+        # because scaling by the line pays back least where the line is smallest (Shaq '94's relief
+        # is 0.643, Shaq '09's 0.488, against 0.78-0.80 for the rest of the band). A card's debt to
+        # the band is its band membership, not the size of the favour, so the slice is absolute.
+        if yr < 2014:
+            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])) - RELIEF_BAND_CUT * wv)
         _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])
@@ -687,8 +738,53 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     # Applies only to stored attributes (use_factor=True), never to inference training targets;
     # rim deadeye also requires self-creation (assisted-heavy finishing is not shot-making).
     if use_factor:   # HIGH-VOLUME PREMIUM (stored attributes only, never inference targets)
+        # RECAL_145 (his ruling, "Confirm 5"): THE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD.
+        # This is the SAME objection recal_51 wrote and recal_78/126 applied to the two deadeye
+        # floors, arriving at last at the bonus sitting directly above them: "attempts are a RATE --
+        # per hundred -- so a 17-minute bench finisher can post a starter's attempt rate while
+        # carrying no load." The midrange premium is keyed on nothing but the in-zone attempt-rate
+        # PERCENTILE, so an 18.9-minute gunner whose whole job is to launch reads the 95th percentile
+        # of midrange rate and collects the same full 0.07 a 36-minute first option collects --
+        # Jamal Crawford '19 (7.9 ppg, 39.7% FG, TS .522, BPM -3.9) printed mid 99, one of 73 cards
+        # on 99 and SIX ABOVE his own 20-ppg '13. It is now scaled by a LOAD SHARE in [0, 1]: a card
+        # that carried a full workload keeps the premium whole and is byte-identical, a half load
+        # gets half of it, and nothing can rise. No cliff. The minutes come from the `mp` and `g`
+        # columns of the Advanced sheet this file already loads (Crawford '19: 1211 / 64 = 18.92),
+        # which is the same number recal_96's load_share reads off Player Per Game, so no new input
+        # enters the pipeline. The composite and both deadeye floors underneath are untouched: this
+        # taxes only the top-quintile-RATE bonus that sits on top of them.
+        #
+        # THE FULL-LOAD LINE IS NOT THE BENCH BOUNDARY -- recal_117 already ruled this, for the same
+        # shape of mistake. recal_96's ramp runs 12 -> 24 minutes because it was cut to answer "did
+        # this man play at all" (Capela '17 at 23.9). recal_117 found the creation rate being paid a
+        # SECOND time with no load reading and ruled that "a rate paid twice has to be scaled twice,
+        # and the second line is not the bench boundary: it is the minutes at which a distributor has
+        # actually carried a season's creation" -- then MEASURED that line as the class's own upper
+        # quartile of minutes (34.7 of the 834 cards the term pays). This premium is the same object:
+        # the composite already pays P['midvol'] at weight 0.65, and the premium pays the TOP of that
+        # same percentile AGAIN. So it takes recal_96's SHAPE (a ramp with the 12-minute foot, below
+        # which a load term earns nothing) and recal_117's LINE, measured on this term's own class:
+        # of the 2,005 cards this premium pays (midrange rate percentile > 0.70, mp >= 1200, 1997+),
+        # the 75th percentile of minutes per game is 35.69 (median 32.52, p25 27.61), so PREM_FULL =
+        # 35.7. Against recal_96's own 24-minute bench line the subject reads mid 97, ONE POINT
+        # outside his band: 24 minutes is not what "high volume" means, and that reading is the
+        # frontier of the bench-boundary shape, recorded in data/rounds/145.json.
+        #
+        # WHY THE PAINT PREMIUM ON THE NEXT LINE IS LEFT ALONE. The objection applies to it word for
+        # word and the symmetric change was measured first (942 rim bars fall, none by more than 5).
+        # It is NOT taken here because it is not this ruling and it does not pay for itself: the two
+        # cards it moves by a single point are Deandre Ayton '26 (27.2 mpg, rim 71 -> 70) and Erick
+        # Dampier '07 (25.2 mpg, 58 -> 57), and those two points re-decide a screen tie-break and a
+        # starting five that two of his OWN earlier rulings pinned in tests/court.test.ts (recal_120,
+        # "Why is Ayton out and James in? Makes no sense") and tests/campaigns.test.ts (recal_142).
+        # A round does not spend an old ruling to buy tidiness in a term the new ruling never named.
+        # The paint premium keeps the unloaded rate and its class line is measured and on the record
+        # (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line.
+        PREM_FOOT, PREM_FULL = 12.0, 35.7
+        _pmpg = ((f(r.get('mp_v')) or 0.0) / (f(r.get('g_v')) or 0.0)) if (f(r.get('g_v')) or 0) > 0 else None
+        _pload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - PREM_FOOT) / (PREM_FULL - PREM_FOOT)))
         rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))
-        mid = min(1.0, mid + 0.07*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
+        mid = min(1.0, mid + 0.07*_pload*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
         # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.
         # These two floors pay 85% on ACCURACY and override the volume-first composite above them, and
         # their only gate was a RATE (2.5 attempts per 100). recal_51 already wrote the objection, for

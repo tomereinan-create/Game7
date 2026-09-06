@@ -402,6 +402,46 @@ export const DEFAULT_TACTICS: Tactics = {
  * main's constants: 3.89/.67 (blind -0.31, +0.51 — both on the rail), 4.00/.62 (-0.39/+0.53, -0.45/+0.53),
  * 4.10 (oracle +0.49, fails). Re-ratified hunt 3.59 -> 4.00 and crashDef .73 -> .62, the pair with room on
  * both edges. The branch figures (137 .18, 138 .48, 139 3.89/.67) are superseded, not stacked. Seven others held.
+ * recal_145 loaded the midrange high-volume premium and moved 856 mid bars, 481 o_ovrs and 274 OVRs
+ * (0 d_ovrs), which reshuffled the ovr>=55 pool once more, and the SAME two taxes broke — on OPPOSITE
+ * edges this time. hunt went under on the ORACLE edge (+0.407 at 4.00, against the +0.50 floor): the
+ * mismatch call is worth less now that a bench gunner's midrange bar no longer towers over the men
+ * guarding him, so 4.00 of tax eats the whole read. Swept 3.200 (blind -0.031) / 3.400 (-0.186) /
+ * 3.500 (-0.265) / 3.540 (-0.2964) / 3.545 (-0.3003, the ceiling exactly) / 3.600 (-0.343) / 3.700
+ * (oracle +0.542) / 3.780 (+0.5038) / 3.785 (+0.5015) / 3.790 (+0.4991, under) — feasible about 3.545
+ * to 3.788, a WIDE 0.243, so it takes its true midpoint by r126's rule: 4.00 -> 3.67 (blind -0.395,
+ * oracle +0.558, 0.095 and 0.058 of room). crash def glass went under on the BLIND edge (-0.224 at .62,
+ * against the -0.30 ceiling) for the reason this row keeps breaking: the fives are stronger, so a blind
+ * glass call costs less against them. Swept .620 (-0.2237) / .700 (-0.2781) / .730 (-0.2982) / .733
+ * (-0.3002, the ceiling exactly) / .800 (-0.3448) / .900 (-0.4121) / 1.100 (oracle +0.5205) / 1.150
+ * (+0.5051) / 1.200 (+0.4898, under) — feasible about .733 to 1.167, a WIDE 0.434, midpoint .62 -> .95
+ * (blind -0.447, oracle +0.568). crashOff held at .17 and the six others held their bands untouched.
+ * All nine pass.
+ * recal_146 made the pre-2014 DBPM relief continuous across its own gate and raised 220 perdef bars,
+ * 203 d_ovrs and 155 OVRs, and the SAME two rows broke again — each one back on the edge recal_145 had
+ * just walked it off, which is what a tax does when the pool moves the other way. hunt went under on
+ * the BLIND edge (-0.203 at 3.67, against the -0.30 ceiling: the fives defend better, so a blind
+ * mismatch call costs less against them). Swept 3.670 (-0.2029) / 3.750 (-0.2688) / 3.790 (-0.3016) /
+ * 3.850 (-0.3505) / 3.950 (oracle +0.5177) / 3.990 (+0.5011) / 4.000 (+0.4970, under) — feasible about
+ * 3.788 to 3.992, a WIDE 0.204, true midpoint by r126's rule: 3.67 -> 3.89 (blind -0.383, oracle
+ * +0.543). crash def glass went under on the ORACLE edge (+0.440 at .95: with the glass men's defence
+ * up, the READ is worth less than .95 of tax). Swept .300 (blind -0.2304) / .390 (-0.2993) / .392
+ * (-0.3008, the ceiling exactly) / .450 (-0.3441) / .650 (oracle +0.5311) / .750 (+0.5001) / .751
+ * (+0.4998, under) — feasible about .391 to .750, a WIDE 0.359, midpoint .95 -> .57 (blind -0.432,
+ * oracle +0.557). crashOff held at .17 and the six others held their bands untouched. All nine pass.
+ * recal_146 AMENDED re-cut the same relief 2-4 DEF points back down (191 d_ovrs, 137 OVRs, all but one
+ * DOWN), so the ovr>=55 pool moved a THIRD time in three rounds — and, exactly as the law requires,
+ * both rows were re-read from MAIN's constants (4.00 / .62) rather than from r146's interim 3.89 / .57,
+ * which are SUPERSEDED by this sweep and not stacked with it. crash def glass HELD main's .62 untouched
+ * (blind -0.31, oracle +0.59, inside on both edges): the pool it reads gave back most of what r146 had
+ * given it, which is why r145's and r146's opposite re-ratifications of this row cancelled rather than
+ * compounded. hunt alone broke, on the ORACLE edge at 4.00 (+0.45 against the +0.50 floor). Swept 3.60
+ * (blind -0.17) / 3.72 (-0.27) / 3.76 (-0.30, the ceiling exactly) / 3.80 (-0.33, oracle +0.54) / 3.82
+ * (-0.35, +0.53) / 3.84 (-0.37, +0.52) / 3.90 (+0.49, under) / 4.00 (+0.45, under) — feasible about
+ * 3.76 to 3.88, a NARROW 0.12, true midpoint by r126's rule: 4.00 -> 3.82 (blind -0.35, oracle +0.53,
+ * 0.05 and 0.03 of room). Hunt's eleventh move and the third round running that it is one of the rows
+ * that breaks; the cause is unchanged — it is the largest tax on the board and it is measured on the
+ * ovr>=55 sample, which every DEF round of this size reshuffles. The seven others held. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -409,7 +449,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.00,
+  hunt: 3.82,
   crashOff: 0.17,
   crashDef: 0.62,
 }

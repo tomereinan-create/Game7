@@ -1413,5 +1413,41 @@
     "round": 147,
     "ruling": "Confirm 8",
     "note": "THE SUBJECT. 82 -> 90, inside 92+-3. The cause was never the defence formula and no formula moved: Eddie House '08 and Rajon Rondo '08 tie at OVR 62, and bestfive.ts broke set ties by the order teamseasons.json lists the roster in, which is alphabetical, so House started for the best relative defence of the 47 seasons (real DRtg 98.9, 1st of 30 by 2.7, +8.6 vs league). recal_147 breaks a tie between max-OVR fives by the Team DB's own OVR for the five instead (gauges.ts dialOvrRaw, raw net as the second key), and Boston field Rondo. THE REMAINING 2 POINTS ARE A CARD, NOT A TEAM: Rajon Rondo '08 reads OFF 50 on ballsec 33 / 3pt 11, which is a ratings-to-off-def question and is reported rather than tuned."
+  },
+  {
+    "card": "Jamal Crawford '19",
+    "scale": "attr:mid",
+    "target": 93,
+    "tol": 3,
+    "round": 145,
+    "ruling": "Confirm 5",
+    "note": "99 -> 95. THE MIDRANGE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD. The +0.07 bonus on top of the zone composite was keyed on nothing but the in-zone attempt-rate PERCENTILE, a per-100 RATE, so an 18.9-mpg gunner on 7.9 ppg / 39.7% FG / TS .522 / BPM -3.9 collected the same premium a 36-minute first option collects and printed mid 99 -- one of 73 cards on 99, six above his own 20-ppg '13. That is recal_51's objection, which recal_78 and recal_126 applied to the two deadeye floors directly underneath and never to the bonus above them. The premium is now scaled by a load ramp with recal_96's 12-minute foot and recal_117's line for a SECOND payment of a rate -- the class's own upper quartile of minutes, measured on this term's own class: 35.7 mpg over the 2,005 cards it pays (mp >= 1200, 1997+; median 32.5, p25 27.6). Against recal_96's own 24-minute bench line the subject reads 97, one point outside this band, which is the recorded frontier of the bench-boundary shape. Nothing rises on mid by construction, 0 rim bars and 0 DEF move, and the PAINT premium is deliberately left unloaded: the symmetric variant costs Ayton '26 rim 71 -> 70 and Dampier '07 58 -> 57, which breaks recal_120's screen tie-break and recal_142's Mavs '07 ladder five for a term this ruling never named."
+  },
+  {
+    "card": "Shaquille O'Neal '94",
+    "scale": "def",
+    "target": 83,
+    "tol": 2,
+    "round": 146,
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "78 -> 86 -> 84. RE-CUT BY HIS AMENDMENT of recal_146, which re-cut this anchor from 85 +-3 to 83 +-2 in the same breath. THE GATE STAYS DELETED (recal_146's finding stands: `drep <= 0.05` gated recal_55's no-vote DBPM relief, but drep is a CAREER reputation decayed 15% a year in BOTH directions, so Shaq '94 -- no 1994 ballot at all -- carried 0.0687 from his 2000 All-D 2nd six years later, crossed by 0.019 and forfeited the WHOLE relief, printing 45 / DEF 78 against his own '93 at 64 / 89; Larry Sanders '13 was the same gate from the other side, one DPOY ballot LOWERING his card by 24). WHAT THE AMENDMENT CHANGES is that the relief's SIZE now fades with its weight instead of only its weight: the line is min(0.80, 0.28 + 0.52*P) - 0.375*wv, one constant, so a card already partly graded by its votes is offered proportionally less of the compensation for having none. Carried at the line's own weight (1 - wv) the cut costs wv*(1-wv)*0.375, which is exactly zero at drep <= 0.05 (the 5,933 no-vote cards recal_141 set stay byte-identical), exactly zero at drep >= 0.30 (860 full-vote cards, byte-identical) and deepest at wv = 0.5. 220 perdef bars come back down, NONE below its recal_145 reading; 0 rimprot, 0 OFF."
+  },
+  {
+    "card": "Larry Sanders '13",
+    "scale": "def",
+    "target": 87,
+    "tol": 3,
+    "round": 146,
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "79 -> 90 -> 86. ADDED BY HIS AMENDMENT of recal_146 at the amended reading. Sanders is the cleanest proof of the defect recal_146 removed, because there is no decay in it at all: ONE DPOY ballot, share 0.149, halved to 0.0745 by the award rule, crossed the old relief gate by 0.024, and his card read perdef 47 where the relief line gives 71 -- one more ballot LOWERED the card by 24 points. With the gate deleted and the relief's size re-cut inside the faded band (- 0.375*wv), he reads perdef 64 / DEF 86: still 12 under his own no-vote counterfactual instead of 29, and no longer below the man he would be with the ballot struck off by more than the band's own hand-off costs."
+  },
+  {
+    "card": "Larry Sanders '13",
+    "scale": "attr:perdef",
+    "target": 67,
+    "tol": 3,
+    "round": 146,
+    "ruling": "A touch too high for all in 146, try to aim a 2-4 points lower, but in general its better",
+    "note": "47 -> 71 -> 64. ADDED BY HIS AMENDMENT of recal_146 on the bar the round actually moves. The relief line for this card is 0.767 (DBPM 3.2 in 2013) and his band membership wv = 0.248, so the amendment's slice costs him 0.248*0.752*0.375 = 0.070 of no-vote space, 6.9 perdef points, and he lands at the bottom of this band. A later ruling that widens RELIEF_BAND_CUT should expect this anchor to be the first to fail."
   }
 ]

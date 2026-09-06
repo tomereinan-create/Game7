@@ -8,6 +8,7 @@ import { balance, buy, canBuy, NODE, NODES, type NodeId } from '../src/engine/tr
 import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
+import { setUserMode } from '../src/state/viewmode'
 import { heightOf, LevelMap, perRow, rowsOf, skinAt, WOBBLE, xOf, yOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
@@ -223,20 +224,26 @@ describe('the trail snakes across whatever width it is given', () => {
 })
 
 /**
- * THE FOUR SKINS, in the order his latest ruling puts them ("Make the 31-60 theme the same as the
- * 61-90, and the 91-120 the same as the current 31-60"): 1b ARENA NIGHTS 1-30, 2b BANNER HALL
- * 31-60, 2a TWILIGHT DYNASTY 61-90, 1c HARDWOOD PRIME 91 to the top. Four blocks, four floors —
- * the permutation changes which board a block wears, not how many there are.
+ * THE FOUR SKINS, in the order his ruling on Campaign Map.dc.html puts them for SCOUT MODE ("For
+ * levels 61-90, I want it to be the banner hall. For levels 121-150, I want it to be the Twilight
+ * Dynasty" — and "all these changes are for scout mode only"): 1b ARENA NIGHTS 1-30, 1c HARDWOOD
+ * PRIME 31-60, 2b BANNER HALL 61-120, 2a TWILIGHT DYNASTY 121 to the top.
+ *
+ * He named two of the five blocks. 31-60 comes from the design doc's own plan line; 91-120 is the
+ * block the doc has no board for, so it carries 61-90 on — the same rule his earlier ruling set
+ * for the top tier, one block further down now that the top has a board of its own.
+ *
+ * `skinAt` reads the view mode, and these run with no localStorage, so the store's default (scout)
+ * is what they see. USER MODE KEEPS THE OLD ORDER and is asserted separately below.
  *
  * The block edges are WRITTEN as levels rather than derived from the tiers, because they no longer
  * agree: the design draws five blocks of thirty and The Champions alone runs 31-90, so the 61 seam
- * is inside a tier. That is exactly why it is tested. Two of the three seams should still land on a
- * tier boundary, and if a tier is ever resized in scripts/campaigns.ts this is what says so.
+ * is inside a tier. That is exactly why it is tested — if a tier is resized in scripts/campaigns.ts
+ * this is what says so.
  */
-describe('the map wears four skins, one per block of thirty', () => {
+describe('the map wears four skins over five blocks of thirty', () => {
   const first = (t: number) => CAMPAIGNS.slice(0, t).reduce((a, c) => a + c.levels.length, 0) + 1
-
-  it('every level from 1 to the top of the ladder has a skin, and they change only at the blocks', () => {
+  const runsOf = () => {
     const runs: { skin: string; from: number; to: number }[] = []
     for (let l = 1; l <= ROUNDS; l++) {
       const skin = skinAt(l)
@@ -244,27 +251,41 @@ describe('the map wears four skins, one per block of thirty', () => {
       if (last && last.skin === skin) last.to = l
       else runs.push({ skin, from: l, to: l })
     }
-    expect(runs).toEqual([
+    return runs
+  }
+
+  it('every level from 1 to the top of the ladder has a skin, and they change only at the blocks', () => {
+    expect(runsOf()).toEqual([
       { skin: 'arena', from: 1, to: 30 },
-      { skin: 'hall', from: 31, to: 60 },
-      { skin: 'dusk', from: 61, to: 90 },
-      { skin: 'wood', from: 91, to: ROUNDS },
+      { skin: 'hall', from: 31, to: 90 },
+      { skin: 'wood', from: 91, to: 120 },
+      { skin: 'dusk', from: 121, to: ROUNDS },
     ])
   })
 
-  it('the top tier carries the 91-120 skin on rather than falling back to one already passed', () => {
-    // The Customs has no board of its own in the design; it must not look like an earlier block
-    expect(skinAt(first(3))).toBe('wood')
-    expect(skinAt(ROUNDS)).toBe('wood')
+  it('every block has a board of its own — nothing is carried on and nothing repeats', () => {
+    const skins = [skinAt(1), skinAt(31), skinAt(91), skinAt(121)]
+    expect(new Set(skins).size).toBe(4)
+    // the swap: hardwood is 91-120's alone, and the hall runs 31-90 in one piece
+    expect(skinAt(90)).toBe('hall')
+    expect(skinAt(91)).toBe('wood')
+    expect(skinAt(120)).toBe('wood')
   })
 
-  it('the seams that CAN follow the tiers still do — 31 and 91 are tier boundaries', () => {
-    expect(first(1)).toBe(31) // The League ends, The Champions begin: arena -> wood
-    expect(first(3)).toBe(121) // The Customs begin inside the dusk block, by his ruling
+  it('the two blocks he named are the two he named', () => {
+    expect(skinAt(61)).toBe('hall')
+    expect(skinAt(90)).toBe('hall')
+    expect(skinAt(121)).toBe('dusk')
+    expect(skinAt(ROUNDS)).toBe('dusk')
+  })
+
+  it('the seams that CAN follow the tiers still do — 31 and 121 are tier boundaries', () => {
+    expect(first(1)).toBe(31) // The League ends, The Champions begin: arena -> hall
+    expect(first(3)).toBe(121) // The Customs begin: wood -> dusk, and here the two agree
     expect(skinAt(first(1) - 1)).toBe('arena')
     expect(skinAt(first(1))).toBe('hall')
-    expect(skinAt(first(2) - 1)).toBe('dusk')
-    expect(skinAt(first(2))).toBe('wood') // All-Time begins at 91: dusk -> wood
+    expect(skinAt(first(3) - 1)).toBe('wood')
+    expect(skinAt(first(3))).toBe('dusk')
   })
 
   it('and the one that CANNOT is inside a tier, which is why it is written and not derived', () => {
@@ -272,8 +293,26 @@ describe('the map wears four skins, one per block of thirty', () => {
     const champions = CAMPAIGNS[1]
     expect(champions.levels.length).toBe(60)
     expect(first(1)).toBeLessThan(61)
-    expect(first(2)).toBeGreaterThan(61)
+    expect(first(2)).toBe(91)
+    // 31-90 is one room now, so the 61 seam no longer changes the floor — the block that DOES
+    // fall inside a tier is 91, and that is the one nothing can derive
     expect(skinAt(60)).toBe('hall')
-    expect(skinAt(61)).toBe('dusk')
+    expect(skinAt(61)).toBe('hall')
+    expect(skinAt(90)).toBe('hall')
+    expect(skinAt(91)).toBe('wood')
+  })
+
+  it('user mode is untouched by the re-deal — it keeps the order it had', () => {
+    setUserMode(true)
+    try {
+      expect(runsOf()).toEqual([
+        { skin: 'arena', from: 1, to: 30 },
+        { skin: 'hall', from: 31, to: 60 },
+        { skin: 'dusk', from: 61, to: 90 },
+        { skin: 'wood', from: 91, to: ROUNDS },
+      ])
+    } finally {
+      setUserMode(false)
+    }
   })
 })

@@ -1,0 +1,278 @@
+{
+  "round": 145,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Confirm 5",
+  "title": "THE MIDRANGE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD -- recal_51's objection reaches the bonus sitting on top of the two deadeye floors recal_78 and recal_126 already fixed, and its full-load line is recal_117's, not the bench boundary",
+  "subject": "Jamal Crawford '19",
+  "scale": "attr:mid",
+  "target": 93,
+  "tol": 3,
+  "before": 99,
+  "after": 95,
+  "pipeline_version": 145,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PREM_FOOT, PREM_FULL = 12\\.0, 35\\.7",
+      "label": "THE ROUND'S TWO CONSTANTS -- the ramp's foot and the class's own full-load line",
+      "note": "foot 12 is recal_96's, unchanged; 35.7 is the premium class's own p75 of minutes (2,005 cards)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_pload = 1\\.0 if _pmpg is None else min\\(1\\.0, max\\(0\\.0, \\(_pmpg - PREM_FOOT\\) / \\(PREM_FULL - PREM_FOOT\\)\\)\\)",
+      "label": "the load share -- how much of a full in-zone workload the card actually carried, in [0, 1]",
+      "note": "a card with no games on the sheet takes 1.0: measured, or not at all (recal_52's rule)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mid = min\\(1\\.0, mid \\+ 0\\.07\\*_pload\\*max\\(0\\.0, \\(P\\['midvol'\\]\\(s10\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
+      "label": "the midrange premium, now loaded",
+      "note": "the 0.07 size and the 0.70 / 0.30 rate ramp are UNCHANGED; only their price is load-scaled"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
+      "label": "the PAINT premium, deliberately left unloaded",
+      "note": "byte-identical: 0 rim bars move this round -- see the note on why"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mp_v=mp, g_v=f\\(r\\['g'\\]\\)",
+      "label": "the input: games played, off the SAME Advanced sheet the file already loads",
+      "note": "mp / g reproduces the Player Per Game mpg recal_96 reads (Crawford '19: 1211 / 64 = 18.92)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "DEYE_LO, DEYE_HI = 0\\.40, 0\\.90",
+      "label": "recal_126's deadeye diet ramp, untouched",
+      "note": "the floors under the premium are not changed this round"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+      "label": "recal_96's own load ramp, left exactly as it was",
+      "note": "the OFF load bars keep the bench-boundary line; only this bonus takes the class line"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_MIN_FULL = 34\\.7",
+      "label": "recal_117's precedent -- a rate paid twice is scaled against the class's own upper quartile",
+      "note": "the shape this round borrows, unchanged"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3?\\d+\\.\\d+,",
+      "label": "the hunt deviation tax, re-ratified on the moved pool (recal_59's law)",
+      "note": "4.00 -> 3.67 at this round; the pattern is r92/r97's loose form so a later re-ratification does not MISS this receipt"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0?\\d+\\.\\d+,",
+      "label": "the crash-def-glass deviation tax, re-ratified on the moved pool",
+      "note": "0.62 -> 0.95 at this round; loose form, same reason"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Jamal Crawford '19",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 3,
+      "label": "the subject's paint bar is untouched"
+    },
+    {
+      "card": "Jamal Crawford '19",
+      "scale": "def",
+      "op": "==",
+      "value": 43,
+      "label": "DEF cannot move: no defensive input changed"
+    },
+    {
+      "card": "Dirk Nowitzki '07",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 99,
+      "label": "a 36.2-minute first option keeps the premium whole"
+    },
+    {
+      "card": "Kevin Durant '14",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 98,
+      "label": "38.5 mpg, untouched"
+    },
+    {
+      "card": "DeMar DeRozan '17",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 93,
+      "label": "35.4 mpg -- the premium is at full price"
+    },
+    {
+      "card": "DeMar DeRozan '23",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 98,
+      "label": "36.2 mpg, untouched"
+    },
+    {
+      "card": "Kobe Bryant '06",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 93,
+      "label": "41.0 mpg, untouched"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "attr:mid",
+      "op": "~",
+      "value": 91,
+      "tol": 2,
+      "label": "his 90 +-2 pin is on def; the mid bar is recorded and does not move"
+    },
+    {
+      "card": "LaMarcus Aldridge '15",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 91,
+      "label": "untouched"
+    },
+    {
+      "card": "Michael Jordan '98",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 99,
+      "label": "the top of the board does not move"
+    },
+    {
+      "card": "Beno Udrih '15",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 94,
+      "label": "the round's largest mover, 18.9 mpg -- the subject's own profile"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 71,
+      "label": "the paint premium is unloaded, so recal_120's screen tie-break is byte-identical"
+    },
+    {
+      "card": "Erick Dampier '07",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 58,
+      "label": "and recal_142's Mavs '07 Team DB five keeps its centre"
+    },
+    {
+      "card": "Moritz Wagner '24",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 85,
+      "label": "the biggest mover the symmetric variant would have had, unmoved here"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:mid",
+      "above": "Dirk Nowitzki '07",
+      "below": "Jamal Crawford '19",
+      "label": "a 36-minute midrange office outranks an 18.9-minute gunner"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "DeMar DeRozan '23",
+      "below": "Jamal Crawford '19",
+      "label": "same"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "Michael Jordan '98",
+      "below": "Jamal Crawford '19",
+      "label": "same"
+    }
+  ],
+  "movers": {
+    "scale": "attr:mid",
+    "count": 856,
+    "max_abs": 5,
+    "top": [
+      [
+        "Beno Udrih '15",
+        99,
+        94
+      ],
+      [
+        "Eddie House '02",
+        89,
+        84
+      ],
+      [
+        "Eddie House '06",
+        92,
+        87
+      ],
+      [
+        "Jannero Pargo '08",
+        77,
+        72
+      ],
+      [
+        "Jamal Crawford '19",
+        99,
+        95
+      ],
+      [
+        "Beno Udrih '13",
+        92,
+        88
+      ],
+      [
+        "Carlos Arroyo '07",
+        86,
+        82
+      ],
+      [
+        "Dwyane Wade '19",
+        74,
+        70
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:mid",
+    "cards": [
+      "Allan Houston '01",
+      "Allan Houston '02",
+      "Allan Houston '03",
+      "Allan Houston '04",
+      "Brandon Ingram '26",
+      "CJ McCollum '20",
+      "CJ McCollum '21",
+      "Chris Paul '15",
+      "Chris Paul '16",
+      "Chris Paul '17",
+      "Chris Paul '21",
+      "Chris Paul '22"
+    ]
+  },
+  "notes": [
+    "THE INPUT WAS NOT UNDER-WEIGHTED -- IT WAS MIS-PRICED. The premium reads the right thing (the in-zone attempt-rate percentile) at the wrong price. mid = 0.65*P[midvol] + 0.35*P[midfg] is already the volume-first composite; the premium then pays the TOP of P[midvol] a SECOND time, up to +0.07 raw (about 7 card points at this end of the curve), to every card above the 70th percentile of the RATE. Crawford '19 sits at the 95th percentile of the 2019 midrange attempt rate on 18.9 minutes and collected the whole thing: mid 99, one of 73 cards on 99, on 7.9 ppg, 39.7% FG, TS .522, BPM -3.9, against his own 20-ppg '13 reading 93.",
+    "WHY A RATE IS NOT A LOAD, in recal_51's own words, quoted by recal_78 one screen further down this same function: 'attempts are a RATE -- per hundred -- so a 17-minute bench finisher can post a starter's attempt rate while carrying no load.' recal_78 applied it to the deadeye floors' SAMPLE and recal_126 to their DIET. This round applies it to the bonus that sits ON TOP of both of them and had never been asked the question.",
+    "WHY THE LINE IS 35.7 AND NOT recal_96's 24 -- MEASURED BOTH WAYS, AND THE BENCH SHAPE IS THE RECORDED FRONTIER. With recal_96's own 12 -> 24 ramp (his load share for this card is 0.575) the subject reads mid 97: ONE POINT outside his band, with all 141 anchors held. recal_117 had already ruled why the bench boundary is the wrong line for a term of this kind -- 'a rate paid twice has to be scaled twice, and the second line is not the bench boundary: it is the minutes at which a distributor has actually carried a season's creation' -- and located that line as the class's own upper quartile of minutes. Of the 2,005 midrange cards this premium pays (rate percentile > 0.70, mp >= 1200, 1997+), p75 of minutes per game is 35.69, median 32.52, p25 27.61. Rounded to a tenth: 35.7. The FOOT is not moved: 12.0 is recal_96's, the minutes below which a load term earns nothing.",
+    "WHY THE PAINT PREMIUM ON THE LINE ABOVE IS LEFT UNLOADED. The objection applies to it word for word and the symmetric change was measured FIRST: 942 rim bars fall, none by more than 5, all 141 anchors still hold, and the subject is unaffected either way. It is not taken because it costs two of his OWN standing rulings for tidiness in a term this ruling never named. Deandre Ayton '26 (27.2 mpg) goes rim 71 -> 70 and that single point flips the screener tie-break recal_120 settled ('Why is Ayton out and James in? Makes no sense', tests/court.test.ts); Erick Dampier '07 (25.2 mpg) goes 58 -> 57 and drops out of the Mavs '07 Team DB five that recal_142 pinned the ladder to (tests/campaigns.test.ts). Both tests go red on the symmetric variant and green on this one. The paint class's line is measured and on the record (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line.",
+    "NOTHING RISES ON MID, BY CONSTRUCTION: the change is a multiplier in [0, 1] on a non-negative additive bonus, so a card either keeps its bar whole or loses part of the bonus. 856 mid bars move, ALL DOWN, largest 5. 0 rim bars. 217 OFF (212 down, max drop 1). 131 OVR. ZERO DEF -- no defensive input is touched, so d_ovr is byte-identical for all 10,000 cards. The five OFF RISERS are the zone SORT, not the zone: when a midrange bar falls under a card's 3PT bar the zone weights 0.22 / 0.08 / 0.05 re-order and recal_38's zone-dominance bonus (which refuses to pay a midrange weapon) can then fire -- Luke Kennard '21 54 -> 58, Hubert Davis '98 56 -> 60, JJ Redick '17 74 -> 77, Danilo Gallinari '20 79 -> 82. That is standing doctrine working, not this round's arithmetic.",
+    "THE 99-BLOCK OF MID: 73 cards read 99 before, 69 after. Exactly two LEAVE it -- Jamal Crawford '19 (18.9 mpg) 99 -> 95 and Beno Udrih '15 (18.9 mpg) 99 -> 94 -- and two come off the ceiling without leaving the top, Kevin Durant '16 and Kawhi Leonard '19 at 99 -> 98. Every other 99 belongs to a card at or above the class's full-load line and is byte-identical.",
+    "HONEST QUALIFIER. The subject's own '13 (29.3 mpg) and '14 (30.3 mpg) fall 2 each, to 91 and 86, because they too sit under the class's full-load line, so his '19 still reads ABOVE his '13 -- four points now instead of six. A load rule cannot close that on its own: the composite underneath already ranks his 2019 midrange DIET above his 2013 one (rate percentile 0.95 against 0.88, conversion .465 against .453). Closing it would mean re-cutting the composite's 0.65 / 0.35 volume-first split, which is a different ruling and is not taken here.",
+    "TAXES RE-RATIFIED per recal_59's deviation-tax law, on the moved pool, both on the edge the movement pushed them off: hunt 4.00 -> 3.67 (it broke on the ORACLE edge, +0.407 against the +0.50 floor -- the mismatch read is worth less now that a bench gunner's midrange bar no longer towers over the men guarding him; feasible 3.545 to 3.788, true midpoint by r126's rule) and crashDef 0.62 -> 0.95 (BLIND edge, -0.224 against the -0.30 ceiling; feasible 0.733 to 1.167). crashOff held at 0.17 and the six others held their bands untouched. All nine rows pass."
+  ],
+  "cost": [
+    "data/build_ratings.py now carries `g_v` (games) on every season row. It is read only by the premium's load factor; no other term sees it. mp_v / g_v reproduces the Player Per Game mpg that recal_96's load_share reads in compute_ovr.py, so the two load terms read the same number off two sheets of the same source.",
+    "The PAINT premium is now the only unloaded rate bonus in the zone stack, and it is left that way ON PURPOSE, not by oversight. Its class line is measured (2,004 cards, mp >= 1200, 1997+, p75 34.95 mpg) and the symmetric variant is fully measured in this file: 942 rim bars fall, max 5, all anchors hold, and the price is Ayton '26 rim 71 -> 70 and Dampier '07 58 -> 57, which breaks tests/court.test.ts (recal_120) and tests/campaigns.test.ts (recal_142). A ruling on a paint card can turn it on by adding `*_pload` to that one line and re-cutting those two tests with his word.",
+    "PREM_FULL is a MEASURED constant, like recal_78's 105 / 174. It was measured on the pool as it stands; a round that moves the premium's 0.70 entry gate changes the class and must re-measure it.",
+    "The composite (0.65 vol / 0.35 fg) and both deadeye floors still read RATES, priced by recal_78's count ramp and recal_126's diet ramp. A later round that wants the composite itself loaded has to say so.",
+    "src/data/campaigns.json and src/data/opponents.json are regenerated in this commit (`npm run opponents`): recal_142's ladder fields the Team DB five, so a round that moves OVRs must re-derive it or tests/campaigns.test.ts reads a stale ladder against a fresh pool. The integrator re-derives it once for the batch anyway."
+  ]
+}
