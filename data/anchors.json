@@ -1398,5 +1398,14 @@
     "round": 145,
     "ruling": "Confirm 5",
     "note": "99 -> 95. THE MIDRANGE HIGH-VOLUME PREMIUM IS PAID AT THE CARD'S LOAD. The +0.07 bonus on top of the zone composite was keyed on nothing but the in-zone attempt-rate PERCENTILE, a per-100 RATE, so an 18.9-mpg gunner on 7.9 ppg / 39.7% FG / TS .522 / BPM -3.9 collected the same premium a 36-minute first option collects and printed mid 99 -- one of 73 cards on 99, six above his own 20-ppg '13. That is recal_51's objection, which recal_78 and recal_126 applied to the two deadeye floors directly underneath and never to the bonus above them. The premium is now scaled by a load ramp with recal_96's 12-minute foot and recal_117's line for a SECOND payment of a rate -- the class's own upper quartile of minutes, measured on this term's own class: 35.7 mpg over the 2,005 cards it pays (mp >= 1200, 1997+; median 32.5, p25 27.6). Against recal_96's own 24-minute bench line the subject reads 97, one point outside this band, which is the recorded frontier of the bench-boundary shape. Nothing rises on mid by construction, 0 rim bars and 0 DEF move, and the PAINT premium is deliberately left unloaded: the symmetric variant costs Ayton '26 rim 71 -> 70 and Dampier '07 58 -> 57, which breaks recal_120's screen tie-break and recal_142's Mavs '07 ladder five for a term this ruling never named."
+  },
+  {
+    "card": "Shaquille O'Neal '94",
+    "scale": "def",
+    "target": 85,
+    "tol": 3,
+    "round": 146,
+    "ruling": "Confirm 7",
+    "note": "78 -> 86 (perdef 45 -> 63). THE PRE-2014 RELIEF'S GATE WAS A CLIFF, AND A CARD COULD BE PUNISHED FOR HAVING BEEN VOTED FOR. `drep <= 0.05` gated recal_55's no-vote DBPM relief, but drep is a CAREER reputation decayed 15% a year in BOTH directions, so a man with no 1994 ballot carries a tail from a vote six years later: Shaq '94 reads 0.0687 (his 2000 All-D 2nd + DPOY credit, 0.687, x 0.10 at six years out), crosses the line by 0.019, forfeits the whole relief and enters the voted band at wv 0.23 — 45 / DEF 78 against his own '93 (drep exactly 0.0, DBPM 1.5) at 64 / 89. Larry Sanders '13 is the same gate from the other side: ONE DPOY ballot, share 0.149, halves to 0.0745, crosses by 0.024, and one more ballot LOWERED his card by 24. The gate is DELETED rather than moved: the relief now applies to the no-vote channel for every pre-tracking season and what fades it is that channel's OWN weight, 1 - wv, so it is paid in full at drep <= 0.05 (byte-identical), fades continuously across 0.05 -> 0.30 exactly as real vote weight takes over, and is worth nothing at drep >= 0.30 (byte-identical). No new constant: the band is recal_20's own. 220 perdef bars move, ALL UP, and nothing outside 0.05 < drep < 0.30 can move by construction."
   }
 ]

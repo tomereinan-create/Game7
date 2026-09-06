@@ -554,7 +554,28 @@ for yr, rows in seasons.items():
         # 20/60/20 season blend's reach back into 2013). recal_57's Caron Butler '08 def 73 +-1 and
         # recal_55's own Vlade Divac '95 perdef 78 +-1 were RELEASED by that ruling and now sit in
         # anchors_superseded.json; they were the two pins recal_134 declined against.
-        if yr < 2014 and r['drep'] <= 0.05:
+        # recal_146 (HIS RULING on Shaquille O'Neal '94, verbatim: "Confirm 7"): THE RELIEF'S GATE WAS
+        # A CLIFF, AND A CARD COULD BE PUNISHED FOR HAVING BEEN VOTED FOR. `drep <= 0.05` is not a
+        # statement about a season -- drep is a CAREER reputation, decayed 15% a year in both
+        # directions, so a man with no 1994 ballot at all can carry a tail from a vote six years
+        # LATER. Shaq '94 carries 0.069 (his 2000 All-D 2nd plus DPOY credit, 0.687, x 0.10 at six
+        # years out): 0.019 over the line, which FORFEITED the whole relief line and put him in the
+        # voted band at wv 0.23 instead. His '93 -- the same player, a WORSE box line (DBPM 1.5 vs
+        # 0.6 is better, but BPM 3.5 against 6.8) -- has drep exactly 0.0, keeps the relief, and reads
+        # perdef 64 / DEF 89 against his '94's 45 / 78. Larry Sanders '13 is the same gate from the
+        # other side: ONE DPOY ballot, share 0.149, halves to 0.0745, crosses by 0.024, and his card
+        # reads perdef 47 where the relief line gives ~71 -- one more ballot LOWERED him by 24.
+        # THE FIX IS TO DELETE THE GATE, NOT TO MOVE IT. The relief now applies to the NO-VOTE
+        # CHANNEL WHENEVER THE ERA HAS NO TRACKING, and what fades it is the channel's OWN WEIGHT:
+        # PD2 = (1 - wv)*novote + wv*(voted band), with wv = min(1, drep/0.30) above the Iverson line.
+        # So the relief is paid IN FULL at drep <= 0.05 (wv = 0, byte-identical to before), fades
+        # smoothly across 0.05 -> 0.30 exactly as real vote weight takes over, and is worth nothing
+        # at drep >= 0.30 (wv = 1, byte-identical again). There is no new constant: the band is the
+        # one recal_20 already drew for the voted channel, and the two channels now hand off
+        # continuously instead of one of them switching off 0.25 before the other switches on.
+        # By construction NOTHING outside 0.05 < drep < 0.30 can move, and nothing can fall: the
+        # relief enters through a max() and only ever raises the no-vote channel.
+        if yr < 2014:
             novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])))
         _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself

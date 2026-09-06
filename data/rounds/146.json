@@ -1,0 +1,274 @@
+{
+  "round": 146,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Confirm 7",
+  "title": "THE PRE-2014 DBPM RELIEF STOPS BEING A CLIFF: its gate is deleted, and what fades it is the no-vote channel's own weight, so a decayed vote tail or a single ballot can never pay LESS than no vote at all",
+  "subject": "Shaquille O'Neal '94",
+  "scale": "def",
+  "target": 85,
+  "tol": 3,
+  "before": 78,
+  "after": 86,
+  "pipeline_version": 146,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "if yr < 2014:\\n            novote = max\\(novote, min\\(0\\.80, 0\\.28 \\+ 0\\.52 \\* P\\['dbpm'\\]\\(r\\['dbpm'\\]\\)\\)\\)",
+      "label": "THE ROUND'S WHOLE CHANGE — the relief's vote gate is gone; the era gate stands",
+      "note": "was `if yr < 2014 and r['drep'] <= 0.05:` — one clause removed, no constant added"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "wv = min\\(1\\.0, r\\['drep'\\] / 0\\.30\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+      "label": "recal_20's graded band membership, UNTOUCHED — it is now the only thing that fades the relief",
+      "note": "1 - wv runs 1.00 at drep <= 0.05 to 0.00 at drep >= 0.30; the Iverson rule is unchanged"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PD\\) \\* BRK\\['_vf'\\]\\)",
+      "label": "the two channels' hand-off, unchanged — it is what now carries the fade",
+      "note": "recal_114's shape; no weight moved this round"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "0\\.28 \\+ 0\\.52 \\* P\\['dbpm'\\]",
+      "label": "recal_55's relief line at recal_141's slope, unchanged",
+      "note": "0.52 and the 0.80 ceiling are exactly as recal_141 left them"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD  = W\\['PD'\\]\\['drep'\\]\\*\\(r\\['drep'\\]\\*rep_hf\\) \\+ W\\['PD'\\]\\['dbpm'\\]\\*P\\['dbpm'\\]\\(r\\['dbpm'\\]\\)",
+      "label": "recal_76/81's purified composite — still no team defence in perdef",
+      "note": "the closed door stays closed"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_paid_in_rim = \\(min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* max\\(_blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\)\\), _out_of_band\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+      "label": "rimprot's own 0.05 line, deliberately NOT touched",
+      "note": "0 rimprot bars move this round; Shaq '93's 88 +-1 floor is byte-identical"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3?\\d+\\.\\d+,",
+      "label": "the hunt deviation tax, re-ratified on the moved pool (recal_59's law)",
+      "note": "3.67 -> 3.89 at this round; r92/r97's loose form, so a later re-ratification does not MISS this receipt"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0?\\d+\\.\\d+,",
+      "label": "the crash-def-glass deviation tax, re-ratified on the moved pool",
+      "note": "0.95 -> 0.57 at this round; loose form, same reason"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Shaquille O'Neal '94",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 63,
+      "tol": 1,
+      "label": "the subject's perimeter bar, the term the round moves"
+    },
+    {
+      "card": "Shaquille O'Neal '94",
+      "scale": "off",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "recal_52's OFF 92 +-1 — unreachable by perdef and unmoved"
+    },
+    {
+      "card": "Shaquille O'Neal '94",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 84,
+      "label": "rim protection is untouched"
+    },
+    {
+      "card": "Shaquille O'Neal '93",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 87,
+      "label": "recal_53's 88 +-1 floor — MUST NOT MOVE, and does not"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "off",
+      "op": "==",
+      "value": 99,
+      "label": "the OFF ceiling anchor"
+    },
+    {
+      "card": "Shaquille O'Neal '00",
+      "scale": "def",
+      "op": "==",
+      "value": 88,
+      "label": "recal_80's DEF 88 — drep 0.687, far past the band, byte-identical"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "recal_97's pin, unmoved"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "a tracked card: 2014+ cannot move by construction"
+    },
+    {
+      "card": "Manu Ginóbili '11",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 72,
+      "tol": 2,
+      "label": "recal_141's band — he is a NO-VOTE card, so the relief was already paid in full"
+    },
+    {
+      "card": "Karl Malone '97",
+      "scale": "def",
+      "op": "~",
+      "value": 87,
+      "tol": 3,
+      "label": "recal_135's band, unmoved"
+    },
+    {
+      "card": "Dan Roundfield '82",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 3,
+      "label": "recal_114's band, unmoved"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 2,
+      "label": "recal_92's band, unmoved"
+    },
+    {
+      "card": "Larry Sanders '13",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 71,
+      "tol": 2,
+      "label": "the gate from the other side: one ballot no longer costs 24 points"
+    },
+    {
+      "card": "Manute Bol '92",
+      "scale": "def",
+      "op": "~",
+      "value": 85,
+      "tol": 2,
+      "label": "the round's largest mover"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:perdef",
+      "above": "Shaquille O'Neal '93",
+      "below": "Shaquille O'Neal '94",
+      "label": "the '93 card still outranks the '94 card, which is the box line's own order (DBPM 1.5 vs 0.6)"
+    },
+    {
+      "scale": "def",
+      "above": "Michael Jordan '89",
+      "below": "Shaquille O'Neal '94",
+      "label": "and the board's order over the subject is unchanged"
+    },
+    {
+      "scale": "def",
+      "above": "Kawhi Leonard '16",
+      "below": "Larry Sanders '13",
+      "label": "a tracked lockdown still outranks the biggest riser"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 220,
+    "max_abs": 35,
+    "top": [
+      [
+        "Manute Bol '92",
+        36,
+        71
+      ],
+      [
+        "Tyson Chandler '05",
+        45,
+        71
+      ],
+      [
+        "Larry Sanders '13",
+        47,
+        71
+      ],
+      [
+        "Dikembe Mutombo '07",
+        45,
+        66
+      ],
+      [
+        "Manute Bol '91",
+        45,
+        64
+      ],
+      [
+        "Shaquille O'Neal '94",
+        45,
+        63
+      ],
+      [
+        "John Stockton '03",
+        50,
+        68
+      ],
+      [
+        "Artis Gilmore '84",
+        36,
+        54
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12",
+      "Bruce Bowen '08"
+    ]
+  },
+  "notes": [
+    "THE INPUT THAT WAS MIS-READ: `drep` is not a season's ballot, it is a CAREER reputation. career_rep() takes the best vote a player ever earned and decays it 15% a year in BOTH directions, so a card can carry a tail from a vote that had not happened yet. Shaquille O'Neal '94 got NO 1994 defensive ballot at all; his 0.0687 is his 2000 All-Defensive 2nd plus DPOY credit (0.687) at six years of decay. recal_55's relief gated on `drep <= 0.05`, so that tail — 0.019 over the line — cost him the ENTIRE relief line and put him in the voted band at wv 0.23. His own '93 card, drep exactly 0.0 (1993 is seven years out, where the decay reaches zero), keeps the relief and reads perdef 64 / DEF 89 against '94's 45 / 78, on a BETTER overall season (BPM 3.5 -> 6.8).",
+    "LARRY SANDERS '13 IS THE SAME GATE FROM THE OTHER SIDE, and it is the cleaner proof because there is no decay in it at all: a single DPOY ballot, share 0.149, halves to 0.0745 by the award rule, crosses the line by 0.024 — and his card read perdef 47 where the relief line gives 71. ONE MORE BALLOT LOWERED THE CARD BY 24 POINTS. That is not a tuning error, it is the gate being a cliff between two channels that are supposed to be the same statement measured two ways.",
+    "THE FIX DELETES THE GATE INSTEAD OF MOVING IT, AND ADDS NO CONSTANT. The relief now applies to the no-vote channel in every pre-tracking season, and what fades it is that channel's OWN weight in the hand-off recal_114 already wrote: PD2 = (1 - wv)*novote + wv*(voted band), wv = min(1, drep/0.30) above recal_20's Iverson line. So the relief is paid IN FULL below 0.05 (wv = 0 — every one of the 5,933 pre-2014 no-vote cards is byte-identical), fades continuously across 0.05 -> 0.30 as real vote weight takes over, and is worth exactly nothing at 0.30 and above (wv = 1 — all 860 full-vote cards byte-identical). A card in the band can now be no worse off than the same card with the vote struck off, which is the property the ruling asks for.",
+    "WHAT CAN MOVE, BY CONSTRUCTION: only the 191 pre-2014 cards with 0.05 < drep < 0.30 (of 6,984 pre-2014 cards at mp >= 1200), plus their season-blend neighbours. 220 perdef bars move and every one of them RISES — the relief enters through a max() and can only raise the no-vote channel. 0 rimprot bars move: rimprot has its own 0.05 line (`_paid_in_rim`) and this round does not touch it, so Shaq '93's rimprot 88 +-1 floor is byte-identical. 0 o_ovrs move. 203 d_ovrs and 155 OVRs move.",
+    "THE 2014+ COUNT IS 5, AND ALL FIVE ARE THE SMOOTHING EDGE: every mover with a peak season of 2014 reaches back into 2013 through the 20/60/20 season blend. No 2015+ card moves at all, so nothing tracked can move by construction, exactly as recal_141 established for the same channel.",
+    "THE ONE CARD THAT FALLS, AND WHY IT IS NOT A FALL IN DEFENCE. Tayshaun Prince '12 goes DEF 58 -> 57 (OVR 56 -> 55) while his perdef RISES 53 -> 54. One point past his rimprot 53 is exactly where recal_99's clause-1 guard (`rimprot >= perdef`) stops grading him partly as a big, so d_bigness falls and the perimeter vector takes more of his blend. It is the class function doing what it was written to do on a card sitting on its boundary, and it is the only non-rising DEF card in 10,000.",
+    "EIGHTEEN CARDS MOVE 8 OR MORE ON DEF, ZERO ON OFF, and they are one archetype: the pre-tracking big or wing whose box line said 'defender' and whose ballot box said almost nothing. Manute Bol '92 (DBPM 3.5, drep 0.074) 69 -> 85, Tyson Chandler '05 (DBPM 2.7, 0.066) 78 -> 90, Larry Sanders '13 90, Dikembe Mutombo '07 86, Fat Lever '94 71, Jason Kidd '13 76, John Stockton '03 63. Every one of them was reading BELOW the same card with its single ballot struck off, which is the defect.",
+    "TEAM DIALS: the Magic '95 best five (Hardaway / Scott / Anderson / Grant / O'Neal) go team DEF 47 -> 49, and the Bucks '13 five (Jennings / Ellis / Harris / Ilyasova / Sanders) 41 -> 45. Both team OFF dials are unchanged (88 and 41).",
+    "TAXES RE-RATIFIED per recal_59's law, each back on the edge recal_145 had just walked it off: hunt 3.67 -> 3.89 (BLIND edge, -0.203 against the -0.30 ceiling; feasible 3.788 to 3.992, true midpoint) and crashDef 0.95 -> 0.57 (ORACLE edge, +0.440 against the +0.50 floor; feasible 0.391 to 0.750, true midpoint). crashOff held at 0.17 and the six others held their bands. All nine rows pass."
+  ],
+  "cost": [
+    "The 0.05 line is now asked in TWO places with two different meanings. `wv` still uses it as recal_20's Iverson rule (a trace vote buys no band membership) and `_paid_in_rim` still uses it as rimprot's own vote gate. This round removes it only from the RELIEF. A later ruling that finds the same cliff in rimprot has the same one-clause fix available and should expect Shaq '93's rimprot floor to be the pin it hits.",
+    "recal_141's slope (0.52) and ceiling (0.80) on the relief line are UNTOUCHED and its finding still stands: this round changes WHO the line is offered to, not what it says. Its own anchor, Ginóbili '11 perdef 72 +-2, is a no-vote card and is byte-identical.",
+    "recal_76 and recal_81's removal of team defence from perdef and rimprot is not reopened and no term reads team_drtg on either scale.",
+    "src/data/campaigns.json and src/data/opponents.json are regenerated (`npm run opponents`) because recal_142's ladder fields the Team DB five and 155 OVRs moved; the integrator re-derives it once for the batch anyway.",
+    "The two taxes have now been re-ratified twice in two rounds in OPPOSITE directions (hunt 4.00 -> 3.67 -> 3.89, crashDef 0.62 -> 0.95 -> 0.57). That is the law working, not drift, but an integrator landing both rounds together should re-sweep ONCE on the merged pool rather than stacking these two settings."
+  ]
+}

@@ -417,6 +417,18 @@ export const DEFAULT_TACTICS: Tactics = {
  * (+0.5051) / 1.200 (+0.4898, under) — feasible about .733 to 1.167, a WIDE 0.434, midpoint .62 -> .95
  * (blind -0.447, oracle +0.568). crashOff held at .17 and the six others held their bands untouched.
  * All nine pass.
+ * recal_146 made the pre-2014 DBPM relief continuous across its own gate and raised 220 perdef bars,
+ * 203 d_ovrs and 155 OVRs, and the SAME two rows broke again — each one back on the edge recal_145 had
+ * just walked it off, which is what a tax does when the pool moves the other way. hunt went under on
+ * the BLIND edge (-0.203 at 3.67, against the -0.30 ceiling: the fives defend better, so a blind
+ * mismatch call costs less against them). Swept 3.670 (-0.2029) / 3.750 (-0.2688) / 3.790 (-0.3016) /
+ * 3.850 (-0.3505) / 3.950 (oracle +0.5177) / 3.990 (+0.5011) / 4.000 (+0.4970, under) — feasible about
+ * 3.788 to 3.992, a WIDE 0.204, true midpoint by r126's rule: 3.67 -> 3.89 (blind -0.383, oracle
+ * +0.543). crash def glass went under on the ORACLE edge (+0.440 at .95: with the glass men's defence
+ * up, the READ is worth less than .95 of tax). Swept .300 (blind -0.2304) / .390 (-0.2993) / .392
+ * (-0.3008, the ceiling exactly) / .450 (-0.3441) / .650 (oracle +0.5311) / .750 (+0.5001) / .751
+ * (+0.4998, under) — feasible about .391 to .750, a WIDE 0.359, midpoint .95 -> .57 (blind -0.432,
+ * oracle +0.557). crashOff held at .17 and the six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -424,9 +436,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.67,
+  hunt: 3.89,
   crashOff: 0.17,
-  crashDef: 0.95,
+  crashDef: 0.57,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
