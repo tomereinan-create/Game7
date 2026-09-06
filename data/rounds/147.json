@@ -1,0 +1,263 @@
+{
+  "round": 147,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Confirm 8",
+  "title": "A TIE BETWEEN TWO BEST FIVES WAS BEING BROKEN BY THE ALPHABET. Total OVR is a sum of integers, so 142 of the 1,255 fieldable team-seasons have two or more max-OVR legal fives, and bestfive.ts kept whichever board its depth-first walk reached first — which is teamseasons.json's roster order, which is alphabetical. Eddie House '08 and Rajon Rondo '08 both read OVR 62 and House started for the best relative defence of the 47 seasons because H comes before R. A tie is now broken by the Team DB's OWN OVR for the five (gauges.ts dialOvrRaw, unrounded; raw net second; first-found last), which is recal_142's Champions-tier key one layer down. Boston field Rondo and read DEF 82 -> 90. 71 of 1,255 fives changed a man and not one of them reads a LOWER OVR than the five it replaced. No engine change: team_rating.py and offense.ts are untouched, no card moved, marg did not move.",
+  "subject": "Celtics '08 (best legal five)",
+  "five": [
+    "Rajon Rondo '08",
+    "Ray Allen '08",
+    "Paul Pierce '08",
+    "Kevin Garnett '08",
+    "Kendrick Perkins '08"
+  ],
+  "season": 2008,
+  "scale": "team:defdial",
+  "target": 92,
+  "tol": 3,
+  "before": 82,
+  "after": 90,
+  "pipeline_version": 147,
+  "knobs": [
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "const key = dialOvrRaw\\(men, seasonOf\\(men\\)\\)",
+      "label": "THE KEY — of the tied max-OVR SETS, the one the Team DB itself rates highest",
+      "note": "was: whichever board walk() reached first, i.e. roster order, i.e. the alphabet"
+    },
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "if \\(key > bestKey \\|\\| \\(key === bestKey && net > bestNet\\)\\)",
+      "label": "the second key is the raw net — recal_142's own tie-break, kept",
+      "note": "an exact tie on both keeps the first-found board, so the function stays pure and stable"
+    },
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "let tied = new Map<string, \\(Player \\| null\\)\\[\\]>\\(\\)",
+      "label": "the walk now collects every DISTINCT max-OVR set instead of keeping only the first",
+      "note": "keyed by the men, sorted — permutations of one set collapse to one entry"
+    },
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "if \\(boards\\.every\\(\\(b\\) => b\\.every\\(\\(p\\) => !!p\\)\\)\\)",
+      "label": "a board with a hole is not priced at all — it keeps the pre-round behaviour",
+      "note": "seven wheel rosters cannot fill five slots; none of them is affected by this round"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "export function dialOvrRaw\\(five: Player\\[\\], season\\?: number\\): number",
+      "label": "the Team DB's OVR column, unrounded — the rounded one ties on 23 of the 142 tie groups",
+      "note": "mean of the two era-relative gauge channels, exactly TeamDb.tsx's ovrOf before rounding"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "const scale71raw = \\(v: number, min: number, mid: number, top: number\\) =>",
+      "label": "recal_71's two-slope map split into raw and rounded — scale71 is now Math.round(scale71raw)",
+      "note": "every displayed dial is byte-identical: 0 of 1,255 OFF or DEF dials moved from the split"
+    },
+    {
+      "file": "src/engine/gauges.ts",
+      "pattern": "export function seasonOf\\(five: Player\\[\\]\\): number \\| undefined",
+      "label": "the five knows its own season — every card carries peak_season",
+      "note": "a five of mixed years has no season and reads in today's league, gauges.ts's own convention"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def _dial_ovr_raw\\(five, season=None\\):",
+      "label": "the python mirror of the key, so anchors.py's starting_five picks the same five",
+      "note": "anchors.py carries the only other port of bestfive.ts; the two move together"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def _optimal_sets\\(roster, elig, dp, left, target\\):",
+      "label": "the python side enumerates the tied sets with the dp table as its oracle",
+      "note": "the old reconstruction of walk()'s first-found board is gone"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "if a\\.get\\('five'\\):",
+      "label": "a team_rank pin MAY now name its five by its men, as a team:* value pin already could",
+      "note": "recal_119's BOS '24 OFF-rank pin is pinned to the five it was cut on — see COST"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export const KNOBS = \\{",
+      "label": "NO ENGINE CHANGE — offense.ts's KNOBS block is untouched by this round",
+      "note": "no usage, TS-slope, AMP, spacing, stack-cap, fouldraw, ORB or DEFENSE v2 constant moved"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "TEAM_USG",
+      "label": "and its python source of truth is untouched too — parity is trivially held",
+      "note": "no card moved, no regeneration, marg did not move; players_stats.json is byte-identical"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the subject's OFF dial barely moved — this is a defensive swap, not an offensive one",
+      "scale": "team:offdial",
+      "season": 2008,
+      "op": "==",
+      "value": 69
+    },
+    {
+      "label": "and the subject's OVR, the number the Team DB shows: 76 -> 80",
+      "scale": "team:ovrdial",
+      "season": 2008,
+      "op": "==",
+      "value": 80
+    },
+    {
+      "label": "the Celtics '08 now read 2nd of 2008 on defence, behind the Spurs '08 only — the Spurs are unmoved",
+      "five": ["Tony Parker '08", "Manu Ginóbili '08", "Bruce Bowen '08", "Ime Udoka '08", "Tim Duncan '08"],
+      "season": 2008,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 94
+    },
+    {
+      "label": "and above the Rockets '08, who are unmoved (89): the reordering the scan asked for is real",
+      "five": ["Rafer Alston '08", "Shane Battier '08", "Tracy McGrady '08", "Luis Scola '08", "Yao Ming '08"],
+      "season": 2008,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 89
+    },
+    {
+      "label": "the same core's '09 did not move — its five was never tied",
+      "five": ["Rajon Rondo '09", "Ray Allen '09", "Paul Pierce '09", "Kevin Garnett '09", "Kendrick Perkins '09"],
+      "season": 2009,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 94
+    },
+    {
+      "label": "and neither did its '10",
+      "five": ["Rajon Rondo '10", "Paul Pierce '10", "Kevin Garnett '10", "Rasheed Wallace '10", "Kendrick Perkins '10"],
+      "season": 2010,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "THE DEF SUMMIT IS WHERE HIS recal_94 RULING PUT IT — the Bulls '96 five did not change a man",
+      "five": ["Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96"],
+      "season": 1996,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "THE OFF SUMMIT likewise — the Warriors '17 five did not change a man (recal_71 / recal_94)",
+      "five": ["Stephen Curry '17", "Kevin Durant '17", "Klay Thompson '17", "Draymond Green '17", "Zaza Pachulia '17"],
+      "season": 2017,
+      "scale": "team:offdial",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "THE KEY'S OWN TEST, and the reason the raw net was rejected: the Bad Boys keep Bill Laimbeer '92",
+      "five": ["Isiah Thomas '92", "Joe Dumars '92", "Dennis Rodman '92", "John Salley '92", "Bill Laimbeer '92"],
+      "season": 1992,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 97
+    },
+    {
+      "label": "and the Spurs '04 keep Bruce Bowen '04 (a raw-net key benched him, DEF 92 -> 85)",
+      "five": ["Tony Parker '04", "Manu Ginóbili '04", "Bruce Bowen '04", "Hedo Türkoğlu '04", "Tim Duncan '04"],
+      "season": 2004,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 92
+    },
+    {
+      "label": "the biggest single mover: the Pistons '06 stop benching Ben Wallace '06 for Antonio McDyess '06",
+      "five": ["Chauncey Billups '06", "Richard Hamilton '06", "Tayshaun Prince '06", "Rasheed Wallace '06", "Ben Wallace '06"],
+      "season": 2006,
+      "scale": "team:defdial",
+      "op": "==",
+      "value": 87
+    },
+    {
+      "label": "the Celtics '24 field Jrue Holiday '24: the five the Team DB rates 65 instead of the one it rates 61",
+      "five": ["Derrick White '24", "Jrue Holiday '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24"],
+      "season": 2024,
+      "scale": "team:ovrdial",
+      "op": "==",
+      "value": 65
+    },
+    {
+      "label": "recal_119's five still reads exactly what recal_119 left it reading — the pin is pinned to it",
+      "five": ["Derrick White '24", "Jaylen Brown '24", "Jayson Tatum '24", "Kristaps Porziņģis '24", "Al Horford '24"],
+      "season": 2024,
+      "scale": "team:off",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "NO CARD MOVED — this is a picker round, not a ratings round: Rajon Rondo '08 OFF",
+      "card": "Rajon Rondo '08",
+      "scale": "off",
+      "op": "==",
+      "value": 50
+    },
+    {
+      "label": "no card moved: Rajon Rondo '08 DEF (and this is the other half of the subject, reported not tuned)",
+      "card": "Rajon Rondo '08",
+      "scale": "def",
+      "op": "==",
+      "value": 75
+    },
+    {
+      "label": "no card moved: Eddie House '08 is still OVR 62, the tie that started the round",
+      "card": "Eddie House '08",
+      "scale": "ovr",
+      "op": "==",
+      "value": 62
+    },
+    {
+      "label": "no card moved: Kevin Garnett '08 DEF",
+      "card": "Kevin Garnett '08",
+      "scale": "def",
+      "op": "==",
+      "value": 96
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Rajon Rondo '08",
+      "below": "Eddie House '08",
+      "label": "why the tie should never have gone to House: Rondo is the better defender on the cards, 75 to 65"
+    }
+  ],
+  "movers": {
+    "scale": "team:defdial",
+    "count": 71,
+    "max_abs": 23,
+    "top": []
+  },
+  "cost": [
+    "ONE ANCHOR HAD TO BE PINNED TO ITS OWN FIVE, and it is reported loudly because it is the only place this round touched an older ruling. recal_119's BOS '24 pin is `team_rank team:off max_rank 10` — a pin on the OFFENSIVE RANK of whatever five the picker chooses. Boston '24 is a THREE-WAY tie at 374 total OVR: the Al Horford board (team:off 56, rank 10 — exactly on the pin), and two Jrue Holiday boards (52, rank 15). The new key takes the board the Team DB rates highest, and that is a Holiday board (dial OVR 65 against 61, DEF 79 against 66), so an unpinned rank would silently have started grading a DIFFERENT five. recal_119's finding is about the ENGINE's reading of the five it measured, and that five still reads team:off 56 and rank 10, bit for bit. So `team_rank` learned to name its five by its men — exactly as a team:* VALUE pin already could — and the pin now names the Horford five. Target 10, ruling text, round and tolerance are all unchanged. AWAITING HIS WORD: if he wants that pin to follow the picker instead, drop the `five` array from it and it reads 15 of 26.",
+    "NO REGENERATION AND NO PIPELINE BUMP. team_rating.py and src/engine/offense.ts are untouched, so no card moved and `marg` did not move; data/players_stats.json, src/data/players_stats.json, data/export/ and src/data/pipeline.json are byte-identical to origin/main. pipeline_version 147 in this file is the number the integrator will stamp; the shipped stamp is still 143 and the receipt prints PENDING.",
+    "src/data/opponents.json and src/data/campaigns.json ARE regenerated (`npm run opponents`). Tier 1: exactly one level changed a man — the Spurs '26 field Dylan Harper '26 for Devin Vassell '26 — and no rung moved. Tier 2: seven levels changed a man (Celtics '24, Sonics '94, Warriors '22, Bucks '20, Lakers '10, Celtics '08, Heat '12), and 33 of the 60 rungs moved because four of those fives climbed on the dial the tier sorts by. Tiers 3 and 4 are byte-identical, 0 levels and 0 men. Tier membership is -0/+0 on all four tiers, ROUNDS is still 150 and the bands still start at 1/31/91/121, so the eight campaign rounds did not silently reorder.",
+    "ANYTHING THAT MEMORISED A TIER-2 FIVE BY INDEX is reading a different level: the Celtics '08 moved L37 -> L44, the Sonics '94 L13 -> L25, the Heat '12 L50 -> L55, the Bucks '20 L23 -> L29. `npm test` is green with ZERO test re-pointing (265 tests, 29 files) — tests/campaigns.test.ts asserts the tier's key and its shape rather than its members, which is why it survived.",
+    "THE SEVEN RELAXED LADDER BOARDS ARE UNAFFECTED. recal_142 recorded seven rosters that cannot fill a legal five and fall back to campaigns.ts's own fit ladder. A board with a hole is never priced by the new key (it keeps the first-found board), so none of the seven moved and tests/campaigns.test.ts's count of exactly 7 still holds."
+  ],
+  "notes": [
+    "THE MEASURED CAUSE, verified before anything was changed. Boston '08's real DRtg is 98.9 — 1st of 30 by 2.7 points and +8.6 against the league, the 2nd-best relative defence of the 47 seasons — and the five read DEF 82, 87th of the 1,255 fieldable fives and 3rd of its own 2008 behind the Spurs (94) and the Rockets (89). The five was Eddie House '08 / Ray Allen / Paul Pierce / Kevin Garnett / Kendrick Perkins. House '08 and Rajon Rondo '08 both read OVR 62; bestfive.ts resolved SET ties by `sum > bestSum` in roster order and teamseasons.json lists a roster alphabetically, so House won on the letter H. With Rondo the five reads DEF 90 (drtgRef 108.328 against 108.719), all-time rank 31 of 1,255, and 2nd of 2008 above the Rockets.",
+    "recal_74's ASSISTS RULE IS NOT THIS RULE AND WAS NOT TOUCHED. It arranges the SLOTS of an already-chosen five (\"if 2 players can play pg/sg, the one with more ast gets the pg position\") and its own comment says the max-OVR set never changes. It could never have reached this: House and Rondo were never both in the five. The two tie-breaks answer different questions and now neither depends on file order.",
+    "THE KEY, AND WHY IT IS THIS ONE. Of the tied max-OVR SETS, take the one with the highest UNROUNDED Team-DB OVR — dialOvrRaw, the mean of the five's two era-relative gauge channels — with the raw net (offRaw - drtgRef) as the second key and the first-found board as the last. It is recal_142's Champions-tier key (\"dial OVR ascending, raw net as the tie-break\") applied one layer down, to the choice of the men instead of the order of the levels. Unrounded because the ROUNDED OVR still ties on 23 of the 142 tie groups, and a tie-break that ties is not a tie-break. The season is the five's own, which the five knows: every card carries peak_season and a team-season's five all share one; a five of mixed years reads in today's league, which is gauges.ts's existing convention for a drafted five.",
+    "THE DECISIVE ARGUMENT: IT IS THE ONLY KEY THAT CANNOT CONTRADICT THE SCREEN. The Team DB shows a five AND its OVR on the same row, so a key that is not the OVR lets the DB display a five it rates below one it could have shown. Measured over the 142 tie groups, how often each key does exactly that: FIRST-FOUND (today's behaviour) 62 times, worst by 12 · RAW NET 34 times, worst by 7 · SUM OF THE MEN'S o_ovr+d_ovr 39 times, worst by 9 · SUM OF marg 36 times, worst by 8 · SUM OF talent 58 times, worst by 14 · THE DIAL OVR 0 times, by construction. And under the dial key not one of the 71 fives that changed reads a lower OVR than the five it replaced.",
+    "WHY THE RAW NET WAS REJECTED, since the dispatch named it first. offRaw's spread over the wheel is about seven times drtgRef's (the two gauge ranges are 37.77 and 5.28 raw points), so a 1:1 net is an offence key with the defence along for the ride — which is recal_142's own measured objection to it as the tier key, Spearman(level, offRaw) .963 against Spearman(level, -drtgRef) .238. It shows up here as exactly the fives you would expect: raw net benches Bill Laimbeer '92 from the Bad Boys (team DEF 97 -> 84), Bruce Bowen '04 from the Spurs (92 -> 85), Bruce Bowen '03, Matisse Thybulle '23 (69 -> 50), Jrue Holiday '24, John Stockton '86 and Michael Cooper '90, and lowers 19 teams' displayed OVR. Sixty-two lower-OVR picks would have become thirty-four instead of zero.",
+    "WHY THE MEN'S OWN NUMBERS CANNOT DECIDE IT. o_ovr and d_ovr ship rounded to integers and the subject is an EXACT tie on their sum: Eddie House 60 + 65 = 125, Rajon Rondo 50 + 75 = 125. There is no unrounded version of them on the shipped card, so \"before rounding\" is not available to the picker at all.",
+    "WHY MINUTES WERE REJECTED. recal_142 took the minutes rule out of the ladder on its own finding — \"a season's minutes are an availability record, not a statement about who the team is\" — and re-introducing minutes as the tie-break would reopen a ruling this round has no business reopening. (They would have picked Rondo: 29.9 mpg x 77 against House's 19.0 x 78.)",
+    "THE ERA QUESTION, measured rather than assumed. An era-invariant LINEAR form of the same key (offRaw - 7.1534 x drtgRef, the ratio of the two gauge ranges) needs no season at all, and it agrees with the season-aware dial on 135 of the 142 tie groups — but on the Hawks '10 it picks a five the DB rates one point lower, because the dial's two-slope knee is not linear and the era offset can carry a candidate across it. Reading the five in its OWN season removes that, costs nothing, and needs no change to startingFive's signature because the five carries its season in its cards.",
+    "THE FOOTPRINT: 71 of the 1,255 fieldable team-seasons changed a man. 142 were tied at all; on the other 71 the tie was already falling to the five the new key would have chosen anyway. Ten famous ones, before -> after on the Team DB's OVR: Lakers '98 Robert Horry '98 IN for Elden Campbell '98, 77 -> 86 · Pistons '06 Ben Wallace '06 IN for Antonio McDyess '06, 63 -> 75, DEF 64 -> 87 · Heat '12 Mario Chalmers '12 IN for Shane Battier '12, 82 -> 86 · Sonics '94 Nate McMillan '94 IN for Detlef Schrempf '94, 68 -> 72, DEF 72 -> 90 · Knicks '92 Charles Oakley '92 IN for Gerald Wilkins '92, 61 -> 69 · Bucks '83 Paul Pressey '83 IN for Junior Bridgeman '83, 67 -> 72, DEF 82 -> 99 · Lakers '90 Michael Cooper '90 IN for Byron Scott '90, 72 -> 76 · Celtics '24 Jrue Holiday '24 IN for Al Horford '24, 61 -> 65 · Bucks '20 George Hill '20 IN for Donte DiVincenzo '20, 71 -> 73 · Celtics '08 Rajon Rondo '08 IN for Eddie House '08, 76 -> 80. Two more that the round HELD rather than moved, and they are why the key matters: the Jazz '86 and the Blazers '84 are both tied, and the dial key keeps John Stockton '86 and Clyde Drexler '84 in the five exactly as the old first-found key happened to — a raw-net key would have benched both.",
+    "THE 2 POINTS THE ROUND DID NOT REACH, reported rather than tuned, exactly as the dispatch asked. 90 is inside 92 +- 3 but it is not 92, and the rest is not a team knob: Rajon Rondo '08 reads OFF 50 on ballsec 33 and 3pt 11, which drags the five's offence (OFF dial 70 -> 69) and therefore its DEF-neutral standing. That is a ratings-to-off-def question about ONE CARD and belongs to that agent. The Celtics '08 also still read below the same core's '09 (94) and '10 (99), which is the same fact from the other side: those two fives already had Rondo, and they are the picker working correctly.",
+    "THE HARNESS POOL DID NOT MOVE. All nine tactics axes PASS unchanged (hunt +0.53, crash off +0.60, crash def +0.53, playmaker +2.37, assignment +3.31) with NO re-ratification, because the harness rates tactics against cards and no card moved. `npm run ticker-check` prints 0 of 3000 path-integrity failures. `npx tsc -b` is clean. 142 anchors, 0 failing, mean |error| 0.73.",
+    "NONE OF THE THIRTEEN '(best legal five)' ANCHORS RE-PICKED A MAN, checked and not assumed: Bulls '96, Lakers '00, Warriors '17, Pistons '04, Thunder '26, 76ers '85, 76ers '26, Pistons '26, Lakers '87, Suns '05 and the rest all field the same five they fielded before the round, and their readings are identical to the digit. The one team pin that moved is recal_119's BOS '24 rank pin, and it moved because it is a RANK pin that re-picks by construction — see COST."
+  ]
+}

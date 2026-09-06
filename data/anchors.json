@@ -1203,7 +1203,14 @@
     "max_rank": 10,
     "round": 119,
     "ruling": "For the scout, I agree with 3,4,5,6,7",
-    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His item 7 asked for team OFF 55 -> near 72; recal_119 reached 56 and DECLINED the rest (data/rounds/119.json carries the full size frontier). What the round DID move is the rank the complaint was really about: the Celtics '24 read 12th of the 26 fieldable 2024 fives on offence against a real ORtg rank of 1st, and they read 9th now. The bound is 10 rather than 3 because 9th is where the possession-loss channel honestly puts them - the cards carry only ~45% of the turnover signal, measured against an oracle channel reading the real TOV%."
+    "note": "THE ROUND'S OWN FINDING, pinned, because the DIAL it declined on is not pinnable. His item 7 asked for team OFF 55 -> near 72; recal_119 reached 56 and DECLINED the rest (data/rounds/119.json carries the full size frontier). What the round DID move is the rank the complaint was really about: the Celtics '24 read 12th of the 26 fieldable 2024 fives on offence against a real ORtg rank of 1st, and they read 9th now. The bound is 10 rather than 3 because 9th is where the possession-loss channel honestly puts them - the cards carry only ~45% of the turnover signal, measured against an oracle channel reading the real TOV%. [recal_147: PINNED TO ITS OWN FIVE, target and meaning unchanged. recal_147 re-ruled how a TIE between max-OVR fives is broken, and Boston '24 is a three-way tie at 374: the Horford board (team:off 56, rank 10) and two Jrue Holiday boards (52, rank 15). The new key takes the board the Team DB rates highest, which is the Holiday one (dial OVR 65 against 61, DEF 79 against 66), so an unpinned rank would have started grading a DIFFERENT five. recal_119's finding is about the ENGINE's reading of the five it measured, and that five still reads team:off 56 and rank 10 exactly as recal_119 left it. AWAITING HIS WORD: if he wants the pin to follow the picker instead, drop the `five` and the pin reads 15/26.]",
+    "five": [
+      "Derrick White '24",
+      "Jaylen Brown '24",
+      "Jayson Tatum '24",
+      "Kristaps Porziņģis '24",
+      "Al Horford '24"
+    ]
   },
   {
     "five": [
@@ -1389,5 +1396,22 @@
     "round": 143,
     "ruling": "Suns dont have to be 85, but can be heigher, low 70s",
     "note": "THE REACHED VALUE, PINNED, AND THE 72 +-3 IS DECLINED. His word after recal_140 asked for the low 70s. recal_143 raised the creation pass-through (CREATE_SHARE 0.20 -> 0.30) and the possession channel (TOV_SIZE 0.45 -> 0.66) together and reached 68 from 66 — the LARGEST reading any (CREATE_SHARE, TOV_SIZE, AMP_MAX) setting produces with every pin held. 69 needs either the Celtics '24 past recal_119's team-OFF rank <=10 or a THIRD five past the Warriors '17 on the all-time adjusted index; 72 needs TOV_SIZE ~1.3 and CREATE_SHARE ~0.6, which puts FOUR fives above the Warriors. The frontier is in data/rounds/143.json. The band is +-4 for the same reason recal_140 used +-4: the OFF gauge is re-frozen on the pool every time teamOffense changes, so a team dial carries pool noise a card does not."
+  },
+  {
+    "card": "Celtics '08 (best legal five)",
+    "five": [
+      "Rajon Rondo '08",
+      "Ray Allen '08",
+      "Paul Pierce '08",
+      "Kevin Garnett '08",
+      "Kendrick Perkins '08"
+    ],
+    "season": 2008,
+    "scale": "team:defdial",
+    "target": 92,
+    "tol": 3,
+    "round": 147,
+    "ruling": "Confirm 8",
+    "note": "THE SUBJECT. 82 -> 90, inside 92+-3. The cause was never the defence formula and no formula moved: Eddie House '08 and Rajon Rondo '08 tie at OVR 62, and bestfive.ts broke set ties by the order teamseasons.json lists the roster in, which is alphabetical, so House started for the best relative defence of the 47 seasons (real DRtg 98.9, 1st of 30 by 2.7, +8.6 vs league). recal_147 breaks a tie between max-OVR fives by the Team DB's own OVR for the five instead (gauges.ts dialOvrRaw, raw net as the second key), and Boston field Rondo. THE REMAINING 2 POINTS ARE A CARD, NOT A TEAM: Rajon Rondo '08 reads OFF 50 on ballsec 33 / 3pt 11, which is a ratings-to-off-def question and is reported rather than tuned."
   }
 ]
