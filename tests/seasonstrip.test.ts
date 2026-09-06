@@ -46,7 +46,12 @@ describe('the strip follows the franchise lineage, not the abbreviation', () => 
     expect(best).not.toBeNull()
     const top = ovrOf(best!)
     for (const t of all) expect(ovrOf(t) ?? -1).toBeLessThanOrEqual(top!)
-    expect(best!.y).toBe(1996) // the ’96 Sonics, 64–18
+    // recal_149 RE-POINTED THIS PIN, and only the literal: the assertion above it (the marked chip
+    // is the franchise MAXIMUM by team OVR) is the behaviour under test and is untouched. The
+    // measurement-ranked voted band lifted Luguentz Dort '25 and Jalen Williams '25 on the OKC five,
+    // and the franchise's best season flipped by ONE point — Thunder '25 (OFF 73 / DEF 89 / OVR 81)
+    // over the '96 Sonics (79 / 81 / OVR 80), which had been the mark. 1996 -> 2025.
+    expect(best!.y).toBe(2025) // Thunder '25, 68–14 — one point over the ’96 Sonics, 64–18
   })
 })
 

@@ -402,6 +402,14 @@ export const DEFAULT_TACTICS: Tactics = {
  * main's constants: 3.89/.67 (blind -0.31, +0.51 — both on the rail), 4.00/.62 (-0.39/+0.53, -0.45/+0.53),
  * 4.10 (oracle +0.49, fails). Re-ratified hunt 3.59 -> 4.00 and crashDef .73 -> .62, the pair with room on
  * both edges. The branch figures (137 .18, 138 .48, 139 3.89/.67) are superseded, not stacked. Seven others held.
+ * recal_149's measurement-ranked voted band moved 210 perdefs, 176 d_ovrs and 120 OVRs and carried
+ * cards across the harness's ovr>=55 line, the pool again; HUNT alone broke, on the ORACLE edge
+ * (+0.4645 at 4.00) — the same failure and the same direction as recal_89's, which is the ninth
+ * time this one tax has been the one that moves. Swept from main's constant: 3.75 (blind -0.29,
+ * under the floor) / 3.80 (-0.33 / +0.56) / 3.83 (-0.35 / +0.54) / 3.85 (-0.37 / +0.53). The
+ * feasible window is about 3.78 to 3.87 and 3.83 is its middle, the value with room at BOTH edges
+ * by r126's rule. Re-ratified hunt 4.00 -> 3.83. crashOff .17, crashDef .62, playmaker 1.10 and the
+ * five others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -409,7 +417,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.00,
+  hunt: 3.83,
   crashOff: 0.17,
   crashDef: 0.62,
 }

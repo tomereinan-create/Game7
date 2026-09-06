@@ -1,0 +1,340 @@
+{
+  "round": 149,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Decline Amen as well. He is elite defender. His 25/26 seasons are even underrated defensively",
+  "title": "THE MEASUREMENT MAY RANK THE BAND: recal_101 gave a voted card's tracked reading a floor and wrote it on the wrong scale — a rank-in-a-band against an absolute level, which fired for exactly one card in the file. The defended-FG% differential is now added to the composite the voted band RANKS, sample-weighted and one-way, against a Pvot pool that does not move. Amen Thompson '26 DEF 93 -> 96 and '25 94 -> 95 on 517 and 471 tracked attempts; '24 (+1.4% on 285) earns nothing and does NOT rise",
+  "subject": "Amen Thompson '26",
+  "scale": "def",
+  "target": 97,
+  "tol": 2,
+  "before": 93,
+  "after": 96,
+  "pipeline_version": 149,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_BAND_LO  = 62\\.5",
+      "label": "where a tracked season starts counting as ELITE — the p75 of the full-sample pool",
+      "note": "measured on this file's 1,068 full-sample tracked cards: p50 57.7 / p75 62.5 / p90 66.5 / p95 68.6 / p99 72.8 / max 80.7"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_BAND_TOP = 72\\.8",
+      "label": "and where it is full — the p99 of the same pool",
+      "note": "the ramp is the top QUARTILE of the measured pool; his word is ELITE"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_BAND_W   = 0\\.32",
+      "label": "what a fully elite measured season is worth in composite space",
+      "note": "the measured distance from a season's MEDIAN voted composite to its MAXIMUM over the thirteen tracked seasons: mean 0.319, median 0.322, range 0.264 (2020) to 0.361 (2014)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_pd149 = PD \\+ TRK_BAND_W \\* _sample_weight\\(r\\['name'\\]\\) \\* _q149",
+      "label": "the measurement joins the composite the band ranks, scaled by the sample",
+      "note": "PD itself is NEVER written back to tmp, so the Pvot pool is bit-identical — recal_114's doctrine"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = max\\(PD2, \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(_pd149\\) \\* BRK\\['_vf'\\]\\)\\)",
+      "label": "one-way: PD2 recomputed with the measured composite, and the card keeps the better",
+      "note": "at wv = 0 the expression is PD2 term for term, so every no-vote card is flat BY CONSTRUCTION"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "if wv > 0 and _dmeas101 is not None and _sample_weight\\(r\\['name'\\]\\) >= 1\\.0:",
+      "label": "UNTOUCHED: recal_101's own floor still stands beside the new one",
+      "note": "it is what still holds Wembanyama '26 at raw 81 — the new floor reads 79 for him"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_RHO_CURVE = \\(\\(150\\.0, 0\\.345\\), \\(250\\.0, 0\\.363\\), \\(350\\.0, 0\\.406\\), \\(450\\.0, 0\\.431\\), \\(550\\.0, 0\\.502\\), \\(650\\.0, 0\\.528\\)\\)",
+      "label": "UNTOUCHED: recal_92/101's reliability regression",
+      "note": "the ramp is taken off _dmeas101, which is ALREADY regressed by this curve and already carries his 0.30 Overall corroboration"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "novote = min\\(0\\.84, \\(1 - wm\\)\\*novote \\+ wm\\*d_meas\\)",
+      "label": "UNTOUCHED: recal_101's 0.84 ceiling on the no-vote tracked channel",
+      "note": "the round does not touch the no-vote channel at all; that is why Jaylen Brown '26, Stephon Castle '26 and Ajay Mitchell '26 are flat to the point"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "def career_rep\\(pid, yr\\)",
+      "label": "UNTOUCHED: the reputation window recal_148 was declined for",
+      "note": "his ruling closed that door — \"Decline Amen as well\" — and no arm of the window is cut or gated"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.83",
+      "label": "the hunt tax re-ratified through the harness on this round's pool",
+      "note": "4.00 -> 3.83; its ORACLE edge broke at +0.4645. Swept 3.75 (blind -0.29, under) / 3.80 (-0.33 / +0.56) / 3.83 (-0.35 / +0.54) / 3.85 (-0.37 / +0.53); 3.83 is the middle of the feasible window by r126's rule. crashOff .17, crashDef .62, playmaker 1.10 and the five others held their bands untouched, all nine PASS. A receipt that pins a tax VALUE is a receipt the Deviation Tax Law is designed to break — this line proves the tax was re-ratified, not that this number still holds."
+    }
+  ],
+  "expect": [
+    {
+      "card": "Amen Thompson '25",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 2,
+      "label": "THE SECOND SUBJECT — 94 -> 95, inside his band. Held off 96 by two things this attribute does not own: recal_114's vote factor (0.867) caps his RAW perdef at 93, and rimprot 84 puts him over compute_ovr's `rimprot >= 80` line so perdef carries 0.40 of his DEF on the BIG vector, not 0.63 on the perimeter one"
+    },
+    {
+      "card": "Amen Thompson '24",
+      "scale": "def",
+      "op": "<=",
+      "value": 94,
+      "label": "THE NEGATIVE CONTROL HIS RULING NAMED: '24 must not rise, and it does not. 94 -> 94. His rookie sheet is +1.4% over 285 6ft+ attempts — below recal_86's neutral point AND 0.57 of a full sample — so the measured term is exactly zero for him"
+    },
+    {
+      "card": "Amen Thompson '24",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "and the one point he does move on the ATTRIBUTE comes only through the 20/60/20 season blend's reach into '25 (92 -> 93), which 0.40 of the big vector cannot carry into a DEF point"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 66,
+      "label": "THE BINDING NO-VOTE CONTROL, and it is why the round is built the way it is. He defends 6ft+ shots at -3.6% over 587 attempts — a BETTER diff on a FULLER sample than Amen '26's -3.2% over 517 — and he is anchored at 66 by Tomer's own words (\"66 is fine, anchor him there\"). No monotone reading of tracking alone can pay Amen 98 and Brown 66, so tracking alone was PROVABLY the wrong door; what separates them is the vote, and this round reads the measurement INSIDE the voted band. wv = 0 makes him flat by construction"
+    },
+    {
+      "card": "Stephon Castle '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 60,
+      "label": "recal_101's own subject, no votes, full sample — flat by construction"
+    },
+    {
+      "card": "Ajay Mitchell '26",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 62,
+      "label": "recal_92's own subject, no votes — flat by construction"
+    },
+    {
+      "card": "Victor Wembanyama '26",
+      "scale": "attr:perdef",
+      "op": "~",
+      "value": 74,
+      "tol": 5,
+      "label": "THE ANCHOR THAT PROVES THE TRACKED CHANNEL WAS CLOSED. He owns the best tracked sheet in the pool (-8.6% over 765) and Tomer anchored him at 74 knowing it (\"I understand the 7'4 is an issue\"), so any rule that pays an elite tracked reading on the ABSOLUTE line must pay him first — and 0.75 x his '26 raw is already 61 of his 74. He rises 74 -> 77, inside, because the composite still charges his height twice and the measurement only re-ranks him"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "the 2014+ summit the ruling names — already at the top of the band, so a floor cannot move him"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "pre-2014: untouched by construction, there is no tracking to read"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "and his DEF with it"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 4,
+      "label": "recal_103's anchor, and the card recal_148 named as the door: -4.7% over 495 attempts. 91 -> 92 through the VOTED band, which is where his 97 already lived; the no-vote path that read him 67 is untouched, so the 148 door stays exactly as that round left it"
+    },
+    {
+      "card": "Jrue Holiday '21",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "FLAT at 93. His 2021 tracked diff is +4.1% — the measurement has nothing to add, and it is one-way, so it cannot take anything either"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "FLAT at 92, and for the same reason: +0.4% over 981 attempts is a full sample of nothing"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "96 -> 97, on the band edge: -4.5% over 876 attempts is the round's own class"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "pre-2014, flat at 95"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "pre-2014, flat at 77"
+    },
+    {
+      "card": "Kevin Durant '24",
+      "scale": "def",
+      "op": "~",
+      "value": 80,
+      "tol": 3,
+      "label": "no votes (drep 0.00), so wv = 0 and he is flat at 80 — the class recal_92 and recal_101 fought over is not reachable by this round at all"
+    },
+    {
+      "card": "Kevin Durant '19",
+      "scale": "def",
+      "op": "~",
+      "value": 79,
+      "tol": 3,
+      "label": "the same, flat at 79"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "rimprot moved on ZERO cards — the round is perdef only"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "the same, flat at 91"
+    },
+    {
+      "card": "Giannis Antetokounmpo '20",
+      "scale": "def",
+      "op": ">=",
+      "value": 99,
+      "label": "THE LOUDEST CARD IN THE ROUND, recorded as an acceptance and not buried: a unanimous DPOY whose composite ranked at the MEDIAN of his own voted pool because 6'11\" empties it twice, measured at -3.0% over 461 attempts. perdef 77 -> 93, DEF 95 -> 99, and OVR 98 -> 99, which makes him the sole card on the OVR ceiling above Jordan '89 and the three LeBron seasons. PENDING TOMER"
+    },
+    {
+      "card": "Jaylen Brown '26",
+      "scale": "off",
+      "op": "==",
+      "value": 83,
+      "label": "o_ovr moved on ZERO cards in the whole pool"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:perdef",
+      "above": "Amen Thompson '26",
+      "below": "Amen Thompson '25",
+      "label": "his ruling reads '26 as the better defensive season and the tracked sheet agrees on both axes (-3.2% over 517 against -3.1% over 471)"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Amen Thompson '26",
+      "below": "Jaylen Brown '26",
+      "label": "THE ROUND'S WHOLE ARGUMENT IN ONE LINE: Brown measures BETTER on a FULLER sample, so the only thing that can separate them is the All-Defensive vote — and it does, 98 to 66"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Amen Thompson '26",
+      "label": "the summit is not reachable from the tracked channel"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Kawhi Leonard '16",
+      "below": "Amen Thompson '26",
+      "label": "and neither is the 2014+ summit his ruling names as the company Amen should keep"
+    },
+    {
+      "scale": "def",
+      "above": "Amen Thompson '26",
+      "below": "Rudy Gobert '24",
+      "label": "his ruling's own comparison, verbatim from the dispatch: Amen should not sit below Gobert '24's 91 by a hair. 96 to 91"
+    },
+    {
+      "scale": "def",
+      "above": "Herbert Jones '23",
+      "below": "Jaylen Brown '26",
+      "label": "the voted elite still reads above the measured-but-unvoted, which is the recal_92 order the whole band exists to keep"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 210,
+    "max_abs": 16,
+    "top": [
+      ["Giannis Antetokounmpo '20", 77, 93],
+      ["LeBron James '16", 75, 88],
+      ["Joakim Noah '15", 76, 89],
+      ["Bam Adebayo '20", 74, 87],
+      ["Andre Roberson '17", 80, 93],
+      ["Al Horford '22", 66, 79],
+      ["Rudy Gobert '21", 71, 83],
+      ["Giannis Antetokounmpo '19", 78, 90],
+      ["Bam Adebayo '21", 77, 89],
+      ["Andre Roberson '16", 81, 93],
+      ["OG Anunoby '26", 79, 90],
+      ["Amen Thompson '26", 91, 98]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Draymond Green '21",
+      "Draymond Green '22",
+      "Draymond Green '23",
+      "Kawhi Leonard '16",
+      "Marcus Smart '20",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Paul George '14"
+    ]
+  },
+  "cost": [
+    "THE OVR SUMMIT MOVED, and it is the round's loudest price. Giannis Antetokounmpo '20 goes OVR 98 -> 99 and is now the SOLE card on the ceiling, above Michael Jordan '89 (98) and LeBron '09/'10/'12 (98), where before he was one of five tied at 98. No anchor covers the OVR ceiling so nothing failed, but this is a board-shape change out of a perdef round and Tomer should see it. The mechanism is not a bug and is not tunable around: the 2020 unanimous DPOY reads a voted composite at the MEDIAN of his own season's voted pool (0.794 against a pool median of 0.792) because 6'11\" is charged twice — recal_54's rep_hf halves his votes above 6'8\" AND height_inv fades over the same inches, the double charge recal_101 measured, named \"the obvious next round on this attribute\" and left standing. His measurement (-3.0% over 461 6ft+ attempts) re-ranks him to the top of that pool, which is exactly what the round is for. If the summit should stay a four-way tie, the thing to re-open is the height double-charge or Giannis, not the measured term.",
+    "THE TRACKED CHANNEL THE DISPATCH POINTED AT IS PROVABLY CLOSED FOR THIS SUBJECT, and the proof is two anchors, not an argument. (1) JAYLEN BROWN '26 is anchored at perdef 66 +-2 by Tomer's own words and defends 6ft+ shots at -3.6% over 587 attempts; Amen '26 is -3.2% over 517. Brown's reading is BETTER on a FULLER sample, so NO monotone function of (diff, attempts) can pay Amen 98 and hold Brown at 66 — recal_92's TRK_RHO and recal_101's 0.84 ceiling are not what stand between them, monotonicity is. (2) VICTOR WEMBANYAMA '26 is anchored at perdef 74 +-5 and owns the best tracked sheet in the file (-8.6% over 765), and his '26 card is 0.75 x a raw value that recal_101's absolute floor already sets at 81; 0.75 x raw + 0.25 x 55 <= 79 caps the absolute tracked line's payout for a -8.6% season at about 87, which is BELOW what Amen '26 would need from a -3.2% season. Measured: the first cut of this round opened the ramp at recal_86's neutral 58.0 and it took OKC '26's team dial to 92 against recal_100's 86 +-4, because the voted composite pool is dense between 0.95 and 1.00 and Luguentz Dort '26 (-0.2%, not elite by any reading) crossed five cards for five points. The ramp was moved to the measured TOP QUARTILE (p75 62.5 -> p99 72.8), Dort earns zero, and the dial reads 87.",
+    "AMEN THOMPSON '25 LANDS AT 95, NOT 96, AND THE LAST POINT IS NOT THIS AGENT'S. Two ceilings hold him and both live outside perdef's own formula. (1) recal_114's vote factor reads 0.867 for him — his All-Defensive vote is partly 'paid in rim' by his block evidence and his DBPM percentile does not fully back it — which caps his RAW band value at 0.55 + 0.45 x 1.00 x 0.867 = card 93 even at Pvot 1.000, which he now reaches. (2) His rimprot is 84, and compute_ovr's `d_bigness` returns a hard 1.0 at `rimprot >= 80`, so a 6'7\" wing is graded on the BIG defensive vector where perdef carries 0.40 instead of 0.63 — his +3 of perdef buys +1.4 of DEF instead of +2.2. That second one is d_ovr's, i.e. compute_ovr.py's, and this agent stops at the attribute per its brief. If 96 is wanted exactly, the levers are recal_114's vote factor or the deterrence clause in d_bigness, both of them rulings.",
+    "AMEN THOMPSON '24 DOES NOT RISE ON DEF — 94 -> 94, as his ruling required. It rises ONE point on the attribute (perdef 92 -> 93) and only through the 20/60/20 season blend's reach into '25; his own '24 tracked term is exactly zero (+1.4% is below recal_86's neutral point, and 285 attempts is 0.57 of a full sample, so both factors of the term vanish). Because he too is over the `rimprot >= 80` line, 0.40 x 1 point does not carry a DEF point. If '24 is later wanted DOWN, that is recal_148's declined door and it is still shut.",
+    "TWO ENGINE PINS RE-BASED IN PLACE WITH THE REASON, neither a ruling reversed. (1) tests/engine.test.ts, Gobert '19 d_ovr >= Giannis '20 d_ovr - 5 -> - 7, the FIFTH widening of that pin (2 -> 3 -> 4 -> 5 -> 7) and the first one caused by evidence rather than by another height constant: Gobert '19 is EXACTLY FLAT at 92 (his recal_62 anchor, tol 1) because his 2019 tracked diff is +0.4%, and Giannis '20 rose because his is -3.0%. (2) tests/seasonstrip.test.ts, the marked OKC chip 1996 -> 2025: the behaviour under test (the mark is the franchise MAXIMUM by team OVR) is untouched and still passes; the franchise best flipped by ONE point, Thunder '25 (OFF 73 / DEF 89 / OVR 81) over the '96 Sonics (79 / 81 / OVR 80), on Dort '25 and Jalen Williams '25.",
+    "THE HUNT TAX WAS RE-RATIFIED, 4.00 -> 3.83, and nothing else was. It broke on the ORACLE edge at +0.4645, the same failure and the same direction as recal_89's; the feasible window on this pool is about 3.78 to 3.87 and 3.83 is its middle. crashOff .17, crashDef .62 and playmaker 1.10 held their bands untouched. src/engine/tactics.ts is otherwise byte-identical to origin/main. The integrator re-sweeps once on the merged pool and that sweep supersedes this figure rather than stacking with it.",
+    "THE DEF GAUGE WAS NOT RE-DERIVED, and that is a decision, not an oversight. recal_100's comment says to re-run scripts/gauge100.ts after any change that moves drtgRef, and recal_101 had to. It was run here and REJECTED: the 2026 league level moves by 0.018 (110.254 -> 110.272) because the round touches 210 cards rather than 2,580, so the re-derivation does not fix anything, while it would move DEF_LEVEL_REF 110.0319 -> 110.2154 and take the Bulls '96 summit from rank 1 to rank 9 of 1,255 with eleven fives on 99 — recal_94's ruling, broken for no gain. src/engine/gauges.ts is byte-identical to origin/main and every team anchor passes against it: Thunder '26 86 -> 87 (86 +-4), Pistons '26 78 -> 79 (75 +-6), Warriors '17 77 -> 80 (81 +-5), 76ers '26 49 (51 +-6), Bulls '96 99 (tol 0), Celtics '08 90, Pistons '04 87, Lakers '87 66, and all seven DEF rank pins.",
+    "PIPELINE_VERSION IS LEFT AT MAIN'S 147 per the dispatch, so the `pipeline_version: 149` line in this file MISSES on this branch by design and passes the moment the integrator stamps the batch. Nothing else in the receipt depends on it.",
+    "WHAT THIS ROUND DELIBERATELY DID NOT TOUCH, listed because each was measured as a route first: recal_92's TRK_RHO regression and recal_101's 0.84 no-vote ceiling (the dispatch's named lever — closed by Jaylen Brown '26 and Wembanyama '26, see above); recal_148's reputation window (his ruling declined it); recal_76 and recal_81's closed doors (no team-defence term and no DBPM term reopened in either attribute); recal_114's vote factor, which now caps the subject and is the obvious next ruling; and the rep_hf / height_inv double charge, which recal_101 named and this round only routes AROUND rather than fixing."
+  ],
+  "notes": [
+    "THE DEFECT, stated as a scale error rather than as a weight. recal_101's line is `PD2 = max(PD2, _dmeas101)`. The left side is a RANK IN A BAND: 0.55 + 0.45 x Pvot(composite) x vote_factor, spanning cards 55 to 99. The right side is an ABSOLUTE LEVEL: recal_86's line centred on 58, regressed by recal_92's reliability curve, whose whole full-sample population spans 43 to 81 with p50 57.7 and p99 72.8. Comparing them with max() means the measurement can only be heard when it beats the card's band position on a scale that is 15 points narrower — so in the entire 2014+ pool it fired for ONE card, Wembanyama '26. Amen Thompson '26 reads 65 on the tracked line against 92 in the band. The measurement was not being underweighted; it was being read in the wrong units.",
+    "THE FIX, in one sentence: the band ranks a composite, so give the composite the measurement. `PD` gains TRK_BAND_W x sample_weight x q, where q ramps over the top quartile of the measured pool, and the SAME frozen Pvot function is asked again. Two properties fall out for free rather than being arranged. (1) The Pvot POOL is bit-identical, because the term is applied to the card's own lookup inside the loop and never written back to `tmp` — recal_114 stated this doctrine for exactly this reason, and it means no card rises by another card falling past it. (2) At wv = 0 the recomputed expression is `(1-0)*novote + 0*(...)`, i.e. PD2 term for term, so every no-vote card is flat BY CONSTRUCTION and not by tuning. Jaylen Brown '26, Stephon Castle '26, Ajay Mitchell '26, Kevin Durant, Stephen Curry and Ayo Dosunmu do not move by a point.",
+    "BOTH CONSTANTS ARE MEASURED. TRK_BAND_W = 0.32 is the distance from a season's median voted composite to its maximum, over all thirteen tracked seasons: 2014 0.361, 2015 0.353, 2016 0.327, 2017 0.288, 2018 0.310, 2019 0.317, 2020 0.264, 2021 0.301, 2022 0.330, 2023 0.322, 2024 0.330, 2025 0.294, 2026 0.350 — mean 0.319, median 0.322. So the statement the constant makes is exact: a fully elite measured season is worth enough to carry the MEDIAN voted defender of that season to the top of his own band, and not one point more. TRK_BAND_LO / TRK_BAND_TOP = 62.5 / 72.8 are the p75 and p99 of the regressed tracked reading over the 1,068 full-sample tracked cards (p50 57.7, p90 66.5, p95 68.6, max 80.7).",
+    "THE FIRST CUT WAS MEASURED AND REJECTED, which is what chose the ramp. Opening it at recal_86's neutral 58.0 instead of the p75 moved 320 cards instead of 210 and broke recal_100's Thunder '26 anchor (dial 86 -> 92), because a merely-average tracked season buys real band position where the voted composite pool is dense: Luguentz Dort '26 at -0.2% gained five points and OG Anunoby '23 eight. His word is ELITE, the top quartile is what elite means on this file's own distribution, and at 62.5 Dort '26 gains one point and Anunoby '23 one.",
+    "THE FOOTPRINT: 210 perdef cards move, ALL 210 UP (the term is one-way by construction), max +16, and the distribution is 69 at +1, 58 at +2 or +3, 27 at +4, and 38 at +5 or more. rimprot moves on ZERO cards and o_ovr on ZERO. Downstream: d_ovr 176 movers (all up, max +9), ovr 120 (all up, max +5). The perdef 99 block goes from 11 cards to 18 — the additions are Draymond '21/'22/'23, Tony Allen '13/'14, Marcus Smart '20 and Paul George '14, every one of them a first-team All-Defensive season with a tracked sheet to match, but it IS compression at the summit and recal_84/recal_90 exist because of compression at the summit.",
+    "THE TEN INPUTS BEHIND THE TEN CARDS (6ft+ diff, attempts, All-D reputation): Amen '26 -3.2%/517/0.85 · Amen '25 -3.1%/471/1.00 · Amen '24 +1.4%/285/0.85 · Giannis '20 -3.0%/461/1.00 · LeBron '16 -5.5%/462/0.55 · Thybulle '21 -5.2%/329/0.60 · Herb Jones '23 -4.7%/495/0.85 · Wembanyama '26 -8.6%/765/1.00 · Jaylen Brown '26 -3.6%/587/0.00 · Jrue '21 +4.1%/532/1.00 · Gobert '19 +0.4%/981/1.00 · Kawhi '16 -5.5%/485/1.00.",
+    "WHY THE CLASS THAT RISES IS MOSTLY BIG AND MOSTLY TALL, and it is the same finding recal_101 recorded rather than a new one. The cards that gain most are the ones whose composite is emptied by height while their measurement is strong — Giannis '19/'20, Anthony Davis '15-'23, Bam Adebayo '20-'22, Al Horford '22, Gobert '21/'22, Joakim Noah '15. The composite charges height twice (rep_hf and height_inv) and the measurement charges it not at all, so reading the measurement is, in effect, a partial refund of a double charge that recal_101 measured, named and left standing. That is a real and arguable side effect, it is reported here rather than smoothed over, and the clean fix for it is the height ruling recal_101 asked for, not this term.",
+    "THE ORDER TEST THAT MATTERS MOST is Amen '26 above Jaylen Brown '26 on perdef, 98 to 66, on a WORSE diff and a SMALLER sample. That is only defensible because the separating evidence is the All-Defensive vote, and because the round pays the measurement strictly INSIDE the voted band rather than on a channel a no-vote card can reach. State it plainly: this round makes the vote worth more, not less — it lets an elite measurement decide WHERE in the voted band a certified defender sits, and gives an uncertified one nothing at all."
+  ]
+}

@@ -49,6 +49,43 @@ def trk_rho(att):
         a0, r0 = TRK_RHO_CURVE[i]; a1, r1 = TRK_RHO_CURVE[i + 1]
         if a <= a1: return r0 + (r1 - r0) * (a - a0) / (a1 - a0)
     return TRK_RHO_CURVE[-1][1]
+# recal_149 (HIS RULING on Amen Thompson, verbatim: "Decline Amen as well. He is elite defender.
+# His 25/26 seasons are even underrated defensively"). THE MEASUREMENT MAY RANK THE BAND.
+# recal_101 gave a voted card's full-sample tracked reading a FLOOR, and it was right to; but the
+# floor was written on the WRONG SCALE. The voted band is a within-season RANK map into 55..99
+# (0.55 + 0.45 x Pvot(PD) x vf), while `_abs_perdef` is an ABSOLUTE level centred on 58 whose whole
+# full-sample pool spans 43 to 81 (p50 57.7, p90 66.5, p99 72.8, max 80.7 = Wembanyama '26). Taking
+# max() of a rank-in-a-band against a level therefore fired for exactly ONE card in the file: an
+# All-Defensive wing measured at -3.2% over 517 shots read 65 on the tracked line against 92 in the
+# band, so his measurement could never be seen. The band ranks a PROXY (votes, DBPM, height); the
+# tracked line MEASURES the same thing. This round reads the measurement WHERE THE BAND DECIDES —
+# it is added to the card's own composite and the SAME frozen Pvot pool is asked again, so elite
+# tracked defence buys BAND POSITION, which is what votes buy.
+# BOTH CONSTANTS ARE MEASURED ON THIS FILE, neither is chosen:
+#   TRK_BAND_LO / TRK_BAND_TOP = 62.5 / 72.8 — the ramp is the TOP QUARTILE of the regressed
+#                   tracked reading, measured over the 1,068 full-sample tracked cards in this file:
+#                   p50 57.7 · p75 62.5 · p90 66.5 · p95 68.6 · p99 72.8 · max 80.7 (Wembanyama '26).
+#                   His word is ELITE, so the credit starts where a season beats three quarters of
+#                   the measured pool and is full at the top one percent. A ramp opened at recal_86's
+#                   neutral 58.0 instead was measured first and is REJECTED: the voted composite pool
+#                   is dense between 0.95 and 1.00, so a merely-average tracked season (Luguentz Dort
+#                   '26, -0.2%) crossed five cards and gained five points, and OKC '26's team dial
+#                   left recal_100's band at 92 against 86 +-4. At the top quartile Dort earns zero.
+#   TRK_BAND_W    = 0.32 — the distance from a season's MEDIAN voted composite to its MAXIMUM,
+#                   measured over the thirteen tracked seasons: mean 0.319, median 0.322, range
+#                   0.264 (2020) to 0.361 (2014). So a fully elite measured season is worth exactly
+#                   enough to carry the MEDIAN voted defender to the top of his own season's band,
+#                   and not one point further. It is read beside drep (0.453) and height_inv (0.309).
+# WHY NOTHING FALLS AND THE POOL IS BIT-IDENTICAL: the term is applied to the CARD'S OWN lookup
+# inside the loop, never to the PD stored in `tmp`, so the Pvot pool it is measured against does not
+# move (recal_114's doctrine, stated there for the same reason), and the whole thing is a max() —
+# no card is demoted by a measurement, so recal_54, recal_82 and recal_97's voted band stand.
+# BY CONSTRUCTION FLAT: every pre-2014 card (no tracking), and every NO-VOTE card (wv = 0 makes the
+# recomputed value identical to PD2 term for term) — Jaylen Brown '26 66, Stephon Castle '26 62,
+# Ajay Mitchell '26 62, Kevin Durant, Stephen Curry, Ayo Dosunmu are untouched by construction.
+TRK_BAND_LO  = 62.5    # regressed tracked reading, card space, where elite starts (p75 full-sample)
+TRK_BAND_TOP = 72.8    # ... and where it is full (p99)
+TRK_BAND_W   = 0.32    # what a fully elite measured season is worth in composite space
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -613,6 +650,16 @@ for yr, rows in seasons.items():
         # recal_82 and recal_97's voted band are untouched for everyone the measurement does not lift.
         if wv > 0 and _dmeas101 is not None and _sample_weight(r['name']) >= 1.0:
             PD2 = max(PD2, _dmeas101)
+        # recal_149: the same measurement, read on the band's own scale (see the header block).
+        # `_dmeas101` is already regressed by recal_92's reliability curve and already carries his
+        # "all shots carry weight" 0.30 Overall corroboration, so the ramp is taken straight off it;
+        # recal_12/101's sample weight then decides how much of the band credit a partial season
+        # earns, which is why a 285-shot rookie year (Amen Thompson '24, and it measures +1.4%
+        # besides) earns none of it. wv carries the trace-vote rule through untouched.
+        if _dmeas101 is not None:
+            _q149 = min(1.0, max(0.0, ((1.0 + 98.0 * _dmeas101) - TRK_BAND_LO) / (TRK_BAND_TOP - TRK_BAND_LO)))
+            _pd149 = PD + TRK_BAND_W * _sample_weight(r['name']) * _q149
+            PD2 = max(PD2, (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(_pd149) * BRK['_vf']))
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)
         out_players[(r['pid'], yr)] = dict(

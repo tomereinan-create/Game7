@@ -164,7 +164,15 @@ describe('player data (stats-only doctrine)', () => {
     // recal_67 WIDENED IT AGAIN, 4 -> 5, and again by design: the display deflation (1.10 -> 1.03 with
     // DEF_TOP re-derived 104.5 -> 98.67) leaves Giannis '20 above the 93 knee, where the re-derived band
     // now STRETCHES (slope 6/5.67), while Gobert '19 (composite 84.1) reads identity — 92 vs 87.
-    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 5)
+    // recal_149 WIDENS IT AGAIN, 5 -> 7, the fifth time and again by design: the voted band is now
+    // ranked on the card's own tracked measurement as well as on the proxy, and Giannis '20 is the
+    // class that names — a unanimous DPOY who defended 6ft+ shots at -3.0% over 461 attempts, perdef
+    // 77 -> 93, DEF 95 -> 99. Gobert '19 is EXACTLY FLAT at 92 (his recal_62 anchor, tol 1): his
+    // 2019 tracked diff is +0.4%, i.e. the measurement has nothing to add to his votes, which is
+    // the whole point of reading it. The gap is 7 because ONE of the pair was measured elite and
+    // the other was not, and it is the height double-charge this comment has been widening around
+    // since r36 finally being answered by evidence rather than by another height constant.
+    expect(PLAYERS.find((p) => p.name === "Rudy Gobert '19")!.d_ovr).toBeGreaterThanOrEqual(PLAYERS.find((p) => p.name === "Giannis Antetokounmpo '20")!.d_ovr - 7)
     // o_ovr / d_ovr on everyone, inside +-3 of the spec anchors; OVR is not rebuilt from them
     const near = (name: string, o: number, d: number) => {
       const p = PLAYERS.find((x) => x.name === name)!
