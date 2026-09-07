@@ -8,6 +8,7 @@ import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
+import { teamColor } from './teamColors'
 import { LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { Dial, TeamDials } from './MatchupPanel'
@@ -668,6 +669,11 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
             {/* his ruling: the five stands on a floor, not in a list — tap a spot for the full card */}
             <CourtFive
+              /* His ruling: the team db's five stands in that club's colours, the same way the
+                 campaign's opponent does — this floor is always somebody else's team, never yours.
+                 Gated the same way too: scout mode only, because user mode's floor is the one the
+                 bundle drew and the bundle draws it in blue. */
+              club={user ? null : teamColor(picked.ab)}
               spots={detail.five.map((p, i) => ({
                 p,
                 slot: POSITIONS[i],
