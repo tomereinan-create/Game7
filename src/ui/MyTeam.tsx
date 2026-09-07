@@ -8,6 +8,7 @@ import { WEAR_OUT } from '../state/campaign'
 import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
+import type { TeamColor } from './teamColors'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { gateTactics, heliMan, pnrPair, popPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
@@ -74,6 +75,7 @@ export function MyTeam({
   capMax,
   onSpend,
   onSwap,
+  club = null,
   onBack,
 }: {
   five: Player[]
@@ -106,6 +108,13 @@ export function MyTeam({
   onSpend: () => void
   /** `out` leaves the five, `in` joins it. */
   onSwap: (out: string, inn: string) => void
+  /**
+   * YOUR KIT (his ruling: "Allow me to pick my team colors when starting a campaign"). Handed down
+   * rather than read here, because this screen knows the five and the plan and has never known who
+   * the franchise is. Null for a campaign written before the picker: that is the blue floor these
+   * men have always stood on.
+   */
+  club?: TeamColor | null
   onBack: () => void
 }) {
   const left = (n: string) => (wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99) + boost
@@ -588,6 +597,7 @@ export function MyTeam({
             </div>
             {/* his ruling: the five stands on the floor — same taps as the rows beside it, plan and all */}
             <CourtFive
+              club={club}
               plan={plan}
               side={side}
               onSide={setSide}

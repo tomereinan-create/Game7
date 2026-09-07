@@ -5,6 +5,7 @@ import { setUserMode, useUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
 import { useLayout } from './useLayout'
 import { Ball } from './Ball'
+import { Trophy } from './Trophy'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
@@ -27,6 +28,15 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
     return n > 0 ? `★ ${n} / ${ROUNDS * 3}` : null
   }
   const cur = currentLevel(progress.campaign)
+  /**
+   * THE TROPHY, ON THE SLATE (his ruling: "Add a trophy in all modes after 150 wins"). The map
+   * carries the full plate; the front door carries the mark, on whichever of the three cards has
+   * been finished, because that is the one screen where all three modes are on view at once and a
+   * finished ladder was indistinguishable from an unfinished one there — 450 stars and 12 read the
+   * same way at a glance. `currentLevel` is null exactly when nothing is left, which is the same
+   * question the status line below already asks.
+   */
+  const done = (p: Progress) => currentLevel(p) === null
   /**
    * THE LADDER, FOR ANY OF THE THREE (his ruling: "Have all the campaigns show the progress in
    * their bar"). It used to be printed on the campaign card alone, so the two rules under it named
@@ -102,6 +112,11 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
         <div className="slate-top">
           <span className="slate-n">01</span>
           <b>Campaign</b>
+          {done(progress.campaign) ? (
+            <span className="slate-trophy" title={`All ${ROUNDS} cleared`}>
+              <Trophy size={18} />
+            </span>
+          ) : null}
           <em className="slate-tag">{tally(progress.campaign) ?? 'PLAY →'}</em>
         </div>
         {rungs(progress.campaign)}
@@ -119,6 +134,11 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           <span className="slate-top">
             <span className="slate-n">02</span>
             <b>Salary cap</b>
+            {done(progress.salary) ? (
+              <span className="slate-trophy" title={`All ${ROUNDS} cleared`}>
+                <Trophy size={16} />
+              </span>
+            ) : null}
             <em className="slate-tag">{tally(progress.salary) ?? 'Under the cap →'}</em>
           </span>
           {rungs(progress.salary)}
@@ -127,6 +147,11 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
           <span className="slate-top">
             <span className="slate-n">03</span>
             <b>Death match</b>
+            {done(progress.death) ? (
+              <span className="slate-trophy" title={`All ${ROUNDS} cleared`}>
+                <Trophy size={16} />
+              </span>
+            ) : null}
             <em className="slate-tag danger">{tally(progress.death) ?? 'One life →'}</em>
           </span>
           {rungs(progress.death)}

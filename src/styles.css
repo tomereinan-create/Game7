@@ -2118,6 +2118,56 @@ button {
 .plate.empty { background: var(--surface-2); }
 .plate.empty .kicker { color: var(--muted-2); }
 .plate.empty b { font-size: 24px; color: var(--muted); }
+/* THE KIT PICKER (his ruling: "Allow me to pick my team colors when starting a campaign").
+   Twelve two-tone chips in a grid that holds four across a phone and six on a desk. Each chip is
+   its own swatch — the colours ARE the label — so the name under it is a handle, not the reading.
+   Every chip is a 44px target, like everything else on this screen he taps with a thumb. */
+.kits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.kit {
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 3px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--muted-2);
+  font-family: var(--sans);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+/* the swatch: the main colour, with the trim as a band down its right edge — the same two-part
+   reading the ladder's tickets give a club, at the size of a thumbnail */
+.kit i {
+  display: block;
+  width: 100%;
+  height: 20px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--kp) 0 68%, var(--ka) 68% 100%);
+}
+.kit.on { border-color: var(--you); color: var(--ink); box-shadow: inset 0 0 0 1px var(--you); }
+.kit:hover { border-color: var(--line-3); }
+/* THE TWO WELLS — for the club that is not in the twelve. They write the same two values the
+   chips do, so there is no second kind of kit and nothing downstream can tell them apart. */
+.kit-mix { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.kit-well { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-2); cursor: pointer; }
+.kit-well input { width: 34px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: none; cursor: pointer; }
+.kit-mix .cap { flex: 1 1 160px; min-width: 0; }
+/* The plate wears the kit once there is a team to put on it — the nameplate is the preview. */
+.plate.kitted { background: linear-gradient(150deg, var(--kp), var(--kd)); border-left: 4px solid var(--ka); }
+.plate.kitted .kicker { color: var(--ka); }
+.plate.kitted b { color: var(--ki); }
+@media (min-width: 900px) {
+  .kits { grid-template-columns: repeat(6, 1fr); }
+  .kit { font-size: 10px; }
+  .kit i { height: 24px; }
+}
 .setup-note { font-size: 11px; color: var(--muted); line-height: 1.45; margin-top: 8px; }
 
 /* ---- opponent reads ---- */
@@ -4320,6 +4370,62 @@ body.um {
 }
 .um-rename:hover { border-color: var(--um-cream); color: var(--um-cream); }
 
+/* SCOUT MODE'S COPY OF THE CONTROL ROW (his ruling: "Add this to all campaign modes in scout
+   mode(same as user mode have)"). The MARKUP is shared — one row, one auto door, one set of era
+   chips — and only the skin is restated, because the `--um-*` tokens the chips are drawn in exist
+   under `body.um` and nowhere else. Restating them in the app's own variables is what keeps the
+   row from arriving in scout mode as unstyled boxes.
+
+   The horizontal padding goes: `.map-top` already pads 14px and the header above this row runs
+   wall to wall inside it, so an inset row would sit narrower than the head it belongs to. */
+.um-mapbar.scout { padding: 2px 0 10px; }
+.um-mapbar.scout .um-era {
+  border-color: var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+}
+.um-mapbar.scout .um-era b { font-family: var(--serif); color: var(--ink-2); }
+.um-mapbar.scout .um-era i { font-family: var(--mono); color: var(--faint); }
+/* the block you are actually standing in, and the auto door when it is open, take the skin's own
+   lit colour — the same one the header's links are printed in, block by block */
+.um-mapbar.scout .um-era.on { border-color: currentColor; color: var(--you); }
+.um-mapbar.scout .um-era.on b, .um-mapbar.scout .um-era.on i { color: inherit; }
+.um-mapbar.scout .um-era.auto { flex: 1.2 1 0; font-weight: 700; }
+.map-top.arena .um-mapbar.scout .um-era.on { color: #ff8a4d; }
+.map-top.wood .um-mapbar.scout .um-era.on { color: #ffcf7d; }
+.map-top.hall .um-mapbar.scout .um-era.on { color: #f4e8cf; }
+.map-top.dusk .um-mapbar.scout .um-era.on { color: #3ee6b0; }
+
+/* THE TROPHY (his ruling: "Add a trophy in all modes after 150 wins"). The last thing in the
+   header, so a finished ladder says so across the top of its own map in whichever of the three
+   campaigns finished it. Gold in both modes: the cup is the result, and the result does not have
+   a scout reading and a user reading. */
+.map-trophy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(217, 164, 65, 0.5);
+  border-radius: 5px;
+  background: linear-gradient(90deg, rgba(217, 164, 65, 0.16), rgba(217, 164, 65, 0.03));
+  color: #e8bf6a;
+}
+.map-trophy .trophy { flex: none; }
+.map-trophy .tr-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.map-trophy b { font-family: var(--serif); font-size: 17px; line-height: 1; font-weight: 400; color: #f4e0b4; }
+.map-trophy i { font-family: var(--mono); font-style: normal; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #c2a06a; }
+@media (min-width: 900px) {
+  .map-trophy b { font-size: 21px; }
+  .map-trophy i { font-size: 11px; }
+}
+/* On the front door the cup is the whole statement — the card already carries the count. */
+.slate-trophy { display: inline-flex; align-self: center; color: #e8bf6a; }
+
 /* --------------------------------------------------------------------------
    USER MODE'S RAILS — the wheel and game night
    -------------------------------------------------------------------------- */
@@ -4429,14 +4535,18 @@ body.um {
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 4px;
-  background: linear-gradient(#1c4c9e, #17408b);
+  /* THE KIT ON THE SHIRT (his ruling: "Allow me to pick my team colors when starting a
+     campaign"). The bundle drew this jersey in one blue; the tokens below are the campaign's own
+     two colours when it has picked a pair, and the bundle's blues when it has not — a save from
+     before the picker runs out in exactly the shirt it always did. */
+  background: linear-gradient(var(--jp, #1c4c9e), var(--jd, #17408b));
   clip-path: polygon(22% 12%, 36% 2%, 44% 9%, 56% 9%, 64% 2%, 78% 12%, 100% 30%, 88% 46%, 88% 100%, 12% 100%, 12% 46%, 0% 30%);
 }
-.jf-jersey b { font-family: var(--serif); font-size: 24px; line-height: 0.8; font-weight: 400; color: #fff; text-shadow: 0 2px 0 #0d2a5e; }
+.jf-jersey b { font-family: var(--serif); font-size: 24px; line-height: 0.8; font-weight: 400; color: var(--ji, #fff); text-shadow: 0 2px 0 var(--jd, #0d2a5e); }
 .jf-card.open .jf-jersey { background: linear-gradient(#2a2622, #1d1916); }
 .jf-plate { display: block; background: var(--um-paper); color: var(--um-ink); padding: 3px 4px 4px; }
 .jf-plate b { display: block; font-family: var(--serif); font-size: 13px; line-height: 1; font-weight: 400; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
-.jf-plate i { display: block; font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.1; color: #17408b; white-space: nowrap; overflow: hidden; }
+.jf-plate i { display: block; font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.1; color: var(--jd, #17408b); white-space: nowrap; overflow: hidden; }
 
 /* LEGS LEFT — five bars keyed to the shirts above them. */
 .um-legs { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }

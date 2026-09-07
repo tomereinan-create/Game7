@@ -1,6 +1,7 @@
 import type { Player } from '../engine/types'
 import { Ball } from './Ball'
 import { LINES } from './Stat'
+import { cardInk, type TeamColor } from './teamColors'
 
 /**
  * GAME NIGHT'S FLOOR (the design bundle, screen 5) — user mode only.
@@ -36,9 +37,38 @@ export interface JerseySpot {
   onTap?: () => void
 }
 
-export function JerseyFive({ spots, shooting = false }: { spots: JerseySpot[]; shooting?: boolean }) {
+export function JerseyFive({
+  spots,
+  shooting = false,
+  club = null,
+}: {
+  spots: JerseySpot[]
+  shooting?: boolean
+  /**
+   * YOUR KIT (his ruling: "Allow me to pick my team colors when starting a campaign"). Of every
+   * surface in the game this is the literal one — these ARE the shirts — so the two colours picked
+   * on the name screen are stated here as the shirt's own tokens and the stylesheet keeps its
+   * blues as the fallbacks. Null (a campaign from before the picker, or any screen that has no
+   * team) leaves the jerseys exactly the blue they have always been.
+   */
+  club?: TeamColor | null
+}) {
   return (
-    <div className="jf">
+    <div
+      className="jf"
+      style={
+        club
+          ? ({
+              '--jp': club.primary,
+              '--jd': club.deep,
+              /* the trim, put through the ladder's own near-black rule, so a club that trims in
+                 black gets cream on the shirt instead of an invisible number */
+              '--ja': cardInk(club).edge,
+              '--ji': club.ink,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
       {/* THE FLOOR. Hardwood raked back under the eye, with the house lights pooled at centre
           court — the same boards the ladder's blocks are cut from, laid flat instead of upright. */}
       <div className="jf-floor" aria-hidden>

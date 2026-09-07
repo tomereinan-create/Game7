@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Team } from '../state/campaign'
 import { useTicker } from './Ticker'
 import { useUserMode } from '../state/viewmode'
+import { DEFAULT_KIT, KITS, kitColor, type Kit } from './teamColors'
 
 /** [name, ISO country code, population], sorted by population desc (GeoNames cities15000). */
 type City = [string, string, number]
@@ -41,6 +42,13 @@ export function TeamSetup({
   const [q, setQ] = useState(initial?.city ?? '')
   const [city, setCity] = useState<Team | null>(initial)
   const [name, setName] = useState(initial?.name ?? '')
+  /**
+   * THE KIT. A renamed team keeps the colours it already wears; a new one starts in the app's own
+   * ice, so picking nothing is not picking wrong. The twelve are the whole picker — the two colour
+   * wells under them are for the club that isn't in the twelve, and they write the same two values.
+   */
+  const [kit, setKit] = useState<Kit>(initial?.colors ?? DEFAULT_KIT)
+  const club = kitColor(kit)
 
   useEffect(() => {
     let on = true
@@ -124,11 +132,47 @@ export function TeamSetup({
           onChange={(e) => setName(e.target.value)}
         />
 
-        {/* THE PLATE — the one thing on this screen that is already the franchise: blue, and the
-            name at the size it will be worn. Empty until both halves are in, because half a
-            nameplate reads as a bug rather than as a prompt. */}
+        {/* HIS RULING: "Allow me to pick my team colors when starting a campaign." Twelve kits,
+            each a two-tone chip printed in the colours it actually is — the swatch IS the preview,
+            so nothing here needs a name to be read. The two wells below take any pair the twelve
+            don't cover, and they write the same two values, so there is no second kind of kit. */}
+        <label className="label">Colours</label>
+        <div className="kits">
+          {KITS.map((k) => (
+            <button
+              key={k.name}
+              className={`kit ${k.kit.primary === kit.primary && k.kit.accent === kit.accent ? 'on' : ''}`}
+              style={{ '--kp': k.kit.primary, '--ka': k.kit.accent } as React.CSSProperties}
+              onClick={() => setKit(k.kit)}
+              aria-pressed={k.kit.primary === kit.primary && k.kit.accent === kit.accent}
+              aria-label={k.name}
+            >
+              <i />
+              <span>{k.name}</span>
+            </button>
+          ))}
+        </div>
+        <div className="kit-mix">
+          <label className="kit-well">
+            <input type="color" value={kit.primary} onChange={(e) => setKit({ ...kit, primary: e.target.value })} />
+            <span>Main</span>
+          </label>
+          <label className="kit-well">
+            <input type="color" value={kit.accent} onChange={(e) => setKit({ ...kit, accent: e.target.value })} />
+            <span>Trim</span>
+          </label>
+          <span className="cap">The jersey, the busts on the floor and the ring around them.</span>
+        </div>
+
+        {/* THE PLATE — the one thing on this screen that is already the franchise: the name at the
+            size it will be worn, and, since the kit is picked here, in the colours it will be worn
+            in. Empty until both halves are in, because half a nameplate reads as a bug rather than
+            as a prompt — and empty it keeps the kit off, so the prompt is never mistaken for a team. */}
         {city && name.trim() ? (
-          <div className="plate">
+          <div
+            className="plate kitted"
+            style={{ '--kp': club.primary, '--kd': club.deep, '--ka': club.accent, '--ki': club.ink } as React.CSSProperties}
+          >
             <span className="kicker">You are</span>
             <b>
               {city.city} {name.trim()}
@@ -148,7 +192,7 @@ export function TeamSetup({
           <button className="btn ghost" onClick={onBack}>
             ← Back
           </button>
-          <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim() })}>
+          <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim(), colors: kit })}>
             {/* The bundle names the whole franchise on the button — "Play as the Salt Lake City
                 Sevens", the thing that goes on the jersey — where the app names only the nickname.
                 User mode takes the bundle's wording; scout mode's label is untouched. */}

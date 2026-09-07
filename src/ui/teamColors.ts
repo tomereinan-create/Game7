@@ -238,3 +238,65 @@ export function terminalSkin(c: TeamColor): Record<string, string> {
     '--pct-acc-tint': a(13),
   }
 }
+
+/* ==========================================================================
+   YOUR OWN CLUB (his ruling: "Allow me to pick my team colors when starting
+   a campaign").
+
+   Every side on the ladder has worn its own two colours since the tickets
+   were painted; YOUR five stood on franchise blue whoever you said you were.
+   The campaign carries a KIT now — two colours picked on the name screen —
+   and it is turned into the SAME `TeamColor` the table above hands out, so
+   every surface that already knows how to wear a club (the court's busts and
+   rings, the ticket, the terminal) takes yours without learning a new type.
+
+   Two colours are picked and the other two are derived, exactly as the table
+   states them: `deep` is the primary driven down to near-black, which is what
+   gives a club its rake under the lights, and `ink` is whatever reads on the
+   primary. Asking for four would be asking him to art-direct a gradient.
+   ========================================================================== */
+
+/** What the campaign stores: the two colours a kit is actually chosen as. */
+export interface Kit {
+  primary: string
+  accent: string
+}
+
+/** The kits offered on the name screen. Ice is the app's own, and the default — a save that never picked reads as it always did. */
+export const KITS: { name: string; kit: Kit }[] = [
+  { name: 'Ice', kit: { primary: '#2b3550', accent: '#a6cbe9' } },
+  { name: 'Royal', kit: { primary: '#1d428a', accent: '#ffc72c' } },
+  { name: 'Forest', kit: { primary: '#007a33', accent: '#bb9753' } },
+  { name: 'Crimson', kit: { primary: '#ce1141', accent: '#f2ece0' } },
+  { name: 'Purple', kit: { primary: '#552583', accent: '#fdb927' } },
+  { name: 'Teal', kit: { primary: '#00778b', accent: '#f2c14e' } },
+  { name: 'Orange', kit: { primary: '#e56020', accent: '#141821' } },
+  { name: 'Navy', kit: { primary: '#0c2340', accent: '#78be20' } },
+  { name: 'Wine', kit: { primary: '#7b1d3a', accent: '#d9b26b' } },
+  { name: 'Steel', kit: { primary: '#55606e', accent: '#e8ecf1' } },
+  { name: 'Midnight', kit: { primary: '#14161c', accent: '#d64545' } },
+  { name: 'Gold', kit: { primary: '#c9a227', accent: '#14161c' } },
+]
+
+/** The kit a fresh campaign starts in — the app's own ice-blue, which is what an unpainted team already wore. */
+export const DEFAULT_KIT: Kit = KITS[0].kit
+
+/**
+ * A picked kit as a whole club. `deep` keeps the primary's hue and takes its lightness to the
+ * floor — a fixed near-black would flatten every kit to the same gradient — and `ink` flips to
+ * near-black on a primary bright enough that cream would disappear on it (Gold, Steel).
+ */
+export function kitColor(kit: Kit): TeamColor {
+  const p = toHsl(kit.primary)
+  const l = Math.min(9, Math.max(2.5, p.l * 0.22))
+  return {
+    primary: kit.primary,
+    deep: `hsl(${p.h.toFixed(0)} ${Math.min(p.s, 60).toFixed(0)}% ${l.toFixed(1)}%)`,
+    accent: kit.accent,
+    ink: lum(kit.primary) > 0.6 ? '#0c0d10' : '#ffffff',
+  }
+}
+
+/** The campaign's own colours, or null for a save from before the kit existed — those keep the blue floor. */
+export const myColor = (team: { colors?: Kit } | null | undefined): TeamColor | null =>
+  team?.colors ? kitColor(team.colors) : null

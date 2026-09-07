@@ -2,6 +2,7 @@ import { ROUNDS } from '../config'
 import { DEFAULT_TACTICS, reconcileTactics, type Tactics } from '../engine/tactics'
 import { migrate, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
+import type { Kit } from '../ui/teamColors'
 
 /** Three save slots: the campaign, its salary-cap variant, and the death match. */
 export type CampaignMode = 'campaign' | 'salary' | 'death'
@@ -29,6 +30,14 @@ export interface Team {
   /** ISO 3166-1 alpha-2. */
   country: string
   name: string
+  /**
+   * THE KIT (his ruling: "Allow me to pick my team colors when starting a campaign"). Two colours,
+   * picked on the name screen beside the city and the nickname, and worn by your five on every
+   * floor they stand on. OPTIONAL, and it stays optional: a save written before the picker existed
+   * has no kit, and `myColor` reads that as the ice-blue those campaigns already played in — no
+   * migration, and nobody's team changes colour behind their back.
+   */
+  colors?: Kit
 }
 
 export interface Progress {

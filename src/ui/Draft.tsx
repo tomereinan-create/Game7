@@ -25,7 +25,7 @@ import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { CoachSays, DraftProgress, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
-import { teamColor } from './teamColors'
+import { myColor, teamColor } from './teamColors'
 import { CrowdBar, JerseyFive, LegsLeft, bugFor } from './JerseyFive'
 import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
@@ -1264,6 +1264,8 @@ export function Draft({
             flash={flash}
           />
           <JerseyFive
+            /* his ruling: the kit picked on the name screen is what the five run out in */
+            club={myColor(wallet.team)}
             shooting={shooting}
             spots={POSITIONS.map((x) => {
               const n = slots[x]
@@ -1278,6 +1280,14 @@ export function Draft({
           </>
         ) : (
         <CourtFive
+          /* HIS RULING: "Allow me to pick my team colors when starting a campaign." The floor
+             opposite already stands in the opponent's club; this one is YOURS, so it stands in the
+             kit picked on the name screen. Not gated on the mode the way the opponent's floor is
+             — the bundle draws the OPPONENT blue because user mode is not told who it is playing,
+             and it is always told who it is itself; user mode with a full five stands the jerseys
+             above instead, and those wear the kit too. `myColor` is null for a campaign that
+             predates the picker, and null is the blue floor this has always been. */
+          club={myColor(wallet.team)}
           tactic={plan}
           swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
           spots={POSITIONS.map((x) => {

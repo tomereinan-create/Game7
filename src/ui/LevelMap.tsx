@@ -7,6 +7,7 @@ import { balance, canBuy, NODE, NODES } from '../engine/tree'
 import { Dial } from './MatchupPanel'
 import { currentLevel, playable, totalStars, type Progress } from '../state/campaign'
 import { Ask } from './Ask'
+import { Trophy } from './Trophy'
 import { cardInk, teamColor } from './teamColors'
 import { isUserMode, useUserMode } from '../state/viewmode'
 
@@ -634,32 +635,38 @@ export function LevelMap({
           </div>
         </div>
 
-        {/* USER MODE'S CONTROL ROW (the design bundle). Four era chips and the auto door, each a
-            44px target, then the staff button and rename side by side underneath. They scroll the
-            map without moving where the campaign is — jumping to era III is a way of LOOKING at the
-            ladder, and it must never be mistaken for having got there. Scout mode's header is the
-            one it has always had: these three rows are additions to user mode only. */}
-        {user ? (
-          <div className="um-mapbar">
-            <div className="um-eras">
-              {eras.map((e, i) => (
-                <button
-                  key={e.name}
-                  className={`um-era ${cur && cur >= e.first && (!eras[i + 1] || cur < eras[i + 1].first) ? 'on' : ''}`}
-                  onClick={() => jumpTo(e.first)}
-                >
-                  <b>{ROMAN[i] ?? i + 1}</b>
-                  <i>
-                    {e.first}–{(eras[i + 1]?.first ?? ROUNDS + 1) - 1}
-                  </i>
-                </button>
-              ))}
-              {onToggleAuto ? (
-                <button className={`um-era auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
-                  Auto · {auto ? 'ON' : 'OFF'}
-                </button>
-              ) : null}
-            </div>
+        {/* THE CONTROL ROW (the design bundle, and his ruling: "Add this to all campaign modes in
+            scout mode"). Four era chips and the auto door, each a 44px target. They scroll the map
+            without moving where the campaign is — jumping to era III is a way of LOOKING at the
+            ladder, and it must never be mistaken for having got there.
+
+            It was user mode's alone, which left scout mode reaching the auto door through a link in
+            the foot three thousand pixels below the fold and the blocks at 31, 91 and 121 with no
+            door at all. Both modes take the row now; only its SKIN differs, `scout` being the class
+            that puts it back on the app's own tokens. The staff-and-rename pair below stays user
+            mode's, because scout's header already carries both in its right column. One map serves
+            all three campaigns, so "all campaign modes" is what this is the moment it renders. */}
+        <div className={`um-mapbar ${user ? '' : 'scout'}`}>
+          <div className="um-eras">
+            {eras.map((e, i) => (
+              <button
+                key={e.name}
+                className={`um-era ${cur && cur >= e.first && (!eras[i + 1] || cur < eras[i + 1].first) ? 'on' : ''}`}
+                onClick={() => jumpTo(e.first)}
+              >
+                <b>{ROMAN[i] ?? i + 1}</b>
+                <i>
+                  {e.first}–{(eras[i + 1]?.first ?? ROUNDS + 1) - 1}
+                </i>
+              </button>
+            ))}
+            {onToggleAuto ? (
+              <button className={`um-era auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
+                Auto · {auto ? 'ON' : 'OFF'}
+              </button>
+            ) : null}
+          </div>
+          {user ? (
             <div className="um-maprow">
               <button className="um-staff" onClick={onStaff}>
                 ★ {bal} to spend · Staff →
@@ -668,6 +675,24 @@ export function LevelMap({
                 Rename
               </button>
             </div>
+          ) : null}
+        </div>
+
+        {/* THE TROPHY (his ruling: "Add a trophy in all modes after 150 wins"). One hundred and
+            fifty series won is the whole ladder, and until now the map answered that with a kicker
+            reading "All cleared" — the same weight it gives level 4. It is the last thing in the
+            header, under the era row, so it stands across the top of the map in every mode the map
+            serves: the campaign, the salary cap and the death match all read this one component,
+            and both skins get it because the trophy is the RESULT, not a way of looking. */}
+        {cleared === ROUNDS ? (
+          <div className="map-trophy">
+            <Trophy />
+            <span className="tr-txt">
+              <b>Champion of the ladder</b>
+              <i>
+                All {ROUNDS} cleared · ★ {total} of {ROUNDS * 3}
+              </i>
+            </span>
           </div>
         ) : null}
       </div>

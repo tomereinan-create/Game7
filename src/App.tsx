@@ -35,6 +35,7 @@ import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
 import { MyTeam, orderFive } from './ui/MyTeam'
+import { myColor } from './ui/teamColors'
 import { Archetypes } from './ui/Archetypes'
 import { Roster } from './ui/Roster'
 import { Series } from './ui/Series'
@@ -431,6 +432,8 @@ export default function App() {
             commit(cm, { ...prog, roster, wear, tactics: reconcileTactics(prog.tactics, roster) })
           }}
           onReorder={(next) => commit(cm, { ...prog, roster: next })}
+          /* his ruling: the five stands in the colours picked when the campaign was started */
+          club={myColor(prog.team)}
           onBack={() => setMyTeam(false)}
         />
       </>
