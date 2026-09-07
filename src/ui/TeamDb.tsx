@@ -8,10 +8,10 @@ import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
-import { teamColor } from './teamColors'
+import { clubChip, ratingTone, teamColor } from './teamColors'
 import { LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
-import { Dial, TeamDials } from './MatchupPanel'
+import { TeamDials } from './MatchupPanel'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -164,18 +164,65 @@ function tacticOf(t: TeamSeason): Style | null {
 }
 const tacticLabel = (s: Style) => STYLES.find((x) => x.key === s)?.label ?? s
 
-/** The row's right edge: the team's three mini dials, same idiom as a player's (his ruling).
- * Ice is the team tone; a ranked sort turns its own dial gold. No legal five reads "—". */
-function RowDials({ t, sorted }: { t: TeamSeason; sorted: 'ovr' | 'off' | 'def' | null }) {
+/**
+ * ONE TEAM-SEASON AS A CARD (Claude Design "Team Database Redesigns", 1b Night Game), his ruling:
+ * "I want to use this design, but with different colors."
+ *
+ * The list was a row with three mini dials down its right edge; 1b makes it a card in a two-across
+ * grid — the club's short name in a chip, the team and its line beside it, its place in the list
+ * on the far side, and OVR / OFF / DEF as three tracked bars under all of it. What is NOT taken
+ * from 1b is its palette: the design was drawn four times over in ember, phosphor, royal and
+ * scarlet, and none of those is the room this app is in. The arena keeps the furniture, and the
+ * two things he named are the only things on the card with any colour in them.
+ *
+ * THE CHIP IS THE CLUB — "in the short of the team name (OKC) have the colors of the team".
+ * THE THREE NUMBERS ARE A SCALE — "either red green or white, depending of how far is it from 50
+ * (50 is white)" — and the bar under each one is painted the same, because a bar that disagreed
+ * with the number beside it would be two readings of one fact. See `ratingTone`.
+ *
+ * A five the pool cannot field has no gauges at all: the card says so in words rather than drawing
+ * three empty tracks, which is what the old row's "—" said in one character.
+ */
+function TeamCard({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; at: number; sorted: 'ovr' | 'off' | 'def' | null; onPick: () => void; span: Span }) {
   const o = ovrOf(t)
   const g = gaugeOf(t)
-  if (o === null || g === null) return <span className="tdb-gauge">—</span>
+  const rows: { k: 'ovr' | 'off' | 'def'; v: number | null }[] = [
+    { k: 'ovr', v: o },
+    { k: 'off', v: g?.off ?? null },
+    { k: 'def', v: g?.def ?? null },
+  ]
   return (
-    <span className="pdials">
-      <Dial label="OVR" value={o} tone={sorted === 'ovr' ? 'you' : 'them'} />
-      <Dial label="OFF" value={g.off} tone={sorted === 'off' ? 'you' : 'them'} />
-      <Dial label="DEF" value={g.def} tone={sorted === 'def' ? 'you' : 'them'} />
-    </span>
+    <button className="tcard" onClick={onPick}>
+      <span className="tcard-head">
+        <span className="tcard-ab" style={clubChip(t.ab) as React.CSSProperties}>
+          {t.ab}
+        </span>
+        <span className="tcard-who">
+          <b>{t.team}</b>
+          <i>
+            {from === to ? '' : `${yy(t.y)} · `}
+            {t.rec ?? t.ab}
+            {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on pool
+          </i>
+        </span>
+        <span className="tcard-rank">#{at + 1}</span>
+      </span>
+      {o === null || g === null ? (
+        <span className="tcard-nofive">No legal five in the card pool</span>
+      ) : (
+        <span className="tcard-bars">
+          {rows.map(({ k, v }) => (
+            <span className={`tcard-bar ${sorted === k ? 'on' : ''}`} key={k}>
+              <i>{k.toUpperCase()}</i>
+              <span className="tcard-track">
+                <span className="tcard-fill" style={{ width: `${v}%`, background: ratingTone(v) }} />
+              </span>
+              <b style={{ color: ratingTone(v) }}>{v}</b>
+            </span>
+          ))}
+        </span>
+      )}
+    </button>
   )
 }
 
@@ -472,7 +519,9 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   }, [picked])
 
   return (
-    <div className="sheetcard">
+    // The list is a two-across grid and wants the desk's width; the team it opens is a court and a
+    // roster, and those keep the app's own column. So the widening rides on the LIST, not the sheet.
+    <div className={`sheetcard tdb-sheet${picked ? '' : ' tdb-list'}`}>
       <div className="topbar">
         <span>Team database</span>
         <button onClick={() => (picked ? setPicked(null) : onBack())}>{picked ? '← Teams' : '← Back'}</button>
@@ -629,21 +678,18 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <span>{listCaption({ query, span, n: teams.length, sort, flip, conf, tactic })}</span>
               <i />
             </div>
-            {teams.slice(0, shown).map(({ t }) => (
-              <button key={t.team + t.y} className="lrow" onClick={() => pick(t)}>
-                <span className="lwho">
-                  <b>{t.team}</b>
-                  <i>
-                    {from === to ? '' : `${yy(t.y)} · `}
-                    {t.ab}
-                    {t.rec ? ` · ${t.rec}` : ''}
-                    {from === to ? `${t.div ? ` · ${t.div}` : ''} · ${t.p.length} men on the card pool` : ''}
-                  </i>
-                </span>
-                <RowDials t={t} sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)} />
-                <span className="tdb-go">→</span>
-              </button>
-            ))}
+            <div className="tdb-grid">
+              {teams.slice(0, shown).map(({ t }, i) => (
+                <TeamCard
+                  key={t.team + t.y}
+                  t={t}
+                  at={i}
+                  sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)}
+                  onPick={() => pick(t)}
+                  span={span}
+                />
+              ))}
+            </div>
             {teams.length > shown ? (
               <button ref={more} className="morebtn" onClick={() => setShown((s) => s + PAGE)}>
                 {(teams.length - shown).toLocaleString()} more seasons · show {Math.min(PAGE, teams.length - shown)}

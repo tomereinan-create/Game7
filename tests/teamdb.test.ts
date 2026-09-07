@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { WHEEL } from '../src/data/wheel'
 import { inSpan, spanFrom, spanLabel, spanTo, TeamDb, type Span } from '../src/ui/TeamDb'
+import { ratingTone, teamColor } from '../src/ui/teamColors'
 
 /**
  * HIS RULING: "Make the year from to" — the team database filters on a SPAN of seasons, not one
@@ -20,6 +21,9 @@ const YMIN = YEARS[0]
 const YMAX = YEARS[YEARS.length - 1]
 
 /** The database's own list screen, rendered with the span the reader left behind. */
+/** How many team cards the list laid down. */
+const cards = (html: string) => html.split('class="tcard"').length - 1
+
 const db = (span: Span) => {
   store.set('game7.teamdb.years', `${span[0]}-${span[1]}`)
   return renderToStaticMarkup(createElement(TeamDb, { onBack: () => {} }))
@@ -96,28 +100,90 @@ describe('the range list pages instead of laying 1,300 rows down at once', () =>
 
   it('a one-year list is whole; a wide one shows a page and says how many are left', () => {
     const one = db([YMAX, YMAX])
-    expect(one.split('class="lrow"').length - 1).toBe(WHEEL.filter((t) => t.y === YMAX).length)
+    expect(cards(one)).toBe(WHEEL.filter((t) => t.y === YMAX).length)
     expect(one).not.toContain('class="morebtn"')
 
     const wide = db([YMIN, YMAX])
-    expect(wide.split('class="lrow"').length - 1).toBe(60)
+    expect(cards(wide)).toBe(60)
     expect(wide).toContain('class="morebtn"')
     expect(wide).toContain(`${(WHEEL.length - 60).toLocaleString()} more seasons`)
   })
 
-  it('a range row carries its year; a single-year row does not need to', () => {
-    expect(db([1996, 2017])).toContain('’96 · CHI · 72–10')
-    expect(db([YMAX, YMAX])).toContain('men on the card pool')
+  it('a range card carries its year; a single-year card does not need to', () => {
+    expect(db([1996, 2017])).toContain('’96 · 72–10')
+    expect(db([YMAX, YMAX])).toContain('men on pool')
+    expect(db([YMAX, YMAX])).not.toContain('’26 · ')
   })
 
   /** The sort runs over the whole span, not inside each season — that is the point of the ruling. */
   it('best record over 1996–2017 opens with the ’16 Warriors, then the ’96 Bulls', () => {
     const html = db([1996, 2017])
-    const gsw = html.indexOf('’16 · GSW · 73–9')
-    const chi = html.indexOf('’96 · CHI · 72–10')
+    const gsw = html.indexOf('’16 · 73–9')
+    const chi = html.indexOf('’96 · 72–10')
     expect(gsw).toBeGreaterThan(-1)
     expect(chi).toBeGreaterThan(gsw)
-    // and the two of them are the first two rows of the list
-    expect(html.slice(0, gsw).split('class="lrow"').length - 1).toBe(1)
+    // and the two of them are the first two cards of the list
+    expect(cards(html.slice(0, gsw))).toBe(1)
+  })
+})
+
+/**
+ * HIS RULING on the Claude Design "Team Database Redesigns" (1b Night Game): "I want to use this
+ * design, but with different colors. In the short of the team name (OKC) have the colors of the
+ * team. The OFF DEF OVR will be either red green or white, depending of how far is it from 50
+ * (50 is white)."
+ */
+describe('the club is on the chip and the scale is on the numbers', () => {
+  beforeEach(() => store.clear())
+
+  it('gives each chip its own club, and never the fallback for a club in the table', () => {
+    const html = db([YMAX, YMAX])
+    // Boston's green and Milwaukee's, off the same table the map's tickets are painted from
+    expect(html).toContain(teamColor('BOS').primary)
+    expect(html).toContain(teamColor('MIL').primary)
+    // and the chip carries all three of the values the CSS asks it for
+    expect(html).toContain('--chip-bg')
+    expect(html).toContain('--chip-edge')
+    expect(html).toContain('--chip-ink')
+  })
+
+  it('is white at 50 and further from white the further from 50', () => {
+    // 50 is the league that season: no colour at all
+    const mid = /hsl\(\d+ (\d+)% (\d+)%\)/.exec(ratingTone(50))!
+    expect(Number(mid[1])).toBeLessThanOrEqual(6)
+    expect(Number(mid[2])).toBeGreaterThanOrEqual(89)
+
+    // and either side of it climbs away from white, evenly
+    const sat = (v: number) => Number(/hsl\(\d+ (\d+)%/.exec(ratingTone(v))![1])
+    expect(sat(60)).toBeLessThan(sat(70))
+    expect(sat(70)).toBeLessThan(sat(85))
+    expect(sat(40)).toBeLessThan(sat(30))
+    expect(sat(30)).toBeLessThan(sat(15))
+    expect(sat(65)).toBe(sat(35))
+  })
+
+  it('is green above the middle and red below it', () => {
+    const hue = (v: number) => Number(/hsl\((\d+)/.exec(ratingTone(v))![1])
+    for (const v of [51, 60, 80, 99]) expect(hue(v)).toBe(145)
+    for (const v of [49, 40, 20, 1]) expect(hue(v)).toBe(352)
+    // the middle itself takes the green hue, but at no saturation it is white either way
+    expect(hue(50)).toBe(145)
+  })
+
+  it('gives every card either three tracks or the words, and never neither', () => {
+    // a five the pool cannot field has no gauges to draw, and the card says that in words instead
+    // of three empty tracks — which is what the old row's "—" said in one character
+    for (const span of [[YMAX, YMAX], [YMIN, YMAX]] as Span[]) {
+      const html = db(span)
+      const n = cards(html)
+      expect(n).toBeGreaterThan(0)
+      expect((html.split('class="tcard-bars"').length - 1) + (html.split('class="tcard-nofive"').length - 1)).toBe(n)
+    }
+  })
+
+  it('has no colour to give a rating that does not exist', () => {
+    expect(ratingTone(null)).toBe('var(--muted)')
+    expect(ratingTone(undefined)).toBe('var(--muted)')
+    expect(ratingTone(NaN)).toBe('var(--muted)')
   })
 })

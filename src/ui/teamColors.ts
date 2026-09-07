@@ -359,3 +359,56 @@ export function wearSkin(c: TeamColor): Record<string, string> {
     '--you-ink': p(40, 8),
   }
 }
+
+/* ==========================================================================
+   THE TEAM DATABASE'S CARD GRID (Claude Design "Team Database Redesigns",
+   direction 1b "Night Game"), his ruling: "I want to use this design, but
+   with different colors. In the short of the team name (OKC) have the colors
+   of the team. The OFF DEF OVR will be either red green or white, depending
+   of how far is it from 50 (50 is white)."
+
+   1b was drawn four times over in four palettes — ember, phosphor, royal,
+   scarlet — and the ruling is that none of them is the answer: the room stays
+   the app's own arena, and the two things he named are what carry colour. The
+   badge takes the club. The three numbers take a scale.
+   ========================================================================== */
+
+/**
+ * A rating's colour on the diverging scale: WHITE AT 50, and further from 50 is further from
+ * white — green above, red below.
+ *
+ * Fifty is not an arbitrary middle here. The team OFF and DEF are season PERCENTILES (`seasonGauges`)
+ * and the team OVR is their mean, so 50 is literally the league that year: a card at 50 is average
+ * and reads as nothing, which is exactly what he asked the colour to say.
+ *
+ * The ends are set at 15 and 85 rather than 1 and 99, because a percentile field is dense in the
+ * middle — pinning full colour to 99 would leave nearly every team in the league a shade of
+ * off-white and say nothing at all. Saturation climbs from a whisper and lightness comes down with
+ * it, so a colour is never both pale and washed out; both hues land at 58% lightness, which is
+ * where a red and a green read as equals against the arena's black.
+ */
+export function ratingTone(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return 'var(--muted)'
+  const k = Math.min(1, Math.abs(v - 50) / 35)
+  // 352 is the app's own red (--them, --danger) rather than a new one; 145 is the green that
+  // reads as its equal against the arena's black at the same lightness.
+  return `hsl(${v >= 50 ? 145 : 352} ${(6 + k * 60).toFixed(0)}% ${(89 - k * 31).toFixed(0)}%)`
+}
+
+/**
+ * The abbreviation chip on a database card — "the short of the team name", in that club's colours.
+ *
+ * The club's own gradient behind it and its second colour around it, put through `cardInk` for the
+ * two clubs that letter in near-black and the ones whose stripe is invisible on their own deep.
+ * Returned as the chip's three custom properties rather than as a style block, so the CSS keeps
+ * saying what a chip IS and this only says what colour this one is.
+ */
+export function clubChip(ab: string | undefined): Record<string, string> {
+  const c = teamColor(ab)
+  const ink = cardInk(c)
+  return {
+    '--chip-bg': `linear-gradient(150deg, ${c.primary}, ${c.deep})`,
+    '--chip-edge': ink.edge,
+    '--chip-ink': ink.darkInk ? '#0c0d10' : c.ink,
+  }
+}
