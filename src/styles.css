@@ -1288,6 +1288,26 @@ button {
   border: 2px solid var(--you);
   background: var(--surface);
 }
+/* ---- THE WHEEL (his ruling: "add an actual wheel with a design fitting to the stage") ----
+   The stage is the arena, so the disc is lit from the middle and rakes off to a rim, the splits
+   between the clubs are hairlines of the room's own black, and the rim, the pointer and the hub
+   are `--you` — which on this screen is the kit, so the machine wears the team and the twelve
+   clubs on the disc are the only loud thing on it. */
+.spinwheel { display: grid; justify-items: center; padding: 6px 0 10px; }
+.spinwheel svg { display: block; width: 100%; max-width: 248px; height: auto; overflow: visible; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55)); }
+.sw-disc { transform-box: view-box; transform-origin: 50% 50%; transition-property: transform; transition-timing-function: cubic-bezier(0.14, 0.72, 0.08, 1); }
+@media (prefers-reduced-motion: reduce) { .sw-disc { transition-duration: 0ms !important; } }
+.sw-rim { stroke: var(--you); stroke-width: 2.5; }
+.sw-hub { fill: var(--surface); stroke: var(--you); stroke-width: 2; }
+.sw-pin { fill: var(--you); }
+.sw-point { fill: var(--you); stroke: var(--bg); stroke-width: 1.5; stroke-linejoin: round; }
+.sw-ab { font-family: var(--serif); font-size: 14px; letter-spacing: 0.04em; }
+.sw-yr { font-family: var(--mono); font-size: 7px; letter-spacing: 0.06em; }
+/* the answer keeps its own edge once the disc has stopped, and is unmarked while it turns */
+.sw-won { stroke: transparent; transition: stroke 0.35s ease 0.1s; }
+.spinwheel.set .sw-won { stroke: var(--ink); }
+@media (max-width: 900px) { .spinwheel svg { max-width: 210px; } }
+
 .wheel-idle .spin-team.dim { color: #6e665e; }
 .spin-live .spin-team { color: var(--you); }
 .spin-live .spin-sub { color: var(--muted); }

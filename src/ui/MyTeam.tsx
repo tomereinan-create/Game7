@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
 import { useLayout } from './useLayout'
+import { wearSkin } from './teamColors'
+import { buildSpin, SPIN_MS, SpinWheel, type Spin } from './SpinWheel'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot, type Slots } from '../engine/slots'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
@@ -151,6 +153,8 @@ export function MyTeam({
   const [spinning, setSpinning] = useState(false)
   const [spun, setSpun] = useState<TeamSeason | null>(null)
   const [display, setDisplay] = useState<TeamSeason | null>(null)
+  /** The disc itself: which twelve clubs are on it and which wedge the pointer has to finish on. */
+  const [disc, setDisc] = useState<Spin | null>(null)
   const [sel, setSel] = useState<string | null>(null)
   const [out, setOut] = useState<string | null>(null)
   /** Resting mode: the bench row was tapped, the next floor tap makes the exchange. */
@@ -252,26 +256,42 @@ export function MyTeam({
   // afford callback below runs the exact matching per candidate anyway.
   const openPos = [...POSITIONS]
 
+  /**
+   * HIS RULING: "Instead of the wheel spinning like it currently does, add an actual wheel."
+   *
+   * The order is unchanged and deliberate: `landOn` decides FIRST, and the disc is then turned to
+   * put that wedge under the pointer. A wheel that decided by where it stopped could stop on a man
+   * this five cannot field or afford, which is the whole reason `landOn` takes `taken`, `openPos`
+   * and the afford test. So the turn is an animation of the answer, not the drawing of it.
+   */
   const spin = () => {
     if (spinning || spun || spinsLeft <= 0) return
     onSpend() // the wheel does not turn twice for one change
-    setSpinning(true)
-    const steps = 14
-    let i = 0
-    const tick = () => {
-      setDisplay(WHEEL[Math.floor(Math.random() * WHEEL.length)])
-      i++
-      if (i < steps) {
-        timer.current = window.setTimeout(tick, 45 + i * i * 1.2)
-      } else {
-        const res = landOn(taken, openPos, () => Math.random(), null, (n) => replaceable(n).length > 0)
-        setDisplay(res)
-        setSpun(res)
-        setSpinning(false)
-      }
+    const res = landOn(taken, openPos, () => Math.random(), null, (n) => replaceable(n).length > 0)
+    if (!res) {
+      // nothing legal to land on — say so the way it always did, with no disc to turn
+      setDisplay(null)
+      setSpun(null)
+      return
     }
-    tick()
+    setDisplay(res)
+    setDisc(buildSpin(res, WHEEL, () => Math.random(), Date.now()))
+    // Reduced motion gets the answer and not the ride: the disc renders already stopped on it.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setSpun(res)
+      return
+    }
+    setSpinning(true)
+    timer.current = window.setTimeout(() => {
+      setSpun(res)
+      setSpinning(false)
+    }, SPIN_MS)
   }
+
+  // a spin left mid-turn must not land on a screen that is gone
+  useEffect(() => () => {
+    if (timer.current !== null) window.clearTimeout(timer.current)
+  }, [])
 
   const confirm = () => {
     if (!sel || !out || !replaceable(sel).includes(out)) return
@@ -279,6 +299,7 @@ export function MyTeam({
     else onSwap(out, sel)
     setSpun(null)
     setDisplay(null)
+    setDisc(null)
     setSel(null)
     setOut(null)
     setInfo(null)
@@ -505,6 +526,20 @@ export function MyTeam({
     return `${w >= 0 ? '+' : '−'}${Math.abs(w).toFixed(1)}`
   })()
 
+  /**
+   * HIS RULING: "After selecting my team colors in campaign, my 5 will wear these colors as well
+   * (in my 5 and tactics, not in the player stats page)." The floor already stood in the kit; the
+   * lit chips, the dials, the rules and the button around it were still the house gold. `wearSkin`
+   * restates the `--you` family in the kit's primary and nothing else, so this screen goes over to
+   * the team without the arena changing colour under it.
+   *
+   * It is hung on the two boxes that ARE the screen — the three-column grid and the dock — rather
+   * than on a wrapper, so nothing about the layout moves. The player card is not among them: it is
+   * rendered by CardProvider at the root, outside this tree, and it wears the club of the man on
+   * it, which is the distinction he drew.
+   */
+  const kitWear = useMemo(() => (club ? (wearSkin(club) as React.CSSProperties) : null), [club])
+
   return (
     <>
       <div className="topbar">
@@ -523,7 +558,7 @@ export function MyTeam({
       <div className="ladder" />
       {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the
           wheel is already in it, so the grid stays three across. */}
-      <div className={`myteam ${dropTactics && !display ? 'plan-hidden' : ''}`} style={{ paddingTop: 8 }}>
+      <div className={`myteam ${dropTactics && !display ? 'plan-hidden' : ''}`} style={{ paddingTop: 8, ...kitWear }}>
         {/* BOX ONE — the men. His ruling put the stats and the durability on the left, and the
             court no longer stands above them: these five rows are the first thing on the screen
             at every width, so a change never asks him to scroll to see who he is deciding about. */}
@@ -918,11 +953,18 @@ export function MyTeam({
               <div className="card-head">
                 <span className="label">{spinning ? 'The wheel is spinning' : 'It lands on'}</span>
               </div>
-              <div className="spin-team">{display.team}</div>
-              <div className="spin-sub">
-                {display.y} · {CONF[display.c]}
-                {display.rec ? ` · ${display.rec}` : ''}
-              </div>
+              {disc ? <SpinWheel spin={disc} spinning={spinning} /> : null}
+              {/* the name is the ANSWER, so it waits for the disc — while it turns, the colour
+                  stopping at the top is the only thing to read */}
+              {spinning ? null : (
+                <>
+                  <div className="spin-team">{display.team}</div>
+                  <div className="spin-sub">
+                    {display.y} · {CONF[display.c]}
+                    {display.rec ? ` · ${display.rec}` : ''}
+                  </div>
+                </>
+              )}
               {spun && !spinning ? (
                 <>
                   <div className="rowhead dr">
@@ -960,7 +1002,7 @@ export function MyTeam({
             nothing mounts — that width keeps the route it has, the row's own detail toggle. */}
         {slot ? <ManBand p={bandMan} at={slot} /> : null}
       </div>
-      <div className="dock">
+      <div className="dock" style={kitWear ?? undefined}>
         <div className="dock-inner">
           {spinning ? (
             <button className="btn" disabled>

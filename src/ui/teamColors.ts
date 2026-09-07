@@ -192,50 +192,68 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
  * of them at once and none of those components had to learn about clubs. (The court floor does
  * the same trick with `--mine` / `--you` for a scouted five.)
  *
- * `--you` is the club's PRIMARY family — the phosphor: the readouts, the attribute bars, the hex.
- * `--pct-acc` is the SECOND colour, and it is spent only on what 1b spends amber on: the peak
- * chip, the OVR box, [ESC], the status word.
+ * TWO TONES, NOT ONE (his ruling: "Make the colors fit the team better. All the reds look the
+ * same, all the blues. You can use 2 tones if needed"). The first pass hung the entire ramp off
+ * `primary`, and the table is full of clubs that share one: Chicago, Houston, Toronto, Detroit,
+ * Washington and the Clippers are all within a few degrees of each other, three of them the same
+ * hex. A primary-only card cannot tell them apart, because there is nothing there to tell apart.
+ * What separates them is the SECOND colour — Chicago's black, Toronto's gold, Detroit's blue,
+ * Atlanta's volt, Miami's orange — so the second colour is given a job big enough to be seen:
+ *
+ *   PRIMARY  — the room (ground, panels, hairlines), the numbers, and the phosphor `--you`:
+ *              attribute bars, the hex, the group heads, the ledger values.
+ *   ACCENT   — every label and caption on the card (`--muted`, `--muted-2`, `--faint`), plus the
+ *              highlights it already had: the peak chip, the OVR box, [ESC], the status word.
+ *
+ * Labels are quiet type, so the second colour is everywhere without ever shouting — and Detroit
+ * (dim blue labels on a red room) stops looking like Chicago (warm cream ones).
+ *
+ * AND SOFTER (his ruling: "Make the colors softer, its a bit too aggressive"). Every saturation
+ * ceiling comes down — the phosphor from 68% to 46%, the highlight from 88% to 52% — and the top
+ * of the ink ramp comes off the ceiling with it, so a card reads as a lit room rather than a sign.
  */
 export function terminalSkin(c: TeamColor): Record<string, string> {
   const P = toHsl(c.primary)
   const A0 = toHsl(c.accent)
   // An achromatic near-black second colour (Chicago's #111, San Antonio's #000) has no hue to
-  // lift into a highlight, so it falls back to the app's cream — the same escape `cardInk` makes
-  // for the ticket stripe, decided for a dark ground instead of a club gradient.
-  const A = A0.s < 12 && A0.l < 25 ? toHsl('#e8e2d6') : A0
+  // carry, so it falls back to the app's cream — the same escape `cardInk` makes for the ticket
+  // stripe, decided for a dark ground instead of a club gradient. Now that the accent letters the
+  // whole card this matters more, not less: it is the difference between warm grey type and none.
+  const A = A0.s < 12 && A0.l < 25 ? toHsl('#e4e1db') : A0
   // A club whose colour is a grey (San Antonio, Brooklyn) still gets a hue, just a quiet one, so
   // its terminal reads as steel rather than as a bug; a neon club is pulled back off the ceiling.
-  const s = clamp(P.s, 20, 68)
-  const as = clamp(A.s, 34, 88)
-  const g = (sat: number, l: number) => `hsl(${P.h.toFixed(0)} ${Math.min(sat, s).toFixed(0)}% ${l}%)`
-  const a = (l: number) => `hsl(${A.h.toFixed(0)} ${as.toFixed(0)}% ${l}%)`
+  const ps = clamp(P.s, 14, 46)
+  const as = clamp(A.s, 12, 52)
+  const p = (sat: number, l: number) => `hsl(${P.h.toFixed(0)} ${Math.min(sat, ps).toFixed(0)}% ${l}%)`
+  const a = (sat: number, l: number) => `hsl(${A.h.toFixed(0)} ${Math.min(sat, as).toFixed(0)}% ${l}%)`
   return {
-    /* the room */
-    '--bg': g(45, 5),
-    '--panel': g(42, 7),
-    '--surface': g(42, 8.5),
-    '--surface-2': g(40, 12),
-    '--line': g(38, 17),
-    '--line-2': g(38, 23),
-    '--line-3': g(34, 34),
-    '--divider': g(38, 14),
-    /* the ink — three steps of the one hue, exactly as 1b prints it */
-    '--faint': g(26, 56),
-    '--muted-2': g(26, 56),
-    '--muted': g(28, 63),
-    '--ink-2': g(34, 80),
-    '--ink': g(30, 91),
+    /* the room — the first colour */
+    '--bg': p(32, 5.5),
+    '--panel': p(30, 7.5),
+    '--surface': p(30, 9),
+    '--surface-2': p(28, 12.5),
+    '--line': p(26, 17),
+    '--line-2': p(26, 23),
+    '--line-3': p(22, 33),
+    '--divider': p(26, 15),
+    /* what NAMES a thing — the second colour, at the two quiet steps */
+    '--faint': a(24, 55),
+    '--muted-2': a(24, 55),
+    '--muted': a(26, 62),
+    /* what a thing IS — the first colour, near the top of the ramp but off the ceiling */
+    '--ink-2': p(20, 75),
+    '--ink': p(22, 85),
     /* the phosphor */
-    '--you': g(72, 62),
-    '--you-hi': g(72, 74),
-    '--you-tint': g(45, 13),
-    '--you-line': g(45, 38),
-    '--you-ink': g(45, 7),
+    '--you': p(46, 58),
+    '--you-hi': p(46, 70),
+    '--you-tint': p(34, 12),
+    '--you-line': p(34, 34),
+    '--you-ink': p(34, 7),
     /* what is locked */
-    '--pct-acc': a(66),
-    '--pct-acc-hi': a(78),
-    '--pct-acc-line': a(42),
-    '--pct-acc-tint': a(13),
+    '--pct-acc': a(52, 62),
+    '--pct-acc-hi': a(52, 74),
+    '--pct-acc-line': a(46, 38),
+    '--pct-acc-tint': a(40, 12),
   }
 }
 
@@ -300,3 +318,36 @@ export function kitColor(kit: Kit): TeamColor {
 /** The campaign's own colours, or null for a save from before the kit existed — those keep the blue floor. */
 export const myColor = (team: { colors?: Kit } | null | undefined): TeamColor | null =>
   team?.colors ? kitColor(team.colors) : null
+
+/**
+ * WEARING THE KIT (his ruling: "After selecting my team colors in campaign, my 5 will wear these
+ * colors as well — in my 5 and tactics, not in the player stats page").
+ *
+ * The floor already stood in the kit; everything around it — the lit chips, the dials, the rules,
+ * the CONFIRM button — was still the house gold, so the team wore its colours from the knees down.
+ * This is the same trick the terminal plays, and a smaller one: the ROOM is untouched (the arena
+ * wash is the app's, not the team's), and only the `--you` family is restated, because `--you` is
+ * the app's word for "lit, and yours".
+ *
+ * It takes the kit's PRIMARY, not its accent. The accent is already spoken for — CourtFive rings
+ * every bust in it — so primary here and accent on the floor is the two-tone split a jersey has,
+ * rather than one colour said twice. And an accent is the half of a kit most likely to already BE
+ * the house gold (Royal is navy and gold), which would have made picking it look like picking
+ * nothing.
+ *
+ * The lightness is stated, not taken: half the kits are near-black by design (Navy, Midnight,
+ * Orange's second colour) and a near-black highlight on the arena's near-black ground is not a
+ * highlight. Fixing the hue and lifting to 64% is what lets Midnight be lit at all.
+ */
+export function wearSkin(c: TeamColor): Record<string, string> {
+  const P = toHsl(c.primary)
+  const s = clamp(P.s, 16, 56)
+  const p = (sat: number, l: number) => `hsl(${P.h.toFixed(0)} ${Math.min(sat, s).toFixed(0)}% ${l}%)`
+  return {
+    '--you': p(56, 64),
+    '--you-hi': p(56, 76),
+    '--you-tint': p(40, 13),
+    '--you-line': p(46, 38),
+    '--you-ink': p(40, 8),
+  }
+}
