@@ -192,68 +192,76 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
  * of them at once and none of those components had to learn about clubs. (The court floor does
  * the same trick with `--mine` / `--you` for a scouted five.)
  *
- * TWO TONES, NOT ONE (his ruling: "Make the colors fit the team better. All the reds look the
- * same, all the blues. You can use 2 tones if needed"). The first pass hung the entire ramp off
- * `primary`, and the table is full of clubs that share one: Chicago, Houston, Toronto, Detroit,
- * Washington and the Clippers are all within a few degrees of each other, three of them the same
- * hex. A primary-only card cannot tell them apart, because there is nothing there to tell apart.
- * What separates them is the SECOND colour — Chicago's black, Toronto's gold, Detroit's blue,
- * Atlanta's volt, Miami's orange — so the second colour is given a job big enough to be seen:
+ * THE CLUB IS THE ROOM, NOT THE TYPE (his ruling: "Redesign the card theme to have these colors in
+ * background but the numbers themselfs no. I need it way way softer").
  *
- *   PRIMARY  — the room (ground, panels, hairlines), the numbers, and the phosphor `--you`:
- *              attribute bars, the hex, the group heads, the ledger values.
- *   ACCENT   — every label and caption on the card (`--muted`, `--muted-2`, `--faint`), plus the
- *              highlights it already had: the peak chip, the OVR box, [ESC], the status word.
+ * Two passes put the club further and further into the type — first the numbers, then every label
+ * — and both times the answer came back that it shouts. So the type comes out of it entirely.
+ * Every word and every digit on this card is now a neutral cream or a neutral grey, the app's own
+ * ink, identical on all thirty-one clubs. What is Milwaukee about a Milwaukee card is the ROOM it
+ * is printed in.
  *
- * Labels are quiet type, so the second colour is everywhere without ever shouting — and Detroit
- * (dim blue labels on a red room) stops looking like Chicago (warm cream ones).
+ * THE TWO TONES MOVE INTO THE BACKGROUND WITH IT. His earlier ruling still holds — Chicago,
+ * Houston, Toronto, Washington and the Clippers share one primary, so a one-colour card cannot
+ * tell them apart — and the answer is the same answer at a lower volume: the GROUND takes the
+ * club's first colour and the PANELS and their hairlines take the second. Detroit is a red room
+ * with faintly blue panels, Miami a red room with warm ones, Chicago a red room with near-neutral
+ * ones. None of it is loud enough to notice on its own; all of it is enough to tell two red clubs
+ * apart at a glance.
  *
- * AND SOFTER (his ruling: "Make the colors softer, its a bit too aggressive"). Every saturation
- * ceiling comes down — the phosphor from 68% to 46%, the highlight from 88% to 52% — and the top
- * of the ink ramp comes off the ceiling with it, so a card reads as a lit room rather than a sign.
+ * WAY, WAY SOFTER. The saturation ceilings come down again and by much more — the room from 32%
+ * to 26%, the bars from 46% to 28%, the highlight from 52% to 32% — and the bars come off the top
+ * of the ramp with them. What is left with any real colour in it is a short list, and every one
+ * of them is a SURFACE rather than a word: the attribute bars, the hexagon, the tint behind a lit
+ * chip, the edge of the OVR box, and the badge that names his archetype.
  */
 export function terminalSkin(c: TeamColor): Record<string, string> {
   const P = toHsl(c.primary)
   const A0 = toHsl(c.accent)
   // An achromatic near-black second colour (Chicago's #111, San Antonio's #000) has no hue to
   // carry, so it falls back to the app's cream — the same escape `cardInk` makes for the ticket
-  // stripe, decided for a dark ground instead of a club gradient. Now that the accent letters the
-  // whole card this matters more, not less: it is the difference between warm grey type and none.
+  // stripe, decided for a dark ground instead of a club gradient. Chicago's panels come out a
+  // near-neutral warm, which is the honest answer: the Bulls' other colour IS the ground.
   const A = A0.s < 12 && A0.l < 25 ? toHsl('#e4e1db') : A0
   // A club whose colour is a grey (San Antonio, Brooklyn) still gets a hue, just a quiet one, so
   // its terminal reads as steel rather than as a bug; a neon club is pulled back off the ceiling.
-  const ps = clamp(P.s, 14, 46)
-  const as = clamp(A.s, 12, 52)
+  const ps = clamp(P.s, 10, 26)
+  const as = clamp(A.s, 8, 30)
   const p = (sat: number, l: number) => `hsl(${P.h.toFixed(0)} ${Math.min(sat, ps).toFixed(0)}% ${l}%)`
   const a = (sat: number, l: number) => `hsl(${A.h.toFixed(0)} ${Math.min(sat, as).toFixed(0)}% ${l}%)`
   return {
-    /* the room — the first colour */
-    '--bg': p(32, 5.5),
-    '--panel': p(30, 7.5),
-    '--surface': p(30, 9),
-    '--surface-2': p(28, 12.5),
-    '--line': p(26, 17),
-    '--line-2': p(26, 23),
-    '--line-3': p(22, 33),
-    '--divider': p(26, 15),
-    /* what NAMES a thing — the second colour, at the two quiet steps */
-    '--faint': a(24, 55),
-    '--muted-2': a(24, 55),
-    '--muted': a(26, 62),
-    /* what a thing IS — the first colour, near the top of the ramp but off the ceiling */
-    '--ink-2': p(20, 75),
-    '--ink': p(22, 85),
-    /* the phosphor */
-    '--you': p(46, 58),
-    '--you-hi': p(46, 70),
-    '--you-tint': p(34, 12),
-    '--you-line': p(34, 34),
-    '--you-ink': p(34, 7),
-    /* what is locked */
-    '--pct-acc': a(52, 62),
-    '--pct-acc-hi': a(52, 74),
-    '--pct-acc-line': a(46, 38),
-    '--pct-acc-tint': a(40, 12),
+    /* THE ROOM — the club's first colour, on the ground it all stands on */
+    '--bg': p(26, 6),
+    '--surface-2': p(24, 13),
+    '--line': p(22, 17),
+    '--line-3': p(18, 32),
+    '--divider': p(22, 15),
+    /* and its SECOND colour on what is raised off that ground: the readout panels, the boxes, and
+       the rules between them. This is the whole of what separates two clubs who share a red. */
+    '--panel': a(24, 8),
+    '--surface': a(24, 9.5),
+    '--line-2': a(22, 23),
+    /* THE TYPE — no club in it at all, on any card. Numbers, labels, captions and names are the
+       app's own cream and greys, and they are the same five values for every team in the table. */
+    '--faint': '#8d8983',
+    '--muted-2': '#8d8983',
+    '--muted': '#9f9a93',
+    '--ink-2': '#cdc9c2',
+    '--ink': '#ebe8e2',
+    /* WHAT STILL CARRIES COLOUR, every one of them a surface rather than a word: the attribute
+       bars, the hexagon, the tint under a lit chip, the CLOSE key. Seventeen bars is the most of
+       any one colour on the card, so this is the step held furthest down of all of them. */
+    '--you': p(22, 44),
+    '--you-hi': p(22, 54),
+    '--you-tint': p(24, 11),
+    '--you-line': p(24, 28),
+    '--you-ink': p(24, 7),
+    /* the second colour again, on the few edges that mark what is LOCKED: the peak chip, the OVR
+       box, [ESC], the archetype badge, the status word. */
+    '--pct-acc': a(32, 56),
+    '--pct-acc-hi': a(32, 66),
+    '--pct-acc-line': a(28, 30),
+    '--pct-acc-tint': a(26, 11),
   }
 }
 

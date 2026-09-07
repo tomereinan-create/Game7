@@ -2929,7 +2929,7 @@ body:has(.sheet) .map-fab { display: none; }
    value bright on the right. Two columns on a phone, one down the dossier on a desk. */
 .pct-meta { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 18px; }
 .pct-mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; font-size: 9.5px; letter-spacing: 0.08em; color: var(--muted-2); }
-.pct-mrow b { font-weight: 600; color: var(--you); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pct-mrow b { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* what the badge above it means — the same sentence the draft's archetype card prints, in the
    terminal's comment voice */
 .pc-what { margin: 0; font-size: 10.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
@@ -2962,7 +2962,7 @@ body:has(.sheet) .map-fab { display: none; }
 /* the attributes: a row each — name, track, number — under a ruled group head, two columns of them */
 .pc-attrs { columns: 2; column-gap: 22px; margin-top: 6px; }
 .pc-grp { break-inside: avoid; margin-bottom: 10px; }
-.pc-grpname { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); }
+.pc-grpname { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .pc-grpname i { height: 1px; background: var(--line-2); }
 .pc-grpname i:first-child { flex: none; width: 13px; }
 .pc-grpname i:last-child { flex: 1; }
@@ -2978,15 +2978,15 @@ body:has(.sheet) .map-fab { display: none; }
 .pct-shape .pc-rule { margin-top: 0; }
 .pct-hexbox { display: grid; justify-items: center; padding: 8px; border: 1px solid var(--line); background: var(--panel); }
 .pct-hexbox .heathex { display: block; width: 100%; max-width: 188px; height: auto; margin: 0; }
-.pc-adv { padding: 9px 0; text-align: center; background: none; border: 1px solid var(--line-3); color: var(--you); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
-.pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); }
+.pc-adv { padding: 9px 0; text-align: center; background: var(--you-tint); border: 1px solid var(--you-line); color: var(--ink-2); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
+.pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 
 /* ---- the way out ----
    the app's gold slab would be the one thing in the card still wearing the house colours, and at
    24px League Gothic it shouts; in here CLOSE is a wide, letterspaced terminal key. */
 .pc-foot { flex: none; padding-top: 9px; }
-.pc-foot .btn { width: 100%; min-height: 44px; border-radius: 0; border: 1px solid var(--you-line); background: var(--you-tint); box-shadow: none; color: var(--you); font-size: 12px; font-weight: 700; letter-spacing: 0.28em; }
-.pc-foot .btn:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); }
+.pc-foot .btn { width: 100%; min-height: 44px; border-radius: 0; border: 1px solid var(--you-line); background: var(--you-tint); box-shadow: none; color: var(--ink-2); font-size: 12px; font-weight: 700; letter-spacing: 0.28em; }
+.pc-foot .btn:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 .pc-foot .btn:active { transform: none; box-shadow: none; }
 
 /* ---- the desk: 1b's three areas ---- */
