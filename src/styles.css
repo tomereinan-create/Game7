@@ -2712,10 +2712,8 @@ body:has(.sheet) .map-fab { display: none; }
 .pname b.cardname:focus-visible { outline: 1px solid var(--you); outline-offset: 2px; }
 
 /* one screen, no scrolling — and no stretching either: the card is as wide as it needs to be */
-.sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 8px; overflow: hidden; padding: 10px 14px calc(8px + env(safe-area-inset-bottom)); }
+.sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 0; overflow: hidden; padding: 0 13px calc(10px + env(safe-area-inset-bottom)); }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
-.pc-bar { margin: 0; flex: none; }
-.pc-head { flex: none; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 
 /* ---- my team: the durability badge (death match) ---- */
 .mt-dur { flex: none; display: grid; justify-items: center; gap: 0; min-width: 32px; padding: 3px 5px 2px; border: 1px solid var(--line-3); border-radius: 6px; }
@@ -2726,9 +2724,6 @@ body:has(.sheet) .map-fab { display: none; }
 
 /* ---- the heat hexagon ---- */
 .heathex { display: block; }
-/* the rail column is 100px: the hex is sized to FIT it, never to spill into the
-   14px gap and the attribute column beside it (his report: it touched PLAYVOL) */
-.pc-rail .heathex { display: block; width: 100%; height: auto; margin: 6px 0 0; }
 .dhex { display: grid; justify-items: center; padding: 8px 0 2px; }
 .au-hex { display: grid; justify-items: center; padding: 2px 0 6px; }
 .cmp-hexwrap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; padding: 8px 0 10px; }
@@ -2780,12 +2775,6 @@ body:has(.sheet) .map-fab { display: none; }
 .ct-mark.sc { top: -2px; background: var(--you); color: var(--you-ink); }
 .ct-mark.pm { top: -2px; background: none; border: 1px solid var(--you); color: var(--you); }
 .ct-mark.pm.lo { top: 12px; }
-.pc-name { font-family: var(--serif); font-size: clamp(19px, 3.4vw, 26px); line-height: 1.05; }
-.pc-sub { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted); }
-.pc-tag { margin-left: auto; padding: 3px 8px; border: 1px solid var(--line); font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); white-space: nowrap; }
-/* what the badge above it means — the same serif sentence the draft's archetype card prints, on
-   its own line under the head so neither the name nor the badge has to give up any width */
-.pc-what { flex: 1 0 100%; margin: 2px 0 0; font-family: var(--serif); font-size: 13px; line-height: 1.35; color: var(--ink-2); }
 
 /* ---- the season strip (his ruling: "In the player page add option to navigate between years") ----
    The man's seasons under his name, in the app's own chip language. The row scrolls INSIDE itself
@@ -2807,60 +2796,188 @@ body:has(.sheet) .map-fab { display: none; }
 /* the chips grow to 45px on a desktop with every other chip in the app; the arrows go with them */
 @media (min-width: 900px) { .yr-arrow { width: 36px; height: 45px; font-size: 17px; } }
 
-/* the verdict is a rail; the stats and attributes are the body. Neither grows to fill the window. */
-/* overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
-   and on the shortest phones the scout sheet can then come out taller than the screen. The body
-   takes the strain instead of letting the last attributes slide under the CLOSE button. */
-.pc-body { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 14px; align-items: start; }
-/* no rail (user mode): the main column takes the whole width */
-.pc-body.solo { grid-template-columns: minmax(0, 1fr); }
-.pc-rail { display: flex; flex-direction: column; gap: 5px; }
-.pc-big { border: 1px solid var(--line); background: var(--surface); padding: 5px 0 7px; text-align: center; }
-.pc-big.lead { border-color: var(--you-line); }
-.pc-big i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; color: var(--muted-2); }
-.pc-big b { display: block; font-family: var(--num); font-weight: 700; font-size: 30px; line-height: 1.05; margin-top: 1px; }
-.pc-big.lead b { color: var(--you); }
-.pc-adv { margin-top: 3px; padding: 7px 0; background: none; border: 1px solid var(--line); color: var(--you); font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+/* ==========================================================================
+   THE CARD IS A TERMINAL, AND IT IS LIT IN HIS CLUB
+   (Claude Design direction 1b "Scout terminal"; his ruling: "Use 1b, but for
+   each player his team colors").
 
-.pc-main { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.pc-rule { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.pc-rule span { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-rule i { flex: 1; height: 1px; background: var(--line); }
-/* the fix: a cell has a MAXIMUM width, so seven of them do not become seven columns of a billboard */
-.pc-stats { display: grid; grid-template-columns: repeat(7, minmax(0, 72px)); gap: 2px 8px; }
-.pc-gcells { display: grid; grid-template-columns: repeat(5, minmax(0, 92px)); gap: 2px 8px; }
-.pc-cell { display: block; min-width: 0; padding: 2px 0; }
-.pc-cell i { display: block; font-style: normal; font-family: var(--mono); font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-cell b { display: block; font-family: var(--num); font-weight: 700; font-size: 15px; line-height: 1.2; }
-.pc-cell.attr b { font-size: 14px; }
-.pc-cell.attr .statt { display: block; height: 2px; margin-top: 2px; background: var(--line); }
-.pc-cell.attr .statf { display: block; height: 100%; background: var(--you); }
-.pc-attrs { display: grid; gap: 2px; }
-.pc-grpname { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
-.pc-note { font-family: var(--mono); font-size: 8px; color: var(--muted-2); margin-top: 2px; }
-.pc-foot { flex: none; padding-top: 10px; }
-.pc-foot .btn { width: 100%; }
+   Not one palette here is stated in hex. `terminalSkin` hangs the club's ramp
+   on the card element under the app's OWN token names — --bg, --line, --ink,
+   --muted, --you — so every rule below is written the way the rest of the app
+   is written and comes out green on a Buck, purple on a Laker, steel on a man
+   who was traded mid-season. --pct-acc is the club's SECOND colour, and it is
+   spent only where 1b spends its amber: the peak, the OVR box, [ESC], the
+   status word. Nothing else may take it, or the highlight stops meaning
+   anything.
 
+   1b was drawn 1180px wide with a season column down the left. This is a
+   phone first: the strip that already scrolls LeBron's 23 seasons inside
+   itself stays, and the desk gets 1b's shape back at 900px from three grid
+   areas — the sheet on the left, the dossier and the hex down the right.
+   ========================================================================== */
+
+.pc-term {
+  /* ONE FACE, and it is a monospace. That is 1b's whole character: a readout whose columns line
+     up because every glyph is the same width. The app's two faces cannot do it and a fourth
+     webfont is not worth the wire, so the card borrows the system's own mono — and aliases all
+     four face tokens to it, which is what makes the season strip and the CLOSE button speak
+     terminal without either of them being touched. */
+  --pct-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --serif: var(--pct-mono);
+  --num: var(--pct-mono);
+  --sans: var(--pct-mono);
+  --mono: var(--pct-mono);
+  font-family: var(--pct-mono);
+}
+
+/* ---- the two status lines ---- */
+.pct-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 42px 8px 0; border-bottom: 1px solid var(--line-2); font-size: 9.5px; letter-spacing: 0.1em; color: var(--muted-2); white-space: nowrap; }
+.pct-sys { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.pct-slug { color: var(--ink); letter-spacing: 0.08em; }
+.pct-esc { flex: none; padding: 0; background: none; border: 0; font: inherit; letter-spacing: inherit; color: var(--pct-acc); cursor: pointer; }
+.pct-esc:hover { color: var(--pct-acc-hi); }
+.pct-status { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0 9px; border-top: 1px solid var(--line-2); font-size: 8.5px; letter-spacing: 0.1em; color: var(--muted-2); white-space: nowrap; }
+.pct-status b { font-weight: 600; color: var(--pct-acc); }
+
+/* ---- the body ----
+   overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
+   and on the shortest phones the sheet can still come out taller than the screen. The body takes
+   the strain instead of letting the last attributes slide under the CLOSE button. */
+/* The body takes the slack (flex: 1) so the two status lines FRAME the card — one against the
+   top edge, one against the bottom — rather than trailing off into a field of club-black on a
+   desk. The sheet stays top-packed inside it (align-content: start).
+   overflow-x clips ONE thing: the season arrows carry a 5px invisible tap-target bleed
+   (.yr-arrow::before), and the strip now runs flush to the card's edge, so that bleed alone
+   was raising a horizontal scrollbar across the whole body. */
+.pc-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; display: grid; gap: 11px 18px; align-content: start; padding: 11px 0 5px; }
+
+/* ---- who he is ---- */
+.pct-id { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
+.pc-name { font-size: clamp(17px, 4.4vw, 22px); font-weight: 700; line-height: 1.18; letter-spacing: 0.02em; text-transform: uppercase; color: var(--ink); }
+.pc-tag { padding: 4px 9px; border: 1px solid var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); font-size: 8.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+/* the run-on "PG/SG · 6'11" · MIL · 63 G" line, broken into readout rows: label dim on the left,
+   value bright on the right. Two columns on a phone, one down the dossier on a desk. */
+.pct-meta { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 18px; }
+.pct-mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; font-size: 9.5px; letter-spacing: 0.08em; color: var(--muted-2); }
+.pct-mrow b { font-weight: 600; color: var(--you); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* what the badge above it means — the same sentence the draft's archetype card prints, in the
+   terminal's comment voice */
+.pc-what { margin: 0; font-size: 10.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+
+/* ---- the seasons ---- */
+.pct-years { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.pc-term .pc-years { flex: none; margin-top: 0; }
+.pc-term .yrchip { font-size: 10px; letter-spacing: 0.02em; }
+.pc-term .yrchip i { font-size: 7px; letter-spacing: 0.08em; color: var(--pct-acc); }
+.pc-term .yrchip.on i { color: var(--you-ink); opacity: 0.75; }
+
+/* ---- the verdict ---- */
+.pct-readouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pc-big { min-width: 0; border: 1px solid var(--line-2); background: var(--panel); padding: 8px 10px 9px; text-align: left; }
+.pc-big.lead { border-color: var(--pct-acc-line); }
+.pc-big i { display: block; font-style: normal; font-size: 8px; letter-spacing: 0.13em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-big.lead i { color: var(--pct-acc); }
+.pc-big b { display: block; margin-top: 2px; font-size: clamp(26px, 6.6vw, 38px); font-weight: 700; line-height: 1.12; color: var(--ink); }
+
+/* ---- the sheet ---- */
+.pc-main { min-width: 0; display: flex; flex-direction: column; }
+.pc-rule { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
+.pc-rule span { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-rule i { flex: 1; height: 1px; background: var(--line-2); }
+/* the real line, in its own readout panel */
+.pc-stats { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px 8px; margin-top: 5px; padding: 11px 13px; border: 1px solid var(--line); background: var(--panel); }
+.pc-cell { display: block; min-width: 0; }
+.pc-cell i { display: block; font-style: normal; font-size: 8px; letter-spacing: 0.08em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-cell b { display: block; margin-top: 1px; font-size: 14px; font-weight: 600; line-height: 1.25; color: var(--ink); }
+/* the attributes: a row each — name, track, number — under a ruled group head, two columns of them */
+.pc-attrs { columns: 2; column-gap: 22px; margin-top: 6px; }
+.pc-grp { break-inside: avoid; margin-bottom: 10px; }
+.pc-grpname { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--you); }
+.pc-grpname i { height: 1px; background: var(--line-2); }
+.pc-grpname i:first-child { flex: none; width: 13px; }
+.pc-grpname i:last-child { flex: 1; }
+.pct-attr { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.pct-attr .k { flex: 1 1 auto; min-width: 0; font-size: 8.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pct-attr .statt { flex: 0 1 76px; height: 7px; border: 1px solid var(--line-2); background: var(--you-tint); }
+.pct-attr .statf { display: block; height: 100%; background: var(--you); }
+.pct-attr b { flex: none; width: 22px; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--ink); }
+.pc-note { margin-top: 6px; font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
+
+/* ---- the shape, and the way into the numbers behind it ---- */
+.pct-shape { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pct-shape .pc-rule { margin-top: 0; }
+.pct-hexbox { display: grid; justify-items: center; padding: 8px; border: 1px solid var(--line); background: var(--panel); }
+.pct-hexbox .heathex { display: block; width: 100%; max-width: 188px; height: auto; margin: 0; }
+.pc-adv { padding: 9px 0; text-align: center; background: none; border: 1px solid var(--line-3); color: var(--you); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
+.pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); }
+
+/* ---- the way out ----
+   the app's gold slab would be the one thing in the card still wearing the house colours, and at
+   24px League Gothic it shouts; in here CLOSE is a wide, letterspaced terminal key. */
+.pc-foot { flex: none; padding-top: 9px; }
+.pc-foot .btn { width: 100%; min-height: 44px; border-radius: 0; border: 1px solid var(--you-line); background: var(--you-tint); box-shadow: none; color: var(--you); font-size: 12px; font-weight: 700; letter-spacing: 0.28em; }
+.pc-foot .btn:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); }
+.pc-foot .btn:active { transform: none; box-shadow: none; }
+
+/* ---- the desk: 1b's three areas ---- */
+@media (min-width: 900px) {
+  .pc-term > * { max-width: 1060px; }
+  /* the desk's home button is 52px and sits 14px in — [ESC] must clear it, the same way the
+     topbar it replaced did (.topbar { padding-right: 44px }) */
+  .pct-bar { padding-right: 56px; }
+  .pc-term { padding: 0 20px 22px; }
+  .pc-body {
+    grid-template-columns: minmax(0, 1fr) 292px;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'years years'
+      'main  id'
+      'main  shape';
+    align-items: start;
+  }
+  .pct-years { grid-area: years; }
+  .pc-main { grid-area: main; }
+  .pct-id { grid-area: id; }
+  .pct-shape { grid-area: shape; }
+  .pct-meta { grid-template-columns: minmax(0, 1fr); }
+  .pc-name { font-size: 21px; }
+}
+
+/* ---- the phone: everything above, packed ----
+   1b's dossier is a COLUMN, and a column is exactly what a 375px screen has least of. Every rule
+   here buys back height: the name and the badge share a line, the ledger runs three across instead
+   of two, the shape stands beside the button rather than above it, and the attribute track — the
+   one part of a row that is decoration rather than fact — comes off, as it already did before. */
 @media (max-width: 560px) {
-  .pc-body { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .pc-rail { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-  .pc-rail .pc-big { flex: 1; }
-  /* stacked: the rail is a flex row, so the hex takes a fixed box on its own line
-     (width:100% would stretch it to the whole card) */
-  .pc-rail .heathex { width: 128px; height: auto; margin: 2px auto 0; }
-  .pc-adv { margin-top: 0; flex: none; width: 76px; }
-  .pc-tag { margin-left: 0; }
-  /* The card is one screen and does not scroll (his ruling), and on a phone the archetype's
-     sentence now takes a line or three of it. The scout sheet pays for them the way a short
-     window already pays: the attribute BAR goes, the number it decorates stays. */
-  .pc-what { font-size: 12px; }
-  .pc-cell.attr .statt { display: none; }
-  .pc-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .pc-gcells { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* the club and the season are the half of the status line that matters */
+  .pct-sys { display: none; }
+  .pct-id { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .pc-name { flex: 0 1 auto; }
+  .pct-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px 12px; }
+  .pc-what { flex: 1 0 100%; }
+  .pc-rule { margin-top: 9px; }
+  /* seven across and two deep rather than five and three, and the sheet in three columns rather
+     than two: between them they buy back most of a phone screen, and three columns of rows is
+     still looser than the four-across grid of cells the card carried before this. */
+  .pc-stats { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 6px; padding: 10px; }
+  .pc-cell i { font-size: 7.5px; letter-spacing: 0.04em; }
+  .pc-cell b { font-size: 12.5px; }
+  .pc-attrs { columns: 3; column-gap: 12px; }
+  .pct-attr { gap: 6px; padding: 1px 0; }
+  .pct-attr .statt { display: none; }
+  .pct-attr .k { font-size: 8px; }
+  .pct-attr b { font-size: 11px; }
+  .pc-grp { margin-bottom: 7px; }
+  .pct-shape { display: grid; grid-template-columns: 146px minmax(0, 1fr); grid-template-areas: 'rule rule' 'hex adv'; align-items: center; gap: 5px 12px; }
+  .pct-shape .pc-rule { grid-area: rule; }
+  .pct-hexbox { grid-area: hex; padding: 6px; }
+  .pct-hexbox .heathex { max-width: 132px; }
+  .pc-adv { grid-area: adv; }
 }
 @media (max-height: 620px) {
-  .pc-cell.attr .statt { display: none; }
+  .pct-attr .statt { display: none; }
   .pc-cell b { font-size: 13px; }
+  .pc-big b { font-size: 26px; }
 }
 
 /* ==========================================================================

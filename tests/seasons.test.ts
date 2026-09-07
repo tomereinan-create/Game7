@@ -86,12 +86,18 @@ describe('stepping a year redraws the same sheet for the other card', () => {
     const b = card("Marcus Smart '15")
     const ha = sheet(a)
     const hb = sheet(b)
-    expect(ha).toContain('Season 2020')
-    expect(hb).toContain('Season 2015')
-    expect(ha).toContain('Marcus Smart &#x27;20')
-    expect(hb).toContain('Marcus Smart &#x27;15')
+    // The terminal's head is the MAN and its ledger is the season, so the year is asserted where
+    // the card now prints it: the slug in the status bar and the SEASON row in the dossier. (A
+    // bare toContain('Season 2020') would pass on either sheet — every chip carries a
+    // `Season NNNN` aria-label — so it says nothing about which season is loaded.)
+    expect(ha).toContain('<div class="pc-name">Marcus Smart</div>')
+    expect(hb).toContain('<div class="pc-name">Marcus Smart</div>')
+    expect(ha).toContain('BOS // S2020')
+    expect(hb).toContain('BOS // S2015')
+    expect(ha).toContain('<span>SEASON</span><b>2020</b>')
+    expect(hb).toContain('<span>SEASON</span><b>2015</b>')
     expect(a.ovr).not.toBe(b.ovr)
-    const ovr = (h: string) => /class="pc-big lead"><i>OVR<\/i><b>(\d+)<\/b>/.exec(h)?.[1]
+    const ovr = (h: string) => /class="pc-big lead"><i>OVR[^<]*<\/i><b>(\d+)<\/b>/.exec(h)?.[1]
     expect(ovr(ha)).toBe(String(a.ovr))
     expect(ovr(hb)).toBe(String(b.ovr))
     // the stat line under it is the other season's too
@@ -99,5 +105,42 @@ describe('stepping a year redraws the same sheet for the other card', () => {
     expect(pts(ha)).not.toBe(pts(hb))
     // and the strip itself does not move — same chips, a different one lit
     expect(chips(ha).map((c) => c.year)).toEqual(chips(hb).map((c) => c.year))
+  })
+})
+
+/**
+ * HIS RULING: "Use 1b, but for each player his team colors."
+ *
+ * The card is 1b's terminal lit by `terminalSkin(teamColor(<the season's club>))`, so what has to
+ * hold is that the colour is read off the SEASON and not off the man: walk one career and the
+ * ground changes at every trade, and a season split between two clubs takes neither.
+ */
+describe('the card is lit in the club he played for that season', () => {
+  const ground = (h: string) => /--bg:(hsl\([^)]*\))/.exec(h)?.[1]
+  const slug = (h: string) => /class="pct-slug">([^<]*)</.exec(h)?.[1]
+
+  it('gives two clubs two grounds, and the same club the same one', () => {
+    const por = sheet(card("Rasheed Wallace '01"))
+    const det = sheet(card("Rasheed Wallace '05"))
+    const det2 = sheet(card("Rasheed Wallace '06"))
+    expect(slug(por)).toBe('POR // S2001')
+    expect(slug(det)).toBe('DET // S2005')
+    expect(ground(por)).toBeTruthy()
+    expect(ground(por)).not.toBe(ground(det))
+    expect(ground(det)).toBe(ground(det2))
+  })
+
+  it('takes the historical club, not its successor', () => {
+    // WSB is the Bullets and WAS is the Wizards; before this table they were both the fallback.
+    const wsb = sheet(card("Wes Unseld '80"))
+    expect(slug(wsb)).toBe('WSB // S1980')
+    expect(ground(wsb)).not.toBe(ground(sheet(card("Marcus Smart '20"))))
+  })
+
+  it('will not pick a club for a man who was traded mid-season', () => {
+    const multi = sheet(card("Rasheed Wallace '04"))
+    expect(slug(multi)).toBe('MULTI // S2004')
+    // the fallback steel, which is what an unnamed abbreviation gets anywhere else in the app
+    expect(ground(multi)).toBe(ground(sheet(card("Wally Szczerbiak '06"))))
   })
 })
