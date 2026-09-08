@@ -1762,13 +1762,48 @@ button {
   body.wide .ladder {
     max-width: 100%;
   }
+  /* HIS RULING: "Make both teams smaller, and widen the player pick and spin area". The three
+     columns were equal thirds, which spent the same width on two things you READ — the opponent
+     and your own five — as on the one thing you WORK: the reels, the team they land on, and the
+     list you pick a man out of. So the middle takes the width and the two teams give it up.
+     0.85 / 1.30 / 0.85 — the middle 30% wider, each team 15% narrower — is where the two halves of
+     the ruling stop fighting: measured at 1280, 1440 and 1920, it is the widest middle that still
+     leaves the opponent's roster reading the way it does today at 1440 and 1920. Read it with the
+     rule under it, which spends what the teams gave up on the men's NAMES. */
   .draft {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr) minmax(0, 0.85fr);
     gap: 18px;
     align-items: start;
     /* the bigger buttons on a desk need a taller band, and the right-hand column runs under them */
     padding-top: 42px;
+  }
+  /* THE OTHER HALF OF THE SAME RULING — "make both teams smaller". A narrower column has to spend
+     what is left of it on the WORDS, so in the two team columns the furniture is what gets smaller
+     and the name is what does not: PTS·REB·AST and the chevron go back to the phone's own sizes,
+     which hands 58px straight back to the man's name — enough that the opponent's roster reads at
+     1440 and 1920 exactly as it did before the columns moved. The card heads wrap the same way for
+     the same reason: the caption drops to its own line rather than break a record in half ("17–"
+     over "65"). The middle column keeps the roomy desk row; it is the list being worked, and it is
+     the column that just got wider. */
+  .draft .col.a .rowhead.dr,
+  .draft .col.a .row.dr,
+  .draft .col.c .rowhead.dr,
+  .draft .col.c .row.dr {
+    grid-template-columns: minmax(0, 1fr) 88px 28px;
+  }
+  .draft .col.a .mini,
+  .draft .col.c .mini {
+    font-size: 11px;
+  }
+  .draft .col.a .card-head,
+  .draft .col.c .card-head {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .draft .col.a .card-head > .label,
+  .draft .col.c .card-head > .label {
+    white-space: nowrap;
   }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
