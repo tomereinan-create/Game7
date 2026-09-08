@@ -903,7 +903,9 @@ export function LevelMap({
           second auto-complete switch — and the switch has had a door of its own in the era row
           at the top of the map since that row was given to both modes, so the bar was saying
           nothing the map does not already say, two hundred pixels below the last ticket. The
-          page's own room for a dock goes with it: this screen has no dock, only the crawl. */}
+          page's own room for a dock goes with it: this screen has no dock. The blue crawl that
+          took the last band under it is gone too (his ruling, 2026-09-08: "Delete everything below
+          the league 2026 in both modes"), so era I's rule is now the last thing on the page. */}
     </>
   )
 }

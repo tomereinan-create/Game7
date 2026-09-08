@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Team } from '../state/campaign'
-import { useTicker } from './Ticker'
 import { useUserMode } from '../state/viewmode'
 import { DEFAULT_KIT, KITS, kitColor, type Kit } from './teamColors'
 
@@ -81,7 +80,9 @@ export function TeamSetup({
   }
   const user = useUserMode()
   const ready = !!city && name.trim().length > 0
-  useTicker('Any city in the world')
+  // This screen used to state the crawl's line ("Any city in the world") while it was up. The
+  // crawl itself is gone on his 2026-09-08 ruling, and the line is no loss here: the paragraph
+  // under the heading already says the team plays out of any city in the world.
 
   return (
     <>

@@ -2,14 +2,16 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { CardProvider } from './ui/CardSheet'
-import { Ticker } from './ui/Ticker'
 import './styles.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <CardProvider>
+      {/* The blue crawl used to hang here, outside App and pinned to the window, so that every
+          screen ended on the same band. It is gone on his ruling, 2026-09-08: "Delete Draft five
+          · beat 150 teams · hang the banners and the entire header" — the bar, not just its line.
+          App is the whole window now. */}
       <App />
-      <Ticker />
     </CardProvider>
   </StrictMode>,
 )
