@@ -94,25 +94,42 @@ describe('a reel stops with its answer under the arrows', () => {
   })
 
   /**
-   * HIS RULING: "make it animated". The flat-out phase is LINEAR and the landing brakes, and the
-   * brake's distance is the distance a body at that speed covers while stopping evenly — which is
-   * what makes the hand-off seamless instead of a lurch.
+   * HIS RULING: "make it animated". The run is LINEAR and the brake decelerates, and the brake's
+   * distance is the ground a body at that speed covers while stopping evenly — which is what makes
+   * the hand-off seamless instead of a lurch.
    */
   it('travels flat out, then brakes over half as much ground per second', () => {
     const p = reelPlan(13, 4, 1400)
     const run = p.start - p.mid
-    const brake = p.mid - p.end
+    const brake = p.mid - p.step
     expect(run).toBeGreaterThan(0)
     expect(brake).toBeGreaterThan(0)
     // same speed in the run; half the average speed in the brake
-    expect(run / p.spinMs / (brake / p.landMs)).toBeCloseTo(2, 5)
+    expect(run / p.spinMs / (brake / p.brakeMs)).toBeCloseTo(2, 5)
+  })
+
+  /**
+   * HIS RULING: "1 step back maximum at the end ... but not 10 back steps like now". The brake
+   * stops one row short and a third phase takes the last row on its own, so the final movement is
+   * exactly one row — never fourteen of them grinding past at walking pace.
+   */
+  it('takes exactly one row as its last step, whatever the list or the answer', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (const spinMs of [1000, 1800]) {
+        for (let at = 0; at < rows; at++) {
+          const p = reelPlan(rows, at, spinMs)
+          expect(p.step - p.end).toBe(H)
+        }
+      }
+    }
   })
 
   it('always goes one way — down the strip, never back up it', () => {
     for (let at = 0; at < 13; at++) {
       const p = reelPlan(13, at, 1400)
       expect(p.mid).toBeLessThan(p.start)
-      expect(p.end).toBeLessThan(p.mid)
+      expect(p.step).toBeLessThan(p.mid)
+      expect(p.end).toBeLessThan(p.step)
     }
   })
 
