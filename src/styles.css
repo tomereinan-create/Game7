@@ -5247,6 +5247,19 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   --ck-dim: #cfc9b2;
   --ck-body: #d8d2bd;
   --ck-yellow: #ffe27a;
+  /* HIS RULING: "when pressing on something instead of a yellow circle make it orange circle."
+     The orange stands BESIDE the yellow and does not replace it — --ck-yellow is also the 7 in
+     the wordmark, the SCOUT chip, the tag and the banked line down the read, the wavy underline
+     and the CTA's dashes, and none of those is the pressed circle. The only rules that changed
+     are the two on .ck-spot.on.
+
+     WHICH ORANGE. A web orange (#f80, #ff6b00) is a sticker on a green slate: it is darker than
+     the board's cream and yellow, so it stops looking like chalk dust and starts looking like
+     ink. The slate's yellow is hsl(44 100% 74%) — fully saturated and very light, which is what
+     chalk is. This is the same stick swung round to hsl(26 100% 70%): unmistakably orange next
+     to that yellow, and still 6.7:1 against the slate, so the name chalked under the mark in it
+     is comfortably readable at the size a phone draws it. */
+  --ck-orange: #ffa866;
   --ck-faint: #93987f;
   --ck-type: 'Courier Prime', 'Courier New', ui-monospace, monospace;
 
@@ -5421,9 +5434,66 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   color: var(--ck-dim);
   white-space: nowrap;
 }
-.ck-spot.on .ck-glyph { border-color: var(--ck-yellow); color: var(--ck-yellow); }
-.ck-spot.on .ck-label { color: var(--ck-yellow); }
+/* his ruling: "instead of a yellow circle make it orange circle." The name goes with the circle:
+   the mark and the word under it are one thing standing on the floor, and a circle in one colour
+   over a name in another reads as a mistake rather than as a selection. The focus ring stays
+   yellow — it says where the keyboard is, which is not the same question as which play is
+   pressed, and on a spot that is both you want to be able to tell them apart. */
+.ck-spot.on .ck-glyph { border-color: var(--ck-orange); color: var(--ck-orange); }
+.ck-spot.on .ck-label { color: var(--ck-orange); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
+
+/* ---------- THE MAN ON THE FLOOR ----------
+   HIS RULING: "have a player with a basketball, running towards where you pressed."
+
+   HE IS PLACED THE WAY THE MARKS ARE, in per cent of the court, so the run is an interpolation
+   between two percentages and stays the same run whatever width the floor is drawn at. Nothing
+   here is a pixel offset from a mark: everything is the court's own cqw, on the same clamps the
+   glyph and its name are on, so he keeps his size against the mark he is standing beside at 331px
+   across on a phone and at 720 on a desk.
+
+   HE PULLS UP BESIDE THE MARK, NOT ON IT — an O with a man standing in it is not a play. He stops
+   on the side he came from, which is where a man running that way would stop, so he is always
+   facing the thing he ran to. --ck-run-side carries both halves of that: -1 puts him a gap to the
+   left and leaves him facing right, which is how he is drawn. The gap is a hair more than the
+   glyph's own radius plus his own half-width, on the same clamps, so he never overlaps the circle
+   and never runs off the sideline — the two X's in the corners stand 8.5% and 91.5% in, and he
+   arrives on their inside shoulder either way.
+
+   He rides an inch high of the spot's own centre because a spot's centre is the middle of the
+   glyph AND its name; that shift puts him level with the circle instead of with the word. */
+.ck-runner {
+  position: absolute;
+  z-index: 2;
+  width: clamp(26px, 8.8cqw, 100px);
+  --ck-run-gap: clamp(44px, 11cqw, 136px);
+  transform:
+    translate(calc(-50% + (var(--ck-run-gap) * var(--ck-run-side))), calc(-50% - clamp(8px, 2cqw, 16px)))
+    scaleX(calc(var(--ck-run-side) * -1));
+  /* 640ms is RUN_MS in ChalkHome.tsx, which is how long his legs are told to keep going */
+  transition: left 640ms cubic-bezier(0.35, 0, 0.25, 1), top 640ms cubic-bezier(0.35, 0, 0.25, 1);
+  pointer-events: none;
+}
+.ck-runner svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* chalk, in the hand the rest of the board is drawn in: no fill, round ends, a hair off white */
+.ck-runner path, .ck-runner circle { fill: none; stroke: var(--ck-bright); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+/* the ball takes the pressed mark's orange — what he carries and what he runs to are one colour */
+.ck-runner .ck-run-ball { stroke: var(--ck-orange); opacity: 1; }
+/* each limb swings about the joint its group was carried to, which is that group's own 0,0 */
+.ck-run-limb { transform-origin: 0px 0px; }
+/* the stride runs only while he is on his way; arrived, he stands in the pose he is drawn in.
+   A and B are the two halves of a stride — the same keyframes half a period apart — and the
+   trailing arm shares a phase with the leading leg, which is what makes it read as running
+   rather than as a man hopping. The arms swing SHORT — fifteen degrees against the legs' thirty
+   — because the ball is at the far end of one of them: at the legs' angle it swung down between
+   his knees on every stride, which reads as a man losing the ball rather than carrying it. */
+.ck-runner.go .ck-run-limb { animation: ck-stride 460ms ease-in-out infinite; }
+.ck-runner.go .ck-run-limb.arm { animation-name: ck-swing; }
+.ck-runner.go .ck-run-limb.b { animation-delay: -230ms; }
+.ck-runner.go svg { animation: ck-bob 230ms ease-in-out infinite; }
+@keyframes ck-stride { 0%, 100% { transform: rotate(31deg); } 50% { transform: rotate(-31deg); } }
+@keyframes ck-swing { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } }
+@keyframes ck-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4%); } }
 
 /* ---------- what the coach says about the play under the chalk ----------
    THE READ IS MEASURED AGAINST ITS OWN COLUMN, not against the window. His ruling widened the
@@ -5513,4 +5583,12 @@ body.map #root { padding-bottom: var(--foot); }
 
 body.chalk { background: #6b4a32; }
 body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
-@media (prefers-reduced-motion: reduce) { .ck-spot { transition: none; } }
+/* WITH REDUCED MOTION HE DOES NOT RUN, HE IS SIMPLY THERE. The left/top are still the pressed
+   mark's, so pressing a play still moves him — it just happens in the same frame as the mark
+   turning orange, with no travel and no legs. */
+@media (prefers-reduced-motion: reduce) {
+  .ck-spot, .ck-runner { transition: none; }
+  /* .arm is in here so this beats the arm's own animation-name a few rules up, which is a
+     four-class selector and would otherwise put the swing back on top of the none */
+  .ck-runner.go .ck-run-limb, .ck-runner.go .ck-run-limb.arm, .ck-runner.go svg { animation: none; }
+}
