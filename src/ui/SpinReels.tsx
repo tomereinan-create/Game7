@@ -49,12 +49,13 @@ const WINDOW = 5
 /** Constant speed of the spin phase, px/ms. 35 rows a second: fast enough to blur, slow enough to
  *  read as names going past rather than as noise. */
 const SPEED = 1.05
-/** How long the flat-out phase runs on the TEAM reel. */
-const SPIN_MS = 1400
+/** How long the flat-out phase runs on the TEAM reel (his ruling: "make the wheel spin a bit
+ *  shorter" — this and the brake below each came down a notch; the stagger did not, it is his). */
+const SPIN_MS = 1000
 /** HIS 0.8s: the year reel simply stays flat out for that much longer before it starts braking. */
 export const REEL_STAGGER_MS = 800
 /** The brake, the same on both reels. */
-const LAND_MS = 1000
+const LAND_MS = 800
 /** y = 1 − (1 − t)², a quadratic ease-out, as a cubic Bézier. Its initial slope is 2 — see above. */
 const BRAKE = 'cubic-bezier(0.333, 0.667, 0.667, 1)'
 
