@@ -50,13 +50,24 @@ const WINDOW = 5
  * one final name eases up into the arrows — a single step, and never more than a single step,
  * whatever the reel or the answer. That is the whole of his "1 step maximum at the end".
  *
- * Each hand-off is continuous by construction, so none of them reads as a jerk:
- *   RUN   linear at SPEED.
- *   BRAKE a quadratic ease-out — its speed at t=0 is twice its own average, so making its distance
- *         `SPEED × BRAKE_MS / 2` starts it at exactly the speed the run ended at, and it finishes
- *         at a standstill.
- *   STEP  starts and ends at a standstill too (an ease-in-out), so it can only be the deliberate
- *         last step it looks like.
+ * ONE DECELERATION, NOT THREE PHASES (his ruling: "Make the movement more fluid. Instead of stop
+ * continue stop, Decline the speed until stopping"). Braking to a standstill and then taking a
+ * separate last step is two stops with a start between them, and he could see all three. So the
+ * brake and the step are one move now, and the speed only ever falls.
+ *
+ * What made them separate was arithmetic, not taste. Shedding speed EVENLY takes 420px to do from
+ * 1.05 px/ms — fourteen rows of walking-pace grind, which was his complaint two rulings ago — so
+ * the brake had to stop short and hand the last row to something else. The fix is to stop shedding
+ * it evenly. A QUINTIC ease-out falls away steeply and then trails: it covers the same ground in a
+ * quarter of the distance an even brake needs, and it spends most of its TIME on the last row or
+ * two. Fast where it should be fast, slow where the drama is, and never stationary until it is
+ * done.
+ *
+ * Both hand-offs are continuous by construction, so neither reads as a jerk:
+ *   RUN   linear at `v`.
+ *   LAND  a quintic ease-out. A cubic Bézier's speed at t=0 is y1/x1 times its average, so making
+ *         its distance `v × LAND_MS × K` — where K is that curve's x1/y1 — starts it at exactly
+ *         `v`, the speed the run was doing, and lets it decay from there to nothing.
  *
  * AND IT ONLY EVER GOES ONE WAY (his ruling: "It still jumps back ... the animation goes up, and
  * then a lot down. I want it to spin in one way and then stop, not spin and respin to the other
@@ -76,25 +87,20 @@ const WINDOW = 5
  *  names going past rather than as noise. */
 const SPEED = 1.05
 /** How long the flat-out phase runs on the TEAM reel. */
-const SPIN_MS = 1000
-/** HIS 0.8s: the year reel simply stays flat out for that much longer before it starts braking. */
+const SPIN_MS = 900
+/** HIS 0.8s: the year reel simply stays flat out for that much longer before it starts slowing. */
 export const REEL_STAGGER_MS = 800
-/** The brake. It only has to reach the row BEFORE the answer, so it is far shorter than the 800ms
- *  it began at — but not as short as it was: his ruling, "make the ending a little bit slower so it
- *  will be a bit more dramatic", is spent here and on the step below, and nowhere else. */
-const BRAKE_MS = 540
-/** The last step, and the most dramatic thing on the screen: 30 pixels taking the better part of
- *  half a second. Slow enough to be watched, which is the whole point of it. */
-const STEP_MS = 460
-/** y = 1 − (1 − t)², a quadratic ease-out, as a cubic Bézier. Its initial slope is 2 — see above. */
-const BRAKE = 'cubic-bezier(0.333, 0.667, 0.667, 1)'
-/** Still at both ends, and slowest at the start: the reel has stopped, and this is it straining
- *  for the last row before it gets there. */
-const STEP = 'cubic-bezier(0.66, 0.02, 0.3, 1)'
+/** The whole slowing-down, in one piece. His "a bit more dramatic" lives in this number. */
+const LAND_MS = 1100
+/** A quintic ease-out: falls away steeply, then trails for a long time. */
+const LAND = 'cubic-bezier(0.22, 1, 0.36, 1)'
+/** That curve's x1/y1 — the reciprocal of how many times its own average it starts at. The landing
+ *  distance is `v × LAND_MS × K`, which is what makes it start at exactly `v`. */
+const K = 0.22
 
 /** When each reel comes to rest, measured from the press. */
-export const REEL_TEAM_MS = SPIN_MS + BRAKE_MS + STEP_MS
-export const REEL_YEAR_MS = SPIN_MS + REEL_STAGGER_MS + BRAKE_MS + STEP_MS
+export const REEL_TEAM_MS = SPIN_MS + LAND_MS
+export const REEL_YEAR_MS = SPIN_MS + REEL_STAGGER_MS + LAND_MS
 
 export interface ReelSpin {
   team: { rows: string[]; at: number }
@@ -159,17 +165,15 @@ export const offsetOf = (index: number) => -(index * H) + Math.floor(WINDOW / 2)
 export interface ReelPlan {
   /** How many rows to lay end to end, so the strip never runs out from under the window. */
   strip: number
-  /** Where it starts, where the brake takes over, where the brake leaves it, and where it rests. */
+  /** Where it starts, where it stops running flat out, and where it comes to rest. */
   start: number
   mid: number
-  step: number
   end: number
   /** The row it comes to rest on, and the one whole cycles above it that it is parked at after. */
   landed: number
   home: number
   spinMs: number
-  brakeMs: number
-  stepMs: number
+  landMs: number
 }
 
 /** Two rows of the window sit below the marker; the strip must always have that much under it. */
@@ -177,7 +181,7 @@ const BELOW = Math.floor(WINDOW / 2)
 
 /** How long a strip has to be for any one journey, whatever row it starts or finishes on. */
 export function stripFor(rows: number, spinMs: number): number {
-  const nominal = SPEED * spinMs + (SPEED * BRAKE_MS) / 2 + H
+  const nominal = SPEED * spinMs + SPEED * LAND_MS * K
   // home band + a full cycle of slack at each end + the journey itself
   const need = BELOW + 2 * rows + Math.ceil(nominal / H) + rows + BELOW + 1
   return Math.ceil(need / rows) * rows
@@ -207,21 +211,20 @@ export function stripFor(rows: number, spinMs: number): number {
  */
 export function reelPlan(rows: number, at: number, spinMs: number, from: number): ReelPlan {
   const strip = stripFor(rows, spinMs)
-  const nominal = SPEED * spinMs + (SPEED * BRAKE_MS) / 2 + H
+  const nominal = SPEED * spinMs + SPEED * LAND_MS * K
   // the first row that far down which carries the answer
   let landed = from + Math.ceil(nominal / H)
   landed += (((at - landed) % rows) + rows) % rows
-  // the speed this distance actually asks for, given the fixed clock
-  const v = ((landed - from) * H - H) / (spinMs + BRAKE_MS / 2)
-  const brake = (v * BRAKE_MS) / 2
+  // the speed this distance actually asks for, given the fixed clock: run + landing, one motion
+  const v = ((landed - from) * H) / (spinMs + LAND_MS * K)
   const end = offsetOf(landed)
-  // THE BRAKE STOPS ONE ROW SHORT. Everything before is measured back from there, so the last step
-  // is exactly one row — H — and cannot be anything else.
-  const step = offsetOf(landed - 1)
+  // where the running stops and the slowing begins — and the ONLY thing between them is the speed
+  // ceasing to be constant. Nothing stops here.
+  const mid = end + v * LAND_MS * K
   // and where it is parked once it has settled: the same row, whole cycles nearer the top, which
   // is the same picture and the next spin's runway
   const home = BELOW + ((((landed - BELOW) % rows) + rows) % rows)
-  return { strip, start: offsetOf(from), mid: step + brake, step, end, landed, home, spinMs, brakeMs: BRAKE_MS, stepMs: STEP_MS }
+  return { strip, start: offsetOf(from), mid, end, landed, home, spinMs, landMs: LAND_MS }
 }
 
 function Reel({
@@ -249,7 +252,7 @@ function Reel({
   nonce: number
   wide?: boolean
 }) {
-  const spinMs = ms - BRAKE_MS - STEP_MS
+  const spinMs = ms - LAND_MS
   /**
    * The row the reel is parked on. It is a ref and not state because it is where the NEXT spin
    * starts from, and nothing renders differently for it — the whole point of the home band is that
@@ -290,13 +293,11 @@ function Reel({
       setFast(true)
       setMove({ y: plan.mid, ms: plan.spinMs, ease: 'linear' })
       timers.push(
-        // the brake takes over at the speed the run left off at, and stops one row short
+        // the speed stops being constant and starts falling — at exactly the speed it was doing
         window.setTimeout(() => {
           setFast(false)
-          setMove({ y: plan.step, ms: plan.brakeMs, ease: BRAKE })
+          setMove({ y: plan.end, ms: plan.landMs, ease: LAND })
         }, plan.spinMs),
-        // and then the one last step, from a standstill to a standstill
-        window.setTimeout(() => setMove({ y: plan.end, ms: plan.stepMs, ease: STEP }), plan.spinMs + plan.brakeMs),
         // Settled. Park it whole cycles nearer the top — the identical picture, and the runway the
         // next spin travels down. This is the move that used to happen at the START of a spin,
         // where it was thirty-eight rows of visible rewind; here there is nothing to see.
@@ -304,7 +305,7 @@ function Reel({
           setDone(true)
           at0.current = plan.home
           setMove({ y: offsetOf(plan.home), ms: 0, ease: 'linear' })
-        }, plan.spinMs + plan.brakeMs + plan.stepMs + 60),
+        }, plan.spinMs + plan.landMs + 60),
       )
     }
     // A page that is not being painted never fires a frame, and the spin lands on a timer

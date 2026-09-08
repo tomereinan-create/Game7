@@ -72,7 +72,7 @@ describe('a reel stops with its answer under the arrows', () => {
   it('ends with the landing row in the middle of the window, whatever the list', () => {
     for (const rows of [3, 7, 13, 47]) {
       for (let at = 0; at < rows; at++) {
-        const p = reelPlan(rows, at, 1000, BELOW)
+        const p = reelPlan(rows, at, 900, BELOW)
         expect(indexOf(p.end) % rows).toBe(at)
         expect(indexOf(p.end)).toBe(p.landed)
       }
@@ -86,7 +86,7 @@ describe('a reel stops with its answer under the arrows', () => {
    */
   it('starts exactly where the reel is already parked, so nothing jumps', () => {
     for (const rows of [3, 7, 13, 47]) {
-      for (const spinMs of [1000, 1800]) {
+      for (const spinMs of [900, 1700]) {
         for (let from = BELOW; from < BELOW + rows; from++) {
           for (let at = 0; at < rows; at++) {
             expect(reelPlan(rows, at, spinMs, from).start).toBe(offsetOf(from))
@@ -96,14 +96,13 @@ describe('a reel stops with its answer under the arrows', () => {
     }
   })
 
-  it('never travels back up, on any leg', () => {
+  it('never travels back up, on either leg', () => {
     for (const rows of [3, 7, 13, 47]) {
       for (let from = BELOW; from < BELOW + rows; from++) {
         for (let at = 0; at < rows; at++) {
-          const p = reelPlan(rows, at, 1000, from)
+          const p = reelPlan(rows, at, 900, from)
           expect(p.mid).toBeLessThan(p.start)
-          expect(p.step).toBeLessThan(p.mid)
-          expect(p.end).toBeLessThan(p.step)
+          expect(p.end).toBeLessThan(p.mid)
         }
       }
     }
@@ -114,7 +113,7 @@ describe('a reel stops with its answer under the arrows', () => {
     for (const rows of [3, 7, 13, 47]) {
       for (let from = BELOW; from < BELOW + rows; from++) {
         for (let at = 0; at < rows; at++) {
-          const p = reelPlan(rows, at, 1000, from)
+          const p = reelPlan(rows, at, 900, from)
           expect((p.landed - p.home) % rows).toBe(0)
           expect(p.home % rows).toBe(p.landed % rows)
           // and it is back in the home band, so the next spin has its runway
@@ -127,7 +126,7 @@ describe('a reel stops with its answer under the arrows', () => {
 
   it('never runs off either end of the strip it built', () => {
     for (const rows of [3, 7, 13, 47]) {
-      for (const spinMs of [1000, 1800]) {
+      for (const spinMs of [900, 1700]) {
         const strip = stripFor(rows, spinMs)
         for (let from = BELOW; from < BELOW + rows; from++) {
           for (let at = 0; at < rows; at++) {
@@ -143,36 +142,44 @@ describe('a reel stops with its answer under the arrows', () => {
   })
 
   /**
-   * HIS RULING: "1 step back maximum at the end ... but not 10 back steps like now". The brake
-   * stops one row short and a third phase takes the last row on its own, so the final movement is
-   * exactly one row.
+   * HIS RULING: "Make the movement more fluid. Instead of stop continue stop, Decline the speed
+   * until stopping." One deceleration, so the only thing at the hand-off is the speed ceasing to be
+   * constant — the landing must BEGIN at exactly the speed the run ended at, or there is a lurch.
+   *
+   * A cubic Bézier's speed at t=0 is y1/x1 times its own average, so with K = x1/y1 the landing's
+   * average speed has to be K times the run's. The rounding up to a landing row is paid in speed
+   * and never in time, so this has to hold for every row of every list.
    */
-  it('takes exactly one row as its last step, whatever the list or the answer', () => {
+  it('starts slowing at exactly the speed it was running', () => {
     for (const rows of [3, 7, 13, 47]) {
-      for (const spinMs of [1000, 1800]) {
-        for (let at = 0; at < rows; at++) {
-          expect(reelPlan(rows, at, spinMs, BELOW).step - reelPlan(rows, at, spinMs, BELOW).end).toBe(H)
+      for (const spinMs of [900, 1700]) {
+        for (let from = BELOW; from < BELOW + rows; from++) {
+          for (let at = 0; at < rows; at++) {
+            const p = reelPlan(rows, at, spinMs, from)
+            const run = (p.start - p.mid) / p.spinMs
+            const land = (p.mid - p.end) / p.landMs
+            expect(run).toBeGreaterThan(0)
+            expect(land).toBeGreaterThan(0)
+            expect(land / run).toBeCloseTo(0.22, 6)
+          }
         }
       }
     }
   })
 
   /**
-   * The rounding up to a landing row is paid in speed, never in time — which is what keeps the two
-   * reels his 0.8s apart — and the brake is derived from that same speed, so the run hands over to
-   * it at exactly the speed it was doing.
+   * And the shape of it: a quintic ease-out covers its ground early and then trails, which is what
+   * lets the whole slowing-down be a handful of rows while still spending most of its SECOND on the
+   * last one or two of them. An even brake would need fourteen rows to shed the same speed.
    */
-  it('brakes from whatever speed it ran at, over half as much ground per second', () => {
-    for (const rows of [3, 7, 13, 47]) {
-      for (let at = 0; at < rows; at++) {
-        const p = reelPlan(rows, at, 1000, BELOW)
-        const run = p.start - p.mid
-        const brake = p.mid - p.step
-        expect(run).toBeGreaterThan(0)
-        expect(brake).toBeGreaterThan(0)
-        expect(run / p.spinMs / (brake / p.brakeMs)).toBeCloseTo(2, 6)
-      }
-    }
+  it('spends most of the landing on the last row or two', () => {
+    const p = reelPlan(13, 4, 900, BELOW)
+    const dist = p.mid - p.end
+    // y = 1 − (1 − t)^5 reaches within one row of the end at this fraction of its time
+    const timeTo = (left: number) => 1 - Math.pow(left / dist, 1 / 5)
+    expect(dist / H).toBeLessThan(10)
+    expect(timeTo(H)).toBeLessThan(0.4)
+    expect(timeTo(2 * H)).toBeLessThan(0.3)
   })
 
   it('stops the year exactly his 0.8s after the team', () => {
