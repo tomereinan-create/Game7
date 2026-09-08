@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { seasonGauges } from '../engine/gauges'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
-import { ratings100 } from '../engine/offense'
 import { bestStyle, STYLES, type Style } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
@@ -11,7 +10,7 @@ import { CourtFive } from './CourtFive'
 import { clubChip, ratingTone, teamColor } from './teamColors'
 import { LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
-import { TeamDials } from './MatchupPanel'
+import { Dial } from './MatchupPanel'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -515,7 +514,10 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     const roster = picked.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)
     const { five, bench } = startingFive(roster)
     const fielded = five.filter((p): p is Player => !!p)
-    return { roster, five, bench, dials: fielded.length === 5 ? ratings100(fielded) : null, fielded }
+    // The same gauges the list card is painted from. The head used to read its numbers off
+    // `ratings100` and the list off these, so one team had two verdicts depending which screen you
+    // were on; both now say the same thing, on the scale whose middle is 50.
+    return { roster, five, bench, gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null, fielded }
   }, [picked])
 
   return (
@@ -708,11 +710,36 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 {picked.rec ? ` · ${picked.rec}` : ''}
                 {picked.div ? ` · ${picked.div}` : ''}
               </span>
-              <span className="cap">Best five · OVR {ovrOf(picked) ?? '—'}</span>
+              <span className="cap">Best five</span>
             </div>
-            <div className="opp-name">{picked.team}</div>
+            {/* HIS RULING: "Also change the design here of the team to have their colors in it and
+                green red white on the ovr/off/def" — the same two moves the list's cards make, on
+                the team those cards open. The club's short name in its own chip, and 1b's lit rule
+                under the title redrawn as the club's second colour under the team's name. */}
+            <div className="tdb-club" style={clubChip(picked.ab) as React.CSSProperties}>
+              <span className="tcard-ab">{picked.ab}</span>
+              <span className="tdb-clubwho">
+                <span className="opp-name">{picked.team}</span>
+                <i className="tdb-clubrule" />
+              </span>
+            </div>
             {stripYears.length > 1 ? <SeasonStrip years={stripYears} cur={seasonId(picked)} go={step} mark="best" /> : null}
-            {detail.dials ? <TeamDials five={detail.fielded} tone="them" vs={picked.y} /> : null}
+            {/* and the verdict on the same scale the cards use: white at 50, green above, red below.
+                OVR joins them here — it was a caption in the head, which made the one number the
+                list sorts on the smallest thing on the page. */}
+            {detail.gauges ? (
+              <div className="dials tdb-scale">
+                {(
+                  [
+                    ['OVR', ovrOf(picked) ?? 0],
+                    ['OFF', detail.gauges.off],
+                    ['DEF', detail.gauges.def],
+                  ] as const
+                ).map(([l, v]) => (
+                  <Dial key={l} label={l} value={v} tone="scale" color={ratingTone(v)} sub={detail.gauges!.basis} />
+                ))}
+              </div>
+            ) : null}
             {/* his ruling: the five stands on a floor, not in a list — tap a spot for the full card */}
             <CourtFive
               /* His ruling: the team db's five stands in that club's colours, the same way the

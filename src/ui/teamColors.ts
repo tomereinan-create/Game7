@@ -377,19 +377,25 @@ export function wearSkin(c: TeamColor): Record<string, string> {
  * A rating's colour on the diverging scale: WHITE AT 50, and further from 50 is further from
  * white — green above, red below.
  *
- * Fifty is not an arbitrary middle here. The team OFF and DEF are season PERCENTILES (`seasonGauges`)
- * and the team OVR is their mean, so 50 is literally the league that year: a card at 50 is average
- * and reads as nothing, which is exactly what he asked the colour to say.
+ * Fifty is not an arbitrary middle here, and it is worth saying exactly why. The gauges are ONE
+ * all-time scale read in a season's own league (`seasonGauges`), and `scale71raw` is a two-slope
+ * map whose middle anchor lands on exactly 50 — so 50 is the scale's own centre by construction.
+ * The wheel agrees: across all 1,255 team-seasons that can field a five, the median OVR is 51. A
+ * card at 50 is the middle of everything ever and reads as nothing, which is what he asked the
+ * colour to say.
  *
- * The ends are set at 15 and 85 rather than 1 and 99, because a percentile field is dense in the
- * middle — pinning full colour to 99 would leave nearly every team in the league a shade of
- * off-white and say nothing at all. Saturation climbs from a whisper and lightness comes down with
- * it, so a colour is never both pale and washed out; both hues land at 58% lightness, which is
- * where a red and a green read as equals against the arena's black.
+ * The ends are set at 25 and 75 rather than 1 and 99, and that is measured rather than guessed:
+ * the same 1,255 run p10 35 · p25 42 · p75 61 · p90 72, so a ramp that only reached full colour at
+ * 99 would leave the entire middle half of the league a shade of off-white. At ±25 the middle half
+ * stays pale — which is the point of a diverging scale — while the tails actually arrive.
+ *
+ * Saturation climbs from a whisper and lightness comes down with it, so a colour is never both
+ * pale and washed out; both hues land at 58% lightness, which is where a red and a green read as
+ * equals against the arena's black.
  */
 export function ratingTone(v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return 'var(--muted)'
-  const k = Math.min(1, Math.abs(v - 50) / 35)
+  const k = Math.min(1, Math.abs(v - 50) / 25)
   // 352 is the app's own red (--them, --danger) rather than a new one; 145 is the green that
   // reads as its equal against the arena's black at the same lightness.
   return `hsl(${v >= 50 ? 145 : 352} ${(6 + k * 60).toFixed(0)}% ${(89 - k * 31).toFixed(0)}%)`

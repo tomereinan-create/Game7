@@ -6,13 +6,18 @@ const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
 const sgn = (v: number, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(d)
 
 /** A 0–100 dial: a three-quarter arc, the number in the middle. */
-export function Dial({ label, value, tone, sub }: { label: string; value: number; tone: 'you' | 'them'; sub?: string }) {
+/**
+ * `tone` is the app's two sides — gold is yours, red is theirs. `scale` is neither: it hands the
+ * dial a colour that was computed from the VALUE (the database's red-to-green rating scale), so
+ * the ring and the numeral both say the same thing the number does.
+ */
+export function Dial({ label, value, tone, sub, color }: { label: string; value: number; tone: 'you' | 'them' | 'scale'; sub?: string; color?: string }) {
   const r = 26
   const c = 2 * Math.PI * r
   const arc = c * 0.75
   const on = (arc * Math.max(0, Math.min(100, value))) / 100
   return (
-    <div className={`dial ${tone}`}>
+    <div className={`dial ${tone}`} style={color ? ({ '--dial-tone': color } as React.CSSProperties) : undefined}>
       <svg viewBox="0 0 64 64" aria-label={`${label} ${value}`}>
         <circle className="track" cx="32" cy="32" r={r} strokeDasharray={`${arc} ${c}`} transform="rotate(135 32 32)" />
         <circle className="fill" cx="32" cy="32" r={r} strokeDasharray={`${on} ${c}`} transform="rotate(135 32 32)" />

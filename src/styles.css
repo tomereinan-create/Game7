@@ -2575,6 +2575,9 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .dial .track { stroke: var(--line-2); }
 .dial.you .fill { stroke: var(--you); }
 .dial.them .fill { stroke: var(--them); }
+/* a dial whose colour came from its own value — the database's rating scale */
+.dial.scale .fill { stroke: var(--dial-tone); }
+.dial.scale text { fill: var(--dial-tone); }
 .dial text { font-family: var(--serif); font-size: 20px; fill: var(--ink); }
 .dial .dl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; color: var(--muted); margin-top: -6px; }
 .dial .ds { font-family: var(--mono); font-size: 9px; color: var(--faint); }
@@ -3201,6 +3204,16 @@ body.offstage #root { position: relative; z-index: 1; }
    old rows did. It takes the arena's own wash, pinned to the viewport so a 1,300-team list does not
    stretch the gradient down four thousand pixels of page. */
 .tdb-sheet { min-height: 100vh; background-color: var(--bg); background-image: var(--wash-lit); background-attachment: fixed; }
+
+/* THE TEAM A CARD OPENS wears the same two things the card did: its club on the chip and under
+   its name, and the red-to-green scale on the three numbers. */
+.tdb-club { display: flex; align-items: center; gap: 12px; margin-top: 4px; min-width: 0; }
+.tdb-club .tcard-ab { width: 48px; height: 48px; font-size: 18px; }
+.tdb-clubwho { min-width: 0; }
+.tdb-clubwho .opp-name { display: block; }
+/* 1b prints a lit rule under its title; here it is the club's second colour under the team's name */
+.tdb-clubrule { display: block; width: 64px; height: 3px; margin-top: 6px; border-radius: 2px; background: var(--chip-edge); }
+.tdb-scale { gap: 10px; padding-top: 10px; }
 
 .tdb-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 6px; }
 @media (min-width: 760px) { .tdb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
