@@ -5564,13 +5564,16 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   color: var(--ck-dim);
   white-space: nowrap;
 }
-/* his ruling: "instead of a yellow circle make it orange circle." The name goes with the circle:
-   the mark and the word under it are one thing standing on the floor, and a circle in one colour
-   over a name in another reads as a mistake rather than as a selection. The focus ring stays
-   yellow — it says where the keyboard is, which is not the same question as which play is
-   pressed, and on a spot that is both you want to be able to tell them apart. */
+/* his ruling: "instead of a yellow circle make it orange circle" — and, when the first pass took
+   the name with it, "Fix the label to be orange only on the circle." So the ORANGE IS THE CIRCLE
+   AND NOTHING ELSE: the ring and its letter turn, the name under it stays the slate's chalk
+   yellow, which is what it lit up in before. Reading it back on the floor he is right — the mark
+   is what the eye picks a play out by, and a second colour under it was the selection saying
+   itself twice.
+   The focus ring stays yellow too: it says where the keyboard is, which is not the same question
+   as which play is pressed, and on a spot that is both you want to tell them apart. */
 .ck-spot.on .ck-glyph { border-color: var(--ck-orange); color: var(--ck-orange); }
-.ck-spot.on .ck-label { color: var(--ck-orange); }
+.ck-spot.on .ck-label { color: var(--ck-yellow); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
 
 /* ---------- THE PLAY: SIX MEN AND ONE BALL ----------
