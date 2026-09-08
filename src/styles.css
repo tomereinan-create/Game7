@@ -1218,6 +1218,20 @@ button {
    Full width of the list it sits in, and its halves stack when the column is narrow. */
 .manband.inline { position: static; margin: 8px 0 12px; height: auto !important; }
 @media (max-width: 720px) { .manband.on { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
+/* THE MIDDLE COLUMN on My team — a box in the row rather than a band across the floor, so it wears
+   the card's own surface and its two halves stand one over the other in a third of the width. */
+.manband.column {
+  position: static;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  height: auto !important;
+  padding: 12px 14px 14px;
+}
+.manband.column .mb-who p { font-size: 16px; }
+.manband.column .mb-who i { margin-top: 8px; }
+/* four across reads better than seven at this width, and the numbers keep their size */
+.manband.column .mb-grid { grid-template-columns: repeat(auto-fit, minmax(58px, 1fr)) !important; gap: 10px 12px; }
+.mb-idle .seriesnow-note { color: var(--faint); }
 .manband .label { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 .mb-who { min-width: 0; display: flex; flex-direction: column; }
 .mb-who .label { color: var(--you); }
@@ -1258,23 +1272,29 @@ button {
    scrolls past the court to reach the men coming in. Must follow .col.c in the cascade: the
    section carries both classes and they are equally specific. */
 .myteam .col.wheel { order: 2; }
+/* the man's own box is a desk column and nothing else: on a phone the band still drops in under
+   the row he tapped, which is the route that width has always had */
+.myteam .col.band { display: none; }
 @media (min-width: 900px) {
+  /* HIS RULING (2026-09-08): "Move the player stats and description to the middle, on the floor to
+     the left, and your five under on the floor." Three columns still, but the first one is now a
+     stack of two boxes — the floor he stands on, and the five under it — the middle is the man
+     himself, and the third is the plan or the wheel as before. Placement is explicit rather than
+     by order, so the DOM keeps the sequence the phone stack reads in. */
   .myteam {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto auto;
     gap: 18px;
     align-items: start;
   }
-  /* on a desk it simply takes the third box, where the plan was */
-  .myteam .col.b { order: 2; }
-  .myteam .col.c { order: 3; }
-  .myteam .col.wheel { order: 3; }
-  /* the plan stepped aside: the two that must be seen take the width it was using */
-  .myteam.plan-hidden {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  /* what is left of the plan drops under the pair, full width, rather than squatting in a column */
-  .myteam.plan-hidden .col.c { grid-column: 1 / -1; }
+  .myteam .col.b { grid-column: 1; grid-row: 1; }
+  .myteam .col.a { grid-column: 1; grid-row: 2; }
+  .myteam .col.band { display: block; grid-column: 2; grid-row: 1 / span 2; }
+  .myteam .col.c,
+  .myteam .col.wheel { grid-column: 3; grid-row: 1 / span 2; }
+  /* Nothing collapses this grid any more: the plan only ever stepped aside to give the five and
+     the floor its width, and those two share a column now. See `measure` in MyTeam. */
 }
 /* design 2e: the opponent is a slim scout bar now, so it leads the phone stack. */
 .draft .col.a { order: 1; }

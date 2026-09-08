@@ -11,7 +11,7 @@ import type { Player } from '../engine/types'
 import { CardName } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import type { TeamColor } from './teamColors'
-import { bandSlot, ManBand } from './ManBand'
+import { ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { gateTactics, heliMan, pnrPair, popPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
@@ -178,7 +178,14 @@ export function MyTeam({
    * no free floor — a phone, a short window, or every column tall — and the panel goes inline
    * under the man instead, so pressing a player always shows him.
    */
-  const [slot, setSlot] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  /**
+   * HIS RULING (2026-09-08): "Move the player stats and description to the middle, on the floor to
+   * the left, and your five under on the floor." The band is not laid into leftover black floor
+   * any more — it is the middle COLUMN, so it needs no rectangle, only to know whether that column
+   * exists. It does at the width the screen goes three across; below that the boxes stack and the
+   * band drops in under the man he tapped, the way it always has on a phone.
+   */
+  const [wide, setWide] = useState(false)
   const [info, setInfo] = useState<string | null>(null)
   const user = useUserMode()
   const timer = useRef<number | null>(null)
@@ -325,7 +332,7 @@ export function MyTeam({
      * closes the card rather than doing nothing. Everything the grid alone used to say — who he was
      * that season, and the league's TS — reads on the card, via seasonWho() / leagueTS().
      */
-    const carded = band === p.name && !slot
+    const carded = band === p.name && !wide
     return (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
@@ -498,21 +505,21 @@ export function MyTeam({
       setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
     }
     if (list && stacked) setRosterEnd(true)
+    /* THE BAND HAS A COLUMN NOW, not a measured rectangle under the short ones, so all this has
+       to answer is whether the screen is at the width where that column exists. */
+    setWide(!stacked)
     /*
-     * THE BLACK RECTANGLE is not the strip under the grid — that is 22px. It is the floor under
-     * the two SHORT columns, beside the tall one: the wheel's box runs to the bottom of the row
-     * while the five and the floor stop well above it. So the room is the row's bottom minus
-     * whichever of those two reaches lower, and the band is laid into that rectangle end-aligned.
-     * Measured without the band in the sum, so mounting it can never feed back into the row.
+     * WHETHER TO SACRIFICE THE PLAN — and, since his ruling moved the boxes, only on a phone.
+     * That sacrifice bought WIDTH: the five and the floor stood side by side, and giving up the
+     * third column let them have it. They share the first column now, one over the other, so
+     * dropping the plan makes them no shorter and costs him a box for nothing. Stacked it still
+     * pays — it is one less card to scroll past while he is deciding — so that is where it is
+     * still asked.
      */
-    const grid = a.parentElement
-    const rowBottom = grid ? Math.min(grid.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0)) : 0
-    const cols = grid ? ([...grid.children] as HTMLElement[]).filter((e) => e.classList.contains('col')) : []
-    setSlot(stacked || !grid ? null : bandSlot(grid, cols, rowBottom))
-    const need = stacked ? a.offsetHeight + b.offsetHeight : Math.max(a.offsetHeight, b.offsetHeight)
+    const need = a.offsetHeight + b.offsetHeight
     // The latch only opens on a real viewport change. Dropping the plan reflows the very columns
     // this measured, so letting content alone clear it would flip the panel on and off forever.
-    setTight((was) => (need > avail ? true : reset ? false : was))
+    setTight((was) => (stacked && need > avail ? true : reset ? false : was))
   }
   // Re-measured on every state that changes what the two boxes are tall enough to hold, because
   // a ResizeObserver alone does not fire in a backgrounded tab.
@@ -1009,9 +1016,25 @@ export function MyTeam({
             </div>
           </section>
         ) : null}
-        {/* Only where the floor exists: on a phone the boxes stack, the rectangle is zero, and
-            nothing mounts — that width keeps the route it has, the row's own detail toggle. */}
-        {slot ? <ManBand p={bandMan} at={slot} /> : null}
+        {/* BOX TWO AND A HALF — the man himself, in the middle. His ruling moved the archetype's
+            sentence and the season line off the floor under the columns and into a column of their
+            own, between the floor he stands on and the men coming off the wheel. Empty until he
+            taps somebody, and gone entirely on a phone, where the band drops in under the row. */}
+        <section className="col band">
+          {bandMan ? (
+            <ManBand p={bandMan} column />
+          ) : (
+            <div className="card mb-idle">
+              <div className="card-head">
+                <span className="label">The man</span>
+              </div>
+              <div className="seriesnow-note" style={{ paddingBottom: 10 }}>
+                Tap a man — on the floor, in your five, or on the wheel — to read what his tag means and the
+                season he actually played.
+              </div>
+            </div>
+          )}
+        </section>
       </div>
       <div className="dock" style={kitWear ?? undefined}>
         <div className="dock-inner">

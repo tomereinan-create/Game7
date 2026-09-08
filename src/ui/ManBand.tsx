@@ -50,6 +50,7 @@ export function ManBand({
   p,
   at,
   inline,
+  column,
 }: {
   p: Player | null
   at?: { top: number; left: number; width: number; height: number }
@@ -59,14 +60,20 @@ export function ManBand({
    * man he tapped instead of silently not appearing.
    */
   inline?: boolean
+  /**
+   * My team's middle column (his ruling: "Move the player stats and description to the middle").
+   * Not a band across the floor but a box in the row, so it is a card like the ones either side
+   * of it and its two halves stand one over the other rather than side by side.
+   */
+  column?: boolean
 }) {
-  const box = inline || !at ? undefined : { position: 'absolute' as const, ...at }
-  if (!p) return inline ? null : <div className="manband" style={box} aria-hidden />
+  const box = inline || column || !at ? undefined : { position: 'absolute' as const, ...at }
+  if (!p) return inline || column ? null : <div className="manband" style={box} aria-hidden />
   const tag = archetype(p)
   const line = LINES[p.name] ?? null
   const lgTS = leagueTS(p)
   return (
-    <div className={`manband on ${inline ? 'inline' : ''}`} style={box}>
+    <div className={`manband on ${inline ? 'inline' : ''} ${column ? 'column card' : ''}`} style={box}>
       <div className="mb-who">
         <span className="label">{tag}</span>
         <p>{RULE[tag] ?? 'A tag from the tree.'}</p>
