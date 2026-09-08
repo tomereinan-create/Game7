@@ -45,26 +45,31 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
    * court, so the floor can be any size and the play keeps its shape. The marks are the board's
    * too: the three ladders are the offense (O), the three side modes are what you draw against.
    *
-   * HIS RULING ON WHERE THREE OF THEM STAND: "move custom and vs friend to outside the 3pt line",
-   * and "move the O of the campaign a bit lower so it won't be right on the circle line."
+   * HIS RULINGS ON WHERE THEY STAND: "move custom and vs friend to outside the 3pt line", then
+   * "move vs friend and custom to the corners", and "move the O of the campaign a bit lower so it
+   * won't be right on the circle line."
    *
-   * The arc is swung off the rim at the bottom of the floor, so it is a circle of radius 44.6% of
-   * the court's width centred on the middle of the baseline. The two X's used to stand at 12/88%
-   * across and 84% down — 226 units from that centre against the arc's 250, which put both marks
-   * ON the line rather than beside it, and the baseline corners cannot take them either: the
-   * corner of the floor is only 280 from the same centre, a strip too narrow for a mark. They
-   * stand at the low wings now, 294 out, which is a corner shooter's ground and is clear of the
-   * arc by more than the mark's own radius.
+   * THE CORNERS ONLY EXIST BECAUSE THE LINE GAINED ITS STRAIGHTS. A pure semicircle swung off the
+   * rim — which is what the board drew — leaves no corner at all: the corner of the floor is 50%
+   * of the width from the arc's centre against the arc's own 44.65%, a strip five points wide,
+   * and a mark is nine. That is why the first pass could only put the two X's at the low wings.
+   * A real three-point line is not a semicircle: it is cut by two straights running up from the
+   * baseline, and the ground between a straight and the sideline is the corner three. Drawing
+   * those straights is what makes his ruling possible, so the floor has them now — see `ck-corner`
+   * and the arc's own clip in the stylesheet — and the two X's stand in the corners behind them.
    *
-   * The campaign's O sat at 58% down, which is exactly where the free-throw circle's top passes;
-   * six points lower puts the whole mark inside the circle instead of straddling its rule.
+   * The campaign's O sat where the free-throw circle's top passes; it is inside the circle now.
+   *
+   * Every y below is read against a floor that is WIDER than the one the board drew (his ruling:
+   * "make the court bigger and wider" — 29:20 where it was 56:47), so the backcourt above the arc
+   * is shallower and the three marks that stand up there come down to meet it.
    */
   const zones: { pick: Mode; mark: string; x: string; y: string; label: string; tag: string; desc: string; meta: string; cta: string }[] = [
     {
       pick: 'campaign',
       mark: 'O',
       x: '50%',
-      y: '64%',
+      y: '56%',
       label: 'CAMPAIGN',
       tag: '01 · THE GAUNTLET',
       desc: cur
@@ -76,8 +81,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'salary',
       mark: 'O',
-      x: '20%',
-      y: '42%',
+      x: '17%',
+      y: '36%',
       label: 'SALARY CAP',
       tag: '02 · TIGHT MONEY',
       desc: `The same ${ROUNDS} levels — every card priced that year, the five held under the cap.`,
@@ -87,8 +92,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'death',
       mark: 'O',
-      x: '80%',
-      y: '42%',
+      x: '83%',
+      y: '36%',
       label: 'DEATH MATCH',
       tag: '03 · ONE LIFE',
       desc: 'One five, carried the whole way — change a single man before each level. Lose and the run is over.',
@@ -98,8 +103,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'custom',
       mark: 'X',
-      x: '11%',
-      y: '61%',
+      x: '8.5%',
+      y: '82%',
       label: 'CUSTOM',
       tag: 'ANY ERA',
       desc: 'Pick the season, pick the opponent — any team from 1980 to 2026, best of seven.',
@@ -109,8 +114,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'versus',
       mark: 'X',
-      x: '89%',
-      y: '61%',
+      x: '91.5%',
+      y: '82%',
       label: 'VS FRIEND',
       tag: 'SAME PHONE',
       desc: 'Pass the phone. Two benches, alternating picks, one winner.',
@@ -121,7 +126,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
       pick: 'auction',
       mark: 'X',
       x: '50%',
-      y: '14%',
+      y: '16%',
       label: '1V1 BID',
       tag: '$20 EACH',
       desc: 'Blind-bid the level with the table — twenty a head, winner takes the pot.',
@@ -185,7 +190,13 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
                 losing its last letters to it, which is what happened the moment his ruling made
                 the names bigger and moved two of them into the corners. */}
             <span className="ck-lines" aria-hidden>
-              <span className="ck-arc" />
+              {/* the arc lives in a box cut to the width between the two straights, so the circle
+                  ENDS where they begin rather than sweeping on down to the baseline */}
+              <span className="ck-arcbox">
+                <span className="ck-arc" />
+              </span>
+              <span className="ck-corner l" />
+              <span className="ck-corner r" />
               <span className="ck-key" />
               <span className="ck-ftc" />
               <span className="ck-rim" />
