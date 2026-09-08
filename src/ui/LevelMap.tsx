@@ -528,6 +528,8 @@ export function LevelMap({
   const xAt = useMemo(() => xOf(colW), [colW])
   const yAt = useMemo(() => yOf(colW), [colW])
   const seam = useMemo(() => seamOf(colW), [colW])
+  /** Which row a level stands in — row 0 is the bottom one, the row that has no seam under it. */
+  const rowAt = useMemo(() => rowOf(colW), [colW])
   const H = useMemo(() => heightOf(colW), [colW])
   // `bands` reads the block list for the mode, so a flip of the switch has to re-band the trail
   const BANDS = useMemo(() => bands(ROUNDS, colW), [colW, user])
@@ -793,28 +795,41 @@ export function LevelMap({
           </i>
         </div>
 
-        {eras.map((e, ei) => (
-          <div
-            className={`era-band ${skinOf(e.first)}`}
-            key={e.name}
-            /**
-             * THE SNAKE took the sides away — a row runs wall to wall now, so an era banner pinned
-             * to a margin would stand on a ticket. It is a full-width rule across the gap between
-             * two rows instead, drawn at the SAME seam the floor changes at, so the line that says
-             * the era changed and the floor that changes are one and the same. The bottom era has
-             * no gap under it — its rule sits in the foot the map leaves below the first row.
-             */
-            style={{ top: Math.min(seam(e.first), H - 34) }}
-          >
-            {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
-                beside the year. Same three parts either way — the skin decides the order. */}
-            <em>Era {ROMAN[ei] ?? ei + 1}</em>
-            <b>{e.name}</b>
-            <i>
-              {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
-            </i>
-          </div>
-        ))}
+        {eras.map((e, ei) => {
+          /**
+           * THE SNAKE took the sides away — a row runs wall to wall now, so an era banner pinned
+           * to a margin would stand on a ticket. It is a full-width rule across the gap between
+           * two rows instead, drawn at the SAME seam the floor changes at, so the line that says
+           * the era changed and the floor that changes are one and the same.
+           *
+           * THE BOTTOM ERA HAS NO SEAM UNDER IT, AND NOW IT HAS NO FLOOR UNDER IT EITHER (his
+           * ruling, 2026-09-08: "Delete everything below the league 2026 in both modes"). An era
+           * that begins in the bottom row has nothing below it to be halfway between, so its
+           * `seam()` lands PAST the foot of the trail; it used to be clamped to `H - 34` and then
+           * pulled up half its own height by `translateY(-50%)`, which left its bottom edge around
+           * `H - 23` and ~24px of arena floor showing under the rule. It is pinned to the foot
+           * instead — `.era-band.foot` drops the translate and sets `bottom: 0` — so the band's
+           * bottom edge and the trail's are the same line and "Era I · The League · 2026" is the
+           * last thing on the page.
+           *
+           * PINNED rather than computed, because the band's height is the skin's and the width's:
+           * ~21px on a phone, ~29px on a wide desk. `bottom: 0` is exactly right at every one of
+           * them; an arithmetic `top` would have to guess, and a guess that is 4px short is the
+           * same sliver of floor back again.
+           */
+          const foot = rowAt(e.first - 1) === 0
+          return (
+            <div className={`era-band ${skinOf(e.first)}${foot ? ' foot' : ''}`} key={e.name} style={foot ? undefined : { top: seam(e.first) }}>
+              {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
+                  beside the year. Same three parts either way — the skin decides the order. */}
+              <em>Era {ROMAN[ei] ?? ei + 1}</em>
+              <b>{e.name}</b>
+              <i>
+                {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
+              </i>
+            </div>
+          )
+        })}
         {/**
          * HIS RULING: "Same as I have a change possible in my team, add a star notification that
          * says that I have stars to spend(only if there is samething available to buy)". So the

@@ -2171,7 +2171,12 @@ button {
 .trail.auto .node.locked { opacity: 0.8; cursor: pointer; }
 .trail.auto .node.arena.locked { opacity: 0.8; }
 .trail.auto .node.wood.locked { opacity: 0.8; }
-.trail { position: relative; margin: 4px 0 10px; }
+/* NOTHING UNDER THE TRAIL (his ruling, 2026-09-08: "Delete everything below the league 2026 in
+   both modes"). There used to be 10px of page under the foot of the map, and the arena floor did
+   not reach it — the ground is absolutely positioned to the trail's own box, so it ended where the
+   trail did and those 10px were bare page below the last floor. The map is the last thing on this
+   screen, so it ends where it ends. */
+.trail { position: relative; margin: 4px 0 0; }
 .trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .trail-dim, .trail-lit { fill: none; stroke-width: 3px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .trail-dim { stroke: var(--line-2); stroke-dasharray: 0.004 0.012; }
@@ -3589,8 +3594,12 @@ body.offstage #root { position: relative; z-index: 1; }
   mask-image: linear-gradient(180deg, transparent 0, #000 110px);
 }
 @media (min-width: 900px) { .ground { left: -21px; right: -21px; } }
-/* the block level 1 stands in: no fade, and it runs past the foot of the trail */
-.ground.arena { margin-bottom: -10px; -webkit-mask-image: none; mask-image: none; }
+/* the block level 1 stands in: no fade — there is nothing under it to fade into. It carried a
+   -10px bottom margin meant to run it past the foot of the trail and cover the page's 10px margin
+   there; on an absolutely positioned box with `top` and `height` both set, a bottom margin paints
+   nothing, so it never did. That margin is gone from .trail now (his ruling, 2026-09-08: "Delete
+   everything below the league 2026 in both modes") and the floor ends exactly at the foot. */
+.ground.arena { -webkit-mask-image: none; mask-image: none; }
 /* ...and whichever block reaches the head of the ladder runs past the top of it — far past it now:
    its own top is set in LevelMap (HEAD_BLEED) so the floor carries on up behind the sticky header
    instead of stopping at it. Nothing is needed here beyond letting it paint. */
@@ -4203,6 +4212,13 @@ body.offstage #root { position: relative; z-index: 1; }
   text-align: center;
   flex-wrap: nowrap;
 }
+/* THE BOTTOM ERA'S RULE STANDS ON THE FOOT (his ruling, 2026-09-08: "Delete everything below the
+   league 2026 in both modes"). Every other band is centred on the seam it is given, half above the
+   line and half below it. The bottom one has no seam under it, so there is nothing to centre it on:
+   it is pinned to the end of the trail instead, its bottom edge on the trail's, and the translate
+   comes off or half the band would hang past the page. `bottom: 0` rather than a computed `top`
+   because the band's height is the skin's and the width's — see the note in LevelMap. */
+.era-band.foot { top: auto; bottom: 0; transform: none; }
 .era-band.left, .era-band.right { left: 0; right: 0; padding: 0 4px; }
 .era-band em, .era-band b, .era-band i { display: inline; width: auto; order: 0; line-height: 1.1; }
 .era-band em::before { content: none; }

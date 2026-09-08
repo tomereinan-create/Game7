@@ -9,7 +9,7 @@ import type { Opponent } from '../src/engine/types'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Progress } from '../src/state/campaign'
 import { setUserMode } from '../src/state/viewmode'
-import { heightOf, LevelMap, perRow, rowsOf, skinAt, WOBBLE, xOf, yOf } from '../src/ui/LevelMap'
+import { heightOf, LevelMap, perRow, rowsOf, seamOf, skinAt, WOBBLE, xOf, yOf } from '../src/ui/LevelMap'
 
 const opponents = OPP as Opponent[]
 const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], first: 1 }]
@@ -33,7 +33,10 @@ const progress = (over: Partial<Progress> = {}): Progress => ({
   ...over,
 })
 
-const map = (p: Progress, mode: { salary?: boolean; death?: boolean; onToggleAuto?: () => void; onMyTeam?: () => void } = {}) =>
+/** What a case may vary about the map: the campaign it is drawing, and the ladder's own tiers. */
+type Vary = { salary?: boolean; death?: boolean; onToggleAuto?: () => void; onMyTeam?: () => void; eras?: typeof eras }
+
+const map = (p: Progress, mode: Vary = {}) =>
   renderToStaticMarkup(
     createElement(LevelMap, {
       title: 'Campaign',
@@ -50,7 +53,7 @@ const map = (p: Progress, mode: { salary?: boolean; death?: boolean; onToggleAut
   )
 
 /** The same map, drawn in the mode that plays blind. */
-const userMap = (p: Progress, mode: { salary?: boolean; death?: boolean; onToggleAuto?: () => void; onMyTeam?: () => void } = {}) => {
+const userMap = (p: Progress, mode: Vary = {}) => {
   setUserMode(true)
   try {
     return map(p, mode)
@@ -439,5 +442,71 @@ describe('laying the header across drops none of its doors', () => {
     expect(html).toContain('um-staff') // the bundle's own staff door
     expect(html).toContain('um-rename')
     expect(html).toContain('Reset this campaign')
+  })
+})
+
+/**
+ * THE FOOT OF THE MAP (his ruling, 2026-09-08: "Delete everything below the league 2026 in both
+ * modes"). Three of the four era rules are drawn on a SEAM — the line between two rows, which the
+ * floor also changes at — and those three must not move. The fourth, era I, has no seam under it:
+ * it begins in the bottom row, so its own `seam()` falls past the end of the trail. It used to be
+ * clamped to `heightOf - 34` and then pulled up half its own height by a transform, which left
+ * ~24px of arena floor showing under the rule at every width. It is pinned to the end of the trail
+ * now, by `.era-band.foot`, so nothing at all stands under "Era I · The League · 2026".
+ *
+ * The placement is read off the MARKUP rather than a screenshot: a band that carries an inline
+ * `top` is drawn on its seam, and the band that carries none is the one the stylesheet pins.
+ */
+describe('the bottom era stands on the foot of the trail, and the rest on their seams', () => {
+  const FOUR: typeof eras = [
+    { name: 'The League', years: [2026, 2026], first: 1 },
+    { name: 'The Champions', years: [1980, 2025], first: 31 },
+    { name: 'All-Time', years: [1980, 2026], first: 91 },
+    { name: 'The Customs', years: [1980, 2026], first: 121 },
+  ]
+  /** Every era band in the markup: its classes, and the inline top it was given (null for none). */
+  const bandsOf = (html: string) =>
+    [...html.matchAll(/<div class="era-band ([^"]*)"(?: style="top:([\d.]+)px")?>/g)].map((m) => ({
+      cls: m[1],
+      top: m[2] === undefined ? null : Number(m[2]),
+    }))
+  const both = [map, userMap]
+
+  it('era I carries the foot class and no top of its own — the stylesheet puts it on the end', () => {
+    for (const draw of both) {
+      const bands = bandsOf(draw(progress(), { eras: FOUR }))
+      expect(bands).toHaveLength(4)
+      expect(bands[0].cls).toContain('foot')
+      expect(bands[0].top).toBeNull()
+    }
+  })
+
+  it('and the other three sit exactly on their seams, which is where the floor changes', () => {
+    // 375 is the width a server render is laid out at — the phone geometry the map falls back to
+    const seam = seamOf(375)
+    for (const draw of both) {
+      const bands = bandsOf(draw(progress(), { eras: FOUR }))
+      for (const [i, first] of [31, 91, 121].entries()) {
+        expect(bands[i + 1].cls, `era ${i + 2} must not be pinned to the foot`).not.toContain('foot')
+        expect(bands[i + 1].top).toBeCloseTo(seam(first), 3)
+        expect(bands[i + 1].top!).toBeLessThan(heightOf(375)) // and inside the trail it is drawn on
+      }
+    }
+  })
+
+  /** The clamp that left the gap: era I centred on `heightOf - 34`, half of it hanging below. */
+  it('and nothing is drawn on the old clamp line any more', () => {
+    for (const draw of both) {
+      for (const b of bandsOf(draw(progress(), { eras: FOUR }))) expect(b.top).not.toBeCloseTo(heightOf(375) - 34, 3)
+    }
+  })
+
+  /** Pinned to the foot, but WHOLE: the rule still says which era, which name and which years. */
+  it('the band pinned to the foot still carries all three of its parts', () => {
+    for (const draw of both) {
+      const html = draw(progress(), { eras: FOUR })
+      const band = html.slice(html.indexOf('<div class="era-band'))
+      expect(band).toMatch(/^<div class="era-band arena foot"><em>Era I<\/em><b>The League<\/b><i>2026<\/i><\/div>/)
+    }
   })
 })
