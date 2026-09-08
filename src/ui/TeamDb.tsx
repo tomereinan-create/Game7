@@ -183,6 +183,11 @@ const tacticLabel = (s: Style) => STYLES.find((x) => x.key === s)?.label ?? s
  * wears, so one rating is drawn one way everywhere in the app. The dials carry the scale as their
  * tone, which is what the bar's fill used to carry.
  *
+ * AND THEN: "a bit smaller and in the same row as the team name" — the card is one row now, the
+ * shape a roster row already has: the club, who it is, and the three rings on the far side. The
+ * only thing displaced was the rank, which leads the line under the name rather than sitting where
+ * the rings now sit — it is still the card's place in the list, and it costs no second row.
+ *
  * A five the pool cannot field has no gauges at all: the card says so in words rather than drawing
  * three empty rings, which is what the old row's "—" said in one character.
  */
@@ -203,24 +208,22 @@ function TeamCard({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; 
         <span className="tcard-who">
           <b>{t.team}</b>
           <i>
-            {from === to ? '' : `${yy(t.y)} · `}
+            <em className="tcard-rank">#{at + 1}</em> · {from === to ? '' : `${yy(t.y)} · `}
             {t.rec ?? t.ab}
             {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on pool
           </i>
         </span>
-        <span className="tcard-rank">#{at + 1}</span>
+        {o === null || g === null ? null : (
+          <span className="tcard-dials">
+            {rows.map(({ k, v }) => (
+              <span className={`tcard-dial ${sorted === k ? 'on' : ''}`} key={k}>
+                <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
+              </span>
+            ))}
+          </span>
+        )}
       </span>
-      {o === null || g === null ? (
-        <span className="tcard-nofive">No legal five in the card pool</span>
-      ) : (
-        <span className="tcard-dials">
-          {rows.map(({ k, v }) => (
-            <span className={`tcard-dial ${sorted === k ? 'on' : ''}`} key={k}>
-              <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
-            </span>
-          ))}
-        </span>
-      )}
+      {o === null || g === null ? <span className="tcard-nofive">No legal five in the card pool</span> : null}
     </button>
   )
 }

@@ -3255,35 +3255,43 @@ body.offstage #root { position: relative; z-index: 1; }
    cards come out half the size they were designed at. The list takes the desk's width. */
 @media (min-width: 900px) { .tdb-list > * { max-width: 940px; } }
 
-.tcard { display: flex; flex-direction: column; gap: 11px; width: 100%; padding: 13px 15px 14px; text-align: left; background: linear-gradient(160deg, var(--surface-2), var(--surface)); border: 1px solid var(--line-2); border-radius: 12px; cursor: pointer; transition: border-color 0.14s ease, transform 0.14s ease; }
+.tcard { display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 11px 12px 12px; text-align: left; background: linear-gradient(160deg, var(--surface-2), var(--surface)); border: 1px solid var(--line-2); border-radius: 12px; cursor: pointer; transition: border-color 0.14s ease, transform 0.14s ease; }
 @media (prefers-reduced-motion: reduce) { .tcard { transition: none; } }
 .tcard:hover { border-color: var(--line-3); }
 .tcard:focus-visible { outline: 1px solid var(--you); outline-offset: 2px; }
 
-.tcard-head { display: flex; align-items: center; gap: 11px; min-width: 0; }
+/* One row on the phone, so every pixel the chip and the rings do not take is a pixel of the team's
+   name. It is still tight there — the longest names ellipsize — and it opens back up at the width
+   where the grid goes two across and a card has room for all of it. */
+.tcard-head { display: flex; align-items: center; gap: 9px; min-width: 0; }
+@media (min-width: 760px) { .tcard-head { gap: 11px; } }
 /* "In the short of the team name (OKC) have the colors of the team." The three values come off
    clubChip, so a chip only has to know it is a chip. */
-.tcard-ab { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 9px; background: var(--chip-bg); border: 1px solid var(--chip-edge); color: var(--chip-ink); font-family: var(--serif); font-size: 16px; letter-spacing: 0.04em; }
+.tcard-ab { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 9px; background: var(--chip-bg); border: 1px solid var(--chip-edge); color: var(--chip-ink); font-family: var(--serif); font-size: 16px; letter-spacing: 0.04em; }
+@media (min-width: 760px) { .tcard-ab { width: 42px; height: 42px; } }
 .tcard-who { flex: 1; min-width: 0; }
 .tcard-who b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tcard-who i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.08em; color: var(--faint); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tcard-rank { flex: none; align-self: flex-start; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted-2); }
+/* the rank leads the line under the name — the far side of the row is the rings' now */
+.tcard-rank { font-style: normal; color: var(--muted-2); }
 
 /* OVR / OFF / DEF, in the same rings a player's card wears (his ruling: "the circles that we have
    for OVR DEF OFF same as players, instead of the lines"). The ring and the number inside it are
    the same colour because they are the same fact — see ratingTone: white at 50, green above it,
-   red below, further is further. Sized between .pdials and the detail head's .tdb-scale: a card in
-   the two-across grid has the room, and these three numbers are what the list is read for. */
-.tcard-dials { display: flex; justify-content: space-around; gap: 8px; padding-top: 1px; }
+   red below, further is further. They ride on the far side of the name's row ("a bit smaller and
+   in the same row as the team name"), which is where a roster row keeps its .pdials and at very
+   nearly the same size — the two lists read the same way now, one for men and one for fives. */
+.tcard-dials { flex: none; display: flex; gap: 0; }
 .tcard-dial { display: block; }
-.tcard-dial .dial { width: 56px; }
-.tcard-dial .dial svg { width: 54px; height: 54px; }
+.tcard-dial .dial { width: 38px; }
+.tcard-dial .dial svg { width: 37px; height: 37px; }
 .tcard-dial .dial circle { stroke-width: 7; }
-.tcard-dial .dial text { font-size: 21px; }
-.tcard-dial .dial .dl { font-size: 8px; letter-spacing: 0.1em; margin-top: -4px; }
+.tcard-dial .dial text { font-size: 22px; }
+.tcard-dial .dial .dl { font-size: 7px; letter-spacing: 0.08em; margin-top: -3px; }
 /* the sort that is on names itself, the way the gold dial used to */
 .tcard-dial.on .dial .dl { color: var(--you); }
-.tcard-nofive { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
+@media (min-width: 760px) { .tcard-dials { gap: 4px; } .tcard-dial .dial { width: 46px; } .tcard-dial .dial svg { width: 44px; height: 44px; } .tcard-dial .dial .dl { font-size: 7.5px; } }
+.tcard-nofive { padding-left: 47px; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
 .lrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 2px; border-bottom: 1px solid var(--divider); }
 .lrow .ln { flex: none; width: 34px; font-family: var(--serif); font-size: 22px; }
