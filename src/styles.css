@@ -720,32 +720,19 @@ button {
   text-transform: uppercase;
   color: var(--faint);
 }
-/* THE FOOT (Game7 Flow): the blue crawl is pinned to the very bottom of the window and the action
-   bar sits on top of it, so every screen ends in the same two bands. --foot is the crawl's height
-   plus the phone's own inset, and it is the one number the dock and the page's bottom padding
-   both read. */
-:root { --foot: calc(24px + env(safe-area-inset-bottom)); }
-.ticker-foot {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  height: var(--foot);
-  padding-bottom: env(safe-area-inset-bottom);
-  background: var(--mine);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.ticker-foot span {
-  font-family: var(--serif);
-  font-size: 15px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--mine-tint);
-  padding-left: 14px;
-}
+/* THE FOOT. THE CRAWL IS GONE — his ruling, 2026-09-08: "Delete Draft five · beat 150 teams ·
+   hang the banners and the entire header", and the header he means is the BAR. What stood here was
+   `.ticker-foot`: a 24px band of franchise blue pinned across the bottom of every screen with one
+   line of serif riding on it, fed by Ticker.tsx. The band went, not just the line, and it went from
+   both modes.
+
+   --foot STAYS, and stays the one number the dock, the page's bottom padding, the map's foot and
+   the chalk board's own height all read — it is simply worth nothing now but the phone's inset.
+   Pointing the token at zero rather than deleting it lets every `calc(... var(--foot) ...)` reclaim
+   the band by arithmetic: the map ends on era I's rule and the slate stands the full height of the
+   window without one of its readers being rewritten. The inset earns its keep on its own — it is
+   what holds the dock clear of a phone's home indicator. */
+:root { --foot: env(safe-area-inset-bottom, 0px); }
 
 .dock {
   position: fixed;
@@ -5508,7 +5495,9 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 /* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
    just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
    on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
-   Only the crawl's own band is left. */
+   The crawl's band has gone the same way (2026-09-08: "Delete everything below the league 2026 in
+   both modes"), and --foot is only the phone's inset now — so era I's rule is the last thing on
+   the page, and this line survives to keep the map clear of a home indicator. */
 body.map #root { padding-bottom: var(--foot); }
 
 body.chalk { background: #6b4a32; }
