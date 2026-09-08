@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { WHEEL } from '../src/data/wheel'
 import { heldPool, landOn } from '../src/ui/Draft'
-import { buildReels, landingOffset } from '../src/ui/SpinReels'
+import { buildReels, offsetOf, REEL_STAGGER_MS, REEL_TEAM_MS, REEL_YEAR_MS, reelPlan } from '../src/ui/SpinReels'
 import { POSITIONS } from '../src/engine/positions'
 import type { Pos } from '../src/engine/positions'
 
@@ -66,27 +66,59 @@ describe('both reels carry the answer', () => {
 })
 
 describe('a reel stops with its answer under the arrows', () => {
-  it('lands every row in the middle of the window, in every copy of the strip', () => {
-    for (const rows of [3, 7, 13]) {
+  it('ends with the landing row in the middle of the window, whatever the list', () => {
+    for (const rows of [3, 7, 13, 47]) {
       for (let at = 0; at < rows; at++) {
-        for (const copy of [1, 4, 7]) {
-          const y = landingOffset(rows, at, copy)
-          // the row that ends up at the window's middle band is exactly `at` of that copy
-          const index = Math.round((Math.floor(ROWS / 2) * H - y) / H)
-          expect(index % rows).toBe(at)
+        const p = reelPlan(rows, at, 1400)
+        // the row sitting in the window's middle band at the end is `at` of the repeating list
+        const index = Math.round((Math.floor(ROWS / 2) * H - p.end) / H)
+        expect(index % rows).toBe(at)
+      }
+    }
+  })
+
+  it('never runs off either end of the strip it built', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (const spinMs of [1400, 2200]) {
+        for (let at = 0; at < rows; at++) {
+          const p = reelPlan(rows, at, spinMs)
+          const first = offsetOf(0)
+          const last = offsetOf(p.strip - 1 - Math.floor(ROWS / 2))
+          // it starts no higher than the top of the strip and ends no lower than its foot
+          expect(p.start).toBeLessThanOrEqual(first)
+          expect(p.end).toBeGreaterThanOrEqual(last)
+          expect(p.strip % rows).toBe(0)
         }
       }
     }
   })
 
-  it('always travels forward, and by whole rows so nothing stops half-shown', () => {
-    const rows = 13
-    for (let at = 0; at < rows; at++) {
-      const from = landingOffset(rows, at, 1)
-      const to = landingOffset(rows, at, 7)
-      expect(to).toBeLessThan(from)
-      expect((from - to) % H).toBe(0)
+  /**
+   * HIS RULING: "make it animated". The flat-out phase is LINEAR and the landing brakes, and the
+   * brake's distance is the distance a body at that speed covers while stopping evenly — which is
+   * what makes the hand-off seamless instead of a lurch.
+   */
+  it('travels flat out, then brakes over half as much ground per second', () => {
+    const p = reelPlan(13, 4, 1400)
+    const run = p.start - p.mid
+    const brake = p.mid - p.end
+    expect(run).toBeGreaterThan(0)
+    expect(brake).toBeGreaterThan(0)
+    // same speed in the run; half the average speed in the brake
+    expect(run / p.spinMs / (brake / p.landMs)).toBeCloseTo(2, 5)
+  })
+
+  it('always goes one way — down the strip, never back up it', () => {
+    for (let at = 0; at < 13; at++) {
+      const p = reelPlan(13, at, 1400)
+      expect(p.mid).toBeLessThan(p.start)
+      expect(p.end).toBeLessThan(p.mid)
     }
+  })
+
+  it('stops the year exactly his 0.8s after the team', () => {
+    expect(REEL_YEAR_MS - REEL_TEAM_MS).toBe(REEL_STAGGER_MS)
+    expect(REEL_STAGGER_MS).toBe(800)
   })
 })
 

@@ -1313,8 +1313,12 @@ button {
 .reel-win::before, .reel-win::after { content: ''; position: absolute; left: 0; right: 0; height: 34%; z-index: 2; pointer-events: none; }
 .reel-win::before { top: 0; background: linear-gradient(to bottom, var(--panel), rgba(0, 0, 0, 0)); }
 .reel-win::after { bottom: 0; background: linear-gradient(to top, var(--panel), rgba(0, 0, 0, 0)); }
-/* the strip rides ABOVE the marker: the lit plate is the row's ground, not a lid over it */
-.reel-strip { position: relative; z-index: 1; transition-property: transform; transition-timing-function: cubic-bezier(0.1, 0.72, 0.06, 1); will-change: transform; }
+/* the strip rides ABOVE the marker: the lit plate is the row's ground, not a lid over it.
+   The duration and the easing are set inline, not here: the spin is flat out and LINEAR and
+   the landing brakes, and one rule cannot say both. */
+.reel-strip { position: relative; z-index: 1; transition-property: transform; will-change: transform; }
+/* only the flat-out phase blurs — a brake that blurred would look like it never stopped */
+.reel-strip.fast { filter: blur(0.9px); }
 @media (prefers-reduced-motion: reduce) { .reel-strip { transition-duration: 0ms !important; } }
 .reel-row { display: flex; align-items: center; justify-content: center; padding: 0 8px; font-family: var(--serif); font-size: 15px; line-height: 1; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .reel.wide .reel-row { justify-content: flex-start; padding: 0 22px; }

@@ -30,15 +30,37 @@ import type { TeamSeason } from '../data/wheel'
 const H = 30
 /** Rows visible in the window: two above the answer, two below. */
 const WINDOW = 5
-/** How many times the list is laid end to end, so the strip has somewhere to travel from. */
-const COPIES = 9
-/** Which copy the strip starts in, and which one it lands in. */
-const FROM_COPY = 1
-const TO_COPY = COPIES - 2
 
-/** The team stops first; the year runs on for another beat, which is the point of two reels. */
-export const REEL_TEAM_MS = 2200
-export const REEL_YEAR_MS = 3300
+/*
+ * THE SPIN IS TWO PHASES, NOT ONE EASE (his ruling: "Have a spinning animation for both, then team
+ * stopps then year after 0.8 sec. But make it animated").
+ *
+ * One long ease-out is why it did not read as spinning: an ease-out spends most of its distance in
+ * its first third and then crawls, so the reel looked like it slid and then dawdled. A real reel
+ * runs FLAT OUT at a constant speed, and only then brakes.
+ *
+ * So: `SPEED` px per millisecond, LINEAR, for the whole spin phase — that is the blur — and then a
+ * decelerating land. The land's distance is not chosen for looks: it is `SPEED × LAND_MS / 2`,
+ * which is exactly the distance a body travelling at SPEED covers while braking evenly to a stop.
+ * Paired with a QUADRATIC ease-out (whose speed at t=0 is twice its average), the brake starts at
+ * precisely the speed the spin ended at, so there is no lurch where one phase hands over to the
+ * other.
+ */
+/** Constant speed of the spin phase, px/ms. 35 rows a second: fast enough to blur, slow enough to
+ *  read as names going past rather than as noise. */
+const SPEED = 1.05
+/** How long the flat-out phase runs on the TEAM reel. */
+const SPIN_MS = 1400
+/** HIS 0.8s: the year reel simply stays flat out for that much longer before it starts braking. */
+export const REEL_STAGGER_MS = 800
+/** The brake, the same on both reels. */
+const LAND_MS = 1000
+/** y = 1 − (1 − t)², a quadratic ease-out, as a cubic Bézier. Its initial slope is 2 — see above. */
+const BRAKE = 'cubic-bezier(0.333, 0.667, 0.667, 1)'
+
+/** When each reel comes to rest, measured from the press. */
+export const REEL_TEAM_MS = SPIN_MS + LAND_MS
+export const REEL_YEAR_MS = SPIN_MS + REEL_STAGGER_MS + LAND_MS
 
 export interface ReelSpin {
   team: { rows: string[]; at: number }
@@ -97,9 +119,41 @@ export function buildReels(landed: TeamSeason, pool: TeamSeason[], rnd: () => nu
   }
 }
 
-/** Where the strip must finish so that row `at` sits under the arrows. */
-export function landingOffset(rows: number, at: number, copy: number): number {
-  return -((copy * rows + at) * H) + Math.floor(WINDOW / 2) * H
+/** Where the strip sits when row `index` of it is under the arrows. */
+export const offsetOf = (index: number) => -(index * H) + Math.floor(WINDOW / 2) * H
+
+export interface ReelPlan {
+  /** How many rows to lay end to end, so the strip never runs out from under the window. */
+  strip: number
+  /** Where it starts, where the brake begins, and where it stops. */
+  start: number
+  mid: number
+  end: number
+  spinMs: number
+  landMs: number
+}
+
+/**
+ * The whole journey, worked out backwards from the one position that has to be exact.
+ *
+ * Only the END has to line up — the answer under the arrows — so the landing row is the LAST row of
+ * the strip that carries it and still leaves the two rows the window shows below it. Everything
+ * before that is measured in pixels off the end: brake distance, then spin distance. The strip is
+ * then made long enough to hold the lot, in whole copies of the list so the rows repeat evenly.
+ */
+export function reelPlan(rows: number, at: number, spinMs: number): ReelPlan {
+  const brake = (SPEED * LAND_MS) / 2
+  const run = SPEED * spinMs
+  // rows the journey needs, plus the window and a row of slack, rounded up to whole copies
+  const need = Math.ceil((run + brake) / H) + WINDOW + 2
+  const copies = Math.max(2, Math.ceil((need + rows) / rows))
+  const strip = copies * rows
+  // the last row of the strip that is `at`, keeping the two rows the window shows underneath it
+  const below = Math.floor(WINDOW / 2)
+  let land = at
+  while (land + rows <= strip - 1 - below) land += rows
+  const end = offsetOf(land)
+  return { strip, start: end + brake + run, mid: end + brake, end, spinMs, landMs: LAND_MS }
 }
 
 function Reel({
@@ -127,8 +181,10 @@ function Reel({
   nonce: number
   wide?: boolean
 }) {
-  const [y, setY] = useState(() => landingOffset(rows.length, at, TO_COPY))
-  const [live, setLive] = useState(false)
+  const plan = useMemo(() => reelPlan(rows.length, at, ms - LAND_MS), [rows.length, at, ms])
+  const [move, setMove] = useState<{ y: number; ms: number; ease: string }>(() => ({ y: plan.end, ms: 0, ease: 'linear' }))
+  /** The flat-out phase, which is the only one that blurs. */
+  const [fast, setFast] = useState(false)
   /**
    * EACH REEL LIGHTS WHEN IT STOPS, not when the pair does — that is the whole point of the team
    * running two-thirds as long as the year. `spinning` belongs to the spin; this belongs to the
@@ -141,37 +197,51 @@ function Reel({
   moving.current = spinning
 
   useEffect(() => {
-    const end = landingOffset(rows.length, at, TO_COPY)
     if (!moving.current || frozen) {
       // held, or reduced motion, or a reel rendered already landed: just be there
-      setLive(false)
+      setFast(false)
       setDone(true)
-      setY(end)
+      setMove({ y: plan.end, ms: 0, ease: 'linear' })
       return
     }
-    setLive(false)
     setDone(false)
-    setY(landingOffset(rows.length, at, FROM_COPY))
-    const stops = window.setTimeout(() => setDone(true), ms + 60)
-    const raf = requestAnimationFrame(() => {
-      setLive(true)
-      setY(end)
-    })
-    // a page that is not being painted never fires a frame, and the spin lands on a timer
-    // regardless — so the strip is released on a timer too rather than being snapped round after
-    const late = window.setTimeout(() => {
-      setLive(true)
-      setY(end)
-    }, 140)
+    // stand at the top of the journey for one frame, or there is nothing to travel FROM
+    setFast(false)
+    setMove({ y: plan.start, ms: 0, ease: 'linear' })
+
+    const timers: number[] = []
+    const go = () => {
+      setFast(true)
+      setMove({ y: plan.mid, ms: plan.spinMs, ease: 'linear' })
+      timers.push(
+        // the brake takes over at the speed the spin left off at
+        window.setTimeout(() => {
+          setFast(false)
+          setMove({ y: plan.end, ms: plan.landMs, ease: BRAKE })
+        }, plan.spinMs),
+        window.setTimeout(() => setDone(true), plan.spinMs + plan.landMs + 40),
+      )
+    }
+    // A page that is not being painted never fires a frame, and the spin lands on a timer
+    // regardless — so the strip is released on a timer too rather than snapped round after the
+    // fact. Whichever gets there first wins, and only once: two arms would schedule two brakes.
+    let armed = false
+    const arm = () => {
+      if (armed) return
+      armed = true
+      go()
+    }
+    const raf = requestAnimationFrame(arm)
+    const late = window.setTimeout(arm, 140)
     return () => {
       cancelAnimationFrame(raf)
       window.clearTimeout(late)
-      window.clearTimeout(stops)
+      for (const t of timers) window.clearTimeout(t)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce])
 
-  const strip = useMemo(() => Array.from({ length: COPIES }, () => rows).flat(), [rows])
+  const strip = useMemo(() => Array.from({ length: plan.strip }, (_, i) => rows[i % rows.length]), [rows, plan.strip])
   const running = spinning && !frozen && !done
 
   return (
@@ -185,7 +255,10 @@ function Reel({
         ) : null}
       </div>
       <div className="reel-win" style={{ height: WINDOW * H }}>
-        <div className="reel-strip" style={{ transform: `translateY(${y}px)`, transitionDuration: live ? `${ms}ms` : '0ms' }}>
+        <div
+          className={`reel-strip ${fast ? 'fast' : ''}`}
+          style={{ transform: `translateY(${move.y}px)`, transitionDuration: `${move.ms}ms`, transitionTimingFunction: move.ease }}
+        >
           {strip.map((r, i) => (
             <div className="reel-row" style={{ height: H }} key={i}>
               {r}
