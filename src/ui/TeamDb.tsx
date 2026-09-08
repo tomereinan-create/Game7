@@ -169,18 +169,22 @@ const tacticLabel = (s: Style) => STYLES.find((x) => x.key === s)?.label ?? s
  *
  * The list was a row with three mini dials down its right edge; 1b makes it a card in a two-across
  * grid — the club's short name in a chip, the team and its line beside it, its place in the list
- * on the far side, and OVR / OFF / DEF as three tracked bars under all of it. What is NOT taken
- * from 1b is its palette: the design was drawn four times over in ember, phosphor, royal and
- * scarlet, and none of those is the room this app is in. The arena keeps the furniture, and the
- * two things he named are the only things on the card with any colour in them.
+ * on the far side, and OVR / OFF / DEF under all of it. What is NOT taken from 1b is its palette:
+ * the design was drawn four times over in ember, phosphor, royal and scarlet, and none of those is
+ * the room this app is in. The arena keeps the furniture, and the two things he named are the only
+ * things on the card with any colour in them.
  *
  * THE CHIP IS THE CLUB — "in the short of the team name (OKC) have the colors of the team".
  * THE THREE NUMBERS ARE A SCALE — "either red green or white, depending of how far is it from 50
- * (50 is white)" — and the bar under each one is painted the same, because a bar that disagreed
- * with the number beside it would be two readings of one fact. See `ratingTone`.
+ * (50 is white)". See `ratingTone`.
+ *
+ * HIS RULING: "change it to the circles that we have for OVR DEF OFF same as players, instead of
+ * the lines" — 1b's three tracked bars are gone and the card wears the same `Dial` a player's card
+ * wears, so one rating is drawn one way everywhere in the app. The dials carry the scale as their
+ * tone, which is what the bar's fill used to carry.
  *
  * A five the pool cannot field has no gauges at all: the card says so in words rather than drawing
- * three empty tracks, which is what the old row's "—" said in one character.
+ * three empty rings, which is what the old row's "—" said in one character.
  */
 function TeamCard({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; at: number; sorted: 'ovr' | 'off' | 'def' | null; onPick: () => void; span: Span }) {
   const o = ovrOf(t)
@@ -209,14 +213,10 @@ function TeamCard({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; 
       {o === null || g === null ? (
         <span className="tcard-nofive">No legal five in the card pool</span>
       ) : (
-        <span className="tcard-bars">
+        <span className="tcard-dials">
           {rows.map(({ k, v }) => (
-            <span className={`tcard-bar ${sorted === k ? 'on' : ''}`} key={k}>
-              <i>{k.toUpperCase()}</i>
-              <span className="tcard-track">
-                <span className="tcard-fill" style={{ width: `${v}%`, background: ratingTone(v) }} />
-              </span>
-              <b style={{ color: ratingTone(v) }}>{v}</b>
+            <span className={`tcard-dial ${sorted === k ? 'on' : ''}`} key={k}>
+              <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
             </span>
           ))}
         </span>

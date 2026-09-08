@@ -3269,16 +3269,20 @@ body.offstage #root { position: relative; z-index: 1; }
 .tcard-who i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.08em; color: var(--faint); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tcard-rank { flex: none; align-self: flex-start; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
-/* OVR / OFF / DEF. The number and the bar under it are the same colour because they are the same
-   fact — see ratingTone: white at 50, green above it, red below, further is further. */
-.tcard-bars { display: flex; flex-direction: column; gap: 6px; }
-.tcard-bar { display: flex; align-items: center; gap: 9px; }
-.tcard-bar i { flex: none; width: 22px; font-style: normal; font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: var(--muted-2); }
+/* OVR / OFF / DEF, in the same rings a player's card wears (his ruling: "the circles that we have
+   for OVR DEF OFF same as players, instead of the lines"). The ring and the number inside it are
+   the same colour because they are the same fact — see ratingTone: white at 50, green above it,
+   red below, further is further. Sized between .pdials and the detail head's .tdb-scale: a card in
+   the two-across grid has the room, and these three numbers are what the list is read for. */
+.tcard-dials { display: flex; justify-content: space-around; gap: 8px; padding-top: 1px; }
+.tcard-dial { display: block; }
+.tcard-dial .dial { width: 56px; }
+.tcard-dial .dial svg { width: 54px; height: 54px; }
+.tcard-dial .dial circle { stroke-width: 7; }
+.tcard-dial .dial text { font-size: 21px; }
+.tcard-dial .dial .dl { font-size: 8px; letter-spacing: 0.1em; margin-top: -4px; }
 /* the sort that is on names itself, the way the gold dial used to */
-.tcard-bar.on i { color: var(--you); }
-.tcard-track { flex: 1; height: 5px; min-width: 0; border-radius: 99px; background: var(--line); overflow: hidden; }
-.tcard-fill { display: block; height: 100%; border-radius: 99px; }
-.tcard-bar b { flex: none; width: 20px; text-align: right; font-family: var(--num); font-size: 15px; font-weight: 700; line-height: 1; }
+.tcard-dial.on .dial .dl { color: var(--you); }
 .tcard-nofive { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
 .lrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 2px; border-bottom: 1px solid var(--divider); }
