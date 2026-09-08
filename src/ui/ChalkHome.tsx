@@ -139,9 +139,11 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
       <div className="ck-board">
         <div className="ck-head">
           {/* his ruling: no PLAYBOOK, no practice slate — the mark and the name, the way the
-              other front door wears them, with the 7 in the slate's own chalk yellow */}
+              other front door wears them, with the 7 in the slate's own chalk yellow. The mark
+              is sized off the slate's own fluid unit rather than at a fixed 44, so it grows with
+              the wordmark beside it — his ruling: "same for the logo". */}
           <div className="ck-lockup">
-            <Ball size={44} dribble />
+            <Ball size="clamp(30px, calc(var(--ck-u) * 3.6), 84px)" dribble />
             <b>
               GAME<em>7</em>
             </b>

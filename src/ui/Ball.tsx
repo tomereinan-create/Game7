@@ -5,9 +5,10 @@
  * rotates: the 7 has to stay upright, which is why `dribble` only moves it on y.
  *
  * Size is the one prop. Everything inside is drawn in ems of it, so 62 on the front door and 30
- * in the header are the same drawing.
+ * in the header are the same drawing. It takes a CSS length as well as a number, so a caller that
+ * wants the mark to grow with its window can hand it a clamp() instead of a fixed pixel count.
  */
-export function Ball({ size = 62, dribble = false, className = '' }: { size?: number; dribble?: boolean; className?: string }) {
+export function Ball({ size = 62, dribble = false, className = '' }: { size?: number | string; dribble?: boolean; className?: string }) {
   return (
     <span className={`ball7 ${dribble ? 'dribble' : ''} ${className}`} style={{ width: size, height: size, fontSize: size }} aria-hidden>
       <i className="seam-v" />

@@ -5263,6 +5263,28 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   --ck-yellow: #ffe27a;
   --ck-faint: #93987f;
   --ck-type: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+
+  /* HIS RULING: "make the court way bigger, to fit proportionally to the screen. Same for the
+     logo, and for every font there in general." The slate was drawn at a phone's size and then
+     simply left that size on a desk — a 560px floor and 40px type marooned in a 1440px window.
+     Two fluid measures carry the whole board now instead:
+
+     --ck-u  is the unit every piece of type and every pad is a multiple of. It tracks the
+             window's width but is held down by its height too, so a short window never grows the
+             type until the read beside the floor runs off the bottom — the read is about
+             twenty-one lines of --ck-u deep, so on a 700px-tall laptop the unit has to come
+             down whatever the width would allow.
+     --ck-cw is how wide the floor is drawn: half the window, or as tall as whatever the head and
+             the book leave under them — whichever runs out first, times the court's own 560/470.
+             What they leave is the window less the crawl, the rules and padding that do not move
+             once the board is wide (the 205px), and the head and the book themselves, which are
+             stacks of --ck-u type and so grow with it (the 6.1u).
+
+     Everything ON the floor (the marks, their names, the chalk lines) is measured in cqw off the
+     court itself, so the play is the same drawing at 340px wide and at 720. */
+  --ck-u: clamp(9px, min(2.7vw, calc(5.6vh - 26px)), 24px);
+  --ck-cw: min(52vw, calc((100vh - var(--foot) - 205px - var(--ck-u) * 6.1) * 1.191));
+  --ck-cw: min(52vw, calc((100dvh - var(--foot) - 205px - var(--ck-u) * 6.1) * 1.191));
 }
 /* HIS RULING: "Make everything full screen." The slate was a card propped in the middle of the
    arena's dark with gutters either side; now it IS the screen — the wood frame runs along the
@@ -5275,7 +5297,7 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   min-height: calc(100vh - var(--foot));
   min-height: calc(100dvh - var(--foot));
   background: var(--ck-slate) radial-gradient(900px 500px at 30% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
-  border: clamp(7px, 2.2vw, 12px) solid var(--ck-wood);
+  border: clamp(7px, 2.2vw, 14px) solid var(--ck-wood);
   color: var(--ck-chalk);
   padding: clamp(16px, 4.4vw, 42px) clamp(14px, 4vw, 50px) clamp(14px, 3.4vw, 34px);
 }
@@ -5286,14 +5308,16 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   align-items: center;
   gap: 14px;
   border-bottom: 2px dashed rgba(240, 234, 214, 0.4);
-  padding-bottom: clamp(10px, 2vw, 16px);
-  margin-bottom: clamp(16px, 3.2vw, 28px);
+  padding-bottom: clamp(10px, 2vw, 18px);
+  margin-bottom: clamp(16px, 3.2vw, 30px);
 }
 /* the mark and the wordmark, the pair the other front door opens with — the ball is the same
-   drawing at a header's size, and the 7 takes the slate's chalk yellow rather than house gold */
-.ck-lockup { display: flex; align-items: center; gap: clamp(8px, 2.4vw, 14px); min-width: 0; }
+   drawing at a header's size, and the 7 takes the slate's chalk yellow rather than house gold.
+   The ball is handed its size in the markup as a length off --ck-u, so mark and wordmark grow
+   with the window together. */
+.ck-lockup { display: flex; align-items: center; gap: clamp(8px, 2.4vw, 18px); min-width: 0; }
 .ck-lockup b {
-  font: 700 clamp(26px, 7vw, 40px) / 1 var(--ck-type);
+  font: 700 clamp(28px, calc(var(--ck-u) * 3.3), 76px) / 1 var(--ck-type);
   letter-spacing: 0.04em;
   color: var(--ck-bright);
 }
@@ -5301,10 +5325,10 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
 /* the mode question as two chalk chips — the only way back to user mode from this screen */
 .ck-modes { display: flex; flex: none; gap: 6px; }
 .ck-mode {
-  padding: 7px 10px;
+  padding: calc(var(--ck-u) * 0.6) calc(var(--ck-u) * 0.9);
   background: none;
   border: 2px dashed transparent;
-  font: 700 clamp(8px, 2.1vw, 11px) / 1 var(--ck-type);
+  font: 700 clamp(9px, var(--ck-u), 20px) / 1 var(--ck-type);
   letter-spacing: 0.16em;
   color: var(--ck-dim);
   cursor: pointer;
@@ -5316,30 +5340,37 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
    against each other in it; on a phone it is the floor and then the read under it. */
 .ck-body { flex: 1; display: flex; flex-direction: column; gap: clamp(18px, 3.4vw, 28px); }
 @media (min-width: 900px) {
-  .ck-body { display: grid; grid-template-columns: minmax(0, 580px) minmax(0, 1fr); gap: 48px; align-items: center; }
+  /* the floor takes the width --ck-cw asked for, the read takes the rest of the window */
+  .ck-body { display: grid; grid-template-columns: var(--ck-cw) minmax(0, 1fr); gap: clamp(32px, 3.6vw, 72px); align-items: center; }
 }
 
 /* ---------- the floor, drawn in dashed chalk ---------- */
 .ck-court {
   position: relative;
+  /* the floor is its own container: everything chalked on it is measured in cqw below, so the
+     play keeps its exact proportions at any width the window gives it */
+  container-type: inline-size;
   width: 100%;
-  max-width: 560px;
+  max-width: 680px;
   aspect-ratio: 560 / 470;
   margin: 0 auto;
   box-sizing: border-box;
-  border: 3px dashed rgba(245, 241, 227, 0.6);
+  border: clamp(3px, 0.4vw, 6px) dashed rgba(245, 241, 227, 0.6);
   /* The arc is the top of a circle swung from the rim, so half of it is under the floor. The
      board draws it hanging out the bottom of the court; on a phone that lands the loose half
      across the read below it, so the sideline clips it — which is what a sideline does. */
   overflow: hidden;
 }
+/* on a desk the floor is not capped at a phone's idea of wide — it takes the whole track
+   --ck-cw asked for, which is already held to what the window has left under the head */
+@media (min-width: 900px) { .ck-court { max-width: none; } }
 .ck-court > span { position: absolute; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
 /* the arc is swung off the rim, so most of the circle is below the floor and only the three
    comes back onto it — a percentage width with aspect-ratio keeps it round at any size */
-.ck-arc { width: 89.3%; aspect-ratio: 1; bottom: -53.2%; border: 3px dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
-.ck-key { width: 32.1%; height: 34%; bottom: 0; border: 3px dashed rgba(245, 241, 227, 0.5); border-bottom: none; }
-.ck-ftc { width: 19.6%; aspect-ratio: 1; bottom: 22.3%; border: 3px dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
-.ck-rim { width: 10.7%; height: 3px; bottom: 4.3%; background: rgba(245, 241, 227, 0.6); }
+.ck-arc { width: 89.3%; aspect-ratio: 1; bottom: -53.2%; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
+.ck-key { width: 32.1%; height: 34%; bottom: 0; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-bottom: none; }
+.ck-ftc { width: 19.6%; aspect-ratio: 1; bottom: 22.3%; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
+.ck-rim { width: 10.7%; height: clamp(3px, 0.55cqw, 6px); bottom: 4.3%; background: rgba(245, 241, 227, 0.6); }
 
 /* the six plays, standing where a coach would chalk them */
 .ck-spot {
@@ -5349,7 +5380,7 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: clamp(5px, 1cqw, 10px);
   padding: 0;
   background: none;
   cursor: pointer;
@@ -5358,15 +5389,15 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
 .ck-glyph {
   display: grid;
   place-items: center;
-  width: clamp(40px, 9.3vw, 52px);
+  width: clamp(42px, 9.3cqw, 120px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 3px dashed transparent;
-  font: 700 clamp(23px, 5.4vw, 30px) / 1 var(--ck-type);
+  border: clamp(3px, 0.55cqw, 6px) dashed transparent;
+  font: 700 clamp(24px, 5.4cqw, 68px) / 1 var(--ck-type);
   color: var(--ck-chalk);
 }
 .ck-label {
-  font: 700 clamp(8px, 1.9vw, 11px) / 1 var(--ck-type);
+  font: 700 clamp(9px, 2.2cqw, 24px) / 1 var(--ck-type);
   letter-spacing: 0.14em;
   color: var(--ck-dim);
   white-space: nowrap;
@@ -5376,23 +5407,25 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
 
 /* ---------- what the coach says about the play under the chalk ---------- */
-.ck-read { display: flex; flex-direction: column; gap: clamp(9px, 1.6vw, 14px); min-width: 0; }
-.ck-tag { font: 700 clamp(9px, 2vw, 12px) / 1 var(--ck-type); letter-spacing: 0.26em; color: var(--ck-yellow); }
+.ck-read { display: flex; flex-direction: column; gap: clamp(9px, 1.6vw, 15px); min-width: 0; }
+.ck-tag { font: 700 clamp(10px, calc(var(--ck-u) * 1.05), 22px) / 1 var(--ck-type); letter-spacing: 0.26em; color: var(--ck-yellow); }
 .ck-name {
-  font: 700 clamp(28px, 7.4vw, 42px) / 1.05 var(--ck-type);
+  font: 700 clamp(30px, calc(var(--ck-u) * 3.4), 78px) / 1.05 var(--ck-type);
   color: var(--ck-bright);
   text-decoration: underline wavy rgba(255, 226, 122, 0.6);
-  text-underline-offset: 8px;
+  text-underline-offset: clamp(8px, calc(var(--ck-u) * 0.6), 16px);
 }
-.ck-desc { margin: 0; font: 400 clamp(13px, 3.2vw, 16px) / 1.7 var(--ck-type); color: var(--ck-body); text-wrap: pretty; }
-.ck-meta { font: 700 clamp(10px, 2.4vw, 13px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-yellow); }
+/* the read column is as wide as the window leaves it, which on a 1920 desk is wider than a line
+   of type should ever run — the copy keeps a coach's-notebook measure inside it */
+.ck-desc { margin: 0; max-width: 42ch; font: 400 clamp(14px, calc(var(--ck-u) * 1.35), 27px) / 1.7 var(--ck-type); color: var(--ck-body); text-wrap: pretty; }
+.ck-meta { font: 700 clamp(11px, calc(var(--ck-u) * 1.2), 24px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-yellow); }
 .ck-cta {
   align-self: flex-start;
   margin-top: 8px;
-  padding: 14px 26px;
+  padding: clamp(12px, calc(var(--ck-u) * 0.85), 22px) clamp(20px, calc(var(--ck-u) * 1.8), 44px);
   background: none;
-  border: 3px dashed var(--ck-yellow);
-  font: 700 clamp(15px, 3.6vw, 18px) / 1 var(--ck-type);
+  border: clamp(3px, 0.3vw, 5px) dashed var(--ck-yellow);
+  font: 700 clamp(16px, calc(var(--ck-u) * 1.6), 32px) / 1 var(--ck-type);
   letter-spacing: 0.12em;
   color: var(--ck-yellow);
   cursor: pointer;
@@ -5401,7 +5434,8 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
 .ck-foot {
   margin-top: auto;
   padding-top: 4px;
-  font: 400 clamp(9px, 2.1vw, 12px) / 1.6 var(--ck-type);
+  max-width: 56ch;
+  font: 400 clamp(10px, calc(var(--ck-u) * 1.05), 20px) / 1.6 var(--ck-type);
   letter-spacing: 0.12em;
   color: var(--ck-faint);
 }
@@ -5421,15 +5455,15 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  padding: 9px 0;
+  padding: clamp(9px, calc(var(--ck-u) * 0.6), 14px) 0;
   background: none;
   text-align: left;
   cursor: pointer;
 }
-.ck-bookrow b { font: 700 clamp(10px, 2.4vw, 12px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-chalk); }
+.ck-bookrow b { font: 700 clamp(11px, calc(var(--ck-u) * 1.15), 22px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-chalk); }
 .ck-bookrow i {
   font-style: normal;
-  font: 400 clamp(9px, 2.1vw, 11px) / 1 var(--ck-type);
+  font: 400 clamp(10px, var(--ck-u), 19px) / 1 var(--ck-type);
   letter-spacing: 0.1em;
   color: var(--ck-faint);
 }
