@@ -21,7 +21,10 @@ import type { Mode } from './Home'
  * the mark and the wordmark, the same pair user mode's front door opens with — and the slate is
  * the screen rather than a card propped in the middle of one.
  *
- * WHAT 4a IS: a wood-framed green slate. Half a court drawn left-handed in dashed chalk, with the
+ * WHAT 4a IS: a green slate — drawn in a wood frame, and full screen without one since his ruling
+ * of 2026-09-08 ("Remove all the brown and black from the scout mode main page, should be full
+ * screen green"), so the green now runs to every edge of the window. Half a court drawn
+ * left-handed in dashed chalk, with the
  * six ways to play standing on it as three O's and three X's where a coach would put them — the
  * campaign at the top of the key, the two other ladders on the wings, the three side modes in the
  * corners and out top. Press one and the slate's right side reads it out: its number, its name
@@ -195,7 +198,9 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
   /* The slate is the room, the same way the tunnel is user mode's — the class reaches the page's
      own ground, which is outside anything this component renders, and comes off on the way out.
      `tunnel` rides along for one rule only: it is what takes #root off its 390px column on a
-     desk, and the board is drawn 1240 wide. */
+     desk, and the board is drawn 1240 wide. Everything ELSE the tunnel class paints — its
+     near-black ground and the lamp on #root::before — is taken back off in the stylesheet, on his
+     ruling that this page carry no black. */
   useLayout(() => {
     document.body.classList.add('chalk', 'tunnel')
     return () => document.body.classList.remove('chalk', 'tunnel')

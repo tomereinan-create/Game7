@@ -5236,12 +5236,21 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    scout mode home screen to be 4a. Only scout mode" — so every rule here is
    under .ck and nothing user mode reads is touched.
 
-   The board's own palette, kept as it was drawn: a green slate in a wood
-   frame, chalk cream on it, and one yellow for whatever is selected.
+   The board's own palette, kept as it was drawn but for the frame: a green
+   slate, chalk cream on it, one yellow for whatever is selected and one
+   orange for whatever is pressed.
    ========================================================================== */
 .ck {
+  /* HIS RULING, 2026-09-08: "Remove all the brown and black from the scout mode main page,
+     should be full screen green." As the board was drawn, the slate stood in a wood frame
+     (--ck-wood, #6b4a32) on a brown page, and around both of those sat the arena's near-black
+     ground. All three are gone: there is one colour behind this screen now and it is the slate,
+     from one edge of the window to the other. The frame was doing a job — it was the edge that
+     said where the board stopped — and the window's own edge does that job instead, so the only
+     thing that had to be kept is the DISTANCE it held: the wood's thickness was folded into
+     .ck-board's padding, and nothing chalked on the slate sits any closer to the glass than it
+     did. See body.chalk at the foot of this section for the page behind the board. */
   --ck-slate: #243530;
-  --ck-wood: #6b4a32;
   --ck-chalk: #f0ead6;
   --ck-bright: #f5f1e3;
   --ck-dim: #cfc9b2;
@@ -5275,9 +5284,10 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
              down whatever the width would allow.
      --ck-cw is how wide the floor is drawn: half the window, or as tall as whatever the head and
              the book leave under them — whichever runs out first, times the court's own 29/20.
-             What they leave is the window less the crawl, the rules and padding that do not move
-             once the board is wide (the 200px), and the head and the book themselves, which are
-             stacks of --ck-u type and so grow with it (the 6.1u).
+             What they leave is the window less the band --foot keeps clear at the foot of it,
+             less the rules and padding that do not move once the board is wide (the 200px), and
+             less the head and the book themselves, which are stacks of --ck-u type and so grow
+             with it (the 6.1u).
 
      Everything ON the floor (the marks, their names, the chalk lines) is measured in cqw off the
      court itself, so the play is the same drawing at 340px wide and at 720. */
@@ -5286,19 +5296,30 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   --ck-cw: min(56vw, calc((100dvh - var(--foot) - 200px - var(--ck-u) * 6.1) * 1.45));
 }
 /* HIS RULING: "Make everything full screen." The slate was a card propped in the middle of the
-   arena's dark with gutters either side; now it IS the screen — the wood frame runs along the
-   window's own edge and the board stands the full height above the crawl, so the head is at the
-   top of the window, the book at the foot of it, and the play in between. */
+   arena's dark with gutters either side; now it IS the screen — the green runs to the window's
+   own edge and the board stands the window's own height, so the head is at the top of the
+   window, the book at the foot of it, and the play in between.
+
+   THE PADDING IS CARRYING THE FRAME. His ruling of 2026-09-08 took the wood off, and the wood
+   was 7px at a phone's width and 14 at a desk's. Every inset below is therefore the padding the
+   board used to have PLUS that thickness, on the two clamps added together: the head, the court
+   and the book stand exactly where they stood against the glass instead of sliding out to meet
+   it. A flat green rectangle with the type jammed into its corners is not a slate. */
 .ck-board {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   min-height: calc(100vh - var(--foot));
   min-height: calc(100dvh - var(--foot));
-  background: var(--ck-slate) radial-gradient(900px 500px at 30% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
-  border: clamp(7px, 2.2vw, 14px) solid var(--ck-wood);
+  /* THE SLATE'S LIGHT POOL, and it is the only shading left on this screen now the frame has
+     gone. It was a fixed 900x500 pool, which is a lamp hung over a CARD: on a phone it washed the
+     whole board evenly and on a 1440 desk it lit the top-left quarter and left the rest reading
+     as a paint chip. It is sized off the window instead, so it is always about the same lamp over
+     the same board — high and to the left, the way the light falls in a gym — and it was opened
+     from 0.05 to 0.07 because with no wood to sit against, a flat fill is the failure mode. */
+  background: var(--ck-slate) radial-gradient(120vw 80vh at 28% 6%, rgba(255, 255, 255, 0.07), transparent 62%);
   color: var(--ck-chalk);
-  padding: clamp(16px, 4.4vw, 42px) clamp(14px, 4vw, 50px) clamp(14px, 3.4vw, 34px);
+  padding: clamp(23px, 6.6vw, 56px) clamp(21px, 6.2vw, 64px) clamp(21px, 5.6vw, 48px);
 }
 
 .ck-head {
@@ -5573,15 +5594,34 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 .ck-bookrow:hover b { color: var(--ck-yellow); text-decoration: underline wavy rgba(255, 226, 122, 0.6); text-underline-offset: 5px; }
 
-/* the slate is the whole room: the page's own column and padding come off at every width, and
-   what shows behind a rubber-band scroll is the frame's wood rather than the arena */
 /* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
    just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
    on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
    Only the crawl's own band is left. */
 body.map #root { padding-bottom: var(--foot); }
 
-body.chalk { background: #6b4a32; }
+/* THE SLATE IS THE WHOLE ROOM, AND THE ROOM IS ONE COLOUR. His ruling, 2026-09-08: "Remove all
+   the brown and black from the scout mode main page, should be full screen green." The page's own
+   column and padding come off at every width, as they always did — and now everything the app
+   would otherwise paint behind this screen is painted the slate as well, because on his phone all
+   three of them are reachable by dragging past an edge:
+
+     · THE PAGE'S GROUND was the frame's wood, #6b4a32. It is the slate, so the band --foot keeps
+       clear under the board reads as more board rather than as a brown sill.
+     · THE TUNNEL'S BLACK. ChalkHome adds `tunnel` for one reason only — it is what takes #root
+       off its 390px column on a desk — but the class drags the tunnel's #0a0908 ground and the
+       lamp it hangs on #root::before along with it, and that lamp is a fixed sheet of near-black
+       across the whole window. Both come off here. The `:not(.um)` is not a condition, since the
+       slate is never user mode; it is there only to match the specificity of the two tunnel rules
+       these have to beat.
+     · THE ARENA'S LIT WASH, which lives on <html> so that it survives the body classes — and
+       <html> is exactly what a rubber-band scroll past the top or the bottom edge uncovers.
+
+   The literal is --ck-slate's own value spelled out: the token is declared on .ck, which is
+   inside #root, so neither <html> nor <body> can read it. */
+html:has(body.chalk) { background: #243530; }
+body.chalk:not(.um) { background: #243530; }
+body.chalk:not(.um) #root::before { display: none; }
 body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 /* WITH REDUCED MOTION HE DOES NOT RUN, HE IS SIMPLY THERE. The left/top are still the pressed
    mark's, so pressing a play still moves him — it just happens in the same frame as the mark
