@@ -712,225 +712,256 @@ export function LevelMap({
             now — see `map-crown`. */}
       </div>
 
-      <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
-        {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
-            exactly two grounds and no more; four skins do not fit in two, so each block paints its
-            own band and every one of them fades into the block below at its own top edge. */}
-        {BANDS.map((b) => (
-          <div
-            key={b.skin}
-            className={`ground ${b.skin}`}
-            /* the topmost block runs up behind the header — see HEAD_BLEED */
-            style={b.top === 0 ? { top: -HEAD_BLEED, height: b.height + HEAD_BLEED } : { top: b.top, height: b.height }}
-          >
-            {/* THE CONFETTI (his ruling on the design doc: "Dont forget the dusk sky, confetti,
-                foil tickets"). The sky and the foil this block already had; this is the third
-                thing, and it cannot be pseudo-elements — a ::before and an ::after are two flecks
-                and the board wants a scatter. BOTH MODES now (his ruling, 2026-09-08: user mode
-                copies scout here) — the dusk block is the same room whoever is reading it. */}
-            {b.skin === 'dusk'
-              ? confettiFor(b.height).map((c, k) => (
-                  <span
-                    key={k}
-                    className={`fleck f${k % 4}`}
-                    style={{ left: `${c.x}%`, top: c.y, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }}
-                    aria-hidden
-                  />
-                ))
-              : null}
-          </div>
-        ))}
-        {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
-        <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
-          {/* The lit trail is ONE stroke in every skin's colour. userSpaceOnUse pins the stops to
-              the viewBox, so the painted line changes colour at exactly the y the floor does — a
-              seam is never a couple of pixels off from the ground behind it. The stops are emitted
-              top-of-the-map first, because the gradient runs y=0 down while the LADDER runs up. */}
-          <defs>
-            <linearGradient id="trailSplit" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={H}>
-              {[...BANDS].reverse().flatMap((b) => {
-                // a hair inside each seam either way, so two blocks meet in a line and not a blend
-                const a = Math.min(1, Math.max(0, b.top / H + (b.top > 0 ? 0.0008 : 0)))
-                const z = Math.min(1, Math.max(0, (b.top + b.height) / H - 0.0008))
-                const ink = b.ink
-                return [
-                  <stop key={`${b.skin}-a`} offset={a} stopColor={ink[ink.length - 1]} />,
-                  <stop key={`${b.skin}-z`} offset={z} stopColor={ink[0]} />,
-                ]
-              })}
-            </linearGradient>
-          </defs>
-          <path className="trail-dim split" d={TRAIL} pathLength={1} />
-          <path className="trail-glow" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
-          <path className="trail-lit split" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
-        </svg>
-
-        {/**
-         * THE PRIZE AT THE END OF THE LADDER, IN EVERY MODE (his ruling, 2026-09-08: "Add a trophy
-         * for EVERY mode at 150 wins(An actual golden trophy at the end)"). The trophy belongs
-         * where the climb ENDS — standing above level 150 at the head of the trail — so the thing
-         * being climbed towards is drawn at the top of the thing you climb.
-         *
-         * IT USED TO BE A SPLIT, AND HIS RULING CLOSES IT. An earlier ruling said "in scout mode",
-         * so this monument was scout's and user mode got a bar across its header instead. "EVERY
-         * mode … at the end" is both halves of that undone at once: the monument stands in scout
-         * and in user, and the header bar is gone (see the note where it used to be). Every mode
-         * means every VIEW mode and every campaign — the ladder, the salary cap and the death
-         * match all read this one component, and none of them is the exception.
-         *
-         * It is up the whole way, not only once it is won: dim while the ladder is unfinished and
-         * lit gold when every level has fallen. A prize you cannot see is not something to climb
-         * for. It never takes a tap — `pointer-events: none` — because it stands over the top row
-         * of tickets and a thumb reaching for level 150 must reach level 150.
-         */}
-        <div
-          className={`map-crown ${skinOf(ROUNDS)} ${cleared === ROUNDS ? 'won' : ''}`}
-          /* over the last ticket, and kept off both walls the same way the node notes are */
-          style={{ top: 26, left: Math.min(Math.max(xAt(ROUNDS - 1), 180), Math.max(180, colW - 180)) }}
-        >
-          <Trophy size={44} />
-          <b>{cleared === ROUNDS ? 'Champion of the ladder' : 'The end of the ladder'}</b>
-          <i>
-            {cleared === ROUNDS ? `All ${ROUNDS} cleared · ★ ${total} of ${ROUNDS * 3}` : `${cleared} of ${ROUNDS} cleared`}
-          </i>
-        </div>
-
-        {eras.map((e, ei) => {
-          /**
-           * THE SNAKE took the sides away — a row runs wall to wall now, so an era banner pinned
-           * to a margin would stand on a ticket. It is a full-width rule across the gap between
-           * two rows instead, drawn at the SAME seam the floor changes at, so the line that says
-           * the era changed and the floor that changes are one and the same.
-           *
-           * THE BOTTOM ERA HAS NO SEAM UNDER IT, AND NOW IT HAS NO FLOOR UNDER IT EITHER (his
-           * ruling, 2026-09-08: "Delete everything below the league 2026 in both modes"). An era
-           * that begins in the bottom row has nothing below it to be halfway between, so its
-           * `seam()` lands PAST the foot of the trail; it used to be clamped to `H - 34` and then
-           * pulled up half its own height by `translateY(-50%)`, which left its bottom edge around
-           * `H - 23` and ~24px of arena floor showing under the rule. It is pinned to the foot
-           * instead — `.era-band.foot` drops the translate and sets `bottom: 0` — so the band's
-           * bottom edge and the trail's are the same line and "Era I · The League · 2026" is the
-           * last thing on the page.
-           *
-           * PINNED rather than computed, because the band's height is the skin's and the width's:
-           * ~21px on a phone, ~29px on a wide desk. `bottom: 0` is exactly right at every one of
-           * them; an arithmetic `top` would have to guess, and a guess that is 4px short is the
-           * same sliver of floor back again.
-           */
-          const foot = rowAt(e.first - 1) === 0
-          return (
-            <div className={`era-band ${skinOf(e.first)}${foot ? ' foot' : ''}`} key={e.name} style={foot ? undefined : { top: seam(e.first) }}>
-              {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
-                  beside the year. Same three parts either way — the skin decides the order. */}
-              <em>Era {ROMAN[ei] ?? ei + 1}</em>
-              <b>{e.name}</b>
-              <i>
-                {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
-              </i>
-            </div>
-          )
-        })}
-        {/**
-         * HIS RULING: "Same as I have a change possible in my team, add a star notification that
-         * says that I have stars to spend(only if there is samething available to buy)". So the
-         * my-team nudge gets a twin: same shape, same corner, beside the NEXT ticket, and it asks
-         * the same question the header notice asks — `spendable`, not a balance. The change note
-         * is the death match's; this one belongs to every mode. When both are up they stack, on
-         * the far side of the trail from the ticket, centred on it.
-         */}
-        {cur && (spendable || (teamNote && onMyTeam)) ? (
-          <div
-            className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
-            /* pinned above tonight's ticket, and kept off both walls */
-            style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
-          >
-            {spendable ? (
-              <button className={`node-note ${skin}`} onClick={onStaff}>
-                {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
-                <i className="g">★</i>
-                {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
-              </button>
-            ) : null}
-            {teamNote && onMyTeam ? (
-              <button className={`node-note ${skin}`} onClick={onMyTeam}>
-                {teamNote} →
-              </button>
-            ) : null}
-          </div>
-        ) : null}
-        {opponents.map((o) => {
-          const level = o.round
-          const i = level - 1
-          const stars = progress.stars[i]
-          const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
-          // Auto mode opens the whole trail: a locked level is exactly what you would be tapping.
-          const can = auto ? true : playable(progress, level)
-          const nodeSkin = skinOf(level)
-          const c = teamColor(o.ab)
-          // User mode paints the whole ticket in the club's gradient, so it needs the two colours
-          // the paper skins never had to ask for: which way the scrim runs, and what the stripe is.
-          const cin = cardInk(c)
-          const s = stub(o)
-          return (
-            <button
-              key={level}
-              ref={state === 'now' ? nowRef : undefined}
-              /* USER MODE WEARS ONE TICKET, NOT FOUR (the design bundle's option B). The four block
-                 skins — arena card, paper, banner, dusk — are scout mode's, and each one is a whole
-                 sheet of rules hung off `.node.arena` and friends. Naming the node `club` instead of
-                 its block takes every one of them off in a single stroke, so the club card below has
-                 only the bare `.node` rules to answer, and the FLOOR each block stands on (which the
-                 design keeps) is untouched — that is painted by the band, not by the ticket. */
-              className={`node ${user ? 'club' : nodeSkin} ${state} ${o.champion ? 'champ' : ''} ${cin.darkInk ? 'lit-ink' : ''}`}
-              style={
-                {
-                  left: xAt(i),
-                  top: yAt(i),
-                  // Both skins are cut from the same four club colours; only the shape differs.
-                  '--tc': c.primary,
-                  '--td': c.deep,
-                  '--ta': c.accent,
-                  '--ti': c.ink,
-                  '--te': cin.edge,
-                  '--tilt': tiltOf(level),
-                } as React.CSSProperties
-              }
-              disabled={!can}
-              onClick={() => (auto ? onAutoTo?.(level) : can && onPlay(level))}
-              aria-label={`Level ${level}${state !== 'locked' ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
+      {/**
+       * THE LADDER'S ROOM, AND ITS WALLS (his report: "the map scrolls sideways on a phone").
+       * Every ticket is centred on its own x, so one standing in the right-hand lane hangs half its
+       * width past that x — and tonight's banner hangs a 190px spotlight off the same point
+       * (.node.hall.now::before, and the arena and the dusk block have one each). On a 375px phone
+       * that light reached ~60px past the wall, and because nothing on this screen bounded the map
+       * to the window, the whole ladder could be dragged sideways to look at it. Mid-ladder in
+       * scout mode is what the game looks like almost all the time, so that was the map almost all
+       * the time: 434px of content in a 375px window.
+       *
+       * The light is not something to reach. It is painted behind the banner at z-index -1 with no
+       * pointer of its own, and every part of it that is not already transparent is already on the
+       * screen. So this is a WALL, not a move: the room the trail stands in is bounded at the
+       * screen's own edge and nothing inside it shifts by a pixel — not a ticket, not a seam, not
+       * an era band, not the trophy, not the painted line.
+       *
+       * WHY A BOX OF ITS OWN, and not `overflow-x: clip` on .trail. The floor bands bleed 14px past
+       * the trail either side on purpose, so that the room reaches the screen edge (see .ground),
+       * and a clip on .trail cuts exactly that bleed off — `overflow-clip-margin` does not answer
+       * it, because Chrome only honours the margin when both axes are clipped, and clipping the
+       * vertical would cut the floor that runs up behind the sticky header. This box is the
+       * bleed's own width WIDER than the trail: its wall stands where the floor already stops, so
+       * the floor is untouched and only what lies past the window is cut.
+       *
+       * `clip`, not `hidden`: it bounds the paint without making the map a scroll container of its
+       * own, so the header goes on sticking to the window and the page still scrolls up the ladder.
+       * And the width the trail measures itself at is its OWN box, which this does not touch — the
+       * geometry is handed the same 347px on a phone as before.
+       */}
+      <div className="trail-room">
+        <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
+          {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
+              exactly two grounds and no more; four skins do not fit in two, so each block paints its
+              own band and every one of them fades into the block below at its own top edge. */}
+          {BANDS.map((b) => (
+            <div
+              key={b.skin}
+              className={`ground ${b.skin}`}
+              /* the topmost block runs up behind the header — see HEAD_BLEED */
+              style={b.top === 0 ? { top: -HEAD_BLEED, height: b.height + HEAD_BLEED } : { top: b.top, height: b.height }}
             >
-              <span className="ticket">
-                {state === 'now' ? <span className="ticket-next">NEXT</span> : null}
-                <span className="ticket-n">{level}</span>
-                {/* The abbreviation and the record are two elements, not one string: 1b reads them
-                    as one line under the number ("WAS 17–65"), 1c lifts the abbreviation out into
-                    the club band printed across the head of the paper ticket. */}
-                <span className="ticket-stub">
-                  {revealed(state) ? (
-                    <>
-                      <b className="ab">{s.ab}</b>
-                      {s.line ? <i className="ln">{s.line}</i> : null}
-                    </>
-                  ) : (
-                    '?'
-                  )}
-                </span>
-                {o.champion && revealed(state) ? <span className="ticket-champ">CHAMP</span> : null}
-                {/* The club card prints its stars ON the ticket, inside the scrim, where the four
-                    paper skins hang them under it. Same three glyphs either way. */}
-                {user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
-              </span>
-              {!user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
-              {state === 'now' && nowGauge && !user ? (
-                <span className="node-dials">
-                  <Dial label="OFF" value={nowGauge.off} tone="them" />
-                  <Dial label="DEF" value={nowGauge.def} tone="them" />
-                  <span className="gauge-basis">{nowGauge.basis}</span>
-                </span>
+              {/* THE CONFETTI (his ruling on the design doc: "Dont forget the dusk sky, confetti,
+                  foil tickets"). The sky and the foil this block already had; this is the third
+                  thing, and it cannot be pseudo-elements — a ::before and an ::after are two flecks
+                  and the board wants a scatter. BOTH MODES now (his ruling, 2026-09-08: user mode
+                  copies scout here) — the dusk block is the same room whoever is reading it. */}
+              {b.skin === 'dusk'
+                ? confettiFor(b.height).map((c, k) => (
+                    <span
+                      key={k}
+                      className={`fleck f${k % 4}`}
+                      style={{ left: `${c.x}%`, top: c.y, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }}
+                      aria-hidden
+                    />
+                  ))
+                : null}
+            </div>
+          ))}
+          {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
+          <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
+            {/* The lit trail is ONE stroke in every skin's colour. userSpaceOnUse pins the stops to
+                the viewBox, so the painted line changes colour at exactly the y the floor does — a
+                seam is never a couple of pixels off from the ground behind it. The stops are emitted
+                top-of-the-map first, because the gradient runs y=0 down while the LADDER runs up. */}
+            <defs>
+              <linearGradient id="trailSplit" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={H}>
+                {[...BANDS].reverse().flatMap((b) => {
+                  // a hair inside each seam either way, so two blocks meet in a line and not a blend
+                  const a = Math.min(1, Math.max(0, b.top / H + (b.top > 0 ? 0.0008 : 0)))
+                  const z = Math.min(1, Math.max(0, (b.top + b.height) / H - 0.0008))
+                  const ink = b.ink
+                  return [
+                    <stop key={`${b.skin}-a`} offset={a} stopColor={ink[ink.length - 1]} />,
+                    <stop key={`${b.skin}-z`} offset={z} stopColor={ink[0]} />,
+                  ]
+                })}
+              </linearGradient>
+            </defs>
+            <path className="trail-dim split" d={TRAIL} pathLength={1} />
+            <path className="trail-glow" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
+            <path className="trail-lit split" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
+          </svg>
+
+          {/**
+           * THE PRIZE AT THE END OF THE LADDER, IN EVERY MODE (his ruling, 2026-09-08: "Add a trophy
+           * for EVERY mode at 150 wins(An actual golden trophy at the end)"). The trophy belongs
+           * where the climb ENDS — standing above level 150 at the head of the trail — so the thing
+           * being climbed towards is drawn at the top of the thing you climb.
+           *
+           * IT USED TO BE A SPLIT, AND HIS RULING CLOSES IT. An earlier ruling said "in scout mode",
+           * so this monument was scout's and user mode got a bar across its header instead. "EVERY
+           * mode … at the end" is both halves of that undone at once: the monument stands in scout
+           * and in user, and the header bar is gone (see the note where it used to be). Every mode
+           * means every VIEW mode and every campaign — the ladder, the salary cap and the death
+           * match all read this one component, and none of them is the exception.
+           *
+           * It is up the whole way, not only once it is won: dim while the ladder is unfinished and
+           * lit gold when every level has fallen. A prize you cannot see is not something to climb
+           * for. It never takes a tap — `pointer-events: none` — because it stands over the top row
+           * of tickets and a thumb reaching for level 150 must reach level 150.
+           */}
+          <div
+            className={`map-crown ${skinOf(ROUNDS)} ${cleared === ROUNDS ? 'won' : ''}`}
+            /* over the last ticket, and kept off both walls the same way the node notes are */
+            style={{ top: 26, left: Math.min(Math.max(xAt(ROUNDS - 1), 180), Math.max(180, colW - 180)) }}
+          >
+            <Trophy size={44} />
+            <b>{cleared === ROUNDS ? 'Champion of the ladder' : 'The end of the ladder'}</b>
+            <i>
+              {cleared === ROUNDS ? `All ${ROUNDS} cleared · ★ ${total} of ${ROUNDS * 3}` : `${cleared} of ${ROUNDS} cleared`}
+            </i>
+          </div>
+
+          {eras.map((e, ei) => {
+            /**
+             * THE SNAKE took the sides away — a row runs wall to wall now, so an era banner pinned
+             * to a margin would stand on a ticket. It is a full-width rule across the gap between
+             * two rows instead, drawn at the SAME seam the floor changes at, so the line that says
+             * the era changed and the floor that changes are one and the same.
+             *
+             * THE BOTTOM ERA HAS NO SEAM UNDER IT, AND NOW IT HAS NO FLOOR UNDER IT EITHER (his
+             * ruling, 2026-09-08: "Delete everything below the league 2026 in both modes"). An era
+             * that begins in the bottom row has nothing below it to be halfway between, so its
+             * `seam()` lands PAST the foot of the trail; it used to be clamped to `H - 34` and then
+             * pulled up half its own height by `translateY(-50%)`, which left its bottom edge around
+             * `H - 23` and ~24px of arena floor showing under the rule. It is pinned to the foot
+             * instead — `.era-band.foot` drops the translate and sets `bottom: 0` — so the band's
+             * bottom edge and the trail's are the same line and "Era I · The League · 2026" is the
+             * last thing on the page.
+             *
+             * PINNED rather than computed, because the band's height is the skin's and the width's:
+             * ~21px on a phone, ~29px on a wide desk. `bottom: 0` is exactly right at every one of
+             * them; an arithmetic `top` would have to guess, and a guess that is 4px short is the
+             * same sliver of floor back again.
+             */
+            const foot = rowAt(e.first - 1) === 0
+            return (
+              <div className={`era-band ${skinOf(e.first)}${foot ? ' foot' : ''}`} key={e.name} style={foot ? undefined : { top: seam(e.first) }}>
+                {/* 1b hangs the era number above the name as a lit kicker; 1c prints it on the flag
+                    beside the year. Same three parts either way — the skin decides the order. */}
+                <em>Era {ROMAN[ei] ?? ei + 1}</em>
+                <b>{e.name}</b>
+                <i>
+                  {e.years[0] === e.years[1] ? e.years[0] : `${e.years[0]}–${e.years[1]}`}
+                </i>
+              </div>
+            )
+          })}
+          {/**
+           * HIS RULING: "Same as I have a change possible in my team, add a star notification that
+           * says that I have stars to spend(only if there is samething available to buy)". So the
+           * my-team nudge gets a twin: same shape, same corner, beside the NEXT ticket, and it asks
+           * the same question the header notice asks — `spendable`, not a balance. The change note
+           * is the death match's; this one belongs to every mode. When both are up they stack, on
+           * the far side of the trail from the ticket, centred on it.
+           */}
+          {cur && (spendable || (teamNote && onMyTeam)) ? (
+            <div
+              className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
+              /* pinned above tonight's ticket, and kept off both walls */
+              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
+            >
+              {spendable ? (
+                <button className={`node-note ${skin}`} onClick={onStaff}>
+                  {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
+                  <i className="g">★</i>
+                  {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
+                </button>
               ) : null}
-            </button>
-          )
-        })}
+              {teamNote && onMyTeam ? (
+                <button className={`node-note ${skin}`} onClick={onMyTeam}>
+                  {teamNote} →
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          {opponents.map((o) => {
+            const level = o.round
+            const i = level - 1
+            const stars = progress.stars[i]
+            const state = stars > 0 ? 'done' : level === cur ? 'now' : 'locked'
+            // Auto mode opens the whole trail: a locked level is exactly what you would be tapping.
+            const can = auto ? true : playable(progress, level)
+            const nodeSkin = skinOf(level)
+            const c = teamColor(o.ab)
+            // User mode paints the whole ticket in the club's gradient, so it needs the two colours
+            // the paper skins never had to ask for: which way the scrim runs, and what the stripe is.
+            const cin = cardInk(c)
+            const s = stub(o)
+            return (
+              <button
+                key={level}
+                ref={state === 'now' ? nowRef : undefined}
+                /* USER MODE WEARS ONE TICKET, NOT FOUR (the design bundle's option B). The four block
+                   skins — arena card, paper, banner, dusk — are scout mode's, and each one is a whole
+                   sheet of rules hung off `.node.arena` and friends. Naming the node `club` instead of
+                   its block takes every one of them off in a single stroke, so the club card below has
+                   only the bare `.node` rules to answer, and the FLOOR each block stands on (which the
+                   design keeps) is untouched — that is painted by the band, not by the ticket. */
+                className={`node ${user ? 'club' : nodeSkin} ${state} ${o.champion ? 'champ' : ''} ${cin.darkInk ? 'lit-ink' : ''}`}
+                style={
+                  {
+                    left: xAt(i),
+                    top: yAt(i),
+                    // Both skins are cut from the same four club colours; only the shape differs.
+                    '--tc': c.primary,
+                    '--td': c.deep,
+                    '--ta': c.accent,
+                    '--ti': c.ink,
+                    '--te': cin.edge,
+                    '--tilt': tiltOf(level),
+                  } as React.CSSProperties
+                }
+                disabled={!can}
+                onClick={() => (auto ? onAutoTo?.(level) : can && onPlay(level))}
+                aria-label={`Level ${level}${state !== 'locked' ? `, ${o.team}` : ''}${stars ? `, ${stars} stars` : ''}`}
+              >
+                <span className="ticket">
+                  {state === 'now' ? <span className="ticket-next">NEXT</span> : null}
+                  <span className="ticket-n">{level}</span>
+                  {/* The abbreviation and the record are two elements, not one string: 1b reads them
+                      as one line under the number ("WAS 17–65"), 1c lifts the abbreviation out into
+                      the club band printed across the head of the paper ticket. */}
+                  <span className="ticket-stub">
+                    {revealed(state) ? (
+                      <>
+                        <b className="ab">{s.ab}</b>
+                        {s.line ? <i className="ln">{s.line}</i> : null}
+                      </>
+                    ) : (
+                      '?'
+                    )}
+                  </span>
+                  {o.champion && revealed(state) ? <span className="ticket-champ">CHAMP</span> : null}
+                  {/* The club card prints its stars ON the ticket, inside the scrim, where the four
+                      paper skins hang them under it. Same three glyphs either way. */}
+                  {user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
+                </span>
+                {!user && state === 'done' ? <span className="node-stars">{starGlyphs(stars)}</span> : null}
+                {state === 'now' && nowGauge && !user ? (
+                  <span className="node-dials">
+                    <Dial label="OFF" value={nowGauge.off} tone="them" />
+                    <Dial label="DEF" value={nowGauge.def} tone="them" />
+                    <span className="gauge-basis">{nowGauge.basis}</span>
+                  </span>
+                ) : null}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {askReset ? (
