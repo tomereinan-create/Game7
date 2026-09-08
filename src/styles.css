@@ -2176,6 +2176,15 @@ button {
    not reach it — the ground is absolutely positioned to the trail's own box, so it ended where the
    trail did and those 10px were bare page below the last floor. The map is the last thing on this
    screen, so it ends where it ends. */
+/* THE WALLS OF THAT ROOM (his report: "the map scrolls sideways on a phone"). The box is the page
+   gutter WIDER than the trail on each side — the same 14px the floor bands bleed by, so its wall
+   stands exactly where the floor already stops — and it clips there. What that cuts is the part of
+   tonight's spotlight (a 190px light centred on a ticket that stands 60px from the wall) that was
+   never on the screen in the first place; what it buys is a map that cannot be dragged sideways.
+   `clip` and not `hidden`, so the map gains no scroll container of its own and the header goes on
+   sticking to the window. The trail's own box is untouched, so the width it measures itself at,
+   and every position that falls out of it, is exactly what it was. See LevelMap's .trail-room. */
+.trail-room { margin: 0 -14px; padding: 0 14px; overflow-x: clip; }
 .trail { position: relative; margin: 4px 0 0; }
 .trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .trail-dim, .trail-lit { fill: none; stroke-width: 3px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
@@ -3594,6 +3603,9 @@ body.offstage #root { position: relative; z-index: 1; }
   mask-image: linear-gradient(180deg, transparent 0, #000 110px);
 }
 @media (min-width: 900px) { .ground { left: -21px; right: -21px; } }
+/* ...and the room's walls move with the bleed: the gutter is 21px on a desk, so the box that holds
+   the trail is 21px wider there too and the wall still stands where the floor stops. */
+@media (min-width: 900px) { .trail-room { margin: 0 -21px; padding: 0 21px; } }
 /* the block level 1 stands in: no fade — there is nothing under it to fade into. It carried a
    -10px bottom margin meant to run it past the foot of the trail and cover the page's 10px margin
    there; on an absolutely positioned box with `top` and `height` both set, a bottom margin paints

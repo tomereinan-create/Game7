@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
@@ -508,5 +509,69 @@ describe('the bottom era stands on the foot of the trail, and the rest on their 
       const band = html.slice(html.indexOf('<div class="era-band'))
       expect(band).toMatch(/^<div class="era-band arena foot"><em>Era I<\/em><b>The League<\/b><i>2026<\/i><\/div>/)
     }
+  })
+})
+
+/**
+ * THE MAP MAY NOT BE DRAGGED SIDEWAYS (his report: "the map scrolls sideways on a phone").
+ *
+ * A ticket is centred on its own x, so one standing in the right-hand lane hangs half its width
+ * past that x — and tonight's banner hangs a spotlight off the same point (.node.hall.now::before,
+ * 190px across and swelled to 1.14 of that at the top of its pulse). On a 375px phone that light
+ * fell some sixty pixels past the wall, and nothing on this screen bounded the map to the window,
+ * so the whole ladder could be dragged over to look at it: 434px of content in a 375px window.
+ * Mid-ladder in scout mode is the state the game is in almost all the time, so that was the map
+ * almost all the time — and he plays on a phone.
+ *
+ * Two claims hold it down. The arithmetic one is WHY the fix could not be a clamp on a ticket: the
+ * light falls so far past the lane that pulling it inside would mean moving the ladder, and the
+ * ladder's geometry is ruled on. The contract one is the fix itself: the trail stands in a room,
+ * and that room's walls are the page's own gutter — exactly where the floor bands already stop —
+ * so the wall cuts what was never on the screen and moves nothing that was.
+ */
+describe('the ladder cannot be dragged sideways', () => {
+  const CSS = readFileSync('src/styles.css', 'utf8')
+  /** The page's gutter, and so the trail's own box on a 375px phone. */
+  const GUTTER = 14
+  const PHONE = 375 - GUTTER * 2
+  /** One rule's block, by selector — the stylesheet is the only place these numbers live. */
+  const rule = (selector: string) => {
+    const at = CSS.indexOf(selector + ' {')
+    expect(at, `${selector} must be in the stylesheet`).toBeGreaterThan(-1)
+    return CSS.slice(at, CSS.indexOf('}', at))
+  }
+
+  it("tonight's spotlight falls past the wall, and no clamp on a ticket could have pulled it in", () => {
+    const halo = Number(/width:\s*(\d+)px/.exec(rule('.node.hall.now::before'))![1])
+    expect(halo).toBe(190)
+    // level 78 — where a mid-ladder save stands, in the right-hand lane of a two-a-row phone
+    const x = xOf(PHONE)(77)
+    expect(x).toBeGreaterThan(PHONE / 2)
+    const reach = x + (halo / 2) * 1.14 // embHalo swells it to 1.14 at the top of its pulse
+    // past the screen's own edge, not merely past the trail: the gutter cannot absorb it either
+    expect(reach).toBeGreaterThan(PHONE + GUTTER)
+    // and it is not a rounding matter — containing it by arithmetic would mean moving the ladder
+    expect(reach - (PHONE + GUTTER)).toBeGreaterThan(40)
+  })
+
+  it('so the trail stands in a room of its own, in both modes and at every point on the ladder', () => {
+    const mid = progress({ stars: Array.from({ length: ROUNDS }, (_, i) => (i < 77 ? 2 : 0)) })
+    for (const html of [map(mid), userMap(mid), map(progress()), userMap(progress()), map(won()), userMap(won())]) {
+      expect(html).toMatch(/<div class="trail-room"><div class="trail/)
+    }
+  })
+
+  it('and that room is walled exactly where the floor stops — the same gutter on a phone and on a desk', () => {
+    const room = rule('.trail-room')
+    // clip, not hidden: the map takes no scroll container of its own, so the header still sticks
+    expect(room).toMatch(/overflow-x:\s*clip/)
+    expect(room).toMatch(new RegExp(`margin:\\s*0 -${GUTTER}px`))
+    expect(room).toMatch(new RegExp(`padding:\\s*0 ${GUTTER}px`))
+    // the floor bleeds by that same gutter, which is what makes the wall invisible
+    expect(rule('.ground')).toMatch(new RegExp(`left:\\s*-${GUTTER}px`))
+    // ...and the desk restates the two together: 21px of gutter, 21px of bleed, one wall
+    const desk = CSS.slice(CSS.indexOf('@media (min-width: 900px) { .ground'), CSS.indexOf('@media (min-width: 900px) { .ground') + 400)
+    expect(desk).toMatch(/\.ground \{ left: -21px; right: -21px; \}/)
+    expect(desk).toMatch(/\.trail-room \{ margin: 0 -21px; padding: 0 21px; \}/)
   })
 })
