@@ -5043,8 +5043,14 @@ body.um .map-doors .map-link.team { display: none; }
 
    It is stated as TOKENS rather than as a rule per element, which is how the four map skins work
    too: `body.tunnel` is added by Home and removed on the way out, so re-pointing --you inside it
-   cannot reach any other screen. `:not(.um)` is the scout-only gate — user mode keeps the front
-   door it has.
+   cannot reach any other screen.
+
+   ONLY `tunnel` IS GATED, AND ONLY BECAUSE OF THE FRONT DOORS. `tunnel` is added by ChalkHome and
+   by UserHome and by nothing else in the app, and those two are deliberately different screens
+   under his standing ruling ("I want scout mode home screen to be 4a. Only scout mode") — the
+   chalk slate against the slate of cards — so the tunnel's black stays scout's and `:not(.um)`
+   stays on it. `offstage` carries no gate: a custom matchup, a hot-seat table and the auction are
+   the same screen in both modes, and they were only ever two rooms because this selector said so.
    ========================================================================== */
 /*
  * THE ROOM, shared by the front door and by every screen that stands on no block of the ladder
@@ -5055,11 +5061,20 @@ body.um .map-doors .map-link.team { display: none; }
  * ruling names. They wear the front door instead, which is the room they were opened from.
  *
  * `offstage` is set in App on exactly the condition the home fab already used to decide whether to
- * take a skin — no campaign in play. The record book opened FROM the front door is already inside
- * `tunnel`; opened from the draft it is standing on a block, and it keeps that block.
+ * take a skin — a mode is open and it is not a campaign, which is Custom, vs Friend and 1v1 Bid,
+ * those three and nothing else. The record book is an overlay rather than a mode and never sets
+ * the class: opened FROM the front door it is already inside `tunnel`, opened from the draft it is
+ * standing on a block, and it keeps that block.
+ *
+ * IN BOTH MODES, since 2026-09-08 (his ruling: "Also in user mode, make all buttons and theme fit
+ * the current stage same as scout mode"). The rest of that ruling put user mode's ladder screens
+ * on the block's skin the way scout mode's have always stood; these three stand on no block, and
+ * keeping `:not(.um)` would have left them the last screens in the app wearing two different rooms
+ * for the two modes — scout in the tunnel, user in the house's gold on near-black, which is the
+ * one combination the ruling above takes out of the app.
  */
 body.tunnel:not(.um),
-body.offstage:not(.um) {
+body.offstage {
   --ink: #f5efe2;
   --ink-2: #ece7db;
   --muted: #8f887a;
@@ -5086,6 +5101,10 @@ body.offstage:not(.um) {
  * and THEY are another. A custom matchup is two fives side by side and the auction is two bidders;
  * greying their half out to match the walls would cost the screen the very thing it is for. On the
  * front door itself there is no opponent, so it keeps taking them too.
+ *
+ * That is why this rule keeps `tunnel` alone where the one above it now names `offstage` as well:
+ * the three offstage screens are exactly the screens with two sides on them, and they need YOU and
+ * THEM to stay two colours in user mode for the same reason they always did in scout mode.
  */
 body.tunnel:not(.um) {
   --mine: #100f0d;
@@ -5097,9 +5116,9 @@ body.tunnel:not(.um) {
    #root's own ::before so it sits under everything the screen prints and over the page's ground,
    and it is fixed rather than scrolled — you do not walk out from under a spotlight by scrolling. */
 body.tunnel:not(.um),
-body.offstage:not(.um) { background: #0a0908; }
+body.offstage { background: #0a0908; }
 body.tunnel:not(.um) #root::before,
-body.offstage:not(.um) #root::before {
+body.offstage #root::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -5189,10 +5208,13 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 
    WHAT STAYS USER MODE'S, because none of it is the stage: the club ticket on the ladder
    (`.node.club` above), the game-night floor and crowd band (`.jf-*` below), the rails
-   (`.um-*`), the rafters, and the control row's staff/rename pair. Screens that stand on NO block
-   — the front door, a custom matchup, the hot-seat table, the auction, the record book — are also
-   untouched: they have no current stage to fit, and scout mode dresses them in the tunnel, which
-   was written for the chalk slate it opens from.
+   (`.um-*`), the rafters, and the control row's staff/rename pair.
+
+   THE SCREENS THAT STAND ON NO BLOCK take no stage, because there is no stage under them — but
+   they do take the same room in both modes now. A custom matchup, the hot-seat table and the
+   auction are the tunnel in user mode as well (see `body.offstage` in 4b above); the FRONT DOOR is
+   the one thing off the ladder that is still two screens, because he ruled it two ("I want scout
+   mode home screen to be 4a. Only scout mode").
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
