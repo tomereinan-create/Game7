@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { WHEEL } from '../src/data/wheel'
 import { heldPool, landOn } from '../src/ui/Draft'
-import { buildReels, offsetOf, REEL_STAGGER_MS, REEL_TEAM_MS, REEL_YEAR_MS, reelPlan } from '../src/ui/SpinReels'
+import { buildReels, offsetOf, REEL_STAGGER_MS, REEL_TEAM_MS, REEL_YEAR_MS, reelPlan, stripFor } from '../src/ui/SpinReels'
 import { POSITIONS } from '../src/engine/positions'
 import type { Pos } from '../src/engine/positions'
 
@@ -66,70 +66,112 @@ describe('both reels carry the answer', () => {
 })
 
 describe('a reel stops with its answer under the arrows', () => {
+  const BELOW = Math.floor(ROWS / 2)
+  const indexOf = (y: number) => Math.round((BELOW * H - y) / H)
+
   it('ends with the landing row in the middle of the window, whatever the list', () => {
     for (const rows of [3, 7, 13, 47]) {
       for (let at = 0; at < rows; at++) {
-        const p = reelPlan(rows, at, 1400)
-        // the row sitting in the window's middle band at the end is `at` of the repeating list
-        const index = Math.round((Math.floor(ROWS / 2) * H - p.end) / H)
-        expect(index % rows).toBe(at)
+        const p = reelPlan(rows, at, 1000, BELOW)
+        expect(indexOf(p.end) % rows).toBe(at)
+        expect(indexOf(p.end)).toBe(p.landed)
+      }
+    }
+  })
+
+  /**
+   * HIS RULING: "I want it to spin in one way and then stop, not spin and respin to the other side."
+   * The one that matters. A spin BEGINS where the last one parked — so there is nothing to snap
+   * back to — and every leg of it travels the same way.
+   */
+  it('starts exactly where the reel is already parked, so nothing jumps', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (const spinMs of [1000, 1800]) {
+        for (let from = BELOW; from < BELOW + rows; from++) {
+          for (let at = 0; at < rows; at++) {
+            expect(reelPlan(rows, at, spinMs, from).start).toBe(offsetOf(from))
+          }
+        }
+      }
+    }
+  })
+
+  it('never travels back up, on any leg', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (let from = BELOW; from < BELOW + rows; from++) {
+        for (let at = 0; at < rows; at++) {
+          const p = reelPlan(rows, at, 1000, from)
+          expect(p.mid).toBeLessThan(p.start)
+          expect(p.step).toBeLessThan(p.mid)
+          expect(p.end).toBeLessThan(p.step)
+        }
+      }
+    }
+  })
+
+  /** Parking is whole list-cycles, which is the same rows in the same order: nothing on screen. */
+  it('parks on a row that shows exactly what the landing row showed', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (let from = BELOW; from < BELOW + rows; from++) {
+        for (let at = 0; at < rows; at++) {
+          const p = reelPlan(rows, at, 1000, from)
+          expect((p.landed - p.home) % rows).toBe(0)
+          expect(p.home % rows).toBe(p.landed % rows)
+          // and it is back in the home band, so the next spin has its runway
+          expect(p.home).toBeGreaterThanOrEqual(BELOW)
+          expect(p.home).toBeLessThan(BELOW + rows)
+        }
       }
     }
   })
 
   it('never runs off either end of the strip it built', () => {
     for (const rows of [3, 7, 13, 47]) {
-      for (const spinMs of [1400, 2200]) {
-        for (let at = 0; at < rows; at++) {
-          const p = reelPlan(rows, at, spinMs)
-          const first = offsetOf(0)
-          const last = offsetOf(p.strip - 1 - Math.floor(ROWS / 2))
-          // it starts no higher than the top of the strip and ends no lower than its foot
-          expect(p.start).toBeLessThanOrEqual(first)
-          expect(p.end).toBeGreaterThanOrEqual(last)
-          expect(p.strip % rows).toBe(0)
+      for (const spinMs of [1000, 1800]) {
+        const strip = stripFor(rows, spinMs)
+        for (let from = BELOW; from < BELOW + rows; from++) {
+          for (let at = 0; at < rows; at++) {
+            const p = reelPlan(rows, at, spinMs, from)
+            expect(p.strip).toBe(strip)
+            expect(strip % rows).toBe(0)
+            expect(indexOf(p.start)).toBeGreaterThanOrEqual(0)
+            expect(p.landed + BELOW).toBeLessThanOrEqual(strip - 1)
+          }
         }
       }
     }
-  })
-
-  /**
-   * HIS RULING: "make it animated". The run is LINEAR and the brake decelerates, and the brake's
-   * distance is the ground a body at that speed covers while stopping evenly — which is what makes
-   * the hand-off seamless instead of a lurch.
-   */
-  it('travels flat out, then brakes over half as much ground per second', () => {
-    const p = reelPlan(13, 4, 1400)
-    const run = p.start - p.mid
-    const brake = p.mid - p.step
-    expect(run).toBeGreaterThan(0)
-    expect(brake).toBeGreaterThan(0)
-    // same speed in the run; half the average speed in the brake
-    expect(run / p.spinMs / (brake / p.brakeMs)).toBeCloseTo(2, 5)
   })
 
   /**
    * HIS RULING: "1 step back maximum at the end ... but not 10 back steps like now". The brake
    * stops one row short and a third phase takes the last row on its own, so the final movement is
-   * exactly one row — never fourteen of them grinding past at walking pace.
+   * exactly one row.
    */
   it('takes exactly one row as its last step, whatever the list or the answer', () => {
     for (const rows of [3, 7, 13, 47]) {
       for (const spinMs of [1000, 1800]) {
         for (let at = 0; at < rows; at++) {
-          const p = reelPlan(rows, at, spinMs)
-          expect(p.step - p.end).toBe(H)
+          expect(reelPlan(rows, at, spinMs, BELOW).step - reelPlan(rows, at, spinMs, BELOW).end).toBe(H)
         }
       }
     }
   })
 
-  it('always goes one way — down the strip, never back up it', () => {
-    for (let at = 0; at < 13; at++) {
-      const p = reelPlan(13, at, 1400)
-      expect(p.mid).toBeLessThan(p.start)
-      expect(p.step).toBeLessThan(p.mid)
-      expect(p.end).toBeLessThan(p.step)
+  /**
+   * The rounding up to a landing row is paid in speed, never in time — which is what keeps the two
+   * reels his 0.8s apart — and the brake is derived from that same speed, so the run hands over to
+   * it at exactly the speed it was doing.
+   */
+  it('brakes from whatever speed it ran at, over half as much ground per second', () => {
+    for (const rows of [3, 7, 13, 47]) {
+      for (let at = 0; at < rows; at++) {
+        const p = reelPlan(rows, at, 1000, BELOW)
+        const run = p.start - p.mid
+        const brake = p.mid - p.step
+        expect(run).toBeGreaterThan(0)
+        expect(brake).toBeGreaterThan(0)
+        expect(run / p.spinMs / (brake / p.brakeMs)).toBeCloseTo(2, 6)
+      }
     }
   })
 

@@ -57,6 +57,20 @@ const WINDOW = 5
  *         at a standstill.
  *   STEP  starts and ends at a standstill too (an ease-in-out), so it can only be the deliberate
  *         last step it looks like.
+ *
+ * AND IT ONLY EVER GOES ONE WAY (his ruling: "It still jumps back ... the animation goes up, and
+ * then a lot down. I want it to spin in one way and then stop, not spin and respin to the other
+ * side"). He was right and I was wrong to say nothing ran backwards: the plan used to be measured
+ * from a landing row near the FOOT of the strip, so every spin began by snapping the strip back to
+ * the top to have somewhere to travel from — thirty-eight rows of rewind between one spin and the
+ * next.
+ *
+ * Now a spin starts exactly where the last one stopped (`from`) and only ever travels away from it.
+ * The runway is kept ahead of it by NORMALISING at rest: because the strip is the list laid end to
+ * end, an offset and that offset plus a whole number of list-cycles show the very same rows in the
+ * window, so once a reel has settled it is moved back up by whole cycles into a home band. That
+ * move changes nothing on screen — same rows, same phase, same everything — and it is what buys the
+ * next spin its distance without anyone seeing a rewind.
  */
 /** Constant speed of the run, px/ms. 35 rows a second: fast enough to blur, slow enough to read as
  *  names going past rather than as noise. */
@@ -146,9 +160,23 @@ export interface ReelPlan {
   mid: number
   step: number
   end: number
+  /** The row it comes to rest on, and the one whole cycles above it that it is parked at after. */
+  landed: number
+  home: number
   spinMs: number
   brakeMs: number
   stepMs: number
+}
+
+/** Two rows of the window sit below the marker; the strip must always have that much under it. */
+const BELOW = Math.floor(WINDOW / 2)
+
+/** How long a strip has to be for any one journey, whatever row it starts or finishes on. */
+export function stripFor(rows: number, spinMs: number): number {
+  const nominal = SPEED * spinMs + (SPEED * BRAKE_MS) / 2 + H
+  // home band + a full cycle of slack at each end + the journey itself
+  const need = BELOW + 2 * rows + Math.ceil(nominal / H) + rows + BELOW + 1
+  return Math.ceil(need / rows) * rows
 }
 
 /**
@@ -159,23 +187,37 @@ export interface ReelPlan {
  * before that is measured in pixels off the end: brake distance, then spin distance. The strip is
  * then made long enough to hold the lot, in whole copies of the list so the rows repeat evenly.
  */
-export function reelPlan(rows: number, at: number, spinMs: number): ReelPlan {
-  const brake = (SPEED * BRAKE_MS) / 2
-  const run = SPEED * spinMs
-  // rows the journey needs — run, brake and the one last step — plus the window and a row of slack,
-  // rounded up to whole copies of the list
-  const need = Math.ceil((run + brake + H) / H) + WINDOW + 2
-  const copies = Math.max(2, Math.ceil((need + rows) / rows))
-  const strip = copies * rows
-  // the last row of the strip that is `at`, keeping the two rows the window shows underneath it
-  const below = Math.floor(WINDOW / 2)
-  let land = at
-  while (land + rows <= strip - 1 - below) land += rows
-  const end = offsetOf(land)
+/**
+ * The journey, forwards from where the reel already is.
+ *
+ * `from` is the row it is resting on, and `start` is that exact offset — that is the whole of the
+ * one-way rule: there is nothing to snap back to, because the spin begins where the last one left
+ * it. Only the far end has to line up, so the landing row is the first row at least a spin's worth
+ * further down the strip that shows `at`.
+ *
+ * Rounding up to that row makes the distance a little longer than nominal, by anything up to a
+ * cycle. That slack is paid in SPEED rather than in time: `v` is solved from the distance actually
+ * being covered, so the run, the brake and the step keep their millisecond budgets exactly and the
+ * two reels stay his 0.8s apart. The brake's own distance is derived from that same `v`, so the
+ * hand-off is still seamless — a slightly faster reel brakes over slightly more ground.
+ */
+export function reelPlan(rows: number, at: number, spinMs: number, from: number): ReelPlan {
+  const strip = stripFor(rows, spinMs)
+  const nominal = SPEED * spinMs + (SPEED * BRAKE_MS) / 2 + H
+  // the first row that far down which carries the answer
+  let landed = from + Math.ceil(nominal / H)
+  landed += (((at - landed) % rows) + rows) % rows
+  // the speed this distance actually asks for, given the fixed clock
+  const v = ((landed - from) * H - H) / (spinMs + BRAKE_MS / 2)
+  const brake = (v * BRAKE_MS) / 2
+  const end = offsetOf(landed)
   // THE BRAKE STOPS ONE ROW SHORT. Everything before is measured back from there, so the last step
   // is exactly one row — H — and cannot be anything else.
-  const step = end + H
-  return { strip, start: step + brake + run, mid: step + brake, step, end, spinMs, brakeMs: BRAKE_MS, stepMs: STEP_MS }
+  const step = offsetOf(landed - 1)
+  // and where it is parked once it has settled: the same row, whole cycles nearer the top, which
+  // is the same picture and the next spin's runway
+  const home = BELOW + ((((landed - BELOW) % rows) + rows) % rows)
+  return { strip, start: offsetOf(from), mid: step + brake, step, end, landed, home, spinMs, brakeMs: BRAKE_MS, stepMs: STEP_MS }
 }
 
 function Reel({
@@ -203,8 +245,15 @@ function Reel({
   nonce: number
   wide?: boolean
 }) {
-  const plan = useMemo(() => reelPlan(rows.length, at, ms - BRAKE_MS - STEP_MS), [rows.length, at, ms])
-  const [move, setMove] = useState<{ y: number; ms: number; ease: string }>(() => ({ y: plan.end, ms: 0, ease: 'linear' }))
+  const spinMs = ms - BRAKE_MS - STEP_MS
+  /**
+   * The row the reel is parked on. It is a ref and not state because it is where the NEXT spin
+   * starts from, and nothing renders differently for it — the whole point of the home band is that
+   * every parking spot in it looks identical.
+   */
+  const at0 = useRef(BELOW)
+  const plan = useMemo(() => reelPlan(rows.length, at, spinMs, at0.current), [rows.length, at, spinMs, nonce])
+  const [move, setMove] = useState<{ y: number; ms: number; ease: string }>(() => ({ y: offsetOf(BELOW), ms: 0, ease: 'linear' }))
   /** The flat-out phase, which is the only one that blurs. */
   const [fast, setFast] = useState(false)
   /**
@@ -220,15 +269,16 @@ function Reel({
 
   useEffect(() => {
     if (!moving.current || frozen) {
-      // held, or reduced motion, or a reel rendered already landed: just be there
+      // held, or reduced motion, or a reel rendered already landed: be parked on the answer
       setFast(false)
       setDone(true)
-      setMove({ y: plan.end, ms: 0, ease: 'linear' })
+      at0.current = plan.home
+      setMove({ y: offsetOf(plan.home), ms: 0, ease: 'linear' })
       return
     }
     setDone(false)
-    // stand at the top of the journey for one frame, or there is nothing to travel FROM
     setFast(false)
+    // NO JUMP: the strip is already at `plan.start`, because `plan.start` is where it was parked
     setMove({ y: plan.start, ms: 0, ease: 'linear' })
 
     const timers: number[] = []
@@ -243,7 +293,14 @@ function Reel({
         }, plan.spinMs),
         // and then the one last step, from a standstill to a standstill
         window.setTimeout(() => setMove({ y: plan.end, ms: plan.stepMs, ease: STEP }), plan.spinMs + plan.brakeMs),
-        window.setTimeout(() => setDone(true), plan.spinMs + plan.brakeMs + plan.stepMs + 40),
+        // Settled. Park it whole cycles nearer the top — the identical picture, and the runway the
+        // next spin travels down. This is the move that used to happen at the START of a spin,
+        // where it was thirty-eight rows of visible rewind; here there is nothing to see.
+        window.setTimeout(() => {
+          setDone(true)
+          at0.current = plan.home
+          setMove({ y: offsetOf(plan.home), ms: 0, ease: 'linear' })
+        }, plan.spinMs + plan.brakeMs + plan.stepMs + 60),
       )
     }
     // A page that is not being painted never fires a frame, and the spin lands on a timer
@@ -265,7 +322,7 @@ function Reel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce])
 
-  const strip = useMemo(() => Array.from({ length: plan.strip }, (_, i) => rows[i % rows.length]), [rows, plan.strip])
+  const strip = useMemo(() => Array.from({ length: stripFor(rows.length, spinMs) }, (_, i) => rows[i % rows.length]), [rows, spinMs])
   const running = spinning && !frozen && !done
 
   return (
