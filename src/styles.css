@@ -5486,57 +5486,338 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 .ck-spot.on .ck-label { color: var(--ck-orange); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
 
-/* ---------- THE MAN ON THE FLOOR ----------
-   HIS RULING: "have a player with a basketball, running towards where you pressed."
+/* ---------- THE PLAY: SIX MEN AND ONE BALL ----------
+   HIS RULING, 2026-09-08: "Instead of a man running, with the ball, have a player on the field for
+   each mode, and have them passing the ball. But please, make the animation good, 3d esque. This
+   animation was disrespect."
 
-   HE IS PLACED THE WAY THE MARKS ARE, in per cent of the court, so the run is an interpolation
-   between two percentages and stays the same run whatever width the floor is drawn at. Nothing
-   here is a pixel offset from a mark: everything is the court's own cqw, on the same clamps the
-   glyph and its name are on, so he keeps his size against the mark he is standing beside at 331px
-   across on a phone and at 720 on a desk.
+   WHAT WENT. `.ck-runner` — one stick figure at two units of stroke, sliding between the marks on
+   a transition of left and top with an orange circle for a ball, limbs swinging about their joints
+   over a body that never shifted its weight. He is deleted, not rescued.
 
-   HE PULLS UP BESIDE THE MARK, NOT ON IT — an O with a man standing in it is not a play. He stops
-   on the side he came from, which is where a man running that way would stop, so he is always
-   facing the thing he ran to. --ck-run-side carries both halves of that: -1 puts him a gap to the
-   left and leaves him facing right, which is how he is drawn. The gap is a hair more than the
-   glyph's own radius plus his own half-width, on the same clamps, so he never overlaps the circle
-   and never runs off the sideline — the two X's in the corners stand 8.5% and 91.5% in, and he
-   arrives on their inside shoulder either way.
+   WHAT STANDS HERE INSTEAD. Six men, one on every mark, none of whom ever moves; the ball is the
+   only thing that travels, and it is thrown from whoever holds it to the man whose mark you
+   pressed. The court is drawn as a PLAN and a plan has no eye level, so every scrap of depth on
+   this floor is manufactured, and it is manufactured five ways at once because no one of them
+   would carry it alone:
 
-   He rides an inch high of the spot's own centre because a spot's centre is the middle of the
-   glyph AND its name; that shift puts him level with the circle instead of with the word. */
-.ck-runner {
+     1. THE BALL LEAVES THE PLANE AND GROWS. `ck-lift` carries it up a parabola and SCALES IT UP
+        toward the apex, because a thing coming nearer the eye is bigger. That single trick does
+        more here than everything else together.
+     2. ITS SHADOW STAYS ON THE FLOOR. `ck-cast` is a child of the ground rig and never lifts, so
+        it slides out from under the ball as the ball climbs and the GAP between the two is the
+        only reading of height this drawing has. It opens and pales at the apex the way a soft
+        shadow does, and draws back in and darkens as the ball drops into the hands.
+     3. THE MEN STAND ON THE PLAN RATHER THAN IN IT. Each is anchored at his FEET, drawn upright
+        in three-quarter view, with a contact smudge under him.
+     4. THE FLOOR RECEDES. --dep is set off how far down the court a man is: away up the floor he
+        is smaller and fainter, down at the baseline he is bigger and brighter, and the ball takes
+        the two ends' scales with it so a pass up the floor shrinks on its way.
+     5. NOTHING IS LINEAR. Every list below sets its own curve at every stop — the wind-up, the
+        release, the rise, the fall and the settle are five different accelerations.
+
+   THE UNITS. Both play layers are SIZE containers cut to the court exactly, so 1cqw is one per
+   cent across the floor and 1cqh is one per cent down it, which are the units the six marks are
+   already placed in. Nothing here is a pixel offset from anything, so the play is the same drawing
+   at 331px of floor and at 761, and a window resized mid-throw simply redraws the throw at the new
+   size rather than losing the ball off the edge.
+
+   THE CLOCK. --pdur is the whole gesture and ChalkHome sets it off the length of the throw, since
+   a long pass hangs and a short one is a zip. The wind-up is a fifth of the flight, which is why
+   17% is the moment of release in every list below whatever the distance, and 52% is the apex —
+   a little before half time on purpose, because the flight decelerates into the catch and an apex
+   at exactly half reads late in space. */
+.ck {
+  /* A man's height, the step he stands off his mark, how far below the mark's middle his feet
+     land, and the ball. All four carry a PIXEL FLOOR because the marks do: .ck-glyph cannot go
+     under 42px, so on a phone the step off the mark has to clear 42px of circle rather than the
+     9.3cqw the circle would otherwise be — without that floor a shoulder sits on an O and a head
+     sits on a name at exactly the width his phone is. */
+  --ck-fig-h: clamp(38px, 11.5cqw, 130px);
+  --ck-fig-gap: clamp(36px, 9.1cqw, 112px);
+  --ck-fig-drop: clamp(7px, 2cqw, 24px);
+  --ck-ball-d: clamp(11px, 3.2cqw, 34px);
+  /* the smudge both shadows are made of: the slate's own green run down to almost nothing, so it
+     reads as chalk rubbed out under a man rather than as a black ellipse stuck on him */
+  --ck-smudge: radial-gradient(closest-side, rgba(6, 14, 11, 0.92), rgba(6, 14, 11, 0.42) 52%, rgba(6, 14, 11, 0) 100%);
+}
+/* THE TWO LAYERS, and they are two because the marks go BETWEEN them: a man is on the floor and
+   must never cover a name or eat a tap, and a ball in the air passes over everything the floor is
+   carrying. Both are the court exactly and both are size containers, so a position on either is
+   the same pair of numbers the marks are placed at. Neither takes a press. */
+.ck-floor,
+.ck-air {
   position: absolute;
-  z-index: 2;
-  width: clamp(26px, 8.8cqw, 100px);
-  --ck-run-gap: clamp(44px, 11cqw, 136px);
-  transform:
-    translate(calc(-50% + (var(--ck-run-gap) * var(--ck-run-side))), calc(-50% - clamp(8px, 2cqw, 16px)))
-    scaleX(calc(var(--ck-run-side) * -1));
-  /* 640ms is RUN_MS in ChalkHome.tsx, which is how long his legs are told to keep going */
-  transition: left 640ms cubic-bezier(0.35, 0, 0.25, 1), top 640ms cubic-bezier(0.35, 0, 0.25, 1);
+  inset: 0;
+  container-type: size;
   pointer-events: none;
 }
-.ck-runner svg { display: block; width: 100%; height: auto; overflow: visible; }
-/* chalk, in the hand the rest of the board is drawn in: no fill, round ends, a hair off white */
-.ck-runner path, .ck-runner circle { fill: none; stroke: var(--ck-bright); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
-/* the ball takes the pressed mark's orange — what he carries and what he runs to are one colour */
-.ck-runner .ck-run-ball { stroke: var(--ck-orange); opacity: 1; }
-/* each limb swings about the joint its group was carried to, which is that group's own 0,0 */
-.ck-run-limb { transform-origin: 0px 0px; }
-/* the stride runs only while he is on his way; arrived, he stands in the pose he is drawn in.
-   A and B are the two halves of a stride — the same keyframes half a period apart — and the
-   trailing arm shares a phase with the leading leg, which is what makes it read as running
-   rather than as a man hopping. The arms swing SHORT — fifteen degrees against the legs' thirty
-   — because the ball is at the far end of one of them: at the legs' angle it swung down between
-   his knees on every stride, which reads as a man losing the ball rather than carrying it. */
-.ck-runner.go .ck-run-limb { animation: ck-stride 460ms ease-in-out infinite; }
-.ck-runner.go .ck-run-limb.arm { animation-name: ck-swing; }
-.ck-runner.go .ck-run-limb.b { animation-delay: -230ms; }
-.ck-runner.go svg { animation: ck-bob 230ms ease-in-out infinite; }
-@keyframes ck-stride { 0%, 100% { transform: rotate(31deg); } 50% { transform: rotate(-31deg); } }
-@keyframes ck-swing { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } }
-@keyframes ck-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4%); } }
+.ck-floor { z-index: 1; }
+.ck-air { z-index: 5; }
+.ck-figdefs { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+
+/* ---------- a man ----------
+   FOUR NESTED SPANS BECAUSE AN ELEMENT CARRIES ONE TRANSFORM, and where he stands, how he
+   breathes, how he throws and which way he is turned are four different questions. Stacking them
+   also means the throw can be restarted — its span is remade on every press — without disturbing
+   the breathing above it, which keeps its own phase. */
+.ck-p {
+  --h: calc(var(--ck-fig-h) * var(--dep));
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--h) * 0.44);
+  height: var(--h);
+  /* his mark's own percentages, plus the step off it, and then MINUS HIS OWN FULL HEIGHT: the
+     point the numbers name is where his feet are, and the body goes up from there. That is the
+     whole of what makes him stand on the plan instead of lying in it. */
+  transform: translate(
+    calc(var(--x) * 1cqw + var(--side) * var(--ck-fig-gap) - 50%),
+    calc(var(--y) * 1cqh + var(--ck-fig-drop) - 100%)
+  );
+  /* air greys out distance: the man out top is a shade fainter than the men on the baseline */
+  opacity: calc(0.78 + (var(--dep) - 0.86) * 0.75);
+}
+/* the contact smudge — it does not breathe with him, because the floor does not move */
+.ck-p-shade {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: calc(var(--h) * 0.54);
+  height: calc(var(--h) * 0.16);
+  transform: translate(-44%, 44%);
+  border-radius: 50%;
+  background: var(--ck-smudge);
+  opacity: 0.72;
+}
+.ck-p-idle,
+.ck-p-act,
+.ck-p-turn {
+  position: absolute;
+  inset: 0;
+  /* every one of them pivots at the FEET, because that is where a standing body is joined to the
+     ground: lean from the ankles, not from the middle */
+  transform-origin: 50% 100%;
+}
+/* THE TURN, AND IT IS A CUT AND NOT A SWEEP. He is drawn facing right; turned round he is the
+   same drawing mirrored — but taking a scaleX from 1 to -1 continuously drags him through ZERO,
+   and for two frames every man who turns is a vertical line. That is a paper doll on a spindle,
+   and it is exactly the kind of thing his ruling was about. So the turn is done the way it is
+   done by hand: squash him toward the turn, CUT on the narrowest frame — the steps(1) is that
+   cut, and he is never narrower than half — and open him out facing the other way. The whole
+   thing is 280ms, and the six are dealt a few milliseconds apart so a floor turning to watch the
+   ball is a ripple rather than one mechanical beat. It runs only for the men whose facing
+   actually changed; the rest are left alone on the rule underneath. */
+.ck-p-turn { transform: scaleX(var(--face)); }
+.ck-p-turn.spin { animation: ck-turn 280ms calc(var(--i) * 14ms) both; }
+@keyframes ck-turn {
+  0% { transform: scaleX(var(--face0)); animation-timing-function: cubic-bezier(0.4, 0, 0.85, 0.5); }
+  50% { transform: scaleX(calc(var(--face0) * 0.5)); animation-timing-function: steps(1, end); }
+  51% { transform: scaleX(calc(var(--face) * 0.5)); animation-timing-function: cubic-bezier(0.15, 0.5, 0.35, 1); }
+  100% { transform: scaleX(var(--face)); }
+}
+.ck-p svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* CHALK WITH MASS. The board's other figure was five hairlines; this one is a filled body and
+   limbs drawn as thick round-capped strokes, which is a capsule and reads as an arm with a
+   thickness. Every piece takes the SAME gradient, in the figure's own user space, so the joins
+   between them cannot be seen at any size — that is what lets a man be built out of loose strokes
+   and still read as one solid body. The paint carries a flat cream fallback after the reference,
+   so a figure is never invisible if the def cannot be found. */
+.ck-figdefs .s0 { stop-color: var(--ck-bright); }
+.ck-figdefs .s1 { stop-color: var(--ck-chalk); }
+.ck-figdefs .s2 { stop-color: var(--ck-faint); }
+.ck-fig .ck-solid { fill: url(#ck-fig-chalk) var(--ck-chalk); stroke: none; }
+.ck-fig .ck-limb {
+  fill: none;
+  stroke: url(#ck-fig-chalk) var(--ck-chalk);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ck-fig .th { stroke-width: 8.6; }
+.ck-fig .sh { stroke-width: 6.6; }
+.ck-fig .ft { stroke-width: 5; }
+.ck-fig .up { stroke-width: 6.4; }
+.ck-fig .lo { stroke-width: 5.4; }
+.ck-fig .nk { stroke-width: 6.4; }
+/* the far side of the body held back — the oldest depth trick there is, and one attribute */
+.ck-fig .ck-arm.b,
+.ck-fig .ck-far { opacity: 0.7; }
+.ck-arm { transform-origin: 0px 0px; }
+
+/* ---------- what the six do ----------
+   IDLE: a breath and a shift of weight, on his own period and his own phase, so six of them never
+   pulse together and none of it is loud enough to compete with a screen somebody is reading. Six
+   figures held perfectly still read as traffic cones; this is the least that stops them. */
+.ck-p-idle { animation: ck-breathe calc(3.6s + var(--i) * 0.43s) calc(var(--i) * -1.13s) ease-in-out infinite; }
+@keyframes ck-breathe {
+  0%, 100% { transform: translateY(0) rotate(0deg) scaleY(1); }
+  30% { transform: translateY(-1.1%) rotate(0.85deg) scaleY(1.013); }
+  66% { transform: translateY(0.3%) rotate(-0.6deg) scaleY(0.994); }
+}
+/* THE THROW AND THE CATCH, and this is the part the last drawing did not have at all. A pass has
+   an anticipation, a release and a follow-through, and the WHOLE BODY does them: the thrower sinks
+   into the coil and leans back off the target (10%), drives through it and comes up off the floor
+   as the ball leaves (18%), rides forward on the follow-through (32%) and is back on his feet
+   before the ball is halfway. The catcher does nothing at all until the ball is two thirds of the
+   way to him, rises to meet it, takes it, and then GIVES at the knees — the sink at 87% is the
+   ball's weight arriving, and it is what stops the catch looking like a magnet.
+   Both lean along --face, which is the direction each of them is already turned: the thrower at
+   his target, the catcher back down the line the ball is coming in on. */
+.ck-p.throw .ck-p-act { animation: ck-throw var(--pdur) both; }
+.ck-p.throw .ck-arm { animation: ck-throw-arm var(--pdur) both; }
+/* the catch runs a third longer than the flight so it can still be absorbing after the ball has
+   landed: the ball arrives at 77% of this list */
+.ck-p.catch .ck-p-act { animation: ck-catch calc(var(--pdur) * 1.3) both; }
+.ck-p.catch .ck-arm { animation: ck-catch-arm calc(var(--pdur) * 1.3) both; }
+@keyframes ck-throw {
+  0% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
+  10% { transform: translate(calc(var(--face) * -6%), 2%) rotate(calc(var(--face) * -4.5deg)) scaleY(0.965); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
+  18% { transform: translate(calc(var(--face) * 8%), -3%) rotate(calc(var(--face) * 6.5deg)) scaleY(1.028); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  32% { transform: translate(calc(var(--face) * 4%), -1%) rotate(calc(var(--face) * 3.4deg)) scaleY(1.006); animation-timing-function: cubic-bezier(0.35, 0, 0.3, 1); }
+  62%, 100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+}
+@keyframes ck-catch {
+  0%, 44% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
+  62% { transform: translate(calc(var(--face) * 2.5%), -3.4%) rotate(calc(var(--face) * 2deg)) scaleY(1.03); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
+  77% { transform: translate(calc(var(--face) * 1.2%), -1.4%) rotate(calc(var(--face) * 1deg)) scaleY(1.014); animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1); }
+  87% { transform: translate(calc(var(--face) * -1%), 2.6%) rotate(calc(var(--face) * -1deg)) scaleY(0.952); animation-timing-function: cubic-bezier(0.2, 0.9, 0.35, 1); }
+  100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+}
+/* THE ARMS SWING INSIDE THE MIRROR, so a rotation here is always "forward" for the man doing it,
+   whichever way he is turned. --amp is how far each of the two goes — the near one all the way,
+   the far one a little under three quarters — so the pair never looks like one arm drawn twice. */
+@keyframes ck-throw-arm {
+  0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
+  10% { transform: rotate(calc(var(--amp) * 26deg)); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4); }
+  18% { transform: rotate(calc(var(--amp) * -76deg)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  32% { transform: rotate(calc(var(--amp) * -54deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
+  66%, 100% { transform: rotate(0deg); }
+}
+@keyframes ck-catch-arm {
+  0%, 44% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
+  62% { transform: rotate(calc(var(--amp) * -68deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
+  77% { transform: rotate(calc(var(--amp) * -60deg)); animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1); }
+  87% { transform: rotate(calc(var(--amp) * -34deg)); animation-timing-function: cubic-bezier(0.25, 0.85, 0.4, 1); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ---------- the ball ----------
+   THE RIG IS THE BALL'S GROUND POSITION — where it would be if it never left the floor. Its
+   untouched transform IS the catcher's hands, which is why there is nothing to restore when the
+   throw is over: the animation simply lands on the rule underneath it. */
+.ck-ball-rig {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  /* THE TWO ENDS OF THE THROW, composed here on the element that uses them so the container units
+     resolve against the air layer and nothing else. Each is a mark's own percentage plus the step
+     the man standing on it takes off it — the same expression .ck-p is placed by, which is how the
+     ball is guaranteed to arrive in a hand and not near one at every width. */
+  --p-fx: calc(var(--pfx) * 1cqw + var(--pfs) * var(--ck-fig-gap));
+  --p-fy: calc(var(--pfy) * 1cqh + var(--ck-fig-drop));
+  --p-tx: calc(var(--ptx) * 1cqw + var(--pts) * var(--ck-fig-gap));
+  --p-ty: calc(var(--pty) * 1cqh + var(--ck-fig-drop));
+  /* the wind-up: six per cent BACK down the line the ball is about to travel */
+  --p-kx: calc(var(--p-fx) * 1.06 - var(--p-tx) * 0.06);
+  --p-ky: calc(var(--p-fy) * 1.06 - var(--p-ty) * 0.06);
+  /* hand height at each end, off each man's OWN height — so the ball leaves a near man's hands
+     further up the screen than a far man's, which is the receding floor again */
+  --p-fh: calc(var(--ck-fig-h) * var(--pfd) * 0.47);
+  --p-th: calc(var(--ck-fig-h) * var(--ptd) * 0.47);
+  --p-arc: calc(var(--parc) * 1cqw);
+  transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd));
+}
+.ck-ball-rig.go { animation: ck-ground var(--pdur) both; }
+/* the ground path: back for the wind-up, out of the hand hard, and decelerating into the catch —
+   which is the asymmetry that makes it arrive rather than stop */
+@keyframes ck-ground {
+  0% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.25, 0.7, 0.4, 1); }
+  10% { transform: translate(var(--p-kx), var(--p-ky)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.3); }
+  17% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.35, 0.2, 0.5, 1); }
+  100% { transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd)); }
+}
+
+/* HEIGHT, AND THE SCALE THAT SELLS IT. The lift is the ball's distance off the floor and nothing
+   else. It rises decelerating and falls accelerating, because that is gravity and because a
+   symmetrical curve reads as a slide rather than a throw; at the top it is half again its size,
+   which is the whole of the "nearer the eye" trick. At 94% it is BELOW the receiving hand and a
+   touch large — the catch taken low and brought up — and it settles on the last six per cent. */
+.ck-lift {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: translateY(calc(var(--p-th) * -1));
+}
+.ck-ball-rig.go .ck-lift { animation: ck-lift var(--pdur) both; }
+@keyframes ck-lift {
+  0% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.3, 0.65, 0.4, 1); }
+  10% { transform: translateY(calc(var(--p-fh) * -0.82)) scale(0.95); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
+  17% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
+  52% { transform: translateY(calc((var(--p-fh) + var(--p-arc)) * -1)) scale(1.55); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6); }
+  94% { transform: translateY(calc(var(--p-th) * -0.84)) scale(1.05); animation-timing-function: cubic-bezier(0.25, 1.5, 0.5, 1); }
+  100% { transform: translateY(calc(var(--p-th) * -1)) scale(1); }
+}
+
+/* THE SHADOW STAYS ON THE FLOOR. It is inside the rig, so it takes the ground path for free and
+   the only thing it ever does is answer the ball's HEIGHT: it slides away from under the ball
+   toward the lower right — the slate's light is the highlight at 28% 6% of .ck-board, so
+   everything on this floor casts down and to the right — spreads and pales as the ball climbs,
+   and draws back in and darkens as the ball comes down. The gap between it and the ball is the
+   only measure of height this drawing has. Both the spread and the fade are scaled by --parc, the
+   apex of this particular throw, so a lob opens a wider, paler shadow than a zip does. */
+.ck-cast {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--ck-ball-d) * 1.55);
+  height: calc(var(--ck-ball-d) * 0.62);
+  margin-left: calc(var(--ck-ball-d) * -0.775);
+  margin-top: calc(var(--ck-ball-d) * -0.31);
+  border-radius: 50%;
+  background: var(--ck-smudge);
+  opacity: 0.72;
+  transform: translate(calc(var(--p-th) * 0.18), calc(var(--p-th) * 0.16));
+}
+.ck-ball-rig.go .ck-cast { animation: ck-cast var(--pdur) both; }
+@keyframes ck-cast {
+  0% { transform: translate(calc(var(--p-fh) * 0.18), calc(var(--p-fh) * 0.16)) scale(1); opacity: 0.72; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+  17% { transform: translate(calc(var(--p-fh) * 0.18), calc(var(--p-fh) * 0.16)) scale(1); opacity: 0.72; animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
+  52% {
+    transform: translate(calc((var(--p-fh) + var(--p-arc)) * 0.18), calc((var(--p-fh) + var(--p-arc)) * 0.16))
+      scale(calc(1 + var(--parc) * 0.06));
+    opacity: calc(0.72 - var(--parc) * 0.019);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6);
+  }
+  100% { transform: translate(calc(var(--p-th) * 0.18), calc(var(--p-th) * 0.16)) scale(1); opacity: 0.72; }
+}
+
+/* the ball itself, and its spin — the seams turning is what says the thing is travelling rather
+   than being carried. It slows as it goes, the way a thrown ball's spin looks like it does. */
+.ck-ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--ck-ball-d);
+  height: var(--ck-ball-d);
+  margin-left: calc(var(--ck-ball-d) / -2);
+  margin-top: calc(var(--ck-ball-d) / -2);
+}
+.ck-ball svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ck-ball-rig.go .ck-ball { animation: ck-spin var(--pdur) cubic-bezier(0.12, 0.6, 0.3, 1) both; }
+@keyframes ck-spin {
+  0%, 17% { transform: rotate(0deg); }
+  100% { transform: rotate(calc(var(--pspin) * 1deg)); }
+}
+/* the pressed mark's orange, so the thing being thrown and the thing you pressed are one colour.
+   The skin is the faintest wash of the same so the ball is not a hole in the slate at fourteen
+   pixels; no new hue is introduced anywhere in this section. */
+.ck-ball-skin { fill: rgba(255, 168, 102, 0.16); stroke: none; }
+.ck-ball-line { fill: none; stroke: var(--ck-orange); stroke-width: 1.7; stroke-linecap: round; }
 
 /* ---------- what the coach says about the play under the chalk ----------
    THE READ IS MEASURED AGAINST ITS OWN COLUMN, not against the window. His ruling widened the
@@ -5647,12 +5928,24 @@ html:has(body.chalk) { background: #243530; }
 body.chalk:not(.um) { background: #243530; }
 body.chalk:not(.um) #root::before { display: none; }
 body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
-/* WITH REDUCED MOTION HE DOES NOT RUN, HE IS SIMPLY THERE. The left/top are still the pressed
-   mark's, so pressing a play still moves him — it just happens in the same frame as the mark
-   turning orange, with no travel and no legs. */
+/* WITH REDUCED MOTION THE BALL IS SIMPLY AT THE MAN YOU PRESSED. No travel, no arc, no shadow
+   opening under it, nobody breathing and nobody swinging: the ball changes hands in the same
+   frame the mark turns orange. Nothing needs a fallback position, because every rule this turns
+   off is an ANIMATION over a rule that already states the resting pose — the rig's own transform
+   is the catcher's hands, the lift's is his hand height, and a man's untouched transform is a man
+   standing on his mark. The turn is stopped as a transition rather than an animation because that
+   is what it is. Each selector below carries the same weight as the one it is beating and comes
+   later in the file, so none of it needs !important. */
 @media (prefers-reduced-motion: reduce) {
-  .ck-spot, .ck-runner { transition: none; }
-  /* .arm is in here so this beats the arm's own animation-name a few rules up, which is a
-     four-class selector and would otherwise put the swing back on top of the none */
-  .ck-runner.go .ck-run-limb, .ck-runner.go .ck-run-limb.arm, .ck-runner.go svg { animation: none; }
+  .ck-spot { transition: none; }
+  .ck-p-turn.spin,
+  .ck-p-idle,
+  .ck-p.throw .ck-p-act,
+  .ck-p.throw .ck-arm,
+  .ck-p.catch .ck-p-act,
+  .ck-p.catch .ck-arm,
+  .ck-ball-rig.go,
+  .ck-ball-rig.go .ck-lift,
+  .ck-ball-rig.go .ck-cast,
+  .ck-ball-rig.go .ck-ball { animation: none; }
 }
