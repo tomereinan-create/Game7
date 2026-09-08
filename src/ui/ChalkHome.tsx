@@ -4,6 +4,7 @@ import { ROUNDS } from '../config'
 import { currentLevel, type Progress, type CampaignMode } from '../state/campaign'
 import { setUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
+import { Ball } from './Ball'
 import { useLayout } from './useLayout'
 import type { Mode } from './Home'
 
@@ -15,6 +16,10 @@ import type { Mode } from './Home'
  * slate of cards it got from the Game Design Overhaul bundle — see `UserHome` in Home.tsx — and
  * nothing shared moves, so the two front doors are two components rather than one with a fork
  * running through it.
+ *
+ * HIS LATER RULINGS ON THE BOARD: no PLAYBOOK in the title and no PRACTICE SLATE line under it —
+ * the mark and the wordmark, the same pair user mode's front door opens with — and the slate is
+ * the screen rather than a card propped in the middle of one.
  *
  * WHAT 4a IS: a wood-framed green slate. Half a court drawn left-handed in dashed chalk, with the
  * six ways to play standing on it as three O's and three X's where a coach would put them — the
@@ -133,9 +138,13 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     <div className="ck">
       <div className="ck-board">
         <div className="ck-head">
+          {/* his ruling: no PLAYBOOK, no practice slate — the mark and the name, the way the
+              other front door wears them, with the 7 in the slate's own chalk yellow */}
           <div className="ck-lockup">
-            <b>GAME7 PLAYBOOK</b>
-            <i>PRACTICE SLATE · SEASON 2026</i>
+            <Ball size={44} dribble />
+            <b>
+              GAME<em>7</em>
+            </b>
           </div>
           {/* the mode question, said the way a coach would write it in the corner of the slate */}
           <div className="ck-modes" role="group" aria-label="How do you want to see the game?">
