@@ -1,6 +1,11 @@
+import { readFileSync } from 'node:fs'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { floorSlot } from '../src/ui/Draft'
-import { bandSlot, sameSlot, type Slot } from '../src/ui/ManBand'
+import { PLAYERS } from '../src/engine/pool'
+import { setUserMode } from '../src/state/viewmode'
+import { CardSheet } from '../src/ui/CardSheet'
+import { bandSlot, floorSlot, sameSlot, type Slot } from '../src/ui/ManBand'
 
 /**
  * HIS REPORT: the draft screen spins on a desk — React logs "Maximum update depth exceeded" over
@@ -81,5 +86,58 @@ describe('the measuring effect settles instead of spinning', () => {
 
   it('settles on the second pass the way the screen writes it now', () => {
     expect(settleIn((cur) => floorSlot(grid, cols, FLOOR_Y, cur))).toBe(2)
+  })
+})
+
+/**
+ * AND THEN THE DRAFT STOPPED MEASURING A FLOOR AT ALL — his ruling: "Pressing on a player shouldnt
+ * open the thing on the buttom left, it shall open photo #2." The rows had already been turned
+ * round to open the man's season line where he stands; what was left were the rings on your own
+ * court and the shirts on the tip-off, and neither of those has a row to open out into. Both open
+ * his CARD now, which carries photo #2's season line and the rest of him, so nothing on the screen
+ * puts a panel on the black floor and the whole band apparatus came out of it.
+ *
+ * These are read off the source because the screen has no test harness: what is being defended is
+ * that no call site quietly comes back.
+ */
+describe('the draft opens the card, never the floor panel', () => {
+  const DRAFT = readFileSync('src/ui/Draft.tsx', 'utf8')
+
+  it('has nothing left that sets a band or mounts one', () => {
+    expect(DRAFT).not.toMatch(/setBand|showMan|<ManBand/)
+  })
+
+  it('measures the roster box and no longer measures a floor', () => {
+    expect(DRAFT).not.toMatch(/setFloor|floorSlot/)
+    expect(DRAFT).toContain('setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)')
+  })
+
+  it('sends the man on a ring and the man on a shirt to his card', () => {
+    expect(DRAFT).toContain('onTap: p ? () => openCard(p) : undefined')
+    expect(DRAFT).toContain('onTap={(p) => openCard(p)}')
+  })
+
+  it('leaves the drag off a ring alone: a tap is still only what a short press does', () => {
+    expect(readFileSync('src/ui/CourtFive.tsx', 'utf8')).toContain('s.onTap?.()')
+  })
+
+  /**
+   * And the card is a fair swap for the panel: it opens on photo #2's own line — SEASON, then the
+   * position, height, team, games and minutes — so the ruling is kept and not merely obeyed. The
+   * tip-off is a NEW door into the card in user mode, so the blind card is checked through it: a
+   * new route must not hand back the verdict the mode takes away.
+   */
+  it('opens on photo #2 line, and stays blind in user mode', () => {
+    const p = PLAYERS.find((x) => x.name.endsWith("'96"))!
+    setUserMode(true)
+    try {
+      const card = renderToStaticMarkup(createElement(CardSheet, { p, onClose: () => {} }))
+      for (const cap of ['SEASON', 'POS', 'HT', 'TEAM', 'GP', 'MPG']) expect(card).toContain(`<span>${cap}</span>`)
+      expect(card).not.toContain('pct-readouts')
+      expect(card).not.toContain('OVERALL')
+      expect(card).not.toContain('ATTRIBUTES')
+    } finally {
+      setUserMode(false)
+    }
   })
 })

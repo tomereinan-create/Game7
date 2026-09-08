@@ -64,6 +64,28 @@ export function bandSlot(grid: HTMLElement, cols: HTMLElement[], floorY: number,
   }
 }
 
+/**
+ * THE FLOOR A BAND LAYS INTO, measured — or the one already in state, when the measurement says
+ * it is exactly where it was.
+ *
+ * The screen re-measures after EVERY render on purpose: a column that grows, a wheel that lands
+ * and a man drafted onto the court all move the floor, and none of them is a dependency you can
+ * name. That is only safe if measuring the same rectangle twice is not a change, which is what
+ * this is for: `bandSlot` builds a new object every call, and writing that object to state on a
+ * screen that measures after every render is a loop with nothing to stop it — React re-renders
+ * because the object is new, the effect measures again, and the desk browser fills with "Maximum
+ * update depth exceeded". Out here rather than inline so the law can be read and tested on its own.
+ *
+ * NOBODY MEASURES A FLOOR TODAY: the draft's band went with his ruling that pressing a player
+ * opens photo #2, and My team gives the band a column instead of a rectangle. It stays beside
+ * the measurement it guards, because a band laid into leftover floor is a shape this app keeps
+ * reaching for, and the loop is only one careless line away each time.
+ */
+export const floorSlot = (grid: HTMLElement, cols: HTMLElement[], floorY: number, cur: Slot | null): Slot | null => {
+  const next = bandSlot(grid, cols, floorY)
+  return sameSlot(cur, next) ? cur : next
+}
+
 export function ManBand({
   p,
   at,

@@ -11,7 +11,6 @@ import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
-import { bandSlot, ManBand, sameSlot, type Slot } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -95,23 +94,6 @@ export const wheelOrder = <T extends { name: string; ovr: number }>(men: T[], dr
 /** The drop that drafts: exactly the five the "Draft … at …" button would have left behind. */
 export const dropDraft = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
   canDropAt(slots, at, name, to) ? { ...slots, [to]: name } : slots
-
-/**
- * THE FLOOR THE BAND LAYS INTO, measured — or the one already in state, when the measurement says
- * it is exactly where it was.
- *
- * The screen re-measures after EVERY render on purpose: a column that grows, a wheel that lands
- * and a man drafted onto the court all move the floor, and none of them is a dependency you can
- * name. That is only safe if measuring the same rectangle twice is not a change, which is what
- * this is for: `bandSlot` builds a new object every call, and writing that object to state on a
- * screen that measures after every render is a loop with nothing to stop it — React re-renders
- * because the object is new, the effect measures again, and the desk browser fills with "Maximum
- * update depth exceeded". Out here rather than inline so the law can be read and tested on its own.
- */
-export const floorSlot = (grid: HTMLElement, cols: HTMLElement[], floorY: number, cur: Slot | null): Slot | null => {
-  const next = bandSlot(grid, cols, floorY)
-  return sameSlot(cur, next) ? cur : next
-}
 
 /** Bare-name index: the same man in a different year is still the same man. */
 const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
@@ -304,42 +286,27 @@ export function Draft({
   const [sel, setSel] = useState<string | null>(null)
   const [slot, setSlot] = useState<Pos | null>(null)
   const [info, setInfo] = useState<string | null>(null)
-  /**
-   * The man showing in the band under the boxes, and the black floor there is to put him on. Same
-   * ruling and same measurement as My team: the gap between the columns and the dock, so the band
-   * only ever uses space the layout already had.
+  /*
+   * NO BAND ON THE FLOOR HERE ANY MORE — his ruling: "Pressing on a player shouldnt open the thing
+   * on the buttom left, it shall open photo #2." Every roster row already opens photo #2 where the
+   * man stands (see `openLine`); the last two things still laying the panel into the black floor
+   * were the rings of your own court and the shirts on the tip-off, and neither of those has a row
+   * of its own to open out into. Both open his CARD now — the same sheet the opponent's five and
+   * every name on this screen open, carrying photo #2's season line and the rest of the man.
    *
-   * NO ROSTER ROW OPENS THIS ANY MORE — his ruling: "Pressing on a player shouldnt open the thing
-   * on the buttom left, it shall open photo #2." The only things left that set it are the FLOOR:
-   * a ring on your own court and a shirt in the tip-off panel, neither of which has a row of its
-   * own to open out into. Every list on this screen opens the man's season line in place instead.
+   * So the band's state, the rectangle that was measured for it and the inline fallback under a
+   * row are all gone from this screen. `ManBand` itself lives on: My team gives it a column, and
+   * that screen is not in this ruling.
    */
-  const [band, setBand] = useState<string | null>(null)
-  /**
-   * The rectangle the band lays into, when there is one. Null means this screen at this size has
-   * no free floor — a phone, a short window, or every column tall — and the panel goes inline
-   * under the man instead, so pressing a player always shows him. Named apart from this screen's
-   * own `slot`, which is a position.
-   */
-  const [floor, setFloor] = useState<Slot | null>(null)
-  /** Where the band goes: the free columns and the room under them. Named apart from this
-      screen's own `slot`, which is a position. */
-  const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
   /**
    * HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it shall open
    * photo #2." Photo #2 is the row itself opened out — SEASON 2008 and the fourteen numbers under
    * it, printed inside the list, exactly what the row's own chevron has always opened. So a press
-   * on a man in a roster list opens his line where he stands and the band on the floor is left out
-   * of it. Toggles, like the chevron: a second press on the same man closes him again.
-   *
-   * It also takes him off the band if he was on it, because he can only have got there off the
-   * court a moment ago and two panels for one player is the duplication he threw out once already
-   * ("Remove what Ive marked, no need for duplicates").
+   * on a man in a roster list opens his line where he stands, and no press anywhere on this screen
+   * puts a panel on the floor. Toggles, like the chevron: a second press on the same man closes
+   * him again.
    */
-  const openLine = (name: string) => {
-    setBand((cur) => (cur === name ? null : cur))
-    setInfo((cur) => (cur === name ? null : name))
-  }
+  const openLine = (name: string) => setInfo((cur) => (cur === name ? null : name))
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
@@ -450,20 +417,20 @@ export function Draft({
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
   /**
-   * WHOSE SEASON THE USER-MODE RAIL IS SHOWING. The bundle's rail heads on one man; the app has
-   * three ways of pointing at one, so they are read in the order he touched them: the card he has
-   * opened, then the man he has selected off the wheel, and failing both the last man he actually
-   * drafted — so the rail says something the moment the first pick lands and never goes blank
-   * again mid-draft.
+   * WHOSE SEASON THE USER-MODE RAIL IS SHOWING. The bundle's rail heads on one man, read in the
+   * order he touched them: the man he has selected off the wheel, and failing that the last man he
+   * actually drafted — so the rail says something the moment the first pick lands and never goes
+   * blank again mid-draft. A man tapped on the court used to head it too, by way of the band; that
+   * tap opens his full card now, which says everything the rail would and more, so the rail stays
+   * on the man he is choosing.
    */
   const focus = (() => {
-    for (const n of [band, sel, picks[picks.length - 1]]) {
+    for (const n of [sel, picks[picks.length - 1]]) {
       const p = n ? BY_NAME.get(n) : null
       if (p) return p
     }
     return null
   })()
-  const gridRef = useRef<HTMLDivElement | null>(null)
   /**
    * THE WHEEL'S ROSTER SCROLLS IN ITS OWN BOX (his ruling). The cap is MEASURED rather than a vh
    * guess: what is above the list — the card head, the two reels, the team and its season line,
@@ -483,7 +450,6 @@ export function Draft({
   }
   useEffect(() => {
     const measure = () => {
-      const g = gridRef.current
       const list = rosterList.current
       const dock = document.querySelector<HTMLElement>('.dock')
       const stacked = window.innerWidth < 900
@@ -505,13 +471,6 @@ export function Draft({
         list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
         setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
       }
-      if (!g || stacked) return setFloor(null)
-      const cols = ([...g.children] as HTMLElement[]).filter((e) => e.classList.contains('col'))
-      const rowBottom = Math.min(g.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0))
-      // the rectangle it measured, and never a new object saying where the old one already was:
-      // this measures after every render, so a rectangle that is only new by identity renders
-      // again, measures again, and never stops
-      setFloor((cur) => floorSlot(g, cols, rowBottom, cur))
     }
     measure()
     window.addEventListener('resize', measure)
@@ -985,17 +944,11 @@ export function Draft({
     },
   ) => {
     /**
-     * HIS RULING: "Remove what Ive marked, no need for duplicates". A man must never be printed
-     * twice — the archetype card and the tap-open grid say the same season and the same fourteen
-     * numbers — so while he is on the band his row does not also print the grid, and the row's
-     * chevron closes the band rather than doing nothing.
-     *
-     * SINCE "it shall open photo #2" THIS IS THE NARROW CASE IT ALWAYS SHOULD HAVE BEEN: no row
-     * puts a man on the band any more, so the only way to be `carded` is to have tapped his ring
-     * on your own court, where there is no row to open out. Press the row itself and he comes off
-     * the band and opens out here instead — see `openLine`.
+     * ONE PANEL PER MAN, AND IT IS HIS OWN LINE. "Remove what Ive marked, no need for duplicates"
+     * used to bite here because a man could be on the floor band and in this list at once; since
+     * "it shall open photo #2" nothing on this screen opens a band at all, so a row has exactly
+     * one thing to show and the chevron and the row itself both open it.
      */
-    const carded = band === p.name
     return (
     <div key={p.name} style={{ display: 'contents' }}>
       <div
@@ -1037,20 +990,18 @@ export function Draft({
         </span>
         <Mini name={p.name} />
         <button
-          className={`pinfo ${carded || info === p.name ? 'open' : ''}`}
+          className={`pinfo ${info === p.name ? 'open' : ''}`}
           aria-label={`${p.name} season line`}
-          aria-expanded={carded || info === p.name}
+          aria-expanded={info === p.name}
           onClick={(e) => {
             e.stopPropagation()
-            if (carded) setBand(null)
-            else setInfo(info === p.name ? null : p.name)
+            setInfo(info === p.name ? null : p.name)
           }}
         >
           ▾
         </button>
       </div>
-      {carded && !floor ? <ManBand p={p} inline /> : null}
-      {info === p.name && !carded ? <DetailGrid p={p} mode="stats" /> : null}
+      {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
     </div>
     )
   }
@@ -1075,7 +1026,7 @@ export function Draft({
         </svg>
       </button>
 
-      <div className="draft" ref={gridRef}>
+      <div className="draft">
       <section className="col a">
       {/* The scout bar is gone by his ruling: the panel below carries the team, the
           record and the dials, so a header that only repeated them and offered a
@@ -1254,8 +1205,8 @@ export function Draft({
                    * HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left,
                    * it shall open photo #2." The press still PICKS him — the dock still says DRAFT
                    * HIM AT PG and the Assign to chips still appear — and `select` is where the
-                   * season line is opened, so it is now the whole of the tap. Nothing here touches
-                   * the band any more.
+                   * season line is opened, so it is now the whole of the tap. Nothing on this
+                   * screen opens the floor panel any more; there is no floor panel.
                    */
                   onTap: () => select(p.name),
                 })
@@ -1517,7 +1468,12 @@ export function Draft({
             myClub={myColor(wallet.team)}
             theirClub={teamColor(opponent.ab)}
             map={boardMap}
-            onTap={(p) => showMan(p.name)}
+            /* HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
+               shall open photo #2." A shirt has no row to open out into, so it opens the man's
+               card — which prints photo #2's season line and the rest of him, and is what a name
+               has always opened everywhere else. Both fives: theirs open the same way the
+               opponent's rings above already did. */
+            onTap={(p) => openCard(p)}
           />
         ) : (
         <CourtFive
@@ -1542,9 +1498,12 @@ export function Draft({
               // one ring at a time lights: the man being drafted onto the floor, or the man
               // already on it being moved across it
               dropOk: pull ? (pull.over === x ? canDrop(pull.name, x) : null) : drag && drag.over === x ? canMove(drag.from, x) : null,
-              // his ruling: the floor opens him in the band. CardName on his row still opens the
-              // full sheet, so the card is one tap away rather than stranded.
-              onTap: p ? () => showMan(p.name) : undefined,
+              // HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
+              // shall open photo #2." A ring is not a row — there is nothing under it to open out
+              // — so the man on it opens his CARD, which carries photo #2's season line and the
+              // rest. His own row below opens the line in place, as the ruling reads there.
+              // The tap is only reached under the drag threshold, so dragging him is untouched.
+              onTap: p ? () => openCard(p) : undefined,
             }
           })}
         />
@@ -1660,8 +1619,6 @@ export function Draft({
         </div>
       ) : null}
       </section>
-      {/* the black floor the columns leave; nothing mounts where there is none, as on a phone */}
-      {floor ? <ManBand p={band ? (BY_NAME.get(band) ?? null) : null} at={floor} /> : null}
       </div>
 
       {askSim ? (
