@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { archetype, PLAYERS } from '../engine/pool'
 import { useLayout } from './useLayout'
 import { wearSkin } from './teamColors'
-import { buildSpin, SPIN_MS, SpinWheel, type Spin } from './SpinWheel'
+import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot, type Slots } from '../engine/slots'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
@@ -15,7 +15,7 @@ import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { gateTactics, heliMan, pnrPair, popPair, postMan, postOption, triangleReaders, SCHEMES, schemeFit, styleFit, STYLES, tacticsParts, type Tactics } from '../engine/tactics'
 import { usageSurplus } from '../engine/offense'
-import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason } from './Draft'
+import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason, heldPool } from './Draft'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 
@@ -153,8 +153,13 @@ export function MyTeam({
   const [spinning, setSpinning] = useState(false)
   const [spun, setSpun] = useState<TeamSeason | null>(null)
   const [display, setDisplay] = useState<TeamSeason | null>(null)
-  /** The disc itself: which twelve clubs are on it and which wedge the pointer has to finish on. */
-  const [disc, setDisc] = useState<Spin | null>(null)
+  /** The two reels: which rows are on them and which row each has to finish under the arrows. */
+  const [reels, setReels] = useState<ReelSpin | null>(null)
+  /** HIS RULING: "unless selected to spin 1 only". At most one reel is held; the other is spun. */
+  const [hold, setHold] = useState<Hold>(null)
+  /** What the reels last stopped on. NOT `display`, which the confirmed swap clears — a hold has to
+   *  survive the change it was made during, or holding a team does nothing on the very next spin. */
+  const lastLanding = useRef<TeamSeason | null>(null)
   const [sel, setSel] = useState<string | null>(null)
   const [out, setOut] = useState<string | null>(null)
   /** Resting mode: the bench row was tapped, the next floor tap makes the exchange. */
@@ -257,35 +262,41 @@ export function MyTeam({
   const openPos = [...POSITIONS]
 
   /**
-   * HIS RULING: "Instead of the wheel spinning like it currently does, add an actual wheel."
+   * HIS RULING: an actual wheel, and then two of them — see ./SpinReels. The order is unchanged and
+   * deliberate: `landOn` decides FIRST and the reels are then run to it. A wheel that decided by
+   * where it stopped could stop on a man this five cannot field or afford, which is the whole
+   * reason `landOn` takes `taken`, `openPos` and the afford test.
    *
-   * The order is unchanged and deliberate: `landOn` decides FIRST, and the disc is then turned to
-   * put that wedge under the pointer. A wheel that decided by where it stopped could stop on a man
-   * this five cannot field or afford, which is the whole reason `landOn` takes `taken`, `openPos`
-   * and the afford test. So the turn is an animation of the answer, not the drawing of it.
+   * A HELD REEL narrows the pool the landing is drawn from rather than the animation: hold the
+   * team and the spin stays inside that franchise, hold the year and it stays inside that season.
    */
   const spin = () => {
     if (spinning || spun || spinsLeft <= 0) return
-    onSpend() // the wheel does not turn twice for one change
-    const res = landOn(taken, openPos, () => Math.random(), null, (n) => replaceable(n).length > 0)
+    const draw = (from: TeamSeason[]) => landOn(taken, openPos, () => Math.random(), null, (n) => replaceable(n).length > 0, from)
+    // a hold that leaves nothing legal falls back to the whole wheel rather than spending the
+    // change on nothing
+    const res = (hold ? draw(heldPool(hold, lastLanding.current)) : null) ?? draw(WHEEL)
     if (!res) {
-      // nothing legal to land on — say so the way it always did, with no disc to turn
+      // nothing legal to land on anywhere — say so the way it always did, with no reel to run
       setDisplay(null)
       setSpun(null)
       return
     }
+    onSpend() // the wheel does not turn twice for one change
     setDisplay(res)
-    setDisc(buildSpin(res, WHEEL, () => Math.random(), Date.now()))
-    // Reduced motion gets the answer and not the ride: the disc renders already stopped on it.
+    lastLanding.current = res
+    setReels((prev) => buildReels(res, WHEEL, () => Math.random(), Date.now(), hold, prev))
+    // Reduced motion gets the answer and not the ride: the reels render already stopped on it.
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setSpun(res)
       return
     }
     setSpinning(true)
+    // the year reel is the last to stop, so the landing is settled when IT does
     timer.current = window.setTimeout(() => {
       setSpun(res)
       setSpinning(false)
-    }, SPIN_MS)
+    }, REEL_YEAR_MS + 120)
   }
 
   // a spin left mid-turn must not land on a screen that is gone
@@ -299,7 +310,7 @@ export function MyTeam({
     else onSwap(out, sel)
     setSpun(null)
     setDisplay(null)
-    setDisc(null)
+    setReels(null)
     setSel(null)
     setOut(null)
     setInfo(null)
@@ -953,7 +964,7 @@ export function MyTeam({
               <div className="card-head">
                 <span className="label">{spinning ? 'The wheel is spinning' : 'It lands on'}</span>
               </div>
-              {disc ? <SpinWheel spin={disc} spinning={spinning} /> : null}
+              {reels ? <SpinReels spin={reels} spinning={spinning} hold={hold} onHold={setHold} /> : null}
               {/* the name is the ANSWER, so it waits for the disc — while it turns, the colour
                   stopping at the top is the only thing to read */}
               {spinning ? null : (

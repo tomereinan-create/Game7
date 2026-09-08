@@ -26,6 +26,7 @@ import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { CoachSays, DraftProgress, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
 import { myColor, teamColor } from './teamColors'
+import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
 import { CrowdBar, JerseyFive, LegsLeft, bugFor } from './JerseyFive'
 import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
@@ -77,23 +78,48 @@ export const dropDraft = (slots: Partial<Record<Pos, string>>, at: (n: string) =
 const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
 export const bare = (name: string) => PLAYER_OF.get(name) ?? name
 
-/** A settled spin: a team-season with at least one available player who can fill an open slot. */
-export function landOn(taken: Set<string>, open: Pos[], next: () => number, avoid?: TeamSeason | null, afford?: (n: string) => boolean): TeamSeason | null {
+/**
+ * A settled spin: a team-season with at least one available player who can fill an open slot.
+ *
+ * `pool` is the wheel by default. His ruling on the two reels — "unless selected to spin 1 only" —
+ * is what narrows it: holding the TEAM reel hands in that franchise's seasons and holding the YEAR
+ * reel hands in that season's teams, so the spin is drawn from the half he did not hold. A hold
+ * that leaves nothing legal returns null and the caller falls back to the whole wheel, because a
+ * held reel must never be able to spend a spin on nothing.
+ */
+export function landOn(
+  taken: Set<string>,
+  open: Pos[],
+  next: () => number,
+  avoid?: TeamSeason | null,
+  afford?: (n: string) => boolean,
+  pool: TeamSeason[] = WHEEL,
+): TeamSeason | null {
+  if (!pool.length) return null
   const ok = (t: TeamSeason) =>
     t !== avoid && t.p.some((n) => !taken.has(bare(n)) && posOf(n).some((x) => open.includes(x)) && (!afford || afford(n)))
   for (let i = 0; i < 400; i++) {
-    const t = WHEEL[Math.floor(next() * WHEEL.length)]
+    const t = pool[Math.floor(next() * pool.length)]
     if (ok(t)) return t
   }
-  // Random tries exhausted: scan the whole wheel from a random offset rather than
+  // Random tries exhausted: scan the whole pool from a random offset rather than
   // falling back to a team that fails the filter (that is how a 1980 roster with no
   // salary on record used to appear in the Salary Cap campaign).
-  const start = Math.floor(next() * WHEEL.length)
-  for (let i = 0; i < WHEEL.length; i++) {
-    const t = WHEEL[(start + i) % WHEEL.length]
+  const start = Math.floor(next() * pool.length)
+  for (let i = 0; i < pool.length; i++) {
+    const t = pool[(start + i) % pool.length]
     if (ok(t)) return t
   }
   return null
+}
+
+/**
+ * The half of the wheel a held reel leaves in play. Held nothing is the whole wheel; held the team
+ * is that franchise across every season it has; held the year is that season across every club.
+ */
+export function heldPool(held: 'team' | 'year' | null, last: TeamSeason | null): TeamSeason[] {
+  if (!held || !last) return WHEEL
+  return held === 'team' ? WHEEL.filter((t) => t.team === last.team) : WHEEL.filter((t) => t.y === last.y)
 }
 
 /** The decade block a season sits in, clipped to the data (the 2020s run 2020–2026 here). */
@@ -222,6 +248,12 @@ export function Draft({
   const [spun, setSpun] = useState<TeamSeason | null>(null)
   const [display, setDisplay] = useState<TeamSeason | null>(null)
   const [spinning, setSpinning] = useState(false)
+  /** The two reels: which rows are on them and which row each has to finish under the arrows. */
+  const [reels, setReels] = useState<ReelSpin | null>(null)
+  /** What the reels last stopped on — the half a held reel keeps for the next spin. */
+  const lastLanding = useRef<TeamSeason | null>(null)
+  /** HIS RULING: "unless selected to spin 1 only". At most one reel is held; the other is spun. */
+  const [hold, setHold] = useState<Hold>(null)
   const [sel, setSel] = useState<string | null>(null)
   const [slot, setSlot] = useState<Pos | null>(null)
   const [info, setInfo] = useState<string | null>(null)
@@ -417,30 +449,46 @@ export function Draft({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spun, spinning, full, picks.length])
 
+  /**
+   * HIS RULING: an actual wheel, and two of them — see ./SpinReels. The team-season is chosen
+   * FIRST, exactly as it always was, and the reels are then run to it; a wheel that decided by
+   * where it stopped could stop on a man this five cannot field or afford, which is the whole
+   * reason `landOn` takes the taken men, the open slots and the afford test.
+   *
+   * A HELD REEL narrows the pool the landing is drawn from rather than the animation: hold the
+   * team and the spin stays inside that franchise, hold the year and it stays inside that season.
+   * `upcoming` (the Wheel whisperer's peek) is only good for an unheld spin, since it was drawn
+   * against the whole wheel.
+   */
   const spin = (force = false) => {
     if (spinning || (spun && !force) || full || dead) return
-    setSpinning(true)
+    const pool = heldPool(hold, lastLanding.current)
+    const draw = (from: TeamSeason[]) => landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n), from)
+    // a hold that leaves nothing legal must not be allowed to spend the spin on nothing
+    const res = (hold ? draw(pool) : upcoming) ?? draw(WHEEL)
+    avoidRef.current = null
+    setUpcoming(null)
+    if (!res) {
+      setDead(true)
+      return
+    }
     setSel(null)
     setSlot(null)
     setInfo(null)
-    const steps = 14
-    let i = 0
-    const tick = () => {
-      setDisplay(WHEEL[Math.floor(Math.random() * WHEEL.length)])
-      i++
-      if (i < steps) {
-        timer.current = window.setTimeout(tick, 45 + i * i * 1.2)
-      } else {
-        const res = upcoming ?? landOn(takenMen, open, () => rng.current.next(), avoidRef.current, (n) => !overCap(n))
-        avoidRef.current = null
-        setUpcoming(null)
-        setDisplay(res)
-        setSpun(res)
-        setSpinning(false)
-        if (!res) setDead(true)
-      }
+    setDisplay(res)
+    setReels((prev) => buildReels(res, WHEEL, () => rng.current.next(), Date.now(), hold, prev))
+    lastLanding.current = res
+    // Reduced motion gets the answer and not the ride.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setSpun(res)
+      return
     }
-    tick()
+    setSpinning(true)
+    // the year reel is the last to stop, so the landing is settled when IT does
+    timer.current = window.setTimeout(() => {
+      setSpun(res)
+      setSpinning(false)
+    }, REEL_YEAR_MS + 120)
   }
 
   const select = (name: string) => {
@@ -983,12 +1031,19 @@ export function Draft({
               </span>
             ) : null}
           </div>
-          <div className="spin-team">{display.team}</div>
-          <div className="spin-sub">
-            {display.y} · {CONF[display.c]}
-            {display.div ? ` · ${display.div}` : ''}
-            {display.rec ? ` · ${display.rec}` : ''}
-          </div>
+          {reels ? <SpinReels spin={reels} spinning={spinning} hold={hold} onHold={spun ? setHold : undefined} /> : null}
+          {/* the line under the reels is the ANSWER, so it waits for them: while they run, the rows
+              under the arrows are the only thing to read */}
+          {spinning ? null : (
+            <>
+              <div className="spin-team">{display.team}</div>
+              <div className="spin-sub">
+                {display.y} · {CONF[display.c]}
+                {display.div ? ` · ${display.div}` : ''}
+                {display.rec ? ` · ${display.rec}` : ''}
+              </div>
+            </>
+          )}
           {spun ? (
             <>
               <div className="rowhead dr">
