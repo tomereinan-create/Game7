@@ -73,6 +73,15 @@ export interface Progress {
   tactics: Tactics
   /** Death match: the sixth man, resting. He does not play, and resting heals (The bench node). */
   bench: string | null
+  /**
+   * THE FRANCHISE'S RECORD IN THIS CAMPAIGN (his ruling: "put the record next to my name as well —
+   * only from current campaign"). Series won and lost, counted where a series settles, so a level
+   * replayed for a better star adds to it like any other night. It is NOT derivable from what was
+   * already here: `stars` says which levels have fallen, never how many attempts it took, and
+   * `plays` counts both outcomes together. Optional, because every save written before this ruling
+   * has none — see `loadProgress`, which reads the best answer the old fields can give.
+   */
+  record?: { w: number; l: number }
   /** Which shape of the ladder this save was written against. See LADDER below. */
   ladder?: number
   /** Stars won on an older ladder whose levels are gone. Spendable, but not cleared levels. */
@@ -127,6 +136,7 @@ const fresh = (): Progress => ({
   subsUsed: 0,
   tactics: DEFAULT_TACTICS,
   bench: null,
+  record: { w: 0, l: 0 },
   ladder: LADDER,
   credit: 0,
 })
@@ -185,6 +195,20 @@ export function loadProgress(m: CampaignMode): Progress {
         Array.isArray(p.roster) ? p.roster : null,
       ),
       bench: typeof p.bench === 'string' ? p.bench : null,
+      /**
+       * A SAVE FROM BEFORE THE RECORD gets the closest honest reading of the two fields that were
+       * there: every cleared level was won at least once, and whatever `plays` has left over was
+       * lost. It undercounts a ladder cleared with replays — those extra wins are inside `plays`
+       * and cannot be told apart from losses — so it is a floor on the wins and a ceiling on the
+       * losses, and it stops being an estimate the moment the next series settles.
+       */
+      record:
+        p.record && typeof p.record.w === 'number' && typeof p.record.l === 'number'
+          ? { w: p.record.w, l: p.record.l }
+          : (() => {
+              const w = stars.filter((x) => x > 0).length
+              return { w, l: Math.max(0, (typeof p.plays === 'number' ? p.plays : 0) - w) }
+            })(),
       ladder: LADDER,
       credit,
     })

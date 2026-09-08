@@ -1,4 +1,5 @@
 import type { Player } from '../engine/types'
+import { POSITIONS } from '../engine/positions'
 import { Ball } from './Ball'
 import { LINES } from './Stat'
 import { cardInk, type TeamColor } from './teamColors'
@@ -149,34 +150,27 @@ export function LegsLeft({ five, wear }: { five: Player[]; wear?: (name: string)
 
 
 /**
- * THE CROWD BAND AND THE SCOREBUG (the design bundle, screen 5) — user mode only.
+ * THE CROWD BAND AND THE SCOREBUG (the design bundle, screen 5).
  *
  * A dotted house in the dark with two cameras going off in it, the night named across the top, and
- * a bug carrying the score. THE SCORE IS THEATRE and nothing else: the engine sims a whole series
- * in one call, so there is no game in progress for it to read, and a bug driven by the projected
- * margin would hand the mode that plays blind the very verdict it exists to withhold. So it is
- * invented — deterministically, from the level, and always inside a possession or two either way,
- * which is the one shape that says nothing about who is better. It is the closing minutes of a
- * game, drawn the way a broadcast draws them; the result comes from the sim, as it always has.
+ * a bug carrying the score.
+ *
+ * IT READS 0–0, 12:00, 1ST (his ruling, 2026-09-08: "Instead of a fake score 104 GA IND 101 4th ·
+ * 5:55, put 0:0 with 12:00 1st"). It used to invent a closing-minutes score — deterministically,
+ * from the level, always inside a possession either way — on the reasoning that a bug driven by
+ * the real margin would hand the mode that plays blind the verdict it exists to withhold. His
+ * ruling settles it the honest way instead: a scoreboard before the tip is not a fake result, it
+ * is the true one. Nothing has been played yet, so nothing is on the board yet.
  */
 export interface Bug {
   ours: number
   theirs: number
   clock: string
+  /** Which quarter the clock is in. Tip-off is the 1st, with a full twelve on it. */
+  period: string
 }
-/** One hash, four numbers off it — the same night every time this level is played. */
-export function bugFor(level: number): Bug {
-  const h = Math.imul(level || 1, 2654435761) >>> 0
-  const base = 88 + (h % 21)
-  // −4 to +4: a one-possession game either way, so the bug can be read for tension and for
-  // nothing else. The two-point bucket is skipped so the shot below always changes the lead.
-  const edge = (((h >>> 5) % 9) - 4) || 3
-  return {
-    ours: base + Math.max(0, edge),
-    theirs: base - Math.min(0, edge),
-    clock: `${3 + ((h >>> 11) % 7)}:${String((h >>> 17) % 60).padStart(2, '0')}`,
-  }
-}
+/** The board before the tip: nothing scored, a full quarter to play. The same for every level. */
+export const TIPOFF: Bug = { ours: 0, theirs: 0, clock: '12:00', period: '1st' }
 
 export function CrowdBar({
   bug,
@@ -205,10 +199,110 @@ export function CrowdBar({
         <i>{us}</i>
         <em>{them}</em>
         <b className="them">{bug.theirs}</b>
-        <span className="jf-clock">4th · {bug.clock}</span>
+        <span className="jf-clock">{bug.period} · {bug.clock}</span>
         {flash ? <span className="jf-plus">+2</span> : null}
       </div>
       <span className="jf-step">{step}</span>
+    </div>
+  )
+}
+
+/**
+ * THE TIP-OFF — BOTH FIVES, FACING (his ruling, 2026-09-08: "only show both teams one next to the
+ * other (with the matchups) … both 5s at that design and the clock as specified. Do the same in
+ * scout mode").
+ *
+ * WHAT IT REPLACES. Once the five was full, each mode showed half of this: user mode stood YOUR
+ * five as jerseys under the rig with an invented fourth-quarter bug over them, and scout mode kept
+ * the working half-court with rings and OVRs. Neither showed the two teams together, which is the
+ * one thing a team sheet is for — a five is only good or bad against the five across from it. So
+ * both modes get this instead, and the mode difference on this panel is nil.
+ *
+ * THE MATCHUPS ARE ON THE NAMEPLATES rather than in a list beside the floor. `JerseySpot` has
+ * carried a `note` for exactly this since it was written ("his season's headline, or his
+ * assignment"); the assignment is what a team sheet says at the tip, and putting it on the shirt
+ * means the pairing is read off the man rather than off a table you have to cross-reference.
+ * Yours says who he is on; theirs says who is on him, so the same five pairings read both ways.
+ *
+ * STACKED, NOT SIDE BY SIDE, at every width — and that is the layout answering the room rather
+ * than the wording. This panel lives in the draft's right-hand column, a third of the window: ten
+ * jersey cards across it come to 44px each on a 1440 desk, which is narrower than the surnames.
+ * One five over the other, each under its own club band, is the same "both teams together" read at
+ * a size the names survive.
+ */
+export function TipOff({
+  bug,
+  us,
+  them,
+  usName,
+  themName,
+  step,
+  bump = 0,
+  flash = false,
+  shooting = false,
+  mine,
+  theirs,
+  myClub = null,
+  theirClub = null,
+  map,
+  onTap,
+}: {
+  bug: Bug
+  /** The two abbreviations on the scorebug. */
+  us: string
+  them: string
+  /** The two names on the club bands — the franchise you named, and the team you are playing. */
+  usName: string
+  themName: string
+  step: string
+  bump?: number
+  flash?: boolean
+  shooting?: boolean
+  mine: Player[]
+  theirs: Player[]
+  myClub?: TeamColor | null
+  theirClub?: TeamColor | null
+  /**
+   * The board, resolved: `map[i]` is the index of the man in `theirs` that `mine[i]` guards. Null
+   * while there is no board to draw — then the nameplates fall back to the season headline they
+   * carry everywhere else, rather than printing a pairing that is not the one being played.
+   */
+  map?: number[] | null
+  onTap?: (p: Player) => void
+}) {
+  /** The same five pairings read the other way: who is on their man `j`. */
+  const guard: (number | undefined)[] = []
+  if (map) map.forEach((j, i) => (guard[j] = i))
+  return (
+    <div className="tipoff">
+      <CrowdBar bug={bug} us={us} them={them} step={step} bump={bump} flash={flash} />
+      <div className="tip-band you">
+        <b>{usName}</b>
+        <i>Your five</i>
+      </div>
+      <JerseyFive
+        club={myClub}
+        shooting={shooting}
+        spots={mine.map((p, i) => ({
+          p,
+          slot: POSITIONS[i] ?? String(i + 1),
+          note: map && theirs[map[i]] ? `on ${surname(theirs[map[i]].name)}` : undefined,
+          onTap: onTap ? () => onTap(p) : undefined,
+        }))}
+      />
+      <div className="tip-band them">
+        <b>{themName}</b>
+        <i>Who guards whom</i>
+      </div>
+      <JerseyFive
+        club={theirClub}
+        spots={theirs.map((p, j) => ({
+          p,
+          slot: POSITIONS[j] ?? String(j + 1),
+          note: guard[j] !== undefined && mine[guard[j]!] ? `${surname(mine[guard[j]!].name)} on him` : undefined,
+          onTap: onTap ? () => onTap(p) : undefined,
+        }))}
+      />
     </div>
   )
 }

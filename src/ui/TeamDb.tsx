@@ -29,8 +29,16 @@ import { startingFive, winsOf } from '../engine/bestfive'
 export function RosterRow({ p, slot }: { p: Player; slot: string }) {
   const l = LINES[p.name]
   const openCard = useCard()
+  /**
+   * USER MODE: the roster keeps what he did and drops what the engine makes of it. The five on the
+   * floor above these rows has printed positions rather than OVRs since the design bundle landed;
+   * the bench underneath it went on printing all three verdicts, which is the same card face-up
+   * one row lower. `blind` takes the column out of the grid rather than emptying it, so the name
+   * and the box line spread into the space instead of leaving a hole where a rating was.
+   */
+  const user = useUserMode()
   return (
-    <button className="row dr tdb" onClick={() => openCard(p)}>
+    <button className={`row dr tdb${user ? ' blind' : ''}`} onClick={() => openCard(p)}>
       <span className="pname">
         <span className="who">
           <CardName p={p} />
@@ -42,11 +50,13 @@ export function RosterRow({ p, slot }: { p: Player; slot: string }) {
       <span className="mini">
         {f1(l?.ppg)} <i>·</i> {f1(l?.rpg)} <i>·</i> {f1(l?.apg)}
       </span>
-      <span className="oppman-nums">
-        <i>{p.ovr}</i>
-        <i>{p.o_ovr}</i>
-        <i>{p.d_ovr}</i>
-      </span>
+      {user ? null : (
+        <span className="oppman-nums">
+          <i>{p.ovr}</i>
+          <i>{p.o_ovr}</i>
+          <i>{p.d_ovr}</i>
+        </span>
+      )}
     </button>
   )
 }
@@ -759,10 +769,10 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             />
             {detail.bench.length ? (
               <>
-                <div className="rowhead dr tdb">
+                <div className={`rowhead dr tdb${user ? ' blind' : ''}`}>
                   <span>The rest of the roster · {detail.bench.length}</span>
                   <span className="gcap">PTS · REB · AST</span>
-                  <span className="gcap">OVR · O · D</span>
+                  {user ? null : <span className="gcap">OVR · O · D</span>}
                 </div>
                 {detail.bench.map((p) => (
                   <RosterRow key={p.name} p={p} slot={eligible(LINES[p.name]?.pos).join(' · ')} />

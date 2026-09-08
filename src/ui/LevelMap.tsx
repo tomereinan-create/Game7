@@ -9,7 +9,7 @@ import { currentLevel, playable, totalStars, type Progress } from '../state/camp
 import { Ask } from './Ask'
 import { Trophy } from './Trophy'
 import { cardInk, teamColor } from './teamColors'
-import { isUserMode, useUserMode } from '../state/viewmode'
+import { useUserMode } from '../state/viewmode'
 
 /**
  * THE SNAKE (his ruling: "instead of only going up, make it go like a snake to fill the screen").
@@ -232,69 +232,41 @@ function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
 
 /**
- * THE FOUR SKINS, by the level each one starts at. His latest ruling reorders them: "Make the
- * 31-60 theme the same as the 61-90, and the 91-120 the same as the current 31-60." That is a
- * PERMUTATION of the four boards, not a merge — he names two of the three moves and the third
- * falls out, because there is only one board left for the block he does not name:
+ * THE FOUR SKINS, by the level each one starts at — ONE ORDER, BOTH MODES (his ruling, 2026-09-08:
+ * "Make user mode same as scout. Meaning copy scout").
  *
- *   1-30    1b ARENA NIGHTS      unchanged
- *   31-60   2b BANNER HALL       was 1c — "the same as the 61-90"
- *   61-90   2a TWILIGHT DYNASTY  the one board left over
- *   91-150  1c HARDWOOD PRIME    was 2a — "the same as the current 31-60"
+ *   1-30     1b ARENA NIGHTS      unchanged
+ *   31-90    2b BANNER HALL       his ruling names 61-90; the second brought 31-60 into it
+ *   91-120   1c HARDWOOD PRIME    "Switch 91-120 with 31-60"
+ *   121-150  2a TWILIGHT DYNASTY  dusk sky, confetti, foil tickets
  *
- * Every block keeps a floor of its own, which is the rule the four skins were drawn for. The top
- * tier still has no board and still carries the block below it on (his earlier ruling), so The
- * Customs is hardwood rather than a floor the ladder already passed.
+ * Every block has a board of its own: nothing is carried on from the block below and no board is
+ * drawn twice. The hall runs 31-90 as one long room rather than repeating across a seam, and the
+ * hardwood stands alone at 91-120 instead of being passed over.
+ *
+ * THERE USED TO BE TWO LISTS. His ruling of 2026-09-06 re-dealt the boards "for scout mode only",
+ * so user mode kept the older order (dusk at 61-90, hardwood carried on to the top). This ruling
+ * collapses that: the ladder is dealt the same way whichever mode you read it in, and the two
+ * modes differ in how a TICKET and a TRAIL are drawn, not in which room a level stands in.
  *
  * WRITTEN AS LEVELS, not read off the tiers, and that is a deliberate reversal of how the first
  * seam worked. It used to derive from `eras[1].first` so that a tier resized in scripts/campaigns.ts
  * could not leave the skin line behind. That only worked while a skin change WAS a tier change, and
  * it no longer is: the design draws the ladder as five blocks of thirty, but the tiers are 30 / 60 /
- * 30 / 30 — The Champions alone runs 31-90 — so the 61 seam falls in the MIDDLE of a tier and there
+ * 30 / 30 — The Champions alone runs 31-90 — so the 91 seam falls in the MIDDLE of a tier and there
  * is nothing to derive it from. The blocks are the design's unit, so they are stated as the design
- * states them, and every seam that still coincides with a tier (31, 91) is checked against the tiers
- * by tests/map.test.ts rather than by being computed from them.
- *
- * 2a covers 91-150 rather than 91-120 (his ruling, on the top tier having no board of its own:
- * "Carry the 91-120 skin on") — The Customs never falls back to a skin the ladder already passed.
+ * states them, and every seam that still coincides with a tier (31, 121) is checked against the
+ * tiers by tests/map.test.ts rather than by being computed from them.
  */
 const SKINS = [
-  { skin: 'arena', first: 1 },
-  { skin: 'hall', first: 31 },
-  { skin: 'dusk', first: 61 },
-  { skin: 'wood', first: 91 },
-] as const
-/**
- * SCOUT MODE'S ORDER (his ruling on Campaign Map.dc.html, 2026-09-06): "For levels 61-90, I want
- * it to be the banner hall. For levels 121-150, I want it to be the Twilight Dynasty" — and, on
- * the same breath, "all these changes are for scout mode only". So the boards are re-dealt for the
- * mode that scouts, and the row above is left exactly as it was for the mode that plays blind.
- *
- *   1-30     1b ARENA NIGHTS      unchanged
- *   31-90    2b BANNER HALL       his ruling names 61-90; his second ruling brings 31-60 into it
- *   91-120   1c HARDWOOD PRIME    his second ruling: "Switch 91-120 with 31-60"
- *   121-150  2a TWILIGHT DYNASTY  his ruling — dusk sky, confetti, foil tickets
- *
- * The second ruling swapped the boards those two blocks wore, and the swap is worth more than it
- * looks: 31-60 had Hardwood Prime and 91-120 was carrying Banner Hall on from the block below,
- * because the doc has no drawn board for it. Trading them gives EVERY block a board of its own —
- * the hall now runs 31-90 as one long room rather than repeating itself across a seam, and the
- * hardwood stands alone at 91-120 instead of being passed over.
- */
-const SKINS_SCOUT = [
   { skin: 'arena', first: 1 },
   { skin: 'hall', first: 31 },
   { skin: 'wood', first: 91 },
   { skin: 'dusk', first: 121 },
 ] as const
 export type Skin = (typeof SKINS)[number]['skin']
-/**
- * WHICH LIST IS IN PLAY. Read at call time rather than passed down: `skinAt` is called from App,
- * the map, the draft and the series, and threading a boolean through four screens to say something
- * every one of them could ask for itself is four chances to forget. The store is synchronous and
- * App subscribes to it with `useUserMode`, so a flip of the switch re-renders everything below.
- */
-const blocks = () => (isUserMode() ? SKINS : SKINS_SCOUT)
+/** The blocks, as a list. One list now — see SKINS above. */
+const blocks = () => SKINS
 export type Block = { readonly skin: Skin; readonly first: number }
 /** Which skin a level wears: the last block that has started by then. */
 export const skinAt = (level: number): Skin => {
@@ -341,13 +313,12 @@ const TRAIL_INK: Record<Skin, readonly string[]> = {
   hall: ['rgba(244,232,207,0.75)'],
   dusk: ['#3ee6b0', '#9d7bff'],
 }
-/**
- * USER MODE CLIMBS ONE TRAIL, NOT FOUR (his ruling, the handoff's second pass). The four inks
- * above are the four boards' own, and user mode no longer stands on a board: the bundle draws the
- * cleared stretch in a single lit gold the whole way up. Flat, so a block paints no gradient
- * within itself and the seams stop showing on the line as well as on the floor.
+/*
+ * THE TRAIL IS THE BLOCK'S OWN INK IN BOTH MODES (his ruling, 2026-09-08: "in user mode, make all
+ * buttons and theme fit the current stage same as scout mode"). User mode climbed one flat gold
+ * the whole way up, because it used to stand on the bundle's single room rather than on a board.
+ * It stands on the boards now, so the line that runs up them changes colour with them.
  */
-const TRAIL_GOLD = ['#f0b323'] as const
 /**
  * Every block as a band of trail, in the trail's own px: `bottom` is the seam below it and `top`
  * the seam above, each halfway between the last ticket of one block and the first of the next. The
@@ -366,7 +337,7 @@ function bands(rounds: number, colW: number) {
     const nextFirst = live[i + 1]?.first ?? rounds + 1
     const bottom = b.first <= 1 ? H : seam(b.first)
     const top = nextFirst > rounds ? 0 : seam(nextFirst)
-    return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: isUserMode() ? TRAIL_GOLD : TRAIL_INK[b.skin] }
+    return { skin: b.skin, first: b.first, top, height: Math.max(0, bottom - top), ink: TRAIL_INK[b.skin] }
   })
 }
 
@@ -726,8 +697,9 @@ export function LevelMap({
             {/* THE CONFETTI (his ruling on the design doc: "Dont forget the dusk sky, confetti,
                 foil tickets"). The sky and the foil this block already had; this is the third
                 thing, and it cannot be pseudo-elements — a ::before and an ::after are two flecks
-                and the board wants a scatter. Scout mode only, like the rest of the ruling. */}
-            {b.skin === 'dusk' && !user
+                and the board wants a scatter. BOTH MODES now (his ruling, 2026-09-08: user mode
+                copies scout here) — the dusk block is the same room whoever is reading it. */}
+            {b.skin === 'dusk'
               ? confettiFor(b.height).map((c, k) => (
                   <span
                     key={k}

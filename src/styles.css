@@ -191,6 +191,15 @@ button {
 .card-head .cap {
   letter-spacing: 0.06em;
 }
+/* THE RECORD, beside the franchise name on the draft's own card (his ruling). It rides inside the
+   label so the two read as one line and wrap together on a phone, and it is the block's accent
+   rather than the label's grey — the name says who, the record says how it has gone. */
+.card-head .label .rec {
+  font-style: normal;
+  margin-left: 7px;
+  color: var(--you);
+  letter-spacing: 0.1em;
+}
 
 .section-rule {
   display: flex;
@@ -3431,6 +3440,8 @@ body.offstage #root { position: relative; z-index: 1; }
 .yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
 .yr-rail::-webkit-scrollbar { display: none; }
 .rowhead.dr.tdb, .row.dr.tdb { grid-template-columns: minmax(0, 1fr) 102px 60px; gap: 8px; }
+/* user mode: no OVR · O · D column, so the grid is two columns and the name takes the room back */
+.rowhead.dr.tdb.blind, .row.dr.tdb.blind { grid-template-columns: minmax(0, 1fr) 102px; }
 .row.dr.tdb .mini { font-size: 10px; }
 .row.dr.tdb .oppman-nums { justify-self: end; gap: 5px; font-size: 10.5px; }
 .row.dr.tdb .oppman-nums i { min-width: 16px; }
@@ -4643,6 +4654,60 @@ body.um {
 /* --------------------------------------------------------------------------
    GAME NIGHT'S FLOOR — the five as jerseys under the rig (user mode only)
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   THE TIP-OFF — both fives, facing (his ruling, 2026-09-08) — BOTH MODES
+   --------------------------------------------------------------------------
+   One panel, three parts: the scorebug reading 0-0 with a full first quarter, your five under
+   your own club band, and theirs under theirs. Each band names the team and says which reading
+   the nameplates under it are giving — yours print who each man is ON, theirs print who is on
+   HIM, so the same five pairings are legible from either side.
+
+   The bands are the only new furniture: the two floors below them are the same `.jf` the game
+   night already drew. `.jf` carries its own bottom margin, so the band closes up against the
+   floor it introduces rather than floating between two of them.
+   -------------------------------------------------------------------------- */
+.tipoff { margin-bottom: 4px; }
+.tip-band {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 10px 4px;
+  border-left: 4px solid var(--you);
+  background: var(--surface-2);
+}
+.tip-band b {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  /* a franchise name can be four words; it takes the room and the caption keeps its own */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tip-band i {
+  flex: none;
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* THEIRS IS THE OTHER SIDE, and reads as it does everywhere else in the app: you are the block's
+   own accent, they are the opponent's red. */
+.tip-band.them { border-left-color: var(--them); }
+/* the two floors sit directly under their own band */
+.tip-band + .jf { margin-top: 0; }
+@media (min-width: 900px) {
+  .tip-band { padding: 7px 12px 6px; }
+  .tip-band b { font-size: 18px; }
+  .tip-band i { font-size: 9.5px; }
+}
+
 .jf { position: relative; height: 176px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
 /* The boards, raked back under the eye. left/right run past the box so the vanishing edges are
    never in shot, and the origin is the FOOT of the panel so the near boards stay the widest. */
@@ -4819,9 +4884,11 @@ body.um .map-side .map-link.team { display: none; }
    not drawing them, and a played level with one star has to look different from one with three. */
 .node.club .node-stars { color: rgba(255, 255, 255, 0.3); }
 .node.club.lit-ink .node-stars { color: rgba(12, 13, 16, 0.3); }
-/* The staff door is a button in the control row now; the note pinned beside tonight's ticket said
-   the same sentence a second time, over the trail. */
-body.um .node-notes { display: none; }
+/* THE NOTE BESIDE TONIGHT'S TICKET STANDS IN BOTH MODES (his ruling, 2026-09-08: user mode copies
+   scout here). It used to be hidden under `body.um` on the grounds that user mode's control row
+   already carries a staff door — but the row is at the top of the map and the note is at the
+   level you are about to play, three thousand pixels down, which is where a star you have not
+   spent is worth being told about. The change note beside it has never had a second door at all. */
 
 /* ==========================================================================
    TWILIGHT DYNASTY — THE CONFETTI (scout mode only)
@@ -4997,103 +5064,27 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 .court.clubbed .ct-init { color: var(--club-ink, var(--ink)); }
 
 /* ==========================================================================
-   USER MODE STANDS ON THE BUNDLE'S GROUND, NOT ON THE BLOCK'S
+   USER MODE STANDS ON THE BLOCK, LIKE SCOUT MODE
    ==========================================================================
-   His ruling on the handoff, second pass: user mode drops the four era skins and takes the
-   bundle's own room everywhere — one wash, gold and franchise blue, hardwood where there is a
-   floor. Scout mode keeps all four skins, which is the whole of the earlier ruling and is not
-   touched by anything below.
+   His ruling, 2026-09-08: "in user mode, make all buttons and theme fit the current stage same as
+   scout mode."
 
-   THE SKINS ARE TOKENS, so this is a token block and not a rewrite. `body.sk-dusk` and its three
-   siblings re-point --bg / --surface / --ink / --you and paint the body; every one of them is put
-   back to the value :root already holds, which IS the bundle's palette, and the body's own paint
-   comes off so the lit arena wash on <html> shows through again. The `sk-` class itself stays on
-   the body — the map's sticky header is keyed on it — it just stops meaning a colour.
+   There used to be a block of overrides here, and it was the whole of the handoff's second pass:
+   user mode dropped the four era skins and took the design bundle's single room everywhere — one
+   wash, gold and franchise blue, the four grounds painted as near-blacks a shade apart, the map's
+   header and both fabs off the block and onto the house, the wheel's court repainted as darkened
+   hardwood, and one flat gold trail up the whole ladder. Every one of those is gone. `body.sk-*`
+   means a colour again in both modes, so the draft, the staff room and the map wear the arena's
+   ember, the hall's cream, the hardwood's amber and the dusk's mint whichever mode is reading —
+   and the trail's ink follows the block it climbs (see TRAIL_INK in LevelMap).
+
+   WHAT STAYS USER MODE'S, because none of it is the stage: the club ticket on the ladder
+   (`.node.club` above), the game-night floor and crowd band (`.jf-*` below), the rails
+   (`.um-*`), the rafters, and the control row's staff/rename pair. Screens that stand on NO block
+   — the front door, a custom matchup, the hot-seat table, the auction, the record book — are also
+   untouched: they have no current stage to fit, and scout mode dresses them in the tunnel, which
+   was written for the chalk slate it opens from.
    ========================================================================== */
-body.um[class*='sk-'] {
-  --bg: #0b0a09;
-  --surface: #12100e;
-  --surface-2: #1d1916;
-  --line: #241f1a;
-  --line-2: #2a2320;
-  --line-3: #4a4038;
-  --divider: #1c1815;
-  --ink: #f6f4ef;
-  --ink-2: #d6d0c8;
-  --muted: #a39a91;
-  --muted-2: #8a8178;
-  --faint: #8a8178;
-  --you: #f0b323;
-  --you-tint: #241f1a;
-  --you-line: #8f6512;
-  --you-ink: #16130f;
-  --danger: #ef4a63;
-  background: none;
-}
-
-/* --------------------------------------------------------------------------
-   THE LADDER'S FOUR GROUNDS, in the bundle's own four
-   --------------------------------------------------------------------------
-   The design keeps a band per block — it names them Arena nights, Hardwood prime, Banner hall and
-   Twilight dynasty — but paints all four as near-blacks a shade apart, so the climb changes
-   temperature rather than changing rooms. That is the difference between the bundle's ladder and
-   the app's: not whether the blocks are painted, but how far apart. Each carries one faint light
-   pool and the floorboards at 3%, and the fade into the block below is the mask .ground already
-   has. The four values are the bundle's, in the order user mode's blocks run.
-   -------------------------------------------------------------------------- */
-body.um .ground {
-  background-image:
-    radial-gradient(420px 300px at var(--pool, 70%) 6%, rgba(246, 244, 239, 0.05), transparent 70%),
-    repeating-linear-gradient(90deg, rgba(246, 244, 239, 0.03) 0 2px, transparent 2px 46px);
-}
-body.um .ground.arena { background-color: #1a0f07; --pool: 72%; }  /* era I   · arena nights */
-body.um .ground.hall  { background-color: #1b1409; --pool: 26%; }  /* era II  · hardwood prime */
-body.um .ground.dusk  { background-color: #0d1119; --pool: 68%; }  /* era III · banner hall */
-body.um .ground.wood  { background-color: #120d1e; --pool: 32%; }  /* era IV  · twilight dynasty */
-
-/* The era rule is the bundle's: the numeral in gold, the block's name in cream, the years in the
-   caption grey. One rule for all four, because in this room there is only one palette. */
-body.um .era-band em { color: var(--you); }
-body.um .era-band b { color: var(--ink); }
-body.um .era-band i { color: var(--muted-2); }
-/* the arena's two hairlines are an ember gradient; in one palette they are the same hairline the
-   other three blocks draw */
-body.um .era-band.arena::before,
-body.um .era-band.arena::after { background: currentColor; opacity: 0.3; }
-
-/* The two fabs come off the block and back onto the house: gold on near-black, which is what the
-   front door this mode opens from wears. */
-body.um .home-fab,
-body.um .map-fab {
-  color: var(--you);
-  background: rgba(11, 10, 9, 0.55);
-  border-color: rgba(240, 179, 35, 0.45);
-}
-body.um .home-fab:hover,
-body.um .map-fab:hover { border-color: var(--you); }
-
-/* --------------------------------------------------------------------------
-   THE WHEEL'S COURT PANEL — darkened hardwood (the bundle, screen 4)
-   --------------------------------------------------------------------------
-   CourtFive paints its floor out of --wash / --surface / --line, so the panel is re-skinned by
-   re-pointing those five inside the court and nothing else. The boards are the bundle's own
-   `--hardwood-panel`, darkened by a wash over them so the cream plates on the busts still read;
-   the painted lines are cream at half strength, which is the design's court-line value.
-
-   The name and mono plates under each bust were cut for this floor and have been carrying their
-   own near-black grounds since they were written — they need nothing here.
-   -------------------------------------------------------------------------- */
-body.um .court {
-  background-color: #2b2521;
-  background-image: linear-gradient(rgba(11, 10, 9, 0.26), rgba(11, 10, 9, 0.26)), var(--hardwood-panel);
-  border-radius: 4px;
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.45);
-  --wash: rgba(246, 239, 226, 0.07);
-  --surface: rgba(11, 10, 9, 0.2);
-  --line: rgba(246, 239, 226, 0.32);
-  --line-2: rgba(246, 239, 226, 0.42);
-  --line-3: rgba(246, 239, 226, 0.5);
-}
 
 /* --------------------------------------------------------------------------
    GAME NIGHT'S CROWD BAND, BUG AND SHOT (the bundle, screen 5) — user mode only
@@ -5233,26 +5224,11 @@ body.um .court {
   .jf-step { font-size: 9.5px; left: 16px; bottom: 9px; }
 }
 
-/* --------------------------------------------------------------------------
-   THE MAP'S CHROME, off the block and onto the house
-   --------------------------------------------------------------------------
-   The header, the foot and the rule under them are dressed per board — the hall's cream, the
-   dusk's mint, the arena's ember — because on a board that is what reads. In one room there is
-   one palette: the star count and the links are gold, the kicker and the captions are the
-   caption grey, reset stays red, and the scrim over the header is the ground's own black.
-   -------------------------------------------------------------------------- */
-body.um .map-top { --top-scrim: rgba(4, 3, 3, 0.55); }
-body.um .map-top .map-kicker,
-body.um .map-top .map-total i { color: var(--muted-2); }
-body.um .map-top .map-total,
-body.um .map-top .map-total .star,
-body.um .map-top .map-link { color: var(--you); text-shadow: 0 0 22px rgba(240, 179, 35, 0.3); }
-body.um .map-top .map-link { text-shadow: none; }
-body.um .map-top .map-link.danger { color: var(--danger); }
-body.um .map-top .rule2 { background: linear-gradient(90deg, var(--you), rgba(240, 179, 35, 0.25) 60%, transparent); }
-/* The dim stretch of trail — the part not yet climbed — is the arena's cold blue on a board and
-   the bundle's own cream-at-a-tenth in this room. The lit stretch is the gold TRAIL_GOLD emits. */
-body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
+/* THE MAP'S CHROME IS THE BOARD'S IN BOTH MODES (his ruling, 2026-09-08). The header, the foot,
+   the rule under them and the unclimbed stretch of trail were dressed off the house here — gold
+   links, a black scrim, cream-at-a-tenth on the dim trail — because user mode stood in one room.
+   It stands on the boards now, so it takes the hall's cream, the dusk's mint and the arena's
+   ember with everything else. */
 
 /* ==========================================================================
    4a — CHALK PLAYBOOK · the scout mode front door

@@ -5,6 +5,7 @@ import type { AttrKey, Player, StatLine } from '../engine/types'
 import { PlayerDials } from './MatchupPanel'
 import { CardName } from './CardSheet'
 import { DetailGrid, LINES, SHEET } from './Stat'
+import { useUserMode } from '../state/viewmode'
 
 type AxisKey = 'peak_season' | 'ovr' | 'o_ovr' | 'd_ovr'
 type Key = 'name' | AxisKey | `attrs.${AttrKey}`
@@ -21,6 +22,18 @@ const RAIL: { k: Key; label: string; short: string }[] = [
   })),
   { k: 'peak_season', label: 'PEAK YR', short: 'YR' },
 ]
+/**
+ * THE RAIL A BLIND READER GETS. Every key above but the last is an ENGINE RATING — the three
+ * verdicts and the seventeen attribute bars — and sorting the whole pool by one of them prints it
+ * down the right-hand edge in `pextra`, which is the card's hand face-up. User mode keeps the two
+ * keys that are facts about the man rather than appraisals of him: his name and the season he
+ * played. Everything else the database offers — the search, the team, season and stat-line filters,
+ * the compare tray — is untouched, because a filter on real Basketball-Reference numbers is not a
+ * rating and never was.
+ */
+const USER_RAIL = RAIL.filter((r) => r.k === 'peak_season')
+const USER_KEYS = new Set<Key>(['name', 'peak_season'])
+const f1 = (v: number | undefined) => (v === undefined ? '—' : v.toFixed(1))
 
 const valueOf = (p: Player, k: Key): number =>
   k === 'name' ? 0 : k.startsWith('attrs.') ? p.attrs[k.slice(6) as AttrKey] : (p[k as AxisKey] as number)
@@ -55,7 +68,12 @@ const ROW_H = 66
 const OVERSCAN = 12
 
 export function Roster({ onBack }: { onBack: () => void }) {
-  const [key, setKey] = useState<Key>('ovr')
+  // USER MODE: no ratings anywhere in the book. The rail loses every rating key, so the default
+  // sort loses its own — and a key held over from a scout session is answered here rather than
+  // trusted, since the row it would print is exactly what the mode is for not printing.
+  const user = useUserMode()
+  const [rawKey, setKey] = useState<Key>('ovr')
+  const key: Key = user && !USER_KEYS.has(rawKey) ? 'name' : rawKey
   // A second tap on the active chip flips the order; picking a new key starts best-first (A-first) again.
   const [flip, setFlip] = useState(false)
   const pickKey = (k: Key) => {
@@ -66,6 +84,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
     }
   }
   const chip = (k: Key) => `sortb ${key === k ? (flip ? 'on asc' : 'on') : ''}`
+  const rail = user ? USER_RAIL : RAIL
   const [q, setQ] = useState('')
   const [open, setOpen] = useState<string | null>(null)
   /** The comparison tray: names picked off the list, in the order they were picked. */
@@ -248,7 +267,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
           <button className={chip('name')} onClick={() => pickKey('name')}>
             A–Z
           </button>
-          {RAIL.map((r) => (
+          {rail.map((r) => (
             <button key={r.k} className={chip(r.k)} onClick={() => pickKey(r.k)}>
               {r.label}
             </button>
@@ -260,11 +279,15 @@ export function Roster({ onBack }: { onBack: () => void }) {
       <div className="pool" style={{ marginTop: 10 }}>
         <div className={`rowhead db ${extra ? 'x' : ''}`} style={{ marginTop: 0 }}>
           <span>Player</span>
-          <span className="gcap dialhead">
-            <i>OVR</i>
-            <i>OFF</i>
-            <i>DEF</i>
-          </span>
+          {user ? (
+            <span className="gcap">PTS · REB · AST</span>
+          ) : (
+            <span className="gcap dialhead">
+              <i>OVR</i>
+              <i>OFF</i>
+              <i>DEF</i>
+            </span>
+          )}
           {extra ? <span className="r on">{extraLabel} ▾</span> : null}
         </div>
 
@@ -310,12 +333,20 @@ export function Roster({ onBack }: { onBack: () => void }) {
                   <i>{archetype(p)}</i>
                 </span>
               </span>
-              <PlayerDials p={p} />
+              {/* the hole where the three dials were is filled by what he actually did that
+                  season — the same line the wheel's roster and the team book print */}
+              {user ? (
+                <span className="mini">
+                  {f1(LINES[p.name]?.ppg)} <i>·</i> {f1(LINES[p.name]?.rpg)} <i>·</i> {f1(LINES[p.name]?.apg)}
+                </span>
+              ) : (
+                <PlayerDials p={p} />
+              )}
               {extra ? <span className="pextra">{valueOf(p, key)}</span> : null}
             </div>
             {open === p.name ? (
               <div ref={expRef}>
-                <DetailGrid p={p} />
+                <DetailGrid p={p} mode={user ? 'stats' : undefined} />
               </div>
             ) : null}
           </div>

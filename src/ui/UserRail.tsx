@@ -61,30 +61,13 @@ export function ScoutsWord({ p }: { p: Player }) {
   )
 }
 
-/**
- * HOW FAR THROUGH THE DRAFT YOU ARE, as five segments rather than a number of points. Blue is a
- * man taken, gold is the pick on the clock, dark is a slot still to fill — the same three states
- * the court's rings wear, so the two read as one thing.
+/*
+ * DRAFTPROGRESS IS GONE (his ruling, 2026-09-08). It printed "None in yet · 5 to go · Playing
+ * blind — no ratings, no odds" under the rail, which the wheel card already answers with the spin
+ * counter and the five's own card with the pick count. Its `um-foot` / `um-seg` styling is left in
+ * the stylesheet: nothing else claims those names, and a strip of segments is the shape the rail
+ * would use again.
  */
-export function DraftProgress({ taken, size }: { taken: number; size: number }) {
-  const left = size - taken
-  return (
-    <div className="um-foot">
-      <div className="um-footline">
-        <span className="um-cap">
-          {taken === 0 ? 'None in yet' : taken === 1 ? 'One pick in' : `${taken} picks in`}
-        </span>
-        <b>{left === 0 ? 'The five is set' : left === 1 ? 'One to go' : `${left} to go`}</b>
-      </div>
-      <div className="um-seg">
-        {Array.from({ length: size }, (_, i) => (
-          <span key={i} className={i < taken ? 'in' : i === taken ? 'now' : ''} />
-        ))}
-      </div>
-      <p>Playing blind — no ratings, no odds. Trust the eye and the box score.</p>
-    </div>
-  )
-}
 
 /**
  * TALE OF THE TAPE — the three men across from you who did the most that season, and what they

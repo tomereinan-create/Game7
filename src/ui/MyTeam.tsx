@@ -18,6 +18,7 @@ import { usageSurplus } from '../engine/offense'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason, heldPool } from './Draft'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
+import type { Skin } from './LevelMap'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const posOf = (name: string) => eligible(LINES[name]?.pos)
@@ -78,6 +79,7 @@ export function MyTeam({
   onSpend,
   onSwap,
   club = null,
+  skin = 'arena',
   onBack,
 }: {
   five: Player[]
@@ -117,6 +119,12 @@ export function MyTeam({
    * men have always stood on.
    */
   club?: TeamColor | null
+  /**
+   * Which block of the ladder the campaign is standing in. Handed down for one thing only: the way
+   * back to the map is the block's own map icon here, as it already is on the draft and in the
+   * staff room (his ruling: "the map there doesnt show as an icon fitting the theme as it should").
+   */
+  skin?: Skin
   onBack: () => void
 }) {
   const left = (n: string) => (wear[n] ?? BY_NAME.get(n)?.attrs.durability ?? 99) + boost
@@ -451,6 +459,16 @@ export function MyTeam({
    * side by side on a desk the taller one governs. A 24px hysteresis band stops the panel
    * flickering as dropping it reflows the columns that produced the measurement.
    */
+  /**
+   * HIS RULING: "pressing my team auto scrolls down. Fix that." It never scrolled — it INHERITED.
+   * The map is thousands of pixels tall and is scrolled to tonight's ticket when you press My
+   * team, and this screen mounted into that same scroll position, landing you somewhere down its
+   * dock. The draft and the staff room have opened at the top since they were written; this is
+   * the one screen off the map that never asked.
+   */
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   const menBox = useRef<HTMLElement | null>(null)
   const floorBox = useRef<HTMLElement | null>(null)
   /** The wheel's box, and the men inside it that scroll rather than pushing the page down. */
@@ -560,6 +578,16 @@ export function MyTeam({
 
   return (
     <>
+      {/* HIS RULING: the way back to the map is the folded-map glyph in the block's own skin,
+          pinned beside the global home button — the same control the draft and the staff room
+          already leave by. It was the words "← Map" in the topbar here, which is the one screen of
+          the three that never took the icon. */}
+      <button className={`map-fab ${skin}`} onClick={onBack} aria-label="Level map" title="Back to the level map">
+        <svg viewBox="0 0 24 24" aria-hidden>
+          <path d="M9 5 3 7.5v12L9 17l6 2.5 6-2.5v-12L15 7 9 5Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M9 5v12M15 7v12.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
       <div className="topbar">
         <span>My team</span>
         <span>
@@ -571,7 +599,6 @@ export function MyTeam({
             'no changes left'
           )}
         </span>
-        <button onClick={onBack}>← Map</button>
       </div>
       <div className="ladder" />
       {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the

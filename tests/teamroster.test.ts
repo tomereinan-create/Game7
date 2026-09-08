@@ -2,6 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { PLAYERS } from '../src/engine/pool'
+import { setUserMode } from '../src/state/viewmode'
 import { RosterRow } from '../src/ui/TeamDb'
 
 /**
@@ -31,5 +32,28 @@ describe('a bench man opens the same card the starters do', () => {
     expect(row).toContain('class="mini"')
     expect(row).toContain('class="oppman-nums"')
     expect(row).toContain(`<i>${p.ovr}</i>`)
+  })
+
+  /**
+   * USER MODE PLAYS BLIND HERE TOO. The five on the floor above these rows has printed positions
+   * rather than OVRs since the design bundle landed; the bench underneath went on printing all
+   * three verdicts, which is the same card face-up one row lower. The box line stays — it is what
+   * he actually did — and the column comes out of the grid rather than being left empty.
+   */
+  it('user mode drops the three ratings and keeps the season line', () => {
+    setUserMode(true)
+    try {
+      const blind = renderToStaticMarkup(createElement(RosterRow, { p, slot: 'C' }))
+      expect(blind.startsWith('<button class="row dr tdb blind"')).toBe(true)
+      expect(blind).toContain('class="mini"')
+      expect(blind).not.toContain('oppman-nums')
+      expect(blind).not.toContain(`<i>${p.ovr}</i>`)
+      expect(blind).not.toContain(`<i>${p.o_ovr}</i>`)
+      expect(blind).not.toContain(`<i>${p.d_ovr}</i>`)
+      // and the man is still the door to his own card
+      expect(blind).toContain('class="cardname"')
+    } finally {
+      setUserMode(false)
+    }
   })
 })

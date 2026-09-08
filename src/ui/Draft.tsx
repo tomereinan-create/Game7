@@ -13,7 +13,7 @@ import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
 import { bandSlot, ManBand } from './ManBand'
 import { ChipRow } from './ChipRow'
-import { naiveAssignment, type Assignment } from '../engine/offense'
+import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -24,10 +24,10 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
-import { CoachSays, DraftProgress, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
+import { CoachSays, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
 import { myColor, teamColor } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
-import { CrowdBar, JerseyFive, LegsLeft, bugFor } from './JerseyFive'
+import { LegsLeft, TipOff, TIPOFF } from './JerseyFive'
 import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
 
@@ -69,6 +69,28 @@ const posLine = (name: string) => posOf(name).join(' · ')
  */
 export const canDropAt = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
   !slots[to] && at(name).includes(to)
+
+/**
+ * HOW THE WHEEL'S ROSTER IS ORDERED (his ruling: "Have the eligible players first then the
+ * ineligible"). Two keys, in this order:
+ *
+ *   1. CAN HE BE TAKEN — plays one of the open rings, and in the salary cap fits what is left of
+ *      the payroll. These rows have always been dimmed; now they are also last, because a dim row
+ *      still costs a scroll and a fifteen-man roster could open with four men who cannot be taken.
+ *   2. WITHIN EACH HALF the list reads like a box score, his earlier ruling: points per game
+ *      first, OVR as the tiebreak, and the name after that so the order never depends on which
+ *      way the source list happened to arrive.
+ *
+ * Out here rather than inline so the rule can be read and tested without the screen around it.
+ */
+export const wheelOrder = <T extends { name: string; ovr: number }>(men: T[], draftable: (name: string) => boolean): T[] =>
+  [...men].sort(
+    (a, b) =>
+      Number(draftable(b.name)) - Number(draftable(a.name)) ||
+      (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0) ||
+      b.ovr - a.ovr ||
+      a.name.localeCompare(b.name),
+  )
 
 /** The drop that drafts: exactly the five the "Draft … at …" button would have left behind. */
 export const dropDraft = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
@@ -301,6 +323,13 @@ export function Draft({
   useEffect(() => () => shotTimers.current.forEach(clearTimeout), [])
   // USER MODE: every choice still works; nothing says whether it was good.
   const user = useUserMode()
+  /**
+   * THE RECORD ON THE CARD HEAD — this campaign's series won and lost, and nothing else's. A
+   * franchise that has not played yet has no record to print rather than a 0–0, which reads as a
+   * result. Not gated on the mode: a win and a loss are facts about nights already played, which
+   * is exactly what user mode keeps.
+   */
+  const record = wallet.record && wallet.record.w + wallet.record.l > 0 ? `${wallet.record.w}–${wallet.record.l}` : null
   const openCard = useCard()
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
@@ -309,8 +338,8 @@ export function Draft({
   const [board, setBoard] = useState<number[] | null>(null)
   const [boardOpen, setBoardOpen] = useState(false)
   const toWin = 4 // best of seven, always
-  /** Tonight's invented fourth quarter — the same one every time this level is played. */
-  const bug = useMemo(() => bugFor(opponent.round), [opponent.round])
+  /** The board before the tip: 0–0 with a full first quarter on the clock (his ruling). */
+  const bug = TIPOFF
   const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
@@ -398,11 +427,48 @@ export function Draft({
     return null
   })()
   const gridRef = useRef<HTMLDivElement | null>(null)
+  /**
+   * THE WHEEL'S ROSTER SCROLLS IN ITS OWN BOX (his ruling). The cap is MEASURED rather than a vh
+   * guess: what is above the list — the card head, the two reels, the team and its season line,
+   * the hint — changes height with the spin and with the width, so the only honest budget is the
+   * room actually left between the top of the list and the dock.
+   *
+   * STACKED ON A PHONE THE LIST RUNS ITS FULL LENGTH, exactly as My team's does and for the same
+   * reason: four boxes never fit an 812px screen, so the page scrolls whatever we do, and a nested
+   * scroller there only eats the thumb swipe meant for the page. Side by side on a desk the page
+   * CAN fit, and that is where the ruling bites.
+   */
+  const rosterList = useRef<HTMLDivElement | null>(null)
+  const [rosterEnd, setRosterEnd] = useState(false)
+  const onRosterScroll = () => {
+    const el = rosterList.current
+    if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
+  }
   useEffect(() => {
     const measure = () => {
       const g = gridRef.current
-      if (!g || window.innerWidth < 900) return setFloor(null)
+      const list = rosterList.current
       const dock = document.querySelector<HTMLElement>('.dock')
+      const stacked = window.innerWidth < 900
+      if (list && stacked) {
+        // overflow off too, not just the cap: a couple of rounding pixels are enough to make the
+        // box scrollable, and a 4px nested scroller swallows the page's own swipe
+        list.style.maxHeight = ''
+        list.style.overflowY = 'visible'
+        setRosterEnd(true)
+      }
+      if (list && !stacked) {
+        list.style.overflowY = 'auto'
+        const lb = list.getBoundingClientRect()
+        // what trails the list inside its card comes out of the budget too, or the card clears the
+        // dock by exactly that much and the page scrolls after all
+        const card = list.closest('.card')
+        const trail = card ? Math.max(0, card.getBoundingClientRect().bottom - lb.bottom) : 0
+        const room = window.innerHeight - lb.top - (dock?.offsetHeight ?? 0) - trail - 8
+        list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
+        setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
+      }
+      if (!g || stacked) return setFloor(null)
       const cols = ([...g.children] as HTMLElement[]).filter((e) => e.classList.contains('col'))
       const rowBottom = Math.min(g.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0))
       setFloor(bandSlot(g, cols, rowBottom))
@@ -436,6 +502,24 @@ export function Draft({
   const overCap = (name: string) => salary && ((capPct(name) ?? 0) > budget + 1e-9 || unpriced(name))
   // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
+  /**
+   * THE SAME BOARD, AS FIVE PAIRINGS, for the tip-off's nameplates. `assignment` is what the sim
+   * is handed and it may be a WORD — 'optimal' is a board the engine solves at sim time, not a map
+   * — so the panel cannot read it directly. Resolved here, and memoised, because solving optimal
+   * walks all 120 permutations and this renders on every keystroke of the draft.
+   */
+  const boardMap = useMemo(
+    () =>
+      !full
+        ? null
+        : Array.isArray(assignment)
+          ? assignment
+          : assignment === 'optimal'
+            ? solveBoard(five, opponent.players)
+            : naiveAssignment(five, opponent.players),
+    // five and the opponent are the whole of what either solver reads
+    [full, assignment, five.map((p) => p.name).join('|'), opponent],
+  )
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
@@ -721,13 +805,21 @@ export function Draft({
   }
 
   const [wide, setWide] = useState<Wide>('team')
+  /**
+   * WHO CAN ACTUALLY BE DRAFTED RIGHT NOW: a man who plays one of the open rings and, in the
+   * salary cap, one this payroll can still afford. The rows have always DIMMED the rest; his
+   * ruling puts them at the bottom as well, because a dim row still costs a scroll and the top of
+   * a roster was often four men who cannot be taken.
+   */
+  const draftable = (name: string) => posOf(name).some((x) => open.includes(x)) && !overCap(name)
   const roster = spun
-    ? widenRoster(spun, wide)
-        .filter((n) => !takenMen.has(bare(n)))
-        .map((n) => BY_NAME.get(n)!)
-        .filter(Boolean)
-        // his ruling: the wheel's roster reads like a box score — points per game first, OVR as the tiebreak
-        .sort((a, b) => (LINES[b.name]?.ppg ?? 0) - (LINES[a.name]?.ppg ?? 0) || b.ovr - a.ovr)
+    ? wheelOrder(
+        widenRoster(spun, wide)
+          .filter((n) => !takenMen.has(bare(n)))
+          .map((n) => BY_NAME.get(n)!)
+          .filter(Boolean),
+        draftable,
+      )
     : []
 
   /**
@@ -1077,6 +1169,14 @@ export function Draft({
               </div>
               {/* his ruling: the drag is the other way to draft, so the list says so */}
               <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
+              {/* HIS RULING: "Make the celtics scrollable instead of scrolling the entire page."
+                  A fifteen-man roster ran the middle column past the fold, so reading to the end
+                  of it meant scrolling the whole screen — and taking the opponent, the wheel and
+                  your own five off the top with it. The head and the column rule stay put and only
+                  the men move, in a box measured to stop above the dock, with an edge fade saying
+                  there is more below. Same box My team's wheel already uses, same measurement. */}
+              <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
+              <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
               {roster.map((p) => {
                 const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
@@ -1093,6 +1193,8 @@ export function Draft({
                   },
                 })
               })}
+              </div>
+              </div>
               {sel ? (
                 <div className="posbar">
                   <span className="cap">Assign to</span>
@@ -1274,7 +1376,15 @@ export function Draft({
       ) : null}
       <div className="card" style={{ paddingBottom: 4 }}>
         <div className="card-head">
-          <span className="label">Your five</span>
+          {/* HIS RULING: "Instead of your five — put the name that I picked. Also, put the record
+              next to my name as well (only from current campaign)." The card used to be headed
+              YOUR FIVE, which is the one thing on this screen you can already see; the franchise
+              you named and what it has done in this campaign are not written anywhere else on it.
+              The record is this save's own — each of the three modes keeps its own ledger. */}
+          <span className="label">
+            {teamName}
+            {record ? <i className="rec">{record}</i> : null}
+          </span>
           <span className={`count ${five.length ? 'on' : ''}`}>
             {five.length} OF {DRAFT_SIZE}
           </span>
@@ -1312,47 +1422,44 @@ export function Draft({
             His ruling adds the pick-up: a man can be dragged off his own ring onto another spot.
             An EMPTY ghost ring is a legal destination too — it is the same gesture and it moves a
             man into an open chair, which canMoveSlot already allows when the target is empty. */}
-        {/* USER MODE'S GAME NIGHT stands the same five as jerseys under the rig, in place of the
-            working half-court. The court is a diagram for deciding — rings, fits, who is on whom —
-            and once the five is set in the mode that plays blind there is nothing left to decide
-            on it. The man rows underneath still move a man, so nothing is lost but the drag. */}
-        {user && full ? (
-          <>
-          {/* THE HOUSE, ABOVE THE FLOOR — the bundle's crowd band with the night named across it
-              and the bug carrying the score. The score is theatre and says so in JerseyFive; what
-              is true on this bar is the two teams and the level. */}
-          <CrowdBar
+        {/* THE TIP-OFF, ONCE THE FIVE IS SET — BOTH MODES (his ruling, 2026-09-08). The half-court
+            is a diagram for DECIDING: rings to drop a man onto, the shape the plan puts him in,
+            who is on whom. With five men in there is nothing left on it to decide, and what the
+            screen owes him instead is the team sheet — his five and theirs, facing, the board
+            drawn on the nameplates, and a scoreboard reading nothing-all with a full quarter to
+            play. It replaces user mode's own-five-only game night AND scout mode's court, which
+            is the whole of "do the same in scout mode".
+            The drag goes with the court; the man rows underneath still move a man by tap, so the
+            only thing lost is the gesture, and only after the five is complete. */}
+        {full ? (
+          <TipOff
             bug={bug}
             us={bugName(teamName)}
             them={opponent.ab ?? bugName(opponent.team)}
+            usName={teamName}
+            themName={opponent.team}
             step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
             bump={bump}
             flash={flash}
-          />
-          <JerseyFive
-            /* his ruling: the kit picked on the name screen is what the five run out in */
-            club={myColor(wallet.team)}
             shooting={shooting}
-            spots={POSITIONS.map((x) => {
-              const n = slots[x]
-              const p = n ? BY_NAME.get(n) : undefined
-              return {
-                p: p ?? null,
-                slot: x,
-                onTap: p ? () => showMan(p.name) : undefined,
-              }
-            })}
+            mine={five}
+            theirs={opponent.players}
+            /* his kit on his shirts, their club on theirs — the two are told apart by colour before
+               a name is read, and a club is a fact about the team, which is why it stands in both
+               modes now that the two share this panel */
+            myClub={myColor(wallet.team)}
+            theirClub={teamColor(opponent.ab)}
+            map={boardMap}
+            onTap={(p) => showMan(p.name)}
           />
-          </>
         ) : (
         <CourtFive
-          /* HIS RULING: "Allow me to pick my team colors when starting a campaign." The floor
-             opposite already stands in the opponent's club; this one is YOURS, so it stands in the
-             kit picked on the name screen. Not gated on the mode the way the opponent's floor is
-             — the bundle draws the OPPONENT blue because user mode is not told who it is playing,
-             and it is always told who it is itself; user mode with a full five stands the jerseys
-             above instead, and those wear the kit too. `myColor` is null for a campaign that
-             predates the picker, and null is the blue floor this has always been. */
+          /* HIS RULING: "Allow me to pick my team colors when starting a campaign." This floor is
+             YOURS, so it stands in the kit picked on the name screen. `myColor` is null for a
+             campaign that predates the picker, and null is the blue floor this has always been.
+             THE COURT IS THE PARTIAL FIVE'S NOW, in both modes: the rings, the ghost slots and the
+             drag are how a five gets BUILT, and the moment it is complete the tip-off above takes
+             the panel. So nothing here is gated on the mode any more. */
           club={myColor(wallet.team)}
           tactic={plan}
           swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
@@ -1471,21 +1578,16 @@ export function Draft({
           <CoachSays lines={coachSays(five, opponent.players, assignment)} />
           <LegsLeft five={five} wear={carried ? (n) => left(n) : undefined} />
         </div>
-      ) : user ? (
+      ) : user && focus ? (
+        /* HIS RULING takes the rest of this rail off: the quiet head ("Spin 1 of 5 / The wheel /
+           Tap a man to read his season") and the progress strip under it ("None in yet · 5 to go
+           · Playing blind…") were the screen narrating itself — the wheel card two columns over
+           already counts the spin and names the open rings, and the five's own card counts the
+           picks. What is left is the one thing nothing else says: the man you are looking at. With
+           nobody in focus the rail does not stand there empty; it is not there. */
         <div className="card um-rail">
-          {focus ? (
-            <>
-              <ManHead p={focus} />
-              <ScoutsWord p={focus} />
-            </>
-          ) : (
-            <div className="um-head quiet">
-              <span className="um-kick">Spin {picks.length + 1} of {DRAFT_SIZE}</span>
-              <b>The wheel</b>
-              <i>Tap a man to read his season</i>
-            </div>
-          )}
-          <DraftProgress taken={picks.length} size={DRAFT_SIZE} />
+          <ManHead p={focus} />
+          <ScoutsWord p={focus} />
         </div>
       ) : null}
       </section>

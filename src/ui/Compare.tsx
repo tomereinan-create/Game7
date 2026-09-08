@@ -103,16 +103,18 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
           {hits.map((p) => (
             <button key={p.name} className="cmp-hit" onClick={() => add(p.name)}>
               <b>{p.name}</b>
-              <i>
-                {archetype(p)} · OVR {p.ovr}
-              </i>
+              {/* the hit line names the shape, and in scout mode prices it */}
+              <i>{user ? archetype(p) : `${archetype(p)} · OVR ${p.ovr}`}</i>
             </button>
           ))}
         </div>
       ) : null}
 
       {!five.length ? (
-        <div className="lede">Search a player to put him in the first column, then add up to three more. Ratings first, then the season he actually played.</div>
+        <div className="lede">
+          Search a player to put him in the first column, then add up to three more.{' '}
+          {user ? 'The season each of them actually played, side by side.' : 'Ratings first, then the season he actually played.'}
+        </div>
       ) : (
         <>
           <div className={cols}>
@@ -125,17 +127,24 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
                 <b>{short(p.name)}</b>
                 <span className="cmp-yr">{p.peak_season}</span>
                 <i className="cmp-tag">{archetype(p)}</i>
-                <div className="cmp-dials" title={OVR_TIP}>
-                  <span className="cmp-dial you">
-                    <em>{p.ovr}</em>OVR
-                  </span>
-                  <span className="cmp-dial">
-                    <em>{p.o_ovr}</em>OFF
-                  </span>
-                  <span className="cmp-dial">
-                    <em>{p.d_ovr}</em>DEF
-                  </span>
-                </div>
+                {/* USER MODE: the head card names the man, not the verdict on him. The three
+                    dials and the seventeen attribute rows below are the whole of what this screen
+                    knows that the box score does not, and in the mode that plays blind they are
+                    exactly what it must not say. What is left is a real comparison — four seasons
+                    side by side, best in each row marked, the gap spelled out for a pair. */}
+                {user ? null : (
+                  <div className="cmp-dials" title={OVR_TIP}>
+                    <span className="cmp-dial you">
+                      <em>{p.ovr}</em>OVR
+                    </span>
+                    <span className="cmp-dial">
+                      <em>{p.o_ovr}</em>OFF
+                    </span>
+                    <span className="cmp-dial">
+                      <em>{p.d_ovr}</em>DEF
+                    </span>
+                  </div>
+                )}
                 <div className="cmp-meta">
                   {ht(p.attrs.height)} · {LINES[p.name]?.team ?? '—'} · {LINES[p.name]?.pos?.join('/') ?? '—'}
                 </div>
@@ -165,7 +174,7 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
             </div>
           ) : null}
 
-          {GROUPS.map((g) => (
+          {(user ? [] : GROUPS).map((g) => (
             <div className="card cmp-block" key={g.title}>
               <div className="card-head">
                 <span className="label">{g.title}</span>

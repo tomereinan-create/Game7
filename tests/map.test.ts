@@ -227,14 +227,16 @@ describe('the trail snakes across whatever width it is given', () => {
  * THE FOUR SKINS, in the order his ruling on Campaign Map.dc.html puts them for SCOUT MODE ("For
  * levels 61-90, I want it to be the banner hall. For levels 121-150, I want it to be the Twilight
  * Dynasty" — and "all these changes are for scout mode only"): 1b ARENA NIGHTS 1-30, 1c HARDWOOD
- * PRIME 31-60, 2b BANNER HALL 61-120, 2a TWILIGHT DYNASTY 121 to the top.
+ * PRIME 31-60, 2b BANNER HALL 61-120, 2a TWILIGHT DYNASTY 121 to the top — and, since his ruling
+ * of 2026-09-08, for user mode too.
  *
  * He named two of the five blocks. 31-60 comes from the design doc's own plan line; 91-120 is the
  * block the doc has no board for, so it carries 61-90 on — the same rule his earlier ruling set
  * for the top tier, one block further down now that the top has a board of its own.
  *
- * `skinAt` reads the view mode, and these run with no localStorage, so the store's default (scout)
- * is what they see. USER MODE KEEPS THE OLD ORDER and is asserted separately below.
+ * ONE ORDER, BOTH MODES (his ruling, 2026-09-08: "Make user mode same as scout"). There used to be
+ * a second list for the mode that plays blind; `skinAt` no longer reads the view mode at all, and
+ * the last case below is what says so.
  *
  * The block edges are WRITTEN as levels rather than derived from the tiers, because they no longer
  * agree: the design draws five blocks of thirty and The Champions alone runs 31-90, so the 61 seam
@@ -302,14 +304,17 @@ describe('the map wears four skins over five blocks of thirty', () => {
     expect(skinAt(91)).toBe('wood')
   })
 
-  it('user mode is untouched by the re-deal — it keeps the order it had', () => {
+  it('user mode reads the SAME ladder — one order, both modes', () => {
+    const scout = runsOf()
     setUserMode(true)
     try {
+      expect(runsOf()).toEqual(scout)
+      // and it is the dealt order, not merely equal to whatever scout happens to hold
       expect(runsOf()).toEqual([
         { skin: 'arena', from: 1, to: 30 },
-        { skin: 'hall', from: 31, to: 60 },
-        { skin: 'dusk', from: 61, to: 90 },
-        { skin: 'wood', from: 91, to: ROUNDS },
+        { skin: 'hall', from: 31, to: 90 },
+        { skin: 'wood', from: 91, to: 120 },
+        { skin: 'dusk', from: 121, to: ROUNDS },
       ])
     } finally {
       setUserMode(false)

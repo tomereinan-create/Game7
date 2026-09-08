@@ -247,6 +247,14 @@ export default function App() {
     if (!cm || !prog || !level || !pending) return
     const stars = [...prog.stars]
     if (pending.result.won) stars[level - 1] = Math.max(stars[level - 1], starsFor(pending.result))
+    /**
+     * THE RECORD (his ruling: the draft's own card carries it beside the franchise name). Counted
+     * here because this is the one place a series settles for all three modes, and counted per
+     * NIGHT rather than per level: replaying a cleared level for a better star is another series
+     * won or lost, and the record is what the franchise did, not which rungs it holds.
+     */
+    const rec = prog.record ?? { w: 0, l: 0 }
+    const record = pending.result.won ? { w: rec.w + 1, l: rec.l } : { w: rec.w, l: rec.l + 1 }
     if (death) {
       // The series is simmed in one piece now, so its cost lands in one piece too: every man who
       // played loses one durability per game the series ran. The My team spin resets — one change
@@ -260,12 +268,12 @@ export default function App() {
         const cap = PLAYERS.find((p) => p.name === prog.bench)?.attrs.durability ?? 50
         wear[prog.bench] = Math.min(cap, (wear[prog.bench] ?? cap) + heal)
       }
-      const next = { ...prog, stars, plays: prog.plays + 1, wear, subsUsed: 0 }
+      const next = { ...prog, stars, record, plays: prog.plays + 1, wear, subsUsed: 0 }
       const settled = pending.result.won ? { ...next, roster: names } : die(next)
       commit(cm, settled)
       settleAch(settled)
     } else {
-      const settled = { ...prog, stars, plays: prog.plays + 1 }
+      const settled = { ...prog, stars, record, plays: prog.plays + 1 }
       commit(cm, settled)
       settleAch(settled)
     }
@@ -434,6 +442,8 @@ export default function App() {
           onReorder={(next) => commit(cm, { ...prog, roster: next })}
           /* his ruling: the five stands in the colours picked when the campaign was started */
           club={myColor(prog.team)}
+          /* his ruling: the way back to the map is the block's own map icon here too */
+          skin={skin}
           onBack={() => setMyTeam(false)}
         />
       </>
