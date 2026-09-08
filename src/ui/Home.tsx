@@ -1,10 +1,9 @@
-import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, type CampaignMode, type Progress } from '../state/campaign'
 import { setUserMode, useUserMode } from '../state/viewmode'
-import { achCount } from '../state/achievements'
 import { useLayout } from './useLayout'
 import { Ball } from './Ball'
+import { ChalkHome } from './ChalkHome'
 import { Trophy } from './Trophy'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
@@ -16,12 +15,21 @@ export interface Era {
 }
 
 /**
- * The front door (Game7 Flow, screen 1): the dribbling mark against the wordmark, the mode
- * question, then tonight's slate — one lit blue card for the campaign carrying the whole
- * 150-rung ladder, two quiet rules under it, the three side modes, and the record book, which
- * belongs to Scout mode only.
+ * TWO FRONT DOORS, ONE FOR EACH MODE (his ruling, 2026-09-08: "I want scout mode home screen to
+ * be 4a. Only scout mode"). User mode keeps the slate of cards the Game Design Overhaul bundle
+ * drew; scout mode opens on the chalk playbook. The fork is here and nowhere else — a component
+ * apiece rather than a `user ?` running through one screen — so neither can drift into the other.
  */
-export function Home({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
+export function Home(props: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
+  return useUserMode() ? <UserHome {...props} /> : <ChalkHome {...props} />
+}
+
+/**
+ * The user mode front door (Game7 Flow, screen 1): the dribbling mark against the wordmark, the
+ * mode question, then tonight's slate — one lit blue card for the campaign carrying the whole
+ * 150-rung ladder, two quiet rules under it, and the three side modes.
+ */
+function UserHome({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
   const user = useUserMode()
   const tally = (p: Progress) => {
     const n = p.stars.reduce((a, b) => a + b, 0)
@@ -173,28 +181,8 @@ export function Home({ progress, onPick }: { progress: Record<CampaignMode, Prog
         </button>
       </div>
 
-      {user ? null : (
-        <div className="slate-grid book">
-          <button className="book-row" onClick={() => onPick('database')}>
-            <b>Database</b>
-            <em>{PLAYERS.length.toLocaleString()} →</em>
-          </button>
-          <button className="book-row" onClick={() => onPick('archetypes')}>
-            <b>Archetypes</b>
-            <em>{DEFAULT_ORDER.length} →</em>
-          </button>
-          <button className="book-row" onClick={() => onPick('teams')}>
-            <b>Teams</b>
-            <em>Every season →</em>
-          </button>
-          <button className="book-row" onClick={() => onPick('achievements')}>
-            <b>Trophies</b>
-            <em>
-              {achCount().done} of {achCount().total} →
-            </em>
-          </button>
-        </div>
-      )}
+      {/* THE RECORD BOOK IS NOT HERE ANY MORE. It was scout-only, and scout mode now opens on the
+          chalk playbook, which carries the four rooms along its foot — see ChalkHome. */}
 
       <div className="alltime">Every number from real 1980—2026 stats</div>
     </>

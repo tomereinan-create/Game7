@@ -5223,3 +5223,207 @@ body.um .map-foot { background: var(--bg); }
 /* The dim stretch of trail — the part not yet climbed — is the arena's cold blue on a board and
    the bundle's own cream-at-a-tenth in this room. The lit stretch is the gold TRAIL_GOLD emits. */
 body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
+
+/* ==========================================================================
+   4a — CHALK PLAYBOOK · the scout mode front door
+   Claude Design "Game7 Menu Concepts", turn 4, board 4a. His ruling: "I want
+   scout mode home screen to be 4a. Only scout mode" — so every rule here is
+   under .ck and nothing user mode reads is touched.
+
+   The board's own palette, kept as it was drawn: a green slate in a wood
+   frame, chalk cream on it, and one yellow for whatever is selected.
+   ========================================================================== */
+.ck {
+  --ck-slate: #243530;
+  --ck-wood: #6b4a32;
+  --ck-chalk: #f0ead6;
+  --ck-bright: #f5f1e3;
+  --ck-dim: #cfc9b2;
+  --ck-body: #d8d2bd;
+  --ck-yellow: #ffe27a;
+  --ck-faint: #93987f;
+  --ck-type: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+/* the slate is propped in the arena's own dark, so the room around it stays the app's */
+.ck-board {
+  box-sizing: border-box;
+  background: var(--ck-slate) radial-gradient(900px 500px at 30% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
+  border: clamp(7px, 2.2vw, 12px) solid var(--ck-wood);
+  color: var(--ck-chalk);
+  padding: clamp(16px, 4.4vw, 42px) clamp(14px, 4vw, 50px) clamp(14px, 3.4vw, 34px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+}
+
+.ck-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  border-bottom: 2px dashed rgba(240, 234, 214, 0.4);
+  padding-bottom: clamp(10px, 2vw, 16px);
+  margin-bottom: clamp(16px, 3.2vw, 28px);
+}
+.ck-lockup b {
+  display: block;
+  font: 700 clamp(21px, 5.4vw, 38px) / 1 var(--ck-type);
+  letter-spacing: 0.04em;
+  color: var(--ck-bright);
+}
+.ck-lockup i {
+  display: block;
+  margin-top: 7px;
+  font: 700 clamp(8px, 2.1vw, 13px) / 1 var(--ck-type);
+  font-style: normal;
+  letter-spacing: 0.2em;
+  color: var(--ck-dim);
+}
+/* the mode question as two chalk chips — the only way back to user mode from this screen */
+.ck-modes { display: flex; flex: none; gap: 6px; }
+.ck-mode {
+  padding: 7px 10px;
+  background: none;
+  border: 2px dashed transparent;
+  font: 700 clamp(8px, 2.1vw, 11px) / 1 var(--ck-type);
+  letter-spacing: 0.16em;
+  color: var(--ck-dim);
+  cursor: pointer;
+}
+.ck-mode.on { border-color: var(--ck-yellow); color: var(--ck-yellow); }
+.ck-mode:not(.on):hover { color: var(--ck-bright); }
+
+/* The head is one line on a desk and two on a phone: the wordmark and its slate line take the
+   width, and the mode chips drop under them, still on the right. */
+@media (max-width: 560px) {
+  .ck-head { flex-wrap: wrap; align-items: center; }
+  .ck-lockup { flex: 1 1 100%; }
+  .ck-modes { margin-left: auto; }
+}
+
+.ck-body { display: flex; flex-direction: column; gap: clamp(18px, 3.4vw, 28px); }
+@media (min-width: 900px) {
+  .ck-body { display: grid; grid-template-columns: 580px minmax(0, 1fr); gap: 48px; align-items: stretch; }
+}
+
+/* ---------- the floor, drawn in dashed chalk ---------- */
+.ck-court {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 560 / 470;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border: 3px dashed rgba(245, 241, 227, 0.6);
+  /* The arc is the top of a circle swung from the rim, so half of it is under the floor. The
+     board draws it hanging out the bottom of the court; on a phone that lands the loose half
+     across the read below it, so the sideline clips it — which is what a sideline does. */
+  overflow: hidden;
+}
+.ck-court > span { position: absolute; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
+/* the arc is swung off the rim, so most of the circle is below the floor and only the three
+   comes back onto it — a percentage width with aspect-ratio keeps it round at any size */
+.ck-arc { width: 89.3%; aspect-ratio: 1; bottom: -53.2%; border: 3px dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
+.ck-key { width: 32.1%; height: 34%; bottom: 0; border: 3px dashed rgba(245, 241, 227, 0.5); border-bottom: none; }
+.ck-ftc { width: 19.6%; aspect-ratio: 1; bottom: 22.3%; border: 3px dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
+.ck-rim { width: 10.7%; height: 3px; bottom: 4.3%; background: rgba(245, 241, 227, 0.6); }
+
+/* the six plays, standing where a coach would chalk them */
+.ck-spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  user-select: none;
+}
+.ck-glyph {
+  display: grid;
+  place-items: center;
+  width: clamp(40px, 9.3vw, 52px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px dashed transparent;
+  font: 700 clamp(23px, 5.4vw, 30px) / 1 var(--ck-type);
+  color: var(--ck-chalk);
+}
+.ck-label {
+  font: 700 clamp(8px, 1.9vw, 11px) / 1 var(--ck-type);
+  letter-spacing: 0.14em;
+  color: var(--ck-dim);
+  white-space: nowrap;
+}
+.ck-spot.on .ck-glyph { border-color: var(--ck-yellow); color: var(--ck-yellow); }
+.ck-spot.on .ck-label { color: var(--ck-yellow); }
+.ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
+
+/* ---------- what the coach says about the play under the chalk ---------- */
+.ck-read { display: flex; flex-direction: column; gap: clamp(9px, 1.6vw, 14px); min-width: 0; }
+.ck-tag { font: 700 clamp(9px, 2vw, 12px) / 1 var(--ck-type); letter-spacing: 0.26em; color: var(--ck-yellow); }
+.ck-name {
+  font: 700 clamp(28px, 7.4vw, 42px) / 1.05 var(--ck-type);
+  color: var(--ck-bright);
+  text-decoration: underline wavy rgba(255, 226, 122, 0.6);
+  text-underline-offset: 8px;
+}
+.ck-desc { margin: 0; font: 400 clamp(13px, 3.2vw, 16px) / 1.7 var(--ck-type); color: var(--ck-body); text-wrap: pretty; }
+.ck-meta { font: 700 clamp(10px, 2.4vw, 13px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-yellow); }
+.ck-cta {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 14px 26px;
+  background: none;
+  border: 3px dashed var(--ck-yellow);
+  font: 700 clamp(15px, 3.6vw, 18px) / 1 var(--ck-type);
+  letter-spacing: 0.12em;
+  color: var(--ck-yellow);
+  cursor: pointer;
+}
+.ck-cta:hover { background: rgba(255, 226, 122, 0.12); }
+.ck-foot {
+  margin-top: auto;
+  padding-top: 4px;
+  font: 400 clamp(9px, 2.1vw, 12px) / 1.6 var(--ck-type);
+  letter-spacing: 0.12em;
+  color: var(--ck-faint);
+}
+
+/* ---------- the book: the four scout-only rooms, in the margin ---------- */
+.ck-book {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 18px;
+  margin-top: clamp(16px, 3.2vw, 26px);
+  padding-top: clamp(12px, 2.2vw, 18px);
+  border-top: 2px dashed rgba(240, 234, 214, 0.4);
+}
+@media (min-width: 900px) { .ck-book { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ck-bookrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.ck-bookrow b { font: 700 clamp(10px, 2.4vw, 12px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-chalk); }
+.ck-bookrow i {
+  font-style: normal;
+  font: 400 clamp(9px, 2.1vw, 11px) / 1 var(--ck-type);
+  letter-spacing: 0.1em;
+  color: var(--ck-faint);
+}
+.ck-bookrow:hover b { color: var(--ck-yellow); text-decoration: underline wavy rgba(255, 226, 122, 0.6); text-underline-offset: 5px; }
+
+/* the slate is the whole room: no arena wash bleeding through the frame, and the desk column
+   opens up the way the front door's always has */
+body.chalk { background: #14201c; }
+body.chalk #root { padding-bottom: calc(28px + var(--foot)); }
+@media (prefers-reduced-motion: reduce) { .ck-spot { transition: none; } }

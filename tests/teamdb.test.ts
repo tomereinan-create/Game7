@@ -170,14 +170,14 @@ describe('the club is on the chip and the scale is on the numbers', () => {
     expect(hue(50)).toBe(145)
   })
 
-  it('gives every card either three tracks or the words, and never neither', () => {
+  it('gives every card either three rings or the words, and never neither', () => {
     // a five the pool cannot field has no gauges to draw, and the card says that in words instead
-    // of three empty tracks — which is what the old row's "—" said in one character
+    // of three empty rings — which is what the old row's "—" said in one character
     for (const span of [[YMAX, YMAX], [YMIN, YMAX]] as Span[]) {
       const html = db(span)
       const n = cards(html)
       expect(n).toBeGreaterThan(0)
-      expect((html.split('class="tcard-bars"').length - 1) + (html.split('class="tcard-nofive"').length - 1)).toBe(n)
+      expect((html.split('class="tcard-dials"').length - 1) + (html.split('class="tcard-nofive"').length - 1)).toBe(n)
     }
   })
 
