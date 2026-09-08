@@ -44,13 +44,27 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
    * The six, in the board's own order and at its own coordinates — the x/y are percentages of the
    * court, so the floor can be any size and the play keeps its shape. The marks are the board's
    * too: the three ladders are the offense (O), the three side modes are what you draw against.
+   *
+   * HIS RULING ON WHERE THREE OF THEM STAND: "move custom and vs friend to outside the 3pt line",
+   * and "move the O of the campaign a bit lower so it won't be right on the circle line."
+   *
+   * The arc is swung off the rim at the bottom of the floor, so it is a circle of radius 44.6% of
+   * the court's width centred on the middle of the baseline. The two X's used to stand at 12/88%
+   * across and 84% down — 226 units from that centre against the arc's 250, which put both marks
+   * ON the line rather than beside it, and the baseline corners cannot take them either: the
+   * corner of the floor is only 280 from the same centre, a strip too narrow for a mark. They
+   * stand at the low wings now, 294 out, which is a corner shooter's ground and is clear of the
+   * arc by more than the mark's own radius.
+   *
+   * The campaign's O sat at 58% down, which is exactly where the free-throw circle's top passes;
+   * six points lower puts the whole mark inside the circle instead of straddling its rule.
    */
   const zones: { pick: Mode; mark: string; x: string; y: string; label: string; tag: string; desc: string; meta: string; cta: string }[] = [
     {
       pick: 'campaign',
       mark: 'O',
       x: '50%',
-      y: '58%',
+      y: '64%',
       label: 'CAMPAIGN',
       tag: '01 · THE GAUNTLET',
       desc: cur
@@ -84,8 +98,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'custom',
       mark: 'X',
-      x: '12%',
-      y: '84%',
+      x: '11%',
+      y: '61%',
       label: 'CUSTOM',
       tag: 'ANY ERA',
       desc: 'Pick the season, pick the opponent — any team from 1980 to 2026, best of seven.',
@@ -95,8 +109,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     {
       pick: 'versus',
       mark: 'X',
-      x: '88%',
-      y: '84%',
+      x: '89%',
+      y: '61%',
       label: 'VS FRIEND',
       tag: 'SAME PHONE',
       desc: 'Pass the phone. Two benches, alternating picks, one winner.',
@@ -165,10 +179,17 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
               and the round things carry aspect-ratio rather than a percentage height, so a circle
               is still a circle when the floor is 320px wide instead of 560. */}
           <div className="ck-court">
-            <span className="ck-arc" aria-hidden />
-            <span className="ck-key" aria-hidden />
-            <span className="ck-ftc" aria-hidden />
-            <span className="ck-rim" aria-hidden />
+            {/* The chalk lines are the only thing the sideline clips — the arc is swung off the
+                rim and half of it falls below the floor. The marks stand OUTSIDE that clip, so a
+                name at the low wing can run a little past the sideline onto the slate rather than
+                losing its last letters to it, which is what happened the moment his ruling made
+                the names bigger and moved two of them into the corners. */}
+            <span className="ck-lines" aria-hidden>
+              <span className="ck-arc" />
+              <span className="ck-key" />
+              <span className="ck-ftc" />
+              <span className="ck-rim" />
+            </span>
             {zones.map((s, i) => (
               <button
                 key={s.pick}

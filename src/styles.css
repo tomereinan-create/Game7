@@ -2078,9 +2078,9 @@ button {
 .map-side { flex: 1 1 auto; min-width: 0; }
 .map-link { background: none; border: 0; padding: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--you); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .map-link.danger { color: var(--danger); }
-/* AUTO-COMPLETE. Off it is a plain foot link; on, it is lit and says so, and the trail behind it
-   brings its locked tickets most of the way up — every one of them is a live target now. */
-.map-link.auto.on { color: var(--you); font-weight: 700; }
+/* AUTO-COMPLETE. On, the trail behind the door brings its locked tickets most of the way up —
+   every one of them is a live target now. The door itself is the era row's last chip; the foot
+   link it used to be went with the foot. */
 .trail.auto .node.locked { opacity: 0.8; cursor: pointer; }
 .trail.auto .node.arena.locked { opacity: 0.8; }
 .trail.auto .node.wood.locked { opacity: 0.8; }
@@ -2105,8 +2105,6 @@ button {
 .node-stars { display: flex; gap: 1px; font-size: 12px; line-height: 1; color: var(--line-3); }
 .node-stars i { font-style: normal; }
 .node-stars i.lit { color: var(--you); }
-.map-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 4px 0 24px; }
-.map-foot .cap { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .who i.sal { display: block; color: var(--you); }
 @media (min-width: 900px) {
   .ticket { width: 96px; }
@@ -3988,7 +3986,6 @@ body.offstage #root { position: relative; z-index: 1; }
   .map-total i { font-size: 24px; }
   .map-total .star { font-size: 44px; }
   button.map-total .a { font-size: 26px; }
-  .map-foot .cap { font-size: 14px; }
   .node-note { font-size: 13px; padding: 9px 13px; }
   .era-band em { font-size: 11px; }
   .era-band b { font-size: 26px; }
@@ -4068,27 +4065,6 @@ body.offstage #root { position: relative; z-index: 1; }
 .node-note.arena { border-color: rgba(255,138,77,0.7); background: rgba(24,30,46,0.92); color: #ff8a4d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
 .node-note.wood { border-color: rgba(255,207,125,0.75); background: rgba(28,17,7,0.94); color: #ffcf7d; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
 
-/* The foot, one floor per block. Two of the four never had one — on the hall and the dusk blocks
-   the strip under the trail fell back to the page's own brown and the room stopped at the last
-   ticket. And the bleed is written for every skin now rather than named two at a time. */
-.map-foot.arena { background: #0a0e17; }
-.map-foot.arena .cap { color: #93a0b4; }
-.map-foot.arena .map-link.danger { color: #ff5d6c; }
-.map-foot.wood { background: #261608; }
-.map-foot.wood .cap { color: #b39f83; }
-.map-foot.wood .map-link.danger { color: #ff6a5c; }
-.map-foot.hall { background: #150c06; }
-.map-foot.hall .cap { color: #b3a184; }
-.map-foot.hall .map-link.danger { color: #ff6a5c; }
-.map-foot.dusk { background: #0a1f2a; }
-.map-foot.dusk .cap { color: #8fb4ab; }
-.map-foot.dusk .map-link.danger { color: #ff6a5c; }
-/* The foot sits under the ground layers, which bleed to the screen edge — so it bleeds too, or a
-   14px strip of the page background shows down each side of it. */
-.map-foot.arena, .map-foot.wood, .map-foot.hall, .map-foot.dusk { margin: 0 -14px; padding: 4px 14px 24px; }
-@media (min-width: 900px) {
-  .map-foot.arena, .map-foot.wood, .map-foot.hall, .map-foot.dusk { margin: 0 -21px; padding: 4px 21px 24px; }
-}
 
 /* The dials on tonight's ticket read cold in both skins; only their label and basis change. */
 .node.arena .node-dials .dl, .node.arena .gauge-basis { color: #93a0b4; }
@@ -4580,6 +4556,43 @@ body.um {
   .map-trophy b { font-size: 21px; }
   .map-trophy i { font-size: 11px; }
 }
+/* THE PRIZE AT THE END OF THE LADDER (his ruling: "Add a trophy at the end of each campaign in
+   scout mode"). A monument standing on the floor above the last ticket, not a bar in the header:
+   the cup on top, what it is under it, and how far off it is under that. Dim while the ladder is
+   unfinished — it is the thing being climbed towards — and gold the moment it is won. */
+.map-crown {
+  position: absolute;
+  z-index: 2;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 18px 13px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  text-align: center;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.32);
+}
+/* both lines run on one line each — the monument stands in the band CROWN leaves above the last
+   ticket, and a wrapped title grows down into it */
+.map-crown b { font-family: var(--serif); font-size: 17px; font-weight: 400; line-height: 1; white-space: nowrap; color: rgba(255, 255, 255, 0.5); }
+.map-crown i { font-family: var(--mono); font-style: normal; font-size: 9.5px; letter-spacing: 0.12em; white-space: nowrap; text-transform: uppercase; }
+/* won: the same gold the header's cup is lit in, and the dashes close into a rule */
+.map-crown.won {
+  border: 1px solid rgba(217, 164, 65, 0.5);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.16), rgba(217, 164, 65, 0.03));
+  color: #c2a06a;
+}
+.map-crown.won .trophy { color: #e8bf6a; }
+.map-crown.won b { color: #f4e0b4; }
+@media (min-width: 900px) {
+  .map-crown { padding: 15px 24px 16px; }
+  .map-crown b { font-size: 21px; }
+  .map-crown i { font-size: 11px; }
+}
+
 /* On the front door the cup is the whole statement — the card already carries the count. */
 .slate-trophy { display: inline-flex; align-self: center; color: #e8bf6a; }
 
@@ -5230,16 +5243,13 @@ body.um .court {
    -------------------------------------------------------------------------- */
 body.um .map-top { --top-scrim: rgba(4, 3, 3, 0.55); }
 body.um .map-top .map-kicker,
-body.um .map-top .map-total i,
-body.um .map-foot .cap { color: var(--muted-2); }
+body.um .map-top .map-total i { color: var(--muted-2); }
 body.um .map-top .map-total,
 body.um .map-top .map-total .star,
 body.um .map-top .map-link { color: var(--you); text-shadow: 0 0 22px rgba(240, 179, 35, 0.3); }
 body.um .map-top .map-link { text-shadow: none; }
-body.um .map-top .map-link.danger,
-body.um .map-foot .map-link.danger { color: var(--danger); }
+body.um .map-top .map-link.danger { color: var(--danger); }
 body.um .map-top .rule2 { background: linear-gradient(90deg, var(--you), rgba(240, 179, 35, 0.25) 60%, transparent); }
-body.um .map-foot { background: var(--bg); }
 /* The dim stretch of trail — the part not yet climbed — is the arena's cold blue on a board and
    the bundle's own cream-at-a-tenth in this room. The lit stretch is the gold TRAIL_GOLD emits. */
 body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
@@ -5356,15 +5366,17 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   margin: 0 auto;
   box-sizing: border-box;
   border: clamp(3px, 0.4vw, 6px) dashed rgba(245, 241, 227, 0.6);
-  /* The arc is the top of a circle swung from the rim, so half of it is under the floor. The
-     board draws it hanging out the bottom of the court; on a phone that lands the loose half
-     across the read below it, so the sideline clips it — which is what a sideline does. */
-  overflow: hidden;
 }
+/* The arc is the top of a circle swung from the rim, so half of it is under the floor. The board
+   draws it hanging out the bottom of the court; on a phone that lands the loose half across the
+   read below it, so the sideline clips it — which is what a sideline does. The clip is on the
+   LINES alone, not the whole floor, so a mark's name at the wall can run past the sideline onto
+   the slate instead of being cut off by it. */
+.ck-lines { position: absolute; inset: 0; overflow: hidden; }
 /* on a desk the floor is not capped at a phone's idea of wide — it takes the whole track
    --ck-cw asked for, which is already held to what the window has left under the head */
 @media (min-width: 900px) { .ck-court { max-width: none; } }
-.ck-court > span { position: absolute; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
+.ck-lines > span { position: absolute; left: 50%; transform: translateX(-50%); box-sizing: border-box; }
 /* the arc is swung off the rim, so most of the circle is below the floor and only the three
    comes back onto it — a percentage width with aspect-ratio keeps it round at any size */
 .ck-arc { width: 89.3%; aspect-ratio: 1; bottom: -53.2%; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
@@ -5393,11 +5405,13 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
   aspect-ratio: 1;
   border-radius: 50%;
   border: clamp(3px, 0.55cqw, 6px) dashed transparent;
-  font: 700 clamp(24px, 5.4cqw, 68px) / 1 var(--ck-type);
+  font: 700 clamp(26px, 6cqw, 74px) / 1 var(--ck-type);
   color: var(--ck-chalk);
 }
+/* his ruling: "make all the modes fonts bigger" — the six names were chalked at 2.2% of the floor,
+   which is a caption under a mark rather than the name of a way to play */
 .ck-label {
-  font: 700 clamp(9px, 2.2cqw, 24px) / 1 var(--ck-type);
+  font: 700 clamp(11px, 3.1cqw, 30px) / 1 var(--ck-type);
   letter-spacing: 0.14em;
   color: var(--ck-dim);
   white-space: nowrap;
@@ -5471,6 +5485,12 @@ body.um .trail-dim.split { stroke: rgba(246, 244, 239, 0.1); }
 
 /* the slate is the whole room: the page's own column and padding come off at every width, and
    what shows behind a rubber-band scroll is the frame's wood rather than the arena */
+/* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
+   just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
+   on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
+   Only the crawl's own band is left. */
+body.map #root { padding-bottom: var(--foot); }
+
 body.chalk { background: #6b4a32; }
 body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 @media (prefers-reduced-motion: reduce) { .ck-spot { transition: none; } }

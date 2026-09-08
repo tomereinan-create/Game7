@@ -558,6 +558,11 @@ export default function App() {
           setLevel(null)
         }}
         onRoster={() => setRoster(true)}
+        /* The worn-out door. My team only renders with no level open (it is the map's room, not
+           the draft's), so this closes the level on the way — and it does NOT spend the attempt
+           the way walking out does: a five with a worn-out man in it cannot take the floor at
+           all, so this is not a peek at the roster, it is the only move left. */
+        onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
       />
     </>
   )

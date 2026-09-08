@@ -178,6 +178,7 @@ export function Draft({
   onSim,
   onBack,
   onRoster,
+  onMyTeam,
 }: {
   opponent: Opponent
   seed: number
@@ -210,6 +211,13 @@ export function Draft({
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
   onRoster: () => void
+  /**
+   * Death match only: the door to MY TEAM, which is the one room a worn-out man can be replaced
+   * in. Separate from `onRoster` on purpose — that one opens the player database, and his report
+   * is that the worn-out button was reaching it: "when I press so, it leads me to the players db,
+   * instead of myteam."
+   */
+  onMyTeam?: () => void
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -747,9 +755,12 @@ export function Draft({
     // draft only holds the door until he has been replaced there.
     // His ruling: pressing it takes him there. It used to be a dead disabled button that named
     // the problem and left him to find My team himself.
+    // AND IT HAS TO BE MY TEAM. The button said "replace him in My team" and opened the player
+    // DATABASE, because it was wired to the same `onRoster` the "See every player" link below
+    // uses — his report: "when I press so, it leads me to the players db, instead of myteam".
     if (full && broken.length)
       return (
-        <button className="btn" onClick={onRoster}>
+        <button className="btn" onClick={onMyTeam ?? onRoster}>
           {broken.length === 1 ? '1 man is worn out' : `${broken.length} men are worn out`} — replace him in My team →
         </button>
       )

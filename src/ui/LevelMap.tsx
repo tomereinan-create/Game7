@@ -70,6 +70,12 @@ const SIDEMAX = 84
 /** Room above the top row and below the bottom one — the foot also carries era I's banner. */
 const PAD = 132
 /**
+ * EXTRA room above the top row, on top of PAD — his ruling: "Add a trophy at the end of each
+ * campaign in scout mode." The end of the ladder is the top of the trail, and the map left only
+ * PAD there, which is half a ticket's clearance and no more. The prize stands in this band.
+ */
+const CROWN = 104
+/**
  * How far the TOP block's floor is carried up past the head of the trail — far enough to run the
  * whole way behind the sticky header and off the top of the page. His ruling ("the header should
  * continue the design not cut it") is only true if there is floor under the header to continue:
@@ -148,12 +154,16 @@ function climbOf(colW: number) {
  */
 export const heightOf = (colW: number) => {
   const { rise, step } = climbOf(colW)
-  return PAD * 2 + step * (rowsOf(colW) - 1) + rise
+  return PAD * 2 + CROWN + step * (rowsOf(colW) - 1) + rise
 }
 
 /** Which row a level index (0-based) stands in, counting up from the bottom. */
 export const rowOf = (colW: number) => (i: number) => Math.floor(i / perRow(colW))
-/** The y a row STARTS at. Row 0 — level 1 — is at the bottom; the ladder climbs from there. */
+/**
+ * The y a row STARTS at. Row 0 — level 1 — is at the bottom; the ladder climbs from there. It is
+ * measured off the FOOT, so CROWN lands entirely above the top row and the bottom of the map is
+ * exactly as tight as it was.
+ */
 export const yRowOf = (colW: number) => (r: number) => heightOf(colW) - PAD - climbOf(colW).step * r
 
 /**
@@ -683,8 +693,13 @@ export function LevelMap({
             reading "All cleared" — the same weight it gives level 4. It is the last thing in the
             header, under the era row, so it stands across the top of the map in every mode the map
             serves: the campaign, the salary cap and the death match all read this one component,
-            and both skins get it because the trophy is the RESULT, not a way of looking. */}
-        {cleared === ROUNDS ? (
+            and both skins get it because the trophy is the RESULT, not a way of looking.
+
+            IT IS USER MODE'S ALONE NOW. His later ruling put a trophy at the END of the ladder in
+            scout mode — see `map-crown` on the trail below — and a scout who has cleared 150 does
+            not need to be told so twice on the same screen. The header bar stays for user mode,
+            whose map has no monument on it. */}
+        {user && cleared === ROUNDS ? (
           <div className="map-trophy">
             <Trophy />
             <span className="tr-txt">
@@ -748,6 +763,34 @@ export function LevelMap({
           <path className="trail-glow" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
           <path className="trail-lit split" d={TRAIL} pathLength={1} style={{ strokeDasharray: `${litLen} 1` }} />
         </svg>
+
+        {/**
+         * THE PRIZE AT THE END OF THE LADDER (his ruling: "Add a trophy at the end of each
+         * campaign in scout mode"). The map already says a finished ladder in its header, but the
+         * header is where you START reading — the trophy belongs where the climb ENDS, standing
+         * above level 150 at the head of the trail, so the thing being climbed towards is drawn
+         * at the top of the thing you climb.
+         *
+         * It is up the whole way, not only once it is won: dim while the ladder is unfinished and
+         * lit when every level has fallen. A prize you cannot see is not something to climb for.
+         * Scout mode only, as he asked — user mode's map is the design bundle's and this does not
+         * reach into it.
+         */}
+        {!user ? (
+          <div
+            className={`map-crown ${skinOf(ROUNDS)} ${cleared === ROUNDS ? 'won' : ''}`}
+            /* over the last ticket, and kept off both walls the same way the node notes are */
+            style={{ top: 26, left: Math.min(Math.max(xAt(ROUNDS - 1), 180), Math.max(180, colW - 180)) }}
+          >
+            <Trophy size={36} />
+            <b>{cleared === ROUNDS ? 'Champion of the ladder' : 'The end of the ladder'}</b>
+            <i>
+              {cleared === ROUNDS
+                ? `All ${ROUNDS} cleared · ★ ${total} of ${ROUNDS * 3}`
+                : `${cleared} of ${ROUNDS} cleared`}
+            </i>
+          </div>
+        ) : null}
 
         {eras.map((e, ei) => (
           <div
@@ -883,18 +926,12 @@ export function LevelMap({
           onClose={() => setAskReset(false)}
         />
       ) : null}
-      <div className={`map-foot ${skin}`}>
-        <span className="cap">
-          {auto
-            ? 'Auto-complete is on — tap any level to clear the ladder up to it. Turning it off puts your real progress back.'
-            : 'Tap a cleared level to replay it for a better rating'}
-        </span>
-        {onToggleAuto ? (
-          <button className={`map-link auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
-            Auto-complete · {auto ? 'ON' : 'OFF'}
-          </button>
-        ) : null}
-      </div>
+      {/* HIS RULING: "anything below era 1 the league 2026 needs to be deleted, its just empty
+          space." What stood under the bottom era's rule was a foot bar carrying a hint and a
+          second auto-complete switch — and the switch has had a door of its own in the era row
+          at the top of the map since that row was given to both modes, so the bar was saying
+          nothing the map does not already say, two hundred pixels below the last ticket. The
+          page's own room for a dock goes with it: this screen has no dock, only the crawl. */}
     </>
   )
 }
