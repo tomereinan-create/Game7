@@ -79,14 +79,18 @@ const SPEED = 1.05
 const SPIN_MS = 1000
 /** HIS 0.8s: the year reel simply stays flat out for that much longer before it starts braking. */
 export const REEL_STAGGER_MS = 800
-/** The brake — down from 800ms, because it now only has to reach the row BEFORE the answer. */
-const BRAKE_MS = 420
-/** The last step. Slow enough to be watched, which is the point of it. */
-const STEP_MS = 280
+/** The brake. It only has to reach the row BEFORE the answer, so it is far shorter than the 800ms
+ *  it began at — but not as short as it was: his ruling, "make the ending a little bit slower so it
+ *  will be a bit more dramatic", is spent here and on the step below, and nowhere else. */
+const BRAKE_MS = 540
+/** The last step, and the most dramatic thing on the screen: 30 pixels taking the better part of
+ *  half a second. Slow enough to be watched, which is the whole point of it. */
+const STEP_MS = 460
 /** y = 1 − (1 − t)², a quadratic ease-out, as a cubic Bézier. Its initial slope is 2 — see above. */
 const BRAKE = 'cubic-bezier(0.333, 0.667, 0.667, 1)'
-/** Still at both ends: the reel has stopped, and this is it reaching for the last row. */
-const STEP = 'cubic-bezier(0.5, 0.02, 0.32, 1)'
+/** Still at both ends, and slowest at the start: the reel has stopped, and this is it straining
+ *  for the last row before it gets there. */
+const STEP = 'cubic-bezier(0.66, 0.02, 0.3, 1)'
 
 /** When each reel comes to rest, measured from the press. */
 export const REEL_TEAM_MS = SPIN_MS + BRAKE_MS + STEP_MS
