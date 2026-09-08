@@ -291,6 +291,11 @@ export function Draft({
    * The man showing in the band under the boxes, and the black floor there is to put him on. Same
    * ruling and same measurement as My team: the gap between the columns and the dock, so the band
    * only ever uses space the layout already had.
+   *
+   * NO ROSTER ROW OPENS THIS ANY MORE — his ruling: "Pressing on a player shouldnt open the thing
+   * on the buttom left, it shall open photo #2." The only things left that set it are the FLOOR:
+   * a ring on your own court and a shirt in the tip-off panel, neither of which has a row of its
+   * own to open out into. Every list on this screen opens the man's season line in place instead.
    */
   const [band, setBand] = useState<string | null>(null)
   /**
@@ -303,6 +308,21 @@ export function Draft({
   /** Where the band goes: the free columns and the room under them. Named apart from this
       screen's own `slot`, which is a position. */
   const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
+  /**
+   * HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it shall open
+   * photo #2." Photo #2 is the row itself opened out — SEASON 2008 and the fourteen numbers under
+   * it, printed inside the list, exactly what the row's own chevron has always opened. So a press
+   * on a man in a roster list opens his line where he stands and the band on the floor is left out
+   * of it. Toggles, like the chevron: a second press on the same man closes him again.
+   *
+   * It also takes him off the band if he was on it, because he can only have got there off the
+   * court a moment ago and two panels for one player is the duplication he threw out once already
+   * ("Remove what Ive marked, no need for duplicates").
+   */
+  const openLine = (name: string) => {
+    setBand((cur) => (cur === name ? null : cur))
+    setInfo((cur) => (cur === name ? null : name))
+  }
   /** A drafted player whose position is being changed (tap). */
   const [moving, setMoving] = useState<Pos | null>(null)
   const [analysis, setAnalysis] = useState(false)
@@ -477,6 +497,26 @@ export function Draft({
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
   })
+  /**
+   * AND THE LINE HE JUST OPENED HAS TO BE ON SCREEN. "it shall open photo #2" is only kept if he
+   * can SEE photo #2, and the wheel's roster scrolls in a measured box: press the last man showing
+   * and his season line opens below the fold of that box, which looks exactly like a press that
+   * did nothing. So the box comes to him — far enough to show the end of the line, never so far
+   * that it pushes his own row off the top, and only inside the box, never the page. Nothing to do
+   * on a phone, where the list is not a scroller and the line opens under his thumb.
+   */
+  useEffect(() => {
+    const list = rosterList.current
+    if (!info || !list || list.style.overflowY !== 'auto') return
+    const line = list.querySelector<HTMLElement>('.pdetail')
+    const row = line?.previousElementSibling as HTMLElement | null
+    if (!line || !row) return
+    const box = list.getBoundingClientRect()
+    const need = line.getBoundingClientRect().bottom - box.bottom + 8
+    const spare = row.getBoundingClientRect().top - box.top
+    const by = need > 0 ? Math.min(need, Math.max(0, spare)) : spare < 0 ? spare : 0
+    if (by) list.scrollBy({ top: by, behavior: reduceMotion() ? 'auto' : 'smooth' })
+  }, [info])
   // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
   const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players, paceMastery(wallet)) : null
   const sigma = pc ? SIGMA * pc.sigmaMult : SIGMA
@@ -649,10 +689,10 @@ export function Draft({
     } else {
       // A press without movement is the TAP — and the row drag synthesises it here rather than
       // calling the row's own onTap, which is why pressing a man in his five showed nothing: the
-      // showMan wired onto those rows was never reached. The tap opens him in the band too.
+      // handler wired onto those rows was never reached. The tap opens his season line in the row.
       setMoving(moving === d.from ? null : d.from)
       const n = slots[d.from]
-      if (n) showMan(n)
+      if (n) openLine(n)
     }
     setDrag(null)
   }
@@ -925,12 +965,15 @@ export function Draft({
     },
   ) => {
     /**
-     * HIS RULING: "Remove what Ive marked, no need for duplicates". Tapping a man in the wheel's
-     * roster opened his archetype card AND, right under it, the tap-open grid — the same season,
-     * the same fourteen numbers, twice. The card is the one that stays (it carries the tag's
-     * sentence as well), so while it is up the grid does not print, and the row's chevron closes
-     * the card rather than doing nothing. Everything the grid alone used to say — who he was that
-     * season, and the league's TS — now reads on the card.
+     * HIS RULING: "Remove what Ive marked, no need for duplicates". A man must never be printed
+     * twice — the archetype card and the tap-open grid say the same season and the same fourteen
+     * numbers — so while he is on the band his row does not also print the grid, and the row's
+     * chevron closes the band rather than doing nothing.
+     *
+     * SINCE "it shall open photo #2" THIS IS THE NARROW CASE IT ALWAYS SHOULD HAVE BEEN: no row
+     * puts a man on the band any more, so the only way to be `carded` is to have tapped his ring
+     * on your own court, where there is no row to open out. Press the row itself and he comes off
+     * the band and opens out here instead — see `openLine`.
      */
     const carded = band === p.name
     return (
@@ -1187,10 +1230,14 @@ export function Draft({
                   dim: !fits.length || priced,
                   // his ruling: he can be carried out of this list and onto an open ring
                   pull: fits.length > 0 && !priced,
-                  onTap: () => {
-                    showMan(p.name)
-                    select(p.name)
-                  },
+                  /**
+                   * HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left,
+                   * it shall open photo #2." The press still PICKS him — the dock still says DRAFT
+                   * HIM AT PG and the Assign to chips still appear — and `select` is where the
+                   * season line is opened, so it is now the whole of the tap. Nothing here touches
+                   * the band any more.
+                   */
+                  onTap: () => select(p.name),
                 })
               })}
               </div>
@@ -1501,8 +1548,10 @@ export function Draft({
                 dur: death ? left(p.name) : undefined,
                 worn: carried ? left(p.name) <= WEAR_OUT : false,
                 dim: carried ? left(p.name) <= WEAR_OUT : false,
+                // his ruling, and the same reading as the wheel's list: a man in a roster row opens
+                // out where he stands. The keyboard reaches this; a finger arrives via dragEnd.
                 onTap: () => {
-                  showMan(p.name)
+                  openLine(p.name)
                   setMoving(moving === x ? null : x)
                 },
               })}
