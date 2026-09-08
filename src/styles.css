@@ -5258,17 +5258,39 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    scout mode home screen to be 4a. Only scout mode" — so every rule here is
    under .ck and nothing user mode reads is touched.
 
-   The board's own palette, kept as it was drawn: a green slate in a wood
-   frame, chalk cream on it, and one yellow for whatever is selected.
+   The board's own palette, kept as it was drawn but for the frame: a green
+   slate, chalk cream on it, one yellow for whatever is selected and one
+   orange for whatever is pressed.
    ========================================================================== */
 .ck {
+  /* HIS RULING, 2026-09-08: "Remove all the brown and black from the scout mode main page,
+     should be full screen green." As the board was drawn, the slate stood in a wood frame
+     (--ck-wood, #6b4a32) on a brown page, and around both of those sat the arena's near-black
+     ground. All three are gone: there is one colour behind this screen now and it is the slate,
+     from one edge of the window to the other. The frame was doing a job — it was the edge that
+     said where the board stopped — and the window's own edge does that job instead, so the only
+     thing that had to be kept is the DISTANCE it held: the wood's thickness was folded into
+     .ck-board's padding, and nothing chalked on the slate sits any closer to the glass than it
+     did. See body.chalk at the foot of this section for the page behind the board. */
   --ck-slate: #243530;
-  --ck-wood: #6b4a32;
   --ck-chalk: #f0ead6;
   --ck-bright: #f5f1e3;
   --ck-dim: #cfc9b2;
   --ck-body: #d8d2bd;
   --ck-yellow: #ffe27a;
+  /* HIS RULING: "when pressing on something instead of a yellow circle make it orange circle."
+     The orange stands BESIDE the yellow and does not replace it — --ck-yellow is also the 7 in
+     the wordmark, the SCOUT chip, the tag and the banked line down the read, the wavy underline
+     and the CTA's dashes, and none of those is the pressed circle. The only rules that changed
+     are the two on .ck-spot.on.
+
+     WHICH ORANGE. A web orange (#f80, #ff6b00) is a sticker on a green slate: it is darker than
+     the board's cream and yellow, so it stops looking like chalk dust and starts looking like
+     ink. The slate's yellow is hsl(44 100% 74%) — fully saturated and very light, which is what
+     chalk is. This is the same stick swung round to hsl(26 100% 70%): unmistakably orange next
+     to that yellow, and still 6.7:1 against the slate, so the name chalked under the mark in it
+     is comfortably readable at the size a phone draws it. */
+  --ck-orange: #ffa866;
   --ck-faint: #93987f;
   --ck-type: 'Courier Prime', 'Courier New', ui-monospace, monospace;
 
@@ -5284,9 +5306,10 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
              down whatever the width would allow.
      --ck-cw is how wide the floor is drawn: half the window, or as tall as whatever the head and
              the book leave under them — whichever runs out first, times the court's own 29/20.
-             What they leave is the window less the crawl, the rules and padding that do not move
-             once the board is wide (the 200px), and the head and the book themselves, which are
-             stacks of --ck-u type and so grow with it (the 6.1u).
+             What they leave is the window less the band --foot keeps clear at the foot of it,
+             less the rules and padding that do not move once the board is wide (the 200px), and
+             less the head and the book themselves, which are stacks of --ck-u type and so grow
+             with it (the 6.1u).
 
      Everything ON the floor (the marks, their names, the chalk lines) is measured in cqw off the
      court itself, so the play is the same drawing at 340px wide and at 720. */
@@ -5295,19 +5318,30 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   --ck-cw: min(56vw, calc((100dvh - var(--foot) - 200px - var(--ck-u) * 6.1) * 1.45));
 }
 /* HIS RULING: "Make everything full screen." The slate was a card propped in the middle of the
-   arena's dark with gutters either side; now it IS the screen — the wood frame runs along the
-   window's own edge and the board stands the full height above the crawl, so the head is at the
-   top of the window, the book at the foot of it, and the play in between. */
+   arena's dark with gutters either side; now it IS the screen — the green runs to the window's
+   own edge and the board stands the window's own height, so the head is at the top of the
+   window, the book at the foot of it, and the play in between.
+
+   THE PADDING IS CARRYING THE FRAME. His ruling of 2026-09-08 took the wood off, and the wood
+   was 7px at a phone's width and 14 at a desk's. Every inset below is therefore the padding the
+   board used to have PLUS that thickness, on the two clamps added together: the head, the court
+   and the book stand exactly where they stood against the glass instead of sliding out to meet
+   it. A flat green rectangle with the type jammed into its corners is not a slate. */
 .ck-board {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   min-height: calc(100vh - var(--foot));
   min-height: calc(100dvh - var(--foot));
-  background: var(--ck-slate) radial-gradient(900px 500px at 30% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
-  border: clamp(7px, 2.2vw, 14px) solid var(--ck-wood);
+  /* THE SLATE'S LIGHT POOL, and it is the only shading left on this screen now the frame has
+     gone. It was a fixed 900x500 pool, which is a lamp hung over a CARD: on a phone it washed the
+     whole board evenly and on a 1440 desk it lit the top-left quarter and left the rest reading
+     as a paint chip. It is sized off the window instead, so it is always about the same lamp over
+     the same board — high and to the left, the way the light falls in a gym — and it was opened
+     from 0.05 to 0.07 because with no wood to sit against, a flat fill is the failure mode. */
+  background: var(--ck-slate) radial-gradient(120vw 80vh at 28% 6%, rgba(255, 255, 255, 0.07), transparent 62%);
   color: var(--ck-chalk);
-  padding: clamp(16px, 4.4vw, 42px) clamp(14px, 4vw, 50px) clamp(14px, 3.4vw, 34px);
+  padding: clamp(23px, 6.6vw, 56px) clamp(21px, 6.2vw, 64px) clamp(21px, 5.6vw, 48px);
 }
 
 .ck-head {
@@ -5443,9 +5477,66 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   color: var(--ck-dim);
   white-space: nowrap;
 }
-.ck-spot.on .ck-glyph { border-color: var(--ck-yellow); color: var(--ck-yellow); }
-.ck-spot.on .ck-label { color: var(--ck-yellow); }
+/* his ruling: "instead of a yellow circle make it orange circle." The name goes with the circle:
+   the mark and the word under it are one thing standing on the floor, and a circle in one colour
+   over a name in another reads as a mistake rather than as a selection. The focus ring stays
+   yellow — it says where the keyboard is, which is not the same question as which play is
+   pressed, and on a spot that is both you want to be able to tell them apart. */
+.ck-spot.on .ck-glyph { border-color: var(--ck-orange); color: var(--ck-orange); }
+.ck-spot.on .ck-label { color: var(--ck-orange); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
+
+/* ---------- THE MAN ON THE FLOOR ----------
+   HIS RULING: "have a player with a basketball, running towards where you pressed."
+
+   HE IS PLACED THE WAY THE MARKS ARE, in per cent of the court, so the run is an interpolation
+   between two percentages and stays the same run whatever width the floor is drawn at. Nothing
+   here is a pixel offset from a mark: everything is the court's own cqw, on the same clamps the
+   glyph and its name are on, so he keeps his size against the mark he is standing beside at 331px
+   across on a phone and at 720 on a desk.
+
+   HE PULLS UP BESIDE THE MARK, NOT ON IT — an O with a man standing in it is not a play. He stops
+   on the side he came from, which is where a man running that way would stop, so he is always
+   facing the thing he ran to. --ck-run-side carries both halves of that: -1 puts him a gap to the
+   left and leaves him facing right, which is how he is drawn. The gap is a hair more than the
+   glyph's own radius plus his own half-width, on the same clamps, so he never overlaps the circle
+   and never runs off the sideline — the two X's in the corners stand 8.5% and 91.5% in, and he
+   arrives on their inside shoulder either way.
+
+   He rides an inch high of the spot's own centre because a spot's centre is the middle of the
+   glyph AND its name; that shift puts him level with the circle instead of with the word. */
+.ck-runner {
+  position: absolute;
+  z-index: 2;
+  width: clamp(26px, 8.8cqw, 100px);
+  --ck-run-gap: clamp(44px, 11cqw, 136px);
+  transform:
+    translate(calc(-50% + (var(--ck-run-gap) * var(--ck-run-side))), calc(-50% - clamp(8px, 2cqw, 16px)))
+    scaleX(calc(var(--ck-run-side) * -1));
+  /* 640ms is RUN_MS in ChalkHome.tsx, which is how long his legs are told to keep going */
+  transition: left 640ms cubic-bezier(0.35, 0, 0.25, 1), top 640ms cubic-bezier(0.35, 0, 0.25, 1);
+  pointer-events: none;
+}
+.ck-runner svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* chalk, in the hand the rest of the board is drawn in: no fill, round ends, a hair off white */
+.ck-runner path, .ck-runner circle { fill: none; stroke: var(--ck-bright); stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+/* the ball takes the pressed mark's orange — what he carries and what he runs to are one colour */
+.ck-runner .ck-run-ball { stroke: var(--ck-orange); opacity: 1; }
+/* each limb swings about the joint its group was carried to, which is that group's own 0,0 */
+.ck-run-limb { transform-origin: 0px 0px; }
+/* the stride runs only while he is on his way; arrived, he stands in the pose he is drawn in.
+   A and B are the two halves of a stride — the same keyframes half a period apart — and the
+   trailing arm shares a phase with the leading leg, which is what makes it read as running
+   rather than as a man hopping. The arms swing SHORT — fifteen degrees against the legs' thirty
+   — because the ball is at the far end of one of them: at the legs' angle it swung down between
+   his knees on every stride, which reads as a man losing the ball rather than carrying it. */
+.ck-runner.go .ck-run-limb { animation: ck-stride 460ms ease-in-out infinite; }
+.ck-runner.go .ck-run-limb.arm { animation-name: ck-swing; }
+.ck-runner.go .ck-run-limb.b { animation-delay: -230ms; }
+.ck-runner.go svg { animation: ck-bob 230ms ease-in-out infinite; }
+@keyframes ck-stride { 0%, 100% { transform: rotate(31deg); } 50% { transform: rotate(-31deg); } }
+@keyframes ck-swing { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } }
+@keyframes ck-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4%); } }
 
 /* ---------- what the coach says about the play under the chalk ----------
    THE READ IS MEASURED AGAINST ITS OWN COLUMN, not against the window. His ruling widened the
@@ -5525,8 +5616,6 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 .ck-bookrow:hover b { color: var(--ck-yellow); text-decoration: underline wavy rgba(255, 226, 122, 0.6); text-underline-offset: 5px; }
 
-/* the slate is the whole room: the page's own column and padding come off at every width, and
-   what shows behind a rubber-band scroll is the frame's wood rather than the arena */
 /* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
    just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
    on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
@@ -5535,6 +5624,35 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    the page, and this line survives to keep the map clear of a home indicator. */
 body.map #root { padding-bottom: var(--foot); }
 
-body.chalk { background: #6b4a32; }
+/* THE SLATE IS THE WHOLE ROOM, AND THE ROOM IS ONE COLOUR. His ruling, 2026-09-08: "Remove all
+   the brown and black from the scout mode main page, should be full screen green." The page's own
+   column and padding come off at every width, as they always did — and now everything the app
+   would otherwise paint behind this screen is painted the slate as well, because on his phone all
+   three of them are reachable by dragging past an edge:
+
+     · THE PAGE'S GROUND was the frame's wood, #6b4a32. It is the slate, so the band --foot keeps
+       clear under the board reads as more board rather than as a brown sill.
+     · THE TUNNEL'S BLACK. ChalkHome adds `tunnel` for one reason only — it is what takes #root
+       off its 390px column on a desk — but the class drags the tunnel's #0a0908 ground and the
+       lamp it hangs on #root::before along with it, and that lamp is a fixed sheet of near-black
+       across the whole window. Both come off here. The `:not(.um)` is not a condition, since the
+       slate is never user mode; it is there only to match the specificity of the two tunnel rules
+       these have to beat.
+     · THE ARENA'S LIT WASH, which lives on <html> so that it survives the body classes — and
+       <html> is exactly what a rubber-band scroll past the top or the bottom edge uncovers.
+
+   The literal is --ck-slate's own value spelled out: the token is declared on .ck, which is
+   inside #root, so neither <html> nor <body> can read it. */
+html:has(body.chalk) { background: #243530; }
+body.chalk:not(.um) { background: #243530; }
+body.chalk:not(.um) #root::before { display: none; }
 body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
-@media (prefers-reduced-motion: reduce) { .ck-spot { transition: none; } }
+/* WITH REDUCED MOTION HE DOES NOT RUN, HE IS SIMPLY THERE. The left/top are still the pressed
+   mark's, so pressing a play still moves him — it just happens in the same frame as the mark
+   turning orange, with no travel and no legs. */
+@media (prefers-reduced-motion: reduce) {
+  .ck-spot, .ck-runner { transition: none; }
+  /* .arm is in here so this beats the arm's own animation-name a few rules up, which is a
+     four-class selector and would otherwise put the swing back on top of the none */
+  .ck-runner.go .ck-run-limb, .ck-runner.go .ck-run-limb.arm, .ck-runner.go svg { animation: none; }
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, type Progress, type CampaignMode } from '../state/campaign'
@@ -21,7 +21,10 @@ import type { Mode } from './Home'
  * the mark and the wordmark, the same pair user mode's front door opens with — and the slate is
  * the screen rather than a card propped in the middle of one.
  *
- * WHAT 4a IS: a wood-framed green slate. Half a court drawn left-handed in dashed chalk, with the
+ * WHAT 4a IS: a green slate — drawn in a wood frame, and full screen without one since his ruling
+ * of 2026-09-08 ("Remove all the brown and black from the scout mode main page, should be full
+ * screen green"), so the green now runs to every edge of the window. Half a court drawn
+ * left-handed in dashed chalk, with the
  * six ways to play standing on it as three O's and three X's where a coach would put them — the
  * campaign at the top of the key, the two other ladders on the wings, the three side modes in the
  * corners and out top. Press one and the slate's right side reads it out: its number, its name
@@ -34,7 +37,19 @@ import type { Mode } from './Home'
  *   · THE RECORD BOOK. Database / Archetypes / Teams / Trophies are scout-only and would have had
  *     no door at all. They are the coach's margin notes along the foot of the slate.
  * Everything else — the geometry, the copy, the six positions, the palette — is the board's.
+ *
+ * HIS RULING OF 2026-09-08, and it is two things: "In the scout home page, when pressing on
+ * something instead of a yellow circle make it orange circle. Also, have a player with a
+ * basketball, running towards where you pressed." So the pressed mark is chalked in orange rather
+ * than the slate's yellow — see --ck-orange in the stylesheet, which stands BESIDE the yellow and
+ * does not replace it, because the yellow is also the 7 in the wordmark, the SCOUT chip and the
+ * whole read down the right — and a chalk figure with a ball under his arm now lives on the floor
+ * and runs to whichever mark you press. See `ChalkRunner` at the foot of this file.
  */
+/* How long the figure is on his way, in ms. The stylesheet transitions his left and top over the
+   same number and cannot read this file, so it is written in both places and named in both. */
+const RUN_MS = 640
+
 export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
   const [sel, setSel] = useState(0)
   const banked = (p: Progress) => p.stars.reduce((a, b) => a + b, 0)
@@ -136,6 +151,42 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
   ]
   const z = zones[sel]
 
+  /**
+   * THE RUNNER'S ERRAND — his ruling: "have a player with a basketball, running towards where you
+   * pressed." He is not a seventh mark. He is one figure who is always standing somewhere on the
+   * floor, and pressing a play is what sends him there, so the only things the board has to
+   * remember about him are which side of the mark he pulls up on and whether his legs are going.
+   * WHERE he is going is just the pressed spot's own percentages, and the run between the old
+   * mark and the new one is the transition on left/top — which is what keeps him honest when the
+   * floor is resized mid-stride, because both ends of the run are percentages of the court.
+   *
+   * SIDE is the whole of his facing: -1 means he pulls up on the LEFT of the mark, which is where
+   * a man running rightwards stops, and so he is drawn facing right. It is read off the x of the
+   * two marks, because that is what "towards" means to an eye watching the floor. A move straight
+   * up or down the middle — the campaign to the 1v1 bid, both chalked at 50% — is neither way, so
+   * he keeps the face he had rather than snapping round to a default.
+   *
+   * He starts on the campaign's O with `moving` false: on first paint he is already standing
+   * there, rather than sprinting in from a corner nobody pressed.
+   */
+  const [side, setSide] = useState<1 | -1>(-1)
+  const [moving, setMoving] = useState(false)
+  function press(i: number) {
+    if (i === sel) return
+    const from = parseFloat(zones[sel].x)
+    const to = parseFloat(zones[i].x)
+    if (to !== from) setSide(to > from ? -1 : 1)
+    setMoving(true)
+    setSel(i)
+  }
+  /* The legs stop when he arrives. Press again while he is still running and the timer is thrown
+     away and restarted, which is what the cleanup is for — he does not stop half way across. */
+  useEffect(() => {
+    if (!moving) return
+    const t = window.setTimeout(() => setMoving(false), RUN_MS)
+    return () => window.clearTimeout(t)
+  }, [moving, sel])
+
   /** The book, along the foot — the four scout-only rooms, with what is in each one. */
   const book: { pick: Mode; label: string; note: string }[] = [
     { pick: 'database', label: 'DATABASE', note: PLAYERS.length.toLocaleString() },
@@ -147,7 +198,9 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
   /* The slate is the room, the same way the tunnel is user mode's — the class reaches the page's
      own ground, which is outside anything this component renders, and comes off on the way out.
      `tunnel` rides along for one rule only: it is what takes #root off its 390px column on a
-     desk, and the board is drawn 1240 wide. */
+     desk, and the board is drawn 1240 wide. Everything ELSE the tunnel class paints — its
+     near-black ground and the lamp on #root::before — is taken back off in the stylesheet, on his
+     ruling that this page carry no black. */
   useLayout(() => {
     document.body.classList.add('chalk', 'tunnel')
     return () => document.body.classList.remove('chalk', 'tunnel')
@@ -201,12 +254,13 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
               <span className="ck-ftc" />
               <span className="ck-rim" />
             </span>
+            <ChalkRunner x={z.x} y={z.y} side={side} moving={moving} />
             {zones.map((s, i) => (
               <button
                 key={s.pick}
                 className={`ck-spot ${i === sel ? 'on' : ''}`}
                 style={{ left: s.x, top: s.y }}
-                onClick={() => setSel(i)}
+                onClick={() => press(i)}
                 aria-pressed={i === sel}
               >
                 <span className="ck-glyph">{s.mark}</span>
@@ -242,5 +296,61 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * THE MAN ON THE FLOOR — his ruling: "have a player with a basketball, running towards where you
+ * pressed."
+ *
+ * DRAWN, NOT SHIPPED. Everything on this slate is chalk on a board — dashed lines, a hand-lettered
+ * O, a wavy underline — so the player is line art in the same hand rather than a sprite or an
+ * emoji, either of which would sit on the slate like a sticker. He is one inline SVG: a head, the
+ * line of a back, two arms off the shoulder and two legs off the hip, in the slate's own chalk.
+ *
+ * THE BALL IS NOT THE `Ball` COMPONENT. That mark is leather, a radial gradient and the 7 through
+ * the middle of it — beautiful at 62px and mud at seven, which is what the ball in his hand
+ * measures on a phone. A chalk circle with one seam across it is what a coach draws, and it is
+ * still a basketball at seven pixels. It is chalked in the pressed mark's own orange, so the thing
+ * he carries and the thing he runs to are the one colour.
+ *
+ * EVERY LIMB IS A GROUP TRANSLATED TO ITS JOINT AND DRAWN FROM 0,0. That is the only way to swing
+ * a limb about a shoulder or a hip in CSS: the stylesheet rotates the INNER group about its own
+ * origin, which the outer group has already carried to the joint. The translate is a presentation
+ * attribute on the outer group on purpose — a CSS transform would overwrite it on the same one.
+ *
+ * The pose he is drawn in is the pose he stands in once he has arrived. The run is the stylesheet
+ * swinging these same limbs either side of it, so there is one drawing here and not two.
+ */
+function ChalkRunner({ x, y, side, moving }: { x: string; y: string; side: 1 | -1; moving: boolean }) {
+  return (
+    <span className={`ck-runner ${moving ? 'go' : ''}`} style={{ left: x, top: y, '--ck-run-side': side } as CSSProperties} aria-hidden>
+      <svg viewBox="0 0 32 38" focusable="false">
+        <circle cx="13.3" cy="5.9" r="4" />
+        <path d="M12.7 10.1 L11.3 21.6" />
+        {/* the shoulder. Arm A trails, arm B carries the ball — and B swings against the front
+            leg, because that is how a person runs. */}
+        <g transform="translate(12.5 12)">
+          <g className="ck-run-limb arm a">
+            <path d="M0 0 L-2.6 5.4 L-3.4 9.2" />
+          </g>
+          <g className="ck-run-limb arm b">
+            <path d="M0 0 L2.8 5.8 L4.6 8.4" />
+            <circle className="ck-run-ball" cx="7.2" cy="9.2" r="3.9" />
+            {/* the one seam, kept inside the circle so it does not sprout whiskers at the round ends */}
+            <path className="ck-run-ball" d="M4.4 9.2 L10 9.2" />
+          </g>
+        </g>
+        {/* the hip. Leg B trails, leg A leads; both end in a foot pointing the way he is going. */}
+        <g transform="translate(11.3 21.6)">
+          <g className="ck-run-limb b">
+            <path d="M0 0 L-2.4 6.4 L-3.2 12.2 L-1.4 13" />
+          </g>
+          <g className="ck-run-limb a">
+            <path d="M0 0 L2.2 6.4 L2.8 12.2 L5 12.9" />
+          </g>
+        </g>
+      </svg>
+    </span>
   )
 }
