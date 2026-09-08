@@ -2092,6 +2092,12 @@ button {
 }
 
 /* ---- campaign map ---- */
+/* THE TWO-COLUMN HEAD, which the campaign map no longer wears — see `.map-head.across` below, his
+   ruling of 2026-09-08. It is still the staff room's, the trophy case's, the archetype list's, the
+   matchup board's and the draft table's: a value on the left, a caption and a link on the right.
+   Everything from here to `.map-link.danger` belongs to THEM now, which is why none of it was
+   changed when the map's own header was laid across. The notes about a team name truncating at
+   375 are the map's history and are kept for the record. */
 .map-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 14px 0 10px; }
 .map-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .map-total { font-family: var(--serif); font-size: 40px; line-height: 1; color: var(--you); margin-top: 4px; }
@@ -2109,6 +2115,56 @@ button {
 .map-side { flex: 1 1 auto; min-width: 0; }
 .map-link { background: none; border: 0; padding: 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--you); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .map-link.danger { color: var(--danger); }
+
+/* THE CAMPAIGN HEADER, LAID ACROSS (his ruling, 2026-09-08: "Make the campaign header (Level 78 is
+   up · The Champions / ★ 81 / 450→ / 77 of 150 cleared / ★81 to spend·Staff→ / Gaziantep ag ·
+   rename / Reset this campaign) smaller, and instead of it being one on top of another, make it
+   one by another").
+
+   Everything here hangs off `.across` and nothing off `.map-head` alone, on purpose: five other
+   screens (the staff room, the trophy case, the archetype list, the matchup board, the draft
+   table) are drawn in the same two-column head, and his ruling is about the CAMPAIGN MAP's. The
+   base rules above are theirs and are untouched.
+
+   ONE ROW THAT WRAPS. The reading line first, then the doors, and flex breaks the line wherever
+   the items stop fitting — so the same rules give a phone two lines, a tablet two, and a desk one,
+   without a width being guessed at anywhere. `row-gap` is small and `column-gap` is wide, because
+   what separates two things standing beside each other is space and what separates two lines is
+   almost nothing: the doors' own 44px boxes already hold them apart. */
+.map-head.across { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding: 4px 0 2px; }
+/* The reading line. A basis wide enough to hold its own text means the doors wrap under it on a
+   phone rather than shouldering it into an ellipsis, and `flex-grow` lets it take up the slack on
+   a desk so the doors sit out at the right where the home button is. */
+.map-head.across .map-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 7px; flex: 1 1 300px; min-width: 0; }
+.map-head.across .map-kicker { font-size: 9.5px; line-height: 1.5; }
+/* the dot between the two halves is drawn, not typed, so it goes away by itself if a long era name
+   wraps them onto separate lines */
+.map-head.across .map-read .map-kicker + .map-kicker::before { content: '·'; margin-right: 7px; opacity: 0.55; }
+/* The doors read left to right off the end of the line above them: a wrapped row that hugged the
+   right wall left a hole under the reading line big enough to look like a mistake. On a desk the
+   reading line grows and carries the whole block out to the right anyway. */
+.map-head.across .map-doors { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 0 15px; flex: 0 1 auto; }
+/* Every door is a 44px box (his phone, one thumb, no hover): the labels are 9.5px mono, which is
+   nothing to hit otherwise. The box is invisible — the type does not move, it only gains reach. */
+.map-head.across .map-doors > * { min-height: 44px; display: inline-flex; align-items: center; }
+.map-head.across .map-link { font-size: 9.5px; }
+/* the counter comes down from 40px to 24: it is a door in a row of doors now, not a headline */
+.map-head.across button.map-total { display: inline-flex; font-size: 24px; padding: 0; margin: 0; }
+.map-head.across .map-total i { font-size: 12px; }
+.map-head.across .map-total .star { font-size: 17px; }
+.map-head.across button.map-total .a { font-size: 15px; margin-left: 6px; }
+/* the team line is a door among doors now, so it sizes to its own words instead of stretching to a
+   column that no longer exists — and it still gives up the NAME first when the row runs out */
+.map-head.across .map-link.team { width: auto; min-width: 0; flex: 0 1 auto; justify-content: flex-start; }
+@media (min-width: 900px) {
+  .map-head.across { gap: 0 22px; padding: 6px 0 4px; }
+  .map-head.across .map-kicker { font-size: 11.5px; }
+  .map-head.across .map-link { font-size: 11.5px; }
+  .map-head.across button.map-total { font-size: 34px; }
+  .map-head.across .map-total i { font-size: 15px; }
+  .map-head.across .map-total .star { font-size: 24px; }
+  .map-head.across button.map-total .a { font-size: 19px; }
+}
 /* AUTO-COMPLETE. On, the trail behind the door brings its locked tickets most of the way up —
    every one of them is a live target now. The door itself is the era row's last chip; the foot
    link it used to be went with the foot. */
@@ -4566,33 +4622,26 @@ body.um {
 .map-top.hall .um-mapbar.scout .um-era.on { color: #f4e8cf; }
 .map-top.dusk .um-mapbar.scout .um-era.on { color: #3ee6b0; }
 
-/* THE TROPHY (his ruling: "Add a trophy in all modes after 150 wins"). The last thing in the
-   header, so a finished ladder says so across the top of its own map in whichever of the three
-   campaigns finished it. Gold in both modes: the cup is the result, and the result does not have
-   a scout reading and a user reading. */
-.map-trophy {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 0 10px;
-  padding: 8px 12px;
-  border: 1px solid rgba(217, 164, 65, 0.5);
-  border-radius: 5px;
-  background: linear-gradient(90deg, rgba(217, 164, 65, 0.16), rgba(217, 164, 65, 0.03));
-  color: #e8bf6a;
-}
-.map-trophy .trophy { flex: none; }
-.map-trophy .tr-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.map-trophy b { font-family: var(--serif); font-size: 17px; line-height: 1; font-weight: 400; color: #f4e0b4; }
-.map-trophy i { font-family: var(--mono); font-style: normal; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #c2a06a; }
-@media (min-width: 900px) {
-  .map-trophy b { font-size: 21px; }
-  .map-trophy i { font-size: 11px; }
-}
-/* THE PRIZE AT THE END OF THE LADDER (his ruling: "Add a trophy at the end of each campaign in
-   scout mode"). A monument standing on the floor above the last ticket, not a bar in the header:
-   the cup on top, what it is under it, and how far off it is under that. Dim while the ladder is
-   unfinished — it is the thing being climbed towards — and gold the moment it is won. */
+/* THERE IS NO `.map-trophy` ANY MORE (his ruling, 2026-09-08: "Add a trophy for EVERY mode at 150
+   wins(An actual golden trophy at the end)"). A gold strip used to stand at the foot of the header
+   in user mode, saying "Champion of the ladder" across the top of the map, while scout mode said
+   the same thing on the monument at the head of the trail. His ruling settles which of the two he
+   meant — AT THE END, in EVERY mode — so the strip is gone and `.map-crown` below is the only
+   trophy on this screen. It was also the copy that stood in the very header his other ruling of
+   the same day asks to be made smaller. */
+
+/* THE PRIZE AT THE END OF THE LADDER, IN EVERY MODE (his ruling: "Add a trophy for EVERY mode at
+   150 wins(An actual golden trophy at the end)"). A monument standing on the floor above the last
+   ticket: the cup on top, what it is under it, and how far off it is under that. It is drawn in
+   both view modes and in all three campaigns — this is the one component all of them read.
+
+   TWO STATES, and the cup itself is one gold now rather than `currentColor`, because a lit object
+   needs more colours than a box can hand down. So the states are done with a filter: unfinished,
+   the cup is drained of its gold and stands in the dark, because it is the thing being climbed
+   towards; won, it is full gold with the light on it and the dashed box closes into a rule.
+
+   IT NEVER TAKES A TAP: `pointer-events: none` keeps it out of the way of level 150, which stands
+   directly under it at the head of the trail. */
 .map-crown {
   position: absolute;
   z-index: 2;
@@ -4612,13 +4661,18 @@ body.um {
    ticket, and a wrapped title grows down into it */
 .map-crown b { font-family: var(--serif); font-size: 17px; font-weight: 400; line-height: 1; white-space: nowrap; color: rgba(255, 255, 255, 0.5); }
 .map-crown i { font-family: var(--mono); font-style: normal; font-size: 9.5px; letter-spacing: 0.12em; white-space: nowrap; text-transform: uppercase; }
-/* won: the same gold the header's cup is lit in, and the dashes close into a rule */
+/* UNWON: the gold is taken out of it and it is left standing in the dark. Not `opacity` alone —
+   that would leave a pale gold cup, which reads as the won one seen through fog; draining the
+   saturation makes it PEWTER, an unclaimed prize. The drop shadow is what holds it off the two
+   pale floors (1c hardwood, 2b banner hall) that the top of the ladder can stand on. */
+.map-crown .trophy { filter: saturate(0.1) brightness(0.55) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
+/* won: the dashes close into a rule, and the cup gets its own light */
 .map-crown.won {
   border: 1px solid rgba(217, 164, 65, 0.5);
   background: linear-gradient(180deg, rgba(217, 164, 65, 0.16), rgba(217, 164, 65, 0.03));
   color: #c2a06a;
 }
-.map-crown.won .trophy { color: #e8bf6a; }
+.map-crown.won .trophy { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 12px rgba(232, 191, 106, 0.45)); }
 .map-crown.won b { color: #f4e0b4; }
 @media (min-width: 900px) {
   .map-crown { padding: 15px 24px 16px; }
@@ -4626,8 +4680,11 @@ body.um {
   .map-crown i { font-size: 11px; }
 }
 
-/* On the front door the cup is the whole statement — the card already carries the count. */
-.slate-trophy { display: inline-flex; align-self: center; color: #e8bf6a; }
+/* On the front door the cup is the whole statement — the card already carries the count. It is
+   always the WON cup there (the badge only shows on a mode that has been finished), so it takes
+   the same light the monument's won state does. */
+.slate-trophy { display: inline-flex; align-self: center; }
+.slate-trophy .trophy { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55)); }
 
 /* --------------------------------------------------------------------------
    USER MODE'S RAILS — the wheel and game night
@@ -4895,9 +4952,11 @@ body.um {
 /* The bundle's control row carries the staff door and rename as buttons, so the header's own two
    links would say both things twice — and the second copy is the one that truncates the team name
    to "Salt Lake Cit…". Only the pair the new row replaces comes off; the cleared count and Reset
-   this campaign are still the header's. */
-body.um .map-side .map-link.staff,
-body.um .map-side .map-link.team { display: none; }
+   this campaign are still the header's. (The header is one wrapping row since his "one by another"
+   ruling, so the doors live in `.map-doors` where they used to live in `.map-side`; taking these
+   two out of it is also what keeps user mode's header to a single line at 375.) */
+body.um .map-doors .map-link.staff,
+body.um .map-doors .map-link.team { display: none; }
 
 /* One chip, not two. The bundle's card carries a single badge — NEXT while it is tonight's, CHAMP
    once it is played — and the app renders both spans, which stack on the same corner. */

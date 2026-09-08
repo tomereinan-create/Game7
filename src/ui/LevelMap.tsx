@@ -564,26 +564,59 @@ export function LevelMap({
         </div>
         <div className="rule2" />
 
-        <div className="map-head">
-          <div>
-            <div className="map-kicker">{cur ? `Level ${cur} is up · ${opponents[cur - 1]?.era ?? ''}` : 'All cleared'}</div>
+        {/**
+         * THE HEADER RUNS ACROSS, NOT DOWN (his ruling, 2026-09-08: "Make the campaign header
+         * (Level 78 is up · The Champions / ★ 81 / 450→ / 77 of 150 cleared / ★81 to spend·Staff→ /
+         * Gaziantep ag · rename / Reset this campaign) smaller, and instead of it being one on top
+         * of another, make it one by another").
+         *
+         * It was two columns, and each column stacked its own lines: the level line over the star
+         * counter on the left; the cleared count over Staff over the team name over My team over
+         * Reset on the right. Six or seven lines of chrome standing between the title and the
+         * ladder, on the one screen whose whole point is the ladder.
+         *
+         * It is ONE WRAPPING ROW now. The two kickers join into a single reading line — which
+         * level is up, which era it is in, how many have fallen — and every door stands BESIDE the
+         * next one rather than under it. Nothing is dropped: the counter is still the way into the
+         * staff tree, and Reset, rename and My team have no other door on this screen.
+         *
+         * WHAT WRAPS, AND IN WHAT ORDER. Flex decides the breaks off the items' own widths, so the
+         * markup order is the reading order: the state first, then the doors — the two gold ones,
+         * the team's own, and the destructive one last, furthest from the thumb's resting place.
+         * At 375 the reading line takes the top line and the doors take one or two under it; by
+         * 1440 the whole header is a single line. It is never a horizontal scroll, and no door is
+         * ever hidden behind another or behind a hover.
+         *
+         * SMALLER is the type as well as the shape: the counter comes down from 40/68px to 24/34
+         * and the mono lines from 11/14 to 9.5/11.5. Each door keeps a 44px box, because a line of
+         * mono this small is nothing to hit with a thumb — that is where the height the stack gave
+         * back is spent.
+         */}
+        <div className="map-head across">
+          <div className="map-read">
+            {/* Stacked, "All cleared" and "150 of 150 cleared" were two lines in two columns and
+                nobody read them together. Side by side they are the same sentence twice, so the
+                finished ladder says it once — the count, which is the half that carries the
+                number. The trophy at the head of the trail is where it is said properly. */}
+            {cur ? <span className="map-kicker">{`Level ${cur} is up · ${opponents[cur - 1]?.era ?? ''}`}</span> : null}
+            {/* the second half of the reading line. The separator between the two is drawn in CSS,
+                so it goes away by itself if a long era name wraps them apart. */}
+            <span className="map-kicker">
+              {cleared} of {ROUNDS} cleared
+            </span>
+          </div>
+          <div className="map-doors">
             {/**
-             * HIS REPORT: "where is my skill tree to spend stars?" — the notice below is the only
-             * door the map had, and his ruling keeps it shut when nothing is affordable, so a
-             * balance spent to zero took the whole tree off the screen while the counter still
-             * read ★ 10. The counter is the door now: you tap your stars to go and spend them.
-             * The notice is untouched and still obeys the ruling.
+             * HIS REPORT: "where is my skill tree to spend stars?" — the notice beside it only
+             * shows when a star can actually be placed, which is his ruling, so a balance spent to
+             * zero took the whole tree off the screen while the counter still read ★ 10. The
+             * counter is the door: you tap your stars to go and spend them.
              */}
             <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
               <span className="star">★</span> {total}
               <i> / {ROUNDS * 3}</i>
               <i className="a">→</i>
             </button>
-          </div>
-          <div className="map-side">
-            <div className="map-kicker">
-              {cleared} of {ROUNDS} cleared
-            </div>
             {spendable ? (
               <button className="map-link staff" onClick={onStaff}>
                 {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
@@ -608,8 +641,8 @@ export function LevelMap({
             ) : null}
             {/* HIS RULING: "Move Reset this campaign next to the home page." It sat in the foot,
                 three thousand pixels below the fold — the one control on the map you had to go
-                looking for. It is the last line of the header's right column now, which is the
-                corner the home button is pinned to. It still asks before it does anything. */}
+                looking for. It is the LAST door in the header's row now, at the end of the line
+                and furthest from everything else you would reach for. It still asks first. */}
             <button className="map-link danger" onClick={() => setAskReset(true)}>
               Reset this campaign
             </button>
@@ -625,8 +658,16 @@ export function LevelMap({
             the foot three thousand pixels below the fold and the blocks at 31, 91 and 121 with no
             door at all. Both modes take the row now; only its SKIN differs, `scout` being the class
             that puts it back on the app's own tokens. The staff-and-rename pair below stays user
-            mode's, because scout's header already carries both in its right column. One map serves
-            all three campaigns, so "all campaign modes" is what this is the moment it renders. */}
+            mode's, because scout's header already carries both among its doors. One map serves all
+            three campaigns, so "all campaign modes" is what this is the moment it renders.
+
+            THE AUTO DOOR IS SCOUT'S ALONE (his ruling, 2026-09-08: "Remove auto complete from all
+            user mode campaigns"). Auto-complete borrows the ladder — it marks every level cleared
+            so the upper blocks can be walked, and puts the real stars back when it is switched off
+            — which is a way of LOOKING at a design, not a way of playing a campaign. User mode is
+            the mode that plays; it has no business with a switch that says the climb is over. Only
+            the chip goes: scout mode's is untouched, and App puts a borrowed ladder back if the
+            view mode is flipped to user while it is still on. */}
         <div className={`um-mapbar ${user ? '' : 'scout'}`}>
           <div className="um-eras">
             {eras.map((e, i) => (
@@ -641,7 +682,7 @@ export function LevelMap({
                 </i>
               </button>
             ))}
-            {onToggleAuto ? (
+            {onToggleAuto && !user ? (
               <button className={`um-era auto ${auto ? 'on' : ''}`} onClick={onToggleAuto} aria-pressed={auto}>
                 Auto · {auto ? 'ON' : 'OFF'}
               </button>
@@ -659,28 +700,14 @@ export function LevelMap({
           ) : null}
         </div>
 
-        {/* THE TROPHY (his ruling: "Add a trophy in all modes after 150 wins"). One hundred and
-            fifty series won is the whole ladder, and until now the map answered that with a kicker
-            reading "All cleared" — the same weight it gives level 4. It is the last thing in the
-            header, under the era row, so it stands across the top of the map in every mode the map
-            serves: the campaign, the salary cap and the death match all read this one component,
-            and both skins get it because the trophy is the RESULT, not a way of looking.
-
-            IT IS USER MODE'S ALONE NOW. His later ruling put a trophy at the END of the ladder in
-            scout mode — see `map-crown` on the trail below — and a scout who has cleared 150 does
-            not need to be told so twice on the same screen. The header bar stays for user mode,
-            whose map has no monument on it. */}
-        {user && cleared === ROUNDS ? (
-          <div className="map-trophy">
-            <Trophy />
-            <span className="tr-txt">
-              <b>Champion of the ladder</b>
-              <i>
-                All {ROUNDS} cleared · ★ {total} of {ROUNDS * 3}
-              </i>
-            </span>
-          </div>
-        ) : null}
+        {/* THERE IS NO TROPHY IN THE HEADER ANY MORE (his ruling, 2026-09-08: "Add a trophy for
+            EVERY mode at 150 wins(An actual golden trophy at the end)"). A `map-trophy` strip used
+            to stand here in user mode, saying "Champion of the ladder" across the top of the map,
+            while scout mode said the same thing on the monument at the head of the trail. His
+            ruling settles which of the two he meant: AT THE END, in every mode. Two cups on one
+            screen is the same sentence twice, and this was the copy standing in the very header he
+            has just asked to be made smaller. The monument on the trail below is the only trophy
+            now — see `map-crown`. */}
       </div>
 
       <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
@@ -737,32 +764,34 @@ export function LevelMap({
         </svg>
 
         {/**
-         * THE PRIZE AT THE END OF THE LADDER (his ruling: "Add a trophy at the end of each
-         * campaign in scout mode"). The map already says a finished ladder in its header, but the
-         * header is where you START reading — the trophy belongs where the climb ENDS, standing
-         * above level 150 at the head of the trail, so the thing being climbed towards is drawn
-         * at the top of the thing you climb.
+         * THE PRIZE AT THE END OF THE LADDER, IN EVERY MODE (his ruling, 2026-09-08: "Add a trophy
+         * for EVERY mode at 150 wins(An actual golden trophy at the end)"). The trophy belongs
+         * where the climb ENDS — standing above level 150 at the head of the trail — so the thing
+         * being climbed towards is drawn at the top of the thing you climb.
+         *
+         * IT USED TO BE A SPLIT, AND HIS RULING CLOSES IT. An earlier ruling said "in scout mode",
+         * so this monument was scout's and user mode got a bar across its header instead. "EVERY
+         * mode … at the end" is both halves of that undone at once: the monument stands in scout
+         * and in user, and the header bar is gone (see the note where it used to be). Every mode
+         * means every VIEW mode and every campaign — the ladder, the salary cap and the death
+         * match all read this one component, and none of them is the exception.
          *
          * It is up the whole way, not only once it is won: dim while the ladder is unfinished and
-         * lit when every level has fallen. A prize you cannot see is not something to climb for.
-         * Scout mode only, as he asked — user mode's map is the design bundle's and this does not
-         * reach into it.
+         * lit gold when every level has fallen. A prize you cannot see is not something to climb
+         * for. It never takes a tap — `pointer-events: none` — because it stands over the top row
+         * of tickets and a thumb reaching for level 150 must reach level 150.
          */}
-        {!user ? (
-          <div
-            className={`map-crown ${skinOf(ROUNDS)} ${cleared === ROUNDS ? 'won' : ''}`}
-            /* over the last ticket, and kept off both walls the same way the node notes are */
-            style={{ top: 26, left: Math.min(Math.max(xAt(ROUNDS - 1), 180), Math.max(180, colW - 180)) }}
-          >
-            <Trophy size={36} />
-            <b>{cleared === ROUNDS ? 'Champion of the ladder' : 'The end of the ladder'}</b>
-            <i>
-              {cleared === ROUNDS
-                ? `All ${ROUNDS} cleared · ★ ${total} of ${ROUNDS * 3}`
-                : `${cleared} of ${ROUNDS} cleared`}
-            </i>
-          </div>
-        ) : null}
+        <div
+          className={`map-crown ${skinOf(ROUNDS)} ${cleared === ROUNDS ? 'won' : ''}`}
+          /* over the last ticket, and kept off both walls the same way the node notes are */
+          style={{ top: 26, left: Math.min(Math.max(xAt(ROUNDS - 1), 180), Math.max(180, colW - 180)) }}
+        >
+          <Trophy size={44} />
+          <b>{cleared === ROUNDS ? 'Champion of the ladder' : 'The end of the ladder'}</b>
+          <i>
+            {cleared === ROUNDS ? `All ${ROUNDS} cleared · ★ ${total} of ${ROUNDS * 3}` : `${cleared} of ${ROUNDS} cleared`}
+          </i>
+        </div>
 
         {eras.map((e, ei) => (
           <div
