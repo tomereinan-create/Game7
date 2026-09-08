@@ -33,7 +33,7 @@ const progress = (over: Partial<Progress> = {}): Progress => ({
   ...over,
 })
 
-const map = (p: Progress, mode: { salary?: boolean; death?: boolean } = {}) =>
+const map = (p: Progress, mode: { salary?: boolean; death?: boolean; onToggleAuto?: () => void; onMyTeam?: () => void } = {}) =>
   renderToStaticMarkup(
     createElement(LevelMap, {
       title: 'Campaign',
@@ -48,6 +48,17 @@ const map = (p: Progress, mode: { salary?: boolean; death?: boolean } = {}) =>
       ...mode,
     }),
   )
+
+/** The same map, drawn in the mode that plays blind. */
+const userMap = (p: Progress, mode: { salary?: boolean; death?: boolean; onToggleAuto?: () => void; onMyTeam?: () => void } = {}) => {
+  setUserMode(true)
+  try {
+    return map(p, mode)
+  } finally {
+    setUserMode(false)
+  }
+}
+const won = () => progress({ stars: Array.from({ length: ROUNDS }, () => 3) })
 
 /** The header's two staff affordances: the always-present door, and the his-ruling notice. */
 const hasDoor = (html: string) => /<button [^>]*class="map-total"/.test(html)
@@ -319,5 +330,114 @@ describe('the map wears four skins over five blocks of thirty', () => {
     } finally {
       setUserMode(false)
     }
+  })
+})
+
+/**
+ * THE TROPHY (his ruling, 2026-09-08: "Add a trophy for EVERY mode at 150 wins(An actual golden
+ * trophy at the end)").
+ *
+ * There used to be TWO of them, split by view mode: a `map-trophy` strip across the header in user
+ * mode, and a `map-crown` monument at the head of the trail in scout mode. His ruling collapses
+ * that split in both directions at once — at the END, and in EVERY mode — so the monument stands
+ * in both view modes and in all three campaigns, and the header strip is gone. These cases hold
+ * down the rule that replaced the split.
+ */
+describe('the trophy stands at the end of the ladder, in every mode', () => {
+  const hasCrown = (html: string) => html.includes('class="map-crown')
+  const isWon = (html: string) => /class="map-crown [a-z]+ won"/.test(html)
+  const hasHeaderStrip = (html: string) => html.includes('map-trophy')
+
+  it('a finished ladder is crowned in scout mode and in user mode alike', () => {
+    for (const html of [map(won()), userMap(won())]) {
+      expect(hasCrown(html)).toBe(true)
+      expect(isWon(html)).toBe(true)
+      expect(html).toContain('Champion of the ladder')
+    }
+  })
+
+  it('and in every campaign the map serves — the ladder, the cap and the death match', () => {
+    for (const mode of [{}, { salary: true }, { death: true }]) {
+      expect(hasCrown(map(won(), mode)), `scout ${JSON.stringify(mode)}`).toBe(true)
+      expect(hasCrown(userMap(won(), mode)), `user ${JSON.stringify(mode)}`).toBe(true)
+    }
+  })
+
+  /** It is up the whole climb, not only at the top of it: a prize you cannot see is not one. */
+  it('an unfinished ladder still has it, standing dim, in both modes', () => {
+    const mid = progress({ stars: Array.from({ length: ROUNDS }, (_, i) => (i < 77 ? 2 : 0)) })
+    for (const html of [map(mid), userMap(mid)]) {
+      expect(hasCrown(html)).toBe(true)
+      expect(isWon(html)).toBe(false)
+      expect(html).toContain('The end of the ladder')
+      expect(html).toContain(`77 of ${ROUNDS} cleared`)
+    }
+  })
+
+  it('and the header says it once, not twice — the strip that stood there is gone', () => {
+    for (const html of [map(won()), userMap(won()), map(progress()), userMap(progress())]) {
+      expect(hasHeaderStrip(html)).toBe(false)
+    }
+  })
+})
+
+/**
+ * AUTO-COMPLETE IS SCOUT'S ALONE (his ruling, 2026-09-08: "Remove auto complete from all user mode
+ * campaigns"). The door borrows the ladder — every level marked cleared at one star so the upper
+ * blocks can be walked, the real stars put back when it is switched off — which is a way of
+ * LOOKING at the design rather than a way of playing a campaign.
+ */
+describe('the auto door belongs to scout mode', () => {
+  const hasAuto = (html: string) => html.includes('um-era auto')
+
+  it('scout mode still has it, in every campaign', () => {
+    for (const mode of [{}, { salary: true }, { death: true }]) {
+      expect(hasAuto(map(progress(), { ...mode, onToggleAuto: () => {} }))).toBe(true)
+    }
+  })
+
+  it('user mode has no auto door in any campaign', () => {
+    for (const mode of [{}, { salary: true }, { death: true }]) {
+      expect(hasAuto(userMap(progress(), { ...mode, onToggleAuto: () => {} }))).toBe(false)
+    }
+  })
+
+  it('and the era chips beside it are untouched — only the last chip goes', () => {
+    const html = userMap(progress(), { onToggleAuto: () => {} })
+    expect(html).toContain('um-era')
+    expect(hasAuto(html)).toBe(false)
+  })
+})
+
+/**
+ * THE HEADER RUNS ACROSS (his ruling, 2026-09-08: "Make the campaign header ... smaller, and
+ * instead of it being one on top of another, make it one by another"). The shape of it is CSS's,
+ * but what the shape may not do is lose a control: the counter is the only door to the staff tree
+ * when nothing is affordable, and Reset, rename and My team have no other door on this screen.
+ */
+describe('laying the header across drops none of its doors', () => {
+  it('every control his ruling names is still in the markup, in one row', () => {
+    const p = progress({ stars: [3, ...Array.from({ length: ROUNDS - 1 }, () => 0)], roster: ['a', 'b', 'c', 'd', 'e'] })
+    const html = map(p, { death: true, onMyTeam: () => {} })
+    expect(html).toContain('class="map-head across"')
+    expect(html).toContain('class="map-doors"')
+    expect(hasDoor(html)).toBe(true) // ★ 3 / 450 →
+    expect(hasNotice(html)).toBe(true) // ★ 3 to spend · Staff →
+    expect(html).toContain('class="map-link team"') // Zhengzhou GA · rename
+    expect(html).toContain('My team') // the death match's own door
+    expect(html).toContain('Reset this campaign')
+    // and the reading line carries both kickers his ruling lists, joined rather than stacked
+    expect(html).toContain('class="map-read"')
+    expect(html).toContain('Level 2 is up')
+    expect(html).toContain(`1 of ${ROUNDS} cleared`)
+  })
+
+  it('user mode keeps its own staff and rename buttons, so the header still reaches everything', () => {
+    const html = userMap(progress(), { death: true })
+    expect(html).toContain('class="map-head across"')
+    expect(hasDoor(html)).toBe(true)
+    expect(html).toContain('um-staff') // the bundle's own staff door
+    expect(html).toContain('um-rename')
+    expect(html).toContain('Reset this campaign')
   })
 })

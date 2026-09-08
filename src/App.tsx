@@ -291,6 +291,27 @@ export default function App() {
     setAuto(null)
   }
 
+  /**
+   * AND FLIPPING TO USER MODE PUTS IT BACK (his ruling, 2026-09-08: "Remove auto complete from all
+   * user mode campaigns"). The map hides the auto door in user mode, and hiding a switch is only
+   * safe if something else can still turn it off: `auto` is session state and it BORROWS the
+   * ladder — every level marked cleared at one star — so a run left in user mode with auto still
+   * on is a save that reads 150 cleared when three were played.
+   *
+   * Today the switch cannot strand it by accident, because the only doors to the view mode are on
+   * the two home screens and every route home runs `leave`, which already puts the ladder back.
+   * That is where the switch HAPPENS to live, not a rule about it, and it is one new door away
+   * from being false — so the mode itself says no rather than the route to it. The flip is a
+   * switch-off, through the same `autoOff` the door calls, so the stars that come back are exactly
+   * the ones that were taken. It sits above every early return in this component so that it runs
+   * whether or not a campaign is open.
+   */
+  useEffect(() => {
+    if (userMode && auto) autoOff(auto)
+    // `autoOff` is redefined every render and is not a dependency: `auto` going null ends this.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userMode, auto])
+
   const leave = () => {
     // walking home with auto still on would leave a borrowed ladder in the save
     if (auto) autoOff(auto)
