@@ -17,6 +17,24 @@ import { BOX, LINES, leagueTS, seasonWho } from './Stat'
  * It lives in its own module because Archetypes already imports Stat, so the prose cannot be
  * reached from inside Stat without a cycle.
  */
+/** The rectangle the band lays into, in pixels relative to the grid. */
+export interface Slot {
+  top: number
+  left: number
+  width: number
+  height: number
+}
+
+/**
+ * THE SAME RECTANGLE IS THE SAME RECTANGLE. `bandSlot` measures and hands back a fresh object each
+ * time, so a screen that keeps the result in state cannot tell "it moved" from "I measured it
+ * again": React compares by identity, a new object is never the old one, and a screen that
+ * measures after every render renders again, measures again, and never stops. So the rectangles
+ * are compared by VALUE here, and a screen only writes one that really is somewhere else.
+ */
+export const sameSlot = (a: Slot | null, b: Slot | null): boolean =>
+  a === b || (!!a && !!b && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height)
+
 /**
  * Where the black rectangle actually is, in pixels relative to the grid.
  *
@@ -29,7 +47,7 @@ import { BOX, LINES, leagueTS, seasonWho } from './Stat'
  * rectangle: laid out that way it cannot displace a column, lengthen the row, or push the dock, no
  * matter what it contains. Null when no column has room — which is what a phone always reports.
  */
-export function bandSlot(grid: HTMLElement, cols: HTMLElement[], floorY: number, min = 120) {
+export function bandSlot(grid: HTMLElement, cols: HTMLElement[], floorY: number, min = 120): Slot | null {
   const g = grid.getBoundingClientRect()
   const free = cols.filter((c) => floorY - c.getBoundingClientRect().bottom - 14 >= min)
   if (!free.length) return null
