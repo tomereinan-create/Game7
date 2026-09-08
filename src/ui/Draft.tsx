@@ -11,7 +11,7 @@ import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
-import { bandSlot, ManBand } from './ManBand'
+import { bandSlot, ManBand, sameSlot, type Slot } from './ManBand'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
 import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
@@ -95,6 +95,23 @@ export const wheelOrder = <T extends { name: string; ovr: number }>(men: T[], dr
 /** The drop that drafts: exactly the five the "Draft … at …" button would have left behind. */
 export const dropDraft = (slots: Partial<Record<Pos, string>>, at: (n: string) => Pos[], name: string, to: Pos) =>
   canDropAt(slots, at, name, to) ? { ...slots, [to]: name } : slots
+
+/**
+ * THE FLOOR THE BAND LAYS INTO, measured — or the one already in state, when the measurement says
+ * it is exactly where it was.
+ *
+ * The screen re-measures after EVERY render on purpose: a column that grows, a wheel that lands
+ * and a man drafted onto the court all move the floor, and none of them is a dependency you can
+ * name. That is only safe if measuring the same rectangle twice is not a change, which is what
+ * this is for: `bandSlot` builds a new object every call, and writing that object to state on a
+ * screen that measures after every render is a loop with nothing to stop it — React re-renders
+ * because the object is new, the effect measures again, and the desk browser fills with "Maximum
+ * update depth exceeded". Out here rather than inline so the law can be read and tested on its own.
+ */
+export const floorSlot = (grid: HTMLElement, cols: HTMLElement[], floorY: number, cur: Slot | null): Slot | null => {
+  const next = bandSlot(grid, cols, floorY)
+  return sameSlot(cur, next) ? cur : next
+}
 
 /** Bare-name index: the same man in a different year is still the same man. */
 const PLAYER_OF = new Map(PLAYERS.map((p) => [p.name, p.player]))
@@ -304,7 +321,7 @@ export function Draft({
    * under the man instead, so pressing a player always shows him. Named apart from this screen's
    * own `slot`, which is a position.
    */
-  const [floor, setFloor] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const [floor, setFloor] = useState<Slot | null>(null)
   /** Where the band goes: the free columns and the room under them. Named apart from this
       screen's own `slot`, which is a position. */
   const showMan = (name: string) => setBand((cur) => (cur === name ? null : name))
@@ -491,7 +508,10 @@ export function Draft({
       if (!g || stacked) return setFloor(null)
       const cols = ([...g.children] as HTMLElement[]).filter((e) => e.classList.contains('col'))
       const rowBottom = Math.min(g.getBoundingClientRect().bottom, window.innerHeight - (dock?.offsetHeight ?? 0))
-      setFloor(bandSlot(g, cols, rowBottom))
+      // the rectangle it measured, and never a new object saying where the old one already was:
+      // this measures after every render, so a rectangle that is only new by identity renders
+      // again, measures again, and never stops
+      setFloor((cur) => floorSlot(g, cols, rowBottom, cur))
     }
     measure()
     window.addEventListener('resize', measure)
