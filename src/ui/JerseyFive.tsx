@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Player } from '../engine/types'
 import { POSITIONS } from '../engine/positions'
 import { Ball } from './Ball'
@@ -229,6 +230,13 @@ export function CrowdBar({
  * jersey cards across it come to 44px each on a 1440 desk, which is narrower than the surnames.
  * One five over the other, each under its own club band, is the same "both teams together" read at
  * a size the names survive.
+ *
+ * THE ROSTER RIDES INSIDE THE PANEL (his ruling, 2026-09-09: "These players should be shown not
+ * down"). Your five's rows used to be laid UNDER both floors, which on a 386px column put them off
+ * the bottom of the screen with a screenful of black floor sitting unused beside them. They are
+ * the same rows, still owned and still rendered by the draft — this only holds them, so the
+ * stylesheet can put them BESIDE the floors on a desk and between your floor and their band on a
+ * phone. `rows` is optional: nothing else that draws a tip-off has a roster to hand it.
  */
 export function TipOff({
   bug,
@@ -246,6 +254,7 @@ export function TipOff({
   theirClub = null,
   map,
   onTap,
+  rows,
 }: {
   bug: Bug
   /** The two abbreviations on the scorebug. */
@@ -269,6 +278,12 @@ export function TipOff({
    */
   map?: number[] | null
   onTap?: (p: Player) => void
+  /**
+   * YOUR FIVE AS ROWS — name, spot, archetype, his line, and the chevron that opens his season.
+   * Handed in whole from the draft, which owns every one of those behaviours; this panel only
+   * decides WHERE they stand (his ruling: "These players should be shown not down").
+   */
+  rows?: ReactNode
 }) {
   /** The same five pairings read the other way: who is on their man `j`. */
   const guard: (number | undefined)[] = []
@@ -303,6 +318,9 @@ export function TipOff({
           onTap: onTap ? () => onTap(p) : undefined,
         }))}
       />
+      {/* THE ROSTER. Last in the DOM and placed by the stylesheet, so the phone can read it
+          straight after your own floor and a desk can stand it beside both of them. */}
+      {rows ? <div className="tip-rows">{rows}</div> : null}
     </div>
   )
 }
