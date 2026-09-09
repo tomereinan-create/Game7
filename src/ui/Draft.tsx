@@ -94,7 +94,8 @@ const Mini = ({ name }: { name: string }) => {
   )
 }
 
-const posOf = (name: string) => eligible(LINES[name]?.pos)
+/** His lifetime rings. Exported so the hot seat enforces positions off the SAME definition (G10). */
+export const posOf = (name: string) => eligible(LINES[name]?.pos)
 const posLine = (name: string) => posOf(name).join(' · ')
 /** The rings he can fill BESIDES the one he is already in — empty when there are none (E13). */
 const alsoPlays = (name: string, here: string) => posOf(name).filter((x) => x !== here).join(' · ')
