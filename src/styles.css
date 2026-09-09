@@ -5819,54 +5819,42 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   user-select: none;
 }
 /**
- * ALL SIX MARKS ARE BULLETS — his ruling, 2026-09-09: "You made only 1 bullet, instead all. Find
- * a way to do it."
+ * ONE BULLET, ON WHATEVER IS PRESSED, AND NOTHING DRAWN AT THE OTHER FIVE — his ruling,
+ * 2026-09-09: "Your bullets are messed up. Have only 1 bullet on wherever I am like before and
+ * remove the circles."
  *
- * THE TWO DECISIONS HE HAS OVERRULED, both recorded here because the shape of this rule is the
- * shape of the argument:
- *   1. THE RINGS. On 2026-09-09 the letters came out of the marks ("Remove the X\O from both home
- *      screens") and this rule answered that by chalking a DASHED RING in for all six — the ring
- *      had been drawn with a transparent border and the letter was the whole of the mark, so an
- *      empty one would have been invisible. That ring is gone now.
- *   2. "THE FIVE THAT ARE NOT PRESSED KEEP THEIR RINGS." When his next ruling turned the pressed
- *      mark into a bullet ("Instead of an orange circle in the home screen make it a bullet"),
- *      the rule below argued the other five should stay rings, on the ground that a small filled
- *      dab cannot read as chalk: a dashed border at 20px is five dashes, so a small mark has to be
- *      solid, and a solid disc is a radio button sitting on top of the drawing. He read the board
- *      and overruled it in one line. The dab is what had to be made to read as chalk, and this
- *      rule is where that was done.
+ * THIS BOX IS NOW EMPTY FIVE TIMES OUT OF SIX AND IT IS STILL HERE ON PURPOSE. Read the next rule
+ * as a footprint, not as a drawing: it reserves the mark's room on the floor and paints nothing.
+ * The dab itself is drawn once, on `.ck-spot.on .ck-glyph::before` further down.
  *
- * WHAT MAKES A 21px DAB CHALK RATHER THAN A UI DOT. Not one thing — four, and none of them alone
- * would carry it. A flat disc of one colour is the failure case (it is what the first bullet was,
- * and reading it back on the board is what made this argument), so every one of these is aimed at
- * something a machine would not have drawn. The build is spelled out on the `background` below;
- * what each of them is FOR is here:
- *   · IT IS NOT A CIRCLE. The mark is the union of three overlapping passes of the stick, so the
- *     silhouette is a lump. This survives 21px — the eye reads "wrong roundness" long before it
- *     can count pixels.
- *   · IT HAS NO EDGE. Every pass fades out over its own outer fifth instead of stopping, so the
- *     mark is dusty all the way round. The first bullet faded over the outer SEVENTH of its
- *     radius, which was 1.3px on a phone: invisible, which is exactly why it read as a flat disc.
- *   · THE DENSITY IS UNEVEN. Two thin spots in the slate's own colour are where the stick
- *     skipped, and the three passes are different sizes, so no two parts of the mark are the same
- *     weight.
- *   · IT SHEDS. Two specks sit clear of the body, one either side. Chalk throws dust.
- * And the SIX ARE NOT THE SAME DAB: each is the same recipe turned to its own angle (--ck-dab
- * below), so the lump, the skips and the specks point somewhere different on every mark. Six
- * identical marks is the other way to look manufactured.
+ * FOUR RULINGS GOT THE MARK HERE AND EACH ONE REVERSES PART OF THE LAST, so all four stand:
+ *   1. "Remove the X\O from both home screens." The ring had carried a TRANSPARENT border with
+ *      the letter inside it, so an empty one would have been invisible; the marks became six
+ *      DASHED RINGS, chalked in.
+ *   2. "Instead of an orange circle in the home screen make it a bullet." Only the PRESSED mark
+ *      was filled in. The other five kept their rings, on the argument that a dab that small
+ *      cannot read as chalk.
+ *   3. "You made only 1 bullet, instead all. Find a way to do it." He read that and overruled it:
+ *      all six became dabs, at rest and pressed, and the ring left the floor entirely. Making a
+ *      21px dab read as chalk rather than as a radio button is what that pass was, and the recipe
+ *      it produced is the one still in use below.
+ *   4. "Have only 1 bullet on wherever I am like before and remove the circles." He read SIX dabs
+ *      and threw the count out, not the drawing. So the COUNT goes back to what (2) had — one
+ *      bullet, on the mark you are on — and the five others lose their mark ALTOGETHER: no ring,
+ *      no dab, no dot. What stands at those five spots is the play's name and the chalk man
+ *      beside it, which is enough to find them by, and the floor is quieter for it. The dab that
+ *      survives is (3)'s dab and not (2)'s hard-edged disc.
  *
- * RESTING AND PRESSED ARE TOLD APART THREE WAYS, because with no ring-vs-dab difference left the
- * colour cannot carry it alone: the dab turns from the board's cream to --ck-orange, it GROWS
- * from 56% of the mark's box to 72% (which is two thirds more ink), and it goes to FULL strength
- * where a resting dab is held at 0.85. At 375 that is a 21px cream lump becoming a 27px orange
- * one, which is legible at arm's length.
- *
- * THE BOX IS THE FOOTPRINT AND IT HAS NOT MOVED. `.ck-glyph` is still clamp(38px, 7.6cqw, 98px)
- * — the ring's own diameter — and only what is DRAWN inside it changes, at rest or pressed. So
- * the name under it never moves, the man beside it (--ck-fig-gap, off the same centre) never has
- * to shuffle, the ball still lands where it always did, and the tap target is the size it was.
- * The tap target is not the dab: it is the whole `.ck-spot`, box plus gap plus the name under it,
- * which is 54px tall on a phone at its narrowest.
+ * WHY THE FOOTPRINT STAYS THOUGH THE FIVE ARE BLANK, and this is the whole risk in the change:
+ * the box was giving every mark its height. Take it away and the six names climb into the space
+ * the marks had, six tap targets fall to the height of one line of type (11px on a phone), and
+ * the selected one — the only one still drawing something — would sit on a different line from
+ * the other five. So `.ck-glyph` keeps clamp(38px, 7.6cqw, 98px) square whether anything is
+ * painted in it or not. Nothing on this floor moved: the six names sit on the same line they sat
+ * on, the men stand where they stood (--ck-fig-gap is measured off the same centre), the ball
+ * lands where it landed, and every `.ck-spot` is the size it was — 49x54 at its smallest on a
+ * 375px phone, against the 44 a thumb needs. Pressing a mark paints a dab INSIDE that reserved
+ * box and changes no measurement anywhere, so no name jumps when the bullet appears.
  */
 .ck-glyph {
   display: grid;
@@ -5874,75 +5862,6 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   width: clamp(38px, 7.6cqw, 98px);
   aspect-ratio: 1;
 }
-.ck-glyph::before {
-  content: '';
-  grid-area: 1 / 1;
-  /* the three stops of one pass of the stick, named so `.on` can repaint the whole dab by
-     restating three colours instead of seven gradients. They are --ck-chalk and --ck-orange
-     written out, because a custom property cannot be given an alpha inside a colour function
-     here. The resting cream is held UNDER full strength (0.85) on purpose: the marks are things
-     standing on the floor, and a mark brighter than the court it is drawn on would pull the eye
-     off the one that is actually pressed. */
-  --ck-dab-core: rgba(240, 234, 214, 0.85);
-  --ck-dab-mid: rgba(240, 234, 214, 0.52);
-  --ck-dab-edge: rgba(240, 234, 214, 0.14);
-  --ck-dab-w: 56%;
-  width: var(--ck-dab-w);
-  aspect-ratio: 1;
-  transform: rotate(var(--ck-dab, 0deg));
-  /* SEVEN LAYERS AND NOT ONE CLIP. Painted from the bottom of this list up, which is the order a
-     hand would do it in:
-       · THREE PASSES OF THE STICK (the last three), a big one and two smaller ones put down off
-         centre and overlapping. Their UNION is the silhouette, and that is the whole trick: a
-         border-radius would have given a lump too, but whatever silhouette you cut, the paint
-         runs up to the cut and stops dead, and a hard edge is the one thing a chalk mark does
-         not have. Three soft circles have no edge anywhere — each holds full body to about 78%
-         of its own radius and is gone by 100% — so the mark is a lump with dusty sides. It is
-         `--ck-smudge`'s profile, the soft disc the men's contact shadows are drawn with, pulled
-         tight enough to leave a body in the middle.
-       · TWO SPECKS thrown clear of it, at the size of a pixel or two. Chalk sheds.
-       · TWO THIN SPOTS on top, painted in the slate's own colour: over the dust they are where
-         the stick skipped, and over the slate outside the dab they ARE the slate, so they cost
-         nothing at the rim and need no clipping to stay inside the mark.
-     Nothing here is centred and nothing is symmetrical, which is the difference between a mark
-     somebody made and a shape a machine filled. */
-  background:
-    radial-gradient(12% 12% at 22% 64%, rgba(36, 53, 48, 0.5), rgba(36, 53, 48, 0) 100%),
-    radial-gradient(18% 18% at 61% 31%, rgba(36, 53, 48, 0.32), rgba(36, 53, 48, 0) 100%),
-    radial-gradient(7% 7% at 89% 21%, var(--ck-dab-mid), rgba(240, 234, 214, 0) 100%),
-    radial-gradient(5% 5% at 13% 85%, var(--ck-dab-mid), rgba(240, 234, 214, 0) 100%),
-    radial-gradient(
-      28% 28% at 66% 66%,
-      var(--ck-dab-core) 76%,
-      var(--ck-dab-mid) 90%,
-      var(--ck-dab-edge) 97%,
-      rgba(240, 234, 214, 0) 100%
-    ),
-    radial-gradient(
-      32% 32% at 36% 36%,
-      var(--ck-dab-core) 78%,
-      var(--ck-dab-mid) 91%,
-      var(--ck-dab-edge) 97%,
-      rgba(240, 234, 214, 0) 100%
-    ),
-    radial-gradient(
-      40% 40% at 50% 52%,
-      var(--ck-dab-core) 80%,
-      var(--ck-dab-mid) 92%,
-      var(--ck-dab-edge) 98%,
-      rgba(240, 234, 214, 0) 100%
-    );
-  transition: width 170ms ease;
-}
-/* the six turned to their own angles — see the dab note above. `nth-of-type` counts BUTTONS
-   inside the court and the six marks are the only ones there, so this needs nothing from
-   ChalkHome. The numbers are just six angles no two of which are near each other. */
-.ck-court > .ck-spot:nth-of-type(1) .ck-glyph::before { --ck-dab: 14deg; }
-.ck-court > .ck-spot:nth-of-type(2) .ck-glyph::before { --ck-dab: 122deg; }
-.ck-court > .ck-spot:nth-of-type(3) .ck-glyph::before { --ck-dab: 233deg; }
-.ck-court > .ck-spot:nth-of-type(4) .ck-glyph::before { --ck-dab: 68deg; }
-.ck-court > .ck-spot:nth-of-type(5) .ck-glyph::before { --ck-dab: 296deg; }
-.ck-court > .ck-spot:nth-of-type(6) .ck-glyph::before { --ck-dab: 175deg; }
 /**
  * THE NAME UNDER THE MARK, and since 2026-09-09 the cup stands on this line rather than inside
  * the mark — see `.ck-cup` below for why it had to move. The row is held to ONE LINE of the name
@@ -5969,25 +5888,100 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   white-space: nowrap;
 }
 /**
- * THE PRESSED MARK — his ruling: "instead of a yellow circle make it orange circle", and then,
- * when the first pass took the name with it, "Fix the label to be orange only on the circle." So
- * THE ORANGE IS THE MARK AND NOTHING ELSE and the name under it stays the slate's chalk yellow,
- * which is what it lit up in before. Reading it back on the floor he is right — the mark is what
- * the eye picks a play out by, and a second colour under it was the selection saying itself twice.
+ * THE BULLET — the ONE mark on this floor, standing in whichever spot you are on. His rulings, in
+ * the order they landed on it: "instead of a yellow circle make it orange circle"; then, when the
+ * first pass took the name orange with it, "Fix the label to be orange only on the circle"; then
+ * "make it a bullet"; then, on a board that had turned all six into bullets, "Have only 1 bullet
+ * on wherever I am like before and remove the circles."
  *
- * The pressed dab is bigger, oranger and denser than a resting one, and it is those three
- * together rather than the colour alone: see the dab note above for why the difference has to be
- * carried three ways now that both states are the same shape.
+ * THE ORANGE IS THE MARK AND NOTHING ELSE — the name under it lights the slate's chalk yellow,
+ * which is what it lit before, because the mark is what the eye picks a play out by and a second
+ * colour under it was the selection saying itself twice.
+ *
+ * WHAT MAKES A 27px DAB READ AS CHALK RATHER THAN AS A RADIO BUTTON, which is the whole of what
+ * the six-dab pass was for and is kept here word for word. A flat disc of one colour is the
+ * failure case — it is what the first bullet was, and reading it back on the board is what forced
+ * this recipe — so every one of these is aimed at something a machine would not have drawn:
+ *   · IT IS NOT A CIRCLE. The mark is the union of three overlapping passes of the stick, so the
+ *     silhouette is a lump. This survives 27px — the eye reads "wrong roundness" long before it
+ *     can count pixels.
+ *   · IT HAS NO EDGE. Every pass fades out over its own outer fifth instead of stopping, so the
+ *     mark is dusty all the way round. The first bullet faded over the outer SEVENTH of its
+ *     radius, which was under 2px on a phone: invisible, which is why it read as a flat disc.
+ *   · THE DENSITY IS UNEVEN. Two thin spots in the slate's own colour are where the stick
+ *     skipped, and the three passes are different sizes, so no two parts of the mark weigh the
+ *     same.
+ *   · IT SHEDS. Two specks sit clear of the body, one either side. Chalk throws dust.
+ *
+ * THE SIX ANGLES ARE GONE AND THAT IS THE RULING'S DOING. Each mark used to turn the same recipe
+ * to its own angle (--ck-dab, six values on six nth-of-type rules), because six identical dabs on
+ * one floor look manufactured. With only ONE dab ever on the board there is nothing for it to be
+ * identical to, so the six collapse to the single rotation below — the angle the campaign's mark
+ * carried, since the campaign is what the board opens on.
+ *
+ * IT IS PAINTED AT 72% OF THE MARK'S BOX and it does not grow, fade or transition into place:
+ * there is no resting dab left for it to grow OUT of, and the box it is painted in is reserved on
+ * all six marks whether it is painted or not, so a press changes colour on the floor and nothing
+ * else. See `.ck-glyph` above.
  *
  * THE FOCUS RING STAYS YELLOW. It says where the keyboard is, which is not the same question as
  * which play is pressed, and on a spot that is both you want to tell them apart — a yellow
  * OUTLINE standing off the mark against an orange FILL inside it.
  */
 .ck-spot.on .ck-glyph::before {
+  content: '';
+  grid-area: 1 / 1;
+  /* the three stops of one pass of the stick, named so the seven gradients below can be read as
+     one drawing rather than as twenty-one colours. This is --ck-orange written out, because a
+     custom property cannot be given an alpha inside a colour function here. */
   --ck-dab-core: rgba(255, 168, 102, 1);
   --ck-dab-mid: rgba(255, 168, 102, 0.68);
   --ck-dab-edge: rgba(255, 168, 102, 0.18);
-  --ck-dab-w: 72%;
+  width: 72%;
+  aspect-ratio: 1;
+  transform: rotate(14deg);
+  /* SEVEN LAYERS AND NOT ONE CLIP. Painted from the bottom of this list up, which is the order a
+     hand would do it in:
+       · THREE PASSES OF THE STICK (the last three), a big one and two smaller ones put down off
+         centre and overlapping. Their UNION is the silhouette, and that is the whole trick: a
+         border-radius would have given a lump too, but whatever silhouette you cut, the paint
+         runs up to the cut and stops dead, and a hard edge is the one thing a chalk mark does
+         not have. Three soft circles have no edge anywhere — each holds full body to about 78%
+         of its own radius and is gone by 100% — so the mark is a lump with dusty sides. It is
+         `--ck-smudge`'s profile, the soft disc the men's contact shadows are drawn with, pulled
+         tight enough to leave a body in the middle.
+       · TWO SPECKS thrown clear of it, at the size of a pixel or two. Chalk sheds.
+       · TWO THIN SPOTS on top, painted in the slate's own colour: over the dust they are where
+         the stick skipped, and over the slate outside the dab they ARE the slate, so they cost
+         nothing at the rim and need no clipping to stay inside the mark.
+     Nothing here is centred and nothing is symmetrical, which is the difference between a mark
+     somebody made and a shape a machine filled. */
+  background:
+    radial-gradient(12% 12% at 22% 64%, rgba(36, 53, 48, 0.5), rgba(36, 53, 48, 0) 100%),
+    radial-gradient(18% 18% at 61% 31%, rgba(36, 53, 48, 0.32), rgba(36, 53, 48, 0) 100%),
+    radial-gradient(7% 7% at 89% 21%, var(--ck-dab-mid), rgba(255, 168, 102, 0) 100%),
+    radial-gradient(5% 5% at 13% 85%, var(--ck-dab-mid), rgba(255, 168, 102, 0) 100%),
+    radial-gradient(
+      28% 28% at 66% 66%,
+      var(--ck-dab-core) 76%,
+      var(--ck-dab-mid) 90%,
+      var(--ck-dab-edge) 97%,
+      rgba(255, 168, 102, 0) 100%
+    ),
+    radial-gradient(
+      32% 32% at 36% 36%,
+      var(--ck-dab-core) 78%,
+      var(--ck-dab-mid) 91%,
+      var(--ck-dab-edge) 97%,
+      rgba(255, 168, 102, 0) 100%
+    ),
+    radial-gradient(
+      40% 40% at 50% 52%,
+      var(--ck-dab-core) 80%,
+      var(--ck-dab-mid) 92%,
+      var(--ck-dab-edge) 98%,
+      rgba(255, 168, 102, 0) 100%
+    );
 }
 .ck-spot.on .ck-label { color: var(--ck-yellow); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
@@ -6066,13 +6060,14 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    at exactly half reads late in space. */
 .ck {
   /* A man's height, the step he stands off his mark, how far below the mark's middle his feet
-     land, and the ball. All four carry a PIXEL FLOOR because the marks do: .ck-glyph cannot go
-     under 38px, so on a phone the step off the mark has to clear 38px of ring rather than the
-     7.6cqw the ring would otherwise be — without that floor a shoulder sits on a mark and a head
-     sits on a name at exactly the width his phone is. THE GAP ITSELF DID NOT MOVE when his ruling
-     of 2026-09-09 took the letters out and brought the rings in from 9.3cqw to 7.6: the men stand
-     exactly where they stood, so the pass lands exactly where it landed, and every man simply has
-     more air between him and his mark than he used to. */
+     land, and the ball. All four carry a PIXEL FLOOR because the marks do: .ck-glyph's box cannot
+     go under 38px, so on a phone the step off the mark has to clear 38px rather than the 7.6cqw
+     the box would otherwise be — without that floor a shoulder sits on a mark and a head sits on
+     a name at exactly the width his phone is. THE GAP HAS NOT MOVED THROUGH ANY OF THE FOUR
+     RULINGS ON THE MARK — the letters coming out, the box coming in from 9.3cqw to 7.6, all six
+     turning to dabs, and five of the six going blank. It is measured off the mark's CENTRE and
+     the mark's box is the size it has been throughout, so the men stand exactly where they stood
+     and the pass lands exactly where it landed. */
   --ck-fig-h: clamp(38px, 11.5cqw, 130px);
   --ck-fig-gap: clamp(36px, 9.1cqw, 112px);
   --ck-fig-drop: clamp(7px, 2cqw, 24px);
@@ -6508,11 +6503,11 @@ body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
    is what it is. Each selector below carries the same weight as the one it is beating and comes
    later in the file, so none of it needs !important. */
 @media (prefers-reduced-motion: reduce) {
-  /* the second of these is the dab growing on the press (see `.ck-glyph::before`); like every
-     other rule in here it is a transition over a resting state that is already correct, so
-     turning it off just makes the mark arrive at its pressed size in the same frame. */
-  .ck-spot,
-  .ck-glyph::before { transition: none; }
+  /* `.ck-glyph::before` USED TO BE LISTED HERE, for the dab growing from its resting size to its
+     pressed one. His ruling of 2026-09-09 — "Have only 1 bullet on wherever I am ... and remove
+     the circles" — left no resting dab to grow out of, so the bullet is simply painted in the
+     mark you are on and there is no transition on it to turn off. */
+  .ck-spot { transition: none; }
   .ck-p-turn.spin,
   .ck-p-idle,
   .ck-p.throw .ck-p-act,
