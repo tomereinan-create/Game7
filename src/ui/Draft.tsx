@@ -24,10 +24,14 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
-import { CoachSays, ManHead, ScoutsWord, TaleOfTheTape } from './UserRail'
+// COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
+// ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
+import { CoachSays } from './UserRail'
 import { myColor, teamColor } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
-import { LegsLeft, TipOff, TIPOFF } from './JerseyFive'
+// LegsLeft is no longer drawn here: it was the last block of user mode's game-night rail, which
+// his ruling of 2026-09-09 removed whole. It still lives in JerseyFive.
+import { TipOff, TIPOFF } from './JerseyFive'
 import { coachSays } from './coachSays'
 import type { Skin } from './LevelMap'
 
@@ -451,21 +455,13 @@ export function Draft({
   const planCalled = !!plan && JSON.stringify(plan) !== JSON.stringify(gateTactics(DEFAULT_TACTICS, playbookRank(wallet)))
   /** What the plan is worth on this five against THIS opponent, for the sheet's head. */
   const planWorth = called ? tacticsWorth(called, playbookRank(wallet), five, opponent.players) : null
-  /**
-   * WHOSE SEASON THE USER-MODE RAIL IS SHOWING. The bundle's rail heads on one man, read in the
-   * order he touched them: the man he has selected off the wheel, and failing that the last man he
-   * actually drafted — so the rail says something the moment the first pick lands and never goes
-   * blank again mid-draft. A man tapped on the court used to head it too, by way of the band; that
-   * tap opens his full card now, which says everything the rail would and more, so the rail stays
-   * on the man he is choosing.
+  /*
+   * `focus` STOOD HERE AND IS GONE (his ruling, 2026-09-09: "Remove the player info on buttom
+   * right from user mode."). It read the man user mode's rail was heading on — the man selected
+   * off the wheel, failing that the last man drafted — and nothing on this screen asks that
+   * question any more: the rail it fed has been taken off, and a man's own card, which says
+   * everything it said and more, is still one tap away on the floor and on every row.
    */
-  const focus = (() => {
-    for (const n of [sel, picks[picks.length - 1]]) {
-      const p = n ? BY_NAME.get(n) : null
-      if (p) return p
-    }
-    return null
-  })()
   /**
    * THE WHEEL'S ROSTER SCROLLS IN ITS OWN BOX (his ruling). The cap is MEASURED rather than a vh
    * guess: what is above the list — the card head, the two reels, the team and its season line,
@@ -479,6 +475,31 @@ export function Draft({
    */
   const rosterList = useRef<HTMLDivElement | null>(null)
   const [rosterEnd, setRosterEnd] = useState(false)
+  /**
+   * THE TWO FLOORS STAND ON ONE LINE (his ruling, 2026-09-09: "In both modes, have both 5s the
+   * same size and alligned").
+   *
+   * MEASURED FIRST. Both courts are the same one rule — `width: 100%; max-width: 430px` inside two
+   * `0.85fr` columns — and at 375, 414, 720, 900, 1024, 1150, 1280, 1440 and 1920, in both modes,
+   * with and without the cap, they draw to the pixel the same: 321.0 wide at 375, 347.9 at 1440,
+   * 430.0 at 1920, on both sides. NOTHING WAS EVER DIFFERENT ABOUT THEIR SIZE. What is different
+   * is where each one STARTS, because the two cards do not carry the same things above their
+   * floors: the opponent's has a headline — the team and its season at 28px — where yours goes
+   * straight from the card head to the boards. At 1440 that is 72.7px in user mode; in scout mode
+   * the `Full analysis →` door above your card pays part of it back and the gap is 32.7px. A floor
+   * that starts seventy pixels below the other reads as a smaller floor, which is the whole of
+   * what he was looking at.
+   *
+   * SO THE FIX IS THE START LINE, NOT THE SIZE. Whichever floor sits higher is dropped to meet the
+   * other, and after that the two fives stand on one line and can be read across. The lower floor
+   * is never lifted: what is above it are the words that say who these men are.
+   *
+   * ONLY SIDE BY SIDE. Under 900 the columns stack and there is no line to share — the floors are
+   * already the same size, one above the other, which is a phone's own idea of aligned — so the
+   * pad comes off and nothing moves.
+   */
+  const oppFloor = useRef<HTMLDivElement | null>(null)
+  const myFloor = useRef<HTMLDivElement | null>(null)
   const onRosterScroll = () => {
     const el = rosterList.current
     if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
@@ -518,9 +539,35 @@ export function Draft({
         list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
         setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
       }
+      /* HIS RULING: "In both modes, have both 5s the same size and alligned." See `oppFloor` above
+         for what was measured and why this is a start line rather than a size. Written straight
+         onto the two elements, the way the roster's cap above is, so nothing re-renders: the pads
+         come off first, the two tops are then read out of the same layout, and the higher floor
+         takes the difference. Both reads are viewport-relative, so it holds however far apart the
+         two CARDS start — in scout mode your column opens with the analysis door and the
+         opponent's does not. */
+      const [a, c] = [oppFloor.current, myFloor.current]
+      if (a) a.style.paddingTop = ''
+      if (c) c.style.paddingTop = ''
+      // the FLOOR ITSELF, not its wrapper — the wrapper carries the margins (see `.court-line`),
+      // so its own top is one 10px step above the boards and the line we are setting is the boards
+      const floor = (el: HTMLDivElement) => (el.firstElementChild ?? el).getBoundingClientRect().top
+      if (a && c && !stacked) {
+        const [ta, tc] = [floor(a), floor(c)]
+        const line = Math.max(ta, tc)
+        if (line - ta >= 1) a.style.paddingTop = `${Math.round(line - ta)}px`
+        if (line - tc >= 1) c.style.paddingTop = `${Math.round(line - tc)}px`
+      }
     }
     measure()
     window.addEventListener('resize', measure)
+    /* AND AGAIN WHEN THE TYPE LANDS. The app's faces are web fonts, and everything above the two
+       floors is words — the opponent's headline is 28px serif, the labels are mono. Until those
+       arrive the browser is drawing fallbacks at other heights, so a line taken at first paint is
+       a line taken against the wrong words: measured in the harness, the floors ended up 8 to 16px
+       apart when the swap landed after the read. Resolved once and for all after that, so on every
+       later render this is the same measure() the line above already ran. */
+    document.fonts?.ready.then(measure).catch(() => {})
     return () => window.removeEventListener('resize', measure)
   })
   /**
@@ -587,6 +634,17 @@ export function Draft({
     [full, assignment, five.map((p) => p.name).join('|'), opponent],
   )
   const naiveMap = full && assignment === 'naive' ? naiveAssignment(five, opponent.players) : null
+  /**
+   * COACHING TIPS — the whole of user mode's third column now (his ruling, 2026-09-09: "Add
+   * coacing tips category instead."). Three sentences off the five that is about to play and the
+   * five across from it: who the ball goes to, who has their best man, and where the glass stands.
+   * Every one is a FACT said out loud; not one of them is a rating, a spread or a verdict on a
+   * pick, which is what keeps them inside user mode at all.
+   *
+   * Empty until BOTH fives are five — see `coachSays`, which returns nothing before then — so the
+   * card that draws them simply is not there while the draft is still going on.
+   */
+  const tips = user && full ? coachSays(five, opponent.players, assignment) : []
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
@@ -1204,20 +1262,29 @@ export function Draft({
           </span>
           <span className="cap">Season lines</span>
         </div>
-        <div className="opp-name">{opponent.team}</div>
-        {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
-        <div className="opp-line">
-          {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
-              an advert for the node that sells them. User mode plays blind, so the line stops at
-              what the team actually was: its record, or what a five that never played a season is. */}
-          {opponent.record ?? opponent.tag ? `${opponent.record ?? opponent.tag}${user ? '' : ' · '}` : ''}
-          {user ? null : (
-            <>
-              vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET {theirs.net > 0 ? '+' : ''}
-              {theirs.net.toFixed(1)}
-            </>
-          )}
+        {/* HIS RULING, 2026-09-09: "Instead of Orlando Magic / 45–37. Have Orlando Magic 26'." The
+            headline is the team AND THE SEASON IT PLAYED, written the way every card in this app
+            writes a season — `Jalen Suggs '26` — rather than his shorthand. A five that never
+            played one (the all-time franchise fives, the customs) has no year to print and gets
+            its name alone: a lone apostrophe is not a season.
+            THE RECORD HAS NOT GONE ANYWHERE. It reads in this card's own head one line above —
+            LEVEL 16 OPPONENT · 45–37 — and for a five with no record the head prints the tag
+            there instead ("all-time", "the 1990s"), which is what let the line below drop it. */}
+        <div className="opp-name">
+          {opponent.team}
+          {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
         </div>
+        {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
+        {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
+            an advert for the node that sells them. User mode plays blind, and with the record gone
+            up into the headline's own head there is nothing left on this line for it: the line is
+            scout mode's alone now, and in user mode it is not drawn at all. */}
+        {user ? null : (
+          <div className="opp-line">
+            vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET {theirs.net > 0 ? '+' : ''}
+            {theirs.net.toFixed(1)}
+          </div>
+        )}
         {user ? null : (
           <div className="opp-line">
             {has('scout_ratings')
@@ -1229,16 +1296,19 @@ export function Draft({
             db and My team draw. Their tactics are unknown pre-series, so no plan: balanced shape.
             Names and slots are what the roster list below already shows ungated; the OVR on a tag
             is the Scout node's reward, so it rides the same rank-2 gate as the numbers block. */}
-        <CourtFive
-          /* His ruling: the opponent's five stand in the opponent's colours. Scout mode only —
-             user mode's floor is the one the bundle drew, and the bundle draws it in blue. */
-          club={user ? null : teamColor(opponent.ab)}
-          spots={opponent.players.map((p, i) => ({
-            p,
-            tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
-            onTap: () => openCard(p),
-          }))}
-        />
+        {/* the wrapper is the start line his ruling asks for and nothing else — see `oppFloor` */}
+        <div className="court-line" ref={oppFloor}>
+          <CourtFive
+            /* His ruling: the opponent's five stand in the opponent's colours. Scout mode only —
+               user mode's floor is the one the bundle drew, and the bundle draws it in blue. */
+            club={user ? null : teamColor(opponent.ab)}
+            spots={opponent.players.map((p, i) => ({
+              p,
+              tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
+              onTap: () => openCard(p),
+            }))}
+          />
+        </div>
         {rank(wallet, 'scout_ratings') >= 2 ? (
           <div className="oppmen">
             {opponent.players.map((p) => (
@@ -1710,6 +1780,8 @@ export function Draft({
             rows={fiveRows}
           />
         ) : (
+        /* the wrapper is the start line his ruling asks for and nothing else — see `oppFloor` */
+        <div className="court-line" ref={myFloor}>
         <CourtFive
           /* HIS RULING: "Allow me to pick my team colors when starting a campaign." This floor is
              YOURS, so it stands in the kit picked on the name screen. `myColor` is null for a
@@ -1751,13 +1823,18 @@ export function Draft({
             }
           })}
         />
+        </div>
         )}
         {/* THE FIVE IS STILL BEING BUILT, so the rows follow the court they are filling. Once it
             is set they go INSIDE the tip-off instead — see the panel above and `.tip-rows`. */}
         {full ? null : fiveRows}
       </div>
 
-      {five.length > 1 ? <div className="cap hint">Drag a player onto another position, or tap him to pick one.</div> : null}
+      {/* THE HINT UNDER THE FLOOR IS GONE, in both modes — his ruling of 2026-09-09 opens its list
+          with it: "Remove Drag a player onto another position, or tap him to pick one. / See every
+          player → / …". It stood here whenever two men were in, saying out loud what the rings
+          already teach the first time a man is held: the ring he is over lights, the ones he
+          cannot take go cold. He named no mode, so it goes from both. */}
       {drag ? (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }}>
           {slots[drag.from]}
@@ -1770,39 +1847,37 @@ export function Draft({
           {pull.over ? <em>{canDrop(pull.name, pull.over) ? `→ ${pull.over}` : `not ${pull.over}`}</em> : null}
         </div>
       ) : null}
-      <button className="linkb" onClick={onRoster}>
-        See every player →
-      </button>
-      {/* THE FIVE IS SET, SO THE ROOM CHANGES. Up to here the rail has been scouting one man at a
-          time; a full five turns this screen into the bundle's game night, and the rail turns with
-          it — who you are playing, what their three biggest men really did, what a coach would say
-          out loud, and how much is left in your own legs. */}
-      {user && full ? (
+      {/* `SEE EVERY PLAYER →` STOOD HERE AND IS GONE, in both modes (his ruling, 2026-09-09, second
+          in the same list). It was the last door into the player database from user mode — the
+          front door's book row is scout mode's alone — and that is the point of taking it off: a
+          searchable table of every card in the game is a scouting tool, and user mode plays blind.
+          `onRoster` is still a live prop: the worn-out-man button in the dock falls back to it when
+          the death match has no My team door to give (`onMyTeam ?? onRoster`), so it stays wired. */}
+
+      {/* THE GAME-NIGHT RAIL IS GONE, and so is the man's own rail before it (his rulings,
+          2026-09-09: "Remove the player info on buttom right from user mode." and the list that
+          runs "Level 16 · best of 7 / 45–37 / Orlando Magic / Tale of the tape / … / Legs left in
+          the five").
+
+          WHAT STOOD HERE. Before the five was full: the man you last touched, his season on
+          franchise blue, his three headline numbers and the archetype's sentence under THE
+          SCOUT'S WORD. Once it was full: the blue head naming the level, the record and the
+          opponent, then Tale of the tape, What your coach says and Legs left in the five.
+
+          WHAT STANDS HERE NOW: one section, and it is the third of those four — "Add coacing tips
+          category instead." `coachSays` is already exactly that content — the three things scout
+          mode prices as keys, said out loud with the number taken off — so nothing new is computed
+          here; it is the same sentences under the heading he named, alone in the card.
+
+          IT CANNOT STAND BEFORE THE FIVE IS FULL, and that is the ruling's own arithmetic rather
+          than a choice: every tip is read off YOUR five AND THEIRS together — who the ball goes
+          to on this floor, who has their best man, whose two bigs want the glass — so `coachSays`
+          returns nothing at all until both fives are five. With two men drafted there is no tip to
+          give, and an empty box captioned COACHING TIPS is worse than no box. So the column is
+          bare while the five is being built and carries the tips the moment it is complete. */}
+      {user && full && tips.length ? (
         <div className="card um-rail">
-          <div className="um-head">
-            <span className="um-kick">
-              Level {opponent.round} · best of {toWin * 2 - 1}
-            </span>
-            <b>{opponent.record ?? opponent.tag ?? opponent.team}</b>
-            <i>
-              {opponent.team}
-              {opponent.champion ? ' · champions' : ''}
-            </i>
-          </div>
-          <TaleOfTheTape theirs={opponent.players} />
-          <CoachSays lines={coachSays(five, opponent.players, assignment)} />
-          <LegsLeft five={five} wear={carried ? (n) => left(n) : undefined} />
-        </div>
-      ) : user && focus ? (
-        /* HIS RULING takes the rest of this rail off: the quiet head ("Spin 1 of 5 / The wheel /
-           Tap a man to read his season") and the progress strip under it ("None in yet · 5 to go
-           · Playing blind…") were the screen narrating itself — the wheel card two columns over
-           already counts the spin and names the open rings, and the five's own card counts the
-           picks. What is left is the one thing nothing else says: the man you are looking at. With
-           nobody in focus the rail does not stand there empty; it is not there. */
-        <div className="card um-rail">
-          <ManHead p={focus} />
-          <ScoutsWord p={focus} />
+          <CoachSays lines={tips} />
         </div>
       ) : null}
       </section>

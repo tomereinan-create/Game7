@@ -128,6 +128,11 @@ export function JerseyFive({
  * LEGS LEFT IN THE FIVE — five durability bars keyed to the shirts above them. Durability is a
  * card attribute, not a verdict on the pick, so it stands in user mode; in the death match it
  * reads the WORN value, which is the number that decides whether he can take the floor at all.
+ *
+ * NOTHING CALLS IT ON THE DRAFT ANY MORE. It was the last block of user mode's game-night rail,
+ * and his ruling of 2026-09-09 named that rail line by line down to "Legs left in the five / [four
+ * numbers]" and took the whole of it off. Kept here whole: the block is sound, the wear it reads
+ * is still the death match's own rule, and the draft is not the only screen that could ask.
  */
 export function LegsLeft({ five, wear }: { five: Player[]; wear?: (name: string) => number }) {
   if (!five.length) return null

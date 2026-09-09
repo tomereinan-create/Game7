@@ -3050,6 +3050,24 @@ body:has(.sheet) .map-fab { display: none; }
 
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
+/* THE START LINE THE TWO FLOORS SHARE, on the draft (his ruling, 2026-09-09: "In both modes, have
+   both 5s the same size and alligned"). The floors were always the same size — one rule, two
+   columns of the same 0.85fr, measured identical at every width from 375 to 1920 — but they did
+   not START together, because the opponent's card carries a headline above its boards and your own
+   card does not. No rule here can close that: what stands above each floor is different in each
+   mode and changes with the cap. So this is only the handle. Draft.tsx measures both floors in one
+   layout pass and writes a `padding-top` here on whichever one sits higher, and only while the two
+   columns are side by side — see `oppFloor` there. Stacked on a phone there is no line to share.
+
+   THE WRAPPER TAKES THE FLOOR'S MARGINS AND THE FLOOR GIVES THEM UP, which is not tidiness — it is
+   what makes the padding mean what it says. Left on the court, that 10px top margin COLLAPSES out
+   through an unpadded wrapper and stops the instant a padding is written, so a floor asked to move
+   80px moved 88 and landed eight pixels past the line (measured: the salary cap's scout column,
+   whose opp-line above leaves an 8px margin of its own). With the margins out here the box is the
+   same box padded or not: the air above and below the floor is the 10 and the 6 it has always
+   been, and the padding is exactly the distance it was handed. */
+.court-line { min-width: 0; margin: 10px 0 6px; }
+.court-line > .court { margin-top: 0; margin-bottom: 0; }
 /* the ghost ring of an unfilled slot: the position stands in for the man */
 .ct-init.ghost { color: var(--ink-2); font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; }
 .ct-spot.drop-ok .ct-bust { border-color: var(--you); border-style: solid; background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
