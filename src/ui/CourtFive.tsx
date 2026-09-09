@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { cardInk, type TeamColor } from './teamColors'
@@ -47,6 +47,14 @@ export interface CourtSpot {
   slot?: string
   /** Live drag feedback: true = this drop is legal, false = it is not, null/undefined = not the target. */
   dropOk?: boolean | null
+  /**
+   * HIS RULING: "When holding down on a player to move/draft him a position, show the elgible
+   * positions." Where `dropOk` above speaks about the ONE ring under his finger, this speaks
+   * about every ring the moment the hold begins: true = a man in hand may land here, false = he
+   * may not and the ring goes quiet (never hidden — he still has to read the five he is standing
+   * in), null/undefined = nobody is holding anybody and the floor is at rest.
+   */
+  dropAble?: boolean | null
 }
 
 type XY = readonly [number, number]
@@ -479,7 +487,9 @@ function Spot({
     <button
       className={`ct-spot ${s.danger ? 'danger' : ''} ${s.on ? 'on' : ''} ${s.dim ? 'dim' : ''} ${s.p ? '' : 'ct-open'} ${
         s.dropOk === true ? 'drop-ok' : s.dropOk === false ? 'drop-no' : ''
-      } ${drag?.lifted ? 'lifted' : ''} ${drag ? 'grab' : ''}`}
+      } ${s.dropAble === true ? 'drop-able' : s.dropAble === false ? 'drop-cold' : ''} ${drag?.lifted ? 'lifted' : ''} ${
+        drag ? 'grab' : ''
+      }`}
       style={{ left: `${at[0]}%`, top: `${at[1]}%` }}
       data-slot={s.slot}
       onPointerDown={drag?.onDown}
@@ -558,6 +568,20 @@ export function CourtFive({
    */
   const dragRef = useRef<{ from: string; x0: number; y0: number; moved: boolean } | null>(null)
   const [drag, setDrag] = useState<{ from: string; over: string | null } | null>(null)
+  /**
+   * HIS RULING: "When holding down on a player to move/draft him a position, show the elgible
+   * positions." A HOLD, not a travel, is what he described — so the same 300ms the draft's own
+   * press-and-drag uses opens the move here: hold a man on his ring and the floor answers before
+   * he has gone anywhere. Releasing without moving is still a tap, because that is decided off
+   * `moved` in the ref and never off this.
+   */
+  const HOLD_MS = 300
+  const holdRef = useRef<number | null>(null)
+  const unhold = () => {
+    if (holdRef.current) window.clearTimeout(holdRef.current)
+    holdRef.current = null
+  }
+  useEffect(() => unhold, [])
   const slotAt = (x: number, y: number): string | null =>
     document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-slot]')?.dataset.slot ?? null
   const dragFor = (s: CourtSpot) => {
@@ -569,17 +593,23 @@ export function CourtFive({
         if (e.button !== 0 && e.pointerType === 'mouse') return
         dragRef.current = { from, x0: e.clientX, y0: e.clientY, moved: false }
         ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+        unhold()
+        holdRef.current = window.setTimeout(() => {
+          if (dragRef.current) setDrag({ from, over: null })
+        }, HOLD_MS)
       },
       onMove: (e: ReactPointerEvent) => {
         const d = dragRef.current
         if (!d) return
         if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 8) return
         d.moved = true
+        unhold() // travelling: the hold has done its job and the drag takes over
         setDrag({ from: d.from, over: slotAt(e.clientX, e.clientY) })
       },
       onUp: (e: ReactPointerEvent) => {
         const d = dragRef.current
         dragRef.current = null
+        unhold()
         if (!d) return
         if (d.moved) {
           const to = slotAt(e.clientX, e.clientY)
@@ -592,6 +622,7 @@ export function CourtFive({
       },
       onCancel: () => {
         dragRef.current = null
+        unhold()
         setDrag(null)
       },
     }
@@ -703,7 +734,12 @@ export function CourtFive({
           key={s.p ? s.p.name : `open-${i}`}
           s={
             swap && drag && s.slot
-              ? { ...s, dropOk: drag.over === s.slot && drag.from !== s.slot ? swap.can(drag.from, s.slot) : null }
+              ? {
+                  ...s,
+                  dropOk: drag.over === s.slot && drag.from !== s.slot ? swap.can(drag.from, s.slot) : null,
+                  // his ruling: while the man is held, every ring says whether it will take him
+                  dropAble: drag.from === s.slot ? null : swap.can(drag.from, s.slot),
+                }
               : s
           }
           at={[at[i][0], y(at[i][1])]}

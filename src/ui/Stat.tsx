@@ -121,11 +121,46 @@ export function leagueTS(p: Player) {
 }
 
 /**
+ * THE DOOR TO THE MAN'S CARD, drawn as a person (his ruling: "Instead of the player page being
+ * shown when pressing on the player's name, add a small human icon once you open the stats, that
+ * will lead you there."). A head and a pair of shoulders, stroked in the weight the map and the
+ * chevrons on this screen are stroked in — the app's own hand, never an emoji. The button is
+ * 44px so a thumb can find it, and it names the man out loud for a screen reader.
+ *
+ * It stands in the box score's fifteenth cell: fourteen numbers in a five-wide grid always leave
+ * the last one empty, so the door lands in a hole that was already there, aligned with the
+ * numbers instead of crowding the season line.
+ */
+export function CardDoor({ p, onOpen }: { p: Player; onOpen: () => void }) {
+  return (
+    <button
+      className="pcard-door"
+      aria-label={`Open ${p.name}'s player card`}
+      title={`${p.name} — player card`}
+      onClick={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        onOpen()
+      }}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden>
+        <circle cx="12" cy="7.6" r="3.7" fill="none" stroke="currentColor" strokeWidth="1.9" />
+        <path d="M4.6 20.4c0-3.9 3.3-6.6 7.4-6.6s7.4 2.7 7.4 6.6" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+      </svg>
+    </button>
+  )
+}
+
+/**
  * The tap-open panel. `full` = season line + the 17 attributes by category +
  * the Advanced window; `stats` = the season line only (the draft scouts on
  * what a player actually did, not on his ratings).
+ *
+ * `onCard` hangs the person icon above in the panel — the ONLY way into the man's card on a
+ * screen whose rows have given up their name-as-a-door (his ruling, above). A panel without it
+ * is unchanged.
  */
-export function DetailGrid({ p, mode = 'full' }: { p: Player; mode?: 'full' | 'stats' }) {
+export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'full' | 'stats'; onCard?: () => void }) {
   const inferred = !p.attrs.rim_mid_measured
   const line = LINES[p.name] ?? null
   const [adv, setAdv] = useState(false)
@@ -146,6 +181,17 @@ export function DetailGrid({ p, mode = 'full' }: { p: Player; mode?: 'full' | 's
               {b.k === 'ts' && lgTS ? <span className="bvs">vs league {lgTS}</span> : null}
             </span>
           ))}
+          {/* the fifteenth cell: fourteen numbers never fill the last row, so the door stands there */}
+          {onCard ? (
+            <span className="bcell bdoor">
+              <CardDoor p={p} onOpen={onCard} />
+            </span>
+          ) : null}
+        </span>
+      ) : onCard ? (
+        // no season line on file, so no grid to hang the door in: it gets a line of its own
+        <span className="bdoor solo">
+          <CardDoor p={p} onOpen={onCard} />
         </span>
       ) : null}
       {mode === 'stats' ? null : (
