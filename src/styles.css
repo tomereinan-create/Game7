@@ -752,6 +752,26 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+/* THE THREE-DOOR DOCK (his ruling: "Add a rematch button, and advance(If you win your latest
+   stage…)"). Three across would give each door a third of the dock, and at 375 that is a 114px
+   slot — too narrow for "Back to the map", which is his word and has to survive. So the dock takes
+   two rows instead: the ways BACK share the top one, and the way ON stands alone across the foot
+   in gold, nearest the thumb. Every door is a full 52px tall and at least 169px wide, well past
+   the 44 a finger needs. */
+.dock-inner.stack {
+  display: grid;
+  gap: 10px;
+}
+.dock-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+/* The page's bottom padding is cut for a one-row dock; the taller one brings its own floor so the
+   last card is not read from under the gradient. */
+.dock-extra {
+  height: 64px;
+}
 /* THE ARCADE BUTTON — 2px border and a hard shadow under it rather than a soft one, and a press
    that actually travels: the button falls the height of its own shadow and lands flat. No
    transition on the way down, so the press is instant and the release is the only easing. */
@@ -1931,6 +1951,9 @@ button {
     height: 78px;
     font-size: 19px;
     border-radius: 9px;
+  }
+  .dock-extra {
+    height: 96px;
   }
   .hero h1 {
     font-size: 99px;
