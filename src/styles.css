@@ -3806,10 +3806,6 @@ body.offstage #root { position: relative; z-index: 1; }
 .gauge-basis { display: block; width: 100%; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-top: 1px; }
 .node-dials { flex-wrap: wrap; }
 
-.freshness-probe-64410 {
-  color: #123456;
-}
-
 /* ==========================================================================
    THE CAMPAIGN MAP'S TWO SKINS — his ruling on the Campaign Map canvas:
    "I want the first 30 games to be 1b, and then we move to 1c."
