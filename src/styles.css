@@ -1311,12 +1311,20 @@ button {
    ledger still lines up with the names above it, and there is nothing to scroll sideways to. The
    selected row bleeds the same 12px and for the same reason, so it comes in with the panel and the
    two stay one band. Only where the box is a scroller: below 900px the list runs its full length
-   and the bleed is the look it has always had. */
+   and the bleed is the look it has always had.
+
+   THE PADDING IS NOT ZEROED WITH THE MARGINS, and that is the whole of his report of 2026-09-09:
+   "notice how the begging of the name and the position are right on the line." The overflow came
+   from the negative MARGIN alone (`margin: 0 -12px` with `width: calc(100% + 24px)`); taking the
+   PADDING with it was an over-correction, and it pushed the man's name and his position line hard
+   against the left edge of their own highlight, with the 2px accent bar running under the first
+   letter. `box-sizing: border-box` is global, so the base 12px sits INSIDE the 100% and indents
+   the type without a pixel of scroll coming back. */
 @media (min-width: 900px) {
   .spin-roster .pdetail,
   .spin-roster .row.on,
   .spin-roster .row.on2,
-  .spin-roster .row.exp { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; width: 100%; }
+  .spin-roster .row.exp { margin-left: 0; margin-right: 0; width: 100%; }
 }
 /* HIS RULING: the men lead the stack at every width. He must never scroll to reach the five
    he is deciding between, so the roster box is first on a phone and leftmost on a desk. */
