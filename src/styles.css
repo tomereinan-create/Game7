@@ -2989,6 +2989,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
    back to the map must not float over it: a press there would leave the level with the sheet still
    standing. Home stays, because going home from anywhere is the same thing wherever you are. */
 body:has(.sheet) .map-fab { display: none; }
+/* ONE SCROLLER AT A TIME (E10b). A sheet is `position: fixed; inset: 0` with its own
+   `overflow-y: auto` — it covers the page but does not replace it, so while it stands there are two
+   scrollable things stacked: the sheet in front and the whole draft behind it. On a desk that draws
+   two scrollbars side by side, and Full Analysis was the screen he saw it on. Worse on a phone: a
+   drag that starts past the sheet's own content, or a wheel over its edge, moves the page you can't
+   see, and closing the sheet drops you somewhere you never scrolled to. The page is frozen for as
+   long as a sheet is up. `overflow: hidden` only takes the SCROLLING away — the page keeps its
+   height and its scrollTop, so closing the sheet puts him back on the row he opened it from. */
+body:has(.sheet) { overflow: hidden; }
 .topbar { padding-right: 44px; }
 @media (min-width: 900px) {
   .home-fab, .map-fab { top: 14px; width: 52px; height: 52px; }
