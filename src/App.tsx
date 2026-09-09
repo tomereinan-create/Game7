@@ -81,6 +81,8 @@ interface Pending {
   assignment: Assignment
   /** Achievements read the moment of the sim: the resolver's pre-series odds and the called plan. */
   pre: number
+  /** The noise the series was simmed at — paced (r57), not the bare SIGMA. A12. */
+  sigma: number
   plan: Tactics | null
   pc: { ours: number; theirs: number; margin: number } | null
   /**
@@ -232,6 +234,7 @@ export default function App() {
       assignment,
       boxCtx,
       pre,
+      sigma: sig,
       plan,
       pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
       next: advanceTo(prog, level, result.won),
@@ -619,6 +622,7 @@ export default function App() {
         {homeFab}
         <Series
           boxCtx={pending.boxCtx ?? null}
+          sigma={pending.sigma}
           opponent={opponent}
           five={pending.five}
           mine={pending.mine}

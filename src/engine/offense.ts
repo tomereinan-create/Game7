@@ -698,6 +698,27 @@ export function readsOf(them: Player[]): Reads {
   }
 }
 
+/**
+ * A RATING IS A RATING OF FIVE MEN (A11 / A14, 2026-09-09). Every team number in this file is
+ * built from a whole lineup; hand it three men and it still returns a float, and that float is a
+ * clamp rather than a reading. Two places were printing those clamps:
+ *
+ *   A11  a partial five's `drtgRef` sits ABOVE DEF_WORST (113.1, the worst five ever fielded) —
+ *        one man 117.7, two men 114.1 — so the DEF dial pinned to its floor of 1 until the third
+ *        man arrived. It looked like the dial needed a PF; it only needed a fifth defender. The
+ *        OFF dial unpinned one man earlier because OFF_MIN sits where it sits, and that gap is
+ *        the whole of the "offense moves, defense is frozen" report.
+ *   A14  `defenseVs(them, mine)` against an EMPTY side gives their anchor nothing to hide behind
+ *        and their hunted man nobody to be hunted by, so their NET jumped +8.0 -> +14.3 the moment
+ *        the first card landed and drifted back down from there. Every man added looked like it
+ *        was helping them.
+ *
+ * Neither is a division by zero and neither needs a formula change — the numbers must simply not
+ * be shown until there are five. Callers gate on this.
+ */
+export const RATEABLE = 5
+export const isRateable = (five: Player[]) => five.length === RATEABLE
+
 export interface TeamRating {
   off: number
   didx: number

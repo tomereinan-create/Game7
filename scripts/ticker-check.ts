@@ -1,8 +1,11 @@
 /** Sanity-check Game 7 pacing: how many ticks, how long the feed actually runs. */
 import OPPONENTS from '../src/data/opponents.json'
+import STATS from '../src/data/stats.json'
 import { makeRng } from '../src/engine/rng'
 import { buildTicker } from '../src/engine/ticker'
-import type { Opponent } from '../src/engine/types'
+import type { Opponent, StatLine } from '../src/engine/types'
+
+const LINES = STATS as Record<string, StatLine | null>
 
 const FAST = 75
 const SLOW = 240
@@ -20,7 +23,7 @@ for (const margin of [1, 3, 5, 8, 14, 25, -2, -6, -20]) {
   let sample = ''
   const N = 200
   for (let i = 0; i < N; i++) {
-    const t = buildTicker(margin, us, them, makeRng(9000 + i))
+    const t = buildTicker(margin, us, them, makeRng(9000 + i), LINES)
     ticks += t.ticks.length
     slow += t.ticks.filter((x) => x.slow).length
     const q4 = t.ticks.findIndex((x) => x.q === 4)
@@ -38,7 +41,7 @@ for (const margin of [1, 3, 5, 8, 14, 25, -2, -6, -20]) {
 let bad = 0
 for (let i = 0; i < 3000; i++) {
   const m = (i % 61) - 30
-  const t = buildTicker(m, us, them, makeRng(i * 31 + 5))
+  const t = buildTicker(m, us, them, makeRng(i * 31 + 5), LINES)
   const last = t.ticks[t.ticks.length - 1]
   if (last.us !== t.us || last.them !== t.them) bad++
   if (t.ticks.some((x, k) => k > 0 && (x.us < t.ticks[k - 1].us || x.them < t.ticks[k - 1].them))) bad++

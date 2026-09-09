@@ -272,14 +272,47 @@ export interface PlayerBox {
 }
 
 /** Largest-remainder apportionment: integer shares that sum to `total` exactly. */
-export function apportion(total: number, weights: number[]): number[] {
+export function apportion(total: number, weights: number[], rng?: Rng): number[] {
   const W = sum(weights)
   if (total <= 0 || W <= 0) return weights.map(() => 0)
   const raw = weights.map((w) => (total * w) / W)
   const out = raw.map(Math.floor)
   let left = total - sum(out)
-  const order = raw.map((v, i) => [v - Math.floor(v), i] as const).sort((a, b) => b[0] - a[0])
-  for (let k = 0; left > 0 && k < order.length; k++, left--) out[order[k][1]]++
+  const frac = raw.map((v) => v - Math.floor(v))
+  if (!rng) {
+    // No stream: biggest fractional part first. Deterministic, and therefore STICKY — the same
+    // man wins the same leftover every game. Kept only for callers with no rng of their own.
+    const order = frac.map((v, i) => [v, i] as const).sort((a, b) => b[0] - a[0])
+    for (let k = 0; left > 0 && k < order.length; k++, left--) out[order[k][1]]++
+    return out
+  }
+  /**
+   * A10 (2026-09-09): with an rng the leftover is SAMPLED, not awarded. A team blocks about five
+   * shots a night and there are five men to give them to, so 48% of man-pairs land on the same
+   * integer — and under the deterministic rule it was the same integer every game, which is why a
+   * four-game series printed exactly 1.0 blocks for all ten players and Kessler took 0.0 steals
+   * across seven. Systematic sampling: one uniform draw, then walk the fractional parts. Each man
+   * is taken with probability exactly equal to his own fraction, so his AVERAGE over a series is
+   * his true share, the leftover count is exactly right, and PTS == the ledger still holds because
+   * `total` is conserved.
+   */
+  const u = rng.next()
+  let acc = 0
+  let k = 0
+  for (let i = 0; i < frac.length && left > 0; i++) {
+    acc += frac[i]
+    if (acc >= u + k - 1e-9) {
+      out[i]++
+      k++
+      left--
+    }
+  }
+  // float dust: hand any unallocated remainder to the biggest fractions, as the no-rng path does
+  if (left > 0) {
+    const order = frac.map((v, i) => [v, i] as const).sort((a, b) => b[0] - a[0])
+    for (let j = 0; left > 0 && j < order.length; j++) if (out[order[j][1]] === Math.floor(raw[order[j][1]])) { out[order[j][1]]++; left-- }
+    for (let j = 0; left > 0; j = (j + 1) % out.length, left--) out[j]++
+  }
   return out
 }
 
@@ -291,7 +324,7 @@ export function apportion(total: number, weights: number[]): number[] {
  * Integer shares apportioned after the split, so every column sums to the
  * team total exactly and each player's points balance his own ledger.
  */
-export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx): PlayerBox[] {
+export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx, rng?: Rng): PlayerBox[] {
   // THE r59 REALLOCATION IS THE LINE: the forced shares (main scorer +8, the rest scaled) carry
   // straight into the shot weights, so the chosen man's volume rises on the sheet exactly as the
   // margin priced it — and his BRICK factor (the repricing off his own curve) weights his
@@ -305,12 +338,18 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx): PlayerBox[
   const w = (f: (p: Player, i: number) => number) => five.map((p, i) => Math.max(0.01, f(p, i)))
   // MOTION spreads the threes across all five — the weight exponent flattens
   const spread = ctx?.style === 'motion' ? 0.75 : 1
-  const tpm = apportion(box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * edge(i)))
-  const tpa = tpm.map((m, i) => m + apportion(box.tpa - box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * missEdge(i) * brickOf(i)))[i])
-  const ftm = apportion(box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw))
-  const fta = ftm.map((m, i) => m + apportion(box.fta - box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw))[i])
-  const twoM = apportion(box.fgm - box.tpm, w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * edge(i)))
-  const twoMiss = apportion(box.fga - box.fgm - (box.tpa - box.tpm), w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * missEdge(i) * brickOf(i)))
+  const tpm = apportion(box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * edge(i)), rng)
+  // HOISTED, and it must stay hoisted: this used to call apportion INSIDE the map, once per player,
+  // and take element i of the i-th call. With the deterministic split every call returned the same
+  // array so the sum still balanced by luck; the moment the leftover became a random draw (A10) the
+  // five calls disagreed and the lines stopped summing to the team box. One call, one allocation.
+  const tpMiss = apportion(box.tpa - box.tpm, w((p, i) => Math.pow(usg[i] * p.attrs['3pt'], spread) * missEdge(i) * brickOf(i)), rng)
+  const tpa = tpm.map((m, i) => m + tpMiss[i])
+  const ftm = apportion(box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw), rng)
+  const ftMiss = apportion(box.fta - box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw), rng)
+  const fta = ftm.map((m, i) => m + ftMiss[i])
+  const twoM = apportion(box.fgm - box.tpm, w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * edge(i)), rng)
+  const twoMiss = apportion(box.fga - box.fgm - (box.tpa - box.tpm), w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * missEdge(i) * brickOf(i)), rng)
   /**
    * A9 (2026-09-09): `orb + drb` swallowed the guards' share. The raw attributes run 4 to 83 across
    * a five, a 20:1 ratio, where the men's real rebound lines are nearer 4:1 — everyone collects
@@ -320,11 +359,11 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx): PlayerBox[
    * player 0.0322 -> 0.0227, worst 0.096 -> 0.088. The 0.10/0.90 split is the data's: a night's
    * rebounds are mostly defensive ones.
    */
-  const reb = apportion(box.reb, w((p) => Math.pow(REB_FLOOR + 0.1 * p.attrs.orb + 0.9 * p.attrs.drb, REB_EXP)))
+  const reb = apportion(box.reb, w((p) => Math.pow(REB_FLOOR + 0.1 * p.attrs.orb + 0.9 * p.attrs.drb, REB_EXP)), rng)
   // the MAIN PLAYMAKER's table rises and the others' compress — the r59 creation share on the sheet
-  const ast = apportion(box.ast, w((p, i) => p.attrs.playvol * (i === ctx?.playmakerIdx ? 1.5 : (ctx?.playmakerIdx ?? -1) >= 0 ? 0.85 : 1)))
-  const stl = apportion(box.stl, w((p) => p.attrs.perimdisrupt))
-  const blk = apportion(box.blk, w((p) => p.attrs.rimprot))
+  const ast = apportion(box.ast, w((p, i) => p.attrs.playvol * (i === ctx?.playmakerIdx ? 1.5 : (ctx?.playmakerIdx ?? -1) >= 0 ? 0.85 : 1)), rng)
+  const stl = apportion(box.stl, w((p) => p.attrs.perimdisrupt), rng)
+  const blk = apportion(box.blk, w((p) => p.attrs.rimprot), rng)
   /**
    * A8 (2026-09-09): `usg x (100 - ballsec)` INVERTED the turnover line. The ballsec term ran the
    * full 1-99 range at exponent 1 while usage entered flat, so it outweighed usage: Iverson '06
@@ -335,7 +374,7 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx): PlayerBox[
    * 0.261 -> 0.118. On the report's own five, Iverson goes 3.2 -> 7.3 a night (real 8.0) and
    * Kessler 6.9 -> 3.1 (real 3.5).
    */
-  const tov = apportion(box.tov, w((p, i) => Math.pow(usg[i], TOV_USG_EXP) * Math.pow(TOV_FLOOR + Math.max(1, 100 - p.attrs.ballsec), TOV_LOOSE_EXP)))
+  const tov = apportion(box.tov, w((p, i) => Math.pow(usg[i], TOV_USG_EXP) * Math.pow(TOV_FLOOR + Math.max(1, 100 - p.attrs.ballsec), TOV_LOOSE_EXP)), rng)
   return five.map((p, i) => ({
     name: p.name,
     pts: 2 * twoM[i] + 3 * tpm[i] + ftm[i],
@@ -388,8 +427,8 @@ export function seriesBox(
     const g = gameBoxes(five, theirFive, lines, scores[i].us, scores[i].them, rng, ctx?.us, ctx?.them)
     us.push(g.us)
     them.push(g.them)
-    usP.push(splitBox(five, g.us, ctx?.us))
-    themP.push(splitBox(theirFive, g.them, ctx?.them))
+    usP.push(splitBox(five, g.us, ctx?.us, rng))
+    themP.push(splitBox(theirFive, g.them, ctx?.them, rng))
   })
   const avgP = (xs: PlayerBox[][], team: Player[]): PlayerBox[] =>
     team.map((p, i) => {

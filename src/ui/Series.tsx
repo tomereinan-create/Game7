@@ -166,6 +166,7 @@ export function Series({
   assignment = 'optimal',
   exhibition = false,
   boxCtx = null,
+  sigma,
   kicker,
   advanceLabel,
   skin = null,
@@ -188,6 +189,8 @@ export function Series({
   exhibition?: boolean
   /** recal_61: the tactical state the box consumes — the death match passes it, others none. */
   boxCtx?: { us: BoxCtx; them: BoxCtx } | null
+  /** The noise this series was simmed at, paced by the plan (r57) — passed on to Full Analysis. A12. */
+  sigma?: number
   /** What the topbar calls this table; a campaign level names itself. */
   kicker?: string
   /** The right-hand dock button's word, when it is not "back to the map". */
@@ -218,8 +221,10 @@ export function Series({
 
   const tape = useMemo(() => {
     if (!decider) return null
-    return buildTicker(decider.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635))
-  }, [decider, five, opponent.players, seed])
+    // The tape plays from the game's own box now (B2/B3), so it needs the stat lines and the same
+    // tactical context the box scores consume.
+    return buildTicker(decider.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635), LINES, boxCtx ?? undefined)
+  }, [decider, five, opponent.players, seed, boxCtx])
 
   const [i, setI] = useState(0)
   const [analysis, setAnalysis] = useState(false)
@@ -467,7 +472,7 @@ export function Series({
         </div>
       ) : null}
 
-      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
+      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
       {done ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>
           Full analysis →

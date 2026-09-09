@@ -12,7 +12,7 @@ import { Ask } from './Ask'
 import { useCard } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
-import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
+import { isRateable, naiveAssignment, RATEABLE, solveBoard, type Assignment } from '../engine/offense'
 import { aiTempo, DEFAULT_TACTICS, gateTactics, pace, reconcileTactics, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -1295,10 +1295,15 @@ export function Draft({
             an advert for the node that sells them. User mode plays blind, and with the record gone
             up into the headline's own head there is nothing left on this line for it: the line is
             scout mode's alone now, and in user mode it is not drawn at all. */}
+        {/* A14: "vs you" means rated against YOUR five, and there is no five until there are five.
+            Against an empty board their anchor has nobody to hide behind and their hunted man
+            nobody to be hunted by, so their NET read +14.3 off a single card and fell from there —
+            every good man drafted looked like it was helping them. The line waits now. */}
         {user ? null : (
           <div className="opp-line">
-            vs you: OFF {theirs.off.toFixed(1)} · DRTG {theirs.drtg.toFixed(1)} · NET {theirs.net > 0 ? '+' : ''}
-            {theirs.net.toFixed(1)}
+            {isRateable(five)
+              ? `vs you: OFF ${theirs.off.toFixed(1)} · DRTG ${theirs.drtg.toFixed(1)} · NET ${theirs.net > 0 ? '+' : ''}${theirs.net.toFixed(1)}`
+              : `vs you: rated once your five is full (${five.length} of ${RATEABLE})`}
           </div>
         )}
         {user ? null : (
@@ -1550,7 +1555,7 @@ export function Draft({
           was a gap; the bundle puts the man himself there instead: whose season is in front of
           you, what the tree says his shape is, and how many chairs are still empty. */}
       {analysis ? (
-        <Analysis mine={five} theirs={opponent.players} assignment={assignment} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
+        <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} />
       ) : null}
       {five.length && !user ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>

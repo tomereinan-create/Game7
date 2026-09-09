@@ -220,7 +220,9 @@ function perGame(ev: SeriesEvent) {
   const games: { us: ReturnType<typeof gameBoxes>['us']; them: ReturnType<typeof gameBoxes>['them']; usP: PlayerBox[]; themP: PlayerBox[] }[] = []
   for (const g of ev.result.games) {
     const b = gameBoxes(ev.five, ev.opponent.players, LINES, g.us, g.them, rng, ev.boxCtx?.us, ev.boxCtx?.them)
-    games.push({ us: b.us, them: b.them, usP: splitBox(ev.five, b.us, ev.boxCtx?.us), themP: splitBox(ev.opponent.players, b.them, ev.boxCtx?.them) })
+    // SAME STREAM as Series.tsx (seed ^ 0x2545f491) in the same order, so the lines an achievement
+    // reads are byte-for-byte the ones he watched — A10 made the split consume the rng.
+    games.push({ us: b.us, them: b.them, usP: splitBox(ev.five, b.us, ev.boxCtx?.us, rng), themP: splitBox(ev.opponent.players, b.them, ev.boxCtx?.them, rng) })
   }
   return games
 }

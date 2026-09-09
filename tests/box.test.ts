@@ -201,3 +201,45 @@ describe('a team line splits the way the five really split it', () => {
     expect(r.rate).toBeGreaterThan(0.88)
   })
 })
+
+/**
+ * A10 (2026-09-09): the split was STICKY. `apportion` awarded every leftover to the biggest
+ * fractional part, deterministically, so a five that blocks five shots a night gave the same men
+ * the same integers every game — a four-game series printed exactly 1.0 blocks for all ten players
+ * and Kessler took 0.0 steals across seven. The leftover is sampled now.
+ */
+describe('the split is not the same every night', () => {
+  const f = five("Allen Iverson '06", "Richard Hamilton '06", "Chris Mills '97", "Andray Blatche '09", "Walker Kessler '25")
+
+  it('two games of the same series do not print identical lines', () => {
+    const rng = makeRng(31337)
+    const seen = new Set<string>()
+    for (let g = 0; g < 12; g++) {
+      const b = gameBoxes(f, opp[3].players, L, 104, 99, rng)
+      seen.add(splitBox(f, b.us, undefined, rng).map((l) => `${l.blk}/${l.stl}`).join('|'))
+    }
+    expect(seen.size, 'twelve games produced this many distinct blk/stl splits').toBeGreaterThan(4)
+  })
+
+  it('the ledger still balances exactly — sampling moves who, never how many', () => {
+    const rng = makeRng(8080)
+    for (let g = 0; g < 60; g++) {
+      const b = gameBoxes(f, opp[7].players, L, 88 + (g % 30), 91 + (g % 19), rng)
+      for (const [team, box] of [[f, b.us], [opp[7].players, b.them]] as const) {
+        const ls = splitBox(team, box, undefined, rng)
+        for (const k of ['pts', 'fgm', 'fga', 'tpm', 'tpa', 'ftm', 'fta', 'reb', 'ast', 'stl', 'blk', 'tov'] as const)
+          expect(ls.reduce((a, l) => a + l[k], 0), k).toBe(box[k])
+      }
+    }
+  })
+
+  it('nobody sits on 0.0 steals for a whole series any more', () => {
+    const rng = makeRng(4242)
+    const tot = f.map(() => 0)
+    for (let g = 0; g < 7; g++) {
+      const b = gameBoxes(f, opp[3].players, L, 104, 99, rng)
+      splitBox(f, b.us, undefined, rng).forEach((l, i) => (tot[i] += l.stl))
+    }
+    expect(Math.min(...tot), 'every man took at least one steal across seven games').toBeGreaterThan(0)
+  })
+})

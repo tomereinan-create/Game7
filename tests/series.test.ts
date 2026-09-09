@@ -11,6 +11,8 @@ import { buildTicker } from '../src/engine/ticker'
 import type { Opponent, Player, SeriesResult, StatLine } from '../src/engine/types'
 import { Series } from '../src/ui/Series'
 
+const LINES = STATS as Record<string, StatLine | null>
+
 /**
  * HIS RULING: "The bid mode should be treated the same as the campaigns.. Full box scores and a
  * simulation of G7". The 1v1 Bid and the hot seat used to end on a bare G1..G7 list; they now
@@ -200,7 +202,7 @@ describe('the bid mode gets the campaign treatment', () => {
 
   it('lands the Game 7 tape exactly on the score the resolver decided', () => {
     const { r, seed } = seriesOfLength(A, B, 7)
-    const tape = buildTicker(r.games[6].margin, A, B, makeRng(seed ^ 0x5bf03635))
+    const tape = buildTicker(r.games[6].margin, A, B, makeRng(seed ^ 0x5bf03635), LINES)
     const last = tape.ticks[tape.ticks.length - 1]
     expect(last.us).toBe(tape.us)
     expect(last.them).toBe(tape.them)
@@ -209,7 +211,7 @@ describe('the bid mode gets the campaign treatment', () => {
 
   it('produces a balanced box for every game of a bid series', () => {
     const { r, seed } = seriesOfLength(A, B, 7)
-    const tape = buildTicker(r.games[6].margin, A, B, makeRng(seed ^ 0x5bf03635))
+    const tape = buildTicker(r.games[6].margin, A, B, makeRng(seed ^ 0x5bf03635), LINES)
     const scores = r.games.map((g, i) => (i === 6 ? { us: tape.us, them: tape.them } : { us: g.us, them: g.them }))
     const box = seriesBox(A, B, L, r.games, scores, makeRng(seed ^ 0x2545f491))
     expect(box.games).toBe(7)

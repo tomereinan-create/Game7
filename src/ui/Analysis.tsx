@@ -30,17 +30,26 @@ export function Analysis({
   myName,
   theirName,
   assignment = 'optimal',
+  sigma: sigmaIn,
   onClose,
 }: {
   mine: Player[]
   theirs: Player[]
   myName: string
   theirName: string
+  /** The noise the sim was actually handed — paced by the plan (r57). Defaults to SIGMA. */
+  sigma?: number
   /** Our defensive assignment — what the sim actually scored. The opponent is always optimal. */
   assignment?: Assignment
   onClose: () => void
 }) {
-  const sigma = SIGMA
+  /**
+   * A12 (2026-09-09): this was `const sigma = SIGMA` — a hard 10 — while the pre-sim card on the
+   * draft screen printed the PACED sigma (recal_57: slow x1.08 = 10.8, fast x0.94 = 9.4). Two
+   * screens, one night, two different noises. The caller hands it over now; the default is only
+   * for a screen with no plan behind it.
+   */
+  const sigma = sigmaIn ?? SIGMA
   const A: Side = { label: myName, five: mine, off: teamOffense(mine), transition: transitionBonus(mine), d: defenseVs(mine, theirs, assignment), steals: 0, tone: 'you' }
   const B: Side = { label: theirName, five: theirs, off: teamOffense(theirs), transition: transitionBonus(theirs), d: defenseVs(theirs, mine), steals: 0, tone: 'them' }
   A.steals = A.d.steals

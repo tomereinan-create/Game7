@@ -8,7 +8,9 @@ import { applyMod, compile, marginTerms, meanMargin, talentEff } from '../src/en
 import { COACHES } from '../src/data/coaches'
 import { makeRng } from '../src/engine/rng'
 import { buildTicker } from '../src/engine/ticker'
-import { ATTR_KEYS, type Lineup, type Opponent } from '../src/engine/types'
+import { ATTR_KEYS, type Lineup, type Opponent, type StatLine } from '../src/engine/types'
+
+const LINES = STATS as Record<string, StatLine | null>
 
 const opponents = OPPONENTS as Opponent[]
 
@@ -52,7 +54,7 @@ describe('game 7 ticker', () => {
     const them = opponents[6].players
     for (let i = 0; i < 4000; i++) {
       const margin = ((i % 81) - 40) + 0.5
-      const tape = buildTicker(margin, us, them, makeRng(i * 2654435761))
+      const tape = buildTicker(margin, us, them, makeRng(i * 2654435761), LINES)
       const last = tape.ticks[tape.ticks.length - 1]
       expect(last.us).toBe(tape.us)
       expect(last.them).toBe(tape.them)
@@ -69,7 +71,7 @@ describe('game 7 ticker', () => {
     const us = opponents[5].players
     const them = opponents[7].players
     for (let i = 0; i < 800; i++) {
-      const tape = buildTicker(i % 2 ? 22 : 2, us, them, makeRng(i + 500))
+      const tape = buildTicker(i % 2 ? 22 : 2, us, them, makeRng(i + 500), LINES)
       const q4 = tape.ticks.findIndex((t) => t.q === 4)
       if (q4 <= 0) continue
       const gap = Math.abs(tape.ticks[q4 - 1].us - tape.ticks[q4 - 1].them)
@@ -401,5 +403,49 @@ describe('campaign', () => {
       else for (const x of pos) expect(POSITIONS).toContain(x)
     }
     expect(missing).toBe(0)
+  })
+})
+
+/**
+ * B1 / B2 / B3 from the 2026-09-09 report. The tape is built from the game's own box now, so the
+ * three faults are one fix and these are the three properties that prove it.
+ */
+describe('the game 7 tape plays the night the box describes', () => {
+  const us = (OPPONENTS as Opponent[])[16].players
+  const them = (OPPONENTS as Opponent[])[22].players
+  const tape = (seed: number, margin = 4.5) => buildTicker(margin, us, them, makeRng(seed), LINES)
+
+  it('B2: a Game 7 has misses, turnovers and stops in it — not only baskets', () => {
+    for (const seed of [1, 2, 3, 99, 12345]) {
+      const t = tape(seed)
+      const quiet = t.ticks.filter((x) => x.pts === 0).length
+      expect(quiet / t.ticks.length, 'share of the tape that is not a made basket').toBeGreaterThan(0.35)
+      expect(t.ticks.some((x) => /misses|rims it out|off the front iron|short|off the back rim|rattles out|, off|, no/.test(x.text))).toBe(true)
+      expect(t.ticks.some((x) => /loses the handle|travels|throws it away|steals it from|steps on the line|charges in/.test(x.text))).toBe(true)
+      expect(t.ticks.some((x) => /boards it|keeps it alive/.test(x.text))).toBe(true)
+    }
+  })
+
+  it('B1: quarters do not run the same schedule, and the gaps are not all equal', () => {
+    const t = tape(777)
+    const secs = (c: string) => +c.split(':')[0] * 60 + +c.split(':')[1]
+    const stamps = (q: number) => t.ticks.filter((x) => x.q === q).map((x) => x.clock)
+    expect(stamps(2).slice(0, 8).join(), 'Q2 and Q4 printed identical stamps before this').not.toBe(stamps(4).slice(0, 8).join())
+    for (const q of [1, 2, 3, 4]) {
+      const s = stamps(q).map(secs)
+      const gaps = s.slice(1).map((v, i) => s[i] - v).filter((g) => g > 0)
+      expect(new Set(gaps).size, `Q${q} had one repeated gap for every event`).toBeGreaterThan(3)
+    }
+  })
+
+  it('B3: every basket on the tape is a basket the box gave that man', () => {
+    const t = tape(20260909)
+    const byMan = new Map<string, number>()
+    for (const x of t.ticks) if (x.side === 'us' && x.pts > 0) byMan.set(x.text.split(' ')[0], (byMan.get(x.text.split(' ')[0]) ?? 0) + x.pts)
+    // the tape's own points reconcile to the final score exactly — it cannot invent a scorer
+    expect([...byMan.values()].reduce((a, b) => a + b, 0)).toBe(t.us)
+    // and no man carries a share the five's usage cannot support (Bagley took a quarter of one)
+    const top = Math.max(...byMan.values())
+    expect(top / t.us, 'the biggest single share of our points').toBeLessThan(0.5)
   })
 })

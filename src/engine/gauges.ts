@@ -1,4 +1,4 @@
-import { ratings100 } from './offense'
+import { isRateable, ratings100 } from './offense'
 import type { Player } from './types'
 
 /**
@@ -185,6 +185,8 @@ export interface Gauge {
   /** What the scale is anchored to, for the dial's label. */
   basis: string
   n: number
+  /** False for a lineup of fewer than five: both dials are clamps, not readings (A11). */
+  complete: boolean
 }
 
 const gauge = (five: Player[], season?: number): Gauge => {
@@ -197,6 +199,7 @@ const gauge = (five: Player[], season?: number): Gauge => {
     drtgRef: r.drtgRef,
     basis: 'all-time scale',
     n: ANCHOR_N,
+    complete: isRateable(five),
   }
 }
 

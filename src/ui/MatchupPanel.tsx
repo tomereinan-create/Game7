@@ -1,4 +1,4 @@
-import { defenseVs, matchupMargin, MKNOBS, ratings100, REF_FIVE, scoreVs, type Assignment } from '../engine/offense'
+import { defenseVs, isRateable, matchupMargin, MKNOBS, ratings100, REF_FIVE, scoreVs, type Assignment } from '../engine/offense'
 import { fieldGauges, seasonGauges } from '../engine/gauges'
 import type { Player } from '../engine/types'
 
@@ -11,18 +11,20 @@ const sgn = (v: number, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(
  * dial a colour that was computed from the VALUE (the database's red-to-green rating scale), so
  * the ring and the numeral both say the same thing the number does.
  */
-export function Dial({ label, value, tone, sub, color }: { label: string; value: number; tone: 'you' | 'them' | 'scale'; sub?: string; color?: string }) {
+export function Dial({ label, value, tone, sub, color, unread }: { label: string; value: number; tone: 'you' | 'them' | 'scale'; sub?: string; color?: string; unread?: boolean }) {
   const r = 26
   const c = 2 * Math.PI * r
   const arc = c * 0.75
-  const on = (arc * Math.max(0, Math.min(100, value))) / 100
+  // A11: a lineup short of five has no rating. Draw the empty track and a dash rather than the
+  // clamp — the DEF dial used to sit on a confident 1 until the third man landed.
+  const on = unread ? 0 : (arc * Math.max(0, Math.min(100, value))) / 100
   return (
     <div className={`dial ${tone}`} style={color ? ({ '--dial-tone': color } as React.CSSProperties) : undefined}>
-      <svg viewBox="0 0 64 64" aria-label={`${label} ${value}`}>
+      <svg viewBox="0 0 64 64" aria-label={unread ? `${label} not yet rated` : `${label} ${value}`}>
         <circle className="track" cx="32" cy="32" r={r} strokeDasharray={`${arc} ${c}`} transform="rotate(135 32 32)" />
         <circle className="fill" cx="32" cy="32" r={r} strokeDasharray={`${on} ${c}`} transform="rotate(135 32 32)" />
         <text x="32" y="37" textAnchor="middle">
-          {value}
+          {unread ? '—' : value}
         </text>
       </svg>
       <span className="dl">{label}</span>
@@ -53,16 +55,17 @@ export function TeamDials({ five, tone, vs }: { five: Player[]; tone: 'you' | 't
     const g = vs === 'field' ? fieldGauges(five) : seasonGauges(five, vs)
     return (
       <div className="dials">
-        <Dial label="OFF" value={g.off} tone={tone} sub={g.basis} />
-        <Dial label="DEF" value={g.def} tone={tone} sub={g.basis} />
+        <Dial label="OFF" value={g.off} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} />
+        <Dial label="DEF" value={g.def} tone={tone} sub={g.complete ? g.basis : 'needs five'} unread={!g.complete} />
       </div>
     )
   }
   const r = ratings100(five)
+  const whole = isRateable(five)
   return (
     <div className="dials">
-      <Dial label="OFF" value={r.off} tone={tone} sub={r.offRaw.toFixed(1)} />
-      <Dial label="DEF" value={r.def} tone={tone} sub={r.drtgRef.toFixed(1)} />
+      <Dial label="OFF" value={r.off} tone={tone} sub={whole ? r.offRaw.toFixed(1) : 'needs five'} unread={!whole} />
+      <Dial label="DEF" value={r.def} tone={tone} sub={whole ? r.drtgRef.toFixed(1) : 'needs five'} unread={!whole} />
     </div>
   )
 }

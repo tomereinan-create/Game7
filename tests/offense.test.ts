@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { KNOBS, stackClamp, teamDefense, teamOffense, teamRating, transitionBonus } from '../src/engine/offense'
+import { isRateable, KNOBS, ratings100, scoreVs, stackClamp, teamDefense, teamOffense, teamRating, transitionBonus } from '../src/engine/offense'
+import { fieldGauges } from '../src/engine/gauges'
+import OPP from '../src/data/opponents.json'
+import type { Opponent } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
 /**
@@ -103,5 +106,37 @@ describe('offense engine — archetype lineups', () => {
     expect(r.drtg).toBeCloseTo(d.drtg, 9)
     expect(r.off).toBeCloseTo(teamOffense(ROLE5).off + transitionBonus(ROLE5), 9)
     expect(r.net).toBeCloseTo(r.off - r.drtg, 9)
+  })
+})
+
+/**
+ * A11 / A14 (2026-09-09). A rating is a rating of five men. These lock the two places that were
+ * printing a clamp as if it were a reading.
+ */
+describe('a lineup short of five is not rated', () => {
+  const pool = PLAYERS
+  const pick = (n: string) => pool.find((p) => p.name === n)!
+  const order = ["Allen Iverson '06", "Walker Kessler '25", "Andray Blatche '09", "Richard Hamilton '06", "Chris Mills '97"].map(pick)
+
+  it('A11: the gauges say so, instead of pinning DEF to its floor', () => {
+    for (let n = 0; n < 5; n++) expect(fieldGauges(order.slice(0, n)).complete, `${n} men`).toBe(false)
+    expect(fieldGauges(order).complete).toBe(true)
+  })
+
+  it('A11: and the floor is what the frozen 1 really was — a partial five rates worse than any real one', () => {
+    // one man 117.7, two men 114.1, both above DEF_WORST 113.1, so the dial clamped to 1
+    expect(ratings100(order.slice(0, 1)).drtgRef).toBeGreaterThan(113.1)
+    expect(ratings100(order.slice(0, 2)).drtgRef).toBeGreaterThan(113.1)
+    expect(ratings100(order).drtgRef).toBeLessThan(113.1)
+  })
+
+  it('A14: rating a five against a partial opponent is what made every good draft help them', () => {
+    const them = (OPP as Opponent[])[16].players
+    const empty = scoreVs(them, []).net
+    const one = scoreVs(them, order.slice(0, 1)).net
+    // the jump the report saw: their NET leapt the moment the first card landed
+    expect(one - empty).toBeGreaterThan(3)
+    expect(isRateable(order.slice(0, 4))).toBe(false)
+    expect(isRateable(order)).toBe(true)
   })
 })
