@@ -148,15 +148,29 @@ second-chance multiplier are added. Archetypes: GOAT5 147.8 / BALANCED 146.5
 / ROLE5 136.3 / CHUCK5 131.2.
 
 **Defense is a property of the pairing** (`defenseVs`): the anchor (top
-rimprot, +0.35 × 2nd if elite) hides on the opponent's worst shooter and
-loses value as that shooter's `out` rises past 45 (five-out); it covers
-teammates' perdef deficit up to 37.5 points, only against paint-hunting
-offense; the weakest defender is hunted in proportion to the opposing star's
-usage, mitigated by the anchor only when that star hunts the paint; steals
-are 60% on-ball (top perimdisrupt × the star's ball insecurity × usage) and
-40% team pressure; the glass is top-2 DRB vs their ORB crash; indiscipline
-is free points. `DRtg = 110 − 0.23 × (Didx − 55) + hunt`, and steal
-generation adds transition offense. The draft screen shows the three reads
+rimprot, +0.20 × 2nd if elite) hides on the opponent's worst shooter and
+loses value as that shooter's `3pt` rises past 45 (five-out); the weakest
+defender is hunted in proportion to the opposing star's usage, mitigated by
+the anchor only when that star hunts the paint; steals are 60% on-ball (top
+perimdisrupt × the star's ball insecurity × usage) and 40% team pressure;
+the glass is top-2 DRB vs their ORB crash; indiscipline is free points.
+`DRtg = 110 − 0.181 × (Didx − 55) + hunt`, and steal generation adds
+transition offense.
+
+Three numbers in that sentence were stale until 2026-09-09 and are corrected
+here rather than in the code, because the code is the survivor in each case.
+**`DRTG_COEF` is 0.181, not the 0.23 this file and `STATUS_REPORT.md` carried
+from `PROMPT_defense_scale.md`.** 0.23 served the 60/40 offense/defense law,
+which wanted a wall-vs-sieve spread of 8–10 DRtg; recal_76 established that
+DRTG_COEF is *not* the lever for that spread, and recal_87 retired the law
+outright on his ruling — verbatim, "Ship the wall-vs-sieve spread as is". The
+accepted consequence is written into that receipt: fielding the five best
+perimeter defenders instead of the five worst is worth about half a point a
+game, where the old law wanted two. **`ANCHOR_2ND` is 0.20** (recal_133,
+down from 0.35), and **the `cover` refund of teammates' perdef deficit is
+gone entirely** (recal_94 removed it along with the 37.5 cap that sized it).
+The anchor reads the `3pt` attribute, not the `out` display axis — they are
+different numbers on the same card. The draft screen shows the three reads
 this produces: where to hide the anchor (or a five-out warning), the steal
 target (star's usage and ball security), and whether they hunt the paint or
 the perimeter.

@@ -146,3 +146,58 @@ describe('box scores — shape follows the score and the identity', () => {
     for (let k = 0; k < opp.length; k++) expect(ratings100(mine)).toEqual(r)
   })
 })
+
+/**
+ * A8 / A9 from the 2026-09-09 engine report. Both weights are fitted against the real per-game
+ * lines in src/data/stats.json, so the tests are about AGREEMENT WITH REALITY, not about pinned
+ * numbers: the split must rank the five men the way their own box lines rank them.
+ */
+describe('a team line splits the way the five really split it', () => {
+  /** Rank agreement between the simmed split and the men's real per-game numbers, over real fives. */
+  const rankFit = (key: 'tov' | 'reb', real: (s: StatLine) => number) => {
+    const tiers = CAMPAIGNS as unknown as { levels: { players: (typeof PLAYERS)[number][] }[] }[]
+    const fives = [...tiers[0].levels, ...tiers[1].levels].map((l) => l.players).filter((f) => f.every((p) => L[p.name] && real(L[p.name]!) != null))
+    let agree = 0
+    let pairs = 0
+    for (const f of fives) {
+      const rng = makeRng(9001)
+      const b = gameBoxes(f, opp[3].players, L, 104, 99, rng)
+      const ls = splitBox(f, b.us)
+      for (let i = 0; i < f.length; i++)
+        for (let j = i + 1; j < f.length; j++) {
+          const dSim = ls[i][key] - ls[j][key]
+          const dReal = real(L[f[i].name]!) - real(L[f[j].name]!)
+          if (dSim === 0 || dReal === 0) continue
+          pairs++
+          if (dSim > 0 === dReal > 0) agree++
+        }
+    }
+    return { rate: agree / pairs, pairs }
+  }
+
+  it('A8: turnovers follow the ball, not the butterfingers — the high-usage guard loses it most', () => {
+    // The report's own five: a 34-usage guard beside two low-usage bigs.
+    const f = five("Allen Iverson '06", "Richard Hamilton '06", "Chris Mills '97", "Andray Blatche '09", "Walker Kessler '25")
+    const ls = splitBox(f, gameBoxes(f, opp[3].players, L, 104, 99, makeRng(4242)).us)
+    const tov = Object.fromEntries(ls.map((l) => [l.name, l.tov]))
+    // real topg: Iverson 3.4, Blatche 2.2, Kessler 1.5 — the shipped weight had this exactly backwards
+    expect(tov["Allen Iverson '06"]).toBeGreaterThan(tov["Walker Kessler '25"])
+    expect(tov["Allen Iverson '06"]).toBeGreaterThan(tov["Andray Blatche '09"])
+    const r = rankFit('tov', (s) => s.topg!)
+    console.log(`  TOV rank agreement with real lines: ${(100 * r.rate).toFixed(1)}% of ${r.pairs} pairs`)
+    expect(r.rate).toBeGreaterThan(0.85) // the shipped weight scored 58.3% — barely better than a coin flip
+  })
+
+  it('A9: the bigs out-rebound the guards, by about as much as they really did', () => {
+    const f = five("Allen Iverson '06", "Richard Hamilton '06", "Chris Mills '97", "Andray Blatche '09", "Walker Kessler '25")
+    const ls = splitBox(f, gameBoxes(f, opp[3].players, L, 104, 99, makeRng(4242)).us)
+    const reb = Object.fromEntries(ls.map((l) => [l.name, l.reb]))
+    expect(reb["Walker Kessler '25"]).toBeGreaterThan(reb["Allen Iverson '06"])
+    // real rpg 12.2 vs 3.2 — a factor of ~4, not the 18x the raw orb+drb sum gave
+    expect(reb["Walker Kessler '25"] / Math.max(1, reb["Allen Iverson '06"])).toBeLessThan(9)
+    // ORDER was never the rebound fault (the shipped sum already ranked 88.3%); MAGNITUDE was.
+    const r = rankFit('reb', (s) => s.rpg!)
+    console.log(`  REB rank agreement with real lines: ${(100 * r.rate).toFixed(1)}% of ${r.pairs} pairs`)
+    expect(r.rate).toBeGreaterThan(0.88)
+  })
+})

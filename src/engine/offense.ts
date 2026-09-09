@@ -362,7 +362,17 @@ export interface DefenseVs {
   steals: number
   // the reads (one-line derivations; the strategy layer)
   star: number
+  /**
+   * A5 (2026-09-09): WHERE THE ANCHOR ACTUALLY STANDS on this board — not necessarily the worst
+   * shooter. With an assignment map he stands on whoever he was given; only the optimal board puts
+   * him on the worst shooter. This field was called `worstShooter` and held THIS, which is why the
+   * DEFENSE panel and the MATCHUP KEYS panel named two different men on one screen: one read the
+   * board, the other recomputed the minimum. Both were right about their own question.
+   */
+  anchorOn: number
+  /** Their genuinely lowest `3pt` — where the anchor BELONGS. The optimal board's answer. */
   worstShooter: number
+  /** Their `3pt` at `anchorOn` — the shot the anchor is actually standing next to. */
   minOppOut: number
   hide: number
   paintOrient: number
@@ -653,7 +663,7 @@ export function defenseVs(us: Player[], them: Player[], assignment: Assignment =
     0.55 * effDi + 0.13 * anc * 0.9 + 0.12 * Math.min(99, steals) * 0.9 + 0.12 * Math.max(0, 60 + glass / 4) - K.DIDX_HOLD
   const drtg = 110 - K.DRTG_COEF * (didx - 55) + huntPen
   void nA
-  return { drtg, steals: Math.min(99, steals), star, worstShooter: anchorOn, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, anchorIdx, weakIdx, effDi, onball, team, glass, didx, map }
+  return { drtg, steals: Math.min(99, steals), star, anchorOn, worstShooter, minOppOut, hide, paintOrient, starPaint, anchor, huntPen, anchorIdx, weakIdx, effDi, onball, team, glass, didx, map }
 }
 
 /** OFF + transition − DRtg, against this opponent. 1:1 with score_vs. */

@@ -105,7 +105,8 @@ export function MatchupPanel({
     </div>
   )
   const hideLine = (d: typeof us, vs: Player[]) =>
-    `${short(vs[d.worstShooter].name)} (out ${d.minOppOut}) · ${Math.round(100 * d.hide)}% · ${sgn(-anchorPts(d))} pts`
+    // A5: anchorOn, not worstShooter — minOppOut and hide are read AT this man. See Analysis.tsx.
+    `${short(vs[d.anchorOn].name)} (out ${d.minOppOut}) · ${Math.round(100 * d.hide)}% · ${sgn(-anchorPts(d))} pts`
   const huntLine = (d: typeof us, we: Player[], vs: Player[]) =>
     `${short(we[d.weakIdx].name)} hunted by ${short(vs[d.star].name)} · ${d.starPaint > 0.5 ? 'anchor helps' : 'no help'} · +${d.huntPen.toFixed(1)} pts`
   const stealLine = (d: typeof us, vs: Player[]) =>

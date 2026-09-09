@@ -4,6 +4,27 @@ import type { GameResult, Player, StatLine } from './types'
 import type { Rng } from './rng'
 
 /**
+ * HOW A TEAM LINE IS SPLIT AMONG THE FIVE — the two weights the 2026-09-09 engine report caught
+ * (A8 turnovers, A9 rebounds). Both were fitted the same way and neither is a taste call: the
+ * exponents and floors below were grid-searched against the REAL per-game lines (src/data/stats.json
+ * `topg` / `rpg`) of the 60 Champions fives, then scored on the 30 League fives that were never
+ * fitted on. Held-out mean |share error| per player:
+ *
+ *   turnovers   usg x (100 - ballsec)                       0.0665  ->  0.0251   (worst 0.261 -> 0.118)
+ *   rebounds    orb + drb                                   0.0322  ->  0.0227   (worst 0.096 -> 0.088)
+ *
+ * WHAT IS STILL WRONG, said plainly rather than left to be re-found: the guards' rebound share is
+ * better but not right. On the report's five Iverson '06 goes 0.8 -> 2.6 a night against a real
+ * 4.1, because the five men here all play the same minutes while the real ones did not. Closing
+ * that gap needs a minutes model, which is a bigger round than this one.
+ */
+export const TOV_USG_EXP = 2.0
+export const TOV_LOOSE_EXP = 0.7
+export const TOV_FLOOR = 25
+export const REB_EXP = 1.6
+export const REB_FLOOR = 40
+
+/**
  * THE TACTICAL STATE THE BOX CONSUMES (recal_61, the law): every tactical resolution that moves
  * the margin moves the lines through the SAME numbers. The resolver's score already carries the
  * margin (PTS == the score, the ledger law), so the box's job is to make each mapping VISIBLE:
@@ -290,12 +311,31 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx): PlayerBox[
   const fta = ftm.map((m, i) => m + apportion(box.fta - box.ftm, w((p, i) => usg[i] * p.attrs.fouldraw))[i])
   const twoM = apportion(box.fgm - box.tpm, w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * edge(i)))
   const twoMiss = apportion(box.fga - box.fgm - (box.tpa - box.tpm), w((p, i) => usg[i] * (p.attrs.rim + p.attrs.mid) * missEdge(i) * brickOf(i)))
-  const reb = apportion(box.reb, w((p) => p.attrs.orb + p.attrs.drb))
+  /**
+   * A9 (2026-09-09): `orb + drb` swallowed the guards' share. The raw attributes run 4 to 83 across
+   * a five, a 20:1 ratio, where the men's real rebound lines are nearer 4:1 — everyone collects
+   * uncontested boards, so the weight needs a floor under it rather than a bare sum. FITTED, not
+   * chosen: exponent, split and floor were grid-searched against the real rpg of the 60 Champions
+   * fives and scored on the 30 League fives that were never fitted on — mean |share error| per
+   * player 0.0322 -> 0.0227, worst 0.096 -> 0.088. The 0.10/0.90 split is the data's: a night's
+   * rebounds are mostly defensive ones.
+   */
+  const reb = apportion(box.reb, w((p) => Math.pow(REB_FLOOR + 0.1 * p.attrs.orb + 0.9 * p.attrs.drb, REB_EXP)))
   // the MAIN PLAYMAKER's table rises and the others' compress — the r59 creation share on the sheet
   const ast = apportion(box.ast, w((p, i) => p.attrs.playvol * (i === ctx?.playmakerIdx ? 1.5 : (ctx?.playmakerIdx ?? -1) >= 0 ? 0.85 : 1)))
   const stl = apportion(box.stl, w((p) => p.attrs.perimdisrupt))
   const blk = apportion(box.blk, w((p) => p.attrs.rimprot))
-  const tov = apportion(box.tov, w((p, i) => usg[i] * (100 - p.attrs.ballsec)))
+  /**
+   * A8 (2026-09-09): `usg x (100 - ballsec)` INVERTED the turnover line. The ballsec term ran the
+   * full 1-99 range at exponent 1 while usage entered flat, so it outweighed usage: Iverson '06
+   * (usg 34.3, ballsec 81) scored 652 against Kessler '25 (usg 13.5, ballsec 11) at 1202 — the
+   * ball-dominant guard was given HALF the centre's turnovers, where their real lines are 3.4 and
+   * 1.5 a night. Turnovers are a touch-count first and a carelessness second. FITTED the same way
+   * as `reb` above and on the same held-out 30 fives: mean |share error| 0.0665 -> 0.0251, worst
+   * 0.261 -> 0.118. On the report's own five, Iverson goes 3.2 -> 7.3 a night (real 8.0) and
+   * Kessler 6.9 -> 3.1 (real 3.5).
+   */
+  const tov = apportion(box.tov, w((p, i) => Math.pow(usg[i], TOV_USG_EXP) * Math.pow(TOV_FLOOR + Math.max(1, 100 - p.attrs.ballsec), TOV_LOOSE_EXP)))
   return five.map((p, i) => ({
     name: p.name,
     pts: 2 * twoM[i] + 3 * tpm[i] + ftm[i],

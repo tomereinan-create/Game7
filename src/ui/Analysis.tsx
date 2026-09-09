@@ -101,7 +101,10 @@ export function Analysis({
     const anchor = s.five[d.anchorIdx]
     const weak = s.five[d.weakIdx]
     const star = vs.five[d.star]
-    const hide = vs.five[d.worstShooter]
+    // A5: where the anchor ACTUALLY stands on this board — `minOppOut` and `hide` below are both
+    // measured at this man, so naming him from `worstShooter` (the optimal board's answer) made the
+    // panel contradict the Matchup Keys panel on the same screen.
+    const hide = vs.five[d.anchorOn]
     return (
       <div className={`an-side ${s.tone}`}>
         <div className="an-team">

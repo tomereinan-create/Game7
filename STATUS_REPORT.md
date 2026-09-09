@@ -65,7 +65,7 @@ Campaign level handicaps add +0/+1/+2/+3 points of spread to the opponent by era
 | `PROMPT_claude_code.md` (original spec) | **applied** — resolver, acceptance tests, pool, coach, UI |
 | `PROMPT_ratings_update` (`RATINGS_UPDATE.md`) | **applied** — 17 attributes, `fouldraw` bug fixed |
 | `PROMPT_offense_update.md` | **applied** — usage economy, skill curves, stack cap, ORB/FT terms. *One deviation documented in-thread:* the stack cap cannot bind at the shipped knobs, so the test asserts the clamp function instead of a value change |
-| `PROMPT_defense_scale.md` (matchup defense) | **applied** — `defense_vs`, anchor/hunt/steals/glass, `DRTG_COEF` 0.23. *Deviation:* the "hunted swing ≥ 2 whole-margin points" check does not isolate the mechanism on this data; the test asserts the hunted-man penalty directly |
+| `PROMPT_defense_scale.md` (matchup defense) | **applied** — `defense_vs`, anchor/hunt/steals/glass, `DRTG_COEF` 0.23 — **superseded: the shipped value is 0.181** (re-derived after recal_12; recal_76 ruled DRTG_COEF is not the lever, recal_87 retired the 60/40 law it served). See README. *Deviation:* the "hunted swing ≥ 2 whole-margin points" check does not isolate the mechanism on this data; the test asserts the hunted-man penalty directly |
 | `PROMPT_era_ts_patch.md` | **applied** — `ts_rel`, shed gate recentred .545 |
 | `PROMPT_ovr.md` | **applied** — OVR as the headline number, resolver still reads `talent` |
 | `PROMPT_display_fixes.md` | **applied** — empirical dial anchors; box scores derived from the score |
