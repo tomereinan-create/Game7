@@ -107,7 +107,7 @@ export function seasonWho(p: Player) {
   const line = LINES[p.name] ?? null
   const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
   return line
-    ? [line.pos?.join('/'), ht, line.team, `${line.gp} G`, line.mpg !== undefined ? `${line.mpg} MPG` : null].filter(Boolean).join(' · ')
+    ? [line.pos?.join('/'), ht, line.teams?.join('/'), `${line.gp} G`, line.mpg !== undefined ? `${line.mpg} MPG` : null].filter(Boolean).join(' · ')
     : (ht ?? 'No stat line on file')
 }
 

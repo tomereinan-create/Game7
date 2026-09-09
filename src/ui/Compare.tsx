@@ -146,7 +146,7 @@ export function Compare({ initial = [], onBack }: { initial?: string[]; onBack: 
                   </div>
                 )}
                 <div className="cmp-meta">
-                  {ht(p.attrs.height)} · {LINES[p.name]?.team ?? '—'} · {LINES[p.name]?.pos?.join('/') ?? '—'}
+                  {ht(p.attrs.height)} · {LINES[p.name]?.teams?.join('/') || '—'} · {LINES[p.name]?.pos?.join('/') ?? '—'}
                 </div>
               </div>
             ))}

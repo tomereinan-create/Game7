@@ -116,9 +116,15 @@ interface P {
   peak_season: number
 }
 const players = JSON.parse(readFileSync(join(here, '..', 'src', 'data', 'players_stats.json'), 'utf8')) as P[]
+/**
+ * E17 (2026-09-10): this cast is a LOCAL shape, not StatLine, so `npx tsc -b` cannot tell when
+ * src/data/stats.json changes underneath it — a stale field name here reads as `undefined` for
+ * every row and fails silently. It is declared against the real field for that reason. If the stat
+ * line's shape moves again, this line has to move with it by hand.
+ */
 const stats = JSON.parse(readFileSync(join(here, '..', 'src', 'data', 'stats.json'), 'utf8')) as Record<
   string,
-  { team?: string } | null
+  { teams?: string[] } | null
 >
 
 // pool index: norm(player)|season -> our unique names (rarely more than one)
@@ -145,10 +151,9 @@ for (const r of parseCsv(readFileSync(join(dir, 'Player Per Game.csv'), 'utf8'))
   // Same-name pairs: keep the candidate whose season team (from stats.json) fits.
   let name = cands[0]
   if (cands.length > 1) {
-    const hit = cands.find((n) => {
-      const t = stats[n]?.team
-      return t === r.team || t === 'MULTI'
-    })
+    // E17: a traded man now carries every club he played for that season instead of one placeholder,
+    // so this asks whether THIS club is among them rather than comparing against 'MULTI'.
+    const hit = cands.find((n) => (stats[n]?.teams ?? []).includes(r.team))
     name = hit ?? cands[0]
   }
   if (conf(r.team, season) === null) {

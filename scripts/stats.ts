@@ -82,6 +82,32 @@ function index(rows: Record<string, string>[]) {
 const pg = index(perGame)
 const adv = index(advanced)
 
+/**
+ * E17 (2026-09-10): WHICH CLUBS A TRADED MAN ACTUALLY PLAYED FOR.
+ *
+ * `index()` above keeps ONE row per (name|season) and prefers the combined TOT / 2TM / 3TM row,
+ * which is right for every NUMBER on the card — the combined row is his whole season. But it holds
+ * no club, so the emitted team field was the placeholder 'MULTI' and a traded man's card named no
+ * team at all. His ruling: show every club instead.
+ *
+ * The split rows were never lost — they are still in the same CSV, and scripts/teams.ts already
+ * reads them at this same stage for the recal_69 roster law. This walks them in SOURCE ROW ORDER,
+ * which IS the chronology, so Gafford '24 comes out ['WAS', 'DAL'] rather than sorted or reversed.
+ *
+ * KEYED BY player_id, NOT BY NAME. Measured: keying by name reports 20 three-club cards where the
+ * truth is 16, because two different men called Eddie Johnson (johnsed02 and johnsed03) pool into
+ * one false chain in 1986. The CSV's own id is the only safe key.
+ */
+const stints = new Map<string, string[]>()
+for (const r of perGame) {
+  if (r.lg !== 'NBA' && r.lg !== 'BAA') continue
+  if (r.team === 'TOT' || /^[2-9]TM$/.test(r.team)) continue
+  const k = `${r.player_id}|${r.season}`
+  const at = stints.get(k)
+  if (at) at.push(r.team)
+  else stints.set(k, [r.team])
+}
+
 /** Lifetime positions: the union of every position B-Ref ever listed for the player, any year. */
 const ORDER = ['PG', 'SG', 'SF', 'PF', 'C']
 const lifetimePos = new Map<string, Set<string>>()
@@ -115,7 +141,9 @@ for (const p of players) {
   hit++
   const posSet = lifetimePos.get(norm(p.player)) ?? new Set<string>()
   const line: Record<string, number | string | string[] | null> = {
-    team: g.team === 'TOT' || /^[2-9]TM$/.test(g.team) ? 'MULTI' : g.team,
+    // one shape for everyone: a single-club man is a list of one, so nothing downstream branches
+    teams:
+      g.team === 'TOT' || /^[2-9]TM$/.test(g.team) ? (stints.get(`${g.player_id}|${g.season}`) ?? [g.team]) : [g.team],
     pos: ORDER.filter((x) => posSet.has(x)),
     gp: num(g.g) ?? 0,
     mpg: r1(num(g.mp_per_game)),

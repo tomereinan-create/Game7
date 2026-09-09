@@ -81,7 +81,8 @@ export interface Player {
  * Basketball-Reference dataset the ratings pipeline reads. Display only.
  */
 export interface StatLine {
-  team: string
+  /** Every club he played for that season, in order — one entry for a man who was not traded. */
+  teams: string[]
   /** Lifetime Basketball-Reference positions, any season. */
   pos?: string[]
   gp: number

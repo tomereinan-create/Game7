@@ -60,8 +60,12 @@ const STATS: { k: keyof StatLine; label: string }[] = [
   { k: 'ws', label: 'WS' },
   { k: 'bpm', label: 'BPM' },
 ]
-/** Every team that appears on a card, for the picker. */
-const TEAMS = [...new Set(Object.values(LINES).map((l) => l?.team).filter((t): t is string => !!t))].sort()
+/**
+ * Every team that appears on a card, for the picker. E17: FLATTENED, deliberately — a traded man
+ * carries a list now, and folding the lists in whole would fill this picker with 525 club CHAINS
+ * ('SAC/NOP', 'DAL/LAL', …) beside the 40 real clubs. The picker names clubs.
+ */
+const TEAMS = [...new Set(Object.values(LINES).flatMap((l) => l?.teams ?? []))].sort()
 const YEARS = { min: Math.min(...PLAYERS.map((p) => p.peak_season)), max: Math.max(...PLAYERS.map((p) => p.peak_season)) }
 
 const ROW_H = 66
@@ -120,7 +124,8 @@ export function Roster({ onBack }: { onBack: () => void }) {
       if (from !== null && p.peak_season < from) return false
       if (to !== null && p.peak_season > to) return false
       const line = LINES[p.name]
-      if (team && line?.team !== team) return false
+      // and a man who played for it that season matches it, whether or not he also played elsewhere
+      if (team && !(line?.teams ?? []).includes(team)) return false
       if (thr !== null) {
         const v = line?.[statK as keyof StatLine]
         // a card with no figure for that stat is not a match either way — the filter asks for evidence

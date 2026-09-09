@@ -169,11 +169,13 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   /*
    * THE CLUB HE PLAYED FOR THAT SEASON — the whole card's colour, read off the stat line and not
    * off the man, so stepping a year moves a traded man's terminal from one club to the other.
-   * `MULTI` is the pool's own mark for a season split between clubs: he wore two that year and the
-   * card will not pick one for him, so it falls through to the table's fallback and the terminal
-   * reads in the app's steel — an answer, not a gap.
+   * A season split between clubs NAMES THEM ALL now (E17, his ruling: show both, or more) — the
+   * card reads WAS/DAL rather than the old placeholder. It still will not pick a club's COLOUR for
+   * him: two clubs is not one skin, so the terminal falls through to the app's steel, which is an
+   * answer rather than a gap. That is the same ground it stood on before, unchanged.
    */
-  const ab = line?.team
+  const teams = line?.teams ?? []
+  const ab = teams.length === 1 ? teams[0] : undefined
   const skin = useMemo(() => terminalSkin(teamColor(ab)), [ab])
 
   const peak = all.length ? peakOf(all) : null
@@ -191,7 +193,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
       ['SEASON', `${p.peak_season}${isPeak ? ' ◄PEAK' : ''}`],
       ['POS', line?.pos?.length ? line.pos.join('·') : null],
       ['HT', ht],
-      ['TEAM', line?.team ?? null],
+      ['TEAM', teams.length ? teams.join('/') : null],
       ['GP', line?.gp !== undefined ? String(line.gp) : null],
       ['MPG', line?.mpg !== undefined ? String(line.mpg) : null],
     ] as [string, string | null][]
@@ -206,7 +208,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
       <div className="pct-bar">
         <span className="pct-sys">GAME7.SYS &#9656; PLAYER CARD</span>
         <span className="pct-slug">
-          {ab ?? '—'} // S{p.peak_season}
+          {teams.length ? teams.join('/') : '—'} // S{p.peak_season}
         </span>
         <button className="pct-esc" onClick={onClose}>
           [ESC] CLOSE

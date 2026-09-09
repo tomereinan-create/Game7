@@ -137,9 +137,11 @@ describe('the card is lit in the club he played for that season', () => {
     expect(ground(wsb)).not.toBe(ground(sheet(card("Marcus Smart '20"))))
   })
 
-  it('will not pick a club for a man who was traded mid-season', () => {
+  it('names every club a traded man played for, and still picks none of their colours', () => {
+    // E17 (2026-09-10), his ruling: a traded man NAMES his clubs now instead of wearing a
+    // placeholder. Wallace '04 went Portland, Atlanta, Detroit — in that order, off the CSV rows.
     const multi = sheet(card("Rasheed Wallace '04"))
-    expect(slug(multi)).toBe('MULTI // S2004')
+    expect(slug(multi)).toBe('POR/ATL/DET // S2004')
     // the fallback steel, which is what an unnamed abbreviation gets anywhere else in the app
     expect(ground(multi)).toBe(ground(sheet(card("Wally Szczerbiak '06"))))
   })
