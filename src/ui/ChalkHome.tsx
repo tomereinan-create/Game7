@@ -5,44 +5,67 @@ import { currentLevel, type Progress, type CampaignMode } from '../state/campaig
 import { setUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
 import { Ball } from './Ball'
+import { Trophy } from './Trophy'
 import { useLayout } from './useLayout'
 import type { Mode } from './Home'
 
 /**
- * THE SCOUT MODE FRONT DOOR — Claude Design "Game7 Menu Concepts", turn 4, board 4a
- * (CHALK PLAYBOOK · the floor as a coach's slate, X's and O's · chalk yellow on green slate).
+ * THE FRONT DOOR, AND SINCE 2026-09-09 IT IS BOTH MODES' — Claude Design "Game7 Menu Concepts",
+ * turn 4, board 4a (CHALK PLAYBOOK · the floor as a coach's slate · chalk on green slate).
  *
- * His ruling: "I want scout mode home screen to be 4a. Only scout mode." User mode keeps the
- * slate of cards it got from the Game Design Overhaul bundle — see `UserHome` in Home.tsx — and
- * nothing shared moves, so the two front doors are two components rather than one with a fork
- * running through it.
+ * His ruling: "Change the user mode main screen to look like the scout mode." So the slate that
+ * was drawn for scout mode under his earlier ruling ("I want scout mode home screen to be 4a.
+ * Only scout mode") is what BOTH modes open on now, and `UserHome` — the hero, the mode question,
+ * tonight's slate of cards — is deleted rather than kept beside it. See the head of Home.tsx for
+ * why the two-door split it replaced was reversed rather than duplicated.
  *
- * HIS LATER RULINGS ON THE BOARD: no PLAYBOOK in the title and no PRACTICE SLATE line under it —
- * the mark and the wordmark, the same pair user mode's front door opens with — and the slate is
- * the screen rather than a card propped in the middle of one.
+ * THE MODE IS ONE PROP AND IT IS SPENT IN THREE PLACES, marked where they are rendered below and
+ * nowhere else, so scout's board is the board it was:
+ *   1. the chip that is lit in the head — USER or SCOUT;
+ *   2. the foot of the board — the record book in scout, the sign-off in user;
+ *   3. the cup standing in a finished ladder's mark, which is user mode's alone.
+ *
+ * HIS EARLIER RULINGS ON THE BOARD: no PLAYBOOK in the title and no PRACTICE SLATE line under it —
+ * the mark and the wordmark — and the slate is the screen rather than a card propped in the
+ * middle of one.
  *
  * WHAT 4a IS: a green slate — drawn in a wood frame, and full screen without one since his ruling
  * of 2026-09-08 ("Remove all the brown and black from the scout mode main page, should be full
  * screen green"), so the green now runs to every edge of the window. Half a court drawn
- * left-handed in dashed chalk, with the
- * six ways to play standing on it as three O's and three X's where a coach would put them — the
- * campaign at the top of the key, the two other ladders on the wings, the three side modes in the
- * corners and out top. Press one and the slate's right side reads it out: its number, its name
- * under a wavy chalk underline, what it is, what you have banked, and the one chip that starts it.
+ * left-handed in dashed chalk, with the six ways to play standing on it as six chalk rings where a
+ * coach would put them — the campaign at the top of the key, the two other ladders on the wings,
+ * the three side modes in the corners and out top. Press one and the slate's right side reads it
+ * out: its number, its name under a wavy chalk underline, what it is, what you have banked, and
+ * the one chip that starts it.
+ *
+ * HIS RULING OF 2026-09-09 TOOK THE LETTERS OUT OF THE MARKS: "Remove the X\O from both home
+ * screens." The board drew three O's for the ladders and three X's for the side modes; the letters
+ * are gone from both boards and the RINGS stay, because the ring is what turns orange when a play
+ * is pressed and what the ball is thrown to. An empty ring drawn the way the old one was would
+ * have been invisible — it carried a TRANSPARENT border and the letter was the whole of the mark
+ * — so the ring is chalked in for all six now and only its colour changes on the press. See
+ * `.ck-glyph` in the stylesheet for the diameter it had to be retuned to.
  *
  * WHAT 4a DID NOT HAVE, and had to be given, because this is the only screen that carries them:
  *   · THE MODE SWITCH. The old front door asked "how do you want to see the game?" in the middle
- *     of itself; on the slate it is two chalk chips in the header, because a scout who cannot get
- *     back to user mode is stuck in scout mode.
- *   · THE RECORD BOOK. Database / Archetypes / Teams / Trophies are scout-only and would have had
- *     no door at all. They are the coach's margin notes along the foot of the slate.
+ *     of itself; on the slate it is two chalk chips in the header, because a player who cannot get
+ *     from one mode to the other is stuck in the one he is in.
+ *   · THE RECORD BOOK, IN SCOUT MODE ONLY. Database / Archetypes / Teams / Trophies are scout-only
+ *     and would have had no door at all. They are the coach's margin notes along the foot of the
+ *     slate. User mode has no doors to them by his standing ruling, so its slate closes on the
+ *     sign-off instead.
+ *   · THE CUP, IN USER MODE ONLY (his ruling: "Add a trophy for EVERY mode at 150 wins(An actual
+ *     golden trophy at the end)"). It stood on the old user-mode cards because that was the one
+ *     screen where all three ladders were on view at once; the six marks on this floor are that
+ *     screen now, so the cup stands IN the mark of a ladder with all 150 cleared — which is the
+ *     room the letter has just left.
  * Everything else — the geometry, the copy, the six positions, the palette — is the board's.
  *
  * HIS RULING OF 2026-09-08, and it is two things: "In the scout home page, when pressing on
  * something instead of a yellow circle make it orange circle. Also, have a player with a
  * basketball, running towards where you pressed." So the pressed mark is chalked in orange rather
  * than the slate's yellow — see --ck-orange in the stylesheet, which stands BESIDE the yellow and
- * does not replace it, because the yellow is also the 7 in the wordmark, the SCOUT chip and the
+ * does not replace it, because the yellow is also the 7 in the wordmark, the lit mode chip and the
  * whole read down the right.
  *
  * HIS SECOND RULING OF THAT DAY THREW THE RUNNER OUT: "Instead of a man running, with the ball,
@@ -89,8 +112,17 @@ const COURT_RATIO = 20 / 29
 const GAP_CQW = 9.5
 const clamp = (lo: number, v: number, hi: number) => Math.min(hi, Math.max(lo, v))
 
-/** one of the six ways to play, as it is chalked on the floor and as it is read out on the right */
-type Zone = { pick: Mode; mark: string; x: string; y: string; side: 1 | -1; label: string; tag: string; desc: string; meta: string; cta: string }
+/**
+ * ONE OF THE SIX WAYS TO PLAY, as it is chalked on the floor and as it is read out on the right.
+ *
+ * `mark` USED TO BE HERE AND IS GONE — his ruling of 2026-09-09: "Remove the X\O from both home
+ * screens." It held the 'O' or the 'X' that was printed inside the ring, and nothing else in the
+ * app ever read it, so it is deleted rather than left standing unused.
+ *
+ * `cup` IS USER MODE'S ALONE and is `false` on every mark in scout mode — see the head of this
+ * file. It is true on a ladder with all 150 cleared, and it puts a gold trophy in the ring.
+ */
+type Zone = { pick: Mode; cup: boolean; x: string; y: string; side: 1 | -1; label: string; tag: string; desc: string; meta: string; cta: string }
 
 /** where a man actually stands, across the floor: his mark, plus the step he takes off it. */
 const groundX = (z: Zone) => parseFloat(z.x) + z.side * GAP_CQW
@@ -114,15 +146,35 @@ const depthOf = (z: Zone) => +(0.86 + (parseFloat(z.y) / 100) * 0.3).toFixed(3)
 const faceOf = (z: Zone, holder: Zone, hold: 1 | -1): 1 | -1 =>
   z === holder ? hold : groundX(holder) >= groundX(z) ? 1 : -1
 
-export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
+export function ChalkHome({
+  user,
+  progress,
+  onPick,
+}: {
+  user: boolean
+  progress: Record<CampaignMode, Progress>
+  onPick: (m: Mode) => void
+}) {
   const [sel, setSel] = useState(0)
   const banked = (p: Progress) => p.stars.reduce((a, b) => a + b, 0)
   const cur = currentLevel(progress.campaign)
+  /**
+   * A LADDER IS FINISHED WHEN THERE IS NO LEVEL LEFT TO PLAY — `currentLevel` is null exactly
+   * then, which is the same question the campaign's own read asks two lines down. The cup it
+   * earns is user mode's, on the mode prop, because scout's board must come out of his ruling of
+   * 2026-09-09 the board it already was but for the letters.
+   */
+  const cup = (p: Progress) => user && currentLevel(p) === null
 
   /**
    * The six, in the board's own order and at its own coordinates — the x/y are percentages of the
-   * court, so the floor can be any size and the play keeps its shape. The marks are the board's
-   * too: the three ladders are the offense (O), the three side modes are what you draw against.
+   * court, so the floor can be any size and the play keeps its shape.
+   *
+   * THE BOARD DREW THE THREE LADDERS AS O'S AND THE THREE SIDE MODES AS X'S. His ruling of
+   * 2026-09-09 — "Remove the X\O from both home screens" — takes the letters off both boards, so
+   * all six are the same ring now and the only thing that tells a ladder from a side mode is
+   * where it stands and what the read says about it. Which is how a coach's slate works anyway:
+   * the six spots are six spots.
    *
    * HIS RULINGS ON WHERE THEY STAND: "move custom and vs friend to outside the 3pt line", then
    * "move vs friend and custom to the corners", and "move the O of the campaign a bit lower so it
@@ -154,7 +206,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
   const zones: Zone[] = [
     {
       pick: 'campaign',
-      mark: 'O',
+      cup: cup(progress.campaign),
       x: '50%',
       y: '56%',
       side: -1,
@@ -168,7 +220,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     },
     {
       pick: 'salary',
-      mark: 'O',
+      cup: cup(progress.salary),
       x: '17%',
       y: '36%',
       side: 1,
@@ -180,7 +232,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     },
     {
       pick: 'death',
-      mark: 'O',
+      cup: cup(progress.death),
       x: '83%',
       y: '36%',
       side: -1,
@@ -192,7 +244,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     },
     {
       pick: 'custom',
-      mark: 'X',
+      cup: false,
       x: '8.5%',
       y: '82%',
       side: 1,
@@ -204,7 +256,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     },
     {
       pick: 'versus',
-      mark: 'X',
+      cup: false,
       x: '91.5%',
       y: '82%',
       side: -1,
@@ -216,7 +268,7 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     },
     {
       pick: 'auction',
-      mark: 'X',
+      cup: false,
       x: '50%',
       y: '16%',
       side: 1,
@@ -289,7 +341,8 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
     return () => window.clearTimeout(t)
   }, [pass, air.ms])
 
-  /** The book, along the foot — the four scout-only rooms, with what is in each one. */
+  /** The book, along the foot — the four scout-only rooms, with what is in each one. Read by the
+      scout branch at the foot of the board and by nothing else; user mode never opens these. */
   const book: { pick: Mode; label: string; note: string }[] = [
     { pick: 'database', label: 'DATABASE', note: PLAYERS.length.toLocaleString() },
     { pick: 'archetypes', label: 'ARCHETYPES', note: String(DEFAULT_ORDER.length) },
@@ -322,12 +375,16 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
               GAME<em>7</em>
             </b>
           </div>
-          {/* the mode question, said the way a coach would write it in the corner of the slate */}
+          {/* THE MODE IS SPENT HERE (1 of 3): the question the old user-mode front door asked in
+              the middle of itself — "How do you want to see the game?" — said the way a coach
+              would write it in the corner of the slate, with the mode you are in lit. It is the
+              same pair of chips on both boards; only which one is lit changes, because a player
+              who cannot get from one mode to the other is stuck in the one he is in. */}
           <div className="ck-modes" role="group" aria-label="How do you want to see the game?">
-            <button className="ck-mode" onClick={() => setUserMode(true)} aria-pressed={false}>
+            <button className={`ck-mode${user ? ' on' : ''}`} onClick={() => setUserMode(true)} aria-pressed={user}>
               USER
             </button>
-            <button className="ck-mode on" onClick={() => setUserMode(false)} aria-pressed>
+            <button className={`ck-mode${user ? '' : ' on'}`} onClick={() => setUserMode(false)} aria-pressed={!user}>
               SCOUT
             </button>
           </div>
@@ -384,6 +441,11 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
                 passes over everything the floor is carrying */}
             <ChalkFloor zones={zones} sel={sel} pass={pass} holdFace={holdFace} />
             <ChalkAir pass={pass} />
+            {/* THE SIX MARKS. Each is a ring and the name under it, and NOTHING INSIDE THE RING —
+                his ruling: "Remove the X\O from both home screens." The button's name is the name
+                chalked under it, which is what it always was: the letter was never announced as
+                anything, so nothing is lost from a screen reader by its going.
+                THE MODE IS SPENT HERE (3 of 3): the cup, and only in user mode. */}
             {zones.map((s, i) => (
               <button
                 key={s.pick}
@@ -391,8 +453,19 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
                 style={{ left: s.x, top: s.y }}
                 onClick={() => press(i)}
                 aria-pressed={i === sel}
+                /* the cup is a drawing and says nothing on its own, so the mark that carries one
+                   is named in full and in the order it should be heard — "Campaign, all 150
+                   cleared" rather than the cup first and the play after it. Every other mark
+                   takes its name from the word chalked under it, which is what it always did. */
+                aria-label={s.cup ? `${s.label}, all ${ROUNDS} cleared` : undefined}
               >
-                <span className="ck-glyph">{s.mark}</span>
+                <span className="ck-glyph">
+                  {s.cup ? (
+                    <span className="ck-cup" aria-hidden>
+                      <Trophy size={22} />
+                    </span>
+                  ) : null}
+                </span>
                 <span className="ck-label">{s.label}</span>
               </button>
             ))}
@@ -407,22 +480,41 @@ export function ChalkHome({ progress, onPick }: { progress: Record<CampaignMode,
             <button className="ck-cta" onClick={() => onPick(z.pick)}>
               {z.cta}
             </button>
-            <div className="ck-foot">
-              EVERY NUMBER FROM REAL 1980—2026 STATS.
-              <br />
-              RUN THE PLAY. ERASE. RUN IT AGAIN.
-            </div>
+            {/* THE SIGN-OFF STANDS AT THE FOOT OF THE READ IN SCOUT MODE and at the foot of the
+                BOARD in user mode — see below. It is one line of chalk either way; what moves it
+                is that user mode has no record book to close the slate with. */}
+            {user ? null : (
+              <div className="ck-foot">
+                EVERY NUMBER FROM REAL 1980—2026 STATS.
+                <br />
+                RUN THE PLAY. ERASE. RUN IT AGAIN.
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="ck-book">
-          {book.map((b) => (
-            <button key={b.pick} className="ck-bookrow" onClick={() => onPick(b.pick)}>
-              <b>{b.label}</b>
-              <i>{b.note} →</i>
-            </button>
-          ))}
-        </div>
+        {/* THE MODE IS SPENT HERE (2 of 3): WHAT CLOSES THE SLATE.
+            In scout mode it is the record book — four rooms of engine ratings, which user mode has
+            no doors to by his standing ruling, so user mode cannot have this row.
+            In user mode the board would otherwise stop dead under the read, which reads as a page
+            cut off rather than a board that ends. It keeps the BOOK'S OWN RULE — the dashed line
+            that has always drawn the foot of the slate — and the slate's sign-off is written
+            under it, centred, instead of being tucked at the bottom of the read column. Same two
+            sentences, same chalk, one line of the board's furniture doing the closing. */}
+        {user ? (
+          <div className="ck-close">
+            EVERY NUMBER FROM REAL 1980—2026 STATS. RUN THE PLAY. ERASE. RUN IT AGAIN.
+          </div>
+        ) : (
+          <div className="ck-book">
+            {book.map((b) => (
+              <button key={b.pick} className="ck-bookrow" onClick={() => onPick(b.pick)}>
+                <b>{b.label}</b>
+                <i>{b.note} →</i>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
