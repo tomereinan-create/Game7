@@ -1,6 +1,6 @@
 import { ROUNDS } from '../config'
-import { DEFAULT_TACTICS, reconcileTactics, type Tactics } from '../engine/tactics'
-import { migrate, type NodeId } from '../engine/tree'
+import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '../engine/tactics'
+import { migrate, playbookRank, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
 
@@ -16,6 +16,42 @@ export const WEAR_OUT = 7
 
 /** Death match only: one five carried the whole way, one change a round, a loss ends the run. */
 export const isDeath = (m: CampaignMode | null) => m === 'death'
+
+/**
+ * WHETHER THIS CAMPAIGN HAS A COACH ON THE BENCH AT ALL — his report: "Tactics arent visable in
+ * boths campaigns(Salary and normal)."
+ *
+ * The Playbook node sits on the COACH branch, and the tree offers Coach in every mode (Tree.tsx
+ * filters out only Salary off the cap and Survival off the death match). So stars could be spent
+ * on Playbook 1, 2 and 3 in the campaign and the salary cap and buy NOTHING: there was no panel
+ * to call a plan in and, at App's sim, no plan reached the margin. That is the defect.
+ *
+ * The rule is the node, not the mode — with one clause that keeps the death match exactly as it
+ * was. The death match has always had a plan whether or not the Playbook was bought, because
+ * `gateTactics` at rank 0 hands back the free defaults and the PACE term is computed off them;
+ * dropping that would be re-tuning a mode nobody reported. So: the death match always has one,
+ * and everywhere else the Playbook is what puts a coach on the bench.
+ */
+export const callsPlan = (mode: CampaignMode, p: Progress): boolean => mode === 'death' || playbookRank(p) >= 1
+
+/**
+ * THE PLAN THE NIGHT ACTUALLY HEARS, gated by the Playbook rank and reconciled against the five
+ * that is taking the floor. Null when this campaign has no coach on the bench (see above), which
+ * is what the sim, the odds and the court all read as "no call, no price".
+ *
+ * WHAT A NAMED MAN MEANS WHEN THE FIVE CHANGES EVERY LEVEL. The campaign and the salary cap draft
+ * a fresh five each night, so the main scorer, the main playmaker, the pick-and-roll pair, the
+ * post target and the helio creator can name men who are nowhere near tonight's floor. The plan
+ * still PERSISTS in the save — it is how this franchise plays, and it cost stars — but the names
+ * are re-read against the five every time the plan is used, exactly as the death match already
+ * treats a plan across a death (dd25ae9: "the names reset with the roster; the tempo and the
+ * style do not"). A man who is not out there is simply not heard: `reconcileTactics` drops him,
+ * the engine picks its own man again, and nothing about the sim can break on his absence.
+ */
+export function planFor(mode: CampaignMode, p: Progress, five: string[] | null): Tactics | null {
+  if (!callsPlan(mode, p)) return null
+  return gateTactics(reconcileTactics(p.tactics, five), playbookRank(p))
+}
 /** How many men you may change before a level. Base one, plus the Extra sub ranks. */
 export const SUBS_BASE = 1
 export const clearedCount = (p: { stars: number[] }) => p.stars.filter((s) => s > 0).length
@@ -69,7 +105,11 @@ export interface Progress {
   wear: Record<string, number>
   /** Death match: changes spent in My team since the last series settled. Reset when one does. */
   subsUsed: number
-  /** Death match: the plan picked on the My team screen. The names must be men on the roster. */
+  /**
+   * THE PLAN. Every mode keeps one — see `planFor` below for who gets to hear it and where it is
+   * called. The names are reconciled against the five that is actually playing when it is read,
+   * so a name left over from another night is simply not heard.
+   */
   tactics: Tactics
   /** Death match: the sixth man, resting. He does not play, and resting heals (The bench node). */
   bench: string | null
