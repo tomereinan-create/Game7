@@ -1321,8 +1321,13 @@ export function Draft({
           collapse he never wanted was a lid on an always-open box. */}
       <div className="card" style={{ paddingBottom: 6 }}>
         <div className="card-head">
+          {/* THE SAME TWO-PART HEAD AS YOUR OWN CARD (E3a): the name is the part that gives, the
+              record beside it never does. `orec` and not `rec` because `rec` is painted in
+              `var(--you)` — the accent that means YOUR side everywhere in this app — and the team
+              you are playing does not get to wear it. */}
           <span className="label">
-            Level {opponent.round} opponent{opponent.record ?? opponent.tag ? ` · ${opponent.record ?? opponent.tag}` : ''}
+            <span className="tname">Level {opponent.round} opponent</span>
+            {opponent.record ?? opponent.tag ? <i className="orec">· {opponent.record ?? opponent.tag}</i> : null}
           </span>
           <span className="cap">Season lines</span>
         </div>
@@ -1778,8 +1783,12 @@ export function Draft({
               YOUR FIVE, which is the one thing on this screen you can already see; the franchise
               you named and what it has done in this campaign are not written anywhere else on it.
               The record is this save's own — each of the three modes keeps its own ledger. */}
+          {/* THE NAME IS A SPAN OF ITS OWN (E3a) because it is the only part of this head that may
+              be shortened. It is a city and a nickname he typed, so it has no length to design for;
+              it takes one line and is cut with an ellipsis when the card is narrower than the words
+              are. The record and the 0 OF 5 beside it are never cut. */}
           <span className="label">
-            {teamName}
+            <span className="tname">{teamName}</span>
             {record ? <i className="rec">{record}</i> : null}
           </span>
           <span className={`count ${five.length ? 'on' : ''}`}>

@@ -201,6 +201,59 @@ button {
   color: var(--you);
   letter-spacing: 0.1em;
 }
+/* THE OPPONENT'S RECORD is the same furniture on the other card, and deliberately NOT the same
+   colour: `var(--you)` is the accent that means YOUR side all over this app, and painting the team
+   you are playing against in it says the wrong thing. It keeps the label's own grey. */
+.card-head .label .orec {
+  font-style: normal;
+  margin-left: 7px;
+  letter-spacing: 0.1em;
+}
+/* A NAME HE TYPED CANNOT PUSH THE PAGE SIDEWAYS (E3a). The team name is a city plus a nickname he
+   writes himself, so there is no length to design for: "Dnipropetrovsk Wanderers" is 24 characters
+   and it ran 108px past the right edge of its own card on a desk, dragging a horizontal scrollbar
+   onto the whole page and folding "0 OF 5" onto a second line. Two separate things did it — the
+   label is a flex item that will not shrink below its content, and above 900px it is explicitly
+   `white-space: nowrap` so it cannot wrap either.
+
+   The head becomes a proper two-part line instead: the label takes whatever room is left over
+   (`flex: 1 1 0`, and `min-width: 0` so it may go narrower than the words inside it), the NAME is
+   the only part that gives — one line, cut with an ellipsis — and the record beside it never
+   shrinks, because a half-printed record is worse than a shortened name. The count and the
+   opponent's `Season lines` sit at their natural width and stay on the first line.
+
+   The second selector is the franchise that has not played yet: it has no `.rec` to hang the rule
+   on, and a 24-character name overflows just as far without one. */
+.card-head .label:has(.rec, .orec),
+.card-head .label:has(.tname) {
+  display: flex;
+  align-items: baseline;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.card-head .label .tname {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-head .label .rec,
+.card-head .label .orec {
+  flex: none;
+}
+/* THE OPPONENT'S HEAD IS THE OTHER CASE, and it does not get cut. Nothing in it was typed by
+   anybody: LEVEL 13 OPPONENT · 42–40 is two short facts the app wrote itself, and at 900px the
+   three columns leave this card about 175px of room — not enough for both side by side however the
+   line is measured. Shortening a fixed string is how you get "L…", which names nothing. So the two
+   facts STACK instead: the label keeps its content width (`flex: 1 1 auto`), which sends `Season
+   lines` to the head's second row and gives the label the card's full width, and the label wraps
+   inside itself so the record drops under the level rather than shoving it off the card. Both read
+   in full at every width; above about 1024px they share one line exactly as they always have. */
+.draft .col.a .card-head .label {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
 
 .section-rule {
   display: flex;
@@ -729,6 +782,12 @@ button {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--faint);
+  /* 0 OF 5 IS NEVER THE THING THAT MOVES (E3a). It shares a flex head with a team name he typed,
+     and above 900px that head is allowed to wrap — so a long name pushed the count down onto a
+     second line and made the card's head two rows deep. It is six characters; it does not shrink
+     and it does not break. The name gives instead. */
+  flex: none;
+  white-space: nowrap;
 }
 .count.on {
   color: var(--you);
