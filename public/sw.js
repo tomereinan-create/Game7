@@ -45,25 +45,40 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(shell ? fromNetwork(req) : immutable ? fromCache(req) : fromNetworkThenCache(req))
 })
 
-/** Un-hashed files and cross-origin fonts: network first, the cache only for being offline. */
+/**
+ * Un-hashed files and cross-origin fonts: network first, the cache only for being offline.
+ *
+ * G8 (2026-09-10), the latent half: the `try` used to span the CACHE WRITE as well as the fetch, so
+ * a STORAGE failure was reported to the page as `Response.error()` — which the page reads as
+ * `TypeError: Failed to fetch`, indistinguishable from the network being down. There was no path
+ * that returned the 200 the worker was already holding. A failure to write our copy must never
+ * change what the page gets. The write also no longer sits in front of the response: provenance.json
+ * is 6.1 MB and the page has no reason to wait on a disk write to read bytes it already has.
+ */
 async function fromNetworkThenCache(req) {
+  let res
   try {
-    const res = await fetch(req)
-    if (res.ok || res.type === 'opaque') {
-      const cache = await caches.open(CACHE)
-      await cache.put(req, res.clone())
-      return res
-    }
-    return (await caches.match(req)) ?? res
+    res = await fetch(req)
   } catch {
+    // only a real network failure reaches here, and only then is a network error the honest answer
     return (await caches.match(req)) ?? Response.error()
   }
+  if (res.ok || res.type === 'opaque') {
+    const copy = res.clone()
+    caches
+      .open(CACHE)
+      .then((c) => c.put(req, copy))
+      .catch(() => {})
+    return res
+  }
+  return (await caches.match(req)) ?? res
 }
 
 /** index.html: network first, cache as the offline fallback. */
 async function fromNetwork(req) {
+  let fresh
   try {
-    const fresh = await fetch(req, { cache: 'no-store' })
+    fresh = await fetch(req, { cache: 'no-store' })
     if (!fresh.ok) throw new Error(String(fresh.status))
 
     const html = await fresh.clone().text()
@@ -77,6 +92,9 @@ async function fromNetwork(req) {
 
     return fresh
   } catch {
+    // G8: a storage failure here used to fail the whole NAVIGATION. The shell we just fetched is
+    // good whether or not we managed to keep a copy of it, so hand it over if we have it.
+    if (fresh) return fresh
     return (await caches.match(SHELL)) ?? Response.error()
   }
 }
@@ -85,14 +103,23 @@ async function fromNetwork(req) {
 async function fromCache(req) {
   const hit = await caches.match(req)
   if (hit) return hit
+  let res
   try {
-    const res = await fetch(req)
-    if (res.ok || res.type === 'opaque') {
-      const cache = await caches.open(CACHE)
-      await cache.put(req, res.clone())
-    }
-    return res
+    res = await fetch(req)
   } catch {
     return Response.error()
   }
+  // G8: same rule — keeping a copy is our business, not the page's, so a storage failure must not
+  // turn a perfectly good 200 into a network error. The write is AWAITED here on purpose, unlike in
+  // fromNetworkThenCache: these are the hashed bundles, they are small, and cache-first only means
+  // anything if the copy is in hand before the next request for the same name arrives.
+  if (res.ok || res.type === 'opaque') {
+    try {
+      const cache = await caches.open(CACHE)
+      await cache.put(req, res.clone())
+    } catch {
+      /* keeping the copy failed; the response is still good */
+    }
+  }
+  return res
 }

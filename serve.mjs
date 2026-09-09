@@ -95,12 +95,41 @@ const server = createServer((req, res) => {
   // waiting eight seconds beats being handed the old game.
   if (path === '/' || path === '/index.html') ensureFresh()
   let file = join(dist, normalize(path).replace(/^(\.\.[/\\])+/, ''))
-  if (!existsSync(file) || path === '/') file = join(dist, 'index.html')
+  /**
+   * G8 (2026-09-10): THIS SERVER USED TO KILL ITSELF, and that is the whole of the bug that got
+   * reported as "the ADVANCED screen cannot fetch its data".
+   *
+   * `existsSync` is an EXISTENCE test, not a readability one, and `.pipe()` does not forward the
+   * stream's 'error' event — so a path that exists but cannot be read as a file (a directory), or
+   * an index.html fallback that is itself missing because another session is part-way through
+   * `npm run build` and has emptied dist/, raised an unhandled error and took the process down.
+   * Measured: EISDIR and ENOENT both do it.
+   *
+   * Nothing looks broken afterwards. The open tab already holds its bundle, its data and its
+   * state, so a dead server only surfaces at the app's one lazy fetch — Advanced.tsx asking for
+   * provenance.json — which is why a crashed server reads as one broken screen.
+   */
+  const isFile = (p) => {
+    try {
+      return statSync(p).isFile()
+    } catch {
+      return false
+    }
+  }
+  if (!isFile(file) || path === '/') file = join(dist, 'index.html')
+  if (!isFile(file)) {
+    // dist/ is mid-rebuild. Say so and stay up: dying here takes the open game down with it.
+    res.writeHead(503, { 'content-type': 'text/plain; charset=utf-8', 'retry-after': '2' })
+    return res.end('building')
+  }
   res.writeHead(200, {
     'content-type': TYPES[extname(file)] || 'application/octet-stream',
     'cache-control': 'no-cache',
   })
-  createReadStream(file).pipe(res)
+  const stream = createReadStream(file)
+  // headers are already out, so there is no clean answer left — drop the socket rather than throw
+  stream.on('error', () => res.destroy())
+  stream.pipe(res)
 })
 
 server.on('error', (err) => {

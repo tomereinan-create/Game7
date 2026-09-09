@@ -104,12 +104,24 @@ export function Bars({
         {coachTag ? <span className="coach-tag">{coachTag}</span> : null}
       </div>
       <div className="cmp-talent">
+        {/*
+          G5 (2026-09-10): the centred header used to read "NET · VS EACH OTHER" and, sitting between
+          the two big numbers and above the delta, it made that claim about all three. It is true of
+          exactly ONE of them. The delta below IS matchupMargin — how much better we rate against them
+          than they against us. The two big numbers are ~90% a rating against the FIELD: measured
+          r=0.9959 against a neutral reference five, with only about 2.2 points of a ~+20 reading
+          being pairing-conditional, because scoreVs takes `off` from teamOffense(us), which never
+          sees the opponent. So each number is captioned for what it actually is.
+          NOT changed: the quantity itself. Swapping in the swing would replace a +20 with something
+          whose whole range is -1.9..+1.9, and would disagree with what the resolver consumes.
+        */}
         <div>
           <div className="side">{leftLabel}</div>
+          <div className="side">NET · VS THE FIELD</div>
           <div className={`big you ${mine ? '' : 'empty'}`}>{mine ? (mine.net > 0 ? '+' : '') + mine.net.toFixed(1) : '—'}</div>
         </div>
         <div className="mid">
-          <div className="t">NET · VS EACH OTHER</div>
+          <div className="t">HEAD TO HEAD</div>
           <div
             className="d"
             style={{ color: delta === null ? 'var(--line-3)' : delta >= 0 ? 'var(--you)' : 'var(--them)' }}
@@ -119,6 +131,7 @@ export function Bars({
         </div>
         <div>
           <div className="side r">{rightLabel}</div>
+          <div className="side r">NET · VS THE FIELD</div>
           <div className="big them">{(theirs.net > 0 ? '+' : '') + theirs.net.toFixed(1)}</div>
         </div>
       </div>

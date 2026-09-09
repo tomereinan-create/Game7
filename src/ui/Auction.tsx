@@ -4,6 +4,7 @@ import { achMachineWin } from '../state/achievements'
 import { PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { compile, simSeries } from '../engine/resolver'
+import { isRateable } from '../engine/offense'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
@@ -454,7 +455,11 @@ export function Auction({ onHome }: { onHome: () => void }) {
         </>
       ) : null}
 
-      {A.length && B.length ? (
+      {/* G5 (2026-09-10): this was `A.length && B.length`, so the ratings card lit at the FIRST
+          card taken and printed a NET for a one-man lineup — -34.3 / -30.7, numbers that mean
+          nothing. A rating is a rating of five men; commit a3bee71 established that law and
+          gated the campaign draft on it, and these two hot-seat screens were left out of it. */}
+      {isRateable(A) && isRateable(B) ? (
         <div className="card">
           <Bars
             mine={compile(A, B)}

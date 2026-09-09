@@ -33,6 +33,14 @@ function loadProv(): Promise<Prov> {
       return r.json()
     })
     .then((j: Prov) => (cache = j))
+    .catch((e) => {
+      // G8: `pending` is a module-level memo and it used to latch a REJECTION for the life of the
+      // page — measured, three opens produced one fetch and three failures, with no second network
+      // attempt. So a momentary outage became "this screen is broken" until a full reload. Clearing
+      // it lets the next open try again.
+      pending = null
+      throw e
+    })
   return pending
 }
 
