@@ -685,6 +685,28 @@ button {
   margin-top: 4px;
   color: var(--ink);
 }
+/* THE DOOR TO THE MAN'S CARD (his ruling: "Instead of the player page being shown when pressing on
+   the player's name, add a small human icon once you open the stats, that will lead you there").
+   Fourteen numbers in a five-wide grid always leave the last cell empty, so the person stands in a
+   hole that was already there — aligned with the numbers, crowding nothing. 44px of tap target
+   around a 20px glyph, and the accent is what says it is a control and not a fifteenth statistic. */
+.bcell.bdoor { display: grid; align-items: center; justify-items: end; }
+.bdoor.solo { display: block; text-align: right; margin-top: 8px; }
+.pcard-door {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  color: var(--you);
+  cursor: pointer;
+}
+.pcard-door svg { display: block; width: 20px; height: 20px; }
+.pcard-door:focus-visible { outline: 1px solid var(--you); outline-offset: -9px; }
+.pcard-door:active { background: var(--you-tint); }
 
 /* ---------- pool card ---------- */
 .pool {
@@ -1279,6 +1301,20 @@ button {
 }
 .spin-wrap.at-end::after { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .spin-wrap::after { transition: none; } }
+/* THE OPENED SEASON LINE DOES NOT BLEED INSIDE THIS BOX (his ruling: "It should be shown clearly,
+   not like this"). Everywhere else the panel runs 12px past its rows to reach the card's edge; in
+   a box that SCROLLS that bleed is horizontal overflow, and what he was looking at was a second
+   scrollbar sitting under the numbers. Here the panel takes the width of the rows exactly — the
+   ledger still lines up with the names above it, and there is nothing to scroll sideways to. The
+   selected row bleeds the same 12px and for the same reason, so it comes in with the panel and the
+   two stay one band. Only where the box is a scroller: below 900px the list runs its full length
+   and the bleed is the look it has always had. */
+@media (min-width: 900px) {
+  .spin-roster .pdetail,
+  .spin-roster .row.on,
+  .spin-roster .row.on2,
+  .spin-roster .row.exp { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; width: 100%; }
+}
 /* HIS RULING: the men lead the stack at every width. He must never scroll to reach the five
    he is deciding between, so the roster box is first on a phone and leftmost on a desk. */
 .myteam .col.a { order: 1; }
@@ -1417,6 +1453,20 @@ button {
   line-height: 1.4;
   color: var(--muted);
   margin-top: 4px;
+}
+/* SHORTENED, BECAUSE HE IS READING A MAN (his ruling: "Perhaps shorten the wheel once the user
+   opens a player up"). The reels and the hint are gone above this line and the landed team comes
+   down with them — from a headline to a line, still saying where the roster came from, in a fifth
+   of the height. Two classes, so it beats the display size at every width. */
+.spin-team.short {
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  margin-top: 0;
+}
+@media (min-width: 900px) {
+  .spin-team.short { font-size: 18px; }
 }
 
 /* position assignment + open slots + stars */
@@ -3020,6 +3070,29 @@ body:has(.sheet) .map-fab { display: none; }
 .ct-spot.lifted .ct-bust { border-style: dashed; }
 .ct-open .ct-bust { background: rgba(11, 10, 9, 0.78); border: 2px dashed var(--ink-2); }
 .ct-open b { color: var(--ink-2); }
+/* WHERE HE IS ALLOWED TO PUT THE MAN (his ruling: "When holding down on a player to move/draft him
+   a position, show the elgible positions"). For as long as the hold lasts, every ring that will
+   take the man in hand wears a gold halo and puts its name in gold, and the halo breathes so the
+   eye finds the set of them without being told. The ring he is actually OVER keeps the solid fill
+   and solid border it already had and stops breathing — "you may drop here" and "this is the one
+   you are over" must not look the same. Rings that refuse him go quiet rather than dark: he is
+   still reading the five he is standing in while he holds. */
+.ct-spot.drop-able .ct-bust { border-color: var(--you); box-shadow: 0 0 0 2px var(--you-line), 0 0 9px 0 var(--you-line); animation: ct-able 1.25s ease-in-out infinite; }
+.ct-spot.drop-able b { color: var(--you); }
+.ct-spot.drop-able .ct-init.ghost { color: var(--you); }
+.ct-spot.drop-cold { opacity: 0.5; }
+/* the halo is a LAMP, not a plate: the tint tokens are opaque, so a spread shadow would lay a
+   solid disc over the floor's own markings. A blurred glow fades out instead and the lines read
+   straight through it. */
+@keyframes ct-able {
+  0%, 100% { box-shadow: 0 0 0 2px var(--you-line), 0 0 8px 0 var(--you-line); }
+  50% { box-shadow: 0 0 0 2px var(--you), 0 0 17px 3px var(--you-line); }
+}
+/* a machine that asked for less motion gets the halo held open instead of breathing */
+@media (prefers-reduced-motion: reduce) {
+  .ct-spot.drop-able .ct-bust { animation: none; box-shadow: 0 0 0 2px var(--you), 0 0 13px 2px var(--you-line); }
+}
+.ct-spot.drop-ok .ct-bust { animation: none; }
 .ct-mark { position: absolute; right: -4px; font-style: normal; text-decoration: none; font-family: var(--mono); font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em; padding: 1px 3px; border-radius: 999px; }
 .ct-mark.sc { top: -2px; background: var(--you); color: var(--you-ink); }
 .ct-mark.pm { top: -2px; background: none; border: 1px solid var(--you); color: var(--you); }

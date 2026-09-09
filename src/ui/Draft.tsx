@@ -9,7 +9,7 @@ import { canMoveSlot, moveSlot } from '../engine/slots'
 import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
-import { CardName, useCard } from './CardSheet'
+import { useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
@@ -448,7 +448,19 @@ export function Draft({
     const el = rosterList.current
     if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
   }
-  useEffect(() => {
+  /**
+   * A LAYOUT effect and no dependency array, on purpose and for two different reasons.
+   *
+   * NO DEPS: what stands above the list is not a dependency you can name — the spin lands, a man
+   * is drafted, the Assign to bar appears, and now (his ruling: "Perhaps shorten the wheel once
+   * the user opens a player up") the reels themselves fold away when a season line opens. Every
+   * one of those moves the top of the box, so the box is measured after EVERY render.
+   *
+   * LAYOUT and not passive: the fold is a 250px jump. A passive effect runs after paint, so the
+   * frame in which the reels go would be drawn with the OLD cap still on the list — the panel
+   * opening into a box that has not grown yet, which is the flicker the ruling is about.
+   */
+  useLayout(() => {
     const measure = () => {
       const list = rosterList.current
       const dock = document.querySelector<HTMLElement>('.dock')
@@ -649,17 +661,31 @@ export function Draft({
     if (e.button !== 0 && e.pointerType === 'mouse') return
     dragRef.current = { from, x0: e.clientX, y0: e.clientY, moved: false }
     ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    /**
+     * HIS RULING: "When holding down on a player to move/draft him a position, show the elgible
+     * positions." The HOLD is the moment, not the travel — he wants to know where he is allowed
+     * to put the man before he has dragged anywhere. So the same 300ms the drag-that-drafts uses
+     * opens the move: the floor lights every ring this man may take, and a press that ends
+     * without moving is still the tap it always was.
+     */
+    const [x, y] = [e.clientX, e.clientY]
+    unhold()
+    holdRef.current = window.setTimeout(() => {
+      if (dragRef.current) setDrag({ from, x, y, over: null })
+    }, HOLD_MS)
   }
   const dragMove = (e: PointerEvent) => {
     const d = dragRef.current
     if (!d) return
     if (!d.moved && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 8) return
     d.moved = true
+    unhold() // travelling: the hold has done its job and the drag takes over
     setDrag({ from: d.from, x: e.clientX, y: e.clientY, over: slotAt(e.clientX, e.clientY) })
   }
   const dragEnd = (e: PointerEvent) => {
     const d = dragRef.current
     dragRef.current = null
+    unhold()
     if (!d) return
     if (d.moved) {
       const to = slotAt(e.clientX, e.clientY)
@@ -723,8 +749,9 @@ export function Draft({
   }
   const pullStart = (name: string) => (e: PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return
-    // the name opens his card and the chevron opens his line: both are controls, not handles
-    if ((e.target as HTMLElement).closest('.cardname, .pinfo')) return
+    // the chevron opens his line: it is a control, not a handle. (The name was one too until his
+    // ruling took the card off it — there is nothing to press on a name now.)
+    if ((e.target as HTMLElement).closest('.pinfo')) return
     // nowhere for him to land — no open ring he can play, or the cap refuses him
     if (!POSITIONS.some((x) => canDrop(name, x))) return
     pullRef.current = { name, x0: e.clientX, y0: e.clientY, lifted: false }
@@ -840,6 +867,25 @@ export function Draft({
         draftable,
       )
     : []
+
+  /**
+   * THE WHEEL IS SHORTENED WHILE HE IS READING A MAN (his ruling: "It should be shown clearly, not
+   * like this. Perhaps shorten the wheel once the user opens a player up.").
+   *
+   * What he was looking at: a season line opening inside the measured roster box, squeezed into
+   * whatever height was left, with a scrollbar of its own and the bottom row of numbers cut off
+   * mid-glyph. Above that box sat the two reels, the team at display size and a two-line hint —
+   * a quarter of the screen spent on a spin that has already landed.
+   *
+   * So the moment a man in THIS list opens, the wheel folds: the reels go, the hint goes, and the
+   * team drops from display size to a single line that still says where the roster came from. The
+   * height goes to the roster, which is measured after every render and therefore re-measures on
+   * this very change. Close the man and every one of them comes back.
+   *
+   * The guard matters: `info` is shared with the opponent's list on the left, and opening one of
+   * THEIR men must not fold a wheel he is still spinning.
+   */
+  const reading = !!spun && !spinning && !!info && roster.some((p) => p.name === info)
 
   /**
    * TAKE THE FLOOR. Scout mode sims and goes; user mode watches the last shot go in first. The
@@ -964,7 +1010,7 @@ export function Draft({
         onPointerDown={opts.slot ? dragStart(opts.slot) : opts.pull ? pullStart(p.name) : undefined}
         onPointerMove={opts.slot ? dragMove : opts.pull ? pullMove : undefined}
         onPointerUp={opts.slot ? dragEnd : opts.pull ? pullEnd(opts.onTap) : undefined}
-        onPointerCancel={opts.slot ? () => { dragRef.current = null; setDrag(null) } : opts.pull ? pullCancel : undefined}
+        onPointerCancel={opts.slot ? () => { unhold(); dragRef.current = null; setDrag(null) } : opts.pull ? pullCancel : undefined}
         /* a held press must not raise the phone's own long-press menu over the man being carried */
         onContextMenu={opts.pull ? (e) => { if (pullRef.current) e.preventDefault() } : undefined}
         onClick={opts.slot || opts.pull ? undefined : opts.onTap}
@@ -983,7 +1029,16 @@ export function Draft({
             </span>
           ) : null}
           <span className="who">
-            <CardName p={p} />
+            {/*
+              HIS RULING: "Instead of the player page being shown when pressing on the player's
+              name, add a small human icon once you open the stats, that will lead you there."
+              So the name is a NAME here — no dotted underline, no press of its own. Every row on
+              this screen opens the man's season line where he stands, and the person icon inside
+              that opened line is the way through to his card. All three lists lose it together:
+              they all open the same panel, and a name that is a door in one list and plain text
+              in the next would be the same word doing two things on one screen.
+            */}
+            <b>{p.name}</b>
             <i>{opts.sub}</i>
             {salary ? <i className="sal">{salaryLine(p.name)}</i> : null}
           </span>
@@ -1001,7 +1056,8 @@ export function Draft({
           ▾
         </button>
       </div>
-      {info === p.name ? <DetailGrid p={p} mode="stats" /> : null}
+      {/* his ruling, above: the opened stats carry the only door to his card on this screen */}
+      {info === p.name ? <DetailGrid p={p} mode="stats" onCard={() => openCard(p)} /> : null}
     </div>
     )
   }
@@ -1148,12 +1204,15 @@ export function Draft({
               </span>
             ) : null}
           </div>
-          {reels ? <SpinReels spin={reels} spinning={spinning} hold={hold} onHold={spun ? setHold : undefined} /> : null}
+          {/* his ruling: once a man is open the reels have nothing left to say, so they fold and
+              the roster takes their height. They come straight back when he closes the man. */}
+          {reels && !reading ? <SpinReels spin={reels} spinning={spinning} hold={hold} onHold={spun ? setHold : undefined} /> : null}
           {/* the line under the reels is the ANSWER, so it waits for them: while they run, the rows
-              under the arrows are the only thing to read */}
+              under the arrows are the only thing to read. Reading a man, it is the whole of the
+              wheel — the team at a line's height instead of a headline's. */}
           {spinning ? null : (
             <>
-              <div className="spin-team">{display.team}</div>
+              <div className={`spin-team ${reading ? 'short' : ''}`}>{display.team}</div>
               <div className="spin-sub">
                 {display.y} · {CONF[display.c]}
                 {display.div ? ` · ${display.div}` : ''}
@@ -1181,8 +1240,11 @@ export function Draft({
                 <span className="gcap">PTS · REB · AST</span>
                 <span />
               </div>
-              {/* his ruling: the drag is the other way to draft, so the list says so */}
-              <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
+              {/* his ruling: the drag is the other way to draft, so the list says so — until he
+                  has taken the instruction and opened a man, when the height is worth more */}
+              {reading ? null : (
+                <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
+              )}
               {/* HIS RULING: "Make the celtics scrollable instead of scrolling the entire page."
                   A fifteen-man roster ran the middle column past the fold, so reading to the end
                   of it meant scrolling the whole screen — and taking the opponent, the wheel and
@@ -1498,6 +1560,16 @@ export function Draft({
               // one ring at a time lights: the man being drafted onto the floor, or the man
               // already on it being moved across it
               dropOk: pull ? (pull.over === x ? canDrop(pull.name, x) : null) : drag && drag.over === x ? canMove(drag.from, x) : null,
+              /**
+               * HIS RULING: "When holding down on a player to move/draft him a position, show the
+               * elgible positions." `dropOk` above answers "is THIS the ring under his finger";
+               * this answers the question he actually asked — "may he put the man here at all" —
+               * for every ring at once, for as long as the hold lasts. `canDrop` is the draft's
+               * law (an OPEN ring he can play, inside the cap) and `canMove` is the move's (any
+               * ring he can play, and an occupied one only if the two men can swap): the same two
+               * rules the dock button and the Move to chips answer with, said on the floor.
+               */
+              dropAble: pull ? canDrop(pull.name, x) : drag ? (drag.from === x ? null : canMove(drag.from, x)) : null,
               // HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
               // shall open photo #2." A ring is not a row — there is nothing under it to open out
               // — so the man on it opens his CARD, which carries photo #2's season line and the
