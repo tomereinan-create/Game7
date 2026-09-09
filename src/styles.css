@@ -5756,145 +5756,208 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   user-select: none;
 }
 /**
- * THE MARK IS A RING NOW AND NOTHING BUT A RING — his ruling, 2026-09-09: "Remove the X\O from
- * both home screens."
+ * ALL SIX MARKS ARE BULLETS — his ruling, 2026-09-09: "You made only 1 bullet, instead all. Find
+ * a way to do it."
  *
- * WHAT THIS RULE USED TO BE, because the change is bigger than deleting a letter from the markup.
- * The ring was drawn with a TRANSPARENT border and the O or the X inside it in chalk, and only
- * `.on` gave the border a colour. So the mark you were LOOKING at was the letter; the ring only
- * ever appeared under the one play you had pressed. Take the letters out of that and five of the
- * six marks vanish off the floor. The ring is therefore chalked in for all six now — at 0.6 of
- * the cream, half a step above the 0.5 the court's own lines are drawn in, so a mark reads as a
- * thing standing ON the floor rather than as another line of it — and the press changes its
- * COLOUR, which is exactly what his earlier ruling asked of it ("instead of a yellow circle make
- * it orange circle").
+ * THE TWO DECISIONS HE HAS OVERRULED, both recorded here because the shape of this rule is the
+ * shape of the argument:
+ *   1. THE RINGS. On 2026-09-09 the letters came out of the marks ("Remove the X\O from both home
+ *      screens") and this rule answered that by chalking a DASHED RING in for all six — the ring
+ *      had been drawn with a transparent border and the letter was the whole of the mark, so an
+ *      empty one would have been invisible. That ring is gone now.
+ *   2. "THE FIVE THAT ARE NOT PRESSED KEEP THEIR RINGS." When his next ruling turned the pressed
+ *      mark into a bullet ("Instead of an orange circle in the home screen make it a bullet"),
+ *      the rule below argued the other five should stay rings, on the ground that a small filled
+ *      dab cannot read as chalk: a dashed border at 20px is five dashes, so a small mark has to be
+ *      solid, and a solid disc is a radio button sitting on top of the drawing. He read the board
+ *      and overruled it in one line. The dab is what had to be made to read as chalk, and this
+ *      rule is where that was done.
  *
- * AND IT IS SMALLER, from 9.3% of the floor to 7.6. The old diameter was set by what it had to
- * hold: a letter at 6cqw needs a ring at 9.3 around it. Empty, that ring is a hole — the eye
- * reads a large circle with nothing in it as a gap in the drawing rather than as a spot on it.
- * At 7.6 the dashes close up into a ring and it reads as a mark again, and it opens the gap
- * between the ring and the man standing beside it (--ck-fig-gap, 9.1cqw from the same centre)
- * from half a ring to nearly a whole one. The stroke and the dash pattern are untouched: they are
- * the court's, and a mark drawn in a different chalk from the floor is not chalk.
+ * WHAT MAKES A 21px DAB CHALK RATHER THAN A UI DOT. Not one thing — four, and none of them alone
+ * would carry it. A flat disc of one colour is the failure case (it is what the first bullet was,
+ * and reading it back on the board is what made this argument), so every one of these is aimed at
+ * something a machine would not have drawn. The build is spelled out on the `background` below;
+ * what each of them is FOR is here:
+ *   · IT IS NOT A CIRCLE. The mark is the union of three overlapping passes of the stick, so the
+ *     silhouette is a lump. This survives 21px — the eye reads "wrong roundness" long before it
+ *     can count pixels.
+ *   · IT HAS NO EDGE. Every pass fades out over its own outer fifth instead of stopping, so the
+ *     mark is dusty all the way round. The first bullet faded over the outer SEVENTH of its
+ *     radius, which was 1.3px on a phone: invisible, which is exactly why it read as a flat disc.
+ *   · THE DENSITY IS UNEVEN. Two thin spots in the slate's own colour are where the stick
+ *     skipped, and the three passes are different sizes, so no two parts of the mark are the same
+ *     weight.
+ *   · IT SHEDS. Two specks sit clear of the body, one either side. Chalk throws dust.
+ * And the SIX ARE NOT THE SAME DAB: each is the same recipe turned to its own angle (--ck-dab
+ * below), so the lump, the skips and the specks point somewhere different on every mark. Six
+ * identical marks is the other way to look manufactured.
  *
- * The pixel floor comes down 42 → 38 with it. The tap target is not the ring — it is the whole
- * `.ck-spot`, which is the ring, a gap and the name under it, and is over 60px tall on a phone at
- * its narrowest.
+ * RESTING AND PRESSED ARE TOLD APART THREE WAYS, because with no ring-vs-dab difference left the
+ * colour cannot carry it alone: the dab turns from the board's cream to --ck-orange, it GROWS
+ * from 56% of the mark's box to 72% (which is two thirds more ink), and it goes to FULL strength
+ * where a resting dab is held at 0.85. At 375 that is a 21px cream lump becoming a 27px orange
+ * one, which is legible at arm's length.
  *
- * THIS DIAMETER IS NOW THE MARK'S FOOTPRINT RATHER THAN ITS DRAWING, since his ruling of
- * 2026-09-09 turned the pressed mark into a bullet: the box is the same at rest and pressed, so
- * the name under it never moves, the man beside it never has to shuffle, and the tap target is
- * the size it always was. What is DRAWN in the box is what changes. See the bullet rule below.
+ * THE BOX IS THE FOOTPRINT AND IT HAS NOT MOVED. `.ck-glyph` is still clamp(38px, 7.6cqw, 98px)
+ * — the ring's own diameter — and only what is DRAWN inside it changes, at rest or pressed. So
+ * the name under it never moves, the man beside it (--ck-fig-gap, off the same centre) never has
+ * to shuffle, the ball still lands where it always did, and the tap target is the size it was.
+ * The tap target is not the dab: it is the whole `.ck-spot`, box plus gap plus the name under it,
+ * which is 54px tall on a phone at its narrowest.
  */
 .ck-glyph {
   display: grid;
   place-items: center;
   width: clamp(38px, 7.6cqw, 98px);
   aspect-ratio: 1;
-  border-radius: 50%;
-  border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.6);
 }
-/* his ruling: "make all the modes fonts bigger" — the six names were chalked at 2.2% of the floor,
-   which is a caption under a mark rather than the name of a way to play */
-.ck-label {
+.ck-glyph::before {
+  content: '';
+  grid-area: 1 / 1;
+  /* the three stops of one pass of the stick, named so `.on` can repaint the whole dab by
+     restating three colours instead of seven gradients. They are --ck-chalk and --ck-orange
+     written out, because a custom property cannot be given an alpha inside a colour function
+     here. The resting cream is held UNDER full strength (0.85) on purpose: the marks are things
+     standing on the floor, and a mark brighter than the court it is drawn on would pull the eye
+     off the one that is actually pressed. */
+  --ck-dab-core: rgba(240, 234, 214, 0.85);
+  --ck-dab-mid: rgba(240, 234, 214, 0.52);
+  --ck-dab-edge: rgba(240, 234, 214, 0.14);
+  --ck-dab-w: 56%;
+  width: var(--ck-dab-w);
+  aspect-ratio: 1;
+  transform: rotate(var(--ck-dab, 0deg));
+  /* SEVEN LAYERS AND NOT ONE CLIP. Painted from the bottom of this list up, which is the order a
+     hand would do it in:
+       · THREE PASSES OF THE STICK (the last three), a big one and two smaller ones put down off
+         centre and overlapping. Their UNION is the silhouette, and that is the whole trick: a
+         border-radius would have given a lump too, but whatever silhouette you cut, the paint
+         runs up to the cut and stops dead, and a hard edge is the one thing a chalk mark does
+         not have. Three soft circles have no edge anywhere — each holds full body to about 78%
+         of its own radius and is gone by 100% — so the mark is a lump with dusty sides. It is
+         `--ck-smudge`'s profile, the soft disc the men's contact shadows are drawn with, pulled
+         tight enough to leave a body in the middle.
+       · TWO SPECKS thrown clear of it, at the size of a pixel or two. Chalk sheds.
+       · TWO THIN SPOTS on top, painted in the slate's own colour: over the dust they are where
+         the stick skipped, and over the slate outside the dab they ARE the slate, so they cost
+         nothing at the rim and need no clipping to stay inside the mark.
+     Nothing here is centred and nothing is symmetrical, which is the difference between a mark
+     somebody made and a shape a machine filled. */
+  background:
+    radial-gradient(12% 12% at 22% 64%, rgba(36, 53, 48, 0.5), rgba(36, 53, 48, 0) 100%),
+    radial-gradient(18% 18% at 61% 31%, rgba(36, 53, 48, 0.32), rgba(36, 53, 48, 0) 100%),
+    radial-gradient(7% 7% at 89% 21%, var(--ck-dab-mid), rgba(240, 234, 214, 0) 100%),
+    radial-gradient(5% 5% at 13% 85%, var(--ck-dab-mid), rgba(240, 234, 214, 0) 100%),
+    radial-gradient(
+      28% 28% at 66% 66%,
+      var(--ck-dab-core) 76%,
+      var(--ck-dab-mid) 90%,
+      var(--ck-dab-edge) 97%,
+      rgba(240, 234, 214, 0) 100%
+    ),
+    radial-gradient(
+      32% 32% at 36% 36%,
+      var(--ck-dab-core) 78%,
+      var(--ck-dab-mid) 91%,
+      var(--ck-dab-edge) 97%,
+      rgba(240, 234, 214, 0) 100%
+    ),
+    radial-gradient(
+      40% 40% at 50% 52%,
+      var(--ck-dab-core) 80%,
+      var(--ck-dab-mid) 92%,
+      var(--ck-dab-edge) 98%,
+      rgba(240, 234, 214, 0) 100%
+    );
+  transition: width 170ms ease;
+}
+/* the six turned to their own angles — see the dab note above. `nth-of-type` counts BUTTONS
+   inside the court and the six marks are the only ones there, so this needs nothing from
+   ChalkHome. The numbers are just six angles no two of which are near each other. */
+.ck-court > .ck-spot:nth-of-type(1) .ck-glyph::before { --ck-dab: 14deg; }
+.ck-court > .ck-spot:nth-of-type(2) .ck-glyph::before { --ck-dab: 122deg; }
+.ck-court > .ck-spot:nth-of-type(3) .ck-glyph::before { --ck-dab: 233deg; }
+.ck-court > .ck-spot:nth-of-type(4) .ck-glyph::before { --ck-dab: 68deg; }
+.ck-court > .ck-spot:nth-of-type(5) .ck-glyph::before { --ck-dab: 296deg; }
+.ck-court > .ck-spot:nth-of-type(6) .ck-glyph::before { --ck-dab: 175deg; }
+/**
+ * THE NAME UNDER THE MARK, and since 2026-09-09 the cup stands on this line rather than inside
+ * the mark — see `.ck-cup` below for why it had to move. The row is held to ONE LINE of the name
+ * (`height: 1em`) so that a mark carrying a cup is exactly as tall as one that is not: the cup is
+ * bigger than the line and overflows it evenly, up into the empty part of the mark's box and down
+ * onto the floor, and nothing under it shifts.
+ *
+ * The type lives here rather than on `.ck-label` now, because the gap and the cup are both sized
+ * in `em` off it. His ruling: "make all the modes fonts bigger" — the six names were chalked at
+ * 2.2% of the floor, which is a caption under a mark rather than the name of a way to play.
+ */
+.ck-under {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.34em;
+  height: 1em;
   font: 700 clamp(11px, 3.1cqw, 30px) / 1 var(--ck-type);
+}
+.ck-label {
+  font: inherit;
   letter-spacing: 0.14em;
   color: var(--ck-dim);
   white-space: nowrap;
 }
-/* his ruling: "instead of a yellow circle make it orange circle" — and, when the first pass took
-   the name with it, "Fix the label to be orange only on the circle." So the ORANGE IS THE CIRCLE
-   AND NOTHING ELSE: the ring turns — it used to turn along with the letter inside it, and since
-   2026-09-09 there is no letter — and the name under it stays the slate's chalk yellow, which is
-   what it lit up in before. Reading it back on the floor he is right — the mark is what the eye
-   picks a play out by, and a second colour under it was the selection saying itself twice.
-   The focus ring stays yellow too: it says where the keyboard is, which is not the same question
-   as which play is pressed, and on a spot that is both you want to tell them apart. */
-.ck-spot.on .ck-glyph { border-color: var(--ck-orange); }
+/**
+ * THE PRESSED MARK — his ruling: "instead of a yellow circle make it orange circle", and then,
+ * when the first pass took the name with it, "Fix the label to be orange only on the circle." So
+ * THE ORANGE IS THE MARK AND NOTHING ELSE and the name under it stays the slate's chalk yellow,
+ * which is what it lit up in before. Reading it back on the floor he is right — the mark is what
+ * the eye picks a play out by, and a second colour under it was the selection saying itself twice.
+ *
+ * The pressed dab is bigger, oranger and denser than a resting one, and it is those three
+ * together rather than the colour alone: see the dab note above for why the difference has to be
+ * carried three ways now that both states are the same shape.
+ *
+ * THE FOCUS RING STAYS YELLOW. It says where the keyboard is, which is not the same question as
+ * which play is pressed, and on a spot that is both you want to tell them apart — a yellow
+ * OUTLINE standing off the mark against an orange FILL inside it.
+ */
+.ck-spot.on .ck-glyph::before {
+  --ck-dab-core: rgba(255, 168, 102, 1);
+  --ck-dab-mid: rgba(255, 168, 102, 0.68);
+  --ck-dab-edge: rgba(255, 168, 102, 0.18);
+  --ck-dab-w: 72%;
+}
 .ck-spot.on .ck-label { color: var(--ck-yellow); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
-
 /**
- * THE PRESSED MARK IS A BULLET — his ruling, 2026-09-09: "Instead of an orange circle in the home
- * screen make it a bullet."
+ * THE CUP, BESIDE THE NAME, IN USER MODE ONLY — his ruling: "Add a trophy for EVERY mode at 150
+ * wins(An actual golden trophy at the end)."
  *
- * The rule above is the one he is ruling on, and it stays where it is because it is still the rule
- * for a mark that has a trophy in it (see the last paragraph). For every other mark the outline
- * now goes to `transparent` and a FILLED dot is chalked in its place: pressing a play fills it in
- * rather than re-colouring its edge, which is the difference between a circle and a bullet.
+ * IT USED TO STAND INSIDE THE MARK, and that is the decision this one replaces. The marks were
+ * rings then and the ring was a hole with room in it — the room the X and the O had just left —
+ * so the cup went in there, and when the pressed mark became a bullet a mark with a cup in it was
+ * exempted from filling in, because a bullet and a trophy want the same middle. THAT EXEMPTION IS
+ * THE VERY THING HE THREW OUT: "You made only 1 bullet, instead all." A ladder with all 150
+ * cleared was one of the five still wearing a ring. There is no inside to a dab, so the cup comes
+ * out of the mark and stands on the line under it, at the head of the name — which is where a cup
+ * belongs anyway: this ladder's name, and the cup it won. Every one of the six is now the same
+ * dab, pressed or not, cup or not.
  *
- * HOW BIG. A bullet is small — a filled disc at the ring's own 38–98px is a puck, not a bullet —
- * but a bullet at the size a bullet is in TEXT (about a third of the name chalked under it, so
- * four pixels on his phone) would be a speck on a court, and this mark is what the eye picks the
- * play out by and what the ball is thrown to. So it is sized off the mark instead: 62% of the
- * ring's inside, which is the SAME 62% the trophy already stands at. One number governs whatever
- * stands in a mark, and it lands at 20px on a phone and 32px on a desk — a third to a half of the
- * height of the man standing beside it, which is what a spot chalked on a floor looks like, and a
- * little over the size of the name under it, which is what a bullet standing on its own at
- * display size looks like. It is smaller than the ring it replaces and yet
- * HEAVIER: a 3px dashed line round a 35px circle is 330px² of stroke, and once the gaps between
- * the dashes and the 0.6 alpha are taken off it is worth something like 120; the bullet is 310px²
- * of solid orange. Pressing a play GAINS ink, which is what a selection has to do.
+ * WHAT KEEPS IT FROM MOVING ANYTHING. It is sized in `em` off the name it stands beside, so it
+ * grows with the floor the way everything else chalked on it does (the width attribute React
+ * writes on the svg is overridden here). And the line it sits on is held to the height of the
+ * name (`.ck-under`), so the cup — which is half again as tall as that — overflows the line
+ * evenly rather than pushing it down: a mark with a cup is exactly as tall as one without, and
+ * the six names all sit on the same line off their marks. What it DOES do is widen the row, so
+ * the name of a finished ladder is nudged along by half the cup. That is the price of putting it
+ * beside the name and it is paid once, at load: nothing moves when the mark is pressed.
  *
- * THE FIVE THAT ARE NOT PRESSED KEEP THEIR RINGS, and that is a decision rather than an omission.
- * He ruled on the orange one. A ring and a bullet are also two different sentences — a ring is the
- * SPOT, one of six places a play stands on this floor, and the bullet is WHICH ONE YOU HAVE
- * PRESSED — and the board is easier to read when the resting state and the chosen state are not
- * the same shape at two colours. The ring also cannot come down to the bullet's size and stay
- * chalk: at 20px a 3px dashed border is five dashes, which is a broken circle rather than a line
- * drawn in chalk, and the dash is the whole reason the marks belong to the same drawing as the
- * court.
- *
- * IT IS CHALK AND NOT A UI DOT. A flat disc of #ffa866 with a hard edge is a sticker stuck on a
- * slate, and there are no dashes to keep here — a filled mark has no edge to break — so the chalk
- * has to come from the way it FADES instead: solid through the middle and then dusty over the
- * last seventh of its radius, which is a stick pressed down and lifted rather than a shape filled
- * by a machine. It is the same idea as `--ck-smudge`, the soft-edged disc the men's contact
- * shadows are already made of, so the bullet belongs to the drawing rather than sitting on it.
- * A GLOW WAS TRIED AND THROWN OUT: a box-shadow round it reads as a lamp, not as dust, and the
- * board has no light sources in it.
- *
- * THE FOCUS RING IS UNTOUCHED and is still yellow, one line above. It is now telling a yellow
- * outline apart from an orange FILL rather than from an orange outline, which is a bigger gap
- * than it had before.
- *
- * A MARK WITH A CUP IN IT IS NOT AN EMPTY RING, so it is not filled in. His standing ruling puts
- * an actual golden trophy in the mark of a ladder with all 150 cleared, and a bullet and a trophy
- * want the same middle: fill the mark and the cup is buried. The ring is what the trophy stands
- * in, so a mark that holds one goes on being a ring and goes on turning orange when pressed —
- * which is exactly what his earlier ruling asked of it ("instead of a yellow circle make it
- * orange circle"). The bullet replaced the ring because the ring was empty; where it is not
- * empty, it is still doing work. `.cup` is put on the glyph by ChalkHome for this one rule.
+ * Gold on the slate is the only thing on this screen that is not chalk, and that is the point:
+ * his ruling asks for an actual golden trophy, not a chalk drawing of one. The drop shadow is
+ * what keeps it from sitting flat on the floor. It is UNCHANGED by the press — the mark goes
+ * orange and the name goes yellow underneath it, and the cup is gold either way, because what it
+ * says ("this one is finished") is not a thing the press can alter.
  */
-.ck-spot.on .ck-glyph:not(.cup) { border-color: transparent; }
-.ck-spot.on .ck-glyph:not(.cup)::after {
-  content: '';
-  grid-area: 1 / 1;
-  width: 62%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  /* the two rgba's are --ck-orange itself, run down to 0.55 and then to nothing for the dust at
-     the rim; they are written out because a custom property cannot be given an alpha here */
-  background: radial-gradient(
-    closest-side,
-    var(--ck-orange) 86%,
-    rgba(255, 168, 102, 0.55) 96%,
-    rgba(255, 168, 102, 0) 100%
-  );
-}
-/* THE CUP, IN THE RING, IN USER MODE ONLY — his ruling: "Add a trophy for EVERY mode at 150
-   wins(An actual golden trophy at the end)." It stood on the old user-mode cards; those are gone
-   with his ruling of 2026-09-09 ("Change the user mode main screen to look like the scout mode"),
-   and the six marks are now the one place where all three ladders can be seen at once, which is
-   the whole reason the cup was on the cards. So it stands IN the mark — the room the X and the O
-   have just left, which is what makes this the cheapest possible home for it.
-
-   It is sized off the RING rather than in pixels, so it grows with the floor the way everything
-   else chalked on it does, and the width attribute React writes on the svg is overridden here.
-   Gold on the slate is the only thing on this screen that is not chalk, and that is the point:
-   his ruling asks for an actual golden trophy, not a chalk drawing of one. The drop shadow is
-   what keeps it from sitting flat inside the ring. */
-.ck-cup { display: grid; place-items: center; width: 62%; line-height: 0; }
+.ck-cup { display: grid; place-items: center; width: 1.5em; flex: none; line-height: 0; }
 .ck-cup .trophy { width: 100%; height: auto; filter: drop-shadow(0 1px 3px rgba(6, 14, 11, 0.65)); }
 
 /* ---------- THE PLAY: SIX MEN AND ONE BALL ----------
@@ -6382,7 +6445,11 @@ body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
    is what it is. Each selector below carries the same weight as the one it is beating and comes
    later in the file, so none of it needs !important. */
 @media (prefers-reduced-motion: reduce) {
-  .ck-spot { transition: none; }
+  /* the second of these is the dab growing on the press (see `.ck-glyph::before`); like every
+     other rule in here it is a transition over a resting state that is already correct, so
+     turning it off just makes the mark arrive at its pressed size in the same frame. */
+  .ck-spot,
+  .ck-glyph::before { transition: none; }
   .ck-p-turn.spin,
   .ck-p-idle,
   .ck-p.throw .ck-p-act,

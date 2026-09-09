@@ -38,13 +38,19 @@ import type { Mode } from './Home'
  * out: its number, its name under a wavy chalk underline, what it is, what you have banked, and
  * the one chip that starts it.
  *
- * HIS RULING OF 2026-09-09 TOOK THE LETTERS OUT OF THE MARKS: "Remove the X\O from both home
- * screens." The board drew three O's for the ladders and three X's for the side modes; the letters
- * are gone from both boards and the RINGS stay, because the ring is what turns orange when a play
- * is pressed and what the ball is thrown to. An empty ring drawn the way the old one was would
- * have been invisible — it carried a TRANSPARENT border and the letter was the whole of the mark
- * — so the ring is chalked in for all six now and only its colour changes on the press. See
- * `.ck-glyph` in the stylesheet for the diameter it had to be retuned to.
+ * THE MARKS ARE SIX CHALK DABS AND THERE IS NO RING ON THE FLOOR. Three rulings got them here and
+ * the last one reverses the middle one, so all three are worth having in order:
+ *   1. "Remove the X\O from both home screens." The board drew three O's for the ladders and three
+ *      X's for the side modes. The letters went, and the marks became six dashed rings — the ring
+ *      had carried a TRANSPARENT border with the letter inside it, so an empty one would have been
+ *      invisible and it had to be chalked in for all six.
+ *   2. "Instead of an orange circle in the home screen make it a bullet." Only the PRESSED mark
+ *      was filled in; the other five kept their rings, on the argument that a dab that small
+ *      cannot read as chalk.
+ *   3. "You made only 1 bullet, instead all. Find a way to do it." He read that on the board and
+ *      overruled it. All six are dabs now, at rest and pressed, cup or no cup, and the ring is
+ *      gone from the screen entirely. See `.ck-glyph::before` in the stylesheet for what a dab is
+ *      made of and why a lump of soft-edged chalk is not a radio button.
  *
  * WHAT 4a DID NOT HAVE, and had to be given, because this is the only screen that carries them:
  *   · THE MODE SWITCH. The old front door asked "how do you want to see the game?" in the middle
@@ -57,8 +63,9 @@ import type { Mode } from './Home'
  *   · THE CUP, IN USER MODE ONLY (his ruling: "Add a trophy for EVERY mode at 150 wins(An actual
  *     golden trophy at the end)"). It stood on the old user-mode cards because that was the one
  *     screen where all three ladders were on view at once; the six marks on this floor are that
- *     screen now, so the cup stands IN the mark of a ladder with all 150 cleared — which is the
- *     room the letter has just left.
+ *     screen now. It stood IN the mark for one day — the room the letter had just left — and it
+ *     stands BESIDE THE NAME under the mark since his "You made only 1 bullet, instead all",
+ *     because a dab has no inside to put it in. See `.ck-cup` in the stylesheet.
  * Everything else — the geometry, the copy, the six positions, the palette — is the board's.
  *
  * HIS RULING OF 2026-09-08, and it is two things: "In the scout home page, when pressing on
@@ -120,7 +127,9 @@ const clamp = (lo: number, v: number, hi: number) => Math.min(hi, Math.max(lo, v
  * app ever read it, so it is deleted rather than left standing unused.
  *
  * `cup` IS USER MODE'S ALONE and is `false` on every mark in scout mode — see the head of this
- * file. It is true on a ladder with all 150 cleared, and it puts a gold trophy in the ring.
+ * file. It is true on a ladder with all 150 cleared, and it stands a gold trophy at the head of
+ * the name chalked under the mark. (It used to stand INSIDE the mark; his ruling of 2026-09-09,
+ * "You made only 1 bullet, instead all", left no inside to stand it in.)
  */
 type Zone = { pick: Mode; cup: boolean; x: string; y: string; side: 1 | -1; label: string; tag: string; desc: string; meta: string; cta: string }
 
@@ -436,18 +445,24 @@ export function ChalkHome({
               <span className="ck-ftc" />
               <span className="ck-rim" />
             </span>
-            {/* the six men, on the floor and UNDER the marks, so no head ever covers an O or a
-                name — and then the ball, in its own layer OVER them, because a ball in the air
-                passes over everything the floor is carrying */}
+            {/* the six men, on the floor and UNDER the marks, so no head ever covers a dab, a cup
+                or a name — and then the ball, in its own layer OVER them, because a ball in the
+                air passes over everything the floor is carrying */}
             <ChalkFloor zones={zones} sel={sel} pass={pass} holdFace={holdFace} />
             <ChalkAir pass={pass} />
-            {/* THE SIX MARKS. Each is a ring and the name under it, and NOTHING INSIDE THE RING —
-                his ruling: "Remove the X\O from both home screens." The button's name is the name
-                chalked under it, which is what it always was: the letter was never announced as
-                anything, so nothing is lost from a screen reader by its going.
-                AND THE ONE YOU PRESS IS NO LONGER A RING AT ALL — his ruling of 2026-09-09:
-                "Instead of an orange circle in the home screen make it a bullet." The ring is
-                filled in and drawn tight; see `.ck-glyph` and the bullet rule in the stylesheet.
+            {/* THE SIX MARKS, AND EVERY ONE OF THEM IS A BULLET — his ruling of 2026-09-09, on a
+                board where only the pressed one had become one: "You made only 1 bullet, instead
+                all. Find a way to do it." So the mark is a chalk dab at rest and the same dab in
+                orange when pressed, and there is no ring left anywhere on the floor. The two
+                rulings this lands on top of: "Remove the X\O from both home screens" took the
+                letters out, and "Instead of an orange circle in the home screen make it a bullet"
+                turned the pressed one. See `.ck-glyph::before` in the stylesheet for how a 19px
+                dab was made to read as chalk rather than as a radio button.
+
+                THE MARK IS NOW A DRAWING AND NOTHING ELSE — `aria-hidden`, empty, with no class
+                left on it that says anything — because everything that used to be announced from
+                inside it has moved out to the line below. The button's name is the name chalked
+                under it, which is what it always was.
                 THE MODE IS SPENT HERE (3 of 3): the cup, and only in user mode. */}
             {zones.map((s, i) => (
               <button
@@ -462,19 +477,23 @@ export function ChalkHome({
                    takes its name from the word chalked under it, which is what it always did. */
                 aria-label={s.cup ? `${s.label}, all ${ROUNDS} cleared` : undefined}
               >
-                {/* `cup` IS ON THE MARK ITSELF as well as inside it, because the bullet and the
-                    trophy want the same middle and only one of them can have it. A mark with a
-                    cup in it is NOT an empty ring, so it does not fill in when pressed — see the
-                    bullet rule in the stylesheet for why that is the reading of his ruling that
-                    keeps his standing one ("Add a trophy for EVERY mode at 150 wins"). */}
-                <span className={`ck-glyph${s.cup ? ' cup' : ''}`}>
+                <span className="ck-glyph" aria-hidden />
+                {/* THE CUP CAME OUT OF THE MARK AND STANDS AT THE HEAD OF THE NAME. It used to sit
+                    inside the ring, and a mark with a cup in it was the one mark that did NOT fill
+                    in when pressed — which is exactly the "only 1 bullet" he threw out, and it was
+                    live on his own save, since his campaign is 150/150 and CAMPAIGN is what the
+                    board opens on. A dab has no inside, so the cup moves to the line under the
+                    mark and every mark is the same dab again. His standing ruling — "Add a trophy
+                    for EVERY mode at 150 wins" — is kept; only where the cup stands has changed.
+                    See `.ck-cup` in the stylesheet for why this costs the row no height. */}
+                <span className="ck-under">
                   {s.cup ? (
                     <span className="ck-cup" aria-hidden>
                       <Trophy size={22} />
                     </span>
                   ) : null}
+                  <span className="ck-label">{s.label}</span>
                 </span>
-                <span className="ck-label">{s.label}</span>
               </button>
             ))}
           </div>
