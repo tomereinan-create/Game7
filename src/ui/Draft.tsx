@@ -49,6 +49,38 @@ export const salaryLine = (name: string) => {
 /** A player's share of his season's cap, or null when the season has no salary on record. */
 export const capPct = (name: string): number | null => SAL[name]?.pct ?? null
 
+/**
+ * WHY A ROSTER ROW IS DIMMED (C3 / C4, 2026-09-09). A row greys for two unrelated reasons — his
+ * position is filled, or he costs more than the payroll has left — and both drew the same grey with
+ * only the cap one carrying a word. On Cleveland '97 that put Hill, Brandon and Phills (14.3%, 5.4%
+ * and 7.4% of the cap, all comfortably affordable) in the same state as a man nobody can pay for,
+ * with nothing on screen to tell them apart.
+ *
+ * POSITION BEFORE PRICE when both bind: "over the cap — he costs 33.3%" invites the thought that
+ * money is the obstacle and a cheaper board would free him. It would not, if his ring is gone. The
+ * binding reason is the one printed.
+ *
+ * Pure, and exported, so the wording is tested without driving the screen.
+ */
+export function dimReason(a: {
+  unpriced: boolean
+  /** Open rings this man can play. Empty = his position is taken. */
+  fits: number
+  overCap: boolean
+  /** Every position he can play, for the sentence. */
+  positions: string[]
+  /** His price, in points of the cap. */
+  cost: number | null
+  /** What is left to spend on this pick. */
+  budget: number
+}): string | undefined {
+  if (a.unpriced) return 'no salary on record — he cannot be priced'
+  if (!a.fits) return `no open spot — ${a.positions.join(' and ')} ${a.positions.length > 1 ? 'are' : 'is'} already filled`
+  if (a.overCap) return `over the cap — he costs ${(a.cost ?? 0).toFixed(1)}%, ${Math.max(0, a.budget).toFixed(1)}% left to spend`
+  return undefined
+}
+
+
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
 const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
@@ -1046,7 +1078,7 @@ export function Draft({
           {sel && slot
             ? `Draft ${sel} at ${slot}`
             : salary && budget < 1
-              ? `No cap room — ${capUsed.toFixed(1)}% of ${capMax}% used`
+              ? `No cap room — ${capUsed.toFixed(1)}% / ${capMax}% of cap used`
               : 'Tap a player to scout him'}
         </button>
       )
@@ -1082,6 +1114,14 @@ export function Draft({
       /** His ruling: durability reads next to the name on this screen too, same badge as My team. */
       dur?: number
       worn?: boolean
+      /**
+       * WHY THIS ROW IS DIMMED (C3, 2026-09-09). A row greys for two unrelated reasons — his
+       * position is filled, or he costs more than the payroll has left — and both drew the same
+       * grey with only the cap one carrying a word. On Cleveland '97 that put Hill, Brandon and
+       * Phills (14.3%, 5.4% and 7.4% of the cap, all comfortably affordable) in the same state as
+       * a man nobody can pay for, with nothing on screen to tell them apart.
+       */
+      why?: string
     },
   ) => {
     /**
@@ -1135,7 +1175,11 @@ export function Draft({
             */}
             <b>{p.name}</b>
             <i>{opts.sub}</i>
-            {salary ? <i className="sal">{salaryLine(p.name)}</i> : null}
+            {/* C4: the cap verdict used to sit INSIDE `sub`, between the positions and the
+                archetype — so the archetype was last and it was the archetype that truncated
+                ("PF · C · OVER THE CAP · TWO-…"). It reads here instead, on the line that already
+                carries the money, and `sub` is positions and archetype only. */}
+            {salary || opts.why ? <i className="sal">{[salary ? salaryLine(p.name) : null, opts.why].filter(Boolean).join(' · ')}</i> : null}
           </span>
         </span>
         <Mini name={p.name} />
@@ -1458,8 +1502,10 @@ export function Draft({
               {roster.map((p) => {
                 const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
+                const cost = capPct(p.name)
                 return scoutRow(p, {
-                  sub: `${unpriced(p.name) ? `${posLine(p.name)} · no salary on record` : priced ? `${posLine(p.name)} · over the cap` : posLine(p.name)} · ${archetype(p)}`,
+                  sub: `${posLine(p.name)} · ${archetype(p)}`,
+                  why: dimReason({ unpriced: !!unpriced(p.name), fits: fits.length, overCap: !!priced, positions: posOf(p.name), cost, budget }),
                   dur: death ? left(p.name) : undefined,
                   on: sel === p.name,
                   dim: !fits.length || priced,
@@ -1745,7 +1791,11 @@ export function Draft({
             <div className="capline">
               <span>Payroll</span>
               <b>
-                {capUsed.toFixed(1)}% of {capMax}%
+                {/* C5: this read "0.0% of 75%", which parses as a percentage OF 75% while the
+                    player card beside it says "25% of cap". The arithmetic was never wrong — both
+                    numbers are shares of the same season cap — but two phrasings on one screen
+                    read as two denominators. One denominator, named once. */}
+                {capUsed.toFixed(1)}% / {capMax}% of cap
               </b>
             </div>
             <div className="captrack">
