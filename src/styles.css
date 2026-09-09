@@ -1848,6 +1848,18 @@ button {
     /* the bigger buttons on a desk need a taller band, and the right-hand column runs under them */
     padding-top: 42px;
   }
+  /* THE FIVE IS SET, SO THE WHEEL'S WIDTH IS THE TEAM SHEET'S (his ruling, 2026-09-09: "These
+     players should be shown not down"). With five men in and no landed team left on the reels the
+     middle column renders NOTHING — the draft says so with `.set` — and what it left was a
+     screenful of black floor beside a column too narrow to hold two floors and five rows at once.
+     So the middle track goes and the third takes its place AND its width: 0.85 / 2.15 is the same
+     0.85 the opponent has had all along, plus 1.30 + 0.85 in one piece. The opponent's column does
+     not move by a pixel; the only thing that changes is that your own five stops being a third of
+     the window. */
+  .draft.set {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 2.15fr);
+  }
+  .draft.set .col.b { display: none; }
   /* THE OTHER HALF OF THE SAME RULING — "make both teams smaller". A narrower column has to spend
      what is left of it on the WORDS, so in the two team columns the furniture is what gets smaller
      and the name is what does not: PTS·REB·AST and the chevron go back to the phone's own sizes,
@@ -4869,7 +4881,30 @@ body.um {
    night already drew. `.jf` carries its own bottom margin, so the band closes up against the
    floor it introduces rather than floating between two of them.
    -------------------------------------------------------------------------- */
-.tipoff { margin-bottom: 4px; }
+/* THE PANEL IS A GRID, AND THE ROSTER IS ITS SIXTH PART (his ruling, 2026-09-09: "These players
+   should be shown not down"). Every part is placed by hand rather than left to flow, because the
+   one thing that has to move is `.tip-rows`, which comes LAST in the DOM (the draft hands it to
+   the panel whole) and must read FOURTH here — straight under your own five's jerseys, not under
+   the opponent's. A phone gets:
+
+       the scorebug · your band · your floor · YOUR FIVE'S ROWS · their band · their floor
+
+   which is the ruling in the only direction a 375px screen has: each five's men next to their own
+   shirts. The desk splits the same six parts into two columns further down. */
+.tipoff {
+  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.tipoff > .jf-crowd { grid-area: 1 / 1; }
+.tipoff > .tip-band.you { grid-area: 2 / 1; }
+.tipoff > .tip-band.you + .jf { grid-area: 3 / 1; }
+.tipoff > .tip-rows { grid-area: 4 / 1; }
+.tipoff > .tip-band.them { grid-area: 5 / 1; }
+.tipoff > .tip-band.them + .jf { grid-area: 6 / 1; }
+/* every row draws its own rule, so the list needs nothing above it — only air under it, the same
+   10px the floor above already leaves */
+.tip-rows { margin-bottom: 10px; }
 .tip-band {
   display: flex;
   align-items: baseline;
@@ -4909,6 +4944,32 @@ body.um {
   .tip-band { padding: 7px 12px 6px; }
   .tip-band b { font-size: 18px; }
   .tip-band i { font-size: 9.5px; }
+}
+/* THE ROSTER BESIDE THE FLOORS (his ruling, 2026-09-09: "These players should be shown not
+   down"). Only on a screen that has actually got the width: `.draft.set` is the draft with the
+   wheel's column given away (see `.draft.set` above), and 1150 is where the sheet that column
+   makes is wide enough to hold BOTH. Measured at the breakpoint: the roster's name cell is 181px
+   against the 152px a third of a 1150 window gave it before this ruling, and a nameplate on the
+   floors is 66px against 40px. So the split never costs a word at any width it runs at — it only
+   costs what the merged column would have spent on the same words had it stayed one piece. Under
+   1150 the panel keeps the phone's order, which already reads: your floor, your men, then theirs. */
+@media (min-width: 1150px) {
+  .draft.set .tipoff {
+    /* the floors take the larger share — ten surnames across them against five down the list */
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  .draft.set .tipoff > .tip-rows {
+    grid-column: 2;
+    grid-row: 1 / 7;
+    /* the list stands at the top of the sheet rather than floating in the middle of it, so it
+       does not shift down the screen when a man's season opens under him */
+    align-self: start;
+    margin-bottom: 0;
+    /* the hairline is the seam between the sheet and the roster; the padding keeps the lit row's
+       own bleed (margin: 0 -18px on a desk) off it */
+    border-left: 1px solid var(--line);
+    padding-left: 22px;
+  }
 }
 
 .jf { position: relative; height: 176px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }

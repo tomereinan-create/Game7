@@ -1062,6 +1062,74 @@ export function Draft({
     )
   }
 
+  /**
+   * YOUR FIVE AS ROWS — one per filled ring, in floor order. Lifted out of the card's body so it
+   * can be handed WHOLE to the tip-off when the five is set (his ruling, 2026-09-09: "These
+   * players should be shown not down"). Nothing about a row changes by moving: the tap still opens
+   * his season where he stands, the chevron still toggles it, and the Move to chips still drop in
+   * under him — this is the same JSX, rendered in one place instead of two.
+   */
+  const fiveRows = POSITIONS.map((x) => {
+    const n = slots[x]
+    const p = n ? BY_NAME.get(n) : undefined
+    return p ? (
+      <div key={x} style={{ display: 'contents' }}>
+        {scoutRow(p, {
+          on: true,
+          slot: x,
+          sub: `${
+            carried && left(p.name) <= WEAR_OUT
+              ? `${x} · WORN OUT — must be replaced`
+              : posOf(p.name).length > 1
+                ? `${x} · can play ${posOf(p.name).join(' · ')}`
+                : x
+          } · ${archetype(p)}`,
+          // the number lives in the DUR badge now, so the sub can never truncate it away
+          dur: death ? left(p.name) : undefined,
+          worn: carried ? left(p.name) <= WEAR_OUT : false,
+          dim: carried ? left(p.name) <= WEAR_OUT : false,
+          // his ruling, and the same reading as the wheel's list: a man in a roster row opens
+          // out where he stands. The keyboard reaches this; a finger arrives via dragEnd.
+          onTap: () => {
+            openLine(p.name)
+            setMoving(moving === x ? null : x)
+          },
+        })}
+        {moving === x ? (
+          <div className="posbar">
+            <span className="cap">
+              Move to
+              {charges('fo_respin') > 0 ? (
+                <button className="chip-btn" onClick={() => respinVersion(x)}>
+                  Another season
+                </button>
+              ) : null}
+            </span>
+            <ChipRow>
+              {POSITIONS.map((y) => {
+                const can = canMove(x, y)
+                return (
+                  <button
+                    key={y}
+                    className={`sortb ${y === x ? 'on' : ''} ${can ? '' : 'no'}`}
+                    disabled={!can}
+                    onClick={() => move(x, y)}
+                    title={slots[y] && can ? `Swap with ${slots[y]}` : undefined}
+                  >
+                    {y}
+                    {slots[y] && y !== x ? <small>⇄</small> : null}
+                  </button>
+                )
+              })}
+            </ChipRow>
+          </div>
+        ) : null}
+      </div>
+    ) : // an unfilled slot is a ghost ring on the floor above, which is also its drop
+    // target — a list row repeating "PG / OPEN" under it would say nothing twice
+    null
+  })
+
   return (
     <>
       {/*
@@ -1082,7 +1150,14 @@ export function Draft({
         </svg>
       </button>
 
-      <div className="draft">
+      {/* THE WHEEL'S COLUMN IS EMPTY ONCE THE FIVE IS SET, so the room goes to the team sheet
+          (his ruling, 2026-09-09: "These players should be shown not down"). `set` is the state
+          in which the middle column renders NOTHING AT ALL — five men in and no landed team left
+          on the reels — which is the only thing that entitles the stylesheet to take its width.
+          It is stated as both halves rather than just `full` so the class keeps meaning what it
+          says: `spin` refuses a full five today, so the second half is always true, and if that
+          ever stops being true the layout stops taking a column that has something in it. */}
+      <div className={`draft${full && !display ? ' set' : ''}`}>
       <section className="col a">
       {/* The scout bar is gone by his ruling: the panel below carries the team, the
           record and the dials, so a header that only repeated them and offered a
@@ -1536,6 +1611,13 @@ export function Draft({
                has always opened everywhere else. Both fives: theirs open the same way the
                opponent's rings above already did. */
             onTap={(p) => openCard(p)}
+            /* HIS RULING, 2026-09-09: "These players should be shown not down." Your five's rows
+               used to be laid under BOTH floors, which on this column put them off the bottom of
+               the screen while a screenful of black floor stood empty beside them. They go into
+               the panel instead, and the stylesheet stands them where there is room: beside the
+               two floors on a desk wide enough to hold both, and directly under your own five's
+               jerseys on a phone. Same rows, same behaviour — only the address changed. */
+            rows={fiveRows}
           />
         ) : (
         <CourtFive
@@ -1580,66 +1662,9 @@ export function Draft({
           })}
         />
         )}
-        {POSITIONS.map((x) => {
-          const n = slots[x]
-          const p = n ? BY_NAME.get(n) : undefined
-          return p ? (
-            <div key={x} style={{ display: 'contents' }}>
-              {scoutRow(p, {
-                on: true,
-                slot: x,
-                sub: `${
-                  carried && left(p.name) <= WEAR_OUT
-                    ? `${x} · WORN OUT — must be replaced`
-                    : posOf(p.name).length > 1
-                      ? `${x} · can play ${posOf(p.name).join(' · ')}`
-                      : x
-                } · ${archetype(p)}`,
-                // the number lives in the DUR badge now, so the sub can never truncate it away
-                dur: death ? left(p.name) : undefined,
-                worn: carried ? left(p.name) <= WEAR_OUT : false,
-                dim: carried ? left(p.name) <= WEAR_OUT : false,
-                // his ruling, and the same reading as the wheel's list: a man in a roster row opens
-                // out where he stands. The keyboard reaches this; a finger arrives via dragEnd.
-                onTap: () => {
-                  openLine(p.name)
-                  setMoving(moving === x ? null : x)
-                },
-              })}
-              {moving === x ? (
-                <div className="posbar">
-                  <span className="cap">
-                    Move to
-                    {charges('fo_respin') > 0 ? (
-                      <button className="chip-btn" onClick={() => respinVersion(x)}>
-                        Another season
-                      </button>
-                    ) : null}
-                  </span>
-                  <ChipRow>
-                    {POSITIONS.map((y) => {
-                      const can = canMove(x, y)
-                      return (
-                        <button
-                          key={y}
-                          className={`sortb ${y === x ? 'on' : ''} ${can ? '' : 'no'}`}
-                          disabled={!can}
-                          onClick={() => move(x, y)}
-                          title={slots[y] && can ? `Swap with ${slots[y]}` : undefined}
-                        >
-                          {y}
-                          {slots[y] && y !== x ? <small>⇄</small> : null}
-                        </button>
-                      )
-                    })}
-                  </ChipRow>
-                </div>
-              ) : null}
-            </div>
-          ) : // an unfilled slot is a ghost ring on the floor above, which is also its drop
-          // target — a list row repeating "PG / OPEN" under it would say nothing twice
-          null
-        })}
+        {/* THE FIVE IS STILL BEING BUILT, so the rows follow the court they are filling. Once it
+            is set they go INSIDE the tip-off instead — see the panel above and `.tip-rows`. */}
+        {full ? null : fiveRows}
       </div>
 
       {five.length > 1 ? <div className="cap hint">Drag a player onto another position, or tap him to pick one.</div> : null}

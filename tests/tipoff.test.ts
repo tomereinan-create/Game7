@@ -87,4 +87,27 @@ describe('the tip-off draws the same board from both sides', () => {
     expect(blank).not.toContain('on him')
     expect(blank).not.toContain('on VANCE')
   })
+
+  /**
+   * HIS RULING, 2026-09-09: "These players should be shown not down." Your five's rows used to be
+   * laid UNDER both floors and fell off the bottom of the screen. They come INSIDE the panel now,
+   * so the stylesheet can stand them beside the floors on a desk and under your own five's
+   * jerseys on a phone. The DOM order is the load-bearing part: `.tip-rows` is LAST, after both
+   * floors, and every position it is ever drawn in is a grid placement off that one slot.
+   */
+  it('holds your five as rows, last in the panel, for the stylesheet to place', () => {
+    const withRows = renderToStaticMarkup(
+      createElement(TipOff, {
+        bug: TIPOFF, us: 'ABC', them: 'XYZ', usName: 'Us', themName: 'Them', step: 'Level 4', mine, theirs, map,
+        rows: createElement('p', { className: 'row dr' }, 'Abel'),
+      }),
+    )
+    expect(withRows).toContain('tip-rows')
+    // after BOTH floors: the last `.jf` in the markup opens before the roster does
+    expect(withRows.lastIndexOf('class="jf"')).toBeLessThan(withRows.indexOf('tip-rows'))
+  })
+
+  it('draws no roster slot at all for a panel that has no rows to hand it', () => {
+    expect(html).not.toContain('tip-rows')
+  })
 })
