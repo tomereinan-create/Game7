@@ -26,7 +26,7 @@ import { DetailGrid, LINES } from './Stat'
 import { useUserMode } from '../state/viewmode'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
-import { CoachSays } from './UserRail'
+import { CoachSays, CoachTipsDoor } from './UserRail'
 import { myColor, teamColor } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
 // LegsLeft is no longer drawn here: it was the last block of user mode's game-night rail, which
@@ -369,6 +369,8 @@ export function Draft({
   /** Which side of the ball the Playbook sheet is showing, exactly as My team holds it. */
   const [planSide, setPlanSide] = useState<Side>('off')
   const [planOpen, setPlanOpen] = useState(false)
+  /** Whether the coaching tips are being read (his ruling: "Move Coaching tips to information button"). */
+  const [tipsOpen, setTipsOpen] = useState(false)
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -1249,8 +1251,22 @@ export function Draft({
           on the reels — which is the only thing that entitles the stylesheet to take its width.
           It is stated as both halves rather than just `full` so the class keeps meaning what it
           says: `spin` refuses a full five today, so the second half is always true, and if that
-          ever stops being true the layout stops taking a column that has something in it. */}
-      <div className={`draft${full && !display ? ' set' : ''}`}>
+          ever stops being true the layout stops taking a column that has something in it.
+
+          AND IN USER MODE, ONCE THE FIVE IS SET, THERE IS ONLY ONE COLUMN LEFT — `solo`. His
+          ruling of 2026-09-09 reads the whole of the opponent's column back to me and ends "and my
+          5 lined up. Keep only the middle part": what stays on that screen is the tip-off, and
+          nothing else. `solo` is what tells the stylesheet the draft is down to a single column,
+          so it can centre it at the size the panel actually wants instead of stretching one team
+          sheet across a 1920px desk. Scout mode never takes this class: its left column carries
+          the dials, the exact axis ratings and the opponent's sheets, and its right carries the
+          matchup panel and the odds — that IS scout mode, and he named neither. */}
+      <div className={`draft${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
+      {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
+          how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
+          man is in — and the moment he is, the thing to look at is the two teams facing, not the
+          card you were shopping from. Scout mode keeps it at every stage. */}
+      {user && full ? null : (
       <section className="col a">
       {/* The scout bar is gone by his ruling: the panel below carries the team, the
           record and the dials, so a header that only repeated them and offered a
@@ -1365,6 +1381,7 @@ export function Draft({
       </div>
 
       </section>
+      )}
 
       <section className="col b">
       {display ? (
@@ -1711,6 +1728,12 @@ export function Draft({
           <span className={`count ${five.length ? 'on' : ''}`}>
             {five.length} OF {DRAFT_SIZE}
           </span>
+          {/* THE INFORMATION BUTTON (his ruling, 2026-09-09: "Move Coaching tips to information
+              button"). The tips are read off BOTH fives, so there is nothing to say until the five
+              is complete — which is also the state in which this card is the only one on the
+              screen, so the `i` cannot be missed. See CoachTipsDoor for why the head and not the
+              staff bar, the scorebug or the club band. */}
+          {user && full && tips.length ? <CoachTipsDoor onOpen={() => setTipsOpen(true)} /> : null}
         </div>
         {salary ? (
           <div className={`capbar ${capUsed > capMax ? 'over' : ''}`}>
@@ -1779,13 +1802,31 @@ export function Draft({
                has always opened everywhere else. Both fives: theirs open the same way the
                opponent's rings above already did. */
             onTap={(p) => openCard(p)}
-            /* HIS RULING, 2026-09-09: "These players should be shown not down." Your five's rows
-               used to be laid under BOTH floors, which on this column put them off the bottom of
-               the screen while a screenful of black floor stood empty beside them. They go into
-               the panel instead, and the stylesheet stands them where there is room: beside the
-               two floors on a desk wide enough to hold both, and directly under your own five's
-               jerseys on a phone. Same rows, same behaviour — only the address changed. */
-            rows={fiveRows}
+            /* YOUR FIVE AS ROWS — SCOUT MODE ONLY NOW.
+               HIS RULING, 2026-09-09 (the first of the day): "These players should be shown not
+               down." The rows used to be laid under BOTH floors, which put them off the bottom of
+               the screen while a screenful of black floor stood empty beside them, so they came
+               INSIDE the panel and the stylesheet stood them beside the floors on a desk and under
+               your own jerseys on a phone. That is still exactly what scout mode does.
+               HIS RULING, 2026-09-09 (later the same day), listing what goes off user mode's game
+               night and ending "and my 5 lined up. Keep only the middle part": in user mode they
+               go entirely. The men are still on the screen — they are the five jerseys above, with
+               their positions, their shirts and who each of them is on — and tapping one still
+               opens his card and his season line. What is gone is the list of them.
+
+               TWO CONTROLS RODE ON THOSE ROWS, AND THIS IS WHAT BECOMES OF THEM IN USER MODE.
+               Recorded rather than quietly patched, because neither was named in the ruling:
+                 · MOVE TO — the five position chips. The drag went when the court did, so the rows
+                   were the last way to reposition a man once the five was complete. Accepted: at
+                   five of five this panel is a TEAM SHEET, not a working diagram — the shape is
+                   settled and the next press is TAKE THE FLOOR. Nothing is lost while the five is
+                   being built, which is where the shape is actually decided; the rows and the
+                   court both stand there, in both modes.
+                 · ANOTHER SEASON — the `fo_respin` charge. That one is PAID FOR, and in user mode
+                   its last door on this screen closes with the fifth pick: a charge left unspent
+                   at that moment is unspent for the level. Flagged for him; no control has been
+                   invented here to carry it. */
+            rows={user ? undefined : fiveRows}
           />
         ) : (
         /* the wrapper is the start line his ruling asks for and nothing else — see `oppFloor` */
@@ -1872,20 +1913,35 @@ export function Draft({
           SCOUT'S WORD. Once it was full: the blue head naming the level, the record and the
           opponent, then Tale of the tape, What your coach says and Legs left in the five.
 
-          WHAT STANDS HERE NOW: one section, and it is the third of those four — "Add coacing tips
-          category instead." `coachSays` is already exactly that content — the three things scout
-          mode prices as keys, said out loud with the number taken off — so nothing new is computed
-          here; it is the same sentences under the heading he named, alone in the card.
+          WHAT STOOD HERE AFTER THAT: one section, the third of those four — "Add coacing tips
+          category instead." `coachSays` is exactly that content — the three things scout mode
+          prices as keys, said out loud with the number taken off — and it stood as a card headed
+          COACHING TIPS at the foot of this column.
 
-          IT CANNOT STAND BEFORE THE FIVE IS FULL, and that is the ruling's own arithmetic rather
-          than a choice: every tip is read off YOUR five AND THEIRS together — who the ball goes
-          to on this floor, who has their best man, whose two bigs want the glass — so `coachSays`
-          returns nothing at all until both fives are five. With two men drafted there is no tip to
-          give, and an empty box captioned COACHING TIPS is worse than no box. So the column is
-          bare while the five is being built and carries the tips the moment it is complete. */}
-      {user && full && tips.length ? (
-        <div className="card um-rail">
-          <CoachSays lines={tips} />
+          AND NOW IT IS A BUTTON, NOT A CARD (his ruling, 2026-09-09: "Move Coaching tips to
+          information button"). Same three sentences, same voice, not a word of them changed; they
+          are read by pressing the `i` in the team sheet's head and they open in the sheet below —
+          the same full-screen sheet MATCHUP BOARD and PLAYBOOK open into, which is why this is a
+          door the game already has rather than a pattern invented for it.
+
+          THEY CANNOT BE READ BEFORE THE FIVE IS FULL, and that is the ruling's own arithmetic
+          rather than a choice: every tip is read off YOUR five AND THEIRS together — who the ball
+          goes to on this floor, who has their best man, whose two bigs want the glass — so
+          `coachSays` returns nothing at all until both fives are five. With two men drafted there
+          is no tip to give, so there is no `i` in the head either: a door onto an empty room is
+          worse than no door. */}
+      {tipsOpen && user && full && tips.length ? (
+        <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
+          <div className="topbar">
+            <span>Coaching tips</span>
+            <button onClick={() => setTipsOpen(false)}>← Done</button>
+          </div>
+          <div className="rule2" />
+          {/* the block drops its own heading here and only here: the topbar one line above already
+              says COACHING TIPS, and saying it twice in forty pixels is not emphasis */}
+          <div className="card um-rail">
+            <CoachSays lines={tips} heading={false} />
+          </div>
         </div>
       ) : null}
       </section>

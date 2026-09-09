@@ -1871,6 +1871,27 @@ button {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 2.15fr);
   }
   .draft.set .col.b { display: none; }
+  /* USER MODE'S GAME NIGHT IS ONE COLUMN (his ruling, 2026-09-09: he read the opponent's whole
+     column back to me — "Level 16 opponent · 45–37 / Season lines / Orlando Magic '26 / … / and my
+     5 lined up" — and finished "Keep only the middle part"). With the opponent gone and the wheel
+     already empty, the team sheet is the only thing on the slate.
+
+     SO IT IS CENTRED AT ITS OWN SIZE, NOT STRETCHED. A single `1fr` track would hand the panel the
+     whole desk: ten jersey cards across a 1920px window come to 370px each, on a floor that is
+     176px tall whatever happens — a shirt wider than it is tall, with a nameplate lost in the
+     middle of it. 744px is the widest this panel is drawn ANYWHERE today: it is what the merged
+     column gives the floors at 1920 (706px of tip-off inside 744px of card), so the biggest
+     jersey on the biggest desk is exactly the biggest jersey the game already had. Under that,
+     nothing changes — the column is narrower than the cap and simply fills the window, as it does
+     at 900 and 1150.
+     The staff bar rides in the same column and centres with it, which is the point: MATCHUP BOARD
+     and PLAYBOOK stay where they are, directly over the sheet they belong to. */
+  .draft.set.solo {
+    /* `min()` and not a bare 744px: a centred track that cannot shrink would run off the right of
+       any window narrower than itself, and nothing in this game may ever need a sideways scroll */
+    grid-template-columns: min(744px, 100%);
+    justify-content: center;
+  }
   /* THE OTHER HALF OF THE SAME RULING — "make both teams smaller". A narrower column has to spend
      what is left of it on the WORDS, so in the two team columns the furniture is what gets smaller
      and the name is what does not: PTS·REB·AST and the chevron go back to the phone's own sizes,
@@ -4890,6 +4911,33 @@ body.um {
 .um-taperow b { font-family: var(--serif); font-size: 20px; font-weight: 400; text-transform: uppercase; color: var(--um-them-hi); white-space: nowrap; }
 .um-taperow span { font-size: 11px; color: var(--um-body); }
 
+/* THE INFORMATION BUTTON (his ruling, 2026-09-09: "Move Coaching tips to information button").
+   A round `i` at the end of the team sheet's head, drawn exactly as `.pcard-door` draws the person
+   on a box score: a 20px glyph in a 44px target, in the accent, so it reads as a control and not
+   as a third caption. The head is a baseline row of 9.5px labels; the negative margins are
+   VERTICAL ONLY, so the target keeps all 44px of itself and the head keeps its height. */
+.tips-door {
+  flex: none;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -13px -8px -13px 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  color: var(--you);
+  cursor: pointer;
+}
+/* the head is a space-between row: with a third child the count would drift into the middle of it,
+   so it is pushed right and the door takes the corner — label left, `5 OF 5` and the `i` together */
+.card-head:has(.tips-door) .count { margin-left: auto; }
+.tips-door svg { display: block; width: 20px; height: 20px; }
+.tips-door:focus-visible { outline: 1px solid var(--you); outline-offset: -9px; }
+.tips-door:active { background: var(--you-tint); }
+
 /* WHAT YOUR COACH SAYS — three sentences, no number in any of them. */
 .um-coach { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
 .um-coach .um-h { font-family: var(--serif); font-size: 28px; text-transform: uppercase; color: var(--um-cream); }
@@ -4986,6 +5034,13 @@ body.um {
   .draft.set .tipoff {
     /* the floors take the larger share — ten surnames across them against five down the list */
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  /* USER MODE HANDS THE PANEL NO ROSTER AT ALL (his ruling, 2026-09-09: "… and my 5 lined up.
+     Keep only the middle part"), so the seam has nothing to hold: the split goes back to one
+     track and the two floors take the whole sheet. Without this the panel would keep a second,
+     empty column and draw both fives at half the width they have on a phone. */
+  .draft.set.solo .tipoff {
+    grid-template-columns: minmax(0, 1fr);
   }
   .draft.set .tipoff > .tip-rows {
     grid-column: 2;
