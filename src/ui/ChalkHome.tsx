@@ -445,6 +445,9 @@ export function ChalkHome({
                 his ruling: "Remove the X\O from both home screens." The button's name is the name
                 chalked under it, which is what it always was: the letter was never announced as
                 anything, so nothing is lost from a screen reader by its going.
+                AND THE ONE YOU PRESS IS NO LONGER A RING AT ALL — his ruling of 2026-09-09:
+                "Instead of an orange circle in the home screen make it a bullet." The ring is
+                filled in and drawn tight; see `.ck-glyph` and the bullet rule in the stylesheet.
                 THE MODE IS SPENT HERE (3 of 3): the cup, and only in user mode. */}
             {zones.map((s, i) => (
               <button
@@ -459,7 +462,12 @@ export function ChalkHome({
                    takes its name from the word chalked under it, which is what it always did. */
                 aria-label={s.cup ? `${s.label}, all ${ROUNDS} cleared` : undefined}
               >
-                <span className="ck-glyph">
+                {/* `cup` IS ON THE MARK ITSELF as well as inside it, because the bullet and the
+                    trophy want the same middle and only one of them can have it. A mark with a
+                    cup in it is NOT an empty ring, so it does not fill in when pressed — see the
+                    bullet rule in the stylesheet for why that is the reading of his ruling that
+                    keeps his standing one ("Add a trophy for EVERY mode at 150 wins"). */}
+                <span className={`ck-glyph${s.cup ? ' cup' : ''}`}>
                   {s.cup ? (
                     <span className="ck-cup" aria-hidden>
                       <Trophy size={22} />

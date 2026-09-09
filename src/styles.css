@@ -5780,6 +5780,11 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
  * The pixel floor comes down 42 → 38 with it. The tap target is not the ring — it is the whole
  * `.ck-spot`, which is the ring, a gap and the name under it, and is over 60px tall on a phone at
  * its narrowest.
+ *
+ * THIS DIAMETER IS NOW THE MARK'S FOOTPRINT RATHER THAN ITS DRAWING, since his ruling of
+ * 2026-09-09 turned the pressed mark into a bullet: the box is the same at rest and pressed, so
+ * the name under it never moves, the man beside it never has to shuffle, and the tap target is
+ * the size it always was. What is DRAWN in the box is what changes. See the bullet rule below.
  */
 .ck-glyph {
   display: grid;
@@ -5808,6 +5813,75 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 .ck-spot.on .ck-glyph { border-color: var(--ck-orange); }
 .ck-spot.on .ck-label { color: var(--ck-yellow); }
 .ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
+
+/**
+ * THE PRESSED MARK IS A BULLET — his ruling, 2026-09-09: "Instead of an orange circle in the home
+ * screen make it a bullet."
+ *
+ * The rule above is the one he is ruling on, and it stays where it is because it is still the rule
+ * for a mark that has a trophy in it (see the last paragraph). For every other mark the outline
+ * now goes to `transparent` and a FILLED dot is chalked in its place: pressing a play fills it in
+ * rather than re-colouring its edge, which is the difference between a circle and a bullet.
+ *
+ * HOW BIG. A bullet is small — a filled disc at the ring's own 38–98px is a puck, not a bullet —
+ * but a bullet at the size a bullet is in TEXT (about a third of the name chalked under it, so
+ * four pixels on his phone) would be a speck on a court, and this mark is what the eye picks the
+ * play out by and what the ball is thrown to. So it is sized off the mark instead: 62% of the
+ * ring's inside, which is the SAME 62% the trophy already stands at. One number governs whatever
+ * stands in a mark, and it lands at 20px on a phone and 32px on a desk — a third to a half of the
+ * height of the man standing beside it, which is what a spot chalked on a floor looks like, and a
+ * little over the size of the name under it, which is what a bullet standing on its own at
+ * display size looks like. It is smaller than the ring it replaces and yet
+ * HEAVIER: a 3px dashed line round a 35px circle is 330px² of stroke, and once the gaps between
+ * the dashes and the 0.6 alpha are taken off it is worth something like 120; the bullet is 310px²
+ * of solid orange. Pressing a play GAINS ink, which is what a selection has to do.
+ *
+ * THE FIVE THAT ARE NOT PRESSED KEEP THEIR RINGS, and that is a decision rather than an omission.
+ * He ruled on the orange one. A ring and a bullet are also two different sentences — a ring is the
+ * SPOT, one of six places a play stands on this floor, and the bullet is WHICH ONE YOU HAVE
+ * PRESSED — and the board is easier to read when the resting state and the chosen state are not
+ * the same shape at two colours. The ring also cannot come down to the bullet's size and stay
+ * chalk: at 20px a 3px dashed border is five dashes, which is a broken circle rather than a line
+ * drawn in chalk, and the dash is the whole reason the marks belong to the same drawing as the
+ * court.
+ *
+ * IT IS CHALK AND NOT A UI DOT. A flat disc of #ffa866 with a hard edge is a sticker stuck on a
+ * slate, and there are no dashes to keep here — a filled mark has no edge to break — so the chalk
+ * has to come from the way it FADES instead: solid through the middle and then dusty over the
+ * last seventh of its radius, which is a stick pressed down and lifted rather than a shape filled
+ * by a machine. It is the same idea as `--ck-smudge`, the soft-edged disc the men's contact
+ * shadows are already made of, so the bullet belongs to the drawing rather than sitting on it.
+ * A GLOW WAS TRIED AND THROWN OUT: a box-shadow round it reads as a lamp, not as dust, and the
+ * board has no light sources in it.
+ *
+ * THE FOCUS RING IS UNTOUCHED and is still yellow, one line above. It is now telling a yellow
+ * outline apart from an orange FILL rather than from an orange outline, which is a bigger gap
+ * than it had before.
+ *
+ * A MARK WITH A CUP IN IT IS NOT AN EMPTY RING, so it is not filled in. His standing ruling puts
+ * an actual golden trophy in the mark of a ladder with all 150 cleared, and a bullet and a trophy
+ * want the same middle: fill the mark and the cup is buried. The ring is what the trophy stands
+ * in, so a mark that holds one goes on being a ring and goes on turning orange when pressed —
+ * which is exactly what his earlier ruling asked of it ("instead of a yellow circle make it
+ * orange circle"). The bullet replaced the ring because the ring was empty; where it is not
+ * empty, it is still doing work. `.cup` is put on the glyph by ChalkHome for this one rule.
+ */
+.ck-spot.on .ck-glyph:not(.cup) { border-color: transparent; }
+.ck-spot.on .ck-glyph:not(.cup)::after {
+  content: '';
+  grid-area: 1 / 1;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* the two rgba's are --ck-orange itself, run down to 0.55 and then to nothing for the dust at
+     the rim; they are written out because a custom property cannot be given an alpha here */
+  background: radial-gradient(
+    closest-side,
+    var(--ck-orange) 86%,
+    rgba(255, 168, 102, 0.55) 96%,
+    rgba(255, 168, 102, 0) 100%
+  );
+}
 /* THE CUP, IN THE RING, IN USER MODE ONLY — his ruling: "Add a trophy for EVERY mode at 150
    wins(An actual golden trophy at the end)." It stood on the old user-mode cards; those are gone
    with his ruling of 2026-09-09 ("Change the user mode main screen to look like the scout mode"),
