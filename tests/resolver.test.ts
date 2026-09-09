@@ -132,3 +132,47 @@ describe('resolver acceptance — real fives', () => {
     expect(r.game).toBeGreaterThan(0.5)
   })
 })
+
+/**
+ * REGRESSION (2026-09-09): Versus and Auction simmed the series from `compile(A)` / `compile(B)`
+ * — each five rated on its own — while handing the result screen `compile(A, B)` / `compile(B, A)`.
+ * Defense is a property of the pairing, so the spread and odds the screen printed described a
+ * different series from the seven games above them. Every screen that plays a series must compile
+ * both fives against each other, the way the campaign always did.
+ */
+describe('every screen plays the series it displays', () => {
+  const SCREENS = ['src/ui/Versus.tsx', 'src/ui/Auction.tsx', 'src/ui/Custom.tsx']
+
+  /** `compile(A)` — one argument — is the unpaired form. No screen that plays a series may use it. */
+  const SOLO = new RegExp(String.raw`(?<![\w$.])compile\(\s*[A-Za-z_$][\w$]*\s*\)`, 'g')
+
+  it('never compiles a five on its own', async () => {
+    const { readFileSync } = await import('node:fs')
+    for (const f of SCREENS) {
+      const src = readFileSync(f, 'utf8')
+      expect(src.match(SOLO) ?? [], `${f} rates a five with no opponent`).toEqual([])
+      // and it is the mutual pairing, the one the result screen displays
+      expect(src, f).toMatch(/compile\(A,\s*B\)/)
+      expect(src, f).toMatch(/compile\(B,\s*A\)/)
+    }
+  })
+
+  it('that guard would have caught the bug it was written for', () => {
+    expect('simSeries(compile(A), compile(B), makeRng(s), SIGMA)'.match(SOLO)).toHaveLength(2)
+    expect('simSeries(compile(A, B), compile(B, A), makeRng(s), SIGMA)'.match(SOLO)).toBeNull()
+  })
+
+  it('the pairing is worth enough to matter: rating a five alone moves the series', () => {
+    const opps = OPP as unknown as Opponent[]
+    let worst = 0
+    for (let i = 0; i < opps.length; i++)
+      for (let j = 0; j < opps.length; j++) {
+        if (i === j) continue
+        const paired = meanMargin(compile(opps[i].players, opps[j].players), compile(opps[j].players, opps[i].players))
+        const solo = meanMargin(compile(opps[i].players), compile(opps[j].players))
+        worst = Math.max(worst, Math.abs(paired - solo))
+      }
+    // If this ever reaches 0 the pairing has stopped doing anything and the test above is empty.
+    expect(worst).toBeGreaterThan(0.1)
+  })
+})

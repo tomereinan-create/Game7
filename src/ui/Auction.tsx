@@ -237,7 +237,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
 
   const sim = () => {
     const s = (Math.random() * 0xffffffff) >>> 0
-    const r = simSeries(compile(A), compile(B), makeRng(s), SIGMA)
+    // Paired, like the campaign, Custom and this screen's own odds below. See Versus.tsx.
+    const r = simSeries(compile(A, B), compile(B, A), makeRng(s), SIGMA)
     if (foe === 'bot' && r.won) achMachineWin(skill) // the human sits in the P1 chair; a Machine win banks nothing
     setResult({ r, seed: s })
   }

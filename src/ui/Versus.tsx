@@ -105,7 +105,10 @@ export function Versus({ onHome }: { onHome: () => void }) {
 
   const sim = () => {
     const s = (Math.random() * 0xffffffff) >>> 0
-    setResult({ r: simSeries(compile(A), compile(B), makeRng(s), SIGMA), seed: s })
+    // Rated AGAINST each other, the way the campaign and Custom sim and the way this screen's own
+    // odds and analysis are compiled below — defense is a property of the pairing, so a five rated
+    // on its own plays a different series from the one the spread on the result screen describes.
+    setResult({ r: simSeries(compile(A, B), compile(B, A), makeRng(s), SIGMA), seed: s })
   }
 
   const reset = () => {
