@@ -1635,7 +1635,15 @@ export function Draft({
                 {chance.spread >= 0 ? '−' : '+'}
                 {Math.abs(chance.spread).toFixed(1)}
               </b>
-              <i>Spread</i>
+              {/* WHOSE LINE IT IS (his report, 2026-09-09: he read the headline as sign-flipped
+                  because it prints −6.8 while the decomposition below reads +6.8). It is not
+                  flipped — this is the book convention, where the FAVOURITE lays the points, and
+                  it agrees with everything else on the card: Φ(+6.8/σ) is the same 75% the game
+                  cell prints. What it never said was WHOSE 6.8 it is, and a bare "Spread" over a
+                  minus sign is exactly the reading he made. Naming the side turns it into the line
+                  a book would post — SLC −6.8 — which can only be read one way. His ruling: keep
+                  the convention, label it properly. */}
+              <i>Spread · {chance.spread >= 0 ? bugName(teamName) : (opponent.ab ?? bugName(opponent.team))}</i>
             </div>
             <div>
               <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
