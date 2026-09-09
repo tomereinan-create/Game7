@@ -171,6 +171,8 @@ export function Series({
   skin = null,
   onHome,
   onAdvance,
+  onRematch,
+  onNext,
 }: {
   opponent: Opponent
   five: Player[]
@@ -200,6 +202,15 @@ export function Series({
   /** A hot-seat table keeps its HOME / REMATCH pair: Home sits left of the advance button. */
   onHome?: () => void
   onAdvance: () => void
+  /**
+   * HIS RULING: "Add a rematch button, and advance(If you win your latest stage(not if you go back
+   * to a stage you already won))." Play this same level again, from here. Passed whatever the
+   * result; absent when there is no level to go back to (an exhibition, a dead death-match run).
+   */
+  onRematch?: () => void
+  /** The same ruling's other door: straight into the next level. The caller decides if it is his
+   *  latest stage — this screen only knows whether it was handed the door. */
+  onNext?: () => void
 }) {
   const myAb = teamAb ?? bug(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
@@ -255,6 +266,8 @@ export function Series({
   )
   const cur = tape ? tape.ticks.slice(Math.max(0, i - 8), i) : []
   const head = tape ? (i > 0 ? tape.ticks[i - 1] : { q: 1, clock: '12:00', us: 0, them: 0 }) : null
+  /** His word for the door that settles the night and leaves. Unchanged by the two new ones. */
+  const mainLabel = advanceLabel ?? (exhibition ? 'Back to the board' : result.won && opponent.round === ROUNDS ? 'Claim the title' : 'Back to the map')
 
   return (
     <>
@@ -489,23 +502,59 @@ export function Series({
         </>
       ) : null}
 
+      {/* The three-door dock is 62px taller than the one-row one, and the page's bottom padding is
+          set for the short one — so the tall shape brings its own floor and nothing hides under it. */}
+      {done && onNext && onRematch ? <div className="dock-extra" aria-hidden /> : null}
       <div className="dock">
-        <div className={done && onHome ? 'dock-inner two' : 'dock-inner'}>
-          {done && onHome ? (
-            <button className="btn ghost" onClick={onHome}>
-              Home
-            </button>
-          ) : null}
-          {done ? (
-            <button className={`btn ${advanceLabel || result.won ? '' : 'ghost'}`} onClick={onAdvance}>
-              {advanceLabel ?? (exhibition ? 'Back to the board' : result.won ? (opponent.round === ROUNDS ? 'Claim the title' : 'Back to the map') : 'Back to the map')}
-            </button>
-          ) : (
+        {!done ? (
+          <div className="dock-inner">
             <button className="btn ghost" onClick={skip}>
               Skip to result
             </button>
-          )}
-        </div>
+          </div>
+        ) : onNext && onRematch ? (
+          /* THREE DOORS (his ruling: "Add a rematch button, and advance…"). Three across at 375
+             would put "Back to the map" in a 114px slot, and his own word does not fit that — so
+             the dock goes two rows instead: the ways BACK share the top row, and the way ON stands
+             alone across the foot, gold, nearest the thumb. Every target keeps the dock's own 52px
+             height, well over the 44 a finger needs. */
+          <div className="dock-inner stack">
+            <div className="dock-row">
+              <button className="btn ghost" onClick={onAdvance}>
+                {mainLabel}
+              </button>
+              <button className="btn ghost" onClick={onRematch}>
+                Rematch
+              </button>
+            </div>
+            <button className="btn" onClick={onNext}>
+              Next level
+            </button>
+          </div>
+        ) : onRematch ? (
+          /* TWO DOORS. The gold one is always the one on the right, and it is always the furthest
+             forward thing on offer: after a win that is still his word for leaving (the stars are
+             banked on the way), after a loss it is the rematch — "the obvious thing to want". */
+          <div className="dock-inner two">
+            <button className="btn ghost" onClick={result.won ? onRematch : onAdvance}>
+              {result.won ? 'Rematch' : mainLabel}
+            </button>
+            <button className="btn" onClick={result.won ? onAdvance : onRematch}>
+              {result.won ? mainLabel : 'Rematch'}
+            </button>
+          </div>
+        ) : (
+          <div className={onHome ? 'dock-inner two' : 'dock-inner'}>
+            {onHome ? (
+              <button className="btn ghost" onClick={onHome}>
+                Home
+              </button>
+            ) : null}
+            <button className={`btn ${advanceLabel || result.won ? '' : 'ghost'}`} onClick={onAdvance}>
+              {mainLabel}
+            </button>
+          </div>
+        )}
       </div>
     </>
   )

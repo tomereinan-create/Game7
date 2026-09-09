@@ -76,6 +76,83 @@ const campaign = (games = 6) => {
   )
 }
 
+/**
+ * The campaign's result screen with the two new doors on it. HIS RULING: "Add a rematch button,
+ * and advance(If you win your latest stage(not if you go back to a stage you already won))." The
+ * screen is handed the doors; the CONDITION is decided by `advanceTo` and pinned in campaign.test.
+ */
+const dock = (opts: { won: boolean; next?: boolean; round?: number }) => {
+  const opp = { ...opponents[3], round: opts.round ?? 12 }
+  const { r, seed } = firstResult(A, opp.players, opts.won)
+  return renderToStaticMarkup(
+    createElement(Series, {
+      opponent: opp,
+      five: A,
+      mine: compile(A, opp.players),
+      theirs: compile(opp.players, A),
+      teamName: 'Los Angeles Lakers',
+      result: r,
+      seed,
+      onAdvance: () => {},
+      onRematch: () => {},
+      onNext: opts.next ? () => {} : undefined,
+    }),
+  )
+}
+/** The first six-game series with the outcome we want, so the screen renders settled. */
+function firstResult(us: Player[], them: Player[], won: boolean): { r: SeriesResult; seed: number } {
+  for (let seed = 1; seed < 5000; seed++) {
+    const r = simSeries(compile(us, them), compile(them, us), makeRng(seed), SIGMA)
+    if (r.games.length === 6 && r.won === won) return { r, seed }
+  }
+  throw new Error('no such series in 5000 seeds')
+}
+
+describe('the two doors off a settled series', () => {
+  it('a frontier win docks three: back, rematch, and the next level in gold', () => {
+    const html = dock({ won: true, next: true })
+    expect(html).toContain('dock-inner stack')
+    expect(html).toContain('>Next level<')
+    expect(html).toContain('>Rematch<')
+    expect(html).toContain('Back to the map')
+    // the way on is the only un-ghosted door, and it stands alone across the foot
+    expect(html).toContain('<button class="btn">Next level</button>')
+    expect(html.match(/class="btn ghost"/g)?.length).toBe(2)
+  })
+
+  it('a replay of a cleared level docks two, and no way on', () => {
+    const html = dock({ won: true })
+    expect(html).toContain('dock-inner two')
+    expect(html).not.toContain('Next level')
+    expect(html).toContain('>Rematch<')
+    expect(html).toContain('Back to the map')
+  })
+
+  it('a loss docks two and never a way on; the rematch is the lit one', () => {
+    const html = dock({ won: false })
+    expect(html).toContain('dock-inner two')
+    expect(html).not.toContain('Next level')
+    // his word for leaving goes ghost, the rematch takes the gold — after a loss it is the door wanted
+    expect(html.indexOf('Back to the map')).toBeLessThan(html.indexOf('>Rematch<'))
+    expect(html).toContain('<button class="btn ghost">Back to the map</button>')
+    expect(html).toContain('<button class="btn">Rematch</button>')
+  })
+
+  it('level 150 keeps his word and is offered nothing above it', () => {
+    const html = dock({ won: true, round: ROUNDS })
+    expect(html).toContain('Claim the title')
+    expect(html).not.toContain('Next level')
+    expect(html).toContain('>Rematch<')
+  })
+
+  it('the dock never grows a third row: at most two, and every door a full-height button', () => {
+    for (const html of [dock({ won: true, next: true }), dock({ won: true }), dock({ won: false })]) {
+      expect(html.match(/class="dock-row"/g)?.length ?? 0).toBeLessThanOrEqual(1)
+      expect(html.match(/class="btn[^"]*"/g)!.length).toBeLessThanOrEqual(3)
+    }
+  })
+})
+
 describe('the bid mode gets the campaign treatment', () => {
   it('renders the campaign box-score furniture, not a bare game list', () => {
     const html = bid()

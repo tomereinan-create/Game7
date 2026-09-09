@@ -5,7 +5,7 @@ import SALARIES from '../src/data/salaries.json'
 import { PLAYERS } from '../src/engine/pool'
 import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '../src/engine/tree'
 import { balance, earned } from '../src/engine/tree'
-import { applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
+import { advanceTo, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
 const prog = (stars: number[]): Progress => ({ coach: 'def', team: null, stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
@@ -34,6 +34,71 @@ describe('campaign map', () => {
     expect(levelSeed(p, 5)).toBe(levelSeed({ ...p }, 5))
     expect(levelSeed(p, 5)).not.toBe(levelSeed({ ...p, plays: 1 }, 5))
     expect(levelSeed(p, 5)).not.toBe(levelSeed(p, 6))
+  })
+})
+
+/**
+ * HIS RULING, verbatim: "Add a rematch button, and advance(If you win your latest stage(not if you
+ * go back to a stage you already won))."
+ *
+ * The rematch is unconditional — the result screen always offers the same level again — so the
+ * rule that has to be defended here is the ADVANCE. `advanceTo` reads the save AS IT WAS BEFORE
+ * the series settled, which is the only reading that can tell his latest stage from a replay:
+ * settling writes the star, and after that a level just won is always the one below the frontier
+ * and every night would look like the frontier.
+ */
+describe('the door onto the next level', () => {
+  /** A save whose frontier — the first level with no stars — is `frontier`. */
+  const at = (frontier: number) => {
+    const s = zeros()
+    for (let i = 0; i < frontier - 1; i++) s[i] = 3
+    return prog(s)
+  }
+
+  it('winning his LATEST stage opens the next one', () => {
+    const p = at(12)
+    expect(currentLevel(p)).toBe(12)
+    expect(advanceTo(p, 12, true)).toBe(13)
+  })
+
+  it('winning a stage he ALREADY WON opens nothing — "not if you go back to a stage you already won"', () => {
+    const p = at(78)
+    expect(advanceTo(p, 12, true)).toBeNull()
+    expect(advanceTo(p, 1, true)).toBeNull()
+    expect(advanceTo(p, 77, true)).toBeNull()
+    // and the frontier still advances off the very same save
+    expect(advanceTo(p, 78, true)).toBe(79)
+  })
+
+  it('a LOSS never advances, on the frontier or anywhere else', () => {
+    const p = at(12)
+    expect(advanceTo(p, 12, false)).toBeNull()
+    expect(advanceTo(p, 3, false)).toBeNull()
+  })
+
+  it('the top of the ladder has nothing above it — level 150 keeps "Claim the title"', () => {
+    const p = at(ROUNDS)
+    expect(currentLevel(p)).toBe(ROUNDS)
+    expect(advanceTo(p, ROUNDS, true)).toBeNull()
+  })
+
+  it('the level it names is playable the moment the win is banked', () => {
+    const p = at(12)
+    const next = advanceTo(p, 12, true)!
+    // a won series is worth at least one star, so settling moves the frontier to exactly `next`
+    const settled = { ...p, stars: p.stars.map((s, i) => (i === 11 ? Math.max(s, 1) : s)) }
+    expect(currentLevel(settled)).toBe(next)
+    expect(playable(settled, next)).toBe(true)
+  })
+
+  it('is blind to the mode: the campaign, the salary cap and the death match read the same rule', () => {
+    // nothing in advanceTo touches lives, wear or a carried five — the three saves answer alike
+    const base = at(30)
+    for (const p of [base, { ...base, lives: 2 }, { ...base, roster: ['a', 'b', 'c', 'd', 'e'] }]) {
+      expect(advanceTo(p, 30, true)).toBe(31)
+      expect(advanceTo(p, 29, true)).toBeNull()
+      expect(advanceTo(p, 30, false)).toBeNull()
+    }
   })
 })
 

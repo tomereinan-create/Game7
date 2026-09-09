@@ -264,6 +264,30 @@ export function currentLevel(p: Progress): number | null {
   return i === -1 ? null : i + 1
 }
 
+/**
+ * THE LEVEL TO GO ON TO, or null when the result screen must not offer one at all.
+ *
+ * HIS RULING, verbatim: "Add a rematch button, and advance(If you win your latest stage(not if you
+ * go back to a stage you already won))." Three ways it comes back null, and each one is a clause
+ * of that sentence:
+ *   · the night was lost — a loss never advances;
+ *   · the level was NOT his latest stage — `currentLevel` is the first level with no stars, so a
+ *     level he had already cleared fails this, and beating level 12 again at level 78 has nothing
+ *     to advance to;
+ *   · the level is the top of the ladder — 150 has nothing above it, and that screen already says
+ *     "Claim the title".
+ *
+ * `p` MUST be the save AS IT WAS BEFORE THIS SERIES SETTLED. Settling is what moves the frontier:
+ * once the stars are written, every level just won looks like the latest one and the second clause
+ * would always pass. The caller reads this at the moment of the sim, not after the fact.
+ */
+export function advanceTo(p: Progress, level: number, won: boolean): number | null {
+  if (!won) return null
+  if (currentLevel(p) !== level) return null
+  if (level >= ROUNDS) return null
+  return level + 1
+}
+
 /** A level is playable if it's cleared (replay) or it's the next one up. */
 export function playable(p: Progress, level: number): boolean {
   const cur = currentLevel(p)

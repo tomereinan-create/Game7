@@ -16,6 +16,7 @@ import { PLAYERS } from './engine/pool'
 import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import type { BoxCtx } from './engine/boxstats'
 import {
+  advanceTo,
   applyWear,
   WEAR_OUT,
   currentLevel,
@@ -80,6 +81,16 @@ interface Pending {
   pre: number
   plan: Tactics | null
   pc: { ours: number; theirs: number; margin: number } | null
+  /**
+   * THE LEVEL THE RESULT SCREEN MAY ADVANCE TO, or null. His ruling: "Add a rematch button, and
+   * advance(If you win your latest stage(not if you go back to a stage you already won))."
+   *
+   * Decided HERE, at the sim, and not on the result screen: settling is what MOVES the frontier,
+   * so once finish() has written the stars every level just won looks like the latest one. The
+   * rule itself is `advanceTo` in state/campaign.ts, reading the save as it stood before the ball
+   * went up.
+   */
+  next: number | null
 }
 
 
@@ -189,7 +200,7 @@ export default function App() {
   const teamName = prog?.team ? `${prog.team.city} ${prog.team.name}` : 'Your team'
 
   const sim = (five: Player[], assignment: Assignment, toWin: number) => {
-    if (!opponent || !prog || !cm) return
+    if (!opponent || !prog || !cm || !level) return
     // Our defense is whatever the board assigned; the AI always plays optimal. The death match
     // adds the My team plan, priced in points of spread like every other modifier.
     const plan = death ? gateTactics(prog.tactics, playbookRank(prog)) : null
@@ -206,17 +217,19 @@ export default function App() {
     // consume the tactical state (recal_61), so the context is captured at the moment of the sim.
     const boxCtx = plan && pc ? boxContext(plan, pc.lvl, five, opponent.players, assignment) : null
     const pre = odds(mine, theirs, sig, toWin).series
+    const result = simSeries(mine, theirs, makeRng(seed), sig, toWin)
     setPending({
       five,
       mine,
       theirs,
-      result: simSeries(mine, theirs, makeRng(seed), sig, toWin),
+      result,
       seed,
       assignment,
       boxCtx,
       pre,
       plan,
       pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+      next: advanceTo(prog, level, result.won),
     })
   }
 
@@ -242,9 +255,18 @@ export default function App() {
     })
   }
 
-  /** Back to the map. A win keeps the better of old and new stars; a loss costs only the attempt. */
-  const finish = () => {
-    if (!cm || !prog || !level || !pending) return
+  /**
+   * SETTLING THE NIGHT. A win keeps the better of old and new stars; a loss costs only the attempt.
+   *
+   * This used to be finish() itself, and finish() was the only door off the result screen. His
+   * ruling — "Add a rematch button, and advance(If you win your latest stage…)" — opens two more,
+   * and ALL THREE SETTLE FIRST: the stars, the record, the play count, the death match's wear and
+   * the achievements are written right here, so a rematch that skipped it would throw away the
+   * night he had just played. The doors differ only in where they leave him. Returns true when the
+   * night really settled, so a door that cannot settle does not navigate either.
+   */
+  const settle = () => {
+    if (!cm || !prog || !level || !pending) return false
     const stars = [...prog.stars]
     if (pending.result.won) stars[level - 1] = Math.max(stars[level - 1], starsFor(pending.result))
     /**
@@ -277,8 +299,37 @@ export default function App() {
       commit(cm, settled)
       settleAch(settled)
     }
-    setPending(null)
-    setLevel(null)
+    return true
+  }
+
+  /** His word, unchanged: settle the night and go back to the map. */
+  const finish = () => {
+    if (settle()) {
+      setPending(null)
+      setLevel(null)
+    }
+  }
+  /**
+   * REMATCH (his ruling: "Add a rematch button"). The same level again, straight from here, without
+   * walking back to the map and tapping the ticket. It settles first and then simply keeps `level`
+   * where it is, which drops him on the draft — and because settling bumped `plays`, `levelSeed`
+   * spins a different wheel, exactly as a replay off the map does.
+   */
+  const rematch = () => {
+    if (settle()) setPending(null)
+  }
+  /**
+   * ADVANCE (his ruling: "and advance(If you win your latest stage(not if you go back to a stage
+   * you already won))"). Straight into the next level's draft. WHICH level, and whether there is
+   * one at all, was decided at the sim and is carried in `pending.next`; it settles first for the
+   * same reason a rematch does.
+   */
+  const advance = () => {
+    const to = pending?.next ?? null
+    if (to !== null && settle()) {
+      setPending(null)
+      setLevel(to)
+    }
   }
 
   /** Put the real ladder back. Called when auto is switched off, and on the way out of a campaign. */
@@ -541,6 +592,22 @@ export default function App() {
   }
 
   if (pending) {
+    /**
+     * THE TWO NEW DOORS OFF THE RESULT (his ruling: "Add a rematch button, and advance(If you win
+     * your latest stage(not if you go back to a stage you already won))").
+     *
+     * ADVANCE is offered when `pending.next` names a level — the rule is `advanceTo` in
+     * state/campaign.ts and it was read at the sim, off the save as it stood before the night
+     * settled. A loss, a replay of a stage already won, and level 150 all come back null there.
+     *
+     * REMATCH is offered whatever the result — after a loss it is the obvious thing to want, after
+     * a win it is how a better star is chased — with ONE exception, and it is the conservative
+     * reading of a subtle case. A death-match loss with no lives left runs `die()`, which resets
+     * the whole run: no stars, no five, no tree. Offering to replay the level a dead run died on
+     * would be offering to resurrect it, so the death match's last loss keeps its single door back
+     * to the map. A loss the run survives (a life absorbed it) still rematches like any other.
+     */
+    const runEnded = death && !pending.result.won && prog.lives === 0
     return (
       <>
         {sheet}
@@ -557,6 +624,8 @@ export default function App() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
+          onRematch={runEnded ? undefined : rematch}
+          onNext={pending.next !== null ? advance : undefined}
         />
       </>
     )
