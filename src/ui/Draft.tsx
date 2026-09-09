@@ -10,13 +10,14 @@ import { odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { useCard } from './CardSheet'
-import { CourtFive } from './CourtFive'
+import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
-import { aiTempo, gateTactics, pace, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
+import { aiTempo, DEFAULT_TACTICS, gateTactics, pace, reconcileTactics, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
+import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { applyMod, compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
@@ -196,6 +197,7 @@ export function Draft({
   death = false,
   skin = 'arena',
   tactics = null,
+  onTactics,
   onSim,
   onBack,
   onRoster,
@@ -226,8 +228,24 @@ export function Draft({
   skin?: Skin
   /** Death match: a My team change is still unspent — simming now deserves a second look. */
   spinLeft?: boolean
-  /** Death match: the My team plan — the sim prices it, so the odds here must too. */
+  /**
+   * THE PLAN — the sim prices it, so the odds here must too. Given in every mode that has a coach
+   * on the bench (state/campaign.ts, `callsPlan`); null means no call and no price.
+   */
   tactics?: Tactics | null
+  /**
+   * AND WHERE IT IS CALLED, in the campaign and the salary cap: the PLAYBOOK sheet off the staff
+   * bar (his report: "Tactics arent visable in boths campaigns(Salary and normal)").
+   *
+   * The Matchup board beside it is the precedent, and the reason this is the right room: both are
+   * Coach-branch calls about the five that is about to play, both are bought with stars, both are
+   * meaningless until there is a five to make them about, and both are priced by the odds card
+   * directly below. My team is the death match's own room — a carried five, its durability, the
+   * round's one change, the bench — and a mode that drafts a fresh five every level has none of
+   * that to put on a screen. Omitted (the death match) there is no door, and the plan is called in
+   * My team exactly as it always was.
+   */
+  onTactics?: (t: Tactics) => void
   onSim: (five: Player[], assignment: Assignment, toWin: number) => void
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
@@ -344,7 +362,9 @@ export function Draft({
   const toWin = 4 // best of seven, always
   /** The board before the tip: 0–0 with a full first quarter on the clock (his ruling). */
   const bug = TIPOFF
-  const plan = tactics ? gateTactics(tactics, playbookRank(wallet)) : null
+  /** Which side of the ball the Playbook sheet is showing, exactly as My team holds it. */
+  const [planSide, setPlanSide] = useState<Side>('off')
+  const [planOpen, setPlanOpen] = useState(false)
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -416,6 +436,21 @@ export function Draft({
   /** One man per five: a different season of the same player is still him. */
   const takenMen = new Set(picks.map(bare))
   const five = picks.map((n) => BY_NAME.get(n)!).filter(Boolean)
+  /**
+   * THE PLAN, READ AGAINST TONIGHT'S FIVE. `tactics` arrives already answered for by App — null
+   * when this campaign has no coach on the bench at all (state/campaign.ts, `callsPlan`) — and
+   * this is where it meets the men who are actually playing: the names are reconciled first, so a
+   * main scorer left over from another night is not heard, then the Playbook rank gates the rest.
+   * The same two steps `planFor` runs for the sim, in the same order, off the same save.
+   */
+  const called = tactics ? reconcileTactics(tactics, picks) : null
+  const plan = called ? gateTactics(called, playbookRank(wallet)) : null
+  /** The plan is CALLABLE here when this screen owns the room for it and the node has opened one. */
+  const canCallPlan = !!onTactics && !!called && playbookRank(wallet) >= 1
+  /** Something has actually been called — the door says so, the way the board's does. */
+  const planCalled = !!plan && JSON.stringify(plan) !== JSON.stringify(gateTactics(DEFAULT_TACTICS, playbookRank(wallet)))
+  /** What the plan is worth on this five against THIS opponent, for the sheet's head. */
+  const planWorth = called ? tacticsWorth(called, playbookRank(wallet), five, opponent.players) : null
   /**
    * WHOSE SEASON THE USER-MODE RAIL IS SHOWING. The bundle's rail heads on one man, read in the
    * order he touched them: the man he has selected off the wheel, and failing that the last man he
@@ -1445,11 +1480,58 @@ export function Draft({
           canSolve={rank(wallet, 'coach_manual') >= 2}
         />
       ) : null}
-      {full && has('coach_manual') ? (
+      {/* THE PLAYBOOK SHEET — the same full-screen sheet the Matchup board opens into, carrying My
+          team's own two boxes in one column: the floor with its OFFENSE/DEFENSE toggle, and the
+          calls under it. Not one control is new; `TacticsCalls` IS My team's panel, and the court
+          is the court, so the toggle that governs which half of the panel shows is the toggle it
+          has always been. Gated on a full five for the same reason the board is: every call is a
+          FIT question about the personnel, and there is nothing to fit until the five is in. */}
+      {planOpen && full && canCallPlan ? (
+        <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
+          <div className="topbar">
+            <span>Playbook</span>
+            <button onClick={() => setPlanOpen(false)}>← Done</button>
+          </div>
+          <div className="rule2" />
+          <div className="card" style={{ paddingBottom: 4 }}>
+            <div className="card-head">
+              <span className="label">Tactics</span>
+              {/* USER MODE KEEPS ITS BLINDFOLD (his ruling, the design bundle): the calls all work,
+                  nothing says whether one was good. The same words My team's head uses. */}
+              <span className="cap">{user || planWorth === null ? 'your plan' : worthLine(planWorth)}</span>
+            </div>
+            <CourtFive
+              club={myColor(wallet.team)}
+              plan={plan}
+              side={planSide}
+              onSide={setPlanSide}
+              spots={five.map((p, i) => ({ p, slot: POSITIONS[i], tag: user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`, onTap: () => openCard(p) }))}
+            />
+            {/* the opponent goes through, which My team cannot do: standing across from a named
+                five, the scheme's and the hunt's fits here ARE the ones the odds card below uses */}
+            <TacticsCalls
+              tactics={called ?? tactics!}
+              playbook={playbookRank(wallet)}
+              five={five}
+              theirs={opponent.players}
+              side={planSide}
+              onTactics={onTactics!}
+            />
+          </div>
+        </div>
+      ) : null}
+      {full && (has('coach_manual') || canCallPlan) ? (
         <div className="card staffbar">
-          <button className="sortb on" onClick={() => setBoardOpen(true)}>
-            Matchup board{board ? ' · set' : ''}
-          </button>
+          {has('coach_manual') ? (
+            <button className="sortb on" onClick={() => setBoardOpen(true)}>
+              Matchup board{board ? ' · set' : ''}
+            </button>
+          ) : null}
+          {canCallPlan ? (
+            <button className="sortb on" onClick={() => setPlanOpen(true)}>
+              Playbook{planCalled ? ' · called' : ''}
+            </button>
+          ) : null}
         </div>
       ) : null}
       {full && !user && rank(wallet, 'coach_optimal') >= 2 && assignWorth !== null ? (
@@ -1467,7 +1549,12 @@ export function Draft({
         <div className="card odds">
           <div className="card-head">
             <span className="label">Before you sim</span>
-            <span className="cap">noise σ {sigma}</span>
+            {/* ONE DECIMAL, because it is a reading and not the number itself. A pace call multiplies
+                SIGMA by 0.94 or 1.08 and the card printed the float raw — "noise σ 9.399999999999999"
+                on a 375px phone. Only the death match could reach a pace call before this pass, so
+                the plan arriving in the other two modes puts it in front of him twice more. The
+                sigma the sim is handed is untouched; this is the label. */}
+            <span className="cap">noise σ {sigma.toFixed(1)}</span>
           </div>
           {/* The three headline numbers came back down here when the command strip went (his
               ruling), onto the card that already carried the why — one read, in one place, right
@@ -1524,7 +1611,10 @@ export function Draft({
                 /* the pnr fit is the fit of HIS pair when he named one, so this list and the price agree */
                 .map((x) => `${x.label} ${Math.round(styleFit(x.key, five, opponent.players, plan))}${plan.style === x.key ? ' ← called' : ''}`)
                 .join(' · ')}
-              {plan.style === 'balanced' ? ' · no call — the style is picked in My team' : ''}
+              {/* and it names the room the plan is ACTUALLY called in, which is no longer one room:
+                  the death match turns it in My team, the campaign and the cap on the Playbook
+                  sheet off the staff bar above (his report) */}
+              {plan.style === 'balanced' ? ` · no call — the style is picked in ${canCallPlan ? 'the Playbook' : 'My team'}` : ''}
             </div>
           ) : null}
         </div>

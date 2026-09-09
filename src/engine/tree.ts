@@ -142,7 +142,11 @@ export const NODES: Node[] = [
   {
     id: 'coach_tactics', branch: 'Coach', depth: 3, ranks: 3, requires: 'coach_sigma',
     name: 'Playbook',
-    blurb: 'Death match only: the tactics called from the My team screen.',
+    /* IT WAS NEVER THE DEATH MATCH'S ALONE — the node has always been on the Coach branch, which
+       every mode is offered (his report: "Tactics arent visable in boths campaigns(Salary and
+       normal)"). The line said "Death match only" because the panel was born on the My team
+       screen, which IS the death match's; the calls are made on the draft in the other two. */
+    blurb: 'The tactics: called on the draft, and in the death match on the My team screen.',
     rankBlurbs: [
       'Name your main scorer and main playmaker, and set the tempo.',
       'The shot diet, and crashing the glass.',
@@ -229,7 +233,7 @@ export const checkpointLevel = (w: Wallet) => [0, 20, 40, 60][rank(w, 'surv_save
 export const subsPerRound = (w: Wallet) => 1 + rank(w, 'surv_sub')
 /** Death match: extra durability every carried man gets, read at evaluation so buying it helps the CURRENT five too. */
 export const duraBoost = (w: Wallet) => rank(w, 'surv_dura') * 10
-/** Death match: how much of the My team playbook is open. 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 everything. */
+/** How much of the playbook is open, in every mode. 0 none, 1 the men and the tempo, 2 the diet and the glass, 3 everything. */
 export const playbookRank = (w: Wallet) => rank(w, 'coach_tactics')
 /** Tempo control (r59 repurpose): pace mastery — 1 the readout, 2 half tax, 3 an 85% call. */
 export const paceMastery = (w: Wallet) => rank(w, 'coach_sigma')

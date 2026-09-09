@@ -7,7 +7,7 @@ import { odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
-import { aiTempo, boxContext, gateTactics, pace, reconcileTactics, tacticsMod } from './engine/tactics'
+import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
@@ -18,6 +18,8 @@ import type { BoxCtx } from './engine/boxstats'
 import {
   advanceTo,
   applyWear,
+  callsPlan,
+  planFor,
   WEAR_OUT,
   currentLevel,
   die,
@@ -201,9 +203,12 @@ export default function App() {
 
   const sim = (five: Player[], assignment: Assignment, toWin: number) => {
     if (!opponent || !prog || !cm || !level) return
-    // Our defense is whatever the board assigned; the AI always plays optimal. The death match
-    // adds the My team plan, priced in points of spread like every other modifier.
-    const plan = death ? gateTactics(prog.tactics, playbookRank(prog)) : null
+    // Our defense is whatever the board assigned; the AI always plays optimal. On top of it comes
+    // the PLAN, priced in points of spread like every other modifier — in ALL THREE MODES now (his
+    // report: "Tactics arent visable in boths campaigns(Salary and normal)"). `planFor` is the one
+    // rule: the death match always has a plan, everywhere else the Playbook node opens one, and
+    // the names are read against the five that is actually playing. See state/campaign.ts.
+    const plan = planFor(cm, prog, five.map((p) => p.name))
     const base = compile(five, opponent.players, assignment)
     const theirs = compile(opponent.players, five)
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
@@ -647,7 +652,18 @@ export default function App() {
         wear={prog.wear}
         spinLeft={death && !!carry && subsPerRound(prog) - prog.subsUsed > 0}
         death={death}
-        tactics={death ? prog.tactics : null}
+        /* THE PLAN REACHES THE DRAFT IN EVERY MODE THAT HAS ONE (his report: "Tactics arent
+           visable in boths campaigns(Salary and normal)"). `callsPlan` is the same rule the sim
+           reads, so the odds card here and the margin there can never disagree; the draft gates
+           and reconciles it against its own five, which is the only five it knows. */
+        tactics={callsPlan(cm, prog) ? prog.tactics : null}
+        /* AND THE CAMPAIGN AND THE CAP CALL IT HERE. My team is the death match's room — it exists
+           for a five that is carried, its durability, the one change a round and the bench — and a
+           mode that drafts a fresh five every level has none of that. But a PLAN is not a roster:
+           it is a call about the five about to play, so it belongs where that five is chosen and
+           where it is already priced. The death match keeps calling it in My team and is handed no
+           door here, so nothing about that mode moves. */
+        onTactics={death ? undefined : (t) => commit(cm, { ...prog, tactics: t })}
         onSim={sim}
         onBack={(started) => {
           // The staff tree lives on the map only. Walking out of a draft with picks on the
