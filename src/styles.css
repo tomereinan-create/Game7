@@ -1294,9 +1294,17 @@ button {
    between. The card's head, team, season line and column rule stay put; only the list moves, in a
    box measured each render to stop above the dock. The fade is the affordance, and it clears when
    the list is at its end. Mid-swap the wheel takes the third box outright, so the roster reads at
-   a full column's width instead of growing down the narrowest one. */
+   a full column's width instead of growing down the narrowest one.
+
+   AND WHEN THE LIST ENDS, THE PAGE TAKES OVER (E10a). This box used to carry
+   `overscroll-behavior: contain`, which stops the scroll AT ITS OWN EDGE: on a phone the roster
+   fills most of the screen, so a thumb that lands on it and keeps dragging past the last man moves
+   nothing at all — the page underneath is pinned and the screen reads as frozen. Containment is
+   for a box you can swipe AROUND; this one you cannot. Without it the chain is the browser's
+   default again: the list scrolls to its end, then the page carries on from there, which is the one
+   gesture a phone has. */
 .spin-wrap { position: relative; }
-.spin-roster { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.spin-roster { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .spin-wrap::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--surface));
