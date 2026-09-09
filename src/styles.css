@@ -1931,7 +1931,13 @@ button {
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
   .draft .col.c { order: 3; }
-  .draft .col > :first-child { margin-top: 18px; }
+  /* The column's first CARD clears the section's top rule. A full-screen sheet is not a card and
+     is not in the column's flow at all — it is `position: fixed; inset: 0`, and a margin on a box
+     pinned top AND bottom does not move it, it SHRINKS it: 18px off a sheet already sized to the
+     window is 18px of its own content it now has to scroll to. Full Analysis is the first child of
+     this column, so it was the one that got it, and a second scrollbar beside the page's was what
+     he saw. Every other first child still gets its 18. */
+  .draft .col > :first-child:not(.sheet) { margin-top: 18px; }
   .rowhead.db.x,
   .row.db.x {
     grid-template-columns: minmax(0, 1fr) 160px 66px;
