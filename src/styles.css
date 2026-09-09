@@ -103,7 +103,8 @@ html {
 #root {
   max-width: 390px;
   margin: 0 auto;
-  padding: 14px 14px calc(120px + var(--foot));
+  /* the dock's own height, the phone's home indicator, and 42px of daylight between the two */
+  padding: 14px 14px calc(var(--dock) + var(--foot) + 42px);
 }
 
 button {
@@ -758,6 +759,18 @@ button {
    window without one of its readers being rewritten. The inset earns its keep on its own — it is
    what holds the dock clear of a phone's home indicator. */
 :root { --foot: env(safe-area-inset-bottom, 0px); }
+/* HOW TALL THE DOCK IS, IN ONE PLACE (E9). Four bottom paddings used to write it down by hand as
+   120px — the height of a ONE-ROW dock on a phone, measured once and never again — and every dock
+   that is not one row had to bolt a spacer under the page to make up the difference. So the
+   three-door result screen carried a `.dock-extra`, and the docks nobody thought of (a sheet's own,
+   a two-row inner) simply covered the last card on the page.
+
+   This token is the fallback: 78px is a 52px button in 12px/14px padding, which is what a one-row
+   dock measures, and 126px is the same sum at desk scale (a 78px button in 18px/30px). App.tsx
+   measures the dock that is ACTUALLY standing on every render and overwrites this on the root, so
+   the number here is only what the page uses before a dock exists — or on a screen that has none.
+   NOTHING may hard-code a dock height again: read var(--dock). */
+:root { --dock: 78px; }
 
 .dock {
   position: fixed;
@@ -791,11 +804,6 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-}
-/* The page's bottom padding is cut for a one-row dock; the taller one brings its own floor so the
-   last card is not read from under the gradient. */
-.dock-extra {
-  height: 64px;
 }
 /* THE ARCADE BUTTON — 2px border and a hard shadow under it rather than a soft one, and a press
    that actually travels: the button falls the height of its own shadow and lands flat. No
@@ -1578,7 +1586,8 @@ button {
   background: var(--bg);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 14px 14px calc(120px + env(safe-area-inset-bottom));
+  /* a sheet stands its own dock, so it keeps the same floor the page does */
+  padding: 14px 14px calc(var(--dock) + var(--foot) + 42px);
 }
 .sheet > * {
   max-width: 347px;
@@ -1785,11 +1794,16 @@ button {
   .dock-inner {
     max-width: 562px;
   }
+  /* the desk's dock is a 78px button in 18px/30px of padding — 126px — and the daylight above it
+     grows with everything else on this screen, from 42px to 54px */
+  :root {
+    --dock: 126px;
+  }
   #root {
-    padding: 21px 21px 180px;
+    padding: 21px 21px calc(var(--dock) + var(--foot) + 54px);
   }
   .sheet {
-    padding: 21px 21px 180px;
+    padding: 21px 21px calc(var(--dock) + var(--foot) + 54px);
   }
   .topbar {
     font-size: 15px;
@@ -2059,9 +2073,6 @@ button {
     height: 78px;
     font-size: 19px;
     border-radius: 9px;
-  }
-  .dock-extra {
-    height: 96px;
   }
   .hero h1 {
     font-size: 99px;
@@ -6481,8 +6492,9 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 
 /* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
-   just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
-   on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
+   just empty space." The page keeps `var(--dock)` plus its daylight clear at its foot for the dock
+   the play screens stand on; the map has no dock, so on the map that room is dead floor under the
+   bottom era's rule.
    The crawl's band has gone the same way (2026-09-08: "Delete everything below the league 2026 in
    both modes"), and --foot is only the phone's inset now — so era I's rule is the last thing on
    the page, and this line survives to keep the map clear of a home indicator. */

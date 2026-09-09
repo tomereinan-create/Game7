@@ -516,9 +516,10 @@ export function Series({
         </>
       ) : null}
 
-      {/* The three-door dock is 62px taller than the one-row one, and the page's bottom padding is
-          set for the short one — so the tall shape brings its own floor and nothing hides under it. */}
-      {done && onNext && onRematch ? <div className="dock-extra" aria-hidden /> : null}
+      {/* The three-door dock used to bolt an empty 64px div under the page, because the page's
+          bottom padding was written for a ONE-ROW dock and this one is two. It does not any more:
+          App.tsx measures whatever dock is standing into `--dock`, and every bottom padding is
+          calc'd off that — so the tall shape simply reports its own height and the floor follows. */}
       <div className="dock">
         {!done ? (
           <div className="dock-inner">
