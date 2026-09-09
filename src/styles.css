@@ -578,9 +578,14 @@ button {
 .dhead {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  /* centred rather than baseline-aligned since the card's door joined this row (his ruling): a
+     44px target next to 8.5px mono has no shared baseline worth sitting on. With no door the row
+     is still only as tall as its type, so nothing grew on the panels that have none. */
+  align-items: center;
   gap: 10px;
 }
+/* the season and the way into the man's card, as one thing at the head of the panel */
+.dwho { display: flex; align-items: center; gap: 2px; min-width: 0; }
 .dtier {
   display: block;
   font-family: var(--mono);
@@ -690,8 +695,6 @@ button {
    Fourteen numbers in a five-wide grid always leave the last cell empty, so the person stands in a
    hole that was already there — aligned with the numbers, crowding nothing. 44px of tap target
    around a 20px glyph, and the accent is what says it is a control and not a fifteenth statistic. */
-.bcell.bdoor { display: grid; align-items: center; justify-items: end; }
-.bdoor.solo { display: block; text-align: right; margin-top: 8px; }
 .pcard-door {
   display: grid;
   place-items: center;

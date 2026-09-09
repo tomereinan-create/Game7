@@ -127,9 +127,11 @@ export function leagueTS(p: Player) {
  * chevrons on this screen are stroked in — the app's own hand, never an emoji. The button is
  * 44px so a thumb can find it, and it names the man out loud for a screen reader.
  *
- * It stands in the box score's fifteenth cell: fourteen numbers in a five-wide grid always leave
- * the last one empty, so the door lands in a hole that was already there, aligned with the
- * numbers instead of crowding the season line.
+ * It stands beside the season line at the head of the panel (his ruling: "Move the human icon next
+ * to 'season X'"). It used to sit in the box score's fifteenth cell — fourteen numbers in a
+ * five-wide grid always leave the last one empty — which aligned it with the numbers but put the
+ * way OUT of the panel at the very bottom of it, and left a man with no stat line on file needing
+ * a fallback line of his own. At the head there is always a home for it and only one rule.
  */
 export function CardDoor({ p, onOpen }: { p: Player; onOpen: () => void }) {
   return (
@@ -169,7 +171,13 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
   return (
     <span className="pdetail">
       <span className="dhead">
-        <span className="dtier">Season {p.peak_season}</span>
+        {/* HIS RULING, 2026-09-09: "Move the human icon next to 'season X'." It stood in the box
+            score's fifteenth cell, aligned with the numbers; beside the season line it is the
+            first thing in the panel instead of the last, which is where a door belongs. */}
+        <span className="dwho">
+          <span className="dtier">Season {p.peak_season}</span>
+          {onCard ? <CardDoor p={p} onOpen={onCard} /> : null}
+        </span>
         <span className="dline">{who}</span>
       </span>
       {line ? (
@@ -181,17 +189,6 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
               {b.k === 'ts' && lgTS ? <span className="bvs">vs league {lgTS}</span> : null}
             </span>
           ))}
-          {/* the fifteenth cell: fourteen numbers never fill the last row, so the door stands there */}
-          {onCard ? (
-            <span className="bcell bdoor">
-              <CardDoor p={p} onOpen={onCard} />
-            </span>
-          ) : null}
-        </span>
-      ) : onCard ? (
-        // no season line on file, so no grid to hang the door in: it gets a line of its own
-        <span className="bdoor solo">
-          <CardDoor p={p} onOpen={onCard} />
         </span>
       ) : null}
       {mode === 'stats' ? null : (
