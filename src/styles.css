@@ -1364,12 +1364,13 @@ button {
    a full column's width instead of growing down the narrowest one.
 
    AND WHEN THE LIST ENDS, THE PAGE TAKES OVER (E10a). This box used to carry
-   `overscroll-behavior: contain`, which stops the scroll AT ITS OWN EDGE: on a phone the roster
-   fills most of the screen, so a thumb that lands on it and keeps dragging past the last man moves
-   nothing at all — the page underneath is pinned and the screen reads as frozen. Containment is
-   for a box you can swipe AROUND; this one you cannot. Without it the chain is the browser's
-   default again: the list scrolls to its end, then the page carries on from there, which is the one
-   gesture a phone has. */
+   `overscroll-behavior: contain`, which stops the scroll dead AT ITS OWN EDGE. Wherever the box is
+   really a scroller — Draft.tsx and MyTeam.tsx switch `overflow-y` to `auto` in a layout effect and
+   then cap the height, which is every width from 900px up — the roster is most of its column, so a
+   scroll that starts on it and carries on past the last man moves nothing at all: the page behind
+   is pinned and the screen reads as frozen. Containment is for a box you can reach AROUND; this
+   one fills the column it is in. Without it the chain is the browser's default again — the list
+   runs to its end and then the page carries on from there, which is one continuous gesture. */
 .spin-wrap { position: relative; }
 .spin-roster { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .spin-wrap::after {
