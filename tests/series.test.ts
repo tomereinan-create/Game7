@@ -242,9 +242,16 @@ describe('the campaign series screen is unchanged', () => {
     expect(html).not.toContain('1v1 Bid')
   })
 
-  it('still abbreviates our side off the team name when none is given', () => {
+  /**
+   * E3b: it still abbreviates our side off the name when no `teamAb` is given — but off the CITY
+   * now, not the last word. LAKERS was the nickname, and the fallback that produced it put SEVENS
+   * on the bug for every franchise he ever names, and the same three letters on every team named
+   * in the same city. `teamCode` reads the city: LAL. The opponent's written `ab` still wins.
+   */
+  it('still abbreviates our side off the team name when none is given — as the city', () => {
     const html = campaign()
-    expect(html).toContain('>LAKERS<')
+    expect(html).toContain('>LAL<')
+    expect(html).not.toContain('>LAKERS<')
     expect(html).toContain(`>${OPP4.ab}<`)
   })
 

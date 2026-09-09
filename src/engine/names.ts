@@ -42,3 +42,44 @@ export function surname(name: string): string {
 
 /** The same, upper-cased, for a shirt back or a scorebug. */
 export const surnameCaps = (name: string) => surname(name).toUpperCase()
+
+/**
+ * THE CODE ON THE SCOREBUG — three characters, off a team's name and nothing else.
+ *
+ * Every real team on the wheel carries a written `ab` (ORL, GSW, BKN) and that always wins. This is
+ * for the teams that have none, and all of them are named by hand: the franchise HE names on the
+ * team screen — any of 34,099 cities plus a nickname he types — and the two sides of a custom
+ * matchup. Both were falling back to "the last word of the name, upper-cased", which puts the
+ * NICKNAME on the bug: Salt Lake City Sevens read SEVENS, and every team he ever names in Boston
+ * reads the same as every other. A scoreboard code is the CITY. That is the whole rule here.
+ *
+ * The first version of this took an initial off every word, and it was measured and thrown out:
+ * 78% of the world's cities are one word, so it returned two-letter codes for four names in five —
+ * BS for Boston Sevens, DN for Denver Nine. So:
+ *
+ *   one or two words   the first three characters, running on into the second word if the first
+ *                      is shorter than three (18 cities are: Bo, Ho, Wa, Of…) — Boston Celtics
+ *                      BOS, Portland Trail Blazers POR, Bo Sevens BOS, Dnipropetrovsk W… DNI
+ *   three or more      an initial from each of the first three — Los Angeles Lakers LAL, Golden
+ *                      State Warriors GSW, New York Knicks NYK, Rio de Janeiro Sevens RDJ
+ *
+ * Measured over all 34,099 cities against three nicknames: no code shorter than three characters.
+ *
+ * THE SEASON COMES OFF BOTH ENDS. A card writes it behind the name ("Orlando Magic '26") and the
+ * custom-matchup screen writes it in front ("'96 Chicago Bulls"), and a code built out of an
+ * apostrophe and two digits names nothing. Punctuation and combining marks are dropped with it, so
+ * 's-Hertogenbosch gives SHE and H̱olon gives HOL rather than a mark that renders as half a glyph.
+ */
+export function teamCode(name: string): string {
+  const bare = bareName(name)
+    // "'96 Chicago Bulls" — the season written in FRONT, which is how Custom names a loaded team
+    .replace(/^\s*'\d\d\s+/, '')
+    .trim()
+  const words = bare
+    .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ''))
+    .filter(Boolean)
+  if (!words.length) return name.trim().toUpperCase()
+  const code = words.length >= 3 ? words.slice(0, 3).map((w) => [...w][0]).join('') : [...words.join('')].slice(0, 3).join('')
+  return code.toUpperCase()
+}

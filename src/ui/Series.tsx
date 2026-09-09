@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ROUNDS } from '../config'
+import { teamCode } from '../engine/names'
 import { seriesNote } from '../engine/notes'
 import { makeRng } from '../engine/rng'
 import { starsFor } from '../engine/resolver'
@@ -27,8 +28,6 @@ interface StatRow {
 
 const f1 = (v: number) => v.toFixed(1)
 const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
-/** The scorebug name: the last word of the team, set in mono caps. */
-const bug = (n: string) => (n.trim().split(/\s+/).pop() ?? n).toUpperCase()
 
 /** The current run over the last stretch of the tape — "7–2 run · CLASH", or nothing when it's trading. */
 function runLine(ticks: { us: number; them: number }[], i: number, you: string, them: string): string | null {
@@ -115,7 +114,12 @@ const pc = (m: number, a: number) => (a > 0 ? `${((100 * m) / a).toFixed(1)}%` :
  */
 const scoresOf = (r: SeriesResult, g7: { us: number; them: number } | null) => r.games.map((g, i) => (i === 6 && g7 ? g7 : { us: g.us, them: g.them }))
 
-function seriesStats(mine: Lineup, theirs: Lineup, r: SeriesResult, g7: { us: number; them: number } | null, box: SeriesBox): StatRow[] {
+/**
+ * Exported so the blind rule can be PINNED rather than eyeballed: the box-score half of this table
+ * is user mode's too, the Rating half is scout mode's alone, and tests/blindgates.test.ts reads
+ * both off this function.
+ */
+export function seriesStats(mine: Lineup, theirs: Lineup, r: SeriesResult, g7: { us: number; them: number } | null, box: SeriesBox, user: boolean): StatRow[] {
   const scores = scoresOf(r, g7)
   const n = scores.length
   const us = scores.reduce((a, s) => a + s.us, 0) / n
@@ -140,12 +144,25 @@ function seriesStats(mine: Lineup, theirs: Lineup, r: SeriesResult, g7: { us: nu
     { label: 'Steals', a: f1(box.us.stl), b: f1(box.them.stl), lead: cmp(box.us.stl, box.them.stl) },
     { label: 'Blocks', a: f1(box.us.blk), b: f1(box.them.blk), lead: cmp(box.us.blk, box.them.blk) },
     { label: 'Turnovers', a: f1(box.us.tov), b: f1(box.them.tov), lead: cmp(box.us.tov, box.them.tov, true) },
-    { label: 'Rating', a: '', b: '', lead: 0, head: true },
-    { label: 'Talent', a: f1(mine.talent), b: f1(theirs.talent), lead: cmp(mine.talent, theirs.talent) },
-    { label: 'Offense', a: f1(mine.off), b: f1(theirs.off), lead: cmp(mine.off, theirs.off) },
-    { label: 'Defense (pts allowed)', a: f1(mine.drtg), b: f1(theirs.drtg), lead: cmp(mine.drtg, theirs.drtg, true) },
-    { label: 'Net', a: (mine.net > 0 ? '+' : '') + f1(mine.net), b: (theirs.net > 0 ? '+' : '') + f1(theirs.net), lead: cmp(mine.net, theirs.net) },
   ]
+  /**
+   * AND THE RATING BLOCK IS SCOUT MODE'S ALONE. Everything above this line is a BOX SCORE — shots,
+   * boards, assists, turnovers, what actually happened out there — and user mode is entitled to
+   * every number of it. What follows is the four figures the engine RATED the two fives at, which
+   * is the one thing his standing ruling takes off every screen: "user mode plays blind — no
+   * ratings, no verdict, no odds". The Full analysis door beside this table was already behind
+   * `!user`, and the dials, the Matchup panel and the odds all are; this table was the hole they
+   * were all still visible through, because a user-mode reader who opened Full box scores got
+   * Talent / Offense / Defense / Net printed for both teams at the foot of it.
+   */
+  if (!user)
+    rows.push(
+      { label: 'Rating', a: '', b: '', lead: 0, head: true },
+      { label: 'Talent', a: f1(mine.talent), b: f1(theirs.talent), lead: cmp(mine.talent, theirs.talent) },
+      { label: 'Offense', a: f1(mine.off), b: f1(theirs.off), lead: cmp(mine.off, theirs.off) },
+      { label: 'Defense (pts allowed)', a: f1(mine.drtg), b: f1(theirs.drtg), lead: cmp(mine.drtg, theirs.drtg, true) },
+      { label: 'Net', a: (mine.net > 0 ? '+' : '') + f1(mine.net), b: (theirs.net > 0 ? '+' : '') + f1(theirs.net), lead: cmp(mine.net, theirs.net) },
+    )
   return rows
 }
 
@@ -180,7 +197,13 @@ export function Series({
   mine: Lineup
   theirs: Lineup
   teamName: string
-  /** Our scorebug abbreviation, the mirror of opponent.ab. Defaults to the last word of teamName. */
+  /**
+   * OUR SCORE-BUG CODE, the mirror of opponent.ab. Only the screens that name their own sides pass
+   * one — the hot seat's P1, the bid's P1 — and everything else leaves it off and gets `teamCode`
+   * off the team's name: the CITY, three characters, "Salt Lake City Sevens" -> SLC. It used to be
+   * the last word of the name, which put the nickname on the bug and made every team he ever named
+   * in the same city read the same.
+   */
   teamAb?: string
   result: SeriesResult
   seed: number
@@ -215,7 +238,7 @@ export function Series({
    *  latest stage — this screen only knows whether it was handed the door. */
   onNext?: () => void
 }) {
-  const myAb = teamAb ?? bug(teamName)
+  const myAb = teamAb ?? teamCode(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
   const shown = decider ? result.games.slice(0, 6) : result.games
 
@@ -308,12 +331,12 @@ export function Series({
               <span className="g7-live">● LIVE</span>
             </div>
             <div className="sb-side them">
-              <i>{opponent.ab ?? bug(opponent.team)}</i>
+              <i>{opponent.ab ?? teamCode(opponent.team)}</i>
               <b>{head!.them}</b>
             </div>
           </div>
           <div className="sb-foot">
-            <span className="you">{runLine(tape.ticks, i, myAb, opponent.ab ?? bug(opponent.team)) ?? ''}</span>
+            <span className="you">{runLine(tape.ticks, i, myAb, opponent.ab ?? teamCode(opponent.team)) ?? ''}</span>
             <span>Series 3–3</span>
           </div>
         </div>
@@ -347,7 +370,7 @@ export function Series({
               <span className="d">–</span>
               <span className="t">{result.losses}</span>
             </h1>
-            <span className="v-side them">{opponent.ab ?? bug(opponent.team)}</span>
+            <span className="v-side them">{opponent.ab ?? teamCode(opponent.team)}</span>
           </div>
           <p>{seriesNote(result.won, result.wins, result.losses)}</p>
           {result.won && !exhibition ? (
@@ -498,7 +521,7 @@ export function Series({
               <span />
               <span className="them">{opponent.team}</span>
             </div>
-            {seriesStats(mine, theirs, result, tape ? { us: tape.us, them: tape.them } : null, box!).map((row) => (
+            {seriesStats(mine, theirs, result, tape ? { us: tape.us, them: tape.them } : null, box!, user).map((row) => (
               <div className={`sr ${row.head ? 'head' : ''}`} key={row.label}>
                 <span className={`you ${row.lead > 0 ? 'lead' : ''}`}>{row.a}</span>
                 <span className="rl">{row.label}</span>

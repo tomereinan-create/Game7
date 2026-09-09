@@ -273,7 +273,9 @@ export function Auction({ onHome }: { onHome: () => void }) {
   // HIS RULING: the bid is treated the same as a campaign — the campaign's own series screen,
   // with the full box scores and Game 7 played out on the ticker. The chairs keep their names.
   if (result) {
-    const opponent = { round: 1, team: names[1], ab: foe === 'bot' ? 'MACHINE' : 'P2', players: B, positions: [] as string[] }
+    // CPU, not MACHINE (E3b): this is the code on a scorebug, beside a P1 — every other one in the
+    // app is three characters, and a seven-letter word in that slot is a label, not a code.
+    const opponent = { round: 1, team: names[1], ab: foe === 'bot' ? 'CPU' : 'P2', players: B, positions: [] as string[] }
     return (
       <Series
         opponent={opponent}
