@@ -4,6 +4,7 @@ import { POSITIONS } from '../engine/positions'
 import { Ball } from './Ball'
 import { LINES } from './Stat'
 import { cardInk, type TeamColor } from './teamColors'
+import { surnameCaps } from '../engine/names'
 
 /**
  * GAME NIGHT'S FLOOR (the design bundle, screen 5) — user mode only.
@@ -20,10 +21,8 @@ import { cardInk, type TeamColor } from './teamColors'
  * he is standing, and the nameplate carries his real season.
  */
 
-const surname = (n: string) => {
-  const bare = n.replace(/ '\d\d( \([a-z]\))?$/, '')
-  return (bare.split(' ').pop() ?? bare).toUpperCase()
-}
+// E16: this took the LAST token, so Marvin Bagley III ran out wearing "III". One helper now.
+const surname = surnameCaps
 /**
  * The number on the shirt. The pool has no jersey numbers — a card is a man AND a season — so the
  * season is what the shirt wears: Stockton '90 runs out in a 90. It reads as a number the way a

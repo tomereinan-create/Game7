@@ -1,6 +1,7 @@
 import { gameBoxes, splitBox, type BoxCtx, type PlayerBox } from './boxstats'
 import { boxScore } from './resolver'
 import type { Rng } from './rng'
+import { surname } from './names'
 import type { Player, StatLine } from './types'
 
 export interface Tick {
@@ -25,7 +26,8 @@ const MISS = ['rims it out', 'off the front iron', 'short', 'off the back rim', 
 const MISS3 = ['from deep, off', 'corner three, no', 'steps back, misses']
 const LOSE = ['loses the handle', 'travels', 'throws it away', 'steps on the line', 'charges in']
 
-const lastName = (n: string) => n.split(' ').slice(1).join(' ') || n
+// One rule for a short name, shared with the jersey and the tactics chips — see names.ts. This
+// used to keep the season, so the tape read "Maxey '26 boards it".
 
 function clockFor(fraction: number): string {
   const secs = Math.max(0, Math.round(720 * (1 - Math.min(1, Math.max(0, fraction)))))
@@ -65,7 +67,7 @@ interface Ev {
  */
 function eventsFor(side: 'us' | 'them', mine: PlayerBox[], theirs: PlayerBox[], rng: Rng): Ev[] {
   const evs: Ev[] = []
-  const name = (l: PlayerBox) => lastName(l.name)
+  const name = (l: PlayerBox) => surname(l.name)
   // whoever on the other side still has a block or a steal left to spend
   const blk = theirs.map((l) => l.blk)
   const stl = theirs.map((l) => l.stl)

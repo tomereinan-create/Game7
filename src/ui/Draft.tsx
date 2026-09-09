@@ -96,6 +96,8 @@ const Mini = ({ name }: { name: string }) => {
 
 const posOf = (name: string) => eligible(LINES[name]?.pos)
 const posLine = (name: string) => posOf(name).join(' · ')
+/** The rings he can fill BESIDES the one he is already in — empty when there are none (E13). */
+const alsoPlays = (name: string, here: string) => posOf(name).filter((x) => x !== here).join(' · ')
 
 /**
  * HIS RULING: "Add the ability to draft a player by dragging him to the court". The drop's law,
@@ -212,6 +214,7 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
  */
 /** The scorebug name: the last word of the team, the way Series.tsx sets one. */
 const bugName = (n: string) => (n.trim().split(' ').pop() ?? n).toUpperCase()
+// E16: a MAN's short name is not the same rule as a TEAM's — a man can carry a suffix. See names.ts.
 /** Whether this machine has asked for less motion. Read at press time, not cached. */
 const reduceMotion = () => {
   try {
@@ -1219,8 +1222,9 @@ export function Draft({
           sub: `${
             carried && left(p.name) <= WEAR_OUT
               ? `${x} · WORN OUT — must be replaced`
-              : posOf(p.name).length > 1
-                ? `${x} · can play ${posOf(p.name).join(' · ')}`
+              : /* E13, same string on my own five: only the OTHER rings after "can play". */
+                alsoPlays(p.name, x)
+                ? `${x} · can play ${alsoPlays(p.name, x)}`
                 : x
           } · ${archetype(p)}`,
           // the number lives in the DUR badge now, so the sub can never truncate it away
@@ -1418,8 +1422,10 @@ export function Draft({
               naiveMap && naiveMap.indexOf(i) >= 0
                 ? `${opponent.positions?.[i] ?? ''} · guarded by ${five[naiveMap.indexOf(i)].name.replace(/ '\d\d( \([a-z]\))?$/, '')}`
                 : opponent.positions?.[i]
-                  ? posOf(p.name).length > 1
-                    ? `${opponent.positions[i]} · can play ${posLine(p.name)}`
+                  ? /* E13: `can play ${posLine}` re-listed the ring he is already standing in —
+                       "SG · can play SG · SF". Only the OTHER rings belong after "can play". */
+                    alsoPlays(p.name, opponent.positions[i])
+                    ? `${opponent.positions[i]} · can play ${alsoPlays(p.name, opponent.positions[i])}`
                     : opponent.positions[i]
                   : posLine(p.name)
             } · ${archetype(p)}`,

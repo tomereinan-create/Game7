@@ -473,7 +473,16 @@ export function Series({
       ) : null}
 
       {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
-      {done ? (
+      {/*
+        E1 (2026-09-09): this door was NOT gated. User mode says "Play blind. No ratings, no
+        verdict." and the draft screen keeps that promise everywhere — the court tags, both teams'
+        dials, the Matchup panel, the spread and the odds are all behind `!user`. Then the series
+        settled and this button opened the whole engine anyway: the spread, the per-game and
+        per-series odds, the talent/fit/modifier decomposition, both defensive reads. One link
+        undid the mode. The other rating surfaces on this screen were already gated; this was the
+        hole.
+      */}
+      {done && !user ? (
         <button className="linkb" onClick={() => setAnalysis(true)}>
           Full analysis →
         </button>

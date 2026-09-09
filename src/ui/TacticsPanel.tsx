@@ -3,6 +3,7 @@ import type { Side } from './CourtFive'
 import { useUserMode } from '../state/viewmode'
 import { usageSurplus } from '../engine/offense'
 import type { Player } from '../engine/types'
+import { surname } from '../engine/names'
 import {
   gateTactics,
   heliMan,
@@ -20,7 +21,8 @@ import {
 } from '../engine/tactics'
 
 /** The name a chip wears: the season tag off, and the surname alone. */
-const shortName = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '').split(' ').slice(-1)[0]
+// E16: was `.slice(-1)[0]`, which turned every Jr./III into his own surname.
+const shortName = surname
 
 /** What the plan is worth on this five, in points of spread. Null in user mode and at rank 0. */
 export function tacticsWorth(tactics: Tactics, playbook: number, five: Player[], theirs?: Player[]): number | null {
