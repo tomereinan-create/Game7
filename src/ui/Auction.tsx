@@ -477,7 +477,20 @@ export function Auction({ onHome }: { onHome: () => void }) {
 
       <div className="dock">
         <div className="dock-inner">
-          <button className={`btn ${done || dry ? '' : 'ghost'}`} onClick={done || dry ? sim : undefined}>
+          {/**
+           * THE DOCK SAYS NOTHING IT CANNOT DO. For the whole auction `done` and `dry` are both
+           * false, so this button carried a rule — "Bid a five into PG–C" — with no handler on
+           * it. It was not disabled, only handler-less, which CSS and the accessibility tree
+           * cannot see: a full-width arcade button in the thumb zone kept its pointer, its hover
+           * lift and its 6px press travel, and fired nothing, for all ten lots. Two of his
+           * reports are that one line: "1v1 Bid opens with no visible action — BID/PASS below the
+           * fold while the sticky CTA shows static text" and "The caption that looks like a link
+           * (above)". `disabled` is the whole fix — the sentence stays exactly where it is, in
+           * the muted skin `.btn:disabled` already paints, and stops pretending to be a door. The
+           * ghost class goes with it, because `.btn.ghost:hover` outranks `.btn:disabled` and
+           * would have kept the lift on a dead button.
+           */}
+          <button className="btn" disabled={!(done || dry)} onClick={done || dry ? sim : undefined}>
             {done ? 'Sim the series' : dry ? 'The block is empty — play the men you have' : 'Bid a five into PG–C — every slot needs $1'}
           </button>
         </div>
