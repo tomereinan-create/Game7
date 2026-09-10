@@ -138,6 +138,55 @@ export function Auction({ onHome }: { onHome: () => void }) {
    * assumed away.
    */
   const dry = !done && !man
+
+  /**
+   * H2: WHOSE MOVE IS IT. The dock is the primary action everywhere else in this app; here it was a
+   * hard-coded three-arm ternary whose middle arm — the entire life of a lot — was a caption that
+   * did nothing, so the only real controls sat LAST in document flow under five read-only blocks
+   * and behind the fixed, opaque, tap-swallowing dock itself. To put the action in the dock the
+   * screen first has to know whose it is.
+   *
+   * Exactly one chair can act at a time: `awaitingCompel` holds until the compelled dollar lands,
+   * and `compelled` can only be null when neither chair could field the man — which `lotIdx` already
+   * prevents by never serving such a lot.
+   */
+  const canAct = (i: 0 | 1) => !!man && !done && !result && !assign && !awaitingCompel && !outFor(i) && top !== i
+  const turn: 0 | 1 | null = canAct(0) ? 0 : canAct(1) ? 1 : null
+
+  /**
+   * Why this chair cannot bid, or null when it can. Lifted out of the render so the dock and the
+   * ledger beside it can never disagree about the same chair.
+   *
+   * HIS RULING: running out of money is not losing. A side held to its $1-a-chair reserve cannot
+   * outbid anyone, but it still takes every man the other side passes on — so the line says that,
+   * rather than reading like defeat.
+   */
+  const whyFor = (i: 0 | 1): string | null => {
+    const slotsAfter = SLOTS - 1 - countOf(i)
+    return passed[i]
+      ? 'passed — final for this lot'
+      : full(i)
+        ? 'five men — out of every auction'
+        : !canPlay(i)
+          ? 'no open slot he can play'
+          : awaitingCompel
+            ? compelled === i
+              ? 'compelled to open — $1'
+              : 'the other chair opens at $1'
+            : top === i
+              ? compelled === i && price === 1
+                ? full(other(i)) || !canPlay(other(i))
+                  ? 'the other chair is out — he is yours at $1'
+                  : 'compelled to open — $1 · the other chair answers'
+                : 'holds the bid — the other chair answers'
+              : price + 1 > ceiling(i)
+                ? ceiling(i) <= 1
+                  ? `down to $1 a chair — you still take every man the other side passes on`
+                  : slotsAfter > 0
+                    ? `outbid here — $${slotsAfter} stays held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
+                    : `outbid here — only $${budget[i]} left`
+                : null
+  }
   const five = (i: 0 | 1) => slots[i].map((b) => (b ? BY_NAME.get(b.name) : undefined)).filter((p): p is Player => !!p)
   const A = five(0)
   const B = five(1)
@@ -153,8 +202,13 @@ export function Auction({ onHome }: { onHome: () => void }) {
     setInfo(false)
   }
 
+  /**
+   * H2 (2026-09-10): THE MONEY IS DEBITED AT THE HAMMER, not here. It used to be spent in `place()`,
+   * which does not run until the winner has chosen a slot — so while "SOLD TO PLAYER 1 · $3" was on
+   * screen his purse still read $20. The money was genuinely unchanged, not merely off-screen. It
+   * is charged in `sell()` now, the moment the lot is won, and `place()` only seats the man.
+   */
   const place = (side: 0 | 1, name: string, p: number, j: number) => {
-    setBudget((cur) => (side === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
     setSlots((cur) => {
       const next: Side = [[...cur[0]], [...cur[1]]]
       next[side][j] = { name, price: p }
@@ -167,6 +221,9 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const sell = (i: 0 | 1, p: number) => {
     const opts = legalOpen(i, man)
     if (!opts.length) return advance(`${man.name} — no chair could field him, off the block`) // defensive; the gate forbids it
+    // H2: the hammer is when the money goes. Every route out of this function ends in the man being
+    // seated — directly, or through the slot chooser — so charging here charges exactly once.
+    setBudget((cur) => (i === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
     // The Machine fills its thinnest-supply chair (by composition, not by peeking); a human with a choice picks.
     if (i === 1 && foe === 'bot') place(1, man.name, p, opts.reduce((best, j) => (compo.pos[j] < compo.pos[best] ? j : best), opts[0]))
     else if (opts.length === 1) place(i, man.name, p, opts[0])
@@ -242,6 +299,63 @@ export function Auction({ onHome }: { onHome: () => void }) {
     const r = simSeries(compile(A, B), compile(B, A), makeRng(s), SIGMA)
     if (foe === 'bot' && r.won) achMachineWin(skill) // the human sits in the P1 chair; a Machine win banks nothing
     setResult({ r, seed: s })
+  }
+
+  /**
+   * One arm per phase of a lot, in the order they can occur. Mirrors how the campaign's draft dock
+   * works: the primary action for right now, and nothing else.
+   */
+  const dock = () => {
+    if (done) return <div className="dock-inner"><button className="btn" onClick={sim}>Sim the series</button></div>
+    if (dry) return <div className="dock-inner"><button className="btn" onClick={sim}>The block is empty — play the men you have</button></div>
+    if (assign)
+      return (
+        // one column per legal slot: `.dock-row` is a 1fr 1fr grid, so the count is set inline
+        // rather than adding a stylesheet rule for 3-5 columns. Five is reachable — `eligible()`
+        // returns all five for a man with no listed positions — and five 61px cells still fit 375.
+        <div className="dock-row" style={{ gridTemplateColumns: `repeat(${assign.opts.length}, 1fr)` }}>
+          {assign.opts.map((j) => (
+            <button key={j} className="btn" onClick={() => place(assign.side, assign.name, assign.price, j)}>
+              {assign.opts.length === 1 ? `Put him at ${POSITIONS[j]}` : POSITIONS[j]}
+            </button>
+          ))}
+        </div>
+      )
+    if (awaitingCompel)
+      return (
+        <div className="dock-inner">
+          <button className="btn ghost" disabled>
+            {names[compelled ?? 0]} opens at $1
+          </button>
+        </div>
+      )
+    if (foe === 'bot' && turn === 1)
+      // full width, not half: the Machine's line runs longer than a half-dock holds
+      return (
+        <div className="dock-inner">
+          <button className="btn them" disabled>
+            {botSay ?? 'The Machine is thinking'}
+          </button>
+        </div>
+      )
+    if (turn !== null)
+      return (
+        <div className="dock-inner two">
+          <button className={`btn ${turn === 1 ? 'them' : ''}`} onClick={() => bid(turn)}>
+            {names[turn]} — bid ${price + 1}
+          </button>
+          <button className="btn ghost" onClick={() => pass(turn)}>
+            Pass
+          </button>
+        </div>
+      )
+    return (
+      <div className="dock-inner">
+        <button className="btn ghost" disabled>
+          Bid a five into PG–C — every slot needs $1
+        </button>
+      </div>
+    )
   }
 
   const reset = () => {
@@ -369,12 +483,22 @@ export function Auction({ onHome }: { onHome: () => void }) {
             <div className="au-kick">
               {assign ? `Sold to ${names[assign.side]} · $${assign.price} — pick his spot` : `Lot ${lotN + 1} · on the block`}
             </div>
-            {!assign ? (
-              <>
-                <div className={`au-price ${top === 0 ? 'p1' : top === 1 ? 'p2' : ''}`}>${price}</div>
-                <div className="au-why">{top !== null ? `${names[top]} holds the bid` : 'no bids yet — a pass is final for this lot'}</div>
-              </>
-            ) : null}
+            {/*
+              H2: THE WIN LANDS WHERE THE EYE ALREADY IS. When a lot sold, this whole block emptied —
+              the 46px price slot the reader has been watching all auction went blank, and the only
+              record of the win was a small grey kicker line above it. The slot keeps the hammer
+              price, in the winner's colour, and says who took him.
+            */}
+            <div className={`au-price ${(assign ? assign.side : top) === 0 ? 'p1' : (assign ? assign.side : top) === 1 ? 'p2' : ''}`}>
+              ${assign ? assign.price : price}
+            </div>
+            <div className="au-why">
+              {assign
+                ? `sold to ${names[assign.side]} — pick his spot below`
+                : top !== null
+                  ? `${names[top]} holds the bid`
+                  : 'no bids yet — a pass is final for this lot'}
+            </div>
           </div>
           <div className="pool">
             <PlayerCard
@@ -394,17 +518,19 @@ export function Auction({ onHome }: { onHome: () => void }) {
           {assign ? (
             <div className="au-actions one">
               <div className="au-panel">
-                <div className="au-slotrow">
-                  {assign.opts.map((j) => (
-                    <button key={j} className="sortb" onClick={() => place(assign.side, assign.name, assign.price, j)}>
-                      {POSITIONS[j]}
-                    </button>
-                  ))}
+                <div className="au-why">
+                  {assign.name} to {names[assign.side]} · ${assign.price} — pick his spot in the bar below
                 </div>
-                <div className="au-why">the slots his card can legally take</div>
               </div>
             </div>
           ) : (
+            /*
+              H2: THE LEDGER, not the controls. The bid and pass buttons moved to the dock, where
+              every other screen in this app puts the action. What stays here is the reading — why
+              each chair can or cannot act — and it is rendered for BOTH chairs unconditionally:
+              `whyFor` is null for exactly the chair that CAN bid, so leaving it conditional emptied
+              that column and left the two-column grid lopsided.
+            */
             <div className="au-actions">
               {([0, 1] as const).map((i) => {
                 if (i === 1 && foe === 'bot')
@@ -413,42 +539,10 @@ export function Auction({ onHome }: { onHome: () => void }) {
                       <div className="au-say">{botSay ?? (outFor(1) || top === 1 ? '' : 'The Machine is thinking')}</div>
                     </div>
                   )
-                const slotsAfter = SLOTS - 1 - countOf(i)
-                // HIS RULING: running out of money is not losing. A side held to its $1-a-chair
-                // reserve cannot outbid anyone, but it still takes every man the other side passes
-                // on — so the line says that, rather than reading like defeat.
-                const why = passed[i]
-                  ? 'passed — final for this lot'
-                  : full(i)
-                    ? 'five men — out of every auction'
-                    : !canPlay(i)
-                      ? 'no open slot he can play'
-                      : awaitingCompel
-                        ? compelled === i
-                          ? 'compelled to open — $1'
-                          : 'the other chair opens at $1'
-                        : top === i
-                          ? compelled === i && price === 1
-                            ? full(other(i)) || !canPlay(other(i))
-                              ? 'the other chair is out — he is yours at $1'
-                              : 'compelled to open — $1 · the other chair answers'
-                            : 'holds the bid — the other chair answers'
-                          : price + 1 > ceiling(i)
-                            ? ceiling(i) <= 1
-                              ? `down to $1 a chair — you still take every man the other side passes on`
-                              : slotsAfter > 0
-                                ? `outbid here — $${slotsAfter} stays held for ${slotsAfter} slot${slotsAfter === 1 ? '' : 's'}`
-                                : `outbid here — only $${budget[i]} left`
-                            : null
+                const why = whyFor(i)
                 return (
                   <div className="au-panel" key={i}>
-                    <button className={`btn ${i === 1 ? 'them' : ''}`} disabled={why !== null} onClick={() => bid(i)}>
-                      {names[i]} — bid ${price + 1}
-                    </button>
-                    <button className="btn ghost" disabled={outFor(i) || top === i || awaitingCompel} onClick={() => pass(i)}>
-                      Pass
-                    </button>
-                    {why ? <div className="au-why">{why}</div> : null}
+                    <div className="au-why">{why ?? 'his move — in the bar below'}</div>
                   </div>
                 )
               })}
@@ -475,13 +569,16 @@ export function Auction({ onHome }: { onHome: () => void }) {
         </div>
       ) : null}
 
-      <div className="dock">
-        <div className="dock-inner">
-          <button className={`btn ${done || dry ? '' : 'ghost'}`} onClick={done || dry ? sim : undefined}>
-            {done ? 'Sim the series' : dry ? 'The block is empty — play the men you have' : 'Bid a five into PG–C — every slot needs $1'}
-          </button>
-        </div>
-      </div>
+      {/*
+        H2 (2026-09-10): THE DOCK CARRIES THE ACTION NOW. It was a three-arm ternary whose middle
+        arm — the whole life of a lot — rendered a full-size, primary-looking button with NO handler
+        reading "Bid a five into PG–C". So the auction's only real controls sat last in document
+        flow, under five read-only blocks, and the dock is `position: fixed` with an opaque gradient
+        and `pointer-events: auto`: at 375x667 it covered the PASS button entirely and ate taps on
+        the bottom of BID, and at the >=900px desk breakpoint — which is where he plays — it is
+        worse. A new player met a screen with nothing on it to press.
+      */}
+      <div className="dock">{dock()}</div>
     </>
   )
 }
