@@ -695,8 +695,22 @@ export function LevelMap({
               <button className="um-staff" onClick={onStaff}>
                 ★ {bal} to spend · Staff →
               </button>
-              <button className="um-rename" onClick={onTeam}>
-                Rename
+              {/**
+               * THE RENAME DOOR CARRIES THE NAME (his report: "RENAME renders as an empty text
+               * input with a placeholder but is actually a button; the current team name appears
+               * nowhere on the map"). Both halves of that are one control's fault. The button held
+               * the word "Rename" alone, in faint grey micro-caps pressed against the left edge of
+               * a dark-bordered box — the silhouette of an empty field with a placeholder in it —
+               * and it was the only door on this row with no arrow. Meanwhile the header's own
+               * "NAME · RENAME" link is hidden under `body.um` so the row would not say the same
+               * thing twice, which left user mode's map never printing the franchise at all.
+               * The name goes ON the door: the club above, what pressing it does below. One
+               * control, both halves, and the header stays the one line his "one by another"
+               * ruling asked for.
+               */}
+              <button className="um-rename" onClick={onTeam} aria-label={`Rename ${teamName}`}>
+                <b>{teamName}</b>
+                <i>Rename →</i>
               </button>
             </div>
           ) : null}
@@ -969,6 +983,7 @@ export function LevelMap({
           label="The whole campaign"
           text="Every level and every star starts over. Reset it?"
           yes="Reset it"
+          danger
           onYes={onReset}
           onClose={() => setAskReset(false)}
         />

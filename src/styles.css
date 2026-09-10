@@ -911,6 +911,40 @@ button {
 }
 .btn.them:hover { background: var(--surface); border-color: var(--them); }
 .btn.them:active { box-shadow: 0 1px 0 #080706; }
+/* A DISABLED VARIANT HAS TO LOOK DISABLED. `.btn:disabled` is declared ABOVE `.btn.ghost` and
+   `.btn.them` at the same specificity (0,2,0), so for years a ghost or a them button carrying
+   `disabled` painted itself live — full-strength ink, the hover border-lift, the press travel —
+   and only the pointer gave it away. That is how the auction's dock came to read as a pressable
+   primary that fires nothing, which is his report of 2026-09-10 ("1v1 Bid opens with no visible
+   action"). Fixed HERE rather than at the call sites: three buttons in the auction wear it today
+   and the next one to be written would have inherited the same lie. Placed after the variants'
+   own :hover rules so it wins on order as well as on weight. */
+.btn.ghost:disabled,
+.btn.them:disabled,
+.btn.danger:disabled {
+  background: var(--surface-2);
+  color: var(--muted);
+  border-color: var(--line);
+  box-shadow: 0 7px 0 #0a0908;
+  cursor: default;
+}
+.btn.ghost:disabled:hover,
+.btn.them:disabled:hover,
+.btn.danger:disabled:hover { background: var(--surface-2); border-color: var(--line); }
+.btn.ghost:disabled:active,
+.btn.them:disabled:active,
+.btn.danger:disabled:active { transform: none; box-shadow: 0 7px 0 #0a0908; }
+/* THE ONE THAT CANNOT BE UNDONE (his report: "RESET IT is styled as the primary orange button,
+   identical to SPIN/DRAFT/SIM. The destructive one should be muted; GO BACK should be primary").
+   `.btn.them` in the danger tokens, so it is the same quiet outline the opponent's side wears and
+   never the gold that DRAFT and SPIN THE WHEEL wear. Opt-in: a dialog asks for it, so the second
+   look before a sim — which destroys nothing — keeps its gold. The order of the two buttons does
+   not change; colour alone moves the pull, and swapping them would move the tab order and the
+   thumb's memory with it. #080706 is copied from the two rules above, not a token: it is the
+   shadow this family casts, and it is the same literal in .ghost and .them. */
+.btn.danger { background: var(--surface); color: var(--danger); border-color: var(--danger-line); box-shadow: 0 7px 0 #080706; }
+.btn.danger:hover { background: var(--surface); border-color: var(--danger); }
+.btn.danger:active { box-shadow: 0 1px 0 #080706; }
 
 /* ---------- home ---------- */
 /* THE MODE CHOICE (his ruling) — two options side by side (own class prefix: .mp- belongs to the matchup panel), the live one lit, so which
@@ -3020,28 +3054,47 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
  * and a drop shadow under it — a lid: the floor ran up to it and stopped, and the line across the
  * window was the first thing the eye found. It is a PANE now. The block's own floor is painted on
  * the page behind it (the map takes an `sk-` body class), the bar is a thin scrim of that block's
- * base colour with the floor blurred through it, and the bottom edge is a fade rather than a rule
+ * base colour laid over that same floor, and the bottom edge is a fade rather than a rule
  * — the room carries on under the header and dissolves out of it.
  *
  * The scrim is NEUTRAL, not the block's colour, and that is the whole trick: the header wears the
  * skin of the level you are ON, but the floor it happens to be sitting over is whichever block you
  * have scrolled to, and at the head of the ladder those are not the same block. A tinted pane
  * would announce that mismatch as a coloured bar over the wrong floor. A pane that only DARKENS
- * cannot: whatever is behind it supplies the colour, at any scroll position, in every block.
+ * cannot: the four scrims are the same near-black to within a few levels of grey, so the bar
+ * reads as a shadow of the room rather than as a bar of the wrong room, at any scroll position.
  */
+/* ...BUT A PANE YOU CAN READ THROUGH IS NOT A PANE, IT IS A SMEAR (his report, 2026-09-10: "New
+ * regression: smeared artifacts in the map header, '?' cards bleeding through the blur layer").
+ * A ~0.52 scrim with blur(14px) does not erase a 116x94 locked ticket, it turns it into a soft
+ * luminous rectangle; and the 40px fade below carried the same scrim with NO backdrop-filter, so
+ * the same ticket was smeared a pixel above the header's edge and razor-sharp a pixel below it.
+ * Scrolling dragged that seam across every ticket on the trail. That is the artifact.
+ *
+ * The pane keeps its colour and loses its transparency. It is the block's own floor with the same
+ * scrim laid over it, so it is painted the exact shade it used to BLUR ITSELF TO over that floor
+ * — the room still carries on under the header, the bottom edge is still a fade and not a rule,
+ * nothing moves by a pixel — but there is no 14% of a "?" card left to come through, and no blur
+ * that can end at a line. Raising the scrim alone was tried first and measured: it took the bleed
+ * down by about four fifths and left a ticket's number still legible in the last 20px of the pane,
+ * where a backdrop blur clamps at its own edge and stays sharp. That last 20px is the seam.
+ *
+ * The backdrop-filter goes with it: over an opaque backing it paints nothing, and a sticky
+ * backdrop-filter over an 18,000px page is the one thing on this screen that can streak on a fast
+ * flick. Dead weight and a suspect, removed together. */
 .map-top {
   position: sticky;
   top: 0;
   z-index: 6;
-  background: var(--top-scrim, rgba(0, 0, 0, 0.52));
-  -webkit-backdrop-filter: blur(14px) saturate(1.25);
-  backdrop-filter: blur(14px) saturate(1.25);
+  background: linear-gradient(var(--top-scrim), var(--top-scrim)), var(--top-solid, #0a0e17);
   margin: -14px -14px 0;
   padding: 14px 14px 0;
   border-bottom: 0;
   box-shadow: none;
 }
-/* the fade the rule used to be: the scrim thins out into the map over 40px rather than ending */
+/* the fade the rule used to be: the scrim thins out into the map over 40px rather than ending.
+   Its top row is the pane's own colour — same scrim, over the floor instead of over the floor's
+   token — so the pane and the fade meet at no edge at all. */
 .map-top::after {
   content: '';
   position: absolute;
@@ -3049,7 +3102,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
   right: 0;
   top: 100%;
   height: 40px;
-  background: linear-gradient(180deg, var(--top-scrim, rgba(0, 0, 0, 0.52)), transparent);
+  background: linear-gradient(180deg, var(--top-scrim, rgba(0, 0, 0, 0.86)), transparent);
   pointer-events: none;
 }
 @media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
@@ -3800,7 +3853,12 @@ body.offstage #root { position: relative; z-index: 1; }
 .ask { width: min(347px, 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: 2px solid var(--you); border-radius: 8px; padding: 16px 16px 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
 .ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 16.5px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
 .ask-btns { display: flex; gap: 10px; margin-top: 16px; }
-.ask-btns .btn { height: 44px; font-size: 11px; }
+/* ...and the card's gold top rule is the dialog's other "go" signal, so a destructive ask does not
+   wear it either. `height: 44px` used to sit on this rule and never applied — .btn's min-height of
+   52px wins — so the dialog's buttons have always been 52px; the dead declaration is gone rather
+   than made true, because 52px is what he has been pressing. */
+.ask.danger { border-top-color: var(--danger); }
+.ask-btns .btn { font-size: 11px; }
 
 /* ---- the team database: a year, a team, their best five ---- */
 .yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
@@ -4269,7 +4327,7 @@ body.offstage #root { position: relative; z-index: 1; }
    THE CHROME for the two new skins — header, era banner, notice and foot, same three parts the
    arena and the hardwood already dress.
    ========================================================================== */
-.map-top.hall { --top-scrim: rgba(8,4,1,0.52); }
+.map-top.hall { --top-scrim: rgba(8,4,1,0.86); --top-solid: #150c06; }
 .map-top.hall .map-kicker { color: #b3a184; }
 .map-top.hall .map-total { color: #f4e8cf; text-shadow: 0 0 18px rgba(255,220,160,0.35); }
 .map-top.hall .map-total .star { color: #d9a441; }
@@ -4282,7 +4340,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .era-band.hall i { color: #b3a184; }
 .node-note.hall { border-color: rgba(244,232,207,0.6); background: rgba(26,15,7,0.94); color: #f4e8cf; }
 
-.map-top.dusk { --top-scrim: rgba(1,8,12,0.5); }
+.map-top.dusk { --top-scrim: rgba(1,8,12,0.86); --top-solid: #0a1f2a; }
 .map-top.dusk .map-kicker { color: #8fb4ab; }
 .map-top.dusk .map-total { color: #3ee6b0; text-shadow: 0 0 22px rgba(62,230,176,0.4); }
 .map-top.dusk .map-total .star { color: #3ee6b0; }
@@ -4397,7 +4455,7 @@ body.offstage #root { position: relative; z-index: 1; }
  * block's own floor: the arena's house light, the hardwood's boards, the hall's rafter spots, the
  * dusk sky. Darkened, because a sticky header has type on it and the trail runs under it.
  */
-.map-top.arena { --top-scrim: rgba(2,5,12,0.52); }
+.map-top.arena { --top-scrim: rgba(2,5,12,0.86); --top-solid: #0a0e17; }
 .map-top.arena .map-kicker { color: #93a0b4; }
 .map-top.arena .map-total { color: #ff8a4d; text-shadow: 0 0 22px rgba(255,116,52,0.35); }
 .map-top.arena .map-total i { color: #93a0b4; }
@@ -4405,7 +4463,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .map-top.arena .map-link.danger { color: #ff5d6c; }
 .map-top.arena .rule2 { background: linear-gradient(90deg, #ff7434, rgba(255,116,52,0.15) 60%, transparent); }
 
-.map-top.wood { --top-scrim: rgba(10,5,1,0.55); }
+.map-top.wood { --top-scrim: rgba(10,5,1,0.86); --top-solid: #261608; }
 .map-top.wood .map-kicker { color: #b39f83; }
 .map-top.wood .map-total { color: #f6eedd; text-shadow: 0 0 18px rgba(255,207,125,0.4); }
 .map-top.wood .map-total .star { color: #ffcf7d; }
@@ -4863,8 +4921,12 @@ body.um {
 .um-era.on i { color: var(--um-gold); }
 .um-maprow { display: flex; gap: 8px; }
 .um-staff {
-  flex: 2;
+  /* It used to take two thirds of the row and its label never filled them; the rename door beside
+     it now has a club name to print, so the staff door takes the width of its own words — flex
+     from zero, clamped at min-content by the nowrap label — and the name gets the rest. */
+  flex: 1;
   min-height: 44px;
+  padding: 0 10px;
   border: 1px solid var(--um-gold);
   border-radius: 5px;
   background: transparent;
@@ -4875,20 +4937,50 @@ body.um {
   cursor: pointer;
 }
 .um-staff:hover { background: #241f1a; }
+/* THE RENAME DOOR IS A DOOR, AND IT IS THE ONE THAT NAMES THE CLUB (his report: "RENAME renders
+   as an empty text input with a placeholder but is actually a button; the current team name
+   appears nowhere on the map"). Three things made it read as an empty field: the page's global
+   button reset zeroes padding and lefts the text, so faint micro-caps sat flush against the left
+   edge of a hairline box; the box had no fill of its own while the era chips above it do; and its
+   hairline was darker than theirs. It is a chip like them now — same raised fill, a border that
+   actually reads — with the franchise on the top line and what the press DOES underneath it, in
+   the cap size the rest of user mode uses. The name is the half that yields: it ellipsises, and
+   the second line never does. */
 .um-rename {
-  flex: 1;
+  flex: 1.6;
+  min-width: 0;
   min-height: 44px;
-  border: 1px solid #2a2320;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 10px;
+  border: 1px solid #3d352e;
   border-radius: 5px;
-  background: transparent;
-  color: #a39a91;
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  background: var(--um-raised);
   cursor: pointer;
 }
-.um-rename:hover { border-color: var(--um-cream); color: var(--um-cream); }
+.um-rename b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--um-cream);
+}
+.um-rename i {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--um-cap);
+}
+.um-rename:hover { border-color: var(--um-cream); }
+.um-rename:hover i { color: var(--um-cream); }
+
 
 /* SCOUT MODE'S COPY OF THE CONTROL ROW (his ruling: "Add this to all campaign modes in scout
    mode(same as user mode have)"). The MARKUP is shared — one row, one auto door, one set of era

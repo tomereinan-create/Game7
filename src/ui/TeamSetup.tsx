@@ -80,6 +80,13 @@ export function TeamSetup({
   }
   const user = useUserMode()
   const ready = !!city && name.trim().length > 0
+  /**
+   * WHETHER THIS IS A FIRST TIME OR A RENAME (his report: "the edit screen's CTA says 'PLAY AS
+   * THE…' instead of SAVE"). Nothing had to be plumbed for this: `initial` is the team the map
+   * handed over, so it is null on the first screen of a campaign and a team every time the screen
+   * is reached through the map's rename door. Only the button's word was ever wrong.
+   */
+  const renaming = initial !== null
   // This screen used to state the crawl's line ("Any city in the world") while it was up. The
   // crawl itself is gone on his 2026-09-08 ruling, and the line is no loss here: the paragraph
   // under the heading already says the team plays out of any city in the world.
@@ -197,7 +204,13 @@ export function TeamSetup({
             {/* The bundle names the whole franchise on the button — "Play as the Salt Lake City
                 Sevens", the thing that goes on the jersey — where the app names only the nickname.
                 User mode takes the bundle's wording; scout mode's label is untouched. */}
-            {ready ? (user ? `Play as the ${city!.city} ${name.trim()}` : `Play as the ${name.trim()}`) : 'Pick a city and a name'}
+            {ready
+              ? renaming
+                ? 'Save'
+                : user
+                  ? `Play as the ${city!.city} ${name.trim()}`
+                  : `Play as the ${name.trim()}`
+              : 'Pick a city and a name'}
           </button>
         </div>
       </div>
