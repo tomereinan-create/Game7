@@ -260,6 +260,7 @@ export function Tree({
           label="The staff tree"
           text={`All ${wallet.spent} stars come back and every node is unlearned. Reset your staff?`}
           yes="Reset spending"
+          danger
           onYes={() => {
             setAskRespec(false)
             onRespec()

@@ -911,6 +911,17 @@ button {
 }
 .btn.them:hover { background: var(--surface); border-color: var(--them); }
 .btn.them:active { box-shadow: 0 1px 0 #080706; }
+/* THE ONE THAT CANNOT BE UNDONE (his report: "RESET IT is styled as the primary orange button,
+   identical to SPIN/DRAFT/SIM. The destructive one should be muted; GO BACK should be primary").
+   `.btn.them` in the danger tokens, so it is the same quiet outline the opponent's side wears and
+   never the gold that DRAFT and SPIN THE WHEEL wear. Opt-in: a dialog asks for it, so the second
+   look before a sim — which destroys nothing — keeps its gold. The order of the two buttons does
+   not change; colour alone moves the pull, and swapping them would move the tab order and the
+   thumb's memory with it. #080706 is copied from the two rules above, not a token: it is the
+   shadow this family casts, and it is the same literal in .ghost and .them. */
+.btn.danger { background: var(--surface); color: var(--danger); border-color: var(--danger-line); box-shadow: 0 7px 0 #080706; }
+.btn.danger:hover { background: var(--surface); border-color: var(--danger); }
+.btn.danger:active { box-shadow: 0 1px 0 #080706; }
 
 /* ---------- home ---------- */
 /* THE MODE CHOICE (his ruling) — two options side by side (own class prefix: .mp- belongs to the matchup panel), the live one lit, so which
@@ -3797,7 +3808,12 @@ body.offstage #root { position: relative; z-index: 1; }
 .ask { width: min(347px, 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: 2px solid var(--you); border-radius: 8px; padding: 16px 16px 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
 .ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 16.5px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
 .ask-btns { display: flex; gap: 10px; margin-top: 16px; }
-.ask-btns .btn { height: 44px; font-size: 11px; }
+/* ...and the card's gold top rule is the dialog's other "go" signal, so a destructive ask does not
+   wear it either. `height: 44px` used to sit on this rule and never applied — .btn's min-height of
+   52px wins — so the dialog's buttons have always been 52px; the dead declaration is gone rather
+   than made true, because 52px is what he has been pressing. */
+.ask.danger { border-top-color: var(--danger); }
+.ask-btns .btn { font-size: 11px; }
 
 /* ---- the team database: a year, a team, their best five ---- */
 .yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }

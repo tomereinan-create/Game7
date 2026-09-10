@@ -969,6 +969,7 @@ export function LevelMap({
           label="The whole campaign"
           text="Every level and every star starts over. Reset it?"
           yes="Reset it"
+          danger
           onYes={onReset}
           onClose={() => setAskReset(false)}
         />
