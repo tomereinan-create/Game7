@@ -3020,28 +3020,47 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
  * and a drop shadow under it — a lid: the floor ran up to it and stopped, and the line across the
  * window was the first thing the eye found. It is a PANE now. The block's own floor is painted on
  * the page behind it (the map takes an `sk-` body class), the bar is a thin scrim of that block's
- * base colour with the floor blurred through it, and the bottom edge is a fade rather than a rule
+ * base colour laid over that same floor, and the bottom edge is a fade rather than a rule
  * — the room carries on under the header and dissolves out of it.
  *
  * The scrim is NEUTRAL, not the block's colour, and that is the whole trick: the header wears the
  * skin of the level you are ON, but the floor it happens to be sitting over is whichever block you
  * have scrolled to, and at the head of the ladder those are not the same block. A tinted pane
  * would announce that mismatch as a coloured bar over the wrong floor. A pane that only DARKENS
- * cannot: whatever is behind it supplies the colour, at any scroll position, in every block.
+ * cannot: the four scrims are the same near-black to within a few levels of grey, so the bar
+ * reads as a shadow of the room rather than as a bar of the wrong room, at any scroll position.
  */
+/* ...BUT A PANE YOU CAN READ THROUGH IS NOT A PANE, IT IS A SMEAR (his report, 2026-09-10: "New
+ * regression: smeared artifacts in the map header, '?' cards bleeding through the blur layer").
+ * A ~0.52 scrim with blur(14px) does not erase a 116x94 locked ticket, it turns it into a soft
+ * luminous rectangle; and the 40px fade below carried the same scrim with NO backdrop-filter, so
+ * the same ticket was smeared a pixel above the header's edge and razor-sharp a pixel below it.
+ * Scrolling dragged that seam across every ticket on the trail. That is the artifact.
+ *
+ * The pane keeps its colour and loses its transparency. It is the block's own floor with the same
+ * scrim laid over it, so it is painted the exact shade it used to BLUR ITSELF TO over that floor
+ * — the room still carries on under the header, the bottom edge is still a fade and not a rule,
+ * nothing moves by a pixel — but there is no 14% of a "?" card left to come through, and no blur
+ * that can end at a line. Raising the scrim alone was tried first and measured: it took the bleed
+ * down by about four fifths and left a ticket's number still legible in the last 20px of the pane,
+ * where a backdrop blur clamps at its own edge and stays sharp. That last 20px is the seam.
+ *
+ * The backdrop-filter goes with it: over an opaque backing it paints nothing, and a sticky
+ * backdrop-filter over an 18,000px page is the one thing on this screen that can streak on a fast
+ * flick. Dead weight and a suspect, removed together. */
 .map-top {
   position: sticky;
   top: 0;
   z-index: 6;
-  background: var(--top-scrim, rgba(0, 0, 0, 0.52));
-  -webkit-backdrop-filter: blur(14px) saturate(1.25);
-  backdrop-filter: blur(14px) saturate(1.25);
+  background: linear-gradient(var(--top-scrim), var(--top-scrim)), var(--top-solid, #0a0e17);
   margin: -14px -14px 0;
   padding: 14px 14px 0;
   border-bottom: 0;
   box-shadow: none;
 }
-/* the fade the rule used to be: the scrim thins out into the map over 40px rather than ending */
+/* the fade the rule used to be: the scrim thins out into the map over 40px rather than ending.
+   Its top row is the pane's own colour — same scrim, over the floor instead of over the floor's
+   token — so the pane and the fade meet at no edge at all. */
 .map-top::after {
   content: '';
   position: absolute;
@@ -3049,7 +3068,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
   right: 0;
   top: 100%;
   height: 40px;
-  background: linear-gradient(180deg, var(--top-scrim, rgba(0, 0, 0, 0.52)), transparent);
+  background: linear-gradient(180deg, var(--top-scrim, rgba(0, 0, 0, 0.86)), transparent);
   pointer-events: none;
 }
 @media (min-width: 900px) { .map-top { margin: -21px -21px 0; padding: 21px 21px 0; } }
@@ -4247,7 +4266,7 @@ body.offstage #root { position: relative; z-index: 1; }
    THE CHROME for the two new skins — header, era banner, notice and foot, same three parts the
    arena and the hardwood already dress.
    ========================================================================== */
-.map-top.hall { --top-scrim: rgba(8,4,1,0.52); }
+.map-top.hall { --top-scrim: rgba(8,4,1,0.86); --top-solid: #150c06; }
 .map-top.hall .map-kicker { color: #b3a184; }
 .map-top.hall .map-total { color: #f4e8cf; text-shadow: 0 0 18px rgba(255,220,160,0.35); }
 .map-top.hall .map-total .star { color: #d9a441; }
@@ -4260,7 +4279,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .era-band.hall i { color: #b3a184; }
 .node-note.hall { border-color: rgba(244,232,207,0.6); background: rgba(26,15,7,0.94); color: #f4e8cf; }
 
-.map-top.dusk { --top-scrim: rgba(1,8,12,0.5); }
+.map-top.dusk { --top-scrim: rgba(1,8,12,0.86); --top-solid: #0a1f2a; }
 .map-top.dusk .map-kicker { color: #8fb4ab; }
 .map-top.dusk .map-total { color: #3ee6b0; text-shadow: 0 0 22px rgba(62,230,176,0.4); }
 .map-top.dusk .map-total .star { color: #3ee6b0; }
@@ -4375,7 +4394,7 @@ body.offstage #root { position: relative; z-index: 1; }
  * block's own floor: the arena's house light, the hardwood's boards, the hall's rafter spots, the
  * dusk sky. Darkened, because a sticky header has type on it and the trail runs under it.
  */
-.map-top.arena { --top-scrim: rgba(2,5,12,0.52); }
+.map-top.arena { --top-scrim: rgba(2,5,12,0.86); --top-solid: #0a0e17; }
 .map-top.arena .map-kicker { color: #93a0b4; }
 .map-top.arena .map-total { color: #ff8a4d; text-shadow: 0 0 22px rgba(255,116,52,0.35); }
 .map-top.arena .map-total i { color: #93a0b4; }
@@ -4383,7 +4402,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .map-top.arena .map-link.danger { color: #ff5d6c; }
 .map-top.arena .rule2 { background: linear-gradient(90deg, #ff7434, rgba(255,116,52,0.15) 60%, transparent); }
 
-.map-top.wood { --top-scrim: rgba(10,5,1,0.55); }
+.map-top.wood { --top-scrim: rgba(10,5,1,0.86); --top-solid: #261608; }
 .map-top.wood .map-kicker { color: #b39f83; }
 .map-top.wood .map-total { color: #f6eedd; text-shadow: 0 0 18px rgba(255,207,125,0.4); }
 .map-top.wood .map-total .star { color: #ffcf7d; }
