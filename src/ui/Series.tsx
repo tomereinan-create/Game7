@@ -287,6 +287,30 @@ export function Series({
   }
 
   const done = !live
+  /**
+   * HIS RULING: "Change photo 1 so it wont be all in the middle and having to scroll down."
+   *
+   * THE CAUSE, not the symptom: this screen never opted into `body.wide`, so on a 1900px desk it
+   * inherited `#root`'s 562px phone column and drew the whole night — verdict, rafters, filmstrip,
+   * both cards — down one narrow strip with the rest of the window black either side, and the foot
+   * of it below the fold. The draft, My team, the map and the staff tree all take this class; the
+   * result screen is the one that was left out. With it on, `.result` below lays the settled night
+   * across the window (see the stylesheet), and a screen that spends its width stops needing
+   * height.
+   *
+   * ONLY ONCE THE NIGHT HAS SETTLED. While Game 7 is on the tape this screen is a scorebug and a
+   * play-by-play feed, which he did not ask about and which reads as a broadcast precisely because
+   * it is a column; widening that would be redesigning something that was not ruled on.
+   *
+   * A LAYOUT effect for the reason the draft's own comment gives: leaving for the map is one
+   * commit, and a passive cleanup here would tear `wide` back off the body a beat AFTER the map
+   * had put it on.
+   */
+  useLayout(() => {
+    if (!done) return
+    document.body.classList.add('wide')
+    return () => document.body.classList.remove('wide')
+  }, [done])
   const box = useMemo(
     () => (done ? seriesBox(five, opponent.players, LINES, result.games, scoresOf(result, tape ? { us: tape.us, them: tape.them } : null), makeRng(seed ^ 0x2545f491), boxCtx ?? undefined) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -359,185 +383,224 @@ export function Series({
         </div>
       ) : null}
 
-      {done ? (
-        /* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */
-        <div className={`verdict final ${user ? 'um-on' : ''}`}>
-          <div className="v-kick">Series · best of seven</div>
-          <div className="v-row">
-            <span className="v-side you">{myAb}</span>
-            <h1 className={result.won ? 'w' : 'l'}>
-              <span className="u">{result.wins}</span>
-              <span className="d">–</span>
-              <span className="t">{result.losses}</span>
-            </h1>
-            <span className="v-side them">{opponent.ab ?? teamCode(opponent.team)}</span>
-          </div>
-          <p>{seriesNote(result.won, result.wins, result.losses)}</p>
-          {result.won && !exhibition ? (
-            <div className="stars">
-              {'★'.repeat(starsFor(result))}
-              <span>{'★'.repeat(3 - starsFor(result))}</span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      {/* USER MODE'S RAFTERS (the design bundle, screen 6). The verdict, the filmstrip and the
-          duels below are FACTS and the bundle leaves all three alone in both modes — what it adds
-          for user mode is the room they are read in: confetti over the boards, and the banner for
-          the level going up in the rafters behind them. Scout mode reads the verdict on black. */}
-      {done && user ? (
-        <div className="um-rafters" aria-hidden>
-          <span className="um-boards" />
-          {result.won ? (
-            <span className="um-banner">
-              <i>{opponent.round}</i>
-            </span>
-          ) : null}
-          {result.won
-            ? Array.from({ length: 14 }, (_, k) => (
-                <span
-                  key={k}
-                  className={`um-conf c${k % 4}`}
-                  style={{ left: `${(k * 7.3 + 4) % 96}%`, animationDelay: `${(k % 7) * 0.31}s`, animationDuration: `${2.2 + (k % 5) * 0.22}s` }}
-                />
-              ))
-            : null}
-        </div>
-      ) : null}
-      {done ? (
-        <div className="strip">
-          {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {
-            const won = result.games[k].won
-            const clinch = k === result.games.length - 1 && result.won
-            return (
-              <span className={`gt ${clinch ? 'clinch' : won ? 'w' : 'l'}`} key={k}>
-                <i>G{k + 1}</i>
-                <b>
-                  {s.us}
-                  <em>–</em>
-                  {s.them}
-                </b>
-              </span>
-            )
-          })}
-        </div>
-      ) : null}
-
-      {done && box ? (
-        <div className="card">
-          <div className="card-head">
-            <span className="label">Where it was won</span>
-            <span className="cap">per game · {result.games.length} played</span>
-          </div>
-          <div className="duels">
-            {(() => {
-              const scores = scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)
-              const us = scores.reduce((a, s) => a + s.us, 0) / scores.length
-              const them = scores.reduce((a, s) => a + s.them, 0) / scores.length
-              return <Duel label="Points" a={us} b={them} aText={f1(us)} bText={f1(them)} />
-            })()}
-            <Duel label="FG%" a={box.us.fgm / box.us.fga} b={box.them.fgm / box.them.fga} aText={pc(box.us.fgm, box.us.fga)} bText={pc(box.them.fgm, box.them.fga)} />
-            <Duel label="3P%" a={box.us.tpm / Math.max(1, box.us.tpa)} b={box.them.tpm / Math.max(1, box.them.tpa)} aText={pc(box.us.tpm, box.us.tpa)} bText={pc(box.them.tpm, box.them.tpa)} />
-            <Duel label="Rebounds" a={box.us.reb} b={box.them.reb} aText={f1(box.us.reb)} bText={f1(box.them.reb)} />
-            <Duel label="Turnovers" a={box.us.tov} b={box.them.tov} aText={f1(box.us.tov)} bText={f1(box.them.tov)} lowerBetter />
-          </div>
-        </div>
-      ) : null}
-
-      {done && box ? (
-        (() => {
-          const star = [...box.usLines].sort((a, b) => b.pts - a.pts)[0]
-          const answer = [...box.themLines].sort((a, b) => b.pts - a.pts)[0]
-          return (
-            <div className="card night">
-              <div className="card-head">
-                <span className="label">The night belonged to</span>
-              </div>
-              <div className="night-row">
-                <b className="you">{short(star.name)}</b>
-                <span>
-                  {f1(star.pts)} PTS · {pc(star.fgm, star.fga)} FG · {f1(star.reb)} REB
-                </span>
-              </div>
-              <div className="night-row small">
-                <b className="them">{short(answer.name)}</b>
-                <span>{f1(answer.pts)} PTS · their best answer</span>
-              </div>
-              <button className="linkb" style={{ paddingTop: 12 }} onClick={() => setBoxOpen((v) => !v)}>
-                {boxOpen ? 'Fold the box scores ↑' : 'Full box scores →'}
-              </button>
-            </div>
-          )
-        })()
-      ) : null}
-
-      {done && boxOpen ? (
-        <div className="card gcard">
-          {shown.map((g) => (
-            <div className="gline" key={g.game}>
-              <span className="g">G{g.game}</span>
-              <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
-              <span className="sc">
-                {g.us}–{g.them}
-              </span>
-            </div>
-          ))}
-          {decider && tape ? (
-            <div className="gline">
-              <span className="g">G7</span>
-              <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
-              <span className="sc">
-                {tape.us}–{tape.them}
-              </span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
       {/*
-        E1 (2026-09-09): this door was NOT gated. User mode says "Play blind. No ratings, no
-        verdict." and the draft screen keeps that promise everywhere — the court tags, both teams'
-        dials, the Matchup panel, the spread and the odds are all behind `!user`. Then the series
-        settled and this button opened the whole engine anyway: the spread, the per-game and
-        per-series odds, the talent/fit/modifier decomposition, both defensive reads. One link
-        undid the mode. The other rating surfaces on this screen were already gated; this was the
-        hole.
+        THE NIGHT, LAID ACROSS THE WINDOW (his ruling: "Change photo 1 so it wont be all in the
+        middle and having to scroll down.").
+
+        Both halves of that sentence are one problem. Everything a settled series has to say was
+        stacked down a single 562px column with the rest of a 1900px desk black either side, and the
+        foot of the stack — the two cards, and after them the dock — was below the fold. So the
+        blocks are grouped by WHAT THEY ARE and the stylesheet stands the groups side by side:
+
+          .res-lead   the score, the rafters and the filmstrip — the things you read IN ORDER
+          .res-won    WHERE IT WAS WON — a self-contained card
+          .res-night  THE NIGHT BELONGED TO — a self-contained card
+          .res-more   the box scores, opened on request, which want the whole width when they come
+
+        BELOW 900px THESE GROUPS DO NOT EXIST: every one of them is `display: contents` on a phone,
+        so the DOM order below IS the phone's order, unchanged to the pixel — a phone has no width
+        to spend and the order was already right. The grouping only bites on a desk.
       */}
-      {done && !user ? (
-        <button className="linkb" onClick={() => setAnalysis(true)}>
-          Full analysis →
-        </button>
-      ) : null}
-      {done && boxOpen ? (
-        <div className="card">
-          <div className="card-head">
-            <span className="label">Series stats</span>
-          </div>
-          <div className="sstats">
-            <div className="sh">
-              <span className="you">{teamName}</span>
-              <span />
-              <span className="them">{opponent.team}</span>
-            </div>
-            {seriesStats(mine, theirs, result, tape ? { us: tape.us, them: tape.them } : null, box!, user).map((row) => (
-              <div className={`sr ${row.head ? 'head' : ''}`} key={row.label}>
-                <span className={`you ${row.lead > 0 ? 'lead' : ''}`}>{row.a}</span>
-                <span className="rl">{row.label}</span>
-                <span className={`them ${row.lead < 0 ? 'lead' : ''}`}>{row.b}</span>
+      {done ? (
+        <div className="result">
+          <div className="res-lead">
+            {/* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */}
+            <div className={`verdict final ${user ? 'um-on' : ''}`}>
+              <div className="v-kick">Series · best of seven</div>
+              <div className="v-row">
+                <span className="v-side you">{myAb}</span>
+                <h1 className={result.won ? 'w' : 'l'}>
+                  <span className="u">{result.wins}</span>
+                  <span className="d">–</span>
+                  <span className="t">{result.losses}</span>
+                </h1>
+                <span className="v-side them">{opponent.ab ?? teamCode(opponent.team)}</span>
               </div>
-            ))}
+              <p>{seriesNote(result.won, result.wins, result.losses)}</p>
+              {result.won && !exhibition ? (
+                <div className="stars">
+                  {'★'.repeat(starsFor(result))}
+                  <span>{'★'.repeat(3 - starsFor(result))}</span>
+                </div>
+              ) : null}
+            </div>
+
+            {/* USER MODE'S RAFTERS (the design bundle, screen 6). The verdict, the filmstrip and the
+                duels below are FACTS and the bundle leaves all three alone in both modes — what it adds
+                for user mode is the room they are read in: confetti over the boards, and the banner for
+                the level going up in the rafters behind them. Scout mode reads the verdict on black.
+                It stays directly under the score, in the same group, because the band is the ROOM the
+                score was read in: its boards and its confetti are absolutely positioned inside it, so
+                it carries its own frame wherever the group is put. */}
+            {user ? (
+              <div className="um-rafters" aria-hidden>
+                <span className="um-boards" />
+                {result.won ? (
+                  <span className="um-banner">
+                    <i>{opponent.round}</i>
+                  </span>
+                ) : null}
+                {result.won
+                  ? Array.from({ length: 14 }, (_, k) => (
+                      <span
+                        key={k}
+                        className={`um-conf c${k % 4}`}
+                        style={{ left: `${(k * 7.3 + 4) % 96}%`, animationDelay: `${(k % 7) * 0.31}s`, animationDuration: `${2.2 + (k % 5) * 0.22}s` }}
+                      />
+                    ))
+                  : null}
+              </div>
+            ) : null}
+
+            {/* The filmstrip is a ROW of game chips and must never break mid-series, so it stays in
+                the lead group whatever the width: one track, one line, G1 to G7 in order. */}
+            <div className="strip">
+              {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {
+                const won = result.games[k].won
+                const clinch = k === result.games.length - 1 && result.won
+                return (
+                  <span className={`gt ${clinch ? 'clinch' : won ? 'w' : 'l'}`} key={k}>
+                    <i>G{k + 1}</i>
+                    <b>
+                      {s.us}
+                      <em>–</em>
+                      {s.them}
+                    </b>
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+
+          {box ? (
+            <div className="res-won">
+              <div className="card">
+                <div className="card-head">
+                  <span className="label">Where it was won</span>
+                  <span className="cap">per game · {result.games.length} played</span>
+                </div>
+                <div className="duels">
+                  {(() => {
+                    const scores = scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)
+                    const us = scores.reduce((a, s) => a + s.us, 0) / scores.length
+                    const them = scores.reduce((a, s) => a + s.them, 0) / scores.length
+                    return <Duel label="Points" a={us} b={them} aText={f1(us)} bText={f1(them)} />
+                  })()}
+                  <Duel label="FG%" a={box.us.fgm / box.us.fga} b={box.them.fgm / box.them.fga} aText={pc(box.us.fgm, box.us.fga)} bText={pc(box.them.fgm, box.them.fga)} />
+                  <Duel label="3P%" a={box.us.tpm / Math.max(1, box.us.tpa)} b={box.them.tpm / Math.max(1, box.them.tpa)} aText={pc(box.us.tpm, box.us.tpa)} bText={pc(box.them.tpm, box.them.tpa)} />
+                  <Duel label="Rebounds" a={box.us.reb} b={box.them.reb} aText={f1(box.us.reb)} bText={f1(box.them.reb)} />
+                  <Duel label="Turnovers" a={box.us.tov} b={box.them.tov} aText={f1(box.us.tov)} bText={f1(box.them.tov)} lowerBetter />
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {box
+            ? (() => {
+                const star = [...box.usLines].sort((a, b) => b.pts - a.pts)[0]
+                const answer = [...box.themLines].sort((a, b) => b.pts - a.pts)[0]
+                return (
+                  <div className="res-night">
+                    <div className="card night">
+                      <div className="card-head">
+                        <span className="label">The night belonged to</span>
+                      </div>
+                      <div className="night-row">
+                        <b className="you">{short(star.name)}</b>
+                        <span>
+                          {f1(star.pts)} PTS · {pc(star.fgm, star.fga)} FG · {f1(star.reb)} REB
+                        </span>
+                      </div>
+                      <div className="night-row small">
+                        <b className="them">{short(answer.name)}</b>
+                        <span>{f1(answer.pts)} PTS · their best answer</span>
+                      </div>
+                      <button className="linkb" style={{ paddingTop: 12 }} onClick={() => setBoxOpen((v) => !v)}>
+                        {boxOpen ? 'Fold the box scores ↑' : 'Full box scores →'}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })()
+            : null}
+
+          {/* WHAT HE ASKED FOR, WHEN HE ASKS FOR IT. The box scores and the analysis door are the
+              only things on this screen that are opened rather than read, so they take the full
+              width UNDER the three groups above and never push the result off the fold. */}
+          <div className="res-more">
+            {boxOpen ? (
+              <div className="card gcard">
+                {shown.map((g) => (
+                  <div className="gline" key={g.game}>
+                    <span className="g">G{g.game}</span>
+                    <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
+                    <span className="sc">
+                      {g.us}–{g.them}
+                    </span>
+                  </div>
+                ))}
+                {decider && tape ? (
+                  <div className="gline">
+                    <span className="g">G7</span>
+                    <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
+                    <span className="sc">
+                      {tape.us}–{tape.them}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {/*
+              E1 (2026-09-09): this door was NOT gated. User mode says "Play blind. No ratings, no
+              verdict." and the draft screen keeps that promise everywhere — the court tags, both teams'
+              dials, the Matchup panel, the spread and the odds are all behind `!user`. Then the series
+              settled and this button opened the whole engine anyway: the spread, the per-game and
+              per-series odds, the talent/fit/modifier decomposition, both defensive reads. One link
+              undid the mode. The other rating surfaces on this screen were already gated; this was the
+              hole.
+            */}
+            {!user ? (
+              <button className="linkb" onClick={() => setAnalysis(true)}>
+                Full analysis →
+              </button>
+            ) : null}
+
+            {boxOpen ? (
+              <div className="card">
+                <div className="card-head">
+                  <span className="label">Series stats</span>
+                </div>
+                <div className="sstats">
+                  <div className="sh">
+                    <span className="you">{teamName}</span>
+                    <span />
+                    <span className="them">{opponent.team}</span>
+                  </div>
+                  {seriesStats(mine, theirs, result, tape ? { us: tape.us, them: tape.them } : null, box!, user).map((row) => (
+                    <div className={`sr ${row.head ? 'head' : ''}`} key={row.label}>
+                      <span className={`you ${row.lead > 0 ? 'lead' : ''}`}>{row.a}</span>
+                      <span className="rl">{row.label}</span>
+                      <span className={`them ${row.lead < 0 ? 'lead' : ''}`}>{row.b}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {boxOpen && box ? (
+              <>
+                <PlayerLines title={teamName} tone="you" lines={box.usLines} />
+                <PlayerLines title={opponent.team} tone="them" lines={box.themLines} />
+              </>
+            ) : null}
           </div>
         </div>
       ) : null}
 
-      {done && boxOpen && box ? (
-        <>
-          <PlayerLines title={teamName} tone="you" lines={box.usLines} />
-          <PlayerLines title={opponent.team} tone="them" lines={box.themLines} />
-        </>
-      ) : null}
+      {/* The full-analysis sheet is `position: fixed; inset: 0` and belongs to no group; it stands
+          outside the result grid so it is never sized by a grid track. */}
+      {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
 
       {/* The three-door dock used to bolt an empty 64px div under the page, because the page's
           bottom padding was written for a ONE-ROW dock and this one is two. It does not any more:
