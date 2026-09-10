@@ -6109,8 +6109,50 @@ body.map #root { padding-bottom: var(--foot); }
    `min-height: 0` IS LOAD-BEARING: without it the court panel cannot shrink, its container-type
    measures a collapsed box, and the floor renders at nothing. */
 .fd-band { flex: 1; min-height: 0; display: flex; align-items: stretch; }
+/**
+ * THE PANEL IS THE COURT. There is no room around the floor any more, because there is no floor
+ * inside a room any more — they are one box.
+ *
+ * HIS RULING, verbatim: "Photo number 3, We have 2 squares, just make the court bigger to fit the
+ * outer square, and add 7 to the basketball".
+ *
+ * THE TWO SQUARES, and where the second one came from. The panel used to be the whole band — full
+ * width, a rule along the top and another along the bottom — with the court sitting inside it at
+ * `min(100cqw, 100cqh * 29/20)`. Whenever HEIGHT was the binding term the court came out narrower
+ * than the panel and the difference showed as a band of bare ground either side of the sidelines:
+ * 13px each side at 375, 82px at 1280x720, 115px at 1920. Add the panel's own vertical inset (32px
+ * at 375, top and bottom) and what he was looking at was a rectangle drawn inside a rectangle.
+ *
+ * TWO WAYS TO CLOSE IT, and only one of them is honest:
+ *   (a) THE PANEL CARRIES THE COURT'S ASPECT, so its box IS the court's box and the gap cannot
+ *       exist by construction. TAKEN.
+ *   (b) let the court fill the panel's width and take whatever aspect that leaves. REJECTED: 29:20
+ *       is his own ruling ("make the court bigger and wider") and every one of the six marks' y
+ *       coordinates is calibrated against it, so (b) silently moves all six.
+ *
+ * WHAT (a) COSTS, said out loud rather than left to be re-found:
+ *   · THE PADDING GOES. It held the jersey's shoulders out top and the corner plates out the sides.
+ *     The floor is wider by the whole of it now (375 instead of 349 on a phone), and that alone
+ *     carries the shoulders back inside the top line — the highest of the six clears it by 5px at
+ *     375. The corner plates needed one more thing; see the note on `.fd-label`.
+ *   · THE PANEL'S OWN TWO RULES GO with it. They were the outer square. The court's border is the
+ *     line now — top and both sidelines, and no baseline, which is what a half court seen from
+ *     above actually has.
+ *   · THE WIDTH THE FLOOR NO LONGER SPENDS ON GROUND GOES TO THE READ, which is why `.fd-read`
+ *     stopped being a fixed column below. Nothing else in the band can take it: a capped read would
+ *     leave the leftover as black, and a panel allowed to grow past its aspect is the gap again.
+ *   · ON A PHONE THE SURPLUS HEIGHT ALL GOES TO THE READ TOO. It used to be split half to the room
+ *     and half to the read; the room cannot hold height any more without re-opening the gap above
+ *     and below the floor, which is the same complaint.
+ *
+ * `flex: 0 1 auto` RATHER THAN `0 0 auto`: on a short, narrow desk (900x600, the first width at
+ * which this is a row at all) height x 29/20 plus the read's own minimum is wider than the window,
+ * and the panel has to be allowed to give. When it does, the court's `min()` below letterboxes
+ * exactly as it used to — the gap comes back in the one case where the alternative is a screen
+ * wider than the window.
+ */
 .fd-panel {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   min-width: 0;
   position: relative;
   /* the panel is a SIZE container so the court can fit itself to what the panel leaves in BOTH
@@ -6119,16 +6161,15 @@ body.map #root { padding-bottom: var(--foot); }
      about eight per cent on any wide, short window, because every cqw on the floor would be
      measuring the panel. */
   container-type: size;
+  /* THE COURT'S OWN SHAPE, on the panel. The band stretches the panel to its full height and this
+     is what turns that height into the width the floor needs — so `100cqw` and `100cqh * 29/20`
+     below are the same number and the court fills its container to the pixel. */
+  aspect-ratio: 29 / 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* the vertical inset also holds the shoulders of the jersey out top, which stands ABOVE its mark
-     and clears the top edge of the floor by a measured three pixels at 375; the horizontal one
-     absorbs the corner plates, which overhang the sidelines by construction at 8.5% and 91.5% */
-  padding: clamp(14px, 2.2vh, 26px) clamp(13px, 1.8vw, 24px);
+  padding: 0;
   background: var(--fd-ground);
-  border-top: 1px solid var(--divider);
-  border-bottom: 1px solid var(--divider);
   overflow: hidden;
 }
 /* THE ARENA'S LIGHT, and it is the light source every shadow on this screen is aimed away from:
@@ -6154,6 +6195,13 @@ body.map #root { padding-bottom: var(--foot); }
  * SOLID (there is no chalk left to draw dashed) and the floor fits itself to the panel in one
  * expression instead of a hand-computed height budget times 1.45 — the 29/20 is written where it
  * belongs now.
+ *
+ * THE `min()` NOW RESOLVES TO 100cqw AT EVERY ORDINARY WIDTH, because the panel above carries the
+ * same 29:20 and the two terms are equal — his ruling "just make the court bigger to fit the outer
+ * square". It is kept rather than replaced by a flat `100%` for one reason: it is the SAFETY. On a
+ * window too short and narrow for the panel to hold its aspect the panel gives, and this expression
+ * is what stops the floor from spilling out of it — the floor letterboxes, exactly as it always
+ * did, in the one case where the alternative is a court wider than the screen.
  */
 .fd-court {
   position: relative;
@@ -6347,16 +6395,38 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-no {
   display: flex;
   align-items: center;
-  padding: clamp(2px, 0.3cqw, 4px) clamp(6px, 0.9cqw, 11px) 0;
+  /* the horizontal FLOOR is 4px and not 6 — see the note on `.fd-label`'s, which is the same note */
+  padding: clamp(2px, 0.3cqw, 4px) clamp(4px, 0.9cqw, 11px) 0;
   background: var(--fd-shirt);
   font: 400 clamp(10px, 1.9cqw, 19px) / 1 var(--serif);
   color: var(--fd-shirt-ink);
 }
 .fd-marks.litflip .fd-mark.on .fd-no { background: var(--you-ink); color: var(--fd-shirt); }
+/**
+ * THE HORIZONTAL PADDING FLOORS CAME DOWN — 9px to 6 here and 6px to 4 on the tag, the design's own
+ * 3:2 ratio kept — AND IT IS HIS RULING OF 2026-09-10 THAT DID IT: "just make the court bigger to
+ * fit the outer square".
+ *
+ * The corner plates used to hang PAST the sideline and land on the ground either side of the floor,
+ * which was the panel's job ("a plate in a corner can run a little past the sideline onto the panel
+ * rather than losing its last letters to it"). His ruling takes that ground away — the floor is the
+ * panel now — so a plate that runs past the sideline runs off the SCREEN, and at 375 the widest of
+ * the six, VS FRIEND, ran two pixels past it.
+ *
+ * A corner mark stands at 8.5% of the floor, so half a plate may be no wider than that: 31.9px on a
+ * 375 floor. The plate is only at these floors on a phone, and at the floor "VS FRIEND" is 33px of
+ * type inside 36px of padding — the padding was the thing that did not fit, not the name. At 6/4 it
+ * measures 30.9 and the whole of it stands on the floor.
+ *
+ * MEASURED, VS FRIEND'S OWN CLEARANCE FROM THE SIDELINE: 2.7px inside at 375, 1.4px at 360, and
+ * 2.0px OUTSIDE at 320 — the one width where this still does not close. 8.5% of a 320 floor is 27px
+ * and the name alone is 33, so the type would have to go under its own legibility floor to fit.
+ * Flagged rather than solved: the six coordinates are his and are not mine to move.
+ */
 .fd-label {
   display: flex;
   align-items: center;
-  padding: clamp(3px, 0.4cqw, 5px) clamp(9px, 1.3cqw, 16px) clamp(2px, 0.25cqw, 3px);
+  padding: clamp(3px, 0.4cqw, 5px) clamp(6px, 1.3cqw, 16px) clamp(2px, 0.25cqw, 3px);
   font: 400 clamp(11px, 2.6cqw, 26px) / 1 var(--serif);
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -6610,9 +6680,11 @@ body.map #root { padding-bottom: var(--foot); }
   background: var(--fd-smudge);
   opacity: 0.72;
 }
-/* THE BALL IS THE HOUSE'S OWN LEATHER, with its 7 dropped — `Ball` is handed the same clamp the rig
-   measures in, and `plain` takes the numeral off, which is what lets this one TURN: the header's
-   mark must stay upright, and a ball with nothing written on it has nothing to keep upright.
+/* THE BALL IS THE HOUSE'S OWN LEATHER, 7 AND ALL — his ruling: "add 7 to the basketball". `Ball` is
+   handed the same clamp the rig measures in and nothing else; the `plain` prop that used to take
+   the numeral off is deleted, this having been its only caller. The 7 turns with the seams, which
+   is the one place this ball differs from the header's mark and is what a numeral painted on a real
+   ball does.
    IT SITS ON THE FLOOR RATHER THAN IN A HAND. The rig point is the ground contact, so the margin
    below carries the ball a full diameter up off it and then sinks it back a hair into its own
    smudge, which is what seats it. `.fd-lift`, which used to carry it a man's hand-height up and
@@ -6644,8 +6716,14 @@ body.map #root { padding-bottom: var(--foot); }
    the root is `overflow: hidden`, so a pane that overflowed would otherwise have its CTA clipped
    with no scrollbar and no symptom in a screenshot. */
 .fd-read {
-  flex: 0 0 clamp(300px, 27%, 420px);
-  min-width: 0;
+  /* THE READ TAKES WHAT THE FLOOR NO LONGER SPENDS ON GROUND. It was a fixed column,
+     `clamp(300px, 27%, 420px)`; under his ruling "make the court bigger to fit the outer square"
+     the panel's width is derived from its height, so the leftover has to land somewhere and this is
+     the only thing in the band that can hold it. A capped read would leave it as a black strip,
+     which is a worse version of the band he is complaining about. 300px is the floor the clamp
+     already had, and it is what makes the panel give rather than the copy. */
+  flex: 1 1 auto;
+  min-width: min(300px, 100%);
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -6827,14 +6905,14 @@ body.map #root { padding-bottom: var(--foot); }
     overflow: visible;
   }
   .fd-band { flex-direction: column; }
-  /* THE SPARE HEIGHT IS SPLIT BETWEEN THE ROOM AND THE READ, and neither can have all of it. On a
-     phone the floor is WIDTH-bound — 349px of court inside a 375px screen — so a tall handset has
-     height it cannot spend on the drawing, and wherever that surplus lands it lands as black. All
-     of it under the read is a hole below the button; all of it in the panel is a hole above and
-     below the floor. Half each reads as arena air over the court and a column of quiet under the
-     copy, which is what the design does with the room it has. `flex-grow` without `flex-shrink`:
-     on a short handset neither may be squeezed under what it is drawing. */
-  .fd-panel { flex: 1 0 auto; container-type: inline-size; }
+  /* THE SPARE HEIGHT ALL GOES TO THE READ NOW. It used to be split half and half — "half each reads
+     as arena air over the court and a column of quiet under the copy" — and his ruling of
+     2026-09-10 ends that: the half that landed in the panel WAS the air above and below the floor,
+     which is the top and bottom of the outer square he is asking the court to fill. The panel is
+     the court on a phone as well, so it takes exactly the height its width earns it (375 x 20/29 =
+     259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
+     any. The read grows instead, and on a phone this band scrolls anyway. */
+  .fd-panel { flex: none; container-type: inline-size; }
   .fd-court { width: 100%; }
   .fd-read {
     flex: 1 0 auto;

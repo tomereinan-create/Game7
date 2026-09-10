@@ -502,8 +502,9 @@ export function FrontDoor({
       {/* ---------- the identity row ---------- */}
       <div className="fd-id">
         {/* the mark is handed a CSS length rather than a number, his ruling "same for the logo", so
-            mark and wordmark grow with the window together. `plain` drops the 7: this ball is the
-            header's and keeps it — see the court ball below for the one that does not. */}
+            mark and wordmark grow with the window together. It carries the 7, and since his ruling
+            of 2026-09-10 so does the ball on the floor below — there is no ball in this app without
+            one any more. */}
         <Ball size="clamp(34px, calc(var(--fd-u) * 2.6), 68px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
@@ -793,18 +794,21 @@ function Jersey({ no }: { no: string }) {
  *                    needs somebody to lob it. Its hand-height rig (--p-fh / --p-th, the ball
  *                    leaving a near man's hand further up the screen than a far man's) went with it.
  *
- * THE DRAWING IS UNCHANGED. This is the house `Ball` — the same leather the header's mark is drawn
- * in — with its 7 dropped, because at fourteen pixels a numeral is mud and because this ball TURNS,
- * which the mark must never do. The 7 is also what makes the turn honest rather than decorative:
- * with nothing written on it there is nothing that has to stay upright, so the seams can say the
- * thing is rolling.
+ * THE 7 IS ON IT — his ruling, verbatim: "Photo number 3, We have 2 squares, just make the court
+ * bigger to fit the outer square, and add 7 to the basketball". This is the house `Ball`, whole:
+ * the same leather and the same numeral the header's mark is drawn in. The argument for taking the
+ * 7 off was that at fourteen pixels a numeral is mud and that a ball with nothing written on it has
+ * nothing to keep upright; the SAME ruling widens this floor from 349px to the full 375, which
+ * carries the ball to 22px at the reference width, and he has ruled on the second half himself. So
+ * the 7 turns with the ball, which is what a 7 painted on a real ball does. `Ball`'s `plain` prop
+ * is deleted rather than left unused — this was its only caller.
  */
 function FrontDoorAir({ pass }: { pass: { from: number; id: number } | null }) {
   return (
     <span className="fd-air" aria-hidden>
       <span key={pass ? pass.id : 'rest'} className={`fd-ball-rig ${pass ? 'go' : ''}`}>
         <span className="fd-cast" />
-        <Ball className="fd-ball" size="var(--fd-ball-d)" plain />
+        <Ball className="fd-ball" size="var(--fd-ball-d)" />
       </span>
     </span>
   )
