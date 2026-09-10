@@ -103,7 +103,8 @@ html {
 #root {
   max-width: 390px;
   margin: 0 auto;
-  padding: 14px 14px calc(120px + var(--foot));
+  /* the dock's own height, the phone's home indicator, and 42px of daylight between the two */
+  padding: 14px 14px calc(var(--dock) + var(--foot) + 42px);
 }
 
 button {
@@ -199,6 +200,59 @@ button {
   margin-left: 7px;
   color: var(--you);
   letter-spacing: 0.1em;
+}
+/* THE OPPONENT'S RECORD is the same furniture on the other card, and deliberately NOT the same
+   colour: `var(--you)` is the accent that means YOUR side all over this app, and painting the team
+   you are playing against in it says the wrong thing. It keeps the label's own grey. */
+.card-head .label .orec {
+  font-style: normal;
+  margin-left: 7px;
+  letter-spacing: 0.1em;
+}
+/* A NAME HE TYPED CANNOT PUSH THE PAGE SIDEWAYS (E3a). The team name is a city plus a nickname he
+   writes himself, so there is no length to design for: "Dnipropetrovsk Wanderers" is 24 characters
+   and it ran 108px past the right edge of its own card on a desk, dragging a horizontal scrollbar
+   onto the whole page and folding "0 OF 5" onto a second line. Two separate things did it — the
+   label is a flex item that will not shrink below its content, and above 900px it is explicitly
+   `white-space: nowrap` so it cannot wrap either.
+
+   The head becomes a proper two-part line instead: the label takes whatever room is left over
+   (`flex: 1 1 0`, and `min-width: 0` so it may go narrower than the words inside it), the NAME is
+   the only part that gives — one line, cut with an ellipsis — and the record beside it never
+   shrinks, because a half-printed record is worse than a shortened name. The count and the
+   opponent's `Season lines` sit at their natural width and stay on the first line.
+
+   The second selector is the franchise that has not played yet: it has no `.rec` to hang the rule
+   on, and a 24-character name overflows just as far without one. */
+.card-head .label:has(.rec, .orec),
+.card-head .label:has(.tname) {
+  display: flex;
+  align-items: baseline;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.card-head .label .tname {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-head .label .rec,
+.card-head .label .orec {
+  flex: none;
+}
+/* THE OPPONENT'S HEAD IS THE OTHER CASE, and it does not get cut. Nothing in it was typed by
+   anybody: LEVEL 13 OPPONENT · 42–40 is two short facts the app wrote itself, and at 900px the
+   three columns leave this card about 175px of room — not enough for both side by side however the
+   line is measured. Shortening a fixed string is how you get "L…", which names nothing. So the two
+   facts STACK instead: the label keeps its content width (`flex: 1 1 auto`), which sends `Season
+   lines` to the head's second row and gives the label the card's full width, and the label wraps
+   inside itself so the record drops under the level rather than shoving it off the card. Both read
+   in full at every width; above about 1024px they share one line exactly as they always have. */
+.draft .col.a .card-head .label {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
 }
 
 .section-rule {
@@ -728,6 +782,12 @@ button {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--faint);
+  /* 0 OF 5 IS NEVER THE THING THAT MOVES (E3a). It shares a flex head with a team name he typed,
+     and above 900px that head is allowed to wrap — so a long name pushed the count down onto a
+     second line and made the card's head two rows deep. It is six characters; it does not shrink
+     and it does not break. The name gives instead. */
+  flex: none;
+  white-space: nowrap;
 }
 .count.on {
   color: var(--you);
@@ -758,6 +818,18 @@ button {
    window without one of its readers being rewritten. The inset earns its keep on its own — it is
    what holds the dock clear of a phone's home indicator. */
 :root { --foot: env(safe-area-inset-bottom, 0px); }
+/* HOW TALL THE DOCK IS, IN ONE PLACE (E9). Four bottom paddings used to write it down by hand as
+   120px — the height of a ONE-ROW dock on a phone, measured once and never again — and every dock
+   that is not one row had to bolt a spacer under the page to make up the difference. So the
+   three-door result screen carried a `.dock-extra`, and the docks nobody thought of (a sheet's own,
+   a two-row inner) simply covered the last card on the page.
+
+   This token is the fallback: 78px is a 52px button in 12px/14px padding, which is what a one-row
+   dock measures, and 126px is the same sum at desk scale (a 78px button in 18px/30px). App.tsx
+   measures the dock that is ACTUALLY standing on every render and overwrites this on the root, so
+   the number here is only what the page uses before a dock exists — or on a screen that has none.
+   NOTHING may hard-code a dock height again: read var(--dock). */
+:root { --dock: 78px; }
 
 .dock {
   position: fixed;
@@ -791,11 +863,6 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-}
-/* The page's bottom padding is cut for a one-row dock; the taller one brings its own floor so the
-   last card is not read from under the gradient. */
-.dock-extra {
-  height: 64px;
 }
 /* THE ARCADE BUTTON — 2px border and a hard shadow under it rather than a soft one, and a press
    that actually travels: the button falls the height of its own shadow and lands flat. No
@@ -1294,9 +1361,18 @@ button {
    between. The card's head, team, season line and column rule stay put; only the list moves, in a
    box measured each render to stop above the dock. The fade is the affordance, and it clears when
    the list is at its end. Mid-swap the wheel takes the third box outright, so the roster reads at
-   a full column's width instead of growing down the narrowest one. */
+   a full column's width instead of growing down the narrowest one.
+
+   AND WHEN THE LIST ENDS, THE PAGE TAKES OVER (E10a). This box used to carry
+   `overscroll-behavior: contain`, which stops the scroll dead AT ITS OWN EDGE. Wherever the box is
+   really a scroller — Draft.tsx and MyTeam.tsx switch `overflow-y` to `auto` in a layout effect and
+   then cap the height, which is every width from 900px up — the roster is most of its column, so a
+   scroll that starts on it and carries on past the last man moves nothing at all: the page behind
+   is pinned and the screen reads as frozen. Containment is for a box you can reach AROUND; this
+   one fills the column it is in. Without it the chain is the browser's default again — the list
+   runs to its end and then the page carries on from there, which is one continuous gesture. */
 .spin-wrap { position: relative; }
-.spin-roster { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.spin-roster { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .spin-wrap::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--surface));
@@ -1570,7 +1646,8 @@ button {
   background: var(--bg);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 14px 14px calc(120px + env(safe-area-inset-bottom));
+  /* a sheet stands its own dock, so it keeps the same floor the page does */
+  padding: 14px 14px calc(var(--dock) + var(--foot) + 42px);
 }
 .sheet > * {
   max-width: 347px;
@@ -1777,11 +1854,16 @@ button {
   .dock-inner {
     max-width: 562px;
   }
+  /* the desk's dock is a 78px button in 18px/30px of padding — 126px — and the daylight above it
+     grows with everything else on this screen, from 42px to 54px */
+  :root {
+    --dock: 126px;
+  }
   #root {
-    padding: 21px 21px 180px;
+    padding: 21px 21px calc(var(--dock) + var(--foot) + 54px);
   }
   .sheet {
-    padding: 21px 21px 180px;
+    padding: 21px 21px calc(var(--dock) + var(--foot) + 54px);
   }
   .topbar {
     font-size: 15px;
@@ -1923,7 +2005,13 @@ button {
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
   .draft .col.c { order: 3; }
-  .draft .col > :first-child { margin-top: 18px; }
+  /* The column's first CARD clears the section's top rule. A full-screen sheet is not a card and
+     is not in the column's flow at all — it is `position: fixed; inset: 0`, and a margin on a box
+     pinned top AND bottom does not move it, it SHRINKS it: 18px off a sheet already sized to the
+     window is 18px of its own content it now has to scroll to. Full Analysis is the first child of
+     this column, so it was the one that got it, and a second scrollbar beside the page's was what
+     he saw. Every other first child still gets its 18. */
+  .draft .col > :first-child:not(.sheet) { margin-top: 18px; }
   .rowhead.db.x,
   .row.db.x {
     grid-template-columns: minmax(0, 1fr) 160px 66px;
@@ -2045,9 +2133,6 @@ button {
     height: 78px;
     font-size: 19px;
     border-radius: 9px;
-  }
-  .dock-extra {
-    height: 96px;
   }
   .hero h1 {
     font-size: 99px;
@@ -2981,6 +3066,15 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
    back to the map must not float over it: a press there would leave the level with the sheet still
    standing. Home stays, because going home from anywhere is the same thing wherever you are. */
 body:has(.sheet) .map-fab { display: none; }
+/* ONE SCROLLER AT A TIME (E10b). A sheet is `position: fixed; inset: 0` with its own
+   `overflow-y: auto` — it covers the page but does not replace it, so while it stands there are two
+   scrollable things stacked: the sheet in front and the whole draft behind it. On a desk that draws
+   two scrollbars side by side, and Full Analysis was the screen he saw it on. Worse on a phone: a
+   drag that starts past the sheet's own content, or a wheel over its edge, moves the page you can't
+   see, and closing the sheet drops you somewhere you never scrolled to. The page is frozen for as
+   long as a sheet is up. `overflow: hidden` only takes the SCROLLING away — the page keeps its
+   height and its scrollTop, so closing the sheet puts him back on the row he opened it from. */
+body:has(.sheet) { overflow: hidden; }
 .topbar { padding-right: 44px; }
 @media (min-width: 900px) {
   .home-fab, .map-fab { top: 14px; width: 52px; height: 52px; }
@@ -3712,10 +3806,6 @@ body.offstage #root { position: relative; z-index: 1; }
 /* recal_64: the gauge's basis, visible wherever the percentile dials show */
 .gauge-basis { display: block; width: 100%; text-align: center; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-top: 1px; }
 .node-dials { flex-wrap: wrap; }
-
-.freshness-probe-64410 {
-  color: #123456;
-}
 
 /* ==========================================================================
    THE CAMPAIGN MAP'S TWO SKINS — his ruling on the Campaign Map canvas:
@@ -6458,8 +6548,9 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 
 /* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
-   just empty space." The page keeps 120px clear at its foot for the dock the play screens stand
-   on; the map has no dock, so on the map that room is dead floor under the bottom era's rule.
+   just empty space." The page keeps `var(--dock)` plus its daylight clear at its foot for the dock
+   the play screens stand on; the map has no dock, so on the map that room is dead floor under the
+   bottom era's rule.
    The crawl's band has gone the same way (2026-09-08: "Delete everything below the league 2026 in
    both modes"), and --foot is only the phone's inset now — so era I's rule is the last thing on
    the page, and this line survives to keep the map clear of a home indicator. */

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { WHEEL, type TeamSeason } from './Draft'
 import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
+import { teamCode } from '../engine/names'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
@@ -11,6 +12,7 @@ import { MatchupPanel } from './MatchupPanel'
 import { Series } from './Series'
 import { CardName } from './CardSheet'
 import { DetailGrid } from './Stat'
+import { useUserMode } from '../state/viewmode'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const fold = (s: string) =>
@@ -25,6 +27,7 @@ const fold = (s: string) =>
  * The same man may not appear twice, in either five, in any season.
  */
 export function Custom({ onHome }: { onHome: () => void }) {
+  const user = useUserMode()
   const [side, setSide] = useState<0 | 1>(0)
   const [teams, setTeams] = useState<[string[], string[]]>([[], []])
   const [names, setNames] = useState<[string, string]>(['Team A', 'Team B'])
@@ -43,6 +46,16 @@ export function Custom({ onHome }: { onHome: () => void }) {
       setLoadFlip(false)
     }
   }
+
+  /**
+   * THE TWO SIDES' SCORE-BUG CODES (E3b). `Team A` and `Team B` differ only in their last word, and
+   * every code rule that leads with the city — which is the rule, because a scoreboard names the
+   * city — returns TEA for both of them. So the sandbox's own default names carry their own codes,
+   * A and B, the way the hot seat carries P1 and P2. The moment a side is renamed, by hand or by
+   * loading a real team into it, the name he gave it is what gets read.
+   */
+  const DEFAULT_NAMES: [string, string] = ['Team A', 'Team B']
+  const code = (i: 0 | 1) => (names[i] === DEFAULT_NAMES[i] ? (i ? 'B' : 'A') : teamCode(names[i]))
 
   const five = (i: 0 | 1) => teams[i].map((n) => BY_NAME.get(n)!).filter(Boolean)
   const A = five(0)
@@ -80,7 +93,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
   }
 
   if (result) {
-    const opponent = { round: 1, team: names[1], players: B, positions: [] as string[] }
+    const opponent = { round: 1, team: names[1], ab: code(1), players: B, positions: [] as string[] }
     return (
       <Series
         opponent={opponent}
@@ -88,6 +101,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
         mine={compile(A, B)}
         theirs={compile(B, A)}
         teamName={names[0]}
+        teamAb={code(0)}
         result={result.r}
         seed={result.seed}
         exhibition
@@ -163,7 +177,14 @@ export function Custom({ onHome }: { onHome: () => void }) {
         {roster(1)}
       </div>
 
-      {ready ? <MatchupPanel mine={A} theirs={B} myName={names[0]} theirName={names[1]} assignment="optimal" /> : null}
+      {/* USER MODE PLAYS BLIND HERE TOO. The Matchup panel is the engine's read of the two fives —
+          who guards whom, what each pairing is worth, the edge — and his standing ruling is that
+          user mode has no doors to any of that. The panel was mounted with no gate at all, and the
+          CUSTOM mark on the front door is not gated either, so this was a route straight from a
+          user-mode home screen to a full ratings read (the ruling as it is written at ChalkHome:
+          "four rooms of engine ratings, which user mode has no doors to by his standing ruling").
+          Scout mode is untouched. */}
+      {ready && !user ? <MatchupPanel mine={A} theirs={B} myName={names[0]} theirName={names[1]} assignment="optimal" /> : null}
 
       <div className="card">
         <div className="card-head">

@@ -152,6 +152,46 @@ export default function App() {
     return () => document.body.classList.remove('um')
   }, [userMode])
 
+  /**
+   * THE DOCK MEASURES ITSELF (E9). Nearly every screen ends in a dock fixed to the foot of the
+   * window, and the page under it has to keep exactly that much floor clear or its last card is
+   * read from under the gradient. That height was written down by hand in four bottom paddings —
+   * 120px on a phone, 180 on a desk — and it was the height of a ONE-ROW dock. Every dock that is
+   * not one row was covering content: the three-door result screen (two rows of buttons), which
+   * bolted an empty spacer div under the page to make up the difference, and the two-button inner
+   * that several screens stand on. A number copied into four stylesheet rules cannot follow the
+   * shape of a button bar that changes per screen.
+   *
+   * So it is measured. The TALLEST dock standing — a sheet can carry its own on top of the page's —
+   * goes to `--dock` on the root, and every bottom padding is `calc(var(--dock) + ...)`. No deps:
+   * this runs after every render, which is every time a screen swaps, and a ResizeObserver on each
+   * dock catches the shapes that change WITHOUT one (the draft's dock button growing to two rows
+   * mid-spin). The write is synchronous in the effect body, so the padding is right in the same
+   * frame the dock appears; the cleanup drops the token so the CSS fallback takes over again.
+   *
+   * ResizeObserver is guarded: it is everywhere this app ships, but a static render in a test has
+   * no window at all, and one missing constructor must not take the whole app down.
+   */
+  useEffect(() => {
+    const root = document.documentElement
+    const write = () => {
+      let tall = 0
+      for (const d of document.querySelectorAll<HTMLElement>('.dock')) tall = Math.max(tall, d.getBoundingClientRect().height)
+      // a screen with no dock at all (the map, the front door) hands the token back to the
+      // stylesheet rather than collapsing the page's floor to nothing
+      if (tall > 0) root.style.setProperty('--dock', `${Math.round(tall)}px`)
+      else root.style.removeProperty('--dock')
+    }
+    write()
+    const RO = typeof ResizeObserver === 'function' ? ResizeObserver : null
+    const ro = RO ? new RO(write) : null
+    if (ro) for (const d of document.querySelectorAll<HTMLElement>('.dock')) ro.observe(d)
+    return () => {
+      ro?.disconnect()
+      root.style.removeProperty('--dock')
+    }
+  })
+
   const cm: CampaignMode | null = mode !== null && (MODES as string[]).includes(mode) ? (mode as CampaignMode) : null
   /**
    * A SCREEN THAT STANDS ON NO BLOCK (his ruling: "No more yellow and black. Anywhere black and

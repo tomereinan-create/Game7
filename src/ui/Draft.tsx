@@ -3,6 +3,7 @@ import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, SIGMA } from '../config'
 import { archetype, PLAYERS } from '../engine/pool'
+import { teamCode } from '../engine/names'
 import { useLayout } from './useLayout'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
@@ -213,9 +214,12 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
  * confirm in the dock. The spin's decelerating shuffle is the app's one
  * motion besides the Game 7 ticker.
  */
-/** The scorebug name: the last word of the team, the way Series.tsx sets one. */
-const bugName = (n: string) => (n.trim().split(' ').pop() ?? n).toUpperCase()
 // E16: a MAN's short name is not the same rule as a TEAM's — a man can carry a suffix. See names.ts.
+// E3b: and a TEAM's short name is not the last word of it. This screen and the series screen each
+// kept a private `bugName`/`bug` that upper-cased the final word, so the franchise he named put its
+// NICKNAME on the bug — Salt Lake City Sevens read SEVENS — and every team anyone ever names in
+// Boston read the same as every other. `teamCode` is the one rule, in names.ts, and it reads the
+// city: SLC. Written `ab`s still win wherever the wheel has one.
 /** Whether this machine has asked for less motion. Read at press time, not cached. */
 const reduceMotion = () => {
   try {
@@ -489,6 +493,15 @@ export function Draft({
   const plan = called ? gateTactics(called, playbookRank(wallet)) : null
   /** The plan is CALLABLE here when this screen owns the room for it and the node has opened one. */
   const canCallPlan = !!onTactics && !!called && playbookRank(wallet) >= 1
+  /**
+   * AND A STYLE IS A RANK-2 CALL. `gateTactics` forces `style: 'balanced'` below rank 2, so at rank
+   * 0 and rank 1 there is no style on this five and no way to pick one — the Playbook button either
+   * is not drawn at all or opens a sheet with no style control in it. The Style fits line under the
+   * odds priced all four of them anyway, and then closed by naming a room to go and call it in.
+   * That is a rating for a decision he cannot make, which is the thing his standing ruling takes
+   * off a screen. It is read where it can be acted on and nowhere else.
+   */
+  const canCallStyle = playbookRank(wallet) >= 2
   /** Something has actually been called — the door says so, the way the board's does. */
   const planCalled = !!plan && JSON.stringify(plan) !== JSON.stringify(gateTactics(DEFAULT_TACTICS, playbookRank(wallet)))
   /** What the plan is worth on this five against THIS opponent, for the sheet's head. */
@@ -1322,8 +1335,13 @@ export function Draft({
           collapse he never wanted was a lid on an always-open box. */}
       <div className="card" style={{ paddingBottom: 6 }}>
         <div className="card-head">
+          {/* THE SAME TWO-PART HEAD AS YOUR OWN CARD (E3a): the name is the part that gives, the
+              record beside it never does. `orec` and not `rec` because `rec` is painted in
+              `var(--you)` — the accent that means YOUR side everywhere in this app — and the team
+              you are playing does not get to wear it. */}
           <span className="label">
-            Level {opponent.round} opponent{opponent.record ?? opponent.tag ? ` · ${opponent.record ?? opponent.tag}` : ''}
+            <span className="tname">Level {opponent.round} opponent</span>
+            {opponent.record ?? opponent.tag ? <i className="orec">· {opponent.record ?? opponent.tag}</i> : null}
           </span>
           <span className="cap">Season lines</span>
         </div>
@@ -1718,7 +1736,7 @@ export function Draft({
                   minus sign is exactly the reading he made. Naming the side turns it into the line
                   a book would post — SLC −6.8 — which can only be read one way. His ruling: keep
                   the convention, label it properly. */}
-              <i>Spread · {chance.spread >= 0 ? bugName(teamName) : (opponent.ab ?? bugName(opponent.team))}</i>
+              <i>Spread · {chance.spread >= 0 ? teamCode(teamName) : (opponent.ab ?? teamCode(opponent.team))}</i>
             </div>
             <div>
               <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
@@ -1756,7 +1774,7 @@ export function Draft({
               {pc.lvl !== 0 ? ` · the night runs ${pc.lvl > 0 ? 'fast (variance shrinks)' : 'slow (variance grows)'}` : ''}
             </div>
           ) : null}
-          {plan && five.length === DRAFT_SIZE && !user ? (
+          {plan && five.length === DRAFT_SIZE && !user && canCallStyle ? (
             <div className="seriesnow-note">
               {/* the full fits, opponent included — the scheme's matchup delta prices HERE */}
               Style fits vs {opponent.team}:{' '}
@@ -1779,8 +1797,12 @@ export function Draft({
               YOUR FIVE, which is the one thing on this screen you can already see; the franchise
               you named and what it has done in this campaign are not written anywhere else on it.
               The record is this save's own — each of the three modes keeps its own ledger. */}
+          {/* THE NAME IS A SPAN OF ITS OWN (E3a) because it is the only part of this head that may
+              be shortened. It is a city and a nickname he typed, so it has no length to design for;
+              it takes one line and is cut with an ellipsis when the card is narrower than the words
+              are. The record and the 0 OF 5 beside it are never cut. */}
           <span className="label">
-            {teamName}
+            <span className="tname">{teamName}</span>
             {record ? <i className="rec">{record}</i> : null}
           </span>
           <span className={`count ${five.length ? 'on' : ''}`}>
@@ -1842,8 +1864,8 @@ export function Draft({
         {full ? (
           <TipOff
             bug={bug}
-            us={bugName(teamName)}
-            them={opponent.ab ?? bugName(opponent.team)}
+            us={teamCode(teamName)}
+            them={opponent.ab ?? teamCode(opponent.team)}
             usName={teamName}
             themName={opponent.team}
             step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
