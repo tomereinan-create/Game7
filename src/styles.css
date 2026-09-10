@@ -3149,7 +3149,12 @@ body:has(.sheet) { overflow: hidden; }
 .pname b.cardname:focus-visible { outline: 1px solid var(--you); outline-offset: 2px; }
 
 /* one screen, no scrolling — and no stretching either: the card is as wide as it needs to be */
-.sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 0; overflow: hidden; padding: 0 13px calc(10px + env(safe-area-inset-bottom)); }
+/* H1: `overflow: hidden` moved off .sheetcard and onto the PLAYER CARD, which is the one that
+   actually wants "one screen, no scrolling". Left here it clipped the 60-achievement list — which
+   is taller than the viewport — with no scroll affordance, the moment the trophy case became a
+   real .sheet. */
+.sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 0; padding: 0 13px calc(10px + env(safe-area-inset-bottom)); }
+.sheetcard.pc-term { overflow: hidden; }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 
 /* ---- my team: the durability badge (death match) ---- */

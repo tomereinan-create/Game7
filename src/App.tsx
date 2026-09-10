@@ -420,6 +420,14 @@ export default function App() {
     setPickTeam(false)
     setStaff(false)
     setMyTeam(false)
+    // H1: the four overlay flags were NOT cleared here, so an overlay opened from the front door
+    // survived the walk home and could still be mounted over a campaign screen. Defence in depth —
+    // the trophy case is a real .sheet now and freezes the page behind it — but the database is
+    // deliberately in-flow (see the note at .tdb-sheet), so nothing else stops that one.
+    setRoster(false)
+    setArchs(false)
+    setAch(false)
+    setTeamDb(false)
   }
 
   // The roster is an overlay, not a screen: leaving the draft to look something

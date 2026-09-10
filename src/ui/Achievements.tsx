@@ -35,8 +35,19 @@ function Row({ a, got }: { a: AchDef; got: { date: string; campaign: string } | 
 export function Achievements({ onBack }: { onBack: () => void }) {
   const s = achState()
   const done = Object.keys(s.unlocked).length
+  /**
+   * H1 (2026-09-10): this was `sheetcard` alone, and that is the whole of the "page drawn twice"
+   * bug. `.sheetcard` carries no `position` and no `background`, so the trophy case rendered as an
+   * IN-FLOW block with the home board still mounted and scrollable underneath it — and because no
+   * `.sheet` element existed, `body:has(.sheet){overflow:hidden}` never fired, so that board stayed
+   * live and hit-testable. Scroll past the trophies, press CAMPAIGN on the home board that should
+   * not have been there, and two entirely different screens end up mounted at once: the trophy
+   * case filling the viewport and the campaign screen 4,800px below the fold, with the campaign's
+   * FIXED dock painted across the bottom of the viewport acting on a screen you cannot see.
+   * That is the second header, the mid-air CTA and the clicks landing on stale layout.
+   */
   return (
-    <div className="sheetcard">
+    <div className="sheet sheetcard">
       <div className="topbar">
         <span>Achievements</span>
         <button onClick={onBack}>← Back</button>
