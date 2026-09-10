@@ -1,6 +1,6 @@
 import { type CampaignMode, type Progress } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
-import { ChalkHome } from './ChalkHome'
+import { FrontDoor } from './FrontDoor'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
@@ -23,9 +23,9 @@ export interface Era {
  * inside a week, and the thing that must NOT drift is the very thing both doors now share.
  *
  * So `UserHome` — the hero, the mode question, tonight's slate of cards, the 150 rungs printed
- * across the campaign card, the three side tiles — is deleted, and both modes render `ChalkHome`.
+ * across the campaign card, the three side tiles — is deleted, and both modes render `FrontDoor`.
  * The mode is read HERE, once, and handed down as a prop, so the whole difference between the two
- * doors is one boolean and the three places ChalkHome spends it:
+ * doors is one boolean and the three places FrontDoor spends it:
  *   · WHICH CHIP IS LIT, USER or SCOUT. A user who cannot get back to scout mode is stuck.
  *   · WHETHER THE BOOK IS ALONG THE FOOT. Database, Archetypes, Teams and Trophies show engine
  *     ratings, and user mode has no doors to them by his standing ruling, so user mode's slate
@@ -36,5 +36,5 @@ export interface Era {
  * drawing rendered twice, which is what keeps scout's board and user's board the same board.
  */
 export function Home(props: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
-  return <ChalkHome user={useUserMode()} {...props} />
+  return <FrontDoor user={useUserMode()} {...props} />
 }
