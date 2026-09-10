@@ -5373,30 +5373,69 @@ body.um {
   }
 }
 
-.jf { position: relative; height: 176px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
+/* ==========================================================================
+   THE FLOOR AND THE BASKET COME BACK OUT FROM BEHIND THE FIVE
+   --------------------------------------------------------------------------
+   HIS RULING: "Photo #2 the fives are hiding the floor and the basket."
+
+   WHAT HE SAW, measured on the panel he photographed: the five cards were 112px of a 176px floor
+   on a phone (63.6% of it) and 134px of 230 on a desk (58.3%), and their hem sat 8px off the foot
+   of the panel — so there was no hardwood in FRONT of them at all and they read as a row of cards
+   laid on a dark band rather than five men standing on a court. The rig was crammed into the last
+   4px of the right edge at a third the size of the shirts, and the net hung down behind the fifth
+   card with a quarter of it covered.
+
+   THE COMPOSITION, not the content: the nameplates and the matchup captions are untouched — they
+   carry the board. What changes is size and placement, four moves:
+     1. THE FLOOR IS DEEPER. 176 -> 200 on a phone, 230 -> 264 on a desk. "Whether the floor needs
+        more visible depth above them" — it does; the boards are what make this a court and they
+        were the first thing eaten.
+     2. THE CARDS ARE SHORTER. The shirt box, the jersey and the plate's second line all come down,
+        so a card is 95px of 200 on a phone (47.5%) and 115px of 264 on a desk (43.6), where it was
+        63.6% and 58.3%.
+     3. THEY STAND FURTHER UP THE FLOOR. The row's hem lifts from 8px to 18 (phone) / 20 (desk), so
+        there is an apron of near hardwood in FRONT of the five and they stand on the court rather
+        than on the panel's bottom edge.
+     4. THE RIG IS BIGGER AND OFF THE EDGE. The rim goes 56x8 -> 70x10 on a phone and 92x12 ->
+        112x14 on a desk, the net and the board with it, and the whole thing insets from 4px to
+        12/16px off the right so the stanchion is not shaved by the panel. It is tuned against the
+        net's FULLY SWISHED extent (the swish scales it to 1.5x, which is what used to reach under
+        the fifth card): board, rim and net are 100% visible in both modes at 375, 900, 1280, 1440
+        and 1920, where the net was 63-79%.
+   AND THE SHOT IS RE-AIMED. `--rim-x` / `--rim-y` are the ball's landing point; a rim that has
+   moved and grown needs them or the 7 drops through empty air beside the net. Measured paused at
+   88% of the flight: ball centre and rim centre agree to the pixel at both scales.
+   ========================================================================== */
+.jf { position: relative; height: 200px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
 /* The boards, raked back under the eye. left/right run past the box so the vanishing edges are
    never in shot, and the origin is the FOOT of the panel so the near boards stay the widest. */
 .jf-floor {
   position: absolute;
   left: -30%;
   right: -30%;
-  top: -170px;
+  /* The boards run to the panel's own top edge — that edge IS the far baseline. The rake is fixed,
+     so the deeper panel this ruling gives the floor needs a taller board before the projection
+     reaches the top again: at -170 a 200px panel left a 39px dead strip above the wood. */
+  top: -225px;
   bottom: 0;
   transform: perspective(700px) rotateX(52deg);
   transform-origin: bottom center;
   background: repeating-linear-gradient(90deg, #b5793d 0 22px, #a96f36 22px 44px);
 }
 .jf-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(255, 225, 180, 0.3), transparent 62%); }
-.jf-rig { position: absolute; top: 14px; right: 4px; width: 84px; height: 96px; z-index: 3; }
-.jf-post { position: absolute; right: 0; top: 0; width: 10px; height: 38px; background: linear-gradient(90deg, #6e655c, #241f1a); }
-.jf-board { position: absolute; right: 10px; top: 0; width: 18px; height: 30px; border: 2px solid var(--um-cream); border-right: 0; background: rgba(235, 242, 255, 0.1); }
-.jf-rim { position: absolute; right: 22px; top: 10px; width: 56px; height: 8px; border: 3px solid #e2571f; border-radius: 50%; }
+.jf-rig { position: absolute; top: 6px; right: 12px; width: 108px; height: 120px; z-index: 3; }
+.jf-post { position: absolute; right: 0; top: 0; width: 13px; height: 50px; background: linear-gradient(90deg, #6e655c, #241f1a); }
+/* THE BACKBOARD TAKES ITS CREAM IN BOTH MODES. `--um-cream` is only declared under `body.um`, so
+   in scout mode this border fell back to currentColor and the board was a grey ghost on a dark
+   panel — half of "the basket" he says is hidden, hidden by a token rather than by a card. */
+.jf-board { position: absolute; right: 13px; top: 0; width: 21px; height: 34px; border: 2px solid var(--um-cream, #f6f4ef); border-right: 0; background: rgba(235, 242, 255, 0.1); }
+.jf-rim { position: absolute; right: 26px; top: 16px; width: 70px; height: 10px; border: 3px solid #e2571f; border-radius: 50%; }
 .jf-net {
   position: absolute;
-  right: 30px;
-  top: 15px;
-  width: 44px;
-  height: 32px;
+  right: 34px;
+  top: 24px;
+  width: 56px;
+  height: 36px;
   clip-path: polygon(0 0, 100% 0, 78% 100%, 22% 100%);
   background-image:
     repeating-linear-gradient(96deg, rgba(246, 244, 239, 0.9) 0 2px, transparent 2px 8px),
@@ -5409,7 +5448,8 @@ body.um {
   50% { transform: scaleY(1.5) skewX(3deg); }
 }
 
-.jf-row { position: absolute; left: 0; right: 0; bottom: 8px; z-index: 5; display: flex; justify-content: center; gap: 5px; padding: 0 10px; }
+/* `bottom` is the apron: the hardwood in FRONT of the five, which was 8px and read as nothing. */
+.jf-row { position: absolute; left: 0; right: 0; bottom: 18px; z-index: 5; display: flex; justify-content: center; gap: 5px; padding: 0 10px; }
 .jf-card {
   flex: 1 1 0;
   min-width: 0;
@@ -5424,13 +5464,13 @@ body.um {
 .jf-card:disabled { cursor: default; }
 .jf-card.open { opacity: 0.6; }
 .jf-head { display: flex; align-items: center; justify-content: flex-start; background: var(--um-inset); padding: 2px 4px 1px; }
-.jf-head i { font-family: var(--serif); font-style: normal; font-size: 12px; line-height: 1.1; background: var(--um-gold); color: #0b0a09; padding: 0 3px; }
-.jf-shirt { display: flex; align-items: center; justify-content: center; height: 58px; background: var(--um-inset); }
+.jf-head i { font-family: var(--serif); font-style: normal; font-size: 11px; line-height: 1.1; background: var(--um-gold); color: #0b0a09; padding: 0 3px; }
+.jf-shirt { display: flex; align-items: center; justify-content: center; height: 44px; background: var(--um-inset); }
 /* THE JERSEY — the bundle's own cut: shoulders, a V at the neck, the sleeves out and the hem
    straight. It is a clip-path so the shirt is one element and the number sits inside it. */
 .jf-jersey {
   width: 84%;
-  height: 52px;
+  height: 40px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -5442,11 +5482,11 @@ body.um {
   background: linear-gradient(var(--jp, #1c4c9e), var(--jd, #17408b));
   clip-path: polygon(22% 12%, 36% 2%, 44% 9%, 56% 9%, 64% 2%, 78% 12%, 100% 30%, 88% 46%, 88% 100%, 12% 100%, 12% 46%, 0% 30%);
 }
-.jf-jersey b { font-family: var(--serif); font-size: 24px; line-height: 0.8; font-weight: 400; color: var(--ji, #fff); text-shadow: 0 2px 0 var(--jd, #0d2a5e); }
+.jf-jersey b { font-family: var(--serif); font-size: 20px; line-height: 0.8; font-weight: 400; color: var(--ji, #fff); text-shadow: 0 2px 0 var(--jd, #0d2a5e); }
 .jf-card.open .jf-jersey { background: linear-gradient(#2a2622, #1d1916); }
 .jf-plate { display: block; background: var(--um-paper); color: var(--um-ink); padding: 3px 4px 4px; }
 .jf-plate b { display: block; font-family: var(--serif); font-size: 13px; line-height: 1; font-weight: 400; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
-.jf-plate i { display: block; font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.1; color: var(--jd, #17408b); white-space: nowrap; overflow: hidden; }
+.jf-plate i { display: block; font-family: var(--serif); font-style: normal; font-size: 12.5px; line-height: 1.1; color: var(--jd, #17408b); white-space: nowrap; overflow: hidden; }
 
 /* LEGS LEFT — five bars keyed to the shirts above them. */
 .um-legs { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -5457,20 +5497,20 @@ body.um {
 .um-leg em { position: absolute; left: 0; right: 0; bottom: 2px; font-family: var(--serif); font-style: normal; font-size: 11px; text-align: center; color: rgba(11, 10, 9, 0.75); }
 
 @media (min-width: 900px) {
-  .jf { height: 230px; }
-  .jf-floor { top: -230px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
-  .jf-rig { width: 150px; height: 190px; top: 10px; }
-  .jf-post { width: 15px; height: 58px; }
-  .jf-board { right: 15px; width: 26px; height: 46px; border-width: 3px; }
-  .jf-rim { right: 30px; top: 14px; width: 92px; height: 12px; border-width: 5px; }
-  .jf-net { right: 40px; top: 22px; width: 74px; height: 52px; }
-  .jf-row { gap: 8px; padding: 0 16px; }
+  .jf { height: 264px; }
+  .jf-floor { top: -292px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
+  .jf-rig { width: 200px; height: 210px; top: 6px; right: 16px; }
+  .jf-post { width: 18px; height: 78px; }
+  .jf-board { right: 18px; width: 30px; height: 54px; border-width: 3px; }
+  .jf-rim { right: 40px; top: 22px; width: 112px; height: 14px; border-width: 5px; }
+  .jf-net { right: 52px; top: 32px; width: 90px; height: 56px; }
+  .jf-row { gap: 8px; padding: 0 16px; bottom: 20px; }
   .jf-card { max-width: 168px; }
-  .jf-shirt { height: 74px; }
-  .jf-jersey { height: 66px; }
-  .jf-jersey b { font-size: 34px; }
+  .jf-shirt { height: 58px; }
+  .jf-jersey { height: 50px; }
+  .jf-jersey b { font-size: 30px; }
   .jf-plate b { font-size: 16px; }
-  .jf-plate i { font-size: 17px; }
+  .jf-plate i { font-size: 15px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -5901,7 +5941,7 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 
 /* THE SHOT. The landing point is the rim's own, stated as two variables on .jf so the desk's
    larger rig retunes the flight without a second set of keyframes. The ball never rotates. */
-.jf { --rim-x: 41px; --rim-y: 15px; --floor-y: 108px; }
+.jf { --rim-x: 60px; --rim-y: 11px; --floor-y: 126px; }
 .jf-shot { position: absolute; z-index: 6; animation: jfshoot 1.6s cubic-bezier(0.3, 0, 0.55, 1) forwards; }
 @keyframes jfshoot {
   0% { right: 86%; top: var(--floor-y); opacity: 0; }
@@ -5915,7 +5955,7 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   .jf-flash { display: none; }
 }
 @media (min-width: 900px) {
-  .jf { --rim-x: 67px; --rim-y: 17px; --floor-y: 152px; }
+  .jf { --rim-x: 99px; --rim-y: 17px; --floor-y: 180px; }
   .jf-crowd { height: 76px; }
   .jf-bug { gap: 10px; padding: 5px 12px; left: 14px; top: 10px; }
   .jf-bug b { font-size: 32px; }
