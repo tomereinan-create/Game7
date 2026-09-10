@@ -69,16 +69,37 @@ import type { Mode } from './Home'
  *     was giving every mark its height. Take it away and six tap targets fall to the height of one
  *     line of type." The jersey and the button's own min-height inherit that job; see the measured
  *     target recorded on `.fd-mark` in the stylesheet.
- *   · THE JERSEY NUMERAL 1-6 ON THE CHEST is drawn but hidden under a 460px court: on a phone the
- *     torso is nine pixels across and a numeral there is a smudge. The plate carries 01-06 either
- *     way, which is where the number is actually read.
+ *   · THE JERSEY NUMERAL 1-6 ON THE CHEST used to be drawn and then hidden under a 460px court,
+ *     because on a phone the torso it sat on was nine pixels across and a numeral there was a
+ *     smudge. THE TORSO IS THE WHOLE MARK NOW, so the numeral is 14px at 375 and it is shown at
+ *     every width. See `.fd-jnum`.
  *   · THE CHALK RUNNER. "Instead of a man running, with the ball, have a player on the field for
  *     each mode, and have them passing the ball. But please, make the animation good, 3d esque.
- *     This animation was disrespect." He is still deleted, and the six men who replaced him are
- *     still here — dressed in the mockup's kit rather than replaced by it. The mockup's figure is a
- *     shirt and nothing else: no head, no arms, no legs. A shirt cannot throw, and adopting it
- *     would delete the throw, the catch, the turn and the breath in favour of a flat 620ms tween —
- *     which is strictly less than the animation he already sent back once.
+ *     This animation was disrespect." He is deleted and so are the six men who replaced him; see
+ *     the tombstone on `Jersey` below for what those six did and on whose ruling it went.
+ *
+ * ==========================================================================================
+ * TOMBSTONE — THE SIX MEN, 2026-09-08 to 2026-09-10.
+ *
+ * HIS RULING, verbatim: "I want no players only jerseys, and the jerseys to have this orange
+ * collor(unless the user picked otherwise). I want the numbers to have the same color as well(as
+ * the jerseys)."
+ *
+ * IT REVERSES A DECISION HE TOOK THAT SAME MORNING — keep the man, dress him — and he took it
+ * knowingly, having seen the man on the floor. So the man goes, not the drawing of him softened.
+ *
+ * WHAT STOOD HERE AND IS GONE: a filled three-quarter figure — head, neck, near and far arms each
+ * an outer group carried to the shoulder with an inner group rotating about its own joint, near
+ * and far legs in thigh/shin/foot strokes, feet, and a torso in the kit with two shoulder caps and
+ * a hem inside its own geometry. With the arms went everything the arms did: THE THROW (a coil, a
+ * drive and a follow-through), THE CATCH (a rise to meet the ball and a give at the knees), THE
+ * TURN — six men facing whoever had the ball, mirrored with a squash-and-cut so nobody swept
+ * through a vertical line — and THE IDLE BREATH, six phases so they never pulsed together. With
+ * the turn went `faceX`/`faceOf` and the hold-facing state; with the throw went the hand-height
+ * rig, the arc and the wind-up. Everything above is in the file's history at c11b844.
+ *
+ * WHAT REPLACES IT is the mockup's own mark: a shirt and nothing else, standing on its plate.
+ * ==========================================================================================
  */
 
 /* The court's own aspect-ratio, off `.fd-court` in the stylesheet. Only the ARC and the FLIGHT
@@ -86,6 +107,20 @@ import type { Mode } from './Home'
    position is placed in the court's own units and needs no ratio at all. */
 const COURT_RATIO = 20 / 29
 const clamp = (lo: number, v: number, hi: number) => Math.min(hi, Math.max(lo, v))
+
+/**
+ * WCAG RELATIVE LUMINANCE AND THE RATIO BETWEEN TWO HEXES. Six lines, and they are here rather
+ * than imported because teamColors keeps its own copy private and this screen has exactly one
+ * question for it — see `litTag` below, where a picked kit that is itself near-black has to be
+ * caught before it is printed on a near-black tag. Both arguments are always #rrggbb: one is a
+ * literal in this file and the other is `Kit.primary`, which the colour input writes in that form.
+ */
+const relLum = (hex: string) =>
+  [1, 3, 5]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+    .reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0)
+const contrast = (a: string, b: string) => (Math.max(relLum(a), relLum(b)) + 0.05) / (Math.min(relLum(a), relLum(b)) + 0.05)
 
 /**
  * ONE OF THE SIX WAYS TO PLAY, as it stands on the floor and as it is read out on the right.
@@ -100,6 +135,14 @@ const clamp = (lo: number, v: number, hi: number) => Math.min(hi, Math.max(lo, v
  *
  * `cup` IS USER MODE'S ALONE and is `false` on every mark in scout mode. It is true on a ladder
  * with all 150 cleared.
+ *
+ * `side` IS BACK TO ITS ORIGINAL JOB and it is the only thing on this screen that still reads it.
+ * It was the step off the mark until his ruling put the jersey above the plate, and then it was the
+ * tiebreak that told two men who share x: 50% which shoulder to look over. There is nobody left to
+ * look: the turn died with the arms. What it does now is say WHICH SIDE OF THE SHIRT THE BALL RESTS
+ * ON — the mockup parks the ball beside the selected mark, and these six signs already point INWARD
+ * at every mark on an edge (custom at 8.5% takes +1, vs friend at 91.5% takes -1), which is what
+ * keeps the ball on the floor instead of off the side of it.
  */
 type Zone = {
   pick: Mode
@@ -116,22 +159,6 @@ type Zone = {
   meta: string
   cta: string
 }
-
-/**
- * WHICH WAY A MAN IS TURNED: at whoever has the ball. That is the whole rule, and it is what makes
- * six figures read as a team rather than as six cones — press a corner and the floor turns to look
- * at it. The man WITH the ball is the exception, since he cannot look at himself; he is handed
- * `hold`, which is the line the ball came in on.
- *
- * `side` NO LONGER PLACES ANYTHING — his ruling put the jersey above the plate, so nobody stands a
- * step off his mark any more — BUT IT IS STILL LOAD-BEARING, as the tiebreak here. The campaign and
- * the 1v1 bid share x: 50%, so a pass between them has dx = 0 and there is no sign to read; the
- * thousandth of a per cent below is what decides which shoulder each of them looks over, and it is
- * the same answer `side` gave when it was a real step. Delete it and two of the six freeze facing
- * the wrong way on the one pass that runs straight up the floor.
- */
-const faceX = (z: Zone) => parseFloat(z.x) + z.side * 0.001
-const faceOf = (z: Zone, holder: Zone, hold: 1 | -1): 1 | -1 => (z === holder ? hold : faceX(holder) >= faceX(z) ? 1 : -1)
 
 /**
  * HOW FAR DOWN THE FLOOR HE IS, AS A SIZE. The plan is read the way the drawing is drawn — the rim
@@ -300,97 +327,130 @@ export function FrontDoor({
   const z = zones[sel]
 
   /**
-   * THE PASS — his ruling: "have a player on the field for each mode, and have them passing the
-   * ball." Nobody moves off his mark. The only thing that travels is the ball, and the board only
-   * has to remember two things about it: WHO has it (that is `sel`, the pressed play, so the ball
-   * always sits with the mode the read is describing) and, while a throw is in the air, who threw
-   * it. That second one is `pass`, cleared the moment the catch is over so the ball is simply
-   * resting in the new man's hands with nothing animating.
+   * THE BALL, AND IT IS CARRIED NOW RATHER THAN THROWN — the second half of his ruling of
+   * 2026-09-10. There is nobody left on this floor to throw it: a shirt has no arms. But the ball
+   * KEEPS ITS PLACE and keeps its journey — the mockup draws it beside the selected mark, and it
+   * still has to get there when you press a play, or the mark you pressed and the ball would say
+   * two different things.
    *
-   * `id` counts the throws. It is the React key on the ball and on the two men involved, which is
-   * how a CSS animation is made to run again from the top: press a fourth mark while the third
-   * throw is still up and the key changes, those nodes are remade, and the new throw starts clean
-   * from wherever the ball happens to be — nothing is left half-swung.
+   * WHAT THE MOTION IS NOW, and it is the simplest honest reading of a floor with no hands on it:
+   * THE BALL ROLLS. It travels along the ground from the mark you left to the mark you pressed —
+   * a straight line on the floor, no arc, no hang, no lift — turning as it goes at the rate its own
+   * circumference says it should, and slowing into the arrival the way a rolled ball loses speed to
+   * friction. The mockup's own is a flat 620ms tween of left and top with a fixed 54px hop; a roll
+   * is that same flat travel with the one thing the drawing can honestly claim added back, which is
+   * that a ball crossing a floor is turning. See `.fd-roll` and `fd-spin` in the stylesheet, which
+   * share one easing curve on purpose: seams that turn faster or slower than the ground goes by are
+   * a ball skidding, and nothing here is skidding.
+   *
+   * The board remembers two things: WHO has it (that is `sel`, the pressed play, so the ball always
+   * rests beside the mode the read is describing) and, while it is travelling, where it set off
+   * from. That second one is `pass`, cleared the moment it arrives so the ball is simply at rest
+   * beside the new mark with nothing animating.
+   *
+   * `id` counts the trips. It is the React key on the ball, which is how a CSS animation is made to
+   * run again from the top: press a fourth mark while the third roll is still running and the key
+   * changes, the node is remade, and the new roll starts clean.
    */
   const [pass, setPass] = useState<{ from: number; id: number } | null>(null)
-  /**
-   * WHICH WAY THE MAN HOLDING THE BALL IS TURNED. Everyone else is turned toward him — that is
-   * `faceOf` above — but he cannot look at himself, so he keeps looking back down the line the ball
-   * came in on. On the first paint nobody has thrown yet, so the campaign's man is turned toward the
-   * middle of the floor, which is where a player with the ball looks.
-   */
-  const [holdFace, setHoldFace] = useState<1 | -1>(1)
   const passId = useRef(1)
   function press(i: number) {
     /* pressing the mark you are already on does nothing. THE MARK PRESS SELECTS AND READS; THE CTA
        IS THE ONLY THING THAT ENTERS A MODE. That two-step is the whole interaction model, and both
        boards agree on it. */
     if (i === sel) return
-    setHoldFace(faceX(zones[sel]) >= faceX(zones[i]) ? 1 : -1)
     setPass({ from: sel, id: passId.current++ })
     setSel(i)
   }
 
-  /* The flight, in numbers the stylesheet does the rest of the arithmetic on. Distance is measured
-     in ONE unit — a step across the floor — so a drop down it is converted by the court's ratio;
-     everything else is a function of that distance, because a long pass is thrown higher, is up
-     longer, and a short one has to be a zip rather than a lob. The step off the mark used to be
-     added here (GAP_CQW); his ruling put the man on his mark, so the marks' own x is the distance. */
-  const air = (() => {
+  /* The roll, in numbers the stylesheet does the rest of the arithmetic on. Distance is measured in
+     ONE unit — a step across the floor — so a drop down it is converted by the court's ratio.
+     THE ARC AND THE WIND-UP ARE GONE with the arms that made them: an arc is what a thrown ball
+     does and a wind-up is a thrower's anticipation, so the clock loses the fifth of itself that was
+     the coil and the ball simply sets off. What is left is a distance, a time and a turn. */
+  const roll = (() => {
     const a = zones[pass ? pass.from : sel]
     const b = zones[sel]
     const dx = parseFloat(b.x) - parseFloat(a.x)
     const dy = (parseFloat(b.y) - parseFloat(a.y)) * COURT_RATIO
     const dist = Math.hypot(dx, dy)
-    /* The apex, as a share of the floor's width. Held between 6 and 12 so the shortest throw still
-       leaves the floor and the longest does not sail off the top of the floor on a phone — the 1v1
-       bid stands 16% down the court and there is not much sky above him. */
-    const arc = clamp(6, dist * 0.16, 12)
-    /* Time in the air, and then the whole gesture. The wind-up is a fifth of the flight, which is
-       what makes 17% of the total the moment of release in every keyframe list in the stylesheet no
-       matter how far the ball is going. */
-    const fly = clamp(430, 300 + dist * 3.2, 660)
-    return { arc: +arc.toFixed(2), ms: Math.round(fly * 1.2), dir: dx >= 0 ? 1 : -1 }
+    /* Held between 430ms and 660: the shortest trip still reads as a journey and the longest never
+       becomes something you wait for. */
+    const ms = Math.round(clamp(430, 300 + dist * 3.2, 660))
+    /* HOW FAR IT TURNS IS NOT A TASTE, IT IS THE ARITHMETIC OF A ROLL. The ball is --fd-ball-d
+       across, which is 3.2% of the floor's width, so one full turn carries it pi * 3.2 = 10.05% of
+       the way across, and the trip is worth as many of those as it is long. Rolling to the right
+       turns clockwise, which is the sign.
+       IT IS ROUNDED TO THE WHOLE TURN, and that is not a fudge of the arithmetic — it is what makes
+       the arithmetic survive the end of the animation. When the trip is over the ball's node is
+       remade at rest with no transform on it, so a spin that finished on 269 degrees would SNAP
+       back to nought on the frame after it landed. On a whole turn the two are the same picture and
+       there is nothing to snap. The price is at most half a turn spread over four to six of them,
+       which is under eight per cent of the rate; the alternative is a visible jolt on every press.
+       Never less than one turn: the shortest trip on this floor is worth three and a half. */
+    const turns = Math.max(1, Math.round(dist / (Math.PI * 3.2)))
+    return { ms, spin: turns * 360 * (dx >= 0 ? 1 : -1) }
   })()
 
-  /* The throw is over when the catcher has finished absorbing it — the catch runs a third longer
-     than the flight, so it can still be giving with the ball after the ball has arrived. Then
-     `pass` is cleared and the ball is simply at rest in the new man's hands. Press again before
-     that and this timer is thrown away and a fresh one starts, which is what the cleanup is for. */
+  /* The trip is over when the ball arrives, and then `pass` is cleared. Nothing needs a hand-off:
+     the resting rule under the animation states the same transform its last keyframe does, so the
+     ball does not move on the frame the animation comes off. The sixty milliseconds are slack
+     against timer jitter, not a pause. Press again before that and this timer is thrown away and a
+     fresh one starts, which is what the cleanup is for. */
   useEffect(() => {
     if (!pass) return
-    const t = window.setTimeout(() => setPass(null), air.ms * 1.35)
+    const t = window.setTimeout(() => setPass(null), roll.ms + 60)
     return () => window.clearTimeout(t)
-  }, [pass, air.ms])
+  }, [pass, roll.ms])
 
   /**
-   * THE TURN NEEDS TWO VALUES, not one. A man is drawn facing right and turned round he is the same
-   * drawing mirrored — but a mirror animated straight through is a figure that becomes a VERTICAL
-   * LINE half way round, which is what a scaleX from 1 to -1 does and it looks like a paper doll on
-   * a spindle. The fix is the oldest one in hand-drawn animation: squash him toward the turn, CUT on
-   * the narrowest frame, and open him out the other way. The cut needs the face he had as well as
-   * the face he is taking, so the previous one is kept here and handed to the stylesheet as
-   * --face0; `prev` is written after the paint, so during a render it still holds the frame before.
-   */
-  const faces = zones.map((q) => faceOf(q, zones[sel], holdFace))
-  const prev = useRef(faces)
-  useEffect(() => {
-    prev.current = faces
-  })
-
-  /**
-   * THE KIT THE SELECTED MAN WEARS — his ruling: "Allow me to pick my team colors when starting a
-   * campaign", and the mockup dresses the pressed mark's shirt in the franchise's colour. `myColor`
-   * → `kitColor` already returns the triple this needs ({primary, accent, ink}) with `ink` flipped
-   * to near-black on a primary bright enough that cream would vanish on it. The mockup cycles five
-   * demo kits on a 2.6s timer because a mockup has no franchise; we have one, so there is no
-   * interval here and the read pane's rule stays --mine — navy is the design's STRUCTURAL blue (the
-   * number tags, the rule, the foot band) and the kit appears on the jersey alone.
+   * THE KIT ALL SIX JERSEYS WEAR — his ruling of 2026-09-10: "the jerseys to have this orange
+   * collor(unless the user picked otherwise)". "Otherwise" is the club he named, and that wiring
+   * was already here: `myColor` → `kitColor` returns the triple these three variables want
+   * ({primary, accent, ink}), with `ink` flipped to near-black on a primary bright enough that
+   * cream would vanish on it. Two things changed under this ruling and no more:
+   *   1. THE FALLBACK IS THE ORANGE, not the house navy. It is set on `.fd` in the stylesheet.
+   *   2. IT DRESSES ALL SIX, not the pressed one. It used to be an inline override on the selected
+   *      mark alone, five smoke-grey shirts around one coloured one, because that is how the mockup
+   *      says "this is the one you are on". His ruling wants every jersey the one colour, so the
+   *      three variables are set ONCE on the marks layer and the five bare shirts are gone.
+   *      SELECTION IS STILL SAID, by the plate: the mark you are on lights gold with a gold ring and
+   *      a halo, and the ball rests beside it. Nothing lost its only signal.
    *
    * The campaign is asked first and the other two ladders after it, because a player who named a
    * team in the salary cap and never opened the campaign still has a club.
    */
   const kit = myColor(progress.campaign.team) ?? myColor(progress.salary.team) ?? myColor(progress.death.team)
+  /**
+   * THE 01-06 TAG ON THE PLATE YOU ARE ON — his ruling: "I want the numbers to have the same color
+   * as well(as the jerseys)". Everywhere else the tag simply IS A LITTLE JERSEY: the shirt's colour
+   * behind the shirt's own ink, so a tag and the shirt standing over it are the same two colours.
+   * The lit plate is the one place that can fail, because it is GOLD, and there are two ways to put
+   * a tag on it. Both were measured on all twelve pickable kits and on the default orange:
+   *
+   *   A · THE LITTLE JERSEY, unchanged: a block of the shirt's colour laid on the gold. The NUMBER
+   *       is the shirt's own ink on the shirt's own colour, which `kitColor` already guarantees
+   *       reads — 5.2:1 at the worst kit. What can fail is the BLOCK'S OWN EDGE against the plate.
+   *   B · INVERTED: the near-black block the lit tag already had (9.3:1 on the gold, so the tag
+   *       always keeps its shape) with the SHIRT'S COLOUR printed on it. The tag still says the
+   *       shirt. What can fail here is the NUMBER, because half the pickable kits are near-black by
+   *       design and a near-black numeral on a near-black block is not a numeral.
+   *
+   * THE RULE IS: TAKE B ONLY WHEN A'S EDGE FAILS AND B'S NUMBER DOES NOT. A number you cannot read
+   * is worse than a block whose edge is soft, so legibility is the first clause and the edge is the
+   * second. 3:1 is the bar for a boundary that is not text, 4.5:1 for one that is.
+   *
+   * WHAT IT DECIDES, measured:
+   *   · the default ORANGE — the case his ruling is about — is 1.70:1 on the gold, no edge at all,
+   *     and 5.81:1 on the near-black. It INVERTS.
+   *   · the Orange kit (1.85 / 5.31) and the Gold kit (1.29 / 7.65) invert for the same reason.
+   *   · Forest, Crimson and Teal are mid-tones that fail A's edge narrowly (2.92 / 2.96 / 2.79) and
+   *     would only reach 3.3-3.5 inverted, so they KEEP A: the number stays at 5.2-5.6 and the soft
+   *     edge is accepted, because it is a boundary between two blocks and not a word.
+   *   · the other seven kits pass A's edge outright (5.1 to 9.6) and never come here.
+   */
+  const shirtNow = kit?.primary ?? '#de7326'
+  const litFlip = contrast(shirtNow, '#f0b323') < 3 && contrast(shirtNow, '#16130f') >= 4.5
   /* The badge is gated on the campaign's own team: it says what THIS franchise is called and where
      it stands on the ladder, and neither question has an answer before he has named one. With it
      null the identity row is the mockup's row minus the badge, which is a layout that has to work
@@ -504,11 +564,12 @@ export function FrontDoor({
       <div className="fd-band">
         <div className="fd-panel">
           <span className="fd-glow" aria-hidden />
-          {/* THE PASS IS HANDED TO THE STYLESHEET AS NUMBERS, not as pixels: the two ends of the
-              throw as the marks' own percentages, how far each man is down the floor (so the ball
-              shrinks as it goes away and grows as it comes back), the apex, the spin and how long
-              the whole gesture runs. They are set on the court because the ball's layer reads them
-              and the court is what both are measured against. */}
+          {/* THE ROLL IS HANDED TO THE STYLESHEET AS NUMBERS, not as pixels: the two ends of the
+              trip as the marks' own percentages, which shoulder of each mark the ball sits on, how
+              far each of them is down the floor (so the ball shrinks as it goes away and grows as
+              it comes back), how far it turns and how long it takes. They are set on the court
+              because the ball's layer reads them and the court is what both are measured against.
+              --parc IS GONE with the arms: an arc is what a THROWN ball does. */}
           <div
             className="fd-court"
             style={
@@ -516,12 +577,13 @@ export function FrontDoor({
                 '--pfx': parseFloat(zones[pass ? pass.from : sel].x),
                 '--pfy': parseFloat(zones[pass ? pass.from : sel].y),
                 '--pfd': depthOf(zones[pass ? pass.from : sel]),
+                '--pfs': zones[pass ? pass.from : sel].side,
                 '--ptx': parseFloat(z.x),
                 '--pty': parseFloat(z.y),
                 '--ptd': depthOf(z),
-                '--parc': air.arc,
-                '--pspin': air.dir * -320,
-                '--pdur': `${air.ms}ms`,
+                '--pts': z.side,
+                '--pspin': roll.spin,
+                '--pdur': `${roll.ms}ms`,
               } as CSSProperties
             }
           >
@@ -543,22 +605,12 @@ export function FrontDoor({
               <span className="fd-board" />
               <span className="fd-post" />
             </span>
-            {/* ONE GRADIENT FOR ALL SIX, defined once here rather than six times inside six SVGs,
-                which would be six copies of the same id in one document. It is in user space — the
-                figure's own 0..100 — so a leg and a torso that overlap take the SAME cream at the
-                same height and the join between them cannot be seen. DELETING THIS SVG SILENTLY
-                BLANKS ALL SIX MEN down to the flat fallback after each url(). */}
-            <svg className="fd-figdefs" aria-hidden focusable="false">
-              <defs>
-                <linearGradient id="fd-fig-ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100">
-                  {/* the stop colours are set in the stylesheet rather than here: a var() inside an
-                      SVG presentation attribute is not reliably substituted. */}
-                  <stop className="s0" offset="0" />
-                  <stop className="s1" offset="0.44" />
-                  <stop className="s2" offset="1" />
-                </linearGradient>
-              </defs>
-            </svg>
+            {/* TOMBSTONE. A LINEAR GRADIENT IN THE FIGURE'S OWN USER SPACE stood here, defined once
+                for all six rather than six times inside six SVGs. It was the cream a head, a neck,
+                four limbs and two feet were all painted in, at the same value at the same height, so
+                the joins between loose strokes could not be seen. There is no cream left on this
+                floor: his ruling of 2026-09-10 took the body away and the shirt it dressed is a
+                flat fill. It went with `.fd-figdefs`, `.fd-fig-g` and `FigureSvg`. */}
             {/**
              * THE SIX MARKS. The layer is z-index 3 and takes no pointer of its own, so it can hold
              * the six buttons in one stacking context and still let the ball pass over them: inside
@@ -569,8 +621,22 @@ export function FrontDoor({
              *
              * THE JERSEY STANDS ABOVE THE PLATE — his override #2 — and the plate is centred on
              * (x, y), which is what keeps his ruled positions meaning what they meant.
+             *
+             * THE KIT IS SET ONCE, HERE, AND DRESSES ALL SIX. It used to be an inline override on
+             * the selected mark alone; his ruling of 2026-09-10 wants every jersey the one colour,
+             * so it is hung on the layer that contains every shirt, every shirt numeral and every
+             * 01-06 tag, and nothing outside this layer reads it. With no club named the three
+             * variables are simply not written and the stylesheet's own values stand, which is the
+             * orange his ruling made the default.
              */}
-            <span className="fd-marks">
+            <span
+              className={`fd-marks${litFlip ? ' litflip' : ''}`}
+              style={
+                (kit
+                  ? { '--fd-shirt': kit.primary, '--fd-shirt-ink': kit.ink, '--fd-hem': kit.accent }
+                  : undefined) as CSSProperties | undefined
+              }
+            >
               {zones.map((s, i) => (
                 <button
                   key={s.pick}
@@ -581,16 +647,6 @@ export function FrontDoor({
                       top: s.y,
                       zIndex: Math.round(parseFloat(s.y)),
                       '--dep': depthOf(s),
-                      '--face': faces[i],
-                      '--face0': prev.current[i],
-                      '--i': i,
-                      ...(i === sel
-                        ? {
-                            '--fd-shirt': kit?.primary ?? 'var(--mine)',
-                            '--fd-shirt-ink': kit?.ink ?? '#fff',
-                            '--fd-hem': kit?.accent ?? 'var(--you)',
-                          }
-                        : null),
                     } as CSSProperties
                   }
                   onClick={() => press(i)}
@@ -615,13 +671,7 @@ export function FrontDoor({
                       <Trophy />
                     </span>
                   ) : null}
-                  <FrontDoorMan
-                    act={pass ? (i === pass.from ? 'throw' : i === sel ? 'catch' : '') : ''}
-                    face={faces[i]}
-                    spin={prev.current[i] !== faces[i]}
-                    jersey={s.jersey}
-                    passId={pass?.id}
-                  />
+                  <Jersey no={s.jersey} />
                   <span className="fd-plate">
                     <span className="fd-no">{s.no}</span>
                     <span className="fd-label">{s.label}</span>
@@ -686,87 +736,75 @@ export function FrontDoor({
 }
 
 /**
- * ONE MAN ON HIS MARK, and the whole of what he does survives his ruling's move above the plate.
+ * ONE JERSEY ON ITS MARK — his ruling of 2026-09-10, verbatim: "I want no players only jerseys, and
+ * the jerseys to have this orange collor(unless the user picked otherwise). I want the numbers to
+ * have the same color as well(as the jerseys)."
  *
- * FOUR NESTED SPANS BECAUSE AN ELEMENT CARRIES ONE TRANSFORM, and where he stands, how he breathes,
- * how he throws and which way he is turned are four different questions:
- *   · .fd-fig     WHERE. Absolutely placed off the MARK'S OWN CENTRE — bottom: 50% of a button that
- *                 is itself centred on (x, y) — so his feet land one lift above the mark whatever
- *                 height the plate turns out to be. That is what lets the ball's two ends be built
- *                 from the same expression in the stylesheet; a figure hung off the plate's height
- *                 could not be, because a plate's height is content and CSS cannot read it back.
- *   · .fd-p-idle  BREATHING. A slow lean and a rise off the heel, pivoting at the feet, every man on
- *                 his own period and his own phase so six of them never pulse together.
- *   · .fd-p-act   THROWING or CATCHING — the weight. A thrower sinks and coils back, drives through
- *                 and rides forward on the follow-through; a catcher rises to meet the ball, takes
- *                 it, and gives at the knees. This is the layer the runner did not have at all.
- *   · .fd-p-turn  FACING. He is drawn facing right; turned round he is the same drawing mirrored.
+ * FOUR FLAT SPANS AND NOT ONE NESTED TRANSFORM, WHICH IS THE WHOLE OF WHAT CHANGED. The man who
+ * stood here needed four wrappers because where he stood, how he breathed, how he threw and which
+ * way he was turned are four different questions and an element carries one transform. A shirt on a
+ * hook asks one question — where — so the wrappers went with the answers:
+ *   · .fd-p-idle  BREATHING. Gone. A shirt does not breathe; without shoulders under it the lean
+ *                 read as a flag, not a body.
+ *   · .fd-p-act   THROWING and CATCHING. Gone with the arms that did them.
+ *   · .fd-p-turn  FACING. Gone with the eyes. There is nothing in a front-on shirt to mirror, so
+ *                 the squash-and-cut that kept a turning man from sweeping through a vertical line
+ *                 has nothing left to protect, and `--face`/`--face0` are not written any more.
  *
- * The act wrapper is the only one keyed on the throw, so remaking it to restart its animation never
- * disturbs the breathing above it — the breath is on a different node and keeps its phase.
- *
- * THE JERSEY NUMERAL SITS OUTSIDE `.fd-p-turn` ON PURPOSE. Everything inside that span is mirrored,
- * which is right for a body and for the arms and WRONG for a glyph: a man facing left would wear a
- * backwards digit. Hung one level up it never mirrors, and it still throws and catches with him.
+ * WHAT SURVIVES, and it is what the mockup draws:
+ *   · .fd-fig       WHERE. Absolutely placed off the MARK'S OWN CENTRE — bottom: 50% of a button
+ *                   that is itself centred on (x, y) — so the shirt's foot lands one lift above the
+ *                   mark whatever height the plate turns out to be. That is what lets the ball's
+ *                   two ends be built from the same expression in the stylesheet; a figure hung off
+ *                   the plate's height could not be, because a plate's height is content and CSS
+ *                   cannot read it back. It also carries --dep, the floor's recession.
+ *   · .fd-p-shade   the contact smudge on the floor under it.
+ *   · .fd-kit       THE SHIRT. One span and a clip-path — the mockup's own polygon, shoulders with
+ *                   a neck notch, sleeves flaring out and a straight body — filled with --fd-shirt.
+ *   · .fd-jnum      THE NUMERAL, in --fd-shirt-ink, which his ruling keeps DARK on the orange so it
+ *                   can still be read. It never had to be counter-mirrored out of a turn again.
+ *   · .fd-hem       the trim band across the foot of the shirt.
  */
-function FrontDoorMan({
-  act,
-  face,
-  spin,
-  jersey,
-  passId,
-}: {
-  act: string
-  face: 1 | -1
-  spin: boolean
-  jersey: string
-  passId?: number
-}) {
+function Jersey({ no }: { no: string }) {
   return (
-    <span className={`fd-fig ${act}`} aria-hidden>
+    <span className="fd-fig" aria-hidden>
       <span className="fd-p-shade" />
-      <span className="fd-p-idle">
-        <span className="fd-p-act" key={act ? `t${passId}` : 'still'}>
-          {/* keyed on the FACE, so a man who turns is a new node and the cut runs from the top */}
-          <span className={`fd-p-turn${spin ? ' spin' : ''}`} key={`f${face}`}>
-            <FigureSvg />
-          </span>
-          <span className="fd-jnum">{jersey}</span>
-        </span>
-      </span>
+      <span className="fd-kit" />
+      <span className="fd-jnum">{no}</span>
+      <span className="fd-hem" />
     </span>
   )
 }
 
 /**
- * THE BALL, AND THE ONLY THING ON THIS SCREEN THAT TRAVELS — his ruling: "have them passing the
- * ball ... make the animation good, 3d esque."
+ * THE BALL, AND THE ONLY THING ON THIS SCREEN THAT MOVES AT ALL — his standing ruling put it in the
+ * play ("have them passing the ball"), and his ruling of 2026-09-10 took the hands off the floor
+ * without taking the ball off it. It rests beside the mark you are on and rolls to the next one.
  *
- * THREE NESTED SPANS, AND EACH ONE IS ONE OF THE THREE DIMENSIONS:
- *   · .fd-ball-rig   is the ball's GROUND position — where it would be if it never left the floor.
- *                    It slides from the thrower's hands to the catcher's and carries the depth scale
- *                    of the two ends with it, so a ball thrown up the floor shrinks on the way and
- *                    one thrown back down grows.
- *   · .fd-cast       is the SHADOW, and it stays on the ground because it is a child of the rig and
- *                    never lifts. The gap between it and the ball is the only reading of height this
- *                    drawing has, and it is the strongest thing in it.
- *   · .fd-lift       is HEIGHT. It carries the ball up the parabola and scales it up at the same
- *                    time, because a thing nearer the eye is bigger.
+ * TWO SPANS NOW, AND THE THIRD IS A TOMBSTONE:
+ *   · .fd-ball-rig   is the ball's position on the floor. It slides from the mark you left to the
+ *                    mark you pressed and carries the depth scale of the two ends with it, so a ball
+ *                    that rolls up the floor shrinks on the way and one that comes back down grows.
+ *   · .fd-cast       is the SHADOW. It is a child of the rig, so it goes where the ball goes, and it
+ *                    stays tucked under it because the ball never leaves the floor now.
+ *   · .fd-lift       IS DELETED. It was HEIGHT — it carried the ball up a parabola and scaled it up
+ *                    toward the apex, and the widening gap between it and its shadow was the whole
+ *                    reading of depth on a plan that has no eye level. It went with the arms: a lob
+ *                    needs somebody to lob it. Its hand-height rig (--p-fh / --p-th, the ball
+ *                    leaving a near man's hand further up the screen than a far man's) went with it.
  *
- * THE DRAWING CHANGES AND THE PHYSICS DOES NOT. The chalk ring in --ck-orange was chalk on a slate
- * and there is neither; this is the house `Ball` — the same leather the header's mark is drawn in —
- * with its 7 dropped, because at fourteen pixels a numeral is mud and because this ball SPINS,
- * which the mark must never do. The mockup's own ball is a flat 620ms tween with a fixed 54px lift
- * and a fixed shadow whatever the distance; that is the thing he already sent back.
+ * THE DRAWING IS UNCHANGED. This is the house `Ball` — the same leather the header's mark is drawn
+ * in — with its 7 dropped, because at fourteen pixels a numeral is mud and because this ball TURNS,
+ * which the mark must never do. The 7 is also what makes the turn honest rather than decorative:
+ * with nothing written on it there is nothing that has to stay upright, so the seams can say the
+ * thing is rolling.
  */
 function FrontDoorAir({ pass }: { pass: { from: number; id: number } | null }) {
   return (
     <span className="fd-air" aria-hidden>
       <span key={pass ? pass.id : 'rest'} className={`fd-ball-rig ${pass ? 'go' : ''}`}>
         <span className="fd-cast" />
-        <span className="fd-lift">
-          <Ball className="fd-ball" size="var(--fd-ball-d)" plain />
-        </span>
+        <Ball className="fd-ball" size="var(--fd-ball-d)" plain />
       </span>
     </span>
   )
@@ -815,76 +853,3 @@ function Hoop() {
   )
 }
 
-/**
- * ONE MAN, DRESSED IN THE KIT. His ruling of 2026-09-08 on the figure that came before this one:
- * "This animation was disrespect."
- *
- * WHY IT IS A SILHOUETTE AND NOT A STICK FIGURE. The man before was five hairlines: a head, the line
- * of a back, and four limbs at two units of stroke, which is a diagram of a person rather than a
- * person. Filling a man in gets MASS — so this one is a filled torso with a shoulder line and a
- * waist, and limbs drawn as strokes eight and six units thick with round ends, which is a capsule
- * and reads as an arm with a thickness rather than a wire.
- *
- * WHERE THE KIT GOES, AND IT IS THREE ELEMENTS AND NOT FOUR. `.fd-kit` is the TORSO AND THE TWO
- * SHOULDER CAPS — the caps read as the sleeve, so they join the shirt — and the head keeps the
- * shared cream gradient, which is the whole reason the torso needed a class of its own: the old
- * `.ck-solid` carried the head as well, and filling it with the kit would have painted his face
- * navy. The arms and legs stay cream against a coloured torso, which is a basketball jersey.
- *
- * THE HEM IS A PATH INSIDE THE TORSO'S OWN GEOMETRY, not a bar laid over it. The torso's foot is the
- * straight run from (14.4, 57.8) to (30.9, 57.8) and its sides at y = 54.5 are x = 14.3 and 30.7, so
- * the band below is inset two units either side and cannot poke out of the silhouette at any size.
- *
- * WHY THREE QUARTER VIEW. Straight on he is a symmetrical paper doll and lies flat on the plan.
- * Turned, one leg leads and one arm is nearer than the other, and a shoulder line that is not square
- * to the eye is the difference between a body in a room and a decal.
- *
- * THE ARMS ARE THE ONLY THINGS THAT ARTICULATE, and each is an outer group carried to the shoulder
- * with an inner group rotating about its own 0,0 — the only way to swing a limb about a joint in
- * CSS, and the translate is a presentation attribute on purpose because a CSS transform on the same
- * element would overwrite it. --amp is how far each arm goes: the near one all the way, the far one
- * a little under three quarters, so the pair never looks like one arm drawn twice. A stride's worth
- * of leg swing is deliberately absent — nobody on this floor is running any more.
- */
-function FigureSvg() {
-  return (
-    <svg viewBox="0 0 44 100" focusable="false">
-      <g className="fd-fig-g">
-        {/* far arm and far leg first, held back, so the near side of the body covers their joints */}
-        <g transform="translate(12.6 26)">
-          <g className="fd-arm b" style={{ '--amp': 0.72 } as CSSProperties}>
-            <path className="fd-limb up" d="M0 0 L-3.6 14" />
-            <path className="fd-limb lo" d="M-3.6 14 L-1.6 26.5" />
-          </g>
-        </g>
-        <g className="fd-far">
-          <path className="fd-limb th" d="M18.6 55 L16.8 76" />
-          <path className="fd-limb sh" d="M16.8 76 L16 94" />
-          <path className="fd-limb ft" d="M16 95 L21.2 97.2" />
-        </g>
-        {/* the shirt: shoulders wider than the hips, a waist between them, and a round cap on each
-            shoulder so the arms have something to hang off */}
-        <path
-          className="fd-kit"
-          d="M11.6 27 C11.4 21.6 14.8 18.4 19.6 17.9 L27.2 17.9 C32.2 18.4 34.4 21.6 34.2 27 L32.6 38 L30.4 49 L30.9 57.8 L14.4 57.8 L14.1 49 L12.6 38 Z"
-        />
-        <circle className="fd-kit" cx="12.9" cy="26.2" r="5.1" />
-        <circle className="fd-kit" cx="32.9" cy="26.2" r="5.3" />
-        <rect className="fd-hem" x="16.4" y="53.9" width="12.2" height="2.6" />
-        {/* the near leg over the body, so the hip joint disappears into it */}
-        <path className="fd-limb th" d="M26 55 L28.4 76" />
-        <path className="fd-limb sh" d="M28.4 76 L29.4 94" />
-        <path className="fd-limb ft" d="M29.4 95 L35 97.2" />
-        {/* head set a little toward the way he is facing — that offset is the three-quarter turn */}
-        <path className="fd-limb nk" d="M22.6 15 L23.4 20" />
-        <circle className="fd-solid" cx="23.6" cy="10.4" r="7.1" />
-        <g transform="translate(32.9 26)">
-          <g className="fd-arm f" style={{ '--amp': 1 } as CSSProperties}>
-            <path className="fd-limb up" d="M0 0 L3.4 14" />
-            <path className="fd-limb lo" d="M3.4 14 L1.8 26.5" />
-          </g>
-        </g>
-      </g>
-    </svg>
-  )
-}

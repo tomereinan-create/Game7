@@ -5869,15 +5869,40 @@ body.map #root { padding-bottom: var(--foot); }
    cup that stands on a finished ladder's mark in user mode.
    ========================================================================== */
 .fd {
-  /* THE FIVE VALUES THE HOUSE DOES NOT HAVE. Everything else on this screen names a token.
+  /* THE SIX VALUES THE HOUSE DOES NOT HAVE. Everything else on this screen names a token.
      --fd-line is an rgb TRIPLE rather than a colour because the court's markings are the same
      bone at three different alphas (0.26 boundary, 0.22 three-point line, 0.20 key and circle),
      and a custom property cannot be given an alpha inside a colour function any other way. */
   --fd-ground: #0d0c0a; /* the court panel — one shade under --bg, which is the design's */
   --fd-line: 244 239 228; /* court markings: warm bone, never pure white */
-  --fd-shirt: #39332c; /* an idle jersey. The SELECTED mark overrides these three inline with */
-  --fd-shirt-ink: #8d8378; /* the franchise's own kit, which is the design's read of selection */
-  --fd-hem: #544b42; /* and ours, from real data instead of a five-colour demo cycle. */
+
+  /**
+   * THE KIT, AND ITS FALLBACK IS THE ORANGE — his ruling of 2026-09-10, verbatim: "I want no
+   * players only jerseys, and the jerseys to have this orange collor(unless the user picked
+   * otherwise). I want the numbers to have the same color as well(as the jerseys)."
+   *
+   * WHERE THE ORANGE COMES FROM. It is read off the mockup rather than eyeballed: the leather in
+   * that document is one four-stop family — #f39a4a / #de7326 / #b2521a / #8a3d12 — and #de7326 is
+   * its BODY, the tone the ball is read as being. The other three are its lit edge, its turn and
+   * its shadow, and each is the same colour at another angle. So the shirt takes the body and the
+   * hem takes the shadow, which is one colour worn twice rather than two colours.
+   *
+   * MEASURED, because both numbers matter and neither is obvious:
+   *   · the shirt on the court's own ground (#0d0c0a) is 6.13:1 — the mark reads at a glance. The
+   *     family's #b2521a would have been 3.83, which is a shirt you have to look for.
+   *   · the numeral on the shirt is 5.81:1. His ruling keeps it DARK for exactly that reason:
+   *     "the numbers to have the same color as well" is the 01-06 TAG, and the big numeral printed
+   *     across the chest stays near-black so it can still be read off the orange. Cream there is
+   *     2.78 and white 3.19; neither is a number you can read at fourteen pixels.
+   *
+   * ALL SIX SHIRTS TAKE THIS, not one. WITH A CLUB NAMED all three are overwritten inline on
+   * `.fd-marks` with the kit's own primary, ink and accent — that is the "unless the user picked
+   * otherwise" — and `kitColor` already flips the ink to near-black on a primary bright enough that
+   * cream would vanish on it, so the numeral goes on reading whatever is picked.
+   */
+  --fd-shirt: #de7326;
+  --fd-shirt-ink: #16130f;
+  --fd-hem: #8a3d12;
 
   /**
    * THE FLUID UNIT, and it is RE-DERIVED rather than carried over. His ruling: "make the court way
@@ -5911,13 +5936,30 @@ body.map #root { padding-bottom: var(--foot); }
    * min-height of 54 on a button cannot be honoured by a man drawn at 11.5% of a 300px floor.
    * Without the floors a shoulder sits on a plate at exactly the width his phone is.
    */
-  --fd-fig-h: clamp(38px, 11.5cqw, 130px);
+  /* THE SHIRT'S HEIGHT, AND IT IS THE MOCKUP'S PROPORTION NOW rather than a man's. The figure that
+     stood here was 11.5cqw tall because that is a person; the design's mark is a 54x64 shirt on a
+     769px floor, which is 8.3% of it, and the shirt is 0.844 as wide as it is tall. The pixel floor
+     goes from 38 to 30 with it — a jersey is a shorter object than a man — and it is what keeps the
+     mark from vanishing on a 331px phone floor, where 8.3cqw is 27.5. */
+  --fd-fig-h: clamp(30px, 8.3cqw, 94px);
   /* HOW FAR ABOVE HIS MARK'S CENTRE THE MAN'S FEET LAND. This one number is the whole of his
      ruling "the jersey above the location and not to the side": it replaces both --ck-fig-gap
      (the step sideways) and --ck-fig-drop (the push below). It is read in exactly two places —
      `.fd-fig`'s `bottom` and the ball's `--p-fy`/`--p-ty` — and they must stay the same
-     expression, because that is what guarantees the ball arrives in a hand and not near one. */
-  --fd-fig-lift: clamp(6px, 1.4cqw, 18px);
+     expression, because that is what guarantees the ball comes to rest on the same ground line the
+     jersey beside it is standing on.
+     ITS PIXEL FLOOR WENT 6 -> 10 WITH THE JERSEY, and it is the plate that sets that number. The
+     plate is half its own height above the mark's centre — 9px idle and 10px lit at the phone's
+     pixel floors — so at 6 the bottom of the mark was BEHIND its own plate. That cost a man his
+     feet, which nobody could see anyway; it costs a jersey its HEM, which sits four pixels off the
+     shirt's foot and is a third of what makes a rectangle read as a shirt. At 10 the shirt stands
+     ON the plate's top edge at 375 (measured: 0px for the lit plate, 1px clear of the other five),
+     and the mark out top — the 1v1 bid, the only one with no sky — still clears the head of the
+     floor by a measured 3px. ABOVE THE PHONE the plate's own type outgrows this lift again and the
+     shirt's foot sits about three pixels inside it (-3.2 at 1440), which costs nothing: the hem is
+     7.5px off the foot there, so what the plate covers is bare shirt. THE PHONE IS THE CASE THIS
+     NUMBER IS FOR, because it is the only width where the hem and the plate can meet. */
+  --fd-fig-lift: clamp(10px, 1.4cqw, 18px);
   --fd-ball-d: clamp(11px, 3.2cqw, 34px);
   /* the smudge both shadows are made of. It is black now rather than the slate's own green, and
      it is centred rather than offset, because the light in this room comes from OVERHEAD CENTRE
@@ -6080,9 +6122,9 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   justify-content: center;
-  /* the vertical inset also holds the head of the man out top, who stands ABOVE his mark now and
-     clears the top edge of the floor by about two pixels at 375; the horizontal one absorbs the
-     corner plates, which overhang the sidelines by construction at 8.5% and 91.5% */
+  /* the vertical inset also holds the shoulders of the jersey out top, which stands ABOVE its mark
+     and clears the top edge of the floor by a measured three pixels at 375; the horizontal one
+     absorbs the corner plates, which overhang the sidelines by construction at 8.5% and 91.5% */
   padding: clamp(14px, 2.2vh, 26px) clamp(13px, 1.8vw, 24px);
   background: var(--fd-ground);
   border-top: 1px solid var(--divider);
@@ -6199,10 +6241,15 @@ body.map #root { padding-bottom: var(--foot); }
  *
  * THE LAYER IS WHY THE Z-ORDER WORKS. `zIndex: round(y)` on a mark orders it against its own
  * children only unless the six share one stacking context; hold them in this layer and the six
- * order against each other inside it while the layer itself sits at 3 — under the ball at 5,
- * because "a ball in the air passes over everything the floor is carrying." Nearer men are
- * therefore painted over farther ones. They do not overlap today; this is what keeps that true if
- * a mark is ever moved.
+ * order against each other inside it while the layer itself sits at 3 — under the ball at 5.
+ * Nearer jerseys are therefore painted over farther ones. They do not overlap today; this is what
+ * keeps that true if a mark is ever moved.
+ *
+ * THE BALL STAYS ABOVE THE MARKS, and the reason changed under his ruling of 2026-09-10 without
+ * the number changing. It used to be "a ball in the air passes over everything the floor is
+ * carrying"; the ball no longer leaves the floor, and what keeps it at 5 now is that it comes to
+ * rest at the SHIRT'S OWN FOOT beside it, which is within a pixel of the plate's top edge. Below
+ * the marks it would be cut in half by a plate at some widths and not others.
  *
  * ONE LIT, FIVE BARE — his ruling: "Your bullets are messed up. Have only 1 bullet on wherever I
  * am like before and remove the circles." Four rulings got the mark to that count and each
@@ -6272,15 +6319,40 @@ body.map #root { padding-bottom: var(--foot); }
   border: 2px solid var(--you);
   box-shadow: 0 0 0 5px rgb(240 179 35 / 0.16), 0 10px 20px rgb(0 0 0 / 0.6);
 }
+/**
+ * THE 01-06 TAG, AND IT IS A LITTLE JERSEY — his ruling of 2026-09-10: "I want the numbers to have
+ * the same color as well(as the jerseys)." It was NAVY (--mine on --mine-tint), which was the
+ * design's structural blue and said nothing about the shirt above it. It is the shirt's own colour
+ * behind the shirt's own ink now, so the tag and the jersey standing over it always agree: an
+ * orange block with a near-black numeral, or the club's colours when a club is named.
+ *
+ * MEASURED: the orange block against the idle plate's near-black ground is 6.20:1, so the tag keeps
+ * a hard edge inside its own plate; the numeral on it is 5.81:1, the same figure as the numeral on
+ * the chest, which is not a coincidence — they are the same two colours.
+ *
+ * ON THE LIT PLATE IT SOMETIMES INVERTS, and that is measurement and not taste. The plate you are
+ * on is GOLD (#f0b323), and the shirt's orange laid on it is 1.70:1 — no edge at all, so the block
+ * would dissolve into its own plate and the design's two-cell chip would become one cell. Inverted,
+ * the block keeps the near-black it already had (9.3:1 against the gold, so the tag always keeps
+ * its shape) and the NUMERAL takes the shirt's colour instead: 5.81:1. The tag says the shirt
+ * either way round; what changes is which of the two carries it.
+ *
+ * IT IS NOT ALWAYS THE RIGHT SWAP, which is why `.litflip` is a class and not this rule's default.
+ * Half the pickable kits are near-black by design — Midnight is 1.02:1 on that block and Navy 1.17
+ * — and for them the un-inverted tag is not only fine but excellent (a Midnight block on gold is
+ * 9.63:1 and its white numeral 18:1). `litFlip` in FrontDoor.tsx measures both arrangements per kit
+ * and carries the reasoning; the short of it is that a number you cannot read beats a block whose
+ * edge is soft, so the flip is taken only when it costs nothing.
+ */
 .fd-no {
   display: flex;
   align-items: center;
   padding: clamp(2px, 0.3cqw, 4px) clamp(6px, 0.9cqw, 11px) 0;
-  background: var(--mine);
+  background: var(--fd-shirt);
   font: 400 clamp(10px, 1.9cqw, 19px) / 1 var(--serif);
-  color: var(--mine-tint);
+  color: var(--fd-shirt-ink);
 }
-.fd-mark.on .fd-no { background: var(--you-ink); color: var(--you); }
+.fd-marks.litflip .fd-mark.on .fd-no { background: var(--you-ink); color: var(--fd-shirt); }
 .fd-label {
   display: flex;
   align-items: center;
@@ -6306,10 +6378,14 @@ body.map #root { padding-bottom: var(--foot); }
  *     tall at 375) adds about 22px with its gap, so a corner plate grows 11px on each side — and
  *     VS FRIEND at x: 91.5% clears the panel's inner edge by a measured 8.5px at 375 today. It
  *     would run off the screen. Rejected twice over.
- *   · A CHEST PATCH ON THE SHIRT — measured, the man at 375 is 17.9px wide and his torso is 9.1px
- *     across the shoulders and 6.6px at the waist, so a modelled cup with a bowl, two handles, a
- *     stem and a two-tier base lands at seven pixels. Illegible; it is a gold smudge. It would also
- *     have to be counter-mirrored out of the turn, like the jersey numeral.
+ *   · A CHEST PATCH ON THE SHIRT — measured against the FIGURE THAT STOOD HERE UNTIL 2026-09-10,
+ *     and the ruling holds against the jersey that replaced it: the shirt is 26px wide at 375 where
+ *     the torso was 9.1, and a cup fitted inside a chest that also has to carry a 14px numeral is
+ *     smaller than the 18px it gets standing above. The measurements below are the old ones and are
+ *     kept as the record of why this was rejected, not as a live reading. The man at 375 was 17.9px
+ *     wide and his torso 9.1px across the shoulders and 6.6px at the waist, so a modelled cup with
+ *     a bowl, two handles, a stem and a two-tier base landed at seven pixels. Illegible; a gold
+ *     smudge. It would also have had to be counter-mirrored out of the turn, like the numeral.
  *   · ABOVE THE JERSEY — a measured 18px at 375, 31px at 1280 and 42px at 1920, on the court's own
  *     near-black in both plate states. That is bigger than the 16.5px the old board drew beside the
  *     name, so it is not a regression, and it costs the plate no width at all.
@@ -6340,233 +6416,147 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-cup .trophy { width: auto; height: 100%; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.7)); }
 
-/* ---------- THE PLAY: SIX MEN AND ONE BALL ----------
-   HIS RULING, 2026-09-08: "Instead of a man running, with the ball, have a player on the field for
-   each mode, and have them passing the ball. But please, make the animation good, 3d esque. This
-   animation was disrespect."
+/* ---------- THE PLAY: SIX JERSEYS AND ONE BALL ----------
+   HIS RULING, 2026-09-10, verbatim: "I want no players only jerseys, and the jerseys to have this
+   orange collor(unless the user picked otherwise). I want the numbers to have the same color as
+   well(as the jerseys)."
 
-   ALL OF IT SURVIVES THE NEW DESIGN, dressed rather than replaced. The design's figure is a shirt
-   and nothing else — a clip-path with a number on it, no head, no arms, no legs — and its ball is
-   a flat 620ms tween of left and top with a fixed 54px lift and a fixed shadow whatever the
-   distance. A shirt cannot throw. Adopting it would delete the throw, the catch, the turn and the
-   breath in favour of something strictly less than the drawing he already sent back once. So the
-   men keep everything they do and put the design's kit on.
+   IT REVERSES A RULING OF THE SAME MORNING and he took it having seen the man on the floor, so the
+   man is deleted rather than trimmed.
 
-   THE COURT IS A PLAN AND A PLAN HAS NO EYE LEVEL, so every scrap of depth here is manufactured,
-   five ways at once because no one of them would carry it alone:
-     1. THE BALL LEAVES THE PLANE AND GROWS. `.fd-lift` carries it up a parabola and scales it up
-        toward the apex, because a thing coming nearer the eye is bigger. That single trick does
-        more here than everything else together.
-     2. ITS SHADOW STAYS ON THE FLOOR. `.fd-cast` is a child of the ground rig and never lifts, so
-        it slides out from under the ball as the ball climbs and the GAP between the two is the
-        only reading of height this drawing has.
-     3. THE MEN STAND ON THE PLAN RATHER THAN IN IT. Each is anchored at his FEET, drawn upright in
-        three-quarter view, with a contact smudge under him.
-     4. THE FLOOR RECEDES. --dep is set off how far down the court a man is: away up the floor he
-        is smaller and fainter, down at the baseline he is bigger and brighter, and the ball takes
-        the two ends' scales with it so a pass up the floor shrinks on its way. The design scales
-        its shirts by --dep and never fades them, which is the same trick half done.
-     5. NOTHING IS LINEAR. Every list below sets its own curve at every stop.
+   TOMBSTONE — WHAT STOOD HERE, and it is written out so that a later pass cannot re-make the
+   decision by accident:
+     · A FILLED THREE-QUARTER FIGURE in four nested spans, because an element carries one transform
+       and where he stood, how he breathed, how he threw and which way he was turned are four
+       different questions. Head, neck, two arms each hung off its own shoulder joint, two legs in
+       thigh/shin/foot strokes, feet, and a torso in the kit with two shoulder caps and a hem.
+     · `.fd-p-idle` / `@keyframes fd-breathe` — a breath and a shift of weight, six periods and six
+       phases so the floor never pulsed together. A shirt on a hook does not breathe.
+     · `.fd-p-act` / `fd-throw` / `fd-catch` / `fd-throw-arm` / `fd-catch-arm` — the coil, the drive,
+       the follow-through, the rise to meet the ball and the give at the knees, and the two arm
+       swings at --amp inside the mirror. All of it needed arms.
+     · `.fd-p-turn` / `@keyframes fd-turn` — six men turning to watch whoever had the ball, mirrored
+       by squash-cut-open rather than a scaleX sweep through zero. Nothing front-on has a side to
+       turn to, and --face / --face0 / --i are not written any more.
+     · `.fd-figdefs` and `.fd-fig-g` — one linear gradient in the figure's own user space, the cream
+       every loose stroke was painted in so the joins between them could not be seen. There is no
+       cream left: the shirt is a flat fill.
+     · `.fd-lift` / `@keyframes fd-lift` / `@keyframes fd-cast` and the hand-height rig
+       (--p-fh / --p-th) — see the ball below.
+   All of it is at c11b844 in this file's history.
 
-   THE CLOCK. --pdur is the whole gesture and FrontDoor sets it off the length of the throw, since
-   a long pass hangs and a short one is a zip. The wind-up is a fifth of the flight, which is why
-   17% is the moment of release in every list below whatever the distance, and 52% is the apex — a
-   little before half time on purpose, because the flight decelerates into the catch and an apex at
-   exactly half reads late in space. */
+   THE COURT IS A PLAN AND A PLAN HAS NO EYE LEVEL, and this ruling took away the two strongest
+   things that were manufacturing depth on it — the ball leaving the plane, and the gap opening
+   between it and its shadow. Three are left and they are the design's own:
+     1. THE FLOOR RECEDES. --dep is set off how far down the court a mark is: away up the floor the
+        shirt is smaller and fainter, down at the baseline it is bigger and brighter, and the ball
+        takes the two ends' scales with it so a ball rolling up the floor shrinks on its way. The
+        design scales its shirts by --dep and never fades them, which is the same trick half done.
+     2. THE SHIRTS STAND ON THE PLAN RATHER THAN IN IT — each anchored at its own foot with a
+        contact smudge under it, and the ball resting on that same ground line beside it.
+     3. NOTHING IS LINEAR. The roll sets its own curve, and the seams turn on that same curve.
 
-/* ---------- a man ----------
-   FOUR NESTED SPANS BECAUSE AN ELEMENT CARRIES ONE TRANSFORM, and where he stands, how he
-   breathes, how he throws and which way he is turned are four different questions.
+   THE CLOCK. --pdur is the whole trip and FrontDoor sets it off its length. THE WIND-UP IS GONE
+   with the arms — it was a fifth of the flight, which is why 17% used to be the moment of release
+   in every list here — so the ball simply sets off. */
 
-   WHERE HE STANDS IS THE ONE THING HIS RULING CHANGED. He used to be placed at his mark's own
-   percentages plus a step to one side of them and a push below; he is placed off THE MARK'S OWN
-   CENTRE now — `bottom: 50%` of a button that is itself centred on (x, y) — so his feet land one
-   --fd-fig-lift above the mark whatever height the plate turns out to be. That is not a
+/* ---------- a jersey ----------
+   FOUR FLAT SPANS AND NOT ONE NESTED TRANSFORM. The mockup's mark is a 54x64 box with a clip-path
+   shirt in it, a numeral across the chest, a hem near the foot and a smudge under it, and that is
+   now exactly what this is.
+
+   WHERE IT STANDS IS UNCHANGED BY THIS RULING, and it is his earlier one: the shirt is placed off
+   THE MARK'S OWN CENTRE — `bottom: 50%` of a button that is itself centred on (x, y) — so its foot
+   lands one --fd-fig-lift above the mark whatever height the plate turns out to be. That is not a
    convenience: a plate's height is content, and CSS cannot read content back, so a figure hung off
-   the plate could not have its feet named in a stylesheet at all — and the ball's two ends have to
-   be built from the same expression that places him, or it arrives near a hand instead of in one.
-   `translate(-100%)` is gone with the same change: the anchor is the button's middle now, not the
-   man's own height.
+   the plate could not have its foot named in a stylesheet at all — and the ball's two ends have to
+   be built from the same expression that places it, or the ball comes to rest floating.
 
-   HE IS INSIDE THE BUTTON AND TAKES A PRESS. He used to sit in a pointer-events:none layer so that
-   "a man is on the floor and must never cover a name or eat a tap" — but the name he could have
-   covered is directly under him now, so the only thing he covers is his own mark, and he ENLARGES
-   its target instead of being excluded from it. */
+   IT IS INSIDE THE BUTTON AND TAKES A PRESS, which is what makes the tap target bigger than the
+   plate: the only thing the shirt covers is its own mark, so it ENLARGES the target rather than
+   being excluded from it. */
 .fd-fig {
   --h: calc(var(--fd-fig-h) * var(--dep));
   position: absolute;
   left: 50%;
   bottom: calc(50% + var(--fd-fig-lift));
-  width: calc(var(--h) * 0.44);
+  /* the mockup's own proportion: a 54-wide shirt on a 64-tall box */
+  width: calc(var(--h) * 0.844);
   height: var(--h);
   transform: translateX(-50%);
-  /* air greys out distance: the man out top is a shade fainter than the men on the baseline */
+  /* air greys out distance: the shirt out top is a shade fainter than the ones on the baseline */
   opacity: calc(0.82 + (var(--dep) - 0.86) * 0.75);
 }
-/* the contact smudge — it does not breathe with him, because the floor does not move. Centred, not
-   offset: the light in this room is overhead, not raking. */
+/* the contact smudge on the floor. Centred, not offset: the light in this room is overhead, not
+   raking. It is the mockup's own 44 under a 54-wide shirt, restated as a share of the height so it
+   tracks --dep with everything else. */
 .fd-p-shade {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: calc(var(--h) * 0.54);
+  width: calc(var(--h) * 0.69);
   height: calc(var(--h) * 0.16);
   transform: translate(-50%, 44%);
   border-radius: 50%;
   background: var(--fd-smudge);
   opacity: 0.66;
 }
-.fd-p-idle,
-.fd-p-act,
-.fd-p-turn {
+/* THE SHIRT — the mockup's polygon exactly: shoulders across the top with the neck notched out of
+   them, sleeves flaring to the full width of the box at 18% down, drawn back in to 14%/86% at 44%,
+   and a straight body to the foot. One span, one clip-path, one flat fill; there is nothing here
+   that a gradient or a stroke would add. */
+.fd-kit {
   position: absolute;
   inset: 0;
-  /* every one of them pivots at the FEET, because that is where a standing body is joined to the
-     ground: lean from the ankles, not from the middle */
-  transform-origin: 50% 100%;
+  background: var(--fd-shirt);
+  clip-path: polygon(30% 0, 44% 9%, 56% 9%, 70% 0, 100% 18%, 86% 44%, 86% 100%, 14% 100%, 14% 44%, 0 18%);
 }
-/* THE TURN, AND IT IS A CUT AND NOT A SWEEP. He is drawn facing right; turned round he is the same
-   drawing mirrored — but taking a scaleX from 1 to -1 continuously drags him through ZERO, and for
-   two frames every man who turns is a vertical line. That is a paper doll on a spindle, and it is
-   exactly the kind of thing his ruling was about. So the turn is done the way it is done by hand:
-   squash him toward the turn, CUT on the narrowest frame — the steps(1) is that cut, and he is
-   never narrower than half — and open him out facing the other way. The whole thing is 280ms, and
-   the six are dealt a few milliseconds apart so a floor turning to watch the ball is a ripple
-   rather than one mechanical beat. It runs only for the men whose facing actually changed. */
-.fd-p-turn { transform: scaleX(var(--face)); }
-.fd-p-turn.spin { animation: fd-turn 280ms calc(var(--i) * 14ms) both; }
-@keyframes fd-turn {
-  0% { transform: scaleX(var(--face0)); animation-timing-function: cubic-bezier(0.4, 0, 0.85, 0.5); }
-  50% { transform: scaleX(calc(var(--face0) * 0.5)); animation-timing-function: steps(1, end); }
-  51% { transform: scaleX(calc(var(--face) * 0.5)); animation-timing-function: cubic-bezier(0.15, 0.5, 0.35, 1); }
-  100% { transform: scaleX(var(--face)); }
-}
-.fd-p-turn svg { display: block; width: 100%; height: 100%; overflow: visible; }
-/* THE JERSEY NUMERAL LIVES OUTSIDE THE TURN, which is the whole reason it can be here at all.
-   Everything inside `.fd-p-turn` is mirrored — right for a body, right for the arms, and wrong for
-   a glyph: a man facing left would wear a backwards digit. Hung one level up it never mirrors and
-   still throws and catches with him.
-   AND IT IS DROPPED UNDER A 460px COURT. At 375 the torso is nine pixels across; a numeral on it is
-   a smudge, and the plate under him carries 01-06 either way, which is where the number is
-   actually read. */
+/* THE NUMERAL ACROSS THE CHEST, and his ruling is what keeps it DARK: the 01-06 tags take the
+   jersey's colour, and this one stays near-black so it can still be read against the orange. 5.81:1
+   at the default, and `kitColor`'s own ink when a club is named.
+   IT IS SHOWN AT EVERY WIDTH NOW. It used to be dropped under a 460px court because the torso it
+   sat on was nine pixels across at 375 and a numeral there was a smudge; the shirt IS the mark now,
+   so at 375 it is 14px on a 25px chest, which is the size the mockup draws it at. The @container
+   rule that hid it is deleted rather than widened.
+   The mockup's 30px on a 64px box is the 0.47 below, and its `top: 18px` is the 28%. */
 .fd-jnum {
   position: absolute;
   left: 0;
   right: 0;
-  top: 25%;
+  top: 28%;
   text-align: center;
-  font: 400 max(9px, calc(var(--h) * 0.18)) / 1 var(--serif);
+  font: 400 max(10px, calc(var(--h) * 0.47)) / 1 var(--serif);
   color: var(--fd-shirt-ink);
   pointer-events: none;
 }
-@container (max-width: 460px) {
-  .fd-jnum { display: none; }
-}
-
-/* A MAN WITH MASS, DRESSED IN THE KIT. The figure before this one was five hairlines, which is a
-   diagram of a person rather than a person; this is a filled body with limbs drawn as thick
-   round-capped strokes, which is a capsule and reads as an arm with a thickness. Every cream piece
-   takes the SAME gradient, in the figure's own user space, so the joins between them cannot be seen
-   at any size — that is what lets a man be built out of loose strokes and still read as one solid
-   body. Each paint carries a flat fallback after the url() reference, so a figure is never
-   invisible if the def cannot be found.
-
-   THE KIT IS THREE ELEMENTS AND NOT FOUR. `.fd-kit` is the torso and the two shoulder caps — the
-   caps read as the sleeve, so they join the shirt — and the HEAD keeps the shared gradient. That is
-   the whole reason the torso needed a class of its own: the class it used to share carried the head
-   as well, and filling it with the kit would have painted his face navy. Cream arms and legs
-   against a coloured torso is a basketball jersey. The hem is a path inside the torso's own
-   geometry rather than a bar laid over it, so it cannot poke out of the silhouette at any size. */
-.fd-figdefs { position: absolute; left: 0; top: 0; width: 0; height: 0; }
-.fd-figdefs .s0 { stop-color: var(--ink-2); }
-.fd-figdefs .s1 { stop-color: var(--muted); }
-.fd-figdefs .s2 { stop-color: var(--muted-2); }
-.fd-fig-g .fd-solid { fill: url(#fd-fig-ink) var(--muted); stroke: none; }
-.fd-fig-g .fd-kit { fill: var(--fd-shirt); stroke: none; }
-.fd-fig-g .fd-hem { fill: var(--fd-hem); stroke: none; }
-.fd-fig-g .fd-limb {
-  fill: none;
-  stroke: url(#fd-fig-ink) var(--muted);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.fd-fig-g .th { stroke-width: 8.6; }
-.fd-fig-g .sh { stroke-width: 6.6; }
-.fd-fig-g .ft { stroke-width: 5; }
-.fd-fig-g .up { stroke-width: 6.4; }
-.fd-fig-g .lo { stroke-width: 5.4; }
-.fd-fig-g .nk { stroke-width: 6.4; }
-/* the far side of the body held back — the oldest depth trick there is, and one attribute */
-.fd-fig-g .fd-arm.b,
-.fd-fig-g .fd-far { opacity: 0.7; }
-.fd-arm { transform-origin: 0px 0px; }
-
-/* ---------- what the six do ----------
-   IDLE: a breath and a shift of weight, on his own period and his own phase, so six of them never
-   pulse together and none of it is loud enough to compete with a screen somebody is reading. Six
-   figures held perfectly still read as traffic cones; this is the least that stops them. */
-.fd-p-idle { animation: fd-breathe calc(3.6s + var(--i) * 0.43s) calc(var(--i) * -1.13s) ease-in-out infinite; }
-@keyframes fd-breathe {
-  0%, 100% { transform: translateY(0) rotate(0deg) scaleY(1); }
-  30% { transform: translateY(-1.1%) rotate(0.85deg) scaleY(1.013); }
-  66% { transform: translateY(0.3%) rotate(-0.6deg) scaleY(0.994); }
-}
-/* THE THROW AND THE CATCH, and this is the part the runner did not have at all. A pass has an
-   anticipation, a release and a follow-through, and the WHOLE BODY does them: the thrower sinks
-   into the coil and leans back off the target (10%), drives through it and comes up off the floor
-   as the ball leaves (18%), rides forward on the follow-through (32%) and is back on his feet
-   before the ball is halfway. The catcher does nothing at all until the ball is two thirds of the
-   way to him, rises to meet it, takes it, and then GIVES at the knees — the sink at 87% is the
-   ball's weight arriving, and it is what stops the catch looking like a magnet.
-   Both lean along --face, which is the direction each of them is already turned: the thrower at his
-   target, the catcher back down the line the ball is coming in on. */
-.fd-fig.throw .fd-p-act { animation: fd-throw var(--pdur) both; }
-.fd-fig.throw .fd-arm { animation: fd-throw-arm var(--pdur) both; }
-/* the catch runs a third longer than the flight so it can still be absorbing after the ball has
-   landed: the ball arrives at 77% of this list */
-.fd-fig.catch .fd-p-act { animation: fd-catch calc(var(--pdur) * 1.3) both; }
-.fd-fig.catch .fd-arm { animation: fd-catch-arm calc(var(--pdur) * 1.3) both; }
-@keyframes fd-throw {
-  0% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
-  10% { transform: translate(calc(var(--face) * -6%), 2%) rotate(calc(var(--face) * -4.5deg)) scaleY(0.965); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
-  18% { transform: translate(calc(var(--face) * 8%), -3%) rotate(calc(var(--face) * 6.5deg)) scaleY(1.028); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
-  32% { transform: translate(calc(var(--face) * 4%), -1%) rotate(calc(var(--face) * 3.4deg)) scaleY(1.006); animation-timing-function: cubic-bezier(0.35, 0, 0.3, 1); }
-  62%, 100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
-}
-@keyframes fd-catch {
-  0%, 44% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
-  62% { transform: translate(calc(var(--face) * 2.5%), -3.4%) rotate(calc(var(--face) * 2deg)) scaleY(1.03); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
-  77% { transform: translate(calc(var(--face) * 1.2%), -1.4%) rotate(calc(var(--face) * 1deg)) scaleY(1.014); animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1); }
-  87% { transform: translate(calc(var(--face) * -1%), 2.6%) rotate(calc(var(--face) * -1deg)) scaleY(0.952); animation-timing-function: cubic-bezier(0.2, 0.9, 0.35, 1); }
-  100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
-}
-/* THE ARMS SWING INSIDE THE MIRROR, so a rotation here is always "forward" for the man doing it,
-   whichever way he is turned. --amp is how far each of the two goes — the near one all the way, the
-   far one a little under three quarters — so the pair never looks like one arm drawn twice. */
-@keyframes fd-throw-arm {
-  0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
-  10% { transform: rotate(calc(var(--amp) * 26deg)); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4); }
-  18% { transform: rotate(calc(var(--amp) * -76deg)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
-  32% { transform: rotate(calc(var(--amp) * -54deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
-  66%, 100% { transform: rotate(0deg); }
-}
-@keyframes fd-catch-arm {
-  0%, 44% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
-  62% { transform: rotate(calc(var(--amp) * -68deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
-  77% { transform: rotate(calc(var(--amp) * -60deg)); animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1); }
-  87% { transform: rotate(calc(var(--amp) * -34deg)); animation-timing-function: cubic-bezier(0.25, 0.85, 0.4, 1); }
-  100% { transform: rotate(0deg); }
+/* THE TRIM ACROSS THE FOOT. It used to be a path inside the torso's own SVG geometry so it could
+   not poke out of the silhouette; inset to 32% either side it sits well inside the body's 14%/86%,
+   so a box does the same job. It takes the kit's ACCENT when a club is named and the leather
+   family's own shadow tone (#8a3d12, 2.39:1 on the shirt) when it does not — one colour worn twice
+   rather than two colours. */
+.fd-hem {
+  position: absolute;
+  left: 32%;
+  right: 32%;
+  bottom: 9.4%;
+  height: max(1.5px, calc(var(--h) * 0.031));
+  background: var(--fd-hem);
 }
 
 /* ---------- the ball ----------
    THE LAYER IS THE COURT EXACTLY AND IT IS A SIZE CONTAINER, so 1cqw is one per cent across the
    floor and 1cqh is one per cent down it — the units the six marks are already placed in. Nothing
    here is a pixel offset from anything, so the play is the same drawing at 331px of floor and at
-   1000, and a window resized mid-throw simply redraws the throw at the new size.
+   1000, and a window resized mid-roll simply redraws the roll at the new size.
 
-   THE RIG IS THE BALL'S GROUND POSITION — where it would be if it never left the floor. Its
-   untouched transform IS the catcher's hands, which is why there is nothing to restore when the
-   throw is over: the animation simply lands on the rule underneath it. */
+   IT ROLLS NOW, IT DOES NOT FLY — his ruling of 2026-09-10 took the hands off this floor without
+   taking the ball off it. The ball keeps the place the mockup gives it (beside the mark you are on)
+   and keeps its journey (it travels to the mark you press), and what it does on the way is the
+   simplest thing a floor with nobody on it can honestly claim: it goes along the ground, turning.
+
+   THE RIG IS THE BALL'S POSITION ON THE FLOOR, and its untouched transform IS the resting place, so
+   there is nothing to restore when the trip is over — the animation simply lands on the rule
+   underneath it. */
 .fd-air { position: absolute; inset: 0; container-type: size; pointer-events: none; z-index: 5; }
 .fd-ball-rig {
   position: absolute;
@@ -6574,97 +6564,72 @@ body.map #root { padding-bottom: var(--foot); }
   top: 0;
   width: 0;
   height: 0;
-  /* THE TWO ENDS OF THE THROW, composed here on the element that uses them so the container units
-     resolve against the air layer and nothing else. Each is a mark's own percentage MINUS the same
-     --fd-fig-lift that `.fd-fig` is placed by, which is where that man's feet are — one expression,
-     read twice and computed once. Get this wrong and the ball arrives near a hand instead of in
-     one, at some widths and not others. */
-  --p-fx: calc(var(--pfx) * 1cqw);
+  /* WHICH SHOULDER OF THE MARK THE BALL SITS ON, as a distance out from the mark's own x. Half a
+     shirt (0.44 of its height, since the shirt is 0.844 as wide as it is tall) plus most of a ball,
+     which is the gap that keeps the leather clear of the sleeve rather than tucked behind it. It is
+     multiplied by that end's own --dep because everything else on this floor is: the ball beside a
+     near mark stands further out than the ball beside a far one, in exactly the proportion the near
+     shirt is wider. --pfs / --pts are the marks' `side`, and those six signs already point INWARD
+     at every mark on an edge, which is what keeps the ball on the floor at custom and vs friend. */
+  --p-off: calc(var(--fd-fig-h) * 0.44 + var(--fd-ball-d) * 0.75);
+  /* THE TWO ENDS OF THE TRIP, composed here on the element that uses them so the container units
+     resolve against the air layer and nothing else. Each y is a mark's own percentage MINUS the
+     same --fd-fig-lift that `.fd-fig` is placed by, which is where that shirt's foot is — one
+     expression, read twice and computed once, and it is what puts the ball on the same ground line
+     the jersey beside it is standing on. */
+  --p-fx: calc(var(--pfx) * 1cqw + var(--pfs) * var(--p-off) * var(--pfd));
   --p-fy: calc(var(--pfy) * 1cqh - var(--fd-fig-lift));
-  --p-tx: calc(var(--ptx) * 1cqw);
+  --p-tx: calc(var(--ptx) * 1cqw + var(--pts) * var(--p-off) * var(--ptd));
   --p-ty: calc(var(--pty) * 1cqh - var(--fd-fig-lift));
-  /* the wind-up: six per cent BACK down the line the ball is about to travel */
-  --p-kx: calc(var(--p-fx) * 1.06 - var(--p-tx) * 0.06);
-  --p-ky: calc(var(--p-fy) * 1.06 - var(--p-ty) * 0.06);
-  /* hand height at each end, off each man's OWN height — so the ball leaves a near man's hands
-     further up the screen than a far man's, which is the receding floor again */
-  --p-fh: calc(var(--fd-fig-h) * var(--pfd) * 0.47);
-  --p-th: calc(var(--fd-fig-h) * var(--ptd) * 0.47);
-  --p-arc: calc(var(--parc) * 1cqw);
   transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd));
 }
-.fd-ball-rig.go { animation: fd-ground var(--pdur) both; }
-/* the ground path: back for the wind-up, out of the hand hard, and decelerating into the catch —
-   which is the asymmetry that makes it arrive rather than stop */
-@keyframes fd-ground {
-  0% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.25, 0.7, 0.4, 1); }
-  10% { transform: translate(var(--p-kx), var(--p-ky)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.3); }
-  17% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.35, 0.2, 0.5, 1); }
+/* THE ROLL. One curve, and it is the whole motion: away promptly and decelerating into the arrival,
+   which is friction and is also the asymmetry that makes a thing ARRIVE rather than stop. There is
+   no wind-up keyframe any more — a wind-up is a thrower's anticipation — and no arc, so the list is
+   two stops and the easing is on the shorthand where the seams can share it. */
+.fd-ball-rig.go { animation: fd-roll var(--pdur) cubic-bezier(0.32, 0.72, 0.3, 1) both; }
+@keyframes fd-roll {
+  0% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); }
   100% { transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd)); }
 }
-/* HEIGHT, AND THE SCALE THAT SELLS IT. The lift is the ball's distance off the floor and nothing
-   else. It rises decelerating and falls accelerating, because that is gravity and because a
-   symmetrical curve reads as a slide rather than a throw; at the top it is half again its size,
-   which is the whole of the "nearer the eye" trick. At 94% it is BELOW the receiving hand and a
-   touch large — the catch taken low and brought up — and it settles on the last six per cent. */
-.fd-lift {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  transform: translateY(calc(var(--p-th) * -1));
-}
-.fd-ball-rig.go .fd-lift { animation: fd-lift var(--pdur) both; }
-@keyframes fd-lift {
-  0% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.3, 0.65, 0.4, 1); }
-  10% { transform: translateY(calc(var(--p-fh) * -0.82)) scale(0.95); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
-  17% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
-  52% { transform: translateY(calc((var(--p-fh) + var(--p-arc)) * -1)) scale(1.55); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6); }
-  94% { transform: translateY(calc(var(--p-th) * -0.84)) scale(1.05); animation-timing-function: cubic-bezier(0.25, 1.5, 0.5, 1); }
-  100% { transform: translateY(calc(var(--p-th) * -1)) scale(1); }
-}
-/* THE SHADOW STAYS ON THE FLOOR. It is inside the rig, so it takes the ground path for free and the
-   only thing it ever does is answer the ball's HEIGHT: it spreads and pales as the ball climbs and
-   draws back in and darkens as it comes down. Both the spread and the fade are scaled by --parc,
-   the apex of this particular throw, so a lob opens a wider, paler shadow than a zip does.
-   IT NO LONGER SLIDES TOWARD THE LOWER RIGHT. That was keyed to the slate's light at 28% 6%; this
-   room is lit from overhead centre, so a ball in the air drops its shadow straight down. */
+/* THE SHADOW IS A CONTACT SHADOW NOW, not a height gauge. It used to spread and pale as the ball
+   climbed and the GAP between the two was the only reading of height this drawing had; the ball
+   never leaves the floor, so there is no height to read and `@keyframes fd-cast` is deleted rather
+   than left animating nothing. What is left is the smudge a ball resting on a floor makes: tighter
+   and darker than the old one, because it is directly underneath. It is inside the rig, so it goes
+   where the ball goes for free. */
 .fd-cast {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(var(--fd-ball-d) * 1.55);
-  height: calc(var(--fd-ball-d) * 0.62);
-  margin-left: calc(var(--fd-ball-d) * -0.775);
-  margin-top: calc(var(--fd-ball-d) * -0.31);
+  width: calc(var(--fd-ball-d) * 1.2);
+  height: calc(var(--fd-ball-d) * 0.44);
+  margin-left: calc(var(--fd-ball-d) * -0.6);
+  margin-top: calc(var(--fd-ball-d) * -0.22);
   border-radius: 50%;
   background: var(--fd-smudge);
-  opacity: 0.66;
+  opacity: 0.72;
 }
-.fd-ball-rig.go .fd-cast { animation: fd-cast var(--pdur) both; }
-@keyframes fd-cast {
-  0% { transform: scale(1); opacity: 0.66; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
-  17% { transform: scale(1); opacity: 0.66; animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
-  52% { transform: scale(calc(1 + var(--parc) * 0.06)); opacity: calc(0.66 - var(--parc) * 0.019); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6); }
-  100% { transform: scale(1); opacity: 0.66; }
-}
-/* THE BALL IS THE HOUSE'S OWN LEATHER NOW, with its 7 dropped — the chalk ring was chalk on a slate
-   and there is neither. `Ball` is handed the same clamp the rig measures in, and `plain` takes the
-   numeral off, which is what lets this one SPIN: the mark must stay upright, and a ball with
-   nothing written on it has nothing to keep upright. The seams turning are what say the thing is
-   travelling rather than being carried, and it slows as it goes, the way a thrown ball's spin looks
-   like it does. */
+/* THE BALL IS THE HOUSE'S OWN LEATHER, with its 7 dropped — `Ball` is handed the same clamp the rig
+   measures in, and `plain` takes the numeral off, which is what lets this one TURN: the header's
+   mark must stay upright, and a ball with nothing written on it has nothing to keep upright.
+   IT SITS ON THE FLOOR RATHER THAN IN A HAND. The rig point is the ground contact, so the margin
+   below carries the ball a full diameter up off it and then sinks it back a hair into its own
+   smudge, which is what seats it. `.fd-lift`, which used to carry it a man's hand-height up and
+   then along a parabola, is deleted — see the tombstone at the head of this section.
+   THE SEAMS TURN ON THE SAME CURVE THE TRAVEL DOES, and that is not tidiness: rotation and distance
+   that disagree are a ball skidding across a floor, and --pspin is worked out in FrontDoor.tsx from
+   the ball's own circumference so the two agree in amount as well as in shape. */
 .fd-ball {
   position: absolute;
   left: 0;
   top: 0;
   margin-left: calc(var(--fd-ball-d) / -2);
-  margin-top: calc(var(--fd-ball-d) / -2);
+  margin-top: calc(var(--fd-ball-d) * -0.94);
 }
-.fd-ball-rig.go .fd-ball { animation: fd-spin var(--pdur) cubic-bezier(0.12, 0.6, 0.3, 1) both; }
+.fd-ball-rig.go .fd-ball { animation: fd-spin var(--pdur) cubic-bezier(0.32, 0.72, 0.3, 1) both; }
 @keyframes fd-spin {
-  0%, 17% { transform: rotate(0deg); }
+  0% { transform: rotate(0deg); }
   100% { transform: rotate(calc(var(--pspin) * 1deg)); }
 }
 
@@ -6919,24 +6884,20 @@ html:has(body.door) { background: #0b0a09; }
 body.door { background: #0b0a09; }
 body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 
-/* WITH REDUCED MOTION THE BALL IS SIMPLY AT THE MAN YOU PRESSED. No travel, no arc, no shadow
-   opening under it, nobody breathing and nobody swinging: the ball changes hands in the same frame
-   the plate lights up. Nothing needs a fallback position, because every rule this turns off is an
-   ANIMATION over a rule that already states the resting pose — the rig's own transform is the
-   catcher's hands, the lift's is his hand height, and a man's untouched transform is a man standing
-   on his mark. Each selector below carries the same weight as the one it is beating and comes later
-   in the file, so none of it needs !important.
+/* WITH REDUCED MOTION THE BALL IS SIMPLY AT THE MARK YOU PRESSED. No travel and no turn: it changes
+   places in the same frame the plate lights up. Nothing needs a fallback position, because both
+   rules this turns off are ANIMATIONS over rules that already state the resting pose — the rig's own
+   transform is the ball beside the selected mark, and an unrotated ball is a ball at rest. Each
+   selector below carries the same weight as the one it is beating and comes later in the file, so
+   none of it needs !important.
+   THE LIST IS TWO LINES WHERE IT WAS TEN. The breath, the turn, the two throws, the two arm swings,
+   the lift and the shadow's opening are all deleted by his ruling of 2026-09-10, and their entries
+   go with them rather than being left here naming selectors that no longer exist — an orphan in a
+   reduced-motion block is the one kind nobody ever notices, because it is only read by the people
+   least likely to file it.
    The two flashbulbs and the header's dribble are stopped at their own primitives further up this
    file rather than here — they are shared, and a caller cannot be trusted to remember. */
 @media (prefers-reduced-motion: reduce) {
-  .fd-p-turn.spin,
-  .fd-p-idle,
-  .fd-fig.throw .fd-p-act,
-  .fd-fig.throw .fd-arm,
-  .fd-fig.catch .fd-p-act,
-  .fd-fig.catch .fd-arm,
   .fd-ball-rig.go,
-  .fd-ball-rig.go .fd-lift,
-  .fd-ball-rig.go .fd-cast,
   .fd-ball-rig.go .fd-ball { animation: none; }
 }
