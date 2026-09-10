@@ -4876,8 +4876,12 @@ body.um {
 .um-era.on i { color: var(--um-gold); }
 .um-maprow { display: flex; gap: 8px; }
 .um-staff {
-  flex: 2;
+  /* It used to take two thirds of the row and its label never filled them; the rename door beside
+     it now has a club name to print, so the staff door takes the width of its own words — flex
+     from zero, clamped at min-content by the nowrap label — and the name gets the rest. */
+  flex: 1;
   min-height: 44px;
+  padding: 0 10px;
   border: 1px solid var(--um-gold);
   border-radius: 5px;
   background: transparent;
@@ -4888,20 +4892,50 @@ body.um {
   cursor: pointer;
 }
 .um-staff:hover { background: #241f1a; }
+/* THE RENAME DOOR IS A DOOR, AND IT IS THE ONE THAT NAMES THE CLUB (his report: "RENAME renders
+   as an empty text input with a placeholder but is actually a button; the current team name
+   appears nowhere on the map"). Three things made it read as an empty field: the page's global
+   button reset zeroes padding and lefts the text, so faint micro-caps sat flush against the left
+   edge of a hairline box; the box had no fill of its own while the era chips above it do; and its
+   hairline was darker than theirs. It is a chip like them now — same raised fill, a border that
+   actually reads — with the franchise on the top line and what the press DOES underneath it, in
+   the cap size the rest of user mode uses. The name is the half that yields: it ellipsises, and
+   the second line never does. */
 .um-rename {
-  flex: 1;
+  flex: 1.6;
+  min-width: 0;
   min-height: 44px;
-  border: 1px solid #2a2320;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 10px;
+  border: 1px solid #3d352e;
   border-radius: 5px;
-  background: transparent;
-  color: #a39a91;
-  font-family: var(--sans);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  background: var(--um-raised);
   cursor: pointer;
 }
-.um-rename:hover { border-color: var(--um-cream); color: var(--um-cream); }
+.um-rename b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--um-cream);
+}
+.um-rename i {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--um-cap);
+}
+.um-rename:hover { border-color: var(--um-cream); }
+.um-rename:hover i { color: var(--um-cream); }
+
 
 /* SCOUT MODE'S COPY OF THE CONTROL ROW (his ruling: "Add this to all campaign modes in scout
    mode(same as user mode have)"). The MARKUP is shared — one row, one auto door, one set of era
