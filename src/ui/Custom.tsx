@@ -181,7 +181,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
           who guards whom, what each pairing is worth, the edge — and his standing ruling is that
           user mode has no doors to any of that. The panel was mounted with no gate at all, and the
           CUSTOM mark on the front door is not gated either, so this was a route straight from a
-          user-mode home screen to a full ratings read (the ruling as it is written at ChalkHome:
+          user-mode home screen to a full ratings read (the ruling as it is written at FrontDoor:
           "four rooms of engine ratings, which user mode has no doors to by his standing ruling").
           Scout mode is untouched. */}
       {ready && !user ? <MatchupPanel mine={A} theirs={B} myName={names[0]} theirName={names[1]} assignment="optimal" /> : null}

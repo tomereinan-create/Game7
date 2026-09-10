@@ -3512,12 +3512,24 @@ body.offstage #root { position: relative; z-index: 1; }
   color: #fff;
   padding-top: 0.05em;
 }
+/* THE BOUNCE IS IN em, WHICH IS THE BALL'S OWN WIDTH. It was a flat 24px, tuned against the one
+   size the mark was ever drawn at; the front door hands `size` a clamp now and a 24px bounce on a
+   34px ball leaves the band it is standing in and lands on the rail above. In em it is the same
+   bounce at every size, which is the rule the rest of this primitive is already written to.
+   AND IT IS STILLED UNDER REDUCED MOTION, which it never was — the eleven other blocks in this
+   file name every looping animation in the app except this one, and it is the mark on the front
+   door, so it is the first thing a reduced-motion user meets. Fixed here at the primitive rather
+   than inside the front door's block, because a caller cannot be trusted to remember. */
 .ball7.dribble { animation: dribble 1.7s cubic-bezier(0.3, 0, 0.7, 1) infinite; }
 @keyframes dribble {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-24px); }
+  50% { transform: translateY(-0.3em); }
 }
-/* the crowd, two cameras deep in the dark */
+@media (prefers-reduced-motion: reduce) {
+  .ball7.dribble { animation: none; }
+}
+/* the crowd, two cameras deep in the dark. THE RESTING POSE IS opacity: 0 — which is what lets the
+   reduced-motion kill below be one line with nothing left burning on the rail. */
 .flashbulb { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 5px rgba(255, 255, 255, 0.8); opacity: 0; pointer-events: none; }
 .flashbulb.one { left: 62%; top: 4px; animation: flashbulb 2.9s linear infinite; }
 .flashbulb.two { left: 86%; top: 52px; animation: flashbulb 3.8s linear infinite; }
@@ -3525,6 +3537,11 @@ body.offstage #root { position: relative; z-index: 1; }
   0%, 93% { opacity: 0; }
   94% { opacity: 1; }
   100% { opacity: 0; }
+}
+/* the selector matches the weight of the two it beats and comes after them, so no !important */
+@media (prefers-reduced-motion: reduce) {
+  .flashbulb.one,
+  .flashbulb.two { animation: none; }
 }
 
 /* ---------- the lockup ---------- */
@@ -5381,17 +5398,23 @@ body.um .map-doors .map-link.team { display: none; }
    too: `body.tunnel` is added by Home and removed on the way out, so re-pointing --you inside it
    cannot reach any other screen.
 
-   WHAT `tunnel` STILL REACHES, AFTER HIS RULING OF 2026-09-09 ("Change the user mode main screen
-   to look like the scout mode"): nothing you can see. `tunnel` is added by ChalkHome alone, and
-   ChalkHome is now the front door in BOTH modes — UserHome, which used to add it too, is deleted.
-   The chalk slate paints its own green over every rule below (see body.chalk.tunnel at the foot of
-   4a) and reads none of these tokens, and the four rules that dressed user mode's old card slate
-   — .hero.front, .slate-card, .rung, .chip-gold — have no element left to find. They are left
-   standing rather than swept out because `offstage` shares the token block above with them and the
-   sweep is not what he ruled on; the `:not(.um)` on them is likewise vestigial now, and the one
-   place it MATTERED — the slate's own ground — has been rewritten to name the slate's classes
-   instead. `offstage` carries no gate: a custom matchup, a hot-seat table and the auction are
-   the same screen in both modes, and they were only ever two rooms because this selector said so.
+   THE FRONT DOOR NO LONGER SETS `tunnel` AT ALL, and this block is why. It used to ride along with
+   the board's own class for ONE rule — `body.tunnel #root { max-width: none }` at the 900px
+   breakpoint, which is what takes #root off its 390px column on a desk — and everything else it
+   dragged was taken straight back off at the foot of 4a. That was survivable while the board named
+   only its own --ck-* tokens. It is not survivable now: 4a is drawn in the HOUSE tokens, and the
+   two rules below re-point --you to cream and --mine to near-black in SCOUT MODE ONLY (`:not(.um)`),
+   so a front door built on --you and --mine would have come out gold-on-navy in user mode and
+   cream-on-black in scout — a total repaint, and a fourth per-mode difference nobody ruled. The
+   door declares `body.door #root { max-width: none }` for itself instead; see the foot of 4a.
+
+   So `tunnel` now reaches nothing you can see anywhere: the four rules that dressed user mode's old
+   card slate — .hero.front, .slate-card, .rung, .chip-gold — have no element left to find, since
+   UserHome was deleted under "Change the user mode main screen to look like the scout mode". They
+   are left standing rather than swept out because `offstage` shares the token block above with them
+   and the sweep is not what he ruled on. `offstage` carries no gate: a custom matchup, a hot-seat
+   table and the auction are the same screen in both modes, and they were only ever two rooms
+   because this selector said so.
    ========================================================================== */
 /*
  * THE ROOM, shared by the front door and by every screen that stands on no block of the ladder
@@ -5702,612 +5725,723 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
    It stands on the boards now, so it takes the hall's cream, the dusk's mint and the arena's
    ember with everything else. */
 
+
+/* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its just
+   empty space." The page keeps `var(--dock)` plus its daylight clear at its foot for the dock the
+   play screens stand on; the map has no dock, so on the map that room is dead floor under the
+   bottom era's rule. The crawl's band has gone the same way (2026-09-08: "Delete everything below
+   the league 2026 in both modes"), and --foot is only the phone's inset now — so era I's rule is
+   the last thing on the page, and this line survives to keep the map clear of a home indicator.
+
+   IT LIVED INSIDE BLOCK 4a UNTIL 2026-09-10 and has nothing to do with the front door; it is
+   hoisted out here so that rewriting that block cannot take two of his rulings with it. */
+body.map #root { padding-bottom: var(--foot); }
+
 /* ==========================================================================
-   4a — CHALK PLAYBOOK · the front door, and since 2026-09-09 it is both
-   modes'. Claude Design "Game7 Menu Concepts", turn 4, board 4a. It was drawn
-   for scout mode under "I want scout mode home screen to be 4a. Only scout
-   mode"; his ruling of 2026-09-09, "Change the user mode main screen to look
-   like the scout mode", hands the same slate to user mode. Every rule is still
-   under .ck, and the two boards differ in three things and no more: which mode
-   chip is lit, whether the record book or the sign-off closes the foot, and
-   the cup that stands in a finished ladder's mark in user mode.
+   4a — THE FRONT DOOR, both modes'. The door screen of the Game7 flow board.
 
-   The board's own palette, kept as it was drawn but for the frame: a green
-   slate, chalk cream on it, one yellow for whatever is selected and one
-   orange for whatever is pressed.
+   HIS RULING, verbatim: "Use this design for the main page, but keep our logic
+   and things we made. Meaning - locations outside the 3pt line, the jersey
+   above the location and not to the side. Fix it logically but copy the
+   design."
+
+   THE FINDING THAT SHAPES EVERY RULE BELOW: the design was drawn in this app's
+   own bundle. Every hex in it is already a token at the head of this file —
+   #0b0a09 is --bg, #0f0d0b is --panel, #1c1815 is --divider, #241f1a is --line,
+   #f0b323 is --you, #17408b is --mine, #16130f is --you-ink, #c3d3ea is
+   --mine-tint — and both faces are already loaded. So this is not a new
+   palette; it is the front door rejoining the house. The block this replaces
+   (CHALK PLAYBOOK) was the only screen in the app that ever left it: a green
+   slate, Courier Prime and everything dashed. Every --ck-* colour token is
+   DELETED rather than translated, and the Courier Prime request comes out of
+   index.html with them, since --ck-type was its only caller in the whole
+   stylesheet.
+
+   THE TWO PLACES THE DESIGN IS OVERRULED, and they are the whole of "fix it
+   logically":
+     1. OUR COORDINATES. The three-point line keeps its STRAIGHTS at 14%/86%
+        with the arc clipped between them; the mockup draws them at 5%/95%,
+        which would put custom and vs friend INSIDE the line his ruling moved
+        them outside of. The floor stays 29:20. See `.fd-corner`.
+     2. THE JERSEY STANDS ABOVE ITS PLATE, never beside it. The mockup parks
+        the shirt a step to one side of the chip; --ck-fig-gap, the step off
+        the mark, retires with it.
+
+   AND THE ONE THE DESIGN LOSES ON ITS OWN GROUND: it is a 1440px artboard with
+   the page showing either side. That is the card with gutters his ruling
+   ("Make everything full screen") took away, so every band here runs to the
+   window's own edge and nothing is capped.
+
+   THE TWO BOARDS DIFFER IN THREE THINGS AND NO MORE: which chip is lit in the
+   header, whether the record book or the sign-off fills the navy band, and the
+   cup that stands on a finished ladder's mark in user mode.
    ========================================================================== */
-.ck {
-  /* HIS RULING, 2026-09-08: "Remove all the brown and black from the scout mode main page,
-     should be full screen green." As the board was drawn, the slate stood in a wood frame
-     (--ck-wood, #6b4a32) on a brown page, and around both of those sat the arena's near-black
-     ground. All three are gone: there is one colour behind this screen now and it is the slate,
-     from one edge of the window to the other. The frame was doing a job — it was the edge that
-     said where the board stopped — and the window's own edge does that job instead, so the only
-     thing that had to be kept is the DISTANCE it held: the wood's thickness was folded into
-     .ck-board's padding, and nothing chalked on the slate sits any closer to the glass than it
-     did. See body.chalk at the foot of this section for the page behind the board. */
-  --ck-slate: #243530;
-  --ck-chalk: #f0ead6;
-  --ck-bright: #f5f1e3;
-  --ck-dim: #cfc9b2;
-  --ck-body: #d8d2bd;
-  --ck-yellow: #ffe27a;
-  /* HIS RULING: "when pressing on something instead of a yellow circle make it orange circle."
-     The orange stands BESIDE the yellow and does not replace it — --ck-yellow is also the 7 in
-     the wordmark, the SCOUT chip, the tag and the banked line down the read, the wavy underline
-     and the CTA's dashes, and none of those is the pressed circle. The only rules that changed
-     are the two on .ck-spot.on.
+.fd {
+  /* THE FIVE VALUES THE HOUSE DOES NOT HAVE. Everything else on this screen names a token.
+     --fd-line is an rgb TRIPLE rather than a colour because the court's markings are the same
+     bone at three different alphas (0.26 boundary, 0.22 three-point line, 0.20 key and circle),
+     and a custom property cannot be given an alpha inside a colour function any other way. */
+  --fd-ground: #0d0c0a; /* the court panel — one shade under --bg, which is the design's */
+  --fd-line: 244 239 228; /* court markings: warm bone, never pure white */
+  --fd-shirt: #39332c; /* an idle jersey. The SELECTED mark overrides these three inline with */
+  --fd-shirt-ink: #8d8378; /* the franchise's own kit, which is the design's read of selection */
+  --fd-hem: #544b42; /* and ours, from real data instead of a five-colour demo cycle. */
 
-     WHICH ORANGE. A web orange (#f80, #ff6b00) is a sticker on a green slate: it is darker than
-     the board's cream and yellow, so it stops looking like chalk dust and starts looking like
-     ink. The slate's yellow is hsl(44 100% 74%) — fully saturated and very light, which is what
-     chalk is. This is the same stick swung round to hsl(26 100% 70%): unmistakably orange next
-     to that yellow, and still 6.7:1 against the slate, so the name chalked under the mark in it
-     is comfortably readable at the size a phone draws it. */
-  --ck-orange: #ffa866;
-  --ck-faint: #93987f;
-  --ck-type: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+  /**
+   * THE FLUID UNIT, and it is RE-DERIVED rather than carried over. His ruling: "make the court way
+   * bigger, to fit proportionally to the screen. Same for the logo, and for every font there in
+   * general." It tracks the window's width but is held down by its HEIGHT too, so a short window
+   * never grows the type until the read beside the floor runs off the bottom. That failure was
+   * measured once already: "a 1280x720 laptop hands it 482px across and 421 down, and type sized
+   * off the column alone ran eighteen pixels past the foot of the board."
+   *
+   * THE HEIGHT HALF IS NOT THE OLD NUMBER, because the furniture it was tuned against is gone.
+   * The old board was a head and a book — 200px plus 6.1u. This one is a top rail, an identity
+   * row and a navy band, and all three are stacks of --fd-u and so grow WITH the unit:
+   *     rail      = 0.8u (padding) + 1.15u (the year range's line) + 1px      ~ 2.0u
+   *     identity  = 1.25u (padding) + 2.6u (the ball, the tallest thing in it) ~ 3.9u
+   *     foot band = 1.0u (padding)  + 1.1u (the book's line)                   ~ 2.1u
+   * so the chrome is about 8u, and the read pane beside the floor is about 18u plus 60px of fixed
+   * rules, margins and padding. 26u + 60px <= 100dvh gives u <= 3.8dvh - 2.3px, and the value
+   * below is that with a little in hand. It is VERIFIED by measurement at 1280x720 and 1366x768
+   * rather than asserted. Above about 720px of window height the 24px cap is what binds and this
+   * half is idle; below 900px of width the page scrolls and it is idle again.
+   */
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6vh - 2px)), 24px);
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6dvh - 2px)), 24px);
+  /* the inset every band keeps off the glass, and it is the same on all four so the page reads as
+     one composition rather than four rows that happen to be stacked */
+  --fd-pad: clamp(14px, 2.4vw, 34px);
 
-  /* HIS RULING: "make the court way bigger, to fit proportionally to the screen. Same for the
-     logo, and for every font there in general." The slate was drawn at a phone's size and then
-     simply left that size on a desk — a 560px floor and 40px type marooned in a 1440px window.
-     Two fluid measures carry the whole board now instead:
+  /**
+   * WHAT STANDS ON THE FLOOR, all of it in cqw off the court so the play is the same drawing at
+   * 340px wide and at 1000 — and all of it carrying a PIXEL FLOOR, because the marks do: a
+   * min-height of 54 on a button cannot be honoured by a man drawn at 11.5% of a 300px floor.
+   * Without the floors a shoulder sits on a plate at exactly the width his phone is.
+   */
+  --fd-fig-h: clamp(38px, 11.5cqw, 130px);
+  /* HOW FAR ABOVE HIS MARK'S CENTRE THE MAN'S FEET LAND. This one number is the whole of his
+     ruling "the jersey above the location and not to the side": it replaces both --ck-fig-gap
+     (the step sideways) and --ck-fig-drop (the push below). It is read in exactly two places —
+     `.fd-fig`'s `bottom` and the ball's `--p-fy`/`--p-ty` — and they must stay the same
+     expression, because that is what guarantees the ball arrives in a hand and not near one. */
+  --fd-fig-lift: clamp(6px, 1.4cqw, 18px);
+  --fd-ball-d: clamp(11px, 3.2cqw, 34px);
+  /* the smudge both shadows are made of. It is black now rather than the slate's own green, and
+     it is centred rather than offset, because the light in this room comes from OVERHEAD CENTRE
+     (see `.fd-glow`) where the slate's came raking from its upper left. */
+  --fd-smudge: radial-gradient(closest-side, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.38) 52%, rgb(0 0 0 / 0) 100%);
 
-     --ck-u  is the unit every piece of type and every pad is a multiple of. It tracks the
-             window's width but is held down by its height too, so a short window never grows the
-             type until the read beside the floor runs off the bottom — the read is about
-             twenty-one lines of --ck-u deep, so on a 700px-tall laptop the unit has to come
-             down whatever the width would allow.
-     --ck-cw is how wide the floor is drawn: half the window, or as tall as whatever the head and
-             the book leave under them — whichever runs out first, times the court's own 29/20.
-             What they leave is the window less the band --foot keeps clear at the foot of it,
-             less the rules and padding that do not move once the board is wide (the 200px), and
-             less the head and the book themselves, which are stacks of --ck-u type and so grow
-             with it (the 6.1u).
-
-     Everything ON the floor (the marks, their names, the chalk lines) is measured in cqw off the
-     court itself, so the play is the same drawing at 340px wide and at 720. */
-  --ck-u: clamp(9px, min(2.7vw, calc(5.6vh - 26px)), 24px);
-  --ck-cw: min(56vw, calc((100vh - var(--foot) - 200px - var(--ck-u) * 6.1) * 1.45));
-  --ck-cw: min(56vw, calc((100dvh - var(--foot) - 200px - var(--ck-u) * 6.1) * 1.45));
-}
-/* HIS RULING: "Make everything full screen." The slate was a card propped in the middle of the
-   arena's dark with gutters either side; now it IS the screen — the green runs to the window's
-   own edge and the board stands the window's own height, so the head is at the top of the
-   window, the book at the foot of it, and the play in between.
-
-   THE PADDING IS CARRYING THE FRAME. His ruling of 2026-09-08 took the wood off, and the wood
-   was 7px at a phone's width and 14 at a desk's. Every inset below is therefore the padding the
-   board used to have PLUS that thickness, on the two clamps added together: the head, the court
-   and the book stand exactly where they stood against the glass instead of sliding out to meet
-   it. A flat green rectangle with the type jammed into its corners is not a slate. */
-.ck-board {
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  min-height: calc(100vh - var(--foot));
-  min-height: calc(100dvh - var(--foot));
-  /* THE SLATE'S LIGHT POOL, and it is the only shading left on this screen now the frame has
-     gone. It was a fixed 900x500 pool, which is a lamp hung over a CARD: on a phone it washed the
-     whole board evenly and on a 1440 desk it lit the top-left quarter and left the rest reading
-     as a paint chip. It is sized off the window instead, so it is always about the same lamp over
-     the same board — high and to the left, the way the light falls in a gym — and it was opened
-     from 0.05 to 0.07 because with no wood to sit against, a flat fill is the failure mode. */
-  background: var(--ck-slate) radial-gradient(120vw 80vh at 28% 6%, rgba(255, 255, 255, 0.07), transparent 62%);
-  color: var(--ck-chalk);
-  padding: clamp(23px, 6.6vw, 56px) clamp(21px, 6.2vw, 64px) clamp(21px, 5.6vw, 48px);
+  height: calc(100vh - var(--foot));
+  height: calc(100dvh - var(--foot));
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
 }
 
-.ck-head {
+/* ---------- 1 · the rail across the top ---------- */
+.fd-rail {
+  position: relative;
+  flex: 0 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 14px;
-  border-bottom: 2px dashed rgba(240, 234, 214, 0.4);
-  padding-bottom: clamp(10px, 2vw, 18px);
-  margin-bottom: clamp(16px, 3.2vw, 30px);
+  justify-content: space-between;
+  gap: 20px;
+  padding: calc(var(--fd-u) * 0.4) var(--fd-pad);
+  background: var(--panel);
+  border-bottom: 1px solid var(--divider);
+  overflow: hidden;
 }
-/* the mark and the wordmark, the pair the other front door opens with — the ball is the same
-   drawing at a header's size, and the 7 takes the slate's chalk yellow rather than house gold.
-   The ball is handed its size in the markup as a length off --ck-u, so mark and wordmark grow
-   with the window together. */
-.ck-lockup { display: flex; align-items: center; gap: clamp(8px, 2.4vw, 18px); min-width: 0; }
-.ck-lockup b {
-  font: 700 clamp(28px, calc(var(--ck-u) * 3.3), 76px) / 1 var(--ck-type);
-  letter-spacing: 0.04em;
-  color: var(--ck-bright);
+.fd-years {
+  flex: none;
+  font-family: var(--serif);
+  font-size: clamp(14px, calc(var(--fd-u) * 0.85), 22px);
+  letter-spacing: 0.24em;
+  color: var(--muted);
 }
-.ck-lockup em { font-style: normal; color: var(--ck-yellow); }
-/* the mode question as two chalk chips — the only way back to user mode from this screen */
-.ck-modes { display: flex; flex: none; gap: 6px; }
-.ck-mode {
-  padding: calc(var(--ck-u) * 0.6) calc(var(--ck-u) * 0.9);
-  background: none;
-  border: 2px dashed transparent;
-  font: 700 clamp(9px, var(--ck-u), 20px) / 1 var(--ck-type);
+/* THE SENTENCE THAT MAY NOT GO UNDER THE WORDMARK. His standing ruling took a second line off the
+   lockup — "no PLAYBOOK in the title and no PRACTICE SLATE line under it" — and the design's own
+   front-page artboard puts `Six ways to play. Pick a spot on the floor.` right back under GAME7.
+   That is the exact shape he struck, so it is not reinstated there. The DOOR screen he chose
+   carries the same sentence up here instead, right-aligned in its own band, which is a caption on
+   the rail and not a tagline on the mark. */
+.fd-cap {
+  min-width: 0;
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the crowd, two cameras deep in the dark — the house's own `.flashbulb`, moved to the design's
+   two positions and its two clocks. Nothing new is drawn: those rules already rest at opacity 0,
+   which is what lets the reduced-motion kill be one line with nothing burning behind it. */
+.fd-rail .flashbulb.one { left: 34%; top: 6px; animation-duration: 3.3s; }
+.fd-rail .flashbulb.two { left: 71%; top: 19px; animation-duration: 2.4s; }
+
+/* ---------- 2 · the identity row ---------- */
+.fd-id {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: clamp(9px, 1.4vw, 18px);
+  padding: clamp(10px, calc(var(--fd-u) * 0.62), 16px) var(--fd-pad) calc(var(--fd-u) * 0.6);
+  background: var(--bg);
+  white-space: nowrap;
+}
+.fd-word {
+  flex: none;
+  font: 400 clamp(28px, calc(var(--fd-u) * 1.7), 58px) / 1 var(--serif);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.fd-word em { font-style: normal; color: var(--you); }
+.fd-div { flex: none; width: 1px; height: clamp(22px, calc(var(--fd-u) * 1.3), 34px); background: var(--line); }
+/* THE CLUB BADGE, and it is drawn only when there is a club. `Progress.team` is null until he has
+   named one, and with it null this row is the design's row minus the badge and its divider —
+   which is the layout a fresh install opens on and so has to work anyway. The standing line reads
+   `currentLevel`, never `Progress.record`: that field is optional by his own ruling and every save
+   written before it has none. */
+.fd-badge { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.fd-crest {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(26px, calc(var(--fd-u) * 1.35), 40px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--crest);
+  border: 2px solid var(--trim);
+  font: 400 clamp(13px, calc(var(--fd-u) * 0.7), 20px) / 1 var(--serif);
+  color: var(--crest-ink);
+  padding-top: 2px;
+}
+.fd-club { min-width: 0; }
+.fd-club b,
+.fd-club i { display: block; overflow: hidden; text-overflow: ellipsis; }
+.fd-club b { font: 400 clamp(16px, calc(var(--fd-u) * 1.02), 26px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
+.fd-club i {
+  font-style: normal;
+  font-size: clamp(8.5px, calc(var(--fd-u) * 0.42), 11px);
   letter-spacing: 0.16em;
-  color: var(--ck-dim);
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+/* THE TWO COUNTERS. Rafters is `totalStars` across all three ladders and INCLUDES `credit` — stars
+   won on a ladder whose levels are gone — because it is the franchise's real banner count. Cleared
+   is `clearedCount` over ROUNDS, both computed, never typed. The denominator takes --muted-2 rather
+   than the design's #4a423a: this file's own floor for a caption on black is "never below #8a8178
+   (4.5:1)", and a denominator is information, not decoration. The split-colour device survives; it
+   moves one shade. */
+.fd-stat { flex: none; }
+.fd-stat.first { margin-left: auto; }
+.fd-stat i {
+  display: block;
+  font-style: normal;
+  font-size: clamp(8.5px, calc(var(--fd-u) * 0.42), 11px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.fd-stat b { display: block; font: 400 clamp(19px, calc(var(--fd-u) * 1.2), 32px) / 1 var(--serif); color: var(--ink); }
+.fd-stat b.gold { color: var(--you); }
+.fd-stat em { font-style: normal; color: var(--muted-2); }
+/* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
+   the ink carrying the whole state, no radius and no gap. The idle ink is --faint (#8a8178) rather
+   than the design's #6b6259, for the contrast floor above. Each half is held to 40px of height
+   because it is a real control on a phone and the design's 9px type would otherwise make it 21. */
+.fd-modes { flex: none; display: flex; align-items: stretch; border: 1px solid var(--line-3); overflow: hidden; }
+.fd-mode {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0 calc(var(--fd-u) * 0.72);
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  background: var(--surface);
   cursor: pointer;
 }
-.ck-mode.on { border-color: var(--ck-yellow); color: var(--ck-yellow); }
-.ck-mode:not(.on):hover { color: var(--ck-bright); }
+.fd-mode.on { color: var(--you); background: var(--you-tint); }
+.fd-mode:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+.fd-idbr { display: none; }
 
-/* The body takes whatever height the window has left. On a desk that is the two columns centred
-   against each other in it; on a phone it is the floor and then the read under it. */
-.ck-body { flex: 1; display: flex; flex-direction: column; gap: clamp(18px, 3.4vw, 28px); }
-@media (min-width: 900px) {
-  /* the floor takes the width --ck-cw asked for, the read takes the rest of the window */
-  .ck-body { display: grid; grid-template-columns: var(--ck-cw) minmax(0, 1fr); gap: clamp(32px, 3.6vw, 72px); align-items: center; }
-}
-
-/* ---------- the floor, drawn in dashed chalk ---------- */
-.ck-court {
+/* ---------- 3 · the floor and the read beside it ----------
+   `min-height: 0` IS LOAD-BEARING: without it the court panel cannot shrink, its container-type
+   measures a collapsed box, and the floor renders at nothing. */
+.fd-band { flex: 1; min-height: 0; display: flex; align-items: stretch; }
+.fd-panel {
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
-  /* the floor is its own container: everything chalked on it is measured in cqw below, so the
-     play keeps its exact proportions at any width the window gives it */
-  container-type: inline-size;
-  width: 100%;
-  max-width: 760px;
-  /* HIS RULING: "make the court bigger and wider." The board drew 56:47, which is a half court
-     seen almost square; 29:20 is the same floor with the backcourt trimmed, and since --ck-cw is
-     a HEIGHT budget times this ratio (the window runs out of height long before width), a wider
-     floor is also a bigger one — the same band of screen buys 136 more pixels of width. */
-  aspect-ratio: 29 / 20;
-  margin: 0 auto;
-  box-sizing: border-box;
-  border: clamp(3px, 0.4vw, 6px) dashed rgba(245, 241, 227, 0.6);
+  /* the panel is a SIZE container so the court can fit itself to what the panel leaves in BOTH
+     axes; the court is its own INLINE-SIZE container so that every cqw chalked on it measures the
+     floor and not the room around it. Without the second one the arc overshoots the straights by
+     about eight per cent on any wide, short window, because every cqw on the floor would be
+     measuring the panel. */
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* the vertical inset also holds the head of the man out top, who stands ABOVE his mark now and
+     clears the top edge of the floor by about two pixels at 375; the horizontal one absorbs the
+     corner plates, which overhang the sidelines by construction at 8.5% and 91.5% */
+  padding: clamp(14px, 2.2vh, 26px) clamp(13px, 1.8vw, 24px);
+  background: var(--fd-ground);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  overflow: hidden;
 }
-/* The arc is the top of a circle swung from the rim, so half of it is under the floor. The board
-   draws it hanging out the bottom of the court; on a phone that lands the loose half across the
-   read below it, so the sideline clips it — which is what a sideline does. The clip is on the
-   LINES alone, not the whole floor, so a mark's name at the wall can run past the sideline onto
-   the slate instead of being cut off by it. */
-.ck-lines { position: absolute; inset: 0; overflow: hidden; }
-/* on a desk the floor is not capped at a phone's idea of wide — it takes the whole track
-   --ck-cw asked for, which is already held to what the window has left under the head */
-@media (min-width: 900px) { .ck-court { max-width: none; } }
-.ck-lines span { position: absolute; box-sizing: border-box; }
-/* the round marks hang off the floor's own middle; the straights stand on their own x, and the
-   arc's clip is a frame between them, so neither of those takes the centring */
-.ck-arc, .ck-key, .ck-ftc, .ck-rim { left: 50%; transform: translateX(-50%); }
+/* THE ARENA'S LIGHT, and it is the light source every shadow on this screen is aimed away from:
+   a warm spill from above centre and a vignette that darkens the room's corners. The board this
+   replaces was lit from 28% 6% and every shadow on it slid to the lower right; here they all drop
+   straight down, which is what the design already draws under its backboard and its rim. */
+.fd-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 62% 74% at 50% 56%, rgb(255 226 178 / 0.16) 0%, rgb(255 214 150 / 0.07) 42%, rgb(0 0 0 / 0) 78%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.55) 100%);
+}
 /**
- * THE THREE-POINT LINE, and it is not a semicircle any more.
+ * THE FLOOR. Half a court seen from above, hoop at the bottom, and THE BASELINE IS NOT DRAWN
+ * (`border-bottom: 0`) so the floor runs off the foot of the frame rather than sitting in a box.
  *
- * HIS RULING: "move vs friend and custom to the corners." A circle swung off the rim and run all
- * the way down to the baseline leaves no corner to stand in — the corner of the floor is 50% of
- * the width out from that circle's centre against the circle's own 44.65%, a strip five points
- * wide where a mark is nine. A real line is cut by two STRAIGHTS instead, and the ground between
- * a straight and the sideline is where a corner three is taken.
+ * 29:20 IS NOT NEGOTIABLE. Every y in the marks table is calibrated to it — his ruling "make the
+ * court bigger and wider" moved it there from 56:47, which trimmed the backcourt and brought the
+ * three marks up top down to meet it. Changing this ratio silently invalidates all six.
  *
- * So the straights are drawn at 14% in from each sideline, and the arc is clipped to the width
- * between them: a circle of radius 44.65cqw centred on the middle of the baseline meets x = 14%
- * at sqrt(44.65^2 - 36^2) = 26.4cqw above it, which is exactly how tall the straights are. The
- * two meet in a line rather than a corner, the way they do on a floor.
- *
- * EVERY MEASURE BELOW IS IN cqw — a fraction of the court's WIDTH — and none of them in per-cent
- * of its height. That is what let the floor be made wider without redrawing it: a key that is
- * 34% of the height is a different key on a 29:20 floor than on a 56:47 one, where a key that is
- * 28.6% of the width is the same key on both.
+ * The two changes from the board it replaces are both the design's and both adopted: the lines go
+ * SOLID (there is no chalk left to draw dashed) and the floor fits itself to the panel in one
+ * expression instead of a hand-computed height budget times 1.45 — the 29/20 is written where it
+ * belongs now.
  */
-.ck-arcbox { left: 14%; right: 14%; top: 0; bottom: 0; overflow: hidden; }
+.fd-court {
+  position: relative;
+  container-type: inline-size;
+  width: min(100cqw, calc(100cqh * 29 / 20));
+  aspect-ratio: 29 / 20;
+  border: clamp(2px, 0.2vw, 4px) solid rgb(var(--fd-line) / 0.26);
+  border-bottom: 0;
+  background: radial-gradient(ellipse 70% 80% at 50% 88%, rgb(255 226 178 / 0.11) 0%, rgb(0 0 0 / 0) 72%);
+}
+/* THE SIDELINE CLIPS THE LINES AND NOTHING ELSE. The arc is swung off the rim and half of it falls
+   below the floor, so it has to be cut; the marks stand OUTSIDE this clip, so a plate in a corner
+   can run a little past the sideline onto the panel rather than losing its last letters to it —
+   which is what happened the moment his ruling made the names bigger and moved two of them into
+   the corners. The men overflow the court UPWARD for the same reason and must not be clipped
+   either; the panel is what catches both. */
+.fd-lines { position: absolute; inset: 0; overflow: hidden; }
+.fd-lines span { position: absolute; box-sizing: border-box; }
+/* the round marks and the rim assembly hang off the floor's own middle; the straights stand on
+   their own x and the arc's clip is a frame between them, so neither takes the centring */
+.fd-arc,
+.fd-key,
+.fd-ftc,
+.fd-board,
+.fd-post { left: 50%; transform: translateX(-50%); }
+/**
+ * THE THREE-POINT LINE, AND IT IS NOT A SEMICIRCLE — the one place the design's own geometry is
+ * overruled, on his ruling "move vs friend and custom to the corners."
+ *
+ * A circle swung off the rim and run all the way down to the baseline leaves no corner to stand
+ * in: the corner of the floor is 50% of the width out from that circle's centre against the
+ * circle's own 44.65%, a strip five points wide where a mark is nine. A real line is cut by two
+ * STRAIGHTS instead, and the ground between a straight and the sideline is where a corner three is
+ * taken. Drawing them is what made his ruling possible.
+ *
+ * The straights are at 14% in from each sideline, and the arc is clipped to the width between
+ * them: a circle of radius 44.65cqw centred on the middle of the baseline meets x = 14% at
+ * sqrt(44.65^2 - 36^2) = 26.4cqw above it, which is exactly how tall the straights are. The two
+ * meet in a line rather than a corner, the way they do on a floor.
+ *
+ * THE DESIGN PUTS ITS STRAIGHTS AT 5% AND 95% and clips its arc between those. At 5% the custom
+ * and vs friend marks stand INSIDE the three-point line, which is the thing his ruling moved them
+ * out of. Rejected.
+ *
+ * EVERY MEASURE HERE IS IN cqw — a fraction of the court's WIDTH — and none in per cent of its
+ * height. That is what let the floor be made wider without redrawing it: a key that is 34% of the
+ * height is a different key on a 29:20 floor than on a 56:47 one, where a key that is 28.6% of the
+ * width is the same key on both. Round things carry aspect-ratio, never a percentage height.
+ */
+.fd-arcbox { left: 14%; right: 14%; top: 0; bottom: 0; overflow: hidden; }
 /* 89.3% of the COURT is 124% of the box the arc is clipped to */
-.ck-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
-.ck-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); }
-.ck-corner.l { left: 14%; }
-.ck-corner.r { left: 86%; }
-.ck-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-bottom: none; }
-.ck-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(3px, 0.55cqw, 6px) dashed rgba(245, 241, 227, 0.5); border-radius: 50%; }
-.ck-rim { width: 10.7%; height: clamp(3px, 0.55cqw, 6px); bottom: 3.6cqw; background: rgba(245, 241, 227, 0.6); }
+.fd-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); border-radius: 50%; }
+.fd-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); }
+.fd-corner.l { left: 14%; }
+.fd-corner.r { left: 86%; }
+.fd-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-bottom: 0; }
+.fd-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-radius: 50%; }
+/* THE RIM ASSEMBLY IS THE DESIGN'S, in our units. Ours was a single solid bar and had nothing to
+   defend; this is a backboard, a stanchion and a net seen from above. The design draws all three
+   at fixed pixels inside a percentage-scaled court, so its rim is huge on a phone and a speck on a
+   desk; every one of them is converted to cqw with a pixel floor here. */
+.fd-board {
+  width: clamp(34px, 6.3cqw, 82px);
+  height: clamp(3px, 0.4cqw, 5px);
+  bottom: 1.85cqw;
+  background: linear-gradient(180deg, #f4efe4 0%, #b5a996 100%);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.6);
+}
+.fd-post { width: clamp(6px, 1cqw, 13px); height: clamp(7px, 1.2cqw, 15px); bottom: 0.7cqw; background: var(--line-3); }
+.fd-hoop {
+  position: absolute;
+  left: 50%;
+  bottom: 3.6cqw;
+  width: clamp(22px, 4cqw, 52px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  z-index: 9;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.6));
+}
+.fd-hoop svg { display: block; width: 100%; height: 100%; }
 
-/* the six plays, standing where a coach would chalk them */
-.ck-spot {
+/**
+ * ---------- the six marks ----------
+ *
+ * THE LAYER IS WHY THE Z-ORDER WORKS. `zIndex: round(y)` on a mark orders it against its own
+ * children only unless the six share one stacking context; hold them in this layer and the six
+ * order against each other inside it while the layer itself sits at 3 — under the ball at 5,
+ * because "a ball in the air passes over everything the floor is carrying." Nearer men are
+ * therefore painted over farther ones. They do not overlap today; this is what keeps that true if
+ * a mark is ever moved.
+ *
+ * ONE LIT, FIVE BARE — his ruling: "Your bullets are messed up. Have only 1 bullet on wherever I
+ * am like before and remove the circles." Four rulings got the mark to that count and each
+ * reversed part of the one before it (six dashed rings, then one filled bullet and five rings,
+ * then six dabs and no rings, then one dab and five blank). THE COUNT SURVIVES INTACT: the mark
+ * you are on lights gold with a gold ring and a gold halo, and the other five draw no mark of
+ * their own. THE DAB DOES NOT. Its seven-gradient recipe — three overlapping passes of the stick,
+ * two thin spots in the slate's own green, two specks thrown clear — existed to make a 27px mark
+ * read as CHALK ON A GREEN SLATE, and there is no chalk and no slate left for it to read against.
+ * An orange dab on a near-black floor under a gold plate is a different drawing and would need
+ * ruling on its own.
+ *
+ * `.ck-glyph` IS GONE WITH IT, and its one real job is inherited rather than dropped. It was a
+ * footprint, not a drawing: "the box was giving every mark its height. Take it away and the six
+ * names climb into the space the marks had, six tap targets fall to the height of one line of type
+ * (11px on a phone)." The plate here is one line of type for the same reason, so the BUTTON
+ * carries the height instead, with the plate centred inside it — which does not move the mark,
+ * because the button stays centred on (x, y).
+ *
+ * THE TAP TARGET, MEASURED IN A BROWSER the way the old one recorded 49x54: at a 375px viewport the
+ * smallest mark on this floor is CUSTOM at 65 x 54 and the largest is DEATH MATCH at 83 x 54, and
+ * at 320 they are the same two numbers, because the plate's type is on its pixel floor at both. So
+ * the narrowest target gained sixteen pixels across and lost none down. The 54 is this rule's own
+ * min-height and it is deliberately the OLD BOARD'S number rather than the 44 a thumb needs, so
+ * that moving from a chalk box to a plate costs no height anywhere.
+ */
+.fd-marks { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.fd-mark {
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: 3;
+  min-width: 44px;
+  min-height: 54px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: clamp(5px, 1cqw, 10px);
+  justify-content: center;
   padding: 0;
   background: none;
   cursor: pointer;
   user-select: none;
+  pointer-events: auto;
 }
-/**
- * ONE BULLET, ON WHATEVER IS PRESSED, AND NOTHING DRAWN AT THE OTHER FIVE — his ruling,
- * 2026-09-09: "Your bullets are messed up. Have only 1 bullet on wherever I am like before and
- * remove the circles."
- *
- * THIS BOX IS NOW EMPTY FIVE TIMES OUT OF SIX AND IT IS STILL HERE ON PURPOSE. Read the next rule
- * as a footprint, not as a drawing: it reserves the mark's room on the floor and paints nothing.
- * The dab itself is drawn once, on `.ck-spot.on .ck-glyph::before` further down.
- *
- * FOUR RULINGS GOT THE MARK HERE AND EACH ONE REVERSES PART OF THE LAST, so all four stand:
- *   1. "Remove the X\O from both home screens." The ring had carried a TRANSPARENT border with
- *      the letter inside it, so an empty one would have been invisible; the marks became six
- *      DASHED RINGS, chalked in.
- *   2. "Instead of an orange circle in the home screen make it a bullet." Only the PRESSED mark
- *      was filled in. The other five kept their rings, on the argument that a dab that small
- *      cannot read as chalk.
- *   3. "You made only 1 bullet, instead all. Find a way to do it." He read that and overruled it:
- *      all six became dabs, at rest and pressed, and the ring left the floor entirely. Making a
- *      21px dab read as chalk rather than as a radio button is what that pass was, and the recipe
- *      it produced is the one still in use below.
- *   4. "Have only 1 bullet on wherever I am like before and remove the circles." He read SIX dabs
- *      and threw the count out, not the drawing. So the COUNT goes back to what (2) had — one
- *      bullet, on the mark you are on — and the five others lose their mark ALTOGETHER: no ring,
- *      no dab, no dot. What stands at those five spots is the play's name and the chalk man
- *      beside it, which is enough to find them by, and the floor is quieter for it. The dab that
- *      survives is (3)'s dab and not (2)'s hard-edged disc.
- *
- * WHY THE FOOTPRINT STAYS THOUGH THE FIVE ARE BLANK, and this is the whole risk in the change:
- * the box was giving every mark its height. Take it away and the six names climb into the space
- * the marks had, six tap targets fall to the height of one line of type (11px on a phone), and
- * the selected one — the only one still drawing something — would sit on a different line from
- * the other five. So `.ck-glyph` keeps clamp(38px, 7.6cqw, 98px) square whether anything is
- * painted in it or not. Nothing on this floor moved: the six names sit on the same line they sat
- * on, the men stand where they stood (--ck-fig-gap is measured off the same centre), the ball
- * lands where it landed, and every `.ck-spot` is the size it was — 49x54 at its smallest on a
- * 375px phone, against the 44 a thumb needs. Pressing a mark paints a dab INSIDE that reserved
- * box and changes no measurement anywhere, so no name jumps when the bullet appears.
- */
-.ck-glyph {
-  display: grid;
-  place-items: center;
-  width: clamp(38px, 7.6cqw, 98px);
-  aspect-ratio: 1;
+/* THE FOCUS RING CHANGES COLOUR AND KEEPS ITS ARGUMENT. It was yellow against an orange fill: "It
+   says where the keyboard is, which is not the same question as which play is pressed, and on a
+   spot that is both you want to tell them apart." Selection is gold now, so a gold ring on a
+   selected plate would be invisible; cream stands off gold. */
+.fd-mark:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+/* THE PLATE — the design's chip, in our units. Two cells flush, no gap, NO BORDER-RADIUS anywhere
+   and no transition: the swap is instant, which is both boards' behaviour. Selection INVERTS it —
+   black-on-gold instead of light-on-smoke, the navy number tab flipping to gold on black, the ring
+   thickening 1 to 2px and a soft gold halo lifting it off the floor.
+   THE PADDING IS IN cqw WITH PIXEL FLOORS, like everything else on this floor. The design's
+   `2px 6px 0` / `3px 9px 2px` are fixed, which would make the plate a fixed object on a shrinking
+   court and grow the corners' overhang as a share of the floor exactly where there is least room.
+   The optical nudge those two paddings encode — more above than below, to seat League Gothic's
+   tall caps — is kept in the ratios. */
+.fd-plate {
+  display: flex;
+  align-items: stretch;
+  white-space: nowrap;
+  background: rgb(11 10 9 / 0.86);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 8px 16px rgb(0 0 0 / 0.5);
 }
-/**
- * THE NAME UNDER THE MARK, and since 2026-09-09 the cup stands on this line rather than inside
- * the mark — see `.ck-cup` below for why it had to move. The row is held to ONE LINE of the name
- * (`height: 1em`) so that a mark carrying a cup is exactly as tall as one that is not: the cup is
- * bigger than the line and overflows it evenly, up into the empty part of the mark's box and down
- * onto the floor, and nothing under it shifts.
- *
- * The type lives here rather than on `.ck-label` now, because the gap and the cup are both sized
- * in `em` off it. His ruling: "make all the modes fonts bigger" — the six names were chalked at
- * 2.2% of the floor, which is a caption under a mark rather than the name of a way to play.
- */
-.ck-under {
+.fd-mark.on .fd-plate {
+  background: var(--you);
+  border: 2px solid var(--you);
+  box-shadow: 0 0 0 5px rgb(240 179 35 / 0.16), 0 10px 20px rgb(0 0 0 / 0.6);
+}
+.fd-no {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.34em;
-  height: 1em;
-  font: 700 clamp(11px, 3.1cqw, 30px) / 1 var(--ck-type);
+  padding: clamp(2px, 0.3cqw, 4px) clamp(6px, 0.9cqw, 11px) 0;
+  background: var(--mine);
+  font: 400 clamp(10px, 1.9cqw, 19px) / 1 var(--serif);
+  color: var(--mine-tint);
 }
-.ck-label {
-  font: inherit;
-  letter-spacing: 0.14em;
-  color: var(--ck-dim);
-  white-space: nowrap;
+.fd-mark.on .fd-no { background: var(--you-ink); color: var(--you); }
+.fd-label {
+  display: flex;
+  align-items: center;
+  padding: clamp(3px, 0.4cqw, 5px) clamp(9px, 1.3cqw, 16px) clamp(2px, 0.25cqw, 3px);
+  font: 400 clamp(11px, 2.6cqw, 26px) / 1 var(--serif);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
+.fd-mark.on .fd-label { color: var(--you-ink); }
+
 /**
- * THE BULLET — the ONE mark on this floor, standing in whichever spot you are on. His rulings, in
- * the order they landed on it: "instead of a yellow circle make it orange circle"; then, when the
- * first pass took the name orange with it, "Fix the label to be orange only on the circle"; then
- * "make it a bullet"; then, on a board that had turned all six into bullets, "Have only 1 bullet
- * on wherever I am like before and remove the circles."
+ * THE CUP, ABOVE THE JERSEY, IN USER MODE ONLY — his standing ruling: "Add a trophy for EVERY mode
+ * at 150 wins(An actual golden trophy at the end)."
  *
- * THE ORANGE IS THE MARK AND NOTHING ELSE — the name under it lights the slate's chalk yellow,
- * which is what it lit before, because the mark is what the eye picks a play out by and a second
- * colour under it was the selection saying itself twice.
+ * WHERE IT STANDS AND WHY IT MOVED AGAIN. It stood inside the mark until "only 1 bullet", then
+ * beside the name on the line under it. There is no line under a mark any more: the name IS the
+ * mark, and when it is the one you are on it is a GOLD PLATE. Three placements were measured at
+ * 375px before this one was taken:
+ *   · INSIDE THE PLATE, beside the label — GOLD ON GOLD the moment that mode is selected, which is
+ *     exactly the case that matters, since his own campaign is 150/150 and the board opens on
+ *     CAMPAIGN. And it costs width where there is none: a cup fitted to the plate's own line (18px
+ *     tall at 375) adds about 22px with its gap, so a corner plate grows 11px on each side — and
+ *     VS FRIEND at x: 91.5% clears the panel's inner edge by a measured 8.5px at 375 today. It
+ *     would run off the screen. Rejected twice over.
+ *   · A CHEST PATCH ON THE SHIRT — measured, the man at 375 is 17.9px wide and his torso is 9.1px
+ *     across the shoulders and 6.6px at the waist, so a modelled cup with a bowl, two handles, a
+ *     stem and a two-tier base lands at seven pixels. Illegible; it is a gold smudge. It would also
+ *     have to be counter-mirrored out of the turn, like the jersey numeral.
+ *   · ABOVE THE JERSEY — a measured 18px at 375, 31px at 1280 and 42px at 1920, on the court's own
+ *     near-black in both plate states. That is bigger than the 16.5px the old board drew beside the
+ *     name, so it is not a regression, and it costs the plate no width at all.
+ * The price is a third tier on the mark — cup, jersey, plate — and it is paid in SKY, which is the
+ * one thing these three marks have: only the ladders can carry a cup and all three stand at
+ * y >= 36%, where the highest of them clears the top of the floor by a measured 23.5px at 375 and
+ * 62px at 1280x720. The mark with the least sky above it, the 1v1 bid at y: 16%, can never have
+ * one — its own head already sits within two pixels of the top edge.
  *
- * WHAT MAKES A 27px DAB READ AS CHALK RATHER THAN AS A RADIO BUTTON, which is the whole of what
- * the six-dab pass was for and is kept here word for word. A flat disc of one colour is the
- * failure case — it is what the first bullet was, and reading it back on the board is what forced
- * this recipe — so every one of these is aimed at something a machine would not have drawn:
- *   · IT IS NOT A CIRCLE. The mark is the union of three overlapping passes of the stick, so the
- *     silhouette is a lump. This survives 27px — the eye reads "wrong roundness" long before it
- *     can count pixels.
- *   · IT HAS NO EDGE. Every pass fades out over its own outer fifth instead of stopping, so the
- *     mark is dusty all the way round. The first bullet faded over the outer SEVENTH of its
- *     radius, which was under 2px on a phone: invisible, which is why it read as a flat disc.
- *   · THE DENSITY IS UNEVEN. Two thin spots in the slate's own colour are where the stick
- *     skipped, and the three passes are different sizes, so no two parts of the mark weigh the
- *     same.
- *   · IT SHEDS. Two specks sit clear of the body, one either side. Chalk throws dust.
- *
- * THE SIX ANGLES ARE GONE AND THAT IS THE RULING'S DOING. Each mark used to turn the same recipe
- * to its own angle (--ck-dab, six values on six nth-of-type rules), because six identical dabs on
- * one floor look manufactured. With only ONE dab ever on the board there is nothing for it to be
- * identical to, so the six collapse to the single rotation below — the angle the campaign's mark
- * carried, since the campaign is what the board opens on.
- *
- * IT IS PAINTED AT 72% OF THE MARK'S BOX and it does not grow, fade or transition into place:
- * there is no resting dab left for it to grow OUT of, and the box it is painted in is reserved on
- * all six marks whether it is painted or not, so a press changes colour on the floor and nothing
- * else. See `.ck-glyph` above.
- *
- * THE FOCUS RING STAYS YELLOW. It says where the keyboard is, which is not the same question as
- * which play is pressed, and on a spot that is both you want to tell them apart — a yellow
- * OUTLINE standing off the mark against an orange FILL inside it.
+ * IT IS SIZED OFF THE FLOOR, not off an inherited font. `<Trophy />`'s own `size` attribute is
+ * DEAD — this rule takes it back, and always did — and an `em` here would hang off the button's
+ * inherited body size, which is a step function at a breakpoint and has nothing to do with how big
+ * the court is. The gold is the cup's own: Trophy carries five stops and its own useId gradients,
+ * because this door can draw three of these at once and duplicate ids in one document are a lottery
+ * over which defs win. The drop shadow is what keeps it from sitting flat on the floor. It is
+ * UNCHANGED by the press: what it says — this one is finished — is not a thing the press can alter.
  */
-.ck-spot.on .ck-glyph::before {
-  content: '';
-  grid-area: 1 / 1;
-  /* the three stops of one pass of the stick, named so the seven gradients below can be read as
-     one drawing rather than as twenty-one colours. This is --ck-orange written out, because a
-     custom property cannot be given an alpha inside a colour function here. */
-  --ck-dab-core: rgba(255, 168, 102, 1);
-  --ck-dab-mid: rgba(255, 168, 102, 0.68);
-  --ck-dab-edge: rgba(255, 168, 102, 0.18);
-  width: 72%;
-  aspect-ratio: 1;
-  transform: rotate(14deg);
-  /* SEVEN LAYERS AND NOT ONE CLIP. Painted from the bottom of this list up, which is the order a
-     hand would do it in:
-       · THREE PASSES OF THE STICK (the last three), a big one and two smaller ones put down off
-         centre and overlapping. Their UNION is the silhouette, and that is the whole trick: a
-         border-radius would have given a lump too, but whatever silhouette you cut, the paint
-         runs up to the cut and stops dead, and a hard edge is the one thing a chalk mark does
-         not have. Three soft circles have no edge anywhere — each holds full body to about 78%
-         of its own radius and is gone by 100% — so the mark is a lump with dusty sides. It is
-         `--ck-smudge`'s profile, the soft disc the men's contact shadows are drawn with, pulled
-         tight enough to leave a body in the middle.
-       · TWO SPECKS thrown clear of it, at the size of a pixel or two. Chalk sheds.
-       · TWO THIN SPOTS on top, painted in the slate's own colour: over the dust they are where
-         the stick skipped, and over the slate outside the dab they ARE the slate, so they cost
-         nothing at the rim and need no clipping to stay inside the mark.
-     Nothing here is centred and nothing is symmetrical, which is the difference between a mark
-     somebody made and a shape a machine filled. */
-  background:
-    radial-gradient(12% 12% at 22% 64%, rgba(36, 53, 48, 0.5), rgba(36, 53, 48, 0) 100%),
-    radial-gradient(18% 18% at 61% 31%, rgba(36, 53, 48, 0.32), rgba(36, 53, 48, 0) 100%),
-    radial-gradient(7% 7% at 89% 21%, var(--ck-dab-mid), rgba(255, 168, 102, 0) 100%),
-    radial-gradient(5% 5% at 13% 85%, var(--ck-dab-mid), rgba(255, 168, 102, 0) 100%),
-    radial-gradient(
-      28% 28% at 66% 66%,
-      var(--ck-dab-core) 76%,
-      var(--ck-dab-mid) 90%,
-      var(--ck-dab-edge) 97%,
-      rgba(255, 168, 102, 0) 100%
-    ),
-    radial-gradient(
-      32% 32% at 36% 36%,
-      var(--ck-dab-core) 78%,
-      var(--ck-dab-mid) 91%,
-      var(--ck-dab-edge) 97%,
-      rgba(255, 168, 102, 0) 100%
-    ),
-    radial-gradient(
-      40% 40% at 50% 52%,
-      var(--ck-dab-core) 80%,
-      var(--ck-dab-mid) 92%,
-      var(--ck-dab-edge) 98%,
-      rgba(255, 168, 102, 0) 100%
-    );
+.fd-cup {
+  position: absolute;
+  left: 50%;
+  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 6px));
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  height: clamp(18px, 4.3cqw, 42px);
+  line-height: 0;
+  pointer-events: none;
 }
-.ck-spot.on .ck-label { color: var(--ck-yellow); }
-.ck-spot:focus-visible { outline: 2px solid var(--ck-yellow); outline-offset: 4px; }
-/**
- * THE CUP, BESIDE THE NAME, IN USER MODE ONLY — his ruling: "Add a trophy for EVERY mode at 150
- * wins(An actual golden trophy at the end)."
- *
- * IT USED TO STAND INSIDE THE MARK, and that is the decision this one replaces. The marks were
- * rings then and the ring was a hole with room in it — the room the X and the O had just left —
- * so the cup went in there, and when the pressed mark became a bullet a mark with a cup in it was
- * exempted from filling in, because a bullet and a trophy want the same middle. THAT EXEMPTION IS
- * THE VERY THING HE THREW OUT: "You made only 1 bullet, instead all." A ladder with all 150
- * cleared was one of the five still wearing a ring. There is no inside to a dab, so the cup comes
- * out of the mark and stands on the line under it, at the head of the name — which is where a cup
- * belongs anyway: this ladder's name, and the cup it won. Every one of the six is now the same
- * dab, pressed or not, cup or not.
- *
- * WHAT KEEPS IT FROM MOVING ANYTHING. It is sized in `em` off the name it stands beside, so it
- * grows with the floor the way everything else chalked on it does (the width attribute React
- * writes on the svg is overridden here). And the line it sits on is held to the height of the
- * name (`.ck-under`), so the cup — which is half again as tall as that — overflows the line
- * evenly rather than pushing it down: a mark with a cup is exactly as tall as one without, and
- * the six names all sit on the same line off their marks. What it DOES do is widen the row, so
- * the name of a finished ladder is nudged along by half the cup. That is the price of putting it
- * beside the name and it is paid once, at load: nothing moves when the mark is pressed.
- *
- * Gold on the slate is the only thing on this screen that is not chalk, and that is the point:
- * his ruling asks for an actual golden trophy, not a chalk drawing of one. The drop shadow is
- * what keeps it from sitting flat on the floor. It is UNCHANGED by the press — the mark goes
- * orange and the name goes yellow underneath it, and the cup is gold either way, because what it
- * says ("this one is finished") is not a thing the press can alter.
- */
-.ck-cup { display: grid; place-items: center; width: 1.5em; flex: none; line-height: 0; }
-.ck-cup .trophy { width: 100%; height: auto; filter: drop-shadow(0 1px 3px rgba(6, 14, 11, 0.65)); }
+.fd-cup .trophy { width: auto; height: 100%; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.7)); }
 
 /* ---------- THE PLAY: SIX MEN AND ONE BALL ----------
    HIS RULING, 2026-09-08: "Instead of a man running, with the ball, have a player on the field for
    each mode, and have them passing the ball. But please, make the animation good, 3d esque. This
    animation was disrespect."
 
-   WHAT WENT. `.ck-runner` — one stick figure at two units of stroke, sliding between the marks on
-   a transition of left and top with an orange circle for a ball, limbs swinging about their joints
-   over a body that never shifted its weight. He is deleted, not rescued.
+   ALL OF IT SURVIVES THE NEW DESIGN, dressed rather than replaced. The design's figure is a shirt
+   and nothing else — a clip-path with a number on it, no head, no arms, no legs — and its ball is
+   a flat 620ms tween of left and top with a fixed 54px lift and a fixed shadow whatever the
+   distance. A shirt cannot throw. Adopting it would delete the throw, the catch, the turn and the
+   breath in favour of something strictly less than the drawing he already sent back once. So the
+   men keep everything they do and put the design's kit on.
 
-   WHAT STANDS HERE INSTEAD. Six men, one on every mark, none of whom ever moves; the ball is the
-   only thing that travels, and it is thrown from whoever holds it to the man whose mark you
-   pressed. The court is drawn as a PLAN and a plan has no eye level, so every scrap of depth on
-   this floor is manufactured, and it is manufactured five ways at once because no one of them
-   would carry it alone:
-
-     1. THE BALL LEAVES THE PLANE AND GROWS. `ck-lift` carries it up a parabola and SCALES IT UP
+   THE COURT IS A PLAN AND A PLAN HAS NO EYE LEVEL, so every scrap of depth here is manufactured,
+   five ways at once because no one of them would carry it alone:
+     1. THE BALL LEAVES THE PLANE AND GROWS. `.fd-lift` carries it up a parabola and scales it up
         toward the apex, because a thing coming nearer the eye is bigger. That single trick does
         more here than everything else together.
-     2. ITS SHADOW STAYS ON THE FLOOR. `ck-cast` is a child of the ground rig and never lifts, so
+     2. ITS SHADOW STAYS ON THE FLOOR. `.fd-cast` is a child of the ground rig and never lifts, so
         it slides out from under the ball as the ball climbs and the GAP between the two is the
-        only reading of height this drawing has. It opens and pales at the apex the way a soft
-        shadow does, and draws back in and darkens as the ball drops into the hands.
-     3. THE MEN STAND ON THE PLAN RATHER THAN IN IT. Each is anchored at his FEET, drawn upright
-        in three-quarter view, with a contact smudge under him.
+        only reading of height this drawing has.
+     3. THE MEN STAND ON THE PLAN RATHER THAN IN IT. Each is anchored at his FEET, drawn upright in
+        three-quarter view, with a contact smudge under him.
      4. THE FLOOR RECEDES. --dep is set off how far down the court a man is: away up the floor he
         is smaller and fainter, down at the baseline he is bigger and brighter, and the ball takes
-        the two ends' scales with it so a pass up the floor shrinks on its way.
-     5. NOTHING IS LINEAR. Every list below sets its own curve at every stop — the wind-up, the
-        release, the rise, the fall and the settle are five different accelerations.
+        the two ends' scales with it so a pass up the floor shrinks on its way. The design scales
+        its shirts by --dep and never fades them, which is the same trick half done.
+     5. NOTHING IS LINEAR. Every list below sets its own curve at every stop.
 
-   THE UNITS. Both play layers are SIZE containers cut to the court exactly, so 1cqw is one per
-   cent across the floor and 1cqh is one per cent down it, which are the units the six marks are
-   already placed in. Nothing here is a pixel offset from anything, so the play is the same drawing
-   at 331px of floor and at 761, and a window resized mid-throw simply redraws the throw at the new
-   size rather than losing the ball off the edge.
-
-   THE CLOCK. --pdur is the whole gesture and ChalkHome sets it off the length of the throw, since
+   THE CLOCK. --pdur is the whole gesture and FrontDoor sets it off the length of the throw, since
    a long pass hangs and a short one is a zip. The wind-up is a fifth of the flight, which is why
-   17% is the moment of release in every list below whatever the distance, and 52% is the apex —
-   a little before half time on purpose, because the flight decelerates into the catch and an apex
-   at exactly half reads late in space. */
-.ck {
-  /* A man's height, the step he stands off his mark, how far below the mark's middle his feet
-     land, and the ball. All four carry a PIXEL FLOOR because the marks do: .ck-glyph's box cannot
-     go under 38px, so on a phone the step off the mark has to clear 38px rather than the 7.6cqw
-     the box would otherwise be — without that floor a shoulder sits on a mark and a head sits on
-     a name at exactly the width his phone is. THE GAP HAS NOT MOVED THROUGH ANY OF THE FOUR
-     RULINGS ON THE MARK — the letters coming out, the box coming in from 9.3cqw to 7.6, all six
-     turning to dabs, and five of the six going blank. It is measured off the mark's CENTRE and
-     the mark's box is the size it has been throughout, so the men stand exactly where they stood
-     and the pass lands exactly where it landed. */
-  --ck-fig-h: clamp(38px, 11.5cqw, 130px);
-  --ck-fig-gap: clamp(36px, 9.1cqw, 112px);
-  --ck-fig-drop: clamp(7px, 2cqw, 24px);
-  --ck-ball-d: clamp(11px, 3.2cqw, 34px);
-  /* the smudge both shadows are made of: the slate's own green run down to almost nothing, so it
-     reads as chalk rubbed out under a man rather than as a black ellipse stuck on him */
-  --ck-smudge: radial-gradient(closest-side, rgba(6, 14, 11, 0.92), rgba(6, 14, 11, 0.42) 52%, rgba(6, 14, 11, 0) 100%);
-}
-/* THE TWO LAYERS, and they are two because the marks go BETWEEN them: a man is on the floor and
-   must never cover a name or eat a tap, and a ball in the air passes over everything the floor is
-   carrying. Both are the court exactly and both are size containers, so a position on either is
-   the same pair of numbers the marks are placed at. Neither takes a press. */
-.ck-floor,
-.ck-air {
-  position: absolute;
-  inset: 0;
-  container-type: size;
-  pointer-events: none;
-}
-.ck-floor { z-index: 1; }
-.ck-air { z-index: 5; }
-.ck-figdefs { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+   17% is the moment of release in every list below whatever the distance, and 52% is the apex — a
+   little before half time on purpose, because the flight decelerates into the catch and an apex at
+   exactly half reads late in space. */
 
 /* ---------- a man ----------
    FOUR NESTED SPANS BECAUSE AN ELEMENT CARRIES ONE TRANSFORM, and where he stands, how he
-   breathes, how he throws and which way he is turned are four different questions. Stacking them
-   also means the throw can be restarted — its span is remade on every press — without disturbing
-   the breathing above it, which keeps its own phase. */
-.ck-p {
-  --h: calc(var(--ck-fig-h) * var(--dep));
+   breathes, how he throws and which way he is turned are four different questions.
+
+   WHERE HE STANDS IS THE ONE THING HIS RULING CHANGED. He used to be placed at his mark's own
+   percentages plus a step to one side of them and a push below; he is placed off THE MARK'S OWN
+   CENTRE now — `bottom: 50%` of a button that is itself centred on (x, y) — so his feet land one
+   --fd-fig-lift above the mark whatever height the plate turns out to be. That is not a
+   convenience: a plate's height is content, and CSS cannot read content back, so a figure hung off
+   the plate could not have its feet named in a stylesheet at all — and the ball's two ends have to
+   be built from the same expression that places him, or it arrives near a hand instead of in one.
+   `translate(-100%)` is gone with the same change: the anchor is the button's middle now, not the
+   man's own height.
+
+   HE IS INSIDE THE BUTTON AND TAKES A PRESS. He used to sit in a pointer-events:none layer so that
+   "a man is on the floor and must never cover a name or eat a tap" — but the name he could have
+   covered is directly under him now, so the only thing he covers is his own mark, and he ENLARGES
+   its target instead of being excluded from it. */
+.fd-fig {
+  --h: calc(var(--fd-fig-h) * var(--dep));
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 50%;
+  bottom: calc(50% + var(--fd-fig-lift));
   width: calc(var(--h) * 0.44);
   height: var(--h);
-  /* his mark's own percentages, plus the step off it, and then MINUS HIS OWN FULL HEIGHT: the
-     point the numbers name is where his feet are, and the body goes up from there. That is the
-     whole of what makes him stand on the plan instead of lying in it. */
-  transform: translate(
-    calc(var(--x) * 1cqw + var(--side) * var(--ck-fig-gap) - 50%),
-    calc(var(--y) * 1cqh + var(--ck-fig-drop) - 100%)
-  );
+  transform: translateX(-50%);
   /* air greys out distance: the man out top is a shade fainter than the men on the baseline */
-  opacity: calc(0.78 + (var(--dep) - 0.86) * 0.75);
+  opacity: calc(0.82 + (var(--dep) - 0.86) * 0.75);
 }
-/* the contact smudge — it does not breathe with him, because the floor does not move */
-.ck-p-shade {
+/* the contact smudge — it does not breathe with him, because the floor does not move. Centred, not
+   offset: the light in this room is overhead, not raking. */
+.fd-p-shade {
   position: absolute;
   left: 50%;
   bottom: 0;
   width: calc(var(--h) * 0.54);
   height: calc(var(--h) * 0.16);
-  transform: translate(-44%, 44%);
+  transform: translate(-50%, 44%);
   border-radius: 50%;
-  background: var(--ck-smudge);
-  opacity: 0.72;
+  background: var(--fd-smudge);
+  opacity: 0.66;
 }
-.ck-p-idle,
-.ck-p-act,
-.ck-p-turn {
+.fd-p-idle,
+.fd-p-act,
+.fd-p-turn {
   position: absolute;
   inset: 0;
   /* every one of them pivots at the FEET, because that is where a standing body is joined to the
      ground: lean from the ankles, not from the middle */
   transform-origin: 50% 100%;
 }
-/* THE TURN, AND IT IS A CUT AND NOT A SWEEP. He is drawn facing right; turned round he is the
-   same drawing mirrored — but taking a scaleX from 1 to -1 continuously drags him through ZERO,
-   and for two frames every man who turns is a vertical line. That is a paper doll on a spindle,
-   and it is exactly the kind of thing his ruling was about. So the turn is done the way it is
-   done by hand: squash him toward the turn, CUT on the narrowest frame — the steps(1) is that
-   cut, and he is never narrower than half — and open him out facing the other way. The whole
-   thing is 280ms, and the six are dealt a few milliseconds apart so a floor turning to watch the
-   ball is a ripple rather than one mechanical beat. It runs only for the men whose facing
-   actually changed; the rest are left alone on the rule underneath. */
-.ck-p-turn { transform: scaleX(var(--face)); }
-.ck-p-turn.spin { animation: ck-turn 280ms calc(var(--i) * 14ms) both; }
-@keyframes ck-turn {
+/* THE TURN, AND IT IS A CUT AND NOT A SWEEP. He is drawn facing right; turned round he is the same
+   drawing mirrored — but taking a scaleX from 1 to -1 continuously drags him through ZERO, and for
+   two frames every man who turns is a vertical line. That is a paper doll on a spindle, and it is
+   exactly the kind of thing his ruling was about. So the turn is done the way it is done by hand:
+   squash him toward the turn, CUT on the narrowest frame — the steps(1) is that cut, and he is
+   never narrower than half — and open him out facing the other way. The whole thing is 280ms, and
+   the six are dealt a few milliseconds apart so a floor turning to watch the ball is a ripple
+   rather than one mechanical beat. It runs only for the men whose facing actually changed. */
+.fd-p-turn { transform: scaleX(var(--face)); }
+.fd-p-turn.spin { animation: fd-turn 280ms calc(var(--i) * 14ms) both; }
+@keyframes fd-turn {
   0% { transform: scaleX(var(--face0)); animation-timing-function: cubic-bezier(0.4, 0, 0.85, 0.5); }
   50% { transform: scaleX(calc(var(--face0) * 0.5)); animation-timing-function: steps(1, end); }
   51% { transform: scaleX(calc(var(--face) * 0.5)); animation-timing-function: cubic-bezier(0.15, 0.5, 0.35, 1); }
   100% { transform: scaleX(var(--face)); }
 }
-.ck-p svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.fd-p-turn svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* THE JERSEY NUMERAL LIVES OUTSIDE THE TURN, which is the whole reason it can be here at all.
+   Everything inside `.fd-p-turn` is mirrored — right for a body, right for the arms, and wrong for
+   a glyph: a man facing left would wear a backwards digit. Hung one level up it never mirrors and
+   still throws and catches with him.
+   AND IT IS DROPPED UNDER A 460px COURT. At 375 the torso is nine pixels across; a numeral on it is
+   a smudge, and the plate under him carries 01-06 either way, which is where the number is
+   actually read. */
+.fd-jnum {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
+  text-align: center;
+  font: 400 max(9px, calc(var(--h) * 0.18)) / 1 var(--serif);
+  color: var(--fd-shirt-ink);
+  pointer-events: none;
+}
+@container (max-width: 460px) {
+  .fd-jnum { display: none; }
+}
 
-/* CHALK WITH MASS. The board's other figure was five hairlines; this one is a filled body and
-   limbs drawn as thick round-capped strokes, which is a capsule and reads as an arm with a
-   thickness. Every piece takes the SAME gradient, in the figure's own user space, so the joins
-   between them cannot be seen at any size — that is what lets a man be built out of loose strokes
-   and still read as one solid body. The paint carries a flat cream fallback after the reference,
-   so a figure is never invisible if the def cannot be found. */
-.ck-figdefs .s0 { stop-color: var(--ck-bright); }
-.ck-figdefs .s1 { stop-color: var(--ck-chalk); }
-.ck-figdefs .s2 { stop-color: var(--ck-faint); }
-.ck-fig .ck-solid { fill: url(#ck-fig-chalk) var(--ck-chalk); stroke: none; }
-.ck-fig .ck-limb {
+/* A MAN WITH MASS, DRESSED IN THE KIT. The figure before this one was five hairlines, which is a
+   diagram of a person rather than a person; this is a filled body with limbs drawn as thick
+   round-capped strokes, which is a capsule and reads as an arm with a thickness. Every cream piece
+   takes the SAME gradient, in the figure's own user space, so the joins between them cannot be seen
+   at any size — that is what lets a man be built out of loose strokes and still read as one solid
+   body. Each paint carries a flat fallback after the url() reference, so a figure is never
+   invisible if the def cannot be found.
+
+   THE KIT IS THREE ELEMENTS AND NOT FOUR. `.fd-kit` is the torso and the two shoulder caps — the
+   caps read as the sleeve, so they join the shirt — and the HEAD keeps the shared gradient. That is
+   the whole reason the torso needed a class of its own: the class it used to share carried the head
+   as well, and filling it with the kit would have painted his face navy. Cream arms and legs
+   against a coloured torso is a basketball jersey. The hem is a path inside the torso's own
+   geometry rather than a bar laid over it, so it cannot poke out of the silhouette at any size. */
+.fd-figdefs { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.fd-figdefs .s0 { stop-color: var(--ink-2); }
+.fd-figdefs .s1 { stop-color: var(--muted); }
+.fd-figdefs .s2 { stop-color: var(--muted-2); }
+.fd-fig-g .fd-solid { fill: url(#fd-fig-ink) var(--muted); stroke: none; }
+.fd-fig-g .fd-kit { fill: var(--fd-shirt); stroke: none; }
+.fd-fig-g .fd-hem { fill: var(--fd-hem); stroke: none; }
+.fd-fig-g .fd-limb {
   fill: none;
-  stroke: url(#ck-fig-chalk) var(--ck-chalk);
+  stroke: url(#fd-fig-ink) var(--muted);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.ck-fig .th { stroke-width: 8.6; }
-.ck-fig .sh { stroke-width: 6.6; }
-.ck-fig .ft { stroke-width: 5; }
-.ck-fig .up { stroke-width: 6.4; }
-.ck-fig .lo { stroke-width: 5.4; }
-.ck-fig .nk { stroke-width: 6.4; }
+.fd-fig-g .th { stroke-width: 8.6; }
+.fd-fig-g .sh { stroke-width: 6.6; }
+.fd-fig-g .ft { stroke-width: 5; }
+.fd-fig-g .up { stroke-width: 6.4; }
+.fd-fig-g .lo { stroke-width: 5.4; }
+.fd-fig-g .nk { stroke-width: 6.4; }
 /* the far side of the body held back — the oldest depth trick there is, and one attribute */
-.ck-fig .ck-arm.b,
-.ck-fig .ck-far { opacity: 0.7; }
-.ck-arm { transform-origin: 0px 0px; }
+.fd-fig-g .fd-arm.b,
+.fd-fig-g .fd-far { opacity: 0.7; }
+.fd-arm { transform-origin: 0px 0px; }
 
 /* ---------- what the six do ----------
    IDLE: a breath and a shift of weight, on his own period and his own phase, so six of them never
    pulse together and none of it is loud enough to compete with a screen somebody is reading. Six
    figures held perfectly still read as traffic cones; this is the least that stops them. */
-.ck-p-idle { animation: ck-breathe calc(3.6s + var(--i) * 0.43s) calc(var(--i) * -1.13s) ease-in-out infinite; }
-@keyframes ck-breathe {
+.fd-p-idle { animation: fd-breathe calc(3.6s + var(--i) * 0.43s) calc(var(--i) * -1.13s) ease-in-out infinite; }
+@keyframes fd-breathe {
   0%, 100% { transform: translateY(0) rotate(0deg) scaleY(1); }
   30% { transform: translateY(-1.1%) rotate(0.85deg) scaleY(1.013); }
   66% { transform: translateY(0.3%) rotate(-0.6deg) scaleY(0.994); }
 }
-/* THE THROW AND THE CATCH, and this is the part the last drawing did not have at all. A pass has
-   an anticipation, a release and a follow-through, and the WHOLE BODY does them: the thrower sinks
+/* THE THROW AND THE CATCH, and this is the part the runner did not have at all. A pass has an
+   anticipation, a release and a follow-through, and the WHOLE BODY does them: the thrower sinks
    into the coil and leans back off the target (10%), drives through it and comes up off the floor
    as the ball leaves (18%), rides forward on the follow-through (32%) and is back on his feet
    before the ball is halfway. The catcher does nothing at all until the ball is two thirds of the
    way to him, rises to meet it, takes it, and then GIVES at the knees — the sink at 87% is the
    ball's weight arriving, and it is what stops the catch looking like a magnet.
-   Both lean along --face, which is the direction each of them is already turned: the thrower at
-   his target, the catcher back down the line the ball is coming in on. */
-.ck-p.throw .ck-p-act { animation: ck-throw var(--pdur) both; }
-.ck-p.throw .ck-arm { animation: ck-throw-arm var(--pdur) both; }
+   Both lean along --face, which is the direction each of them is already turned: the thrower at his
+   target, the catcher back down the line the ball is coming in on. */
+.fd-fig.throw .fd-p-act { animation: fd-throw var(--pdur) both; }
+.fd-fig.throw .fd-arm { animation: fd-throw-arm var(--pdur) both; }
 /* the catch runs a third longer than the flight so it can still be absorbing after the ball has
    landed: the ball arrives at 77% of this list */
-.ck-p.catch .ck-p-act { animation: ck-catch calc(var(--pdur) * 1.3) both; }
-.ck-p.catch .ck-arm { animation: ck-catch-arm calc(var(--pdur) * 1.3) both; }
-@keyframes ck-throw {
+.fd-fig.catch .fd-p-act { animation: fd-catch calc(var(--pdur) * 1.3) both; }
+.fd-fig.catch .fd-arm { animation: fd-catch-arm calc(var(--pdur) * 1.3) both; }
+@keyframes fd-throw {
   0% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
   10% { transform: translate(calc(var(--face) * -6%), 2%) rotate(calc(var(--face) * -4.5deg)) scaleY(0.965); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
   18% { transform: translate(calc(var(--face) * 8%), -3%) rotate(calc(var(--face) * 6.5deg)) scaleY(1.028); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
   32% { transform: translate(calc(var(--face) * 4%), -1%) rotate(calc(var(--face) * 3.4deg)) scaleY(1.006); animation-timing-function: cubic-bezier(0.35, 0, 0.3, 1); }
   62%, 100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
 }
-@keyframes ck-catch {
+@keyframes fd-catch {
   0%, 44% { transform: translate(0, 0) rotate(0deg) scaleY(1); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
   62% { transform: translate(calc(var(--face) * 2.5%), -3.4%) rotate(calc(var(--face) * 2deg)) scaleY(1.03); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
   77% { transform: translate(calc(var(--face) * 1.2%), -1.4%) rotate(calc(var(--face) * 1deg)) scaleY(1.014); animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1); }
@@ -6315,16 +6449,16 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   100% { transform: translate(0, 0) rotate(0deg) scaleY(1); }
 }
 /* THE ARMS SWING INSIDE THE MIRROR, so a rotation here is always "forward" for the man doing it,
-   whichever way he is turned. --amp is how far each of the two goes — the near one all the way,
-   the far one a little under three quarters — so the pair never looks like one arm drawn twice. */
-@keyframes ck-throw-arm {
+   whichever way he is turned. --amp is how far each of the two goes — the near one all the way, the
+   far one a little under three quarters — so the pair never looks like one arm drawn twice. */
+@keyframes fd-throw-arm {
   0% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
   10% { transform: rotate(calc(var(--amp) * 26deg)); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4); }
   18% { transform: rotate(calc(var(--amp) * -76deg)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
   32% { transform: rotate(calc(var(--amp) * -54deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.3, 1); }
   66%, 100% { transform: rotate(0deg); }
 }
-@keyframes ck-catch-arm {
+@keyframes fd-catch-arm {
   0%, 44% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
   62% { transform: rotate(calc(var(--amp) * -68deg)); animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1); }
   77% { transform: rotate(calc(var(--amp) * -60deg)); animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1); }
@@ -6333,49 +6467,55 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 
 /* ---------- the ball ----------
+   THE LAYER IS THE COURT EXACTLY AND IT IS A SIZE CONTAINER, so 1cqw is one per cent across the
+   floor and 1cqh is one per cent down it — the units the six marks are already placed in. Nothing
+   here is a pixel offset from anything, so the play is the same drawing at 331px of floor and at
+   1000, and a window resized mid-throw simply redraws the throw at the new size.
+
    THE RIG IS THE BALL'S GROUND POSITION — where it would be if it never left the floor. Its
    untouched transform IS the catcher's hands, which is why there is nothing to restore when the
    throw is over: the animation simply lands on the rule underneath it. */
-.ck-ball-rig {
+.fd-air { position: absolute; inset: 0; container-type: size; pointer-events: none; z-index: 5; }
+.fd-ball-rig {
   position: absolute;
   left: 0;
   top: 0;
   width: 0;
   height: 0;
   /* THE TWO ENDS OF THE THROW, composed here on the element that uses them so the container units
-     resolve against the air layer and nothing else. Each is a mark's own percentage plus the step
-     the man standing on it takes off it — the same expression .ck-p is placed by, which is how the
-     ball is guaranteed to arrive in a hand and not near one at every width. */
-  --p-fx: calc(var(--pfx) * 1cqw + var(--pfs) * var(--ck-fig-gap));
-  --p-fy: calc(var(--pfy) * 1cqh + var(--ck-fig-drop));
-  --p-tx: calc(var(--ptx) * 1cqw + var(--pts) * var(--ck-fig-gap));
-  --p-ty: calc(var(--pty) * 1cqh + var(--ck-fig-drop));
+     resolve against the air layer and nothing else. Each is a mark's own percentage MINUS the same
+     --fd-fig-lift that `.fd-fig` is placed by, which is where that man's feet are — one expression,
+     read twice and computed once. Get this wrong and the ball arrives near a hand instead of in
+     one, at some widths and not others. */
+  --p-fx: calc(var(--pfx) * 1cqw);
+  --p-fy: calc(var(--pfy) * 1cqh - var(--fd-fig-lift));
+  --p-tx: calc(var(--ptx) * 1cqw);
+  --p-ty: calc(var(--pty) * 1cqh - var(--fd-fig-lift));
   /* the wind-up: six per cent BACK down the line the ball is about to travel */
   --p-kx: calc(var(--p-fx) * 1.06 - var(--p-tx) * 0.06);
   --p-ky: calc(var(--p-fy) * 1.06 - var(--p-ty) * 0.06);
   /* hand height at each end, off each man's OWN height — so the ball leaves a near man's hands
      further up the screen than a far man's, which is the receding floor again */
-  --p-fh: calc(var(--ck-fig-h) * var(--pfd) * 0.47);
-  --p-th: calc(var(--ck-fig-h) * var(--ptd) * 0.47);
+  --p-fh: calc(var(--fd-fig-h) * var(--pfd) * 0.47);
+  --p-th: calc(var(--fd-fig-h) * var(--ptd) * 0.47);
   --p-arc: calc(var(--parc) * 1cqw);
   transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd));
 }
-.ck-ball-rig.go { animation: ck-ground var(--pdur) both; }
+.fd-ball-rig.go { animation: fd-ground var(--pdur) both; }
 /* the ground path: back for the wind-up, out of the hand hard, and decelerating into the catch —
    which is the asymmetry that makes it arrive rather than stop */
-@keyframes ck-ground {
+@keyframes fd-ground {
   0% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.25, 0.7, 0.4, 1); }
   10% { transform: translate(var(--p-kx), var(--p-ky)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.3); }
   17% { transform: translate(var(--p-fx), var(--p-fy)) scale(var(--pfd)); animation-timing-function: cubic-bezier(0.35, 0.2, 0.5, 1); }
   100% { transform: translate(var(--p-tx), var(--p-ty)) scale(var(--ptd)); }
 }
-
 /* HEIGHT, AND THE SCALE THAT SELLS IT. The lift is the ball's distance off the floor and nothing
    else. It rises decelerating and falls accelerating, because that is gravity and because a
    symmetrical curve reads as a slide rather than a throw; at the top it is half again its size,
    which is the whole of the "nearer the eye" trick. At 94% it is BELOW the receiving hand and a
    touch large — the catch taken low and brought up — and it settles on the last six per cent. */
-.ck-lift {
+.fd-lift {
   position: absolute;
   left: 0;
   top: 0;
@@ -6383,8 +6523,8 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   height: 0;
   transform: translateY(calc(var(--p-th) * -1));
 }
-.ck-ball-rig.go .ck-lift { animation: ck-lift var(--pdur) both; }
-@keyframes ck-lift {
+.fd-ball-rig.go .fd-lift { animation: fd-lift var(--pdur) both; }
+@keyframes fd-lift {
   0% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.3, 0.65, 0.4, 1); }
   10% { transform: translateY(calc(var(--p-fh) * -0.82)) scale(0.95); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.35); }
   17% { transform: translateY(calc(var(--p-fh) * -1)) scale(1); animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
@@ -6392,226 +6532,319 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   94% { transform: translateY(calc(var(--p-th) * -0.84)) scale(1.05); animation-timing-function: cubic-bezier(0.25, 1.5, 0.5, 1); }
   100% { transform: translateY(calc(var(--p-th) * -1)) scale(1); }
 }
-
-/* THE SHADOW STAYS ON THE FLOOR. It is inside the rig, so it takes the ground path for free and
-   the only thing it ever does is answer the ball's HEIGHT: it slides away from under the ball
-   toward the lower right — the slate's light is the highlight at 28% 6% of .ck-board, so
-   everything on this floor casts down and to the right — spreads and pales as the ball climbs,
-   and draws back in and darkens as the ball comes down. The gap between it and the ball is the
-   only measure of height this drawing has. Both the spread and the fade are scaled by --parc, the
-   apex of this particular throw, so a lob opens a wider, paler shadow than a zip does. */
-.ck-cast {
+/* THE SHADOW STAYS ON THE FLOOR. It is inside the rig, so it takes the ground path for free and the
+   only thing it ever does is answer the ball's HEIGHT: it spreads and pales as the ball climbs and
+   draws back in and darkens as it comes down. Both the spread and the fade are scaled by --parc,
+   the apex of this particular throw, so a lob opens a wider, paler shadow than a zip does.
+   IT NO LONGER SLIDES TOWARD THE LOWER RIGHT. That was keyed to the slate's light at 28% 6%; this
+   room is lit from overhead centre, so a ball in the air drops its shadow straight down. */
+.fd-cast {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(var(--ck-ball-d) * 1.55);
-  height: calc(var(--ck-ball-d) * 0.62);
-  margin-left: calc(var(--ck-ball-d) * -0.775);
-  margin-top: calc(var(--ck-ball-d) * -0.31);
+  width: calc(var(--fd-ball-d) * 1.55);
+  height: calc(var(--fd-ball-d) * 0.62);
+  margin-left: calc(var(--fd-ball-d) * -0.775);
+  margin-top: calc(var(--fd-ball-d) * -0.31);
   border-radius: 50%;
-  background: var(--ck-smudge);
-  opacity: 0.72;
-  transform: translate(calc(var(--p-th) * 0.18), calc(var(--p-th) * 0.16));
+  background: var(--fd-smudge);
+  opacity: 0.66;
 }
-.ck-ball-rig.go .ck-cast { animation: ck-cast var(--pdur) both; }
-@keyframes ck-cast {
-  0% { transform: translate(calc(var(--p-fh) * 0.18), calc(var(--p-fh) * 0.16)) scale(1); opacity: 0.72; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
-  17% { transform: translate(calc(var(--p-fh) * 0.18), calc(var(--p-fh) * 0.16)) scale(1); opacity: 0.72; animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
-  52% {
-    transform: translate(calc((var(--p-fh) + var(--p-arc)) * 0.18), calc((var(--p-fh) + var(--p-arc)) * 0.16))
-      scale(calc(1 + var(--parc) * 0.06));
-    opacity: calc(0.72 - var(--parc) * 0.019);
-    animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6);
-  }
-  100% { transform: translate(calc(var(--p-th) * 0.18), calc(var(--p-th) * 0.16)) scale(1); opacity: 0.72; }
+.fd-ball-rig.go .fd-cast { animation: fd-cast var(--pdur) both; }
+@keyframes fd-cast {
+  0% { transform: scale(1); opacity: 0.66; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+  17% { transform: scale(1); opacity: 0.66; animation-timing-function: cubic-bezier(0.2, 0.62, 0.4, 1); }
+  52% { transform: scale(calc(1 + var(--parc) * 0.06)); opacity: calc(0.66 - var(--parc) * 0.019); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.6); }
+  100% { transform: scale(1); opacity: 0.66; }
 }
-
-/* the ball itself, and its spin — the seams turning is what says the thing is travelling rather
-   than being carried. It slows as it goes, the way a thrown ball's spin looks like it does. */
-.ck-ball {
+/* THE BALL IS THE HOUSE'S OWN LEATHER NOW, with its 7 dropped — the chalk ring was chalk on a slate
+   and there is neither. `Ball` is handed the same clamp the rig measures in, and `plain` takes the
+   numeral off, which is what lets this one SPIN: the mark must stay upright, and a ball with
+   nothing written on it has nothing to keep upright. The seams turning are what say the thing is
+   travelling rather than being carried, and it slows as it goes, the way a thrown ball's spin looks
+   like it does. */
+.fd-ball {
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--ck-ball-d);
-  height: var(--ck-ball-d);
-  margin-left: calc(var(--ck-ball-d) / -2);
-  margin-top: calc(var(--ck-ball-d) / -2);
+  margin-left: calc(var(--fd-ball-d) / -2);
+  margin-top: calc(var(--fd-ball-d) / -2);
 }
-.ck-ball svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.ck-ball-rig.go .ck-ball { animation: ck-spin var(--pdur) cubic-bezier(0.12, 0.6, 0.3, 1) both; }
-@keyframes ck-spin {
+.fd-ball-rig.go .fd-ball { animation: fd-spin var(--pdur) cubic-bezier(0.12, 0.6, 0.3, 1) both; }
+@keyframes fd-spin {
   0%, 17% { transform: rotate(0deg); }
   100% { transform: rotate(calc(var(--pspin) * 1deg)); }
 }
-/* the pressed mark's orange, so the thing being thrown and the thing you pressed are one colour.
-   The skin is the faintest wash of the same so the ball is not a hole in the slate at fourteen
-   pixels; no new hue is introduced anywhere in this section. */
-.ck-ball-skin { fill: rgba(255, 168, 102, 0.16); stroke: none; }
-.ck-ball-line { fill: none; stroke: var(--ck-orange); stroke-width: 1.7; stroke-linecap: round; }
 
-/* ---------- what the coach says about the play under the chalk ----------
-   THE READ IS MEASURED AGAINST ITS OWN COLUMN, not against the window. His ruling widened the
-   floor, and a wider floor leaves the read a narrower column to stand in — type sized off the
-   window went on setting 27px lines in it, which pushed the copy to four lines, the sign-off to
-   three, and the whole board off the bottom of the screen. In cqw the read simply reads smaller
-   when it is given less room, which is what a column of type is supposed to do. The caps are the
-   sizes it had at the width it used to get, and the ratios are set so the copy runs to four lines
-   in the narrower column rather than shrinking to keep three — there is height to spare beside a
-   floor this wide, and the type is the thing he asked to be big. The sign-off is the exception:
-   it is held to one line each, because two half-lines under a rule read as a mistake.
-
-   THE COLUMN IS NOT THE ONLY BOUND. A short window gives the read a wide column and no height to
-   spend it in — a 1280x720 laptop hands it 482px across and 421 down, and type sized off the
-   column alone ran eighteen pixels past the foot of the board. Each line takes the SMALLER of
-   what its column allows and what --ck-u allows, and --ck-u is the height-aware one. On a normal
-   desk the column is the binding half and nothing here moves. */
-.ck-read { container-type: inline-size; display: flex; flex-direction: column; gap: clamp(9px, 1.6vw, 15px); min-width: 0; }
-.ck-tag { font: 700 clamp(10px, min(4cqw, var(--ck-u) * 1.3), 22px) / 1 var(--ck-type); letter-spacing: 0.26em; color: var(--ck-yellow); }
-.ck-name {
-  font: 700 clamp(30px, min(14.3cqw, var(--ck-u) * 4.2), 78px) / 1.05 var(--ck-type);
-  color: var(--ck-bright);
-  text-decoration: underline wavy rgba(255, 226, 122, 0.6);
-  text-underline-offset: clamp(8px, calc(var(--ck-u) * 0.6), 16px);
+/* ---------- 4 · what the read says about the play you are on ----------
+   THE READ IS MEASURED AGAINST ITS OWN COLUMN, not against the window: a wider floor leaves the
+   read a narrower column, and type sized off the window goes on setting 27px lines in it. THE
+   COLUMN IS NOT THE ONLY BOUND, either — a short window gives it a wide column and no height to
+   spend it in, which is the 1280x720 failure that put eighteen pixels of this pane past the foot of
+   the board once already. Every line below takes the SMALLER of what its column allows and what
+   --fd-u allows, and --fd-u is the height-aware one.
+   AND UNDER BOTH OF THOSE THERE IS A NET. The clamps are the design and this scroll is the safety:
+   the root is `overflow: hidden`, so a pane that overflowed would otherwise have its CTA clipped
+   with no scrollbar and no symptom in a screenshot. */
+.fd-read {
+  flex: 0 0 clamp(300px, 27%, 420px);
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  padding: calc(var(--fd-u) * 0.85) calc(var(--fd-u) * 1.15);
+  container-type: inline-size;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-/* the read column is as wide as the window leaves it, which on a 1920 desk is wider than a line
-   of type should ever run — the copy keeps a coach's-notebook measure inside it */
-.ck-desc { margin: 0; max-width: 42ch; font: 400 clamp(14px, min(5cqw, var(--ck-u) * 1.45), 27px) / 1.7 var(--ck-type); color: var(--ck-body); text-wrap: pretty; }
-.ck-meta { font: 700 clamp(11px, min(4.4cqw, var(--ck-u) * 1.35), 24px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-yellow); }
-.ck-cta {
-  align-self: flex-start;
-  margin-top: 8px;
-  padding: clamp(12px, calc(var(--ck-u) * 0.85), 22px) clamp(20px, calc(var(--ck-u) * 1.8), 44px);
-  background: none;
-  border: clamp(3px, 0.3vw, 5px) dashed var(--ck-yellow);
-  font: 700 clamp(16px, min(5.9cqw, var(--ck-u) * 1.8), 32px) / 1 var(--ck-type);
-  letter-spacing: 0.12em;
-  color: var(--ck-yellow);
-  cursor: pointer;
+.fd-read > * { flex: none; }
+.fd-tag {
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.55)), 13px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--you);
 }
-.ck-cta:hover { background: rgba(255, 226, 122, 0.12); }
-.ck-foot {
-  margin-top: auto;
-  padding-top: 4px;
-  max-width: 56ch;
-  font: 400 clamp(10px, min(3.14cqw, var(--ck-u) * 1.05), 20px) / 1.6 var(--ck-type);
-  letter-spacing: 0.12em;
-  color: var(--ck-faint);
+/* THE WAVY YELLOW UNDERLINE IS GONE and the 4px navy rule under the title replaces it — the same
+   job in the design's own language, and the same navy as the number tags and the foot band, which
+   is what makes the three read as one structure. */
+.fd-name {
+  font: 400 clamp(30px, min(18cqw, calc(var(--fd-u) * 3)), 72px) / 0.84 var(--serif);
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 4px;
 }
-
-/* ---------- the book: the four scout-only rooms, in the margin ---------- */
-.ck-book {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2px 18px;
-  margin-top: clamp(16px, 3.2vw, 26px);
-  padding-top: clamp(12px, 2.2vw, 18px);
-  border-top: 2px dashed rgba(240, 234, 214, 0.4);
+.fd-rule { height: clamp(3px, 1.2cqw, 5px); background: var(--mine); margin-top: 8px; }
+/* the read column is as wide as the window leaves it, which on a 1920 desk is wider than a line of
+   type should ever run — the copy keeps a notebook's measure inside it */
+.fd-desc {
+  margin: 12px 0 0;
+  max-width: 42ch;
+  font-size: clamp(12px, min(4.3cqw, calc(var(--fd-u) * 0.62)), 17px);
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
 }
-@media (min-width: 900px) { .ck-book { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.ck-bookrow {
+.fd-meta {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  padding: clamp(9px, calc(var(--ck-u) * 0.6), 14px) 0;
-  background: none;
-  text-align: left;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.fd-metak {
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+.fd-metav {
+  margin-left: auto;
+  font: 400 clamp(16px, min(8.5cqw, calc(var(--fd-u) * 1.35)), 34px) / 1 var(--serif);
+  text-transform: uppercase;
+  color: var(--you);
+}
+/* THE ONE THING THAT ENTERS A MODE. The mark press selects and reads; this is the separate commit,
+   and that two-step is the whole interaction model — both boards agree on it. Full-bleed to the
+   pane, no radius, no border, and the padding is asymmetric (more above than below) to optically
+   centre League Gothic's caps. */
+.fd-cta {
+  margin-top: 16px;
+  min-height: 44px;
+  padding: 12px 0 8px;
+  background: var(--you);
+  color: var(--you-ink);
+  text-align: center;
+  font: 400 clamp(20px, min(10.4cqw, calc(var(--fd-u) * 1.7)), 40px) / 1 var(--serif);
+  text-transform: uppercase;
   cursor: pointer;
 }
-.ck-bookrow b { font: 700 clamp(11px, calc(var(--ck-u) * 1.15), 22px) / 1 var(--ck-type); letter-spacing: 0.18em; color: var(--ck-chalk); }
-.ck-bookrow i {
-  font-style: normal;
-  font: 400 clamp(10px, var(--ck-u), 19px) / 1 var(--ck-type);
-  letter-spacing: 0.1em;
-  color: var(--ck-faint);
+.fd-cta:hover { background: var(--you-hi); }
+.fd-cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+/* IN USER MODE THE CTA IS THE LAST THING IN THIS COLUMN, because the sign-off is down in the navy
+   band, and the design pins the foot of the pane with that sign-off. With nothing pinning it a
+   1440-wide desk leaves four hundred pixels of empty ground under the button. So the button takes
+   the pin when it is last — one selector, no mode prop, and it says which case it is for. */
+.fd-cta:last-child { margin-top: auto; }
+/* held to one line each, because two half-lines under a rule read as a mistake */
+.fd-signoff {
+  margin-top: auto;
+  padding-top: 14px;
+  max-width: 56ch;
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.7;
+  color: var(--faint);
 }
-.ck-bookrow:hover b { color: var(--ck-yellow); text-decoration: underline wavy rgba(255, 226, 122, 0.6); text-underline-offset: 5px; }
 
-/* ---------- what closes the slate in user mode ----------
-   His ruling, 2026-09-09: "Change the user mode main screen to look like the scout mode." User
-   mode gets the whole slate EXCEPT the book — those four rooms are engine ratings and it has no
-   doors to them — and a board that simply stops under the read reads as a page cut off rather
-   than as a board that ends.
-
-   So the book's own rule stays and the slate's sign-off is written under it. It is the same two
-   sentences scout mode keeps at the foot of its read column, moved to the foot of the BOARD and
-   centred on it, so the last thing on the screen is the slate saying what it is. One line at
-   every width — the read's version breaks after the first sentence because it is standing in a
-   narrow column beside the floor; across the whole board there is room for both.
-
-   Sized off --ck-u alone rather than off a container width: this stands on the board, which is
-   not a size container, so a cqw here would be measuring the window. */
-.ck-close {
-  margin-top: clamp(16px, 3.2vw, 26px);
-  padding-top: clamp(12px, 2.2vw, 18px);
-  border-top: 2px dashed rgba(240, 234, 214, 0.4);
+/* ---------- 5 · the navy band along the foot ----------
+   The one saturated block on the page, and the same navy as the read pane's rule and the idle
+   number tags. IN SCOUT MODE it is four doors; IN USER MODE it is the sign-off written across it,
+   because Database, Archetypes, Teams and Trophies are engine ratings and user mode has no doors to
+   them by his standing ruling. The design dims those four cells to 40% in user mode and leaves them
+   inert; that draws three things that look like doors and are not, which is worse than not drawing
+   them at all. The band itself stays in both modes, because a board that simply stops under the
+   read reads as a page cut off rather than as a board that ends.
+   TWO CELLS TO A ROW ON A PHONE AND FOUR ACROSS ON A DESK, which is the breakpoint the record book
+   already had: the band clips, so four cells at 94px each on a 375 screen would cut `DATABASE` and
+   `10,000` in half, silently. */
+.fd-foot {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  background: var(--mine);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.fd-bookrow {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(8px, 1.4vw, 18px);
+  border-left: 1px solid rgb(255 255 255 / 0.14);
+  cursor: pointer;
+}
+/* the design puts this hairline on all four, which draws one flush against the band's own left
+   edge; it is dropped from whichever cell starts a row */
+.fd-bookrow:nth-child(odd) { border-left: 0; }
+.fd-bookrow:hover { background: var(--mine-hi); }
+.fd-bookrow:focus-visible { outline: 2px solid var(--paper); outline-offset: -3px; }
+/* the label and the count are the SAME type in two colours, which is how the count sits against the
+   label without a second size doing the work. The arrow is part of the gold half's own string in
+   the markup, not a pseudo-element. */
+.fd-bookrow b,
+.fd-bookrow i {
+  font: 400 clamp(14px, calc(var(--fd-u) * 0.9), 22px) / 1 var(--serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fd-bookrow b { color: var(--paper); }
+.fd-bookrow i { font-style: normal; color: var(--you); }
+.fd-close {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(10px, 1.4vw, 18px);
   text-align: center;
   text-wrap: balance;
-  font: 400 clamp(10px, calc(var(--ck-u) * 1.05), 20px) / 1.6 var(--ck-type);
-  letter-spacing: 0.12em;
-  color: var(--ck-faint);
+  white-space: normal;
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--paper);
 }
 
-/* HIS RULING on the campaign: "anything below era 1 the league 2026 needs to be deleted, its
-   just empty space." The page keeps `var(--dock)` plus its daylight clear at its foot for the dock
-   the play screens stand on; the map has no dock, so on the map that room is dead floor under the
-   bottom era's rule.
-   The crawl's band has gone the same way (2026-09-08: "Delete everything below the league 2026 in
-   both modes"), and --foot is only the phone's inset now — so era I's rule is the last thing on
-   the page, and this line survives to keep the map clear of a home indicator. */
-body.map #root { padding-bottom: var(--foot); }
+/* ---------- the desk ---------- */
+@media (min-width: 900px) {
+  .fd-bookrow { flex: 1 1 0; }
+  .fd-bookrow:nth-child(odd) { border-left: 1px solid rgb(255 255 255 / 0.14); }
+  .fd-bookrow:first-child { border-left: 0; }
+}
 
-/* THE SLATE IS THE WHOLE ROOM, AND THE ROOM IS ONE COLOUR. His ruling, 2026-09-08: "Remove all
-   the brown and black from the scout mode main page, should be full screen green." The page's own
-   column and padding come off at every width, as they always did — and now everything the app
-   would otherwise paint behind this screen is painted the slate as well, because on his phone all
-   three of them are reachable by dragging past an edge:
+/* ---------- the phone ----------
+   THE DESIGN HAS NO BREAKPOINTS AT ALL — it is a 1440-wide artboard at 100vh with a hard 380px read
+   pane, and taking that literally clips the read off the side of a phone. Below 900 the two columns
+   become two rows and THE PAGE SCROLLS, which is the one departure from "no scrolling anywhere" and
+   it is the difference between a screen that works on his phone and one that does not. The panel
+   stops being a size container at the same moment, because in a column it has no definite height
+   for `100cqh` to measure — the floor takes the full width and its aspect-ratio supplies the
+   height instead. */
+@media (max-width: 899px) {
+  .fd {
+    height: auto;
+    min-height: calc(100vh - var(--foot));
+    min-height: calc(100dvh - var(--foot));
+    overflow: visible;
+  }
+  .fd-band { flex-direction: column; }
+  /* THE SPARE HEIGHT IS SPLIT BETWEEN THE ROOM AND THE READ, and neither can have all of it. On a
+     phone the floor is WIDTH-bound — 349px of court inside a 375px screen — so a tall handset has
+     height it cannot spend on the drawing, and wherever that surplus lands it lands as black. All
+     of it under the read is a hole below the button; all of it in the panel is a hole above and
+     below the floor. Half each reads as arena air over the court and a column of quiet under the
+     copy, which is what the design does with the room it has. `flex-grow` without `flex-shrink`:
+     on a short handset neither may be squeezed under what it is drawing. */
+  .fd-panel { flex: 1 0 auto; container-type: inline-size; }
+  .fd-court { width: 100%; }
+  .fd-read {
+    flex: 1 0 auto;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    overflow: visible;
+  }
+}
+/* Below 700 the rail's caption comes off: at 375 it is 42 characters of letterspaced 9px type
+   against a year range that is already 78 wide, and there is no third band to put it in. */
+@media (max-width: 699px) {
+  .fd-cap { display: none; }
+}
+/* AND BELOW 640 THE IDENTITY ROW IS TWO LINES RATHER THAN A SHORTER ONE. Everything in it is either
+   the mark, the club or a control, and the alternative to wrapping is hiding one of the three. The
+   break is a zero-height item at `flex-basis: 100%`: the ball, the wordmark and the mode pair take
+   line one, the badge and the two counters take line two. */
+@media (max-width: 639px) {
+  .fd-id { flex-wrap: wrap; row-gap: calc(var(--fd-u) * 0.5); }
+  .fd-id > .ball7,
+  .fd-word,
+  .fd-modes { order: 1; }
+  .fd-modes { margin-left: auto; }
+  .fd-idbr { display: block; order: 2; flex: 0 0 100%; height: 0; }
+  .fd-div,
+  .fd-badge,
+  .fd-stat { order: 3; }
+}
 
-     · THE PAGE'S GROUND was the frame's wood, #6b4a32. It is the slate, so the band --foot keeps
-       clear under the board reads as more board rather than as a brown sill.
-     · THE TUNNEL'S BLACK. ChalkHome adds `tunnel` for one reason only — it is what takes #root
-       off its 390px column on a desk — but the class drags the tunnel's #0a0908 ground and the
-       lamp it hangs on #root::before along with it, and that lamp is a fixed sheet of near-black
-       across the whole window. Both come off here.
+/* ---------- the board's own ground ----------
+   The page's column and padding come off at every width, and everything the app would otherwise
+   paint behind this screen is painted the door's own ground, because on his phone all of it is
+   reachable by dragging past an edge. <html> is exactly what a rubber-band scroll past the top or
+   the bottom uncovers.
 
-   THE SELECTOR NAMES BOTH OF THE SLATE'S OWN CLASSES, AND THAT IS THE WHOLE TRICK. These two used
-   to read `body.chalk:not(.um)` — the `:not` was never a condition, since the slate was scout's
-   alone, but purely a way of matching the weight of the `body.tunnel:not(.um)` rules they have to
-   beat. His ruling of 2026-09-09 gave the slate to user mode as well, so `:not(.um)` would now
-   switch the green OFF on exactly the board that has just been given it. `body.chalk.tunnel`
-   weighs the same, matches in both modes, and is honest about why: ChalkHome adds both classes
-   together and neither is ever set without the other.
-     · THE ARENA'S LIT WASH, which lives on <html> so that it survives the body classes — and
-       <html> is exactly what a rubber-band scroll past the top or the bottom edge uncovers.
+   `tunnel` IS NOT SET ANY MORE AND THAT IS THE POINT. The old board added it for one rule — it is
+   what takes #root off its 390px column on a desk — and paid for it by re-declaring everything else
+   the class drags. It cannot be paid for here: `body.tunnel:not(.um)` re-points --you to cream and
+   --mine to near-black IN SCOUT MODE ONLY, and this screen is built on --you and --mine, so
+   borrowing the class would have painted the front door gold-on-navy in one mode and cream-on-black
+   in the other. `body.door #root` is (1,1,1) against `#root`'s (1,0,0) and does the whole job on
+   its own weight, at every width, in both modes.
 
-   The literal is --ck-slate's own value spelled out: the token is declared on .ck, which is
-   inside #root, so neither <html> nor <body> can read it. */
-html:has(body.chalk) { background: #243530; }
-body.chalk.tunnel { background: #243530; }
-body.chalk.tunnel #root::before { display: none; }
-body.chalk #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
+   The literal is --bg's own value spelled out. The token is declared on :root, but this is <html>
+   and <body>, and it is also what index.html already hands the status bar. */
+html:has(body.door) { background: #0b0a09; }
+body.door { background: #0b0a09; }
+body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
+
 /* WITH REDUCED MOTION THE BALL IS SIMPLY AT THE MAN YOU PRESSED. No travel, no arc, no shadow
-   opening under it, nobody breathing and nobody swinging: the ball changes hands in the same
-   frame the mark turns orange. Nothing needs a fallback position, because every rule this turns
-   off is an ANIMATION over a rule that already states the resting pose — the rig's own transform
-   is the catcher's hands, the lift's is his hand height, and a man's untouched transform is a man
-   standing on his mark. The turn is stopped as a transition rather than an animation because that
-   is what it is. Each selector below carries the same weight as the one it is beating and comes
-   later in the file, so none of it needs !important. */
+   opening under it, nobody breathing and nobody swinging: the ball changes hands in the same frame
+   the plate lights up. Nothing needs a fallback position, because every rule this turns off is an
+   ANIMATION over a rule that already states the resting pose — the rig's own transform is the
+   catcher's hands, the lift's is his hand height, and a man's untouched transform is a man standing
+   on his mark. Each selector below carries the same weight as the one it is beating and comes later
+   in the file, so none of it needs !important.
+   The two flashbulbs and the header's dribble are stopped at their own primitives further up this
+   file rather than here — they are shared, and a caller cannot be trusted to remember. */
 @media (prefers-reduced-motion: reduce) {
-  /* `.ck-glyph::before` USED TO BE LISTED HERE, for the dab growing from its resting size to its
-     pressed one. His ruling of 2026-09-09 — "Have only 1 bullet on wherever I am ... and remove
-     the circles" — left no resting dab to grow out of, so the bullet is simply painted in the
-     mark you are on and there is no transition on it to turn off. */
-  .ck-spot { transition: none; }
-  .ck-p-turn.spin,
-  .ck-p-idle,
-  .ck-p.throw .ck-p-act,
-  .ck-p.throw .ck-arm,
-  .ck-p.catch .ck-p-act,
-  .ck-p.catch .ck-arm,
-  .ck-ball-rig.go,
-  .ck-ball-rig.go .ck-lift,
-  .ck-ball-rig.go .ck-cast,
-  .ck-ball-rig.go .ck-ball { animation: none; }
+  .fd-p-turn.spin,
+  .fd-p-idle,
+  .fd-fig.throw .fd-p-act,
+  .fd-fig.throw .fd-arm,
+  .fd-fig.catch .fd-p-act,
+  .fd-fig.catch .fd-arm,
+  .fd-ball-rig.go,
+  .fd-ball-rig.go .fd-lift,
+  .fd-ball-rig.go .fd-cast,
+  .fd-ball-rig.go .fd-ball { animation: none; }
 }
