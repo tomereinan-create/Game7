@@ -3828,6 +3828,119 @@ body.offstage #root { position: relative; z-index: 1; }
 .night-row.small b.them { color: var(--them); }
 .night-row span { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-align: right; }
 
+/* ==========================================================================
+   THE SETTLED NIGHT, ACROSS THE WINDOW
+   --------------------------------------------------------------------------
+   HIS RULING: "Change photo 1 so it wont be all in the middle and having to scroll down."
+
+   THE CAUSE was that <Series> never took `body.wide`. Every other screen that has anything to lay
+   out — the draft, My team, the map, the staff tree — adds that class in a layout effect and gets
+   the window; the result screen did not, so on a 1900px desk it inherited `#root`'s 562px column,
+   drew the whole night down the middle with black either side, and put its own foot below the
+   fold. Series.tsx adds the class now, once the night has settled, and this is what it does with
+   the room.
+
+   BELOW 900px NOTHING HAPPENS. Every group is `display: contents`, so the four wrappers generate
+   no boxes at all and the phone reads exactly the stack it read yesterday, in exactly the DOM
+   order: score, rafters, filmstrip, where it was won, the night, then whatever he opened. A phone
+   has no width to spend, and `body.wide` is only ever honoured inside the 900px query anyway.
+   ========================================================================== */
+.result,
+.res-lead,
+.res-won,
+.res-night,
+.res-more {
+  display: contents;
+}
+
+@media (min-width: 900px) {
+  .result {
+    display: grid;
+    /* 900–1149: TWO columns. The things you read in order down the left, the two self-contained
+       cards down the right. Three tracks at 900 would put six or seven filmstrip chips in a 274px
+       track, which is narrower than "112–108" wants to be. */
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    column-gap: 24px;
+    align-items: start;
+  }
+  .result > * {
+    display: block;
+    min-width: 0;
+  }
+  /* The lead SPANS both card rows rather than sitting in the first of them: otherwise row 1 is as
+     tall as the whole lead and the night card is pushed down to meet its foot, which puts back the
+     scroll this ruling is about. */
+  .res-lead {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .res-won {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .res-night {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  /* OPENED ON REQUEST, and capped. The box scores are the one part of this screen read as a TABLE,
+     and a table stretched to 1400px puts every number a hand's width from the label it belongs to —
+     the draft's own `.draft.set.solo` cap is here for the same reason. 900px is the widest the
+     series-stats rows and the two player-line tables read at, and it is still 60% more room than
+     the 562 column they were drawn in before this ruling. */
+  .res-more {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    max-width: 900px;
+    width: 100%;
+    justify-self: center;
+  }
+  /* Every column starts on the same line: the verdict's plate carries its own 28px of top padding,
+     so the two cards give up the 18px they would otherwise drop by. */
+  .res-won > .card,
+  .res-night > .card:first-child {
+    margin-top: 0;
+  }
+  .res-night > .card {
+    margin-top: 18px;
+  }
+  .res-lead > .verdict.final {
+    padding-top: 14px;
+  }
+  /* THE HOME BUTTON IS FIXED TO THE CORNER (44px at right: 14) and this screen's topbar used to
+     stop 440px short of it inside the phone column. Now that the column is the window, the second
+     half of the topbar — "<your club> · <their club>", which is as long as the two names are — runs
+     underneath it. The bar keeps the button's width clear. `:has()` rather than another body class:
+     `body:has(.sheet) .map-fab` above already sets the precedent, and the settled result is the only
+     thing that draws `.result`. */
+  body:has(.result) .topbar {
+    padding-right: 52px;
+  }
+}
+
+/* ≥1150: THREE columns, which is his own reading of it — "the verdict and the filmstrip are one
+   column of things you read in order, while WHERE IT WAS WON and THE NIGHT BELONGED TO are two
+   self-contained cards that could sit side by side". 1150 is where the third track is still wide
+   enough for a duel bar and a nameplate; it is the same width the tip-off's own roster split
+   waits for. */
+@media (min-width: 1150px) {
+  .result {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .res-lead {
+    grid-row: 1;
+  }
+  .res-night {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .res-night > .card {
+    margin-top: 0;
+  }
+  .res-more {
+    grid-row: 2;
+  }
+}
+
 /* ---- achievements: the trophy case (round 63) ---- */
 .ach-row { display: flex; align-items: baseline; gap: 12px; padding: 11px 2px 10px; border-bottom: 1px solid var(--divider); }
 .ach-row .ach-mark { flex: none; width: 20px; font-size: 15px; color: var(--line-3); }
