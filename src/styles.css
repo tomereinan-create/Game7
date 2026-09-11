@@ -3353,17 +3353,19 @@ body:has(.sheet) { overflow: hidden; }
    ========================================================================== */
 
 .pc-term {
-  /* ONE FACE, and it is a monospace. That is 1b's whole character: a readout whose columns line
-     up because every glyph is the same width. The app's two faces cannot do it and a fourth
-     webfont is not worth the wire, so the card borrows the system's own mono — and aliases all
-     four face tokens to it, which is what makes the season strip and the CLOSE button speak
-     terminal without either of them being touched. */
-  --pct-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-  --serif: var(--pct-mono);
-  --num: var(--pct-mono);
-  --sans: var(--pct-mono);
-  --mono: var(--pct-mono);
-  font-family: var(--pct-mono);
+  /* THE CARD SPEAKS THE APP'S OWN TWO FACES (his ruling, 2026-09-11, pointing at the campaign
+     mock: "Use this font in all the software. Only change the font"). It used to alias all four
+     face tokens to the system monospace, on the reasoning that 1b is a readout whose columns line
+     up because every glyph is one width — and that was the ONLY place in the whole stylesheet
+     that departed from League Gothic and Space Grotesk. Every other rule already reads the tokens,
+     so this block was the entire difference between the app and the mock.
+     THE COLUMNS DO NOT NEED THE MONOSPACE. Nothing here is aligned by counting characters: the
+     meta rows are flex, the box line is a grid, the attribute sheet is a row per attribute with
+     its own track. What the monospace was really buying is that DIGITS share a width, and that
+     is `tabular-nums` — declared below, so the readout still reads as columns of figures in the
+     app's own face. */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 /* ---- the two status lines ---- */
@@ -6214,7 +6216,13 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-club { min-width: 0; }
 .fd-club b,
 .fd-club i { display: block; overflow: hidden; text-overflow: ellipsis; }
-.fd-club b { font: 400 clamp(16px, calc(var(--fd-u) * 1.02), 26px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
+/* HIS RULING, 2026-09-11: "Gaziantep ag Make this even bigger in the home page." The ruling before
+   it — "Make the GA Gaziantep ag Way bigger" — named the crest AND the club name, and only the
+   crest grew: a 16-26px wordmark stood beside a 52-80px disc, which is why it still read small.
+   The name is the franchise's own on its own front door, so it leads the row now. `.fd-club` keeps
+   `min-width: 0` and the name keeps `text-overflow: ellipsis`, so a long one still shortens rather
+   than pushing the stats off the end of the row. */
+.fd-club b { font: 400 clamp(26px, calc(var(--fd-u) * 1.75), 46px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
 .fd-club i {
   font-style: normal;
   font-size: clamp(8.5px, calc(var(--fd-u) * 0.42), 11px);
@@ -7135,4 +7143,8 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 @media (prefers-reduced-motion: reduce) {
   .fd-ball-rig.go,
   .fd-ball-rig.go .fd-ball { animation: none; }
+}
+
+.freshness-probe-62119 {
+  color: #123456;
 }
