@@ -28,7 +28,7 @@ import { useUserMode } from '../state/viewmode'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
 import { CoachSays, CoachTipsDoor } from './UserRail'
-import { myColor, teamColor } from './teamColors'
+import { teamColor, type TeamColor } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
 // LegsLeft is no longer drawn here: it was the last block of user mode's game-night rail, which
 // his ruling of 2026-09-09 removed whole. It still lives in JerseyFive.
@@ -235,6 +235,7 @@ export function Draft({
   teamName,
   salary = false,
   wallet,
+  club = null,
   carry = null,
   wear = {},
   spinLeft = false,
@@ -254,6 +255,8 @@ export function Draft({
   salary?: boolean
   /** The campaign's staff tree: what's owned gates what this screen can do. */
   wallet: Progress
+  /** ONE CLUB FOR ALL THREE LADDERS (2026-09-11) — it left the per-ladder save, so it is handed in. */
+  club?: TeamColor | null
   /** Death match: the five carried in from the last level, already in their slots. */
   carry?: Player[] | null
   /** Death match: durability left per carried man. A man at WEAR_OUT or less must be replaced. */
@@ -1664,7 +1667,7 @@ export function Draft({
               <span className="cap">{user || planWorth === null ? 'your plan' : worthLine(planWorth)}</span>
             </div>
             <CourtFive
-              club={myColor(wallet.team)}
+              club={club}
               plan={plan}
               side={planSide}
               onSide={setPlanSide}
@@ -1877,7 +1880,7 @@ export function Draft({
             /* his kit on his shirts, their club on theirs — the two are told apart by colour before
                a name is read, and a club is a fact about the team, which is why it stands in both
                modes now that the two share this panel */
-            myClub={myColor(wallet.team)}
+            myClub={club}
             theirClub={teamColor(opponent.ab)}
             map={boardMap}
             /* HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
@@ -1922,7 +1925,7 @@ export function Draft({
              THE COURT IS THE PARTIAL FIVE'S NOW, in both modes: the rings, the ghost slots and the
              drag are how a five gets BUILT, and the moment it is complete the tip-off above takes
              the panel. So nothing here is gated on the mode any more. */
-          club={myColor(wallet.team)}
+          club={club}
           tactic={plan}
           swap={{ can: (a, b) => canMove(a as Pos, b as Pos), commit: (a, b) => move(a as Pos, b as Pos) }}
           spots={POSITIONS.map((x) => {

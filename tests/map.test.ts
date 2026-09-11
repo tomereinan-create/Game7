@@ -17,7 +17,6 @@ const eras = [{ name: 'Modern', years: [2016, 2024] as [number, number], first: 
 
 const progress = (over: Partial<Progress> = {}): Progress => ({
   coach: null,
-  team: null,
   stars: Array.from({ length: ROUNDS }, () => 0),
   seed: 1,
   plays: 0,

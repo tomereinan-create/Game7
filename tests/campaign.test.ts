@@ -7,7 +7,7 @@ import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '..
 import { balance, earned } from '../src/engine/tree'
 import { advanceTo, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
-const prog = (stars: number[]): Progress => ({ coach: 'def', team: null, stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
+const prog = (stars: number[]): Progress => ({ coach: 'def', stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
 
 describe('campaign map', () => {
@@ -118,7 +118,7 @@ describe('a saved run survives the new ladder', () => {
   const oldSave = (stars: number[], over: Record<string, unknown> = {}) =>
     store.set(
       'game7.campaign.v2',
-      JSON.stringify({ coach: 'def', team: null, stars, seed: 7, plays: 4, spent: 0, nodes: {}, deaths: 0, ...over }),
+      JSON.stringify({ coach: 'def', stars, seed: 7, plays: 4, spent: 0, nodes: {}, deaths: 0, ...over }),
     )
 
   it('his run — four levels cleared, on level 5 — opens exactly where it was', () => {
@@ -222,7 +222,9 @@ describe('death match — a run, not a map', () => {
     expect(dead.deaths).toBe(1)
     // who he is is not progress, so it survives
     expect(dead.coach).toBe(spent.coach)
-    expect(dead.team).toBe(spent.team)
+    // the CLUB is no longer a ladder's to carry: it lives under its own key and outlives every run
+    // by not being in the run at all (2026-09-11, "one team name, colors, for all modes").
+    expect('team' in dead).toBe(false)
   })
 
   it('the Survival branch prices lives, checkpoints and substitutions', () => {

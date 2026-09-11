@@ -23,7 +23,6 @@ const OTHER = five(240)
 
 const wallet = (nodes: Partial<Record<NodeId, number>> = {}, tactics: Tactics = DEFAULT_TACTICS): Progress => ({
   coach: null,
-  team: null,
   stars: Array.from({ length: ROUNDS }, () => 3),
   seed: 1,
   plays: 0,

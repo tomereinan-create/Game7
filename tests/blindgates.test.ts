@@ -71,7 +71,6 @@ describe('the draft prices a style only where a style can be called', () => {
   /** A save with nothing bought but the Playbook, at the rank under test. */
   const wallet = (playbook: number): Progress => ({
     coach: 'def',
-    team: null,
     stars: Array.from({ length: ROUNDS }, () => 3),
     seed: 12345,
     plays: 0,

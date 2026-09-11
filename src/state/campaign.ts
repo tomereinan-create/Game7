@@ -78,8 +78,12 @@ export interface Team {
 
 export interface Progress {
   coach: CoachId | null
-  /** City + nickname, chosen before the first coach. */
-  team: Team | null
+  /**
+   * THE CLUB IS NOT HERE ANY MORE (2026-09-11). It used to be `team: Team | null` on every ladder's
+   * own save, which is why naming one was a toll on the door of all three. It lives under its own
+   * key now — see `loadTeam` / `saveTeam` above — and an old save's copy is adopted once and then
+   * ignored. Nothing writes it back.
+   */
   /** Best stars per level (index = level - 1); 0 = never cleared. */
   stars: number[]
   /** Base seed for the wheel; each play mixes in the level and the play count. */
@@ -157,12 +161,70 @@ export const wornOut = (wear: Record<string, number>, five: string[], dur: (name
   five.filter((n) => (wear[n] ?? dur(n)) <= WEAR_OUT)
 
 const key = (m: CampaignMode) => `game7.${m}.v2`
+
+/**
+ * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
+ * colors, for all modes").
+ *
+ * The club used to live INSIDE each ladder's own save, so naming a team was a toll on the door of
+ * every mode: city, nickname and a colour picker that reset to ice-blue, three times over. It is
+ * its own key now and every ladder reads the same one, so naming it once names it everywhere and a
+ * rename in any mode is a rename in all of them.
+ *
+ * THE OLD FIELD IS STILL READ, ONCE, and never written again. Anyone mid-campaign already has a
+ * club sitting in one or more of those three saves; `loadTeam` adopts the first it finds and
+ * promotes it. The order is the front door's own — campaign, then salary cap, then death match —
+ * because a player who named a club in the salary cap and never opened the campaign still has one,
+ * and that is exactly the case the front door was already working around.
+ */
+const TEAM_KEY = 'game7.team.v1'
+
+const readTeam = (raw: string | null): Team | null => {
+  if (!raw) return null
+  try {
+    const t = JSON.parse(raw) as Partial<Team> | null
+    return t && typeof t.city === 'string' && typeof t.name === 'string' ? (t as Team) : null
+  } catch {
+    return null
+  }
+}
+
+export function loadTeam(): Team | null {
+  try {
+    const own = readTeam(localStorage.getItem(TEAM_KEY))
+    if (own) return own
+    // no shared club yet: adopt one out of the old per-ladder saves, oldest ruling first
+    for (const m of MODES) {
+      const raw = localStorage.getItem(key(m)) ?? (legacyKey(m) ? localStorage.getItem(legacyKey(m)!) : null)
+      if (!raw) continue
+      try {
+        const t = readTeam(JSON.stringify((JSON.parse(raw) as { team?: unknown }).team ?? null))
+        if (t) {
+          saveTeam(t)
+          return t
+        }
+      } catch {
+        /* a save we cannot read is a save with no club in it */
+      }
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+export function saveTeam(t: Team) {
+  try {
+    localStorage.setItem(TEAM_KEY, JSON.stringify(t))
+  } catch {
+    /* private mode — the game still plays, it just forgets */
+  }
+}
 /** The first 30 levels were briefly saved under their own era key. */
 const legacyKey = (m: CampaignMode) => (m === 'campaign' ? 'game7.c2026.v2' : null)
 
 const fresh = (): Progress => ({
   coach: null,
-  team: null,
   stars: Array.from({ length: ROUNDS }, () => 0),
   seed: (Math.random() * 0xffffffff) >>> 0,
   plays: 0,
@@ -195,7 +257,8 @@ const fresh = (): Progress => ({
  */
 export function die(p: Progress): Progress {
   if (p.lives > 0) return { ...p, lives: p.lives - 1 }
-  return { ...fresh(), coach: p.coach, team: p.team, deaths: p.deaths + 1 }
+  // the club outlives the run by living outside it now, so there is nothing to carry here
+  return { ...fresh(), coach: p.coach, deaths: p.deaths + 1 }
 }
 
 export function loadProgress(m: CampaignMode): Progress {
@@ -218,7 +281,6 @@ export function loadProgress(m: CampaignMode): Progress {
     // A wallet saved before the tree was ranked can hold nodes that no longer exist.
     return migrate({
       coach: p.coach ?? null,
-      team: p.team && typeof p.team.city === 'string' && typeof p.team.name === 'string' ? p.team : null,
       stars,
       seed: typeof p.seed === 'number' ? p.seed : (Math.random() * 0xffffffff) >>> 0,
       plays: typeof p.plays === 'number' ? p.plays : 0,

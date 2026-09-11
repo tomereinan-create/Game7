@@ -1,4 +1,4 @@
-import { type CampaignMode, type Progress } from '../state/campaign'
+import { type CampaignMode, type Progress, type Team } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
 import { FrontDoor } from './FrontDoor'
 
@@ -35,6 +35,6 @@ export interface Era {
  * Everything else on the screen — the floor, the six marks, the men, the pass, the read — is one
  * drawing rendered twice, which is what keeps scout's board and user's board the same board.
  */
-export function Home(props: { progress: Record<CampaignMode, Progress>; onPick: (m: Mode) => void }) {
+export function Home(props: { progress: Record<CampaignMode, Progress>; team: Team | null; onPick: (m: Mode) => void }) {
   return <FrontDoor user={useUserMode()} {...props} />
 }

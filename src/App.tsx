@@ -25,9 +25,11 @@ import {
   die,
   levelSeed,
   loadProgress,
+  loadTeam,
   MODES,
   resetProgress,
   saveProgress,
+  saveTeam,
   starsFromUrl,
   type CampaignMode,
   type Progress,
@@ -111,6 +113,13 @@ export default function App() {
   const [level, setLevel] = useState<number | null>(null)
   const [pending, setPending] = useState<Pending | null>(null)
   const [pickTeam, setPickTeam] = useState(false)
+  /**
+   * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
+   * colors, for all modes"). It used to be a field on each ladder's own save, so the city, the
+   * nickname and a colour picker that reset to ice-blue were a toll on the door of every mode —
+   * three times in one sitting. Held here, read from its own key, written back on every change.
+   */
+  const [team, setTeamState] = useState<Team | null>(loadTeam)
   const [staff, setStaff] = useState(false)
   const [myTeam, setMyTeam] = useState(false)
   const [roster, setRoster] = useState(false)
@@ -233,15 +242,15 @@ export default function App() {
     saveProgress(m, p)
     setProgress((all) => ({ ...all, [m]: p }))
     // the cheap achievement checks (stars banked, branches owned) fire on every save
-    achCheckMeta(p, `${p.team ? `${p.team.city} ${p.team.name}` : 'Your team'} · ${TITLE(m)}`)
+    achCheckMeta(p, `${teamName} · ${TITLE(m)}`)
   }
 
   const setTeam = (t: Team) => {
-    if (!cm || !prog) return
-    commit(cm, { ...prog, team: t })
+    saveTeam(t)
+    setTeamState(t)
     setPickTeam(false)
   }
-  const teamName = prog?.team ? `${prog.team.city} ${prog.team.name}` : 'Your team'
+  const teamName = team ? `${team.city} ${team.name}` : 'Your team'
 
   const sim = (five: Player[], assignment: Assignment, toWin: number) => {
     if (!opponent || !prog || !cm || !level) return
@@ -454,6 +463,7 @@ export default function App() {
         {sheet}
         <Home
           progress={progress}
+          team={team}
           onPick={(m) => {
             if (m === 'database') setRoster(true)
             else if (m === 'archetypes') setArchs(true)
@@ -512,14 +522,14 @@ export default function App() {
       </>
     )
 
-  if (prog.team === null || pickTeam) {
+  if (team === null || pickTeam) {
     return (
       <>
         {sheet}
         {homeFab}
         <TeamSetup
           title={TITLE(cm)}
-          initial={prog.team}
+          initial={team}
           onDone={setTeam}
           onBack={pickTeam ? () => setPickTeam(false) : leave}
         />
@@ -569,7 +579,7 @@ export default function App() {
           }}
           onReorder={(next) => commit(cm, { ...prog, roster: next })}
           /* his ruling: the five stands in the colours picked when the campaign was started */
-          club={myColor(prog.team)}
+          club={myColor(team)}
           /* his ruling: the way back to the map is the block's own map icon here too */
           skin={skin}
           onBack={() => setMyTeam(false)}

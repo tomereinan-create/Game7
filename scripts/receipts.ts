@@ -4091,7 +4091,7 @@ const ROUNDS: Record<string, () => void> = {
     const F5 = ["Michael Jordan '88", "Magic Johnson '87", "Larry Bird '86", "Tim Duncan '03", "Hakeem Olajuwon '94"].map(g63)
     const O5 = ["Stephen Curry '16", "Klay Thompson '15", "Draymond Green '16", "Kevin Durant '14", "Andre Iguodala '15"].map(g63)
     const mk = (won: boolean, us: number, them: number, game: number) => ({ game, margin: us - them, won, us, them, note: '' })
-    const fresh63 = (stars: number[]): Prog63 => ({ coach: null, team: { city: 'Receipt', country: 'US', name: 'Five' }, stars, seed: 1, plays: 1, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
+    const fresh63 = (stars: number[]): Prog63 => ({ coach: null, stars, seed: 1, plays: 1, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
     const z = Array.from({ length: 120 }, () => 0)
     const z1 = [...z]; z1[0] = 3
     achSettleSeries({

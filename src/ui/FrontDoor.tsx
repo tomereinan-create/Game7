@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
-import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode } from '../state/campaign'
+import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
 import { setUserMode } from '../state/viewmode'
 import { achCount } from '../state/achievements'
 import { myColor } from './teamColors'
@@ -173,10 +173,17 @@ const depthOf = (z: Zone) => +(0.86 + (parseFloat(z.y) / 100) * 0.3).toFixed(3)
 export function FrontDoor({
   user,
   progress,
+  team,
   onPick,
 }: {
   user: boolean
   progress: Record<CampaignMode, Progress>
+  /**
+   * ONE CLUB, ALL THREE LADDERS (2026-09-11). This screen used to ask each ladder in turn for a
+   * kit and then read the CAMPAIGN's save for the badge — so a club named in the salary cap wore
+   * its colours here and still showed no name. There is one club now and it is handed in.
+   */
+  team: Team | null
   onPick: (m: Mode) => void
 }) {
   const [sel, setSel] = useState(0)
@@ -420,7 +427,7 @@ export function FrontDoor({
    * The campaign is asked first and the other two ladders after it, because a player who named a
    * team in the salary cap and never opened the campaign still has a club.
    */
-  const kit = myColor(progress.campaign.team) ?? myColor(progress.salary.team) ?? myColor(progress.death.team)
+  const kit = myColor(team)
   /**
    * THE 01-06 TAG ON THE PLATE YOU ARE ON — his ruling: "I want the numbers to have the same color
    * as well(as the jerseys)". Everywhere else the tag simply IS A LITTLE JERSEY: the shirt's colour
@@ -455,7 +462,6 @@ export function FrontDoor({
      it stands on the ladder, and neither question has an answer before he has named one. With it
      null the identity row is the mockup's row minus the badge, which is a layout that has to work
      anyway (a fresh install opens on it). */
-  const team = progress.campaign.team
   /* DERIVED, NOT STORED — nothing in the app computes a club's initials. Guard the empty and the
      one-word case rather than indexing blind. */
   const initials = team ? ((team.city[0] ?? '') + (team.name[0] ?? '')).toUpperCase() : ''
@@ -698,39 +704,36 @@ export function FrontDoor({
           <button className="fd-cta" onClick={() => onPick(z.pick)}>
             {z.cta}
           </button>
-          {/* THE SIGN-OFF STANDS AT THE FOOT OF THE READ IN SCOUT MODE and across the foot BAND in
-              user mode — see below. What moves it is that user mode has no record book to close the
-              board with. */}
-          {user ? null : (
-            <div className="fd-signoff">
-              Every number from real 1980—2026 stats.
-              <br />
-              Run the play. Erase. Run it again.
-            </div>
-          )}
+          {/* THE SIGN-OFF STANDS AT THE FOOT OF THE READ, IN BOTH MODES NOW. It used to move to the
+              foot band in user mode, because user mode had no record book to close the board with.
+              It has one (2026-09-11), so the sign-off stays where scout mode keeps it. */}
+          <div className="fd-signoff">
+            Every number from real 1980—2026 stats.
+            <br />
+            Run the play. Erase. Run it again.
+          </div>
         </div>
       </div>
 
-      {/* THE MODE IS SPENT HERE (2 of 3): WHAT CLOSES THE BOARD.
-          In scout mode the navy band is four doors — Database, Archetypes, Teams and Trophies show
-          engine ratings, and user mode has no doors to them by his standing ruling, so user mode
-          cannot have this row. In user mode the band is still drawn, because a board that simply
-          stops under the read reads as a page cut off rather than as a board that ends; it carries
-          the sign-off across it instead, which is the same two sentences on one line.
-          The mockup dims the four cells to 40% in user mode and leaves them inert. That draws three
-          things that look like doors and are not, which is worse than not drawing them. */}
+      {/*
+        WHAT CLOSES THE BOARD — four doors, in BOTH modes now.
+        HIS RULING, 2026-09-11: "Add the archetype teams trophies database. To user mode as well."
+        This band used to be scout's alone. What stood here said: "Database, Archetypes, Teams and
+        Trophies show engine ratings, and user mode has no doors to them by his standing ruling, so
+        user mode cannot have this row" — and user mode got the sign-off strung across the band
+        instead. That ruling is superseded by this one. The reference rooms are reference: a database
+        that will not tell you a rating is not a database, and the mode's blindness is about what you
+        are told while you DRAFT, which the draft board still enforces on its own.
+        The mode no longer reaches this band at all, which is one fewer place the two doors can drift.
+      */}
       <div className="fd-foot">
-        {user ? (
-          <span className="fd-close">Every number from real 1980—2026 stats. Run the play. Erase. Run it again.</span>
-        ) : (
-          book.map((b) => (
-            <button key={b.pick} className="fd-bookrow" onClick={() => onPick(b.pick)}>
-              <b>{b.label}</b>
-              {/* the arrow is part of the gold half's own string in the markup, not a pseudo-element */}
-              <i>{b.note} →</i>
-            </button>
-          ))
-        )}
+        {book.map((b) => (
+          <button key={b.pick} className="fd-bookrow" onClick={() => onPick(b.pick)}>
+            <b>{b.label}</b>
+            {/* the arrow is part of the gold half's own string in the markup, not a pseudo-element */}
+            <i>{b.note} →</i>
+          </button>
+        ))}
       </div>
     </div>
   )
