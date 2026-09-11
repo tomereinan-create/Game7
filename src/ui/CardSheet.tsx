@@ -203,6 +203,12 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
     // The skin is the app's own token names restated in the club's hue (see terminalSkin), so
     // everything under here — the strip, the hex, the button — re-lights without being told.
     <div className="sheet sheetcard pc-term" style={skin as React.CSSProperties} onClick={(e) => e.stopPropagation()}>
+      {/* THE WINDOW (the mock's CARD board, which is a bordered box inset in a scrim — not a
+          full-screen takeover). The layer above is the scrim; this is the box, and it is as tall
+          as the card is, capped at the screen. On a phone the scrim's padding falls to 8px, so it
+          reads as the full-bleed sheet it has always been; on a desk it stops being a page with
+          280px of empty club-black under the last line and becomes the window the mock draws. */}
+      <div className="pc-win">
       {/* the top status line. The middle slot carries the club and the season because those two
           are what the card is coloured BY; on a phone the leftmost slot stands down. */}
       <div className="pct-bar">
@@ -355,6 +361,8 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
           Close card
         </button>
       </div>
+      </div>
+      {/* the Advanced door is its own sheet — it stands OVER the window, not inside it */}
       {adv ? <Advanced p={p} onClose={() => setAdv(false)} /> : null}
     </div>
   )

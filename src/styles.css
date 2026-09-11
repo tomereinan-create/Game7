@@ -3217,7 +3217,40 @@ body:has(.sheet) { overflow: hidden; }
    own edges and only the SHEET between them is inset. A sheet's 13px side padding sat on the card
    element, which held both of them 13px short of it; the body and the foot status line carry that
    gutter themselves now, and the two pieces of chrome stand on the edge. */
-.sheetcard.pc-term { overflow: hidden; padding-left: 0; padding-right: 0; }
+/* THE CARD IS A WINDOW ON A SCRIM, NOT A TAKEOVER (his ruling: "Use this deisgn(photo #2) for
+   the player card in both modes"). The mock's board is `position:fixed; inset:0` holding a
+   bordered box that is `max-height:100%` and no taller than its own content — so this layer stops
+   being the card and becomes the ground the card stands on. Measured before: user mode at 1440
+   ran 294px of empty club-black below the last line, because a sheet fills the screen whether it
+   has anything to put there or not. The padding is the mock's own — clamp(8px,2.5vh,30px) by
+   clamp(8px,3.5vw,54px) — which comes out 13x20 on a 375x812 phone and 50x22 on a desk. The
+   phone pays 26px of column for it; measured, that costs user mode nothing (the card sizes to
+   its content and clears the screen with room over), and scout mode 33px more body scroll on a
+   sheet that already scrolled, because it carries 17 attributes and a hexagon the mock has no
+   equivalent of. */
+.sheetcard.pc-term {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(8px, 2.5vh, 30px) clamp(8px, 3.5vw, 54px);
+  /* the mock's own scrim over whatever the card was opened from — the pool, the draft, the floor */
+  background: rgba(6, 6, 5, 0.9);
+}
+.pc-win {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* `.sheetcard > *` caps its children at 660px; the window is the card, and the card's own
+     content cap is 1060 (see the desk block) */
+  max-width: 1060px;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 
 /* ---- my team: the durability badge (death match) ---- */
@@ -3519,11 +3552,11 @@ body:has(.sheet) { overflow: hidden; }
 
 /* ---- the desk: 1b's three areas ---- */
 @media (min-width: 900px) {
-  .pc-term > * { max-width: 1060px; }
+  .pc-term > .pc-win { max-width: 1060px; }
   /* the desk's home button is 52px and sits 14px in — [ESC] must clear it, the same way the
      topbar it replaced did (.topbar { padding-right: 44px }) */
   .pct-bar { padding-right: 56px; padding-left: 20px; }
-  .pc-term { padding: 0 0 22px; }
+  /* the scrim's own inset is the mock's; the 22px floor the takeover needed is gone with it */
   .pct-status { padding-left: 20px; padding-right: 20px; }
   .pc-body {
     padding: 12px 20px 6px;
