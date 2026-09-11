@@ -7144,7 +7144,3 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   .fd-ball-rig.go,
   .fd-ball-rig.go .fd-ball { animation: none; }
 }
-
-.freshness-probe-62119 {
-  color: #123456;
-}
