@@ -323,9 +323,21 @@ export function kitColor(kit: Kit): TeamColor {
   }
 }
 
-/** The campaign's own colours, or null for a save from before the kit existed — those keep the blue floor. */
-export const myColor = (team: { colors?: Kit } | null | undefined): TeamColor | null =>
-  team?.colors ? kitColor(team.colors) : null
+/**
+ * The club's own colours, or null for a save from before the kit existed — those keep the blue
+ * floor.
+ *
+ * IT VALIDATES THE KIT RATHER THAN TRUSTING IT (2026-09-11). `kitColor` calls `.replace` on both
+ * fields, so a `colors` object that is present but not two strings threw — and since the club moved
+ * to its own key and is now read by the front door on every screen, one malformed kit blanked the
+ * whole app with no way back in. I hit this by hand-writing a save with the wrong field names, and
+ * a save from a future or older build could do the same. An unreadable kit falls back to the same
+ * ice-blue an absent one does, which is a floor the app already knows how to draw.
+ */
+export const myColor = (team: { colors?: Kit } | null | undefined): TeamColor | null => {
+  const k = team?.colors
+  return k && typeof k.primary === 'string' && typeof k.accent === 'string' ? kitColor(k) : null
+}
 
 /**
  * WEARING THE KIT (his ruling: "After selecting my team colors in campaign, my 5 will wear these

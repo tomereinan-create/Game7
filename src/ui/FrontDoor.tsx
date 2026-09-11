@@ -155,6 +155,12 @@ type Zone = {
   label: string
   tag: string
   desc: string
+  /**
+   * HOW THE MODE IS PLAYED (his ruling, 2026-09-11: "Add in the home page the rules for each mode.
+   * In the black blank space"). Three or four lines, the things you would have to be told before
+   * pressing the button — not a description of the mode, which `desc` already is.
+   */
+  rules: string[]
   metaKey: string
   meta: string
   cta: string
@@ -243,6 +249,12 @@ export function FrontDoor({
       desc: cur
         ? `${ROUNDS} levels against every team in the league, best of seven each. Level ${cur} is up next.`
         : `${ROUNDS} levels against every team in the league, best of seven each. Every rung of it is cleared.`,
+      rules: [
+        'Every level is a best-of-seven. Win it and the next rung unlocks.',
+        'A win banks one to three stars — a sweep is worth the most.',
+        'Stars buy staff nodes, and a cleared level can be replayed for a better one.',
+        'Losing costs nothing but the attempt.',
+      ],
       metaKey: 'Banked',
       meta: `★ ${banked(progress.campaign)} / ${ROUNDS * 3}`,
       cta: cur ? 'Continue →' : 'Run it again →',
@@ -258,6 +270,12 @@ export function FrontDoor({
       label: 'Salary cap',
       tag: '02 · Tight money',
       desc: `The same ${ROUNDS} levels — every card priced that year, the five held under the cap.`,
+      rules: [
+        'The same ladder, with every card priced at its real salary that season.',
+        'Your five must come in under 75% of that year’s cap.',
+        '5% is held back for each slot you have not filled yet.',
+        'A man you cannot afford is greyed, with the reason on his row.',
+      ],
       metaKey: 'Banked',
       meta: `★ ${banked(progress.salary)} / ${ROUNDS * 3}`,
       cta: 'Play →',
@@ -273,6 +291,13 @@ export function FrontDoor({
       label: 'Death match',
       tag: '03 · One life',
       desc: 'One five, carried the whole way — change a single man before each level. Lose and the run is over.',
+      rules: [
+        'One five, carried from the first level to the last.',
+        'You may change a single man before each level, and no more.',
+        'Every man spends durability per game played; at the floor he must be replaced.',
+        'Lose with no life left and the run ends — every star and every node with it.',
+        'It runs on the salary cap too: the five has to stay payable.',
+      ],
       metaKey: 'Banked',
       meta: `★ ${banked(progress.death)} / ${ROUNDS * 3}`,
       cta: 'Play →',
@@ -292,6 +317,12 @@ export function FrontDoor({
       /* our own string, split at its own middot into the design's key/value pair — "EVERY TEAM"
          becomes the key rather than being dropped for the mockup's invented "Pool". The dash here
          is an EN dash; the sign-off and the top rail use an EM dash. */
+      rules: [
+        'Pick both fives yourself, from any season between 1980 and 2026.',
+        'Load a real team on either side, or build one man at a time.',
+        'Best of seven, on the same engine the campaign uses.',
+        'Nothing is banked — it is an exhibition.',
+      ],
       metaKey: 'Every team',
       meta: '1980–2026',
       cta: 'Set it up →',
@@ -307,6 +338,12 @@ export function FrontDoor({
       label: 'Vs friend',
       tag: 'Same phone',
       desc: 'Pass the phone. Two benches, alternating picks, one winner.',
+      rules: [
+        'Two people, one phone, one shared board of twelve cards.',
+        'Picks snake — A B B A A B B A A B — so the first pick is not decisive.',
+        'Five rings a side, and a man can only be taken into a ring he plays.',
+        'Either chair may load a whole real team instead of drafting.',
+      ],
       metaKey: 'Local',
       meta: 'No account',
       cta: 'Tip off →',
@@ -326,12 +363,23 @@ export function FrontDoor({
          mockup's answer — key "House rules", value "$20" — invents a number that appears nowhere in
          the data and says the kicker's "$20 each" twice. So the string stays whole in the value and
          the key is empty: the row keeps its gold at all six, and nothing is invented. */
+      rules: [
+        'Twenty dollars a chair, and every man goes to the block.',
+        'Bid a dollar at a time; a pass is final for that lot.',
+        'Win him and you choose which of your open rings he fills.',
+        'A dollar has to stay held for every chair you have not filled.',
+      ],
       metaKey: '',
       meta: 'House rules',
       cta: 'Ante up →',
     },
   ]
   const z = zones[sel]
+  /**
+   * WHICH LADDER THE MARK YOU ARE READING BELONGS TO, or null for the three side modes — Custom, VS
+   * Friend and 1v1 Bid keep no progress of their own. The identity row's two figures follow this.
+   */
+  const ladder: CampaignMode | null = z.pick === 'campaign' || z.pick === 'salary' || z.pick === 'death' ? z.pick : null
 
   /**
    * THE BALL, AND IT IS CARRIED NOW RATHER THAN THROWN — the second half of his ruling of
@@ -527,26 +575,38 @@ export function FrontDoor({
             >
               {initials}
             </span>
+            {/* HIS RULING, 2026-09-11: "Remove Campaign · level 80 of 150." The standing line under
+                the club name is gone — the read pane already says which ladder you are looking at
+                and how far in you are, and saying it again beside the crest said it for the CAMPAIGN
+                whichever mode you were reading. The club name stands alone. */}
             <span className="fd-club">
               <b>{`${team.city} ${team.name}`}</b>
-              {/* `Progress.record` is optional by design — every save written before that ruling has
-                  none — so the standing line is built from `currentLevel`, which every save has. */}
-              <i>{cur ? `Campaign · level ${cur} of ${ROUNDS}` : `Campaign · all ${ROUNDS} cleared`}</i>
             </span>
           </span>
         ) : null}
-        {/* RAFTERS TAKES `credit` AND THE READ PANE'S BANKED DOES NOT — see `banked` above. This is
-            the franchise's real banner count across all three ladders; that one is the map's own
-            stars against the map's own denominator. */}
+        {/*
+          HIS RULING, 2026-09-11: "157 ★ / Cleared 79/150 — here in the main page it needs to update
+          when Im changing modes."
+          Both figures follow the mark you are reading now. They did not: Rafters was deliberately
+          the franchise's banner count ACROSS all three ladders, and Cleared was hard-wired to
+          `progress.campaign` — so standing on the salary cap you were shown the campaign's progress
+          with nothing saying so. On one of the three LADDERS each figure is that ladder's own; on
+          the three side modes, which keep no progress of their own, they fall back to the franchise
+          total and the campaign, which is the only honest reading left for them.
+          RAFTERS STILL TAKES `credit` AND THE READ PANE'S BANKED STILL DOES NOT — see `banked`
+          above. Two questions, two formulas, and they must not be unified.
+        */}
         <span className="fd-stat first">
-          <i>Rafters</i>
-          <b className="gold">{totalStars(progress.campaign) + totalStars(progress.salary) + totalStars(progress.death)} ★</b>
+          <i>{ladder ? `Rafters · ${z.label}` : 'Rafters'}</i>
+          <b className="gold">
+            {ladder ? totalStars(progress[ladder]) : totalStars(progress.campaign) + totalStars(progress.salary) + totalStars(progress.death)} ★
+          </b>
         </span>
         <span className="fd-stat">
           <i>Cleared</i>
           {/* ROUNDS is computed from the campaign config. Never type 150. */}
           <b>
-            {clearedCount(progress.campaign)}
+            {clearedCount(progress[ladder ?? 'campaign'])}
             <em>/{ROUNDS}</em>
           </b>
         </span>
@@ -697,6 +757,20 @@ export function FrontDoor({
           <div className="fd-name">{z.label}</div>
           <div className="fd-rule" aria-hidden />
           <p className="fd-desc">{z.desc}</p>
+          {/*
+            HOW IT IS PLAYED — his ruling, 2026-09-11: "Add in the home page the rules for each
+            mode. In the black blank space." The read pane said what a mode IS and then stopped, and
+            everything a player actually had to be told — that a pass is final, that durability is
+            spent per game, that the death match runs on the cap too — was only ever discoverable by
+            losing to it. Each mark carries its own rules now.
+            Rendered on `.fd-desc`, the face the line above already uses, so the pane fills without
+            a new class in a stylesheet another session is working in.
+          */}
+          {z.rules.map((r) => (
+            <p className="fd-desc" key={r}>
+              · {r}
+            </p>
+          ))}
           <div className="fd-meta">
             {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
             <span className="fd-metav">{z.meta}</span>

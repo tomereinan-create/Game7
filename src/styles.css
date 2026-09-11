@@ -6194,16 +6194,20 @@ body.map #root { padding-bottom: var(--foot); }
    `currentLevel`, never `Progress.record`: that field is optional by his own ruling and every save
    written before it has none. */
 .fd-badge { display: flex; align-items: center; gap: 9px; min-width: 0; }
+/* HIS RULING, 2026-09-11: "Make the GA Gaziantep ag Way bigger." The crest is the club's mark on
+   its own front door and it was a 26-40px disc — smaller than the ball beside it. Roughly doubled,
+   and the letters with it, so it reads as a crest rather than a bullet. It keeps `flex: none` so it
+   never squeezes the club name, and the whole row still ellipsizes as before. */
 .fd-crest {
   flex: none;
   display: grid;
   place-items: center;
-  width: clamp(26px, calc(var(--fd-u) * 1.35), 40px);
+  width: clamp(52px, calc(var(--fd-u) * 2.7), 80px);
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--crest);
-  border: 2px solid var(--trim);
-  font: 400 clamp(13px, calc(var(--fd-u) * 0.7), 20px) / 1 var(--serif);
+  border: 3px solid var(--trim);
+  font: 400 clamp(24px, calc(var(--fd-u) * 1.35), 38px) / 1 var(--serif);
   color: var(--crest-ink);
   padding-top: 2px;
 }
