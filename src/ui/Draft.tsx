@@ -1290,6 +1290,22 @@ export function Draft({
     null
   })
 
+  /**
+   * THE HEAD OVER YOUR OWN MEN (his ruling: "Player PTS · REB · AST should show in my teams as
+   * well"). The opponent's list has always been headed — the caption is what tells you the three
+   * figures on the right are points, rebounds and assists, in that order, and nothing else on the
+   * row says so. Your own five was the one list that read them bare. It is the same head, so it
+   * rides with the rows into whichever of the two places they are rendered: under the floor while
+   * the five is being built, and inside the tip-off once it is set.
+   */
+  const fiveHead = (
+    <div className="rowhead dr">
+      <span>Player</span>
+      <span className="gcap">PTS · REB · AST</span>
+      <span />
+    </div>
+  )
+
   return (
     <>
       {/*
@@ -1913,7 +1929,14 @@ export function Draft({
                    its last door on this screen closes with the fifth pick: a charge left unspent
                    at that moment is unspent for the level. Flagged for him; no control has been
                    invented here to carry it. */
-            rows={user ? undefined : fiveRows}
+            rows={
+              user ? undefined : (
+                <>
+                  {fiveHead}
+                  {fiveRows}
+                </>
+              )
+            }
           />
         ) : (
         /* the wrapper is the start line his ruling asks for and nothing else — see `oppFloor` */
@@ -1963,6 +1986,8 @@ export function Draft({
         )}
         {/* THE FIVE IS STILL BEING BUILT, so the rows follow the court they are filling. Once it
             is set they go INSIDE the tip-off instead — see the panel above and `.tip-rows`. */}
+        {/* the head only once there is a man under it — an empty five is an empty list */}
+        {full || !five.length ? null : fiveHead}
         {full ? null : fiveRows}
       </div>
 

@@ -336,7 +336,12 @@ button {
 .rowhead .gcap {
   font-size: 7.5px;
   letter-spacing: 0.02em;
-  text-align: center;
+  /* HIS RULING: "Player PTS · REB · AST Isnt alligned, allign it." The caption was CENTRED over a
+     cell whose numbers are RIGHT-aligned (`.mini`), so the head sat a few pixels left of the
+     column it names and the drift grew with every row whose figures ran short. A head belongs on
+     the same edge as the thing it heads: one right edge for the caption and the numbers under it.
+     `.dialhead` keeps its own flex-end run of fixed-width cells and is untouched. */
+  text-align: right;
   white-space: nowrap;
 }
 .rowhead .r {

@@ -611,6 +611,15 @@ export function MyTeam({
                 {capUsed.toFixed(1)}% of {capMax}% cap
               </span>
             </div>
+            {/* THE HEAD OVER YOUR OWN MEN (his ruling: "Player PTS · REB · AST should show in my
+                teams as well"). The wheel's roster beside this one has always been headed; your
+                own five read its three figures bare, with nothing on the screen saying which was
+                which. Same head, same columns — `.myteam .rowhead.dr` already matches the rows. */}
+            <div className="rowhead dr">
+              <span>Player</span>
+              <span className="gcap">PTS · REB · AST</span>
+              <span />
+            </div>
             {five.map((p) => {
               const o = floorOpts(p)
               return row(p, {
