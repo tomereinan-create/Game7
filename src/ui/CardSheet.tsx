@@ -220,6 +220,9 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
         <div className="pct-id">
           <div className="pc-name">{p.player}</div>
           <div className="pc-tag">{tag}</div>
+          {/* the mock's 3px slab under the badge: it closes the man off from his ledger, and it is
+              the only rule on the card that is a slab rather than a hairline */}
+          <div className="pc-slab" aria-hidden="true" />
           <div className="pct-meta">
             {META.map(([k, v]) => (
               <div className="pct-mrow" key={k}>
@@ -346,8 +349,10 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
         <span>{span ? `${span} AVAILABLE █` : 'SINGLE SEASON █'}</span>
       </div>
       <div className="pc-foot">
+        {/* the mock names its own dock key "Close card": [ESC] CLOSE is already the small print in
+            the title bar, and the two want to read as the same act at two sizes */}
         <button className="btn" onClick={onClose}>
-          Close
+          Close card
         </button>
       </div>
       {adv ? <Advanced p={p} onClose={() => setAdv(false)} /> : null}

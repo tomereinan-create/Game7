@@ -3212,7 +3212,12 @@ body:has(.sheet) { overflow: hidden; }
    is taller than the viewport — with no scroll affordance, the moment the trophy case became a
    real .sheet. */
 .sheetcard { z-index: 60; display: flex; flex-direction: column; gap: 0; padding: 0 13px calc(10px + env(safe-area-inset-bottom)); }
-.sheetcard.pc-term { overflow: hidden; }
+/* THE CARD'S GUTTER MOVES INSIDE (the mock's CARD board, his ruling: "Use this deisgn(photo #2)
+   for the player card in both modes"). In the mock the title bar and the dock run to the window's
+   own edges and only the SHEET between them is inset. A sheet's 13px side padding sat on the card
+   element, which held both of them 13px short of it; the body and the foot status line carry that
+   gutter themselves now, and the two pieces of chrome stand on the edge. */
+.sheetcard.pc-term { overflow: hidden; padding-left: 0; padding-right: 0; }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 
 /* ---- my team: the durability badge (death match) ---- */
@@ -3373,13 +3378,23 @@ body:has(.sheet) { overflow: hidden; }
   font-feature-settings: 'tnum' 1;
 }
 
-/* ---- the two status lines ---- */
-.pct-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 42px 8px 0; border-bottom: 1px solid var(--line-2); font-size: 9.5px; letter-spacing: 0.1em; color: var(--muted-2); white-space: nowrap; }
+/* ---- the two status lines ----
+   THE TOP LINE IS A TITLE BAR, EDGE TO EDGE (the campaign mock's CARD board, his ruling:
+   "Use this deisgn(photo #2) for the player card in both modes"). It used to run inside the
+   card's 13px gutter on the card's own ground; the mock stands it on --panel and takes it out
+   to both edges, which is what makes the sheet read as a window with a chrome rather than as a
+   page with a caption. The 13px on the left is the gutter the card element gave up, restated
+   here so GAME7.SYS still starts on the same line the man's name does. */
+.pct-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 42px 8px 13px; background: var(--panel); border-bottom: 1px solid var(--divider); font-size: 10px; letter-spacing: 0.17em; color: var(--muted-2); white-space: nowrap; }
 .pct-sys { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.pct-slug { color: var(--ink); letter-spacing: 0.08em; }
-.pct-esc { flex: none; padding: 0; background: none; border: 0; font: inherit; letter-spacing: inherit; color: var(--pct-acc); cursor: pointer; }
+.pct-slug { flex: none; color: var(--ink); letter-spacing: 0.15em; }
+.pct-esc { flex: none; padding: 0; background: none; border: 0; font: inherit; font-weight: 700; letter-spacing: inherit; color: var(--pct-acc); cursor: pointer; }
 .pct-esc:hover { color: var(--pct-acc-hi); }
-.pct-status { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0 9px; border-top: 1px solid var(--line-2); font-size: 8.5px; letter-spacing: 0.1em; color: var(--muted-2); white-space: nowrap; }
+/* the foot line keeps the card's gutter — in the mock it is the last line of the SHEET, not of
+   the chrome — and only comes up to the mock's 10px/0.16em from 8.5px/0.1em */
+.pct-status { flex: none; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 8px 13px 9px; border-top: 1px solid var(--line); font-size: 9.5px; letter-spacing: 0.15em; color: var(--muted-2); white-space: nowrap; }
+.pct-status span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.pct-status span + span { flex: none; }
 .pct-status b { font-weight: 600; color: var(--pct-acc); }
 
 /* ---- the body ----
@@ -3392,25 +3407,47 @@ body:has(.sheet) { overflow: hidden; }
    overflow-x clips ONE thing: the season arrows carry a 5px invisible tap-target bleed
    (.yr-arrow::before), and the strip now runs flush to the card's edge, so that bleed alone
    was raising a horizontal scrollbar across the whole body. */
-.pc-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; display: grid; gap: 11px 18px; align-content: start; padding: 11px 0 5px; }
+.pc-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; display: grid; gap: 11px 18px; align-content: start; padding: 11px 13px 5px; }
 
 /* ---- who he is ---- */
 .pct-id { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
-.pc-name { font-size: clamp(17px, 4.4vw, 22px); font-weight: 700; line-height: 1.18; letter-spacing: 0.02em; text-transform: uppercase; color: var(--ink); }
-.pc-tag { padding: 4px 9px; border: 1px solid var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); font-size: 8.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+/* THE NAME IS THE HEADLINE (the mock's CARD board: League Gothic at display size, set solid).
+   It was 17–22px and set in the copy face, which made the man the smallest thing on his own
+   card — the mock puts him first by size and nothing else changes to say so. The ceiling is
+   54px rather than the mock's 62: the mock draws on a 1340px sheet and this card caps its
+   content at 1060, so the same 3.4vw would have come out larger here relative to the column
+   it sits in. `.pc-name` keeps its element and its class — tests/seasons.test.ts pins the
+   markup, and the man's name is the one thing on the card that must not move. */
+.pc-name { font-family: var(--serif); font-size: clamp(30px, 4.6vw, 54px); font-weight: 400; line-height: 0.84; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
+.pc-tag { padding: 5px 10px 4px; border: 1px solid var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); font-size: clamp(9.5px, 0.8vw, 12px); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+/* the mock's 3px slab between the badge and the ledger. It is the app's franchise blue, which is
+   the colour the mock itself names there (#17408b) — NOT the club accent, which on this card is
+   spent only on what is locked (the peak, [ESC], the status word) and would stop meaning that if
+   a rule took it too. */
+.pc-slab { width: 100%; height: 3px; background: var(--mine); }
 /* the run-on "PG/SG · 6'11" · MIL · 63 G" line, broken into readout rows: label dim on the left,
-   value bright on the right. Two columns on a phone, one down the dossier on a desk. */
-.pct-meta { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 18px; }
-.pct-mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; font-size: 9.5px; letter-spacing: 0.08em; color: var(--muted-2); }
-.pct-mrow b { font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+   value bright on the right. THE MOCK RULES EVERY ROW and sets the value in the heading face —
+   that hairline under each line is what turns six facts into a dossier instead of a caption.
+   Two columns while the dossier is the full width of the card, one down it on a desk. */
+.pct-meta { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+.pct-mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; padding: 6px 0 5px; border-bottom: 1px solid var(--divider); font-size: 9.5px; letter-spacing: 0.13em; color: var(--muted-2); }
+.pct-mrow b { flex: none; max-width: 66%; font-family: var(--num); font-size: clamp(15px, 1.15vw, 21px); font-weight: 400; line-height: 1; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* what the badge above it means — the same sentence the draft's archetype card prints, in the
-   terminal's comment voice */
-.pc-what { margin: 0; font-size: 10.5px; line-height: 1.55; color: var(--muted); text-wrap: pretty; }
+   terminal's comment voice. The mock sets it at 11–14px on --ink-2 and holds it to 46ch: a
+   sentence this long is read, not glanced at, and 10.5px on --muted was reading as fine print. */
+.pc-what { margin: 0; max-width: 46ch; font-size: clamp(11px, 0.9vw, 14px); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
 
 /* ---- the seasons ---- */
-.pct-years { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.pc-term .pc-years { flex: none; margin-top: 0; }
-.pc-term .yrchip { font-size: 10px; letter-spacing: 0.02em; }
+.pct-years { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.pc-term .pc-years { flex: none; align-items: stretch; gap: 5px; margin-top: 0; }
+/* THE STRIP'S SHAPE, off the mock: square boxes, not rounded chips, and the arrows the same
+   height as the years they step between. Nothing else in the terminal is rounded, and the chips
+   were the one thing on the card that still was. The year keeps the app's chip WIDTH (44px, not
+   the mock's 52) on purpose — the mock wraps its years onto as many rows as it needs and this
+   strip scrolls inside itself, so width here is years-per-swipe on a phone, and 44 shows one
+   more of them. The 34px box plus the 5px tap bleed on .yrchip::before is still a 44px target. */
+.pc-term .yrchip { height: 34px; border-radius: 0; font-size: 10px; letter-spacing: 0.02em; }
+.pc-term .yr-arrow { height: 34px; border-radius: 0; }
 .pc-term .yrchip i { font-size: 7px; letter-spacing: 0.08em; color: var(--pct-acc); }
 .pc-term .yrchip.on i { color: var(--you-ink); opacity: 0.75; }
 
@@ -3420,18 +3457,32 @@ body:has(.sheet) { overflow: hidden; }
 .pc-big.lead { border-color: var(--pct-acc-line); }
 .pc-big i { display: block; font-style: normal; font-size: 8px; letter-spacing: 0.13em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pc-big.lead i { color: var(--pct-acc); }
-.pc-big b { display: block; margin-top: 2px; font-size: clamp(26px, 6.6vw, 38px); font-weight: 700; line-height: 1.12; color: var(--ink); }
+/* the verdict's three figures follow the season line onto the heading face: they sit directly
+   above it in scout mode, and one card may not read its numbers in two voices */
+.pc-big b { display: block; margin-top: 2px; font-family: var(--num); font-size: clamp(30px, 7.4vw, 44px); font-weight: 400; line-height: 1; color: var(--ink); }
 
 /* ---- the sheet ---- */
 .pc-main { min-width: 0; display: flex; flex-direction: column; }
 .pc-rule { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
-.pc-rule span { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-rule i { flex: 1; height: 1px; background: var(--line-2); }
-/* the real line, in its own readout panel */
-.pc-stats { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px 8px; margin-top: 5px; padding: 11px 13px; border: 1px solid var(--line); background: var(--panel); }
-.pc-cell { display: block; min-width: 0; }
-.pc-cell i { display: block; font-style: normal; font-size: 8px; letter-spacing: 0.08em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-cell b { display: block; margin-top: 1px; font-size: 14px; font-weight: 600; line-height: 1.25; color: var(--ink); }
+.pc-rule span { font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-rule i { flex: 1; height: 1px; background: var(--line); }
+/* THE REAL LINE, AS THE MOCK DRAWS IT: not fourteen figures loose in one panel, but fourteen
+   BOXES, each with its own ground and a hairline between it and the next, the figure set in the
+   heading face at reading size (14px -> 19–32px). The columns are the mock's own `auto-fit
+   minmax(..., 1fr)`, so the line REFLOWS — eight across on a tablet, seven on a desk, five on a
+   phone — instead of being squeezed into a fixed seven at every width.
+   The floor is 70px rather than the mock's 82 so that fourteen figures land as SEVEN AND SEVEN
+   in the half-window the line gets on a desk (499px of it at 1280 and up), instead of six, six
+   and a two-cell stub.
+   THE HAIRLINE IS AN OUTLINE, NOT THE GAP. The mock paints the grid's own background in the line
+   colour and lets a 1px gap show it through, which draws a solid slab wherever the last row is
+   short — six cells in a row of eight leaves two empty tracks. An outline is drawn per CELL, so
+   an unfilled track stays empty, and because it sits outside the border box two neighbours share
+   the same 1px gap and come out as one line. */
+.pc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 70px), 1fr)); gap: 1px; margin-top: 8px; padding: 1px; }
+.pc-cell { display: block; min-width: 0; padding: 9px 10px 8px; background: var(--surface); outline: 1px solid var(--line); }
+.pc-cell i { display: block; font-style: normal; font-size: 8.5px; letter-spacing: 0.14em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-cell b { display: block; margin-top: 3px; font-family: var(--num); font-size: clamp(19px, 1.8vw, 32px); font-weight: 400; line-height: 1; color: var(--ink); }
 /* the attributes: a row each — name, track, number — under a ruled group head, two columns of them */
 .pc-attrs { columns: 2; column-gap: 22px; margin-top: 6px; }
 .pc-grp { break-inside: avoid; margin-bottom: 10px; }
@@ -3455,10 +3506,14 @@ body:has(.sheet) { overflow: hidden; }
 .pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 
 /* ---- the way out ----
-   the app's gold slab would be the one thing in the card still wearing the house colours, and at
-   24px League Gothic it shouts; in here CLOSE is a wide, letterspaced terminal key. */
-.pc-foot { flex: none; padding-top: 9px; }
-.pc-foot .btn { width: 100%; min-height: 44px; border-radius: 0; border: 1px solid var(--you-line); background: var(--you-tint); box-shadow: none; color: var(--ink-2); font-size: 12px; font-weight: 700; letter-spacing: 0.28em; }
+   THE MOCK'S DOCK: one key across the foot of the window, edge to edge, sitting on its own
+   hairline — not a button floated inside the card's gutter. The app's gold slab would be the one
+   thing in the card still wearing the house colours, so the key keeps the club's tint; the mock's
+   own close key is its dim one (#1d1916) for exactly the same reason. It says CLOSE CARD rather
+   than CLOSE because [ESC] CLOSE is already the small print at the top right, and the two want to
+   read as the same act at two sizes. */
+.pc-foot { flex: none; padding-top: 0; border-top: 1px solid var(--divider); }
+.pc-foot .btn { width: 100%; min-height: 50px; padding: 2px 18px 0; border-radius: 0; border: 0; background: var(--you-tint); box-shadow: none; color: var(--ink-2); font-size: clamp(17px, 1.35vw, 26px); font-weight: 400; letter-spacing: 0.07em; }
 .pc-foot .btn:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 .pc-foot .btn:active { transform: none; box-shadow: none; }
 
@@ -3467,10 +3522,17 @@ body:has(.sheet) { overflow: hidden; }
   .pc-term > * { max-width: 1060px; }
   /* the desk's home button is 52px and sits 14px in — [ESC] must clear it, the same way the
      topbar it replaced did (.topbar { padding-right: 44px }) */
-  .pct-bar { padding-right: 56px; }
-  .pc-term { padding: 0 20px 22px; }
+  .pct-bar { padding-right: 56px; padding-left: 20px; }
+  .pc-term { padding: 0 0 22px; }
+  .pct-status { padding-left: 20px; padding-right: 20px; }
   .pc-body {
-    grid-template-columns: minmax(0, 1fr) 292px;
+    padding: 12px 20px 6px;
+    /* TWO EQUAL COLUMNS, which is what the mock's `auto-fit minmax(min(100%, 340px), 1fr)`
+       actually comes out as on a sheet this wide: the line on the left and the man on the
+       right, each half the window. The dossier used to be pinned to 292px, which left the
+       season line stranded across 750 — seven figures with a hand's width of air between
+       them — and squeezed the archetype sentence into three short lines. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
     grid-template-areas:
       'years years'
@@ -3483,7 +3545,6 @@ body:has(.sheet) { overflow: hidden; }
   .pct-id { grid-area: id; }
   .pct-shape { grid-area: shape; }
   .pct-meta { grid-template-columns: minmax(0, 1fr); }
-  .pc-name { font-size: 21px; }
 }
 
 /* ---- the phone: everything above, packed ----
@@ -3494,17 +3555,22 @@ body:has(.sheet) { overflow: hidden; }
 @media (max-width: 560px) {
   /* the club and the season are the half of the status line that matters */
   .pct-sys { display: none; }
-  .pct-id { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .pct-id { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; }
   .pc-name { flex: 0 1 auto; }
-  .pct-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px 12px; }
+  /* the ledger and the sentence take the full width under the name and the badge */
+  .pc-slab { flex: 1 0 100%; margin-top: 1px; }
+  .pct-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; }
+  .pct-mrow { padding: 5px 0 4px; letter-spacing: 0.1em; }
   .pc-what { flex: 1 0 100%; }
   .pc-rule { margin-top: 9px; }
-  /* seven across and two deep rather than five and three, and the sheet in three columns rather
-     than two: between them they buy back most of a phone screen, and three columns of rows is
-     still looser than the four-across grid of cells the card carried before this. */
-  .pc-stats { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 6px; padding: 10px; }
-  .pc-cell i { font-size: 7.5px; letter-spacing: 0.04em; }
-  .pc-cell b { font-size: 12.5px; }
+  /* FIVE ACROSS AND THREE DEEP, not the mock's four. The mock's own `minmax(82px)` lands on four
+     columns at 375, and four means a fourth row of cells — his standing "one screen, no
+     scrolling" is what the card is built around, so the phone spends the narrowest column the
+     figure still reads big in (17px in a 62px box) and buys the row back. */
+  .pc-stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 62px), 1fr)); }
+  .pc-cell { padding: 7px 7px 6px; }
+  .pc-cell i { font-size: 7.5px; letter-spacing: 0.06em; }
+  .pc-cell b { margin-top: 2px; font-size: 17px; }
   .pc-attrs { columns: 3; column-gap: 12px; }
   .pct-attr { gap: 6px; padding: 1px 0; }
   .pct-attr .statt { display: none; }
@@ -3517,10 +3583,13 @@ body:has(.sheet) { overflow: hidden; }
   .pct-hexbox .heathex { max-width: 132px; }
   .pc-adv { grid-area: adv; }
 }
+/* a landscape phone: the card is the same card, one size down through the figures */
 @media (max-height: 620px) {
   .pct-attr .statt { display: none; }
-  .pc-cell b { font-size: 13px; }
-  .pc-big b { font-size: 26px; }
+  .pc-name { font-size: clamp(26px, 3.4vw, 38px); }
+  .pc-cell b { font-size: 16px; }
+  .pc-big b { font-size: 28px; }
+  .pct-mrow b { font-size: 15px; }
 }
 
 /* ==========================================================================
