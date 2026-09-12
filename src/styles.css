@@ -5540,7 +5540,7 @@ body.um {
    moved and grown needs them or the 7 drops through empty air beside the net. Measured paused at
    88% of the flight: ball centre and rim centre agree to the pixel at both scales.
    ========================================================================== */
-.jf { position: relative; height: 200px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
+.jf { position: relative; height: 236px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
 /* The boards, raked back under the eye. left/right run past the box so the vanishing edges are
    never in shot, and the origin is the FOOT of the panel so the near boards stay the widest. */
 .jf-floor {
@@ -5550,7 +5550,7 @@ body.um {
   /* The boards run to the panel's own top edge — that edge IS the far baseline. The rake is fixed,
      so the deeper panel this ruling gives the floor needs a taller board before the projection
      reaches the top again: at -170 a 200px panel left a 39px dead strip above the wood. */
-  top: -225px;
+  top: -480px;
   bottom: 0;
   transform: perspective(700px) rotateX(52deg);
   transform-origin: bottom center;
@@ -5583,7 +5583,7 @@ body.um {
 }
 
 /* `bottom` is the apron: the hardwood in FRONT of the five, which was 8px and read as nothing. */
-.jf-row { position: absolute; left: 0; right: 0; bottom: 18px; z-index: 5; display: flex; justify-content: center; gap: 5px; padding: 0 10px; }
+.jf-row { position: absolute; left: 0; right: 0; bottom: 20px; z-index: 5; display: flex; justify-content: center; gap: 8px; padding: 0 12px; }
 .jf-card {
   flex: 1 1 0;
   min-width: 0;
@@ -5631,14 +5631,14 @@ body.um {
 .um-leg em { position: absolute; left: 0; right: 0; bottom: 2px; font-family: var(--serif); font-style: normal; font-size: 11px; text-align: center; color: rgba(11, 10, 9, 0.75); }
 
 @media (min-width: 900px) {
-  .jf { height: 264px; }
-  .jf-floor { top: -292px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
+  .jf { height: 320px; }
+  .jf-floor { top: -430px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
   .jf-rig { width: 200px; height: 210px; top: 6px; right: 16px; }
   .jf-post { width: 18px; height: 78px; }
   .jf-board { right: 18px; width: 30px; height: 54px; border-width: 3px; }
   .jf-rim { right: 40px; top: 22px; width: 112px; height: 14px; border-width: 5px; }
   .jf-net { right: 52px; top: 32px; width: 90px; height: 56px; }
-  .jf-row { gap: 8px; padding: 0 16px; bottom: 20px; }
+  .jf-row { gap: 14px; padding: 0 22px; bottom: 22px; }
   .jf-card { max-width: 168px; }
   .jf-shirt { height: 58px; }
   .jf-jersey { height: 50px; }
@@ -6075,7 +6075,7 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 
 /* THE SHOT. The landing point is the rim's own, stated as two variables on .jf so the desk's
    larger rig retunes the flight without a second set of keyframes. The ball never rotates. */
-.jf { --rim-x: 60px; --rim-y: 11px; --floor-y: 126px; }
+.jf { --rim-x: 60px; --rim-y: 11px; --floor-y: 152px; }
 .jf-shot { position: absolute; z-index: 6; animation: jfshoot 1.6s cubic-bezier(0.3, 0, 0.55, 1) forwards; }
 @keyframes jfshoot {
   0% { right: 86%; top: var(--floor-y); opacity: 0; }
@@ -6089,7 +6089,7 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   .jf-flash { display: none; }
 }
 @media (min-width: 900px) {
-  .jf { --rim-x: 99px; --rim-y: 17px; --floor-y: 180px; }
+  .jf { --rim-x: 99px; --rim-y: 17px; --floor-y: 226px; }
   .jf-crowd { height: 76px; }
   .jf-bug { gap: 10px; padding: 5px 12px; left: 14px; top: 10px; }
   .jf-bug b { font-size: 32px; }
