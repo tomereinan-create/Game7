@@ -2469,7 +2469,15 @@ button {
 .trail { position: relative; margin: 4px 0 0; }
 .trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .trail-dim, .trail-lit { fill: none; stroke-width: 3px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
-.trail-dim { stroke: var(--line-2); stroke-dasharray: 0.004 0.012; }
+/* THE TRAIL RUNS UNBROKEN THROUGH THE LEVELS NOT YET PLAYED (his ruling: "Have the lines
+   connected even in the uncompleted stages (all modes)"). It was dashed 0.004 painted to 0.012
+   blank of a pathLength of 1 — a quarter of one percent of a trail that is several thousand
+   pixels long, so between two locked tickets you got one short stub and a long nothing, and the
+   ladder ahead read as a scatter of unrelated boxes rather than a road. It is one line now, and
+   the only thing that says a level is unplayed is that the line is DIM: the lit stroke, its glow
+   and the gradient still paint exactly as far as he has walked. Declared on the base rule, which
+   both skins' variants inherit, so it lands in both modes together. */
+.trail-dim { stroke: var(--line-2); }
 .trail-lit { stroke: var(--you); }
 .node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); }
 .node:disabled { cursor: default; }
