@@ -1275,9 +1275,35 @@ export function Draft({
           </div>
         ) : null}
       </div>
-    ) : // an unfilled slot is a ghost ring on the floor above, which is also its drop
-    // target — a list row repeating "PG / OPEN" under it would say nothing twice
-    null
+    ) : (
+      /**
+       * AN OPEN CHAIR IS A ROW TOO (his ruling: "In my team, have 5 empty positions, and then I
+       * will fill those by drafting"). This used to render nothing, on the reasoning that the
+       * ghost ring on the floor above already says the slot is open and a row repeating it would
+       * say the same thing twice. His ruling overrules that, and it is the better read: the list
+       * is FIVE ROWS from the first spin, so the shape of the team he is building — which rings
+       * are still to fill — is legible without counting the men who are there. It fills in place
+       * as he drafts instead of growing a line at a time.
+       * Not a button: there is nothing to open, nothing to move, and no man to read. The floor's
+       * ring above is still the drop target, and the wheel is still how a man gets here.
+       */
+      <div className="row dr chair" key={x} aria-hidden>
+        <span className="pname">
+          <span className="who">
+            <b>{x}</b>
+            <i>open — draft a man here</i>
+          </span>
+        </span>
+        <span className="mini">
+          <em>–</em>
+          <i>·</i>
+          <em>–</em>
+          <i>·</i>
+          <em>–</em>
+        </span>
+        <span />
+      </div>
+    )
   })
 
   /**

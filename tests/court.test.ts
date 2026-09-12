@@ -288,7 +288,11 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
   it('balanced is no call: the best-fit read and its caption stay exactly as they were', () => {
     expect(draw({ style: 'balanced', pnr: null })).toBe(draw(null))
     expect(caption(draw(null))).not.toContain('your tactic')
-    expect(caption(draw(null))).toContain(inferredStyle(FIVE)!.style === 'balanced' ? 'no better fit' : 'best fit')
+    // his ruling removed the "· no better fit" tail: a balanced read is now the bare label, and
+    // what this case is really pinning is that the read is still INFERRED and not called.
+    const inferred = inferredStyle(FIVE)!.style
+    expect(caption(draw(null))).toContain(inferred === 'balanced' ? 'Balanced' : 'best fit')
+    if (inferred === 'balanced') expect(caption(draw(null))).not.toContain('no better fit')
   })
 
   it('the best-fit caption names the man, or the pair, the shape runs through', () => {

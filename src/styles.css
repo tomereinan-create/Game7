@@ -374,6 +374,14 @@ button {
 .row.off {
   opacity: 0.35;
 }
+/* AN OPEN CHAIR IN YOUR OWN FIVE (his ruling: "In my team, have 5 empty positions, and then I
+   will fill those by drafting"). It holds the row's height and its three stat tracks so the list
+   is five rows deep from the first spin and nothing under it jumps as a man lands — the position
+   is the only thing it has to say, so the position is the only thing set bright. */
+.row.dr.chair { cursor: default; color: var(--muted); }
+.row.dr.chair .who b { font-weight: 400; color: var(--muted); letter-spacing: 0.08em; }
+.row.dr.chair .who i { color: var(--faint); }
+.row.dr.chair .mini { color: var(--faint); font-weight: 400; }
 .row.exp {
   background: var(--wash);
   margin: 0 -12px;
@@ -1480,6 +1488,17 @@ button {
   .spin-roster .row.on,
   .spin-roster .row.on2,
   .spin-roster .row.exp { margin-left: 0; margin-right: 0; width: 100%; }
+  /* HIS RULING: "When pressing on a player before drafting, pts reb ast becomes unalligned as
+     well." Everywhere else a lit row keeps its content box — it bleeds 18px each way by negative
+     margin and takes the 18 back as padding, so the columns inside never move. In THIS box the
+     bleed is overflow, so the margins are zeroed above and the padding (rightly) is not — which
+     left the lit row, and only the lit row, 18px narrower inside than every row around it. Its
+     three figures went 18px left of the three labels the moment he pressed a man.
+     So the inset is not the lit row's any more, it is the LIST's: every row and the head carry
+     it, and lighting a man changes his colour and nothing else. Same 18px the bleed uses at this
+     width, which is what keeps the type clear of the accent bar. */
+  .spin-roster > .rowhead.dr,
+  .spin-roster .row.dr { padding-left: 18px; padding-right: 18px; }
 }
 /* HIS RULING: the men lead the stack at every width. He must never scroll to reach the five
    he is deciding between, so the roster box is first on a phone and leftmost on a desk. */
@@ -3340,6 +3359,14 @@ body:has(.sheet) { overflow: hidden; }
    been, and the padding is exactly the distance it was handed. */
 .court-line { min-width: 0; margin: 10px 0 6px; }
 .court-line > .court { margin-top: 0; margin-bottom: 0; }
+/* THE DRAFT'S TWO FLOORS RUN SMALLER THAN EVERY OTHER COURT IN THE APP (his ruling: "Make the 5s
+   a tiny bit smaller so I will see both fives without having to scroll down"). They are the only
+   courts with a five-man LIST under them in the same card, and at the shared 430px the card came
+   out 43px past the dock in user mode — the fifth man was always the one below the fold. 356px
+   takes 62px of height off each column and nothing off the diagram: the rings, the tags and the
+   drag are all laid out in percentages of this box. Only `.court-line`, so My team, the team book
+   and the archetype pages keep the size they were drawn at. */
+.court-line > .court { max-width: 356px; }
 /* the ghost ring of an unfilled slot: the position stands in for the man */
 .ct-init.ghost { color: var(--ink-2); font-family: var(--serif); font-size: 15px; letter-spacing: 0.06em; }
 .ct-spot.drop-ok .ct-bust { border-color: var(--you); border-style: solid; background: var(--you-tint); box-shadow: 0 0 0 1px var(--you); }
@@ -5563,7 +5590,7 @@ body.um {
    moved and grown needs them or the 7 drops through empty air beside the net. Measured paused at
    88% of the flight: ball centre and rim centre agree to the pixel at both scales.
    ========================================================================== */
-.jf { position: relative; height: 236px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
+.jf { position: relative; height: 224px; overflow: hidden; margin: 0 0 10px; background: linear-gradient(to bottom, rgba(36, 31, 51, 0.55), #0b0a09 92%); }
 /* The boards, raked back under the eye. left/right run past the box so the vanishing edges are
    never in shot, and the origin is the FOOT of the panel so the near boards stay the widest. */
 .jf-floor {
@@ -5622,12 +5649,12 @@ body.um {
 .jf-card.open { opacity: 0.6; }
 .jf-head { display: flex; align-items: center; justify-content: flex-start; background: var(--um-inset); padding: 2px 4px 1px; }
 .jf-head i { font-family: var(--serif); font-style: normal; font-size: 11px; line-height: 1.1; background: var(--um-gold); color: #0b0a09; padding: 0 3px; }
-.jf-shirt { display: flex; align-items: center; justify-content: center; height: 44px; background: var(--um-inset); }
+.jf-shirt { display: flex; align-items: center; justify-content: center; height: 38px; background: var(--um-inset); }
 /* THE JERSEY — the bundle's own cut: shoulders, a V at the neck, the sleeves out and the hem
    straight. It is a clip-path so the shirt is one element and the number sits inside it. */
 .jf-jersey {
   width: 84%;
-  height: 40px;
+  height: 33px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -5639,7 +5666,7 @@ body.um {
   background: linear-gradient(var(--jp, #1c4c9e), var(--jd, #17408b));
   clip-path: polygon(22% 12%, 36% 2%, 44% 9%, 56% 9%, 64% 2%, 78% 12%, 100% 30%, 88% 46%, 88% 100%, 12% 100%, 12% 46%, 0% 30%);
 }
-.jf-jersey b { font-family: var(--serif); font-size: 20px; line-height: 0.8; font-weight: 400; color: var(--ji, #fff); text-shadow: 0 2px 0 var(--jd, #0d2a5e); }
+.jf-jersey b { font-family: var(--serif); font-size: 17px; line-height: 0.8; font-weight: 400; color: var(--ji, #fff); text-shadow: 0 2px 0 var(--jd, #0d2a5e); }
 .jf-card.open .jf-jersey { background: linear-gradient(#2a2622, #1d1916); }
 .jf-plate { display: block; background: var(--um-paper); color: var(--um-ink); padding: 3px 4px 4px; }
 .jf-plate b { display: block; font-family: var(--serif); font-size: 13px; line-height: 1; font-weight: 400; text-transform: uppercase; white-space: nowrap; overflow: hidden; }
@@ -5654,7 +5681,7 @@ body.um {
 .um-leg em { position: absolute; left: 0; right: 0; bottom: 2px; font-family: var(--serif); font-style: normal; font-size: 11px; text-align: center; color: rgba(11, 10, 9, 0.75); }
 
 @media (min-width: 900px) {
-  .jf { height: 320px; }
+  .jf { height: 276px; }
   .jf-floor { top: -430px; transform: perspective(1200px) rotateX(50deg); background: repeating-linear-gradient(90deg, #b5793d 0 26px, #a96f36 26px 52px); }
   .jf-rig { width: 200px; height: 210px; top: 6px; right: 16px; }
   .jf-post { width: 18px; height: 78px; }
@@ -5662,12 +5689,12 @@ body.um {
   .jf-rim { right: 40px; top: 22px; width: 112px; height: 14px; border-width: 5px; }
   .jf-net { right: 52px; top: 32px; width: 90px; height: 56px; }
   .jf-row { gap: 14px; padding: 0 22px; bottom: 22px; }
-  .jf-card { max-width: 168px; }
-  .jf-shirt { height: 58px; }
-  .jf-jersey { height: 50px; }
-  .jf-jersey b { font-size: 30px; }
-  .jf-plate b { font-size: 16px; }
-  .jf-plate i { font-size: 15px; }
+  .jf-card { max-width: 146px; }
+  .jf-shirt { height: 46px; }
+  .jf-jersey { height: 40px; }
+  .jf-jersey b { font-size: 24px; }
+  .jf-plate b { font-size: 14px; }
+  .jf-plate i { font-size: 13px; }
 }
 
 /* --------------------------------------------------------------------------
@@ -6097,8 +6124,13 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
 }
 
 /* THE SHOT. The landing point is the rim's own, stated as two variables on .jf so the desk's
-   larger rig retunes the flight without a second set of keyframes. The ball never rotates. */
-.jf { --rim-x: 60px; --rim-y: 11px; --floor-y: 152px; }
+   larger rig retunes the flight without a second set of keyframes. The ball never rotates.
+   `--floor-y` IS THE LAUNCH POINT, AND IT HAS TO BE ABOVE THE FIVE (his ruling: "players are
+   hiding whatever animation is going on"). It used to sit at 226 of a 276px panel — twenty pixels
+   INTO the card row, so the shot began behind a jersey and the first third of its arc was drawn
+   over the men rather than over the floor. It launches from the open hardwood between the five
+   and the basket now: 128 on a desk against a row that starts at 156, 96 on a phone against 110. */
+.jf { --rim-x: 60px; --rim-y: 11px; --floor-y: 96px; }
 .jf-shot { position: absolute; z-index: 6; animation: jfshoot 1.6s cubic-bezier(0.3, 0, 0.55, 1) forwards; }
 @keyframes jfshoot {
   0% { right: 86%; top: var(--floor-y); opacity: 0; }
@@ -6112,7 +6144,7 @@ body:not(.um) .node.dusk.now { transform: translate(-50%, -50%) rotate(var(--til
   .jf-flash { display: none; }
 }
 @media (min-width: 900px) {
-  .jf { --rim-x: 99px; --rim-y: 17px; --floor-y: 226px; }
+  .jf { --rim-x: 99px; --rim-y: 17px; --floor-y: 128px; }
   .jf-crowd { height: 76px; }
   .jf-bug { gap: 10px; padding: 5px 12px; left: 14px; top: 10px; }
   .jf-bug b { font-size: 32px; }

@@ -421,7 +421,10 @@ function callLine(plan: Tactics, side: Side, men: Player[]): string {
  */
 function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
   const label = STYLES.find((s) => s.key === inf.style)?.label ?? inf.style
-  if (inf.style === 'balanced') return `${label} · no better fit`
+  // HIS RULING: "Remove · no better fit." It was there to say the read was INFERRED and that the
+  // default won on its own rather than at some score — but BALANCED already says that to anybody
+  // reading it, and the tail was a sentence of apparatus over a diagram that has none.
+  if (inf.style === 'balanced') return label
   // WHO IT RUNS THROUGH (recal_115, his ruling: "Why is the system helio for rus when KD is a better
   // scorrer?"). The read used to name a shape and no man, so the only way to see whose offense the
   // engine thought it was, was to find him standing at the top of the arc. The caption names him —
