@@ -240,7 +240,6 @@ export function Series({
 }) {
   const myAb = teamAb ?? teamCode(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
-  const shown = decider ? result.games.slice(0, 6) : result.games
 
   const tape = useMemo(() => {
     if (!decider) return null
@@ -518,35 +517,13 @@ export function Series({
                       <button className="linkb" style={{ paddingTop: 12 }} onClick={() => setBoxOpen((v) => !v)}>
                         {boxOpen ? 'Fold the box scores ↑' : 'Full box scores →'}
                       </button>
-                      {/* HIS RULING: "Box scores should be under the full box scores." The game by
-                          game list used to open in the full-width band below with the series stats
-                          and the two player-line tables — which on a desk put it in a different
-                          column from the door that opened it, so pressing Full box scores made
-                          something appear somewhere else on the screen. It drops in HERE instead,
-                          directly under the door, the way an opened thing should. The heavier
-                          tables stay in the band: they are read as tables and want the width. */}
-                      {boxOpen ? (
-                        <div className="gcard in-night">
-                          {shown.map((g) => (
-                            <div className="gline" key={g.game}>
-                              <span className="g">G{g.game}</span>
-                              <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
-                              <span className="sc">
-                                {g.us}–{g.them}
-                              </span>
-                            </div>
-                          ))}
-                          {decider && tape ? (
-                            <div className="gline">
-                              <span className="g">G7</span>
-                              <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
-                              <span className="sc">
-                                {tape.us}–{tape.them}
-                              </span>
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
+                      {/* HIS RULING: "Remove this part." The game-by-game list is gone from this
+                          card. It printed G1 111-85 / G2 108-100 / G3 114-91 / G4 101-97 — which
+                          is the filmstrip's own line, chip for chip, already standing under the
+                          verdict where the series is read. One screen said the same four scores
+                          twice, and the filmstrip is the copy that earns its place: it is part of
+                          reading the result, not something you open. Full box scores still opens
+                          what only it has — the series stats and both sides' player lines. */}
                     </div>
                   </div>
                 )
