@@ -1201,7 +1201,25 @@ def d_score(p, trace=None):
     _kb = (1.0 - DISC_BIG) / 0.97    # the big vector's surviving 0.97, renormalised back to 1.00
     _kp = (1.0 - DISC_PER) / 0.94    # the perimeter vector's surviving 0.94, likewise
     # drb weight up: rebounding credit now lives here, not inside rimprot
-    _big = _kb*(0.40*a['perdef'] + 0.40*a['rimprot'] + 0.17*a['drb']) + DISC_BIG*a['discipline']
+    #
+    # recal_151 (HIS RULING, verbatim: "Agree with 7" — Kurt Thomas '09 DEF should read near 74).
+    # THE RIM-ANCHOR PREMIUM IS PAID AT BENCH LOAD — the DEF mirror of recal_96, and the same
+    # load line (LOAD_FOOT 12 / LOAD_FULL 24, load_share()), not a new constant.
+    #
+    # WHAT THE PREMIUM IS. rimprot is priced 0.13 on the perimeter vector and 0.40 on the big one.
+    # The extra 0.27 is not a second helping of the same skill: it is this file's oldest defensive
+    # claim, stated at the top of d_score — "bigs' defensive votes route to rimprot by design, so
+    # perdef understates them". That is a claim about being THE ANCHOR of a defence, which is a
+    # BURDEN, not a rate. A man who anchors the back line for 17.8 minutes anchored it for 17.8
+    # minutes. So the 0.13 SKILL price is paid in full at any minutes — recal_96's own standing
+    # line, "skill rates keep full price in 19 or 39 minutes", is not reopened — and only the 0.27
+    # ANCHOR premium is paid in proportion to the minutes it was earned in.
+    # At share 1.0 the weight is 0.13 + 0.27 = 0.40 exactly, so every full-load big (>= 24 mpg) is
+    # byte-identical and the freed weight is NOT reallocated, exactly as recal_96 left volume and
+    # playvol shrunk rather than renormalised: a load discount discounts.
+    RP_SKILL, RP_ANCHOR = 0.13, 0.27   # the perimeter price of rimprot, and the big vector's premium over it
+    _rp_w = RP_SKILL + RP_ANCHOR * load_share(p)
+    _big = _kb*(0.40*a['perdef'] + _rp_w*a['rimprot'] + 0.17*a['drb']) + DISC_BIG*a['discipline']
     # recal_57 trimmed perimdisrupt 0.15 -> 0.09; recal_62 (his ruling) trims it again 0.09 -> 0.05.
     # Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict).
     # recal_80 (design-side round, HIS RULING "Ship 80"): rim protection counted ZERO on the
@@ -1221,7 +1239,7 @@ def d_score(p, trace=None):
         trace['branch'] = ('big' if w >= 1.0 else ('perimeter' if w <= 0.0 else f'blend w={w:.4f}'))
         trace['bigness'] = w
         _wpd = _kb*0.40*w + _kp*0.63*(1-w)*_size
-        _wrp = _kb*0.40*w + _kp*0.13*(1-w)*_size
+        _wrp = _kb*_rp_w*w + _kp*0.13*(1-w)*_size
         _wpx = _kp*0.11*(1-w)*_size
         _wdr = _kb*0.17*w + _kp*0.07*(1-w)*_size
         _wdi = DISC_BIG*w + DISC_PER*(1-w)*_size
@@ -1234,6 +1252,7 @@ def d_score(p, trace=None):
         trace['big_vector'] = _big
         trace['perim_vector'] = _perim
         trace['size_mod'] = _size
+        trace['rp_anchor'] = dict(w=_rp_w, share=load_share(p), skill=RP_SKILL, anchor=RP_ANCHOR)
         trace['d_score'] = out
     return out
 for cls in (True, False):
@@ -1541,6 +1560,11 @@ if _CARD:
     _table(f"D_SCORE — the {_dt['branch']} branch (effective weights; recal_93 blends the two vectors)", _dt['terms'])
     print(f"  big vector {_dt['big_vector']:.4f}   perimeter vector {_dt['perim_vector']:.4f}"
           f" (base {_dt['base']:.4f} x size {_dt['size_mod']:.4f}, height {_a.get('height', 76)})")
+    if 'rp_anchor' in _dt:
+        _ra = _dt['rp_anchor']
+        print(f"  RIM-ANCHOR PREMIUM AT LOAD (recal_151) - share {_ra['share']:.4f}: rimprot is priced "
+              f"{_ra['skill']:.2f} skill + {_ra['anchor']:.2f} x {_ra['share']:.4f} anchor = {_ra['w']:.4f}"
+              f" on the big vector (0.40 at full load)")
     print(f"  d_bigness {_dt['bigness']:.4f}  ->  {_dt['bigness']:.4f} x big + {1-_dt['bigness']:.4f} x perimeter"
           f"  =  {_dt['d_score']:.4f}")
     print(f"  d_score {_dt['d_score']:.4f}  x 1.1305 display multiplier  =  raw {_draw:.4f}")

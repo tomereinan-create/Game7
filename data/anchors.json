@@ -1,5 +1,14 @@
 [
   {
+    "card": "Kurt Thomas '09",
+    "scale": "def",
+    "target": 74,
+    "tol": 3,
+    "round": 151,
+    "ruling": "Agree with 7",
+    "note": "the DEF mirror of recal_96's load share, on the same load line (foot 12 / full 24): rimprot's 0.13 skill price is paid in full at any minutes and only the big vector's 0.27 ANCHOR premium is paid at bench load. 17.8 mpg, share 0.4833, 84 -> 72 (error -2 inside the tolerance; landing 74 exactly would need a second, DEF-only load line, which was declined). No skill rate is re-priced by minutes, no perimeter card moves, d_bigness and the vote channels untouched, DEF_TOP not re-derived."
+  },
+  {
     "card": "Cedric Maxwell '80",
     "scale": "off",
     "target": 67,
