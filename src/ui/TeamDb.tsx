@@ -753,9 +753,9 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             <CourtFive
               /* His ruling: the team db's five stands in that club's colours, the same way the
                  campaign's opponent does — this floor is always somebody else's team, never yours.
-                 Gated the same way too: scout mode only, because user mode's floor is the one the
-                 bundle drew and the bundle draws it in blue. */
-              club={user ? null : teamColor(picked.ab)}
+                 BOTH MODES NOW, with the draft's: the club chip two lines above this floor has
+                 always worn the club in user mode, so the floor under it was the odd one out. */
+              club={teamColor(picked.ab)}
               spots={detail.five.map((p, i) => ({
                 p,
                 slot: POSITIONS[i],

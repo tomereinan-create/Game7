@@ -1396,9 +1396,14 @@ export function Draft({
         {/* the wrapper is the start line his ruling asks for and nothing else — see `oppFloor` */}
         <div className="court-line" ref={oppFloor}>
           <CourtFive
-            /* His ruling: the opponent's five stand in the opponent's colours. Scout mode only —
-               user mode's floor is the one the bundle drew, and the bundle draws it in blue. */
-            club={user ? null : teamColor(opponent.ab)}
+            /* His ruling: the opponent's five stand in the opponent's colours — BOTH MODES NOW
+               ("Make usermode same as scout mode, in terms of the players colors being the same
+               as their team's"). It was scout mode's alone because the design bundle drew user
+               mode's floor in franchise blue, and that made one screen disagree with itself: the
+               tip-off below already dresses their shirts in their club in user mode too, so the
+               same five changed colour the moment the fifth man was drafted. A club is a fact
+               about the team, not a rating, so nothing here is blind to gate. */
+            club={teamColor(opponent.ab)}
             spots={opponent.players.map((p, i) => ({
               p,
               tag: `${opponent.positions?.[i] ?? POSITIONS[i]}${!user && rank(wallet, 'scout_ratings') >= 2 ? ` · ${p.ovr}` : ''}`,
