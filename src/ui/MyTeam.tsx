@@ -774,15 +774,19 @@ export function MyTeam({
               )}
               {spun && !spinning ? (
                 <>
+                  {/* The head and the column rule stay put; only the men scroll, in a box measured
+                      to stop above the dock. An edge fade says there is more below.
+                      HIS RULING: "Allign the pts reb ast." The head is INSIDE the box and sticky,
+                      not above it — a scroller's bar comes out of its content width, so a head
+                      standing outside was 15px wider than every row under it and the three labels
+                      sat 15.2px right of the three figures. Same content width now, no drift. */}
+                  <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
+                  <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
                   <div className="rowhead dr">
                     <span>Roster · {roster.length}</span>
                     <StatHead />
                     <span />
                   </div>
-                  {/* The head and the column rule stay put; only the men scroll, in a box measured
-                      to stop above the dock. An edge fade says there is more below. */}
-                  <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
-                  <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
                   {roster.map((p) => {
                     const outsFor = replaceable(p.name)
                     return row(p, {

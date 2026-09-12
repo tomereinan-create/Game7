@@ -1435,8 +1435,23 @@ button {
    is pinned and the screen reads as frozen. Containment is for a box you can reach AROUND; this
    one fills the column it is in. Without it the chain is the browser's default again — the list
    runs to its end and then the page carries on from there, which is one continuous gesture. */
-.spin-wrap { position: relative; }
+.spin-wrap { position: relative; margin-top: 10px; }
 .spin-roster { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+/* THE COLUMN HEAD RIDES INSIDE THE SCROLLER (his ruling: "Allign the pts reb ast"). A scrolling
+   box takes its bar out of its CONTENT width, so a head standing above the box was 15px wider
+   than every row inside it and the three labels sat 15.2px right of the three figures — on
+   Windows, where the bar has width; nowhere on a platform that overlays it, which is why it had
+   never shown up. Inside, it is measured by the same content width the rows are, so the drift
+   cannot exist whatever the bar does. `sticky` keeps it doing the one thing being outside bought:
+   staying put while the men move. Its own top margin goes to the wrapper — a margin above a
+   sticky element scrolls away and would let the first man slide into the gap. */
+.spin-roster > .rowhead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin-top: 0;
+  background: var(--surface);
+}
 .spin-wrap::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--surface));

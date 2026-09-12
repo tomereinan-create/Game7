@@ -1507,6 +1507,27 @@ export function Draft({
           )}
           {spun ? (
             <>
+              {/* his ruling: the drag is the other way to draft, so the list says so — until he
+                  has taken the instruction and opened a man, when the height is worth more */}
+              {reading ? null : (
+                <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
+              )}
+              {/* HIS RULING: "Make the celtics scrollable instead of scrolling the entire page."
+                  A fifteen-man roster ran the middle column past the fold, so reading to the end
+                  of it meant scrolling the whole screen — and taking the opponent, the wheel and
+                  your own five off the top with it. The head and the column rule stay put and only
+                  the men move, in a box measured to stop above the dock, with an edge fade saying
+                  there is more below. Same box My team's wheel already uses, same measurement. */}
+              <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
+              <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
+              {/* HIS RULING: "Allign the pts reb ast." The head used to stand OUTSIDE this box,
+                  which on a desk made it 15px wider than the rows: a scroller's bar is taken out
+                  of its CONTENT width, not off the element, so every row was inset by the bar and
+                  the head was not — and the three labels sat 15.2px right of the three figures,
+                  at every width where the list is long enough to scroll. It rides INSIDE the box
+                  now and sticks to its top, so it is measured by the same content width the rows
+                  are and cannot drift whatever the platform's bar happens to be. It still stays
+                  put while the men move, which is the whole of what it was outside for. */}
               <div className="rowhead dr">
                 <span>
                   {wide === 'team'
@@ -1525,19 +1546,6 @@ export function Draft({
                 <StatHead />
                 <span />
               </div>
-              {/* his ruling: the drag is the other way to draft, so the list says so — until he
-                  has taken the instruction and opened a man, when the height is worth more */}
-              {reading ? null : (
-                <div className="cap hint">Tap a man to scout him — or press and drag him onto an open spot on the court.</div>
-              )}
-              {/* HIS RULING: "Make the celtics scrollable instead of scrolling the entire page."
-                  A fifteen-man roster ran the middle column past the fold, so reading to the end
-                  of it meant scrolling the whole screen — and taking the opponent, the wheel and
-                  your own five off the top with it. The head and the column rule stay put and only
-                  the men move, in a box measured to stop above the dock, with an edge fade saying
-                  there is more below. Same box My team's wheel already uses, same measurement. */}
-              <div className={`spin-wrap ${rosterEnd ? 'at-end' : ''}`}>
-              <div className="spin-roster" ref={rosterList} onScroll={onRosterScroll}>
               {roster.map((p) => {
                 const fits = posOf(p.name).filter((x) => open.includes(x))
                 const priced = overCap(p.name)
