@@ -518,6 +518,35 @@ export function Series({
                       <button className="linkb" style={{ paddingTop: 12 }} onClick={() => setBoxOpen((v) => !v)}>
                         {boxOpen ? 'Fold the box scores ↑' : 'Full box scores →'}
                       </button>
+                      {/* HIS RULING: "Box scores should be under the full box scores." The game by
+                          game list used to open in the full-width band below with the series stats
+                          and the two player-line tables — which on a desk put it in a different
+                          column from the door that opened it, so pressing Full box scores made
+                          something appear somewhere else on the screen. It drops in HERE instead,
+                          directly under the door, the way an opened thing should. The heavier
+                          tables stay in the band: they are read as tables and want the width. */}
+                      {boxOpen ? (
+                        <div className="gcard in-night">
+                          {shown.map((g) => (
+                            <div className="gline" key={g.game}>
+                              <span className="g">G{g.game}</span>
+                              <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
+                              <span className="sc">
+                                {g.us}–{g.them}
+                              </span>
+                            </div>
+                          ))}
+                          {decider && tape ? (
+                            <div className="gline">
+                              <span className="g">G7</span>
+                              <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
+                              <span className="sc">
+                                {tape.us}–{tape.them}
+                              </span>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 )
@@ -528,29 +557,6 @@ export function Series({
               only things on this screen that are opened rather than read, so they take the full
               width UNDER the three groups above and never push the result off the fold. */}
           <div className="res-more">
-            {boxOpen ? (
-              <div className="card gcard">
-                {shown.map((g) => (
-                  <div className="gline" key={g.game}>
-                    <span className="g">G{g.game}</span>
-                    <span className={`wl ${g.won ? 'w' : 'l'}`}>{g.won ? 'W' : 'L'}</span>
-                    <span className="sc">
-                      {g.us}–{g.them}
-                    </span>
-                  </div>
-                ))}
-                {decider && tape ? (
-                  <div className="gline">
-                    <span className="g">G7</span>
-                    <span className={`wl ${decider.won ? 'w' : 'l'}`}>{decider.won ? 'W' : 'L'}</span>
-                    <span className="sc">
-                      {tape.us}–{tape.them}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-
             {/*
               E1 (2026-09-09): this door was NOT gated. User mode says "Play blind. No ratings, no
               verdict." and the draft screen keeps that promise everywhere — the court tags, both teams'

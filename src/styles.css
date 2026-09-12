@@ -1024,6 +1024,15 @@ button {
 .gcard {
   padding: 4px 14px;
 }
+/* THE GAME-BY-GAME LIST INSIDE THE NIGHT CARD (his ruling: "Box scores should be under the full
+   box scores"). It is no longer a card of its own — it is the body of the door above it — so it
+   gives up the card's gutter and takes a rule off the button instead. `.gline:first-child` drops
+   its own top border, so the two never double up. */
+.gcard.in-night {
+  margin-top: 12px;
+  padding: 0;
+  border-top: 1px solid var(--divider);
+}
 .gline {
   display: grid;
   grid-template-columns: 24px 24px 1fr auto;
