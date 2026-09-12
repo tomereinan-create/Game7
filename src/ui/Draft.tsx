@@ -23,7 +23,7 @@ import { MatchupPanel, TeamDials } from './MatchupPanel'
 import { applyMod, compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
-import { DetailGrid, LINES } from './Stat'
+import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
@@ -84,16 +84,6 @@ export function dimReason(a: {
 
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
-const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
-/** The three numbers everyone reads first. */
-const Mini = ({ name }: { name: string }) => {
-  const l = LINES[name]
-  return (
-    <span className="mini">
-      {f1(l?.ppg)} <i>·</i> {f1(l?.rpg)} <i>·</i> {f1(l?.apg)}
-    </span>
-  )
-}
 
 /** His lifetime rings. Exported so the hot seat enforces positions off the SAME definition (G10). */
 export const posOf = (name: string) => eligible(LINES[name]?.pos)
@@ -1301,7 +1291,7 @@ export function Draft({
   const fiveHead = (
     <div className="rowhead dr">
       <span>Player</span>
-      <span className="gcap">PTS · REB · AST</span>
+      <StatHead />
       <span />
     </div>
   )
@@ -1445,7 +1435,7 @@ export function Draft({
         {/* his ruling (post-r62): the Matchup reads block is gone from the scout card. */}
         <div className="rowhead dr">
           <span>Player</span>
-          <span className="gcap">PTS · REB · AST</span>
+          <StatHead />
           <span />
         </div>
         {naiveMap ? (
@@ -1527,7 +1517,7 @@ export function Draft({
                             : 'Roster'}{' '}
                   · {roster.length}
                 </span>
-                <span className="gcap">PTS · REB · AST</span>
+                <StatHead />
                 <span />
               </div>
               {/* his ruling: the drag is the other way to draft, so the list says so — until he

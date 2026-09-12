@@ -15,7 +15,7 @@ import { ManBand } from './ManBand'
 import { gateTactics, tacticsParts, type Tactics } from '../engine/tactics'
 import { TacticsCalls } from './TacticsPanel'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason, heldPool } from './Draft'
-import { DetailGrid, LINES } from './Stat'
+import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import type { Skin } from './LevelMap'
 
@@ -44,7 +44,6 @@ export function orderFive(names: string[]): string[] {
   if (!fit(0)) return names
   return POSITIONS.map((x) => at[x]!)
 }
-const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 const CONF = { E: 'Eastern Conference', W: 'Western Conference' }
 
 /**
@@ -366,9 +365,7 @@ export function MyTeam({
             <i className="sal">{salaryLine(p.name)}</i>
           </span>
         </span>
-        <span className="mini">
-          {f1(LINES[p.name]?.ppg)} <i>·</i> {f1(LINES[p.name]?.rpg)} <i>·</i> {f1(LINES[p.name]?.apg)}
-        </span>
+        <Mini name={p.name} />
         <button
           className={`pinfo ${carded || info === p.name ? 'open' : ''}`}
           aria-label={`${p.name} season line`}
@@ -617,7 +614,7 @@ export function MyTeam({
                 which. Same head, same columns — `.myteam .rowhead.dr` already matches the rows. */}
             <div className="rowhead dr">
               <span>Player</span>
-              <span className="gcap">PTS · REB · AST</span>
+              <StatHead />
               <span />
             </div>
             {five.map((p) => {
@@ -779,7 +776,7 @@ export function MyTeam({
                 <>
                   <div className="rowhead dr">
                     <span>Roster · {roster.length}</span>
-                    <span className="gcap">PTS · REB · AST</span>
+                    <StatHead />
                     <span />
                   </div>
                   {/* The head and the column rule stay put; only the men scroll, in a box measured

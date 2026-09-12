@@ -241,3 +241,46 @@ export function DetailGrid({ p, mode = 'full', onCard }: { p: Player; mode?: 'fu
     </span>
   )
 }
+
+/**
+ * THE THREE FIGURES EVERYONE READS FIRST, AND THE HEAD THAT STANDS OVER THEM.
+ *
+ * HIS RULING: "Pts ast reb should be alligned with the actual stats." The caption used to be one
+ * run of text set against the right edge, over one run of figures set against the same edge: the
+ * BLOCK lined up, but PTS did not stand over the points, and the further left you read the further
+ * each word drifted off the column it names — `33.5 · 7.7 · 8.3` and `PTS · REB · AST` are not the
+ * same width, and no two rows are the same width as each other either.
+ *
+ * So both are three tracks on one template, with the dots in fixed gutters so the head and the row
+ * divide their column identically at every size. This is the same thing `.gcap.dialhead` already
+ * does over `.pdials` in scout mode's database — the stats list was the one that had not been
+ * given it.
+ *
+ * One pair, used by every list that prints the line: the draft's three, My team's two, the team
+ * book and the database pool. They all had the same four-line copy of this markup.
+ */
+const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
+
+export const Mini = ({ name }: { name: string }) => {
+  const l = LINES[name]
+  return (
+    <span className="mini">
+      <em>{f1(l?.ppg)}</em>
+      <i>·</i>
+      <em>{f1(l?.rpg)}</em>
+      <i>·</i>
+      <em>{f1(l?.apg)}</em>
+    </span>
+  )
+}
+
+/** The head for `Mini`'s three tracks — same template, so a label cannot drift off its figure. */
+export const StatHead = () => (
+  <span className="gcap stat3">
+    <em>PTS</em>
+    <i>·</i>
+    <em>REB</em>
+    <i>·</i>
+    <em>AST</em>
+  </span>
+)

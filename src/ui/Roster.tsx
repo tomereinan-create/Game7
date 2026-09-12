@@ -4,7 +4,7 @@ import { Compare, COMPARE_MAX } from './Compare'
 import type { AttrKey, Player, StatLine } from '../engine/types'
 import { PlayerDials } from './MatchupPanel'
 import { CardName } from './CardSheet'
-import { DetailGrid, LINES, SHEET } from './Stat'
+import { DetailGrid, LINES, Mini, SHEET, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 
 type AxisKey = 'peak_season' | 'ovr' | 'o_ovr' | 'd_ovr'
@@ -33,7 +33,6 @@ const RAIL: { k: Key; label: string; short: string }[] = [
  */
 const USER_RAIL = RAIL.filter((r) => r.k === 'peak_season')
 const USER_KEYS = new Set<Key>(['name', 'peak_season'])
-const f1 = (v: number | undefined) => (v === undefined ? '—' : v.toFixed(1))
 
 const valueOf = (p: Player, k: Key): number =>
   k === 'name' ? 0 : k.startsWith('attrs.') ? p.attrs[k.slice(6) as AttrKey] : (p[k as AxisKey] as number)
@@ -285,7 +284,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
         <div className={`rowhead db ${extra ? 'x' : ''}`} style={{ marginTop: 0 }}>
           <span>Player</span>
           {user ? (
-            <span className="gcap">PTS · REB · AST</span>
+            <StatHead />
           ) : (
             <span className="gcap dialhead">
               <i>OVR</i>
@@ -341,9 +340,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
               {/* the hole where the three dials were is filled by what he actually did that
                   season — the same line the wheel's roster and the team book print */}
               {user ? (
-                <span className="mini">
-                  {f1(LINES[p.name]?.ppg)} <i>·</i> {f1(LINES[p.name]?.rpg)} <i>·</i> {f1(LINES[p.name]?.apg)}
-                </span>
+                <Mini name={p.name} />
               ) : (
                 <PlayerDials p={p} />
               )}

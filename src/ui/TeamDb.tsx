@@ -8,7 +8,7 @@ import { WHEEL, type TeamSeason } from './Draft'
 import { CardName, useCard } from './CardSheet'
 import { CourtFive } from './CourtFive'
 import { clubChip, ratingTone, teamColor } from './teamColors'
-import { LINES } from './Stat'
+import { LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { Dial } from './MatchupPanel'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
@@ -16,7 +16,6 @@ import { SeasonStrip, useYearKeys } from './SeasonStrip'
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
 export { startingFive, winsOf } from '../engine/bestfive'
-const f1 = (v: number | undefined) => (v === undefined ? '–' : v.toFixed(1))
 
 import { startingFive, winsOf } from '../engine/bestfive'
 
@@ -27,7 +26,6 @@ import { startingFive, winsOf } from '../engine/bestfive'
  * same dotted underline it has on every other roster row in the app.
  */
 export function RosterRow({ p, slot }: { p: Player; slot: string }) {
-  const l = LINES[p.name]
   const openCard = useCard()
   /**
    * USER MODE: the roster keeps what he did and drops what the engine makes of it. The five on the
@@ -47,9 +45,7 @@ export function RosterRow({ p, slot }: { p: Player; slot: string }) {
           </i>
         </span>
       </span>
-      <span className="mini">
-        {f1(l?.ppg)} <i>·</i> {f1(l?.rpg)} <i>·</i> {f1(l?.apg)}
-      </span>
+      <Mini name={p.name} />
       {user ? null : (
         <span className="oppman-nums">
           <i>{p.ovr}</i>
@@ -771,7 +767,7 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <>
                 <div className={`rowhead dr tdb${user ? ' blind' : ''}`}>
                   <span>The rest of the roster · {detail.bench.length}</span>
-                  <span className="gcap">PTS · REB · AST</span>
+                  <StatHead />
                   {user ? null : <span className="gcap">OVR · O · D</span>}
                 </div>
                 {detail.bench.map((p) => (

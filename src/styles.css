@@ -1306,19 +1306,35 @@ button {
 .row.on .ovr { color: var(--you); }
 .row.dr { grid-template-columns: minmax(0, 1fr) 34px 96px 28px; }
 .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
+/* THE LINE AND ITS HEAD SHARE ONE TEMPLATE (his ruling: "Pts ast reb should be alligned with the
+   actual stats"). Three equal tracks for the figures with the dots in fixed 10px gutters, declared
+   once for both: the gutters are fixed rather than `auto` because the head is set at 7.5px and the
+   row at 11px, so an auto dot would be a different width in each and would push the three figure
+   tracks out of step by a pixel or two. The block still ends on the column's right edge — what
+   changes is that PTS now stands over the points wherever the row is wide or narrow. */
+.mini,
+.rowhead .gcap.stat3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 10px minmax(0, 1fr) 10px minmax(0, 1fr);
+  align-items: baseline;
+}
+.mini em,
+.rowhead .gcap.stat3 em {
+  font-style: normal;
+  text-align: center;
+}
 .mini {
   font-family: var(--num);
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.02em;
-  text-align: right;
   white-space: nowrap;
   color: var(--ink-2);
 }
-.mini i {
+.mini i,
+.rowhead .gcap.stat3 i {
   font-style: normal;
-  /* the ledger face sets tighter spaces than the mono did — the dots keep their own air */
-  padding: 0 2px;
+  text-align: center;
   font-weight: 400;
   color: var(--faint);
 }
