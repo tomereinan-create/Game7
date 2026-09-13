@@ -1073,6 +1073,105 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['paint_floor'] = dict(share=_pz, evidence=_pe, block=_pblk,
                                         added=max(0.0, _pz * (0.30 * _pe - _pblk)))
+    # recal_155 (HIS RULING, verbatim: "Agree with 6" — Josh Hart '25 OVR should read near 63).
+    # THE GLUE FLOOR — the low-usage possession starter, and it is the PERIMETER sibling of
+    # recal_91's stretch-big floor and recal_131's paint evidence.
+    #
+    # THE CARD. Josh Hart '25: 37.6 minutes on a 51-win team, 14.5/9.6/5.9 on .611 true shooting,
+    # BPM +2.8 and VORP 3.6 — SIXTEENTH in the NBA — printing OFF 44 and OVR 52, #185 of 236 in his
+    # own season, tied with Cole Anthony and Max Strus. That is 4.0 class sigma below his BPM and
+    # 5.4 below his VORP, the loudest VORP miss on the board.
+    #
+    # WHERE THE FORTY-FOUR COMES FROM, decomposed. His o_score is 47.12 and the two biggest terms
+    # are playvol 58 x 0.19 = 11.02 and volume 13 x 0.26 = 3.38. He uses 15.2% of the possessions he
+    # is on the floor for, so the load channel — the largest weight in the vector — pays him almost
+    # nothing, and the three zone terms pay a man who does not shoot. What he actually does is not
+    # in the sum at all: DEFENSIVE REBOUNDING IS WORTH ZERO IN o_score. `drb` appears once in this
+    # whole file, in d_score at 0.07. A defensive rebound is the possession his offence then plays,
+    # and this side of the pipeline has never priced it.
+    #
+    # WHY NOT THE DIALS, and both are closed by his own standing record rather than by preference.
+    #   THE VOLUME WEIGHT (0.26) is recal_112's measured WALL: "the efficiency of a low-usage man
+    #     cannot be paid through a weight that every high-usage anchor also rides" — 0.13 already
+    #     breaks Moses Malone '82 and the reweight that reaches a low-usage card breaks twenty-five
+    #     anchors. recal_91 and recal_98 declined the same dial from the passing side.
+    #   recal_64/118's OFF-BALL FLOOR is gated on the arc and is not about him: his floor computes
+    #     30.2 at a full share and does not bind even if his 3pt were 68. He is not a spacer.
+    #
+    # THE TERM, and every bar in it is one this file already carries.
+    # The glue starter's offence is POSSESSIONS, not usage. His possession work is three bars — the
+    # defensive glass, the offensive glass, and the creation he does with the ball he did not shoot
+    # — and they are AVERAGED, not summed, because they are three readings of ONE statement ("he
+    # ends and starts possessions he did not use"), which is recal_139's rule applied before the
+    # term rather than after it. That average is then paid HALF AND HALF against `efficiency`: a
+    # possession is worth what the man does with it, and a floor that paid the work without the
+    # conversion would price Josh Hart '24 — the same job at .513 true shooting, efficiency 35 —
+    # the same as '25 at .611. The block's total weight is 1.07, inside the band this file's other
+    # floors occupy: recal_64's wing floor is 0.72, recal_91's big floor 1.16, the standard path
+    # itself 1.26.
+    # It is a FLOOR, written in recal_118's form `std + f x (floor - std)`, so it can only ever LIFT
+    # and a card whose standard path already exceeds it does not move at all — which is where most
+    # of the protection comes from: Mark Jackson '98's floor is 48.3 against a standard path of 55.9
+    # and '99's 52.1 against 54.8, Bruce Bowen '06's 34.2 against 48.4, Steve Kerr '96's 60.3
+    # against 65.6. Not one of the four moves by a point.
+    #
+    # THE GATES, each of them a line this file already drew, none of them new.
+    #   volume 55 -> 25   recal_112's OWN low-usage pair, unchanged. 55 is this file's low-usage
+    #                     line (recal_64, recal_107 and recal_112 all read `volume < 55`) and it is
+    #                     where recal_131's paint-evidence floor BEGINS, so the two are disjoint by
+    #                     construction and no card can be paid by both. Above 55 the standard load
+    #                     channels have taken over and this term is exactly zero.
+    #   3pt 68 -> 40      recal_112's OWN exclusion gate, reused verbatim and for its own reason:
+    #                     "efficiency earned at the rim and the line is paid here and efficiency
+    #                     earned from the arc is paid there" — there being recal_64/118's off-ball
+    #                     floor, which IS the low-usage shooter's channel. It is load-bearing rather
+    #                     than decorative: Kyle Korver '15 (pinned off 58 +-1) has a glue floor of
+    #                     64.7 against a standard path of 62.4 and would take +2 without it.
+    #   not is_big        every glass channel this file has built is on the BIG branch — recal_91's
+    #                     stretch-big floor pays 0.17 x (orb + rim), recal_131's paint evidence pays
+    #                     half the offensive glass. The perimeter card who rebounds like a big has
+    #                     none, and that is the gap this term fills. It also holds Clint Capela '17
+    #                     (pinned off 58 +-1 with zero room up), Capela '18 (61 +-1, at its floor),
+    #                     Cedric Maxwell '80 (67 +-4), OG Anunoby '21, Dorian Finney-Smith '20/'21
+    #                     and Draymond Green '16 at EXACTLY zero — all six are bigs by is_big.
+    #   load_share        recal_96's own line, foot 12 / full 24, no new constant. "The low-usage
+    #                     STARTER" is his ruling's own subject, and a floor that stands in for a
+    #                     season's possession work is a claim about how much of a season it was.
+    #                     Hart is 37.6 mpg and sits at 1.0000; the bench glue class is paid in
+    #                     proportion (Gary Payton II '22 at 17.6 mpg takes 0.4667).
+    #
+    # THE FRONTIER IS THE BLEND, NOT THE CAP — said plainly because the dispatch asked which one
+    # fences him. With DEF 60 the offence cap `max(o_ovr + 10, 0.85 x d_ovr)` read 54 against a
+    # blend of 52: it was NOT binding, it has never been binding on this card, and it grows looser
+    # with every OFF point (74 now). What fences him is recal_104's blend itself — at DEF 60, OVR 63
+    # needs OFF 64 (0.70 x 64 + 0.30 x 60 = 62.8) and OVR 60 needs OFF 60. The ruling is therefore a
+    # demand for TWENTY printed OFF points, and 1.07 is what puts him there: 44 -> 64, OVR 52 -> 63.
+    # 1.08 IS THE MEASURED CEILING and the stopping pin is named: above it the subject's OWN '24
+    # card (OVR 48 -> 58) passes Bojan Bogdanović '24 and enters the Knicks '24 best five, which
+    # takes New York past Boston on offence and breaks recal_119's `BOS '24 OFF rank <= 10` — a pin
+    # with ZERO slack, reading exactly 10 of 26. At 1.07 Hart '24 reads 51/57 and the five is
+    # unchanged. Every size from 1.00 to 1.08 holds all 150 anchors; 1.07 is the one that lands the
+    # subject ON his number with the smaller collateral of the two that do.
+    # MEASURED on the whole pool: 641 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, max +24,
+    # mean +5.10; DEF and every attribute move on ZERO; OVR follows on 567, max +16. The top 12 by
+    # OFF is identical and the top 50 by OVR has no entrant and no leaver. The movers are one class
+    # and read like it — T.R. Dunn '82-'84, Bob Gross '81/'82, Danny Vranes '83, Thabo Sefolosha
+    # '11/'16, Andre Iguodala '05/'14/'17, Javonte Green '22, Alonzo Gee '16, Ira Newble '02 — the
+    # low-usage wings who rebound, move it and convert, and who this file has never paid.
+    GL_V_LO, GL_V_HI = 25.0, 55.0
+    GL_K = 1.070
+    if not is_big(p) and a['volume'] < GL_V_HI:
+        _gg = (min(1.0, max(0.0, (GL_V_HI - a['volume']) / (GL_V_HI - GL_V_LO)))
+               * min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO))) * _load)
+        _gpos = (a['drb'] + a['orb'] + a['playvol']) / 3.0
+        _gfl = GL_K * (0.5 * _gpos + 0.5 * a['efficiency'])
+        if _gg > 0.0 and _gfl > std:
+            _gadd = _gg * (_gfl - std)
+            std += _gadd
+            if trace is not None:
+                trace['glue'] = dict(gate=_gg, floor=_gfl, k=GL_K, load=_load, pos=_gpos,
+                                     bars=(a['drb'], a['orb'], a['playvol'], a['efficiency']),
+                                     added=_gadd)
     # recal_121 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone guy.
     # In addition to the OFF being a touch heigher than Id like it to be.. More around 85"; and, on
     # the round's first cut, HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
@@ -1550,6 +1649,12 @@ if _CARD:
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+    if 'glue' in _ot:
+        _gl2 = _ot['glue']
+        print(f"GLUE FLOOR (recal_155) - possession work drb/orb/playvol {_gl2['bars'][:3]} averaged "
+              f"= {_gl2['pos']:.2f}, half against conversion (efficiency {_gl2['bars'][3]}), x "
+              f"{_gl2['k']:.3f} = floor {_gl2['floor']:.2f}; gate {_gl2['gate']:.4f} (volume 55->25 "
+              f"x 3pt 68->40 x recal_96's load share {_gl2['load']:.4f}): +{_gl2['added']:.3f}")
     if 'paint_floor' in _ot:
         _pf = _ot['paint_floor']
         print(f"PAINT-EVIDENCE FLOOR (recal_131) - share {_pf['share']:.2f} (volume 55->80 x efficiency "

@@ -466,6 +466,18 @@ export const DEFAULT_TACTICS: Tactics = {
  * NARROW 0.085, true midpoint by r126's rule: 3.78 -> 4.05 (blind -0.333, oracle +0.523, 0.033 and 0.023 of
  * room). Hunt's twelfth move, and the largest value this tax has ever carried. crash def glass held .48
  * untouched (blind -0.342, oracle +0.558) and the seven others held their bands. All nine pass.
+ * recal_155 added the glue floor to o_score: 641 OFF and 567 OVR, every one UP, which carried low-usage
+ * defensive wings ACROSS the harness's ovr>=55 line and changed the fives it draws. HUNT alone broke, on
+ * the ORACLE edge (+0.44 at 4.05, against the +0.50 floor) — the mirror of recal_151's break and the
+ * thirteenth time this one row is the one that moves. This is an OFFENSIVE round: the fives now SCORE
+ * better, so the hunted-man mismatch is a smaller share of a bigger number and the oracle call is worth
+ * less of it. Swept from main's constant: 3.60 (blind -0.21, above the -0.30 ceiling) / 3.70 (-0.29,
+ * above) / 3.71 (-0.30, the ceiling exactly) / 3.72 (-0.31 / +0.56) / 3.76 (-0.34 / +0.55) / 3.80
+ * (-0.37 / +0.53) / 3.84 (-0.40 / +0.51) / 3.86 (-0.42 / +0.50, the floor exactly) / 3.87 (under the
+ * floor) / 3.90 (+0.48, under) / 4.00 (+0.44, under) — feasible about 3.72 to 3.86, a width of 0.14,
+ * true midpoint by r126's rule: 4.05 -> 3.79 (blind -0.36, oracle +0.53, 0.06 and 0.03 of room).
+ * crash def glass held .48 untouched (blind -0.34, oracle +0.57) and the seven others held their bands.
+ * All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -473,7 +485,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.05,
+  hunt: 3.79,
   crashOff: 0.17,
   crashDef: 0.48,
 }
