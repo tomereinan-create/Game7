@@ -1,364 +1,364 @@
 {
-  "round": 151,
-  "agent": "ratings-to-off-def",
-  "status": "done",
-  "ruling": "Agree with 7",
-  "title": "THE RIM-ANCHOR PREMIUM IS PAID AT BENCH LOAD — the DEF mirror of recal_96, on the same load line: rimprot's 0.13 SKILL price is paid in full at any minutes, and only the big vector's 0.27 ANCHOR premium is paid in proportion to the minutes it was earned in",
-  "subject": "Kurt Thomas '09",
+ "round": 151,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 7",
+ "title": "THE RIM-ANCHOR PREMIUM IS PAID AT BENCH LOAD — the DEF mirror of recal_96, on the same load line: rimprot's 0.13 SKILL price is paid in full at any minutes, and only the big vector's 0.27 ANCHOR premium is paid in proportion to the minutes it was earned in",
+ "subject": "Kurt Thomas '09",
+ "scale": "def",
+ "target": 74,
+ "tol": 3,
+ "before": 84,
+ "after": 72,
+ "pipeline_version": 151,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "RP_SKILL, RP_ANCHOR = 0\\.13, 0\\.27",
+   "label": "THE ROUND'S SPLIT — rimprot's skill price and the big vector's anchor premium over it",
+   "note": "0.40 -> 0.13 + 0.27; neither number is new, they are the two prices rimprot already carried on the two vectors"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_rp_w = RP_SKILL \\+ RP_ANCHOR \\* load_share\\(p\\)",
+   "label": "THE LOAD TERM — the premium alone is scaled by recal_96's load_share()",
+   "note": "at share 1.0 the weight is 0.40 exactly, so every big at or above 24 mpg is byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_big = _kb\\*\\(0\\.40\\*a\\['perdef'\\] \\+ _rp_w\\*a\\['rimprot'\\] \\+ 0\\.17\\*a\\['drb'\\]\\) \\+ DISC_BIG\\*a\\['discipline'\\]",
+   "label": "and where it lands: the BIG vector, and only the big vector",
+   "note": "perdef 0.40, drb 0.17 and the discipline term are byte-identical; the freed weight is NOT reallocated"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+   "label": "recal_96's LOAD LINE, REUSED UNCHANGED — no new constant was invented for the DEF side",
+   "note": "12 / 24, the same foot and the same full-load line the OFF load term is priced on"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "return min\\(1\\.0, max\\(0\\.0, \\(m - LOAD_FOOT\\) / \\(LOAD_FULL - LOAD_FOOT\\)\\)\\)",
+   "label": "load_share() itself, untouched",
+   "note": "a card with no minutes on the sheet still takes 1.0 — recal_52's 'measured, or not at all'"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_kp\\*\\(0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*a\\['rimprot'\\] \\+ 0\\.11\\*a\\['perimdisrupt'\\] \\+ 0\\.07\\*a\\['drb'\\]\\)",
+   "label": "THE PERIMETER VECTOR IS UNTOUCHED — recal_80's vector, byte-identical",
+   "note": "rimprot keeps its 0.13 there at any minutes; a perimeter card cannot move this round"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
+   "label": "recal_106's discipline weights, untouched",
+   "note": "the ruling is about a bench big's premium, not about discipline"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+   "label": "d_bigness AND THE VOTE CHANNELS WERE NOT TOUCHED — recal_99/136's ramps stand",
+   "note": "not one card changes class this round; w is read, never rewritten"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors, NOT re-derived (recal_90's cost avoided)",
+   "note": "the DEF raw top is a 37.7-mpg card and does not move; every mover is far below the 93 knee"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ \\(40 if is_big\\(p\\) else 10\\), 0\\.85 \\* p\\['d_ovr'\\]\\)",
+   "label": "recal_93's elite-defence floor on the OVR cap, untouched",
+   "note": "OVR moves only because DEF does; the blend and its cap are byte-identical"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 4\\.05,",
+   "label": "THE DEVIATION TAX LAW, re-ratified on this pool: hunt broke on the BLIND edge",
+   "note": "3.78 -> 4.05, the true midpoint of a feasible 4.011-4.096 by r126's rule; the other eight held"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PIPELINE_VERSION = \\d+",
+   "label": "pipeline version, compute side",
+   "note": "the integrator stamps the batch's highest round; left at main's value on this branch"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PIPELINE_VERSION = \\d+",
+   "label": "pipeline version, ratings side (the two must never drift)",
+   "note": "build_ratings.py was NOT run: no attribute moved, so no input changed"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Kurt Thomas '05",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 0,
+   "label": "HIS OWN FULL-LOAD SEASON, 35.7 mpg: FLAT by construction, and the whole point of the ruling — the bench season now reads BELOW it instead of eight points above"
+  },
+  {
+   "card": "Kurt Thomas '03",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 0,
+   "label": "and the 31.8-mpg season: flat. Every 32+ mpg season he played now stands above the 17.8-mpg one"
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "THE DEF SUMMIT, 37.7 mpg: untouched, so the band anchor is not reopened"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "THE ANCHOR ON ITS EDGE (recal_114, 91 +-3, reading 94): 36.3 mpg, flat. A load term cannot reach him"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 0,
+   "label": "the tol-1 pin at 31.8 mpg: flat"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "the tol-1 pin at 34.7 mpg: flat"
+  },
+  {
+   "card": "Amen Thompson '24",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "THE ONLY DEF PIN BELOW THE 24-MINUTE LINE (22.4 mpg, tol 1, recal_149) — and it is flat, because he is graded d_bigness 0.0000: the premium this round prices lives on the big vector alone"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "def",
+   "op": "~",
+   "value": 73,
+   "tol": 0,
+   "label": "recal_96's own edge card, 23.9 mpg: share 0.9917, and he does not lose a printed point"
+  },
+  {
+   "card": "Dereck Lively II '24",
+   "scale": "def",
+   "op": "~",
+   "value": 78,
+   "tol": 0,
+   "label": "THE RAMP'S TOP EDGE, 23.5 mpg on rimprot 89: 79 -> 78, one point. The seam is smooth where it matters"
+  },
+  {
+   "card": "Marvin Webster '84",
+   "scale": "def",
+   "op": "~",
+   "value": 73,
+   "tol": 1,
+   "label": "the scout's pool-wide list, card 1 of 7: 17.0 mpg, 88 -> 73"
+  },
+  {
+   "card": "Greg Stiemsma '13",
+   "scale": "def",
+   "op": "~",
+   "value": 69,
+   "tol": 1,
+   "label": "15.9 mpg, 87 -> 69"
+  },
+  {
+   "card": "Jim McIlvaine '98",
+   "scale": "def",
+   "op": "~",
+   "value": 66,
+   "tol": 1,
+   "label": "15.5 mpg, 85 -> 66"
+  },
+  {
+   "card": "Sean Williams '08",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 1,
+   "label": "17.5 mpg, 84 -> 70 (the scout's \"S. Williams '08\")"
+  },
+  {
+   "card": "Caldwell Jones '89",
+   "scale": "def",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "17.8 mpg, 85 -> 71 (the scout's \"C. Jones '89\")"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "off",
+   "op": "~",
+   "value": 35,
+   "tol": 0,
+   "label": "OFF moved on ZERO of 10,000 cards — o_score is not in this round's path at all"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "ovr",
+   "op": "~",
+   "value": 54,
+   "tol": 1,
+   "label": "OVR follows DEF through the unchanged blend: 60 -> 54"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Kurt Thomas '03",
+   "below": "Kurt Thomas '09",
+   "label": "THE RULING, as an ordering: his 31.8-mpg season now reads above his 17.8-mpg one"
+  },
+  {
+   "scale": "def",
+   "above": "Kurt Thomas '05",
+   "below": "Kurt Thomas '09",
+   "label": "and his 35.7-mpg season, which the bench card used to beat by eight"
+  },
+  {
+   "scale": "def",
+   "above": "Ben Wallace '04",
+   "below": "Kurt Thomas '09",
+   "label": "the summit is untouched and still above him"
+  },
+  {
+   "scale": "def",
+   "above": "Rudy Gobert '19",
+   "below": "Marvin Webster '84",
+   "label": "a full-load anchor outranks a 17-minute one, which is the claim of the round"
+  },
+  {
+   "scale": "def",
+   "above": "Dan Roundfield '82",
+   "below": "Greg Stiemsma '13",
+   "label": "the same, on the anchor sitting on its own edge"
+  },
+  {
+   "scale": "def",
+   "above": "Amen Thompson '24",
+   "below": "Kurt Thomas '09",
+   "label": "a 22.4-mpg PERIMETER pin is flat and still far above: this round prices the big premium, not minutes as such"
+  }
+ ],
+ "movers": {
   "scale": "def",
-  "target": 74,
-  "tol": 3,
-  "before": 84,
-  "after": 72,
-  "pipeline_version": 151,
-  "knobs": [
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "RP_SKILL, RP_ANCHOR = 0\\.13, 0\\.27",
-      "label": "THE ROUND'S SPLIT — rimprot's skill price and the big vector's anchor premium over it",
-      "note": "0.40 -> 0.13 + 0.27; neither number is new, they are the two prices rimprot already carried on the two vectors"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_rp_w = RP_SKILL \\+ RP_ANCHOR \\* load_share\\(p\\)",
-      "label": "THE LOAD TERM — the premium alone is scaled by recal_96's load_share()",
-      "note": "at share 1.0 the weight is 0.40 exactly, so every big at or above 24 mpg is byte-identical"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_big = _kb\\*\\(0\\.40\\*a\\['perdef'\\] \\+ _rp_w\\*a\\['rimprot'\\] \\+ 0\\.17\\*a\\['drb'\\]\\) \\+ DISC_BIG\\*a\\['discipline'\\]",
-      "label": "and where it lands: the BIG vector, and only the big vector",
-      "note": "perdef 0.40, drb 0.17 and the discipline term are byte-identical; the freed weight is NOT reallocated"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
-      "label": "recal_96's LOAD LINE, REUSED UNCHANGED — no new constant was invented for the DEF side",
-      "note": "12 / 24, the same foot and the same full-load line the OFF load term is priced on"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "return min\\(1\\.0, max\\(0\\.0, \\(m - LOAD_FOOT\\) / \\(LOAD_FULL - LOAD_FOOT\\)\\)\\)",
-      "label": "load_share() itself, untouched",
-      "note": "a card with no minutes on the sheet still takes 1.0 — recal_52's 'measured, or not at all'"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_kp\\*\\(0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*a\\['rimprot'\\] \\+ 0\\.11\\*a\\['perimdisrupt'\\] \\+ 0\\.07\\*a\\['drb'\\]\\)",
-      "label": "THE PERIMETER VECTOR IS UNTOUCHED — recal_80's vector, byte-identical",
-      "note": "rimprot keeps its 0.13 there at any minutes; a perimeter card cannot move this round"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "DISC_BIG, DISC_PER = 0\\.027, 0\\.054",
-      "label": "recal_106's discipline weights, untouched",
-      "note": "the ruling is about a bench big's premium, not about discipline"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
-      "label": "d_bigness AND THE VOTE CHANNELS WERE NOT TOUCHED — recal_99/136's ramps stand",
-      "note": "not one card changes class this round; w is read, never rewritten"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
-      "label": "the band anchors, NOT re-derived (recal_90's cost avoided)",
-      "note": "the DEF raw top is a 37.7-mpg card and does not move; every mover is far below the 93 knee"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ \\(40 if is_big\\(p\\) else 10\\), 0\\.85 \\* p\\['d_ovr'\\]\\)",
-      "label": "recal_93's elite-defence floor on the OVR cap, untouched",
-      "note": "OVR moves only because DEF does; the blend and its cap are byte-identical"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 4\\.05,",
-      "label": "THE DEVIATION TAX LAW, re-ratified on this pool: hunt broke on the BLIND edge",
-      "note": "3.78 -> 4.05, the true midpoint of a feasible 4.011-4.096 by r126's rule; the other eight held"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "PIPELINE_VERSION = \\d+",
-      "label": "pipeline version, compute side",
-      "note": "the integrator stamps the batch's highest round; left at main's value on this branch"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "PIPELINE_VERSION = \\d+",
-      "label": "pipeline version, ratings side (the two must never drift)",
-      "note": "build_ratings.py was NOT run: no attribute moved, so no input changed"
-    }
-  ],
-  "expect": [
-    {
-      "card": "Kurt Thomas '05",
-      "scale": "def",
-      "op": "~",
-      "value": 76,
-      "tol": 0,
-      "label": "HIS OWN FULL-LOAD SEASON, 35.7 mpg: FLAT by construction, and the whole point of the ruling — the bench season now reads BELOW it instead of eight points above"
-    },
-    {
-      "card": "Kurt Thomas '03",
-      "scale": "def",
-      "op": "~",
-      "value": 79,
-      "tol": 0,
-      "label": "and the 31.8-mpg season: flat. Every 32+ mpg season he played now stands above the 17.8-mpg one"
-    },
-    {
-      "card": "Ben Wallace '04",
-      "scale": "def",
-      "op": "~",
-      "value": 99,
-      "tol": 0,
-      "label": "THE DEF SUMMIT, 37.7 mpg: untouched, so the band anchor is not reopened"
-    },
-    {
-      "card": "Dan Roundfield '82",
-      "scale": "def",
-      "op": "~",
-      "value": 94,
-      "tol": 0,
-      "label": "THE ANCHOR ON ITS EDGE (recal_114, 91 +-3, reading 94): 36.3 mpg, flat. A load term cannot reach him"
-    },
-    {
-      "card": "Rudy Gobert '19",
-      "scale": "def",
-      "op": "~",
-      "value": 92,
-      "tol": 0,
-      "label": "the tol-1 pin at 31.8 mpg: flat"
-    },
-    {
-      "card": "Draymond Green '16",
-      "scale": "def",
-      "op": "~",
-      "value": 97,
-      "tol": 0,
-      "label": "the tol-1 pin at 34.7 mpg: flat"
-    },
-    {
-      "card": "Amen Thompson '24",
-      "scale": "def",
-      "op": "~",
-      "value": 94,
-      "tol": 0,
-      "label": "THE ONLY DEF PIN BELOW THE 24-MINUTE LINE (22.4 mpg, tol 1, recal_149) — and it is flat, because he is graded d_bigness 0.0000: the premium this round prices lives on the big vector alone"
-    },
-    {
-      "card": "Clint Capela '17",
-      "scale": "def",
-      "op": "~",
-      "value": 73,
-      "tol": 0,
-      "label": "recal_96's own edge card, 23.9 mpg: share 0.9917, and he does not lose a printed point"
-    },
-    {
-      "card": "Dereck Lively II '24",
-      "scale": "def",
-      "op": "~",
-      "value": 78,
-      "tol": 0,
-      "label": "THE RAMP'S TOP EDGE, 23.5 mpg on rimprot 89: 79 -> 78, one point. The seam is smooth where it matters"
-    },
-    {
-      "card": "Marvin Webster '84",
-      "scale": "def",
-      "op": "~",
-      "value": 73,
-      "tol": 1,
-      "label": "the scout's pool-wide list, card 1 of 7: 17.0 mpg, 88 -> 73"
-    },
-    {
-      "card": "Greg Stiemsma '13",
-      "scale": "def",
-      "op": "~",
-      "value": 69,
-      "tol": 1,
-      "label": "15.9 mpg, 87 -> 69"
-    },
-    {
-      "card": "Jim McIlvaine '98",
-      "scale": "def",
-      "op": "~",
-      "value": 66,
-      "tol": 1,
-      "label": "15.5 mpg, 85 -> 66"
-    },
-    {
-      "card": "Sean Williams '08",
-      "scale": "def",
-      "op": "~",
-      "value": 70,
-      "tol": 1,
-      "label": "17.5 mpg, 84 -> 70 (the scout's \"S. Williams '08\")"
-    },
-    {
-      "card": "Caldwell Jones '89",
-      "scale": "def",
-      "op": "~",
-      "value": 71,
-      "tol": 1,
-      "label": "17.8 mpg, 85 -> 71 (the scout's \"C. Jones '89\")"
-    },
-    {
-      "card": "Kurt Thomas '09",
-      "scale": "off",
-      "op": "~",
-      "value": 35,
-      "tol": 0,
-      "label": "OFF moved on ZERO of 10,000 cards — o_score is not in this round's path at all"
-    },
-    {
-      "card": "Kurt Thomas '09",
-      "scale": "ovr",
-      "op": "~",
-      "value": 54,
-      "tol": 1,
-      "label": "OVR follows DEF through the unchanged blend: 60 -> 54"
-    }
-  ],
-  "order": [
-    {
-      "scale": "def",
-      "above": "Kurt Thomas '03",
-      "below": "Kurt Thomas '09",
-      "label": "THE RULING, as an ordering: his 31.8-mpg season now reads above his 17.8-mpg one"
-    },
-    {
-      "scale": "def",
-      "above": "Kurt Thomas '05",
-      "below": "Kurt Thomas '09",
-      "label": "and his 35.7-mpg season, which the bench card used to beat by eight"
-    },
-    {
-      "scale": "def",
-      "above": "Ben Wallace '04",
-      "below": "Kurt Thomas '09",
-      "label": "the summit is untouched and still above him"
-    },
-    {
-      "scale": "def",
-      "above": "Rudy Gobert '19",
-      "below": "Marvin Webster '84",
-      "label": "a full-load anchor outranks a 17-minute one, which is the claim of the round"
-    },
-    {
-      "scale": "def",
-      "above": "Dan Roundfield '82",
-      "below": "Greg Stiemsma '13",
-      "label": "the same, on the anchor sitting on its own edge"
-    },
-    {
-      "scale": "def",
-      "above": "Amen Thompson '24",
-      "below": "Kurt Thomas '09",
-      "label": "a 22.4-mpg PERIMETER pin is flat and still far above: this round prices the big premium, not minutes as such"
-    }
-  ],
-  "movers": {
-    "scale": "def",
-    "count": 1352,
-    "max_abs": 20,
-    "top": [
-      [
-        "Dikembe Mutombo '05",
-        82,
-        62
-      ],
-      [
-        "Arvydas Sabonis '03",
-        91,
-        72
-      ],
-      [
-        "Jim McIlvaine '98",
-        85,
-        66
-      ],
-      [
-        "Brad Lohaus '91",
-        81,
-        62
-      ],
-      [
-        "Kyle O'Quinn '17",
-        79,
-        60
-      ],
-      [
-        "Mark West '94",
-        79,
-        60
-      ],
-      [
-        "Greg Stiemsma '13",
-        87,
-        69
-      ],
-      [
-        "Mike Gminski '83",
-        85,
-        67
-      ],
-      [
-        "Coby Dietrick '81",
-        81,
-        63
-      ],
-      [
-        "Ian Mahinmi '14",
-        75,
-        57
-      ],
-      [
-        "Aron Baynes '16",
-        71,
-        53
-      ],
-      [
-        "Kurt Thomas '09",
-        84,
-        72
-      ]
-    ]
-  },
-  "top12": {
-    "scale": "def",
-    "cards": [
-      "Ben Wallace '01",
-      "Ben Wallace '02",
-      "Ben Wallace '03",
-      "Ben Wallace '04",
-      "Ben Wallace '05",
-      "Ben Wallace '06",
-      "Dwight Howard '10",
-      "Giannis Antetokounmpo '19",
-      "Giannis Antetokounmpo '20",
-      "Kawhi Leonard '16",
-      "Anthony Davis '18",
-      "Ben Wallace '07"
-    ]
-  },
-  "cost": [
-    "THE SUBJECT LANDS AT 72 AGAINST A TARGET OF 74, error -2 inside the orchestrator's +-3, and the reason is a CHOICE the dispatch asked for: reuse recal_96's load line rather than invent a DEF one. At 17.8 mpg the shared ramp (foot 12, full 24) gives share 0.4833, which prices Kurt Thomas '09 at d_score 63.33 -> DEF 72. To land 74 exactly the share at 17.8 minutes would have to be about 0.62, i.e. a DEF-only foot near 5.4 or a DEF-only full-load line near 21.5 — a second, different load line in the same file, for the same question, two points from the one already ratified. It was not taken. If he wants 74 rather than 72 that is the one-line change, and it moves the same 1,352 cards with him.",
-    "THE DEPTH ON THE DEEPEST CARDS IS -20, AND IT IS CONCENTRATED ON ELITE-RIMPROT BENCH BIGS, which is arithmetic rather than taste: the term removes 0.27 x (1 - share) x rimprot, so it bites hardest exactly where rimprot is largest. Dikembe Mutombo '05 (15.2 mpg, rimprot 92, age 38 backup) 82 -> 62 is the extreme, and Arvydas Sabonis '03 (15.5 mpg, rimprot 88) 91 -> 72 the second. Both readings are defensible on the round's own claim — neither man anchored a defence for a quarter of a game — but they are the two places a complaint will come from, and Mutombo '05 at DEF 62 is the single number a later round is most likely to be asked about.",
-    "THE CLASS THE SCOUT FOUND IS GONE, MEASURED: 13 bigs under 18 mpg read DEF >= 84 before this round (Sabonis '03, C. Jones '89, Gadzuric '04, Diop '08, Stiemsma '13, McIlvaine '98, Salley '87, Cato '03, Hughes '80, Kurt Thomas '09, Webster '84, Gminski '83, S. Williams '08) and ZERO do after. Kurt Thomas '09 goes from 25th of 228 in 2009 to 61st, and from 941st of 10,000 to 2,475th.",
-    "THE THREE FAMOUS LOW-MINUTE DEFENDERS THIS TERM REACHES, named so a later round does not have to find them. BILL WALTON '86 (19.3 mpg, the Sixth Man of the Year on a 67-win Celtics team, rimprot 92) 92 -> 82 is the biggest cut above DEF 90 and the one card here with a real claim that his 19 minutes anchored a defence; DRAYMOND GREEN '14 (21.9 mpg, his second year) 93 -> 88; ERVIN JOHNSON '96 (18.8) 91 -> 79. Walton '86 is not anchored and nothing in his ruling history covers him, but if any single name comes back it is his. Above them, Bobby Jones '84 (23.5) loses one point and Ben Wallace '09 (23.5) loses one.",
-    "FIVE TEAM DEF DIALS MOVED BY 2 OR MORE, and NOT because the DEF gauge block moved — it is frozen at pipeline 142 and was not touched. `npm run opponents` re-picks each level's best legal five, and a bench big who lost 8-16 DEF points loses his seat: The Champions' Miami Heat '12 DEF 91 -> 86 (the largest), The League's Washington Wizards 35 -> 31 and Boston Celtics 67 -> 64, Golden State Warriors '22 71 -> 74 (UP, a different five), Los Angeles Lakers '80 76 -> 74. Five levels also moved their team OFF dial for the same reason (Wizards 32 -> 23 is the largest) even though OFF moved on zero cards, and ten ladder positions re-sorted by net, max shift 4 (Heat '12 r54 -> r50). Every one of the 11 team:defdial anchors and all 149 anchors read EXACTLY as they did before the round — the full anchor table diffs to zero lines.",
-    "THE DEVIATION TAX: HUNT BROKE ON THE BLIND EDGE AND WAS RE-RATIFIED, 3.78 -> 4.05. 1,237 OVRs fell, all of them, which pulled bench bigs out of the harness's ovr>=55 sample and left the fives it draws defending worse; the mismatch read is therefore worth more and a blind call costs less of it (blind -0.108 against the -0.30 ceiling). Swept from MAIN's constant, not from any interim: feasible about 4.011 to 4.096, a NARROW 0.085, true midpoint 4.05 by r126's rule (blind -0.333, oracle +0.523; 0.033 and 0.023 of room). This is hunt's TWELFTH move and the largest value the tax has ever carried. crash def glass held .48 (blind -0.342, oracle +0.558) and the seven others held their bands untouched; all nine pass.",
-    "THE HOLE recal_96 LEFT IN ITS OWN TERM IS NOW HALF-CLOSED, and the other half is named. recal_96's COST recorded that recal_91's stretch-big OFF floor 'does carry a raw 0.10 * volume, so a sub-24-minute stretch big keeps a small load credit the rest of the file no longer pays'. That hole is still open on the OFF side and this round does not touch it. On the DEF side the mirror hole is the PERIMETER vector's 0.13 rimprot, which is now deliberately full-price at any minutes — that is the round's central claim, not an oversight: a wing who contests at the rim is being graded on a skill rate, and recal_96 ruled skill rates are not discounted by minutes.",
-    "NO ATTRIBUTE MOVED AND build_ratings.py WAS NOT RUN, so public/provenance.json is untouched. The files that changed together: data/compute_ovr.py, data/players_stats.json, src/data/players_stats.json, data/export/players_stats_smoothed.json, src/data/campaigns.json + src/data/opponents.json (npm run opponents), src/engine/tactics.ts (the tax), data/anchors.json (this round's pin), data/rounds/151.json. src/data/pipeline.json and export/MANIFEST.json are byte-identical because the version and the card count did not change on this branch — the integrator stamps the batch's version."
-  ],
-  "notes": [
-    "WHAT THE RULING IS ABOUT, in one sentence. Kurt Thomas '09 played 17.8 minutes a night off Al Horford and Zaza Pachulia, scored 4.3 on 5.1 rebounds with 0.7 blocks at BPM -0.3, and had no defensive bar above 79 (perdef 73, rimprot 79, drb 76, discipline 16) — and read DEF 84, 25th of 228 cards in 2009 and above every 32+ minute season of his own career. The number came from one weight: rimprot at 0.40 on the big vector, more than three times the 0.13 the same bar is worth to a perimeter defender.",
-    "WHY THAT EXTRA 0.27 IS A LOAD CLAIM AND NOT A SKILL PRICE. d_score's own opening line says why the big vector pays rimprot triple: 'bigs' defensive votes route to rimprot by design, so perdef understates them'. That is a statement about being THE ANCHOR of a defence — the man the other four play in front of — and being the anchor is a BURDEN, measured in minutes, not a rate that is true whether you play nineteen or thirty-nine. So the round splits the weight at the two prices the file already contains: 0.13 is what rim contesting is worth as a skill, paid in full at any minutes to any card, and 0.27 is the anchor premium, paid at recal_96's load share. HIS COUNTER IS ANSWERED RATHER THAN OVERRULED: no skill rate is re-priced by minutes this round. perdef, drb, discipline, perimdisrupt and rimprot's own skill price are byte-identical at every minute count, and a perimeter card cannot move at all.",
-    "WHY NOT THE OTHER TWO CANDIDATE FORMS, both measured before this one was applied. (1) THE WHOLE BIG PREMIUM AT LOAD — blending toward the perimeter vector by share, i.e. _perim + share x w x (_big - _perim) — is the obvious mirror and CANNOT REACH THE NUMBER: Kurt Thomas '09's perimeter vector is 67.27 against a big vector of 74.38, so the whole premium is 7.11 of d_score and paying 48% of it lands him on DEF 80, six points above the tolerance band. (2) THE DISPLAY MULTIPLIER AT LOAD (1.1305 scaled by share) reaches only 79, and it would tax every low-minute PERIMETER card in the pool for a finding about bigs. Only the rim-anchor premium is both large enough and narrow enough, and it is the one of the three that has a sentence behind it.",
-    "MEASURED ON THE WHOLE POOL BEFORE APPLYING. DEF moves on 1,352 of 10,000 cards, every one of them DOWN (a load discount cannot raise anything; there are ZERO rises), mean -6.29, max -20. By minutes: under 18 mpg 233 of 430 cards moved, mean -6.45; 18-24 mpg 1,119 of 2,367 moved, mean -2.42; 24-30 mpg ZERO moved; 30+ mpg ZERO moved. OFF moves on ZERO cards and no attribute moves — this is a compute_ovr-only round. OVR moves on 1,237, max -10, entirely through the unchanged blend.",
-    "THE BOARD'S SHAPE IS UNCHANGED WHERE IT MATTERS. The top 12 by DEF is identical name for name and position for position (six Ben Wallace seasons, Howard '10, two Giannis, Kawhi '16, Davis '18); scout reports ZERO rank flips touching the top 50 by OVR; and the DEF raw top is still a 37.7-mpg card, so DEF_TOP was not re-derived and nothing above the 93 knee moved. The highest-rated card that moves at all is Bobby Jones '84 (23.5 mpg, 83rd on DEF before the round) and he loses ONE point, 95 -> 94; the 296 cards that lose ten or more are ALL under twenty minutes, the deepest at 15.2.",
-    "THE CARD THAT PROVES THE SEAM IS SMOOTH. recal_96's COST warned that 24.0 minutes is a corner. On the DEF side the card sitting on it is Dereck Lively II '24 — 23.5 mpg, rimprot 89, share 0.9583 — and he loses exactly ONE printed point, 79 -> 78. Clint Capela '17 at 23.9 loses none. The discount is concentrated where the ruling is: 296 of the 1,352 movers lose 10 or more, and all 296 are under 21 minutes."
+  "count": 1352,
+  "max_abs": 20,
+  "top": [
+   [
+    "Dikembe Mutombo '05",
+    82,
+    62
+   ],
+   [
+    "Arvydas Sabonis '03",
+    91,
+    72
+   ],
+   [
+    "Jim McIlvaine '98",
+    85,
+    66
+   ],
+   [
+    "Brad Lohaus '91",
+    81,
+    62
+   ],
+   [
+    "Kyle O'Quinn '17",
+    79,
+    60
+   ],
+   [
+    "Mark West '94",
+    79,
+    60
+   ],
+   [
+    "Greg Stiemsma '13",
+    87,
+    69
+   ],
+   [
+    "Mike Gminski '83",
+    85,
+    67
+   ],
+   [
+    "Coby Dietrick '81",
+    81,
+    63
+   ],
+   [
+    "Ian Mahinmi '14",
+    75,
+    57
+   ],
+   [
+    "Aron Baynes '16",
+    71,
+    53
+   ],
+   [
+    "Kurt Thomas '09",
+    84,
+    72
+   ]
   ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Anthony Davis '18",
+   "Ben Wallace '07"
+  ]
+ },
+ "cost": [
+  "THE SUBJECT LANDS AT 72 AGAINST A TARGET OF 74, error -2 inside the orchestrator's +-3, and the reason is a CHOICE the dispatch asked for: reuse recal_96's load line rather than invent a DEF one. At 17.8 mpg the shared ramp (foot 12, full 24) gives share 0.4833, which prices Kurt Thomas '09 at d_score 63.33 -> DEF 72. To land 74 exactly the share at 17.8 minutes would have to be about 0.62, i.e. a DEF-only foot near 5.4 or a DEF-only full-load line near 21.5 — a second, different load line in the same file, for the same question, two points from the one already ratified. It was not taken. If he wants 74 rather than 72 that is the one-line change, and it moves the same 1,352 cards with him.",
+  "THE DEPTH ON THE DEEPEST CARDS IS -20, AND IT IS CONCENTRATED ON ELITE-RIMPROT BENCH BIGS, which is arithmetic rather than taste: the term removes 0.27 x (1 - share) x rimprot, so it bites hardest exactly where rimprot is largest. Dikembe Mutombo '05 (15.2 mpg, rimprot 92, age 38 backup) 82 -> 62 is the extreme, and Arvydas Sabonis '03 (15.5 mpg, rimprot 88) 91 -> 72 the second. Both readings are defensible on the round's own claim — neither man anchored a defence for a quarter of a game — but they are the two places a complaint will come from, and Mutombo '05 at DEF 62 is the single number a later round is most likely to be asked about.",
+  "THE CLASS THE SCOUT FOUND IS GONE, MEASURED: 13 bigs under 18 mpg read DEF >= 84 before this round (Sabonis '03, C. Jones '89, Gadzuric '04, Diop '08, Stiemsma '13, McIlvaine '98, Salley '87, Cato '03, Hughes '80, Kurt Thomas '09, Webster '84, Gminski '83, S. Williams '08) and ZERO do after. Kurt Thomas '09 goes from 25th of 228 in 2009 to 61st, and from 941st of 10,000 to 2,475th.",
+  "THE THREE FAMOUS LOW-MINUTE DEFENDERS THIS TERM REACHES, named so a later round does not have to find them. BILL WALTON '86 (19.3 mpg, the Sixth Man of the Year on a 67-win Celtics team, rimprot 92) 92 -> 82 is the biggest cut above DEF 90 and the one card here with a real claim that his 19 minutes anchored a defence; DRAYMOND GREEN '14 (21.9 mpg, his second year) 93 -> 88; ERVIN JOHNSON '96 (18.8) 91 -> 79. Walton '86 is not anchored and nothing in his ruling history covers him, but if any single name comes back it is his. Above them, Bobby Jones '84 (23.5) loses one point and Ben Wallace '09 (23.5) loses one.",
+  "FIVE TEAM DEF DIALS MOVED BY 2 OR MORE, and NOT because the DEF gauge block moved — it is frozen at pipeline 142 and was not touched. `npm run opponents` re-picks each level's best legal five, and a bench big who lost 8-16 DEF points loses his seat: The Champions' Miami Heat '12 DEF 91 -> 86 (the largest), The League's Washington Wizards 35 -> 31 and Boston Celtics 67 -> 64, Golden State Warriors '22 71 -> 74 (UP, a different five), Los Angeles Lakers '80 76 -> 74. Five levels also moved their team OFF dial for the same reason (Wizards 32 -> 23 is the largest) even though OFF moved on zero cards, and ten ladder positions re-sorted by net, max shift 4 (Heat '12 r54 -> r50). Every one of the 11 team:defdial anchors and all 149 anchors read EXACTLY as they did before the round — the full anchor table diffs to zero lines.",
+  "THE DEVIATION TAX: HUNT BROKE ON THE BLIND EDGE AND WAS RE-RATIFIED, 3.78 -> 4.05. 1,237 OVRs fell, all of them, which pulled bench bigs out of the harness's ovr>=55 sample and left the fives it draws defending worse; the mismatch read is therefore worth more and a blind call costs less of it (blind -0.108 against the -0.30 ceiling). Swept from MAIN's constant, not from any interim: feasible about 4.011 to 4.096, a NARROW 0.085, true midpoint 4.05 by r126's rule (blind -0.333, oracle +0.523; 0.033 and 0.023 of room). This is hunt's TWELFTH move and the largest value the tax has ever carried. crash def glass held .48 (blind -0.342, oracle +0.558) and the seven others held their bands untouched; all nine pass.",
+  "THE HOLE recal_96 LEFT IN ITS OWN TERM IS NOW HALF-CLOSED, and the other half is named. recal_96's COST recorded that recal_91's stretch-big OFF floor 'does carry a raw 0.10 * volume, so a sub-24-minute stretch big keeps a small load credit the rest of the file no longer pays'. That hole is still open on the OFF side and this round does not touch it. On the DEF side the mirror hole is the PERIMETER vector's 0.13 rimprot, which is now deliberately full-price at any minutes — that is the round's central claim, not an oversight: a wing who contests at the rim is being graded on a skill rate, and recal_96 ruled skill rates are not discounted by minutes.",
+  "NO ATTRIBUTE MOVED AND build_ratings.py WAS NOT RUN, so public/provenance.json is untouched. The files that changed together: data/compute_ovr.py, data/players_stats.json, src/data/players_stats.json, data/export/players_stats_smoothed.json, src/data/campaigns.json + src/data/opponents.json (npm run opponents), src/engine/tactics.ts (the tax), data/anchors.json (this round's pin), data/rounds/151.json. src/data/pipeline.json and export/MANIFEST.json are byte-identical because the version and the card count did not change on this branch — the integrator stamps the batch's version."
+ ],
+ "notes": [
+  "WHAT THE RULING IS ABOUT, in one sentence. Kurt Thomas '09 played 17.8 minutes a night off Al Horford and Zaza Pachulia, scored 4.3 on 5.1 rebounds with 0.7 blocks at BPM -0.3, and had no defensive bar above 79 (perdef 73, rimprot 79, drb 76, discipline 16) — and read DEF 84, 25th of 228 cards in 2009 and above every 32+ minute season of his own career. The number came from one weight: rimprot at 0.40 on the big vector, more than three times the 0.13 the same bar is worth to a perimeter defender.",
+  "WHY THAT EXTRA 0.27 IS A LOAD CLAIM AND NOT A SKILL PRICE. d_score's own opening line says why the big vector pays rimprot triple: 'bigs' defensive votes route to rimprot by design, so perdef understates them'. That is a statement about being THE ANCHOR of a defence — the man the other four play in front of — and being the anchor is a BURDEN, measured in minutes, not a rate that is true whether you play nineteen or thirty-nine. So the round splits the weight at the two prices the file already contains: 0.13 is what rim contesting is worth as a skill, paid in full at any minutes to any card, and 0.27 is the anchor premium, paid at recal_96's load share. HIS COUNTER IS ANSWERED RATHER THAN OVERRULED: no skill rate is re-priced by minutes this round. perdef, drb, discipline, perimdisrupt and rimprot's own skill price are byte-identical at every minute count, and a perimeter card cannot move at all.",
+  "WHY NOT THE OTHER TWO CANDIDATE FORMS, both measured before this one was applied. (1) THE WHOLE BIG PREMIUM AT LOAD — blending toward the perimeter vector by share, i.e. _perim + share x w x (_big - _perim) — is the obvious mirror and CANNOT REACH THE NUMBER: Kurt Thomas '09's perimeter vector is 67.27 against a big vector of 74.38, so the whole premium is 7.11 of d_score and paying 48% of it lands him on DEF 80, six points above the tolerance band. (2) THE DISPLAY MULTIPLIER AT LOAD (1.1305 scaled by share) reaches only 79, and it would tax every low-minute PERIMETER card in the pool for a finding about bigs. Only the rim-anchor premium is both large enough and narrow enough, and it is the one of the three that has a sentence behind it.",
+  "MEASURED ON THE WHOLE POOL BEFORE APPLYING. DEF moves on 1,352 of 10,000 cards, every one of them DOWN (a load discount cannot raise anything; there are ZERO rises), mean -6.29, max -20. By minutes: under 18 mpg 233 of 430 cards moved, mean -6.45; 18-24 mpg 1,119 of 2,367 moved, mean -2.42; 24-30 mpg ZERO moved; 30+ mpg ZERO moved. OFF moves on ZERO cards and no attribute moves — this is a compute_ovr-only round. OVR moves on 1,237, max -10, entirely through the unchanged blend.",
+  "THE BOARD'S SHAPE IS UNCHANGED WHERE IT MATTERS. The top 12 by DEF is identical name for name and position for position (six Ben Wallace seasons, Howard '10, two Giannis, Kawhi '16, Davis '18); scout reports ZERO rank flips touching the top 50 by OVR; and the DEF raw top is still a 37.7-mpg card, so DEF_TOP was not re-derived and nothing above the 93 knee moved. The highest-rated card that moves at all is Bobby Jones '84 (23.5 mpg, 83rd on DEF before the round) and he loses ONE point, 95 -> 94; the 296 cards that lose ten or more are ALL under twenty minutes, the deepest at 15.2.",
+  "THE CARD THAT PROVES THE SEAM IS SMOOTH. recal_96's COST warned that 24.0 minutes is a corner. On the DEF side the card sitting on it is Dereck Lively II '24 — 23.5 mpg, rimprot 89, share 0.9583 — and he loses exactly ONE printed point, 79 -> 78. Clint Capela '17 at 23.9 loses none. The discount is concentrated where the ruling is: 296 of the 1,352 movers lose 10 or more, and all 296 are under 21 minutes."
+ ]
 }
