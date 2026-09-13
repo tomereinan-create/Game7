@@ -53,6 +53,44 @@
         "marg": 42
       },
       {
+        "name": "Tre Johnson '26",
+        "player": "Tre Johnson",
+        "peak_season": 2026,
+        "talent": 68,
+        "in": 22,
+        "out": 76,
+        "id": 27,
+        "pd": 45,
+        "attrs": {
+          "3pt": 74,
+          "rim": 11,
+          "mid": 93,
+          "rim_mid_measured": true,
+          "ft": 87,
+          "fouldraw": 26,
+          "orb": 27,
+          "drb": 31,
+          "playvol": 40,
+          "ballsec": 49,
+          "volume": 64,
+          "efficiency": 28,
+          "durability": 23,
+          "rimprot": 27,
+          "perimdisrupt": 22,
+          "height": 77,
+          "perdef": 45,
+          "discipline": 42,
+          "usg_raw": 22.5,
+          "ts_raw": 0.535,
+          "ts_rel": 0.521
+        },
+        "big": false,
+        "o_ovr": 60,
+        "d_ovr": 44,
+        "ovr": 55,
+        "marg": 42
+      },
+      {
         "name": "Kyshawn George '26",
         "player": "Kyshawn George",
         "peak_season": 2026,
@@ -91,44 +129,6 @@
         "marg": 45
       },
       {
-        "name": "Justin Champagnie '26",
-        "player": "Justin Champagnie",
-        "peak_season": 2026,
-        "talent": 74,
-        "in": 59,
-        "out": 41,
-        "id": 59,
-        "pd": 50,
-        "attrs": {
-          "3pt": 38,
-          "rim": 67,
-          "mid": 8,
-          "rim_mid_measured": true,
-          "ft": 76,
-          "fouldraw": 41,
-          "orb": 74,
-          "drb": 66,
-          "playvol": 29,
-          "ballsec": 66,
-          "volume": 25,
-          "efficiency": 55,
-          "durability": 15,
-          "rimprot": 59,
-          "perimdisrupt": 63,
-          "height": 78,
-          "perdef": 50,
-          "discipline": 42,
-          "usg_raw": 16.4,
-          "ts_raw": 0.595,
-          "ts_rel": 0.583
-        },
-        "big": true,
-        "o_ovr": 51,
-        "d_ovr": 63,
-        "ovr": 57,
-        "marg": 81
-      },
-      {
         "name": "Marvin Bagley III '26",
         "player": "Marvin Bagley III",
         "peak_season": 2026,
@@ -162,8 +162,8 @@
         },
         "big": true,
         "o_ovr": 61,
-        "d_ovr": 72,
-        "ovr": 66,
+        "d_ovr": 64,
+        "ovr": 62,
         "marg": 94
       },
       {
@@ -407,8 +407,8 @@
         },
         "big": true,
         "o_ovr": 53,
-        "d_ovr": 81,
-        "ovr": 67,
+        "d_ovr": 74,
+        "ovr": 64,
         "marg": 70
       }
     ]
@@ -1235,8 +1235,8 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 65,
-        "ovr": 66,
+        "d_ovr": 61,
+        "ovr": 64,
         "marg": 87
       }
     ]
@@ -2270,8 +2270,8 @@
         },
         "big": true,
         "o_ovr": 53,
-        "d_ovr": 52,
-        "ovr": 53,
+        "d_ovr": 49,
+        "ovr": 52,
         "marg": 70
       }
     ]
@@ -2891,8 +2891,8 @@
         },
         "big": true,
         "o_ovr": 67,
-        "d_ovr": 81,
-        "ovr": 74,
+        "d_ovr": 77,
+        "ovr": 72,
         "marg": 89
       }
     ]
@@ -3098,8 +3098,8 @@
         },
         "big": true,
         "o_ovr": 43,
-        "d_ovr": 80,
-        "ovr": 62,
+        "d_ovr": 74,
+        "ovr": 58,
         "marg": 90
       }
     ]
@@ -3681,8 +3681,8 @@
         },
         "big": true,
         "o_ovr": 38,
-        "d_ovr": 79,
-        "ovr": 58,
+        "d_ovr": 74,
+        "ovr": 56,
         "marg": 79
       },
       {
@@ -3719,7 +3719,7 @@
         },
         "big": true,
         "o_ovr": 54,
-        "d_ovr": 74,
+        "d_ovr": 73,
         "ovr": 64,
         "marg": 94
       }
@@ -4133,8 +4133,8 @@
         },
         "big": true,
         "o_ovr": 74,
-        "d_ovr": 73,
-        "ovr": 74,
+        "d_ovr": 69,
+        "ovr": 72,
         "marg": 93
       }
     ]
@@ -5511,42 +5511,42 @@
         "marg": 81
       },
       {
-        "name": "Jordan Walsh '26",
-        "player": "Jordan Walsh",
+        "name": "Sam Hauser '26",
+        "player": "Sam Hauser",
         "peak_season": 2026,
-        "talent": 74,
-        "in": 48,
-        "out": 67,
-        "id": 74,
+        "talent": 75,
+        "in": 24,
+        "out": 97,
+        "id": 48,
         "pd": 55,
         "attrs": {
-          "3pt": 64,
-          "rim": 38,
-          "mid": 7,
+          "3pt": 97,
+          "rim": 32,
+          "mid": 51,
           "rim_mid_measured": true,
-          "ft": 77,
-          "fouldraw": 41,
-          "orb": 67,
-          "drb": 59,
-          "playvol": 26,
-          "ballsec": 39,
-          "volume": 5,
-          "efficiency": 65,
-          "durability": 2,
-          "rimprot": 74,
-          "perimdisrupt": 59,
-          "height": 78,
+          "ft": 89,
+          "fouldraw": 12,
+          "orb": 36,
+          "drb": 46,
+          "playvol": 20,
+          "ballsec": 89,
+          "volume": 17,
+          "efficiency": 58,
+          "durability": 53,
+          "rimprot": 48,
+          "perimdisrupt": 15,
+          "height": 79,
           "perdef": 55,
-          "discipline": 6,
-          "usg_raw": 11.7,
-          "ts_raw": 0.623,
-          "ts_rel": 0.609
+          "discipline": 82,
+          "usg_raw": 14.4,
+          "ts_raw": 0.6,
+          "ts_rel": 0.588
         },
         "big": true,
-        "o_ovr": 54,
-        "d_ovr": 70,
+        "o_ovr": 64,
+        "d_ovr": 58,
         "ovr": 62,
-        "marg": 69
+        "marg": 58
       },
       {
         "name": "Neemias Queta '26",
@@ -6203,8 +6203,8 @@
         },
         "big": true,
         "o_ovr": 46,
-        "d_ovr": 85,
-        "ovr": 66,
+        "d_ovr": 76,
+        "ovr": 61,
         "marg": 62
       }
     ]

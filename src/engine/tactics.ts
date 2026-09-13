@@ -455,6 +455,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * (+0.45, +0.48). Swept 3.82/.57 (crashDef +0.49 fails), 3.76/.52 (both pass, thin), 3.86/.60 (fails),
  * 3.78/.48; re-ratified hunt 4.00 -> 3.78, crashDef .62 -> 0.48. The branches' interim figures (145 3.67/.95,
  * 146 3.89/.57 then 3.82, 149 3.83) are superseded, not stacked. Seven others held.
+ * recal_151 paid the rim-anchor premium at bench load: 1,352 d_ovrs and 1,237 OVRs, every one DOWN, which
+ * took bench bigs out of the harness's ovr>=55 sample and changed the fives it draws. HUNT alone broke, on
+ * the BLIND edge (-0.108 at 3.78, against the -0.30 ceiling) — the shape recal_146 named: this is a
+ * DEFENSIVE round, hunt is the tax whose benefit reads a defensive attribute, and the fives now defend
+ * WORSE, so the mismatch read is worth more and a blind call costs less of it. Swept from main's constant:
+ * 3.78 (-0.108) / 3.90 (-0.209) / 4.00 (-0.296) / 4.010 (-0.2997, under the ceiling) / 4.012 (-0.3013, the
+ * ceiling exactly) / 4.02 (-0.308 / +0.538) / 4.05 (-0.333 / +0.523) / 4.09 (-0.365 / +0.5031) / 4.095
+ * (+0.5007) / 4.097 (+0.4997, under the floor) / 4.10 (+0.4982, under) — feasible about 4.011 to 4.096, a
+ * NARROW 0.085, true midpoint by r126's rule: 3.78 -> 4.05 (blind -0.333, oracle +0.523, 0.033 and 0.023 of
+ * room). Hunt's twelfth move, and the largest value this tax has ever carried. crash def glass held .48
+ * untouched (blind -0.342, oracle +0.558) and the seven others held their bands. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -462,7 +473,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.78,
+  hunt: 4.05,
   crashOff: 0.17,
   crashDef: 0.48,
 }
