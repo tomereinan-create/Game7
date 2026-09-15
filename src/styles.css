@@ -3520,11 +3520,15 @@ body:has(.sheet) { overflow: hidden; }
    to both edges, which is what makes the sheet read as a window with a chrome rather than as a
    page with a caption. The 13px on the left is the gutter the card element gave up, restated
    here so GAME7.SYS still starts on the same line the man's name does. */
-.pct-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 42px 8px 13px; background: var(--panel); border-bottom: 1px solid var(--divider); font-size: 10px; letter-spacing: 0.17em; color: var(--muted-2); white-space: nowrap; }
-.pct-sys { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.pct-slug { flex: none; color: var(--ink); letter-spacing: 0.15em; }
-.pct-esc { flex: none; padding: 0; background: none; border: 0; font: inherit; font-weight: 700; letter-spacing: inherit; color: var(--pct-acc); cursor: pointer; }
-.pct-esc:hover { color: var(--pct-acc-hi); }
+.pct-bar { flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; padding: 8px 42px 8px 13px; background: var(--panel); border-bottom: 1px solid var(--divider); font-size: 10px; letter-spacing: 0.17em; color: var(--muted-2); white-space: nowrap; }
+/* THE BIG CLOSE, top left (his ruling: "have a big close button on the top left"): a real key,
+   44px tall so it is a thumb's target on a phone, in the heading face the old CLOSE CARD dock
+   key wore, on the same tint. */
+.pct-close { justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 3px 22px 0 16px; border: 1px solid var(--line-3); background: var(--you-tint); color: var(--ink); font-family: var(--serif); font-size: 24px; font-weight: 400; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.pct-close span { font-family: var(--sans); font-size: 17px; margin-top: -3px; }
+.pct-close:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); }
+.pct-close:focus-visible { outline: 1px solid var(--ink); outline-offset: 2px; }
+.pct-slug { color: var(--ink); letter-spacing: 0.15em; }
 
 /* ---- the body ----
    overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
@@ -3718,7 +3722,7 @@ body:has(.sheet) { overflow: hidden; }
    one part of a row that is decoration rather than fact — comes off, as it already did before. */
 @media (max-width: 560px) {
   /* the club and the season are the half of the status line that matters */
-  .pct-sys { display: none; }
+  .pct-close { min-height: 40px; padding: 3px 16px 0 12px; font-size: 20px; }
   .pct-id { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; }
   .pc-name { flex: 0 1 auto; }
   /* the banner, the ledger and the sentence each take the full width; inside the banner the name

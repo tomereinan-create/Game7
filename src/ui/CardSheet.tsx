@@ -218,16 +218,18 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
           reads as the full-bleed sheet it has always been; on a desk it stops being a page with
           280px of empty club-black under the last line and becomes the window the mock draws. */}
       <div className="pc-win">
-      {/* the top status line. The middle slot carries the club and the season because those two
-          are what the card is coloured BY; on a phone the leftmost slot stands down. */}
+      {/* the top bar. THE WAY OUT IS THE FIRST THING ON IT (his ruling: "Remove GAME7.SYS ▸ PLAYER
+          CARD And instead have a big close button on the top left") — one big key where the caption
+          stood, and the small [ESC] CLOSE on the right goes with it, so there is one close, not two.
+          The middle slot still carries the club and the season. */}
       <div className="pct-bar">
-        <span className="pct-sys">GAME7.SYS &#9656; PLAYER CARD</span>
+        <button className="pct-close" onClick={onClose} aria-label="Close player card">
+          <span aria-hidden="true">&#10005;</span> Close
+        </button>
         <span className="pct-slug">
           {teams.length ? teams.join('/') : '—'} // S{p.peak_season}
         </span>
-        <button className="pct-esc" onClick={onClose}>
-          [ESC] CLOSE
-        </button>
+        <span aria-hidden="true" />
       </div>
 
       <div className="pc-body">
