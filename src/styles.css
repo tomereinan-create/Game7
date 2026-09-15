@@ -10,6 +10,11 @@
   /* --- the room --- */
   --bg: #0b0a09;                 /* ground */
   --wash-lit: radial-gradient(ellipse at 50% -6%, #241f33 0%, #0b0a09 56%);
+  /* the front door's light — a warm spill at centre and a vignette on the corners — as one token,
+     so the Database and the player card stand in the same room the home page does */
+  --arena-light:
+    radial-gradient(ellipse 62% 74% at 50% 56%, rgb(255 226 178 / 0.16) 0%, rgb(255 214 150 / 0.07) 42%, rgb(0 0 0 / 0) 78%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.55) 100%);
   --panel: #0f0d0b;              /* header, rails, action bars */
   --surface: #12100e;            /* panel raised — cards */
   --surface-2: #1d1916;          /* panel inset — key rows, roster lists */
@@ -1741,7 +1746,12 @@ button {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: var(--bg);
+  /* THE HOME PAGE'S LIGHT, NOT A FLAT GROUND (his ruling: "Make both screens have the same black
+     gradient background as the home page"). The front door's glow and vignette, fixed to the
+     window so the whole screen is the lit room and a long list scrolls through it. */
+  background-color: var(--bg);
+  background-image: var(--arena-light);
+  background-attachment: fixed;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* a sheet stands its own dock, so it keeps the same floor the page does */
@@ -3320,7 +3330,9 @@ body:has(.sheet) { overflow: hidden; }
   display: flex;
   flex-direction: column;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--arena-light);
+  background-attachment: fixed;
 }
 .pc-term > .pc-win {
   display: flex;
@@ -3331,7 +3343,7 @@ body:has(.sheet) { overflow: hidden; }
   max-width: none;
   min-height: 0;
   overflow: hidden;
-  background: var(--bg);
+  background: transparent;
 }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 
@@ -6560,9 +6572,7 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-glow {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 62% 74% at 50% 56%, rgb(255 226 178 / 0.16) 0%, rgb(255 214 150 / 0.07) 42%, rgb(0 0 0 / 0) 78%),
-    radial-gradient(ellipse 120% 90% at 50% 50%, rgb(0 0 0 / 0) 40%, rgb(0 0 0 / 0.55) 100%);
+  background: var(--arena-light);
 }
 /**
  * THE FLOOR. Half a court seen from above, hoop at the bottom, and THE BASELINE IS NOT DRAWN
