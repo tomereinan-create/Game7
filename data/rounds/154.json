@@ -1,253 +1,301 @@
 {
-  "round": 154,
-  "agent": "ratings-to-off-def",
-  "status": "done",
-  "ruling": "Agree with 5",
-  "title": "the hub's volume floor stops being a cliff and becomes a ramp — recal_138's class function fades on BOTH of its bars, over the hub's own 20-point width, and the volume-48-to-68 creation class is paid (his release: \"Push 154-157\", which lifts recal_89's Chauncey Billups '06 pin)",
-  "subject": "Kevin Johnson '92",
+ "round": 154,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 5",
+ "title": "the hub's volume floor stops being a cliff and becomes a ramp — recal_138's class function fades on BOTH of its bars, over the hub's own 20-point width, and the volume-48-to-68 creation class is paid (his release: \"Push 154-157\", which lifts recal_89's Chauncey Billups '06 pin)",
+ "subject": "Kevin Johnson '92",
+ "scale": "off",
+ "target": 81,
+ "tol": 3,
+ "before": 75,
+ "after": 80,
+ "pipeline_version": 157,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "\\* min\\(1\\.0, max\\(0\\.0, \\(a\\['volume'\\] - \\(PD_V_HI - \\(HUB_FULL - HUB_GATE\\)\\)\\)",
+   "label": "THE ROUND ITSELF — recal_138's hub-role volume floor is now a RAMP over the hub's own width, not a step at PD_V_HI",
+   "note": "`if a['volume'] >= PD_V_HI else 0.0` -> `* min(1, max(0, (volume - 48) / 20))`: full at 68, nothing at 48, NO NEW CONSTANT"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "HUB_GATE, HUB_FULL = 60, 80",
+   "label": "recal_98's hub ramp and its WIDTH (20), untouched — the width the new ramp reuses, which is why the round adds no constant"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
+   "label": "recal_117's elite-passer band, untouched — its top is still the hub's full point, so the two creation channels now CROSS over a 20-point overlap instead of meeting at a discontinuity"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "HUB_K = 0\\.05",
+   "label": "recal_138's premium size, untouched — the round changes WHO is in the class, never what the class is paid"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50,_hubload\\)\\*a\\['efficiency'\\]/100\\)\\)",
+   "label": "recal_26's signature floor reading the hub's load (recal_138), untouched — it follows the class function, so the subject's signature term rises 3.95 -> 4.70 with his role"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived (recal_90's warning) — every card above the knee is byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
+   "label": "recal_89's LOCKED DIAL STATE — not one o_score weight moved; the round is a class function, not a reweighting"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.85",
+   "label": "the deviation tax law re-ratified on the moved pool (recal_59's harness, recal_126's midpoint rule)",
+   "note": "[re-pointed at integration] branch swept hunt 4.05 -> 3.67, crashOff 0.17 -> 0.70, crashDef 0.48 -> 0.98; on the merged 154-157 pool the once-only sweep from main's constants landed hunt 3.85, crashOff 0.55, crashDef 0.72"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Kevin Johnson '92",
+   "scale": "ovr",
+   "op": "~",
+   "value": 72,
+   "tol": 0,
+   "label": "the OVR the scout named: 68 -> 72, carried entirely by OFF through recal_83's offence-led blend (DEF 52 did not move)"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "THE RELEASED PIN, re-pinned at its new level by his word \"Push 154-157\". recal_89's 86 +-1 is in data/anchors_superseded.json; volume 66 put him one point under the old step and the ramp pays him the channel"
+  },
+  {
+   "card": "Chauncey Billups '07",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 0,
+   "label": "his '07, unpinned, moves with him 83 -> 88 — the same shape one season later"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "THE PIN ON THE OTHER SIDE OF THE OLD CLIFF (recal_138), volume 69: already at role 1.00 before the round and still at 1.00, so he moves by EXACTLY zero. The ramp is full at 68, which is what protects him"
+  },
+  {
+   "card": "Kevin Johnson '91",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "the subject's own other half, volume 74, unmoved — the pair gap closes from 15 to 10 and what is left is real decline (22.2/10.1/.604 BPM 6.6 against 19.7/10.7/.561 BPM 3.5)"
+  },
+  {
+   "card": "Kevin Johnson '94",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 0,
+   "label": "the third season, volume 71, unmoved at 80 — and the subject now reads 80 beside it, which is the whole point: two near-identical lines no longer 5 apart because of one point of volume"
+  },
+  {
+   "card": "Steve Nash '05",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 3,
+   "label": "recal_109's pin, volume 42 — six points below the ramp's foot, unmoved"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 84,
+   "tol": 4,
+   "label": "recal_130's pin, volume 31 — below the foot, unmoved, and still at its +4 edge"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "recal_117's pin, volume 36 — below the foot, unmoved. The claim that the two creation channels stay disjoint is measured here"
+  },
+  {
+   "card": "Mark Jackson '98",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "the passer band's floor case, volume 12 — every card below volume 48 is paid exactly zero hub, as before"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 2,
+   "label": "recal_121's pin — volume 98, surplus negative, role 0.00 by the SURPLUS half of the class function, which this round did not touch"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 70,
+   "tol": 1,
+   "label": "recal_55's own named card, a BIG: is_big short-circuits the ramp, so every big in the pool is byte-identical"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "the OFF summit is untouched — nothing above the knee moved and OFF_TOP was not re-derived"
+  },
+  {
+   "card": "Nikola Jokić '25",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "the same, from the big side"
+  },
+  {
+   "card": "Kevin Johnson '92",
+   "scale": "def",
+   "op": "==",
+   "value": 52,
+   "label": "DEF moved on ZERO cards in the pool — the round is entirely inside o_score"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Kevin Johnson '91",
+   "below": "Kevin Johnson '92",
+   "label": "the pair the ruling is about: 90 > 80. The decline is still there, it is just no longer doubled by a cliff"
+  },
+  {
+   "scale": "off",
+   "above": "Chauncey Billups '06",
+   "below": "Kevin Johnson '92",
+   "label": "the two cards the declined 154 could not separate keep their ORDER (91 > 80) — Tomer chose the LEVEL, which is what the conflict was always about"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '90",
+   "below": "Chauncey Billups '06",
+   "label": "93 > 91: the ramp does not let the released pin pass the card on the far side of the old cliff"
+  },
+  {
+   "scale": "off",
+   "above": "Nikola Jokić '25",
+   "below": "Tyrese Haliburton '24",
+   "label": "the largest mover in the round (+6) does not reach the summit: 99 > 87"
+  }
+ ],
+ "movers": {
   "scale": "off",
-  "target": 81,
-  "tol": 3,
-  "before": 75,
-  "after": 80,
-  "pipeline_version": 151,
-  "knobs": [
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "\\* min\\(1\\.0, max\\(0\\.0, \\(a\\['volume'\\] - \\(PD_V_HI - \\(HUB_FULL - HUB_GATE\\)\\)\\)",
-      "label": "THE ROUND ITSELF — recal_138's hub-role volume floor is now a RAMP over the hub's own width, not a step at PD_V_HI",
-      "note": "`if a['volume'] >= PD_V_HI else 0.0` -> `* min(1, max(0, (volume - 48) / 20))`: full at 68, nothing at 48, NO NEW CONSTANT"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "HUB_GATE, HUB_FULL = 60, 80",
-      "label": "recal_98's hub ramp and its WIDTH (20), untouched — the width the new ramp reuses, which is why the round adds no constant"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
-      "label": "recal_117's elite-passer band, untouched — its top is still the hub's full point, so the two creation channels now CROSS over a 20-point overlap instead of meeting at a discontinuity"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "HUB_K = 0\\.05",
-      "label": "recal_138's premium size, untouched — the round changes WHO is in the class, never what the class is paid"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50,_hubload\\)\\*a\\['efficiency'\\]/100\\)\\)",
-      "label": "recal_26's signature floor reading the hub's load (recal_138), untouched — it follows the class function, so the subject's signature term rises 3.95 -> 4.70 with his role"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
-      "label": "the band anchors are NOT re-derived (recal_90's warning) — every card above the knee is byte-identical"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
-      "label": "recal_89's LOCKED DIAL STATE — not one o_score weight moved; the round is a class function, not a reweighting"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.67",
-      "label": "the deviation tax law re-ratified on the moved pool (recal_59's harness, recal_126's midpoint rule)",
-      "note": "hunt 4.05 -> 3.67, crashOff 0.17 -> 0.70, crashDef 0.48 -> 0.98 — all three swept from main's constants and set at their true midpoints"
-    }
-  ],
-  "expect": [
-    {
-      "card": "Kevin Johnson '92",
-      "scale": "ovr",
-      "op": "~",
-      "value": 72,
-      "tol": 0,
-      "label": "the OVR the scout named: 68 -> 72, carried entirely by OFF through recal_83's offence-led blend (DEF 52 did not move)"
-    },
-    {
-      "card": "Chauncey Billups '06",
-      "scale": "off",
-      "op": "~",
-      "value": 91,
-      "tol": 1,
-      "label": "THE RELEASED PIN, re-pinned at its new level by his word \"Push 154-157\". recal_89's 86 +-1 is in data/anchors_superseded.json; volume 66 put him one point under the old step and the ramp pays him the channel"
-    },
-    {
-      "card": "Chauncey Billups '07",
-      "scale": "off",
-      "op": "~",
-      "value": 88,
-      "tol": 0,
-      "label": "his '07, unpinned, moves with him 83 -> 88 — the same shape one season later"
-    },
-    {
-      "card": "Magic Johnson '90",
-      "scale": "off",
-      "op": "~",
-      "value": 93,
-      "tol": 1,
-      "label": "THE PIN ON THE OTHER SIDE OF THE OLD CLIFF (recal_138), volume 69: already at role 1.00 before the round and still at 1.00, so he moves by EXACTLY zero. The ramp is full at 68, which is what protects him"
-    },
-    {
-      "card": "Kevin Johnson '91",
-      "scale": "off",
-      "op": "~",
-      "value": 90,
-      "tol": 0,
-      "label": "the subject's own other half, volume 74, unmoved — the pair gap closes from 15 to 10 and what is left is real decline (22.2/10.1/.604 BPM 6.6 against 19.7/10.7/.561 BPM 3.5)"
-    },
-    {
-      "card": "Kevin Johnson '94",
-      "scale": "off",
-      "op": "~",
-      "value": 80,
-      "tol": 0,
-      "label": "the third season, volume 71, unmoved at 80 — and the subject now reads 80 beside it, which is the whole point: two near-identical lines no longer 5 apart because of one point of volume"
-    },
-    {
-      "card": "Steve Nash '05",
-      "scale": "off",
-      "op": "~",
-      "value": 86,
-      "tol": 3,
-      "label": "recal_109's pin, volume 42 — six points below the ramp's foot, unmoved"
-    },
-    {
-      "card": "John Stockton '01",
-      "scale": "off",
-      "op": "~",
-      "value": 84,
-      "tol": 4,
-      "label": "recal_130's pin, volume 31 — below the foot, unmoved, and still at its +4 edge"
-    },
-    {
-      "card": "John Stockton '90",
-      "scale": "off",
-      "op": "~",
-      "value": 82,
-      "tol": 3,
-      "label": "recal_117's pin, volume 36 — below the foot, unmoved. The claim that the two creation channels stay disjoint is measured here"
-    },
-    {
-      "card": "Mark Jackson '98",
-      "scale": "off",
-      "op": "~",
-      "value": 52,
-      "tol": 3,
-      "label": "the passer band's floor case, volume 12 — every card below volume 48 is paid exactly zero hub, as before"
-    },
-    {
-      "card": "Russell Westbrook '15",
-      "scale": "off",
-      "op": "~",
-      "value": 85,
-      "tol": 2,
-      "label": "recal_121's pin — volume 98, surplus negative, role 0.00 by the SURPLUS half of the class function, which this round did not touch"
-    },
-    {
-      "card": "Domantas Sabonis '21",
-      "scale": "off",
-      "op": "~",
-      "value": 70,
-      "tol": 1,
-      "label": "recal_55's own named card, a BIG: is_big short-circuits the ramp, so every big in the pool is byte-identical"
-    },
-    {
-      "card": "Giannis Antetokounmpo '25",
-      "scale": "off",
-      "op": "==",
-      "value": 99,
-      "label": "the OFF summit is untouched — nothing above the knee moved and OFF_TOP was not re-derived"
-    },
-    {
-      "card": "Nikola Jokić '25",
-      "scale": "off",
-      "op": "==",
-      "value": 99,
-      "label": "the same, from the big side"
-    },
-    {
-      "card": "Kevin Johnson '92",
-      "scale": "def",
-      "op": "==",
-      "value": 52,
-      "label": "DEF moved on ZERO cards in the pool — the round is entirely inside o_score"
-    }
-  ],
-  "order": [
-    {
-      "scale": "off",
-      "above": "Kevin Johnson '91",
-      "below": "Kevin Johnson '92",
-      "label": "the pair the ruling is about: 90 > 80. The decline is still there, it is just no longer doubled by a cliff"
-    },
-    {
-      "scale": "off",
-      "above": "Chauncey Billups '06",
-      "below": "Kevin Johnson '92",
-      "label": "the two cards the declined 154 could not separate keep their ORDER (91 > 80) — Tomer chose the LEVEL, which is what the conflict was always about"
-    },
-    {
-      "scale": "off",
-      "above": "Magic Johnson '90",
-      "below": "Chauncey Billups '06",
-      "label": "93 > 91: the ramp does not let the released pin pass the card on the far side of the old cliff"
-    },
-    {
-      "scale": "off",
-      "above": "Nikola Jokić '25",
-      "below": "Tyrese Haliburton '24",
-      "label": "the largest mover in the round (+6) does not reach the summit: 99 > 87"
-    }
-  ],
-  "movers": {
-    "scale": "off",
-    "count": 228,
-    "max_abs": 6,
-    "top": [
-      ["Tyrese Haliburton '24", 81, 87],
-      ["Chauncey Billups '06", 86, 91],
-      ["James Harden '23", 76, 81],
-      ["Deron Williams '08", 79, 84],
-      ["Chris Paul '06", 71, 76],
-      ["Baron Davis '02", 66, 71],
-      ["Terrell Brandon '00", 74, 79],
-      ["Chauncey Billups '07", 83, 88],
-      ["Steve Nash '02", 84, 89],
-      ["Kevin Johnson '92", 75, 80],
-      ["Chauncey Billups '08", 85, 89],
-      ["Mark Price '90", 84, 88]
-    ]
-  },
-  "top12": {
-    "scale": "off",
-    "cards": [
-      "Giannis Antetokounmpo '20",
-      "Giannis Antetokounmpo '23",
-      "Giannis Antetokounmpo '24",
-      "Giannis Antetokounmpo '25",
-      "LeBron James '09",
-      "LeBron James '10",
-      "LeBron James '12",
-      "Nikola Jokić '22",
-      "Nikola Jokić '24",
-      "Nikola Jokić '25",
-      "Nikola Jokić '26",
-      "Shai Gilgeous-Alexander '26"
-    ]
-  },
-  "cost": [
-    "A PIN WAS RELEASED BY TOMER, NOT BY THE AGENT. recal_89's Chauncey Billups '06 off 86 +-1 is moved to data/anchors_superseded.json with the reason 'released by Tomer on round 154 (Push 154-157): the hub floor ramp pays the volume-60-to-68 creation class', and he is re-pinned at off 91 +-1 (round 154). The previous, DECLINED 154 proved over the whole family that no ramp monotone in volume can separate Billups (volume 66, playvol 88, efficiency 92) from the subject (65, 91, 76): the last ramp foot Billups survives, 65.5, pays the subject exactly zero. So the round could only land once he chose the level, and he did.",
-    "TWO NEW ANCHORS: Chauncey Billups '06 off 91 +-1 (round 154) and Kevin Johnson '92 off 81 +-3 (round 154). The subject reads 80, which is inside the tolerance; the pin stays at 81 +-3 rather than being moved down to the reached value, because 81 is the number the ruling names. 151 anchors, 0 failing, mean |error| 0.79.",
-    "THE FOOTPRINT: 228 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +1.83, max +6; 184 OVRs follow; DEF and every attribute move on ZERO; every mover has volume between 49 and 67, which is the ramp's window and nothing else. OFF_TOP and DEF_TOP are NOT re-derived, so no card above the knee moves and recal_90's warning does not apply to this round. data/build_ratings.py is untouched — the attributes are not in dispute.",
-    "THE DEVIATION TAX LAW COST THREE CONSTANTS. The 228 risers are guards and wings in the harness's ovr>=55 pool, so the fives it draws got better at offence and all three taxes whose benefit reads an offensive mismatch fell out of band AT ONCE — hunt on the ORACLE edge (+0.4165 at 4.05) and crash off / crash def on the BLIND edge (-0.2014 at .17, -0.0094 at .48), the two edges in opposite directions in the same round for the first time. Each was swept ONCE from main's constant and set at its true midpoint by recal_126's rule: hunt 4.05 -> 3.67 (feasible 3.510-3.834), crashOff 0.17 -> 0.70 (feasible .327-1.067), crashDef 0.48 -> 0.98 (feasible .858-1.101). All nine rows pass. Hunt's thirteenth move, and it walks back down the jump recal_151 made it take.",
-    "TEAM DIALS: three adjacent swaps in the all-time franchise-fives tier, no dial value changed on any other level. All-time Pistons and Knicks trade rounds 4 and 5 (Billups '06 is the Piston), Trail Blazers and Nuggets trade 7 and 8, Raptors and Bucks trade 14 and 15. Two cards in the League tier's opponents.json move one point of OVR each. No five's dial moved enough to change a tier's difficulty band."
-  ],
-  "notes": [
-    "WHAT THE RULING WAS REALLY ABOUT, in one term. The subject's o_score before: the hub channel paid him 0.000 and his signature term read 3.95 on a volume floor of 50. recal_138 gave the hub class TWO tests — a creation SURPLUS (playvol - volume, deliberately ramped 'so it is a fade and not a step') and a volume FLOOR (volume >= 68, left as a step). Kevin Johnson '92 passes the first at 0.85 and failed the second by three points of volume. After the round his role reads 0.85 x 0.85 = 0.7225, the premium is +3.867 and the signature floor lifts to 58.79: o_score 81.12 -> 85.82, OFF 75 -> 80.",
-    "WHY A RAMP AND NOT A LOWER STEP. A lower step moves the cliff, it does not remove it; the previous 154 measured the cliff's width at 5 printed OFF points for a guard at flat minutes, which is the same size wherever it is put. The ramp is the form recal_138 already chose for the OTHER half of the same class function and it reuses that half's width (HUB_FULL - HUB_GATE = 20), so the round introduces no constant and invents no shape. recal_138's own COST named this seam (Nash '03 vs '05) as OPEN rather than accepted.",
-    "THE DISJOINTNESS CLAIM IS NOT WEAKENED, IT IS MADE CONTINUOUS. recal_117's elite-passer gate ramps to exactly zero going UP at volume 68; the hub now ramps to exactly zero going DOWN at 48. Between 48 and 68 both channels pay a fraction, and the fractions sum to less than either channel alone would pay at full size — the same overlap construction recal_112/109 use across playvol 70. No card is paid twice for one assist rate at any volume, which is the property recal_138's block claims and which the step was only one way of getting.",
-    "EVERY BIG IS BYTE-IDENTICAL. `is_big(p)` short-circuits the whole expression and returns role 1.00, exactly as recal_55 wrote it, so no centre reads the volume ramp at all. Measured: 0 bigs moved.",
-    "THE SUBJECT LANDS AT 80 AGAINST A TARGET OF 81. That is inside the orchestrator's 81 +-3 and it is the honest reading of the form, not a value tuned to the number: the ramp's shape was fixed by the constants already in the file before the subject was read. Nothing in the round is a per-player override; the change is a class function evaluated on every perimeter card in the pool."
+  "count": 228,
+  "max_abs": 6,
+  "top": [
+   [
+    "Tyrese Haliburton '24",
+    81,
+    87
+   ],
+   [
+    "Chauncey Billups '06",
+    86,
+    91
+   ],
+   [
+    "James Harden '23",
+    76,
+    81
+   ],
+   [
+    "Deron Williams '08",
+    79,
+    84
+   ],
+   [
+    "Chris Paul '06",
+    71,
+    76
+   ],
+   [
+    "Baron Davis '02",
+    66,
+    71
+   ],
+   [
+    "Terrell Brandon '00",
+    74,
+    79
+   ],
+   [
+    "Chauncey Billups '07",
+    83,
+    88
+   ],
+   [
+    "Steve Nash '02",
+    84,
+    89
+   ],
+   [
+    "Kevin Johnson '92",
+    75,
+    80
+   ],
+   [
+    "Chauncey Billups '08",
+    85,
+    89
+   ],
+   [
+    "Mark Price '90",
+    84,
+    88
+   ]
   ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '22",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25",
+   "Nikola Jokić '26",
+   "Shai Gilgeous-Alexander '26"
+  ]
+ },
+ "cost": [
+  "A PIN WAS RELEASED BY TOMER, NOT BY THE AGENT. recal_89's Chauncey Billups '06 off 86 +-1 is moved to data/anchors_superseded.json with the reason 'released by Tomer on round 154 (Push 154-157): the hub floor ramp pays the volume-60-to-68 creation class', and he is re-pinned at off 91 +-1 (round 154). The previous, DECLINED 154 proved over the whole family that no ramp monotone in volume can separate Billups (volume 66, playvol 88, efficiency 92) from the subject (65, 91, 76): the last ramp foot Billups survives, 65.5, pays the subject exactly zero. So the round could only land once he chose the level, and he did.",
+  "TWO NEW ANCHORS: Chauncey Billups '06 off 91 +-1 (round 154) and Kevin Johnson '92 off 81 +-3 (round 154). The subject reads 80, which is inside the tolerance; the pin stays at 81 +-3 rather than being moved down to the reached value, because 81 is the number the ruling names. 151 anchors, 0 failing, mean |error| 0.79.",
+  "THE FOOTPRINT: 228 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +1.83, max +6; 184 OVRs follow; DEF and every attribute move on ZERO; every mover has volume between 49 and 67, which is the ramp's window and nothing else. OFF_TOP and DEF_TOP are NOT re-derived, so no card above the knee moves and recal_90's warning does not apply to this round. data/build_ratings.py is untouched — the attributes are not in dispute.",
+  "THE DEVIATION TAX LAW COST THREE CONSTANTS. The 228 risers are guards and wings in the harness's ovr>=55 pool, so the fives it draws got better at offence and all three taxes whose benefit reads an offensive mismatch fell out of band AT ONCE — hunt on the ORACLE edge (+0.4165 at 4.05) and crash off / crash def on the BLIND edge (-0.2014 at .17, -0.0094 at .48), the two edges in opposite directions in the same round for the first time. Each was swept ONCE from main's constant and set at its true midpoint by recal_126's rule: hunt 4.05 -> 3.67 (feasible 3.510-3.834), crashOff 0.17 -> 0.70 (feasible .327-1.067), crashDef 0.48 -> 0.98 (feasible .858-1.101). All nine rows pass. Hunt's thirteenth move, and it walks back down the jump recal_151 made it take.",
+  "TEAM DIALS: three adjacent swaps in the all-time franchise-fives tier, no dial value changed on any other level. All-time Pistons and Knicks trade rounds 4 and 5 (Billups '06 is the Piston), Trail Blazers and Nuggets trade 7 and 8, Raptors and Bucks trade 14 and 15. Two cards in the League tier's opponents.json move one point of OVR each. No five's dial moved enough to change a tier's difficulty band."
+ ],
+ "notes": [
+  "WHAT THE RULING WAS REALLY ABOUT, in one term. The subject's o_score before: the hub channel paid him 0.000 and his signature term read 3.95 on a volume floor of 50. recal_138 gave the hub class TWO tests — a creation SURPLUS (playvol - volume, deliberately ramped 'so it is a fade and not a step') and a volume FLOOR (volume >= 68, left as a step). Kevin Johnson '92 passes the first at 0.85 and failed the second by three points of volume. After the round his role reads 0.85 x 0.85 = 0.7225, the premium is +3.867 and the signature floor lifts to 58.79: o_score 81.12 -> 85.82, OFF 75 -> 80.",
+  "WHY A RAMP AND NOT A LOWER STEP. A lower step moves the cliff, it does not remove it; the previous 154 measured the cliff's width at 5 printed OFF points for a guard at flat minutes, which is the same size wherever it is put. The ramp is the form recal_138 already chose for the OTHER half of the same class function and it reuses that half's width (HUB_FULL - HUB_GATE = 20), so the round introduces no constant and invents no shape. recal_138's own COST named this seam (Nash '03 vs '05) as OPEN rather than accepted.",
+  "THE DISJOINTNESS CLAIM IS NOT WEAKENED, IT IS MADE CONTINUOUS. recal_117's elite-passer gate ramps to exactly zero going UP at volume 68; the hub now ramps to exactly zero going DOWN at 48. Between 48 and 68 both channels pay a fraction, and the fractions sum to less than either channel alone would pay at full size — the same overlap construction recal_112/109 use across playvol 70. No card is paid twice for one assist rate at any volume, which is the property recal_138's block claims and which the step was only one way of getting.",
+  "EVERY BIG IS BYTE-IDENTICAL. `is_big(p)` short-circuits the whole expression and returns role 1.00, exactly as recal_55 wrote it, so no centre reads the volume ramp at all. Measured: 0 bigs moved.",
+  "THE SUBJECT LANDS AT 80 AGAINST A TARGET OF 81. That is inside the orchestrator's 81 +-3 and it is the honest reading of the form, not a value tuned to the number: the ramp's shape was fixed by the constants already in the file before the subject was read. Nothing in the round is a per-player override; the change is a class function evaluated on every perimeter card in the pool."
+ ]
 }

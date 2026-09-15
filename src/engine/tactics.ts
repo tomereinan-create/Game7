@@ -495,6 +495,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * room), crash off .17 -> 0.70 (blind -0.528, oracle +0.598) and crash def .48 -> 0.98 (blind -0.393,
  * oracle +0.540). That is hunt's THIRTEENTH move and it walks straight back down the jump r151 made it
  * take. The six others held their bands untouched. All nine pass.
+ * recal_154-157 INTEGRATION SWEEP (pipeline 157): the four rounds were folded onto main and the taxes were swept ONCE from
+ * main's constants (hunt 4.05, crashOff 0.17, crashDef 0.48), superseding the per-branch figures (154: 3.67/0.70/0.98, 155: 3.79).
+ * On the merged pool all three broke at once: hunt on the ORACLE edge at 4.05 (+0.44) and on the BLIND edge at 3.67 (-0.27),
+ * crashOff on the blind edge at 0.17 (-0.29), crashDef on the blind edge at 0.48 (-0.18) and on the oracle edge at 0.98 (+0.43).
+ * Set at the middle of each bracketed window: hunt 3.85 (blind -0.41, oracle +0.52), crashOff 0.55 (-0.53, +0.57),
+ * crashDef 0.72 (-0.38, +0.52). The 641 glue-floor risers (155) and 228 hub-ramp risers (154) are guards in the ovr>=55 pool,
+ * so every tax whose benefit reads an offensive mismatch moved; the six other taxes held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -502,9 +509,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.79,
-  crashOff: 0.17,
-  crashDef: 0.48,
+  hunt: 3.85,
+  crashOff: 0.55,
+  crashDef: 0.72,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

@@ -1,131 +1,346 @@
 {
-  "round": 155,
-  "agent": "ratings-to-off-def",
-  "status": "done",
-  "ruling": "Agree with 6",
-  "title": "the glue floor: a low-usage starter's possession work is paid against what he converts it at, and defensive rebounding stops being worth zero on offence",
-  "scale": "ovr",
-  "subject": "Josh Hart '25",
-  "target": 63,
-  "tol": 3,
-  "before": 52,
-  "after": 63,
-  "pipeline_version": 151,
-  "knobs": [
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "GL_V_LO, GL_V_HI = 25\\.0, 55\\.0",
-      "label": "the glue floor's usage gate — recal_112's own low-usage pair, reused unchanged",
-      "note": "new: full at volume 25, nothing at 55, where recal_131's paint floor begins"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "GL_K = 1\\.070",
-      "label": "the glue floor's total weight",
-      "note": "new: 1.07, between recal_91's big floor (1.16) and recal_64's wing floor (0.72)"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\]\\)",
-      "label": "half the averaged possession work (drb/orb/playvol), half the conversion",
-      "note": "new term, applied in recal_118's correction form so it can only lift"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "EF_3P_HI - a\\['3pt'\\]\\) / \\(EF_3P_HI - EF_3P_LO\\)\\)\\) \\* _load",
-      "label": "the shooter exclusion (recal_112's 3pt 68->40 gate) times recal_96's load share",
-      "note": "the arc spacer is paid at recal_64/118's off-ball floor, not here"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.79",
-      "label": "the hunt deviation tax, re-swept on the moved pool (recal_59's standing law)",
-      "note": "4.05 -> 3.79, the midpoint of the feasible window 3.72..3.86"
-    }
-  ],
-  "expect": [
-    { "card": "Josh Hart '25", "scale": "off", "op": "~", "value": 64, "tol": 0, "label": "the subject's OFF, the twenty points the blend demanded" },
-    { "card": "Josh Hart '25", "scale": "def", "op": "~", "value": 60, "tol": 0, "label": "DEF is untouched — this round moved no defensive weight" },
-    { "card": "Josh Hart '24", "scale": "ovr", "op": "<=", "value": 57, "tol": 0, "label": "THE STOPPING PIN: at 58 he enters the Knicks '24 five and breaks recal_119's BOS rank" },
-    { "card": "Kyle Korver '15", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "recal_89 — held by the 3pt exclusion gate, which is load-bearing here" },
-    { "card": "Steve Kerr '96", "scale": "off", "op": "~", "value": 61, "tol": 1, "label": "recal_89" },
-    { "card": "Reggie Miller '97", "scale": "off", "op": "~", "value": 87, "tol": 1, "label": "recal_89" },
-    { "card": "Clint Capela '17", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "recal_51 — a big, excluded by is_big" },
-    { "card": "Clint Capela '18", "scale": "off", "op": "~", "value": 61, "tol": 1, "label": "recal_52 — a big, excluded by is_big" },
-    { "card": "Cedric Maxwell '80", "scale": "off", "op": "~", "value": 67, "tol": 4, "label": "recal_112 — a big, unmoved at 68" },
-    { "card": "Mark Jackson '98", "scale": "off", "op": "~", "value": 55, "tol": 3, "label": "recal_109 — floor 48.3 under a standard path of 55.9, never binds" },
-    { "card": "Mark Jackson '99", "scale": "off", "op": "~", "value": 54, "tol": 3, "label": "recal_117" },
-    { "card": "OG Anunoby '21", "scale": "off", "op": "~", "value": 65, "tol": 2, "label": "recal_91 — a big, unmoved at 63" },
-    { "card": "Dorian Finney-Smith '20", "scale": "off", "op": "~", "value": 55, "tol": 3, "label": "recal_118 — a big, unmoved at 52" },
-    { "card": "Bruce Bowen '06", "scale": "off", "op": "~", "value": 45, "tol": 3, "label": "recal_64 — floor 34.2 under a standard path of 48.4" },
-    { "card": "Tony Snell '18", "scale": "off", "op": "~", "value": 50, "tol": 3, "label": "recal_64" },
-    { "card": "Nenê '11", "scale": "off", "op": "~", "value": 66, "tol": 2, "label": "recal_139 — a big, unmoved" },
-    { "card": "Draymond Green '16", "scale": "def", "op": "~", "value": 96, "tol": 2, "label": "recal_62 — DEF moved on zero cards" },
-    { "card": "John Stockton '01", "scale": "off", "op": "~", "value": 80, "tol": 4, "label": "recal_130" },
-    { "card": "Michael Jordan '89", "scale": "off", "op": "~", "value": 99, "tol": 1, "label": "recal_102 — the summit is untouched" },
-    { "card": "Stephen Curry '16", "scale": "off", "op": "~", "value": 96, "tol": 2, "label": "a star who must not move" },
-    { "card": "Nikola Jokić '25", "scale": "off", "op": "~", "value": 99, "tol": 1, "label": "a star who must not move" }
-  ],
-  "order": [
-    { "scale": "ovr", "above": "Josh Hart '25", "below": "Josh Hart '24", "label": "the good season must read above the bad-shooting one — the conversion half is what says so" },
-    { "scale": "off", "above": "Josh Hart '25", "below": "Delon Wright '23", "label": "the 37.6-minute starter above the 24-minute one on the same shape" },
-    { "scale": "off", "above": "Josh Hart '25", "below": "Gary Payton II '22", "label": "load share: 37.6 mpg against 17.6" },
-    { "scale": "off", "above": "Bojan Bogdanović '24", "below": "Josh Hart '24", "label": "the Knicks '24 best five must not change — recal_119's rank pin has zero slack" }
-  ],
-  "movers": {
-    "scale": "off",
-    "count": 641,
-    "max_abs": 24,
-    "top": [
-      ["Andre Iguodala '05", 42, 66],
-      ["Cedric Maxwell '86", 48, 70],
-      ["Bob Gross '82", 37, 58],
-      ["T.R. Dunn '82", 29, 50],
-      ["Josh Hart '25", 44, 64],
-      ["Javonte Green '22", 41, 60],
-      ["Andre Iguodala '17", 41, 59],
-      ["Thabo Sefolosha '16", 34, 52],
-      ["Josh Hart '23", 43, 60],
-      ["Josh Hart '24", 34, 51],
-      ["Michael Cooper '84", 39, 55],
-      ["Josh Childress '06", 50, 66]
-    ]
+ "round": 155,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 6",
+ "title": "the glue floor: a low-usage starter's possession work is paid against what he converts it at, and defensive rebounding stops being worth zero on offence",
+ "scale": "ovr",
+ "subject": "Josh Hart '25",
+ "target": 63,
+ "tol": 3,
+ "before": 52,
+ "after": 63,
+ "pipeline_version": 157,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_V_LO, GL_V_HI = 25\\.0, 55\\.0",
+   "label": "the glue floor's usage gate — recal_112's own low-usage pair, reused unchanged",
+   "note": "new: full at volume 25, nothing at 55, where recal_131's paint floor begins"
   },
-  "top12": {
-    "scale": "off",
-    "cards": [
-      "Giannis Antetokounmpo '20",
-      "Giannis Antetokounmpo '23",
-      "Giannis Antetokounmpo '24",
-      "Giannis Antetokounmpo '25",
-      "LeBron James '09",
-      "LeBron James '10",
-      "LeBron James '12",
-      "Nikola Jokić '22",
-      "Nikola Jokić '24",
-      "Nikola Jokić '25",
-      "Nikola Jokić '26",
-      "Shai Gilgeous-Alexander '26"
-    ]
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_K = 1\\.070",
+   "label": "the glue floor's total weight",
+   "note": "new: 1.07, between recal_91's big floor (1.16) and recal_64's wing floor (0.72)"
   },
-  "cost": [
-    "THE CAP IS NOT THE FENCE, and the dispatch asked in so many words. With DEF 60 the perimeter offence cap max(o_ovr + 10, 0.85 x d_ovr) read 54 against a blend of 52 — it was never binding on this card, and at OFF 64 it reads 74. What fenced him is recal_104's blend itself: at DEF 60, OVR 63 requires OFF 64 and OVR 60 requires OFF 60. The scout's 'under the o_ovr+10 cap OVR 63 needs OFF >= 53' is the cap's necessary condition only; the blend's is eleven points higher. The ruling was therefore a demand for TWENTY printed OFF points, not for eleven.",
-    "1.08 IS THE MEASURED CEILING OF THIS TERM and the stopping pin is recal_119's `BOS '24 OFF rank <= 10`, which reads exactly 10 of 26 and has ZERO slack. Above 1.08 the subject's OWN '24 card passes Bojan Bogdanović '24 (OVR 58) and enters the Knicks '24 best five, which takes New York past Boston on offence. Every size from 1.00 to 1.08 holds all 150 anchors; 1.07 is the smaller-collateral of the two that put the subject on 63.",
-    "A LATER ROUND THAT MOVES Josh Hart '24 OR Bojan Bogdanović '24 RE-OPENS THAT PIN. The margin is one OVR point (57 against 58) and it is held by the conversion half of this floor, nothing else.",
-    "THE HUNT DEVIATION TAX WAS RE-SWEPT, its thirteenth move: 4.05 -> 3.79 on the moved pool (feasible 3.72..3.86, midpoint by recal_126's rule). This is the mirror of recal_151's break — that was a defensive round and hunt went shallow on the BLIND edge; this is an offensive one and it went short on the ORACLE edge. The seven other taxes held their bands.",
-    "TEAM DIALS: one five changed on the whole wheel. Knicks '25 offdial 56 -> 65, defdial 55 -> 57, ovrdial 56 -> 61 (off rank 7th -> 6th of 26), because Josh Hart '25 now displaces Miles McBride '25 in their best five. Celtics '24 (51/79/65, 15th on raw off, rank pin 10th), Celtics '25 (53/67/60), Thunder '26 (70/87/78), Pistons '26, 76ers '26, Warriors '17 and Bulls '96 are all BYTE-IDENTICAL. Gauges were not re-derived.",
-    "NEITHER BAND ANCHOR WAS RE-DERIVED. OFF_TOP 102.75 and DEF_TOP 104.25 are untouched, so no card above the 93 knee moves (recal_90's warning does not apply to this round). The subject's raw is 63.69, far below the knee, where band() is the identity.",
-    "is_big DECIDES THE CLASS AND IT IS NOT ALWAYS THE SAME ACROSS ONE MAN'S CAREER. Cedric Maxwell '80 is a big by the shape clause and is excluded; his '83-'87 seasons are not, and they are among the largest movers (+17 to +22 OFF). That is is_big's existing behaviour, inherited rather than introduced, but it is the reason one pinned card sits still while four of the same man's seasons move."
-  ],
-  "notes": [
-    "THE HONEST TERM, in the scout's own words: 'no channel pays low-usage glue'. Decomposed, Josh Hart '25's o_score is 47.12 and its two largest terms are playvol 58 x 0.19 = 11.02 and volume 13 x 0.26 = 3.38. He uses 15.2% of the possessions he is on the floor for, so the load channel — the biggest weight in the vector — pays him almost nothing, and the three zone terms pay a man who does not shoot. The bar that describes him is not in the sum at all: drb 83 is worth EXACTLY ZERO in o_score. `drb` appears once in the whole file, in d_score at 0.07.",
-    "THE TERM. Three possession bars — the defensive glass, the offensive glass, and the creation he does with the ball he did not shoot — are AVERAGED, because they are three readings of one statement (recal_139's rule, applied before the term instead of after it). That average is paid HALF AND HALF against efficiency, so the work is priced at what the man does with it. Written in recal_118's correction form `std + f x (floor - std)`, so it can only ever LIFT and a card whose standard path already exceeds it does not move.",
-    "EVERY GATE IS A LINE THIS FILE ALREADY DREW. volume 55 -> 25 is recal_112's own pair and 55 is where recal_131's paint-evidence floor begins, so the two are disjoint by construction. 3pt 68 -> 40 is recal_112's own exclusion gate reused for its own reason — 'efficiency earned from the arc is paid there', there being recal_64/118's off-ball floor. `not is_big` because every glass channel this file has built is on the big branch. load_share is recal_96's own line. No new constant enters except the size.",
-    "THE CONVERSION HALF IS NOT DECORATION, it is what makes the term reach the subject at all. A floor that paid the possession work alone would price Josh Hart '24 — the same job, the same minutes, at .513 true shooting — within two points of '25 at .611, and the even four-bar form is provably capped at OVR 59 for the subject because of exactly that: measured, K <= 0.2325 for every anchor to hold, which puts him on 59 and outside his band.",
-    "THE 3pt GATE IS LOAD-BEARING AND WAS MEASURED, not assumed. Kyle Korver '15 (pinned off 58 +-1) is a perimeter card at volume 10 whose glue floor computes 64.7 against a standard path of 62.4; without the gate he takes +2 and leaves his band at every size that reaches the subject. With it he takes exactly zero.",
-    "WHY NOT THE DIALS, both closed by his own record. The volume weight (0.26) is recal_112's measured WALL — 'the efficiency of a low-usage man cannot be paid through a weight that every high-usage anchor also rides'; 0.13 already breaks Moses Malone '82 and reaching a low-usage card breaks twenty-five anchors. recal_64/118's off-ball floor computes 30.2 for the subject at a full share and would not bind even at 3pt 68, so the arc ramp is not the cause either. Neither was re-opened.",
-    "MEASURED on the whole pool: 641 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, max +24, mean +5.10; OVR follows on 567, max +16. DEF and every attribute move on ZERO. The top 12 by OFF is identical, the top 50 by OVR has no entrant, no leaver and no rank flip. The movers are one class and read like it — T.R. Dunn '82-'84, Bob Gross '81/'82, Danny Vranes '83, Thabo Sefolosha '11/'16, Andre Iguodala '05/'14/'16/'17, Michael Cooper '83/'84, Javonte Green '22, Josh Childress '06, Alonzo Gee '16, Ira Newble '02.",
-    "THE SCOUT'S CLASS LIST, after: Josh Hart '25 OVR 52 -> 63, '24 48 -> 57, '23 52 -> 61, '26 56 -> 56 (unmoved — he shot 3pt 69 that year and is paid at the spacer floor instead). Boris Diaw '10 54 -> 60, Shaun Livingston '14 54 -> 58, Andre Iguodala '14 67 -> 73, Delon Wright '23 50 -> 54, Gary Payton II '22 52 -> 56. Ricky Rubio '14 (54) and T.J. McConnell '24 (51) do not move at all: Rubio's standard path already exceeds his floor and McConnell is volume 54, at the top of the usage gate where the standard channels have taken over.",
-    "HIS VORP MISS IS GONE. Josh Hart '25 was the loudest VORP outlier on the board at 5.4 class sigma; he no longer appears in the scout's OVR-vs-VORP or OVR-vs-BPM lists at all, and no card this round raised appears in them as an over-reading."
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\]\\)",
+   "label": "half the averaged possession work (drb/orb/playvol), half the conversion",
+   "note": "new term, applied in recal_118's correction form so it can only lift"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "EF_3P_HI - a\\['3pt'\\]\\) / \\(EF_3P_HI - EF_3P_LO\\)\\)\\) \\* _load",
+   "label": "the shooter exclusion (recal_112's 3pt 68->40 gate) times recal_96's load share",
+   "note": "the arc spacer is paid at recal_64/118's off-ball floor, not here"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.85",
+   "label": "the hunt deviation tax, re-swept on the moved pool (recal_59's standing law)",
+   "note": "[re-pointed at integration] branch swept 4.05 -> 3.79 (window 3.72..3.86); on the merged 154-157 pool the once-only sweep landed hunt 3.85"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Josh Hart '25",
+   "scale": "off",
+   "op": "~",
+   "value": 64,
+   "tol": 0,
+   "label": "the subject's OFF, the twenty points the blend demanded"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "def",
+   "op": "~",
+   "value": 60,
+   "tol": 0,
+   "label": "DEF is untouched — this round moved no defensive weight"
+  },
+  {
+   "card": "Josh Hart '24",
+   "scale": "ovr",
+   "op": "<=",
+   "value": 57,
+   "tol": 0,
+   "label": "THE STOPPING PIN: at 58 he enters the Knicks '24 five and breaks recal_119's BOS rank"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_89 — held by the 3pt exclusion gate, which is load-bearing here"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_89"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "recal_89"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_51 — a big, excluded by is_big"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_52 — a big, excluded by is_big"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 4,
+   "label": "recal_112 — a big, unmoved at 68"
+  },
+  {
+   "card": "Mark Jackson '98",
+   "scale": "off",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_109 — floor 48.3 under a standard path of 55.9, never binds"
+  },
+  {
+   "card": "Mark Jackson '99",
+   "scale": "off",
+   "op": "~",
+   "value": 54,
+   "tol": 3,
+   "label": "recal_117"
+  },
+  {
+   "card": "OG Anunoby '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "recal_91 — a big, unmoved at 63"
+  },
+  {
+   "card": "Dorian Finney-Smith '20",
+   "scale": "off",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_118 — a big, unmoved at 52"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 3,
+   "label": "recal_64 — floor 34.2 under a standard path of 48.4"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 3,
+   "label": "recal_64"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 66,
+   "tol": 2,
+   "label": "recal_139 — a big, unmoved"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "recal_62 — DEF moved on zero cards"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 4,
+   "label": "recal_130"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_102 — the summit is untouched"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "a star who must not move"
+  },
+  {
+   "card": "Nikola Jokić '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "a star who must not move"
+  }
+ ],
+ "order": [
+  {
+   "scale": "ovr",
+   "above": "Josh Hart '25",
+   "below": "Josh Hart '24",
+   "label": "the good season must read above the bad-shooting one — the conversion half is what says so"
+  },
+  {
+   "scale": "off",
+   "above": "Josh Hart '25",
+   "below": "Delon Wright '23",
+   "label": "the 37.6-minute starter above the 24-minute one on the same shape"
+  },
+  {
+   "scale": "off",
+   "above": "Josh Hart '25",
+   "below": "Gary Payton II '22",
+   "label": "load share: 37.6 mpg against 17.6"
+  },
+  {
+   "scale": "off",
+   "above": "Bojan Bogdanović '24",
+   "below": "Josh Hart '24",
+   "label": "the Knicks '24 best five must not change — recal_119's rank pin has zero slack"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 641,
+  "max_abs": 24,
+  "top": [
+   [
+    "Andre Iguodala '05",
+    42,
+    66
+   ],
+   [
+    "Cedric Maxwell '86",
+    48,
+    70
+   ],
+   [
+    "Bob Gross '82",
+    37,
+    58
+   ],
+   [
+    "T.R. Dunn '82",
+    29,
+    50
+   ],
+   [
+    "Josh Hart '25",
+    44,
+    64
+   ],
+   [
+    "Javonte Green '22",
+    41,
+    60
+   ],
+   [
+    "Andre Iguodala '17",
+    41,
+    59
+   ],
+   [
+    "Thabo Sefolosha '16",
+    34,
+    52
+   ],
+   [
+    "Josh Hart '23",
+    43,
+    60
+   ],
+   [
+    "Josh Hart '24",
+    34,
+    51
+   ],
+   [
+    "Michael Cooper '84",
+    39,
+    55
+   ],
+   [
+    "Josh Childress '06",
+    50,
+    66
+   ]
   ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '22",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25",
+   "Nikola Jokić '26",
+   "Shai Gilgeous-Alexander '26"
+  ]
+ },
+ "cost": [
+  "THE CAP IS NOT THE FENCE, and the dispatch asked in so many words. With DEF 60 the perimeter offence cap max(o_ovr + 10, 0.85 x d_ovr) read 54 against a blend of 52 — it was never binding on this card, and at OFF 64 it reads 74. What fenced him is recal_104's blend itself: at DEF 60, OVR 63 requires OFF 64 and OVR 60 requires OFF 60. The scout's 'under the o_ovr+10 cap OVR 63 needs OFF >= 53' is the cap's necessary condition only; the blend's is eleven points higher. The ruling was therefore a demand for TWENTY printed OFF points, not for eleven.",
+  "1.08 IS THE MEASURED CEILING OF THIS TERM and the stopping pin is recal_119's `BOS '24 OFF rank <= 10`, which reads exactly 10 of 26 and has ZERO slack. Above 1.08 the subject's OWN '24 card passes Bojan Bogdanović '24 (OVR 58) and enters the Knicks '24 best five, which takes New York past Boston on offence. Every size from 1.00 to 1.08 holds all 150 anchors; 1.07 is the smaller-collateral of the two that put the subject on 63.",
+  "A LATER ROUND THAT MOVES Josh Hart '24 OR Bojan Bogdanović '24 RE-OPENS THAT PIN. The margin is one OVR point (57 against 58) and it is held by the conversion half of this floor, nothing else.",
+  "THE HUNT DEVIATION TAX WAS RE-SWEPT, its thirteenth move: 4.05 -> 3.79 on the moved pool (feasible 3.72..3.86, midpoint by recal_126's rule). This is the mirror of recal_151's break — that was a defensive round and hunt went shallow on the BLIND edge; this is an offensive one and it went short on the ORACLE edge. The seven other taxes held their bands.",
+  "TEAM DIALS: one five changed on the whole wheel. Knicks '25 offdial 56 -> 65, defdial 55 -> 57, ovrdial 56 -> 61 (off rank 7th -> 6th of 26), because Josh Hart '25 now displaces Miles McBride '25 in their best five. Celtics '24 (51/79/65, 15th on raw off, rank pin 10th), Celtics '25 (53/67/60), Thunder '26 (70/87/78), Pistons '26, 76ers '26, Warriors '17 and Bulls '96 are all BYTE-IDENTICAL. Gauges were not re-derived.",
+  "NEITHER BAND ANCHOR WAS RE-DERIVED. OFF_TOP 102.75 and DEF_TOP 104.25 are untouched, so no card above the 93 knee moves (recal_90's warning does not apply to this round). The subject's raw is 63.69, far below the knee, where band() is the identity.",
+  "is_big DECIDES THE CLASS AND IT IS NOT ALWAYS THE SAME ACROSS ONE MAN'S CAREER. Cedric Maxwell '80 is a big by the shape clause and is excluded; his '83-'87 seasons are not, and they are among the largest movers (+17 to +22 OFF). That is is_big's existing behaviour, inherited rather than introduced, but it is the reason one pinned card sits still while four of the same man's seasons move."
+ ],
+ "notes": [
+  "THE HONEST TERM, in the scout's own words: 'no channel pays low-usage glue'. Decomposed, Josh Hart '25's o_score is 47.12 and its two largest terms are playvol 58 x 0.19 = 11.02 and volume 13 x 0.26 = 3.38. He uses 15.2% of the possessions he is on the floor for, so the load channel — the biggest weight in the vector — pays him almost nothing, and the three zone terms pay a man who does not shoot. The bar that describes him is not in the sum at all: drb 83 is worth EXACTLY ZERO in o_score. `drb` appears once in the whole file, in d_score at 0.07.",
+  "THE TERM. Three possession bars — the defensive glass, the offensive glass, and the creation he does with the ball he did not shoot — are AVERAGED, because they are three readings of one statement (recal_139's rule, applied before the term instead of after it). That average is paid HALF AND HALF against efficiency, so the work is priced at what the man does with it. Written in recal_118's correction form `std + f x (floor - std)`, so it can only ever LIFT and a card whose standard path already exceeds it does not move.",
+  "EVERY GATE IS A LINE THIS FILE ALREADY DREW. volume 55 -> 25 is recal_112's own pair and 55 is where recal_131's paint-evidence floor begins, so the two are disjoint by construction. 3pt 68 -> 40 is recal_112's own exclusion gate reused for its own reason — 'efficiency earned from the arc is paid there', there being recal_64/118's off-ball floor. `not is_big` because every glass channel this file has built is on the big branch. load_share is recal_96's own line. No new constant enters except the size.",
+  "THE CONVERSION HALF IS NOT DECORATION, it is what makes the term reach the subject at all. A floor that paid the possession work alone would price Josh Hart '24 — the same job, the same minutes, at .513 true shooting — within two points of '25 at .611, and the even four-bar form is provably capped at OVR 59 for the subject because of exactly that: measured, K <= 0.2325 for every anchor to hold, which puts him on 59 and outside his band.",
+  "THE 3pt GATE IS LOAD-BEARING AND WAS MEASURED, not assumed. Kyle Korver '15 (pinned off 58 +-1) is a perimeter card at volume 10 whose glue floor computes 64.7 against a standard path of 62.4; without the gate he takes +2 and leaves his band at every size that reaches the subject. With it he takes exactly zero.",
+  "WHY NOT THE DIALS, both closed by his own record. The volume weight (0.26) is recal_112's measured WALL — 'the efficiency of a low-usage man cannot be paid through a weight that every high-usage anchor also rides'; 0.13 already breaks Moses Malone '82 and reaching a low-usage card breaks twenty-five anchors. recal_64/118's off-ball floor computes 30.2 for the subject at a full share and would not bind even at 3pt 68, so the arc ramp is not the cause either. Neither was re-opened.",
+  "MEASURED on the whole pool: 641 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, max +24, mean +5.10; OVR follows on 567, max +16. DEF and every attribute move on ZERO. The top 12 by OFF is identical, the top 50 by OVR has no entrant, no leaver and no rank flip. The movers are one class and read like it — T.R. Dunn '82-'84, Bob Gross '81/'82, Danny Vranes '83, Thabo Sefolosha '11/'16, Andre Iguodala '05/'14/'16/'17, Michael Cooper '83/'84, Javonte Green '22, Josh Childress '06, Alonzo Gee '16, Ira Newble '02.",
+  "THE SCOUT'S CLASS LIST, after: Josh Hart '25 OVR 52 -> 63, '24 48 -> 57, '23 52 -> 61, '26 56 -> 56 (unmoved — he shot 3pt 69 that year and is paid at the spacer floor instead). Boris Diaw '10 54 -> 60, Shaun Livingston '14 54 -> 58, Andre Iguodala '14 67 -> 73, Delon Wright '23 50 -> 54, Gary Payton II '22 52 -> 56. Ricky Rubio '14 (54) and T.J. McConnell '24 (51) do not move at all: Rubio's standard path already exceeds his floor and McConnell is volume 54, at the top of the usage gate where the standard channels have taken over.",
+  "HIS VORP MISS IS GONE. Josh Hart '25 was the loudest VORP outlier on the board at 5.4 class sigma; he no longer appears in the scout's OVR-vs-VORP or OVR-vs-BPM lists at all, and no card this round raised appears in them as an over-reading."
+ ]
 }
