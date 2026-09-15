@@ -8,7 +8,7 @@ import { TeamBanner } from './TeamBanner'
 import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
-import { PLAIN_SKIN } from './teamColors'
+import { PLAIN_SKIN, teamColor, terminalSkin } from './teamColors'
 
 /**
  * THE PLAYER CARD. Press a man's name anywhere in the app and his whole card loads.
@@ -177,8 +177,15 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
    * THE BANNER IS THE ONLY COLOUR (his ruling: "Remove the colors from the player card other than
    * the banner"). The terminal used to be lit in the club too; it is the same terminal in grey now,
    * on every card, and the club lives in the banner alone.
+   *
+   * TWO EXCEPTIONS WEAR THE CLUB AGAIN (his ruling: "For the year and the shape hex change it to the
+   * team color like before. Only those 2."). The season strip and the hexagon take the club's skin
+   * back, hung on their own boxes so nothing else on the card re-lights. A season split between
+   * clubs is not one skin, so those two fall through to the steel, as they did before.
    */
   const teams = line?.teams ?? []
+  const ab = teams.length === 1 ? teams[0] : undefined
+  const club = useMemo(() => terminalSkin(teamColor(ab)), [ab]) as React.CSSProperties
 
   const peak = all.length ? peakOf(all) : null
   // A man the pool holds one season of has no strip to step and no peak to compare against — that
@@ -246,7 +253,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
         </div>
 
         {all.length > 1 ? (
-          <div className="pct-years">
+          <div className="pct-years" style={club}>
             <div className="pc-rule">
               <span>SEASONS &#9656; {span} ON FILE</span>
               <i />
@@ -340,7 +347,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
               <span>SHAPE.HEX &#9656; 6-AXIS</span>
               <i />
             </div>
-            <div className="pct-hexbox">
+            <div className="pct-hexbox" style={club}>
               <HeatHex men={[p]} size={168} />
             </div>
             <button className="pc-adv" onClick={() => setAdv(true)}>
