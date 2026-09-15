@@ -357,20 +357,9 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
         )}
       </div>
 
-      {/* the bottom status line: which season is loaded, and how many there are to step between */}
-      <div className="pct-status">
-        <span>
-          STATUS &#9656; <b>{isPeak ? 'PEAK LOCKED' : `S${p.peak_season} SELECTED`}</b>
-        </span>
-        <span>{span ? `${span} AVAILABLE █` : 'SINGLE SEASON █'}</span>
-      </div>
-      <div className="pc-foot">
-        {/* the mock names its own dock key "Close card": [ESC] CLOSE is already the small print in
-            the title bar, and the two want to read as the same act at two sizes */}
-        <button className="btn" onClick={onClose}>
-          Close card
-        </button>
-      </div>
+      {/* NO FOOT (his ruling: "Remove the marked part, the page shouldnt be scrollable, everything
+          should fit"). The status line and the CLOSE CARD key are gone; [ESC] CLOSE in the title
+          bar and the Esc key are the way out, and the body has the whole height to itself. */}
       </div>
       {/* the Advanced door is its own sheet — it stands OVER the window, not inside it */}
       {adv ? <Advanced p={p} onClose={() => setAdv(false)} /> : null}
