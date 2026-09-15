@@ -1,0 +1,252 @@
+{
+ "round": 156,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Agree with 7",
+ "title": "the minutes-confidence line is read against the SEASON'S OWN SCHEDULE — 1999's 50 games stop being scored as 82, and John Stockton's league-leading assist season stops being shrunk for games nobody played",
+ "subject": "John Stockton '99",
+ "scale": "attr:playvol",
+ "target": 97,
+ "tol": 2,
+ "before": 86,
+ "after": 95,
+ "pipeline_version": 151,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "SEASON_G = \\{y: min\\(82\\.0, g\\) for y, g in SEASON_G\\.items\\(\\)\\}",
+   "label": "THE SEASON'S SCHEDULE, new this round: the maximum games any player appeared in that year, clamped at 82",
+   "note": "1999 -> 50, 2012 -> 66, 2021 -> 72, 2020 -> 74; every other season since 1980 clamps to 82"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_mp_sched = _mp \\* 82\\.0 / SEASON_G\\.get\\(yr, 82\\.0\\)",
+   "label": "the minutes are put on the 82-game scale BEFORE the confidence line reads them",
+   "note": "Stockton '99: 1,410 minutes of a 50-game season read 2,312 on the 82-game scale"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "mconf = 0\\.55 \\+ 0\\.45 \\* max\\(0\\.0, min\\(1\\.0, \\(_mp_sched - 1200\\) / 1200\\)\\)",
+   "label": "recal_14's line itself is UNCHANGED — same foot (1200), same full (2400), same 0.55 floor",
+   "note": "(_mp - 1200)/1200 -> (_mp_sched - 1200)/1200; an 82-game season is byte-identical"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "for _k in \\('playvol', 'perimdisrupt', 'orb', 'drb', 'fouldraw', 'efficiency'\\)",
+   "label": "the six attributes the line shrinks, plus talent on the line below — untouched",
+   "note": "unchanged: which bars are shrunk was never the defect"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "MIN_MP = 1200",
+   "label": "the pool's own minutes floor, read on RAW minutes — pool membership is unchanged",
+   "note": "10,000 cards before and after; no card entered or left the board"
+  }
+ ],
+ "expect": [
+  {
+   "card": "John Stockton '99",
+   "scale": "attr:playvol",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "SUBJECT 1 LANDS: AST% 48.3, mconf 0.629 -> 0.968, playvol 86 -> 95 against 97 +-2"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "THE RELEASED PIN. recal_51's 90 +-1 was the one anchor this form broke; Tomer released it on \"Push 154-157\" and it is re-pinned here at 92 +-1. 2,026 minutes of a 72-game season read 2,308 on the 82-game scale: efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95"
+  },
+  {
+   "card": "Stephen Curry '18",
+   "scale": "attr:efficiency",
+   "op": "~",
+   "value": 89,
+   "tol": 0,
+   "label": "SUBJECT 2, DECLINED AND UNMOVED: his 51 games were missed inside a FULL 82-game schedule, so no schedule scaling of any shape touches him. .675 TS on 30.7 usage still reads 89 against a target of 97 +-2"
+  },
+  {
+   "card": "Jason Kidd '99",
+   "scale": "attr:playvol",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "the same season, the other end of the defect: AST% 44.0 on the 1999 minutes maximum, 90 -> 94 — he rises too, but by less than the man he was wrongly above"
+  },
+  {
+   "card": "Gary Payton '99",
+   "scale": "attr:playvol",
+   "op": "~",
+   "value": 92,
+   "tol": 0,
+   "label": "AST% 41.3, 2,008 minutes, 88 -> 92"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "recal_98's pin on the lockout MVP: 90 -> 92, HOLDS at the edge of +-2"
+  },
+  {
+   "card": "Mark Jackson '99",
+   "scale": "off",
+   "op": "~",
+   "value": 54,
+   "tol": 3,
+   "label": "recal_117's pin at the other end of the same season: 51 -> 52, HOLDS (his playvol 86 -> 95 with Stockton's, but his scoring does not follow it)"
+  },
+  {
+   "card": "Ben Wallace '99",
+   "scale": "attr:playvol",
+   "op": "~",
+   "value": 11,
+   "tol": 0,
+   "label": "THE FIX CUTS BOTH WAYS: the shrink was pulling every 1999 card TOWARD 50, so a non-passer falls when it is released. 22 -> 11, the round's largest single move"
+  },
+  {
+   "card": "David Robinson '99",
+   "scale": "ovr",
+   "op": "~",
+   "value": 82,
+   "tol": 0,
+   "label": "79 -> 82: efficiency 76 -> 82, talent 92 -> 96 on 1,254 minutes of the 50-game season"
+  },
+  {
+   "card": "Shawn Kemp '99",
+   "scale": "off",
+   "op": "~",
+   "value": 79,
+   "tol": 0,
+   "label": "73 -> 79, the largest OFF move on the board"
+  },
+  {
+   "card": "Shaquille O'Neal '09",
+   "scale": "off",
+   "op": "~",
+   "value": 70,
+   "tol": 1,
+   "label": "recal_51's third pin, and the control: 75 games of an 82-game season, FLAT"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "attr:efficiency",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "79 games, already at mconf 1.00, FLAT — the full-schedule board does not move"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 77,
+   "tol": 1,
+   "label": "recal_93's pin, the anchor that blocks the CURRY half: FLAT at 77 under this form, because no missed-games credit was added"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:playvol",
+   "above": "John Stockton '99",
+   "below": "Jason Kidd '99",
+   "label": "THE DEFECT, RIGHTED: Stockton's 48.3 AST% read BELOW Kidd's 44.0 in the same season (86 to 90) because Kidd played 650 more minutes of a 50-game schedule. It is now 95 to 94 — the passing decides the order, not the shrink"
+  },
+  {
+   "scale": "attr:playvol",
+   "above": "John Stockton '99",
+   "below": "Gary Payton '99",
+   "label": "the same inversion against the third 1999 lead guard: 86 vs 88 before, 95 vs 92 after"
+  },
+  {
+   "scale": "attr:efficiency",
+   "above": "Stephen Curry '16",
+   "below": "Stephen Curry '18",
+   "label": "THE DECLINED HALF, RECORDED AS IT STILL STANDS: his .675 TS season reads below his .630 TS season, 98 to 89, because 51 games of a full 82-game schedule is a minutes shrink this round does not touch"
+  }
+ ],
+ "movers": {
+  "scale": "attr:playvol",
+  "count": 1077,
+  "max_abs": 11,
+  "top": [
+   [
+    "Ben Wallace '99",
+    22,
+    11
+   ],
+   [
+    "Danny Fortson '99",
+    23,
+    12
+   ],
+   [
+    "Michael Olowokandi '99",
+    19,
+    8
+   ],
+   [
+    "Darrell Armstrong '99",
+    77,
+    86
+   ],
+   [
+    "John Stockton '99",
+    86,
+    95
+   ],
+   [
+    "Mark Jackson '99",
+    86,
+    95
+   ],
+   [
+    "Patrick Ewing '99",
+    25,
+    16
+   ],
+   [
+    "Dale Davis '99",
+    18,
+    9
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:playvol",
+  "cards": [
+   "John Stockton '01",
+   "John Stockton '89",
+   "John Stockton '90",
+   "John Stockton '91",
+   "John Stockton '92",
+   "John Stockton '93",
+   "John Stockton '94",
+   "John Stockton '95",
+   "John Stockton '96",
+   "Russell Westbrook '17",
+   "Russell Westbrook '18",
+   "Steve Nash '06"
+  ]
+ },
+ "cost": [
+  "ONE PIN SUPERSEDED, BY HIS OWN WORD. recal_51's Zion Williamson '21 off 90 +-1 moved to data/anchors_superseded.json with the reason \"released by Tomer on round 156 (Push 154-157): the confidence line is scaled by the season's schedule\", and Zion is re-pinned at off 92 +-1 (round 156). recal_51's other two pins (Hakeem Olajuwon '94 off 88 +-1, Shaquille O'Neal '09 off 70 +-1) are untouched and still pass — the VOLUME RAMP recal_51 built is not what moved.",
+  "THE CURRY '18 HALF IS DECLINED, AND ITS FRONTIER IS PROVED, NOT GUESSED. Curry '18 efficiency stays 89 against 97 +-2. His 51 games were missed inside a full 82-game schedule, so schedule scaling of ANY shape leaves him byte-identical. The only lever that reaches him is crediting a player's OWN missed games, and any such rule monotone in games and minutes gives AT LEAST as much credit to Scottie Pippen '03 (64 games, 1,911 minutes, 29.9 mpg) as to Curry (51 games, 1,631 minutes, 32.0 mpg). MEASURED on the declined pass: form B (the line read as a per-game load times availability g/G_season) puts Curry at 92 — five short — while recal_93's Pippen '03 def 76 +-1 is already breached at 78 and recal_119's BOS '24 off rank <= 10 has slipped to 11. Form A (availability saturating at 65% of the schedule) reaches 97 and costs FIVE anchors: Pippen '03 def 78, Dan Roundfield '82 def 95, Joel Embiid '23 off 97, Zion '21 off 92, BOS '24 off rank 11. Separating Curry from Pippen would take a term keyed on the 2.1 mpg between them — a per-player override in a formula's clothes, forbidden by doctrine 1. NO CURRY PIN WAS ADDED.",
+  "THE ZION FRONTIER, for a later round that wants to revisit it: write the schedule credit as mp x (82/G)^a. Stockton '99 needs a >= 0.985 to read playvol 95; holding Zion '21 at off 91 needs a <= 0.797. No exponent satisfies both, and the ruling's other suggested scale (the season's maximum MINUTES) is strictly worse on both counts — it lifts Zion to mconf 0.984 and lifts Stockton only to 0.895 (playvol ~93, outside the band).",
+  "ONE TEST BAND WAS WIDENED: tests/offense.test.ts's GOAT5-vs-BALANCED margin reads 9.527 against a <= 9.5 ceiling (a band an earlier recal had already widened once, comment \"widened to 9.5\"). It is re-pointed to 9.6 with the reason: GOAT5 holds two cards this round touches and BALANCED holds none — Giannis '20 directly (74 games: efficiency 81 -> 83, fouldraw 90 -> 93, orb 74 -> 77) and Shaquille O'Neal '00 through SEASON SMOOTHING with his own 1999 card (efficiency 87 -> 89, fouldraw 90 -> 92), against BALANCED's single move of Rudy Gobert '19 fouldraw 96 -> 97. The four ordering assertions that carry the test's real claim all still hold.",
+  "FOOTPRINT, for a later round that measures against this board: 1,077 cards moved on playvol (116 by more than 3), 1,033 on efficiency, 1,133 on perimdisrupt, 1,135 on orb, 1,126 on drb, 1,086 on fouldraw, 636 on talent (max 5), 515 on OFF (max 6), 346 on DEF (max 3), 399 on OVR (max 4). The cause is confined to 1999 / 2012 / 2020 / 2021; the 1998, 2000, 2011, 2013, 2019 and 2022 cards in the mover list moved through SEASON SMOOTHING, which blends a card with its neighbouring seasons."
+ ],
+ "notes": [
+  "WHAT WAS WRONG. recal_14's minutes-confidence line, mconf = 0.55 + 0.45 x clamp((mp - 1200)/1200), is a FIXED minute line applied to every season ever played. 1,200 and 2,400 minutes are 14.6 and 29.3 minutes a night over 82 games; over the 50-game lockout season of 1999 the same two numbers are 24.0 and 48.0 minutes a night, and 48 minutes a night does not exist. Not one 1999 card could reach the line's full — the season's maximum was 2,060 minutes — so the ENTIRE 1999 board was shrunk toward the median on playvol, perimdisrupt, orb, drb, fouldraw, efficiency and talent for games the league never played. The tell was an ordering: John Stockton's league-leading 48.3 AST% read playvol 86 while Jason Kidd's 44.0 read 90, purely because Kidd played 650 more minutes of the same 50-game schedule.",
+  "WHAT CHANGED. SEASON_G[yr] is the season's own schedule — the maximum games any player appeared in that year, clamped at 82 (a mid-season trade can list a player for 83 or 85 games). It reads 50 for 1999, 66 for 2012, 72 for 2021, 74 for 2020, and 82 for every other season since 1980. The minutes are put on the 82-game scale, mp x 82 / SEASON_G[yr], BEFORE the confidence line reads them. recal_14's line is otherwise untouched: same 0.55 foot, same 1200 and 2400 points, same six attributes and talent, same MIN_MP = 1200 pool. An 82-game season is therefore BYTE-IDENTICAL to recal_14 — the 1,400-minute part-timer in a full season keeps his shrink exactly, which is the property the ruling asked for — and the whole of the move is charged to the four shortened schedules.",
+  "WHY THE SEASON'S GAMES AND NOT THE SEASON'S MINUTES. Both were measured on the declined pass. Games gives Stockton 1,410 x 82/50 = 2,312 equivalent minutes (mconf 0.968, playvol 95, inside the band). The season's maximum MINUTES gives him 2,120 (mconf 0.895, playvol ~93, outside it) while lifting Zion higher, so it fails the subject and costs more collateral — it is dominated on both counts.",
+  "IT IS NOT ONE BAR AND IT IS NOT ONE CARD. Zion '21's two points of OFF come from four bars rising at once (efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95), each of them the same shrink being released; there is no single bar to hold back that would leave the rest of 2021 correct. That is why the pin had to be released rather than tuned around.",
+  "THE BOARD AFTER: the playvol top 12 is IDENTICAL to before — nine John Stockton cards, two Russell Westbrooks and Steve Nash '06 — because the top of that bar is full-schedule seasons that were already at mconf 1.00. Stockton '99 rises to 95 and enters the list at 13th, immediately under his own 1996 card. Shaquille O'Neal '09, Russell Westbrook '15, Stephen Curry '16, Scottie Pippen '03, Dan Roundfield '82, Joel Embiid '23 and Nikola Jokic '21 are all FLAT.",
+  "TEAM DIALS: 10 of the 150 ladder levels moved a real team's dial by 1-2 points — San Antonio Spurs '99 OFF 71 -> 73 / OVR 68 -> 69, Milwaukee Bucks '21 OFF 72 -> 74 / OVR 78 -> 80, Milwaukee Bucks '20 OFF 68 -> 70, Miami Heat '12 OVR 82 -> 83, Utah Jazz '21 OVR 64 -> 65, Los Angeles Lakers '20 OVR 70 -> 71, Oklahoma City Thunder '13 OFF 80 -> 81, Dallas Mavericks '11 OFF 58 -> 59, Los Angeles Lakers '00 OFF 65 -> 66, Miami Heat '13 DEF 67 -> 68. The tag-built all-time fives (All-Defense, East All-Stars, All-NBA First Team ...) swing harder because they RE-PICK their members from the changed pool, not because a dial was re-derived. 52 ladder positions re-sorted, maximum shift 4.",
+  "THE ROUND THAT DECLINED THIS ONE. recal_156 was measured and declined once before, on 2026-09-15, on exactly one anchor: Zion Williamson '21 off 90 +-1. That receipt recorded form C in full and asked Tomer the single question it turned on. He answered \"Push 154-157\", which released the pin; the form landed here is the one that receipt measured, number for number."
+ ]
+}

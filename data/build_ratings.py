@@ -177,6 +177,27 @@ for r in per100:
     k = (r['player_id'], r['season'])
     if k not in p100 or is_tot(r['team']): p100[k] = r
 
+# ---- the SEASON'S SCHEDULE (recal_156) ----
+# recal_14's minutes-confidence line (see below, ~"MINUTES CONFIDENCE") is a FIXED minute line —
+# 1200 raw minutes to 2400 — applied to every season ever played. Over 82 games those are 14.6 and
+# 29.3 minutes a night; over the 50-game lockout season of 1999 the same numbers are 24.0 and 48.0
+# minutes a night, and 48 minutes a night does not exist. So the whole of 1999 was shrunk toward the
+# median on playvol/perimdisrupt/orb/drb/fouldraw/efficiency and talent for games the league never
+# played: John Stockton's league-leading 48.3 AST% read playvol 86 while Jason Kidd's 44.0 read 90,
+# purely because Kidd played 650 more minutes of the same 50-game schedule.
+# SEASON_G[yr] is the season's own schedule: the maximum games any player appeared in that year,
+# clamped at 82 (a mid-season trade can push a player past the schedule). 1999 -> 50, 2012 -> 66,
+# 2021 -> 72, 2020 -> 74; every other season since 1980 clamps to 82, so an 82-game season is
+# BYTE-IDENTICAL to recal_14 and a 1,400-minute part-timer in a full season keeps his shrink exactly.
+SEASON_G = {}
+for r in adv:
+    if r['lg'] not in ('NBA', 'BAA'): continue
+    _g = f(r['g'])
+    if _g is None: continue
+    _y = int(r['season'])
+    if _g > SEASON_G.get(_y, 0.0): SEASON_G[_y] = _g
+SEASON_G = {y: min(82.0, g) for y, g in SEASON_G.items()}
+
 # ---- collect qualified seasons ----
 seasons = defaultdict(list)   # season -> list of merged rows
 for r in adv:
@@ -1079,8 +1100,17 @@ for yr in sorted(rows_by):
             # era-relative TS: this player's efficiency against his own league, recentred on .570
             ts_rel=round(((r['ts'] or lg_ts.get(yr, 0.545)) - lg_ts.get(yr, 0.545)) + 0.570, 3))
         # MINUTES CONFIDENCE (recal_14): a rate on 800 minutes is a claim, not a season.
+        # recal_156 (HIS RULING on John Stockton '99, verbatim: "Agree with 7", released for landing
+        # by "Push 154-157"): the line's foot (1200) and full (2400) are read against the SEASON'S OWN
+        # SCHEDULE, not a fixed 82 games — the minutes are scaled by 82 / SEASON_G[yr] before the line
+        # is applied. 82-game seasons are unchanged to the byte; the four shortened schedules (1999,
+        # 2012, 2020, 2021) stop being shrunk for games nobody played. Stockton '99 playvol 86 -> 95.
+        # This released recal_51's Zion Williamson '21 OFF 90 +-1 pin to 92 by his explicit ruling —
+        # a PROVED frontier, not a tuning failure: Stockton needs (82/50)^a >= 1.628 (a >= 0.985) and
+        # holding Zion needs (82/72)^a <= 1.109 (a <= 0.797), so no exponent satisfies both.
         _mp = f(by_pid_yr[(pid,yr)].get('mp_v')) or 0.0
-        mconf = 0.55 + 0.45 * max(0.0, min(1.0, (_mp - 1200) / 1200))
+        _mp_sched = _mp * 82.0 / SEASON_G.get(yr, 82.0)
+        mconf = 0.55 + 0.45 * max(0.0, min(1.0, (_mp_sched - 1200) / 1200))
         if mconf < 1.0:
             for _k in ('playvol', 'perimdisrupt', 'orb', 'drb', 'fouldraw', 'efficiency'):
                 p['attrs'][_k] = int(round(50 + mconf * (p['attrs'][_k] - 50)))
