@@ -229,6 +229,21 @@ export function terminalSkin(c: TeamColor): Record<string, string> {
   const as = clamp(A.s, 8, 30)
   const p = (sat: number, l: number) => `hsl(${P.h.toFixed(0)} ${Math.min(sat, ps).toFixed(0)}% ${l}%)`
   const a = (sat: number, l: number) => `hsl(${A.h.toFixed(0)} ${Math.min(sat, as).toFixed(0)}% ${l}%)`
+  return skinOf(p, a)
+}
+
+/**
+ * THE CARD IN GREY (his ruling: "Remove the colors from the player card other than the banner").
+ * The same tokens at the same lightness steps, with the saturation taken out of both ramps — so
+ * every surface keeps its contrast and its place, and the club's banner is the only colour on it.
+ */
+export const PLAIN_SKIN: Record<string, string> = skinOf(
+  (_s, l) => `hsl(0 0% ${l}%)`,
+  (_s, l) => `hsl(0 0% ${l}%)`,
+)
+
+type Ramp = (sat: number, l: number) => string
+function skinOf(p: Ramp, a: Ramp): Record<string, string> {
   return {
     /* THE ROOM — the club's first colour, on the ground it all stands on */
     '--bg': p(26, 6),

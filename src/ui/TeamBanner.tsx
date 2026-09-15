@@ -16,11 +16,15 @@ import type { CSSProperties, ReactNode } from 'react'
  * colour is near-black (Minnesota, Utah, Denver, New Orleans) so there is something for the smoke
  * to glow with. The clubs that moved or were renamed take their franchise's treatment in their
  * own colours — the '96 Sonics burn green and gold, not Thunder blue.
+ *
+ * NO NAME ON IT (his ruling: "Remove the team name from the banner"): 8a's ghosted code and the
+ * city in the top line are gone. The smoke and the split are what say the club; the name is the
+ * man's, and the TEAM row in the ledger underneath still prints the abbreviation.
  */
 
 type RGB = [number, number, number]
 type C = string | RGB
-type Fx = { layers: CSSProperties[]; w?: string; rGlow?: string; ghost?: CSSProperties }
+type Fx = { layers: CSSProperties[]; w?: string; rGlow?: string }
 type T = '6a' | '6b' | '6d' | '7a' | '7b' | '7d'
 
 const hx = (h: string): RGB => {
@@ -80,7 +84,6 @@ const FX: Record<T, (p: C, s: C) => Fx> = {
       L({ top: '-12px', bottom: '-12px', right: '-16px', width: '64px', background: `linear-gradient(180deg, ${CSS(MX(p, '#000000', 0.72))}, ${CSS(MX(p, '#000000', 0.88))})`, borderLeft: `2px solid ${CSS(s)}`, transform: 'skewX(-16deg)', boxShadow: `-8px 0 34px ${A(s, 0.65)}`, mixBlendMode: 'normal' }),
       L({ top: '-12px', bottom: '-12px', right: '58px', width: '9px', background: A(s, 0.9), transform: 'skewX(-16deg)', boxShadow: `0 0 20px ${A(s, 0.9)}`, mixBlendMode: 'normal' }),
     ],
-    ghost: { right: '15%' },
   }),
   '7a': (p, s) => ({
     layers: [
@@ -99,7 +102,6 @@ const FX: Record<T, (p: C, s: C) => Fx> = {
       L({ left: '-60px', top: '-40px', width: '480px', height: '180px', background: `conic-gradient(from 150deg at 55% 50%, transparent 0deg, ${A(p, 0.55)} 70deg, transparent 150deg, ${A(LT(p), 0.4)} 240deg, transparent 320deg)`, filter: 'blur(13px)' }),
       L({ right: '-70px', top: '-50px', width: '320px', height: '190px', background: `radial-gradient(ellipse 52% 44% at 48% 55%, ${A(s, 0.55)} 0%, ${A(s, 0.22)} 50%, transparent 76%)`, filter: 'blur(13px)' }),
     ],
-    ghost: { color: A(LT(s), 0.3) },
   }),
   '7d': (p, s) => ({
     layers: [
@@ -109,72 +111,71 @@ const FX: Record<T, (p: C, s: C) => Fx> = {
       L({ left: '60px', top: '8px', width: '480px', height: '76px', background: `repeating-radial-gradient(ellipse 160% 42% at 85% 50%, transparent 0 7px, ${A(LT(p), 0.32)} 8px 10px, transparent 11px 21px)`, filter: 'blur(2.5px)', transform: 'rotate(-1deg)' }),
       L({ right: '150px', top: '50%', transform: 'translateY(-50%)', width: '60px', height: '44px', background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${A(LT(s), 0.85)} 0%, ${A(s, 0.35)} 50%, transparent 74%)`, filter: 'blur(5px)' }),
     ],
-    ghost: { color: 'rgba(240,250,255,0.9)', filter: 'none', textShadow: `-14px 0 26px ${A(LT(p), 0.9)},0 0 34px ${A(p, 0.9)}` },
   }),
 }
 
-type Club = [city: string, conf: 'EAST' | 'WEST', p: string, s: string, t: T]
+type Club = [conf: 'EAST' | 'WEST', p: string, s: string, t: T]
 
 /**
  * 8a's thirty, keyed by the abbreviation the pool's stat lines carry (BRK, CHO, PHO — the artboard
  * prints BKN, CHA, PHX), then the old clubs in their own colours on their franchise's treatment.
  */
 const CLUBS: Record<string, Club> = {
-  ATL: ['ATLANTA', 'EAST', '#E03A3E', '#C1D32F', '6b'],
-  BOS: ['BOSTON', 'EAST', '#007A33', '#BA9653', '6a'],
-  BRK: ['BROOKLYN', 'EAST', '#cfd6dd', '#6e7a86', '6d'],
-  CHO: ['CHARLOTTE', 'EAST', '#00788C', '#5f4bc2', '7a'],
-  CHI: ['CHICAGO', 'EAST', '#CE1141', '#d7dde6', '6b'],
-  CLE: ['CLEVELAND', 'EAST', '#a01048', '#FDBB30', '7a'],
-  DET: ['DETROIT', 'EAST', '#C8102E', '#2f5ae0', '7d'],
-  IND: ['INDIANA', 'EAST', '#2456a8', '#FDBB30', '7d'],
-  MIA: ['MIAMI', 'EAST', '#b8073c', '#F9A01B', '6b'],
-  MIL: ['MILWAUKEE', 'EAST', '#0a6a30', '#EEE1C6', '6a'],
-  NYK: ['NEW YORK', 'EAST', '#006BB6', '#F58426', '7a'],
-  ORL: ['ORLANDO', 'EAST', '#0077C0', '#C4CED4', '7b'],
-  PHI: ['PHILADELPHIA', 'EAST', '#006BB6', '#ED174C', '7a'],
-  TOR: ['TORONTO', 'EAST', '#CE1141', '#A1A1A4', '6d'],
-  WAS: ['WASHINGTON', 'EAST', '#1a4a8c', '#E31837', '7b'],
-  DAL: ['DALLAS', 'WEST', '#00538C', '#B8C4CA', '6a'],
-  DEN: ['DENVER', 'WEST', '#1b3a66', '#FEC524', '6b'],
-  GSW: ['GOLDEN STATE', 'WEST', '#2a5ac0', '#FFC72C', '7b'],
-  HOU: ['HOUSTON', 'WEST', '#CE1141', '#C4CED4', '7d'],
-  LAC: ['LOS ANGELES', 'WEST', '#C8102E', '#2f62c8', '7a'],
-  LAL: ['LOS ANGELES', 'WEST', '#6a2fa8', '#FDB927', '7a'],
-  MEM: ['MEMPHIS', 'WEST', '#5D76A9', '#F5B112', '6d'],
-  MIN: ['MINNESOTA', 'WEST', '#2a6cb0', '#78BE20', '6d'],
-  NOP: ['NEW ORLEANS', 'WEST', '#28457c', '#d4b56a', '6a'],
-  OKC: ['OKLAHOMA CITY', 'WEST', '#007AC1', '#EF3B24', '7b'],
-  PHO: ['PHOENIX', 'WEST', '#E56020', '#F9AD1B', '6b'],
-  POR: ['PORTLAND', 'WEST', '#9aa6b4', '#E03A3E', '6d'],
-  SAC: ['SACRAMENTO', 'WEST', '#7a44b4', '#aab6c0', '6a'],
-  SAS: ['SAN ANTONIO', 'WEST', '#C4CED4', '#6e7a86', '7d'],
-  UTA: ['UTAH', 'WEST', '#3a5aa8', '#F9A01B', '6a'],
+  ATL: ['EAST', '#E03A3E', '#C1D32F', '6b'],
+  BOS: ['EAST', '#007A33', '#BA9653', '6a'],
+  BRK: ['EAST', '#cfd6dd', '#6e7a86', '6d'],
+  CHO: ['EAST', '#00788C', '#5f4bc2', '7a'],
+  CHI: ['EAST', '#CE1141', '#d7dde6', '6b'],
+  CLE: ['EAST', '#a01048', '#FDBB30', '7a'],
+  DET: ['EAST', '#C8102E', '#2f5ae0', '7d'],
+  IND: ['EAST', '#2456a8', '#FDBB30', '7d'],
+  MIA: ['EAST', '#b8073c', '#F9A01B', '6b'],
+  MIL: ['EAST', '#0a6a30', '#EEE1C6', '6a'],
+  NYK: ['EAST', '#006BB6', '#F58426', '7a'],
+  ORL: ['EAST', '#0077C0', '#C4CED4', '7b'],
+  PHI: ['EAST', '#006BB6', '#ED174C', '7a'],
+  TOR: ['EAST', '#CE1141', '#A1A1A4', '6d'],
+  WAS: ['EAST', '#1a4a8c', '#E31837', '7b'],
+  DAL: ['WEST', '#00538C', '#B8C4CA', '6a'],
+  DEN: ['WEST', '#1b3a66', '#FEC524', '6b'],
+  GSW: ['WEST', '#2a5ac0', '#FFC72C', '7b'],
+  HOU: ['WEST', '#CE1141', '#C4CED4', '7d'],
+  LAC: ['WEST', '#C8102E', '#2f62c8', '7a'],
+  LAL: ['WEST', '#6a2fa8', '#FDB927', '7a'],
+  MEM: ['WEST', '#5D76A9', '#F5B112', '6d'],
+  MIN: ['WEST', '#2a6cb0', '#78BE20', '6d'],
+  NOP: ['WEST', '#28457c', '#d4b56a', '6a'],
+  OKC: ['WEST', '#007AC1', '#EF3B24', '7b'],
+  PHO: ['WEST', '#E56020', '#F9AD1B', '6b'],
+  POR: ['WEST', '#9aa6b4', '#E03A3E', '6d'],
+  SAC: ['WEST', '#7a44b4', '#aab6c0', '6a'],
+  SAS: ['WEST', '#C4CED4', '#6e7a86', '7d'],
+  UTA: ['WEST', '#3a5aa8', '#F9A01B', '6a'],
 
-  SEA: ['SEATTLE', 'WEST', '#0a7a45', '#FFC200', '7b'],
-  NJN: ['NEW JERSEY', 'EAST', '#2a4f9a', '#C8102E', '6d'],
-  WSB: ['WASHINGTON', 'EAST', '#1a4a8c', '#E31837', '7b'],
-  CHH: ['CHARLOTTE', 'EAST', '#00788C', '#5f4bc2', '7a'],
-  CHA: ['CHARLOTTE', 'EAST', '#2f62a8', '#F26532', '7a'],
-  NOH: ['NEW ORLEANS', 'WEST', '#00788C', '#c9a860', '6a'],
-  NOK: ['OKLAHOMA CITY', 'WEST', '#00788C', '#c9a860', '6a'],
-  KCK: ['KANSAS CITY', 'WEST', '#2a5cb8', '#e6b325', '6a'],
-  VAN: ['VANCOUVER', 'WEST', '#00788e', '#bc7844', '6d'],
-  SDC: ['SAN DIEGO', 'WEST', '#C8102E', '#f2a900', '7a'],
+  SEA: ['WEST', '#0a7a45', '#FFC200', '7b'],
+  NJN: ['EAST', '#2a4f9a', '#C8102E', '6d'],
+  WSB: ['EAST', '#1a4a8c', '#E31837', '7b'],
+  CHH: ['EAST', '#00788C', '#5f4bc2', '7a'],
+  CHA: ['EAST', '#2f62a8', '#F26532', '7a'],
+  NOH: ['WEST', '#00788C', '#c9a860', '6a'],
+  NOK: ['WEST', '#00788C', '#c9a860', '6a'],
+  KCK: ['WEST', '#2a5cb8', '#e6b325', '6a'],
+  VAN: ['WEST', '#00788e', '#bc7844', '6d'],
+  SDC: ['WEST', '#C8102E', '#f2a900', '7a'],
 }
 
 /**
  * A season split between clubs is not one club's banner, the same answer the terminal's skin gives
- * it: the steel river, with every club he wore that year ghosted on the right.
+ * it: the steel river. The club is not named on the banner (his ruling: "Remove the team name from
+ * the banner") — the TEAM row under it already reads BRK/PHI.
  */
-const SPLIT: Club = ['SPLIT SEASON', 'EAST', '#5a6d92', '#a6cbe9', '6a']
+const SPLIT: Club = ['EAST', '#5a6d92', '#a6cbe9', '6a']
 
 export function TeamBanner({ teams, children }: { teams: string[]; children: ReactNode }) {
   const one = teams.length === 1 ? CLUBS[teams[0]] : undefined
-  const [city, conf, p, s, t] = one ?? SPLIT
+  const [conf, p, s, t] = one ?? SPLIT
   const fx = FX[t](p, s)
-  const code = teams.length ? teams.join('/') : ''
-  const top = one ? `NBA ▸ ${conf} · ${city}` : teams.length > 1 ? `NBA ▸ ${city}` : 'NBA'
+  const top = one ? `NBA ▸ ${conf}` : teams.length > 1 ? 'NBA ▸ SPLIT SEASON' : 'NBA'
   return (
     <div
       className="pct-banner"
@@ -185,9 +186,6 @@ export function TeamBanner({ teams, children }: { teams: string[]; children: Rea
         <i key={i} style={l} />
       ))}
       <i className="pct-ban-shade" />
-      <span className="pct-ban-ghost" style={{ color: A(LT(p), 0.3), ...fx.ghost }}>
-        {code}
-      </span>
       <div className="pct-ban-body">
         <div className="pct-ban-top" style={{ color: CSS(MX(p, '#dfe8f5', 0.72)) }}>
           {top}

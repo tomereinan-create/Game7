@@ -3530,14 +3530,13 @@ body:has(.sheet) { overflow: hidden; }
 .pc-tag { padding: 5px 10px 4px; border: 1px solid var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); font-size: clamp(9.5px, 0.8vw, 12px); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
 /* HIS CLUB'S BANNER (Player Card Banners 8a, his ruling: "Use 8a for all 30 teams"). The name and
    the badge stand in a box of the club's smoke — one of six treatments per club, drawn in
-   TeamBanner.tsx — under 8a's left-to-right shade, with the code ghosted on the right and the
+   TeamBanner.tsx — under 8a's left-to-right shade, no club name printed on it, and the
    club's two colours split along the foot. That split is the slab the mock put between the badge
    and the ledger, so the franchise-blue slab is gone with it. The layers screen onto the box's own
    ground, so the box isolates them: nothing behind the card is ever lightened through it. */
 .pct-banner { position: relative; isolation: isolate; overflow: hidden; width: 100%; min-height: 88px; border: 1px solid #14213a; color: #e8edf5; }
 .pct-banner > i { display: block; }
 .pct-ban-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(1, 2, 4, 0.86) 0%, rgba(1, 2, 4, 0.3) 33%, rgba(1, 2, 4, 0.07) 66%, rgba(1, 2, 4, 0.32) 100%); }
-.pct-ban-ghost { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-family: var(--serif); font-size: 40px; line-height: 1; letter-spacing: 2px; white-space: nowrap; filter: blur(0.4px); pointer-events: none; }
 .pct-ban-body { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; padding: 13px 18px 17px; }
 .pct-ban-top { max-width: 100%; font-size: 9px; letter-spacing: 0.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pct-banner .pc-name { margin-top: 3px; color: #ffffff; text-shadow: var(--ban-glow); }
@@ -3683,7 +3682,6 @@ body:has(.sheet) { overflow: hidden; }
   .pct-banner { flex: 1 0 100%; }
   .pct-ban-body { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; padding: 11px 14px 14px; }
   .pct-ban-top { flex: 1 0 100%; }
-  .pct-ban-ghost { right: 12px; font-size: 32px; }
   .pct-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; }
   .pct-mrow { padding: 5px 0 4px; letter-spacing: 0.1em; }
   .pc-what { flex: 1 0 100%; }

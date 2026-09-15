@@ -115,26 +115,38 @@ describe('stepping a year redraws the same sheet for the other card', () => {
  * hold is that the colour is read off the SEASON and not off the man: walk one career and the
  * ground changes at every trade, and a season split between two clubs takes neither.
  */
-describe('the card is lit in the club he played for that season', () => {
+describe('the club lights the banner, and only the banner', () => {
+  // His rulings: "Use 8a for all 30 teams", then "Remove the team name from the banner. Remove the
+  // colors from the player card other than the banner".
   const ground = (h: string) => /--bg:(hsl\([^)]*\))/.exec(h)?.[1]
+  const banner = (h: string) => /class="pct-banner" data-fx="([^"]*)" style="background:(rgb\([^)]*\))/.exec(h)?.slice(1, 3).join(' ')
   const slug = (h: string) => /class="pct-slug">([^<]*)</.exec(h)?.[1]
+  const top = (h: string) => /class="pct-ban-top"[^>]*>([^<]*)</.exec(h)?.[1]
 
-  it('gives two clubs two grounds, and the same club the same one', () => {
+  it('gives two clubs two banners, the same club the same one, and every card the same grey', () => {
     const por = sheet(card("Rasheed Wallace '01"))
     const det = sheet(card("Rasheed Wallace '05"))
     const det2 = sheet(card("Rasheed Wallace '06"))
     expect(slug(por)).toBe('POR // S2001')
     expect(slug(det)).toBe('DET // S2005')
-    expect(ground(por)).toBeTruthy()
-    expect(ground(por)).not.toBe(ground(det))
-    expect(ground(det)).toBe(ground(det2))
+    expect(banner(por)).toBeTruthy()
+    expect(banner(por)).not.toBe(banner(det))
+    expect(banner(det)).toBe(banner(det2))
+    expect(ground(por)).toBe('hsl(0 0% 6%)')
+    expect(ground(det)).toBe(ground(por))
   })
 
   it('takes the historical club, not its successor', () => {
-    // WSB is the Bullets and WAS is the Wizards; before this table they were both the fallback.
+    // WSB is the Bullets and WAS is the Wizards: the same treatment, their own colours.
     const wsb = sheet(card("Wes Unseld '80"))
     expect(slug(wsb)).toBe('WSB // S1980')
-    expect(ground(wsb)).not.toBe(ground(sheet(card("Marcus Smart '20"))))
+    expect(banner(wsb)).not.toBe(banner(sheet(card("Marcus Smart '20"))))
+  })
+
+  it('never prints the club on the banner', () => {
+    const por = sheet(card("Rasheed Wallace '01"))
+    expect(top(por)).toBe('NBA ▸ WEST')
+    expect(por).not.toContain('pct-ban-ghost')
   })
 
   it('names every club a traded man played for, and still picks none of their colours', () => {
@@ -142,7 +154,7 @@ describe('the card is lit in the club he played for that season', () => {
     // placeholder. Wallace '04 went Portland, Atlanta, Detroit — in that order, off the CSV rows.
     const multi = sheet(card("Rasheed Wallace '04"))
     expect(slug(multi)).toBe('POR/ATL/DET // S2004')
-    // the fallback steel, which is what an unnamed abbreviation gets anywhere else in the app
-    expect(ground(multi)).toBe(ground(sheet(card("Wally Szczerbiak '06"))))
+    expect(banner(multi)?.startsWith('split ')).toBe(true)
+    expect(top(multi)).toBe('NBA ▸ SPLIT SEASON')
   })
 })

@@ -8,7 +8,7 @@ import { TeamBanner } from './TeamBanner'
 import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
-import { teamColor, terminalSkin } from './teamColors'
+import { PLAIN_SKIN } from './teamColors'
 
 /**
  * THE PLAYER CARD. Press a man's name anywhere in the app and his whole card loads.
@@ -21,6 +21,8 @@ import { teamColor, terminalSkin } from './teamColors'
  * gold — built by `terminalSkin` and hung on the card as the app's own token names, so the season
  * strip, the heat hexagon and the CLOSE button re-light without knowing anything about clubs.
  * Step a year and a man who was traded changes club mid-card, because that is what he did.
+ * (Since his ruling "Remove the colors from the player card other than the banner", the terminal
+ * is grey — PLAIN_SKIN — and only the club's banner around his name carries the colour.)
  *
  * ONE SCREEN, NO SCROLLING (his ruling). 1b drew a 1180px desk with a season column down the left;
  * this is a phone first, so the seasons keep the strip that already solves LeBron's 23 of them by
@@ -168,16 +170,15 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   const ht = p.attrs.height ? `${Math.floor(p.attrs.height / 12)}'${p.attrs.height % 12}"` : null
 
   /*
-   * THE CLUB HE PLAYED FOR THAT SEASON — the whole card's colour, read off the stat line and not
-   * off the man, so stepping a year moves a traded man's terminal from one club to the other.
-   * A season split between clubs NAMES THEM ALL now (E17, his ruling: show both, or more) — the
-   * card reads WAS/DAL rather than the old placeholder. It still will not pick a club's COLOUR for
-   * him: two clubs is not one skin, so the terminal falls through to the app's steel, which is an
-   * answer rather than a gap. That is the same ground it stood on before, unchanged.
+   * THE CLUB HE PLAYED FOR THAT SEASON, read off the stat line and not off the man, so stepping a
+   * year moves a traded man's banner from one club to the other. A season split between clubs
+   * NAMES THEM ALL (E17, his ruling: show both, or more) — the card reads WAS/DAL.
+   *
+   * THE BANNER IS THE ONLY COLOUR (his ruling: "Remove the colors from the player card other than
+   * the banner"). The terminal used to be lit in the club too; it is the same terminal in grey now,
+   * on every card, and the club lives in the banner alone.
    */
   const teams = line?.teams ?? []
-  const ab = teams.length === 1 ? teams[0] : undefined
-  const skin = useMemo(() => terminalSkin(teamColor(ab)), [ab])
 
   const peak = all.length ? peakOf(all) : null
   // A man the pool holds one season of has no strip to step and no peak to compare against — that
@@ -201,9 +202,9 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   ).filter((r): r is [string, string] => !!r[1])
 
   return (
-    // The skin is the app's own token names restated in the club's hue (see terminalSkin), so
+    // The skin is the app's own token names restated in grey (see PLAIN_SKIN), so
     // everything under here — the strip, the hex, the button — re-lights without being told.
-    <div className="sheet sheetcard pc-term" style={skin as React.CSSProperties} onClick={(e) => e.stopPropagation()}>
+    <div className="sheet sheetcard pc-term" style={PLAIN_SKIN as React.CSSProperties} onClick={(e) => e.stopPropagation()}>
       {/* THE WINDOW (the mock's CARD board, which is a bordered box inset in a scrim — not a
           full-screen takeover). The layer above is the scrim; this is the box, and it is as tall
           as the card is, capped at the screen. On a phone the scrim's padding falls to 8px, so it
