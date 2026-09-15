@@ -318,6 +318,11 @@ button {
 .five-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
 .opp-top { margin-top: 8px; }
 .opp-top .opp-name { flex: 0 1 auto; min-width: 0; margin-top: 0; }
+/* YOUR NAME IS THE SAME SIZE AS THEIRS (his ruling: "As for my team name, have it the same size as
+   my opponent"). It was the head's small grey caption; it is the opponent's headline now — the same
+   face, weight and size as `.opp-name` at every width — with the record and 0 OF 5 still beside it. */
+.five-top .card-head { align-items: baseline; }
+.five-top .card-head .label .tname { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.1; letter-spacing: 0; text-transform: none; color: var(--ink); }
 .five-top .card-head { flex: 1 1 auto; min-width: 0; }
 .opp-top .dials,
 .five-top .dials { flex: none; gap: 6px; padding: 0; }
@@ -2155,7 +2160,7 @@ button {
   .draft .col.c .pname b { font-size: 17px; }
   .draft .col.a .pname i,
   .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
-  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 660px) * 1.19), 356px); }
+  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 680px) * 1.19), 356px); }
   /* and "a little bit higher" (his ruling: "Move both 5s a little bit heigher and its perfect"):
      the floor comes up flush under the name row, the row itself sits tighter under the card's
      head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
@@ -2163,6 +2168,53 @@ button {
   .draft .opp-top { margin-top: 2px; }
   .draft .opp-top .dial svg,
   .draft .five-top .dial svg { width: 46px; height: 46px; }
+
+  /* THE WHOLE DRAFT READS BIGGER (his ruling: "Make the entire screen with bigger fonts"). Every
+     small word on the screen comes up about a quarter — the card heads, the captions, the dial
+     labels, the names on the floors, the roster rows and their figures, the wheel's words and the
+     SPIN key — and the two team rows grow 6px to carry it, which the floors pay back out of the
+     height formula above so the screen still does not scroll. The two headlines were already the
+     biggest thing on it and stay 42px, the opponent's and now yours. */
+  .draft .five-top .card-head .label .tname { font-size: 42px; }
+  .draft .card-head .label { font-size: 17px; }
+  .draft .card-head .cap { font-size: 14.5px; }
+  .draft .count { font-size: 16px; }
+  .draft .opp-line { font-size: 14px; }
+  .draft .dial .dl { font-size: 11px; margin-top: -5px; }
+  .draft .dial .ds { font-size: 10.5px; white-space: nowrap; }
+  /* the bigger caption under a dial ("all-time scale") must not break onto a second line — that
+     alone made the name row 16px deeper and pushed both floors down — so the head dials widen */
+  .draft .opp-top .dial,
+  .draft .five-top .dial { width: 76px; }
+  .draft .opp-top { margin-top: 0; }
+  .draft .rowhead span { font-size: 14px; }
+  .draft .rowhead .gcap { font-size: 13px; }
+  .draft .col.a .row.dr,
+  .draft .col.c .row.dr { height: 52px; }
+  .draft .col.a .row.dr.short { height: 50px; }
+  .draft .col.a .rowhead.dr { height: 30px; }
+  .draft .col.a .pname b,
+  .draft .col.c .pname b { font-size: 20px; }
+  .draft .col.a .pname i,
+  .draft .col.c .pname i { font-size: 13px; }
+  .draft .col.a .mini,
+  .draft .col.c .mini { font-size: 14px; }
+  .draft .col.a .rowhead.dr,
+  .draft .col.a .row.dr,
+  .draft .col.c .rowhead.dr,
+  .draft .col.c .row.dr { grid-template-columns: minmax(0, 1fr) 112px 28px; }
+  .draft .col.b .pname b { font-size: 24px; }
+  .draft .col.b .pname i { font-size: 14px; }
+  .draft .col.b .mini { font-size: 16px; }
+  .draft .ct-spot b { font-size: 18px; max-width: 104px; }
+  .draft .ct-spot i { font-size: 11px; }
+  .draft .ct-call { font-size: 10px; }
+  .draft .ct-init { font-size: 22px; }
+  .draft .ct-init.ghost { font-size: 18px; }
+  .draft .spin-team { font-size: 58px; }
+  .draft .spin-sub,
+  .draft .spin-kicker { font-size: 18px; }
+  body:has(.draft) .dock .btn { font-size: 24px; }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
