@@ -1852,6 +1852,23 @@ button {
 .sheet2 {
   z-index: 70;
 }
+/* ADVANCED IS ITS OWN FULL SCREEN (his ruling: "Make the advanced its own full screen"). It was a
+   347/562px column — and, opened from the player card, a 660px strip over it, because the card's
+   `.sheetcard > *` cap caught it too. It takes the whole screen now: the head runs across the top,
+   and the seventeen attribute cards fill it in as many columns as the width holds — one on a
+   phone, three or four on a desk. */
+.sheetcard > .sheet2 { max-width: none; margin: 0; }
+.sheet.sheet2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 0 18px;
+  align-content: start;
+  align-items: start;
+  padding-left: clamp(14px, 3vw, 40px);
+  padding-right: clamp(14px, 3vw, 40px);
+}
+.sheet.sheet2 > * { grid-column: 1 / -1; max-width: none; margin-left: 0; margin-right: 0; }
+.sheet.sheet2 > .adv-card { grid-column: auto; }
 .adv-open {
   display: block;
   width: 100%;
@@ -3295,28 +3312,26 @@ body:has(.sheet) { overflow: hidden; }
    its content and clears the screen with room over), and scout mode 33px more body scroll on a
    sheet that already scrolled, because it carries 17 attributes and a hexagon the mock has no
    equivalent of. */
+/* THE CARD IS THE WHOLE SCREEN (his ruling: "Make the player page full screen"). The window on a
+   scrim is gone: no inset, no border, no 1060px cap — the window IS the screen, edge to edge and
+   top to bottom, and only the phone's safe areas are kept clear. */
 .sheetcard.pc-term {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: clamp(8px, 2.5vh, 30px) clamp(8px, 3.5vw, 54px);
-  /* the mock's own scrim over whatever the card was opened from — the pool, the draft, the floor */
-  background: rgba(6, 6, 5, 0.9);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: var(--bg);
 }
-.pc-win {
+.pc-term > .pc-win {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   width: 100%;
-  /* `.sheetcard > *` caps its children at 660px; the window is the card, and the card's own
-     content cap is 1060 (see the desk block) */
-  max-width: 1060px;
+  /* `.sheetcard > *` caps its children at 660px; the window is the screen */
+  max-width: none;
   min-height: 0;
-  max-height: 100%;
   overflow: hidden;
   background: var(--bg);
-  border: 1px solid var(--line);
 }
 .sheetcard > * { max-width: 660px; width: 100%; margin-left: auto; margin-right: auto; }
 
@@ -3639,7 +3654,6 @@ body:has(.sheet) { overflow: hidden; }
 
 /* ---- the desk: 1b's three areas ---- */
 @media (min-width: 900px) {
-  .pc-term > .pc-win { max-width: 1060px; }
   /* the desk's home button is 52px and sits 14px in — [ESC] must clear it, the same way the
      topbar it replaced did (.topbar { padding-right: 44px }) */
   .pct-bar { padding-right: 56px; padding-left: 20px; }
