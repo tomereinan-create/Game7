@@ -3525,12 +3525,6 @@ body:has(.sheet) { overflow: hidden; }
 .pct-slug { flex: none; color: var(--ink); letter-spacing: 0.15em; }
 .pct-esc { flex: none; padding: 0; background: none; border: 0; font: inherit; font-weight: 700; letter-spacing: inherit; color: var(--pct-acc); cursor: pointer; }
 .pct-esc:hover { color: var(--pct-acc-hi); }
-/* the foot line keeps the card's gutter — in the mock it is the last line of the SHEET, not of
-   the chrome — and only comes up to the mock's 10px/0.16em from 8.5px/0.1em */
-.pct-status { flex: none; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 8px 13px 9px; border-top: 1px solid var(--line); font-size: 9.5px; letter-spacing: 0.15em; color: var(--muted-2); white-space: nowrap; }
-.pct-status span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.pct-status span + span { flex: none; }
-.pct-status b { font-weight: 600; color: var(--pct-acc); }
 
 /* ---- the body ----
    overflow-y is a safety valve, not a design: the longest archetype sentences run to four lines,
@@ -3633,15 +3627,15 @@ body:has(.sheet) { overflow: hidden; }
 /* the attributes: a row each — name, track, number — under a ruled group head, two columns of them */
 .pc-attrs { columns: 2; column-gap: 22px; margin-top: 6px; }
 .pc-grp { break-inside: avoid; margin-bottom: 10px; }
-.pc-grpname { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.pc-grpname { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .pc-grpname i { height: 1px; background: var(--line-2); }
 .pc-grpname i:first-child { flex: none; width: 13px; }
 .pc-grpname i:last-child { flex: 1; }
 .pct-attr { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
-.pct-attr .k { flex: 1 1 auto; min-width: 0; font-size: 8.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pct-attr .statt { flex: 0 1 76px; height: 7px; border: 1px solid var(--line-2); background: var(--you-tint); }
+.pct-attr .k { flex: 1 1 auto; min-width: 0; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pct-attr .statt { flex: 0 1 96px; height: 8px; border: 1px solid var(--line-2); background: var(--you-tint); }
 .pct-attr .statf { display: block; height: 100%; background: var(--you); }
-.pct-attr b { flex: none; width: 22px; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--ink); }
+.pct-attr b { flex: none; width: 26px; text-align: right; font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .pc-note { margin-top: 6px; font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
 /* ---- the shape, and the way into the numbers behind it ---- */
@@ -3652,25 +3646,12 @@ body:has(.sheet) { overflow: hidden; }
 .pc-adv { padding: 9px 0; text-align: center; background: var(--you-tint); border: 1px solid var(--you-line); color: var(--ink-2); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
 .pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 
-/* ---- the way out ----
-   THE MOCK'S DOCK: one key across the foot of the window, edge to edge, sitting on its own
-   hairline — not a button floated inside the card's gutter. The app's gold slab would be the one
-   thing in the card still wearing the house colours, so the key keeps the club's tint; the mock's
-   own close key is its dim one (#1d1916) for exactly the same reason. It says CLOSE CARD rather
-   than CLOSE because [ESC] CLOSE is already the small print at the top right, and the two want to
-   read as the same act at two sizes. */
-.pc-foot { flex: none; padding-top: 0; border-top: 1px solid var(--divider); }
-.pc-foot .btn { width: 100%; min-height: 50px; padding: 2px 18px 0; border-radius: 0; border: 0; background: var(--you-tint); box-shadow: none; color: var(--ink-2); font-size: clamp(17px, 1.35vw, 26px); font-weight: 400; letter-spacing: 0.07em; }
-.pc-foot .btn:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
-.pc-foot .btn:active { transform: none; box-shadow: none; }
 
 /* ---- the desk: 1b's three areas ---- */
 @media (min-width: 900px) {
   /* the desk's home button is 52px and sits 14px in — [ESC] must clear it, the same way the
      topbar it replaced did (.topbar { padding-right: 44px }) */
   .pct-bar { padding-right: 56px; padding-left: 20px; }
-  /* the scrim's own inset is the mock's; the 22px floor the takeover needed is gone with it */
-  .pct-status { padding-left: 20px; padding-right: 20px; }
   .pc-body {
     padding: 12px 20px 6px;
     /* TWO EQUAL COLUMNS, which is what the mock's `auto-fit minmax(min(100%, 340px), 1fr)`
@@ -3691,6 +3672,43 @@ body:has(.sheet) { overflow: hidden; }
   .pct-id { grid-area: id; }
   .pct-shape { grid-area: shape; }
   .pct-meta { grid-template-columns: minmax(0, 1fr); }
+
+  /* ONE SCREEN, NO SCROLL (his ruling: "the page shouldnt be scrollable, everything should
+     fit"). The body stops scrolling, the last row takes exactly what the window has left, and
+     the hexagon is the part that gives: its box fills that row and the shape scales inside it. */
+  .pc-body { overflow: hidden; grid-template-rows: auto auto minmax(0, 1fr); align-self: stretch; }
+  .pct-shape { align-self: stretch; min-height: 0; }
+  .pct-hexbox { position: relative; flex: 1 1 auto; min-height: 90px; }
+  .pct-hexbox .heathex { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); max-width: none; }
+
+  /* THE ATTRIBUTES, READABLE FROM THE CHAIR (his ruling: "Increase the font size of the
+     attributes for visability"). The left column has the height to spare on a desk. */
+  .pc-grpname { font-size: clamp(10px, 1.25vh, 12px); margin-bottom: 4px; }
+  .pct-attr { gap: 10px; padding: clamp(2px, 0.35vh, 4px) 0; }
+  .pct-attr .k { font-size: clamp(11px, 1.45vh, 14px); letter-spacing: 0.05em; }
+  .pct-attr .statt { flex-basis: 130px; height: 9px; }
+  .pct-attr b { width: 30px; font-size: clamp(13px, 1.8vh, 17px); }
+}
+/* a short desk window (a laptop with its browser chrome): the same card, packed tighter, so it
+   still fits without a scroll — the rules, the boxes and the dossier give up their air first */
+@media (min-width: 900px) and (max-height: 780px) {
+  .pc-body { gap: 8px 18px; padding-top: 8px; }
+  .pc-rule { margin-top: 7px; }
+  .pc-big { padding: 5px 10px 6px; }
+  .pc-big b { font-size: 34px; }
+  .pc-stats { margin-top: 5px; }
+  .pc-cell { padding: 6px 9px 5px; }
+  .pc-cell b { font-size: 22px; }
+  .pc-attrs { margin-top: 4px; }
+  .pc-grp { margin-bottom: 6px; }
+  .pct-banner { min-height: 0; }
+  .pct-ban-body { gap: 6px; padding: 9px 16px 12px; }
+  .pc-name { font-size: 40px; }
+  .pct-mrow { padding: 3px 0 2px; }
+  .pct-mrow b { font-size: 16px; }
+  .pc-what { line-height: 1.4; }
+  .pct-hexbox { min-height: 60px; }
+  .pc-adv { padding: 6px 0; }
 }
 
 /* ---- the phone: everything above, packed ----
@@ -3723,8 +3741,8 @@ body:has(.sheet) { overflow: hidden; }
   .pc-attrs { columns: 3; column-gap: 12px; }
   .pct-attr { gap: 6px; padding: 1px 0; }
   .pct-attr .statt { display: none; }
-  .pct-attr .k { font-size: 8px; }
-  .pct-attr b { font-size: 11px; }
+  .pct-attr .k { font-size: 9px; }
+  .pct-attr b { font-size: 12px; }
   .pc-grp { margin-bottom: 7px; }
   .pct-shape { display: grid; grid-template-columns: 146px minmax(0, 1fr); grid-template-areas: 'rule rule' 'hex adv'; align-items: center; gap: 5px 12px; }
   .pct-shape .pc-rule { grid-area: rule; }
