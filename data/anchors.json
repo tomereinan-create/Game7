@@ -306,15 +306,6 @@
     "ruling": "Dont do 87, only shift the weights a little torward 88"
   },
   {
-    "card": "Chauncey Billups '06",
-    "scale": "off",
-    "target": 86,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the load-and-creation gain, 85 -> 86"
-  },
-  {
     "card": "Jaylen Brown '26",
     "scale": "off",
     "target": 83,
@@ -1512,5 +1503,23 @@
     "round": 156,
     "ruling": "Push 154-157",
     "note": "re-pins recal_51's 90 +-1, which Tomer released on this round. 2,026 minutes of a 72-game season read 2,308 on the 82-game scale: mconf 0.860 -> 0.965, and four bars rise at once (efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95). A proved frontier, not a tuning failure: Stockton '99 needs (82/50)^a >= 1.628 (a >= 0.985) while holding Zion at 91 needs (82/72)^a <= 1.109 (a <= 0.797)."
+  },
+  {
+    "card": "Chauncey Billups '06",
+    "scale": "off",
+    "target": 91,
+    "tol": 1,
+    "round": 154,
+    "ruling": "Push 154-157",
+    "note": "supersedes recal_89's 86 +-1 by his explicit release. recal_154's hub-role volume ramp pays him the hub channel his volume 66 / playvol 88 shape had been denied by a step at 68: 86 -> 91. His '07 (83 -> 88) and '08 (85 -> 89) move with him and are not pinned."
+  },
+  {
+    "card": "Kevin Johnson '92",
+    "scale": "off",
+    "target": 81,
+    "tol": 3,
+    "round": 154,
+    "ruling": "Agree with 5",
+    "note": "the subject of recal_154. recal_138's hub-role volume floor stops being a step at PD_V_HI and becomes a ramp over the hub's own width (HUB_FULL - HUB_GATE = 20): full at 68, nothing at 48, no new constant. 75 -> 80, inside the 81 +-3. 228 cards move on OFF, every one of them up, mean +1.83, max +6; DEF, every attribute and OFF_TOP/DEF_TOP are untouched and every big is byte-identical."
   }
 ]

@@ -774,5 +774,14 @@
     "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
     "note": "vol 85+, ramp = 1.0 by construction | SUPERSEDED by recal_156: released by Tomer on round 156 (Push 154-157): the confidence line is scaled by the season's schedule. The 90 +-1 pin was the single anchor that stopped the schedule-scaled minutes-confidence line; his release let it land, and Zion re-pins at 92 +-1 (round 156).",
     "current": 92
+  },
+  {
+    "card": "Chauncey Billups '06",
+    "scale": "off",
+    "target": 86,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "released by Tomer on round 154 (Push 154-157): the hub floor ramp pays the volume-60-to-68 creation class. the load-and-creation gain, 85 -> 86. recal_154 made recal_138's hub-role volume floor a ramp over the hub's own width (full at 68, nothing at 48) to land Kevin Johnson '92 near 81; Billups '06 sits at volume 66, one point under the old step, and no ramp monotone in volume can separate him from the subject at volume 65 (measured over the whole family in the declined 154 receipt: the last ramp foot he survives pays the subject exactly zero). Tomer chose the level: 86 +-1 is superseded by 91 +-1 (round 154)"
   }
 ]

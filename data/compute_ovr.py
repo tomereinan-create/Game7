@@ -319,6 +319,28 @@ def d_bigness(p):
 # only ever LIFT (it is a max) and it is zero for every card outside the hub class.
 # MEASURED: 267 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +2.41, max +8; DEF and every
 # attribute move on ZERO; OVR follows on 208. All 137 anchors hold.
+#
+# recal_154 — THE VOLUME FLOOR BECOMES A RAMP, AND IT IS THE SAME SENTENCE recal_138 WROTE.
+# His ruling: "Agree with 5" (Kevin Johnson '92 OFF near 81).
+# recal_138 made the surplus `playvol - volume` a FADE "so it is a fade and not a step", and then
+# hung that fade off a STEP: `volume >= PD_V_HI`. A guard at volume 67.99 was paid the hub channel
+# NOTHING and at 68.00 was paid ALL of it — worth 5 printed OFF points at flat minutes, which is
+# the width round 154 measured (Kevin Johnson '92, volume 65, reads 75; his own '94 season, volume
+# 71 and a near-identical line, reads 80). recal_138's own COST named this seam (Nash '03 vs '05)
+# as OPEN rather than accepted. So the second half of the class function fades too, over the hub's
+# OWN width again — HUB_FULL - HUB_GATE = 20, full at PD_V_HI (68), nothing at 48. NO NEW CONSTANT.
+#   The disjointness the block above claims is NOT weakened, it is made continuous: recal_109's
+#   elite-passer gate ramps to exactly zero AT 68 going up, and the hub now ramps to exactly zero
+#   at 48 going down, so the two channels cross over a 20-point overlap instead of meeting at a
+#   cliff. Stockton '90 (volume 36), Nash '05 (42) and all three Mark Jacksons are still below the
+#   foot and move by EXACTLY zero; every BIG is byte-identical (is_big short-circuits the ramp).
+# MEASURED: 228 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +1.83, max +6 (Haliburton
+# '24 81 -> 87); DEF and every attribute move on ZERO; OVR follows on 184; every mover has volume
+# between 49 and 67. OFF_TOP/DEF_TOP are NOT re-derived. The subject reads 80 inside his 81 +-3.
+# THE PIN IT COST: Chauncey Billups '06 off 86 +-1 (recal_89) reads 91 and was RELEASED by Tomer
+# on this round ("Push 154-157") — see data/anchors_superseded.json. The declined measurement in
+# data/rounds/154.json's history proves no ramp monotone in volume can separate Billups (volume 66)
+# from the subject (65); Tomer chose the level, as doctrine 5 requires.
 HUB_GATE, HUB_FULL = 60, 80
 HUB_K = 0.05                       # recal_138 derived 0.07 (load 0.26 minus creation 0.19); shipped at 0.05, the measured fallback, on his word "138 at 93" — Magic '90 reads 93 with no card moving more than 6
 PD_V_LO, PD_V_HI = 10.0, 68.0      # recal_117's band; the hub's floor is its top, so the two are disjoint
@@ -408,9 +430,12 @@ def o_score(p, trace=None):
     # shot, ramped over the hub's own width and floored at recal_117's band top so this term and
     # recal_109's elite passer cannot both pay the same assist rate. `_hubload` is the load that
     # creation constitutes: the same quantity the hub premium is charged on, computed once.
+    # recal_154: and the SHARE HE CARRIES HIMSELF is a ramp too, over the hub's own width — full at
+    # PD_V_HI (68) and nothing at 48. Same two constants, no third one; see the block above o_score.
     _role = (1.0 if is_big(p) else
-             (min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
-              if a['volume'] >= PD_V_HI else 0.0))
+             min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
+             * min(1.0, max(0.0, (a['volume'] - (PD_V_HI - (HUB_FULL - HUB_GATE)))
+                                 / (HUB_FULL - HUB_GATE))))
     _hubload = a['playvol'] * min(1.0, max(0.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))) * _role
     std = (0.22*z[0] + 0.08*z[1] + 0.05*z[2] + 0.11*a['efficiency'] + 0.26*_vol + 0.19*_pvol
         + 0.10*a['ballsec'] + 0.11*(a['fouldraw']*a['ft']/100) + 0.06*a['orb']
@@ -627,7 +652,9 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['big_hub'] = _hub
             trace['hub_role'] = dict(role=_role, hubload=_hubload, k=HUB_K, big=is_big(p),
-                                     surplus=a['playvol'] - a['volume'], v_floor=PD_V_HI)
+                                     surplus=a['playvol'] - a['volume'], v_floor=PD_V_HI,
+                                     v_foot=PD_V_HI - (HUB_FULL - HUB_GATE),
+                                     v_gate=min(1.0, max(0.0, (a['volume'] - (PD_V_HI - (HUB_FULL - HUB_GATE))) / (HUB_FULL - HUB_GATE))))
     # r34's deletion of the three gated bonuses stands; r37's dominance bonus is the one deliberate
     # exception, and it is a claim about SHAPE rather than a top-up for clearing a threshold.
     # recal_64 (design-side "62", the OKC problem): THE OFF-BALL FLOOR. The Dort/Wallace class had
@@ -1643,7 +1670,7 @@ if _CARD:
     if 'big_hub' in _ot:
         _hr = _ot['hub_role']
         print(f"HUB (recal_55's channel, recal_98's ramp playvol 60->80, recal_138's ROLE class) - "
-              f"{'big (role 1.00 by recal_55s own class)' if _hr['big'] else f'''perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, volume floor {_hr['v_floor']:.0f} -> role {_hr['role']:.4f}'''}")
+              f"{'big (role 1.00 by recal_55s own class)' if _hr['big'] else f'''perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, x recal_154's volume ramp {_hr['v_foot']:.0f}->{_hr['v_floor']:.0f} = {_hr['v_gate']:.4f} -> role {_hr['role']:.4f}'''}")
         print(f"  hub load {_hr['hubload']:.2f} x K {_hr['k']:.2f} (the load weight 0.26 minus the "
               f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
