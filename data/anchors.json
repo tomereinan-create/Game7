@@ -666,15 +666,6 @@
     "note": "post-97, measured — unchanged"
   },
   {
-    "card": "Zion Williamson '21",
-    "scale": "off",
-    "target": 90,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-    "note": "vol 85+, ramp = 1.0 by construction"
-  },
-  {
     "card": "Hakeem Olajuwon '94",
     "scale": "off",
     "target": 88,
@@ -1503,5 +1494,23 @@
     "round": 157,
     "ruling": "Agree with 9",
     "note": "99 -> 95 (error +2, inside the band; 93 exactly is NOT reachable). THE MID COMPOSITE'S VOLUME SHARE IS PAID AT THE CARD'S LOAD, which is the round recal_145 said a later ruling would have to say out loud: it loaded the +0.07 premium ON TOP of the composite and recorded that 'the composite (0.65 vol / 0.35 fg) and both deadeye floors still read RATES'. A 19.9-mpg spot-up shooter on 9.2 ppg, USG 19.2 and BPM -2.1 printed the only mid 99 in the pool under 24 minutes, straight off the per-100 composite: the 94th percentile of the 2023 midrange ATTEMPT RATE at weight 0.65. Above VOL_GATE 0.77 that percentile is now scaled toward the gate by a load share on recal_96's own bench line (foot 12, full 24) -- the FIRST payment of the rate takes the ordinary load line, while recal_145's SECOND payment keeps recal_117's class line 35.7. 171 mid bars move, all down, largest 7; 0 rim, 0 3pt, 0 DEF; 55 OFF and 36 OVR, max 1 each. THE REMAINING TWO POINTS ARE HIS DEADEYE FLOOR: recal_126's floor caps at 0.92 raw, which is card 95 for a 2023 card, so the composite cannot take him lower. Loading the floor's diet as well reaches 93 exactly and puts Jamal Crawford '19 at mid 87, four points outside the 93 +-3 recal_145 earned him -- measured and declined. The gate is the frontier: swept 0.70 to 0.90 at both load lines, 0.76 and below breaks that same Crawford anchor."
+  },
+  {
+    "card": "John Stockton '99",
+    "scale": "attr:playvol",
+    "target": 97,
+    "tol": 2,
+    "round": 156,
+    "ruling": "Agree with 7",
+    "note": "recal_156: recal_14's minutes-confidence line is read against the SEASON'S OWN SCHEDULE (SEASON_G[yr] = the season's maximum games, clamped at 82; 1999 -> 50, 2012 -> 66, 2021 -> 72, 2020 -> 74), so the 50-game lockout board stops being shrunk for games nobody played. His league-leading 48.3 AST% reads 86 -> 95, inside 97 +-2. 82-game seasons are byte-identical to recal_14: a 1,400-minute part-timer in a full season keeps his shrink exactly."
+  },
+  {
+    "card": "Zion Williamson '21",
+    "scale": "off",
+    "target": 92,
+    "tol": 1,
+    "round": 156,
+    "ruling": "Push 154-157",
+    "note": "re-pins recal_51's 90 +-1, which Tomer released on this round. 2,026 minutes of a 72-game season read 2,308 on the 82-game scale: mconf 0.860 -> 0.965, and four bars rise at once (efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95). A proved frontier, not a tuning failure: Stockton '99 needs (82/50)^a >= 1.628 (a >= 0.985) while holding Zion at 91 needs (82/72)^a <= 1.109 (a <= 0.797)."
   }
 ]

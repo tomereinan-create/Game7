@@ -62,7 +62,14 @@ describe('offense engine — archetype lineups', () => {
     // separates them by construction: GOAT5's possession multiplier is 1.0090 (+1.39 index pts) and
     // BALANCED's is 1.0003 (+0.05). Widened to 9.5, the fifth re-pin of this line; the four ordering
     // assertions above, which carry the real claim, all still hold.
-    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(9.5) // 1.3 raw TS · 3.4 smoothed · 5.4 post recal_70 · 7.9 post recal_110 · 9.25 post recal_119
+    // recal_156: 9.25 -> 9.527, and the 0.28 is not a re-pricing of anything this test claims. The
+    // minutes-confidence line is now read against the SEASON'S OWN SCHEDULE, so the shortened seasons
+    // stop being shrunk for games nobody played — and GOAT5 holds two cards that touch them while
+    // BALANCED holds none: Giannis '20 directly (74 games: efficiency 81 -> 83, fouldraw 90 -> 93,
+    // orb 74 -> 77) and Shaq '00 through season smoothing with his own 1999 card (efficiency 87 -> 89,
+    // fouldraw 90 -> 92). BALANCED's only move on the whole five is Gobert '19 fouldraw 96 -> 97.
+    // Widened to 9.6, the sixth re-pin; the four ordering assertions above still carry the claim.
+    expect(off(GOAT5) - off(BALANCED)).toBeLessThanOrEqual(9.6) // 1.3 raw TS · 3.4 smoothed · 5.4 post recal_70 · 7.9 post recal_110 · 9.25 post recal_119 · 9.53 post recal_156
   })
 
   it('a finisher eats better next to a creator who shoots (Curry) than one who does not (Rondo)', () => {
