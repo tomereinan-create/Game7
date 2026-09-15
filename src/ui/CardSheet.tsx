@@ -4,6 +4,7 @@ import type { Player } from '../engine/types'
 import { Advanced } from './Advanced'
 import { RULE } from './Archetypes'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
+import { TeamBanner } from './TeamBanner'
 import { HeatHex } from './HeatHex'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
@@ -224,11 +225,12 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
       <div className="pc-body">
         {/* WHO HE IS — the head of the card on a phone, the right-hand dossier on a desk */}
         <div className="pct-id">
-          <div className="pc-name">{p.player}</div>
-          <div className="pc-tag">{tag}</div>
-          {/* the mock's 3px slab under the badge: it closes the man off from his ledger, and it is
-              the only rule on the card that is a slab rather than a hairline */}
-          <div className="pc-slab" aria-hidden="true" />
+          {/* his name and his badge stand in his club's banner (8a) — its two-colour split along
+              the foot is the slab that closes the man off from his ledger now */}
+          <TeamBanner teams={teams}>
+            <div className="pc-name">{p.player}</div>
+            <div className="pc-tag">{tag}</div>
+          </TeamBanner>
           <div className="pct-meta">
             {META.map(([k, v]) => (
               <div className="pct-mrow" key={k}>

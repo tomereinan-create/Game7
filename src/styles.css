@@ -3528,11 +3528,24 @@ body:has(.sheet) { overflow: hidden; }
    markup, and the man's name is the one thing on the card that must not move. */
 .pc-name { font-family: var(--serif); font-size: clamp(30px, 4.6vw, 54px); font-weight: 400; line-height: 0.84; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
 .pc-tag { padding: 5px 10px 4px; border: 1px solid var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--pct-acc); font-size: clamp(9.5px, 0.8vw, 12px); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
-/* the mock's 3px slab between the badge and the ledger. It is the app's franchise blue, which is
-   the colour the mock itself names there (#17408b) — NOT the club accent, which on this card is
-   spent only on what is locked (the peak, [ESC], the status word) and would stop meaning that if
-   a rule took it too. */
-.pc-slab { width: 100%; height: 3px; background: var(--mine); }
+/* HIS CLUB'S BANNER (Player Card Banners 8a, his ruling: "Use 8a for all 30 teams"). The name and
+   the badge stand in a box of the club's smoke — one of six treatments per club, drawn in
+   TeamBanner.tsx — under 8a's left-to-right shade, with the code ghosted on the right and the
+   club's two colours split along the foot. That split is the slab the mock put between the badge
+   and the ledger, so the franchise-blue slab is gone with it. The layers screen onto the box's own
+   ground, so the box isolates them: nothing behind the card is ever lightened through it. */
+.pct-banner { position: relative; isolation: isolate; overflow: hidden; width: 100%; min-height: 88px; border: 1px solid #14213a; color: #e8edf5; }
+.pct-banner > i { display: block; }
+.pct-ban-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(1, 2, 4, 0.86) 0%, rgba(1, 2, 4, 0.3) 33%, rgba(1, 2, 4, 0.07) 66%, rgba(1, 2, 4, 0.32) 100%); }
+.pct-ban-ghost { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-family: var(--serif); font-size: 40px; line-height: 1; letter-spacing: 2px; white-space: nowrap; filter: blur(0.4px); pointer-events: none; }
+.pct-ban-body { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 9px; padding: 13px 18px 17px; }
+.pct-ban-top { max-width: 100%; font-size: 9px; letter-spacing: 0.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pct-banner .pc-name { margin-top: 3px; color: #ffffff; text-shadow: var(--ban-glow); }
+/* 1a's badge on smoke: a dark glass chip, the club's second colour as its dot */
+.pct-banner .pc-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(5, 10, 20, 0.55); color: #f0f4fa; }
+.pct-banner .pc-tag::before { content: ''; flex: none; width: 7px; height: 7px; background: var(--ban-dot); }
+.pct-ban-split { position: absolute; left: 0; right: 0; bottom: 0; display: flex; }
+.pct-ban-split i { flex: 1; height: 3px; }
 /* the run-on "PG/SG · 6'11" · MIL · 63 G" line, broken into readout rows: label dim on the left,
    value bright on the right. THE MOCK RULES EVERY ROW and sets the value in the heading face —
    that hairline under each line is what turns six facts into a dossier instead of a caption.
@@ -3665,8 +3678,12 @@ body:has(.sheet) { overflow: hidden; }
   .pct-sys { display: none; }
   .pct-id { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; }
   .pc-name { flex: 0 1 auto; }
-  /* the ledger and the sentence take the full width under the name and the badge */
-  .pc-slab { flex: 1 0 100%; margin-top: 1px; }
+  /* the banner, the ledger and the sentence each take the full width; inside the banner the name
+     and the badge still share a line */
+  .pct-banner { flex: 1 0 100%; }
+  .pct-ban-body { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 7px 10px; padding: 11px 14px 14px; }
+  .pct-ban-top { flex: 1 0 100%; }
+  .pct-ban-ghost { right: 12px; font-size: 32px; }
   .pct-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; }
   .pct-mrow { padding: 5px 0 4px; letter-spacing: 0.1em; }
   .pc-what { flex: 1 0 100%; }
