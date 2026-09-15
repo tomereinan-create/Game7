@@ -13,7 +13,7 @@ import { Ask } from './Ask'
 import { useCard } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
-import { isRateable, naiveAssignment, RATEABLE, solveBoard, type Assignment } from '../engine/offense'
+import { isRateable, naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
 import { aiTempo, DEFAULT_TACTICS, gateTactics, pace, reconcileTactics, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
@@ -1388,11 +1388,16 @@ export function Draft({
             THE RECORD HAS NOT GONE ANYWHERE. It reads in this card's own head one line above —
             LEVEL 16 OPPONENT · 45–37 — and for a five with no record the head prints the tag
             there instead ("all-time", "the 1990s"), which is what let the line below drop it. */}
-        <div className="opp-name">
-          {opponent.team}
-          {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
+        {/* THE RATING STANDS BESIDE THE NAME, NOT UNDER IT (his ruling: "Move the rating next to
+            the team name not below") — one row, the headline on the left and the two dials on the
+            right, which gives the height the dials took back to the floor and the roster below. */}
+        <div className="opp-top">
+          <div className="opp-name">
+            {opponent.team}
+            {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
+          </div>
+          {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         </div>
-        {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
             an advert for the node that sells them. User mode plays blind, and with the record gone
             up into the headline's own head there is nothing left on this line for it: the line is
@@ -1401,20 +1406,20 @@ export function Draft({
             Against an empty board their anchor has nobody to hide behind and their hunted man
             nobody to be hunted by, so their NET read +14.3 off a single card and fell from there —
             every good man drafted looked like it was helping them. The line waits now. */}
-        {user ? null : (
+        {/* THE TWO PLACEHOLDERS ARE GONE (his ruling, quoting both: "vs you: rated once your five is
+            full (0 of 5)" and "Exact axis ratings — Scout · Exact ratings node" — "Remove"). A line
+            that only says what it will say later is not drawn; the real figures still print once
+            they exist — the NET when your five is full, the axes once the Scout node is bought. */}
+        {!user && isRateable(five) ? (
           <div className="opp-line">
-            {isRateable(five)
-              ? `vs you: OFF ${theirs.off.toFixed(1)} · DRTG ${theirs.drtg.toFixed(1)} · NET ${theirs.net > 0 ? '+' : ''}${theirs.net.toFixed(1)}`
-              : `vs you: rated once your five is full (${five.length} of ${RATEABLE})`}
+            {`vs you: OFF ${theirs.off.toFixed(1)} · DRTG ${theirs.drtg.toFixed(1)} · NET ${theirs.net > 0 ? '+' : ''}${theirs.net.toFixed(1)}`}
           </div>
-        )}
-        {user ? null : (
+        ) : null}
+        {!user && has('scout_ratings') ? (
           <div className="opp-line">
-            {has('scout_ratings')
-              ? `Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`
-              : 'Exact axis ratings — Scout · Exact ratings node'}
+            {`Inside ${Math.round(theirs.in)} · Outside ${Math.round(theirs.out)} · Interior D ${Math.round(theirs.id)} · Perimeter D ${Math.round(theirs.pd)}`}
           </div>
-        )}
+        ) : null}
         {/* his ruling: read their five as a LINEUP, not a list — the same half court the team
             db and My team draw. Their tactics are unknown pre-series, so no plan: balanced shape.
             Names and slots are what the roster list below already shows ungated; the OVR on a tag
@@ -1839,6 +1844,9 @@ export function Draft({
         </div>
       ) : null}
       <div className="card" style={{ paddingBottom: 4 }}>
+        {/* your own five's dials ride beside its head for the same reason the opponent's ride beside
+            its name (his ruling: "Move the rating next to the team name not below") */}
+        <div className="five-top">
         <div className="card-head">
           {/* HIS RULING: "Instead of your five — put the name that I picked. Also, put the record
               next to my name as well (only from current campaign)." The card used to be headed
@@ -1863,6 +1871,8 @@ export function Draft({
               staff bar, the scorebug or the club band. */}
           {user && full && tips.length ? <CoachTipsDoor onOpen={() => setTipsOpen(true)} /> : null}
         </div>
+        {five.length && !user ? <TeamDials five={five} tone="you" vs="field" /> : null}
+        </div>
         {salary ? (
           <div className={`capbar ${capUsed > capMax ? 'over' : ''}`}>
             <div className="capline">
@@ -1885,8 +1895,8 @@ export function Draft({
           </div>
         ) : null}
         {/* Your own five's OFF and DEF are engine ratings, the same two the opponent's dials show —
-            and those already come off in user mode. Both sides go, or neither does. */}
-        {five.length && !user ? <TeamDials five={five} tone="you" vs="field" /> : null}
+            and those already come off in user mode. Both sides go, or neither does. (They stand in
+            the head row above now.) */}
         {/* his ruling: read your own side as a lineup too, the same floor the scout card draws.
             The five fills as he spins, so an unfilled slot stands on the floor as a dashed ghost
             ring wearing its position — the shape of the team he is building is visible from the

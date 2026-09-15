@@ -311,6 +311,20 @@ button {
   line-height: 1.1;
   margin-top: 8px;
 }
+/* THE NAME AND ITS RATING ON ONE ROW (his ruling: "Move the rating next to the team name not
+   below"): the headline takes what width there is and gives, the dials never do. Your own five's
+   head and dials ride the same row. */
+.opp-top,
+.five-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.opp-top { margin-top: 8px; }
+.opp-top .opp-name { flex: 0 1 auto; min-width: 0; margin-top: 0; }
+.five-top .card-head { flex: 1 1 auto; min-width: 0; }
+.opp-top .dials,
+.five-top .dials { flex: none; gap: 6px; padding: 0; }
+.opp-top .dial,
+.five-top .dial { width: 58px; }
+.opp-top .dial svg,
+.five-top .dial svg { width: 50px; height: 50px; }
 .opp-tag {
   font-family: var(--serif);
   font-style: italic;
@@ -2126,6 +2140,22 @@ button {
   .draft .col.c .card-head > .label {
     white-space: nowrap;
   }
+  /* THE DRAFT FITS THE WINDOW (his ruling: "Move the 5 lineup and the 5 on the court up. Make
+     everything visible on the page not scrollable"). The two team columns are what ran under the
+     dock, so they pack: the rows come down from the desk's 69px to 46 with the name one step
+     smaller, the roster head loses its air, and the two floors — which stay the same size as each
+     other and on one line — take their size from the window's HEIGHT, so what is left over after
+     the head, the rows and the dock is exactly what the courts get, between 220px and the 356 they
+     had. The middle column keeps its roomy rows; its list already measures itself to the dock. */
+  .draft .col.a .row.dr,
+  .draft .col.c .row.dr { height: 46px; }
+  .draft .col.a .row.dr.short { height: 44px; }
+  .draft .col.a .rowhead.dr { height: 26px; margin-top: 4px; }
+  .draft .col.a .pname b,
+  .draft .col.c .pname b { font-size: 17px; }
+  .draft .col.a .pname i,
+  .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
+  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 660px) * 1.19), 356px); }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
