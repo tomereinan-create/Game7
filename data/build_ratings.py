@@ -776,11 +776,52 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     f10a = f(sh['fg_percent_from_x10_16_range']); f10b = f(sh['fg_percent_from_x16_3p_range'])
     fmid = ((f10a or 0)+(f10b or 0))/ (2 if (f10a and f10b) else 1) or None
     if share is None or fga100 is None: return None, None
+    # recal_145's load share, hoisted here because RECAL_157 below needs it one term earlier. The two
+    # constants and the ramp are recal_145's, byte for byte; only their position in the file moved.
+    PREM_FOOT, PREM_FULL = 12.0, 35.7
+    _pmpg = ((f(r.get('mp_v')) or 0.0) / (f(r.get('g_v')) or 0.0)) if (f(r.get('g_v')) or 0) > 0 else None
+    _pload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - PREM_FOOT) / (PREM_FULL - PREM_FOOT)))
     rim = 0.65*P['rimvol'](share*fga100*(creation_factor(sh) if use_factor else 1.0)) + 0.35*P['rimfg'](fgp)
     # ELITE-CONVERSION FLOOR (recal_16, widened by recal_19): accuracy AND volume.
     if use_factor and fgp is not None and share * fga100 >= 6.0:
         rim = max(rim, min(0.68, 0.28 + 0.42 * P['rimfg'](fgp) + 0.15 * P['rimvol'](share*fga100)))
-    mid = 0.65*P['midvol'](s10*fga100) + 0.35*P['midfg'](fmid)
+    # RECAL_157 (his ruling, "Agree with 9"): THE COMPOSITE'S VOLUME SHARE IS PAID AT THE CARD'S LOAD
+    # TOO. recal_145 loaded the +0.07 PREMIUM that sits on top of this composite and wrote in its own
+    # COST that "the composite (0.65 vol / 0.35 fg) and both deadeye floors still read RATES ... a
+    # later round that wants the composite itself loaded has to say so." This is that round. Seth
+    # Curry '23 printed mid 99 -- the only 99 in the pool under 24 mpg -- on 19.9 minutes, 9.2 ppg,
+    # BPM -2.1, USG 19.2, with nothing behind the bar but the per-100 composite: the 94th percentile
+    # of the 2023 midrange ATTEMPT RATE times 0.65, plus a 94th-percentile conversion times 0.35. He
+    # tied Dirk '07 and Jordan '98 and outranked DeRozan '23, which is the ordering shape recal_145
+    # ruled against when it cut Jamal Crawford '19 from 99 to 95. recal_51's objection, quoted twice
+    # further down this function, applies to the FIRST payment of the rate exactly as it applies to
+    # the second: "attempts are a RATE -- per hundred -- so a 17-minute bench finisher can post a
+    # starter's attempt rate while carrying no load." So the part of the rate percentile that only a
+    # carried workload can justify is now paid at a load share: above VOL_GATE the percentile is
+    # scaled toward the gate by the card's load, below it nothing changes, and a card at or above the
+    # full-load line is byte-identical. Nothing can rise: the term is a min() against the old value.
+    #
+    # THE LINE IS recal_96's, NOT recal_145's. recal_117 ruled that "a rate paid twice has to be
+    # scaled twice, and the second line is not the bench boundary" -- and recal_145 used that second
+    # line (the class's own p75, 35.7) because the premium is the SECOND payment. The composite is
+    # the FIRST payment, the card's primary reading of the zone, so its load question is the ordinary
+    # one recal_96 settled and recal_151 reused on the defensive side: foot 12, full 24, the bench
+    # boundary. Measured both ways: at 35.7 the subject reads the SAME 95 and 1,353 mid bars move
+    # (Dirk '18 99 -> 89, Sam Cassell '08 95 -> 84); at 24 it is 168 bars, largest 10, and every card
+    # at 24 minutes or more is byte-identical.
+    #
+    # THE GATE IS THE FRONTIER, NOT A CHOSEN NUMBER. Swept 0.70 (recal_145's own premium gate) to
+    # 0.90 in steps of 0.01 against all 150 anchors: at 0.76 and below Jamal Crawford '19 falls to
+    # mid 89 and leaves the 93 +-3 band recal_145 earned him -- his composite drops under his own
+    # deadeye floor (0.879) and the floor, not this term, sets his bar. 0.77 is the largest step at
+    # which every anchor holds. THE TARGET IS NOT REACHED AND THE WALL IS THAT ANCHOR: the ruling
+    # asks 93 and the subject lands 95, because his own deadeye floor caps at 0.92 -- to print 93 the
+    # floor's DIET would have to be loaded as well, which is measured in data/rounds/157.json and
+    # costs Crawford '19 mid 87, four points outside his band.
+    VOL_FOOT, VOL_FULL, VOL_GATE = 12.0, 24.0, 0.77
+    _vload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - VOL_FOOT) / (VOL_FULL - VOL_FOOT)))
+    _mvol = P['midvol'](s10*fga100)
+    mid = 0.65*(min(_mvol, VOL_GATE + (_mvol - VOL_GATE)*_vload) if use_factor else _mvol) + 0.35*P['midfg'](fmid)
     # zone deadeye (same convexity rule as 3PT): elite conversion on real attempts earns its own path.
     # Applies only to stored attributes (use_factor=True), never to inference training targets;
     # rim deadeye also requires self-creation (assisted-heavy finishing is not shot-making).
@@ -827,9 +868,8 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
         # A round does not spend an old ruling to buy tidiness in a term the new ruling never named.
         # The paint premium keeps the unloaded rate and its class line is measured and on the record
         # (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line.
-        PREM_FOOT, PREM_FULL = 12.0, 35.7
-        _pmpg = ((f(r.get('mp_v')) or 0.0) / (f(r.get('g_v')) or 0.0)) if (f(r.get('g_v')) or 0) > 0 else None
-        _pload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - PREM_FOOT) / (PREM_FULL - PREM_FOOT)))
+        # PREM_FOOT / PREM_FULL / _pmpg / _pload are recal_145's, unchanged; recal_157 hoisted them to
+        # the top of this function because the composite one term above now needs the same minutes.
         rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))
         mid = min(1.0, mid + 0.07*_pload*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
         # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.

@@ -1,0 +1,301 @@
+{
+  "round": 157,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Agree with 9",
+  "title": "THE MID COMPOSITE'S VOLUME SHARE IS PAID AT THE CARD'S LOAD TOO — recal_145 loaded the premium ON TOP of the composite and wrote in its own COST that the composite still read a RATE; this is that round, on recal_96's bench line, and it stops one point short of 93 because recal_145's own Crawford anchor is the wall",
+  "subject": "Seth Curry '23",
+  "scale": "attr:mid",
+  "target": 93,
+  "tol": 3,
+  "before": 99,
+  "after": 95,
+  "pipeline_version": 151,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "VOL_FOOT, VOL_FULL, VOL_GATE = 12\\.0, 24\\.0, 0\\.77",
+      "label": "THE ROUND'S THREE CONSTANTS — recal_96's load line (foot 12, full 24) and the gate above which a rate percentile is paid at load",
+      "note": "the LINE is recal_96's / recal_151's bench boundary, not recal_145's 35.7 class line; the GATE is the frontier of the sweep"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_vload = 1\\.0 if _pmpg is None else min\\(1\\.0, max\\(0\\.0, \\(_pmpg - VOL_FOOT\\) / \\(VOL_FULL - VOL_FOOT\\)\\)\\)",
+      "label": "the composite's load share, in [0, 1], off the same mp / g the premium reads",
+      "note": "a card with no games on the sheet takes 1.0 — measured, or not at all (recal_52's rule)"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mid = 0\\.65\\*\\(min\\(_mvol, VOL_GATE \\+ \\(_mvol - VOL_GATE\\)\\*_vload\\) if use_factor else _mvol\\) \\+ 0\\.35\\*P\\['midfg'\\]\\(fmid\\)",
+      "label": "THE ONE LINE — the volume-first composite, its 0.65 volume percentile now paid at load above the gate",
+      "note": "was mid = 0.65*P['midvol'](s10*fga100) + 0.35*P['midfg'](fmid); the 0.65 / 0.35 split and the accuracy side are untouched, and the min() makes the term one-directional"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PREM_FOOT, PREM_FULL = 12\\.0, 35\\.7",
+      "label": "recal_145's premium line, unchanged — only hoisted to the top of the function so the composite can read the same minutes",
+      "note": "the SECOND payment of the rate keeps recal_117's class line; the FIRST payment takes recal_96's"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mid = min\\(1\\.0, mid \\+ 0\\.07\\*_pload\\*max\\(0\\.0, \\(P\\['midvol'\\]\\(s10\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
+      "label": "recal_145's loaded premium, byte-identical",
+      "note": "this round taxes the composite UNDER it, not the bonus again"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "mid = _lift\\(mid, min\\(0\\.92, 0\\.85\\*P\\['midfg'\\]\\(fmid\\) \\+ 0\\.15\\*P\\['midvol'\\]\\(s10\\*fga100\\)\\), s10\\*fga100\\*_poss78/100\\.0, 105\\.0, P\\['midvol'\\]\\(s10\\*fga100\\)\\)",
+      "label": "recal_126's midrange deadeye floor, DELIBERATELY NOT LOADED — and it is what stops the subject at 95",
+      "note": "the floor caps at 0.92; loading its diet reaches the subject's 93 and costs Crawford '19 mid 87 — measured, not taken"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
+      "label": "the PAINT premium and the whole paint composite, untouched again",
+      "note": "0 rim bars move this round, so recal_120's screen tie-break and recal_142's Mavs '07 five are byte-identical"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+      "label": "recal_96's load line — the line this round borrows, unchanged in its own file",
+      "note": "compute_ovr.py is byte-identical this round; the OFF/OVR movement is entirely the moved mid bars"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Seth Curry '23",
+      "scale": "def",
+      "op": "==",
+      "value": 44,
+      "label": "DEF cannot move: no defensive input changed (0 of 10,000 d_ovr moved)"
+    },
+    {
+      "card": "Seth Curry '23",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 13,
+      "label": "the subject's paint bar is untouched"
+    },
+    {
+      "card": "Jamal Crawford '19",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 90,
+      "label": "THE STOPPING PIN — recal_145's 93 +-3 at its band floor; one step further on the gate and he prints 89"
+    },
+    {
+      "card": "Beno Udrih '15",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 90,
+      "label": "the subject's twin (18.9 mpg, 5.72 midrange attempts/100, 99th-percentile conversion) — SUPERSEDES recal_145's recorded 94"
+    },
+    {
+      "card": "Dirk Nowitzki '18",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 99,
+      "label": "24.7 mpg — at recal_96's full-load line, so byte-identical; recal_145's 35.7 line would have cost him 10"
+    },
+    {
+      "card": "Dirk Nowitzki '07",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 99,
+      "label": "a 36.2-minute midrange office keeps the whole composite"
+    },
+    {
+      "card": "Michael Jordan '98",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 99,
+      "label": "the top of the board does not move"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 94,
+      "label": "40.2 mpg, untouched"
+    },
+    {
+      "card": "DeMar DeRozan '23",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 98,
+      "label": "36.2 mpg — the card the subject was outranking"
+    },
+    {
+      "card": "DeMar DeRozan '17",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 93,
+      "label": "35.4 mpg, untouched"
+    },
+    {
+      "card": "Kobe Bryant '06",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 93,
+      "label": "41.0 mpg, untouched"
+    },
+    {
+      "card": "Kevin Durant '14",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 98,
+      "label": "38.5 mpg, untouched"
+    },
+    {
+      "card": "Karl Malone '99",
+      "scale": "attr:mid",
+      "op": "~",
+      "value": 91,
+      "tol": 2,
+      "label": "his 90 +-2 pin is on def; the mid bar is recorded and does not move"
+    },
+    {
+      "card": "LaMarcus Aldridge '15",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 91,
+      "label": "34.4 mpg, untouched"
+    },
+    {
+      "card": "Jamal Murray '20",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 96,
+      "label": "32.3 mpg — a real load on a real midrange diet, untouched"
+    },
+    {
+      "card": "Lou Williams '18",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 72,
+      "label": "32.8 mpg sixth man, untouched"
+    },
+    {
+      "card": "Kevin Martin '10",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 68,
+      "label": "35.5 mpg, untouched"
+    },
+    {
+      "card": "Spencer Dinwiddie '20",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 34,
+      "label": "31.2 mpg, a 46th-percentile midrange diet — below the gate, untouched"
+    },
+    {
+      "card": "Deandre Ayton '26",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 71,
+      "label": "0 rim bars move, so recal_120's screen tie-break is byte-identical"
+    },
+    {
+      "card": "Erick Dampier '07",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 58,
+      "label": "and recal_142's Mavs '07 Team DB five keeps its centre"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "off",
+      "op": "~",
+      "value": 80,
+      "tol": 4,
+      "label": "recal_126/130's band: his midrange diet is the 42nd percentile, far below the gate, so he does not move"
+    },
+    {
+      "card": "Clint Capela '17",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 1,
+      "label": "recal_51's pin, untouched"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:mid",
+      "above": "Dirk Nowitzki '07",
+      "below": "Seth Curry '23",
+      "label": "a 36-minute midrange office outranks a 19.9-minute spot-up shooter"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "DeMar DeRozan '23",
+      "below": "Seth Curry '23",
+      "label": "the ordering shape the ruling named: DeRozan '23 is no longer under him"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "Michael Jordan '98",
+      "below": "Seth Curry '23",
+      "label": "same"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "Jamal Murray '20",
+      "below": "Seth Curry '23",
+      "label": "a 32-minute starter on the same midrange rate now reads above the bench shooter"
+    }
+  ],
+  "movers": {
+    "scale": "attr:mid",
+    "count": 171,
+    "max_abs": 7,
+    "top": [
+      ["Eddie House '06", 87, 80],
+      ["Eddie House '02", 84, 78],
+      ["T.J. McConnell '25", 85, 79],
+      ["Eddie House '10", 62, 57],
+      ["Jamal Crawford '19", 95, 90],
+      ["Jason Kapono '05", 82, 77],
+      ["Luis Scola '14", 82, 77],
+      ["Michael Doleac '00", 84, 79],
+      ["Beno Udrih '15", 94, 90],
+      ["Seth Curry '23", 99, 95]
+    ]
+  },
+  "top12": {
+    "scale": "attr:mid",
+    "cards": [
+      "Allan Houston '01",
+      "Allan Houston '02",
+      "Allan Houston '03",
+      "Allan Houston '04",
+      "Brandon Ingram '26",
+      "CJ McCollum '20",
+      "CJ McCollum '21",
+      "Chris Paul '15",
+      "Chris Paul '16",
+      "Chris Paul '17",
+      "Chris Paul '21",
+      "Chris Paul '22"
+    ]
+  },
+  "notes": [
+    "THE DEFECT, IN THE ROUND BEFORE'S OWN WORDS. recal_145 loaded the +0.07 midrange PREMIUM and recorded in its COST: 'the composite (0.65 vol / 0.35 fg) and both deadeye floors still read RATES, priced by recal_78's count ramp and recal_126's diet ramp. A later round that wants the composite itself loaded has to say so.' Seth Curry '23 is what that sentence left standing: mid 99 -- the only 99 in the pool under 24 mpg, the next lowest being Dirk '18 at 24.7 -- on 19.9 minutes, 9.2 ppg, USG 19.2, BPM -2.1, OFF 56, OVR 52. His provenance is three numbers, [measured, 5.03 midrange attempts/100, .539], and the whole bar is the composite: the 94th percentile of the 2023 midrange ATTEMPT RATE at weight 0.65 plus a 94th-percentile conversion at 0.35, +0.019 of premium at his load, and no floor lift at all. He tied Dirk '07 and Jordan '98 and printed ABOVE DeRozan '23 -- the exact ordering recal_145 ruled against for Jamal Crawford '19.",
+    "THE FIX IS recal_51's OBJECTION APPLIED TO THE FIRST PAYMENT OF THE RATE: 'attempts are a RATE -- per hundred -- so a 17-minute bench finisher can post a starter's attempt rate while carrying no load.' recal_78 applied it to the floors' SAMPLE, recal_126 to their DIET, recal_145 to the PREMIUM. The composite itself had never been asked. Above VOL_GATE the volume percentile is now scaled toward the gate by the card's load share -- pv -> min(pv, GATE + (pv - GATE) * load) -- so a bench midrange diet reads as a bench load. A card at or above the full-load line is byte-identical, nothing can rise (the term is a min against the old value), and the accuracy side, the 0.65 / 0.35 split, the premium, both deadeye floors and the entire paint stack are untouched.",
+    "WHY THE LINE IS recal_96's 24 AND NOT recal_145's 35.7. recal_117 ruled that 'a rate paid twice has to be scaled twice, and the second line is not the bench boundary'; recal_145 used that second line because the premium is the SECOND payment of the same percentile. The composite is the FIRST payment -- the card's primary reading of the zone -- so its load question is the ordinary one recal_96 settled and recal_151 reused on defence: foot 12, full 24. MEASURED BOTH WAYS ON THE WHOLE POOL: at 35.7 the subject reads the SAME 95 and 1,353 mid bars move (Dirk Nowitzki '18 99 -> 89, Sam Cassell '08 95 -> 84, Jamal Murray '20 96 -> 93); at 24 it is 171 bars, largest 7, and every card at 24 minutes or more is byte-identical. Same subject, an eighth of the collateral, and three full-load-adjacent cards saved.",
+    "THE GATE IS THE FRONTIER, NOT A CHOSEN NUMBER. Swept 0.70 (recal_145's own premium gate) to 0.90 in steps of 0.01, at both load lines, against all 150 anchors. At 0.76 and below, Jamal Crawford '19 prints mid 89 and leaves the 93 +-3 band recal_145 earned him: his loaded composite drops under his own deadeye floor (0.879 = 0.85 x an 87th-percentile conversion + 0.15 x a 95th-percentile rate) and the floor, not this term, then sets his bar. 0.77 is the largest step at which every anchor holds -- he lands exactly 90, at the band floor. Gate 0.70 with either line, the 'no new number' form, was measured first and breaks that anchor by one point.",
+    "THE TARGET IS NOT REACHED AND THE WALL IS ARITHMETIC. The ruling asks 93 and the subject prints 95. His deadeye floor caps at 0.92 raw -- min(0.92, 0.85 x P[midfg] + 0.15 x P[midvol]) with both percentiles at 0.94 -- so no matter how hard the composite is loaded he cannot fall below 0.92, which is card 94 before smoothing and 95 after (a 2023 measured card also carries the +4 era ramp). To print 93 the FLOOR's diet has to be loaded as well. That variant was built and measured: the subject reads exactly 93, and Jamal Crawford '19 reads 87 (four points outside his band), Beno Udrih '15 88, Dirk '18 89, 1,353 bars move. It is not taken -- a round does not spend one of his standing rulings to reach another by two points.",
+    "NOTHING RISES ON MID, BY CONSTRUCTION. 171 mid bars move, ALL DOWN, largest 7 (Eddie House '06, 17.5 mpg, the 98th percentile of the 2006 midrange rate). 0 rim bars, 0 3pt bars, ZERO DEF -- d_ovr is byte-identical for all 10,000 cards. 55 OFF moved (54 down, max 1) and 36 OVR (35 down, max 1). The ONE riser is Alec Burks '22 OFF 63 -> 64 / OVR 62 -> 63, and it is the zone SORT, not the zone: his mid fell from 51 to 50 under his 3pt 86, which lets recal_38's zone-dominance bonus fire -- the same second-order effect recal_145 documented.",
+    "WHO ACTUALLY MOVES: the class is bench cards on a starter's midrange rate. Eddie House '06 (17.5 mpg, 8.68 attempts/100) 87 -> 80, T.J. McConnell '25 (17.9) 85 -> 79, Jason Kapono '05 (18.4) 82 -> 77, Luis Scola '14 (17.1) 82 -> 77, Kevin Porter Jr. '25 (19.8) 90 -> 86, Beno Udrih '15 (18.9) 94 -> 90, Jamal Crawford '19 (18.9) 95 -> 90. WHO DOES NOT: Jamal Murray '20 (32.3 mpg) 96, Lou Williams '18 (32.8) 72, Kevin Martin '10 (35.5) 68, Spencer Dinwiddie '20 (31.2) 34, every full-load midrange card on the board, and every card whose midrange rate percentile is under 0.77 at any minutes.",
+    "THE 99-BLOCK OF MID: 69 cards before, 68 after. Exactly one leaves it -- the subject -- and he is the only card on 99 whose minutes were under the bench line. The top 12 is unchanged, name for name.",
+    "TAXES: no re-ratification was needed. All nine tactic deviations pass on the moved pool (hunt oracle +0.50 against its +0.50 floor, crash off +0.59, crash def +0.56), so src/engine/tactics.ts is byte-identical this round. 410 tests green; npm run opponents re-derived the ladder (three mid bars inside opponent rosters, no five re-selected)."
+  ],
+  "cost": [
+    "recal_145's EXPECT LINE FOR BENO UDRIH '15 (attr:mid == 94) IS SUPERSEDED IN VALUE BY THIS RULING and will print MISS in data/rounds/145.json until it is re-pointed at 90. That card is the subject's twin -- 18.9 mpg, 5.72 midrange attempts per 100, a 99th-percentile conversion -- and no formula can hold him at 94 while Seth Curry '23 moves at all: their raw composites are 0.9597 and 0.9623 and the five card points between them are the 2016+ era ramp, not the shooting. It is recorded collateral from recal_145, not one of his rulings; the anchor that round earned (Jamal Crawford '19 mid 93 +-3) is held, at 90. Every other line of round 145 still passes.",
+    "THE SUBJECT'S FLOOR IS NOW HIS DEADEYE FLOOR, 0.92, AND THAT IS THE WHOLE REMAINING GAP TO 93. A later ruling that wants a bench midrange bar under 94 has to load recal_126's diet ramp (the _diet lambda, which is NOT pinned by a receipt knob -- the DEYE_LO/DEYE_HI constants and the _lift lambda are). The measured price of that variant on this pool: subject 93, Crawford '19 87, Udrih '15 88, Dirk '18 89, 1,353 mid bars. It also reaches the RIM floor through the same lambda, which recal_120 and recal_142 have pinned cards under.",
+    "VOL_GATE 0.77 IS A FRONTIER CONSTANT, fitted to nothing but the anchor table: it is the largest step at which all 150 anchors hold, and Jamal Crawford '19 sits exactly on his band floor (90 against 93 -3). Any later round that moves his mid down by one breaks recal_145's anchor, and any round that moves the 0.70 premium gate or the deadeye floors must re-sweep this gate.",
+    "PREM_FOOT / PREM_FULL / _pmpg / _pload moved from the middle of rim_mid_measured to its top (the composite now needs the same minutes one term earlier). The text of all three of recal_145's knob lines is unchanged, so its receipt still matches; only their position in the file moved.",
+    "PIPELINE_VERSION is left at main's 151 per the integration rule, and this file records 151 for the same reason (the check is >=, so the integrator's stamp keeps it green). src/data/campaigns.json and src/data/opponents.json are regenerated in this commit (npm run opponents); the integrator re-derives them once for the batch."
+  ]
+}
