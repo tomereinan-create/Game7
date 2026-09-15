@@ -466,6 +466,23 @@ export const DEFAULT_TACTICS: Tactics = {
  * NARROW 0.085, true midpoint by r126's rule: 3.78 -> 4.05 (blind -0.333, oracle +0.523, 0.033 and 0.023 of
  * room). Hunt's twelfth move, and the largest value this tax has ever carried. crash def glass held .48
  * untouched (blind -0.342, oracle +0.558) and the seven others held their bands. All nine pass.
+ * recal_154 made recal_138's hub-role volume floor a RAMP (full at volume 68, nothing at 48): 228 o_ovrs
+ * and 184 OVRs, every one UP, all of them guards and wings in the 49-67 volume band — the class the
+ * harness draws its fives from. THREE taxes broke together, and all three are the ones whose benefit is
+ * read off an OFFENSIVE mismatch, so a pool whose creators just got better makes the DEFAULT plan
+ * stronger and a blind call cheaper: hunt went under on the ORACLE edge (+0.4165 at 4.05) while crash off
+ * (-0.2014 at .17) and crash def (-0.0094 at .48) went under on the BLIND edge — the two edges in
+ * opposite directions in one round, the first time that has happened. Swept from MAIN's constants, one
+ * sweep each. hunt: 4.05 (+0.4165) / 3.90 (+0.4738) / 3.85 (+0.4935) / 3.83 (+0.5014) / 3.80 (+0.5133) /
+ * 3.60 (-0.3723) / 3.52 (-0.3083) / 3.51 (-0.3002) / 3.50 (-0.2923, over the ceiling) — feasible about
+ * 3.510 to 3.834, a WIDE 0.324. crash off: .17 (-0.2014) / .31 (-0.2893) / .32 (-0.2956) / .33 (-0.3019) /
+ * 1.00 (+0.5181) / 1.05 (+0.5046) / 1.06 (+0.5018) / 1.08 (+0.4963, under the floor) — feasible about
+ * .327 to 1.067, a WIDE 0.740. crash def: .48 (-0.0094) / .85 (-0.2943) / .86 (-0.3019) / 1.09 (+0.5036) /
+ * 1.10 (+0.5003) / 1.11 (+0.4971, under) — feasible about .858 to 1.101, a WIDE 0.243. All three take
+ * their true midpoints by r126's rule: hunt 4.05 -> 3.67 (blind -0.427, oracle +0.567, 0.127 and 0.067 of
+ * room), crash off .17 -> 0.70 (blind -0.528, oracle +0.598) and crash def .48 -> 0.98 (blind -0.393,
+ * oracle +0.540). That is hunt's THIRTEENTH move and it walks straight back down the jump r151 made it
+ * take. The six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -473,9 +490,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.05,
-  crashOff: 0.17,
-  crashDef: 0.48,
+  hunt: 3.67,
+  crashOff: 0.70,
+  crashDef: 0.98,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

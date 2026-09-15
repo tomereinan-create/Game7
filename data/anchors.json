@@ -297,15 +297,6 @@
     "ruling": "Dont do 87, only shift the weights a little torward 88"
   },
   {
-    "card": "Chauncey Billups '06",
-    "scale": "off",
-    "target": 86,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88",
-    "note": "the load-and-creation gain, 85 -> 86"
-  },
-  {
     "card": "Jaylen Brown '26",
     "scale": "off",
     "target": 83,
@@ -1485,5 +1476,23 @@
     "round": 149,
     "ruling": "Decline Amen as well. He is elite defender. His 25/26 seasons are even underrated defensively",
     "note": "THE NEGATIVE CONTROL, recorded because his ruling named '24 as not a subject and it must not rise: it does not. 94 -> 94. His rookie tracked sheet is +1.4% over 285 6ft+ attempts, i.e. below recal_86's neutral point AND at 0.57 of a full sample, so the measured term is exactly zero for him; perdef moves 92 -> 93 only through the 20/60/20 season blend's reach into '25, and 0.40 x 1 point of perdef on the big vector does not carry a DEF point."
+  },
+  {
+    "card": "Chauncey Billups '06",
+    "scale": "off",
+    "target": 91,
+    "tol": 1,
+    "round": 154,
+    "ruling": "Push 154-157",
+    "note": "supersedes recal_89's 86 +-1 by his explicit release. recal_154's hub-role volume ramp pays him the hub channel his volume 66 / playvol 88 shape had been denied by a step at 68: 86 -> 91. His '07 (83 -> 88) and '08 (85 -> 89) move with him and are not pinned."
+  },
+  {
+    "card": "Kevin Johnson '92",
+    "scale": "off",
+    "target": 81,
+    "tol": 3,
+    "round": 154,
+    "ruling": "Agree with 5",
+    "note": "the subject of recal_154. recal_138's hub-role volume floor stops being a step at PD_V_HI and becomes a ramp over the hub's own width (HUB_FULL - HUB_GATE = 20): full at 68, nothing at 48, no new constant. 75 -> 80, inside the 81 +-3. 228 cards move on OFF, every one of them up, mean +1.83, max +6; DEF, every attribute and OFF_TOP/DEF_TOP are untouched and every big is byte-identical."
   }
 ]
