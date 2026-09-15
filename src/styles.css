@@ -2156,6 +2156,13 @@ button {
   .draft .col.a .pname i,
   .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
   .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 660px) * 1.19), 356px); }
+  /* and "a little bit higher" (his ruling: "Move both 5s a little bit heigher and its perfect"):
+     the floor comes up flush under the name row, the row itself sits tighter under the card's
+     head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
+  .draft .court-line { margin-top: 0; }
+  .draft .opp-top { margin-top: 2px; }
+  .draft .opp-top .dial svg,
+  .draft .five-top .dial svg { width: 46px; height: 46px; }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
