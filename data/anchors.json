@@ -1,5 +1,14 @@
 [
   {
+    "card": "Josh Hart '25",
+    "scale": "ovr",
+    "target": 63,
+    "tol": 3,
+    "round": 155,
+    "ruling": "Agree with 6",
+    "note": "THE GLUE FLOOR. A 37.6-mpg starter on a 51-win team (14.5/9.6/5.9, TS .611, BPM +2.8, VORP 3.6 = 16th in the NBA) read OVR 52, #185 of 236 in his season and the loudest VORP miss on the board, because no channel in o_score pays low-usage glue: drb 83 is worth EXACTLY ZERO on offence (it appears once in the whole file, in d_score at 0.07) and volume 13 x 0.26 pays 3.38. The term AVERAGES the three possession bars (drb, orb, playvol) and pays that half-and-half against efficiency, at total weight 1.07, in recal_118's correction form so it can only LIFT; gated on recal_112's own volume 55->25 and 3pt 68->40, on `not is_big` (every glass channel this file has built is on the big branch), and on recal_96's load share. OFF 44 -> 64, OVR 52 -> 63. THE CAP IS NOT THE FENCE: max(o_ovr + 10, 0.85 x d_ovr) read 54 against a blend of 52 and now reads 74 - it is recal_104's blend that required OFF 64 at DEF 60. 1.08 is the measured ceiling: above it Josh Hart '24 enters the Knicks '24 best five and breaks recal_119's `BOS '24 OFF rank <= 10`, which has zero slack."
+  },
+  {
     "card": "Kurt Thomas '09",
     "scale": "def",
     "target": 74,
