@@ -1,0 +1,137 @@
+{
+  "round": 167,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Rudy Agree, Claxton agree",
+  "title": "recal_112's EFFICIENCY FOOT WAS A CLIFF and recal_139's geometric mean is what made it vertical — the foot gets a WIDTH measured on the class (its own upper quartile of conversion, 63, up to recal_139's 93), and the size is renormalised on the class's median paid card so a reshape is not a re-pricing",
+  "subject": "Rudy Gobert '16",
+  "scale": "off",
+  "target": 52,
+  "tol": 3,
+  "before": 42,
+  "after": 49,
+  "pipeline_version": 167,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_E_LO, EF_E_HI = 63\\.0, 93\\.0",
+      "label": "THE FOOT IS A RAMP — its foot is the class's own upper quartile of conversion",
+      "note": "85.0, 93.0 -> 63.0, 93.0 (measured on the 4,253 cards at 3pt < 68, playvol < 70, volume < 55: p25 33, median 48, p75 63)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_E_ELITE, EF_E_MED = 85\\.0, 90\\.0",
+      "label": "85 SURVIVES as a point inside the ramp, and 90 is the class's median PAID conversion",
+      "note": "the two numbers the size is solved on; 85 is recal_112's own elite line, 90 the median of the 148 cards the term pays"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "EF_SIZE = 0\\.14 \\* \\(\\(\\(EF_E_MED - EF_E_ELITE\\)",
+      "label": "THE SIZE IS SOLVED, NOT CHOSEN — hold the class's median paid card at the payment it had",
+      "note": "0.14 -> 0.14 x 5/6 = 0.116667, written as the equation rather than the number"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_ef = EF_SIZE \\* a\\['efficiency'\\] \\* \\(\\(_ee \\* _ev\\) \\*\\* 0\\.5\\) \\* _ep \\* _e3 \\* _second",
+      "label": "the term itself — recal_139's geometric mean and recal_163's load line are untouched",
+      "note": "only the size symbol changes on this line"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashOff: 0\\.14",
+      "label": "the deviation tax law (recal_59): crash off glass broke on the ORACLE edge and was re-swept ONCE from main",
+      "note": "0.32 -> 0.14, the midpoint of the POSITIVE half (recal_117's precedent for this row)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.33",
+      "label": "crash def glass broke on the same edge; feasible 0.166-0.492, true midpoint by recal_126's rule",
+      "note": "0.50 -> 0.33"
+    }
+  ],
+  "expect": [
+    { "card": "Nic Claxton '24", "scale": "off", "op": "~", "value": 56, "tol": 3, "label": "THE SECOND SUBJECT of the same ruling" },
+    { "card": "Richaun Holmes '21", "scale": "off", "op": "<=", "value": 65, "label": "recal_163's pin at its TOP EDGE — his efficiency 89 is one point off the class median the size is solved on, so he moves +0.107 of raw and does not rise" },
+    { "card": "Clint Capela '17", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "the class pin (recal_51) — 57 -> 59, the top edge of his band" },
+    { "card": "Clint Capela '18", "scale": "off", "op": "~", "value": 61, "tol": 1, "label": "the class pin (recal_52) — volume 45 keeps him outside the gate entirely, unmoved at 60" },
+    { "card": "Nenê '11", "scale": "off", "op": "~", "value": 66, "tol": 2, "label": "recal_139's own subject, 64 -> 65, closer to his number" },
+    { "card": "Cedric Maxwell '80", "scale": "off", "op": "~", "value": 67, "tol": 4, "label": "recal_112's own subject pays the renormalisation: 68 -> 66" },
+    { "card": "Deandre Ayton '26", "scale": "off", "op": "~", "value": 58, "tol": 3, "label": "recal_107's subject — recal_163's one-claim-one-payment line holds him still at 57" },
+    { "card": "Domantas Sabonis '21", "scale": "off", "op": "~", "value": 71, "tol": 1, "label": "the hub is outside the gates (playvol) and moves by zero" },
+    { "card": "Dwight Howard '11", "scale": "off", "op": "~", "value": 78, "tol": 1, "label": "the volume big is outside the gates and moves by zero" },
+    { "card": "Andre Drummond '20", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "unmoved" },
+    { "card": "Montrezl Harrell '18", "scale": "off", "op": "~", "value": 63, "tol": 2, "label": "unmoved" },
+    { "card": "Jarrett Allen '22", "scale": "off", "op": "==", "value": 64, "label": "already paid at the top of the ramp; unmoved" },
+    { "card": "Rudy Gobert '16", "scale": "def", "op": "==", "value": 91, "label": "DEF moved on ZERO cards — this is an o_score round" },
+    { "card": "Nic Claxton '24", "scale": "def", "op": "==", "value": 84, "label": "the same, on the second subject" },
+    { "card": "Rudy Gobert '16", "scale": "attr:efficiency", "op": "==", "value": 83, "label": "no attribute moved: data/build_ratings.py is untouched" },
+    { "card": "Shaquille O'Neal '00", "scale": "off", "op": "==", "value": 99, "label": "the summit does not move" },
+    { "card": "Giannis Antetokounmpo '20", "scale": "ovr", "op": "==", "value": 99, "label": "nor the board's one 99 OVR" }
+  ],
+  "order": [
+    { "scale": "off", "above": "Rudy Gobert '17", "below": "Rudy Gobert '16", "label": "THE SAW-TOOTH IS GONE: 51/42/60 across his '15-'17 becomes 51/49/58, and his best season still reads highest" },
+    { "scale": "off", "above": "Clint Capela '17", "below": "Rudy Gobert '16", "label": "the comparison the ruling makes — 12.6 points on .638 true shooting still reads above 9.1 on .582: 59 > 49" },
+    { "scale": "off", "above": "Nic Claxton '23", "below": "Nic Claxton '24", "label": "the better season still reads higher, and the ten-point step down becomes five: 59 > 54" },
+    { "scale": "off", "above": "Nenê '10", "below": "Nenê '11", "label": "recal_139's own order pin survives the renormalisation: 67 > 65" },
+    { "scale": "off", "above": "Cedric Maxwell '80", "below": "Richaun Holmes '21", "label": "recal_163's order — the term's own subject still reads above the card that was taking it twice: 66 > 65" },
+    { "scale": "off", "above": "Shaquille O'Neal '00", "below": "Clint Capela '17", "label": "recal_47's standing pin: 99 > 59" }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 702,
+    "max_abs": 8,
+    "top": [
+      ["Horace Grant '92", 53, 61],
+      ["Horace Grant '91", 52, 60],
+      ["Rod Higgins '88", 56, 63],
+      ["Tim McCormick '87", 44, 51],
+      ["Robin Lopez '14", 48, 55],
+      ["Dikembe Mutombo '97", 47, 54],
+      ["Rudy Gobert '16", 42, 49],
+      ["Dikembe Mutombo '95", 41, 48],
+      ["Tyson Chandler '09", 40, 46],
+      ["Dikembe Mutombo '01", 41, 47],
+      ["Nic Claxton '24", 50, 54],
+      ["Nenê '10", 70, 67],
+      ["James Donaldson '87", 53, 50],
+      ["Artis Gilmore '82", 70, 68],
+      ["Cedric Maxwell '80", 68, 66]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "BOTH SUBJECTS LAND ON THE LOWER EDGE OF THEIR BANDS, and 49 is the CEILING of what this term can give Rudy Gobert '16 — stated because the next round to read this term should not spend itself trying for 52. Swept over the whole (foot, solved size) family: he reads 49 for every foot from 65 down to 50, 48 at 68, and the highest raw any of them gives him is 48.98 at foot 50. OFF 52 needs the term paid WHOLE at gate 1.00, which no ramp does at efficiency 83. What is left is not this file's: his standard path is 45.16 against his own '17's 52.12, and the gap is rim 58 against 67 and volume 11 against 21 — data/build_ratings.py's bars, stats-to-ratings' room.",
+    "A NEW CONSTANT PAIR IN THIS FILE, and both halves are measured, not chosen: EF_E_LO 63 is the upper quartile of conversion of recal_112's OWN class (the 4,253 cards at 3pt < 68, playvol < 70, volume < 55 — p25 33, median 48, p75 63) and EF_E_MED 90 is the median conversion of the 148 cards the term actually pays (p25 88, p75 94). If a later round re-measures either, it should re-derive EF_SIZE from the equation rather than carry 0.116667 forward as a number.",
+    "THE FOOTPRINT IS LARGE FOR THIS TERM: 702 of 10,000 cards move on OFF (637 up, 65 down, mean +2.10, max +8 and max -3) against recal_112's own 154 and recal_139's 152. 574 of the 702 are below the old 85 line — that IS the round — and the 65 that fall are the elite converters paying for the renormalisation (Nenê '10 70 -> 67, James Donaldson '87 53 -> 50, the Artis Gilmore seasons -2 each, Cedric Maxwell '80 68 -> 66). DEF moves on ZERO cards, every attribute on ZERO, and no rank flip touches the top 50 by OVR.",
+    "CLINT CAPELA '17 IS THE ONE PIN THAT MOVED TO ITS EDGE: 57 -> 59 against 58 +-1. His efficiency 79 was excluded outright by the old foot and is now 0.533 of the ramp; his volume 43 holds him to a gate of 0.327 and +1.6 of o_score. There is no room left above him, so a later round widening this term further must check him first.",
+    "TWO DEVIATION TAXES MOVED, both on the ORACLE edge and both DOWN, which is the mirror of recal_162's reading: a round that lifts 637 glass-working bigs makes the pool's rebounding richer, so the oracle's glass call is worth less against a default plan that already crashes well. Each was swept ONCE from main's constant by recal_126's rule: crashOff 0.32 -> 0.14 (its blind edge never binds — the whole-interval midpoint is NEGATIVE, so the value is the midpoint of the positive half, recal_117's own precedent for this row) and crashDef 0.50 -> 0.33 (feasible 0.166-0.492, true midpoint). hunt held at 3.85 for the second round running; the six others held their bands. All nine rows pass.",
+    "TEAM DIALS: src/data/campaigns.json moved one tier line and src/data/opponents.json fifteen; no team anchor (rank or dial) fails and no five's dial moved enough to change a tier's difficulty band. The gauges were NOT re-derived.",
+    "OFF_TOP / DEF_TOP / the 93 knee are UNTOUCHED (recal_90's warning): every card above the knee is byte-identical and the top 12 by OFF is unchanged name for name."
+  ],
+  "notes": [
+    "THE DEFECT IN ONE SENTENCE: recal_139 combined the efficiency and volume shares by their GEOMETRIC MEAN, which was right for the middle of the gate and left the FOOT with an infinite slope — at efficiency 85 the share is 0 and the term pays nothing, and one rating point higher the share is 0.125, whose square root is 0.354, a THIRD of a term worth up to twelve o_score points bought with one point of a rating.",
+    "THE SUBJECT DECOMPOSED. Rudy Gobert '16: efficiency 83, two under the foot, term 0.000, OFF 42. His own '15 (efficiency 89) reads 51 and his '17 (efficiency 92) reads 60 at 26.3 / 31.7 / 33.9 minutes on the same job — 51/42/60, a saw-tooth on one man's three consecutive seasons, and the whole of it is this one factor. 9.1 points, 11.0 rebounds, .582 true shooting, against Clint Capela '17 pinned at 58 on 12.6 points and .638.",
+    "THE SECOND SUBJECT IS THE SAME STEP ON ONE SEASON'S DRIFT. Nic Claxton '23 (efficiency 92) takes +11.2 and reads 60; his '24 (efficiency 75) takes 0.0 and reads 50, on 12.6 -> 11.8 points and .691 -> .629 true shooting at 29.9 -> 29.8 minutes. The standard path moved -1.5. The foot moved -11.2. The same shape, measured on the pool: Tyson Chandler '08 -> '09 56 -> 40, Dikembe Mutombo '00 -> '01 55 -> 41, DeAndre Jordan '19 -> '20 56 -> 45. All four pairs now read 59/54, 54/46, 54/47 and 55/48.",
+    "BOTH ENDS OF THE RAMP ARE NOW THE SAME MEASURED STATISTIC ON NESTED POPULATIONS, which is recal_139's own construction extended downward instead of upward: 93 is the upper quartile of conversion among the cards that clear the elite line (recal_139's number, re-measured today at 93 on 164 cards) and 63 is the upper quartile of the whole class. It is where the class's BEST QUARTER begins — three quarters of the low-usage interior pool are still excluded outright — and 85 is not deleted but becomes a point inside the ramp, at 0.73 of it, which is recal_118's move in its own words: 'a threshold becomes the point of saturation, the same number doing the job it was chosen for'.",
+    "THE SIZE IS SOLVED AND THAT IS WHAT HOLDS THE BOARD STILL. Widening a ramp RE-PRICES every card above the old foot, so EF_SIZE is the size at which the class's MEDIAN PAID CARD — efficiency 90, the median of the 148 cards the term pays — is paid exactly what 0.14 paid it before. It comes out 0.14 x 5/6 = 0.116667 exactly, and it is written into the file as the equation, not the number.",
+    "RICHAUN HOLMES '21 IS THE PROOF THIS IS A RENORMALISATION AND NOT A FIT. recal_163 pinned him off 62 +-3 and left him at 65 with ZERO room upward. His efficiency is 89, ONE point off the median the size is solved on, and he moves +0.107 of raw (65.224 -> 65.331) and still prints 65. The card the anchor makes untouchable is untouched BY CONSTRUCTION, not by a name check: a bare foot move to 82 — the highest foot that reaches nothing at all — already takes him to 66.",
+    "WHAT WAS MEASURED AND REJECTED. (1) THE BARE FOOT MOVE, no renormalisation, swept 82 / 80 / 78 / 75 / 72 / 70 / 65 / 60: it breaks recal_163's Holmes pin at EVERY value including 82, because the pin sits 0.28 of raw under the rounding line, and it never reaches the subject before it does. (2) MOVING THE TOP instead of the foot: at any top that holds Gobert '16's payment, Gobert '17 falls from 60 to the low 50s — the saw-tooth is flattened from the wrong end. (3) RENORMALISING AT THE CLASS'S p75 (93) is the bare foot move again, and at its p25 (86) the term shrinks so far that Cedric Maxwell '80 leaves his band. The median is the only renormalisation point that both reaches the subjects and holds the pins.",
+    "THE EXCLUSIONS THIS TERM DEPENDS ON ARE BYTE-IDENTICAL, verified rather than assumed: the playvol ceiling (70) still keeps it disjoint from recal_109's elite passer, so John Stockton '96 and Steve Nash '05 move by zero; the 3pt ceiling (68) still keeps it disjoint from recal_64's off-ball floor, so Kyle Korver '15 and Steve Kerr '96 move by zero; the volume band (35-45) is recal_139's and is untouched, so Clint Capela '18 (volume 45) takes nothing at all and holds his 61 +-1 pin at 60."
+  ]
+}
