@@ -85,6 +85,12 @@ _MPG = {k: (v or {}).get('mpg') for k, v in _STATS_RAW.items()}
 # below which the load terms earn nothing. Both are stated in COST and derived, not chosen by taste:
 # see the long comment at the load term itself, inside o_score.
 LOAD_FOOT, LOAD_FULL = 12.0, 24.0
+# recal_163: SECOND_FULL is the SECOND-payment full-load line — the minutes at which a rate the
+# standard path has ALREADY paid once is paid again in full. recal_130 settled that a rate paid twice
+# is scaled twice and that the second line is the class's own upper quartile of minutes, not the
+# 24-minute bench boundary; 33.9 is that quartile, measured on the 193 cards recal_107 and recal_112
+# pay. The long comment sits at the two terms themselves, inside o_score.
+SECOND_FULL = 33.9
 # recal_99: the evidence recal_91's stretch-big terms are paid against - load, or glass.
 SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8.0, 22.0, 45.0, 65.0
 def load_share(p):
@@ -693,15 +699,77 @@ def o_score(p, trace=None):
     # gate never fires, so there is no bonus to un-throttle) and breaks six anchors; recal_96's load
     # term is already 1.0 for him at 27.2 mpg. None of them can tell a two-level big from a lob
     # finisher, because none of them reads the second zone.
+    # recal_163 (HIS RULING, verbatim: "Agree"). TWO SECOND PAYMENTS FOR ONE CLAIM, BOTH AT FULL
+    # PRICE AND BOTH AT NO LOAD. The whole round is stated here and at recal_112's term below,
+    # because it is ONE change read at the two places it lands.
+    #
+    # THE CARD. Richaun Holmes '21 printed OFF 75 — above Deandre Ayton '22 (72, the same mid 75, a
+    # better rim 74 and twice the load) and eleven clear of Jarrett Allen '22 (64) — on 14.2 points
+    # and 8.3 rebounds at 29.2 minutes, 17.0% usage and BPM +0.6. Against his own '20 (12.3/8.1 at
+    # 28.2 minutes) his true shooting went DOWN, .681 -> .669, and his OFF went 53 -> 75.
+    # THE STANDARD PATH MOVED 56.8 -> 62.7 of that. The other +18.3 is these two terms firing at
+    # once and each paying in full: recal_107's mid gate crossed 0.07 -> 1.00 as his mid went 56 ->
+    # 76 (+9.5), and recal_112's efficiency gate crossed its 85 foot as his efficiency went 83 -> 89
+    # (+8.8). Round 112's receipt checked non-stacking on ONE card, Deandre Ayton '26, where one of
+    # the two gates was shut — so the stack was never measured on a card that clears both.
+    #
+    # CLAUSE 1 — ONE CLAIM, ONE PAYMENT. The two terms are not two facts. recal_107 pays a big whose
+    # SECOND LEVEL is as good as his first; recal_112 pays a big whose INTERIOR CONVERSION is elite
+    # at low usage. For a two-level interior big they are the same sentence said twice, and they
+    # meet by construction: recal_107's efficiency ramp SATURATES at 85 and recal_112's efficiency
+    # ramp BEGINS at 85, so above 85 both are paid, in full, for one man's conversion. The second
+    # payment is therefore paid only on WHAT THE FIRST LEFT UNPAID — `max(0, interior - two_level)`,
+    # so the pair sums to the larger of the two and never to both. This is recal_118's shape
+    # (`std + f x (floor - std)`, a correction and not a rival score) and recal_117's rule (read the
+    # claim ONCE) applied across two terms instead of inside one.
+    # IT IS BYTE-IDENTICAL FOR EVERY CARD THAT TAKES ONE TERM: of 10,000 cards, 48 take recal_107,
+    # 151 take recal_112 and SIX take both — Kevin Gamble '91, Richaun Holmes '21, Serge Ibaka '13,
+    # Brad Miller '03/'04/'05. Gamble '91 is the same defect on a wing and is named here because the
+    # scout found him independently: he printed OFF 76 on 15.6 points at 33 minutes.
+    #
+    # CLAUSE 2 — THE SECOND PAYMENT CARRIES ITS OWN LOAD LINE, and it is recal_130's ruling applied
+    # where it had not been. Both of these terms pay a per-possession RATE that the standard path has
+    # already paid once (zones at 0.22/0.08, efficiency at 0.11), and both took that rate raw, with
+    # no reading of the minutes that produced it. recal_130: "A rate paid twice has to be scaled
+    # twice, and the second line is not the bench boundary" — recal_96's LOAD_FULL of 24 asks "did
+    # this man play at all", which every rotation big clears. The line is the CLASS'S OWN UPPER
+    # QUARTILE OF MINUTES, measured on the 193 cards these two terms pay: p25 27.2, median 31.1,
+    # p75 33.9 — so SECOND_FULL = 33.9, and the share is recal_96's own ramp off its own foot,
+    # `(mpg - LOAD_FOOT) / (SECOND_FULL - LOAD_FOOT)`, clipped to [0, 1]. No new constant but the
+    # measured line. A card with no minutes on the sheet takes 1.0 — recal_96's "measured, or not at
+    # all". The subject reads 29.2 minutes and takes 0.785 of one payment where he took 1.000 of two.
+    #
+    # WHY BOTH CLAUSES, measured on the whole pool and neither is decoration: clause 1 alone puts the
+    # subject on 67 (five clear of his band's centre and outside it); clause 2 alone, with the two
+    # terms still added, puts him on 72. Together: 65.
+    # AND 65 IS THE FLOOR OF WHAT IS REACHABLE, which is why he lands on his band's edge and not on
+    # its centre. The frontier is Nenê '11, pinned off 66 +-2 by recal_139 and reading 65: he is
+    # 30.5 minutes to the subject's 29.2, so any factor monotone in minutes pays him about what it
+    # pays the subject. Swept: the subject reads 65 across every line from 33.4 to 34.3 and the line
+    # cannot pass 34.3 — at 34.4 Nenê leaves his band — while the subject never reads below 65
+    # anywhere in the admissible window. 33.9 is the measured quartile and it sits inside that window
+    # with room either side. Reaching 62 itself would need the pair zeroed for him entirely, because
+    # recal_118's off-ball-floor correction damps every further point he loses by 0.84.
+    # MEASURED on the pool: 93 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -10, and they
+    # are the two-level and interior bigs at bench and rotation minutes (Mark West '91 50 -> 45,
+    # DeAndre Jordan '13 55 -> 51, Darryl Dawkins '83 64 -> 60). DEF and every attribute move on
+    # ZERO; the top 12 by OFF is identical; every anchor holds, including recal_107's own subject
+    # (Ayton '26 59 -> 57, band 58 +-3) and recal_112's (Cedric Maxwell '80 68, unmoved at 35.2 mpg).
     TL_MID_LO, TL_MID_HI = 55.0, 70.0
     TL_EFF_LO, TL_EFF_HI = 70.0, 85.0
+    _mp2 = _MPG.get(p['name'])
+    _second = 1.0 if _mp2 is None else min(1.0, max(0.0,
+              (_mp2 - LOAD_FOOT) / (SECOND_FULL - LOAD_FOOT)))
+    _tl_add = 0.0
     if is_big(p) and a['volume'] < 55:
         _gm = min(1.0, max(0.0, (a['mid'] - TL_MID_LO) / (TL_MID_HI - TL_MID_LO)))
         _ge = min(1.0, max(0.0, (a['efficiency'] - TL_EFF_LO) / (TL_EFF_HI - TL_EFF_LO)))
         if _gm * _ge > 0.0:
-            std = max(std, std + _gm * _ge * (0.22 - 0.08) * z[1])
+            _tl_add = _gm * _ge * (0.22 - 0.08) * z[1] * _second
+            std = max(std, std + _tl_add)
             if trace is not None:
-                trace['two_level'] = dict(gm=_gm, ge=_ge, z1=z[1], added=_gm * _ge * 0.14 * z[1])
+                trace['two_level'] = dict(gm=_gm, ge=_ge, z1=z[1], mpg=_mp2, load=_second,
+                                          added=_tl_add)
     # recal_109 (HIS RULINGS, verbatim: "Agree with both" on the scout's group B, and on Steve Nash
     # '05: "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol").
     # THE ELITE PASSER.
@@ -940,10 +1008,23 @@ def o_score(p, trace=None):
         # recal_139: the two halves of ONE claim are combined by their GEOMETRIC MEAN, not their
         # product. The two EXCLUSION gates (_ep for recal_109's passers, _e3 for recal_64's
         # shooters) stay hard multipliers — they decide class membership, not degree.
-        _ef = 0.14 * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3
-        std += _ef
+        # recal_163 (HIS RULING, verbatim: "Agree"), the second half of the round whose argument is
+        # written out at recal_107's term above. TWO THINGS, and both of them are that term's:
+        #   x _second   THE SECOND-PAYMENT LOAD LINE (recal_130's doctrine, SECOND_FULL = 33.9, the
+        #               upper quartile of minutes among the 193 cards these two terms pay). This is a
+        #               rate the standard path already paid at 0.11; a rate paid twice is scaled
+        #               twice, and the second line is not recal_96's 24-minute bench boundary.
+        #   max(0, ...) ONE CLAIM, ONE PAYMENT. Where recal_107's two-level premium has already
+        #               fired, this term is paid only on WHAT THAT LEFT UNPAID, so a big whose
+        #               second level and whose interior conversion are both elite is paid the larger
+        #               of the two claims and not their sum. Six cards of 10,000 take both; for
+        #               every other card `_tl_add` is 0.0 and this line is the identity.
+        _ef = 0.14 * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3 * _second
+        _add = max(0.0, _ef - _tl_add)
+        std += _add
         if trace is not None:
-            trace['interior'] = dict(gate=((_ee * _ev) ** 0.5) * _ep * _e3, added=_ef,
+            trace['interior'] = dict(gate=((_ee * _ev) ** 0.5) * _ep * _e3, added=_add, full=_ef,
+                                     two_level=_tl_add, load=_second, mpg=_mp2,
                                      eff_share=_ee, vol_share=_ev, product=_ee * _ev)
     # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
     # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
@@ -1652,6 +1733,11 @@ if _CARD:
               f"share {_i2['eff_share']:.3f} and volume share {_i2['vol_share']:.3f}, combined by "
               f"their geometric mean {(_i2['product'] ** 0.5):.3f} rather than their product "
               f"{_i2['product']:.3f} -> gate {_i2['gate']:.2f}: +{_i2['added']:.3f}")
+        print(f"  recal_163 - second-payment load {_i2['load']:.3f} "
+              f"({_i2['mpg'] if _i2['mpg'] is not None else 'no'} mpg against the class's own "
+              f"{SECOND_FULL:.1f}-minute line, foot {LOAD_FOOT:.0f}) -> {_i2['full']:.3f}, of which "
+              f"recal_107's two-level premium ({_i2['two_level']:.3f}) already paid: "
+              f"+{_i2['added']:.3f} left to pay")
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
@@ -1661,7 +1747,9 @@ if _CARD:
     if 'two_level' in _ot:
         _t2 = _ot['two_level']
         print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "
-              f"second zone {_t2['z1']} paid at the first zone's rate: +{_t2['added']:.3f}")
+              f"second zone {_t2['z1']} paid at the first zone's rate x recal_163's second-payment "
+              f"load {_t2['load']:.3f} ({_t2['mpg'] if _t2['mpg'] is not None else 'no'} mpg against "
+              f"the class's own {SECOND_FULL:.1f}-minute line): +{_t2['added']:.3f}")
     if 'turnover_charge' in _ot:
         _t3 = _ot['turnover_charge']
         print(f"HANDLER'S TURNOVER CHARGE (recal_121) - handling load {_t3['handling']:.1f} "

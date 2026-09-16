@@ -1521,5 +1521,14 @@
     "round": 154,
     "ruling": "Agree with 5",
     "note": "the subject of recal_154. recal_138's hub-role volume floor stops being a step at PD_V_HI and becomes a ramp over the hub's own width (HUB_FULL - HUB_GATE = 20): full at 68, nothing at 48, no new constant. 75 -> 80, inside the 81 +-3. 228 cards move on OFF, every one of them up, mean +1.83, max +6; DEF, every attribute and OFF_TOP/DEF_TOP are untouched and every big is byte-identical."
+  },
+  {
+    "card": "Richaun Holmes '21",
+    "scale": "off",
+    "target": 62,
+    "tol": 3,
+    "round": 163,
+    "ruling": "Agree",
+    "note": "the subject of recal_163. recal_107's two-level premium and recal_112's efficient-interior term were BOTH paid in full on one card - his mid crossed 56 -> 76 and his efficiency crossed the 85 foot in the same season, worth +18.3 of an o_score whose standard path moved 56.8 -> 62.7. The pair now sums to the LARGER of the two (the second is paid on what the first left unpaid) and both carry a second-payment load line at SECOND_FULL = 33.9, the upper quartile of minutes among the 193 cards they pay. 75 -> 65, at the top edge of the band, and 65 is the FLOOR of what is reachable: the line cannot pass 34.3 without taking Nene '11 out of recal_139's 66 +-2, and the subject reads 65 across the whole admissible window. 93 cards move on OFF, every one of them DOWN, all bigs; DEF and every attribute move on ZERO."
   }
 ]
