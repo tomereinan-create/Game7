@@ -502,6 +502,21 @@ export const DEFAULT_TACTICS: Tactics = {
  * Set at the middle of each bracketed window: hunt 3.85 (blind -0.41, oracle +0.52), crashOff 0.55 (-0.53, +0.57),
  * crashDef 0.72 (-0.38, +0.52). The 641 glue-floor risers (155) and 228 hub-ramp risers (154) are guards in the ovr>=55 pool,
  * so every tax whose benefit reads an offensive mismatch moved; the six other taxes held.
+ * recal_163 stopped recal_107's two-level premium and recal_112's efficient-interior term STACKING on one
+ * card and put both on a second-payment load line: 93 o_ovrs and 70 OVRs, EVERY ONE DOWN, and every one a
+ * big. This is the exact mirror of 154/155 — the fives now score LESS, so the default plan is weaker, a
+ * blind call costs less and the oracle call is worth more of a smaller number. The two taxes that broke
+ * are the two whose benefit reads a mismatch involving bigs, and they broke on OPPOSITE edges: hunt went
+ * over the BLIND ceiling at 3.85 (-0.2123, needs -0.30) and crash def glass went under the ORACLE floor at
+ * 0.72 (+0.4855, needs +0.50). Swept ONCE from main's constants, one sweep each. hunt: 3.85 (-0.2123) /
+ * 3.90 (-0.2532) / 3.94 (-0.2861) / 3.95 (-0.2943) / 3.96 (-0.3024, over the ceiling) / 4.00 (+0.5110) /
+ * 4.02 (+0.5018) / 4.03 (+0.4972, under the floor) — feasible about 3.953 to 4.024, a NARROW 0.071.
+ * crash def: 0.72 (+0.4855) / 0.68 (+0.4989) / 0.67 (+0.5022) / 0.65 (+0.5088) / 0.50 (-0.3064) / 0.49
+ * (-0.2986, over the ceiling) / 0.45 (-0.2673) — feasible about 0.492 to 0.676, a width of 0.184. Both
+ * take their true midpoints by r126's rule: hunt 3.85 -> 3.99 (blind -0.327, oracle +0.516, 0.027 and
+ * 0.016 of room) and crash def 0.72 -> 0.58 (blind -0.369, oracle +0.533, 0.069 and 0.033). That is
+ * hunt's FOURTEENTH move. crash off held at 0.55 (blind -0.53, oracle +0.57) and the six others held
+ * their bands. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -509,9 +524,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.85,
+  hunt: 3.99,
   crashOff: 0.55,
-  crashDef: 0.72,
+  crashDef: 0.58,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

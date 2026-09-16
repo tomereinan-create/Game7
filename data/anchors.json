@@ -1530,5 +1530,14 @@
     "round": 164,
     "ruling": "Agree",
     "note": "65 -> 68, at the EDGE of the tolerance and the round says so. d_bigness clause 1's SHAPE test, `rimprot >= perdef`, was the last hard step left in the function after recal_93 (the middle clause), recal_99 (deterrence) and recal_136 (clause 1's rim-protection bar). His rimprot 60 is past recal_136's saturation at 55, so one point over perdef 59 returned a hard 1.0 and graded him on the whole big vector (57.92 x 1.1305 = 65) while his own perimeter vector read 62.01 x 1.1305 = 70; '05 (rimprot 61 < perdef 65) is 100% perimeter at 77, '06 at 82, '07 92% perimeter at 89. The test is now a ramp on the signed gap rimprot - perdef over recal_136's OWN width (C1_RP_HI - C1_RP_LO = 10) - no new constant; the clause's `3pt < 45` and recal_136's ramp are byte-identical, and recal_99's deterrence guard keeps its hard test (there it can only ever lift). 68 is his CEILING here and not a tuning failure: recal_93's middle clause grades him 0.4286 big on rimprot 60 / 3pt 26 on its own and it is a max() alongside clause 1, so reaching 70 would mean reopening recal_93's ramp. Wider widths reach no further for him and cost recal_136's own subject: DEF_RP's 35 takes Ken Norman '94 to 49 and 20 takes him to 51, both outside his 55 +-3."
+  },
+  {
+    "card": "Richaun Holmes '21",
+    "scale": "off",
+    "target": 62,
+    "tol": 3,
+    "round": 163,
+    "ruling": "Agree",
+    "note": "the subject of recal_163. recal_107's two-level premium and recal_112's efficient-interior term were BOTH paid in full on one card - his mid crossed 56 -> 76 and his efficiency crossed the 85 foot in the same season, worth +18.3 of an o_score whose standard path moved 56.8 -> 62.7. The pair now sums to the LARGER of the two (the second is paid on what the first left unpaid) and both carry a second-payment load line at SECOND_FULL = 33.9, the upper quartile of minutes among the 193 cards they pay. 75 -> 65, at the top edge of the band, and 65 is the FLOOR of what is reachable: the line cannot pass 34.3 without taking Nene '11 out of recal_139's 66 +-2, and the subject reads 65 across the whole admissible window. 93 cards move on OFF, every one of them DOWN, all bigs; DEF and every attribute move on ZERO."
   }
 ]

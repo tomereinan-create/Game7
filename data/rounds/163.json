@@ -1,0 +1,302 @@
+{
+ "round": 163,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree",
+ "title": "recal_107's two-level premium and recal_112's efficient-interior term stop STACKING — the second is paid only on what the first left unpaid, and both carry a second-payment load line at the class's own upper quartile of minutes (SECOND_FULL = 33.9)",
+ "subject": "Richaun Holmes '21",
+ "scale": "off",
+ "target": 62,
+ "tol": 3,
+ "before": 75,
+ "after": 65,
+ "pipeline_version": 157,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_add = max\\(0\\.0, _ef - _tl_add\\)",
+   "label": "THE ROUND, CLAUSE 1 — ONE CLAIM, ONE PAYMENT: recal_112's term is paid only on what recal_107's two-level premium left unpaid, so the pair sums to the larger and never to both",
+   "note": "`std += _ef` -> `std += max(0, _ef - _tl_add)`: identity for the 9,994 cards that take at most one of the two"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SECOND_FULL = 33\\.9",
+   "label": "THE ROUND, CLAUSE 2 — the SECOND-payment full-load line, recal_130's doctrine applied where it had not been",
+   "note": "measured, not chosen: the 75th percentile of minutes among the 193 cards these two terms pay (p25 27.2, median 31.1, p75 33.9)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_tl_add = _gm \\* _ge \\* \\(0\\.22 - 0\\.08\\) \\* z\\[1\\] \\* _second",
+   "label": "recal_107's premium now reads the minutes that produced the rate — the second zone at the first zone's rate, times the second-payment load share"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "\\(_mp2 - LOAD_FOOT\\) / \\(SECOND_FULL - LOAD_FOOT\\)",
+   "label": "the share is recal_96's OWN ramp off recal_96's OWN foot (LOAD_FOOT = 12) — the round adds no constant but the measured line"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "\\* _ep \\* _e3 \\* _second",
+   "label": "recal_112/139's efficient-interior term on the same second-payment line, before the netting"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "TL_MID_LO, TL_MID_HI = 55\\.0, 70\\.0",
+   "label": "recal_107's mid gate, untouched — the round changes what the terms are WORTH, never who is in their class"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "EF_E_LO, EF_E_HI = 85\\.0, 93\\.0",
+   "label": "recal_112's efficiency foot and recal_139's re-cut top, untouched — Ayton '26, Capela '17 and Sabonis '21 are still below the foot and take nothing"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+   "label": "recal_96's OWN line is untouched at 24 — the first payment of a rate still saturates at the bench boundary; only the SECOND payment gets the higher line"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
+   "label": "recal_89's LOCKED DIAL STATE — not one o_score weight moved"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived (recal_90's warning) — every card above the knee is byte-identical"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.99",
+   "label": "the deviation tax law re-ratified on the moved pool (recal_59's harness, recal_126's midpoint rule)",
+   "note": "3.85 -> 3.99: hunt went OVER the blind ceiling (-0.2123) because the fives lost offence; feasible 3.953-4.024, true midpoint"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.58",
+   "label": "the other broken tax, swept once from main's constant",
+   "note": "0.72 -> 0.58: crash def glass went UNDER the oracle floor (+0.4855); feasible 0.492-0.676, true midpoint. crash off held at 0.55"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Richaun Holmes '21",
+   "scale": "ovr",
+   "op": "~",
+   "value": 70,
+   "tol": 0,
+   "label": "the subject's OVR follows OFF through recal_104's even defence-led blend: 76 -> 70, DEF 76 unmoved"
+  },
+  {
+   "card": "Richaun Holmes '21",
+   "scale": "def",
+   "op": "==",
+   "value": 76,
+   "label": "DEF moved on ZERO of 10,000 cards — the round is entirely inside o_score"
+  },
+  {
+   "card": "Richaun Holmes '20",
+   "scale": "off",
+   "op": "~",
+   "value": 53,
+   "tol": 0,
+   "label": "THE OTHER HALF OF THE PAIR THE FINDING IS ABOUT, unmoved: his mid 56 leaves recal_107's gate at 0.07 and his efficiency 83 is under recal_112's 85 foot, so he never took either term. The season gap 53 -> 75 was the whole complaint and is now 53 -> 65 on a box that went 12.3/8.1 to 14.2/8.3 with true shooting DOWN"
+  },
+  {
+   "card": "Kevin Gamble '91",
+   "scale": "off",
+   "op": "~",
+   "value": 68,
+   "tol": 0,
+   "label": "THE SAME DEFECT ON A WING, found independently by the scout: 76 -> 68, and 70 -> 64 on OVR. One of the six cards in the pool that cleared both gates"
+  },
+  {
+   "card": "Deandre Ayton '26",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "recal_107's OWN subject and pin (\"This should be around 58 OFF. Super eff\"): 59 -> 57 at 27.2 minutes, still inside the band. The term he was given is still his; it is now paid for the minutes he played"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 4,
+   "label": "recal_112's OWN subject and pin: 68, UNMOVED — 34.3 minutes is past the second-payment line, so a starter's efficiency is still paid in full"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 66,
+   "tol": 2,
+   "label": "recal_139's pin and THE FRONTIER OF THIS ROUND: 65 -> 64 at 30.5 minutes. He is what stops the load line going past 34.3, and therefore what puts the subject on 65 rather than lower"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_52's pin at its floor, 60, UNMOVED — recal_139 already took this term off him entirely, so there is nothing here to scale"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_51's pin, 57, unmoved — mid 21 is below recal_107's gate and efficiency 79 below recal_112's foot"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "recal_55's pin, 71, unmoved — efficiency 70 is under the interior foot and volume 55 shuts the two-level gate"
+  },
+  {
+   "card": "Montrezl Harrell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 63,
+   "tol": 2,
+   "label": "recal_96's pin, 63, unmoved — the 17-minute bench big the load doctrine was written for takes neither term"
+  },
+  {
+   "card": "Deandre Ayton '22",
+   "scale": "off",
+   "op": "~",
+   "value": 70,
+   "tol": 0,
+   "label": "the comparable the finding names: 72 -> 70 (29.5 mpg), and the subject no longer reads above him"
+  },
+  {
+   "card": "Jarrett Allen '22",
+   "scale": "off",
+   "op": "~",
+   "value": 64,
+   "tol": 0,
+   "label": "the other comparable, 64, UNMOVED — the gap to the subject falls from 11 to 1"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "recal_52's pin, 77, unmoved — a 37.6-minute volume big is outside both gates by usage"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "the wall, 85, unmoved"
+  },
+  {
+   "card": "Hakeem Olajuwon '93",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "the wall, 87, unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "the summit is untouched — nothing above the 93 knee moved and OFF_TOP was not re-derived"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "the same, from the perimeter side"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Deandre Ayton '22",
+   "below": "Richaun Holmes '21",
+   "label": "THE INVERSION THE RULING IS ABOUT: a 14.2-point, BPM +0.6 role big read 75 against Ayton's 72 on the same mid, a better rim and twice the load. Now 70 > 65"
+  },
+  {
+   "scale": "off",
+   "above": "Richaun Holmes '21",
+   "below": "Richaun Holmes '20",
+   "label": "the subject's own arc keeps its direction (65 > 53) — his '21 was a better season, it was not a twenty-two point season"
+  },
+  {
+   "scale": "off",
+   "above": "Cedric Maxwell '80",
+   "below": "Richaun Holmes '21",
+   "label": "recal_112's OWN subject — 16.9 points on .679 true shooting at 34.3 minutes — now reads above the card that was taking his term twice: 68 > 65"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Clint Capela '17",
+   "label": "recal_47's order pin: the volume big over the lob finisher, 99 > 57"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 93,
+  "max_abs": 10,
+  "top": [
+   ["Richaun Holmes '21", 75, 65],
+   ["Kevin Gamble '91", 76, 68],
+   ["Mark West '91", 50, 45],
+   ["Adam Keefe '98", 55, 51],
+   ["Darryl Dawkins '83", 64, 60],
+   ["DeAndre Jordan '11", 51, 47],
+   ["DeAndre Jordan '12", 55, 51],
+   ["DeAndre Jordan '13", 55, 51],
+   ["James Donaldson '83", 50, 46],
+   ["Joel Przybilla '09", 47, 43],
+   ["Mark West '89", 47, 43],
+   ["Mikki Moore '07", 56, 52]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '22",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25",
+   "Nikola Jokić '26",
+   "Shai Gilgeous-Alexander '26"
+  ]
+ },
+ "cost": [
+  "THE SUBJECT LANDS ON HIS BAND'S EDGE, 65 against 62 +-3, AND 65 IS THE FLOOR OF WHAT IS REACHABLE. The frontier is Nenê '11 (recal_139, off 66 +-2, reading 65 before the round) at 30.5 minutes against the subject's 29.2: any factor monotone in minutes pays him about what it pays the subject. Swept over the whole line: the subject reads 65 from 33.4 to 34.3 and never lower, and at 34.4 Nenê leaves his band. Reaching 62 itself would need both terms zeroed for him, because recal_118's off-ball-floor correction damps every further o_score point he loses by 0.84.",
+  "A NEW ANCHOR: Richaun Holmes '21 off 62 +-3 (round 163), pinned at the number the ruling names rather than at the 65 reached. 155 anchors, 0 failing.",
+  "THE FOOTPRINT: 93 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, mean -2.38, max -10; 70 OVRs follow; DEF, every attribute and every card above the 93 knee are byte-identical, and the top 12 by OFF is unchanged with no rank flip touching the top 50 by OVR. Every mover is a big (or, in Kevin Gamble '91's case, a wing inside is_big) who took recal_107's or recal_112's term. data/build_ratings.py is untouched.",
+  "TWO DEVIATION TAXES MOVED, on OPPOSITE edges, and this is the mirror of rounds 154/155: a round that LOWERS 93 offensive cards makes the default plan weaker, so a blind call costs less (hunt went over the blind ceiling at 3.85, -0.2123) and the oracle call is worth less of a smaller number (crash def glass went under the oracle floor at 0.72, +0.4855). Each was swept ONCE from main's constant and set at its true midpoint by recal_126's rule: hunt 3.85 -> 3.99 (feasible 3.953-4.024, a NARROW 0.071), crashDef 0.72 -> 0.58 (feasible 0.492-0.676). crash off held at 0.55 and the six others held their bands. All nine rows pass. This is hunt's fourteenth move.",
+  "STILL OPEN, and it belongs to whoever reads this term next: the second-payment load line is a NEW line in this file (SECOND_FULL = 33.9) and recal_130's own second line for the elite passer is 34.7, measured the same way on a different class. Two classes, two quartiles, two constants — if a later round unifies them it should do it by re-measuring, not by averaging.",
+  "TEAM DIALS: src/data/campaigns.json moved one tier line and src/data/opponents.json six; no five's dial moved enough to change a tier's difficulty band, and no team anchor (rank or dial) fails."
+ ],
+ "notes": [
+  "WHAT THE RULING WAS REALLY ABOUT, decomposed on the card. Richaun Holmes '21, 29.2 minutes, 17.0% usage, 14.2 points: o_score standard path 62.656, recal_107's two-level premium +9.520, recal_112's efficient-interior term +8.811, total 80.99 x 0.93 = OFF 75. Against his own '20 the standard path moved 56.8 -> 62.7 and the other +18.3 was these two terms turning on together - mid 56 -> 76 crossed recal_107's gate 0.07 -> 1.00 and efficiency 83 -> 89 crossed recal_112's 85 foot - on a season whose true shooting went DOWN, .681 -> .669. Round 112's receipt checked non-stacking on ONE card, Deandre Ayton '26, where one of the two gates was shut, so the stack was never measured on a card that clears both.",
+  "WHY THE TWO TERMS OVERLAP BY CONSTRUCTION, which is what makes the fix a formula and not a patch: recal_107's efficiency ramp SATURATES at 85 and recal_112's efficiency ramp BEGINS at 85. Above 85 both terms are paid, in full, for one man's conversion - the pair is a single claim (this big's interior scoring is underpaid) charged twice. recal_117 ruled the cure for exactly this shape one term up the file (\"the product of two decreasing factors is steeper than either ... READ THE CLAIM ONCE\") and recal_139 applied it inside recal_112 itself.",
+  "SIX CARDS OF 10,000 TAKE BOTH TERMS and they are the whole of clause 1's footprint: Kevin Gamble '91, Richaun Holmes '21, Serge Ibaka '13, Brad Miller '03, '04 and '05. 48 cards take recal_107 alone, 151 take recal_112 alone, and for every one of them `_tl_add` is zero or `_ef` is zero and the max() is the identity.",
+  "WHY BOTH CLAUSES, measured on the whole pool, neither decorative: clause 1 alone (one claim, one payment) leaves the subject on 67, outside his band; clause 2 alone (both terms at the second-payment load line, still added together) leaves him on 72. Together, 65. Clause 2 is also what carries the round beyond the six stacking cards, and it is the same doctrine recal_130 wrote for the elite passer: a rate the standard path already paid is being paid a second time, and the second payment cannot take recal_96's 24-minute bench line, which every rotation big clears.",
+  "THE LINE IS MEASURED, NOT CHOSEN, by recal_130's own method: of the 193 cards these two terms pay, the 75th percentile of minutes is 33.9 (p25 27.2, median 31.1). The share is recal_96's own ramp off its own foot, (mpg - 12) / (33.9 - 12), clipped - so the round introduces no constant but the measured line, and a card with no minutes on the sheet takes 1.0, which is recal_96's \"measured, or not at all\".",
+  "REJECTED, all measured on the whole pool against every anchor: the geometric mean of the two terms (recal_139's own combination) and the min both leave the subject at 66-67 without a load line and land on the same 65 with one, so the max() is taken because it is the only one of the three with a sentence behind it - the second payment is paid on what the first left unpaid. A flat share min(1, mpg / 33.9) instead of recal_96's ramp leaves him on 66. Re-deriving OFF_TOP was never considered: recal_90's warning is that it moves every card above the knee, and this round moves nobody there.",
+  "NOTHING IN THE ROUND IS A PER-PLAYER OVERRIDE. Both clauses are evaluated on every card in the pool; the subject is reached by what the class function does to his minutes and his two gates, and his name appears in the code only in the comment that records the ruling."
+ ]
+}
