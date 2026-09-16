@@ -86,6 +86,7 @@ def trk_rho(att):
 TRK_BAND_LO  = 62.5    # regressed tracked reading, card space, where elite starts (p75 full-sample)
 TRK_BAND_TOP = 72.8    # ... and where it is full (p99)
 TRK_BAND_W   = 0.32    # what a fully elite measured season is worth in composite space
+BAND_FOOT, BAND_FULL = 12.0, 34.0   # recal_159: recal_96's 12-minute foot; full load = this term's own class p75 (34.04)
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -728,9 +729,42 @@ for yr, rows in seasons.items():
         # recal_12/101's sample weight then decides how much of the band credit a partial season
         # earns, which is why a 285-shot rookie year (Amen Thompson '24, and it measures +1.4%
         # besides) earns none of it. wv carries the trace-vote rule through untouched.
+        # RECAL_159 (his ruling on Andre Roberson '15, verbatim: "Can go down to lower mid 80s"):
+        # THE BAND CREDIT IS PAID AT THE CARD'S LOAD. recal_149's weight on the credit is a shot
+        # COUNT and nothing else — `_sample_weight` is attempts / 500 — so a 19.2-minute bench wing
+        # switched onto 328 perimeter shots collected two thirds of a credit that is SIZED (see
+        # TRK_BAND_W at the top of this file: "the distance from a season's MEDIAN voted composite to
+        # its MAXIMUM") to carry a median voted defender to the TOP of his season's band. Roberson
+        # '15 (19.2 mpg, 0.8 spg, 0.4 bpg, BPM -0.7, usg 9, no ballot that season; his drep 0.422 is
+        # the 2017 All-Defensive 2nd decayed two years, which puts a no-ballot season inside the
+        # voted band) went perdef 82 -> 91 and DEF 81 -> 88 on an unchanged box line, printing above
+        # Fat Lever '88 and level with Jrue Holiday '17, who read the same kind of line over 32.7
+        # minutes. A COUNT IS NOT A LOAD: the 6ft+ series counts the shots a man was NEAR, and a
+        # switch-everything specialist's count rises with his assignment while his season stays a
+        # bench season. recal_96/130/145/151/157 all put a load line on a rate paid without one; this
+        # was the one term on the DEF side that had none.
+        # THE LINE IS MEASURED ON THIS TERM'S OWN CLASS, recal_117's rule, exactly as recal_145 and
+        # recal_130 measured theirs: of the 135 cards this credit actually pays (q > 0, sample > 0,
+        # wv > 0, and the max() binding), minutes per game run p25 28.40 · median 31.79 · p75 34.04 ·
+        # p90 35.85, so BAND_FULL = 34.0 with recal_96's 12-minute foot, below which a load term
+        # earns nothing. WHY NOT recal_96's 24-MINUTE BENCH BOUNDARY (measured first, it is the
+        # frontier and it is recorded in data/rounds/159.json): 24 minutes sits BELOW this class's
+        # own 25th percentile, so a ramp that saturates there is a no-op for 132 of the 135 cards and
+        # taxes essentially the subject alone — a load line that only one card can feel is a
+        # per-player override wearing a formula's clothes, and it lands him DEF 86, one point outside
+        # the ruling. At 34.0 the whole class pays in proportion to what it carried: 48 cards move,
+        # every one of them down, the largest perdef move is 7 (Matisse Thybulle '20, 19.8 mpg) and
+        # the largest DEF move is 5. The full-time defenders the credit was written for are
+        # untouched — Amen Thompson '24/'25/'26 (recal_149's own pins), Draymond '16, Jrue '21,
+        # Herbert Jones '23, Dort '25/'26, Kawhi '16/'17 and Marcus Smart '19 are all BYTE-IDENTICAL.
+        # NOTHING RISES, AND NOTHING FALLS BELOW ITS PRE-149 VALUE: the term is still a one-way max()
+        # read against the same frozen Pvot pool, so this can only shave credit recal_149 added.
+        # A card with no minutes on the sheet takes 1.0 — recal_52's "measured, or not at all".
         if _dmeas101 is not None:
             _q149 = min(1.0, max(0.0, ((1.0 + 98.0 * _dmeas101) - TRK_BAND_LO) / (TRK_BAND_TOP - TRK_BAND_LO)))
-            _pd149 = PD + TRK_BAND_W * _sample_weight(r['name']) * _q149
+            _dmpg = ((r.get('mp_v') or 0.0) / (r.get('g_v') or 0.0)) if (r.get('g_v') or 0) > 0 else None
+            _dload = 1.0 if _dmpg is None else min(1.0, max(0.0, (_dmpg - BAND_FOOT) / (BAND_FULL - BAND_FOOT)))
+            _pd149 = PD + TRK_BAND_W * _sample_weight(r['name']) * _q149 * _dload
             PD2 = max(PD2, (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(_pd149) * BRK['_vf']))
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)
