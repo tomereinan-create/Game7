@@ -648,15 +648,6 @@
     "note": "post-97, measured — unchanged"
   },
   {
-    "card": "Clint Capela '18",
-    "scale": "off",
-    "target": 61,
-    "tol": 1,
-    "round": 52,
-    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
-    "note": "post-97, measured — unchanged"
-  },
-  {
     "card": "Hakeem Olajuwon '94",
     "scale": "off",
     "target": 88,
@@ -1362,15 +1353,6 @@
     "note": "87 -> 94, the FLOOR of his band. THE HUB IS A ROLE, NOT A BODY. His best box season (BPM 10.1, OBPM 8.3, TS .622, 22.3/11.5) read FOUR BELOW his own '89 because his three-point rating went 37 -> 60, which flips is_big's middle shape clause `rim >= 60 and 3pt < 40` off and takes recal_55's BIG HUB with it: 93.28 [perimeter] against 93.45 + 4.90 [big], the same man, the flag being the whole difference. recal_55's own words are 'an efficient playmaking CENTER ... nothing priced the offense that RUNS THROUGH him' - a claim about a ROLE, with is_big as its proxy. The role is now measured on the two bars o_score already carries: more of the offence goes through his hands as CREATION than as his own shot (playvol - volume, ramped over the hub's own 20-point width, so Westbrook '17's surplus of ONE keeps recal_121's order pin), floored at volume >= PD_V_HI = 68 so this and recal_109's elite passer are DISJOINT by construction. Every big keeps role 1.00 and recal_55's class is untouched. The SIZE is derived rather than inherited: a hub's creation IS his load, so it is paid at the load weight instead of the creation weight and the premium is the gap, 0.26 - 0.19 = 0.07 (was 0.05, never defended); and it is paid wherever load is paid, so recal_26's signature floor reads max(volume, 50, hub load) too. 94 is the FLOOR of what this reaches and 95 needs K = 0.104, which is not derivable from anything in the file. [pipeline-139 integration: his word \"Accept ... 138 at 93\" — the fallback premium size; target re-cut 95±1 → 93±1]"
   },
   {
-    "card": "Nenê '11",
-    "scale": "off",
-    "target": 66,
-    "tol": 2,
-    "round": 139,
-    "ruling": "Nene maybe around 66.",
-    "note": "60 -> 65. recal_112's gate ASKED ONE CLAIM TWICE and one of its two ramps was a needle. His '10 takes the term whole (gate 1.00, +13.86) and his '11 at 0.12 (+1.50), because BOTH ramps slid at once - efficiency 99 -> 88 (ts_rel .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3) - and the gate is their PRODUCT: 0.21 x 0.57 = 0.12, an eighth of the term for a card still in the top 3% of his class on conversion. recal_117's item 4 in its own words, one term down the file: 'the product of two decreasing factors is steeper than either'. The two ramps are two readings of ONE statement, so they are now combined by their GEOMETRIC MEAN (zero whenever either is zero, so every exclusion is byte-identical); the efficiency ramp's top comes off the top of the scale - 99 is ELEVEN cards of the 4,256 in this class - onto the class's own upper quartile of conversion, 93 (measured; median 89); and the volume band is 35-45, which is NOT chosen but is what CLINT CAPELA '18's pin leaves. He is the same card at this term's inputs (ts_rel .664 vs .660, usage 19.3 vs 19.3, efficiency 91 vs 88, so his gate was ALREADY higher), pinned 61 +-1 with zero room up, and only volume separates them: 45 against 38. He loses the term entirely and goes 62 -> 60, the floor of his own band. Measured over 720 parameterisations of the whole gate family graded against every anchor: 83 hold the board and the highest reading any gives the subject is 69."
-  },
-  {
     "kind": "team_rank",
     "season": 2005,
     "ab": "PHO",
@@ -1575,5 +1557,32 @@
     "round": 162,
     "ruling": "Agree",
     "note": "the subject of recal_162. An MVP season with no All-Defensive vote, 0.8 blocks and 0.7 steals a game read DEF 84 (#20 of 239 in 2007, one under Battier '07 and two under Okafor '07) because recal_95's no-vote rim ceiling had a FLAT bottom at 75: a 7-footer whose deterrent composite cleared it collected rimprot 75 with no block evidence of any kind, and the big d_score branch takes that at 0.40. The floor now grades on recal_92's own block band read one step earlier - full at the p80 bar, gone one band-width under it, falling to RIM_BAND_FLOOR 0.55, the bottom the deterrent scale itself starts from. rimprot 75 -> 55, DEF 84 -> 75, OVR 90 -> 88, and he lands with Barkley '93 (75) and Bird '87 (77). The band was SHIFTED rather than reused unshifted because Kevin Durant '19 (def 79 +-3, r99) sits at blk p81, ON recal_92's bar: unshifted he falls to 68 and no choice of base saves him."
+  },
+  {
+    "card": "Eddy Curry '04",
+    "scale": "attr:rim",
+    "target": 82,
+    "tol": 3,
+    "round": 166,
+    "ruling": "166 confirm",
+    "note": "THE SUBJECT of recal_166 (his ruling on the scout's \"Eddy Curry '04 rim 86, near 78\" was \"Eddy agree\", and on the landed round \"166 confirm\"). 86 -> 82. The paint HIGH-VOLUME PREMIUM re-read the composite's own attempt rate UNDISCOUNTED -- 8.61 paint attempts per 100 discounted to 5.79 by creation_factor for the composite (percentile .991 -> .813), then .991 again for the premium, paying the full +0.0679 as if a man with 72.6% of his makes assisted had created the volume himself, on 53.2% conversion (57th percentile of 2004) and BPM -2.8. It now reads share*fga100*creation_factor(sh), the identical expression. 78 IS NOT REACHABLE THROUGH THIS TERM and he confirmed 82: his pre-smooth bar goes 79 -> 75, and the 20/60/20 season blend then averages him with his own '03 (98 -> 91) and '05 (93 -> 86), the SAME assisted shape, which carry 40% of the card. Cutting the neighbours to reach 78 is a per-card use of the smoother, which doctrine 1 forbids."
+  },
+  {
+    "card": "Clint Capela '18",
+    "scale": "off",
+    "target": 60,
+    "tol": 2,
+    "round": 166,
+    "ruling": "166 confirm",
+    "note": "RE-PINNED ONE POINT LOWER, replacing recal_52's 61 +-1 which Tomer released on this round. 60 -> 59. He is the premium's clearest assisted big: 82% of his 2P makes assisted, paint percentile .992 -> .784, premium 0.0681 -> 0.0195, rim 89 -> 85. His '17 pin (r51, 58 +-1) is untouched and holds at 57."
+  },
+  {
+    "card": "Nenê '11",
+    "scale": "off",
+    "target": 65,
+    "tol": 2,
+    "round": 166,
+    "ruling": "166 confirm",
+    "note": "RE-PINNED ONE POINT LOWER, replacing recal_139's 66 +-2 which Tomer released on this round. 64 -> 63. 70% assisted at a mid-class paint rate, so the discounted value falls off the premium's 0.70 gate entirely (.909 -> .600) and he loses the whole 0.0487, rim 73 -> 70. That is the structural cost of reading a discounted value against a RAW pool, which recal_166 kept on purpose."
   }
 ]

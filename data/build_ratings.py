@@ -1000,10 +1000,66 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
         # "Why is Ayton out and James in? Makes no sense") and tests/campaigns.test.ts (recal_142).
         # A round does not spend an old ruling to buy tidiness in a term the new ruling never named.
         # The paint premium keeps the unloaded rate and its class line is measured and on the record
-        # (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line.
+        # (2,004 cards, p75 34.95) so a paint ruling can turn it on in one line. STILL TRUE AFTER
+        # recal_166 below: that round gave the paint premium the CREATION discount, not the LOAD
+        # share, so the paragraph above is the open door it always was and Ayton '26 / Dampier '07
+        # are untouched.
+        #
+        # RECAL_166 (his ruling, "166 confirm", on the scout's "Eddy Curry '04 rim 86, near 78"):
+        # THE PAINT PREMIUM READS THE SAME CREATION-DISCOUNTED RATE THE COMPOSITE READS. ONE CLAIM,
+        # ONE DISCOUNT. This is the objection the paragraph above deferred, arriving at last with a
+        # ruling behind it. The composite one term up discounts the paint attempt rate by
+        # creation_factor -- Eddy Curry '04's 8.61 attempts per 100 become 5.79 and his percentile
+        # 0.991 becomes 0.813 -- and THIS line then re-read the SAME rate UNDISCOUNTED at 0.991 and
+        # paid the full +0.0679, seven card points, as if a man with 72.6% of his makes assisted had
+        # created that volume himself. He converted 53.2% of it, the 57th percentile of 2004, on
+        # BPM -2.8 and 14.7 ppg. A rate discounted once and then paid twice is the same double
+        # payment recal_117 named ("a rate paid twice has to be scaled twice") and recal_157 fixed on
+        # the midrange composite; the premium is simply the last place in this function where the
+        # undiscounted rate was still readable. It now reads share*fga100*creation_factor(sh), the
+        # identical expression the composite reads, so a card's paint VOLUME enters its bar exactly
+        # once and at one scale.
+        #
+        # THE SHAPE IS DELIBERATELY UNTOUCHED: the gate is still 0.70, the payment still 0.07 over a
+        # 0.30 band, and the POOL still stays raw (see vol_rim below -- "adjusted value ranks as
+        # self-created-equivalent volume"). Nothing rises anywhere on the board: 2,003 rim bars fall,
+        # ZERO rise, the largest move is 7 (Moritz Wagner '24) and 423 move by more than 3. The
+        # self-created finishers the premium was written for are untouched -- Zion '24 (assisted2p
+        # .474) keeps 0.0649 of 0.0690 and is BYTE-IDENTICAL at 88, Shaq '00-'02 read 0.995 on both
+        # scales and hold rim 99, Hakeem '93/'94 and Moses '82/'85 do not move a point. What falls is
+        # exactly the assisted diet: Capela '18 .992 -> .784, Nene '11 .909 -> .600, Sabonis '21
+        # .927 -> .641, the subject .991 -> .813.
+        #
+        # THE SUBJECT LANDS AT 82, NOT 78, AND HE CONFIRMED 82. His pre-smooth bar is 79 -> 75; the
+        # 20/60/20 season blend then averages him with his own '03 (98 -> 91) and '05 (93 -> 86),
+        # which are the SAME assisted shape and carry 40% of the card, so 86 -> 82. 78 is not
+        # reachable through this term: the neighbours would have to be cut too, and the smoother is
+        # not a per-card knob. Measured and recorded in data/rounds/166.json.
+        #
+        # TWO OF HIS OWN OFF PINS WERE RELEASED BY ONE POINT TO LET THIS LAND, BY HIS EXPLICIT WORD.
+        # r52's Clint Capela '18 off 61 +-1 and r139's Nene '11 off 66 +-2 were both already standing
+        # on the FLOOR of their bands (60 and 64) with zero room down, and both are assisted-diet
+        # bigs, so the discount takes each one point lower. They are in data/anchors_superseded.json
+        # with his reason and re-pinned at 60 +-2 and 65 +-2. Every other anchor holds untouched.
+        # REJECTED, each measured on the whole pool: scaling the discount by t in [0,1] (t <= 0.10
+        # holds the OLD pins and moves the subject by ZERO, t = 0.15 already takes Nene out, so there
+        # was no partial form to hide behind); ranking the discounted value against a DISCOUNTED pool
+        # instead of this file's raw one (the subject keeps 0.0615 of 0.0679, six tenths of a point);
+        # and deleting the premium outright (the subject reaches 79 but Shaq '00-'02 fall to rim 97
+        # and Zion '24 to 81, which is the volume-first doctrine itself, and 8 anchors fail).
+        #
+        # ONE COST THIS ROUND DOES PAY, AND IT IS THE ONE recal_145 ABOVE REFUSED TO PAY, NAMED BY
+        # CARD: Deandre Ayton '26 is an assisted-diet big and his rim goes 71 -> 68, so his screenFit
+        # (min(max(rim, mid), efficiency) in src/engine/tactics.ts) goes 71 -> 70 and no longer TIES
+        # Rui Hachimura '26's 71. The tie was what handed Ayton the screen, via that file's own
+        # roll tie-break (rim 71 to 27); without it Hachimura takes the screen and the pick-and-roll
+        # set stands Ayton (3pt 4) IN A CORNER, failing tests/court.test.ts's "a man who cannot shoot
+        # is never sent out to space the floor". THE BAR IS RIGHT AND THE FLOOR IS WRONG: the defect
+        # is that the set corners the non-screener big at all. It cannot be reached from this file
+        # without a per-player override and is flagged in data/rounds/166.json for the engine/ui lane.
         # PREM_FOOT / PREM_FULL / _pmpg / _pload are recal_145's, unchanged; recal_157 hoisted them to
         # the top of this function because the composite one term above now needs the same minutes.
-        rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))
+        rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100*creation_factor(sh)) - 0.70)/0.30))
         mid = min(1.0, mid + 0.07*_pload*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
         # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.
         # These two floors pay 85% on ACCURACY and override the volume-first composite above them, and

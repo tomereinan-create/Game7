@@ -783,5 +783,29 @@
     "round": 89,
     "ruling": "Dont do 87, only shift the weights a little torward 88",
     "note": "released by Tomer on round 154 (Push 154-157): the hub floor ramp pays the volume-60-to-68 creation class. the load-and-creation gain, 85 -> 86. recal_154 made recal_138's hub-role volume floor a ramp over the hub's own width (full at 68, nothing at 48) to land Kevin Johnson '92 near 81; Billups '06 sits at volume 66, one point under the old step, and no ramp monotone in volume can separate him from the subject at volume 65 (measured over the whole family in the declined 154 receipt: the last ramp foot he survives pays the subject exactly zero). Tomer chose the level: 86 +-1 is superseded by 91 +-1 (round 154)"
+  },
+  {
+    "card": "Clint Capela '18",
+    "scale": "off",
+    "target": 61,
+    "tol": 1,
+    "round": 52,
+    "ruling": "recal_52 — the self-created gate must not GUESS on inferred seasons",
+    "note": "post-97, measured — unchanged",
+    "current": 59,
+    "superseded_by": 166,
+    "superseded_note": "RELEASED BY TOMER ON ROUND 166, in his own word on the round: \"166 confirm\". Released by Tomer on round 166 (confirm): the paint premium reads the discounted rate. recal_166 made the paint HIGH-VOLUME PREMIUM read the same creation-discounted attempt rate the composite four lines above it reads (share*fga100*creation_factor(sh)), so a paint rate is discounted once and paid once. This card is an assisted-diet big -- 82% of his 2P makes assisted, percentile .992 -> .784 -- and it was ALREADY STANDING ON THE FLOOR of its band before the round (reading 60 of 61 +-1, zero room down), so the discount takes it one point lower. THE PIN WAS NOT WRONG AND NEITHER ROUND IS REVERSED: recal_52 fixed a real defect and that fix still stands untouched; what moved is the paint bar underneath the OFF reading. Tomer released it by one point rather than give up the discount, and it is re-pinned on round 166 at 60 +-2 so the new reading sits inside with room either side."
+  },
+  {
+    "card": "Nenê '11",
+    "scale": "off",
+    "target": 66,
+    "tol": 2,
+    "round": 139,
+    "ruling": "Nene maybe around 66.",
+    "note": "60 -> 65. recal_112's gate ASKED ONE CLAIM TWICE and one of its two ramps was a needle. His '10 takes the term whole (gate 1.00, +13.86) and his '11 at 0.12 (+1.50), because BOTH ramps slid at once - efficiency 99 -> 88 (ts_rel .668 -> .660) and volume 25 -> 38 (usage 17.3 -> 19.3) - and the gate is their PRODUCT: 0.21 x 0.57 = 0.12, an eighth of the term for a card still in the top 3% of his class on conversion. recal_117's item 4 in its own words, one term down the file: 'the product of two decreasing factors is steeper than either'. The two ramps are two readings of ONE statement, so they are now combined by their GEOMETRIC MEAN (zero whenever either is zero, so every exclusion is byte-identical); the efficiency ramp's top comes off the top of the scale - 99 is ELEVEN cards of the 4,256 in this class - onto the class's own upper quartile of conversion, 93 (measured; median 89); and the volume band is 35-45, which is NOT chosen but is what CLINT CAPELA '18's pin leaves. He is the same card at this term's inputs (ts_rel .664 vs .660, usage 19.3 vs 19.3, efficiency 91 vs 88, so his gate was ALREADY higher), pinned 61 +-1 with zero room up, and only volume separates them: 45 against 38. He loses the term entirely and goes 62 -> 60, the floor of his own band. Measured over 720 parameterisations of the whole gate family graded against every anchor: 83 hold the board and the highest reading any gives the subject is 69.",
+    "current": 63,
+    "superseded_by": 166,
+    "superseded_note": "RELEASED BY TOMER ON ROUND 166, in his own word on the round: \"166 confirm\". Released by Tomer on round 166 (confirm): the paint premium reads the discounted rate. recal_166 made the paint HIGH-VOLUME PREMIUM read the same creation-discounted attempt rate the composite four lines above it reads (share*fga100*creation_factor(sh)), so a paint rate is discounted once and paid once. This card is an assisted-diet big -- 70% assisted, percentile .909 -> .600, which is his whole premium -- and it was ALREADY STANDING ON THE FLOOR of its band before the round (reading 64 of 66 +-2, zero room down), so the discount takes it one point lower. THE PIN WAS NOT WRONG AND NEITHER ROUND IS REVERSED: recal_139 fixed a real defect and that fix still stands untouched; what moved is the paint bar underneath the OFF reading. Tomer released it by one point rather than give up the discount, and it is re-pinned on round 166 at 65 +-2 so the new reading sits inside with room either side."
   }
 ]
