@@ -1,0 +1,129 @@
+{
+ "round": 160,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Can be high 70s",
+ "title": "THE RIM-PROTECTION VOTE REINFORCEMENT READS WHICH SEASON THE BALLOT WAS CAST IN — recal_135 named this second vote channel and left it gated on height alone; a ballot carried from another season now reinforces at half rate, and the Prot pool is frozen so no card can rise",
+ "subject": "Jack Sikma '83",
+ "scale": "attr:rimprot",
+ "target": 78,
+ "tol": 2,
+ "before": 82,
+ "after": 79,
+ "pipeline_version": 160,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "CARRIED_REIN = 0\\.50",
+   "label": "THE ROUND'S ONE CONSTANT — what a ballot cast in ANOTHER season is worth to rim protection",
+   "note": "new; the fitted part, stated as such (the VOTE_SUPPORT_POW precedent). 0.00 puts the subject at 72, 0.30 at 77, 0.40-0.55 at 79, 0.60 at 80"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_own = min\\(r\\['drep'\\], max\\(0\\.0, rep_by_pid\\.get\\(r\\['pid'\\], \\{\\}\\)\\.get\\(r\\['season'\\], 0\\.0\\)\\)\\)",
+   "label": "the share of the card's career reputation the SEASON'S OWN ballot supplies",
+   "note": "rep_by_pid[pid][season] is the undecayed All-D/DPOY credit for THIS season; drep is career_rep, decayed 15% a year in both directions"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_ID_OWN\\[\\(r\\['pid'\\], r\\['season'\\]\\)\\] = min\\(1\\.0, ID \\+ 0\\.25\\*\\(\\(_own \\+ CARRIED_REIN\\*\\(r\\['drep'\\] - _own\\)\\)\\*hp\\)\\)",
+   "label": "THE ONE LINE — the reinforcement paid in full for the own-season ballot and at CARRIED_REIN for the carried one",
+   "note": "the line it gates is ID = ID + 0.25*(r['drep']*hp), which is UNCHANGED and still what the season's Prot pool is built on"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID = _ID_OWN\\.get\\(\\(r\\['pid'\\], yr\\), ID\\)",
+   "label": "THE POOL IS FROZEN (recal_114 / recal_149's doctrine): the gated ID is the CARD'S OWN lookup only",
+   "note": "without it the pool thins under every card that loses a carried ballot and Mutombo '97, Duncan '03, Ben Wallace '04, Gobert '19 and Wembanyama '24 all break upward on the pool shift alone — measured"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
+   "label": "recal_135's second vote channel itself, byte-identical — the round gates what the CARD reads off it, not the pool",
+   "note": "unchanged"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.48",
+   "label": "crash def glass re-ratified once from main's constant after the pool moved",
+   "note": "0.72 -> 0.48 (oracle +0.4397 -> +0.524, blind -0.345); feasible window .423 to .546, true midpoint by r126's rule"
+  }
+ ],
+ "expect": [
+  { "card": "Ben Simmons '21", "scale": "attr:rimprot", "op": "~", "value": 86, "tol": 0, "label": "HIS 'Disagree' — a ballot IN the season, byte-identical, not one point" },
+  { "card": "Ben Simmons '21", "scale": "def", "op": "~", "value": 95, "tol": 0, "label": "and his DEF with it" },
+  { "card": "Dikembe Mutombo '97", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
+  { "card": "Tim Duncan '03", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
+  { "card": "Ben Wallace '04", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
+  { "card": "Rudy Gobert '19", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 0, "label": "r82 pin, +-0" },
+  { "card": "Victor Wembanyama '24", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 0, "label": "r82 pin, +-0" },
+  { "card": "Dikembe Mutombo '01", "scale": "attr:rimprot", "op": "~", "value": 99, "tol": 1, "label": "r81 pin" },
+  { "card": "Joel Embiid '23", "scale": "attr:rimprot", "op": ">=", "value": 90, "label": "r81 pin 91 +-1 — the tightest card in the round, and what set CARRIED_REIN at 0.50" },
+  { "card": "Joakim Noah '09", "scale": "attr:rimprot", "op": ">=", "value": 91, "label": "r82 pin 92 +-1" },
+  { "card": "Bobby Jones '82", "scale": "attr:rimprot", "op": ">=", "value": 95, "label": "r82 pin 96 +-1" },
+  { "card": "Caldwell Jones '82", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 2, "label": "r82 pin" },
+  { "card": "Kevin McHale '88", "scale": "attr:rimprot", "op": "~", "value": 89, "tol": 3, "label": "r92 pin" },
+  { "card": "Walker Kessler '23", "scale": "attr:rimprot", "op": "~", "value": 92, "tol": 1, "label": "r53 pin" },
+  { "card": "Shaquille O'Neal '93", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1, "label": "r53 pin" },
+  { "card": "Shawn Bradley '95", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1, "label": "r53 pin" },
+  { "card": "Pau Gasol '04", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "r95 pin" },
+  { "card": "Karl Malone '97", "scale": "def", "op": "~", "value": 87, "tol": 3, "label": "r135's own subject, the round that named this line" },
+  { "card": "Dan Roundfield '82", "scale": "def", "op": "~", "value": 91, "tol": 3, "label": "r114 pin" },
+  { "card": "Dennis Rodman '90", "scale": "def", "op": "~", "value": 94, "tol": 1, "label": "r57 pin" },
+  { "card": "Scottie Pippen '03", "scale": "def", "op": "~", "value": 76, "tol": 1, "label": "r93 pin" },
+  { "card": "Michael Jordan '89", "scale": "def", "op": "~", "value": 99, "tol": 1, "label": "r102 pin" },
+  { "card": "Herbert Jones '23", "scale": "def", "op": "~", "value": 91, "tol": 4, "label": "r103 pin" },
+  { "card": "Bill Cartwright '82", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 0, "label": "the no-vote 1982-84 band the ruling is read off — untouched" },
+  { "card": "Bob Lanier '82", "scale": "attr:rimprot", "op": "~", "value": 76, "tol": 0, "label": "same band, untouched" },
+  { "card": "Rich Kelley '83", "scale": "attr:rimprot", "op": "~", "value": 72, "tol": 0, "label": "same band, untouched" },
+  { "card": "Jeff Ruland '83", "scale": "attr:rimprot", "op": "~", "value": 68, "tol": 0, "label": "same band, untouched" },
+  { "card": "Mickey Johnson '82", "scale": "attr:rimprot", "op": "~", "value": 65, "tol": 0, "label": "the subject's box twin, untouched" },
+  { "card": "Scottie Pippen '91", "scale": "attr:rimprot", "op": "~", "value": 80, "tol": 0, "label": "on the same line as the subject: 82 -> 80, reported" },
+  { "card": "LeBron James '12", "scale": "attr:rimprot", "op": "~", "value": 81, "tol": 0, "label": "on the same line, and byte-identical — his 2012 All-D 1st is his own season's ballot" }
+ ],
+ "order": [
+  { "scale": "attr:rimprot", "above": "Kevin McHale '88", "below": "Jack Sikma '83", "label": "a voted-in-season big still reads above a carried one" },
+  { "scale": "attr:rimprot", "above": "Jack Sikma '83", "below": "Bob Lanier '82", "label": "the subject still leads the no-vote band he is read against" },
+  { "scale": "attr:rimprot", "above": "Ben Simmons '21", "below": "Jack Sikma '83", "label": "his 'Disagree' sits above the card he compared it with" }
+ ],
+ "movers": {
+  "scale": "attr:rimprot",
+  "count": 780,
+  "max_abs": 7,
+  "top": [
+   ["Karl Malone '00", 80, 73],
+   ["Karl Malone '95", 79, 72],
+   ["Bob Dandridge '80", 60, 54],
+   ["Herbert Jones '26", 69, 63],
+   ["Karl Malone '90", 65, 59],
+   ["Karl Malone '96", 74, 68],
+   ["LeBron James '07", 74, 68],
+   ["Scottie Pippen '01", 61, 55],
+   ["Scottie Pippen '02", 61, 55],
+   ["Charles Oakley '92", 41, 36]
+  ]
+ },
+ "top12": {
+  "scale": "attr:rimprot",
+  "cards": [
+   "Ben Wallace '03", "David Robinson '95", "Hakeem Olajuwon '94", "Marcus Camby '07",
+   "Marcus Camby '08", "Rudy Gobert '21", "Tim Duncan '01", "Tim Duncan '07",
+   "Tim Duncan '08", "Ben Wallace '04", "Caldwell Jones '80", "Caldwell Jones '81"
+  ]
+ },
+ "cost": [
+  "CARRIED_REIN = 0.50 is the fitted part and is stated as such in the file. The subject reads 72 at 0.00 (his votes worth nothing to the rim), 77 at 0.30, 79 at 0.40-0.55 and 80 at 0.60. What decides it is not the subject but the pins: at 0.30 Joel Embiid '23 (r81 rimprot 91 +-1, reading 90) falls to 89 and Joakim Noah '09 (r82 92 +-1) to 90. 0.50 is the lowest half-step where every rim anchor in the file holds, and the subject lands 79 against 78 +-2.",
+  "THE POOL FREEZE IS LOAD-BEARING AND IT IS A SECOND EDIT SITE. score_season still returns the UNGATED ID (so the season's Prot pool is bit-identical) and the gated value is handed to the card through _ID_OWN, read one line inside the per-card loop. Measured without the freeze: the pool thins, the top of it drifts up and Mutombo '97, Duncan '03, Ben Wallace '04 (98 +-0), Gobert '19 and Wembanyama '24 (97 +-0) all break upward. With it, 780 cards move and NOT ONE RISES.",
+  "4 cards flipped is_big as their rimprot fell (compute_ovr reads the attribute): LeBron James '08 (OFF 97 -> 94, DEF 94 -> 96, OVR 96 -> 95) and Tayshaun Prince '04 / '10 / '11 (Prince '04 OFF 51 -> 53, DEF 78 -> 73). They are the ONLY two OFF movers in the whole round and the only two DEF risers; no anchor reads any of them.",
+  "crash def glass was re-ratified ONCE from main's constant .72 -> .48 (the value it carried before the pipeline-157 integration sweep). hunt 3.85 and crash off glass .55 held their bands untouched; all nine taxes pass.",
+  "A later ruling that wants the carried ballot to be worth NOTHING has the form already: CARRIED_REIN = 0.0 costs Embiid '23 one point and Noah '09 two, and puts the subject at 72.",
+  "recal_92's block gate was measured as the alternative and REJECTED for this line: gating the reinforcement on block evidence instead of on the ballot's season takes Ben Simmons '21 from 86 to 68 and Karl Malone '97 to 56, which is the ruling this round is told to hold ('Disagree')."
+ ],
+ "notes": [
+  "THE INPUT THAT WAS MIS-READ, NAMED: drep is a CAREER reputation (career_rep, decayed 15% a year in BOTH directions), and this line paid it as if it were a season's ballot. Jack Sikma has no 1983 All-Defensive selection at all; his drep 0.51 is his 1982 2nd team decayed one year, and it was buying the full 0.25 x drep x height reinforcement in 1983, 1984 and (before his 1982 ballot) 1981.",
+  "THE SUBJECT'S SHEET: BLK% 1.3 (the 65th percentile of 1983 — below recal_92's 80th-percentile block bar, so the voted CEILING already refuses to unlock for him), 0.9 blocks a game, DBPM +0.9, 6'11\". The 1982-84 no-vote bigs at 6'9\"+ on a BLK% of 1.0-2.0 read 63-78: Cartwright '82 78, Lanier '82 76, Kelley '83 72, Ruland '83 68, and his box twin Mickey Johnson '82 65. He read 82. He now reads 79, one point over the top of that band, which is what a carried ballot at half rate buys.",
+  "WHY recal_92's GATE CANNOT BE REUSED HERE, IN ONE LINE: the ceiling it gates is a CAP (it can only ever subtract, so a wing with votes and no blocks loses nothing he did not have), while this line is an ADDITION every voted big is already standing on. Applied to it, block evidence is 0.000 for Simmons '21 (BLK% at the 62nd percentile of 2021) and for Malone '97, and both fall off a cliff.",
+  "BEN SIMMONS '21 IS BYTE-IDENTICAL BY CONSTRUCTION, not by tolerance: own 1.00 = drep 1.00, so _own + CARRIED_REIN*(drep - _own) = drep exactly and his ID is the same float it was. The same holds for every card whose reputation is its own season's ballot — LeBron '12, Draymond '16, Jordan '89, Gobert '19, Mutombo '97, Duncan '03.",
+  "MONOTONE IN BOTH CHANNELS AND ONE-DIRECTIONAL: more reputation is still more, an own-season ballot is always worth at least as much as a carried one, and no card in the pool gains a point."
+ ]
+}
