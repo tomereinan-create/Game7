@@ -1,0 +1,494 @@
+{
+ "round": 162,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Agree",
+ "title": "THE NO-VOTE RIM CEILING'S OWN FLOOR IS GRADED BY BLOCK EVIDENCE — recal_95 graded the 88 tier and left its bottom flat at 75, so a 7-foot MVP with 0.8 blocks a game and no All-Defensive vote still collected rimprot 75 for being tall; the floor now reads recal_92's own block band one step earlier (full at the p80 bar, gone a band-width under it) and falls to 0.55, the bottom of the deterrent band ID2 itself starts from",
+ "subject": "Dirk Nowitzki '07",
+ "scale": "def",
+ "target": 74,
+ "tol": 3,
+ "before": 84,
+ "after": 75,
+ "pipeline_version": 157,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "RIM_BAND_FLOOR = 0\\.55",
+   "label": "THE FLOOR THE GRADING FALLS TO — the bottom of the two-stage deterrent band, named once and read by both the ID2 line and the no-vote floor",
+   "note": "not a new number: it is the 0.55 of ID2 = 0.55 + 0.47 x Prot(ID), and the 0.54 sub-gate cap meets it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "return RIM_BAND_FLOOR \\+ \\(NOVOTE_FLOOR - RIM_BAND_FLOOR\\) \\* _blk_evidence\\(blk_pctile \\+ \\(BLK_FULL - BLK_BAR\\)\\)",
+   "label": "THE ONE LINE — recal_92's block-evidence function read one band EARLIER: 1.0 at BLK_BAR (p80), 0.0 one band-width below it (p74)",
+   "note": "was a flat NOVOTE_FLOOR for every no-vote big whose composite cleared it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_cap53 = _nf \\+ \\(_cap53 - _nf\\) \\* _ceiling_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\), r\\['dbpm'\\], r\\['drep'\\]\\)",
+   "label": "recal_95's graded ceiling, now standing on the graded floor instead of a flat one",
+   "note": "was _cap53 = NOVOTE_FLOOR + (_cap53 - NOVOTE_FLOOR) * _ceiling_evidence(...); at full evidence (a voted big) the tier is reached exactly as before"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "NOVOTE_FLOOR = \\(75 - 1\\) / 98\\.0",
+   "label": "recal_95's 75, unchanged in value — it is now the TOP of the floor's own grade, paid in full at recal_92's block bar",
+   "note": "a no-vote big at p80 of his season's blocks reads exactly what he read before"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "BLK_BAR, BLK_FULL = 0\\.80, 0\\.86",
+   "label": "recal_92's block-evidence band — the bar, the width and the band are reused, not redefined",
+   "note": "one definition of block evidence in this file; this round adds no constant to it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID2 = min\\(1\\.0, RIM_BAND_FLOOR \\+ 0\\.47 \\* Prot\\(ID\\)\\) if ID >= RIM_GATE else min\\(ID, 0\\.54\\)",
+   "label": "the two-stage deterrent scale, byte-identical in value — 0.55 is now named",
+   "note": "was ID2 = min(1.0, 0.55 + 0.47 * Prot(ID)) ..."
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID  = W\\['ID'\\]\\['blk'\\]\\*P\\['blk'\\]\\(r\\['blk'\\]\\) \\+ W\\['ID'\\]\\['height'\\]\\*P\\['ht'\\]\\(r\\['ht'\\]\\)",
+   "label": "the rim composite itself is untouched — no height weight moved, recal_81's no-DBPM door stays shut",
+   "note": "the round changes only HOW HIGH a no-vote big may be READ, never what he scores"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
+   "label": "recal_135's VOTE-reinforcement line, deliberately untouched (it is another round's subject)",
+   "note": "this round lives entirely in the NO-VOTE path, where drep is 0 and this term pays nothing"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.14",
+   "label": "the crash-off-glass deviation tax, re-ratified through the harness from main's 0.55",
+   "note": "0.55 -> 0.14, the true midpoint of a feasible window of about -0.085 to 0.365"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.59",
+   "label": "the crash-def-glass deviation tax, re-ratified through the harness from main's 0.72",
+   "note": "0.72 -> 0.59, the true midpoint of a feasible window of about 0.506 to 0.680"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 55,
+   "label": "THE SUBJECT'S CARRYING BAR — 0.8 blocks a game, BLK% 1.7, the 72nd percentile of 2007, a full band under recal_92's bar"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 67,
+   "label": "perdef is the restrained part and does not move — no perimeter channel is touched"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "off",
+   "op": "==",
+   "value": 93,
+   "label": "OFF cannot move: no offensive input changed"
+  },
+  {
+   "card": "Dirk Nowitzki '03",
+   "scale": "def",
+   "op": "==",
+   "value": 77,
+   "label": "the Dirk block follows the same formula, not a per-card rule"
+  },
+  {
+   "card": "Dirk Nowitzki '05",
+   "scale": "def",
+   "op": "==",
+   "value": 84,
+   "label": "his best block season (BLK% 2.9, p82) keeps most of the floor — the grade is monotone in blocks"
+  },
+  {
+   "card": "Dirk Nowitzki '06",
+   "scale": "def",
+   "op": "==",
+   "value": 77,
+   "label": ""
+  },
+  {
+   "card": "Dirk Nowitzki '08",
+   "scale": "def",
+   "op": "==",
+   "value": 74,
+   "label": ""
+  },
+  {
+   "card": "Dirk Nowitzki '11",
+   "scale": "def",
+   "op": "==",
+   "value": 71,
+   "label": "the title season, 0.6 blocks a game"
+  },
+  {
+   "card": "Pau Gasol '04",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 78,
+   "tol": 2,
+   "label": "recal_95's ANCHOR — the card its product was fitted to, blk p89, above the bar: byte-identical"
+  },
+  {
+   "card": "Kevin Durant '19",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 3,
+   "label": "THE STOPPING PIN (r99, 'anchor the Durants') — blk p81, AT recal_92's bar, so he does not move a point"
+  },
+  {
+   "card": "Kevin Durant '24",
+   "scale": "def",
+   "op": "~",
+   "value": 80,
+   "tol": 3,
+   "label": "blk p83, above the bar: untouched"
+  },
+  {
+   "card": "Rich Kelley '81",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 79,
+   "label": "the DECLINED card (recal_88) must not move: blk p81, above the bar"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "recal_151's bench-load pin, untouched (blk p84)"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_136's pin, at its band edge: 53 -> 52, inside by exactly the tolerance"
+  },
+  {
+   "card": "Arvydas Sabonis '96",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 79,
+   "tol": 1,
+   "label": "recal_55's pin — no perdef bar moves in this round at all"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 97,
+   "label": "every voted / high-block rim pin is byte-identical"
+  },
+  {
+   "card": "Victor Wembanyama '24",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 97,
+   "label": ""
+  },
+  {
+   "card": "Dikembe Mutombo '97",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": ""
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": ""
+  },
+  {
+   "card": "Ben Wallace '03",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": ""
+  },
+  {
+   "card": "Bobby Jones '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Shaquille O'Neal '93",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Kevin McHale '88",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 89,
+   "tol": 3,
+   "label": "recal_92's pin: a voted big is graded by his votes, and the floor never reaches him"
+  },
+  {
+   "card": "Walker Kessler '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Joakim Noah '09",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": ""
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 2,
+   "label": "recal_146's pin, untouched"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "recal_135's pin — a VOTED card, so the no-vote floor cannot reach him"
+  },
+  {
+   "card": "Charles Barkley '93",
+   "scale": "def",
+   "op": "==",
+   "value": 75,
+   "label": "the comparable the ruling names: rimprot 50, no votes, good DBPM — byte-identical"
+  },
+  {
+   "card": "Larry Bird '87",
+   "scale": "def",
+   "op": "==",
+   "value": 77,
+   "label": "the other comparable: rimprot 60 — byte-identical"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "recal_80's pin"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_102's pin — no perimeter card can move in this round"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "recal_62's pin"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "recal_57's pin"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "recal_114's pin"
+  },
+  {
+   "card": "Amen Thompson '25",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "recal_149's pin"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Shane Battier '07",
+   "below": "Dirk Nowitzki '07",
+   "label": "the ordering the finding names: a defensive specialist now reads above the MVP forward, by ten"
+  },
+  {
+   "scale": "def",
+   "above": "Emeka Okafor '07",
+   "below": "Dirk Nowitzki '07",
+   "label": "same season, a real rim protector"
+  },
+  {
+   "scale": "def",
+   "above": "Pau Gasol '04",
+   "below": "Dirk Nowitzki '07",
+   "label": "recal_95's own subject, on 1.7 blocks a game, reads above him"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Pau Gasol '04",
+   "below": "Dirk Nowitzki '07",
+   "label": "the attribute itself: blk p89 above blk p72"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Larry Bird '87",
+   "below": "Dirk Nowitzki '07",
+   "label": "a 6'9\" forward with the same block rate is no longer 15 points of rim protection behind a 7-footer"
+  },
+  {
+   "scale": "def",
+   "above": "Dirk Nowitzki '05",
+   "below": "Dirk Nowitzki '07",
+   "label": "inside the block the order follows the blocks: his p82 season reads above his p72 one"
+  }
+ ],
+ "movers": {
+  "scale": "attr:rimprot",
+  "count": 2261,
+  "max_abs": 20,
+  "top": [
+   [
+    "Dirk Nowitzki '07",
+    75,
+    55
+   ],
+   [
+    "Nikola Jokić '20",
+    74,
+    55
+   ],
+   [
+    "Cooper Flagg '26",
+    75,
+    55
+   ],
+   [
+    "Jack Sikma '89",
+    74,
+    55
+   ],
+   [
+    "Tiago Splitter '13",
+    75,
+    55
+   ],
+   [
+    "Bill Laimbeer '85",
+    73,
+    55
+   ],
+   [
+    "Kevin Durant '22",
+    78,
+    63
+   ],
+   [
+    "Dirk Nowitzki '08",
+    74,
+    55
+   ],
+   [
+    "Jason Collins '04",
+    75,
+    55
+   ],
+   [
+    "Kwame Brown '11",
+    75,
+    55
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:rimprot",
+  "cards": [
+   "Ben Wallace '03",
+   "David Robinson '95",
+   "Hakeem Olajuwon '94",
+   "Marcus Camby '07",
+   "Marcus Camby '08",
+   "Rudy Gobert '21",
+   "Tim Duncan '01",
+   "Tim Duncan '07",
+   "Tim Duncan '08",
+   "Andrei Kirilenko '06",
+   "Ben Wallace '04",
+   "Caldwell Jones '80"
+  ]
+ },
+ "notes": [
+  "THE DEFECT, IN recal_95's OWN SENTENCE. That round wrote 'a flat ceiling is a floor for everyone who reaches it, and Gasol was reaching it on size' — and then graded the 88 tier while leaving the BOTTOM of its own grading flat at 75. Dirk Nowitzki '07 is what that left standing: 7'0\", BLK% 1.7 (0.8 a game, the 72nd percentile of his season), DBPM +1.2, no All-Defensive vote, ceiling evidence 0.000. His raw deterrent composite is 0.7798 — 38% of it the height percentile — the flat floor caps it at 0.7551, and the card prints rimprot 75 EXACTLY. The big d_score branch then takes it at 0.40 beside perdef 67 at 0.40, drb 88 at 0.17 and discipline 90: 74.41 x 1.1305 = 84.12, DEF 84, #20 of 239 in 2007, one under Battier '07 and two under Okafor '07. perdef 67 was already the restrained part; the card was carried by rim protection it had not earned.",
+  "THE FIX IS recal_92's BAR, READ ONE STEP EARLIER. recal_92 defines block evidence once — nothing below the 80th percentile of the season's block rate, the whole band at the 86th — and recal_95's ceiling grades UPWARD from the bar. The floor asks the prior question (is there any rim evidence at all), so it reads the same function shifted down by exactly one band width: full 75 at the bar, nothing at p74, the same linear grade between. Below that it falls to RIM_BAND_FLOOR = 0.55, which is not a new number: it is the 0.55 the two-stage deterrent scale itself starts from (ID2 = 0.55 + 0.47 x Prot(ID)), the number the sub-gate cap of 0.54 hands off to. Dirk '07 lands on it: rimprot 55, DEF 75, inside the ruling's 74 +-3.",
+  "MONOTONE, SUBTRACTIVE, AND NOTHING RISES. The graded floor is <= NOVOTE_FLOOR everywhere and enters a cap that can only bind downward, so on the whole pool 2,261 rimprot bars move and ZERO rise; 1,883 d_ovrs move, three of them UP (Eddie Robinson '01 +2, Jerome Kersey '86 +1, Wes Iwundu '19 +3) and those three rise only because a lower rimprot moves them off compute_ovr's big mix onto the perimeter one — the d_bigness ramp, not this file. 1,432 OVRs move, largest 5. A voted big is untouched by construction (his ceiling evidence is his vote share, unchanged), and so is every card at or above recal_92's block bar.",
+  "THE FRONTIER AND THE STOPPING PIN. The obvious form — grading the floor on recal_92's band UNSHIFTED — was measured first on the whole pool: it also lands Dirk '07 at DEF 75, but it costs Kevin Durant '19 (def 79 +-3 -> 68) and '24 (80 +-3 -> 75), and no choice of the floor's base rescues them, because Durant '19 sits at blk p81 with DBPM +0.1 and is ON the same flat floor Dirk is. Shifting the band is exactly what separates them: Durant '19 and '24 sit AT and ABOVE recal_92's bar and do not move a point, Dirk '07 sits a full band under it. The softer alternative — grading over [RIM_GATE, BLK_BAR], i.e. p60 to p80 — was measured too and does not reach: Dirk lands rimprot 66, DEF 80.",
+  "WHO ACTUALLY MOVES: no-vote bigs whose season block rate is under the 80th percentile — the class the flat floor was paying for height. Nikola Jokic '20 (0.6 bpg) DEF 78 -> 69, Kevin Durant '22 78 -> 68, Jack Sikma '89 83 -> 74, Bill Laimbeer '85 75 -> 67, Cooper Flagg '26 75 -> 66, Tiago Splitter '13 80 -> 71, Chris Bosh '10 71 -> 64, LaMarcus Aldridge '15 80 -> 72. WHO DOES NOT: every voted big (McHale '88 91, Malone '97 DEF 89, Garnett, Duncan, Mutombo, Wallace), every card at or above the block bar (Gasol '04 78, Kurt Thomas '09 79, Rich Kelley '81 79, Durant '19 and '24 78), every perimeter card (perdef, perimdisrupt and drb are byte-identical for all 10,000), and the whole top 12 of the attribute, name for name.",
+  "THE COMPARABLES THE FINDING NAMES NOW READ IN ORDER. Dirk '07 DEF 75 sits with Barkley '93 (75, rimprot 50, no votes, good DBPM) and Bird '87 (77, rimprot 60) — offensive stars with no defensive votes, which is the band the ruling puts him in — and he now reads ten under Battier '07 (85) and eleven under Okafor '07 (86) instead of one and two. His DEF rank in 2007 moves from #20 of 239 to #36.",
+  "TAXES: both crash-glass rows broke on the ORACLE edge (crash off +0.4478 at main's 0.55, crash def +0.4889 at main's 0.72) because their benefit reads a REBOUNDING attribute this round did not touch — what moved is the ovr>=55 pool the benefit is averaged over. Swept once from main's constants and re-ratified at the true midpoints, crashOff 0.55 -> 0.14 and crashDef 0.72 -> 0.59. All nine rows pass; the seven others held their bands untouched, hunt included."
+ ],
+ "cost": [
+  "KEN NORMAN '94 (def 55 +-3, recal_136) IS NOW EXACTLY ON HIS BAND EDGE: 53 -> 52, error -3 of a tolerance of 3. He moves one point, and only through season smoothing off a neighbouring year. Any later round that lowers a no-vote big by one more point anywhere near him breaks that anchor.",
+  "THE DIRK BLOCK IS A SINGLE FORMULA, NOT A CARD RULING, and it moves as one: '00 70 -> 62, '01 78 -> 71, '02 82 -> 73, '03 84 -> 77, '04 82 -> 80, '05 86 -> 84, '06 84 -> 77, '07 84 -> 75, '08 82 -> 74, '09 77 -> 69, '10 79 -> 71, '11 78 -> 71, '12 74 -> 69, '13 74 -> 67, '14 73 -> 67, '15 69 -> 66, '16 72 -> 66, '17 73 -> 68, '18 75 -> 69. His OVRs fall 2-3 (peak '07 90 -> 88, '06 90 -> 87, '11 86 -> 84). A later ruling on any Dirk season should read this block first.",
+  "THE CLIFF IS SHARP AND IT IS recal_92's OWN SHARPNESS: 20 card points across 6 percentile points of block rate (p74 to p80). That is the same width recal_92 already swings the voted ceiling over, but it now applies to a much larger class — every no-vote big in the pool. A later ruling that wants the band widened has to move BLK_BAR / BLK_FULL, which moves the voted ceiling too.",
+  "NOTHING IN THE VOTE CHANNELS WAS TOUCHED, deliberately: recal_135's reinforcement line ID = ID + 0.25 x (drep x hp) is another round's subject, and the whole of this change lives in the no-vote path where drep is 0 and that term pays nothing. The two rounds compose without conflict.",
+  "PIPELINE_VERSION is left at main's 157 per the integration rule, and this file records 157 for the same reason (the check is >=, so the integrator's stamp for the batch keeps it green). src/data/campaigns.json and src/data/opponents.json are regenerated in this commit (npm run opponents); the integrator re-derives them and re-sweeps the two taxes ONCE from main's constants for the merged batch, which supersedes 0.14 / 0.59 rather than stacking with them."
+ ]
+}

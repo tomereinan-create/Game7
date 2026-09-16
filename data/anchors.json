@@ -1566,5 +1566,14 @@
     "round": 160,
     "ruling": "Disagree",
     "note": "HIS 'Disagree' PINNED AT ITS READING. Simmons's 2021 All-Defensive 1st team is a ballot IN the season the card describes (own 1.00 = drep 1.00), so recal_160's gate is byte-identical for him and he does not move a point: 86 -> 86. This is the wall the round was fitted against - the distinction the ruling draws is between a ballot cast FOR this season and one carried from another, not between a small big man's blocks and a large one's."
+  },
+  {
+    "card": "Dirk Nowitzki '07",
+    "scale": "def",
+    "target": 74,
+    "tol": 3,
+    "round": 162,
+    "ruling": "Agree",
+    "note": "the subject of recal_162. An MVP season with no All-Defensive vote, 0.8 blocks and 0.7 steals a game read DEF 84 (#20 of 239 in 2007, one under Battier '07 and two under Okafor '07) because recal_95's no-vote rim ceiling had a FLAT bottom at 75: a 7-footer whose deterrent composite cleared it collected rimprot 75 with no block evidence of any kind, and the big d_score branch takes that at 0.40. The floor now grades on recal_92's own block band read one step earlier - full at the p80 bar, gone one band-width under it, falling to RIM_BAND_FLOOR 0.55, the bottom the deterrent scale itself starts from. rimprot 75 -> 55, DEF 84 -> 75, OVR 90 -> 88, and he lands with Barkley '93 (75) and Bird '87 (77). The band was SHIFTED rather than reused unshifted because Kevin Durant '19 (def 79 +-3, r99) sits at blk p81, ON recal_92's bar: unshifted he falls to 68 and no choice of base saves him."
   }
 ]

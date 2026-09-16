@@ -528,6 +528,10 @@ export const DEFAULT_TACTICS: Tactics = {
  * (-0.2980, over the ceiling) / .400 (-0.2822, over) — feasible about .423 to .546, a NARROW 0.123, true
  * midpoint by r126's rule: .72 -> .48 (blind -0.345, oracle +0.524, 0.045 and 0.024 of room). hunt held at
  * 3.85 and crashOff at .55, and the six others held their bands untouched. All nine pass.
+ * recal_162 graded the no-vote rim ceiling's own FLOOR by block evidence: 2,261 rimprot bars, 1,883
+ * d_ovrs and 1,432 OVRs, every one DOWN, and a whole class of no-block bigs left the harness's
+ * ovr>=55 sample — the pool again. BOTH CRASH ROWS broke together on the ORACLE edge (crash off
+ * +0.4478 at 0.55, crash def +0.4889 at 0.72, against the +0.50 floor), the shape recal_126 and
  */
 export const TAX = {
   scorer: 0.55,

@@ -451,6 +451,42 @@ def _blk_evidence(blk_pctile):
 # any card, and no card rises through it. It enters only here, as one of two gates on HOW HIGH a big
 # with no votes may be READ — a ceiling, which can only ever subtract. His ruling named it.
 NOVOTE_FLOOR = (75 - 1) / 98.0   # recal_95: the ceiling with no block and no DBPM evidence behind it
+# recal_162 (HIS RULING on Dirk Nowitzki '07, verbatim: "Agree"). recal_95's OWN SENTENCE, APPLIED TO
+# ITS OWN FLOOR: "a flat ceiling is a floor for everyone who reaches it." recal_95 graded the 88 tier
+# by block-and-DBPM evidence and left the BOTTOM of that grading flat at 75 — so the no-vote ceiling
+# still handed a free 75 to every tall man whose raw deterrent composite cleared it, with no block
+# evidence of any kind required. Dirk Nowitzki '07 is that card: 7'0", BLK% 1.7 (0.8 a game, the 72nd
+# percentile of his season), no All-Defensive vote, ceiling evidence 0.000 — pre-cap 0.7798, capped to
+# 0.7551, rimprot 75 EXACTLY. The big d_score branch takes that at 0.40 beside drb 88 at 0.17, and an
+# MVP season with 0.8 blocks and 0.7 steals read DEF 84, #20 of 239 in 2007, one under Battier '07 and
+# two under Okafor '07, where Barkley '93 (rimprot 50) reads 75 and Bird '87 (60) reads 77.
+# THE FLOOR NOW GRADES ON THE SAME EVIDENCE THE CEILING DOES, ONE BAND EARLIER. recal_92's block bar
+# is where this file says block evidence BEGINS (nothing below the 80th percentile of the season's
+# block rate); recal_95's ceiling then grades from that bar to BLK_FULL. The floor asks the prior
+# question — is there any rim evidence at all — so it reads recal_92's own evidence function shifted
+# down by exactly one band width: full 75 at the bar (p80), nothing one band under it (p74), and in
+# between the same linear grade. No new constant: the band, its width and its bar are recal_92's, and
+# the bottom is RIM_BAND_FLOOR, the 0.55 the two-stage deterrent scale itself starts from (ID2 =
+# 0.55 + 0.47 x Prot(ID), and the sub-gate cap of 0.54 that meets it). Reading of the line: a big with
+# no votes and no blocks is not held at 75 for being tall, he is returned to the bottom of the
+# deterrent band and has to climb it on measured deterrence.
+# MONOTONE AND SUBTRACTIVE BY CONSTRUCTION. The graded floor is <= NOVOTE_FLOOR everywhere, it enters
+# the same cap that can only ever bind downward, and full votes (ev = 1) still read the whole tier, so
+# no card rises on this attribute and every voted band is bit-identical.
+# MEASURED ON THE POOL: 2,261 cards move rimprot (1,337 by more than 3), 619 move DEF by more than 3,
+# 81 move OVR by more than 3, and nothing rises. Dirk '07 rimprot 75 -> 55, DEF 84 -> 75, OVR 90 -> 88;
+# the block '03 84 -> 77, '05 86 -> 84, '06 84 -> 77, '08 82 -> 74, '11 78 -> 71. Jokic '20 DEF 78 -> 69,
+# Durant '22 78 -> 68, Bill Laimbeer '85 75 -> 67, Jack Sikma '89 83 -> 74.
+# THE FRONTIER AND THE STOPPING PIN, STATED. Grading the floor on recal_92's band UNSHIFTED (bar p80,
+# full p86) reaches Dirk 75 too but costs Kevin Durant '19 (def 79 +-3 -> 68) and '24 (80 +-3 -> 75):
+# at BLK% 2.6 / p81 his floor would fall with Dirk's, and r99's "anchor the Durants" holds him up. The
+# shift by one band width is exactly what separates them — Durant '19 p81 and '24 p83 sit AT or above
+# recal_92's bar and do not move a point; Dirk '07 at p72 sits a full band under it. Softer ramps were
+# measured and do not reach: over [RIM_GATE, BLK_BAR] Dirk lands rimprot 66, DEF 80.
+RIM_BAND_FLOOR = 0.55   # the bottom of the two-stage deterrent band (see ID2 below); card 55
+def _novote_floor(blk_pctile):
+    # recal_92's evidence function read one band EARLIER: 1.0 at BLK_BAR, 0.0 a band-width below it.
+    return RIM_BAND_FLOOR + (NOVOTE_FLOOR - RIM_BAND_FLOOR) * _blk_evidence(blk_pctile + (BLK_FULL - BLK_BAR))
 RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
 # (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
 # relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
@@ -594,7 +630,7 @@ for yr, rows in seasons.items():
         ID = _ID_OWN.get((r['pid'], yr), ID)   # recal_160: the card's own (carried-ballot-gated) ID; Prot above is built on the ungated one
         # the very top SATURATES (0.47 slope, clamped): season smoothing blends a peak with its
         # neighbours, so only a man who is the league's best deterrent for years running lands on 99
-        ID2 = min(1.0, 0.55 + 0.47 * Prot(ID)) if ID >= RIM_GATE else min(ID, 0.54)
+        ID2 = min(1.0, RIM_BAND_FLOOR + 0.47 * Prot(ID)) if ID >= RIM_GATE else min(ID, 0.54)   # recal_162: 0.55 named, value unchanged
         if Prim is not None:                                                    # measured rim deterrence, 2014+
             rv = _trk('Less Than 6Ft', r['name'])
             if rv is not None:
@@ -630,7 +666,9 @@ for yr, rows in seasons.items():
             _cap53 = (92 - 1) / 98.0
         # recal_95: the tier above is the CEILING A BIG CAN EARN; what he is actually held to is that
         # tier graded by the evidence behind it (blocks and DBPM), or by his votes, whichever is more.
-        _cap53 = NOVOTE_FLOOR + (_cap53 - NOVOTE_FLOOR) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'])
+        # recal_162: the floor of that grading is itself graded by block evidence (see _novote_floor).
+        _nf = _novote_floor(P['blk'](r['blk']))
+        _cap53 = _nf + (_cap53 - _nf) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'])
         ID2 = (1 - _w53) * min(ID2, _cap53) + _w53 * ID2
         # GRADED entry to the voted band (the Kawhi-'26 cliff fix): membership is a weight, not a switch.
         # Full selections (drep>=0.35) sit purely in the voted band; fading legends blend down SMOOTHLY;
