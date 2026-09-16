@@ -2156,7 +2156,9 @@ button {
   .draft .col.c .pname b { font-size: 17px; }
   .draft .col.a .pname i,
   .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
-  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 680px) * 1.19), 356px); }
+  /* the floors take back what the shorter dock left over (his ruling: "Make the courts bigger
+     again") — the formula spends the last of the height above the dock, which is 32px more floor */
+  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 648px) * 1.19), 356px); }
   /* and "a little bit higher" (his ruling: "Move both 5s a little bit heigher and its perfect"):
      the floor comes up flush under the name row, the row itself sits tighter under the card's
      head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
