@@ -1,274 +1,314 @@
 {
-  "round": 166,
-  "agent": "stats-to-ratings",
-  "status": "done",
-  "ruling": "166 confirm",
-  "title": "THE PAINT PREMIUM READS THE SAME CREATION-DISCOUNTED RATE THE COMPOSITE READS — one claim, one discount: Eddy Curry '04 rim 86 -> 82 on 8.61 paint attempts per 100 with 72.6% of his makes assisted, 2,003 rim bars down and NONE up, with two of his own OFF pins released by one point each on his word",
-  "subject": "Eddy Curry '04",
+ "round": 166,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "166 confirm",
+ "title": "THE PAINT PREMIUM READS THE SAME CREATION-DISCOUNTED RATE THE COMPOSITE READS — one claim, one discount: Eddy Curry '04 rim 86 -> 82 on 8.61 paint attempts per 100 with 72.6% of his makes assisted, 2,003 rim bars down and NONE up, with two of his own OFF pins released by one point each on his word",
+ "subject": "Eddy Curry '04",
+ "scale": "attr:rim",
+ "target": 82,
+ "tol": 3,
+ "before": 86,
+ "after": 82,
+ "pipeline_version": 167,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\*creation_factor\\(sh\\)\\) - 0\\.70\\)/0\\.30\\)\\)",
+   "label": "THE ROUND'S ONE LINE — the paint HIGH-VOLUME PREMIUM now reads the creation-discounted attempt rate",
+   "note": "P['rimvol'](share*fga100) -> P['rimvol'](share*fga100*creation_factor(sh)). Gate 0.70, payment 0.07, band 0.30 and the raw percentile POOL are all unchanged"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "0\\.65\\*P\\['rimvol'\\]\\(share\\*fga100\\*\\(creation_factor\\(sh",
+   "label": "the composite, UNCHANGED — the premium now reads the identical expression, which is the whole point",
+   "note": "[re-pointed at integration] recal_161 landed in the same batch and gave creation_factor a paint_frac argument"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "RECAL_166 \\(his ruling, \"166 confirm\"",
+   "label": "the round's record in the file's history comments, beside the term it changed"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "mid = min\\(1\\.0, mid \\+ 0\\.07\\*_pload\\*max\\(0\\.0, \\(P\\['midvol'\\]\\(s10\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
+   "label": "THE MIDRANGE PREMIUM IS NOT TOUCHED — recal_145's load share stands and no midrange bar moved this round",
+   "note": "0 of 10,000 mid bars changed"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Eddy Curry '04",
+   "scale": "off",
+   "op": "==",
+   "value": 61,
+   "label": "THE SUBJECT'S OFF follows the bar: 62 -> 61 (OVR 62, unmoved)"
+  },
+  {
+   "card": "Eddy Curry '03",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 92,
+   "label": "the neighbour carrying 20% of the subject's blend, the same assisted shape: 93 -> 91 (pre-smooth 98 -> 91) (was 91) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Eddy Curry '05",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 87,
+   "label": "the other neighbour, 20% of the blend: 89 -> 86 (pre-smooth 93 -> 86) (was 86) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 2,
+   "label": "THE FIRST RELEASED PIN, re-pinned this round at 60 +-2: 60 -> 59. recal_52's 61 +-1 is in anchors_superseded.json by Tomer's word on this round"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "THE SECOND RELEASED PIN, re-pinned at 65 +-2: 64 -> 63. recal_139's 66 +-2 is superseded"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "r51's pin HELD UNRELEASED at 57 — his rim falls 88 -> 85 and his OFF does not move"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "r55's pin HELD, on its floor: rim 75 -> 70 (his whole premium, percentile .927 -> .641) and OFF 71 -> 70, the bottom of the band"
+  },
+  {
+   "card": "Zion Williamson '24",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 88,
+   "label": "THE VOLUME-FIRST DOCTRINE'S CARD, BYTE-IDENTICAL: p100 paint volume at p50 conversion, SELF-CREATED (assisted2p .474), percentile .996 -> .978, premium 0.0690 -> 0.0649. He was not to fall more than 2 and he falls 0"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "r156's pin, unmoved at 92 (rim 99 held)"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 99,
+   "label": "rim 99 HOLDS — his discounted percentile is .995, identical to his raw one, so the term cannot touch him"
+  },
+  {
+   "card": "Shaquille O'Neal '01",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 99,
+   "label": "rim 99 holds"
+  },
+  {
+   "card": "Shaquille O'Neal '02",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 99,
+   "label": "rim 99 holds"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "and his OFF summit is untouched"
+  },
+  {
+   "card": "Hakeem Olajuwon '93",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 96,
+   "label": "named wall, byte-identical"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 96,
+   "label": "named wall, byte-identical (was 95) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 95,
+   "label": "named wall, byte-identical"
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 60,
+   "label": "named wall, byte-identical"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "r52's other pin HELD at 77: rim 98 -> 96 and OFF does not move"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "named wall, unmoved at 92 (rim 58 -> 56)"
+  },
+  {
+   "card": "Karl Malone '00",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 2,
+   "label": "named wall, unmoved at 93 (rim 60 -> 58). recal_161 is landing his rim target in parallel and this round moves it 2 of the way without touching creation_factor"
+  },
+  {
+   "card": "Moritz Wagner '24",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 79,
+   "label": "THE LARGEST MOVE ON THE BOARD, 85 -> 78 — a 17.9-mpg bench finisher on an assisted paint diet, which is exactly the class the term was mis-paying (was 78) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:rim",
+   "above": "Shaquille O'Neal '00",
+   "below": "Eddy Curry '04",
+   "label": "99 vs 82"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Zion Williamson '24",
+   "below": "Eddy Curry '05",
+   "label": "THE INVERSION THE RULING WAS ABOUT, NOW RIGHT WAY UP: self-created p100 volume (88) above assisted p100 volume (86). It read 88 vs 89 before the round"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Zion Williamson '24",
+   "below": "Eddy Curry '04",
+   "label": "88 vs 82, from 88 vs 86"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Dwight Howard '11",
+   "below": "Clint Capela '18",
+   "label": "the less-assisted big above the more-assisted one, 96 vs 85 (was 98 vs 89) — the gap WIDENS, which is the term working"
+  }
+ ],
+ "movers": {
   "scale": "attr:rim",
-  "target": 82,
-  "tol": 3,
-  "before": 86,
-  "after": 82,
-  "pipeline_version": 164,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\*creation_factor\\(sh\\)\\) - 0\\.70\\)/0\\.30\\)\\)",
-      "label": "THE ROUND'S ONE LINE — the paint HIGH-VOLUME PREMIUM now reads the creation-discounted attempt rate",
-      "note": "P['rimvol'](share*fga100) -> P['rimvol'](share*fga100*creation_factor(sh)). Gate 0.70, payment 0.07, band 0.30 and the raw percentile POOL are all unchanged"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "rim = 0\\.65\\*P\\['rimvol'\\]\\(share\\*fga100\\*\\(creation_factor\\(sh\\) if use_factor else 1\\.0\\)\\)",
-      "label": "the composite, UNCHANGED — the premium now reads the identical expression, which is the whole point",
-      "note": "recal_161 owns creation_factor itself in this batch; it is untouched here"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "RECAL_166 \\(his ruling, \"166 confirm\"",
-      "label": "the round's record in the file's history comments, beside the term it changed"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "mid = min\\(1\\.0, mid \\+ 0\\.07\\*_pload\\*max\\(0\\.0, \\(P\\['midvol'\\]\\(s10\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
-      "label": "THE MIDRANGE PREMIUM IS NOT TOUCHED — recal_145's load share stands and no midrange bar moved this round",
-      "note": "0 of 10,000 mid bars changed"
-    }
-  ],
-  "expect": [
-    {
-      "card": "Eddy Curry '04",
-      "scale": "off",
-      "op": "==",
-      "value": 61,
-      "label": "THE SUBJECT'S OFF follows the bar: 62 -> 61 (OVR 62, unmoved)"
-    },
-    {
-      "card": "Eddy Curry '03",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 91,
-      "label": "the neighbour carrying 20% of the subject's blend, the same assisted shape: 93 -> 91 (pre-smooth 98 -> 91)"
-    },
-    {
-      "card": "Eddy Curry '05",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 86,
-      "label": "the other neighbour, 20% of the blend: 89 -> 86 (pre-smooth 93 -> 86)"
-    },
-    {
-      "card": "Clint Capela '18",
-      "scale": "off",
-      "op": "~",
-      "value": 60,
-      "tol": 2,
-      "label": "THE FIRST RELEASED PIN, re-pinned this round at 60 +-2: 60 -> 59. recal_52's 61 +-1 is in anchors_superseded.json by Tomer's word on this round"
-    },
-    {
-      "card": "Nenê '11",
-      "scale": "off",
-      "op": "~",
-      "value": 65,
-      "tol": 2,
-      "label": "THE SECOND RELEASED PIN, re-pinned at 65 +-2: 64 -> 63. recal_139's 66 +-2 is superseded"
-    },
-    {
-      "card": "Clint Capela '17",
-      "scale": "off",
-      "op": "~",
-      "value": 58,
-      "tol": 1,
-      "label": "r51's pin HELD UNRELEASED at 57 — his rim falls 88 -> 85 and his OFF does not move"
-    },
-    {
-      "card": "Domantas Sabonis '21",
-      "scale": "off",
-      "op": "~",
-      "value": 71,
-      "tol": 1,
-      "label": "r55's pin HELD, on its floor: rim 75 -> 70 (his whole premium, percentile .927 -> .641) and OFF 71 -> 70, the bottom of the band"
-    },
-    {
-      "card": "Zion Williamson '24",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 88,
-      "label": "THE VOLUME-FIRST DOCTRINE'S CARD, BYTE-IDENTICAL: p100 paint volume at p50 conversion, SELF-CREATED (assisted2p .474), percentile .996 -> .978, premium 0.0690 -> 0.0649. He was not to fall more than 2 and he falls 0"
-    },
-    {
-      "card": "Zion Williamson '21",
-      "scale": "off",
-      "op": "~",
-      "value": 92,
-      "tol": 1,
-      "label": "r156's pin, unmoved at 92 (rim 99 held)"
-    },
-    {
-      "card": "Shaquille O'Neal '00",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 99,
-      "label": "rim 99 HOLDS — his discounted percentile is .995, identical to his raw one, so the term cannot touch him"
-    },
-    {
-      "card": "Shaquille O'Neal '01",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 99,
-      "label": "rim 99 holds"
-    },
-    {
-      "card": "Shaquille O'Neal '02",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 99,
-      "label": "rim 99 holds"
-    },
-    {
-      "card": "Shaquille O'Neal '00",
-      "scale": "off",
-      "op": "==",
-      "value": 99,
-      "label": "and his OFF summit is untouched"
-    },
-    {
-      "card": "Hakeem Olajuwon '93",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 96,
-      "label": "named wall, byte-identical"
-    },
-    {
-      "card": "Hakeem Olajuwon '94",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 95,
-      "label": "named wall, byte-identical"
-    },
-    {
-      "card": "Moses Malone '82",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 95,
-      "label": "named wall, byte-identical"
-    },
-    {
-      "card": "Moses Malone '85",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 60,
-      "label": "named wall, byte-identical"
-    },
-    {
-      "card": "Dwight Howard '11",
-      "scale": "off",
-      "op": "~",
-      "value": 78,
-      "tol": 1,
-      "label": "r52's other pin HELD at 77: rim 98 -> 96 and OFF does not move"
-    },
-    {
-      "card": "Karl Malone '99",
-      "scale": "off",
-      "op": "~",
-      "value": 90,
-      "tol": 2,
-      "label": "named wall, unmoved at 92 (rim 58 -> 56)"
-    },
-    {
-      "card": "Karl Malone '00",
-      "scale": "off",
-      "op": "~",
-      "value": 93,
-      "tol": 2,
-      "label": "named wall, unmoved at 93 (rim 60 -> 58). recal_161 is landing his rim target in parallel and this round moves it 2 of the way without touching creation_factor"
-    },
-    {
-      "card": "Moritz Wagner '24",
-      "scale": "attr:rim",
-      "op": "==",
-      "value": 78,
-      "label": "THE LARGEST MOVE ON THE BOARD, 85 -> 78 — a 17.9-mpg bench finisher on an assisted paint diet, which is exactly the class the term was mis-paying"
-    }
-  ],
-  "order": [
-    {
-      "scale": "attr:rim",
-      "above": "Shaquille O'Neal '00",
-      "below": "Eddy Curry '04",
-      "label": "99 vs 82"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Zion Williamson '24",
-      "below": "Eddy Curry '05",
-      "label": "THE INVERSION THE RULING WAS ABOUT, NOW RIGHT WAY UP: self-created p100 volume (88) above assisted p100 volume (86). It read 88 vs 89 before the round"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Zion Williamson '24",
-      "below": "Eddy Curry '04",
-      "label": "88 vs 82, from 88 vs 86"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Dwight Howard '11",
-      "below": "Clint Capela '18",
-      "label": "the less-assisted big above the more-assisted one, 96 vs 85 (was 98 vs 89) — the gap WIDENS, which is the term working"
-    }
-  ],
-  "movers": {
-    "scale": "attr:rim",
-    "count": 2003,
-    "max_abs": 7,
-    "top": [
-      ["Moritz Wagner '24", 85, 78],
-      ["Alonzo Mourning '00", 81, 75],
-      ["Anthony Davis '18", 82, 76],
-      ["Bonzi Wells '01", 80, 74],
-      ["Brook Lopez '15", 74, 68],
-      ["Carlos Boozer '10", 78, 72],
-      ["Charlie Villanueva '08", 63, 57],
-      ["Christian Wood '20", 78, 72],
-      ["Clint Capela '19", 83, 77],
-      ["Corliss Williamson '00", 76, 70]
-    ]
-  },
-  "top12": {
-    "scale": "attr:rim",
-    "cards": [
-      "Adrian Dantley '81",
-      "Charles Barkley '91",
-      "Charles Barkley '92",
-      "David Robinson '90",
-      "David Robinson '91",
-      "Giannis Antetokounmpo '20",
-      "Giannis Antetokounmpo '21",
-      "Giannis Antetokounmpo '23",
-      "Giannis Antetokounmpo '24",
-      "Giannis Antetokounmpo '25",
-      "Kareem Abdul-Jabbar '81",
-      "Kareem Abdul-Jabbar '85"
-    ]
-  },
-  "cost": [
-    "TWO OF HIS OWN OFF PINS WERE RELEASED BY ONE POINT EACH, BY HIS EXPLICIT WORD ON THIS ROUND (\"166 confirm\"), and both are now in data/anchors_superseded.json with the reason \"released by Tomer on round 166 (confirm): the paint premium reads the discounted rate\". recal_52's Clint Capela '18 off 61 +-1 -> re-pinned 60 +-2 (reads 59). recal_139's Nene '11 off 66 +-2 -> re-pinned 65 +-2 (reads 63). NEITHER ROUND IS REVERSED: both fixed real defects that still stand; both cards were already sitting on the FLOOR of their bands (60 and 64) with zero room down before this round, because both are assisted-diet bigs, and the discount takes each one point lower. A later round that wants those pins back has to say which of the two rulings stands.",
-    "82, NOT 78 — HE CONFIRMED 82, AND WHY 78 IS UNREACHABLE THROUGH THIS TERM. The subject's PRE-SMOOTH bar goes 79 -> 75. The 20/60/20 season blend then averages him with his own '03 (pre-smooth 98 -> 91) and '05 (93 -> 86), which are the SAME assisted shape and carry 40% of the card, so the stored bar reads 82. Deleting the premium outright reaches 79 but costs 8 anchors and drops Shaq '00-'02 to rim 97 and Zion '24 to 81; cutting only the neighbours is a per-card use of the smoother, which doctrine 1 forbids. 78 needs a ruling on the smoother, not on this term.",
-    "THE ONE RISE ON THE BOARD IS NOT THIS TERM'S — IT IS is_big's CLIFF IN compute_ovr.py, AND IT IS OUT OF LANE. Nothing rises on any ATTRIBUTE (2,003 rim bars fall, 0 rise). But THREE cards cross is_big's middle shape clause `rim >= 60 and 3pt < 40` on the way down and are re-graded on the perimeter vector: Larry Johnson '99 (rim 60 -> 59) OFF 51 -> 55 and OVR 51 -> 54, Metta World Peace '04 (60 -> 57) OFF 67 -> 66, Jaime Jaquez Jr. '26 (62 -> 56) OFF 58 -> 57. Only Johnson rises, by 4 on OFF, on a ONE-POINT fall in rim. compute_ovr.py's own comment at line 130 already names this clause \"THE DEFECT\"; a one-point attribute step should not be worth four points of OFF and this round is the second time it has fired on a rim change. It belongs to ratings-to-off-def.",
-    "OFF MOVED ON 760 CARDS AND OVR ON 426, all bigs, worst OFF -3 (Chris Webber '95, Tim Duncan '04) and worst OVR -2 (Tim Duncan '02, Christian Wood '20, Ivica Zubac '25, Clint Capela '16, Corliss Williamson '00). Giannis '22 leaves the rim top 12 at 98 and Kareem '85 enters it; the other eleven names are unchanged. No DEF bar and no other attribute moved: the round's diff is one expression inside rim_mid_measured's premium.",
-    "THE MIDRANGE SIDE IS UNTOUCHED AND THE LOAD DOOR IS STILL OPEN. recal_145's paragraph deferring the LOAD share on the paint premium (Ayton '26 and Dampier '07, pinned in tests/court.test.ts and tests/campaigns.test.ts) is still true and still open: this round gave the paint premium the CREATION discount, not the load share, and its class line (2,004 cards, p75 34.95) remains measured and unspent.",
-    "ONE TEST FAILS AND IT IS OUT OF MY LANE — tests/court.test.ts \"a man who cannot shoot is never sent out to space the floor > holds in every shape, called or inferred\" (410 of 411 pass; the pre-round tree was 411/411 green). CAUSE, exactly: Deandre Ayton '26 is an assisted-diet big and his rim goes 71 -> 68, so screenFit = min(max(rim, mid), efficiency) = min(70, 81) = 70 where it was min(71, 81) = 71. Rui Hachimura '26 reads 71, capped by his efficiency 71. They were TIED at 71 and pnrPair broke the tie by the roll (rim 71 to 27) in Ayton's favour — that tie-break is written into src/engine/tactics.ts line 742 and quoted in the test's own recal_120 comment. At 70 vs 71 it is no longer a tie, Hachimura takes the screen, and the pick-and-roll set stands AYTON (3pt 4) IN A CORNER, which is the ruling the test guards. THIS IS EXACTLY THE COLLATERAL recal_145 REFUSED TO PAY and named by card ('the two cards it moves by a single point are Deandre Ayton '26 ... those two points re-decide a screen tie-break ... pinned in tests/court.test.ts'). The difference is that this time the rim move is Tomer's own confirmed ruling, so the bar is right and the FLOOR is wrong: the real defect is that the pnr set corners the non-screener big at all, whatever his three. THE FIX IS NOT AN ATTRIBUTE and this agent owns only data/build_ratings.py — it belongs either in src/ui/CourtFive.tsx (never put a man with canSpace false on a corner spot; the inside/dunker spot is free in the pnr set) or in src/engine/tactics.ts's pnrPair (break a NEAR-tie on screenFit by the roll, not an exact one). Nothing in data/ can reach it without a per-player override. Flagged for the engine/ui round; every anchor, every receipt and the other 410 tests pass.",
-    "PARALLEL ROUNDS IN THE SAME BATCH: recal_161 eases creation_factor itself (the 0.45 and the rim-deadeye gate) and recal_165 moves the rimprot block-evidence band. NEITHER IS TOUCHED HERE — this round's python diff is one expression plus comments. BUT THE TWO COMPOSE MULTIPLICATIVELY: every percentile quoted in this file is read at the CURRENT creation_factor, so if recal_161 lands, the subject and every card in the movers list will read differently and the integrator's single merged regeneration is the only true reading. Karl Malone '00 (recal_161's subject) already moves rim 60 -> 58 on this round alone."
-  ],
-  "notes": [
-    "THE ROUND IN ONE LINE: a paint attempt rate was discounted once for self-creation and then paid twice, and the second payment now reads the same discounted number as the first.",
-    "THE SUBJECT, TERM BY TERM. data/provenance.json rim [1, 8.61, 0.532, 0.726]: 8.61 paint attempts per 100 (0-10 ft), 53.2% conversion — the 57th percentile of 2004 — and 72.6% of his 2P makes assisted, on BPM -2.8 and 14.7 ppg. creation_factor = 1 - 0.45 x 0.726 = 0.673, so the composite reads P_rimvol(5.79) = 0.813 at weight 0.65. The premium read P_rimvol(8.61) = 0.991 and paid 0.07 x (0.991 - 0.70)/0.30 = +0.0679, seven card points, for volume the composite had already said he did not create. It now pays 0.07 x (0.813 - 0.70)/0.30 = +0.0263. Pre-smooth 79 -> 75; smoothed 86 -> 82.",
-    "PERCENTILE RAW -> DISCOUNTED, the whole round in one column: Shaq '00 .995 -> .995 (premium unchanged, rim 99) · Zion '24 .996 -> .978 (.0690 -> .0649, rim 88, byte-identical) · Dwight Howard '11 .996 -> .926 (rim 98 -> 96) · Eddy Curry '04 .991 -> .813 (.0679 -> .0263) · Clint Capela '17 .996 -> .839 (rim 88 -> 85) · Clint Capela '18 .992 -> .784 (.0681 -> .0195, rim 89 -> 85) · Domantas Sabonis '21 .927 -> .641 (.0530 -> 0, his whole premium) · Nene '11 .909 -> .600 (.0487 -> 0). The self-created finishers are untouched and the assisted diets pay; that ordering is the ruling.",
-    "THE POOL STAYS RAW ON PURPOSE and it is why the mid-class bigs fall hardest. vol_rim collects undiscounted volumes ('adjusted value ranks as self-created-equivalent volume'), so a discounted reading moves an assisted big down the WHOLE class rather than past only the cards more assisted than he is. That is the shape recal_51 built and this round did not re-open it: the gate (0.70), the payment (0.07) and the band (0.30) are all byte-identical.",
-    "REJECTED, each measured on the full 10,000-card pool before landing: (1) scaling the discount by t in [0,1] — t <= 0.10 holds the OLD pins and moves the subject by ZERO, t = 0.15 already takes Nene out, so there was no partial form to hide behind and the choice was genuinely release-the-pins or decline; (2) ranking the discounted value against a DISCOUNTED pool — the subject keeps 0.0615 of 0.0679, six tenths of a card point; (3) deleting the premium — the subject reaches 79 but 8 anchors fail and Shaq '00-'02 fall to rim 97 with Zion '24 to 81, which is the volume-first doctrine itself. Round 166 was DECLINED on this measurement first; Tomer read the frontier and released the two pins.",
-    "TEN CARDS, rim / OFF / OVR before -> after. Eddy Curry '04 86->82 / 62->61 / 62 · Eddy Curry '03 93->91 / 55 / 54 · Eddy Curry '05 89->86 / 64->63 / 64 · Clint Capela '18 89->85 / 60->59 / 70 · Clint Capela '17 88->85 / 57 / 65 · Nene '11 73->70 / 64->63 / 72 · Domantas Sabonis '21 75->70 / 71->70 / 70 · Dwight Howard '11 98->96 / 77 / 88 · Moritz Wagner '24 85->78 / 60->58 / 59 · Zion Williamson '24 88 / 84 / 78 and Shaquille O'Neal '00 99 / 99 / 96, both byte-identical.",
-    "VERIFICATION: npm run anchors 161 anchors, 0 failing, mean |error| 0.85 (was 160 / 0 / 0.82 — three anchors added, two superseded). npx vitest run 410 of 411 across 39 files — the ONE failure is tests/court.test.ts's corner rule, diagnosed card by card in COST above and reachable only from src/ui or src/engine. npm run harness all nine levers PASS with no tax re-sweep needed (main scorer +1.39, main playmaker +2.21, tempo +0.70, playstyle +2.02, scheme +0.63, hunt +0.52, crash off +0.56, crash def +0.53, assignment +3.16), so src/engine/tactics.ts is not in this round's diff. npm run opponents regenerated the 150-level ladder."
+  "count": 2003,
+  "max_abs": 7,
+  "top": [
+   [
+    "Moritz Wagner '24",
+    85,
+    78
+   ],
+   [
+    "Alonzo Mourning '00",
+    81,
+    75
+   ],
+   [
+    "Anthony Davis '18",
+    82,
+    76
+   ],
+   [
+    "Bonzi Wells '01",
+    80,
+    74
+   ],
+   [
+    "Brook Lopez '15",
+    74,
+    68
+   ],
+   [
+    "Carlos Boozer '10",
+    78,
+    72
+   ],
+   [
+    "Charlie Villanueva '08",
+    63,
+    57
+   ],
+   [
+    "Christian Wood '20",
+    78,
+    72
+   ],
+   [
+    "Clint Capela '19",
+    83,
+    77
+   ],
+   [
+    "Corliss Williamson '00",
+    76,
+    70
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:rim",
+  "cards": [
+   "Adrian Dantley '81",
+   "Charles Barkley '91",
+   "Charles Barkley '92",
+   "David Robinson '90",
+   "David Robinson '91",
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '21",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kareem Abdul-Jabbar '81",
+   "Kareem Abdul-Jabbar '85"
+  ]
+ },
+ "cost": [
+  "TWO OF HIS OWN OFF PINS WERE RELEASED BY ONE POINT EACH, BY HIS EXPLICIT WORD ON THIS ROUND (\"166 confirm\"), and both are now in data/anchors_superseded.json with the reason \"released by Tomer on round 166 (confirm): the paint premium reads the discounted rate\". recal_52's Clint Capela '18 off 61 +-1 -> re-pinned 60 +-2 (reads 59). recal_139's Nene '11 off 66 +-2 -> re-pinned 65 +-2 (reads 63). NEITHER ROUND IS REVERSED: both fixed real defects that still stand; both cards were already sitting on the FLOOR of their bands (60 and 64) with zero room down before this round, because both are assisted-diet bigs, and the discount takes each one point lower. A later round that wants those pins back has to say which of the two rulings stands.",
+  "82, NOT 78 — HE CONFIRMED 82, AND WHY 78 IS UNREACHABLE THROUGH THIS TERM. The subject's PRE-SMOOTH bar goes 79 -> 75. The 20/60/20 season blend then averages him with his own '03 (pre-smooth 98 -> 91) and '05 (93 -> 86), which are the SAME assisted shape and carry 40% of the card, so the stored bar reads 82. Deleting the premium outright reaches 79 but costs 8 anchors and drops Shaq '00-'02 to rim 97 and Zion '24 to 81; cutting only the neighbours is a per-card use of the smoother, which doctrine 1 forbids. 78 needs a ruling on the smoother, not on this term.",
+  "THE ONE RISE ON THE BOARD IS NOT THIS TERM'S — IT IS is_big's CLIFF IN compute_ovr.py, AND IT IS OUT OF LANE. Nothing rises on any ATTRIBUTE (2,003 rim bars fall, 0 rise). But THREE cards cross is_big's middle shape clause `rim >= 60 and 3pt < 40` on the way down and are re-graded on the perimeter vector: Larry Johnson '99 (rim 60 -> 59) OFF 51 -> 55 and OVR 51 -> 54, Metta World Peace '04 (60 -> 57) OFF 67 -> 66, Jaime Jaquez Jr. '26 (62 -> 56) OFF 58 -> 57. Only Johnson rises, by 4 on OFF, on a ONE-POINT fall in rim. compute_ovr.py's own comment at line 130 already names this clause \"THE DEFECT\"; a one-point attribute step should not be worth four points of OFF and this round is the second time it has fired on a rim change. It belongs to ratings-to-off-def.",
+  "OFF MOVED ON 760 CARDS AND OVR ON 426, all bigs, worst OFF -3 (Chris Webber '95, Tim Duncan '04) and worst OVR -2 (Tim Duncan '02, Christian Wood '20, Ivica Zubac '25, Clint Capela '16, Corliss Williamson '00). Giannis '22 leaves the rim top 12 at 98 and Kareem '85 enters it; the other eleven names are unchanged. No DEF bar and no other attribute moved: the round's diff is one expression inside rim_mid_measured's premium.",
+  "THE MIDRANGE SIDE IS UNTOUCHED AND THE LOAD DOOR IS STILL OPEN. recal_145's paragraph deferring the LOAD share on the paint premium (Ayton '26 and Dampier '07, pinned in tests/court.test.ts and tests/campaigns.test.ts) is still true and still open: this round gave the paint premium the CREATION discount, not the load share, and its class line (2,004 cards, p75 34.95) remains measured and unspent.",
+  "ONE TEST FAILS AND IT IS OUT OF MY LANE — tests/court.test.ts \"a man who cannot shoot is never sent out to space the floor > holds in every shape, called or inferred\" (410 of 411 pass; the pre-round tree was 411/411 green). CAUSE, exactly: Deandre Ayton '26 is an assisted-diet big and his rim goes 71 -> 68, so screenFit = min(max(rim, mid), efficiency) = min(70, 81) = 70 where it was min(71, 81) = 71. Rui Hachimura '26 reads 71, capped by his efficiency 71. They were TIED at 71 and pnrPair broke the tie by the roll (rim 71 to 27) in Ayton's favour — that tie-break is written into src/engine/tactics.ts line 742 and quoted in the test's own recal_120 comment. At 70 vs 71 it is no longer a tie, Hachimura takes the screen, and the pick-and-roll set stands AYTON (3pt 4) IN A CORNER, which is the ruling the test guards. THIS IS EXACTLY THE COLLATERAL recal_145 REFUSED TO PAY and named by card ('the two cards it moves by a single point are Deandre Ayton '26 ... those two points re-decide a screen tie-break ... pinned in tests/court.test.ts'). The difference is that this time the rim move is Tomer's own confirmed ruling, so the bar is right and the FLOOR is wrong: the real defect is that the pnr set corners the non-screener big at all, whatever his three. THE FIX IS NOT AN ATTRIBUTE and this agent owns only data/build_ratings.py — it belongs either in src/ui/CourtFive.tsx (never put a man with canSpace false on a corner spot; the inside/dunker spot is free in the pnr set) or in src/engine/tactics.ts's pnrPair (break a NEAR-tie on screenFit by the roll, not an exact one). Nothing in data/ can reach it without a per-player override. Flagged for the engine/ui round; every anchor, every receipt and the other 410 tests pass.",
+  "PARALLEL ROUNDS IN THE SAME BATCH: recal_161 eases creation_factor itself (the 0.45 and the rim-deadeye gate) and recal_165 moves the rimprot block-evidence band. NEITHER IS TOUCHED HERE — this round's python diff is one expression plus comments. BUT THE TWO COMPOSE MULTIPLICATIVELY: every percentile quoted in this file is read at the CURRENT creation_factor, so if recal_161 lands, the subject and every card in the movers list will read differently and the integrator's single merged regeneration is the only true reading. Karl Malone '00 (recal_161's subject) already moves rim 60 -> 58 on this round alone."
+ ],
+ "notes": [
+  "THE ROUND IN ONE LINE: a paint attempt rate was discounted once for self-creation and then paid twice, and the second payment now reads the same discounted number as the first.",
+  "THE SUBJECT, TERM BY TERM. data/provenance.json rim [1, 8.61, 0.532, 0.726]: 8.61 paint attempts per 100 (0-10 ft), 53.2% conversion — the 57th percentile of 2004 — and 72.6% of his 2P makes assisted, on BPM -2.8 and 14.7 ppg. creation_factor = 1 - 0.45 x 0.726 = 0.673, so the composite reads P_rimvol(5.79) = 0.813 at weight 0.65. The premium read P_rimvol(8.61) = 0.991 and paid 0.07 x (0.991 - 0.70)/0.30 = +0.0679, seven card points, for volume the composite had already said he did not create. It now pays 0.07 x (0.813 - 0.70)/0.30 = +0.0263. Pre-smooth 79 -> 75; smoothed 86 -> 82.",
+  "PERCENTILE RAW -> DISCOUNTED, the whole round in one column: Shaq '00 .995 -> .995 (premium unchanged, rim 99) · Zion '24 .996 -> .978 (.0690 -> .0649, rim 88, byte-identical) · Dwight Howard '11 .996 -> .926 (rim 98 -> 96) · Eddy Curry '04 .991 -> .813 (.0679 -> .0263) · Clint Capela '17 .996 -> .839 (rim 88 -> 85) · Clint Capela '18 .992 -> .784 (.0681 -> .0195, rim 89 -> 85) · Domantas Sabonis '21 .927 -> .641 (.0530 -> 0, his whole premium) · Nene '11 .909 -> .600 (.0487 -> 0). The self-created finishers are untouched and the assisted diets pay; that ordering is the ruling.",
+  "THE POOL STAYS RAW ON PURPOSE and it is why the mid-class bigs fall hardest. vol_rim collects undiscounted volumes ('adjusted value ranks as self-created-equivalent volume'), so a discounted reading moves an assisted big down the WHOLE class rather than past only the cards more assisted than he is. That is the shape recal_51 built and this round did not re-open it: the gate (0.70), the payment (0.07) and the band (0.30) are all byte-identical.",
+  "REJECTED, each measured on the full 10,000-card pool before landing: (1) scaling the discount by t in [0,1] — t <= 0.10 holds the OLD pins and moves the subject by ZERO, t = 0.15 already takes Nene out, so there was no partial form to hide behind and the choice was genuinely release-the-pins or decline; (2) ranking the discounted value against a DISCOUNTED pool — the subject keeps 0.0615 of 0.0679, six tenths of a card point; (3) deleting the premium — the subject reaches 79 but 8 anchors fail and Shaq '00-'02 fall to rim 97 with Zion '24 to 81, which is the volume-first doctrine itself. Round 166 was DECLINED on this measurement first; Tomer read the frontier and released the two pins.",
+  "TEN CARDS, rim / OFF / OVR before -> after. Eddy Curry '04 86->82 / 62->61 / 62 · Eddy Curry '03 93->91 / 55 / 54 · Eddy Curry '05 89->86 / 64->63 / 64 · Clint Capela '18 89->85 / 60->59 / 70 · Clint Capela '17 88->85 / 57 / 65 · Nene '11 73->70 / 64->63 / 72 · Domantas Sabonis '21 75->70 / 71->70 / 70 · Dwight Howard '11 98->96 / 77 / 88 · Moritz Wagner '24 85->78 / 60->58 / 59 · Zion Williamson '24 88 / 84 / 78 and Shaquille O'Neal '00 99 / 99 / 96, both byte-identical.",
+  "VERIFICATION: npm run anchors 161 anchors, 0 failing, mean |error| 0.85 (was 160 / 0 / 0.82 — three anchors added, two superseded). npx vitest run 410 of 411 across 39 files — the ONE failure is tests/court.test.ts's corner rule, diagnosed card by card in COST above and reachable only from src/ui or src/engine. npm run harness all nine levers PASS with no tax re-sweep needed (main scorer +1.39, main playmaker +2.21, tempo +0.70, playstyle +2.02, scheme +0.63, hunt +0.52, crash off +0.56, crash def +0.53, assignment +3.16), so src/engine/tactics.ts is not in this round's diff. npm run opponents regenerated the 150-level ladder."
+ ]
 }

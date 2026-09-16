@@ -553,6 +553,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * -0.302) to 0.492 (oracle +0.500 exactly at 0.493), true midpoint by r126's rule: 0.50 -> 0.33 (blind
  * -0.424, oracle +0.547; 0.047 and 0.124 of room). hunt held at 3.85 for the second round running and the
  * six others held their bands untouched. All nine pass.
+ * recal_161-167 INTEGRATION SWEEP (pipeline 167): four rounds folded onto main (161, 165, 166, 167) and the taxes swept
+ * ONCE from main's constants (hunt 3.85, crashOff 0.32, crashDef 0.50), superseding the per-branch figures (167: crashOff .14 /
+ * crashDef .33). On the merged pool all three broke: hunt on the BLIND edge (-0.28 at 3.85), both crash taxes on the ORACLE
+ * edge (crashOff +0.46 at 0.32 and +0.48 at 0.20; crashDef +0.48 at 0.50). Set inside each window: hunt 3.97 (blind -0.38,
+ * oracle +0.52), crashOff 0.08 (-0.77, +0.51), crashDef 0.38 (-0.52, +0.51). 2,003 assisted-big rim bars fell (166) while
+ * 2,350 two-zone bigs rose (161) and 637 interior bigs rose (167): the glass mismatch is worth less, the hunt more.
  */
 export const TAX = {
   scorer: 0.55,
@@ -560,9 +566,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.85,
-  crashOff: 0.14,
-  crashDef: 0.33,
+  hunt: 3.97,
+  crashOff: 0.08,
+  crashDef: 0.38,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
@@ -752,8 +758,15 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
   const dScore = (p: Player) => screenFit(p.attrs)
   const handler = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78).sort((x, y) => hScore(y) - hScore(x))[0] ?? null
   // ties on screenFit are real — two bigs can be capped by the same efficiency — and they are broken
-  // by the ROLL: of two men who finish the same off the screen, the one who can get to the rim sets it
-  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => dScore(y) - dScore(x) || y.attrs.rim - x.attrs.rim)[0] ?? null
+  // by the ROLL: of two men who finish the same off the screen, the one who can get to the rim sets it.
+  // Integration 161-167 (pipeline 167): a NEAR-tie (within one point) is a tie too. recal_166 took Deandre
+  // Ayton '26's rim 71 -> 68, his screenFit 71 -> 70 against Rui Hachimura '26's 71, and an exact-tie rule
+  // sent the roll man to a corner he cannot space (tests/court.test.ts). One point of screenFit is smoothing
+  // noise; the roll decides inside it.
+  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => {
+    const d = dScore(y) - dScore(x)
+    return Math.abs(d) > 1 ? d : (y.attrs.rim - x.attrs.rim) || d
+  })[0] ?? null
   return { handler, screener, chosen: false }
 }
 

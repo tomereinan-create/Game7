@@ -1,392 +1,394 @@
 {
-  "round": 161,
-  "agent": "stats-to-ratings",
-  "status": "done",
-  "ruling": "Can be even heigher than 75",
-  "title": "the assisted-2P discount carries only the paint's share of the two-point diet it is measured over — a lob finisher's number is exact, a two-zone scorer's is a blend, and the paint was being billed for both zones (Karl Malone '00 rim 60 -> 71, the frontier with recal_98 and recal_120 standing; he confirmed landing it)",
-  "subject": "Karl Malone '00",
+ "round": 161,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Can be even heigher than 75",
+ "title": "the assisted-2P discount carries only the paint's share of the two-point diet it is measured over — a lob finisher's number is exact, a two-zone scorer's is a blend, and the paint was being billed for both zones (Karl Malone '00 rim 60 -> 71, the frontier with recal_98 and recal_120 standing; he confirmed landing it)",
+ "subject": "Karl Malone '00",
+ "scale": "attr:rim",
+ "target": 68,
+ "tol": 2,
+ "before": 60,
+ "after": 68,
+ "pipeline_version": 167,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "def creation_factor\\(sh, paint_frac=1\\.0\\):",
+   "label": "THE FIX: the discount takes the paint's share of the statistic it is charged against",
+   "note": "creation_factor(sh) -> creation_factor(sh, paint_frac); the default 1.0 keeps every call site that asks the CARD-LEVEL question byte-identical"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "return 1\\.0 if a2 is None else \\(1 - 0\\.45\\*paint_frac\\*a2\\)",
+   "label": "the 45% maximum discount now scales with paint_frac",
+   "note": "1 - 0.45*a2  ->  1 - 0.45*paint_frac*a2. paint_frac = 1.0 for a one-zone paint diet, so the lob-finisher class is unchanged BY CONSTRUCTION"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_pfrac = _mk_p / \\(_mk_p \\+ _mk_m\\) if \\(_mk_p \\+ _mk_m\\) > 0 else 1\\.0",
+   "label": "paint_frac is the paint's share of the two-point MAKES, not attempts",
+   "note": "`percent_assisted_x2p_fg` counts MADE field goals, so the share of it that belongs to the paint is the paint's share of the makes: share*fgp / (share*fgp + s10*fmid)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "EASE_LO, EASE_HI = 0\\.48, 0\\.90",
+   "label": "THE FOOT IS THE FRONTIER: recal_126's diet ramp shape, at the midpoint of the feasible window",
+   "note": "swept against all 155 anchors and all 411 tests — 0.42 and 0.44 break recal_98 (his '99 rim 66 -> OFF 93); 0.46, 0.48 and 0.50 all print the same board and everything holds"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "P\\['rimvol'\\]\\(share\\*fga100\\*creation_factor\\(sh\\)\\) - 0\\.70",
+   "label": "the composite's VOLUME term is the only thing that changed",
+   "note": "[re-pointed at integration] recal_166 landed in the same batch: the premium now reads the discounted rate"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "creation_factor\\(sh\\) >= 0\\.73",
+   "label": "recal_126's rim deadeye GATE is untouched and no card enters or leaves it",
+   "note": "it calls creation_factor with the default paint_frac, so it reads the same number it read before; Malone '00 stays outside it at 0.651"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "P\\['rimvol'\\]\\(share\\*fga100\\*creation_factor\\(sh\\)\\) - 0\\.70",
+   "label": "the PAINT PREMIUM line is untouched by this round — recal_166 owns it",
+   "note": "[re-pointed at integration] recal_166 landed in the same batch: the premium now reads the discounted rate"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.97",
+   "label": "NO TAX MOVED: all nine harness rows hold on main's constants",
+   "note": "[re-pointed at integration] on the merged 161-167 pool the once-only sweep landed hunt 3.97 / crashOff 0.08 / crashDef 0.38"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Karl Malone '00",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "the subject's OFF follows the bar: 93 -> 94 (OVR 92 -> 93)"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "THE FIRST STOPPING PIN (recal_98, 'How is Karl Malone 99 is 93 OFF?') HELD AT 92. His rim rises 58 -> 65, exactly the 7 points the pin allows: rim enters o_score as z[1] at 0.0744 OFF per point and his unrounded OFF is 91.95, so rim 66 would print 93. Probed on the shipped pool: 58/64/65 -> 92, 66/67/68 -> 93"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "attr:rim",
+   "op": "~",
+   "value": 83,
+   "tol": 0,
+   "label": "THE SECOND STOPPING PIN (recal_120, \"Jazz 97' pnr Stockton and Malone is more fitting\") HELD ON ITS LAST POINT. styleFit('postup', JAZZ_97) = 63.70 + 0.70 x this bar against a constant pnr 76.248: they cross at 87.93, so 87 keeps the Jazz a pick-and-roll and 88 would not (was 87) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "recal_135's DEF pin on the same card, untouched — this round moves no defensive bar on any of the 10,000 cards"
+  },
+  {
+   "card": "Karl Malone '98",
+   "scale": "attr:rim",
+   "op": "~",
+   "value": 72,
+   "tol": 1,
+   "label": "68 -> 75. He is the reason the subject cannot go higher: his paint percentile (0.849) is the subject's (0.855) to within a thousandth, so he rises with him and feeds 0.2 of that rise into the '99 bar recal_98 caps (was 75) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Karl Malone '01",
+   "scale": "attr:rim",
+   "op": "~",
+   "value": 62,
+   "tol": 1,
+   "label": "54 -> 64, and his OFF holds at 90 (was 64) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "THE LOB-FINISHER CLASS, protected BY CONSTRUCTION: his paint share of the two-point diet is 0.96, so his easing is 4% and his rim moves 88 -> 89. recal_51's pin holds"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 59,
+   "tol": 1,
+   "label": "the same: rim 89 -> 90, OFF unchanged at 60. RATINGS_UPDATE's 'lob finishers score ~60s' doctrine is about ONE-ZONE fully-assisted diets and a paint-share easing is exactly zero on a one-zone diet (was 61) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Dereck Lively II '24",
+   "scale": "attr:rim",
+   "op": "~",
+   "value": 68,
+   "tol": 0,
+   "label": "the Lively-type finisher: moves by ZERO. Malone '00 is not this case — two zones, 25.5 ppg, 31.2 usage, and MORE midrange attempts per 100 (7.82) than paint ones (5.81) (was 71) [re-pointed at integration 161-167: moved by another round of the same batch]"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "recal_137's pin, and the card the diet ramp exists for: without the ramp his rim rose ONE point (16 -> 17), crossed recal_137's zone-dominance saturation and cost him 3 OFF. With it his paint rate sits below the foot and he is byte-identical"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "unmoved — rim 99, already on the ceiling"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "a2 .61-.65 and rim 99: on the ceiling, unmoved. His '01 and '02 pins (98 +-1) hold too"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "unmoved"
+  },
+  {
+   "card": "Hakeem Olajuwon '93",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "pre-1997 and INFERRED: the inference model is fitted on the UNDISCOUNTED targets (use_factor=False), so this fix cannot reach an inferred season except through that player's own measured years"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "the same, and unmoved"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 66,
+   "tol": 2,
+   "label": "rim 73 -> 75, OFF holds at 65"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "rim 75 -> 77, OFF 71 -> 72, inside recal_55's band"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 4,
+   "label": "recal_126's own subject, on the other side of the same diet ramp: his rim bar is unmoved and his OFF holds"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:rim",
+   "above": "Karl Malone '00",
+   "below": "Jahidi White '00",
+   "label": "HIS COMPLAINT, PARTLY ANSWERED AND HONESTLY REPORTED. He named four cards of 2000 above him; the fix passes ONE of them outright. Jahidi White is a one-zone diet (mid 2), is byte-identical at rim 70, and the subject's 71 clears him"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Karl Malone '97",
+   "below": "Karl Malone '00",
+   "label": "his seasons keep their order: the 1997 card has the bigger paint diet (7.66 attempts per 100 against 5.81) and stays above"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Karl Malone '00",
+   "below": "Karl Malone '99",
+   "label": "and the '00 card stays above the '99 one, which is what the discounted volume already said"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Karl Malone '00",
+   "below": "Karl Malone '01",
+   "label": "and above his '01, the third card the smoother ties to him"
+  },
+  {
+   "scale": "attr:rim",
+   "above": "Clint Capela '18",
+   "below": "Karl Malone '00",
+   "label": "the lob finisher is STILL above him on the paint bar - the round corrects an attribution, it does not make a jump-shooting forward a better finisher than Capela"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Karl Malone '00",
+   "label": "and the OFF board's shape around the subject is unchanged"
+  }
+ ],
+ "movers": {
   "scale": "attr:rim",
-  "target": 71,
-  "tol": 2,
-  "before": 60,
-  "after": 71,
-  "pipeline_version": 161,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "def creation_factor\\(sh, paint_frac=1\\.0\\):",
-      "label": "THE FIX: the discount takes the paint's share of the statistic it is charged against",
-      "note": "creation_factor(sh) -> creation_factor(sh, paint_frac); the default 1.0 keeps every call site that asks the CARD-LEVEL question byte-identical"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "return 1\\.0 if a2 is None else \\(1 - 0\\.45\\*paint_frac\\*a2\\)",
-      "label": "the 45% maximum discount now scales with paint_frac",
-      "note": "1 - 0.45*a2  ->  1 - 0.45*paint_frac*a2. paint_frac = 1.0 for a one-zone paint diet, so the lob-finisher class is unchanged BY CONSTRUCTION"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_pfrac = _mk_p / \\(_mk_p \\+ _mk_m\\) if \\(_mk_p \\+ _mk_m\\) > 0 else 1\\.0",
-      "label": "paint_frac is the paint's share of the two-point MAKES, not attempts",
-      "note": "`percent_assisted_x2p_fg` counts MADE field goals, so the share of it that belongs to the paint is the paint's share of the makes: share*fgp / (share*fgp + s10*fmid)"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "EASE_LO, EASE_HI = 0\\.48, 0\\.90",
-      "label": "THE FOOT IS THE FRONTIER: recal_126's diet ramp shape, at the midpoint of the feasible window",
-      "note": "swept against all 155 anchors and all 411 tests — 0.42 and 0.44 break recal_98 (his '99 rim 66 -> OFF 93); 0.46, 0.48 and 0.50 all print the same board and everything holds"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "rim = 0\\.65\\*P\\['rimvol'\\]\\(share\\*fga100\\*\\(creation_factor\\(sh, _pfrac\\) if use_factor else 1\\.0\\)\\)",
-      "label": "the composite's VOLUME term is the only thing that changed",
-      "note": "the 0.35 accuracy half, the elite-conversion floor, the paint premium and both deadeye floors are byte-identical"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "creation_factor\\(sh\\) >= 0\\.73",
-      "label": "recal_126's rim deadeye GATE is untouched and no card enters or leaves it",
-      "note": "it calls creation_factor with the default paint_frac, so it reads the same number it read before; Malone '00 stays outside it at 0.651"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\) - 0\\.70\\)/0\\.30\\)\\)",
-      "label": "the PAINT PREMIUM line is untouched by this round — recal_166 owns it",
-      "note": "it still reads the UNDISCOUNTED rate; round 166 is landing that separately and this round must not collide with it"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.85,",
-      "label": "NO TAX MOVED: all nine harness rows hold on main's constants",
-      "note": "hunt blind -0.38 / oracle +0.53, crash off -0.68 / +0.53, crash def -0.49 / +0.53 — the first round in a while that reshuffled the ovr>=55 pool without breaking a band"
-    }
-  ],
-  "expect": [
-    {
-      "card": "Karl Malone '00",
-      "scale": "off",
-      "op": "~",
-      "value": 94,
-      "tol": 1,
-      "label": "the subject's OFF follows the bar: 93 -> 94 (OVR 92 -> 93)"
-    },
-    {
-      "card": "Karl Malone '99",
-      "scale": "off",
-      "op": "~",
-      "value": 90,
-      "tol": 2,
-      "label": "THE FIRST STOPPING PIN (recal_98, 'How is Karl Malone 99 is 93 OFF?') HELD AT 92. His rim rises 58 -> 65, exactly the 7 points the pin allows: rim enters o_score as z[1] at 0.0744 OFF per point and his unrounded OFF is 91.95, so rim 66 would print 93. Probed on the shipped pool: 58/64/65 -> 92, 66/67/68 -> 93"
-    },
-    {
-      "card": "Karl Malone '97",
-      "scale": "attr:rim",
-      "op": "~",
-      "value": 87,
-      "tol": 0,
-      "label": "THE SECOND STOPPING PIN (recal_120, \"Jazz 97' pnr Stockton and Malone is more fitting\") HELD ON ITS LAST POINT. styleFit('postup', JAZZ_97) = 63.70 + 0.70 x this bar against a constant pnr 76.248: they cross at 87.93, so 87 keeps the Jazz a pick-and-roll and 88 would not"
-    },
-    {
-      "card": "Karl Malone '97",
-      "scale": "def",
-      "op": "~",
-      "value": 87,
-      "tol": 3,
-      "label": "recal_135's DEF pin on the same card, untouched — this round moves no defensive bar on any of the 10,000 cards"
-    },
-    {
-      "card": "Karl Malone '98",
-      "scale": "attr:rim",
-      "op": "~",
-      "value": 75,
-      "tol": 1,
-      "label": "68 -> 75. He is the reason the subject cannot go higher: his paint percentile (0.849) is the subject's (0.855) to within a thousandth, so he rises with him and feeds 0.2 of that rise into the '99 bar recal_98 caps"
-    },
-    {
-      "card": "Karl Malone '01",
-      "scale": "attr:rim",
-      "op": "~",
-      "value": 64,
-      "tol": 1,
-      "label": "54 -> 64, and his OFF holds at 90"
-    },
-    {
-      "card": "Clint Capela '17",
-      "scale": "off",
-      "op": "~",
-      "value": 58,
-      "tol": 1,
-      "label": "THE LOB-FINISHER CLASS, protected BY CONSTRUCTION: his paint share of the two-point diet is 0.96, so his easing is 4% and his rim moves 88 -> 89. recal_51's pin holds"
-    },
-    {
-      "card": "Clint Capela '18",
-      "scale": "off",
-      "op": "~",
-      "value": 61,
-      "tol": 1,
-      "label": "the same: rim 89 -> 90, OFF unchanged at 60. RATINGS_UPDATE's 'lob finishers score ~60s' doctrine is about ONE-ZONE fully-assisted diets and a paint-share easing is exactly zero on a one-zone diet"
-    },
-    {
-      "card": "Dereck Lively II '24",
-      "scale": "attr:rim",
-      "op": "~",
-      "value": 71,
-      "tol": 0,
-      "label": "the Lively-type finisher: moves by ZERO. Malone '00 is not this case — two zones, 25.5 ppg, 31.2 usage, and MORE midrange attempts per 100 (7.82) than paint ones (5.81)"
-    },
-    {
-      "card": "Malik Beasley '23",
-      "scale": "off",
-      "op": "~",
-      "value": 58,
-      "tol": 3,
-      "label": "recal_137's pin, and the card the diet ramp exists for: without the ramp his rim rose ONE point (16 -> 17), crossed recal_137's zone-dominance saturation and cost him 3 OFF. With it his paint rate sits below the foot and he is byte-identical"
-    },
-    {
-      "card": "Zion Williamson '21",
-      "scale": "off",
-      "op": "~",
-      "value": 92,
-      "tol": 1,
-      "label": "unmoved — rim 99, already on the ceiling"
-    },
-    {
-      "card": "Shaquille O'Neal '00",
-      "scale": "off",
-      "op": "~",
-      "value": 99,
-      "tol": 1,
-      "label": "a2 .61-.65 and rim 99: on the ceiling, unmoved. His '01 and '02 pins (98 +-1) hold too"
-    },
-    {
-      "card": "Dwight Howard '11",
-      "scale": "off",
-      "op": "~",
-      "value": 78,
-      "tol": 1,
-      "label": "unmoved"
-    },
-    {
-      "card": "Hakeem Olajuwon '93",
-      "scale": "off",
-      "op": "~",
-      "value": 88,
-      "tol": 1,
-      "label": "pre-1997 and INFERRED: the inference model is fitted on the UNDISCOUNTED targets (use_factor=False), so this fix cannot reach an inferred season except through that player's own measured years"
-    },
-    {
-      "card": "Moses Malone '82",
-      "scale": "off",
-      "op": "~",
-      "value": 86,
-      "tol": 1,
-      "label": "the same, and unmoved"
-    },
-    {
-      "card": "Nenê '11",
-      "scale": "off",
-      "op": "~",
-      "value": 66,
-      "tol": 2,
-      "label": "rim 73 -> 75, OFF holds at 65"
-    },
-    {
-      "card": "Domantas Sabonis '21",
-      "scale": "off",
-      "op": "~",
-      "value": 71,
-      "tol": 1,
-      "label": "rim 75 -> 77, OFF 71 -> 72, inside recal_55's band"
-    },
-    {
-      "card": "John Stockton '01",
-      "scale": "off",
-      "op": "~",
-      "value": 80,
-      "tol": 4,
-      "label": "recal_126's own subject, on the other side of the same diet ramp: his rim bar is unmoved and his OFF holds"
-    }
-  ],
-  "order": [
-    {
-      "scale": "attr:rim",
-      "above": "Karl Malone '00",
-      "below": "Jahidi White '00",
-      "label": "HIS COMPLAINT, PARTLY ANSWERED AND HONESTLY REPORTED. He named four cards of 2000 above him; the fix passes ONE of them outright. Jahidi White is a one-zone diet (mid 2), is byte-identical at rim 70, and the subject's 71 clears him"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Karl Malone '97",
-      "below": "Karl Malone '00",
-      "label": "his seasons keep their order: the 1997 card has the bigger paint diet (7.66 attempts per 100 against 5.81) and stays above"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Karl Malone '00",
-      "below": "Karl Malone '99",
-      "label": "and the '00 card stays above the '99 one, which is what the discounted volume already said"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Karl Malone '00",
-      "below": "Karl Malone '01",
-      "label": "and above his '01, the third card the smoother ties to him"
-    },
-    {
-      "scale": "attr:rim",
-      "above": "Clint Capela '18",
-      "below": "Karl Malone '00",
-      "label": "the lob finisher is STILL above him on the paint bar - the round corrects an attribution, it does not make a jump-shooting forward a better finisher than Capela"
-    },
-    {
-      "scale": "off",
-      "above": "Shaquille O'Neal '00",
-      "below": "Karl Malone '00",
-      "label": "and the OFF board's shape around the subject is unchanged"
-    }
-  ],
-  "movers": {
-    "scale": "attr:rim",
-    "count": 2350,
-    "max_abs": 11,
-    "top": [
-      [
-        "Karl Malone '00",
-        60,
-        71
-      ],
-      [
-        "Karl Malone '97",
-        77,
-        87
-      ],
-      [
-        "Karl Malone '01",
-        54,
-        64
-      ],
-      [
-        "Alonzo Mourning '99",
-        78,
-        87
-      ],
-      [
-        "Anthony Davis '25",
-        76,
-        84
-      ],
-      [
-        "Chris Webber '01",
-        81,
-        89
-      ],
-      [
-        "Kevin Garnett '00",
-        58,
-        66
-      ],
-      [
-        "Alonzo Mourning '00",
-        81,
-        89
-      ],
-      [
-        "Hakeem Olajuwon '97",
-        70,
-        78
-      ],
-      [
-        "Carlos Boozer '08",
-        83,
-        91
-      ],
-      [
-        "Clifford Robinson '00",
-        42,
-        50
-      ],
-      [
-        "Matt Harpring '03",
-        56,
-        64
-      ],
-      [
-        "Antonio McDyess '01",
-        66,
-        74
-      ],
-      [
-        "Antawn Jamison '05",
-        54,
-        62
-      ],
-      [
-        "Karl Malone '99",
-        58,
-        65
-      ],
-      [
-        "Karl Malone '98",
-        68,
-        75
-      ],
-      [
-        "Clint Capela '17",
-        88,
-        89
-      ],
-      [
-        "Clint Capela '18",
-        89,
-        90
-      ],
-      [
-        "Nenê '11",
-        73,
-        75
-      ],
-      [
-        "Domantas Sabonis '21",
-        75,
-        77
-      ]
-    ]
-  },
-  "top12": {
-    "scale": "attr:rim",
-    "cards": [
-      "Adrian Dantley '81",
-      "Charles Barkley '91",
-      "Charles Barkley '92",
-      "David Robinson '90",
-      "David Robinson '91",
-      "Giannis Antetokounmpo '19",
-      "Giannis Antetokounmpo '20",
-      "Giannis Antetokounmpo '21",
-      "Giannis Antetokounmpo '22",
-      "Giannis Antetokounmpo '23",
-      "Giannis Antetokounmpo '24",
-      "Giannis Antetokounmpo '25"
-    ]
-  },
-  "cost": [
-    "71 IS THE FRONTIER, NOT HIS NUMBER, AND HE CONFIRMED IT. His ruling asks for more than 75; this lands 71. The round was reported as a decline at that frontier, he answered \"161 confirm\", and it is landed with every pin held — no release of recal_98 and no release of the Jazz pin. The anchor is written at 71 +-2 so `npm run anchors` states the true position; if he later releases either pin, this anchor is the one to re-cut.",
-    "THE FIRST WALL — recal_98, Karl Malone '99 OFF 90 +-2. He reads 92, the top of the band, unrounded 91.95. rim enters o_score as z[1] at weight 0.08 x 0.93 = 0.0744 per point, so his '99 rim may rise at most 7 (58 -> 65) before OFF prints 93 — the exact number recal_98 struck down. It rises EXACTLY 7 here. Probed card by card on the shipped pool: rim 58/64/65 -> OFF 92; rim 66/67/68 -> OFF 93. THIS PIN NOW HAS ZERO SLACK: any later round that raises Karl Malone '99's rim, mid or volume by one point breaks it.",
-    "THE SECOND WALL — recal_120, the Jazz '97 pick-and-roll, in tests/tactics.test.ts. styleFit('postup', JAZZ_97) = 63.70 + 0.70 x Malone '97 rim against a pnr fit of 76.248 that does not move with rim at all (screenFit reads his MID). They cross at rim 87.93, so his '97 rim may rise at most 10 (77 -> 87). It rises EXACTLY 10 here. THIS PIN ALSO HAS ZERO SLACK: one more point on Karl Malone '97's rim turns the Jazz '97 into a post-up and fails three tests.",
-    "WHY NO RAMP CAN DO BETTER. The 20/60/20 smoother makes his four cards one object: stored '00 = 0.6 x '00 + 0.2 x '99 + 0.2 x '01 and stored '99 = 0.6 x '99 + 0.2 x '98 + 0.2 x '00. His '98 and '00 paint attempt-rate percentiles are 0.849 and 0.855 and their paint shares of two-point makes 0.510 and 0.513, so no input this file holds separates them; and his '97 percentile (0.917) is ABOVE his '00's, so every monotone ramp gives '97 MORE easing while '97 has ten points of room and the subject needs twelve. Solving the smoother against both caps gives stored '00 <= 71.6.",
-    "THE FULL FRONTIER LADDER, every rung measured end to end (build_ratings.py -> compute_ovr.py -> anchors -> vitest), never projected: makes-share easing at foot 0.46 / 0.48 / 0.50 -> subject 71, '97 87, '99 65, everything holds (0.48 shipped, the window's midpoint); makes-share at foot 0.42 / 0.44 -> subject 72, but '99 rim 66 and OFF 93, recal_98 fails; ATTEMPTS-share at foot 0.56 -> subject 72, but '97 rim 89, the Jazz flip, recal_120 fails; attempts-share at recal_126's own foot 0.40 -> subject 74, '99 OFF 93; NO diet ramp at all, attempts share -> subject 77 (inside his 75-81), and the bill is '99 OFF 93 + Beasley '23 OFF 53 + the Jazz as a post-up; the deadeye gate opened on the eased factor -> subject 87 and his '99 at 83, absurd. TO REACH HIS BAND HE MUST RELEASE recal_98 AND recal_120 AND recal_137.",
-    "A SECOND, INDEPENDENT CLIFF FOUND IN THIS COMPOSITE AND DELIBERATELY LEFT ALONE. recal_16/19's ELITE-CONVERSION FLOOR is gated on `share * fga100 >= 6.0`, a hard step with no ramp. Karl Malone '98 clears it at 6.19 and is floored to 0.68 (rim 71 before this round); his '00 misses it at 5.81 and keeps a base of 0.611 (rim 64). Two tenths of an attempt per 100 are worth seven points of rim. It is NOT this round's to close and it is not a route to this ruling — the floor caps at 0.68, so the subject would saturate at rim 68, and his '99 (base 0.498) would take +17 and blow recal_98 open — but it is the loudest cliff left in the rim composite and a later round should ramp it.",
-    "NO TAX MOVED, which is unusual for a round that reshuffles this pool (2,350 rim bars, 646 o_ovrs, 392 OVRs, and the ovr>=55 pool grew 6,429 -> 6,436). All nine harness rows hold on main's constants hunt 3.85 / crashOff 0.55 / crashDef 0.72 (hunt blind -0.38 oracle +0.53, crash off -0.68/+0.53, crash def -0.49/+0.53). The alternative constant set the dispatch quoted, 3.85 / 0.32 / 0.50, was ALSO read on this pool and also passes all nine (-0.38/+0.53, -0.55/+0.59, -0.33/+0.60), so whichever pair main carries at integration time, src/engine/tactics.ts needs no change from this round.",
-    "THE PAINT PREMIUM LINE IS UNTOUCHED. `rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))` still reads the UNDISCOUNTED rate, exactly as recal_145's COST left it. Round 166 is landing that line in parallel; this round changes only the composite's volume argument and the two rounds do not overlap.",
-    "THE OTHER THREE CARDS HE NAMED ROSE WITH HIM, AND THAT IS THE FIX WORKING, NOT FAILING. He read below Jahidi White, Cedric Ceballos, Keith Van Horn and Chris Gatling in 2000. White is a ONE-ZONE diet (mid 2), is byte-identical at rim 70, and the subject now clears him. The other three are two-zone cards carrying the SAME mis-charge - Gatling mid 44, Ceballos mid 52, Van Horn mid 39 - so the correction pays them too: Gatling 72 -> 77, Ceballos 71 -> 76, Van Horn 66 -> 71 (a tie with the subject). The subject moves from 43rd of the 220 cards of 2000 to 26th. Closing the gap to those three needs the pins released, not a different formula: they carry the same defect, not a different one, and a round that reached past them would be re-ranking rather than re-attributing."
-  ],
-  "notes": [
-    "THE DEFECT IS ONE LINE AND IT IS GENERAL. `percent_assisted_x2p_fg` is a single number measured over a card's WHOLE two-point diet — the paint finishes AND the jump shots from 10 feet to the arc. `creation_factor` charged it, whole, against the PAINT VOLUME TERM and nothing else. For a one-zone lob diet that attribution is exact; for a two-zone scorer it bills the paint for assists collected in a zone the term never pays.",
-    "THE SUBJECT IS THE CASE. Karl Malone '00: 25.5 ppg at 31.2 usage, paint FG .614 (the 98th percentile of 2000) on the 85th-percentile paint attempt rate, and a MIDRANGE diet LARGER than his paint one — 7.82 attempts per 100 against 5.81 — so barely two fifths of the twos behind his .776 assisted share are the shots being discounted. The full 45% took his volume percentile from p86 to p41: composite 0.65 x 0.414 + 0.35 x 0.977 = 0.611 plus the 0.036 paint premium = rim 64 raw, 60 smoothed. Undiscounted he reads 93. His MID bar on the same card is 95.",
-    "THE EASING FACTOR IS MEASURED, NOT CHOSEN: the paint's share of the card's two-point MAKES. It is read on makes rather than attempts because the statistic itself counts MADE field goals, and both halves come off the same shooting row the assisted share comes from. Three-pointers are excluded because the statistic excludes them. A one-zone paint diet has paint_frac = 1.0 and is byte-identical.",
-    "HE IS NOT THE LIVELY CASE, and this is the part of the doctrine that needed saying in code. RATINGS_UPDATE's 'lob finishers score ~60s' is a doctrine about ONE-ZONE fully-assisted diets — a man whose entire two-point diet IS the paint, so the assisted share describes exactly the shots being discounted. Capela '17 takes 11.08 paint attempts per 100 and 0.5 from midrange (paint share of the two-point diet 0.96); Lively '24 is the same shape. The subject's paint share is 0.43. Verified on the board: Capela '17 rim +1 and OFF 58, '18 rim +1 and OFF 60, Lively '24 +0.",
-    "WHY HIS '97 ALREADY READ 77 ON THE SAME ASSISTED SHARE — the dispatch asked whether it was the era or the diet ramp, and it is the DIET RAMP. The two cards' creation factors are identical to three decimals (0.650 vs 0.651) and their paint-accuracy percentiles are the same (0.981 vs 0.977); his 1997 paint attempt rate was 7.66 per 100 against 5.81 in 2000, so the DISCOUNTED volume ranked p57 in 1997 against p41 in 2000. Both seasons are 1997+ and measured, so no era term touches either.",
-    "THE DEADEYE GATE WAS NOT THE ROUTE AND WAS NOT TOUCHED. `creation_factor(sh) >= 0.73` closes at 0.651 for the subject; opening it on an eased factor was measured on the whole pool and prints him at rim 87 and his '99 at 83. The gate still calls creation_factor with the default paint_frac, so its population is bit-identical: no card entered it and no card left it.",
-    "THE FOOTPRINT IS ONE-DIRECTIONAL AND ONE-ATTRIBUTE. 2,350 rim bars rise and NONE falls (the discount can only shrink); 0 mid, 0 3pt, 0 rimprot, 0 perdef, 0 d_ovr, 0 talent. The class that moves is the two-zone interior scorer the term was mis-charging: Alonzo Mourning, Chris Webber, Anthony Davis, Carlos Boozer, Antonio McDyess, Kevin Garnett, Matt Harpring, Antawn Jamison, Rasheed Wallace."
+  "count": 2350,
+  "max_abs": 11,
+  "top": [
+   [
+    "Karl Malone '00",
+    60,
+    71
+   ],
+   [
+    "Karl Malone '97",
+    77,
+    87
+   ],
+   [
+    "Karl Malone '01",
+    54,
+    64
+   ],
+   [
+    "Alonzo Mourning '99",
+    78,
+    87
+   ],
+   [
+    "Anthony Davis '25",
+    76,
+    84
+   ],
+   [
+    "Chris Webber '01",
+    81,
+    89
+   ],
+   [
+    "Kevin Garnett '00",
+    58,
+    66
+   ],
+   [
+    "Alonzo Mourning '00",
+    81,
+    89
+   ],
+   [
+    "Hakeem Olajuwon '97",
+    70,
+    78
+   ],
+   [
+    "Carlos Boozer '08",
+    83,
+    91
+   ],
+   [
+    "Clifford Robinson '00",
+    42,
+    50
+   ],
+   [
+    "Matt Harpring '03",
+    56,
+    64
+   ],
+   [
+    "Antonio McDyess '01",
+    66,
+    74
+   ],
+   [
+    "Antawn Jamison '05",
+    54,
+    62
+   ],
+   [
+    "Karl Malone '99",
+    58,
+    65
+   ],
+   [
+    "Karl Malone '98",
+    68,
+    75
+   ],
+   [
+    "Clint Capela '17",
+    88,
+    89
+   ],
+   [
+    "Clint Capela '18",
+    89,
+    90
+   ],
+   [
+    "Nenê '11",
+    73,
+    75
+   ],
+   [
+    "Domantas Sabonis '21",
+    75,
+    77
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:rim",
+  "cards": [
+   "Adrian Dantley '81",
+   "Charles Barkley '91",
+   "Charles Barkley '92",
+   "David Robinson '90",
+   "David Robinson '91",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '21",
+   "Giannis Antetokounmpo '22",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25"
+  ]
+ },
+ "cost": [
+  "71 IS THE FRONTIER, NOT HIS NUMBER, AND HE CONFIRMED IT. His ruling asks for more than 75; this lands 71. The round was reported as a decline at that frontier, he answered \"161 confirm\", and it is landed with every pin held — no release of recal_98 and no release of the Jazz pin. The anchor is written at 71 +-2 so `npm run anchors` states the true position; if he later releases either pin, this anchor is the one to re-cut.",
+  "THE FIRST WALL — recal_98, Karl Malone '99 OFF 90 +-2. He reads 92, the top of the band, unrounded 91.95. rim enters o_score as z[1] at weight 0.08 x 0.93 = 0.0744 per point, so his '99 rim may rise at most 7 (58 -> 65) before OFF prints 93 — the exact number recal_98 struck down. It rises EXACTLY 7 here. Probed card by card on the shipped pool: rim 58/64/65 -> OFF 92; rim 66/67/68 -> OFF 93. THIS PIN NOW HAS ZERO SLACK: any later round that raises Karl Malone '99's rim, mid or volume by one point breaks it.",
+  "THE SECOND WALL — recal_120, the Jazz '97 pick-and-roll, in tests/tactics.test.ts. styleFit('postup', JAZZ_97) = 63.70 + 0.70 x Malone '97 rim against a pnr fit of 76.248 that does not move with rim at all (screenFit reads his MID). They cross at rim 87.93, so his '97 rim may rise at most 10 (77 -> 87). It rises EXACTLY 10 here. THIS PIN ALSO HAS ZERO SLACK: one more point on Karl Malone '97's rim turns the Jazz '97 into a post-up and fails three tests.",
+  "WHY NO RAMP CAN DO BETTER. The 20/60/20 smoother makes his four cards one object: stored '00 = 0.6 x '00 + 0.2 x '99 + 0.2 x '01 and stored '99 = 0.6 x '99 + 0.2 x '98 + 0.2 x '00. His '98 and '00 paint attempt-rate percentiles are 0.849 and 0.855 and their paint shares of two-point makes 0.510 and 0.513, so no input this file holds separates them; and his '97 percentile (0.917) is ABOVE his '00's, so every monotone ramp gives '97 MORE easing while '97 has ten points of room and the subject needs twelve. Solving the smoother against both caps gives stored '00 <= 71.6.",
+  "THE FULL FRONTIER LADDER, every rung measured end to end (build_ratings.py -> compute_ovr.py -> anchors -> vitest), never projected: makes-share easing at foot 0.46 / 0.48 / 0.50 -> subject 71, '97 87, '99 65, everything holds (0.48 shipped, the window's midpoint); makes-share at foot 0.42 / 0.44 -> subject 72, but '99 rim 66 and OFF 93, recal_98 fails; ATTEMPTS-share at foot 0.56 -> subject 72, but '97 rim 89, the Jazz flip, recal_120 fails; attempts-share at recal_126's own foot 0.40 -> subject 74, '99 OFF 93; NO diet ramp at all, attempts share -> subject 77 (inside his 75-81), and the bill is '99 OFF 93 + Beasley '23 OFF 53 + the Jazz as a post-up; the deadeye gate opened on the eased factor -> subject 87 and his '99 at 83, absurd. TO REACH HIS BAND HE MUST RELEASE recal_98 AND recal_120 AND recal_137.",
+  "A SECOND, INDEPENDENT CLIFF FOUND IN THIS COMPOSITE AND DELIBERATELY LEFT ALONE. recal_16/19's ELITE-CONVERSION FLOOR is gated on `share * fga100 >= 6.0`, a hard step with no ramp. Karl Malone '98 clears it at 6.19 and is floored to 0.68 (rim 71 before this round); his '00 misses it at 5.81 and keeps a base of 0.611 (rim 64). Two tenths of an attempt per 100 are worth seven points of rim. It is NOT this round's to close and it is not a route to this ruling — the floor caps at 0.68, so the subject would saturate at rim 68, and his '99 (base 0.498) would take +17 and blow recal_98 open — but it is the loudest cliff left in the rim composite and a later round should ramp it.",
+  "NO TAX MOVED, which is unusual for a round that reshuffles this pool (2,350 rim bars, 646 o_ovrs, 392 OVRs, and the ovr>=55 pool grew 6,429 -> 6,436). All nine harness rows hold on main's constants hunt 3.85 / crashOff 0.55 / crashDef 0.72 (hunt blind -0.38 oracle +0.53, crash off -0.68/+0.53, crash def -0.49/+0.53). The alternative constant set the dispatch quoted, 3.85 / 0.32 / 0.50, was ALSO read on this pool and also passes all nine (-0.38/+0.53, -0.55/+0.59, -0.33/+0.60), so whichever pair main carries at integration time, src/engine/tactics.ts needs no change from this round.",
+  "THE PAINT PREMIUM LINE IS UNTOUCHED. `rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100) - 0.70)/0.30))` still reads the UNDISCOUNTED rate, exactly as recal_145's COST left it. Round 166 is landing that line in parallel; this round changes only the composite's volume argument and the two rounds do not overlap.",
+  "THE OTHER THREE CARDS HE NAMED ROSE WITH HIM, AND THAT IS THE FIX WORKING, NOT FAILING. He read below Jahidi White, Cedric Ceballos, Keith Van Horn and Chris Gatling in 2000. White is a ONE-ZONE diet (mid 2), is byte-identical at rim 70, and the subject now clears him. The other three are two-zone cards carrying the SAME mis-charge - Gatling mid 44, Ceballos mid 52, Van Horn mid 39 - so the correction pays them too: Gatling 72 -> 77, Ceballos 71 -> 76, Van Horn 66 -> 71 (a tie with the subject). The subject moves from 43rd of the 220 cards of 2000 to 26th. Closing the gap to those three needs the pins released, not a different formula: they carry the same defect, not a different one, and a round that reached past them would be re-ranking rather than re-attributing."
+ ],
+ "notes": [
+  "THE DEFECT IS ONE LINE AND IT IS GENERAL. `percent_assisted_x2p_fg` is a single number measured over a card's WHOLE two-point diet — the paint finishes AND the jump shots from 10 feet to the arc. `creation_factor` charged it, whole, against the PAINT VOLUME TERM and nothing else. For a one-zone lob diet that attribution is exact; for a two-zone scorer it bills the paint for assists collected in a zone the term never pays.",
+  "THE SUBJECT IS THE CASE. Karl Malone '00: 25.5 ppg at 31.2 usage, paint FG .614 (the 98th percentile of 2000) on the 85th-percentile paint attempt rate, and a MIDRANGE diet LARGER than his paint one — 7.82 attempts per 100 against 5.81 — so barely two fifths of the twos behind his .776 assisted share are the shots being discounted. The full 45% took his volume percentile from p86 to p41: composite 0.65 x 0.414 + 0.35 x 0.977 = 0.611 plus the 0.036 paint premium = rim 64 raw, 60 smoothed. Undiscounted he reads 93. His MID bar on the same card is 95.",
+  "THE EASING FACTOR IS MEASURED, NOT CHOSEN: the paint's share of the card's two-point MAKES. It is read on makes rather than attempts because the statistic itself counts MADE field goals, and both halves come off the same shooting row the assisted share comes from. Three-pointers are excluded because the statistic excludes them. A one-zone paint diet has paint_frac = 1.0 and is byte-identical.",
+  "HE IS NOT THE LIVELY CASE, and this is the part of the doctrine that needed saying in code. RATINGS_UPDATE's 'lob finishers score ~60s' is a doctrine about ONE-ZONE fully-assisted diets — a man whose entire two-point diet IS the paint, so the assisted share describes exactly the shots being discounted. Capela '17 takes 11.08 paint attempts per 100 and 0.5 from midrange (paint share of the two-point diet 0.96); Lively '24 is the same shape. The subject's paint share is 0.43. Verified on the board: Capela '17 rim +1 and OFF 58, '18 rim +1 and OFF 60, Lively '24 +0.",
+  "WHY HIS '97 ALREADY READ 77 ON THE SAME ASSISTED SHARE — the dispatch asked whether it was the era or the diet ramp, and it is the DIET RAMP. The two cards' creation factors are identical to three decimals (0.650 vs 0.651) and their paint-accuracy percentiles are the same (0.981 vs 0.977); his 1997 paint attempt rate was 7.66 per 100 against 5.81 in 2000, so the DISCOUNTED volume ranked p57 in 1997 against p41 in 2000. Both seasons are 1997+ and measured, so no era term touches either.",
+  "THE DEADEYE GATE WAS NOT THE ROUTE AND WAS NOT TOUCHED. `creation_factor(sh) >= 0.73` closes at 0.651 for the subject; opening it on an eased factor was measured on the whole pool and prints him at rim 87 and his '99 at 83. The gate still calls creation_factor with the default paint_frac, so its population is bit-identical: no card entered it and no card left it.",
+  "THE FOOTPRINT IS ONE-DIRECTIONAL AND ONE-ATTRIBUTE. 2,350 rim bars rise and NONE falls (the discount can only shrink); 0 mid, 0 3pt, 0 rimprot, 0 perdef, 0 d_ovr, 0 talent. The class that moves is the two-zone interior scorer the term was mis-charging: Alonzo Mourning, Chris Webber, Anthony Davis, Carlos Boozer, Antonio McDyess, Kevin Garnett, Matt Harpring, Antawn Jamison, Rasheed Wallace.",
+  "[integration 161-167] subject reads 68 on the merged pool (was 71 on the branch); see anchors.json note",
+  "[integration 161-167] target re-pointed 71 -> 68 at the merged reading (pin re-pointed in anchors.json with the reason)"
+ ]
 }

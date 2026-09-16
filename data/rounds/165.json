@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 93,
  "after": 91,
- "pipeline_version": 164,
+ "pipeline_version": 167,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -44,46 +44,226 @@
   }
  ],
  "expect": [
-  {"card": "Kevin McHale '85", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 3, "label": "THE SUBJECT, his ruling"},
-  {"card": "Kevin McHale '88", "scale": "attr:rimprot", "op": "~", "value": 89, "tol": 3, "label": "recal_92's own subject, the unanimous 1st-team season, must hold"},
-  {"card": "Moses Malone '85", "scale": "attr:rimprot", "op": ">=", "value": 86, "label": "THE WALL — the 76ers '85 defdial sits exactly on its floor and moves off it at 85"},
-  {"card": "Hakeem Olajuwon '85", "scale": "attr:rimprot", "op": ">=", "value": 92, "label": "the comparable the ruling is read against: he must stay above the subject"},
-  {"card": "Dikembe Mutombo '01", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "recal_81, 99 +-0 at the smoothed centre; the carried-ballot restore is what holds his 2000"},
-  {"card": "Joakim Noah '09", "scale": "attr:rimprot", "op": "~", "value": 92, "tol": 1, "label": "recal_82"},
-  {"card": "Joel Embiid '23", "scale": "attr:rimprot", "op": "~", "value": 91, "tol": 1, "label": "recal_81"},
-  {"card": "Jack Sikma '83", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "recal_160, the round this one extends"},
-  {"card": "Ben Simmons '21", "scale": "attr:rimprot", "op": "~", "value": 86, "tol": 1, "label": "recal_160's negative control: own ballot, byte-identical"},
-  {"card": "Bobby Jones '82", "scale": "attr:rimprot", "op": "~", "value": 96, "tol": 1, "label": "recal_82"},
-  {"card": "Shaquille O'Neal '93", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1},
-  {"card": "Pau Gasol '04", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "recal_95"},
-  {"card": "Ben Wallace '04", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
-  {"card": "Tim Duncan '03", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
-  {"card": "Rudy Gobert '19", "scale": "attr:rimprot", "op": "==", "value": 97, "label": "tol 0"},
-  {"card": "Victor Wembanyama '24", "scale": "attr:rimprot", "op": "==", "value": 97, "label": "tol 0"},
-  {"card": "Dikembe Mutombo '97", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
-  {"card": "Dirk Nowitzki '07", "scale": "def", "op": "~", "value": 74, "tol": 3, "label": "recal_162"},
-  {"card": "Karl Malone '97", "scale": "def", "op": "~", "value": 88, "tol": 3, "label": "recal_135"},
-  {"card": "Michael Jordan '89", "scale": "attr:rimprot", "op": "==", "value": 59, "label": "no block evidence, no unlock: untouched by construction"}
+  {
+   "card": "Kevin McHale '85",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 3,
+   "label": "THE SUBJECT, his ruling"
+  },
+  {
+   "card": "Kevin McHale '88",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 89,
+   "tol": 3,
+   "label": "recal_92's own subject, the unanimous 1st-team season, must hold"
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "attr:rimprot",
+   "op": ">=",
+   "value": 86,
+   "label": "THE WALL — the 76ers '85 defdial sits exactly on its floor and moves off it at 85"
+  },
+  {
+   "card": "Hakeem Olajuwon '85",
+   "scale": "attr:rimprot",
+   "op": ">=",
+   "value": 92,
+   "label": "the comparable the ruling is read against: he must stay above the subject"
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": "recal_81, 99 +-0 at the smoothed centre; the carried-ballot restore is what holds his 2000"
+  },
+  {
+   "card": "Joakim Noah '09",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "recal_82"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "recal_81"
+  },
+  {
+   "card": "Jack Sikma '83",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 78,
+   "tol": 2,
+   "label": "recal_160, the round this one extends"
+  },
+  {
+   "card": "Ben Simmons '21",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "recal_160's negative control: own ballot, byte-identical"
+  },
+  {
+   "card": "Bobby Jones '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "recal_82"
+  },
+  {
+   "card": "Shaquille O'Neal '93",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 1
+  },
+  {
+   "card": "Pau Gasol '04",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 78,
+   "tol": 2,
+   "label": "recal_95"
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": "tol 0"
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": "tol 0"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 97,
+   "label": "tol 0"
+  },
+  {
+   "card": "Victor Wembanyama '24",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 97,
+   "label": "tol 0"
+  },
+  {
+   "card": "Dikembe Mutombo '97",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 98,
+   "label": "tol 0"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "recal_162"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 3,
+   "label": "recal_135"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 59,
+   "label": "no block evidence, no unlock: untouched by construction"
+  }
  ],
  "order": [
-  {"scale": "attr:rimprot", "above": "Hakeem Olajuwon '85", "below": "Kevin McHale '85", "label": "THE RULING'S OWN SENTENCE — BLK% 4.3 must read above BLK% 2.4"},
-  {"scale": "attr:rimprot", "above": "Kevin McHale '87", "below": "Kevin McHale '85", "label": "the voted seasons stay above the carried one"},
-  {"scale": "attr:rimprot", "above": "Kevin McHale '86", "below": "Kevin McHale '85"},
-  {"scale": "attr:rimprot", "above": "Dikembe Mutombo '97", "below": "Kevin McHale '85"}
+  {
+   "scale": "attr:rimprot",
+   "above": "Hakeem Olajuwon '85",
+   "below": "Kevin McHale '85",
+   "label": "THE RULING'S OWN SENTENCE — BLK% 4.3 must read above BLK% 2.4"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Kevin McHale '87",
+   "below": "Kevin McHale '85",
+   "label": "the voted seasons stay above the carried one"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Kevin McHale '86",
+   "below": "Kevin McHale '85"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Dikembe Mutombo '97",
+   "below": "Kevin McHale '85"
+  }
  ],
  "movers": {
   "scale": "attr:rimprot",
   "count": 88,
   "max_abs": 2,
   "top": [
-   ["Kevin McHale '85", 93, 91],
-   ["Kevin McHale '84", 91, 89],
-   ["Rudy Gobert '23", 97, 95],
-   ["Brook Lopez '21", 96, 94],
-   ["Serge Ibaka '11", 95, 93],
-   ["Dikembe Mutombo '92", 91, 89],
-   ["Roy Hibbert '11", 89, 87],
-   ["Brook Lopez '25", 93, 91]
+   [
+    "Kevin McHale '85",
+    93,
+    91
+   ],
+   [
+    "Kevin McHale '84",
+    91,
+    89
+   ],
+   [
+    "Rudy Gobert '23",
+    97,
+    95
+   ],
+   [
+    "Brook Lopez '21",
+    96,
+    94
+   ],
+   [
+    "Serge Ibaka '11",
+    95,
+    93
+   ],
+   [
+    "Dikembe Mutombo '92",
+    91,
+    89
+   ],
+   [
+    "Roy Hibbert '11",
+    89,
+    87
+   ],
+   [
+    "Brook Lopez '25",
+    93,
+    91
+   ]
   ]
  },
  "top12": {
