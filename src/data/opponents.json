@@ -5687,7 +5687,7 @@
         "in": 68,
         "out": 12,
         "id": 89,
-        "pd": 97,
+        "pd": 96,
         "attrs": {
           "3pt": 10,
           "rim": 59,
@@ -5705,7 +5705,7 @@
           "rimprot": 89,
           "perimdisrupt": 86,
           "height": 79,
-          "perdef": 97,
+          "perdef": 96,
           "discipline": 9,
           "usg_raw": 17.4,
           "ts_raw": 0.551,
@@ -5715,7 +5715,7 @@
         "o_ovr": 44,
         "d_ovr": 94,
         "ovr": 69,
-        "marg": 82
+        "marg": 81
       },
       {
         "name": "Tobias Harris '26",
@@ -5970,7 +5970,7 @@
         "in": 84,
         "out": 69,
         "id": 97,
-        "pd": 77,
+        "pd": 76,
         "attrs": {
           "3pt": 66,
           "rim": 78,
@@ -5988,7 +5988,7 @@
           "rimprot": 97,
           "perimdisrupt": 45,
           "height": 88,
-          "perdef": 77,
+          "perdef": 76,
           "discipline": 57,
           "usg_raw": 31.9,
           "ts_raw": 0.618,
@@ -6139,7 +6139,7 @@
         "in": 85,
         "out": 50,
         "id": 98,
-        "pd": 69,
+        "pd": 67,
         "attrs": {
           "3pt": 47,
           "rim": 71,
@@ -6157,7 +6157,7 @@
           "rimprot": 98,
           "perimdisrupt": 9,
           "height": 85,
-          "perdef": 69,
+          "perdef": 67,
           "discipline": 60,
           "usg_raw": 21.9,
           "ts_raw": 0.653,
@@ -6165,8 +6165,8 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 94,
-        "ovr": 82,
+        "d_ovr": 93,
+        "ovr": 81,
         "marg": 96
       },
       {

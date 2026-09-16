@@ -1521,5 +1521,14 @@
     "round": 154,
     "ruling": "Agree with 5",
     "note": "the subject of recal_154. recal_138's hub-role volume floor stops being a step at PD_V_HI and becomes a ramp over the hub's own width (HUB_FULL - HUB_GATE = 20): full at 68, nothing at 48, no new constant. 75 -> 80, inside the 81 +-3. 228 cards move on OFF, every one of them up, mean +1.83, max +6; DEF, every attribute and OFF_TOP/DEF_TOP are untouched and every big is byte-identical."
+  },
+  {
+    "card": "Andre Roberson '15",
+    "scale": "def",
+    "target": 83,
+    "tol": 2,
+    "round": 159,
+    "ruling": "Can go down to lower mid 80s",
+    "note": "reads 84. recal_149's tracked-band credit is now paid at the card's LOAD as well as at its shot COUNT: BAND_FOOT/BAND_FULL = 12.0/34.0 in build_ratings.py, recal_96's 12-minute foot with the full-load line measured on this term's own class (the 135 cards the credit pays: mpg p25 28.40, median 31.79, p75 34.04). A 19.2-mpg bench wing takes 0.33 of the credit instead of all of it: perdef 91 -> 86, DEF 88 -> 84. His '16 (22.2 mpg) follows to perdef 88 / DEF 85 and is NOT pinned. recal_96's 24-minute bench boundary was measured first and is the frontier: it sits below this class's own p25, moves only 7 cards, and leaves the subject at DEF 86, one point outside. Amen Thompson '24/'25/'26, Draymond '16, Jrue '21, Herbert Jones '23, Dort '25/'26 and Kawhi are byte-identical."
   }
 ]
