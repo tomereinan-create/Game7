@@ -1170,7 +1170,7 @@
         "talent": 80,
         "in": 66,
         "out": 60,
-        "id": 91,
+        "id": 90,
         "pd": 70,
         "attrs": {
           "3pt": 58,
@@ -1186,7 +1186,7 @@
           "volume": 84,
           "efficiency": 48,
           "durability": 38,
-          "rimprot": 91,
+          "rimprot": 90,
           "perimdisrupt": 51,
           "height": 82,
           "perdef": 70,

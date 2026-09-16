@@ -1575,5 +1575,14 @@
     "round": 162,
     "ruling": "Agree",
     "note": "the subject of recal_162. An MVP season with no All-Defensive vote, 0.8 blocks and 0.7 steals a game read DEF 84 (#20 of 239 in 2007, one under Battier '07 and two under Okafor '07) because recal_95's no-vote rim ceiling had a FLAT bottom at 75: a 7-footer whose deterrent composite cleared it collected rimprot 75 with no block evidence of any kind, and the big d_score branch takes that at 0.40. The floor now grades on recal_92's own block band read one step earlier - full at the p80 bar, gone one band-width under it, falling to RIM_BAND_FLOOR 0.55, the bottom the deterrent scale itself starts from. rimprot 75 -> 55, DEF 84 -> 75, OVR 90 -> 88, and he lands with Barkley '93 (75) and Bird '87 (77). The band was SHIFTED rather than reused unshifted because Kevin Durant '19 (def 79 +-3, r99) sits at blk p81, ON recal_92's bar: unshifted he falls to 68 and no choice of base saves him."
+  },
+  {
+    "card": "Kevin McHale '85",
+    "scale": "attr:rimprot",
+    "target": 88,
+    "tol": 3,
+    "round": 165,
+    "ruling": "Mchale agree",
+    "note": "THE VOTED-BAND UNLOCK READS WHICH SEASON THE BALLOT WAS CAST IN. recal_92 gated recal_53's unlock on block evidence and left its other half, drep, ungraded - and drep is a CAREER reputation decayed 15% a year in BOTH directions. McHale '85 (1.5 bpg, BLK% 2.4, DBPM -0.2, NO 1985 selection) read rimprot 93, above Hakeem '85 (94 on BLK% 4.3) and 2 over his own '88 (91), the unanimous 1st-team season: his BLK% 2.4 is 0.1 over 1985's p86 so block evidence is 1.000 and the unlock was his whole drep 0.850, which is his 1986 1st team carried back one year. The unlock is now paid in full for the season's OWN ballot and at CARRIED_UNLOCK = 1-(1-CARRIED_REIN)/2 = 0.75 for a carried one, restored to 1.000 wherever the season's own blocks AND DBPM certify it (_measured_rim_evidence, recal_95's ceiling meter). 93 -> 91. LANDS AT THE TOP OF TOLERANCE, DELIBERATELY: Moses Malone '85 is the same 1985 sheet (BLK% 2.4, same p87, no ballot, drep 0.700 carried from 1983) and the 76ers '85 defdial (recal_133, 93 +-2) reads 91 on its exact floor, stepping to 90 the moment Moses goes 86 -> 85. Since McHale's drep is the LARGER of the two, no monotone reading of a carried ballot drops him below 91 while recal_133 stands - measured on both channels (the carried rate 0.50-0.85, and BLK_FULL 0.86 -> 1.00). 88 itself needs recal_133 re-ruled first. See data/rounds/165.json."
   }
 ]
