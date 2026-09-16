@@ -1047,7 +1047,61 @@ def o_score(p, trace=None):
     # is 69. The setting taken is the one that reaches his band with the smallest worst-case move.
     # MEASURED on the pool: 152 of 10,000 cards move on OFF, 138 up and 14 down, max +7 and max -3,
     # mean +3.78; DEF and every attribute move on ZERO; OVR follows on 134. Every anchor holds.
-    EF_E_LO, EF_E_HI = 85.0, 93.0
+    # recal_167 (HIS RULINGS, verbatim: "Rudy Agree, Claxton agree" — two scout items on ONE term:
+    # Rudy Gobert '16 off 42 -> near 52, Nic Claxton '24 off 50 -> near 56).
+    # THE EFFICIENCY FOOT WAS A CLIFF, AND THE GEOMETRIC MEAN IS WHAT MADE IT VERTICAL.
+    #
+    # THE DEFECT. recal_139 combined the efficiency and volume shares by their GEOMETRIC MEAN, which
+    # was right for the middle of the gate and left the foot with an INFINITE slope: at efficiency 85
+    # the share is 0 and the term pays nothing, and one rating point higher the share is 0.125, whose
+    # square root is 0.354 — a THIRD of a term worth up to twelve o_score points, bought with one
+    # point of a rating. The foot is not a threshold any more, it is a step.
+    #   RUDY GOBERT '16 is the card: efficiency 83, two under the foot, so the term pays 0.000 and he
+    #   printed OFF 42. His own '15 (efficiency 89) reads 51 and his '17 (efficiency 92) reads 60 on
+    #   the SAME job at flat minutes — 51/42/60, a saw-tooth on one man's three seasons, and the
+    #   whole of it is this one factor. 9.1 points, 11.0 rebounds, .582 true shooting.
+    #   NIC CLAXTON '24 is the same step on one season's drift: '23 (efficiency 92) takes +11.2 and
+    #   reads 60, '24 (efficiency 75) takes 0.0 and reads 50, on 12.6 -> 11.8 points and .691 -> .629
+    #   true shooting at 29.9 -> 29.8 minutes. The standard path moved -1.5; the foot moved -11.2.
+    #   The same shape, measured on the pool: Chandler '08->'09 56->40, Mutombo '00->'01 55->41,
+    #   DeAndre Jordan '19->'20 56->45. 139 bigs inside this term's class sit at efficiency 80-84 and
+    #   take nothing at all.
+    #
+    # THE FOOT GETS A WIDTH, AND BOTH ENDS OF THE RAMP ARE NOW THE SAME MEASURED STATISTIC ON NESTED
+    # POPULATIONS — which is recal_139's own construction, extended downward instead of upward:
+    #   EF_E_HI 93  the UPPER QUARTILE of conversion among the cards that clear the ELITE line
+    #               (recal_139's own number, re-measured today at 93 on 164 cards, untouched).
+    #   EF_E_LO 63  the UPPER QUARTILE of conversion of THIS TERM'S OWN CLASS — the 4,253 cards at
+    #               3pt < 68, playvol < 70, volume < 55 that recal_139 measured its needle on
+    #               (p25 33, median 48, p75 63). It is where the class's BEST QUARTER begins: three
+    #               quarters of the low-usage interior pool are still excluded outright.
+    # 85 IS NOT DELETED, it stops being a threshold and becomes a point inside the ramp (recal_118's
+    # move, in its own words: "68 stops being a threshold and becomes the point of saturation — the
+    # same number, doing the job it was chosen for"). A card at 85 now stands at 0.73 of the ramp.
+    #
+    # THE SIZE IS SOLVED, NOT CHOSEN, and this is the half of the round that holds the board still.
+    # Widening a ramp RE-PRICES every card above the old foot, so the size is renormalised to hold
+    # the class's MEDIAN PAID CARD at exactly the payment it had: the 148 cards this term pays today
+    # have median conversion 90 (p25 88, p75 94), and EF_SIZE is the size at which efficiency 90 is
+    # paid what 0.14 paid it before. It comes out exactly 0.14 x 5/6 = 0.116667 — a RESHAPE, not a
+    # re-pricing (recal_89's rule: the total is held constant, so no compensation is owed).
+    # RICHAUN HOLMES '21 IS THE PROOF THAT THIS IS THE RIGHT RENORMALISATION AND NOT A FIT. recal_163
+    # pinned him off 62 +-3 and left him at 65, the top edge, with ZERO room upward; his efficiency is
+    # 89, one point off the class median the size is solved on, and he moves by +0.107 of raw — 65.224
+    # -> 65.331, still 65. The card that the anchor makes untouchable is untouched BY CONSTRUCTION.
+    #
+    # MEASURED, and the frontier is stated because both subjects land on their band's lower edge:
+    # over the whole (foot, solved size) family, Gobert '16 reads 49 for every foot from 65 down to
+    # 50 and 48 at 68 — 48.98 of raw at foot 50 is the CEILING of what this term can give him, because
+    # his own standard path is 45.16 against his '17's 52.12 (rim 58 against 67, volume 11 against 21).
+    # OFF 52 itself is only reachable with the term paid WHOLE at gate 1.00, which no ramp does at
+    # efficiency 83. 49 is inside his 52 +-3 and it is the top of what is reachable here.
+    # MEASURED on the pool: 702 of 10,000 cards move on OFF, 637 up and 65 down, max +8 and max -3;
+    # DEF and every attribute move on ZERO; every one of the 160 anchors holds.
+    EF_E_LO, EF_E_HI = 63.0, 93.0
+    EF_E_ELITE, EF_E_MED = 85.0, 90.0   # recal_112's elite line, now inside the ramp; the class's median
+    EF_SIZE = 0.14 * (((EF_E_MED - EF_E_ELITE) / (EF_E_HI - EF_E_ELITE))
+                      / ((EF_E_MED - EF_E_LO) / (EF_E_HI - EF_E_LO))) ** 0.5
     EF_V_LO, EF_V_HI = 35.0, 45.0
     EF_PV_LO, EF_PV_HI = 40.0, 70.0
     EF_3P_LO, EF_3P_HI = 40.0, 68.0
@@ -1070,7 +1124,9 @@ def o_score(p, trace=None):
         #               second level and whose interior conversion are both elite is paid the larger
         #               of the two claims and not their sum. Six cards of 10,000 take both; for
         #               every other card `_tl_add` is 0.0 and this line is the identity.
-        _ef = 0.14 * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3 * _second
+        # recal_167: the size is EF_SIZE, solved above so that the class's median paid card is paid
+        # what 0.14 paid it before the foot was widened. Nothing else on this line changes.
+        _ef = EF_SIZE * a['efficiency'] * ((_ee * _ev) ** 0.5) * _ep * _e3 * _second
         _add = max(0.0, _ef - _tl_add)
         std += _add
         if trace is not None:

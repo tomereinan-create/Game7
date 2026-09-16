@@ -539,6 +539,20 @@ export const DEFAULT_TACTICS: Tactics = {
  * 0.40 (+0.52) and 0.25 (+0.56, blind -0.65); crashDef passes at 0.58 (+0.51) and 0.45 (+0.55, blind -0.40). Set at the
  * middle of each window: crashOff 0.32, crashDef 0.50. The 2,261 no-vote rim bars that fell in 162 and the 93 bigs
  * that fell in 163 thin the ovr>=55 pool's rebounding, so the glass mismatch reads for less on both edges.
+ * recal_167 gave recal_112's efficiency foot a width: 702 o_ovrs and 531 OVRs, 637 of the OFF moves UP and
+ * every one of them a big inside the efficient-interior class, which pushed a class of GLASS-WORKING bigs
+ * (orb 80+, drb 75+) up through the harness's ovr>=55 line and into the fives it draws. BOTH CRASH ROWS
+ * broke on the ORACLE edge again (crash off +0.490 at 0.32, crash def +0.498 at 0.50) — the same shape
+ * recal_162 and the 159-164 sweep named, and for the mirror reason: the pool's rebounding is RICHER now, so
+ * the oracle's glass call is worth less against a default plan that already crashes well. Swept ONCE from
+ * MAIN's constants, as the law requires. crash off glass: feasible to 0.270 (oracle +0.501; 0.276 reads the
+ * +0.500 floor exactly and fails) and its blind edge never binds — -0.610 at zero tax and -0.30 only at
+ * about -0.52 — so the whole-interval midpoint is NEGATIVE, a call that pays to make, and the value is the
+ * midpoint of the POSITIVE half instead, which is recal_117's own precedent for this same row: 0.32 -> 0.14
+ * (blind -0.690, oracle +0.531; 0.031 of room on the tight side). crash def glass: feasible 0.166 (blind
+ * -0.302) to 0.492 (oracle +0.500 exactly at 0.493), true midpoint by r126's rule: 0.50 -> 0.33 (blind
+ * -0.424, oracle +0.547; 0.047 and 0.124 of room). hunt held at 3.85 for the second round running and the
+ * six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -547,8 +561,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.80,
   hunt: 3.85,
-  crashOff: 0.32,
-  crashDef: 0.50,
+  crashOff: 0.14,
+  crashDef: 0.33,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

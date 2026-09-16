@@ -820,9 +820,9 @@
           "ts_rel": 0.605
         },
         "big": true,
-        "o_ovr": 53,
+        "o_ovr": 55,
         "d_ovr": 67,
-        "ovr": 60,
+        "ovr": 61,
         "marg": 82
       }
     ]
@@ -2476,9 +2476,9 @@
           "ts_rel": 0.614
         },
         "big": true,
-        "o_ovr": 57,
+        "o_ovr": 59,
         "d_ovr": 81,
-        "ovr": 69,
+        "ovr": 70,
         "marg": 92
       }
     ]
@@ -3097,9 +3097,9 @@
           "ts_rel": 0.748
         },
         "big": true,
-        "o_ovr": 43,
+        "o_ovr": 46,
         "d_ovr": 74,
-        "ovr": 58,
+        "ovr": 60,
         "marg": 90
       }
     ]
@@ -3680,9 +3680,9 @@
           "ts_rel": 0.622
         },
         "big": true,
-        "o_ovr": 38,
+        "o_ovr": 40,
         "d_ovr": 74,
-        "ovr": 56,
+        "ovr": 57,
         "marg": 80
       },
       {
@@ -3718,9 +3718,9 @@
           "ts_rel": 0.666
         },
         "big": true,
-        "o_ovr": 54,
+        "o_ovr": 58,
         "d_ovr": 73,
-        "ovr": 64,
+        "ovr": 66,
         "marg": 94
       }
     ]
@@ -4339,7 +4339,7 @@
           "ts_rel": 0.657
         },
         "big": true,
-        "o_ovr": 56,
+        "o_ovr": 55,
         "d_ovr": 93,
         "ovr": 74,
         "marg": 91
@@ -4546,9 +4546,9 @@
           "ts_rel": 0.67
         },
         "big": true,
-        "o_ovr": 62,
+        "o_ovr": 64,
         "d_ovr": 79,
-        "ovr": 70,
+        "ovr": 72,
         "marg": 97
       }
     ]
@@ -5750,9 +5750,9 @@
           "ts_rel": 0.615
         },
         "big": true,
-        "o_ovr": 45,
+        "o_ovr": 47,
         "d_ovr": 75,
-        "ovr": 60,
+        "ovr": 61,
         "marg": 77
       },
       {
