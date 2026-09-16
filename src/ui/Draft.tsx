@@ -1844,23 +1844,18 @@ export function Draft({
         </div>
       ) : null}
       <div className="card" style={{ paddingBottom: 4 }}>
-        {/* your own five's dials ride beside its head for the same reason the opponent's ride beside
-            its name (his ruling: "Move the rating next to the team name not below") */}
-        <div className="five-top">
+        {/* YOUR NAME STANDS EXACTLY WHERE THEIRS DOES (his ruling: "make my team name to be
+            identical (size and location wise) to my opponent"). The card is built the way the
+            opponent's is: a small head line on top — your record where theirs reads LEVEL N
+            OPPONENT, 0 OF 5 where theirs reads its record — and under it the SAME `.opp-top` row,
+            the name in the same `.opp-name` headline on the left and your dials on the right. One
+            class for both names, so they cannot drift apart in size, and the two rows start on the
+            same line because the two heads above them are the same height.
+            The record is this save's own (his earlier ruling: "put the record next to my name").
+            THE NAME IS STILL CUT, NOT WRAPPED (E3a): it is a city and a nickname he typed, so it has
+            no length to design for, and a second line would push this floor off the opponent's. */}
         <div className="card-head">
-          {/* HIS RULING: "Instead of your five — put the name that I picked. Also, put the record
-              next to my name as well (only from current campaign)." The card used to be headed
-              YOUR FIVE, which is the one thing on this screen you can already see; the franchise
-              you named and what it has done in this campaign are not written anywhere else on it.
-              The record is this save's own — each of the three modes keeps its own ledger. */}
-          {/* THE NAME IS A SPAN OF ITS OWN (E3a) because it is the only part of this head that may
-              be shortened. It is a city and a nickname he typed, so it has no length to design for;
-              it takes one line and is cut with an ellipsis when the card is narrower than the words
-              are. The record and the 0 OF 5 beside it are never cut. */}
-          <span className="label">
-            <span className="tname">{teamName}</span>
-            {record ? <i className="rec">{record}</i> : null}
-          </span>
+          <span className="label">{record ? <i className="rec own">{record}</i> : null}</span>
           <span className={`count ${five.length ? 'on' : ''}`}>
             {five.length} OF {DRAFT_SIZE}
           </span>
@@ -1871,7 +1866,9 @@ export function Draft({
               staff bar, the scorebug or the club band. */}
           {user && full && tips.length ? <CoachTipsDoor onOpen={() => setTipsOpen(true)} /> : null}
         </div>
-        {five.length && !user ? <TeamDials five={five} tone="you" vs="field" /> : null}
+        <div className="opp-top you-top">
+          <div className="opp-name">{teamName}</div>
+          {five.length && !user ? <TeamDials five={five} tone="you" vs="field" /> : null}
         </div>
         {salary ? (
           <div className={`capbar ${capUsed > capMax ? 'over' : ''}`}>

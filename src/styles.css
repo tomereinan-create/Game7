@@ -314,22 +314,18 @@ button {
 /* THE NAME AND ITS RATING ON ONE ROW (his ruling: "Move the rating next to the team name not
    below"): the headline takes what width there is and gives, the dials never do. Your own five's
    head and dials ride the same row. */
-.opp-top,
-.five-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.opp-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
 .opp-top { margin-top: 8px; }
 .opp-top .opp-name { flex: 0 1 auto; min-width: 0; margin-top: 0; }
-/* YOUR NAME IS THE SAME SIZE AS THEIRS (his ruling: "As for my team name, have it the same size as
-   my opponent"). It was the head's small grey caption; it is the opponent's headline now — the same
-   face, weight and size as `.opp-name` at every width — with the record and 0 OF 5 still beside it. */
-.five-top .card-head { align-items: baseline; }
-.five-top .card-head .label .tname { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.1; letter-spacing: 0; text-transform: none; color: var(--ink); }
-.five-top .card-head { flex: 1 1 auto; min-width: 0; }
-.opp-top .dials,
-.five-top .dials { flex: none; gap: 6px; padding: 0; }
-.opp-top .dial,
-.five-top .dial { width: 58px; }
-.opp-top .dial svg,
-.five-top .dial svg { width: 50px; height: 50px; }
+/* YOUR NAME IS THE OPPONENT'S HEADLINE, IN THE OPPONENT'S PLACE (his ruling: "make my team name to
+   be identical (size and location wise) to my opponent") — the same `.opp-top` row and `.opp-name`
+   class; all it adds is that a name he typed is cut on one line rather than wrapped (E3a). The
+   record leads the head line above it, where the opponent's LEVEL N OPPONENT stands. */
+.you-top .opp-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-head .label .rec.own { margin-left: 0; }
+.opp-top .dials { flex: none; gap: 6px; padding: 0; }
+.opp-top .dial { width: 58px; }
+.opp-top .dial svg { width: 50px; height: 50px; }
 .opp-tag {
   font-family: var(--serif);
   font-style: italic;
@@ -2166,55 +2162,67 @@ button {
      head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
   .draft .court-line { margin-top: 0; }
   .draft .opp-top { margin-top: 2px; }
-  .draft .opp-top .dial svg,
-  .draft .five-top .dial svg { width: 46px; height: 46px; }
+  .draft .opp-top .dial svg { width: 46px; height: 46px; }
 
-  /* THE WHOLE DRAFT READS BIGGER (his ruling: "Make the entire screen with bigger fonts"). Every
-     small word on the screen comes up about a quarter — the card heads, the captions, the dial
-     labels, the names on the floors, the roster rows and their figures, the wheel's words and the
-     SPIN key — and the two team rows grow 6px to carry it, which the floors pay back out of the
-     height formula above so the screen still does not scroll. The two headlines were already the
-     biggest thing on it and stay 42px, the opponent's and now yours. */
-  .draft .five-top .card-head .label .tname { font-size: 42px; }
-  .draft .card-head .label { font-size: 17px; }
-  .draft .card-head .cap { font-size: 14.5px; }
-  .draft .count { font-size: 16px; }
-  .draft .opp-line { font-size: 14px; }
-  .draft .dial .dl { font-size: 11px; margin-top: -5px; }
-  .draft .dial .ds { font-size: 10.5px; white-space: nowrap; }
-  /* the bigger caption under a dial ("all-time scale") must not break onto a second line — that
-     alone made the name row 16px deeper and pushed both floors down — so the head dials widen */
-  .draft .opp-top .dial,
-  .draft .five-top .dial { width: 76px; }
+  /* THE WHOLE DRAFT READS BIGGER (his rulings: "Make the entire screen with bigger fonts", and
+     again, on the same screen: "Make all the fonts here bigger, while keeping everything in the
+     same screen (unscrollable)"). Every small word comes up — the card heads, the captions, the
+     dial labels, the names on the floors, the roster rows and their figures, the wheel's words and
+     the SPIN key — and the two team rows grow to 58px to carry them.
+     THE HEIGHT TO PAY FOR IT COMES OUT OF THE DOCK, NOT THE FLOORS. On this screen the SPIN key was
+     a 78px slab in 48px of padding with another 54px of empty daylight above it; it is a 64px key
+     in 30px of padding with 14px above it now, which hands back 72px, and the floors keep the size
+     formula they already had. The two headlines stay 42px: a longer club ("Minnesota Timberwolves
+     '26") would break onto a second line at anything bigger, and a second line is exactly the
+     scroll this ruling rules out. */
+  .draft .card-head .label { font-size: 19px; }
+  .draft .card-head .cap { font-size: 16px; }
+  .draft .count { font-size: 18px; }
+  .draft .opp-line { font-size: 16px; }
+  .draft .dial .dl { font-size: 13px; margin-top: -5px; }
+  .draft .dial .ds { font-size: 12px; white-space: nowrap; }
+  /* the caption under a dial ("all-time scale") must not break onto a second line — that alone
+     made the name row 16px deeper and pushed both floors down — so the head dials widen */
+  .draft .opp-top .dial { width: 86px; }
   .draft .opp-top { margin-top: 0; }
-  .draft .rowhead span { font-size: 14px; }
-  .draft .rowhead .gcap { font-size: 13px; }
+  /* THE TWO NAMES ON ONE LINE, TO THE PIXEL (his ruling: "identical (size and location wise)").
+     Both heads are held to the same height whatever words are in them, and each name hangs from
+     the top of its row rather than centring against dials — your card has none until a man is
+     drafted, and a centred name would sit higher than the opponent's until he is. */
+  .draft .col.a .card-head,
+  .draft .col.c .card-head { min-height: 30px; align-items: center; }
+  .draft .opp-top { align-items: flex-start; }
+  .draft .rowhead span { font-size: 16px; }
+  .draft .rowhead .gcap { font-size: 15px; }
   .draft .col.a .row.dr,
-  .draft .col.c .row.dr { height: 52px; }
-  .draft .col.a .row.dr.short { height: 50px; }
-  .draft .col.a .rowhead.dr { height: 30px; }
+  .draft .col.c .row.dr { height: 58px; }
+  .draft .col.a .row.dr.short { height: 56px; }
+  .draft .col.a .rowhead.dr { height: 32px; }
   .draft .col.a .pname b,
-  .draft .col.c .pname b { font-size: 20px; }
+  .draft .col.c .pname b { font-size: 23px; }
   .draft .col.a .pname i,
-  .draft .col.c .pname i { font-size: 13px; }
+  .draft .col.c .pname i { font-size: 14.5px; }
   .draft .col.a .mini,
-  .draft .col.c .mini { font-size: 14px; }
+  .draft .col.c .mini { font-size: 17px; }
   .draft .col.a .rowhead.dr,
   .draft .col.a .row.dr,
   .draft .col.c .rowhead.dr,
-  .draft .col.c .row.dr { grid-template-columns: minmax(0, 1fr) 112px 28px; }
-  .draft .col.b .pname b { font-size: 24px; }
-  .draft .col.b .pname i { font-size: 14px; }
-  .draft .col.b .mini { font-size: 16px; }
-  .draft .ct-spot b { font-size: 18px; max-width: 104px; }
-  .draft .ct-spot i { font-size: 11px; }
-  .draft .ct-call { font-size: 10px; }
-  .draft .ct-init { font-size: 22px; }
-  .draft .ct-init.ghost { font-size: 18px; }
-  .draft .spin-team { font-size: 58px; }
+  .draft .col.c .row.dr { grid-template-columns: minmax(0, 1fr) 132px 28px; }
+  .draft .col.b .pname b { font-size: 26px; }
+  .draft .col.b .pname i { font-size: 15px; }
+  .draft .col.b .mini { font-size: 18px; }
+  .draft .ct-spot b { font-size: 21px; max-width: 120px; }
+  .draft .ct-spot i { font-size: 13px; }
+  .draft .ct-call { font-size: 12px; }
+  .draft .ct-init { font-size: 25px; }
+  .draft .ct-init.ghost { font-size: 21px; }
+  .draft .spin-team { font-size: 66px; }
   .draft .spin-sub,
-  .draft .spin-kicker { font-size: 18px; }
-  body:has(.draft) .dock .btn { font-size: 24px; }
+  .draft .spin-kicker { font-size: 21px; }
+  body:has(.draft) { --dock: 94px; }
+  body:has(.draft) #root { padding-bottom: calc(var(--dock) + var(--foot) + 14px); }
+  body:has(.draft) .dock { padding: 12px 21px 18px; }
+  body:has(.draft) .dock .btn { height: 64px; font-size: 30px; }
   .draft .col { min-width: 0; }
   .draft .col.a { order: 1; }
   .draft .col.b { order: 2; }
