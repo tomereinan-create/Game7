@@ -1593,5 +1593,14 @@
     "round": 167,
     "ruling": "Rudy Agree, Claxton agree",
     "note": "50 -> 54. His '23 (efficiency 92) took +11.2 from recal_112's term and read 60; his '24 (efficiency 75) took 0.0 and read 50, on 12.6 -> 11.8 points and .691 -> .629 true shooting at 29.9 -> 29.8 minutes - the standard path moved -1.5 and the foot moved -11.2. With the foot ramped the pair reads 59/54."
+  },
+  {
+    "card": "Kevin McHale '85",
+    "scale": "attr:rimprot",
+    "target": 88,
+    "tol": 3,
+    "round": 165,
+    "ruling": "Mchale agree",
+    "note": "THE VOTED-BAND UNLOCK READS WHICH SEASON THE BALLOT WAS CAST IN. recal_92 gated recal_53's unlock on block evidence and left its other half, drep, ungraded - and drep is a CAREER reputation decayed 15% a year in BOTH directions. McHale '85 (1.5 bpg, BLK% 2.4, DBPM -0.2, NO 1985 selection) read rimprot 93, above Hakeem '85 (94 on BLK% 4.3) and 2 over his own '88 (91), the unanimous 1st-team season: his BLK% 2.4 is 0.1 over 1985's p86 so block evidence is 1.000 and the unlock was his whole drep 0.850, which is his 1986 1st team carried back one year. The unlock is now paid in full for the season's OWN ballot and at CARRIED_UNLOCK = 1-(1-CARRIED_REIN)/2 = 0.75 for a carried one, restored to 1.000 wherever the season's own blocks AND DBPM certify it (_measured_rim_evidence, recal_95's ceiling meter). 93 -> 91. LANDS AT THE TOP OF TOLERANCE, DELIBERATELY: Moses Malone '85 is the same 1985 sheet (BLK% 2.4, same p87, no ballot, drep 0.700 carried from 1983) and the 76ers '85 defdial (recal_133, 93 +-2) reads 91 on its exact floor, stepping to 90 the moment Moses goes 86 -> 85. Since McHale's drep is the LARGER of the two, no monotone reading of a carried ballot drops him below 91 while recal_133 stands - measured on both channels (the carried rate 0.50-0.85, and BLK_FULL 0.86 -> 1.00). 88 itself needs recal_133 re-ruled first. See data/rounds/165.json."
   }
 ]

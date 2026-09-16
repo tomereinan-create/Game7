@@ -1,0 +1,121 @@
+{
+ "round": 165,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Mchale agree",
+ "title": "THE VOTED RIM UNLOCK NOW READS WHICH SEASON THE BALLOT WAS CAST IN — recal_92 gated it on block evidence and left its other half, drep, ungraded; a carried ballot now unlocks at CARRIED_UNLOCK unless the season's own blocks and DBPM certify it themselves",
+ "subject": "Kevin McHale '85",
+ "scale": "attr:rimprot",
+ "target": 88,
+ "tol": 3,
+ "before": 93,
+ "after": 91,
+ "pipeline_version": 164,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "CARRIED_UNLOCK = 1 - \\(1 - CARRIED_REIN\\) / 2",
+   "label": "THE ROUND'S CONSTANT, DERIVED NOT FREE — recal_160's carried-ballot discount, halved",
+   "note": "= 0.75. The unlock is already multiplied by recal_92's block evidence; the reinforcement line recal_160 graded is gated on nothing but height, so the carried ballot is discounted half as hard here. Measured: 0.50/0.60/0.65 take Moses Malone '85 to 85 and the 76ers '85 defdial to 90 against 93 +-2; 0.80/0.85 leave the subject at 92, outside 88 +-3. 0.70-0.75 is the whole feasible band"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_own53 = min\\(r\\['drep'\\], max\\(0\\.0, rep_by_pid\\.get\\(r\\['pid'\\], \\{\\}\\)\\.get\\(yr, 0\\.0\\)\\)\\)",
+   "label": "the share of the card's career reputation the SEASON'S OWN ballot supplies",
+   "note": "rep_by_pid[pid][yr] is the undecayed All-D/DPOY credit for THIS season; drep is career_rep, decayed 15% a year in BOTH directions. Kevin McHale '85: own 0.000, drep 0.850 (his 1986 1st team carried back one year)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_carr53 = max\\(CARRIED_UNLOCK, _measured_rim_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\), r\\['dbpm'\\]\\)\\)",
+   "label": "the carried ballot's rate, RESTORED to 1.000 by the season's own measured rim evidence",
+   "note": "_measured_rim_evidence is recal_95's ceiling meter (block evidence x the DBPM ramp) refactored out of _ceiling_evidence unchanged. Mutombo '00 (BLK% 5.9, DBPM +1.5) reads 1.000 and does not move, which is what holds the Mutombo '01 99 +-0 pin; McHale '85's DBPM is -0.2 and reads 0.000"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_w53 = min\\(1\\.0, max\\(0\\.0, _own53 \\+ _carr53 \\* \\(r\\['drep'\\] - _own53\\)\\)\\) \\* _blk_evidence",
+   "label": "THE ONE LINE — recal_53's voted-band unlock, its reputation half now graded by whose season the ballot is",
+   "note": "was: min(1.0, max(0.0, r['drep'])) * _blk_evidence(P['blk'](r['blk'])). The Iverson gate (drep > 0.05) and recal_92's block-evidence factor are untouched"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "def _measured_rim_evidence\\(blk_pctile, dbpm\\):",
+   "label": "the measured half of recal_95's ceiling meter, lifted out so both rim gates read one definition",
+   "note": "_ceiling_evidence is byte-identical: max(drep, _measured_rim_evidence(blk, dbpm))"
+  }
+ ],
+ "expect": [
+  {"card": "Kevin McHale '85", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 3, "label": "THE SUBJECT, his ruling"},
+  {"card": "Kevin McHale '88", "scale": "attr:rimprot", "op": "~", "value": 89, "tol": 3, "label": "recal_92's own subject, the unanimous 1st-team season, must hold"},
+  {"card": "Moses Malone '85", "scale": "attr:rimprot", "op": ">=", "value": 86, "label": "THE WALL — the 76ers '85 defdial sits exactly on its floor and moves off it at 85"},
+  {"card": "Hakeem Olajuwon '85", "scale": "attr:rimprot", "op": ">=", "value": 92, "label": "the comparable the ruling is read against: he must stay above the subject"},
+  {"card": "Dikembe Mutombo '01", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "recal_81, 99 +-0 at the smoothed centre; the carried-ballot restore is what holds his 2000"},
+  {"card": "Joakim Noah '09", "scale": "attr:rimprot", "op": "~", "value": 92, "tol": 1, "label": "recal_82"},
+  {"card": "Joel Embiid '23", "scale": "attr:rimprot", "op": "~", "value": 91, "tol": 1, "label": "recal_81"},
+  {"card": "Jack Sikma '83", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "recal_160, the round this one extends"},
+  {"card": "Ben Simmons '21", "scale": "attr:rimprot", "op": "~", "value": 86, "tol": 1, "label": "recal_160's negative control: own ballot, byte-identical"},
+  {"card": "Bobby Jones '82", "scale": "attr:rimprot", "op": "~", "value": 96, "tol": 1, "label": "recal_82"},
+  {"card": "Shaquille O'Neal '93", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1},
+  {"card": "Pau Gasol '04", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "recal_95"},
+  {"card": "Ben Wallace '04", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
+  {"card": "Tim Duncan '03", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
+  {"card": "Rudy Gobert '19", "scale": "attr:rimprot", "op": "==", "value": 97, "label": "tol 0"},
+  {"card": "Victor Wembanyama '24", "scale": "attr:rimprot", "op": "==", "value": 97, "label": "tol 0"},
+  {"card": "Dikembe Mutombo '97", "scale": "attr:rimprot", "op": "==", "value": 98, "label": "tol 0"},
+  {"card": "Dirk Nowitzki '07", "scale": "def", "op": "~", "value": 74, "tol": 3, "label": "recal_162"},
+  {"card": "Karl Malone '97", "scale": "def", "op": "~", "value": 88, "tol": 3, "label": "recal_135"},
+  {"card": "Michael Jordan '89", "scale": "attr:rimprot", "op": "==", "value": 59, "label": "no block evidence, no unlock: untouched by construction"}
+ ],
+ "order": [
+  {"scale": "attr:rimprot", "above": "Hakeem Olajuwon '85", "below": "Kevin McHale '85", "label": "THE RULING'S OWN SENTENCE — BLK% 4.3 must read above BLK% 2.4"},
+  {"scale": "attr:rimprot", "above": "Kevin McHale '87", "below": "Kevin McHale '85", "label": "the voted seasons stay above the carried one"},
+  {"scale": "attr:rimprot", "above": "Kevin McHale '86", "below": "Kevin McHale '85"},
+  {"scale": "attr:rimprot", "above": "Dikembe Mutombo '97", "below": "Kevin McHale '85"}
+ ],
+ "movers": {
+  "scale": "attr:rimprot",
+  "count": 88,
+  "max_abs": 2,
+  "top": [
+   ["Kevin McHale '85", 93, 91],
+   ["Kevin McHale '84", 91, 89],
+   ["Rudy Gobert '23", 97, 95],
+   ["Brook Lopez '21", 96, 94],
+   ["Serge Ibaka '11", 95, 93],
+   ["Dikembe Mutombo '92", 91, 89],
+   ["Roy Hibbert '11", 89, 87],
+   ["Brook Lopez '25", 93, 91]
+  ]
+ },
+ "top12": {
+  "scale": "attr:rimprot",
+  "cards": [
+   "Ben Wallace '03",
+   "David Robinson '95",
+   "Hakeem Olajuwon '94",
+   "Marcus Camby '07",
+   "Marcus Camby '08",
+   "Rudy Gobert '21",
+   "Tim Duncan '01",
+   "Tim Duncan '07",
+   "Tim Duncan '08",
+   "Ben Wallace '04",
+   "Caldwell Jones '80",
+   "Caldwell Jones '81"
+  ]
+ },
+ "notes": [
+  "THE FINDING. Kevin McHale '85 read rimprot 93 on 1.5 blocks a game, BLK% 2.4, DBPM -0.2 and NO 1985 All-Defensive selection — above Hakeem Olajuwon '85 (94 on BLK% 4.3) and 2 over his own '88 (91), the season he was a unanimous 1st-team pick. His BLK% 2.4 is 0.1 over 1985's p86, so recal_92's block evidence is 1.000 and the voted-band unlock is his WHOLE drep, 0.850 — which is his 1986 1st team decayed one year backwards. The same 2.2 in 1988 is p81 and unlocks 0.233. The vote the '85 card cashes was cast in 1986.",
+  "THE FIX IS recal_160's, APPLIED TO THE OTHER VOTE CHANNEL. recal_160 taught the rim REINFORCEMENT line (ID + 0.25*drep*hp) to read which season the ballot came from and pay a carried one at half rate. The voted-band UNLOCK (_w53) still read drep in full. It now reads own + rate*(drep - own), byte-identical for every card whose reputation is its own season's ballot — Mutombo '97, Duncan '03, Ben Wallace '04, Gobert '19, Wembanyama '24, Simmons '21 and McHale '86/'87/'88 all own 1.000 and do not move on their own season's score.",
+  "RESTORED BY THE SEASON'S OWN SHEET. A carried ballot that the card's own blocks AND DBPM independently certify is not carried evidence — the season says what the ballot says — so the rate returns to 1.000 through _measured_rim_evidence, recal_95's ceiling meter refactored out of _ceiling_evidence unchanged. That is what keeps Mutombo '00 (BLK% 5.9, DBPM +1.5) whole and with him the Mutombo '01 99 +-0 pin, and Noah '09 and Embiid '23 with theirs. McHale '85's DBPM is -0.2: nothing in 1985 backs the ballot.",
+  "THE RATE IS DERIVED, NOT FITTED: CARRIED_UNLOCK = 1 - (1 - CARRIED_REIN)/2 = 0.75. recal_160's discount, halved, because this gate is already multiplied by recal_92's block evidence and the reinforcement line is gated on nothing but height.",
+  "WHY 91 AND NOT 88 — STATED PLAINLY. Moses Malone '85 is the same 1985 sheet: BLK% 2.4, the same p87, 6'10\", no 1985 ballot, drep 0.700 carried from 1983. The 76ers '85 defdial (recal_133, 93 +-2) reads 91 on main — EXACTLY on its floor — and it steps to 90 the moment Moses's rimprot goes 86 -> 85. So the carried rate cannot fall below ~0.67, and at any rate that keeps Moses at 86 the subject reads 91. Measured on the grid: 0.50 -> subject 90 / Moses 85 / dial FAIL; 0.60 -> 90 / 85 / FAIL; 0.65 -> 91 / 85 / FAIL; 0.70 -> 91 / 86 / all 160 pass; 0.75 -> 91 / 86 / all 160 pass; 0.80 -> 92 / 86 (subject out of band); 0.85 -> 92 / 86.",
+  "THE OTHER ROUTE WAS MEASURED AND REACHES THE IDENTICAL 91. Widening recal_92's block-evidence band (BLK_FULL 0.86 -> 0.90, the scout's option (a)) puts the subject on 90 pre-smoothing and 91 after it, with Moses at 88 — the same wall, the same answer — and it drags the ceiling and recal_162's graded floor with it, which this line does not. BLK_FULL 1.00, the width that would reach 88 on that channel, takes Mutombo '97 to 97 against 98 +-0. Since Moses '85 and McHale '85 differ only in drep (0.700 vs 0.850) and McHale's is the LARGER, no monotone reading of a ballot can drop the subject below the top of his tolerance while recal_133 stands.",
+  "MONOTONE AND SUBTRACTIVE BY CONSTRUCTION: the graded reputation is <= drep everywhere, it enters the same blend weight, and the season's Prot pool is built on the ungated ID above, so no card can rise. Measured: 88 cards move rimprot, none by more than 2, none up; 41 cards move DEF, none by more than 3; 19 move OVR, none by more than 3.",
+  "npm run harness: all nine tactics PASS on main's constants (hunt 3.85 / crashOff 0.32 / crashDef 0.50). No tax re-sweep was needed and src/engine/tactics.ts is untouched."
+ ],
+ "cost": [
+  "THE 76ers '85 DEFDIAL IS ON A KNIFE EDGE AND A LATER ROUND SHOULD KNOW IT. recal_133's 93 +-2 reads 91 — its floor — and the five's drtg sits 0.0001 above the 91/90 rounding boundary. ANY round that lowers ANY of Cheeks '85 / Erving '85 / Bobby Jones '85 / Barkley '85 / Moses Malone '85 on any defensive bar by any amount breaks it. Moses Malone '85 rimprot 86 is effectively a pin now; it is the reason this round stopped at 91.",
+  "Kevin McHale '85 lands at the TOP of his tolerance (91 against 88 +-3, error +3), not near his number. If Tomer wants the 88 itself, recal_133 has to be re-ruled first — the two cannot both stand.",
+  "CARRIED_UNLOCK is derived from CARRIED_REIN. A later round that moves recal_160's 0.50 moves this gate too; that is deliberate (one carried-ballot doctrine, two gates) but it means the rim anchors must be re-read whenever CARRIED_REIN changes."
+ ]
+}

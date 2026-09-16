@@ -249,6 +249,10 @@ P_3pa_mod = pctile([r['x3pa_per_100'] for r in mod])
 P_3pp_mod = pctile([r['x3p_pct'] for r in mod if (r['x3pa_per_100'] or 0) >= 2])
 
 CARRIED_REIN = 0.50   # recal_160: a ballot from ANOTHER season reinforces rim protection at half rate
+CARRIED_UNLOCK = 1 - (1 - CARRIED_REIN) / 2   # recal_165: = 0.75. The SAME carried-ballot discount,
+# halved, because the voted rim CEILING's unlock already carries a second gate the reinforcement line
+# does not: it is multiplied by recal_92's block evidence, so a ballot carried into a season is already
+# corroborated by that season's own blocks before it buys anything. See the _w53 block below.
 _ID_OWN = {}          # (pid, season) -> the card's own gated ID; the Prot pool keeps the ungated one
 def score_season(r, P):
     W = WEIGHTS
@@ -501,9 +505,14 @@ RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades 
 DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0.0, 1.0   # DBPM band the ceiling grades on; the BLOCK band is
 # recal_92's own BLK_BAR/BLK_FULL, reused deliberately - there is ONE definition of "block evidence"
 # in this file and both rim gates read it, so a later ruling moves one number, not two.
-def _ceiling_evidence(blk_pctile, dbpm, drep):
+# recal_165: the MEASURED half of recal_95's ceiling meter, lifted out of _ceiling_evidence
+# unchanged (the function below is byte-identical to what it was) so the voted-band unlock can
+# read the same thing: does THIS season's own sheet certify the rim protection its ballot claims.
+def _measured_rim_evidence(blk_pctile, dbpm):
     dbp = max(0.0, min(1.0, ((dbpm if dbpm is not None else 0.0) - DBPM_CEIL_BAR) / (DBPM_CEIL_FULL - DBPM_CEIL_BAR)))
-    return max(min(1.0, max(0.0, drep)), _blk_evidence(blk_pctile) * dbp)
+    return _blk_evidence(blk_pctile) * dbp
+def _ceiling_evidence(blk_pctile, dbpm, drep):
+    return max(min(1.0, max(0.0, drep)), _measured_rim_evidence(blk_pctile, dbpm))
 def dfg_floor(yr, name):
     # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
     # recal_65: VERIFIED — the design side re-reported the floors as still keyed to all-shots; they are
@@ -664,7 +673,45 @@ for yr, rows in seasons.items():
         # the season's block rate, the whole band at the 86th and above. Below the bar the man keeps
         # exactly what he had without the vote - min(ID2, cap) - which is his own measured value.
         # The r53 measured tier is untouched: elite tracked rim defence still lifts the cap to 92.
-        _w53 = min(1.0, max(0.0, r['drep'])) * _blk_evidence(P['blk'](r['blk'])) if r['drep'] > 0.05 else 0.0
+        # recal_165 (HIS RULING on Kevin McHale '85, verbatim: "Mchale agree"). THE UNLOCK READS WHICH
+        # SEASON THE BALLOT WAS CAST IN, THE WAY recal_160 TAUGHT THE REINFORCEMENT LINE TO. recal_92
+        # gated this unlock on block evidence but left its OTHER half, `drep`, ungraded — and drep is a
+        # CAREER reputation, decayed 15% a year in BOTH directions, so a season with no ballot at all
+        # still buys the voted band with one cast the year before or the year after.
+        # THE SUBJECT, MEASURED. Kevin McHale '85: 1.5 blocks a game, BLK% 2.4, DBPM -0.2, NO 1985
+        # All-Defensive selection (own 0.000) — and rimprot 93, above Hakeem Olajuwon '85 (94 on BLK%
+        # 4.3) and 2 over his own '88 (91), the season he WAS a unanimous 1st-team pick. His BLK% 2.4
+        # is 0.1 over 1985's p86, so block evidence is 1.000 and the unlock is his whole drep 0.850 —
+        # which is his 1986 1st team carried back one season. The same 2.2 in 1988 is p81 and unlocks
+        # 0.233. The vote the '85 card cashes was cast in 1986.
+        # THE FORM IS recal_160's, TO THE LETTER: full for the share of drep the season's OWN ballot
+        # supplies, discounted for the rest — so a card whose reputation is its own season's ballot is
+        # byte-identical (Mutombo '97, Duncan '03, Ben Wallace '04, Gobert '19, Wemby '24, Simmons '21,
+        # McHale '86/'87/'88 all own 1.000 and do not move a point on their own season's score).
+        # RESTORED BY THE SEASON'S OWN MEASURED RIM EVIDENCE. A carried ballot that the card's own
+        # blocks AND DBPM independently certify is not carried evidence at all — the season says the
+        # same thing the ballot does — so the rate returns to 1.000 through _measured_rim_evidence,
+        # which is recal_95's own ceiling meter (block evidence x the DBPM ramp), refactored out of
+        # _ceiling_evidence unchanged. That is what holds Mutombo '00 (BLK% 5.9, DBPM +1.5) whole and
+        # with him the Mutombo '01 99 +-0 pin, and Noah '09 and Embiid '23 with theirs. McHale '85's
+        # DBPM is -0.2: nothing in his season backs the ballot, and he takes the discount in full.
+        # THE RATE IS NOT A NEW FREE CONSTANT (see CARRIED_UNLOCK at the top): it is recal_160's own
+        # discount halved, because this gate is already multiplied by block evidence and that one is
+        # gated on nothing but height. MEASURED FRONTIER, and it is a NARROW window: 0.50 and 0.60 put
+        # the subject on 90 but take Moses Malone '85 — the same 1985 sheet, BLK% 2.4, p87, no ballot,
+        # drep 0.700 carried from 1983 — to 85, and the 76ers '85 defdial (recal_133, 93 +-2) is
+        # sitting EXACTLY on its floor at 91, so it falls to 90 and breaks. 0.65 breaks it too. 0.80
+        # and 0.85 leave the subject at 92, outside 88 +-3. 0.70-0.75 is the whole feasible band and
+        # both read the subject 91; 0.75 is the derived value and the roundest one in it.
+        # WHY 91 AND NOT 88: with Moses '85 pinned at rimprot 86 by that dial, and his rim sheet
+        # identical to the subject's but for drep (0.700 vs 0.850), NO monotone reading of the ballot
+        # can drop the subject below the top of his tolerance. Measured over the same window on the
+        # band channel too (BLK_FULL 0.86 -> 0.90, the other route to the same unlock), the subject
+        # bottoms at the identical 91 and the floor band moves with it. 88 is not reachable while
+        # recal_133 stands.
+        _own53 = min(r['drep'], max(0.0, rep_by_pid.get(r['pid'], {}).get(yr, 0.0)))   # the ballot THIS season cast
+        _carr53 = max(CARRIED_UNLOCK, _measured_rim_evidence(P['blk'](r['blk']), r['dbpm']))
+        _w53 = min(1.0, max(0.0, _own53 + _carr53 * (r['drep'] - _own53))) * _blk_evidence(P['blk'](r['blk'])) if r['drep'] > 0.05 else 0.0
         _cap53 = (88 - 1) / 98.0
         _row6 = TRACKING.get((yr, 'Less Than 6Ft'), {}).get(_nrm(r['name']))
         if _row6 and _row6[1] and min(1.0, _row6[1] / 350.0) >= 0.75 and _row6[0] <= -0.040:
