@@ -502,6 +502,24 @@ export const DEFAULT_TACTICS: Tactics = {
  * Set at the middle of each bracketed window: hunt 3.85 (blind -0.41, oracle +0.52), crashOff 0.55 (-0.53, +0.57),
  * crashDef 0.72 (-0.38, +0.52). The 641 glue-floor risers (155) and 228 hub-ramp risers (154) are guards in the ovr>=55 pool,
  * so every tax whose benefit reads an offensive mismatch moved; the six other taxes held.
+ * recal_162 graded the no-vote rim ceiling's own FLOOR by block evidence: 2,261 rimprot bars, 1,883
+ * d_ovrs and 1,432 OVRs, every one DOWN, and a whole class of no-block bigs left the harness's
+ * ovr>=55 sample — the pool again. BOTH CRASH ROWS broke together on the ORACLE edge (crash off
+ * +0.4478 at 0.55, crash def +0.4889 at 0.72, against the +0.50 floor), the shape recal_126 and
+ * recal_137 already name for this pair: their benefit reads a REBOUNDING attribute (orb, drb) this
+ * round did not touch at all, so what moved was the fives the benefit is averaged over — and this
+ * time it moved the way a DEFENSIVE round moves it, the glass men's defence down, the read worth
+ * less than the tax. Swept ONCE from MAIN's constants. crash off: 0.550 (+0.4478) / 0.400 (+0.4910)
+ * / 0.370 (+0.4999) / 0.365 (+0.5013) / 0.300 (+0.5210) / 0.100 (+0.5828) / 0.000 (blind -0.3555) /
+ * -0.080 (-0.3045) / -0.085 (-0.3013) / -0.090 (-0.2981, over the ceiling) — feasible about -0.085
+ * to 0.365, a WIDE 0.450 whose true midpoint is POSITIVE for once (r117's half-interval rule does
+ * not bind): 0.55 -> 0.14 (blind -0.444, oracle +0.570, 0.144 and 0.070 of room). crash def: 0.720
+ * (+0.4889) / 0.684 (+0.4999) / 0.680 (+0.5011) / 0.600 (+0.5267) / 0.510 (blind -0.3033) / 0.506
+ * (-0.3003) / 0.500 (-0.2958, over the ceiling) — feasible about 0.506 to 0.680, a NARROW 0.174,
+ * true midpoint by r126's rule: 0.72 -> 0.59 (blind -0.363, oracle +0.530, 0.063 and 0.030 of room).
+ * The seven others held their bands untouched, hunt included (blind -0.366, oracle +0.523). All nine
+ * pass. The law was applied as written: the bands broke, the taxes moved to meet them, and nothing
+ * in the OVR chain was touched to hold a band up.
  */
 export const TAX = {
   scorer: 0.55,
@@ -510,8 +528,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.80,
   hunt: 3.85,
-  crashOff: 0.55,
-  crashDef: 0.72,
+  crashOff: 0.14,
+  crashDef: 0.59,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
