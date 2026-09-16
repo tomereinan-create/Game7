@@ -248,6 +248,8 @@ mod = [r for y in range(MODERN[0], MODERN[1]+1) for r in seasons.get(y, [])]
 P_3pa_mod = pctile([r['x3pa_per_100'] for r in mod])
 P_3pp_mod = pctile([r['x3p_pct'] for r in mod if (r['x3pa_per_100'] or 0) >= 2])
 
+CARRIED_REIN = 0.50   # recal_160: a ballot from ANOTHER season reinforces rim protection at half rate
+_ID_OWN = {}          # (pid, season) -> the card's own gated ID; the Prot pool keeps the ungated one
 def score_season(r, P):
     W = WEIGHTS
     IN  = W['IN']['x2p_per_100']*P['x2p_per_100'](r['x2p_per_100']) + W['IN']['x2p_pct']*P['x2p_pct'](r['x2p_pct']) + W['IN']['ftr']*P['ftr'](r['ftr'])
@@ -346,6 +348,38 @@ def score_season(r, P):
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
+    # recal_160 (HIS RULING on Jack Sikma '83, verbatim: "Can be high 70s", and on Ben Simmons '21,
+    # verbatim: "Disagree"). A CARRIED BALLOT REINFORCES AT HALF RATE. The line below is rim
+    # protection's SECOND vote channel (recal_135 named it and measured it: zero it and Karl Malone
+    # '97 reads 56 instead of 74). recal_92 gated the voted rim CEILING on block evidence and
+    # recal_114 gated perdef's vote premium on DBPM support, but this line was gated on NOTHING but
+    # height -- and, crucially, not on WHICH SEASON THE BALLOT WAS CAST IN. `drep` is a CAREER
+    # reputation, decayed 15% a year in both directions (career_rep, top of this file), so a man with
+    # no ballot at all in the season the card describes still collects the full reinforcement for a
+    # ballot cast the year before or the year after.
+    # THE SUBJECT, MEASURED. Jack Sikma '83 read rimprot 82 on BLK% 1.3 (the 65th percentile of 1983),
+    # 0.9 blocks a game, DBPM +0.9 and NO 1983 selection: his drep 0.51 is his 1982 All-Defensive 2nd
+    # team decayed one year. Every other 1982-84 no-vote big at 6'9"+ with a BLK% between 1.0 and 2.0
+    # reads 63-78 (Cartwright '82 78, Lanier '82 76, Kelley '83 72, Ruland '83 68) and his own box
+    # twin Mickey Johnson '82 reads 65. The whole gap is this line.
+    # THE FORM: the reinforcement is paid IN FULL for the share of drep the season's OWN ballot
+    # supplies, and at CARRIED_REIN for the rest. It is byte-identical for every card whose
+    # reputation is its own season's ballot -- Ben Simmons '21 (All-Defensive 1st IN 2021, own 1.00 =
+    # drep 1.00) does not move a point, which is his ruling -- and it is monotone in both channels.
+    # CARRIED_REIN = 0.50 IS THE FITTED PART AND IS STATED AS SUCH (the VOTE_SUPPORT_POW precedent
+    # above). A carried ballot is evidence, but it is evidence about ANOTHER season; half is the
+    # roundest reading of "less, not nothing". Measured across the pool, the subject lands 72 at 0.00
+    # (his votes worth nothing), 77 at 0.30, 79 at 0.40-0.55 and 80 at 0.60; the pins decide the rest
+    # -- below 0.50, Joel Embiid '23 (r81 rimprot 91 +-1, reading 90) falls to 89 and Joakim Noah '09
+    # (r82 92 +-1) to 90 at 0.30. 0.50 is the value at which every rim anchor in the file holds.
+    _own = min(r['drep'], max(0.0, rep_by_pid.get(r['pid'], {}).get(r['season'], 0.0)))   # the ballot THIS season cast
+    # THE POOL IS FROZEN (recal_114's doctrine, and recal_149's, both stated in this file for the
+    # same reason): the deduction is applied to the CARD'S OWN lookup, never to the ID that builds
+    # the season's Prot pool below, so the within-season deterrent ranking does not move and NO CARD
+    # CAN RISE. Without the freeze the pool thins under every card that loses a carried ballot and
+    # the top of it drifts up a point -- Mutombo '97, Duncan '03, Ben Wallace '04 (rimprot 98 +-0),
+    # Gobert '19 and Wembanyama '24 (97 +-0) all broke on the pool shift alone, measured.
+    _ID_OWN[(r['pid'], r['season'])] = min(1.0, ID + 0.25*((_own + CARRIED_REIN*(r['drep'] - _own))*hp))
     ID  = ID + 0.25*(r['drep']*hp)   # big-man defensive votes reinforce rim protection
     # recal_97 (HIS RULING, verbatim: "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting").
     # THE PD CLAMP IS GONE. PD was clamped to 1.0 BEFORE Pvot percentiled it, and a perfect sheet
@@ -557,6 +591,7 @@ for yr, rows in seasons.items():
     Prot = pctile_top([t[1][2] for t in tmp if t[1][2] >= RIM_GATE])
     for r, (IN, OUT, ID, PD, TAL, BRK) in tmp:
         out_brk[(r['pid'], yr)] = BRK
+        ID = _ID_OWN.get((r['pid'], yr), ID)   # recal_160: the card's own (carried-ballot-gated) ID; Prot above is built on the ungated one
         # the very top SATURATES (0.47 slope, clamped): season smoothing blends a peak with its
         # neighbours, so only a man who is the league's best deterrent for years running lands on 99
         ID2 = min(1.0, 0.55 + 0.47 * Prot(ID)) if ID >= RIM_GATE else min(ID, 0.54)

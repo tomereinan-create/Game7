@@ -517,6 +517,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * 0.016 of room) and crash def 0.72 -> 0.58 (blind -0.369, oracle +0.533, 0.069 and 0.033). That is
  * hunt's FOURTEENTH move. crash off held at 0.55 (blind -0.53, oracle +0.57) and the six others held
  * their bands. All nine pass.
+ * recal_160 gated the rim-protection vote reinforcement on WHICH SEASON the ballot was cast in: 780 rimprot
+ * bars, 336 d_ovrs and 195 OVRs, every one DOWN, which moved cards across the harness's ovr>=55 line and the
+ * fives it draws. CRASH DEF GLASS alone broke, on the ORACLE edge (+0.4397 at .72 against the +0.50 floor) —
+ * the shape recal_146 named for this row: the glass men this round touched defend WORSE now, so the default
+ * plan is cheaper to leave and .72 of tax eats the whole read. Swept ONCE from MAIN's constant, as the law
+ * requires: .720 (oracle +0.4397, under) / .600 (+0.4804, under) / .580 (+0.4875) / .560 (+0.4947) / .547
+ * (+0.4994, under) / .545 (blind -0.3958, oracle +0.5001, the floor exactly) / .520 (+0.5092) / .500
+ * (-0.3607 / +0.5166) / .460 (-0.3293) / .440 (-0.3137) / .423 (-0.3003, the ceiling exactly) / .420
+ * (-0.2980, over the ceiling) / .400 (-0.2822, over) — feasible about .423 to .546, a NARROW 0.123, true
+ * midpoint by r126's rule: .72 -> .48 (blind -0.345, oracle +0.524, 0.045 and 0.024 of room). hunt held at
+ * 3.85 and crashOff at .55, and the six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,

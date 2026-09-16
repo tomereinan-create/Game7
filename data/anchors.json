@@ -1548,5 +1548,23 @@
     "round": 159,
     "ruling": "Can go down to lower mid 80s",
     "note": "reads 84. recal_149's tracked-band credit is now paid at the card's LOAD as well as at its shot COUNT: BAND_FOOT/BAND_FULL = 12.0/34.0 in build_ratings.py, recal_96's 12-minute foot with the full-load line measured on this term's own class (the 135 cards the credit pays: mpg p25 28.40, median 31.79, p75 34.04). A 19.2-mpg bench wing takes 0.33 of the credit instead of all of it: perdef 91 -> 86, DEF 88 -> 84. His '16 (22.2 mpg) follows to perdef 88 / DEF 85 and is NOT pinned. recal_96's 24-minute bench boundary was measured first and is the frontier: it sits below this class's own p25, moves only 7 cards, and leaves the subject at DEF 86, one point outside. Amen Thompson '24/'25/'26, Draymond '16, Jrue '21, Herbert Jones '23, Dort '25/'26 and Kawhi are byte-identical."
+  },
+  {
+    "card": "Jack Sikma '83",
+    "scale": "attr:rimprot",
+    "target": 78,
+    "tol": 2,
+    "round": 160,
+    "ruling": "Can be high 70s",
+    "note": "THE VOTE-REINFORCEMENT LINE READS WHICH SEASON THE BALLOT WAS CAST IN. ID += 0.25*drep*hp (recal_135 named this second vote channel and left it) was gated on height alone: no block gate, no own-ballot gate. Sikma '83 has NO 1983 selection - his drep 0.51 is his 1982 All-Defensive 2nd team decayed one year - and read rimprot 82 on BLK% 1.3 (p65 of 1983), 0.9 bpg and DBPM +0.9, where every other 1982-84 no-vote big at 6'9\"+ on a BLK% of 1.0-2.0 reads 63-78 (Cartwright '82 78, Lanier '82 76, Kelley '83 72, Ruland '83 68) and his box twin Mickey Johnson '82 reads 65. The reinforcement is now paid in FULL for the share of drep the season's OWN ballot supplies and at CARRIED_REIN = 0.50 for the rest: 82 -> 79 (error +1). The Prot pool is frozen on the ungated ID (recal_114/recal_149's doctrine), so no card can rise."
+  },
+  {
+    "card": "Ben Simmons '21",
+    "scale": "attr:rimprot",
+    "target": 86,
+    "tol": 1,
+    "round": 160,
+    "ruling": "Disagree",
+    "note": "HIS 'Disagree' PINNED AT ITS READING. Simmons's 2021 All-Defensive 1st team is a ballot IN the season the card describes (own 1.00 = drep 1.00), so recal_160's gate is byte-identical for him and he does not move a point: 86 -> 86. This is the wall the round was fitted against - the distinction the ruling draws is between a ballot cast FOR this season and one carried from another, not between a small big man's blocks and a large one's."
   }
 ]
