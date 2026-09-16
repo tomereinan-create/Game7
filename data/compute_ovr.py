@@ -229,12 +229,58 @@ C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55.0   # recal_136: clause 1's own step, made a 
 # movers are the same archetype found by the same test — Luc Mbah a Moute '17, Thaddeus Young,
 # OG Anunoby '25, Gerald Wallace: wings a box score once listed at power forward.
 POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed big is graded as a wing
+# recal_164 (HIS RULING, verbatim: "Agree"). THE LAST HARD STEP IN THE FUNCTION — clause 1's SHAPE
+# test, `rimprot >= perdef`, which was still a cliff after recal_136 ramped the same clause's OTHER
+# bar.
+#
+# THE DEFECT, decomposed on the card the ruling names. LeBron James '04 reads rim protection 60 and
+# perimeter defence 59. Sixty is PAST recal_136's saturation (55), so that ramp returns 1.00 and the
+# only thing left deciding him is the shape test — which one point of separation answers with a hard
+# 1.0. He is therefore graded on the WHOLE big vector, 57.92 x 1.1305 = 65, while his own perimeter
+# vector reads 62.01 x 1.1305 = 70. His neighbouring seasons are on the other side of the same
+# one-point line and read like it: '05 (rimprot 61 < perdef 65) is 100% perimeter at DEF 77, '06
+# perimeter at 82, '07 92% perimeter at 89. A rookie box of 1.6 steals, 0.7 blocks and BPM 1.7 sits
+# on that line at about 70, not at 65.
+#
+# WHY A RAMP, AND WHY NOW. Three rounds have each taken one hard step out of this function and each
+# left this one standing by name: recal_93 replaced the MIDDLE clause's step with a product of two
+# ramps, recal_99 gave the DETERRENCE clause its own, recal_136 ramped clause 1's RIM-PROTECTION bar
+# and wrote that the clause's other two tests are "BYTE-IDENTICAL and still hard". Reading defensive
+# shape is why the clause is RIGHT — recal_103 leaned on it and it stays — but it is not why the
+# clause may STEP. A man whose rim protection beats his perimeter defence by one point has a
+# one-point claim to the big verdict, not the whole of it.
+#
+# THE RAMP, AND IT INTRODUCES NO NEW CONSTANT. `rimprot >= perdef` becomes a ramp on the SIGNED GAP
+# `rimprot - perdef`, over recal_136's OWN ramp width, C1_RP_HI - C1_RP_LO = 10 — the width already
+# in the clause, reused rather than invented, so the clause has one story about how far a claim must
+# travel before it is whole. At a gap of 10 or more the clause returns exactly what it always did;
+# below it the card is graded a little big instead of entirely big. The clause's two OTHER tests are
+# untouched: `3pt < 45` is still hard, and recal_136's rim-protection ramp multiplies as before.
+# recal_99's deterrence guard is NOT reopened — it keeps the hard `rimprot >= perdef`, because there
+# the test is a guard that can only ever LIFT, and ramping it would DEMOTE the elite perimeter
+# defenders recal_99 wrote it to protect.
+# THE WIDER WIDTH, MEASURED AND REJECTED: the clause's own DEF_RP band (35) reaches the same number
+# for the subject (his ceiling is set elsewhere, see below) but takes recal_136's OWN subject, Ken
+# Norman '94, from 53 to 49 and out of his 55 +-3 pin; 20 already takes him to 51. Ten is the width
+# the anchors permit and the width the clause already carries.
+# THE SUBJECT'S CEILING IS NOT THIS CLAUSE. At rimprot 60 / 3pt 26 recal_93's MIDDLE clause grades
+# LeBron '04 0.4286 big on its own, and that term is a max() alongside this one, so no change here
+# can take him below 0.4286 or above DEF 68. 68 is inside his 70 +-2 and the round lands there;
+# reaching 70 exactly would mean reopening recal_93's ramp, which this round does not do.
+# MEASURED: 45 of 10,000 cards move on DEF, 22 up and 23 down, max +6 / -3; OFF and every attribute
+# move on ZERO (is_big is untouched, so the boolean, the big hub, the stretch-big floor and the OVR
+# cap branch are all byte-identical); OVR follows on 28 cards, max 3. The top 12 by DEF is identical
+# and every one of the 154 anchors passes. The movers are one archetype and it is the archetype
+# recal_72 named when it wrote this clause — "SF-only stoppers (Reggie Williams-class)": Reggie
+# Williams '89 himself +6, Tayshaun Prince '04-'16, Lionel Simmons, Derrick McKey '97, Boris Diaw,
+# Josh Howard, Deni Avdija '23, Josh Giddey '22. Wings, graded on their own vector in proportion to
+# the rim-protection claim they actually have over their own perimeter defence.
 def d_bigness(p):
     """How much of the BIG d_score mix this card is graded by, in [0, 1]. 0 = the whole perimeter
     verdict, 1 = the whole big verdict. The lifetime-guard branch and the third shape clause are
     is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
-    recal_99's, clause 1 is recal_136's ramp (identical to is_big's at rimprot 55 and above), and
-    the position-big branch is recal_103's shape override."""
+    recal_99's, clause 1 is recal_136's ramp on rim protection times recal_164's ramp on the shape
+    gap, and the position-big branch is recal_103's shape override."""
     pos = _POS.get(p['name'], [])
     a = p['attrs']
     if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
@@ -245,8 +291,13 @@ def d_bigness(p):
     # recal_136: clause 1 is a RAMP on its own rim-protection bar, from DEF_RP_LO to its own 55.
     # Above 55 this is the hard 1.0 it always was; below it, the man is graded as a big in
     # proportion to the rim-protection claim he actually has. Its other two tests are untouched.
-    w_c1 = (min(1.0, max(0.0, (a['rimprot'] - C1_RP_LO) / (C1_RP_HI - C1_RP_LO)))
-            if a['3pt'] < 45 and a['rimprot'] >= a['perdef'] else 0.0)
+    # recal_164: and its SHAPE test is a ramp too, on the signed gap rimprot - perdef, over
+    # recal_136's own width (C1_RP_HI - C1_RP_LO = 10). At a gap of 10 or more this is the hard
+    # `rimprot >= perdef` it always was; below it, one point of separation buys one tenth of the
+    # big verdict instead of all of it.
+    _c1_shape = min(1.0, max(0.0, (a['rimprot'] - a['perdef']) / (C1_RP_HI - C1_RP_LO)))
+    w_c1 = (_c1_shape * min(1.0, max(0.0, (a['rimprot'] - C1_RP_LO) / (C1_RP_HI - C1_RP_LO)))
+            if a['3pt'] < 45 else 0.0)
     w_rp = min(1.0, max(0.0, (a['rimprot'] - DEF_RP_LO) / (DEF_RP_HI - DEF_RP_LO)))
     w_3p = min(1.0, max(0.0, (DEF_3P_HI - a['3pt']) / (DEF_3P_HI - DEF_3P_LO)))
     # recal_99 (HIS RULING, verbatim: "Agree with 1-7"). THE RAMP STILL CLIFFED FOR SHOOTERS.

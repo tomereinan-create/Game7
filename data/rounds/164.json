@@ -1,0 +1,134 @@
+{
+  "round": 164,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "Agree",
+  "title": "THE LAST HARD STEP IN d_bigness — clause 1's SHAPE test `rimprot >= perdef` becomes a ramp on the signed gap, over recal_136's own width, so one point of separation grades a card a little big instead of entirely big",
+  "subject": "LeBron James '04",
+  "scale": "def",
+  "target": 70,
+  "tol": 2,
+  "before": 65,
+  "after": 68,
+  "pipeline_version": 164,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_c1_shape = min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - a\\['perdef'\\]\\) / \\(C1_RP_HI - C1_RP_LO\\)\\)\\)",
+      "label": "THE ONE LINE — clause 1's shape test, ramped on the signed gap rimprot - perdef",
+      "note": "was the hard test `a['rimprot'] >= a['perdef']` inside w_c1's condition; the width is recal_136's own C1_RP_HI - C1_RP_LO = 10, so no new constant enters the function"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_c1 = \\(_c1_shape \\* min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - C1_RP_LO\\) / \\(C1_RP_HI - C1_RP_LO\\)\\)\\)[\\s\\S]{0,40}if a\\['3pt'\\] < 45 else 0\\.0\\)",
+      "label": "clause 1 itself — recal_136's rim-protection ramp TIMES recal_164's shape ramp, the `3pt < 45` test still hard",
+      "note": "was (min(...rimprot - C1_RP_LO...) if a['3pt'] < 45 and a['rimprot'] >= a['perdef'] else 0.0)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55\\.0",
+      "label": "recal_136's constants, untouched and now doing double duty as the shape ramp's width",
+      "note": "45 -> 55: the foot is the middle clause's own rim-protection foot, the top is clause 1's own bar"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_det = \\(min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - DET_LO\\) / \\(DET_HI - DET_LO\\)\\)\\)[\\s\\S]{0,40}if a\\['rimprot'\\] >= a\\['perdef'\\] else 0\\.0\\)",
+      "label": "recal_99's deterrence guard is NOT reopened — it keeps the hard `rimprot >= perdef`",
+      "note": "there the test is a guard that can only ever LIFT; ramping it would demote the elite perimeter defenders recal_99 wrote it to protect"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "w_rp \\* w_3p, w_det, w_c1",
+      "label": "the three clauses still combine by max(), which is why the subject's ceiling is recal_93's middle clause and not this one",
+      "note": "at rimprot 60 / 3pt 26 the middle clause alone grades LeBron '04 0.4286 big, so DEF 68 is the most clause 1 can give back"
+    }
+  ],
+  "expect": [
+    { "card": "LeBron James '04", "scale": "off", "op": "==", "value": 79, "label": "OFF moves on ZERO cards — is_big is untouched, so the boolean, the big hub, the stretch-big floor and the OVR cap branch are byte-identical" },
+    { "card": "LeBron James '04", "scale": "ovr", "op": "==", "value": 76, "label": "OVR follows DEF by one" },
+    { "card": "LeBron James '05", "scale": "def", "op": "==", "value": 77, "label": "the line he was one point off — 100% perimeter, unmoved" },
+    { "card": "LeBron James '06", "scale": "def", "op": "==", "value": 82, "label": "perimeter, unmoved" },
+    { "card": "LeBron James '07", "scale": "def", "op": "==", "value": 89, "label": "92% perimeter, unmoved" },
+    { "card": "LeBron James '13", "scale": "off", "op": "~", "value": 97, "tol": 1, "label": "the only LeBron pin, untouched" },
+    { "card": "Ken Norman '94", "scale": "def", "op": "~", "value": 55, "tol": 3, "label": "recal_136's own subject — his gap is 15, past the ramp, so he is byte-identical at 53" },
+    { "card": "Ken Norman '93", "scale": "def", "op": "==", "value": 61, "label": "the season recal_136 measured him against" },
+    { "card": "Scottie Pippen '03", "scale": "def", "op": "~", "value": 76, "tol": 1, "label": "recal_93's pin — perimeter by a mile (rimprot 56 vs perdef 76), unmoved" },
+    { "card": "Scottie Pippen '94", "scale": "def", "op": "~", "value": 92, "tol": 3, "label": "recal_93's hardest pin" },
+    { "card": "Cedric Maxwell '80", "scale": "def", "op": "~", "value": 67, "tol": 3, "label": "a big by the shape clause, pinned — rimprot 57 under perdef 66, so clause 1 never paid him and nothing changes" },
+    { "card": "Peyton Watson '24", "scale": "def", "op": "~", "value": 65, "tol": 3, "label": "recal_103 doctrine, position-branched — no shape test runs at all" },
+    { "card": "Herbert Jones '24", "scale": "def", "op": "==", "value": 90, "label": "recal_103's subject, position branch, unmoved" },
+    { "card": "Draymond Green '16", "scale": "def", "op": "~", "value": 97, "tol": 2, "label": "DEF pin at tol 1 in anchors.json" },
+    { "card": "Dennis Rodman '90", "scale": "def", "op": "~", "value": 95, "tol": 2 },
+    { "card": "Jrue Holiday '21", "scale": "def", "op": "~", "value": 93, "tol": 2 },
+    { "card": "Ben Wallace '04", "scale": "def", "op": "==", "value": 99 },
+    { "card": "Rudy Gobert '19", "scale": "def", "op": "~", "value": 92, "tol": 2 },
+    { "card": "Tim Duncan '03", "scale": "def", "op": "~", "value": 98, "tol": 2 },
+    { "card": "Dikembe Mutombo '01", "scale": "def", "op": "~", "value": 92, "tol": 2 },
+    { "card": "Joel Embiid '23", "scale": "def", "op": "~", "value": 88, "tol": 2 },
+    { "card": "Shaquille O'Neal '00", "scale": "def", "op": "~", "value": 88, "tol": 2 },
+    { "card": "Kevin Durant '19", "scale": "def", "op": "~", "value": 79, "tol": 2, "label": "recal_99's own card — the deterrence guard is untouched" },
+    { "card": "Kevin Durant '24", "scale": "def", "op": "~", "value": 80, "tol": 2 },
+    { "card": "Andre Iguodala '14", "scale": "def", "op": "==", "value": 94, "label": "recal_93's named card, unmoved by this round — his gap is far past the ramp (recal_93 left him at 90; later rounds lifted him to 94)" },
+    { "card": "Jimmy Butler '16", "scale": "def", "op": "~", "value": 86, "tol": 1, "label": "recal_93's named card, unmoved by this round" }
+  ],
+  "order": [
+    { "scale": "def", "above": "LeBron James '05", "below": "LeBron James '04", "label": "the rookie no longer outruns his second year — the seasons read monotone again" },
+    { "scale": "def", "above": "LeBron James '06", "below": "LeBron James '05" },
+    { "scale": "def", "above": "LeBron James '07", "below": "LeBron James '06" },
+    { "scale": "def", "above": "LeBron James '13", "below": "LeBron James '07" },
+    { "scale": "def", "above": "Scottie Pippen '94", "below": "LeBron James '04", "label": "the ramp does not lift a rookie past a pinned stopper" },
+    { "scale": "def", "above": "Ken Norman '93", "below": "Ken Norman '94", "label": "recal_136's own ordering survives" }
+  ],
+  "movers": {
+    "scale": "def",
+    "count": 45,
+    "max_abs": 6,
+    "top": [
+      ["Reggie Williams '89", 52, 58],
+      ["J.J. Anderson '83", 53, 59],
+      ["Ron Holland '25", 48, 53],
+      ["Jared Dudley '19", 51, 55],
+      ["Tayshaun Prince '16", 50, 54],
+      ["LeBron James '04", 65, 68],
+      ["Alvin Scott '80", 61, 64],
+      ["Wes Iwundu '19", 54, 57],
+      ["Tayshaun Prince '11", 63, 60],
+      ["Tayshaun Prince '04", 78, 76],
+      ["Tayshaun Prince '05", 72, 70],
+      ["LeBron James '26", 67, 65],
+      ["Boris Diaw '04", 58, 56],
+      ["Billy Owens '95", 62, 60]
+    ]
+  },
+  "top12": {
+    "scale": "def",
+    "cards": [
+      "Ben Wallace '01",
+      "Ben Wallace '02",
+      "Ben Wallace '03",
+      "Ben Wallace '04",
+      "Ben Wallace '05",
+      "Ben Wallace '06",
+      "Dwight Howard '10",
+      "Dwight Howard '11",
+      "Giannis Antetokounmpo '19",
+      "Giannis Antetokounmpo '20",
+      "Kawhi Leonard '16",
+      "Anthony Davis '18"
+    ]
+  },
+  "cost": [
+    "THE PIN SITS ON ITS EDGE. LeBron James '04 def 70 +-2 is added at a reading of 68, error exactly -2. The ceiling is not clause 1: recal_93's MIDDLE clause grades him 0.4286 big on rimprot 60 / 3pt 26 by itself, and d_bigness combines the clauses by max(), so no change to clause 1 can take him past DEF 68. A later round that wants 70 exactly must reopen recal_93's ramp, and this round did not.",
+    "No anchor was re-derived and no band anchor was touched: OFF_TOP and DEF_TOP are byte-identical, so nothing above the knee moved. is_big is untouched, so OFF, every attribute, the big flag, the big hub, the stretch-big floor and the OVR cap branch are all unchanged — OFF moves on ZERO of 10,000 cards.",
+    "EQUALITY NOW READS ZERO. The old test included `>=`, so a card with rimprot EXACTLY equal to perdef took the whole big verdict; on a ramp from a gap of 0 it takes none of it. That is the whole point of the round (a claim of zero separation is a claim of zero), but it is the one place where the change is not a small one for a small input: Reggie Williams '89 (54/54) +6 and J.J. Anderson '83 (53/53) +6 are the two largest movers on the board and both are equality cards.",
+    "Tayshaun Prince is the class that pays for it: '04 78 -> 76, '05 72 -> 70, '10 65 -> 63, '11 63 -> 60, '06 64 -> 63, and '12 58 -> 56 — a wing whose rim protection runs a point or two over his perimeter defence is no longer graded entirely on the big vector. '16 goes the other way (+4) because there the big vector was the lower one. None of the six is pinned."
+  ],
+  "notes": [
+    "THE DEFECT. LeBron James '04 reads rimprot 60 against perdef 59. Sixty is past recal_136's saturation at 55, so that ramp returns 1.00 and the SHAPE test alone decided him — and it answered one point of separation with a hard 1.0. He was graded on the whole big vector, 57.92 x 1.1305 = 65, while his own perimeter vector reads 62.01 x 1.1305 = 70. His neighbouring seasons sit on the other side of the same one-point line: '05 (rimprot 61 < perdef 65) is 100% perimeter at 77, '06 perimeter at 82, '07 92% perimeter at 89.",
+    "THE FIX, AND IT INTRODUCES NO NEW CONSTANT. `rimprot >= perdef` becomes min(1, max(0, (rimprot - perdef) / (C1_RP_HI - C1_RP_LO))) — a ramp on the signed gap over recal_136's OWN ramp width, 10. At a gap of 10 or more the clause returns exactly what it always did. The clause's other two tests are untouched: `3pt < 45` is still hard and recal_136's rim-protection ramp still multiplies. LeBron '04's branch weight goes 1.0000 -> 0.4286 (the floor set by recal_93's middle clause) and DEF 65 -> 68.",
+    "WHY THIS CLAUSE. recal_93 ramped the middle clause, recal_99 the deterrence clause, recal_136 clause 1's rim-protection bar — each round wrote in its own comment that this shape test was left hard. It was the last hard 1.0 in the function.",
+    "THE WIDER WIDTH, MEASURED AND REJECTED. The clause's own DEF_RP band (35) gives the subject the same 68 (his ceiling is elsewhere) but takes recal_136's own subject Ken Norman '94 from 53 to 49, outside his 55 +-3; a width of 20 takes him to 51, also outside. Ten is both the width the clause already carries and the widest the anchors permit.",
+    "MEASURED ON THE WHOLE POOL: 45 of 10,000 cards move on DEF, 22 up and 23 down, max +6 / -3; OFF and every attribute move on ZERO; OVR follows on 28, max 3. The top 12 by DEF is identical. All 154 standing anchors pass (mean |error| 0.79). The movers are one archetype and it is the archetype recal_72 named when it wrote this clause — 'SF-only stoppers (Reggie Williams-class)': Reggie Williams '89 himself, Tayshaun Prince, Lionel Simmons, Derrick McKey, Boris Diaw, Josh Howard, Deni Avdija '23, Josh Giddey '22.",
+    "The tactics harness passes on all nine dials with no tax re-sweep."
+  ]
+}
