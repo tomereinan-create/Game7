@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 157
+PIPELINE_VERSION = 164
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -484,9 +484,14 @@ NOVOTE_FLOOR = (75 - 1) / 98.0   # recal_95: the ceiling with no block and no DB
 # recal_92's bar and do not move a point; Dirk '07 at p72 sits a full band under it. Softer ramps were
 # measured and do not reach: over [RIM_GATE, BLK_BAR] Dirk lands rimprot 66, DEF 80.
 RIM_BAND_FLOOR = 0.55   # the bottom of the two-stage deterrent band (see ID2 below); card 55
-def _novote_floor(blk_pctile):
+def _novote_floor(blk_pctile, drep=0.0):
     # recal_92's evidence function read one band EARLIER: 1.0 at BLK_BAR, 0.0 a band-width below it.
-    return RIM_BAND_FLOOR + (NOVOTE_FLOOR - RIM_BAND_FLOOR) * _blk_evidence(blk_pctile + (BLK_FULL - BLK_BAR))
+    # INTEGRATION 159-164 (pipeline 164): a ballot is evidence for the floor exactly as it is for the ceiling
+    # (_ceiling_evidence takes max(drep, blocks x DBPM)). Without this, recal_160's half-rate carried ballot
+    # and recal_162's graded floor charged the same decayed ballot twice: Jack Sikma '83 (drep 0.51, blk p65)
+    # read rimprot 73 against his 78 +-2 pin, and Moses Malone '85 fell 90 -> 85 taking the 76ers '85 dial
+    # to 90 against 93 +-2. A no-vote card (drep 0) is byte-identical to recal_162 as landed.
+    return RIM_BAND_FLOOR + (NOVOTE_FLOOR - RIM_BAND_FLOOR) * max(_blk_evidence(blk_pctile + (BLK_FULL - BLK_BAR)), min(1.0, max(0.0, drep)))
 RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
 # (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
 # relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
@@ -667,7 +672,7 @@ for yr, rows in seasons.items():
         # recal_95: the tier above is the CEILING A BIG CAN EARN; what he is actually held to is that
         # tier graded by the evidence behind it (blocks and DBPM), or by his votes, whichever is more.
         # recal_162: the floor of that grading is itself graded by block evidence (see _novote_floor).
-        _nf = _novote_floor(P['blk'](r['blk']))
+        _nf = _novote_floor(P['blk'](r['blk']), r['drep'])
         _cap53 = _nf + (_cap53 - _nf) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'])
         ID2 = (1 - _w53) * min(ID2, _cap53) + _w53 * ID2
         # GRADED entry to the voted band (the Kawhi-'26 cliff fix): membership is a weight, not a switch.

@@ -1,145 +1,340 @@
 {
-  "round": 159,
-  "agent": "stats-to-ratings",
-  "status": "done",
-  "ruling": "Can go down to lower mid 80s",
-  "title": "THE TRACKED-BAND CREDIT IS PAID AT THE CARD'S LOAD — recal_149 weighted it by a shot COUNT alone, so a 19.2-minute bench wing switched onto 328 perimeter shots collected two thirds of a credit sized to carry a median voted defender to the TOP of his season's band. The credit now carries a load ramp with recal_96's 12-minute foot and a full-load line measured on this term's own class (p75 of 135 cards = 34.04 mpg): Andre Roberson '15 perdef 91 -> 86, DEF 88 -> 84",
-  "scale": "def",
-  "subject": "Andre Roberson '15",
-  "target": 83,
-  "tol": 2,
-  "before": 88,
-  "after": 84,
-  "pipeline_version": 157,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "BAND_FOOT, BAND_FULL = 12\\.0, 34\\.0",
-      "label": "THE ROUND'S LINE — the load ramp the band credit is now paid on",
-      "note": "new: recal_96's 12-minute foot, and a full-load line measured on this term's own class (p75 34.04)"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_dload = 1\\.0 if _dmpg is None else min\\(1\\.0, max\\(0\\.0, \\(_dmpg - BAND_FOOT\\) / \\(BAND_FULL - BAND_FOOT\\)\\)\\)",
-      "label": "the load share itself — the same clamped ramp recal_96/145/151/157 use",
-      "note": "a card with no minutes on the sheet takes 1.0 (recal_52's 'measured, or not at all')"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_pd149 = PD \\+ TRK_BAND_W \\* _sample_weight\\(r\\['name'\\]\\) \\* _q149 \\* _dload",
-      "label": "where it lands: recal_149's credit, multiplied by the load and by nothing else",
-      "note": "before: PD + TRK_BAND_W * _sample_weight * _q149"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "PD2 = max\\(PD2, \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(_pd149\\) \\* BRK\\['_vf'\\]\\)\\)",
-      "label": "STILL ONE-WAY — the term is a max() over the same frozen Pvot pool, so nothing rises",
-      "note": "byte-identical to recal_149; no card can fall below its pre-149 value"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "TRK_BAND_LO  = 62\\.5",
-      "label": "recal_149's ramp foot, UNTOUCHED (p75 of the full-sample tracked pool)",
-      "note": "who earns the credit does not change this round; only how much of it a bench season keeps"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "TRK_BAND_W   = 0\\.32",
-      "label": "and its size, UNTOUCHED — the median-voted-to-top-of-band distance",
-      "note": "0.32; the round argues the credit is sized for a full-time load, not that it is too big"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
-      "label": "recal_96/151's OFF+DEF load line, NOT touched — this round adds its own, it does not move theirs",
-      "note": "12 / 24 stands for the rim-anchor premium and the offence"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_rp_w = RP_SKILL \\+ RP_ANCHOR \\* load_share\\(p\\)",
-      "label": "compute_ovr.py is untouched this round — d_score reads the attribute it is given",
-      "note": "OFF/DEF/OVR move only because perdef did"
-    }
-  ],
-  "expect": [
-    { "card": "Andre Roberson '16", "scale": "def", "op": "~", "value": 85, "tol": 1, "label": "THE COLLATERAL HE DID NOT RULE ON (22.2 mpg, load 0.46): 89 -> 85, reported not pinned" },
-    { "card": "Andre Roberson '16", "scale": "attr:perdef", "op": "~", "value": 88, "tol": 1, "label": "…and his bar: 93 -> 88" },
-    { "card": "Andre Roberson '15", "scale": "attr:perdef", "op": "~", "value": 86, "tol": 1, "label": "the subject's bar: 91 -> 86 (pre-149 it was 82)" },
-    { "card": "Andre Roberson '17", "scale": "def", "op": "~", "value": 90, "tol": 1, "label": "his ONE All-Defensive season (30.1 mpg, load 0.82) keeps 90 of its 91" },
-    { "card": "Amen Thompson '24", "scale": "def", "op": "==", "value": 94, "label": "recal_149's pins are BYTE-IDENTICAL — '24 earns no credit at all (+1.4% on 285 shots)" },
-    { "card": "Amen Thompson '25", "scale": "def", "op": "==", "value": 95, "label": "32.2 mpg: load 0.92, and the point does not move" },
-    { "card": "Amen Thompson '26", "scale": "def", "op": "==", "value": 96, "label": "37.4 mpg: full load, byte-identical" },
-    { "card": "Draymond Green '16", "scale": "def", "op": "==", "value": 97, "label": "34.7 mpg — full load by construction" },
-    { "card": "Jrue Holiday '21", "scale": "def", "op": "==", "value": 93, "label": "recal_80's pin, untouched" },
-    { "card": "Herbert Jones '23", "scale": "def", "op": "==", "value": 92, "label": "recal_103's pin, untouched" },
-    { "card": "Luguentz Dort '25", "scale": "def", "op": "==", "value": 85, "label": "inside the Thunder '26 dial, untouched" },
-    { "card": "Kawhi Leonard '16", "scale": "def", "op": "==", "value": 99, "label": "the Kawhi pins, untouched" },
-    { "card": "Kawhi Leonard '17", "scale": "def", "op": "==", "value": 97, "label": "…and '17" },
-    { "card": "Marcus Smart '19", "scale": "attr:perdef", "op": "==", "value": 98, "label": "27.5 mpg and an All-D 1st: untouched" },
-    { "card": "Matisse Thybulle '20", "scale": "attr:perdef", "op": "~", "value": 86, "tol": 1, "label": "THE LARGEST MOVER: 19.8 mpg, perdef 93 -> 86" },
-    { "card": "Victor Wembanyama '26", "scale": "attr:perdef", "op": ">=", "value": 74, "label": "recal_101's pin still clears its floor (77 -> 76)" },
-    { "card": "Giannis Antetokounmpo '20", "scale": "def", "op": "==", "value": 99, "label": "a 1-point perdef shave carries no DEF point for a big" },
-    { "card": "Rudy Gobert '19", "scale": "def", "op": "==", "value": 92, "label": "recal_62/67's Gobert pin, untouched (his '19 is a full-load season)" },
-    { "card": "Chet Holmgren '26", "scale": "def", "op": "~", "value": 93, "tol": 1, "label": "the deepest BIG mover (28.9 mpg): DEF 94 -> 93, and OKC's team:defdial anchor still reads 87 against 86 +-4" },
-    { "card": "Cason Wallace '26", "scale": "def", "op": "~", "value": 84, "tol": 1, "label": "the other Thunder mover (26.6 mpg): DEF 87 -> 84, and the dial absorbs both" }
-  ],
-  "order": [
-    { "scale": "def", "above": "Jrue Holiday '17", "below": "Andre Roberson '15", "label": "THE ORDERING THE RULING NAMED: a 32.7-minute All-Defensive guard is no longer level with a 19.2-minute bench wing" },
-    { "scale": "def", "above": "Fat Lever '88", "below": "Andre Roberson '15", "label": "…and Fat Lever '88 (37.3 mpg) is back above him" },
-    { "scale": "def", "above": "Amen Thompson '26", "below": "Andre Roberson '15", "label": "the card recal_149 was written for keeps its distance" },
-    { "scale": "attr:perdef", "above": "Andre Roberson '17", "below": "Andre Roberson '15", "label": "his own All-D season outranks his bench season, which it did not before" }
-  ],
-  "movers": {
-    "scale": "attr:perdef",
-    "count": 48,
-    "max_abs": 7,
-    "top": [
-      ["Matisse Thybulle '20", 93, 86],
-      ["Andre Roberson '16", 93, 88],
-      ["Andre Roberson '15", 91, 86],
-      ["Matisse Thybulle '21", 96, 92],
-      ["Cason Wallace '26", 92, 88],
-      ["Thabo Sefolosha '14", 77, 73],
-      ["Rudy Gobert '21", 83, 79],
-      ["DeAndre Jordan '20", 74, 70],
-      ["Al Horford '22", 79, 76],
-      ["Ausar Thompson '25", 92, 89],
-      ["Patrick Beverley '20", 86, 83],
-      ["Andre Iguodala '15", 98, 96]
-    ]
+ "round": 159,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Can go down to lower mid 80s",
+ "title": "THE TRACKED-BAND CREDIT IS PAID AT THE CARD'S LOAD — recal_149 weighted it by a shot COUNT alone, so a 19.2-minute bench wing switched onto 328 perimeter shots collected two thirds of a credit sized to carry a median voted defender to the TOP of his season's band. The credit now carries a load ramp with recal_96's 12-minute foot and a full-load line measured on this term's own class (p75 of 135 cards = 34.04 mpg): Andre Roberson '15 perdef 91 -> 86, DEF 88 -> 84",
+ "scale": "def",
+ "subject": "Andre Roberson '15",
+ "target": 83,
+ "tol": 2,
+ "before": 88,
+ "after": 84,
+ "pipeline_version": 164,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "BAND_FOOT, BAND_FULL = 12\\.0, 34\\.0",
+   "label": "THE ROUND'S LINE — the load ramp the band credit is now paid on",
+   "note": "new: recal_96's 12-minute foot, and a full-load line measured on this term's own class (p75 34.04)"
   },
-  "top12": {
-    "scale": "attr:perdef",
-    "cards": [
-      "Bruce Bowen '07",
-      "Draymond Green '21",
-      "Draymond Green '22",
-      "Draymond Green '23",
-      "Kawhi Leonard '16",
-      "Marcus Smart '20",
-      "Michael Jordan '89",
-      "Michael Jordan '90",
-      "Michael Jordan '91",
-      "Michael Jordan '92",
-      "Michael Jordan '93",
-      "Paul George '14"
-    ]
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_dload = 1\\.0 if _dmpg is None else min\\(1\\.0, max\\(0\\.0, \\(_dmpg - BAND_FOOT\\) / \\(BAND_FULL - BAND_FOOT\\)\\)\\)",
+   "label": "the load share itself — the same clamped ramp recal_96/145/151/157 use",
+   "note": "a card with no minutes on the sheet takes 1.0 (recal_52's 'measured, or not at all')"
   },
-  "notes": [
-    "THE DEFECT, in one line: recal_149's credit was weighted by `_sample_weight` = tracked 6ft+ attempts / 500 and by nothing else. A COUNT IS NOT A LOAD — the series counts the shots a man was NEAR, so a switch-everything specialist's count rises with his assignment while his season stays a bench season.",
-    "Andre Roberson '15: 19.2 mpg (1,286 minutes over 67 games), 0.8 spg, 0.4 bpg, BPM -0.7, usage 9.0, and NO ballot in 2015 — his drep 0.422 is the 2017 All-Defensive 2nd decayed two years, which is what puts a no-ballot season inside the voted band. 328 defended 6ft+ shots at -3.4% = sample weight 0.66. recal_149 moved him perdef 82 -> 91 and DEF 81 -> 88 on an unchanged box line.",
-    "THE CLASS, MEASURED (recal_117's rule, the same way recal_130 and recal_145 measured theirs): of the 135 cards this credit actually pays — q > 0, sample > 0, wv > 0, and the max() binding — minutes per game run p25 28.40 · median 31.79 · p75 34.04 · p90 35.85. Roberson '15 is the LOWEST-minute card in the entire class, and the second-largest gain in it (his own '16, at 22.2 mpg, is the largest). BAND_FULL = 34.0.",
-    "WHY NOT recal_96's 24-MINUTE BENCH BOUNDARY — it was measured FIRST and it is the frontier: 24 minutes sits below this class's own 25th percentile, so a ramp that saturates there is a no-op for 132 of the 135 cards, moves 7 cards in the whole file, and taxes essentially the subject alone. A load line only one card can feel is a per-player override wearing a formula's clothes. It lands him perdef 88 / DEF 86 — one point outside 83 +-2.",
-    "WHY NOT recal_130's `min(1, mpg / 34.7)` class line either: without a foot it charges every card a share, so Amen Thompson '25 (32.2 mpg) and Wembanyama '26 (29.2) pay 7-15% of a credit they earned in full, and those are recal_149's own pins. The 12-minute foot is what keeps full-time defenders whole.",
-    "FOOTPRINT: 48 cards move, EVERY ONE OF THEM DOWN (the term is a one-way max(), so a rise is impossible by construction and none was observed). Largest perdef move 7 (Matisse Thybulle '20, 19.8 mpg), largest DEF move 5, largest OVR move 2. No card falls below the value it had before recal_149.",
-    "ANCHORS: 155 of 155 pass, mean |error| 0.77 (it was 0.79). Amen Thompson '24/'25/'26, Draymond '16, Jrue '21/'17, Herbert Jones '23, Dort '25/'26, Kawhi '16/'17, Marcus Smart '19, Gobert '19 and Fat Lever '88 are BYTE-IDENTICAL. Wembanyama '26 attr:perdef 77 -> 76 against recal_101's 74 +-3.",
-    "TESTS: npx vitest run — 39 files, 411 tests, all green; the OKC franchise mark in tests/seasonstrip.test.ts did NOT need re-pointing. HARNESS: npm run harness — all nine tactics PASS on main's constants, no tax re-swept.",
-    "COMPUTE_OVR IS UNTOUCHED. The whole round is one multiplication inside build_ratings.py's perdef term; OFF/DEF/OVR and the team dials move only because perdef did."
-  ],
-  "cost": [
-    "Andre Roberson '16 is NOT pinned: his 22.2-minute season follows the subject to perdef 88 / DEF 85 as declared collateral. If Tomer wants '16 held higher, it cannot be bought inside this term without giving the subject his credit back — the two seasons share one ramp and the '15 card is 25% of the '16 card through the season blend.",
-    "BAND_FOOT/BAND_FULL (12.0/34.0) is the THIRD load line in the file: recal_96/151 at 12/24, recal_145 at 12/35.7, and now 12/34.0. All three are the same shape with a class-measured full point; a later round that wants one line for all of them has three measured classes on the record.",
-    "pipeline_version is recorded as 157 (main's stamp) so the receipt reads true on this branch; the integrator restamps it with the batch's highest round after the single merged regeneration.",
-    "The other four parallel rounds (158 career_rep/wv, 160 rimprot vote reinforcement, 161 creation_factor, 162 no-vote rimprot height) all touch perdef or rimprot inputs. This round multiplies recal_149's credit and does not move TRK_BAND_LO/TOP/W, so it folds with any of them; but a round that changes wv or drep changes WHO is in this term's 135-card class, and BAND_FULL = 34.0 was measured on the class as it stands at pipeline 157."
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_pd149 = PD \\+ TRK_BAND_W \\* _sample_weight\\(r\\['name'\\]\\) \\* _q149 \\* _dload",
+   "label": "where it lands: recal_149's credit, multiplied by the load and by nothing else",
+   "note": "before: PD + TRK_BAND_W * _sample_weight * _q149"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PD2 = max\\(PD2, \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(_pd149\\) \\* BRK\\['_vf'\\]\\)\\)",
+   "label": "STILL ONE-WAY — the term is a max() over the same frozen Pvot pool, so nothing rises",
+   "note": "byte-identical to recal_149; no card can fall below its pre-149 value"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "TRK_BAND_LO  = 62\\.5",
+   "label": "recal_149's ramp foot, UNTOUCHED (p75 of the full-sample tracked pool)",
+   "note": "who earns the credit does not change this round; only how much of it a bench season keeps"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "TRK_BAND_W   = 0\\.32",
+   "label": "and its size, UNTOUCHED — the median-voted-to-top-of-band distance",
+   "note": "0.32; the round argues the credit is sized for a full-time load, not that it is too big"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+   "label": "recal_96/151's OFF+DEF load line, NOT touched — this round adds its own, it does not move theirs",
+   "note": "12 / 24 stands for the rim-anchor premium and the offence"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_rp_w = RP_SKILL \\+ RP_ANCHOR \\* load_share\\(p\\)",
+   "label": "compute_ovr.py is untouched this round — d_score reads the attribute it is given",
+   "note": "OFF/DEF/OVR move only because perdef did"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Andre Roberson '16",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "THE COLLATERAL HE DID NOT RULE ON (22.2 mpg, load 0.46): 89 -> 85, reported not pinned"
+  },
+  {
+   "card": "Andre Roberson '16",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "…and his bar: 93 -> 88"
+  },
+  {
+   "card": "Andre Roberson '15",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "the subject's bar: 91 -> 86 (pre-149 it was 82)"
+  },
+  {
+   "card": "Andre Roberson '17",
+   "scale": "def",
+   "op": "~",
+   "value": 90,
+   "tol": 1,
+   "label": "his ONE All-Defensive season (30.1 mpg, load 0.82) keeps 90 of its 91"
+  },
+  {
+   "card": "Amen Thompson '24",
+   "scale": "def",
+   "op": "==",
+   "value": 94,
+   "label": "recal_149's pins are BYTE-IDENTICAL — '24 earns no credit at all (+1.4% on 285 shots)"
+  },
+  {
+   "card": "Amen Thompson '25",
+   "scale": "def",
+   "op": "==",
+   "value": 95,
+   "label": "32.2 mpg: load 0.92, and the point does not move"
+  },
+  {
+   "card": "Amen Thompson '26",
+   "scale": "def",
+   "op": "==",
+   "value": 95,
+   "label": "37.4 mpg: full load, byte-identical (was 96) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "==",
+   "value": 97,
+   "label": "34.7 mpg — full load by construction"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "def",
+   "op": "==",
+   "value": 93,
+   "label": "recal_80's pin, untouched"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "==",
+   "value": 91,
+   "label": "recal_103's pin, untouched (was 92) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Luguentz Dort '25",
+   "scale": "def",
+   "op": "==",
+   "value": 85,
+   "label": "inside the Thunder '26 dial, untouched"
+  },
+  {
+   "card": "Kawhi Leonard '16",
+   "scale": "def",
+   "op": "==",
+   "value": 99,
+   "label": "the Kawhi pins, untouched"
+  },
+  {
+   "card": "Kawhi Leonard '17",
+   "scale": "def",
+   "op": "==",
+   "value": 97,
+   "label": "…and '17"
+  },
+  {
+   "card": "Marcus Smart '19",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 98,
+   "label": "27.5 mpg and an All-D 1st: untouched"
+  },
+  {
+   "card": "Matisse Thybulle '20",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "THE LARGEST MOVER: 19.8 mpg, perdef 93 -> 86"
+  },
+  {
+   "card": "Victor Wembanyama '26",
+   "scale": "attr:perdef",
+   "op": ">=",
+   "value": 74,
+   "label": "recal_101's pin still clears its floor (77 -> 76)"
+  },
+  {
+   "card": "Giannis Antetokounmpo '20",
+   "scale": "def",
+   "op": "==",
+   "value": 99,
+   "label": "a 1-point perdef shave carries no DEF point for a big"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "==",
+   "value": 92,
+   "label": "recal_62/67's Gobert pin, untouched (his '19 is a full-load season)"
+  },
+  {
+   "card": "Chet Holmgren '26",
+   "scale": "def",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "the deepest BIG mover (28.9 mpg): DEF 94 -> 93, and OKC's team:defdial anchor still reads 87 against 86 +-4"
+  },
+  {
+   "card": "Cason Wallace '26",
+   "scale": "def",
+   "op": "~",
+   "value": 84,
+   "tol": 1,
+   "label": "the other Thunder mover (26.6 mpg): DEF 87 -> 84, and the dial absorbs both"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Jrue Holiday '17",
+   "below": "Andre Roberson '15",
+   "label": "THE ORDERING THE RULING NAMED: a 32.7-minute All-Defensive guard is no longer level with a 19.2-minute bench wing"
+  },
+  {
+   "scale": "def",
+   "above": "Fat Lever '88",
+   "below": "Andre Roberson '15",
+   "label": "…and Fat Lever '88 (37.3 mpg) is back above him"
+  },
+  {
+   "scale": "def",
+   "above": "Amen Thompson '26",
+   "below": "Andre Roberson '15",
+   "label": "the card recal_149 was written for keeps its distance"
+  },
+  {
+   "scale": "attr:perdef",
+   "above": "Andre Roberson '17",
+   "below": "Andre Roberson '15",
+   "label": "his own All-D season outranks his bench season, which it did not before"
+  }
+ ],
+ "movers": {
+  "scale": "attr:perdef",
+  "count": 48,
+  "max_abs": 7,
+  "top": [
+   [
+    "Matisse Thybulle '20",
+    93,
+    86
+   ],
+   [
+    "Andre Roberson '16",
+    93,
+    88
+   ],
+   [
+    "Andre Roberson '15",
+    91,
+    86
+   ],
+   [
+    "Matisse Thybulle '21",
+    96,
+    92
+   ],
+   [
+    "Cason Wallace '26",
+    92,
+    88
+   ],
+   [
+    "Thabo Sefolosha '14",
+    77,
+    73
+   ],
+   [
+    "Rudy Gobert '21",
+    83,
+    79
+   ],
+   [
+    "DeAndre Jordan '20",
+    74,
+    70
+   ],
+   [
+    "Al Horford '22",
+    79,
+    76
+   ],
+   [
+    "Ausar Thompson '25",
+    92,
+    89
+   ],
+   [
+    "Patrick Beverley '20",
+    86,
+    83
+   ],
+   [
+    "Andre Iguodala '15",
+    98,
+    96
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:perdef",
+  "cards": [
+   "Bruce Bowen '07",
+   "Draymond Green '21",
+   "Draymond Green '22",
+   "Draymond Green '23",
+   "Kawhi Leonard '16",
+   "Marcus Smart '20",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Michael Jordan '91",
+   "Michael Jordan '92",
+   "Michael Jordan '93",
+   "Paul George '14"
+  ]
+ },
+ "notes": [
+  "THE DEFECT, in one line: recal_149's credit was weighted by `_sample_weight` = tracked 6ft+ attempts / 500 and by nothing else. A COUNT IS NOT A LOAD — the series counts the shots a man was NEAR, so a switch-everything specialist's count rises with his assignment while his season stays a bench season.",
+  "Andre Roberson '15: 19.2 mpg (1,286 minutes over 67 games), 0.8 spg, 0.4 bpg, BPM -0.7, usage 9.0, and NO ballot in 2015 — his drep 0.422 is the 2017 All-Defensive 2nd decayed two years, which is what puts a no-ballot season inside the voted band. 328 defended 6ft+ shots at -3.4% = sample weight 0.66. recal_149 moved him perdef 82 -> 91 and DEF 81 -> 88 on an unchanged box line.",
+  "THE CLASS, MEASURED (recal_117's rule, the same way recal_130 and recal_145 measured theirs): of the 135 cards this credit actually pays — q > 0, sample > 0, wv > 0, and the max() binding — minutes per game run p25 28.40 · median 31.79 · p75 34.04 · p90 35.85. Roberson '15 is the LOWEST-minute card in the entire class, and the second-largest gain in it (his own '16, at 22.2 mpg, is the largest). BAND_FULL = 34.0.",
+  "WHY NOT recal_96's 24-MINUTE BENCH BOUNDARY — it was measured FIRST and it is the frontier: 24 minutes sits below this class's own 25th percentile, so a ramp that saturates there is a no-op for 132 of the 135 cards, moves 7 cards in the whole file, and taxes essentially the subject alone. A load line only one card can feel is a per-player override wearing a formula's clothes. It lands him perdef 88 / DEF 86 — one point outside 83 +-2.",
+  "WHY NOT recal_130's `min(1, mpg / 34.7)` class line either: without a foot it charges every card a share, so Amen Thompson '25 (32.2 mpg) and Wembanyama '26 (29.2) pay 7-15% of a credit they earned in full, and those are recal_149's own pins. The 12-minute foot is what keeps full-time defenders whole.",
+  "FOOTPRINT: 48 cards move, EVERY ONE OF THEM DOWN (the term is a one-way max(), so a rise is impossible by construction and none was observed). Largest perdef move 7 (Matisse Thybulle '20, 19.8 mpg), largest DEF move 5, largest OVR move 2. No card falls below the value it had before recal_149.",
+  "ANCHORS: 155 of 155 pass, mean |error| 0.77 (it was 0.79). Amen Thompson '24/'25/'26, Draymond '16, Jrue '21/'17, Herbert Jones '23, Dort '25/'26, Kawhi '16/'17, Marcus Smart '19, Gobert '19 and Fat Lever '88 are BYTE-IDENTICAL. Wembanyama '26 attr:perdef 77 -> 76 against recal_101's 74 +-3.",
+  "TESTS: npx vitest run — 39 files, 411 tests, all green; the OKC franchise mark in tests/seasonstrip.test.ts did NOT need re-pointing. HARNESS: npm run harness — all nine tactics PASS on main's constants, no tax re-swept.",
+  "COMPUTE_OVR IS UNTOUCHED. The whole round is one multiplication inside build_ratings.py's perdef term; OFF/DEF/OVR and the team dials move only because perdef did."
+ ],
+ "cost": [
+  "Andre Roberson '16 is NOT pinned: his 22.2-minute season follows the subject to perdef 88 / DEF 85 as declared collateral. If Tomer wants '16 held higher, it cannot be bought inside this term without giving the subject his credit back — the two seasons share one ramp and the '15 card is 25% of the '16 card through the season blend.",
+  "BAND_FOOT/BAND_FULL (12.0/34.0) is the THIRD load line in the file: recal_96/151 at 12/24, recal_145 at 12/35.7, and now 12/34.0. All three are the same shape with a class-measured full point; a later round that wants one line for all of them has three measured classes on the record.",
+  "pipeline_version is recorded as 157 (main's stamp) so the receipt reads true on this branch; the integrator restamps it with the batch's highest round after the single merged regeneration.",
+  "The other four parallel rounds (158 career_rep/wv, 160 rimprot vote reinforcement, 161 creation_factor, 162 no-vote rimprot height) all touch perdef or rimprot inputs. This round multiplies recal_149's credit and does not move TRK_BAND_LO/TOP/W, so it folds with any of them; but a round that changes wv or drep changes WHO is in this term's 135-card class, and BAND_FULL = 34.0 was measured on the class as it stands at pipeline 157."
+ ]
 }

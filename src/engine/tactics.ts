@@ -532,6 +532,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * d_ovrs and 1,432 OVRs, every one DOWN, and a whole class of no-block bigs left the harness's
  * ovr>=55 sample — the pool again. BOTH CRASH ROWS broke together on the ORACLE edge (crash off
  * +0.4478 at 0.55, crash def +0.4889 at 0.72, against the +0.50 floor), the shape recal_126 and
+ * recal_159-164 INTEGRATION SWEEP (pipeline 164): five rounds folded onto main (159, 160, 162, 163, 164) and the taxes swept
+ * ONCE from main's constants (hunt 3.85, crashOff 0.55, crashDef 0.72), superseding the per-branch figures (160: crashDef .48;
+ * 162: crashOff .14 / crashDef .59; 163: hunt 3.99 / crashDef .58). On the merged pool hunt held (blind -0.31, oracle +0.57);
+ * both crash taxes broke on the ORACLE edge (crashOff +0.49 at 0.55, crashDef +0.47 at 0.72). Bracketed: crashOff passes at
+ * 0.40 (+0.52) and 0.25 (+0.56, blind -0.65); crashDef passes at 0.58 (+0.51) and 0.45 (+0.55, blind -0.40). Set at the
+ * middle of each window: crashOff 0.32, crashDef 0.50. The 2,261 no-vote rim bars that fell in 162 and the 93 bigs
+ * that fell in 163 thin the ovr>=55 pool's rebounding, so the glass mismatch reads for less on both edges.
  */
 export const TAX = {
   scorer: 0.55,
@@ -539,9 +546,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.99,
-  crashOff: 0.55,
-  crashDef: 0.58,
+  hunt: 3.85,
+  crashOff: 0.32,
+  crashDef: 0.50,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

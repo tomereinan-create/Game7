@@ -10,7 +10,7 @@
  "tol": 2,
  "before": 82,
  "after": 79,
- "pipeline_version": 160,
+ "pipeline_version": 164,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -44,71 +44,342 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.48",
+   "pattern": "crashDef: 0\\.50",
    "label": "crash def glass re-ratified once from main's constant after the pool moved",
-   "note": "0.72 -> 0.48 (oracle +0.4397 -> +0.524, blind -0.345); feasible window .423 to .546, true midpoint by r126's rule"
+   "note": "[re-pointed at integration] branch swept crashDef .72 -> .48; the once-only sweep on the merged 159-164 pool landed crashOff 0.32 / crashDef 0.50, hunt held 3.85"
   }
  ],
  "expect": [
-  { "card": "Ben Simmons '21", "scale": "attr:rimprot", "op": "~", "value": 86, "tol": 0, "label": "HIS 'Disagree' — a ballot IN the season, byte-identical, not one point" },
-  { "card": "Ben Simmons '21", "scale": "def", "op": "~", "value": 95, "tol": 0, "label": "and his DEF with it" },
-  { "card": "Dikembe Mutombo '97", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
-  { "card": "Tim Duncan '03", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
-  { "card": "Ben Wallace '04", "scale": "attr:rimprot", "op": "~", "value": 98, "tol": 0, "label": "r82 pin, +-0" },
-  { "card": "Rudy Gobert '19", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 0, "label": "r82 pin, +-0" },
-  { "card": "Victor Wembanyama '24", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 0, "label": "r82 pin, +-0" },
-  { "card": "Dikembe Mutombo '01", "scale": "attr:rimprot", "op": "~", "value": 99, "tol": 1, "label": "r81 pin" },
-  { "card": "Joel Embiid '23", "scale": "attr:rimprot", "op": ">=", "value": 90, "label": "r81 pin 91 +-1 — the tightest card in the round, and what set CARRIED_REIN at 0.50" },
-  { "card": "Joakim Noah '09", "scale": "attr:rimprot", "op": ">=", "value": 91, "label": "r82 pin 92 +-1" },
-  { "card": "Bobby Jones '82", "scale": "attr:rimprot", "op": ">=", "value": 95, "label": "r82 pin 96 +-1" },
-  { "card": "Caldwell Jones '82", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 2, "label": "r82 pin" },
-  { "card": "Kevin McHale '88", "scale": "attr:rimprot", "op": "~", "value": 89, "tol": 3, "label": "r92 pin" },
-  { "card": "Walker Kessler '23", "scale": "attr:rimprot", "op": "~", "value": 92, "tol": 1, "label": "r53 pin" },
-  { "card": "Shaquille O'Neal '93", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1, "label": "r53 pin" },
-  { "card": "Shawn Bradley '95", "scale": "attr:rimprot", "op": "~", "value": 88, "tol": 1, "label": "r53 pin" },
-  { "card": "Pau Gasol '04", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 2, "label": "r95 pin" },
-  { "card": "Karl Malone '97", "scale": "def", "op": "~", "value": 87, "tol": 3, "label": "r135's own subject, the round that named this line" },
-  { "card": "Dan Roundfield '82", "scale": "def", "op": "~", "value": 91, "tol": 3, "label": "r114 pin" },
-  { "card": "Dennis Rodman '90", "scale": "def", "op": "~", "value": 94, "tol": 1, "label": "r57 pin" },
-  { "card": "Scottie Pippen '03", "scale": "def", "op": "~", "value": 76, "tol": 1, "label": "r93 pin" },
-  { "card": "Michael Jordan '89", "scale": "def", "op": "~", "value": 99, "tol": 1, "label": "r102 pin" },
-  { "card": "Herbert Jones '23", "scale": "def", "op": "~", "value": 91, "tol": 4, "label": "r103 pin" },
-  { "card": "Bill Cartwright '82", "scale": "attr:rimprot", "op": "~", "value": 78, "tol": 0, "label": "the no-vote 1982-84 band the ruling is read off — untouched" },
-  { "card": "Bob Lanier '82", "scale": "attr:rimprot", "op": "~", "value": 76, "tol": 0, "label": "same band, untouched" },
-  { "card": "Rich Kelley '83", "scale": "attr:rimprot", "op": "~", "value": 72, "tol": 0, "label": "same band, untouched" },
-  { "card": "Jeff Ruland '83", "scale": "attr:rimprot", "op": "~", "value": 68, "tol": 0, "label": "same band, untouched" },
-  { "card": "Mickey Johnson '82", "scale": "attr:rimprot", "op": "~", "value": 65, "tol": 0, "label": "the subject's box twin, untouched" },
-  { "card": "Scottie Pippen '91", "scale": "attr:rimprot", "op": "~", "value": 80, "tol": 0, "label": "on the same line as the subject: 82 -> 80, reported" },
-  { "card": "LeBron James '12", "scale": "attr:rimprot", "op": "~", "value": 81, "tol": 0, "label": "on the same line, and byte-identical — his 2012 All-D 1st is his own season's ballot" }
+  {
+   "card": "Ben Simmons '21",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 86,
+   "tol": 0,
+   "label": "HIS 'Disagree' — a ballot IN the season, byte-identical, not one point"
+  },
+  {
+   "card": "Ben Simmons '21",
+   "scale": "def",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "and his DEF with it"
+  },
+  {
+   "card": "Dikembe Mutombo '97",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "r82 pin, +-0"
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "r82 pin, +-0"
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "r82 pin, +-0"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "r82 pin, +-0"
+  },
+  {
+   "card": "Victor Wembanyama '24",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "r82 pin, +-0"
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "r81 pin"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "attr:rimprot",
+   "op": ">=",
+   "value": 90,
+   "label": "r81 pin 91 +-1 — the tightest card in the round, and what set CARRIED_REIN at 0.50"
+  },
+  {
+   "card": "Joakim Noah '09",
+   "scale": "attr:rimprot",
+   "op": ">=",
+   "value": 91,
+   "label": "r82 pin 92 +-1"
+  },
+  {
+   "card": "Bobby Jones '82",
+   "scale": "attr:rimprot",
+   "op": ">=",
+   "value": 95,
+   "label": "r82 pin 96 +-1"
+  },
+  {
+   "card": "Caldwell Jones '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 2,
+   "label": "r82 pin"
+  },
+  {
+   "card": "Kevin McHale '88",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 89,
+   "tol": 3,
+   "label": "r92 pin"
+  },
+  {
+   "card": "Walker Kessler '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "r53 pin"
+  },
+  {
+   "card": "Shaquille O'Neal '93",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "r53 pin"
+  },
+  {
+   "card": "Shawn Bradley '95",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "r53 pin"
+  },
+  {
+   "card": "Pau Gasol '04",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 78,
+   "tol": 2,
+   "label": "r95 pin"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "r135's own subject, the round that named this line"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "r114 pin"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "r57 pin"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "r93 pin"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "r102 pin"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 4,
+   "label": "r103 pin"
+  },
+  {
+   "card": "Bill Cartwright '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 63,
+   "tol": 0,
+   "label": "the no-vote 1982-84 band the ruling is read off — untouched (was 78) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Bob Lanier '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 61,
+   "tol": 0,
+   "label": "same band, untouched (was 76) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Rich Kelley '83",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 60,
+   "tol": 0,
+   "label": "same band, untouched (was 72) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Jeff Ruland '83",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 55,
+   "tol": 0,
+   "label": "same band, untouched (was 68) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Mickey Johnson '82",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 56,
+   "tol": 0,
+   "label": "the subject's box twin, untouched (was 65) [re-pointed at integration 159-164: moved by another round of the same batch]"
+  },
+  {
+   "card": "Scottie Pippen '91",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 80,
+   "tol": 0,
+   "label": "on the same line as the subject: 82 -> 80, reported"
+  },
+  {
+   "card": "LeBron James '12",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 81,
+   "tol": 0,
+   "label": "on the same line, and byte-identical — his 2012 All-D 1st is his own season's ballot"
+  }
  ],
  "order": [
-  { "scale": "attr:rimprot", "above": "Kevin McHale '88", "below": "Jack Sikma '83", "label": "a voted-in-season big still reads above a carried one" },
-  { "scale": "attr:rimprot", "above": "Jack Sikma '83", "below": "Bob Lanier '82", "label": "the subject still leads the no-vote band he is read against" },
-  { "scale": "attr:rimprot", "above": "Ben Simmons '21", "below": "Jack Sikma '83", "label": "his 'Disagree' sits above the card he compared it with" }
+  {
+   "scale": "attr:rimprot",
+   "above": "Kevin McHale '88",
+   "below": "Jack Sikma '83",
+   "label": "a voted-in-season big still reads above a carried one"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Jack Sikma '83",
+   "below": "Bob Lanier '82",
+   "label": "the subject still leads the no-vote band he is read against"
+  },
+  {
+   "scale": "attr:rimprot",
+   "above": "Ben Simmons '21",
+   "below": "Jack Sikma '83",
+   "label": "his 'Disagree' sits above the card he compared it with"
+  }
  ],
  "movers": {
   "scale": "attr:rimprot",
   "count": 780,
   "max_abs": 7,
   "top": [
-   ["Karl Malone '00", 80, 73],
-   ["Karl Malone '95", 79, 72],
-   ["Bob Dandridge '80", 60, 54],
-   ["Herbert Jones '26", 69, 63],
-   ["Karl Malone '90", 65, 59],
-   ["Karl Malone '96", 74, 68],
-   ["LeBron James '07", 74, 68],
-   ["Scottie Pippen '01", 61, 55],
-   ["Scottie Pippen '02", 61, 55],
-   ["Charles Oakley '92", 41, 36]
+   [
+    "Karl Malone '00",
+    80,
+    73
+   ],
+   [
+    "Karl Malone '95",
+    79,
+    72
+   ],
+   [
+    "Bob Dandridge '80",
+    60,
+    54
+   ],
+   [
+    "Herbert Jones '26",
+    69,
+    63
+   ],
+   [
+    "Karl Malone '90",
+    65,
+    59
+   ],
+   [
+    "Karl Malone '96",
+    74,
+    68
+   ],
+   [
+    "LeBron James '07",
+    74,
+    68
+   ],
+   [
+    "Scottie Pippen '01",
+    61,
+    55
+   ],
+   [
+    "Scottie Pippen '02",
+    61,
+    55
+   ],
+   [
+    "Charles Oakley '92",
+    41,
+    36
+   ]
   ]
  },
  "top12": {
   "scale": "attr:rimprot",
   "cards": [
-   "Ben Wallace '03", "David Robinson '95", "Hakeem Olajuwon '94", "Marcus Camby '07",
-   "Marcus Camby '08", "Rudy Gobert '21", "Tim Duncan '01", "Tim Duncan '07",
-   "Tim Duncan '08", "Ben Wallace '04", "Caldwell Jones '80", "Caldwell Jones '81"
+   "Ben Wallace '03",
+   "David Robinson '95",
+   "Hakeem Olajuwon '94",
+   "Marcus Camby '07",
+   "Marcus Camby '08",
+   "Rudy Gobert '21",
+   "Tim Duncan '01",
+   "Tim Duncan '07",
+   "Tim Duncan '08",
+   "Ben Wallace '04",
+   "Caldwell Jones '80",
+   "Caldwell Jones '81"
   ]
  },
  "cost": [

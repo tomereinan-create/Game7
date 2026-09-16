@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 75,
  "after": 65,
- "pipeline_version": 157,
+ "pipeline_version": 164,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -66,15 +66,15 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.99",
+   "pattern": "hunt: 3\\.85",
    "label": "the deviation tax law re-ratified on the moved pool (recal_59's harness, recal_126's midpoint rule)",
-   "note": "3.85 -> 3.99: hunt went OVER the blind ceiling (-0.2123) because the fives lost offence; feasible 3.953-4.024, true midpoint"
+   "note": "[re-pointed at integration] branch 3.85 -> 3.99; on the merged pool hunt held at 3.85"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.58",
+   "pattern": "crashDef: 0\\.50",
    "label": "the other broken tax, swept once from main's constant",
-   "note": "0.72 -> 0.58: crash def glass went UNDER the oracle floor (+0.4855); feasible 0.492-0.676, true midpoint. crash off held at 0.55"
+   "note": "[re-pointed at integration] branch .72 -> .58; merged-pool sweep landed 0.50"
   }
  ],
  "expect": [
@@ -251,18 +251,66 @@
   "count": 93,
   "max_abs": 10,
   "top": [
-   ["Richaun Holmes '21", 75, 65],
-   ["Kevin Gamble '91", 76, 68],
-   ["Mark West '91", 50, 45],
-   ["Adam Keefe '98", 55, 51],
-   ["Darryl Dawkins '83", 64, 60],
-   ["DeAndre Jordan '11", 51, 47],
-   ["DeAndre Jordan '12", 55, 51],
-   ["DeAndre Jordan '13", 55, 51],
-   ["James Donaldson '83", 50, 46],
-   ["Joel Przybilla '09", 47, 43],
-   ["Mark West '89", 47, 43],
-   ["Mikki Moore '07", 56, 52]
+   [
+    "Richaun Holmes '21",
+    75,
+    65
+   ],
+   [
+    "Kevin Gamble '91",
+    76,
+    68
+   ],
+   [
+    "Mark West '91",
+    50,
+    45
+   ],
+   [
+    "Adam Keefe '98",
+    55,
+    51
+   ],
+   [
+    "Darryl Dawkins '83",
+    64,
+    60
+   ],
+   [
+    "DeAndre Jordan '11",
+    51,
+    47
+   ],
+   [
+    "DeAndre Jordan '12",
+    55,
+    51
+   ],
+   [
+    "DeAndre Jordan '13",
+    55,
+    51
+   ],
+   [
+    "James Donaldson '83",
+    50,
+    46
+   ],
+   [
+    "Joel Przybilla '09",
+    47,
+    43
+   ],
+   [
+    "Mark West '89",
+    47,
+    43
+   ],
+   [
+    "Mikki Moore '07",
+    56,
+    52
+   ]
   ]
  },
  "top12": {

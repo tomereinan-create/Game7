@@ -97,7 +97,7 @@
         "talent": 71,
         "in": 25,
         "out": 70,
-        "id": 73,
+        "id": 70,
         "pd": 59,
         "attrs": {
           "3pt": 68,
@@ -113,7 +113,7 @@
           "volume": 47,
           "efficiency": 32,
           "durability": 25,
-          "rimprot": 73,
+          "rimprot": 70,
           "perimdisrupt": 43,
           "height": 80,
           "perdef": 59,
@@ -257,7 +257,7 @@
         "o_ovr": 66,
         "d_ovr": 45,
         "ovr": 60,
-        "marg": 67
+        "marg": 68
       },
       {
         "name": "Bennedict Mathurin '26",
@@ -304,7 +304,7 @@
         "talent": 68,
         "in": 20,
         "out": 81,
-        "id": 59,
+        "id": 55,
         "pd": 53,
         "attrs": {
           "3pt": 79,
@@ -320,7 +320,7 @@
           "volume": 50,
           "efficiency": 36,
           "durability": 12,
-          "rimprot": 59,
+          "rimprot": 55,
           "perimdisrupt": 21,
           "height": 77,
           "perdef": 53,
@@ -342,7 +342,7 @@
         "talent": 85,
         "in": 71,
         "out": 58,
-        "id": 50,
+        "id": 48,
         "pd": 54,
         "attrs": {
           "3pt": 55,
@@ -358,7 +358,7 @@
           "volume": 88,
           "efficiency": 42,
           "durability": 74,
-          "rimprot": 50,
+          "rimprot": 48,
           "perimdisrupt": 30,
           "height": 80,
           "perdef": 54,
@@ -369,8 +369,8 @@
         },
         "big": true,
         "o_ovr": 78,
-        "d_ovr": 63,
-        "ovr": 74,
+        "d_ovr": 62,
+        "ovr": 73,
         "marg": 85
       },
       {
@@ -549,7 +549,7 @@
         "talent": 67,
         "in": 34,
         "out": 66,
-        "id": 58,
+        "id": 55,
         "pd": 43,
         "attrs": {
           "3pt": 63,
@@ -565,7 +565,7 @@
           "volume": 52,
           "efficiency": 32,
           "durability": 50,
-          "rimprot": 58,
+          "rimprot": 55,
           "perimdisrupt": 29,
           "height": 82,
           "perdef": 43,
@@ -576,7 +576,7 @@
         },
         "big": true,
         "o_ovr": 51,
-        "d_ovr": 57,
+        "d_ovr": 56,
         "ovr": 54,
         "marg": 44
       },
@@ -756,7 +756,7 @@
         "talent": 68,
         "in": 66,
         "out": 14,
-        "id": 75,
+        "id": 67,
         "pd": 60,
         "attrs": {
           "3pt": 12,
@@ -772,7 +772,7 @@
           "volume": 33,
           "efficiency": 34,
           "durability": 46,
-          "rimprot": 75,
+          "rimprot": 67,
           "perimdisrupt": 53,
           "height": 80,
           "perdef": 60,
@@ -783,9 +783,9 @@
         },
         "big": true,
         "o_ovr": 46,
-        "d_ovr": 78,
-        "ovr": 62,
-        "marg": 74
+        "d_ovr": 74,
+        "ovr": 60,
+        "marg": 73
       },
       {
         "name": "Maxime Raynaud '26",
@@ -794,7 +794,7 @@
         "talent": 66,
         "in": 75,
         "out": 20,
-        "id": 68,
+        "id": 55,
         "pd": 53,
         "attrs": {
           "3pt": 17,
@@ -810,7 +810,7 @@
           "volume": 34,
           "efficiency": 70,
           "durability": 63,
-          "rimprot": 68,
+          "rimprot": 55,
           "perimdisrupt": 10,
           "height": 85,
           "perdef": 53,
@@ -821,9 +821,9 @@
         },
         "big": true,
         "o_ovr": 53,
-        "d_ovr": 73,
-        "ovr": 63,
-        "marg": 83
+        "d_ovr": 67,
+        "ovr": 60,
+        "marg": 82
       }
     ]
   },
@@ -887,7 +887,7 @@
         "talent": 63,
         "in": 51,
         "out": 12,
-        "id": 59,
+        "id": 55,
         "pd": 40,
         "attrs": {
           "3pt": 10,
@@ -903,7 +903,7 @@
           "volume": 20,
           "efficiency": 22,
           "durability": 39,
-          "rimprot": 59,
+          "rimprot": 55,
           "perimdisrupt": 34,
           "height": 80,
           "perdef": 40,
@@ -914,8 +914,8 @@
         },
         "big": false,
         "o_ovr": 38,
-        "d_ovr": 48,
-        "ovr": 43,
+        "d_ovr": 47,
+        "ovr": 42,
         "marg": 42
       },
       {
@@ -963,7 +963,7 @@
         "talent": 84,
         "in": 67,
         "out": 76,
-        "id": 59,
+        "id": 55,
         "pd": 46,
         "attrs": {
           "3pt": 74,
@@ -979,7 +979,7 @@
           "volume": 88,
           "efficiency": 56,
           "durability": 23,
-          "rimprot": 59,
+          "rimprot": 55,
           "perimdisrupt": 30,
           "height": 85,
           "perdef": 46,
@@ -990,7 +990,7 @@
         },
         "big": true,
         "o_ovr": 77,
-        "d_ovr": 61,
+        "d_ovr": 59,
         "ovr": 72,
         "marg": 90
       },
@@ -1094,7 +1094,7 @@
         "talent": 77,
         "in": 59,
         "out": 55,
-        "id": 63,
+        "id": 55,
         "pd": 55,
         "attrs": {
           "3pt": 52,
@@ -1110,7 +1110,7 @@
           "volume": 55,
           "efficiency": 50,
           "durability": 36,
-          "rimprot": 63,
+          "rimprot": 55,
           "perimdisrupt": 23,
           "height": 77,
           "perdef": 55,
@@ -1121,8 +1121,8 @@
         },
         "big": false,
         "o_ovr": 61,
-        "d_ovr": 60,
-        "ovr": 61,
+        "d_ovr": 59,
+        "ovr": 60,
         "marg": 76
       },
       {
@@ -1170,7 +1170,7 @@
         "talent": 80,
         "in": 66,
         "out": 60,
-        "id": 92,
+        "id": 91,
         "pd": 70,
         "attrs": {
           "3pt": 58,
@@ -1186,7 +1186,7 @@
           "volume": 84,
           "efficiency": 48,
           "durability": 38,
-          "rimprot": 92,
+          "rimprot": 91,
           "perimdisrupt": 51,
           "height": 82,
           "perdef": 70,
@@ -1197,8 +1197,8 @@
         },
         "big": true,
         "o_ovr": 68,
-        "d_ovr": 86,
-        "ovr": 77,
+        "d_ovr": 85,
+        "ovr": 76,
         "marg": 68
       },
       {
@@ -1208,7 +1208,7 @@
         "talent": 75,
         "in": 61,
         "out": 67,
-        "id": 75,
+        "id": 55,
         "pd": 43,
         "attrs": {
           "3pt": 64,
@@ -1224,7 +1224,7 @@
           "volume": 39,
           "efficiency": 55,
           "durability": 30,
-          "rimprot": 75,
+          "rimprot": 55,
           "perimdisrupt": 21,
           "height": 83,
           "perdef": 43,
@@ -1235,9 +1235,9 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 61,
-        "ovr": 64,
-        "marg": 86
+        "d_ovr": 53,
+        "ovr": 62,
+        "marg": 85
       }
     ]
   },
@@ -1301,7 +1301,7 @@
         "talent": 87,
         "in": 61,
         "out": 23,
-        "id": 75,
+        "id": 55,
         "pd": 54,
         "attrs": {
           "3pt": 20,
@@ -1317,7 +1317,7 @@
           "volume": 86,
           "efficiency": 24,
           "durability": 86,
-          "rimprot": 75,
+          "rimprot": 55,
           "perimdisrupt": 45,
           "height": 81,
           "perdef": 54,
@@ -1328,9 +1328,9 @@
         },
         "big": true,
         "o_ovr": 72,
-        "d_ovr": 75,
-        "ovr": 74,
-        "marg": 66
+        "d_ovr": 64,
+        "ovr": 70,
+        "marg": 64
       },
       {
         "name": "Klay Thompson '26",
@@ -1622,7 +1622,7 @@
         "talent": 89,
         "in": 92,
         "out": 8,
-        "id": 59,
+        "id": 55,
         "pd": 64,
         "attrs": {
           "3pt": 7,
@@ -1638,7 +1638,7 @@
           "volume": 79,
           "efficiency": 80,
           "durability": 53,
-          "rimprot": 59,
+          "rimprot": 55,
           "perimdisrupt": 37,
           "height": 78,
           "perdef": 64,
@@ -1649,7 +1649,7 @@
         },
         "big": true,
         "o_ovr": 82,
-        "d_ovr": 66,
+        "d_ovr": 64,
         "ovr": 77,
         "marg": 97
       }
@@ -1829,7 +1829,7 @@
         "talent": 83,
         "in": 55,
         "out": 63,
-        "id": 66,
+        "id": 55,
         "pd": 60,
         "attrs": {
           "3pt": 61,
@@ -1845,7 +1845,7 @@
           "volume": 62,
           "efficiency": 49,
           "durability": 59,
-          "rimprot": 66,
+          "rimprot": 55,
           "perimdisrupt": 12,
           "height": 81,
           "perdef": 60,
@@ -1856,8 +1856,8 @@
         },
         "big": true,
         "o_ovr": 65,
-        "d_ovr": 76,
-        "ovr": 70,
+        "d_ovr": 71,
+        "ovr": 68,
         "marg": 88
       }
     ]
@@ -1922,7 +1922,7 @@
         "talent": 82,
         "in": 56,
         "out": 31,
-        "id": 49,
+        "id": 47,
         "pd": 53,
         "attrs": {
           "3pt": 28,
@@ -1938,7 +1938,7 @@
           "volume": 70,
           "efficiency": 38,
           "durability": 10,
-          "rimprot": 49,
+          "rimprot": 47,
           "perimdisrupt": 76,
           "height": 77,
           "perdef": 53,
@@ -1960,7 +1960,7 @@
         "talent": 68,
         "in": 60,
         "out": 45,
-        "id": 60,
+        "id": 52,
         "pd": 59,
         "attrs": {
           "3pt": 42,
@@ -1976,7 +1976,7 @@
           "volume": 59,
           "efficiency": 40,
           "durability": 52,
-          "rimprot": 60,
+          "rimprot": 52,
           "perimdisrupt": 21,
           "height": 80,
           "perdef": 59,
@@ -1987,8 +1987,8 @@
         },
         "big": true,
         "o_ovr": 56,
-        "d_ovr": 68,
-        "ovr": 62,
+        "d_ovr": 64,
+        "ovr": 60,
         "marg": 48
       },
       {
@@ -1998,7 +1998,7 @@
         "talent": 78,
         "in": 38,
         "out": 85,
-        "id": 42,
+        "id": 39,
         "pd": 37,
         "attrs": {
           "3pt": 84,
@@ -2014,7 +2014,7 @@
           "volume": 74,
           "efficiency": 47,
           "durability": 30,
-          "rimprot": 42,
+          "rimprot": 39,
           "perimdisrupt": 25,
           "height": 81,
           "perdef": 37,
@@ -2025,8 +2025,8 @@
         },
         "big": true,
         "o_ovr": 71,
-        "d_ovr": 53,
-        "ovr": 66,
+        "d_ovr": 52,
+        "ovr": 65,
         "marg": 72
       },
       {
@@ -2167,7 +2167,7 @@
         "talent": 74,
         "in": 27,
         "out": 92,
-        "id": 58,
+        "id": 53,
         "pd": 52,
         "attrs": {
           "3pt": 91,
@@ -2183,7 +2183,7 @@
           "volume": 39,
           "efficiency": 55,
           "durability": 32,
-          "rimprot": 58,
+          "rimprot": 53,
           "perimdisrupt": 52,
           "height": 77,
           "perdef": 52,
@@ -2194,9 +2194,9 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 58,
-        "ovr": 61,
-        "marg": 69
+        "d_ovr": 57,
+        "ovr": 60,
+        "marg": 68
       },
       {
         "name": "Draymond Green '26",
@@ -2205,7 +2205,7 @@
         "talent": 70,
         "in": 35,
         "out": 45,
-        "id": 77,
+        "id": 75,
         "pd": 95,
         "attrs": {
           "3pt": 42,
@@ -2221,7 +2221,7 @@
           "volume": 9,
           "efficiency": 24,
           "durability": 57,
-          "rimprot": 77,
+          "rimprot": 75,
           "perimdisrupt": 48,
           "height": 78,
           "perdef": 95,
@@ -2232,7 +2232,7 @@
         },
         "big": true,
         "o_ovr": 36,
-        "d_ovr": 93,
+        "d_ovr": 92,
         "ovr": 64,
         "marg": 50
       },
@@ -2336,7 +2336,7 @@
         "talent": 71,
         "in": 2,
         "out": 86,
-        "id": 64,
+        "id": 57,
         "pd": 52,
         "attrs": {
           "3pt": 85,
@@ -2352,7 +2352,7 @@
           "volume": 1,
           "efficiency": 61,
           "durability": 9,
-          "rimprot": 64,
+          "rimprot": 57,
           "perimdisrupt": 54,
           "height": 79,
           "perdef": 52,
@@ -2363,9 +2363,9 @@
         },
         "big": false,
         "o_ovr": 45,
-        "d_ovr": 60,
+        "d_ovr": 59,
         "ovr": 52,
-        "marg": 44
+        "marg": 43
       },
       {
         "name": "Kawhi Leonard '26",
@@ -2374,7 +2374,7 @@
         "talent": 95,
         "in": 80,
         "out": 87,
-        "id": 30,
+        "id": 29,
         "pd": 58,
         "attrs": {
           "3pt": 86,
@@ -2390,7 +2390,7 @@
           "volume": 98,
           "efficiency": 76,
           "durability": 71,
-          "rimprot": 30,
+          "rimprot": 29,
           "perimdisrupt": 89,
           "height": 78,
           "perdef": 58,
@@ -2412,7 +2412,7 @@
         "talent": 76,
         "in": 72,
         "out": 80,
-        "id": 74,
+        "id": 68,
         "pd": 58,
         "attrs": {
           "3pt": 78,
@@ -2428,7 +2428,7 @@
           "volume": 50,
           "efficiency": 77,
           "durability": 43,
-          "rimprot": 74,
+          "rimprot": 68,
           "perimdisrupt": 37,
           "height": 81,
           "perdef": 58,
@@ -2439,8 +2439,8 @@
         },
         "big": true,
         "o_ovr": 72,
-        "d_ovr": 72,
-        "ovr": 72,
+        "d_ovr": 69,
+        "ovr": 71,
         "marg": 86
       },
       {
@@ -2450,7 +2450,7 @@
         "talent": 78,
         "in": 82,
         "out": 3,
-        "id": 86,
+        "id": 83,
         "pd": 56,
         "attrs": {
           "3pt": 3,
@@ -2466,7 +2466,7 @@
           "volume": 40,
           "efficiency": 72,
           "durability": 41,
-          "rimprot": 86,
+          "rimprot": 83,
           "perimdisrupt": 15,
           "height": 84,
           "perdef": 56,
@@ -2477,8 +2477,8 @@
         },
         "big": true,
         "o_ovr": 57,
-        "d_ovr": 82,
-        "ovr": 70,
+        "d_ovr": 81,
+        "ovr": 69,
         "marg": 92
       }
     ]
@@ -2534,7 +2534,7 @@
         "o_ovr": 62,
         "d_ovr": 72,
         "ovr": 67,
-        "marg": 72
+        "marg": 73
       },
       {
         "name": "Shaedon Sharpe '26",
@@ -2581,7 +2581,7 @@
         "talent": 92,
         "in": 71,
         "out": 52,
-        "id": 63,
+        "id": 55,
         "pd": 50,
         "attrs": {
           "3pt": 49,
@@ -2597,7 +2597,7 @@
           "volume": 81,
           "efficiency": 62,
           "durability": 75,
-          "rimprot": 63,
+          "rimprot": 55,
           "perimdisrupt": 17,
           "height": 80,
           "perdef": 50,
@@ -2608,8 +2608,8 @@
         },
         "big": false,
         "o_ovr": 75,
-        "d_ovr": 57,
-        "ovr": 70,
+        "d_ovr": 56,
+        "ovr": 69,
         "marg": 84
       },
       {
@@ -2619,7 +2619,7 @@
         "talent": 77,
         "in": 43,
         "out": 81,
-        "id": 51,
+        "id": 50,
         "pd": 53,
         "attrs": {
           "3pt": 80,
@@ -2635,7 +2635,7 @@
           "volume": 66,
           "efficiency": 53,
           "durability": 38,
-          "rimprot": 51,
+          "rimprot": 50,
           "perimdisrupt": 23,
           "height": 79,
           "perdef": 53,
@@ -2646,8 +2646,8 @@
         },
         "big": true,
         "o_ovr": 64,
-        "d_ovr": 53,
-        "ovr": 61,
+        "d_ovr": 52,
+        "ovr": 60,
         "marg": 60
       },
       {
@@ -2788,7 +2788,7 @@
         "talent": 82,
         "in": 40,
         "out": 83,
-        "id": 56,
+        "id": 54,
         "pd": 64,
         "attrs": {
           "3pt": 82,
@@ -2804,7 +2804,7 @@
           "volume": 55,
           "efficiency": 49,
           "durability": 65,
-          "rimprot": 56,
+          "rimprot": 54,
           "perimdisrupt": 45,
           "height": 78,
           "perdef": 64,
@@ -2815,8 +2815,8 @@
         },
         "big": true,
         "o_ovr": 63,
-        "d_ovr": 62,
-        "ovr": 63,
+        "d_ovr": 61,
+        "ovr": 62,
         "marg": 76
       },
       {
@@ -2826,7 +2826,7 @@
         "talent": 88,
         "in": 59,
         "out": 44,
-        "id": 73,
+        "id": 72,
         "pd": 72,
         "attrs": {
           "3pt": 42,
@@ -2842,7 +2842,7 @@
           "volume": 77,
           "efficiency": 28,
           "durability": 89,
-          "rimprot": 73,
+          "rimprot": 72,
           "perimdisrupt": 48,
           "height": 81,
           "perdef": 72,
@@ -2853,8 +2853,8 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 86,
-        "ovr": 78,
+        "d_ovr": 85,
+        "ovr": 77,
         "marg": 88
       },
       {
@@ -3033,7 +3033,7 @@
         "talent": 84,
         "in": 56,
         "out": 59,
-        "id": 61,
+        "id": 55,
         "pd": 62,
         "attrs": {
           "3pt": 56,
@@ -3049,7 +3049,7 @@
           "volume": 72,
           "efficiency": 34,
           "durability": 82,
-          "rimprot": 61,
+          "rimprot": 55,
           "perimdisrupt": 5,
           "height": 79,
           "perdef": 62,
@@ -3060,8 +3060,8 @@
         },
         "big": true,
         "o_ovr": 65,
-        "d_ovr": 73,
-        "ovr": 69,
+        "d_ovr": 70,
+        "ovr": 68,
         "marg": 66
       },
       {
@@ -3126,7 +3126,7 @@
         "talent": 85,
         "in": 39,
         "out": 72,
-        "id": 47,
+        "id": 45,
         "pd": 81,
         "attrs": {
           "3pt": 70,
@@ -3142,7 +3142,7 @@
           "volume": 55,
           "efficiency": 37,
           "durability": 35,
-          "rimprot": 47,
+          "rimprot": 45,
           "perimdisrupt": 82,
           "height": 77,
           "perdef": 81,
@@ -3153,7 +3153,7 @@
         },
         "big": false,
         "o_ovr": 59,
-        "d_ovr": 80,
+        "d_ovr": 79,
         "ovr": 69,
         "marg": 63
       },
@@ -3202,7 +3202,7 @@
         "talent": 70,
         "in": 28,
         "out": 62,
-        "id": 48,
+        "id": 47,
         "pd": 53,
         "attrs": {
           "3pt": 59,
@@ -3218,7 +3218,7 @@
           "volume": 22,
           "efficiency": 39,
           "durability": 52,
-          "rimprot": 48,
+          "rimprot": 47,
           "perimdisrupt": 39,
           "height": 80,
           "perdef": 53,
@@ -3240,7 +3240,7 @@
         "talent": 88,
         "in": 66,
         "out": 32,
-        "id": 62,
+        "id": 55,
         "pd": 52,
         "attrs": {
           "3pt": 29,
@@ -3256,7 +3256,7 @@
           "volume": 88,
           "efficiency": 34,
           "durability": 76,
-          "rimprot": 62,
+          "rimprot": 55,
           "perimdisrupt": 6,
           "height": 82,
           "perdef": 52,
@@ -3267,8 +3267,8 @@
         },
         "big": true,
         "o_ovr": 74,
-        "d_ovr": 71,
-        "ovr": 73,
+        "d_ovr": 68,
+        "ovr": 72,
         "marg": 64
       },
       {
@@ -3278,7 +3278,7 @@
         "talent": 70,
         "in": 66,
         "out": 23,
-        "id": 73,
+        "id": 55,
         "pd": 62,
         "attrs": {
           "3pt": 20,
@@ -3294,7 +3294,7 @@
           "volume": 19,
           "efficiency": 61,
           "durability": 73,
-          "rimprot": 73,
+          "rimprot": 55,
           "perimdisrupt": 23,
           "height": 82,
           "perdef": 62,
@@ -3305,9 +3305,9 @@
         },
         "big": true,
         "o_ovr": 47,
-        "d_ovr": 77,
-        "ovr": 62,
-        "marg": 82
+        "d_ovr": 69,
+        "ovr": 58,
+        "marg": 81
       }
     ]
   },
@@ -3409,7 +3409,7 @@
         "talent": 69,
         "in": 52,
         "out": 48,
-        "id": 50,
+        "id": 49,
         "pd": 52,
         "attrs": {
           "3pt": 45,
@@ -3425,7 +3425,7 @@
           "volume": 38,
           "efficiency": 43,
           "durability": 43,
-          "rimprot": 50,
+          "rimprot": 49,
           "perimdisrupt": 70,
           "height": 80,
           "perdef": 52,
@@ -3436,8 +3436,8 @@
         },
         "big": false,
         "o_ovr": 46,
-        "d_ovr": 61,
-        "ovr": 54,
+        "d_ovr": 60,
+        "ovr": 53,
         "marg": 55
       },
       {
@@ -3476,7 +3476,7 @@
         "o_ovr": 37,
         "d_ovr": 68,
         "ovr": 52,
-        "marg": 67
+        "marg": 68
       },
       {
         "name": "Joel Embiid '26",
@@ -3485,7 +3485,7 @@
         "talent": 88,
         "in": 78,
         "out": 41,
-        "id": 80,
+        "id": 79,
         "pd": 54,
         "attrs": {
           "3pt": 38,
@@ -3501,7 +3501,7 @@
           "volume": 97,
           "efficiency": 58,
           "durability": 1,
-          "rimprot": 80,
+          "rimprot": 79,
           "perimdisrupt": 23,
           "height": 84,
           "perdef": 54,
@@ -3616,7 +3616,7 @@
         "talent": 71,
         "in": 38,
         "out": 75,
-        "id": 35,
+        "id": 33,
         "pd": 61,
         "attrs": {
           "3pt": 73,
@@ -3632,7 +3632,7 @@
           "volume": 78,
           "efficiency": 27,
           "durability": 53,
-          "rimprot": 35,
+          "rimprot": 33,
           "perimdisrupt": 37,
           "height": 79,
           "perdef": 61,
@@ -3683,7 +3683,7 @@
         "o_ovr": 38,
         "d_ovr": 74,
         "ovr": 56,
-        "marg": 79
+        "marg": 80
       },
       {
         "name": "Mark Williams '26",
@@ -3747,7 +3747,7 @@
         "talent": 80,
         "in": 55,
         "out": 15,
-        "id": 61,
+        "id": 60,
         "pd": 95,
         "attrs": {
           "3pt": 13,
@@ -3763,7 +3763,7 @@
           "volume": 22,
           "efficiency": 21,
           "durability": 91,
-          "rimprot": 61,
+          "rimprot": 60,
           "perimdisrupt": 93,
           "height": 79,
           "perdef": 95,
@@ -3823,7 +3823,7 @@
         "talent": 67,
         "in": 38,
         "out": 65,
-        "id": 56,
+        "id": 54,
         "pd": 49,
         "attrs": {
           "3pt": 62,
@@ -3839,7 +3839,7 @@
           "volume": 38,
           "efficiency": 36,
           "durability": 35,
-          "rimprot": 56,
+          "rimprot": 54,
           "perimdisrupt": 49,
           "height": 80,
           "perdef": 49,
@@ -3861,7 +3861,7 @@
         "talent": 92,
         "in": 68,
         "out": 43,
-        "id": 54,
+        "id": 51,
         "pd": 54,
         "attrs": {
           "3pt": 40,
@@ -3877,7 +3877,7 @@
           "volume": 75,
           "efficiency": 46,
           "durability": 70,
-          "rimprot": 54,
+          "rimprot": 51,
           "perimdisrupt": 50,
           "height": 80,
           "perdef": 54,
@@ -3888,7 +3888,7 @@
         },
         "big": true,
         "o_ovr": 76,
-        "d_ovr": 69,
+        "d_ovr": 68,
         "ovr": 74,
         "marg": 74
       },
@@ -4030,7 +4030,7 @@
         "talent": 83,
         "in": 58,
         "out": 67,
-        "id": 74,
+        "id": 55,
         "pd": 54,
         "attrs": {
           "3pt": 64,
@@ -4046,7 +4046,7 @@
           "volume": 85,
           "efficiency": 39,
           "durability": 94,
-          "rimprot": 74,
+          "rimprot": 55,
           "perimdisrupt": 6,
           "height": 80,
           "perdef": 54,
@@ -4057,9 +4057,9 @@
         },
         "big": true,
         "o_ovr": 74,
-        "d_ovr": 73,
-        "ovr": 74,
-        "marg": 63
+        "d_ovr": 64,
+        "ovr": 71,
+        "marg": 61
       },
       {
         "name": "Scottie Barnes '26",
@@ -4106,7 +4106,7 @@
         "talent": 84,
         "in": 66,
         "out": 74,
-        "id": 71,
+        "id": 55,
         "pd": 56,
         "attrs": {
           "3pt": 72,
@@ -4122,7 +4122,7 @@
           "volume": 43,
           "efficiency": 76,
           "durability": 47,
-          "rimprot": 71,
+          "rimprot": 55,
           "perimdisrupt": 53,
           "height": 81,
           "perdef": 56,
@@ -4133,9 +4133,9 @@
         },
         "big": true,
         "o_ovr": 74,
-        "d_ovr": 69,
-        "ovr": 72,
-        "marg": 93
+        "d_ovr": 62,
+        "ovr": 70,
+        "marg": 92
       }
     ]
   },
@@ -4199,7 +4199,7 @@
         "talent": 74,
         "in": 53,
         "out": 71,
-        "id": 82,
+        "id": 80,
         "pd": 65,
         "attrs": {
           "3pt": 69,
@@ -4215,7 +4215,7 @@
           "volume": 31,
           "efficiency": 60,
           "durability": 86,
-          "rimprot": 82,
+          "rimprot": 80,
           "perimdisrupt": 53,
           "height": 81,
           "perdef": 65,
@@ -4226,8 +4226,8 @@
         },
         "big": true,
         "o_ovr": 56,
-        "d_ovr": 74,
-        "ovr": 65,
+        "d_ovr": 73,
+        "ovr": 64,
         "marg": 63
       },
       {
@@ -4444,7 +4444,7 @@
         "talent": 77,
         "in": 36,
         "out": 93,
-        "id": 59,
+        "id": 55,
         "pd": 63,
         "attrs": {
           "3pt": 92,
@@ -4460,7 +4460,7 @@
           "volume": 41,
           "efficiency": 62,
           "durability": 49,
-          "rimprot": 59,
+          "rimprot": 55,
           "perimdisrupt": 33,
           "height": 78,
           "perdef": 63,
@@ -4575,7 +4575,7 @@
         "talent": 87,
         "in": 80,
         "out": 10,
-        "id": 69,
+        "id": 66,
         "pd": 98,
         "attrs": {
           "3pt": 9,
@@ -4591,7 +4591,7 @@
           "volume": 41,
           "efficiency": 58,
           "durability": 93,
-          "rimprot": 69,
+          "rimprot": 66,
           "perimdisrupt": 69,
           "height": 79,
           "perdef": 98,
@@ -4602,8 +4602,8 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 96,
-        "ovr": 79,
+        "d_ovr": 95,
+        "ovr": 78,
         "marg": 96
       },
       {
@@ -4651,7 +4651,7 @@
         "talent": 94,
         "in": 79,
         "out": 88,
-        "id": 75,
+        "id": 60,
         "pd": 68,
         "attrs": {
           "3pt": 87,
@@ -4667,7 +4667,7 @@
           "volume": 85,
           "efficiency": 86,
           "durability": 93,
-          "rimprot": 75,
+          "rimprot": 60,
           "perimdisrupt": 7,
           "height": 83,
           "perdef": 68,
@@ -4678,9 +4678,9 @@
         },
         "big": false,
         "o_ovr": 85,
-        "d_ovr": 76,
-        "ovr": 82,
-        "marg": 95
+        "d_ovr": 69,
+        "ovr": 80,
+        "marg": 94
       },
       {
         "name": "Jabari Smith Jr. '26",
@@ -4689,7 +4689,7 @@
         "talent": 71,
         "in": 38,
         "out": 67,
-        "id": 75,
+        "id": 60,
         "pd": 53,
         "attrs": {
           "3pt": 64,
@@ -4705,7 +4705,7 @@
           "volume": 36,
           "efficiency": 38,
           "durability": 82,
-          "rimprot": 75,
+          "rimprot": 60,
           "perimdisrupt": 5,
           "height": 83,
           "perdef": 53,
@@ -4716,9 +4716,9 @@
         },
         "big": true,
         "o_ovr": 55,
-        "d_ovr": 73,
-        "ovr": 64,
-        "marg": 55
+        "d_ovr": 67,
+        "ovr": 61,
+        "marg": 53
       },
       {
         "name": "Alperen Şengün '26",
@@ -4727,7 +4727,7 @@
         "talent": 94,
         "in": 75,
         "out": 17,
-        "id": 78,
+        "id": 73,
         "pd": 50,
         "attrs": {
           "3pt": 15,
@@ -4743,7 +4743,7 @@
           "volume": 78,
           "efficiency": 34,
           "durability": 87,
-          "rimprot": 78,
+          "rimprot": 73,
           "perimdisrupt": 53,
           "height": 83,
           "perdef": 50,
@@ -4754,9 +4754,9 @@
         },
         "big": true,
         "o_ovr": 76,
-        "d_ovr": 75,
-        "ovr": 76,
-        "marg": 91
+        "d_ovr": 72,
+        "ovr": 75,
+        "marg": 90
       }
     ]
   },
@@ -4782,7 +4782,7 @@
         "talent": 96,
         "in": 79,
         "out": 89,
-        "id": 45,
+        "id": 44,
         "pd": 58,
         "attrs": {
           "3pt": 88,
@@ -4798,7 +4798,7 @@
           "volume": 98,
           "efficiency": 67,
           "durability": 73,
-          "rimprot": 45,
+          "rimprot": 44,
           "perimdisrupt": 80,
           "height": 80,
           "perdef": 58,
@@ -4858,7 +4858,7 @@
         "talent": 92,
         "in": 81,
         "out": 42,
-        "id": 55,
+        "id": 52,
         "pd": 54,
         "attrs": {
           "3pt": 38,
@@ -4874,7 +4874,7 @@
           "volume": 85,
           "efficiency": 58,
           "durability": 70,
-          "rimprot": 55,
+          "rimprot": 52,
           "perimdisrupt": 46,
           "height": 81,
           "perdef": 54,
@@ -4885,7 +4885,7 @@
         },
         "big": true,
         "o_ovr": 85,
-        "d_ovr": 65,
+        "d_ovr": 64,
         "ovr": 79,
         "marg": 86
       },
@@ -5065,7 +5065,7 @@
         "talent": 82,
         "in": 50,
         "out": 62,
-        "id": 57,
+        "id": 56,
         "pd": 74,
         "attrs": {
           "3pt": 59,
@@ -5081,7 +5081,7 @@
           "volume": 37,
           "efficiency": 52,
           "durability": 97,
-          "rimprot": 57,
+          "rimprot": 56,
           "perimdisrupt": 53,
           "height": 78,
           "perdef": 74,
@@ -5103,7 +5103,7 @@
         "talent": 83,
         "in": 56,
         "out": 76,
-        "id": 62,
+        "id": 61,
         "pd": 90,
         "attrs": {
           "3pt": 74,
@@ -5119,7 +5119,7 @@
           "volume": 47,
           "efficiency": 69,
           "durability": 81,
-          "rimprot": 62,
+          "rimprot": 61,
           "perimdisrupt": 79,
           "height": 79,
           "perdef": 90,
@@ -5130,7 +5130,7 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 83,
+        "d_ovr": 82,
         "ovr": 74,
         "marg": 77
       },
@@ -5141,7 +5141,7 @@
         "talent": 93,
         "in": 76,
         "out": 64,
-        "id": 68,
+        "id": 55,
         "pd": 56,
         "attrs": {
           "3pt": 62,
@@ -5157,7 +5157,7 @@
           "volume": 79,
           "efficiency": 76,
           "durability": 86,
-          "rimprot": 68,
+          "rimprot": 55,
           "perimdisrupt": 23,
           "height": 84,
           "perdef": 56,
@@ -5168,9 +5168,9 @@
         },
         "big": true,
         "o_ovr": 79,
-        "d_ovr": 75,
-        "ovr": 78,
-        "marg": 96
+        "d_ovr": 70,
+        "ovr": 76,
+        "marg": 95
       }
     ]
   },
@@ -5310,7 +5310,7 @@
         "talent": 75,
         "in": 43,
         "out": 91,
-        "id": 44,
+        "id": 43,
         "pd": 53,
         "attrs": {
           "3pt": 90,
@@ -5326,7 +5326,7 @@
           "volume": 31,
           "efficiency": 73,
           "durability": 41,
-          "rimprot": 44,
+          "rimprot": 43,
           "perimdisrupt": 25,
           "height": 80,
           "perdef": 53,
@@ -5348,7 +5348,7 @@
         "talent": 97,
         "in": 92,
         "out": 70,
-        "id": 66,
+        "id": 54,
         "pd": 52,
         "attrs": {
           "3pt": 68,
@@ -5364,7 +5364,7 @@
           "volume": 89,
           "efficiency": 96,
           "durability": 83,
-          "rimprot": 66,
+          "rimprot": 54,
           "perimdisrupt": 72,
           "height": 83,
           "perdef": 52,
@@ -5375,8 +5375,8 @@
         },
         "big": true,
         "o_ovr": 99,
-        "d_ovr": 74,
-        "ovr": 92,
+        "d_ovr": 68,
+        "ovr": 90,
         "marg": 99
       }
     ]
@@ -5610,7 +5610,7 @@
         "talent": 95,
         "in": 62,
         "out": 57,
-        "id": 70,
+        "id": 62,
         "pd": 62,
         "attrs": {
           "3pt": 54,
@@ -5626,7 +5626,7 @@
           "volume": 91,
           "efficiency": 35,
           "durability": 78,
-          "rimprot": 70,
+          "rimprot": 62,
           "perimdisrupt": 56,
           "height": 78,
           "perdef": 62,
@@ -5637,7 +5637,7 @@
         },
         "big": false,
         "o_ovr": 78,
-        "d_ovr": 68,
+        "d_ovr": 67,
         "ovr": 75,
         "marg": 88
       },
@@ -5648,7 +5648,7 @@
         "talent": 76,
         "in": 34,
         "out": 98,
-        "id": 46,
+        "id": 45,
         "pd": 56,
         "attrs": {
           "3pt": 98,
@@ -5664,7 +5664,7 @@
           "volume": 30,
           "efficiency": 72,
           "durability": 65,
-          "rimprot": 46,
+          "rimprot": 45,
           "perimdisrupt": 10,
           "height": 79,
           "perdef": 56,
@@ -5686,7 +5686,7 @@
         "talent": 83,
         "in": 68,
         "out": 12,
-        "id": 89,
+        "id": 88,
         "pd": 96,
         "attrs": {
           "3pt": 10,
@@ -5702,7 +5702,7 @@
           "volume": 27,
           "efficiency": 31,
           "durability": 46,
-          "rimprot": 89,
+          "rimprot": 88,
           "perimdisrupt": 86,
           "height": 79,
           "perdef": 96,
@@ -5718,42 +5718,42 @@
         "marg": 81
       },
       {
-        "name": "Tobias Harris '26",
-        "player": "Tobias Harris",
+        "name": "Isaiah Stewart '26",
+        "player": "Isaiah Stewart",
         "peak_season": 2026,
-        "talent": 80,
-        "in": 47,
-        "out": 51,
-        "id": 66,
-        "pd": 61,
+        "talent": 75,
+        "in": 73,
+        "out": 27,
+        "id": 88,
+        "pd": 59,
         "attrs": {
-          "3pt": 48,
-          "rim": 30,
-          "mid": 62,
+          "3pt": 24,
+          "rim": 62,
+          "mid": 36,
           "rim_mid_measured": true,
-          "ft": 87,
-          "fouldraw": 45,
-          "orb": 36,
-          "drb": 65,
-          "playvol": 36,
-          "ballsec": 80,
-          "volume": 42,
-          "efficiency": 42,
-          "durability": 56,
-          "rimprot": 66,
-          "perimdisrupt": 35,
+          "ft": 76,
+          "fouldraw": 63,
+          "orb": 69,
+          "drb": 60,
+          "playvol": 29,
+          "ballsec": 22,
+          "volume": 18,
+          "efficiency": 68,
+          "durability": 12,
+          "rimprot": 88,
+          "perimdisrupt": 20,
           "height": 80,
-          "perdef": 61,
-          "discipline": 85,
-          "usg_raw": 18.5,
-          "ts_raw": 0.573,
-          "ts_rel": 0.561
+          "perdef": 59,
+          "discipline": 2,
+          "usg_raw": 15.6,
+          "ts_raw": 0.628,
+          "ts_rel": 0.615
         },
         "big": true,
-        "o_ovr": 53,
-        "d_ovr": 73,
-        "ovr": 63,
-        "marg": 62
+        "o_ovr": 45,
+        "d_ovr": 75,
+        "ovr": 60,
+        "marg": 77
       },
       {
         "name": "Jalen Duren '26",
@@ -6024,7 +6024,7 @@
         "talent": 98,
         "in": 90,
         "out": 68,
-        "id": 71,
+        "id": 59,
         "pd": 63,
         "attrs": {
           "3pt": 65,
@@ -6040,7 +6040,7 @@
           "volume": 98,
           "efficiency": 92,
           "durability": 83,
-          "rimprot": 71,
+          "rimprot": 59,
           "perimdisrupt": 72,
           "height": 78,
           "perdef": 63,
@@ -6051,8 +6051,8 @@
         },
         "big": false,
         "o_ovr": 99,
-        "d_ovr": 72,
-        "ovr": 91,
+        "d_ovr": 70,
+        "ovr": 90,
         "marg": 99
       },
       {
@@ -6100,7 +6100,7 @@
         "talent": 67,
         "in": 8,
         "out": 73,
-        "id": 59,
+        "id": 58,
         "pd": 92,
         "attrs": {
           "3pt": 70,
@@ -6116,7 +6116,7 @@
           "volume": 11,
           "efficiency": 27,
           "durability": 57,
-          "rimprot": 59,
+          "rimprot": 58,
           "perimdisrupt": 42,
           "height": 76,
           "perdef": 92,

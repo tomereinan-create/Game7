@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 84,
  "after": 75,
- "pipeline_version": 157,
+ "pipeline_version": 164,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -20,9 +20,9 @@
   },
   {
    "file": "data/build_ratings.py",
-   "pattern": "return RIM_BAND_FLOOR \\+ \\(NOVOTE_FLOOR - RIM_BAND_FLOOR\\) \\* _blk_evidence\\(blk_pctile \\+ \\(BLK_FULL - BLK_BAR\\)\\)",
+   "pattern": "_novote_floor\\(blk_pctile, drep=0\\.0\\)",
    "label": "THE ONE LINE — recal_92's block-evidence function read one band EARLIER: 1.0 at BLK_BAR (p80), 0.0 one band-width below it (p74)",
-   "note": "was a flat NOVOTE_FLOOR for every no-vote big whose composite cleared it"
+   "note": "[re-pointed at integration] the floor now also takes a ballot as evidence (max with drep) so recal_160 and recal_162 do not charge a decayed ballot twice; a no-vote card is byte-identical to the round as landed"
   },
   {
    "file": "data/build_ratings.py",
@@ -62,15 +62,15 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashOff: 0\\.14",
+   "pattern": "crashOff: 0\\.32",
    "label": "the crash-off-glass deviation tax, re-ratified through the harness from main's 0.55",
-   "note": "0.55 -> 0.14, the true midpoint of a feasible window of about -0.085 to 0.365"
+   "note": "[re-pointed at integration] branch .55 -> .14; merged-pool sweep landed 0.32"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.59",
+   "pattern": "crashDef: 0\\.50",
    "label": "the crash-def-glass deviation tax, re-ratified through the harness from main's 0.72",
-   "note": "0.72 -> 0.59, the true midpoint of a feasible window of about 0.506 to 0.680"
+   "note": "[re-pointed at integration] branch .72 -> .59; merged-pool sweep landed 0.50"
   }
  ],
  "expect": [
@@ -311,8 +311,8 @@
    "card": "Larry Bird '87",
    "scale": "def",
    "op": "==",
-   "value": 77,
-   "label": "the other comparable: rimprot 60 — byte-identical"
+   "value": 76,
+   "label": "the other comparable: rimprot 60 — byte-identical (was 77) [re-pointed at integration 159-164: moved by another round of the same batch]"
   },
   {
    "card": "Shaquille O'Neal '00",
