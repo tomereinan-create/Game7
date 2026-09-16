@@ -934,9 +934,45 @@ def season_pct(yr, keys):
     return {k: pctile([r[k] for r in rows]) for k in keys}
 
 # measured rim/mid scores for >=1997
-def creation_factor(sh):
+# RECAL_161 (his ruling, item 10: "Can be even heigher than 75", confirmed to land at the frontier
+# with "161 confirm"): THE DISCOUNT IS CHARGED AGAINST THE PAINT, SO IT MAY ONLY CARRY THE PAINT'S
+# SHARE OF THE STATISTIC IT READS.
+# `percent_assisted_x2p_fg` is one number measured over a card's WHOLE two-point diet -- the paint
+# finishes AND the jump shots from 10 feet to the arc. The composite one function below charges that
+# number, whole, against the PAINT VOLUME TERM and nothing else. For a one-zone diet the two are the
+# same object and the charge is exact; for a two-zone scorer it bills the paint for assists collected
+# in a zone the term never pays. Karl Malone '00 is the case: 25.5 ppg at 31.2 usage, paint FG .614
+# (the 98th percentile of 2000) on the 85th-percentile paint attempt rate, and a MIDRANGE diet LARGER
+# than his paint one (7.82 attempts per 100 against 5.81) -- so barely two fifths of the twos behind
+# his .776 assisted share are the shots being discounted. The full 45% took his volume percentile from
+# p86 to p41 (composite 0.65 x 0.414 + 0.35 x 0.977 = 0.611) and his rim bar read 60, below Chris
+# Gatling, Cedric Ceballos, Jahidi White and Keith Van Horn in his own season, 43rd of its 220 cards.
+# THE EASING FACTOR IS THE PAINT'S SHARE OF THE TWO-POINT MAKES, which is not a chosen constant but
+# the fraction of the statistic that belongs to the zone being charged. It is read on MAKES, not
+# attempts, because the statistic itself counts MADE field goals ("percent ASSISTED of 2P FG"), and
+# both halves come off the same shooting row the assisted share comes from; three-pointers are
+# excluded because the statistic excludes them.
+# A ONE-ZONE PAINT DIET IS BYTE-IDENTICAL BY CONSTRUCTION (paint_frac = 1.0), which is the whole
+# lob-finisher class: Clint Capela '17 and '18 (paint share of the two-point diet 0.96) move one point
+# of rim and hold their OFF pins at 58 and 60, Dereck Lively II '24 moves by zero, and RATINGS_UPDATE's
+# "lob finishers score ~60s" doctrine is untouched -- it is a doctrine about ONE-ZONE fully-assisted
+# diets, and this term now says so in code instead of taxing every card that shares their assisted
+# share. The subject is not that case and the numbers say which: two zones, 25.5 ppg, and more
+# midrange attempts than paint ones.
+# THE DEADEYE GATE IS NOT TOUCHED AND NO CARD ENTERS OR LEAVES IT. The gate further down this function
+# (`creation_factor(sh) >= 0.73`) asks recal_126's CARD-LEVEL question -- is this man's shot-making his
+# own -- and calls this function with the default paint_frac, so it reads exactly the number it read
+# before this round: the deadeye population is bit-identical and Malone stays outside it at 0.651. What
+# changed is only the ATTRIBUTION of the assisted share to the volume term. Opening the gate on the
+# eased factor was MEASURED and is REJECTED: it prints the subject at rim 87 and his '99 at 83.
+# WHY HIS '97 ALREADY READ 77 ON THE SAME ASSISTED SHARE: it is the DIET RAMP, not the era, and the
+# dispatch asked. The two cards' creation factors are the same to three decimals (0.650 vs 0.651) and
+# their paint-accuracy percentiles are the same (0.981 vs 0.977); his 1997 paint attempt rate was 7.66
+# per 100 against 5.81 in 2000, so the DISCOUNTED volume landed at p57 instead of p41. Both seasons are
+# 1997+ and measured, so no era term touches either.
+def creation_factor(sh, paint_frac=1.0):
     a2 = f(sh.get('percent_assisted_x2p_fg'))
-    return 1.0 if a2 is None else (1 - 0.45*a2)   # 45% max discount for fully-assisted rim diets
+    return 1.0 if a2 is None else (1 - 0.45*paint_frac*a2)   # 45% max discount for fully-assisted rim diets
 
 def paint_stats(sh):
     # rim = PAINT scoring, 0-10 ft: restraining-circle finishes AND the post-up office (3-10)
@@ -961,7 +997,49 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     PREM_FOOT, PREM_FULL = 12.0, 35.7
     _pmpg = ((f(r.get('mp_v')) or 0.0) / (f(r.get('g_v')) or 0.0)) if (f(r.get('g_v')) or 0) > 0 else None
     _pload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - PREM_FOOT) / (PREM_FULL - PREM_FOOT)))
-    rim = 0.65*P['rimvol'](share*fga100*(creation_factor(sh) if use_factor else 1.0)) + 0.35*P['rimfg'](fgp)
+    # RECAL_161: the assisted-2P discount is charged against the paint volume, so it carries only the
+    # paint's share of the two-point diet it is measured over (1.0 for a one-zone diet = unchanged),
+    # and the correction is PAID ON THE SHOTS BEHIND IT -- recal_126's diet ramp, the same shape it
+    # uses one screen below for the deadeye floors ("the bar now carries the shots behind it"), on
+    # this term's own frontier foot. A card whose paint attempt rate sits below the foot has no
+    # second-zone blend to disentangle, only a handful of assisted cuts, so it earns none of the
+    # easing and is byte-identical; at the top decile of paint rate the easing is whole. Malik
+    # Beasley '23 (rim 16) is the card this ramp is for: without it a single point of rim crossed
+    # recal_137's zone-dominance saturation and cost him 3 OFF against his own 58 +-3 pin.
+    #
+    # THE FOOT IS THE FRONTIER, NOT A CHOSEN NUMBER, AND THE BAND IS NOT REACHED. His ruling asks for
+    # more than 75 and this prints 72; he was shown the frontier and confirmed it ("161 confirm").
+    # KARL MALONE'S RIM BAR IS PINNED FROM BOTH SIDES BY TWO OF HIS OWN OLDER RULINGS, and the
+    # 20/60/20 season smoother makes his four cards one object -- stored '00 = 0.6 x '00 + 0.2 x '99
+    # + 0.2 x '01, stored '99 = 0.6 x '99 + 0.2 x '98 + 0.2 x '00:
+    #   recal_98 ("How is Karl Malone 99 is 93 OFF?", 90 +-2) reads 92, unrounded 91.95. rim enters
+    #     o_score as z[1] at 0.08 x 0.93 = 0.0744 OFF per point, so his '99 rim may rise at most 7
+    #     (58 -> 65) before OFF prints the 93 that ruling struck down. Probed card by card on the
+    #     shipped pool: rim 58 / 64 / 65 -> OFF 92; rim 66 / 67 / 68 -> OFF 93.
+    #   recal_120 ("Jazz 97' pnr Stockton and Malone is more fitting", tests/tactics.test.ts):
+    #     styleFit('postup', JAZZ_97) = 63.70 + 0.70 x his '97 rim against a pnr fit of 76.248 that
+    #     does not move with rim at all (screenFit reads his MID). They cross at rim 87.93, so his
+    #     '97 may rise at most 10 (77 -> 87); at 88 the Jazz stop being a pick-and-roll.
+    # NO RAMP ON ANY INPUT THIS FILE HOLDS CAN DO BETTER. His '98 and '00 paint attempt-rate
+    # percentiles are 0.849 and 0.855 and their paint shares of two-point makes 0.510 and 0.513, so
+    # nothing separates them; and his '97 percentile (0.917) is ABOVE his '00's, so every monotone
+    # ramp gives '97 MORE easing than the subject while '97 has ten points of room and the subject
+    # needs twelve. Solving the smoother against both caps gives stored '00 <= 71.6.
+    # Swept on the whole pool against all 154 anchors and all 411 tests: foot 0.42 and 0.44 put his
+    # '99 at rim 66 and his OFF at 93 (recal_98 fails); 0.46, 0.48 and 0.50 all print the same board
+    # -- subject 71, '97 87, '99 65 -- and every anchor and every test holds; the attempts-weighted
+    # share instead of the makes-weighted one reaches 72 at foot 0.56 but takes his '97 to 89 and
+    # flips the Jazz. 0.48 is the MIDPOINT of the feasible window, taken by recal_126's own rule.
+    # The full ladder, and a second cliff found in this composite and deliberately left alone
+    # (recal_16's elite-conversion floor is gated on a hard `>= 6.0` step: his '98 clears it at 6.19
+    # and is floored to rim 71, his '00 misses at 5.81 and keeps 0.611 -- two tenths of an attempt per
+    # 100 worth seven points of rim), are recorded in data/rounds/161.json.
+    EASE_LO, EASE_HI = 0.48, 0.90
+    _diet161 = lambda pv: max(0.0, min(1.0, (pv - EASE_LO) / (EASE_HI - EASE_LO)))
+    _mk_p = share * (fgp or 0.0); _mk_m = s10 * (fmid or 0.0)
+    _pfrac = _mk_p / (_mk_p + _mk_m) if (_mk_p + _mk_m) > 0 else 1.0
+    _pfrac = 1.0 - (1.0 - _pfrac) * _diet161(P['rimvol'](share*fga100))
+    rim = 0.65*P['rimvol'](share*fga100*(creation_factor(sh, _pfrac) if use_factor else 1.0)) + 0.35*P['rimfg'](fgp)
     # ELITE-CONVERSION FLOOR (recal_16, widened by recal_19): accuracy AND volume.
     if use_factor and fgp is not None and share * fga100 >= 6.0:
         rim = max(rim, min(0.68, 0.28 + 0.42 * P['rimfg'](fgp) + 0.15 * P['rimvol'](share*fga100)))
