@@ -257,7 +257,7 @@
         "o_ovr": 66,
         "d_ovr": 45,
         "ovr": 60,
-        "marg": 67
+        "marg": 68
       },
       {
         "name": "Bennedict Mathurin '26",
@@ -1174,7 +1174,7 @@
         "pd": 70,
         "attrs": {
           "3pt": 58,
-          "rim": 63,
+          "rim": 64,
           "mid": 70,
           "rim_mid_measured": true,
           "ft": 80,
@@ -1196,9 +1196,9 @@
           "ts_rel": 0.567
         },
         "big": true,
-        "o_ovr": 68,
+        "o_ovr": 69,
         "d_ovr": 86,
-        "ovr": 77,
+        "ovr": 78,
         "marg": 68
       },
       {
@@ -1474,7 +1474,7 @@
         "pd": 53,
         "attrs": {
           "3pt": 39,
-          "rim": 49,
+          "rim": 51,
           "mid": 47,
           "rim_mid_measured": true,
           "ft": 79,
@@ -1496,7 +1496,7 @@
           "ts_rel": 0.511
         },
         "big": false,
-        "o_ovr": 55,
+        "o_ovr": 56,
         "d_ovr": 57,
         "ovr": 56,
         "marg": 42
@@ -2454,7 +2454,7 @@
         "pd": 56,
         "attrs": {
           "3pt": 3,
-          "rim": 75,
+          "rim": 76,
           "mid": 45,
           "rim_mid_measured": true,
           "ft": 70,
@@ -2534,7 +2534,7 @@
         "o_ovr": 62,
         "d_ovr": 72,
         "ovr": 67,
-        "marg": 72
+        "marg": 73
       },
       {
         "name": "Shaedon Sharpe '26",
@@ -2585,7 +2585,7 @@
         "pd": 50,
         "attrs": {
           "3pt": 49,
-          "rim": 64,
+          "rim": 66,
           "mid": 50,
           "rim_mid_measured": true,
           "ft": 80,
@@ -2607,7 +2607,7 @@
           "ts_rel": 0.589
         },
         "big": false,
-        "o_ovr": 75,
+        "o_ovr": 76,
         "d_ovr": 57,
         "ovr": 70,
         "marg": 84
@@ -2923,7 +2923,7 @@
         "pd": 46,
         "attrs": {
           "3pt": 87,
-          "rim": 46,
+          "rim": 47,
           "mid": 72,
           "rim_mid_measured": true,
           "ft": 88,
@@ -3337,7 +3337,7 @@
         "pd": 58,
         "attrs": {
           "3pt": 77,
-          "rim": 63,
+          "rim": 66,
           "mid": 76,
           "rim_mid_measured": true,
           "ft": 89,
@@ -3696,7 +3696,7 @@
         "pd": 52,
         "attrs": {
           "3pt": 5,
-          "rim": 74,
+          "rim": 75,
           "mid": 44,
           "rim_mid_measured": true,
           "ft": 77,
@@ -3718,7 +3718,7 @@
           "ts_rel": 0.666
         },
         "big": true,
-        "o_ovr": 54,
+        "o_ovr": 55,
         "d_ovr": 73,
         "ovr": 64,
         "marg": 94
@@ -4203,7 +4203,7 @@
         "pd": 65,
         "attrs": {
           "3pt": 69,
-          "rim": 35,
+          "rim": 36,
           "mid": 66,
           "rim_mid_measured": true,
           "ft": 83,
@@ -4410,7 +4410,7 @@
         "pd": 52,
         "attrs": {
           "3pt": 85,
-          "rim": 72,
+          "rim": 74,
           "mid": 91,
           "rim_mid_measured": true,
           "ft": 85,
@@ -4486,7 +4486,7 @@
         "pd": 68,
         "attrs": {
           "3pt": 28,
-          "rim": 78,
+          "rim": 81,
           "mid": 35,
           "rim_mid_measured": true,
           "ft": 64,
@@ -4508,9 +4508,9 @@
           "ts_rel": 0.593
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 70,
         "d_ovr": 93,
-        "ovr": 81,
+        "ovr": 82,
         "marg": 91
       },
       {
@@ -4731,7 +4731,7 @@
         "pd": 50,
         "attrs": {
           "3pt": 15,
-          "rim": 77,
+          "rim": 79,
           "mid": 54,
           "rim_mid_measured": true,
           "ft": 69,
@@ -4862,7 +4862,7 @@
         "pd": 54,
         "attrs": {
           "3pt": 38,
-          "rim": 86,
+          "rim": 87,
           "mid": 77,
           "rim_mid_measured": true,
           "ft": 75,
@@ -4884,7 +4884,7 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 85,
+        "o_ovr": 86,
         "d_ovr": 67,
         "ovr": 80,
         "marg": 86
@@ -5145,7 +5145,7 @@
         "pd": 56,
         "attrs": {
           "3pt": 62,
-          "rim": 72,
+          "rim": 74,
           "mid": 35,
           "rim_mid_measured": true,
           "ft": 85,
@@ -5352,7 +5352,7 @@
         "pd": 52,
         "attrs": {
           "3pt": 68,
-          "rim": 92,
+          "rim": 95,
           "mid": 86,
           "rim_mid_measured": true,
           "ft": 82,
@@ -5483,7 +5483,7 @@
         "pd": 66,
         "attrs": {
           "3pt": 54,
-          "rim": 72,
+          "rim": 76,
           "mid": 90,
           "rim_mid_measured": true,
           "ft": 79,
@@ -5614,7 +5614,7 @@
         "pd": 62,
         "attrs": {
           "3pt": 54,
-          "rim": 62,
+          "rim": 66,
           "mid": 90,
           "rim_mid_measured": true,
           "ft": 82,
@@ -5636,9 +5636,9 @@
           "ts_rel": 0.552
         },
         "big": false,
-        "o_ovr": 78,
+        "o_ovr": 79,
         "d_ovr": 68,
-        "ovr": 75,
+        "ovr": 76,
         "marg": 88
       },
       {
@@ -5897,7 +5897,7 @@
         "pd": 56,
         "attrs": {
           "3pt": 48,
-          "rim": 74,
+          "rim": 75,
           "mid": 13,
           "rim_mid_measured": true,
           "ft": 78,
@@ -5960,7 +5960,7 @@
         "o_ovr": 61,
         "d_ovr": 46,
         "ovr": 56,
-        "marg": 64
+        "marg": 63
       },
       {
         "name": "Victor Wembanyama '26",
@@ -5973,7 +5973,7 @@
         "pd": 77,
         "attrs": {
           "3pt": 66,
-          "rim": 78,
+          "rim": 82,
           "mid": 82,
           "rim_mid_measured": true,
           "ft": 83,
@@ -6028,7 +6028,7 @@
         "pd": 63,
         "attrs": {
           "3pt": 65,
-          "rim": 82,
+          "rim": 84,
           "mid": 99,
           "rim_mid_measured": true,
           "ft": 88,
