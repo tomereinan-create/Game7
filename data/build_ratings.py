@@ -496,6 +496,16 @@ def _novote_floor(blk_pctile, drep=0.0):
     # read rimprot 73 against his 78 +-2 pin, and Moses Malone '85 fell 90 -> 85 taking the 76ers '85 dial
     # to 90 against 93 +-2. A no-vote card (drep 0) is byte-identical to recal_162 as landed.
     return RIM_BAND_FLOOR + (NOVOTE_FLOOR - RIM_BAND_FLOOR) * max(_blk_evidence(blk_pctile + (BLK_FULL - BLK_BAR)), min(1.0, max(0.0, drep)))
+NOVOTE_CAP = 0.62   # recal_13's no-vote cap, card 61.8. Named by recal_173 so the `novote = min(PD,
+# ...)` line below and the relief's clawback read ONE number; the value is recal_13's and unchanged.
+def _relief_corroboration(ht, stl_pctile, blk_pctile):
+    # recal_173: how much of the pre-2014 DBPM relief ABOVE the no-vote cap the card's own sheet
+    # backs. Three existing ramps under a max(), no new constant (see the block at the relief line):
+    # recal_35's perimeter band at its upper edge (1.0 through 80 inches, 0 at 88 — the same term
+    # PD weights as height_inv and the same 80.0 recal_135 calls the edge of the wing band), and
+    # recal_92's evidence band read on the card's own steal rate and on his block rate.
+    return max(max(0.0, 1.0 - max(0.0, (ht or 78) - 80.0) / 8.0),
+               _blk_evidence(stl_pctile), _blk_evidence(blk_pctile))
 RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
 # (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
 # relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
@@ -726,7 +736,7 @@ for yr, rows in seasons.items():
         # Full selections (drep>=0.35) sit purely in the voted band; fading legends blend down SMOOTHLY;
         # trace votes (<=0.05) still buy nothing (the Iverson rule holds).
         wv = min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0   # recal_20: graded band enters sooner
-        novote = min(PD, 0.62)   # recal_13: no-vote cap 0.58 -> 0.62
+        novote = min(PD, NOVOTE_CAP)   # recal_13: no-vote cap 0.58 -> 0.62
         # recal_55: PRE-2014 NO-REP DBPM RELIEF, at his "big increase" size. Before tracking exists
         # a no-vote defender had no way past the cap no matter what DBPM said; elite-DBPM unvoted
         # men now reach ~78-80. The negative control holds by construction: a bad DBPM percentile
@@ -789,8 +799,65 @@ for yr, rows in seasons.items():
         # because scaling by the line pays back least where the line is smallest (Shaq '94's relief
         # is 0.643, Shaq '09's 0.488, against 0.78-0.80 for the rest of the band). A card's debt to
         # the band is its band membership, not the size of the favour, so the slice is absolute.
+        # recal_173 (HIS RULING on Vlade Divac '02, verbatim: "Agree with 10"): THE RELIEF IS PAID
+        # FOR PERIMETER DEFENCE, SO IT IS CORROBORATED BY THE CARD'S OWN DISRUPTION EVIDENCE.
+        # THE SUBJECT, TRACED. Vlade Divac '02 read DEF 87, #10 of 226 in 2002, above Shaquille
+        # O'Neal '02 (86), David Robinson '02 (85) and Andrei Kirilenko '02 (85) — with no defensive
+        # bar at 80 on the card: perdef 77, rimprot 77, perimdisrupt 39, drb 78, discipline 62
+        # (76.77 x 1.1305 = 86.8, no clamp, no band). `explain` cannot break perdef down, so the
+        # provenance sidecar was read instead, and the whole of that 77 is THIS LINE: his own
+        # composite is `novote` = min(PD, 0.62) = 0.3903, i.e. card 39, and the relief line pays
+        # 0.7770, i.e. card 77. A 7'1" centre with 1.0 steals a game and BLK% 2.6 is read as the
+        # 23rd-best PERIMETER defender of his season by his DBPM alone.
+        # WHY THAT IS WRONG AND WHERE IT IS WRONG. DBPM is a TOTAL defensive rating: for a centre it
+        # is mostly defensive rebounding and rim deterrence, both of which this file already pays
+        # somewhere else (drb has its own attribute, rimprot its own vector, and d_score takes 0.40
+        # of rimprot beside 0.40 of perdef). The relief line reads all of it as perimeter defence
+        # with nothing on the card agreeing — perimdisrupt 39 flatly contradicts it. This is the
+        # Rich Kelley '81 shape too ("How is this 86 DEF with no stat above 80?"): 50 cards read
+        # DEF >= 80 with perdef, rimprot, perimdisrupt and drb ALL under 80, and the subject tops
+        # that list.
+        # THE FORM. The relief's whole purpose is to lift a no-vote card ABOVE recal_13's no-vote
+        # cap (0.62, card 61.8) — below the cap the line is inert by construction, exactly as
+        # recal_55 said of its negative control. So the part of the line that is claimed back is the
+        # part ABOVE THE CAP, and it is paid at the share the card's own sheet corroborates:
+        #     relief = NOVOTE_CAP + corroboration x (line - NOVOTE_CAP)      for line > NOVOTE_CAP
+        # NO NEW CONSTANT. NOVOTE_CAP is recal_13's own cap, named here and read on the `novote` line
+        # above so there is ONE definition of it. The corroboration is three existing ramps under a
+        # max(), the same shape _ceiling_evidence uses ("votes, or the season's own measurement"):
+        #   - recal_35's PERIMETER BAND, upper edge: 1.0 through 80 inches, zero at 88. Inside the
+        #     band the file has already decided the card IS a perimeter defender (this is the same
+        #     height_inv term PD weights at 0.309, and the same 80.0 boundary recal_135 calls the
+        #     place a card stops being one), so every guard and wing is BYTE-IDENTICAL by
+        #     construction — Manu Ginobili '11 (recal_141, 72 +-2), Shawn Marion '06, Ken Norman '94
+        #     and every sub-6'9" card in the pool do not move a point.
+        #   - recal_92's EVIDENCE BAND read on the card's own STEAL rate, and on his BLOCK rate:
+        #     nothing below the 80th percentile of his season, the whole band at the 86th. A tall man
+        #     who does disrupt gets the whole relief back through one of them (25 cards are restored
+        #     by steals alone — Corey Brewer, Jerome Williams, Kenyon Martin, Nene '03 — and 377 by
+        #     blocks). Divac '02 clears neither: steals p42, blocks p81, 0.162 of the block band,
+        #     so the perimeter band's 0.375 is the most his sheet says and he keeps the cap plus a
+        #     third of the rest.
+        # THE FRONTIER AND THE STOPPING PIN, STATED. The verbatim form of the ruling — perimeter
+        # evidence ONLY, max(band, steals) with no block channel — was measured first and BREAKS FOUR
+        # ANCHORS: Arvydas Sabonis '96 (recal_55, perdef 79 +-1) falls to 64, Larry Sanders '13
+        # (recal_146, 67 +-3, already sitting ON its floor at 64) to 63, and the Celtics '08 and
+        # Bulls '96 defence dials go -4 and -3. Both of those pinned cards are bigs whose DBPM is
+        # rim work and neither has a steal rate: Sabonis '96 is 7'3" at steal p61, Sanders '13 6'11"
+        # at p36 — BELOW the subject's p42. No steal-monotone reading can lower Divac without
+        # lowering Sanders further, and no height-monotone reading can lower him without lowering
+        # Sabonis further (7'3" against 7'1"). The block channel is what separates them and it is
+        # not a courtesy: Sabonis blocks at p86 and Sanders at p99, where the subject is at p81.
+        # MONOTONE AND SUBTRACTIVE BY CONSTRUCTION: the clawback only ever lowers the relief LINE,
+        # the line still enters through max() against the card's own composite, and a card whose
+        # line never cleared the cap is untouched — which is why Shaquille O'Neal '94 (recal_146,
+        # def 83 +-2, line 0.5569) and Ken Norman '94 (recal_136, def 55 +-3, line 0.3206, ON its
+        # floor) are byte-identical, and why 0 of 10,000 cards rise.
         if yr < 2014:
-            novote = max(novote, min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])) - RELIEF_BAND_CUT * wv)
+            _relief = min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])) - RELIEF_BAND_CUT * wv
+            if _relief > NOVOTE_CAP:
+                _relief = NOVOTE_CAP + _relief_corroboration(r['ht'], P['stl'](r['stl']), P['blk'](r['blk'])) * (_relief - NOVOTE_CAP)
+            novote = max(novote, _relief)
         _dmeas101 = None
         if Pperim is not None:   # the season-has-tracking sentinel; recal_86 retired the percentile itself
             dv = _trk(PERDEF_CAT, r['name'])

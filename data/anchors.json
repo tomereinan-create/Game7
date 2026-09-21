@@ -1674,5 +1674,14 @@
     "round": 171,
     "ruling": "Agree with 6",
     "note": "89 -> 80. recal_149's tracked-band credit was paid through wv = min(1, drep/0.30), and drep is a CAREER reputation: Noah's 2014 DPOY carried into a 2015 season with no ballot of its own (own credit 0.003 against drep 0.850) bought the credit at FULL band membership, perdef 73 -> 89 and DEF 96, tied 2nd of 2015 above Draymond '15. The carried share now unlocks the credit only in proportion to what the season's own perimeter sheet certifies - u = (own + P['stl']*(drep - own))/drep, the within-season steal-rate percentile read raw, recal_165's own-sheet restore in its perimeter form. Noah '15 is p22 of 2015 (STL% 1.1); THE WALL, Amen Thompson '26, has the identical provenance (own 0.006) and is p74 of 2026, so his def 97 +-2 holds at 95 with perdef 98 -> 96. The tracked reading itself and DBPM were measured as gates first and REJECTED: Noah is the better card on both (68.51 vs 65.47, DBPM p95 vs p80), so either one takes Amen and leaves the subject. 74 perdef bars fall, none rises."
+  },
+  {
+    "card": "Vlade Divac '02",
+    "scale": "def",
+    "target": 82,
+    "tol": 3,
+    "round": 173,
+    "ruling": "Agree with 10",
+    "note": "87 -> 83. DEF 87 was #10 of 226 in 2002, above Shaq '02 (86), Robinson '02 (85) and Kirilenko '02 (85) and level with Karl Malone '97's pinned 87, on a card with NO defensive bar at 80 (perdef 77, rimprot 77, perimdisrupt 39, drb 78, discipline 62). The whole of that perdef 77 was the pre-2014 no-vote DBPM relief: his own composite is card 39 and the line pays card 77 on his DBPM percentile alone. The relief's part ABOVE recal_13's no-vote cap is now paid at the share his own sheet corroborates - max(recal_35's perimeter band, recal_92's evidence band on steals, the same band on blocks) - which for a 7'1\" centre at steals p42 and blocks p81 is 0.375. perdef 69, DEF 83, #19 of 226. LANDS ONE OVER THE NUMBER: 82 exactly needs his perdef near 67, and the corroboration meter is already at its floor value for him. THE STOPPING PIN for the ruling's verbatim (perimeter-evidence-only) form is Arvydas Sabonis '96 attr:perdef 79 +-1, which falls to 64 without the block channel, with Larry Sanders '13 (67 +-3, on its floor) to 63. See data/rounds/173.json."
   }
 ]

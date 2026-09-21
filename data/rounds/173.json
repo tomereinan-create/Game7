@@ -1,0 +1,260 @@
+{
+ "round": 173,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Agree with 10",
+ "title": "THE PRE-2014 NO-VOTE DBPM RELIEF IS CORROBORATED BY THE CARD'S OWN DISRUPTION EVIDENCE — the part of the line above recal_13's no-vote cap is paid at max(recal_35's perimeter band, recal_92's band on steals, recal_92's band on blocks): Vlade Divac '02 perdef 77 -> 69, DEF 87 -> 83 (#10 of 226 in 2002 -> #19), 301 perdef bars down and NONE up",
+ "subject": "Vlade Divac '02",
+ "scale": "def",
+ "target": 82,
+ "tol": 3,
+ "before": 87,
+ "after": 83,
+ "pipeline_version": 173,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_relief = NOVOTE_CAP \\+ _relief_corroboration\\(r\\['ht'\\], P\\['stl'\\]\\(r\\['stl'\\]\\), P\\['blk'\\]\\(r\\['blk'\\]\\)\\) \\* \\(_relief - NOVOTE_CAP\\)",
+   "label": "THE ROUND'S ONE LINE — the relief above the no-vote cap is paid at the card's own corroboration",
+   "note": "novote = max(novote, line) -> the line is first re-cut toward NOVOTE_CAP by 1 - corroboration"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "def _relief_corroboration\\(ht, stl_pctile, blk_pctile\\):",
+   "label": "the corroboration meter: three EXISTING ramps under a max(), no new constant",
+   "note": "recal_35's perimeter band (1.0 through 80 in, 0 at 88) OR recal_92's evidence band on steals OR on blocks"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "NOVOTE_CAP = 0\\.62",
+   "label": "recal_13's no-vote cap, NAMED (value unchanged) so the cap line and the clawback read one number",
+   "note": "0.62 hard-coded twice -> NOVOTE_CAP, used by `novote = min(PD, NOVOTE_CAP)` and the relief"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "min\\(0\\.80, 0\\.28 \\+ 0\\.52 \\* P\\['dbpm'\\]\\(r\\['dbpm'\\]\\)\\) - RELIEF_BAND_CUT \\* wv",
+   "label": "recal_55/141/146's relief LINE itself is untouched — slope 0.52, ceiling 0.80, band cut 0.375",
+   "note": "the round changes how much of the line is READ, never what the line says"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.65,",
+   "label": "the one tactics tax this round's DEF movement broke, re-swept ONCE from main's 0.38",
+   "note": "crashDef 0.38 -> 0.65; hunt held at 3.97 and crashOff at 0.08"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Vlade Divac '02",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 69,
+   "label": "THE SUBJECT'S BAR, which is the whole of the move: 77 -> 69"
+  },
+  {
+   "card": "Vlade Divac '02",
+   "scale": "ovr",
+   "op": "==",
+   "value": 66,
+   "label": "the subject's OVR follows the defence-led blend: 68 -> 66"
+  },
+  {
+   "card": "Vlade Divac '01",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 67,
+   "label": "the neighbour carrying 20% of the subject's blend, the same sheet: 77 -> 67, DEF 86 -> 82"
+  },
+  {
+   "card": "Vlade Divac '03",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 70,
+   "label": "the other neighbour, 20% of the blend; his BLK% is p84 so two thirds of his block band survives: 75 -> 70, DEF 85 -> 83"
+  },
+  {
+   "card": "Vlade Divac '00",
+   "scale": "def",
+   "op": "==",
+   "value": 81,
+   "label": "the same player one peak earlier, the largest DEF move in the file: 85 -> 81"
+  },
+  {
+   "card": "Vlade Divac '95",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 75,
+   "label": "BYTE-IDENTICAL: his 1995 BLK% 4.3 is p93, the whole block band, so his relief is paid in full. recal_55's own 78 +-1 pin on this card was released by recal_141 and is in anchors_superseded.json"
+  },
+  {
+   "card": "Rich Kelley '81",
+   "scale": "def",
+   "op": "==",
+   "value": 75,
+   "label": "HIS DECLINED ITEM, reported not pinned ('he would like it lower'): perdef 76 -> 70, DEF 78 -> 75. 7'0\", BLK% 2.1 at p81 and steals p68 — the same shape as the subject and it lands 3 lower"
+  },
+  {
+   "card": "Arvydas Sabonis '96",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 79,
+   "tol": 1,
+   "label": "THE STOPPING PIN (recal_55, 79 +-1). BYTE-IDENTICAL at 78: BLK% 3.4 is p86, the whole block band. Without the block channel he reads 64 and this anchor breaks by 15"
+  },
+  {
+   "card": "Larry Sanders '13",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 67,
+   "tol": 3,
+   "label": "THE OTHER STOPPING PIN (recal_146, sitting ON its floor at 64). BYTE-IDENTICAL: BLK% 7.6 is p99. Without the block channel he reads 63 and fails"
+  },
+  {
+   "card": "Manu Ginóbili '11",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 72,
+   "tol": 2,
+   "label": "recal_141's subject, BYTE-IDENTICAL at 73 — 6'6\" is inside recal_35's perimeter band, so every guard and wing is untouched by construction"
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 2,
+   "label": "recal_146's subject, BYTE-IDENTICAL at 84: his relief line is 0.5569, BELOW the no-vote cap, so there is nothing above it to claw back"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_136's subject, sitting ON its floor at 52 and BYTE-IDENTICAL: DBPM -1.6 puts his line at 0.3206, under the cap — recal_55's negative control still holds"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "recal_151's subject, the TIGHTEST wall that moves: 72 -> 71, the floor of its band. 6'9\" (band 0.875) with BLK% 3.1 at p84"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "recal_162's subject: perdef 67 -> 64, DEF 75 -> 74. 7'0\" with no steal and no block evidence, held up by the perimeter band's 0.5 alone"
+  },
+  {
+   "card": "Shawn Marion '06",
+   "scale": "def",
+   "op": "==",
+   "value": 79,
+   "label": "BYTE-IDENTICAL: 6'7\", inside the perimeter band, corroboration 1.000"
+  },
+  {
+   "card": "Kevin Durant '19",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 3,
+   "label": "r99's anchor, BYTE-IDENTICAL at 79 — 2019 has tracking, and the relief is a pre-2014 line"
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 57,
+   "label": "recal_133's ZERO-SLACK 76ers '85 dial hangs on this card: BYTE-IDENTICAL (wv = 1, his relief line is negative). The defdial anchor reads 91 exactly as before"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Shaquille O'Neal '02",
+   "below": "Vlade Divac '02",
+   "label": "THE COMPARISON THE RULING IS ABOUT: the subject printed ABOVE Shaq '02 (rimprot 92, drb 88). He is now 3 under"
+  },
+  {
+   "scale": "def",
+   "above": "David Robinson '02",
+   "below": "Vlade Divac '02",
+   "label": "and above a VOTED 7'1\" defender at 85. Now 2 under"
+  },
+  {
+   "scale": "def",
+   "above": "Andrei Kirilenko '02",
+   "below": "Vlade Divac '02",
+   "label": "and above Kirilenko '02 (BLK% 5.9, STL% 2.9) at 85. Now 2 under"
+  },
+  {
+   "scale": "def",
+   "above": "Karl Malone '97",
+   "below": "Vlade Divac '02",
+   "label": "he was LEVEL with Karl Malone '97's pinned 87. Malone is untouched (wv = 1, no relief) and is now 5 clear"
+  },
+  {
+   "scale": "attr:perdef",
+   "above": "Arvydas Sabonis '96",
+   "below": "Vlade Divac '02",
+   "label": "the no-vote ceiling card keeps its 78 and the subject falls under it"
+  }
+ ],
+ "movers": {
+  "scale": "attr:perdef",
+  "count": 301,
+  "max_abs": 10,
+  "top": [
+   ["Vlade Divac '01", 77, 67],
+   ["Vlade Divac '00", 75, 67],
+   ["Vlade Divac '02", 77, 69],
+   ["Arvydas Sabonis '98", 77, 71],
+   ["Rich Kelley '81", 76, 70],
+   ["Rich Kelley '82", 73, 67],
+   ["Jon Koncak '91", 76, 70],
+   ["Rich Kelley '85", 74, 68],
+   ["Bill Laimbeer '89", 76, 71],
+   ["Bill Laimbeer '90", 76, 71],
+   ["Vlade Divac '03", 75, 70],
+   ["Bill Laimbeer '88", 74, 69]
+  ]
+ },
+ "top12": {
+  "scale": "attr:perdef",
+  "cards": [
+   "Bruce Bowen '07",
+   "Draymond Green '21",
+   "Draymond Green '22",
+   "Draymond Green '23",
+   "Kawhi Leonard '16",
+   "Marcus Smart '20",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Michael Jordan '91",
+   "Michael Jordan '92",
+   "Michael Jordan '93",
+   "Paul George '14"
+  ]
+ },
+ "cost": [
+  "NO PIN WAS SUPERSEDED AND NO ANCHOR WAS RE-DERIVED. All 165 pins that stood before this round still pass (0 failing, mean |error| 0.85, identical to main's reading). Vlade Divac '02 def 82 +-3 is ADDED by this round, so anchors.json holds 166 and grades 166/0.",
+  "THE ONE TAX: src/engine/tactics.ts crashDef 0.38 -> 0.65, swept ONCE from MAIN's constants as the law requires. hunt (3.97) and crashOff (0.08) were re-read from main first and both HELD. A later round that moves a big's drb or perdef should expect crash def glass to be the row that breaks — it is now the fourth round running in which one of the two glass taxes is the only band to move.",
+  "THE PERIMETER BAND'S UPPER EDGE IS NOW LOAD-BEARING IN TWO PLACES. recal_135 already reads 80.0 as the height where a card stops being a perimeter defender (OUT_OF_BAND_IN), and recal_35's height_inv fades from it over 8 inches. This round reads the SAME edge. A ruling that moves the band moves this too; recal_135's own note says the boundary cannot come DOWN (Rodman '90 at 79 in and Pippen '03 at 80 in are anchored on it).",
+  "KURT THOMAS '09 IS NOW ON THE FLOOR OF recal_151's BAND (74 +-3, reading 71). A later round that lowers a 6'9\" big's perdef by even one point should check it first."
+ ],
+ "notes": [
+  "THE TRACE, WHICH THE SCOUT COULD NOT DO: `explain` does not break perdef down, so the provenance sidecar (data/provenance.json, the `perdef` array: drep, dbpm, team_drtg, height, no-vote flag, tracked 6ft+ diff, wv, 6ft+ attempts, tracked Overall diff) was read instead and the line instrumented. Vlade Divac '02: drep 0.000, so wv = 0 and his own composite `novote` = min(PD, 0.62) is 0.3903 — CARD 39. The pre-2014 relief line pays min(0.80, 0.28 + 0.52 x 0.956) = 0.7770 — CARD 77. The whole of his perdef 77 is that one line, and the line reads nothing but his DBPM percentile.",
+  "WHY IT IS WRONG. DBPM is a TOTAL defensive rating and for a 7'1\" centre it is mostly defensive rebounding and rim deterrence — both of which this file pays somewhere else (drb has its own attribute; rimprot has its own vector, and the big d_score branch takes 0.40 of it BESIDE 0.40 of perdef). The relief reads all of it as PERIMETER defence with the card's own perimdisrupt 39 flatly contradicting it. 50 cards in the pool read DEF >= 80 with perdef, rimprot, perimdisrupt AND drb all under 80 (the Rich Kelley '81 shape: 'How is this 86 DEF with no stat above 80?'); the subject topped that list, and the class is 41 now.",
+  "THE FORM, AND WHY NOTHING IN IT IS NEW. The relief exists to lift a no-vote card ABOVE recal_13's cap; below the cap it is inert by construction (recal_55's own negative control). So the clawback is applied to the part of the line ABOVE the cap, at the share the card's own sheet corroborates: relief = NOVOTE_CAP + corr x (line - NOVOTE_CAP). corr is max() of three ramps that already exist — recal_35's perimeter band at its upper edge (1.0 through 80 inches, 0 at 88, the same term PD weights 0.309 as height_inv), and recal_92's evidence band (p80 bar, p86 full) read on the card's own steal rate and on his block rate. It is the same shape _ceiling_evidence uses: the claim, or the season's own measurement of it.",
+  "THE SUBJECT, MEASURED ON IT. Divac '02 is 7'1\" (band 0.375), steals p42 (band 0.000) and BLK% 2.6 at p81 (band 0.162), so his corroboration is 0.375 and he keeps the cap plus three eighths of the rest: 0.7770 -> 0.6789, perdef 77 -> 69 after the 20/60/20 blend, DEF 87 -> 83, #10 of 226 in 2002 -> #19. He is now under Shaq '02 (86), Robinson '02 (85), Kirilenko '02 (85) and five clear of Karl Malone '97's pinned 87.",
+  "THE FRONTIER AND THE STOPPING PIN, STATED, because the ruling's verbatim form does not reach. Perimeter evidence ONLY — max(perimeter band, recal_92's band on steals), no block channel — was measured first on the whole pool and BREAKS FOUR ANCHORS: Arvydas Sabonis '96 (recal_55, attr:perdef 79 +-1) falls to 64, Larry Sanders '13 (recal_146, 67 +-3, already ON its floor at 64) to 63, Celtics '08 team:defdial -4 and Bulls '96 -3. Those two cards are the wall and the arithmetic is flat: Sabonis '96 is 7'3\" with steals at p61 and Sanders '13 is 6'11\" with steals at p36 — BELOW the subject's p42. No steal-monotone reading can lower Divac without lowering Sanders further; no height-monotone reading can lower him without lowering Sabonis further. The block channel is the only thing that separates them and it is not a courtesy: Sabonis blocks at p86 and Sanders at p99, where the subject sits at p81, one point over recal_92's bar.",
+  "THE 82 ITSELF IS NOT REACHED AND THE ROUND SAYS SO. He lands DEF 83, inside 82 +-3 and one over the number. Reaching 82 exactly needs his perdef near 67, which is under his own '01 card and inside the rounding of the same sheet; the honest statement is that the relief is the only channel this round owns and the corroboration meter is already at its floor value for him (0.375 is the perimeter band; nothing on his sheet adds to it). Taking him lower means either moving recal_35's band edge — recal_135 says it cannot come down — or the d_score side, which is compute_ovr's lane.",
+  "MONOTONE AND SUBTRACTIVE BY CONSTRUCTION: the clawback only lowers the relief LINE, the line still enters through max() against the card's own composite, and a line that never cleared the cap is untouched. 0 of 10,000 cards rise on any scale. 301 perdef bars fall (34 by more than 3), 223 d_ovrs (3 by more than 3), 116 OVRs (none by more than 3) and exactly ONE o_ovr — Danny Granger '06, 50 -> 45, whose falling perdef flipped compute_ovr's d_bigness branch and with it his off-ball floor. Every one of the 301 is a card taller than 6'8\".",
+  "WHO IS BYTE-IDENTICAL, AND WHY IT IS BY CONSTRUCTION: every card 6'8\" and under (the perimeter band is 1.0 there) — Ginóbili '11, Marion '06, Norman '94, Jordan, Pippen, Kawhi, Draymond, Tony Allen, Marcus Smart, the whole perdef top 12; every card whose relief line never cleared the cap — Shaq '94, Norman '94, Moses Malone '85, McHale '85, Karl Malone '97; every card at wv >= 1 (no relief at all); and every 2014+ card (the line is pre-tracking). The perdef top 12 is bit-identical before and after.",
+  "MEASURED ON THE POOL: of the 1,575 pre-2014 cards whose relief clears the cap, 321 take a cut. The steal band is the binding channel for 25 of them (Corey Brewer, Jerome Williams, Kenyon Martin, Nene '03, Sabonis '03 — tall men who genuinely disrupt get the whole relief back through the ruling's own named channel) and the block band for 377."
+ ]
+}
