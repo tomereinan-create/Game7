@@ -13,6 +13,7 @@
     "tags": "vite-node scripts/tags.ts",
     "stats": "vite-node scripts/stats.ts",
     "teams": "vite-node scripts/teams.ts",
+    "teamstats": "vite-node scripts/teamstats.ts",
     "salaries": "vite-node scripts/salaries.ts",
     "ovr": "python data/compute_ovr.py src/data/players_stats.json",
     "data": "npm run opponents && npm run stats && npm run teams && npm run salaries",

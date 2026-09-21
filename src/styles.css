@@ -4445,6 +4445,58 @@ body.offstage #root { position: relative; z-index: 1; }
 /* 1d is drawn 940px wide, which is the width the list already claimed for 1b's two cards. */
 @media (min-width: 900px) { .tdb-list > * { max-width: 940px; } }
 
+/* ---- THE TEAM ITSELF, AT THE SIZE OF THE SCREEN IT IS READ ON ----
+   HIS RULING, 2026-09-21: "Make everything bigger here" — on the page a team opens into.
+   The list took the desk's width when board 1b landed and the TEAM never did: "the team it opens
+   is a court and a roster, and those keep the app's own column". On his screen that column is
+   660px in the middle of 3,840, so the floor was 430 wide with a mile of black either side and the
+   roster was set at a phone's 22px. The page takes the room now and lays itself out across it. */
+/* `minmax(0, 1fr)` AND NOT THE DEFAULT `auto`, which is the whole of this line: the court inside
+   it is `width: 100%; max-width: 430px`, and a percentage width cannot resolve against an auto
+   track, so the track sized itself to the court's MAX-CONTENT and carried the card 20px past the
+   right edge of a 375px phone. Measured before this: scrollWidth 395 against a 375 window. */
+.tdb-detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (min-width: 1100px) {
+  /* the sheet stops being a column and becomes a page: wide enough for a floor and a ledger side
+     by side, capped so a 4K screen does not stretch one line of roster across a metre of glass */
+  .tdb-sheet:not(.tdb-list) > * { max-width: min(1680px, 96vw); margin-left: auto; margin-right: auto; }
+  /* THE FLOOR AND ITS VERDICT ON ONE SIDE, THE RECORD AND THE ROSTER ON THE OTHER. 1.05fr against
+     1fr: the court is square and wants the extra, the line is a grid of cells and gives it. */
+  .tdb-detail { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 12px 34px; align-items: start; }
+  .tdb-left, .tdb-right { min-width: 0; }
+  /* every number on this page grows with the page (his ruling). The court's 430px cap was written
+     for a 562px column; here it is the half of the sheet it stands in. */
+  .tdb-sheet .court { max-width: min(720px, 100%); margin-top: 14px; }
+  .tdb-sheet .tdb-club .tcard-ab { width: 64px; height: 64px; font-size: 25px; }
+  .tdb-sheet .tdb-club .opp-name { font-size: clamp(30px, 2.6vw, 52px); }
+  .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 8vw, 150px); }
+  .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 20px); }
+  .tdb-sheet .rowhead.tdb span { font-size: clamp(14px, 1.1vw, 22px); }
+}
+
+/* THE TEAM'S OWN LINE — Basketball Reference's per-game table, in the app's own cells (his ruling:
+   "add more(as many as possible) real (basic, not advanced) stats on the team from basketball
+   ref"). It is the player card's STATLINE shape, because it is the same kind of fact and the two
+   should read the same way: the column's name over the figure, hairline-ruled, as many across as
+   the width allows. `auto-fit` rather than a fixed count — nineteen cells go five across on a
+   phone and ten across on his desk without a breakpoint for either. */
+.tdb-linehead { margin-top: 14px; }
+.tdb-line { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 62px), 1fr)); gap: 1px; margin-top: 8px; padding: 1px; }
+.tdb-cell { display: block; min-width: 0; padding: 7px 8px 6px; background: var(--surface); outline: 1px solid var(--line); }
+.tdb-cell i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tdb-cell b { display: block; margin-top: 3px; font-family: var(--serif); font-size: 19px; font-weight: 400; line-height: 1; color: var(--ink); }
+@media (min-width: 900px) {
+  /* 76px AND NOT 84, AND THE FIGURE COMES DOWN A POINT TO PAY FOR IT. Nineteen cells is an awkward
+     number: at 84 the desk fitted nine across and left the nineteenth standing alone on a third
+     row, which reads as a mistake rather than as a table. At 76 it is ten and nine — one row full,
+     one row one short — and the widest figure on the block, a three-digit opponent's points, still
+     measures 50 inside a cell whose padding takes 20. */
+  .tdb-line { grid-template-columns: repeat(auto-fit, minmax(min(100%, 76px), 1fr)); }
+  .tdb-cell { padding: 9px 10px 8px; }
+  .tdb-cell i { font-size: 10px; letter-spacing: 0.14em; }
+  .tdb-cell b { font-size: clamp(20px, 1.4vw, 28px); margin-top: 4px; }
+}
+
 /* ---- the spotlight ----
    THE WASH IS THE CLUB AND THE PANEL IS THE APP. `--hero-wash` is written per team in TeamDb
    (the club's primary at 62% raked into --surface at 68%), which is 1d's own hero gradient with

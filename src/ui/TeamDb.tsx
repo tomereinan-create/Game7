@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { seasonGauges } from '../engine/gauges'
+import { teamLine } from '../engine/teamline'
 import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { bestStyle, STYLES, type Style } from '../engine/tactics'
@@ -340,6 +341,42 @@ function TeamTick({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; 
         ))}
       </span>
     </button>
+  )
+}
+
+/**
+ * THE REAL LINE, AS THE LEAGUE KEPT IT — his ruling, 2026-09-21: "add more(as many as possible)
+ * real (basic, not advanced) stats on the team from basketball ref."
+ *
+ * The same shape the player card's STATLINE wears, because it is the same kind of fact: a ruled
+ * name, then a run of cells with the column over the figure. What it must never be mistaken for is
+ * the three dials above it — those are this app's verdict on the five it can field, and these are
+ * what the team actually did, which is why the rule says whose number each one is.
+ *
+ * A season the dump has no row for prints nothing at all rather than a row of dashes: the pool
+ * reaches back to 1980 and so does the file, so the only way here is a team-season that never
+ * played (and there is none in the wheel).
+ */
+function TeamLineBlock({ t }: { t: TeamSeason }) {
+  const line = teamLine(t.ab, t.y)
+  if (!line) return null
+  return (
+    <>
+      <div className="pc-rule tdb-linehead">
+        <span>
+          TEAM.{t.y} &#9656; PER GAME &#183; {line.g} GAMES &#183; BASKETBALL REFERENCE
+        </span>
+        <i />
+      </div>
+      <div className="tdb-line">
+        {line.cells.map((c) => (
+          <span className="tdb-cell" key={c.k}>
+            <i>{c.k}</i>
+            <b>{c.v}</b>
+          </span>
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -864,6 +901,14 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               </span>
             </div>
             {stripYears.length > 1 ? <SeasonStrip years={stripYears} cur={seasonId(picked)} go={step} mark="best" /> : null}
+            {/* TWO COLUMNS ON A DESK (his ruling, 2026-09-21: "Make everything bigger here"). The
+                page was the app's 660px column standing in the middle of a 3,840px screen, so
+                everything on it was as small as a phone's and surrounded by black. The floor and
+                its verdict take one side now and the team's own line and its roster the other,
+                which is what lets both of them be drawn at size. One wrapper, one grid, and on a
+                phone it is the column it always was. */}
+            <div className="tdb-detail">
+            <div className="tdb-left">
             {/* and the verdict on the same scale the cards use: white at 50, green above, red below.
                 OVR joins them here — it was a caption in the head, which made the one number the
                 list sorts on the smallest thing on the page. */}
@@ -894,6 +939,16 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 onTap: p ? () => openCard(p) : undefined,
               }))}
             />
+            </div>
+            <div className="tdb-right">
+            {/* THE TEAM'S OWN LINE (his ruling: "add more(as many as possible) real (basic, not
+                advanced) stats on the team from basketball ref"). Nineteen cells of Basketball
+                Reference's per-game table, summed from its own player totals — see
+                scripts/teamstats.ts — and nothing modelled: what they scored, what they allowed,
+                the three splits with their makes and attempts, the boards, and the four counting
+                stats. The app's verdict on this five is two inches to the left and is a different
+                question; this block is the record. */}
+            <TeamLineBlock t={picked} />
             {detail.bench.length ? (
               <>
                 <div className={`rowhead dr tdb${user ? ' blind' : ''}`}>
@@ -906,6 +961,8 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 ))}
               </>
             ) : null}
+            </div>
+            </div>
           </div>
           <div className="cap hint">Only men in the card pool appear — a season the pipeline never rated is not here.</div>
         </>
