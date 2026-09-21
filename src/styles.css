@@ -3774,15 +3774,40 @@ body:has(.sheet) { overflow: hidden; }
   .pc-main { grid-area: main; }
   .pct-id { grid-area: id; }
   .pct-shape { grid-area: shape; }
-  .pct-meta { grid-template-columns: minmax(0, 1fr); }
+  /**
+   * THE DOSSIER IS THE ROW THAT STRETCHES, AND THE LEDGER IS WHAT STRETCHES INSIDE IT — his
+   * ruling, 2026-09-21: "make this SEASON 2024 / POS PG·SG·SF·PF / HT 6'11" / TEAM MIL / GP 73 /
+   * MPG bigger, so there will be no dead space."
+   *
+   * The six rows are a grid of auto tracks, so `align-content: stretch` hands them the height the
+   * hexagon's box gave up — they do not need to be told how much, which is the point: the amount
+   * is different on every window and no clamp could have known it. The type comes up to meet the
+   * taller row (see the wide-desk block below), and the row's contents centre in it rather than
+   * sitting on the old baseline with air underneath.
+   * `.pct-id` has to be told to stretch because this grid is `align-items: start`; the ledger
+   * takes the leftover inside it with `flex: 1`, which is what leaves the banner and the sentence
+   * at their own sizes.
+   */
+  .pct-id { align-self: stretch; }
+  .pct-meta { grid-template-columns: minmax(0, 1fr); flex: 1 1 auto; align-content: stretch; }
+  .pct-mrow { align-items: center; }
 
   /* ONE SCREEN, NO SCROLL (his ruling: "the page shouldnt be scrollable, everything should
-     fit"). The body stops scrolling, the last row takes exactly what the window has left, and
-     the hexagon is the part that gives: its box fills that row and the shape scales inside it.
-     THE SHAPE IS CAPPED SINCE 2026-09-21 — see below. */
-  .pc-body { overflow: hidden; grid-template-rows: auto auto minmax(0, 1fr); align-self: stretch; }
+     fit"). The body stops scrolling and the window's spare height goes to ONE ROW.
+     WHICH ROW CHANGED ON 2026-09-21 — his ruling: "For the hex ... make that box smaller. After
+     making the box smaller, make this SEASON 2024 / POS ... bigger, so there will be no dead
+     space." It used to be the SHAPE's row (`auto auto minmax(0, 1fr)`), because the hexagon was
+     the part of the card that gives; his ruling of that morning capped the hexagon at 320px, so a
+     stretching row under it could only ever be a taller empty box. The slack moves up a row to the
+     DOSSIER instead, and the shape's row is sized by what stands in it — the rule, the hexagon's
+     own box and the ADVANCED key, with nothing left over to show. */
+  .pc-body { overflow: hidden; grid-template-rows: auto minmax(0, 1fr) auto; align-self: stretch; }
   .pct-shape { align-self: stretch; min-height: 0; }
-  .pct-hexbox { position: relative; flex: 1 1 auto; min-height: 90px; }
+  /* THE BOX IS THE HEXAGON'S OWN SIZE NOW, not the row's — "the hex size is good but it should fit
+     inside the back box so make that box smaller". It hugs the drawing with the 8px of padding it
+     always had, and the drawing keeps the 320px ceiling and the same recession on a short window
+     (34vh) that the row used to impose on it from outside. */
+  .pct-hexbox { position: relative; flex: 0 0 auto; align-self: center; max-width: 100%; display: grid; place-items: center; min-height: 0; }
   /**
    * THE SHAPE HAS A CEILING NOW — his ruling, 2026-09-21: "Make the hex samller".
    *
@@ -3799,18 +3824,31 @@ body:has(.sheet) { overflow: hidden; }
    * phone's 188px box reads as on a phone held at arm's length. Under the cap nothing changes: on
    * an ordinary laptop the row is 210 deep and the shape is still the thing that gives.
    *
-   * IT IS CENTRED BY `margin: auto` AGAINST A FULL INSET, which is the one way an absolutely
-   * placed box centres in both axes when a max cuts it down — the four offsets are all stated, so
-   * the leftover space is split rather than pushed to one corner. The case around it stays
-   * stretched: the panel is the display case, the hexagon is the object in it, and a case that
-   * shrank to its object would leave the ADVANCED key floating up the column away from the foot.
+   * IT IS IN THE FLOW AGAIN (2026-09-21, the second ruling of the day: "it should fit inside the
+   * back box so make that box smaller"). It was absolutely placed and centred by `margin: auto`
+   * against a full inset, because the box it stood in was a stretching row and the drawing had to
+   * find its own middle inside it. The box is the drawing's own size now, so there is nothing to
+   * centre against and nothing to place: one square in the flow, capped, and the box closes round
+   * it. `place-items: center` on the box is what keeps it true when the column is wider than 320.
+   * 28vh IS THE TERM THAT ACTUALLY BINDS, and it is the size he passed: on his own 770px window it
+   * is 216px, which is within a pixel of the 219 the capped-but-stretched box was drawing when he
+   * said "the hex size is good". The 320 is the ceiling from that morning and it only takes over
+   * on a window over 1140px tall. The shape row is `auto` now, so this number is also what decides
+   * how much height is left for the dossier above it — 28vh is the difference between a ledger
+   * with fifty pixels to spread into and one with none.
+   * AND THE BOX HUGS THE DRAWING SIDEWAYS TOO (`align-self: center`). A box that kept the column's
+   * full 971px with a 216px hexagon floating in the middle of it is the same complaint he made
+   * about its height, turned ninety degrees.
    */
   .pct-hexbox .heathex {
-    position: absolute;
-    inset: 8px;
-    margin: auto;
-    width: min(100% - 16px, 320px);
-    height: min(100% - 16px, 320px);
+    position: static;
+    /* NO `100%` TERM ANY MORE, and leaving one in would have been the quiet bug in this rule: the
+       box shrink-wraps this drawing now, so a percentage here would be measured against a width
+       this element is itself deciding. It resolved to 168px — a hexagon sized by a circular
+       argument. The two absolute terms are the whole rule, and the box carries the `max-width:
+       100%` that keeps the pair inside a narrow column. */
+    width: min(320px, 28vh);
+    height: auto;
     max-width: none;
   }
 
@@ -3828,6 +3866,28 @@ body:has(.sheet) { overflow: hidden; }
   .pct-attr .k { font-size: clamp(11px, 1.45vh, 14px); letter-spacing: 0.05em; }
   .pct-attr .statt { flex-basis: 130px; height: 9px; }
   .pct-attr b { width: 30px; font-size: clamp(13px, 1.8vh, 17px); }
+}
+
+/* a short desk window (a laptop with its browser chrome): the same card, packed tighter, so it
+   still fits without a scroll — the rules, the boxes and the dossier give up their air first */
+@media (min-width: 900px) and (max-height: 780px) {
+  .pc-body { gap: 8px 18px; padding-top: 8px; }
+  .pc-rule { margin-top: 7px; }
+  .pc-big { padding: 5px 10px 6px; }
+  .pc-big b { font-size: 34px; }
+  .pc-stats { margin-top: 5px; }
+  .pc-cell { padding: 6px 9px 5px; }
+  .pc-cell b { font-size: 22px; }
+  .pc-attrs { margin-top: 4px; }
+  .pc-grp { margin-bottom: 6px; }
+  .pct-banner { min-height: 0; }
+  .pct-ban-body { gap: 6px; padding: 9px 16px 12px; }
+  .pc-name { font-size: 40px; }
+  .pct-mrow { padding: 3px 0 2px; }
+  .pct-mrow b { font-size: 16px; }
+  .pc-what { line-height: 1.4; }
+  .pct-hexbox { min-height: 60px; }
+  .pc-adv { padding: 6px 0; }
 }
 
 /**
@@ -3862,34 +3922,69 @@ body:has(.sheet) { overflow: hidden; }
  * laptop with a dock and a browser open), and there every term falls back to its floor on the vh
  * side and the card goes on fitting: measured, 48px clear.
  */
-@media (min-width: 1500px) {
-  .pc-attrs { columns: 3; column-gap: 26px; }
-  .pc-grpname { font-size: clamp(11px, 1.8vh, 16px); margin-bottom: 5px; }
-  .pct-attr { gap: 12px; padding: clamp(3px, 0.7vh, 8px) 0; }
-  .pct-attr .k { flex: 0 0 auto; font-size: clamp(13px, 2.25vh, 18px); }
-  .pct-attr .statt { flex: 1 1 46px; max-width: clamp(120px, 11vw, 230px); height: clamp(10px, 1.3vh, 14px); }
-  .pct-attr b { width: 40px; font-size: clamp(15px, 2.75vh, 23px); }
-}
-/* a short desk window (a laptop with its browser chrome): the same card, packed tighter, so it
-   still fits without a scroll — the rules, the boxes and the dossier give up their air first */
-@media (min-width: 900px) and (max-height: 780px) {
-  .pc-body { gap: 8px 18px; padding-top: 8px; }
-  .pc-rule { margin-top: 7px; }
-  .pc-big { padding: 5px 10px 6px; }
-  .pc-big b { font-size: 34px; }
-  .pc-stats { margin-top: 5px; }
-  .pc-cell { padding: 6px 9px 5px; }
-  .pc-cell b { font-size: 22px; }
-  .pc-attrs { margin-top: 4px; }
-  .pc-grp { margin-bottom: 6px; }
-  .pct-banner { min-height: 0; }
-  .pct-ban-body { gap: 6px; padding: 9px 16px 12px; }
-  .pc-name { font-size: 40px; }
-  .pct-mrow { padding: 3px 0 2px; }
-  .pct-mrow b { font-size: 16px; }
-  .pc-what { line-height: 1.4; }
-  .pct-hexbox { min-height: 60px; }
-  .pc-adv { padding: 6px 0; }
+@media (min-width: 1200px) and (min-height: 740px) {
+  /**
+   * TWO COLUMNS AGAIN, AND THEY ARE MEANT TO REACH THE FOOT OF THE WINDOW — his ruling,
+   * 2026-09-21: "The attributes need to cover the entire side of the screen, we dont need all that
+   * empty space."
+   *
+   * THIS REVERSES THE THREE COLUMNS OF THAT MORNING, and it reverses them because the thing they
+   * were for is gone. Three columns were a way of BUYING HEIGHT: the attributes were being crushed
+   * under a hexagon that took whatever the window had left, so the list was folded a third shorter
+   * to make room for bigger type. The hexagon is capped now and this column's height is its own,
+   * so a folded list is just a short list with 94px of black under it — which is the empty space
+   * he is pointing at. Sixteen rows in two columns is eight rows deep; eight rows plus the group
+   * names, at the padding below, is the height of the column.
+   *
+   * THE PADDING GOES THE OTHER WAY TO PAY FOR IT — 0.28vh where the three-column version had 0.7 —
+   * and that is not a contradiction, it is the arithmetic of the fold. Two columns are eight or
+   * nine rows deep against three columns' six, so the SAME row height is half as tall again; the
+   * rows have to give back the air that the extra fold costs. The type is untouched: the name and
+   * the figure keep the sizes his earlier ruling set, which is the whole point of spending the
+   * padding rather than the point size.
+   * WHY THE FOLD IS NEVER EVEN: `.pc-grp` is `break-inside: avoid`, so a column is filled with
+   * whole groups. SCORING is seven rows on its own and the other four groups are nine rows and
+   * four names between them, which is why two columns is 7 | 9 and not 8 | 8. The nine-row column
+   * is what this padding is measured against.
+   * MEASURED at 2000x770, which is his window: the block stands at 409px in 417 of room, so the
+   * last hairline lands within nine pixels of the foot of the card.
+   *
+   * AND THE BAR CAN BREATHE. Two columns are 470px apiece where three were 306, so the track's
+   * ceiling goes 230 to 300 and the 46px stub the three-column layout squeezed it to at 1500 never
+   * happens again.
+   *
+   * THE GATE MOVED WITH THE FOLD — 1500 to 1200, AND A HEIGHT WAS ADDED.
+   * The 1500 was measured for THREE columns: it was the width at which a third column still held
+   * PERIMDISRUPT, its bar and its figure. Two columns clear that at 1200, where a column is 290px
+   * and the longest name is 115 of them.
+   * `min-height: 740px` is the half that matters: a fold that fills a tall column OVERFLOWS a
+   * short one, and this column is `overflow: hidden`, so it would not have scrolled, it would have
+   * cut the last group off without a mark. MEASURED before the gate: 334px of block in 286 of room
+   * at 1520x620, 376 in 348 at 1280x700, 360 in 318 at 1210x670. Under 740 the laptop rules above
+   * stand, which is the layout that fitted those windows all along.
+   *
+   * AND INSIDE THE GATE THE TYPE HAS A KNEE, for the same reason the front door's read pane grew
+   * one that morning: a plain vh term is too shallow here. The block's height moves at about half
+   * a pixel for every pixel of window while the room for it moves at a whole one, so the two lines
+   * cross just under his own window and everything between the gate and 780 sits on the wrong side
+   * of it. `7.5vh - 40` and `9vh - 48` do nothing at 770 — 17.75 and 21.3 against the plain terms'
+   * 17.3 and 21.2 — and pull the rows down hard as the window shortens, which is what carries the
+   * fold through the forty pixels between the gate and the size it was measured at.
+   */
+  .pc-attrs { columns: 2; column-gap: 30px; }
+  .pc-grpname { font-size: clamp(11px, 1.8vh, 16px); margin-bottom: 3px; }
+  .pc-grp { margin-bottom: 4px; }
+  .pct-attr { gap: 14px; padding: clamp(1px, 0.28vh, 4px) 0; }
+  .pct-attr .k { flex: 0 0 auto; font-size: clamp(13px, min(2.25vh, calc(7.5vh - 40px)), 18px); }
+  .pct-attr .statt { flex: 1 1 46px; max-width: clamp(120px, 14vw, 300px); height: clamp(10px, 1.3vh, 15px); }
+  .pct-attr b { width: 40px; font-size: clamp(15px, min(2.75vh, calc(9vh - 48px)), 23px); }
+
+  /* THE LEDGER, AT THE SIZE THE TALLER ROW ASKS FOR (his ruling: "make this SEASON 2024 / POS ...
+     bigger, so there will be no dead space"). The label was 9.5px and the value 21 at this width;
+     the row itself is now stretched by the grid above, so both come up to stand in it rather than
+     leaving the height empty under a 9.5px word. */
+  .pct-mrow { font-size: clamp(11px, 1.35vh, 15px); letter-spacing: 0.12em; }
+  .pct-mrow b { max-width: 60%; font-size: clamp(19px, 3vh, 30px); }
 }
 
 /* ---- the phone: everything above, packed ----
