@@ -616,6 +616,10 @@ export const DEFAULT_TACTICS: Tactics = {
  * (oracle +0.5015, the floor), true midpoint by r126's rule 3.80 -> 4.22 (blind -0.357, oracle +0.537; 0.057 and 0.037
  * of room either side). crashOff held at 0.28 and crashDef at 0.66 — both read from main's constants first and neither
  * moved — and the other six held their bands untouched. All nine pass. hunt's tenth move, and the same shape every time.
+ * recal_176 INTEGRATION SWEEP (pipeline 176): the elite-passer re-cut folded onto main and hunt swept ONCE from main's
+ * constant. 585 creators gained offence, so a blind hunt call costs almost nothing: blind -0.02 at 3.80 against the -0.30
+ * ceiling. The branch's window (4.150-4.292) holds on the merged pool: hunt 3.80 -> 4.22 (blind -0.36, oracle +0.54), the
+ * largest value this tax has carried. crashOff 0.28 and crashDef 0.66 held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -623,7 +627,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
+  hunt: 4.22,
   crashOff: 0.28,
   crashDef: 0.66,
 }
