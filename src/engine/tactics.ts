@@ -583,6 +583,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * true midpoint by r126's rule: 0.38 -> 0.62 (blind -0.4166, oracle +0.5542; 0.117 and 0.054 of room). hunt
  * held at 3.97 (blind -0.38, oracle +0.55) and crashOff at 0.08 (-0.59, +0.60) — the first round in four that
  * did not move either crash tax together — and the six others held their bands untouched. All nine pass.
+ * recal_169-170 INTEGRATION SWEEP (pipeline 170): two floor rounds folded onto main (169 the glue floor's usage gate, 170 the
+ * stretch-big floor at load) and the taxes swept ONCE from main's constants (hunt 3.97, crashOff 0.08, crashDef 0.38),
+ * superseding the per-branch figures (169: hunt 4.08; 170: crashDef 0.62). 717 low-load role players fell out of or down
+ * the ovr>=55 sample together and all three broke: hunt on the ORACLE edge (+0.47 at 3.97), crashOff on the BLIND edge
+ * (-0.18 at 0.08), crashDef on the BLIND edge (+0.09 at 0.38). Set inside each window: hunt 3.80 (blind -0.40, oracle
+ * +0.55), crashOff 0.40 (-0.40, +0.61), crashDef 0.94 (window about 0.88 to 1.00 — the narrowest it has been).
  */
 export const TAX = {
   scorer: 0.55,
@@ -590,9 +596,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.08,
-  crashOff: 0.08,
-  crashDef: 0.38,
+  hunt: 3.80,
+  crashOff: 0.40,
+  crashDef: 0.94,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 60,
  "after": 50,
- "pipeline_version": 169,
+ "pipeline_version": 170,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -38,9 +38,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 4\\.08",
+   "pattern": "hunt: 3\\.80",
    "label": "the hunt deviation tax, re-swept ONCE from main's constant on the moved pool (recal_59's standing law)",
-   "note": "3.97 -> 4.08; feasible 4.017..4.148, true midpoint by r126's rule"
+   "note": "[re-pointed at integration 169-170] the once-only sweep on the merged pool landed hunt 3.80 / crashOff 0.40 / crashDef 0.94 (all three broke together when both floors landed) (branch: 3.97 -> 4.08; feasible 4.017..4.148, true midpoint by r126's rule)"
   }
  ],
  "expect": [
