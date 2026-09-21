@@ -1620,5 +1620,14 @@
   "round": 166,
   "ruling": "166 confirm",
   "note": "RE-PINNED ONE POINT LOWER, replacing recal_139's 66 +-2 which Tomer released on this round. 64 -> 63. 70% assisted at a mid-class paint rate, so the discounted value falls off the premium's 0.70 gate entirely (.909 -> .600) and he loses the whole 0.0487, rim 73 -> 70. That is the structural cost of reading a discounted value against a RAW pool, which recal_166 kept on purpose."
+ },
+ {
+  "card": "Vlade Divac '02",
+  "scale": "def",
+  "target": 82,
+  "tol": 3,
+  "round": 173,
+  "ruling": "Agree with 10",
+  "note": "87 -> 83. DEF 87 was #10 of 226 in 2002, above Shaq '02 (86), Robinson '02 (85) and Kirilenko '02 (85) and level with Karl Malone '97's pinned 87, on a card with NO defensive bar at 80 (perdef 77, rimprot 77, perimdisrupt 39, drb 78, discipline 62). The whole of that perdef 77 was the pre-2014 no-vote DBPM relief: his own composite is card 39 and the line pays card 77 on his DBPM percentile alone. The relief's part ABOVE recal_13's no-vote cap is now paid at the share his own sheet corroborates - max(recal_35's perimeter band, recal_92's evidence band on steals, the same band on blocks) - which for a 7'1\" centre at steals p42 and blocks p81 is 0.375. perdef 69, DEF 83, #19 of 226. LANDS ONE OVER THE NUMBER: 82 exactly needs his perdef near 67, and the corroboration meter is already at its floor value for him. THE STOPPING PIN for the ruling's verbatim (perimeter-evidence-only) form is Arvydas Sabonis '96 attr:perdef 79 +-1, which falls to 64 without the block channel, with Larry Sanders '13 (67 +-3, on its floor) to 63. See data/rounds/173.json."
  }
 ]

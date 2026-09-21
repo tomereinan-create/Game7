@@ -559,6 +559,14 @@ export const DEFAULT_TACTICS: Tactics = {
  * edge (crashOff +0.46 at 0.32 and +0.48 at 0.20; crashDef +0.48 at 0.50). Set inside each window: hunt 3.97 (blind -0.38,
  * oracle +0.52), crashOff 0.08 (-0.77, +0.51), crashDef 0.38 (-0.52, +0.51). 2,003 assisted-big rim bars fell (166) while
  * 2,350 two-zone bigs rose (161) and 637 interior bigs rose (167): the glass mismatch is worth less, the hunt more.
+ * recal_173 corroborated the pre-2014 no-vote perdef relief with the card's own disruption evidence: 301 perdef bars
+ * fell, 223 d_ovrs and 116 OVRs with them, every one of them a BIG above 6'8" — which is exactly the class whose drb
+ * the crash-def benefit reads, so the ovr>=55 pool the harness draws from lost defensive-glass VALUE without losing a
+ * rebound. CRASH DEF GLASS alone broke, on the BLIND edge this time (-0.20 at 0.38 against the -0.30 ceiling): the
+ * mismatch is worth MORE now, so the tax goes UP. Swept ONCE from MAIN's constant as the law requires: feasible 0.512
+ * (blind -0.3005) to 0.786 (oracle +0.5005 at 0.785, +0.4995 at 0.788), true midpoint by r126's rule 0.38 -> 0.65
+ * (blind -0.404, oracle +0.548; 0.104 and 0.048 of room). hunt held at 3.97 and crashOff at 0.08 — both were read
+ * from main's constants first and neither moved — and the other six held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -568,7 +576,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.97,
   crashOff: 0.08,
-  crashDef: 0.38,
+  crashDef: 0.65,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
