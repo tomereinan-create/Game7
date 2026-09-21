@@ -93,10 +93,94 @@ export interface Ctx {
    * governs everything else, and this is the one fact that is a fact.
    */
   pos: Pos[]
+  /**
+   * THE SIGNATURE — the one family this card is top-quartile at, read against the LEAGUE rather than
+   * against a 0-99 threshold (see the signature block at the bottom of RULES). `null` when nothing on
+   * the sheet reaches the floor. `sigPct` is that family's league percentile, 0-1.
+   */
+  sig: SigFamily | null
+  sigPct: number
+  /** The league percentiles the signature rules read by name: perimeter D, the three, rim protection. */
+  pctPerdef: number
+  pct3: number
+  pctRimprot: number
+  /** SIG_FLOOR, carried on the context so a rule prints `pct(perdef) >= 0.75` in any build. */
+  sigFloor: number
+}
+
+/**
+ * LEAGUE PERCENTILE. pct(k, v) is the share of the pool whose bar k is at or under v — bisect_right on
+ * that bar's sorted column, so O(log n) per lookup. The columns are built once, at module load, from
+ * PLAYERS: `ctxFor` is called for every card on every render and must never sort anything.
+ */
+export type SigBar = 'perdef' | 'rimprot' | 'playvol' | 'volume' | '3pt' | 'mid' | 'rim' | 'orb' | 'drb' | 'perimdisrupt' | 'fouldraw'
+const SIG_BARS: SigBar[] = ['perdef', 'rimprot', 'playvol', 'volume', '3pt', 'mid', 'rim', 'orb', 'drb', 'perimdisrupt', 'fouldraw']
+const SORTED = Object.fromEntries(
+  SIG_BARS.map((k) => [k, Float64Array.from(PLAYERS.map((p) => p.attrs[k])).sort()]),
+) as Record<SigBar, Float64Array>
+export function pct(k: SigBar, v: number): number {
+  const col = SORTED[k]
+  let lo = 0
+  let hi = col.length
+  while (lo < hi) {
+    const m = (lo + hi) >>> 1
+    if (col[m] <= v) lo = m + 1
+    else hi = m
+  }
+  return col.length ? lo / col.length : 0
+}
+
+/**
+ * THE ONE DIAL. A family is a signature when the card sits in the league's top quartile at it.
+ * Measured on the pool: 0.80 leaves 12.6% of cards Balanced, 0.75 leaves 6.8%, 0.70 leaves 3.1%.
+ */
+export const SIG_FLOOR = 0.75
+/** What a man can be KNOWN for — tried first, in this order on a tie. */
+const IDENTITY = ['perdef', 'rimprot', 'playvol', 'volume', '3pt', 'mid', 'rim'] as const
+/** What he can be known for when none of those reaches the floor. `reb` is the better of the two glasses. */
+const SUPPORTING = ['reb', 'perimdisrupt', 'fouldraw'] as const
+export type SigFamily = (typeof IDENTITY)[number] | (typeof SUPPORTING)[number]
+export interface Signature {
+  sig: SigFamily | null
+  sigPct: number
+  pctPerdef: number
+  pct3: number
+  pctRimprot: number
+}
+/** A sheet's signature never changes, so it is read once per sheet and remembered. */
+const SIG_MEMO = new WeakMap<Player['attrs'], Signature>()
+export function signature(a: Player['attrs']): Signature {
+  const hit = SIG_MEMO.get(a)
+  if (hit) return hit
+  const f: Record<SigFamily, number> = {
+    perdef: pct('perdef', a.perdef),
+    rimprot: pct('rimprot', a.rimprot),
+    playvol: pct('playvol', a.playvol),
+    volume: pct('volume', a.volume),
+    '3pt': pct('3pt', a['3pt']),
+    mid: pct('mid', a.mid),
+    rim: pct('rim', a.rim),
+    reb: Math.max(pct('orb', a.orb), pct('drb', a.drb)),
+    perimdisrupt: pct('perimdisrupt', a.perimdisrupt),
+    fouldraw: pct('fouldraw', a.fouldraw),
+  }
+  // the highest score, FIRST LISTED on a tie — strictly-greater, walked in the listed order
+  const best = (ks: readonly SigFamily[]) => ks.reduce((b, k) => (f[k] > f[b] ? k : b), ks[0])
+  let k = best(IDENTITY)
+  if (f[k] < SIG_FLOOR) k = best(SUPPORTING)
+  const out: Signature = {
+    sig: f[k] >= SIG_FLOOR ? k : null,
+    sigPct: f[k],
+    pctPerdef: f.perdef,
+    pct3: f['3pt'],
+    pctRimprot: f.rimprot,
+  }
+  SIG_MEMO.set(a, out)
+  return out
 }
 
 export const RULES: Rule[] = [
-  // Tree v2, 45 rules. Evaluated top-down, FIRST MATCH WINS. Names describe style,
+  // Tree v2. Evaluated top-down, FIRST MATCH WINS. Names describe style,
   // never tier — quality is OVR's job. Thresholds are tunable; the order is law.
   { tag: 'Defensive playmaker', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.perdef, 80) && c.lt(c.zone, 55) },
   { tag: 'Point god', test: (c) => c.ge(c.a.playvol, 97) && c.lt(c.a.volume, 83) && c.ltH(c.h, 79) },
@@ -203,7 +287,56 @@ export const RULES: Rule[] = [
   { tag: 'Co-star', test: (c) => c.ge(c.p.o_ovr, 78) && c.lt(c.p.o_ovr, 90) && c.ge(c.p.d_ovr, 60) && c.lt(c.p.d_ovr, 85) },
   { tag: 'Glue guy', test: (c) => c.glue >= 4 && c.lt(c.glueMax, 80) && c.ge(c.a.playvol, 40) && c.lt(c.a.volume, 65) },
   { tag: 'All-around', test: (c) => c.lt(Math.max(c.zone, c.a.playvol, c.a.perdef, c.a.rimprot, c.a.orb, c.a.drb), 88) && c.solid >= 4 },
+  // THE SIGNATURE BLOCK — his complaint: "Too many players have balanced archetype". Six cards in ten
+  // fell out of the bottom of the tree, because every rule above asks for a number that is good in
+  // ABSOLUTE terms and most of a rotation has no such number. These fifteen ask a different question:
+  // what is this man best at, measured against the LEAGUE? A family is his signature when he sits in
+  // the pool's top quartile at it (SIG_FLOOR — the one dial). Still style, never tier: there is no OVR
+  // gate anywhere in the block, and a 58 and an 88 who both live on the pass are both table setters.
+  //
+  //   TWO-WAY SHOOTER is asked first: under 6'10", top quartile at perimeter D AND from three.
+  //   Otherwise the signature is the best of the IDENTITY families — perdef, rimprot, playvol, volume,
+  //   3pt, mid, rim, first listed on a tie. If the best of those is under the floor, it is the best of
+  //   the SUPPORTING families instead — reb (the better glass), perimdisrupt, fouldraw. If that is
+  //   under the floor too he has no signature, and he is Balanced exactly as he was.
+  //
+  // They sit at the very BOTTOM, under every rule that was already here, so no card that had a name can
+  // lose it — only the men who fell through can be caught. Each rule states its whole condition, the
+  // negations included, so ranking the fifteen among themselves moves nobody except across the Two-way
+  // shooter line. MEASURED at the 0.75 floor, on 10,000 cards: the fallback goes 6,095 -> 675, from 61%
+  // of the pool to 6.8%, and the largest of the fifteen (Table setter, 787) is under 8%.
+  //
+  // `relax` is IGNORED by the whole block. The floor is a percentile, not a 0-99 rating, and RELAX
+  // points of a quartile mean nothing; and the rating splits inside a family (volume 65, volume 60,
+  // rim against mid) are not floors at all — they decide WHICH of two names a man gets, so easing one
+  // side would only make the two rules overlap. They are written as plain comparisons for that reason.
+  // 6'9" is written as 81 here rather than BIG_HT: ruleText prints a rule from its SOURCE, and a
+  // production build renames the constant, so the screen would read `h < Ne`.
+  { tag: 'Two-way shooter', test: (c) => c.ltH(c.h, 82) && c.pctPerdef >= c.sigFloor && c.pct3 >= c.sigFloor },
+  // a defender's signature on a big's body is rim protection if he has that too; otherwise he is what
+  // Pippen was — a man who guards the perimeter at 6'9".
+  { tag: 'Lockdown defender', test: (c) => c.sig === 'perdef' && (c.ltH(c.h, 81) || c.pctRimprot < c.sigFloor) },
+  { tag: 'Rim protector', test: (c) => c.sig === 'rimprot' || (c.sig === 'perdef' && c.geH(c.h, 81) && c.pctRimprot >= c.sigFloor) },
+  // the passers split on whether he is also looking for his own
+  { tag: 'Table setter', test: (c) => c.sig === 'playvol' && c.a.volume < 65 },
+  { tag: 'Lead guard', test: (c) => c.sig === 'playvol' && c.a.volume >= 65 },
+  { tag: 'Go-to scorer', test: (c) => c.sig === 'volume' },
+  { tag: 'Midrange scorer', test: (c) => c.sig === 'mid' && (c.ltH(c.h, 81) || c.paint >= c.mid || c.a.volume >= 60) },
+  { tag: 'Interior scorer', test: (c) => c.sig === 'rim' && c.geH(c.h, 81) },
+  { tag: 'Rim attacker', test: (c) => c.sig === 'rim' && c.ltH(c.h, 81) },
+  { tag: 'Spot-up shooter', test: (c) => c.sig === '3pt' && c.ltH(c.h, 81) && c.a.volume < 60 },
+  { tag: 'Scoring shooter', test: (c) => c.sig === '3pt' && c.ltH(c.h, 81) && c.a.volume >= 60 },
+  // SHOOTING BIG — a deleted name stays deleted, so this is not the pick-and-pop big. 6'9" and up whose
+  // signature is the three, or the midrange when the jumper beats his rim number and the load is light.
+  { tag: 'Shooting big', test: (c) => c.geH(c.h, 81) && (c.sig === '3pt' || (c.sig === 'mid' && c.paint < c.mid && c.a.volume < 60)) },
+  // the supporting families — only ever reached when no identity family made the floor
+  { tag: 'Rebounder', test: (c) => c.sig === 'reb' },
+  { tag: 'Ball thief', test: (c) => c.sig === 'perimdisrupt' },
+  { tag: 'Foul magnet', test: (c) => c.sig === 'fouldraw' },
 ]
+
+/** The fifteen signature tags, in the order the tree asks them. */
+export const SIGNATURE_TAGS: string[] = RULES.slice(-15).map((r) => r.tag)
 
 /** The shipped order — the ratified law, and what "reset" returns to. */
 export const DEFAULT_ORDER: string[] = RULES.map((r) => r.tag)
@@ -220,7 +353,10 @@ const OPS: Record<string, string> = { ge: '>=', lt: '<', geH: '>=', ltH: '<' }
 export function ruleText(tag: string): string {
   const rule = BY_TAG.get(tag)
   if (!rule) return tag === 'Balanced' ? 'no rule above matched — the fallback' : ''
-  const src = rule.test.toString()
+  return ruleTextOf(rule.test.toString())
+}
+/** The same reading, from a rule's SOURCE — split out so a minified build's spelling can be tested. */
+export function ruleTextOf(src: string): string {
   const param = /^\(?\s*([A-Za-z_$][\w$]*)\s*\)?\s*=>/.exec(src)?.[1] ?? 'c'
   const q = param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   let s = src
@@ -230,6 +366,13 @@ export function ruleText(tag: string): string {
     .replace(new RegExp(`${q}\\.p\\.`, 'g'), '')
     .replace(new RegExp(`${q}\\.`, 'g'), '')
     .replace(/Math\./g, '')
+    // the signature block's vocabulary, as the arithmetic it stands for: pct(bar) is the league
+    // percentile of that bar, and the floor is printed as its number
+    .replace(/\bpctPerdef\b/g, 'pct(perdef)')
+    .replace(/\bpctRimprot\b/g, 'pct(rimprot)')
+    .replace(/\bpct3\b/g, 'pct(3pt)')
+    .replace(/\bsigFloor\b/g, String(SIG_FLOOR))
+    .replace(/(===|!==)\s*"([^"]*)"/g, "$1 '$2'")
   for (;;) {
     const m = /\b(geH|ltH|ge|lt)\(/.exec(s)
     if (!m) return tidy(s)
@@ -373,7 +516,7 @@ export function archetype(p: Player, relax: number = RELAX): string {
 }
 
 /**
- * The tree itself: 45 rules, top-down, first match wins. Exported so callers (and the
+ * The tree itself: every rule in RULES, top-down, first match wins. Exported so callers (and the
  * pinned tests) can ask what the tree says at its OWN thresholds, before the OVR-79
  * rescue relaxes them.
  */
@@ -414,6 +557,9 @@ export function ctxFor(p: Player, relax: number = RELAX): Ctx {
     // the band: floor relaxes with RELAX, ceiling never does — same law as ge/lt above.
     glue: glueDims.filter((v) => ge(v, 55) && lt(v, 76)).length,
     glueMax: Math.max(...glueDims),
+    // the signature reads the league, not a threshold — `relax` has nothing to say to it
+    ...signature(a),
+    sigFloor: SIG_FLOOR,
   }
 }
 
