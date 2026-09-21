@@ -20,10 +20,18 @@
  *   · MARGIN OF VICTORY — the one number that knows what the OTHER team scored. Opponent points
  *     per game is PTS/G minus MOV, which is arithmetic, not a model.
  *
+ * AND WHAT THE OTHER SIDE DID comes from `Opponent Totals.csv`, which is Basketball Reference's
+ * own opponent table for each season, fetched once by scripts/fetch-opponents.ts. It cannot be
+ * summed out of this repo's player rows — a player's totals are his own, never his opponents' —
+ * and it cannot be solved out of the four factors either, so it is the one part of this file that
+ * came off the wire. Its rows name teams in full, which `Team Summaries.csv` turns into the same
+ * abbreviations everything else here is keyed by.
+ *
  * The file is an object keyed `${abbreviation}${season}` — the same key `seasonId` builds in the
  * team database — holding TOTALS, not averages: the app divides by `g` itself, so a per-game
  * figure and a percentage are computed from the same integers the league keeps, and nothing is
- * rounded twice.
+ * rounded twice. The fifteen team totals come first and the fifteen opponent totals after them,
+ * in the same order.
  *
  *   npm run teamstats
  */
@@ -33,7 +41,7 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const dir = process.argv[2] ?? join(here, '..', 'data', 'bref')
-for (const f of ['Player Totals.csv', 'Team Summaries.csv']) {
+for (const f of ['Player Totals.csv', 'Team Summaries.csv', 'Opponent Totals.csv']) {
   if (!existsSync(join(dir, f))) {
     console.error(`missing ${f} in ${dir}`)
     process.exit(1)
@@ -119,26 +127,65 @@ const mov = new Map<string, number>()
   }
 }
 
-/** `[g, mov, ...KEYS]`, integers where the source is integral — the app does every division. */
+/** the full club name, per season, so the opponent table's rows can be keyed like everything else */
+const abOf = new Map<string, string>()
+{
+  const { head, data } = rows('Team Summaries.csv')
+  for (const r of data) {
+    const season = Number(r[head.season])
+    if (!Number.isFinite(season) || season < FROM || r[head.lg] !== 'NBA') continue
+    const name = r[head.team]?.replace(/\*+$/, '').trim()
+    const ab = r[head.abbreviation]
+    if (name && ab) abOf.set(`${name}|${season}`, ab)
+  }
+}
+
+/** WHAT THE OTHER SIDE DID — Basketball Reference's own opponent totals (see fetch-opponents.ts). */
+const against = new Map<string, number[]>()
+{
+  const { head, data } = rows('Opponent Totals.csv')
+  const cols = KEYS.map((k) => head[`opp_${k === 'x3p' ? 'fg3' : k === 'x3pa' ? 'fg3a' : k}`])
+  for (const r of data) {
+    const season = Number(r[head.season])
+    if (!Number.isFinite(season)) continue
+    const name = r[head.team]?.replace(/^"|"$/g, '').replace(/\*+$/, '').trim()
+    const ab = abOf.get(`${name}|${season}`)
+    if (!ab) {
+      console.error(`opponent row with no abbreviation: ${name} ${season}`)
+      continue
+    }
+    against.set(`${ab}${season}`, cols.map((i) => Math.round(Number(r[i]) || 0)))
+  }
+}
+
+/** `[g, mov, ...KEYS, ...KEYS against]`, integers — the app does every division. */
 const out: Record<string, number[]> = {}
 let skipped = 0
+let noOpp = 0
 for (const [key, acc] of totals) {
   const g = games.get(key)
   if (!g) {
     skipped++
     continue
   }
-  out[key] = [g, +(mov.get(key) ?? 0).toFixed(2), ...KEYS.map((k) => Math.round(acc[k]))]
+  const opp = against.get(key)
+  if (!opp) noOpp++
+  out[key] = [g, +(mov.get(key) ?? 0).toFixed(2), ...KEYS.map((k) => Math.round(acc[k])), ...(opp ?? [])]
 }
 
 const dest = join(here, '..', 'src', 'data', 'teamstats.json')
 writeFileSync(dest, JSON.stringify(out), 'utf8')
 
 const seasons = [...Object.keys(out)].map((k) => Number(k.slice(-4)))
-console.log(`teamstats: ${Object.keys(out).length} team-seasons, ${Math.min(...seasons)}–${Math.max(...seasons)}${skipped ? `, ${skipped} without a summary row` : ''}`)
+console.log(
+  `teamstats: ${Object.keys(out).length} team-seasons, ${Math.min(...seasons)}–${Math.max(...seasons)}` +
+    `${skipped ? `, ${skipped} without a summary row` : ''}${noOpp ? `, ${noOpp} without an opponent row` : ''}`,
+)
 const probe = out['GSW2016']
 if (probe) {
   const [g, m, ...t] = probe
   const at = (k: Key) => t[KEYS.indexOf(k)]
-  console.log(`  GSW 2016: ${g} games, ${(at('pts') / g).toFixed(1)} pts, ${(at('trb') / g).toFixed(1)} reb, ${(at('ast') / g).toFixed(1)} ast, ${(at('fg') / at('fga')).toFixed(3)} fg%, opp ${(at('pts') / g - m).toFixed(1)}`)
+  const opp = (k: Key) => t[KEYS.length + KEYS.indexOf(k)]
+  console.log(`  GSW 2016: ${g} games, ${(at('pts') / g).toFixed(1)} pts, ${(at('trb') / g).toFixed(1)} reb, ${(at('ast') / g).toFixed(1)} ast, ${(at('fg') / at('fga')).toFixed(3)} fg%`)
+  console.log(`  allowed:  ${(opp('pts') / g).toFixed(1)} pts (mov says ${(at('pts') / g - m).toFixed(1)}), ${(opp('trb') / g).toFixed(1)} reb, ${(opp('fg') / opp('fga')).toFixed(3)} fg%`)
 }

@@ -4096,12 +4096,28 @@ body:has(.sheet) { overflow: hidden; }
  * he reads this card on.
  */
 @media (min-width: 1600px) and (min-height: 740px) {
+  /**
+   * THE SHAPE GETS A ROW OF ITS OWN, DIRECTLY UNDER THE ATTRIBUTES — his ruling, 2026-09-21: "Make
+   * the hex bigger and more higher and to the left(below the attributes)".
+   *
+   * TOMBSTONE, AN HOUR OLD: the strip stood in the SAME cell as the attributes, pinned to the foot
+   * of it with `align-self: end`, and the list reserved its height as padding. That put the
+   * hexagon at the bottom of the card — which on a 770px window is just under the attributes, and
+   * on his 1,610px one is four hundred pixels below them, at the far right, small. Three
+   * complaints, one cause: the strip was hanging off the bottom of the column instead of following
+   * the list.
+   * It is a grid row now — `main` over `shape`, with the dossier spanning both — so it starts
+   * where the attributes end at every window height, and the hexagon is as big as the row is tall
+   * rather than as big as a reserved strip allowed. No reserve, no overlap to guard, and the
+   * drawing takes the LEFT-hand end with the rule and the key beside it.
+   */
   .pc-body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
     grid-template-areas:
       'years years'
-      'main  id';
+      'main  id'
+      'shape id';
   }
   /**
    * THE SHAPE STANDS IN THE SPACE THE ATTRIBUTES LEAVE — his ruling, 2026-09-21: "The hex on the
@@ -4172,15 +4188,16 @@ body:has(.sheet) { overflow: hidden; }
      31px in a 72px cell at his window, where "30.4" measures 54 and the cell's own padding takes
      14. */
   .pc-cell b { font-size: clamp(18px, 1.55vw, 36px); }
-  /* THE LIST SITS A LITTLE LOWER AND CLOSES ON THE STRIP (his ruling: "move the attributes a bit
-     lower", and "closer to the attributes"): 14px of air above it where there were 3, and 6 under
-     its columns where there were 14. */
-  .pc-attrs { columns: 3; column-gap: 26px; margin-top: 14px; padding-bottom: calc(var(--shape-h) + 6px); }
+  /* THE LIST SITS A LITTLE LOWER (his ruling: "move the attributes a bit lower"): 14px of air above
+     it where there were 3. IT RESERVES NOTHING UNDER ITSELF ANY MORE — the shape has its own grid
+     row, so the list ends where its columns end and the hexagon starts there. */
+  .pc-attrs { columns: 3; column-gap: 26px; margin-top: 14px; }
   .pct-shape {
-    grid-area: main;
-    align-self: end;
+    grid-area: shape;
+    align-self: stretch;
     justify-self: stretch;
-    height: var(--shape-h);
+    min-height: var(--shape-h);
+    padding-top: 10px;
     display: grid;
     /* ONE ROW AND NOT TWO. The block is a STRIP at the foot of a column now, so its three parts
        stand side by side — the shape, its ruled name, and the door — rather than stacked with the
@@ -4188,19 +4205,22 @@ body:has(.sheet) { overflow: hidden; }
        gets, and the hexagon is measured off this block's height: at two rows it came out 110px,
        at one it is 159. */
     grid-template-columns: auto minmax(0, 1fr) auto;
-    /* THE HEXAGON MOVED TO THE FAR END, because that is where the tail it rises into is — the
-       shortest column is the last one. The key takes the end it left. */
-    grid-template-areas: 'adv rule hex';
+    /* THE HEXAGON TAKES THE LEFT-HAND END — his ruling — and the rule and the key follow it. */
+    grid-template-areas: 'hex rule adv';
     align-items: center;
     gap: 0 20px;
   }
   .pct-shape .pc-rule { grid-area: rule; margin-top: 0; }
-  /* THE BOX IS TALLER THAN THE STRIP ON PURPOSE. It is aligned to the strip's foot and overflows
-     upward into the tail above it, which is ground the attribute columns do not use. */
-  .pct-hexbox { grid-area: hex; justify-self: end; align-self: end; }
-  /* 18px is the box's own padding and its two hairlines; the drawing takes the strip's height and
-     the rise above it, and the 320 ceiling from his "the hex size is good" still caps the pair. */
-  .pct-hexbox .heathex { width: min(320px, calc(var(--shape-h) + var(--shape-rise) - 18px)); }
+  /* THE BOX HUGS THE DRAWING AND STANDS AT THE TOP OF ITS ROW, which is what "higher" means once
+     the row is its own: the case is square, as tall as the row allows up to its ceiling, and it
+     starts immediately under the last attribute rather than floating in the middle of what is
+     left. The height is read off the ROW (a definite 1fr track), so the drawing inside can take
+     100% of the box without either of them asking the other how big it is. */
+  .pct-hexbox { grid-area: hex; justify-self: start; align-self: start; height: min(100%, 538px); aspect-ratio: 1; }
+  /* THE DRAWING IS ITS BOX, less the 18px of padding and hairline the case has always had. The
+     ceiling went 320 to 520 with his "make the hex bigger": 320 was measured against a strip in the
+     foot of a column, and this is a row of its own on a screen with the height for it. */
+  .pct-hexbox .heathex { height: 100%; width: auto; max-width: 100%; }
   /* the way down into the numbers stands at the far end of the strip: the shape at one end of the
      foot, the door at the other, and the attributes' own ground between them */
   .pc-adv { grid-area: adv; margin-top: 0; justify-self: start; min-width: clamp(180px, 18vw, 300px); padding: 10px 24px; }
@@ -4457,44 +4477,108 @@ body.offstage #root { position: relative; z-index: 1; }
    right edge of a 375px phone. Measured before this: scrollWidth 395 against a 375 window. */
 .tdb-detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 @media (min-width: 1100px) {
-  /* the sheet stops being a column and becomes a page: wide enough for a floor and a ledger side
-     by side, capped so a 4K screen does not stretch one line of roster across a metre of glass */
-  .tdb-sheet:not(.tdb-list) > * { max-width: min(1680px, 96vw); margin-left: auto; margin-right: auto; }
+  /* THE SHEET IS THE PAGE NOW — his ruling, 2026-09-21: "Make it even bigger". It was capped at
+     1680 "so a 4K screen does not stretch one line of roster across a metre of glass", and on his
+     screen that cap WAS the complaint: 1680 of card in 3,840 of window is the same strip of black
+     either side, one size up. The page takes the window less a gutter, and what keeps a line of
+     roster from running a metre is that the card is two columns — the floor on one side, the
+     league's own table on the other, both of which want every pixel. */
+  .tdb-sheet:not(.tdb-list) > * { max-width: 96vw; margin-left: auto; margin-right: auto; }
   /* THE FLOOR AND ITS VERDICT ON ONE SIDE, THE RECORD AND THE ROSTER ON THE OTHER. 1.05fr against
      1fr: the court is square and wants the extra, the line is a grid of cells and gives it. */
   .tdb-detail { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 12px 34px; align-items: start; }
   .tdb-left, .tdb-right { min-width: 0; }
   /* every number on this page grows with the page (his ruling). The court's 430px cap was written
      for a 562px column; here it is the half of the sheet it stands in. */
-  .tdb-sheet .court { max-width: min(720px, 100%); margin-top: 14px; }
-  .tdb-sheet .tdb-club .tcard-ab { width: 64px; height: 64px; font-size: 25px; }
-  .tdb-sheet .tdb-club .opp-name { font-size: clamp(30px, 2.6vw, 52px); }
-  .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 8vw, 150px); }
-  .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 20px); }
-  .tdb-sheet .rowhead.tdb span { font-size: clamp(14px, 1.1vw, 22px); }
+  .tdb-sheet .court { max-width: min(1000px, 100%); margin-top: 16px; }
+  .tdb-sheet .tdb-club .tcard-ab { width: clamp(64px, 3.2vw, 96px); height: clamp(64px, 3.2vw, 96px); font-size: clamp(25px, 1.3vw, 38px); }
+  .tdb-sheet .tdb-club .opp-name { font-size: clamp(30px, 3vw, 76px); }
+  .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 9vw, 210px); }
+  .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 24px); }
+  .tdb-sheet .rowhead.tdb span { font-size: clamp(14px, 1.1vw, 24px); }
+  /* the roster under the table reads at the page's size too, not the phone's */
+  .tdb-sheet .row.dr.tdb .pname .who b { font-size: clamp(15px, 1.15vw, 26px); }
+  .tdb-sheet .row.dr.tdb .pname .who i { font-size: clamp(9px, 0.62vw, 14px); }
 }
 
-/* THE TEAM'S OWN LINE — Basketball Reference's per-game table, in the app's own cells (his ruling:
-   "add more(as many as possible) real (basic, not advanced) stats on the team from basketball
-   ref"). It is the player card's STATLINE shape, because it is the same kind of fact and the two
-   should read the same way: the column's name over the figure, hairline-ruled, as many across as
-   the width allows. `auto-fit` rather than a fixed count — nineteen cells go five across on a
-   phone and ten across on his desk without a breakpoint for either. */
+/* ---- THE TEAM AND OPPONENT BLOCK — Basketball Reference's own four lines ----
+   HIS RULING, 2026-09-21: "have the stats be 4 lines - basic stats. League ranking. Opp basic
+   stats. League ranking."
+
+   ONE GRID AND NOT FOUR ROWS. A rank printed under a figure is only a rank if it is under THAT
+   figure, so the head, the two lines and the two rank lines are cells of a single grid: a label
+   column that sizes itself, then one equal track per stat. Four rows laid out separately would
+   line up by luck and stop lining up the first time a figure went to three digits.
+
+   IT SCROLLS SIDEWAYS RATHER THAN WRAPPING when the column cannot hold eighteen stats — a stat
+   table that wraps is two tables that disagree about their own heads — and the label column is
+   sticky, so the row you are reading still says whose it is halfway along. */
 .tdb-linehead { margin-top: 14px; }
-.tdb-line { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 62px), 1fr)); gap: 1px; margin-top: 8px; padding: 1px; }
-.tdb-cell { display: block; min-width: 0; padding: 7px 8px 6px; background: var(--surface); outline: 1px solid var(--line); }
-.tdb-cell i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tdb-cell b { display: block; margin-top: 3px; font-family: var(--serif); font-size: 19px; font-weight: 400; line-height: 1; color: var(--ink); }
+.tdb-line {
+  display: grid;
+  grid-template-columns: auto repeat(var(--cols), minmax(38px, 1fr));
+  align-items: center;
+  margin-top: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+/* the column heads, and the label column's own empty corner */
+.tdb-col,
+.tdb-lab.head {
+  padding: 7px 6px 6px;
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted-2);
+  text-align: center;
+  white-space: nowrap;
+}
+/* whose line it is, down the left edge: the team's pair in cream and the opponent's in the away
+   side's own ink, so the block reads as two pairs without a second border */
+.tdb-lab {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: 6px 10px 6px 9px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+.tdb-lab.opp { color: var(--them); }
+.tdb-lab.rank { font-weight: 400; color: var(--muted-2); }
+.tdb-num {
+  padding: 6px 6px 5px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* A RANK IS NOT A STAT and is not drawn like one: the mono face at half the size, dimmer, tucked
+   under the figure it belongs to. The eye reads the two lines and drops to the rank when it wants
+   it, which is the order his ruling puts them in. */
+.tdb-num.rank {
+  padding-top: 0;
+  padding-bottom: 7px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted-2);
+}
+.tdb-num.opp { color: var(--ink-2); }
 @media (min-width: 900px) {
-  /* 76px AND NOT 84, AND THE FIGURE COMES DOWN A POINT TO PAY FOR IT. Nineteen cells is an awkward
-     number: at 84 the desk fitted nine across and left the nineteenth standing alone on a third
-     row, which reads as a mistake rather than as a table. At 76 it is ten and nine — one row full,
-     one row one short — and the widest figure on the block, a three-digit opponent's points, still
-     measures 50 inside a cell whose padding takes 20. */
-  .tdb-line { grid-template-columns: repeat(auto-fit, minmax(min(100%, 76px), 1fr)); }
-  .tdb-cell { padding: 9px 10px 8px; }
-  .tdb-cell i { font-size: 10px; letter-spacing: 0.14em; }
-  .tdb-cell b { font-size: clamp(20px, 1.4vw, 28px); margin-top: 4px; }
+  .tdb-line { grid-template-columns: auto repeat(var(--cols), minmax(52px, 1fr)); }
+  .tdb-col, .tdb-lab { font-size: 10px; }
+  .tdb-lab { padding: 8px 14px 8px 12px; }
+  .tdb-num { padding: 9px 7px 7px; font-size: clamp(19px, 1.5vw, 30px); }
+  .tdb-num.rank { padding-top: 0; padding-bottom: 10px; font-size: clamp(11px, 0.75vw, 15px); }
 }
 
 /* ---- the spotlight ----

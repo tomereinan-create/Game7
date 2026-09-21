@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { seasonGauges } from '../engine/gauges'
 import { teamLine } from '../engine/teamline'
 import { archetype, PLAYERS } from '../engine/pool'
@@ -364,16 +364,30 @@ function TeamLineBlock({ t }: { t: TeamSeason }) {
     <>
       <div className="pc-rule tdb-linehead">
         <span>
-          TEAM.{t.y} &#9656; PER GAME &#183; {line.g} GAMES &#183; BASKETBALL REFERENCE
+          TEAM.{t.y} &#9656; PER GAME &#183; {line.g} GAMES &#183; RANK 1 OF {line.of} IS BEST &#183; BASKETBALL REFERENCE
         </span>
         <i />
       </div>
-      <div className="tdb-line">
-        {line.cells.map((c) => (
-          <span className="tdb-cell" key={c.k}>
-            <i>{c.k}</i>
-            <b>{c.v}</b>
+      {/* ONE GRID, FIVE ROWS, NINETEEN COLUMNS — his ruling: "have the stats be 4 lines - basic
+          stats. League ranking. Opp basic stats. League ranking." A column has to line up down all
+          four lines or a rank under a figure means nothing, so the whole block is a single grid and
+          every row is just cells in it; a row of its own would only line up by luck. */}
+      <div className="tdb-line" style={{ '--cols': line.cols.length } as React.CSSProperties}>
+        <span className="tdb-lab head" />
+        {line.cols.map((c) => (
+          <span className="tdb-col" key={c}>
+            {c}
           </span>
+        ))}
+        {line.rows.map((r, i) => (
+          <Fragment key={`${r.label}${r.side}${i}`}>
+            <span className={`tdb-lab ${r.kind} ${r.side}`}>{r.label}</span>
+            {r.cells.map((v, j) => (
+              <span className={`tdb-num ${r.kind} ${r.side}`} key={line.cols[j]}>
+                {v}
+              </span>
+            ))}
+          </Fragment>
         ))}
       </div>
     </>
