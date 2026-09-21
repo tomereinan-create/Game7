@@ -16,6 +16,7 @@ const FIFTEEN = [
   'Two-way shooter', 'Defensive specialist', 'Shot blocker', 'Pass-first playmaker', 'Ball-dominant guard', 'Microwave scorer', 'Gunner',
   'Midrange specialist', 'Paint scorer', 'Rim attacker', 'Spot-up shooter', 'Perimeter scorer', 'Shooting big',
   'Rebounder', 'Ball thief', 'Foul magnet',
+  'High-wire playmaker', 'Lockdown defender', // the two names for the men PAST the limit
 ]
 const SIG = new Set(FIFTEEN)
 /** The tree as it stood before the block: every rule that is not one of the fifteen, in shipped order. */
@@ -72,7 +73,9 @@ describe('the signature block', () => {
 
   it('every one of the fifteen names a real population', () => {
     const h = hist()
-    for (const t of FIFTEEN) expect(h.get(t) ?? 0, t).toBeGreaterThanOrEqual(50)
+    // the two past-the-limit names are small on purpose: they hold only the men a star rule declined
+    const PAST = new Set(['High-wire playmaker', 'Lockdown defender'])
+    for (const t of FIFTEEN) expect(h.get(t) ?? 0, t).toBeGreaterThanOrEqual(PAST.has(t) ? 5 : 50)
   })
 
   it('names the men it was built for', () => {
@@ -102,10 +105,8 @@ describe('the signature block', () => {
       expect(hits.length, p.name).toBeLessThanOrEqual(1)
       // a signature and a rule that reads it are the same fact — unless the man is past THE LIMIT, where the
       // role name is withheld on purpose and he falls through to the fallback
-      const past =
-        (c.sig === 'playvol' && c.a.playvol >= 88) ||
-        ((c.sig === 'perdef' || c.sig === 'rimprot') && (c.a.perdef >= 90 || c.a.rimprot >= 90)) ||
-        (c.sig === 'perimdisrupt' && c.a.perimdisrupt >= 90)
+      // (only an Anchor-grade rim protector under perdef 90 is left: Anchor itself names him, higher up)
+      const past = (c.sig === 'perdef' || c.sig === 'rimprot') && c.a.rimprot >= 90 && c.a.perdef < 90
       expect(hits.length === 1, p.name).toBe(c.sig !== null && !past)
     }
   })
@@ -117,11 +118,16 @@ describe('the signature block', () => {
       if (t === 'Pass-first playmaker' || t === 'Ball-dominant guard') expect(p.attrs.playvol, p.name).toBeLessThan(88)
       if (t === 'Defensive specialist') expect(p.attrs.perdef, p.name).toBeLessThan(90)
       if (t === 'Shot blocker') expect(p.attrs.rimprot, p.name).toBeLessThan(90)
-      if (t === 'Ball thief') expect(p.attrs.perimdisrupt, p.name).toBeLessThan(90)
     }
-    // a floor-general-grade passer the star rule declined is left unnamed rather than dressed down
-    expect(SIG.has(archetype(get("Andre Miller '02")))).toBe(false)
-    expect(archetype(get("Scottie Pippen '97"))).toBe('Unclassified') // perdef 98, OVR 86: a star the star rules miss
+    // past the bar a man takes a name of his own, never the role player's
+    expect(archetype(get("Andre Miller '02"))).toBe('Floor general') // his gate ruling: ball security 50
+    expect(archetype(get("Sleepy Floyd '87"))).toBe('High-wire playmaker') // playmaking 89, ball security 47
+    expect(archetype(get("Scottie Pippen '97"))).toBe('Lockdown defender') // perdef 98 on a man Stopper cannot take
+    for (const p of PLAYERS) {
+      const t = archetype(p)
+      if (t === 'High-wire playmaker') expect(p.attrs.playvol, p.name).toBeGreaterThanOrEqual(88)
+      if (t === 'Lockdown defender') expect(p.attrs.perdef, p.name).toBeGreaterThanOrEqual(90)
+    }
   })
 
   it('ignores relax: the floor is a percentile, not a 0-99 rating', () => {

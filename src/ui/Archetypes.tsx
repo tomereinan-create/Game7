@@ -81,6 +81,8 @@ export const RULE: Record<string, string> = {
   Rebounder: 'The glass is where he is among the league’s best. He ends possessions at one end and extends them at the other.',
   'Ball thief': 'Steals and deflections are his signature. He reads the pass early, gets a hand on the ball, and the other team plays the night a little carefully.',
   'Foul magnet': 'Getting to the line is the best thing he does. He seeks the contact, gets the whistle, and puts the other team in the bonus early.',
+  'High-wire playmaker': 'Elite passing with the ball in harm’s way. He sees everything and tries everything, and some of it ends up going the other way.',
+  'Lockdown defender': 'Perimeter defense at the very top of the league, on a man who does far more than defend. He takes the best scorer on the floor and still carries his share at the other end.',
   Balanced: 'The ordinary run of the league — a real player with a real job, whose mix of strengths never settles into a type. Most of every rotation is made of him.',
   Unclassified: 'A good player whose shape the tree has no name for yet. He is reported rather than fudged into the nearest fit — `npm run unfit` prints the list.',
 }

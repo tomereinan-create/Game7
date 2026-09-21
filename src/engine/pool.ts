@@ -345,12 +345,19 @@ export const RULES: Rule[] = [
   { tag: 'Shooting big', test: (c) => c.geH(c.h, 81) && (c.sig === '3pt' || (c.sig === 'mid' && c.paint < c.mid && c.a.volume < 60)) },
   // the supporting families — only ever reached when no identity family made the floor
   { tag: 'Rebounder', test: (c) => c.sig === 'reb' },
-  { tag: 'Ball thief', test: (c) => c.sig === 'perimdisrupt' && c.a.perimdisrupt < 90 },
+  { tag: 'Ball thief', test: (c) => c.sig === 'perimdisrupt' },
   { tag: 'Foul magnet', test: (c) => c.sig === 'fouldraw' },
+  // PAST THE LIMIT (his ruling: "Find a name for both options then"). The two groups the limit left unnamed are not
+  // role players, so they do not get a role player's name. HIGH-WIRE PLAYMAKER is the floor-general-grade passer
+  // (playmaking 88+) whom Floor general still declines — he does not hold the ball even as well as the median man
+  // (Mark Jackson '99-'01, Sleepy Floyd '87). LOCKDOWN DEFENDER is perimeter defence at Stopper's 90 on a man Stopper
+  // cannot take because he also scores, shoots or carries a load (Scottie Pippen '97, Jrue Holiday '17/'18).
+  { tag: 'High-wire playmaker', test: (c) => c.sig === 'playvol' && c.a.playvol >= 88 },
+  { tag: 'Lockdown defender', test: (c) => (c.sig === 'perdef' || c.sig === 'rimprot') && c.a.perdef >= 90 },
 ]
 
 /** The fifteen signature tags, in the order the tree asks them. */
-export const SIGNATURE_TAGS: string[] = RULES.slice(-16).map((r) => r.tag) // sixteen: the scoring-load signature is split by conversion
+export const SIGNATURE_TAGS: string[] = RULES.slice(-18).map((r) => r.tag) // eighteen: sixteen role names plus the two past-the-limit names
 
 /** The shipped order — the ratified law, and what "reset" returns to. */
 export const DEFAULT_ORDER: string[] = RULES.map((r) => r.tag)
