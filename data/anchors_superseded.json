@@ -807,5 +807,18 @@
     "current": 63,
     "superseded_by": 166,
     "superseded_note": "RELEASED BY TOMER ON ROUND 166, in his own word on the round: \"166 confirm\". Released by Tomer on round 166 (confirm): the paint premium reads the discounted rate. recal_166 made the paint HIGH-VOLUME PREMIUM read the same creation-discounted attempt rate the composite four lines above it reads (share*fga100*creation_factor(sh)), so a paint rate is discounted once and paid once. This card is an assisted-diet big -- 70% assisted, percentile .909 -> .600, which is his whole premium -- and it was ALREADY STANDING ON THE FLOOR of its band before the round (reading 64 of 66 +-2, zero room down), so the discount takes it one point lower. THE PIN WAS NOT WRONG AND NEITHER ROUND IS REVERSED: recal_139 fixed a real defect and that fix still stands untouched; what moved is the paint bar underneath the OFF reading. Tomer released it by one point rather than give up the discount, and it is re-pinned on round 166 at 65 +-2 so the new reading sits inside with room either side."
+  },
+  {
+    "kind": "team_rank",
+    "season": 2000,
+    "ab": "LAL",
+    "scale": "team:off",
+    "max_rank": 5,
+    "round": 110,
+    "ruling": "How is this team 47 OFF with 2 all time great players",
+    "note": "the rank is the thing he was pointing at, and it survives any rescale: 17th of 28 -> 2nd, against a real ORtg rank of 5th.",
+    "current": 6,
+    "superseded_by": 170,
+    "superseded_note": "RELEASED BY TOMER ON ROUND 170, verbatim: \"Release the Lakers rank\". recal_170 pays recal_64/91/118's off-ball floor its correction at recal_96's load share, and Sam Perkins '00 (20.0 mpg, 3pt 88, volume 18 — the class the round corrects) falls OVR 59 -> 57. bestfive picks by total OVR, so Indiana's five swaps him for Travis Best '00 and IND's offence rises 124.685 -> 126.891, passing a Lakers five that does not move by a thousandth: team offence is computed from ATTRIBUTES and recal_170 moves none. The pin sat EXACTLY on 5 with zero slack and now reads 6 of 28. It is RE-PINNED at <= 6 for round 170 with its ruling text kept, and recal_110's SIBLING value pin (Lakers '00 best legal five, team:offdial 64 +-4) is UNTOUCHED and reads 65 either way — the dial is what his 2000 complaint was actually about, and it never moved."
   }
 ]

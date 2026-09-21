@@ -571,6 +571,18 @@ export const DEFAULT_TACTICS: Tactics = {
  * 4.148, a width of 0.131, true midpoint by r126's rule: 3.97 -> 4.08 (blind -0.3489, oracle +0.5321,
  * 0.049 and 0.032 of room). crashOff held at 0.08 (blind -0.664, oracle +0.541) and crashDef at 0.38
  * (-0.392, +0.595), and the six others held their bands untouched. All nine pass.
+ * recal_170 paid recal_64/91/118's off-ball floor at recal_96's load share: 259 o_ovrs and 178 OVRs, EVERY ONE
+ * OF THEM DOWN, and the class is the low-minute STRETCH BIG — a shooting four or five who crashes the glass.
+ * That is the exact profile the harness's ovr>=55 sample was drawing for its rebounding, so cards like Obi
+ * Toppin '25 (66 -> 61), Matt Bonner '05, Channing Frye '16 and Mike Muscala '17 thin out of the pool and the
+ * fives it draws rebound MORE alike. crash def glass broke ALONE and on the BLIND edge this time (-0.2483 at
+ * 0.38, against the -0.30 ceiling) — the mirror of recal_167's break, and for the mirror reason: with the
+ * pool's glass more uniform a blind crash call costs less, so the tax must be heavier to keep it a real
+ * mistake. Swept ONCE from MAIN's constants, as the law requires. Feasible 0.455 (blind -0.3006, the ceiling
+ * exactly; 0.454 reads -0.2999 and fails) to 0.789 (oracle +0.5000 exactly at 0.790 and fails), a WIDE 0.334,
+ * true midpoint by r126's rule: 0.38 -> 0.62 (blind -0.4166, oracle +0.5542; 0.117 and 0.054 of room). hunt
+ * held at 3.97 (blind -0.38, oracle +0.55) and crashOff at 0.08 (-0.59, +0.60) — the first round in four that
+ * did not move either crash tax together — and the six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
