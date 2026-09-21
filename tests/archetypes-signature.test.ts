@@ -77,7 +77,7 @@ describe('the signature block', () => {
 
   it('names the men it was built for', () => {
     for (const [name, want] of [
-      ["Scottie Pippen '97", 'Defensive specialist'],
+      ["Kobe Bryant '98", 'Defensive specialist'], // perdef 86: under Stopper's 90, so the role name is his
       ["Eddie Jones '01", 'Two-way shooter'],
       ["LaMarcus Aldridge '16", 'Midrange specialist'],
       ["Pau Gasol '05", 'Paint scorer'],
@@ -86,7 +86,7 @@ describe('the signature block', () => {
       // offence into the star band, so the EXISTING 'Offensive superstar' rule now names him — which is the block
       // working as designed (a star rule always outranks a signature). Fox '19 sits at OFF 68, far from any star floor.
       ["De'Aaron Fox '19", 'Ball-dominant guard'],
-      ["Rod Strickland '94", 'Pass-first playmaker'],
+      ["Maurice Cheeks '88", 'Pass-first playmaker'], // playvol 84: under Floor general's 88 (Strickland '94 at 90 is past the limit)
       ["Ray Allen '00", 'Perimeter scorer'],
       ["Josh Hart '25", 'Rebounder'],
       ["Luol Deng '06", 'Balanced'], // nothing on his sheet reaches the floor, and he is not dressed up
@@ -100,9 +100,28 @@ describe('the signature block', () => {
       const c = ctxFor(p)
       const hits = RULES.filter((r) => SIG.has(r.tag) && r.tag !== 'Two-way shooter' && r.test(c))
       expect(hits.length, p.name).toBeLessThanOrEqual(1)
-      // a signature and a rule that reads it are the same fact
-      expect(hits.length === 1, p.name).toBe(c.sig !== null)
+      // a signature and a rule that reads it are the same fact — unless the man is past THE LIMIT, where the
+      // role name is withheld on purpose and he falls through to the fallback
+      const past =
+        (c.sig === 'playvol' && c.a.playvol >= 88) ||
+        ((c.sig === 'perdef' || c.sig === 'rimprot') && (c.a.perdef >= 90 || c.a.rimprot >= 90)) ||
+        (c.sig === 'perimdisrupt' && c.a.perimdisrupt >= 90)
+      expect(hits.length === 1, p.name).toBe(c.sig !== null && !past)
     }
+  })
+
+  it('THE LIMIT: a role name stops where its star counterpart starts', () => {
+    // his ruling: "I dont want floor general to be classified as pass first playmaker"
+    for (const p of PLAYERS) {
+      const t = archetype(p)
+      if (t === 'Pass-first playmaker' || t === 'Ball-dominant guard') expect(p.attrs.playvol, p.name).toBeLessThan(88)
+      if (t === 'Defensive specialist') expect(p.attrs.perdef, p.name).toBeLessThan(90)
+      if (t === 'Shot blocker') expect(p.attrs.rimprot, p.name).toBeLessThan(90)
+      if (t === 'Ball thief') expect(p.attrs.perimdisrupt, p.name).toBeLessThan(90)
+    }
+    // a floor-general-grade passer the star rule declined is left unnamed rather than dressed down
+    expect(SIG.has(archetype(get("Andre Miller '02")))).toBe(false)
+    expect(archetype(get("Scottie Pippen '97"))).toBe('Unclassified') // perdef 98, OVR 86: a star the star rules miss
   })
 
   it('ignores relax: the floor is a percentile, not a 0-99 rating', () => {
@@ -148,11 +167,11 @@ describe('league percentile', () => {
 describe('the signature rules print as arithmetic', () => {
   it('reads the block in the tree’s own vocabulary', () => {
     expect(ruleText('Two-way shooter')).toBe('h < 82 && pct(perdef) >= 0.75 && pct(3pt) >= 0.75')
-    expect(ruleText('Pass-first playmaker')).toBe("sig === 'playvol' && volume < 65")
-    expect(ruleText('Ball-dominant guard')).toBe("sig === 'playvol' && volume >= 65")
+    expect(ruleText('Pass-first playmaker')).toBe("sig === 'playvol' && volume < 65 && playvol < 88")
+    expect(ruleText('Ball-dominant guard')).toBe("sig === 'playvol' && volume >= 65 && playvol < 88")
     expect(ruleText('Microwave scorer')).toBe("sig === 'volume' && efficiency >= 40")
     expect(ruleText('Spot-up shooter')).toBe("sig === '3pt' && h < 81 && volume < 60")
-    expect(ruleText('Defensive specialist')).toBe("sig === 'perdef' && (h < 81 || pct(rimprot) < 0.75)")
+    expect(ruleText('Defensive specialist')).toBe("sig === 'perdef' && (h < 81 || pct(rimprot) < 0.75) && perdef < 90")
     expect(ruleText('Midrange specialist')).toBe("sig === 'mid' && (h < 81 || paint >= mid || volume >= 60)")
     for (const t of FIFTEEN) {
       const s = ruleText(t)

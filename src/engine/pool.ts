@@ -312,14 +312,19 @@ export const RULES: Rule[] = [
   // side would only make the two rules overlap. They are written as plain comparisons for that reason.
   // 6'9" is written as 81 here rather than BIG_HT: ruleText prints a rule from its SOURCE, and a
   // production build renames the constant, so the screen would read `h < Ne`.
+  // THE LIMIT (his ruling: "push these new archetypes, but with a limit. Meaning, I dont want floor general to be
+  // classified as pass first playmaker"). A role player's name stops where its star counterpart starts: playmaking
+  // under Floor general's 88, perimeter defence under Stopper's 90, rim protection under Anchor's 90, disruption under
+  // Pest's 90. A man at or past that bar whom the star rule still declined (Floor general wants ball security 61, his
+  // own ruling) is NOT dressed in the lesser name — he falls through to the fallback, where he can be seen and ruled on.
   { tag: 'Two-way shooter', test: (c) => c.ltH(c.h, 82) && c.pctPerdef >= c.sigFloor && c.pct3 >= c.sigFloor },
   // a defender's signature on a big's body is rim protection if he has that too; otherwise he is what
   // Pippen was — a man who guards the perimeter at 6'9".
-  { tag: 'Defensive specialist', test: (c) => c.sig === 'perdef' && (c.ltH(c.h, 81) || c.pctRimprot < c.sigFloor) },
-  { tag: 'Shot blocker', test: (c) => c.sig === 'rimprot' || (c.sig === 'perdef' && c.geH(c.h, 81) && c.pctRimprot >= c.sigFloor) },
+  { tag: 'Defensive specialist', test: (c) => c.sig === 'perdef' && (c.ltH(c.h, 81) || c.pctRimprot < c.sigFloor) && c.a.perdef < 90 },
+  { tag: 'Shot blocker', test: (c) => (c.sig === 'rimprot' || (c.sig === 'perdef' && c.geH(c.h, 81) && c.pctRimprot >= c.sigFloor)) && c.a.rimprot < 90 && c.a.perdef < 90 },
   // the passers split on whether he is also looking for his own
-  { tag: 'Pass-first playmaker', test: (c) => c.sig === 'playvol' && c.a.volume < 65 },
-  { tag: 'Ball-dominant guard', test: (c) => c.sig === 'playvol' && c.a.volume >= 65 },
+  { tag: 'Pass-first playmaker', test: (c) => c.sig === 'playvol' && c.a.volume < 65 && c.a.playvol < 88 },
+  { tag: 'Ball-dominant guard', test: (c) => c.sig === 'playvol' && c.a.volume >= 65 && c.a.playvol < 88 },
   // HIS RULING ON THE NAMES: "focus on lower level players, not go to scorer". The men this block reaches are role
   // players — its fifteen groups have median OVRs of 49 to 63 — so the names are a role player's names. The
   // scoring-load signature is split by whether the shots go in: more than half of that group converts under 40.
@@ -335,7 +340,7 @@ export const RULES: Rule[] = [
   { tag: 'Shooting big', test: (c) => c.geH(c.h, 81) && (c.sig === '3pt' || (c.sig === 'mid' && c.paint < c.mid && c.a.volume < 60)) },
   // the supporting families — only ever reached when no identity family made the floor
   { tag: 'Rebounder', test: (c) => c.sig === 'reb' },
-  { tag: 'Ball thief', test: (c) => c.sig === 'perimdisrupt' },
+  { tag: 'Ball thief', test: (c) => c.sig === 'perimdisrupt' && c.a.perimdisrupt < 90 },
   { tag: 'Foul magnet', test: (c) => c.sig === 'fouldraw' },
 ]
 
