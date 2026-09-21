@@ -191,8 +191,10 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   // A man the pool holds one season of has no strip to step and no peak to compare against — that
   // one season IS his peak, so the card says so rather than calling it merely "selected".
   const isPeak = all.length ? peak?.name === p.name : true
-  const yy = (y: number) => `’${String(y).slice(2)}`
-  const span = all.length > 1 ? `${yy(all[0].peak_season)}–${yy(all[all.length - 1].peak_season)}` : null
+  /* TOMBSTONE — `span` AND `yy`, the "’14–’25" in the strip's own rule. His ruling, 2026-09-21: "Remove this
+     SEASONS ▸ ’14–’25 ON FILE." The strip prints every one of those years as a key you can press,
+     so the rule over it was the first and last of them said again in smaller type. It goes with
+     the rule; nothing else read it. */
 
   // The dossier's ledger — the run-on "PG/SG · 6'11\" · MIL · 63 G" line broken into the readout
   // rows 1b prints, label dim on the left and the value bright on the right. A row with nothing
@@ -256,10 +258,9 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
 
         {all.length > 1 ? (
           <div className="pct-years" style={club}>
-            <div className="pc-rule">
-              <span>SEASONS &#9656; {span} ON FILE</span>
-              <i />
-            </div>
+            {/* NO RULE OVER THE STRIP (his ruling: "Remove this SEASONS ▸ ’14–’25 ON FILE"). The
+                years are the strip; a caption naming the first and the last of them was the strip
+                said twice. The keys took the height it gave back — see `.pc-term .yrchip`. */}
             <SeasonStrip years={years} cur={p.name} go={(id) => setSeason(all.find((x) => x.name === id) ?? p)} />
           </div>
         ) : null}

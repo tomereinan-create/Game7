@@ -3762,8 +3762,12 @@ body:has(.sheet) { overflow: hidden; }
        right, each half the window. The dossier used to be pinned to 292px, which left the
        season line stranded across 750 — seven figures with a hand's width of air between
        them — and squeezed the archetype sentence into three short lines. */
+    /* TWO COLUMNS, which is what the mock's `auto-fit minmax(min(100%, 340px), 1fr)` comes out as
+       on a sheet this wide: the line on the left and the man on the right, each half the window.
+       THE HEXAGON JOINS THE ATTRIBUTES ON A WIDE DESK and this is not that desk — see the
+       three-column block further down and the note on why 1200 is where it starts. */
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
       'years years'
       'main  id'
@@ -3801,7 +3805,7 @@ body:has(.sheet) { overflow: hidden; }
      stretching row under it could only ever be a taller empty box. The slack moves up a row to the
      DOSSIER instead, and the shape's row is sized by what stands in it — the rule, the hexagon's
      own box and the ADVANCED key, with nothing left over to show. */
-  .pc-body { overflow: hidden; grid-template-rows: auto minmax(0, 1fr) auto; align-self: stretch; }
+  .pc-body { overflow: hidden; align-self: stretch; }
   .pct-shape { align-self: stretch; min-height: 0; }
   /* THE BOX IS THE HEXAGON'S OWN SIZE NOW, not the row's — "the hex size is good but it should fit
      inside the back box so make that box smaller". It hugs the drawing with the 8px of padding it
@@ -3924,6 +3928,39 @@ body:has(.sheet) { overflow: hidden; }
  */
 @media (min-width: 1200px) and (min-height: 740px) {
   /**
+   * THE HEXAGON CROSSES THE CARD — his ruling, 2026-09-21: "For the player card page, move the hex
+   * to the attributes side."
+   *
+   * It stood UNDER THE DOSSIER, in the right-hand column with the club's banner, the ledger and
+   * the archetype sentence: 'main id' over 'main shape'. It belongs with the attributes — both are
+   * the engine's read of the man, where the dossier is who he IS — so the shape takes a column of
+   * its own beside them and the dossier takes the whole right-hand side.
+   *
+   * WHY A COLUMN AND NOT A ROW UNDER THE ATTRIBUTES, which is the other way to read the ruling:
+   * the attributes were told to cover the entire side of the screen the day before this, and they
+   * do — 412px of block in 417 of room. A hexagon stacked under them comes out of that same 417,
+   * which would undo yesterday's ruling to satisfy today's. Beside them it costs WIDTH, and width
+   * is the one thing this column has to spare on his 2000px desk: two attribute columns of 414
+   * where they were 470.
+   *
+   * AND IT IS GATED WITH THE REST OF THIS BLOCK. Below 1200 the sheet is 960px of card: a third
+   * column would leave the attributes 358 to hold two columns of a name, a bar and a figure, which
+   * is 165 apiece — narrower than the bar alone. Those windows keep the two-column arrangement
+   * above, with the shape under the dossier. FLAGGED RATHER THAN FORCED: his ruling is about the
+   * screen he reads this card on, and on a phone the card is one column where the shape already
+   * follows the attributes in DOM order.
+   */
+  .pc-body {
+    grid-template-columns: minmax(0, 1fr) clamp(196px, 15vw, 268px) minmax(0, 0.92fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'years years years'
+      'main  shape id';
+  }
+  /* the key stands at the foot of its own column now that the shape has one */
+  .pc-adv { margin-top: auto; }
+
+  /**
    * TWO COLUMNS AGAIN, AND THEY ARE MEANT TO REACH THE FOOT OF THE WINDOW — his ruling,
    * 2026-09-21: "The attributes need to cover the entire side of the screen, we dont need all that
    * empty space."
@@ -3975,7 +4012,24 @@ body:has(.sheet) { overflow: hidden; }
   .pc-grpname { font-size: clamp(11px, 1.8vh, 16px); margin-bottom: 3px; }
   .pc-grp { margin-bottom: 4px; }
   .pct-attr { gap: 14px; padding: clamp(1px, 0.28vh, 4px) 0; }
-  .pct-attr .k { flex: 0 0 auto; font-size: clamp(13px, min(2.25vh, calc(7.5vh - 40px)), 18px); }
+  /**
+   * EVERY BAR STARTS ON THE SAME LINE — his ruling, 2026-09-21: "make sure that for each attribute
+   * the line starts in the same place so it will be alligned. Meaning, you should go to the
+   * longest letter attribute, and find out where the line starts, and allign the rest of the lines
+   * to begin from the same place."
+   *
+   * The name cell went RIGID in this breakpoint so a fixed bar could not ellipsise it, and rigid
+   * means each name is its own width — so every bar began where its own word ended and the column
+   * had no line down it at all. The floor is the longest word on the card, PERIMDISRUPT, and it is
+   * stated in `ch` rather than in pixels because the type is fluid between 13px and 18: at 12.6ch
+   * the twelve letters clear their box at both ends of that range, and every shorter name pads out
+   * to the same edge. The bar keeps `flex: 1 1 46px`, so what it does with the width the names no
+   * longer take is grow.
+   * NOT A CHANGE BELOW THIS BREAKPOINT: the laptop rules give the name `flex: 1 1 auto` against a
+   * fixed 130px track, which pads every name to the same width already — the raggedness was this
+   * block's alone.
+   */
+  .pct-attr .k { flex: 0 0 auto; min-width: 12.6ch; font-size: clamp(13px, min(2.25vh, calc(7.5vh - 40px)), 18px); }
   .pct-attr .statt { flex: 1 1 46px; max-width: clamp(120px, 14vw, 300px); height: clamp(10px, 1.3vh, 15px); }
   .pct-attr b { width: 40px; font-size: clamp(15px, min(2.75vh, calc(9vh - 48px)), 23px); }
 
@@ -3985,6 +4039,57 @@ body:has(.sheet) { overflow: hidden; }
      leaving the height empty under a 9.5px word. */
   .pct-mrow { font-size: clamp(11px, 1.35vh, 15px); letter-spacing: 0.12em; }
   .pct-mrow b { max-width: 60%; font-size: clamp(19px, 3vh, 30px); }
+  /**
+   * AND THE LEDGER'S ROWS HAVE A CEILING NOW, which is the correction the hexagon's move forced.
+   * "Make this SEASON / POS / HT … bigger, so there will be no dead space" was answered by letting
+   * the six rows stretch into whatever the dossier had spare; the dossier was then the bottom half
+   * of one column. It is the WHOLE right-hand side since the shape moved out of it, so the same
+   * stretch put 76px under each of six one-line facts — which is the dead space it was meant to
+   * remove, in bigger pieces. The rows take a definite height instead, and what is left over goes
+   * to the two things in that column that can use it: the club's banner grows into it (capped, so
+   * a banner cannot become the column) and the archetype sentence rides the foot.
+   */
+  .pct-meta { flex: 0 0 auto; grid-auto-rows: minmax(min-content, clamp(40px, 6.6vh, 58px)); }
+  .pct-banner { flex: 1 1 auto; max-height: clamp(96px, 26vh, 220px); }
+  .pc-what { margin-top: auto; }
+
+  /**
+   * THE THREE VERDICTS AND THE SEASON LINE, AT SIZE — his ruling, 2026-09-21: "Also, enlarge this
+   * OVR ▸ OVERALL 96 / OFF ▸ OFFENSE 99 / DEF ▸ DEFENSE 89 / STATLINE.2025 ▸ THE REAL LINE, NEVER
+   * BLENDED / PTS 30.4 / REB 11.9 …". That is the whole head of the left column — the three
+   * readouts and all fourteen cells of the box score — and it was being set by the SHORT-DESK
+   * block above, which pins them at 34px and 22 for a laptop. A 2000px desk is not that laptop:
+   * the numbers are the card's own verdict and they were smaller than the attribute figures under
+   * them. Both labels come up with their numbers, because a 8px cap over a 30px figure reads as a
+   * footnote rather than as what the figure IS.
+   */
+  .pc-big { padding: 6px 12px 7px; }
+  .pc-big i { font-size: clamp(9px, 1.2vh, 12px); }
+  .pc-big b { font-size: clamp(34px, 5.6vh, 52px); }
+  .pc-cell { padding: 5px 10px 5px; }
+  .pc-cell i { font-size: clamp(9px, 1.15vh, 11.5px); }
+  .pc-cell b { font-size: clamp(22px, 3.4vh, 32px); }
+  .pc-rule { margin-top: 7px; }
+  .pc-rule span { font-size: clamp(10px, 1.25vh, 13px); }
+  .pc-stats { margin-top: 4px; }
+  .pc-attrs { margin-top: 3px; }
+
+  /**
+   * THE SEASON KEYS — his ruling: "and this ‹ ’14 ’15 ’16 … ’25" — with the height the rule over
+   * them gave back when it was deleted (see CardSheet.tsx). They were 34px boxes of 10px type,
+   * which is the size the PHONE needs them at to fit a swipe's worth on screen; on a desk the
+   * strip is the one control on this page you actually aim at, and the year under a thumb was the
+   * smallest type on the card.
+   */
+  .pc-term .yrchip,
+  .pc-term .yr-arrow { height: clamp(40px, 5.6vh, 52px); }
+  .pc-term .yrchip { font-size: clamp(13px, 1.9vh, 17px); }
+  .pc-term .yrchip i { font-size: clamp(8px, 1.1vh, 10px); }
+
+  /* WHAT THE BADGE MEANS, at reading size (his ruling: "And enlarge the archetype description").
+     It is one sentence in a column that is now the full right-hand side of the card, and it was
+     set at 14px — the same size as the smallest thing in the dossier above it. */
+  .pc-what { max-width: 62ch; font-size: clamp(15px, 2.6vh, 22px); line-height: 1.5; }
 }
 
 /* ---- the phone: everything above, packed ----
