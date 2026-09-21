@@ -3778,19 +3778,97 @@ body:has(.sheet) { overflow: hidden; }
 
   /* ONE SCREEN, NO SCROLL (his ruling: "the page shouldnt be scrollable, everything should
      fit"). The body stops scrolling, the last row takes exactly what the window has left, and
-     the hexagon is the part that gives: its box fills that row and the shape scales inside it. */
+     the hexagon is the part that gives: its box fills that row and the shape scales inside it.
+     THE SHAPE IS CAPPED SINCE 2026-09-21 — see below. */
   .pc-body { overflow: hidden; grid-template-rows: auto auto minmax(0, 1fr); align-self: stretch; }
   .pct-shape { align-self: stretch; min-height: 0; }
   .pct-hexbox { position: relative; flex: 1 1 auto; min-height: 90px; }
-  .pct-hexbox .heathex { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); max-width: none; }
+  /**
+   * THE SHAPE HAS A CEILING NOW — his ruling, 2026-09-21: "Make the hex samller".
+   *
+   * WHAT WENT WRONG WITHOUT ONE. The hexagon was the part of this card that GIVES: its box takes
+   * whatever height the window has left and the drawing fills that box, which is what makes the
+   * card fit without a scroll at any size. On his 2000-wide desk it gives the other way — half the
+   * window is 980px across and the row under the dossier ran 455 deep on the card he sent, so the
+   * shape came out near enough 440 square beside attribute rows pinned at their 11px floor. A
+   * hexagon is a SHAPE: past a certain size it stops saying anything it was not already saying at
+   * 300, and what it costs is the only wall the attributes could have grown into.
+   *
+   * 320px IS THE CEILING and it is not a taste: the drawing is R=42 in a 120 box, so the visible
+   * hexagon is 70% of whatever the svg is given — 224px across at the cap, which is about what the
+   * phone's 188px box reads as on a phone held at arm's length. Under the cap nothing changes: on
+   * an ordinary laptop the row is 210 deep and the shape is still the thing that gives.
+   *
+   * IT IS CENTRED BY `margin: auto` AGAINST A FULL INSET, which is the one way an absolutely
+   * placed box centres in both axes when a max cuts it down — the four offsets are all stated, so
+   * the leftover space is split rather than pushed to one corner. The case around it stays
+   * stretched: the panel is the display case, the hexagon is the object in it, and a case that
+   * shrank to its object would leave the ADVANCED key floating up the column away from the foot.
+   */
+  .pct-hexbox .heathex {
+    position: absolute;
+    inset: 8px;
+    margin: auto;
+    width: min(100% - 16px, 320px);
+    height: min(100% - 16px, 320px);
+    max-width: none;
+  }
 
   /* THE ATTRIBUTES, READABLE FROM THE CHAIR (his ruling: "Increase the font size of the
-     attributes for visability"). The left column has the height to spare on a desk. */
+     attributes for visability"). The left column has the height to spare on a desk.
+     THESE ARE THE LAPTOP'S NUMBERS AND THEY DO NOT MOVE. His ruling of 2026-09-21 ("the attributes
+     bigger") is answered in the block for wide desks below rather than here, because here there is
+     nothing to spend: MEASURED at 960x745, where the season line wraps to three rows, this column
+     already comes within 46px of the foot of the window, and at 1280x700 within 60. Raise
+     these five numbers and the card stops fitting on the very windows the no-scroll ruling was
+     written for — and it would not fail by scrolling, which is visible, but by CLIPPING, because
+     `.pc-body` is `overflow: hidden` up here. */
   .pc-grpname { font-size: clamp(10px, 1.25vh, 12px); margin-bottom: 4px; }
   .pct-attr { gap: 10px; padding: clamp(2px, 0.35vh, 4px) 0; }
   .pct-attr .k { font-size: clamp(11px, 1.45vh, 14px); letter-spacing: 0.05em; }
   .pct-attr .statt { flex-basis: 130px; height: 9px; }
   .pct-attr b { width: 30px; font-size: clamp(13px, 1.8vh, 17px); }
+}
+
+/**
+ * THE WIDE DESK, AND IT IS THE ONE HE READS THIS CARD ON — his ruling, 2026-09-21: "Make the hex
+ * samller, and the attributes bigger."
+ *
+ * THE BLOCK GOES TO THREE COLUMNS, AND THAT IS WHAT PAYS FOR THE TYPE. Sixteen rows in two columns
+ * is nine rows deep; in three it is six, so the block gives up a third of its height and the type
+ * takes that back and more. It is also the shape THE PHONE has used all along (`columns: 3` at the
+ * foot of this file), for the opposite reason — there it is three columns because the rows are
+ * tiny, here because the window is wide.
+ * MEASURED at 2000x770, which is his own window: the name goes 11px to 17.3, the figure 13.4 to
+ * 21.2 and the bar 130px to 192, and the column still ends 94px clear of the foot of the window.
+ * At 1900x745 it is 16.8 / 20.5 / 183 with 80px clear, against the 96 the small two-column version
+ * had — so nine tenths of the slack that was there is now in the type.
+ *
+ * 1500px IS WHERE THE THIRD COLUMN FITS, and the longest word on the card is what sets it. At 1500
+ * each column is 223px and PERIMDISRUPT is 126 of them at this size, which leaves 97 for two gaps,
+ * the figure and the bar — everything fits, with the bar down to 33px. That is a thin bar and it is
+ * the right thing to give: it is the only cell in the row that is a picture of a number printed two
+ * inches away. Below 1500 the third column would start eating the NAMES, so the two-column laptop
+ * rules above stand there.
+ *
+ * WHICH IS ALSO WHY THE NAME STOPS GIVING HERE. In two columns the name is the flexible cell and
+ * the bar is fixed; at 223px a fixed 188px bar ellipsised every name on the card into two letters
+ * and a full stop (PA…, EFFICI…, PERIMDIS…), which is the whole point of the row gone. So the roles
+ * swap inside this breakpoint: THE NAME IS RIGID AND THE BAR IS WHAT FLEXES, because the name is
+ * the fact and the bar is the decoration. The ellipsis stays on the name as a backstop and never
+ * fires — the arithmetic above is what keeps it from having to.
+ *
+ * vh IS STILL THE GOVERNOR INSIDE THE BREAKPOINT. A wide window can also be short (1520x620 is a
+ * laptop with a dock and a browser open), and there every term falls back to its floor on the vh
+ * side and the card goes on fitting: measured, 48px clear.
+ */
+@media (min-width: 1500px) {
+  .pc-attrs { columns: 3; column-gap: 26px; }
+  .pc-grpname { font-size: clamp(11px, 1.8vh, 16px); margin-bottom: 5px; }
+  .pct-attr { gap: 12px; padding: clamp(3px, 0.7vh, 8px) 0; }
+  .pct-attr .k { flex: 0 0 auto; font-size: clamp(13px, 2.25vh, 18px); }
+  .pct-attr .statt { flex: 1 1 46px; max-width: clamp(120px, 11vw, 230px); height: clamp(10px, 1.3vh, 14px); }
+  .pct-attr b { width: 40px; font-size: clamp(15px, 2.75vh, 23px); }
 }
 /* a short desk window (a laptop with its browser chrome): the same card, packed tighter, so it
    still fits without a scroll — the rules, the boxes and the dossier give up their air first */
