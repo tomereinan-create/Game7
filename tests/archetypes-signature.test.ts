@@ -82,7 +82,10 @@ describe('the signature block', () => {
       ["LaMarcus Aldridge '16", 'Midrange scorer'],
       ["Pau Gasol '05", 'Interior scorer'],
       ["Clyde Drexler '93", 'Go-to scorer'],
-      ["Kevin Johnson '96", 'Lead guard'],
+      // De'Aaron Fox '19, not Kevin Johnson '96: recal_176 (the elite-passer re-cut, pipeline 176) lifted KJ '96's
+      // offence into the star band, so the EXISTING 'Offensive superstar' rule now names him — which is the block
+      // working as designed (a star rule always outranks a signature). Fox '19 sits at OFF 68, far from any star floor.
+      ["De'Aaron Fox '19", 'Lead guard'],
       ["Rod Strickland '94", 'Table setter'],
       ["Ray Allen '00", 'Scoring shooter'],
       ["Josh Hart '25", 'Rebounder'],
