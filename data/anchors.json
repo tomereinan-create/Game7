@@ -1620,5 +1620,23 @@
   "round": 166,
   "ruling": "166 confirm",
   "note": "RE-PINNED ONE POINT LOWER, replacing recal_139's 66 +-2 which Tomer released on this round. 64 -> 63. 70% assisted at a mid-class paint rate, so the discounted value falls off the premium's 0.70 gate entirely (.909 -> .600) and he loses the whole 0.0487, rim 73 -> 70. That is the structural cost of reading a discounted value against a RAW pool, which recal_166 kept on purpose."
+ },
+ {
+  "card": "Javonte Green '22",
+  "scale": "off",
+  "target": 48,
+  "tol": 3,
+  "round": 169,
+  "ruling": "Agree with 1,2",
+  "note": "THE FIRST SUBJECT of recal_169. 7.2 points on 11.5 usage, BPM +0.1, a standard path of 41, and recal_155's glue floor added EIGHTEEN, printing OFF 60 - level with Josh Hart '23 and above Kyle Korver '15 (pinned 58) and Tony Snell '18 (pinned 50 on 6.9 points). The floor's conversion half is now earned by the possessions the card actually used (usg_raw x recal_96's load share, read against the class's own upper-quartile load, 15.0): 10.93 used pays that half at 0.7283 and he reads 50. THE STOPPING WALL IS HIS OWN RECORD, not this term - every reference above 15.2 lands Green on 48 exactly and takes Josh Hart '25 off the 64 recal_155 ruled and Cedric Maxwell '87 off the 73 he DECLINED to lower."
+ },
+ {
+  "card": "Alonzo Gee '16",
+  "scale": "off",
+  "target": 36,
+  "tol": 3,
+  "round": 169,
+  "ruling": "Agree with 1,2",
+  "note": "THE SECOND SUBJECT of recal_169, the same term. 4.5 points on 9.2 usage, BPM -2.6, VORP -0.2, a standard path of 30, and the glue floor added 19.5, printing OFF 49 - above Bruce Bowen '06 (pinned 45 on 7.5 points at BPM +0.3). 7.97 possessions used pays the conversion half at 0.5315 and he reads 36, his number exactly. Across the class the floor's lifts fall from 647 cards to 411, the negative-BPM ones from 390 to 211, and the lifts of ten printed points or more from 84 to 39."
  }
 ]

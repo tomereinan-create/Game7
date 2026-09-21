@@ -1,0 +1,360 @@
+{
+ "round": 169,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 1,2",
+ "title": "the glue floor's conversion half is earned by possessions actually used — efficiency stops being paid at half weight with no usage behind it",
+ "scale": "off",
+ "subject": "Javonte Green '22",
+ "target": 48,
+ "tol": 3,
+ "before": 60,
+ "after": 50,
+ "pipeline_version": 169,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_U_FULL = 15\\.0",
+   "label": "the class's own upper-quartile load: the third quartile of usg_raw x load over the 739 cards the floor binds on is 15.02",
+   "note": "new: the line at which the conversion half is paid in full"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gused = a\\['usg_raw'\\] \\* _load",
+   "label": "possessions actually used — the usage rate the card posted times recal_96's own load share",
+   "note": "new: a COUNT, not a rate"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\] \\* _gu\\)",
+   "label": "the conversion half now carries the used-load ramp; the possession half (drb/orb/playvol) is untouched",
+   "note": "was: 0.5 * _gpos + 0.5 * a['efficiency']"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_K = 1\\.070",
+   "label": "recal_155's total weight, UNTOUCHED — this round did not re-open the size",
+   "note": "1.070, as recal_155 measured it"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 4\\.08",
+   "label": "the hunt deviation tax, re-swept ONCE from main's constant on the moved pool (recal_59's standing law)",
+   "note": "3.97 -> 4.08; feasible 4.017..4.148, true midpoint by r126's rule"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Alonzo Gee '16",
+   "scale": "off",
+   "op": "~",
+   "value": 36,
+   "tol": 3,
+   "label": "THE SECOND SUBJECT of the same ruling — lands on the number exactly"
+  },
+  {
+   "card": "Alonzo Gee '16",
+   "scale": "ovr",
+   "op": "~",
+   "value": 46,
+   "tol": 0,
+   "label": "his OVR follows the defence-led blend: 52 -> 46"
+  },
+  {
+   "card": "Javonte Green '22",
+   "scale": "ovr",
+   "op": "~",
+   "value": 54,
+   "tol": 0,
+   "label": "the subject's OVR, 59 -> 54"
+  },
+  {
+   "card": "Javonte Green '22",
+   "scale": "off",
+   "op": "<=",
+   "value": 50,
+   "tol": 0,
+   "label": "the scout's own comparable: Tony Snell '18 reads 50 on 6.9 points, and the subject was reading TEN above him — he now reads level with him, and the last two points to 48 are the stopping wall"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "off",
+   "op": "~",
+   "value": 64,
+   "tol": 0,
+   "label": "WALL A: recal_155's own subject moves by EXACTLY ZERO — the ramp saturates 0.2 of a possession below him"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 0,
+   "label": "WALL A: recal_155's anchor, untouched"
+  },
+  {
+   "card": "Cedric Maxwell '87",
+   "scale": "off",
+   "op": ">=",
+   "value": 71,
+   "tol": 0,
+   "label": "WALL B: the card he DECLINED to lower — must not fall more than 2; it falls by ZERO, reading 73"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_89 — the 3pt gate keeps him out of this term entirely"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 0,
+   "label": "recal_64 — the comparable the subject was reading above; unmoved"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 0,
+   "label": "recal_64 — the comparable Alonzo Gee '16 was reading above; unmoved"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_89 — his standard path already exceeds the floor"
+  },
+  {
+   "card": "Dorian Finney-Smith '20",
+   "scale": "off",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_118 — a big, excluded by is_big; unmoved at 53"
+  },
+  {
+   "card": "OG Anunoby '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "recal_91 — a big; unmoved at 63"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 4,
+   "label": "recal_112 — a big; unmoved at 66"
+  },
+  {
+   "card": "Andre Iguodala '14",
+   "scale": "ovr",
+   "op": ">=",
+   "value": 71,
+   "tol": 0,
+   "label": "a named wall: 14.4 possessions used against the class's 15.0, so he pays a 0.96 share — OVR 73 -> 72"
+  },
+  {
+   "card": "Josh Hart '24",
+   "scale": "ovr",
+   "op": "<=",
+   "value": 57,
+   "tol": 0,
+   "label": "recal_155's STOPPING PIN, and this round moves it AWAY from the edge: 57 -> 56"
+  },
+  {
+   "card": "Bojan Bogdanović '24",
+   "scale": "off",
+   "op": "~",
+   "value": 68,
+   "tol": 0,
+   "label": "the Knicks '24 five's gatekeeper — unmoved, so recal_119's BOS '24 rank pin is untouched"
+  },
+  {
+   "card": "Miles McBride '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 55,
+   "tol": 0,
+   "label": "the Knicks '25 five: Hart '25 still displaces him, so every New York dial is byte-identical"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "recal_62 — DEF moved on ZERO cards"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_102 — the summit is untouched"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "a star who must not move"
+  },
+  {
+   "card": "Nikola Jokić '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "a star who must not move"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Kyle Korver '15",
+   "below": "Javonte Green '22",
+   "label": "THE FINDING: a 7.2-point, 11.5-usage wing must not read above a pinned shooter — 58 against 50"
+  },
+  {
+   "scale": "off",
+   "above": "Bruce Bowen '06",
+   "below": "Alonzo Gee '16",
+   "label": "THE FINDING for the second subject: 7.5 points at BPM +0.3 must read above 4.5 at BPM -2.6"
+  },
+  {
+   "scale": "off",
+   "above": "Josh Hart '25",
+   "below": "Javonte Green '22",
+   "label": "the 37.6-minute starter above the 15-minute one: the load the floor now asks for"
+  },
+  {
+   "scale": "off",
+   "above": "Javonte Green '22",
+   "below": "Alonzo Gee '16",
+   "label": "monotone in the load: 10.93 used above 7.97"
+  },
+  {
+   "scale": "off",
+   "above": "Bojan Bogdanović '24",
+   "below": "Josh Hart '24",
+   "label": "the Knicks '24 best five must not change — recal_119's rank pin has zero slack"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 458,
+  "max_abs": 13,
+  "top": [
+   [
+    "Alonzo Gee '16",
+    49,
+    36
+   ],
+   [
+    "Isaac Bonga '20",
+    46,
+    35
+   ],
+   [
+    "Javonte Green '22",
+    60,
+    50
+   ],
+   [
+    "Andre Roberson '16",
+    42,
+    32
+   ],
+   [
+    "T.R. Dunn '84",
+    42,
+    32
+   ],
+   [
+    "Andre Iguodala '17",
+    59,
+    50
+   ],
+   [
+    "Thabo Sefolosha '11",
+    47,
+    38
+   ],
+   [
+    "T.R. Dunn '83",
+    47,
+    38
+   ],
+   [
+    "Ryan Bowen '02",
+    44,
+    35
+   ],
+   [
+    "Darvin Ham '02",
+    43,
+    34
+   ],
+   [
+    "Matisse Thybulle '22",
+    38,
+    29
+   ],
+   [
+    "T.R. Dunn '85",
+    37,
+    28
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '22",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25",
+   "Nikola Jokić '26",
+   "Shai Gilgeous-Alexander '26"
+  ]
+ },
+ "cost": [
+  "THE SATURATION POINT IS A WALL OF HIS OWN MAKING, and it is what keeps Javonte Green '22 at 50 instead of 48. The ramp is min(1, used / 15.0). Every reference above 15.2 lands Green on his number EXACTLY — at 16.0 he reads 48 and Alonzo Gee '16 reads 35 — but 15.2 is Josh Hart '25's own used load and 16.6 is Cedric Maxwell '87's, so any reference above 15.2 takes recal_155's ruled subject off 64 (OFF 62, OVR 61 at a reference of 16) and starts on the card Tomer DECLINED to lower. 15.0 is the largest class statistic below that wall and it is a measured one: the class's upper quartile is 15.02. The frontier is therefore 2 points on the second subject, bought with zero movement on two of his own rulings.",
+  "recal_155's 1.07 WAS NOT RE-OPENED and must not be read as re-ratified either. The size still carries the possession half at full weight; only the conversion half was made conditional. A later round that wants more out of this class should move GL_U_FULL or the halves, not the size, because the size is what recal_155 measured against the BOS '24 rank pin.",
+  "THE PIN THAT FENCED recal_155 IS NOW LOOSER, NOT TIGHTER. Josh Hart '24 goes OVR 57 -> 56 against Bojan Bogdanović '24's 58 (unmoved), so recal_119's `BOS '24 OFF rank <= 10` — which reads exactly 10 of 26 and has zero slack — gains a point of margin instead of spending one.",
+  "THE HUNT DEVIATION TAX WAS RE-SWEPT, its FIFTEENTH move: 3.97 -> 4.08 on the moved pool (feasible 4.017..4.148, true midpoint by recal_126's rule). It broke on the BLIND edge (-0.2636 against the -0.30 ceiling), the mirror of the 161-167 integration sweep: this round takes points OFF the glue wings the harness draws into its ovr>=55 fives, so the fives score less, the default plan is weaker and a blind call costs less. crashOff (0.08) and crashDef (0.38) held their bands untouched, as did the six others.",
+  "THE CHAMPIONS LADDER RE-SORTS BY FOUR SLOTS. The ladder is ordered by the fives' net rating, and Miami Heat '12 falls from level 51 to 54 while Chicago Bulls '92, Los Angeles Lakers '02 and Chicago Bulls '96 each rise one. No five CHANGED — the glue wings in those rosters simply dropped by different amounts. Every team dial anchor passes and no best-five composition moved on the whole wheel.",
+  "NEITHER BAND ANCHOR WAS RE-DERIVED. OFF_TOP 102.75 and DEF_TOP 104.25 are untouched and no card above the 93 knee moves, so recal_90's warning does not apply. Every card this round touches sits far below the knee, where band() is the identity.",
+  "usg_raw ENTERS compute_ovr.py FOR THE FIRST TIME. It was already on every one of the 10,000 sheets (no nulls, min 4.3, max 38.8) and build_ratings.py derives the `volume` BAR from it, but this file had only ever read the bar. The bar is a compressed percentile — Josh Hart '25's 15.2% usage is bar 13 and Alonzo Gee '16's 9.2% is bar 1 — and the compression is exactly why the bar could not carry this ramp: measured, a ramp on the load-scaled volume bar that reaches Gee's target leaves Javonte Green '22 five points high, because the bar puts them 4 apart where the rate puts them 2.3 apart."
+ ],
+ "notes": [
+  "THE TERM IS HALF OF recal_155's FLOOR, NOT A NEW ONE. That round priced a glue starter's season as `1.07 x (0.5 x mean(drb, orb, playvol) + 0.5 x efficiency)`. The possession half is a VOLUME statement and needs no qualifier — it already says how much work there was. The conversion half says only how WELL, and how well is worth what it was done on. So `efficiency` is now multiplied by `min(1, usg_raw x load / 15.0)`: the possessions the card actually used, against the class's own upper-quartile load. Nothing else in the term moves — the gates (volume 55->25, 3pt 68->40, not is_big, recal_96's load share), the correction form, and the size 1.07 are all exactly as recal_155 left them.",
+  "IT IS recal_96's OWN DISTINCTION ASKED ONE LEVEL DOWN. That round separated a LOAD claim (discounted by minutes) from a SKILL rate (untouched by them), and left efficiency on the skill side — correctly, because in the standard path efficiency is multiplied by the volume it was earned on. Inside this FLOOR there is no such multiplication: the floor stands in for a whole season's offence, so within it the conversion IS the load claim. That is the whole defect and the whole fix.",
+  "THE QUANTITY IS A COUNT, NOT A RATE, and that is why the ramp can start at zero without a floor constant. `usg_raw x _load` is possessions used per 100 scaled by how much of a game the man was on the floor for. Measured on the 739 cards the floor binds on: q10 6.67, q25 8.88, median 12.10, q75 15.02. Alonzo Gee '16 is 7.97 and Javonte Green '22 is 10.93 — the bottom sixth and the bottom third of a class that is itself the bottom of the league.",
+  "WHY NOT A RAMP FROM THE CLASS'S BOTTOM DECILE, which is the obvious shape and was measured first: it puts BOTH subjects at zero. Gee's 9.2 usage is below the class's own 10th percentile (12.10) and Green's 11.5 is below it too, so a decile->median ramp pays them nothing at all and prints OFF 30 and 44 — six and four points BELOW his targets. The ruling asks for a man who converts on almost no touches to be paid LESS, not to be stripped: he still did the possession work, and the possession half still pays it in full.",
+  "WHY NOT THE WHOLE GATE, and it is provably infeasible rather than merely worse. Ramping the entire floor requires keeping 0.286 of it at Gee's load and 0.245 at Green's — a DECREASING function of usage, which no monotone ramp can be. Taking the tolerances instead: the line through (9.2, 0.136) and (15.2, 1.0) reads 0.468 at 11.5 against a ceiling of 0.42, and the line through (11.5, 0.42) and (15.2, 1.0) reads 0.06 at 9.2 against a floor of 0.136. The two targets are jointly unreachable that way, by arithmetic. Only the conversion half separates them, because Gee's efficiency is 66 against Green's 77 — the man being paid most for conversion is the one who used least.",
+  "MEASURED on the whole pool: 458 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, mean -3.10, max -13; OVR follows on 371, mean -1.91, max -6; DEF and every one of the 17 attributes move on ZERO. The top 12 by OFF is identical and the top 50 by OVR has no entrant, no leaver and no rank flip.",
+  "MEASURED ON THE CLASS, which is the ruling's own question. The floor lifted 647 cards on main and lifts 411 now; 236 lose it entirely and 179 of those are NEGATIVE-BPM seasons. Negative-BPM movers 390 -> 211. Lifts of ten printed points or more 84 -> 39, and the negative-BPM ones among them 28 -> 9. The floor still binds on 482 cards (739 before) and the negative-BPM share of everything it pays falls from 52% to 43%.",
+  "THE CLASS READS LIKE ITSELF AFTER, which is the check that the right cards paid: Alonzo Gee '16 49 -> 36, Isaac Bonga '20 46 -> 35, Javonte Green '22 60 -> 50, Andre Roberson '16 42 -> 32, T.R. Dunn '84 42 -> 32, Matisse Thybulle '22 38 -> 29, P.J. Tucker '21 38 -> 31 — men who guarded, rebounded and used nothing. And the ones who used a starter's load keep every point: Josh Hart '25 64, Cedric Maxwell '87 73, Cedric Maxwell '86 70, Josh Childress '06 66 -> 65, Andre Iguodala '05 66 -> 61 (13.3 usage on 22.4 minutes: 11.5 used, a 0.77 share).",
+  "DEF WAS NOT TOUCHED AND NEITHER WAS ANY ATTRIBUTE. This round is one factor inside one floor in o_score. Alonzo Gee '16's OVR falls 52 -> 46 only because his blend is DEFENCE-led (0.5/0.5 at DEF 56), and Javonte Green '22's 59 -> 54 because his is offence-led at DEF 58."
+ ]
+}

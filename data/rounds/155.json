@@ -26,9 +26,9 @@
   },
   {
    "file": "data/compute_ovr.py",
-   "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\]\\)",
+   "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\]",
    "label": "half the averaged possession work (drb/orb/playvol), half the conversion",
-   "note": "new term, applied in recal_118's correction form so it can only lift"
+   "note": "new term, applied in recal_118's correction form so it can only lift [recal_169: RE-POINTED with the wording kept — the conversion half now carries a used-load ramp and the line reads `0.5 * a['efficiency'] * _gu)`. The halves, the size 1.07, the gates and the correction form are exactly as this round left them; only the closing parenthesis left the pattern.]"
   },
   {
    "file": "data/compute_ovr.py",
