@@ -4133,7 +4133,25 @@ body:has(.sheet) { overflow: hidden; }
      falls back to `auto`. Measured when it was on `.pc-main`: a 168px hexagon (the svg's own
      attribute) in a 209px block over a foot reserved for 161, overlapping the last attribute rows
      by 21. */
-  .pc-body { --shape-h: clamp(112px, 21vh, 190px); }
+  /**
+   * THE STRIP'S HEIGHT, AND THE HEXAGON'S RISE ABOVE IT — his ruling, 2026-09-21: "Make the hex
+   * bigger on the player card. And closer to the attributes."
+   *
+   * The strip is as tall as the foot the attributes leave it, and that foot is set by the TALLEST
+   * of the three columns. The other two end short of it: measured on his window, SCORING's column
+   * runs to 576 while DEFENCE+PLAYMAKING stop at 531 and REBOUNDING+INTANGIBLES at 495 — 45px and
+   * 81px of the list's own ground that no attribute is standing on, because a group cannot be cut
+   * in half by a column break.
+   *
+   * SO THE HEXAGON STANDS AT THE RIGHT-HAND END AND RISES INTO THE SHORTEST COLUMN'S TAIL. It is
+   * the one piece of this strip that wants height, --shape-rise is what that tail is worth, and
+   * the drawing comes out bigger than it ever was in its own column while sitting directly under
+   * the last attribute row rather than a hand's width below it — which is the second half of his
+   * ruling. Everything else in the strip stays on the foot's own line.
+   * THE RISE IS MEASURED, NOT GUESSED, and it is deliberately short of the whole tail: the clearance
+   * between the drawing's head and DURABILITY's row is checked at every width this block covers.
+   */
+  .pc-body { --shape-h: clamp(112px, 21vh, 190px); --shape-rise: clamp(0px, 8.4vh, 78px); }
   /**
    * AND THE SEASON LINE IS HELD TO ONE ROW, which this arrangement cannot do without.
    * `.pc-stats` is an auto-fit grid of 14 cells with a 70px floor, so it wraps to two rows the
@@ -4149,8 +4167,15 @@ body:has(.sheet) { overflow: hidden; }
   .pc-stats { grid-template-columns: repeat(14, minmax(0, 1fr)); }
   .pc-cell { padding: 5px 7px 5px; }
   .pc-cell i { font-size: clamp(8px, 0.6vw, 11.5px); }
-  .pc-cell b { font-size: clamp(18px, 1.35vw, 32px); }
-  .pc-attrs { columns: 3; column-gap: 26px; padding-bottom: calc(var(--shape-h) + 14px); }
+  /* AND THE BOX SCORE COMES UP AGAIN (his ruling: "Make the stats bigger as well"). It is still a
+     vw and not a vh, because the thing it must not do is push fourteen cells onto a second row:
+     31px in a 72px cell at his window, where "30.4" measures 54 and the cell's own padding takes
+     14. */
+  .pc-cell b { font-size: clamp(18px, 1.55vw, 36px); }
+  /* THE LIST SITS A LITTLE LOWER AND CLOSES ON THE STRIP (his ruling: "move the attributes a bit
+     lower", and "closer to the attributes"): 14px of air above it where there were 3, and 6 under
+     its columns where there were 14. */
+  .pc-attrs { columns: 3; column-gap: 26px; margin-top: 14px; padding-bottom: calc(var(--shape-h) + 6px); }
   .pct-shape {
     grid-area: main;
     align-self: end;
@@ -4163,18 +4188,22 @@ body:has(.sheet) { overflow: hidden; }
        gets, and the hexagon is measured off this block's height: at two rows it came out 110px,
        at one it is 159. */
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'hex rule adv';
+    /* THE HEXAGON MOVED TO THE FAR END, because that is where the tail it rises into is — the
+       shortest column is the last one. The key takes the end it left. */
+    grid-template-areas: 'adv rule hex';
     align-items: center;
     gap: 0 20px;
   }
   .pct-shape .pc-rule { grid-area: rule; margin-top: 0; }
-  .pct-hexbox { grid-area: hex; justify-self: start; align-self: center; }
-  /* 18px is the box's own padding and its two hairlines; the drawing takes everything else the
-     strip has, which is what makes --shape-h the only number to tune here. */
-  .pct-hexbox .heathex { width: min(320px, calc(var(--shape-h) - 18px)); }
+  /* THE BOX IS TALLER THAN THE STRIP ON PURPOSE. It is aligned to the strip's foot and overflows
+     upward into the tail above it, which is ground the attribute columns do not use. */
+  .pct-hexbox { grid-area: hex; justify-self: end; align-self: end; }
+  /* 18px is the box's own padding and its two hairlines; the drawing takes the strip's height and
+     the rise above it, and the 320 ceiling from his "the hex size is good" still caps the pair. */
+  .pct-hexbox .heathex { width: min(320px, calc(var(--shape-h) + var(--shape-rise) - 18px)); }
   /* the way down into the numbers stands at the far end of the strip: the shape at one end of the
      foot, the door at the other, and the attributes' own ground between them */
-  .pc-adv { grid-area: adv; margin-top: 0; justify-self: end; min-width: clamp(180px, 18vw, 300px); padding: 10px 24px; }
+  .pc-adv { grid-area: adv; margin-top: 0; justify-self: start; min-width: clamp(180px, 18vw, 300px); padding: 10px 24px; }
 }
 
 /* ---- the phone: everything above, packed ----
