@@ -7370,6 +7370,87 @@ body.map #root { padding-bottom: var(--foot); }
   color: var(--ink-2);
   text-wrap: pretty;
 }
+/**
+ * THE READ AT READING SIZE, ON A PANE WIDE ENOUGH TO PAY FOR IT — his ruling, 2026-09-21: "Make
+ * this font (And any other mode) 03 · One life / Death match / ... Way bigger on th ehome page."
+ *
+ * IT IS A CONTAINER QUERY AND NOT A MEDIA QUERY, because the thing that decides whether this copy
+ * can be bigger is the PANE, not the window. `.fd-read` is already an inline-size container (the
+ * clamps above measure their cqw against it), and its width is what the floor leaves over: a
+ * 1440x900 desk gives it 408px and a 2000x770 desk gives it 1156. Those two windows want opposite
+ * things from this block, and only the pane can tell them apart.
+ *
+ * WHAT IT WAS BEFORE, MEASURED ON THE DEATH MATCH — the longest read on the board, five rules and a
+ * sentence: 641px of copy in a 582px pane at 2000x770 (59 over, already scrolling on the safety at
+ * the head of this section) and 627 in 518 at 1280x700. The sentence was set at 14.9px under a
+ * 72px name. So there was nothing to add until something was taken away.
+ *
+ * WHAT PAYS FOR IT IS THE SECOND COLUMN. `.fd-rules` is a box round the five lines and nothing else
+ * (see FrontDoor.tsx); at 520px of pane it splits in two, which halves the tallest part of the read
+ * and hands back more height than the bigger type spends. MEASURED after: the sentence and the
+ * rules go 14.9px to 23.5, the tag 13 to 19.2, the name 72 to 86, and the death match's read comes
+ * out INSIDE its pane at both of the windows that were overflowing before.
+ *
+ * 520px IS WHERE THE SECOND COLUMN IS WORTH HAVING: two columns of 250 with the gutter, which is
+ * about 30 characters of the sentence's own face — a short line, but a line. Under it the pane is
+ * too narrow to divide (a 1440x900 desk leaves 408) and every rule above stands unchanged, which is
+ * also what keeps the phone exactly as it was: its pane is the full 375 and the band is a column.
+ *
+ * THE cqw TERM IS THE ONE THAT MOVED MOST. Each line below still takes the SMALLER of what its
+ * column allows and what --fd-u allows, and --fd-u is still the height-aware one, so a short window
+ * pulls all of this back down on its own. What changed is that the pane's own width now has a real
+ * say: at 529px of pane the sentence comes out at 16.9 and at 1156 it is held at 23.5 by the
+ * height, which is the right way round.
+ */
+/* THE SECOND COLUMN COMES FIRST, AT 420px OF PANE, and it is worth having on its own even where
+   there is no room to grow the type: it is what stopped the death match's read from running off the
+   foot of its pane. `break-inside: avoid` so a rule is never cut in half by the column — a bullet
+   that starts at the foot of one column and finishes at the head of the next reads as two rules,
+   and there are exactly five. */
+@container (min-width: 420px) {
+  .fd-rules { columns: 2; column-gap: calc(var(--fd-u) * 1.2); }
+  .fd-rules .fd-desc { break-inside: avoid; }
+}
+/* AND THE TYPE GROWS AT 500, where two columns are 240 apiece and the height the second column
+   handed back is worth more than the points it costs. */
+@container (min-width: 500px) {
+  .fd-tag { font-size: clamp(11px, min(2.4cqw, calc(var(--fd-u) * 0.8)), 20px); }
+  .fd-name { font-size: clamp(34px, min(18cqw, calc(var(--fd-u) * 3.2)), 92px); }
+  .fd-desc {
+    margin-top: 9px;
+    /**
+     * THREE TERMS AND THE SMALLEST WINS, and the third one is new to this screen.
+     *   · 3.2cqw  — what the pane's own width allows.
+     *   · --fd-u  — the board's fluid unit, which is already height-aware.
+     *   · 8.4dvh - 44px — THE HEIGHT, DIRECTLY, and it is here because --fd-u is not steep enough
+     *     to protect this pane on its own. --fd-u only moves from 23.2 to 24 between a 700px window
+     *     and a 770px one, while the pane between them loses 64px of height — so copy sized off it
+     *     alone fitted at 770 and then ran 41px past the foot of the pane at 700. This term is a
+     *     KNEE rather than a slope: above about 770 it is the largest of the three and does nothing
+     *     at all, and below it, it falls away fast enough to give the height back — 19.7 at 770,
+     *     17.6 at 745, 13.8 at 700, and under the 12px floor by 620, where the floor takes over.
+     *     THE FLOOR IS THE BASE RULE'S OWN 12 and not a point more: at 1600x620 a 13px floor put
+     *     the death match six pixels past the foot of its pane, which is the one place where a
+     *     floor set for legibility and a floor set for fitting disagree, and the pane keeps its
+     *     scroll for exactly that case.
+     *     Both numbers in it are measured off the death match, which is the longest read on the
+     *     board: five rules where every other mark has three or four.
+     *     It is dvh and not vh so a phone browser's collapsing toolbar is counted.
+     */
+    font-size: clamp(12px, min(3.2cqw, calc(var(--fd-u) * 0.85), calc(8.4dvh - 45px)), 26px);
+    /* 1.4 rather than 1.5: at 20px a fifteenth of a line is four pixels, and over the ten lines
+       this pane holds that is the difference between the sign-off standing on the board and the
+       sign-off being scrolled to. */
+    line-height: 1.4;
+  }
+  .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 16px); }
+  /* THE FURNITURE GIVES UP ITS AIR SO THE COPY CAN HAVE IT. Every number here is smaller than the
+     one it overrides by four or five pixels and together they are worth about fifteen, which is
+     what the fifth rule costs. */
+  .fd-meta { margin-top: 10px; padding-top: 9px; }
+  .fd-cta { margin-top: 12px; }
+  .fd-signoff { padding-top: 10px; }
+}
 .fd-meta {
   display: flex;
   align-items: baseline;

@@ -783,11 +783,20 @@ export function FrontDoor({
             Rendered on `.fd-desc`, the face the line above already uses, so the pane fills without
             a new class in a stylesheet another session is working in.
           */}
-          {z.rules.map((r) => (
-            <p className="fd-desc" key={r}>
-              · {r}
-            </p>
-          ))}
+          {/* THE RULES STAND IN THEIR OWN BOX SINCE 2026-09-21 (his ruling: "Make this font ... Way
+              bigger on th ehome page"), and the box is the only reason the type could grow. On a
+              wide desk the pane is over a thousand pixels across and these five lines were running
+              down it in one 42ch column, which is what put the death match's read 59px past the
+              foot of its own pane before a single point was added. In two columns they are half as
+              tall, and the height that buys is what the copy is now set in. The paragraphs keep
+              `.fd-desc` — one face for the sentence and the lines under it, as before. */}
+          <div className="fd-rules">
+            {z.rules.map((r) => (
+              <p className="fd-desc" key={r}>
+                · {r}
+              </p>
+            ))}
+          </div>
           <div className="fd-meta">
             {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
             <span className="fd-metav">{z.meta}</span>
