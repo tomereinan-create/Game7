@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 87,
  "after": 83,
- "pipeline_version": 173,
+ "pipeline_version": 175,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -38,9 +38,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.65,",
+   "pattern": "crashDef: 0\\.66",
    "label": "the one tactics tax this round's DEF movement broke, re-swept ONCE from main's 0.38",
-   "note": "crashDef 0.38 -> 0.65; hunt held at 3.97 and crashOff at 0.08"
+   "note": "[re-pointed at integration 173-175] branch swept crashDef .38 -> .65; on the merged pool the once-only sweep from main's .94 landed crashOff 0.28 / crashDef 0.66, hunt held 3.80"
   }
  ],
  "expect": [
@@ -209,18 +209,66 @@
   "count": 301,
   "max_abs": 10,
   "top": [
-   ["Vlade Divac '01", 77, 67],
-   ["Vlade Divac '00", 75, 67],
-   ["Vlade Divac '02", 77, 69],
-   ["Arvydas Sabonis '98", 77, 71],
-   ["Rich Kelley '81", 76, 70],
-   ["Rich Kelley '82", 73, 67],
-   ["Jon Koncak '91", 76, 70],
-   ["Rich Kelley '85", 74, 68],
-   ["Bill Laimbeer '89", 76, 71],
-   ["Bill Laimbeer '90", 76, 71],
-   ["Vlade Divac '03", 75, 70],
-   ["Bill Laimbeer '88", 74, 69]
+   [
+    "Vlade Divac '01",
+    77,
+    67
+   ],
+   [
+    "Vlade Divac '00",
+    75,
+    67
+   ],
+   [
+    "Vlade Divac '02",
+    77,
+    69
+   ],
+   [
+    "Arvydas Sabonis '98",
+    77,
+    71
+   ],
+   [
+    "Rich Kelley '81",
+    76,
+    70
+   ],
+   [
+    "Rich Kelley '82",
+    73,
+    67
+   ],
+   [
+    "Jon Koncak '91",
+    76,
+    70
+   ],
+   [
+    "Rich Kelley '85",
+    74,
+    68
+   ],
+   [
+    "Bill Laimbeer '89",
+    76,
+    71
+   ],
+   [
+    "Bill Laimbeer '90",
+    76,
+    71
+   ],
+   [
+    "Vlade Divac '03",
+    75,
+    70
+   ],
+   [
+    "Bill Laimbeer '88",
+    74,
+    69
+   ]
   ]
  },
  "top12": {

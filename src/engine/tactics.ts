@@ -597,6 +597,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * (blind -0.3005) to 0.786 (oracle +0.5005 at 0.785, +0.4995 at 0.788), true midpoint by r126's rule 0.38 -> 0.65
  * (blind -0.404, oracle +0.548; 0.104 and 0.048 of room). hunt held at 3.97 and crashOff at 0.08 — both were read
  * from main's constants first and neither moved — and the other six held their bands untouched. All nine pass.
+ * recal_173-175 INTEGRATION SWEEP (pipeline 175): two perdef rounds folded onto main (173 the no-vote relief corroborated by
+ * the card's own disruption evidence, 175 the contradicted carried ballot) and the taxes swept ONCE from main's constants
+ * (hunt 3.80, crashOff 0.40, crashDef 0.94), superseding 173's branch figure (crashDef .65 from .38). hunt held (blind -0.36,
+ * oracle +0.55); both crash taxes broke on the ORACLE edge (crashOff +0.49 at 0.40, crashDef +0.44 at 0.94) and were set at
+ * crashOff 0.28 (blind -0.69, oracle +0.52) and crashDef 0.66 (-0.48, +0.53). 301 tall no-vote bigs lost perimeter defence,
+ * so the sampled fives defend the glass more alike and the oracle's crash call is worth less.
  */
 export const TAX = {
   scorer: 0.55,
@@ -605,8 +611,8 @@ export const TAX = {
   style: 0.35,
   scheme: 0.80,
   hunt: 3.80,
-  crashOff: 0.40,
-  crashDef: 0.94,
+  crashOff: 0.28,
+  crashDef: 0.66,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
