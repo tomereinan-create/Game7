@@ -559,6 +559,18 @@ export const DEFAULT_TACTICS: Tactics = {
  * edge (crashOff +0.46 at 0.32 and +0.48 at 0.20; crashDef +0.48 at 0.50). Set inside each window: hunt 3.97 (blind -0.38,
  * oracle +0.52), crashOff 0.08 (-0.77, +0.51), crashDef 0.38 (-0.52, +0.51). 2,003 assisted-big rim bars fell (166) while
  * 2,350 two-zone bigs rose (161) and 637 interior bigs rose (167): the glass mismatch is worth less, the hunt more.
+ * recal_169 made recal_155's glue floor pay its conversion half only for the possessions the card actually
+ * used: 458 o_ovrs and 371 OVRs, EVERY ONE DOWN, and every one a low-usage perimeter card — which is the
+ * class the harness's ovr>=55 pool draws its wings from. HUNT alone broke, on the BLIND edge (-0.2636 at
+ * 3.97 against the -0.30 ceiling) — its FIFTEENTH move, and the exact mirror of the 161-167 sweep: this is
+ * an offensive round that takes points OFF the glue wings, so the fives score less, the default plan is
+ * weaker, and a blind call costs less of a smaller number. Swept ONCE from MAIN's constant, as the law
+ * requires: 3.97 (blind -0.2636, over the ceiling) / 4.00 (-0.2870, over) / 4.02 (-0.3025) / 4.04
+ * (-0.3180) / 4.06 (-0.3334) / 4.10 (-0.3642 / oracle +0.5225) / 4.12 (+0.5131) / 4.14 (+0.5037) / 4.15
+ * (+0.4990, under the floor) / 4.16 (+0.4944, under) / 4.17 (+0.4898, under) — feasible about 4.017 to
+ * 4.148, a width of 0.131, true midpoint by r126's rule: 3.97 -> 4.08 (blind -0.3489, oracle +0.5321,
+ * 0.049 and 0.032 of room). crashOff held at 0.08 (blind -0.664, oracle +0.541) and crashDef at 0.38
+ * (-0.392, +0.595), and the six others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -566,7 +578,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.97,
+  hunt: 4.08,
   crashOff: 0.08,
   crashDef: 0.38,
 }

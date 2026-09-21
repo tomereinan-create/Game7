@@ -1373,20 +1373,68 @@ def o_score(p, trace=None):
     # and read like it — T.R. Dunn '82-'84, Bob Gross '81/'82, Danny Vranes '83, Thabo Sefolosha
     # '11/'16, Andre Iguodala '05/'14/'17, Javonte Green '22, Alonzo Gee '16, Ira Newble '02 — the
     # low-usage wings who rebound, move it and convert, and who this file has never paid.
+    # recal_169 (HIS RULING, verbatim: "Agree with 1,2" — Javonte Green '22 OFF near 48 and
+    # Alonzo Gee '16 OFF near 36, two scout items that share ONE term).
+    # THE CONVERSION HALF IS EARNED BY POSSESSIONS ACTUALLY USED.
+    #
+    # THE DEFECT, and it is in the half recal_155 added last. The floor above pays `efficiency` at
+    # HALF WEIGHT with NOTHING BEHIND IT: efficiency is a RATE, and a man who converts well on almost
+    # no touches was being paid the same conversion half as a man who converts well while carrying a
+    # starter's load. The possession half (drb/orb/playvol) is a VOLUME statement and needs no such
+    # qualifier — it already says how much work there was. The conversion half says only how well,
+    # and "how well" is worth what it was done on. This is the same distinction recal_96 drew between
+    # a load claim and a skill rate, asked one level down: inside the floor, the conversion IS the
+    # load claim, because the floor stands in for a season's offence.
+    #
+    # THE TWO CARDS. Javonte Green '22: 7.2 points, usage 11.5, BPM +0.1, a standard path of 41, and
+    # the floor added EIGHTEEN, printing OFF 60 — level with Josh Hart '23 and ABOVE Kyle Korver '15
+    # (pinned 58) and Tony Snell '18 (pinned 50 on 6.9 points). Alonzo Gee '16: 4.5 points, usage
+    # 9.2, BPM -2.6, VORP -0.2, standard path 30, floor +19.5, printing 49 — ABOVE Bruce Bowen '06
+    # (pinned 45 on 7.5 points at BPM +0.3). 380 of the floor's 641 movers are NEGATIVE-BPM seasons
+    # and 86 of them take ten points or more: the term was paying conversion to men who used nothing.
+    #
+    # THE RAMP, and the quantity is a COUNT, not a rate. `usg_raw x _load` is the usage rate the card
+    # actually posted times recal_96's own load share — the possessions he used, per 100, scaled by
+    # how much of a game he was on the floor for. It is measured against GL_U_FULL, THE CLASS'S OWN
+    # UPPER-QUARTILE LOAD: over the 739 cards this floor binds on, the third quartile of usg x load
+    # is 15.02, and 15.0 is that number. No new arbitrary constant enters — the constant is a
+    # quantile of the very class the term pays, the same way recal_163 took its 33.9-minute line from
+    # the class it charged. A man at or above the class's top quarter of used possessions is paid the
+    # conversion half IN FULL; below it he is paid pro rata for what he used.
+    #   Alonzo Gee '16      7.97 used -> 0.5315  (OFF 49 -> 36, his number)
+    #   Javonte Green '22  10.93 used -> 0.7283  (OFF 60 -> 50, inside "near 48")
+    #   Josh Hart '25      15.20 used -> 1.0000  (EXACTLY ZERO: recal_155's own subject, OVR 63, and
+    #                                             the ramp saturates 0.2 BELOW him by measurement)
+    #   Cedric Maxwell '87 16.60 used -> 1.0000  (EXACTLY ZERO: the card he DECLINED to lower)
+    # THE SATURATION POINT IS THE WALL and it was chosen by the two cards his own record fixes, not
+    # by taste: every reference above 15.2 takes Josh Hart '25 off his ruled 64 and Cedric Maxwell
+    # '87 off the 73 he declined to lower, and the class's upper quartile is the largest class
+    # statistic that clears both. At a reference of 16 Green lands exactly on 48 and Hart '25 falls
+    # to 62 — that is the frontier, and the wall is his.
+    # MEASURED on the whole pool: 458 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, mean
+    # -3.10, max -13; OVR follows on 371, mean -1.91; DEF and every attribute move on ZERO, the top
+    # 12 by OFF is identical and the top 50 by OVR has no entrant, no leaver and no rank flip.
+    # MEASURED ON THE CLASS, which is the ruling's own question: the floor lifted 647 cards before
+    # and lifts 411 now; 236 lose it entirely and 179 of those are NEGATIVE-BPM seasons. Negative-BPM
+    # movers 390 -> 211, and the lifts of ten printed points or more 84 -> 39. The floor still binds
+    # on 482 cards (739 before) and the negative-BPM share of everything it pays falls 52% -> 43%.
     GL_V_LO, GL_V_HI = 25.0, 55.0
     GL_K = 1.070
+    GL_U_FULL = 15.0
     if not is_big(p) and a['volume'] < GL_V_HI:
         _gg = (min(1.0, max(0.0, (GL_V_HI - a['volume']) / (GL_V_HI - GL_V_LO)))
                * min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO))) * _load)
         _gpos = (a['drb'] + a['orb'] + a['playvol']) / 3.0
-        _gfl = GL_K * (0.5 * _gpos + 0.5 * a['efficiency'])
+        _gused = a['usg_raw'] * _load
+        _gu = min(1.0, max(0.0, _gused / GL_U_FULL))
+        _gfl = GL_K * (0.5 * _gpos + 0.5 * a['efficiency'] * _gu)
         if _gg > 0.0 and _gfl > std:
             _gadd = _gg * (_gfl - std)
             std += _gadd
             if trace is not None:
                 trace['glue'] = dict(gate=_gg, floor=_gfl, k=GL_K, load=_load, pos=_gpos,
                                      bars=(a['drb'], a['orb'], a['playvol'], a['efficiency']),
-                                     added=_gadd)
+                                     used=_gused, u=_gu, added=_gadd)
     # recal_121 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone guy.
     # In addition to the OFF being a touch heigher than Id like it to be.. More around 85"; and, on
     # the round's first cut, HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
@@ -1874,9 +1922,13 @@ if _CARD:
     if 'glue' in _ot:
         _gl2 = _ot['glue']
         print(f"GLUE FLOOR (recal_155) - possession work drb/orb/playvol {_gl2['bars'][:3]} averaged "
-              f"= {_gl2['pos']:.2f}, half against conversion (efficiency {_gl2['bars'][3]}), x "
+              f"= {_gl2['pos']:.2f}, half against conversion (efficiency {_gl2['bars'][3]} x "
+              f"recal_169's used-load ramp {_gl2['u']:.4f} = {_gl2['bars'][3] * _gl2['u']:.2f}), x "
               f"{_gl2['k']:.3f} = floor {_gl2['floor']:.2f}; gate {_gl2['gate']:.4f} (volume 55->25 "
               f"x 3pt 68->40 x recal_96's load share {_gl2['load']:.4f}): +{_gl2['added']:.3f}")
+        print(f"  recal_169 - possessions actually used {_gl2['used']:.2f} (usage {_gl2['used'] / max(_gl2['load'], 1e-9):.1f}"
+              f" x load {_gl2['load']:.4f}) against the class's upper-quartile load 15.0 -> the "
+              f"conversion half is paid at {_gl2['u']:.4f}")
     if 'paint_floor' in _ot:
         _pf = _ot['paint_floor']
         print(f"PAINT-EVIDENCE FLOOR (recal_131) - share {_pf['share']:.2f} (volume 55->80 x efficiency "
