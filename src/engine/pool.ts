@@ -304,7 +304,7 @@ export const RULES: Rule[] = [
   // lose it — only the men who fell through can be caught. Each rule states its whole condition, the
   // negations included, so ranking the fifteen among themselves moves nobody except across the Two-way
   // shooter line. MEASURED at the 0.75 floor, on 10,000 cards: the fallback goes 6,095 -> 675, from 61%
-  // of the pool to 6.8%, and the largest of the fifteen (Table setter, 787) is under 8%.
+  // of the pool to 6.8%, and the largest of them (Pass-first playmaker, 786) is under 8%.
   //
   // `relax` is IGNORED by the whole block. The floor is a percentile, not a 0-99 rating, and RELAX
   // points of a quartile mean nothing; and the rating splits inside a family (volume 65, volume 60,
@@ -315,17 +315,21 @@ export const RULES: Rule[] = [
   { tag: 'Two-way shooter', test: (c) => c.ltH(c.h, 82) && c.pctPerdef >= c.sigFloor && c.pct3 >= c.sigFloor },
   // a defender's signature on a big's body is rim protection if he has that too; otherwise he is what
   // Pippen was — a man who guards the perimeter at 6'9".
-  { tag: 'Lockdown defender', test: (c) => c.sig === 'perdef' && (c.ltH(c.h, 81) || c.pctRimprot < c.sigFloor) },
-  { tag: 'Rim protector', test: (c) => c.sig === 'rimprot' || (c.sig === 'perdef' && c.geH(c.h, 81) && c.pctRimprot >= c.sigFloor) },
+  { tag: 'Defensive specialist', test: (c) => c.sig === 'perdef' && (c.ltH(c.h, 81) || c.pctRimprot < c.sigFloor) },
+  { tag: 'Shot blocker', test: (c) => c.sig === 'rimprot' || (c.sig === 'perdef' && c.geH(c.h, 81) && c.pctRimprot >= c.sigFloor) },
   // the passers split on whether he is also looking for his own
-  { tag: 'Table setter', test: (c) => c.sig === 'playvol' && c.a.volume < 65 },
-  { tag: 'Lead guard', test: (c) => c.sig === 'playvol' && c.a.volume >= 65 },
-  { tag: 'Go-to scorer', test: (c) => c.sig === 'volume' },
-  { tag: 'Midrange scorer', test: (c) => c.sig === 'mid' && (c.ltH(c.h, 81) || c.paint >= c.mid || c.a.volume >= 60) },
-  { tag: 'Interior scorer', test: (c) => c.sig === 'rim' && c.geH(c.h, 81) },
+  { tag: 'Pass-first playmaker', test: (c) => c.sig === 'playvol' && c.a.volume < 65 },
+  { tag: 'Ball-dominant guard', test: (c) => c.sig === 'playvol' && c.a.volume >= 65 },
+  // HIS RULING ON THE NAMES: "focus on lower level players, not go to scorer". The men this block reaches are role
+  // players — its fifteen groups have median OVRs of 49 to 63 — so the names are a role player's names. The
+  // scoring-load signature is split by whether the shots go in: more than half of that group converts under 40.
+  { tag: 'Microwave scorer', test: (c) => c.sig === 'volume' && c.a.efficiency >= 40 },
+  { tag: 'Gunner', test: (c) => c.sig === 'volume' && c.a.efficiency < 40 },
+  { tag: 'Midrange specialist', test: (c) => c.sig === 'mid' && (c.ltH(c.h, 81) || c.paint >= c.mid || c.a.volume >= 60) },
+  { tag: 'Paint scorer', test: (c) => c.sig === 'rim' && c.geH(c.h, 81) },
   { tag: 'Rim attacker', test: (c) => c.sig === 'rim' && c.ltH(c.h, 81) },
   { tag: 'Spot-up shooter', test: (c) => c.sig === '3pt' && c.ltH(c.h, 81) && c.a.volume < 60 },
-  { tag: 'Scoring shooter', test: (c) => c.sig === '3pt' && c.ltH(c.h, 81) && c.a.volume >= 60 },
+  { tag: 'Perimeter scorer', test: (c) => c.sig === '3pt' && c.ltH(c.h, 81) && c.a.volume >= 60 },
   // SHOOTING BIG — a deleted name stays deleted, so this is not the pick-and-pop big. 6'9" and up whose
   // signature is the three, or the midrange when the jumper beats his rim number and the load is light.
   { tag: 'Shooting big', test: (c) => c.geH(c.h, 81) && (c.sig === '3pt' || (c.sig === 'mid' && c.paint < c.mid && c.a.volume < 60)) },
@@ -336,7 +340,7 @@ export const RULES: Rule[] = [
 ]
 
 /** The fifteen signature tags, in the order the tree asks them. */
-export const SIGNATURE_TAGS: string[] = RULES.slice(-15).map((r) => r.tag)
+export const SIGNATURE_TAGS: string[] = RULES.slice(-16).map((r) => r.tag) // sixteen: the scoring-load signature is split by conversion
 
 /** The shipped order — the ratified law, and what "reset" returns to. */
 export const DEFAULT_ORDER: string[] = RULES.map((r) => r.tag)

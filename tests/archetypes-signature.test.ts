@@ -13,8 +13,8 @@ import type { Player } from '../src/engine/types'
  * had a name lost it, every one of the fifteen is a real population, and the named men read right.
  */
 const FIFTEEN = [
-  'Two-way shooter', 'Lockdown defender', 'Rim protector', 'Table setter', 'Lead guard', 'Go-to scorer',
-  'Midrange scorer', 'Interior scorer', 'Rim attacker', 'Spot-up shooter', 'Scoring shooter', 'Shooting big',
+  'Two-way shooter', 'Defensive specialist', 'Shot blocker', 'Pass-first playmaker', 'Ball-dominant guard', 'Microwave scorer', 'Gunner',
+  'Midrange specialist', 'Paint scorer', 'Rim attacker', 'Spot-up shooter', 'Perimeter scorer', 'Shooting big',
   'Rebounder', 'Ball thief', 'Foul magnet',
 ]
 const SIG = new Set(FIFTEEN)
@@ -38,7 +38,7 @@ const hist = () => {
 describe('the signature block', () => {
   it('is the fifteen, under unique names, at the very bottom of the shipped law', () => {
     expect(SIGNATURE_TAGS).toEqual(FIFTEEN)
-    expect(DEFAULT_ORDER.slice(-15)).toEqual(FIFTEEN)
+    expect(DEFAULT_ORDER.slice(-FIFTEEN.length)).toEqual(FIFTEEN) // sixteen since the scoring-load group was split in two
     expect(new Set(DEFAULT_ORDER).size).toBe(DEFAULT_ORDER.length) // no name is claimed twice
     for (const t of FIFTEEN) expect(ALL_TAGS).toContain(t)
     // the star rule keeps its name and its place; the signature version has its own
@@ -77,17 +77,17 @@ describe('the signature block', () => {
 
   it('names the men it was built for', () => {
     for (const [name, want] of [
-      ["Scottie Pippen '97", 'Lockdown defender'],
+      ["Scottie Pippen '97", 'Defensive specialist'],
       ["Eddie Jones '01", 'Two-way shooter'],
-      ["LaMarcus Aldridge '16", 'Midrange scorer'],
-      ["Pau Gasol '05", 'Interior scorer'],
-      ["Clyde Drexler '93", 'Go-to scorer'],
+      ["LaMarcus Aldridge '16", 'Midrange specialist'],
+      ["Pau Gasol '05", 'Paint scorer'],
+      ["Clyde Drexler '93", 'Microwave scorer'],
       // De'Aaron Fox '19, not Kevin Johnson '96: recal_176 (the elite-passer re-cut, pipeline 176) lifted KJ '96's
       // offence into the star band, so the EXISTING 'Offensive superstar' rule now names him — which is the block
       // working as designed (a star rule always outranks a signature). Fox '19 sits at OFF 68, far from any star floor.
-      ["De'Aaron Fox '19", 'Lead guard'],
-      ["Rod Strickland '94", 'Table setter'],
-      ["Ray Allen '00", 'Scoring shooter'],
+      ["De'Aaron Fox '19", 'Ball-dominant guard'],
+      ["Rod Strickland '94", 'Pass-first playmaker'],
+      ["Ray Allen '00", 'Perimeter scorer'],
       ["Josh Hart '25", 'Rebounder'],
       ["Luol Deng '06", 'Balanced'], // nothing on his sheet reaches the floor, and he is not dressed up
     ] as const) {
@@ -148,12 +148,12 @@ describe('league percentile', () => {
 describe('the signature rules print as arithmetic', () => {
   it('reads the block in the tree’s own vocabulary', () => {
     expect(ruleText('Two-way shooter')).toBe('h < 82 && pct(perdef) >= 0.75 && pct(3pt) >= 0.75')
-    expect(ruleText('Table setter')).toBe("sig === 'playvol' && volume < 65")
-    expect(ruleText('Lead guard')).toBe("sig === 'playvol' && volume >= 65")
-    expect(ruleText('Go-to scorer')).toBe("sig === 'volume'")
+    expect(ruleText('Pass-first playmaker')).toBe("sig === 'playvol' && volume < 65")
+    expect(ruleText('Ball-dominant guard')).toBe("sig === 'playvol' && volume >= 65")
+    expect(ruleText('Microwave scorer')).toBe("sig === 'volume' && efficiency >= 40")
     expect(ruleText('Spot-up shooter')).toBe("sig === '3pt' && h < 81 && volume < 60")
-    expect(ruleText('Lockdown defender')).toBe("sig === 'perdef' && (h < 81 || pct(rimprot) < 0.75)")
-    expect(ruleText('Midrange scorer')).toBe("sig === 'mid' && (h < 81 || paint >= mid || volume >= 60)")
+    expect(ruleText('Defensive specialist')).toBe("sig === 'perdef' && (h < 81 || pct(rimprot) < 0.75)")
+    expect(ruleText('Midrange specialist')).toBe("sig === 'mid' && (h < 81 || paint >= mid || volume >= 60)")
     for (const t of FIFTEEN) {
       const s = ruleText(t)
       expect(s, t).not.toBe('')
