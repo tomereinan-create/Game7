@@ -170,66 +170,175 @@ function tacticOf(t: TeamSeason): Style | null {
 const tacticLabel = (s: Style) => STYLES.find((x) => x.key === s)?.label ?? s
 
 /**
- * ONE TEAM-SEASON AS A CARD (Claude Design "Team Database Redesigns", 1b Night Game), his ruling:
- * "I want to use this design, but with different colors."
+ * THE BOARD — Claude Design "Team Database Redesigns", board 1d Broadcast Board. HIS RULING,
+ * 2026-09-21, verbatim: "Use 1d. The englarged team will only be the first one and the rest will
+ * be pressable."
  *
- * The list was a row with three mini dials down its right edge; 1b makes it a card in a two-across
- * grid — the club's short name in a chip, the team and its line beside it, its place in the list
- * on the far side, and OVR / OFF / DEF under all of it. What is NOT taken from 1b is its palette:
- * the design was drawn four times over in ember, phosphor, royal and scarlet, and none of those is
- * the room this app is in. The arena keeps the furniture, and the two things he named are the only
- * things on the card with any colour in them.
+ * 1d is one SPOTLIGHT drawn at size over a dense ticker: a hero panel washed in the club's colour
+ * with the record set enormous beside three rings, and under it a run of 50px rows, each with the
+ * club's second colour down its left edge. The board's own Tweaks let the spotlight be moved to
+ * any rank; his ruling fixes it — THE HERO IS ALWAYS THE HEAD OF THE LIST, whatever the list is
+ * sorted by, and every other season is a row you can press. A spotlight that could be any rank is
+ * a second piece of state on a screen that already carries ten filters; pinned to the top it is
+ * the same fact the list already states, drawn at the size that fact deserves.
  *
- * THE CHIP IS THE CLUB — "in the short of the team name (OKC) have the colors of the team".
- * THE THREE NUMBERS ARE A SCALE — "either red green or white, depending of how far is it from 50
- * (50 is white)". See `ratingTone`.
+ * BOTH ARE PRESSABLE, THE HERO INCLUDED. "The rest will be pressable" is about the ticker being
+ * rows you can open rather than a read-out; it is not an instruction to make the best team in the
+ * book the one team on the screen that cannot be opened.
  *
- * HIS RULING: "change it to the circles that we have for OVR DEF OFF same as players, instead of
- * the lines" — 1b's three tracked bars are gone and the card wears the same `Dial` a player's card
- * wears, so one rating is drawn one way everywhere in the app. The dials carry the scale as their
- * tone, which is what the bar's fill used to carry.
+ * WHAT IS TAKEN FROM 1d AND WHAT IS NOT is the same split board 1b got when it was adopted here:
+ * the arena keeps the furniture. 1d's own palette — a #07080C ground, Chakra Petch, a red LIVE dot
+ * — is not the room this app is in, so the panel is the app's surfaces, the faces are the house's
+ * two, and the only colour on the board is the colour that was already earned: the club's, through
+ * `clubChip` and `teamColor`, and the rating's, through `ratingTone`. What IS taken is 1d's SHAPE:
+ * hero over ticker, the club's wash behind the hero, the record as the biggest thing on the
+ * screen, the accent edge down every row, and the three ratings riding the far side of each line.
  *
- * AND THEN: "a bit smaller and in the same row as the team name" — the card is one row now, the
- * shape a roster row already has: the club, who it is, and the three rings on the far side. The
- * only thing displaced was the rank, which leads the line under the name rather than sitting where
- * the rings now sit — it is still the card's place in the list, and it costs no second row.
+ * ==========================================================================================
+ * TOMBSTONE — `TeamCard`, board 1b Night Game, 2026-09-16 to 2026-09-21.
  *
- * A five the pool cannot field has no gauges at all: the card says so in words rather than drawing
- * three empty rings, which is what the old row's "—" said in one character.
+ * Every season was a card in a two-across grid: the club's chip, the team and its line beside it,
+ * the rank leading that line, and three `Dial` rings on the far side. It is superseded whole, but
+ * the two things HIS OWN rulings bolted onto it were never 1b's and they carry over unchanged:
+ *   · the chip in the club's colours — "in the short of the team name (OKC) have the colors of the
+ *     team";
+ *   · the ratings on the white-at-50 scale — "either red green or white, depending of how far is
+ *     it from 50 (50 is white)".
+ * The RINGS survive on the hero, which is the one place on this board with room for a ring ("the
+ * circles that we have for OVR DEF OFF same as players"); the ticker prints the same three numbers
+ * in the same tones, because three dials inside a 46px row would be the card this board replaces,
+ * one row lower.
+ * ==========================================================================================
  */
-function TeamCard({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; at: number; sorted: 'ovr' | 'off' | 'def' | null; onPick: () => void; span: Span }) {
-  const o = ovrOf(t)
+
+/**
+ * The club's primary driven down toward black — 1d's own `shade(c1, .62)`, which is the wash that
+ * puts a hero in its team's colour without putting a team's colour behind a page of type. It lives
+ * here rather than in teamColors because this is the only screen that asks for it.
+ */
+const wash = (hex: string, f: number) =>
+  'rgb(' +
+  [1, 3, 5]
+    .map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * f))
+    .join(',') +
+  ')'
+
+/**
+ * THE HERO'S ACCENT — the club's second colour, EXCEPT WHEN THAT COLOUR IS BLACK. 1d draws its
+ * rank, its pill and the pill's border in `c2`, which works because the board's twenty teams were
+ * hand-picked with bright seconds. Ours are the real thirty: Chicago's second is #111111 and
+ * Brooklyn's deep is near it, so a pill drawn in the club's accent on a wash that is already the
+ * club's primary at 62% would be a black outline on a black field — the tag would simply not be
+ * there. Anything under a tenth of relative luminance falls back to the club's own ink, which is
+ * the colour that club already letters its chip in.
+ */
+function accentOf(c: { accent: string; ink: string }): string {
+  const lum = [1, 3, 5]
+    .map((i) => parseInt(c.accent.slice(i, i + 2), 16) / 255)
+    .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+    .reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0)
+  return lum < 0.1 ? c.ink : c.accent
+}
+
+/** The three ratings of one team-season, in the order the board prints them. */
+function ratingsOf(t: TeamSeason) {
   const g = gaugeOf(t)
-  const rows: { k: 'ovr' | 'off' | 'def'; v: number | null }[] = [
-    { k: 'ovr', v: o },
-    { k: 'off', v: g?.off ?? null },
-    { k: 'def', v: g?.def ?? null },
-  ]
+  const o = ovrOf(t)
+  return {
+    live: o !== null && g !== null,
+    rows: [
+      { k: 'ovr' as const, v: o },
+      { k: 'off' as const, v: g?.off ?? null },
+      { k: 'def' as const, v: g?.def ?? null },
+    ],
+  }
+}
+
+/**
+ * THE SPOTLIGHT — the head of the list, drawn at size.
+ *
+ * `tag` is 1d's own pill and it is the one thing on the hero that had to be re-thought rather than
+ * copied. The board hard-codes "BEST RECORD · 1980–2026" because its list has one order; this list
+ * has five sorts and either direction of each, so the pill says what actually put this team at the
+ * top — "BEST DEF · 1996–2017", "LOWEST OVR · 2026" — which is the sort and the span the caption
+ * above already states, said in the hero's own voice.
+ */
+function TeamHero({ t, sorted, tag, onPick, span: [from, to] }: { t: TeamSeason; sorted: 'ovr' | 'off' | 'def' | null; tag: string; onPick: () => void; span: Span }) {
+  const { live, rows } = ratingsOf(t)
+  const c = teamColor(t.ab)
   return (
-    <button className="tcard" onClick={onPick}>
-      <span className="tcard-head">
-        <span className="tcard-ab" style={clubChip(t.ab) as React.CSSProperties}>
-          {t.ab}
-        </span>
-        <span className="tcard-who">
-          <b>{t.team}</b>
-          <i>
-            <em className="tcard-rank">#{at + 1}</em> · {from === to ? '' : `${yy(t.y)} · `}
-            {t.rec ?? t.ab}
-            {t.div ? ` · ${t.div}` : ''} · {t.p.length} men on pool
-          </i>
-        </span>
-        {o === null || g === null ? null : (
-          <span className="tcard-dials">
-            {rows.map(({ k, v }) => (
-              <span className={`tcard-dial ${sorted === k ? 'on' : ''}`} key={k}>
-                <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
-              </span>
-            ))}
+    <button
+      className="thero"
+      onClick={onPick}
+      style={
+        {
+          ...clubChip(t.ab),
+          '--hero-wash': `linear-gradient(115deg, ${wash(c.primary, 0.62)} 0%, var(--surface) 68%)`,
+          '--hero-accent': accentOf(c),
+        } as React.CSSProperties
+      }
+    >
+      <span className="thero-body">
+        <span className="thero-id">
+          <em className="thero-rank">#1</em>
+          <span className="tcard-ab">{t.ab}</span>
+          <span className="thero-who">
+            <b>{t.team}</b>
+            <i>
+              {from === to ? '' : `${yy(t.y)} · `}
+              {t.div ? `${t.div} · ` : ''}
+              {t.p.length} men on pool
+            </i>
           </span>
-        )}
+        </span>
+        <span className="thero-rec">
+          <b>{t.rec ?? '—'}</b>
+          <em className="thero-tag">{tag}</em>
+        </span>
       </span>
-      {o === null || g === null ? <span className="tcard-nofive">No legal five in the card pool</span> : null}
+      {live ? (
+        <span className="thero-dials">
+          {rows.map(({ k, v }) => (
+            <span className={`thero-dial ${sorted === k ? 'on' : ''}`} key={k}>
+              <Dial label={k.toUpperCase()} value={v!} tone="scale" color={ratingTone(v)} />
+            </span>
+          ))}
+        </span>
+      ) : (
+        <span className="tcard-nofive">No legal five in the card pool</span>
+      )}
+    </button>
+  )
+}
+
+/**
+ * ONE LINE OF THE TICKER, AND IT IS A BUTTON — the second half of his ruling. 1d's row exactly:
+ * the rank, the club, who it is with its season under it, the record, and the three ratings on the
+ * far side, with the club's accent down the left edge so a run of rows reads as a run of clubs.
+ */
+function TeamTick({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; at: number; sorted: 'ovr' | 'off' | 'def' | null; onPick: () => void; span: Span }) {
+  const { rows } = ratingsOf(t)
+  const c = teamColor(t.ab)
+  return (
+    <button className="ttick" onClick={onPick} style={{ ...clubChip(t.ab), '--tick-edge': accentOf(c) } as React.CSSProperties}>
+      <em className="ttick-rank">#{at + 1}</em>
+      <span className="tcard-ab">{t.ab}</span>
+      <span className="ttick-who">
+        <b>{t.team}</b>
+        <i>
+          {from === to ? '' : `${yy(t.y)} · `}
+          {t.div || t.ab}
+        </i>
+      </span>
+      <span className="ttick-rec">{t.rec ?? '—'}</span>
+      <span className="ttick-nums">
+        {rows.map(({ k, v }) => (
+          <span className={`ttick-num ${sorted === k ? 'on' : ''}`} key={k}>
+            <i>{k.toUpperCase()}</i>
+            <b style={{ color: ratingTone(v) }}>{v ?? '—'}</b>
+          </span>
+        ))}
+      </span>
     </button>
   )
 }
@@ -432,6 +541,14 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     saveSpan(next)
   }
 
+  /**
+   * WHAT THE HERO'S PILL SAYS (board 1d's own tag, re-thought — see `TeamHero`). 1d writes "BEST
+   * RECORD · 1980–2026" because its list has one order; this one has five sorts and both
+   * directions of each, so the pill names the order that actually put this season at the top.
+   */
+  const heroTag = (
+    sort === 'az' ? `${flip ? 'LAST' : 'FIRST'} BY NAME` : `${flip ? 'LOWEST' : 'BEST'} ${sort === 'rec' ? 'RECORD' : sort.toUpperCase()}`
+  ) + ` · ${spanLabel(span)}`
   const rating = sort === 'off' || sort === 'def' ? sort : null
   /** OVR and the gauges share the 1-99 scale, so the same Min/Max inputs bind whichever sort is on. */
   const ranked = rating !== null || sort === 'ovr'
@@ -689,12 +806,26 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
               <span>{listCaption({ query, span, n: teams.length, sort, flip, conf, tactic })}</span>
               <i />
             </div>
-            <div className="tdb-grid">
-              {teams.slice(0, shown).map(({ t }, i) => (
-                <TeamCard
+            {/* BOARD 1d: ONE SPOTLIGHT OVER A TICKER (his ruling: "Use 1d. The englarged team will
+                only be the first one and the rest will be pressable"). The hero is `teams[0]` and
+                nothing else — it follows the sort rather than being pinned to a rank of its own —
+                and every other season is a pressable row. Both open the same team. */}
+            <div className="tdb-board">
+              {teams.length ? (
+                <TeamHero
+                  key={teams[0].t.team + teams[0].t.y}
+                  t={teams[0].t}
+                  sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)}
+                  tag={heroTag}
+                  onPick={() => pick(teams[0].t)}
+                  span={span}
+                />
+              ) : null}
+              {teams.slice(1, shown).map(({ t }, i) => (
+                <TeamTick
                   key={t.team + t.y}
                   t={t}
-                  at={i}
+                  at={i + 1}
                   sorted={rating ?? (sort === 'ovr' ? 'ovr' : null)}
                   onPick={() => pick(t)}
                   span={span}

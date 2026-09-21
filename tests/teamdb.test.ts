@@ -21,8 +21,14 @@ const YMIN = YEARS[0]
 const YMAX = YEARS[YEARS.length - 1]
 
 /** The database's own list screen, rendered with the span the reader left behind. */
-/** How many team cards the list laid down. */
-const cards = (html: string) => html.split('class="tcard"').length - 1
+/**
+ * How many team-seasons the board laid down — board 1d is one SPOTLIGHT and a ticker under it
+ * (his ruling: "Use 1d. The englarged team will only be the first one and the rest will be
+ * pressable"), so a seat is a hero or a row and the list is the two of them together.
+ */
+const heroes = (html: string) => html.split('class="thero"').length - 1
+const ticks = (html: string) => html.split('class="ttick"').length - 1
+const cards = (html: string) => heroes(html) + ticks(html)
 
 const db = (span: Span) => {
   store.set('game7.teamdb.years', `${span[0]}-${span[1]}`)
@@ -109,21 +115,42 @@ describe('the range list pages instead of laying 1,300 rows down at once', () =>
     expect(wide).toContain(`${(WHEEL.length - 60).toLocaleString()} more seasons`)
   })
 
-  it('a range card carries its year; a single-year card does not need to', () => {
-    expect(db([1996, 2017])).toContain('’96 · 72–10')
+  it('a range seat carries its year; a single-year seat does not need to', () => {
+    // the record is a cell of its own on this board, so the year leads the line rather than the
+    // rank: "’96 · Central" on a row, "’96 · Central · 12 men on pool" on the spotlight
+    expect(db([1996, 2017])).toContain('’96 · ')
     expect(db([YMAX, YMAX])).toContain('men on pool')
     expect(db([YMAX, YMAX])).not.toContain('’26 · ')
   })
 
   /** The sort runs over the whole span, not inside each season — that is the point of the ruling. */
-  it('best record over 1996–2017 opens with the ’16 Warriors, then the ’96 Bulls', () => {
+  it('best record over 1996–2017 spotlights the ’16 Warriors and opens the ticker with the ’96 Bulls', () => {
     const html = db([1996, 2017])
-    const gsw = html.indexOf('’16 · 73–9')
-    const chi = html.indexOf('’96 · 72–10')
-    expect(gsw).toBeGreaterThan(-1)
-    expect(chi).toBeGreaterThan(gsw)
-    // and the two of them are the first two cards of the list
-    expect(cards(html.slice(0, gsw))).toBe(1)
+    const hero = html.slice(html.indexOf('class="thero"'), html.indexOf('class="ttick"'))
+    expect(hero).toContain('Golden State Warriors')
+    expect(hero).toContain('73–9')
+    // …and the second-best record is the first row under it, not the second
+    const first = html.slice(html.indexOf('class="ttick"'))
+    expect(first.indexOf('Chicago Bulls')).toBeLessThan(first.indexOf('class="ttick"', 1))
+    expect(first).toContain('72–10')
+  })
+
+  /**
+   * HIS RULING, 2026-09-21: "The englarged team will only be the first one and the rest will be
+   * pressable." One hero, at the head of the list, and every other season a button.
+   */
+  it('enlarges one team only, the head of the list, and leaves the rest pressable rows', () => {
+    for (const span of [[YMAX, YMAX], [1996, 2017]] as Span[]) {
+      const html = db(span)
+      expect(heroes(html)).toBe(1)
+      expect(ticks(html)).toBe(cards(html) - 1)
+      // the spotlight says which rank it is, and it is always the first
+      expect(html).toContain('class="thero-rank">#1<')
+      expect(html).not.toContain('class="thero-rank">#2<')
+      // both halves open a team: the hero is a button too, not a read-out
+      expect(html).toContain('<button class="thero"')
+      expect(html.split('<button class="ttick"').length - 1).toBe(ticks(html))
+    }
   })
 })
 
@@ -170,15 +197,21 @@ describe('the club is on the chip and the scale is on the numbers', () => {
     expect(hue(50)).toBe(145)
   })
 
-  it('gives every card either three rings or the words, and never neither', () => {
-    // a five the pool cannot field has no gauges to draw, and the card says that in words instead
+  it('gives the spotlight either three rings or the words, and never neither', () => {
+    // a five the pool cannot field has no gauges to draw, and the hero says that in words instead
     // of three empty rings — which is what the old row's "—" said in one character
     for (const span of [[YMAX, YMAX], [YMIN, YMAX]] as Span[]) {
       const html = db(span)
-      const n = cards(html)
-      expect(n).toBeGreaterThan(0)
-      expect((html.split('class="tcard-dials"').length - 1) + (html.split('class="tcard-nofive"').length - 1)).toBe(n)
+      expect(cards(html)).toBeGreaterThan(0)
+      expect((html.split('class="thero-dials"').length - 1) + (html.split('class="tcard-nofive"').length - 1)).toBe(heroes(html))
     }
+  })
+
+  /** A 46px ticker row has no room for a ring, so the same three ratings are printed as figures —
+   *  in the same tones, and a season with no legal five prints the dash in all three. */
+  it('prints three ratings on every ticker row, dashes included', () => {
+    const html = db([YMAX, YMAX])
+    expect(html.split('class="ttick-num ').length - 1).toBe(ticks(html) * 3)
   })
 
   it('has no colour to give a rating that does not exist', () => {
