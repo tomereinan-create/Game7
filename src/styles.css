@@ -6444,8 +6444,27 @@ body.map #root { padding-bottom: var(--foot); }
      stood here was 11.5cqw tall because that is a person; the design's mark is a 54x64 shirt on a
      769px floor, which is 8.3% of it, and the shirt is 0.844 as wide as it is tall. The pixel floor
      goes from 38 to 30 with it — a jersey is a shorter object than a man — and it is what keeps the
-     mark from vanishing on a 331px phone floor, where 8.3cqw is 27.5. */
-  --fd-fig-h: clamp(30px, 8.3cqw, 94px);
+     mark from vanishing on a 331px phone floor, where 8.3cqw is 27.5.
+
+     IT IS 9.3cqw SINCE 2026-09-21, his ruling: "Make the jerseys a bit bigger". Twelve per cent on
+     all three terms, so the floor and the cap keep the ratios they were given — 34px where the
+     phone had 30, 105 where the desk had 94 — and every number derived off this one comes with it
+     rather than being re-tuned: the shirt's width (0.844 of it), the numeral across the chest
+     (0.47), the hem, the smudge, the cup's stand-off and the ball's own rest beside the mark
+     (--p-off, 0.44 of it). THE SIX COORDINATES DO NOT MOVE: the shirt grows UPWARD off a foot that
+     --fd-fig-lift pins to the plate, so his marks stand exactly where they stood.
+
+     WHAT IT SPENDS IS SKY, and there is only one mark short of any — the 1v1 bid out top, the one
+     with no ground above it. MEASURED, its head against the floor's own top edge: 14.4px inside at
+     1440, 10.7 at 1024, 1.7 at 375, 0.5 at 360, and 3.9px OUTSIDE at 320, where it crosses the line
+     onto the panel. The shirts are outside the sideline's clip by design (the panel catches them),
+     so at 320 it is not cut, it simply stands a little proud of the floor — and 320 is the same
+     width at which VS FRIEND's plate already hangs 2px past the sideline, flagged on `.fd-label`.
+     It is the pixel FLOOR that does this and not the cqw: at 320 the term in play is the 34, which
+     is 12% of a height the court below it does not get 12% more of. Flagged rather than solved,
+     like the plate above it — the alternative is holding the floor at 30 and making his ruling
+     stop applying to the narrowest phone, which is the width it is least visible on. */
+  --fd-fig-h: clamp(34px, 9.3cqw, 105px);
   /* HOW FAR ABOVE HIS MARK'S CENTRE THE MAN'S FEET LAND. This one number is the whole of his
      ruling "the jersey above the location and not to the side": it replaces both --ck-fig-gap
      (the step sideways) and --ck-fig-drop (the push below). It is read in exactly two places —
@@ -7535,10 +7554,16 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   .fd-mark:not(.on):hover .fd-label,
   .fd-mark:not(.on):focus-visible .fd-label { color: var(--ink); }
 
-  /* THE HOUSE LIGHTS FOLLOW THE MOUSE ACROSS THE FLOOR. --px/--py are written on the panel by
-     FrontDoor.tsx, at most once a frame, from the pointer's own place inside it; with no mouse in
-     the room they are never written at all and the fallback stands this spill exactly where
-     --arena-light already stands, so the layer cannot be seen until something moves over it.
+  /* THE HOUSE LIGHTS COME UP WHEN YOUR HAND IS ON THE FLOOR, AND THEY DO NOT MOVE — his ruling,
+     2026-09-21: "stop moving the light. The light stays."
+     TOMBSTONE, ONE DAY OLD: this lamp used to FOLLOW THE MOUSE. --px/--py were written on the panel
+     by FrontDoor.tsx once a frame from the pointer's own place inside it, and this gradient was
+     centred on them, so the spill slid about under the cursor. His ruling takes the travel and
+     keeps the lamp, which is the whole of the change: the circle is nailed to 50% 56% — the
+     fallback it already used, and the place --arena-light lights the room from — so what is left is
+     a floor that WARMS when the pointer is over it and is otherwise the room it always was. The two
+     custom properties are deleted rather than left in place unread; see the tombstone in
+     FrontDoor.tsx for the handler that wrote them.
      IT IS THE SAME WARM BONE AS THE ARENA'S OWN LIGHT at about half the strength — one more lamp in
      the same roof, not a colour this room does not own — and it is a child of the glow, which means
      it sits UNDER the floor and its markings with the rest of the light rather than washing over
@@ -7548,7 +7573,7 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
     position: absolute;
     inset: 0;
     opacity: 0;
-    background: radial-gradient(circle at var(--px, 50%) var(--py, 56%), rgb(255 226 178 / 0.13) 0%, rgb(255 214 150 / 0.05) 24%, rgb(0 0 0 / 0) 48%);
+    background: radial-gradient(circle at 50% 56%, rgb(255 226 178 / 0.13) 0%, rgb(255 214 150 / 0.05) 24%, rgb(0 0 0 / 0) 48%);
     transition: opacity 260ms ease;
   }
   .fd-panel:hover .fd-glow::after { opacity: 1; }
@@ -7606,10 +7631,13 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
      still answers — solid ground, a brighter hairline, a cream name, a gold halo — because none of
      that is movement; what goes is the step forward, the shirt's lift, the smudge opening under it,
      the button's rise and the eased draw of the gold rule under the book, which either become
-     instant or do not happen at all. THE MOUSE-TRACKED LAMP IS OFF OUTRIGHT rather than snapped to
-     each new position: a light that follows a cursor IS the movement, and there is no version of it
-     left once the easing is taken away. Every selector below carries the same weight as the one it
-     beats and comes later in the file, so none of it needs !important. */
+     instant or do not happen at all. THE LAMP OVER THE FLOOR IS NOT TOUCHED HERE ANY MORE. It was
+     switched off outright while it followed the cursor, because a light that tracks a pointer IS
+     the movement and there is no reduced version of it; his ruling of 2026-09-21 nailed it in
+     place, so all that is left is a panel that warms under the hand — a fade, not a travel, and
+     fading is what this block leaves alone everywhere else in the app. Every selector below carries
+     the same weight as the one it beats and comes later in the file, so none of it needs
+     !important. */
   .fd-mark,
   .fd-fig,
   .fd-p-shade,
@@ -7626,5 +7654,4 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   .fd-mark:focus-visible .fd-p-shade { transform: translate(-50%, 44%); opacity: 0.66; }
   .fd-cta:hover,
   .fd-cta:active { transform: none; }
-  .fd-glow::after { display: none; }
 }
