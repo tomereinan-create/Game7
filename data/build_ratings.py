@@ -87,6 +87,37 @@ TRK_BAND_LO  = 62.5    # regressed tracked reading, card space, where elite star
 TRK_BAND_TOP = 72.8    # ... and where it is full (p99)
 TRK_BAND_W   = 0.32    # what a fully elite measured season is worth in composite space
 BAND_FOOT, BAND_FULL = 12.0, 34.0   # recal_159: recal_96's 12-minute foot; full load = this term's own class p75 (34.04)
+# recal_175 (HIS RULING, verbatim: "Agree with Mikal bridges 21' dropping per d", and on the
+# collateral: "Jrue Smart and Kobe shouldnt drop nearly as much as bridges"). A CARRIED BALLOT IS
+# PAID IN FULL UNLESS THE SEASON'S OWN MEASUREMENT CONTRADICTS IT.
+# `drep` is a CAREER reputation decayed 15%/yr in BOTH directions, so a season with no ballot of its
+# own collects a neighbouring year's ballot at full weight in the PD composite — which is the whole
+# of Mikal Bridges '21: perdef 95, #4 of 2021, on ZERO 2021 ballot (his only career selection is
+# 2022), DBPM +0.9, STL% 1.6, and the WORST tracked read of any card in the file reading 95+ —
+# +5.3% on 483 shots from 6ft out, +2.8% on 863 overall. His own '20, with the better box sheet,
+# reads 89. recal_160 established the own-ballot / carried-ballot split for rim protection and
+# recal_165 extended it to the voted ceiling's unlock; this is the same split for perimeter defence.
+# WHAT SEPARATES HIM FROM THE OTHER CARRIED BALLOTS, MEASURED. A flat half-rate on every carried
+# ballot is NOT the form and is the thing his second ruling forbids: it takes Jrue Holiday '20,
+# Marcus Smart '23 and Kobe Bryant '99 down with him. The separator is the season's OWN tracked
+# defence, which the file already computes and regresses to its reliability (`_dmeas101`, recal_92 /
+# recal_101 / recal_86). Read in card space, the four seasons the ruling names are not alike:
+#   Bridges '21 47.3   |   Smart '23 56.3   |   Jrue '20 63.5   |   Kobe '99 — NOT MEASURED
+# so the carried ballot is discounted toward CARRIED_REIN only where the measurement CONTRADICTS it,
+# and Kobe '99 (and every pre-2014 card in the file) is untouched by construction: recal_52's rule,
+# "measured, or not at all". Nothing here reads DBPM — recal_150's declined form did, and it is the
+# door that ruling closed.
+# THE WINDOW IS MEASURED ON TWO CLASSES AND THEY AGREE. Over the 288 CARRIED-ballot tracked seasons
+# this line actually pays (the term's own class, recal_117/130/145/159's rule) the regressed tracked
+# reading runs p01 44.6 · p05 49.2 · p10 51.7 · p25 54.5 · p50 59.3; over the 124 seasons that hold
+# a ballot OF THEIR OWN — the class a carried ballot claims to belong to — it runs p01 49.3 · p05
+# 51.5 · p10 55.4 · p25 59.2 · p50 63.2. The bottom twentieth of the paid class and the bottom
+# hundredth of the certified class land on the SAME 2.5-point window, so that window is where a
+# season stops looking like one the league votes for. Below CONTRA_LO the carried ballot buys
+# CARRIED_REIN of what it bought; at CONTRA_FULL and above it buys all of it.
+# WHY NOT A WIDER RAMP: at the certified class's p05->p10 (51.5 -> 55.4) Bridges '25 (53.8) starts
+# paying, and recal_141's control pin Mikal Bridges '24 == 78 is a 20% blend of it and breaks.
+CONTRA_LO, CONTRA_FULL = 49.2, 51.7   # carried-class p05 / p10 (certified-class p01 / p05: 49.3 / 51.5)
 SHORTLINE = {1995, 1996, 1997}  # 22ft uniform line -> discount 3P% a touch
 ERA_ALPHA = 0.38  # dampening for the 3PT-volume era multiplier (recal_22 -> recal_24)
 ERA_CAP   = 3.0   # multiplier ceiling
@@ -385,6 +416,11 @@ def score_season(r, P):
     # Gobert '19 and Wembanyama '24 (97 +-0) all broke on the pool shift alone, measured.
     _ID_OWN[(r['pid'], r['season'])] = min(1.0, ID + 0.25*((_own + CARRIED_REIN*(r['drep'] - _own))*hp))
     ID  = ID + 0.25*(r['drep']*hp)   # big-man defensive votes reinforce rim protection
+    # recal_175: the exact value the PD COMPOSITE pays for the part of `drep` that was cast in
+    # ANOTHER season. Stashed, not deducted — the deduction is decided in the season loop below,
+    # where the season's own tracked measurement is available. Zero for every own-ballot season and
+    # for every no-vote card, so both classes are byte-identical by construction.
+    _cw175 = W['PD']['drep'] * rep_hf * max(0.0, r['drep'] - _own)
     # recal_97 (HIS RULING, verbatim: "This is 99 per def. 3+ dpbm. Perfect heigh. perfect voting").
     # THE PD CLAMP IS GONE. PD was clamped to 1.0 BEFORE Pvot percentiled it, and a perfect sheet
     # overshoots 1.0 by construction: full votes at height <= 6'8" pay 0.453 x 1.2 = 0.5436, the
@@ -401,7 +437,7 @@ def score_season(r, P):
         out=[path, r['x3pa_per_100'], era_mult(r['season']), r['x3p_pct'], round(vol, 3), round(acc, 3), round(gate, 3)],
         idc=[r['blk'], r['ht'], r['dbpm'], round(r['drep'], 3),
              (TRACKING.get((r['season'], 'Less Than 6Ft'), {}).get(_nrm(r['name'])) or (None,))[0]],
-        _vf=_vote_factor,
+        _vf=_vote_factor, _cw=_cw175,
         pdc=[round(r['drep'], 3), r['dbpm'], r['team_drtg'], r['ht'], 1 if r['drep'] == 0 else 0,
              (TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, None))[0],
              round(min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0, 2),
@@ -902,7 +938,29 @@ for yr, rows in seasons.items():
         # anchor of 76 +-1 purely by other men falling past him. Applied here instead, to the 0.45 band
         # premium that the votes actually buy, the Pvot pool is BIT-IDENTICAL and nobody rises: every
         # card with _paid_in_rim = 0 reads exactly what it read before, by construction.
-        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PD) * BRK['_vf'])   # no-vote cap 54 -> 58 (recal 5)
+        # recal_175: THE CARRIED SHARE OF THE COMPOSITE'S REPUTATION TERM, PAID BY THE SEASON'S OWN
+        # MEASUREMENT (see the CONTRA_LO/CONTRA_FULL block at the top of this file). `_cw` is what
+        # the PD composite pays for a ballot cast in another year; `_dmeas101` is this season's own
+        # tracked perimeter defence, already regressed to its reliability. Where the measurement is
+        # at or above the window the card is BYTE-IDENTICAL — which is every own-ballot season
+        # (_cw = 0), every no-vote card (_cw = 0), every pre-tracking card (_dmeas101 is None,
+        # recal_52's "measured, or not at all"), and every carried ballot the season corroborates:
+        # Jrue Holiday '20, Marcus Smart '23, Kobe Bryant '99, Amen Thompson '26, Luguentz Dort
+        # '24/'26, Herbert Jones '23, Paul George '17, Avery Bradley '15, Andre Roberson '15.
+        # The contradiction is itself paid at recal_12/101's sample weight, so a thin tracking season
+        # cannot empty a ballot.
+        # THE POOL IS FROZEN, recal_114's and recal_149's doctrine, stated there for this reason: the
+        # deduction lands on the CARD'S OWN lookup into Pvot and never on the PD stored in `tmp`, so
+        # the within-season voted ranking does not move and NO CARD CAN RISE. `novote` is read off the
+        # UNDISCOUNTED composite above, so the no-vote channel and recal_146's pre-2014 relief are
+        # byte-identical too — this round can only take band POSITION off a contradicted carry.
+        _corr175 = 1.0
+        if BRK['_cw'] > 0.0 and _dmeas101 is not None:
+            _m175 = 1.0 + 98.0 * _dmeas101
+            _c175 = min(1.0, max(0.0, (_m175 - CONTRA_LO) / (CONTRA_FULL - CONTRA_LO)))
+            _corr175 = 1.0 - (1.0 - _c175) * _sample_weight(r['name'])
+        PDo = PD - (1.0 - CARRIED_REIN) * (1.0 - _corr175) * BRK['_cw']
+        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PDo) * BRK['_vf'])   # no-vote cap 54 -> 58 (recal 5)
         # recal_101 (HIS RULING on Wembanyama '26, verbatim: "Per def is too low. I understand the
         # 7'4 is an issue but everything else is 10/10"). A VOTED CARD'S FULL-SAMPLE MEASUREMENT MAY
         # RAISE HIM, NEVER LOWER HIM. For wv = 1 the tracked branch was multiplied by zero, so the
@@ -1006,7 +1064,7 @@ for yr, rows in seasons.items():
             _own171 = min(r['drep'], max(0.0, rep_by_pid.get(r['pid'], {}).get(yr, 0.0)))   # the ballot THIS season cast
             _cert171 = P['stl'](r['stl'])   # recal_171: what the season's OWN perimeter sheet certifies
             _u171 = 1.0 if r['drep'] <= 0.0 else min(1.0, max(0.0, (_own171 + _cert171 * (r['drep'] - _own171)) / r['drep']))
-            _pd149 = PD + TRK_BAND_W * _sample_weight(r['name']) * _q149 * _dload
+            _pd149 = PDo + TRK_BAND_W * _sample_weight(r['name']) * _q149 * _dload   # recal_175: the same discounted composite; recal_171's gate below unchanged
             PD2 = PD2 + _u171 * max(0.0, ((1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(_pd149) * BRK['_vf'])) - PD2)
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)

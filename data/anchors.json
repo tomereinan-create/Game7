@@ -1683,5 +1683,41 @@
     "round": 173,
     "ruling": "Agree with 10",
     "note": "87 -> 83. DEF 87 was #10 of 226 in 2002, above Shaq '02 (86), Robinson '02 (85) and Kirilenko '02 (85) and level with Karl Malone '97's pinned 87, on a card with NO defensive bar at 80 (perdef 77, rimprot 77, perimdisrupt 39, drb 78, discipline 62). The whole of that perdef 77 was the pre-2014 no-vote DBPM relief: his own composite is card 39 and the line pays card 77 on his DBPM percentile alone. The relief's part ABOVE recal_13's no-vote cap is now paid at the share his own sheet corroborates - max(recal_35's perimeter band, recal_92's evidence band on steals, the same band on blocks) - which for a 7'1\" centre at steals p42 and blocks p81 is 0.375. perdef 69, DEF 83, #19 of 226. LANDS ONE OVER THE NUMBER: 82 exactly needs his perdef near 67, and the corroboration meter is already at its floor value for him. THE STOPPING PIN for the ruling's verbatim (perimeter-evidence-only) form is Arvydas Sabonis '96 attr:perdef 79 +-1, which falls to 64 without the block channel, with Larry Sanders '13 (67 +-3, on its floor) to 63. See data/rounds/173.json."
+  },
+  {
+    "card": "Mikal Bridges '21",
+    "scale": "attr:perdef",
+    "target": 80,
+    "tol": 3,
+    "round": 175,
+    "ruling": "Agree with Mikal bridges 21' dropping per d",
+    "note": "A CARRIED BALLOT IS PAID IN FULL UNLESS THE SEASON'S OWN MEASUREMENT CONTRADICTS IT. He read perdef 95, #4 of 2021, on a season with NO 2021 ballot - drep 0.85 is his 2022 All-Defensive 1st team decayed one year, and the PD composite paid it at the full wing rate (0.453 x 1.2 x 0.85 = 0.462 of a 0.959 sheet). DBPM +0.9, STL% 1.6, and the worst tracked read of any card printing 95+: +5.3% on 483 shots from 6ft out, +2.8% on 863 overall. The carried share of the composite's reputation term is now discounted toward CARRIED_REIN 0.50 where the season's own regressed tracked read falls below CONTRA_LO/CONTRA_FULL 49.2/51.7 - the window where the carried class's p05 and the certified class's p01 meet. 95 -> 81, DEF 91 -> 81. The Pvot pool is frozen on the undiscounted composite (recal_114/149's doctrine), so no card rises: 40 movers, all down."
+  },
+  {
+    "card": "Jrue Holiday '20",
+    "scale": "attr:perdef",
+    "target": 95,
+    "tol": 5,
+    "round": 175,
+    "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+    "note": "HIS SECOND RULING, PINNED AT ITS READING. Jrue '20 carries a ballot from 2019/2021 and his own season MEASURES -2.6% on 559 shots (regressed tracked read 63.5, above the certified class's median 63.2), so the carry is corroborated and he is byte-identical at 95. This is the wall recal_175 was fitted against: the flat half-rate form takes him to 80."
+  },
+  {
+    "card": "Marcus Smart '23",
+    "scale": "attr:perdef",
+    "target": 95,
+    "tol": 5,
+    "round": 175,
+    "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+    "note": "The same ruling. Carried 2022 ballot, own season tracked read 56.3, above the window - byte-identical at 95. The flat half-rate form takes him to 78."
+  },
+  {
+    "card": "Kobe Bryant '99",
+    "scale": "attr:perdef",
+    "target": 91,
+    "tol": 5,
+    "round": 175,
+    "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+    "note": "The same ruling, and the PRE-TRACKING half of it. 1999 has no tracked defence, so recal_52's 'measured, or not at all' pays his carried 2000 ballot in full and every pre-2014 card in the file is untouched by construction - which is also why recal_150's declined subjects (Kobe '05 90, Oladipo '17 91) and recal_158's (Covington '15 85) do not move. The flat half-rate form takes him to 77."
   }
 ]
