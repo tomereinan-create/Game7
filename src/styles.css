@@ -7474,6 +7474,118 @@ html:has(body.door) { background: #0b0a09; }
 body.door { background: #0b0a09; }
 body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 
+/* ---------- 6 · WHAT THE BOARD DOES UNDER A POINTER ----------
+ *
+ * HIS RULING, 2026-09-21, verbatim: "I want to make the home page interactive, when I hover over
+ * things make it dynamic."
+ *
+ * EVERY RULE IN THIS SECTION IS BEHIND `(hover: hover) and (pointer: fine)`, and that is not
+ * belt-and-braces. On his phone a tap leaves :hover stuck on whatever was tapped last until
+ * something else is touched — so a floor built on hover would sit there with one mark permanently
+ * lifted and lit, saying "your hand is here" about a hand that left. The board on a phone is
+ * exactly the board it was yesterday; this is a desk's extra layer and nothing below it moved.
+ *
+ * WHAT HOVER IS ALLOWED TO SPEND, and this is the rule that keeps it from undoing a decision
+ * already taken: THE MOTION GOES ON TRANSFORM AND OPACITY, WHICH SELECTION NEVER WRITES. The
+ * plate's swap to gold is instant on purpose — "no transition: the swap is instant, which is both
+ * boards' behaviour" — so not one rule here puts a transition on a plate's background, border or
+ * ink, and hover's own colour changes are instant for the same reason. What eases is the step
+ * forward, the shirt lifting off its plate, the light crossing the floor and the gold rule drawing
+ * itself under the book.
+ *
+ * THE READ PANE DOES NOT FOLLOW THE POINTER, and that is the one obvious thing this does not do.
+ * Sweeping the six would strobe the tag, the name, four lines of rules and the counter, and the
+ * pane is the thing that has to hold still while it is being read. Hover says A MARK IS UNDER YOUR
+ * HAND; the press still says which play you are on. Two questions, and the second one is his.
+ */
+@media (hover: hover) and (pointer: fine) {
+  /* THE MARK STEPS FORWARD. The scale is on the BUTTON, so the plate and the shirt standing over it
+     grow together about the mark's own centre — his six coordinates keep meaning what they mean,
+     which they would not if the lift were a translate. 7% is the whole budget: VS FRIEND in the
+     corner clears the sideline by 2.7px at 375, and at 1.1 it is over it. */
+  .fd-mark { transition: transform 140ms cubic-bezier(0.32, 0.72, 0.3, 1); }
+  .fd-mark:hover,
+  .fd-mark:focus-visible { transform: translate(-50%, -50%) scale(1.07); }
+  .fd-mark:active { transform: translate(-50%, -50%) scale(1.02); transition-duration: 60ms; }
+
+  /* THE SHIRT LIFTS OFF ITS PLATE and the smudge opens under it — the same two-part reading of
+     height the ball's own shadow used to do when there was a lob on this floor, at a twentieth of
+     the distance. The shade is spread with a SCALE and not a width, so both halves ride the
+     compositor and neither one is a layout. */
+  .fd-fig { transition: transform 160ms cubic-bezier(0.32, 0.72, 0.3, 1); }
+  .fd-mark:hover .fd-fig,
+  .fd-mark:focus-visible .fd-fig { transform: translateX(-50%) translateY(-9%); }
+  .fd-p-shade { transition: transform 160ms cubic-bezier(0.32, 0.72, 0.3, 1), opacity 160ms linear; }
+  .fd-mark:hover .fd-p-shade,
+  .fd-mark:focus-visible .fd-p-shade { transform: translate(-50%, 44%) scale(1.22); opacity: 0.42; }
+
+  /* AND THE IDLE PLATE ANSWERS — the five that are not lit, and only them. The ground goes solid,
+     the hairline takes the light one step up (--line-2 to --line-3), the name goes to full cream
+     and a thin gold halo lifts the chip off the floor. THE HALO IS A TENTH OF AN ALPHA WHERE THE
+     SELECTED PLATE'S IS 0.16 ON A GOLD FILL, so the two can never be read as the same state: one is
+     a gold plate, this is a black plate standing in a little gold air. The lit plate is left
+     entirely alone — there is nothing hover could add to it that would not be taking something
+     away. */
+  .fd-mark:not(.on):hover .fd-plate,
+  .fd-mark:not(.on):focus-visible .fd-plate {
+    background: rgb(11 10 9 / 0.97);
+    border-color: var(--line-3);
+    box-shadow: 0 0 0 4px rgb(240 179 35 / 0.1), 0 10px 20px rgb(0 0 0 / 0.55);
+  }
+  .fd-mark:not(.on):hover .fd-label,
+  .fd-mark:not(.on):focus-visible .fd-label { color: var(--ink); }
+
+  /* THE HOUSE LIGHTS FOLLOW THE MOUSE ACROSS THE FLOOR. --px/--py are written on the panel by
+     FrontDoor.tsx, at most once a frame, from the pointer's own place inside it; with no mouse in
+     the room they are never written at all and the fallback stands this spill exactly where
+     --arena-light already stands, so the layer cannot be seen until something moves over it.
+     IT IS THE SAME WARM BONE AS THE ARENA'S OWN LIGHT at about half the strength — one more lamp in
+     the same roof, not a colour this room does not own — and it is a child of the glow, which means
+     it sits UNDER the floor and its markings with the rest of the light rather than washing over
+     them. */
+  .fd-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(circle at var(--px, 50%) var(--py, 56%), rgb(255 226 178 / 0.13) 0%, rgb(255 214 150 / 0.05) 24%, rgb(0 0 0 / 0) 48%);
+    transition: opacity 260ms ease;
+  }
+  .fd-panel:hover .fd-glow::after { opacity: 1; }
+
+  /* the mode pair: the half you are not in comes up to full cream under the hand, so the way out of
+     a mode is visible before it is pressed. The lit half only brightens — it must not look idle. */
+  .fd-mode { transition: color 120ms linear, background 120ms linear; }
+  .fd-mode:hover { color: var(--ink); background: var(--surface-2); }
+  .fd-mode.on:hover { color: var(--you-hi); background: var(--you-tint); }
+
+  /* THE ONE BUTTON THAT ENTERS A MODE rises to meet the cursor and throws its own gold on the pane
+     under it, and gives both back on the press so the click has somewhere to travel. Two pixels: on
+     a block this wide anything more reads as the button coming loose. */
+  .fd-cta { transition: background 120ms linear, transform 120ms cubic-bezier(0.32, 0.72, 0.3, 1), box-shadow 120ms linear; }
+  .fd-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgb(240 179 35 / 0.22); }
+  .fd-cta:active { transform: translateY(0); box-shadow: none; transition-duration: 60ms; }
+
+  /* THE RECORD BOOK: the navy lifts as it already did, and a gold rule draws itself along the top of
+     the cell. The band's own two colours doing the work — the count is already gold and the ground
+     is already navy, so nothing new is introduced at the foot of the page. */
+  .fd-bookrow { position: relative; transition: background 120ms linear; }
+  .fd-bookrow::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    background: var(--you);
+    transform: scaleX(0);
+    transition: transform 180ms cubic-bezier(0.32, 0.72, 0.3, 1);
+  }
+  .fd-bookrow:hover::after,
+  .fd-bookrow:focus-visible::after { transform: scaleX(1); }
+  .fd-bookrow:hover i { color: var(--you-hi); }
+}
+
 /* WITH REDUCED MOTION THE BALL IS SIMPLY AT THE MARK YOU PRESSED. No travel and no turn: it changes
    places in the same frame the plate lights up. Nothing needs a fallback position, because both
    rules this turns off are ANIMATIONS over rules that already state the resting pose — the rig's own
@@ -7490,4 +7602,29 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 @media (prefers-reduced-motion: reduce) {
   .fd-ball-rig.go,
   .fd-ball-rig.go .fd-ball { animation: none; }
+  /* AND THE POINTER LAYER OF 2026-09-21 KEEPS ITS STATES AND GIVES UP ITS TRAVEL. A hovered mark
+     still answers — solid ground, a brighter hairline, a cream name, a gold halo — because none of
+     that is movement; what goes is the step forward, the shirt's lift, the smudge opening under it,
+     the button's rise and the eased draw of the gold rule under the book, which either become
+     instant or do not happen at all. THE MOUSE-TRACKED LAMP IS OFF OUTRIGHT rather than snapped to
+     each new position: a light that follows a cursor IS the movement, and there is no version of it
+     left once the easing is taken away. Every selector below carries the same weight as the one it
+     beats and comes later in the file, so none of it needs !important. */
+  .fd-mark,
+  .fd-fig,
+  .fd-p-shade,
+  .fd-mode,
+  .fd-cta,
+  .fd-bookrow,
+  .fd-bookrow::after { transition: none; }
+  .fd-mark:hover,
+  .fd-mark:focus-visible,
+  .fd-mark:active { transform: translate(-50%, -50%); }
+  .fd-mark:hover .fd-fig,
+  .fd-mark:focus-visible .fd-fig { transform: translateX(-50%); }
+  .fd-mark:hover .fd-p-shade,
+  .fd-mark:focus-visible .fd-p-shade { transform: translate(-50%, 44%); opacity: 0.66; }
+  .fd-cta:hover,
+  .fd-cta:active { transform: none; }
+  .fd-glow::after { display: none; }
 }

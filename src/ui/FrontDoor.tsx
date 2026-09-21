@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
@@ -475,6 +475,49 @@ export function FrontDoor({
    * The campaign is asked first and the other two ladders after it, because a player who named a
    * team in the salary cap and never opened the campaign still has a club.
    */
+  /**
+   * THE HOUSE LIGHTS FOLLOW THE MOUSE ACROSS THE FLOOR — his ruling, 2026-09-21: "I want to make the
+   * home page interactive, when I hover over things make it dynamic."
+   *
+   * IT IS TWO CUSTOM PROPERTIES ON THE PANEL AND NOT A PIECE OF STATE, which is the whole of the
+   * design here. A pointer that moved React state would re-render six marks, a ball rig and four
+   * hundred words of read pane at the frame rate of a mouse; the lamp is a paint and it is handed to
+   * the compositor as a paint — `.fd-glow::after` reads --px/--py off this node and nothing in the
+   * tree is told anything. The two writes are held to ONE A FRAME by the pending handle, because a
+   * fine mouse fires well past 60Hz and a dropped intermediate position is a light that is one frame
+   * behind, which is not a thing anyone can see.
+   *
+   * MOUSE ONLY. A finger dragged across the floor would light it and then leave the lamp burning
+   * wherever the finger came off, which is the phone failure the stylesheet's own `(hover: hover)`
+   * guard exists to prevent; the handler agrees with it rather than relying on it.
+   *
+   * NOTHING IS RESET ON THE WAY OUT: the layer's opacity is driven by `.fd-panel:hover`, so the lamp
+   * fades where it stood and the stale coordinates are never seen. That also means the very first
+   * mouse in — the one frame before this handler has written anything — stands the spill at the
+   * fallback place, which is where --arena-light already lights the room.
+   */
+  const panel = useRef<HTMLDivElement>(null)
+  const lampFrame = useRef(0)
+  const lamp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse' || lampFrame.current) return
+    const el = panel.current
+    if (!el) return
+    const box = el.getBoundingClientRect()
+    if (!box.width || !box.height) return
+    const x = ((e.clientX - box.left) / box.width) * 100
+    const y = ((e.clientY - box.top) / box.height) * 100
+    lampFrame.current = requestAnimationFrame(() => {
+      lampFrame.current = 0
+      el.style.setProperty('--px', `${x.toFixed(1)}%`)
+      el.style.setProperty('--py', `${y.toFixed(1)}%`)
+    })
+  }
+  /* the frame is dropped on the way out, so a pointer moving as the door closes cannot write to a
+     node that is no longer in the document */
+  useEffect(() => () => {
+    if (lampFrame.current) cancelAnimationFrame(lampFrame.current)
+  }, [])
+
   const kit = myColor(team)
   /**
    * THE 01-06 TAG ON THE PLATE YOU ARE ON — his ruling: "I want the numbers to have the same color
@@ -629,7 +672,7 @@ export function FrontDoor({
 
       {/* ---------- the floor and the read beside it ---------- */}
       <div className="fd-band">
-        <div className="fd-panel">
+        <div className="fd-panel" ref={panel} onPointerMove={lamp}>
           <span className="fd-glow" aria-hidden />
           {/* THE ROLL IS HANDED TO THE STYLESHEET AS NUMBERS, not as pixels: the two ends of the
               trip as the marks' own percentages, which shoulder of each mark the ball sits on, how
