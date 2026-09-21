@@ -1620,5 +1620,41 @@
   "round": 166,
   "ruling": "166 confirm",
   "note": "RE-PINNED ONE POINT LOWER, replacing recal_139's 66 +-2 which Tomer released on this round. 64 -> 63. 70% assisted at a mid-class paint rate, so the discounted value falls off the premium's 0.70 gate entirely (.909 -> .600) and he loses the whole 0.0487, rim 73 -> 70. That is the structural cost of reading a discounted value against a RAW pool, which recal_166 kept on purpose."
+ },
+ {
+  "card": "Mikal Bridges '21",
+  "scale": "attr:perdef",
+  "target": 80,
+  "tol": 3,
+  "round": 175,
+  "ruling": "Agree with Mikal bridges 21' dropping per d",
+  "note": "A CARRIED BALLOT IS PAID IN FULL UNLESS THE SEASON'S OWN MEASUREMENT CONTRADICTS IT. He read perdef 95, #4 of 2021, on a season with NO 2021 ballot - drep 0.85 is his 2022 All-Defensive 1st team decayed one year, and the PD composite paid it at the full wing rate (0.453 x 1.2 x 0.85 = 0.462 of a 0.959 sheet). DBPM +0.9, STL% 1.6, and the worst tracked read of any card printing 95+: +5.3% on 483 shots from 6ft out, +2.8% on 863 overall. The carried share of the composite's reputation term is now discounted toward CARRIED_REIN 0.50 where the season's own regressed tracked read falls below CONTRA_LO/CONTRA_FULL 49.2/51.7 - the window where the carried class's p05 and the certified class's p01 meet. 95 -> 81, DEF 91 -> 81. The Pvot pool is frozen on the undiscounted composite (recal_114/149's doctrine), so no card rises: 40 movers, all down."
+ },
+ {
+  "card": "Jrue Holiday '20",
+  "scale": "attr:perdef",
+  "target": 95,
+  "tol": 5,
+  "round": 175,
+  "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+  "note": "HIS SECOND RULING, PINNED AT ITS READING. Jrue '20 carries a ballot from 2019/2021 and his own season MEASURES -2.6% on 559 shots (regressed tracked read 63.5, above the certified class's median 63.2), so the carry is corroborated and he is byte-identical at 95. This is the wall recal_175 was fitted against: the flat half-rate form takes him to 80."
+ },
+ {
+  "card": "Marcus Smart '23",
+  "scale": "attr:perdef",
+  "target": 95,
+  "tol": 5,
+  "round": 175,
+  "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+  "note": "The same ruling. Carried 2022 ballot, own season tracked read 56.3, above the window - byte-identical at 95. The flat half-rate form takes him to 78."
+ },
+ {
+  "card": "Kobe Bryant '99",
+  "scale": "attr:perdef",
+  "target": 91,
+  "tol": 5,
+  "round": 175,
+  "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
+  "note": "The same ruling, and the PRE-TRACKING half of it. 1999 has no tracked defence, so recal_52's 'measured, or not at all' pays his carried 2000 ballot in full and every pre-2014 card in the file is untouched by construction - which is also why recal_150's declined subjects (Kobe '05 90, Oladipo '17 91) and recal_158's (Covington '15 85) do not move. The flat half-rate form takes him to 77."
  }
 ]
