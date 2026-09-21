@@ -6801,6 +6801,15 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-rail .flashbulb.two { left: 71%; top: 19px; animation-duration: 2.4s; }
 
 /* ---------- 2 · the identity row ---------- */
+/* EVERYTHING IN THIS ROW IS A THIRD BIGGER SINCE 2026-09-21 — his ruling: "make this 7 / Game7 /
+   GA / Gaziantep ag / Rafters · Death match / 36 ★ / Cleared / 15/150 / User / Scout bigger". That
+   list is the identity row read left to right and it names every item in it, so the multiplier on
+   --fd-u went up on all ten rather than on the three that were easiest to reach: the mark, the
+   wordmark, the divider, the crest and its letters, the club's name and its line, both counters and
+   their labels, and the two mode chips. The FLOORS moved with the ceilings, because this row wraps
+   to two lines under 640px and a phone that keeps yesterday's sizes has not had the ruling applied.
+   WHAT IT COSTS IS THE BAND UNDER IT, which is the same height his next words take from the floor:
+   "the court square smaller". */
 .fd-id {
   flex: 0 0 auto;
   display: flex;
@@ -6812,12 +6821,12 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-word {
   flex: none;
-  font: 400 clamp(28px, calc(var(--fd-u) * 1.7), 58px) / 1 var(--serif);
+  font: 400 clamp(34px, calc(var(--fd-u) * 2.2), 76px) / 1 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
 }
 .fd-word em { font-style: normal; color: var(--you); }
-.fd-div { flex: none; width: 1px; height: clamp(22px, calc(var(--fd-u) * 1.3), 34px); background: var(--line); }
+.fd-div { flex: none; width: 1px; height: clamp(28px, calc(var(--fd-u) * 1.7), 44px); background: var(--line); }
 /* THE CLUB BADGE, and it is drawn only when there is a club. `Progress.team` is null until he has
    named one, and with it null this row is the design's row minus the badge and its divider —
    which is the layout a fresh install opens on and so has to work anyway. The standing line reads
@@ -6832,12 +6841,12 @@ body.map #root { padding-bottom: var(--foot); }
   flex: none;
   display: grid;
   place-items: center;
-  width: clamp(52px, calc(var(--fd-u) * 2.7), 80px);
+  width: clamp(62px, calc(var(--fd-u) * 3.4), 100px);
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--crest);
   border: 3px solid var(--trim);
-  font: 400 clamp(24px, calc(var(--fd-u) * 1.35), 38px) / 1 var(--serif);
+  font: 400 clamp(29px, calc(var(--fd-u) * 1.7), 48px) / 1 var(--serif);
   color: var(--crest-ink);
   padding-top: 2px;
 }
@@ -6850,10 +6859,10 @@ body.map #root { padding-bottom: var(--foot); }
    The name is the franchise's own on its own front door, so it leads the row now. `.fd-club` keeps
    `min-width: 0` and the name keeps `text-overflow: ellipsis`, so a long one still shortens rather
    than pushing the stats off the end of the row. */
-.fd-club b { font: 400 clamp(26px, calc(var(--fd-u) * 1.75), 46px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
+.fd-club b { font: 400 clamp(31px, calc(var(--fd-u) * 2.2), 58px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
 .fd-club i {
   font-style: normal;
-  font-size: clamp(8.5px, calc(var(--fd-u) * 0.42), 11px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -6869,12 +6878,12 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-stat i {
   display: block;
   font-style: normal;
-  font-size: clamp(8.5px, calc(var(--fd-u) * 0.42), 11px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
-.fd-stat b { display: block; font: 400 clamp(19px, calc(var(--fd-u) * 1.2), 32px) / 1 var(--serif); color: var(--ink); }
+.fd-stat b { display: block; font: 400 clamp(24px, calc(var(--fd-u) * 1.5), 40px) / 1 var(--serif); color: var(--ink); }
 .fd-stat b.gold { color: var(--you); }
 .fd-stat em { font-style: normal; color: var(--muted-2); }
 /* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
@@ -6885,9 +6894,9 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-mode {
   display: grid;
   place-items: center;
-  min-height: 40px;
-  padding: 0 calc(var(--fd-u) * 0.72);
-  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  min-height: 48px;
+  padding: 0 calc(var(--fd-u) * 0.9);
+  font-size: clamp(11px, calc(var(--fd-u) * 0.58), 15px);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -6954,10 +6963,22 @@ body.map #root { padding-bottom: var(--foot); }
      about eight per cent on any wide, short window, because every cqw on the floor would be
      measuring the panel. */
   container-type: size;
-  /* THE COURT'S OWN SHAPE, on the panel. The band stretches the panel to its full height and this
-     is what turns that height into the width the floor needs — so `100cqw` and `100cqh * 29/20`
-     below are the same number and the court fills its container to the pixel. */
+  /* THE COURT'S OWN SHAPE, on the panel. The band gives the panel its height and this is what turns
+     that height into the width the floor needs — so `100cqw` and `100cqh * 29/20` below are the
+     same number and the court fills its container to the pixel. */
   aspect-ratio: 29 / 20;
+  /**
+   * AND IT NO LONGER TAKES THE WHOLE BAND — his ruling, 2026-09-21: "the court square smaller".
+   * The panel used to be stretched by the band, so the floor was as tall as the window had left
+   * and as wide as 29/20 of that; it is 80% of that height now and stands in the middle of what it
+   * gave up. The 20% is not a taste either: the read pane beside it is `flex: 1 1 auto`, so every
+   * pixel the floor stops taking in WIDTH lands in the read — which is the same pane his other
+   * ruling of the morning wants each rule to stand on one row of. One number moves two screens.
+   * `align-self: center` is what keeps the floor on the band's own centre line rather than hanging
+   * from its top edge with the shortfall under it.
+   */
+  align-self: center;
+  height: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7584,14 +7605,30 @@ body.map #root { padding-bottom: var(--foot); }
  * say: at 529px of pane the sentence comes out at 16.9 and at 1156 it is held at 23.5 by the
  * height, which is the right way round.
  */
-/* THE SECOND COLUMN COMES FIRST, AT 420px OF PANE, and it is worth having on its own even where
-   there is no room to grow the type: it is what stopped the death match's read from running off the
-   foot of its pane. `break-inside: avoid` so a rule is never cut in half by the column — a bullet
-   that starts at the foot of one column and finishes at the head of the next reads as two rules,
-   and there are exactly five. */
-@container (min-width: 420px) {
-  .fd-rules { columns: 2; column-gap: calc(var(--fd-u) * 1.2); }
-  .fd-rules .fd-desc { break-inside: avoid; }
+/**
+ * ONE RULE, ONE ROW — his ruling, 2026-09-21: "each rule in a game mode should have its own row."
+ *
+ * TOMBSTONE, ONE DAY OLD: THE SECOND COLUMN. The five lines used to split into two columns at
+ * 420px of pane, and that fold is what paid for the type when the copy came up to reading size the
+ * morning before — the rules block went 236px to 176 and the death match's read came back inside
+ * its own pane. His ruling takes the fold away, and the height it was buying has to come from
+ * somewhere else: it comes from THE MEASURE. A rule in a 42ch column is two lines; the same rule
+ * across the pane is ONE, so five rules that were 5 rows of two lines in two columns are 5 rows of
+ * one line in one column — and one line each is what "its own row" means.
+ *
+ * SO THE CAP COMES OFF THE RULES AND STAYS ON THE SENTENCE. `.fd-desc`'s 42ch is a notebook's
+ * measure and it is right for the lead, which is prose; a rule is a spec, and a spec that wraps has
+ * a second row nobody asked for. The rules get the pane's own width — which is wider since the
+ * floor gave 20% of itself back the same morning — and the sentence above them keeps its measure.
+ * 96ch is the backstop for a window wide enough to run a rule past the eye's own limit.
+ */
+.fd-rules .fd-desc {
+  max-width: 96ch;
+  /* ONE LINE EACH CLOSES THE GAP BETWEEN THEM. At two lines a rule needed the 9px above it to keep
+     the block from reading as one paragraph; at one line the rules ARE the rhythm, and 9 between
+     five single rows is 45px of air the pane has to find from somewhere. 6 is what a list of specs
+     wants and it is 15px back into the height the fold used to buy. */
+  margin-top: 5px;
 }
 /* AND THE TYPE GROWS AT 500, where two columns are 240 apiece and the height the second column
    handed back is worth more than the points it costs. */
@@ -7609,8 +7646,10 @@ body.map #root { padding-bottom: var(--foot); }
      *     and a 770px one, while the pane between them loses 64px of height — so copy sized off it
      *     alone fitted at 770 and then ran 41px past the foot of the pane at 700. This term is a
      *     KNEE rather than a slope: above about 770 it is the largest of the three and does nothing
-     *     at all, and below it, it falls away fast enough to give the height back — 19.7 at 770,
-     *     17.6 at 745, 13.8 at 700, and under the 12px floor by 620, where the floor takes over.
+     *     at all, and below it, it falls away fast enough to give the height back — 18.7 at 770,
+     *     16.6 at 745, 12.8 at 700, and under the 12px floor by 620, where the floor takes over.
+     *     THE CONSTANT WENT 45 TO 46 ON 2026-09-21, when the identity row above this band grew a
+     *     third and took 19px of the pane's height with it.
      *     THE FLOOR IS THE BASE RULE'S OWN 12 and not a point more: at 1600x620 a 13px floor put
      *     the death match six pixels past the foot of its pane, which is the one place where a
      *     floor set for legibility and a floor set for fitting disagree, and the pane keeps its
@@ -7619,7 +7658,7 @@ body.map #root { padding-bottom: var(--foot); }
      *     board: five rules where every other mark has three or four.
      *     It is dvh and not vh so a phone browser's collapsing toolbar is counted.
      */
-    font-size: clamp(12px, min(3.2cqw, calc(var(--fd-u) * 0.85), calc(8.4dvh - 45px)), 26px);
+    font-size: clamp(12px, min(3.2cqw, calc(var(--fd-u) * 0.85), calc(8.4dvh - 46px)), 26px);
     /* 1.4 rather than 1.5: at 20px a fifteenth of a line is four pixels, and over the ten lines
        this pane holds that is the difference between the sign-off standing on the board and the
        sign-off being scrolled to. */
@@ -7627,11 +7666,15 @@ body.map #root { padding-bottom: var(--foot); }
   }
   .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 16px); }
   /* THE FURNITURE GIVES UP ITS AIR SO THE COPY CAN HAVE IT. Every number here is smaller than the
-     one it overrides by four or five pixels and together they are worth about fifteen, which is
-     what the fifth rule costs. */
-  .fd-meta { margin-top: 10px; padding-top: 9px; }
-  .fd-cta { margin-top: 12px; }
-  .fd-signoff { padding-top: 10px; }
+     one it overrides by four or five pixels and together they are worth about twenty, which is
+     what the fifth rule costs — and they gave up two apiece again on 2026-09-21, when the identity
+     row above this band grew a third and took nineteen pixels of pane with it. The gaps are the
+     last place to find height that nobody reads: a rule of navy under a name is a rule of navy at
+     six pixels of clearance as much as at eight. */
+  .fd-rule { margin-top: 6px; }
+  .fd-meta { margin-top: 8px; padding-top: 8px; }
+  .fd-cta { margin-top: 10px; }
+  .fd-signoff { padding-top: 8px; }
 }
 .fd-meta {
   display: flex;
@@ -7785,6 +7828,13 @@ body.map #root { padding-bottom: var(--foot); }
      259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
      any. The read grows instead, and on a phone this band scrolls anyway. */
   .fd-panel { flex: none; container-type: inline-size; }
+  /* AND THE 80% OF 2026-09-21 IS A DESK RULE ONLY. "The court square smaller" takes height off a
+     panel the BAND is stretching, which is what the band does when it is a row. In this column
+     there is nothing stretching it — the floor takes the width and its own 29:20 supplies the
+     height — so `height: 80%` resolves against an auto-height parent and `align-self: center`
+     stops meaning "centre it vertically" and starts meaning "shrink it horizontally". Measured
+     before this line went in: a four-pixel court at 375. The phone keeps the floor it had. */
+  .fd-panel { align-self: stretch; height: auto; }
   .fd-court { width: 100%; }
   .fd-read {
     flex: 1 0 auto;

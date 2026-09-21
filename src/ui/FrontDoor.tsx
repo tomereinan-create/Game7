@@ -576,7 +576,7 @@ export function FrontDoor({
             mark and wordmark grow with the window together. It carries the 7, and since his ruling
             of 2026-09-10 so does the ball on the floor below — there is no ball in this app without
             one any more. */}
-        <Ball size="clamp(34px, calc(var(--fd-u) * 2.6), 68px)" dribble />
+        <Ball size="clamp(42px, calc(var(--fd-u) * 3.4), 88px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>
