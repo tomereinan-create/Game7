@@ -4069,7 +4069,7 @@
         "in": 67,
         "out": 22,
         "id": 86,
-        "pd": 83,
+        "pd": 82,
         "attrs": {
           "3pt": 19,
           "rim": 61,
@@ -4087,7 +4087,7 @@
           "rimprot": 86,
           "perimdisrupt": 76,
           "height": 80,
-          "perdef": 83,
+          "perdef": 82,
           "discipline": 68,
           "usg_raw": 24.3,
           "ts_raw": 0.563,

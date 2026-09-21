@@ -603,6 +603,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * oracle +0.55); both crash taxes broke on the ORACLE edge (crashOff +0.49 at 0.40, crashDef +0.44 at 0.94) and were set at
  * crashOff 0.28 (blind -0.69, oracle +0.52) and crashDef 0.66 (-0.48, +0.53). 301 tall no-vote bigs lost perimeter defence,
  * so the sampled fives defend the glass more alike and the oracle's crash call is worth less.
+ * recal_172 read the perdef vote meter's block band one width earlier at the top of the wing band: 32 perdef
+ * bars, 27 d_ovrs and 16 OVRs, EVERY ONE DOWN, and exactly ONE card crossed the harness's ovr>=55 line
+ * (Shane Battier '12, 55 -> 54, 6,370 -> 6,369). One card is enough: the pool is drawn by index, so every
+ * one of the 200 matchups is a different five after it leaves. BOTH CRASH ROWS broke on the ORACLE edge
+ * (crash off +0.479 at 0.08, crash def +0.487 at 0.38), the same shape recal_162, the 159-164 sweep and
  */
 export const TAX = {
   scorer: 0.55,
