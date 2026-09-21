@@ -3950,16 +3950,6 @@ body:has(.sheet) { overflow: hidden; }
    * screen he reads this card on, and on a phone the card is one column where the shape already
    * follows the attributes in DOM order.
    */
-  .pc-body {
-    grid-template-columns: minmax(0, 1fr) clamp(196px, 15vw, 268px) minmax(0, 0.92fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas:
-      'years years years'
-      'main  shape id';
-  }
-  /* the key stands at the foot of its own column now that the shape has one */
-  .pc-adv { margin-top: auto; }
-
   /**
    * TWO COLUMNS AGAIN, AND THEY ARE MEANT TO REACH THE FOOT OF THE WINDOW — his ruling,
    * 2026-09-21: "The attributes need to cover the entire side of the screen, we dont need all that
@@ -4090,6 +4080,101 @@ body:has(.sheet) { overflow: hidden; }
      It is one sentence in a column that is now the full right-hand side of the card, and it was
      set at 14px — the same size as the smallest thing in the dossier above it. */
   .pc-what { max-width: 62ch; font-size: clamp(15px, 2.6vh, 22px); line-height: 1.5; }
+}
+
+/**
+ * THE WIDEST DESK: THE HEXAGON COMES DOWN INTO THE ATTRIBUTES' OWN FOOT.
+ *
+ * 1600 AND NOT 1200, and the bar is what sets it. This arrangement needs THREE attribute columns —
+ * two columns of sixteen rows are nine rows deep and leave nothing under them, which is what put
+ * the hexagon in a column of its own in the first place — and a third column is only free at this
+ * width. MEASURED at the gate it was first written to: at 1440 the three columns squeezed the
+ * track to 9px and at 1250 to 2, which is a bar you cannot read, and the block ran 8 and 40 past
+ * the foot of its column. At 1600 the track is 56px and at 2000 it is 150.
+ * Between 1200 and 1600 the card keeps the two-column list and the shape under the dossier, which
+ * is where it stood before his ruling. FLAGGED RATHER THAN FORCED: the ruling is about the screen
+ * he reads this card on.
+ */
+@media (min-width: 1600px) and (min-height: 740px) {
+  .pc-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'years years'
+      'main  id';
+  }
+  /**
+   * THE SHAPE STANDS IN THE SPACE THE ATTRIBUTES LEAVE — his ruling, 2026-09-21: "The hex on the
+   * player card should be in the empty space below the attributes not stuck in the middle."
+   *
+   * The reading before this one gave the hexagon a COLUMN of its own between the attributes and
+   * the dossier, which is the middle he is pointing at. It is deleted: the card is two columns
+   * again and the shape takes the same grid cell as the attributes, pinned to the FOOT of it.
+   *
+   * WHICH MEANS THE ATTRIBUTES HAVE TO LEAVE IT A FOOT, and that is the whole mechanism here.
+   * `--shape-h` is the height of the block; the attribute list carries it as padding under its own
+   * columns, so the multicol balances INSIDE what is left and the shape lands exactly in the space
+   * that padding opened. One number, declared once, read by both — they cannot drift apart into an
+   * overlap. The list goes back to THREE columns to open that space: two columns of sixteen rows
+   * is nine rows deep and leaves nothing under them, which is what put the hexagon in a column of
+   * its own in the first place.
+   *
+   * AND THE BLOCK LIES DOWN TO FIT. The space under three columns is about 160px on his window, so
+   * the shape takes the shape the PHONE already gives it — the rule across the top, the hexagon
+   * and the ADVANCED key side by side under it — rather than the tall stack it wore in a column.
+   * The hexagon is then sized off --shape-h and not off the window, which is why it reads smaller
+   * here than the 216 it stood at in the middle: a hexagon in the foot of a column can only be as
+   * tall as the foot. That is the trade his ruling asks for.
+   */
+  /* THE NUMBER IS DECLARED ON THE BODY AND NOT ON THE LEFT COLUMN, because the two elements that
+     read it are SIBLINGS — the attribute list is inside `.pc-main` and the shape is not. A custom
+     property that only one of them can see is not a shared number at all: `var()` would have gone
+     invalid inside the shape, and an invalid var does not fall back to the rule underneath it, it
+     falls back to `auto`. Measured when it was on `.pc-main`: a 168px hexagon (the svg's own
+     attribute) in a 209px block over a foot reserved for 161, overlapping the last attribute rows
+     by 21. */
+  .pc-body { --shape-h: clamp(112px, 21vh, 190px); }
+  /**
+   * AND THE SEASON LINE IS HELD TO ONE ROW, which this arrangement cannot do without.
+   * `.pc-stats` is an auto-fit grid of 14 cells with a 70px floor, so it wraps to two rows the
+   * moment the left column falls under about 1000px — and two rows is 50 more pixels than the
+   * column has once the hexagon is standing in its foot. MEASURED before this rule: 2000x770 was
+   * one row and fitted with 3px to spare, 1900x770 was two rows and ran 51 past the foot, 1750x800
+   * the same. The cells are told to be fourteen-across instead, and the figure inside them takes a
+   * vw so it shrinks with the cell rather than pushing it wider: 27px at 2000, 22 at 1620, against
+   * a cell of 72 and 57. The enlargement his ruling asked for survives at the width he reads on;
+   * what it gives up is a little of it on a narrower desk, which is the trade that keeps the box
+   * score on one line where the hexagon needs it to be.
+   */
+  .pc-stats { grid-template-columns: repeat(14, minmax(0, 1fr)); }
+  .pc-cell { padding: 5px 7px 5px; }
+  .pc-cell i { font-size: clamp(8px, 0.6vw, 11.5px); }
+  .pc-cell b { font-size: clamp(18px, 1.35vw, 32px); }
+  .pc-attrs { columns: 3; column-gap: 26px; padding-bottom: calc(var(--shape-h) + 14px); }
+  .pct-shape {
+    grid-area: main;
+    align-self: end;
+    justify-self: stretch;
+    height: var(--shape-h);
+    display: grid;
+    /* ONE ROW AND NOT TWO. The block is a STRIP at the foot of a column now, so its three parts
+       stand side by side — the shape, its ruled name, and the door — rather than stacked with the
+       rule across the top. Every line the strip does not spend on a label is a line the hexagon
+       gets, and the hexagon is measured off this block's height: at two rows it came out 110px,
+       at one it is 159. */
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'hex rule adv';
+    align-items: center;
+    gap: 0 20px;
+  }
+  .pct-shape .pc-rule { grid-area: rule; margin-top: 0; }
+  .pct-hexbox { grid-area: hex; justify-self: start; align-self: center; }
+  /* 18px is the box's own padding and its two hairlines; the drawing takes everything else the
+     strip has, which is what makes --shape-h the only number to tune here. */
+  .pct-hexbox .heathex { width: min(320px, calc(var(--shape-h) - 18px)); }
+  /* the way down into the numbers stands at the far end of the strip: the shape at one end of the
+     foot, the door at the other, and the attributes' own ground between them */
+  .pc-adv { grid-area: adv; margin-top: 0; justify-self: end; min-width: clamp(180px, 18vw, 300px); padding: 10px 24px; }
 }
 
 /* ---- the phone: everything above, packed ----
@@ -7073,17 +7158,26 @@ body.map #root { padding-bottom: var(--foot); }
      same number and the court fills its container to the pixel. */
   aspect-ratio: 29 / 20;
   /**
-   * AND IT NO LONGER TAKES THE WHOLE BAND — his ruling, 2026-09-21: "the court square smaller".
-   * The panel used to be stretched by the band, so the floor was as tall as the window had left
-   * and as wide as 29/20 of that; it is 80% of that height now and stands in the middle of what it
-   * gave up. The 20% is not a taste either: the read pane beside it is `flex: 1 1 auto`, so every
-   * pixel the floor stops taking in WIDTH lands in the read — which is the same pane his other
-   * ruling of the morning wants each rule to stand on one row of. One number moves two screens.
-   * `align-self: center` is what keeps the floor on the band's own centre line rather than hanging
-   * from its top edge with the shortfall under it.
+   * IT TAKES THE WHOLE BAND AGAIN — his ruling, 2026-09-21: "In the home page make the board
+   * bigger to fit the 2 dead spaces."
+   *
+   * TOMBSTONE, HOURS OLD: `align-self: center; height: 80%`, which was HIS EARLIER RULING OF THE
+   * SAME DAY — "the court square smaller". The panel is stretched by the band, so a floor at 80%
+   * of that height stood in the middle of the left-hand side with 56px of flat black above it and
+   * 56 below. THOSE ARE THE TWO DEAD SPACES: measured, band 162-724, floor 218-668. They were the
+   * cost of the first ruling and the subject of the second, and the second is the one that stands.
+   *
+   * IT IS NOT A RETURN TO THE BOARD HE CALLED TOO BIG, because the band it fills is not the band
+   * it filled that morning: the identity row above it grew a third on the same ruling and took
+   * nineteen pixels of it. 816x563 against the 844x582 he was looking at when he asked for
+   * smaller — a board that fills its own side of the screen, three per cent under the one that did
+   * not.
+   *
+   * WHAT IT COSTS IS THE READ'S WIDTH, and that arithmetic was checked before this went back:
+   * 1184px of pane where 1347 had bought one-line rules, which is 1129 of content against a
+   * longest rule of about 780 at this size. Each rule still stands on its own row — his ruling of
+   * the same morning — with three hundred pixels to spare.
    */
-  align-self: center;
-  height: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7933,13 +8027,6 @@ body.map #root { padding-bottom: var(--foot); }
      259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
      any. The read grows instead, and on a phone this band scrolls anyway. */
   .fd-panel { flex: none; container-type: inline-size; }
-  /* AND THE 80% OF 2026-09-21 IS A DESK RULE ONLY. "The court square smaller" takes height off a
-     panel the BAND is stretching, which is what the band does when it is a row. In this column
-     there is nothing stretching it — the floor takes the width and its own 29:20 supplies the
-     height — so `height: 80%` resolves against an auto-height parent and `align-self: center`
-     stops meaning "centre it vertically" and starts meaning "shrink it horizontally". Measured
-     before this line went in: a four-pixel court at 375. The phone keeps the floor it had. */
-  .fd-panel { align-self: stretch; height: auto; }
   .fd-court { width: 100%; }
   .fd-read {
     flex: 1 0 auto;
