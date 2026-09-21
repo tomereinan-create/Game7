@@ -192,7 +192,12 @@ export const RULES: Rule[] = [
   // FLOOR GENERAL — his ruling: the table-setter has to take care of the ball. A lead creator
   // who coughs it up is a floor raiser or a scorer, not the man organising the offence. (">60"
   // is written as >= 61; ballsec is an integer percentile.)
-  { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) && c.ge(c.a.ballsec, 61) },
+  // HIS RULING (2026-09-21): "Loosen the floor general gate to 50". The ball-security floor was 61 — his own earlier
+  // ruling that a floor general must hold the ball — and it turned away 64 passers at playmaking 88-97 (Kevin Johnson
+  // '89, Andre Miller '01, Isiah Thomas '87, Deron Williams '12). Once the signature block's LIMIT stopped calling them
+  // Pass-first playmakers they had no name at all. 50 is the league's median ball security: he still has to hold it
+  // as well as the average man.
+  { tag: 'Floor general', test: (c) => c.ge(c.a.playvol, 88) && c.lt(c.a.volume, 88) && c.ge(c.a.ballsec, 50) },
   { tag: 'Floor raiser', test: (c) => c.ge(c.a.playvol, 90) && c.lt(c.a.efficiency, 45) && c.ge(c.a.volume, 85) },
   { tag: 'Two-way anchor', test: (c) => c.geH(c.h, BIG_HT) && c.ge(c.a.rimprot, 90) && c.ge(c.p.o_ovr, 78) },
   { tag: 'Unicorn', test: (c) => c.ge(c.three, 50) && c.ge(c.a.rimprot, 85) && c.geH(c.h, 86) && c.p.ovr >= 70 },
