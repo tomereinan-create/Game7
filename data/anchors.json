@@ -45,16 +45,6 @@
  },
  {
   "kind": "team_rank",
-  "season": 2000,
-  "ab": "LAL",
-  "scale": "team:off",
-  "max_rank": 5,
-  "round": 110,
-  "ruling": "How is this team 47 OFF with 2 all time great players",
-  "note": "the rank is the thing he was pointing at, and it survives any rescale: 17th of 28 -> 2nd, against a real ORtg rank of 5th."
- },
- {
-  "kind": "team_rank",
   "season": 1996,
   "ab": "CHI",
   "scale": "team:off",
@@ -1620,5 +1610,42 @@
   "round": 166,
   "ruling": "166 confirm",
   "note": "RE-PINNED ONE POINT LOWER, replacing recal_139's 66 +-2 which Tomer released on this round. 64 -> 63. 70% assisted at a mid-class paint rate, so the discounted value falls off the premium's 0.70 gate entirely (.909 -> .600) and he loses the whole 0.0487, rim 73 -> 70. That is the structural cost of reading a discounted value against a RAW pool, which recal_166 kept on purpose."
+ },
+ {
+  "kind": "team_rank",
+  "season": 2000,
+  "ab": "LAL",
+  "scale": "team:off",
+  "max_rank": 6,
+  "round": 170,
+  "ruling": "How is this team 47 OFF with 2 all time great players",
+  "note": "recal_110's rank pin, RELEASED BY HIM on round 170 (\"Release the Lakers rank\") and re-pinned one place lower. The rank is still the thing he was pointing at — 17th of 28 when he asked — and its sibling value pin (Lakers '00 offdial 64 +-4, reading 65) is the one that answers the complaint. recal_170 moved no Laker's contribution: team offence is computed from ATTRIBUTES and that round moves none. Indiana passed them when Sam Perkins '00 (20.0 mpg, the class the round corrects) left their best five."
+ },
+ {
+  "card": "Sam Hauser '23",
+  "scale": "off",
+  "target": 60,
+  "tol": 3,
+  "round": 170,
+  "ruling": "Agree with 3,4,5",
+  "note": "HIS TARGET WAS 55 AND 60 IS THE LANDED FRONTIER, recorded rather than smoothed over. 16.1 mpg, 6.4 ppg, 14.7% usage, 3pt 99; he read 68, TEN above Kyle Korver '15 (58 at 32.2 mpg) and SIX above Steve Kerr '96 (61). His STANDARD PATH already prints 55, so 55 is what he reads with the floor deleted outright and NO positive share of the correction can reach it — recal_170 pays him 0.34 of a 13.68 correction, which is +4.7. A later round that wants 55 is asking for the floor to be switched off below some minutes line, not scaled."
+ },
+ {
+  "card": "Donyell Marshall '07",
+  "scale": "off",
+  "target": 52,
+  "tol": 3,
+  "round": 170,
+  "ruling": "Agree with 3,4,5",
+  "note": "65 -> 53. 16.8 mpg, 7.0 ppg, TS .536, efficiency 44 — his standard path printed 42.7 and recal_91's stretch-big floor paid him 70.0, a lift of +22.4 that was the largest in the pool. recal_170 pays that correction at recal_96's load share (0.40 at 16.8 minutes)."
+ },
+ {
+  "card": "Matt Bullard '92",
+  "scale": "off",
+  "target": 52,
+  "tol": 3,
+  "round": 170,
+  "ruling": "Agree with 3,4,5",
+  "note": "66 -> 54. 16.0 mpg, 6.4 ppg, TS .546, BPM -0.6; standard path 51.64 against a floor of 70.83, paid at load share 0.33. The third of the three scout items that share one term."
  }
 ]

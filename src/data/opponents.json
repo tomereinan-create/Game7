@@ -161,9 +161,9 @@
           "ts_rel": 0.647
         },
         "big": true,
-        "o_ovr": 60,
+        "o_ovr": 58,
         "d_ovr": 64,
-        "ovr": 62,
+        "ovr": 61,
         "marg": 94
       },
       {
@@ -406,9 +406,9 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 53,
+        "o_ovr": 51,
         "d_ovr": 74,
-        "ovr": 64,
+        "ovr": 62,
         "marg": 70
       }
     ]
@@ -1234,9 +1234,9 @@
           "ts_rel": 0.581
         },
         "big": true,
-        "o_ovr": 66,
+        "o_ovr": 64,
         "d_ovr": 53,
-        "ovr": 62,
+        "ovr": 61,
         "marg": 85
       }
     ]
@@ -2269,9 +2269,9 @@
           "ts_rel": 0.595
         },
         "big": true,
-        "o_ovr": 53,
+        "o_ovr": 52,
         "d_ovr": 49,
-        "ovr": 52,
+        "ovr": 51,
         "marg": 70
       }
     ]
@@ -2291,6 +2291,44 @@
       "C"
     ],
     "players": [
+      {
+        "name": "Kris Dunn '26",
+        "player": "Kris Dunn",
+        "peak_season": 2026,
+        "talent": 69,
+        "in": 32,
+        "out": 54,
+        "id": 26,
+        "pd": 65,
+        "attrs": {
+          "3pt": 51,
+          "rim": 23,
+          "mid": 32,
+          "rim_mid_measured": true,
+          "ft": 74,
+          "fouldraw": 22,
+          "orb": 31,
+          "drb": 30,
+          "playvol": 52,
+          "ballsec": 9,
+          "volume": 4,
+          "efficiency": 41,
+          "durability": 69,
+          "rimprot": 26,
+          "perimdisrupt": 90,
+          "height": 75,
+          "perdef": 65,
+          "discipline": 23,
+          "usg_raw": 12.5,
+          "ts_raw": 0.568,
+          "ts_rel": 0.556
+        },
+        "big": false,
+        "o_ovr": 37,
+        "d_ovr": 64,
+        "ovr": 50,
+        "marg": 50
+      },
       {
         "name": "James Harden '26",
         "player": "James Harden",
@@ -2328,44 +2366,6 @@
         "d_ovr": 63,
         "ovr": 78,
         "marg": 92
-      },
-      {
-        "name": "Nicolas Batum '26",
-        "player": "Nicolas Batum",
-        "peak_season": 2026,
-        "talent": 71,
-        "in": 2,
-        "out": 86,
-        "id": 57,
-        "pd": 52,
-        "attrs": {
-          "3pt": 85,
-          "rim": 2,
-          "mid": 30,
-          "rim_mid_measured": true,
-          "ft": 82,
-          "fouldraw": 22,
-          "orb": 32,
-          "drb": 50,
-          "playvol": 26,
-          "ballsec": 20,
-          "volume": 1,
-          "efficiency": 61,
-          "durability": 9,
-          "rimprot": 57,
-          "perimdisrupt": 54,
-          "height": 79,
-          "perdef": 52,
-          "discipline": 46,
-          "usg_raw": 9.4,
-          "ts_raw": 0.61,
-          "ts_rel": 0.598
-        },
-        "big": false,
-        "o_ovr": 45,
-        "d_ovr": 59,
-        "ovr": 52,
-        "marg": 43
       },
       {
         "name": "Kawhi Leonard '26",
@@ -2890,9 +2890,9 @@
           "ts_rel": 0.6
         },
         "big": true,
-        "o_ovr": 67,
+        "o_ovr": 64,
         "d_ovr": 77,
-        "ovr": 72,
+        "ovr": 70,
         "marg": 89
       }
     ]
@@ -4132,9 +4132,9 @@
           "ts_rel": 0.623
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 72,
         "d_ovr": 62,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 92
       }
     ]

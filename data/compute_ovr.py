@@ -1217,10 +1217,71 @@ def o_score(p, trace=None):
             _fl += _g * (0.17*(a['orb'] + a['rim']) + 0.10*a['volume'])
         # recal_118: the share of the CORRECTION he has earned, not the whole of it. At _f3 == 1.0
         # this line is `max(std, _fl)` byte for byte, which is what every card above 3pt 68 gets.
-        _flr = std + _f3 * (_fl - std)
+        #
+        # recal_170 (HIS RULINGS, verbatim: "Agree with 3,4,5" on three scout items sharing one term,
+        # and then "Release the Lakers rank" on the pin the fit broke). THE FLOOR IS PAID AT THE LOAD
+        # IT WAS EARNED AT — x _load, and it is the ONE term this line was missing.
+        #
+        # THE DEFECT, AND recal_96 WROTE IT DOWN ITSELF. Its COST note: "the big branch does carry a
+        # raw 0.10 * volume, so a sub-24-minute stretch big keeps a small load credit the rest of the
+        # file no longer pays... it is the second place to look if a bench big reads high". It is the
+        # FIRST place. Since recal_96 the standard path pays `volume` and `playvol` at load_share, so
+        # a sixteen-minute card's own weighted line is correctly small — and then this floor hands
+        # him the whole difference back at a full-time shooter's price. The correction is worth up to
+        # twenty-four printed OFF points and it was the only claim in o_score that never asked how
+        # much of a game the man played. THE THREE CARDS, decomposed:
+        #   Sam Hauser '23       16.1 mpg, 6.4 ppg, 14.7% usage, 3pt 99. Standard path 59.43, floor
+        #                        73.11 BINDING - a correction of 13.68, a fifth of the card. He read
+        #                        OFF 68: TEN above Kyle Korver '15 (pinned 58 at 32.2 mpg on 49.2%
+        #                        from the arc) and SIX above Steve Kerr '96 (pinned 61).
+        #   Donyell Marshall '07 16.8 mpg, 7.0 ppg, TS .536, efficiency 44. Standard path 42.7 printed
+        #                        against a floor of 70.0: +22.4, the largest stretch-big lift in the
+        #                        pool, on a man whose own conversion was below his league's.
+        #   Matt Bullard '92     16.0 mpg, 6.4 ppg, TS .546, BPM -0.6. Standard path 51.64, floor
+        #                        70.83. 175 binding-floor cards are under twenty minutes; 19 read 60+.
+        #
+        # THE TERM, AND IT INTRODUCES NO CONSTANT. `_load` is recal_96's own load_share (LOAD_FOOT 12,
+        # LOAD_FULL 24), already computed at the top of o_score and already read by the SIBLING floor
+        # eleven lines below - recal_155's glue floor multiplies its gate by `_load`, recal_107's
+        # two-level premium and recal_163's interior term scale by SECOND_FULL, recal_151's rim-anchor
+        # premium blends on load_share. This floor was the last one in the file that took no load
+        # share at all. At full load (24 minutes and up) the line is BYTE-IDENTICAL to what recal_118
+        # left, so every pin the floor was built on is untouched by construction: Korver '15 (32.2),
+        # Kerr '96 (23.4, share 1.00 on r96's own line), Anunoby '21 (33.3), Hachimura '26 (28.3),
+        # Finney-Smith '20 (29.6), Novak '13 and Tolliver '14 all hold.
+        #
+        # WHY THE SHARE MULTIPLIES THE CORRECTION AND NOT THE FLOOR, which is recal_118's finding and
+        # is not re-opened: the floor is not a rival score but a CORRECTION to the standard path, and
+        # a scaled floor sinks below that path long before the share bites. The two shares are a
+        # PRODUCT and not a geometric mean (recal_139's rule is for two readings of ONE claim; how
+        # much of a spacer he is and how much of a game he played are two DIFFERENT facts, and a man
+        # who is neither should be paid neither). MEASURED, all three: product -> Hauser 60; geometric
+        # mean -> 63; the load share on the big branch's three added terms alone -> 61.
+        #
+        # THE FRONTIER IS HAUSER AND IT IS AN HONEST ONE. His target was 55; he lands 60. His standard
+        # path ALREADY prints 55, so 55 is what he reads with the floor deleted outright and NO
+        # positive share can reach it - the round pays him 0.34 of a 13.68 correction and that is
+        # +4.7. Marshall lands 53 against 52 and Bullard 54 against 52, both dead on.
+        #
+        # THE PIN THIS ROUND RELEASED, named loudly because it is an older ruling of his. recal_110's
+        # `LAL '00 OFF rank <= 5` sat EXACTLY on 5 with zero slack. Sam Perkins '00 (20.0 mpg, 3pt 88,
+        # the same class) falls OVR 59 -> 57, Indiana's best five swaps him for Travis Best '00, and
+        # IND's offence rises 124.685 -> 126.891 past a Lakers five that does not move by a thousandth
+        # - team offence is computed from ATTRIBUTES and this round moves none. He ruled "Release the
+        # Lakers rank": the pin is superseded at <= 6 and its SIBLING value pin (Lakers '00 offdial
+        # 64 +-4, which reads 65 either way) is untouched, because the dial is what his 2000 complaint
+        # was actually about. recal_119's BOS '24 OFF rank <= 10 - the other zero-slack rank pin, and
+        # Hauser is a Celtic - reads 10 of 26 before and after.
+        # MEASURED on the whole pool: 259 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max
+        # -12, mean -2.31; 146 under 20 mpg (mean -2.88), 113 between 20 and 24 (mean -1.58) and ZERO
+        # at 24 or above. DEF and every attribute move on ZERO; OVR follows on 178. The top 12 by OFF
+        # is identical name for name.
+        _ob_std = std
+        _flr = std + _f3 * _load * (_fl - std)
         std = max(std, _flr)
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
+                                          load=_load, std=_ob_std,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     # recal_131 (HIS RULING, verbatim: "What I dont like, is Malone being 69 OFF with 25 ppg on not
     # bad eff"). THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK.
@@ -1870,7 +1931,10 @@ if _CARD:
               f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
-        print(f"OFF-BALL FLOOR — {_f['branch']} branch: {_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+        print(f"OFF-BALL FLOOR — {_f['branch']} branch: full floor {_f['full']:.3f} over a standard "
+              f"path of {_f['std']:.3f}; the correction is paid at arc share {_f['share']:.4f} "
+              f"(recal_118) x load share {_f['load']:.4f} (recal_170, recal_96's own line) -> "
+              f"{_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
     if 'glue' in _ot:
         _gl2 = _ot['glue']
         print(f"GLUE FLOOR (recal_155) - possession work drb/orb/playvol {_gl2['bars'][:3]} averaged "
