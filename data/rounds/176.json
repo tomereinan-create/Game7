@@ -1,0 +1,188 @@
+{
+  "round": 176,
+  "agent": "ratings-to-off-def",
+  "status": "declined",
+  "ruling": "route 174 to OFF/DEF",
+  "title": "DECLINED — the efficiency factor IS mis-cut (its 70->90 ramp is the elite-passer class's own p84 -> p95, so 85% of the class sits on the 0.5 floor and Kevin Johnson '89, the class's 90th percentile of conversion, is paid 0.72), and re-cutting it on the class's own distribution (p50 43 -> p90 78) pays him in FULL with every anchor held — but a factor capped at 1.0 can add at most 2.01 to his o_score. Measured frontier: OFF 77, one point short of the 78 floor. The stopping pin is John Stockton '01 (80 +-4, reading 84) and it leaves ZERO room: the term's size breaks him at +2%, the subject needs +12% to gain his next point",
+  "subject": "Kevin Johnson '89",
+  "scale": "off",
+  "target": 81,
+  "tol": 3,
+  "before": 75,
+  "after": 75,
+  "pipeline_version": 175,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 70\\.0, 90\\.0, 0\\.5",
+      "label": "THE FACTOR THE RULING POINTS AT, UNCHANGED — recal_109's efficiency ramp on the elite-passer term",
+      "note": "byte-identical to main: the round is a measurement and a decline. 70 -> 90 is NOT a cut of the class it ranks — inside the 842 cards this term pays, efficiency 70 is the 84.3rd percentile and 90 is the 94.8th, so the ramp spans the class's TOP SIXTH and 85.0% of the class is paid the 0.5 floor while 5.2% is paid in full"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_ge = PD_E_FLOOR \\+ \\(1\\.0 - PD_E_FLOOR\\) \\* min\\(1\\.0, max\\(0\\.0,",
+      "label": "THE CEILING, and it is arithmetic rather than a pin: _ge is a MULTIPLIER clamped at 1.0",
+      "note": "Kevin Johnson '89 reads efficiency 79 and takes _ge = 0.725 against John Stockton '90's 1.000 — the 0.72 round 174 named. The most this factor can ever give him is the other 0.275, which is +2.01 of o_score and +2 of OFF"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge \\* _gl",
+      "label": "THE TERM, UNCHANGED. 0.245 is recal_117's size and it is fixed by HIS OWN CAP on John Stockton '97",
+      "note": "the subject: 0.245 x playvol 91 x gate 0.3276 x eff 0.725 x load 1.000 = 5.295, against Stockton '90's 13.38. At eff 1.000 it is 7.304 and that is the whole of what this factor can pay"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 68\\.0",
+      "label": "WHERE THE REST OF THE GAP ACTUALLY LIVES — recal_117's volume gate, UNCHANGED",
+      "note": "the subject's gate is (68 - 49)/58 = 0.328 against Stockton '90's 0.552 and Stockton '01's 0.638. Two thirds of the 5.30-against-13.38 gap is this gate, not the efficiency factor; round 174 measured the same wall from the attribute side"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_MIN_FULL = 34\\.7",
+      "label": "NOT THE CAUSE, and recorded so no later round re-measures it: recal_130's second-payment load line",
+      "note": "Kevin Johnson '89 played 39.2 minutes, so his load factor is 1.000 — he is paid the full season's worth of creation already"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Kevin Johnson '89",
+      "scale": "off",
+      "op": "~",
+      "value": 75,
+      "tol": 0,
+      "label": "DECLINED, recorded at its unchanged reading. Target 81 +-3, floor 78; the closest reading any pin-holding form of this factor reaches is 77"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "off",
+      "op": "~",
+      "value": 80,
+      "tol": 4,
+      "label": "THE STOPPING PIN (recal_130). He reads 84 — the top edge of 80 +-4, ZERO slack upward — and every route past the subject's 77 runs through him: the term's size breaks him at 0.255 (+2%) while the subject needs 0.275 (+12%) to print 78, and widening recal_117's volume band to 75 prints the subject 78 and Stockton '01 85"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 84,
+      "tol": 3,
+      "label": "recal_117's pin, reading 82 with one point of floor slack, byte-identical under the whole measured family"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "THE BOTTOM WALL of any re-cut of this factor: efficiency 35 is the class's 34.6th percentile, so every cut that lifts the class's median also lifts him. He reads 52 with zero slack downward and three of headroom"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "off",
+      "op": "~",
+      "value": 54,
+      "tol": 3,
+      "label": "efficiency 43 IS the class median, so he is the card that decides where a re-cut's foot may sit: a foot below 43 moves him"
+    },
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "THE TIGHTEST of the three (efficiency 52 = class p64, reading 56): the class's own interquartile cut (p25 30 -> p75 59) prints him 62 and fails, which is why the measured frontier form uses p50 -> p90"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "recal_109's own subject, reading 86 with two points of headroom — the SECOND pin to fail on any size increase (0.32 prints him 89)"
+    },
+    {
+      "card": "Kevin Johnson '92",
+      "scale": "off",
+      "op": "~",
+      "value": 81,
+      "tol": 3,
+      "label": "recal_154's pin, held and untouched: efficiency 76 but volume 65, so his gate is 0.052 and this factor is worth 0.4 of a point to him whatever it is set to"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "the tol-1 pin that closes the volume-band route: widening PD_V_HI to 95 reaches the subject's 81 and prints Billups 93"
+    },
+    {
+      "card": "Magic Johnson '90",
+      "scale": "off",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "volume 69 puts him at gate 0.00 exactly, by recal_117's construction — he is untouched by every form measured here"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 1,
+      "label": "round 174's blocker, recorded as untouched: playvol 71 clears recal_109's foot by one point but volume 71 puts him at gate 0.00, so nothing in this file's passer term can reach him"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Kevin Johnson '92",
+      "below": "Kevin Johnson '89",
+      "label": "THE ITEM, still standing after two rounds: the worse season by every box column still reads higher. Round 174 located the cause in the volume bar; this round confirms the passer term can close 2 of the 5 points and no more"
+    },
+    {
+      "scale": "off",
+      "above": "John Stockton '90",
+      "below": "Kevin Johnson '89",
+      "label": "and the comparison the ruling is really about — 82 against 75, of which 8.09 of o_score is the passer term's gate and eff factor together"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": [["Kevin Johnson '89", 75, 75]]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '22",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25",
+      "Nikola Jokić '26",
+      "Shai Gilgeous-Alexander '26"
+    ]
+  },
+  "cost": [
+    "WHAT THE EFFICIENCY FACTOR IS, MEASURED ON THE CLASS IT RANKS. recal_109 built `_ge = 0.5 + 0.5 x clamp((efficiency - 70) / 20)` and never cut it on the class. The 842 cards this term pays have efficiency p01 10, p05 17, p10 21, p25 30, p50 43, p75 59, p90 78, p95 90, p99 97. So the ramp's foot (70) is the class's 84.3rd percentile and its top (90) is the 94.8th: 85.0% of the class is paid the 0.5 floor and 5.2% is paid in full. It is the SAME DEFECT recal_117 fixed on the playvol gate of this very term ('full credit was reserved for EIGHTY-FOUR seasons in history, which is not a ramp, it is a needle') — recal_117 re-cut the playvol gate and left the efficiency factor beside it uncut. Round 174's reading is exact: Kevin Johnson '89 converts at the class's 90.3rd PERCENTILE and is paid 72%.",
+    "THE RE-CUT IS REAL AND IT HOLDS EVERY ANCHOR, and it is staged here so he can rule on it rather than be told no. `PD_E_LO, PD_E_HI = 43.0, 78.0` — the class's own median and its own 90th percentile, the same construction recal_130 used for PD_MIN_FULL ('the class's own upper quartile, measured, not chosen'). ONE LINE, no new constant, the floor and the ceiling untouched. MEASURED on the full pipeline: Kevin Johnson '89 off 75 -> 77, ovr 69 -> 71; 195 cards move on OFF, every one of them UP, max +6; ALL 176 ANCHORS PASS, including Mark Jackson '98 and '99 and Jason Kidd '02 BYTE-IDENTICAL (their efficiency sits at or below the new foot) and every Stockton, Nash, Magic, Billups and Haliburton byte-identical. Biggest movers: Scott Skiles '93 63 -> 69, Maurice Cheeks '82 61 -> 66, John Stockton '87 57 -> 62, Jason Kidd '10 61 -> 66, Jose Calderon '12 68 -> 73, Terry Porter '88 66 -> 70, Mark Jackson '00 56 -> 58.",
+    "AND IT STOPS AT 77 BY ARITHMETIC, NOT BY A PIN. _ge is a multiplier clamped at 1.0, so the most this factor can ever add to the subject is 0.275 x 0.245 x 91 x 0.3276 = 2.009 of o_score = +1.87 of OFF. MEASURED AT THE CEILING: setting the factor to 1.0 for the WHOLE class (the arithmetic limit, and it fails three anchors — Mark Jackson '98 61, '99 61, '00 64) still prints Kevin Johnson '89 at 77. There is no parameterisation of this factor, defensible or not, that reaches 78. The tolerance floor is 78 and the frontier is 77.",
+    "THE STOPPING PIN IS JOHN STOCKTON '01 AND IT LEAVES ZERO ROOM. Past the factor, the only two knobs that can pay the subject more are the term's SIZE (0.245, fixed by his own cap on Stockton '97) and recal_117's VOLUME BAND (PD_V_HI 68, which is the subject's gate at 0.328). Both run through Stockton '01, pinned 80 +-4 by recal_130 and reading 84 — his ceiling. SIZE SWEEP, on top of the re-cut: 0.250 subject 77 / Stockton '01 84 (all pass); 0.255 subject 77 / Stockton '01 85 (FAILS); 0.2697 subject 77 / 85; 0.275 subject 78 / 86; 0.29 subject 78 / 86; 0.32 subject 79 / 88 and Nash '05 89; 0.378 subject 80 and four anchors fail. The pin breaks at +2% of the term's size and the subject does not gain his next point until +12%. BAND SWEEP: PD_V_HI 75 puts the subject on 78 with Stockton '01 at 85 (one out) as the ONLY failure; 80 -> subject 79, Stockton '01 85; 90 -> subject 80, Stockton '01 86 and Nash '05 89; 95 -> subject 81 and THREE fail (Stockton '01 86, Nash '05 90, Billups '06 93 against 91 +-1).",
+    "WHAT 81 COSTS, STATED SO HE CAN RULE RATHER THAN BE TOLD NO. Exactly one of these: (a) RELEASE JOHN STOCKTON '01's 80 +-4 (recal_130) and STEVE NASH '05's 85 +-3 (recal_109) — the re-cut plus PD_V_HI 95 then prints Kevin Johnson '89 81 with Stockton '01 86 and Nash '05 90, and Billups '06 93 would need his tol-1 pin loosened too; (b) accept the frontier form at OFF 77 (75 -> 77, +2, every anchor held, 195 cards up) as a partial; (c) accept 75. The orchestrator's gate for this round was 78, so nothing was landed.",
+    "NOTHING WAS APPLIED. data/compute_ovr.py is byte-identical to origin/main (668025a), no data file was regenerated, no anchor was added or superseded, no tactics tax re-swept, and the shipped board reproduces exactly: the measurement rig re-derived all 10,000 cards' o_ovr / d_ovr / ovr from main's constants and matched src/data/players_stats.json on every one."
+  ],
+  "notes": [
+    "THE CARD, decomposed. Kevin Johnson '89: 20.4 points, 12.2 assists, 39.2 minutes, usg 21.2, TS .597, BPM 4.2, All-NBA 2nd. He prints volume 49, playvol 91, efficiency 79, and o_score 80.58 of which the passer term is 5.295: 0.245 x playvol 91 x gate 0.3276 x eff factor 0.725 x load 1.000. John Stockton '90 takes 13.38 on the same line: playvol 99, gate 0.552, eff 1.000, load 1.000. OFF 75 against 82.",
+    "WHICH FACTOR THE GAP IS REALLY IN, since the ruling was routed here on the efficiency reading. Of the 8.09 of o_score between the two passer terms, the VOLUME GATE accounts for 5.0 and the EFFICIENCY FACTOR for 2.0 (playvol 91 against 99 is the remaining 1.1). Round 174's diagnosis of the efficiency factor is right and the factor is genuinely mis-cut; it is simply the smaller half of the gap, and the larger half is recal_117's band, which is the wall 174 measured from the attribute side and which this round re-measured from this side with the same answer.",
+    "WHY p50 -> p90 AND NOT THE CLASS'S INTERQUARTILE RANGE. Five class-derived cuts were measured on the full pipeline, all with floor and ceiling untouched: p50 -> p90 (43 -> 78) subject 77, 195 movers, ALL PASS; p50 -> p75 (43 -> 59) subject 77, 237 movers, all pass; p50 -> p95 (43 -> 90) subject 76, 163 movers, all pass; p25 -> p90 (30 -> 78) subject 77, 304 movers, all pass; p10 -> p90 (21 -> 78) subject 77, 372 movers, all pass; p25 -> p75 (30 -> 59) subject 77, 345 movers, FAILS Mark Jackson '00 (62 against 58 +-3). Every cut that reaches the subject's ceiling reaches 77; p50 -> p90 is the one with the smallest footprint and the widest anchor margins, so it is the form on the table.",
+    "THE FACTOR IS A MIS-SCALING, NOT A CLIFF — recorded because the dispatch asked the question. Its slope is 1/40 of the term per efficiency point over a 20-point span, which is gentle; what is wrong is WHERE the span sits. It was cut on the 1-99 attribute scale as if 70 meant 'good' in the abstract, but inside the class this term pays, a man who converts at the 84th percentile of all elite distributors is only just beginning to be paid. Nothing about the shape needs changing; only its location on the class's own distribution.",
+    "THIRTY-ONE FULL-BOARD MEASUREMENTS were run, not modelled: the base (reproducing every one of the 10,000 cards' o_ovr / d_ovr / ovr byte-for-byte), the arithmetic ceiling, six class-derived cuts of the ramp, fourteen sizes on top of the chosen cut, seven widths and feet of recal_117's volume band, and a full board written out for the frontier form and graded by data/anchors.py itself — '176 anchors, 0 failing, mean |error| 0.83' against main's 0.85, so the claim that every anchor holds is anchors.py's reading and not this round's arithmetic. Every number in this file is a reading of the real pipeline with main's other constants untouched."
+  ]
+}
