@@ -1,5 +1,14 @@
 [
  {
+  "card": "Joakim Noah '15",
+  "scale": "attr:perdef",
+  "target": 78,
+  "tol": 3,
+  "round": 171,
+  "ruling": "Agree with 6",
+  "note": "89 -> 80. recal_149's tracked-band credit was paid through wv = min(1, drep/0.30), and drep is a CAREER reputation: Noah's 2014 DPOY carried into a 2015 season with no ballot of its own (own credit 0.003 against drep 0.850) bought the credit at FULL band membership, perdef 73 -> 89 and DEF 96, tied 2nd of 2015 above Draymond '15. The carried share now unlocks the credit only in proportion to what the season's own perimeter sheet certifies - u = (own + P['stl']*(drep - own))/drep, the within-season steal-rate percentile read raw, recal_165's own-sheet restore in its perimeter form. Noah '15 is p22 of 2015 (STL% 1.1); THE WALL, Amen Thompson '26, has the identical provenance (own 0.006) and is p74 of 2026, so his def 97 +-2 holds at 95 with perdef 98 -> 96. The tracked reading itself and DBPM were measured as gates first and REJECTED: Noah is the better card on both (68.51 vs 65.47, DBPM p95 vs p80), so either one takes Amen and leaves the subject. 74 perdef bars fall, none rises."
+ },
+ {
   "card": "Josh Hart '25",
   "scale": "ovr",
   "target": 63,

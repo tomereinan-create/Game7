@@ -885,12 +885,62 @@ for yr, rows in seasons.items():
         # NOTHING RISES, AND NOTHING FALLS BELOW ITS PRE-149 VALUE: the term is still a one-way max()
         # read against the same frozen Pvot pool, so this can only shave credit recal_149 added.
         # A card with no minutes on the sheet takes 1.0 — recal_52's "measured, or not at all".
+        # RECAL_171 (his ruling on Joakim Noah '15, verbatim: "Agree with 6"): THE CARRIED BALLOT
+        # UNLOCKS THE BAND CREDIT ONLY AS FAR AS THE SEASON'S OWN PERIMETER SHEET CERTIFIES IT.
+        # recal_149's credit is paid THROUGH wv, and wv = min(1, drep/0.30) — so a card whose whole
+        # drep is a ballot CARRIED from another season collects the credit at full band membership
+        # exactly as a man voted for THIS season does. Noah '15 is that card: DPOY 2014, no 2015
+        # ballot at all (own credit 0.003 against drep 0.850), and the credit took him perdef 73 ->
+        # 89 and DEF to 96, tied 2nd of 2015 above Draymond '15. recal_160 drew the line this round
+        # applies — "a ballot cast FOR this season is not a ballot carried from another" — and
+        # recal_165 gave it its shape on the rim side: the carried share is restored by asking
+        # whether THIS season's own sheet certifies the thing the ballot claims (_measured_rim_
+        # evidence, blocks x DBPM, because the rim ballot claims deterrence). The perimeter ballot
+        # claims PERIMETER DEFENCE, and this file's own perimeter counting stat is the steal rate —
+        # it is what `perimdisrupt` is built from (Pa['stl']), and it is the only own-season
+        # individual perimeter signal here that is not already inside the credit.
+        # NO NEW CONSTANT: the certification IS the within-season steal-rate percentile, read raw
+        # off the SAME P['stl'] the rest of the file already builds, with no bar and no ramp — the
+        # reason recal_159 rejected the 24-minute boundary applies to any bar drawn here too.
+        # WHY NOT THE TRACKED READING ITSELF, AND WHY NOT DBPM. Both were measured and both fail in
+        # the direction that matters, because Noah '15 is the BETTER card on each: regressed tracked
+        # reading 68.51 against Amen Thompson '26's 65.47 (-3.8% over 625 attempts against -3.2%
+        # over 517), DBPM percentile 0.950 against 0.797. Gating on `_q149` or on DBPM would take
+        # Amen '26 — recal_149's own pin, def 97 +-2, reading 95 with no slack left — and leave the
+        # subject where he is. The steal rate is the one own-season axis that separates them, and it
+        # separates them by a distance: Noah '15 is the 22nd percentile of 2015 (0.7 a game over 30.6
+        # minutes, STL% 1.1), Amen '26 the 74th of 2026. That is the difference between a centre
+        # whose 2014 ballot was a RIM ballot and a wing certifying his own season on the perimeter.
+        # WHERE THE FACTOR LANDS, AND THE VARIANT THAT MISSED. It is applied to the credit's PAYMENT
+        # (the distance the band credit would carry the card) and not to `_pd149`, the credit's size
+        # in composite space. Measured on the whole pool, the composite-space placement lands the
+        # subject at perdef 82 / DEF 95, ONE POINT outside 78 +-3, because the same shrink in PD
+        # space buys a different number of card points at every point of the Pvot density — Noah '15
+        # sits in the dense middle of 2015, so a 78% cut of his composite credit is only a 44% cut of
+        # his card points, while Amen '26 is past the top of the 2026 pool and a cut there costs him
+        # nothing at all. Unlocking the PAYMENT is the same rule for every card wherever it sits.
+        # MONOTONE AND ONE-WAY BY CONSTRUCTION. u lies in [0, 1] and multiplies a max(0, ...), so at
+        # u = 1 the line is byte-identical to recal_149 (PD2 + max(0, X - PD2) IS max(PD2, X)), at
+        # u = 0 it is byte-identical to pre-149, no card rises, and no card falls below its pre-149
+        # value. BYTE-IDENTICAL for every card whose ballot is its OWN (own = drep -> u = 1 exactly):
+        # Draymond '15/'16, Kawhi '16/'17/'20, Jrue '21, Marcus Smart '19, Dort '25, Giannis '20,
+        # Gobert '21, Anthony Davis '15, Bam Adebayo '20/'21, OG Anunoby '26, Amen Thompson '25,
+        # Ben Simmons '21 — and for every card the credit never paid (pre-2014, no vote, q = 0, thin
+        # sample): Dort '26, Amen Thompson '24, Herbert Jones '23 is held at 91 by his own p96 steals.
+        # MEASURED ON THE POOL: 74 cards move perdef, ALL down, 8 by more than 3; 55 move DEF, one by
+        # 4 (Klay Thompson '17); 28 move OVR, none by more than 3. Joakim Noah '15 perdef 89 -> 80,
+        # DEF 96 -> 94, and 2015's defensive board reads Kawhi 98 · Davis 96 · Draymond 95 · DeAndre
+        # Jordan 94 · Noah 94 instead of Noah tied 2nd. Al Horford '22 (p24 steals, drep 0.255 all
+        # carried) 76 -> 69 is the next largest and the class's other end.
         if _dmeas101 is not None:
             _q149 = min(1.0, max(0.0, ((1.0 + 98.0 * _dmeas101) - TRK_BAND_LO) / (TRK_BAND_TOP - TRK_BAND_LO)))
             _dmpg = ((r.get('mp_v') or 0.0) / (r.get('g_v') or 0.0)) if (r.get('g_v') or 0) > 0 else None
             _dload = 1.0 if _dmpg is None else min(1.0, max(0.0, (_dmpg - BAND_FOOT) / (BAND_FULL - BAND_FOOT)))
+            _own171 = min(r['drep'], max(0.0, rep_by_pid.get(r['pid'], {}).get(yr, 0.0)))   # the ballot THIS season cast
+            _cert171 = P['stl'](r['stl'])   # recal_171: what the season's OWN perimeter sheet certifies
+            _u171 = 1.0 if r['drep'] <= 0.0 else min(1.0, max(0.0, (_own171 + _cert171 * (r['drep'] - _own171)) / r['drep']))
             _pd149 = PD + TRK_BAND_W * _sample_weight(r['name']) * _q149 * _dload
-            PD2 = max(PD2, (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(_pd149) * BRK['_vf']))
+            PD2 = PD2 + _u171 * max(0.0, ((1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(_pd149) * BRK['_vf'])) - PD2)
         # v3: every qualified season is a draftable player. Identity = player + year.
         sc = lambda x: round(1+98*x)
         out_players[(r['pid'], yr)] = dict(
