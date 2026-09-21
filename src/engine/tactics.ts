@@ -559,7 +559,35 @@ export const DEFAULT_TACTICS: Tactics = {
  * edge (crashOff +0.46 at 0.32 and +0.48 at 0.20; crashDef +0.48 at 0.50). Set inside each window: hunt 3.97 (blind -0.38,
  * oracle +0.52), crashOff 0.08 (-0.77, +0.51), crashDef 0.38 (-0.52, +0.51). 2,003 assisted-big rim bars fell (166) while
  * 2,350 two-zone bigs rose (161) and 637 interior bigs rose (167): the glass mismatch is worth less, the hunt more.
+ * recal_172 read the perdef vote meter's block band one width earlier at the top of the wing band: 32 perdef
+ * bars, 27 d_ovrs and 16 OVRs, EVERY ONE DOWN, and exactly ONE card crossed the harness's ovr>=55 line
+ * (Shane Battier '12, 55 -> 54, 6,370 -> 6,369). One card is enough: the pool is drawn by index, so every
+ * one of the 200 matchups is a different five after it leaves. BOTH CRASH ROWS broke on the ORACLE edge
+ * (crash off +0.479 at 0.08, crash def +0.487 at 0.38), the same shape recal_162, the 159-164 sweep and
+ * recal_167 all named for these two rows. Swept ONCE from MAIN's constants, as the law requires.
+ * crash def glass: .380 (oracle +0.4867, under) / .340 (+0.4987, under) / .336 (+0.4999, a ten-thousandth
+ * under) / .300 (+0.5109) / .250 (+0.5264) / .200 (blind -0.3947, oracle +0.5420) / .100 (-0.3213) / .075
+ * (-0.3026) / .070 (-0.2989, over the ceiling) / .000 (-0.2461, over) — feasible about .0735 to .3355, a
+ * WIDE 0.262, true midpoint by r126's rule: .38 -> .20 (blind -0.395, oracle +0.542; 0.095 and 0.042 of room).
+ * crash off glass: THE TAX HAS NO SHIPPABLE VALUE ON THIS POOL, and the sweep says so plainly. .080
+ * (+0.4792) / .060 (+0.4843) / .040 (+0.4894) / .020 (+0.4945) / .000 (blind -0.6842, oracle +0.4996) —
+ * four ten-thousandths under the +0.500 floor AT ZERO TAX, and the oracle only reaches the floor at about
+ * -0.0017. The whole feasible interval is NEGATIVE (-0.52 to -0.0017; the blind edge still never binds, as
+ * recal_167 recorded for this row), so the POSITIVE half recal_167 and recal_117 take their value from is
+ * the single point .000 — and .000 is not a tax at all, which is the one thing recal_59's law forbids
+ * ("every deviation carries an INTRINSIC COST"). The row is therefore ratified on its OTHER harness
+ * constant, which the law names in the same sentence as the taxes ("the taxes AND SLOPES the harness
+ * ratified — tune them ONLY through it"): the offensive-glass slope. THE TAX IS HELD AT MAIN'S .08 and the
+ * slope swept at it: .280 (oracle +0.4989, under) / .285 (+0.5037) / .290 (blind -0.7393, oracle +0.5085) /
+ * .300 (+0.5178) / .310 (+0.5267) / .350 (+0.5591) / .500 (+0.6409). The window is ONE-SIDED — the blind
+ * read saturates near -0.756 against the -2.5 clamp and never approaches the -1.5 floor — so r126's midpoint
+ * rule does not apply and recal_92's rule does, "the SMALLEST move that clears both edges": 0.26 -> 0.29,
+ * which carries 0.0085 of oracle room, more than the 0.0063 main itself was carrying. Steepening the slope
+ * rather than deleting the tax is also the law's own direction of travel for this row ("tactics reward
+ * READS"): the intrinsic cost of the call is unchanged and the conditional benefit is sharper.
+ * hunt held at 3.97 (blind -0.33, oracle +0.52) and the six others held their bands untouched. All nine pass.
  */
+export const CRASH_OFF_SLOPE = 0.29   // recal_172: 0.26 -> 0.29, re-ratified through the harness (see above)
 export const TAX = {
   scorer: 0.55,
   playmaker: 1.10,
@@ -568,7 +596,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.97,
   crashOff: 0.08,
-  crashDef: 0.38,
+  crashDef: 0.20,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
@@ -1295,7 +1323,7 @@ export function tacticsParts(t: Tactics, five: Player[], theirs?: Player[]): { l
     if (theirs?.length) pts += clamp((60 - Math.min(...theirs.map((p) => p.attrs.perdef))) * 0.05, -1.8, 1.8)
     parts.push({ label: 'hunt the mismatch', pts: clamp(pts - TAX.hunt, -2.5, 2.5) })
   }
-  if (t.crashOff) parts.push({ label: 'crash the offensive glass', pts: clamp((mean(five, (p) => p.attrs.orb) - 50) * 0.26 - TAX.crashOff, -2.5, 2.5) })
+  if (t.crashOff) parts.push({ label: 'crash the offensive glass', pts: clamp((mean(five, (p) => p.attrs.orb) - 50) * CRASH_OFF_SLOPE - TAX.crashOff, -2.5, 2.5) })
   if (t.crashDef) parts.push({ label: 'crash the defensive glass', pts: clamp((mean(five, (p) => p.attrs.drb) - 50) * 0.19 - TAX.crashDef, -2.5, 2.5) })
   return parts
 }

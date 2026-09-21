@@ -1,0 +1,457 @@
+{
+  "round": 172,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Agree with 7",
+  "title": "ON THE TOP EDGE OF THE WING BAND THE VOTE METER WAS STILL ASKING THE CEILING'S QUESTION: recal_92's block band grades how far the voted rim CEILING opens, but of Dan Roundfield '83's fourteen-point rim lift the ceiling is worth four tenths of a point and recal_135's reinforcement line is worth the rest - so at 6'8\" and above the meter reads that band one width earlier, recal_162's form for the same prior question",
+  "subject": "Dan Roundfield '83",
+  "scale": "def",
+  "target": 91,
+  "tol": 3,
+  "before": 95,
+  "after": 92,
+  "pipeline_version": 172,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_at_band_top = min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 79\\.0\\) / OUT_OF_BAND_IN\\)\\)",
+      "label": "THE ONE NEW LINE: the top edge of recal_35's sweet band and recal_54's rep_hf, 80 inches, read from the inside",
+      "note": "recal_135 drew the same edge from the outside (ht - 80.0); no new constant, the same OUT_OF_BAND_IN width"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_paid_in_rim = \\(min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* max\\(_blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\) \\+ \\(BLK_FULL - BLK_BAR\\) \\* _at_band_top\\), _out_of_band\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+      "label": "THE ONE LINE THAT CHANGED: at the band's top edge the block evidence is read ONE BAND WIDTH EARLIER",
+      "note": "was _blk_evidence(blkP) alone inside the band - 0.344 for Roundfield '83 at the 82nd percentile of 1983"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "return max\\(0\\.0, min\\(1\\.0, \\(blk_pctile - BLK_BAR\\) / \\(BLK_FULL - BLK_BAR\\)\\)\\)",
+      "label": "UNTOUCHED: recal_92's evidence function itself, the band and its bar",
+      "note": "the round shifts WHERE it is read, never what it says"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_blk_evidence\\(blk_pctile \\+ \\(BLK_FULL - BLK_BAR\\)\\)",
+      "label": "THE PRECEDENT, quoted from recal_162's own floor: the same band read one width earlier",
+      "note": "recal_162 asked the same prior question of recal_95's no-vote floor and answered it this way"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "VOTE_SUPPORT_POW = 3",
+      "label": "UNTOUCHED: recal_114's fitted DBPM support exponent",
+      "note": "the round changes the METER, never the price"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "OUT_OF_BAND_IN = 1\\.0",
+      "label": "UNTOUCHED: recal_135's height channel, still 0 at 6'8\" and 1 above it",
+      "note": "every card above the band keeps _out_of_band = 1.0 and is bit-identical"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PD\\) \\* BRK\\['_vf'\\]\\)",
+      "label": "UNTOUCHED: the deduction still lands on the vote PREMIUM, not on PD",
+      "note": "the within-season Pvot pool is bit-identical and no card rises - 32 perdef movers, all 32 DOWN"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
+      "label": "UNTOUCHED: the reinforcement line the meter is now measuring properly",
+      "note": "rimprot moved on ZERO cards this round"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "crashDef: 0\\.20,",
+      "label": "TAX re-ratified through the harness (recal_59's law), swept once from main's 0.38",
+      "note": "feasible .0735 to .3355, a WIDE 0.262, true midpoint by r126's rule: .38 -> .20"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const CRASH_OFF_SLOPE = 0\\.29",
+      "label": "THE ROW WHOSE TAX HAD NO SHIPPABLE VALUE: ratified on its SLOPE instead, the tax held at main's 0.08",
+      "note": "at zero tax the oracle still read +0.4996 against the +0.500 floor; 0.26 -> 0.29 (oracle +0.5085)"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Dan Roundfield '83",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 71,
+      "label": "THE SUBJECT'S CARD STORY: 83 -> 71, and his rim protection is untouched at 87"
+    },
+    {
+      "card": "Dan Roundfield '83",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 87,
+      "label": "rimprot moved on ZERO cards - the round deducts in perdef only"
+    },
+    {
+      "card": "Dan Roundfield '83",
+      "scale": "ovr",
+      "op": "==",
+      "value": 79
+    },
+    {
+      "card": "Dan Roundfield '82",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 3,
+      "label": "recal_114's OWN ANCHOR, and it comes DOWN off its top edge: 94 -> 93"
+    },
+    {
+      "card": "Dan Roundfield '84",
+      "scale": "def",
+      "op": "==",
+      "value": 91,
+      "label": "the season either side, 93 -> 91, all of it through the 20/60/20 blend"
+    },
+    {
+      "card": "Dan Roundfield '85",
+      "scale": "def",
+      "op": "==",
+      "value": 83,
+      "label": "86 -> 83"
+    },
+    {
+      "card": "Dan Roundfield '80",
+      "scale": "def",
+      "op": "==",
+      "value": 95,
+      "label": "RECORDED, NOT MOVED: blk p93, so his meter was already 1.000 before this round and the defect never touched him"
+    },
+    {
+      "card": "Dan Roundfield '81",
+      "scale": "def",
+      "op": "==",
+      "value": 94,
+      "label": "same: blk p92, meter already 1.000, bit-identical"
+    },
+    {
+      "card": "Dennis Rodman '90",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "r57 anchor, 79 in - INSIDE the band, bit-identical. The card that forbids shifting the band for everyone"
+    },
+    {
+      "card": "Amen Thompson '24",
+      "scale": "def",
+      "op": "~",
+      "value": 94,
+      "tol": 1,
+      "label": "r149 anchor, 79 in, blk p80.2 - the other card the ungated shift broke; bit-identical here"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "HELD: 78 in, bit-identical by construction"
+    },
+    {
+      "card": "Michael Jordan '89",
+      "scale": "def",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "r102 anchor"
+    },
+    {
+      "card": "Kawhi Leonard '16",
+      "scale": "def",
+      "op": "==",
+      "value": 99,
+      "label": "HELD, 78 in"
+    },
+    {
+      "card": "Jrue Holiday '21",
+      "scale": "def",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "r80 anchor, 76 in, bit-identical"
+    },
+    {
+      "card": "Herbert Jones '23",
+      "scale": "def",
+      "op": "~",
+      "value": 91,
+      "tol": 4,
+      "label": "r103 anchor, 79 in, bit-identical"
+    },
+    {
+      "card": "Scottie Pippen '03",
+      "scale": "def",
+      "op": "~",
+      "value": 76,
+      "tol": 1,
+      "label": "r93 anchor, 80 in and ON the new edge - blk p54, a full band under the bar, so bit-identical"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "r62 anchor, 78 in"
+    },
+    {
+      "card": "Karl Malone '97",
+      "scale": "def",
+      "op": "~",
+      "value": 87,
+      "tol": 3,
+      "label": "r135 anchor, 81 in - _out_of_band is already 1.0, bit-identical"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "r92 anchor - rimprot moved on ZERO cards"
+    },
+    {
+      "card": "Kevin McHale '85",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 3,
+      "label": "r165 anchor"
+    },
+    {
+      "card": "Bobby Jones '82",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "r82 anchor"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "r95 anchor"
+    },
+    {
+      "card": "Jack Sikma '83",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "r160 anchor, 83 in"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 98,
+      "tol": 0,
+      "label": "r82 anchor"
+    },
+    {
+      "card": "Dwight Howard '11",
+      "scale": "off",
+      "op": "~",
+      "value": 78,
+      "tol": 1,
+      "label": "r52 anchor - OFF moved on ZERO cards this round"
+    },
+    {
+      "card": "Kevin Durant '19",
+      "scale": "def",
+      "op": "~",
+      "value": 79,
+      "tol": 3,
+      "label": "r99 anchor, 83 in, drep 0.006 under the Iverson line - bit-identical"
+    },
+    {
+      "card": "Maurice Cheeks '85",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 93,
+      "label": "THE 76ERS '85 DIAL HAS ZERO SLACK (91 against 93 +-2): every member of the five is bit-identical"
+    },
+    {
+      "card": "Moses Malone '85",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 57,
+      "label": "same five, 82 in, _out_of_band already 1.0"
+    },
+    {
+      "card": "Bobby Jones '85",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 82,
+      "label": "same five, 81 in, bit-identical"
+    },
+    {
+      "card": "Shane Battier '08",
+      "scale": "def",
+      "op": "==",
+      "value": 85,
+      "label": "THE LARGEST NAMED COLLATERAL BESIDE THE SUBJECT: 6'8\", All-Defensive 1st, BLK% 2.3 at the 80th percentile"
+    },
+    {
+      "card": "Scottie Pippen '91",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 89,
+      "label": "93 -> 89: 80 in, blk p78, inside the shifted band's tail"
+    },
+    {
+      "card": "Scottie Pippen '94",
+      "scale": "attr:perdef",
+      "op": "==",
+      "value": 99,
+      "label": "HELD at the summit - blk p66, a full band under the bar even shifted"
+    },
+    {
+      "card": "Kermit Washington '81",
+      "scale": "def",
+      "op": "==",
+      "value": 89,
+      "label": "91 -> 89, the same archetype: 6'8\", votes, BLK% 2.2 at the 82nd percentile, DBPM p72"
+    }
+  ],
+  "order": [
+    {
+      "scale": "def",
+      "above": "Bobby Jones '83",
+      "below": "Dan Roundfield '83",
+      "label": "THE RULING'S OWN COMPARISON: the 1983 card that reads 94 on BLK% 2.9 and rimprot 96 is above the one that reads it on BLK% 2.3"
+    },
+    {
+      "scale": "def",
+      "above": "Hakeem Olajuwon '94",
+      "below": "Dan Roundfield '83",
+      "label": "the DPOY the whole recal_114 line was drawn against"
+    },
+    {
+      "scale": "def",
+      "above": "Ben Wallace '04",
+      "below": "Dan Roundfield '83",
+      "label": "and the DEF summit is clear"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Michael Jordan '89",
+      "below": "Dan Roundfield '83",
+      "label": "the voted band's summit, never in play"
+    },
+    {
+      "scale": "attr:perdef",
+      "above": "Dennis Rodman '90",
+      "below": "Dan Roundfield '83",
+      "label": "a 79-inch voted card the round does not touch, above an 80-inch one it does"
+    }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 32,
+    "max_abs": 12,
+    "top": [
+      [
+        "Dan Roundfield '83",
+        83,
+        71
+      ],
+      [
+        "Dan Roundfield '85",
+        80,
+        73
+      ],
+      [
+        "Dan Roundfield '84",
+        85,
+        79
+      ],
+      [
+        "Dan Roundfield '82",
+        75,
+        70
+      ],
+      [
+        "Kermit Washington '81",
+        78,
+        73
+      ],
+      [
+        "Scottie Pippen '91",
+        93,
+        89
+      ],
+      [
+        "Shane Battier '08",
+        92,
+        88
+      ],
+      [
+        "Scottie Pippen '92",
+        96,
+        93
+      ],
+      [
+        "Scottie Barnes '25",
+        76,
+        73
+      ],
+      [
+        "Scottie Pippen '90",
+        87,
+        84
+      ],
+      [
+        "Shane Battier '10",
+        82,
+        79
+      ],
+      [
+        "Shane Battier '11",
+        76,
+        73
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Draymond Green '21",
+      "Draymond Green '22",
+      "Draymond Green '23",
+      "Kawhi Leonard '16",
+      "Marcus Smart '20",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Paul George '14"
+    ]
+  },
+  "notes": [
+    "WHY HE READ DEF 95, TERM BY TERM, BEFORE ANYTHING WAS TOUCHED. Dan Roundfield '83: 80 inches, drep 1.000 (1983 All-Defensive 1st team), BLK% 2.3 = the 0.8207 percentile of 1983, DBPM +0.5 = the 0.6196 percentile. recal_92's band runs p80 to p86, so _blk_evidence read 0.344, _paid_in_rim = 1.000 x 0.344 and the vote factor was 1 - 0.344 x (1 - 0.6196^3) = 0.738. PD2 = 0.55 + 0.45 x 0.9167 x 0.738 = 0.8544, card 85, smoothed to 83. d_score then reads him a BIG (d_bigness 1.0000) and takes 0.40 x perdef 83 + 0.40 x rimprot 87 + 0.17 x drb 91, raw 97.04 against a DEF_TOP of 104.25 - DEF 95, #1 of the 239 cards of 1983, above Bobby Jones '83 (94) and above his own '82 (94), the card recal_114 was written for.",
+    "THE FOURTEEN POINTS, MEASURED AND DECOMPOSED, not asserted. Running his own sheet through the rim chain twice - once with his ballot and once with drep = 0 - reads rimprot 88.4 against 74.1. Of that 0.1458 lift in band space, recal_53/92's voted CEILING (the channel _blk_evidence grades) contributes 0.0044; the remaining 0.1414 is recal_135's reinforcement line ID = ID + 0.25*(drep*hp), which is gated on nothing but height. So the meter was grading his payment by the one channel that paid him almost nothing. His '82 is the control: lift 0.1545 (92.0 against 76.9), a payment within a tenth of the same size, metered at 0.899 - and the weaker block line took the smaller deduction and printed four DEF points higher.",
+    "WHY THE SHIFT IS GATED ON THE BAND'S EDGE, AND THE TWO VARIANTS THAT MEASURED IT. Reading the band one width earlier for EVERY card is recal_162's form applied literally, and it reaches the subject identically (DEF 92) - but it also reaches BELOW recal_92's bar, where the file says there is no block evidence at all, and it breaks two anchors: Dennis Rodman '90 (79 in, blk p76, def 94 +-1) falls to 92 and Amen Thompson '24 (79 in, blk p80.2, def 94 +-1) to 91. The other direction - taking recal_135's height step down to 80 inches as a flat 1.0, which also reaches the subject - costs Scottie Pippen '97/'98/'99 fifteen to twenty perdef points each on block rates BELOW the bar, takes Paul George '17/'18 thirteen DEF points and breaks the Bulls '96 dial (r94). The landed form is the intersection: the earlier reading applies only ON the band's edge and above, where recal_135's channel already applies, and it still requires the blocks recal_92 asks for. 32 of 10,000 cards move.",
+    "WHY 80 INCHES IS NOT A FITTED NUMBER. It is drawn twice in this file already and both times as the same edge: recal_35's sweet band is FLAT at 1.0 from 75 to 80 inches, and recal_54's rep_hf is FLAT at its maximum 1.2 through 80. A card standing there collects the whole perimeter-vote premium the file can pay while being tall enough for the rim reinforcement to land on him in full - which is exactly the position recal_114's own subject stands in, and recal_114's receipt says so in its first paragraph ('6'8\" EXACTLY - the top edge of recal_35's 6'3\"-6'8\" band'). recal_135 drew its height channel from the OUTSIDE of that edge because its own subject was 81 inches. This round draws the same edge from the inside.",
+    "ROUNDFIELD '80 AND '81 DO NOT MOVE, AND THAT IS THE FORMULA WORKING, NOT AN OMISSION. Their block percentiles are 0.9330 and 0.9235, both past BLK_FULL, so _blk_evidence already returned 1.000 for them before this round - the defect the ruling names never touched them. What holds them at DEF 95 and 94 is the OTHER half of recal_114's rule, the DBPM support: their percentiles are 0.832 and 0.732 against the subject's 0.620, so at VOTE_SUPPORT_POW 3 they keep 0.577 and 0.484 of the vote premium where he now keeps 0.238. Moving them would mean re-fitting recal_114's exponent, which is a different ruling.",
+    "NOBODY ROSE, AND NOTHING OUTSIDE perdef MOVED. The deduction still lands on the 0.45 vote premium and never on PD, so the within-season Pvot pool is bit-identical: 32 perdef cards moved and all 32 moved DOWN, 27 DEF and all 27 down, 16 OVR and all 16 down. rimprot moved on ZERO cards, every offensive attribute on ZERO cards, o_ovr on ZERO cards. The perdef top 12 is unchanged name for name.",
+    "THE CLASS THAT MOVED IS ONE ARCHETYPE. Every mover is a voted card at exactly 80 inches whose block rate sits at or near recal_92's bar: Dan Roundfield '82-'86, Shane Battier '03-'11, Scottie Pippen '89-'92, Kermit Washington '80/'81, Al Horford '18/'20, Scottie Barnes '25, Lonnie Shelton '80, Buck Williams '84/'85. Six-foot-eight forwards with All-Defensive votes, real but ordinary rim deterrence, and a d_score that grades them on the big vector."
+  ],
+  "cost": [
+    "ANCHOR ADDED: Dan Roundfield '83 def 91 +-3 (round 172). Nothing superseded. recal_114's Dan Roundfield '82 def 91 +-3 is NOT superseded - it reads 93 now instead of 94, one point further inside its band, which is the direction recal_114's own cost note asked for ('If Tomer wants him nearer 91 than 94, THAT is the next round').",
+    "165 anchors, 0 failing, mean |error| 0.84 against main's 0.87 on the same 165 - the round improves the board's mean error. Worst three unchanged (Westbrook '15 ballsec +4, Stockton '01 off +4, Mark Jackson '98 off -3).",
+    "THE HARNESS BROKE ON ONE CARD, AND IT IS WORTH RECORDING WHY. Exactly one card crossed the harness's ovr>=55 line - Shane Battier '12, 55 -> 54, pool 6,370 -> 6,369 - and because the pool is drawn by index every one of the 200 matchups is a different five afterwards. Both crash rows broke on the ORACLE edge. crash def glass re-ratified .38 -> .20 (feasible .0735 to .3355, true midpoint by r126's rule). crash off glass HAS NO SHIPPABLE TAX on this pool: the oracle reads +0.4996 AT ZERO TAX, four ten-thousandths under the +0.500 floor, and the whole feasible interval is negative (-0.52 to about -0.0017), so recal_167's 'midpoint of the POSITIVE half' rule has a single point to choose from and that point is not a tax at all. The row was therefore ratified on its OTHER harness constant - the law names 'the taxes AND SLOPES the harness ratified' in one sentence - with the tax HELD at main's 0.08 and the offensive-glass slope 0.26 -> 0.29 by recal_92's 'smallest move that clears both edges' (the window is one-sided; the blind read saturates near -0.756 against the -2.5 clamp and never approaches -1.5). It carries 0.0085 of oracle room where main itself carried 0.0063. All nine rows pass. FOR THE NEXT ROUND: main's crash-off tax has been pinned at the bottom of its range for three sweeps running (r167 recorded the same thing), so any round that thins this pool again will find the same wall.",
+    "pipeline_version is written as 172 per the dispatch; PIPELINE_VERSION in both python files and src/data/pipeline.json is left at main's 167 for the integrator to stamp.",
+    "THE METER IS NOW COMPLETE FOR HEIGHT AND FOR THE CEILING, BUT IT IS STILL BLIND BELOW THE BAND. A 79-inch voted card whose rim protection the ballot genuinely lifts - Dennis Rodman '90 is the measured example, 15.8 card points of lift on a block rate at the 76th percentile - is still metered at 0.000, and his recal_57 anchor is what stops this round from reaching him. If a later ruling wants that class, it is a ruling about recal_57's pin, not about this meter."
+  ]
+}

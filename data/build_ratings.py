@@ -347,7 +347,54 @@ def score_season(r, P):
     # is read off. A fade that starts at 78 or 79 costs all four.
     OUT_OF_BAND_IN = 1.0
     _out_of_band = min(1.0, max(0.0, ((r['ht'] or 78) - 80.0) / OUT_OF_BAND_IN))
-    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk'])), _out_of_band)) if r['drep'] > 0.05 else 0.0
+    # recal_172 (HIS RULING on Dan Roundfield '83, verbatim: "Agree with 7"). ON THE BAND'S TOP EDGE
+    # THE METER WAS STILL ASKING THE CEILING'S QUESTION, NOT THE RIM'S.
+    # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Dan Roundfield '83 read DEF 95 - #1 of 1983,
+    # above Bobby Jones '83 (94) and above HIS OWN '82, the card recal_114 was written for and pinned
+    # at 91 +-3. Same man, same sheet, same shape: 6'8" on the big d_score branch taking 0.40 x perdef
+    # 83 beside 0.40 x rimprot 87, for one 1983 All-Defensive 1st team on 1.5 blocks a game.
+    # THE DEFECT IS THE RULER, AND THE TWO SEASONS PROVE IT. His BLK% of 2.3 is the 82nd percentile of
+    # 1983, a THIRD of the way up recal_92's six-point unlock band, so _blk_evidence returned 0.344 and
+    # the meter's verdict was that rim protection had cashed a third of his ballot. It had cashed all
+    # of it: his rim protection reads 88.4 where the SAME SHEET WITH NO BALLOT AT ALL reads 74.1 - a
+    # realised lift of FOURTEEN card points, against his '82's fifteen (92.0 against 76.9) on an
+    # evidence reading of 0.899. Two neighbouring seasons of one man, the same payment, and deductions
+    # that differed by a factor of two and a half: the WEAKER block line earned the SMALLER deduction
+    # (vote factor 0.738 against 0.428) and printed four DEF points HIGHER.
+    # WHY THE BAND IS THE WRONG RULER, DECOMPOSED. Rim protection pays a ballot through channels that
+    # recal_92's band does not govern. Of Roundfield '83's 0.146 lift, the voted CEILING - the thing
+    # the band grades - is worth 0.004. The other 0.142 is recal_135's reinforcement line,
+    # ID = ID + 0.25*(drep*hp), which is gated on nothing but height and pays at EVERY block rate. So
+    # the meter should ask the PRIOR question - has the rim cashed this ballot at all - and that is the
+    # question recal_162 already had to ask of recal_95's floor. Its answer is reused here verbatim:
+    # recal_92's own evidence function read ONE BAND WIDTH EARLIER (full at the bar p80, nothing one
+    # band under it, the same linear grade between). No new constant: the band, its width and its bar
+    # are recal_92's and the shift is recal_162's.
+    # WHERE THE EARLIER READING APPLIES, AND WHY IT IS THE SAME 80 INCHES recal_135 ALREADY DREW.
+    # recal_135 gave this meter its height channel as a STEP - flat 1.0 above the wing band, flat 0
+    # inside it - because its own subject was 81 inches and it had no reason to look at the edge. The
+    # card recal_114 was written for stands ON that edge: 80 inches is the last inch at which recal_35's
+    # sweet band and recal_54's rep_hf both pay the FULL wing rate, so a card there collects the whole
+    # perimeter-vote premium while standing tall enough for the rim reinforcement to land on him. The
+    # step therefore gets a landing at the edge instead of starting past it: at 80 inches and above the
+    # block band is read one width earlier, at 79 and under it is read exactly where recal_92 put it.
+    # MEASURED, AND THIS IS WHY THE SHIFT IS GATED ON THE EDGE AND NOT APPLIED TO EVERY CARD. Reading
+    # the band one width earlier for EVERYONE reaches the subject too (DEF 92, identically) but it
+    # reaches BELOW recal_92's bar, into cards the file says have no block evidence at all, and breaks
+    # two anchors: Dennis Rodman '90 (79 in, blk p76, def 94 +-1) falls to 92 and Amen Thompson '24
+    # (79 in, blk p80.2, def 94 +-1) to 91. Taking recal_135's height step down to 80 inches as a flat
+    # 1.0 instead - the other variant measured - costs Scottie Pippen '97/'98/'99 fifteen to twenty
+    # perdef points apiece on block rates BELOW the bar, takes Paul George '17/'18 thirteen DEF points
+    # and breaks the Bulls '96 dial (r94). The gated form is the intersection of the two: it moves only
+    # cards ON the band's edge whose blocks clear recal_92's bar, 32 of 10,000.
+    # NOTHING BELOW 6'8" MOVES, BY CONSTRUCTION, and nothing rises anywhere: the meter can only go up,
+    # the deduction still lands on the 0.45 vote premium and never on PD, so the within-season Pvot
+    # pool is bit-identical. Rodman '90, Amen Thompson '24/'25/'26, Kawhi '16, Draymond '16, Jordan
+    # '89, Jrue '21, Herbert Jones '23, Maurice Cheeks '85 and Scottie Pippen '03 are bit-identical,
+    # and so is every card recal_135 already reached above the band (McHale '85/'88, Moses '85, Bobby
+    # Jones '82/'83/'85, Sikma '83, Malone '97, Dwight '11, Garnett '04/'08, Ben Wallace '04).
+    _at_band_top = min(1.0, max(0.0, ((r['ht'] or 78) - 79.0) / OUT_OF_BAND_IN))
+    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk']) + (BLK_FULL - BLK_BAR) * _at_band_top), _out_of_band)) if r['drep'] > 0.05 else 0.0
     _vote_factor = 1.0 - _paid_in_rim * (1.0 - P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW)
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
