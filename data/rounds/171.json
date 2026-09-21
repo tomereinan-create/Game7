@@ -1,0 +1,123 @@
+{
+  "round": 171,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Agree with 6",
+  "title": "the carried ballot unlocks recal_149's tracked-band credit only as far as the season's own steal rate certifies it: Joakim Noah '15 perdef 89 -> 80, 74 perdef bars down and none up",
+  "scale": "attr:perdef",
+  "subject": "Joakim Noah '15",
+  "target": 78,
+  "tol": 3,
+  "before": 89,
+  "after": 80,
+  "pipeline_version": 167,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_cert171 = P\\['stl'\\]\\(r\\['stl'\\]\\)",
+      "label": "the season's OWN perimeter certification: the within-season steal-rate percentile, raw",
+      "note": "new term; no new constant"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_u171 = 1\\.0 if r\\['drep'\\] <= 0\\.0 else min\\(1\\.0, max\\(0\\.0, \\(_own171 \\+ _cert171 \\* \\(r\\['drep'\\] - _own171\\)\\) / r\\['drep'\\]\\)\\)",
+      "label": "recal_160's own-vs-carried split, restored by the own sheet in recal_165's shape",
+      "note": "u = 1 exactly when own == drep"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "PD2 = PD2 \\+ _u171 \\* max\\(0\\.0, \\(\\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(_pd149\\) \\* BRK\\['_vf'\\]\\)\\) - PD2\\)",
+      "label": "recal_149's band credit is now PAID at u instead of taken whole",
+      "note": "max(PD2, X) -> PD2 + u*max(0, X - PD2); byte-identical at u = 1"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "TRK_BAND_W   = 0\\.32",
+      "label": "recal_149's credit size, untouched",
+      "note": "0.32"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "BAND_FOOT, BAND_FULL = 12\\.0, 34\\.0",
+      "label": "recal_159's load line, untouched",
+      "note": "12.0 / 34.0"
+    }
+  ],
+  "expect": [
+    { "card": "Joakim Noah '15", "scale": "def", "op": "~", "value": 94, "tol": 1, "label": "THE SUBJECT'S DEF: 96 -> 94, no longer tied 2nd of 2015" },
+    { "card": "Amen Thompson '26", "scale": "def", "op": ">=", "value": 95, "label": "THE CRITICAL WALL (recal_149, def 97 +-2, zero slack): own 2026 credit 0.006 like the subject's, but p74 steals against the subject's p22" },
+    { "card": "Amen Thompson '25", "scale": "def", "op": ">=", "value": 94, "label": "recal_149 pin 96 +-2; own ballot = drep, byte-identical" },
+    { "card": "Amen Thompson '24", "scale": "def", "op": "~", "value": 94, "tol": 1, "label": "recal_149's negative control; the credit never paid him (q = 0)" },
+    { "card": "Andre Roberson '15", "scale": "def", "op": "~", "value": 83, "tol": 2, "label": "recal_159 pin 83 +-2; 84 -> 83" },
+    { "card": "Herbert Jones '23", "scale": "def", "op": "~", "value": 91, "tol": 4, "label": "recal_103 pin; held at 91 by his own p96 steal rate" },
+    { "card": "Jrue Holiday '21", "scale": "def", "op": "~", "value": 92, "tol": 1, "label": "recal_80 pin; own ballot = drep, byte-identical" },
+    { "card": "Draymond Green '16", "scale": "def", "op": "~", "value": 96, "tol": 1, "label": "recal_62 pin; own ballot = drep, byte-identical" },
+    { "card": "Rudy Gobert '19", "scale": "def", "op": "~", "value": 92, "tol": 1, "label": "recal_62 pin, untouched" },
+    { "card": "Kawhi Leonard '17", "scale": "off", "op": "~", "value": 94, "tol": 1, "label": "recal_89 pin, untouched" },
+    { "card": "Kawhi Leonard '14", "scale": "ovr", "op": "~", "value": 80, "tol": 2, "label": "recal_93 pin, untouched" },
+    { "card": "Giannis Antetokounmpo '20", "scale": "attr:perdef", "op": "==", "value": 92, "label": "own 2020 ballot = drep 1.000 -> u = 1, byte-identical (p52 steals buy him nothing and cost him nothing)" },
+    { "card": "Marcus Smart '19", "scale": "attr:perdef", "op": "==", "value": 98, "label": "own ballot = drep, byte-identical" },
+    { "card": "Luguentz Dort '26", "scale": "attr:perdef", "op": "==", "value": 92, "label": "carried ballot AND p43 steals, but q149 = 0 so the credit never paid him: byte-identical" },
+    { "card": "Joakim Noah '09", "scale": "attr:rimprot", "op": "~", "value": 92, "tol": 1, "label": "recal_82 pin on the subject's own rim attribute; perdef-only round" },
+    { "card": "Victor Wembanyama '25", "scale": "attr:rimprot", "op": "~", "value": 97, "tol": 0, "label": "recal_53 pin, untouched" }
+  ],
+  "order": [
+    { "scale": "def", "above": "Draymond Green '15", "below": "Joakim Noah '15", "label": "THE COMPLAINT: Noah '15 read 96 ABOVE Draymond '15 at 95" },
+    { "scale": "def", "above": "Anthony Davis '15", "below": "Joakim Noah '15", "label": "and level with Davis '15 at 96" },
+    { "scale": "def", "above": "Kawhi Leonard '15", "below": "Joakim Noah '15", "label": "2015's defensive summit stays where it was" },
+    { "scale": "attr:perdef", "above": "Amen Thompson '26", "below": "Joakim Noah '15", "label": "the wall over the subject, on the attribute itself" },
+    { "scale": "attr:perdef", "above": "Draymond Green '15", "below": "Joakim Noah '15", "label": "a 2015 ballot cast in 2015 outranks one carried from 2014" }
+  ],
+  "movers": {
+    "scale": "attr:perdef",
+    "count": 74,
+    "max_abs": 9,
+    "top": [
+      ["Joakim Noah '15", 89, 80],
+      ["Al Horford '22", 76, 69],
+      ["Klay Thompson '17", 72, 67],
+      ["Klay Thompson '18", 71, 67],
+      ["LeBron James '16", 88, 84],
+      ["LeBron James '17", 80, 76],
+      ["Klay Thompson '16", 70, 66],
+      ["Anthony Davis '23", 84, 80],
+      ["Andre Iguodala '17", 90, 87],
+      ["Andre Iguodala '18", 80, 77],
+      ["Jaren Jackson Jr. '26", 70, 67],
+      ["Amen Thompson '26", 98, 96]
+    ]
+  },
+  "top12": {
+    "scale": "attr:perdef",
+    "cards": [
+      "Bruce Bowen '07",
+      "Kawhi Leonard '16",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Michael Jordan '91",
+      "Michael Jordan '92",
+      "Michael Jordan '93",
+      "Paul George '14",
+      "Scottie Pippen '94",
+      "Scottie Pippen '98",
+      "Tony Allen '11",
+      "Tony Allen '12"
+    ]
+  },
+  "cost": [
+    "ADDED to data/anchors.json: Joakim Noah '15 attr:perdef 78 +-3 (reads 80).",
+    "Amen Thompson '26 def 97 +-2 now reads 95 with his perdef 98 -> 96. It read 95 before this round too, so the round costs him nothing, but the pin is ON its lower edge and any later round that shaves perdef on a carried-ballot 2026 wing breaks it. His u is 0.739 (p74 steals) and the remaining slack in his DEF is zero.",
+    "The round does NOT reopen recal_149's constants (TRK_BAND_LO/TOP/W) or recal_159's load line (BAND_FOOT/BAND_FULL). Both were measured as routes to the subject and both are the wrong knob: they charge the whole class for one card's ballot provenance.",
+    "Klay Thompson '16/'17/'18 (drep carried from his 2019 All-Defensive 2nd, p30-ish steals) lose 4-5 perdef and 3-4 DEF. None is pinned; his OFF and OVR are untouched except through DEF.",
+    "A later ruling that wants the carried-ballot discount on a DIFFERENT axis than steals should know that the tracked reading itself and DBPM both point the OTHER way on this pair: Noah '15 is 68.51 / p95 against Amen '26's 65.47 / p80."
+  ],
+  "notes": [
+    "THE FINDING. recal_149's tracked-band credit is paid through wv = min(1, drep/0.30), and drep is a CAREER reputation decayed 15% a year in both directions. So a season with no ballot of its own collects the credit at full band membership on a ballot cast for a DIFFERENT season. Joakim Noah '15 is that card: 2014 DPOY, 2015 DPOY share 0.006 (under recal_20's 0.05 trace line) and no All-Defensive team, own credit 0.003 against drep 0.850. The credit took him perdef 73 -> 89 and DEF to 96 on 30.6 mpg, 7.2 ppg, 0.7 spg and DBPM 2.0 — tied 2nd of 2015 with Anthony Davis, above Draymond '15 (95), DeAndre Jordan (94) and Duncan (93). recal_149's receipt disclosed the rise as 'a real and arguable side effect' and it was never ruled by name.",
+    "THE RULE. The carried share of drep unlocks the band credit only in proportion to what THIS season's own sheet certifies: u = (own + cert*(drep - own))/drep, cert = P['stl'], the within-season steal-rate percentile. recal_160 drew this line ('a ballot cast FOR this season is not a ballot carried from another') and recal_165 gave it its shape on the rim side, where the restoring evidence is _measured_rim_evidence (blocks x DBPM) because a rim ballot claims deterrence. A PERIMETER ballot claims perimeter defence, and this file's perimeter counting stat is the steal rate — it is what perimdisrupt is built from. NO NEW CONSTANT: the percentile is read raw off the P dict the file already builds, with no bar and no ramp.",
+    "THE SEPARATION, AND WHY IT IS NOT _q149 OR DBPM. Amen Thompson '26 has the SAME provenance as the subject — own 2026 credit 0.006, the whole 0.850 carried from 2025 — and he is recal_149's own pin at def 97 +-2 reading 95 with no slack. On the tracked axis and on DBPM the subject is the BETTER card (regressed tracked reading 68.51 vs 65.47, -3.8% over 625 attempts vs -3.2% over 517; DBPM percentile 0.950 vs 0.797), so a gate on _q149 or on DBPM takes Amen and leaves Noah. The steal rate is the one own-season axis that separates them and it separates them by a distance: Noah '15 p22 of 2015 (0.7 a game over 30.6 minutes, STL% 1.1), Amen '26 p74 of 2026. Their u's are 0.222 and 0.739.",
+    "WHERE THE FACTOR LANDS — the variant that missed, measured on the whole pool. Multiplying _pd149's credit in COMPOSITE space (PD + W*sample*q*load*u, the tidier edit) lands the subject at perdef 82 / DEF 95, ONE POINT outside 78 +-3, because the same fractional shrink in PD space buys a different number of card points at every point of the Pvot density: Noah sits in the dense middle of 2015 so a 78% cut of his composite credit is only a 44% cut of his card points, while Amen '26 is past the top of the 2026 pool where a cut costs nothing at all. Unlocking the PAYMENT instead is the same rule for every card wherever it sits, and it reaches 80.",
+    "MONOTONE AND ONE-WAY BY CONSTRUCTION. u is in [0, 1] and multiplies a max(0, ...): at u = 1 the line is byte-identical to recal_149 (PD2 + max(0, X - PD2) IS max(PD2, X)), at u = 0 it is byte-identical to pre-149, the Pvot pool is the same frozen pool, no card rises and no card falls below its pre-149 value. Every card whose ballot is its OWN (own == drep) is byte-identical: Draymond '15/'16, Kawhi '16/'17/'20, Jrue '21, Marcus Smart '19, Dort '25, Giannis '20, Gobert '21, Anthony Davis '15, Bam Adebayo '20/'21, OG Anunoby '26, Amen Thompson '25, Ben Simmons '21.",
+    "MEASURED ON THE POOL: 74 cards move perdef, ALL down, 8 by more than 3, largest 9 (the subject). 55 move DEF, all down, one by 4 (Klay Thompson '17). 28 move OVR, all down, none by more than 2. The 2015 defensive board now reads Kawhi 98 / Davis 96 / Draymond 95 / DeAndre Jordan 94 / Noah 94, which is the complaint answered.",
+    "npm run anchors: 166 anchors (165 + this round's own), 0 failing, mean |error| 0.86. npx vitest run: 411 passed, 39 files. npm run harness: 9/9 PASS, no tax re-sweep (constants left at main's 3.97 / crashOff 0.08 / crashDef 0.38). npm run receipts -- 171: 42 OK, 0 missed."
+  ]
+}
