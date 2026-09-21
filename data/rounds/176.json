@@ -1,0 +1,240 @@
+{
+  "round": 176,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "land 77. Stockton and nash going up is fine, but bilups on 93 is madness. If we can increase nash stockton and kevin johnson without billups tho, that will be fine",
+  "title": "recal_109's elite-passer term has BOTH of its gates re-cut on the class they rank, and neither number is chosen: the efficiency factor 70->90 (the class's own p84 -> p95, with 85% of the class sitting on the 0.5 floor) becomes 43->78, its own MEDIAN to its own p90; and recal_117's volume band top, fitted at 68 by naming one card to exclude, becomes the measured 93 — the p90 of volume among the 1,486 distributors that clear the term's own playvol foot. Kevin Johnson '89 off 75 -> 81, ovr 69 -> 74. John Stockton '01 84 -> 86 and Steve Nash '05 86 -> 90 rise by his release; Chauncey Billups '06 is the wall and holds at 92",
+  "subject": "Kevin Johnson '89",
+  "scale": "off",
+  "target": 81,
+  "tol": 3,
+  "before": 75,
+  "after": 81,
+  "pipeline_version": 175,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 43\\.0, 78\\.0, 0\\.5",
+      "label": "THE FACTOR round 174 routed here — recal_109's efficiency ramp, RE-CUT on the class's own conversion distribution",
+      "note": "70 -> 90 becomes 43 -> 78. The 842 cards this term pays read efficiency p25 30 / p50 43 / p75 59 / p90 78 / p95 90, so the old ramp spanned the class's 84.3rd percentile to its 94.8th: 85.0% of the class was paid the 0.5 FLOOR and 5.2% was paid in full. The new ramp is the class's own median to its own p90. The floor, the ceiling and the shape are untouched — the factor was never a cliff, only mis-located"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 93\\.0",
+      "label": "recal_117's volume band top, RE-CUT on the same class's own volume distribution: 68 -> 93",
+      "note": "recal_117 set 68 by naming one card to clear ('just clear of the nearest star it must exclude', Magic '89 at volume 70) — a fitted constant. Of the 1,486 cards that clear this term's OWN playvol foot (playvol >= 70), the p90 of volume is exactly 93.0 (p50 58, p75 81, p95 96). 68 was that class's 60.6th percentile: the gate was excluding four distributors in ten. The gate now says what it means — a distributor is paid for the ball he moves until his own scoring load is in the class's top decile"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge \\* _gl",
+      "label": "THE SIZE IS UNTOUCHED, and deliberately: 0.245 is fixed by HIS OWN CAP on John Stockton '97",
+      "note": "the size route was measured and rejected — it reaches the subject only at 0.378 and breaks John Stockton '90 (89 against 84 +-3) and both Mark Jacksons, because it multiplies a term the low-efficiency passers already collect in full. Both landed changes are re-cuts of a gate on its own class; nothing about how much the term is worth has moved"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "PD_MIN_FULL = 34\\.7",
+      "label": "recal_130's second-payment load line, UNTOUCHED",
+      "note": "the subject played 39.2 minutes and takes 1.000 of it; John Stockton '01's 29.2 still costs him 16%, which is why his release lands him at 86 and not higher"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 4\\.22,",
+      "label": "THE TAX RE-SWEPT ONCE from main's constants, as the harness law requires: 3.80 -> 4.22",
+      "note": "585 cards gained offence, so every sampled five creates better and hunting the wrong man costs less: hunt broke on the BLIND edge (-0.016 against the -0.30 ceiling). Feasible 4.150 (blind -0.3023) to 4.292 (oracle +0.5015), true midpoint 4.22 (blind -0.357, oracle +0.537). crashOff 0.28 and crashDef 0.66 were read from main's constants first and did not move"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "<=",
+      "value": 92,
+      "label": "THE WALL, IN HIS OWN WORDS ('bilups on 93 is madness'). He is the one pin of the three that was NOT released, and he is what sets the band top's ceiling: the feasible window is PD_V_HI 91 to 94, where the subject reads 81 and Billups reads 92; at 95 the subject still reads 81 and Billups reads 93"
+    },
+    {
+      "card": "Chauncey Billups '06",
+      "scale": "off",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "and the recal_154 pin itself, held at its top edge rather than released"
+    },
+    {
+      "card": "John Stockton '01",
+      "scale": "off",
+      "op": "~",
+      "value": 86,
+      "tol": 2,
+      "label": "RELEASED UPWARD BY HIM on this round ('Stockton and nash going up is fine') and re-pinned at his new reading: recal_130's 80 +-4 is in data/anchors_superseded.json. 84 -> 86"
+    },
+    {
+      "card": "Steve Nash '05",
+      "scale": "off",
+      "op": "~",
+      "value": 90,
+      "tol": 2,
+      "label": "the same release, and the card recal_109 was built for in the first place ('Elite passers are massively underrated in OFF. This is 85+ OFF'): 86 -> 90. recal_109's 85 +-3 is superseded"
+    },
+    {
+      "card": "John Stockton '90",
+      "scale": "off",
+      "op": "~",
+      "value": 84,
+      "tol": 3,
+      "label": "NOT released and it did not need to be: recal_117 pinned him 84 +-3 and he read 82, one point off his floor. He now reads 85 — the arc recal_117 turned the right way up is finally ON its number"
+    },
+    {
+      "card": "Mark Jackson '98",
+      "scale": "off",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "BYTE-IDENTICAL at 52. Efficiency 35 is the class's p35, below the new ramp's foot, and volume 12 was already at full gate — the bottom of the class does not move at all"
+    },
+    {
+      "card": "Mark Jackson '99",
+      "scale": "off",
+      "op": "~",
+      "value": 54,
+      "tol": 3,
+      "label": "BYTE-IDENTICAL at 52. His efficiency 43 IS the class median, which is what fixes the ramp's foot: he is the card that decides the constant and he is paid exactly what he was"
+    },
+    {
+      "card": "Mark Jackson '00",
+      "scale": "off",
+      "op": "~",
+      "value": 58,
+      "tol": 3,
+      "label": "56 -> 58, onto the centre of his band (efficiency 52 = class p64). The class's INTERQUARTILE cut (30 -> 59) would have printed him 62 and is why the foot is the median and not p25"
+    },
+    {
+      "card": "Kevin Johnson '92",
+      "scale": "off",
+      "op": "~",
+      "value": 81,
+      "tol": 3,
+      "label": "recal_154's pin, 80 -> 82. The arc now reads '89 81, '90 89, '91 89, '92 82 — the scout's five-point inversion against '92 is down to ONE point and both cards are inside 81 +-3, but it is not flipped and this round does not claim it is"
+    },
+    {
+      "card": "Magic Johnson '90",
+      "scale": "off",
+      "op": "~",
+      "value": 93,
+      "tol": 1,
+      "label": "the tol-1 pin on the summit, held at 93 exactly. His '88 (90 -> 95) and '89 (93 -> 97) are NOT pinned and rise: volume 70 is now inside the band recal_117 had cut to exclude him, which is this round's largest stated cost"
+    },
+    {
+      "card": "Tyrese Haliburton '24",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 3,
+      "label": "87 -> 86, and the direction is the point: a creator between volume 68 and 93 hands hub credit BACK as he picks up passer credit, because recal_138 built the two to meet exactly at PD_V_HI and they still do"
+    },
+    {
+      "card": "Russell Westbrook '17",
+      "scale": "off",
+      "op": "~",
+      "value": 85,
+      "tol": 2,
+      "label": "volume 98 — still outside the band, still byte-identical, as are LeBron '13, Harden '19 and Jordan '89"
+    },
+    {
+      "card": "Domantas Sabonis '21",
+      "scale": "off",
+      "op": "~",
+      "value": 71,
+      "tol": 1,
+      "label": "round 174's blocker: the round that declined from the attribute side could not move him without moving Sabonis. From THIS side he moves 70 -> 71 and lands on his pin's centre"
+    },
+    {
+      "card": "Josh Hart '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 63,
+      "tol": 3,
+      "label": "byte-identical: playvol 58 never reaches the term's foot. The whole non-distributor board is untouched — DEF moved on ZERO cards and OFF on none outside playvol >= 70"
+    },
+    {
+      "card": "Utah Jazz '97 (best legal five)",
+      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+      "scale": "team:off",
+      "op": ">=",
+      "value": 60,
+      "label": "the Jazz dial, read through the engine after the biggest Stockton move in six rounds"
+    }
+  ],
+  "order": [
+    {
+      "scale": "off",
+      "above": "Kevin Johnson '91",
+      "below": "Kevin Johnson '89",
+      "label": "THE ITEM THAT STARTED IT, NINE TENTHS CLOSED AND RECORDED HONESTLY. The scout's complaint was that Kevin Johnson '89 read FIVE below his own worse seasons; he now reads 81 against '92's 82 and '91's 89, so the inversion against '92 is one point, not five, and both cards sit inside their own pins (81 +-3 apiece). This round hit the ruling's number and did NOT flip that pair — see COST"
+    },
+    {
+      "scale": "off",
+      "above": "John Stockton '90",
+      "below": "Kevin Johnson '89",
+      "label": "and the better passer still reads above him — 85 against 81, on 14.5 assists at .607 against 12.2 at .597"
+    },
+    {
+      "scale": "off",
+      "above": "Magic Johnson '90",
+      "below": "Chauncey Billups '06",
+      "label": "the summit order the band widening had to preserve: 93 against 92"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 694,
+    "max_abs": 7,
+    "top": [
+      ["Scott Skiles '93", 63, 70],
+      ["Sleepy Floyd '87", 70, 77],
+      ["Kevin Johnson '89", 75, 81],
+      ["Maurice Cheeks '82", 61, 67],
+      ["Micheal Williams '94", 68, 74],
+      ["Terry Porter '89", 65, 71],
+      ["Ben Simmons '19", 69, 74],
+      ["Chris Paul '21", 78, 83],
+      ["Magic Johnson '89", 93, 97],
+      ["Tim Hardaway '96", 78, 76],
+      ["Terrell Brandon '00", 79, 77],
+      ["Tyrese Haliburton '24", 87, 86]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '23",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "LeBron James '09",
+      "LeBron James '10",
+      "LeBron James '12",
+      "Nikola Jokić '21",
+      "Nikola Jokić '22",
+      "Nikola Jokić '23",
+      "Nikola Jokić '24",
+      "Nikola Jokić '25"
+    ]
+  },
+  "cost": [
+    "TWO PINS WERE RELEASED UPWARD BY TOMER IN THE RULING ITSELF and are in data/anchors_superseded.json with his words: JOHN STOCKTON '01 off 80 +-4 (recal_130) and STEVE NASH '05 off 85 +-3 (recal_109). Neither is deleted — each is RE-PINNED at its landed reading +-2 by this round (Stockton '01 86 +-2, Nash '05 90 +-2), so the numbers are still held, just held higher. CHAUNCEY BILLUPS '06 off 91 +-1 (recal_154) was explicitly NOT released ('bilups on 93 is madness') and is now the binding wall on this term: he reads 92, the top edge of his band, and any further widening of PD_V_HI past 94 prints him 93.",
+    "recal_117's STAR-EXCLUSION PROPERTY IS SPENT, and a later round must not assume it. r117 wrote that 'LeBron '13 (volume 97), Harden '19 (99), Jokic '25 (89), Chris Paul '09 (82) and Magic '89 (70) all sit at gate 0.00 and move by EXACTLY zero'. With the band top at 93 that is true only of LeBron '13, Harden '19 and Westbrook '17. MAGIC JOHNSON '89 (volume 70) is now the largest single consequence of this round: off 93 -> 97, ovr 88 -> 91, and his '88 90 -> 95 / 85 -> 88. Chris Paul '09 94 -> 95 and Jokic '25 is inside the band by four volume points and does not move a display point. Magic '90, the pinned card, holds at 93 exactly.",
+    "THE HUB RAMP MOVED WITH THE BAND TOP, BY recal_138's CONSTRUCTION AND NOT BY ACCIDENT, and this is why 109 cards read LOWER. r138 hoisted PD_V_HI to module scope precisely so the hub's volume ramp is `PD_V_HI - (HUB_FULL - HUB_GATE)` to `PD_V_HI`; it therefore travels from recal_154's 48 -> 68 to 73 -> 93 and the two terms remain DISJOINT at the band top exactly as r138 built them. A creator between volume 68 and 93 hands hub credit back as he picks up passer credit — the same fact priced once instead of twice. The cards that give back more than they gain are the INEFFICIENT high-volume creators: Tim Hardaway '96 (efficiency 49) 78 -> 76, Terrell Brandon '00 (46) 79 -> 77, Rod Strickland '96/'97 (41) 75 -> 73, Isiah Thomas '85 (42) 76 -> 74, Tyrese Haliburton '24 (68) 87 -> 86, Kevin Johnson '91 (volume 74) 90 -> 89. Largest drop on the board is 2. No pin is among them.",
+    "OFF_TOP AND DEF_TOP WERE NOT RE-DERIVED (recal_90's warning): the band anchors are untouched at 102.75 / 104.25, so nothing above the knee was rescaled and the summit order is unchanged. DEF moved on ZERO cards — this round is entirely inside o_score.",
+    "THE HUNT TAX WAS RE-SWEPT ONCE from main's constants (hunt 3.80 / crashOff 0.28 / crashDef 0.66) and moved 3.80 -> 4.22; crashOff and crashDef held. See the knob line and the comment block in src/engine/tactics.ts.",
+    "THE SCOUT'S ITEM IS NOT FULLY CLOSED AND THIS ROUND DOES NOT PRETEND IT IS. Kevin Johnson '89 reads 81, his ruling's number, but his own '92 reads 82 — the worse season by every box column is still ONE point above him, where it was FIVE. The residue is the `volume` bar, not this file: '92 carries volume 65 against '89's 49 on 0.7 fewer points a night, and recal_174 proved that gap is a usage RATE reading honestly (usg 23.6 against 21.2) and that no load form of it survives Domantas Sabonis '21. Both cards sit inside 81 +-3, so nothing is out of band; a later round that wants the pair flipped must go back to the attribute lane and it should read recal_174's frontier first.",
+    "FOR A LATER ROUND ON THIS TERM: the three knobs are now all cut on the class and there is no slack left in the fitted direction. The efficiency factor is at its own class median/p90, the band top is at the class's p90 of volume with the feasible window 91-94 closed above by Billups '06, and the size 0.245 is still fixed by his cap on John Stockton '97 (reading 88 against 91). The next lever on this class would have to be the playvol foot (PD_PV_LO 70, which recal_112's `playvol <= 70` gate holds disjoint) or a new channel."
+  ],
+  "notes": [
+    "THE SUBJECT, AND IT TOOK TWO ROUNDS AND TWO AGENTS. Kevin Johnson '89: 20.4 points, 12.2 assists, 39.2 minutes, usg 21.2, TS .597, BPM 4.2, All-NBA 2nd. recal_174 declined him from the attribute side, proved the `volume` bar is a usage RATE and his is the 50th percentile of 1989, and named the door here: 'the subject's passer credit is 5.30 against Stockton '90's 13.38 because his efficiency factor is 0.72 against 1.00'. This round opened that door and the one beside it. His passer term goes 5.295 -> 13.19: gate 0.328 -> 0.530 and eff factor 0.725 -> 1.000. off 75 -> 81, ovr 69 -> 74.",
+    "WHY BOTH GATES AND NOT ONE, MEASURED FIRST AND DECLINED IN PUBLIC. The efficiency factor alone reaches OFF 77 and NOT ONE POINT MORE — _ge is a multiplier clamped at 1.0, so the most it can add the subject is 2.01 of o_score, and setting it to 1.0 for the whole class (which fails three Mark Jackson pins) still prints him 77. That was this round's first report and Tomer's answer was 'land 77 ... if we can increase nash stockton and kevin johnson without billups tho, that will be fine'. The band top is what carries the last four points, and it is measured rather than fitted: it is the only knob that moves the subject without touching Billups, whose volume 66 sits so far inside the band that his gate changes by a twentieth.",
+    "WHY 93 AND NOT A NUMBER INSIDE THE WINDOW. The feasible window under his wall is PD_V_HI 91 to 94 — the subject reads 81 across all four and Billups reads 92 across all four — so a fitted midpoint was available and was NOT used. 93.0 is the measured p90 of volume among the 1,486 cards that clear the term's own playvol foot, it lands inside the window, and the dispatch's rule is to prefer the measured value where one does. Sweep, all with the efficiency re-cut in place: 68 subject 77 Billups 91; 85-88 subject 80 Billups 91; 89-90 subject 80 Billups 92; 91-94 subject 81 Billups 92; 95 subject 81 BILLUPS 93, the reading he refused.",
+    "THE FOOTPRINT. 694 cards move on OFF — 585 up, 109 down, largest rise +7 (Scott Skiles '93 63 -> 70), largest fall -2. 516 move on OVR, max 5. ZERO move on DEF. Every mover clears playvol 70; no card outside the distributor class is touched, which is why Josh Hart '25, Cedric Maxwell '80, Kyle Korver '15, Richaun Holmes '21, Andre Drummond '20 and the whole low-usage family round 174 could not avoid breaking are byte-identical here. ANCHORS: 177 pins, 0 failing, mean |error| 0.80 against main's 0.85 — the board is closer to his rulings after this round than before it, on the same measure.",
+    "WHAT THE CLASS LOOKS LIKE NOW. The efficiency factor pays the class's median passer 0.50 and its p90 1.00, against a ramp that used to pay 85% of the class the floor. The volume gate pays a distributor in full at volume 10 and nothing at 93, against a gate that used to pay nothing from 68 — the 60th percentile of the class it ranks. Both constants are the class's own quantiles, which is the construction recal_130 settled ('the class's own upper quartile, MEASURED, NOT CHOSEN') and recal_117 used on the playvol ramp of this same term; the one gate r117 left fitted and the one factor it left uncut are the two this round closes.",
+    "THIRTY-EIGHT FULL-BOARD MEASUREMENTS stand behind these two numbers: the base reproducing all 10,000 cards byte-for-byte, the efficiency factor's arithmetic ceiling, six class-derived cuts of that ramp, fourteen sizes of the term, and seventeen feet and tops of the volume band — each graded by data/anchors.py itself on a written-out board, never by hand."
+  ]
+}

@@ -608,6 +608,14 @@ export const DEFAULT_TACTICS: Tactics = {
  * (Shane Battier '12, 55 -> 54, 6,370 -> 6,369). One card is enough: the pool is drawn by index, so every
  * one of the 200 matchups is a different five after it leaves. BOTH CRASH ROWS broke on the ORACLE edge
  * (crash off +0.479 at 0.08, crash def +0.487 at 0.38), the same shape recal_162, the 159-164 sweep and
+ * recal_176: the elite-passer term's two gates were re-cut on the class they rank and 694 o_ovrs moved, 585 of them up —
+ * every five the harness samples got better at creating offence. HUNT ALONE BROKE, and on the BLIND edge (-0.016 at 3.80
+ * against the -0.30 ceiling, its oracle a healthy +0.76): when every sampled five has more creation in it, hunting the
+ * wrong man costs less, so the tax has to go UP to keep a blind call punished. Swept ONCE from MAIN's constants
+ * (hunt 3.80, crashOff 0.28, crashDef 0.66) as the law requires: feasible 4.150 (blind -0.3023, the ceiling) to 4.292
+ * (oracle +0.5015, the floor), true midpoint by r126's rule 3.80 -> 4.22 (blind -0.357, oracle +0.537; 0.057 and 0.037
+ * of room either side). crashOff held at 0.28 and crashDef at 0.66 — both read from main's constants first and neither
+ * moved — and the other six held their bands untouched. All nine pass. hunt's tenth move, and the same shape every time.
  */
 export const TAX = {
   scorer: 0.55,
