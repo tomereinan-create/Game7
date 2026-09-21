@@ -56,11 +56,11 @@
   {
     "card": "Steve Nash '05",
     "scale": "off",
-    "target": 85,
-    "tol": 3,
-    "round": 109,
-    "ruling": "Elite passers are massively underrated in OFF. This is 85+ OFF. Amazing eff and playvol",
-    "note": "the elite-passer term: playvol x (1 - volume/100), gated playvol 80->95 and volume 65->10, scaled by an efficiency factor 0.5->1.0 across 70->90. 78 -> 85, ON the floor his ruling states. Size 0.32 is HIS choice over the fit's 0.36 - see receipt 109."
+    "target": 90,
+    "tol": 2,
+    "round": 176,
+    "ruling": "land 77. Stockton and nash going up is fine, but bilups on 93 is madness. If we can increase nash stockton and kevin johnson without billups tho, that will be fine",
+    "note": "RE-PINNED AT THE NEW READING by his explicit release of the older pin (round 109's 85 +-3, now in anchors_superseded.json). recal_176's two class re-cuts of recal_109's elite-passer term lift him 85 -> 90. The tolerance is tightened to +-2 because this reading is a measurement of the landed form, not a target he named."
   },
   {
     "card": "Mark Jackson '00",
@@ -1256,11 +1256,11 @@
   {
     "card": "John Stockton '01",
     "scale": "off",
-    "target": 80,
-    "tol": 4,
-    "round": 130,
-    "ruling": "Stockton became overrated, on OFF ... 01' is currently at 92. 80+-4 sounds about right",
-    "note": "THE VALUE PIN recal_126 deliberately left out, added now that a compute_ovr round has landed the band: 92 (recal_123) -> 86 (recal_126, zone bars) -> 84 (recal_130, the elite-passer term's own load line). It sits at the TOP EDGE of his band and that edge is the frontier, not a tuning choice - Mark Jackson '98 is pinned 55 +-3, reads 53 and played 29.4 minutes against the subject's 29.2, so any factor monotone in minutes pays the subject at least what it pays Jackson; 13,236 parameterisations of the whole floor-plus-ramp family hold every anchor and none of them reads the subject below 84."
+    "target": 86,
+    "tol": 2,
+    "round": 176,
+    "ruling": "land 77. Stockton and nash going up is fine, but bilups on 93 is madness. If we can increase nash stockton and kevin johnson without billups tho, that will be fine",
+    "note": "RE-PINNED AT THE NEW READING by his explicit release of the older pin (round 130's 80 +-4, now in anchors_superseded.json). recal_176's two class re-cuts of recal_109's elite-passer term lift him 80 -> 86. The tolerance is tightened to +-2 because this reading is a measurement of the landed form, not a target he named."
   },
   {
     "card": "Moses Malone '85",
@@ -1719,5 +1719,14 @@
     "round": 175,
     "ruling": "Jrue Smart and Kobe shouldnt drop nearly as much as bridges",
     "note": "The same ruling, and the PRE-TRACKING half of it. 1999 has no tracked defence, so recal_52's 'measured, or not at all' pays his carried 2000 ballot in full and every pre-2014 card in the file is untouched by construction - which is also why recal_150's declined subjects (Kobe '05 90, Oladipo '17 91) and recal_158's (Covington '15 85) do not move. The flat half-rate form takes him to 77."
+  },
+  {
+    "card": "Kevin Johnson '89",
+    "scale": "off",
+    "target": 81,
+    "tol": 3,
+    "round": 176,
+    "ruling": "Agree with 11",
+    "note": "THE SUBJECT, and it took two rounds and two agents. recal_174 declined him from the attribute side (the `volume` bar is a usage RATE and his is the 50th percentile of 1989; every load form makes him Domantas Sabonis '21) and named the door in compute_ovr.py: his passer credit was 5.30 against John Stockton '90's 13.38. recal_176 re-cut BOTH of the term's mis-located gates on the class they rank - the efficiency factor from 70->90 (the class's p84->p95, with 85% of the class on the floor) to 43->78 (its median to its p90), and the volume band top from recal_117's fitted 68 to the measured 93 (the p90 of volume among the 1,486 distributors that clear the term's playvol foot). 75 -> 81, dead on his number. THE STOPPING PIN IS CHAUNCEY BILLUPS '06 (91 +-1) by his own word, 'bilups on 93 is madness': the feasible band top is 91 to 94, the subject reads 81 across all of it and Billups reads 92; at 95 Billups reads 93."
   }
 ]

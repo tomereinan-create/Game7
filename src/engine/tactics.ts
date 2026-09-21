@@ -603,6 +603,14 @@ export const DEFAULT_TACTICS: Tactics = {
  * oracle +0.55); both crash taxes broke on the ORACLE edge (crashOff +0.49 at 0.40, crashDef +0.44 at 0.94) and were set at
  * crashOff 0.28 (blind -0.69, oracle +0.52) and crashDef 0.66 (-0.48, +0.53). 301 tall no-vote bigs lost perimeter defence,
  * so the sampled fives defend the glass more alike and the oracle's crash call is worth less.
+ * recal_176: the elite-passer term's two gates were re-cut on the class they rank and 694 o_ovrs moved, 585 of them up —
+ * every five the harness samples got better at creating offence. HUNT ALONE BROKE, and on the BLIND edge (-0.016 at 3.80
+ * against the -0.30 ceiling, its oracle a healthy +0.76): when every sampled five has more creation in it, hunting the
+ * wrong man costs less, so the tax has to go UP to keep a blind call punished. Swept ONCE from MAIN's constants
+ * (hunt 3.80, crashOff 0.28, crashDef 0.66) as the law requires: feasible 4.150 (blind -0.3023, the ceiling) to 4.292
+ * (oracle +0.5015, the floor), true midpoint by r126's rule 3.80 -> 4.22 (blind -0.357, oracle +0.537; 0.057 and 0.037
+ * of room either side). crashOff held at 0.28 and crashDef at 0.66 — both read from main's constants first and neither
+ * moved — and the other six held their bands untouched. All nine pass. hunt's tenth move, and the same shape every time.
  */
 export const TAX = {
   scorer: 0.55,
@@ -610,7 +618,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
+  hunt: 4.22,
   crashOff: 0.28,
   crashDef: 0.66,
 }

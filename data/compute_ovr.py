@@ -400,7 +400,33 @@ def d_bigness(p):
 # from the subject (65); Tomer chose the level, as doctrine 5 requires.
 HUB_GATE, HUB_FULL = 60, 80
 HUB_K = 0.05                       # recal_138 derived 0.07 (load 0.26 minus creation 0.19); shipped at 0.05, the measured fallback, on his word "138 at 93" — Magic '90 reads 93 with no card moving more than 6
-PD_V_LO, PD_V_HI = 10.0, 68.0      # recal_117's band; the hub's floor is its top, so the two are disjoint
+# recal_176 (HIS RULING, verbatim: "land 77. Stockton and nash going up is fine, but bilups on 93 is
+# madness. If we can increase nash stockton and kevin johnson without billups tho, that will be
+# fine"). THE BAND TOP IS CUT ON THE CLASS IT RANKS, 68 -> 93.
+# recal_117 set 68 by exclusion — "set just clear of the nearest star it must exclude rather than on
+# top of him", Magic '89 at volume 70. That is a fitted constant: it names one card, not a
+# population. THE MEASURED CUT: of the 1,486 cards that clear this term's OWN playvol foot
+# (playvol >= PD_PV_LO = 70 — the distributors), the 90th percentile of `volume` is exactly 93.0
+# (p50 58, p75 81, p90 93, p95 96). So the gate now says what it means — a distributor is paid for
+# the ball he moves until his own scoring load is in the TOP DECILE of distributors, at which point
+# he is a lead scorer and the term pays nothing. Same construction recal_130 used for PD_MIN_FULL
+# ("the class's own upper quartile, MEASURED, NOT CHOSEN") and recal_117 used for the playvol ramp.
+# 68 was the class's 60.6th percentile: the gate was excluding four distributors in ten.
+# WHAT IT COSTS, AND IT IS recal_117's OWN PROPERTY: the stars no longer all sit at gate 0.00.
+# Magic '89 (volume 70) and Chris Paul '09 (82) now enter the band and rise, Jokic '25 (89) barely.
+# LeBron '13 (97) and Harden '19 (99) are still at 0.00. Tomer ruled the band open on this round;
+# the pins are what holds it, and they do — see the anchor table.
+# THE HUB MOVES WITH IT, BY recal_138's CONSTRUCTION AND NOT BY ACCIDENT: the hub's volume ramp is
+# `PD_V_HI - (HUB_FULL - HUB_GATE)` to `PD_V_HI`, so it travels from 48->68 to 73->93 and the two
+# terms stay DISJOINT at the band top exactly as r138 built them to. That is why 109 cards read one
+# or two LOWER on OFF while 585 read higher: a creator between volume 68 and 93 hands back hub
+# credit as he picks up passer credit, which is the same fact priced once instead of twice.
+# THE WALL IS CHAUNCEY BILLUPS '06 (91 +-1, recal_154), by his ruling. The feasible window is
+# PD_V_HI 91 to 94 — Kevin Johnson '89 reads 81 across all of it and Billups reads 92; at 95 Billups
+# reads 93, which is the reading Tomer called madness. 93 is the measured value AND it is inside the
+# window, so no fitted number is used.
+PD_V_LO, PD_V_HI = 10.0, 93.0      # recal_117's band, RE-CUT by recal_176 on the class's own volume
+                                   # distribution; the hub's floor is its top, so the two are disjoint
 def o_score(p, trace=None):
     # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the
     # terms it just computed into it. Every write is guarded by `if trace is not None`, no expression
@@ -952,7 +978,27 @@ def o_score(p, trace=None):
     PD_PV_LO, PD_PV_HI = 70.0, 85.0
     # recal_138 hoisted `PD_V_LO, PD_V_HI = 10.0, 68.0` to module scope — the band top is now read
     # by the hub's class function too, and the two terms are DISJOINT across it by construction.
-    PD_E_LO, PD_E_HI, PD_E_FLOOR = 70.0, 90.0, 0.5
+    # recal_176, THE SAME RULING AND THE SAME METHOD, on the factor round 174 sent here. recal_174
+    # declined Kevin Johnson '89 from the attribute side and named the door: "the subject's passer
+    # credit is 5.30 against Stockton '90's 13.38 because his EFFICIENCY FACTOR is 0.72 against 1.00".
+    # THE DEFECT, measured on the class this term pays and not on the 1-99 scale in the abstract. The
+    # 842 cards inside `_gpv * _gv > 0` have efficiency p01 10, p05 17, p10 21, p25 30, p50 43,
+    # p75 59, p90 78, p95 90, p99 97. recal_109's ramp ran 70 -> 90, which is the class's 84.3rd
+    # percentile to its 94.8th: 85.0% of the class was paid the 0.5 FLOOR and 5.2% was paid in full.
+    # The floor was the rule and the ramp was the exception — the same needle recal_117 cut out of
+    # the playvol gate of this very term ("full credit was reserved for EIGHTY-FOUR seasons in
+    # history, which is not a ramp, it is a needle") and left standing on the factor beside it.
+    # Kevin Johnson '89 converts at the class's 90.3rd PERCENTILE (efficiency 79, TS .597 on 12.2
+    # assists) and was paid 72%.
+    # THE CUT: the class's own MEDIAN (43) to its own 90th PERCENTILE (78). No new constant, the
+    # floor and the ceiling untouched, and the shape untouched — the factor was never a cliff, only
+    # mis-located. Mark Jackson '98 (efficiency 35, class p35) and '99 (43, THE MEDIAN, and the card
+    # that fixes the foot) are byte-identical; Mark Jackson '00 (52, class p64) +2.
+    # MEASURED ALTERNATIVES, all on the full pipeline: p50->p75 (43->59) and p25->p90 (30->78) and
+    # p10->p90 (21->78) all reach the same subject reading with a larger footprint; p50->p95 (43->90)
+    # leaves him a point short; the class's INTERQUARTILE range (30->59) prints Mark Jackson '00 at
+    # 62 against his 58 +-3 and is the one cut that fails.
+    PD_E_LO, PD_E_HI, PD_E_FLOOR = 43.0, 78.0, 0.5
     PD_MIN_FULL = 34.7
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
