@@ -1,0 +1,343 @@
+{
+ "round": 179,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 1-10",
+ "title": "the shot diet stops standing in for the hub's ROLE — a card that is a big ONLY by is_big's middle shape clause (`rim >= 60 and 3pt < 40`) now has to pass recal_138's own creation-surplus test instead of being handed role 1.00 by recal_55's class, so one rim point can no longer move OFF by three and a half. Jimmy Butler '21 off 89 -> 86, twelve cards move and every one of them down, DEF and the big flag move on ZERO, all 178 anchors hold",
+ "subject": "Jimmy Butler '21",
+ "scale": "off",
+ "target": 85,
+ "tol": 3,
+ "before": 89,
+ "after": 86,
+ "pipeline_version": 179,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "def _hub_shape_only\\(p\\):",
+   "label": "THE ROUND ITSELF — the class test that names the one way into is_big that is a SHOT DIET rather than a body",
+   "note": "new: True only when the position branch and shape clauses 1 and 3 (all of which read DEFENSIVE bars) have all failed and the middle clause `rim >= 60 and 3pt < 40` is the whole of the card's claim to bigness"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_role = \\(\\(_surp if _hub_shape_only\\(p\\) else 1\\.0\\) if is_big\\(p\\) else",
+   "label": "recal_138's hub-role class function — a shape-clause-only big takes the creation surplus instead of the unconditional 1.0",
+   "note": "`1.0 if is_big(p)` -> `(_surp if _hub_shape_only(p) else 1.0) if is_big(p)`; a POSITION big and a DEFENSIVE-shape big are byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_surp = min\\(1\\.0, max\\(0\\.0, \\(a\\['playvol'\\] - a\\['volume'\\]\\) / \\(HUB_FULL - HUB_GATE\\)\\)\\)",
+   "label": "NO NEW CONSTANT — the surplus and its ramp are recal_138's own, hoisted out of the perimeter branch because both branches read them now",
+   "note": "`playvol - volume` over the hub's own width HUB_FULL - HUB_GATE = 20, the same ramp shape recal_93 gave the defensive branch"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "HUB_K = 0\\.05",
+   "label": "recal_138's premium size, UNTOUCHED — the round changes WHO is in the class, never what the class is paid",
+   "note": "as recal_154 left it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 93\\.0",
+   "label": "recal_176's re-cut band top, UNTOUCHED — and recal_154/176's volume ramp is deliberately NOT multiplied into the new branch",
+   "note": "that ramp exists only for disjointness with recal_109's elite-passer band; multiplying it in moves ten Magic Johnson seasons and reaches the subject at the same 86"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "a\\['rimprot'\\] >= 55 and a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\]\\) or \\(a\\['rim'\\] >= 60 and a\\['3pt'\\] < 40\\) or a\\['rimprot'\\] >= 80",
+   "label": "is_big itself is BYTE-IDENTICAL — the boolean, the OVR cap branch, d_bigness, recal_91's stretch-big floor and the marginal percentile classes are all untouched",
+   "note": "which is why DEF moves on ZERO cards and the big flag moves on ZERO"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived (recal_90's warning) — every card above the knee is byte-identical",
+   "note": "no mover this round comes near the knee from below, and every mover moves DOWN"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pvol",
+   "label": "recal_89's LOCKED DIAL STATE — not one o_score weight moved; the round is a class function, not a reweighting"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jimmy Butler '20",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 0,
+   "label": "THE OTHER SIDE OF THE CLIFF, byte-identical at 80. He is rim 58 / 3pt 15 and is NOT a big; his surplus is -5, so before and after the round the flag buys him nothing — the '20 -> '21 step is now 80 -> 86, six points of a real sheet (.607 TS, 7.1 assists), not nine and a half with three and a half of flag in it"
+  },
+  {
+   "card": "Jimmy Butler '22",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "87 -> 85. Same clause, surplus -10"
+  },
+  {
+   "card": "Jimmy Butler '23",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "88 -> 87. Surplus -9, and his playvol 70 sits at half the hub's own ramp, so he had less of the term to lose"
+  },
+  {
+   "card": "Jimmy Butler '24",
+   "scale": "off",
+   "op": "~",
+   "value": 81,
+   "tol": 0,
+   "label": "byte-identical at 81 — 3pt 57 puts him outside the clause entirely, which is the seam the scout item is about. The five-season line now reads 80 / 86 / 85 / 87 / 81 instead of 80 / 89 / 87 / 88 / 81"
+  },
+  {
+   "card": "Jimmy Butler '16",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "recal_93's OWN Butler pin, on the DEFENSIVE side of the same flag ('Agree with 16 Jimmy'). DEF moves on zero cards this round and he holds at 86"
+  },
+  {
+   "card": "DeMar DeRozan '20",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "the second card the scout named: the same flag paid him +2.59 of o_score on rim 64 / 3pt 19 with a creation surplus of -7. 87 -> 85, and he now reads below his own '17 (86) rather than above it"
+  },
+  {
+   "card": "DeMar DeRozan '17",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "recal_89's pin, byte-identical at 86 — rim 58 keeps him outside the clause"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "THE WALL. recal_138's own subject and the card the hub-role class was written for; he is not a big at all (3pt 60) and is untouched at 93"
+  },
+  {
+   "card": "Magic Johnson '86",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "THE SECOND WALL — round 144's decline. He IS on the middle shape clause (rim 69 / 3pt 22) and he keeps the whole hub, because his creation surplus is +46: the new test is the one recal_138 wrote to describe exactly this man. Byte-identical at 98"
+  },
+  {
+   "card": "Magic Johnson '89",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "and the peak recal_176 raised, byte-identical at 97 on a surplus of +28. Every Magic season from '80 to '89 that sits on this clause reads role 1.00 after the round; only '81 (surplus +14, inside the 20-point ramp) gives back a single point"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "recal_89's pin, byte-identical at 98 — 3pt 69 puts him outside the clause"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_51's zero-slack pin. A POSITION big (C, never a guard), so _hub_shape_only is False and his role is recal_55's 1.00 exactly as before: 58"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 1,
+   "label": "same, 59"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "the position big who IS a hub (playvol 71, surplus +13) — untouched at 71, because the position branch never reaches the shape test"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "77, byte-identical"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "85, byte-identical"
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 2,
+   "label": "78, byte-identical"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "87, byte-identical"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": ">=",
+   "value": 99,
+   "label": "the summit pin, untouched"
+  },
+  {
+   "card": "Nikola Jokić '25",
+   "scale": "off",
+   "op": ">=",
+   "value": 99,
+   "label": "recal_90's ORDER pin `Jokić '25 >= Shaq '00` holds as a tie at 99/99 — Jokić is a position big and 3pt 72 fails the clause twice over"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": ">=",
+   "value": 99,
+   "label": "a SHAPE big, and the reason the round tests the clauses separately: rimprot 90 clears clause 3 ('an elite deterrent is a big whatever his shape'), so _hub_shape_only is False and his role is 1.00. Untouched at 99"
+  },
+  {
+   "card": "LeBron James '07",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "THE SECOND-LARGEST MOVER, recorded rather than defended away: 94 -> 91. A 22-year-old wing at rim 96 / 3pt 39 whose creation surplus is -13; he keeps the elite-passer channel and loses the hub"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "recal_93's Pippen pin — DEF moves on zero cards; 77"
+  },
+  {
+   "card": "Boris Diaw '06",
+   "scale": "off",
+   "op": "~",
+   "value": 51,
+   "tol": 0,
+   "label": "the control on the other side of the new test: a shape-clause big with surplus +45 keeps the whole hub and is byte-identical at 51"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Jimmy Butler '21",
+   "below": "Jimmy Butler '20",
+   "label": "THE SEAM THE RULING IS ABOUT, still the right way up and now by six instead of nine: 86 against 80, on a sheet that really did improve"
+  },
+  {
+   "scale": "off",
+   "above": "Jimmy Butler '21",
+   "below": "Jimmy Butler '24",
+   "label": "86 against 81 — the peak is still the peak"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '89",
+   "below": "Magic Johnson '90",
+   "label": "the hub class's own pair, untouched at 97 against 93"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '86",
+   "below": "Magic Johnson '87",
+   "label": "round 144's decline, untouched at 98 against 96"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '86",
+   "below": "Jimmy Butler '21",
+   "label": "a real hub against a wing the flag was calling one: 98 against 86"
+  },
+  {
+   "scale": "off",
+   "above": "DeMar DeRozan '17",
+   "below": "DeMar DeRozan '20",
+   "label": "86 against 85 — the inversion the flag had created between his two seasons is closed"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 12,
+  "max_abs": 4,
+  "top": [
+   ["LeBron James '26", 87, 83],
+   ["LeBron James '07", 94, 91],
+   ["Jimmy Butler '21", 89, 86],
+   ["Scottie Pippen '94", 79, 77],
+   ["Jimmy Butler '22", 87, 85],
+   ["DeMar DeRozan '20", 87, 85],
+   ["Magic Johnson '81", 79, 78],
+   ["Jimmy Butler '23", 88, 87],
+   ["Scottie Pippen '93", 72, 71],
+   ["Franz Wagner '25", 78, 77],
+   ["Andre Iguodala '09", 67, 66],
+   ["Bernard King '91", 78, 77]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "NO ANCHOR WAS RE-DERIVED AND NO PIN WAS RELEASED. OFF_TOP / DEF_TOP / KNEE are byte-identical (recal_90's warning), is_big is byte-identical, and every one of the 178 anchors passes with the same mean |error| 0.79 the round started from. This round ADDS one anchor: Jimmy Butler '21 off 85 +-3.",
+  "recal_138's SENTENCE 'A BIG IS STILL A HUB, unconditionally' IS NO LONGER TRUE OF ONE OF is_big's FOUR BRANCHES, and a later round must not quote it whole. It still holds exactly as written for the POSITION branch (PF/C, never a guard — 168 of the 221 hub-paid bigs) and for shape clauses 1 and 3, which read rimprot. It does NOT hold for the middle shape clause alone: those 26 cards now answer recal_138's own role question. recal_55's class is therefore intact everywhere it was making a claim about a BODY and is measured everywhere it was making a claim about a SHOT.",
+  "THE 3PT SEAM AT THE TOP OF THE CLAUSE IS NARROWER BUT NOT CLOSED, and it is honest to say so. Magic '89 (a clause-2 big, role 1.00) still reads four above Magic '90 (not a big, role 0.00 because recal_176's volume ramp starts at 73 and his volume is 69). That gap is recal_176's volume ramp, not this clause, and Magic '90 is a PINNED card at 93 — closing it is a round about PD_V_HI, not about is_big.",
+  "THE BIGGEST MOVER IS NOT THE SUBJECT: LeBron James '26 off 87 -> 83, ovr 80 -> 77. A 41-year-old wing at rim 86 / 3pt 38 with a creation surplus of MINUS ONE was taking the whole hub for a shot diet. He is unpinned, and the reading is reported rather than softened."
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED BEFORE ANYTHING WAS CHANGED. Jimmy Butler '21 printed OFF 89 on a weighted sum of 87.351, a paint-evidence floor of +3.439, an elite-passer term of +1.162 and a HUB of +3.510 — 'big (role 1.00 by recal_55's own class)', hub load 70.20 x K 0.05. o_score 95.4614 x 0.93 = 88.78. Without the hub the same card reads 91.9514 x 0.93 = 85.51 = OFF 86. His own '20 season reads a weighted sum of 82.278, so five of the nine points between '20 and '21 are a real sheet and three and a half are the FLAG.",
+  "WHICH TERM THE RULING IS ABOUT, and it is not a weight. Butler's rim rating goes 58 / 64 / 63 / 63 / 58 across '20-'24 at 3pt 10-57, which crosses is_big's middle shape clause `rim >= 60 and 3pt < 40` four times; the big flag flips perimeter / big / big / big / perimeter with it, and recal_138's hub role flips 0 / 1 / 1 / 1 / 0. As a PERIMETER card his role would be ramp(playvol 78 - volume 81) = 0.00 — he creates less of the offence than he shoots of it. The number was never a hub's number.",
+  "WHY THE CLAUSE AND NOT THE CLASS, stated as recal_93 stated it for the defensive branch. is_big has four ways in. The position branch (PF/C, never a guard) and shape clauses 1 and 3 all read DEFENSIVE bars — rimprot >= 55 and rimprot >= perdef, and rimprot >= 80 — and are claims about a body playing a position. The middle clause reads `rim` and `3pt`, which are o_score's OWN zone ratings: how the man SCORES. recal_93's sentence about the defensive side is the same sentence here — 'how a man SCORES was deciding how he is GRADED' — and recal_138's own comment already conceded the seam on this exact card class: 'the man is identical and the FLAG is the difference'.",
+  "THE TEST IS NOT NEW AND NEITHER IS ITS RAMP. A clause-2-only big now takes recal_138's own role measurement, the creation surplus `playvol - volume` ramped over the hub's own width (HUB_FULL - HUB_GATE = 20). Same quantity, same width, same ramp shape recal_93 gave the defensive branch. A man who creates more of the offence than he shoots of it is paid in full — every Magic Johnson season on this clause reads role 1.00 — and a man whose own shot outruns his creation is not.",
+  "THE VARIANT THAT WAS MEASURED AND REJECTED. Multiplying recal_154/176's VOLUME ramp into the new branch as well doubles the footprint, 12 movers -> 22, and every one of the ten extra is Magic Johnson: '85 93 -> 85, '84 91 -> 83, '83 89 -> 82, '82 85 -> 79, '88 95 -> 90, '86 98 -> 93, '89 97 -> 93, '87 96 -> 92, '81 79 -> 76, '80 76 -> 73. It flattens the '86 decline round 144 shaped, on a ramp aimed at nobody in this round — and it reaches the subject at the same 86. That ramp exists for one stated reason, disjointness with recal_109's elite-passer band, and a big's exemption from it is recal_55's class, which this round does not reopen.",
+  "MEASURED ON THE WHOLE POOL: 12 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, mean -1.83, max -4; DEF moves on ZERO, every attribute moves on ZERO, the big flag moves on ZERO; OVR follows on 10, max -3. The top 12 by OFF and the top 12 by OVR are identical and there are ZERO rank flips touching the top 50 by OVR. The tactics harness passes all nine dimensions unswept, so no deviation tax was re-derived.",
+  "THE MOVERS ARE ONE ARCHETYPE AND IT IS THE ARCHETYPE THE CLAUSE DESCRIBES: a paint-scoring, non-shooting wing whose own shot outruns his creation. Butler '21/'22/'23, DeRozan '20, LeBron '07 and '26, Pippen '93/'94, Franz Wagner '25, Iguodala '09, Bernard King '91 — and Magic '81, the one card inside the 20-point ramp rather than at either end of it."
+ ]
+}

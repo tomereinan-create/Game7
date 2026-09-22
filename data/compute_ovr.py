@@ -427,6 +427,60 @@ HUB_K = 0.05                       # recal_138 derived 0.07 (load 0.26 minus cre
 # window, so no fitted number is used.
 PD_V_LO, PD_V_HI = 10.0, 93.0      # recal_117's band, RE-CUT by recal_176 on the class's own volume
                                    # distribution; the hub's floor is its top, so the two are disjoint
+# recal_179 (HIS RULING, verbatim: "Agree with 1-10", item 4 of the 2026-09-21 scout). THE SHOT DIET
+# IS NOT A ROLE — is_big's MIDDLE shape clause stops standing in for recal_138's hub-role test.
+#
+# THE CARD, decomposed. Jimmy Butler's five Heat/Bulls-era peak seasons read OFF 80 ('20) -> 89 ('21)
+# -> 87 ('22) -> 88 ('23) -> 81 ('24) on a rim rating that goes 58, 64, 63, 63, 58 at 3pt 10-57. That
+# crosses is_big's middle shape clause `rim >= 60 and 3pt < 40` four times, and recal_138's hub role
+# goes with it: a 6'6" wing is handed role = 1.00 by recal_55's own class and collects
+# hub load 70.20 x K 0.05 = +3.510 of o_score, +3.3 of the nine-point '20 -> '21 jump. His raw sums
+# are 82.3 and 87.4 without it, so five of the nine points are real (.607 TS, 7.1 assists) and the
+# other three and a half are the FLAG. recal_138's own comment concedes the seam in one sentence —
+# "the man is identical and the FLAG is the difference" — and then keeps the hub unconditional for a
+# big. The same flag pays DeMar DeRozan '20 +2.59 and LeBron James '07 +4.15.
+#
+# WHY THIS CLAUSE AND NOT THE CLASS. recal_55's claim is about a ROLE ("an efficient playmaking
+# CENTER had no channel... nothing priced the offense that RUNS THROUGH him") and recal_138 restated
+# it: "THE HUB IS A ROLE, NOT A BODY". is_big has FOUR ways in and only ONE of them is a shot diet:
+# the position branch (PF/C, never a guard) and shape clauses 1 and 3 all read DEFENSIVE bars
+# (rimprot >= 55 and rimprot >= perdef; rimprot >= 80), which is a claim about a body playing a
+# position. The middle clause reads `rim` and `3pt` — o_score's OWN zone ratings, how the man
+# SCORES — and recal_93 removed exactly that reading from the defensive branch with exactly this
+# diagnosis: "how a man SCORES was deciding how he is GRADED". A paint-scoring non-shooter is not
+# thereby the hub of an offence.
+#
+# THE TEST IS NOT NEW, AND NEITHER IS ITS RAMP. A card whose ONLY claim to bigness is that clause
+# takes recal_138's OWN role measurement — the creation surplus `playvol - volume`, ramped over the
+# hub's own width (HUB_FULL - HUB_GATE = 20). Nothing is invented: it is the same quantity, the same
+# width, the same ramp shape recal_93 gave the defensive branch and recal_138 gave the perimeter hub.
+# A man who creates more of the offence than he shoots of it is still paid in full — every Magic
+# Johnson season on this clause ('83-'89, surplus 20 to 66) reads role 1.00 and is BYTE-IDENTICAL —
+# and a man whose own shot outruns his creation is not (Butler '21 surplus -3, DeRozan '20 -7).
+#
+# WHAT IS DELIBERATELY NOT APPLIED. recal_154/176's VOLUME ramp is NOT multiplied in here. That ramp
+# exists for one stated reason — to keep this channel DISJOINT from recal_109's elite-passer band —
+# and a big's exemption from it is recal_55's class, which this round does not reopen: is_big is
+# untouched, so the boolean, the OVR cap branch, d_bigness and recal_91's stretch-big floor are all
+# byte-identical and DEF moves on ZERO cards. MEASURED AND REJECTED (the variant that does multiply
+# it in): it doubles the movers, 12 -> 22, and every one of the ten extra is Magic Johnson — '85
+# 93 -> 85, '84 91 -> 83, '83 89 -> 82, '82 85 -> 79, '88 95 -> 90, '86 98 -> 93, '89 97 -> 93,
+# '87 96 -> 92, '81 79 -> 76, '80 76 -> 73 — on a volume ramp aimed at nobody in this round, which
+# flattens the '86 decline round 144 shaped, and it reaches the subject at the same 86.
+# MEASURED (this round, the form that shipped): 12 of 10,000 cards move on OFF, EVERY ONE DOWN,
+# mean -1.83, max -4 (LeBron James '26, a 41-year-old wing with a creation surplus of MINUS ONE);
+# DEF and every attribute move on ZERO, the big flag moves on ZERO, OVR follows on 10, max -3.
+# The top 12 by OFF and the top 12 by OVR are identical. All 178 anchors hold.
+def _hub_shape_only(p):
+    """recal_179: True when the ONLY thing making this card a big is is_big's MIDDLE shape clause,
+    `rim >= 60 and 3pt < 40` — a shot diet. Called only for a card is_big already returned True for,
+    so the lifetime-guard branch is already spent; a POSITION big (PF/C, never a guard) and the two
+    DEFENSIVE shape clauses are all False here and keep recal_55's unconditional role of 1.0."""
+    pos = _POS.get(p['name'], [])
+    if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos): return False
+    a = p['attrs']
+    return not ((a['rimprot'] >= 55 and a['3pt'] < 45 and a['rimprot'] >= a['perdef'])
+                or a['rimprot'] >= 80)
 def o_score(p, trace=None):
     # `trace` is the --explain hook and NOTHING ELSE: when it is a dict this function records the
     # terms it just computed into it. Every write is guarded by `if trace is not None`, no expression
@@ -515,8 +569,13 @@ def o_score(p, trace=None):
     # creation constitutes: the same quantity the hub premium is charged on, computed once.
     # recal_154: and the SHARE HE CARRIES HIMSELF is a ramp too, over the hub's own width — full at
     # PD_V_HI (68) and nothing at 48. Same two constants, no third one; see the block above o_score.
-    _role = (1.0 if is_big(p) else
-             min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
+    # recal_179: and a card that is a big ONLY by the middle shape clause — a shot diet, not a class —
+    # takes the SAME creation-surplus measurement instead of recal_55's unconditional 1.0. See the
+    # block above o_score. `_surp` is hoisted out of the perimeter branch because both branches read
+    # it now; the perimeter expression below is otherwise byte-identical to recal_154's.
+    _surp = min(1.0, max(0.0, (a['playvol'] - a['volume']) / (HUB_FULL - HUB_GATE)))
+    _role = ((_surp if _hub_shape_only(p) else 1.0) if is_big(p) else
+             _surp
              * min(1.0, max(0.0, (a['volume'] - (PD_V_HI - (HUB_FULL - HUB_GATE)))
                                  / (HUB_FULL - HUB_GATE))))
     _hubload = a['playvol'] * min(1.0, max(0.0, (a['playvol'] - HUB_GATE) / (HUB_FULL - HUB_GATE))) * _role
@@ -734,7 +793,9 @@ def o_score(p, trace=None):
         std += _hub
         if trace is not None:
             trace['big_hub'] = _hub
-            trace['hub_role'] = dict(role=_role, hubload=_hubload, k=HUB_K, big=is_big(p),
+            trace['hub_role'] = dict(role=_role, hubload=_hubload, k=HUB_K,
+                                     big=is_big(p) and not _hub_shape_only(p),
+                                     shape_only=is_big(p) and _hub_shape_only(p),
                                      surplus=a['playvol'] - a['volume'], v_floor=PD_V_HI,
                                      v_foot=PD_V_HI - (HUB_FULL - HUB_GATE),
                                      v_gate=min(1.0, max(0.0, (a['volume'] - (PD_V_HI - (HUB_FULL - HUB_GATE))) / (HUB_FULL - HUB_GATE))))
@@ -2019,8 +2080,11 @@ if _CARD:
               f"{_t3['b']:.2f} = {_t3['gate']:.3f}: -{_t3['taken']:.3f}")
     if 'big_hub' in _ot:
         _hr = _ot['hub_role']
-        print(f"HUB (recal_55's channel, recal_98's ramp playvol 60->80, recal_138's ROLE class) - "
-              f"{'big (role 1.00 by recal_55s own class)' if _hr['big'] else f'''perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, x recal_154's volume ramp {_hr['v_foot']:.0f}->{_hr['v_floor']:.0f} = {_hr['v_gate']:.4f} -> role {_hr['role']:.4f}'''}")
+        _hmsg = ('big (role 1.00 by recal_55s own class)' if _hr['big'] else
+                 (f"""big ONLY by is_big's middle SHAPE clause, so recal_179 asks recal_138's own role question: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width -> role {_hr['role']:.4f}"""
+                  if _hr.get('shape_only') else
+                  f"""perimeter: creation surplus playvol-volume {_hr['surplus']:+d} over the hub's own 20-point width, x recal_154's volume ramp {_hr['v_foot']:.0f}->{_hr['v_floor']:.0f} = {_hr['v_gate']:.4f} -> role {_hr['role']:.4f}"""))
+        print(f"HUB (recal_55's channel, recal_98's ramp playvol 60->80, recal_138's ROLE class) - {_hmsg}")
         print(f"  hub load {_hr['hubload']:.2f} x K {_hr['k']:.2f} (the load weight 0.26 minus the "
               f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
