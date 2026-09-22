@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 85,
  "after": 81,
- "pipeline_version": 184,
+ "pipeline_version": 185,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -44,9 +44,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.92,",
+   "pattern": "hunt: 3\\.80,",
    "label": "THE TAX RE-SWEPT ONCE from main's constants, as the harness law requires: 4.22 -> 3.92",
-   "note": "the exact MIRROR of recal_176. 58 distributors lost offence, so the sampled fives create less, hunting the wrong man costs MORE and the tax comes back DOWN: oracle +0.386 at 4.22 against the +0.50 floor. Feasible 3.876 (blind -0.300) to 3.960 (oracle +0.5001), true midpoint by r126's rule 3.92 (blind -0.337, oracle +0.519). crashOff 0.28 and crashDef 0.66 were read from main's constants first and did not move"
+   "note": "[re-pointed at integration 182-185] on the merged pool the once-only sweep from main landed hunt 3.80; playmaker 1.10, crashOff 0.28 and crashDef 0.66 held (branch: the exact MIRROR of recal_176. 58 distributors lost offence, so the sampled fives create less, hunti)"
   }
  ],
  "expect": [

@@ -661,6 +661,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * 0.440, true midpoint by r126's rule: 0.66 -> 0.33 (0.150 of blind room and 0.053 of oracle). hunt held at 4.22 and
  * crashOff at 0.28 — both re-read from main's constants first, neither moved — and the other five held their bands
  * untouched. All nine pass.
+ * recal_182-185 INTEGRATION SWEEP (pipeline 185): three rounds folded onto main (182 the big-side glass floor, 184 the
+ * elite-passer lift at load, 185 the deadeye gate ramped) and the taxes swept ONCE from main's constants (playmaker 1.10,
+ * hunt 4.22, crashOff 0.28, crashDef 0.66), superseding the per-branch figures (182: hunt 4.09 / crashDef .54; 184: hunt
+ * 3.92; 185: playmaker 1.60 / crashDef .33). On the merged pool only hunt broke, on the ORACLE edge (+0.35 at 4.22);
+ * 3.92 still short (+0.47), 3.65 past the blind ceiling (-0.18). hunt 3.80 (blind -0.31, oracle +0.52) — a NARROW window.
+ * playmaker, crashOff and crashDef held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -668,9 +674,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.09,
+  hunt: 3.80,
   crashOff: 0.28,
-  crashDef: 0.54,
+  crashDef: 0.66,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

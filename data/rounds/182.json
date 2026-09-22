@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 55,
  "after": 63,
- "pipeline_version": 176,
+ "pipeline_version": 185,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -50,15 +50,15 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 4\\.09,",
+   "pattern": "hunt: 3\\.80,",
    "label": "THE TAXES RE-SWEPT ONCE from main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66), as the harness law requires: hunt 4.22 -> 4.09",
-   "note": "14 cards crossed the harness's ovr>=55 line (6,345 -> 6,359) and TWO taxes broke, both on the ORACLE edge. hunt read +0.456 at 4.22 against the +0.50 floor; feasible 4.062 (blind -0.3000, the ceiling) to 4.126 (oracle +0.5003), a NARROW 0.064, true midpoint 4.09 (blind -0.323, oracle +0.518)"
+   "note": "[re-pointed at integration 182-185] on the merged pool the once-only sweep from main landed hunt 3.80; playmaker 1.10, crashOff 0.28 and crashDef 0.66 held (branch: 14 cards crossed the harness's ovr>=55 line (6,345 -> 6,359) and TWO taxes broke, both on the ORACLE)"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.54,",
+   "pattern": "crashDef: 0\\.66,",
    "label": "crash def glass 0.66 -> 0.54 — the tax whose benefit reads `drb`, off a pool this round reshuffled with fourteen high-drb bigs",
-   "note": "+0.482 at 0.66 against the +0.50 floor. Feasible about 0.469 (blind -0.300) to 0.609 (oracle +0.5001), midpoint 0.54 (blind -0.359, oracle +0.524). crashOff held at 0.28, read from main's constant first. All nine rows pass"
+   "note": "[re-pointed at integration 182-185] on the merged pool the once-only sweep from main landed hunt 3.80; playmaker 1.10, crashOff 0.28 and crashDef 0.66 held"
   }
  ],
  "expect": [

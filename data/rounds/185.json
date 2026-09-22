@@ -1,132 +1,340 @@
 {
-  "round": 185,
-  "agent": "stats-to-ratings",
-  "status": "done",
-  "ruling": "Agree with 1-10",
-  "title": "the 3PT deadeye GATE becomes a RAMP — a card under the era-adjusted 3.0-attempt line now takes the deadeye path in the share its attempts bear to that line (min(1, adj/3.0)), blended from its own gunner value, so the path selection has no cliff left; the gate itself, the gunner path and every card at or above 3.0 are byte-identical. Richard Hamilton '06, who LED THE NBA in 3P% at .458 and read 3pt 39 because 2.761 adjusted attempts missed the door by a quarter of one, reads 60",
-  "subject": "Richard Hamilton '06",
+ "round": 185,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Agree with 1-10",
+ "title": "the 3PT deadeye GATE becomes a RAMP — a card under the era-adjusted 3.0-attempt line now takes the deadeye path in the share its attempts bear to that line (min(1, adj/3.0)), blended from its own gunner value, so the path selection has no cliff left; the gate itself, the gunner path and every card at or above 3.0 are byte-identical. Richard Hamilton '06, who LED THE NBA in 3P% at .458 and read 3pt 39 because 2.761 adjusted attempts missed the door by a quarter of one, reads 60",
+ "subject": "Richard Hamilton '06",
+ "scale": "attr:3pt",
+ "target": 65,
+ "tol": 5,
+ "before": 39,
+ "after": 60,
+ "pipeline_version": 185,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_share = min\\(1\\.0, max\\(0\\.0, _adj3 / DEADEYE_ATT\\)\\)",
+   "label": "THE RAMP: a card under the gate takes the deadeye path in proportion to its attempts",
+   "note": "hard step at 3.0 -> min(1, adj/3.0). The only constant in the term is the 3.0 that was already there; no width is fitted, because the class measurement is degenerate (of the 528 cards at accuracy >= p90 the lower quartile of adjusted attempts is 6.16 and only EIGHT sit under the gate at all, so any foot read off the class lands above 3.0 and the ramp has zero width)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "eye = gun \\+ _share \\* \\(_eye_full - gun\\)",
+   "label": "the blend is FROM the card's own gunner value, so the term can only lift and is continuous at 3.0",
+   "note": "_share = 0 returns gun exactly and OUT = max(gun, eye) cannot fall; _share = 1 returns the old deadeye expression. No card sits on a line any more"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "elif \\(r\\['x3pa_per_100'\\] or 0\\) >= 2:",
+   "label": "the ramp is open only where ACCURACY IS MEASURED — the file's own 2-attempt line, reused",
+   "note": "below 2 raw 3PA/100 `acc` is 0.35 x the free-throw percentile standing in for a shot the man did not take, so the deadeye path has no three-point accuracy to pay. This is what holds the doctrine the ruling kept: Michael Jordan '89 (1.5 raw, 2.64 adjusted) stays at 3pt 23"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "DEADEYE_ATT = 3\\.0",
+   "label": "the gate is NAMED, not moved",
+   "note": "3.0 era-adjusted 3PA/100 — the same number recal_126 measured from above and left standing"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "playmaker: 1\\.10,",
+   "label": "harness re-ratification: main playmaker broke on the BLIND edge (-0.163 at 1.10)",
+   "note": "[re-pointed at integration 182-185] on the merged pool the once-only sweep from main landed hunt 3.80; playmaker 1.10, crashOff 0.28 and crashDef 0.66 held"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.66,",
+   "label": "harness re-ratification: crash def glass broke on the ORACLE edge (+0.475 at 0.66)",
+   "note": "[re-pointed at integration 182-185] on the merged pool the once-only sweep from main landed hunt 3.80; playmaker 1.10, crashOff 0.28 and crashDef 0.66 held"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Michael Jordan '89",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 31,
+   "tol": 1,
+   "label": "DOCTRINE: low volume still means a low bar — Jordan is under the measured line and cannot enter the ramp"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 2,
+   "label": "r102"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "r89"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "r89"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "r89"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 1,
+   "label": "r64"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 1,
+   "label": "r64"
+  },
+  {
+   "card": "Steve Novak '13",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 3,
+   "label": "r99"
+  },
+  {
+   "card": "Anthony Tolliver '14",
+   "scale": "off",
+   "op": "~",
+   "value": 54,
+   "tol": 3,
+   "label": "r99"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "r137"
+  },
+  {
+   "card": "Buddy Hield '25",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "r137"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "r117"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "r176"
+  },
+  {
+   "card": "Javonte Green '22",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 3,
+   "label": "r169 — the one anchored card whose 3pt bar moves (31 -> 39); its OFF does not"
+  },
+  {
+   "card": "Toni Kukoč '96",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 46,
+   "tol": 1,
+   "label": "r132's decline: must not rise"
+  },
+  {
+   "card": "Richard Hamilton '04",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 20,
+   "tol": 1,
+   "label": "the Pistons '04 five: the subject's OWN '04 card is under the measured line and does not move"
+  },
+  {
+   "card": "Richard Hamilton '04",
+   "scale": "off",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "the Pistons '04 five"
+  },
+  {
+   "card": "Jim Jackson '02",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 75,
+   "tol": 0,
+   "label": "the card on the OTHER side of the step: byte-identical, as every card at or above 3.0 is"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "r55"
+  },
+  {
+   "card": "Nikola Jokić '23",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "3pt 40 -> 52 and the offence does not move"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:3pt",
+   "above": "Jim Jackson '02",
+   "below": "Richard Hamilton '06",
+   "label": "the man above the gate still reads higher than the man below it — the step is gone, the ordering is not"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Richard Hamilton '06",
+   "below": "Richard Hamilton '05",
+   "label": "the league-leading season reads above his own .305 season on the same attempts"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Richard Hamilton '06",
+   "below": "Michael Jordan '89",
+   "label": "doctrine intact at both ends"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Kyle Korver '15",
+   "below": "Richard Hamilton '06",
+   "label": "a partial share never passes a full-volume marksman"
+  }
+ ],
+ "movers": {
   "scale": "attr:3pt",
-  "target": 65,
-  "tol": 5,
-  "before": 39,
-  "after": 60,
-  "pipeline_version": 185,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_share = min\\(1\\.0, max\\(0\\.0, _adj3 / DEADEYE_ATT\\)\\)",
-      "label": "THE RAMP: a card under the gate takes the deadeye path in proportion to its attempts",
-      "note": "hard step at 3.0 -> min(1, adj/3.0). The only constant in the term is the 3.0 that was already there; no width is fitted, because the class measurement is degenerate (of the 528 cards at accuracy >= p90 the lower quartile of adjusted attempts is 6.16 and only EIGHT sit under the gate at all, so any foot read off the class lands above 3.0 and the ramp has zero width)"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "eye = gun \\+ _share \\* \\(_eye_full - gun\\)",
-      "label": "the blend is FROM the card's own gunner value, so the term can only lift and is continuous at 3.0",
-      "note": "_share = 0 returns gun exactly and OUT = max(gun, eye) cannot fall; _share = 1 returns the old deadeye expression. No card sits on a line any more"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "elif \\(r\\['x3pa_per_100'\\] or 0\\) >= 2:",
-      "label": "the ramp is open only where ACCURACY IS MEASURED — the file's own 2-attempt line, reused",
-      "note": "below 2 raw 3PA/100 `acc` is 0.35 x the free-throw percentile standing in for a shot the man did not take, so the deadeye path has no three-point accuracy to pay. This is what holds the doctrine the ruling kept: Michael Jordan '89 (1.5 raw, 2.64 adjusted) stays at 3pt 23"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "DEADEYE_ATT = 3\\.0",
-      "label": "the gate is NAMED, not moved",
-      "note": "3.0 era-adjusted 3PA/100 — the same number recal_126 measured from above and left standing"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "playmaker: 1\\.60",
-      "label": "harness re-ratification: main playmaker broke on the BLIND edge (-0.163 at 1.10)",
-      "note": "1.10 -> 1.60 by r121's rule for this row (the first passing value with room on the blind side): blind -0.361, oracle +2.175. The feasible interval 1.437-5.065 is too wide for r126's midpoint to mean anything"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.33",
-      "label": "harness re-ratification: crash def glass broke on the ORACLE edge (+0.475 at 0.66)",
-      "note": "0.66 -> 0.33, the true midpoint of the feasible interval 0.113-0.553 by r126's rule: blind -0.450, oracle +0.553. Swept ONCE from main's constants; hunt held at 4.22 and crashOff at 0.28"
-    }
-  ],
-  "expect": [
-    { "card": "Michael Jordan '89", "scale": "attr:3pt", "op": "~", "value": 31, "tol": 1, "label": "DOCTRINE: low volume still means a low bar — Jordan is under the measured line and cannot enter the ramp" },
-    { "card": "Michael Jordan '89", "scale": "off", "op": "~", "value": 98, "tol": 2, "label": "r102" },
-    { "card": "Steve Kerr '96", "scale": "off", "op": "~", "value": 61, "tol": 1, "label": "r89" },
-    { "card": "Kyle Korver '15", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "r89" },
-    { "card": "Reggie Miller '97", "scale": "off", "op": "~", "value": 87, "tol": 1, "label": "r89" },
-    { "card": "Tony Snell '18", "scale": "off", "op": "~", "value": 50, "tol": 1, "label": "r64" },
-    { "card": "Bruce Bowen '06", "scale": "off", "op": "~", "value": 45, "tol": 1, "label": "r64" },
-    { "card": "Steve Novak '13", "scale": "off", "op": "~", "value": 61, "tol": 3, "label": "r99" },
-    { "card": "Anthony Tolliver '14", "scale": "off", "op": "~", "value": 54, "tol": 3, "label": "r99" },
-    { "card": "Malik Beasley '23", "scale": "off", "op": "~", "value": 56, "tol": 3, "label": "r137" },
-    { "card": "Buddy Hield '25", "scale": "off", "op": "~", "value": 58, "tol": 3, "label": "r137" },
-    { "card": "John Stockton '90", "scale": "off", "op": "~", "value": 85, "tol": 3, "label": "r117" },
-    { "card": "John Stockton '01", "scale": "off", "op": "~", "value": 86, "tol": 2, "label": "r176" },
-    { "card": "Javonte Green '22", "scale": "off", "op": "~", "value": 50, "tol": 3, "label": "r169 — the one anchored card whose 3pt bar moves (31 -> 39); its OFF does not" },
-    { "card": "Toni Kukoč '96", "scale": "attr:3pt", "op": "~", "value": 46, "tol": 1, "label": "r132's decline: must not rise" },
-    { "card": "Richard Hamilton '04", "scale": "attr:3pt", "op": "~", "value": 20, "tol": 1, "label": "the Pistons '04 five: the subject's OWN '04 card is under the measured line and does not move" },
-    { "card": "Richard Hamilton '04", "scale": "off", "op": "~", "value": 76, "tol": 1, "label": "the Pistons '04 five" },
-    { "card": "Jim Jackson '02", "scale": "attr:3pt", "op": "~", "value": 75, "tol": 0, "label": "the card on the OTHER side of the step: byte-identical, as every card at or above 3.0 is" },
-    { "card": "Domantas Sabonis '21", "scale": "off", "op": "~", "value": 71, "tol": 1, "label": "r55" },
-    { "card": "Nikola Jokić '23", "scale": "off", "op": "~", "value": 99, "tol": 1, "label": "3pt 40 -> 52 and the offence does not move" }
-  ],
-  "order": [
-    { "scale": "attr:3pt", "above": "Jim Jackson '02", "below": "Richard Hamilton '06", "label": "the man above the gate still reads higher than the man below it — the step is gone, the ordering is not" },
-    { "scale": "attr:3pt", "above": "Richard Hamilton '06", "below": "Richard Hamilton '05", "label": "the league-leading season reads above his own .305 season on the same attempts" },
-    { "scale": "attr:3pt", "above": "Richard Hamilton '06", "below": "Michael Jordan '89", "label": "doctrine intact at both ends" },
-    { "scale": "attr:3pt", "above": "Kyle Korver '15", "below": "Richard Hamilton '06", "label": "a partial share never passes a full-volume marksman" }
-  ],
-  "movers": {
-    "scale": "attr:3pt",
-    "count": 155,
-    "max_abs": 24,
-    "top": [
-      ["Domantas Sabonis '25", 39, 63],
-      ["Marvin Bagley III '26", 48, 71],
-      ["Michael Beasley '18", 43, 65],
-      ["Richard Hamilton '06", 39, 60],
-      ["Larry Nance Jr. '24", 38, 59],
-      ["Eric Bledsoe '13", 44, 64],
-      ["Tayshaun Prince '15", 35, 55],
-      ["Bobby Simmons '05", 51, 70],
-      ["Michael Beasley '09", 38, 57],
-      ["Avery Bradley '12", 41, 60],
-      ["Tony Parker '15", 36, 54],
-      ["Dirk Nowitzki '10", 51, 68]
-    ]
-  },
-  "top12": {
-    "scale": "attr:3pt",
-    "cards": [
-      "Buddy Hield '19",
-      "Buddy Hield '20",
-      "Craig Hodges '89",
-      "Dale Ellis '99",
-      "Damon Jones '08",
-      "Dana Barros '90",
-      "Dennis Scott '94",
-      "Dennis Scott '95",
-      "Duncan Robinson '20",
-      "Isaiah Joe '23",
-      "Isaiah Joe '24",
-      "Isaiah Joe '25"
-    ]
-  },
-  "cost": [
-    "THE TARGET IS REACHED AT THE BOTTOM OF ITS TOLERANCE AND THAT IS THE FRONTIER, not a choice. 60 is what the PATH SELECTION can pay in full: at _share = 1 — the gate removed outright — Hamilton '06's pre-smooth bar is 88 and he still ships 60, because the 20/60/20 season smoother blends him with his own '05 (pre-smooth 16, .305 on the same attempts) and '07 (28). Any number above ~62 needs the deadeye VALUE or the smoother, neither of which is this round's edit.",
-    "A NEW ANCHOR: Richard Hamilton '06 attr:3pt 65 +-5 (reading 60). A later round that wants him nearer 65 has to argue with the smoother or with the deadeye value, not with the gate.",
-    "TWO TAXES RE-RATIFIED on this branch's pool (playmaker 1.10 -> 1.60, crashDef 0.66 -> 0.33), swept ONCE from main's constants as the law requires. These are BRANCH figures: the integrator re-sweeps from main's constants on the merged pool and supersedes them rather than stacking them.",
-    "MAIN PLAYMAKER is only the second break this row has ever had (the first was the pipeline-121 integration, at the same -0.16 blind read). It is now a row to watch: any round that lifts a class of creators into the ovr>=55 pool will move it again.",
-    "COMPUTE_OVR SIDE EFFECT, NOT OWNED HERE: a handful of cards cross is_big's `3pt < 45` clause as their bar rises and stop being graded as bigs. Boris Diaw '13 (3pt 43 -> 55) loses the big branch and reads OFF 51 -> 46, OVR 58 -> 56; Bruce Brown '22 OFF 51 -> 49. They are the only OFF drops above 2 points in the round. Whether a 55-3pt big should still be a big is compute_ovr's question."
-  ],
-  "notes": [
-    "THE DEFECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Richard Hamilton '06 led the NBA in three-point percentage (.458, 55 of 120, 1.5 a game over 35.3 mpg) and read 3pt 39. His provenance is path 0 (gunner): 2.3 3PA/100 x an era multiplier of 1.2005 = 2.761 adjusted attempts, 0.239 UNDER the deadeye gate, accuracy percentile .993, volume .227, pre-smooth bar 50. Jim Jackson '02 shot .469 on the SAME 1.5 attempts a game and is 2.4 x 1.2501 = 3.0002 — two ten-thousandths OVER — took the deadeye path at a pre-smooth 89 and ships 75. A quarter of one adjusted attempt per 100 was worth thirty-nine points of shooting.",
-    "IT WAS A STEP, NOT A SLOPE, POOL-WIDE: the median pre-smooth bar just UNDER the line read 48 and just OVER it 81.",
-    "recal_126 MEASURED THIS GATE FROM THE OTHER SIDE and left it — taxing the cards ABOVE it broke Kerr '96, Snell '18 and Bowen '06. A ramp from BELOW had never been measured. It costs those three nothing: all of them are above the line and byte-identical.",
-    "WHY THERE IS NO FITTED WIDTH. The obvious form is a ramp from a foot measured on the class. That measurement is degenerate: of 528 cards whose accuracy clears p90, the lower quartile of adjusted attempts is 6.16 and only eight sit under the gate at all. Any foot read off the class lands above 3.0 and the ramp has zero width. The only foot that is not a chosen number is zero — which makes the share literally what the ruling asks for, the card's attempts as a fraction of the gate.",
-    "THE HONEST QUALIFIERS, as the scout stated them. 120 attempts is a thin season; Hamilton '06 is a midrange scorer (mid 95) and the bar is not claiming otherwise; and one can argue the wrong side of this pair is Jackson '02 at 75 rather than Hamilton at 39. The ramp does not settle that argument — it removes the cliff that made it a thirty-nine-point argument.",
-    "FOOTPRINT: 155 three-point bars move, ALL up, 88 by more than 3 and 29 by more than 10; 60 o_ovrs and 39 OVRs follow, largest Marvin Bagley III '26 OVR 61 -> 65 and Larry Nance Jr. '24 OFF 41 -> 49. 178 anchors, 0 failing. The top 12 on the attribute is unchanged.",
-    "EVERY WALL THE DISPATCH NAMED HELD: Jordan '89 3pt 31 / OFF 98 / DEF 98, Kerr '96 61, Snell '18 50, Bowen '06 45, Korver '15 58, Reggie Miller '97 87, Novak '13 61, Tolliver '14 54, Beasley '23 56, Hield '25 58, Stockton '90 85 and '01 86, Kukoč '96 3pt 46 (unmoved, not risen), and the Pistons '04 five to the point — Hamilton '04 3pt 20 / OFF 76, Billups '04 82, Ben Wallace '04 28/99, Rasheed '04 66, Prince '04 53."
+  "count": 155,
+  "max_abs": 24,
+  "top": [
+   [
+    "Domantas Sabonis '25",
+    39,
+    63
+   ],
+   [
+    "Marvin Bagley III '26",
+    48,
+    71
+   ],
+   [
+    "Michael Beasley '18",
+    43,
+    65
+   ],
+   [
+    "Richard Hamilton '06",
+    39,
+    60
+   ],
+   [
+    "Larry Nance Jr. '24",
+    38,
+    59
+   ],
+   [
+    "Eric Bledsoe '13",
+    44,
+    64
+   ],
+   [
+    "Tayshaun Prince '15",
+    35,
+    55
+   ],
+   [
+    "Bobby Simmons '05",
+    51,
+    70
+   ],
+   [
+    "Michael Beasley '09",
+    38,
+    57
+   ],
+   [
+    "Avery Bradley '12",
+    41,
+    60
+   ],
+   [
+    "Tony Parker '15",
+    36,
+    54
+   ],
+   [
+    "Dirk Nowitzki '10",
+    51,
+    68
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:3pt",
+  "cards": [
+   "Buddy Hield '19",
+   "Buddy Hield '20",
+   "Craig Hodges '89",
+   "Dale Ellis '99",
+   "Damon Jones '08",
+   "Dana Barros '90",
+   "Dennis Scott '94",
+   "Dennis Scott '95",
+   "Duncan Robinson '20",
+   "Isaiah Joe '23",
+   "Isaiah Joe '24",
+   "Isaiah Joe '25"
+  ]
+ },
+ "cost": [
+  "THE TARGET IS REACHED AT THE BOTTOM OF ITS TOLERANCE AND THAT IS THE FRONTIER, not a choice. 60 is what the PATH SELECTION can pay in full: at _share = 1 — the gate removed outright — Hamilton '06's pre-smooth bar is 88 and he still ships 60, because the 20/60/20 season smoother blends him with his own '05 (pre-smooth 16, .305 on the same attempts) and '07 (28). Any number above ~62 needs the deadeye VALUE or the smoother, neither of which is this round's edit.",
+  "A NEW ANCHOR: Richard Hamilton '06 attr:3pt 65 +-5 (reading 60). A later round that wants him nearer 65 has to argue with the smoother or with the deadeye value, not with the gate.",
+  "TWO TAXES RE-RATIFIED on this branch's pool (playmaker 1.10 -> 1.60, crashDef 0.66 -> 0.33), swept ONCE from main's constants as the law requires. These are BRANCH figures: the integrator re-sweeps from main's constants on the merged pool and supersedes them rather than stacking them.",
+  "MAIN PLAYMAKER is only the second break this row has ever had (the first was the pipeline-121 integration, at the same -0.16 blind read). It is now a row to watch: any round that lifts a class of creators into the ovr>=55 pool will move it again.",
+  "COMPUTE_OVR SIDE EFFECT, NOT OWNED HERE: a handful of cards cross is_big's `3pt < 45` clause as their bar rises and stop being graded as bigs. Boris Diaw '13 (3pt 43 -> 55) loses the big branch and reads OFF 51 -> 46, OVR 58 -> 56; Bruce Brown '22 OFF 51 -> 49. They are the only OFF drops above 2 points in the round. Whether a 55-3pt big should still be a big is compute_ovr's question."
+ ],
+ "notes": [
+  "THE DEFECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Richard Hamilton '06 led the NBA in three-point percentage (.458, 55 of 120, 1.5 a game over 35.3 mpg) and read 3pt 39. His provenance is path 0 (gunner): 2.3 3PA/100 x an era multiplier of 1.2005 = 2.761 adjusted attempts, 0.239 UNDER the deadeye gate, accuracy percentile .993, volume .227, pre-smooth bar 50. Jim Jackson '02 shot .469 on the SAME 1.5 attempts a game and is 2.4 x 1.2501 = 3.0002 — two ten-thousandths OVER — took the deadeye path at a pre-smooth 89 and ships 75. A quarter of one adjusted attempt per 100 was worth thirty-nine points of shooting.",
+  "IT WAS A STEP, NOT A SLOPE, POOL-WIDE: the median pre-smooth bar just UNDER the line read 48 and just OVER it 81.",
+  "recal_126 MEASURED THIS GATE FROM THE OTHER SIDE and left it — taxing the cards ABOVE it broke Kerr '96, Snell '18 and Bowen '06. A ramp from BELOW had never been measured. It costs those three nothing: all of them are above the line and byte-identical.",
+  "WHY THERE IS NO FITTED WIDTH. The obvious form is a ramp from a foot measured on the class. That measurement is degenerate: of 528 cards whose accuracy clears p90, the lower quartile of adjusted attempts is 6.16 and only eight sit under the gate at all. Any foot read off the class lands above 3.0 and the ramp has zero width. The only foot that is not a chosen number is zero — which makes the share literally what the ruling asks for, the card's attempts as a fraction of the gate.",
+  "THE HONEST QUALIFIERS, as the scout stated them. 120 attempts is a thin season; Hamilton '06 is a midrange scorer (mid 95) and the bar is not claiming otherwise; and one can argue the wrong side of this pair is Jackson '02 at 75 rather than Hamilton at 39. The ramp does not settle that argument — it removes the cliff that made it a thirty-nine-point argument.",
+  "FOOTPRINT: 155 three-point bars move, ALL up, 88 by more than 3 and 29 by more than 10; 60 o_ovrs and 39 OVRs follow, largest Marvin Bagley III '26 OVR 61 -> 65 and Larry Nance Jr. '24 OFF 41 -> 49. 178 anchors, 0 failing. The top 12 on the attribute is unchanged.",
+  "EVERY WALL THE DISPATCH NAMED HELD: Jordan '89 3pt 31 / OFF 98 / DEF 98, Kerr '96 61, Snell '18 50, Bowen '06 45, Korver '15 58, Reggie Miller '97 87, Novak '13 61, Tolliver '14 54, Beasley '23 56, Hield '25 58, Stockton '90 85 and '01 86, Kukoč '96 3pt 46 (unmoved, not risen), and the Pistons '04 five to the point — Hamilton '04 3pt 20 / OFF 76, Billups '04 82, Ben Wallace '04 28/99, Rasheed '04 66, Prince '04 53."
+ ]
 }
