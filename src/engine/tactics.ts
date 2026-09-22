@@ -644,6 +644,23 @@ export const DEFAULT_TACTICS: Tactics = {
  * +0.519; 0.037 and 0.019 of room either side). crashOff held at 0.28 (blind -0.58, oracle +0.58) and crashDef at 0.66
  * (-0.48, +0.51), both read from main's constants first, and the other six held their bands. All nine pass. hunt's
  * eleventh move, and the same shape every time.
+ * recal_185 turned the 3PT deadeye GATE into a ramp: 155 three-point bars up (88 by more than 3), 60 o_ovrs and 39 OVRs,
+ * every one of them through the attribute. Small by count, but the men it lifts are ACCURATE LOW-VOLUME SHOOTERS, and
+ * several cross the harness's ovr>=55 line, so the sampled fives are different fives again. TWO rows broke, and neither is
+ * hunt. MAIN PLAYMAKER went shallow on the BLIND edge (-0.163 at 1.10 against the -0.30 ceiling, its oracle a huge +2.27):
+ * this is the second time this row has ever moved and it is the SAME shape as the pipeline-121 integration's break (-0.16),
+ * for the same reason — the fives create better, so a blind lane call costs less. Swept ONCE from MAIN's constants
+ * (playmaker 1.10, hunt 4.22, crashOff 0.28, crashDef 0.66): 1.440 (blind -0.3006, the ceiling exactly) / 1.500 (-0.324) /
+ * 1.550 (-0.343) / 1.600 (-0.361) / 2.000 (-0.512) / 3.000 (-0.873) / 5.060 (-1.499) / 5.100 (-1.509, under the -1.50
+ * floor) — the feasible interval is 1.437 to 5.065 and is far too WIDE for r126's midpoint rule to mean anything (its
+ * midpoint, 3.25, would treble a tax the oracle never asked to move). r121's own rule for THIS row is taken instead —
+ * "the first passing value with room on the blind side" — so playmaker 1.10 -> 1.60 (blind -0.361 with 0.061 of room,
+ * oracle +2.175 with 1.675). CRASH DEF GLASS broke on the ORACLE edge (+0.475 at 0.66), the edge it always breaks on when
+ * a round makes the sampled fives better: swept 0.110 (blind -0.2994) / 0.113 (the ceiling) / 0.200 (-0.361, +0.586) /
+ * 0.330 (-0.450, +0.553) / 0.450 (+0.524) / 0.550 (+0.5006) / 0.554 (+0.4999, under) — feasible 0.113 to 0.553, a WIDE
+ * 0.440, true midpoint by r126's rule: 0.66 -> 0.33 (0.150 of blind room and 0.053 of oracle). hunt held at 4.22 and
+ * crashOff at 0.28 — both re-read from main's constants first, neither moved — and the other five held their bands
+ * untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
