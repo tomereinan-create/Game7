@@ -589,6 +589,10 @@ def _relief_corroboration(ht, stl_pctile, blk_pctile):
     # recal_92's evidence band read on the card's own steal rate and on his block rate.
     return max(max(0.0, 1.0 - max(0.0, (ht or 78) - 80.0) / 8.0),
                _blk_evidence(stl_pctile), _blk_evidence(blk_pctile))
+RELIEF_FOOT = 0.42   # recal_183: THE FOOT OF THE RELIEF LINE'S SUB-CAP SEGMENT, 0.28 -> 0.42. See the
+# two-segment line at the `if yr < 2014` relief below. It is the ONE constant this round moves, and at
+# 0.28 the two segments are the same line recal_141 left - the whole pipeline regenerates byte-identical,
+# which is how the shape was verified to be a re-parametrisation rather than a new line.
 RELIEF_BAND_CUT = 0.375   # recal_146 amended: the pre-2014 relief's SIZE fades with its weight
 # (see the block at the `if yr < 2014` relief below). 0.375 of no-vote space is subtracted from the
 # relief LINE at full band membership; carried at the line's own weight (1 - wv) the deepest cut any
@@ -936,8 +940,71 @@ for yr, rows in seasons.items():
         # line never cleared the cap is untouched — which is why Shaquille O'Neal '94 (recal_146,
         # def 83 +-2, line 0.5569) and Ken Norman '94 (recal_136, def 55 +-3, line 0.3206, ON its
         # floor) are byte-identical, and why 0 of 10,000 cards rise.
+        # recal_183 (HIS RULING on the 2026-09-21 scout, verbatim: "Agree with 1-10", item 8, Klay
+        # Thompson '13; and on the frontier this round measured, verbatim: "Land 52 on 183"): THE
+        # UNTRACKED CHANNEL'S FLOOR IS LEVELLED TO THE TRACKED ONE'S. There is a SEAM at 2013/2014 and
+        # it is the pool, not the card. Measured on the shipped cards, the mean perdef change across
+        # same-player PERIMETER pairs (height <= 80in, recal_35's own band edge) crossing 2013 -> 2014
+        # is +4.08, against -3.03 .. +1.09 for EVERY other adjacent year pair from 2005-06 to 2019-20;
+        # on the raw pre-smoothing channel the same seam is +6.78 against +0.46 (2012->13) and +0.64
+        # (2014->15). 250 of 756 perimeter starters (28+ mpg) from 2004-2013 read perdef < 45 (33.1%);
+        # 22 of 1,109 from 2014 on do (2.0%). Klay Thompson himself is the seam in one man: perdef
+        # 48 / DEF 49 in '13, 62 / 60 in '14, 64 / 65 in '15, on DBPM -0.2 / -0.1 / -0.1.
+        # WHY. recal_86's tracked line is ABSOLUTE and centred on 58, and once recal_92's reliability
+        # regression has been applied it is NARROW. Measured on the SAME BOX - the 66 same-player
+        # 2013/2014 pairs where this relief line binds in '13 and a full tracked sample binds in '14 -
+        # the untracked channel reads mean 54.5 / sd 11.8 and the tracked channel mean 57.7 / sd 6.2.
+        # The untracked line is ~3 low at its middle and falls away roughly TWICE as fast below it.
+        # A man with no tracking behind him is not a worse defender; he is a less measured one.
+        # THE FORM: re-foot ONLY the segment BELOW recal_13's no-vote cap, hinged ON the cap.
+        #   P <  Pcap : RELIEF_FOOT + (NOVOTE_CAP - RELIEF_FOOT) * P / Pcap
+        #   P >= Pcap : min(0.80, 0.28 + 0.52 * P)                   <- recal_141's line, UNTOUCHED
+        #   Pcap = (NOVOTE_CAP - 0.28) / 0.52 = 0.6538
+        # NO NEW BREAKPOINT. recal_173 already treats NOVOTE_CAP as this line's natural hinge ("the
+        # part of the line that is claimed back is the part ABOVE THE CAP"); this round says the part
+        # BELOW it is the part that is too low. ONE constant moves, RELIEF_FOOT, and at 0.28 the two
+        # segments are the same line: the whole pipeline regenerates BYTE-IDENTICAL, verified.
+        # UNTOUCHED BY CONSTRUCTION: recal_141's slope and 0.80 ceiling (the segment above the cap is
+        # the same expression), recal_146's RELIEF_BAND_CUT (still subtracted after, unchanged), and
+        # recal_173's corroboration (it only ever acts on a line ABOVE the cap, and no re-footing of
+        # the sub-cap segment can push a card there - the segment's own top IS the cap). Every card
+        # whose DBPM percentile clears 0.6538 does not move a point: Ginobili '11 (0.848, recal_141
+        # 72 +-2), Kurt Thomas '09 (0.868), Sabonis '96 (0.981, recal_55 79 +-1), Divac '02 (0.956),
+        # Sanders '13 (0.936, recal_146 67 +-3 and ON its floor), Dirk '07 (0.824), Marion '06 (0.838),
+        # Malone '97 (0.816), Shaq '94 (0.698, recal_146 def 83 +-2), Kelley '81 (declined at 86 DEF,
+        # reads 75), Roundfield '82/'83, and FOUR OF THE FIVE Pistons '04.
+        # WHY THE HINGE IS THE CAP AND NOT THE 0.80 TOP. Pivoting the whole line about its top was
+        # measured first: it lifts the upper-middle too, and Rasheed Wallace '04 and Richard Hamilton
+        # '04 both sit ABOVE the cap on the line, so recal_94's Pistons '04 defdial breaks at foot
+        # 0.36 instead of 0.43 and the subject caps at 49 instead of 52. The cap-hinge is both the
+        # constant already in the file and the form that spends the least of the pins' headroom.
+        # WHERE THE FOOT COMES FROM, AND WHERE IT STOPS. Three readings of "level the channels"
+        # bracket it: zeroing the cross-seam mean change needs 0.494 on the card scale (0.487 on the
+        # raw channel), levelling the 2004-13 perimeter-starter class MEAN onto the 2014-26 one needs
+        # 0.423, putting the line's median-DBPM reading on recal_86's centre of 58 needs 0.457. The
+        # measured band is 0.42 .. 0.50. THE LARGEST FOOT THAT HOLDS EVERY ANCHOR IS 0.42, the bottom
+        # of that band: recal_94's Pistons '04 team:defdial is pinned 84 +-4 and already read 87, so
+        # 0.42 puts it on 88 and 0.43 on 89, which fails. (The dial does not move because any Piston
+        # moved - all five are byte-identical in raw perdef. It moves through SEASON SMOOTHING:
+        # Richard Hamilton '03, DBPM -0.8 at p23, and Mehmet Okur '05, -0.5 at p33, are deep in the
+        # class this round lifts and carry +2 each into the '04 cards at the 20/20 blend weights.)
+        # WHAT THAT COSTS THE RULING, STATED HONESTLY. The scout asked for ~58 and 58 IS NOT REACHABLE
+        # BY THIS TERM AT ALL: even the top of the measured band only reaches 53-54, and it would cost
+        # the Pistons pin. A -0.2 DBPM at the 43rd percentile of 2013, blended 60/20/20 with a
+        # 24-minute '12 at the 4th percentile, reads the low 50s on any monotone reading of this line.
+        # He was shown the frontier and ruled "Land 52 on 183" - so 52 is the pin-held frontier and it
+        # is pinned as such in data/anchors.json, not as the 58 the scout opened with.
+        # MONOTONE AND ONE-WAY: the relief still enters through max() against the card's own composite
+        # and the sub-cap segment only ever rises with the foot, so NO CARD FALLS. Measured on the
+        # whole pool: 4,881 cards move perdef and every one of them UP (3,445 by more than 3, largest
+        # +14 - Kevin Duckworth '88 and Damon Stoudamire '07 both 29 -> 43); 4,628 move DEF, none
+        # down, largest +9 (Tyronn Lue '06 27 -> 36); 3,885 move OVR, 26 by more than 3, largest +4;
+        # 0 move OFF. The perdef top 12 is unchanged, name for name and in order.
         if yr < 2014:
-            _relief = min(0.80, 0.28 + 0.52 * P['dbpm'](r['dbpm'])) - RELIEF_BAND_CUT * wv
+            _P183 = P['dbpm'](r['dbpm'])
+            _Pcap = (NOVOTE_CAP - 0.28) / 0.52   # 0.6538 — where recal_141's line crosses recal_13's cap
+            _relief = (RELIEF_FOOT + (NOVOTE_CAP - RELIEF_FOOT) * (_P183 / _Pcap) if _P183 < _Pcap
+                       else min(0.80, 0.28 + 0.52 * _P183)) - RELIEF_BAND_CUT * wv
             if _relief > NOVOTE_CAP:
                 _relief = NOVOTE_CAP + _relief_corroboration(r['ht'], P['stl'](r['stl']), P['blk'](r['blk'])) * (_relief - NOVOTE_CAP)
             novote = max(novote, _relief)

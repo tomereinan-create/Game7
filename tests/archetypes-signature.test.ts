@@ -83,7 +83,12 @@ describe('the signature block', () => {
       ["Kobe Bryant '98", 'Defensive specialist'], // perdef 86: under Stopper's 90, so the role name is his
       ["Eddie Jones '01", 'Two-way shooter'],
       ["LaMarcus Aldridge '16", 'Midrange specialist'],
-      ["Pau Gasol '05", 'Paint scorer'],
+      // Pau Gasol '08, not his '05: recal_183 (the pre-2014 no-vote perdef relief re-footed below the
+      // no-vote cap, pipeline 183) took the '05 card's perdef 67 -> 68 and the EXISTING 'Versatile
+      // defender' rule — min(perdef, rimprot) >= 68, d_ovr >= 78, o_ovr < 80 — now names him, which is
+      // the block working as designed: an old rule always outranks a signature, and the 'takes no name
+      // away' promise above is what proves it. His '08 is the same man on the same shelf, perdef 59.
+      ["Pau Gasol '08", 'Paint scorer'],
       ["Clyde Drexler '93", 'Microwave scorer'],
       // De'Aaron Fox '19, not Kevin Johnson '96: recal_176 (the elite-passer re-cut, pipeline 176) lifted KJ '96's
       // offence into the star band, so the EXISTING 'Offensive superstar' rule now names him — which is the block

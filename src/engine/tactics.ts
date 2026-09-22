@@ -620,6 +620,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * constant. 585 creators gained offence, so a blind hunt call costs almost nothing: blind -0.02 at 3.80 against the -0.30
  * ceiling. The branch's window (4.150-4.292) holds on the merged pool: hunt 3.80 -> 4.22 (blind -0.36, oracle +0.54), the
  * largest value this tax has carried. crashOff 0.28 and crashDef 0.66 held.
+ * recal_183 re-footed the pre-2014 no-vote perdef relief below the no-vote cap: 4,881 perdef bars and 4,628 d_ovrs
+ * moved, EVERY ONE UP, and 3,885 OVRs with them — so the ovr>=55 pool the harness draws from changed again. HUNT
+ * ALONE BROKE, and on the ORACLE edge (+0.2672 at 4.22 against the +0.50 floor), the mirror of the shape this tax
+ * shows after every DEFENSIVE round: hunt's benefit reads a defensive attribute, the sampled fives all defend the
+ * perimeter better now, so the hunted-man mismatch is a smaller share of a bigger number and the oracle call is
+ * worth less — the tax has to come DOWN. Swept ONCE from MAIN's constants (hunt 3.80, crashOff 0.28, crashDef 0.66)
+ * as the law requires: feasible 3.491 (blind -0.3000, the ceiling) to 3.597 (oracle +0.5001, the floor), true
+ * midpoint by r126's rule 3.80 -> 3.54 (blind -0.3403, oracle +0.5244; 0.040 and 0.024 of room either side).
+ * crashOff held at 0.28 and crashDef at 0.66 — both read from main's constants first and neither moved — and the
+ * other six held their bands untouched. All nine pass. hunt's eleventh move on this ledger, same shape as ever.
+ * The branch figure the integrator supersedes if the merged pool sweeps differently: 4.22 -> 3.54.
  */
 export const TAX = {
   scorer: 0.55,
@@ -627,7 +638,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.22,
+  hunt: 3.54,
   crashOff: 0.28,
   crashDef: 0.66,
 }
