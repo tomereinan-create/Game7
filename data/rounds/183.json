@@ -1,0 +1,161 @@
+{
+ "round": 183,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Land 52 on 183",
+ "title": "the pre-2014 no-vote perdef relief is re-footed BELOW recal_13's no-vote cap and hinged on it — RELIEF_FOOT 0.28 -> 0.42, recal_141's segment above the cap untouched — so the untracked channel stops reading 4 points under recal_86's tracked centre and the 2013/2014 seam closes from +4.08 to +1.59. Klay Thompson '13 perdef 48 -> 52, DEF 49 -> 52. 4,881 perdef bars move and NOT ONE FALLS. The scout's 58 is unreachable by this term; 52 is the pin-held frontier and it is his ruling",
+ "subject": "Klay Thompson '13",
+ "scale": "attr:perdef",
+ "target": 52,
+ "tol": 3,
+ "before": 48,
+ "after": 52,
+ "pipeline_version": 176,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "RELIEF_FOOT = 0\\.42",
+   "label": "recal_183 — THE ONE CONSTANT THIS ROUND MOVES: the foot of the relief line's sub-cap segment",
+   "note": "0.28 -> 0.42; at 0.28 the two segments are the same line and the whole pipeline regenerates byte-identical"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_relief = \\(RELIEF_FOOT \\+ \\(NOVOTE_CAP - RELIEF_FOOT\\) \\* \\(_P183 / _Pcap\\) if _P183 < _Pcap",
+   "label": "the two-segment line: re-footed below the cap, recal_141's line above it",
+   "note": "was min(0.80, 0.28 + 0.52 * P['dbpm'](...)) - RELIEF_BAND_CUT * wv, one ramp from card 28 to card 79"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_Pcap = \\(NOVOTE_CAP - 0\\.28\\) / 0\\.52",
+   "label": "the hinge is DERIVED, not chosen — where recal_141's line crosses recal_13's cap",
+   "note": "0.6538; recal_173 already treats NOVOTE_CAP as this line's hinge, so no new breakpoint is invented"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "NOVOTE_CAP = 0\\.62",
+   "label": "recal_13's no-vote cap, UNCHANGED — it is the hinge, not a knob",
+   "note": "0.62, card 61.8"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "RELIEF_BAND_CUT = 0\\.375",
+   "label": "recal_146's band cut, UNTOUCHED — still subtracted after the line, unchanged",
+   "note": "it costs the subject 7.35 card points on his own line (drep 0.060, wv 0.200)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "return min\\(84\\.0, max\\(25\\.0, 58\\.0 - 5\\.0 \\* \\(100\\.0 \\* diff \\* rho\\)\\)\\)",
+   "label": "recal_86's absolute tracked line, centre 58 — the level the untracked channel is levelled ONTO",
+   "note": "untouched; it is the reference, not the knob"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.54,",
+   "label": "the one tactic tax the round's pool shift broke, re-ratified THROUGH the harness",
+   "note": "hunt 4.22 -> 3.54, swept ONCE from main's constant 3.80: feasible 3.491 (blind -0.3000) to 3.597 (oracle +0.5001), true midpoint by r126's rule"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.28,",
+   "label": "crash off glass HELD — read from main's constant first, it did not move",
+   "note": "oracle +0.56 against the +0.50 floor"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.66,",
+   "label": "crash def glass HELD — read from main's constant first, it did not move",
+   "note": "oracle +0.50, blind -0.53; the other six taxes held their bands untouched"
+  }
+ ],
+ "expect": [
+  {"card": "Klay Thompson '13", "scale": "def", "op": "~", "value": 52, "tol": 3,
+   "label": "THE RULING'S OTHER HALF: the subject's DEF follows the bar, 49 -> 52"},
+  {"card": "Klay Thompson '12", "scale": "attr:perdef", "op": "~", "value": 45, "tol": 3,
+   "label": "the neighbour that drags the subject's 60/20/20 blend, and the largest mover of the three: 36 -> 45 (DBPM -1.7, the 4th percentile of 2012)"},
+  {"card": "Klay Thompson '14", "scale": "attr:perdef", "op": "~", "value": 63, "tol": 2,
+   "label": "the TRACKED side of the seam barely moves: 62 -> 63, and only through its own 20% reach back into 2013"},
+  {"card": "Klay Thompson '15", "scale": "attr:perdef", "op": "~", "value": 64, "tol": 1,
+   "label": "his '15 is byte-identical — a fully tracked season this line cannot reach"},
+  {"card": "Larry Sanders '13", "scale": "attr:perdef", "op": "~", "value": 64, "tol": 3,
+   "label": "recal_146, 67 +-3 and sitting ON its floor: a 2013 card ON the seam, DBPM percentile 0.936, above the hinge — BYTE-IDENTICAL"},
+  {"card": "Manu Ginóbili '11", "scale": "attr:perdef", "op": "~", "value": 73, "tol": 2,
+   "label": "recal_141, 72 +-2 — P 0.848, above the hinge, byte-identical"},
+  {"card": "Arvydas Sabonis '96", "scale": "attr:perdef", "op": "~", "value": 78, "tol": 1,
+   "label": "recal_55, 79 +-1 — P 0.981, above the hinge, byte-identical"},
+  {"card": "Kurt Thomas '09", "scale": "def", "op": "~", "value": 71, "tol": 3,
+   "label": "recal_151, 74 +-3, already on its floor — P 0.868, above the hinge, byte-identical"},
+  {"card": "Shaquille O'Neal '94", "scale": "def", "op": "~", "value": 84, "tol": 2,
+   "label": "recal_146, 83 +-2 — P 0.698, above the hinge, byte-identical"},
+  {"card": "Vlade Divac '02", "scale": "def", "op": "~", "value": 83, "tol": 3,
+   "label": "recal_173, 82 +-3 — P 0.956, above the hinge, byte-identical"},
+  {"card": "Ken Norman '94", "scale": "def", "op": "~", "value": 54, "tol": 3,
+   "label": "recal_136, 55 +-3 — the ONE pinned card inside the class this round lifts: P 0.078, perdef 38 -> 45, DEF 52 -> 54, and it moves TOWARD its target"},
+  {"card": "Rich Kelley '81", "scale": "def", "op": "~", "value": 75, "tol": 2,
+   "label": "the declined card the dispatch asked about — P above the hinge, byte-identical at DEF 75; the 'no stat above 80' shape recal_173 named is unchanged by this round"},
+  {"card": "Dan Roundfield '82", "scale": "def", "op": "~", "value": 93, "tol": 3,
+   "label": "recal_114, 91 +-3 — byte-identical"},
+  {"card": "Shawn Marion '06", "scale": "attr:perdef", "op": "~", "value": 63, "tol": 2,
+   "label": "P 0.838, above the hinge, byte-identical"},
+  {"card": "Karl Malone '97", "scale": "def", "op": "~", "value": 88, "tol": 3,
+   "label": "recal_135, 87 +-3 — byte-identical"},
+  {"label": "recal_94's Pistons '04 defdial, THE WALL THAT SET THE FOOT — target 84 +-4. data/anchors.py (the anchor of record) reads 87 before and 88 after, dead on its tolerance; src/engine/offense.ts reads one point higher on both sides, 88 -> 89, and that is the number this line bounds. Foot 0.43 puts the anchor reading on 89 and the round fails, which is why 0.42 is the landed value",
+   "five": ["Chauncey Billups '04", "Richard Hamilton '04", "Tayshaun Prince '04", "Ben Wallace '04", "Mehmet Okur '04"],
+   "scale": "team:defdial", "op": "<=", "value": 89},
+  {"label": "recal_94's summit: the Bulls '96 are still the definition of 99 and the Pistons are still under them",
+   "five": ["Michael Jordan '96", "Scottie Pippen '96", "Dennis Rodman '96", "Ron Harper '96", "Toni Kukoč '96"],
+   "scale": "team:defdial", "op": ">=", "value": 99}
+ ],
+ "order": [
+  {"scale": "attr:perdef", "above": "Klay Thompson '14", "below": "Klay Thompson '13",
+   "label": "the seam NARROWS but does not invert — '14 still reads above '13, as a tracked season over an untracked one should"},
+  {"scale": "attr:perdef", "above": "Klay Thompson '13", "below": "Klay Thompson '12",
+   "label": "and his own order holds: '13 (35.8 mpg, DBPM -0.2) above '12 (24.4 mpg, DBPM -1.7)"},
+  {"scale": "attr:perdef", "above": "Larry Sanders '13", "below": "Klay Thompson '13",
+   "label": "the 2013 wall stays above the subject, 64 to 52, on an unchanged bar"},
+  {"scale": "attr:perdef", "above": "Manu Ginóbili '11", "below": "Klay Thompson '13",
+   "label": "recal_141's pin stays above the subject, 73 to 52, on an unchanged bar"}
+ ],
+ "movers": {
+  "scale": "attr:perdef",
+  "count": 4881,
+  "max_abs": 14,
+  "top": [
+   ["Kevin Duckworth '88", 29, 43],
+   ["Damon Stoudamire '07", 29, 43],
+   ["Vin Baker '01", 31, 44],
+   ["Tyronn Lue '04", 31, 44],
+   ["Sherman Douglas '94", 31, 44],
+   ["Tyronn Lue '06", 29, 42],
+   ["Nick Van Exel '97", 33, 45],
+   ["Klay Thompson '12", 36, 45],
+   ["Klay Thompson '13", 48, 52],
+   ["Richard Hamilton '04", 58, 60],
+   ["Mehmet Okur '04", 58, 60],
+   ["Ken Norman '94", 38, 45]
+  ]
+ },
+ "top12": {
+  "scale": "attr:perdef",
+  "cards": ["Bruce Bowen '07", "Kawhi Leonard '16", "Michael Jordan '89", "Michael Jordan '90",
+            "Michael Jordan '91", "Michael Jordan '92", "Michael Jordan '93", "Paul George '14",
+            "Scottie Pippen '94", "Tony Allen '11", "Tony Allen '12", "Tony Allen '13"]
+ },
+ "cost": [
+  "THE ANCHOR THIS ROUND ADDS IS 52, NOT 58. The scout's item 8 asked for ~58 and he agreed with it ('Agree with 1-10'); this round measured that 58 is UNREACHABLE by this term — the measured band for the foot is 0.42 .. 0.50 and even its top reaches only 53-54, at the cost of the Pistons '04 pin. He was shown that frontier and ruled 'Land 52 on 183'. data/anchors.json therefore pins Klay Thompson '13 attr:perdef at 52 +-3 with the whole trail in its note. Nothing is superseded; no older anchor moved.",
+  "RELIEF_FOOT IS NOW A NAMED KNOB AT THE TOP OF THE FILE. A later ruling on this line moves ONE number, and the note beside it records that 0.42 is the anchor frontier and 0.494 is the seam-zeroing value. If recal_94's Pistons '04 defdial is ever re-derived or retired, the foot has 0.08 of room above it.",
+  "THE PISTONS '04 DIAL SPENT ITS LAST POINT. It was pinned at 84 +-4 by recal_94, already read 87 on main, and now reads 88. Any later round that lifts a pre-2014 no-vote perimeter card — or that re-foots this line further — breaks it. Note the dial does not move because any of its five moved: all five are byte-identical in raw perdef. It moves through SEASON SMOOTHING, from Richard Hamilton '03 (DBPM -0.8, p23) and Mehmet Okur '05 (-0.5, p33).",
+  "ONE ARCHETYPE LABEL MOVED, AND THE TREE WAS NOT TOUCHED. Pau Gasol '05 went perdef 67 -> 68 and crossed the EXISTING 'Versatile defender' bar in src/engine/pool.ts (min(perdef, rimprot) >= 68, d_ovr >= 78, o_ovr < 80), so an OLD rule now names him and the 'Paint scorer' signature no longer does — which is the signature block working as designed, and the block's own 'takes no name away' test passes untouched. tests/archetypes-signature.test.ts carried him as its 'Paint scorer' exemplar; it now carries Pau Gasol '08 (perdef 59, the same man on the same shelf), by the precedent recal_176 set in that same list with Kevin Johnson '96 -> De'Aaron Fox '19. No rule, no threshold and no tag order was changed.",
+  "THE TAX THE POOL SHIFT BROKE: hunt, on the ORACLE edge (+0.267 at 4.22 against the +0.50 floor). Swept ONCE from main's constant 3.80 as the law requires, 4.22 -> 3.54. crashOff 0.28 and crashDef 0.66 were read from main's constants first and held. The integrator re-sweeps once on the merged pool and supersedes this branch figure if it differs.",
+  "MEASURED TWICE. The form was re-measured on a clean extract of origin/main (pipeline 185, rounds 179-182/184/185 folded, 183 anchors) and the result is IDENTICAL card for card: subject 48 -> 52, Pistons '04 87 -> 88, 183 of 183 anchors passing, 4,881 perdef movers all up, max +14. Rounds 177/178, 180 and 185 touch rim_mid_measured / fga100, _paid_in_rim / _vote_factor and the 3pt attempt gate; none of them reaches the sub-cap segment of this line."
+ ],
+ "notes": [
+  "THE FINDING REPRODUCES, AND IT IS THE POOL, NOT THE CARD. Measured on the shipped cards, the mean perdef change across same-player PERIMETER pairs (height <= 80in, recal_35's own band edge) crossing 2013 -> 2014 was +4.08, against -3.03 .. +1.09 for EVERY other adjacent year pair from 2005-06 to 2019-20. On the raw pre-smoothing channel the same seam was +6.78 against +0.46 (2012->13) and +0.64 (2014->15). 250 of 756 perimeter starters (28+ mpg) from 2004-2013 read perdef < 45 (33.1%); 22 of 1,109 from 2014 on did (2.0%).",
+  "WHY. recal_86's tracked line is ABSOLUTE and centred on 58, and once recal_92's reliability regression has been applied it is NARROW. Measured on the SAME BOX — the 66 same-player 2013/2014 pairs where the relief binds in '13 and a full tracked sample binds in '14 — the untracked channel read mean 54.5 / sd 11.8 and the tracked channel mean 57.7 / sd 6.2. The untracked line was ~3 low at its middle and fell away roughly twice as fast below it. A man with no tracking behind him is not a worse defender; he is a less measured one.",
+  "THE FORM, AND WHY IT INVENTS NOTHING. line = RELIEF_FOOT + (NOVOTE_CAP - RELIEF_FOOT) * P / Pcap below the cap, min(0.80, 0.28 + 0.52 * P) at and above it, Pcap = (NOVOTE_CAP - 0.28) / 0.52 = 0.6538. The hinge is recal_13's cap, which recal_173 already calls this line's hinge; the segment above it is recal_141's own expression, character for character. ONE constant moves. At RELIEF_FOOT = 0.28 the two segments ARE the same line and the pipeline regenerates byte-identical — that identity was run and diffed before the foot was moved, which is what makes this a re-parametrisation rather than a new line.",
+  "WHY THE HINGE IS THE CAP AND NOT THE 0.80 TOP. Pivoting the whole line about its top was measured FIRST: it lifts the upper-middle of the line too, where Rasheed Wallace '04 (P 0.749) and Richard Hamilton '04 (P 0.717) sit, so recal_94's Pistons '04 defdial broke at foot 0.36 instead of 0.43 and the subject capped at 49 instead of 52. Hinging at the cap spends the least of the pins' headroom per point of subject.",
+  "WHERE THE FOOT COMES FROM. Three readings of 'level the untracked channel onto the tracked one' bracket it: zeroing the cross-seam mean change needs 0.494 on the card scale (0.487 on the raw channel); levelling the 2004-13 perimeter-starter class MEAN onto the 2014-26 one needs 0.423 (58.96 against 59.08 at foot 0.42); putting the line's median-DBPM reading on recal_86's centre of 58 needs 0.457. The measured band is 0.42 .. 0.50, and 0.42 is its bottom AND the largest value every anchor holds.",
+  "AFTER: the perimeter cross-seam mean is +1.59 (from +4.08), the raw-channel seam +2.52 (from +6.78), and the share of 2004-13 perimeter starters under perdef 45 is 35 of 756 (4.6%) against 250 of 756 before and 2.0% in the tracked era. The 2004-13 class mean is 58.96 against the 2014-26 class's 59.08.",
+  "MONOTONE AND ONE-WAY BY CONSTRUCTION. The relief still enters through max() against the card's own composite, and the sub-cap segment only rises with the foot, so NO CARD CAN FALL: 4,881 cards move perdef and every one UP (3,445 by more than 3); 4,628 move DEF, none down, largest +9 (Tyronn Lue '06 27 -> 36); 3,885 move OVR, 26 by more than 3, largest +4; 0 move OFF. The perdef top 12 is unchanged, name for name and in order.",
+  "THE HONEST QUALIFIER, HIS OWN. 58 was a CONSISTENCY target — the tracked centre and his own '14/'15 — and a -0.2 DBPM at the 43rd percentile of 2013, blended 60/20/20 with a 24-minute '12 at the 4th percentile, honestly reads the low 50s on any monotone reading of this line. 52 is what the pool-level fix gives him with every pin held, and that is what he ruled."
+ ]
+}
