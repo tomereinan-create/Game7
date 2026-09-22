@@ -5404,7 +5404,7 @@
         "in": 28,
         "out": 76,
         "id": 74,
-        "pd": 78,
+        "pd": 89,
         "attrs": {
           "3pt": 73,
           "rim": 19,
@@ -5422,7 +5422,7 @@
           "rimprot": 74,
           "perimdisrupt": 40,
           "height": 76,
-          "perdef": 78,
+          "perdef": 89,
           "discipline": 94,
           "usg_raw": 21.4,
           "ts_raw": 0.548,
@@ -5430,9 +5430,9 @@
         },
         "big": false,
         "o_ovr": 62,
-        "d_ovr": 78,
-        "ovr": 70,
-        "marg": 72
+        "d_ovr": 86,
+        "ovr": 73,
+        "marg": 74
       },
       {
         "name": "Payton Pritchard '26",
@@ -5687,7 +5687,7 @@
         "in": 68,
         "out": 12,
         "id": 88,
-        "pd": 96,
+        "pd": 97,
         "attrs": {
           "3pt": 10,
           "rim": 58,
@@ -5705,7 +5705,7 @@
           "rimprot": 88,
           "perimdisrupt": 86,
           "height": 79,
-          "perdef": 96,
+          "perdef": 97,
           "discipline": 9,
           "usg_raw": 17.4,
           "ts_raw": 0.551,
@@ -5715,7 +5715,7 @@
         "o_ovr": 44,
         "d_ovr": 94,
         "ovr": 69,
-        "marg": 81
+        "marg": 82
       },
       {
         "name": "Isaiah Stewart '26",

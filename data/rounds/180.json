@@ -1,149 +1,334 @@
 {
-  "round": 180,
-  "agent": "stats-to-ratings",
-  "status": "declined",
-  "ruling": "Agree with 1-10",
-  "title": "recal_114's VOTE METER NEVER ASKED WHETHER THE CARD IS PRICED ON THE RIM AT ALL: 'a vote is paid once' is arithmetic on the BIG d_score branch, where perdef and rimprot are both weighed 0.40, and Derrick White '26 is a 6'4\" card with d_bigness 0.0000 whose rimprot is priced 0.13 against perdef's 0.62 - so _paid_in_rim is scaled by how much of the card is read on the rim side, a ramp across recal_35's own 75-80 inch band floored at the perimeter vector's own price ratio 0.13/0.62. perdef 78 -> 89, DEF 78 -> 86; 94 +-4 is DECLINED with the frontier, because recal_119's pinned Celtics '24 five allows Derrick White '24 no more than perdef 86 and the bare ramp that prints the subject at 92 prints him at 87",
-  "subject": "Derrick White '26",
+ "round": 180,
+ "agent": "stats-to-ratings",
+ "status": "declined",
+ "ruling": "Agree with 1-10",
+ "title": "recal_114's VOTE METER NEVER ASKED WHETHER THE CARD IS PRICED ON THE RIM AT ALL: 'a vote is paid once' is arithmetic on the BIG d_score branch, where perdef and rimprot are both weighed 0.40, and Derrick White '26 is a 6'4\" card with d_bigness 0.0000 whose rimprot is priced 0.13 against perdef's 0.62 - so _paid_in_rim is scaled by how much of the card is read on the rim side, a ramp across recal_35's own 75-80 inch band floored at the perimeter vector's own price ratio 0.13/0.62. perdef 78 -> 89, DEF 78 -> 86; 94 +-4 is DECLINED with the frontier, because recal_119's pinned Celtics '24 five allows Derrick White '24 no more than perdef 86 and the bare ramp that prints the subject at 92 prints him at 87",
+ "subject": "Derrick White '26",
+ "scale": "attr:perdef",
+ "target": 94,
+ "tol": 4,
+ "before": 78,
+ "after": 89,
+ "pipeline_version": 185,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_on_rim_vector = PERIM_RIM_SHARE \\+ \\(1\\.0 - PERIM_RIM_SHARE\\) \\* min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 75\\.0\\) / \\(80\\.0 - 75\\.0\\)\\)\\)",
+   "label": "THE ONE NEW LINE: how much of the card is read on the rim side, a ramp across recal_35's sweet band",
+   "note": "no new height constant - 75.0 and 80.0 are the band's own two ends, written out again in the height_inv term three lines below"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PERIM_RIM_SHARE = 0\\.13 / 0\\.62",
+   "label": "THE FLOOR, READ OFF THE PERIMETER VECTOR'S OWN TWO PRICES: rimprot 0.13 against perdef 0.62",
+   "note": "recal_114's argument is a comparison of two prices in one composite (0.40 x perdef beside 0.40 x rimprot = 1.00). On the perimeter vector the same comparison is 0.13/0.62 = 0.21, and that ratio - not zero - is what a card at the band's floor still owes"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_paid_in_rim = \\(_on_rim_vector \\* min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* max\\(_blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\) \\+ \\(BLK_FULL - BLK_BAR\\) \\* _at_band_top\\), _out_of_band\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
+   "label": "THE ONE LINE THAT CHANGED: recal_114's meter, scaled by the rim vector share",
+   "note": "was the same product without _on_rim_vector - 1.000 for Derrick White '26 on drep 1.00 and BLK% 3.8 at the 90th percentile of 2026"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_at_band_top = min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 79\\.0\\) / OUT_OF_BAND_IN\\)\\)",
+   "label": "UNTOUCHED: recal_172's early read of the block band at the band's top edge",
+   "note": "it lives inside the same product and is multiplied by 1.0 at 80 inches and above"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "OUT_OF_BAND_IN = 1\\.0",
+   "label": "UNTOUCHED: recal_135's height step, still 0 at 6'8\" and 1 above it - THE BOUNDARY DID NOT COME DOWN",
+   "note": "the new scaling is 1.0 at 80 inches and above, so every card recal_135 and recal_172 reached is bit-identical; it can only RAISE a card under 80 inches, never lower one"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "VOTE_SUPPORT_POW = 3",
+   "label": "UNTOUCHED: recal_114's fitted DBPM support exponent",
+   "note": "the round changes the METER, never the price"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "W\\['PD'\\]\\['height_inv'\\] \\* max\\(0\\.0, 1\\.0 - max\\(0\\.0, max\\(75\\.0-\\(r\\['ht'\\] or 78\\), \\(r\\['ht'\\] or 78\\)-80\\.0\\)\\)/8\\.0\\)",
+   "label": "THE BAND, QUOTED FROM THE LINE THAT ALREADY WRITES IT OUT: recal_35's 75-80 sweet band",
+   "note": "the ramp's two ends are this term's two ends; PD itself is untouched"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PDo\\) \\* BRK\\['_vf'\\]\\)",
+   "label": "UNTOUCHED: the deduction still lands on the 0.45 vote PREMIUM, never on PD",
+   "note": "the within-season Pvot pool is bit-identical, so nothing moves by pool drift - 30 perdef movers, all 30 UP, every one of them a voted perimeter defender under 6'8\""
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
+   "label": "UNTOUCHED: recal_135's reinforcement line",
+   "note": "rimprot moved on ZERO cards this round"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "==",
+   "value": 93,
+   "label": "recal_114's subject, at 80 inches - bit-identical"
+  },
+  {
+   "card": "Dan Roundfield '83",
+   "scale": "def",
+   "op": "==",
+   "value": 92,
+   "label": "recal_172's subject, at 80 inches - bit-identical"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "==",
+   "value": 88,
+   "label": "recal_135's subject, at 81 inches - bit-identical"
+  },
+  {
+   "card": "Kevin McHale '85",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 91,
+   "label": "above the band - bit-identical"
+  },
+  {
+   "card": "Jack Sikma '83",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 77,
+   "label": "recal_160's subject - bit-identical"
+  },
+  {
+   "card": "Ben Simmons '21",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 86,
+   "label": "recal_160's second ruling - bit-identical"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "def",
+   "op": "==",
+   "value": 93,
+   "label": "6'4\", the subject's own height, but no block evidence - bit-identical"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "==",
+   "value": 91,
+   "label": "recal_103 - bit-identical"
+  },
+  {
+   "card": "Amen Thompson '24",
+   "scale": "def",
+   "op": "==",
+   "value": 94,
+   "label": "recal_149 - bit-identical"
+  },
+  {
+   "card": "Amen Thompson '25",
+   "scale": "def",
+   "op": "==",
+   "value": 95,
+   "label": "recal_149 - bit-identical"
+  },
+  {
+   "card": "Amen Thompson '26",
+   "scale": "def",
+   "op": "==",
+   "value": 95,
+   "label": "recal_149, reading at its floor - bit-identical, the 6'7\" wing who blocks does not move"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "==",
+   "value": 97,
+   "label": "recal_62 - bit-identical"
+  },
+  {
+   "card": "Kawhi Leonard '16",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 99,
+   "label": "bit-identical"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "==",
+   "value": 95,
+   "label": "recal_57, at 79 inches with blocks under recal_92's bar - bit-identical"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "==",
+   "value": 77,
+   "label": "recal_93, at 80 inches - bit-identical"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 99,
+   "label": "bit-identical"
+  },
+  {
+   "card": "Derrick White '24",
+   "scale": "attr:perdef",
+   "op": "<=",
+   "value": 86,
+   "label": "THE WALL: recal_119's pinned Celtics '24 five reads team:defdial 68 at 86 and 69 at 87, against 65 +-3"
+  },
+  {
+   "card": "Derrick White '25",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "the subject's '25 card, 81 -> 87"
+  },
+  {
+   "card": "Derrick White '26",
+   "scale": "def",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "the subject's DEF, 78 -> 86"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:perdef",
+   "above": "Derrick White '26",
+   "below": "Derrick White '24",
+   "label": "the 1st-team season now reads above the 2nd-team one"
+  },
+  {
+   "scale": "attr:perdef",
+   "above": "Draymond Green '16",
+   "below": "Derrick White '26",
+   "label": "the class above him is not passed"
+  },
+  {
+   "scale": "attr:perdef",
+   "above": "Jrue Holiday '21",
+   "below": "Derrick White '26",
+   "label": "the other 6'4\" 1st-team Celtic guard still reads higher"
+  },
+  {
+   "scale": "def",
+   "above": "Amen Thompson '26",
+   "below": "Derrick White '26",
+   "label": "the pinned wing is not passed"
+  }
+ ],
+ "movers": {
   "scale": "attr:perdef",
-  "target": 94,
-  "tol": 4,
-  "before": 78,
-  "after": 89,
-  "pipeline_version": 176,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_on_rim_vector = PERIM_RIM_SHARE \\+ \\(1\\.0 - PERIM_RIM_SHARE\\) \\* min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 75\\.0\\) / \\(80\\.0 - 75\\.0\\)\\)\\)",
-      "label": "THE ONE NEW LINE: how much of the card is read on the rim side, a ramp across recal_35's sweet band",
-      "note": "no new height constant - 75.0 and 80.0 are the band's own two ends, written out again in the height_inv term three lines below"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "PERIM_RIM_SHARE = 0\\.13 / 0\\.62",
-      "label": "THE FLOOR, READ OFF THE PERIMETER VECTOR'S OWN TWO PRICES: rimprot 0.13 against perdef 0.62",
-      "note": "recal_114's argument is a comparison of two prices in one composite (0.40 x perdef beside 0.40 x rimprot = 1.00). On the perimeter vector the same comparison is 0.13/0.62 = 0.21, and that ratio - not zero - is what a card at the band's floor still owes"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_paid_in_rim = \\(_on_rim_vector \\* min\\(1\\.0, max\\(0\\.0, r\\['drep'\\]\\)\\) \\* max\\(_blk_evidence\\(P\\['blk'\\]\\(r\\['blk'\\]\\) \\+ \\(BLK_FULL - BLK_BAR\\) \\* _at_band_top\\), _out_of_band\\)\\) if r\\['drep'\\] > 0\\.05 else 0\\.0",
-      "label": "THE ONE LINE THAT CHANGED: recal_114's meter, scaled by the rim vector share",
-      "note": "was the same product without _on_rim_vector - 1.000 for Derrick White '26 on drep 1.00 and BLK% 3.8 at the 90th percentile of 2026"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_at_band_top = min\\(1\\.0, max\\(0\\.0, \\(\\(r\\['ht'\\] or 78\\) - 79\\.0\\) / OUT_OF_BAND_IN\\)\\)",
-      "label": "UNTOUCHED: recal_172's early read of the block band at the band's top edge",
-      "note": "it lives inside the same product and is multiplied by 1.0 at 80 inches and above"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "OUT_OF_BAND_IN = 1\\.0",
-      "label": "UNTOUCHED: recal_135's height step, still 0 at 6'8\" and 1 above it - THE BOUNDARY DID NOT COME DOWN",
-      "note": "the new scaling is 1.0 at 80 inches and above, so every card recal_135 and recal_172 reached is bit-identical; it can only RAISE a card under 80 inches, never lower one"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "VOTE_SUPPORT_POW = 3",
-      "label": "UNTOUCHED: recal_114's fitted DBPM support exponent",
-      "note": "the round changes the METER, never the price"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "W\\['PD'\\]\\['height_inv'\\] \\* max\\(0\\.0, 1\\.0 - max\\(0\\.0, max\\(75\\.0-\\(r\\['ht'\\] or 78\\), \\(r\\['ht'\\] or 78\\)-80\\.0\\)\\)/8\\.0\\)",
-      "label": "THE BAND, QUOTED FROM THE LINE THAT ALREADY WRITES IT OUT: recal_35's 75-80 sweet band",
-      "note": "the ramp's two ends are this term's two ends; PD itself is untouched"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "PD2 = \\(1 - wv\\) \\* novote \\+ wv \\* \\(0\\.55 \\+ 0\\.45 \\* Pvot\\(PDo\\) \\* BRK\\['_vf'\\]\\)",
-      "label": "UNTOUCHED: the deduction still lands on the 0.45 vote PREMIUM, never on PD",
-      "note": "the within-season Pvot pool is bit-identical, so nothing moves by pool drift - 30 perdef movers, all 30 UP, every one of them a voted perimeter defender under 6'8\""
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "ID  = ID \\+ 0\\.25\\*\\(r\\['drep'\\]\\*hp\\)",
-      "label": "UNTOUCHED: recal_135's reinforcement line",
-      "note": "rimprot moved on ZERO cards this round"
-    }
-  ],
-  "expect": [
-    { "card": "Dan Roundfield '82", "scale": "def", "op": "==", "value": 93, "label": "recal_114's subject, at 80 inches - bit-identical" },
-    { "card": "Dan Roundfield '83", "scale": "def", "op": "==", "value": 92, "label": "recal_172's subject, at 80 inches - bit-identical" },
-    { "card": "Karl Malone '97", "scale": "def", "op": "==", "value": 88, "label": "recal_135's subject, at 81 inches - bit-identical" },
-    { "card": "Kevin McHale '85", "scale": "attr:rimprot", "op": "==", "value": 91, "label": "above the band - bit-identical" },
-    { "card": "Jack Sikma '83", "scale": "attr:rimprot", "op": "==", "value": 77, "label": "recal_160's subject - bit-identical" },
-    { "card": "Ben Simmons '21", "scale": "attr:rimprot", "op": "==", "value": 86, "label": "recal_160's second ruling - bit-identical" },
-    { "card": "Jrue Holiday '21", "scale": "def", "op": "==", "value": 93, "label": "6'4\", the subject's own height, but no block evidence - bit-identical" },
-    { "card": "Herbert Jones '23", "scale": "def", "op": "==", "value": 91, "label": "recal_103 - bit-identical" },
-    { "card": "Amen Thompson '24", "scale": "def", "op": "==", "value": 94, "label": "recal_149 - bit-identical" },
-    { "card": "Amen Thompson '25", "scale": "def", "op": "==", "value": 95, "label": "recal_149 - bit-identical" },
-    { "card": "Amen Thompson '26", "scale": "def", "op": "==", "value": 95, "label": "recal_149, reading at its floor - bit-identical, the 6'7\" wing who blocks does not move" },
-    { "card": "Draymond Green '16", "scale": "def", "op": "==", "value": 97, "label": "recal_62 - bit-identical" },
-    { "card": "Kawhi Leonard '16", "scale": "attr:perdef", "op": "==", "value": 99, "label": "bit-identical" },
-    { "card": "Dennis Rodman '90", "scale": "def", "op": "==", "value": 95, "label": "recal_57, at 79 inches with blocks under recal_92's bar - bit-identical" },
-    { "card": "Scottie Pippen '03", "scale": "def", "op": "==", "value": 77, "label": "recal_93, at 80 inches - bit-identical" },
-    { "card": "Michael Jordan '89", "scale": "attr:perdef", "op": "==", "value": 99, "label": "bit-identical" },
-    { "card": "Derrick White '24", "scale": "attr:perdef", "op": "<=", "value": 86, "label": "THE WALL: recal_119's pinned Celtics '24 five reads team:defdial 68 at 86 and 69 at 87, against 65 +-3" },
-    { "card": "Derrick White '25", "scale": "attr:perdef", "op": "~", "value": 87, "tol": 1, "label": "the subject's '25 card, 81 -> 87" },
-    { "card": "Derrick White '26", "scale": "def", "op": "~", "value": 86, "tol": 1, "label": "the subject's DEF, 78 -> 86" }
-  ],
-  "order": [
-    { "scale": "attr:perdef", "above": "Derrick White '26", "below": "Derrick White '24", "label": "the 1st-team season now reads above the 2nd-team one" },
-    { "scale": "attr:perdef", "above": "Draymond Green '16", "below": "Derrick White '26", "label": "the class above him is not passed" },
-    { "scale": "attr:perdef", "above": "Jrue Holiday '21", "below": "Derrick White '26", "label": "the other 6'4\" 1st-team Celtic guard still reads higher" },
-    { "scale": "def", "above": "Amen Thompson '26", "below": "Derrick White '26", "label": "the pinned wing is not passed" }
-  ],
-  "movers": {
-    "scale": "attr:perdef",
-    "count": 30,
-    "max_abs": 11,
-    "top": [
-      ["Derrick White '26", 78, 89],
-      ["Derrick White '25", 81, 87],
-      ["Derrick White '24", 82, 86],
-      ["Derrick White '23", 81, 84],
-      ["Alex Caruso '24", 92, 94],
-      ["Robert Covington '21", 76, 78],
-      ["Alex Caruso '23", 96, 97],
-      ["Draymond Green '24", 97, 98],
-      ["Herbert Jones '24", 94, 95],
-      ["Ausar Thompson '26", 96, 97],
-      ["Andre Roberson '17", 90, 91],
-      ["Patrick Beverley '23", 65, 66]
-    ]
-  },
-  "top12": {
-    "scale": "attr:perdef",
-    "cards": [
-      "Bruce Bowen '07",
-      "Draymond Green '21",
-      "Draymond Green '22",
-      "Draymond Green '23",
-      "Kawhi Leonard '16",
-      "Michael Jordan '89",
-      "Michael Jordan '90",
-      "Michael Jordan '91",
-      "Michael Jordan '92",
-      "Michael Jordan '93",
-      "Paul George '14",
-      "Scottie Pippen '94"
-    ]
-  },
-  "cost": [
-    "THE TARGET IS DECLINED AT 89 AND THE WALL IS NAMED: recal_119's `five: Derrick White '24, Jaylen Brown '24, Jayson Tatum '24, Kristaps Porzingis '24, Al Horford '24` team:defdial 65 +-3. It read 66 before this round and reads 68 after - ON its tolerance edge. Measured one card at a time with every other card of the five frozen, that five reads defdial 68 at White '24 perdef 85 and 86, and 69 at 87. Any form of this round that prints the subject above 90 prints White '24 at 87 and fails that pin.",
-    "THE FRONTIER, THREE POINTS MEASURED END TO END. PERIM_RIM_SHARE = 0 (the bare band ramp, no floor at all): subject perdef 92, DEF 88, White '24 87, r119 defdial 69 - FAIL by one point. PERIM_RIM_SHARE = 0.125: subject 90, White '24 87, r119 defdial 69 - FAIL by one point. PERIM_RIM_SHARE = 0.13/0.62: subject 89, White '24 86, all 178 anchors PASS - landed. The frontier is not smooth in the subject: the pin flips on White '24's rounding boundary before the subject reaches 90.",
-    "WHAT THE PIN IS FOR, so he can decide whether it should stop this round. recal_119's own note calls that defdial line \"THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket\" - it is a no-change guard written against an OFFENCE round, and it records what Boston '24's defence read, not a ruling that it should read 65. This is a DEFENCE round raising a Celtic's defence on his own ruling. If he releases that pin by three points, the bare ramp (PERIM_RIM_SHARE = 0) lands the subject at 92, the centre of his tolerance, and every other anchor still holds.",
-    "NO ANCHOR WAS ADDED. The dispatch said to pin `Derrick White '26 attr:perdef 94 +-4` if it holds; it reads 89 and does not hold, so nothing was written to data/anchors.json.",
-    "THE perdef 99 CEILING GAINED THREE CARDS, 12 -> 15: Draymond Green '21, '22 and '23 each go 98 -> 99. Nothing else on the board's top reshuffled and the top 12 by name is unchanged."
-  ],
-  "notes": [
-    "THE SUBJECT'S SHEET. Derrick White '26: 2026 All-Defensive 1ST team (drep 1.000), 76 inches, DBPM +1.0, BLK% 3.8 - the 90th percentile of 2026, clear of recal_92's BLK_BAR 0.80/BLK_FULL 0.86 band, so _blk_evidence returns 1.000 and recal_114's meter read _paid_in_rim = 1.000 and vote factor 0.51. He read perdef 78 and DEF 78 against a 1st-team guard class (6'5\" and under, n=65) whose median is 96.",
-    "WHY THE METER WAS WRONG ON HIM AND NOT ON ROUNDFIELD. recal_114's text does the arithmetic on the BIG branch: 'd_score then reads him as a BIG (d_bigness 1.0000 at 80 inches) and takes 0.40 x rimprot as well ... 0.40 x 96 + 0.40 x 92 = 75.2 of a 92.76 d_score'. A VOTE IS PAID ONCE is a claim about that second 0.40. White's explain prints d_bigness 0.0000 and the PERIMETER vector, where rimprot 74 is priced 0.13 beside perdef's 0.62 - the ballot is not weighed twice at equal price, it is weighed once at full price and once at a fifth of it.",
-    "recal_114 DISCLOSED THIS CARD AND NEVER RULED ON IT: its collateral list carries 'Derrick White '26 (95 -> 78)' under the heading 'paid twice on thin blocks'. The blocks are not thin - 3.8% is the season's 90th percentile - and they are not paid twice; they are paid at 0.13. The disclosure is what this round re-reads.",
-    "THE REJECTED VARIANT, AND WHY IT IS REJECTED ON A PIN AND NOT ON PRINCIPLE. The bare ramp (floor 0) is the cleaner statement - it draws no constant at all - and it lands the subject at 92, inside his tolerance. It is not landed because it takes his own '24 card one point past recal_119's Celtics '24 defdial pin. The floored form is also the truer reading of the composite: a perimeter card does still carry 0.13 of rimprot in its verdict, so the meter should be paid something, not nothing.",
-    "THE FOOTPRINT IS 30 CARDS AND EVERY ONE OF THEM RISES, by construction: the deduction can only shrink, it lands on the vote premium and never on PD, and the within-season Pvot pool is bit-identical. 24 of the 30 move by exactly 1 point. OFF moved on 0 of 10,000 cards, DEF on 19, OVR on 12. No card at 80 inches or above moved at all.",
-    "THE CLASS IT REACHES IS THE RIGHT CLASS: voted perimeter defenders under 6'8\" who block - Alex Caruso, Robert Covington, Danny Green, Andre Roberson, Matisse Thybulle, Dwyane Wade, Herbert Jones '24, Ausar Thompson, Patrick Beverley, Draymond Green's post-2020 seasons. Not one of them is a big and not one of them loses a point.",
-    "TESTS: 436 vitest tests pass (tests/serve.test.ts timed out once on a cold first vite build in a fresh worktree and passes on re-run, 85s). HARNESS: all nine rows PASS on main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66); nothing was re-swept. ANCHORS: 178, 0 failing, mean |error| 0.79 -> 0.81."
+  "count": 30,
+  "max_abs": 11,
+  "top": [
+   [
+    "Derrick White '26",
+    78,
+    89
+   ],
+   [
+    "Derrick White '25",
+    81,
+    87
+   ],
+   [
+    "Derrick White '24",
+    82,
+    86
+   ],
+   [
+    "Derrick White '23",
+    81,
+    84
+   ],
+   [
+    "Alex Caruso '24",
+    92,
+    94
+   ],
+   [
+    "Robert Covington '21",
+    76,
+    78
+   ],
+   [
+    "Alex Caruso '23",
+    96,
+    97
+   ],
+   [
+    "Draymond Green '24",
+    97,
+    98
+   ],
+   [
+    "Herbert Jones '24",
+    94,
+    95
+   ],
+   [
+    "Ausar Thompson '26",
+    96,
+    97
+   ],
+   [
+    "Andre Roberson '17",
+    90,
+    91
+   ],
+   [
+    "Patrick Beverley '23",
+    65,
+    66
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:perdef",
+  "cards": [
+   "Bruce Bowen '07",
+   "Draymond Green '21",
+   "Draymond Green '22",
+   "Draymond Green '23",
+   "Kawhi Leonard '16",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Michael Jordan '91",
+   "Michael Jordan '92",
+   "Michael Jordan '93",
+   "Paul George '14",
+   "Scottie Pippen '94"
+  ]
+ },
+ "cost": [
+  "THE TARGET IS DECLINED AT 89 AND THE WALL IS NAMED: recal_119's `five: Derrick White '24, Jaylen Brown '24, Jayson Tatum '24, Kristaps Porzingis '24, Al Horford '24` team:defdial 65 +-3. It read 66 before this round and reads 68 after - ON its tolerance edge. Measured one card at a time with every other card of the five frozen, that five reads defdial 68 at White '24 perdef 85 and 86, and 69 at 87. Any form of this round that prints the subject above 90 prints White '24 at 87 and fails that pin.",
+  "THE FRONTIER, THREE POINTS MEASURED END TO END. PERIM_RIM_SHARE = 0 (the bare band ramp, no floor at all): subject perdef 92, DEF 88, White '24 87, r119 defdial 69 - FAIL by one point. PERIM_RIM_SHARE = 0.125: subject 90, White '24 87, r119 defdial 69 - FAIL by one point. PERIM_RIM_SHARE = 0.13/0.62: subject 89, White '24 86, all 178 anchors PASS - landed. The frontier is not smooth in the subject: the pin flips on White '24's rounding boundary before the subject reaches 90.",
+  "WHAT THE PIN IS FOR, so he can decide whether it should stop this round. recal_119's own note calls that defdial line \"THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket\" - it is a no-change guard written against an OFFENCE round, and it records what Boston '24's defence read, not a ruling that it should read 65. This is a DEFENCE round raising a Celtic's defence on his own ruling. If he releases that pin by three points, the bare ramp (PERIM_RIM_SHARE = 0) lands the subject at 92, the centre of his tolerance, and every other anchor still holds.",
+  "NO ANCHOR WAS ADDED. The dispatch said to pin `Derrick White '26 attr:perdef 94 +-4` if it holds; it reads 89 and does not hold, so nothing was written to data/anchors.json.",
+  "THE perdef 99 CEILING GAINED THREE CARDS, 12 -> 15: Draymond Green '21, '22 and '23 each go 98 -> 99. Nothing else on the board's top reshuffled and the top 12 by name is unchanged."
+ ],
+ "notes": [
+  "THE SUBJECT'S SHEET. Derrick White '26: 2026 All-Defensive 1ST team (drep 1.000), 76 inches, DBPM +1.0, BLK% 3.8 - the 90th percentile of 2026, clear of recal_92's BLK_BAR 0.80/BLK_FULL 0.86 band, so _blk_evidence returns 1.000 and recal_114's meter read _paid_in_rim = 1.000 and vote factor 0.51. He read perdef 78 and DEF 78 against a 1st-team guard class (6'5\" and under, n=65) whose median is 96.",
+  "WHY THE METER WAS WRONG ON HIM AND NOT ON ROUNDFIELD. recal_114's text does the arithmetic on the BIG branch: 'd_score then reads him as a BIG (d_bigness 1.0000 at 80 inches) and takes 0.40 x rimprot as well ... 0.40 x 96 + 0.40 x 92 = 75.2 of a 92.76 d_score'. A VOTE IS PAID ONCE is a claim about that second 0.40. White's explain prints d_bigness 0.0000 and the PERIMETER vector, where rimprot 74 is priced 0.13 beside perdef's 0.62 - the ballot is not weighed twice at equal price, it is weighed once at full price and once at a fifth of it.",
+  "recal_114 DISCLOSED THIS CARD AND NEVER RULED ON IT: its collateral list carries 'Derrick White '26 (95 -> 78)' under the heading 'paid twice on thin blocks'. The blocks are not thin - 3.8% is the season's 90th percentile - and they are not paid twice; they are paid at 0.13. The disclosure is what this round re-reads.",
+  "THE REJECTED VARIANT, AND WHY IT IS REJECTED ON A PIN AND NOT ON PRINCIPLE. The bare ramp (floor 0) is the cleaner statement - it draws no constant at all - and it lands the subject at 92, inside his tolerance. It is not landed because it takes his own '24 card one point past recal_119's Celtics '24 defdial pin. The floored form is also the truer reading of the composite: a perimeter card does still carry 0.13 of rimprot in its verdict, so the meter should be paid something, not nothing.",
+  "THE FOOTPRINT IS 30 CARDS AND EVERY ONE OF THEM RISES, by construction: the deduction can only shrink, it lands on the vote premium and never on PD, and the within-season Pvot pool is bit-identical. 24 of the 30 move by exactly 1 point. OFF moved on 0 of 10,000 cards, DEF on 19, OVR on 12. No card at 80 inches or above moved at all.",
+  "THE CLASS IT REACHES IS THE RIGHT CLASS: voted perimeter defenders under 6'8\" who block - Alex Caruso, Robert Covington, Danny Green, Andre Roberson, Matisse Thybulle, Dwyane Wade, Herbert Jones '24, Ausar Thompson, Patrick Beverley, Draymond Green's post-2020 seasons. Not one of them is a big and not one of them loses a point.",
+  "TESTS: 436 vitest tests pass (tests/serve.test.ts timed out once on a cold first vite build in a fresh worktree and passes on re-run, 85s). HARNESS: all nine rows PASS on main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66); nothing was re-swept. ANCHORS: 178, 0 failing, mean |error| 0.79 -> 0.81.",
+  "[integration] landed on top of pipeline 185; the stamp stays 185 by the monotonic rule"
+ ]
 }
