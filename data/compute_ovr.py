@@ -235,6 +235,47 @@ C1_RP_LO, C1_RP_HI = DEF_RP_LO, 55.0   # recal_136: clause 1's own step, made a 
 # movers are the same archetype found by the same test — Luc Mbah a Moute '17, Thaddeus Young,
 # OG Anunoby '25, Gerald Wallace: wings a box score once listed at power forward.
 POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed big is graded as a wing
+# recal_187 (HIS RULING, verbatim: "Agree with 2-10"). THE POSITION BRANCH'S SECOND FACT.
+#
+# THE DEFECT, decomposed on the three cards the ruling names. recal_103 built the override above so
+# that "a wing is scored as a wing" whatever a box score once listed him at, and it reads the
+# contradiction off ONE quantity: the perimeter-disruption-minus-rebounding gap. That test catches
+# Herbert Jones (+79) and misses the men whose gap is ordinary while their RIM SHEET is empty:
+#   Joe Ingles '17    6'8", 0.1 bpg, rimprot 29, perdef 60, perimdisrupt 75, drb 44 -> gap 31,
+#                     w 0.9667 big, graded 0.40 perdef + 0.40 rimprot, DEF 51; his own perimeter
+#                     vector reads 63.7.
+#   Jae Crowder '16   6'6", rimprot 37, gap 23 -> 1.0000 big, DEF 58, perimeter vector 68.8.
+#   DeMarre Carroll '14  6'6", rimprot 31, gap 27 -> 1.0000 big, DEF 53, perimeter vector 65.1.
+# 250 PF-listed wings at 6'8" or under with rimprot < 45 sit on this branch at >= 0.9 big and 40 of
+# them lose eight or more DEF points to it (Sly Williams '83 -16.5, Thaddeus Young '08 -13.9). The
+# branch was putting 0.39 of the verdict on the one bar these men do not have.
+#
+# THE SECOND FACT, AND WHY IT BELONGS HERE. A listing is one fact; a man's RIM PRESENCE is another,
+# and it is the one the big vector actually spends its weight on. recal_103's own reasoning was that
+# the card's sheet may CONTRADICT the listing — this round adds the contradiction the gap test
+# cannot see. The position branch's weight is multiplied by the card's rim-protection claim whenever
+# the height is a wing's, so a listed power forward with no rim sheet is graded on his own vector,
+# while a genuine power forward with rim presence is byte-identical.
+#
+# IT INTRODUCES NO NEW CONSTANT, AND BOTH ENDS ARE ALREADY IN THE FILE.
+#   - the rim-protection ramp is C1_RP_LO -> C1_RP_HI, i.e. DEF_RP_LO 45 -> 55: recal_136's own
+#     saturation over the middle clause's own foot, the file's single story about where a
+#     rim-protection claim begins and where it is whole. At rimprot >= 55 this factor is 1.0 and the
+#     branch returns exactly what recal_103 wrote; below 45 the card has no rim claim at all.
+#   - the height test is the band edge recal_114 named and measured: "this file has exactly one
+#     place where a card stops being a perimeter defender and it is 80 inches" — recal_35's sweet
+#     band is flat at 1.0 through 80 and recal_54's rep_hf flat at its maximum 1.2 through 80. A
+#     card at 81 inches or more is a big by height and keeps the whole position verdict.
+# NOT is_big, exactly as recal_93 / recal_103 / recal_164 did it: only d_score's branch moves, so the
+# boolean still labels the card, still gates recal_55's big hub and recal_91's stretch-big floor and
+# still picks the OVR cap branch. OFF and every attribute move on ZERO cards.
+# WHAT IS PROVABLY UNTOUCHED: every card above 80 inches (the whole position-decided big population
+# that is actually big), every card at rimprot >= 55, and every card the branch already graded a
+# wing. Draymond Green '16 (rimprot 84) 1.0000 -> 1.0000, Dennis Rodman '90 (76) 1.0000 -> 1.0000,
+# Shawn Marion '06 (68) 1.0000 -> 1.0000, Herbert Jones '22 0.0000 -> 0.0000. Peyton Watson '24,
+# Cedric Maxwell '80, Ken Norman '94, LeBron '04 and Pippen '03 are not on this branch at all.
+POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI   # recal_187: the position branch's rim-presence ramp; both ends are recal_136's
+POS_HT_MAX = 80.0                           # recal_114's own band edge — the last inch that is a wing's
 # recal_164 (HIS RULING, verbatim: "Agree"). THE LAST HARD STEP IN THE FUNCTION — clause 1's SHAPE
 # test, `rimprot >= perdef`, which was still a cliff after recal_136 ramped the same clause's OTHER
 # bar.
@@ -286,13 +327,21 @@ def d_bigness(p):
     verdict, 1 = the whole big verdict. The lifetime-guard branch and the third shape clause are
     is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
     recal_99's, clause 1 is recal_136's ramp on rim protection times recal_164's ramp on the shape
-    gap, and the position-big branch is recal_103's shape override."""
+    gap, and the position-big branch is recal_103's shape override times recal_187's rim-presence
+    ramp at a wing's height."""
     pos = _POS.get(p['name'], [])
     a = p['attrs']
     if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
     if pos and ('C' in pos or 'PF' in pos) and not ('PG' in pos or 'SG' in pos):
         _gap = a['perimdisrupt'] - a['drb']
-        return 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))
+        _w_pos = 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))
+        # recal_187: the listing is one fact, the rim sheet is another. At a wing's height the
+        # position verdict is paid in proportion to the rim-protection claim the card actually has,
+        # over recal_136's own band (45 -> 55). At rimprot >= 55, or above 80 inches, this is
+        # byte-identical to recal_103's override.
+        if a.get('height', 76) <= POS_HT_MAX:
+            _w_pos *= min(1.0, max(0.0, (a['rimprot'] - POS_RP_LO) / (POS_RP_HI - POS_RP_LO)))
+        return _w_pos
     if a['rimprot'] >= 80: return 1.0
     # recal_136: clause 1 is a RAMP on its own rim-protection bar, from DEF_RP_LO to its own 55.
     # Above 55 this is the hard 1.0 it always was; below it, the man is graded as a big in

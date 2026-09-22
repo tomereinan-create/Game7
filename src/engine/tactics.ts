@@ -683,6 +683,20 @@ export const DEFAULT_TACTICS: Tactics = {
  * pre-2014 perimeter cards gained defence, so the fives read more alike and the hunt call is worth less: hunt broke on the
  * ORACLE edge (+0.35 at 3.80; +0.46 at 3.54; -0.28 blind at 3.30) and lands at 3.40 (blind -0.37, oracle +0.52). crashDef
  * sat exactly on its +0.50 floor at 0.66 and moves to 0.60 (-0.32, +0.52) for room; crashOff and playmaker held.
+ * recal_187 gave d_bigness's POSITION branch a rim-presence ramp at a wing's height: 522 d_ovrs moved (334 up,
+ * 188 down, max +19 / -10) and 395 OVRs with them, 0 o_ovrs — so the ovr>=55 pool the harness samples changed
+ * again. HUNT ALONE BROKE, on the BLIND edge this time (-0.2227 at 3.40 against the -0.30 ceiling), which is the
+ * OPPOSITE sign to r183's break and the reason is the opposite too: this round DEMOTES a class of listed bigs to
+ * their own perimeter vector, so the sampled fives defend the perimeter a little WORSE on average and the
+ * hunted-man mismatch is a bigger share of a smaller number — the blind call stops being punished enough and the
+ * tax has to go UP. Swept ONCE from MAIN's constants (playmaker 1.10, hunt 3.40, crashOff 0.28, crashDef 0.60) as
+ * the law requires: 3.45 (blind -0.2618) / 3.499 (blind -0.2997, the ceiling by three ten-thousandths) / 3.50
+ * (-0.3005, OK) / 3.55 / 3.65 / 3.68 (oracle +0.5014) / 3.683 (+0.5001, the floor) / 3.70 (+0.4925, FAIL) / 3.80
+ * (+0.4495) — a feasible interval of about 3.4995 to 3.6835, so it takes its TRUE MIDPOINT by r126's rule:
+ * 3.40 -> 3.59, blind -0.3703 and oracle +0.5415, 0.070 and 0.042 of room either side. playmaker, crashOff and
+ * crashDef were each re-read from main's constants first and none of them broke; the other six held their bands
+ * untouched. All nine pass. hunt's twelfth move on this ledger, and the first time a DEFENSIVE round has pushed
+ * it up rather than down.
  */
 export const TAX = {
   scorer: 0.55,
@@ -690,7 +704,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.40,
+  hunt: 3.59,
   crashOff: 0.28,
   crashDef: 0.60,
 }
