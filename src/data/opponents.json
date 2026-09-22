@@ -161,9 +161,9 @@
           "ts_rel": 0.647
         },
         "big": true,
-        "o_ovr": 65,
+        "o_ovr": 62,
         "d_ovr": 64,
-        "ovr": 65,
+        "ovr": 63,
         "marg": 94
       },
       {
@@ -406,7 +406,7 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 51,
+        "o_ovr": 49,
         "d_ovr": 74,
         "ovr": 62,
         "marg": 69
@@ -1234,9 +1234,9 @@
           "ts_rel": 0.581
         },
         "big": true,
-        "o_ovr": 64,
+        "o_ovr": 61,
         "d_ovr": 53,
-        "ovr": 61,
+        "ovr": 59,
         "marg": 85
       }
     ]
@@ -2062,9 +2062,9 @@
           "ts_rel": 0.578
         },
         "big": true,
-        "o_ovr": 59,
+        "o_ovr": 58,
         "d_ovr": 72,
-        "ovr": 66,
+        "ovr": 65,
         "marg": 58
       }
     ]
@@ -2269,9 +2269,9 @@
           "ts_rel": 0.595
         },
         "big": true,
-        "o_ovr": 52,
+        "o_ovr": 50,
         "d_ovr": 49,
-        "ovr": 51,
+        "ovr": 50,
         "marg": 70
       }
     ]
@@ -2438,9 +2438,9 @@
           "ts_rel": 0.627
         },
         "big": true,
-        "o_ovr": 72,
+        "o_ovr": 69,
         "d_ovr": 69,
-        "ovr": 71,
+        "ovr": 69,
         "marg": 85
       },
       {
@@ -2890,9 +2890,9 @@
           "ts_rel": 0.6
         },
         "big": true,
-        "o_ovr": 64,
+        "o_ovr": 59,
         "d_ovr": 77,
-        "ovr": 70,
+        "ovr": 68,
         "marg": 89
       }
     ]
@@ -4132,9 +4132,9 @@
           "ts_rel": 0.623
         },
         "big": true,
-        "o_ovr": 72,
+        "o_ovr": 68,
         "d_ovr": 62,
-        "ovr": 69,
+        "ovr": 66,
         "marg": 92
       }
     ]
@@ -4922,9 +4922,9 @@
           "ts_rel": 0.607
         },
         "big": true,
-        "o_ovr": 66,
+        "o_ovr": 64,
         "d_ovr": 50,
-        "ovr": 61,
+        "ovr": 60,
         "marg": 60
       },
       {
@@ -5543,9 +5543,9 @@
           "ts_rel": 0.588
         },
         "big": true,
-        "o_ovr": 64,
+        "o_ovr": 63,
         "d_ovr": 58,
-        "ovr": 62,
+        "ovr": 61,
         "marg": 57
       },
       {
@@ -5957,9 +5957,9 @@
           "ts_rel": 0.607
         },
         "big": true,
-        "o_ovr": 61,
+        "o_ovr": 58,
         "d_ovr": 46,
-        "ovr": 56,
+        "ovr": 54,
         "marg": 63
       },
       {

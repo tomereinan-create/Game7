@@ -1,5 +1,32 @@
 [
   {
+    "card": "Ryan Anderson '18",
+    "scale": "off",
+    "target": 65,
+    "tol": 3,
+    "round": 188,
+    "ruling": "Agree with 2-10",
+    "note": "THE STRETCH-BIG FLOOR IS PAID AT ITS OWN SECOND-PAYMENT MINUTE LINE. recal_170 paid recal_118's correction at recal_96's load share, whose full-load line is 24 minutes — a line cut to ask 'did this man play at all' — so above 24 the floor paid the same whatever the man did: 493 of the 1,083 bigs it binds on sat at share 1.0000. recal_91's three added terms (orb 0.17, rim 0.17, volume 0.10) are bars the STANDARD PATH ALREADY PAYS (0.06, the zone block, 0.26 x load), so by recal_130's doctrine a rate paid twice is scaled twice and the second line is the class's own upper quartile of minutes: SB_SECOND_FULL 31.6, measured on the 493 bigs recal_96's line paid in full (p25 26.1, median 28.7). 26.1 mpg, share 1.0000 -> 0.7194, OFF 68 -> 65. HIS NUMBER WAS 60 AND 65 IS THE FRONTIER: the wall is his own recal_118 pin, Dorian Finney-Smith '20 (55 +-3), who is the same card on every bar this term reads except minutes (29.9) and who reads 51.517 of raw against a band edge of 51.500. Every line above ~31.62 takes him out of his band; at recal_163's existing 33.9 the three subjects read 64/55/52 and Finney-Smith reads 50. The scoring-load reading the scan asked for is provably infeasible in either direction: Finney-Smith uses 13.0% to Kleber '20's 13.2% and must KEEP his floor, and OG Anunoby '21 (18.5%, pinned with zero room) sits above Mo Bamba '22 (17.2%)."
+  },
+  {
+    "card": "Mo Bamba '22",
+    "scale": "off",
+    "target": 56,
+    "tol": 3,
+    "round": 188,
+    "ruling": "Agree with 2-10",
+    "note": "the same term and the same round: 25.7 mpg, 10.6 points at 17.2% usage, standard path 49.86 under a floor of 65.30 paid in full. Share 1.0000 -> 0.7018, OFF 60 -> 56 and OVR 74 -> 72, off the shoulder of Jarrett Allen '22 (74). His number was 52; 56 is what the Finney-Smith '20 wall leaves."
+  },
+  {
+    "card": "Maxi Kleber '20",
+    "scale": "off",
+    "target": 53,
+    "tol": 3,
+    "round": 188,
+    "ruling": "Agree with 2-10",
+    "note": "the same term: 25.5 mpg, 9.1 points at 13.2% usage — the lowest scoring load of anyone near him — standard path 46.06 under a floor of 62.95. Share 1.0000 -> 0.6888, OFF 58 -> 53, INSIDE his stated 50 +-3 and the one of the three subjects that lands on his number."
+  },
+  {
     "card": "Jimmy Butler '21",
     "scale": "off",
     "target": 85,
