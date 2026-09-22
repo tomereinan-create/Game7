@@ -1060,18 +1060,65 @@ def o_score(p, trace=None):
     # leaves him a point short; the class's INTERQUARTILE range (30->59) prints Mark Jackson '00 at
     # 62 against his 58 +-3 and is the one cut that fails.
     PD_E_LO, PD_E_HI, PD_E_FLOOR = 43.0, 78.0, 0.5
+    # recal_184 (HIS RULING, verbatim: "Agree with 1-10", item 9 of the 2026-09-21 scout).
+    # THE EFFICIENCY LIFT IS A RATE, AND recal_96's DOCTRINE SAYS A RATE IS PAID AT THE LOAD THAT
+    # PRODUCED IT. The subject is José Calderón '09: 12.8 points and 8.9 assists on 17.1% usage,
+    # BPM 2.8, and he printed OFF 85 — four above Kevin Johnson '89 (20.4 / 12.2, BPM 4.2, pinned
+    # 81), five above Terry Porter '90, and three above his OWN '08 (BPM 4.5). Of his o_score of
+    # 90.91 this term was 19.65: gate 0.89 x eff factor 1.00 x load 0.988.
+    #
+    # THE DEFECT, and it is in the FACTOR, not in the size or the gates. The gate _gv pays a
+    # distributor MORE the less he scores (full at volume 10, nothing at 93) — that is recal_117's
+    # construction and it is right, because a man who is not a lead scorer should not be docked for
+    # it. But the factor beside it then reads his CONVERSION percentile at full price no matter how
+    # little scoring produced it: Calderón's efficiency 87 is a .603 true-shooting mark taken on a
+    # 17.1% load, and the term paid him the same 1.00 lift it pays a creator who converts at that
+    # rate carrying a fifth of his team's possessions. recal_96 settled exactly this for the
+    # standard path ("a per-possession profile must be scaled by the load that produced it") and
+    # recal_130 settled it for this term's SECOND payment of minutes; the conversion factor was the
+    # one rate on the card still paid at full price on no load at all.
+    #
+    # THE CUT: the lift ABOVE THE FLOOR is paid pro rata to the man's own scoring load until that
+    # load reaches PD_E_V_FULL, the class's OWN LOWER QUARTILE of volume. Of the 1,235 cards inside
+    # this term's class (`_gpv * _gv > 0` — the same class recal_176 cut PD_E_LO and PD_E_HI on),
+    # the 25th percentile of `volume` is exactly 30.0 under every convention (p10 16, p20 26, p50
+    # 52), so only the class's own bottom quarter is docked and 929 of the 1,235 are untouched.
+    # NO NEW ARBITRARY CONSTANT, and the shape, the floor and the ceiling of the efficiency ramp
+    # are all untouched.
+    #
+    # WHY THE LIFT AND NOT THE TERM, and it is the Mark Jackson pins that decide it. A load factor
+    # on the WHOLE term is PROVABLY INFEASIBLE: Mark Jackson '98 (volume 12) is pinned 55 +-3, reads
+    # 52, and can lose 0.98 of o_score — 10% of his term — while the subject (volume 19) must lose
+    # 30% of his, and no factor rising in volume can pay 12 more than it pays 19. Scaling only the
+    # lift ABOVE PD_E_FLOOR exempts him and '99 exactly: their efficiency (35 and 43) is at or below
+    # the ramp's foot, they were never paid a lift, and a man who is paid no lift cannot lose one.
+    # Both are byte-identical, as they were through recal_176.
+    #
+    # WHERE IT STOPS, AND THE NUMBER IT DOES NOT REACH. The ruling's target is 79 and the subject
+    # lands 81, inside its tolerance and not on it. The wall is recal_126's ORDER pin, John Stockton
+    # '97 >= John Stockton '01, standing over recal_176's John Stockton '01 86 +-2. '97 is volume 23
+    # carrying a 19.84 term and '01 is volume 31 carrying 15.25, so EVERY load condition on this
+    # term costs '97 more than '01, and '97's whole cushion is 1.81 of raw. Measured: '97 holds his
+    # order only while the factor at volume 23 stays above 0.860, which caps the dock at volume 19
+    # and puts the subject's floor at 81. PD_E_V_FULL 30.0 lands '97 and '01 level at 86 (the pin is
+    # graded `>=`); 32.0 — the same quartile taken on recal_176's WIDER playvol >= 70 class — prints
+    # '97 85 against '01 86 and FAILS it, and every top from 33 up fails it by more. Reaching 79
+    # needs a ramp whose foot sits at the subject's own volume, which is a name in disguise.
+    PD_E_V_FULL = 30.0
     PD_MIN_FULL = 34.7
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
     if _gpv * _gv > 0.0:
-        _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
-              (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
+        _gel = min(1.0, max(0.0, (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
+        _gev = min(1.0, max(0.0, a['volume'] / PD_E_V_FULL))
+        _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * _gel * _gev
         _mp = _MPG.get(p['name'])
         _gl = 1.0 if _mp is None else min(1.0, _mp / PD_MIN_FULL)
         _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge * _gl
         std += _pd
         if trace is not None:
-            trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, mpg=_mp, load=_gl, added=_pd)
+            trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, mpg=_mp, load=_gl, added=_pd,
+                                   eff_lift=_gel, eff_vol=_gev, v_full=PD_E_V_FULL)
     # recal_112 (HIS RULING, verbatim: "I think in general eff is getting undervalued. 17pgg on 68
     # ts(on a bad era). Has to show mid to high 60's at least. Even low 70's"). THE EFFICIENT
     # INTERIOR SCORER — the mirror of recal_64's off-ball floor, for the man whose efficiency comes
@@ -2233,7 +2280,9 @@ if _CARD:
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
-              f"{_p2['eff_factor']:.2f} x load {_p2['load']:.3f} (recal_130: "
+              f"{_p2['eff_factor']:.2f} (recal_176's lift {_p2['eff_lift']:.2f} x recal_184's "
+              f"scoring load {_p2['eff_vol']:.2f} - volume against the class's own lower quartile "
+              f"{_p2['v_full']:.0f}) x load {_p2['load']:.3f} (recal_130: "
               f"{_p2['mpg'] if _p2['mpg'] is not None else 'no'} mpg against the class's own 34.7-minute "
               f"full-creation line): +{_p2['added']:.3f}")
     if 'two_level' in _ot:

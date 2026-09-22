@@ -633,6 +633,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * (blind -0.359, oracle +0.524; 0.059 and 0.024 of room). crashOff held at 0.28 (blind -0.63, oracle
  * +0.54), read from main's constant first, and the other six held their bands untouched. All nine pass.
  * hunt's eleventh move; this is the first round in which it moved DOWN off a purely offensive change.
+ * recal_184 put the elite-passer term's EFFICIENCY LIFT on a scoring-load line: 58 o_ovrs and 48 OVRs, EVERY ONE DOWN,
+ * and every one a low-usage distributor — the exact MIRROR of recal_176, which is why hunt broke on the opposite edge.
+ * Fewer creators in the sampled fives means the default plan creates less, so hunting the wrong man costs MORE and the
+ * tax has to come back DOWN: oracle +0.386 at 4.22 against the +0.50 floor. Swept ONCE from MAIN's constants
+ * (hunt 4.22, crashOff 0.28, crashDef 0.66) as the law requires: 4.22 (oracle +0.386) / 4.10 (+0.437) / 4.00 (+0.482) /
+ * 3.96 (+0.5001, the floor exactly) / 3.95 (+0.505) / 3.94 (+0.509) / 3.92 (+0.519) / 3.90 (+0.528) / 3.88 (blind
+ * -0.3045) / 3.87 (blind -0.2965, over the ceiling) / 3.86 (-0.2884) / 3.80 (-0.2398) — feasible about 3.876 (blind
+ * -0.300) to 3.960 (oracle +0.500), a width of 0.085, true midpoint by r126's rule 4.22 -> 3.92 (blind -0.337, oracle
+ * +0.519; 0.037 and 0.019 of room either side). crashOff held at 0.28 (blind -0.58, oracle +0.58) and crashDef at 0.66
+ * (-0.48, +0.51), both read from main's constants first, and the other six held their bands. All nine pass. hunt's
+ * eleventh move, and the same shape every time.
  */
 export const TAX = {
   scorer: 0.55,
