@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 89,
  "after": 86,
- "pipeline_version": 179,
+ "pipeline_version": 181,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -294,18 +294,66 @@
   "count": 12,
   "max_abs": 4,
   "top": [
-   ["LeBron James '26", 87, 83],
-   ["LeBron James '07", 94, 91],
-   ["Jimmy Butler '21", 89, 86],
-   ["Scottie Pippen '94", 79, 77],
-   ["Jimmy Butler '22", 87, 85],
-   ["DeMar DeRozan '20", 87, 85],
-   ["Magic Johnson '81", 79, 78],
-   ["Jimmy Butler '23", 88, 87],
-   ["Scottie Pippen '93", 72, 71],
-   ["Franz Wagner '25", 78, 77],
-   ["Andre Iguodala '09", 67, 66],
-   ["Bernard King '91", 78, 77]
+   [
+    "LeBron James '26",
+    87,
+    83
+   ],
+   [
+    "LeBron James '07",
+    94,
+    91
+   ],
+   [
+    "Jimmy Butler '21",
+    89,
+    86
+   ],
+   [
+    "Scottie Pippen '94",
+    79,
+    77
+   ],
+   [
+    "Jimmy Butler '22",
+    87,
+    85
+   ],
+   [
+    "DeMar DeRozan '20",
+    87,
+    85
+   ],
+   [
+    "Magic Johnson '81",
+    79,
+    78
+   ],
+   [
+    "Jimmy Butler '23",
+    88,
+    87
+   ],
+   [
+    "Scottie Pippen '93",
+    72,
+    71
+   ],
+   [
+    "Franz Wagner '25",
+    78,
+    77
+   ],
+   [
+    "Andre Iguodala '09",
+    67,
+    66
+   ],
+   [
+    "Bernard King '91",
+    78,
+    77
+   ]
   ]
  },
  "top12": {

@@ -62,9 +62,9 @@
   },
   {
    "file": "data/build_ratings.py",
-   "pattern": "PIPELINE_VERSION = 176",
+   "pattern": "^PIPELINE_VERSION = 1\\d\\d",
    "label": "NO ATTRIBUTE MOVED AND build_ratings.py WAS NOT RUN",
-   "note": "the round is a compute_ovr.py round only: 0 attribute sheets differ out of 10,000, and o_ovr and marg move on ZERO cards"
+   "note": "the round is a compute_ovr.py round only: 0 attribute sheets differ out of 10,000, and o_ovr and marg move on ZERO cards [re-pointed at integration: the branch's pattern read the version stamp, which the integrator raised to 181]"
   }
  ],
  "expect": [
