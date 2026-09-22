@@ -1,0 +1,613 @@
+{
+ "round": 181,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 1-10",
+ "title": "THE LOCKDOWN EVENT FLOOR. d_score's perimeter vector prices a man against ~0.31 of EVENT production (rimprot, perimdisrupt, drb) he may never generate, so a stopper who does not gamble, block or rebound cannot pass 80 at any perdef. Each of the three event bars is now paid at max(its own bar, the class's own lower quartile x t), t ramping over the non-big pool's OWN perdef p95->p99 (85 -> 96). A floor, never a replacement: no card is lowered and a gambler keeps every point of his own production. Joe Dumars '90 DEF 74 -> 81, OVR 74 -> 78",
+ "subject": "Joe Dumars '90",
+ "scale": "def",
+ "target": 81,
+ "tol": 3,
+ "before": 74,
+ "after": 81,
+ "pipeline_version": 181,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PDX_LO, PDX_HI = 85\\.0, 96\\.0",
+   "label": "the ramp, read off the pool this vector grades and not chosen",
+   "note": "the 5,357-card non-big pool's OWN perdef percentiles: p50 53 · p75 62 · p90 74 · p95 85 · p99 96. The ramp runs from the top twentieth of perimeter defenders to the top hundredth. At perdef <= 85 the floor is zero and the vector is byte-identical to recal_80's"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PX_FLOOR, RP_FLOOR, DRB_FLOOR = 67\\.0, 32\\.25, 24\\.0",
+   "label": "the LOWER QUARTILE of each event bar among the class the ramp itself opens on (non-big, perdef >= PDX_LO; n = 278)",
+   "note": "measured: perimdisrupt p25 67.0 / p50 83.0 · rimprot p25 32.25 / p50 48.0 · drb p25 24.0 / p50 36.0. The lower quartile and not the median, deliberately — the claim is only that a man who defends in the top hundredth is not at ZERO on events, never that he is typical (recal_130's convention, a class's own quartile of its own bar)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_px = max\\(a\\['perimdisrupt'\\], PX_FLOOR \\* _pdx\\)",
+   "label": "max(), so it is a FLOOR: it can only ever lift",
+   "note": "measured over all 10,000 cards: 54 move on DEF, every one of them UP"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "base = \\(_kp\\*\\(0\\.63\\*a\\['perdef'\\] \\+ 0\\.13\\*_rpp \\+ 0\\.11\\*_px \\+ 0\\.07\\*_drb\\)",
+   "label": "the whole edit lives inside the PERIMETER vector; recal_80's weights 0.63/0.13/0.11/0.07 are untouched",
+   "note": "only the three event VALUES are floored; not one weight moves, so recal_62's and recal_80's vector is the vector"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_big = _kb\\*\\(0\\.40\\*a\\['perdef'\\] \\+ _rp_w\\*a\\['rimprot'\\] \\+ 0\\.17\\*a\\['drb'\\]\\)",
+   "label": "UNTOUCHED: the BIG vector still reads the raw bars",
+   "note": "a big's rimprot and drb are his own measured production — the floor is about a perimeter defender's missing events, and recal_151's rim-anchor premium at load is not reopened. Every position-decided big is byte-identical by construction"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "UNTOUCHED: the band anchors are NOT re-derived",
+   "note": "recal_90's warning — re-deriving DEF_TOP moves every card above the knee. It stays at recal_102's value (his ruling) and the top 12 by DEF is identical before and after"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_size = min\\(1\\.0, 0\\.94 \\+ 0\\.06\\*\\(a\\.get\\('height', 76\\) - 71\\)/7\\)",
+   "label": "UNTOUCHED: the size modifier still shrinks the perimeter vector, floor and all",
+   "note": "Dumars is 6'3\", so his floor is paid at 0.9743 like the rest of his vector"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "raw = max\\(0\\.5 \\* p\\['o_ovr'\\] \\+ 0\\.5 \\* p\\['d_ovr'\\], 0\\.70 \\* p\\['o_ovr'\\] \\+ 0\\.30 \\* p\\['d_ovr'\\]\\)",
+   "label": "UNTOUCHED: recal_83/85/104's blend is the whole of OVR",
+   "note": "Dumars '90 OVR 78 is 0.5 x 74 + 0.5 x 81 = 77.5, rounded — no band, no marginal, no per-player anything"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PIPELINE_VERSION = 176",
+   "label": "NO ATTRIBUTE MOVED AND build_ratings.py WAS NOT RUN",
+   "note": "the round is a compute_ovr.py round only: 0 attribute sheets differ out of 10,000, and o_ovr and marg move on ZERO cards"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Joe Dumars '90",
+   "scale": "ovr",
+   "op": "==",
+   "value": 78,
+   "label": "THE SUBJECT's OVR consequence, through the blend alone: 74 -> 78"
+  },
+  {
+   "card": "Joe Dumars '90",
+   "scale": "off",
+   "op": "==",
+   "value": 74,
+   "label": "o_ovr moved on ZERO cards in the whole pool — this is a d_score round only"
+  },
+  {
+   "card": "Joe Dumars '90",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 93,
+   "label": "and no attribute moved either: the round does not touch build_ratings.py"
+  },
+  {
+   "card": "Joe Dumars '89",
+   "scale": "def",
+   "op": "~",
+   "value": 81,
+   "tol": 2,
+   "label": "THE CLASS, 1 of 6: his other 1st-team season, 75 -> 81"
+  },
+  {
+   "card": "Joe Dumars '91",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 2,
+   "label": "THE CLASS, 2 of 6: 74 -> 79 (perdef 92)"
+  },
+  {
+   "card": "Joe Dumars '92",
+   "scale": "def",
+   "op": "~",
+   "value": 77,
+   "tol": 2,
+   "label": "THE CLASS, 3 of 6: 73 -> 77 (perdef 91)"
+  },
+  {
+   "card": "Joe Dumars '93",
+   "scale": "def",
+   "op": "~",
+   "value": 75,
+   "tol": 2,
+   "label": "THE CLASS, 4 of 6: 72 -> 75 (perdef 90, the ramp's shallow end). The '89-'93 run now reads 81/81/79/77/75 against the ballots 1st/1st/1st/2nd/2nd — monotone with the evidence, which it was not before"
+  },
+  {
+   "card": "Raja Bell '07",
+   "scale": "def",
+   "op": "~",
+   "value": 77,
+   "tol": 2,
+   "label": "THE CLASS, 5 of 6: the only non-Dumars card in the scout's seven, 1st team on perdef 90 and perimdisrupt 8. 73 -> 77"
+  },
+  {
+   "card": "Bruce Bowen '05",
+   "scale": "def",
+   "op": "~",
+   "value": 93,
+   "tol": 2,
+   "label": "THE CLASS, 6 of 6 and the largest collateral: perdef 97 with perimdisrupt 23 — the same defect one band up. 87 -> 93"
+  },
+  {
+   "card": "Avery Bradley '15",
+   "scale": "def",
+   "op": "==",
+   "value": 78,
+   "label": "HIS CONSTRAINT: the peers who DO gamble hold or rise, never fall. Bradley '15 perimdisrupt 55 is above the floor at his perdef 92 (67 x 0.636 = 42.6) — byte-identical"
+  },
+  {
+   "card": "Avery Bradley '16",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 1,
+   "label": "the same constraint: 82 -> 83 (his rimprot 22 takes the floor's 29, his perimdisrupt 67 does not), and he still reads ABOVE the subject"
+  },
+  {
+   "card": "Patrick Beverley '17",
+   "scale": "def",
+   "op": "==",
+   "value": 82,
+   "label": "the same constraint: perimdisrupt 70, rimprot 35, drb 48 — every bar above its floor at perdef 93, so byte-identical, and he stays above the subject"
+  },
+  {
+   "card": "Patrick Beverley '16",
+   "scale": "def",
+   "op": "==",
+   "value": 79,
+   "label": "the same constraint, byte-identical"
+  },
+  {
+   "card": "Quinn Buckner '80",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 1,
+   "label": "the eighth card of the scout's list and the gambler's control: perimdisrupt 86 at perdef 90. He rises by ONE, off rimprot 8 alone"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "WALL, recal_93's anchor at zero slack. perdef 76 is below the ramp's foot — t = 0, byte-identical"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "WALL, recal_80's anchor at zero slack. perdef 96 puts him at t = 1.0 and EVERY bar of his is above its floor (84/62/19 vs 67/32.25/24 — drb 19 is the one exception and 0.07 x 5 does not move a printed point). Byte-identical at 93"
+  },
+  {
+   "card": "Andre Roberson '15",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 2,
+   "label": "WALL, recal_159's anchor. perdef 85 sits exactly ON the ramp's foot — t = 0, byte-identical"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "WALL, recal_164's anchor. perdef 59, t = 0 — byte-identical at 68"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "WALL, recal_102's anchor. perdef 99, t = 1, and 96/59/61 are all above 67/32.25/24 — byte-identical at 98"
+  },
+  {
+   "card": "Kawhi Leonard '14",
+   "scale": "ovr",
+   "op": "~",
+   "value": 80,
+   "tol": 2,
+   "label": "WALL, recal_93's OVR anchor. Every bar above its floor — byte-identical"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "WALL, recal_57's anchor, and the Piston beside the subject. He is a BIG (d_bigness 1.0), so the perimeter vector is not read at all — byte-identical at 95"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "WALL, recal_62's anchor — a big, byte-identical"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "WALL, recal_62's anchor — a big, byte-identical"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 4,
+   "label": "WALL, recal_103's anchor — byte-identical"
+  },
+  {
+   "card": "Amen Thompson '25",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "WALL, recal_149's anchor. perdef 94, t = 0.818, and 74/83/65 are all above their floors — byte-identical at 95"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "WALL, recal_151's anchor, sitting ON its edge at 71 before this round and unmoved by it (a big)"
+  },
+  {
+   "card": "Mikal Bridges '21",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 80,
+   "tol": 3,
+   "label": "WALL, recal_175's anchor — no attribute moved in this round at all"
+  },
+  {
+   "card": "Mikal Bridges '24",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 78,
+   "label": "WALL, recal_141/175's control pin at zero slack — untouched"
+  },
+  {
+   "card": "Kobe Bryant '08",
+   "scale": "def",
+   "op": "==",
+   "value": 94,
+   "label": "WALL, the Kobe pins. perdef 96 puts him at t = 1 and his 77/50/47 clear every floor — byte-identical, which is the floor's whole design"
+  },
+  {
+   "card": "Kobe Bryant '03",
+   "scale": "def",
+   "op": "==",
+   "value": 94,
+   "label": "the same, byte-identical"
+  },
+  {
+   "card": "Shawn Marion '06",
+   "scale": "def",
+   "op": "==",
+   "value": 79,
+   "label": "WALL, the Marion reading — a big at perdef 63, t = 0, byte-identical"
+  },
+  {
+   "card": "Ben Wallace '06",
+   "scale": "def",
+   "op": "==",
+   "value": 99,
+   "label": "the summit of the DEF board, unmoved — the band was not re-derived"
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "def",
+   "op": "==",
+   "value": 98,
+   "label": "WALL, a star that must not move (perimdisrupt 6 at perdef 79 — a big, and below the foot anyway)"
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "def",
+   "op": "==",
+   "value": 92,
+   "label": "WALL, a star that must not move"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "def",
+   "op": "==",
+   "value": 88,
+   "label": "WALL, a star that must not move"
+  },
+  {
+   "card": "Kawhi Leonard '16",
+   "scale": "def",
+   "op": "==",
+   "value": 99,
+   "label": "WALL, a star that must not move"
+  },
+  {
+   "five": [
+    "Chauncey Billups '04",
+    "Richard Hamilton '04",
+    "Tayshaun Prince '04",
+    "Ben Wallace '04",
+    "Mehmet Okur '04"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 84,
+   "tol": 4,
+   "label": "WALL, recal_94's Pistons '04 dial — not one of the five moves"
+  },
+  {
+   "five": [
+    "Steve Kerr '96",
+    "Michael Jordan '96",
+    "Scottie Pippen '96",
+    "Toni Kukoč '96",
+    "Luc Longley '96"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "WALL, recal_94's Bulls '96 dial at ZERO slack — not one of the five moves"
+  },
+  {
+   "five": [
+    "Rajon Rondo '08",
+    "Ray Allen '08",
+    "Paul Pierce '08",
+    "Kevin Garnett '08",
+    "Kendrick Perkins '08"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 92,
+   "tol": 3,
+   "label": "WALL, recal_147's Celtics '08 dial. Rondo '10 and '11 rise but his '08 card does not (perdef below the foot), so the dial is flat — recal_122's usage-weighted team defence reads d_ovr and is not double-read here"
+  },
+  {
+   "five": [
+    "Maurice Cheeks '85",
+    "Julius Erving '85",
+    "Bobby Jones '85",
+    "Charles Barkley '85",
+    "Moses Malone '85"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 93,
+   "tol": 2,
+   "label": "WALL, recal_133's 76ers '85 dial at 2 points of slack — Cheeks '85 rises ONE (83 -> 84) and the dial holds"
+  },
+  {
+   "five": [
+    "Byron Scott '87",
+    "Michael Cooper '87",
+    "James Worthy '87",
+    "Magic Johnson '87",
+    "Kareem Abdul-Jabbar '87"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 67,
+   "tol": 6,
+   "label": "recal_100's Lakers '87 dial — the widest-moving five in the round, since Cooper '87 rises 90 -> 93"
+  },
+  {
+   "five": [
+    "Isiah Thomas '90",
+    "Joe Dumars '90",
+    "Mark Aguirre '90",
+    "Dennis Rodman '90",
+    "Bill Laimbeer '90"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 88,
+   "tol": 2,
+   "label": "REPORTED, not pinned before this round: the Pistons '90 champion five, the subject's own club. MEASURED ON BOTH BOARDS — 88 before the round and 88 after. Dumars' +7 does not move the dial: recal_122's team defence is usage-weighted and Rodman '90 and Laimbeer '90 carry this five's defensive load. Ladder round 16, unchanged"
+  },
+  {
+   "five": [
+    "Isiah Thomas '89",
+    "Joe Dumars '89",
+    "Adrian Dantley '89",
+    "Dennis Rodman '89",
+    "Bill Laimbeer '89"
+   ],
+   "scale": "team:defdial",
+   "op": "~",
+   "value": 84,
+   "tol": 2,
+   "label": "REPORTED: the Pistons '89 champion five. 84 before the round and 84 after — flat for the same reason. Ladder round 17, unchanged"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Joe Dumars '90",
+   "below": "Joe Dumars '93",
+   "label": "THE ORDERING THE RULING IS ABOUT: inside his own career the three 1st-team years now read above the two 2nd-team ones"
+  },
+  {
+   "scale": "def",
+   "above": "Joe Dumars '90",
+   "below": "Joe Dumars '92"
+  },
+  {
+   "scale": "def",
+   "above": "Joe Dumars '91",
+   "below": "Joe Dumars '92"
+  },
+  {
+   "scale": "def",
+   "above": "Doug Christie '03",
+   "below": "Joe Dumars '90",
+   "label": "the comparables the scout named still read above him: Christie '03 perdef 97 / DEF 94"
+  },
+  {
+   "scale": "def",
+   "above": "Bruce Bowen '05",
+   "below": "Joe Dumars '90",
+   "label": "Bowen '05 perdef 97 — he rises with the class and stays above it"
+  },
+  {
+   "scale": "def",
+   "above": "Avery Bradley '16",
+   "below": "Joe Dumars '90",
+   "label": "HIS CONSTRAINT, stated as an order: a peer who DOES gamble (perimdisrupt 67) stays above him"
+  },
+  {
+   "scale": "def",
+   "above": "Patrick Beverley '17",
+   "below": "Joe Dumars '90",
+   "label": "the same: perimdisrupt 70, and he did not move at all"
+  },
+  {
+   "scale": "def",
+   "above": "Doug Christie '03",
+   "below": "Bruce Bowen '05",
+   "label": "the ceiling of the lift: the class stops below the men who defend elite AND generate events. Christie '03 (perdef 97, perimdisrupt 94) 94 over Bowen '05 (perdef 97, perimdisrupt 23) 93 — and Jrue '21 now TIES Bowen at 93, which is the closest the floor brings the two kinds of defender"
+  },
+  {
+   "scale": "def",
+   "above": "Joe Dumars '90",
+   "below": "Scottie Pippen '03",
+   "label": "and the subject now reads above recal_93's 76 pin, which is the gap the scout's finding was about"
+  }
+ ],
+ "movers": {
+  "scale": "def",
+  "count": 54,
+  "max_abs": 7,
+  "top": [
+   [
+    "Joe Dumars '90",
+    74,
+    81
+   ],
+   [
+    "Joe Dumars '89",
+    75,
+    81
+   ],
+   [
+    "Bruce Bowen '05",
+    87,
+    93
+   ],
+   [
+    "Bruce Bowen '04",
+    86,
+    92
+   ],
+   [
+    "Bruce Bowen '08",
+    85,
+    91
+   ],
+   [
+    "Joe Dumars '91",
+    74,
+    79
+   ],
+   [
+    "Bruce Bowen '07",
+    88,
+    93
+   ],
+   [
+    "Joe Dumars '92",
+    73,
+    77
+   ],
+   [
+    "Bruce Bowen '06",
+    89,
+    93
+   ],
+   [
+    "Raja Bell '07",
+    73,
+    77
+   ],
+   [
+    "Bruce Bowen '09",
+    83,
+    87
+   ],
+   [
+    "Chris Paul '12",
+    81,
+    84
+   ],
+   [
+    "Chris Paul '15",
+    84,
+    87
+   ],
+   [
+    "Gary Payton '96",
+    88,
+    91
+   ],
+   [
+    "Michael Cooper '87",
+    90,
+    93
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Dwight Howard '11",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Dwight Howard '09"
+  ]
+ },
+ "cost": [
+  "pipeline_version is recorded at 181; the branch's data actually ships at 176 (main's stamp, left alone per the integration rule). The integrator stamps the batch's highest round after the single merged regeneration.",
+  "ANCHOR ADDED: Joe Dumars '90 def 81 +-3 (the ruling). It reads 81 exactly.",
+  "THE BAND WAS NOT RE-DERIVED. DEF_TOP stays at recal_102's 104.25 and the measured DEF maximum is unchanged, so nothing above the knee is restretched (recal_90's warning). Every moved card is below the knee: the largest raw after the round is Bowen '06/'07 at 93.1, one tenth over it.",
+  "THIS ROUND'S EDIT IS CONFINED TO d_score's PERIMETER VECTOR, between the `_rp_w` line and `_size`. It touches no weight — only the three event VALUES the vector reads — so it folds cleanly beside a round that changes d_bigness/is_big (179) or o_score (182, 184).",
+  "THE CLASS IS NOW PAID FOR EVENTS IT DID NOT GENERATE, and a later round that raises the perimdisrupt ATTRIBUTE for this same class would be paying it twice: the floor is a max(), so it recedes on its own as the real bar rises, but a round that moves perdef for these cards moves the floor with it (t is a function of perdef alone).",
+  "Nine tactics taxes re-ratified unchanged on this pool (npm run harness, all PASS) — no sweep was needed."
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED BEFORE THE ROUND. Joe Dumars '90, All-Defensive FIRST team, perdef 93, read DEF 74. His perimeter vector: perdef 0.62 x 93 = 57.45, rimprot 0.13 x 8 = 1.02, perimdisrupt 0.11 x 19 = 2.05, drb 0.07 x 3 = 0.21, discipline 0.05 x 92 = 4.84 — sum 65.56 after the 0.9743 size modifier at 6'3\", x 1.1305 = 74.12. THE TERM THE RULING IS ABOUT is not perdef, which is already near the top of the board: it is the 0.31 of the vector that pays EVENTS, of which he collects 3.3 out of a possible ~31.",
+  "WHY IT IS A CLASS AND NOT A CARD. Of the 205 non-big cards at perdef >= 90, the seven lowest DEF are six Dumars seasons plus Raja Bell '07 (1st team, perdef 90, perimdisrupt 8, DEF 73); the eighth, Quinn Buckner '80, is five clear at 78. Bruce Bowen '04-'09 (perdef 97-99, perimdisrupt 23-34) is the same defect one band up, and this round lifts him with them — the scout cited Bowen '05 at 87 as a comparable, and he was under-read for exactly the same reason, only less far.",
+  "WHY A FLOOR AND NOT A WEIGHT SHIFT, measured. Moving weight from the event bars to perdef reaches the number too, but it is a change to EVERY perimeter card on the board including the 178 anchors, and it would take the gambler's own production away from him — which is the half of his ruling that says Bradley and Beverley stay where they are. max() reaches only the cards the ruling is about: 54 of 10,000, every one of them UP, and the four peers he named move by 0, 0, +1 and 0.",
+  "THE FOOTPRINT: 54 DEF movers, all up, max +7; 40 OVR movers, all up, max +4; ZERO movers on OFF, on marg, and on every one of the 17 attributes (0 of 10,000 sheets differ). The top 12 by DEF is identical, name for name and value for value. Beyond the scout's seven the class it reaches is exactly the class it is written for: Bruce Bowen '04-'09, Chris Paul '09-'17 (four-time All-Defensive 1st team at 6'0\" with rimprot 4-13), Gary Payton '94-'01, Michael Cooper '85-'89, Sidney Moncrief '84-'86, Dennis Johnson '82/'83, Rajon Rondo '10/'11, Marcus Smart '19-'23, Maurice Cheeks '85, Jason Kidd '02, Jrue Holiday '23/'24, Luguentz Dort '25 — lockdown guards, every one.",
+  "WHAT THE FLOOR DOES NOT DO, which is most of it. At perdef <= 85 (94.9% of the non-big pool) t is zero and the vector is byte-identical to recal_80's. Above it the floor still only binds where the card's own bar is BELOW its class's lower quartile, so Jordan '89, Kawhi '16, Kobe '03/'08, Doug Christie '03, Jrue '21, Amen Thompson and Herbert Jones — every elite perimeter defender who also generates events — are byte-identical too.",
+  "THE FIVES. Ten champion/all-time/custom levels change a player's card and two change their roster: the All-time Pistons five now takes Joe Dumars '90 over Cade Cunningham '26 (ladder round 5 -> 8) and the All-Stoppers custom takes him over Mookie Blaylock '95 (ladder round 1 -> 2, swapping with All-Defense). The Pistons '89 and '90 champion levels keep ladder rounds 17 and 16.",
+  "All 178 anchors pass (0 failing, mean |error| 0.79), 436 tests pass, and all nine tactics taxes re-ratify unchanged through the harness."
+ ]
+}

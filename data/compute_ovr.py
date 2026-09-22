@@ -1756,7 +1756,56 @@ def d_score(p, trace=None):
     # perimeter branch, so a wing who genuinely contests at the rim got nothing for it. New vector,
     # sums to 1.00. NOTE the raise to perimdisrupt is 0.05 -> 0.11 on OUR real vector (the round
     # quotes 0.09 -> 0.11), a 2.2x raise that SUPERSEDES recal_62 — see the annotation in receipt 80.
-    base = (_kp*(0.63*a['perdef'] + 0.13*a['rimprot'] + 0.11*a['perimdisrupt'] + 0.07*a['drb'])
+    #
+    # recal_181 (HIS RULING, verbatim: "Agree with 1-10" — item 6 of the 2026-09-21 scout: Joe
+    # Dumars '90, All-Defensive FIRST team on perdef 93, reads DEF 74). THE LOCKDOWN EVENT FLOOR:
+    # ON THE PERIMETER VECTOR THE THREE EVENT BARS ARE PAID AT LEAST WHAT THE ELITE-PERDEF CLASS
+    # PRODUCES, IN PROPORTION TO HOW FAR PERDEF ITSELF STANDS OUT.
+    #
+    # THE DEFECT. Of the three bars beside perdef on this vector, two are not perimeter skills at all
+    # (rimprot, drb) and the third, perimdisrupt, counts STEALS AND DEFLECTIONS — events. recal_62
+    # settled that "steals are a gamble, not a lockdown", and recal_80 still left the gambler's bar
+    # 0.11 of the vector while the lockdown's only channel is perdef. So a man who stops his matchup
+    # and does nothing else collects 0.62 x perdef and is then priced against a possible ~0.31 of
+    # event production he was never going to have. Dumars '90: rimprot 8, perimdisrupt 19, drb 3 pay
+    # 1.02 + 2.05 + 0.21 = 3.3 out of ~31. MEASURED, and it is a CLASS and not a card: of the 205
+    # non-big cards at perdef >= 90, the seven lowest DEF are six Dumars seasons plus Raja Bell '07
+    # (All-Defensive 1st team, perdef 90, DEF 73) — and the eighth, Quinn Buckner '80, is five points
+    # clear at 78. Bruce Bowen '04-'09 (perdef 97, perimdisrupt 23) is the same defect one band up.
+    #
+    # THE SUBSTITUTION. perdef IS the complete defensive verdict on this vector (d_score's oldest
+    # line, reaffirmed by recal_62 and recal_80). Where that verdict is EXTRAORDINARY it is allowed
+    # to stand in for the events the card did not generate: each event bar is paid at
+    # max(its own bar, FLOOR * t) — a floor, never a replacement, so no card is ever lowered and a
+    # man who DOES gamble keeps every point of his own production.
+    #
+    # NO CONSTANT IS CHOSEN. All five are read off the pool this vector grades:
+    #   PDX_LO / PDX_HI = 85 / 96 — the 5,357-card non-big pool's OWN 95th and 99th percentiles of
+    #     perdef. The ramp is therefore "from the top twentieth of perimeter defenders to the top
+    #     hundredth", the pool's own statement of what is out of the ordinary, not a bar invented
+    #     here. At perdef <= 85 the floor is zero and the vector is byte-identical to recal_80's.
+    #   PX_FLOOR / RP_FLOOR / DRB_FLOOR = 67 / 32.25 / 24 — the LOWER QUARTILE of perimdisrupt,
+    #     rimprot and drb among the class the ramp itself opens on (non-big, perdef >= PDX_LO;
+    #     n = 278). The lower quartile and not the median, deliberately: the claim is only that a
+    #     man who defends in the top hundredth is not at ZERO on events, never that he is typical.
+    #     (recal_130's convention — a class's own quartile of its own bar — applied to this vector.)
+    # MEASURED over all 10,000 cards: 54 move on DEF, EVERY ONE OF THEM UP (a floor cannot subtract),
+    # max +7; OFF and every attribute move on ZERO. The class it lifts is exactly the one the scout
+    # named — Dumars '88-'93, Bowen '04-'09, Raja Bell '07 — plus Chris Paul '12-'15, four-time
+    # All-Defensive 1st team at 6'0" with rimprot 6-13. The peers who DO gamble are untouched:
+    # Avery Bradley '15 78, Patrick Beverley '16 79 / '17 82, Quinn Buckner '80 79 all hold or rise.
+    # NO DEF OR OVR ANCHOR MOVES AT ALL: Pippen '03, Jrue '21, Roberson '15, LeBron '04, Kawhi '14,
+    # Jordan '89, Rodman '90, Gobert '19, Draymond '16, Herbert Jones '23 and Amen Thompson '24-'26
+    # are byte-identical, and the three DEF order anchors (r62/r67/r80) hold.
+    # THE BAND IS NOT RE-DERIVED: DEF_TOP stays at recal_102's 104.25 (his ruling), the top of the
+    # board does not move, and nothing above the knee is restretched.
+    PDX_LO, PDX_HI = 85.0, 96.0            # the non-big pool's own perdef p95 / p99
+    PX_FLOOR, RP_FLOOR, DRB_FLOOR = 67.0, 32.25, 24.0   # that class's own lower quartile, per bar
+    _pdx = min(1.0, max(0.0, (a['perdef'] - PDX_LO) / (PDX_HI - PDX_LO)))
+    _px = max(a['perimdisrupt'], PX_FLOOR * _pdx)
+    _rpp = max(a['rimprot'], RP_FLOOR * _pdx)
+    _drb = max(a['drb'], DRB_FLOOR * _pdx)
+    base = (_kp*(0.63*a['perdef'] + 0.13*_rpp + 0.11*_px + 0.07*_drb)
             + DISC_PER*a['discipline'])
     # size modifier: a 6'0 defender guards one matchup; tall stoppers switch. Guard-quota All-D
     # selections are real evidence, but size caps the ceiling. Bites only truly small defenders.
@@ -1773,11 +1822,18 @@ def d_score(p, trace=None):
         _wpx = _kp*0.11*(1-w)*_size
         _wdr = _kb*0.17*w + _kp*0.07*(1-w)*_size
         _wdi = DISC_BIG*w + DISC_PER*(1-w)*_size
+        # recal_181: the event bars are paid at their floor on the PERIMETER half only, so each of
+        # the three is printed as (big half at the raw bar) + (perimeter half at the floored one).
+        _bpx, _bpp, _bdr = _kp*0.11*(1-w)*_size, _kp*0.13*(1-w)*_size, _kp*0.07*(1-w)*_size
         trace['terms'] = [('perdef', a['perdef'], _wpd, _wpd*a['perdef']),
-                          ('rimprot', a['rimprot'], _wrp, _wrp*a['rimprot']),
-                          ('perimdisrupt', a['perimdisrupt'], _wpx, _wpx*a['perimdisrupt']),
-                          ('drb', a['drb'], _wdr, _wdr*a['drb']),
+                          ('rimprot', _rpp, _wrp, _kb*_rp_w*w*a['rimprot'] + _bpp*_rpp),
+                          ('perimdisrupt', _px, _wpx, _bpx*_px),
+                          ('drb', _drb, _wdr, _kb*0.17*w*a['drb'] + _bdr*_drb),
                           ('discipline', a['discipline'], _wdi, _wdi*a['discipline'])]
+        trace['lockdown_floor'] = dict(t=_pdx, lo=PDX_LO, hi=PDX_HI,
+                                       px=(a['perimdisrupt'], _px, PX_FLOOR),
+                                       rp=(a['rimprot'], _rpp, RP_FLOOR),
+                                       drb=(a['drb'], _drb, DRB_FLOOR))
         trace['base'] = base
         trace['big_vector'] = _big
         trace['perim_vector'] = _perim
@@ -2118,6 +2174,17 @@ if _CARD:
         print(f"  RIM-ANCHOR PREMIUM AT LOAD (recal_151) - share {_ra['share']:.4f}: rimprot is priced "
               f"{_ra['skill']:.2f} skill + {_ra['anchor']:.2f} x {_ra['share']:.4f} anchor = {_ra['w']:.4f}"
               f" on the big vector (0.40 at full load)")
+    if 'lockdown_floor' in _dt:
+        _lf = _dt['lockdown_floor']
+        if _lf['t'] > 0.0:
+            print(f"  LOCKDOWN EVENT FLOOR (recal_181) - perdef {_a['perdef']} over the pool's own p95/p99"
+                  f" {_lf['lo']:.0f}->{_lf['hi']:.0f}: t {_lf['t']:.4f}; the perimeter half's event bars are "
+                  f"paid at max(bar, class lower quartile x t) — " +
+                  "  ".join(f"{k} {v[0]:.0f} -> {v[1]:.2f} (floor {v[2]}x t = {v[2]*_lf['t']:.2f})"
+                            for k, v in (('perimdisrupt', _lf['px']), ('rimprot', _lf['rp']), ('drb', _lf['drb']))))
+        else:
+            print(f"  LOCKDOWN EVENT FLOOR (recal_181) - perdef {_a['perdef']} is at or below the pool's own"
+                  f" p95 ({_lf['lo']:.0f}): t 0.0000, the event bars are paid exactly as they read")
     print(f"  d_bigness {_dt['bigness']:.4f}  ->  {_dt['bigness']:.4f} x big + {1-_dt['bigness']:.4f} x perimeter"
           f"  =  {_dt['d_score']:.4f}")
     print(f"  d_score {_dt['d_score']:.4f}  x 1.1305 display multiplier  =  raw {_draw:.4f}")
