@@ -700,7 +700,14 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
   return (
     // The list is a two-across grid and wants the desk's width; the team it opens is a court and a
     // roster, and those keep the app's own column. So the widening rides on the LIST, not the sheet.
-    <div className={`sheetcard tdb-sheet${picked ? '' : ' tdb-list'}`}>
+    /* `sheet` AND NOT `sheetcard` ALONE — his ruling, 2026-09-22: "Why is the homescreen beneth it?
+       This page should be unscrollable." `.sheetcard` carries no `position`: it is a column of
+       furniture that stands wherever it is mounted, and this screen is mounted as a SIBLING of the
+       home board, so the door was still there underneath and the window scrolled down onto it.
+       `.sheet` is `position: fixed; inset: 0` and is what every other overlay in the app already
+       wears — the trophy case had this exact bug and was fixed this exact way (see Achievements,
+       "the page drawn twice"). The team page was the last one still mounted in the flow. */
+    <div className={`sheet sheetcard tdb-sheet${picked ? '' : ' tdb-list'}`}>
       <div className="topbar">
         <span>Team database</span>
         <button onClick={() => (picked ? setPicked(null) : onBack())}>{picked ? '← Teams' : '← Back'}</button>

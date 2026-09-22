@@ -3516,15 +3516,21 @@ body:has(.sheet) { overflow: hidden; }
    inline custom property beats a stylesheet's on the same element. The variable is what makes the
    default overridable AT ALL (it used to be an inline `width`, which nothing could reach); the
    override itself has to be the size. */
-.tdb-sheet .ct-bust { width: clamp(58px, 15cqw, 176px); height: clamp(58px, 15cqw, 176px); border-width: clamp(2px, 0.4cqw, 5px); }
-.tdb-sheet .ct-spot { width: clamp(86px, 22cqw, 258px); gap: clamp(1px, 0.5cqw, 6px); }
-.tdb-sheet .ct-spot b { max-width: 100%; font-size: clamp(15px, 4cqw, 46px); padding: 0 clamp(4px, 0.9cqw, 10px); }
-.tdb-sheet .ct-spot i { font-size: clamp(9px, 2.4cqw, 27px); padding: 0 clamp(4px, 0.9cqw, 10px); }
-.tdb-sheet .ct-init { font-size: clamp(19px, 5.2cqw, 60px); }
-.tdb-sheet .ct-init.ghost { font-size: clamp(15px, 4.2cqw, 48px); }
+/* THE MEN ARE A LARGER SHARE OF THE FLOOR THAN THE HOUSE DEFAULT, which is the half of "way
+   bigger" that survives his next ruling ("Too big. Make it fit the screen"). The floor itself is
+   now whatever the window's height allows — on a 760px desk that is 426px, near enough the 430 it
+   has always been on a phone — so a purely proportional scale would have handed the men back
+   their original 58px and answered nothing. 17cqw against the default's 13.5 is a ring half again
+   as large as the drawing has ever carried, at every size of floor. */
+.tdb-sheet .ct-bust { width: clamp(58px, 17cqw, 176px); height: clamp(58px, 17cqw, 176px); border-width: clamp(2px, 0.45cqw, 5px); }
+.tdb-sheet .ct-spot { width: clamp(86px, 23cqw, 258px); gap: clamp(1px, 0.5cqw, 6px); }
+.tdb-sheet .ct-spot b { max-width: 100%; font-size: clamp(15px, 4.4cqw, 46px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+.tdb-sheet .ct-spot i { font-size: clamp(9px, 2.7cqw, 27px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+.tdb-sheet .ct-init { font-size: clamp(19px, 5.8cqw, 60px); }
+.tdb-sheet .ct-init.ghost { font-size: clamp(15px, 4.6cqw, 48px); }
 /* THE TACTIC IS THE FLOOR'S OWN CAPTION and was the smallest type on the page — 8px of mono over a
    half-metre of hardwood (his ruling: "and the tactic way bigger"). */
-.tdb-sheet .ct-call { font-size: clamp(8px, 2.3cqw, 26px); max-width: 66%; }
+.tdb-sheet .ct-call { font-size: clamp(8px, 2.6cqw, 26px); max-width: 66%; }
 /* THE START LINE THE TWO FLOORS SHARE, on the draft (his ruling, 2026-09-09: "In both modes, have
    both 5s the same size and alligned"). The floors were always the same size — one rule, two
    columns of the same 0.85fr, measured identical at every width from 375 to 1920 — but they did
@@ -3936,6 +3942,7 @@ body:has(.sheet) { overflow: hidden; }
   .pct-attr .statt { flex-basis: 130px; height: 9px; }
   .pct-attr b { width: 30px; font-size: clamp(13px, 1.8vh, 17px); }
 }
+
 
 /* a short desk window (a laptop with its browser chrome): the same card, packed tighter, so it
    still fits without a scroll — the rules, the boxes and the dossier give up their air first */
@@ -4536,6 +4543,33 @@ body.offstage #root { position: relative; z-index: 1; }
    old rows did. It takes the arena's own wash, pinned to the viewport so a 1,300-team list does not
    stretch the gradient down four thousand pixels of page. */
 .tdb-sheet { min-height: 100vh; background-color: var(--bg); background-image: var(--wash-lit); background-attachment: fixed; }
+/* ---- ONE SCREEN, NO SCROLL, ON THE TEAM A CARD OPENS ----
+   HIS RULING, 2026-09-22: "Too big. Make it fit the screen ... This page should be unscrollable."
+   The same standing rule the player card is built around, now that this page is a full-window
+   overlay rather than a column standing in the flow.
+
+   THE LIST IS EXEMPT AND MUST BE: it is 1,300 team-seasons and it scrolls through the lit room,
+   which is what `.sheet`'s own `overflow-y: auto` is for. Only the TEAM takes the window.
+
+   THE CHAIN IS FOUR LINKS and every one of them needs `min-height: 0`, because a flex or grid item
+   defaults to a content-sized minimum and would refuse to be squeezed: the sheet is the window,
+   the card takes what the two lines of chrome leave, the two-column block takes what the club line
+   and the season strip leave, and the columns take that. The roster is the one thing allowed to
+   overflow, inside its own column — fifteen men at this type is taller than any window, and the
+   alternative to a scroll there is a team sheet that stops at the ninth man. */
+/* AND IT IS THE DESK'S RULE, NOT THE PHONE'S. Fitting a window means fitting it in BOTH
+   directions, and a phone is one column: the floor, the league's table and fifteen men stacked, on
+   a screen 375 across. There is no arrangement of that which is one screen tall, and clipping it
+   to one — `overflow: hidden` on a sheet that cannot fit — would cut the roster off without a
+   mark. Below 1100 the sheet keeps `.sheet`'s own scroll, INSIDE the fixed overlay, so the door is
+   still not underneath it. See the block at 1100. */
+/* EVERY OTHER CHILD OF THE CARD IS RIGID, and this line is not tidiness — the card was a BLOCK
+   until this ruling, so the flex properties its children were already carrying meant nothing. The
+   season strip's wrapper is `flex: 1 0 100%` (it is a wrapping row on the player card, where 100%
+   is a WIDTH), and the moment the card became a column that basis was read as a HEIGHT: measured,
+   the strip claimed 632 of the card's 661 pixels and the two columns under it came out zero tall.
+   The chrome keeps its own height and the block below it takes what is left. */
+.tdb-sheet:not(.tdb-list) > .card > * { flex: none; }
 
 /* THE TEAM A CARD OPENS wears the same two things the card did: its club on the chip and under
    its name, and the red-to-green scale on the three numbers. */
@@ -4653,8 +4687,44 @@ body.offstage #root { position: relative; z-index: 1; }
      table's tracks are a `minmax(min, 1fr)` and what the even split costs them is slack they were
      only using to sit wider than they need. Measured on his screen: the table still ends inside
      its column and the floor is 11% wider than it was. */
+  /**
+   * THE FLOOR'S COLUMN IS AS WIDE AS THE FLOOR CAN BE, AND THE TABLE TAKES THE REST — his ruling,
+   * 2026-09-22: "Too big. Make it fit the screen."
+   *
+   * An even split was right while the page could be any height it liked. It cannot: the court is a
+   * 100-to-84 shape, so half of a 1,990px window is 919 of width and 772 of HEIGHT — and once the
+   * page has to fit a 760px window the floor is limited by the height it has, not by the column it
+   * stands in. Half the page for a floor that can only be 430 wide is a floor with a hand's width
+   * of black either side of it, which is the dead space his earlier ruling was about, moved.
+   *
+   * SO THE TRACK IS STATED IN THE SAME TERM THE FLOOR IS: the height the block has left, times the
+   * floor's own ratio, and never more than half the page. `--tdb-chrome` is what stands above and
+   * below the block — the two status lines, the club line, the season strip and the footnote —
+   * measured, not guessed, and restated in the short-window block below where that furniture is
+   * smaller. If it is ever wrong the cost is a little air beside the floor, never an overflow:
+   * the floor's own ceiling is `112cqh`, which is read off the column itself and cannot drift.
+   */
   .tdb-detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 34px; align-items: start; }
+  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 380px; }
+  .tdb-sheet:not(.tdb-list) .tdb-detail {
+    grid-template-columns: minmax(0, min(calc((100vh - var(--tdb-chrome)) * 1.12), 50%)) minmax(0, 1fr);
+  }
   .tdb-left, .tdb-right { min-width: 0; }
+  /* ONE SCREEN, NO SCROLL (his ruling: "Make it fit the screen ... This page should be
+     unscrollable") — the four-link chain: the sheet is the window, the card takes what the two
+     status lines leave, the block takes what the club line and the season strip leave, and the
+     columns take that. */
+  .tdb-sheet:not(.tdb-list) { height: 100vh; height: 100dvh; overflow: hidden; }
+  .tdb-sheet:not(.tdb-list) > .card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+  /* the block is the height the card has left, and the roster scrolls inside its own column.
+     `grid-template-rows: minmax(0, 1fr)` AND NOT THE DEFAULT AUTO ROW, which is the whole of this
+     line: an auto row is sized by its contents, so the columns inside it have no definite height
+     to stretch to — and `.tdb-left` is a SIZE CONTAINER, whose contents are by definition not
+     allowed to size it. Auto row plus size containment is a row of nothing: measured, the column
+     came out 0 tall and the floor 0 wide. One 1fr row of a grid whose own height is settled is
+     definite, and everything below it resolves. */
+  .tdb-sheet:not(.tdb-list) > .card > .tdb-detail { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .tdb-sheet:not(.tdb-list) .tdb-right { min-height: 0; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
   /**
    * AND THE FLOOR STANDS IN THE MIDDLE OF ITS SIDE — the other half of "so there will be no dead
    * space", and the half no width can fix. A court is a fixed shape: given a column it fills the
@@ -4664,7 +4734,24 @@ body.offstage #root { position: relative; z-index: 1; }
    * stretches to the row instead and centres what is in it, so the hardwood sits in the middle of
    * its own side and the emptiness is split above and below it rather than dumped underneath.
    */
-  .tdb-left { align-self: stretch; display: grid; align-content: center; }
+  .tdb-left { align-self: stretch; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+  /**
+   * AND THE COLUMN IS THE FLOOR'S RULER — his ruling, 2026-09-22: "Too big. Make it fit the
+   * screen." The floor took its column's WIDTH and derived its height from the ratio of a real
+   * half-court, which on a 1,990px window is 938 of width and 788 of height in a window 760 tall:
+   * the baseline ran off the bottom of the screen, and the page grew to hold it.
+   * A court cannot be clamped by `max-height` — its `aspect-ratio` derives height FROM width, so a
+   * height cap would squash the drawing rather than shrink it — so the cap has to be expressed as
+   * a width, and the number it has to be expressed in is the height of the column. That is what
+   * `cqh` is: `.tdb-left` becomes a size container and the floor's ceiling is 112% of its height,
+   * which is the floor's own 100:84 ratio less the margin it keeps under the baseline for the two
+   * corner men who hang past it. No magic pixel count, and it re-solves itself at every window.
+   */
+  .tdb-left { container-type: size; }
+  .tdb-sheet:not(.tdb-list) .court { max-width: min(100%, 112cqh); }
+}
+
+@media (min-width: 1100px) {
   /* every number on this page grows with the page (his ruling). The court's 430px cap was written
      for a 562px column; here it is the half of the sheet it stands in. */
   /* THE FLOOR TAKES THE COLUMN — his ruling, 2026-09-22: "make the court with the 5s bigger".
@@ -4689,6 +4776,21 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-sheet .dials.tdb-scale .dial .dl { font-size: clamp(11px, 0.75vw, 17px); margin-top: -8px; }
   .tdb-sheet .dials.tdb-scale .dial .ds { font-size: clamp(9px, 0.6vw, 14px); }
   .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 24px); }
+}
+
+/* ---- A SHORT DESK, ON THE TEAM PAGE ----
+   Every pixel the chrome gives up here is a pixel of FLOOR, and on a 760px window there are not
+   many to find: the club line is the one piece of furniture on this page tall enough to matter,
+   and the dials in it were sized against the WIDTH of a 1,990px desk (7vw) with no opinion about
+   its height. They take a vh term as well now, so a wide-but-short window draws them at the size
+   that window can afford. The card's own top padding and the floor's top margin come in with
+   them. `--tdb-chrome` is restated to match: 380 -> 336, measured after these three. */
+@media (min-width: 1100px) and (max-height: 900px) {
+  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 336px; }
+  .tdb-sheet:not(.tdb-list) > .card { padding-top: 10px; }
+  .tdb-sheet .dials.tdb-scale .dial { width: clamp(88px, min(7vw, 15.5vh), 168px); }
+  .tdb-sheet .dials.tdb-scale .dial svg { width: clamp(76px, min(6.2vw, 13vh), 150px); }
+  .tdb-sheet:not(.tdb-list) .court { margin-top: 8px; }
 }
 
 /* ---- THE RIGHT-HAND COLUMN, AT THE SIZE OF THE COLUMN ITSELF ----
