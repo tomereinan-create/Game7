@@ -1885,7 +1885,10 @@ button {
 .sheetcard > .sheet2 { max-width: none; margin: 0; }
 .sheet.sheet2 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  /* THE COLUMN GROWS WITH THE TYPE IN IT (his ruling, 2026-09-22: "Make the advanced page font
+     bigger"). A 380px track was cut for the old sizes; at the new ones an attribute row's label
+     and its two figures were being pushed onto two lines in it. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
   gap: 0 18px;
   align-content: start;
   align-items: start;
@@ -1925,14 +1928,14 @@ button {
    The labels, the version line and the OVR strip were already --mono and are untouched. */
 .adv-name {
   font-family: var(--sans);
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
 .adv-sub {
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 15.5px;
   color: var(--muted);
   margin-top: 5px;
   line-height: 1.55;
@@ -1944,18 +1947,23 @@ button {
   padding: 20px 0;
   text-align: center;
 }
+/* the same class carries the Analysis screen's empty line, so only THIS page's copy of it grows */
+.sheet2 .adv-err { font-size: 13px; }
 .adv-card {
   padding: 12px;
 }
-.adv-val {
-  font-size: 18px;
-  font-weight: 800;
+/* THE SECTION NAME IS THE BIGGEST WORD IN ITS CARD and the app's own `.label` sets it at 9.5px on
+   a phone and 14 on a desk, which is the size of a caption. Scoped here rather than raised on
+   `.label`, which is furniture on every screen in the app.
+   THREE CLASSES DEEP ON PURPOSE: `.card-head .label` is restated inside the desk block further
+   down this file, and at equal specificity the later rule would have won back the 14px. */
+.adv-card .card-head .label { font-size: 12.5px; }
+@media (min-width: 900px) {
+  .adv-card .card-head .label { font-size: 18px; }
 }
-.adv-formula {
-  font-size: 11.5px;
-  color: var(--muted);
-  line-height: 1.5;
-  margin-top: 6px;
+.adv-val {
+  font-size: 23px;
+  font-weight: 800;
 }
 .adv-rows {
   margin-top: 8px;
@@ -1966,29 +1974,22 @@ button {
   justify-content: space-between;
   align-items: baseline;
   gap: 10px;
-  min-height: 26px;
+  min-height: 32px;
   border-bottom: 1px solid var(--divider);
-  padding: 4px 0;
+  padding: 6px 0;
 }
 .adv-row span {
   font-family: var(--mono);
-  font-size: 8.5px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--faint);
 }
 .adv-row b {
   font-family: var(--sans);
-  font-size: 12.5px;
+  font-size: 16px;
   font-weight: 700;
   white-space: nowrap;
-}
-.adv-note {
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--them);
-  margin-top: 8px;
-  line-height: 1.5;
 }
 
 /* ==========================================================================
@@ -2501,28 +2502,25 @@ button {
   .spin-kicker {
     font-size: 15px;
   }
-  /* the copy face sets wider than the condensed one it replaced, so the two largest things on
-     this page come down a step rather than running the name onto two lines */
+  /* HIS RULING, 2026-09-22: "Make the advanced page font bigger" — this page is a long read on a
+     desk and it was set at a footnote's size, which is what the move onto the copy face made
+     plain. Every figure on it comes up about a third. The name stays the one thing that does NOT
+     grow with the rest: the copy face sets much wider than the condensed one it replaced, and past
+     44px a season-stamped name runs onto two lines in this column. */
   .adv-name {
-    font-size: 34px;
+    font-size: 44px;
   }
   .adv-sub {
-    font-size: 17px;
-  }
-  .adv-formula {
-    font-size: 15px;
+    font-size: 21px;
   }
   .adv-row span {
-    font-size: 13px;
+    font-size: 16px;
   }
   .adv-row b {
-    font-size: 16px;
+    font-size: 22px;
   }
   .adv-val {
-    font-size: 27px;
-  }
-  .adv-note {
-    font-size: 16px;
+    font-size: 34px;
   }
   .adv-open {
     font-size: 14px;
@@ -2902,7 +2900,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 
 .widen-cap { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); padding: 10px 0 5px; }
 
-.adv-ver { font-family: var(--mono); font-size: 9px; color: var(--faint); letter-spacing: 0.06em; padding-top: 6px; }
+.adv-ver { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.06em; padding-top: 6px; }
 
 /* ---- the rule, as arithmetic ---- */
 .arch-cond { font-family: var(--mono); font-size: 8.5px; line-height: 1.5; color: var(--them); background: var(--them-tint); border: 1px solid var(--them-line); border-radius: 5px; padding: 4px 6px; display: block; overflow-wrap: anywhere; }
@@ -5069,7 +5067,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .tdb-go { flex: none; font-family: var(--mono); font-size: 12px; color: var(--faint); }
 
 /* the Advanced window's own verdict line (scout mode only) */
-.adv-ovr { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.adv-ovr { font-family: var(--mono); font-size: 13.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 .adv-ovr b { color: var(--you); font-weight: 700; }
 
 /* team rows carry the three mini dials; keep them tighter than the player db's */
