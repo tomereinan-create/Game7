@@ -1,0 +1,311 @@
+{
+ "round": 184,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 1-10",
+ "title": "the elite-passer term's EFFICIENCY LIFT is put on a scoring-load line — recal_96's own doctrine ('a per-possession profile is scaled by the load that produced it') applied to the one rate on the card still paid at full price on no load at all. The lift ABOVE recal_109's 0.5 floor is now paid pro rata to `volume` until the class's OWN LOWER QUARTILE of it (PD_E_V_FULL 30.0, measured on the 1,235 cards the term pays). José Calderón '09 off 85 -> 81, ovr 74 -> 71; 58 cards move, every one down, every one a low-usage distributor, and DEF moves on none",
+ "subject": "José Calderón '09",
+ "scale": "off",
+ "target": 79,
+ "tol": 3,
+ "before": 85,
+ "after": 81,
+ "pipeline_version": 184,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_E_V_FULL = 30\\.0",
+   "label": "THE NEW LINE — the scoring load at which a distributor's conversion percentile is fully earned, and it is the class's OWN lower quartile of volume",
+   "note": "of the 1,235 cards inside this term's class (`_gpv * _gv > 0` — the same class recal_176 cut PD_E_LO 43 and PD_E_HI 78 on), the 25th percentile of `volume` is exactly 30.0 under every convention (p10 16, p20 26, p50 52). Only the class's own bottom quarter is docked; 929 of the 1,235 are untouched, and 58 cards on the whole board move"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_ge = PD_E_FLOOR \\+ \\(1\\.0 - PD_E_FLOOR\\) \\* _gel \\* _gev",
+   "label": "THE FORM, and it is the LIFT that is scaled, never the term",
+   "note": "`_gel` is recal_176's efficiency ramp, unchanged in floor, shape and ceiling; `_gev = min(1, volume / 30)` is the load that produced the rate. A load factor on the WHOLE term is provably infeasible — Mark Jackson '98 (volume 12) is pinned 55 +-3, reads 52 and can lose 10% of his term while the subject (volume 19) must lose 30%, and no factor rising in volume pays 12 more than it pays 19. Scaling only the lift exempts him exactly: his efficiency 35 is below the ramp's foot, he was never paid a lift, and a man paid no lift cannot lose one"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 43\\.0, 78\\.0, 0\\.5",
+   "label": "recal_176's efficiency ramp, UNTOUCHED",
+   "note": "the class's own median to its own p90, with the 0.5 floor: this round does not move where the ramp sits, only what the lift is paid against"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 93\\.0",
+   "label": "recal_117's volume band as recal_176 re-cut it, UNTOUCHED — and recal_138's hub ramp with it",
+   "note": "the descending gate that pays a distributor MORE the less he scores is right and stays: a man who is not a lead scorer should not be docked for it. What was wrong was the FACTOR beside it reading his conversion at full price on that same small load. The hub's own ramp hangs off PD_V_HI and does not move, so no creator hands credit back"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge \\* _gl",
+   "label": "THE SIZE AND recal_130's MINUTES LINE, BOTH UNTOUCHED",
+   "note": "0.245 is still fixed by his cap on John Stockton '97 and PD_MIN_FULL 34.7 is still recal_130's second-payment load line. The subject played 34.3 minutes and keeps 0.988 of it — his minutes were never the defect, his 17.1% usage was"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.92,",
+   "label": "THE TAX RE-SWEPT ONCE from main's constants, as the harness law requires: 4.22 -> 3.92",
+   "note": "the exact MIRROR of recal_176. 58 distributors lost offence, so the sampled fives create less, hunting the wrong man costs MORE and the tax comes back DOWN: oracle +0.386 at 4.22 against the +0.50 floor. Feasible 3.876 (blind -0.300) to 3.960 (oracle +0.5001), true midpoint by r126's rule 3.92 (blind -0.337, oracle +0.519). crashOff 0.28 and crashDef 0.66 were read from main's constants first and did not move"
+  }
+ ],
+ "expect": [
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "recal_176's pin, BYTE-IDENTICAL at 86: volume 31 is one point above the new line and he is paid his lift in full. He is half of the wall this round stops at"
+  },
+  {
+   "card": "John Stockton '97",
+   "scale": "off",
+   "op": ">=",
+   "value": 86,
+   "label": "THE OTHER HALF OF THE WALL — recal_126's ORDER pin, '97 >= '01, graded `>=` by data/anchors.py's own definition. 88 -> 86, level with '01 and holding. '97 is volume 23 carrying a 19.84 term against '01's 15.25, so EVERY load condition on this term costs him more than it costs '01, and his whole cushion was 1.81 of raw"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "~",
+   "value": 84,
+   "tol": 3,
+   "label": "BYTE-IDENTICAL at 85 — volume 36, above the line"
+  },
+  {
+   "card": "Steve Nash '05",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "BYTE-IDENTICAL at 90. THE TENSION THE ROUND HAD TO SURVIVE: Nash and Stockton '01 are pure distributors too, pinned HIGH at volume 42 and 31, and a load ramp that sank them would have been the wrong reading of the ruling. The line sits at 30 — below both of them and eleven points above the subject"
+  },
+  {
+   "card": "Kevin Johnson '89",
+   "scale": "off",
+   "op": "~",
+   "value": 81,
+   "tol": 3,
+   "label": "recal_176's subject, BYTE-IDENTICAL at 81 (volume 49) — and the comparison the scout's item was built on is closed: 20.4 / 12.2 at BPM 4.2 now reads level with 12.8 / 8.9 at BPM 2.8 instead of four under it"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "<=",
+   "value": 92,
+   "label": "HIS WALL IN HIS OWN WORDS ('bilups on 93 is madness'), byte-identical at 92: volume 66"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "the tol-1 pin on the summit, byte-identical at 93"
+  },
+  {
+   "card": "Mark Jackson '98",
+   "scale": "off",
+   "op": "==",
+   "value": 52,
+   "label": "BYTE-IDENTICAL, and by construction rather than by luck: efficiency 35 is below the ramp's foot, his lift was always zero, and zero times any load is zero. He is the card that proves the form — he had 0.98 of o_score of room and a factor on the whole term would have taken 2.9 of it"
+  },
+  {
+   "card": "Mark Jackson '99",
+   "scale": "off",
+   "op": "==",
+   "value": 52,
+   "label": "BYTE-IDENTICAL for the same reason: efficiency 43 IS the ramp's foot (recal_176 cut it there on this class's median), so his lift is zero too"
+  },
+  {
+   "card": "Mark Jackson '00",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "58 -> 57, the only Jackson that moves: efficiency 52 buys him a 0.26 lift and volume 10 pays a third of it. Inside his band with two points to spare"
+  },
+  {
+   "card": "José Calderón '08",
+   "scale": "off",
+   "op": "~",
+   "value": 81,
+   "tol": 1,
+   "label": "THE INTERNAL CONTRADICTION THE SCOUT NAMED, CLOSED: '09 read THREE above '08 (BPM 2.8 against 4.5) and the two now read level at 81 — '08 82 -> 81 (volume 24), '09 85 -> 81"
+  },
+  {
+   "card": "Terry Porter '90",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 1,
+   "label": "BYTE-IDENTICAL at 80 (volume 38). The scout's third comparison: 17.6 / 9.1 at BPM 5.8 was five under the subject and is now one under"
+  },
+  {
+   "card": "Tyrese Haliburton '24",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "byte-identical at 86 — volume 67. No creator hands anything back this round: the hub channel is untouched"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 2,
+   "label": "byte-identical at 85, as are LeBron '13, Harden '19, Jordan '89, Curry '16 and Magic '89 — every card above the new line"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "the tol-1 pin two rounds have had to carry, byte-identical at 71"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "byte-identical at 63: playvol 58 never reaches the term's foot. The whole non-distributor board is untouched — DEF moved on ZERO cards and OFF on none outside playvol >= 70"
+  },
+  {
+   "card": "Utah Jazz '97 (best legal five)",
+   "five": [
+    "John Stockton '97",
+    "Jeff Hornacek '97",
+    "Bryon Russell '97",
+    "Karl Malone '97",
+    "Greg Ostertag '97"
+   ],
+   "scale": "team:off",
+   "op": ">=",
+   "value": 60,
+   "label": "the Jazz dial, read through the engine after the largest Stockton move since recal_176"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "John Stockton '01",
+   "below": "José Calderón '09",
+   "label": "THE ITEM, IN ONE LINE. 11.5 points and 8.7 assists at 18.8% usage read 86 and 12.8 / 8.9 at 17.1% read 85 — one point apart. They are now five apart, and the subject is under the Stockton pin his own scout item said he should be under"
+  },
+  {
+   "scale": "off",
+   "above": "Steve Nash '05",
+   "below": "José Calderón '09",
+   "label": "the pure distributor who is pinned HIGH still reads nine above the pure distributor who was not: volume 42 against 19 on 15.5 / 11.5 against 12.8 / 8.9"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '90",
+   "below": "Chauncey Billups '06",
+   "label": "the summit order recal_176 had to preserve, preserved: 93 against 92, both untouched"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 58,
+  "max_abs": 6,
+  "top": [
+   [
+    "John Stockton '88",
+    81,
+    75
+   ],
+   [
+    "Maurice Cheeks '82",
+    67,
+    61
+   ],
+   [
+    "John Stockton '87",
+    62,
+    57
+   ],
+   [
+    "Jason Kidd '10",
+    66,
+    62
+   ],
+   [
+    "José Calderón '09",
+    85,
+    81
+   ],
+   [
+    "John Stockton '96",
+    89,
+    86
+   ],
+   [
+    "José Calderón '13",
+    79,
+    76
+   ],
+   [
+    "Terry Porter '88",
+    71,
+    68
+   ],
+   [
+    "José Calderón '12",
+    73,
+    70
+   ],
+   [
+    "John Stockton '95",
+    88,
+    86
+   ],
+   [
+    "John Stockton '97",
+    88,
+    86
+   ],
+   [
+    "Steve Nash '12",
+    85,
+    83
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "THE RULING'S NUMBER IS 79 AND THE SUBJECT LANDS 81 — inside the dispatch's 79 +-3 and NOT on its centre, and the frontier is stated rather than hidden. The wall is recal_126's ORDER pin (John Stockton '97 >= John Stockton '01) standing over recal_176's John Stockton '01 86 +-2. '97 is volume 23 with a 19.84 passer term and '01 is volume 31 with 15.25, so every load condition on this term costs '97 MORE than '01 and '97's whole cushion is 1.81 of raw. MEASURED on the full pipeline: PD_E_V_FULL 30 prints subject 81, '97 86, '01 86 (the pin holds, level); 32 — the same quartile taken on recal_176's WIDER playvol >= 70 class — prints subject 81, '97 85, '01 86 and FAILS the pin; 46 prints the subject at 79 EXACTLY, '97 83 and '01 84 and fails it by a point. A ramp that reaches 79 with the pin held would need its foot at the subject's own volume, which is a name in disguise.",
+  "JOHN STOCKTON '97 AND '01 ARE NOW LEVEL AT 86, where they were 88 and 86. data/anchors.py grades an order pin `>=` by its own written definition, so the pin passes, but a later round should know the pair is now TIED and has no slack left: any further dock on this term, from any direction, inverts them. That is the single largest cost of this round.",
+  "FIVE STOCKTON SEASONS AND FOUR CALDERÓNS MOVE TOGETHER, and that is the round working rather than a side effect: '88 81 -> 75, '96 89 -> 86, '95 88 -> 86, '97 88 -> 86, '94 84 -> 82, '89 85 -> 84, '98 83 -> 82, '87 62 -> 57, '86 55 -> 52 — the seasons where he carried 15-23% of the offence, never the ones where he carried more. Calderón '13 79 -> 76, '12 73 -> 70, '10 71 -> 70, '08 82 -> 81. Maurice Cheeks '82 67 -> 61 and Terry Porter '88 71 -> 68 are the same card type. None of the nine is pinned.",
+  "OFF_TOP AND DEF_TOP WERE NOT RE-DERIVED (recal_90's warning): the band anchors are untouched at 102.75 / 104.25, nothing above the knee was rescaled, the top 12 by OFF is identical and the summit order is unchanged. DEF moved on ZERO cards — this round is entirely inside one factor of one term of o_score.",
+  "THE HUNT TAX WAS RE-SWEPT ONCE from main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66) and moved 4.22 -> 3.92, the mirror of recal_176's move in the same knob. crashOff and crashDef held. See the knob line and the comment block in src/engine/tactics.ts.",
+  "FOR A LATER ROUND ON THIS TERM: all four knobs are now cut on the class the term pays — size 0.245 (his cap on Stockton '97), efficiency ramp 43 -> 78 (class median -> p90), volume band top 93 (class p90), and now the lift's load line 30 (class p25). The two remaining levers are the playvol foot PD_PV_LO 70, which recal_112's `playvol <= 70` gate holds disjoint, and a new channel. Nothing in the fitted direction has slack."
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED BEFORE ANYTHING WAS TOUCHED. José Calderón '09: 12.8 points, 8.9 assists, 34.3 minutes, usg 17.1, TS .603, BPM 2.8, volume 19. Of an o_score of 90.91 this term was 19.65 — gate 0.89 x eff factor 1.00 x load 0.988, about 18 printed points, against 71.26 without it. The gate is recal_117's and it is right. The FACTOR was the defect: a .603 conversion mark taken on 17.1% of his team's possessions was paid the same 1.00 lift as a creator converting at that rate while carrying a fifth of the offence. recal_96 settled exactly this for the standard path and recal_130 for this term's second payment of minutes; the conversion factor was the last rate on the card paid at full price on no load at all. The term now reads gate 0.89 x eff factor 0.82 (lift 1.00 x scoring load 0.63) x load 0.988 = +16.05, and he prints 81.",
+  "WHY THE LIFT AND NOT THE TERM, AND IT IS A PROOF RATHER THAN A PREFERENCE. Mark Jackson '98 is pinned 55 +-3, reads 52 (raw 52.411) and can lose 0.98 of o_score — 9.9% of his 9.93 term. The subject must lose 30% of his. Jackson's volume is 12 and the subject's is 19, so no factor MONOTONE AND RISING in scoring load can dock 19 by three times what it docks 12: a load condition on the whole term is infeasible before a constant is chosen, the same shape recal_82 and recal_130 recorded. Scaling the LIFT ABOVE THE FLOOR moves the whole bottom of the class out of the way at once — 592 of the 1,235 cards the term pays have efficiency at or under the ramp's foot and are byte-identical by arithmetic, Mark Jackson '98 and '99 among them.",
+  "WHY THE LOWER QUARTILE AND NOT THE MEDIAN, MEASURED ON THE FULL PIPELINE EACH TIME. The class's own median volume is 52 and it prints the subject at 79 — his number, read off the full pipeline — while printing John Stockton '01 at 83 against a pin of 86 +-2 and John Stockton '97 at 83 with him. p25 = 30.0 is the deepest cut in this family that holds every standing pin, and it is a MEASURED quantile of the class the term pays rather than a fitted value: 25th percentile 30.0 under linear, nearest-rank and lower-interpolation conventions alike (p10 16, p20 26, p50 52, p75 74). The knee it puts in the term is small and honest — a distributor carrying less scoring than the bottom quarter of his own class is paid his conversion percentile pro rata, and everyone else is paid exactly what recal_176 paid him.",
+  "THE FOOTPRINT. 58 cards move on OFF, EVERY ONE DOWN, largest fall 6 (John Stockton '88 81 -> 75); 48 move on OVR, max 4; ZERO move on DEF. Rank flips touching the top 50 by OVR: none. Four of the 150 campaign levels change a single player's card and no five changes membership (Celtics '81, 76ers '83, All-time Jazz, All-Hall-of-Fame). ANCHORS: 178 pins, 0 failing, mean |error| 0.80 — identical to main's 0.80 on the same measure.",
+  "WHAT WAS MEASURED AND REJECTED. (1) A load factor on the WHOLE term — infeasible against Mark Jackson '98 before a constant is chosen, shown above. (2) Load-scaling the efficiency INPUT (`efficiency x min(1, volume/H)`, walking the man down recal_176's ramp instead of scaling his lift) — decomposed on the two cards rather than run: at H = 52 the subject's efficiency 87 reads as 31.8, BELOW the ramp's foot of 43, so his factor drops to the bare 0.5 floor (o_score -9.83, off 75, under his own tolerance) while John Stockton '01's 97 reads as 57.8 and costs him four points he does not have. The ramp's foot is a cliff for anyone the load pushes through it, which is exactly what the multiplicative form on the lift avoids. (3) The same lift ramp on the load-scaled `_vol` (volume x recal_96's load share) — every card in this class is over the 24-minute full-load line, so it is the same number with more arithmetic. (4) PD_E_V_FULL at 32 (the wider playvol >= 70 class's p25) and at 46 (the value that lands the subject on 79 exactly) — both break recal_126's order pin, and 32 does not even move the subject."
+ ]
+}
