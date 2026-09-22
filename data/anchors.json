@@ -1791,5 +1791,32 @@
     "round": 183,
     "ruling": "Land 52 on 183",
     "note": "THE PIN IS 52, NOT THE 58 THE SCOUT OPENED WITH, and that is his own ruling on this round's measurement. The scout's item 8 asked for ~58 on the ground that '13 reads perdef 48 / DEF 49 while '14 reads 62 / 60 and '15 64 / 65 on DBPM -0.2 / -0.1 / -0.1. The finding was right and it is the POOL: the mean perdef change across same-player perimeter pairs crossing 2013 -> 2014 is +4.08 against -3.03 .. +1.09 for every other adjacent year pair 2005-2020, and 250 of 756 perimeter starters from 2004-13 read perdef < 45 (33.1%) against 22 of 1,109 from 2014 on (2.0%). recal_183 levels it by re-footing the pre-2014 no-vote relief line BELOW recal_13's NOVOTE_CAP (RELIEF_FOOT 0.28 -> 0.42, hinged on the cap, recal_141's segment above it untouched). 58 IS NOT REACHABLE BY THIS TERM AT ALL: the measured band for the foot is 0.42 .. 0.50 and even its top only reaches 53-54, while the largest foot that holds every anchor is 0.42 — recal_94's Pistons '04 team:defdial is pinned 84 +-4, already read 87, goes to 88 at foot 0.42 and 89 at 0.43. He was shown that frontier and ruled 'Land 52 on 183', so the pin records the frontier he accepted. Tolerance 3 rather than 0 because the subject's card is a 60/20/20 season blend whose '12 and '14 neighbours both move with any later ruling on this line."
+  },
+  {
+    "card": "Jon Koncak '93",
+    "scale": "attr:rimprot",
+    "target": 78,
+    "tol": 3,
+    "round": 186,
+    "ruling": "Agree with 2-10",
+    "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Koncak (BLK% 3.2, 1.3 blocks a game, 25.3 mpg, no ballot, DBPM +2.6) read 87 — the same bar as Shaquille O'Neal '93 on 5.7% — and LANDS ON 81, the top of this tolerance, not on 78. That is the frontier and it is stated in the round file: his '94 season (BLK% 4.5, class p91) keeps the whole ceiling and carries 20% of the card through the season blend, and the band cannot be footed any higher without cutting Kurt Thomas '09 (def 74 +-3, already on its floor) and the Bulls '96 defdial."
+  },
+  {
+    "card": "John Salley '89",
+    "scale": "attr:rimprot",
+    "target": 78,
+    "tol": 3,
+    "round": 186,
+    "ruling": "Agree with 2-10",
+    "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Salley (BLK% 3.0, 21.8 mpg, no ballot) read 88, level with Wayne Cooper '89 on 6.4% and one above Mark West '89 on 5.1%; he lands on 80. Cooper and West do not move a point — a 5-9% blocker still takes the whole ceiling, which is the point of the round."
+  },
+  {
+    "card": "Darryl Dawkins '86",
+    "scale": "attr:rimprot",
+    "target": 76,
+    "tol": 3,
+    "round": 186,
+    "ruling": "Agree with 2-10",
+    "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
   }
 ]

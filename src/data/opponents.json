@@ -3447,7 +3447,7 @@
         "talent": 68,
         "in": 66,
         "out": 12,
-        "id": 76,
+        "id": 75,
         "pd": 52,
         "attrs": {
           "3pt": 10,
@@ -3463,7 +3463,7 @@
           "volume": 7,
           "efficiency": 57,
           "durability": 41,
-          "rimprot": 76,
+          "rimprot": 75,
           "perimdisrupt": 53,
           "height": 81,
           "perdef": 52,
@@ -3474,7 +3474,7 @@
         },
         "big": true,
         "o_ovr": 37,
-        "d_ovr": 68,
+        "d_ovr": 67,
         "ovr": 52,
         "marg": 67
       },
@@ -3654,7 +3654,7 @@
         "talent": 73,
         "in": 75,
         "out": 1,
-        "id": 82,
+        "id": 75,
         "pd": 62,
         "attrs": {
           "3pt": 2,
@@ -3670,7 +3670,7 @@
           "volume": 3,
           "efficiency": 76,
           "durability": 52,
-          "rimprot": 82,
+          "rimprot": 75,
           "perimdisrupt": 63,
           "height": 83,
           "perdef": 62,
@@ -3681,9 +3681,9 @@
         },
         "big": true,
         "o_ovr": 40,
-        "d_ovr": 74,
-        "ovr": 57,
-        "marg": 79
+        "d_ovr": 72,
+        "ovr": 56,
+        "marg": 78
       },
       {
         "name": "Mark Williams '26",
@@ -3890,7 +3890,7 @@
         "o_ovr": 76,
         "d_ovr": 68,
         "ovr": 74,
-        "marg": 73
+        "marg": 74
       },
       {
         "name": "Onyeka Okongwu '26",
@@ -4275,7 +4275,7 @@
         "talent": 82,
         "in": 43,
         "out": 80,
-        "id": 82,
+        "id": 80,
         "pd": 56,
         "attrs": {
           "3pt": 78,
@@ -4291,7 +4291,7 @@
           "volume": 61,
           "efficiency": 39,
           "durability": 69,
-          "rimprot": 82,
+          "rimprot": 80,
           "perimdisrupt": 44,
           "height": 81,
           "perdef": 56,
@@ -4302,9 +4302,9 @@
         },
         "big": true,
         "o_ovr": 59,
-        "d_ovr": 79,
-        "ovr": 69,
-        "marg": 59
+        "d_ovr": 78,
+        "ovr": 68,
+        "marg": 58
       },
       {
         "name": "Rudy Gobert '26",
@@ -4520,7 +4520,7 @@
         "talent": 84,
         "in": 95,
         "out": 10,
-        "id": 77,
+        "id": 75,
         "pd": 58,
         "attrs": {
           "3pt": 8,
@@ -4536,7 +4536,7 @@
           "volume": 43,
           "efficiency": 85,
           "durability": 44,
-          "rimprot": 77,
+          "rimprot": 75,
           "perimdisrupt": 45,
           "height": 81,
           "perdef": 58,
@@ -4547,8 +4547,8 @@
         },
         "big": true,
         "o_ovr": 63,
-        "d_ovr": 79,
-        "ovr": 71,
+        "d_ovr": 78,
+        "ovr": 70,
         "marg": 97
       }
     ]
@@ -4727,7 +4727,7 @@
         "talent": 94,
         "in": 75,
         "out": 17,
-        "id": 73,
+        "id": 70,
         "pd": 50,
         "attrs": {
           "3pt": 15,
@@ -4743,7 +4743,7 @@
           "volume": 78,
           "efficiency": 34,
           "durability": 87,
-          "rimprot": 73,
+          "rimprot": 70,
           "perimdisrupt": 53,
           "height": 83,
           "perdef": 50,
@@ -4754,8 +4754,8 @@
         },
         "big": true,
         "o_ovr": 76,
-        "d_ovr": 72,
-        "ovr": 75,
+        "d_ovr": 71,
+        "ovr": 74,
         "marg": 90
       }
     ]
@@ -5762,7 +5762,7 @@
         "talent": 89,
         "in": 96,
         "out": 4,
-        "id": 78,
+        "id": 76,
         "pd": 61,
         "attrs": {
           "3pt": 3,
@@ -5778,7 +5778,7 @@
           "volume": 56,
           "efficiency": 91,
           "durability": 64,
-          "rimprot": 78,
+          "rimprot": 76,
           "perimdisrupt": 25,
           "height": 82,
           "perdef": 61,
@@ -5789,8 +5789,8 @@
         },
         "big": true,
         "o_ovr": 69,
-        "d_ovr": 81,
-        "ovr": 75,
+        "d_ovr": 80,
+        "ovr": 74,
         "marg": 96
       }
     ]
@@ -6176,7 +6176,7 @@
         "talent": 81,
         "in": 29,
         "out": 81,
-        "id": 84,
+        "id": 81,
         "pd": 70,
         "attrs": {
           "3pt": 79,
@@ -6192,7 +6192,7 @@
           "volume": 15,
           "efficiency": 55,
           "durability": 6,
-          "rimprot": 84,
+          "rimprot": 81,
           "perimdisrupt": 27,
           "height": 81,
           "perdef": 70,
@@ -6203,9 +6203,9 @@
         },
         "big": true,
         "o_ovr": 46,
-        "d_ovr": 76,
-        "ovr": 61,
-        "marg": 62
+        "d_ovr": 75,
+        "ovr": 60,
+        "marg": 61
       }
     ]
   }

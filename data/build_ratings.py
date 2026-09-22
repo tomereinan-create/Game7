@@ -699,8 +699,71 @@ DBPM_CEIL_BAR, DBPM_CEIL_FULL = 0.0, 1.0   # DBPM band the ceiling grades on; th
 def _measured_rim_evidence(blk_pctile, dbpm):
     dbp = max(0.0, min(1.0, ((dbpm if dbpm is not None else 0.0) - DBPM_CEIL_BAR) / (DBPM_CEIL_FULL - DBPM_CEIL_BAR)))
     return _blk_evidence(blk_pctile) * dbp
-def _ceiling_evidence(blk_pctile, dbpm, drep):
-    return max(min(1.0, max(0.0, drep)), _measured_rim_evidence(blk_pctile, dbpm))
+# recal_186 (HIS RULING on the 2026-09-22 scout, verbatim: "Agree with 2-10"; items 2-4 are Jon
+# Koncak '93, John Salley '89 and Darryl Dawkins '86 and they share this one term).
+# THE CEILING WAS GRADED ON A PERCENTILE TAKEN OVER THE WRONG POPULATION. recal_95 made the no-vote
+# 88 climbable instead of flat and graded the climb on _blk_evidence, which is recal_92's band read
+# on the SEASON's whole roster - every guard in the league included. A 7-footer at BLK% 3.0 is at the
+# 89th percentile of that population, clear of BLK_FULL, so the meter returned 1.000 and he took the
+# whole ceiling on a block rate that is ordinary for a centre. Measured on the pool before this round:
+# 166 no-vote cards sat on 87-88 with block rates from 2.8% to 9.4%, and the top quarter of the
+# no-vote big class printed 87-88 WHATEVER its rate. Jon Koncak '93 (BLK% 3.2, 1.3 blocks a game,
+# 25.3 mpg, no ballot) read the same 87 as Shaquille O'Neal '93 (5.7%, 3.5 a game); John Salley '89
+# (3.0%) read 88, level with Wayne Cooper '89 (6.4%); Darryl Dawkins '86 (2.8%, the lowest block rate
+# on the ceiling) read 87 beside Jawann Oldham '86 (6.0%).
+# THE BAND DOES NOT MOVE - THE POPULATION UNDER IT DOES. BLK_BAR and BLK_FULL are recal_92's own
+# numbers and are UNCHANGED here and everywhere else they are read (recal_114/172's vote meter,
+# recal_162's graded floor, recal_165's carried-ballot unlock all keep the season-wide percentile).
+# Only the percentile handed to THIS one gate is re-based: the card's rank in the class the ceiling
+# is actually grading - cards with no defensive ballot (drep <= 0.05, the Iverson threshold this file
+# already uses) who are 80 inches or taller (the big/wing edge recal_35 and recal_135 already read,
+# and the same 80.0 _relief_corroboration is written in). n = 3,661 cards; p80 = BLK% 3.30 and
+# p86 = 3.80, against the season-wide bar's 2.0-2.5% for the same two percentiles. Reading of the
+# line: a 5-9% blocker still takes the whole 88, a 4%+ blocker still clears the band, and a 3%
+# blocker is returned to his own class's middle.
+# POOLED ACROSS SEASONS, DELIBERATELY. recal_53's ceiling is ONE number for every season ever played;
+# a within-season rank would certify the 1986 class's eighth-best blocker and the 2004 class's
+# eighth-best on identical evidence at different rates, and on a class of ~60 cards a season it is
+# noise - Yao Ming's own rate moves 4.0 -> 4.2 while his class rank moves p75 -> p86. An absolute
+# ceiling is graded on an absolute rate. Measured by decade the class bar is 1980s 2.70 / 1990s 3.20 /
+# 2000s 3.60 / 2010s 3.30 / 2020s 3.94, so the pooled 3.30 is stricter on the 1980s than that decade's
+# own rank would be - which is the direction the three subjects are ruled in.
+# THE CHANGE IS CONFINED TO THE NO-VOTE CHANNEL, AND SMOOTHLY. A card that HAS a ballot is not in the
+# class, so his membership fades out exactly as recal_20's graded band fades in (wv = drep/0.30,
+# capped, the same weight the voted band itself enters on) and at wv = 1 the reading is the
+# season-wide one, bit-identical. That is what holds Joakim Noah '09 (92 +-1, drep 0.43) and Joel
+# Embiid '23 (91 +-1, drep 0.42) whole - both sit on their tolerance already and have no slack - and
+# it keeps recal_95's smoothness at drep = 0 (no cliff between a trace vote and none).
+# MONOTONE AND SUBTRACTIVE IN PRACTICE: the class's block rates are higher than the league's at every
+# quantile, so the re-based percentile is <= the season one for every card that the gate can bind on,
+# the evidence can only fall, and the cap only ever binds downward. Measured on the pool: 627 cards
+# move rimprot, NONE rises, and the no-vote cards sitting on 87-88 fall from 166 to 116.
+NOVOTE_CLASS_HT = 80.0   # the big/wing edge this file already uses (recal_35's perimeter band top,
+# recal_135's wing band, _relief_corroboration's own 80.0).
+NOVOTE_CLASS_BAR = 0.75   # WHERE recal_92's BAND SITS ON THE CLASS: on its third quartile. The band
+# itself is not rebuilt - its WIDTH is BLK_FULL - BLK_BAR, recal_92's own 0.06, and it is moved by
+# shifting the percentile, the same way recal_162's floor reads the band one width EARLIER. In the
+# class's own rates that is BLK% 3.00 at the bar and 3.42 whole.
+# THE FRONTIER, MEASURED, AND WHY THE BAR IS THE THIRD QUARTILE AND NOT THE CLASS'S p80. Footing the
+# band on the class's p80 (the literal translation of recal_92's bar) reaches the subjects harder -
+# Koncak 78, Salley 80, Dawkins 75 - but it takes TWO pins with it: Kurt Thomas '09 (BLK% 3.1, class
+# p76) is not a card the ceiling was ever inflating, his own composite reads 80 under a cap of 84, and
+# a p80 bar drops the cap to 75 and cuts him to rimprot 75, DEF 70 against recal_151's def 74 +-3,
+# which already sits on its floor at 71; and Luc Longley '97 (BLK% 3.4, class p81) falls 85 -> 78,
+# which drags his '96 card through the season blend to 85 and takes the Bulls '96 defdial to 98
+# against recal_94's 99 +-0. The bar has to sit low enough that a 3.0-3.4% class blocker keeps a
+# graded reading instead of falling to the floor. At the third quartile he does: Kurt Thomas '09
+# holds 79 and Longley '96 holds 87. Lower than p74 and the subjects stop falling (Salley '89 reads
+# 81+ by p74, 83 by p70); higher than p76 and Kurt Thomas '09 breaks. p75 is the whole window, and it
+# is the class's own quartile rather than a number chosen inside it. The cost is stated: Koncak '93
+# lands at 81, the top of his 78 +-3, not on 78.
+def _ceiling_evidence(blk_pctile, dbpm, drep, blk_class_pctile=None):
+    meas = _measured_rim_evidence(blk_pctile, dbpm)
+    if blk_class_pctile is not None:      # recal_186: read on the no-vote big class, re-widened by the ballot
+        wv = min(1.0, drep / 0.30) if drep > 0.05 else 0.0
+        _cls = _measured_rim_evidence(blk_class_pctile + (BLK_BAR - NOVOTE_CLASS_BAR), dbpm)
+        meas = _cls + wv * (meas - _cls)
+    return max(min(1.0, max(0.0, drep)), meas)
 def dfg_floor(yr, name):
     # recal_20: the floors judge the same series perdef reads; recal_55 widened that to 6ft+.
     # recal_65: VERIFIED — the design side re-reported the floors as still keyed to all-shots; they are
@@ -747,6 +810,12 @@ except FileNotFoundError:
 
 out_players = {}
 out_brk = {}
+# recal_186: the no-vote big class the rim CEILING grades its approach on (see the block at
+# _ceiling_evidence). Pooled over every season, because the ceiling it grades is one number for
+# every season. Built from two facts that are known before any score is computed - the card's
+# height and whether a ballot exists - so nothing here depends on the rating it grades.
+P_NOVOTE_BIG_BLK = pctile_top([r['blk'] for _rs in seasons.values() for r in _rs
+                               if r['drep'] <= 0.05 and (r['ht'] or 78) >= NOVOTE_CLASS_HT])
 for yr, rows in seasons.items():
     P = {k: pctile([r[k] for r in rows]) for k in ['x2p_per_100','x2p_pct','ftr','blk','drb','stl','dbpm','ht','bpm','ft_pct','usg','team_drtg','mp_v']}
     q3 = sorted(r['x3p_pct'] for r in rows if r['x3p_pct'] is not None and (r['x3pa_per_100'] or 0) >= 2)
@@ -908,7 +977,10 @@ for yr, rows in seasons.items():
         # tier graded by the evidence behind it (blocks and DBPM), or by his votes, whichever is more.
         # recal_162: the floor of that grading is itself graded by block evidence (see _novote_floor).
         _nf = _novote_floor(P['blk'](r['blk']), r['drep'])
-        _cap53 = _nf + (_cap53 - _nf) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'])
+        # recal_186: the APPROACH to the ceiling is graded on the CLASS's own block rate (see
+        # P_NOVOTE_BIG_BLK at the top of the loop). The floor above still reads the season.
+        _cap53 = _nf + (_cap53 - _nf) * _ceiling_evidence(P['blk'](r['blk']), r['dbpm'], r['drep'],
+                                                          P_NOVOTE_BIG_BLK(r['blk']))
         ID2 = (1 - _w53) * min(ID2, _cap53) + _w53 * ID2
         # GRADED entry to the voted band (the Kawhi-'26 cliff fix): membership is a weight, not a switch.
         # Full selections (drep>=0.35) sit purely in the voted band; fading legends blend down SMOOTHLY;
