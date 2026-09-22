@@ -678,6 +678,11 @@ export const DEFAULT_TACTICS: Tactics = {
  * crashOff held at 0.28 and crashDef at 0.66 — both read from main's constants first and neither moved — and the
  * other six held their bands untouched. All nine pass. hunt's eleventh move on this ledger, same shape as ever.
  * The branch figure the integrator supersedes if the merged pool sweeps differently: 4.22 -> 3.54.
+ * recal_183 INTEGRATION SWEEP (pipeline 185): the pre-2014 relief re-foot folded onto main and the taxes swept ONCE from
+ * main's constants (playmaker 1.10, hunt 3.80, crashOff 0.28, crashDef 0.66), superseding the branch's hunt 3.54. 4,881
+ * pre-2014 perimeter cards gained defence, so the fives read more alike and the hunt call is worth less: hunt broke on the
+ * ORACLE edge (+0.35 at 3.80; +0.46 at 3.54; -0.28 blind at 3.30) and lands at 3.40 (blind -0.37, oracle +0.52). crashDef
+ * sat exactly on its +0.50 floor at 0.66 and moves to 0.60 (-0.32, +0.52) for room; crashOff and playmaker held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -685,9 +690,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.80,
+  hunt: 3.40,
   crashOff: 0.28,
-  crashDef: 0.66,
+  crashDef: 0.60,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
