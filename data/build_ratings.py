@@ -425,7 +425,55 @@ def score_season(r, P):
     # and so is every card recal_135 already reached above the band (McHale '85/'88, Moses '85, Bobby
     # Jones '82/'83/'85, Sikma '83, Malone '97, Dwight '11, Garnett '04/'08, Ben Wallace '04).
     _at_band_top = min(1.0, max(0.0, ((r['ht'] or 78) - 79.0) / OUT_OF_BAND_IN))
-    _paid_in_rim = (min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk']) + (BLK_FULL - BLK_BAR) * _at_band_top), _out_of_band)) if r['drep'] > 0.05 else 0.0
+    # recal_180 (HIS RULING on Derrick White '26, verbatim: "Agree with 1-10"). THE METER ASKED
+    # WHETHER RIMPROT CASHED THE BALLOT AND NEVER WHETHER THE CARD IS PRICED ON THE RIM AT ALL.
+    # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Derrick White '26 - 2026 All-Defensive
+    # 1ST team - read perdef 78 and DEF 78. Every other 1st-team guard 6'5" and under in the file
+    # (n=65) reads 90 or better, median 96; his own '24 and '25 read 82 and 81.
+    # WHY recal_114's DEDUCTION FIRES IN FULL ON HIM. His BLK% of 3.8 is the 90th percentile of
+    # 2026, clear of recal_92's band, so _blk_evidence returns 1.000 on a drep of 1.000 and the
+    # meter's verdict is that rim protection has cashed his ENTIRE ballot: vote factor 0.51 on a
+    # DBPM percentile of 0.80, and 18 card points of perdef removed.
+    # THE PREMISE THAT DOES NOT HOLD. recal_114's whole argument is arithmetic performed on the BIG
+    # d_score branch: "d_score then reads him as a BIG (d_bigness 1.0000) and takes 0.40 x rimprot
+    # as well, where recal_53's voted ceiling had already paid the SAME votes - 0.40 x 96 + 0.40 x
+    # 92 = 75.2 of a 92.76 d_score". A VOTE IS PAID ONCE is a statement about that 0.40. Derrick
+    # White is 76 inches with d_bigness 0.0000: his card is graded on the PERIMETER vector, where
+    # rimprot 74 is priced 0.13, not 0.40. Whatever his blocks bought him in rim protection, less
+    # than a third of it is collected a second time - so the deduction that removes the WHOLE
+    # unsupported share removes credit the composite never double-paid. recal_114 disclosed this
+    # card as collateral ("Derrick White '26 (95 -> 78) ... paid twice on thin blocks"): the
+    # description does not fit a 90th-percentile block rate priced at 0.13.
+    # THE FORM: the meter is scaled by HOW MUCH OF THE CARD IS READ ON THE RIM SIDE, and this file
+    # already draws that line in exactly one place. recal_35's sweet band is 75-80 inches - flat at
+    # the full wing rate across it, fading past it - and the height_inv term two lines below is that
+    # band written out, `max(75.0 - ht, ht - 80.0)`. So the ramp's two ends are the band's own two
+    # ends and NO NEW HEIGHT CONSTANT IS DRAWN: at 80 inches and above, where recal_135 and recal_172
+    # do their work, the meter is paid in full and every card either of them reached is BIT-IDENTICAL
+    # (Roundfield '82/'83 at 80, Malone '97 at 81, McHale '85/'88, Moses '85, Bobby Jones, Sikma '83,
+    # Dwight '11, Garnett '04/'08, Ben Wallace '04); below it the meter is paid in proportion.
+    # THE FLOOR IS THE VECTOR'S OWN PRICE RATIO, NOT ZERO. recal_114's arithmetic is a comparison of
+    # TWO PRICES in one composite - "0.40 x perdef 96 + 0.40 x rimprot 92" - and the ballot lands
+    # twice at EQUAL weight there, which is why the whole unsupported share is removed. The perimeter
+    # vector prices the same two channels 0.62 and 0.13 (recal_93's weights, recal_151's split of the
+    # big vector's 0.40 into 0.13 skill + 0.27 anchor). So the rim is worth 0.13/0.62 = 0.21 of perdef
+    # on the verdict this card is actually graded by, against 0.40/0.40 = 1.00 on the big one - and
+    # that ratio, not zero, is what a card at the band's floor still owes. PERIM_RIM_SHARE is read
+    # straight off those two weights.
+    # THE BOUNDARY DOES NOT COME DOWN, which is recal_135's standing condition. That note forbids
+    # moving the 80-inch step so that it starts FADING EARLIER and takes credit off wings; this
+    # scaling can only RAISE a card under 80 inches and can never touch one at 80 or above. The
+    # deduction still lands on the 0.45 vote premium and never on PD, so the within-season Pvot pool
+    # is bit-identical and nothing rises by pool drift.
+    # THE WALL, MEASURED, AND WHY THE FLOOR IS NOT ZERO IN PRACTICE EITHER. Dropping it to zero (the
+    # bare band ramp) puts the subject at perdef 92 - the centre of his ruling - and takes his own
+    # '24 card to 87, which lifts recal_119's pinned Celtics '24 five from team:defdial 66 to 69
+    # against a pin of 65 +-3. That pin allows White '24 up to 86 and no further (measured, one card
+    # at a time: 85 -> 68, 86 -> 68, 87 -> 69), and 86 is exactly where this floor leaves him. A floor
+    # of 0.125 was measured too: the subject reads 90 and White '24 reads 87, and the pin fails.
+    PERIM_RIM_SHARE = 0.13 / 0.62
+    _on_rim_vector = PERIM_RIM_SHARE + (1.0 - PERIM_RIM_SHARE) * min(1.0, max(0.0, ((r['ht'] or 78) - 75.0) / (80.0 - 75.0)))
+    _paid_in_rim = (_on_rim_vector * min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk']) + (BLK_FULL - BLK_BAR) * _at_band_top), _out_of_band)) if r['drep'] > 0.05 else 0.0
     _vote_factor = 1.0 - _paid_in_rim * (1.0 - P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW)
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
