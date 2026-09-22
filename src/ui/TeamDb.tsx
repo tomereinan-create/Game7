@@ -688,7 +688,13 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     // The same gauges the list card is painted from. The head used to read its numbers off
     // `ratings100` and the list off these, so one team had two verdicts depending which screen you
     // were on; both now say the same thing, on the scale whose middle is 50.
-    return { roster, five, bench, gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null, fielded }
+    /**
+     * `sheet` IS THE WHOLE TEAM IN TEAM-SHEET ORDER — his ruling, 2026-09-22: "have there the
+     * entire team not only the bench". The five as they stand on the floor, then everyone else.
+     * NOT `roster` ITSELF, which is the order the season file happens to list them in, and not
+     * `five` concatenated raw, which carries the nulls an incomplete five leaves behind.
+     */
+    return { roster, five, bench, sheet: [...fielded, ...bench], gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null, fielded }
   }, [picked])
 
   return (
@@ -962,14 +968,30 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 stats. The app's verdict on this five is two inches to the left and is a different
                 question; this block is the record. */}
             <TeamLineBlock t={picked} />
-            {detail.bench.length ? (
+            {/* THE WHOLE TEAM, NOT WHAT IS LEFT OF IT — his ruling, 2026-09-22: "have there the
+                entire team not only the bench". The list under the table was the bench alone, on
+                the reasoning that the five are already drawn on the floor; but the floor prints a
+                surname and a position, and this is the only place on the page where a man's line
+                and his three verdicts are written down. A roster that omits its five best players
+                is not a roster. The five come first, in the order they stand on the floor, and the
+                bench follows — so the list reads as a team sheet rather than as an afterthought.
+                THE HEAD LINES UP WITH WHAT IT HEADS ("Aliggn OVR · O · D with the actual stats"):
+                three cells on the figures' own template, the same fix PTS · REB · AST already had
+                — see `.oppman-nums` and `.gcap.nums3` in the stylesheet. */}
+            {detail.sheet.length ? (
               <>
                 <div className={`rowhead dr tdb${user ? ' blind' : ''}`}>
-                  <span>The rest of the roster · {detail.bench.length}</span>
+                  <span>The roster · {detail.sheet.length}</span>
                   <StatHead />
-                  {user ? null : <span className="gcap">OVR · O · D</span>}
+                  {user ? null : (
+                    <span className="gcap nums3">
+                      <i>OVR</i>
+                      <i>O</i>
+                      <i>D</i>
+                    </span>
+                  )}
                 </div>
-                {detail.bench.map((p) => (
+                {detail.sheet.map((p) => (
                   <RosterRow key={p.name} p={p} slot={eligible(LINES[p.name]?.pos).join(' · ')} />
                 ))}
               </>

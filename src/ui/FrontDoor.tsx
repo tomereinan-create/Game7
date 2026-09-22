@@ -410,10 +410,15 @@ export function FrontDoor({
   const [pass, setPass] = useState<{ from: number; id: number } | null>(null)
   const passId = useRef(1)
   function press(i: number) {
-    /* pressing the mark you are already on does nothing. THE MARK PRESS SELECTS AND READS; THE CTA
-       IS THE ONLY THING THAT ENTERS A MODE. That two-step is the whole interaction model, and both
-       boards agree on it. */
-    if (i === sel) return
+    /* THE SECOND PRESS ENTERS — his ruling, 2026-09-22: "In the main page, pressing twice on a mode
+       should enter it."
+       The first press still only SELECTS AND READS: the ball rolls over, the pane on the right
+       fills with that mode's rules, and nothing is entered. What changes is that pressing the mark
+       you are ALREADY on now does what the CTA under the read does, instead of doing nothing at
+       all. That is the two-step exactly as it was, with the second step available in the place the
+       hand is already resting — a mark you have to travel away from and back to is one press; the
+       same mark twice is two, and it cannot be reached by accident from any other mode. */
+    if (i === sel) return onPick(zones[i].pick)
     setPass({ from: sel, id: passId.current++ })
     setSel(i)
   }

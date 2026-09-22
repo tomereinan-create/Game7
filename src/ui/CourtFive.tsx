@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { cardInk, type TeamColor } from './teamColors'
@@ -503,7 +503,15 @@ function Spot({
       onClick={drag ? undefined : s.onTap}
       disabled={!s.onTap && !drag}
     >
-      <span className="ct-bust" style={{ width: size, height: size }}>
+      {/* THE RING'S SIZE IS A CUSTOM PROPERTY AND NOT AN INLINE WIDTH — his ruling, 2026-09-22:
+          "Make the players on the court and the tactic way bigger." Every court in the app handed
+          this span a fixed pixel box, which is right on the draft's 356px floor and absurd on the
+          team page's, where the same 58px ring is a dot on a floor three times as wide. An inline
+          width cannot be overridden by a stylesheet at all, so the number is declared here as the
+          floor's own `--bust` and the size is taken in CSS — where a court that wants to scale its
+          men with itself can say so, and every other court reads exactly the number it always
+          passed. See `.ct-bust` and the team page's container query. */}
+      <span className="ct-bust" style={{ '--bust': `${size}px` } as CSSProperties}>
         {s.p ? <em className="ct-init">{initials(s.p.name)}</em> : s.slot ? <em className="ct-init ghost">{s.slot}</em> : null}
         {sc ? <u className="ct-mark sc">SC</u> : null}
         {pm ? <u className={`ct-mark pm ${sc ? 'lo' : ''}`}>PM</u> : null}
