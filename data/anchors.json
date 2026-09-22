@@ -1,5 +1,14 @@
 [
   {
+    "card": "Jimmy Butler '21",
+    "scale": "off",
+    "target": 85,
+    "tol": 3,
+    "round": 179,
+    "ruling": "Agree with 1-10",
+    "note": "THE SHOT DIET IS NOT A ROLE. is_big's MIDDLE shape clause, `rim >= 60 and 3pt < 40`, was handing a 6'6\" wing recal_138's hub role = 1.00 by recal_55's class, worth hub load 70.20 x K 0.05 = +3.510 of o_score; his rim rating goes 58/64/63/63/58 across '20-'24 and OFF followed it 80/89/87/88/81. The clause is the one way into is_big that reads o_score's OWN zone ratings instead of a defensive bar, which is the reading recal_93 removed from d_score ('how a man SCORES was deciding how he is GRADED'), and recal_138's own comment conceded the seam ('the man is identical and the FLAG is the difference'). A card whose ONLY claim to bigness is that clause now answers recal_138's own role question instead - the creation surplus playvol - volume, ramped over the hub's own width - and Butler's is -3. The position branch and shape clauses 1 and 3 (all rimprot) keep the unconditional 1.00, so Capela, Sabonis, Jokic and Giannis are byte-identical. OFF 89 -> 86; 12 of 10,000 cards move, every one DOWN, DEF and the big flag move on ZERO."
+  },
+  {
     "card": "Josh Hart '25",
     "scale": "ovr",
     "target": 63,
