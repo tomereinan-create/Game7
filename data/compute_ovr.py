@@ -1542,6 +1542,119 @@ def o_score(p, trace=None):
                 trace['glue'] = dict(gate=_gg, floor=_gfl, k=GL_K, load=_load, pos=_gpos,
                                      bars=(a['drb'], a['orb'], a['playvol'], a['efficiency']),
                                      used=_gused, u=_gu, added=_gadd)
+    # recal_182 (HIS RULING, verbatim: "Agree with 1-10" — item 7 of the 2026-09-21 scout: Dennis
+    # Rodman '96 OVR should read near 63).
+    # THE SECOND-CHANCE FLOOR — the BIG-SIDE sibling of the glue floor directly above, and the term
+    # the `not is_big(p)` gate on line 1531 openly leaves unbuilt.
+    #
+    # THE CARD. Dennis Rodman '96: All-Defensive 1st team and the rebounding champion of a 72-win
+    # team — 14.9 rpg in 32.6 minutes — printing OFF 26 and OVR 55, BELOW his own teammates Luc
+    # Longley '96 (60) and Ron Harper '96 (58), and below Rodman '92 (63) and Horace Grant '95 (69).
+    #
+    # WHERE THE TWENTY-SIX COMES FROM, decomposed. His standard o_score is 27.685. orb 90 — the
+    # second-highest offensive-glass bar on the board that season — is paid ONE WEIGHT, 0.06, for
+    # 5.400, and every other channel pays a man who does not shoot: volume 1 x 0.26 = 0.26, the
+    # zone terms 6.82 on rim 26 / mid 6 / 3pt 10, the paint bonus EXACTLY ZERO (0.52 paint attempts
+    # per 100 kills the attempt factor). recal_91's stretch-big floor is the only thing that lifts
+    # him at all and it lifts him 0.76, because it is paid at ARC SHARE (0.1471) and he has no arc.
+    # recal_131's paint evidence is zero too: it begins at volume 55 and at efficiency 45.
+    #
+    # WHY THE GATE ON LINE 1531 IS THE DEFECT, in its own words. recal_155 excluded bigs from the
+    # glue floor because "every glass channel this file has built is on the BIG branch — recal_91's
+    # stretch-big floor pays 0.17 x (orb + rim), recal_131's paint evidence pays half the offensive
+    # glass. The perimeter card who rebounds like a big has none." That is true of the SHOOTING big
+    # and false of the big who ONLY rebounds: recal_91's channel is priced by the arc he does not
+    # shoot, recal_131's by the volume he does not take. Both of the big's glass channels are gated
+    # on SCORING, so the big whose whole offence is the glass falls through both. The claim the
+    # exclusion rests on is therefore half true, and this term is the other half.
+    #
+    # THE TERM, and it is ONE sentence: AN OFFENSIVE REBOUND IS A POSSESSION THE OFFENCE GETS BACK.
+    # The possession half is recal_155's OWN three bars and its own average — (drb + orb + playvol)/3,
+    # three readings of one statement ("he ends and starts possessions he did not use"), averaged by
+    # recal_139's rule rather than summed. Nothing new is introduced there.
+    # The CONVERSION half is where the sibling DIFFERS from recal_155, and the difference is the
+    # argument, not a tuning. recal_155 pays the glue wing's OWN efficiency (recal_169 then gated it
+    # by the possessions he actually used) because the low-usage WING finishes a real share of what
+    # he recovers. The big who only rebounds does not: he tips it out, and the ball is converted by
+    # the offence he handed it to. So the returned possession is worth WHAT THE CLASS CONVERTS, and
+    # GB_CONV is exactly that — the MEDIAN efficiency of the 520 cards in the class, 67 (the board's
+    # own median is 50, so this is not a generous constant, it is the class's). This is also what
+    # holds the term honest at both ends: it cannot be farmed by a big who converts brilliantly on
+    # nothing (his standard path is already above the floor and he does not move), and it does not
+    # pretend a 34-efficiency season scored what a 84-efficiency one did — it prices the POSSESSION,
+    # which is the only thing the ruling is about. recal_169's used-possession ramp is therefore NOT
+    # carried across: it qualifies a man's OWN rate, and no rate of his own is being paid here.
+    #
+    # THE GATES, every one of them a line already drawn in this file or a quantile of the class.
+    #   is_big            the sibling branch. The perimeter card is recal_155's and is untouched;
+    #                     no card can be paid by both floors, by construction.
+    #   volume 55 -> 25   recal_112's low-usage pair, reused from the glue floor verbatim. Above 55
+    #                     the standard load channels have taken over and this term is exactly zero,
+    #                     and it is disjoint from recal_131's paint evidence, which BEGINS at 55.
+    #   3pt 68 -> 40      recal_112's exclusion gate, reused for its own reason: efficiency earned
+    #                     from the arc is paid by recal_64/118's off-ball floor, not here.
+    #   orb 85 -> 89      THE CLASS, and it is the only gate this term adds. 85 is the class line:
+    #                     the 520 bigs at or above it are the 88.6th percentile of the 4,578 on the
+    #                     board — the top ninth of the big population on the offensive glass. 89 is
+    #                     that class's OWN MEDIAN offensive-glass bar, so a man at the middle of the
+    #                     class is paid in full and the bottom of it pro rata. This gate is what
+    #                     keeps five of the six cards line 1531's comment protects at EXACTLY ZERO:
+    #                     Capela '17 (orb 81), Cedric Maxwell '80 (84), OG Anunoby '21 (57), Dorian
+    #                     Finney-Smith '20/'21 (78, 73) and Draymond Green '16 (60) are all below
+    #                     the class line and are not in this term's population at all.
+    #   load_share        recal_96's own line, foot 12 / full 24, no new constant — the same line
+    #                     the glue floor is paid at, for the same reason: a floor that stands in for
+    #                     a season's possession work is a claim about how much of a season it was.
+    # It is a FLOOR in recal_118's form, so it can only ever LIFT, and that is where the rest of the
+    # protection comes from. CLINT CAPELA '18 is the ONE protected card inside the class (orb 88):
+    # his floor computes 36.4 against a standard path of 63.4 and he moves by EXACTLY ZERO — pinned
+    # off 60 +-2, reading 59 before and 59 after. Same for Andre Drummond '20 (58 +-1), Deandre
+    # Ayton '26, Nic Claxton '24, Richaun Holmes '21, Rudy Gobert '16, Moses Malone '82/'85,
+    # Dwight Howard '11, Domantas Sabonis '21 and Zion '21: all in or near the class, all already
+    # above the floor, all unmoved.
+    #
+    # GB_K = 0.650, SOLVED FOR THE SUBJECT exactly as GL_K was. Rodman '96's possession average is
+    # (90 + 90 + 32)/3 = 70.667, so his floor is 0.650 x (35.333 + 33.5) = 44.742 against a standard
+    # path of 28.446, at a gate of 1.0000 (volume 1, 3pt 10, orb 90, 32.6 mpg): OFF 26 -> 42, and
+    # recal_104's blend gives 0.5 x 42 + 0.5 x 84 = 63. THE BLEND IS THE FENCE, NOT THE CAP — the
+    # big cap (o_ovr + 40) read 66 before and reads 82 now and was never binding on this card.
+    # THE FRONTIER, measured: every K from 0.62 to 0.70 lands the subject inside his 63 +-3 and
+    # holds all 178 anchors; 0.65 is the one that lands him ON 63. The first anchor to fall is Rudy
+    # Gobert '16 (off 48 +-3) at K = 0.85 and Capela '18 at K = 1.00 — so the stopping pin here is
+    # the SUBJECT'S OWN NUMBER, not a wall, and the term has room it is not taking.
+    # THE ARITHMETIC CEILING is worth stating because it is what makes the term safe: the floor can
+    # never print more than 0.650 x (0.5 x 99 + 33.5) x 0.93 = OFF 50 for anybody, and the measured
+    # maximum it prints on the whole board is OFF 43 (Rodman '98). A man cannot rebound his way to a
+    # good offensive card; he can only stop reading like he has no offence at all.
+    # MEASURED on the whole pool: the floor binds on 91 of 10,000 cards; 85 move on printed OFF,
+    # EVERY ONE OF THEM UP, max +23, mean +7.16; DEF and every attribute move on ZERO; OVR follows
+    # on 80, max +12, mean +3.86. The top 12 by OFF is IDENTICAL and the top 50 by OVR has no
+    # entrant and no leaver. The 85 are one class and read like it — Rodman '91-'98, Ben Wallace
+    # '99-'08, Chris Dudley '92-'97, Larry Smith '81-'91, Popeye Jones '94-'02, Michael Cage
+    # '89-'96, Charles Oakley '92-'94, Lorenzo Williams '95/'96, Reggie Evans '08/'13, Samuel
+    # Dalembert '08-'11, Jeff Foster '02-'09, Ömer Aşık '13/'15, Marcus Camby '10, Steven Adams '22,
+    # Wes Unseld '80/'81, Buck Williams '95, Tyson Chandler '05/'06 — the men whose offence IS the
+    # offensive glass, and who this file has never paid for it.
+    # COST, stated plainly: BEN WALLACE RISES WITH THE SUBJECT. Wallace '02-'07 go OVR 64/65/60 ->
+    # 69/70, '01 62 -> 70, '00 62 -> 63, '08 56 -> 58, '09 unmoved — the same term, the same class,
+    # and the ordering recal_67/104 set is KEPT: Rodman '96 reads 63 and does not pass Wallace '04,
+    # who reads 70. Nothing in anchors.json pinned Wallace's OVR; his rimprot pins are untouched.
+    GB_O_LO, GB_O_HI = 85.0, 89.0   # the class line (88.6th percentile of bigs) -> the class's own median orb
+    GB_CONV = 67.0                  # the class's own median efficiency: what the offence converts the returned possession at
+    GB_K = 0.650
+    if is_big(p) and a['volume'] < GL_V_HI and a['orb'] > GB_O_LO:
+        _bg = (min(1.0, max(0.0, (GL_V_HI - a['volume']) / (GL_V_HI - GL_V_LO)))
+               * min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO)))
+               * min(1.0, max(0.0, (a['orb'] - GB_O_LO) / (GB_O_HI - GB_O_LO))) * _load)
+        _bpos = (a['drb'] + a['orb'] + a['playvol']) / 3.0
+        _bfl = GB_K * (0.5 * _bpos + 0.5 * GB_CONV)
+        if _bg > 0.0 and _bfl > std:
+            _badd = _bg * (_bfl - std)
+            std += _badd
+            if trace is not None:
+                trace['glass'] = dict(gate=_bg, floor=_bfl, k=GB_K, load=_load, pos=_bpos,
+                                      bars=(a['drb'], a['orb'], a['playvol']), conv=GB_CONV,
+                                      added=_badd)
     # recal_121 (HIS RULING, verbatim: "This is way too much ball sec for a very turnover prone guy.
     # In addition to the OFF being a touch heigher than Id like it to be.. More around 85"; and, on
     # the round's first cut, HIS AMENDMENT, verbatim: "I agree that Luka and Lebron are the only
@@ -2039,6 +2152,14 @@ if _CARD:
         print(f"  recal_169 - possessions actually used {_gl2['used']:.2f} (usage {_gl2['used'] / max(_gl2['load'], 1e-9):.1f}"
               f" x load {_gl2['load']:.4f}) against the class's upper-quartile load 15.0 -> the "
               f"conversion half is paid at {_gl2['u']:.4f}")
+    if 'glass' in _ot:
+        _gs2 = _ot['glass']
+        print(f"SECOND-CHANCE FLOOR (recal_182, the big-side sibling) - possession work drb/orb/playvol "
+              f"{_gs2['bars']} averaged = {_gs2['pos']:.2f}, half against the CLASS's conversion "
+              f"{_gs2['conv']:.0f} (the orb>=85 big class's own median efficiency; an offensive rebound "
+              f"is a possession the OFFENCE gets back), x {_gs2['k']:.3f} = floor {_gs2['floor']:.2f}; "
+              f"gate {_gs2['gate']:.4f} (volume 55->25 x 3pt 68->40 x orb 85->89 x recal_96's load "
+              f"share {_gs2['load']:.4f}): +{_gs2['added']:.3f}")
     if 'paint_floor' in _ot:
         _pf = _ot['paint_floor']
         print(f"PAINT-EVIDENCE FLOOR (recal_131) - share {_pf['share']:.2f} (volume 55->80 x efficiency "
