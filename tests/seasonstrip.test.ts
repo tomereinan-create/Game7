@@ -51,7 +51,9 @@ describe('the strip follows the franchise lineage, not the abbreviation', () => 
     // measurement-ranked voted band lifted Luguentz Dort '25 and Jalen Williams '25 on the OKC five,
     // and the franchise's best season flipped by ONE point — Thunder '25 (OFF 73 / DEF 89 / OVR 81)
     // over the '96 Sonics (79 / 81 / OVR 80), which had been the mark. 1996 -> 2025.
-    expect(best!.y).toBe(2025) // Thunder '25, 68–14 — one point over the ’96 Sonics, 64–18
+    // recal_183 RE-POINTED IT BACK: the pre-2014 relief re-foot lifted the perimeter defence of the '96 Sonics'
+    // untracked five (Payton, McMillan, Perkins) and the pair flipped again by one point. 2025 -> 1996.
+    expect(best!.y).toBe(1996) // the ’96 Sonics, 64–18 — one point over the Thunder '25, 68–14
   })
 })
 
