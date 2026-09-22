@@ -1,0 +1,330 @@
+{
+ "round": 182,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 1-10",
+ "title": "THE SECOND-CHANCE FLOOR — the big-side sibling recal_155's `not is_big(p)` gate openly left unbuilt. Both of the big's glass channels are gated on SCORING (recal_91's stretch-big floor is paid at ARC share, recal_131's paint evidence begins at volume 55), so the big whose whole offence is the offensive glass falls through both and reads like a man with no offence at all. The term pays recal_155's OWN three possession bars (drb, orb, playvol) averaged, half against the CLASS's conversion — an offensive rebound is a possession the OFFENCE gets back, so what it is worth is what the class converts, not what the rebounder converts — gated on recal_112's volume 55->25 and 3pt 68->40, on orb 85->89 (the class line, the 88.6th percentile of bigs, to that class's own median) and on recal_96's load share. Dennis Rodman '96 OFF 26 -> 42, OVR 55 -> 63",
+ "subject": "Dennis Rodman '96",
+ "scale": "ovr",
+ "target": 63,
+ "tol": 3,
+ "before": 55,
+ "after": 63,
+ "pipeline_version": 176,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if is_big\\(p\\) and a\\['volume'\\] < GL_V_HI and a\\['orb'\\] > GB_O_LO:",
+   "label": "THE TERM — a big-side possession/glass floor beside recal_155's glue floor, on the branch its `not is_big(p)` gate excludes",
+   "note": "the perimeter card is recal_155's and the big is this one's; no card can be paid by both, by construction"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GB_O_LO, GB_O_HI = 85\\.0, 89\\.0",
+   "label": "THE CLASS, and the only gate this term adds: the class line -> the class's own median offensive-glass bar",
+   "note": "85 is the 88.6th percentile of the 4,578 bigs on the board — 520 cards, the top ninth on the offensive glass. 89 is that class's own MEDIAN orb, so a man at the middle of the class is paid in full and the bottom of it pro rata. This gate is what holds five of the six cards line 1531's comment protects at EXACTLY zero: Capela '17 (orb 81), Cedric Maxwell '80 (84), OG Anunoby '21 (57), Dorian Finney-Smith '20/'21 (78, 73) and Draymond Green '16 (60) are not in the population at all"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GB_CONV = 67\\.0",
+   "label": "THE CONVERSION HALF IS THE CLASS'S, NOT THE CARD'S — the class's own median efficiency, measured on the same 520",
+   "note": "this is where the sibling DIFFERS from recal_155 and the difference is the argument. recal_155 pays the glue WING's own efficiency (recal_169 then gated it by the possessions he actually used) because the low-usage wing finishes a real share of what he recovers. The big who only rebounds tips it out and the ball is converted by the offence he handed it to, so the returned possession is worth what the class converts. 67 against a whole-board median of 50 — the class's number, not a generous one. recal_169's used-possession ramp is therefore NOT carried across: it qualifies a man's OWN rate, and no rate of his own is paid here"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GB_K = 0\\.650",
+   "label": "SOLVED FOR THE SUBJECT, exactly as GL_K was — and the stopping pin is the subject's own number, not a wall",
+   "note": "Rodman '96's possession average is (90 + 90 + 32)/3 = 70.667, so his floor is 0.650 x (35.333 + 33.5) = 44.742 against a standard path of 28.446, at a gate of 1.0000. Every K from 0.62 to 0.70 lands him inside 63 +-3 and holds all 178 anchors; 0.65 is the one that lands him ON 63. The first anchor to fall is Rudy Gobert '16 (off 48 +-3) at K = 0.85 and Clint Capela '18 at K = 1.00 — the term has room it is not taking"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_bfl = GB_K \\* \\(0\\.5 \\* _bpos \\+ 0\\.5 \\* GB_CONV\\)",
+   "label": "THE FLOOR'S ARITHMETIC CEILING, and it is what makes the term safe",
+   "note": "the floor can never print more than 0.650 x (0.5 x 99 + 33.5) x 0.93 = OFF 50 for anybody, and the measured maximum it prints on the whole board is OFF 43 (Dennis Rodman '98). A man cannot rebound his way to a good offensive card; he can only stop reading like he has no offence"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if not is_big\\(p\\) and a\\['volume'\\] < GL_V_HI:",
+   "label": "recal_155's glue floor, UNTOUCHED on its own branch",
+   "note": "Josh Hart '25 (pinned ovr 63 +-3), Javonte Green '22, Alonzo Gee '16, Kyle Korver '15, Bruce Bowen '06, Tony Snell '18 and Steve Kerr '96 are byte-identical — the perimeter side of the file did not move a point"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 4\\.09,",
+   "label": "THE TAXES RE-SWEPT ONCE from main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66), as the harness law requires: hunt 4.22 -> 4.09",
+   "note": "14 cards crossed the harness's ovr>=55 line (6,345 -> 6,359) and TWO taxes broke, both on the ORACLE edge. hunt read +0.456 at 4.22 against the +0.50 floor; feasible 4.062 (blind -0.3000, the ceiling) to 4.126 (oracle +0.5003), a NARROW 0.064, true midpoint 4.09 (blind -0.323, oracle +0.518)"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.54,",
+   "label": "crash def glass 0.66 -> 0.54 — the tax whose benefit reads `drb`, off a pool this round reshuffled with fourteen high-drb bigs",
+   "note": "+0.482 at 0.66 against the +0.50 floor. Feasible about 0.469 (blind -0.300) to 0.609 (oracle +0.5001), midpoint 0.54 (blind -0.359, oracle +0.524). crashOff held at 0.28, read from main's constant first. All nine rows pass"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Dennis Rodman '96",
+   "scale": "off",
+   "op": "~",
+   "value": 42,
+   "tol": 1,
+   "label": "THE SUBJECT'S OFFENCE, and the blend is the fence: at DEF 84, OVR 63 needs exactly OFF 42 (0.5 x 42 + 0.5 x 84). The big cap (o_ovr + 40) read 66 before and reads 82 now — it was never binding on this card"
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "ovr",
+   "op": ">=",
+   "value": 63,
+   "label": "THE WALL OF recal_67/104, AND IT HOLDS AS AN ORDERING: Rodman '96 must not pass Ben Wallace '04. Wallace rises WITH him — he is the same term on the same class — 64 -> 70, and the subject reads 63 underneath him. Nothing in anchors.json ever pinned Wallace's OVR; his rimprot pins are untouched"
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "recal_82's zero-tolerance pin, and the proof no attribute moved: this round is entirely inside o_score"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "the first of the six cards line 1531's comment protects, held at EXACTLY zero by the class gate: orb 81 is below the class line"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 2,
+   "label": "THE ONE PROTECTED CARD INSIDE THE CLASS (orb 88) and the floor holds him on its own: his floor computes 36.4 against a standard path of 63.4, so he moves by EXACTLY zero. 59 before, 59 after"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 4,
+   "label": "orb 84 — one point below the class line — and byte-identical at 66"
+  },
+  {
+   "card": "OG Anunoby '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "orb 57, not in the population; byte-identical at 63"
+  },
+  {
+   "card": "Dorian Finney-Smith '20",
+   "scale": "off",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "orb 78; byte-identical at 53. '21 (orb 73) likewise, at 63"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "orb 60, the sixth protected card, and the proof DEF moved on ZERO cards board-wide"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "recal_155's own subject, on the branch this round did not touch: byte-identical"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "the subject's own peak card, and it does NOT move at all — his standard path (48.4) is already above his floor (42.7), which is where most of this term's protection comes from. OFF 45, OVR 70, unchanged"
+  },
+  {
+   "card": "Rudy Gobert '16",
+   "scale": "off",
+   "op": "~",
+   "value": 48,
+   "tol": 3,
+   "label": "the first anchor the term would reach if K were raised — at 0.85, not at 0.65. Byte-identical here"
+  },
+  {
+   "card": "Andre Drummond '20",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "orb 99, deep inside the class, and unmoved: already above the floor"
+  },
+  {
+   "card": "Nic Claxton '24",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "and the rest of the low-usage big family — Deandre Ayton '26, Richaun Holmes '21, Montrezl Harrell '18, Domantas Sabonis '21, Moses Malone '82/'85, Dwight Howard '11, Shaq '08/'09 — all in or near the class, all already above the floor, all byte-identical"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "the summit: the top 12 by OFF is IDENTICAL and the top 50 by OVR has no entrant, no leaver and no rank flip"
+  },
+  {
+   "card": "Bulls '96 (best legal five)",
+   "five": [
+    "Steve Kerr '96",
+    "Michael Jordan '96",
+    "Scottie Pippen '96",
+    "Toni Kukoč '96",
+    "Luc Longley '96"
+   ],
+   "scale": "team:off",
+   "op": ">=",
+   "value": 60,
+   "label": "THE PINNED FIVE, AND IT DOES NOT CONTAIN THE SUBJECT: recal_94/105 fixed it as Kerr/Jordan/Pippen/Kukoč/Longley, and the team dials read ATTRIBUTES, not o_ovr. All three Bulls '96 dials are byte-identical (offdial 70, defdial 99, ovrdial 84), as is Pistons '04 (defdial 87) and CHI '96 OFF rank (4 of 29)"
+  }
+ ],
+ "order": [
+  {
+   "scale": "ovr",
+   "above": "Ben Wallace '04",
+   "below": "Dennis Rodman '96",
+   "label": "THE ORDERING THE REFUTER ASKED FOR, and the reason the target was trimmed to 62-64: 70 against 63"
+  },
+  {
+   "scale": "ovr",
+   "above": "Dennis Rodman '96",
+   "below": "Luc Longley '96",
+   "label": "THE ITEM ITSELF. The rebounding champion of the 72-win Bulls read BELOW his own centre (60) and his own point guard (58). He now reads 63 against Longley's 60 and Harper's 58, and neither of those two moved a point"
+  },
+  {
+   "scale": "ovr",
+   "above": "Dennis Rodman '96",
+   "below": "Ron Harper '96",
+   "label": "the other half of the same item: 63 against 58"
+  },
+  {
+   "scale": "ovr",
+   "above": "Horace Grant '95",
+   "below": "Dennis Rodman '96",
+   "label": "and the comparison the scout used the other way stays the right way up: Grant '95 (OFF 54, a big who scores as well as rebounds) holds 69 against the subject's 63, byte-identical"
+  },
+  {
+   "scale": "ovr",
+   "above": "Dennis Rodman '90",
+   "below": "Dennis Rodman '96",
+   "label": "inside the arc: the peak season (70, unmoved) still reads above the ruled one (63)"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 85,
+  "max_abs": 23,
+  "top": [
+   [
+    "Dennis Rodman '98",
+    20,
+    43
+   ],
+   [
+    "Lorenzo Williams '96",
+    16,
+    38
+   ],
+   [
+    "Reggie Evans '13",
+    19,
+    40
+   ],
+   [
+    "Chris Dudley '96",
+    18,
+    39
+   ],
+   [
+    "Chris Dudley '95",
+    18,
+    39
+   ],
+   [
+    "Lorenzo Williams '95",
+    17,
+    38
+   ],
+   [
+    "Dennis Rodman '97",
+    22,
+    42
+   ],
+   [
+    "Ben Wallace '07",
+    22,
+    41
+   ],
+   [
+    "Dennis Rodman '96",
+    26,
+    42
+   ],
+   [
+    "Jamie Feick '00",
+    24,
+    40
+   ],
+   [
+    "Ben Wallace '01",
+    26,
+    41
+   ],
+   [
+    "Ben Wallace '04",
+    28,
+    41
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "BEN WALLACE RISES WITH THE SUBJECT, and it is the round's largest stated cost. Wallace '01 62 -> 70, '02 65 -> 70, '03 64 -> 70, '04 64 -> 70, '05 64 -> 70, '06 64 -> 70, '07 60 -> 69, '99 62 -> 64, '00 62 -> 63, '08 56 -> 58, '09 unmoved. He is the same term on the same class — orb 86-95, volume 1-13, a conversion the file was pricing as an offence — and the ordering recal_67/104 set is KEPT: Rodman '96 reads 63 and does not pass him. Nothing in anchors.json pinned Wallace's OVR (only rimprot, at recal_82's zero tolerance, which is untouched), so no anchor is broken and none is superseded. A later round that wants Wallace back at 64 is asking for this term to be withdrawn, not tuned: he and the subject sit on the same floor and are separated only by DEF.",
+  "THE FLOOR FLATTENS A CAREER ARC, and it should be said rather than discovered. Below the floor the reading IS the floor, so Rodman '91-'98 now print OFF 39-43 within four points of each other, and '98 (OFF 43, the highest of the run) is a worse offensive season than '92 (42) by every box column. The bars that separate them — efficiency 18 against 59 — are deliberately NOT in this term, because the possession it prices is converted by the offence and not by him. The arc survives on OVR, where DEF still orders them (68/68/66/62/62/63/60/60), and the peak card '90 is above the floor entirely and did not move. This is recal_155's own property on its own branch; it is not new, only newly visible on bigs.",
+  "OFF_TOP AND DEF_TOP WERE NOT RE-DERIVED (recal_90's warning). The band anchors stand at 102.75 / 104.25, nothing above the knee was rescaled, and the summit is untouched: the top 12 by OFF is identical and the top 50 by OVR has no entrant, no leaver and no rank flip. DEF moved on ZERO cards and no attribute moved at all — this round is entirely inside o_score.",
+  "TWO TACTICS TAXES WERE RE-SWEPT ONCE from main's constants (hunt 4.22 / crashOff 0.28 / crashDef 0.66): hunt 4.22 -> 4.09 and crash def glass 0.66 -> 0.54, crashOff held. hunt's window is 0.064 wide, the narrowest it has held since recal_95; a later round on any offensive class should expect to re-ratify it again rather than read a break as a fault in the new formula.",
+  "FOR A LATER ROUND ON THIS TERM: the three constants are cut on the class (line 85 = the bigs' 88.6th percentile, full 89 = the class's median orb, conversion 67 = the class's median efficiency) and K = 0.650 is the only fitted number. K's headroom is real but bounded — Rudy Gobert '16 (off 48 +-3) falls at about 0.85 and Clint Capela '18 (off 60 +-2) at about 1.00 — and the floor's arithmetic ceiling is OFF 50 for any card on the board. The lever NOT used here is the possession average itself: it carries `playvol` at a third, which is what holds the pure-glass big below the glue wing, and changing that changes the whole class at once."
+ ],
+ "notes": [
+  "THE CARD. Dennis Rodman '96: All-Defensive 1st team and the rebounding champion of a 72-win team — 14.9 rpg in 32.6 minutes — printing OFF 26 and OVR 55, #9,770 of 10,000 by OFF, BELOW his own teammates Luc Longley '96 (60) and Ron Harper '96 (58). His standard o_score is 27.685, of which orb 90 — paid one weight, 0.06 — is 5.400, and every other channel prices a man who does not shoot: volume 1 x 0.26 = 0.26, the three zone terms 6.82, the paint bonus EXACTLY ZERO at 0.52 paint attempts per 100. recal_91's stretch-big floor is the only lift he gets and it is 0.76, because it is paid at ARC share (0.1471) and he has no arc; recal_131's paint evidence is zero because it begins at volume 55 and efficiency 45.",
+  "WHY THE GATE ON LINE 1531 IS THE DEFECT, in its own words. recal_155 excluded bigs from the glue floor because 'every glass channel this file has built is on the BIG branch ... The perimeter card who rebounds like a big has none.' That is true of the SHOOTING big and false of the big who ONLY rebounds: recal_91's channel is priced by the arc he does not shoot and recal_131's by the volume he does not take. Both of the big's glass channels are gated on SCORING, so the big whose whole offence is the glass falls through both. The claim the exclusion rests on is half true, and this term is the other half.",
+  "WHY THIS FORM AND NOT recal_155's, MEASURED AND REJECTED. The obvious move is to extend recal_155's floor verbatim — same K, the card's OWN efficiency under recal_169's used-possession ramp, with an orb gate for bigs. It was measured on the whole pool at the K that lands the subject (0.95) and it FAILS: Rudy Gobert '16 breaks at 61 against a pin of 48 +-3, Capela '18 reaches 62 at the top edge of his, and the term inflates the high-efficiency low-usage big without limit — Rodman '89 to OVR 80, Rodman '90 to 77, DeAndre Jordan '18 to 82, Tyson Chandler '05 to 72, 293 movers against 85. The reason is structural and is the round's whole argument: a man's own conversion rate is not what a possession he handed to someone else is worth.",
+  "THE FRONTIER, stated because the dispatch asked which pin fences the subject. It is the SUBJECT'S OWN NUMBER. Every K from 0.62 to 0.70 holds all 178 anchors and lands him inside 63 +-3 (0.62 -> 62, 0.65 -> 63, 0.68 -> 64, 0.70 -> 64); the first anchor to fall is Rudy Gobert '16 at about K = 0.85 and Capela '18 at K = 1.00. 0.650 is the value that lands him ON 63, and the blend — not the cap — is what required OFF 42 to get there.",
+  "MEASURED on the whole pool: the floor binds on 91 of 10,000 cards; 85 move on printed OFF, EVERY ONE OF THEM UP, max +23, mean +7.16; DEF and every attribute move on ZERO; OVR follows on 80, max +12, mean +3.86. The 85 are one class and read like it — Rodman '91-'98, Ben Wallace '99-'08, Chris Dudley '92-'97, Larry Smith '81-'91, Popeye Jones '94-'02, Michael Cage '89-'96, Charles Oakley '92-'94, Lorenzo Williams '95/'96, Reggie Evans '08/'13, Samuel Dalembert '08-'11, Jeff Foster '02-'09, Ömer Aşık '13/'15, Marcus Camby '10, Steven Adams '22, Wes Unseld '80/'81, Buck Williams '95, Tyson Chandler '05/'06 — the men whose offence IS the offensive glass, and whom this file has never paid for it.",
+  "ANCHORS: 179 pins including this round's own, 0 failing, mean |error| 0.79 — identical to main's reading before the round (178 pins, 0.79), on the same measure. The Bulls '96 pinned five, the Pistons '04 five and every team rank anchor are byte-identical, because the team engine reads attributes and this round moved none; not one of the 150 campaign fives changed membership."
+ ]
+}

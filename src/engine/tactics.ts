@@ -620,6 +620,19 @@ export const DEFAULT_TACTICS: Tactics = {
  * constant. 585 creators gained offence, so a blind hunt call costs almost nothing: blind -0.02 at 3.80 against the -0.30
  * ceiling. The branch's window (4.150-4.292) holds on the merged pool: hunt 3.80 -> 4.22 (blind -0.36, oracle +0.54), the
  * largest value this tax has carried. crashOff 0.28 and crashDef 0.66 held.
+ * recal_182's second-chance floor lifted 85 o_ovrs and 80 OVRs (0 d_ovrs, no attribute) on ONE class — the
+ * bigs whose offence is the offensive glass — and 14 of them crossed the harness's ovr>=55 line (6,345 ->
+ * 6,359), so the sampled fives changed again. TWO taxes broke, both on the ORACLE edge. HUNT +0.456 at 4.22 against the
+ * +0.50 floor: the men this round lifted are non-creators, so a five that now clears ovr>=55 carries a
+ * clearer mismatch to hunt and the best call is worth less against a tax this large. Swept ONCE from
+ * MAIN's constants (hunt 4.22, crashOff 0.28, crashDef 0.66) as the law requires: feasible 4.062 (blind
+ * -0.3000, the ceiling) to 4.126 (oracle +0.5003, the floor), a NARROW 0.064; true midpoint by r126's
+ * rule 4.22 -> 4.09 (blind -0.323, oracle +0.518; 0.023 and 0.018 of room either side). CRASH DEF GLASS
+ * +0.482 at 0.66 — the tax whose benefit reads `drb`, off a pool this round reshuffled with fourteen
+ * high-drb bigs: feasible about 0.469 (blind -0.300) to 0.609 (oracle +0.5001), midpoint 0.66 -> 0.54
+ * (blind -0.359, oracle +0.524; 0.059 and 0.024 of room). crashOff held at 0.28 (blind -0.63, oracle
+ * +0.54), read from main's constant first, and the other six held their bands untouched. All nine pass.
+ * hunt's eleventh move; this is the first round in which it moved DOWN off a purely offensive change.
  */
 export const TAX = {
   scorer: 0.55,
@@ -627,9 +640,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 4.22,
+  hunt: 4.09,
   crashOff: 0.28,
-  crashDef: 0.66,
+  crashDef: 0.54,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
