@@ -3467,6 +3467,10 @@ body:has(.sheet) { overflow: hidden; }
 
 /* ---- the court lineup ---- */
 .court { position: relative; width: 100%; max-width: 430px; margin: 10px auto 6px; aspect-ratio: 1 / 1; }
+/* the team page's floor is the one thing in its column (his ruling: "make the court with the 5s
+   bigger"), so it is not held to the 430px a floor takes when it shares a screen with a roster.
+   On a phone the column is narrower than either figure and nothing here changes. */
+.tdb-sheet .court { max-width: min(100%, 560px); }
 /* THE START LINE THE TWO FLOORS SHARE, on the draft (his ruling, 2026-09-09: "In both modes, have
    both 5s the same size and alligned"). The floors were always the same size — one rule, two
    columns of the same 0.85fr, measured identical at every width from 375 to 1920 — but they did
@@ -4445,13 +4449,29 @@ body.offstage #root { position: relative; z-index: 1; }
 
 /* THE TEAM A CARD OPENS wears the same two things the card did: its club on the chip and under
    its name, and the red-to-green scale on the three numbers. */
-.tdb-club { display: flex; align-items: center; gap: 12px; margin-top: 4px; min-width: 0; }
+.tdb-club { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 4px; min-width: 0; }
 .tdb-club .tcard-ab { width: 48px; height: 48px; font-size: 18px; }
 .tdb-clubwho { min-width: 0; }
 .tdb-clubwho .opp-name { display: block; }
 /* 1b prints a lit rule under its title; here it is the club's second colour under the team's name */
 .tdb-clubrule { display: block; width: 64px; height: 3px; margin-top: 6px; border-radius: 2px; background: var(--chip-edge); }
 .tdb-scale { gap: 10px; padding-top: 10px; }
+/* ---- THE VERDICT ON THE CLUB LINE ----
+   HIS RULING, 2026-09-22: "Move 93 OVR all-time scale 88 OFF all-time scale 98 next to the
+   name(above the years)". The three dials opened the left column, under the season strip, which
+   put the page's headline numbers below the row of years and left the club line carrying a name
+   and nothing else. Chip, name, verdict: one line, and the years run under all of it.
+
+   `margin-left: auto` AND NOT A THIRD FLEX TRACK: the name must keep every pixel it can take, so
+   the dials are pushed to the far edge by what is left over rather than given a share of the line.
+
+   THE LINE WRAPS ON A PHONE and the dials drop under the chip — still above the season strip,
+   which is what the ruling asks — because three dials and a club name cannot both be read across
+   375px. `flex-wrap` on the club line is the whole mechanism; nothing here needs a query. */
+.tdb-clubdials { padding-top: 0; }
+/* pushed to the far edge only once the line is wide enough to hold the name and the three of them
+   at once; on a phone they are the wrapped second line and start where that line starts. */
+@media (min-width: 900px) { .tdb-clubdials { margin-left: auto; } }
 
 /* ---- 1d: THE BROADCAST BOARD ----
    Claude Design "Team Database Redesigns", board 1d, his ruling of 2026-09-21: "Use 1d. The
@@ -4486,19 +4506,70 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-sheet:not(.tdb-list) > * { max-width: 96vw; margin-left: auto; margin-right: auto; }
   /* THE FLOOR AND ITS VERDICT ON ONE SIDE, THE RECORD AND THE ROSTER ON THE OTHER. 1.05fr against
      1fr: the court is square and wants the extra, the line is a grid of cells and gives it. */
-  .tdb-detail { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 12px 34px; align-items: start; }
+  /* THE TABLE TAKES THE LARGER SHARE NOW — 0.9 against 1.1, where it used to be 1.05 against 1.
+     Nineteen columns is the widest thing on this page and the one his ruling asks to grow ("Make
+     this entire part way bigger"), while the floor is square and is held by the window's height
+     long before it is held by its column. Giving the court the extra was right when the dials
+     opened its column above it; they are on the club line now and it no longer needs the room. */
+  .tdb-detail { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 12px 34px; align-items: start; }
   .tdb-left, .tdb-right { min-width: 0; }
   /* every number on this page grows with the page (his ruling). The court's 430px cap was written
      for a 562px column; here it is the half of the sheet it stands in. */
-  .tdb-sheet .court { max-width: min(1000px, 100%); margin-top: 16px; }
+  /* THE FLOOR TAKES THE COLUMN — his ruling, 2026-09-22: "make the court with the 5s bigger".
+     The 1000px cap was written while the three dials still opened this column and the court began
+     a third of the way down it; with the verdict moved up to the club line the column holds
+     nothing but the floor, and a cap of 1000 left the bottom half of it empty on his screen. It is
+     the width it is given now, held back only by the height of the window: the court is square, so
+     an unbounded width is also an unbounded height and the five would run off the bottom. */
+  .tdb-sheet .court { max-width: min(100%, 84vh); margin-top: 16px; }
   .tdb-sheet .tdb-club .tcard-ab { width: clamp(64px, 3.2vw, 96px); height: clamp(64px, 3.2vw, 96px); font-size: clamp(25px, 1.3vw, 38px); }
   .tdb-sheet .tdb-club .opp-name { font-size: clamp(30px, 3vw, 76px); }
-  .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 9vw, 210px); }
+  /* THE DIALS ARE ON THE CLUB LINE NOW and are drawn to match the name they stand beside. The
+     ring itself used to stay at its phone's 64px inside a box three times that wide — which was
+     survivable while they opened a column of their own and is not while they share a line with a
+     76px team name — so the svg grows with the box. `height: auto` and not a matching clamp: the
+     viewBox is square and one dimension is enough. */
+  .tdb-sheet .dials.tdb-scale .dial { width: clamp(96px, 7vw, 168px); }
+  .tdb-sheet .dials.tdb-scale .dial svg { width: clamp(84px, 6.2vw, 150px); height: auto; }
+  .tdb-sheet .dials.tdb-scale .dial .dl { font-size: clamp(11px, 0.75vw, 17px); margin-top: -8px; }
+  .tdb-sheet .dials.tdb-scale .dial .ds { font-size: clamp(9px, 0.6vw, 14px); }
   .tdb-sheet .card-head .label { font-size: clamp(13px, 1.1vw, 24px); }
-  .tdb-sheet .rowhead.tdb span { font-size: clamp(14px, 1.1vw, 24px); }
-  /* the roster under the table reads at the page's size too, not the phone's */
-  .tdb-sheet .row.dr.tdb .pname .who b { font-size: clamp(15px, 1.15vw, 26px); }
-  .tdb-sheet .row.dr.tdb .pname .who i { font-size: clamp(9px, 0.62vw, 14px); }
+}
+
+/* ---- THE RIGHT-HAND COLUMN, AT THE SIZE OF THE COLUMN ITSELF ----
+   HIS RULING, 2026-09-22: "Make this entire part way bigger" — on the league's table and the
+   roster beneath it, which is everything the right column holds.
+
+   THE FIRST PASS ONLY GREW THE TYPE AND LEFT THE BOXES ALONE, and the boxes were what capped it:
+   nineteen tracks of `minmax(52px, 1fr)` and a row locked to the app's 46px meant the column could
+   be 1,800px wide and still print the line at a laptop's size with air either side. Every figure
+   here is a clamp against the viewport now, and the tracks and the row heights grow with them, so
+   the block fills the half of the page it was given instead of sitting in the top-left of it. */
+@media (min-width: 1100px) {
+  /* the league's own table */
+  .tdb-sheet .tdb-line { grid-template-columns: auto repeat(var(--cols), minmax(clamp(58px, 3.3vw, 100px), 1fr)); }
+  .tdb-sheet .tdb-col, .tdb-sheet .tdb-lab { font-size: clamp(11px, 0.78vw, 18px); }
+  .tdb-sheet .tdb-col { padding: 11px 7px 9px; }
+  .tdb-sheet .tdb-lab { padding: 11px 18px 11px 15px; }
+  .tdb-sheet .tdb-num { padding: 13px 8px 9px; font-size: clamp(24px, 1.95vw, 40px); }
+  .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: 14px; font-size: clamp(13px, 0.98vw, 22px); }
+  /* THE ROSTER UNDER IT reads at the page's size too, not the phone's. The three tracks are
+     clamps rather than the 102px/60px the phone gives them, because a name set at 34px over a box
+     line still set at 10px is one row pretending to be two. */
+  .tdb-sheet .rowhead.dr.tdb, .tdb-sheet .row.dr.tdb {
+    grid-template-columns: minmax(0, 1fr) clamp(150px, 11vw, 270px) clamp(88px, 6.6vw, 164px);
+    gap: 14px;
+  }
+  .tdb-sheet .rowhead.dr.tdb.blind, .tdb-sheet .row.dr.tdb.blind { grid-template-columns: minmax(0, 1fr) clamp(150px, 11vw, 270px); }
+  .tdb-sheet .rowhead.tdb { height: auto; padding-bottom: 8px; margin-top: 18px; }
+  .tdb-sheet .rowhead.tdb span { font-size: clamp(15px, 1.25vw, 28px); }
+  .tdb-sheet .rowhead.tdb .gcap { font-size: clamp(10px, 0.72vw, 16px); }
+  .tdb-sheet .row.dr.tdb { height: clamp(56px, 3.6vw, 92px); }
+  .tdb-sheet .row.dr.tdb .pname .who b { font-size: clamp(18px, 1.45vw, 33px); }
+  .tdb-sheet .row.dr.tdb .pname .who i { font-size: clamp(11px, 0.78vw, 18px); }
+  .tdb-sheet .row.dr.tdb .mini { font-size: clamp(14px, 1.05vw, 24px); }
+  .tdb-sheet .row.dr.tdb .oppman-nums { gap: 9px; font-size: clamp(14px, 1.05vw, 24px); }
+  .tdb-sheet .row.dr.tdb .oppman-nums i { min-width: clamp(22px, 1.6vw, 38px); }
 }
 
 /* ---- THE TEAM AND OPPONENT BLOCK — Basketball Reference's own four lines ----
@@ -4513,12 +4584,14 @@ body.offstage #root { position: relative; z-index: 1; }
    IT SCROLLS SIDEWAYS RATHER THAN WRAPPING when the column cannot hold eighteen stats — a stat
    table that wraps is two tables that disagree about their own heads — and the label column is
    sticky, so the row you are reading still says whose it is halfway along. */
-.tdb-linehead { margin-top: 14px; }
+/* NO HEAD OVER IT — his ruling, 2026-09-22: "Remove TEAM.2016 ▸ PER GAME · 82 GAMES · RANK 1 OF 30
+   IS BEST · BASKETBALL REFERENCE". The strapline's margin came with it, so the table carries its
+   own clearance from the top of the column. */
 .tdb-line {
   display: grid;
   grid-template-columns: auto repeat(var(--cols), minmax(38px, 1fr));
   align-items: center;
-  margin-top: 8px;
+  margin-top: 14px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   background: var(--surface);

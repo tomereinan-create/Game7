@@ -348,10 +348,10 @@ function TeamTick({ t, at, sorted, onPick, span: [from, to] }: { t: TeamSeason; 
  * THE REAL LINE, AS THE LEAGUE KEPT IT — his ruling, 2026-09-21: "add more(as many as possible)
  * real (basic, not advanced) stats on the team from basketball ref."
  *
- * The same shape the player card's STATLINE wears, because it is the same kind of fact: a ruled
- * name, then a run of cells with the column over the figure. What it must never be mistaken for is
- * the three dials above it — those are this app's verdict on the five it can field, and these are
- * what the team actually did, which is why the rule says whose number each one is.
+ * IT CARRIES NO HEAD — his ruling, 2026-09-22: "Remove TEAM.2016 ▸ PER GAME · 82 GAMES · RANK 1 OF
+ * 30 IS BEST · BASKETBALL REFERENCE". The strapline was a caption explaining a table that explains
+ * itself: the four labels down the left already say TEAM, LG RANK, OPP, LG RANK, and the season is
+ * on the chip at the top of the page. The table starts at the table now.
  *
  * A season the dump has no row for prints nothing at all rather than a row of dashes: the pool
  * reaches back to 1980 and so does the file, so the only way here is a team-season that never
@@ -362,12 +362,6 @@ function TeamLineBlock({ t }: { t: TeamSeason }) {
   if (!line) return null
   return (
     <>
-      <div className="pc-rule tdb-linehead">
-        <span>
-          TEAM.{t.y} &#9656; PER GAME &#183; {line.g} GAMES &#183; RANK 1 OF {line.of} IS BEST &#183; BASKETBALL REFERENCE
-        </span>
-        <i />
-      </div>
       {/* ONE GRID, FIVE ROWS, NINETEEN COLUMNS — his ruling: "have the stats be 4 lines - basic
           stats. League ranking. Opp basic stats. League ranking." A column has to line up down all
           four lines or a rank under a figure means nothing, so the whole block is a single grid and
@@ -913,6 +907,27 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 <span className="opp-name">{picked.team}</span>
                 <i className="tdb-clubrule" />
               </span>
+              {/* THE VERDICT STANDS WITH THE NAME — his ruling, 2026-09-22: "Move 93 OVR all-time
+                  scale 88 OFF all-time scale 98 next to the name(above the years)". The three dials
+                  opened the left column, under the season strip, which put the page's headline
+                  numbers below the row of years and left the club line carrying a name and nothing
+                  else. Chip, name, verdict: one line, and the years run under all of it.
+                  Same scale the cards use — white at 50, green above, red below — and OVR is one of
+                  the three rather than a caption in the head, which is what it was before the floor
+                  and the line took the page in two. */}
+              {detail.gauges ? (
+                <div className="dials tdb-scale tdb-clubdials">
+                  {(
+                    [
+                      ['OVR', ovrOf(picked) ?? 0],
+                      ['OFF', detail.gauges.off],
+                      ['DEF', detail.gauges.def],
+                    ] as const
+                  ).map(([l, v]) => (
+                    <Dial key={l} label={l} value={v} tone="scale" color={ratingTone(v)} sub={detail.gauges!.basis} />
+                  ))}
+                </div>
+              ) : null}
             </div>
             {stripYears.length > 1 ? <SeasonStrip years={stripYears} cur={seasonId(picked)} go={step} mark="best" /> : null}
             {/* TWO COLUMNS ON A DESK (his ruling, 2026-09-21: "Make everything bigger here"). The
@@ -923,22 +938,6 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                 phone it is the column it always was. */}
             <div className="tdb-detail">
             <div className="tdb-left">
-            {/* and the verdict on the same scale the cards use: white at 50, green above, red below.
-                OVR joins them here — it was a caption in the head, which made the one number the
-                list sorts on the smallest thing on the page. */}
-            {detail.gauges ? (
-              <div className="dials tdb-scale">
-                {(
-                  [
-                    ['OVR', ovrOf(picked) ?? 0],
-                    ['OFF', detail.gauges.off],
-                    ['DEF', detail.gauges.def],
-                  ] as const
-                ).map(([l, v]) => (
-                  <Dial key={l} label={l} value={v} tone="scale" color={ratingTone(v)} sub={detail.gauges!.basis} />
-                ))}
-              </div>
-            ) : null}
             {/* his ruling: the five stands on a floor, not in a list — tap a spot for the full card */}
             <CourtFive
               /* His ruling: the team db's five stands in that club's colours, the same way the
