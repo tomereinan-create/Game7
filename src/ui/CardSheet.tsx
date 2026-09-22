@@ -289,7 +289,10 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
           {line ? (
             <>
               <div className="pc-rule">
-                <span>STATLINE.{p.peak_season} &#9656; THE REAL LINE, NEVER BLENDED</span>
+                {/* NO MOTTO (his ruling, 2026-09-22: "Remove ▸ THE REAL LINE, NEVER BLENDED").
+                    The rule names the block and stops; what the figures are was a sentence the
+                    block has been proving on its own for a year. */}
+                <span>STATLINE.{p.peak_season}</span>
                 <i />
               </div>
               <div className="pc-stats">
@@ -339,23 +342,26 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
                 ))}
               </div>
               {inferred ? <div className="pc-note">// * RIM/MID INFERRED (PRE-1997)</div> : null}
+              {/* THE DOOR STANDS UNDER THE ATTRIBUTES — his ruling, 2026-09-22: "move advanced
+                  right below to the attributes". It used to be the last item of the shape's own
+                  block, which on a wide desk parks it at the far end of a strip in the foot of the
+                  card and on a phone beside the hexagon. What is behind that door is how the
+                  attributes were made, so it belongs at the end of them. */}
+              <button className="pc-adv" onClick={() => setAdv(true)}>
+                ADVANCED &rarr;
+              </button>
             </>
           )}
         </div>
 
-        {/* the shape, and the way down into the numbers behind it */}
+        {/* THE SHAPE, AND NOTHING SAID OVER IT — his ruling, 2026-09-22: "Delete SHAPE.HEX ▸ 6-AXIS
+            from the player page". A hexagon with six labelled points does not need a caption
+            announcing that it has six points; the block is the drawing now. */}
         {user ? null : (
           <div className="pct-shape">
-            <div className="pc-rule">
-              <span>SHAPE.HEX &#9656; 6-AXIS</span>
-              <i />
-            </div>
             <div className="pct-hexbox" style={club}>
               <HeatHex men={[p]} size={168} />
             </div>
-            <button className="pc-adv" onClick={() => setAdv(true)}>
-              ADVANCED &rarr;
-            </button>
           </div>
         )}
       </div>

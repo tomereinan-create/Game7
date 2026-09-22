@@ -1911,18 +1911,31 @@ button {
 .adv-head {
   padding: 16px 2px 2px;
 }
+/* ---- ADVANCED READS IN THE ATTRIBUTES' OWN FACE ----
+   HIS RULING, 2026-09-22: "The font in the advanced page is unclear, change it to the font of the
+   actual attributes in the player page."
+
+   The attribute sheet sets no family of its own — it inherits the app's copy face, Space Grotesk
+   (--sans, and --mono is an alias of it). This page was the other one: its name, its standfirst,
+   its notes and every figure in its rows were in League Gothic (--serif / --num), which is the
+   condensed display face the card's HEADLINE numbers wear. Condensed and set small is exactly
+   where that face stops being readable, and half of it was set in a synthesised oblique on top of
+   that — Space Grotesk ships no italic, so the slant went with the face rather than being
+   translated into one. Everything on this page is the copy face now, upright.
+   The labels, the version line and the OVR strip were already --mono and are untouched. */
 .adv-name {
-  font-family: var(--serif);
-  font-size: 28px;
-  line-height: 1.1;
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
 }
 .adv-sub {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 13.5px;
+  font-family: var(--sans);
+  font-size: 13px;
   color: var(--muted);
   margin-top: 5px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 .adv-err {
   font-family: var(--mono);
@@ -1965,17 +1978,17 @@ button {
   color: var(--faint);
 }
 .adv-row b {
-  font-family: var(--num);
+  font-family: var(--sans);
   font-size: 12.5px;
   font-weight: 700;
   white-space: nowrap;
 }
 .adv-note {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 12.5px;
+  font-family: var(--sans);
+  font-size: 12px;
   color: var(--them);
   margin-top: 8px;
+  line-height: 1.5;
 }
 
 /* ==========================================================================
@@ -2488,26 +2501,28 @@ button {
   .spin-kicker {
     font-size: 15px;
   }
+  /* the copy face sets wider than the condensed one it replaced, so the two largest things on
+     this page come down a step rather than running the name onto two lines */
   .adv-name {
-    font-size: 42px;
+    font-size: 34px;
   }
   .adv-sub {
-    font-size: 20px;
+    font-size: 17px;
   }
   .adv-formula {
-    font-size: 17px;
+    font-size: 15px;
   }
   .adv-row span {
     font-size: 13px;
   }
   .adv-row b {
-    font-size: 19px;
+    font-size: 16px;
   }
   .adv-val {
     font-size: 27px;
   }
   .adv-note {
-    font-size: 19px;
+    font-size: 16px;
   }
   .adv-open {
     font-size: 14px;
@@ -3745,12 +3760,17 @@ body:has(.sheet) { overflow: hidden; }
 .pct-attr b { flex: none; width: 26px; text-align: right; font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .pc-note { margin-top: 6px; font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
-/* ---- the shape, and the way into the numbers behind it ---- */
+/* ---- the shape, and the way into the numbers behind it ----
+   NO RULE OVER THE HEXAGON (his ruling, 2026-09-22: "Delete SHAPE.HEX ▸ 6-AXIS from the player
+   page") and NO DOOR INSIDE IT ("move advanced right below to the attributes"). What is left is
+   the drawing, so the block is a box round a box — kept as the wrapper because it is what holds
+   the `shape` grid area at every width above a phone. */
 .pct-shape { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.pct-shape .pc-rule { margin-top: 0; }
 .pct-hexbox { display: grid; justify-items: center; padding: 8px; border: 1px solid var(--line); background: var(--panel); }
 .pct-hexbox .heathex { display: block; width: 100%; max-width: 188px; height: auto; margin: 0; }
-.pc-adv { padding: 9px 0; text-align: center; background: var(--you-tint); border: 1px solid var(--you-line); color: var(--ink-2); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
+/* THE DOOR, AT THE END OF THE ATTRIBUTES (his ruling): a full-width key closing the block whose
+   making it explains, rather than the last item of the shape's strip. */
+.pc-adv { width: 100%; margin-top: 9px; padding: 9px 0; text-align: center; background: var(--you-tint); border: 1px solid var(--you-line); color: var(--ink-2); font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
 .pc-adv:hover { border-color: var(--pct-acc-line); background: var(--pct-acc-tint); color: var(--ink); }
 
 
@@ -4002,10 +4022,20 @@ body:has(.sheet) { overflow: hidden; }
    * 17.3 and 21.2 — and pull the rows down hard as the window shortens, which is what carries the
    * fold through the forty pixels between the gate and the size it was measured at.
    */
+  /* THE LIST GIVES BACK THE KEY'S OWN HEIGHT — the correction that "move advanced right below to
+     the attributes" (2026-09-22) forces on this breakpoint, and it is the same arithmetic the
+     block was written with. The list was measured to END AT THE FOOT of its column ("409px of
+     block in 417 of room"), which is a column with nothing left in it; the ADVANCED key is 45px
+     of new furniture under it and `.pc-body` is `overflow: hidden` up here, so the difference
+     would not have scrolled, it would have cut the key in half without a mark. MEASURED before
+     this: 776px of body in 739 of room at 1280x800.
+     THE AIR PAYS AND THE TYPE DOES NOT. The padding, the group gaps and the group names give up
+     about fifty pixels between them; the attribute name and its figure keep the sizes his earlier
+     rulings set, which is the same trade the fold was paid for with. */
   .pc-attrs { columns: 2; column-gap: 30px; }
-  .pc-grpname { font-size: clamp(11px, 1.8vh, 16px); margin-bottom: 3px; }
-  .pc-grp { margin-bottom: 4px; }
-  .pct-attr { gap: 14px; padding: clamp(1px, 0.28vh, 4px) 0; }
+  .pc-grpname { font-size: clamp(10px, 1.6vh, 14px); margin-bottom: 2px; }
+  .pc-grp { margin-bottom: 1px; }
+  .pct-attr { gap: 14px; padding: clamp(0px, 0.13vh, 3px) 0; }
   /**
    * EVERY BAR STARTS ON THE SAME LINE — his ruling, 2026-09-21: "make sure that for each attribute
    * the line starts in the same place so it will be alligned. Meaning, you should go to the
@@ -4171,7 +4201,12 @@ body:has(.sheet) { overflow: hidden; }
    * THE RISE IS MEASURED, NOT GUESSED, and it is deliberately short of the whole tail: the clearance
    * between the drawing's head and DURABILITY's row is checked at every width this block covers.
    */
-  .pc-body { --shape-h: clamp(112px, 21vh, 190px); --shape-rise: clamp(0px, 8.4vh, 78px); }
+  /* THE STRIP'S FLOOR COMES DOWN BY WHAT THE DOOR TOOK (2026-09-22). `main` is an auto row and
+     the ADVANCED key is now the last line in it, so the shape's row starts 45px lower; the floor
+     was 21vh and at the short end of this block that is 7px more than the row has left. 19vh is
+     the same number on any window tall enough for the 190px ceiling to bind — it only gives on
+     the windows that were about to clip. MEASURED at 1600x745: 7px past the foot, now 8 clear. */
+  .pc-body { --shape-h: clamp(104px, 19vh, 190px); --shape-rise: clamp(0px, 8.4vh, 78px); }
   /**
    * AND THE SEASON LINE IS HELD TO ONE ROW, which this arrangement cannot do without.
    * `.pc-stats` is an auto-fit grid of 14 cells with a 70px floor, so it wraps to two rows the
@@ -4208,13 +4243,15 @@ body:has(.sheet) { overflow: hidden; }
        rule across the top. Every line the strip does not spend on a label is a line the hexagon
        gets, and the hexagon is measured off this block's height: at two rows it came out 110px,
        at one it is 159. */
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    /* THE HEXAGON TAKES THE LEFT-HAND END — his ruling — and the rule and the key follow it. */
-    grid-template-areas: 'hex rule adv';
+    /* ONE CELL NOW. The strip was 'hex rule adv' — the drawing at the left-hand end with its
+       ruled name and the ADVANCED key beside it — and both of those are gone (his rulings,
+       2026-09-22). The hexagon keeps the left-hand end it was given and the attributes' own
+       ground runs out beside it. */
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: 'hex .';
     align-items: center;
     gap: 0 20px;
   }
-  .pct-shape .pc-rule { grid-area: rule; margin-top: 0; }
   /* THE BOX HUGS THE DRAWING AND STANDS AT THE TOP OF ITS ROW, which is what "higher" means once
      the row is its own: the case is square, as tall as the row allows up to its ceiling, and it
      starts immediately under the last attribute rather than floating in the middle of what is
@@ -4225,9 +4262,18 @@ body:has(.sheet) { overflow: hidden; }
      ceiling went 320 to 520 with his "make the hex bigger": 320 was measured against a strip in the
      foot of a column, and this is a row of its own on a screen with the height for it. */
   .pct-hexbox .heathex { height: 100%; width: auto; max-width: 100%; }
-  /* the way down into the numbers stands at the far end of the strip: the shape at one end of the
-     foot, the door at the other, and the attributes' own ground between them */
-  .pc-adv { grid-area: adv; margin-top: 0; justify-self: start; min-width: clamp(180px, 18vw, 300px); padding: 10px 24px; }
+  /* THE DOOR CLOSES THE ATTRIBUTE LIST (his ruling: "move advanced right below to the
+     attributes"). It stood at the far end of the foot strip, a column away from what it opens;
+     inside `.pc-main` it is the last line of the list, and it is set to the width of one of the
+     three attribute columns rather than across all three — a key, not a banner. */
+  .pc-adv { width: auto; align-self: start; min-width: clamp(180px, 18vw, 300px); margin-top: 6px; padding: 8px 24px; }
+}
+
+/* THE KEY IS A KEY AND NOT A BANNER on a desk, wherever it stands: the width of one attribute
+   column, on the left, under the list it opens. Below 1600 the shape is in the dossier's column
+   and this block is the left column's last line. */
+@media (min-width: 900px) and (max-width: 1599.98px) {
+  .pc-adv { width: auto; align-self: start; min-width: clamp(170px, 20vw, 300px); margin-top: 6px; padding: 6px 22px; }
 }
 
 /* ---- the phone: everything above, packed ----
@@ -4263,11 +4309,14 @@ body:has(.sheet) { overflow: hidden; }
   .pct-attr .k { font-size: 9px; }
   .pct-attr b { font-size: 12px; }
   .pc-grp { margin-bottom: 7px; }
-  .pct-shape { display: grid; grid-template-columns: 146px minmax(0, 1fr); grid-template-areas: 'rule rule' 'hex adv'; align-items: center; gap: 5px 12px; }
-  .pct-shape .pc-rule { grid-area: rule; }
-  .pct-hexbox { grid-area: hex; padding: 6px; }
+  /* the rule and the key that used to share this row with the drawing are gone (his rulings,
+     2026-09-22), so the hexagon stands on its own and takes the middle of the card's last line */
+  .pct-shape { display: grid; justify-items: center; }
+  .pct-hexbox { padding: 6px; }
   .pct-hexbox .heathex { max-width: 132px; }
-  .pc-adv { grid-area: adv; }
+  /* the key is a line of its own here where it used to share the hexagon's row, so it gives back
+     what it can: this card already runs past a 375px screen and the body is its safety valve */
+  .pc-adv { margin-top: 6px; padding: 7px 0; }
 }
 /* a landscape phone: the card is the same card, one size down through the figures */
 @media (max-height: 620px) {
