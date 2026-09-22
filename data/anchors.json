@@ -1737,5 +1737,14 @@
     "round": 176,
     "ruling": "Agree with 11",
     "note": "THE SUBJECT, and it took two rounds and two agents. recal_174 declined him from the attribute side (the `volume` bar is a usage RATE and his is the 50th percentile of 1989; every load form makes him Domantas Sabonis '21) and named the door in compute_ovr.py: his passer credit was 5.30 against John Stockton '90's 13.38. recal_176 re-cut BOTH of the term's mis-located gates on the class they rank - the efficiency factor from 70->90 (the class's p84->p95, with 85% of the class on the floor) to 43->78 (its median to its p90), and the volume band top from recal_117's fitted 68 to the measured 93 (the p90 of volume among the 1,486 distributors that clear the term's playvol foot). 75 -> 81, dead on his number. THE STOPPING PIN IS CHAUNCEY BILLUPS '06 (91 +-1) by his own word, 'bilups on 93 is madness': the feasible band top is 91 to 94, the subject reads 81 across all of it and Billups reads 92; at 95 Billups reads 93."
+  },
+  {
+    "card": "Richard Hamilton '06",
+    "scale": "attr:3pt",
+    "target": 65,
+    "tol": 5,
+    "round": 185,
+    "ruling": "Agree with 1-10",
+    "note": "THE LAST HARD STEP IN THE 3PT BAR. He LED THE NBA in three-point percentage (.458, 55 of 120, 1.5 a game over 35.3 mpg) and read 39, because 2.3 3PA/100 x an era multiplier of 1.2005 = 2.761 adjusted attempts and the deadeye gate opens at 3.0. Jim Jackson '02 shot .469 on the SAME 1.5 attempts a game, is 2.4 x 1.2501 = 3.0002 — two ten-thousandths over — and ships 75: a quarter of one adjusted attempt per 100 was worth thirty-nine points. Pool-wide the median pre-smooth bar just under the line read 48 and just over it 81. recal_185 turned the door into a ramp: under the gate a card takes the deadeye path in the share its attempts bear to it, _share = min(1, adj/3.0), blended FROM its own gunner value — so the term can only lift, is continuous at 3.0, and every card at or above 3.0 is byte-identical. No width is fitted: the class measurement is degenerate (of 528 cards at accuracy >= p90 the lower quartile of adjusted attempts is 6.16 and only eight sit under the gate), so the only foot that is not a chosen number is zero. The ramp is open only where accuracy is MEASURED (2 raw 3PA/100, the file's own line) — below it `acc` is a free-throw proxy, which is what keeps Michael Jordan '89 at 23 and the low-volume doctrine intact. HE READS 60, THE BOTTOM OF THIS TOLERANCE, AND THAT IS THE FRONTIER OF THE PATH SELECTION: with the gate removed outright his pre-smooth bar is 88 and he STILL ships 60, because the 20/60/20 smoother blends him with his own '05 (pre-smooth 16) and '07 (28). A later round that wants 65 must argue with the smoother or the deadeye value, not the gate."
   }
 ]

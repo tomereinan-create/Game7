@@ -134,11 +134,11 @@
         "peak_season": 2026,
         "talent": 78,
         "in": 87,
-        "out": 51,
+        "out": 73,
         "id": 75,
         "pd": 53,
         "attrs": {
-          "3pt": 48,
+          "3pt": 71,
           "rim": 72,
           "mid": 39,
           "rim_mid_measured": true,
@@ -161,9 +161,9 @@
           "ts_rel": 0.647
         },
         "big": true,
-        "o_ovr": 58,
+        "o_ovr": 65,
         "d_ovr": 64,
-        "ovr": 61,
+        "ovr": 65,
         "marg": 94
       },
       {
@@ -2065,7 +2065,7 @@
         "o_ovr": 59,
         "d_ovr": 72,
         "ovr": 66,
-        "marg": 58
+        "marg": 59
       }
     ]
   },

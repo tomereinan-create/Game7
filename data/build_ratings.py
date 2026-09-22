@@ -290,6 +290,7 @@ def score_season(r, P):
     IN  = W['IN']['x2p_per_100']*P['x2p_per_100'](r['x2p_per_100']) + W['IN']['x2p_pct']*P['x2p_pct'](r['x2p_pct']) + W['IN']['ftr']*P['ftr'](r['ftr'])
     # OUT: absolute vs modern pool (all seasons >=1980 have measured 3P data)
     if True:
+        DEADEYE_ATT = 3.0   # era-adjusted 3PA/100 at which the deadeye path pays in full (recal_185 names it)
         p3 = r['x3p_pct']
         if r['season'] in SHORTLINE and p3: p3 = p3*0.93
         vol = P_3pa_mod((r['x3pa_per_100'] or 0) * era_mult(r['season']))   # volume is ALWAYS era-adjusted
@@ -303,9 +304,51 @@ def score_season(r, P):
                 gate = max(0.55, 1 - 3.0*(gap-0.02))
                 gun *= gate
         # DEADEYE path: elite accuracy on real (era-adjusted) attempts; capped so specialists never pass elite gunners
+        # recal_185 (HIS RULING, verbatim: "Agree with 1-10"). THE DOOR BECOMES A RAMP — THE FILE'S OWN
+        # NO-CLIFFS RULE (recal_43), APPLIED TO THE ONE HARD STEP LEFT IN THE 3PT BAR.
+        # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Richard Hamilton '06 LED THE NBA in 3P%
+        # (.458, 55 of 120, 1.5 a game over 35.3 mpg) and read 3pt 39. He is 2.3 3PA/100 x an era
+        # multiplier of 1.2005 = 2.761 adjusted attempts, which is 0.239 BELOW this gate, so he took
+        # the gunner path at a pre-smooth 50. Jim Jackson '02 — .469 on the SAME 1.5 attempts a game —
+        # is 2.4 x 1.2501 = 3.0002, two ten-thousandths ABOVE it, took the deadeye path at a pre-smooth
+        # 89 and ships 75. A quarter of one adjusted attempt per 100 was worth thirty-nine points of
+        # shooting. Pool-wide the step is the same size and it is a step, not a slope: the median
+        # pre-smooth bar just UNDER the line is 48 and just OVER it is 81.
+        # WHY THE RAMP HAS NO FITTED WIDTH. The obvious form is a ramp from a foot measured on the
+        # class — the lower quartile of adjusted attempts among cards whose accuracy clears p90. That
+        # measurement is DEGENERATE for this purpose: of 528 such cards the lower quartile is 6.16
+        # adjusted attempts and only EIGHT sit under the gate at all, so any foot read off the class
+        # lands above 3.0 and the ramp has zero width. The only foot that is not a chosen number is
+        # therefore zero, and it makes the share LITERALLY what the ruling asks for — a card under the
+        # gate takes the deadeye path in the proportion its attempts bear to the gate, _share = adj/3.0.
+        # The 3.0 stays the only constant in the term; nothing new is fitted.
+        # WHAT IS BYTE-IDENTICAL BY CONSTRUCTION. (a) Every card at or above 3.0 adjusted attempts:
+        # _share saturates and eye is the same expression it always was. (b) The gunner path: gun,
+        # its chucker gate and GUN_BOOST are untouched, and the ramp blends FROM gun, so _share = 0
+        # returns gun exactly and OUT = max(gun, eye) cannot fall. This term can only lift, and it is
+        # continuous at 3.0 from both sides — there is no longer a card on either side of a line.
+        # (c) Every card under 2 raw 3PA/100. Below that line `acc` above is NOT three-point accuracy
+        # at all, it is 0.35 x the free-throw percentile standing in for a shot the man did not take —
+        # the deadeye path pays MEASURED accuracy, so there is nothing for it to pay. That is the
+        # file's own existing test, reused, and it is what holds the doctrine the ruling explicitly
+        # kept: Michael Jordan '89 (1.5 raw 3PA/100, 2.64 adjusted — UNDER this gate, and under the
+        # measured line too) stays at 3pt 23, and low volume still means a low bar for every man who
+        # simply did not take them.
+        # THE FRONTIER, STATED. This is the whole of what the path selection can pay. At full deadeye
+        # — the gate removed outright — Hamilton '06's pre-smooth bar is 88 and he SHIPS 60, because
+        # the 20/60/20 season smoother blends him with his own '05 (pre-smooth 16, .305 on the same
+        # attempts) and '07 (28). The ruling's 65 is not reachable from the path selection at any
+        # width; 60 is the ceiling and it is the bottom of the tolerance. Nothing here touches the
+        # deadeye VALUE, the gunner path, or the smoother.
         eye = 0.0
-        if p3 is not None and (r['x3pa_per_100'] or 0)*era_mult(r['season']) >= 3.0:
-            eye = min(0.95, 0.88*acc + 0.12*vol)   # season-level deadeye: near-pure accuracy, volume nudge
+        if p3 is not None:
+            _eye_full = min(0.95, 0.88*acc + 0.12*vol)   # season-level deadeye: near-pure accuracy, volume nudge
+            _adj3 = (r['x3pa_per_100'] or 0) * era_mult(r['season'])
+            if _adj3 >= DEADEYE_ATT:
+                eye = _eye_full
+            elif (r['x3pa_per_100'] or 0) >= 2:
+                _share = min(1.0, max(0.0, _adj3 / DEADEYE_ATT))
+                eye = gun + _share * (_eye_full - gun)
         GUN_BOOST = min(1.0, gun * 1.08)   # the gunner boost and the volume premium are alternatives
         OUT = max(gun, eye)   # two ways to be a shooter
     ID  = W['ID']['blk']*P['blk'](r['blk']) + W['ID']['height']*P['ht'](r['ht'])   # recal_81: no dbpm term
