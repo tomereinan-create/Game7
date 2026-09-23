@@ -75,7 +75,9 @@ describe('the signature block', () => {
     const h = hist()
     // the two past-the-limit names are small on purpose: they hold only the men a star rule declined
     const PAST = new Set(['High-wire playmaker', 'Lockdown defender'])
-    for (const t of FIFTEEN) expect(h.get(t) ?? 0, t).toBeGreaterThanOrEqual(PAST.has(t) ? 5 : 50)
+    // pipeline 205: Lockdown defender is four (Pippen '97, Dandridge '80, Bridges '22, Oladipo '17) — Gerald Wallace '08
+    // crossed into Two-way big when recal_205 read his DEF 84 -> 86. The floor for the two past-the-limit names is 4.
+    for (const t of FIFTEEN) expect(h.get(t) ?? 0, t).toBeGreaterThanOrEqual(PAST.has(t) ? 4 : 50)
   })
 
   it('names the men it was built for', () => {
