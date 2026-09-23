@@ -1791,5 +1791,32 @@
     "round": 183,
     "ruling": "Land 52 on 183",
     "note": "THE PIN IS 52, NOT THE 58 THE SCOUT OPENED WITH, and that is his own ruling on this round's measurement. The scout's item 8 asked for ~58 on the ground that '13 reads perdef 48 / DEF 49 while '14 reads 62 / 60 and '15 64 / 65 on DBPM -0.2 / -0.1 / -0.1. The finding was right and it is the POOL: the mean perdef change across same-player perimeter pairs crossing 2013 -> 2014 is +4.08 against -3.03 .. +1.09 for every other adjacent year pair 2005-2020, and 250 of 756 perimeter starters from 2004-13 read perdef < 45 (33.1%) against 22 of 1,109 from 2014 on (2.0%). recal_183 levels it by re-footing the pre-2014 no-vote relief line BELOW recal_13's NOVOTE_CAP (RELIEF_FOOT 0.28 -> 0.42, hinged on the cap, recal_141's segment above it untouched). 58 IS NOT REACHABLE BY THIS TERM AT ALL: the measured band for the foot is 0.42 .. 0.50 and even its top only reaches 53-54, while the largest foot that holds every anchor is 0.42 — recal_94's Pistons '04 team:defdial is pinned 84 +-4, already read 87, goes to 88 at foot 0.42 and 89 at 0.43. He was shown that frontier and ruled 'Land 52 on 183', so the pin records the frontier he accepted. Tolerance 3 rather than 0 because the subject's card is a 60/20/20 season blend whose '12 and '14 neighbours both move with any later ruling on this line."
+  },
+  {
+    "card": "Joe Ingles '17",
+    "scale": "def",
+    "target": 64,
+    "tol": 3,
+    "round": 187,
+    "ruling": "Agree with 2-10",
+    "note": "THE POSITION BRANCH'S SECOND FACT. recal_103's override reads the contradiction between a listing and a sheet off ONE quantity, perimdisrupt - drb, and misses the men whose gap is ordinary while their RIM SHEET is empty. Ingles '17 is 6'8\" with 0.1 bpg, rimprot 29, perdef 60, perimdisrupt 75, drb 44: gap 31, so d_bigness read him 0.9667 big and graded him 0.41 perdef + 0.39 rimprot for DEF 51, while his own perimeter vector reads 63.7. 250 PF-listed wings at 6'8\" or under with rimprot < 45 sat on this branch at >= 0.9 big and 40 of them lost eight or more DEF points to it. recal_187 multiplies the position branch's weight by the card's rim-protection claim over recal_136's OWN band (C1_RP_LO 45 -> C1_RP_HI 55) whenever the height is a wing's (recal_114's measured 80-inch band edge). No new constant, is_big untouched, OFF and every attribute move on ZERO cards."
+  },
+  {
+    "card": "Jae Crowder '16",
+    "scale": "def",
+    "target": 69,
+    "tol": 3,
+    "round": 187,
+    "ruling": "Agree with 2-10",
+    "note": "Item 6 of the same ruling. 6'6\", rimprot 37, perimdisrupt 74, drb 51 - a gap of 23, UNDER recal_103's ramp foot of 30, so the position branch graded him 1.0000 big at DEF 58 against a perimeter vector of 68.8. recal_187's rim-presence ramp zeroes the position weight (rimprot 37 is below the band's foot of 45) and he is graded on his own vector."
+  },
+  {
+    "card": "DeMarre Carroll '14",
+    "scale": "def",
+    "target": 65,
+    "tol": 3,
+    "round": 187,
+    "ruling": "Agree with 2-10",
+    "note": "Item 7 of the same ruling, and the third card of one term. 6'6\", rimprot 31, perimdisrupt 77, drb 50 - gap 27, again under recal_103's foot, so 1.0000 big at DEF 53 against a perimeter vector of 65.1. Items 5-7 share ONE term and were landed as one fit: the position branch's rim-presence ramp."
   }
 ]

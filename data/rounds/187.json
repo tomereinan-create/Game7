@@ -1,0 +1,438 @@
+{
+ "round": 187,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 2-10",
+ "title": "d_bigness's POSITION branch gets a RIM-PRESENCE ramp at a wing's height — a listing is one fact, a man's rim sheet is another, so recal_103's 'a wing is scored as a wing' now reaches the men its perimdisrupt-minus-drb gap test misses",
+ "subject": "Joe Ingles '17",
+ "scale": "def",
+ "target": 64,
+ "tol": 3,
+ "before": 51,
+ "after": 64,
+ "pipeline_version": 187,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if a\\.get\\('height', 76\\) <= POS_HT_MAX:\\s*\\n\\s*_w_pos \\*= min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - POS_RP_LO\\) / \\(POS_RP_HI - POS_RP_LO\\)\\)\\)",
+   "label": "THE ONE LINE — the position branch's weight is paid in proportion to the card's rim-protection claim whenever the height is a wing's",
+   "note": "was `return 1.0 - min(1.0, max(0.0, (_gap - POS_GAP_LO) / (POS_GAP_HI - POS_GAP_LO)))` with nothing but the gap test deciding it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI",
+   "label": "the ramp's band is recal_136's OWN band, aliased rather than invented — 45 -> 55",
+   "note": "C1_RP_LO is DEF_RP_LO (45, the middle clause's rim-protection foot) and C1_RP_HI is 55 (clause 1's own saturation). No new number enters the function."
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_HT_MAX = 80\\.0",
+   "label": "recal_114's measured band edge — 'this file has exactly one place where a card stops being a perimeter defender and it is 80 inches'",
+   "note": "recal_35's sweet band is flat at 1.0 through 80 and recal_54's rep_hf flat at its maximum 1.2 through 80; above 80 inches the position verdict is untouched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+   "label": "recal_103's gap test itself is UNTOUCHED — the new ramp multiplies it, it does not replace it",
+   "note": "perimdisrupt - drb, 30 -> 60, byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_c1_shape = min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - a\\['perdef'\\]\\) / \\(C1_RP_HI - C1_RP_LO\\)\\)\\)",
+   "label": "recal_164's shape ramp is not reopened — the shape clauses below the position branch are byte-identical",
+   "note": "the round touches the POSITION branch only, and returns before any shape test runs"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.59",
+   "label": "the one tax the harness broke, re-swept ONCE from main's constants and landed on its feasible interval's true midpoint",
+   "note": "3.40 -> 3.59; feasible 3.4995 (blind ceiling) to 3.6835 (oracle floor), blind -0.3703 and oracle +0.5415"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jae Crowder '16",
+   "scale": "def",
+   "op": "~",
+   "value": 69,
+   "tol": 3,
+   "label": "second subject of the same ruling — 6'6\", rimprot 37, gap 23 (under the ramp's foot), was 1.0000 big at DEF 58"
+  },
+  {
+   "card": "DeMarre Carroll '14",
+   "scale": "def",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "third subject — 6'6\", rimprot 31, gap 27, was 1.0000 big at DEF 53"
+  },
+  {
+   "card": "Joe Ingles '17",
+   "scale": "off",
+   "op": "==",
+   "value": 51,
+   "label": "OFF moves on ZERO of 10,000 cards — is_big is untouched, so the boolean, recal_55's big hub, recal_91's stretch-big floor and the OVR cap branch are byte-identical"
+  },
+  {
+   "card": "Joe Ingles '17",
+   "scale": "ovr",
+   "op": "==",
+   "value": 58,
+   "label": "OVR follows DEF through the blend only"
+  },
+  {
+   "card": "Peyton Watson '24",
+   "scale": "def",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "recal_103 doctrine, rimprot 87 — and he is not on the position branch at all (pos SG/SF), so he is byte-identical"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "def",
+   "op": "~",
+   "value": 67,
+   "tol": 3,
+   "label": "pinned shape-clause big, rimprot 57 — SF-only, never on the position branch"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_136's own subject, reads 54 — SF-only listing, so the position branch never runs for him and he is byte-identical"
+  },
+  {
+   "card": "Ken Norman '93",
+   "scale": "def",
+   "op": "==",
+   "value": 62,
+   "label": "the season recal_136 measured him against, unmoved"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "recal_164's subject, reads 68 — listed at all five positions, so he is not on the position branch"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "recal_93's pin, reads 77 — SF-only, unmoved"
+  },
+  {
+   "card": "Scottie Pippen '94",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 3,
+   "label": "recal_93's hardest pin, reads 95, unmoved"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 97,
+   "tol": 2,
+   "label": "PF-listed and ON the position branch — rimprot 84, far past the ramp's 55, so his weight stays 1.0000 exactly"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 95,
+   "tol": 2,
+   "label": "PF-listed, on the branch, rimprot 76 — weight 1.0000 -> 1.0000"
+  },
+  {
+   "card": "Shawn Marion '06",
+   "scale": "def",
+   "op": "==",
+   "value": 79,
+   "label": "PF-listed, on the branch, rimprot 68 — untouched"
+  },
+  {
+   "card": "Andrei Kirilenko '04",
+   "scale": "def",
+   "op": "~",
+   "value": 95,
+   "tol": 2,
+   "label": "the Kirilenko pins hold"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "recal_114's subject, reads 93"
+  },
+  {
+   "card": "Bruce Bowen '05",
+   "scale": "def",
+   "op": "==",
+   "value": 93
+  },
+  {
+   "card": "Joe Dumars '90",
+   "scale": "def",
+   "op": "~",
+   "value": 81,
+   "tol": 3,
+   "label": "recal_181's subject"
+  },
+  {
+   "card": "Mikal Bridges '21",
+   "scale": "def",
+   "op": "~",
+   "value": 80,
+   "tol": 3
+  },
+  {
+   "card": "Herbert Jones '22",
+   "scale": "def",
+   "op": "==",
+   "value": 88,
+   "label": "recal_103's own subject — already graded a full wing by the gap test (weight 0.0000), so the new factor cannot move him"
+  },
+  {
+   "card": "Herbert Jones '24",
+   "scale": "def",
+   "op": "==",
+   "value": 91
+  },
+  {
+   "card": "Ben Wallace '04",
+   "scale": "def",
+   "op": "==",
+   "value": 99
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 2
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "def",
+   "op": "~",
+   "value": 98,
+   "tol": 2
+  },
+  {
+   "card": "Kawhi Leonard '16",
+   "scale": "def",
+   "op": "==",
+   "value": 99
+  },
+  {
+   "card": "Kevin Garnett '04",
+   "scale": "def",
+   "op": "~",
+   "value": 98,
+   "tol": 2
+  },
+  {
+   "card": "Popeye Jones '95",
+   "scale": "def",
+   "op": "==",
+   "value": 49,
+   "label": "the largest DOWN on the board and the only one past -8: 6'8\", rimprot 45 exactly on the ramp's foot, perimdisrupt 11 — an undersized rebounder now graded a wing"
+  },
+  {
+   "card": "Jae Crowder '16",
+   "scale": "off",
+   "op": "==",
+   "value": 57,
+   "label": "OFF unmoved on the subjects too"
+  },
+  {
+   "card": "DeMarre Carroll '14",
+   "scale": "off",
+   "op": "==",
+   "value": 57
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Draymond Green '16",
+   "below": "Joe Ingles '17",
+   "label": "the round does not lift a wing past a pinned two-way big"
+  },
+  {
+   "scale": "def",
+   "above": "Herbert Jones '22",
+   "below": "Jae Crowder '16",
+   "label": "recal_103's own subject still outranks the men this round reaches"
+  },
+  {
+   "scale": "def",
+   "above": "Scottie Pippen '03",
+   "below": "Jae Crowder '16",
+   "label": "the pinned stopper stays above"
+  },
+  {
+   "scale": "def",
+   "above": "Mikal Bridges '21",
+   "below": "Joe Ingles '17"
+  },
+  {
+   "scale": "def",
+   "above": "Jae Crowder '16",
+   "below": "DeMarre Carroll '14",
+   "label": "the three subjects read in the order their perimeter vectors do"
+  },
+  {
+   "scale": "def",
+   "above": "DeMarre Carroll '14",
+   "below": "Joe Ingles '17"
+  },
+  {
+   "scale": "def",
+   "above": "Shawn Marion '06",
+   "below": "Jae Crowder '16",
+   "label": "a genuine PF with rim presence still outranks a listed one without"
+  }
+ ],
+ "movers": {
+  "scale": "def",
+  "count": 522,
+  "max_abs": 19,
+  "top": [
+   [
+    "Joe Ingles '16",
+    42,
+    61
+   ],
+   [
+    "Bill Hanzlik '88",
+    53,
+    70
+   ],
+   [
+    "Sly Williams '83",
+    50,
+    67
+   ],
+   [
+    "Jae Crowder '14",
+    48,
+    64
+   ],
+   [
+    "Jae Crowder '13",
+    51,
+    66
+   ],
+   [
+    "Anthony Bonner '94",
+    57,
+    71
+   ],
+   [
+    "Bill Hanzlik '83",
+    54,
+    68
+   ],
+   [
+    "Thaddeus Young '08",
+    50,
+    64
+   ],
+   [
+    "Steve Mix '80",
+    47,
+    61
+   ],
+   [
+    "Joe Ingles '17",
+    51,
+    64
+   ],
+   [
+    "Jae Crowder '16",
+    58,
+    69
+   ],
+   [
+    "DeMarre Carroll '14",
+    53,
+    65
+   ],
+   [
+    "Popeye Jones '95",
+    59,
+    49
+   ],
+   [
+    "Udonis Haslem '09",
+    60,
+    52
+   ],
+   [
+    "Popeye Jones '96",
+    59,
+    51
+   ],
+   [
+    "Truck Robinson '84",
+    63,
+    57
+   ],
+   [
+    "Larry Smith '84",
+    59,
+    53
+   ],
+   [
+    "Danny Fortson '02",
+    51,
+    45
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Dwight Howard '11",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Dwight Howard '09"
+  ]
+ },
+ "cost": [
+  "NO ANCHOR WAS RE-DERIVED. OFF_TOP and DEF_TOP are byte-identical, so nothing above the knee moved and recal_90's warning does not apply. is_big is untouched, exactly as recal_93 / recal_103 / recal_164 did it, so OFF and every one of the 17 attributes move on ZERO of 10,000 cards. Of the 184 standing anchors, exactly ONE reading changed: Dennis Rodman '96 ovr 63 -> 64, still inside its band. Every other anchor line is byte-identical before and after.",
+  "THE CLASS THAT PAYS FOR IT is the undersized rebounding power forward: a man at 6'7\"-6'8\" with rimprot in the 39-50 band and almost no perimeter disruption loses part of the big verdict and is priced on the wing vector, where drb is worth 0.07 instead of 0.17. Popeye Jones '95 59 -> 49 (rimprot 45, exactly the ramp's foot), Udonis Haslem '09 60 -> 52, Popeye Jones '96 59 -> 51, Truck Robinson '84 63 -> 57, Larry Smith '84 59 -> 53, Kenny Carr '81 65 -> 60, Danny Fortson '99 59 -> 53. It is bounded: 188 cards fall at all, 59 by 3 or more, 23 by 5 or more, THREE by 8 or more and ONE by 10. None of them is pinned.",
+  "POS_HT_MAX = 80.0 is a NAME, not a new number. The value is recal_114's own measured band edge, quoted in build_ratings.py: 'this file has exactly one place where a card stops being a perimeter defender and it is 80 inches'. A later round that moves recal_35's sweet band must move this alias with it.",
+  "THE TAX LEDGER: hunt 3.40 -> 3.59, swept ONCE from main's constants as the law requires. It broke on the BLIND edge (-0.2227), the opposite sign to r183's break, because this round demotes a class of listed bigs to their own perimeter vector and the sampled fives therefore defend the perimeter slightly worse. playmaker, crashOff and crashDef were each re-read from main's constants and none broke.",
+  "src/data/campaigns.json and src/data/opponents.json were regenerated (npm run opponents, gauges NOT re-derived): the Blazers '26 best-legal-five swaps Jerami Grant '26 for Toumani Camara '26, whose DEF moved with this round."
+ ],
+ "notes": [
+  "THE DEFECT, decomposed. recal_103 built the position override so that 'a wing is scored as a wing' whatever a box score once listed him at, and it reads the contradiction off ONE quantity: perimdisrupt - drb. That test catches Herbert Jones (+79) and misses the men whose gap is ordinary while their RIM SHEET is empty. Joe Ingles '17: 6'8\", 0.1 bpg, rimprot 29, perdef 60, perimdisrupt 75, drb 44 — gap 31, so d_bigness reads 0.9667 big and grades him 0.41 perdef + 0.39 rimprot; his own perimeter vector reads 63.7 and he printed DEF 51. Jae Crowder '16 (6'6\", rimprot 37, gap 23) and DeMarre Carroll '14 (6'6\", rimprot 31, gap 27) are 1.0000 big because the gap is UNDER the ramp's foot, and read 58 and 53 against perimeter vectors of 68.8 and 65.1.",
+  "IT IS A CLASS, NOT THREE CARDS. 250 PF-listed wings at 6'8\" or under with rimprot < 45 sit on this branch at 0.9 big or more; 40 of them lose eight or more DEF points to it (Sly Williams '83 -16.5, Thaddeus Young '08 -13.9). The branch was putting 0.39 of the verdict on the one bar these men do not have.",
+  "THE FIX, AND IT INTRODUCES NO NEW CONSTANT. A listing is one fact; a man's RIM PRESENCE is another, and it is the one the big vector actually spends its weight on. The position branch's weight is multiplied by min(1, max(0, (rimprot - 45) / 10)) whenever height <= 80 inches. Both ends are already in the file: the band is C1_RP_LO -> C1_RP_HI, recal_136's own foot and saturation, and the height line is recal_114's measured band edge. At rimprot >= 55, or above 80 inches, the branch returns exactly what recal_103 wrote.",
+  "WHY MULTIPLY. Two independent contradictions of one listing compose the way this file already composes them: clause 1 is recal_136's rim-protection ramp TIMES recal_164's shape ramp. The gap test is untouched and still runs first; the new factor can only ever demote, never promote, so no card the branch already graded a wing can move (Herbert Jones '22 0.0000 -> 0.0000).",
+  "WHAT IS PROVABLY UNTOUCHED. Every card above 80 inches, every card at rimprot >= 55, and every card already graded a wing. Draymond Green '16 (rimprot 84) 1.0000 -> 1.0000, Dennis Rodman '90 (76) 1.0000, Shawn Marion '06 (68) 1.0000. Peyton Watson '24 (pos SG/SF), Cedric Maxwell '80 (SF), Ken Norman '94 (SF), LeBron James '04 (all five) and Scottie Pippen '03 (SF) are not on the position branch at all and are byte-identical.",
+  "MEASURED ON THE WHOLE POOL: 522 of 10,000 cards move on DEF — 334 up, 188 down, max +19 / -10 — and 395 OVRs follow, max +10 / -4. OFF and every attribute move on ZERO. The top 12 by DEF is identical and scout reports ZERO rank flips touching the top 50 by OVR. All 184 standing anchors pass, mean |error| 0.83.",
+  "THE UPS ARE ONE ARCHETYPE and it is the archetype the ruling named: a 6'6\"-6'8\" wing a box score once listed at power forward, with a real perimeter sheet and no rim sheet. Joe Ingles '16 +19, Bill Hanzlik '83-'88, Sly Williams '81-'83, Jae Crowder '13-'16, Thaddeus Young '08, Steve Mix '80-'82, Anthony Bonner '94, Stanley Johnson '19, Grant Long '01, Jamaal Wilkes '80, DeMarre Carroll '14-'15.",
+  "The tactics harness passes on all nine dials after ONE tax re-sweep (hunt 3.40 -> 3.59)."
+ ]
+}

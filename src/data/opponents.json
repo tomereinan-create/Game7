@@ -369,7 +369,7 @@
         },
         "big": true,
         "o_ovr": 77,
-        "d_ovr": 62,
+        "d_ovr": 60,
         "ovr": 72,
         "marg": 85
       },
@@ -1987,8 +1987,8 @@
         },
         "big": true,
         "o_ovr": 55,
-        "d_ovr": 64,
-        "ovr": 60,
+        "d_ovr": 63,
+        "ovr": 59,
         "marg": 48
       },
       {
@@ -2270,8 +2270,8 @@
         },
         "big": true,
         "o_ovr": 52,
-        "d_ovr": 49,
-        "ovr": 51,
+        "d_ovr": 57,
+        "ovr": 54,
         "marg": 70
       }
     ]
@@ -2613,42 +2613,42 @@
         "marg": 83
       },
       {
-        "name": "Jerami Grant '26",
-        "player": "Jerami Grant",
+        "name": "Toumani Camara '26",
+        "player": "Toumani Camara",
         "peak_season": 2026,
-        "talent": 77,
-        "in": 43,
-        "out": 81,
-        "id": 50,
-        "pd": 53,
+        "talent": 69,
+        "in": 35,
+        "out": 76,
+        "id": 42,
+        "pd": 76,
         "attrs": {
-          "3pt": 80,
-          "rim": 41,
-          "mid": 33,
+          "3pt": 73,
+          "rim": 27,
+          "mid": 24,
           "rim_mid_measured": true,
-          "ft": 82,
-          "fouldraw": 76,
-          "orb": 33,
-          "drb": 22,
-          "playvol": 34,
-          "ballsec": 53,
-          "volume": 66,
-          "efficiency": 53,
-          "durability": 38,
-          "rimprot": 50,
-          "perimdisrupt": 23,
+          "ft": 71,
+          "fouldraw": 22,
+          "orb": 67,
+          "drb": 32,
+          "playvol": 25,
+          "ballsec": 26,
+          "volume": 18,
+          "efficiency": 44,
+          "durability": 95,
+          "rimprot": 42,
+          "perimdisrupt": 45,
           "height": 79,
-          "perdef": 53,
-          "discipline": 44,
-          "usg_raw": 22.7,
-          "ts_raw": 0.587,
-          "ts_rel": 0.574
+          "perdef": 76,
+          "discipline": 30,
+          "usg_raw": 15.8,
+          "ts_raw": 0.576,
+          "ts_rel": 0.564
         },
         "big": true,
-        "o_ovr": 64,
-        "d_ovr": 52,
-        "ovr": 60,
-        "marg": 59
+        "o_ovr": 54,
+        "d_ovr": 71,
+        "ovr": 62,
+        "marg": 60
       },
       {
         "name": "Donovan Clingan '26",
@@ -3888,8 +3888,8 @@
         },
         "big": true,
         "o_ovr": 76,
-        "d_ovr": 68,
-        "ovr": 74,
+        "d_ovr": 67,
+        "ovr": 73,
         "marg": 73
       },
       {
@@ -4923,8 +4923,8 @@
         },
         "big": true,
         "o_ovr": 66,
-        "d_ovr": 50,
-        "ovr": 61,
+        "d_ovr": 53,
+        "ovr": 62,
         "marg": 60
       },
       {
@@ -5337,8 +5337,8 @@
         },
         "big": true,
         "o_ovr": 68,
-        "d_ovr": 52,
-        "ovr": 63,
+        "d_ovr": 54,
+        "ovr": 64,
         "marg": 76
       },
       {
@@ -5544,7 +5544,7 @@
         },
         "big": true,
         "o_ovr": 64,
-        "d_ovr": 58,
+        "d_ovr": 57,
         "ovr": 62,
         "marg": 57
       },
@@ -5958,8 +5958,8 @@
         },
         "big": true,
         "o_ovr": 61,
-        "d_ovr": 46,
-        "ovr": 56,
+        "d_ovr": 54,
+        "ovr": 59,
         "marg": 63
       },
       {
