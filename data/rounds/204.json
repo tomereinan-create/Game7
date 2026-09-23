@@ -1,0 +1,175 @@
+{
+ "round": 204,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Brent Barry '02 OFF 62 -> target 72 +-3 and Ray Allen '09 OFF 73 -> target 78 +-3 (scout items Tomer agreed to, 2026-09-23)",
+ "title": "CONVERSION IS PAID AT LOAD, NOT BESIDE IT — o_score read a scorer's load (0.26) and his conversion (0.11) as two independent facts and their PRODUCT only through recal_26's signature at 0.08; the new term pays conversion on recal_121's own HANDLING LOAD 0.5 x (volume + playvol), over the class's own p10->median, faded out where recal_109/176 already price a lead creator or a lead scorer, at the derived weight 0.26 - 0.11 = 0.15",
+ "subject": "Brent Barry '02",
+ "scale": "off",
+ "target": 72,
+ "tol": 3,
+ "before": 62,
+ "after": 70,
+ "pipeline_version": 204,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "CV_K = 0\\.26 - 0\\.11",
+   "label": "THE SIZE, DERIVED NOT FITTED — the load weight minus the conversion weight, recal_138's own construction",
+   "note": "conversion achieved on a real share of an offence IS what the load produced, so on that share it is paid at 0.26 instead of 0.11; written as a premium on top of the 0.11 the standard path already pays, the total at a full share is exactly 0.26 and the rate is paid ONCE"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "CV_L_LO, CV_L_HI = 24\\.5, 47\\.5",
+   "label": "THE LOAD RAMP — the class's OWN 10th percentile and median handling load, measured on the 979 cards the term can pay",
+   "note": "0.5 x (volume + playvol) over p10 24.5 -> p50 47.5 (p25 33.25, p75 60.5). MEASURED, NOT CHOSEN, the way recal_130 took PD_MIN_FULL and recal_169 took GL_U_FULL from the class they charge"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_cvq = 0\\.5 \\* \\(a\\['volume'\\] \\+ a\\['playvol'\\]\\)",
+   "label": "THE QUANTITY IS recal_121/186's OWN — the HANDLING LOAD the turnover charge already reads by that name",
+   "note": "the share of an offence a man moves, whether he finishes it or passes it. Korver '15 25.0, Kerr '96 26.0, Barry '02 38.5, Allen '09 51.5"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_cvv = min\\(1\\.0, max\\(0\\.0, \\(PD_V_HI - a\\['volume'\\]\\) / \\(PD_V_HI - PD_V_LO\\)\\)\\)",
+   "label": "THE LEAD-SCORER FADE — recal_109/176's OWN volume band (93 -> 10), for recal_176's own stated reason",
+   "note": "paid \"until his own scoring load is in the TOP DECILE, at which point he is a lead scorer\". Kawhi '17 (volume 94) is exactly zero; Reggie Miller '97 (85) is paid 0.096 of the term"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_cvp = min\\(1\\.0, max\\(0\\.0, \\(PD_PV_HI - a\\['playvol'\\]\\) / \\(PD_PV_HI - PD_PV_LO\\)\\)\\)",
+   "label": "THE LEAD-CREATOR FADE — recal_109's OWN passer band (85 -> 70) run backwards, so the two channels are DISJOINT BY CONSTRUCTION",
+   "note": "recal_109 pays nothing below playvol 70 and everything above 85; this term is the mirror. Billups '06 (88), Magic '90 (98), Stockton '01 (99), Nash '05 (97), Calderon '09 (91), Curry '16 (86), LeBron '13 (87), Harden '19 (94) are all EXACTLY zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_cve = min\\(1\\.0, max\\(0\\.0, \\(a\\['efficiency'\\] - EF_E_LO\\) / \\(EF_E_HI - EF_E_LO\\)\\)\\)",
+   "label": "THE CONVERSION RAMP — recal_112's OWN efficiency band (63 -> 93), reused verbatim",
+   "note": "below 63 there is no conversion claim to pay: Hield '25 (40), Beasley '23 (30), DeRozan '17 (51), Jaylen Brown '26 (38), Bowen '06 (46) are all exactly zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if not is_big\\(p\\) and _cve \\* _cvl \\* _cvp \\* _cvv > 0\\.0:",
+   "label": "THE CLASS GATE — recal_112/139's efficient-interior term IS the big side of this claim; this is the perimeter sibling (recal_155/182's construction)",
+   "note": "LOAD-BEARING and measured: without it Nene '11 (65 +-2) reads 71 and Richaun Holmes '21 (62 +-3) reads 66, and the round breaks two anchors"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_cvadd = CV_K \\* a\\['efficiency'\\] \\* _cve \\* _cvl \\* _cvp \\* _cvv \\* _second",
+   "label": "THE TERM ITSELF, paid at recal_163's SECOND-PAYMENT load line",
+   "note": "volume and playvol are rates the standard path has ALREADY paid (0.26, 0.19), so recal_130's doctrine scales the second payment at the class's own upper quartile of minutes: this class reads 34.8 and SECOND_FULL is 33.9 — indistinguishable on this pool, so no new constant enters"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "\\+ 0\\.08\\*\\(max\\(a\\['volume'\\],50,_hubload\\)\\*a\\['efficiency'\\]/100\\)",
+   "label": "recal_26's SIGNATURE, UNTOUCHED — the one place the standard path already read the product, and the weight this round did not move",
+   "note": "0.08, flat below volume 50 by its own floor; the new term is the correction below the lead-scorer line, not a re-weighting of the signature"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol",
+   "label": "recal_89's LOCKED DIAL STATE, UNTOUCHED — the two weights the premium is derived from",
+   "note": "recal_112's measured wall stands: \"the efficiency of a low-usage man cannot be paid through a weight that every high-usage anchor also rides\" — 0.13 alone breaks Moses Malone '82"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "EF_V_LO, EF_V_HI = 35\\.0, 45\\.0",
+   "label": "recal_112's own low-usage gate, untouched — Ray Allen '09 at volume 59 was outside it and still is",
+   "note": "the big-side term is not widened; the perimeter claim gets its own channel instead"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_90's band anchors, NOT re-derived — no card above the knee moves",
+   "note": "the OFF raw top is 110.27 before and after and the same 16 cards sit above the anchor; every card the term pays is a lead-scorer fade or a lead-creator fade away from the top"
+  }
+ ],
+ "expect": [
+  {"card": "Ray Allen '09", "scale": "off", "op": "~", "value": 78, "tol": 3, "label": "SUBJECT 2, AND THE ONE THAT LANDS ON HIS NUMBER (78 +-3). 18.2 on .624 TS, 40.9% on 6.0 threes, BPM 4.0; handling load 51.5 saturates the ramp and the lead-scorer fade pays 0.41 at volume 59. 73 -> 78"},
+  {"card": "Ray Allen '09", "scale": "ovr", "op": "~", "value": 71, "tol": 1, "label": "his OVR follows his OFF through the offence-led branch: 67 -> 71"},
+  {"card": "Brent Barry '02", "scale": "ovr", "op": "~", "value": 73, "tol": 1, "label": "the subject's OVR follows too: 69 -> 73, on a DEF of 76 that moved by zero"},
+  {"card": "Jamal Crawford '09", "scale": "off", "op": "==", "value": 73, "label": "THE CARD THE DEFECT WAS MEASURED AGAINST, and he does not move by a point: 16.0 on .547 TS, efficiency 51, below the term's own conversion foot of 63. Allen was level with him at 73 and is now five clear"},
+  {"card": "Kyle Korver '15", "scale": "off", "op": "==", "value": 58, "label": "THE PROOF THAT AN EFFICIENCY-x-VOLUME TERM COULD NOT HAVE DONE THIS. Efficiency 94 to Barry's 96, volume 10 to his 14, arc 95 to his 91 — and a handling load of 25.0 to Barry's 38.5. Pinned 58 +-1, moves by EXACTLY zero"},
+  {"card": "Steve Kerr '96", "scale": "off", "op": "==", "value": 61, "label": "the other low-handling shooter pin (62 +-1, reads 61): handling 26.0, one and a half points above the term's foot. Zero"},
+  {"card": "Chauncey Billups '06", "scale": "off", "op": "==", "value": 92, "label": "THE LEAD-CREATOR FADE, on the pin with the least room on the board (91 +-1, 0.23 of o_score). Efficiency 92 exactly as Allen's and volume 66 ABOVE his, so any term monotone in those two would have taken him; playvol 88 puts him inside recal_109's band and outside this one. Zero"},
+  {"card": "Reggie Miller '97", "scale": "off", "op": "~", "value": 88, "tol": 1, "label": "THE WALL, AND IT IS NAMED: the same card as Allen with more load (efficiency 95, volume 85, playvol 50). The lead-scorer fade pays him 0.096 and he moves 87 -> 88, ONTO his pin. At CV_K 0.28 he reads 90 and the round ends"},
+  {"card": "Kawhi Leonard '17", "scale": "off", "op": "==", "value": 94, "label": "volume 94 is past recal_176's top decile: exactly zero, on a pin with 2.46 of room"},
+  {"card": "Stephen Curry '16", "scale": "off", "op": "==", "value": 96, "label": "efficiency 98 and the highest signature on the board — and playvol 86 puts him in recal_109's band. Zero, and no star pin moves"},
+  {"card": "Michael Jordan '89", "scale": "off", "op": "==", "value": 98, "label": "playvol 83 and volume 98: both fades bite. Zero"},
+  {"card": "Nenê '11", "scale": "off", "op": "~", "value": 65, "tol": 2, "label": "THE CLASS GATE'S OWN MEASURED REASON: efficiency 88 at volume 38 and handling 38.0 — the same shape as Barry, on the big branch where recal_112/139 already pays it. Without `not is_big` he reads 71"},
+  {"card": "Richaun Holmes '21", "scale": "off", "op": "~", "value": 65, "tol": 3, "label": "the second big the class gate holds (pinned 62 +-3 with zero room up): without it he reads 66"},
+  {"card": "Bruce Bowen '06", "scale": "off", "op": "==", "value": 45, "label": "efficiency 46 and handling 11.0: two gates shut. Zero"},
+  {"card": "Tony Snell '18", "scale": "off", "op": "==", "value": 50, "label": "efficiency 67 clears the foot but handling 11.0 does not. Zero"},
+  {"card": "Buddy Hield '25", "scale": "off", "op": "==", "value": 58, "label": "the high-volume low-conversion shooter the term is AGAINST: efficiency 40, exactly zero"},
+  {"card": "Ty Jerome '25", "scale": "off", "op": "==", "value": 71, "label": "recal_96's own subject: efficiency 75 pays 0.4 of the ramp and 19.9 minutes pay 0.36 of the second line. Zero printed movement"},
+  {"card": "Reggie Miller '02", "scale": "off", "op": "~", "value": 79, "tol": 1, "label": "THE COMPARATOR THE RULING NAMED (\"Reggie Miller '02 reads 72\"): 16.5 on .617 TS, efficiency 95 at volume 46, handling 46.5. He is the same claim as Barry with more of his own shot and rises with him, 72 -> 79 — the order the ruling asked for is kept, not inverted"},
+  {"card": "Chris Mullin '97", "scale": "off", "op": "~", "value": 70, "tol": 1, "label": "the largest clean mover of the round's archetype: efficiency 94 at volume 30 with playvol 57, 34.6 mpg. 62 -> 70"},
+  {"card": "Jeff Hornacek '97", "scale": "off", "op": "~", "value": 80, "tol": 1, "label": "74 -> 80: handling 58.5, efficiency 91, the Utah second option who converted everything and ran none of it"},
+  {"card": "Michael Porter Jr. '21", "scale": "off", "op": "~", "value": 73, "tol": 1, "label": "the biggest MODERN mover, and it is three points: efficiency 88 at volume 61 with playvol 13. 71 -> 73"},
+  {"card": "Latrell Sprewell '02", "scale": "off", "op": "==", "value": 64, "label": "the card the ruling measured Barry against (\"below Sprewell '02, TS .501, BPM -0.8\"): efficiency 33, exactly zero. Barry now reads six above him instead of two below"}
+ ],
+ "order": [
+  {"scale": "off", "above": "Brent Barry '02", "below": "Latrell Sprewell '02", "label": "THE INVERSION THE RULING NAMED IS GONE AND THAT IS THE ROUND: .652 true shooting with 5.3 assists now reads above .499 true shooting at BPM -0.8 (70 against 64), where it read two BELOW"},
+  {"scale": "off", "above": "Brent Barry '02", "below": "Kerry Kittles '02", "label": "and above the '02 card he was exactly level with, 70 against 63"},
+  {"scale": "off", "above": "Brent Barry '02", "below": "Jason Williams '02", "label": "and above Jason Williams '02 (63, TS .466), which the ruling listed as the third man over him"},
+  {"scale": "off", "above": "Ray Allen '09", "below": "Jamal Crawford '09", "label": "78 against 73: the pair whose 4.42 of volume and 4.51 of efficiency used to cancel"},
+  {"scale": "off", "above": "Ray Allen '09", "below": "Josh Howard '09", "label": "78 against 74, the second of the three '09 cards the ruling said he printed under"},
+  {"scale": "off", "above": "Reggie Miller '97", "below": "Reggie Miller '02", "label": "the same man at 31 and at 36 stays in the right order (88 over 79) — the lead-scorer fade pays the peak season a tenth of what it pays the late one"},
+  {"scale": "off", "above": "Chauncey Billups '06", "below": "Ray Allen '09", "label": "the lead creator still reads above the secondary scorer, 92 against 78, without moving"},
+  {"scale": "off", "above": "Brent Barry '02", "below": "Kyle Korver '15", "label": "the two cards an efficiency-x-volume term could not have separated now read 70 and 58, and Korver never moved"},
+  {"scale": "ovr", "above": "Brent Barry '02", "below": "Kerry Kittles '02", "label": "OVR follows: 73 against 70, where Kittles read 70 to Barry's 69"}
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 481,
+  "max_abs": 9,
+  "top": [
+   ["Brent Barry '03", 58, 67],
+   ["Mike Miller '08", 61, 69],
+   ["Chris Mullin '97", 62, 70],
+   ["Brent Barry '02", 62, 70],
+   ["Reggie Miller '02", 72, 79],
+   ["Kenny Smith '94", 60, 67],
+   ["Terry Porter '99", 63, 69],
+   ["Sidney Moncrief '82", 72, 78],
+   ["Reggie Miller '92", 75, 81],
+   ["Ray Allen '11", 67, 73],
+   ["Ray Allen '10", 68, 74],
+   ["Jeff Hornacek '97", 74, 80]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "THE SUBJECT LANDS 70 AGAINST 72 AND THE SIZE WAS DERIVED, NOT FITTED TO HIM. CV_K is 0.26 - 0.11 = 0.15, the load weight minus the conversion weight, which is recal_138's own construction ('paid at the LOAD weight instead of the CREATION weight, and the premium is the gap between them'). The JOINT window in which both subjects sit inside their tolerance is 0.12 to 0.25 and the derived value is inside it; at 0.18 Barry reads exactly 72 and Allen 79. A later round that wants Barry ON 72 can move CV_K to 0.18 without touching anything else and without breaking an anchor — that is measured, not guessed.",
+  "THE ANCHOR WALL IS REGGIE MILLER '97 (88 +-1, recal_89) AND IT IS THE ONLY ONE. Every CV_K from 0 to 0.27 holds all 195 anchors; 0.28 takes him to 90. He is the same card as Ray Allen '09 with more load (efficiency 95, volume 85, playvol 50) and the lead-scorer fade is the whole reason he only moves one point. Any later round that widens this term's volume fade is spending his pin first.",
+  "THE SCOUT'S PROPOSED MECHANISM IS PROVABLY INSUFFICIENT FOR BARRY AND THAT IS ON THE RECORD. The dispatch asked for 'an efficiency x volume interaction'. Brent Barry '02 and the pinned Kyle Korver '15 differ by 2 on efficiency (96/94), 4 on volume (14/10) and 4 on the arc (91/95); Barry needs +6.57 of o_score to enter his band and Korver has 2.06 before he leaves his, so no function of those three bars can separate them. Measured over 15,600 parameterisations of an efficiency x involvement term with no lead-scorer fade: ZERO feasible, and Reggie Miller '97 fails in all 1,041 of the settings that land both subjects. The fade is what makes the term possible, and it is recal_176's own line.",
+  "OFF_TOP IS NOT RE-DERIVED. The OFF raw top is 110.27 before and after and the same 16 cards sit above the band anchor of 102.75, because every card above the knee is either a lead creator (playvol >= 85) or a lead scorer (volume >= 93) or a big. recal_90's cost is not paid this round.",
+  "THE TERM SITS BEFORE THE FLOORS, SO A FLOOR CAN STILL ABSORB IT. It is placed immediately after recal_112's efficient-interior block and before recal_64/118's off-ball floor, recal_155's glue floor and recal_182's second-chance floor — a floor is a floor and a card whose standard path now clears it simply stops being floored. Neither subject is floored either way (Barry's arc floor reads 60.76 against a standard path of 75.43).",
+  "recal_155's GLUE FLOOR STILL CARRIES A SHOT-DIET GATE AND IT IS THE NEXT THING TO LOOK AT. Its `3pt 68 -> 40` factor shuts the file's only possession-work channel to any card who can shoot, and its own named reason for that gate — 'Kyle Korver '15 would take +2 without it' — was defused by recal_169's used-load ramp, which post-dates it: Korver's glue floor now reads 62.06 against a standard path of 61.92, worth +0.14. Removing the gate was MEASURED this round as an alternative route to the subject: 157 cards move, all up, every anchor holds, and Barry lands at 68 — one printed point short of his band (raw 68.33 against the 68.50 he needs), which is why it is not the round. It remains a real seam for a later ruling."
+ ],
+ "notes": [
+  "WHAT THE TWO SCOUT ITEMS SHARE, decomposed. o_score reads a scorer with TWO INDEPENDENT FACTS — `volume` at 0.26 (how many possessions ran through him) and `efficiency` at 0.11 (what he did with them) — and reads their PRODUCT only through recal_26's signature, `0.08 x max(volume, 50) x efficiency / 100`, the smallest weight on the sheet, flat below volume 50 by its own floor. Points are load TIMES conversion. Ray Allen '09 (volume 59 x 0.26 = 15.34 against efficiency 92 x 0.11 = 10.12, o_score 78.41) and Jamal Crawford '09 (volume 76 x 0.26 = 19.76 against efficiency 51 x 0.11 = 5.61, o_score 78.26) printed the SAME 73: seventeen volume points are worth 4.42 and forty-one efficiency points are worth 4.51, and the two cancel. It is the Kaman/Smits shape — usage paid regardless of what it produced — read on the perimeter.",
+  "WHY NEITHER EXISTING CHANNEL REACHED THEM, checked rather than assumed. recal_112/139's efficient-interior term is gated by `_e3` (3pt 68 -> 40) — 'efficiency earned at the rim and the line is paid here and efficiency earned from the arc is paid there' — and both subjects shoot (3pt 91 and 90), so it is exactly zero for them; Allen also fails its `_ev` gate (volume 45 -> 35) at 59. recal_64/118's off-ball floor is where `_e3` sends them and it provably does not pay the claim: its vector carries NO load term at all and only ever acts as a floor. Barry's reads 60.76 against a standard path of 67.09 and does not bind; Allen is outside its `volume < 55` gate entirely. The gate routes the arc's conversion to a channel that is empty.",
+  "WHY THE LOAD IS THE OFFENCE HE HANDLES AND NOT HIS OWN SHOT. Barry '02 uses 15.4% of his team's possessions — his `volume` is 14 and no term reading volume can lift him past Kyle Korver '15, who reads 10. What he has that Korver has not is the other 5.3 assists a night: playvol 63 against 40. So the quantity is recal_121/186's HANDLING LOAD, `0.5 x (volume + playvol)`, the share of an offence a man moves whether he finishes it or passes it: Korver 25.0, Kerr '96 26.0, Barry 38.5, Allen 51.5, Reggie Miller '97 67.5, Billups '06 77.0. The ramp runs over the class's own p10 and median because a quantile of the class the term pays is the only number in the file's vocabulary for 'a real share' (recal_130's PD_MIN_FULL, recal_163's SECOND_FULL, recal_169's GL_U_FULL, recal_176's PD_V_HI).",
+  "THE TWO FADES ARE NOT NEW IDEAS, THEY ARE THE DISJOINTNESS THIS FILE ALREADY BUILDS. A lead creator is priced by recal_109's passer band, so this term runs the same band backwards and the two cross over the same 15 points (playvol 70 -> 85) that recal_154/176 gave the hub and the passer. A lead scorer is priced by the load weight at its largest AND by the signature, which above volume 50 is already linear in volume — this term is the correction BELOW that line, so it fades over recal_176's own measured top decile (volume 93 -> 10). Neither constant is chosen here; both are read off the terms they hand over to.",
+  "MEASURED, AND THE MOVERS ARE ONE ARCHETYPE. 481 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +1.86, max +9; DEF and every attribute move on ZERO (the term lives entirely inside o_score); OVR follows on 372, mean +1.58, max +6. The top 12 by OFF and the top 12 by OVR are IDENTICAL, name for name and in order. The class reads like what it is — efficient secondary scorers who handle a real share of an offence without being the man it runs through: Chris Mullin '97 (+8), Mike Miller '08 (+8), Reggie Miller '02 (+7), Kenny Smith '94 (+7), Terry Porter '99 (+6), Sidney Moncrief '82 (+6), Jeff Hornacek '95/'97 (+6), Hersey Hawkins '95-'97 (+5/+6), Steve Smith '01 (+5). Only 41 of the movers are 2021-26 cards and the largest is three points (Michael Porter Jr. '21 71 -> 73, Kon Knueppel '26 77 -> 79, Austin Reaves '24 64 -> 66).",
+  "THE VARIANTS THAT WERE MEASURED AND REJECTED. (1) An efficiency x volume interaction, the reading the dispatch proposed: 15,600 parameterisations, ZERO feasible, and of the 1,041 that land both subjects every single one breaks Reggie Miller '97 — the proof is that the correction must know about a man's CREATION, not just his shot. (2) Removing recal_155's glue-floor `3pt` gate, which is a real and separate defect: it reaches Barry through his possession work (drb 46, orb 15, playvol 63 against efficiency 96) and lands him at 68, one printed point short, and does nothing at all for Allen (volume 59 is outside the floor's `volume < 55` gate and his floor computes 63.5 against a standard path of 78.41). (3) Dropping the `not is_big` gate: Nene '11 reads 71 against a 65 +-2 pin and Richaun Holmes '21 reads 66 against 62 +-3 — the big side of this claim is recal_112/139's and it is already paid."
+ ]
+}

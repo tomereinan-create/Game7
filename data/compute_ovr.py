@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 204
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -1336,6 +1336,118 @@ def o_score(p, trace=None):
             trace['interior'] = dict(gate=((_ee * _ev) ** 0.5) * _ep * _e3, added=_add, full=_ef,
                                      two_level=_tl_add, load=_second, mpg=_mp2,
                                      eff_share=_ee, vol_share=_ev, product=_ee * _ev)
+    # recal_204 (HIS RULING, verbatim: "Brent Barry '02 OFF 62 → target 72 ±3 and Ray Allen '09
+    # OFF 73 → target 78 ±3"). CONVERSION IS PAID AT LOAD, NOT BESIDE IT — the PERIMETER sibling of
+    # recal_112's efficient-interior term.
+    #
+    # THE DEFECT, decomposed on the two cards the ruling names and on the men they print level with.
+    # o_score reads a scorer with TWO independent facts — `volume` at 0.26 (how many possessions ran
+    # through him) and `efficiency` at 0.11 (what he did with them) — plus recal_26's SIGNATURE,
+    # `0.08 x max(volume, 50) x efficiency / 100`, which is the one place the file reads them as the
+    # PRODUCT they actually are. Points are load TIMES conversion; the card prices load PLUS
+    # conversion, at a ratio of 0.26 to 0.11, and reads the product at the smallest weight on the
+    # sheet. The arithmetic of that shows up whole in the pair the scan put up:
+    #   Ray Allen '09     18.2 on .624 TS, 40.9% on 6.0 threes, BPM 4.0: volume 59 x 0.26 = 15.34
+    #                     against efficiency 92 x 0.11 = 10.12, o_score 78.41 -> OFF 73
+    #   Jamal Crawford '09  16.0 on .547 TS, BPM -1.3:            volume 76 x 0.26 = 19.76
+    #                     against efficiency 51 x 0.11 =  5.61, o_score 78.26 -> OFF 73
+    # The seventeen volume points Crawford carries are worth 4.42 and the forty-one efficiency
+    # points Allen gives back are worth 4.51: the two CANCEL, and the league's second-best shooting
+    # guard prints level with a sub-.55 chucker. It is the Kaman/Smits shape — usage paid regardless
+    # of what it produced — read on the perimeter.
+    #
+    # WHY NEITHER EXISTING CHANNEL REACHES THEM, checked rather than assumed (the dispatch asked).
+    #   recal_112/139's EFFICIENT-INTERIOR term is gated by `_e3` (3pt 68 -> 40) — "efficiency
+    #     earned at the rim and the line is paid here and efficiency earned from the arc is paid
+    #     there". Both subjects shoot (3pt 91 and 90), so it is exactly zero for them; and Allen
+    #     also fails its `_ev` gate (volume 45 -> 35) at volume 59.
+    #   recal_64/118's OFF-BALL FLOOR is where `_e3` sends them, and it PROVABLY does not pay the
+    #     claim: its vector `0.38 x 3pt + 0.20 x efficiency + 0.08 x ballsec + 0.06 x discipline`
+    #     carries no load term at all and only ever acts as a FLOOR. Barry's reads 60.76 against a
+    #     standard path of 67.09 and does not bind; Allen is outside its `volume < 55` gate
+    #     entirely. The gate routes the arc's conversion to a channel that is empty.
+    # THE SCAN'S OWN READING IS HALF RIGHT AND THE HALF THAT IS WRONG IS PROVABLE. An
+    # efficiency-x-volume interaction reaches Allen and CANNOT reach Barry: Barry '02 and the pinned
+    # Kyle Korver '15 differ by 2 on efficiency (96/94), 4 on volume (14/10) and 4 on the arc
+    # (91/95), so ANY term reading only those three bars separates them by a rounding error — and
+    # Barry needs +6.57 of o_score to enter his band while Korver has 2.06 before he leaves his.
+    # What Barry has and Korver has not is the rest of the offence: playvol 63 against 40. So the
+    # load this term reads is not the man's SHOT, it is the OFFENCE HE HANDLES.
+    #
+    # THE TERM, and the quantity is recal_121/186's own. `0.5 x (volume + playvol)` is the HANDLING
+    # LOAD the turnover charge already reads by that name — the share of an offence a man moves,
+    # whether he finishes it or passes it. Conversion is paid ON that share and nowhere else, so a
+    # man who converts at the top of the league while handling nothing is paid nothing extra
+    # (Korver '15 handles 25.0, Kerr '96 26.0; Barry 38.5, Allen 51.5).
+    #
+    # THE SIZE IS DERIVED, exactly as recal_138 derived the hub's. Conversion achieved on a real
+    # share of an offence is not a skill rate standing beside the load — it IS what the load
+    # produced, so on that share it is paid at the LOAD weight 0.26 instead of the CONVERSION weight
+    # 0.11, and the premium is the gap between them: 0.26 - 0.11 = 0.15, both of them recal_89's
+    # LOCKED DIAL STATE. Written as a premium ON TOP of the 0.11 the standard path already pays,
+    # the total at a full share is exactly 0.26 and the rate is paid ONCE.
+    #
+    # THE FOUR GATES, and every constant in them already exists or is MEASURED on the class itself.
+    #   efficiency  EF_E_LO -> EF_E_HI (63 -> 93), recal_112's OWN conversion ramp, reused verbatim.
+    #               Below 63 there is no conversion claim to pay: Hield '25 (40), Beasley '23 (30),
+    #               DeRozan '17 (51), Jaylen Brown '26 (38) and Bowen '06 (46) are all exactly zero.
+    #   handling    CV_L_LO -> CV_L_HI, the class's OWN 10th percentile and MEDIAN, measured on the
+    #               979 cards the term can pay at all (not big, efficiency > 63, playvol < 85,
+    #               volume < 93): p10 24.5, p50 47.5 (p25 33.25, p75 60.5). MEASURED, NOT CHOSEN,
+    #               the same way recal_130 took PD_MIN_FULL and recal_169 took GL_U_FULL from the
+    #               class they charge. A card who handles the class's median share is paid in full.
+    #   lead scorer PD_V_LO -> PD_V_HI (10 -> 93), recal_109/176's OWN volume fade, and it is here
+    #               for recal_176's own stated reason: a man is paid for the offence he handles
+    #               "until his own scoring load is in the TOP DECILE, at which point he is a lead
+    #               scorer" — and at the top of the load range the SIGNATURE is already reading the
+    #               product linearly in volume, which is precisely what this term is correcting for
+    #               below it. Kawhi '17 (volume 94) is exactly zero; Reggie Miller '97 (85) is paid
+    #               at 0.096 of the term and moves 87 -> 88, ONTO his 88 +-1.
+    #   lead creator PD_PV_HI -> PD_PV_LO (85 -> 70), recal_109's OWN passer band, run backwards so
+    #               the two channels are DISJOINT BY CONSTRUCTION and cross over the same 15-point
+    #               overlap recal_154/176 built for the hub: recal_109 pays nothing below playvol 70
+    #               and everything above 85, this term the mirror. Chauncey Billups '06 (playvol 88,
+    #               pinned 91 +-1 with 0.23 of room), Magic '90 (98), Stockton '01 (99), Nash '05
+    #               (97), Calderón '09 (91), Curry '16 (86), LeBron '13 (87) and Harden '19 (94) are
+    #               all EXACTLY ZERO and cannot be paid twice for one assist rate.
+    #   not is_big  recal_112/139's term IS the big side of this claim and this is the perimeter
+    #               sibling, the same construction recal_155/182 use for the glue and second-chance
+    #               floors. It is LOAD-BEARING, not decoration, and the variant WAS measured:
+    #               without it Nenê '11 (pinned 65 +-2, efficiency 88 at volume 38) reads 71 and
+    #               Richaun Holmes '21 (62 +-3) reads 66, and the round breaks two anchors.
+    #   _second     recal_163's SECOND-PAYMENT load line, because `volume` and `playvol` are rates
+    #               the standard path has ALREADY paid once (0.26 and 0.19) and recal_130's doctrine
+    #               is that a rate paid twice is scaled twice at the class's own upper quartile of
+    #               minutes. This class's own quartile is 34.8 and SECOND_FULL is 33.9; the two are
+    #               indistinguishable on this pool, so no new constant is introduced.
+    # THE WALL IS REGGIE MILLER '97 (88 +-1, recal_89) and it is named because it is the only one:
+    # every size from 0 to 0.27 holds all 193 anchors and 0.28 takes him to 90. The joint window in
+    # which BOTH subjects sit inside their tolerance is 0.12 to 0.25, and the derived 0.15 is inside
+    # it — the derivation is not fitted to the subjects, it is checked against them. At 0.18 Barry
+    # reads exactly 72 and Allen 79; 0.15 was shipped because it is the number the doctrine gives.
+    # MEASURED on the whole pool: 481 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +1.86,
+    # max +9; DEF and every attribute move on ZERO; OVR follows on 372. OFF_TOP is NOT re-derived —
+    # the OFF raw top is 110.27 before and after and the same 16 cards sit above the band anchor —
+    # and the top 12 by OFF and the top 12 by OVR are identical. The movers are ONE archetype and
+    # read like it: Chris Mullin '97, Jeff Hornacek '95/'97, Hersey Hawkins '95-'97, Reggie Miller
+    # '89/'92/'02/'04, Sidney Moncrief '82, Terry Porter '99, Kenny Smith '94, Mike Miller '08,
+    # Michael Porter Jr. '21, Kon Knueppel '26, Austin Reaves '24 — efficient secondary scorers who
+    # handle a real share of an offence without being the man it runs through.
+    CV_L_LO, CV_L_HI = 24.5, 47.5   # the class's own p10 and median handling load, measured on 979
+    CV_K = 0.26 - 0.11              # the load weight minus the conversion weight (recal_138's form)
+    _cvq = 0.5 * (a['volume'] + a['playvol'])
+    _cve = min(1.0, max(0.0, (a['efficiency'] - EF_E_LO) / (EF_E_HI - EF_E_LO)))
+    _cvl = min(1.0, max(0.0, (_cvq - CV_L_LO) / (CV_L_HI - CV_L_LO)))
+    _cvp = min(1.0, max(0.0, (PD_PV_HI - a['playvol']) / (PD_PV_HI - PD_PV_LO)))
+    _cvv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
+    if not is_big(p) and _cve * _cvl * _cvp * _cvv > 0.0:
+        _cvadd = CV_K * a['efficiency'] * _cve * _cvl * _cvp * _cvv * _second
+        std += _cvadd
+        if trace is not None:
+            trace['conversion'] = dict(handling=_cvq, eff_gate=_cve, load_gate=_cvl,
+                                       creator_fade=_cvp, scorer_fade=_cvv, load=_second,
+                                       mpg=_mp2, k=CV_K, added=_cvadd,
+                                       l_lo=CV_L_LO, l_hi=CV_L_HI)
     # recal_118 (HIS RULING, verbatim: "For the scout, I agree with 3,4,5,6,7"). THE OFF-BALL FLOOR
     # IS A RAMP, NOT A GATE — item 5 of the scan's shortlist.
     #
@@ -2412,6 +2524,16 @@ if _CARD:
               f"{_p2['v_full']:.0f}) x load {_p2['load']:.3f} (recal_130: "
               f"{_p2['mpg'] if _p2['mpg'] is not None else 'no'} mpg against the class's own 34.7-minute "
               f"full-creation line): +{_p2['added']:.3f}")
+    if 'conversion' in _ot:
+        _c2 = _ot['conversion']
+        print(f"CONVERSION AT LOAD (recal_204) - handling load {_c2['handling']:.1f} "
+              f"(0.5 x (volume + playvol), recal_121's own quantity) over the class's own p10->median "
+              f"{_c2['l_lo']:.1f}->{_c2['l_hi']:.1f} = {_c2['load_gate']:.4f}; x efficiency gate "
+              f"{_c2['eff_gate']:.4f} (recal_112's 63->93) x lead-scorer fade {_c2['scorer_fade']:.4f} "
+              f"(recal_176's volume 93->10) x lead-creator fade {_c2['creator_fade']:.4f} "
+              f"(recal_109's playvol 85->70) x recal_163's second-payment load {_c2['load']:.3f} "
+              f"({_c2['mpg'] if _c2['mpg'] is not None else 'no'} mpg); "
+              f"{_c2['k']:.2f} x efficiency = +{_c2['added']:.3f}")
     if 'two_level' in _ot:
         _t2 = _ot['two_level']
         print(f"TWO-LEVEL BIG (recal_107) - mid gate {_t2['gm']:.2f} x eff gate {_t2['ge']:.2f}, "
