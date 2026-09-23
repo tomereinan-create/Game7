@@ -1,5 +1,14 @@
 [
   {
+    "card": "Zion Williamson '21",
+    "scale": "off",
+    "target": 90,
+    "tol": 1,
+    "round": 190,
+    "ruling": "Zion 21' OFF too high",
+    "note": "THE PAINT DOMINANCE BONUS'S ATTEMPT CEILING WAS A DEAD LETTER: of the 855 measured-era cards recal_47's power pays, ZERO reached the 2.85 clamp — the maximum on the board is the subject's own 2.7917 at 14.87 self-created paint attempts a hundred — so the factor ran unbounded to whatever the busiest diet happened to be. 2.00 is recal_45's own design sentence ('the busiest doubles'), and the class's own quantiles agree: p90 pays att_f 1.0419 and p99 2.3668, so the ceiling binds on the top 1.9% of the class and nothing else in the distribution moves. OFF 92 -> 90, OVR 84 -> 82; 9 of 10,000 cards move on OFF, every one of them DOWN, max -2, and DEF and every attribute move on ZERO. HIS NUMBER WAS 86 +-3 AND 90 IS THE FRONTIER, which he accepted on 'Push 194': the wall is Shaquille O'Neal '02 (off 98 +-1), whose bonus is 18.176 to the subject's 4.990 on the same attempt rate because the subject's free-throw stroke (70) already sits on recal_44's gate floor while Shaq's (52) sits at its top — a 3.76:1 lever on every shared factor. Shaq '02 holds only at a ceiling >= 1.51553 and the subject does not print 89 until 1.50971. The three other routes are each blocked by a pin: recal_44's 0.25 gate floor IS the pre-1997 class's whole bonus (Moses '82 84 at 0.20), a one-zone gate cuts Shaq harder than the subject (Shaq '02 is mid 6 against the subject's 32), and recal_131's evidence cannot separate him from Dwight Howard '11, his twin on every paint input (evidence 74.21 against 75.40) pinned 78 +-1 with 0.060 of o_score of room."
+  },
+  {
     "card": "Ryan Anderson '18",
     "scale": "off",
     "target": 65,
@@ -1484,15 +1493,6 @@
     "round": 156,
     "ruling": "Agree with 7",
     "note": "recal_156: recal_14's minutes-confidence line is read against the SEASON'S OWN SCHEDULE (SEASON_G[yr] = the season's maximum games, clamped at 82; 1999 -> 50, 2012 -> 66, 2021 -> 72, 2020 -> 74), so the 50-game lockout board stops being shrunk for games nobody played. His league-leading 48.3 AST% reads 86 -> 95, inside 97 +-2. 82-game seasons are byte-identical to recal_14: a 1,400-minute part-timer in a full season keeps his shrink exactly."
-  },
-  {
-    "card": "Zion Williamson '21",
-    "scale": "off",
-    "target": 92,
-    "tol": 1,
-    "round": 156,
-    "ruling": "Push 154-157",
-    "note": "re-pins recal_51's 90 +-1, which Tomer released on this round. 2,026 minutes of a 72-game season read 2,308 on the 82-game scale: mconf 0.860 -> 0.965, and four bars rise at once (efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95). A proved frontier, not a tuning failure: Stockton '99 needs (82/50)^a >= 1.628 (a >= 0.985) while holding Zion at 91 needs (82/72)^a <= 1.109 (a <= 0.797)."
   },
   {
     "card": "Chauncey Billups '06",

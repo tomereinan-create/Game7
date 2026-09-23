@@ -1,0 +1,374 @@
+{
+ "round": 190,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Zion 21' OFF too high",
+ "title": "THE PAINT DOMINANCE BONUS'S ATTEMPT CEILING WAS A DEAD LETTER — of the 855 measured-era cards recal_47's power pays, ZERO reached the 2.85 clamp (the maximum on the board is the subject's own 2.7917 at 14.87 self-created paint attempts a hundred), so the factor ran unbounded to whatever the busiest diet happened to be. 2.00 is recal_45's own design sentence, 'the busiest doubles', and the class's own quantiles agree: p90 pays att_f 1.0419 and p99 2.3668, so the ceiling binds on the top 1.9% of the class it prices. OFF 92 -> 90, OVR 84 -> 82; 9 of 10,000 cards move on OFF, every one of them DOWN, max -2, and DEF and every attribute move on ZERO. 86 +-3 was DECLINED with the frontier and he accepted it on 'Push 194': the wall is Shaquille O'Neal '02 (off 98 +-1), who holds only at a ceiling >= 1.51553 while the subject does not print 89 until 1.50971",
+ "subject": "Zion Williamson '21",
+ "scale": "off",
+ "target": 90,
+ "tol": 1,
+ "before": 92,
+ "after": 90,
+ "pipeline_version": 190,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "att_f = min\\(2\\.00, max\\(0\\.30, \\(\\(_two \\* _create\\) / 7\\.5\\) \\*\\* 1\\.5\\)\\)",
+   "label": "THE ONE LINE THAT CHANGED: the paint dominance bonus's attempt-rate ceiling",
+   "note": "2.85 -> 2.00. The curve beneath it, the 0.30 floor, the 7.5 hinge and the 1.5 power are all untouched — only the saturation point moves"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "2\\.00 IS recal_45's OWN SENTENCE, not a new number",
+   "label": "WHERE 2.00 COMES FROM — it is not a new constant",
+   "note": "recal_45 built this factor 'hinged so the median specialist sits on the floor and THE BUSIEST DOUBLES, which is how max(volume/50, 1) behaved before it'. Doubling is 2.0"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "p90 7\\.71 \\(1\\.0419\\), p95 8\\.86 \\(1\\.2848\\), p99 13\\.32 \\(2\\.3668\\)",
+   "label": "THE CLASS AGREES INDEPENDENTLY: the 855 measured-era paint cards' own self-created attempt quantiles",
+   "note": "only 44 of 855 are paid above att_f 1.0 at all and only 16 above 2.00 — the ceiling binds on the top 1.9% and nothing else in the distribution moves"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "base = 6\\.5",
+   "label": "UNTOUCHED: recal_46/47's paint base",
+   "note": "6.5 -> 5.5 reaches only 91 and takes Dwight Howard '11 to 76 — measured and rejected"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "gate_f = min\\(1\\.00, max\\(0\\.25, 1\\.00 - \\(a\\['ft'\\] - 58\\) \\* 0\\.075\\)\\)",
+   "label": "UNTOUCHED: recal_44's free-throw gate and its 0.25 floor",
+   "note": "the floor IS the pre-1997 interior class's whole bonus (att_f pinned at 1.0 by recal_52, strokes 76-77); 0.25 -> 0.20 takes Moses Malone '82 to 84 against 86 +-1"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ZD_W = 3\\.0",
+   "label": "UNTOUCHED: recal_137's shape-gate ramp",
+   "note": "the subject saturates it at 1.0000 through clause 1; a one-zone gate is the wrong way round, Shaq '02 is mid 6 against the subject's mid 32"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\] \\+ 0\\.11\\*a\\['efficiency'\\] \\+ 0\\.26\\*_vol \\+ 0\\.19\\*_pv",
+   "label": "UNTOUCHED: recal_89's LOCKED DIAL STATE — no o_score weight moved",
+   "note": "a 0.005 cut to ANY of the ten already breaks Jordan '89, Moses '82 and Dwight Howard '11 and buys the subject one point; nothing here collides with rounds 189 or 191"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "UNTOUCHED: the band anchors (recal_90)",
+   "note": "the subject is raw 91.6316 before the round and 90.3151 after, BELOW the knee both times, so band() is the identity on him and no card above the knee was re-derived"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PIPELINE_VERSION = 190",
+   "label": "the stamp",
+   "note": "188 -> 190 in both python files"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Zion Williamson '21",
+   "scale": "ovr",
+   "op": "==",
+   "value": 82,
+   "label": "OVR follows: the offence-led blend on the new OFF, 0.70 x 90 + 0.30 x 64 = 82.20"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "def",
+   "op": "==",
+   "value": 64,
+   "label": "DEF moved on ZERO cards — the round is inside o_score"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 99,
+   "label": "every attribute moved on ZERO cards — no input changed, build_ratings.py reproduces its base exactly"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "THE DOCTRINE CARD, UNMOVED. His att_f is 2.5422, above the new ceiling, but he had 4.765 of o_score of room and spends 3.876 of it"
+  },
+  {
+   "card": "Shaquille O'Neal '01",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "off 98 +-1: att_f 2.2218 -> 2.00, unmoved at 99"
+  },
+  {
+   "card": "Shaquille O'Neal '02",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "THE WALL, and it is the stopping pin of the whole round: off 98 +-1, 99 -> 98. He holds only while the ceiling is >= 1.51553; the subject does not print 89 until 1.50971"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "off 99 +-0, ZERO room: att_f 2.1733 -> 2.00 costs him 1.237 of o_score against 8.957 of room. The rim-heavy star with a jumper holds"
+  },
+  {
+   "card": "Giannis Antetokounmpo '24",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "off 98 +-1, unmoved"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 77,
+   "tol": 1,
+   "label": "THE PAINT-CHANNEL TWIN and the tightest pin on the board after Finney-Smith '20 (0.060 of o_score of room): att_f 0.665, far under the ceiling, so he is BYTE-IDENTICAL"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "off 86 +-1 with 0.300 of room: att_f 1.0 by recal_52 (pre-1997, unmeasured), under the ceiling, BYTE-IDENTICAL"
+  },
+  {
+   "card": "Hakeem Olajuwon '93",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "the same class, the same reason — unmoved"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "unmoved"
+  },
+  {
+   "card": "Patrick Ewing '90",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "pre-1997 Shaq: att_f 1.0, unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '95",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '96",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "unmoved"
+  },
+  {
+   "card": "Montrezl Harrell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 63,
+   "tol": 2,
+   "label": "recal_93's own blocker on any load term inside att_f: att_f 0.49, under the ceiling, unmoved"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 59,
+   "tol": 2,
+   "label": "recal_166: the shape gate never fires for him, unmoved"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "off",
+   "op": "==",
+   "value": 95,
+   "label": "the two-level big takes NO dominance bonus at all (mid 98 over rim 79) — outside this knob entirely"
+  },
+  {
+   "card": "Zion Williamson '24",
+   "scale": "off",
+   "op": "==",
+   "value": 84,
+   "label": "the subject's own rim-88 doctrine card: att_f 2.39 -> 2.00 costs 0.52 of o_score and he does not move"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 2,
+   "label": "off 90 +-2 at the top edge with zero slack upward, unmoved"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "==",
+   "value": 71,
+   "label": "off 71 +-1, unmoved"
+  },
+  {
+   "card": "Richaun Holmes '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "off 62 +-3 at the top edge, unmoved"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "the tightest non-paint pin on the board (0.093 of o_score of room) — no dominance bonus, unmoved"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Zion Williamson '21",
+   "label": "the doctrine card still reads above the subject, and by nine now rather than seven"
+  },
+  {
+   "scale": "off",
+   "above": "Hakeem Olajuwon '93",
+   "below": "Zion Williamson '24",
+   "label": "the pinned interior class is not passed by the subject's other card"
+  },
+  {
+   "scale": "off",
+   "above": "Zion Williamson '21",
+   "below": "Dwight Howard '11",
+   "label": "the twin is still fifteen points below — this round did not close that gap and says so"
+  },
+  {
+   "scale": "off",
+   "above": "Giannis Antetokounmpo '25",
+   "below": "Zion Williamson '21",
+   "label": "the rim-heavy star with a jumper is not passed"
+  },
+  {
+   "scale": "off",
+   "above": "Joel Embiid '23",
+   "below": "Zion Williamson '21"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 9,
+  "max_abs": 2,
+  "top": [
+   [
+    "Shaquille O'Neal '97",
+    97,
+    95
+   ],
+   [
+    "Shaquille O'Neal '98",
+    98,
+    96
+   ],
+   [
+    "Zion Williamson '21",
+    92,
+    90
+   ],
+   [
+    "Giannis Antetokounmpo '19",
+    98,
+    97
+   ],
+   [
+    "Giannis Antetokounmpo '23",
+    99,
+    98
+   ],
+   [
+    "Shaquille O'Neal '99",
+    99,
+    98
+   ],
+   [
+    "Shaquille O'Neal '02",
+    99,
+    98
+   ],
+   [
+    "Shaquille O'Neal '03",
+    99,
+    98
+   ],
+   [
+    "Shaquille O'Neal '05",
+    95,
+    94
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25",
+   "Nikola Jokić '26"
+  ]
+ },
+ "cost": [
+  "THE PIN IS RE-CUT, NOT DELETED. `Zion Williamson '21 off 92 +-1` (round 156, his 'Push 154-157') moves to data/anchors_superseded.json with his own new word, and `Zion Williamson '21 off 90 +-1` (round 190) takes its place. 193 anchors, 0 failing.",
+  "HIS NUMBER WAS 86 +-3 AND THIS IS THE FRONTIER, ACCEPTED ON 'Push 194'. 86 is not reachable in o_score. The subject's o_score is 98.529 and the dominance bonus is only 4.990 of it, so even CONFISCATING the whole term reads him 87. Measured end to end, one knob at a time, every other anchor held: the attempt ceiling reaches 90 and stops on Shaquille O'Neal '02; recal_44's gate floor reaches 91 and stops on Moses Malone '82; recal_131's evidence cap is infeasible at every K (Dwight Howard '11 needs K >= 0.3684, the subject needs K <= 0.3586); and no reweighting of o_score's ten dials reads him below 91 under recal_89's held-total rule. The one form that reaches 89 — ceiling 1.80 WITH gate floor 0.205 — was measured and rejected: both constants are fitted to the frontier, Moses '82 is left with 0.007 of o_score, and Shaq '00/'01/'02 all fall to 98.",
+  "WHERE THE REMAINING FOUR POINTS LIVE, so a later round is not sent back into this term. The subject's standard path (93.538) sits 2.661 UNDER Shaq '00's and 15.6 OVER Dwight Howard '11's, and the whole of that 15.6 is in three bars that are not about the paint at all: playvol 55 against 21 (+6.46 of o_score), ballsec 60 against 21 (+3.90) and volume 89 against 79 (+2.60). If he is ever to read 86 it is through the creation and handling bars (data/build_ratings.py, stats-to-ratings) or the load and efficiency channels rounds 189 and 191 hold. NO o_score weight and no other term moved here, so nothing collides with either.",
+  "SHAQUILLE O'NEAL '97 AND '98 ARE THE ROUND'S LARGEST MOVERS AT -2 AND NEITHER IS PINNED: 97 -> 95 and 98 -> 96. They are the two measured-era Shaq seasons whose self-created paint rate is highest after the ceiling binds (att_f 2.71 and 2.80), and they sit between his pinned '96 (91 +-1, unmoved at 91) and his pinned '01 (98 +-1, unmoved at 99), so the career line is still monotone through them. Shaq '99, '02, '03 and '05 each lose one.",
+  "THE LADDER RE-SORTED. src/data/campaigns.json changed on 17 of its 150 levels: the subject's OVR 84 -> 82 drops him out of the All-Time tier's level 19 five (DeMarcus Cousins '17 takes the slot) and the Customs tier, which is ordered by strength, re-ranks and shifts whole fives between adjacent levels. The ladder is still 150 long and src/data/opponents.json is byte-identical.",
+  "BASE REPRODUCTION, checked because this round bumped the stamp in both python files: data/build_ratings.py re-run on this branch's base changes ZERO attribute sheets of 10,000, so the only difference this round ships is compute_ovr.py's. (origin/main moved to pipeline 204 mid-round; this branch is NOT rebased, per the standing rule — the integrator merges it.)"
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED (npm run explain, before). Zion Williamson '21, OFF 92 / DEF 64 / OVR 84 on 27.0 points, 3.7 assists, 33.2 minutes, usage 29.8, TS .649, BPM 5.8. o_score 98.5286 x 0.93 = raw 91.6316, BELOW the 93 knee, so band() is the identity and the band anchors are not in this ruling. Standard path 93.538 and the zone-dominance bonus +4.990 = base 6.50 x zone_f 1.1000 x att_f 2.7917 x gate_f 0.2500. Nothing else fires: recal_131's paint-evidence floor computes 0.30 x 75.40 = 22.62 against a zone block of 24.34 and pays +0.000; the hub never opens (playvol 55 under the gate 60); recal_107's two-level big, recal_112's efficient interior scorer, recal_121's turnover charge (which names him as spared: 'poor ball security is not enough on its own: all four convert') and recal_182's second-chance floor all pay zero. AFTER: att_f 2.7917 -> 2.0000, bonus 4.990 -> 3.575, o_score 97.113, raw 90.315 -> OFF 90.",
+  "HE WAS THE CARD THAT MADE THE CEILING VISIBLE, and that is the honest way round: the clamp was written at 2.85 by recal_47 and the board's maximum is 2.7917, which is the subject's own. A ceiling no card can touch is not a ceiling. What was actually pricing him was an unbounded power on a RATE — 14.87 self-created paint attempts a hundred — and the class it prices has its p90 at 7.71 attempts (att_f 1.0419) and its p99 at 13.32 (2.3668). He is the maximum of 855 cards on the input, and the term paid him accordingly.",
+  "WHY THE DISPATCH'S TWO HYPOTHESES WERE BOTH WRONG, recorded because they were reasonable. (1) A ONE-ZONE GATE is backwards: Shaq '00 is mid 23 / 3pt 2 and Shaq '02 is mid 6 / 3pt 2 against the subject's mid 32, so a gate on a missing second zone cuts the doctrine card HARDER than the card the ruling names. (2) recal_131's PAINT-EVIDENCE FLOOR pays the subject +0.000, so there is no second payment of the paint claim to net off — and the one-claim-one-payment cap that would follow from it cannot separate him from Dwight Howard '11, whose evidence is 74.21 against his 75.40 and whose zone block is 22.96 against 24.34.",
+  "WHY SHAQ SURVIVES A CEILING THAT MOVES THE SUBJECT, stated as arithmetic. Shaq '00's bonus is 18.176 to the subject's 4.990 on a nearly identical attempt rate (13.97 against 14.87 per 100), because the subject's free-throw stroke (70) already sits on recal_44's gate FLOOR at 0.2500 while Shaq's (52) sits at the gate's TOP, 1.0000. So every factor the two share has a 3.76:1 lever against the subject — which is exactly why the ceiling is the only knob that moves him a useful distance, and exactly why it runs out at 90: Shaq '02 leaves 98 +-1 below a ceiling of 1.51553 and the subject does not print 89 until 1.50971, a gap of 0.0058 in the constant and 0.047 of his o_score.",
+  "THE MEASUREMENT: the variant harness ran 60 parameterisations across seven families (this ceiling, the attempt exponent and hinge, the paint base, the zone_f ceiling, recal_44's gate re-read on the whole fouldraw term and on recal_131's evidence, the evidence cap, recal_44's 'already paid' gate carried to the paint branch, and every single-weight and redistributed reweighting of o_score's ten dials), each graded against every standing OFF anchor plus the named walls. Not one reads the subject below 90 with the board held. The class quantiles are measured on the 855 measured-era cards this branch pays.",
+  "FOOTPRINT: 9 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -2, mean -1.33; DEF moves on ZERO and every attribute moves on ZERO; OVR follows on 8, max -2. The nine are one class and read like it — Shaquille O'Neal '97, '98, '99, '02, '03, '05, Giannis Antetokounmpo '19 and '23, and the subject: the measured-era seasons whose self-created paint diet is the busiest on the board. The top 12 by OFF is UNCHANGED: Giannis '23 was 99 and is 98, but the 99 tier is deeper than twelve and the printed listing is alphabetical, so no name enters or leaves it.",
+  "TESTS: npx vitest run — all pass. npx tsc -b clean. HARNESS: all nine rows PASS on main's constants (playmaker 1.10 / hunt 3.65 / crashOff 0.28 / crashDef 0.60); NOTHING was re-swept, because no tax input moved. ANCHORS: 193, 0 failing, mean |error| 0.83.",
+  "[integration] landed on pipeline 190 on this branch; origin/main moved to 204 mid-round and the branch is deliberately NOT rebased — the integrator restamps."
+ ]
+}
