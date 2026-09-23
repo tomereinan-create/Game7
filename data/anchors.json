@@ -1926,5 +1926,32 @@
     "round": 196,
     "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
     "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99). HIS FRONTIER: 87 sits on the bottom edge of the band. He is held from below by volume 76 (usage 24.7 = p79 of 1980) and from above by Ewing '90 and by recal_50, which this round released."
+  },
+  {
+    "card": "Bam Adebayo '23",
+    "scale": "def",
+    "target": 82,
+    "tol": 3,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "THE ANCHOR CLAIM IS PAID FOR A LEAD BAR. rimprot 78 / perdef 79 / drb 86, d_bigness 1.0, share 1.0, no floor firing: the big vector paid 0.40 x 79 + 0.40 x 78 + 0.17 x 86 = 79.25 and printed 90 — one point off Rudy Gobert '23 (rimprot 95, perdef 63, vector 80.44, DEF 91), because an equal-weight mean of two bars cannot tell a lead from a level. The part of the vector above the big class's own p85 of itself (ANCHOR_BASE 74.14) is now paid in proportion to the man's lead bar max(rimprot, perdef), ramped over that class's own p75/p92 of that bar (81 -> 92), at the vector's own perdef+rimprot claim share (0.80). His lead bar is 79, under the p75, so t = 0 and the whole 5.11 of anchor-band vector is discounted: 79.25 - 4.09 = 75.16, DEF 90 -> 85. 85 IS THE FRONTIER, not the tuning: Karl Malone '97 (rimprot 72 / perdef 76 / drb 92, pinned 87 +-3) is flatter and lower on both lead bars and must still read 84+, so no ramp on the bars can separate them — only the level can, and it lands them adjacent at 85 / 85."
+  },
+  {
+    "card": "Bam Adebayo '24",
+    "scale": "def",
+    "target": 84,
+    "tol": 3,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "rimprot 81 / perdef 82 / drb 90. Lead bar 82, barely over the class's p75 of 81, so t = 0.09 and he keeps almost none of the anchor claim: 82.72 - 6.24 = 76.48, DEF 93 -> 86, the largest single drop on the board. The pair that is the whole round is his own '20 season (rimprot 91, t = 0.91) which he ruled FINE and which holds at 96 to the point."
+  },
+  {
+    "card": "Bam Adebayo '22",
+    "scale": "def",
+    "target": 90,
+    "tol": 2,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "rimprot 83 / perdef 88 / drb 84 — 'too high' and, in his own grading, NOT 'by a lot'. Lead bar 88 is three quarters of the way up the ramp (t = 0.64), so he keeps most of the claim: 84.18 - 2.92 = 81.26, DEF 94 -> 92. The ramp's top is the class's p92 (92) and both neighbours were measured: at p90 (90) this card never leaves 93, and at p95 (94) he reads 91 but Bam '20 — ruled fine — falls to the bottom edge of his hold."
   }
 ]
