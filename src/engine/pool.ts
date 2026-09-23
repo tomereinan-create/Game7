@@ -187,7 +187,9 @@ export const RULES: Rule[] = [
   { tag: 'Offensive engine', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.volume, 90) },
   // TRIPLE-DOUBLE THREAT — his ruling: the load floor drops to 60. Filling three columns is about
   // doing all three, not about carrying a star's usage while you do it.
-  { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 85) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 60) },
+  // HIS RULING (2026-09-23): "Change triple double threat to playvol >= 80 && drb >= 80 && volume >= 50".
+  // 9 -> 17 cards: Giannis '20/'22/'23/'24 (from Two-way anchor / star), Jokić '18, Sabonis '23/'24, Grant Hill '96.
+  { tag: 'Triple-double threat', test: (c) => c.ge(c.a.playvol, 80) && c.ge(c.a.drb, 80) && c.ge(c.a.volume, 50) },
   { tag: 'Point forward', test: (c) => c.geH(c.h, 79) && c.ltH(c.h, 83) && c.ge(c.a.playvol, 70) && c.lt(c.a.volume, 92) },
   // FLOOR GENERAL — his ruling: the table-setter has to take care of the ball. A lead creator
   // who coughs it up is a floor raiser or a scorer, not the man organising the offence. (">60"
