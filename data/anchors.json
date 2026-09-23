@@ -1793,15 +1793,6 @@
     "note": "THE SECOND-CHANCE FLOOR, the big-side sibling recal_155's `not is_big(p)` gate openly left unbuilt. The rebounding champion of a 72-win team (14.9 rpg in 32.6 minutes, All-Defensive 1st team) read OFF 26 and OVR 55 - BELOW his own teammates Luc Longley '96 (60) and Ron Harper '96 (58) - because both of a big's glass channels are gated on SCORING: recal_91's stretch-big floor is paid at ARC share (his was 0.1471, worth 0.76) and recal_131's paint evidence begins at volume 55 and efficiency 45. orb 90 was paid one weight, 0.06, for 5.400 of a 27.685 standard path. The term pays recal_155's OWN three possession bars (drb, orb, playvol) averaged, half against the CLASS's conversion GB_CONV 67 - the orb>=85 big class's own median efficiency, because an offensive rebound is a possession the OFFENCE gets back and is worth what the class converts, not what the rebounder converts - at GB_K 0.650, in recal_118's correction form so it can only LIFT. Gated on recal_112's volume 55->25 and 3pt 68->40, on orb 85->89 (the class line, the 88.6th percentile of bigs, to that class's own median) and on recal_96's load share. OFF 26 -> 42, and recal_104's blend gives 0.5 x 42 + 0.5 x 84 = 63; the big cap (o_ovr + 40) was never binding. 85 cards move on OFF, every one UP, max +23; DEF and every attribute move on ZERO; the top 12 by OFF is identical and the top 50 by OVR has no entrant or leaver. COST: Ben Wallace rises with him - '02-'06 64/65 -> 70 - and the recal_67/104 ordering is kept, Rodman reading 63 underneath. Five of the six cards recal_155's comment protects are out of the class by the orb gate; Capela '18 (orb 88) is in it and is held at zero by his own standard path."
   },
   {
-    "card": "José Calderón '09",
-    "scale": "off",
-    "target": 79,
-    "tol": 3,
-    "round": 184,
-    "ruling": "Agree with 1-10",
-    "note": "ITEM 9 OF THE 2026-09-21 SCOUT. 12.8 points and 8.9 assists on 17.1% usage, BPM 2.8, printed OFF 85 - four above Kevin Johnson '89 (20.4 / 12.2, BPM 4.2, pinned 81), five above Terry Porter '90 and three above his OWN '08 (BPM 4.5). recal_184 put the elite-passer term's EFFICIENCY LIFT on a scoring-load line (the lift above recal_109's 0.5 floor is paid pro rata to volume until PD_E_V_FULL 30.0, the class's own lower quartile): 85 -> 81, ovr 74 -> 71. HE LANDS 81 AND NOT 79, INSIDE THE TOLERANCE AND NOT ON ITS CENTRE, and the wall is recorded in data/rounds/184.json: recal_126's order pin John Stockton '97 >= John Stockton '01 standing over recal_176's Stockton '01 86 +-2. '97 is volume 23 with a 19.84 passer term against '01's 15.25, so every load condition on this term costs him more; the two are now level at 86 and the pair has no slack left."
-  },
-  {
     "card": "Richard Hamilton '06",
     "scale": "attr:3pt",
     "target": 65,
@@ -1872,5 +1863,23 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Isaiah Collier '26",
+    "scale": "attr:ballsec",
+    "target": 45,
+    "tol": 5,
+    "round": 197,
+    "ruling": "Isaiah Collier '26 ballsec target 45 +-5 (now 22)",
+    "note": "THE RE-OPENING OF recal_192 UNDER HIS AMENDED CONSTRAINT. recal_192's decline was arithmetic: ballsec is a blend of two within-season percentiles and the subject's pair (adjusted 0.556, raw 0.983) puts every re-weighting of the two legs below 37 printed, band bottom 40. recal_197 lays a FLOOR under the blend instead — the season creator class's own percentile of AST/TOV, squared, ramped over the class's interquartile range of AST% — and the subject lands on 45 exactly. Because it is a floor it saturates by construction: it cannot move a card already above it, so recal_56's Jordan '88 (95), recal_116's Westbrook '15 (60), Magic '90, Billups '06, Harden '19, Curry '16, SGA '25 and Luka '23 move by EXACTLY zero, and recal_126's order pin John Stockton '97 >= '01 WIDENS (ballsec 47/53 -> 73/62, OFF 86/86 -> 88/87) instead of inverting."
+  },
+  {
+    "card": "José Calderón '09",
+    "scale": "attr:ballsec",
+    "target": 87,
+    "tol": 3,
+    "round": 197,
+    "ruling": "Calderón can be high 80s, not 99 tho",
+    "note": "HIS AMENDMENT, taken as a ballsec pin and the ceiling of recal_197's creator floor. 61 -> 85, inside the band, with OFF following 81 -> 83 (his recal_184 OFF pin released to anchors_superseded.json by the same words). CR_CEIL 0.90 IS A MEASURED FRONTIER: at 1.00 this card reads ballsec 94 and recal_176's Steve Nash '05 reads OFF 93 against 90 +-2 while recal_154's Chauncey Billups '06 reads 93 against 91 +-1."
   }
 ]

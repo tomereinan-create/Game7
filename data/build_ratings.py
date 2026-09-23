@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 197
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -1807,6 +1807,44 @@ for yr in sorted(rows_by):
     # it counts as more than half of one in the responsibility denominator. 0.5 -> 0.8 ast.
     _bsec = lambda rr: (rr.get('tov_pct') or 13) * 25.0 / max(10.0, (rr.get('usg') or 20) + 0.8 * (rr.get('ast') or 15))
     Padj = pctile([_bsec(rr) for rr in rows])
+    # recal_197: THE CREATOR'S FLOOR. recal_192 declined the same subject on an arithmetic proof —
+    # the two legs of ballsec are a blend of two percentiles, and at Isaiah Collier '26's own pair
+    # (adjusted 0.556, raw 0.983) NO setting of the raw-leg weight reaches past 37 printed. The band
+    # opened at 40. His amendment ("Calderón can be high 80s, not 99 tho") releases the pin that
+    # capped the answer, so the answer is no longer a re-weighting: it is a FLOOR that a man earns by
+    # creating cleanly, laid UNDER the blend, which is why it saturates — it cannot lift a card that
+    # is already above it, so Jordan '88 (95), Billups '06 (81), Magic '90 (60), Westbrook '15 (60),
+    # Harden '19, Curry '16, SGA '25 and Luka '23 move by EXACTLY zero and recal_56's class, recal_116's
+    # wall and the whole ball-stopper column are untouched by construction.
+    # THE KEY IS CREATION EFFICIENCY READ INSIDE THE CREATION CLASS, not against the league. recal_192's
+    # second finding is the reason: AST/TOV 2.85 is the 90th percentile of 2026 only because the league
+    # median is set by men who never pass. The class is the season's own creators (AST% >= CR_CLS) and
+    # the floor is their percentile of AST/TOV. 25.0 is the class floor and not 30.0 because a class
+    # cut at 30 is FIVE cards in 1980 (16 at 25; median season 20 against 37) and a percentile of five
+    # is not a reading.
+    # WHY IT IS SQUARED. The percentile alone is too flat to separate the two cards his two rulings
+    # name: Collier sits at 0.78 of his class and Calderón '09 at the very top, and a straight
+    # percentile pays them 0.78 to 1.00 where the rulings ask for 0.63 to 1.00. The square is the
+    # hardening this file already uses on six bars (orb/drb ^1.15, perimdisrupt ^1.30, 3pt ^1.12).
+    # THE LOAD GATE IS WHAT KEEPS THE TEAM BOARD STILL. Without it the floor pays every man with a
+    # tidy ratio whether or not he creates, and Mike Conley '24 (AST/TOV 4.39 at AST% 28.4) takes
+    # ballsec 48 -> 74, which carries Minnesota past Boston and breaks recal_119's BOS '24 OFF rank
+    # <= 10 — measured, at every ceiling that reaches Calderón's band. The floor is a CREATOR's floor,
+    # so it is paid in proportion to creation, ramped across the class's OWN interquartile range of
+    # AST% (measured on the 1,710 class cards: p25 27.5, median 30.6, p75 35.5). Conley's gate is 0.11
+    # and he moves zero; the gate can only ever SHRINK a floor, so no volume key can lift anyone.
+    # CR_CEIL 0.90 IS A FRONTIER, measured through the whole pipeline: at 1.00 (Calderón 94) recal_176
+    # Steve Nash '05 reads off 93 against 90 +-2 and recal_154 Chauncey Billups '06 reads 93 against
+    # 91 +-1. At 0.90 the subject lands on 45 exactly, Calderón on 85 inside his 87 +-3, and the ONLY
+    # failing anchor on the board is the one his amendment released.
+    CR_CLS, CR_CEIL, CR_EXP, CR_G_LO, CR_G_HI = 25.0, 0.90, 2.0, 27.5, 35.5
+    def _asttov(rr):
+        _s = pf100.get((rr['pid'], str(yr)), {})
+        _a, _t = f(_s.get('ast_per_100_poss')), f(_s.get('tov_per_100_poss'))
+        return (_a / _t) if (_a and _t) else None
+    # pctile_top, not pctile: the top of the class must reach the ceiling exactly, the same reason
+    # rim protection needed it.
+    P_crt = pctile_top([_asttov(rr) for rr in rows if (rr.get('ast') or 0) >= CR_CLS])
     hts = sorted([x['ht'] or 78 for x in rows])
     ht_t33, ht_t67 = hts[int(0.33*len(hts))], hts[int(0.67*len(hts))]
     _cls = lambda h: 'pf_big' if h >= ht_t67 else ('pf_wng' if h >= ht_t33 else 'pf_grd')
@@ -1859,6 +1897,10 @@ for yr in sorted(rows_by):
         # The allowance is right for the passers it was built for; what was wrong was how loud it
         # was against the raw fact.
         _wraw = 0.54 - 0.29 * _credit
+        # recal_197's creator floor, per card: the class percentile of AST/TOV, squared, scaled to the
+        # ceiling and paid in proportion to creation load. See the block beside P_crt above.
+        _cgate = min(1.0, max(0.0, ((r.get('ast') or 0.0) - CR_G_LO) / (CR_G_HI - CR_G_LO)))
+        _cfloor = 0.0 if ast_tov is None else CR_CEIL * P_crt(ast_tov) ** CR_EXP * _cgate
         p['attrs'] = dict(
             # mid hardened globally (^1.15): the top barely moves, the 60-85 band compresses a few points
             **{'3pt': sc((p['out']/99)**1.12)}, rim=sc(ex['rim']),
@@ -1871,7 +1913,8 @@ for yr in sorted(rows_by):
             # recal_79 part 2: the RAW side (r56's 0.45) is blind to assists — a passer's turnovers were
             # charged exactly like a ball-stopper's. Its weight now shrinks for genuinely efficient
             # passers ONLY, keyed on AST/TOV and not on passing VOLUME, so r56's class does not move.
-            ballsec=sc(1 - ((1 - _wraw) * Padj(_bsec(r)) + _wraw * Pa['tov_pct'](r.get('tov_pct')))),
+            ballsec=max(sc(1 - ((1 - _wraw) * Padj(_bsec(r)) + _wraw * Pa['tov_pct'](r.get('tov_pct')))),
+                        sc(_cfloor)),
             # efficiency hardened globally (^1.30): the median reads ~40, elite stays elite
             volume=sc(Pvol(_vol(r))**1.15),
             efficiency=sc(0.5*Pa['ts'](r['ts'])**1.05 + 0.5*(0.5 + ((r['ts'] or lg_ts.get(yr, 0.545)) - lg_ts.get(yr, 0.545))*6)),
