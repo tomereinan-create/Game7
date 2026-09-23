@@ -86,57 +86,292 @@
   }
  ],
  "expect": [
-  {"card": "Ray Allen '09", "scale": "off", "op": "~", "value": 78, "tol": 3, "label": "SUBJECT 2, AND THE ONE THAT LANDS ON HIS NUMBER (78 +-3). 18.2 on .624 TS, 40.9% on 6.0 threes, BPM 4.0; handling load 51.5 saturates the ramp and the lead-scorer fade pays 0.41 at volume 59. 73 -> 78"},
-  {"card": "Ray Allen '09", "scale": "ovr", "op": "~", "value": 71, "tol": 1, "label": "his OVR follows his OFF through the offence-led branch: 67 -> 71"},
-  {"card": "Brent Barry '02", "scale": "ovr", "op": "~", "value": 73, "tol": 1, "label": "the subject's OVR follows too: 69 -> 73, on a DEF of 76 that moved by zero"},
-  {"card": "Jamal Crawford '09", "scale": "off", "op": "==", "value": 73, "label": "THE CARD THE DEFECT WAS MEASURED AGAINST, and he does not move by a point: 16.0 on .547 TS, efficiency 51, below the term's own conversion foot of 63. Allen was level with him at 73 and is now five clear"},
-  {"card": "Kyle Korver '15", "scale": "off", "op": "==", "value": 58, "label": "THE PROOF THAT AN EFFICIENCY-x-VOLUME TERM COULD NOT HAVE DONE THIS. Efficiency 94 to Barry's 96, volume 10 to his 14, arc 95 to his 91 — and a handling load of 25.0 to Barry's 38.5. Pinned 58 +-1, moves by EXACTLY zero"},
-  {"card": "Steve Kerr '96", "scale": "off", "op": "==", "value": 61, "label": "the other low-handling shooter pin (62 +-1, reads 61): handling 26.0, one and a half points above the term's foot. Zero"},
-  {"card": "Chauncey Billups '06", "scale": "off", "op": "==", "value": 92, "label": "THE LEAD-CREATOR FADE, on the pin with the least room on the board (91 +-1, 0.23 of o_score). Efficiency 92 exactly as Allen's and volume 66 ABOVE his, so any term monotone in those two would have taken him; playvol 88 puts him inside recal_109's band and outside this one. Zero"},
-  {"card": "Reggie Miller '97", "scale": "off", "op": "~", "value": 88, "tol": 1, "label": "THE WALL, AND IT IS NAMED: the same card as Allen with more load (efficiency 95, volume 85, playvol 50). The lead-scorer fade pays him 0.096 and he moves 87 -> 88, ONTO his pin. At CV_K 0.28 he reads 90 and the round ends"},
-  {"card": "Kawhi Leonard '17", "scale": "off", "op": "==", "value": 94, "label": "volume 94 is past recal_176's top decile: exactly zero, on a pin with 2.46 of room"},
-  {"card": "Stephen Curry '16", "scale": "off", "op": "==", "value": 96, "label": "efficiency 98 and the highest signature on the board — and playvol 86 puts him in recal_109's band. Zero, and no star pin moves"},
-  {"card": "Michael Jordan '89", "scale": "off", "op": "==", "value": 98, "label": "playvol 83 and volume 98: both fades bite. Zero"},
-  {"card": "Nenê '11", "scale": "off", "op": "~", "value": 65, "tol": 2, "label": "THE CLASS GATE'S OWN MEASURED REASON: efficiency 88 at volume 38 and handling 38.0 — the same shape as Barry, on the big branch where recal_112/139 already pays it. Without `not is_big` he reads 71"},
-  {"card": "Richaun Holmes '21", "scale": "off", "op": "~", "value": 65, "tol": 3, "label": "the second big the class gate holds (pinned 62 +-3 with zero room up): without it he reads 66"},
-  {"card": "Bruce Bowen '06", "scale": "off", "op": "==", "value": 45, "label": "efficiency 46 and handling 11.0: two gates shut. Zero"},
-  {"card": "Tony Snell '18", "scale": "off", "op": "==", "value": 50, "label": "efficiency 67 clears the foot but handling 11.0 does not. Zero"},
-  {"card": "Buddy Hield '25", "scale": "off", "op": "==", "value": 58, "label": "the high-volume low-conversion shooter the term is AGAINST: efficiency 40, exactly zero"},
-  {"card": "Ty Jerome '25", "scale": "off", "op": "==", "value": 71, "label": "recal_96's own subject: efficiency 75 pays 0.4 of the ramp and 19.9 minutes pay 0.36 of the second line. Zero printed movement"},
-  {"card": "Reggie Miller '02", "scale": "off", "op": "~", "value": 79, "tol": 1, "label": "THE COMPARATOR THE RULING NAMED (\"Reggie Miller '02 reads 72\"): 16.5 on .617 TS, efficiency 95 at volume 46, handling 46.5. He is the same claim as Barry with more of his own shot and rises with him, 72 -> 79 — the order the ruling asked for is kept, not inverted"},
-  {"card": "Chris Mullin '97", "scale": "off", "op": "~", "value": 70, "tol": 1, "label": "the largest clean mover of the round's archetype: efficiency 94 at volume 30 with playvol 57, 34.6 mpg. 62 -> 70"},
-  {"card": "Jeff Hornacek '97", "scale": "off", "op": "~", "value": 80, "tol": 1, "label": "74 -> 80: handling 58.5, efficiency 91, the Utah second option who converted everything and ran none of it"},
-  {"card": "Michael Porter Jr. '21", "scale": "off", "op": "~", "value": 73, "tol": 1, "label": "the biggest MODERN mover, and it is three points: efficiency 88 at volume 61 with playvol 13. 71 -> 73"},
-  {"card": "Latrell Sprewell '02", "scale": "off", "op": "==", "value": 64, "label": "the card the ruling measured Barry against (\"below Sprewell '02, TS .501, BPM -0.8\"): efficiency 33, exactly zero. Barry now reads six above him instead of two below"}
+  {
+   "card": "Ray Allen '09",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 3,
+   "label": "SUBJECT 2, AND THE ONE THAT LANDS ON HIS NUMBER (78 +-3). 18.2 on .624 TS, 40.9% on 6.0 threes, BPM 4.0; handling load 51.5 saturates the ramp and the lead-scorer fade pays 0.41 at volume 59. 73 -> 78"
+  },
+  {
+   "card": "Ray Allen '09",
+   "scale": "ovr",
+   "op": "~",
+   "value": 71,
+   "tol": 1,
+   "label": "his OVR follows his OFF through the offence-led branch: 67 -> 71"
+  },
+  {
+   "card": "Brent Barry '02",
+   "scale": "ovr",
+   "op": "~",
+   "value": 73,
+   "tol": 1,
+   "label": "the subject's OVR follows too: 69 -> 73, on a DEF of 76 that moved by zero"
+  },
+  {
+   "card": "Jamal Crawford '09",
+   "scale": "off",
+   "op": "==",
+   "value": 73,
+   "label": "THE CARD THE DEFECT WAS MEASURED AGAINST, and he does not move by a point: 16.0 on .547 TS, efficiency 51, below the term's own conversion foot of 63. Allen was level with him at 73 and is now five clear"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "==",
+   "value": 58,
+   "label": "THE PROOF THAT AN EFFICIENCY-x-VOLUME TERM COULD NOT HAVE DONE THIS. Efficiency 94 to Barry's 96, volume 10 to his 14, arc 95 to his 91 — and a handling load of 25.0 to Barry's 38.5. Pinned 58 +-1, moves by EXACTLY zero"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "==",
+   "value": 61,
+   "label": "the other low-handling shooter pin (62 +-1, reads 61): handling 26.0, one and a half points above the term's foot. Zero"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "==",
+   "value": 91,
+   "label": "THE LEAD-CREATOR FADE, on the pin with the least room on the board (91 +-1, 0.23 of o_score). Efficiency 92 exactly as Allen's and volume 66 ABOVE his, so any term monotone in those two would have taken him; playvol 88 puts him inside recal_109's band and outside this one. Zero [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "THE WALL, AND IT IS NAMED: the same card as Allen with more load (efficiency 95, volume 85, playvol 50). The lead-scorer fade pays him 0.096 and he moves 87 -> 88, ONTO his pin. At CV_K 0.28 he reads 90 and the round ends"
+  },
+  {
+   "card": "Kawhi Leonard '17",
+   "scale": "off",
+   "op": "==",
+   "value": 94,
+   "label": "volume 94 is past recal_176's top decile: exactly zero, on a pin with 2.46 of room"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "==",
+   "value": 96,
+   "label": "efficiency 98 and the highest signature on the board — and playvol 86 puts him in recal_109's band. Zero, and no star pin moves"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "==",
+   "value": 99,
+   "label": "playvol 83 and volume 98: both fades bite. Zero [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "THE CLASS GATE'S OWN MEASURED REASON: efficiency 88 at volume 38 and handling 38.0 — the same shape as Barry, on the big branch where recal_112/139 already pays it. Without `not is_big` he reads 71"
+  },
+  {
+   "card": "Richaun Holmes '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "the second big the class gate holds (pinned 62 +-3 with zero room up): without it he reads 66"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "==",
+   "value": 45,
+   "label": "efficiency 46 and handling 11.0: two gates shut. Zero"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "==",
+   "value": 50,
+   "label": "efficiency 67 clears the foot but handling 11.0 does not. Zero"
+  },
+  {
+   "card": "Buddy Hield '25",
+   "scale": "off",
+   "op": "==",
+   "value": 58,
+   "label": "the high-volume low-conversion shooter the term is AGAINST: efficiency 40, exactly zero"
+  },
+  {
+   "card": "Ty Jerome '25",
+   "scale": "off",
+   "op": "==",
+   "value": 71,
+   "label": "recal_96's own subject: efficiency 75 pays 0.4 of the ramp and 19.9 minutes pay 0.36 of the second line. Zero printed movement"
+  },
+  {
+   "card": "Reggie Miller '02",
+   "scale": "off",
+   "op": "~",
+   "value": 79,
+   "tol": 1,
+   "label": "THE COMPARATOR THE RULING NAMED (\"Reggie Miller '02 reads 72\"): 16.5 on .617 TS, efficiency 95 at volume 46, handling 46.5. He is the same claim as Barry with more of his own shot and rises with him, 72 -> 79 — the order the ruling asked for is kept, not inverted"
+  },
+  {
+   "card": "Chris Mullin '97",
+   "scale": "off",
+   "op": "~",
+   "value": 70,
+   "tol": 1,
+   "label": "the largest clean mover of the round's archetype: efficiency 94 at volume 30 with playvol 57, 34.6 mpg. 62 -> 70"
+  },
+  {
+   "card": "Jeff Hornacek '97",
+   "scale": "off",
+   "op": "~",
+   "value": 80,
+   "tol": 1,
+   "label": "74 -> 80: handling 58.5, efficiency 91, the Utah second option who converted everything and ran none of it"
+  },
+  {
+   "card": "Michael Porter Jr. '21",
+   "scale": "off",
+   "op": "~",
+   "value": 73,
+   "tol": 1,
+   "label": "the biggest MODERN mover, and it is three points: efficiency 88 at volume 61 with playvol 13. 71 -> 73"
+  },
+  {
+   "card": "Latrell Sprewell '02",
+   "scale": "off",
+   "op": "==",
+   "value": 61,
+   "label": "the card the ruling measured Barry against (\"below Sprewell '02, TS .501, BPM -0.8\"): efficiency 33, exactly zero. Barry now reads six above him instead of two below [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
+  }
  ],
  "order": [
-  {"scale": "off", "above": "Brent Barry '02", "below": "Latrell Sprewell '02", "label": "THE INVERSION THE RULING NAMED IS GONE AND THAT IS THE ROUND: .652 true shooting with 5.3 assists now reads above .499 true shooting at BPM -0.8 (70 against 64), where it read two BELOW"},
-  {"scale": "off", "above": "Brent Barry '02", "below": "Kerry Kittles '02", "label": "and above the '02 card he was exactly level with, 70 against 63"},
-  {"scale": "off", "above": "Brent Barry '02", "below": "Jason Williams '02", "label": "and above Jason Williams '02 (63, TS .466), which the ruling listed as the third man over him"},
-  {"scale": "off", "above": "Ray Allen '09", "below": "Jamal Crawford '09", "label": "78 against 73: the pair whose 4.42 of volume and 4.51 of efficiency used to cancel"},
-  {"scale": "off", "above": "Ray Allen '09", "below": "Josh Howard '09", "label": "78 against 74, the second of the three '09 cards the ruling said he printed under"},
-  {"scale": "off", "above": "Reggie Miller '97", "below": "Reggie Miller '02", "label": "the same man at 31 and at 36 stays in the right order (88 over 79) — the lead-scorer fade pays the peak season a tenth of what it pays the late one"},
-  {"scale": "off", "above": "Chauncey Billups '06", "below": "Ray Allen '09", "label": "the lead creator still reads above the secondary scorer, 92 against 78, without moving"},
-  {"scale": "off", "above": "Brent Barry '02", "below": "Kyle Korver '15", "label": "the two cards an efficiency-x-volume term could not have separated now read 70 and 58, and Korver never moved"},
-  {"scale": "ovr", "above": "Brent Barry '02", "below": "Kerry Kittles '02", "label": "OVR follows: 73 against 70, where Kittles read 70 to Barry's 69"}
+  {
+   "scale": "off",
+   "above": "Brent Barry '02",
+   "below": "Latrell Sprewell '02",
+   "label": "THE INVERSION THE RULING NAMED IS GONE AND THAT IS THE ROUND: .652 true shooting with 5.3 assists now reads above .499 true shooting at BPM -0.8 (70 against 64), where it read two BELOW"
+  },
+  {
+   "scale": "off",
+   "above": "Brent Barry '02",
+   "below": "Kerry Kittles '02",
+   "label": "and above the '02 card he was exactly level with, 70 against 63"
+  },
+  {
+   "scale": "off",
+   "above": "Brent Barry '02",
+   "below": "Jason Williams '02",
+   "label": "and above Jason Williams '02 (63, TS .466), which the ruling listed as the third man over him"
+  },
+  {
+   "scale": "off",
+   "above": "Ray Allen '09",
+   "below": "Jamal Crawford '09",
+   "label": "78 against 73: the pair whose 4.42 of volume and 4.51 of efficiency used to cancel"
+  },
+  {
+   "scale": "off",
+   "above": "Ray Allen '09",
+   "below": "Josh Howard '09",
+   "label": "78 against 74, the second of the three '09 cards the ruling said he printed under"
+  },
+  {
+   "scale": "off",
+   "above": "Reggie Miller '97",
+   "below": "Reggie Miller '02",
+   "label": "the same man at 31 and at 36 stays in the right order (88 over 79) — the lead-scorer fade pays the peak season a tenth of what it pays the late one"
+  },
+  {
+   "scale": "off",
+   "above": "Chauncey Billups '06",
+   "below": "Ray Allen '09",
+   "label": "the lead creator still reads above the secondary scorer, 92 against 78, without moving"
+  },
+  {
+   "scale": "off",
+   "above": "Brent Barry '02",
+   "below": "Kyle Korver '15",
+   "label": "the two cards an efficiency-x-volume term could not have separated now read 70 and 58, and Korver never moved"
+  },
+  {
+   "scale": "ovr",
+   "above": "Brent Barry '02",
+   "below": "Kerry Kittles '02",
+   "label": "OVR follows: 73 against 70, where Kittles read 70 to Barry's 69"
+  }
  ],
  "movers": {
   "scale": "off",
   "count": 481,
   "max_abs": 9,
   "top": [
-   ["Brent Barry '03", 58, 67],
-   ["Mike Miller '08", 61, 69],
-   ["Chris Mullin '97", 62, 70],
-   ["Brent Barry '02", 62, 70],
-   ["Reggie Miller '02", 72, 79],
-   ["Kenny Smith '94", 60, 67],
-   ["Terry Porter '99", 63, 69],
-   ["Sidney Moncrief '82", 72, 78],
-   ["Reggie Miller '92", 75, 81],
-   ["Ray Allen '11", 67, 73],
-   ["Ray Allen '10", 68, 74],
-   ["Jeff Hornacek '97", 74, 80]
+   [
+    "Brent Barry '03",
+    58,
+    67
+   ],
+   [
+    "Mike Miller '08",
+    61,
+    69
+   ],
+   [
+    "Chris Mullin '97",
+    62,
+    70
+   ],
+   [
+    "Brent Barry '02",
+    62,
+    70
+   ],
+   [
+    "Reggie Miller '02",
+    72,
+    79
+   ],
+   [
+    "Kenny Smith '94",
+    60,
+    67
+   ],
+   [
+    "Terry Porter '99",
+    63,
+    69
+   ],
+   [
+    "Sidney Moncrief '82",
+    72,
+    78
+   ],
+   [
+    "Reggie Miller '92",
+    75,
+    81
+   ],
+   [
+    "Ray Allen '11",
+    67,
+    73
+   ],
+   [
+    "Ray Allen '10",
+    68,
+    74
+   ],
+   [
+    "Jeff Hornacek '97",
+    74,
+    80
+   ]
   ]
  },
  "top12": {

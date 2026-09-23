@@ -176,7 +176,7 @@
         "id": 75,
         "pd": 43,
         "attrs": {
-          "3pt": 35,
+          "3pt": 34,
           "rim": 54,
           "mid": 29,
           "rim_mid_measured": true,
@@ -254,9 +254,9 @@
           "ts_rel": 0.547
         },
         "big": false,
-        "o_ovr": 65,
+        "o_ovr": 66,
         "d_ovr": 45,
-        "ovr": 59,
+        "ovr": 60,
         "marg": 69
       },
       {
@@ -586,7 +586,7 @@
         "peak_season": 2026,
         "talent": 78,
         "in": 78,
-        "out": 11,
+        "out": 10,
         "id": 86,
         "pd": 53,
         "attrs": {
@@ -636,80 +636,42 @@
     ],
     "players": [
       {
-        "name": "Zach LaVine '26",
-        "player": "Zach LaVine",
+        "name": "Russell Westbrook '26",
+        "player": "Russell Westbrook",
         "peak_season": 2026,
-        "talent": 76,
-        "in": 58,
-        "out": 88,
-        "id": 17,
-        "pd": 51,
+        "talent": 77,
+        "in": 40,
+        "out": 59,
+        "id": 19,
+        "pd": 48,
         "attrs": {
-          "3pt": 87,
-          "rim": 53,
-          "mid": 75,
+          "3pt": 56,
+          "rim": 52,
+          "mid": 25,
           "rim_mid_measured": true,
-          "ft": 86,
-          "fouldraw": 51,
-          "orb": 17,
-          "drb": 29,
-          "playvol": 42,
-          "ballsec": 59,
-          "volume": 73,
-          "efficiency": 68,
-          "durability": 25,
-          "rimprot": 17,
-          "perimdisrupt": 20,
-          "height": 77,
-          "perdef": 51,
-          "discipline": 74,
-          "usg_raw": 24.1,
-          "ts_raw": 0.62,
-          "ts_rel": 0.608
+          "ft": 68,
+          "fouldraw": 46,
+          "orb": 58,
+          "drb": 60,
+          "playvol": 78,
+          "ballsec": 26,
+          "volume": 68,
+          "efficiency": 20,
+          "durability": 58,
+          "rimprot": 19,
+          "perimdisrupt": 77,
+          "height": 76,
+          "perdef": 48,
+          "discipline": 42,
+          "usg_raw": 25.4,
+          "ts_raw": 0.529,
+          "ts_rel": 0.516
         },
         "big": false,
-        "o_ovr": 72,
-        "d_ovr": 48,
-        "ovr": 65,
-        "marg": 82
-      },
-      {
-        "name": "Malik Monk '26",
-        "player": "Malik Monk",
-        "peak_season": 2026,
-        "talent": 74,
-        "in": 32,
-        "out": 83,
-        "id": 43,
-        "pd": 46,
-        "attrs": {
-          "3pt": 82,
-          "rim": 29,
-          "mid": 70,
-          "rim_mid_measured": true,
-          "ft": 88,
-          "fouldraw": 34,
-          "orb": 19,
-          "drb": 25,
-          "playvol": 59,
-          "ballsec": 55,
-          "volume": 73,
-          "efficiency": 38,
-          "durability": 28,
-          "rimprot": 43,
-          "perimdisrupt": 31,
-          "height": 75,
-          "perdef": 46,
-          "discipline": 51,
-          "usg_raw": 24.1,
-          "ts_raw": 0.563,
-          "ts_rel": 0.551
-        },
-        "big": false,
-        "o_ovr": 62,
-        "d_ovr": 47,
-        "ovr": 58,
-        "marg": 56
+        "o_ovr": 61,
+        "d_ovr": 53,
+        "ovr": 59,
+        "marg": 45
       },
       {
         "name": "DeMar DeRozan '26",
@@ -717,7 +679,7 @@
         "peak_season": 2026,
         "talent": 78,
         "in": 70,
-        "out": 24,
+        "out": 23,
         "id": 34,
         "pd": 45,
         "attrs": {
@@ -750,16 +712,54 @@
         "marg": 88
       },
       {
+        "name": "Zach LaVine '26",
+        "player": "Zach LaVine",
+        "peak_season": 2026,
+        "talent": 76,
+        "in": 58,
+        "out": 87,
+        "id": 17,
+        "pd": 51,
+        "attrs": {
+          "3pt": 86,
+          "rim": 53,
+          "mid": 75,
+          "rim_mid_measured": true,
+          "ft": 86,
+          "fouldraw": 51,
+          "orb": 17,
+          "drb": 29,
+          "playvol": 42,
+          "ballsec": 59,
+          "volume": 73,
+          "efficiency": 68,
+          "durability": 25,
+          "rimprot": 17,
+          "perimdisrupt": 20,
+          "height": 77,
+          "perdef": 51,
+          "discipline": 74,
+          "usg_raw": 24.1,
+          "ts_raw": 0.62,
+          "ts_rel": 0.608
+        },
+        "big": false,
+        "o_ovr": 73,
+        "d_ovr": 48,
+        "ovr": 66,
+        "marg": 82
+      },
+      {
         "name": "Precious Achiuwa '26",
         "player": "Precious Achiuwa",
         "peak_season": 2026,
         "talent": 68,
         "in": 66,
-        "out": 14,
+        "out": 13,
         "id": 67,
         "pd": 60,
         "attrs": {
-          "3pt": 12,
+          "3pt": 11,
           "rim": 67,
           "mid": 20,
           "rim_mid_measured": true,
@@ -793,11 +793,11 @@
         "peak_season": 2026,
         "talent": 66,
         "in": 75,
-        "out": 20,
+        "out": 19,
         "id": 55,
         "pd": 53,
         "attrs": {
-          "3pt": 17,
+          "3pt": 16,
           "rim": 68,
           "mid": 56,
           "rim_mid_measured": true,
@@ -1055,11 +1055,11 @@
         "peak_season": 2026,
         "talent": 81,
         "in": 25,
-        "out": 95,
+        "out": 94,
         "id": 15,
         "pd": 44,
         "attrs": {
-          "3pt": 95,
+          "3pt": 93,
           "rim": 9,
           "mid": 82,
           "rim_mid_measured": true,
@@ -1082,9 +1082,9 @@
           "ts_rel": 0.635
         },
         "big": false,
-        "o_ovr": 75,
+        "o_ovr": 77,
         "d_ovr": 43,
-        "ovr": 65,
+        "ovr": 67,
         "marg": 92
       },
       {
@@ -1262,11 +1262,11 @@
         "peak_season": 2026,
         "talent": 80,
         "in": 74,
-        "out": 17,
+        "out": 16,
         "id": 30,
         "pd": 46,
         "attrs": {
-          "3pt": 15,
+          "3pt": 14,
           "rim": 57,
           "mid": 70,
           "rim_mid_measured": true,
@@ -1376,7 +1376,7 @@
         "peak_season": 2026,
         "talent": 74,
         "in": 76,
-        "out": 21,
+        "out": 20,
         "id": 26,
         "pd": 54,
         "attrs": {
@@ -1583,11 +1583,11 @@
         "peak_season": 2026,
         "talent": 74,
         "in": 57,
-        "out": 12,
+        "out": 11,
         "id": 84,
         "pd": 55,
         "attrs": {
-          "3pt": 10,
+          "3pt": 9,
           "rim": 46,
           "mid": 46,
           "rim_mid_measured": true,
@@ -1621,11 +1621,11 @@
         "peak_season": 2026,
         "talent": 89,
         "in": 92,
-        "out": 8,
+        "out": 7,
         "id": 55,
         "pd": 64,
         "attrs": {
-          "3pt": 7,
+          "3pt": 6,
           "rim": 90,
           "mid": 36,
           "rim_mid_measured": true,
@@ -1703,9 +1703,9 @@
           "ts_rel": 0.623
         },
         "big": false,
-        "o_ovr": 69,
+        "o_ovr": 70,
         "d_ovr": 49,
-        "ovr": 63,
+        "ovr": 64,
         "marg": 94
       },
       {
@@ -1779,9 +1779,9 @@
           "ts_rel": 0.551
         },
         "big": false,
-        "o_ovr": 66,
+        "o_ovr": 69,
         "d_ovr": 60,
-        "ovr": 64,
+        "ovr": 66,
         "marg": 73
       },
       {
@@ -1921,7 +1921,7 @@
         "peak_season": 2026,
         "talent": 82,
         "in": 56,
-        "out": 31,
+        "out": 30,
         "id": 47,
         "pd": 53,
         "attrs": {
@@ -1997,11 +1997,11 @@
         "peak_season": 2026,
         "talent": 78,
         "in": 38,
-        "out": 85,
+        "out": 84,
         "id": 39,
         "pd": 37,
         "attrs": {
-          "3pt": 84,
+          "3pt": 82,
           "rim": 31,
           "mid": 84,
           "rim_mid_measured": true,
@@ -2158,7 +2158,7 @@
         "o_ovr": 59,
         "d_ovr": 58,
         "ovr": 59,
-        "marg": 68
+        "marg": 69
       },
       {
         "name": "Moses Moody '26",
@@ -2656,7 +2656,7 @@
         "peak_season": 2026,
         "talent": 82,
         "in": 69,
-        "out": 33,
+        "out": 32,
         "id": 87,
         "pd": 64,
         "attrs": {
@@ -2863,7 +2863,7 @@
         "peak_season": 2026,
         "talent": 79,
         "in": 62,
-        "out": 63,
+        "out": 62,
         "id": 78,
         "pd": 61,
         "attrs": {
@@ -3021,9 +3021,9 @@
           "ts_rel": 0.619
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 79,
         "d_ovr": 59,
-        "ovr": 72,
+        "ovr": 73,
         "marg": 87
       },
       {
@@ -3446,11 +3446,11 @@
         "peak_season": 2026,
         "talent": 68,
         "in": 66,
-        "out": 12,
+        "out": 11,
         "id": 75,
         "pd": 52,
         "attrs": {
-          "3pt": 10,
+          "3pt": 9,
           "rim": 46,
           "mid": 13,
           "rim_mid_measured": true,
@@ -3484,11 +3484,11 @@
         "peak_season": 2026,
         "talent": 88,
         "in": 78,
-        "out": 41,
+        "out": 40,
         "id": 79,
         "pd": 54,
         "attrs": {
-          "3pt": 38,
+          "3pt": 37,
           "rim": 57,
           "mid": 99,
           "rim_mid_measured": true,
@@ -3746,11 +3746,11 @@
         "peak_season": 2026,
         "talent": 80,
         "in": 55,
-        "out": 15,
+        "out": 14,
         "id": 60,
         "pd": 95,
         "attrs": {
-          "3pt": 13,
+          "3pt": 12,
           "rim": 59,
           "mid": 39,
           "rim_mid_measured": true,
@@ -3860,7 +3860,7 @@
         "peak_season": 2026,
         "talent": 92,
         "in": 68,
-        "out": 43,
+        "out": 42,
         "id": 51,
         "pd": 54,
         "attrs": {
@@ -3887,9 +3887,9 @@
           "ts_rel": 0.565
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 77,
         "d_ovr": 67,
-        "ovr": 73,
+        "ovr": 74,
         "marg": 73
       },
       {
@@ -3980,9 +3980,9 @@
           "ts_rel": 0.563
         },
         "big": false,
-        "o_ovr": 69,
+        "o_ovr": 70,
         "d_ovr": 59,
-        "ovr": 66,
+        "ovr": 67,
         "marg": 86
       },
       {
@@ -4394,7 +4394,7 @@
           "ts_rel": 0.574
         },
         "big": false,
-        "o_ovr": 78,
+        "o_ovr": 79,
         "d_ovr": 47,
         "ovr": 69,
         "marg": 79
@@ -4481,7 +4481,7 @@
         "peak_season": 2026,
         "talent": 90,
         "in": 86,
-        "out": 31,
+        "out": 30,
         "id": 97,
         "pd": 68,
         "attrs": {
@@ -4519,7 +4519,7 @@
         "peak_season": 2026,
         "talent": 84,
         "in": 95,
-        "out": 10,
+        "out": 9,
         "id": 75,
         "pd": 58,
         "attrs": {
@@ -4578,7 +4578,7 @@
         "id": 66,
         "pd": 96,
         "attrs": {
-          "3pt": 9,
+          "3pt": 8,
           "rim": 77,
           "mid": 33,
           "rim_mid_measured": true,
@@ -4677,9 +4677,9 @@
           "ts_rel": 0.629
         },
         "big": false,
-        "o_ovr": 85,
+        "o_ovr": 86,
         "d_ovr": 69,
-        "ovr": 80,
+        "ovr": 81,
         "marg": 92
       },
       {
@@ -4726,11 +4726,11 @@
         "peak_season": 2026,
         "talent": 94,
         "in": 75,
-        "out": 17,
+        "out": 16,
         "id": 70,
         "pd": 50,
         "attrs": {
-          "3pt": 15,
+          "3pt": 14,
           "rim": 76,
           "mid": 31,
           "rim_mid_measured": true,
@@ -4753,7 +4753,7 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 75,
+        "o_ovr": 76,
         "d_ovr": 71,
         "ovr": 74,
         "marg": 91
@@ -4846,9 +4846,9 @@
           "ts_rel": 0.622
         },
         "big": false,
-        "o_ovr": 75,
+        "o_ovr": 76,
         "d_ovr": 53,
-        "ovr": 68,
+        "ovr": 69,
         "marg": 91
       },
       {
@@ -5053,7 +5053,7 @@
           "ts_rel": 0.599
         },
         "big": false,
-        "o_ovr": 52,
+        "o_ovr": 53,
         "d_ovr": 60,
         "ovr": 56,
         "marg": 79
@@ -5195,11 +5195,11 @@
         "peak_season": 2026,
         "talent": 92,
         "in": 54,
-        "out": 92,
+        "out": 89,
         "id": 24,
         "pd": 56,
         "attrs": {
-          "3pt": 91,
+          "3pt": 88,
           "rim": 34,
           "mid": 97,
           "rim_mid_measured": true,
@@ -5554,11 +5554,11 @@
         "peak_season": 2026,
         "talent": 83,
         "in": 86,
-        "out": 10,
+        "out": 9,
         "id": 92,
         "pd": 63,
         "attrs": {
-          "3pt": 9,
+          "3pt": 8,
           "rim": 68,
           "mid": 13,
           "rim_mid_measured": true,
@@ -5723,11 +5723,11 @@
         "peak_season": 2026,
         "talent": 75,
         "in": 73,
-        "out": 27,
+        "out": 25,
         "id": 88,
         "pd": 59,
         "attrs": {
-          "3pt": 24,
+          "3pt": 22,
           "rim": 60,
           "mid": 36,
           "rim_mid_measured": true,
@@ -5761,7 +5761,7 @@
         "peak_season": 2026,
         "talent": 89,
         "in": 96,
-        "out": 4,
+        "out": 3,
         "id": 76,
         "pd": 61,
         "attrs": {
@@ -5843,9 +5843,9 @@
           "ts_rel": 0.561
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 78,
         "d_ovr": 57,
-        "ovr": 71,
+        "ovr": 72,
         "marg": 83
       },
       {

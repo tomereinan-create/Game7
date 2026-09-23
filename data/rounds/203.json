@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 64,
  "after": 71,
- "pipeline_version": 203,
+ "pipeline_version": 204,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -70,15 +70,15 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.668,",
+   "pattern": "hunt: 3\\.65,",
    "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke on the BLIND edge by one thousandth (-0.2992 at 3.65)",
-   "note": "feasible 3.651 (blind -0.3001) to 3.685 (oracle +0.5002), true midpoint by r126's rule: 3.65 -> 3.668"
+   "note": "feasible 3.651 (blind -0.3001) to 3.685 (oracle +0.5002), true midpoint by r126's rule: 3.65 -> 3.668 [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashOff: 0\\.048,",
+   "pattern": "crashOff: 0\\.05,",
    "label": "crash off glass re-ratified on the ORACLE edge (+0.4540 at 0.28)",
-   "note": "feasible about -0.623 to 0.0965, true midpoint NEGATIVE, so recal_117's rule gives the midpoint of the positive half: 0.28 -> 0.048"
+   "note": "feasible about -0.623 to 0.0965, true midpoint NEGATIVE, so recal_117's rule gives the midpoint of the positive half: 0.28 -> 0.048 [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   },
   {
    "file": "src/engine/tactics.ts",
@@ -87,8 +87,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.60,",
-   "label": "crash def glass HELD at main's constant (blind -0.53, oracle +0.52)"
+   "pattern": "crashDef: 0\\.54,",
+   "label": "crash def glass HELD at main's constant (blind -0.53, oracle +0.52)",
+   "note": " [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   }
  ],
  "expect": [
@@ -120,29 +121,29 @@
    "card": "Mark Jackson '98",
    "scale": "off",
    "op": "==",
-   "value": 52,
-   "label": "THE BRACKET THE RULING NAMED, AND IT IS BYTE-IDENTICAL. Pinned 55 +-3 at volume 12 — under the ramp's foot, so he is paid recal_109's floor whole exactly as before. A flat floor raise cannot do this: at PD_E_FLOOR 0.9 he reads 60 and leaves his band"
+   "value": 56,
+   "label": "THE BRACKET THE RULING NAMED, AND IT IS BYTE-IDENTICAL. Pinned 55 +-3 at volume 12 — under the ramp's foot, so he is paid recal_109's floor whole exactly as before. A flat floor raise cannot do this: at PD_E_FLOOR 0.9 he reads 60 and leaves his band [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "Mark Jackson '99",
    "scale": "off",
    "op": "==",
-   "value": 52,
-   "label": "volume 10, byte-identical (pinned 54 +-3)"
+   "value": 56,
+   "label": "volume 10, byte-identical (pinned 54 +-3) [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "Mark Jackson '00",
    "scale": "off",
    "op": "==",
-   "value": 57,
-   "label": "volume 10, byte-identical (pinned 58 +-3)"
+   "value": 61,
+   "label": "volume 10, byte-identical (pinned 58 +-3) [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "John Stockton '90",
    "scale": "off",
    "op": "==",
-   "value": 85,
-   "label": "THE WALL, AND THE WHOLE FRONTIER. Pinned 84 +-3, reads 85, and is volume 36 to Kidd '99's 38 — the two cards the VOLUME GATE cannot tell apart. Byte-identical here because his efficiency factor was already 1.00 (efficiency 94), which is exactly why an efficiency-side change is the only one available"
+   "value": 86,
+   "label": "THE WALL, AND THE WHOLE FRONTIER. Pinned 84 +-3, reads 85, and is volume 36 to Kidd '99's 38 — the two cards the VOLUME GATE cannot tell apart. Byte-identical here because his efficiency factor was already 1.00 (efficiency 94), which is exactly why an efficiency-side change is the only one available [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "Steve Nash '05",

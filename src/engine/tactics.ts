@@ -752,6 +752,14 @@ export const DEFAULT_TACTICS: Tactics = {
  * +0.51, 0.00 +0.52 with blind -0.66) — window [0.00, ~0.10], midpoint 0.05. crashDef passes at 0.48 (+0.50) and
  * loses the blind floor under ~0.24 (0.20 reads blind -0.28 FAIL, 0.30 -0.36 PASS) — window [~0.24, 0.48],
  * midpoint 0.36. Landed crashOff 0.28 -> 0.05, crashDef 0.60 -> 0.36; the seven others held untouched, nine PASS.
+ *
+ * PIPELINE 204 (integration of recal_201 / 202 / 203 / 204). Eight rows PASS at pipeline 200's constants; crashDef
+ * 0.36 lost its BLIND floor (-0.24 against the -0.3 edge) because 203 and 204 lift 1,100 perimeter OFF cards and the
+ * random crash now costs less against them. Bracketed upward: 0.44 reads blind -0.30 FAIL, 0.52 -0.36 PASS, 0.60
+ * -0.42 / oracle +0.52 PASS, 0.66 oracle +0.50 FAIL, 0.80 +0.45 — window [~0.45, ~0.63], midpoint 0.54 (blind -0.37,
+ * oracle +0.54). hunt 3.65 (blind -0.33, oracle +0.57) and crashOff 0.05 (-0.51 / +0.62) held. Landed crashDef
+ * 0.36 -> 0.54. The three branches' own re-ratifications (201: hunt 3.58 / crashOff .11 / crashDef .18; 203: hunt
+ * 3.668 / crashOff .048; 204: none) are superseded by this merged-pool sweep, not stacked.
  */
 export const TAX = {
   scorer: 0.55,
@@ -761,7 +769,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.65,
   crashOff: 0.05,
-  crashDef: 0.36,
+  crashDef: 0.54,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

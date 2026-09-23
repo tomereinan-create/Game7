@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 97,
  "after": 93,
- "pipeline_version": 202,
+ "pipeline_version": 204,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -72,9 +72,9 @@
    "card": "Jim Les '91",
    "scale": "off",
    "op": "~",
-   "value": 58,
+   "value": 61,
    "tol": 0,
-   "label": "the subject's OFF follows his bar: 60 -> 58 (OVR 56 -> 55)"
+   "label": "the subject's OFF follows his bar: 60 -> 58 (OVR 56 -> 55) [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "Richard Hamilton '06",
@@ -192,9 +192,9 @@
    "card": "Michael Jordan '89",
    "scale": "off",
    "op": "~",
-   "value": 98,
+   "value": 99,
    "tol": 0,
-   "label": "recal_185's low-volume doctrine card: 3pt 31 -> 30, OFF unmoved at 98"
+   "label": "recal_185's low-volume doctrine card: 3pt 31 -> 30, OFF unmoved at 98 [pipeline-204 integration: batch reading — 201/202/203/204 landed together on pipeline 200]"
   },
   {
    "card": "Duncan Robinson '20",
@@ -244,18 +244,66 @@
   "count": 4133,
   "max_abs": 4,
   "top": [
-   ["Bobby Simmons '09", 86, 82],
-   ["Dale Ellis '85", 78, 74],
-   ["Jim Les '91", 97, 93],
-   ["Michael Porter Jr. '21", 98, 94],
-   ["Michael Redd '02", 98, 94],
-   ["Ben Gordon '06", 95, 92],
-   ["Danny Green '12", 97, 94],
-   ["Seth Curry '20", 96, 93],
-   ["Luke Kennard '23", 96, 93],
-   ["Mo Williams '09", 91, 88],
-   ["Jamal Murray '26", 91, 88],
-   ["Pat Garrity '01", 95, 92]
+   [
+    "Bobby Simmons '09",
+    86,
+    82
+   ],
+   [
+    "Dale Ellis '85",
+    78,
+    74
+   ],
+   [
+    "Jim Les '91",
+    97,
+    93
+   ],
+   [
+    "Michael Porter Jr. '21",
+    98,
+    94
+   ],
+   [
+    "Michael Redd '02",
+    98,
+    94
+   ],
+   [
+    "Ben Gordon '06",
+    95,
+    92
+   ],
+   [
+    "Danny Green '12",
+    97,
+    94
+   ],
+   [
+    "Seth Curry '20",
+    96,
+    93
+   ],
+   [
+    "Luke Kennard '23",
+    96,
+    93
+   ],
+   [
+    "Mo Williams '09",
+    91,
+    88
+   ],
+   [
+    "Jamal Murray '26",
+    91,
+    88
+   ],
+   [
+    "Pat Garrity '01",
+    95,
+    92
+   ]
   ]
  },
  "top12": {

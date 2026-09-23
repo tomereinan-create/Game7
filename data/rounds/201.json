@@ -10,7 +10,7 @@
  "tol": 2,
  "before": 89,
  "after": 94,
- "pipeline_version": 201,
+ "pipeline_version": 204,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -89,21 +89,21 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.58,",
+   "pattern": "hunt: 3\\.65,",
    "label": "THE DEVIATION TAX LAW — hunt broke on the ORACLE edge (+0.482 at main's 3.65)",
-   "note": "feasible 3.547 to 3.609 (sixty-two thousandths), true midpoint by r126's rule: 3.65 -> 3.58, oracle +0.512, blind -0.331"
+   "note": "feasible 3.547 to 3.609 (sixty-two thousandths), true midpoint by r126's rule: 3.65 -> 3.58, oracle +0.512, blind -0.331 [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashOff: 0\\.11,",
+   "pattern": "crashOff: 0\\.05,",
    "label": "crash off glass broke on the ORACLE edge too (+0.483 at main's .28)",
-   "note": "feasible about -.393 to .213, midpoint NEGATIVE, so r117's rule stands and it takes the midpoint of the POSITIVE half: .28 -> .11, oracle +0.528, blind -0.612"
+   "note": "feasible about -.393 to .213, midpoint NEGATIVE, so r117's rule stands and it takes the midpoint of the POSITIVE half: .28 -> .11, oracle +0.528, blind -0.612 [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "crashDef: 0\\.18,",
+   "pattern": "crashDef: 0\\.54,",
    "label": "crash def glass, the third ORACLE break (+0.397 at main's .60)",
-   "note": "feasible about .118 to .247, true midpoint .18: oracle +0.520, blind -0.347"
+   "note": "feasible about .118 to .247, true midpoint .18: oracle +0.520, blind -0.347 [pipeline-204 integration: the merged-pool sweep landed hunt 3.65 / crashOff 0.05 / crashDef 0.54; the branch figure is superseded, not stacked]"
   },
   {
    "file": "src/engine/tactics.ts",
