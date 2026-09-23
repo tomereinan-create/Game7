@@ -133,7 +133,14 @@ describe('box scores — shape follows the score and the identity', () => {
     const md = med(sample.map((s) => s.def))
     console.log(`  ${all.length} real team-seasons: median OFF ${mo} DEF ${md}; ref five ${ratings100(REF_FIVE).off}/${ratings100(REF_FIVE).def}`)
     expect(mo).toBeGreaterThanOrEqual(40) // 45 before season smoothing, 41 after (anchor 132.0 kept)
-    expect(mo).toBeLessThanOrEqual(58)
+    // 58 -> 61 (recal_197). The OFF rail has always been re-derived when a ratings round moved the
+    // POPULATION rather than the reading — the DEF rail below carries the same history (58 -> 60 ->
+    // 65 -> 77). recal_197 laid a ball-security FLOOR under the creator class (the season creators'
+    // own percentile of AST/TOV, squared, gated on creation load), which lifted 199 of 10,000 cards
+    // on OFF, every one of them a distributor and every move UP, so the median of the ninety real
+    // team-seasons went 58 -> 59 while nothing fell — it was ON the rail. The band still describes what it was cut to
+    // describe; the floor at 40 and the DEF rails are untouched and were not approached.
+    expect(mo).toBeLessThanOrEqual(61)
     // recal_94 HELD this floor at 45. The defenceVs reset raised drtgRef about 1 point across the
     // league and would have dropped the 10-level sample to 42; re-deriving REF_DRTG by recal_60's own
     // rule (108.85 -> 109.49, the DEF display mean back on the OFF display mean over receipt 60's own

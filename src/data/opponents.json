@@ -240,7 +240,7 @@
           "orb": 17,
           "drb": 18,
           "playvol": 77,
-          "ballsec": 51,
+          "ballsec": 56,
           "volume": 54,
           "efficiency": 35,
           "durability": 51,
@@ -257,7 +257,7 @@
         "o_ovr": 66,
         "d_ovr": 45,
         "ovr": 60,
-        "marg": 67
+        "marg": 69
       },
       {
         "name": "Bennedict Mathurin '26",
@@ -709,7 +709,7 @@
         "o_ovr": 77,
         "d_ovr": 46,
         "ovr": 68,
-        "marg": 89
+        "marg": 88
       },
       {
         "name": "Zach LaVine '26",
@@ -878,7 +878,7 @@
         "o_ovr": 76,
         "d_ovr": 48,
         "ovr": 68,
-        "marg": 82
+        "marg": 81
       },
       {
         "name": "Cody Williams '26",
@@ -1068,7 +1068,7 @@
           "orb": 26,
           "drb": 20,
           "playvol": 76,
-          "ballsec": 62,
+          "ballsec": 63,
           "volume": 26,
           "efficiency": 80,
           "durability": 44,
@@ -1085,7 +1085,7 @@
         "o_ovr": 75,
         "d_ovr": 43,
         "ovr": 65,
-        "marg": 92
+        "marg": 91
       },
       {
         "name": "Cedric Coward '26",
@@ -1292,7 +1292,7 @@
         "o_ovr": 63,
         "d_ovr": 50,
         "ovr": 59,
-        "marg": 63
+        "marg": 62
       },
       {
         "name": "Cooper Flagg '26",
@@ -1537,7 +1537,7 @@
         "o_ovr": 67,
         "d_ovr": 55,
         "ovr": 63,
-        "marg": 87
+        "marg": 86
       },
       {
         "name": "Trey Murphy III '26",
@@ -1706,7 +1706,7 @@
         "o_ovr": 69,
         "d_ovr": 49,
         "ovr": 63,
-        "marg": 94
+        "marg": 93
       },
       {
         "name": "Coby White '26",
@@ -2158,7 +2158,7 @@
         "o_ovr": 59,
         "d_ovr": 58,
         "ovr": 59,
-        "marg": 68
+        "marg": 67
       },
       {
         "name": "Moses Moody '26",
@@ -2196,7 +2196,7 @@
         "o_ovr": 62,
         "d_ovr": 57,
         "ovr": 60,
-        "marg": 68
+        "marg": 67
       },
       {
         "name": "Draymond Green '26",
@@ -2779,7 +2779,7 @@
         "o_ovr": 78,
         "d_ovr": 47,
         "ovr": 69,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "Andrew Wiggins '26",
@@ -2986,7 +2986,7 @@
         "o_ovr": 74,
         "d_ovr": 53,
         "ovr": 68,
-        "marg": 83
+        "marg": 82
       },
       {
         "name": "Kon Knueppel '26",
@@ -3776,7 +3776,7 @@
         "o_ovr": 44,
         "d_ovr": 95,
         "ovr": 70,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "CJ McCollum '26",
@@ -4397,7 +4397,7 @@
         "o_ovr": 78,
         "d_ovr": 47,
         "ovr": 69,
-        "marg": 79
+        "marg": 78
       },
       {
         "name": "Donovan Mitchell '26",
@@ -4849,7 +4849,7 @@
         "o_ovr": 77,
         "d_ovr": 53,
         "ovr": 70,
-        "marg": 93
+        "marg": 92
       },
       {
         "name": "LeBron James '26",
@@ -5056,7 +5056,7 @@
         "o_ovr": 52,
         "d_ovr": 60,
         "ovr": 56,
-        "marg": 80
+        "marg": 79
       },
       {
         "name": "Mikal Bridges '26",
@@ -5263,7 +5263,7 @@
         "o_ovr": 53,
         "d_ovr": 62,
         "ovr": 58,
-        "marg": 60
+        "marg": 59
       },
       {
         "name": "Tim Hardaway Jr. '26",
@@ -5508,7 +5508,7 @@
         "o_ovr": 83,
         "d_ovr": 66,
         "ovr": 78,
-        "marg": 81
+        "marg": 80
       },
       {
         "name": "Sam Hauser '26",
@@ -5639,7 +5639,7 @@
         "o_ovr": 79,
         "d_ovr": 67,
         "ovr": 75,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "Duncan Robinson '26",
@@ -5846,7 +5846,7 @@
         "o_ovr": 77,
         "d_ovr": 57,
         "ovr": 71,
-        "marg": 83
+        "marg": 82
       },
       {
         "name": "Dylan Harper '26",
@@ -5922,7 +5922,7 @@
         "o_ovr": 62,
         "d_ovr": 56,
         "ovr": 60,
-        "marg": 90
+        "marg": 89
       },
       {
         "name": "Harrison Barnes '26",
@@ -6091,7 +6091,7 @@
         "o_ovr": 68,
         "d_ovr": 53,
         "ovr": 63,
-        "marg": 88
+        "marg": 87
       },
       {
         "name": "Luguentz Dort '26",

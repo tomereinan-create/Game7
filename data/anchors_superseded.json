@@ -844,5 +844,17 @@
     "current": 86,
     "superseded_by": 176,
     "superseded_note": "released upward by Tomer on round 176: 'Stockton and nash going up is fine'. recal_176 re-cut recal_109's efficiency factor on the elite-passer class's own conversion distribution (70->90, the class's p84->p95, becomes 43->78, its median to its p90) and recal_117's volume band top on the same class's own volume distribution (68 -> 93, the p90 of volume among the 1,486 cards that clear the term's playvol foot), to carry Kevin Johnson '89 from off 75 to 81 on his ruling \"Agree with 11\". Both cards rise with him and Tomer ruled that rise acceptable in the same sentence that refused Chauncey Billups '06 at 93. THE PIN IS NOT DELETED, IT IS RE-CUT: each is re-pinned at its new reading +-2 by round 176 below, so the number is still held, just held higher."
+  },
+  {
+    "card": "José Calderón '09",
+    "scale": "off",
+    "target": 79,
+    "tol": 3,
+    "round": 184,
+    "ruling": "Agree with 1-10",
+    "note": "ITEM 9 OF THE 2026-09-21 SCOUT. 12.8 points and 8.9 assists on 17.1% usage, BPM 2.8, printed OFF 85 - four above Kevin Johnson '89 (20.4 / 12.2, BPM 4.2, pinned 81), five above Terry Porter '90 and three above his OWN '08 (BPM 4.5). recal_184 put the elite-passer term's EFFICIENCY LIFT on a scoring-load line (the lift above recal_109's 0.5 floor is paid pro rata to volume until PD_E_V_FULL 30.0, the class's own lower quartile): 85 -> 81, ovr 74 -> 71. HE LANDS 81 AND NOT 79, INSIDE THE TOLERANCE AND NOT ON ITS CENTRE, and the wall is recorded in data/rounds/184.json: recal_126's order pin John Stockton '97 >= John Stockton '01 standing over recal_176's Stockton '01 86 +-2. '97 is volume 23 with a 19.84 passer term against '01's 15.25, so every load condition on this term costs him more; the two are now level at 86 and the pair has no slack left.",
+    "current": 83,
+    "superseded_by": 197,
+    "superseded_note": "RELEASED BY HIS AMENDMENT of 2026-09-23, verbatim: \"Calderón can be high 80s, not 99 tho\". recal_192 declined Isaiah Collier '26's ballsec band and recorded this pin as the second wall: the subject cannot be reached without lifting the creation-efficient class, and this card takes 2.4x the subject's move. His amendment re-rules the card on BALLSEC (87 +-3, recal_197) and releases the OFF value to follow it. It follows to 83 (ballsec 61 -> 85, ovr 72 -> 73). WHAT THE RELEASE COSTS, stated plainly: recal_184's complaint was that this card read four above Kevin Johnson '89 (pinned 81, unmoved here because his AST/TOV of 3.04 is mid-class and his ball security was never the fault); at 83 he reads two above him again. recal_184's TERM is untouched — compute_ovr.py was not edited this round — and the move is entirely the ballsec his amendment re-ruled."
   }
 ]

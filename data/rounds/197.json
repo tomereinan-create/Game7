@@ -1,0 +1,356 @@
+{
+ "round": 197,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Isaiah Collier '26 ballsec target 45 +-5 (now 22). [amendment 2026-09-23] Calderón can be high 80s, not 99 tho",
+ "title": "THE CREATOR'S FLOOR — recal_192 was declined on arithmetic (no re-weighting of ballsec's two legs reaches past 37 printed); his amendment releases the pin that capped the answer, so recal_197 lays a FLOOR under the blend instead: the season creator class's own percentile of AST/TOV, squared, ramped over the class's interquartile range of AST%. A floor SATURATES by construction — it cannot move a card already above it — so Jordan '88, Westbrook '15, Magic '90 and Billups '06 move by EXACTLY zero and the Stockton '97 >= '01 order pin WIDENS",
+ "scale": "attr:ballsec",
+ "subject": "Isaiah Collier '26",
+ "target": 45,
+ "tol": 5,
+ "before": 22,
+ "after": 45,
+ "pipeline_version": 197,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "CR_CLS, CR_CEIL, CR_EXP, CR_G_LO, CR_G_HI = 25\\.0, 0\\.90, 2\\.0, 27\\.5, 35\\.5",
+   "label": "THE WHOLE ROUND, five constants: the creation class, the floor's ceiling, the hardening, and the load gate's two ends",
+   "note": "CR_CLS 25.0 = the class floor (a class cut at AST% >= 30 is FIVE cards in 1980; at 25 it is 16, median season 37 against 20). CR_CEIL 0.90 = the measured frontier (at 1.00 Nash '05 reads OFF 93 against 90 +-2 and Billups '06 reads 93 against 91 +-1). CR_EXP 2.0 = the square, the hardening this file already uses on six bars. CR_G_LO/HI 27.5/35.5 = the class's OWN interquartile range of AST%, measured on its 1,710 cards (p25 27.5, median 30.6, p75 35.5)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "P_crt = pctile_top\\(\\[_asttov\\(rr\\) for rr in rows if \\(rr\\.get\\('ast'\\) or 0\\) >= CR_CLS\\]\\)",
+   "label": "the key: creation EFFICIENCY read inside the season's creation class, not against the league",
+   "note": "recal_192's second finding is why: AST/TOV 2.85 is the 90th percentile of 2026 only because the league median is set by men who never pass. pctile_top and not pctile so the top of the class reaches the ceiling exactly, the same reason rim protection needed it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_cgate = min\\(1\\.0, max\\(0\\.0, \\(\\(r\\.get\\('ast'\\) or 0\\.0\\) - CR_G_LO\\) / \\(CR_G_HI - CR_G_LO\\)\\)\\)",
+   "label": "THE LOAD GATE, which is what keeps the team board still",
+   "note": "without it the floor pays every man with a tidy ratio whether or not he creates, and Mike Conley '24 (AST/TOV 4.39 at AST% 28.4) takes ballsec 48 -> 74, carrying Minnesota past Boston and breaking recal_119's BOS '24 OFF rank <= 10 at every ceiling that reaches Calderón's band. His gate is 0.11 and he moves ZERO. The gate can only ever SHRINK a floor, so no volume key can lift anyone — recal_192's first wall is closed by construction"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ballsec=max\\(sc\\(1 - \\(\\(1 - _wraw\\) \\* Padj\\(_bsec\\(r\\)\\) \\+ _wraw \\* Pa\\['tov_pct'\\]\\(r\\.get\\('tov_pct'\\)\\)\\)\\),",
+   "label": "the floor laid UNDER recal_116's two-leg blend, as a max() and not a term",
+   "note": "this is the saturation his amendment asked for: a floor cannot lift a card already above it, so nothing on the board can FALL and the elite ball-keepers are byte-identical"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_wraw = 0\\.54 - 0\\.29 \\* _credit",
+   "label": "recal_116's raw-leg ceiling and ramp depth, UNCHANGED",
+   "note": "0.54 ceiling, 0.25 floor at full credit — the frontier recal_116 proved, untouched"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_credit = 0\\.0 if ast_tov is None else max\\(0\\.0, min\\(1\\.0, \\(ast_tov - 2\\.0\\) / 2\\.0\\)\\)",
+   "label": "recal_79's AST/TOV credit ramp with his 2.0 floor amendment, UNCHANGED",
+   "note": "the two-leg blend is byte-identical; the round adds a floor beneath it and changes nothing above it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "\\+ 0\\.8 \\* \\(rr\\.get\\('ast'\\) or 15\\)",
+   "label": "the 0.8 assist coefficient in the responsibility denominator, UNCHANGED",
+   "note": "recal_116 declared it untouched; recal_192 swept it to 3.0 and proved it cannot carry the subject"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Isaiah Collier '26",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 45,
+   "label": "THE SUBJECT, on his number exactly (45 +-5). Class percentile of AST/TOV 0.78, squared 0.61, gate 1.00 (AST% 39.2) -> floor 55 against a two-leg base of 27"
+  },
+  {
+   "card": "Isaiah Collier '26",
+   "scale": "off",
+   "op": "==",
+   "value": 54,
+   "label": "OFF 51 -> 54: ball security carries 0.10 of o_score"
+  },
+  {
+   "card": "Isaiah Collier '26",
+   "scale": "ovr",
+   "op": "==",
+   "value": 51,
+   "label": "OVR 49 -> 51"
+  },
+  {
+   "card": "Isaiah Collier '25",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 25,
+   "label": "THE SMOOTHING WEIGHT, and it is why the floor has to be worth 55: a quarter of the printed card is the rookie year (AST/TOV 2.15, class percentile 0.43) and it floors to 15"
+  },
+  {
+   "card": "José Calderón '09",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 85,
+   "label": "HIS AMENDMENT, 87 +-3: 61 -> 85. Top of his class on AST/TOV (4.25), gate 1.00, floor 89 — the ceiling itself"
+  },
+  {
+   "card": "José Calderón '09",
+   "scale": "off",
+   "op": "==",
+   "value": 83,
+   "label": "his recal_184 OFF pin RELEASED by the same words; it follows the ballsec to 83, not to 99"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 60,
+   "label": "WALL ONE, recal_116's 56 +-4 at +4 with ZERO upward slack: AST/TOV 1.95 is the 0.23 of his OWN class, so his floor is 6 against a base of 64. He moves by EXACTLY zero"
+  },
+  {
+   "card": "Michael Jordan '88",
+   "scale": "attr:ballsec",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "WALL TWO, recal_56's pin. AST/TOV 1.95 at AST% 27.0, below the load gate's foot: floor 1 against a base of 97. Twice immune"
+  },
+  {
+   "card": "John Stockton '97",
+   "scale": "off",
+   "op": "==",
+   "value": 88,
+   "label": "THE STOPPING PIN OF recal_192, half one: recal_126's order pin '97 >= '01 had ZERO slack at 86/86 and every credit-keyed form inverted it"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "==",
+   "value": 87,
+   "label": "half two, and the pin WIDENS instead of inverting: the floor saturates, so the season with the LOWER ratio takes the larger lift (ballsec 47 -> 73 against 53 -> 62) and the pair goes 86/86 -> 88/87"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "==",
+   "value": 93,
+   "label": "recal_138's 93 +-1 with ONE point of room: floor 43 against a base of 63, so he does not move at all"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "==",
+   "value": 92,
+   "label": "recal_154's pin with ZERO upward slack: AST/TOV 4.12 earns him the full floor of 89 and his base is 89. EXACTLY zero"
+  },
+  {
+   "card": "Steve Nash '05",
+   "scale": "off",
+   "op": "==",
+   "value": 92,
+   "label": "recal_176's 90 +-2, landing on its top edge. ballsec 48 -> 71; this pin is the ceiling frontier's first casualty above CR_CEIL 0.90"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "==",
+   "value": 86,
+   "label": "recal_117's 84 +-3, ballsec 62 -> 73"
+  },
+  {
+   "card": "Kevin Johnson '89",
+   "scale": "off",
+   "op": "==",
+   "value": 81,
+   "label": "recal_176's 81 +-3, unmoved — AST/TOV 3.04 is mid-class and his base already covers his floor"
+  },
+  {
+   "card": "Mark Jackson '98",
+   "scale": "off",
+   "op": "==",
+   "value": 56,
+   "label": "recal_109's 55 +-3 — the low-usage high-assist card the ruling's shape points at, ballsec 42 -> 78 and he lands ON his number"
+  },
+  {
+   "card": "Mark Jackson '00",
+   "scale": "off",
+   "op": "==",
+   "value": 61,
+   "label": "recal_109's 58 +-3, ballsec 35 -> 76"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "==",
+   "value": 98,
+   "label": "recal_102's 99 +-1 at -1 with ZERO downward slack — a floor cannot lower a card, and nothing on the board falls this round"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "==",
+   "value": 96,
+   "label": "recal_89's 95 +-1 at +1, AST/TOV 1.52 — no floor reaches him"
+  },
+  {
+   "card": "Mike Conley '24",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 48,
+   "label": "THE CARD THE LOAD GATE IS FOR: AST/TOV 4.39, the cleanest ratio in the 2024 class, at AST% 28.4. Gate 0.11, floor 9, moves ZERO — and recal_119's BOS '24 OFF rank holds at 10 because of it"
+  },
+  {
+   "card": "Chris Paul '09",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 83,
+   "label": "the comparable recal_192 ended its argument with: he prints 83 to the subject's 45 and the order the decline defended is intact"
+  },
+  {
+   "card": "Tyrese Haliburton '24",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 82,
+   "label": "the cleanest creator on the board, 80 -> 82: his base already carried him"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "John Stockton '97",
+   "below": "John Stockton '01",
+   "label": "recal_126's order pin, the wall recal_192 stopped at: 86/86 with zero slack becomes 88/87"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "Chris Paul '09",
+   "below": "Isaiah Collier '26",
+   "label": "the man who loses 8.94% of the possessions he ends still reads above the man who loses 12.62%"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "José Calderón '09",
+   "below": "Isaiah Collier '26",
+   "label": "his two rulings in one line: 85 against 45"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "Tyrese Haliburton '24",
+   "below": "Isaiah Collier '26"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "Isaiah Collier '26",
+   "below": "Isaiah Collier '25",
+   "label": "the second year reads above the rookie year, as the inputs say"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "Michael Jordan '88",
+   "below": "José Calderón '09",
+   "label": "the ceiling stops at the high 80s: the floor cannot take a creator past the men who simply never lost the ball"
+  }
+ ],
+ "movers": {
+  "scale": "attr:ballsec",
+  "count": 330,
+  "max_abs": 60,
+  "top": [
+   [
+    "Jason Kidd '10",
+    18,
+    78
+   ],
+   [
+    "Kendall Marshall '14",
+    18,
+    76
+   ],
+   [
+    "Nate McMillan '88",
+    14,
+    67
+   ],
+   [
+    "Nate McMillan '87",
+    10,
+    63
+   ],
+   [
+    "Jason Kidd '11",
+    15,
+    65
+   ],
+   [
+    "Jason Kidd '09",
+    19,
+    68
+   ],
+   [
+    "Geoff Huston '86",
+    30,
+    79
+   ],
+   [
+    "Ricky Rubio '16",
+    32,
+    79
+   ],
+   [
+    "Mark Jackson '01",
+    33,
+    78
+   ],
+   [
+    "Ricky Rubio '14",
+    26,
+    69
+   ],
+   [
+    "Mark Jackson '99",
+    37,
+    80
+   ],
+   [
+    "Rajon Rondo '19",
+    18,
+    60
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:ballsec",
+  "cards": [
+   "Al Jefferson '12",
+   "Michael Jordan '97",
+   "Michael Jordan '98",
+   "Mike Mitchell '88",
+   "Steve Novak '13",
+   "Al Jefferson '13",
+   "Al Jefferson '14",
+   "Al Jefferson '15",
+   "Alex English '88",
+   "Alex English '89",
+   "Dirk Nowitzki '16",
+   "Dirk Nowitzki '17"
+  ]
+ },
+ "cost": [
+  "HIS recal_184 PIN IS SUPERSEDED BY HIS OWN WORDS. José Calderón '09 off 79 +-3 moves to data/anchors_superseded.json with superseded_by 197 and the verbatim amendment. It follows the ballsec to 83. What the release costs, stated plainly: recal_184's complaint was that this card read four above Kevin Johnson '89 (pinned 81); at 83 he reads two above him again. compute_ovr.py's recal_184 TERM was not touched — this round edits data/build_ratings.py only, and the PIPELINE_VERSION bump is the sole change in compute_ovr.py.",
+  "TWO NEW PINS: Isaiah Collier '26 attr:ballsec 45 +-5 and José Calderón '09 attr:ballsec 87 +-3. The board goes 193 anchors -> 194, 0 failing.",
+  "THE CEILING IS A MEASURED FRONTIER AND recal_176/recal_154 ARE WHAT SITS ON IT. Swept through the WHOLE pipeline at CR_CEIL 0.86 / 0.90 / 1.00: at 0.86 the subject reads 44 and Calderón 82 (one under his band); at 0.90 they read 45 and 85 with every standing anchor intact; at 1.00 they read 52 and 94 and TWO pins break — Steve Nash '05 off 93 against recal_176's 90 +-2, Chauncey Billups '06 off 93 against recal_154's 91 +-1. Nash lands ON his top edge at 0.90, so the room above the shipped ceiling is a fraction of a point.",
+  "THE LOAD GATE IS NOT A TASTE, IT IS recal_119's BOS '24 RANK. The ungated floor (same class, same square, same ceiling) reaches the subject at 45-47 and Calderón at 85-88 just as well, and breaks BOS '24 OFF rank <= 10 at EVERY ceiling in that band — measured at 0.86, 0.88, 0.90 and 1.00, all 11/26. The single card that does it is Mike Conley '24 (ballsec 48 -> 74, Minnesota +1.40 of team offence against Boston's +0.32 on the pinned five). Gating the floor on creation load takes Conley to zero and the rank back to 10.",
+  "TACTICS: `crash def glass` LEAVES ITS BAND ON THIS POOL and was NOT re-swept, per the doctrine of 2026-09-03 (the integrator re-sweeps the taxes ONCE on the merged pool). Measured both ways on the same harness: main reads random -0.35 / oracle +0.58 PASS, this round reads random -0.58 / oracle +0.44 FAIL. The other eight pass on both. 330 cards gained ball security and the men who gained are guards, so the sampled fives' defensive-glass trade-off moved under the tax; it is one constant and it is the integrator's sweep.",
+  "ONE TEST RAIL RE-DERIVED, tests/box.test.ts: the median OFF of the ninety real team-seasons in the ladder was sitting ON recal_94's upper rail (58) and this round's distributors carried it to 59, so the rail is 61. That rail has been re-derived every time a ratings round moved the POPULATION rather than the reading — its DEF sibling in the same test carries the history 58 -> 60 -> 65 -> 77 — and the OFF FLOOR (40), the DEF rails and the sample definition are untouched. Measured both ways on the same test: main 58/55, this round 59/55.",
+  "NOTHING FALLS. The change is a max() laid under the existing blend, so no card on the board loses a point of ball security, of OFF or of OVR: 330 cards move on ballsec (max +60), 199 on OFF (max +6), 161 on OVR, and the minimum delta on all three is ZERO. DEF moves on nothing.",
+  "NOT REOPENED: recal_76 and recal_81's removal of team defence from perdef and rimprot; recal_116's three rejected shapes; recal_192's five rejected families (the credit ramp re-cut, the per-touch rate in either leg, the assist coefficient sweep, the usage-stripped allowance). Every one of them was a re-weighting of the two legs and recal_192 proved the class of them cannot reach 40."
+ ],
+ "notes": [
+  "THE CARD. Isaiah Collier '26: 11.7 points and 7.2 assists in 25.7 minutes over 59 games, usage 20.4, TS .567, BPM -2.4. Ball-security inputs: TOV% 19.6, USG 20.4, AST% 39.2, and 13.1 assists against 4.6 turnovers per 100 possessions — an assist-to-turnover ratio of 2.85.",
+  "WHY recal_192's DECLINE WAS RIGHT AND STILL IS, ON ITS OWN TERMS. ballsec = 1 - [(1-w) x Padj + w x Praw]. The subject's two legs are fixed facts of his season (Padj 0.556, Praw 0.983), so his pre-smoothing card is 44.5 - 41.8w and the printed number is 0.75 x that + 0.25 x a rookie year that reads 13.1 - 11.7w. At w = 0 — the raw leg DELETED — he prints 37 and the band opens at 40. NO re-weighting of the two legs can land this ruling, and that is not a tuning failure but arithmetic. What his amendment changed is not the subject's arithmetic: it released the ceiling on the ANSWER, and the answer had to be a third thing under the blend rather than a fourth way of mixing two percentiles.",
+  "WHY A FLOOR AND NOT A LOUDER CREDIT. His amendment asked for a credit 'that saturates', and a floor is the saturating credit in its strongest form: max(base, floor) pays a man nothing once he is already above it. That single property is what closed the eleven doors recal_192 measured. The elite ball-keepers (Jordan '88 95, Billups '06 89, SGA '25 94, Steve Kerr '96 86, DeRozan '17 90) are at or above their own floors and move by EXACTLY zero; the ball-stoppers (Westbrook '15, Harden '19, Jordan '88 again) take floors of 1 to 6 because their AST/TOV sits at the bottom of the creator class; and the order pin recal_192 died on WIDENS, because the season with the WORSE ratio ('97, 3.43) sits further below its floor than the season with the better one ('01, 3.53) and therefore takes the larger lift.",
+  "THE CLASS IS THE POINT, AND IT IS recal_192's OWN FINDING TURNED INTO A TERM. 'AST/TOV 2.85 is the 90.1st percentile of 2026 — but only because the league median (1.50) is set by men who never pass.' So the floor reads the ratio inside the class that the statistic means something in: the season's own creators. The subject sits at 0.78 of his class where he sat at 0.90 of his league, and Calderón '09 sits at the top of his. The square then separates them 0.61 to 1.00, which is exactly the ratio his two rulings ask for (45 against the high 80s).",
+  "WHAT THE FLOOR ACTUALLY PAYS, AND TO WHOM. 330 of 10,000 cards move. The largest are one archetype and read like it: Jason Kidd '09-'12, Ricky Rubio '14-'16, Rajon Rondo '11-'19, Mark Jackson '98-'01, Nate McMillan '87-'88, Muggsy Bogues '89-'97, Kendall Marshall '14, T.J. McConnell '20, Andre Miller '15, Chris Paul '25 — low-usage distributors whose raw TOV% was being read as though they were ball-stoppers. Their OFF gains 4 to 6 and their OVR 2 to 4.",
+  "THE SUMMIT DOES NOT CHANGE HANDS, which is the failure recal_116 and recal_192 both named. The ballsec top 12 is Al Jefferson '12/'13/'14/'15, Michael Jordan '97/'98, Mike Mitchell '88, Steve Novak '13, Alex English '88/'89 and Dirk Nowitzki '16/'17 — BYTE-IDENTICAL to main's, and to the list recal_192 recorded. Muggsy Bogues '90 reaches 89 and Jason Kidd '10 reaches 78; neither is near it, because the floor's ceiling is 89 and every man above that got there on the raw fact. An UNGATED floor read against the whole league instead of the class hands the summit to Sidney Lowe, Pablo Prigioni and Lester Conner — measured, and the reason the class and the gate are both in the term.",
+  "THE ONE PLACE THE FLOOR WAS TOO LOUD, AND WHAT FIXED IT. An ungated floor pays anyone with a tidy ratio, and the man it overpaid is Mike Conley '24 — AST/TOV 4.39, the cleanest ratio in the 2024 class, on AST% 28.4 and USG 16.0. He went 48 -> 74, Minnesota's offence went +1.40 while Boston's pinned five went +0.32, and recal_119's BOS '24 OFF rank <= 10 (zero slack) went to 11. The class's own interquartile range of AST% is 27.5 to 35.5, so the gate is read there: Conley 0.11, the subject 1.00, Calderón 1.00. A gate can only SHRINK a floor, so it cannot lift Westbrook — recal_192's other wall, the one every creation-VOLUME key ran into, stays shut.",
+  "THE OFF SIDE IS NOT THIS LANE'S AND WAS NOT TOUCHED. data/compute_ovr.py changed by ONE line, the PIPELINE_VERSION constant. Every OFF and OVR move on the board is the 0.10 ballsec weight in o_score and recal_121's turnover charge relaxing for men who now clear its ball-security gate."
+ ]
+}
