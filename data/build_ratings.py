@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 205
+PIPELINE_VERSION = 207
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -278,6 +278,26 @@ def pctile(vals):
 mod = [r for y in range(MODERN[0], MODERN[1]+1) for r in seasons.get(y, [])]
 P_3pa_mod = pctile([r['x3pa_per_100'] for r in mod])
 P_3pp_mod = pctile([r['x3p_pct'] for r in mod if (r['x3pa_per_100'] or 0) >= 2])
+# recal_207: THE REFERENCE POOL IS UNCHANGED. The 2-3PA/100 line above selects WHO DEFINES the
+# absolute accuracy scale, and that is the right job for a rate: a scale built from men who did not
+# shoot is not a shooting scale. The line's other job — deciding whose percentage gets READ at all —
+# is the one this round retires (see the accuracy leg in score_season below). 2,763 modern cards
+# define the pool before and after; every accuracy percentile in the file is measured against the
+# identical distribution.
+# THE SAMPLE FOOT IS THE GATE'S OWN ARITHMETIC, NOT A FITTED NUMBER. `2 three-point attempts per 100
+# possessions` over the file's own minimum qualifying season (MIN_MP = 1200) at the median league
+# pace (99.27) IS an attempt count: 2 x (1200 x 99.27 / 48) / 100 = 49.6 shots. Read from the other
+# end, the pool the gate admits confirms it: of the 5,473 cards at or above 2 3PA/100, the SMALLEST
+# three-point sample in the whole class is 47.3 attempts (p1 = 65.9, p50 = 238.8). The gate already
+# treats 49.6 attempts as a readable sample — it simply refused to look at the identical sample when
+# it arrived over more minutes. Nothing new is chosen here; the constant is the old line, restated in
+# the unit that decides whether a percentage means anything.
+_MED_PACE = sorted(lgpace.values())[len(lgpace)//2]
+ACC_CNT_FULL = 2.0 * (MIN_MP * _MED_PACE / 48.0) / 100.0   # = 49.6 three-point attempts
+def _att3_count(r):
+    """recal_78's attempt-count estimator (minutes x league pace / 48 = possessions on the floor,
+    times the per-100 rate), reused: no new input is read."""
+    return (r['x3pa_per_100'] or 0) * ((r['mp_v'] or 0.0) * lgpace.get(int(r['season']), 100.0) / 48.0) / 100.0
 
 CARRIED_REIN = 0.50   # recal_160: a ballot from ANOTHER season reinforces rim protection at half rate
 CARRIED_UNLOCK = 1 - (1 - CARRIED_REIN) / 2   # recal_165: = 0.75. The SAME carried-ballot discount,
@@ -295,7 +315,48 @@ def score_season(r, P):
         p3 = r['x3p_pct']
         if r['season'] in SHORTLINE and p3: p3 = p3*0.93
         vol = P_3pa_mod((r['x3pa_per_100'] or 0) * era_mult(r['season']))   # volume is ALWAYS era-adjusted
-        acc = P_3pp_mod(p3) if (r['x3pa_per_100'] or 0)>=2 else 0.35*P['ft_pct'](r['ft_pct'])
+        # recal_207 (HIS RULING, verbatim: "Why does 2016 Parker have accuracy percentile 16 when he
+        # is shooting 40+% from 3?", amended "I want it fixed, mid 40s to 50s is fine for Parker '16").
+        # THE ACCURACY LEG'S DOOR BECOMES A RAMP — recal_185's move, applied to the OTHER hard step in
+        # this composite. recal_185 ramped the DEADEYE gate from below and left this one standing.
+        # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Tony Parker '16 shot 27 of 65 from three,
+        # .415, over 1,980 minutes in 72 games — the 92nd percentile of the modern pool's accuracy —
+        # and his accuracy leg read 0.155, the 16th percentile, because 65 attempts over 1,980 minutes
+        # is 1.7 3PA per 100 possessions and the line above was 2. His percentage was never read. What
+        # the leg reported instead was 0.35 x his FREE-THROW percentile (.760, p44) — a number that is
+        # not three-point accuracy, does not contain a three-point shot, and was worse for him than
+        # simply not knowing. 3pt 29 (pre-smooth 16), OFF 65.
+        # WHY A RATE IS THE WRONG QUESTION TO ASK OF AN ACCURACY. The leg has exactly one thing to
+        # decide: is this percentage standing on enough shots to mean something. That is a COUNT, and
+        # the file already builds the count (recal_78, recal_202). A rate gate answers a different
+        # question — how large a share of his offence the shot was — and the VOLUME leg is already the
+        # whole of that answer: Parker's vol is 0.189 and stays 0.189. Charging the same low rate a
+        # second time inside the accuracy term is the same fact counted twice, and at the extreme it
+        # inverts: Michael Jordan '89 (98 attempts, .276) and Tony Parker '16 (65 attempts, .415) both
+        # fell under the line, and the FT stand-in ranked JORDAN'S three-point accuracy ABOVE PARKER'S.
+        # THE SHAPE. The stand-in stays exactly what it was and stays whole at the bottom; the measured
+        # percentile is blended in against the sample behind it, saturating at ACC_CNT_FULL = 49.6
+        # attempts (derived above from the gate's own arithmetic — nothing fitted). So:
+        #   - a guard at 0.3 3PA/100 on 6 attempts keeps 0.88 of the stand-in and is unchanged;
+        #   - 3 for 6 cannot buy an elite accuracy percentile, which is what the stand-in exists to stop;
+        #   - a real sample is read whole, whether it arrived over 1,700 minutes or 3,200.
+        # NO NEW CLIFF, AND THE OLD ONE SHRINKS. Above 2 3PA/100 the expression is byte-identical, and
+        # below it the ramp can only move acc TOWARD the value the branch above would have returned and
+        # never past it — so the step at the line is strictly smaller than the step this round found
+        # there (recal_43's rule), and it is zero for any card whose sample clears the foot.
+        # THE CLASS THAT FALLS, NAMED. 1,880 cards lose 3pt and 720 gain. The losers are the men the
+        # stand-in FLATTERED: a good free-throw shooter who took threes badly. Michael Jordan '85/'87/'88
+        # (7 of 53, 12 of 66) 21 -> 12, Jordan '89 30 -> 23, Larry Bird '82/'83 (22 of 77, .286) 28 -> 15.
+        # Those are readings of shots they actually took. The winners are the 1980s and the low-rate
+        # modern bigs: John Stockton '90 (47 of 113, .416) 25 -> 59, Detlef Schrempf '87 (33 of 69,
+        # .478) 19 -> 70, Andrew Toney '82 (25 of 59) 21 -> 58.
+        _stand3 = 0.35*P['ft_pct'](r['ft_pct'])   # the FT touch-prior, unchanged and whole at zero attempts
+        _accw = 1.0
+        if (r['x3pa_per_100'] or 0) >= 2:   acc = P_3pp_mod(p3)
+        elif p3 is None:                    acc = _stand3            # no three attempted: nothing to read
+        else:
+            _accw = min(1.0, _att3_count(r) / ACC_CNT_FULL)
+            acc = _stand3 + _accw*(P_3pp_mod(p3) - _stand3)
         # GUNNER path: volume-first blend (chucker-gated)
         gun = WEIGHTS['OUT']['x3pa_rate']*vol + WEIGHTS['OUT']['x3p_pct']*acc
         gate = 1.0
@@ -718,7 +779,10 @@ def score_season(r, P):
     # provenance: which OUT path won, and the raw defensive components (display only)
     path = 2 if (r['x3pa_per_100'] or 0) < 2 else (1 if eye > gun else 0)
     BRK = dict(
-        out=[path, r['x3pa_per_100'], era_mult(r['season']), r['x3p_pct'], round(vol, 3), round(acc, 3), round(gate, 3)],
+        # recal_207 appends the accuracy leg's sample weight at index 7 (1.0 for every card whose
+        # percentage is read whole, which is every card the old gate admitted).
+        out=[path, r['x3pa_per_100'], era_mult(r['season']), r['x3p_pct'], round(vol, 3), round(acc, 3), round(gate, 3),
+             round(_accw, 3)],
         idc=[r['blk'], r['ht'], r['dbpm'], round(r['drep'], 3),
              (TRACKING.get((r['season'], 'Less Than 6Ft'), {}).get(_nrm(r['name'])) or (None,))[0]],
         _vf=_vote_factor, _cw=_cw175, _pr=_pr201,
