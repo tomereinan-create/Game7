@@ -277,7 +277,14 @@ describe('player data (stats-only doctrine)', () => {
     // perdef recals, and r54 is the round that finally names why: a small guard's relative edge in
     // the voted band WAS the bug — the height factor paid guards full credit while it taxed every
     // wing. His votes still carry (D 90); the anchor records the corrected class.
-    near("Rajon Rondo '09", 60, 85) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
+    // recal_203 RE-BASES THE O HALF OF THIS CONTROL, 60 -> 70, and the card is the round's own
+    // archetype rather than collateral: Rondo '09 is volume 33 / efficiency 44 against Jason Kidd
+    // '99's 38 / 44, i.e. the SAME card on the two bars the round moved. recal_109's passer floor
+    // was a flat 0.5 paid to every distributor in the class, including one carrying a real scoring
+    // load; it now rises to 1.0 across the class's own p10 -> p25 of volume, and Rondo '09 (8.2
+    // assists, 11.9 points, .534 true shooting, BPM 3.5) reads 63 -> 70. The D half is untouched at
+    // 85 — the round moves ZERO defensive scores and ZERO attributes.
+    near("Rajon Rondo '09", 70, 85) // spec said 65 with Rondo graded as a big; as a lifetime guard his All-D perdef carries (Payton fix)
     near("Gary Payton '96", 77, 88) // the Payton fix: a lifetime guard is never a big
     // recal_95 MOVED THIS FLOOR, 97 -> 96, and it is one card and one point. The pool's OVR summit
     // was Giannis '25 alone at 97; grading the no-vote rim ceiling by blocks AND DBPM (his ruling)

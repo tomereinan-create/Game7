@@ -727,6 +727,22 @@ export const DEFAULT_TACTICS: Tactics = {
  * per-branch figures (186: 3.66; 187: 3.59; 188: 3.76). hunt broke on the BLIND edge (-0.11 at 3.40): 447 no-vote bigs
  * lost rim protection and 188 rebounding forwards lost defence, so a blind hunt call costs less. 3.90 overshoots the oracle
  * (+0.42), 3.72 sits exactly on it (+0.50); hunt 3.65 (blind -0.32, oracle +0.53) — a NARROW window. The others held.
+ * recal_203 paid recal_109's passer floor at the man's own scoring load: 684 o_ovrs and 569 OVRs moved, EVERY ONE
+ * UP, so a whole class of lead distributors crossed or climbed inside the harness's ovr>=55 sample and the fives it
+ * draws score better. TWO taxes broke, and they are the two this ledger keeps naming. HUNT went one thousandth
+ * under the BLIND ceiling (-0.2992 at 3.65 against -0.30, oracle a healthy +0.52) — the usual shape for an
+ * OFFENSIVE round that lifts the pool: stronger fives, so a blind mismatch call costs less and the tax comes UP.
+ * Swept from main's constants: 3.650 (blind -0.2992) / 3.651 (-0.3001, the ceiling exactly) / 3.660 (-0.3075) /
+ * 3.680 (-0.3239) / 3.685 (oracle +0.5002, the floor exactly) / 3.686 (+0.4997, under) / 3.700 (+0.4933) —
+ * feasible about 3.651 to 3.685, a VERY narrow 0.034, true midpoint by r126's rule: 3.65 -> 3.668 (blind -0.3140,
+ * oracle +0.5080; 0.014 and 0.008 of room either side). CRASH OFF GLASS broke on the ORACLE edge (+0.4540 at 0.28
+ * against the +0.50 floor), the same edge and the same cause as recal_126's break — its benefit reads `orb`, an
+ * attribute this round did not touch at all, off a pool the round reshuffled. Swept 0.280 (+0.4540) / 0.100
+ * (+0.4991) / 0.096 (+0.5001, the floor exactly) / 0.000 (+0.5263) / -0.400 (+0.6380) / -0.620 (blind -0.3024) /
+ * -0.624 (-0.2999, the ceiling passed) / -0.800 (-0.1892) — feasible about -0.623 to 0.0965, whose true midpoint
+ * is NEGATIVE (-0.263), so recal_117's rule stands and the value is the midpoint of the POSITIVE half:
+ * 0.28 -> 0.048 (blind -0.7072, oracle +0.5131; 0.213 and 0.013 of room). The six others held their bands
+ * untouched. All nine pass. hunt's thirteenth move on this ledger.
  */
 export const TAX = {
   scorer: 0.55,
@@ -734,8 +750,8 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.65,
-  crashOff: 0.28,
+  hunt: 3.668,
+  crashOff: 0.048,
   crashDef: 0.60,
 }
 

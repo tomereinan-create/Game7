@@ -1,0 +1,414 @@
+{
+ "round": 203,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Jason Kidd '99 OFF 64 -> target 74 +-3 and Jason Kidd '02 OFF 70 -> target 75 +-3",
+ "title": "recal_109's ELITE-PASSER FLOOR IS FOR A PURE NON-SCORER AND IT WAS BEING PAID TO EVERYONE — the half-floor now rises to 1.0 across the class's own p10 -> p25 of volume (16 -> PD_E_V_FULL 30), so a lead distributor who also carries a scoring load stops being charged a conversion penalty the standard path has already taken twice",
+ "subject": "Jason Kidd '99",
+ "scale": "off",
+ "target": 74,
+ "tol": 3,
+ "before": 64,
+ "after": 71,
+ "pipeline_version": 203,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_E_V_FOOT = 16\\.0",
+   "label": "THE WHOLE ROUND, ONE CONSTANT — the floor's own foot, the passer class's TENTH percentile of volume",
+   "note": "measured on the 1,235 cards inside `_gpv * _gv > 0`: p5 10, p10 16.0, p20 26, p25 30.0, p50 52, p75 74. recal_184's own comment already records this distribution ('p10 16, p20 26, p50 52')"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_fl = PD_E_FLOOR \\+ \\(1\\.0 - PD_E_FLOOR\\) \\* min\\(1\\.0, max\\(0\\.0,",
+   "label": "the flat 0.5 floor becomes a ramp in the man's own scoring load",
+   "note": "`_ge = PD_E_FLOOR + (1-PD_E_FLOOR)*_gel*_gev` -> `_fl = PD_E_FLOOR + (1-PD_E_FLOOR)*ramp(volume, 16 -> 30)` then `_ge = _fl + (1-_fl)*_gel*_gev`. At volume <= 16 this is BYTE-IDENTICAL to recal_184's line"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_E_LO, PD_E_HI, PD_E_FLOOR = 43\\.0, 78\\.0, 0\\.5",
+   "label": "recal_176's efficiency ramp and recal_109's own floor VALUE, both untouched",
+   "note": "the class's median 43 to its p90 78, and the half-floor 0.5. The round changes WHO is paid the floor whole, not what the floor is worth or where the ramp sits"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_E_V_FULL = 30\\.0",
+   "label": "recal_184's own line is the ramp's TOP — the class's own lower quartile of volume, reused rather than invented",
+   "note": "the same constant that saturates recal_184's dock on the lift now saturates the floor's rise; no new top constant"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gev = min\\(1\\.0, max\\(0\\.0, a\\['volume'\\] / PD_E_V_FULL\\)\\)",
+   "label": "recal_184's dock on the LIFT, untouched and still multiplying above the floor"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_V_LO, PD_V_HI = 10\\.0, 93\\.0",
+   "label": "recal_117's VOLUME GATE, NOT TOUCHED — the half that makes the stars unreachable",
+   "note": "Harden '19, LeBron '13, Luka '23, Westbrook '15, Curry '16, SGA '25 all sit at gate 0.00 and move by EXACTLY zero. Opening this gate is what reaching 74 would need, and John Stockton '90 forbids it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_PV_LO, PD_PV_HI = 70\\.0, 85\\.0",
+   "label": "recal_117's playvol gate, untouched — the class is not widened by a card"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PD_MIN_FULL = 34\\.7",
+   "label": "recal_130's second-payment minute line, untouched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_pd = 0\\.245 \\* a\\['playvol'\\] \\* _gpv \\* _gv \\* _ge \\* _gl",
+   "label": "the term's SIZE, 0.245, untouched — it is fixed by his own Stockton '97 cap and this round does not spend it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_90's band anchors, NOT re-derived",
+   "note": "every mover is far below the 93 knee (the largest lands at OFF 74) and nothing above the knee moved by a thousandth"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.668,",
+   "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke on the BLIND edge by one thousandth (-0.2992 at 3.65)",
+   "note": "feasible 3.651 (blind -0.3001) to 3.685 (oracle +0.5002), true midpoint by r126's rule: 3.65 -> 3.668"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.048,",
+   "label": "crash off glass re-ratified on the ORACLE edge (+0.4540 at 0.28)",
+   "note": "feasible about -0.623 to 0.0965, true midpoint NEGATIVE, so recal_117's rule gives the midpoint of the positive half: 0.28 -> 0.048"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "playmaker: 1\\.10,",
+   "label": "playmaker HELD at main's constant, read first and unmoved"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.60,",
+   "label": "crash def glass HELD at main's constant (blind -0.53, oracle +0.52)"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jason Kidd '02",
+   "scale": "off",
+   "op": "~",
+   "value": 73,
+   "tol": 3,
+   "label": "SUBJECT 2 (target 75 +-3, lands 73). MVP runner-up at 14.7/7.3/9.9, BPM 4.5; volume 63 / efficiency 33 / playvol 96, gate 0.36 x eff factor 0.50 -> 0.36 x 1.00. 70 -> 73"
+  },
+  {
+   "card": "Jason Kidd '02",
+   "scale": "ovr",
+   "op": "~",
+   "value": 83,
+   "tol": 1,
+   "label": "his OVR follows, 80 -> 83, AND THE CAP STILL BINDS: the blend reads 0.5 x 73 + 0.5 x 95 = 84 and recal_93/99's offence cap max(o+10, 0.85 x 95) = 83 clips it. His cap ruling stands untouched"
+  },
+  {
+   "card": "Jason Kidd '99",
+   "scale": "ovr",
+   "op": "~",
+   "value": 81,
+   "tol": 1,
+   "label": "78 -> 81, again with the cap binding (blend 82, cap max(81, 79.05) = 81)"
+  },
+  {
+   "card": "Mark Jackson '98",
+   "scale": "off",
+   "op": "==",
+   "value": 52,
+   "label": "THE BRACKET THE RULING NAMED, AND IT IS BYTE-IDENTICAL. Pinned 55 +-3 at volume 12 — under the ramp's foot, so he is paid recal_109's floor whole exactly as before. A flat floor raise cannot do this: at PD_E_FLOOR 0.9 he reads 60 and leaves his band"
+  },
+  {
+   "card": "Mark Jackson '99",
+   "scale": "off",
+   "op": "==",
+   "value": 52,
+   "label": "volume 10, byte-identical (pinned 54 +-3)"
+  },
+  {
+   "card": "Mark Jackson '00",
+   "scale": "off",
+   "op": "==",
+   "value": 57,
+   "label": "volume 10, byte-identical (pinned 58 +-3)"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "==",
+   "value": 85,
+   "label": "THE WALL, AND THE WHOLE FRONTIER. Pinned 84 +-3, reads 85, and is volume 36 to Kidd '99's 38 — the two cards the VOLUME GATE cannot tell apart. Byte-identical here because his efficiency factor was already 1.00 (efficiency 94), which is exactly why an efficiency-side change is the only one available"
+  },
+  {
+   "card": "Steve Nash '05",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "recal_109's own subject, efficiency 96: byte-identical at 90 — a floor can only raise a factor toward a ceiling he already sits on"
+  },
+  {
+   "card": "Kevin Johnson '89",
+   "scale": "off",
+   "op": "~",
+   "value": 81,
+   "tol": 3,
+   "label": "recal_176's subject, efficiency 79 (his _gel is already 1.00): byte-identical at 81"
+  },
+  {
+   "card": "Kevin Johnson '92",
+   "scale": "off",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "efficiency 76, _gel 0.94: 82, unmoved"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "efficiency 92: byte-identical at 92"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "efficiency 99: byte-identical at 93"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "recal_176's pin, volume 31 — one point over the ramp's top, so his floor is whole and he is unmoved at 86"
+  },
+  {
+   "card": "John Stockton '97",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "volume 23, inside the ramp: 86 -> 87, and recal_126's ORDER over '01 (86) is kept with a point to spare"
+  },
+  {
+   "card": "José Calderón '09",
+   "scale": "off",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "recal_184's own subject and the COST of this round, volume 19: 81 -> 82, inside his 79 +-3 at the edge he already sat on. The floor's rise between 16 and 30 partly offsets recal_184's dock on the lift"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "volume 99 — recal_117's gate pays him nothing, so nothing here can reach him"
+  },
+  {
+   "card": "Luka Dončić '23",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "the same, unmoved"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "the same, unmoved"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 2,
+   "label": "recal_121's pin: unmoved"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "the summit is outside this term entirely"
+  },
+  {
+   "card": "Jason Kidd '99",
+   "scale": "def",
+   "op": "==",
+   "value": 93,
+   "label": "DEF MOVES ON ZERO OF 10,000 CARDS — this is an o_score-only round and d_score is untouched"
+  },
+  {
+   "card": "Jason Kidd '99",
+   "scale": "attr:efficiency",
+   "op": "==",
+   "value": 44,
+   "label": "and NO ATTRIBUTE MOVES: build_ratings.py is untouched by the round (it was re-run only for the version stamp)"
+  },
+  {
+   "five": [
+    "Stephen Curry '17",
+    "Klay Thompson '17",
+    "Kevin Durant '17",
+    "Draymond Green '17",
+    "Zaza Pachulia '17"
+   ],
+   "scale": "team:off",
+   "op": ">=",
+   "value": 90,
+   "label": "the Warriors '17 dial: team offence is computed from ATTRIBUTES, which this round does not move, so every team pin is byte-identical"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Jason Kidd '99",
+   "below": "Mark Jackson '98",
+   "label": "the bracket the ruling named, held with room: 71 against a byte-identical 52"
+  },
+  {
+   "scale": "off",
+   "above": "Jason Kidd '02",
+   "below": "Jason Kidd '99",
+   "label": "the two subjects in the order their seasons ask for: 73 against 71, where they were 70 against 64"
+  },
+  {
+   "scale": "off",
+   "above": "John Stockton '97",
+   "below": "John Stockton '01",
+   "label": "recal_126's standing order, kept: 87 against 86"
+  },
+  {
+   "scale": "off",
+   "above": "John Stockton '90",
+   "below": "Jason Kidd '99",
+   "label": "the wall stays above the subject: 85 against 71"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '90",
+   "below": "Steve Nash '05",
+   "label": "two untouched cards at the top of the class, 93 against 90 — the round changes nothing above the ramp"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 684,
+  "max_abs": 8,
+  "top": [
+   [
+    "Rajon Rondo '10",
+    65,
+    73
+   ],
+   [
+    "Jason Kidd '07",
+    63,
+    71
+   ],
+   [
+    "Mookie Blaylock '93",
+    57,
+    65
+   ],
+   [
+    "Rajon Rondo '12",
+    55,
+    63
+   ],
+   [
+    "Mookie Blaylock '94",
+    62,
+    69
+   ],
+   [
+    "Mark Jackson '89",
+    57,
+    64
+   ],
+   [
+    "Jason Kidd '06",
+    67,
+    74
+   ],
+   [
+    "Jason Kidd '99",
+    64,
+    71
+   ],
+   [
+    "Rajon Rondo '09",
+    63,
+    70
+   ],
+   [
+    "Michael Ray Richardson '80",
+    58,
+    65
+   ],
+   [
+    "Ricky Rubio '17",
+    66,
+    73
+   ],
+   [
+    "Brevin Knight '06",
+    60,
+    67
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "BOTH SUBJECTS LAND AT THE CEILING OF WHAT THIS LEVER CAN REACH, AND THE CEILING IS ARITHMETIC. The efficiency factor cannot exceed 1.00, so Jason Kidd '99's whole passer term is capped at 0.245 x playvol 94 x his gate 0.6627 = 15.26, his o_score at 76.51 and his OFF at 71 — the TOP of what any efficiency-side change can give him, and the bottom edge of 74 +-3. Kidd '02 is capped the same way at 73 against 75 +-3. A later round that wants their centres must open recal_117's VOLUME GATE, and that is where the conflict is: John Stockton '90 is volume 36 to Kidd '99's 38, the gate reads nothing else that separates them, he is pinned 84 +-3 and already reads 85. Every widening measured that lifts Kidd by three lifts Stockton by five or more. The stopping pin is John Stockton '90.",
+  "THE RANK GRIEVANCE IS ONLY HALF CURED AND THE NUMBER SAYS SO. The ruling's case was that Kidd '99 read ELEVENTH among 1999 point guards, under Nick Van Exel '99 (67), Rod Strickland '99 (68), Terrell Brandon '99 (72) and Stephon Marbury '99 (77). He now reads NINTH, because the change lifts his whole class with him: Van Exel '99 67 -> 71 (LEVEL with the subject, not below him), Strickland '99 68 -> 72, Brandon '99 72 -> 75, Marbury '99 77 -> 79. Kidd '02 moves 13th -> 12th among 2002 point guards (Van Exel '02 74 -> 75, Andre Miller '02 78 -> 81). Those men are inside the same term on the same bars — Strickland '99 is playvol 96 to Kidd's 94 — so no formula change inside this term can separate them; what separates Kidd from them on the card is his DEF 93, which this round does not touch. If he wants Kidd ABOVE that group on OFF rather than level with it, the lever is the o_score weights themselves (volume 0.26 against playvol 0.19), which recal_91 and recal_98 both measured and both DECLINED.",
+  "ABOVE VOLUME 30 THE EFFICIENCY FACTOR IS NOW INERT. 929 of the 1,235 cards in this term's class sit at or above PD_E_V_FULL, so for three quarters of the class the term is creation x gate x load and recal_176's PD_E_LO / PD_E_HI ramp decides nothing. That is the doctrine's own consequence — a conversion percentile is read at the load that produced it, and a man carrying the class's own quarter-load has already had his conversion priced by the standard path (efficiency at 0.11 and the signature term at 0.08 x max(volume, 50, hub load) x efficiency) — but it is a large structural claim and a later round reopening the factor should start from it.",
+  "recal_184's SUBJECT MOVES ONE POINT THE WRONG WAY. José Calderón '09 (volume 19) reads 81 -> 82 against his 79 +-3, because between 16 and 30 the floor's rise partly offsets the dock recal_184 put on the lift. He is still inside his band, at the same edge he already occupied before this round. John Stockton '97 (volume 23) 86 -> 87 for the same reason and keeps recal_126's order over '01.",
+  "TWO TAXES RE-RATIFIED, AND BOTH ARE THE PAIR THIS LEDGER KEEPS NAMING. 684 OFF and 569 OVR moved, every one UP, so the harness's ovr>=55 sample got stronger. hunt broke on the BLIND edge by one thousandth (-0.2992 at 3.65): feasible 3.651 to 3.685, a VERY narrow 0.034, true midpoint 3.668. crash off glass broke on the ORACLE edge (+0.4540 at 0.28): feasible about -0.623 to 0.0965, true midpoint NEGATIVE, so recal_117's rule gives the positive half's midpoint, 0.048. The six others held their bands. All nine pass.",
+  "ONE SPEC CONTROL RE-BASED IN tests/engine.test.ts. `near(\"Rajon Rondo '09\", 60, 85)` becomes `near(..., 70, 85)`: Rondo '09 is volume 33 / efficiency 44 against Kidd '99's 38 / 44, i.e. the SAME card on the two bars this round reads, so he is the round's archetype and not collateral. The D half is untouched.",
+  "ROUNDS 196 / 198 / 200 AND 204 / 205 ARE LANDING IN PARALLEL AND THIS ONE IS DISJOINT FROM THEM BY CONSTRUCTION. This round is one constant and one line inside recal_109's elite-passer block; 196 and 198 own o_score's zone and signature terms and 200 owns a d_score band. DEF moved on ZERO of 10,000 cards here and no attribute moved at all.",
+  "PIPELINE_VERSION is stamped 203 in both python files on this branch; per the doctrine of 2026-09-03 the integrator restamps the batch's highest round after ONE merged regeneration. build_ratings.py WAS re-run (for the stamp only) and no attribute moved, so data/provenance.json and public/provenance.json are BYTE-EQUAL to main and do not appear in the diff at all."
+ ],
+ "notes": [
+  "THE TWO CARDS, DECOMPOSED. Jason Kidd '99 led the league at 10.8 assists, scored 16.9 at 20.4% usage, made All-NBA 1st team at BPM 5.5 — second among 1999 point guards — and printed OFF 64. His card is volume 38 / efficiency 44 / playvol 94 / ballsec 54 / zones 37-44-41, and of his o_score of 69.10 the passer term was 7.85: gate 0.66 times an EFFICIENCY FACTOR OF 0.51. Jason Kidd '02 is the MVP runner-up at 14.7/7.3/9.9, BPM 4.5, volume 63 / efficiency 33 / playvol 96, and his term was 4.25 on a factor of 0.50 EXACTLY — the floor, with no lift at all, because efficiency 33 is below recal_176's foot of 43.",
+  "THE SCOUT'S SENTENCE IS THE DIAGNOSIS AND IT VERIFIES. 'The efficiency factor floors at 0.5 for every lead distributor at or below the class median while the volume gate halves it again for a passer who also scores.' Both halves are true on these cards and the FIRST is the one that can move: recal_109 cut the 0.5 floor for a man who takes almost no shots ('a pure non-scorer who is also inefficient still keeps half the term, because his ruling is about the ball he moves, not about his jumper') and located it on Mark Jackson '98, volume 12. It was then paid at the same 0.5 to a man at volume 38 and a man at volume 63, whose own shot the standard path has already priced twice — efficiency at 0.11, and the signature term at 0.08 x max(volume, 50, hub load) x efficiency.",
+  "THE CUT IS recal_184's OWN MEASUREMENT USED A SECOND TIME. recal_184 established the doctrine for this term — 'the lift ABOVE THE FLOOR is paid pro rata to the man's own scoring load' — up to PD_E_V_FULL, 'the class's OWN LOWER QUARTILE of volume... exactly 30.0 under every convention'. The floor itself was the one rate in the term still read at no load at all. It now rises from 0.5 to 1.0 across the SAME class's p10 -> p25, 16 -> 30, re-measured this round on the current pool (1,235 cards: p5 10, p10 16.0, p20 26, p25 30.0, p50 52, p75 74) and already written down in recal_184's own comment. No new arbitrary constant; recal_176's ramp, recal_109's floor value, recal_117's two gates, recal_130's minute line and the size 0.245 are all untouched.",
+  "WHY THE OBVIOUS FIX IS PROVABLY WRONG, MEASURED OVER THE WHOLE KNOB. Raising PD_E_FLOOR flat was swept 0.50 / 0.60 / 0.65 / 0.70 / 0.75 / 0.80 / 0.90 / 1.00 on the full pipeline: it pays Mark Jackson '98 MORE than it pays Kidd '99 at every setting, because Jackson's gate is 0.976 against Kidd's 0.663 and his playvol is 98 against 94. At 0.80 Kidd '99 is still 68 and Jackson is on his band's top edge at 58; at 0.90 all three Mark Jackson pins fail and Kidd '99 is 70; at 1.00 — the whole factor removed — Kidd reaches 71 and Jackson reads 62, seven outside. The flat floor cannot separate the two men the ruling's own bracket names. A volume-ramped floor separates them BY CONSTRUCTION: Jackson is under the foot and moves by exactly zero.",
+  "WHAT IT PROVABLY DOES NOT TOUCH, AND IT IS EVERY PIN THIS TERM HAS EVER BEEN CUT AGAINST. Every efficient distributor is byte-identical because his factor was ALREADY 1.00 — Stockton '90 (efficiency 94) 85, Nash '05 (96) 90, Kevin Johnson '89 (79) 81, '92 (76) 82, Billups '06 (92) 92, Magic '90 (99) 93. Every pure non-scorer is byte-identical because he is at or under the foot — Mark Jackson '98 (volume 12) 52, '99 (10) 52, '00 (10) 57, and 126 of the 1,235 class cards at volume <= 16. Every lead scorer is byte-identical because recal_117's gate already pays him nothing — Harden '19, LeBron '13, Luka '23, Westbrook '15, Curry '16, SGA '25, Jordan '89.",
+  "MEASURED BEFORE APPLYING, ON THE WHOLE POOL. 684 of 10,000 cards move on OFF, EVERY ONE OF THEM UP (a floor can only rise), max +8, and OVR follows on 569, max +5. DEF moves on ZERO cards and no attribute moves at all. The top 12 by OFF is identical name for name, no card enters or leaves it, OFF_TOP is not re-derived and nothing above the 93 knee moves. All 193 anchors pass, mean |error| 0.84.",
+  "THE CLASS IS FOUND BY THE TERM AND NOT BY A NAME. The largest movers are one archetype and read like it: Rajon Rondo '10 65 -> 73, Jason Kidd '07 63 -> 71, Mookie Blaylock '93 57 -> 65, Rajon Rondo '12 55 -> 63, Mookie Blaylock '94 62 -> 69, Mark Jackson '89 57 -> 64, Jason Kidd '06 67 -> 74, Rajon Rondo '09 63 -> 70, Michael Ray Richardson '80 58 -> 65, Ricky Rubio '17 66 -> 73, Brevin Knight '06 60 -> 67, Jamaal Tinsley '02 48 -> 55 — lead distributors who also carried a scoring load and converted it at or under the class median. Mark Jackson '89 (volume 38) rises while Mark Jackson '98 (volume 12) does not, which is the round's whole statement on one player."
+ ]
+}
