@@ -89,7 +89,12 @@ describe('the signature block', () => {
       // the block working as designed: an old rule always outranks a signature, and the 'takes no name
       // away' promise above is what proves it. His '08 is the same man on the same shelf, perdef 59.
       ["Pau Gasol '08", 'Paint scorer'],
-      ["Clyde Drexler '93", 'Microwave scorer'],
+      // Vince Carter '03, not Clyde Drexler '93: recal_196 (the era's third zone, pipeline 196) lifted every
+      // pre-1997 two-zone volume scorer, and Drexler '93 crossed OFF 77 -> 78 into the EXISTING 'Co-star' rule
+      // (o_ovr in [78, 90), d_ovr in [60, 85)) — which is the block working as designed, exactly as with
+      // Pau Gasol '05 above and Kevin Johnson '96 below: an old rule always outranks a signature. Carter '03
+      // is the same reading on a season the era ramp does not reach at all (volume 96, efficiency 49).
+      ["Vince Carter '03", 'Microwave scorer'],
       // De'Aaron Fox '19, not Kevin Johnson '96: recal_176 (the elite-passer re-cut, pipeline 176) lifted KJ '96's
       // offence into the star band, so the EXISTING 'Offensive superstar' rule now names him — which is the block
       // working as designed (a star rule always outranks a signature). Fox '19 sits at OFF 68, far from any star floor.

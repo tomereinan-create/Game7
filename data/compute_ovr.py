@@ -520,6 +520,100 @@ PD_V_LO, PD_V_HI = 10.0, 93.0      # recal_117's band, RE-CUT by recal_176 on th
 # mean -1.83, max -4 (LeBron James '26, a 41-year-old wing with a creation surplus of MINUS ONE);
 # DEF and every attribute move on ZERO, the big flag moves on ZERO, OVR follows on 10, max -3.
 # The top 12 by OFF and the top 12 by OVR are identical. All 178 anchors hold.
+# ====================== recal_196 — THE ERA'S THIRD ZONE (the class datum) ======================
+# HIS RULINGS, verbatim: "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin."
+# then "Even Hakeem and Kareem OFF is too low."
+#
+# WHAT WAS MEASURED FIRST, on the whole pool, before anything was changed. Take each season's
+# PRIMARY-OPTION CLASS — the cards with volume >= 85. That class is era-CONSTANT by construction,
+# because `volume` is a SEASON percentile in build_ratings (`Pvol` is built from that season's rows):
+# it holds 19 to 30 cards in every one of the 47 seasons and its mean volume is 91.0 +- 0.5 in all of
+# them. Its mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. Nine points, for the same job.
+#
+# The o_score's own terms say exactly where those nine points come from (class means, 1980-92 ->
+# 2017-26, in std units):
+#     volume       23.7 -> 23.8   FLAT   (a season percentile — this is what era-graded looks like)
+#     efficiency    6.2 ->  6.4   FLAT   (ts_rel's era leg; round 193 measured the same flatness)
+#     signature     4.1 ->  4.2   FLAT
+#     ballsec       8.2 ->  6.8   -1.4   (the 1980s are paid MORE here)
+#     orb           2.8 ->  2.2   -0.6   (and here)
+#     fouldraw      4.3 ->  6.4   +2.1
+#     playvol       8.4 -> 13.1   +4.7
+#     ZONE BLOCK   23.0 -> 27.4   +4.4   <- 0.22*z0 + 0.08*z1 + 0.05*z2
+# and inside the zone block the second-and-third slots carry half of it: 0.08*z1 + 0.05*z2 runs
+# 6.0 -> 8.3 while 0.22*z0 runs 17.2 -> 19.4. The class's THIRD ZONE is the whole story of that half:
+# its mean 3pt bar reads 18.1 in 1980 and 68.6 in 2026.
+#
+# THE DEFECT. The zone vector 0.22 / 0.08 / 0.05 describes a THREE-ZONE GAME. A 1980s primary option
+# played a two-zone game: the three-point line was one year old, and the pool's own season mean of
+# the 3pt bar is 15.1 in 1981 against 58.3 in 2025. His second zone was not his third option, it was
+# his diet's other half — and the vector pays it 0.08, the weight of a third option in a game that
+# has three. He is graded on a shot chart his league did not have.
+#
+# THE TERM. The weight the absent third zone cannot earn is transferred to the second, and it is
+# transferred on the part of the second zone that stands CLEAR of the third (z1 - z2): a card whose
+# third zone is as good as his second already played three zones and nothing moves for him. Magic
+# Johnson '90 (rim 70 / mid 60 / 3pt 60) is that card and he is byte-identical, which is why his
+# 93 +-1 pin survives a round that lifts his whole era. Four factors, no new number among them:
+#   ERA SHARE  — the pool's own season means of the 3pt bar, L3(y), ramped from the pool's MINIMUM
+#                season (15.08, 1981 — the league at the line's introduction) to its MEDIAN season
+#                (36.25, reached in 2004 — the season at which the third zone is the median league's
+#                third zone). 1.00 in 1982, 0.60 in 1990, 0.36 in 1994, 0.14 in 1995, 0 from 2003.
+#   CREATION   — recal_49's doctrine ("the dominance bonus counts SELF-CREATED paint work") applied
+#                to the second zone, over the POOL'S OWN lower quartile and median of playvol
+#                (27 -> 41). Moses Malone '82 (playvol 12, orb 98) is the card this is for: his
+#                second-zone looks come off the offensive glass, not off a chart he drew, and he
+#                earns none of the transfer — which is how his 86 +-1 pin holds untouched.
+#   LOAD       — recal_131's own scoring-load line, PZ_V_LO/PZ_V_HI (volume 55 -> 80). recal_130's
+#                rule: a rate paid twice is scaled twice. Every card below the foot is byte-identical.
+#   CLEARANCE  — saturated at the POOL'S OWN p95 of (z1 - z2), 52: past that the second zone IS the
+#                diet and the vector's first slot is already paying it. Without the saturation the
+#                term's largest payers are the two-zone monsters of 1980-84 (Adrian Dantley '84 reads
+#                z1 - z2 = 76) and they clear 99 while the named subjects are still short.
+# THE WEIGHT IS recal_107's TWO-LEVEL CONSTANT: the feasible window, swept on the whole pool against
+# every standing anchor, is [0.115, 0.145] — below 0.115 Kareem '80 and Gervin '80 are unreachable,
+# above 0.145 Hakeem '90's 73 +-1 goes and at 0.16 Ewing '90's 85 +-1 goes with it. 0.130 is the
+# MIDPOINT of that window, taken by recal_126's own rule; it sits one notch under the 0.14 that
+# `(0.22 - 0.08)` would have named, and every one of the six reachable subjects lands across the
+# whole window, so nothing in the round turns on the third decimal.
+#
+# WHAT IS NOT REACHED, and why it is not this file's number (the frontier, per subject):
+#   DOMINIQUE WILKINS '86 — asked 85 +-4, reads 76, and 81 is unreachable HERE. His zone pair is
+#     rim 60 / mid 56 for a 30.3-ppg scorer, so his clearance is 33 and there is nothing to transfer.
+#     He is dominated by Patrick Ewing '90 (85 +-1, zero room) on efficiency (44 v 87), rim (60 v 97)
+#     and mid (56 v 67) and leads him only on ballsec, and no monotone reweighting of the bars this
+#     file pays can open a 12-point gap between two cards in that order. Round 193's own ceiling
+#     proof has his answer: forcing rim = mid = 99 on the pre-1997 inference puts him at exactly 85.
+#     WILKINS IS A STATS-TO-RATINGS CARD; the zone INFERENCE is what holds him, not the weights.
+#   SCOTTIE PIPPEN '92 — asked 80 +-3, reads 75, frontier 76. Clearance 38 at a 1992 era share of
+#     0.53 and a scoring load of 72 (load factor 0.68): he would need the weight at 0.23, and
+#     Ewing '90 breaks at 0.16.
+# THE TWO HAKEEM PINS HE RELEASED ARE BOTH SPENT, and '93 is provably a blocker, not a casualty:
+# Hakeem '93 and Kareem '80 have the SAME clearance (58), the same creation factor and the same load,
+# so their credits stand in the fixed ratio 0.942*0.84 / 0.392 = 2.019 whatever the weight is — and
+# Kareem needs 4.542 std while Hakeem '93 may take at most 2.218, a ratio of 2.048. No weight and no
+# saturation reaches Kareem with that pin standing. Hakeem '94's own 88 +-1 (recal_51) is superseded
+# by this round's ruling on the same card.
+_L3 = {}
+for _p in players: _L3.setdefault(_p['peak_season'], []).append(_p['attrs']['3pt'])
+_L3 = {_y: sum(_v) / len(_v) for _y, _v in _L3.items()}
+def _pctl(vals, f):
+    _v = sorted(vals); _i = f * (len(_v) - 1); _lo = int(_i)
+    return _v[_lo] + (_v[min(_lo + 1, len(_v) - 1)] - _v[_lo]) * (_i - _lo)
+ERA3_FOOT, ERA3_FULL = min(_L3.values()), _pctl(list(_L3.values()), 0.5)
+ERA3 = {_y: min(1.0, max(0.0, (ERA3_FULL - _L3[_y]) / (ERA3_FULL - ERA3_FOOT))) for _y in _L3}
+Z2_CR_LO, Z2_CR_HI = (_pctl([_p['attrs']['playvol'] for _p in players], 0.25),
+                      _pctl([_p['attrs']['playvol'] for _p in players], 0.50))
+Z2_CLEAR = _pctl([max(0, sorted([_p['attrs']['3pt'], _p['attrs']['rim'], _p['attrs']['mid']],
+                                reverse=True)[1] - sorted([_p['attrs']['3pt'], _p['attrs']['rim'],
+                                _p['attrs']['mid']], reverse=True)[2]) for _p in players], 0.95)
+Z2_W = 0.130
+# recal_131's own scoring-load line, PZ_V_LO / PZ_V_HI, restated at module scope because the paint
+# floor assigns those two names LOCALLY inside o_score, further down than this term is paid.
+Z2_LD_LO, Z2_LD_HI = 55.0, 80.0
+if not _CARD:
+    print(f"era third zone: 3pt season means {ERA3_FOOT:.2f} (min) -> {ERA3_FULL:.2f} (median); "
+          f"creation {Z2_CR_LO:g}->{Z2_CR_HI:g}, clearance cap {Z2_CLEAR:g}, weight {Z2_W}")
 def _hub_shape_only(p):
     """recal_179: True when the ONLY thing making this card a big is is_big's MIDDLE shape clause,
     `rim >= 60 and 3pt < 40` — a shot diet. Called only for a card is_big already returned True for,
@@ -653,6 +747,27 @@ def o_score(p, trace=None):
         trace['load'] = dict(share=_load, mpg=_MPG.get(p['name']), foot=LOAD_FOOT, full=LOAD_FULL,
                              volume_raw=a['volume'], volume_paid=_vol,
                              playvol_raw=a['playvol'], playvol_paid=_pvol)
+    # THE ERA'S THIRD ZONE (recal_196). The whole argument, the measurement and the four factors are
+    # in the block above o_score. The vector's third slot is a three-zone game's third option; where
+    # the league had no third zone, that weight is transferred to the second zone's clearance over
+    # the third. Gated on the INFERRED-ZONE flag so the cut falls at the pipeline's own regime
+    # boundary (build_ratings measures rim/mid from 1997) and no card with a real shot chart moves:
+    # the era share is already down to 0.10 by 1997 and Karl Malone '99 — 90 +-2, reading 92 with
+    # zero room up — is the card that boundary protects.
+    _z2 = 0.0
+    if not a.get('rim_mid_measured') and ERA3.get(p.get('peak_season'), 0.0) > 0.0:
+        _e3 = ERA3[p['peak_season']]
+        _z2cr = min(1.0, max(0.0, (a['playvol'] - Z2_CR_LO) / (Z2_CR_HI - Z2_CR_LO)))
+        _z2ld = min(1.0, max(0.0, (a['volume'] - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
+        _z2 = Z2_W * _e3 * _z2cr * _z2ld * min(Z2_CLEAR, max(0.0, z[1] - z[2]))
+        std += _z2
+        if trace is not None:
+            trace['era_third_zone'] = dict(era=_e3, l3=_L3[p['peak_season']], foot=ERA3_FOOT,
+                                           full=ERA3_FULL, creation=_z2cr, load=_z2ld,
+                                           clearance=max(0.0, z[1] - z[2]), cap=Z2_CLEAR,
+                                           w=Z2_W, added=_z2)
+    elif trace is not None:
+        trace['era_third_zone'] = None
     # EVERY FLOOR IS DELETED (recal_37). Specialist, maestro and creator each REPLACED the sum for
     # whoever cleared a gate, so three scoring laws ran at once and a card's own law depended on a
     # threshold it happened to pass. (Their round lists four; this side never had a FINISHER floor.)
@@ -2387,6 +2502,17 @@ if _CARD:
     else:
         print('\nZONE-DOMINANCE BONUS — did NOT fire (no single weapon towering over the rest of the diet,'
               '\n  or the weapon is a midrange one, which recal_38 ruled is not the same threat)')
+    _e2 = _ot.get('era_third_zone')
+    if _e2:
+        print(f"ERA'S THIRD ZONE (recal_196) - his league's 3pt level {_e2['l3']:.1f} against the pool's "
+              f"own min {_e2['foot']:.1f} / median {_e2['full']:.1f}: era share {_e2['era']:.3f}")
+        print(f"  weight {_e2['w']} x era {_e2['era']:.3f} x creation {_e2['creation']:.3f} (playvol "
+              f"over the pool's own {Z2_CR_LO:g}->{Z2_CR_HI:g}) x load {_e2['load']:.3f} (recal_131's "
+              f"volume line) x clearance {min(_e2['cap'], _e2['clearance']):.0f} "
+              f"(z1-z2 {_e2['clearance']:.0f}, capped at the pool's own p95 {_e2['cap']:g}) = +{_e2['added']:.3f}")
+    elif 'era_third_zone' in _ot:
+        print("ERA'S THIRD ZONE (recal_196) - did NOT fire (his shot chart is MEASURED, or his league's "
+              "third zone was already the median league's)")
     _l = _ot.get('load')
     if _l:
         print(f"LOAD SHARE (recal_96) - {_l['mpg']} mpg against the {_l['full']:.0f}-minute full-load "

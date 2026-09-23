@@ -665,15 +665,6 @@
     "note": "post-97, measured — unchanged"
   },
   {
-    "card": "Hakeem Olajuwon '94",
-    "scale": "off",
-    "target": 88,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
-    "note": "vol 85+, ramp = 1.0 by construction"
-  },
-  {
     "card": "Joel Embiid '23",
     "scale": "off",
     "target": 95,
@@ -713,15 +704,6 @@
     "tol": 1,
     "round": 51,
     "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Hakeem Olajuwon '93",
-    "scale": "off",
-    "target": 88,
-    "tol": 1,
-    "round": 50,
-    "ruling": "the creation floor drops 0.55 -> 0.35",
-    "note": "87 at r50, then r52 lifted the inferred-season clamp"
   },
   {
     "card": "Shaquille O'Neal '02",
@@ -1890,5 +1872,59 @@
     "round": 199,
     "ruling": "his ballsec is too high. 3.5 tov for 28/4.6 is a lot",
     "note": "NO NUMBER WAS GIVEN — the orchestrator set 50 +-5 from his words, and the card landed at 53. The creation allowance (recal_79's 0.8 x AST% in the adjusted leg's denominator) was paid in full to a card at the 76th percentile of assist share: it carried him from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. The allowance's BENEFIT is now free up to 0.16 of rank and paid on the within-season percentile of assist share above that (CRE_FREE / CRE_FOOT / CRE_FULL in build_ratings.py), and the discounted leg is re-ranked so the season's level is held. Jordan '88 95, Westbrook '15 60, Harden '19 56, Carmelo '13 91, Kawhi '17 90 and LeBron '13 72 are byte-identical. His OFF is unchanged at 95; round 198 carries the OFF half of the card."
+  },
+  {
+    "card": "George Gervin '80",
+    "scale": "off",
+    "target": 93,
+    "tol": 3,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99). HIS FRONTIER: 90 sits on the bottom edge of the band and the round cannot do better - at a weight of 0.16 Ewing '90's 85 +-1 goes."
+  },
+  {
+    "card": "Clyde Drexler '88",
+    "scale": "off",
+    "target": 88,
+    "tol": 3,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99)."
+  },
+  {
+    "card": "Larry Bird '84",
+    "scale": "off",
+    "target": 91,
+    "tol": 3,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99)."
+  },
+  {
+    "card": "Michael Jordan '87",
+    "scale": "off",
+    "target": 96,
+    "tol": 2,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99)."
+  },
+  {
+    "card": "Hakeem Olajuwon '94",
+    "scale": "off",
+    "target": 92,
+    "tol": 3,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99). Supersedes recal_51's 88 +-1 on the same card."
+  },
+  {
+    "card": "Kareem Abdul-Jabbar '80",
+    "scale": "off",
+    "target": 90,
+    "tol": 3,
+    "round": 196,
+    "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+    "note": "THE ERA'S THIRD ZONE. Measured on the primary-option class (volume >= 85 - era-constant, because `volume` is a season percentile: 19-30 cards and mean volume 91.0 +-0.5 in all 47 seasons), the class's mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. The o_score's own terms locate the nine points: volume 23.7->23.8, efficiency 6.2->6.4 and the signature 4.1->4.2 are FLAT (they are season-graded), ballsec -1.4 and orb -0.6 run the other way, and the whole gap is playvol (8.4->13.1) plus the ZONE BLOCK (23.0->27.4), whose second-and-third slots carry half of it because the class's 3pt bar reads 18.1 in 1980 and 68.6 in 2026. The vector 0.22/0.08/0.05 is a THREE-ZONE game's vector; a 1980s primary option played two zones and his second was his diet's other half, not his third option. recal_196 transfers the absent third zone's weight to the second zone's CLEARANCE over the third (z1 - z2), at four factors with no new number among them: the era share (the pool's own season means of the 3pt bar, ramped from the pool's minimum season 15.08 to its median 36.25), recal_49's self-creation test over the pool's own playvol p25/p50 (27->41), recal_131's scoring-load line (volume 55->80), and a saturation at the pool's own p95 of z1 - z2 (52). The weight 0.130 is the MIDPOINT of the feasible window [0.115, 0.145] swept against every standing anchor. 705 cards move, every one of them pre-1997 and every one of them up, max +7; zero modern cards move; Magic Johnson '90 (rim 70 / mid 60 / 3pt 60 - a three-zone card already) is byte-identical and his 93 +-1 holds, as do Ewing '90 85 +-1 (85->86), Moses '82 86 +-1 (untouched, playvol 12 earns no creation share), Shaq '94/'95/'96 and Jordan '89 99 +-1 (98->99). HIS FRONTIER: 87 sits on the bottom edge of the band. He is held from below by volume 76 (usage 24.7 = p79 of 1980) and from above by Ewing '90 and by recal_50, which this round released."
   }
 ]

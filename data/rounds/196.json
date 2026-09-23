@@ -1,0 +1,201 @@
+{
+ "round": 196,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin. / Even Hakeem and Kareem OFF is too low.",
+ "title": "THE ERA'S THIRD ZONE — the zone vector 0.22/0.08/0.05 is a THREE-ZONE game's vector, and a league without a third zone has the absent slot's weight transferred to its second zone's clearance over the third; six of eight subjects land, Wilkins '86 and Pippen '92 are the frontier",
+ "subject": "Michael Jordan '87",
+ "scale": "off",
+ "target": 96,
+ "tol": 2,
+ "before": 92,
+ "after": 95,
+ "pipeline_version": 196,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_W = 0\\.130",
+   "label": "THE WEIGHT — the transferred third-zone weight, the MIDPOINT of the feasible window",
+   "note": "swept on the whole pool against every standing anchor: [0.115, 0.145]. Below 0.115 Kareem '80 and Gervin '80 are unreachable; above 0.145 Hakeem '90's 73 +-1 goes; at 0.16 Ewing '90's 85 +-1 goes with it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_z2 = Z2_W \\* _e3 \\* _z2cr \\* _z2ld \\* min\\(Z2_CLEAR, max\\(0\\.0, z\\[1\\] - z\\[2\\]\\)\\)",
+   "label": "THE TERM — era share x self-creation x scoring load x the second zone's clearance over the third",
+   "note": "paid on (z1 - z2), so a card whose third zone is as good as his second earns nothing: Magic Johnson '90 (rim 70 / mid 60 / 3pt 60) is byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ERA3_FOOT, ERA3_FULL = min\\(_L3\\.values\\(\\)\\), _pctl\\(list\\(_L3\\.values\\(\\)\\), 0\\.5\\)",
+   "label": "THE ERA RAMP IS MEASURED, NOT CHOSEN — the pool's own season means of the 3pt bar",
+   "note": "foot = the pool's MINIMUM season (15.08, 1981, the league at the line's introduction); full = its MEDIAN season (36.25, reached 2004). era share 1.00 in 1982, 0.60 in 1990, 0.36 in 1994, 0.14 in 1995, 0 from 2003"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_CR_LO, Z2_CR_HI = \\(_pctl\\(\\[_p\\['attrs'\\]\\['playvol'\\] for _p in players\\], 0\\.25\\),",
+   "label": "recal_49's SELF-CREATION test, over the pool's own playvol lower quartile and median (27 -> 41)",
+   "note": "Moses Malone '82 is the card this is for: playvol 12, orb 98 — his second-zone looks come off the glass, he earns none of the transfer, and his 86 +-1 is untouched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_LD_LO, Z2_LD_HI = 55\\.0, 80\\.0",
+   "label": "recal_131's own scoring-load line (PZ_V_LO / PZ_V_HI), restated at module scope",
+   "note": "recal_130's rule — a rate paid twice is scaled twice. Every card below volume 55 is byte-identical; Stockton '90 (36), Kevin Johnson '89 (49), Kerr '96 (8), Bullard '92 (30) and Maxwell '80 (27) never enter the term"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_CLEAR = _pctl\\(\\[max\\(0, sorted",
+   "label": "THE SATURATION — the pool's own p95 of (z1 - z2), 52",
+   "note": "past the p95 the second zone IS the diet and the vector's first slot is already paying it. Without it the term's largest payers are the two-zone monsters of 1980-84 (Adrian Dantley '84 reads z1 - z2 = 76) and they clear 99 while the named subjects are still short"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if not a\\.get\\('rim_mid_measured'\\) and ERA3\\.get\\(p\\.get\\('peak_season'\\), 0\\.0\\) > 0\\.0:",
+   "label": "GATED ON THE INFERRED-ZONE FLAG — the cut falls at the pipeline's own regime boundary",
+   "note": "build_ratings measures rim/mid from 1997. The era share is still 0.10 in 1997-99 and Karl Malone '99 — 90 +-2, reading 92 with zero room up — is the card that boundary protects. ZERO cards from 1997 on move"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "std = \\(0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\]",
+   "label": "the zone vector itself, UNTOUCHED — the round transfers weight, it does not re-weight the vector",
+   "note": "0.22 / 0.08 / 0.05 exactly as recal_24 left them; a card outside the term reads the same three products it did at v188"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_90's band anchors, NOT re-derived",
+   "note": "no COST under recal_90: the anchors stand, so no card above the knee is stretched differently than it was"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_tl_add = _gm \\* _ge \\* \\(0\\.22 - 0\\.08\\) \\* z\\[1\\] \\* _second",
+   "label": "recal_107's TWO-LEVEL premium — the existing term that already prices a second zone at the first zone's weight",
+   "note": "its (0.22 - 0.08) is the scale this round's 0.130 sits one notch under; it is gated on `is_big and volume < 55` and reaches no card in this round's class"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_create = 0\\.35 \\+ 0\\.65 \\* min\\(1\\.0, a\\['playvol'\\] / 50\\.0\\)",
+   "label": "recal_49's own self-creation factor inside the paint bonus, untouched and NOT reused verbatim",
+   "note": "with its 0.35 FLOOR the test is infeasible here: Ewing '90 (playvol 33) then takes 0.66 of the transfer against Kareem '80's (49) 0.98, a ratio of 1.27 where 2.17 is needed. The floor is right where it multiplies an attempt rate that is already self-created evidence; here the factor IS the test, so it runs to zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PIPELINE_VERSION = 196",
+   "label": "the round's stamp (the integrator re-stamps the batch's highest)"
+  }
+ ],
+ "expect": [
+  {"card": "Kareem Abdul-Jabbar '80", "scale": "off", "op": "~", "value": 87, "tol": 3,
+   "label": "SUBJECT (90 +-3) AND THE BINDING FRONTIER: 82 -> 87, the bottom edge of his band. era share 0.942 x creation 1.000 x load 0.840 x clearance 52 (z1 - z2 = 58, capped) = +5.347 of std"},
+  {"card": "George Gervin '80", "scale": "off", "op": "~", "value": 90, "tol": 3,
+   "label": "SUBJECT (93 +-3): 87 -> 90, the other bottom edge. mid 96 / rim 91 / 3pt 26 — clearance 65, capped to 52; his creation is 0.50 (playvol 34) and that is what keeps him off the middle of his band"},
+  {"card": "Clyde Drexler '88", "scale": "off", "op": "~", "value": 88, "tol": 3,
+   "label": "SUBJECT (88 +-3), dead on the number: 83 -> 88"},
+  {"card": "Larry Bird '84", "scale": "off", "op": "~", "value": 90, "tol": 3,
+   "label": "SUBJECT (91 +-3): 87 -> 90. mid 93 / rim 73 / 3pt 42 — his own third zone is real, so his clearance is only 31 and he takes the smallest transfer of the six"},
+  {"card": "Hakeem Olajuwon '94", "scale": "off", "op": "~", "value": 90, "tol": 3,
+   "label": "SUBJECT (92 +-3): 87 -> 90. Supersedes recal_51's 88 +-1 on the same card"},
+  {"card": "Dominique Wilkins '86", "scale": "off", "op": "~", "value": 76, "tol": 1,
+   "label": "SUBJECT NOT REACHED (85 +-4), frontier 76. rim 60 / mid 56 for a 30.3-ppg scorer: clearance 33 and nothing to transfer. HIS NUMBER IS IN build_ratings — round 193's own ceiling proof puts him at exactly 85 with rim = mid = 99"},
+  {"card": "Scottie Pippen '92", "scale": "off", "op": "~", "value": 75, "tol": 1,
+   "label": "SUBJECT NOT REACHED (80 +-3), frontier 76. clearance 38 at a 1992 era share of 0.53 and a scoring load of 72 (load 0.68): he needs the weight at 0.23 and Ewing '90 breaks at 0.16"},
+  {"card": "Patrick Ewing '90", "scale": "off", "op": "~", "value": 86, "tol": 1,
+   "label": "THE WALL, AND WHY THE WEIGHT STOPS WHERE IT DOES. 85 +-1, 85 -> 86 with 0.21 of raw left before he prints 87. Every subject's ceiling is his"},
+  {"card": "Magic Johnson '90", "scale": "off", "op": "==", "value": 93,
+   "label": "93 +-1, BYTE-IDENTICAL: rim 70 / mid 60 / 3pt 60 is a card that already played three zones, so his clearance is 0 and the transfer is 0"},
+  {"card": "Moses Malone '82", "scale": "off", "op": "==", "value": 85,
+   "label": "86 +-1, BYTE-IDENTICAL: playvol 12 and orb 98 — his second-zone looks are not his own creation, so recal_49's test pays him nothing. Without that factor he takes +7.84 of std and leaves his band"},
+  {"card": "Shaquille O'Neal '94", "scale": "off", "op": "~", "value": 93, "tol": 1},
+  {"card": "Shaquille O'Neal '95", "scale": "off", "op": "==", "value": 93},
+  {"card": "Shaquille O'Neal '96", "scale": "off", "op": "==", "value": 91},
+  {"card": "Michael Jordan '89", "scale": "off", "op": "~", "value": 99, "tol": 1,
+   "label": "99 +-1: 98 -> 99, still under the clamp"},
+  {"card": "John Stockton '90", "scale": "off", "op": "==", "value": 85,
+   "label": "84 +-3, BYTE-IDENTICAL — volume 36 is below recal_131's load foot, so he never enters the term"},
+  {"card": "Kevin Johnson '89", "scale": "off", "op": "==", "value": 81,
+   "label": "81 +-3, BYTE-IDENTICAL (volume 49)"},
+  {"card": "Kevin Johnson '92", "scale": "off", "op": "~", "value": 83, "tol": 3},
+  {"card": "Steve Kerr '96", "scale": "off", "op": "==", "value": 61,
+   "label": "62 +-1, BYTE-IDENTICAL (volume 8)"},
+  {"card": "Matt Bullard '92", "scale": "off", "op": "==", "value": 52},
+  {"card": "Cedric Maxwell '80", "scale": "off", "op": "==", "value": 66},
+  {"card": "Moses Malone '85", "scale": "off", "op": "==", "value": 78},
+  {"card": "Hakeem Olajuwon '90", "scale": "off", "op": "~", "value": 74, "tol": 1,
+   "label": "73 +-1 HELD (73 -> 74), one of the two pins Tomer released — it did not have to be spent"},
+  {"card": "Karl Malone '99", "scale": "off", "op": "==", "value": 92,
+   "label": "90 +-2 with zero room up, BYTE-IDENTICAL — his shot chart is MEASURED, so the inferred-zone gate keeps him out"},
+  {"card": "Reggie Miller '97", "scale": "off", "op": "==", "value": 87,
+   "label": "88 +-1, BYTE-IDENTICAL for the same reason"},
+  {"card": "Stephen Curry '16", "scale": "off", "op": "==", "value": 96,
+   "label": "ZERO cards from 1997 on move; the modern board is untouched name for name"},
+  {"card": "LeBron James '13", "scale": "off", "op": "==", "value": 98},
+  {"card": "Giannis Antetokounmpo '25", "scale": "off", "op": "==", "value": 99},
+  {"card": "Adrian Dantley '84", "scale": "off", "op": "~", "value": 96, "tol": 1,
+   "label": "THE LARGEST COLLATERAL AND THE REASON FOR THE SATURATION: 30.6 ppg on .652 TS, clearance 76 — the highest on the board. 92 -> 96 with the cap; 99 without it"},
+  {"card": "Kareem Abdul-Jabbar '81", "scale": "off", "op": "~", "value": 92, "tol": 1,
+   "label": "the biggest single move of the round, +7 — the subject's own next season, one point of era share higher and a full scoring load"}
+ ],
+ "order": [
+  {"scale": "off", "above": "Michael Jordan '89", "below": "Michael Jordan '87",
+   "label": "his own pinned peak still sits above the season this round lifted"},
+  {"scale": "off", "above": "Magic Johnson '86", "below": "Adrian Dantley '84",
+   "label": "the era's top is still its playmaker, not its volume scorer"},
+  {"scale": "off", "above": "Kareem Abdul-Jabbar '80", "below": "Dominique Wilkins '86"},
+  {"scale": "off", "above": "Michael Jordan '87", "below": "Clyde Drexler '88"},
+  {"scale": "off", "above": "Hakeem Olajuwon '94", "below": "Patrick Ewing '90"}
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 705,
+  "max_abs": 7,
+  "top": [
+   ["Alex English '81", 75, 82],
+   ["Kareem Abdul-Jabbar '81", 85, 92],
+   ["Alex English '82", 84, 90],
+   ["Alex English '83", 87, 93],
+   ["Alex English '84", 85, 91],
+   ["Alex English '85", 83, 89],
+   ["Andrew Toney '82", 77, 83],
+   ["Andrew Toney '83", 80, 86],
+   ["Bernard King '83", 85, 91],
+   ["David Thompson '81", 79, 85],
+   ["David Thompson '82", 67, 73],
+   ["George Gervin '81", 85, 91]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23"
+  ]
+ },
+ "cost": [
+  "TWO OF EIGHT SUBJECTS ARE NOT REACHED AND ONE OF THEM IS NOT THIS FILE'S NUMBER. Dominique Wilkins '86 asked 85 +-4 and reads 76; 81 is unreachable in compute_ovr. His zone pair is rim 60 / mid 56 for a 30.3-ppg scorer, so his second-zone clearance is 33 and there is nothing to transfer. He is dominated by Patrick Ewing '90 — pinned 85 +-1 with one point of room — on efficiency (44 v 87), rim (60 v 97) and mid (56 v 67), and leads him only on ballsec (95 v 62), volume (98 v 91) and orb (74 v 63); no monotone reweighting of the bars this file pays opens a twelve-point gap between two cards in that order, and ballsec's own era slope runs the WRONG way (the 1980s primary-option class averages 83.7 against 70.3 today). Round 193's ceiling proof already has his answer: forcing rim = mid = 99 on the pre-1997 inference puts him at exactly 85. WILKINS IS A STATS-TO-RATINGS CARD.",
+  "SCOTTIE PIPPEN '92 asked 80 +-3, reads 75, frontier 76. Clearance 38 at a 1992 era share of 0.525 and a scoring load of 72 (load factor 0.68): he needs the weight at about 0.23, and Ewing '90 leaves his band at 0.16. Raising his load factor by widening recal_131's line to 45 -> 70 reaches 77 for him but costs Hakeem '90 as well as '93 and puts Kevin Johnson '92 on his own edge; it was measured and not taken.",
+  "TWO PINS SPENT, BOTH OFFERED BY TOMER IN THE DISPATCH, AND ONLY ONE WAS NEEDED. Hakeem Olajuwon '93 (recal_50, 88 +-1) is a PROVEN blocker and not a casualty: he and Kareem '80 carry the same clearance (58), the same creation factor and the same load, so this term pays them in the fixed ratio 0.942*0.84 / 0.392 = 2.019 whatever its weight or saturation is — while Kareem needs 4.542 of std to clear his band and recal_50 may take at most 2.218, a ratio of 2.048. No parameterisation of the term reaches Kareem with that pin standing. Hakeem '94 (recal_51, 88 +-1) is superseded by Tomer's own ruling on the same card. HAKEEM '90 (recal_52, 73 +-1) WAS OFFERED AND IS NOT SPENT: he reads 74 and holds.",
+  "THE BAND ANCHORS ARE NOT RE-DERIVED. OFF_TOP stays at recal_90's 102.75 and DEF_TOP at recal_102's 104.25; the round's raw maximum is unchanged in the sense that matters (Michael Jordan '89 was already the pre-1997 summit and he was already above the knee), so no card above the knee is stretched differently than it was. DEF moves on ZERO of 10,000 cards and no attribute moves at all.",
+  "THE TWO TACTICS TAXES THAT FAIL (hunt, crash def glass) FAILED ON MAIN BEFORE THIS ROUND AND ARE THE INTEGRATOR'S SWEEP, NOT THIS ROUND'S. Per the standing rule the agent reports the status and does not re-sweep: 7 of 9 pass, hunt and crashDef fail their oracle edge. This is an OFFENSIVE round on pre-1997 cards only and the sampled fives are overwhelmingly modern.",
+  "data/build_ratings.py WAS RUN (the chain is the full one) but nothing in it changed except PIPELINE_VERSION, so public/provenance.json and every attribute are byte-identical to v188. The round is a compute_ovr round.",
+  "ROUND 191's LEAD-HANDLER'S FLOOR IS DISJOINT BY CONSTRUCTION: it adds a floor for guards, this round adds a term to the zone block keyed on the inferred-zone flag. The two do not touch the same expression and the integrator can fold both; if they land together the combined weight should be re-swept against Ewing '90, who is this round's wall with 0.21 of raw to spare."
+ ],
+ "notes": [
+  "THE MEASUREMENT THAT CAME FIRST, ON THE WHOLE POOL, BEFORE ANYTHING WAS CHANGED. Take each season's PRIMARY-OPTION CLASS: the cards with volume >= 85. That class is era-CONSTANT by construction, because `volume` is a SEASON percentile in build_ratings (Pvol is built from that season's rows) — it holds 19 to 30 cards in every one of the 47 seasons and its mean volume is 91.0 +-0.5 in all of them. Its mean OFF is 74.7 across 1980-92 and 83.8 across 2017-26. Nine points, for the same job.",
+  "THE o_score's OWN TERMS SAY WHERE THE NINE POINTS ARE (class means, 1980-92 -> 2017-26, in std units): volume 23.7 -> 23.8 FLAT, efficiency 6.2 -> 6.4 FLAT, signature 4.1 -> 4.2 FLAT — the three season-graded bars, and their flatness across 47 years is what era-graded looks like. ballsec 8.2 -> 6.8 and orb 2.8 -> 2.2 run the OTHER way (the 1980s are paid more). What is left is fouldraw +2.1, playvol 8.4 -> 13.1 (+4.7) and the ZONE BLOCK 23.0 -> 27.4 (+4.4). Inside the zone block the second-and-third slots carry half of the drift — 0.08*z1 + 0.05*z2 runs 6.0 -> 8.3 while 0.22*z0 runs 17.2 -> 19.4 — and the class's THIRD ZONE is the whole story of that half: its mean 3pt bar reads 18.1 in 1980 and 68.6 in 2026.",
+  "THE DEFECT, IN ONE SENTENCE. The zone vector 0.22 / 0.08 / 0.05 describes a THREE-ZONE GAME. A 1980s primary option played a two-zone game — the pool's own season mean of the 3pt bar is 15.1 in 1981 against 58.3 in 2025 — so his second zone was not his third option, it was his diet's other half, and the vector pays it 0.08, the weight of a third option in a game that has three. He is graded on a shot chart his league did not have.",
+  "WHY THE TRANSFER IS PAID ON (z1 - z2) AND NOT ON z1. The question the term asks is whether the card's diet actually had a third zone. Magic Johnson '90 (rim 70 / mid 60 / 3pt 60) says yes — he shot the three at the 1990 level of a modern wing — so his clearance is zero and he is byte-identical, which is how a round that lifts his entire era leaves his 93 +-1 alone. Larry Bird '84 (3pt 42) half says yes: clearance 31, the smallest transfer of the six subjects. George Gervin '80 (3pt 26 under a mid of 96) says no.",
+  "THE REJECTED SHAPES, ALL MEASURED ON THE FULL POOL AGAINST EVERY ANCHOR. (a) A UNIFORM ERA LIFT — re-centre playvol and the zone block on each season's own class level: it reaches six subjects but breaks Ewing '90, Magic '90, Shaq '94, Shaq '95, Moses '82 and Kevin Johnson '92, because a uniform shift cannot close a WITHIN-era gap and every one of those pins is a pre-1997 card. (b) THE ROLE-SPLIT READING — pay the scoring load more where the league split scoring from creation, k*max(0, volume - playvol): Ewing '90's gap is 58 and Wilkins '86's is 62, a ratio of 1.07 where 7.5 is needed; dead on arrival. (c) A USAGE-ADJUSTED EFFICIENCY with saturation at 99: reaches Wilkins by +1.43 of std where +7.68 is needed. (d) RAISING THE z[1] WEIGHT GLOBALLY: it lands six subjects at delta 0.029 and breaks nearly every modern +-1 pin, since the modern primary-option class averages z1 = 76. (e) recal_49's self-creation factor VERBATIM, with its 0.35 floor: infeasible by 5% — Ewing '90 then takes 0.66 of the transfer against Kareem '80's 0.98.",
+  "MEASURED BEFORE APPLYING, ON THE WHOLE POOL. 705 of 10,000 cards move on OFF, every one of them UP and every one of them pre-1997; histogram +1:278, +2:164, +3:119, +4:60, +5:61, +6:21, +7:2. OVR follows on 591. DEF moves on ZERO. ZERO cards from 1997 on move at all. The top 12 by OFF is identical name for name. The pre-1997 top 20 keeps Michael Jordan and Magic Johnson at its head; the entrants are Adrian Dantley '81/'82/'84, Julius Erving '80 and Michael Jordan '85.",
+  "THE CLASS IS FOUND BY THE TERM, NOT BY A NAME, AND IT READS LIKE THE RULING. The largest movers are Alex English '81-'85 (+6 to +7), Kareem Abdul-Jabbar '81 (+7), Bernard King '83, Mark Aguirre '84, Walter Davis '80-'83, George Gervin '81/'83, Andrew Toney '82/'83, David Thompson '81/'82, Julius Erving '83, Gus Williams '80, Rolando Blackman '86, Purvis Short '80/'81 — the two-zone volume scorers of 1980-86, which is the class Tomer named. The primary-option class's mean OFF goes 75.7 -> 78.7 in 1980, 73.1 -> 75.2 in 1986, 76.1 -> 78.1 in 1990, 75.1 -> 75.9 in 1994 and 79.1 -> 79.3 in 1996, against a modern class that does not move at all: the era ramp closes about a third of the nine-point gap and leaves the rest where the measurement could not justify moving it."
+ ]
+}

@@ -856,5 +856,29 @@
     "current": 83,
     "superseded_by": 197,
     "superseded_note": "RELEASED BY HIS AMENDMENT of 2026-09-23, verbatim: \"Calderón can be high 80s, not 99 tho\". recal_192 declined Isaiah Collier '26's ballsec band and recorded this pin as the second wall: the subject cannot be reached without lifting the creation-efficient class, and this card takes 2.4x the subject's move. His amendment re-rules the card on BALLSEC (87 +-3, recal_197) and releases the OFF value to follow it. It follows to 83 (ballsec 61 -> 85, ovr 72 -> 73). WHAT THE RELEASE COSTS, stated plainly: recal_184's complaint was that this card read four above Kevin Johnson '89 (pinned 81, unmoved here because his AST/TOV of 3.04 is mid-class and his ball security was never the fault); at 83 he reads two above him again. recal_184's TERM is untouched — compute_ovr.py was not edited this round — and the move is entirely the ballsec his amendment re-ruled."
+  },
+  {
+    "card": "Hakeem Olajuwon '93",
+    "scale": "off",
+    "target": 88,
+    "tol": 1,
+    "round": 50,
+    "ruling": "the creation floor drops 0.55 -> 0.35",
+    "note": "87 at r50, then r52 lifted the inferred-season clamp",
+    "current": 90,
+    "superseded_by": 196,
+    "superseded_note": "RELEASED BY TOMER on round 196 (\"these two Hakeem pins may be RELEASED if they block the rise\"), and '93 is a PROVEN blocker rather than a casualty: Hakeem '93 and Kareem '80 carry the same second-zone clearance (58), the same creation factor and the same scoring load, so recal_196's credit pays them in the fixed ratio 0.942*0.84/0.392 = 2.019 whatever its weight is - while Kareem needs 4.542 of std to clear his 90 +-3 band and this pin may take at most 2.218, a ratio of 2.048. No weight and no saturation reaches Kareem with recal_50 standing."
+  },
+  {
+    "card": "Hakeem Olajuwon '94",
+    "scale": "off",
+    "target": 88,
+    "tol": 1,
+    "round": 51,
+    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
+    "note": "vol 85+, ramp = 1.0 by construction",
+    "current": 90,
+    "superseded_by": 196,
+    "superseded_note": "SUPERSEDED by Tomer's own round-196 ruling on the SAME CARD: 'Even Hakeem and Kareem OFF is too low', Hakeem '94 92 +-3. recal_51's 88 +-1 and the new 92 +-3 overlap only at 89; the new ruling is the later one and stands."
   }
 ]
