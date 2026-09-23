@@ -1953,5 +1953,14 @@
     "round": 200,
     "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
     "note": "rimprot 83 / perdef 88 / drb 84 — 'too high' and, in his own grading, NOT 'by a lot'. Lead bar 88 is three quarters of the way up the ramp (t = 0.64), so he keeps most of the claim: 84.18 - 2.92 = 81.26, DEF 94 -> 92. The ramp's top is the class's p92 (92) and both neighbours were measured: at p90 (90) this card never leaves 93, and at p95 (94) he reads 91 but Bam '20 — ruled fine — falls to the bottom edge of his hold."
+  },
+  {
+    "card": "Jerry Stackhouse '07",
+    "scale": "attr:mid",
+    "target": 64,
+    "tol": 3,
+    "round": 195,
+    "ruling": "Jerry Stackhouse '07 is too high in OFF. Should be low 60s.",
+    "note": "78 -> 64, the measured frontier, accepted with \"195 push\"; the dispatch's mid 52 +-6 is DECLINED and recorded in data/rounds/195.json. A MIDRANGE ATTEMPT-RATE STANDING MAY NOT OUTRUN THE CONVERSION STANDING BEHIND IT: 6.40 midrange attempts per 100 (the 96th percentile of 2007) at 39.7% (the 46th percentile of the men who clear this file's own 2.5-per-100 in-zone gate) paid 0.65 x 0.958 = 0.623 of the bar before conversion was consulted, and at conversion percentile ZERO he would still have read 55. The rate percentile is now pulled toward the conversion percentile by a ramp on the gap between them (GAP_FOOT 0.28, GAP_FULL 0.48), read by the composite and by recal_145's premium (recal_166's one claim, one discount). THE FOOT IS THE FRONTIER: at 0.24 he reads 59, still one point outside the dispatch's band, and r89's Jaylen Brown '26 off 83 +-1 reads 80. The two cards are the same midrange card (Brown takes 6.54 per 100 at 44.3%, the 50th percentile of his own era's shooters) and his mid is his best zone, so no monotone reading of this file's inputs separates them. Every midrange specialist is byte-identical by construction - Jordan '98, Dirk '07, Rip Hamilton '06, Durant '14, Cassell '08, Chris Paul '21, and both standing mid pins, r145's Crawford '19 at 90 and r157's Seth Curry '23 at 95. 1,967 mid bars move, every one DOWN; 0 rim, 0 3pt, 0 DEF. His OFF is NOT pinned: it reads 67, and the ruling's low 60s is unreachable from this file because recal_126's deadeye floor stops his mid at 54 and r189 measured mid 50 -> OFF 63."
   }
 ]

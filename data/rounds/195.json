@@ -1,0 +1,294 @@
+{
+ "round": 195,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Jerry Stackhouse '07 is too high in OFF. Should be low 60s.\" — then, shown the whole ladder and the wall: \"195 push",
+ "title": "A MIDRANGE ATTEMPT-RATE STANDING MAY NOT OUTRUN THE CONVERSION STANDING BEHIND IT — the rate percentile is pulled toward the conversion percentile by a ramp on the gap between them, in the composite and in recal_145's premium. Jerry Stackhouse '07 mid 78 -> 64, OFF 69 -> 67. The dispatch's mid 52 +-6 is DECLINED and 0.28 is the frontier: at 0.24 he reads 59, still outside that band, and r89's Jaylen Brown '26 off 83 +-1 breaks",
+ "subject": "Jerry Stackhouse '07",
+ "scale": "attr:mid",
+ "target": 64,
+ "tol": 3,
+ "before": 78,
+ "after": 64,
+ "pipeline_version": 195,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "GAP_FOOT, GAP_FULL = 0\\.28, 0\\.48",
+   "label": "THE ROUND'S ONE CONSTANT PAIR — the gap ramp's foot and full, the frontier of the standing pins",
+   "note": "0.32 -> subject 69 and r89's Reggie Miller '97 off fails; 0.28 -> subject 64 and ALL 193 pass; 0.24 -> subject 59 and r89's Jaylen Brown '26 off fails by 2; 0.20 -> subject 55 and Brown fails by 3"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_gap  = max\\(0\\.0, _mvol - _mfg\\) if fmid is not None else 0\\.0",
+   "label": "THE GAP: how far the in-zone attempt-rate standing has run ahead of the conversion standing, both within-season percentiles of the same pool",
+   "note": "signed and floored at zero, so a card whose conversion keeps pace can never be lifted by this term; era-neutral by construction"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_mvolc = _mvol - _pull\\*_gap",
+   "label": "THE PULL: the rate standing is drawn toward the conversion standing, whole at GAP_FULL",
+   "note": "the subject's gap is 0.355, pull 0.375, so 0.958 becomes 0.825; a gap under 0.28 pulls nothing and the card is BYTE-IDENTICAL"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "mid = 0\\.65\\*\\(min\\(_mvolc, VOL_GATE \\+ \\(_mvolc - VOL_GATE\\)\\*_vload\\) if use_factor else _mvol\\) \\+ 0\\.35\\*_mfg",
+   "label": "THE COMPOSITE reads the corrected rate — and the INFERENCE TRAINING TARGET still reads the raw one, exactly as recal_157 left it",
+   "note": "was 0.65*(min(_mvol, ...)) + 0.35*P['midfg'](fmid); the else-branch is untouched, so every pre-1997 inferred card is byte-identical"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "mid = min\\(1\\.0, mid \\+ 0\\.07\\*_pload\\*max\\(0\\.0, \\(_mvolc - 0\\.70\\)/0\\.30\\)\\)",
+   "label": "recal_145's premium re-reads the SAME corrected rate — recal_166's 'one claim, one discount'",
+   "note": "was (P['midvol'](s10*fga100) - 0.70)/0.30, the undiscounted rate paid a second time, which is recal_117's double payment"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "VOL_FOOT, VOL_FULL, VOL_GATE = 12\\.0, 24\\.0, 0\\.77",
+   "label": "recal_157's load line, UNTOUCHED — and the reason no load lever could reach this card",
+   "note": "the subject plays 24.1 mpg and Jaylen Brown '26 34.4; both read load share 1.0000, so the term is blind to the difference"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "rim = min\\(1\\.0, rim \\+ 0\\.07\\*max\\(0\\.0, \\(P\\['rimvol'\\]\\(share\\*fga100\\*creation_factor\\(sh\\)\\) - 0\\.70\\)/0\\.30\\)\\)",
+   "label": "THE PAINT IS DELIBERATELY LEFT ALONE, for recal_145's reason word for word",
+   "note": "0 rim bars move; the objection reads across to the paint and this ruling did not name it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "DEYE_LO, DEYE_HI = 0\\.40, 0\\.90",
+   "label": "recal_126's deadeye floor and its diet ramp, UNTOUCHED — the hard bottom under every cut this round makes",
+   "note": "the floor is 0.85 on conversion, so a genuine midrange shooter is caught by it; the subject's own floor stops his mid at 54, which is why the dispatch's 52 could never be centred"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "fmid = \\(\\(f10a or 0\\)\\+\\(f10b or 0\\)\\)/ \\(2 if \\(f10a and f10b\\) else 1\\) or None",
+   "label": "recal_177's territory (attempt-weighted midrange FG% mean), HIS STANDING DECLINE, NOT REOPENED",
+   "note": "it would have RAISED this subject: his attempt-weighted conversion is .4065 against the .3970 unweighted mean this line computes"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jerry Stackhouse '07",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 1,
+   "label": "THE OFF SIDE, RECORDED NOT PINNED: 69 -> 67; 'low 60s' is unreachable from this file"
+  },
+  {
+   "card": "Jerry Stackhouse '07",
+   "scale": "ovr",
+   "op": "==",
+   "value": 62,
+   "label": "OVR 64 -> 62"
+  },
+  {
+   "card": "Jaylen Brown '26",
+   "scale": "off",
+   "op": "~",
+   "value": 83,
+   "tol": 1,
+   "label": "THE WALL, HELD: r89's off 83 +-1 reads 82, the floor of its band. One step further down the ramp and it breaks"
+  },
+  {
+   "card": "Jamal Crawford '19",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 90,
+   "label": "r145's pin 93 +-3 — BYTE-IDENTICAL, gap 0.083, under the foot"
+  },
+  {
+   "card": "Seth Curry '23",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 95,
+   "label": "r157's pin 93 +-3 — BYTE-IDENTICAL, gap 0.000"
+  },
+  {
+   "card": "Michael Jordan '98",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 99,
+   "label": "gap 0.129 — byte-identical, the specialist the term is built to spare"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 99,
+   "label": "gap 0.017 — byte-identical"
+  },
+  {
+   "card": "Richard Hamilton '06",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 95,
+   "label": "gap 0.144 — byte-identical"
+  },
+  {
+   "card": "Kevin Durant '14",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 98,
+   "label": "gap 0.147 — byte-identical"
+  },
+  {
+   "card": "Chris Paul '21",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 99,
+   "label": "gap 0.034 — byte-identical"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "attr:rim",
+   "op": "==",
+   "value": 99,
+   "label": "the paint is untouched: 0 rim bars moved on the whole pool"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "attr:3pt",
+   "op": "==",
+   "value": 99,
+   "label": "0 3pt bars moved"
+  },
+  {
+   "card": "Larry Bird '88",
+   "scale": "attr:mid",
+   "op": "==",
+   "value": 98,
+   "label": "the inferred era is byte-identical — the training target still reads the raw rate"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:mid",
+   "above": "Seth Curry '23",
+   "below": "Jerry Stackhouse '07",
+   "label": "a 53.9% midrange shooter reads above a 39.7% one"
+  },
+  {
+   "scale": "attr:mid",
+   "above": "Jaylen Brown '26",
+   "below": "Jerry Stackhouse '07",
+   "label": "the better shooter of the two cards this round could not separate still reads higher"
+  },
+  {
+   "scale": "attr:mid",
+   "above": "DeMar DeRozan '17",
+   "below": "DeMar DeRozan '15",
+   "label": "his 43.9% season reads above his 36.2% one, which it did not do by nearly this much before"
+  },
+  {
+   "scale": "attr:mid",
+   "above": "Jerry Stackhouse '07",
+   "below": "Jerry Stackhouse '08",
+   "label": "the subject's own decline year stays below him"
+  }
+ ],
+ "movers": {
+  "scale": "attr:mid",
+  "count": 1967,
+  "max_abs": 44,
+  "top": [
+   [
+    "Kobe Bryant '15",
+    76,
+    32
+   ],
+   [
+    "LeBron James '09",
+    70,
+    27
+   ],
+   [
+    "Kobe Bryant '16",
+    77,
+    35
+   ],
+   [
+    "LeBron James '08",
+    67,
+    26
+   ],
+   [
+    "John Wall '18",
+    64,
+    23
+   ],
+   [
+    "Allen Iverson '02",
+    78,
+    38
+   ],
+   [
+    "Chris Webber '05",
+    77,
+    38
+   ],
+   [
+    "Allen Iverson '00",
+    76,
+    37
+   ],
+   [
+    "Pascal Siakam '26",
+    75,
+    37
+   ],
+   [
+    "DeMar DeRozan '15",
+    79,
+    43
+   ],
+   [
+    "Victor Wembanyama '24",
+    61,
+    31
+   ],
+   [
+    "Jerry Stackhouse '07",
+    78,
+    64
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:mid",
+  "cards": [
+   "Allan Houston '01",
+   "Allan Houston '02",
+   "Allan Houston '03",
+   "Allan Houston '04",
+   "Brandon Ingram '26",
+   "CJ McCollum '20",
+   "CJ McCollum '21",
+   "Chris Paul '15",
+   "Chris Paul '16",
+   "Chris Paul '17",
+   "Chris Paul '21",
+   "Chris Paul '22"
+  ]
+ },
+ "cost": [
+  "THE DISPATCH'S NUMBER IS DECLINED AND HE ACCEPTED THE FRONTIER. The ruling was routed here as `mid 52 +-6`; this round lands 64 and he said \"195 push\" after being shown the ladder. The anchor written to data/anchors.json is therefore `Jerry Stackhouse '07 attr:mid 64 +-3`, not 52 +-6. HIS OFF IS NOT PINNED: it reads 67, and the ruling's 'low 60s' is unreachable from this file — recal_126's deadeye floor stops his mid at 54 (0.85 x his conversion percentile 0.603 + 0.15 x his rate percentile 0.958, solved through the 20/60/20 smoother) and r189 measured mid 50 -> OFF 63 on this card. A later round that wants OFF 62 has to find the last four points outside the midrange zone.",
+  "THE WALL, NAMED, AND IT IS ONE STEP AWAY. r89 `Jaylen Brown '26 off 83 +-1` (\"Dont do 87, only shift the weights a little torward 88\") now reads 82, the FLOOR of its band. THE TWO CARDS ARE THE SAME MIDRANGE CARD: Stackhouse '07 takes 6.40 midrange attempts per 100 at 39.7%, Brown '26 takes 6.54 at 44.3% — against the men who clear the 2.5-per-100 in-zone gate that is the 94th percentile of volume at the 46th of conversion against the 88th at the 50th. Brown's mid is his BEST zone (rim 72, 3pt 54), priced at z[0] 0.22 x 0.93, about 4.9 mid points per OFF point. GAP_FOOT cannot go below 0.28 without taking him out: 0.24 prints him at 80. Any later midrange round must read this line first.",
+  "A SECOND PIN SITS JUST ABOVE THE FOOT, NON-MONOTONICALLY. At GAP_FOOT 0.32 r89's Reggie Miller '97 off fails while Brown survives — his mid falls under his 3pt, recal_38's zone-dominance bonus stops firing, and his OFF drops without the bonus to catch it. At 0.28 his mid lands 83 -> 64, his 3pt takes z[0], the bonus fires and his OFF is unchanged at 87. The frontier in this term is not smooth in any single card.",
+  "51 OFF CARDS AND 39 OVR CARDS ROSE, WHICH LOOKS WRONG AND IS NOT. Nothing in the mid term can rise — 1,967 bars moved and all 1,967 fell. The risers are recal_38's zone-dominance bonus firing for the first time on cards whose midrange had been masking a purer weapon: Klay Thompson '24 OFF 65 -> 71 and '23 68 -> 72, Peja Stojakovic '10 55 -> 59, Jose Calderon '14 OVR 56 -> 59. That is the bonus doing exactly what recal_38 wrote it to do.",
+  "THE FOOTPRINT: 1,967 mid bars (all DOWN, max 44, 1,397 by more than 3), 1,210 OFF (51 up, max 8), 892 OVR (39 up, max 6), 0 rim, 0 3pt, 0 DEF, 0 pre-1997 inferred cards. The top 12 by mid is unchanged, 12 of 12."
+ ],
+ "notes": [
+  "THE SUBJECT'S SHEET. Jerry Stackhouse '07: 24.1 mpg over 62 games (1,615 minutes), USG 24.5, TS .529. Midrange diet 0.508 of his attempts — 0.217 from 10-16 ft at .331 and 0.291 from 16-3P at .463, an unweighted mean of .3970 — on 12.60 field goal attempts per 100, giving 6.40 midrange attempts per 100 and 198 attempts on the season. Paint 0.245 of the diet: rim 22. 3pt 54.",
+  "WHY 39.7% READ 78, IN ARITHMETIC. midvol percentile 0.958 x 0.65 = 0.623; midfg percentile 0.603 x 0.35 = 0.211; recal_157's load share 1.0000 at 24.1 mpg, so the gate returned the rate whole; recal_145's premium +0.0308 at load share 0.511. Stored 0.8648 -> card 84, smoothed 0.6 x .8648 + 0.2 x .8345 ('06) + 0.2 x .6066 ('08) = 0.8071 -> 78. AT CONVERSION PERCENTILE ZERO HE WOULD STILL HAVE READ 55: the bar was a diet, not a skill.",
+  "AND WHY IT NOW READS 64. gap 0.958 - 0.603 = 0.355, pull (0.355 - 0.28)/0.20 = 0.375, so the rate standing becomes 0.958 - 0.133 = 0.825 and the premium re-reads the same 0.825 instead of 0.958. Stored 0.7620 on the '07, 0.7650 on the '06, floor-caught at 0.3305 on the '08 -> smoothed 0.6760 -> 64.",
+  "THE 2007 MIDRANGE POOLS. 239 qualified cards: attempt rate median 3.50, p75 4.59, p90 5.92, p95 6.33, max 8.94 — a long, top-heavy tail in which 6.40 is the 96th percentile. Conversion median .3865 across all 237 and .3995 across the 159 that clear 2.5 attempts per 100, so 39.7% is the 60th percentile of everyone and the 46th of the men who take the shot.",
+  "WHAT THE TERM SPARES, MEASURED BY GAP: Seth Curry '23 0.000, Dirk '07 0.017, Chris Paul '21 0.034, Jamal Crawford '19 0.083, Dirk '18 0.098, Kevin Durant '24 0.106, Sam Cassell '08 0.130, Michael Jordan '98 0.129, Rip Hamilton '06 0.144, Kevin Durant '14 0.147, Karl Malone '00 0.155. Every one of them is under the 0.28 foot and every one is byte-identical or within a point.",
+  "WHAT IT REACHES, AND IT IS THE RIGHT CLASS: the high-volume midrange diet that does not go in. John Wall '18 (28.5% from the zone) 64 -> 23, LeBron '09 (33.7%) 70 -> 27, Kobe '15 (35.0%) 76 -> 32, Iverson '02 (34.7%) 78 -> 38, Chris Webber '05 (35.8%) 77 -> 38, DeMar DeRozan '15 (36.2%) 79 -> 43, Wembanyama '24 (32.6%) 61 -> 31. Not one of them shot the league's median from the zone.",
+  "MEASURED AND REJECTED, EACH ON THE WHOLE POOL AGAINST EVERY ANCHOR. (1) The constant-free CAP, min(_mvol, _mfg), applied to composite, premium and training target: the subject reaches 54 but 7,694 mid bars move, 4,859 by more than 3, and Jamal Crawford '19 goes 90 -> 89, one point under r145's band — that pin sits ON its floor and has no room in any direction. (2) Paying the WHOLE rate percentile at load on recal_117's 35.7 line: subject 55, Crawford 90 -> 89 again. (3) Gating the midrange CONVERSION pool to the in-zone population, the way P_3pp_mod has gated 3PT since the file was written: the subject moves only 78 -> 76 (conversion is 0.35 of the bar) and Crawford goes 90 -> 88. (4) A ramp narrow enough to separate the subject (gap 0.355) from Jaylen Brown '26 (0.315) must run 0.299 to 0.372 — a window of 0.073 placed between two cards, which is a per-player override wearing a ramp's clothes, and doctrine 1 forbids it.",
+  "HIS TWO STANDING DECLINES WERE CHECKED AND LEFT SHUT. recal_177 (attempt-weighted midrange FG% mean) would have RAISED this subject — his attempt-weighted conversion is .4065 against the .3970 the file computes. recal_178 (fga100 = x2p makes + x3pa) stands by his word and is the denominator under every rate quoted here.",
+  "TESTS: 436 vitest tests pass. HARNESS: all nine rows PASS on main's constants; nothing was re-swept. ANCHORS: 193 -> 194 with this round's own pin, 0 failing, mean |error| 0.83 -> 0.85. BASE REPRODUCED byte-identical before the change was applied.",
+  "[integration] regenerated at PIPELINE_VERSION 195 in both python files; the integrator stamps the batch's highest round"
+ ]
+}
