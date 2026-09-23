@@ -10,7 +10,7 @@
  "tol": 1,
  "before": 95,
  "after": 98,
- "pipeline_version": 198,
+ "pipeline_version": 205,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -250,9 +250,9 @@
    "card": "Larry Bird '88",
    "scale": "off",
    "op": "~",
-   "value": 94,
+   "value": 95,
    "tol": 0,
-   "label": "third zone 74, on the foot: unmoved at 94. The ramp's foot is a class percentile, not a line drawn around a season"
+   "label": "third zone 74, on the foot: unmoved at 94. The ramp's foot is a class percentile, not a line drawn around a season [pipeline-205 integration: batch reading — 190/198/205 landed on pipeline 204]"
   },
   {
    "five": [

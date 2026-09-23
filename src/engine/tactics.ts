@@ -760,6 +760,13 @@ export const DEFAULT_TACTICS: Tactics = {
  * oracle +0.54). hunt 3.65 (blind -0.33, oracle +0.57) and crashOff 0.05 (-0.51 / +0.62) held. Landed crashDef
  * 0.36 -> 0.54. The three branches' own re-ratifications (201: hunt 3.58 / crashOff .11 / crashDef .18; 203: hunt
  * 3.668 / crashOff .048; 204: none) are superseded by this merged-pool sweep, not stacked.
+ *
+ * PIPELINE 205 (integration of recal_190 / 198 / 205). Eight rows PASS at pipeline 204's constants; hunt 3.65 lost
+ * its BLIND floor (-0.28) — 198 adds three OFF points at the summit (Durant '13/'14, Bird '87) and 190 takes two
+ * from Zion '21 and the Shaq run, so the random hunt lands on a slightly different mismatch. Bracketed upward:
+ * 3.68 blind -0.30 PASS, 3.75 -0.36 / oracle +0.51 PASS, 3.80 oracle +0.49 FAIL, 3.90 +0.44 — window
+ * [~3.67, ~3.77], midpoint 3.72 (blind -0.33, oracle +0.52). crashOff 0.05 and crashDef 0.54 held. Landed hunt
+ * 3.65 -> 3.72. 205's branch re-ratification (hunt 3.74 / crashOff .13 / crashDef .30) is superseded, not stacked.
  */
 export const TAX = {
   scorer: 0.55,
@@ -767,7 +774,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.65,
+  hunt: 3.72,
   crashOff: 0.05,
   crashDef: 0.54,
 }

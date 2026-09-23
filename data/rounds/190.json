@@ -10,7 +10,7 @@
  "tol": 1,
  "before": 92,
  "after": 90,
- "pipeline_version": 190,
+ "pipeline_version": 205,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -62,9 +62,9 @@
   },
   {
    "file": "data/compute_ovr.py",
-   "pattern": "PIPELINE_VERSION = 190",
+   "pattern": "PIPELINE_VERSION = 205",
    "label": "the stamp",
-   "note": "188 -> 190 in both python files"
+   "note": "188 -> 190 in both python files [pipeline-205 integration: batch stamp]"
   }
  ],
  "expect": [
@@ -79,8 +79,8 @@
    "card": "Zion Williamson '21",
    "scale": "def",
    "op": "==",
-   "value": 64,
-   "label": "DEF moved on ZERO cards — the round is inside o_score"
+   "value": 63,
+   "label": "DEF moved on ZERO cards — the round is inside o_score [pipeline-205 integration: batch reading — 190/198/205 landed on pipeline 204]"
   },
   {
    "card": "Zion Williamson '21",
@@ -147,17 +147,17 @@
    "card": "Hakeem Olajuwon '93",
    "scale": "off",
    "op": "~",
-   "value": 87,
+   "value": 90,
    "tol": 1,
-   "label": "the same class, the same reason — unmoved"
+   "label": "the same class, the same reason — unmoved [pipeline-205 integration: batch reading — 190/198/205 landed on pipeline 204]"
   },
   {
    "card": "Hakeem Olajuwon '94",
    "scale": "off",
    "op": "~",
-   "value": 87,
+   "value": 89,
    "tol": 1,
-   "label": "unmoved"
+   "label": "unmoved [pipeline-205 integration: batch reading — 190/198/205 landed on pipeline 204]"
   },
   {
    "card": "Patrick Ewing '90",
@@ -218,8 +218,8 @@
    "card": "Zion Williamson '24",
    "scale": "off",
    "op": "==",
-   "value": 84,
-   "label": "the subject's own rim-88 doctrine card: att_f 2.39 -> 2.00 costs 0.52 of o_score and he does not move"
+   "value": 83,
+   "label": "the subject's own rim-88 doctrine card: att_f 2.39 -> 2.00 costs 0.52 of o_score and he does not move [pipeline-205 integration: batch reading — 190/198/205 landed on pipeline 204]"
   },
   {
    "card": "Karl Malone '99",

@@ -1,339 +1,395 @@
 {
-  "round": 205,
-  "agent": "ratings-to-off-def",
-  "status": "done",
-  "ruling": "Rodney McCray '88 DEF 81 -> target 88 +-3",
-  "title": "the position branch's rim-presence ramp takes its TOP from the lead perdef has over rimprot — recal_187's saturation at POS_RP_HI 55 becomes recal_99's deterrence foot DET_LO 68 for a wing-height card whose perimeter defence leads his rim sheet, and is byte-identical for one whose rim sheet leads",
-  "subject": "Rodney McCray '88",
+ "round": 205,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Rodney McCray '88 DEF 81 -> target 88 +-3",
+ "title": "the position branch's rim-presence ramp takes its TOP from the lead perdef has over rimprot — recal_187's saturation at POS_RP_HI 55 becomes recal_99's deterrence foot DET_LO 68 for a wing-height card whose perimeter defence leads his rim sheet, and is byte-identical for one whose rim sheet leads",
+ "subject": "Rodney McCray '88",
+ "scale": "def",
+ "target": 88,
+ "tol": 3,
+ "before": 81,
+ "after": 87,
+ "pipeline_version": 205,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_RP_TOP_WIDTH = C1_RP_HI - C1_RP_LO",
+   "label": "THE WHOLE ROUND — the width the lead perdef has over rimprot is read over",
+   "note": "recal_164's own width (10), reused rather than invented: the file's single statement of how far a defensive-shape claim must travel before it is whole"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_RP_HI_MAX = DET_LO",
+   "label": "the far TOP of the ramp — recal_99's deterrence foot, an existing constant",
+   "note": "55 -> 68 at a lead of ten or more; 68 is where this file already says a rim number begins to deter anybody"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_lead = min\\(1\\.0, max\\(0\\.0, \\(a\\['perdef'\\] - a\\['rimprot'\\]\\) / POS_RP_TOP_WIDTH\\)\\)",
+   "label": "the SHAPE GATE — the whole reason the fallers fall by zero",
+   "note": "a listed big whose rimprot is at least his perdef has lead 0, top POS_RP_HI, and is BYTE-IDENTICAL to recal_187 (LaPhonso Ellis '94/'98, Walter Berry '87/'88, Kidd-Gilchrist '13 all move 0)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_w_pos \\*= min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - POS_RP_LO\\) / \\(_top - POS_RP_LO\\)\\)\\)",
+   "label": "recal_187's ramp form, with the top now a function instead of a constant",
+   "note": "`(rimprot - POS_RP_LO) / (POS_RP_HI - POS_RP_LO)` -> `(rimprot - POS_RP_LO) / (_top - POS_RP_LO)`; the FOOT is untouched at 45"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI",
+   "label": "recal_187's own ends, both still in the file and both still used",
+   "note": "45 is still where a rim claim begins and 55 is still the top at no lead at all"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_HT_MAX = 80\\.0",
+   "label": "recal_114's band edge, untouched — a card at 81 inches or more keeps the whole position verdict",
+   "note": "the round reaches nobody above 80 inches, by construction"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+   "label": "recal_103's perimdisrupt-minus-drb override, untouched and still multiplied in first",
+   "note": "Herbert Jones '23 is 0.0000 big by the gap test alone and moves by zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
+   "label": "recal_99's deterrence ramp itself, untouched — the round BORROWS its foot, it does not move it",
+   "note": "no card's deterrence term changes by anything"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = ",
+   "label": "recal_90's band anchors, NOT re-derived — the dispatch forbade it and nothing above the knee moves",
+   "note": "the whole footprint is under the knee; the top 12 by DEF is identical"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.72,",
+   "label": "recal_59's deviation-tax law, re-ratified on the pool this round moved",
+   "note": "3.65 -> 3.74, the true midpoint of a feasible 3.727-3.750 (blind -0.3105, oracle +0.5049) [pipeline-205 integration: merged-pool sweep landed hunt 3.72 / crashOff 0.05 / crashDef 0.54; branch figure superseded]"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.05,",
+   "label": "crash off glass, re-ratified on the ORACLE edge",
+   "note": "0.28 -> 0.13, the midpoint of the POSITIVE half of a feasible -0.507 to .2625 (r117's rule) [pipeline-205 integration: merged-pool sweep landed hunt 3.72 / crashOff 0.05 / crashDef 0.54; branch figure superseded]"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.54,",
+   "label": "crash def glass, re-ratified on the ORACLE edge",
+   "note": "0.60 -> 0.30, the true midpoint of a feasible .132-.466 (blind -0.4350, oracle +0.5500) [pipeline-205 integration: merged-pool sweep landed hunt 3.72 / crashOff 0.05 / crashDef 0.54; branch figure superseded]"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Rodney McCray '88",
+   "scale": "ovr",
+   "op": "~",
+   "value": 65,
+   "tol": 1,
+   "label": "THE SUBJECT'S OVR FOLLOWS HIS DEF: 62 -> 65, still an OFF-43 card"
+  },
+  {
+   "card": "Gerald Wallace '12",
+   "scale": "def",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "THE CLASS, CARD 2 (named in the dispatch, no target of its own): perdef 90 / rimprot 57 / perimdisrupt 76 at 6'7\". 81 -> 86, and his '13 and '14 with him (78 -> 84, 76 -> 82)"
+  },
+  {
+   "card": "Robert Covington '17",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 2,
+   "label": "THE CLASS, CARD 3: perdef 96 / rimprot 64 — the highest rim number in the class, so he releases LEAST (0.826 big) and moves least. 85 -> 87; his '16 78 -> 83 and '15 76 -> 80"
+  },
+  {
+   "card": "Dennis Rodman '96",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "THE TIGHT WALL the dispatch named, and it holds on its EDGE: rimprot 51 / perdef 94, so he reads 0.26 big instead of 0.60, DEF 87 -> 89, OVR 64 -> 66 — the top of his +-3"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "THE FIRST WALL: rimprot 76, past DET_LO, so the ramp is 1.0 at any top. BYTE-IDENTICAL"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "THE SECOND WALL: rimprot 84. BYTE-IDENTICAL"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 4,
+   "label": "recal_103's own subject: 0.0000 big by the GAP test before this ramp is reached. BYTE-IDENTICAL at 91"
+  },
+  {
+   "card": "LaPhonso Ellis '94",
+   "scale": "def",
+   "op": "~",
+   "value": 71,
+   "tol": 0,
+   "label": "THE SHAPE GATE'S PROOF. Under a flat 45->68 top he loses 8; rimprot 64 > perdef 61, so his lead is 0, his top stays 55 and he moves by EXACTLY ZERO"
+  },
+  {
+   "card": "Walter Berry '88",
+   "scale": "def",
+   "op": "~",
+   "value": 61,
+   "tol": 0,
+   "label": "the same proof, rimprot 65 against perdef 47: ZERO"
+  },
+  {
+   "card": "Michael Kidd-Gilchrist '13",
+   "scale": "def",
+   "op": "~",
+   "value": 64,
+   "tol": 0,
+   "label": "the same proof, rimprot 62 against perdef 50: ZERO"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "recal_93's pin, an SF-only listing that never reaches the position branch: unmoved at 77"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "recal_164's pin, a listing that includes PG so the branch is not his: unmoved at 68"
+  },
+  {
+   "card": "Jimmy Butler '16",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "SG in the listing, off the branch entirely: unmoved at 86"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_136's own subject, SF-only: unmoved at 54"
+  },
+  {
+   "card": "DeMarre Carroll '14",
+   "scale": "def",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "recal_187's own subject: rimprot 31, under the FOOT, which this round does not move. Unmoved at 65"
+  },
+  {
+   "card": "Jae Crowder '16",
+   "scale": "def",
+   "op": "~",
+   "value": 69,
+   "tol": 3,
+   "label": "recal_187's second subject, rimprot 37: unmoved at 69"
+  },
+  {
+   "card": "Joe Ingles '17",
+   "scale": "def",
+   "op": "~",
+   "value": 64,
+   "tol": 3,
+   "label": "recal_187's third subject, rimprot 29: unmoved at 64"
+  },
+  {
+   "card": "Buck Williams '88",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "THE LARGEST FALL ON THE BOARD AND IT IS THREE POINTS. perdef leads his rimprot, so the branch releases him — and his own perimeter vector is UNDER his big one. 79 -> 76"
+  },
+  {
+   "card": "Luc Mbah a Moute '16",
+   "scale": "def",
+   "op": "~",
+   "value": 66,
+   "tol": 1,
+   "label": "THE LARGEST RISE, +10, and recal_103's own named archetype: a 6'8\" wing a box score listed at power forward. 56 -> 66"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Michael Cooper '88",
+   "below": "Rodney McCray '88",
+   "label": "THE RULING'S OWN ORDER, AND IT IS THE FRONTIER: the 1988 All-Defensive first team stays in its own order — Cooper 93 over McCray 87, where McCray was #19 of 1988 at 81"
+  },
+  {
+   "scale": "def",
+   "above": "Alvin Robertson '88",
+   "below": "Rodney McCray '88",
+   "label": "the other name the dispatch used to place him: Robertson 91 over 87, and McCray is now #8 of 1988 instead of #19"
+  },
+  {
+   "scale": "def",
+   "above": "Rodney McCray '88",
+   "below": "Buck Williams '88",
+   "label": "the round's whole argument in one pair of 1988 forwards: the All-Defensive FIRST team wing (perdef 93, rimprot 56) now reads above the rebounding power forward (perdef 64, rimprot 71), 87 against 76, where it was 81 against 79"
+  },
+  {
+   "scale": "def",
+   "above": "Dennis Rodman '90",
+   "below": "Dennis Rodman '96",
+   "label": "the same man's two seasons stay in their own order across the wall: 95 over 89"
+  },
+  {
+   "scale": "def",
+   "above": "Draymond Green '16",
+   "below": "Robert Covington '17",
+   "label": "the unmoved wall still reads above the class's best card, 97 against 87"
+  },
+  {
+   "scale": "def",
+   "above": "Kawhi Leonard '17",
+   "below": "Luka Dončić '23",
+   "label": "the dispatch's own ordering check, untouched by this round: 97 against 69"
+  },
+  {
+   "scale": "def",
+   "above": "Herbert Jones '23",
+   "below": "Rodney McCray '88",
+   "label": "recal_103's subject, whose gap test releases him WHOLLY, stays above the man this round releases by half: 91 against 87"
+  }
+ ],
+ "movers": {
   "scale": "def",
-  "target": 88,
-  "tol": 3,
-  "before": 81,
-  "after": 87,
-  "pipeline_version": 205,
-  "knobs": [
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "POS_RP_TOP_WIDTH = C1_RP_HI - C1_RP_LO",
-      "label": "THE WHOLE ROUND — the width the lead perdef has over rimprot is read over",
-      "note": "recal_164's own width (10), reused rather than invented: the file's single statement of how far a defensive-shape claim must travel before it is whole"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "POS_RP_HI_MAX = DET_LO",
-      "label": "the far TOP of the ramp — recal_99's deterrence foot, an existing constant",
-      "note": "55 -> 68 at a lead of ten or more; 68 is where this file already says a rim number begins to deter anybody"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_lead = min\\(1\\.0, max\\(0\\.0, \\(a\\['perdef'\\] - a\\['rimprot'\\]\\) / POS_RP_TOP_WIDTH\\)\\)",
-      "label": "the SHAPE GATE — the whole reason the fallers fall by zero",
-      "note": "a listed big whose rimprot is at least his perdef has lead 0, top POS_RP_HI, and is BYTE-IDENTICAL to recal_187 (LaPhonso Ellis '94/'98, Walter Berry '87/'88, Kidd-Gilchrist '13 all move 0)"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "_w_pos \\*= min\\(1\\.0, max\\(0\\.0, \\(a\\['rimprot'\\] - POS_RP_LO\\) / \\(_top - POS_RP_LO\\)\\)\\)",
-      "label": "recal_187's ramp form, with the top now a function instead of a constant",
-      "note": "`(rimprot - POS_RP_LO) / (POS_RP_HI - POS_RP_LO)` -> `(rimprot - POS_RP_LO) / (_top - POS_RP_LO)`; the FOOT is untouched at 45"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI",
-      "label": "recal_187's own ends, both still in the file and both still used",
-      "note": "45 is still where a rim claim begins and 55 is still the top at no lead at all"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "POS_HT_MAX = 80\\.0",
-      "label": "recal_114's band edge, untouched — a card at 81 inches or more keeps the whole position verdict",
-      "note": "the round reaches nobody above 80 inches, by construction"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
-      "label": "recal_103's perimdisrupt-minus-drb override, untouched and still multiplied in first",
-      "note": "Herbert Jones '23 is 0.0000 big by the gap test alone and moves by zero"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "DET_LO, DET_HI = 68\\.0, 80\\.0",
-      "label": "recal_99's deterrence ramp itself, untouched — the round BORROWS its foot, it does not move it",
-      "note": "no card's deterrence term changes by anything"
-    },
-    {
-      "file": "data/compute_ovr.py",
-      "pattern": "KNEE, OFF_TOP, DEF_TOP = ",
-      "label": "recal_90's band anchors, NOT re-derived — the dispatch forbade it and nothing above the knee moves",
-      "note": "the whole footprint is under the knee; the top 12 by DEF is identical"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.74",
-      "label": "recal_59's deviation-tax law, re-ratified on the pool this round moved",
-      "note": "3.65 -> 3.74, the true midpoint of a feasible 3.727-3.750 (blind -0.3105, oracle +0.5049)"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "crashOff: 0\\.13",
-      "label": "crash off glass, re-ratified on the ORACLE edge",
-      "note": "0.28 -> 0.13, the midpoint of the POSITIVE half of a feasible -0.507 to .2625 (r117's rule)"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "crashDef: 0\\.30",
-      "label": "crash def glass, re-ratified on the ORACLE edge",
-      "note": "0.60 -> 0.30, the true midpoint of a feasible .132-.466 (blind -0.4350, oracle +0.5500)"
-    }
-  ],
-  "expect": [
-    {
-      "card": "Rodney McCray '88",
-      "scale": "ovr",
-      "op": "~",
-      "value": 65,
-      "tol": 1,
-      "label": "THE SUBJECT'S OVR FOLLOWS HIS DEF: 62 -> 65, still an OFF-43 card"
-    },
-    {
-      "card": "Gerald Wallace '12",
-      "scale": "def",
-      "op": "~",
-      "value": 86,
-      "tol": 2,
-      "label": "THE CLASS, CARD 2 (named in the dispatch, no target of its own): perdef 90 / rimprot 57 / perimdisrupt 76 at 6'7\". 81 -> 86, and his '13 and '14 with him (78 -> 84, 76 -> 82)"
-    },
-    {
-      "card": "Robert Covington '17",
-      "scale": "def",
-      "op": "~",
-      "value": 87,
-      "tol": 2,
-      "label": "THE CLASS, CARD 3: perdef 96 / rimprot 64 — the highest rim number in the class, so he releases LEAST (0.826 big) and moves least. 85 -> 87; his '16 78 -> 83 and '15 76 -> 80"
-    },
-    {
-      "card": "Dennis Rodman '96",
-      "scale": "ovr",
-      "op": "~",
-      "value": 63,
-      "tol": 3,
-      "label": "THE TIGHT WALL the dispatch named, and it holds on its EDGE: rimprot 51 / perdef 94, so he reads 0.26 big instead of 0.60, DEF 87 -> 89, OVR 64 -> 66 — the top of his +-3"
-    },
-    {
-      "card": "Dennis Rodman '90",
-      "scale": "def",
-      "op": "~",
-      "value": 95,
-      "tol": 0,
-      "label": "THE FIRST WALL: rimprot 76, past DET_LO, so the ramp is 1.0 at any top. BYTE-IDENTICAL"
-    },
-    {
-      "card": "Draymond Green '16",
-      "scale": "def",
-      "op": "~",
-      "value": 97,
-      "tol": 0,
-      "label": "THE SECOND WALL: rimprot 84. BYTE-IDENTICAL"
-    },
-    {
-      "card": "Herbert Jones '23",
-      "scale": "def",
-      "op": "~",
-      "value": 91,
-      "tol": 4,
-      "label": "recal_103's own subject: 0.0000 big by the GAP test before this ramp is reached. BYTE-IDENTICAL at 91"
-    },
-    {
-      "card": "LaPhonso Ellis '94",
-      "scale": "def",
-      "op": "~",
-      "value": 71,
-      "tol": 0,
-      "label": "THE SHAPE GATE'S PROOF. Under a flat 45->68 top he loses 8; rimprot 64 > perdef 61, so his lead is 0, his top stays 55 and he moves by EXACTLY ZERO"
-    },
-    {
-      "card": "Walter Berry '88",
-      "scale": "def",
-      "op": "~",
-      "value": 61,
-      "tol": 0,
-      "label": "the same proof, rimprot 65 against perdef 47: ZERO"
-    },
-    {
-      "card": "Michael Kidd-Gilchrist '13",
-      "scale": "def",
-      "op": "~",
-      "value": 64,
-      "tol": 0,
-      "label": "the same proof, rimprot 62 against perdef 50: ZERO"
-    },
-    {
-      "card": "Scottie Pippen '03",
-      "scale": "def",
-      "op": "~",
-      "value": 76,
-      "tol": 1,
-      "label": "recal_93's pin, an SF-only listing that never reaches the position branch: unmoved at 77"
-    },
-    {
-      "card": "LeBron James '04",
-      "scale": "def",
-      "op": "~",
-      "value": 70,
-      "tol": 2,
-      "label": "recal_164's pin, a listing that includes PG so the branch is not his: unmoved at 68"
-    },
-    {
-      "card": "Jimmy Butler '16",
-      "scale": "def",
-      "op": "~",
-      "value": 85,
-      "tol": 3,
-      "label": "SG in the listing, off the branch entirely: unmoved at 86"
-    },
-    {
-      "card": "Ken Norman '94",
-      "scale": "def",
-      "op": "~",
-      "value": 55,
-      "tol": 3,
-      "label": "recal_136's own subject, SF-only: unmoved at 54"
-    },
-    {
-      "card": "DeMarre Carroll '14",
-      "scale": "def",
-      "op": "~",
-      "value": 65,
-      "tol": 3,
-      "label": "recal_187's own subject: rimprot 31, under the FOOT, which this round does not move. Unmoved at 65"
-    },
-    {
-      "card": "Jae Crowder '16",
-      "scale": "def",
-      "op": "~",
-      "value": 69,
-      "tol": 3,
-      "label": "recal_187's second subject, rimprot 37: unmoved at 69"
-    },
-    {
-      "card": "Joe Ingles '17",
-      "scale": "def",
-      "op": "~",
-      "value": 64,
-      "tol": 3,
-      "label": "recal_187's third subject, rimprot 29: unmoved at 64"
-    },
-    {
-      "card": "Buck Williams '88",
-      "scale": "def",
-      "op": "~",
-      "value": 76,
-      "tol": 1,
-      "label": "THE LARGEST FALL ON THE BOARD AND IT IS THREE POINTS. perdef leads his rimprot, so the branch releases him — and his own perimeter vector is UNDER his big one. 79 -> 76"
-    },
-    {
-      "card": "Luc Mbah a Moute '16",
-      "scale": "def",
-      "op": "~",
-      "value": 66,
-      "tol": 1,
-      "label": "THE LARGEST RISE, +10, and recal_103's own named archetype: a 6'8\" wing a box score listed at power forward. 56 -> 66"
-    }
-  ],
-  "order": [
-    {
-      "scale": "def",
-      "above": "Michael Cooper '88",
-      "below": "Rodney McCray '88",
-      "label": "THE RULING'S OWN ORDER, AND IT IS THE FRONTIER: the 1988 All-Defensive first team stays in its own order — Cooper 93 over McCray 87, where McCray was #19 of 1988 at 81"
-    },
-    {
-      "scale": "def",
-      "above": "Alvin Robertson '88",
-      "below": "Rodney McCray '88",
-      "label": "the other name the dispatch used to place him: Robertson 91 over 87, and McCray is now #8 of 1988 instead of #19"
-    },
-    {
-      "scale": "def",
-      "above": "Rodney McCray '88",
-      "below": "Buck Williams '88",
-      "label": "the round's whole argument in one pair of 1988 forwards: the All-Defensive FIRST team wing (perdef 93, rimprot 56) now reads above the rebounding power forward (perdef 64, rimprot 71), 87 against 76, where it was 81 against 79"
-    },
-    {
-      "scale": "def",
-      "above": "Dennis Rodman '90",
-      "below": "Dennis Rodman '96",
-      "label": "the same man's two seasons stay in their own order across the wall: 95 over 89"
-    },
-    {
-      "scale": "def",
-      "above": "Draymond Green '16",
-      "below": "Robert Covington '17",
-      "label": "the unmoved wall still reads above the class's best card, 97 against 87"
-    },
-    {
-      "scale": "def",
-      "above": "Kawhi Leonard '17",
-      "below": "Luka Dončić '23",
-      "label": "the dispatch's own ordering check, untouched by this round: 97 against 69"
-    },
-    {
-      "scale": "def",
-      "above": "Herbert Jones '23",
-      "below": "Rodney McCray '88",
-      "label": "recal_103's subject, whose gap test releases him WHOLLY, stays above the man this round releases by half: 91 against 87"
-    }
-  ],
-  "movers": {
-    "scale": "def",
-    "count": 217,
-    "max_abs": 10,
-    "top": [
-      ["Luc Mbah a Moute '16", 56, 66],
-      ["George McGinnis '82", 65, 73],
-      ["Rodney McCray '88", 81, 87],
-      ["Gerald Wallace '14", 76, 82],
-      ["Gerald Wallace '13", 78, 84],
-      ["Chuck Hayes '08", 69, 75],
-      ["Rodney McCray '87", 80, 85],
-      ["Robert Covington '16", 78, 83],
-      ["Gerald Wallace '12", 81, 86],
-      ["Rodney Rogers '03", 60, 65],
-      ["Andrés Nocioni '06", 71, 68],
-      ["Buck Williams '88", 79, 76],
-      ["Andrés Nocioni '07", 66, 63],
-      ["Miles Bridges '26", 70, 67]
-    ]
-  },
-  "top12": {
-    "scale": "def",
-    "cards": [
-      "Ben Wallace '01",
-      "Ben Wallace '02",
-      "Ben Wallace '03",
-      "Ben Wallace '04",
-      "Ben Wallace '05",
-      "Ben Wallace '06",
-      "Dwight Howard '10",
-      "Dwight Howard '11",
-      "Giannis Antetokounmpo '19",
-      "Giannis Antetokounmpo '20",
-      "Kawhi Leonard '16",
-      "Dwight Howard '09"
-    ]
-  },
-  "cost": [
-    "THE SUBJECT LANDS AT 87 AGAINST A STATED 88, INSIDE HIS +-3 BUT ON THE LOW HALF, AND THE REASON IS A CONSTANT THIS FILE SPENDS ELSEWHERE. His whole perimeter vector is 80.72 x 1.1305 = 91.3, so 88 exactly needs him about 0.35 big, i.e. a ramp top near 76 rather than 68. Every top above DET_LO is a NEW constant — the file's own statements about where a rim claim is whole are 45 (a claim begins), 55 (recal_136's saturation), 68 (recal_99's deterrence foot) and 80 (clause 3's absolute bar); 80 as the top reads McCray 89 but takes Dennis Rodman '96 to 0.17 big and OVR 67, one outside his 63 +-3. 68 is the last existing constant that holds every pin, and 87 is what it pays.",
-    "DENNIS RODMAN '96 IS THE STOPPING PIN AND HE IS ON HIS EDGE. ovr 63 +-3, reading 66 (DEF 87 -> 89) at rimprot 51 / perdef 94. Any widening of this ramp's top past DET_LO, or any lowering of its foot, moves him first. A later round that wants McCray on 88 exactly is asking for that pin to be released.",
-    "THE FLAT 45->68 TOP THE SCOUT MEASURED IS SUPERSEDED BY THE GATED ONE, AND THE DIFFERENCE IS 58 CARDS. Flat: 200 cards in the band, 53 rise >= 3, 62 FALL >= 3 (LaPhonso Ellis '94/'98, Walter Berry '87/'88, Michael Kidd-Gilchrist '13 at -8 and -9). Gated on the lead perdef has over rimprot: 41 rise >= 3 and FOUR fall >= 3, all at exactly -3. The men who fell under the flat form move by ZERO under this one, by construction, and that is the form the dispatch asked to be considered.",
-    "THREE TACTICS TAXES WERE RE-RATIFIED AND THE INTEGRATOR MUST RE-SWEEP FROM MAIN'S CONSTANTS, NOT FROM THESE. hunt 3.65 -> 3.74, crashOff 0.28 -> 0.13, crashDef 0.60 -> 0.30. hunt's window this time is 0.023 wide, the narrowest it has ever recorded; crashOff's own interval has a NEGATIVE midpoint for the second time in the file's history (r117 was the first), so it took the positive half's midpoint.",
-    "DEF_TOP WAS NOT RE-DERIVED (the dispatch forbade it) and nothing this round moves sits above the knee: the whole footprint is under 93 raw. The top 12 by DEF is identical, card for card."
-  ],
-  "notes": [
-    "WHAT THE DEFECT IS, DECOMPOSED ON THE SUBJECT. Rodney McCray '88 — 1988 All-Defensive FIRST team, 33.2 mpg, 6'7\" (height 79) — has perdef 93, discipline 93, rimprot 56, drb 57, perimdisrupt 12 (as shipped; recal_181's lockdown floor pays it as 48.73 inside the perimeter half). His listing is ['SF','PF'], so recal_103's POSITION branch decides him and never reaches a shape clause. recal_103's own override cannot see him: his perimdisrupt-minus-drb gap is -45, the rebounding side of the test, because he is a low-event stopper rather than a ball-hawk. recal_187's rim-presence ramp saturates at 55 and his rimprot is 56 — ONE POINT past it — so it releases nothing either. He was graded 1.000 big: 0.40 x 93 + 0.40 x 56 + 0.17 x 57 = 72.0, against his own perimeter vector of 80.7, and printed DEF 81, #19 of 1988.",
-    "WHY THE TOP IS THE KNOB AND NOT THE FOOT. recal_187 borrowed BOTH ends of its ramp from recal_136, which set them for a different question. The foot (45, where a rim-protection claim begins) is right for this question too and is untouched — that is why Carroll '14, Crowder '16 and Ingles '17, recal_187's own three subjects, move by exactly zero. The TOP is the guess: 55 is where recal_136 said a man who does not shoot is WHOLLY a big, and it leaves a 6'7\" wing with rimprot 56-67 graded entirely on a big vector while recal_99's deterrence clause — the file's other statement about a whole rim claim — does not think that number deters anybody until 68.",
-    "WHY THE TOP IS A FUNCTION AND NOT A CONSTANT, WHICH IS THE ROUND'S ONE REAL CHOICE. Moving the top flat to 68 is right for a wing whose perimeter defence is his case (McCray, Wallace, Covington) and WRONG for a listed power forward whose rim number is his case: LaPhonso Ellis '94 (rimprot 64 > perdef 61), Walter Berry '88 (65 > 47), Kidd-Gilchrist '13 (62 > 50) each lose eight or nine points to it, and they should lose nothing — their listing and their sheet AGREE. So the top is set by the SIGNED LEAD perdef has over rimprot, over recal_164's own width 10, the quantity every other clause in this function already reads. At lead 0 the branch is byte-identical to recal_187; at lead 10 the top is DET_LO. NO NEW CONSTANT ENTERS THE FILE.",
-    "THE CLASS, AND IT IS WHY THIS IS A FORMULA AND NOT A CARD. The dispatch named two more instances and both are the same shape — wing height, a real but unremarkable rim number, a perimeter sheet nobody was grading them on. Gerald Wallace '12 (perdef 90, rimprot 57) 81 -> 86, with '13 78 -> 84 and '14 76 -> 82. Robert Covington '17 (perdef 96, rimprot 64) 85 -> 87, with '16 78 -> 83 and '15 76 -> 80 — he releases LEAST of the three because his rim number is the highest, which is the ramp doing exactly what it says. The largest movers on the whole board are the same archetype recal_103 named: Luc Mbah a Moute '16 +10, George McGinnis '82 +8, Chuck Hayes '08 +6, Rodney Rogers '03 +5, Eduardo Nájera '08 +5, Chris Singleton '12 +5.",
-    "THE FOUR FALLERS ARE NOT A DEFECT, THEY ARE THE SAME SENTENCE READ THE OTHER WAY. Andrés Nocioni '06/'07, Buck Williams '88 and Miles Bridges '26 each have perdef ahead of rimprot, so the branch releases them toward their own perimeter vector — and for them that vector is LOWER than the big one. All four move exactly -3, and Buck Williams '88 is the clearest reading of it: a rebounding power forward at perdef 64 no longer outscores an All-Defensive first-team wing on defence (76 against 87, where it was 79 against 81).",
-    "OFF AND EVERY ATTRIBUTE MOVE ON ZERO CARDS. is_big is untouched, exactly as recal_93 / recal_103 / recal_164 / recal_187 left it, so the boolean still labels the card, still gates recal_55's big hub and recal_91's stretch-big floor, and still picks the OVR cap branch. Only d_score's mix weight moves: 217 DEF (154 up, 63 down, max +10 / -3) and 133 OVR (max +6 / -2) of 10,000."
+  "count": 217,
+  "max_abs": 10,
+  "top": [
+   [
+    "Luc Mbah a Moute '16",
+    56,
+    66
+   ],
+   [
+    "George McGinnis '82",
+    65,
+    73
+   ],
+   [
+    "Rodney McCray '88",
+    81,
+    87
+   ],
+   [
+    "Gerald Wallace '14",
+    76,
+    82
+   ],
+   [
+    "Gerald Wallace '13",
+    78,
+    84
+   ],
+   [
+    "Chuck Hayes '08",
+    69,
+    75
+   ],
+   [
+    "Rodney McCray '87",
+    80,
+    85
+   ],
+   [
+    "Robert Covington '16",
+    78,
+    83
+   ],
+   [
+    "Gerald Wallace '12",
+    81,
+    86
+   ],
+   [
+    "Rodney Rogers '03",
+    60,
+    65
+   ],
+   [
+    "Andrés Nocioni '06",
+    71,
+    68
+   ],
+   [
+    "Buck Williams '88",
+    79,
+    76
+   ],
+   [
+    "Andrés Nocioni '07",
+    66,
+    63
+   ],
+   [
+    "Miles Bridges '26",
+    70,
+    67
+   ]
   ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Dwight Howard '11",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Dwight Howard '09"
+  ]
+ },
+ "cost": [
+  "THE SUBJECT LANDS AT 87 AGAINST A STATED 88, INSIDE HIS +-3 BUT ON THE LOW HALF, AND THE REASON IS A CONSTANT THIS FILE SPENDS ELSEWHERE. His whole perimeter vector is 80.72 x 1.1305 = 91.3, so 88 exactly needs him about 0.35 big, i.e. a ramp top near 76 rather than 68. Every top above DET_LO is a NEW constant — the file's own statements about where a rim claim is whole are 45 (a claim begins), 55 (recal_136's saturation), 68 (recal_99's deterrence foot) and 80 (clause 3's absolute bar); 80 as the top reads McCray 89 but takes Dennis Rodman '96 to 0.17 big and OVR 67, one outside his 63 +-3. 68 is the last existing constant that holds every pin, and 87 is what it pays.",
+  "DENNIS RODMAN '96 IS THE STOPPING PIN AND HE IS ON HIS EDGE. ovr 63 +-3, reading 66 (DEF 87 -> 89) at rimprot 51 / perdef 94. Any widening of this ramp's top past DET_LO, or any lowering of its foot, moves him first. A later round that wants McCray on 88 exactly is asking for that pin to be released.",
+  "THE FLAT 45->68 TOP THE SCOUT MEASURED IS SUPERSEDED BY THE GATED ONE, AND THE DIFFERENCE IS 58 CARDS. Flat: 200 cards in the band, 53 rise >= 3, 62 FALL >= 3 (LaPhonso Ellis '94/'98, Walter Berry '87/'88, Michael Kidd-Gilchrist '13 at -8 and -9). Gated on the lead perdef has over rimprot: 41 rise >= 3 and FOUR fall >= 3, all at exactly -3. The men who fell under the flat form move by ZERO under this one, by construction, and that is the form the dispatch asked to be considered.",
+  "THREE TACTICS TAXES WERE RE-RATIFIED AND THE INTEGRATOR MUST RE-SWEEP FROM MAIN'S CONSTANTS, NOT FROM THESE. hunt 3.65 -> 3.74, crashOff 0.28 -> 0.13, crashDef 0.60 -> 0.30. hunt's window this time is 0.023 wide, the narrowest it has ever recorded; crashOff's own interval has a NEGATIVE midpoint for the second time in the file's history (r117 was the first), so it took the positive half's midpoint.",
+  "DEF_TOP WAS NOT RE-DERIVED (the dispatch forbade it) and nothing this round moves sits above the knee: the whole footprint is under 93 raw. The top 12 by DEF is identical, card for card."
+ ],
+ "notes": [
+  "WHAT THE DEFECT IS, DECOMPOSED ON THE SUBJECT. Rodney McCray '88 — 1988 All-Defensive FIRST team, 33.2 mpg, 6'7\" (height 79) — has perdef 93, discipline 93, rimprot 56, drb 57, perimdisrupt 12 (as shipped; recal_181's lockdown floor pays it as 48.73 inside the perimeter half). His listing is ['SF','PF'], so recal_103's POSITION branch decides him and never reaches a shape clause. recal_103's own override cannot see him: his perimdisrupt-minus-drb gap is -45, the rebounding side of the test, because he is a low-event stopper rather than a ball-hawk. recal_187's rim-presence ramp saturates at 55 and his rimprot is 56 — ONE POINT past it — so it releases nothing either. He was graded 1.000 big: 0.40 x 93 + 0.40 x 56 + 0.17 x 57 = 72.0, against his own perimeter vector of 80.7, and printed DEF 81, #19 of 1988.",
+  "WHY THE TOP IS THE KNOB AND NOT THE FOOT. recal_187 borrowed BOTH ends of its ramp from recal_136, which set them for a different question. The foot (45, where a rim-protection claim begins) is right for this question too and is untouched — that is why Carroll '14, Crowder '16 and Ingles '17, recal_187's own three subjects, move by exactly zero. The TOP is the guess: 55 is where recal_136 said a man who does not shoot is WHOLLY a big, and it leaves a 6'7\" wing with rimprot 56-67 graded entirely on a big vector while recal_99's deterrence clause — the file's other statement about a whole rim claim — does not think that number deters anybody until 68.",
+  "WHY THE TOP IS A FUNCTION AND NOT A CONSTANT, WHICH IS THE ROUND'S ONE REAL CHOICE. Moving the top flat to 68 is right for a wing whose perimeter defence is his case (McCray, Wallace, Covington) and WRONG for a listed power forward whose rim number is his case: LaPhonso Ellis '94 (rimprot 64 > perdef 61), Walter Berry '88 (65 > 47), Kidd-Gilchrist '13 (62 > 50) each lose eight or nine points to it, and they should lose nothing — their listing and their sheet AGREE. So the top is set by the SIGNED LEAD perdef has over rimprot, over recal_164's own width 10, the quantity every other clause in this function already reads. At lead 0 the branch is byte-identical to recal_187; at lead 10 the top is DET_LO. NO NEW CONSTANT ENTERS THE FILE.",
+  "THE CLASS, AND IT IS WHY THIS IS A FORMULA AND NOT A CARD. The dispatch named two more instances and both are the same shape — wing height, a real but unremarkable rim number, a perimeter sheet nobody was grading them on. Gerald Wallace '12 (perdef 90, rimprot 57) 81 -> 86, with '13 78 -> 84 and '14 76 -> 82. Robert Covington '17 (perdef 96, rimprot 64) 85 -> 87, with '16 78 -> 83 and '15 76 -> 80 — he releases LEAST of the three because his rim number is the highest, which is the ramp doing exactly what it says. The largest movers on the whole board are the same archetype recal_103 named: Luc Mbah a Moute '16 +10, George McGinnis '82 +8, Chuck Hayes '08 +6, Rodney Rogers '03 +5, Eduardo Nájera '08 +5, Chris Singleton '12 +5.",
+  "THE FOUR FALLERS ARE NOT A DEFECT, THEY ARE THE SAME SENTENCE READ THE OTHER WAY. Andrés Nocioni '06/'07, Buck Williams '88 and Miles Bridges '26 each have perdef ahead of rimprot, so the branch releases them toward their own perimeter vector — and for them that vector is LOWER than the big one. All four move exactly -3, and Buck Williams '88 is the clearest reading of it: a rebounding power forward at perdef 64 no longer outscores an All-Defensive first-team wing on defence (76 against 87, where it was 79 against 81).",
+  "OFF AND EVERY ATTRIBUTE MOVE ON ZERO CARDS. is_big is untouched, exactly as recal_93 / recal_103 / recal_164 / recal_187 left it, so the boolean still labels the card, still gates recal_55's big hub and recal_91's stretch-big floor, and still picks the OVR cap branch. Only d_score's mix weight moves: 217 DEF (154 up, 63 down, max +10 / -3) and 133 OVR (max +6 / -2) of 10,000."
+ ]
 }
