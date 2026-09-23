@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 201
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -518,6 +518,92 @@ def score_season(r, P):
     _on_rim_vector = PERIM_RIM_SHARE + (1.0 - PERIM_RIM_SHARE) * min(1.0, max(0.0, ((r['ht'] or 78) - 75.0) / (80.0 - 75.0)))
     _paid_in_rim = (_on_rim_vector * min(1.0, max(0.0, r['drep'])) * max(_blk_evidence(P['blk'](r['blk']) + (BLK_FULL - BLK_BAR) * _at_band_top), _out_of_band)) if r['drep'] > 0.05 else 0.0
     _vote_factor = 1.0 - _paid_in_rim * (1.0 - P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW)
+    # recal_201 (HIS RULING on Mark Eaton '85, verbatim: "at or just above Gobert '19's pinned 92").
+    # THE COMPOSITE CHARGES A BIG'S HEIGHT TWICE AND BEFORE 2014 THERE IS NO MEASUREMENT TO ANSWER IT.
+    # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Mark Eaton '85 - DPOY, All-Defensive 1st,
+    # 5.6 blocks a game (the record), BLK% 8.7 at the 99th percentile of 1985, DBPM +4.2 at the 99th -
+    # read perdef 57 and DEF 89, BELOW Bobby Jones '82 (93), Dennis Rodman '89 (93) and Dan Roundfield
+    # '80 (95), and below Dikembe Mutombo '95 (90, perdef 56 at 86 inches). His '89 DPOY reads 88 the
+    # same way. The big vector prints 0.40 x 57 + 0.40 x 98 + 0.17 x 89 + 0.03 x 55 = 78.85, x 1.1305
+    # = 89, so the whole gap to his number is the one bar that is not his: perdef.
+    # WHERE THE 57 COMES FROM, DECOMPOSED. The PD composite is drep 0.453 + dbpm 0.238 + height_inv
+    # 0.309. At 88 inches `height_inv = max(0, 1 - (ht-80)/8)` pays 0.000 and recal_54's `rep_hf =
+    # max(0.5, 1.2 - 0.8*clip((ht-80)/6))` is on its floor, so the ballot term pays 0.453 x 1.00 x
+    # 0.50 = 0.227 of the 0.544 a wing collects for the SAME ballot. Together the two height terms are
+    # 0.76 of the composite's weight (0.309 + 0.453) and they are both read off the same 80-inch band.
+    # His composite is 0.4632, which is the 4th PERCENTILE of the 1985 voted pool (26 of 27, above
+    # Kareem alone) - the pool is sorted almost exactly by height, and the season's DPOY sits at the
+    # bottom of it. recal_101 named this defect in this file in these words: "a composite that charges
+    # his height twice (rep_hf halves his votes above 6'8" AND height_inv zeroes at 7'4")".
+    # WHY recal_101's REMEDY CANNOT REACH HIM. That round did not repair the composite; it let the
+    # season's OWN TRACKED READING floor a voted card (`PD2 = max(PD2, _dmeas101)` below), which is
+    # how Victor Wembanyama '26 - the same 88 inches, the same two zeroed terms - prints perdef 74 off
+    # -8.6% over 765 shots. Before 2014 there is no such channel, and this file's own header says what
+    # is left: "All-D/DPOY votes are the ONLY recorded measure of pre-tracking perimeter D". So in the
+    # untracked era the height split halves the only measure there is, with nothing able to answer it.
+    # THE CLASS IS THE UNTRACKED ERA, AND IT IS THE SENTINEL THE FILE ALREADY USES. `season < 2014` is
+    # recal_146/183's own gate for "the era has no tracking" (the relief line below reads it). Every
+    # 2014+ card is BYTE-IDENTICAL by construction - Wembanyama '24/'25/'26, Gobert '19, Walker Kessler
+    # '23, Joel Embiid '23, Amen Thompson '24/'25/'26, Jaylen Brown '26, Stephon Castle '26, Ajay
+    # Mitchell '26, Mikal Bridges '21, Marcus Smart '23, Jrue Holiday '20/'21 - because a tracked card
+    # already has recal_101's answer.
+    # THE PAR IS 1.0 AND IT IS NOT A NEW HEIGHT CONSTANT. recal_54's 1.2 is a WING PREMIUM, not the
+    # face value of a ballot: recal_97's note records that a perfect wing sheet reads 0.453 x 1.2 +
+    # 0.238 + 0.309 = 1.0896, i.e. the premium is what takes the best perimeter sheet OVER unity. The
+    # relief therefore restores a big's ballot toward PAR and never toward the wing rate, which makes
+    # the class SELF-DEFINING: rep_hf is at or above 1.0 through 81.5 inches, so every card 6'9" and
+    # under is untouched by arithmetic and so is every 6'9"-and-under-equivalent - Dennis Rodman
+    # '89/'90 (79in), Dan Roundfield '80/'82/'83 (80in), Buck Williams '91 (80in), Scottie Pippen,
+    # Michael Jordan '89, Karl Malone '97 (81in), Ben Wallace '03/'04/'06 (81in), Bobby Jones '82
+    # (81in), Manu Ginobili '11, Klay Thompson '13, Joe Dumars '90, Alvin Robertson. The boundary
+    # recal_135 forbids moving DOWN is untouched: this term can only ever RAISE a card ABOVE it.
+    # WHAT CERTIFIES THE BALLOT IS recal_114's OWN TEST, UNCHANGED. The reason rep_hf discounts a big's
+    # ballot at all is that a big's All-Defensive votes may be RIM votes, which rimprot pays already -
+    # and this file built a meter for exactly that question and gated it on DBPM support
+    # (`VOTE_SUPPORT_POW`, "votes rimprot has already cashed are backed in perdef only by a top-decile
+    # DBPM"). rep_hf is the same deduction taken a second time and it is gated on NOTHING but height.
+    # So the relief is paid at the share that meter already certifies, P(dbpm)**VOTE_SUPPORT_POW: the
+    # subject is at 0.982 (DBPM +4.2), and the bigs whose ballots their box lines do NOT back collect
+    # nothing - Moses Malone '85 (DBPM -1.4) and Kevin McHale '85 (-0.2) are byte-identical, which is
+    # the negative control. No new meter and no new band: VOTE_SUPPORT_POW is recal_114's 3.
+    # HOW MUCH IS REFUNDED IS HOW MUCH THE OTHER TERM ALREADY TOOK, AND THERE IS NO NEW CONSTANT.
+    # The defect is that ONE height is charged TWICE, so the refund is sized by the charge already
+    # made: `1 - height_inv`, the card term's own spent share, written from the same expression the
+    # PD line below uses. At 6'8" and under nothing has been charged and nothing is refunded; at 7'4"
+    # and beyond the card term has paid out everything it can (height_inv is 0.000) and the ballot is
+    # restored the whole way to par. Between them the refund grades exactly as the charge does, which
+    # is why the class needs no bar: the refund share `1 - height_inv` is 0.375 at 6'11" (Tim Duncan
+    # '03, Marcus Camby '07), 0.625 at 7'1" (Shaquille O'Neal '00, David Robinson), 0.750 at 7'2"
+    # (Dikembe Mutombo) and 1.000 at 7'4" and up (the subject, Manute Bol, Yao Ming).
+    # THE POOL MOVES WITH THE CLASS, WHICH IS WHY THE TERM SITS IN THE COMPOSITE AND NOT BESIDE IT.
+    # This is recal_97's case, not recal_114's: what is repaired is the COMPOSITE'S OWN DEFINITION for
+    # a class, not a deduction aimed at particular cards, so Pvot must rank the corrected composite.
+    # The FROZEN form (recal_114/149/175's shape - the relief added to the card's own lookup only) was
+    # built and measured FIRST and it is freezing that breaks the board: with the pool held at the old
+    # PD a relieved big leapfrogs the OTHER relieved bigs standing just above him, and Shaquille
+    # O'Neal '00 (recal_80, def 88 +-1, reading 88.28 with 1.21 of raw room) jumps P.J. Brown '00 -
+    # 6'11", drep 0.51, a card that would have moved WITH him - for perdef 60, DEF 90 and a broken
+    # pin. Ranked in the corrected pool he passes only Larry Hughes '00 (6'5", outside the class by
+    # construction), moves ONE point and reads 89. NOTHING FALLS EITHER: see Pvot_pre in the season
+    # loop below - a card this term does not touch keeps the band position he had, so the 100-odd
+    # cards that move all move UP and LeBron James '04 (recal_164, def 70 +-2, reading 68 with no room
+    # down at all), Kurt Thomas '09, Larry Sanders '13 and Michael Jordan '89 are bit-identical.
+    # MEASURED ON THE WHOLE POOL BEFORE APPLYING. 109 of 10,000 cards move perdef and EVERY ONE OF
+    # THEM UP (largest +16, David Robinson '96 62 -> 78); 82 move DEF, none down, largest +5; 54 move
+    # OVR, none down, largest +2; ZERO move OFF and zero move any other attribute. The perdef top 12
+    # and the DEF top 12 are unchanged, name for name and in order. All 193 anchors hold.
+    # WHAT THE ROUND COSTS AND WHERE IT LANDS, STATED. There is no fitted constant in it - par is 1.0,
+    # the certification is recal_114's own power, the refund share is the file's own height_inv - and
+    # at full strength the subject reads perdef 68 / DEF 94 against a ruling of 93 +-2, one point above
+    # his number and inside it. Every partial strength was measured: a rate of 0.70 lands him DEF 92
+    # and 0.85 lands 93-94, so 93 EXACTLY is reachable only by adding a fitted rate to a term that
+    # otherwise has none. The unfitted form is the one that ships and the frontier is on the record.
+    _hinv = max(0.0, 1.0 - max(0.0, max(75.0 - (r['ht'] or 78), (r['ht'] or 78) - 80.0)) / 8.0)
+    BALLOT_PAR = 1.0        # a ballot at face value; 1.2 is recal_54's WING premium, not par
+    _rep_hf0 = rep_hf
+    if r['season'] < 2014 and r['drep'] > 0.05:
+        rep_hf = rep_hf + max(0.0, BALLOT_PAR - rep_hf) * (P['dbpm'](r['dbpm']) ** VOTE_SUPPORT_POW) * (1.0 - _hinv)
+    _pr201 = W['PD']['drep'] * (rep_hf - _rep_hf0) * r['drep']   # the refund, in composite space
     PD  = W['PD']['drep']*(r['drep']*rep_hf) + W['PD']['dbpm']*P['dbpm'](r['dbpm']) + W['PD']['height_inv'] * max(0.0, 1.0 - max(0.0, max(75.0-(r['ht'] or 78), (r['ht'] or 78)-80.0))/8.0)
     if r['drep'] == 0:   # evidence is weak without votes: shrink toward league middle (fixes both steal-gamblers and quiet solid defenders)
         PD = 0.5 + WEIGHTS['PD_SHRINK_NOVOTE']*(PD-0.5)
@@ -575,7 +661,7 @@ def score_season(r, P):
         out=[path, r['x3pa_per_100'], era_mult(r['season']), r['x3p_pct'], round(vol, 3), round(acc, 3), round(gate, 3)],
         idc=[r['blk'], r['ht'], r['dbpm'], round(r['drep'], 3),
              (TRACKING.get((r['season'], 'Less Than 6Ft'), {}).get(_nrm(r['name'])) or (None,))[0]],
-        _vf=_vote_factor, _cw=_cw175,
+        _vf=_vote_factor, _cw=_cw175, _pr=_pr201,
         pdc=[round(r['drep'], 3), r['dbpm'], r['team_drtg'], r['ht'], 1 if r['drep'] == 0 else 0,
              (TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, None))[0],
              round(min(1.0, r['drep'] / 0.30) if r['drep'] > 0.05 else 0.0, 2),
@@ -830,6 +916,15 @@ for yr, rows in seasons.items():
     # by arithmetic: the best-measured voted defender of a season could not be read as the best one.
     # pctile_top maps the maximum to exactly 1.0. (Read pctile_top's own docstring - it says this.)
     Pvot = pctile_top([t[1][3] for t in tmp if t[0]['drep'] >= 0.25])
+    # recal_201: the SAME percentile taken on the pool AS IT STOOD BEFORE the untracked-era ballot
+    # refund (`_pr`, the block at BALLOT_PAR in score_season). Every card takes the better of the two
+    # readings below, which is this file's standing rule written for a CREDIT instead of a deduction:
+    # a card the correction does not touch keeps the band position he had (his refund is zero, so his
+    # pre-relief reading is the larger by construction and he is bit-identical), while a card it does
+    # touch is ranked in the corrected pool against the other corrected cards instead of leapfrogging
+    # them. Bit-identical for every 2014+ season, where every `_pr` is zero and the two pools are the
+    # same list.
+    Pvot_pre = pctile_top([t[1][3] - t[1][5]['_pr'] for t in tmp if t[0]['drep'] >= 0.25])
     # two-stage deterrent scale: a real rim protector (composite >= RIM_GATE) is percentiled WITHIN that
     # class onto 55-99; everyone below caps at 54, so tall men with decent blocks stop riding global
     # percentiles into the high 80s. The anchor term sharpens with it (protection scales anchor/99).
@@ -1237,7 +1332,11 @@ for yr, rows in seasons.items():
             _c175 = min(1.0, max(0.0, (_m175 - CONTRA_LO) / (CONTRA_FULL - CONTRA_LO)))
             _corr175 = 1.0 - (1.0 - _c175) * _sample_weight(r['name'])
         PDo = PD - (1.0 - CARRIED_REIN) * (1.0 - _corr175) * BRK['_cw']
-        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * Pvot(PDo) * BRK['_vf'])   # no-vote cap 54 -> 58 (recal 5)
+        # recal_201: the corrected pool, floored by the pool as it stood (see Pvot_pre above). `_pr`
+        # is zero for every 2014+ card and every card 6'8" and under, and for those the two readings
+        # are the same number.
+        _pv201 = max(Pvot(PDo), Pvot_pre(PDo - BRK['_pr']))
+        PD2 = (1 - wv) * novote + wv * (0.55 + 0.45 * _pv201 * BRK['_vf'])   # no-vote cap 54 -> 58 (recal 5)
         # recal_101 (HIS RULING on Wembanyama '26, verbatim: "Per def is too low. I understand the
         # 7'4 is an issue but everything else is 10/10"). A VOTED CARD'S FULL-SAMPLE MEASUREMENT MAY
         # RAISE HIM, NEVER LOWER HIM. For wv = 1 the tracked branch was multiplied by zero, so the

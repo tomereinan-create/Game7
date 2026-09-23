@@ -727,6 +727,21 @@ export const DEFAULT_TACTICS: Tactics = {
  * per-branch figures (186: 3.66; 187: 3.59; 188: 3.76). hunt broke on the BLIND edge (-0.11 at 3.40): 447 no-vote bigs
  * lost rim protection and 188 rebounding forwards lost defence, so a blind hunt call costs less. 3.90 overshoots the oracle
  * (+0.42), 3.72 sits exactly on it (+0.50); hunt 3.65 (blind -0.32, oracle +0.53) — a NARROW window. The others held.
+ * recal_201's untracked-era ballot refund lifted 109 perdefs, 82 d_ovrs and 54 OVRs — every one of them UP, since the
+ * round only returns a charge taken twice — and reshuffled the ovr>=55 pool with them; THREE taxes broke together and
+ * all three on the ORACLE edge, which is the signature of a DEFENSIVE round that only raises: hunt +0.482, crash off
+ * glass +0.483, crash def glass +0.397 against the +0.50 floor. Swept ONCE each from main's constants (3.65 / .28 / .60).
+ * hunt: 3.65 (+0.4822) / 3.62 (+0.4951) / 3.61 (+0.4995) / 3.60 (+0.5037) / 3.55 (blind -0.3055) / 3.54 (blind -0.2972)
+ * — feasible about 3.547 to 3.609, SIXTY-TWO THOUSANDTHS wide, and it takes its true midpoint by r126's rule: 3.65 ->
+ * 3.58, oracle +0.512 and blind -0.331, 0.012 and 0.031 of room. crashOff: .22 (+0.4982) / .21 (+0.5009) / .15 / .11 /
+ * .10 / -.35 (blind -0.3293) / -.40 (blind -0.2984) — feasible about -.393 to .213, whose midpoint is NEGATIVE again,
+ * so r117's rule stands and the value is the midpoint of the POSITIVE half: .28 -> .11, oracle +0.528 and blind -0.612.
+ * crashDef: .26 (+0.4950) / .25 (+0.4980) / .24 (+0.5010) / .18 / .14 / .12 (blind -0.3015) / .11 (blind -0.2939) —
+ * a whole feasible interval of about .118 to .247, true midpoint .18: oracle +0.520 and blind -0.347, 0.020 and 0.047
+ * of room. hunt's benefit reads a DEFENSIVE attribute and both crash benefits read a rebounding one off a pool this
+ * round reshuffled, which is the cause the r116/r126/r141 entries already name. The other six held their bands
+ * untouched. All nine pass. NOTE: swept on THIS BRANCH's pool; rounds 195/197/199 are landing in parallel and the
+ * integrator re-sweeps ONCE from main's constants on the merged pool, superseding these three figures.
  */
 export const TAX = {
   scorer: 0.55,
@@ -734,9 +749,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.65,
-  crashOff: 0.28,
-  crashDef: 0.60,
+  hunt: 3.58,
+  crashOff: 0.11,
+  crashDef: 0.18,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
