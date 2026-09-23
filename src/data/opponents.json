@@ -178,7 +178,7 @@
         "attrs": {
           "3pt": 35,
           "rim": 54,
-          "mid": 48,
+          "mid": 26,
           "rim_mid_measured": true,
           "ft": 69,
           "fouldraw": 42,
@@ -199,10 +199,10 @@
           "ts_rel": 0.516
         },
         "big": true,
-        "o_ovr": 61,
+        "o_ovr": 60,
         "d_ovr": 69,
-        "ovr": 65,
-        "marg": 58
+        "ovr": 64,
+        "marg": 53
       }
     ]
   },
@@ -233,7 +233,7 @@
         "attrs": {
           "3pt": 48,
           "rim": 24,
-          "mid": 82,
+          "mid": 73,
           "rim_mid_measured": true,
           "ft": 81,
           "fouldraw": 62,
@@ -254,9 +254,9 @@
           "ts_rel": 0.547
         },
         "big": false,
-        "o_ovr": 66,
+        "o_ovr": 64,
         "d_ovr": 45,
-        "ovr": 60,
+        "ovr": 58,
         "marg": 67
       },
       {
@@ -271,7 +271,7 @@
         "attrs": {
           "3pt": 37,
           "rim": 32,
-          "mid": 64,
+          "mid": 58,
           "rim_mid_measured": true,
           "ft": 86,
           "fouldraw": 84,
@@ -292,9 +292,9 @@
           "ts_rel": 0.563
         },
         "big": false,
-        "o_ovr": 63,
+        "o_ovr": 61,
         "d_ovr": 46,
-        "ovr": 58,
+        "ovr": 56,
         "marg": 53
       },
       {
@@ -309,7 +309,7 @@
         "attrs": {
           "3pt": 79,
           "rim": 8,
-          "mid": 51,
+          "mid": 43,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 41,
@@ -330,9 +330,9 @@
           "ts_rel": 0.54
         },
         "big": false,
-        "o_ovr": 55,
+        "o_ovr": 58,
         "d_ovr": 53,
-        "ovr": 54,
+        "ovr": 56,
         "marg": 49
       },
       {
@@ -347,7 +347,7 @@
         "attrs": {
           "3pt": 55,
           "rim": 70,
-          "mid": 75,
+          "mid": 37,
           "rim_mid_measured": true,
           "ft": 70,
           "fouldraw": 68,
@@ -368,9 +368,9 @@
           "ts_rel": 0.559
         },
         "big": true,
-        "o_ovr": 77,
+        "o_ovr": 74,
         "d_ovr": 60,
-        "ovr": 72,
+        "ovr": 70,
         "marg": 85
       },
       {
@@ -409,7 +409,7 @@
         "o_ovr": 49,
         "d_ovr": 74,
         "ovr": 62,
-        "marg": 69
+        "marg": 70
       }
     ]
   },
@@ -516,7 +516,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 63,
-          "mid": 73,
+          "mid": 49,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 43,
@@ -537,9 +537,9 @@
           "ts_rel": 0.588
         },
         "big": false,
-        "o_ovr": 78,
+        "o_ovr": 77,
         "d_ovr": 51,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 89
       },
       {
@@ -578,7 +578,7 @@
         "o_ovr": 51,
         "d_ovr": 56,
         "ovr": 54,
-        "marg": 43
+        "marg": 44
       },
       {
         "name": "Nic Claxton '26",
@@ -636,42 +636,80 @@
     ],
     "players": [
       {
-        "name": "Russell Westbrook '26",
-        "player": "Russell Westbrook",
+        "name": "Zach LaVine '26",
+        "player": "Zach LaVine",
         "peak_season": 2026,
-        "talent": 77,
-        "in": 40,
-        "out": 59,
-        "id": 19,
-        "pd": 48,
+        "talent": 76,
+        "in": 58,
+        "out": 88,
+        "id": 17,
+        "pd": 51,
         "attrs": {
-          "3pt": 56,
-          "rim": 52,
-          "mid": 51,
+          "3pt": 87,
+          "rim": 53,
+          "mid": 74,
           "rim_mid_measured": true,
-          "ft": 68,
-          "fouldraw": 46,
-          "orb": 58,
-          "drb": 60,
-          "playvol": 78,
-          "ballsec": 24,
-          "volume": 68,
-          "efficiency": 20,
-          "durability": 58,
-          "rimprot": 19,
-          "perimdisrupt": 77,
-          "height": 76,
-          "perdef": 48,
-          "discipline": 42,
-          "usg_raw": 25.4,
-          "ts_raw": 0.529,
-          "ts_rel": 0.516
+          "ft": 86,
+          "fouldraw": 51,
+          "orb": 17,
+          "drb": 29,
+          "playvol": 42,
+          "ballsec": 58,
+          "volume": 73,
+          "efficiency": 68,
+          "durability": 25,
+          "rimprot": 17,
+          "perimdisrupt": 20,
+          "height": 77,
+          "perdef": 51,
+          "discipline": 74,
+          "usg_raw": 24.1,
+          "ts_raw": 0.62,
+          "ts_rel": 0.608
         },
         "big": false,
-        "o_ovr": 61,
-        "d_ovr": 53,
-        "ovr": 59,
-        "marg": 45
+        "o_ovr": 72,
+        "d_ovr": 48,
+        "ovr": 65,
+        "marg": 82
+      },
+      {
+        "name": "Malik Monk '26",
+        "player": "Malik Monk",
+        "peak_season": 2026,
+        "talent": 74,
+        "in": 32,
+        "out": 83,
+        "id": 43,
+        "pd": 46,
+        "attrs": {
+          "3pt": 82,
+          "rim": 29,
+          "mid": 68,
+          "rim_mid_measured": true,
+          "ft": 88,
+          "fouldraw": 34,
+          "orb": 19,
+          "drb": 25,
+          "playvol": 59,
+          "ballsec": 58,
+          "volume": 73,
+          "efficiency": 38,
+          "durability": 28,
+          "rimprot": 43,
+          "perimdisrupt": 31,
+          "height": 75,
+          "perdef": 46,
+          "discipline": 51,
+          "usg_raw": 24.1,
+          "ts_raw": 0.563,
+          "ts_rel": 0.551
+        },
+        "big": false,
+        "o_ovr": 62,
+        "d_ovr": 47,
+        "ovr": 58,
+        "marg": 58
       },
       {
         "name": "DeMar DeRozan '26",
@@ -709,45 +747,7 @@
         "o_ovr": 77,
         "d_ovr": 46,
         "ovr": 68,
-        "marg": 89
-      },
-      {
-        "name": "Zach LaVine '26",
-        "player": "Zach LaVine",
-        "peak_season": 2026,
-        "talent": 76,
-        "in": 58,
-        "out": 88,
-        "id": 17,
-        "pd": 51,
-        "attrs": {
-          "3pt": 87,
-          "rim": 53,
-          "mid": 76,
-          "rim_mid_measured": true,
-          "ft": 86,
-          "fouldraw": 51,
-          "orb": 17,
-          "drb": 29,
-          "playvol": 42,
-          "ballsec": 58,
-          "volume": 73,
-          "efficiency": 68,
-          "durability": 25,
-          "rimprot": 17,
-          "perimdisrupt": 20,
-          "height": 77,
-          "perdef": 51,
-          "discipline": 74,
-          "usg_raw": 24.1,
-          "ts_raw": 0.62,
-          "ts_rel": 0.608
-        },
-        "big": false,
-        "o_ovr": 72,
-        "d_ovr": 48,
-        "ovr": 65,
-        "marg": 82
+        "marg": 88
       },
       {
         "name": "Precious Achiuwa '26",
@@ -854,7 +854,7 @@
         "attrs": {
           "3pt": 74,
           "rim": 45,
-          "mid": 72,
+          "mid": 62,
           "rim_mid_measured": true,
           "ft": 87,
           "fouldraw": 80,
@@ -875,9 +875,9 @@
           "ts_rel": 0.579
         },
         "big": false,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 48,
-        "ovr": 68,
+        "ovr": 67,
         "marg": 82
       },
       {
@@ -968,7 +968,7 @@
         "attrs": {
           "3pt": 74,
           "rim": 64,
-          "mid": 48,
+          "mid": 33,
           "rim_mid_measured": true,
           "ft": 89,
           "fouldraw": 64,
@@ -1099,7 +1099,7 @@
         "attrs": {
           "3pt": 52,
           "rim": 67,
-          "mid": 44,
+          "mid": 34,
           "rim_mid_measured": true,
           "ft": 84,
           "fouldraw": 52,
@@ -1120,7 +1120,7 @@
           "ts_rel": 0.571
         },
         "big": false,
-        "o_ovr": 61,
+        "o_ovr": 60,
         "d_ovr": 59,
         "ovr": 60,
         "marg": 75
@@ -1161,7 +1161,7 @@
         "o_ovr": 53,
         "d_ovr": 53,
         "ovr": 53,
-        "marg": 51
+        "marg": 52
       },
       {
         "name": "Jaren Jackson Jr. '26",
@@ -1199,7 +1199,7 @@
         "o_ovr": 68,
         "d_ovr": 83,
         "ovr": 76,
-        "marg": 66
+        "marg": 67
       },
       {
         "name": "Jock Landale '26",
@@ -1306,7 +1306,7 @@
         "attrs": {
           "3pt": 20,
           "rim": 58,
-          "mid": 76,
+          "mid": 44,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 64,
@@ -1327,10 +1327,10 @@
           "ts_rel": 0.534
         },
         "big": true,
-        "o_ovr": 72,
+        "o_ovr": 67,
         "d_ovr": 64,
-        "ovr": 70,
-        "marg": 63
+        "ovr": 66,
+        "marg": 66
       },
       {
         "name": "Klay Thompson '26",
@@ -1344,7 +1344,7 @@
         "attrs": {
           "3pt": 96,
           "rim": 9,
-          "mid": 68,
+          "mid": 37,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 17,
@@ -1365,9 +1365,9 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 67,
+        "o_ovr": 65,
         "d_ovr": 53,
-        "ovr": 63,
+        "ovr": 61,
         "marg": 46
       },
       {
@@ -1382,7 +1382,7 @@
         "attrs": {
           "3pt": 18,
           "rim": 74,
-          "mid": 51,
+          "mid": 44,
           "rim_mid_measured": true,
           "ft": 77,
           "fouldraw": 71,
@@ -1403,10 +1403,10 @@
           "ts_rel": 0.577
         },
         "big": true,
-        "o_ovr": 62,
+        "o_ovr": 61,
         "d_ovr": 58,
-        "ovr": 61,
-        "marg": 66
+        "ovr": 60,
+        "marg": 55
       },
       {
         "name": "P.J. Washington '26",
@@ -1444,7 +1444,7 @@
         "o_ovr": 47,
         "d_ovr": 72,
         "ovr": 60,
-        "marg": 46
+        "marg": 47
       }
     ]
   },
@@ -1475,7 +1475,7 @@
         "attrs": {
           "3pt": 39,
           "rim": 47,
-          "mid": 47,
+          "mid": 26,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 48,
@@ -1496,10 +1496,10 @@
           "ts_rel": 0.511
         },
         "big": false,
-        "o_ovr": 55,
+        "o_ovr": 54,
         "d_ovr": 57,
         "ovr": 56,
-        "marg": 42
+        "marg": 41
       },
       {
         "name": "Saddiq Bey '26",
@@ -1965,7 +1965,7 @@
         "attrs": {
           "3pt": 42,
           "rim": 63,
-          "mid": 40,
+          "mid": 33,
           "rim_mid_measured": true,
           "ft": 70,
           "fouldraw": 55,
@@ -2003,7 +2003,7 @@
         "attrs": {
           "3pt": 84,
           "rim": 31,
-          "mid": 88,
+          "mid": 82,
           "rim_mid_measured": true,
           "ft": 74,
           "fouldraw": 20,
@@ -2024,7 +2024,7 @@
           "ts_rel": 0.563
         },
         "big": true,
-        "o_ovr": 71,
+        "o_ovr": 70,
         "d_ovr": 52,
         "ovr": 65,
         "marg": 72
@@ -2134,7 +2134,7 @@
         "attrs": {
           "3pt": 68,
           "rim": 31,
-          "mid": 62,
+          "mid": 47,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 53,
@@ -2155,9 +2155,9 @@
           "ts_rel": 0.564
         },
         "big": false,
-        "o_ovr": 59,
+        "o_ovr": 58,
         "d_ovr": 58,
-        "ovr": 59,
+        "ovr": 58,
         "marg": 68
       },
       {
@@ -2548,7 +2548,7 @@
         "attrs": {
           "3pt": 60,
           "rim": 66,
-          "mid": 76,
+          "mid": 47,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 42,
@@ -2569,9 +2569,9 @@
           "ts_rel": 0.535
         },
         "big": false,
-        "o_ovr": 68,
+        "o_ovr": 65,
         "d_ovr": 49,
-        "ovr": 62,
+        "ovr": 60,
         "marg": 43
       },
       {
@@ -2793,7 +2793,7 @@
         "attrs": {
           "3pt": 82,
           "rim": 40,
-          "mid": 54,
+          "mid": 52,
           "rim_mid_measured": true,
           "ft": 78,
           "fouldraw": 42,
@@ -2831,7 +2831,7 @@
         "attrs": {
           "3pt": 42,
           "rim": 51,
-          "mid": 68,
+          "mid": 48,
           "rim_mid_measured": true,
           "ft": 78,
           "fouldraw": 80,
@@ -2852,9 +2852,9 @@
           "ts_rel": 0.541
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 65,
         "d_ovr": 85,
-        "ovr": 77,
+        "ovr": 75,
         "marg": 88
       },
       {
@@ -2924,7 +2924,7 @@
         "attrs": {
           "3pt": 87,
           "rim": 46,
-          "mid": 72,
+          "mid": 69,
           "rim_mid_measured": true,
           "ft": 88,
           "fouldraw": 28,
@@ -2962,7 +2962,7 @@
         "attrs": {
           "3pt": 79,
           "rim": 53,
-          "mid": 62,
+          "mid": 58,
           "rim_mid_measured": true,
           "ft": 86,
           "fouldraw": 68,
@@ -3038,7 +3038,7 @@
         "attrs": {
           "3pt": 56,
           "rim": 62,
-          "mid": 28,
+          "mid": 26,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 47,
@@ -3062,7 +3062,7 @@
         "o_ovr": 64,
         "d_ovr": 70,
         "ovr": 67,
-        "marg": 65
+        "marg": 66
       },
       {
         "name": "Ryan Kalkbrenner '26",
@@ -3155,7 +3155,7 @@
         "o_ovr": 59,
         "d_ovr": 79,
         "ovr": 69,
-        "marg": 62
+        "marg": 63
       },
       {
         "name": "Desmond Bane '26",
@@ -3245,7 +3245,7 @@
         "attrs": {
           "3pt": 29,
           "rim": 56,
-          "mid": 68,
+          "mid": 47,
           "rim_mid_measured": true,
           "ft": 77,
           "fouldraw": 92,
@@ -3266,10 +3266,10 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 71,
         "d_ovr": 68,
-        "ovr": 72,
-        "marg": 63
+        "ovr": 70,
+        "marg": 64
       },
       {
         "name": "Wendell Carter Jr. '26",
@@ -3621,7 +3621,7 @@
         "attrs": {
           "3pt": 73,
           "rim": 26,
-          "mid": 84,
+          "mid": 65,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 32,
@@ -3642,9 +3642,9 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 64,
+        "o_ovr": 61,
         "d_ovr": 56,
-        "ovr": 62,
+        "ovr": 60,
         "marg": 50
       },
       {
@@ -3790,7 +3790,7 @@
         "attrs": {
           "3pt": 82,
           "rim": 36,
-          "mid": 91,
+          "mid": 89,
           "rim_mid_measured": true,
           "ft": 76,
           "fouldraw": 32,
@@ -3811,9 +3811,9 @@
           "ts_rel": 0.549
         },
         "big": false,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 54,
-        "ovr": 68,
+        "ovr": 67,
         "marg": 73
       },
       {
@@ -3852,7 +3852,7 @@
         "o_ovr": 45,
         "d_ovr": 55,
         "ovr": 50,
-        "marg": 52
+        "marg": 53
       },
       {
         "name": "Jalen Johnson '26",
@@ -4073,7 +4073,7 @@
         "attrs": {
           "3pt": 19,
           "rim": 61,
-          "mid": 84,
+          "mid": 78,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 59,
@@ -4094,9 +4094,9 @@
           "ts_rel": 0.551
         },
         "big": true,
-        "o_ovr": 73,
+        "o_ovr": 72,
         "d_ovr": 93,
-        "ovr": 83,
+        "ovr": 82,
         "marg": 88
       },
       {
@@ -4166,7 +4166,7 @@
         "attrs": {
           "3pt": 94,
           "rim": 68,
-          "mid": 86,
+          "mid": 78,
           "rim_mid_measured": true,
           "ft": 81,
           "fouldraw": 77,
@@ -4187,9 +4187,9 @@
           "ts_rel": 0.599
         },
         "big": false,
-        "o_ovr": 87,
+        "o_ovr": 86,
         "d_ovr": 64,
-        "ovr": 80,
+        "ovr": 79,
         "marg": 93
       },
       {
@@ -4242,7 +4242,7 @@
         "attrs": {
           "3pt": 35,
           "rim": 64,
-          "mid": 69,
+          "mid": 53,
           "rim_mid_measured": true,
           "ft": 80,
           "fouldraw": 88,
@@ -4263,9 +4263,9 @@
           "ts_rel": 0.574
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 61,
-        "ovr": 72,
+        "ovr": 71,
         "marg": 86
       },
       {
@@ -4304,7 +4304,7 @@
         "o_ovr": 59,
         "d_ovr": 78,
         "ovr": 68,
-        "marg": 58
+        "marg": 59
       },
       {
         "name": "Rudy Gobert '26",
@@ -4411,7 +4411,7 @@
         "attrs": {
           "3pt": 85,
           "rim": 72,
-          "mid": 91,
+          "mid": 86,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 67,
@@ -4432,9 +4432,9 @@
           "ts_rel": 0.591
         },
         "big": false,
-        "o_ovr": 89,
+        "o_ovr": 88,
         "d_ovr": 58,
-        "ovr": 80,
+        "ovr": 79,
         "marg": 96
       },
       {
@@ -4580,7 +4580,7 @@
         "attrs": {
           "3pt": 9,
           "rim": 77,
-          "mid": 42,
+          "mid": 31,
           "rim_mid_measured": true,
           "ft": 76,
           "fouldraw": 84,
@@ -4601,7 +4601,7 @@
           "ts_rel": 0.583
         },
         "big": false,
-        "o_ovr": 62,
+        "o_ovr": 61,
         "d_ovr": 95,
         "ovr": 78,
         "marg": 96
@@ -4694,7 +4694,7 @@
         "attrs": {
           "3pt": 64,
           "rim": 31,
-          "mid": 64,
+          "mid": 53,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 37,
@@ -4732,7 +4732,7 @@
         "attrs": {
           "3pt": 15,
           "rim": 76,
-          "mid": 54,
+          "mid": 30,
           "rim_mid_measured": true,
           "ft": 69,
           "fouldraw": 80,
@@ -4753,10 +4753,10 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 71,
         "ovr": 74,
-        "marg": 90
+        "marg": 91
       }
     ]
   },
@@ -4787,7 +4787,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 72,
-          "mid": 92,
+          "mid": 82,
           "rim_mid_measured": true,
           "ft": 78,
           "fouldraw": 88,
@@ -4808,7 +4808,7 @@
           "ts_rel": 0.596
         },
         "big": false,
-        "o_ovr": 94,
+        "o_ovr": 93,
         "d_ovr": 69,
         "ovr": 86,
         "marg": 98
@@ -4825,7 +4825,7 @@
         "attrs": {
           "3pt": 70,
           "rim": 67,
-          "mid": 51,
+          "mid": 27,
           "rim_mid_measured": true,
           "ft": 87,
           "fouldraw": 84,
@@ -4846,9 +4846,9 @@
           "ts_rel": 0.622
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 76,
         "d_ovr": 53,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 93
       },
       {
@@ -4863,7 +4863,7 @@
         "attrs": {
           "3pt": 38,
           "rim": 86,
-          "mid": 77,
+          "mid": 63,
           "rim_mid_measured": true,
           "ft": 75,
           "fouldraw": 69,
@@ -4884,7 +4884,7 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 83,
+        "o_ovr": 82,
         "d_ovr": 64,
         "ovr": 77,
         "marg": 86
@@ -5146,7 +5146,7 @@
         "attrs": {
           "3pt": 62,
           "rim": 69,
-          "mid": 35,
+          "mid": 34,
           "rim_mid_measured": true,
           "ft": 85,
           "fouldraw": 85,
@@ -5277,7 +5277,7 @@
         "attrs": {
           "3pt": 92,
           "rim": 11,
-          "mid": 66,
+          "mid": 65,
           "rim_mid_measured": true,
           "ft": 82,
           "fouldraw": 50,
@@ -5408,7 +5408,7 @@
         "attrs": {
           "3pt": 73,
           "rim": 19,
-          "mid": 65,
+          "mid": 64,
           "rim_mid_measured": true,
           "ft": 88,
           "fouldraw": 28,
@@ -5446,7 +5446,7 @@
         "attrs": {
           "3pt": 88,
           "rim": 40,
-          "mid": 73,
+          "mid": 66,
           "rim_mid_measured": true,
           "ft": 88,
           "fouldraw": 11,
@@ -5484,7 +5484,7 @@
         "attrs": {
           "3pt": 54,
           "rim": 72,
-          "mid": 90,
+          "mid": 84,
           "rim_mid_measured": true,
           "ft": 79,
           "fouldraw": 76,
@@ -5505,9 +5505,9 @@
           "ts_rel": 0.556
         },
         "big": false,
-        "o_ovr": 83,
+        "o_ovr": 82,
         "d_ovr": 66,
-        "ovr": 78,
+        "ovr": 77,
         "marg": 81
       },
       {
@@ -5546,7 +5546,7 @@
         "o_ovr": 63,
         "d_ovr": 57,
         "ovr": 61,
-        "marg": 57
+        "marg": 58
       },
       {
         "name": "Neemias Queta '26",
@@ -5753,7 +5753,7 @@
         "o_ovr": 46,
         "d_ovr": 75,
         "ovr": 60,
-        "marg": 76
+        "marg": 77
       },
       {
         "name": "Jalen Duren '26",
@@ -5960,7 +5960,7 @@
         "o_ovr": 58,
         "d_ovr": 54,
         "ovr": 57,
-        "marg": 63
+        "marg": 64
       },
       {
         "name": "Victor Wembanyama '26",
@@ -5974,7 +5974,7 @@
         "attrs": {
           "3pt": 66,
           "rim": 78,
-          "mid": 82,
+          "mid": 57,
           "rim_mid_measured": true,
           "ft": 83,
           "fouldraw": 72,
@@ -5995,7 +5995,7 @@
           "ts_rel": 0.605
         },
         "big": true,
-        "o_ovr": 86,
+        "o_ovr": 84,
         "d_ovr": 95,
         "ovr": 90,
         "marg": 97

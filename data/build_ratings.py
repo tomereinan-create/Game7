@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 195
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -1531,7 +1531,72 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     VOL_FOOT, VOL_FULL, VOL_GATE = 12.0, 24.0, 0.77
     _vload = 1.0 if _pmpg is None else min(1.0, max(0.0, (_pmpg - VOL_FOOT) / (VOL_FULL - VOL_FOOT)))
     _mvol = P['midvol'](s10*fga100)
-    mid = 0.65*(min(_mvol, VOL_GATE + (_mvol - VOL_GATE)*_vload) if use_factor else _mvol) + 0.35*P['midfg'](fmid)
+    _mfg  = P['midfg'](fmid)
+    # RECAL_195 (his ruling on Jerry Stackhouse '07, verbatim: "Jerry Stackhouse '07 is too high in
+    # OFF. Should be low 60s.", routed here as mid 52 +-6; landed at the measured frontier 64 with
+    # his word "195 push"): A MIDRANGE ATTEMPT-RATE STANDING MAY NOT OUTRUN THE CONVERSION STANDING
+    # BEHIND IT.
+    # This is the third and last reading of recal_51's objection on this one term. recal_145 made the
+    # +0.07 premium paid at the card's LOAD, recal_157 made the composite's own volume share paid at
+    # the card's LOAD -- and both left the question of whether the shots WENT IN out of the rate
+    # entirely, because the composite answers it once, separately, at weight 0.35. That split is what
+    # printed the subject: Jerry Stackhouse '07 took 6.40 midrange attempts per 100 (the 96th
+    # percentile of 2007, a pool whose median is 3.50, p90 5.92 and max 8.94) and made 39.7% of them
+    # -- the 60th percentile of every card in the season, the 46th of the 159 that clear this
+    # function's own 2.5-per-100 in-zone gate -- and read mid 78, because 0.65 x 0.958 is 0.623 of the
+    # bar before conversion is consulted at all. AT CONVERSION PERCENTILE ZERO HE WOULD STILL HAVE
+    # READ 55. At 39.7% a long two returns 0.79 points a shot, the worst price on the floor; taking
+    # MORE of them at that price is a diet, not a skill, and recal_38 already ruled for this very zone
+    # that "a midrange weapon is not the same threat" when it kept mid out of the zone-dominance bonus.
+    # NO LOAD LEVER CAN REACH THIS CARD, which is why the question had to be asked of conversion. The
+    # subject plays 24.1 mpg and Jaylen Brown '26 34.4; BOTH read recal_157's load share 1.0000, so
+    # that term is blind to the difference. Moving its line to recal_117's class line 35.7 buys the
+    # subject five points (78 -> 73) and costs Dirk '18 and Sam Cassell '08 ten each, measured by
+    # recal_157 itself.
+    # THE CORRECTION IS A RAMP ON THE GAP, NOT A CAP. The rate percentile is pulled toward the
+    # conversion percentile by a share that is zero while the two keep pace and whole once the rate
+    # has run GAP_FULL ahead of what the card makes. A specialist is therefore BYTE-IDENTICAL:
+    # Michael Jordan '98 (gap 0.129), Rip Hamilton '06 (0.144), Kevin Durant '14 (0.147), Sam Cassell
+    # '08 (0.130), Dirk '07 (0.017), Chris Paul '21 (0.034), Seth Curry '23 (0.000) and Jamal Crawford
+    # '19 (0.083) do not move a point -- which is how BOTH standing mid anchors survive this round.
+    # r145's Crawford 93 +-3 and r157's Curry 93 +-3 were sitting ON the floor of their bands with
+    # zero room down, so any shape that touched a midrange specialist at all was dead on arrival: the
+    # constant-free cap (min(_mvol, _mfg)) reaches the subject's own band at 54 and takes Crawford to
+    # 89, and so does paying the whole rate percentile at load on the 35.7 line. Nothing can rise
+    # anywhere in this term -- the pull is signed, and only downward.
+    # THE FOOT IS THE FRONTIER, NOT A CHOSEN NUMBER, AND THE TARGET IS NOT REACHED. Swept on the whole
+    # pool, each setting a full regeneration plus compute_ovr plus all 193 anchors:
+    #   0.32 -> subject mid 69; r89's Reggie Miller '97 off fails, non-monotonically (his mid falls
+    #           under his 3pt and recal_38's zone-dominance bonus stops firing).
+    #   0.28 -> subject mid 64, OFF 67; Jaylen Brown '26 off 82; ALL 193 ANCHORS PASS.   <-- landed
+    #   0.24 -> subject mid 59, still ONE point outside his band; r89's Jaylen Brown '26 off 83 +-1
+    #           reads 80 and FAILS by 2.
+    #   0.20 -> subject mid 55, inside the band; Brown off 79, FAILS by 3.
+    # THE WALL IS THAT PIN AND THE TWO CARDS ARE THE SAME MIDRANGE CARD: Stackhouse '07 takes 6.40
+    # midrange attempts per 100 and makes 39.7%; Brown '26 takes 6.54 and makes 44.3%. Against the men
+    # who take the shot that is the 94th percentile of volume at the 46th of conversion against the
+    # 88th at the 50th -- Brown is four percentile points the better shooter of his own era and six
+    # the lesser volume, and his mid is his BEST zone (z[0], about 4.9 mid points per OFF point). Any
+    # monotone reading of this file's midrange inputs that cuts one by twenty cuts the other by at
+    # least as much; a ramp narrow enough to separate them runs 0.299 to 0.372, a window of 0.073
+    # placed between two cards, which is a per-player override wearing a ramp's clothes. He was shown
+    # the whole ladder, chose the frontier and said "195 push". GAP_FULL keeps the foot's own 0.20
+    # width. The gap is read on two WITHIN-SEASON percentiles of the same season's pool, so the term
+    # is era-neutral by construction.
+    # THE PAINT IS DELIBERATELY LEFT ALONE, for recal_145's reason word for word: the objection reads
+    # across to rim, this ruling did not name it, and a round does not spend an old ruling to buy
+    # tidiness in a term the new ruling never named. 0 rim bars, 0 3pt bars and 0 DEF move.
+    # THE TRAINING TARGET STAYS RAW (use_factor=False), exactly as recal_157 left it, so the pre-1997
+    # inference model and every inferred card are byte-identical.
+    # recal_177 (attempt-weighted midrange FG% mean) and recal_178 (fga100) are HIS STANDING DECLINES
+    # and are not reopened here; 177 would have RAISED this subject anyway -- his attempt-weighted
+    # conversion is .4065 (0.217 of the diet at .331 from 10-16, 0.291 at .463 from 16-3P) against the
+    # .3970 unweighted mean the line above computes.
+    GAP_FOOT, GAP_FULL = 0.28, 0.48
+    _gap  = max(0.0, _mvol - _mfg) if fmid is not None else 0.0
+    _pull = max(0.0, min(1.0, (_gap - GAP_FOOT) / (GAP_FULL - GAP_FOOT)))
+    _mvolc = _mvol - _pull*_gap
+    mid = 0.65*(min(_mvolc, VOL_GATE + (_mvolc - VOL_GATE)*_vload) if use_factor else _mvol) + 0.35*_mfg
     # zone deadeye (same convexity rule as 3PT): elite conversion on real attempts earns its own path.
     # Applies only to stored attributes (use_factor=True), never to inference training targets;
     # rim deadeye also requires self-creation (assisted-heavy finishing is not shot-making).
@@ -1637,7 +1702,12 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
         # PREM_FOOT / PREM_FULL / _pmpg / _pload are recal_145's, unchanged; recal_157 hoisted them to
         # the top of this function because the composite one term above now needs the same minutes.
         rim = min(1.0, rim + 0.07*max(0.0, (P['rimvol'](share*fga100*creation_factor(sh)) - 0.70)/0.30))
-        mid = min(1.0, mid + 0.07*_pload*max(0.0, (P['midvol'](s10*fga100) - 0.70)/0.30))
+        # RECAL_195: the premium re-reads the composite's own rate, so it reads the CONVERSION-
+        # corrected one -- recal_166's "one claim, one discount", applied here for the reason it was
+        # applied to the paint premium one line up: a rate discounted once and then paid twice is
+        # recal_117's double payment. A card whose conversion keeps pace is byte-identical, because
+        # _mvolc == _mvol wherever the gap sits under GAP_FOOT.
+        mid = min(1.0, mid + 0.07*_pload*max(0.0, (_mvolc - 0.70)/0.30))
         # RECAL_78 (his ruling, "Ty jerome still 82 OFF"): THE DEADEYE FLOORS ASK r51'S LOAD QUESTION.
         # These two floors pay 85% on ACCURACY and override the volume-first composite above them, and
         # their only gate was a RATE (2.5 attempts per 100). recal_51 already wrote the objection, for

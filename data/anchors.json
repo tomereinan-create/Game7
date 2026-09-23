@@ -1872,5 +1872,14 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Jerry Stackhouse '07",
+    "scale": "attr:mid",
+    "target": 64,
+    "tol": 3,
+    "round": 195,
+    "ruling": "Jerry Stackhouse '07 is too high in OFF. Should be low 60s.",
+    "note": "78 -> 64, the measured frontier, accepted with \"195 push\"; the dispatch's mid 52 +-6 is DECLINED and recorded in data/rounds/195.json. A MIDRANGE ATTEMPT-RATE STANDING MAY NOT OUTRUN THE CONVERSION STANDING BEHIND IT: 6.40 midrange attempts per 100 (the 96th percentile of 2007) at 39.7% (the 46th percentile of the men who clear this file's own 2.5-per-100 in-zone gate) paid 0.65 x 0.958 = 0.623 of the bar before conversion was consulted, and at conversion percentile ZERO he would still have read 55. The rate percentile is now pulled toward the conversion percentile by a ramp on the gap between them (GAP_FOOT 0.28, GAP_FULL 0.48), read by the composite and by recal_145's premium (recal_166's one claim, one discount). THE FOOT IS THE FRONTIER: at 0.24 he reads 59, still one point outside the dispatch's band, and r89's Jaylen Brown '26 off 83 +-1 reads 80. The two cards are the same midrange card (Brown takes 6.54 per 100 at 44.3%, the 50th percentile of his own era's shooters) and his mid is his best zone, so no monotone reading of this file's inputs separates them. Every midrange specialist is byte-identical by construction - Jordan '98, Dirk '07, Rip Hamilton '06, Durant '14, Cassell '08, Chris Paul '21, and both standing mid pins, r145's Crawford '19 at 90 and r157's Seth Curry '23 at 95. 1,967 mid bars move, every one DOWN; 0 rim, 0 3pt, 0 DEF. His OFF is NOT pinned: it reads 67, and the ruling's low 60s is unreachable from this file because recal_126's deadeye floor stops his mid at 54 and r189 measured mid 50 -> OFF 63."
   }
 ]
