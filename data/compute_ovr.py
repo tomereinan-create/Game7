@@ -1479,12 +1479,90 @@ def o_score(p, trace=None):
         # -12, mean -2.31; 146 under 20 mpg (mean -2.88), 113 between 20 and 24 (mean -1.58) and ZERO
         # at 24 or above. DEF and every attribute move on ZERO; OVR follows on 178. The top 12 by OFF
         # is identical name for name.
+        #
+        # recal_188 (HIS RULING, verbatim: "Agree with 2-10", items 8, 9 and 10 of the 2026-09-22
+        # scout — three cards on ONE term). THE BIG BRANCH IS A SECOND PAYMENT, AND ITS LOAD LINE IS
+        # NOT THE BENCH BOUNDARY.
+        #
+        # THE DEFECT, and it is recal_170's own line read one step further. recal_170 paid this
+        # correction at recal_96's load_share, whose full-load line is 24 MINUTES — a line cut to ask
+        # "did this man play at all" (it is located by Clint Capela '17 at 23.9). So the share
+        # saturates at 24 and ABOVE IT THE FLOOR PAYS THE SAME WHATEVER THE MAN DID: 493 of the 1,083
+        # bigs this floor binds on were at 1.0000, from a 24-minute bench big to a 40-minute starter,
+        # and the floor is worth up to twenty-four printed OFF points. THE THREE CARDS, decomposed:
+        #   Ryan Anderson '18   26.1 mpg, 9.3 points at 15.3% usage, TS .592, BPM +0.1. Standard path
+        #                       61.53, floor 73.24 BINDING at share 1.0000 — a correction of 11.71,
+        #                       and he printed OFF 68: the SAME 68 as his own '16 (17.0 points at
+        #                       23.1% usage, no floor at all — volume 75 is outside r64's gate) and
+        #                       ten above Kyle Korver '15 (pinned 58 on 12.1 points at 32.2 mpg).
+        #   Mo Bamba '22        25.7 mpg, 10.6 points at 17.2% usage. Standard path 49.86, floor
+        #                       65.30, correction +14.53 -> OFF 60 and OVR 74, level with Jarrett
+        #                       Allen '22 and above Ja Morant '22.
+        #   Maxi Kleber '20     25.5 mpg, 9.1 points at 13.2% usage. Standard path 46.06, floor 62.95,
+        #                       correction +16.64 -> OFF 58, level with Korver's pin on the lowest
+        #                       scoring load of anyone near him.
+        #
+        # THE LINE, AND WHY IT IS A SECOND LINE. recal_130 settled the shape and recal_163 applied it
+        # twice already: "A rate paid twice has to be scaled twice, and the second line is not the
+        # bench boundary". recal_91's three added terms are exactly that — orb, rim and volume are
+        # bars the STANDARD PATH ALREADY PAYS EVERY CARD (orb at 0.06, rim inside the zone block at
+        # 0.22/0.08/0.05, volume at 0.26 x load_share), and the big branch pays them again at 0.17,
+        # 0.17 and 0.10. So this branch takes a SECOND-PAYMENT line, and it is measured the way
+        # recal_130 and recal_163 measure theirs — the CLASS'S OWN UPPER QUARTILE OF MINUTES, on the
+        # population the old line could not tell apart: of the 493 bigs this floor binds on that
+        # recal_96's 24-minute line paid IN FULL, the upper quartile of minutes is 31.6 (p25 26.1,
+        # median 28.7). No new kind of constant, and the shape is recal_163's own ramp off recal_96's
+        # own foot, `(mpg - LOAD_FOOT) / (SB_SECOND_FULL - LOAD_FOOT)`, clipped to [0, 1]. A card with
+        # no minutes on the sheet takes 1.0 — recal_96's "measured, or not at all".
+        #
+        # recal_64's WING BRANCH KEEPS recal_96's LINE AND IS BYTE-IDENTICAL, and that is a class
+        # statement rather than an exemption. The four wing terms stand in for a standard path that
+        # pays a standstill spacer almost nothing — r64's own words, "its four terms are the whole of
+        # what a standstill wing specialist does" — while the big branch's three terms duplicate
+        # channels the path already pays. A second line is the CLASS'S OWN quartile (recal_176: read
+        # it on the class the term pays, not on the scale in the abstract) and the wing class was not
+        # measured here, so it is not re-cut: Kyle Korver '15 (58), Steve Kerr '96 (61), Tony Snell
+        # '18 (50) and Bruce Bowen '06 (45) all move by EXACTLY zero, and so does every other wing.
+        # MEASURED, both ways: with ONE line across both branches Snell '18 falls 50 -> 48 and leaves
+        # recal_64's pin (50 +-1), which is the whole reason the wing branch is left where it stands.
+        #
+        # WHERE IT LANDS AND WHERE IT STOPS — the targets are 60 / 52 / 50 and the subjects land
+        # 65 / 56 / 53, with Kleber inside his band and the other two on the frontier. THE WALL IS HIS
+        # OWN recal_118 PIN, Dorian Finney-Smith '20 (55 +-3, reading 53): 29.9 minutes, 13.0% usage,
+        # orb 78, a standard path of 41.01 under a floor of 59.80, so he is THE SAME CARD as Kleber
+        # '20 on every bar this term reads except minutes, and his correction is the largest on the
+        # board. He reads 51.517 of raw at this line and 51.500 is the edge of his band; every line
+        # above ~31.62 takes him out of it. Measured against that wall: at recal_163's existing
+        # SECOND_FULL of 33.9 the subjects read 64 / 55 / 52 — closer to his numbers on all three —
+        # and Finney-Smith '20 reads 50, TWO outside his pin, so 33.9 is not available to this round.
+        # At the whole binding class's quartile (28.2, no restriction to the cards the old line paid
+        # in full) Anderson reads 66 and nothing is reached. 31.6 is the measured line and it is also
+        # the largest the board allows.
+        # WHY NOT THE SCORING-LOAD READING THE SCAN ASKED FOR, measured and PROVABLY INFEASIBLE: a
+        # share of the card's own scoring load (recal_169's `usg_raw x load` shape, or volume, or
+        # possessions used per game) cannot reach any of the three, because the cards that must NOT
+        # move use LESS than the subjects do. Finney-Smith '20 (13.0% usage) must keep 91% of his
+        # correction while Kleber '20 (13.2%) must lose half of it, and OG Anunoby '21 (pinned 65 +-2,
+        # reading 63 with ZERO room down) is 18.5% against Bamba '22's 17.2%. No factor monotone in
+        # scoring load can separate either pair, in any direction. Minutes is the one axis that orders
+        # the board the way his rulings do, and it is the axis recal_170 already put here.
+        # MEASURED on the whole pool: 353 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -5,
+        # mean -2.15; OVR follows on 254, max -4; DEF and every attribute move on ZERO; the top 12 by
+        # OFF is identical name for name and the top 50 by OVR has no entrant and no leaver. Every one
+        # of the 184 anchors holds, including the two rank pins with no slack (LAL '00 OFF 4 of 28,
+        # BOS '24 OFF 10 of 26) and recal_91's own subjects (Anunoby '21 63 unmoved, Hachimura '26
+        # 66 -> 64 inside 65 +-4).
+        SB_SECOND_FULL = 31.6
+        _sb_load = _load if not is_big(p) else (
+            1.0 if _mp2 is None else
+            min(1.0, max(0.0, (_mp2 - LOAD_FOOT) / (SB_SECOND_FULL - LOAD_FOOT))))
         _ob_std = std
-        _flr = std + _f3 * _load * (_fl - std)
+        _flr = std + _f3 * _sb_load * (_fl - std)
         std = max(std, _flr)
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
-                                          load=_load, std=_ob_std,
+                                          load=_sb_load, load96=_load, std=_ob_std,
+                                          second_full=SB_SECOND_FULL, mpg=_mp2,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     # recal_131 (HIS RULING, verbatim: "What I dont like, is Malone being 69 OFF with 25 ppg on not
     # bad eff"). THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK.
@@ -2356,9 +2434,13 @@ if _CARD:
               f"creation weight 0.19): +{_ot['big_hub']:.3f}; the same load also floors the signature term")
     if 'offball_floor' in _ot:
         _f = _ot['offball_floor']
+        _fline = ("recal_188's second-payment line %.1f, foot %.0f" % (_f['second_full'], LOAD_FOOT)
+                  if _f['branch'].startswith('stretch big')
+                  else "recal_170, recal_96's own 24-minute line")
         print(f"OFF-BALL FLOOR — {_f['branch']} branch: full floor {_f['full']:.3f} over a standard "
               f"path of {_f['std']:.3f}; the correction is paid at arc share {_f['share']:.4f} "
-              f"(recal_118) x load share {_f['load']:.4f} (recal_170, recal_96's own line) -> "
+              f"(recal_118) x load share {_f['load']:.4f} ({_fline}; {_f['mpg']} mpg, recal_96's own "
+              f"line reads {_f['load96']:.4f}) -> "
               f"{_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
     if 'glue' in _ot:
         _gl2 = _ot['glue']

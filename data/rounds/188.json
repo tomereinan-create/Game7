@@ -1,0 +1,508 @@
+{
+ "round": 188,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Agree with 2-10",
+ "title": "recal_91's STRETCH-BIG FLOOR IS A SECOND PAYMENT AND ITS LOAD LINE IS NOT THE BENCH BOUNDARY — recal_170's share re-cut from recal_96's 24-minute line to the class's own upper quartile of minutes (31.6), measured on the 493 bigs the old line paid in full; the wing branch is byte-identical",
+ "subject": "Ryan Anderson '18",
+ "scale": "off",
+ "target": 65,
+ "tol": 3,
+ "before": 68,
+ "after": 65,
+ "pipeline_version": 188,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SB_SECOND_FULL = 31\\.6",
+   "label": "THE WHOLE ROUND, ONE CONSTANT — the floor's own SECOND-payment full-load line",
+   "note": "recal_96's LOAD_FULL 24 -> 31.6, the upper quartile of minutes among the 493 bigs this floor binds on that the 24-minute line already paid IN FULL (p25 26.1, median 28.7)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_flr = std \\+ _f3 \\* _sb_load \\* \\(_fl - std\\)",
+   "label": "recal_118's correction form and recal_170's share, with the share now read off the second line",
+   "note": "`std + _f3 * _load * (_fl - std)` -> `std + _f3 * _sb_load * (_fl - std)`. At 31.6 minutes and above the line is BYTE-IDENTICAL to recal_170's"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_sb_load = _load if not is_big\\(p\\) else \\(",
+   "label": "recal_64's WING branch keeps recal_96's line — every wing moves by EXACTLY zero",
+   "note": "a second line is the CLASS's own quartile and the wing class was not measured here; with ONE line across both branches Tony Snell '18 falls 50 -> 48 and leaves recal_64's pin"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "LOAD_FOOT, LOAD_FULL = 12\\.0, 24\\.0",
+   "label": "recal_96's own load line, UNTOUCHED — it still prices the standard path's two load bars and the wing floor",
+   "note": "the new ramp is recal_163's shape off recal_96's own foot: (mpg - LOAD_FOOT) / (SB_SECOND_FULL - LOAD_FOOT)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SECOND_FULL = 33\\.9",
+   "label": "recal_163's second line for the two-level / interior terms, untouched and NOT reused here",
+   "note": "33.9 is a different class's quartile; at 33.9 the subjects read 64 / 55 / 52 and Dorian Finney-Smith '20 reads 50, two outside recal_118's pin"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_fl \\+= _g \\* \\(0\\.17\\*\\(a\\['orb'\\] \\+ a\\['rim'\\]\\) \\+ 0\\.10\\*a\\['volume'\\]\\)",
+   "label": "recal_91's three added terms and recal_99's gate — the SECOND payment this round prices, unchanged in value",
+   "note": "orb, rim and volume are bars the standard path already pays (0.06, the zone block, 0.26 x load); the round scales WHEN they are paid in full, not what they are worth"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8\\.0, 22\\.0, 45\\.0, 65\\.0",
+   "label": "recal_99's load-or-glass evidence gate, untouched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "OB_3P_FULL = 68\\.0",
+   "label": "recal_64's threshold / recal_118's saturation point, untouched — the arc share `_f3` and its number do not move"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if _f3 > 0\\.0 and a\\['volume'\\] < 55:",
+   "label": "recal_64's usage gate, untouched — no card changes CLASS this round",
+   "note": "ZERO of the 353 movers has volume >= 55; every volume scorer is outside the branch by construction"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_U_FULL = 15\\.0",
+   "label": "recal_169's used-possession ramp inside the GLUE floor — the scoring-load shape the scan asked for, left where it is",
+   "note": "measured on this floor and PROVABLY INFEASIBLE: Finney-Smith '20 (13.0% usage) must KEEP his correction while Kleber '20 (13.2%) must lose half of it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = ",
+   "label": "recal_90's band anchors, NOT re-derived",
+   "note": "every mover is far below the 93 knee and nothing above it moved"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.76",
+   "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke ALONE and on the BLIND edge (-0.0700 at main's 3.40)",
+   "note": "swept once from main's constants: feasible 3.697 (blind -0.3000) to 3.832 (oracle +0.5000), a NARROW 0.135, true midpoint by r126's rule 3.40 -> 3.76 (blind -0.3475, oracle +0.5338)"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "playmaker: 1\\.10",
+   "label": "playmaker HELD at main's constant, read first and unmoved"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.28",
+   "label": "crash off glass HELD at main's constant (blind -0.60, oracle +0.58)"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.60",
+   "label": "crash def glass HELD at main's constant (blind -0.48, oracle +0.50)"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Mo Bamba '22",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "SUBJECT 2 (stated 52 +-3, lands 56 — four out and inside the dispatch's five). 25.7 mpg, 10.6 points at 17.2% usage; standard path 49.86 under a floor of 65.30 that was paid in full. 60 -> 56"
+  },
+  {
+   "card": "Mo Bamba '22",
+   "scale": "ovr",
+   "op": "~",
+   "value": 72,
+   "tol": 1,
+   "label": "his OVR follows his OFF: 74 -> 72, off the shoulder of Jarrett Allen '22 (74) — the reading the scan called out"
+  },
+  {
+   "card": "Maxi Kleber '20",
+   "scale": "off",
+   "op": "~",
+   "value": 53,
+   "tol": 3,
+   "label": "SUBJECT 3, AND THE ONE THAT LANDS ON HIS NUMBER: 50 +-3, reads 53. 25.5 mpg, 9.1 points at 13.2% usage; standard path 46.06 under a floor of 62.95. 58 -> 53"
+  },
+  {
+   "card": "Ryan Anderson '16",
+   "scale": "off",
+   "op": "~",
+   "value": 68,
+   "tol": 0,
+   "label": "THE COMPARABLE THE SCAN MEASURED THE DEFECT AGAINST — the same man at 17.0 points and 23.1% usage, volume 75, outside recal_64's gate and therefore with no floor at all: UNMOVED at 68. The subject's identical 68 is now 65"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_64's own pin (32.2 mpg): unmoved — a WING, so the second line does not reach him at all"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_64's other pin, 23.4 mpg and a wing: unmoved"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 1,
+   "label": "THE CARD THAT FIXES THE BRANCH SPLIT. 27.4 mpg: with ONE line across both branches he reads 48 and leaves this pin; with the wing branch left on recal_96's line he is byte-identical at 50"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 1,
+   "label": "recal_64's fourth wing pin: unmoved"
+  },
+  {
+   "card": "Dorian Finney-Smith '20",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "THE WALL, AND THE WHOLE FRONTIER OF THIS ROUND. recal_118's own subject, 29.9 mpg, 13.0% usage, orb 78, standard path 41.01 under a floor of 59.80 — the same card as Kleber '20 on every bar this term reads except minutes. 53 -> 52, reading 51.517 of raw against a band edge of 51.500"
+  },
+  {
+   "card": "OG Anunoby '21",
+   "scale": "off",
+   "op": "~",
+   "value": 63,
+   "tol": 2,
+   "label": "recal_91's subject with ZERO room down, 33.3 mpg: UNMOVED BY CONSTRUCTION — above the second line the share is 1.0000 and the card is byte-identical"
+  },
+  {
+   "card": "Rui Hachimura '26",
+   "scale": "off",
+   "op": "~",
+   "value": 64,
+   "tol": 4,
+   "label": "recal_91's other subject, 28.3 mpg: 66 -> 64, inside 65 +-4"
+  },
+  {
+   "card": "Sam Hauser '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "recal_170's own subject, 16.1 mpg: 60 -> 58, inside his 60 +-3. The bench end of the ramp is steeper now, not switched off"
+  },
+  {
+   "card": "Donyell Marshall '07",
+   "scale": "off",
+   "op": "~",
+   "value": 49,
+   "tol": 3,
+   "label": "recal_170's second pin, 16.8 mpg: 53 -> 49, the bottom edge of 52 +-3 — the second wall, and it is what stops the ramp's FOOT from rising"
+  },
+  {
+   "card": "Matt Bullard '92",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "recal_170's third pin, 16.0 mpg: 54 -> 52, dead on his 52"
+  },
+  {
+   "card": "Steve Novak '13",
+   "scale": "off",
+   "op": "~",
+   "value": 59,
+   "tol": 3,
+   "label": "recal_99's pin, 20.3 mpg: 61 -> 59, inside 60 +-3"
+  },
+  {
+   "card": "Anthony Tolliver '14",
+   "scale": "off",
+   "op": "~",
+   "value": 54,
+   "tol": 3,
+   "label": "recal_99's second pin: unmoved at 54 — recal_99's gate pays him nothing on the big branch, so there is nothing for the line to scale"
+  },
+  {
+   "card": "Al Horford '24",
+   "scale": "off",
+   "op": "<=",
+   "value": 63,
+   "label": "round 132 was DECLINED because Horford ROSE. He falls, 63 -> 60, which is the direction that round required"
+  },
+  {
+   "card": "Toni Kukoč '96",
+   "scale": "off",
+   "op": "<=",
+   "value": 72,
+   "label": "the other half of round 132's decline: it may not rise, and it does not"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "the card that LOCATES recal_96's 24-minute line (23.9 mpg, zero room): unmoved — that line is untouched and his floor does not bind"
+  },
+  {
+   "card": "Clint Capela '18",
+   "scale": "off",
+   "op": "~",
+   "value": 59,
+   "tol": 2,
+   "label": "recal_166's pin on the sibling term: unmoved"
+  },
+  {
+   "card": "Deandre Ayton '26",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "recal_107's subject: unmoved"
+  },
+  {
+   "card": "Domantas Sabonis '21",
+   "scale": "off",
+   "op": "~",
+   "value": 71,
+   "tol": 2,
+   "label": "a named wall: unmoved"
+  },
+  {
+   "card": "Nenê '11",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "recal_166's other pin: unmoved"
+  },
+  {
+   "card": "Dirk Nowitzki '11",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 1,
+   "label": "the Dirk wall — volume 89, outside recal_64's usage gate: unmoved"
+  },
+  {
+   "card": "Rashard Lewis '07",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 0,
+   "label": "a named wall in the same class: unmoved"
+  },
+  {
+   "card": "Lauri Markkanen '23",
+   "scale": "off",
+   "op": "~",
+   "value": 77,
+   "tol": 0,
+   "label": "a named wall: unmoved"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "a named wall: unmoved"
+  },
+  {
+   "card": "Buddy Hield '25",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "a named wall: unmoved"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "recal_155's glue-floor subject — the PERIMETER sibling, gated `not is_big`: unmoved"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "volume 95 — the summit is outside this branch entirely"
+  },
+  {
+   "card": "Sam Perkins '00",
+   "scale": "ovr",
+   "op": "~",
+   "value": 56,
+   "tol": 1,
+   "label": "the Laker recal_170's COST named (20.0 mpg, 3pt 88, volume 18): OVR 57 -> 56. The LAL '00 OFF rank pin reads 4 of 28 before and after — recal_170 released it to <= 6 and this round does not spend the slack"
+  },
+  {
+   "five": [
+    "Ron Harper '00",
+    "Kobe Bryant '00",
+    "Glen Rice '00",
+    "Robert Horry '00",
+    "Shaquille O'Neal '00"
+   ],
+   "scale": "team:off",
+   "op": "~",
+   "value": 57,
+   "tol": 1,
+   "label": "recal_110's own five: team offence is computed from ATTRIBUTES and this round moves none, so it is byte-identical"
+  },
+  {
+   "five": [
+    "Stephen Curry '17",
+    "Klay Thompson '17",
+    "Kevin Durant '17",
+    "Draymond Green '17",
+    "Zaza Pachulia '17"
+   ],
+   "scale": "team:off",
+   "op": ">=",
+   "value": 90,
+   "label": "the Warriors '17 dial, untouched by the round"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Ryan Anderson '16",
+   "below": "Ryan Anderson '18",
+   "label": "THE INVERSION THE SCAN FOUND IS GONE AND THAT IS THE ROUND. 17.0 points at 23.1% usage now reads above 9.3 points at 15.3% usage (68 over 65), where the two read the SAME 68 — and the '16 card never moved"
+  },
+  {
+   "scale": "off",
+   "above": "OG Anunoby '21",
+   "below": "Mo Bamba '22",
+   "label": "recal_91's own 33.3-minute stretch four over a 25.7-minute one, 63 against 56, which is what the second line says"
+  },
+  {
+   "scale": "off",
+   "above": "Kyle Korver '15",
+   "below": "Maxi Kleber '20",
+   "label": "recal_64's 32.2-mpg pin reads above the 25.5-mpg stretch big who was level with him (58 against 53), without moving by a point"
+  },
+  {
+   "scale": "off",
+   "above": "Dorian Finney-Smith '20",
+   "below": "Donyell Marshall '07",
+   "label": "the two walls in the right order: 29.9 minutes over 16.8, 52 against 49"
+  },
+  {
+   "scale": "ovr",
+   "above": "Jarrett Allen '22",
+   "below": "Mo Bamba '22",
+   "label": "the scan's own comparison, 74 against 72, where the two were level"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 353,
+  "max_abs": 5,
+  "top": [
+   [
+    "Obi Toppin '24",
+    69,
+    64
+   ],
+   [
+    "Raef LaFrentz '03",
+    69,
+    64
+   ],
+   [
+    "Keita Bates-Diop '23",
+    65,
+    60
+   ],
+   [
+    "Kel'el Ware '26",
+    64,
+    59
+   ],
+   [
+    "Cameron Johnson '21",
+    64,
+    59
+   ],
+   [
+    "Cameron Johnson '20",
+    63,
+    58
+   ],
+   [
+    "Maxi Kleber '20",
+    58,
+    53
+   ],
+   [
+    "Lauri Markkanen '21",
+    73,
+    69
+   ],
+   [
+    "Doug McDermott '21",
+    72,
+    68
+   ],
+   [
+    "Sandro Mamukelashvili '26",
+    72,
+    68
+   ],
+   [
+    "Omri Casspi '16",
+    71,
+    67
+   ],
+   [
+    "Bobby Portis '21",
+    68,
+    64
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24",
+   "Nikola Jokić '25"
+  ]
+ },
+ "cost": [
+  "THE THREE SUBJECTS LAND 65 / 56 / 53 AGAINST STATED 60 / 52 / 50, AND THE WALL IS ONE OF HIS OWN PINS. Dorian Finney-Smith '20 is pinned 55 +-3 by recal_118 and already reads its bottom edge; he is 29.9 minutes, 13.0% usage, orb 78, a standard path of 41.01 under a floor of 59.80, which makes him the SAME CARD as Maxi Kleber '20 on every bar this term reads except minutes. At the shipped line he reads 51.517 of raw against a band edge of 51.500 — the admissible window's top is about 31.62 and the measured quartile 31.60 sits inside it with two hundredths of a point to spare. At recal_163's existing SECOND_FULL of 33.9 the subjects read 64 / 55 / 52 — closer to his numbers on ALL THREE — and Finney-Smith reads 50, two outside his pin. A later round that wants 60 / 52 / 50 is asking for that pin to be released, exactly as recal_170 asked for the Lakers rank.",
+  "THE SECOND WALL IS recal_170's OWN BENCH PIN AND IT FIXES THE RAMP'S FOOT. Donyell Marshall '07 (16.8 mpg) is pinned 52 +-3 and now reads 49, the bottom edge. Raising the foot above recal_96's 12 is what a steeper ramp needs — the optimum with both walls binding is a foot near 13 and a top near 31.5 — and it buys the subject nothing: Anderson reads 65 anywhere in that whole family. 65 is therefore the FLOOR of what is reachable with every pin held, not a choice of constant.",
+  "THE SCORING-LOAD READING THE SCAN ASKED FOR IS PROVABLY INFEASIBLE, MEASURED IN EVERY FORM. `usg_raw x load` (recal_169's shape), `usg_raw x mpg` (the same count without the 24-minute saturation), raw usage, and recal_112's volume ramp were each solved against the standing pins. Two pairs close the door in opposite directions: Finney-Smith '20 (13.0% usage) must KEEP 91% of his correction while Kleber '20 (13.2%) must lose half of it, and OG Anunoby '21 (18.5% usage, pinned 65 +-2 and reading 63 with ZERO room down) sits ABOVE Mo Bamba '22 (17.2%), who must fall four. No factor monotone in scoring load can separate either pair. MINUTES is the one axis that orders the board the way his own rulings do, and it is the axis recal_170 already put on this line.",
+  "recal_64's WING BRANCH IS UNTOUCHED ON PURPOSE AND A LATER ROUND MAY STILL WANT IT. With ONE line across both branches Tony Snell '18 falls 50 -> 48 and leaves recal_64's 50 +-1; Korver '15, Kerr '96 and Bowen '06 hold either way. The wing class's own second-payment quartile was not measured here, so the wing floor keeps recal_96's 24-minute line and every non-big card on the board is byte-identical.",
+  "ONE TAX RE-RATIFIED. hunt broke ALONE and on the BLIND edge (-0.0700 at main's 3.40, against the -0.30 ceiling) — the mirror of recal_183's shape: this is an OFFENSIVE round, the sampled fives score worse while their defence is untouched, so a blind mismatch call costs less and the tax comes UP. Swept ONCE from main's constants (playmaker 1.10, hunt 3.40, crashOff 0.28, crashDef 0.60) as the law requires: feasible 3.697 (blind -0.3000) to 3.832 (oracle +0.5000), a NARROW 0.135, true midpoint by r126's rule 3.40 -> 3.76 (blind -0.3475, oracle +0.5338; 0.048 and 0.034 of room). The other eight held their bands. All nine pass.",
+  "THE ROUND NUMBER IS 188 AND THE PIPELINE CONSTANT IS LEFT AT 185. Per the doctrine of 2026-09-03 the integrator stamps the batch's highest round after ONE merged regeneration. data/build_ratings.py was not run and no attribute moved, so public/provenance.json is untouched.",
+  "ROUND 187 IS LANDING IN PARALLEL AND THE TWO ARE DISJOINT BY CONSTRUCTION. 187 owns d_bigness's position branch inside d_score; this round is one constant and one line inside o_score's off-ball floor. DEF moved on ZERO of 10,000 cards here and no attribute moved at all, so the integrator can fold both."
+ ],
+ "notes": [
+  "WHAT THE THREE SCOUT ITEMS SHARE, decomposed. Ryan Anderson '18: 26.1 mpg, 9.3 points at 15.3% usage, TS .592, BPM +0.1; standard path 61.53 of o_score under a floor of 73.24 that BINDS at share 1.0000, so 11.71 points — a sixth of the card — were a correction paid at a full-time spacer's price. He printed the SAME OFF 68 as his own '16 (17.0 points at 23.1% usage) and ten above Kyle Korver '15 (pinned 58 at 32.2 mpg). Mo Bamba '22: 25.7 mpg, 10.6 points at 17.2% usage, standard path 49.86 under a floor of 65.30, printing OFF 60 and OVR 74 — level with Jarrett Allen '22 and above Ja Morant '22. Maxi Kleber '20: 25.5 mpg, 9.1 points at 13.2% usage, standard path 46.06 under a floor of 62.95, printing 58 on the lowest scoring load of anyone near him.",
+  "WHY THE LINE IS A SECOND LINE, AND IT IS recal_130's DOCTRINE APPLIED WHERE IT HAD NOT BEEN. recal_170 paid this correction at recal_96's load share, whose full-load line is 24 minutes — a line located by Clint Capela '17 at 23.9 and cut to ask 'did this man play at all'. 493 of the 1,083 bigs this floor binds on sat at share 1.0000, from a 24-minute bench big to a 40-minute starter, and the floor is worth up to twenty-four printed OFF points. recal_91's three added terms are bars the STANDARD PATH ALREADY PAYS EVERY CARD — orb at 0.06, rim inside the zone block at 0.22/0.08/0.05, volume at 0.26 x load_share — so this branch is a second payment in recal_130's exact sense: 'a rate paid twice has to be scaled twice, and the second line is not the bench boundary'. recal_163 set its own second line the same way (SECOND_FULL 33.9, the upper quartile of minutes among the 193 cards its two terms pay).",
+  "THE CONSTANT IS MEASURED, NOT CHOSEN, AND THE ALTERNATIVES ARE ON THE RECORD. The class is the cards this floor binds on inside recal_91's branch (1,083 bigs; minutes p25 19.7, median 23.2, p75 28.2, p90 31.76). The line is measured on the sub-class the OLD line could not tell apart — the 493 that recal_96's 24-minute line paid IN FULL — whose upper quartile of minutes is 31.60 (p25 26.1, median 28.7). Measured alternatives, all on the full pipeline: 28.2 (the whole binding class's quartile) reads Anderson 66 and reaches nobody; 30.1 (the quartile of the 2,880 cards inside the branch's gate) reads him 66; 31.76 (the binding class's upper decile) and 33.9 (recal_163's existing line) both take Dorian Finney-Smith '20 out of recal_118's band. Every line from about 30.7 to 31.62 reads the subjects 65 / 56 / 53-54 and holds all 187 pins.",
+  "MEASURED BEFORE APPLYING, on the whole pool. 353 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN (a share can only discount a correction; there are ZERO rises), max -5, mean -1.85. OVR follows on 254, max -4. DEF moves on ZERO cards and no attribute moves at all — this is a compute_ovr-only round. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant, no leaver and no rank flip. Nothing at 31.6 minutes or above moves by a thousandth.",
+  "THE CLASS IS FOUND BY THE TERM AND NOT BY A NAME. The largest movers are one archetype and read like it: Obi Toppin '24 69 -> 64, Raef LaFrentz '03 69 -> 64, Keita Bates-Diop '23 65 -> 60, Kel'el Ware '26 64 -> 59, Cameron Johnson '20/'21 63 -> 58 and 64 -> 59, Lauri Markkanen '21 73 -> 69, Doug McDermott '21 72 -> 68, Sandro Mamukelashvili '26 72 -> 68, Omri Casspi '16 71 -> 67, Bobby Portis '21 68 -> 64, Bojan Bogdanović '15 57 -> 52 — rotation stretch bigs between twenty and thirty minutes who were priced as though they spaced the floor for a full season."
+ ]
+}

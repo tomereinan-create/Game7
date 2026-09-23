@@ -697,6 +697,19 @@ export const DEFAULT_TACTICS: Tactics = {
  * crashDef were each re-read from main's constants first and none of them broke; the other six held their bands
  * untouched. All nine pass. hunt's twelfth move on this ledger, and the first time a DEFENSIVE round has pushed
  * it up rather than down.
+ * recal_188 re-cut recal_91's stretch-big floor onto its own second-payment minute line: 353 OFF and 254 OVR,
+ * EVERY ONE DOWN, which took rotation stretch bigs OUT of the harness's ovr>=55 sample and changed the fives it
+ * draws. HUNT ALONE BROKE, on the BLIND edge (-0.0700 at 3.40, against the -0.30 ceiling) — the mirror of the
+ * shape recal_183 left: this is an OFFENSIVE round, the sampled fives now score worse while their defence is
+ * untouched, so a blind mismatch call costs less of a smaller number and the tax has to come UP. Swept ONCE from
+ * MAIN's constants (playmaker 1.10, hunt 3.40, crashOff 0.28, crashDef 0.60) as the law requires: 3.400 (blind
+ * -0.0700) / 3.600 (-0.2255) / 3.690 (-0.2946, under the ceiling) / 3.700 (-0.3023, the ceiling exactly) / 3.765
+ * (-0.3513 / +0.5314) / 3.800 (-0.3777 / +0.5147) / 3.830 (-0.4004 / +0.5009, the floor exactly) / 3.840 (oracle
+ * +0.4963, under) / 4.000 (+0.4248, under) — feasible about 3.697 to 3.832, a NARROW 0.135, true midpoint by
+ * r126's rule: 3.40 -> 3.76 (blind -0.3475, oracle +0.5338; 0.048 and 0.034 of room either side). playmaker,
+ * crashOff and crashDef were read from main's constants first and none moved; the other five held their bands.
+ * All nine pass. hunt's twelfth move on this ledger, same cause as ever: it is the largest tax on the board and
+ * it is measured on the ovr>=55 sample, which a round of this size reshuffles.
  */
 export const TAX = {
   scorer: 0.55,
