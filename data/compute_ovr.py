@@ -276,6 +276,55 @@ POS_GAP_LO, POS_GAP_HI = 30.0, 60.0   # perimdisrupt - drb, over which a listed 
 # Cedric Maxwell '80, Ken Norman '94, LeBron '04 and Pippen '03 are not on this branch at all.
 POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI   # recal_187: the position branch's rim-presence ramp; both ends are recal_136's
 POS_HT_MAX = 80.0                           # recal_114's own band edge — the last inch that is a wing's
+# recal_205 (HIS RULING, verbatim: "Rodney McCray '88 DEF 81 -> target 88 +-3"). WHERE THE POSITION
+# BRANCH'S RIM RAMP IS WHOLE — the third fact, and it is the one recal_187 left at a guess.
+#
+# THE DEFECT, decomposed on the card the ruling names. Rodney McCray '88 is a 1988 All-Defensive
+# FIRST team wing at 6'7" (height 79), 33.2 mpg, perdef 93 / discipline 93 / rimprot 56 / drb 57 /
+# perimdisrupt 12. His listing is ['SF','PF'], so the POSITION branch decides him; recal_103's gap
+# test cannot see him (perimdisrupt - drb = -45, the rebounding side); and recal_187's rim-presence
+# ramp SATURATES at POS_RP_HI 55, one point under his rimprot, so it releases nothing. He is 1.000
+# big and graded 0.40 x 93 + 0.40 x 56 + 0.17 x 57 = 72.0 against his own perimeter vector of 80.7,
+# and he printed DEF 81 — #19 of 1988, under Michael Cooper '88 (93) and Alvin Robertson '88 (91).
+# The class is not one card: Gerald Wallace '12 (perdef 90 / rimprot 57) and Robert Covington '17
+# (96 / 64) are the same shape, wing height, a real rim number, and a perimeter sheet nobody is
+# grading them on.
+#
+# WHY THE TOP AND NOT THE FOOT. recal_187 borrowed BOTH ends of its ramp from recal_136, which set
+# them for a different question — where a rim-protection CLAIM begins (45) and where clause 1's own
+# step used to be (55). The foot is right and is untouched: a card under 45 has no rim claim at all.
+# The TOP is the guess. Fifty-five is the number at which recal_136 said a man who does not shoot is
+# WHOLLY a big; the file's other statement about a whole rim claim is recal_99's deterrence foot,
+# DET_LO 68 — "an elite deterrent is a big whatever his shape" begins there. Between 55 and 68 the
+# position branch was calling a 6'7" wing entirely a big on a rim number that the deterrence clause
+# does not think deters anybody.
+#
+# THE SHAPE GATE, AND WHY THE TOP IS NOT SIMPLY MOVED. Moving the top to 68 flat was measured on the
+# whole pool: 200 cards in the band, 53 rise >= 3 and 62 FALL >= 3 — LaPhonso Ellis '94/'98, Walter
+# Berry '87/'88, Michael Kidd-Gilchrist '13 lose eight and nine, and every one of them has perdef
+# UNDER his rimprot. That is the right verdict for them: a listed power forward whose rim number
+# beats his perimeter number is playing the position he is listed at, and his claim is whole where
+# recal_136 said it was. So the top is not a constant, it is a function of the SAME quantity every
+# other clause in this file reads — the signed lead perdef has over rimprot — over recal_164's own
+# width (C1_RP_HI - C1_RP_LO = 10), the width already in the file for exactly this question. At no
+# lead at all the top is POS_RP_HI and the branch is BYTE-IDENTICAL to recal_187; at a lead of 10 or
+# more it is DET_LO. NO NEW CONSTANT: 55, 68, 45 and the width 10 are all already here.
+#
+# NOT is_big, exactly as recal_93 / recal_103 / recal_164 / recal_187 did it: only d_score's branch
+# moves, so the boolean still labels the card, still gates recal_55's big hub and recal_91's
+# stretch-big floor and still picks the OVR cap branch. OFF and every attribute move on ZERO cards.
+# WHAT IS PROVABLY UNTOUCHED: every card above 80 inches, every card at rimprot >= DET_LO, every card
+# whose rimprot is at least his perdef, and every card the gap test already graded a wing. Dennis
+# Rodman '90 (rimprot 76) 95 -> 95, Draymond Green '16 (84) 97 -> 97, Herbert Jones '23 (0.000 big by
+# the gap test) 91 -> 91, Pippen '03 77 -> 77, LeBron '04 68 -> 68, Butler '16 86 -> 86, Ken Norman
+# '94 54 -> 54, Carroll '14 / Crowder '16 / Ingles '17 65 / 69 / 64 — all unmoved.
+# MEASURED: 217 of 10,000 cards move on DEF, 154 up and 63 down, max +10 / -3; only 41 rise by 3 or
+# more and only FOUR fall by 3 (Andres Nocioni '06/'07, Buck Williams '88, Miles Bridges '26 — wings
+# whose perimeter vector is under their big one, all at exactly -3). OVR follows on 133, max +6 / -2.
+# The top 12 by DEF is identical and all 193 anchors pass. The subject reads 87 and the class reads
+# with him: Gerald Wallace '12 81 -> 86, Robert Covington '17 85 -> 87, Mbah a Moute '16 56 -> 66.
+POS_RP_TOP_WIDTH = C1_RP_HI - C1_RP_LO      # recal_205: recal_164's own width, on the perdef-over-rimprot lead
+POS_RP_HI_MAX = DET_LO                      # recal_205: recal_99's deterrence foot — the far top of the ramp
 # recal_164 (HIS RULING, verbatim: "Agree"). THE LAST HARD STEP IN THE FUNCTION — clause 1's SHAPE
 # test, `rimprot >= perdef`, which was still a cliff after recal_136 ramped the same clause's OTHER
 # bar.
@@ -328,7 +377,7 @@ def d_bigness(p):
     is_big's, byte for byte; the middle clause is recal_93's ramp, the deterrence clause is
     recal_99's, clause 1 is recal_136's ramp on rim protection times recal_164's ramp on the shape
     gap, and the position-big branch is recal_103's shape override times recal_187's rim-presence
-    ramp at a wing's height."""
+    ramp at a wing's height, whose top recal_205 sets by the lead perdef has over rimprot."""
     pos = _POS.get(p['name'], [])
     a = p['attrs']
     if pos and ('PG' in pos or 'SG' in pos) and not ('C' in pos or 'PF' in pos): return 0.0
@@ -340,7 +389,14 @@ def d_bigness(p):
         # over recal_136's own band (45 -> 55). At rimprot >= 55, or above 80 inches, this is
         # byte-identical to recal_103's override.
         if a.get('height', 76) <= POS_HT_MAX:
-            _w_pos *= min(1.0, max(0.0, (a['rimprot'] - POS_RP_LO) / (POS_RP_HI - POS_RP_LO)))
+            # recal_205: the ramp's TOP is where the rim claim is whole, and for a wing-height card
+            # that depends on which of his two defensive bars leads. recal_164's own width (10) reads
+            # the lead perdef has over rimprot; at a lead of 10 or more the top is recal_99's
+            # deterrence foot DET_LO, at no lead at all it is POS_RP_HI and the branch is
+            # byte-identical to recal_187.
+            _lead = min(1.0, max(0.0, (a['perdef'] - a['rimprot']) / POS_RP_TOP_WIDTH))
+            _top = POS_RP_HI + (POS_RP_HI_MAX - POS_RP_HI) * _lead
+            _w_pos *= min(1.0, max(0.0, (a['rimprot'] - POS_RP_LO) / (_top - POS_RP_LO)))
         return _w_pos
     if a['rimprot'] >= 80: return 1.0
     # recal_136: clause 1 is a RAMP on its own rim-protection bar, from DEF_RP_LO to its own 55.
