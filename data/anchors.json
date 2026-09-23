@@ -1980,5 +1980,23 @@
     "round": 202,
     "ruling": "Jim Les '91 3pt 97 -> target 90 +-3 (my number)",
     "note": "THE TWO LIFTS ON TOP OF THE 3PT COMPOSITE NOW CARRY THE SHOTS BEHIND THEM. 55 games, 25.4 mpg, 71 of 154 from three (.461 on 5.6 3PA/100) - the best three-point bar of 1991, and it printed 97, the 71st outside bar of 10,000 cards. acc .994 against the modern pool and ERA_ALPHA's 1.694 multiplier lifted 5.6 to 9.49 adjusted attempts (vol .835), so the deadeye value 0.975 hit its 0.95 cap - and then the +0.07 volume premium was added AFTER the cap (0.9815) while the x1.08 gunner boost paid 0.9619 on a gunner composite of 0.891 on its own. recal_202 scaled both lifts by recal_78's count ramp (CNT3_REF 239 = the median full-season three-point sample over the 5,473 cards clearing the file's own 2-per-100 measured-shooter line; the estimator is recal_78's own, minutes x pace / 48 x rate, and reads no new input) and paid the premium to each path BEFORE they are compared, so the deadeye side is re-capped at EYE_CAP: 97 -> 93, OFF 60 -> 58. HE LANDS 93, THE TOP EDGE, AND IT IS THE FLOOR OF WHAT THE LIFTS CAN REACH - with both switched off entirely his capped deadeye value still prints 93, so 90 needs EYE_CAP or the era multiplier, not this term. The load share (the other half of the ruling) reaches the same 93 and breaks FIVE off anchors on the bench-specialist class: Beasley '23, Hield '25, Tolliver '14, Marshall '07, Bullard '92. 4,133 bars fall, all of them down, 3,566 by a single point; every full-sample deadeye (Curry, Korver '15, Klay '15, Duncan Robinson '20, Ray Allen '06) is byte-identical."
+  },
+  {
+    "card": "Jason Kidd '99",
+    "scale": "off",
+    "target": 74,
+    "tol": 3,
+    "round": 203,
+    "ruling": "Jason Kidd '99 OFF 64 -> target 74 +-3 and Jason Kidd '02 OFF 70 -> target 75 +-3",
+    "note": "recal_203: recal_109's elite-passer FLOOR is for a pure non-scorer and was being paid flat to everyone. Kidd '99 led the league at 10.8 assists, scored 16.9 at 20.4% usage, All-NBA 1st team at BPM 5.5, and printed OFF 64 - eleventh among 1999 point guards, under Nick Van Exel '99 (67 on TS .488, BPM -0.8). Of his o_score of 69.10 the passer term was 7.85: gate 0.66 x an efficiency factor of 0.51, because efficiency 44 sits at recal_176's foot (the class median, 43). The floor now rises from 0.5 to 1.0 across the class's own p10 -> p25 of volume (16 -> PD_E_V_FULL 30), so a distributor who also carries a scoring load stops being charged a conversion penalty the standard path has already taken twice. 64 -> 71. HE LANDS AT THE BOTTOM EDGE AND 71 IS THE ARITHMETIC CEILING of any efficiency-side change: the factor cannot exceed 1.00, so his term is capped at 0.245 x 94 x 0.6627 = 15.26 and his o_score at 76.51. Reaching 74 needs recal_117's VOLUME GATE opened, and John Stockton '90 (volume 36 to Kidd's 38, pinned 84 +-3, reading 85) forbids it - every widening measured that lifts Kidd by three lifts Stockton by five."
+  },
+  {
+    "card": "Jason Kidd '02",
+    "scale": "off",
+    "target": 75,
+    "tol": 3,
+    "round": 203,
+    "ruling": "Jason Kidd '99 OFF 64 -> target 74 +-3 and Jason Kidd '02 OFF 70 -> target 75 +-3",
+    "note": "recal_203, the same fix and the same ceiling. MVP runner-up at 14.7/7.3/9.9, BPM 4.5; volume 63 / efficiency 33 / playvol 96, so his efficiency factor was 0.50 EXACTLY - the floor with no lift at all, efficiency 33 being below recal_176's foot of 43 - and his passer term 4.25. 70 -> 73, the bottom half of his band; 0.245 x 96 x gate 0.3614 puts 73 at the top of what the factor can give him. HIS OVR CAP STANDS UNTOUCHED: 80 -> 83, where the blend reads 84 and recal_93/99's max(o_ovr + 10, 0.85 x d_ovr) clips it, which is his own recal_93/99 ruling."
   }
 ]

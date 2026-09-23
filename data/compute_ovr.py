@@ -1270,19 +1270,94 @@ def o_score(p, trace=None):
     # needs a ramp whose foot sits at the subject's own volume, which is a name in disguise.
     PD_E_V_FULL = 30.0
     PD_MIN_FULL = 34.7
+    # recal_203 (HIS RULING, the scout items agreed 2026-09-23, verbatim: "Jason Kidd '99 OFF 64 ->
+    # target 74 +-3 and Jason Kidd '02 OFF 70 -> target 75 +-3"). THE FLOOR IS FOR A PURE NON-SCORER
+    # AND IT WAS BEING PAID TO EVERYONE — the last rate in this term still read at no load at all.
+    #
+    # THE DEFECT, decomposed on the two cards the ruling names. Jason Kidd '99 led the league at 10.8
+    # assists, scored 16.9 on a 20.4% load, made All-NBA 1st team at BPM 5.5, and printed OFF 64 —
+    # ELEVENTH among 1999 point guards, under Nick Van Exel '99 (67 on true shooting .488 and BPM
+    # -0.8), Rod Strickland '99 (68 on efficiency 27) and Terrell Brandon '99 (72). Jason Kidd '02 is
+    # the MVP runner-up at 14.7/7.3/9.9 and printed 70, thirteenth among 2002 point guards.
+    # Their passer terms are 7.85 and 4.25, and in both the EFFICIENCY FACTOR is sitting on its
+    # FLOOR: Kidd '99 is efficiency 44 against recal_176's foot of 43 (the class median), so his
+    # lift is 0.03 and his factor is 0.51; Kidd '02 is efficiency 33, below the foot, so his lift is
+    # ZERO and his factor is 0.50 exactly. Half the term is struck off both men for a conversion
+    # percentile, and the standard path then hands Van Exel seven more points through volume's 0.26
+    # for taking worse shots more often.
+    #
+    # WHAT THE FLOOR IS, IN recal_109's OWN WORDS, AND WHO IT WAS CUT FOR. "It is a HALF-floor, not a
+    # gate: a pure non-scorer who is also inefficient (Mark Jackson '98 is efficiency 36) still keeps
+    # half the term, because his ruling is about the ball he moves, not about his jumper." The floor
+    # is the share of the term that is NOT read on the man's own shot, and the card it was located on
+    # is volume 12. It was then paid at the same 0.5 to every card in the class, including one
+    # carrying a fifth of his team's possessions — whose own shot the STANDARD PATH has already
+    # priced twice over (efficiency at 0.11, and the signature term at 0.08 x max(volume, 50,
+    # hub load) x efficiency). A man who barely shoots has no conversion statement to be read on;
+    # a man who
+    # carries a real scoring load has one, and it has already been read.
+    #
+    # THE CUT, AND IT IS recal_184's OWN MEASUREMENT USED TWICE. recal_184 established the doctrine
+    # for this term — "a per-possession profile must be scaled by the load that produced it" — and
+    # applied it to the LIFT above the floor, pro rata to volume up to PD_E_V_FULL, "the class's OWN
+    # LOWER QUARTILE of volume... exactly 30.0 under every convention". The FLOOR itself was the one
+    # rate left unscaled. It now ramps from 0.5 to 1.0 across the SAME class's p10 -> p25 of volume,
+    # 16 -> 30: recal_184's comment records that distribution verbatim ("p10 16, p20 26, p50 52") and
+    # this round re-measured it on the current pool (1,235 cards; p5 10, p10 16.0, p20 26, p25 30.0,
+    # p50 52, p75 74). NO NEW ARBITRARY CONSTANT: the top is PD_E_V_FULL itself, the foot is the same
+    # class's tenth percentile, and the shape, the floor's own value and recal_176's ramp are all
+    # untouched.
+    #
+    # WHAT IT PROVABLY DOES NOT TOUCH, and it is every pin this term has ever been cut against.
+    #   - EVERY EFFICIENT DISTRIBUTOR IS BYTE-IDENTICAL, because his factor was already 1.00: John
+    #     Stockton '90 (efficiency 94) 85, Steve Nash '05 (96) 90, Kevin Johnson '89 (79) 81, Kevin
+    #     Johnson '92 (76) 82, Chauncey Billups '06 (92) 92, Magic Johnson '90 (99) 93. A floor can
+    #     only ever raise a factor toward a ceiling these men are already on.
+    #   - EVERY PURE NON-SCORER IS BYTE-IDENTICAL, because he is at or under the foot: Mark Jackson
+    #     '98 (volume 12) 52, '99 (10) 52, '00 (10) 57 — the bracket the ruling itself named — and
+    #     every card in the class at volume <= 16 (126 of the 1,235).
+    #   - EVERY LEAD SCORER IS BYTE-IDENTICAL, because recal_117's gate already pays him nothing:
+    #     Harden '19, LeBron '13, Luka '23, Westbrook '15, Curry '16, SGA '25, Jordan '89.
+    # WHAT IT DOES COST, stated rather than buried: between volume 16 and 30 the floor's rise partly
+    # offsets recal_184's own dock, and its subject José Calderón '09 (volume 19) reads 81 -> 82,
+    # inside his 79 +-3 at the same edge he already sat on. John Stockton '97 (volume 23) 86 -> 87
+    # and keeps recal_126's order over '01 (86). Above volume 30 — 929 of the 1,235 — the efficiency
+    # factor is now inert and the term is creation x gate x load; that is the doctrine's own
+    # consequence and it is the price of the ruling.
+    # THE FRONTIER, AND WHY '99 LANDS ON 71 AND NOT ON 74. The factor cannot exceed 1.00, so Kidd
+    # '99's whole term is capped at 0.245 x 94 x his gate 0.6627 = 15.26 and his o_score at 76.51,
+    # i.e. OFF 71 — the TOP of what any efficiency-side change can reach, and inside his 74 +-3 at
+    # its lower edge. Reaching 74 needs his VOLUME GATE opened too, and that is provably blocked:
+    # John Stockton '90 is volume 36 to Kidd's 38 with nothing else between them that the gate reads,
+    # he is pinned 84 +-3 and already reads 85, and every widening of the gate that lifts Kidd by
+    # three lifts Stockton by five or more. Kidd '02 lands 73 against 75 +-3 by the same ceiling.
+    # MEASURED, on the whole pool: 684 of 10,000 cards move on OFF, every one of them UP, max +8;
+    # OVR follows on 569, max +5; DEF and every attribute move on ZERO. The top 12 by OFF is
+    # identical, no card enters or leaves it, OFF_TOP is NOT re-derived and nothing above the knee
+    # moves. All 193 anchors pass. The movers are one archetype: Rajon Rondo '10 (+8), Jason Kidd
+    # '07 (+8), Mookie Blaylock '93 (+8), Mark Jackson '89 (+7), Michael Ray Richardson '80 (+7),
+    # Ricky Rubio '17 (+7), Brevin Knight '06 (+7), Jamaal Tinsley '02 (+7) — lead distributors who
+    # also carried a scoring load and converted it at or under the class median.
+    PD_E_V_FOOT = 16.0   # recal_203: the same class's own TENTH percentile of volume
     _gpv = min(1.0, max(0.0, (a['playvol'] - PD_PV_LO) / (PD_PV_HI - PD_PV_LO)))
     _gv = min(1.0, max(0.0, (PD_V_HI - a['volume']) / (PD_V_HI - PD_V_LO)))
     if _gpv * _gv > 0.0:
         _gel = min(1.0, max(0.0, (a['efficiency'] - PD_E_LO) / (PD_E_HI - PD_E_LO)))
         _gev = min(1.0, max(0.0, a['volume'] / PD_E_V_FULL))
-        _ge = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * _gel * _gev
+        # recal_203: the floor is paid WHOLE only to the pure non-scorer it was cut for, and rises to
+        # 1.0 across the class's own p10 -> p25 of volume (16 -> PD_E_V_FULL). recal_176's ramp and
+        # recal_184's dock above it are byte-identical.
+        _fl = PD_E_FLOOR + (1.0 - PD_E_FLOOR) * min(1.0, max(0.0,
+              (a['volume'] - PD_E_V_FOOT) / (PD_E_V_FULL - PD_E_V_FOOT)))
+        _ge = _fl + (1.0 - _fl) * _gel * _gev
         _mp = _MPG.get(p['name'])
         _gl = 1.0 if _mp is None else min(1.0, _mp / PD_MIN_FULL)
         _pd = 0.245 * a['playvol'] * _gpv * _gv * _ge * _gl
         std += _pd
         if trace is not None:
             trace['passer'] = dict(gate=_gpv * _gv, eff_factor=_ge, mpg=_mp, load=_gl, added=_pd,
-                                   eff_lift=_gel, eff_vol=_gev, v_full=PD_E_V_FULL)
+                                   eff_lift=_gel, eff_vol=_gev, v_full=PD_E_V_FULL, floor=_fl,
+                                   v_foot=PD_E_V_FOOT)
     # recal_112 (HIS RULING, verbatim: "I think in general eff is getting undervalued. 17pgg on 68
     # ts(on a bad era). Has to show mid to high 60's at least. Even low 70's"). THE EFFICIENT
     # INTERIOR SCORER — the mirror of recal_64's off-ball floor, for the man whose efficiency comes
@@ -2597,9 +2672,10 @@ if _CARD:
     if 'passer' in _ot:
         _p2 = _ot['passer']
         print(f"ELITE PASSER (recal_109) - gate {_p2['gate']:.2f} x eff factor "
-              f"{_p2['eff_factor']:.2f} (recal_176's lift {_p2['eff_lift']:.2f} x recal_184's "
-              f"scoring load {_p2['eff_vol']:.2f} - volume against the class's own lower quartile "
-              f"{_p2['v_full']:.0f}) x load {_p2['load']:.3f} (recal_130: "
+              f"{_p2['eff_factor']:.2f} (recal_203's floor {_p2['floor']:.2f} - volume across the "
+              f"class's own p10 {_p2['v_foot']:.0f} -> p25 {_p2['v_full']:.0f} - lifted by "
+              f"recal_176's {_p2['eff_lift']:.2f} x recal_184's "
+              f"scoring load {_p2['eff_vol']:.2f}) x load {_p2['load']:.3f} (recal_130: "
               f"{_p2['mpg'] if _p2['mpg'] is not None else 'no'} mpg against the class's own 34.7-minute "
               f"full-creation line): +{_p2['added']:.3f}")
     if 'two_level' in _ot:
