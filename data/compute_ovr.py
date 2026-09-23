@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 204
+PIPELINE_VERSION = 205
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2289,6 +2289,79 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['turnover_charge'] = dict(handling=_hl, h=_th, e=_te, b=_tb,
                                             gate=_th * _te * _tb, taken=_tc)
+    # recal_198 (HIS RULING, verbatim: "KD '13 OFF way too low. 96 vol 99 eff with decent playvol
+    # and ballsec can't be only 95 OFF"). THE THIRD LEVEL, AT A TOP-1% LOAD AND A TOP-1% CONVERSION.
+    #
+    # THE CARD, DECOMPOSED FIRST. Kevin Durant '13 sums to o_score 104.31 and his ten standing terms
+    # read: z[0] 21.560, z[1] 6.800, z[2] 4.100, efficiency 10.890, volume 24.960, playvol 12.350,
+    # ballsec 6.200, fouldraw x ft 9.007, orb 0.840, signature 7.603. Nothing is missing and nothing
+    # is wrong; the raw is 97.0083, which is 4.01 ABOVE the knee, and the band's stretch turns those
+    # four points into 2.47 — so he prints 95.47 and rounds to 95. The ruling's three points are
+    # therefore 3.30 of RAW, which is 3.55 of o_score, and they have to come from a term.
+    #
+    # WHAT THE RULING'S OWN QUANTITY CANNOT DO, MEASURED BEFORE ANYTHING WAS WRITTEN. The dispatch
+    # asked for a term paying the volume x efficiency PRODUCT — "a scorer carrying a top-1% load at a
+    # top-1% efficiency". That product is recal_26's SIGNATURE, `volume x efficiency / 100`, and on
+    # this board it reads Durant '13 at 95.04 and LeBron James '13 at 95.06. LeBron is HIGHER. He is
+    # also pinned at off 97 +-1 and prints 98, so he has 0.712 of raw headroom, while the subject
+    # needs 3.30 — a five-to-one separation between two cards the quantity orders the WRONG WAY.
+    # Shai Gilgeous-Alexander '25 (0.618 of headroom), Stephen Curry '16 (1.118) and James Harden '19
+    # (1.342) close the frontier behind him. NO term monotone in the product alone can land this
+    # ruling: the product is the GATE, it cannot be the payload. (Nor can any term monotone in load,
+    # creation or ball security: LeBron '13 beats Durant '13 on volume 97-96, playvol 87-65, ballsec
+    # 72-62 and orb 47-14. The subject leads him on exactly six bars — the three zones, efficiency,
+    # fouldraw and free throws — and on ONE of them by more than four points.)
+    #
+    # THE PAYLOAD IS THE THIRD LEVEL, AND IT IS THE BAR THE ADDITIVE SUM UNDER-PRICES. o_score sorts
+    # the three zones and pays them 0.22 / 0.08 / 0.05 (recal_32 created the third, recal_34 and
+    # recal_89 set the split). That decline is right for a man with one weapon and a shot diet built
+    # around it; it is wrong for a man who must be GUARDED at all three levels while carrying the
+    # offence. Durant '13 reads 98 mid / 85 rim / 82 three — a worst level of 82 — against LeBron '13
+    # 69, Curry '16 74, SGA '25 59, Harden '19 42, Embiid '23 39 and Jordan '89 31. The weakest place
+    # you can send a scorer IS the property, and at 0.05 the card pays 4.10 for it.
+    # THE SIZE: the third zone is PAID TWICE, 0.05 again on top of the 0.05 the standard path already
+    # paid. No new weight is introduced — the term's coefficient is the bar's own standing weight, and
+    # recal_130's doctrine follows with it ("a rate paid twice is scaled twice"), so the second
+    # payment is scaled by recal_163's SECOND-payment minute line, SECOND_FULL = 33.9, exactly as
+    # recal_107/112's second payments are. The subject plays 38.5 and is paid in full.
+    #
+    # EVERY ONE OF THE FOUR CONSTANTS IS A PERCENTILE OF THE POOL OR OF THE CLASS, MEASURED, NOT
+    # CHOSEN — the construction recal_130 and recal_176 settled ("the class's own upper quartile,
+    # MEASURED, NOT CHOSEN"):
+    #   THREE_SIG_HI = 80.36 is the POOL's 99th percentile of `volume x efficiency / 100`. That is
+    #     the ruling's own sentence turned into a number: a top-1% load at a top-1% conversion. 101
+    #     cards of 10,000 clear it.
+    #   THREE_SIG_LO = 73.04 is the POOL's 98th percentile of the same quantity, so the gate FADES IN
+    #     over the last percentile instead of stepping at it. Every gate in this file has been made a
+    #     ramp for that reason (recal_93, 99, 136, 154, 164) and this one is born as one.
+    #   THREE_Z2_LO = 74.0 is THAT CLASS's OWN 95th percentile of the third zone, and
+    #   THREE_Z2_HI = 82.0 is the same class's 99th percentile of it (and its maximum). So the second
+    #     payment begins where a third level is already top-5% among men carrying this load, and is
+    #     whole only at the top percentile of it. The class's quartiles are p25 14, p50 32, p75 56:
+    #     a third level of 74 is not a normal property of a top-1% load, it is the rarest one.
+    #
+    # PROVABLY DISJOINT FROM EVERY FLOOR AND FROM THE CHARGE, so this is an addition and not a
+    # re-fight of an older round. The gate needs `volume x efficiency / 100 >= 73.04`, and efficiency
+    # is capped at 99, so every card it touches has volume >= 73.8. recal_64's off-ball floor,
+    # recal_91's stretch-big floor, recal_155's two-level term, recal_182's glue floor and recal_186's
+    # glass floor ALL gate on `volume < 55`; recal_109's elite-passer band tops out at volume 93 with
+    # an efficiency gate; and the turnover charge above needs efficiency < 60, which no card at
+    # volume >= 74 and sig >= 73.04 can have. The term is also LAST in o_score, so no floor's
+    # `_fl > std` comparison sees it. DEF, the big flag, is_big and every attribute move on ZERO.
+    THREE_SIG_LO, THREE_SIG_HI = 73.04, 80.36   # the pool's own p98 -> p99 of volume x efficiency / 100
+    THREE_Z2_LO, THREE_Z2_HI = 74.0, 82.0       # that class's own p95 -> p99 of the third zone
+    THREE_K = 0.05                              # the third zone's OWN standing weight, paid a second time
+    _3sig = a['volume'] * a['efficiency'] / 100.0
+    _3g = (min(1.0, max(0.0, (_3sig - THREE_SIG_LO) / (THREE_SIG_HI - THREE_SIG_LO)))
+           * min(1.0, max(0.0, (z[2] - THREE_Z2_LO) / (THREE_Z2_HI - THREE_Z2_LO))))
+    if _3g > 0.0:
+        _3add = THREE_K * z[2] * _3g * _second
+        std += _3add
+        if trace is not None:
+            trace['three_level'] = dict(sig=_3sig, gate=_3g, z2=z[2], k=THREE_K,
+                                        load=_second, mpg=_mp2, added=_3add,
+                                        sig_gate=min(1.0, max(0.0, (_3sig - THREE_SIG_LO) / (THREE_SIG_HI - THREE_SIG_LO))),
+                                        z2_gate=min(1.0, max(0.0, (z[2] - THREE_Z2_LO) / (THREE_Z2_HI - THREE_Z2_LO))))
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):

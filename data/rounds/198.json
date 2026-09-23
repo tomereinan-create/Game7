@@ -1,0 +1,383 @@
+{
+ "round": 198,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "KD '13 OFF way too low. 96 vol 99 eff with decent playvol and ballsec can't be only 95 OFF",
+ "title": "THE THIRD LEVEL IS PAID TWICE AT A TOP-1% LOAD AND A TOP-1% CONVERSION — o_score's third zone (weight 0.05) earns its own weight a second time when volume x efficiency clears the pool's p99 and the third zone clears its class's p95, scaled by recal_163's second-payment minute line; the volume x efficiency PRODUCT is the gate, not the payload, because it orders Durant '13 BELOW LeBron '13",
+ "subject": "Kevin Durant '13",
+ "scale": "off",
+ "target": 98,
+ "tol": 1,
+ "before": 95,
+ "after": 98,
+ "pipeline_version": 198,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "THREE_SIG_LO, THREE_SIG_HI = 73\\.04, 80\\.36",
+   "label": "THE GATE — the pool's own p98 -> p99 of `volume x efficiency / 100`, the ruling's 'top-1% load at a top-1% efficiency' turned into a number",
+   "note": "101 cards of 10,000 clear p99 = 80.36; the ramp starts at p98 = 73.04 so the gate fades in over the last percentile rather than stepping at it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "THREE_Z2_LO, THREE_Z2_HI = 74\\.0, 82\\.0",
+   "label": "THE PAYLOAD'S OWN RAMP — that class's p95 -> p99 of the third (weakest) zone",
+   "note": "the class's third-zone quartiles are p25 14, p50 32, p75 56, p90 70, p95 74, p99/max 82: a third level of 82 at this load is the top percentile of the top percentile"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "THREE_K = 0\\.05",
+   "label": "NO NEW WEIGHT — the third zone's OWN standing weight (0.22 / 0.08 / 0.05), paid a second time",
+   "note": "recal_130's doctrine comes with it: a rate paid twice is scaled twice, so the second payment takes recal_163's SECOND_FULL = 33.9 minute line"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_3add = THREE_K \\* z\\[2\\] \\* _3g \\* _second",
+   "label": "the whole term, one line, LAST in o_score so no floor's `_fl > std` comparison sees it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SECOND_FULL = 33\\.9",
+   "label": "recal_163's second-payment minute line, reused and not re-cut",
+   "note": "the subject plays 38.5 and is paid in full; the term's whole class is above 32 minutes"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\]",
+   "label": "recal_34/recal_89's LOCKED DIAL STATE for the three zones, UNTOUCHED — the standing weights are not reopened",
+   "note": "the round adds a second payment of the third zone to a tiny measured class; it does not re-cut the split for the 10,000"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "0\\.08\\*\\(max\\(a\\['volume'\\],50,_hubload\\)\\*a\\['efficiency'\\]/100\\)",
+   "label": "recal_26's SIGNATURE term, untouched — the product it pays is the quantity this round's gate reads",
+   "note": "the gate re-reads the signature; it does not re-weight it. A term monotone in the product alone is infeasible (see COST)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_98's band anchors, NOT re-derived — no card above the knee is re-scaled",
+   "note": "the subject's three points come from raw (97.0083 -> 100.8213), not from moving the stretch"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "raw = max\\(0\\.5 \\* p\\['o_ovr'\\] \\+ 0\\.5 \\* p\\['d_ovr'\\], 0\\.70 \\* p\\['o_ovr'\\] \\+ 0\\.30 \\* p\\['d_ovr'\\]\\)",
+   "label": "recal_83/104's OVR blend, untouched — OVR follows OFF and nothing else"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if _f3 > 0\\.0 and a\\['volume'\\] < 55:",
+   "label": "recal_64/91's off-ball floor gate — PROVABLY DISJOINT",
+   "note": "the term's gate needs volume x efficiency / 100 >= 73.04 at efficiency <= 99, so every card it touches has volume >= 73.8"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "TC_E_LO, TC_E_HI = 51\\.0, 60\\.0",
+   "label": "recal_190-era turnover charge's efficiency gate — also disjoint",
+   "note": "no card at volume >= 74 can clear the signature gate with efficiency < 60"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Kevin Durant '13",
+   "scale": "ovr",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "the subject's OVR follows his OFF through the blend: 90 -> 92, nothing else moved on his card"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "THE WALL, AND THE REASON THE PRODUCT IS THE GATE AND NOT THE PAYLOAD. His signature is 95.06 against the subject's 95.04 — HIGHER — and he is pinned 97 +-1 while printing 98, so he has 0.712 of raw headroom where the subject needed 3.30. His third zone is 69, below this term's foot: UNMOVED by construction"
+  },
+  {
+   "card": "Shai Gilgeous-Alexander '25",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "the tightest OFF anchor on the board (0.618 of raw headroom): third zone 59, gate 0.0000, unmoved"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "THE CARD THE Z2 FOOT IS MEASURED AT. Signature 93.10 (gate 1.0000) but third zone 74 — EXACTLY the class's 95th percentile and therefore exactly the foot of the ramp: he takes 0.0000 of the term and does not move a thousandth"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "volume 99 is the highest load on the board and his third zone is 42: unmoved. Load alone buys nothing here"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "signature 92.12, third zone 31 (3pt): unmoved — a two-level scorer at a top-1% load is not what this term pays"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "signature 82.32 clears the gate, third zone 39 does not: unmoved"
+  },
+  {
+   "card": "Luka Dončić '23",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "THE MIRROR IMAGE AND THE PROOF THE GATE IS DOING WORK. Third zone 78 — the fourth highest in the file at any load — but efficiency 65 puts his signature at 63.70, below the p98 foot: gate 0.0000, unmoved. Three levels without conversion earn nothing"
+  },
+  {
+   "card": "Nikola Jokić '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "signature 85.44 with third zone 72: below the foot, unmoved, and already on the ceiling"
+  },
+  {
+   "card": "Kawhi Leonard '17",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "recal-pinned at 94 +-1 with signature 81.78 and third zone 72 — the nearest card BELOW the z2 foot in the class: unmoved"
+  },
+  {
+   "card": "Kevin Durant '17",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "his own pinned season, third zone 74 (on the foot): UNMOVED at 95, so the round does not flatten the Durant curve it lifts"
+  },
+  {
+   "card": "Kevin Durant '19",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "a second Durant pin, third zone 57: unmoved"
+  },
+  {
+   "card": "Kevin Durant '24",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 2,
+   "label": "the third Durant pin: unmoved"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "0.214 of raw headroom, the third-tightest anchor on the board: unmoved (signature 60.72)"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 2,
+   "label": "0.183 of raw headroom and signature 87.30 — deep inside the gate — but third zone 10: unmoved, and he is the card that shows the payload is the separator"
+  },
+  {
+   "card": "Jaylen Brown '26",
+   "scale": "off",
+   "op": "~",
+   "value": 83,
+   "tol": 1,
+   "label": "volume 96 at efficiency 38: signature 36.48, gate 0.0000. Load without conversion buys nothing"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 2,
+   "label": "volume 98 at efficiency 51: unmoved, and the turnover charge that decides him is disjoint from this term by its own efficiency gate"
+  },
+  {
+   "card": "Giannis Antetokounmpo '20",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "the summit, untouched: third zone 28"
+  },
+  {
+   "card": "Larry Bird '87",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "THE ROUND'S OTHER +3 AND ITS CROSS-ERA WITNESS: 28.1 points on .555 TS at 40.6 mpg, zones 98 mid / 87 rim / 82 three — the same third level as the subject, at signature 83.70. 95 -> 98. No anchor stands on him"
+  },
+  {
+   "card": "Kevin Durant '14",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "THE LARGEST COLLATERAL AND IT IS FORCED. '14 dominates '13 on volume 97-96, playvol 71-65 and ballsec 68-62 at the same efficiency 99 and the same third zone 82, so NO term monotone in the sheet can lift '13 without lifting '14 at least as much: 97 -> 99. Holding him at 98 costs the subject his own number (97)"
+  },
+  {
+   "card": "Kevin Durant '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 0,
+   "label": "third zone 80 -> 0.75 of the ramp: 95 -> 96, the only partial payment on the board"
+  },
+  {
+   "card": "Larry Bird '88",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "third zone 74, on the foot: unmoved at 94. The ramp's foot is a class percentile, not a line drawn around a season"
+  },
+  {
+   "five": [
+    "Ron Harper '00",
+    "Kobe Bryant '00",
+    "Glen Rice '00",
+    "Robert Horry '00",
+    "Shaquille O'Neal '00"
+   ],
+   "scale": "team:off",
+   "op": "~",
+   "value": 57,
+   "tol": 1,
+   "label": "team offence is computed from ATTRIBUTES and this round moves none: byte-identical"
+  },
+  {
+   "five": [
+    "Stephen Curry '17",
+    "Klay Thompson '17",
+    "Kevin Durant '17",
+    "Draymond Green '17",
+    "Zaza Pachulia '17"
+   ],
+   "scale": "team:off",
+   "op": ">=",
+   "value": 90,
+   "label": "the Warriors '17 dial, untouched"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Kevin Durant '14",
+   "below": "Kevin Durant '13",
+   "label": "the Durant curve keeps its shape: '14 is the better season on volume, creation and ball security and still reads above '13 (99 over 98)"
+  },
+  {
+   "scale": "off",
+   "above": "Kevin Durant '13",
+   "below": "Kevin Durant '16",
+   "label": "'13 over '16 (98 over 96), the order the ruling's own neighbour list carries"
+  },
+  {
+   "scale": "off",
+   "above": "Kevin Durant '13",
+   "below": "Kevin Durant '17",
+   "label": "'13 over the pinned '17 (98 over 95)"
+  },
+  {
+   "scale": "off",
+   "above": "Kevin Durant '13",
+   "below": "Stephen Curry '16",
+   "label": "the subject now reads above Curry '16 (98 over 96) instead of one below him"
+  },
+  {
+   "scale": "off",
+   "above": "Larry Bird '87",
+   "below": "Larry Bird '88",
+   "label": "Bird's own peak over his next season, 98 against 94 — the ramp is on the third zone (82 against 74) and it orders his two seasons the way the box does"
+  },
+  {
+   "scale": "ovr",
+   "above": "LeBron James '13",
+   "below": "Kevin Durant '13",
+   "label": "OVR order is untouched where it matters: LeBron '13 97 still reads above the subject's 92, because this is an OFFENCE round and DEF moved on zero cards"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 4,
+  "max_abs": 3,
+  "top": [
+   [
+    "Kevin Durant '13",
+    95,
+    98
+   ],
+   [
+    "Larry Bird '87",
+    95,
+    98
+   ],
+   [
+    "Kevin Durant '14",
+    97,
+    99
+   ],
+   [
+    "Kevin Durant '16",
+    95,
+    96
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '23",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kevin Durant '14",
+   "LeBron James '09",
+   "LeBron James '10",
+   "LeBron James '12",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24"
+  ]
+ },
+ "cost": [
+  "THE RULING'S OWN QUANTITY IS INFEASIBLE AS A PAYLOAD, AND THIS IS THE MEASUREMENT. The dispatch asked for a term paying the volume x efficiency PRODUCT. That product is recal_26's signature, and it reads Kevin Durant '13 at 95.04 against LeBron James '13 at 95.06 — LeBron HIGHER. LeBron is pinned off 97 +-1, prints 98, and therefore has 0.712 of raw headroom; the subject needed 3.30. Behind him the frontier closes: SGA '25 0.618, Curry '16 1.118, Harden '19 1.342, Embiid '23 1.843, Karl Malone '99 0.183 (signature 87.30). No term monotone in the product alone — and no term monotone in load, creation or ball security, all three of which LeBron '13 leads on — can separate the two. The product survives as the GATE; the separator had to be a bar the subject actually leads on, and there is exactly one with room in it: the THIRD ZONE, 82 against 69.",
+  "KEVIN DURANT '14 GOES TO 99 AND IT IS FORCED, NOT COLLATERAL DAMAGE. '14 is '13 plus a point of volume, six of creation and six of ball security at identical efficiency 99 and an identical third zone 82, so every term monotone in the sheet pays him at least what it pays the subject. Measured: the largest K that holds '14 at 98 is 0.0387, and at that K the subject reads 97 — inside 98 +-1 but not on his number. At THREE_K = 0.05 (the third zone's own weight, the principled value) the subject lands 98 and '14 lands 99. Cards printing OFF 99 go from 19 to 20; recal_98 made the summit a tie block on purpose and Durant '14 joins Shaq '00-'03, LeBron '09/'10/'12, Jokić '21-'26, SGA '26 and four Giannis seasons there.",
+  "THE BALLSEC AMENDMENT, MEASURED AS A LAB READING. Tomer's amendment ('Even though his ballsec is too high. 3.5 tov for 28/4.6 is a lot') sends KD '13's ball security from 62 toward 50 in the stats lane (round 199). ballsec enters o_score at exactly one place for this card, 0.10 x ballsec, so 62 -> 50 is -1.20 of o_score and -1.116 of raw. LAB READING, run through the full card path on a throwaway copy of players_stats.json: the subject reads raw 99.7053 -> band 97.1263 -> OFF 97, still inside 98 +-1, and the term itself does not move at all (its gate reads volume, efficiency and the zones, none of which 199 touches). The round therefore survives 199: OFF 98 as shipped, OFF 97 after the ballsec cut.",
+  "THE CLASS IS FOUR CARDS AND THAT IS THE MEASUREMENT, NOT A NARROWING. 101 cards of 10,000 clear the pool's p99 signature; of those, four clear the class's p95 third zone — Durant '13, '14, '16 and Larry Bird '87. The gates are percentiles of the pool and of the class, so the class grows by itself as the file grows; no name appears anywhere in the term. A later round that wants a wider footprint should move THREE_Z2_LO down the class's own distribution (p90 = 70 brings in Jokić '25/'26, Kawhi '17, Curry '17, Durant '12/'17 and Bird '88) — but at p90 Kawhi '17 (pinned 94 +-1) and Jokić '25 both move, so the wider foot was NOT taken on this round's authority.",
+  "THE BAND IS NOT RE-DERIVED. OFF_TOP stays at recal_98's 102.75 and the subject's three points are raw, not stretch. Durant '14's new raw (102.7970) is above OFF_TOP and clamps at 99, which is recal_98's own stated consequence ('everything above the constant clamps') and not a drift: 76 cards already sit above it.",
+  "ROUND 196 (pre-1997 high-usage scorers) IS LANDING IN PARALLEL AND THE TWO ARE DISJOINT BY CONSTRUCTION. This term is keyed on nothing but volume, efficiency, the sorted zones and minutes — no era, no inferred zones, no `rim_mid_measured` branch. Larry Bird '87 is the only pre-1997 card it touches. Round 191's declined 'lead handler's floor' is not re-landed in any form: playvol and ballsec are not read by this term at all, and Payton, Hardaway and Carter move by exactly zero."
+ ],
+ "notes": [
+  "THE CARD, DECOMPOSED FIRST. Kevin Durant '13 sums to o_score 104.3100 across ten standing terms — z[0] 21.560, z[1] 6.800, z[2] 4.100, efficiency 10.890, volume 24.960, playvol 12.350, ballsec 6.200, fouldraw x ft 9.007, orb 0.840, signature 7.603 — with the zone-dominance bonus not firing (his weapon is a midrange one, which recal_38 ruled is not the same threat) and the paint-evidence floor adding 0.000. Nothing is missing and nothing is double-counted. His raw is 97.0083, four points above the 93 knee, and the band's stretch turns those four into 2.47, so he prints 95.4666 and rounds to 95. The ruling's three points are therefore 3.30 of RAW, which is 3.55 of o_score.",
+  "WHICH TERM THE RULING IS REALLY ABOUT. The ruling names four bars — volume 96, efficiency 99, playvol 65, ballsec 62 — and three of them are already paid at or above their standing weight (volume 0.26 x load is the single largest term on the card at 24.960; the signature pays the product a second time at 0.08). Ball security at 62 and creation at 65 are the two bars the card is genuinely ORDINARY on, and Tomer's own amendment on the same day takes ball security DOWN. What the additive sum does not price is the shape of the scoring itself: 98 mid / 85 rim / 82 three is a man with no level you can send him to, and o_score pays the third level 0.05 — 4.10 points, less than his offensive rebounding costs some bigs.",
+  "THE PAYLOAD IS THE WEAKEST LEVEL, AND THE POOL SAYS HOW RARE IT IS. Among the 101 cards at a top-1% volume x efficiency, the third zone reads p25 14, p50 32, p75 56, p90 70, p95 74, p99 82. The whole company of the ruling sits in the bottom half of that: LeBron '13 69, SGA '25 59, Harden '19 42, Embiid '23 39, Jordan '89 31, Giannis '20 28. Durant '13 and '14 are the class's maximum at 82. A third level of 82 while carrying a top-1% load at a top-1% conversion is, measured, the rarest property in the file's offensive vocabulary — and it was being paid a twentieth of a point per unit.",
+  "EVERY CONSTANT IS A PERCENTILE, MEASURED, NOT CHOSEN — recal_130 and recal_176's construction. THREE_SIG_HI = 80.36 is the pool's p99 of volume x efficiency / 100 (the ruling's own sentence as a number); THREE_SIG_LO = 73.04 is its p98, so the gate fades in over the last percentile instead of stepping at it, the way every gate in this file has been made a ramp since recal_93. THREE_Z2_LO = 74.0 is that class's own p95 of the third zone and THREE_Z2_HI = 82.0 its p99. THREE_K = 0.05 is the third zone's own standing weight, paid a second time, so no new weight enters the file — and recal_130's rule travels with it, which is why the second payment is scaled by recal_163's SECOND_FULL of 33.9 minutes.",
+  "PROVABLY DISJOINT FROM EVERY FLOOR AND FROM THE CHARGE. The gate needs volume x efficiency / 100 >= 73.04 and efficiency is capped at 99, so every card the term can touch has volume >= 73.8. recal_64's off-ball floor, recal_91's stretch-big floor, recal_155's two-level term, recal_182's glue floor and recal_186's glass floor ALL gate on volume < 55; recal_109's elite-passer band tops out at volume 93 with its own efficiency gate; the turnover charge needs efficiency < 60, unreachable at volume >= 74 inside this gate. The term is also the LAST statement in o_score, so no floor's `_fl > std` comparison can be suppressed by it.",
+  "MEASURED BEFORE APPLYING, on the whole pool. 4 of 10,000 cards move on OFF, every one of them UP: Durant '13 95 -> 98, Larry Bird '87 95 -> 98, Durant '14 97 -> 99, Durant '16 95 -> 96. OVR follows on 3 (max +2). DEF moves on ZERO cards, is_big and the big flag move on ZERO, and no attribute moves at all — this is a compute_ovr-only round. All 193 anchors pass with mean |error| 0.83. The subject's OFF rank goes 40 -> 25, landing him beside SGA '25, LeBron '13, Magic '86, Shaq '98, Larry Bird '87 and Jordan '89 — the company the ruling named."
+ ]
+}

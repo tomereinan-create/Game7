@@ -2016,5 +2016,14 @@
     "round": 204,
     "ruling": "Brent Barry '02 OFF 62 -> target 72 +-3 and Ray Allen '09 OFF 73 -> target 78 +-3 (scout items Tomer agreed to, 2026-09-23)",
     "note": "recal_204: the same term, read on the card the defect is cleanest on. 18.2 points on .624 TS and 40.9% on 6.0 threes, BPM 4.0, printed OFF 73 - the same 73 as Jamal Crawford '09 (16.0 on .547, BPM -1.3), because the 17 volume points Crawford carries are worth 4.42 of o_score and the 41 efficiency points Allen gives back are worth 4.51 and the two cancel. Handling load 51.5 saturates the ramp; the lead-scorer fade pays him 0.41 at volume 59. He lands ON 78."
+  },
+  {
+    "card": "Kevin Durant '13",
+    "scale": "off",
+    "target": 98,
+    "tol": 1,
+    "round": 198,
+    "ruling": "KD '13 OFF way too low. 96 vol 99 eff with decent playvol and ballsec can't be only 95 OFF",
+    "note": "THE THIRD LEVEL IS PAID TWICE AT A TOP-1% LOAD AND A TOP-1% CONVERSION. His ten standing terms sum to o_score 104.3100 and nothing is missing; the raw is 97.0083, four points above the 93 knee, which the band stretches to 95.4666. The ruling's three points are 3.30 of raw. THE RULING'S OWN QUANTITY CANNOT CARRY THEM: volume x efficiency / 100 reads Durant '13 at 95.04 against LeBron '13 at 95.06 — LeBron HIGHER, pinned off 97 +-1 and printing 98 with 0.712 of headroom, with SGA '25 (0.618), Curry '16 (1.118), Harden '19 (1.342) and Karl Malone '99 (0.183) behind him. So the product is the GATE and the payload is the one bar the subject leads on with room in it: the THIRD (weakest) zone, 82 against LeBron's 69, Curry's 74, SGA's 59, Harden's 42, Jordan '89's 31. o_score pays it 0.05; this term pays it 0.05 again — the bar's own standing weight, so no new weight enters the file — scaled by recal_163's SECOND_FULL 33.9 per recal_130 ('a rate paid twice is scaled twice'). All four gate constants are percentiles, MEASURED: THREE_SIG_LO/HI 73.04 / 80.36 are the pool's p98 / p99 of the signature (101 cards of 10,000 clear p99), THREE_Z2_LO/HI 74 / 82 are that class's own p95 / p99 of the third zone (class quartiles p25 14, p50 32, p75 56). 95 -> 98, OVR 90 -> 92. FOUR cards of 10,000 move, all up and all one archetype: Durant '13 and '14 (97 -> 99, FORCED — '14 dominates '13 on volume, creation and ball security at the same efficiency and the same third zone), Durant '16 (95 -> 96 at 0.75 of the ramp) and Larry Bird '87 (95 -> 98). DEF and every attribute move on zero. LAB READING for the parallel ballsec cut (62 -> 50, stats lane round 199): raw 99.7053, OFF 97 — still inside 98 +-1."
   }
 ]
