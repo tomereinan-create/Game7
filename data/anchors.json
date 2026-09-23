@@ -1872,5 +1872,32 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Bam Adebayo '23",
+    "scale": "def",
+    "target": 82,
+    "tol": 3,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "THE ANCHOR CLAIM IS PAID FOR A LEAD BAR. rimprot 78 / perdef 79 / drb 86, d_bigness 1.0, share 1.0, no floor firing: the big vector paid 0.40 x 79 + 0.40 x 78 + 0.17 x 86 = 79.25 and printed 90 — one point off Rudy Gobert '23 (rimprot 95, perdef 63, vector 80.44, DEF 91), because an equal-weight mean of two bars cannot tell a lead from a level. The part of the vector above the big class's own p85 of itself (ANCHOR_BASE 74.14) is now paid in proportion to the man's lead bar max(rimprot, perdef), ramped over that class's own p75/p92 of that bar (81 -> 92), at the vector's own perdef+rimprot claim share (0.80). His lead bar is 79, under the p75, so t = 0 and the whole 5.11 of anchor-band vector is discounted: 79.25 - 4.09 = 75.16, DEF 90 -> 85. 85 IS THE FRONTIER, not the tuning: Karl Malone '97 (rimprot 72 / perdef 76 / drb 92, pinned 87 +-3) is flatter and lower on both lead bars and must still read 84+, so no ramp on the bars can separate them — only the level can, and it lands them adjacent at 85 / 85."
+  },
+  {
+    "card": "Bam Adebayo '24",
+    "scale": "def",
+    "target": 84,
+    "tol": 3,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "rimprot 81 / perdef 82 / drb 90. Lead bar 82, barely over the class's p75 of 81, so t = 0.09 and he keeps almost none of the anchor claim: 82.72 - 6.24 = 76.48, DEF 93 -> 86, the largest single drop on the board. The pair that is the whole round is his own '20 season (rimprot 91, t = 0.91) which he ruled FINE and which holds at 96 to the point."
+  },
+  {
+    "card": "Bam Adebayo '22",
+    "scale": "def",
+    "target": 90,
+    "tol": 2,
+    "round": 200,
+    "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+    "note": "rimprot 83 / perdef 88 / drb 84 — 'too high' and, in his own grading, NOT 'by a lot'. Lead bar 88 is three quarters of the way up the ramp (t = 0.64), so he keeps most of the claim: 84.18 - 2.92 = 81.26, DEF 94 -> 92. The ramp's top is the class's p92 (92) and both neighbours were measured: at p90 (90) this card never leaves 93, and at p95 (94) he reads 91 but Bam '20 — ruled fine — falls to the bottom edge of his hold."
   }
 ]

@@ -1,0 +1,630 @@
+{
+ "round": 200,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF is too high. 23-24 by a lot.",
+ "title": "THE ANCHOR CLAIM IS PAID FOR A LEAD BAR — the part of a big's vector that sits in the anchor band is paid in proportion to max(rimprot, perdef), over the big class's own p75/p92 of that bar (81 -> 92); below the class's own p85 of the vector (74.14) nothing is at risk, and the depth is the vector's own perdef+rimprot share (0.80), so no new constant enters and the vector stays monotone in every bar",
+ "scale": "def",
+ "subject": "Bam Adebayo '23",
+ "target": 82,
+ "tol": 3,
+ "before": 90,
+ "after": 85,
+ "pipeline_version": 200,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "LEAD_LO, LEAD_HI = 81\\.0, 92\\.0",
+   "label": "THE RAMP — the big class's own p75 / p92 of max(rimprot, perdef)",
+   "note": "the lead bar runs from the top quarter of bigs by best defensive bar to the point where the anchor claim is whole; at p90 (90) Bam '22 never leaves 93, at p95 (94) Bam '20 — a card he ruled FINE — drops to the bottom edge of his hold"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ANCHOR_BASE = 74\\.14",
+   "label": "the anchor band's floor — the same class's own p85 of the big vector (DEF ~84)",
+   "note": "p80 (71.77) drops Karl Malone '97 out of his 87 +-3 pin before Bam '23 reaches his; p90 (77.01) cannot reach 82 +-3 at any share <= 1.0. p85 is the only member of the family the pool admits"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ANCHOR_SHARE = 0\\.80",
+   "label": "the depth, and it is NOT a new constant — perdef 0.40 + rimprot 0.40, the share of the big vector that IS the anchor claim",
+   "note": "drb (0.17) and discipline (0.027) are the man's own glass and fouls and are never at risk; <= 1.0 is also what keeps the vector monotone in its own bars (slope >= 0.20)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_claim = ANCHOR_SHARE \\* \\(1\\.0 - _lt\\) \\* max\\(0\\.0, _big - ANCHOR_BASE\\)",
+   "label": "the whole line — a discount on the anchor band, faded by the lead bar",
+   "note": "lead is max(rimprot, perdef) so a lockdown big (Draymond '16, 84/98) and a rim big (Lopez '23, 97/60) are both whole; only the man with NEITHER bar is touched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "RP_SKILL, RP_ANCHOR = 0\\.13, 0\\.27",
+   "label": "recal_151's rim-anchor premium at load, UNTOUCHED — this round is its sibling, not its replacement",
+   "note": "r151 made the premium conditional on MINUTES; r200 makes it conditional on EVIDENCE. Both still apply"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "DEF_TOP IS NOT RE-DERIVED (recal_90's warning) — the term can only ever lower a card, so the summit cannot move",
+   "note": "recal_102's 104.25 stands; nothing above the knee is restretched and the top 12 by DEF is unchanged"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "PDX_LO, PDX_HI = 85\\.0, 96\\.0",
+   "label": "recal_181's lockdown event floor, on the PERIMETER vector, untouched",
+   "note": "this round lives entirely on the big vector, so every card the branch grades a perimeter defender is byte-identical"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "def",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "THE SUBJECT AND THE SENTENCE — 'a flat ~79 shouldn't read 90'. rimprot 78 / perdef 79 / drb 86, d_bigness 1.0, no floor firing: the vector paid 79.25 and printed 90. The lead bar is 79, under the class's p75 of 81, so t = 0 and the 5.11 of vector sitting above the anchor band's floor is paid at 0.80 x 0 — 79.25 - 4.09 = 75.16, DEF 90 -> 85"
+  },
+  {
+   "card": "Bam Adebayo '24",
+   "scale": "def",
+   "op": "~",
+   "value": 84,
+   "tol": 3,
+   "label": "SUBJECT 2, 'too high by a lot' — lead bar 82, barely over p75, t = 0.09: 93 -> 86, the largest single drop on the board"
+  },
+  {
+   "card": "Bam Adebayo '22",
+   "scale": "def",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "SUBJECT 3, 'too high' and NOT 'by a lot' — lead bar 88 is three quarters of the way up the ramp (t = 0.64), so he keeps most of the claim: 94 -> 92"
+  },
+  {
+   "card": "Bam Adebayo '20",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "CARD 4, RULED FINE AND IT HOLDS EXACTLY — the same man, one point of rimprot short of the ramp's top (91): t = 0.91, he keeps 96. This pair is the whole round in one player"
+  },
+  {
+   "card": "Rudy Gobert '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "CARD 5, ruled fine — rimprot 95 is past the ramp's top, the claim is whole, byte-identical"
+  },
+  {
+   "card": "Jaren Jackson Jr. '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "CARD 6, ruled fine — rimprot 97, claim whole, byte-identical"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "CARD 7, ruled fine — lead bar 90, t = 0.82, and the vector sits only 3.4 over the band floor: 88 -> 87, inside the +-1 hold"
+  },
+  {
+   "card": "Brook Lopez '23",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 1,
+   "label": "CARD 8, ruled fine — rimprot 97 and a vector BELOW the anchor band's floor: nothing at risk twice over, byte-identical"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "THE PIN THE ROUND WAS WRITTEN AROUND — rimprot 85 / perdef 98. He leads with the OTHER bar, which is why the test is max() and not rimprot: a rimprot-only ramp takes him to 95 and Rodman '90 to 90. Byte-identical at 97"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "perdef 97 on rimprot 76 — the same shape as Draymond, untouched"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "byte-identical"
+  },
+  {
+   "card": "Ben Wallace '06",
+   "scale": "def",
+   "op": ">=",
+   "value": 98,
+   "label": "the summit, untouched — the band is not re-derived"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "a perimeter card: d_bigness 0, moved by exactly zero"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 4,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Amen Thompson '24",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 2,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Amen Thompson '25",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Amen Thompson '26",
+   "scale": "def",
+   "op": "~",
+   "value": 97,
+   "tol": 2,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Andre Roberson '15",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 2,
+   "label": "perimeter, zero"
+  },
+  {
+   "card": "Jimmy Butler '16",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "d_bigness 0.057 and a big vector below the band floor: zero"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "d_bigness 0.257, big vector 61.95, below the floor: zero"
+  },
+  {
+   "card": "Joe Dumars '90",
+   "scale": "def",
+   "op": "~",
+   "value": 81,
+   "tol": 3,
+   "label": "recal_181's class, perimeter: zero"
+  },
+  {
+   "card": "Kevin Durant '19",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 3,
+   "label": "d_bigness 0.833 but a big vector of 71.4, under the band floor: zero"
+  },
+  {
+   "card": "Kevin Durant '24",
+   "scale": "def",
+   "op": "~",
+   "value": 80,
+   "tol": 3,
+   "label": "same, zero"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "zero"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "zero"
+  },
+  {
+   "card": "DeMarre Carroll '14",
+   "scale": "def",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "recal_187's wings, zero"
+  },
+  {
+   "card": "Jae Crowder '16",
+   "scale": "def",
+   "op": "~",
+   "value": 69,
+   "tol": 3,
+   "label": "recal_187's wings, zero"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "THE TIGHTEST PIN ON THE BOARD AND IT DOES NOT MOVE — rimprot 77 / perdef 72 / drb 76 is the same FLAT shape as the subject and he was already sitting ON the bottom edge of his anchor (71 against 74 +-3, zero room). His vector is 62.40, twelve under the anchor band's floor, so the term never reaches him. This is why the term is gated on the LEVEL and not on the bars"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "vector 65.59, below the floor: zero"
+  },
+  {
+   "card": "Vlade Divac '02",
+   "scale": "def",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "lead bar 74 and a vector of 72.35, below the floor: zero"
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "def",
+   "op": "~",
+   "value": 83,
+   "tol": 2,
+   "label": "vector 74.09, five hundredths under the floor: zero"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "rimprot 93, past the ramp's top: zero"
+  },
+  {
+   "card": "Larry Sanders '13",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "lead bar 89, t = 0.73: 86 holds"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "rimprot 92, at the ramp's top: zero, 93 holds"
+  },
+  {
+   "card": "Dan Roundfield '83",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "THE SECOND MOVER AMONG THE PINS — rimprot 87 / perdef 71 / drb 91, t = 0.45: 92 -> 89, inside his 91 +-3. His r180 == 92 snapshot is superseded"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "THE FRONTIER PIN, and the reason ANCHOR_BASE cannot go lower. rimprot 72 / perdef 76 / drb 92 is FLATTER and LOWER than the subject on both lead bars and must still read 84+, so no ramp on the bars alone can separate them — only the level can, and it does: his vector is 77.50 against the subject's 79.25, so he loses 2.69 where the subject loses 4.09. 88 -> 85, inside both his 87 +-3 and his 88 +-3 readings"
+  },
+  {
+   "card": "Bam Adebayo '26",
+   "scale": "def",
+   "op": "==",
+   "value": 84,
+   "label": "recal_135's snapshot of the same man's flattest season (rimprot 72 / perdef 72 / drb 90) was FAILING at 85 before this round and is repaired by it: 85 -> 84"
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "def",
+   "op": "~",
+   "value": 98,
+   "tol": 2,
+   "label": "rimprot 98 — the claim is whole, zero"
+  },
+  {
+   "card": "Kevin Garnett '04",
+   "scale": "def",
+   "op": "~",
+   "value": 98,
+   "tol": 2,
+   "label": "rimprot 95, zero"
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 2,
+   "label": "zero"
+  },
+  {
+   "card": "Kawhi Leonard '16",
+   "scale": "def",
+   "op": "==",
+   "value": 99,
+   "label": "zero"
+  },
+  {
+   "card": "Chet Holmgren '26",
+   "scale": "def",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "rimprot 98 on perdef 67 — a modern rim big, untouched"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "ovr",
+   "op": "~",
+   "value": 77,
+   "tol": 1,
+   "label": "the subject's OVR follows his DEF through recal_104's even split: 80 -> 77"
+  },
+  {
+   "card": "Bam Adebayo '24",
+   "scale": "ovr",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "82 -> 78"
+  },
+  {
+   "card": "Bam Adebayo '20",
+   "scale": "ovr",
+   "op": "~",
+   "value": 80,
+   "tol": 1,
+   "label": "the card he ruled fine keeps his OVR too"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "ovr",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "offence-led, so one point of DEF does not reach him"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "off",
+   "op": "==",
+   "value": 69,
+   "label": "OFF moved on ZERO of 10,000 cards — the round is d_score only, and rounds 196 and 198 own o_score"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "attr:rimprot",
+   "op": "==",
+   "value": 78,
+   "label": "no attribute moves: build_ratings.py is untouched but for the version stamp"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "attr:perdef",
+   "op": "==",
+   "value": 79,
+   "label": "the flat pair he ruled on is still exactly what he was shown"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "attr:drb",
+   "op": "==",
+   "value": 86,
+   "label": "same"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Rudy Gobert '23",
+   "below": "Bam Adebayo '23",
+   "label": "THE INVERSION HIS SENTENCE NAMES IS GONE AND THAT IS THE ROUND. rimprot 95 / perdef 63 now reads six over a flat 78/79 (91 against 85), where the two were one point apart"
+  },
+  {
+   "scale": "def",
+   "above": "Jaren Jackson Jr. '23",
+   "below": "Bam Adebayo '23",
+   "label": "rimprot 97 over the flat pair, 91 against 85"
+  },
+  {
+   "scale": "def",
+   "above": "Joel Embiid '23",
+   "below": "Bam Adebayo '24",
+   "label": "rimprot 90 over rimprot 81, 87 against 86 — they were level at 88/93 the wrong way round"
+  },
+  {
+   "scale": "def",
+   "above": "Bam Adebayo '20",
+   "below": "Bam Adebayo '22",
+   "label": "the same man's seasons stay in his own order, 96 over 92"
+  },
+  {
+   "scale": "def",
+   "above": "Bam Adebayo '22",
+   "below": "Bam Adebayo '24",
+   "label": "92 over 86"
+  },
+  {
+   "scale": "def",
+   "above": "Bam Adebayo '24",
+   "below": "Bam Adebayo '23",
+   "label": "86 over 85 — the season order inside the ruling survives it"
+  },
+  {
+   "scale": "def",
+   "above": "Draymond Green '16",
+   "below": "Bam Adebayo '20",
+   "label": "the lockdown big still tops the board over the rim big, 97 against 96"
+  },
+  {
+   "scale": "def",
+   "above": "Ben Wallace '06",
+   "below": "Rudy Gobert '19",
+   "label": "recal_67's standing DEF order anchor"
+  },
+  {
+   "scale": "def",
+   "above": "Kawhi Leonard '17",
+   "below": "Luka Dončić '23",
+   "label": "recal_80's standing DEF order anchor"
+  },
+  {
+   "scale": "def",
+   "above": "Gary Payton '96",
+   "below": "Trae Young '22",
+   "label": "recal_62's standing DEF order anchor"
+  },
+  {
+   "scale": "def",
+   "above": "Brook Lopez '23",
+   "below": "Vlade Divac '02",
+   "label": "rimprot 97 with drb 53 still reads over a flat big, 83 against 82 — the term does not invert the bottom of the class either"
+  }
+ ],
+ "movers": {
+  "scale": "def",
+  "count": 220,
+  "max_abs": 7,
+  "top": [
+   [
+    "Bam Adebayo '24",
+    93,
+    86
+   ],
+   [
+    "Larry Bird '83",
+    91,
+    85
+   ],
+   [
+    "Al Horford '19",
+    92,
+    86
+   ],
+   [
+    "Dan Roundfield '84",
+    91,
+    85
+   ],
+   [
+    "Karl Malone '95",
+    90,
+    85
+   ],
+   [
+    "Chris Webber '97",
+    90,
+    85
+   ],
+   [
+    "Bam Adebayo '23",
+    90,
+    85
+   ],
+   [
+    "Larry Bird '84",
+    89,
+    85
+   ],
+   [
+    "Karl Malone '94",
+    89,
+    85
+   ],
+   [
+    "Paul Millsap '16",
+    89,
+    85
+   ],
+   [
+    "Kevin Garnett '12",
+    93,
+    89
+   ],
+   [
+    "Scottie Barnes '26",
+    93,
+    89
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Dwight Howard '11",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Dwight Howard '09"
+  ]
+ },
+ "cost": [
+  "THE SUBJECTS LAND 85 / 86 / 92 AGAINST 82 +-3 / 84 +-3 / 90 +-2 — inside every band but on the top edge of all three, AND THAT IS THE FRONTIER, not a tuning preference. The wall is Karl Malone '97, pinned 87 +-3 (r146/160/161/162/172) and 88 +-3 (r165/183). He is rimprot 72 / perdef 76 / drb 92: FLATTER AND LOWER THAN THE SUBJECT ON BOTH LEAD BARS, and he must still read 84+ while the subject reads 85-. Any formula monotone in the bars therefore cannot separate them through a ramp on rimprot, on perdef, on max(), on min() or on the gap — all five were solved as linear programs over the whole pin set and all five are infeasible (the rimprot-premium ramp misses by a factor of 1.2; the max/min order-statistic reweight needs a max weight of 0.75 and a negative min weight). The ONLY coordinate that separates them is the LEVEL of the vector itself (77.50 against 79.25), and the level is what this term is gated on. With ANCHOR_BASE held at the class's p85 the subject's floor is DEF 84-85 and Malone's is 84-85: they land adjacent, which is what the arithmetic allows. IF HE RELEASES MALONE '97 to 84, ANCHOR_SHARE rises to 1.00 (the term becomes a clean soft cap with no depth constant at all) and the three subjects read 84 / 85 / 91 — one better on each. That is the next round's question, and it is his to answer, not ours.",
+  "SEVEN RECORDED DEF READINGS ARE SUPERSEDED, six of them `==` snapshots that any d_score round moves by nature: Karl Malone '98 (r135 == 88) -> 85, Dan Roundfield '84 (r172 == 91) -> 85, Kermit Washington '81 (r172 == 89) -> 85, Dan Roundfield '83 (r180 == 92) -> 89, Karl Malone '97 (r180 == 88) -> 85, Joel Embiid '23 (r181 == 88) -> 87. The seventh is a real tolerance: SHAQUILLE O'NEAL '93, pinned 91 +-1 by recal_146, reads 88. He is rimprot 87 / perdef 69 / drb 95 — a big whose 91 was carried by the glass rather than by a lead bar, which is the class this ruling names, so it is reported as the ruling working rather than as a casualty. Two OVR snapshots follow their DEF: Karl Malone '97 (r135 == 93) -> 92 and Dan Roundfield '83 (r172 == 79) -> 78.",
+  "DEF_TOP IS NOT RE-DERIVED and cannot need to be: the term only ever subtracts, so the measured maximum raw is unchanged and nothing above the knee is restretched. recal_90's warning does not bind here. The top 12 by DEF is identical before and after.",
+  "THE ROUND IS d_score ONLY. o_score is untouched, so rounds 196 (pre-1997 scorers) and 198 (KD '13) merge with it cleanly; OFF moves on exactly zero cards and no attribute moves at all.",
+  "A THIRD CONDITION ON THE SAME PREMIUM IS NOW SPOKEN FOR. recal_151 made the rim-anchor premium conditional on minutes; recal_200 makes the anchor BAND conditional on a lead bar. A later round that wants to reach the same 0.27 again should know both are already live and that the two compose multiplicatively on cards like Kurt Thomas '09 (share 0.48, vector under the band floor)."
+ ],
+ "notes": [
+  "WHAT THE DEFECT WAS, decomposed on the card he named. Bam Adebayo '23: d_bigness 1.0 (a full big), load share 1.0, recal_181's lockdown floor t = 0 (it is a perimeter-vector term and does not reach him). The big vector is 0.40 x perdef 79 + 0.40 x rimprot 78 + 0.17 x drb 86 + 0.027 x discipline 59 = 79.25, and 79.25 x 1.1305 = 89.59 prints DEF 90. Rudy Gobert '23 — the best rim protection in the group at 95, with perdef 63 — computes 80.44 and prints 91. One point. A vector that is an equal-weight MEAN of two bars cannot tell a LEAD from a LEVEL, and his sentence is exactly that reading.",
+  "WHY IT IS THE ANCHOR PREMIUM AND NOT A REWEIGHT. d_score's opening line, the oldest claim in the file, is 'bigs' defensive votes route to rimprot by design, so perdef understates them' — a claim about ANCHORING a defence, and the reason the big vector prices rimprot 0.40 where the perimeter one prices it 0.13. recal_151 already ruled that the extra 0.27 is 'a BURDEN, not a rate' and made it conditional on minutes. The same sentence has a second half: a burden is only borne by a man who actually has the job. A big with NEITHER an elite rim bar NOR an elite perimeter bar is not anchoring anything, so the part of his reading that sits in the anchor band is not his to keep. A REWEIGHT was measured first and rejected: taking weight off perdef reaches Bam '22 (delta in [0.027, 0.034]) but needs delta >= 0.046 for '23 and >= 0.065 for '24, and at 0.065 Bam '20 — a card he ruled FINE — leaves his hold.",
+  "WHY THE TEST IS max(rimprot, perdef) AND NOT rimprot. Three of the pins lead with the OTHER bar and a rimprot-only ramp destroys them: Draymond Green '16 (rimprot 84, perdef 98, pinned 96 +-1) falls to 95 and Dennis Rodman '90 (rimprot 76, perdef 97, pinned 94 +-1) falls to 90. His own words for the subject — 'his perdef at 79 is not a wing's 79 either' — are a statement that NEITHER bar leads, not that rimprot alone decides. max() is the only reading that says that.",
+  "WHY THERE IS A LEVEL GATE AT ALL, and it is the single load-bearing choice in the round. The class of flat low-rim bigs is not one shape: it runs from Kurt Thomas '09 (rimprot 77 / perdef 72 / drb 76, vector 62.40, pinned 74 +-3 and already ON the bottom edge at 71 with ZERO room) through Vlade Divac '02 (vector 72.35, pinned 82 +-3) and Dirk Nowitzki '07 (65.59, pinned 74 +-3) up to Bam '23 (79.25, printing 90). A discount on the BARS hits all four in proportion to their bars and breaks the first three before it reaches the fourth — measured, every variant. A discount on the LEVEL reaches only the cards actually standing in the anchor band, which is the only place the ruling complains about. The floor is the class's own p85 of the vector and all three of Kurt Thomas, Divac and Dirk sit below it, untouched by construction.",
+  "THE PAIR THAT IS THE WHOLE ROUND, in one player. Bam Adebayo '20 (rimprot 91 / perdef 87 / drb 86) is ruled FINE at 96 and Bam Adebayo '24 (rimprot 81 / perdef 82 / drb 90) is ruled 'too high by a lot' at 93. They are the same man, four years apart, and the bar that separates them is rimprot: 91 sits at t = 0.91 on the ramp and keeps the claim whole, 81 sits at t = 0.09 and keeps almost none of it. 96 holds to the point and 93 -> 86.",
+  "MEASURED OVER ALL 10,000 CARDS: 220 move on DEF, EVERY ONE OF THEM DOWN (a discount discounts), 89 by one and only one by seven; 161 move on OVR, max 4; OFF and every one of the 17 attributes move on ZERO. ZERO guards and ZERO wings move at all — the term is multiplied by d_bigness, so every card the branch grades a perimeter defender is byte-identical, and recal_187's Crowder / Carroll / Ingles and recal_181's Dumars class are untouched. The anchor table reads 196 anchors, 0 failing (the three this round adds included).",
+  "THE CLASS IT LOWERS IS THE ONE THE RULING NAMES, and it is a class and not a card: flat bigs with no lead bar printing 88-93 — Larry Bird '83 91 -> 85 (rimprot 75 / perdef 80), Al Horford '19 92 -> 86 (83 / 83), Dan Roundfield '84 91 -> 85, Karl Malone '94-'98, Chris Webber '97 90 -> 85, Paul Millsap '16 89 -> 85, Arvydas Sabonis '96-'99, Vlade Divac '93/'95, Scottie Barnes '26 93 -> 89. Every elite-rim big is untouched: Tim Duncan '03 98, Kevin Garnett '04 98, Chet Holmgren '26 93, Rudy Gobert '19 92 and '23 91, Dan Roundfield '82 93, Shaquille O'Neal '00 88, Brook Lopez '23 83, Ben Wallace '06 99.",
+  "IT IS MONOTONE, and that is why the depth is capped at the vector's own claim share rather than tuned. The slope of the shipped vector in itself is 1 - 0.80 x (1 - t) >= 0.20 > 0, and raising either lead bar raises both the vector and t, so no card on the board can improve a defensive bar and read lower. A depth above 1.0 would invert that — which is also the reason ANCHOR_BASE cannot be raised past the class's p85."
+ ]
+}

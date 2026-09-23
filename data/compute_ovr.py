@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 200
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2037,6 +2037,68 @@ def d_score(p, trace=None):
     RP_SKILL, RP_ANCHOR = 0.13, 0.27   # the perimeter price of rimprot, and the big vector's premium over it
     _rp_w = RP_SKILL + RP_ANCHOR * load_share(p)
     _big = _kb*(0.40*a['perdef'] + _rp_w*a['rimprot'] + 0.17*a['drb']) + DISC_BIG*a['discipline']
+    #
+    # recal_200 (HIS RULING, verbatim: "A flat ~79 shouldn't read 90. 4-8 are fine, but 22-24 Bam DEF
+    # is too high. 23-24 by a lot"). THE ANCHOR CLAIM IS PAID FOR A LEAD BAR.
+    #
+    # THE DEFECT, decomposed on the card he named. Bam Adebayo '23 is rimprot 78 / perdef 79 / drb 86,
+    # d_bigness 1.0, no floor firing, share 1.0: the big vector pays 0.40 x 79 + 0.40 x 78 + 0.17 x 86
+    # = 79.25 and 79.25 x 1.1305 prints DEF 90. Rudy Gobert '23 — rimprot 95, perdef 63, drb 93 —
+    # computes 80.44 and prints 91. So a big with a FLAT ~79/78 pair reads one point off a man with
+    # the best rim protection on the board, because the vector is an equal-weight MEAN of two bars
+    # and a mean cannot tell a lead from a level. His sentence is exactly that reading: 4-8 (Gobert
+    # '23, Jackson '23, Embiid '23, Lopez '23, and Bam's own '20 at rimprot 91) are fine, 22-24 are not.
+    #
+    # WHAT THE TERM IS, and it is this file's own oldest claim made conditional. d_score's opening line
+    # is "bigs' defensive votes route to rimprot by design, so perdef understates them" — a claim about
+    # ANCHORING a defence, which is why the big vector prices rimprot 0.40 where the perimeter one
+    # prices it 0.13. recal_151 already ruled that premium is not a rate but a BURDEN and made it
+    # conditional on MINUTES (a man who anchors for 17.8 minutes anchored for 17.8 minutes). This
+    # round makes it conditional on EVIDENCE: a big who has no bar that LEADS is not anchoring
+    # anything, so the part of his reading that sits in the anchor band is not his to keep.
+    #   _lead = max(rimprot, perdef)  — the man's own best defensive bar, whichever kind it is, so a
+    #     lockdown big (Draymond '16, rimprot 84 / perdef 98) and a rim big (Lopez '23, 97 / 60) are
+    #     both whole and only the man with NEITHER is touched. This is why it is max() and not rimprot:
+    #     a rimprot-only test breaks Draymond and Rodman, who lead with the other bar.
+    #   ANCHOR_BASE — below it nothing happens at all; the term only ever reaches into the anchor band.
+    #   ANCHOR_SHARE — perdef 0.40 + rimprot 0.40, the share of the big vector that IS the anchor
+    #     claim. drb (0.17) and discipline (0.027) are the man's own glass and fouls and he keeps them
+    #     whatever his lead bar, so they are NOT at risk. No new constant is introduced for the depth.
+    # NO CONSTANT IS CHOSEN. All three are read off the 3,730-card class the big vector actually
+    # grades (d_bigness == 1.0), which is recal_93's own class:
+    #   LEAD_LO = 81 — that class's own p75 of max(rimprot, perdef). "The top quarter of bigs by lead
+    #     bar." Below it the claim earns nothing; recal_130's doctrine, a class's own quartile of its
+    #     own bar.
+    #   LEAD_HI = 92 — the same class's p92, where the claim is whole. BOTH NEIGHBOURS IN THE
+    #     PERCENTILE FAMILY WERE MEASURED AND ARE NAMED RATHER THAN GLOSSED: at p90 (90) Bam '22 reads
+    #     93 and never leaves his ruling; at p95 (94) the three subjects land 85/86/91 but Bam '20 —
+    #     a card he ruled FINE — falls to the bottom edge of his hold and Roundfield '82 loses a point.
+    #   ANCHOR_BASE = 74.14 — that class's own p85 of the big vector itself (DEF ~84): the floor of
+    #     the anchor band. p80 (71.77) and p90 (77.01) were measured and BOTH FAIL, and they are the
+    #     frontier of this round: below ~71.9 Karl Malone '97 (rimprot 72 / perdef 76 / drb 92, pinned
+    #     87 +-3) falls out of his pin before Bam '23 reaches his, and above ~75.6 Bam '23 cannot reach
+    #     82 +-3 at all without ANCHOR_SHARE exceeding 1.0, which would make the vector NON-MONOTONE in
+    #     its own bars. p85 is the only member of the family the pool admits.
+    # IT IS MONOTONE, which is the reason the depth is capped at the anchor share: the slope in the
+    # vector is 1 - 0.80 x (1 - t) >= 0.20 > 0, and raising either bar raises both the vector and t.
+    # No card can improve a bar and read lower.
+    # MEASURED over all 10,000 cards: 220 move on DEF, EVERY ONE OF THEM DOWN (a discount discounts),
+    # max -7; OFF and every attribute move on ZERO; 161 move on OVR, max 4. ZERO guards and ZERO wings
+    # move — the term lives on the big vector and is multiplied by d_bigness, so every card the branch
+    # grades a perimeter defender is byte-identical. The top 12 by DEF is unchanged. The class it
+    # lowers is the one the ruling names: flat bigs with no lead bar printing 88-93 (Larry Bird '83
+    # 91 -> 85, Al Horford '19 92 -> 86, Karl Malone '94-'98, Chris Webber '97, Paul Millsap '16,
+    # Dan Roundfield '84), while every elite-rim big is untouched (Duncan '03 98, Garnett '04 98,
+    # Holmgren '26 93, Gobert '19 92 and '23 91, Lopez '23 83, Ben Wallace '06 99).
+    # THE BAND IS NOT RE-DERIVED: DEF_TOP stays at recal_102's 104.25 and nothing above the knee is
+    # restretched — the term can only ever lower a card, so the summit cannot move.
+    LEAD_LO, LEAD_HI = 81.0, 92.0      # the big class's own p75 / p92 of max(rimprot, perdef)
+    ANCHOR_BASE = 74.14                # that class's own p85 of the big vector — the anchor band's floor
+    ANCHOR_SHARE = 0.80                # perdef 0.40 + rimprot 0.40: the share of the vector that IS the claim
+    _lead = max(a['rimprot'], a['perdef'])
+    _lt = min(1.0, max(0.0, (_lead - LEAD_LO) / (LEAD_HI - LEAD_LO)))
+    _claim = ANCHOR_SHARE * (1.0 - _lt) * max(0.0, _big - ANCHOR_BASE)
+    _big_pre, _big = _big, _big - _claim
     # recal_57 trimmed perimdisrupt 0.15 -> 0.09; recal_62 (his ruling) trims it again 0.09 -> 0.05.
     # Steals are a gamble, not a lockdown — perdef takes all the slack (it IS the complete verdict).
     # recal_80 (design-side round, HIS RULING "Ship 80"): rim protection counted ZERO on the
@@ -2126,6 +2188,8 @@ def d_score(p, trace=None):
         trace['perim_vector'] = _perim
         trace['size_mod'] = _size
         trace['rp_anchor'] = dict(w=_rp_w, share=load_share(p), skill=RP_SKILL, anchor=RP_ANCHOR)
+        trace['anchor_claim'] = dict(lead=_lead, lo=LEAD_LO, hi=LEAD_HI, t=_lt, base=ANCHOR_BASE,
+                                     share=ANCHOR_SHARE, pre=_big_pre, taken=_claim, post=_big)
         trace['d_score'] = out
     return out
 for cls in (True, False):
@@ -2475,6 +2539,19 @@ if _CARD:
         print(f"  RIM-ANCHOR PREMIUM AT LOAD (recal_151) - share {_ra['share']:.4f}: rimprot is priced "
               f"{_ra['skill']:.2f} skill + {_ra['anchor']:.2f} x {_ra['share']:.4f} anchor = {_ra['w']:.4f}"
               f" on the big vector (0.40 at full load)")
+    if 'anchor_claim' in _dt:
+        _ac = _dt['anchor_claim']
+        if _ac['taken'] > 0.0:
+            print(f"  ANCHOR CLAIM (recal_200) - lead bar max(rimprot, perdef) {_ac['lead']:.0f} over the big"
+                  f" class's own p75/p92 {_ac['lo']:.0f}->{_ac['hi']:.0f}: t {_ac['t']:.4f}; the part of the"
+                  f" vector above the anchor band's floor {_ac['base']:.2f} is paid at t on its"
+                  f" {_ac['share']:.2f} claim share — {_ac['pre']:.4f} - {_ac['taken']:.4f} = {_ac['post']:.4f}")
+        else:
+            print(f"  ANCHOR CLAIM (recal_200) - lead bar max(rimprot, perdef) {_ac['lead']:.0f}"
+                  + (f" is at or above the big class's own p92 ({_ac['hi']:.0f}): t 1.0000, the claim is whole"
+                     if _ac['t'] >= 1.0 else
+                     f": the vector {_ac['pre']:.4f} is at or below the anchor band's floor"
+                     f" {_ac['base']:.2f}, so nothing is at risk"))
     if 'lockdown_floor' in _dt:
         _lf = _dt['lockdown_floor']
         if _lf['t'] > 0.0:
