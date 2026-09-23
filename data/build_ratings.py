@@ -1592,7 +1592,11 @@ def rim_mid_measured(r, sh, P, fga100, use_factor=True):
     # and are not reopened here; 177 would have RAISED this subject anyway -- his attempt-weighted
     # conversion is .4065 (0.217 of the diet at .331 from 10-16, 0.291 at .463 from 16-3P) against the
     # .3970 unweighted mean the line above computes.
-    GAP_FOOT, GAP_FULL = 0.28, 0.48
+    # [pipeline-200 integration] 0.28 -> 0.30: recal_195's foot was cut with Jaylen Brown '26 (r89 off 83 +-1)
+    # reading 82 on main's ballsec; recal_199 lands in the same batch and takes his ballsec 64 -> 58, so the two
+    # together read him 81. Re-cut on the merged pool: 0.30 reads Brown 82, Stackhouse '07 mid 67 / OFF 67 (the
+    # OFF Tomer accepted), 203 pins 0 failing; 0.32 breaks Reggie Miller '97 and the subject's own band.
+    GAP_FOOT, GAP_FULL = 0.30, 0.50
     _gap  = max(0.0, _mvol - _mfg) if fmid is not None else 0.0
     _pull = max(0.0, min(1.0, (_gap - GAP_FOOT) / (GAP_FULL - GAP_FOOT)))
     _mvolc = _mvol - _pull*_gap

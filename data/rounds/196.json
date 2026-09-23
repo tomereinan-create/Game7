@@ -10,7 +10,7 @@
  "tol": 2,
  "before": 92,
  "after": 95,
- "pipeline_version": 196,
+ "pipeline_version": 200,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -80,87 +80,315 @@
   },
   {
    "file": "data/compute_ovr.py",
-   "pattern": "PIPELINE_VERSION = 196",
-   "label": "the round's stamp (the integrator re-stamps the batch's highest)"
+   "pattern": "PIPELINE_VERSION = 200",
+   "label": "the round's stamp (the integrator re-stamps the batch's highest)",
+   "note": " [pipeline-200 integration: batch stamp]"
   }
  ],
  "expect": [
-  {"card": "Kareem Abdul-Jabbar '80", "scale": "off", "op": "~", "value": 87, "tol": 3,
-   "label": "SUBJECT (90 +-3) AND THE BINDING FRONTIER: 82 -> 87, the bottom edge of his band. era share 0.942 x creation 1.000 x load 0.840 x clearance 52 (z1 - z2 = 58, capped) = +5.347 of std"},
-  {"card": "George Gervin '80", "scale": "off", "op": "~", "value": 90, "tol": 3,
-   "label": "SUBJECT (93 +-3): 87 -> 90, the other bottom edge. mid 96 / rim 91 / 3pt 26 — clearance 65, capped to 52; his creation is 0.50 (playvol 34) and that is what keeps him off the middle of his band"},
-  {"card": "Clyde Drexler '88", "scale": "off", "op": "~", "value": 88, "tol": 3,
-   "label": "SUBJECT (88 +-3), dead on the number: 83 -> 88"},
-  {"card": "Larry Bird '84", "scale": "off", "op": "~", "value": 90, "tol": 3,
-   "label": "SUBJECT (91 +-3): 87 -> 90. mid 93 / rim 73 / 3pt 42 — his own third zone is real, so his clearance is only 31 and he takes the smallest transfer of the six"},
-  {"card": "Hakeem Olajuwon '94", "scale": "off", "op": "~", "value": 90, "tol": 3,
-   "label": "SUBJECT (92 +-3): 87 -> 90. Supersedes recal_51's 88 +-1 on the same card"},
-  {"card": "Dominique Wilkins '86", "scale": "off", "op": "~", "value": 76, "tol": 1,
-   "label": "SUBJECT NOT REACHED (85 +-4), frontier 76. rim 60 / mid 56 for a 30.3-ppg scorer: clearance 33 and nothing to transfer. HIS NUMBER IS IN build_ratings — round 193's own ceiling proof puts him at exactly 85 with rim = mid = 99"},
-  {"card": "Scottie Pippen '92", "scale": "off", "op": "~", "value": 75, "tol": 1,
-   "label": "SUBJECT NOT REACHED (80 +-3), frontier 76. clearance 38 at a 1992 era share of 0.53 and a scoring load of 72 (load 0.68): he needs the weight at 0.23 and Ewing '90 breaks at 0.16"},
-  {"card": "Patrick Ewing '90", "scale": "off", "op": "~", "value": 86, "tol": 1,
-   "label": "THE WALL, AND WHY THE WEIGHT STOPS WHERE IT DOES. 85 +-1, 85 -> 86 with 0.21 of raw left before he prints 87. Every subject's ceiling is his"},
-  {"card": "Magic Johnson '90", "scale": "off", "op": "==", "value": 93,
-   "label": "93 +-1, BYTE-IDENTICAL: rim 70 / mid 60 / 3pt 60 is a card that already played three zones, so his clearance is 0 and the transfer is 0"},
-  {"card": "Moses Malone '82", "scale": "off", "op": "==", "value": 85,
-   "label": "86 +-1, BYTE-IDENTICAL: playvol 12 and orb 98 — his second-zone looks are not his own creation, so recal_49's test pays him nothing. Without that factor he takes +7.84 of std and leaves his band"},
-  {"card": "Shaquille O'Neal '94", "scale": "off", "op": "~", "value": 93, "tol": 1},
-  {"card": "Shaquille O'Neal '95", "scale": "off", "op": "==", "value": 93},
-  {"card": "Shaquille O'Neal '96", "scale": "off", "op": "==", "value": 91},
-  {"card": "Michael Jordan '89", "scale": "off", "op": "~", "value": 99, "tol": 1,
-   "label": "99 +-1: 98 -> 99, still under the clamp"},
-  {"card": "John Stockton '90", "scale": "off", "op": "==", "value": 85,
-   "label": "84 +-3, BYTE-IDENTICAL — volume 36 is below recal_131's load foot, so he never enters the term"},
-  {"card": "Kevin Johnson '89", "scale": "off", "op": "==", "value": 81,
-   "label": "81 +-3, BYTE-IDENTICAL (volume 49)"},
-  {"card": "Kevin Johnson '92", "scale": "off", "op": "~", "value": 83, "tol": 3},
-  {"card": "Steve Kerr '96", "scale": "off", "op": "==", "value": 61,
-   "label": "62 +-1, BYTE-IDENTICAL (volume 8)"},
-  {"card": "Matt Bullard '92", "scale": "off", "op": "==", "value": 52},
-  {"card": "Cedric Maxwell '80", "scale": "off", "op": "==", "value": 66},
-  {"card": "Moses Malone '85", "scale": "off", "op": "==", "value": 78},
-  {"card": "Hakeem Olajuwon '90", "scale": "off", "op": "~", "value": 74, "tol": 1,
-   "label": "73 +-1 HELD (73 -> 74), one of the two pins Tomer released — it did not have to be spent"},
-  {"card": "Karl Malone '99", "scale": "off", "op": "==", "value": 92,
-   "label": "90 +-2 with zero room up, BYTE-IDENTICAL — his shot chart is MEASURED, so the inferred-zone gate keeps him out"},
-  {"card": "Reggie Miller '97", "scale": "off", "op": "==", "value": 87,
-   "label": "88 +-1, BYTE-IDENTICAL for the same reason"},
-  {"card": "Stephen Curry '16", "scale": "off", "op": "==", "value": 96,
-   "label": "ZERO cards from 1997 on move; the modern board is untouched name for name"},
-  {"card": "LeBron James '13", "scale": "off", "op": "==", "value": 98},
-  {"card": "Giannis Antetokounmpo '25", "scale": "off", "op": "==", "value": 99},
-  {"card": "Adrian Dantley '84", "scale": "off", "op": "~", "value": 96, "tol": 1,
-   "label": "THE LARGEST COLLATERAL AND THE REASON FOR THE SATURATION: 30.6 ppg on .652 TS, clearance 76 — the highest on the board. 92 -> 96 with the cap; 99 without it"},
-  {"card": "Kareem Abdul-Jabbar '81", "scale": "off", "op": "~", "value": 92, "tol": 1,
-   "label": "the biggest single move of the round, +7 — the subject's own next season, one point of era share higher and a full scoring load"}
+  {
+   "card": "Kareem Abdul-Jabbar '80",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "SUBJECT (90 +-3) AND THE BINDING FRONTIER: 82 -> 87, the bottom edge of his band. era share 0.942 x creation 1.000 x load 0.840 x clearance 52 (z1 - z2 = 58, capped) = +5.347 of std"
+  },
+  {
+   "card": "George Gervin '80",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 3,
+   "label": "SUBJECT (93 +-3): 87 -> 90, the other bottom edge. mid 96 / rim 91 / 3pt 26 — clearance 65, capped to 52; his creation is 0.50 (playvol 34) and that is what keeps him off the middle of his band"
+  },
+  {
+   "card": "Clyde Drexler '88",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 3,
+   "label": "SUBJECT (88 +-3), dead on the number: 83 -> 88"
+  },
+  {
+   "card": "Larry Bird '84",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 3,
+   "label": "SUBJECT (91 +-3): 87 -> 90. mid 93 / rim 73 / 3pt 42 — his own third zone is real, so his clearance is only 31 and he takes the smallest transfer of the six"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 3,
+   "label": "SUBJECT (92 +-3): 87 -> 90. Supersedes recal_51's 88 +-1 on the same card"
+  },
+  {
+   "card": "Dominique Wilkins '86",
+   "scale": "off",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "SUBJECT NOT REACHED (85 +-4), frontier 76. rim 60 / mid 56 for a 30.3-ppg scorer: clearance 33 and nothing to transfer. HIS NUMBER IS IN build_ratings — round 193's own ceiling proof puts him at exactly 85 with rim = mid = 99"
+  },
+  {
+   "card": "Scottie Pippen '92",
+   "scale": "off",
+   "op": "~",
+   "value": 75,
+   "tol": 1,
+   "label": "SUBJECT NOT REACHED (80 +-3), frontier 76. clearance 38 at a 1992 era share of 0.53 and a scoring load of 72 (load 0.68): he needs the weight at 0.23 and Ewing '90 breaks at 0.16"
+  },
+  {
+   "card": "Patrick Ewing '90",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "THE WALL, AND WHY THE WEIGHT STOPS WHERE IT DOES. 85 +-1, 85 -> 86 with 0.21 of raw left before he prints 87. Every subject's ceiling is his"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "==",
+   "value": 93,
+   "label": "93 +-1, BYTE-IDENTICAL: rim 70 / mid 60 / 3pt 60 is a card that already played three zones, so his clearance is 0 and the transfer is 0"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "==",
+   "value": 85,
+   "label": "86 +-1, BYTE-IDENTICAL: playvol 12 and orb 98 — his second-zone looks are not his own creation, so recal_49's test pays him nothing. Without that factor he takes +7.84 of std and leaves his band"
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1
+  },
+  {
+   "card": "Shaquille O'Neal '95",
+   "scale": "off",
+   "op": "==",
+   "value": 93
+  },
+  {
+   "card": "Shaquille O'Neal '96",
+   "scale": "off",
+   "op": "==",
+   "value": 91
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "99 +-1: 98 -> 99, still under the clamp"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "==",
+   "value": 86,
+   "label": "84 +-3, BYTE-IDENTICAL — volume 36 is below recal_131's load foot, so he never enters the term [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
+  },
+  {
+   "card": "Kevin Johnson '89",
+   "scale": "off",
+   "op": "==",
+   "value": 81,
+   "label": "81 +-3, BYTE-IDENTICAL (volume 49)"
+  },
+  {
+   "card": "Kevin Johnson '92",
+   "scale": "off",
+   "op": "~",
+   "value": 83,
+   "tol": 3
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "==",
+   "value": 61,
+   "label": "62 +-1, BYTE-IDENTICAL (volume 8)"
+  },
+  {
+   "card": "Matt Bullard '92",
+   "scale": "off",
+   "op": "==",
+   "value": 52
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "==",
+   "value": 66
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "off",
+   "op": "==",
+   "value": 78
+  },
+  {
+   "card": "Hakeem Olajuwon '90",
+   "scale": "off",
+   "op": "~",
+   "value": 74,
+   "tol": 1,
+   "label": "73 +-1 HELD (73 -> 74), one of the two pins Tomer released — it did not have to be spent"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "==",
+   "value": 91,
+   "label": "90 +-2 with zero room up, BYTE-IDENTICAL — his shot chart is MEASURED, so the inferred-zone gate keeps him out [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "==",
+   "value": 87,
+   "label": "88 +-1, BYTE-IDENTICAL for the same reason"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "==",
+   "value": 96,
+   "label": "ZERO cards from 1997 on move; the modern board is untouched name for name"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "off",
+   "op": "==",
+   "value": 98
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "==",
+   "value": 99
+  },
+  {
+   "card": "Adrian Dantley '84",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "THE LARGEST COLLATERAL AND THE REASON FOR THE SATURATION: 30.6 ppg on .652 TS, clearance 76 — the highest on the board. 92 -> 96 with the cap; 99 without it"
+  },
+  {
+   "card": "Kareem Abdul-Jabbar '81",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "the biggest single move of the round, +7 — the subject's own next season, one point of era share higher and a full scoring load"
+  }
  ],
  "order": [
-  {"scale": "off", "above": "Michael Jordan '89", "below": "Michael Jordan '87",
-   "label": "his own pinned peak still sits above the season this round lifted"},
-  {"scale": "off", "above": "Magic Johnson '86", "below": "Adrian Dantley '84",
-   "label": "the era's top is still its playmaker, not its volume scorer"},
-  {"scale": "off", "above": "Kareem Abdul-Jabbar '80", "below": "Dominique Wilkins '86"},
-  {"scale": "off", "above": "Michael Jordan '87", "below": "Clyde Drexler '88"},
-  {"scale": "off", "above": "Hakeem Olajuwon '94", "below": "Patrick Ewing '90"}
+  {
+   "scale": "off",
+   "above": "Michael Jordan '89",
+   "below": "Michael Jordan '87",
+   "label": "his own pinned peak still sits above the season this round lifted"
+  },
+  {
+   "scale": "off",
+   "above": "Magic Johnson '86",
+   "below": "Adrian Dantley '84",
+   "label": "the era's top is still its playmaker, not its volume scorer"
+  },
+  {
+   "scale": "off",
+   "above": "Kareem Abdul-Jabbar '80",
+   "below": "Dominique Wilkins '86"
+  },
+  {
+   "scale": "off",
+   "above": "Michael Jordan '87",
+   "below": "Clyde Drexler '88"
+  },
+  {
+   "scale": "off",
+   "above": "Hakeem Olajuwon '94",
+   "below": "Patrick Ewing '90"
+  }
  ],
  "movers": {
   "scale": "off",
   "count": 705,
   "max_abs": 7,
   "top": [
-   ["Alex English '81", 75, 82],
-   ["Kareem Abdul-Jabbar '81", 85, 92],
-   ["Alex English '82", 84, 90],
-   ["Alex English '83", 87, 93],
-   ["Alex English '84", 85, 91],
-   ["Alex English '85", 83, 89],
-   ["Andrew Toney '82", 77, 83],
-   ["Andrew Toney '83", 80, 86],
-   ["Bernard King '83", 85, 91],
-   ["David Thompson '81", 79, 85],
-   ["David Thompson '82", 67, 73],
-   ["George Gervin '81", 85, 91]
+   [
+    "Alex English '81",
+    75,
+    82
+   ],
+   [
+    "Kareem Abdul-Jabbar '81",
+    85,
+    92
+   ],
+   [
+    "Alex English '82",
+    84,
+    90
+   ],
+   [
+    "Alex English '83",
+    87,
+    93
+   ],
+   [
+    "Alex English '84",
+    85,
+    91
+   ],
+   [
+    "Alex English '85",
+    83,
+    89
+   ],
+   [
+    "Andrew Toney '82",
+    77,
+    83
+   ],
+   [
+    "Andrew Toney '83",
+    80,
+    86
+   ],
+   [
+    "Bernard King '83",
+    85,
+    91
+   ],
+   [
+    "David Thompson '81",
+    79,
+    85
+   ],
+   [
+    "David Thompson '82",
+    67,
+    73
+   ],
+   [
+    "George Gervin '81",
+    85,
+    91
+   ]
   ]
  },
  "top12": {

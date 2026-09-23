@@ -742,6 +742,16 @@ export const DEFAULT_TACTICS: Tactics = {
  * EMPTY, the first time this file has seen that (blind -0.3007 at 3.560 against oracle +0.4934; +0.5000 at 3.545
  * against blind -0.2880). That is the sampling lottery, not nine different calibration faults, and it is why this
  * figure is superseded by the merged-pool sweep rather than stacked with it.
+ *
+ * PIPELINE 200 (integration of recal_195 / 196 / 197 / 199 / 200, the merged-pool sweep). hunt 3.67 on 199's branch
+ * goes back to main's 3.65 and PASSES on the merged pool (blind -0.38, oracle +0.52). Both glass rows broke the
+ * other way: crashOff 0.28 read oracle +0.46 and crashDef 0.60 read +0.47, and RAISING either tax shrinks the edge
+ * (0.31/0.64: +0.45/+0.46; 0.34/0.68: +0.45/+0.45) — the oracle's rebounding edge is smaller on this pool because
+ * 197/199 re-price ball security across the creator column and 200 re-prices the flat-shape big, so the crash has
+ * less to buy. Bracketed downward: crashOff passes at <= ~0.09 (0.12 reads +0.50 FAIL, 0.09 +0.50 PASS, 0.06
+ * +0.51, 0.00 +0.52 with blind -0.66) — window [0.00, ~0.10], midpoint 0.05. crashDef passes at 0.48 (+0.50) and
+ * loses the blind floor under ~0.24 (0.20 reads blind -0.28 FAIL, 0.30 -0.36 PASS) — window [~0.24, 0.48],
+ * midpoint 0.36. Landed crashOff 0.28 -> 0.05, crashDef 0.60 -> 0.36; the seven others held untouched, nine PASS.
  */
 export const TAX = {
   scorer: 0.55,
@@ -749,9 +759,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.67,
-  crashOff: 0.28,
-  crashDef: 0.60,
+  hunt: 3.65,
+  crashOff: 0.05,
+  crashDef: 0.36,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

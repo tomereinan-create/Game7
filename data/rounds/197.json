@@ -10,7 +10,7 @@
  "tol": 5,
  "before": 22,
  "after": 45,
- "pipeline_version": 197,
+ "pipeline_version": 200,
  "knobs": [
   {
    "file": "data/build_ratings.py",
@@ -32,9 +32,9 @@
   },
   {
    "file": "data/build_ratings.py",
-   "pattern": "ballsec=max\\(sc\\(1 - \\(\\(1 - _wraw\\) \\* Padj\\(_bsec\\(r\\)\\) \\+ _wraw \\* Pa\\['tov_pct'\\]\\(r\\.get\\('tov_pct'\\)\\)\\)\\),",
+   "pattern": "ballsec=max\\(sc\\(1 - \\(\\(1 - _wraw\\) \\* Pdisc\\(_bdisc\\(r\\)\\) \\+ _wraw \\* Pa\\['tov_pct'\\]\\(r\\.get\\('tov_pct'\\)\\)\\)\\),",
    "label": "the floor laid UNDER recal_116's two-leg blend, as a max() and not a term",
-   "note": "this is the saturation his amendment asked for: a floor cannot lift a card already above it, so nothing on the board can FALL and the elite ball-keepers are byte-identical"
+   "note": "this is the saturation his amendment asked for: a floor cannot lift a card already above it, so nothing on the board can FALL and the elite ball-keepers are byte-identical [pipeline-200 integration: recal_199 lands in the same batch — the adjusted leg is its Pdisc(_bdisc(r)); the floor stays under the blend as max()]"
   },
   {
    "file": "data/build_ratings.py",
@@ -180,8 +180,8 @@
    "card": "Michael Jordan '89",
    "scale": "off",
    "op": "==",
-   "value": 98,
-   "label": "recal_102's 99 +-1 at -1 with ZERO downward slack — a floor cannot lower a card, and nothing on the board falls this round"
+   "value": 99,
+   "label": "recal_102's 99 +-1 at -1 with ZERO downward slack — a floor cannot lower a card, and nothing on the board falls this round [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
   },
   {
    "card": "James Harden '19",
@@ -194,8 +194,8 @@
    "card": "Mike Conley '24",
    "scale": "attr:ballsec",
    "op": "==",
-   "value": 48,
-   "label": "THE CARD THE LOAD GATE IS FOR: AST/TOV 4.39, the cleanest ratio in the 2024 class, at AST% 28.4. Gate 0.11, floor 9, moves ZERO — and recal_119's BOS '24 OFF rank holds at 10 because of it"
+   "value": 51,
+   "label": "THE CARD THE LOAD GATE IS FOR: AST/TOV 4.39, the cleanest ratio in the 2024 class, at AST% 28.4. Gate 0.11, floor 9, moves ZERO — and recal_119's BOS '24 OFF rank holds at 10 because of it [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
   },
   {
    "card": "Chris Paul '09",
@@ -208,8 +208,8 @@
    "card": "Tyrese Haliburton '24",
    "scale": "attr:ballsec",
    "op": "==",
-   "value": 82,
-   "label": "the cleanest creator on the board, 80 -> 82: his base already carried him"
+   "value": 83,
+   "label": "the cleanest creator on the board, 80 -> 82: his base already carried him [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
   }
  ],
  "order": [

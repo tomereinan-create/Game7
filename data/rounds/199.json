@@ -1,131 +1,295 @@
 {
-  "round": 199,
-  "agent": "stats-to-ratings",
-  "status": "done",
-  "ruling": "his ballsec is too high. 3.5 tov for 28/4.6 is a lot",
-  "title": "THE CREATION ALLOWANCE'S BENEFIT IS PAID AT THE RATE THE MAN ACTUALLY CREATES — recal_79's 0.8 x AST% still sets the adjusted rate, but the distance it carries a card BELOW its own raw turnover rank is free only up to CRE_FREE and is bought past that with the within-season percentile of assist share; the discounted leg is re-ranked, so the round re-prices the board instead of deflating it",
-  "subject": "Kevin Durant '13",
+ "round": 199,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "his ballsec is too high. 3.5 tov for 28/4.6 is a lot",
+ "title": "THE CREATION ALLOWANCE'S BENEFIT IS PAID AT THE RATE THE MAN ACTUALLY CREATES — recal_79's 0.8 x AST% still sets the adjusted rate, but the distance it carries a card BELOW its own raw turnover rank is free only up to CRE_FREE and is bought past that with the within-season percentile of assist share; the discounted leg is re-ranked, so the round re-prices the board instead of deflating it",
+ "subject": "Kevin Durant '13",
+ "scale": "attr:ballsec",
+ "target": 50,
+ "tol": 5,
+ "before": 62,
+ "after": 53,
+ "pipeline_version": 200,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "CRE_FREE, CRE_FOOT, CRE_FULL = 0\\.16, 0\\.78, 0\\.86",
+   "label": "THE WHOLE ROUND, THREE CONSTANTS — the free band and the creation ramp that prices the rest",
+   "note": "the allowance's benefit is free to 0.16 of rank for everyone, then paid from the 78th to the 86th percentile of assist share"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "return _pt - \\(min\\(_ben, CRE_FREE\\) \\+ _g \\* max\\(0\\.0, _ben - CRE_FREE\\)\\)",
+   "label": "the priced benefit — ONE-SIDED, so a card the allowance never flattered is untouched",
+   "note": "_bdisc returns Padj unchanged whenever the adjusted leg already reads WORSE than the raw rate (_pa >= _pt)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "Pdisc = pctile\\(\\[_bdisc\\(rr\\) for rr in rows\\]\\)",
+   "label": "the RE-RANK, which is what makes this a re-pricing and not a deflation",
+   "note": "the adjusted leg stays a within-season percentile; the discount changes the ORDER, not the level (mean ballsec +0.02 over 10,000 cards)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ballsec=max\\(sc\\(1 - \\(\\(1 - _wraw\\) \\* Pdisc\\(_bdisc\\(r\\)\\) \\+ _wraw \\* Pa\\['tov_pct'\\]\\(r\\.get\\('tov_pct'\\)\\)\\)\\),",
+   "label": "the card line — Padj(_bsec(r)) -> Pdisc(_bdisc(r))",
+   "note": "recal_79's _wraw ramp and recal_116's 0.54 ceiling are byte-identical; only the adjusted leg's input changed [pipeline-200 integration: recal_197's creator floor is laid under the discounted blend as max(); the leg is unchanged]"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_wraw = 0\\.54 - 0\\.29 \\* _credit",
+   "label": "recal_116's raw-leg ceiling, UNTOUCHED — the round did not reopen it",
+   "note": "0.54 is still the frontier: Durant needs 0.84 on this leg alone and that reads Harden '19 ballsec 34"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_bsec = lambda rr: \\(rr\\.get\\('tov_pct'\\) or 13\\) \\* 25\\.0 / max\\(10\\.0, \\(rr\\.get\\('usg'\\) or 20\\) \\+ 0\\.8 \\* \\(rr\\.get\\('ast'\\) or 15\\)\\)",
+   "label": "recal_79's allowance itself, UNTOUCHED — the 0.8 coefficient and the 25 normaliser both stand",
+   "note": "recal_116 closed both doors and both were re-measured and still fail; only the allowance's PRICE moved"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.65,",
+   "label": "the hunt tax re-ratified through the harness on this round's pool",
+   "note": "3.65 -> 3.67, the true midpoint of a feasible window about 3.661 to 3.680; superseded by the integrator's merged-pool sweep, not stacked [pipeline-200 integration: the merged-pool sweep holds hunt at main's 3.65 (blind -0.38, oracle +0.52); crashOff 0.28 -> 0.05 and crashDef 0.60 -> 0.36 were the taxes that moved]"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Michael Jordan '88",
+   "scale": "attr:ballsec",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "recal_56's pin, byte-identical"
+  },
+  {
+   "card": "Russell Westbrook '15",
+   "scale": "attr:ballsec",
+   "op": "~",
+   "value": 56,
+   "tol": 4,
+   "label": "recal_116's pin, byte-identical at 60"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 56,
+   "label": "the hub the allowance was built for: assist share at the 98th percentile, zero move"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "recal_89's OFF pin"
+  },
+  {
+   "card": "Carmelo Anthony '13",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 91,
+   "label": "the careful low-assist scorer his ruling holds up as the shape — free band covers his whole benefit"
+  },
+  {
+   "card": "Kawhi Leonard '17",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 90,
+   "label": "the same class, same reason"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "attr:ballsec",
+   "op": "==",
+   "value": 72,
+   "label": "assist share at the 96th percentile: the allowance is paid in full"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_102"
+  },
+  {
+   "card": "Dwight Howard '11",
+   "scale": "off",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "recal_52 — the free band is what holds him"
+  },
+  {
+   "card": "Zion Williamson '21",
+   "scale": "off",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "recal_156"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "recal_51, on a card whose ballsec fell 10"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "recal_98, on a card whose ballsec fell 6"
+  },
+  {
+   "card": "John Stockton '99",
+   "scale": "attr:playvol",
+   "op": "~",
+   "value": 95,
+   "tol": 3,
+   "label": "recal_156's playvol, untouched by this round"
+  },
+  {
+   "card": "Kevin Durant '13",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "the subject's OFF is UNCHANGED — round 198 carries the OFF half"
+  },
+  {
+   "card": "John Stockton '97",
+   "scale": "off",
+   "op": ">=",
+   "value": 86,
+   "label": "recal_126's order, held: '97 86 and '01 86, the anchor's own >= is satisfied"
+  },
+  {
+   "card": "John Stockton '01",
+   "scale": "off",
+   "op": "<=",
+   "value": 87,
+   "label": "the other half of the same order [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:ballsec",
+   "above": "Carmelo Anthony '13",
+   "below": "Kevin Durant '13",
+   "label": "the ruling's own shape: the careful scorer above the turnover-prone one"
+  },
+  {
+   "scale": "attr:ballsec",
+   "above": "Kevin Durant '14",
+   "below": "Kevin Durant '13",
+   "label": "12.2 / 26.7 above 13.7 / 21.7 — the better season stays the better card"
+  }
+ ],
+ "movers": {
   "scale": "attr:ballsec",
-  "target": 50,
-  "tol": 5,
-  "before": 62,
-  "after": 53,
-  "pipeline_version": 199,
-  "knobs": [
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "CRE_FREE, CRE_FOOT, CRE_FULL = 0\\.16, 0\\.78, 0\\.86",
-      "label": "THE WHOLE ROUND, THREE CONSTANTS — the free band and the creation ramp that prices the rest",
-      "note": "the allowance's benefit is free to 0.16 of rank for everyone, then paid from the 78th to the 86th percentile of assist share"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "return _pt - \\(min\\(_ben, CRE_FREE\\) \\+ _g \\* max\\(0\\.0, _ben - CRE_FREE\\)\\)",
-      "label": "the priced benefit — ONE-SIDED, so a card the allowance never flattered is untouched",
-      "note": "_bdisc returns Padj unchanged whenever the adjusted leg already reads WORSE than the raw rate (_pa >= _pt)"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "Pdisc = pctile\\(\\[_bdisc\\(rr\\) for rr in rows\\]\\)",
-      "label": "the RE-RANK, which is what makes this a re-pricing and not a deflation",
-      "note": "the adjusted leg stays a within-season percentile; the discount changes the ORDER, not the level (mean ballsec +0.02 over 10,000 cards)"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "ballsec=sc\\(1 - \\(\\(1 - _wraw\\) \\* Pdisc\\(_bdisc\\(r\\)\\) \\+ _wraw \\* Pa\\['tov_pct'\\]\\(r\\.get\\('tov_pct'\\)\\)\\)\\)",
-      "label": "the card line — Padj(_bsec(r)) -> Pdisc(_bdisc(r))",
-      "note": "recal_79's _wraw ramp and recal_116's 0.54 ceiling are byte-identical; only the adjusted leg's input changed"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_wraw = 0\\.54 - 0\\.29 \\* _credit",
-      "label": "recal_116's raw-leg ceiling, UNTOUCHED — the round did not reopen it",
-      "note": "0.54 is still the frontier: Durant needs 0.84 on this leg alone and that reads Harden '19 ballsec 34"
-    },
-    {
-      "file": "data/build_ratings.py",
-      "pattern": "_bsec = lambda rr: \\(rr\\.get\\('tov_pct'\\) or 13\\) \\* 25\\.0 / max\\(10\\.0, \\(rr\\.get\\('usg'\\) or 20\\) \\+ 0\\.8 \\* \\(rr\\.get\\('ast'\\) or 15\\)\\)",
-      "label": "recal_79's allowance itself, UNTOUCHED — the 0.8 coefficient and the 25 normaliser both stand",
-      "note": "recal_116 closed both doors and both were re-measured and still fail; only the allowance's PRICE moved"
-    },
-    {
-      "file": "src/engine/tactics.ts",
-      "pattern": "hunt: 3\\.67,",
-      "label": "the hunt tax re-ratified through the harness on this round's pool",
-      "note": "3.65 -> 3.67, the true midpoint of a feasible window about 3.661 to 3.680; superseded by the integrator's merged-pool sweep, not stacked"
-    }
-  ],
-  "expect": [
-    { "card": "Michael Jordan '88", "scale": "attr:ballsec", "op": "~", "value": 95, "tol": 1, "label": "recal_56's pin, byte-identical" },
-    { "card": "Russell Westbrook '15", "scale": "attr:ballsec", "op": "~", "value": 56, "tol": 4, "label": "recal_116's pin, byte-identical at 60" },
-    { "card": "James Harden '19", "scale": "attr:ballsec", "op": "==", "value": 56, "label": "the hub the allowance was built for: assist share at the 98th percentile, zero move" },
-    { "card": "James Harden '19", "scale": "off", "op": "~", "value": 95, "tol": 1, "label": "recal_89's OFF pin" },
-    { "card": "Carmelo Anthony '13", "scale": "attr:ballsec", "op": "==", "value": 91, "label": "the careful low-assist scorer his ruling holds up as the shape — free band covers his whole benefit" },
-    { "card": "Kawhi Leonard '17", "scale": "attr:ballsec", "op": "==", "value": 90, "label": "the same class, same reason" },
-    { "card": "LeBron James '13", "scale": "attr:ballsec", "op": "==", "value": 72, "label": "assist share at the 96th percentile: the allowance is paid in full" },
-    { "card": "Michael Jordan '89", "scale": "off", "op": "~", "value": 99, "tol": 1, "label": "recal_102" },
-    { "card": "Dwight Howard '11", "scale": "off", "op": "~", "value": 78, "tol": 1, "label": "recal_52 — the free band is what holds him" },
-    { "card": "Zion Williamson '21", "scale": "off", "op": "~", "value": 92, "tol": 1, "label": "recal_156" },
-    { "card": "Joel Embiid '23", "scale": "off", "op": "~", "value": 95, "tol": 1, "label": "recal_51, on a card whose ballsec fell 10" },
-    { "card": "Karl Malone '99", "scale": "off", "op": "~", "value": 90, "tol": 2, "label": "recal_98, on a card whose ballsec fell 6" },
-    { "card": "John Stockton '99", "scale": "attr:playvol", "op": "~", "value": 95, "tol": 3, "label": "recal_156's playvol, untouched by this round" },
-    { "card": "Kevin Durant '13", "scale": "off", "op": "~", "value": 95, "tol": 1, "label": "the subject's OFF is UNCHANGED — round 198 carries the OFF half" },
-    { "card": "John Stockton '97", "scale": "off", "op": ">=", "value": 86, "label": "recal_126's order, held: '97 86 and '01 86, the anchor's own >= is satisfied" },
-    { "card": "John Stockton '01", "scale": "off", "op": "<=", "value": 86, "label": "the other half of the same order" }
-  ],
-  "order": [
-    { "scale": "attr:ballsec", "above": "Carmelo Anthony '13", "below": "Kevin Durant '13", "label": "the ruling's own shape: the careful scorer above the turnover-prone one" },
-    { "scale": "attr:ballsec", "above": "Kevin Durant '14", "below": "Kevin Durant '13", "label": "12.2 / 26.7 above 13.7 / 21.7 — the better season stays the better card" }
-  ],
-  "movers": {
-    "scale": "attr:ballsec",
-    "count": 4383,
-    "max_abs": 15,
-    "top": [
-      ["Kevin Durant '13", 62, 53],
-      ["DeMarcus Cousins '15", 46, 31],
-      ["Joel Embiid '18", 46, 31],
-      ["Zach LaVine '19", 49, 34],
-      ["Joel Embiid '19", 51, 37],
-      ["Victor Wembanyama '24", 32, 19],
-      ["Zach LaVine '20", 51, 38],
-      ["DeMarcus Cousins '14", 45, 33],
-      ["Paul George '16", 56, 44],
-      ["Jerry Stackhouse '00", 61, 50],
-      ["Joel Embiid '22", 67, 56],
-      ["Ron Harper '87", 53, 42]
-    ]
-  },
-  "top12": {
-    "scale": "attr:ballsec",
-    "cards": [
-      "Al Jefferson '12",
-      "Michael Jordan '97",
-      "Michael Jordan '98",
-      "Mike Mitchell '88",
-      "Steve Novak '13",
-      "Al Jefferson '13",
-      "Al Jefferson '14",
-      "Al Jefferson '15",
-      "Alex English '88",
-      "Alex English '89",
-      "Dirk Nowitzki '16",
-      "Dirk Nowitzki '17"
-    ]
-  },
-  "cost": [
-    "The hunt tax was re-ratified 3.65 -> 3.67 on this branch's pool (window about 3.661 to 3.680, true midpoint by r126's rule). It is a BRANCH figure: the integrator re-sweeps once from main's constant on the merged pool and this number is superseded, not stacked.",
-    "The harness's ovr>=55 sample indexes against pool.length, and this round moves it 6,579 -> 6,582 (7 crossings, 5 in / 2 out), which redraws all 200 matchups. Three other constant triples inside the round's own feasible band were measured end to end and each broke a DIFFERENT subset of rows; at 0.16/0.78/0.84 hunt's window was EMPTY (blind -0.3007 at 3.560 against oracle +0.4934; +0.5000 at 3.545 against blind -0.2880). That is sampling, not calibration, and a later round that moves the pool should expect the same.",
-    "recal_116's two closed doors were re-measured on this pipeline and BOTH still fail, so they stay closed: the raw-leg ceiling above 0.54, and the 25 -> usg normalisation of the adjusted rate.",
-    "The subject's OFF did not move (95). A parallel OFF/DEF round 198 raises Kevin Durant '13's OFF to 98 +-1 and was told this change was coming; it now reads him at ballsec 53, not 62.",
-    "Kevin Durant '12 (ballsec 61 -> 51, OFF 93 -> 92) and '16 (63 -> 60) move with him because the fault is the same one on the same card class, and the season blend carries some of it into '13."
-  ],
-  "notes": [
-    "THE GENERAL FAULT, not a fact about Durant. recal_79's allowance adds 0.8 x AST% to the responsibility denominator of the adjusted turnover rate. Its SIZE is set by the denominator, not by the passing: at USG 29.8 / AST% 21.7 — a wing's share, the 76th percentile of 2013 — it adds 17.4 to a 29.8 denominator and carries the card from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. A 45-point rank gift on a card that assists 6.2 per 100 against 4.6 turnovers.",
-    "WHAT IS PRICED IS THE BENEFIT, not the allowance. The allowance itself (0.8 x AST%, the 25 normaliser) is untouched; what changed is what the resulting rank DISCOUNT costs. The first 0.16 of rank is free to everyone, because a man who passes at all does manufacture some turnovers passing, and that free band is the entire benefit for most of the board — Jordan '88 0.047, Carmelo '13 0.090, Howard '11 0.065, all three byte-identical after this round. The rest is bought with the within-season percentile of assist share: nothing below the 78th, in full at the 86th. Harden '19 0.983, Westbrook '15 0.992, Magic '90 0.99, Stockton 0.999, LeBron '13 0.96 — every hub the allowance was built for is past the top and none moves by a point.",
-    "THE RE-RANK IS LOAD-BEARING. A one-sided discount left in raw percentile space is a DEFLATION: it walks the whole board down ~1.5 points of ball security and breaks five anchors by rounding alone (Jordan '89 OFF 97, Zion '21 90, Howard '11 76, Shaq '09 69, Warriors '17 offdial 98). The adjusted leg is a within-season RANK, so the discounted readings are ranked again and the season's level is held: mean ball security moves +0.02 across 10,000 cards, OFF +0.001, and 319 of the 622 OFF moves are UP.",
-    "FOUR OTHER SHAPES MEASURED AND REJECTED. (a) Raising recal_116's raw-leg ceiling: Durant needs 0.84, which reads Harden '19 ballsec 34. (b) Normalising the adjusted rate by the card's own usage (25 -> usg; recal_116's option (b) in another dress): at half strength Durant reaches 55 but Harden falls to 49 and Mark Jackson '98 rises 10, and at full strength Jordan '88 reads 93, Luka '23 falls 17 and the top 12 becomes low-usage spot-up shooters (T.R. Dunn '87 +60). (c) Paying the allowance only on assist share above what the card's usage implies (a per-season OLS of AST% on USG%): nearly rank-neutral among non-passers — Durant reaches only 59 at full strength while Mark Jackson '98 rises 9. (d) The creation ramp applied TWO-SIDED, as a weight on the adjusted LEG rather than on its benefit: Durant lands but the low-usage tail is handed the leg's penalty back and 6,479 cards move past 3 points (T.R. Dunn '87 +53, Luke Kornet '26 +41).",
-    "THE FREE BAND IS WHAT KEEPS THE ROUND HONEST ABOUT HIS OWN SHAPE. Without it the same landing costs Howard '11 OFF 76 against recal_52's 78 +-1, and Carmelo '13 (9.3 / 14.1) and Kawhi '17 (9.1 / 18.9) — the careful low-assist scorers his ruling names approvingly at 91 and 90 — lose 4 and 3 points for nothing. Both are byte-identical as it stands.",
-    "FOOTPRINT: 4,383 ballsec bars moved, 324 by more than 3, max 15, mean +0.02. OFF 622 (range -2 to +1), OVR 357 (all +-1), DEF exactly 0. The top 12 by ball security is IDENTICAL before and after. The class that takes the charge reads like one: high-usage bigs and wings who turn it over at a hub's rate on a wing's assist share — Embiid '18-'22, Cousins '14-'18, Wembanyama '24-'25, Zach LaVine '19-'20, Paul George '16 and '21."
+  "count": 4383,
+  "max_abs": 15,
+  "top": [
+   [
+    "Kevin Durant '13",
+    62,
+    53
+   ],
+   [
+    "DeMarcus Cousins '15",
+    46,
+    31
+   ],
+   [
+    "Joel Embiid '18",
+    46,
+    31
+   ],
+   [
+    "Zach LaVine '19",
+    49,
+    34
+   ],
+   [
+    "Joel Embiid '19",
+    51,
+    37
+   ],
+   [
+    "Victor Wembanyama '24",
+    32,
+    19
+   ],
+   [
+    "Zach LaVine '20",
+    51,
+    38
+   ],
+   [
+    "DeMarcus Cousins '14",
+    45,
+    33
+   ],
+   [
+    "Paul George '16",
+    56,
+    44
+   ],
+   [
+    "Jerry Stackhouse '00",
+    61,
+    50
+   ],
+   [
+    "Joel Embiid '22",
+    67,
+    56
+   ],
+   [
+    "Ron Harper '87",
+    53,
+    42
+   ]
   ]
+ },
+ "top12": {
+  "scale": "attr:ballsec",
+  "cards": [
+   "Al Jefferson '12",
+   "Michael Jordan '97",
+   "Michael Jordan '98",
+   "Mike Mitchell '88",
+   "Steve Novak '13",
+   "Al Jefferson '13",
+   "Al Jefferson '14",
+   "Al Jefferson '15",
+   "Alex English '88",
+   "Alex English '89",
+   "Dirk Nowitzki '16",
+   "Dirk Nowitzki '17"
+  ]
+ },
+ "cost": [
+  "The hunt tax was re-ratified 3.65 -> 3.67 on this branch's pool (window about 3.661 to 3.680, true midpoint by r126's rule). It is a BRANCH figure: the integrator re-sweeps once from main's constant on the merged pool and this number is superseded, not stacked.",
+  "The harness's ovr>=55 sample indexes against pool.length, and this round moves it 6,579 -> 6,582 (7 crossings, 5 in / 2 out), which redraws all 200 matchups. Three other constant triples inside the round's own feasible band were measured end to end and each broke a DIFFERENT subset of rows; at 0.16/0.78/0.84 hunt's window was EMPTY (blind -0.3007 at 3.560 against oracle +0.4934; +0.5000 at 3.545 against blind -0.2880). That is sampling, not calibration, and a later round that moves the pool should expect the same.",
+  "recal_116's two closed doors were re-measured on this pipeline and BOTH still fail, so they stay closed: the raw-leg ceiling above 0.54, and the 25 -> usg normalisation of the adjusted rate.",
+  "The subject's OFF did not move (95). A parallel OFF/DEF round 198 raises Kevin Durant '13's OFF to 98 +-1 and was told this change was coming; it now reads him at ballsec 53, not 62.",
+  "Kevin Durant '12 (ballsec 61 -> 51, OFF 93 -> 92) and '16 (63 -> 60) move with him because the fault is the same one on the same card class, and the season blend carries some of it into '13."
+ ],
+ "notes": [
+  "THE GENERAL FAULT, not a fact about Durant. recal_79's allowance adds 0.8 x AST% to the responsibility denominator of the adjusted turnover rate. Its SIZE is set by the denominator, not by the passing: at USG 29.8 / AST% 21.7 — a wing's share, the 76th percentile of 2013 — it adds 17.4 to a 29.8 denominator and carries the card from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. A 45-point rank gift on a card that assists 6.2 per 100 against 4.6 turnovers.",
+  "WHAT IS PRICED IS THE BENEFIT, not the allowance. The allowance itself (0.8 x AST%, the 25 normaliser) is untouched; what changed is what the resulting rank DISCOUNT costs. The first 0.16 of rank is free to everyone, because a man who passes at all does manufacture some turnovers passing, and that free band is the entire benefit for most of the board — Jordan '88 0.047, Carmelo '13 0.090, Howard '11 0.065, all three byte-identical after this round. The rest is bought with the within-season percentile of assist share: nothing below the 78th, in full at the 86th. Harden '19 0.983, Westbrook '15 0.992, Magic '90 0.99, Stockton 0.999, LeBron '13 0.96 — every hub the allowance was built for is past the top and none moves by a point.",
+  "THE RE-RANK IS LOAD-BEARING. A one-sided discount left in raw percentile space is a DEFLATION: it walks the whole board down ~1.5 points of ball security and breaks five anchors by rounding alone (Jordan '89 OFF 97, Zion '21 90, Howard '11 76, Shaq '09 69, Warriors '17 offdial 98). The adjusted leg is a within-season RANK, so the discounted readings are ranked again and the season's level is held: mean ball security moves +0.02 across 10,000 cards, OFF +0.001, and 319 of the 622 OFF moves are UP.",
+  "FOUR OTHER SHAPES MEASURED AND REJECTED. (a) Raising recal_116's raw-leg ceiling: Durant needs 0.84, which reads Harden '19 ballsec 34. (b) Normalising the adjusted rate by the card's own usage (25 -> usg; recal_116's option (b) in another dress): at half strength Durant reaches 55 but Harden falls to 49 and Mark Jackson '98 rises 10, and at full strength Jordan '88 reads 93, Luka '23 falls 17 and the top 12 becomes low-usage spot-up shooters (T.R. Dunn '87 +60). (c) Paying the allowance only on assist share above what the card's usage implies (a per-season OLS of AST% on USG%): nearly rank-neutral among non-passers — Durant reaches only 59 at full strength while Mark Jackson '98 rises 9. (d) The creation ramp applied TWO-SIDED, as a weight on the adjusted LEG rather than on its benefit: Durant lands but the low-usage tail is handed the leg's penalty back and 6,479 cards move past 3 points (T.R. Dunn '87 +53, Luke Kornet '26 +41).",
+  "THE FREE BAND IS WHAT KEEPS THE ROUND HONEST ABOUT HIS OWN SHAPE. Without it the same landing costs Howard '11 OFF 76 against recal_52's 78 +-1, and Carmelo '13 (9.3 / 14.1) and Kawhi '17 (9.1 / 18.9) — the careful low-assist scorers his ruling names approvingly at 91 and 90 — lose 4 and 3 points for nothing. Both are byte-identical as it stands.",
+  "FOOTPRINT: 4,383 ballsec bars moved, 324 by more than 3, max 15, mean +0.02. OFF 622 (range -2 to +1), OVR 357 (all +-1), DEF exactly 0. The top 12 by ball security is IDENTICAL before and after. The class that takes the charge reads like one: high-usage bigs and wings who turn it over at a hub's rate on a wing's assist share — Embiid '18-'22, Cousins '14-'18, Wembanyama '24-'25, Zach LaVine '19-'20, Paul George '16 and '21."
+ ]
 }

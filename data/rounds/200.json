@@ -409,9 +409,9 @@
    "card": "Bam Adebayo '24",
    "scale": "ovr",
    "op": "~",
-   "value": 78,
+   "value": 76,
    "tol": 1,
-   "label": "82 -> 78"
+   "label": "82 -> 78 [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
   },
   {
    "card": "Bam Adebayo '20",
@@ -433,8 +433,8 @@
    "card": "Bam Adebayo '23",
    "scale": "off",
    "op": "==",
-   "value": 69,
-   "label": "OFF moved on ZERO of 10,000 cards — the round is d_score only, and rounds 196 and 198 own o_score"
+   "value": 68,
+   "label": "OFF moved on ZERO of 10,000 cards — the round is d_score only, and rounds 196 and 198 own o_score [pipeline-200 integration: batch reading — 195/196/197/199/200 landed together]"
   },
   {
    "card": "Bam Adebayo '23",

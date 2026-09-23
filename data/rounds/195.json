@@ -10,13 +10,13 @@
  "tol": 3,
  "before": 78,
  "after": 64,
- "pipeline_version": 195,
+ "pipeline_version": 200,
  "knobs": [
   {
    "file": "data/build_ratings.py",
-   "pattern": "GAP_FOOT, GAP_FULL = 0\\.28, 0\\.48",
+   "pattern": "GAP_FOOT, GAP_FULL = 0\\.30, 0\\.50",
    "label": "THE ROUND'S ONE CONSTANT PAIR — the gap ramp's foot and full, the frontier of the standing pins",
-   "note": "0.32 -> subject 69 and r89's Reggie Miller '97 off fails; 0.28 -> subject 64 and ALL 193 pass; 0.24 -> subject 59 and r89's Jaylen Brown '26 off fails by 2; 0.20 -> subject 55 and Brown fails by 3"
+   "note": "0.32 -> subject 69 and r89's Reggie Miller '97 off fails; 0.28 -> subject 64 and ALL 193 pass; 0.24 -> subject 59 and r89's Jaylen Brown '26 off fails by 2; 0.20 -> subject 55 and Brown fails by 3 [pipeline-200 integration: re-cut 0.28 -> 0.30 on the merged pool — recal_199 takes Jaylen Brown '26's ballsec 64 -> 58 and the two together read him 81 against r89's 83 +-1; 0.30 reads Brown 82, subject mid 67 / OFF 67, 203 pins 0 failing]"
   },
   {
    "file": "data/build_ratings.py",
