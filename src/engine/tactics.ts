@@ -727,6 +727,26 @@ export const DEFAULT_TACTICS: Tactics = {
  * per-branch figures (186: 3.66; 187: 3.59; 188: 3.76). hunt broke on the BLIND edge (-0.11 at 3.40): 447 no-vote bigs
  * lost rim protection and 188 rebounding forwards lost defence, so a blind hunt call costs less. 3.90 overshoots the oracle
  * (+0.42), 3.72 sits exactly on it (+0.50); hunt 3.65 (blind -0.32, oracle +0.53) — a NARROW window. The others held.
+ * recal_205 set the position branch's rim ramp TOP by the lead perdef has over rimprot: 217 d_ovrs and 133 OVRs
+ * moved, 154 of the DEF reads UP, so wings who were being graded on a big vector got their own perimeter one back
+ * and the ovr>=55 sample moved with them. THREE taxes broke, and they are the three this file already names as the
+ * pool-sensitive ones — every one of them on the edge a DEFENCE-UP round pushes: the sampled fives defend the
+ * perimeter and the glass better, so a blind call costs LESS and an oracle read is worth less against them.
+ * Swept ONCE from MAIN's constants (hunt 3.65, crashOff 0.28, crashDef 0.60) as the law requires.
+ * HUNT broke on the BLIND edge (-0.2380 at 3.65 against the -0.30 ceiling): 3.700 (-0.2783) / 3.720 (-0.2944) /
+ * 3.730 (-0.3024, past the ceiling) / 3.740 (-0.3105 / +0.5049) / 3.750 (-0.3185 / +0.5002, the floor exactly) /
+ * 3.760 (+0.4956, under) / 3.800 (+0.4773) — feasible about 3.727 to 3.750, a VERY NARROW 0.023, true midpoint by
+ * r126's rule: 3.65 -> 3.74 (0.011 of blind room and 0.005 of oracle). hunt's thirteenth move on this ledger.
+ * CRASH DEF GLASS broke on the ORACLE edge (+0.4619 at .60 against the +0.50 floor): .500 (+0.4901) / .470
+ * (+0.4988) / .466 (+0.5000, the floor) / .460 (+0.5017) / .400 (+0.5196) / .300 (+0.5500) / .200 (-0.3571) /
+ * .140 (-0.3107) / .135 (-0.3068) / .100 (-0.2797, past the ceiling) — feasible about .132 to .466, a WIDE 0.334,
+ * true midpoint .60 -> .30 (blind -0.4350, oracle +0.5500; 0.135 and 0.050 of room either side).
+ * CRASH OFF GLASS broke on the ORACLE edge too (+0.4954 at .28), the first time BOTH glass rows and hunt have
+ * broken in one round: .262 (+0.5001, the floor) / .260 (+0.5006) / .200 (+0.5165) / .120 (+0.5377) / .040
+ * (+0.5584) / .000 (blind -0.6191, still a quarter-point clear of the ceiling) / -0.500 (-0.3199) / -0.540
+ * (-0.2954, past it) — the feasible interval runs about -0.507 to .2625 and its own midpoint is NEGATIVE, a call
+ * that pays to make, which is not a tax at all, so it takes the midpoint of the POSITIVE half exactly as r117 did:
+ * .28 -> .13 (oracle +0.5351, blind -0.6821). The five others held their bands untouched. All nine pass.
  */
 export const TAX = {
   scorer: 0.55,
@@ -734,9 +754,9 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.65,
-  crashOff: 0.28,
-  crashDef: 0.60,
+  hunt: 3.74,
+  crashOff: 0.13,
+  crashDef: 0.30,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }

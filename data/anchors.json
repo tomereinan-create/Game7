@@ -1872,5 +1872,14 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Rodney McCray '88",
+    "scale": "def",
+    "target": 88,
+    "tol": 3,
+    "round": 205,
+    "ruling": "Rodney McCray '88 DEF 81 -> target 88 +-3",
+    "note": "recal_205: the position branch's rim-presence ramp (recal_187) takes its TOP from the lead perdef has over rimprot, over recal_164's own width 10 - POS_RP_HI 55 at no lead, recal_99's deterrence foot DET_LO 68 at a lead of ten or more. 1988 All-Defensive FIRST team, 6'7\" (height 79), 33.2 mpg, perdef 93 / discipline 93 / rimprot 56 / drb 57 / perimdisrupt 12: recal_103's gap test cannot see him (perimdisrupt - drb = -45) and recal_187's ramp saturated one point under his rimprot, so he was 1.000 big on a big vector of 72.0 against his own perimeter vector of 80.7. He lands on 87, the bottom half of this tolerance and #8 of 1988 behind Cooper (93) and Alvin Robertson (91); 88 exactly would need the ramp's top above DET_LO, which is a constant this file already spends on deterrence."
   }
 ]
