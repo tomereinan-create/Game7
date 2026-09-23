@@ -66,15 +66,36 @@
   --court-edge: #4a4038;
 
   /**
-   * TWO FACES, four names. League Gothic carries every heading and every numeral (condensed,
-   * uppercase, tight); Space Grotesk carries all copy, labels and captions. The four token names
-   * are older than this pass — dozens of call sites still say `var(--mono)` — so they are aliased
-   * rather than renamed: --serif/--num are the heading face, --sans/--mono the copy face. This
-   * reverses the earlier one-face ruling ("change EVERYTHING to this font", Instrument Serif) in
-   * favour of the Game7 Flow bundle, and these four lines are where that reverses again.
+   * TWO FACES, four names, AND THE LINE BETWEEN THEM IS NOW HEADINGS AGAINST FIGURES.
+   *
+   * HIS RULING, 2026-09-23: "Where ever there are stats on the app, anywhere, I want Space
+   * Grotesk." League Gothic carries every HEADING — a man's name, a club's name, a screen's title,
+   * the big uppercase display type — and Space Grotesk carries everything else, which now includes
+   * every number the engine or the box score produces.
+   *
+   * `--num` IS THE WHOLE MECHANISM. It has always been the token that means "a figure", and it was
+   * an alias of the heading face; it is an alias of the copy face now, and that one line moves
+   * every readout in the app that was already declared as a figure. What it could not move is the
+   * rules that reached past it and named `--serif` directly for a number — those are converted to
+   * `--num` one at a time, and the commit that did it lists them.
+   *
+   * THE TEST IS NOT "IS IT A DIGIT". A jersey number, a level number on a ticket, an era's dates
+   * and a club's three letters are furniture and keep the display face. A rating, a record, a
+   * score, a price, a box-score cell and a dial's own figure are stats and do not.
+   *
+   * AND THE SIZES MOVED WITH THE FACE, which is not decoration: League Gothic sets a digit at
+   * about 0.28em and Space Grotesk at 0.6em, so the same number is more than twice as wide in the
+   * new face and every one of these boxes was cut for the old one. Each converted rule comes down
+   * to about 0.68 of its old point size, which is what keeps the figure the same SIZE ON THE PAGE
+   * — the two faces differ in width far more than they differ in x-height — and the ones in boxes
+   * that cannot grow were re-measured against the text rather than scaled by eye. See `.tdb-num`,
+   * whose `cqw` arithmetic is stated in the measured width of "114.9".
+   *
+   * The four names are older than this pass — dozens of call sites still say `var(--mono)` — so
+   * they stay aliased rather than renamed.
    */
   --serif: 'League Gothic', 'Arial Narrow', Impact, sans-serif;
-  --num: var(--serif);
+  --num: var(--sans);
   --sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   --mono: var(--sans);
 
@@ -531,8 +552,8 @@ button {
   text-align: right;
 }
 .cmp-talent .big {
-  font-family: var(--serif);
-  font-size: 44px;
+  font-family: var(--num);
+  font-size: 30px;
   line-height: 1;
   margin-top: 2px;
 }
@@ -1157,8 +1178,8 @@ button {
 }
 .g7-score {
   text-align: center;
-  font-family: var(--serif);
-  font-size: 46px;
+  font-family: var(--num);
+  font-size: 31px;
   line-height: 1;
   margin-top: 12px;
 }
@@ -1339,7 +1360,7 @@ button {
 .row.dr {
   grid-template-columns: minmax(0, 1fr) 96px 28px;
 }
-.row.dr .ovr { font-family: var(--serif); font-size: 19px; line-height: 1; color: var(--ink); text-align: right; padding-right: 6px; }
+.row.dr .ovr { font-family: var(--num); font-size: 14px; line-height: 1; color: var(--ink); text-align: right; padding-right: 6px; }
 .row.on .ovr { color: var(--you); }
 .row.dr { grid-template-columns: minmax(0, 1fr) 34px 96px 28px; }
 .rowhead.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
@@ -2539,9 +2560,9 @@ button {
    375 are the map's history and are kept for the record. */
 .map-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 14px 0 10px; }
 .map-kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.map-total { font-family: var(--serif); font-size: 40px; line-height: 1; color: var(--you); margin-top: 4px; }
+.map-total { font-family: var(--num); font-size: 27px; line-height: 1; color: var(--you); margin-top: 4px; }
 .map-total i { font-style: normal; font-size: 18px; color: var(--muted); }
-.map-total .star { font-size: 28px; }
+.map-total .star { font-size: 24px; }
 .map-side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 /* At 375 the header is at capacity: the level line takes 180 of the 347 available and TEL AVIV
    LIONS · RENAME wants 158 of the rest. A 12px gutter left his real team name overflowing by a
@@ -2800,7 +2821,7 @@ button {
 /* ---- pre-sim odds ---- */
 .odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 6px 0 2px; }
 .odds-grid div { display: grid; gap: 2px; text-align: center; }
-.odds-grid b { font-family: var(--serif); font-size: 34px; line-height: 1; font-weight: 400; }
+.odds-grid b { font-family: var(--num); font-size: 23px; line-height: 1; font-weight: 400; }
 .odds-grid b.you { color: var(--you); }
 .odds-grid b.them { color: var(--them); }
 .odds-grid i { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; font-style: normal; color: var(--muted); }
@@ -2812,7 +2833,7 @@ button {
 .an-spread span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
 .an-spread .you { color: var(--you); text-align: left; }
 .an-spread .them { color: var(--them); text-align: right; }
-.an-spread b { font-family: var(--serif); font-size: 52px; line-height: 1; font-weight: 400; }
+.an-spread b { font-family: var(--num); font-size: 35px; line-height: 1; font-weight: 400; }
 .an-spread b.you { color: var(--you); }
 .an-spread b.them { color: var(--them); }
 .an-odds { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 8px; }
@@ -2827,7 +2848,7 @@ button {
 .an-side.you .an-team { color: var(--you); }
 .an-side.them .an-team { color: var(--them); }
 .an-team i { font-style: normal; color: var(--faint); }
-.an-big { font-family: var(--serif); font-size: 34px; line-height: 1.1; margin: 6px 0 8px; }
+.an-big { font-family: var(--num); font-size: 23px; line-height: 1.1; margin: 6px 0 8px; }
 .an-big i { font-family: var(--mono); font-size: 10px; font-style: normal; letter-spacing: 0.1em; color: var(--muted); }
 .an-rows { border-top: 1px solid var(--divider); margin-bottom: 6px; }
 .an-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--divider); }
@@ -2975,7 +2996,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .au-slotrow { display: flex; gap: 8px; justify-content: center; }
 .au-block { text-align: center; padding: 14px 0 4px; }
 .au-kick { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
-.au-price { font-family: var(--serif); font-size: 46px; line-height: 1.1; color: var(--ink); }
+.au-price { font-family: var(--num); font-size: 31px; line-height: 1.1; color: var(--ink); }
 .au-price.p1 { color: var(--you); }
 .au-price.p2 { color: var(--them); }
 .au-why { font-family: var(--mono); font-size: 9px; line-height: 1.4; color: var(--faint); text-align: center; }
@@ -3111,7 +3132,9 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .hex-shadow { fill: rgba(0, 0, 0, 0.5); }
 .hex { fill: var(--surface-2); stroke: var(--line-3); stroke-width: 2; transition: fill 120ms ease, stroke 120ms ease; }
 .hex-in { fill: none; stroke: rgba(239, 231, 214, 0.07); stroke-width: 1; }
-.hex-name { font-family: var(--serif); font-size: 13px; fill: var(--ink); }
+/* the six axes are stat NAMES, and every other stat name in the app — the box score's PTS, FG,
+   FGA, the attribute sheet's own row labels — is set in the copy face (his ruling, 2026-09-23) */
+.hex-name { font-family: var(--num); font-size: 10px; fill: var(--ink); }
 .hex-name2 { font-family: var(--mono); font-size: 9px; fill: var(--muted); letter-spacing: 0.04em; }
 .hex-pill { fill: var(--bg); stroke: var(--line-3); stroke-width: 1; }
 .hex-rank { font-family: var(--mono); font-size: 11px; fill: var(--ink-2); }
@@ -3188,7 +3211,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* a dial whose colour came from its own value — the database's rating scale */
 .dial.scale .fill { stroke: var(--dial-tone); }
 .dial.scale text { fill: var(--dial-tone); }
-.dial text { font-family: var(--serif); font-size: 20px; fill: var(--ink); }
+.dial text { font-family: var(--num); font-size: 15px; fill: var(--ink); }
 .dial .dl { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; color: var(--muted); margin-top: -6px; }
 .dial .ds { font-family: var(--mono); font-size: 9px; color: var(--faint); }
 /* ---- matchup panel ---- */
@@ -3210,7 +3233,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .node-dials .dial { width: 34px; }
 .node-dials .dial svg { width: 32px; height: 32px; }
 .node-dials .dial circle { stroke-width: 7; }
-.node-dials .dial text { font-size: 22px; }
+.node-dials .dial text { font-size: 15px; }
 .node-dials .dial .dl { font-size: 7px; letter-spacing: 0.08em; margin-top: -3px; }
 @media (min-width: 900px) {
   .node-dials .dial { width: 44px; }
@@ -3259,8 +3282,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .era-band b { display: block; font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); }
 .era-band i { font-family: var(--mono); font-size: 9px; font-style: normal; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 
-.ptal, .row .ovr { font-family: var(--serif); }
-.pool .row .ovr, .row.db .ovr { font-size: 18px; color: var(--ink); }
+.ptal, .row .ovr { font-family: var(--num); }
+.pool .row .ovr, .row.db .ovr { font-size: 13.5px; color: var(--ink); }
 
 /* The map's top (title, rule, header — stars, staff, team, coach) stays on screen while the long
    trail scrolls. It pins as ONE block, title included: the home button is fixed to the window's
@@ -3363,7 +3386,7 @@ body:has(.sheet) { overflow: hidden; }
 .row.dr { grid-template-columns: minmax(0, 1fr) 96px 28px; }
 @media (min-width: 900px) { .row.dr { grid-template-columns: minmax(0, 1fr) 132px 42px; } }
 
-.row.db .ovr.db { display: grid; justify-items: end; line-height: 1; font-family: var(--serif); font-size: 18px; color: var(--ink); }
+.row.db .ovr.db { display: grid; justify-items: end; line-height: 1; font-family: var(--num); font-size: 13.5px; color: var(--ink); }
 .row.db .ovr.db small { font-family: var(--mono); font-size: 7.5px; color: var(--muted); margin-top: 2px; }
 @media (min-width: 900px) { .row.db .ovr.db { font-size: 24px; } .row.db .ovr.db small { font-size: 10px; } }
 
@@ -3371,7 +3394,7 @@ body:has(.sheet) { overflow: hidden; }
 .drating { display: flex; gap: 18px; padding: 8px 0 6px; border-bottom: 1px solid var(--divider); }
 .drating span { display: grid; justify-items: start; }
 .drating i { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.12em; font-style: normal; color: var(--faint); }
-.drating b { font-family: var(--serif); font-size: 24px; line-height: 1; font-weight: 400; color: var(--ink); }
+.drating b { font-family: var(--num); font-size: 17px; line-height: 1; font-weight: 400; color: var(--ink); }
 .drating span:first-child b { color: var(--you); }
 
 /* player mini dials (database rows, card header) */
@@ -3379,7 +3402,7 @@ body:has(.sheet) { overflow: hidden; }
 .pdials .dial { width: 40px; }
 .pdials .dial svg { width: 38px; height: 38px; }
 .pdials .dial circle { stroke-width: 7; }
-.pdials .dial text { font-size: 22px; }
+.pdials .dial text { font-size: 15px; }
 .pdials .dial .dl { font-size: 7px; letter-spacing: 0.08em; margin-top: -3px; }
 .drating { justify-content: flex-start; }
 .drating .pdials { justify-content: flex-start; gap: 10px; }
@@ -3749,7 +3772,7 @@ body:has(.sheet) { overflow: hidden; }
    Two columns while the dossier is the full width of the card, one down it on a desk. */
 .pct-meta { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
 .pct-mrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; padding: 6px 0 5px; border-bottom: 1px solid var(--divider); font-size: 9.5px; letter-spacing: 0.13em; color: var(--muted-2); }
-.pct-mrow b { flex: none; max-width: 66%; font-family: var(--num); font-size: clamp(15px, 1.15vw, 21px); font-weight: 400; line-height: 1; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pct-mrow b { flex: none; max-width: 66%; font-family: var(--num); font-size: clamp(11px, 0.82vw, 15px); font-weight: 400; line-height: 1; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* what the badge above it means — the same sentence the draft's archetype card prints, in the
    terminal's comment voice. The mock sets it at 11–14px on --ink-2 and holds it to 46ch: a
    sentence this long is read, not glanced at, and 10.5px on --muted was reading as fine print. */
@@ -3777,7 +3800,7 @@ body:has(.sheet) { overflow: hidden; }
 .pc-big.lead i { color: var(--pct-acc); }
 /* the verdict's three figures follow the season line onto the heading face: they sit directly
    above it in scout mode, and one card may not read its numbers in two voices */
-.pc-big b { display: block; margin-top: 2px; font-family: var(--num); font-size: clamp(30px, 7.4vw, 44px); font-weight: 400; line-height: 1; color: var(--ink); }
+.pc-big b { display: block; margin-top: 2px; font-family: var(--num); font-size: clamp(21px, 5.1vw, 30px); font-weight: 400; line-height: 1; color: var(--ink); }
 
 /* ---- the sheet ---- */
 .pc-main { min-width: 0; display: flex; flex-direction: column; }
@@ -3800,7 +3823,7 @@ body:has(.sheet) { overflow: hidden; }
 .pc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 70px), 1fr)); gap: 1px; margin-top: 8px; padding: 1px; }
 .pc-cell { display: block; min-width: 0; padding: 9px 10px 8px; background: var(--surface); outline: 1px solid var(--line); }
 .pc-cell i { display: block; font-style: normal; font-size: 8.5px; letter-spacing: 0.14em; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pc-cell b { display: block; margin-top: 3px; font-family: var(--num); font-size: clamp(19px, 1.8vw, 32px); font-weight: 400; line-height: 1; color: var(--ink); }
+.pc-cell b { display: block; margin-top: 3px; font-family: var(--num); font-size: clamp(13px, 1.24vw, 22px); font-weight: 400; line-height: 1; color: var(--ink); }
 /* the attributes: a row each — name, track, number — under a ruled group head, two columns of them */
 .pc-attrs { columns: 2; column-gap: 22px; margin-top: 6px; }
 .pc-grp { break-inside: avoid; margin-bottom: 10px; }
@@ -3958,17 +3981,17 @@ body:has(.sheet) { overflow: hidden; }
   .pc-body { gap: 8px 18px; padding-top: 8px; }
   .pc-rule { margin-top: 7px; }
   .pc-big { padding: 5px 10px 6px; }
-  .pc-big b { font-size: 34px; }
+  .pc-big b { font-size: 23px; }
   .pc-stats { margin-top: 5px; }
   .pc-cell { padding: 6px 9px 5px; }
-  .pc-cell b { font-size: 22px; }
+  .pc-cell b { font-size: 15px; }
   .pc-attrs { margin-top: 4px; }
   .pc-grp { margin-bottom: 6px; }
   .pct-banner { min-height: 0; }
   .pct-ban-body { gap: 6px; padding: 9px 16px 12px; }
   .pc-name { font-size: 40px; }
   .pct-mrow { padding: 3px 0 2px; }
-  .pct-mrow b { font-size: 16px; }
+  .pct-mrow b { font-size: 11.5px; }
   .pc-what { line-height: 1.4; }
   .pct-hexbox { min-height: 60px; }
   .pc-adv { padding: 6px 0; }
@@ -4118,7 +4141,7 @@ body:has(.sheet) { overflow: hidden; }
      the row itself is now stretched by the grid above, so both come up to stand in it rather than
      leaving the height empty under a 9.5px word. */
   .pct-mrow { font-size: clamp(11px, 1.35vh, 15px); letter-spacing: 0.12em; }
-  .pct-mrow b { max-width: 60%; font-size: clamp(19px, 3vh, 30px); }
+  .pct-mrow b { max-width: 60%; font-size: clamp(13px, 2.05vh, 21px); }
   /**
    * AND THE LEDGER'S ROWS HAVE A CEILING NOW, which is the correction the hexagon's move forced.
    * "Make this SEASON / POS / HT … bigger, so there will be no dead space" was answered by letting
@@ -4145,10 +4168,10 @@ body:has(.sheet) { overflow: hidden; }
    */
   .pc-big { padding: 6px 12px 7px; }
   .pc-big i { font-size: clamp(9px, 1.2vh, 12px); }
-  .pc-big b { font-size: clamp(34px, 5.6vh, 52px); }
+  .pc-big b { font-size: clamp(23px, 3.8vh, 35px); }
   .pc-cell { padding: 5px 10px 5px; }
   .pc-cell i { font-size: clamp(9px, 1.15vh, 11.5px); }
-  .pc-cell b { font-size: clamp(22px, 3.4vh, 32px); }
+  .pc-cell b { font-size: clamp(15px, 2.3vh, 22px); }
   .pc-rule { margin-top: 7px; }
   .pc-rule span { font-size: clamp(10px, 1.25vh, 13px); }
   .pc-stats { margin-top: 4px; }
@@ -4282,7 +4305,7 @@ body:has(.sheet) { overflow: hidden; }
      vw and not a vh, because the thing it must not do is push fourteen cells onto a second row:
      31px in a 72px cell at his window, where "30.4" measures 54 and the cell's own padding takes
      14. */
-  .pc-cell b { font-size: clamp(18px, 1.55vw, 36px); }
+  .pc-cell b { font-size: clamp(12px, 1.05vw, 24px); }
   /* THE LIST SITS A LITTLE LOWER (his ruling: "move the attributes a bit lower"): 14px of air above
      it where there were 3. IT RESERVES NOTHING UNDER ITSELF ANY MORE — the shape has its own grid
      row, so the list ends where its columns end and the hexagon starts there. */
@@ -4358,7 +4381,7 @@ body:has(.sheet) { overflow: hidden; }
   .pc-stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 62px), 1fr)); }
   .pc-cell { padding: 7px 7px 6px; }
   .pc-cell i { font-size: 7.5px; letter-spacing: 0.06em; }
-  .pc-cell b { margin-top: 2px; font-size: 17px; }
+  .pc-cell b { margin-top: 2px; font-size: 12px; }
   .pc-attrs { columns: 3; column-gap: 12px; }
   .pct-attr { gap: 6px; padding: 1px 0; }
   .pct-attr .statt { display: none; }
@@ -4378,9 +4401,9 @@ body:has(.sheet) { overflow: hidden; }
 @media (max-height: 620px) {
   .pct-attr .statt { display: none; }
   .pc-name { font-size: clamp(26px, 3.4vw, 38px); }
-  .pc-cell b { font-size: 16px; }
-  .pc-big b { font-size: 28px; }
-  .pct-mrow b { font-size: 15px; }
+  .pc-cell b { font-size: 11px; }
+  .pc-big b { font-size: 19px; }
+  .pct-mrow b { font-size: 11px; }
 }
 
 /* ==========================================================================
@@ -4639,7 +4662,7 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-sheet .thero .tcard-ab { width: clamp(42px, 3.3vw, 78px); height: clamp(42px, 3.3vw, 78px); border-radius: clamp(9px, 0.7vw, 17px); font-size: clamp(17px, 1.35vw, 32px); }
   .tdb-sheet .thero-rank { font-size: clamp(11px, 0.85vw, 19px); }
   .tdb-sheet .thero-who i { font-size: clamp(9px, 0.75vw, 17px); }
-  .tdb-sheet .thero-rec b { font-size: clamp(74px, 5.6vw, 118px); }
+  .tdb-sheet .thero-rec b { font-size: clamp(50px, 3.8vw, 80px); }
   .tdb-sheet .thero-tag { font-size: clamp(8.5px, 0.72vw, 16px); padding: clamp(4px, 0.4vw, 9px) clamp(11px, 0.95vw, 22px) clamp(3px, 0.35vw, 8px); }
   .tdb-sheet .thero-dial .dial { width: clamp(74px, 5.4vw, 126px); }
   .tdb-sheet .thero-dial .dial svg { width: clamp(72px, 5.2vw, 122px); height: auto; }
@@ -4650,11 +4673,11 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-sheet .ttick .tcard-ab { width: clamp(32px, 2.5vw, 58px); height: clamp(32px, 2.5vw, 58px); border-radius: clamp(7px, 0.55vw, 13px); font-size: clamp(12px, 1vw, 23px); }
   .tdb-sheet .ttick-who b { font-size: clamp(14px, 1.15vw, 27px); }
   .tdb-sheet .ttick-who i { font-size: clamp(8.5px, 0.7vw, 16px); }
-  .tdb-sheet .ttick-rec { font-size: clamp(20px, 1.6vw, 36px); }
+  .tdb-sheet .ttick-rec { font-size: clamp(14px, 1.1vw, 25px); }
   .tdb-sheet .ttick-nums { gap: clamp(10px, 0.85vw, 20px); }
   .tdb-sheet .ttick-num { width: clamp(38px, 2.9vw, 66px); }
   .tdb-sheet .ttick-num i { font-size: clamp(7.5px, 0.6vw, 14px); }
-  .tdb-sheet .ttick-num b { font-size: clamp(17px, 1.35vw, 31px); }
+  .tdb-sheet .ttick-num b { font-size: clamp(12px, 0.92vw, 21px); }
   /* the search, the filter drawer and the rule over the board */
   .tdb-sheet .search input { font-size: clamp(13px, 1vw, 22px); }
   .tdb-sheet .filterbar { gap: clamp(8px, 0.7vw, 16px); }
@@ -4831,11 +4854,16 @@ body.offstage #root { position: relative; z-index: 1; }
      the 38px ceiling his earlier ruling set. The block can no longer overflow, so it can no longer
      be cut. */
   .tdb-sheet .tdb-line { grid-template-columns: auto repeat(var(--cols), minmax(0, 1fr)); }
-  .tdb-sheet .tdb-col, .tdb-sheet .tdb-lab { font-size: clamp(9px, 0.95cqw, 18px); }
+  .tdb-sheet .tdb-col, .tdb-sheet .tdb-lab { font-size: clamp(8px, 0.8cqw, 15px); }
   .tdb-sheet .tdb-col { padding: clamp(7px, 0.85cqw, 11px) clamp(3px, 0.5cqw, 7px) clamp(6px, 0.7cqw, 9px); }
   .tdb-sheet .tdb-lab { padding: clamp(7px, 0.85cqw, 11px) clamp(8px, 1.4cqw, 18px) clamp(7px, 0.85cqw, 11px) clamp(7px, 1.2cqw, 15px); }
-  .tdb-sheet .tdb-num { padding: clamp(8px, 1cqw, 13px) clamp(3px, 0.6cqw, 8px) clamp(6px, 0.7cqw, 9px); font-size: clamp(14px, calc(3.5cqw - 10px), 38px); }
-  .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: clamp(8px, 1.1cqw, 14px); font-size: clamp(9px, calc(1.9cqw - 5px), 22px); }
+  /* RESTATED FOR THE COPY FACE (his ruling, 2026-09-23). `3.5cqw - 10px` was the arithmetic of
+     "114.9" in League Gothic, where five characters measure 1.39em; in Space Grotesk with tabular
+     figures the same five measure 2.8em, so the term that fits them in the same cell is this one.
+     Measured, not scaled: at 1,293 of column it prints 18px and the widest cell in the table has
+     room to spare. */
+  .tdb-sheet .tdb-num { padding: clamp(8px, 1cqw, 13px) clamp(3px, 0.6cqw, 8px) clamp(6px, 0.7cqw, 9px); font-size: clamp(11px, calc(1.82cqw - 5.5px), 28px); }
+  .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: clamp(8px, 1.1cqw, 14px); font-size: clamp(8px, calc(1.05cqw - 2px), 16px); }
   /* THE ROSTER UNDER IT reads at the page's size too, not the phone's. The three tracks are
      clamps rather than the 102px/60px the phone gives them, because a name set at 34px over a box
      line still set at 10px is one row pretending to be two. */
@@ -4916,8 +4944,8 @@ body.offstage #root { position: relative; z-index: 1; }
 .tdb-num {
   padding: 6px 6px 5px;
   text-align: center;
-  font-family: var(--serif);
-  font-size: 17px;
+  font-family: var(--num);
+  font-size: 12px;
   line-height: 1;
   color: var(--ink);
   white-space: nowrap;
@@ -4986,14 +5014,14 @@ body.offstage #root { position: relative; z-index: 1; }
    clamped off the viewport rather than fixed. It wraps under itself with the pill when there is no
    room beside it. */
 .thero-rec { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px 14px; }
-.thero-rec b { font-family: var(--serif); font-size: clamp(42px, 13.5vw, 74px); font-weight: 400; line-height: 0.82; letter-spacing: 0.01em; color: var(--ink); }
+.thero-rec b { font-family: var(--num); font-size: clamp(28px, 9vw, 50px); font-weight: 400; line-height: 0.82; letter-spacing: 0.01em; color: var(--ink); }
 .thero-tag { font-style: normal; font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.16em; color: var(--hero-accent); border: 1px solid var(--hero-accent); border-radius: 999px; padding: 4px 11px 3px; white-space: nowrap; }
 /* the same rings a player's card wears — the one place on this board with room for a ring */
 .thero-dials { flex: none; display: flex; gap: 4px; }
 .thero-dial .dial { width: 62px; }
 .thero-dial .dial svg { width: 60px; height: 60px; }
 .thero-dial .dial circle { stroke-width: 6; }
-.thero-dial .dial text { font-size: 21px; }
+.thero-dial .dial text { font-size: 15px; }
 .thero-dial .dial .dl { font-size: 8px; letter-spacing: 0.1em; margin-top: -2px; }
 .thero-dial.on .dial .dl { color: var(--you); }
 @media (min-width: 620px) {
@@ -5002,7 +5030,7 @@ body.offstage #root { position: relative; z-index: 1; }
   .thero-dials { gap: 6px; }
   .thero-dial .dial { width: 74px; }
   .thero-dial .dial svg { width: 72px; height: 72px; }
-  .thero-dial .dial text { font-size: 20px; }
+  .thero-dial .dial text { font-size: 14px; }
 }
 
 /* ---- the ticker ----
@@ -5032,14 +5060,14 @@ body.offstage #root { position: relative; z-index: 1; }
 .ttick-who { flex: 1 1 auto; min-width: 0; }
 .ttick-who b { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ttick-who i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.08em; color: var(--faint); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ttick-rec { flex: none; font-family: var(--serif); font-size: 17px; letter-spacing: 0.01em; color: var(--ink); }
+.ttick-rec { flex: none; font-family: var(--num); font-size: 13px; letter-spacing: 0.01em; color: var(--ink); }
 /* THE THREE RATINGS AS NUMBERS, in the tones the rings would have worn (ratingTone: white at 50,
    green above, red below). The label rides over the figure rather than beside it, which is how
    every other dense read-out in this app stacks a name and a number. */
 .ttick-nums { flex: none; display: flex; gap: 6px; }
 .ttick-num { width: 30px; text-align: center; }
 .ttick-num i { display: block; font-style: normal; font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.1em; color: var(--faint); }
-.ttick-num b { display: block; font-family: var(--serif); font-size: 15px; font-weight: 400; line-height: 1; margin-top: 2px; }
+.ttick-num b { display: block; font-family: var(--num); font-size: 12px; font-weight: 400; line-height: 1; margin-top: 2px; }
 /* the sort that is on names itself, the way the hero's ring does */
 .ttick-num.on i { color: var(--you); }
 @media (min-width: 620px) {
@@ -5047,11 +5075,11 @@ body.offstage #root { position: relative; z-index: 1; }
   .ttick-rank { width: 34px; font-size: 11px; }
   .ttick .tcard-ab { width: 32px; height: 32px; font-size: 12px; }
   .ttick-who b { font-size: 14px; }
-  .ttick-rec { font-size: 20px; }
+  .ttick-rec { font-size: 14px; }
   .ttick-nums { gap: 10px; }
   .ttick-num { width: 38px; }
   .ttick-num i { font-size: 7.5px; }
-  .ttick-num b { font-size: 17px; }
+  .ttick-num b { font-size: 12px; }
 }
 
 /* "In the short of the team name (OKC) have the colors of the team." The three values come off
@@ -5098,7 +5126,7 @@ body.offstage #root { position: relative; z-index: 1; }
 .sb-side i { display: block; font-style: normal; font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.14em; }
 .sb-side.you i { color: var(--you); }
 .sb-side.them i { color: var(--them); }
-.sb-side b { display: block; font-family: var(--serif); font-size: 44px; line-height: 1; margin-top: 4px; font-weight: 400; }
+.sb-side b { display: block; font-family: var(--num); font-size: 30px; line-height: 1; margin-top: 4px; font-weight: 400; }
 .sb-side.you b { color: var(--you); }
 .sb-side.them b { color: var(--them); }
 .sb-mid { display: grid; place-content: center; gap: 4px; padding: 0 14px; text-align: center; }
@@ -5326,7 +5354,7 @@ body.offstage #root { position: relative; z-index: 1; }
 /* team rows carry the three mini dials; keep them tighter than the player db's */
 .lrow .pdials .dial { width: 34px; }
 .lrow .pdials .dial svg { width: 32px; height: 32px; }
-.lrow .pdials .dial text { font-size: 24px; }
+.lrow .pdials .dial text { font-size: 16px; }
 .lrow .pdials .dial .dl { font-size: 6.5px; margin-top: -2px; }
 @media (min-width: 900px) { .lrow .pdials .dial { width: 40px; } .lrow .pdials .dial svg { width: 38px; height: 38px; } }
 
@@ -7611,7 +7639,7 @@ body.map #root { padding-bottom: var(--foot); }
   text-transform: uppercase;
   color: var(--muted-2);
 }
-.fd-stat b { display: block; font: 400 clamp(24px, calc(var(--fd-u) * 1.5), 40px) / 1 var(--serif); color: var(--ink); }
+.fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 27px) / 1 var(--num); color: var(--ink); }
 .fd-stat b.gold { color: var(--you); }
 .fd-stat em { font-style: normal; color: var(--muted-2); }
 /* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
@@ -8429,7 +8457,7 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-metav {
   margin-left: auto;
-  font: 400 clamp(16px, min(8.5cqw, calc(var(--fd-u) * 1.35)), 34px) / 1 var(--serif);
+  font: 400 clamp(12px, min(5.8cqw, calc(var(--fd-u) * 0.92)), 23px) / 1 var(--num);
   text-transform: uppercase;
   color: var(--you);
 }
