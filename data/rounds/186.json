@@ -1,0 +1,473 @@
+{
+  "round": 186,
+  "agent": "stats-to-ratings",
+  "status": "done",
+  "ruling": "Agree with 2-10",
+  "title": "THE NO-VOTE RIM CEILING IS GRADED AGAINST THE CLASS IT IS GRADING: recal_92's block band stops being read on a season that includes every guard and is read on the no-vote big class instead, so a 3% centre reads his band's middle and a 5-9% blocker still takes the whole 88",
+  "subject": "Jon Koncak '93",
+  "scale": "attr:rimprot",
+  "target": 78,
+  "tol": 3,
+  "before": 87,
+  "after": 81,
+  "pipeline_version": 186,
+  "knobs": [
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "P_NOVOTE_BIG_BLK = pctile_top\\(\\[r\\['blk'\\] for _rs in seasons\\.values\\(\\) for r in _rs",
+      "label": "the no-vote big class the ceiling now grades its approach on",
+      "note": "n = 3,661 cards: no All-Defensive ballot (drep <= 0.05) and 80 inches or taller, pooled over every season"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "NOVOTE_CLASS_HT = 80\\.0",
+      "label": "the big/wing edge that defines the class — not a new constant",
+      "note": "recal_35's perimeter band top, recal_135's wing band, _relief_corroboration's own 80.0"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "NOVOTE_CLASS_BAR = 0\\.75",
+      "label": "where recal_92's band sits on the class: on its third quartile",
+      "note": "the class's own p75 = BLK% 3.00; the band is whole one recal_92 width (0.06) above it, BLK% 3.42"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "_cls = _measured_rim_evidence\\(blk_class_pctile \\+ \\(BLK_BAR - NOVOTE_CLASS_BAR\\), dbpm\\)",
+      "label": "the band is MOVED by shifting the percentile, the way recal_162's floor reads it one width earlier",
+      "note": "the band itself is not rebuilt: its width is BLK_FULL - BLK_BAR, recal_92's own 0.06"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "meas = _cls \\+ wv \\* \\(meas - _cls\\)",
+      "label": "class membership fades out exactly as recal_20's graded voted band fades in",
+      "note": "wv = min(1, drep/0.30); at wv = 1 the reading is the season-wide one, bit-identical — Noah '09 and Embiid '23 do not move"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "BLK_BAR, BLK_FULL = 0\\.80, 0\\.86",
+      "label": "UNTOUCHED: recal_92's band, still the one definition of block evidence in the file",
+      "note": "recal_114/172's vote meter, recal_162's graded floor and recal_165's carried-ballot unlock all keep the season-wide percentile"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "NOVOTE_FLOOR = \\(75 - 1\\) / 98\\.0",
+      "label": "UNTOUCHED: recal_95's floor of the grading, and recal_162's grading of that floor",
+      "note": "the round changes what the evidence SAYS, not where the ceiling starts or ends"
+    },
+    {
+      "file": "data/build_ratings.py",
+      "pattern": "ID  = dict\\(blk=0\\.6875, height=0\\.3125\\)",
+      "label": "UNTOUCHED: recal_81's rim composite (blocks + height, no DBPM, no team defence)",
+      "note": "recal_76/81's door stays shut — nothing here re-opens team defence"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "hunt: 3\\.66",
+      "label": "the hunt tax re-ratified through the harness on this round's pool",
+      "note": "3.40 -> 3.66. 323 bigs lost defence, the sampled fives protect the rim worse, the hunted-man call is worth MORE and the tax goes UP — the mirror of recal_183. Swept ONCE from main's constants; feasible 3.626-3.687, true midpoint by r126's rule. A receipt that pins a tax VALUE is one the Deviation Tax Law is built to break; what this line proves is that the tax was re-ratified."
+    }
+  ],
+  "expect": [
+    {
+      "card": "John Salley '89",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 3,
+      "label": "THE SECOND SUBJECT — 88 -> 80. BLK% 3.0, 21.8 mpg, no ballot",
+      "note": ""
+    },
+    {
+      "card": "Darryl Dawkins '86",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 76,
+      "tol": 3,
+      "label": "THE THIRD SUBJECT, and the round's largest mover — 87 -> 75. BLK% 2.8, the lowest rate that was on the ceiling"
+    },
+    {
+      "card": "Wayne Cooper '89",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 88,
+      "label": "THE POINT OF THE ROUND: 6.4% in the same season Salley's 3.0% sat level with him — and Cooper does not move a point"
+    },
+    {
+      "card": "Jawann Oldham '86",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 88,
+      "label": "6.0% in Dawkins' season, flat"
+    },
+    {
+      "card": "Mark West '89",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 87,
+      "label": "5.1%, flat — he was reading ONE UNDER Salley and now reads seven over"
+    },
+    {
+      "card": "Shaquille O'Neal '93",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "recal_53's pin: 5.7% on DBPM +1.5, class p97 — flat at 87"
+    },
+    {
+      "card": "Yao Ming '09",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "THE BINDING PIN OF THE ROUND. 4.2% on +1.6 is class p89 and keeps the whole ceiling; it is what forbids a band top any higher than the class's p81"
+    },
+    {
+      "card": "Pau Gasol '04",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "recal_95's own product, the card its ceiling meter was fitted to — flat at 78 (his DBPM +0.1 was already holding him)"
+    },
+    {
+      "card": "Shawn Bradley '95",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "8.5%, flat"
+    },
+    {
+      "card": "Sam Bowie '85",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "5.0%, flat"
+    },
+    {
+      "card": "DeSagana Diop '06",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 1,
+      "label": "7.4%, flat"
+    },
+    {
+      "card": "Walker Kessler '23",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "8.6% — recal_53's MEASURED tier grades on the class too and still lands whole"
+    },
+    {
+      "card": "Joakim Noah '09",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 92,
+      "tol": 1,
+      "label": "drep 0.43 -> wv 1.00, so his reading is the season-wide one, bit-identical. He sits on his tolerance at 91 and had no slack"
+    },
+    {
+      "card": "Joel Embiid '23",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 91,
+      "tol": 1,
+      "label": "drep 0.42, same reason — flat at 90"
+    },
+    {
+      "card": "Kurt Thomas '09",
+      "scale": "def",
+      "op": "~",
+      "value": 74,
+      "tol": 3,
+      "label": "THE OTHER WALL THE BAND IS FOOTED AGAINST: BLK% 3.1, class p76, a card the ceiling was never inflating (his own composite read 80 under a cap of 84). recal_151's pin already sat on its floor at 71 and holds at 71"
+    },
+    {
+      "card": "Luc Longley '96",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 87,
+      "label": "the Bulls '96 defdial (99 +-0, zero slack) rides on him — flat at 87"
+    },
+    {
+      "card": "Dirk Nowitzki '07",
+      "scale": "def",
+      "op": "~",
+      "value": 74,
+      "tol": 3,
+      "label": "recal_162's floor reads the SEASON percentile and is untouched — flat"
+    },
+    {
+      "card": "Jack Sikma '83",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 78,
+      "tol": 2,
+      "label": "drep 0.51 -> wv 1.00, flat at 77"
+    },
+    {
+      "card": "Ben Simmons '21",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 86,
+      "tol": 1,
+      "label": "flat"
+    },
+    {
+      "card": "Kevin McHale '85",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 88,
+      "tol": 3,
+      "label": "flat at 91"
+    },
+    {
+      "card": "Kevin McHale '88",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 89,
+      "tol": 3,
+      "label": "flat at 91"
+    },
+    {
+      "card": "Bobby Jones '82",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 96,
+      "tol": 1,
+      "label": "flat"
+    },
+    {
+      "card": "Caldwell Jones '82",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 97,
+      "tol": 2,
+      "label": "flat"
+    },
+    {
+      "card": "Dikembe Mutombo '97",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "flat"
+    },
+    {
+      "card": "Dikembe Mutombo '01",
+      "scale": "attr:rimprot",
+      "op": "~",
+      "value": 99,
+      "tol": 1,
+      "label": "flat"
+    },
+    {
+      "card": "Tim Duncan '03",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "flat"
+    },
+    {
+      "card": "Ben Wallace '04",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 98,
+      "label": "flat"
+    },
+    {
+      "card": "Rudy Gobert '19",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "flat"
+    },
+    {
+      "card": "Victor Wembanyama '24",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 97,
+      "label": "flat"
+    },
+    {
+      "card": "Dennis Rodman '96",
+      "scale": "ovr",
+      "op": "~",
+      "value": 63,
+      "tol": 3,
+      "label": "recal_182's pin — flat"
+    },
+    {
+      "card": "Vlade Divac '02",
+      "scale": "def",
+      "op": "~",
+      "value": 82,
+      "tol": 3,
+      "label": "83 -> 82, inside recal_173's tolerance"
+    },
+    {
+      "card": "Ken Norman '94",
+      "scale": "def",
+      "op": "~",
+      "value": 55,
+      "tol": 3,
+      "label": "flat at 54"
+    },
+    {
+      "card": "Moses Malone '85",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 86,
+      "label": "the 76ers '85 defdial (93 +-2) sits on its floor at 91 and he is what holds it — drep 0.700, wv 1.00, flat"
+    },
+    {
+      "five": [
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Dennis Rodman '96",
+        "Luc Longley '96",
+        "Ron Harper '96"
+      ],
+      "scale": "team:def",
+      "op": "==",
+      "value": 73,
+      "label": "recal_94's summit five, zero slack on its defdial (99 +-0, checked by npm run anchors): Longley is the only one of the five this round could touch and he does not move, so the engine dial is flat"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:rimprot",
+      "above": "Wayne Cooper '89",
+      "below": "John Salley '89",
+      "label": "THE POINT OF THE ROUND: 6.4% now reads above 3.0% in the same season, where they were level"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Mark West '89",
+      "below": "John Salley '89",
+      "label": "5.1% above 3.0%, where it was one UNDER"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Jawann Oldham '86",
+      "below": "Darryl Dawkins '86",
+      "label": "6.0% above 2.8%"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Shaquille O'Neal '93",
+      "below": "Jon Koncak '93",
+      "label": "5.7% on 37.9 mpg above 3.2% on 25.3, where they were level at 87"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Yao Ming '09",
+      "below": "Kurt Thomas '09",
+      "label": "the two 2009 no-vote bigs separate: 4.2% keeps the ceiling, 3.1% keeps his own composite"
+    }
+  ],
+  "movers": {
+    "scale": "attr:rimprot",
+    "count": 447,
+    "max_abs": 12,
+    "top": [
+      [
+        "Darryl Dawkins '86",
+        87,
+        75
+      ],
+      [
+        "Arvydas Sabonis '03",
+        88,
+        78
+      ],
+      [
+        "Kent Benson '80",
+        83,
+        73
+      ],
+      [
+        "Rich Kelley '80",
+        85,
+        75
+      ],
+      [
+        "Sam Lacey '80",
+        86,
+        76
+      ],
+      [
+        "Bill Wennington '91",
+        84,
+        75
+      ],
+      [
+        "Darryl Dawkins '80",
+        84,
+        75
+      ],
+      [
+        "Darryl Dawkins '81",
+        87,
+        78
+      ],
+      [
+        "Herb Williams '90",
+        84,
+        75
+      ],
+      [
+        "Jon Koncak '92",
+        85,
+        76
+      ],
+      [
+        "John Salley '89",
+        88,
+        80
+      ],
+      [
+        "Jon Koncak '93",
+        87,
+        81
+      ]
+    ]
+  },
+  "top12": {
+    "scale": "attr:rimprot",
+    "cards": [
+      "Ben Wallace '03",
+      "David Robinson '95",
+      "Hakeem Olajuwon '94",
+      "Marcus Camby '07",
+      "Marcus Camby '08",
+      "Rudy Gobert '21",
+      "Tim Duncan '01",
+      "Tim Duncan '07",
+      "Tim Duncan '08",
+      "Ben Wallace '04",
+      "Caldwell Jones '80",
+      "Caldwell Jones '81"
+    ]
+  },
+  "cost": [
+    "THE SUBJECT LANDS AT 81, THE TOP OF HIS 78 +-3, NOT ON 78. The frontier is Kurt Thomas '09 and the Bulls '96 defdial, and it is stated in build_ratings.py at NOVOTE_CLASS_BAR. Footing the band on the class's p80 — the literal translation of recal_92's bar — reaches Koncak 78 / Salley 80 / Dawkins 75, but it cuts Kurt Thomas '09 (BLK% 3.1, a card the ceiling was never inflating) to rimprot 75 and DEF 70 against recal_151's def 74 +-3, which already sat on its floor at 71, and it drags Luc Longley '97 85 -> 78, which carries his '96 card to 85 through the season blend and takes the Bulls '96 defdial to 98 against recal_94's 99 +-0. The window on the bar is p74 to p76: below it the subjects stop falling (Salley reads 81 at p74 and 83 at p70), above it Kurt Thomas breaks. The class's own third quartile is inside that window and is a quartile rather than a number chosen inside one.",
+    "KONCAK '93 CANNOT GO BELOW 81 WHILE THE SEASON BLEND STANDS. His '94 season is BLK% 4.5, the class's p91, and keeps the whole ceiling at 88; the 20/60/20 blend carries a fifth of it into the '93 card. The same shape holds Salley '89 at 80 ('88 at 4.0% and '90 at 5.1% both stay on 88). Both are inside tolerance, and both are cards whose NEIGHBOURING seasons really are elite rim years.",
+    "THE BAND'S FOOT IS NOW A THIRD CONSTANT ON THIS GATE (NOVOTE_CLASS_BAR 0.75), beside BLK_BAR/BLK_FULL and DBPM_CEIL_BAR/FULL. Its width is not free — it is BLK_FULL - BLK_BAR — and a later ruling that moves recal_92's band moves this one with it.",
+    "THE POOLED CLASS IS ERA-FLAT ON PURPOSE and that is a real cost to the 1980s: the class's own bar by decade is 1980s BLK% 2.70 / 1990s 3.20 / 2000s 3.60 / 2010s 3.30 / 2020s 3.94, so a pooled 3.00 asks more of an 80s centre than his own decade would. The argument is that recal_53's ceiling is one number for every season ever played, so an absolute ceiling is graded on an absolute rate — and on a class of ~78 cards a season a within-season rank is noise (Yao Ming's own rank swings p75 -> p89 on a rate that moves 4.0 -> 4.2).",
+    "NOTHING ROSE. 447 cards move rimprot, every one down; 323 move DEF, every one down, 14 by more than 3; 184 move OVR, none by more than 3. The class's block rates sit above the league's at every quantile, so the re-based percentile is <= the season one and the cap can only bind harder.",
+    "The hunt tax moved 3.40 -> 3.66 and the branch figure is superseded if the merged pool sweeps differently."
+  ],
+  "notes": [
+    "HIS RULING WAS ON ITEMS 2-10 OF THE 2026-09-22 SCOUT; ITEMS 2, 3 AND 4 ARE THE THREE SUBJECTS AND THEY SHARE THIS ONE TERM.",
+    "WHAT WAS WRONG, IN ONE LINE: recal_95 made the flat no-vote 88 climbable and graded the climb on _blk_evidence — recal_92's band read on the season's WHOLE roster, every guard included. A 7-footer at BLK% 3.0 is the 89th percentile of that population, clear of BLK_FULL, so the meter returned 1.000 and he took the entire ceiling on a block rate that is ordinary for a centre. 166 no-vote cards sat on 87-88 with rates from 2.8% to 9.4%.",
+    "WHAT CHANGED: the population, not the band. The percentile handed to this one gate is now the card's rank among cards with no ballot who are 80 inches or taller, pooled over every season (n = 3,661), and recal_92's band is moved onto that class's third quartile by shifting the percentile — the same device recal_162 uses to read the band one width earlier. In the class's own rates: nothing under BLK% 3.00, the whole band at 3.42.",
+    "NO-VOTE CARDS ON THE CEILING, MEASURED: 88 -> 105 cards became 86, 87 -> 61 became 52, 87-88 together 166 -> 138.",
+    "THE VOTED BAND IS BIT-IDENTICAL. Class membership fades at recal_20's own graded-band weight, so every card with drep >= 0.30 reads exactly what it read before — Mutombo '97/'01, Duncan '03, Wallace '03/'04, Gobert '19, Wemby '24/'25, McHale '85/'88, Noah '09/'15, Embiid '23, Simmons '21, Sikma '83, Moses '85. It is also smooth at drep = 0: no cliff between a trace vote and none (recal_95's own requirement).",
+    "REJECTED, MEASURED: a WITHIN-SEASON class rank (the first thing tried). On ~78 cards a season it is noise and it cannot separate the subjects from Yao Ming '09 at all — Koncak sits at class p73 of 1993 and Yao at p86 of 2009 on rates of 3.2% and 4.2%, and his '08 season at 4.0% falls to class p75, one point above Koncak. Every band that reaches the subjects takes Yao '09 to 84-86 against his 88 +-1. Pooling the class is what separates a rate of 3.2 from a rate of 4.2.",
+    "REJECTED, MEASURED: leaving the class unrestricted by ballot (all bigs, voted or not). Its rates run higher, the band lands at BLK% 3.70-4.30, and Yao '09 falls to 84."
+  ]
+}

@@ -710,6 +710,17 @@ export const DEFAULT_TACTICS: Tactics = {
  * crashOff and crashDef were read from main's constants first and none moved; the other five held their bands.
  * All nine pass. hunt's twelfth move on this ledger, same cause as ever: it is the largest tax on the board and
  * it is measured on the ovr>=55 sample, which a round of this size reshuffles.
+ * recal_186 re-based the no-vote rim ceiling's block evidence on the no-vote big class: 447 rimprot bars and 323
+ * d_ovrs moved, EVERY ONE DOWN, and 184 OVRs with them — so the ovr>=55 pool moved again and HUNT ALONE BROKE,
+ * this time on the BLIND edge (-0.1188 at 3.40 against the -0.30 ceiling, oracle a healthy +0.64). It is the exact
+ * mirror of the shape recal_183 showed: that round gave 4,881 perimeter cards defence and hunt had to come DOWN;
+ * this one takes rim defence off 323 bigs, the sampled fives protect the rim worse, the hunted-man mismatch is a
+ * BIGGER share of a smaller number, the call is worth more and the tax has to come UP. Swept ONCE from MAIN's
+ * constants (playmaker 1.10, hunt 3.40, crashOff 0.28, crashDef 0.60) as the law requires: feasible 3.626 (blind
+ * -0.3000, the ceiling) to 3.687 (oracle +0.5000, the floor), true midpoint by r126's rule 3.40 -> 3.66 (blind
+ * -0.3277, oracle +0.5128; 0.028 and 0.013 of room either side). playmaker, crashOff and crashDef were all read
+ * from main's constants first and none moved — and the other six held their bands untouched. All nine pass.
+ * hunt's twelfth move on this ledger.
  */
 export const TAX = {
   scorer: 0.55,
