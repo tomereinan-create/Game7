@@ -671,6 +671,22 @@ export function CourtFive({
       style={
         {
           aspectRatio: `100 / ${bottom - top}`,
+          /**
+           * WHERE THE HARDWOOD ACTUALLY STARTS, as two percentages of this box — his ruling,
+           * 2026-09-22: "The tactic is half on court half outside. Make it either all in or all
+           * out."
+           *
+           * The box is 100 units wide and the FLOOR inside it is not: the boundary runs from
+           * `50 - SIDE` to `50 + SIDE`, which is 8.5% of margin down each side, and its top edge
+           * is the half-court line, which is `HALF` in a viewBox that starts at `top`. Anything
+           * placed against the BOX's own edges — which is where the tactic line and the side
+           * switch were, at 3% and 2.5% — lands in that margin, half on the boards and half off
+           * them. These two numbers are the margin, so a caption can be put inside the lines
+           * instead of across them, and they are derived from the same constants that draw the
+           * floor rather than copied as literals into the stylesheet.
+           */
+          '--ct-in-x': `${(50 - SIDE).toFixed(3)}%`,
+          '--ct-in-y': `${(((HALF - top) / (bottom - top)) * 100).toFixed(3)}%`,
           /*
            * The bust takes the club's primary and its ring takes the club's second colour — put
            * through `cardInk`, which is the ladder's own rule for the two clubs that letter in

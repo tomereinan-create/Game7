@@ -3530,7 +3530,7 @@ body:has(.sheet) { overflow: hidden; }
 .tdb-sheet .ct-init.ghost { font-size: clamp(15px, 4.6cqw, 48px); }
 /* THE TACTIC IS THE FLOOR'S OWN CAPTION and was the smallest type on the page — 8px of mono over a
    half-metre of hardwood (his ruling: "and the tactic way bigger"). */
-.tdb-sheet .ct-call { font-size: clamp(8px, 2.6cqw, 26px); max-width: 66%; }
+.tdb-sheet .ct-call { font-size: clamp(8px, 2.6cqw, 26px); max-width: 52%; }
 /* THE START LINE THE TWO FLOORS SHARE, on the draft (his ruling, 2026-09-09: "In both modes, have
    both 5s the same size and alligned"). The floors were always the same size — one rule, two
    columns of the same 0.85fr, measured identical at every width from 375 to 1920 — but they did
@@ -3565,7 +3565,15 @@ body:has(.sheet) { overflow: hidden; }
 /* the court's side switch: one court, two states, named on the floor */
 .ct-side { position: absolute; top: 2%; left: 3%; display: flex; gap: 4px; z-index: 1; }
 .ct-side .sortb { height: 22px; padding: 0 7px; font-size: 8px; letter-spacing: 0.1em; }
-.ct-call { position: absolute; top: 2.5%; right: 3%; max-width: 60%; text-align: right; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+/* THE TACTIC STANDS INSIDE THE LINES — his ruling, 2026-09-22: "The tactic is half on court half
+   outside. Make it either all in or all out." It was pinned to the BOX at 2.5% / 3%, and the box
+   is not the floor: the boards start 8.5% in from each side and at the half-court line. So the
+   caption sat astride the right sideline and astride the half-court line at once — half on the
+   court, half off it, exactly as he read it. `--ct-in-x` / `--ct-in-y` are that margin, written by
+   CourtFive off the constants that draw the floor; the fallbacks are the old numbers, so a court
+   that somehow did not write them is no worse than it was. ALL IN rather than all out, because
+   out is above the boards and the only thing above the boards on this page is the season strip. */
+.ct-call { position: absolute; top: calc(var(--ct-in-y, 2.5%) + 1.6%); right: calc(var(--ct-in-x, 3%) + 1.6%); max-width: 60%; text-align: right; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
 .ct-spot { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; width: 86px; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
 .ct-spot:disabled { cursor: default; }
 @media (prefers-reduced-motion: no-preference) {
@@ -4804,12 +4812,30 @@ body.offstage #root { position: relative; z-index: 1; }
    the block fills the half of the page it was given instead of sitting in the top-left of it. */
 @media (min-width: 1100px) {
   /* the league's own table */
-  .tdb-sheet .tdb-line { grid-template-columns: auto repeat(var(--cols), minmax(clamp(58px, 3vw, 88px), 1fr)); }
-  .tdb-sheet .tdb-col, .tdb-sheet .tdb-lab { font-size: clamp(11px, 0.78vw, 18px); }
-  .tdb-sheet .tdb-col { padding: 11px 7px 9px; }
-  .tdb-sheet .tdb-lab { padding: 11px 18px 11px 15px; }
-  .tdb-sheet .tdb-num { padding: 13px 8px 9px; font-size: clamp(24px, 1.8vw, 38px); }
-  .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: 14px; font-size: clamp(13px, 0.98vw, 22px); }
+  /* ---- THE LINE IS MEASURED AGAINST ITS OWN COLUMN, NOT AGAINST THE WINDOW ----
+     HIS RULING, 2026-09-22: "In the team stats, the line kind of cuts off, fix it."
+
+     IT CUT OFF BECAUSE ITS TRACKS HAD A FLOOR AND ITS TYPE HAD NO CEILING BUT THE VIEWPORT.
+     Eighteen tracks of `minmax(58px, 1fr)` need 1,164px plus the label whatever the column is
+     actually worth, and the figure inside them was a `vw` — so on a window where the floor takes
+     its half and leaves the table 970, the table wanted 1,149 and the last three columns were
+     simply cut by the block's own `overflow-x`. A vw term cannot know that: the column's width is
+     set by the WINDOW'S HEIGHT on this page (see the track formula above), so the one number the
+     type must follow is the one a viewport unit cannot see.
+
+     SO THE BLOCK IS ITS OWN CONTAINER AND EVERY TERM IN IT IS A `cqw`. The tracks lose their
+     floor — `minmax(0, 1fr)`, eighteen equal shares of whatever there is — and the figure is
+     sized to the share: `3.5cqw - 10px` is the arithmetic of "114.9" in this face at this padding,
+     measured, not guessed. At 1,293 of column it prints 35px, which is within a pixel of the vw
+     term it replaces; at 970 it prints 24 and fits where the old one was cut; at 1,788 it reaches
+     the 38px ceiling his earlier ruling set. The block can no longer overflow, so it can no longer
+     be cut. */
+  .tdb-sheet .tdb-line { grid-template-columns: auto repeat(var(--cols), minmax(0, 1fr)); }
+  .tdb-sheet .tdb-col, .tdb-sheet .tdb-lab { font-size: clamp(9px, 0.95cqw, 18px); }
+  .tdb-sheet .tdb-col { padding: clamp(7px, 0.85cqw, 11px) clamp(3px, 0.5cqw, 7px) clamp(6px, 0.7cqw, 9px); }
+  .tdb-sheet .tdb-lab { padding: clamp(7px, 0.85cqw, 11px) clamp(8px, 1.4cqw, 18px) clamp(7px, 0.85cqw, 11px) clamp(7px, 1.2cqw, 15px); }
+  .tdb-sheet .tdb-num { padding: clamp(8px, 1cqw, 13px) clamp(3px, 0.6cqw, 8px) clamp(6px, 0.7cqw, 9px); font-size: clamp(14px, calc(3.5cqw - 10px), 38px); }
+  .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: clamp(8px, 1.1cqw, 14px); font-size: clamp(9px, calc(1.9cqw - 5px), 22px); }
   /* THE ROSTER UNDER IT reads at the page's size too, not the phone's. The three tracks are
      clamps rather than the 102px/60px the phone gives them, because a name set at 34px over a box
      line still set at 10px is one row pretending to be two. */
@@ -4849,6 +4875,7 @@ body.offstage #root { position: relative; z-index: 1; }
    own clearance from the top of the column. */
 .tdb-line {
   display: grid;
+  container-type: inline-size;
   grid-template-columns: auto repeat(var(--cols), minmax(38px, 1fr));
   align-items: center;
   margin-top: 14px;
@@ -5274,6 +5301,16 @@ body.offstage #root { position: relative; z-index: 1; }
 /* user mode: no OVR · O · D column, so the grid is two columns and the name takes the room back */
 .rowhead.dr.tdb.blind, .row.dr.tdb.blind { grid-template-columns: minmax(0, 1fr) 102px; }
 .row.dr.tdb .mini { font-size: 10px; }
+/* THE MEN'S FIGURES ARE IN THE COPY FACE — his ruling, 2026-09-22: "The stats of the players are
+   in a different font, change it to Space Grotesk." `.mini` and `.oppman-nums` are set in `--num`,
+   which is League Gothic: the condensed DISPLAY face, right over a 10px row on the draft and wrong
+   beside a 33px name here, where it was the only thing on this page not speaking the app's copy
+   face. AT EVERY WIDTH, not only on the desk — a phone reads the same roster.
+   SCOPED TO THIS SCREEN, because the same two classes carry the draft's rows, My team's, the
+   pool's and the team book's, and those are set at the sizes the condensed face was chosen for.
+   `font-variant-numeric` keeps the columns of figures true without it. */
+.tdb-sheet .row.dr.tdb .mini,
+.tdb-sheet .row.dr.tdb .oppman-nums { font-family: var(--sans); font-variant-numeric: tabular-nums; }
 .row.dr.tdb .oppman-nums,
 .rowhead.dr.tdb .gcap.nums3 { justify-self: end; gap: 5px; }
 .row.dr.tdb .oppman-nums { font-size: 10.5px; }
