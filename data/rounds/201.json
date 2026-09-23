@@ -1,0 +1,537 @@
+{
+ "round": 201,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "at or just above Gobert '19's pinned 92",
+ "title": "A HEIGHT IS CHARGED ONCE — the PD composite reads the same 80-inch band twice (height_inv on the CARD, rep_hf on the BALLOT) and before 2014 there is no tracked reading to answer it; the ballot's discount is refunded by the share the card term already spent, at recal_114's own DBPM certification, with the pool ranked on the corrected composite and floored so nothing falls",
+ "subject": "Mark Eaton '85",
+ "scale": "def",
+ "target": 93,
+ "tol": 2,
+ "before": 89,
+ "after": 94,
+ "pipeline_version": 201,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "rep_hf = rep_hf \\+ max\\(0\\.0, BALLOT_PAR - rep_hf\\) \\* \\(P\\['dbpm'\\]\\(r\\['dbpm'\\]\\) \\*\\* VOTE_SUPPORT_POW\\) \\* \\(1\\.0 - _hinv\\)",
+   "label": "THE WHOLE ROUND, ONE LINE — the untracked-era ballot refund",
+   "note": "a voted big's ballot is restored toward PAR by the share the CARD's height term has already spent (1 - height_inv), at the DBPM certification recal_114 already uses. Zero above 6'9\" equivalent by arithmetic, zero for 2014+ by gate"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "BALLOT_PAR = 1\\.0",
+   "label": "PAR, AND IT IS NOT A NEW HEIGHT CONSTANT",
+   "note": "recal_54's 1.2 is a WING PREMIUM (recal_97's note: a perfect wing sheet reads 1.0896, i.e. the premium is what takes it over unity). Par makes the class self-defining — rep_hf is at or above 1.0 through 81.5 inches, so every card 6'9\" and under is byte-identical by arithmetic"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "if r\\['season'\\] < 2014 and r\\['drep'\\] > 0\\.05:",
+   "label": "THE CLASS: VOTED, AND IN THE ERA WITH NO TRACKING",
+   "note": "`season < 2014` is recal_146/183's own sentinel for 'the era has no tracking'; `drep > 0.05` is the Iverson line this file already draws. A tracked voted card already has recal_101's answer (PD2 = max(PD2, _dmeas101)) and does not move a thousandth"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_hinv = max\\(0\\.0, 1\\.0 - max\\(0\\.0, max\\(75\\.0 - \\(r\\['ht'\\] or 78\\), \\(r\\['ht'\\] or 78\\) - 80\\.0\\)\\) / 8\\.0\\)",
+   "label": "THE REFUND SHARE IS THE CHARGE ALREADY MADE — recal_35's own band, the same expression the PD line reads",
+   "note": "1 - height_inv: 0.000 at 6'8\", 0.375 at 6'11\", 0.625 at 7'1\", 0.750 at 7'2\", 1.000 at 7'4\" and up. NO NEW CONSTANT in the round"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "Pvot_pre = pctile_top\\(\\[t\\[1\\]\\[3\\] - t\\[1\\]\\[5\\]\\['_pr'\\] for t in tmp if t\\[0\\]\\['drep'\\] >= 0\\.25\\]\\)",
+   "label": "THE POOL AS IT STOOD — the no-fall floor",
+   "note": "the standing 'no card falls' rule written for a CREDIT: an untouched card keeps the band position he had (his _pr is zero so this reading is the larger by construction), which is what holds LeBron James '04 (r164, def 70 +-2, reading 68 with no room down)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_pv201 = max\\(Pvot\\(PDo\\), Pvot_pre\\(PDo - BRK\\['_pr'\\]\\)\\)",
+   "label": "the band lookup takes the better of the corrected pool and the pool as it stood"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "VOTE_SUPPORT_POW = 3",
+   "label": "recal_114's DBPM certification, REUSED AND UNCHANGED",
+   "note": "the file's one answer to 'does this ballot describe real defensive value'. The subject certifies at 0.982 (DBPM +4.2, p99); Moses Malone '85 (-1.4) and Kevin McHale '85 (-0.2) certify at ~0 and are byte-identical — the negative control"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "rep_hf = max\\(0\\.5, 1\\.2 - 0\\.8 \\* max\\(0\\.0, min\\(1\\.0, \\(\\(r\\['ht'\\] or 78\\) - 80\\.0\\) / 6\\.0\\)\\)\\)",
+   "label": "recal_54's discount itself, UNTOUCHED — the round refunds part of it, it does not redraw it",
+   "note": "the ramp, its 1.2 top, its 0.5 floor and its 80-inch foot are all recal_54's and all unchanged"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "OUT_OF_BAND_IN = 1\\.0",
+   "label": "recal_135's boundary, which may not come DOWN — untouched, and this term can only ever RAISE a card above it"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PERIM_RIM_SHARE = 0\\.13 / 0\\.62",
+   "label": "recal_180's rim-vector share inside the vote meter, untouched"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "RELIEF_FOOT = 0\\.42",
+   "label": "recal_183's pre-2014 no-vote DBPM relief foot, untouched — the refund never enters the band's vote lookup for a no-vote card",
+   "note": "the relief LINE is a function of P(dbpm) and wv only and is bit-identical; the only thing the refund can reach on the no-vote channel is min(PD, cap), and that is capped at recal_13's 0.62"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PD2 = max\\(PD2, _dmeas101\\)",
+   "label": "recal_101's TRACKED floor — the remedy this round gives the untracked era, untouched where it exists",
+   "note": "it is why every 2014+ card is outside the class: Wembanyama '26 is the same 88 inches with the same two zeroed terms and prints perdef 74 off -8.6% over 765 shots"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = ",
+   "label": "recal_90's band anchors, NOT re-derived",
+   "note": "the subject lands at raw 94.1 just over the 93 knee; the band is read as it stands"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "hunt: 3\\.58,",
+   "label": "THE DEVIATION TAX LAW — hunt broke on the ORACLE edge (+0.482 at main's 3.65)",
+   "note": "feasible 3.547 to 3.609 (sixty-two thousandths), true midpoint by r126's rule: 3.65 -> 3.58, oracle +0.512, blind -0.331"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashOff: 0\\.11,",
+   "label": "crash off glass broke on the ORACLE edge too (+0.483 at main's .28)",
+   "note": "feasible about -.393 to .213, midpoint NEGATIVE, so r117's rule stands and it takes the midpoint of the POSITIVE half: .28 -> .11, oracle +0.528, blind -0.612"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "crashDef: 0\\.18,",
+   "label": "crash def glass, the third ORACLE break (+0.397 at main's .60)",
+   "note": "feasible about .118 to .247, true midpoint .18: oracle +0.520, blind -0.347"
+  },
+  {
+   "file": "src/engine/tactics.ts",
+   "pattern": "playmaker: 1\\.10",
+   "label": "playmaker HELD at main's constant, read first and unmoved"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Mark Eaton '85",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 68,
+   "tol": 1,
+   "label": "THE SUBJECT'S ONE BAR. 57 -> 68: the composite goes 0.4632 -> 0.6899 and his rank in the 1985 voted pool goes 26th of 27 to 9th. Nothing else on his sheet moved by a thousandth"
+  },
+  {
+   "card": "Mark Eaton '85",
+   "scale": "ovr",
+   "op": "~",
+   "value": 56,
+   "tol": 1,
+   "label": "his OVR follows his DEF on the defence-led branch: 54 -> 56"
+  },
+  {
+   "card": "Mark Eaton '89",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 2,
+   "label": "THE OTHER DPOY THE RULING NAMED, read the same way and moving the same way: 88 -> 92, perdef 57 -> 64"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "THE CARD HIS NUMBER IS READ OFF (recal_62, 92 +-1): BYTE-IDENTICAL at 92, perdef 64. A 2014 card has recal_101's tracked floor and is outside the class by gate — the subject is now one point above him"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "recal_82's zero-tolerance rim pin: unmoved. The round touches perdef and nothing else"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "def",
+   "op": "~",
+   "value": 89,
+   "tol": 1,
+   "label": "THE WALL, AND THE CARD THAT CHOSE THE FORM. recal_80 pins him 88 +-1 and he read 88.28 of raw, 1.21 under the edge. 7'1\", so he keeps five eighths of his charge: perdef 57 -> 59, raw 89.19, DEF 89. The FROZEN variant took him to 60 and DEF 90 and broke this pin"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 68,
+   "tol": 2,
+   "label": "THE SECOND WALL, AND THE REASON FOR Pvot_pre. recal_164 pins him 70 +-2 and he already read 68, the bottom edge, with NO room down. 6'9\", outside the class: with the corrected pool alone he is passed by a relieved big and falls to 67; with the no-fall floor he is BIT-IDENTICAL"
+  },
+  {
+   "card": "Ben Wallace '06",
+   "scale": "def",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "recal_67's order pin (>= Gobert '19) and the top of the board: 6'9\", untouched by arithmetic, perdef 90"
+  },
+  {
+   "card": "Dikembe Mutombo '97",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "recal_82 zero-tolerance: unmoved. His perdef rises 59 -> 69 (7'2\", three quarters of the charge refunded) and his DEF 92 -> 95"
+  },
+  {
+   "card": "Dikembe Mutombo '01",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "recal_81's pin: unmoved"
+  },
+  {
+   "card": "Tim Duncan '03",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "recal_82 zero-tolerance: unmoved. 6'11\", so only three eighths of a much smaller charge comes back — perdef 79 -> 80, DEF 98 -> 98"
+  },
+  {
+   "card": "Walker Kessler '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "recal_53's pin, a 2014+ card: byte-identical by gate"
+  },
+  {
+   "card": "Yao Ming '09",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "recal_53's pin: unmoved. 7'6\" and NO ballot (drep 0.00), so the refund is zero for him — the class is VOTED"
+  },
+  {
+   "card": "Victor Wembanyama '24",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "recal_82 zero-tolerance, and the same 88 inches as the subject: byte-identical, perdef 57, DEF 89 — a tracked card keeps recal_101's answer"
+  },
+  {
+   "card": "Victor Wembanyama '25",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "recal_53's pin: unmoved"
+  },
+  {
+   "card": "Victor Wembanyama '26",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 75,
+   "tol": 5,
+   "label": "recal_101's own pin and the card that PROVES the class line: 88 inches, the same two zeroed height terms, and he reads 75 because a full tracked sample floors him. Byte-identical"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "attr:rimprot",
+   "op": "~",
+   "value": 90,
+   "tol": 1,
+   "label": "recal_81's pin: unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '94",
+   "scale": "def",
+   "op": "~",
+   "value": 84,
+   "tol": 2,
+   "label": "recal_146's pin: BYTE-IDENTICAL. drep 0.069 is over the Iverson line but his DBPM certifies at 0.34 and 7'1\" refunds 0.625 of a discount worth almost nothing on a 0.069 ballot"
+  },
+  {
+   "card": "Arvydas Sabonis '96",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 78,
+   "tol": 1,
+   "label": "recal_55's pin: unmoved. 7'3\" but NO ballot at all — his 78 is the no-vote DBPM relief line, which this round never touches"
+  },
+  {
+   "card": "Larry Sanders '13",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 64,
+   "tol": 3,
+   "label": "recal_146's pin, sitting on its floor: unmoved"
+  },
+  {
+   "card": "Klay Thompson '13",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "recal_183's pinned frontier, 6'6\": byte-identical"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_97's pin and the top of the attribute: unmoved"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 77,
+   "tol": 1,
+   "label": "recal_93's pin: unmoved"
+  },
+  {
+   "card": "Dan Roundfield '82",
+   "scale": "def",
+   "op": "~",
+   "value": 93,
+   "tol": 3,
+   "label": "recal_114's pin, 6'8\": BYTE-IDENTICAL by arithmetic — rep_hf is 1.2 there, above par, so there is nothing to refund"
+  },
+  {
+   "card": "Dan Roundfield '83",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 3,
+   "label": "recal_172's pin, the same man on the band's top edge: unmoved"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 3,
+   "label": "recal_135's pin, 6'9\": unmoved"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 71,
+   "tol": 3,
+   "label": "recal_151's pin, already at -3 of its tolerance: BIT-IDENTICAL, which is the no-fall floor doing its job"
+  },
+  {
+   "card": "Vlade Divac '02",
+   "scale": "def",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "recal_173's pin: unmoved — no ballot, so the refund is zero"
+  },
+  {
+   "card": "Dirk Nowitzki '07",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "recal_162's pin: unmoved"
+  },
+  {
+   "card": "Moses Malone '85",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 57,
+   "tol": 0,
+   "label": "THE NEGATIVE CONTROL. 6'10\" with a 1985 ballot, and a DBPM of -1.4 that does not certify it: the refund is 0.000 and he is byte-identical, in the same season the subject moves eleven"
+  },
+  {
+   "card": "Kevin McHale '85",
+   "scale": "attr:perdef",
+   "op": "~",
+   "value": 61,
+   "tol": 0,
+   "label": "the second negative control: 6'10\", All-Defensive, DBPM -0.2 — byte-identical"
+  },
+  {
+   "five": [
+    "Michael Jordan '96",
+    "Scottie Pippen '96",
+    "Dennis Rodman '96",
+    "Ron Harper '96",
+    "Luc Longley '96"
+   ],
+   "scale": "team:def",
+   "op": "~",
+   "value": 73,
+   "tol": 1,
+   "label": "recal_94's Bulls '96 dial (pinned defdial 99 +-0, and the anchor suite still reads it 99): all five cards are BYTE-IDENTICAL on every attribute, so the raw dial does not move"
+  },
+  {
+   "five": [
+    "Moses Malone '85",
+    "Julius Erving '85",
+    "Charles Barkley '85",
+    "Maurice Cheeks '85",
+    "Bobby Jones '85"
+   ],
+   "scale": "team:def",
+   "op": "~",
+   "value": 63,
+   "tol": 1,
+   "label": "recal_133's 76ers '85 dial (pinned defdial 93 +-2, anchor suite still reads 91): the SUBJECT'S OWN SEASON, and all five are byte-identical — Moses is the negative control and the other four are 6'9\" and under"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Mark Eaton '85",
+   "below": "Rudy Gobert '19",
+   "label": "THE RULING IN ONE LINE: 'at or just above Gobert 19's pinned 92'. 94 against 92, where the subject read 89 and sat three BELOW him"
+  },
+  {
+   "scale": "def",
+   "above": "Mark Eaton '85",
+   "below": "Bobby Jones '82",
+   "label": "the DPOY with 5.6 blocks a game now reads above the 6'9\" forward he sat four under (94 against 93), and Bobby Jones never moved"
+  },
+  {
+   "scale": "def",
+   "above": "Mark Eaton '85",
+   "below": "Dennis Rodman '89",
+   "label": "the second comparable the ruling named: 94 against 93, with Rodman bit-identical"
+  },
+  {
+   "scale": "def",
+   "above": "Mark Eaton '85",
+   "below": "Dikembe Mutombo '95",
+   "label": "the third: 94 against 92, and Mutombo '95 rises too (90 -> 92) because he is the same defect two inches shorter"
+  },
+  {
+   "scale": "def",
+   "above": "Ben Wallace '06",
+   "below": "Mark Eaton '85",
+   "label": "the top of the board is untouched and still above him: 99 against 94"
+  },
+  {
+   "scale": "def",
+   "above": "Mark Eaton '85",
+   "below": "Shaquille O'Neal '00",
+   "label": "94 against 89 — the wall holds its pin and the subject clears it by five"
+  },
+  {
+   "scale": "attr:perdef",
+   "above": "Michael Jordan '89",
+   "below": "Mark Eaton '85",
+   "label": "the attribute's own top is still a perimeter defender, 99 against 68: this round moves a 7'4\" centre from the 4th percentile of his voted season to the 33rd, not to the top of it"
+  }
+ ],
+ "movers": {
+  "scale": "attr:perdef",
+  "count": 109,
+  "max_abs": 16,
+  "top": [
+   [
+    "David Robinson '96",
+    62,
+    78
+   ],
+   [
+    "David Robinson '95",
+    62,
+    77
+   ],
+   [
+    "Mark Eaton '86",
+    58,
+    71
+   ],
+   [
+    "Mark Eaton '85",
+    57,
+    68
+   ],
+   [
+    "Dikembe Mutombo '97",
+    59,
+    69
+   ],
+   [
+    "David Robinson '91",
+    65,
+    75
+   ],
+   [
+    "Tree Rollins '84",
+    63,
+    72
+   ],
+   [
+    "Dikembe Mutombo '96",
+    57,
+    66
+   ],
+   [
+    "David Robinson '90",
+    63,
+    72
+   ],
+   [
+    "Tree Rollins '83",
+    63,
+    71
+   ],
+   [
+    "Mark Eaton '87",
+    59,
+    67
+   ],
+   [
+    "Hakeem Olajuwon '95",
+    67,
+    75
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:perdef",
+  "cards": [
+   "Bruce Bowen '07",
+   "Draymond Green '21",
+   "Draymond Green '22",
+   "Draymond Green '23",
+   "Kawhi Leonard '16",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Michael Jordan '91",
+   "Michael Jordan '92",
+   "Michael Jordan '93",
+   "Paul George '14",
+   "Scottie Pippen '94"
+  ]
+ },
+ "cost": [
+  "THE SUBJECT LANDS 94 AGAINST A STATED 93 +-2, AND 93 EXACTLY COSTS A FITTED CONSTANT. There is no fitted number in this round: par is 1.0, the certification is recal_114's own VOTE_SUPPORT_POW, and the refund share is the file's own height_inv. At full strength the subject reads perdef 68 / DEF 94, one point above his number and inside his tolerance. Every partial strength was measured on the full pipeline: a rate of 0.70 on the refund lands him DEF 92, 0.85 lands 93-94, 1.00 lands 94. A later ruling that wants 93 EXACTLY is asking for a fitted rate on a term that otherwise has none, and it is one constant to add.",
+  "THE TWO WALLS ARE HIS OWN PINS AND THEY BIND FROM OPPOSITE SIDES, WHICH IS WHAT CHOSE THE FORM. Shaquille O'Neal '00 (recal_80, def 88 +-1, raw 88.28 with 1.21 of room) may rise by at most 2 perdef points; LeBron James '04 (recal_164, def 70 +-2, reading 68) may not fall by one. The FROZEN construction this file uses for deductions (recal_114/149/175) breaks Shaq: with the pool held at the old composite he leapfrogs P.J. Brown '00, a 6'11\" card that would have moved WITH him, for perdef 60 and DEF 90. The bare corrected pool breaks LeBron: he is passed by one relieved big and falls to 67. The shipped form is the intersection — rank on the corrected pool, floored by the pool as it stood — and it is the only one of the three that holds both.",
+  "THE FROZEN VARIANT IS ON THE RECORD WITH ITS OWN MEASUREMENT, in case a later ruling prefers it. Frozen with a refund to par at half rate the subject reads perdef 65 / DEF 93 — dead on his number — with 288 cards moving and ZERO falling; it fails only on Shaquille O'Neal '00 at DEF 90. That is the single pin between this round and his exact 93 from the other direction too.",
+  "DAVID ROBINSON IS THE LARGEST MOVER AND HE IS NOT THE SUBJECT. '95 and '96 go perdef 62 -> 77 and 62 -> 78 (DEF 93 -> 97 on the '96), '90-'92 move 9 to 10 apiece. He is 7'1\" with a DBPM at the top of every season he played and a full ballot in all of them, so he is the card the two height terms taxed hardest after the subject. Nothing pins him; a later ruling that disagrees is looking at this term.",
+  "THREE TAXES RE-RATIFIED, ALL ON THE ORACLE EDGE, AND SWEPT ON THIS BRANCH'S POOL ONLY. hunt 3.65 -> 3.58, crashOff .28 -> .11, crashDef .60 -> .18, each swept ONCE from main's constants as the law requires (hunt feasible 3.547-3.609, true midpoint; crashOff feasible -.393 to .213, midpoint negative so r117's positive-half rule, .11; crashDef feasible .118-.247, true midpoint .18). Rounds 195/197/199 are landing in parallel and the integrator re-sweeps ONCE on the merged pool, superseding all three.",
+  "ROUNDS 195/197/199 ARE DISJOINT FROM THIS ONE BY CONSTRUCTION. They own the mid composite's foot, a ballsec floor and a priced ballsec allowance — all on the OFFENSIVE side. This round moves perdef and nothing else: ZERO cards move OFF and zero move any attribute but perdef. The integrator can fold all four."
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED BEFORE ANYTHING WAS TOUCHED. Mark Eaton '85 — Defensive Player of the Year, All-Defensive 1st team, 5.6 blocks a game (the NBA record), BLK% 8.7 at the 99th percentile of 1985, DBPM +4.2 at the 99th — read perdef 57 and DEF 89. The big vector: 0.40 x perdef 57 + 0.40 x rimprot 98 + 0.17 x drb 89 + 0.03 x discipline 55 = 78.85, x 1.1305 = 89.14. Every bar but one is where a DPOY's should be; the whole gap to his number is perdef.",
+  "WHERE THE 57 COMES FROM, AND IT IS ONE BAND READ TWICE. The PD composite is drep 0.453 + dbpm 0.238 + height_inv 0.309. At 88 inches height_inv = max(0, 1-(ht-80)/8) pays 0.000, and recal_54's rep_hf = max(0.5, 1.2-0.8*clip((ht-80)/6)) sits on its 0.5 floor, so his ballot term pays 0.453 x 1.00 x 0.50 = 0.227 where a wing collects 0.544 for the SAME ballot. The two height terms are 0.76 of the composite's weight (0.309 + 0.453) and they are read off the same 80-inch band. His composite is 0.4632 — the 4th percentile of the 1985 voted pool, 26th of 27, above Kareem alone. That pool is sorted almost exactly by height and the season's DPOY is at the bottom of it.",
+  "recal_101 ALREADY NAMED THIS DEFECT IN THIS FILE, IN THESE WORDS: 'a composite that charges his height twice (rep_hf halves his votes above 6'8\" AND height_inv zeroes at 7'4\")'. What that round did about it was not to repair the composite but to let a full tracked sample FLOOR a voted card — which is why Victor Wembanyama '26, the same 88 inches with the same two zeroed terms, prints perdef 74 off -8.6% over 765 shots. Before 2014 there is no such channel, and this file's own header says what is left: 'All-D/DPOY votes are the ONLY recorded measure of pre-tracking perimeter D'. In the untracked era the height split halves the only measure there is and nothing can answer it. That is the class, and `season < 2014` is recal_146/183's own sentinel for it.",
+  "WHY THE REFUND IS CERTIFIED BY DBPM AND NOT BY SOMETHING NEW. The REASON rep_hf discounts a big's ballot is that a big's All-Defensive votes may be RIM votes, and rimprot pays those already. This file built a meter for exactly that question and gated it on DBPM support — recal_114's VOTE_SUPPORT_POW, 'votes rimprot has already cashed are backed in perdef only by a top-decile DBPM'. rep_hf is the SAME deduction taken a second time and it is gated on nothing but height. So the refund is paid at the share that meter already certifies. The subject certifies at 0.982; Moses Malone '85 (DBPM -1.4) and Kevin McHale '85 (-0.2) certify at nothing and are byte-identical in the subject's own season.",
+  "WHY THE REFUND IS SIZED BY 1 - height_inv, AND WHY THAT MAKES THE ROUND CONSTANT-FREE. The defect is that ONE height is charged TWICE, so the refund is the size of the charge already made — the card term's own spent share, written from the same expression the PD line reads. 0.000 at 6'8\", 0.375 at 6'11\" (Duncan '03, Camby '07), 0.625 at 7'1\" (Shaq '00, Robinson), 0.750 at 7'2\" (Mutombo), 1.000 at 7'4\" and up (the subject, Bol, Yao). And PAR is 1.0, not recal_54's 1.2: recal_97's note records that 1.2 is a WING PREMIUM, the thing that takes a perfect perimeter sheet over unity (0.453 x 1.2 + 0.238 + 0.309 = 1.0896). Par makes the class self-defining — rep_hf is at or above 1.0 through 81.5 inches — so every card 6'9\" and under is untouched BY ARITHMETIC: Rodman '89/'90, Roundfield '80/'82/'83, Buck Williams '91, Pippen, Jordan '89, Malone '97, Ben Wallace '03/'04/'06, Bobby Jones '82, Ginobili '11, Klay '13, Joe Dumars '90.",
+  "MEASURED ON THE WHOLE POOL BEFORE APPLYING. 109 of 10,000 cards move perdef and EVERY ONE OF THEM UP (largest +16); 82 move DEF, none down, largest +5; 54 move OVR, none down, largest +2; ZERO move OFF and zero move any other attribute. The perdef top 12 and the DEF top 12 are unchanged, name for name and in order. All 193 anchors hold, 0 failing, mean |error| 0.84 — the same mean the round started from.",
+  "THE CLASS IS FOUND BY THE TERM AND READS LIKE IT. David Robinson '90-'96, Mark Eaton '84-'90, Dikembe Mutombo '96-'99, Tree Rollins '82-'84, Hakeem Olajuwon '93-'95, Manute Bol '86, Alonzo Mourning '99, Marcus Camby '07 — voted centres in the era before anyone measured what a man gave up on the perimeter, every one of them with a DBPM his season agreed with."
+ ]
+}
