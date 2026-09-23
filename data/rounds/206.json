@@ -1,0 +1,195 @@
+{
+  "round": 206,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "2016 Spurs cant be Helio, bc Kawhi cant be the primary playmaker as well. Helio needs to be ran by a guy with high vol and playvol, not only one.",
+  "title": "the helio read prices the engine for the play volume he does not carry — HELIO_PV 65 at HELIO_PV_W 0.45 a point, and the Spurs '16 fall to balanced",
+  "scale": "team:off",
+  "subject": "Spurs '16 (best legal five)",
+  "five": [
+    "Tony Parker '16",
+    "Danny Green '16",
+    "Kawhi Leonard '16",
+    "LaMarcus Aldridge '16",
+    "Tim Duncan '16"
+  ],
+  "target": 55,
+  "tol": 0,
+  "before": 55,
+  "after": 55,
+  "pipeline_version": 205,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_PV = 65\\s*\\nexport const HELIO_PV_W = 0\\.45",
+      "label": "the play-volume line a helio engine runs an offence from, and the price per point under it",
+      "note": "new — no playmaking gate existed on the helio read at all"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const heliEngineScore = \\(x: Attrs\\) => scorerCreator\\(x\\) - HELIO_PV_W \\* Math\\.max\\(0, HELIO_PV - x\\.playvol\\)",
+      "label": "the helio-engine score: the scorer-creator composite, charged for the play volume he does not carry",
+      "note": "new export, read by the helio fit only"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return 0\\.7 \\* \\(engine \\? heliEngineScore\\(engine\\.attrs\\) : 0\\) \\+ 0\\.3 \\* \\(e\\[0\\] - \\(e\\[1\\] \\?\\? 0\\)\\) \\+ 0\\.12 \\* Math\\.min",
+      "label": "helio fit = the ENGINE's helio score + the scoring separation + the ballsec floor",
+      "note": "0.7 * e[0] (the top composite) -> 0.7 * heliEngineScore(engine)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const scorerCreator = \\(x: Attrs\\) => 0\\.45 \\* x\\.volume \\+ 0\\.3 \\* x\\.efficiency \\+ 25 \\* creation\\(x\\)",
+      "label": "recal_115's composite is UNTOUCHED — twoStars, the triangle separation, heliMan and featured read it unchanged",
+      "note": "0.45/0.3/25 -> 0.45/0.3/25"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const STAR_LINE = 78\\s*\\nexport const DUO_GAP = 8",
+      "label": "the two-superstar veto is untouched, so recal_115's ruling still stands on its own terms",
+      "note": "78 / 8 -> 78 / 8"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export const creation = \\(a: Attrs\\) => \\(0\\.45 \\* a\\.playvol \\+ 0\\.2 \\* a\\.ballsec\\) / \\(0\\.65 \\* 99\\)",
+      "label": "creation() was NOT touched, so src/engine/offense.ts <-> data/team_rating.py parity is untouched and no rating moved",
+      "note": "unchanged — the round is a tactics read, not a pipeline change"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: the Spurs '16 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "Leonard '16 is the scoring load the old composite keyed on",
+      "card": "Kawhi Leonard '16",
+      "scale": "attr:volume",
+      "op": ">=",
+      "value": 80
+    },
+    {
+      "label": "...and he is NOT the primary playmaker — the fact the gate reads, his ruling in one number",
+      "card": "Kawhi Leonard '16",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 64
+    },
+    {
+      "label": "Parker '16 is the man who ran that offence, and he is not the scorer",
+      "card": "Tony Parker '16",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "the head of the list survives by construction: Johnson '87 is over the line",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "Jokic '22 over the line",
+      "card": "Nikola Jokić '22",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "James '18 over the line",
+      "card": "LeBron James '18",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "Harden '15, the lowest play volume of the head, is still clear of it",
+      "card": "James Harden '15",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "Gilgeous-Alexander '22 clears it too, so recal_115's surviving helio five survives this round",
+      "card": "Shai Gilgeous-Alexander '22",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 65
+    },
+    {
+      "label": "the Lakers '87 (Johnson) dial unmoved — no rating in this round moved at all",
+      "five": ["Magic Johnson '87", "Byron Scott '87", "James Worthy '87", "A.C. Green '87", "Kareem Abdul-Jabbar '87"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 71
+    },
+    {
+      "label": "the Thunder '22 dial unmoved (recal_115's expect line, read back)",
+      "five": ["Josh Giddey '22", "Shai Gilgeous-Alexander '22", "Luguentz Dort '22", "Aleksej Pokusevski '22", "Darius Bazley '22"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 1
+    },
+    {
+      "label": "the Thunder '16 dial unmoved — 77 today, where recal_115 recorded 75 before eleven rounds of card work",
+      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 77
+    },
+    {
+      "label": "Leonard '16's own card is untouched: a team ruling never moves a man",
+      "card": "Kawhi Leonard '16",
+      "scale": "ovr",
+      "op": "==",
+      "value": 94
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:playvol",
+      "above": "Magic Johnson '87",
+      "below": "Kawhi Leonard '16",
+      "label": "\"a guy with high vol and playvol, not only one\" — the head of the helio list against the subject's engine"
+    },
+    {
+      "scale": "attr:playvol",
+      "above": "Tony Parker '16",
+      "below": "Kawhi Leonard '16",
+      "label": "\"Kawhi cant be the primary playmaker as well\" — on his own floor he is not the primary playmaker"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "cost": [
+    "NOTHING in data/ was regenerated. src/engine/offense.ts, data/team_rating.py, data/compute_ovr.py and every players_stats.json are byte-identical to origin/main, so no OVR, no OFF/DEF dial and no `marg` moved. Every reading in this receipt is a dial read back unchanged for exactly that reason; the round changes which SHAPE a five is read as, nothing else.",
+    "NO ANCHOR WAS ADDED and none could be, for recal_115's reason: data/anchors.py can only read ratings off the python pipeline, and this ruling is about which of eight TypeScript fit formulas wins on a five. It is pinned instead in tests/tactics.test.ts ('a helio engine is high volume AND high play volume', three assertions blocks naming the Spurs '16, the Lakers '87, the Thunder '22 and the Thunder '16), which npm test runs forever — the same place recal_115 and recal_125 pinned theirs. All 211 existing anchors pass unmoved.",
+    "TAX.style was NOT re-ratified and did not need to be: the harness playstyle row reads random -0.95 / oracle +2.03 after the round against -0.90 / +2.12 before, both inside the band, PASS. The round LOWERS a style's fit on 749 of the 1,255 wheel fives and raises it on none, so the oracle can only fall; a later round that widens any style's range should still expect to re-ratify it.",
+    "A CALLED helio is untouched. styleFit's helio case reads heliMan(five, null) — the engine's own pick — exactly as it read the top composite before, so recal_125's creator call still changes the caption, the floor and the two role terms and still does not change the fit. Pricing a CALLED creator's play volume is the obvious next round; it was left out because it would let a call score HIGHER than the engine's own pick on the 263 fives where the best scorer-creator is not the best helio engine, which is the deviation tax law inverted.",
+    "heliMan's PICK was deliberately left on scorerCreator. Gating it as well was measured: the default helio engine would change on 263 of 1,255 fives — Houston '80 from Moses Malone to Calvin Murphy, Boston '81 from Robert Parish to Larry Bird, San Antonio '80 from George Gervin to James Silas — which is a different ruling (who the offence runs through) from the one he gave (whether this five can run helio at all)."
+  ],
+  "notes": [
+    "THE SUBJECT. Spurs '16 — Parker (vol 59, playvol 73), Green (16/32), Leonard (85/48), Aldridge (88/25), Duncan (37/51).",
+    "  helio 63.9 -> 58.6 and the five reads BALANCED 60.0. The next fits are pnr 56.0 and pickpop 56.0, so the read falls to the free default, not onto another shape; he has not said what it should be and nothing was steered to make one win.",
+    "  Leonard is STILL the five's best scorer-creator (80.4) and still the man `featured('helio')` names. What changed is that the fit is now built on his helio-engine score, 80.4 - 0.45 x (65 - 48) = 72.8.",
+    "WHY A GATE AND NOT A REWRITE. scorerCreator is a weighted SUM — 0.45 x volume + 0.3 x efficiency + 25 x creation — so the playmaking side is worth at most 25 of ~100 and a big efficient scoring load carries a man who never ran anything to the top of it. His ruling makes the helio engine a CONJUNCTION, so the helio read (and only the helio read) charges the missing side: HELIO_PV_W 0.45 per point of play volume under HELIO_PV 65, continuous, no cliff, no floor, one formula for everyone.",
+    "WHERE 65 COMES FROM. It is measured, not chosen: over the 1,255 wheel fives the men the engine picks as helio engines have a MEDIAN play volume of 65 (p25 50, p75 77). The whole board's first options run p50 58; the card pool runs p75 60. A man at or above the median offence-runner pays nothing.",
+    "THE READ, over all 1,255 wheel fives that can field one.",
+    "  before  balanced 422 · fiveout 18 · pnr 309 · motion 4 · postup 235 · helio 200 · triangle 43 · pickpop 24",
+    "  after   balanced 465 · fiveout 19 · pnr 316 · motion 4 · postup 240 · helio 141 · triangle 45 · pickpop 25",
+    "  59 fives changed their read. ALL 59 left helio; none entered it; no five changed style without helio on one side, so the footprint is exactly the size of the ruling.",
+    "THE TAIL THAT DROPS (59 fives), the complaint in his own terms — pure scorers who never ran an offence, listed by the play volume of their engine. Blazers '86 (Vandeweghe 26) · Hornets '98 (Rice 26) · Hornets '97 (Rice 27) · Lakers '95 (Ceballos 27) · Heat '95 (Rice 32) · Bucks '04 (Redd 33) · Spurs '80 (Gervin 34) · Pacers '98 (Miller 35) · Kings '08 (K. Martin 35) · Spurs '82 (Gervin 38) · Timberwolves '12 (Love 38) · Jazz '80 (Dantley 39) · Spurs '85 (Gervin 39) · Spurs '83 (Gervin 40) · Knicks '02 and '03 (Houston 40) · Hawks '90 (Wilkins 41) · Kings '09 (K. Martin 41) · Mavericks '14 and '12 (Nowitzki 42) · Blazers '83 (Paxson 42) · Mavericks '13 (Nowitzki 43) · Bucks '89 (Pierce 43) · Rockets '11 (K. Martin 43) · Clippers '81 (F. Williams 44) · Mavericks '05 (Nowitzki 44) · Hawks '93 (Wilkins 45) · Knicks '83 (King 45) · Nets '26 (Porter Jr. 45) · Thunder '09 (Durant 45) · Mavericks '11 (Nowitzki 45) · Hawks '91 (Wilkins 46) · Pacers '10 (Granger 46) · Nuggets '06 (Anthony 47) · 76ers '88 (Barkley 48) · SuperSonics '92 (Pierce 48) · SPURS '16 (Leonard 48) · Mavericks '06 (Nowitzki 48) · Knicks '13 (Anthony 49) · SuperSonics '93 (Pierce 50) · Pacers '97 (Miller 50) · Pelicans '19 (Davis 50) · Jazz '84 (Dantley 50) · Celtics '01 (Pierce 50) · 76ers '21 (Embiid 52) · Spurs '26 (Wembanyama 52) · 76ers '82 (Erving 54) · Mavericks '08 (Nowitzki 54) · Mavericks '85 (Aguirre 54) · Nuggets '86 (English 55) · Pelicans '21 (Williamson 55) · Raptors '19 (Leonard 55) · Nuggets '85 (English 56) · Suns '96 (Barkley 57) · SuperSonics '05 (Allen 59) · Timberwolves '07 (Garnett 60) · Lakers '17 (Lou Williams 60) · Cavaliers '86 (Free 61) · Mavericks '98 (Finley 61).",
+    "THE HEAD IS UNTOUCHED, by construction: the charge is one-sided, so nothing prices a man for scoring too little and every engine at or over 65 reads exactly what he read before. Johnson '87 67.0, '88 63.1, '89 65.0 (playvol 98) · Jokic '22 76.8 (96) · James '18 73.1 (95) · Doncic '24 64.9 (94) · Price '94 71.4 (93) · James '10 76.1 (93) · Wade '09 69.4 (91) · Iverson '06 64.7 (88) · Curry '16 69.3 (86) · Harden '15 74.7 (85) · Gilgeous-Alexander '22 65.3 (76) — all unmoved to the decimal.",
+    "THE CAMPAIGN LADDER DOES NOT REORDER. No rating moved, so every opponent's OFF and DEF dial is identical; two of the thirty opponents change their READ (Nets '26 helio 60.2 -> balanced 60.0, Spurs '26 helio 64.4 -> pnr 63.5) and nothing in the sim consults the read today (see bestStyle's header).",
+    "MEASURED AND REJECTED (1): ranking the whole floor by the gated score instead of the engine alone. It inflates the separation term — the four men beside the star are charged too — and 40 fives GAINED helio, including nine Phoenix Suns seasons. The separation term must keep reading scorerCreator.",
+    "MEASURED AND REJECTED (2): the softer pairs. (58, 0.40) and (62, 0.40) leave the Spurs reading helio at 61.2 and 60.0; (58, 0.60) drops them to 59.8, a quarter of a point under the free default, which is a knife edge rather than a ruling. (65, 0.45) lands them at 58.6, 1.4 clear, and is the pair whose line is a measured median rather than a number picked to clear the subject.",
+    "MEASURED AND REJECTED (3): a harder line. (70, 0.50) takes helio to 123 of 1,255 and (74, 0.75) to 94, which starts charging men like Jordan '98 (playvol 58) and Barkley '91 (59) out of a shape they belong in. The head never falls at any pair tested, but the middle does, so the line stayed at the measured median."
+  ]
+}
