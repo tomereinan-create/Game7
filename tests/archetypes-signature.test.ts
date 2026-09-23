@@ -100,7 +100,12 @@ describe('the signature block', () => {
       // working as designed (a star rule always outranks a signature). Fox '19 sits at OFF 68, far from any star floor.
       ["De'Aaron Fox '19", 'Ball-dominant guard'],
       ["Maurice Cheeks '88", 'Pass-first playmaker'], // playvol 84: under Floor general's 88 (Strickland '94 at 90 is past the limit)
-      ["Ray Allen '00", 'Perimeter scorer'],
+      // Ray Allen '08, not his '00: recal_204 (conversion paid at load, pipeline 204) took the '00
+      // card's offence 84 -> 85 and the EXISTING 'Offensive superstar' rule — o_ovr >= 85 with
+      // d_ovr < 70 — now names him, which is the block working as designed (a star rule always
+      // outranks a signature, exactly as it did for Pau Gasol '05 and Kevin Johnson '96 above).
+      // His '08 is the same man on the same shelf at OFF 77, eight clear of the star floor.
+      ["Ray Allen '08", 'Perimeter scorer'],
       ["Josh Hart '25", 'Rebounder'],
       ["Luol Deng '06", 'Balanced'], // nothing on his sheet reaches the floor, and he is not dressed up
     ] as const) {
