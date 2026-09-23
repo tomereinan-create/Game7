@@ -727,6 +727,21 @@ export const DEFAULT_TACTICS: Tactics = {
  * per-branch figures (186: 3.66; 187: 3.59; 188: 3.76). hunt broke on the BLIND edge (-0.11 at 3.40): 447 no-vote bigs
  * lost rim protection and 188 rebounding forwards lost defence, so a blind hunt call costs less. 3.90 overshoots the oracle
  * (+0.42), 3.72 sits exactly on it (+0.50); hunt 3.65 (blind -0.32, oracle +0.53) — a NARROW window. The others held.
+ * recal_199's creation-rate discount on ball security moved 3,978 ballsec bars, 445 o_ovrs and 271 OVRs and carried
+ * seven cards across the harness's ovr>=55 line (5 in, 2 out; the pool goes 6,579 -> 6,582, which redraws all 200
+ * matchups because the sample indexes against pool.length). HUNT alone broke, on the ORACLE edge exactly as r118's
+ * did (blind -0.2913 at main's 3.65, a hundredth shallow of the -0.30 ceiling). Swept ONCE from main's constant:
+ * 3.650 (-0.2913 / +0.5138) / 3.660 (-0.2995) / 3.662 (-0.3011, the ceiling just cleared) / 3.670 (-0.3077 /
+ * +0.5046) / 3.675 (+0.5024) / 3.680 (+0.5001, the floor exactly) / 3.700 (+0.4910, under) — feasible about 3.661
+ * to 3.680, a NARROW 0.019, true midpoint by r126's rule: 3.65 -> 3.67 (0.0077 of blind room, 0.0046 of oracle).
+ * hunt's thirteenth move, and the same shape every time: it is the largest tax on the board and it is measured on a
+ * sample the pool line reshuffles. playmaker 1.10, crashOff 0.28, crashDef 0.60 and the five others held untouched.
+ * RECORDED FOR THE INTEGRATOR: on this branch's pool three other constant triples for the round's own knob were
+ * measured end to end, and each one broke a DIFFERENT subset of rows (0.18/0.78/0.84: hunt + both glass rows;
+ * 0.14/0.78/0.86: scorer + hunt + crashDef; 0.16/0.74/0.82: hunt + crashDef) — at 0.16/0.78/0.84 hunt's window was
+ * EMPTY, the first time this file has seen that (blind -0.3007 at 3.560 against oracle +0.4934; +0.5000 at 3.545
+ * against blind -0.2880). That is the sampling lottery, not nine different calibration faults, and it is why this
+ * figure is superseded by the merged-pool sweep rather than stacked with it.
  */
 export const TAX = {
   scorer: 0.55,
@@ -734,7 +749,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.65,
+  hunt: 3.67,
   crashOff: 0.28,
   crashDef: 0.60,
 }

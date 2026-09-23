@@ -1872,5 +1872,14 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Kevin Durant '13",
+    "scale": "attr:ballsec",
+    "target": 50,
+    "tol": 5,
+    "round": 199,
+    "ruling": "his ballsec is too high. 3.5 tov for 28/4.6 is a lot",
+    "note": "NO NUMBER WAS GIVEN — the orchestrator set 50 +-5 from his words, and the card landed at 53. The creation allowance (recal_79's 0.8 x AST% in the adjusted leg's denominator) was paid in full to a card at the 76th percentile of assist share: it carried him from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. The allowance's BENEFIT is now free up to 0.16 of rank and paid on the within-season percentile of assist share above that (CRE_FREE / CRE_FOOT / CRE_FULL in build_ratings.py), and the discounted leg is re-ranked so the season's level is held. Jordan '88 95, Westbrook '15 60, Harden '19 56, Carmelo '13 91, Kawhi '17 90 and LeBron '13 72 are byte-identical. His OFF is unchanged at 95; round 198 carries the OFF half of the card."
   }
 ]

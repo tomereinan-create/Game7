@@ -71,7 +71,7 @@
           "orb": 27,
           "drb": 31,
           "playvol": 40,
-          "ballsec": 49,
+          "ballsec": 51,
           "volume": 64,
           "efficiency": 28,
           "durability": 23,
@@ -109,7 +109,7 @@
           "orb": 37,
           "drb": 54,
           "playvol": 54,
-          "ballsec": 21,
+          "ballsec": 16,
           "volume": 47,
           "efficiency": 32,
           "durability": 25,
@@ -123,10 +123,10 @@
           "ts_rel": 0.532
         },
         "big": false,
-        "o_ovr": 52,
+        "o_ovr": 51,
         "d_ovr": 63,
-        "ovr": 58,
-        "marg": 45
+        "ovr": 57,
+        "marg": 44
       },
       {
         "name": "Marvin Bagley III '26",
@@ -240,7 +240,7 @@
           "orb": 17,
           "drb": 18,
           "playvol": 77,
-          "ballsec": 51,
+          "ballsec": 52,
           "volume": 54,
           "efficiency": 35,
           "durability": 51,
@@ -278,7 +278,7 @@
           "orb": 45,
           "drb": 60,
           "playvol": 35,
-          "ballsec": 45,
+          "ballsec": 48,
           "volume": 74,
           "efficiency": 45,
           "durability": 46,
@@ -295,7 +295,7 @@
         "o_ovr": 63,
         "d_ovr": 46,
         "ovr": 58,
-        "marg": 53
+        "marg": 54
       },
       {
         "name": "Aaron Nesmith '26",
@@ -316,7 +316,7 @@
           "orb": 48,
           "drb": 38,
           "playvol": 33,
-          "ballsec": 62,
+          "ballsec": 64,
           "volume": 50,
           "efficiency": 36,
           "durability": 12,
@@ -354,7 +354,7 @@
           "orb": 60,
           "drb": 69,
           "playvol": 54,
-          "ballsec": 87,
+          "ballsec": 86,
           "volume": 88,
           "efficiency": 42,
           "durability": 74,
@@ -561,7 +561,7 @@
           "orb": 34,
           "drb": 55,
           "playvol": 28,
-          "ballsec": 37,
+          "ballsec": 38,
           "volume": 52,
           "efficiency": 32,
           "durability": 50,
@@ -599,7 +599,7 @@
           "orb": 80,
           "drb": 76,
           "playvol": 56,
-          "ballsec": 47,
+          "ballsec": 49,
           "volume": 28,
           "efficiency": 52,
           "durability": 58,
@@ -654,7 +654,7 @@
           "orb": 58,
           "drb": 60,
           "playvol": 78,
-          "ballsec": 24,
+          "ballsec": 26,
           "volume": 68,
           "efficiency": 20,
           "durability": 58,
@@ -730,7 +730,7 @@
           "orb": 17,
           "drb": 29,
           "playvol": 42,
-          "ballsec": 58,
+          "ballsec": 59,
           "volume": 73,
           "efficiency": 68,
           "durability": 25,
@@ -744,9 +744,9 @@
           "ts_rel": 0.608
         },
         "big": false,
-        "o_ovr": 72,
+        "o_ovr": 73,
         "d_ovr": 48,
-        "ovr": 65,
+        "ovr": 66,
         "marg": 82
       },
       {
@@ -768,7 +768,7 @@
           "orb": 79,
           "drb": 76,
           "playvol": 24,
-          "ballsec": 67,
+          "ballsec": 69,
           "volume": 33,
           "efficiency": 34,
           "durability": 46,
@@ -785,7 +785,7 @@
         "o_ovr": 46,
         "d_ovr": 74,
         "ovr": 60,
-        "marg": 72
+        "marg": 73
       },
       {
         "name": "Maxime Raynaud '26",
@@ -937,7 +937,7 @@
           "orb": 38,
           "drb": 35,
           "playvol": 39,
-          "ballsec": 48,
+          "ballsec": 50,
           "volume": 71,
           "efficiency": 56,
           "durability": 41,
@@ -954,7 +954,7 @@
         "o_ovr": 67,
         "d_ovr": 48,
         "ovr": 61,
-        "marg": 64
+        "marg": 65
       },
       {
         "name": "Lauri Markkanen '26",
@@ -1068,7 +1068,7 @@
           "orb": 26,
           "drb": 20,
           "playvol": 76,
-          "ballsec": 62,
+          "ballsec": 64,
           "volume": 26,
           "efficiency": 80,
           "durability": 44,
@@ -1106,7 +1106,7 @@
           "orb": 63,
           "drb": 71,
           "playvol": 48,
-          "ballsec": 44,
+          "ballsec": 45,
           "volume": 55,
           "efficiency": 50,
           "durability": 36,
@@ -1123,7 +1123,7 @@
         "o_ovr": 61,
         "d_ovr": 59,
         "ovr": 60,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "Jaylen Wells '26",
@@ -1144,7 +1144,7 @@
           "orb": 45,
           "drb": 20,
           "playvol": 24,
-          "ballsec": 73,
+          "ballsec": 75,
           "volume": 42,
           "efficiency": 35,
           "durability": 56,
@@ -1161,7 +1161,7 @@
         "o_ovr": 53,
         "d_ovr": 53,
         "ovr": 53,
-        "marg": 51
+        "marg": 52
       },
       {
         "name": "Jaren Jackson Jr. '26",
@@ -1182,7 +1182,7 @@
           "orb": 39,
           "drb": 62,
           "playvol": 33,
-          "ballsec": 58,
+          "ballsec": 61,
           "volume": 84,
           "efficiency": 48,
           "durability": 38,
@@ -1196,10 +1196,10 @@
           "ts_rel": 0.567
         },
         "big": true,
-        "o_ovr": 68,
+        "o_ovr": 69,
         "d_ovr": 83,
         "ovr": 76,
-        "marg": 66
+        "marg": 68
       },
       {
         "name": "Jock Landale '26",
@@ -1220,7 +1220,7 @@
           "orb": 79,
           "drb": 54,
           "playvol": 37,
-          "ballsec": 73,
+          "ballsec": 75,
           "volume": 39,
           "efficiency": 55,
           "durability": 30,
@@ -1275,7 +1275,7 @@
           "orb": 27,
           "drb": 37,
           "playvol": 64,
-          "ballsec": 43,
+          "ballsec": 39,
           "volume": 75,
           "efficiency": 43,
           "durability": 26,
@@ -1292,7 +1292,7 @@
         "o_ovr": 63,
         "d_ovr": 50,
         "ovr": 59,
-        "marg": 63
+        "marg": 60
       },
       {
         "name": "Cooper Flagg '26",
@@ -1313,7 +1313,7 @@
           "orb": 46,
           "drb": 70,
           "playvol": 62,
-          "ballsec": 76,
+          "ballsec": 74,
           "volume": 86,
           "efficiency": 24,
           "durability": 86,
@@ -1330,7 +1330,7 @@
         "o_ovr": 72,
         "d_ovr": 64,
         "ovr": 70,
-        "marg": 63
+        "marg": 62
       },
       {
         "name": "Klay Thompson '26",
@@ -1351,7 +1351,7 @@
           "orb": 20,
           "drb": 23,
           "playvol": 31,
-          "ballsec": 86,
+          "ballsec": 87,
           "volume": 68,
           "efficiency": 30,
           "durability": 37,
@@ -1368,7 +1368,7 @@
         "o_ovr": 67,
         "d_ovr": 53,
         "ovr": 63,
-        "marg": 46
+        "marg": 47
       },
       {
         "name": "Naji Marshall '26",
@@ -1389,7 +1389,7 @@
           "orb": 36,
           "drb": 47,
           "playvol": 48,
-          "ballsec": 56,
+          "ballsec": 58,
           "volume": 53,
           "efficiency": 54,
           "durability": 70,
@@ -1406,7 +1406,7 @@
         "o_ovr": 62,
         "d_ovr": 58,
         "ovr": 61,
-        "marg": 66
+        "marg": 67
       },
       {
         "name": "P.J. Washington '26",
@@ -1482,7 +1482,7 @@
           "orb": 31,
           "drb": 38,
           "playvol": 57,
-          "ballsec": 41,
+          "ballsec": 33,
           "volume": 76,
           "efficiency": 14,
           "durability": 72,
@@ -1496,10 +1496,10 @@
           "ts_rel": 0.511
         },
         "big": false,
-        "o_ovr": 55,
+        "o_ovr": 54,
         "d_ovr": 57,
         "ovr": 56,
-        "marg": 42
+        "marg": 41
       },
       {
         "name": "Saddiq Bey '26",
@@ -1558,7 +1558,7 @@
           "orb": 27,
           "drb": 51,
           "playvol": 47,
-          "ballsec": 77,
+          "ballsec": 78,
           "volume": 70,
           "efficiency": 68,
           "durability": 76,
@@ -1575,7 +1575,7 @@
         "o_ovr": 73,
         "d_ovr": 57,
         "ovr": 68,
-        "marg": 85
+        "marg": 86
       },
       {
         "name": "Derik Queen '26",
@@ -1596,7 +1596,7 @@
           "orb": 72,
           "drb": 83,
           "playvol": 60,
-          "ballsec": 14,
+          "ballsec": 13,
           "volume": 51,
           "efficiency": 26,
           "durability": 68,
@@ -1610,7 +1610,7 @@
           "ts_rel": 0.532
         },
         "big": true,
-        "o_ovr": 52,
+        "o_ovr": 51,
         "d_ovr": 80,
         "ovr": 66,
         "marg": 65
@@ -1689,7 +1689,7 @@
           "orb": 23,
           "drb": 24,
           "playvol": 72,
-          "ballsec": 73,
+          "ballsec": 74,
           "volume": 42,
           "efficiency": 76,
           "durability": 47,
@@ -1727,7 +1727,7 @@
           "orb": 18,
           "drb": 38,
           "playvol": 60,
-          "ballsec": 43,
+          "ballsec": 37,
           "volume": 84,
           "efficiency": 58,
           "durability": 25,
@@ -1741,10 +1741,10 @@
           "ts_rel": 0.584
         },
         "big": false,
-        "o_ovr": 75,
+        "o_ovr": 74,
         "d_ovr": 45,
-        "ovr": 66,
-        "marg": 74
+        "ovr": 65,
+        "marg": 70
       },
       {
         "name": "Josh Giddey '26",
@@ -1765,7 +1765,7 @@
           "orb": 56,
           "drb": 78,
           "playvol": 83,
-          "ballsec": 31,
+          "ballsec": 33,
           "volume": 60,
           "efficiency": 39,
           "durability": 51,
@@ -1782,7 +1782,7 @@
         "o_ovr": 66,
         "d_ovr": 60,
         "ovr": 64,
-        "marg": 72
+        "marg": 73
       },
       {
         "name": "Matas Buzelis '26",
@@ -1841,7 +1841,7 @@
           "orb": 74,
           "drb": 83,
           "playvol": 52,
-          "ballsec": 80,
+          "ballsec": 81,
           "volume": 62,
           "efficiency": 49,
           "durability": 59,
@@ -1934,7 +1934,7 @@
           "orb": 36,
           "drb": 54,
           "playvol": 69,
-          "ballsec": 38,
+          "ballsec": 39,
           "volume": 70,
           "efficiency": 38,
           "durability": 10,
@@ -1951,7 +1951,7 @@
         "o_ovr": 68,
         "d_ovr": 62,
         "ovr": 66,
-        "marg": 57
+        "marg": 58
       },
       {
         "name": "Kyle Kuzma '26",
@@ -2010,7 +2010,7 @@
           "orb": 65,
           "drb": 77,
           "playvol": 36,
-          "ballsec": 89,
+          "ballsec": 90,
           "volume": 74,
           "efficiency": 47,
           "durability": 30,
@@ -2103,7 +2103,7 @@
           "orb": 19,
           "drb": 40,
           "playvol": 68,
-          "ballsec": 67,
+          "ballsec": 66,
           "volume": 95,
           "efficiency": 72,
           "durability": 28,
@@ -2141,7 +2141,7 @@
           "orb": 37,
           "drb": 67,
           "playvol": 56,
-          "ballsec": 57,
+          "ballsec": 60,
           "volume": 47,
           "efficiency": 45,
           "durability": 73,
@@ -2158,7 +2158,7 @@
         "o_ovr": 59,
         "d_ovr": 58,
         "ovr": 59,
-        "marg": 68
+        "marg": 69
       },
       {
         "name": "Moses Moody '26",
@@ -2179,7 +2179,7 @@
           "orb": 42,
           "drb": 31,
           "playvol": 28,
-          "ballsec": 75,
+          "ballsec": 77,
           "volume": 39,
           "efficiency": 55,
           "durability": 32,
@@ -2348,7 +2348,7 @@
           "orb": 11,
           "drb": 50,
           "playvol": 88,
-          "ballsec": 43,
+          "ballsec": 44,
           "volume": 85,
           "efficiency": 64,
           "durability": 91,
@@ -2365,7 +2365,7 @@
         "o_ovr": 85,
         "d_ovr": 63,
         "ovr": 78,
-        "marg": 92
+        "marg": 93
       },
       {
         "name": "Kawhi Leonard '26",
@@ -2462,7 +2462,7 @@
           "orb": 81,
           "drb": 83,
           "playvol": 37,
-          "ballsec": 32,
+          "ballsec": 33,
           "volume": 40,
           "efficiency": 72,
           "durability": 41,
@@ -2517,7 +2517,7 @@
           "orb": 56,
           "drb": 37,
           "playvol": 67,
-          "ballsec": 39,
+          "ballsec": 41,
           "volume": 53,
           "efficiency": 42,
           "durability": 40,
@@ -2534,7 +2534,7 @@
         "o_ovr": 62,
         "d_ovr": 72,
         "ovr": 67,
-        "marg": 72
+        "marg": 73
       },
       {
         "name": "Shaedon Sharpe '26",
@@ -2555,7 +2555,7 @@
           "orb": 45,
           "drb": 42,
           "playvol": 45,
-          "ballsec": 51,
+          "ballsec": 47,
           "volume": 88,
           "efficiency": 31,
           "durability": 40,
@@ -2593,7 +2593,7 @@
           "orb": 47,
           "drb": 76,
           "playvol": 75,
-          "ballsec": 35,
+          "ballsec": 34,
           "volume": 81,
           "efficiency": 62,
           "durability": 75,
@@ -2762,7 +2762,7 @@
           "orb": 13,
           "drb": 30,
           "playvol": 38,
-          "ballsec": 78,
+          "ballsec": 79,
           "volume": 85,
           "efficiency": 65,
           "durability": 48,
@@ -2800,7 +2800,7 @@
           "orb": 66,
           "drb": 27,
           "playvol": 38,
-          "ballsec": 67,
+          "ballsec": 68,
           "volume": 55,
           "efficiency": 49,
           "durability": 65,
@@ -2969,7 +2969,7 @@
           "orb": 33,
           "drb": 16,
           "playvol": 60,
-          "ballsec": 42,
+          "ballsec": 31,
           "volume": 78,
           "efficiency": 64,
           "durability": 38,
@@ -2983,10 +2983,10 @@
           "ts_rel": 0.597
         },
         "big": false,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 53,
-        "ovr": 68,
-        "marg": 83
+        "ovr": 67,
+        "marg": 77
       },
       {
         "name": "Kon Knueppel '26",
@@ -3007,7 +3007,7 @@
           "orb": 52,
           "drb": 53,
           "playvol": 49,
-          "ballsec": 52,
+          "ballsec": 54,
           "volume": 63,
           "efficiency": 83,
           "durability": 92,
@@ -3024,7 +3024,7 @@
         "o_ovr": 77,
         "d_ovr": 59,
         "ovr": 72,
-        "marg": 86
+        "marg": 87
       },
       {
         "name": "Miles Bridges '26",
@@ -3138,7 +3138,7 @@
           "orb": 28,
           "drb": 44,
           "playvol": 70,
-          "ballsec": 24,
+          "ballsec": 25,
           "volume": 55,
           "efficiency": 37,
           "durability": 35,
@@ -3155,7 +3155,7 @@
         "o_ovr": 59,
         "d_ovr": 79,
         "ovr": 69,
-        "marg": 62
+        "marg": 63
       },
       {
         "name": "Desmond Bane '26",
@@ -3214,7 +3214,7 @@
           "orb": 41,
           "drb": 44,
           "playvol": 27,
-          "ballsec": 58,
+          "ballsec": 59,
           "volume": 22,
           "efficiency": 39,
           "durability": 52,
@@ -3252,7 +3252,7 @@
           "orb": 41,
           "drb": 85,
           "playvol": 66,
-          "ballsec": 55,
+          "ballsec": 46,
           "volume": 88,
           "efficiency": 34,
           "durability": 76,
@@ -3266,10 +3266,10 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 68,
         "ovr": 72,
-        "marg": 63
+        "marg": 58
       },
       {
         "name": "Wendell Carter Jr. '26",
@@ -3383,7 +3383,7 @@
           "orb": 62,
           "drb": 40,
           "playvol": 52,
-          "ballsec": 63,
+          "ballsec": 65,
           "volume": 51,
           "efficiency": 18,
           "durability": 94,
@@ -3400,7 +3400,7 @@
         "o_ovr": 56,
         "d_ovr": 59,
         "ovr": 58,
-        "marg": 60
+        "marg": 61
       },
       {
         "name": "Kelly Oubre Jr. '26",
@@ -3497,7 +3497,7 @@
           "orb": 63,
           "drb": 68,
           "playvol": 57,
-          "ballsec": 72,
+          "ballsec": 64,
           "volume": 97,
           "efficiency": 58,
           "durability": 1,
@@ -3511,10 +3511,10 @@
           "ts_rel": 0.591
         },
         "big": true,
-        "o_ovr": 87,
+        "o_ovr": 86,
         "d_ovr": 76,
-        "ovr": 84,
-        "marg": 95
+        "ovr": 83,
+        "marg": 93
       }
     ]
   },
@@ -3552,7 +3552,7 @@
           "orb": 52,
           "drb": 36,
           "playvol": 66,
-          "ballsec": 54,
+          "ballsec": 55,
           "volume": 35,
           "efficiency": 42,
           "durability": 83,
@@ -3607,7 +3607,7 @@
         "o_ovr": 86,
         "d_ovr": 51,
         "ovr": 76,
-        "marg": 91
+        "marg": 92
       },
       {
         "name": "Dillon Brooks '26",
@@ -3628,7 +3628,7 @@
           "orb": 31,
           "drb": 25,
           "playvol": 25,
-          "ballsec": 86,
+          "ballsec": 87,
           "volume": 78,
           "efficiency": 27,
           "durability": 53,
@@ -3797,7 +3797,7 @@
           "orb": 27,
           "drb": 14,
           "playvol": 57,
-          "ballsec": 83,
+          "ballsec": 84,
           "volume": 83,
           "efficiency": 34,
           "durability": 72,
@@ -3814,7 +3814,7 @@
         "o_ovr": 74,
         "d_ovr": 54,
         "ovr": 68,
-        "marg": 73
+        "marg": 74
       },
       {
         "name": "Zaccharie Risacher '26",
@@ -3873,7 +3873,7 @@
           "orb": 53,
           "drb": 90,
           "playvol": 78,
-          "ballsec": 43,
+          "ballsec": 42,
           "volume": 75,
           "efficiency": 46,
           "durability": 70,
@@ -3890,7 +3890,7 @@
         "o_ovr": 76,
         "d_ovr": 67,
         "ovr": 73,
-        "marg": 74
+        "marg": 73
       },
       {
         "name": "Onyeka Okongwu '26",
@@ -3911,7 +3911,7 @@
           "orb": 75,
           "drb": 82,
           "playvol": 38,
-          "ballsec": 48,
+          "ballsec": 49,
           "volume": 40,
           "efficiency": 62,
           "durability": 79,
@@ -3966,7 +3966,7 @@
           "orb": 12,
           "drb": 40,
           "playvol": 72,
-          "ballsec": 88,
+          "ballsec": 89,
           "volume": 58,
           "efficiency": 44,
           "durability": 78,
@@ -3983,7 +3983,7 @@
         "o_ovr": 69,
         "d_ovr": 59,
         "ovr": 66,
-        "marg": 86
+        "marg": 87
       },
       {
         "name": "RJ Barrett '26",
@@ -4004,7 +4004,7 @@
           "orb": 43,
           "drb": 62,
           "playvol": 54,
-          "ballsec": 76,
+          "ballsec": 77,
           "volume": 85,
           "efficiency": 45,
           "durability": 47,
@@ -4042,7 +4042,7 @@
           "orb": 21,
           "drb": 62,
           "playvol": 49,
-          "ballsec": 64,
+          "ballsec": 63,
           "volume": 85,
           "efficiency": 39,
           "durability": 94,
@@ -4059,7 +4059,7 @@
         "o_ovr": 74,
         "d_ovr": 64,
         "ovr": 71,
-        "marg": 61
+        "marg": 60
       },
       {
         "name": "Scottie Barnes '26",
@@ -4080,7 +4080,7 @@
           "orb": 70,
           "drb": 78,
           "playvol": 72,
-          "ballsec": 45,
+          "ballsec": 43,
           "volume": 69,
           "efficiency": 37,
           "durability": 89,
@@ -4118,7 +4118,7 @@
           "orb": 68,
           "drb": 70,
           "playvol": 39,
-          "ballsec": 78,
+          "ballsec": 79,
           "volume": 43,
           "efficiency": 76,
           "durability": 47,
@@ -4135,7 +4135,7 @@
         "o_ovr": 68,
         "d_ovr": 62,
         "ovr": 66,
-        "marg": 92
+        "marg": 93
       }
     ]
   },
@@ -4173,7 +4173,7 @@
           "orb": 14,
           "drb": 46,
           "playvol": 54,
-          "ballsec": 72,
+          "ballsec": 67,
           "volume": 94,
           "efficiency": 69,
           "durability": 80,
@@ -4187,10 +4187,10 @@
           "ts_rel": 0.599
         },
         "big": false,
-        "o_ovr": 87,
+        "o_ovr": 86,
         "d_ovr": 64,
-        "ovr": 80,
-        "marg": 93
+        "ovr": 79,
+        "marg": 92
       },
       {
         "name": "Jaden McDaniels '26",
@@ -4249,7 +4249,7 @@
           "orb": 68,
           "drb": 64,
           "playvol": 65,
-          "ballsec": 47,
+          "ballsec": 38,
           "volume": 79,
           "efficiency": 52,
           "durability": 89,
@@ -4263,10 +4263,10 @@
           "ts_rel": 0.574
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 61,
-        "ovr": 72,
-        "marg": 86
+        "ovr": 71,
+        "marg": 82
       },
       {
         "name": "Naz Reid '26",
@@ -4287,7 +4287,7 @@
           "orb": 58,
           "drb": 78,
           "playvol": 37,
-          "ballsec": 51,
+          "ballsec": 52,
           "volume": 61,
           "efficiency": 39,
           "durability": 69,
@@ -4304,7 +4304,7 @@
         "o_ovr": 59,
         "d_ovr": 78,
         "ovr": 68,
-        "marg": 58
+        "marg": 59
       },
       {
         "name": "Rudy Gobert '26",
@@ -4380,7 +4380,7 @@
           "orb": 22,
           "drb": 17,
           "playvol": 76,
-          "ballsec": 51,
+          "ballsec": 52,
           "volume": 83,
           "efficiency": 53,
           "durability": 30,
@@ -4418,7 +4418,7 @@
           "orb": 17,
           "drb": 38,
           "playvol": 73,
-          "ballsec": 79,
+          "ballsec": 78,
           "volume": 95,
           "efficiency": 64,
           "durability": 84,
@@ -4456,7 +4456,7 @@
           "orb": 70,
           "drb": 47,
           "playvol": 37,
-          "ballsec": 39,
+          "ballsec": 40,
           "volume": 41,
           "efficiency": 62,
           "durability": 49,
@@ -4494,7 +4494,7 @@
           "orb": 78,
           "drb": 83,
           "playvol": 48,
-          "ballsec": 60,
+          "ballsec": 62,
           "volume": 66,
           "efficiency": 64,
           "durability": 72,
@@ -4532,7 +4532,7 @@
           "orb": 78,
           "drb": 80,
           "playvol": 30,
-          "ballsec": 53,
+          "ballsec": 54,
           "volume": 43,
           "efficiency": 85,
           "durability": 44,
@@ -4625,7 +4625,7 @@
           "orb": 10,
           "drb": 24,
           "playvol": 55,
-          "ballsec": 65,
+          "ballsec": 66,
           "volume": 59,
           "efficiency": 35,
           "durability": 74,
@@ -4642,7 +4642,7 @@
         "o_ovr": 63,
         "d_ovr": 59,
         "ovr": 62,
-        "marg": 62
+        "marg": 63
       },
       {
         "name": "Kevin Durant '26",
@@ -4663,7 +4663,7 @@
           "orb": 5,
           "drb": 57,
           "playvol": 59,
-          "ballsec": 48,
+          "ballsec": 40,
           "volume": 85,
           "efficiency": 86,
           "durability": 93,
@@ -4680,7 +4680,7 @@
         "o_ovr": 85,
         "d_ovr": 69,
         "ovr": 80,
-        "marg": 94
+        "marg": 93
       },
       {
         "name": "Jabari Smith Jr. '26",
@@ -4718,7 +4718,7 @@
         "o_ovr": 55,
         "d_ovr": 67,
         "ovr": 61,
-        "marg": 53
+        "marg": 52
       },
       {
         "name": "Alperen Şengün '26",
@@ -4739,7 +4739,7 @@
           "orb": 89,
           "drb": 82,
           "playvol": 76,
-          "ballsec": 44,
+          "ballsec": 43,
           "volume": 78,
           "efficiency": 34,
           "durability": 87,
@@ -4832,7 +4832,7 @@
           "orb": 20,
           "drb": 39,
           "playvol": 65,
-          "ballsec": 47,
+          "ballsec": 39,
           "volume": 77,
           "efficiency": 76,
           "durability": 58,
@@ -4846,10 +4846,10 @@
           "ts_rel": 0.622
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 76,
         "d_ovr": 53,
-        "ovr": 70,
-        "marg": 93
+        "ovr": 69,
+        "marg": 91
       },
       {
         "name": "LeBron James '26",
@@ -4870,7 +4870,7 @@
           "orb": 25,
           "drb": 73,
           "playvol": 84,
-          "ballsec": 50,
+          "ballsec": 51,
           "volume": 85,
           "efficiency": 58,
           "durability": 70,
@@ -4887,7 +4887,7 @@
         "o_ovr": 83,
         "d_ovr": 64,
         "ovr": 77,
-        "marg": 86
+        "marg": 87
       },
       {
         "name": "Rui Hachimura '26",
@@ -4908,7 +4908,7 @@
           "orb": 29,
           "drb": 32,
           "playvol": 14,
-          "ballsec": 77,
+          "ballsec": 80,
           "volume": 22,
           "efficiency": 71,
           "durability": 59,
@@ -4925,7 +4925,7 @@
         "o_ovr": 64,
         "d_ovr": 53,
         "ovr": 61,
-        "marg": 60
+        "marg": 61
       },
       {
         "name": "Deandre Ayton '26",
@@ -5077,7 +5077,7 @@
           "orb": 30,
           "drb": 11,
           "playvol": 44,
-          "ballsec": 83,
+          "ballsec": 85,
           "volume": 37,
           "efficiency": 52,
           "durability": 97,
@@ -5094,7 +5094,7 @@
         "o_ovr": 56,
         "d_ovr": 74,
         "ovr": 65,
-        "marg": 75
+        "marg": 76
       },
       {
         "name": "OG Anunoby '26",
@@ -5153,7 +5153,7 @@
           "orb": 88,
           "drb": 97,
           "playvol": 42,
-          "ballsec": 45,
+          "ballsec": 44,
           "volume": 79,
           "efficiency": 76,
           "durability": 86,
@@ -5208,7 +5208,7 @@
           "orb": 4,
           "drb": 29,
           "playvol": 78,
-          "ballsec": 86,
+          "ballsec": 85,
           "volume": 86,
           "efficiency": 71,
           "durability": 92,
@@ -5322,7 +5322,7 @@
           "orb": 35,
           "drb": 33,
           "playvol": 38,
-          "ballsec": 69,
+          "ballsec": 72,
           "volume": 31,
           "efficiency": 73,
           "durability": 41,
@@ -5415,7 +5415,7 @@
           "orb": 41,
           "drb": 21,
           "playvol": 62,
-          "ballsec": 76,
+          "ballsec": 77,
           "volume": 60,
           "efficiency": 27,
           "durability": 94,
@@ -5453,7 +5453,7 @@
           "orb": 37,
           "drb": 18,
           "playvol": 63,
-          "ballsec": 89,
+          "ballsec": 90,
           "volume": 58,
           "efficiency": 58,
           "durability": 89,
@@ -5470,7 +5470,7 @@
         "o_ovr": 70,
         "d_ovr": 50,
         "ovr": 64,
-        "marg": 85
+        "marg": 86
       },
       {
         "name": "Jaylen Brown '26",
@@ -5491,7 +5491,7 @@
           "orb": 47,
           "drb": 69,
           "playvol": 68,
-          "ballsec": 64,
+          "ballsec": 58,
           "volume": 96,
           "efficiency": 38,
           "durability": 85,
@@ -5505,10 +5505,10 @@
           "ts_rel": 0.556
         },
         "big": false,
-        "o_ovr": 83,
+        "o_ovr": 82,
         "d_ovr": 66,
-        "ovr": 78,
-        "marg": 81
+        "ovr": 77,
+        "marg": 77
       },
       {
         "name": "Sam Hauser '26",
@@ -5529,7 +5529,7 @@
           "orb": 36,
           "drb": 46,
           "playvol": 20,
-          "ballsec": 89,
+          "ballsec": 90,
           "volume": 17,
           "efficiency": 58,
           "durability": 53,
@@ -5546,7 +5546,7 @@
         "o_ovr": 63,
         "d_ovr": 57,
         "ovr": 61,
-        "marg": 57
+        "marg": 58
       },
       {
         "name": "Neemias Queta '26",
@@ -5660,7 +5660,7 @@
           "orb": 11,
           "drb": 14,
           "playvol": 31,
-          "ballsec": 76,
+          "ballsec": 77,
           "volume": 30,
           "efficiency": 72,
           "durability": 65,
@@ -5698,7 +5698,7 @@
           "orb": 75,
           "drb": 56,
           "playvol": 47,
-          "ballsec": 23,
+          "ballsec": 24,
           "volume": 27,
           "efficiency": 31,
           "durability": 46,
@@ -5715,45 +5715,45 @@
         "o_ovr": 44,
         "d_ovr": 94,
         "ovr": 69,
-        "marg": 81
+        "marg": 82
       },
       {
-        "name": "Isaiah Stewart '26",
-        "player": "Isaiah Stewart",
+        "name": "Tobias Harris '26",
+        "player": "Tobias Harris",
         "peak_season": 2026,
-        "talent": 75,
-        "in": 73,
-        "out": 27,
-        "id": 88,
-        "pd": 59,
+        "talent": 80,
+        "in": 47,
+        "out": 51,
+        "id": 55,
+        "pd": 61,
         "attrs": {
-          "3pt": 24,
-          "rim": 60,
-          "mid": 36,
+          "3pt": 48,
+          "rim": 30,
+          "mid": 62,
           "rim_mid_measured": true,
-          "ft": 76,
-          "fouldraw": 63,
-          "orb": 69,
-          "drb": 60,
-          "playvol": 29,
-          "ballsec": 22,
-          "volume": 18,
-          "efficiency": 68,
-          "durability": 12,
-          "rimprot": 88,
-          "perimdisrupt": 20,
+          "ft": 87,
+          "fouldraw": 45,
+          "orb": 36,
+          "drb": 65,
+          "playvol": 36,
+          "ballsec": 81,
+          "volume": 42,
+          "efficiency": 42,
+          "durability": 56,
+          "rimprot": 55,
+          "perimdisrupt": 35,
           "height": 80,
-          "perdef": 59,
-          "discipline": 2,
-          "usg_raw": 15.6,
-          "ts_raw": 0.628,
-          "ts_rel": 0.615
+          "perdef": 61,
+          "discipline": 85,
+          "usg_raw": 18.5,
+          "ts_raw": 0.573,
+          "ts_rel": 0.561
         },
         "big": true,
-        "o_ovr": 46,
-        "d_ovr": 75,
-        "ovr": 60,
-        "marg": 76
+        "o_ovr": 54,
+        "d_ovr": 68,
+        "ovr": 61,
+        "marg": 62
       },
       {
         "name": "Jalen Duren '26",
@@ -5774,7 +5774,7 @@
           "orb": 89,
           "drb": 88,
           "playvol": 35,
-          "ballsec": 41,
+          "ballsec": 43,
           "volume": 56,
           "efficiency": 91,
           "durability": 64,
@@ -5829,7 +5829,7 @@
           "orb": 16,
           "drb": 26,
           "playvol": 76,
-          "ballsec": 66,
+          "ballsec": 68,
           "volume": 79,
           "efficiency": 42,
           "durability": 78,
@@ -5846,7 +5846,7 @@
         "o_ovr": 77,
         "d_ovr": 57,
         "ovr": 71,
-        "marg": 83
+        "marg": 84
       },
       {
         "name": "Dylan Harper '26",
@@ -5867,7 +5867,7 @@
           "orb": 47,
           "drb": 40,
           "playvol": 63,
-          "ballsec": 59,
+          "ballsec": 58,
           "volume": 57,
           "efficiency": 43,
           "durability": 34,
@@ -5905,7 +5905,7 @@
           "orb": 73,
           "drb": 62,
           "playvol": 24,
-          "ballsec": 87,
+          "ballsec": 88,
           "volume": 62,
           "efficiency": 61,
           "durability": 56,
@@ -5981,7 +5981,7 @@
           "orb": 70,
           "drb": 87,
           "playvol": 52,
-          "ballsec": 68,
+          "ballsec": 63,
           "volume": 95,
           "efficiency": 69,
           "durability": 48,
@@ -6150,7 +6150,7 @@
           "orb": 72,
           "drb": 87,
           "playvol": 22,
-          "ballsec": 59,
+          "ballsec": 61,
           "volume": 62,
           "efficiency": 85,
           "durability": 66,
@@ -6164,9 +6164,9 @@
           "ts_rel": 0.639
         },
         "big": true,
-        "o_ovr": 68,
+        "o_ovr": 69,
         "d_ovr": 93,
-        "ovr": 80,
+        "ovr": 81,
         "marg": 96
       },
       {
