@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 188
+PIPELINE_VERSION = 202
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -291,6 +291,7 @@ def score_season(r, P):
     # OUT: absolute vs modern pool (all seasons >=1980 have measured 3P data)
     if True:
         DEADEYE_ATT = 3.0   # era-adjusted 3PA/100 at which the deadeye path pays in full (recal_185 names it)
+        EYE_CAP = 0.95      # recal_202 names the deadeye cap: "specialists never pass elite gunners"
         p3 = r['x3p_pct']
         if r['season'] in SHORTLINE and p3: p3 = p3*0.93
         vol = P_3pa_mod((r['x3pa_per_100'] or 0) * era_mult(r['season']))   # volume is ALWAYS era-adjusted
@@ -342,14 +343,73 @@ def score_season(r, P):
         # deadeye VALUE, the gunner path, or the smoother.
         eye = 0.0
         if p3 is not None:
-            _eye_full = min(0.95, 0.88*acc + 0.12*vol)   # season-level deadeye: near-pure accuracy, volume nudge
+            _eye_full = min(EYE_CAP, 0.88*acc + 0.12*vol)   # season-level deadeye: near-pure accuracy, volume nudge
             _adj3 = (r['x3pa_per_100'] or 0) * era_mult(r['season'])
             if _adj3 >= DEADEYE_ATT:
                 eye = _eye_full
             elif (r['x3pa_per_100'] or 0) >= 2:
                 _share = min(1.0, max(0.0, _adj3 / DEADEYE_ATT))
                 eye = gun + _share * (_eye_full - gun)
-        GUN_BOOST = min(1.0, gun * 1.08)   # the gunner boost and the volume premium are alternatives
+        # RECAL_202 (HIS RULING on Jim Les '91, verbatim: "Jim Les '91 3pt 97 -> target 90 +-3").
+        # THE TWO LIFTS THAT SIT ON TOP OF THE 3PT COMPOSITE CARRY THE SHOTS BEHIND THEM, AND NEITHER
+        # CARRIES A SPECIALIST PAST THE DEADEYE CAP. This is recal_51's objection -- "attempts are a
+        # RATE, per hundred, so a 17-minute bench man can post a starter's attempt rate while carrying
+        # no load" -- arriving at the last two terms in this file that never heard it, and it is
+        # recal_78's answer, byte for byte: a lift scales by the real attempt COUNT behind it,
+        # against the median full-season sample of the class that takes the shot.
+        # THE SUBJECT, MEASURED BEFORE ANYTHING WAS TOUCHED. Jim Les '91 (55 g, 25.4 mpg, 7.2 ppg)
+        # shot 71 of 154 from three, .461 on 5.6 3PA/100 -- the best three-point bar of 1991 by rate
+        # and by percentage, above Ainge (90), Dennis Scott (90) and Terry Porter (85) -- and read
+        # 3pt 97, one of the twenty best outside bars in a ten-thousand-card file, above Ray Allen
+        # '06 and Klay Thompson '19. The path to 97 ran through BOTH lifts: acc .994 against the
+        # modern pool and an era multiplier of 1.694 lifting 5.6 to 9.49 adjusted attempts (vol .835),
+        # so the deadeye value 0.88*acc + 0.12*vol = 0.975 hit the 0.95 cap -- and then the +0.07
+        # volume premium was added AFTER the cap (0.9815) while the x1.08 gunner boost independently
+        # paid 0.9619 on a gunner composite of 0.891. The cap's own comment says specialists never
+        # pass elite gunners; both lifts stepped over it, on 154 shots in 25 minutes a night.
+        # (a) THE COUNT RAMP, recal_78's SHAPE AND ITS ESTIMATOR, UNCHANGED. CNT3_REF = 239 is the
+        # median three-point attempt count over every card in the file (mp >= 1200) that clears the
+        # file's own measured-shooter line of 2 raw 3PA/100 -- 5,473 cards, median 238.8, p25 138,
+        # p75 383. The count reads no new input, exactly as recal_78's does: minutes x the season's
+        # league pace / 48 = the possessions the card was on the floor for, times its per-100 rate
+        # (Les: 1399 mp, 1991 pace 97.8 -> 2,851 possessions -> 160 attempts against a real 154). A
+        # full season's sample keeps both lifts whole and is byte-identical; a third of one gets a
+        # third of them; the ramp runs continuously from zero, so no card sits on either side of a
+        # line (recal_43), and nothing can rise.
+        # WHY COUNT AND NOT LOAD, WHICH WAS MEASURED FIRST AND IS THE OTHER HALF OF HIS RULING.
+        # recal_145's load share (recal_96's 12-minute foot, and this term's own class line: of the
+        # 1,850 cards the premium pays, vol > 0.70 and mp >= 1200, the p75 of mpg is 33.87) reaches
+        # the same 93 for the subject on a quarter of the collateral -- and it BREAKS FIVE OFF
+        # ANCHORS, because a three-point lift taxed by minutes falls entirely on the bench specialist
+        # whose whole card is the shot: Malik Beasley '23 off 58 -> 51 (r137), Buddy Hield '25 58 ->
+        # 53 (r137), Anthony Tolliver '14 (r99), Donyell Marshall '07 and Matt Bullard '92 (r170).
+        # Those five rulings say a low-minute shooter IS his shooting; the count ramp asks the
+        # different question -- how many shots is this bar standing on -- and holds all 193.
+        # (b) THE CAP IS RE-APPLIED AFTER THE PREMIUM, on the deadeye side only. The premium is now
+        # added to each path BEFORE the two are compared, and the deadeye side is re-capped at
+        # EYE_CAP -- so a specialist's bar cannot be lifted past the cap by a payment for volume,
+        # which is the one thing the cap exists to forbid. The gunner side keeps the premium whole
+        # (min(1.0, gun + premium)), so NO CARD FALLS BELOW WHAT ITS GUNNER PATH ALREADY EARNED and
+        # the term is continuous at the crossing eye == gun: a naive min(OUT, EYE_CAP) applied after
+        # the fact is NOT, and was measured -- a card at vol = acc = 0.95 sits exactly on the crossing
+        # and would fall 99 -> 93 by a ten-thousandth of accuracy.
+        # WHAT THIS ROUND DOES NOT TOUCH, AND WHY. The deadeye VALUE and recal_185's path ramp keep
+        # their measured accuracy undiscounted: the same count ramp on the deadeye path itself
+        # (recal_78's shape, the obvious third change) takes the subject to 92, one point closer to
+        # his number, and breaks Richard Hamilton '06 -- 123 attempts, an anchor already sitting at
+        # the bottom of its band (65 +-5, reads 60). The accuracy read is not what he objected to.
+        # THE COST THIS ROUND DOES PAY, NAMED. A count ramp charges the cards with few threes, and
+        # most of them never claimed a three-point volume at all: 4,133 bars fall, 3,566 of them by
+        # one point and nearly all in the teens, where a non-shooter's bar lives. Three of those
+        # 1-point bars re-sort compute_ovr's zone shape and move an OVR the other way (Chris Webber
+        # '95 78 -> 80, Dwyane Wade '06 89 -> 90, Patrick Ewing '87 76 -> 77); Magic Johnson '83 and
+        # Yao Ming '07 lose one OVR the same way. That machinery belongs to compute_ovr, not here.
+        # THE WHOLE TERM CAN ONLY FALL: both lifts are scaled by a ramp <= 1 and the cap only
+        # subtracts, so no card in the file rises a point of 3pt on this change.
+        CNT3_REF = 239.0   # median full-season three-point sample, measured above
+        _poss3 = (r['mp_v'] or 0.0) * lgpace.get(int(r['season']), 100.0) / 48.0
+        _cnt3 = max(0.0, min(1.0, ((r['x3pa_per_100'] or 0) * _poss3 / 100.0) / CNT3_REF))
+        GUN_BOOST = min(1.0, gun * (1 + 0.08*_cnt3))   # the gunner boost and the volume premium are alternatives
         OUT = max(gun, eye)   # two ways to be a shooter
     ID  = W['ID']['blk']*P['blk'](r['blk']) + W['ID']['height']*P['ht'](r['ht'])   # recal_81: no dbpm term
     # reputation term: All-D/DPOY votes are the only recorded measure of pre-tracking perimeter D.
@@ -582,7 +642,10 @@ def score_season(r, P):
              round((TRACKING.get((r['season'], 'Outside 6Ft'), {}).get(_nrm(r['name'])) or (None, 0))[1]),   # recal_56: the sidecar records the 6ft+ series the score reads
              (TRACKING.get((r['season'], 'Overall'), {}).get(_nrm(r['name'])) or (None,))[0]],
     )
-    OUT = min(1.0, OUT + 0.07*max(0.0, (vol - 0.70)/0.30))   # HIGH-VOLUME PREMIUM (never subtracts)
+    # HIGH-VOLUME PREMIUM (never subtracts) — recal_202: paid at the card's own three-point COUNT,
+    # to each path separately, and re-capped at EYE_CAP on the deadeye side (see the block above).
+    _prem3 = 0.07*_cnt3*max(0.0, (vol - 0.70)/0.30)
+    OUT = max(min(1.0, gun + _prem3), min(EYE_CAP, eye + _prem3))
     try: OUT = max(OUT, GUN_BOOST)
     except NameError: pass   # no gunner path on this sheet
     return IN, OUT, ID, PD, TAL, BRK

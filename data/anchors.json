@@ -1872,5 +1872,14 @@
     "round": 186,
     "ruling": "Agree with 2-10",
     "note": "recal_186: the no-vote rim ceiling's block evidence is read on the no-vote big class (cards with no All-Defensive ballot, 80 inches and up, pooled over every season) instead of on the season's whole roster, with recal_92's band (width 0.06) footed on that class's third quartile. Before the round 166 no-vote cards sat on 87-88 with block rates from 2.8%% to 9.4%%; after it, 138. Dawkins (BLK% 2.8, the lowest block rate of any card that was sitting on the ceiling) read 87 beside Jawann Oldham '86 on 6.0%; he lands on 75, and Oldham holds 88. He is the round's largest mover: rimprot 87 -> 75, DEF 79 -> 74, OVR 73 -> 70."
+  },
+  {
+    "card": "Jim Les '91",
+    "scale": "attr:3pt",
+    "target": 90,
+    "tol": 3,
+    "round": 202,
+    "ruling": "Jim Les '91 3pt 97 -> target 90 +-3 (my number)",
+    "note": "THE TWO LIFTS ON TOP OF THE 3PT COMPOSITE NOW CARRY THE SHOTS BEHIND THEM. 55 games, 25.4 mpg, 71 of 154 from three (.461 on 5.6 3PA/100) - the best three-point bar of 1991, and it printed 97, the 71st outside bar of 10,000 cards. acc .994 against the modern pool and ERA_ALPHA's 1.694 multiplier lifted 5.6 to 9.49 adjusted attempts (vol .835), so the deadeye value 0.975 hit its 0.95 cap - and then the +0.07 volume premium was added AFTER the cap (0.9815) while the x1.08 gunner boost paid 0.9619 on a gunner composite of 0.891 on its own. recal_202 scaled both lifts by recal_78's count ramp (CNT3_REF 239 = the median full-season three-point sample over the 5,473 cards clearing the file's own 2-per-100 measured-shooter line; the estimator is recal_78's own, minutes x pace / 48 x rate, and reads no new input) and paid the premium to each path BEFORE they are compared, so the deadeye side is re-capped at EYE_CAP: 97 -> 93, OFF 60 -> 58. HE LANDS 93, THE TOP EDGE, AND IT IS THE FLOOR OF WHAT THE LIFTS CAN REACH - with both switched off entirely his capped deadeye value still prints 93, so 90 needs EYE_CAP or the era multiplier, not this term. The load share (the other half of the ruling) reaches the same 93 and breaks FIVE off anchors on the bench-specialist class: Beasley '23, Hield '25, Tolliver '14, Marshall '07, Bullard '92. 4,133 bars fall, all of them down, 3,566 by a single point; every full-sample deadeye (Curry, Korver '15, Klay '15, Duncan Robinson '20, Ray Allen '06) is byte-identical."
   }
 ]
