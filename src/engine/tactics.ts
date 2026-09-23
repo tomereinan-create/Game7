@@ -721,6 +721,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * -0.3277, oracle +0.5128; 0.028 and 0.013 of room either side). playmaker, crashOff and crashDef were all read
  * from main's constants first and none moved — and the other six held their bands untouched. All nine pass.
  * hunt's twelfth move on this ledger.
+ * recal_186-188 INTEGRATION SWEEP (pipeline 188): three rounds folded onto main (186 the no-vote rim ceiling on the class's
+ * own block rate, 187 the position branch ramped on rim presence, 188 the stretch-big floor's second-payment load line) and
+ * the taxes swept ONCE from main's constants (playmaker 1.10, hunt 3.40, crashOff 0.28, crashDef 0.60), superseding the
+ * per-branch figures (186: 3.66; 187: 3.59; 188: 3.76). hunt broke on the BLIND edge (-0.11 at 3.40): 447 no-vote bigs
+ * lost rim protection and 188 rebounding forwards lost defence, so a blind hunt call costs less. 3.90 overshoots the oracle
+ * (+0.42), 3.72 sits exactly on it (+0.50); hunt 3.65 (blind -0.32, oracle +0.53) — a NARROW window. The others held.
  */
 export const TAX = {
   scorer: 0.55,
@@ -728,7 +734,7 @@ export const TAX = {
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.59,
+  hunt: 3.65,
   crashOff: 0.28,
   crashDef: 0.60,
 }

@@ -78,9 +78,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.76",
+   "pattern": "hunt: 3\\.65,",
    "label": "THE DEVIATION TAX LAW, re-ratified — hunt broke ALONE and on the BLIND edge (-0.0700 at main's 3.40)",
-   "note": "swept once from main's constants: feasible 3.697 (blind -0.3000) to 3.832 (oracle +0.5000), a NARROW 0.135, true midpoint by r126's rule 3.40 -> 3.76 (blind -0.3475, oracle +0.5338)"
+   "note": "[re-pointed at integration 186-188] on the merged pool the once-only sweep from main landed hunt 3.65; playmaker, crashOff and crashDef held (branch: swept once from main's constants: feasible 3.697 (blind -0.3000) to 3.832 (oracl)"
   },
   {
    "file": "src/engine/tactics.ts",

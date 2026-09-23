@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 51,
  "after": 64,
- "pipeline_version": 187,
+ "pipeline_version": 188,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -44,9 +44,9 @@
   },
   {
    "file": "src/engine/tactics.ts",
-   "pattern": "hunt: 3\\.59",
+   "pattern": "hunt: 3\\.65,",
    "label": "the one tax the harness broke, re-swept ONCE from main's constants and landed on its feasible interval's true midpoint",
-   "note": "3.40 -> 3.59; feasible 3.4995 (blind ceiling) to 3.6835 (oracle floor), blind -0.3703 and oracle +0.5415"
+   "note": "[re-pointed at integration 186-188] on the merged pool the once-only sweep from main landed hunt 3.65; playmaker, crashOff and crashDef held (branch: 3.40 -> 3.59; feasible 3.4995 (blind ceiling) to 3.6835 (oracle floor), blind -0)"
   }
  ],
  "expect": [
