@@ -5,6 +5,7 @@ import type { AttrKey, Player, StatLine } from '../engine/types'
 import { PlayerDials } from './MatchupPanel'
 import { CardName } from './CardSheet'
 import { DetailGrid, LINES, Mini, SHEET, StatHead } from './Stat'
+import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { useUserMode } from '../state/viewmode'
 
 type AxisKey = 'peak_season' | 'ovr' | 'o_ovr' | 'd_ovr'
@@ -103,15 +104,53 @@ export function Roster({ onBack }: { onBack: () => void }) {
   const [statK, setStatK] = useState<keyof StatLine | ''>('')
   const [statOp, setStatOp] = useState<'>=' | '<='>('>=')
   const [statV, setStatV] = useState('')
+  /** HIS RULING, 2026-09-23: "Add an option to search by archetype in the player db." */
+  const [arch, setArch] = useState('')
+  /**
+   * HIS RULING, 2026-09-23: "Add option to filter by position in the player db."
+   *
+   * A CARD IS ELIGIBLE AT SEVERAL POSITIONS, not at one, so this asks "may he be slotted here"
+   * rather than "is he listed here": a man Basketball-Reference gave SG and SF is answered by both.
+   * That is the same question the app asks everywhere it puts a man on a floor — `eligible` is the
+   * engine's own rule, and a card with no positions on file is eligible anywhere, which is what
+   * that function already says. The picker is the five real positions in floor order and not a
+   * list derived from the pool: all five are always populated, and PG · SG · SF · PF · C in any
+   * other order is not a thing anyone reads.
+   */
+  const [pos, setPos] = useState<Pos | ''>('')
   const [filtering, setFiltering] = useState(false)
-  const activeFilters = [team, yrFrom, yrTo, statK && statV].filter(Boolean).length
+  const activeFilters = [team, yrFrom, yrTo, arch, pos, statK && statV].filter(Boolean).length
   const clearFilters = () => {
     setTeam('')
     setYrFrom('')
     setYrTo('')
     setStatK('')
     setStatV('')
+    setArch('')
+    setPos('')
   }
+
+  /**
+   * EVERY CARD'S ARCHETYPE, IN ONE PASS — his ruling, 2026-09-23: "Add an option to search by
+   * archetype in the player db."
+   *
+   * ONE MAP AND NOT A CALL PER ROW PER KEYSTROKE. `archetype()` walks the decision tree, and the
+   * two things this ruling adds — a picker that must not offer an empty tag, and a search box that
+   * now matches the tag as well as the name — would otherwise run that tree over ten thousand
+   * cards on every letter typed. It is read once per visit to this screen.
+   *
+   * IT IS ALSO WHY THE PICKER IS BUILT FROM THE POOL rather than from `ALL_TAGS`: what a card is
+   * called depends on the tag ORDER, which he can rearrange on the archetype screen, and a tag
+   * that no card currently wears would be an option that always returns nothing. The count rides
+   * on the option for the same reason the team picker's does not need one — a tag is a verdict,
+   * and how many men it covers is the first thing you want to know about it.
+   */
+  const archOf = useMemo(() => new Map(PLAYERS.map((p) => [p.name, archetype(p)])), [])
+  const ARCHES = useMemo(() => {
+    const n = new Map<string, number>()
+    for (const t of archOf.values()) n.set(t, (n.get(t) ?? 0) + 1)
+    return [...n.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  }, [archOf])
 
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -119,7 +158,13 @@ export function Roster({ onBack }: { onBack: () => void }) {
     const to = yrTo ? Number(yrTo) : null
     const thr = statK && statV !== '' ? Number(statV) : null
     const list = PLAYERS.filter((p) => {
-      if (needle && !p.name.toLowerCase().includes(needle)) return false
+      /* THE SEARCH BOX ANSWERS A TAG TOO (his ruling: "search by archetype"). The picker below is
+         the exact form of the question; this is the one a hand reaches for first — type "sniper"
+         and the book is every sniper in it. A name and a tag cannot be confused: no archetype is
+         a man's name and no man is called "Lockdown defender". */
+      if (needle && !p.name.toLowerCase().includes(needle) && !(archOf.get(p.name) ?? '').toLowerCase().includes(needle)) return false
+      if (arch && archOf.get(p.name) !== arch) return false
+      if (pos && !eligible(LINES[p.name]?.pos).includes(pos)) return false
       if (from !== null && p.peak_season < from) return false
       if (to !== null && p.peak_season > to) return false
       const line = LINES[p.name]
@@ -137,7 +182,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
       const d = key === 'name' ? a.name.localeCompare(b.name) : valueOf(b, key) - valueOf(a, key) || a.name.localeCompare(b.name)
       return flip ? -d : d
     })
-  }, [key, flip, q, team, yrFrom, yrTo, statK, statOp, statV])
+  }, [key, flip, q, team, yrFrom, yrTo, statK, statOp, statV, arch, pos, archOf])
 
   useEffect(() => {
     const el = sheet.current
@@ -201,7 +246,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
         </svg>
         <input
           type="search"
-          placeholder="Search a player…"
+          placeholder="Search a player or archetype…"
           value={q}
           onChange={(e) => {
             setQ(e.target.value)
@@ -243,6 +288,33 @@ export function Roster({ onBack }: { onBack: () => void }) {
               <i>to</i>
               <input type="number" placeholder={String(YEARS.max)} value={yrTo} onChange={(e) => setYrTo(e.target.value)} min={YEARS.min} max={YEARS.max} />
             </span>
+          </label>
+          {/* WHERE HE CAN PLAY, above the verdict about how he plays (his ruling). It sits with
+              the team and the season because it is the same kind of thing — a fact off his card,
+              not an appraisal — and it is the last of those three. */}
+          <label className="filt">
+            <span>Position</span>
+            <select value={pos} onChange={(e) => setPos(e.target.value as Pos | '')}>
+              <option value="">any</option>
+              {POSITIONS.map((x) => (
+                <option key={x} value={x}>
+                  {x}
+                </option>
+              ))}
+            </select>
+          </label>
+          {/* the same shape the team picker wears, one row above the stat line: a verdict about
+              the man, where the two above it are facts about him */}
+          <label className="filt">
+            <span>Archetype</span>
+            <select value={arch} onChange={(e) => setArch(e.target.value)}>
+              <option value="">any</option>
+              {ARCHES.map(([t, n]) => (
+                <option key={t} value={t}>
+                  {t} · {n}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="filt">
             <span>Stat line</span>
