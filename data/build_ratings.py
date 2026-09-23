@@ -19,7 +19,7 @@ DATA = sys.argv[1] if len(sys.argv) > 1 else _os.path.join(_os.path.dirname(_os.
 MIN_MP = 1200          # minutes floor for a season to count
 MIN_SEASON = 1980      # stats-only doctrine: every axis measured, no priors (3PT line exists from 1980)
 MODERN = (2011, 2025)  # reference pool for absolute OUT scale
-PIPELINE_VERSION = 197
+PIPELINE_VERSION = 199
 # recal_92 (HIS RULING, verbatim: "Way too high per def"). THE TRACKED READ IS REGRESSED TO ITS
 # OWN RELIABILITY. A season of defended-FG% differential is an ESTIMATE of a man's true differential,
 # and the estimate is noisy: measured on our own tracking_defense.csv over every consecutive-season
@@ -1845,6 +1845,60 @@ for yr in sorted(rows_by):
     # pctile_top, not pctile: the top of the class must reach the ceiling exactly, the same reason
     # rim protection needed it.
     P_crt = pctile_top([_asttov(rr) for rr in rows if (rr.get('ast') or 0) >= CR_CLS])
+    # recal_199 (HIS RULING on Kevin Durant '13, verbatim: "his ballsec is too high. 3.5 tov for
+    # 28/4.6 is a lot"). THE CREATION ALLOWANCE WAS PAID IN FULL TO A CARD THAT DOES NOT CREATE.
+    # The allowance — recal_79's 0.8 x AST% in the line above — exists for ONE reason: passing
+    # manufactures turnovers, so a hub's turnovers must be read against his passes as well as his
+    # shots. But it was paid at the same rate to every card that has an assist share at all, and its
+    # size is set by the DENOMINATOR rather than by the passing: at USG 29.8 / AST% 21.7 — a wing's
+    # share, the 76th percentile of 2013 — it adds 17.4 to a 29.8 denominator and carries Durant '13
+    # from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. 3.5
+    # turnovers a night against 4.6 assists is then read as the price of creation and the card
+    # prints 62.
+    # THE ALLOWANCE'S BENEFIT IS NOW PAID AT THE RATE THE MAN ACTUALLY CREATES. Call the benefit the
+    # distance the allowance carries a card BELOW its own raw turnover rank (Durant '13: 0.592 raw ->
+    # 0.142 adjusted, a benefit of 0.451). The first CRE_FREE of that benefit is paid to EVERYONE,
+    # because a man who passes at all manufactures some turnovers passing — and that free band is
+    # the whole allowance for most of the board (Jordan '88's benefit is 0.047, Carmelo '13's 0.090,
+    # Howard '11's 0.065: all three are byte-identical after this round). The REST, the part only a
+    # hub's passing VOLUME can justify, is paid on the within-season percentile of assist share —
+    # the same quantity playvol reads — in full from CRE_FULL and not at all below CRE_FOOT. Every
+    # card the allowance was built for is far past CRE_FULL and does not move by a point: Harden '19
+    # 0.983, Westbrook '15 0.992, Magic '90 0.99, Stockton 0.999, LeBron '13 0.96. Durant '13 is at
+    # 0.764 — a wing's share, below CRE_FOOT — so he keeps 0.16 of 0.451 and the card reads its
+    # own turnover rate.
+    # ONE-SIDED BY CONSTRUCTION: where the adjusted leg already reads WORSE than the raw rate there
+    # is no benefit to price, so the low-usage cards the allowance never flattered are untouched.
+    # AND THE LEG IS RE-RANKED AFTERWARDS (Pdisc, not Padj), which is what keeps this a re-pricing
+    # instead of a deflation: a one-sided discount left in raw percentile space walks the WHOLE board
+    # down ~1.5 points of ball security and takes Jordan '89 OFF to 97, Zion '21 to 90, Howard '11 to
+    # 76, Shaq '09 to 69 and the Warriors '17 offdial to 98 — five anchors broken by rounding alone.
+    # The adjusted leg is a within-season RANK; the discount changes the ORDER, so the leg is ranked
+    # again and the season's level is held (mean ball security moves +0.05 across 10,000 cards).
+    # FOUR OTHER SHAPES WERE MEASURED AND FAIL, two of them recal_116's closed doors re-checked:
+    # (a) Raising the raw weight (recal_116's 0.54 frontier). Durant needs 0.84 and that reads
+    #     Harden '19 ballsec 34.
+    # (b) Normalising the adjusted rate by the card's own usage (the 25 -> usg substitution, which is
+    #     recal_116's option (b) in another dress). At half strength Durant reaches 55 but Harden
+    #     falls to 49 and Mark Jackson '98 rises 10; at full strength Jordan '88 reads 93, Luka '23
+    #     falls 17 and the ballsec top 12 becomes low-usage spot-up shooters (T.R. Dunn '87 +60).
+    # (c) Paying the allowance only on assist share ABOVE what the card's usage already implies (a
+    #     per-season OLS of AST% on USG%). Nearly rank-neutral among non-passers: at full strength
+    #     Durant only reaches 59 while Mark Jackson '98 rises 9 and Nash '05 rises 6.
+    # (d) The same creation ramp applied TWO-SIDED, as a weight on the adjusted LEG rather than on
+    #     its benefit. Durant lands, but the low-usage tail is handed the leg's penalty back and the
+    #     board tears open: T.R. Dunn '87 +53, Luke Kornet '26 +41, 6,479 cards past 3 points.
+    # WITHOUT THE FREE BAND (the benefit priced from its first point) the same landing costs Howard
+    # '11 OFF 76 against recal_52's 78 +-1, and Carmelo '13 and Kawhi '17 — the careful low-assist
+    # scorers his ruling holds up as the shape — drop 4 and 3 points of ball security for nothing.
+    CRE_FREE, CRE_FOOT, CRE_FULL = 0.16, 0.78, 0.86
+    def _bdisc(rr):
+        _pa, _pt = Padj(_bsec(rr)), Pa['tov_pct'](rr.get('tov_pct'))
+        if _pa >= _pt: return _pa
+        _ben = _pt - _pa
+        _g = max(0.0, min(1.0, (Pa['ast'](rr.get('ast')) - CRE_FOOT) / (CRE_FULL - CRE_FOOT)))
+        return _pt - (min(_ben, CRE_FREE) + _g * max(0.0, _ben - CRE_FREE))
+    Pdisc = pctile([_bdisc(rr) for rr in rows])
     hts = sorted([x['ht'] or 78 for x in rows])
     ht_t33, ht_t67 = hts[int(0.33*len(hts))], hts[int(0.67*len(hts))]
     _cls = lambda h: 'pf_big' if h >= ht_t67 else ('pf_wng' if h >= ht_t33 else 'pf_grd')
@@ -1913,7 +1967,9 @@ for yr in sorted(rows_by):
             # recal_79 part 2: the RAW side (r56's 0.45) is blind to assists — a passer's turnovers were
             # charged exactly like a ball-stopper's. Its weight now shrinks for genuinely efficient
             # passers ONLY, keyed on AST/TOV and not on passing VOLUME, so r56's class does not move.
-            ballsec=max(sc(1 - ((1 - _wraw) * Padj(_bsec(r)) + _wraw * Pa['tov_pct'](r.get('tov_pct')))),
+            # recal_199: the adjusted leg enters as Pdisc — the creation-rate discount, re-ranked.
+            # (integration 200: recal_197's creator floor is laid under the discounted blend)
+            ballsec=max(sc(1 - ((1 - _wraw) * Pdisc(_bdisc(r)) + _wraw * Pa['tov_pct'](r.get('tov_pct')))),
                         sc(_cfloor)),
             # efficiency hardened globally (^1.30): the median reads ~40, elite stays elite
             volume=sc(Pvol(_vol(r))**1.15),

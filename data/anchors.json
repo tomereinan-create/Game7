@@ -1881,5 +1881,14 @@
     "round": 197,
     "ruling": "Calderón can be high 80s, not 99 tho",
     "note": "HIS AMENDMENT, taken as a ballsec pin and the ceiling of recal_197's creator floor. 61 -> 85, inside the band, with OFF following 81 -> 83 (his recal_184 OFF pin released to anchors_superseded.json by the same words). CR_CEIL 0.90 IS A MEASURED FRONTIER: at 1.00 this card reads ballsec 94 and recal_176's Steve Nash '05 reads OFF 93 against 90 +-2 while recal_154's Chauncey Billups '06 reads 93 against 91 +-1."
+  },
+  {
+    "card": "Kevin Durant '13",
+    "scale": "attr:ballsec",
+    "target": 50,
+    "tol": 5,
+    "round": 199,
+    "ruling": "his ballsec is too high. 3.5 tov for 28/4.6 is a lot",
+    "note": "NO NUMBER WAS GIVEN — the orchestrator set 50 +-5 from his words, and the card landed at 53. The creation allowance (recal_79's 0.8 x AST% in the adjusted leg's denominator) was paid in full to a card at the 76th percentile of assist share: it carried him from the 59th percentile of 2013's RAW turnover rate to the 14th of the adjusted one. The allowance's BENEFIT is now free up to 0.16 of rank and paid on the within-season percentile of assist share above that (CRE_FREE / CRE_FOOT / CRE_FULL in build_ratings.py), and the discounted leg is re-ranked so the season's level is held. Jordan '88 95, Westbrook '15 60, Harden '19 56, Carmelo '13 91, Kawhi '17 90 and LeBron '13 72 are byte-identical. His OFF is unchanged at 95; round 198 carries the OFF half of the card."
   }
 ]
