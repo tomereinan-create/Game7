@@ -1,0 +1,292 @@
+{
+ "round": 202,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Jim Les '91 3pt 97 -> target 90 +-3 (my number). 55 games, 25.4 mpg, 7.2 ppg, 71/154 = .461 on 5.6 3PA/100 - the best three-point bar of 1991, above Ainge (90), Dennis Scott (90 on 6.9/100), Terry Porter (85, .415 on the same volume), Hornacek (84), Reggie Miller '91 (74). The cap's own comment ('specialists never pass elite gunners') is breached by the premium, which is the one zone premium still unloaded and has no count ramp - 154 attempts fire it. Then the general fix: re-apply the cap after the premium, and/or load- or count-gate the 3pt premium the way the other two zones already are.",
+ "title": "THE TWO LIFTS ON TOP OF THE 3PT COMPOSITE CARRY THE SHOTS BEHIND THEM AND NEITHER PASSES THE DEADEYE CAP — recal_78's count ramp (CNT3_REF 239, the same estimator) on the +0.07 volume premium and the x1.08 gunner boost, and the premium now paid to each path BEFORE they are compared so the deadeye side is re-capped at EYE_CAP. Jim Les '91, 71 of 154 in 25 minutes a night, reads 93 instead of 97",
+ "subject": "Jim Les '91",
+ "scale": "attr:3pt",
+ "target": 90,
+ "tol": 3,
+ "before": 97,
+ "after": 93,
+ "pipeline_version": 202,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "CNT3_REF = 239\\.0",
+   "label": "THE ONE MEASURED CONSTANT — the median full-season three-point sample",
+   "note": "median attempt count over the 5,473 cards (mp >= 1200) that clear the file's own 2-per-100 measured-shooter line: 238.8 (p25 138, p75 383)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_cnt3 = max\\(0\\.0, min\\(1\\.0, \\(\\(r\\['x3pa_per_100'\\] or 0\\) \\* _poss3 / 100\\.0\\) / CNT3_REF\\)\\)",
+   "label": "recal_78's COUNT, its estimator unchanged and reading no new input",
+   "note": "minutes x the season's league pace / 48 = possessions on the floor, times the per-100 rate (Les: 1399 mp, 1991 pace 97.8 -> 2,851 poss -> 160 attempts against a real 154)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "GUN_BOOST = min\\(1\\.0, gun \\* \\(1 \\+ 0\\.08\\*_cnt3\\)\\)",
+   "label": "THE GUNNER BOOST IS PAID AT THE COUNT — this is the term that actually held the subject at 95",
+   "note": "min(1.0, gun * 1.08) -> min(1.0, gun * (1 + 0.08*_cnt3)). Les: 0.891 x 1.08 = 0.9619 (card 95) -> 0.891 x 1.0535 = 0.9387, under the cap"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_prem3 = 0\\.07\\*_cnt3\\*max\\(0\\.0, \\(vol - 0\\.70\\)/0\\.30\\)",
+   "label": "THE HIGH-VOLUME PREMIUM IS PAID AT THE COUNT — the gate (0.70), the payment (0.07) and the width (0.30) are untouched"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "OUT = max\\(min\\(1\\.0, gun \\+ _prem3\\), min\\(EYE_CAP, eye \\+ _prem3\\)\\)",
+   "label": "THE CAP IS RE-APPLIED AFTER THE PREMIUM, on the deadeye side only",
+   "note": "min(1.0, max(gun, eye) + premium) -> the premium paid to each path first, deadeye re-capped. Continuous at eye == gun and never below what the gunner path earned"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "EYE_CAP = 0\\.95",
+   "label": "the deadeye cap, named but NOT revalued — 'specialists never pass elite gunners'"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_eye_full = min\\(EYE_CAP, 0\\.88\\*acc \\+ 0\\.12\\*vol\\)",
+   "label": "the deadeye VALUE, byte-identical (0.95 spelled as the constant)"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "OUT = max\\(OUT, GUN_BOOST\\)",
+   "label": "the de-stack's own line, untouched — boost and premium are still alternatives, max of the two, never both"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "DEADEYE_ATT = 3\\.0",
+   "label": "recal_185's path ramp and its 3.0 line, untouched — this round does not touch the deadeye VALUE or the accuracy read"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ERA_ALPHA = 0\\.38",
+   "label": "the era multiplier, untouched — the subject's 5.6 3PA/100 still reads 9.49 adjusted (vol .835)"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jim Les '91",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 0,
+   "label": "the subject's OFF follows his bar: 60 -> 58 (OVR 56 -> 55)"
+  },
+  {
+   "card": "Richard Hamilton '06",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 60,
+   "tol": 0,
+   "label": "recal_185's anchor, already at the bottom of its 65 +-5 band: UNMOVED. The same count ramp applied to the deadeye PATH would take the subject one point closer (92) and break him — 123 attempts"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "recal_89's pin, 239 threes in 23.4 mpg: unmoved, 3pt 93"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_89's pin, 449 threes: a full sample keeps both lifts whole, byte-identical at 3pt 95 — and he now reads ABOVE the subject, where he read two below"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "857 threes: unmoved at 3pt 99"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 1,
+   "label": "recal_89's pin: OFF unmoved, 3pt 95 -> 94 (540 attempts, the ramp is saturated; the point comes off his '96 neighbour through the smoother)"
+  },
+  {
+   "card": "Buddy Hield '25",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "recal_137's pin: unmoved. THE LOAD VARIANT OF THIS ROUND BROKE HIM AT 53"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "recal_137's pin: unmoved. The load variant broke him at 51"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 1,
+   "label": "recal_64's wing pin: unmoved"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 1,
+   "label": "recal_64's wing pin: unmoved"
+  },
+  {
+   "card": "Seth Curry '23",
+   "scale": "attr:mid",
+   "op": "~",
+   "value": 95,
+   "tol": 3,
+   "label": "recal_157's pin on the sibling zone: unmoved — this round touches nothing outside the 3pt composite"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "recal_154's pin: 3pt 90 -> 88 and his OFF lands 92 -> 91, dead on the pin it was one above"
+  },
+  {
+   "card": "Danny Ainge '91",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "the ruling's own 1991 comparison, 90: unmoved (6.0 3PA/100 over 2,163 minutes — a full sample)"
+  },
+  {
+   "card": "Dennis Scott '91",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "the ruling's second 1991 comparison, 90 on 6.9/100: unmoved"
+  },
+  {
+   "card": "Terry Porter '91",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 85,
+   "tol": 0,
+   "label": "the ruling's third, 85: unmoved"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "recal_185's low-volume doctrine card: 3pt 31 -> 30, OFF unmoved at 98"
+  },
+  {
+   "card": "Duncan Robinson '20",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "the modern deadeye at full load and full sample: byte-identical at the top of the board"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "a star with no threes at all: unmoved"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:3pt",
+   "above": "Jim Les '91",
+   "below": "Danny Ainge '91",
+   "label": "HIS OWN FRAMING SURVIVES THE CUT: Les is still the best three-point bar of 1991 (93 over 90), he is no longer 12th in a ten-thousand-card file"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Kyle Korver '15",
+   "below": "Jim Les '91",
+   "label": "449 threes over 154: 95 above 93, where the 154-shot season read two points ABOVE the 449-shot one"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Stephen Curry '16",
+   "below": "Jim Les '91",
+   "label": "the summit is untouched and still above him"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Jim Les '91",
+   "below": "Jeff Hornacek '91",
+   "label": "the order inside 1991 is unchanged below him — Hornacek 84, unmoved"
+  }
+ ],
+ "movers": {
+  "scale": "attr:3pt",
+  "count": 4133,
+  "max_abs": 4,
+  "top": [
+   ["Bobby Simmons '09", 86, 82],
+   ["Dale Ellis '85", 78, 74],
+   ["Jim Les '91", 97, 93],
+   ["Michael Porter Jr. '21", 98, 94],
+   ["Michael Redd '02", 98, 94],
+   ["Ben Gordon '06", 95, 92],
+   ["Danny Green '12", 97, 94],
+   ["Seth Curry '20", 96, 93],
+   ["Luke Kennard '23", 96, 93],
+   ["Mo Williams '09", 91, 88],
+   ["Jamal Murray '26", 91, 88],
+   ["Pat Garrity '01", 95, 92]
+  ]
+ },
+ "top12": {
+  "scale": "attr:3pt",
+  "cards": [
+   "Buddy Hield '19",
+   "Buddy Hield '20",
+   "Craig Hodges '89",
+   "Dale Ellis '99",
+   "Damon Jones '08",
+   "Dana Barros '90",
+   "Dennis Scott '94",
+   "Dennis Scott '95",
+   "Duncan Robinson '20",
+   "Isaiah Joe '23",
+   "Isaiah Joe '24",
+   "Isaiah Joe '25"
+  ]
+ },
+ "cost": [
+  "HE LANDS 93, THE TOP EDGE OF 90 +-3, AND 93 IS THE FLOOR OF WHAT IS REACHABLE WITHOUT TOUCHING THE DEADEYE VALUE. With both lifts switched off entirely the subject still reads the cap, 0.95 -> out 94 -> 3pt 93, because his deadeye value (0.88 x acc .994 + 0.12 x vol .835 = 0.975) is over the cap by construction. 90 is reachable only by lowering EYE_CAP itself or by discounting the accuracy read (a count ramp on the deadeye PATH prints 92 and breaks Richard Hamilton '06). A later round that wants 90 is arguing with the cap's value or with ERA_ALPHA, not with the lifts.",
+  "THE LOAD SHARE — the other half of his ruling — WAS MEASURED FIRST AND BREAKS FIVE OFF ANCHORS. recal_145's shape on this term's own class (recal_96's 12-minute foot; of the 1,850 cards the premium pays, vol > 0.70 and mp >= 1200, the p75 of mpg is 33.87) reaches the SAME 93 for the subject on a quarter of the collateral, and fails: Malik Beasley '23 off 58 -> 51 and Buddy Hield '25 58 -> 53 (both r137), Anthony Tolliver '14 (r99), Donyell Marshall '07 and Matt Bullard '92 (both r170). Those five rulings say a low-minute shooter IS his shooting, so minutes cannot price a three-point lift. The count ramp asks the different question — how many shots is this bar standing on — and holds all 193.",
+  "THE COST THE COUNT RAMP DOES PAY, NAMED. 4,133 of 10,000 bars fall, but 3,566 of them by one point and nearly all in the teens, where a non-shooter's bar lives: the boost is 8% of a composite that for a man who does not shoot is mostly a free-throw stand-in. OFF moves on 371 cards (350 of them by one), OVR on 195, DEF on zero. Five named cards move an OVR on a 1-point bar they do not use, and three of those move UP because compute_ovr's zone block re-sorts z[0..2] when the third zone drops: Chris Webber '95 78 -> 80, Dwyane Wade '06 89 -> 90, Patrick Ewing '87 76 -> 77, against Magic Johnson '83 87 -> 86 and Yao Ming '07 87 -> 86. That machinery is compute_ovr's, not this file's; a lane that wants it flat should look at the zone sort, not at the 3pt bar.",
+  "NO CARD RISES A POINT OF 3pt. Both lifts are scaled by a ramp <= 1 and the cap only subtracts, so the term is monotone non-increasing over the whole pool — the top 12 is name-for-name identical and every card with a full season's threes behind it is byte-identical.",
+  "THE ROUND KEPT ITS TERM INSIDE THE 3PT COMPOSITE. Nothing in perdef, ballsec or the mid composite is touched (rounds 195/197/199/201 are live in those terms); o_ovr / d_ovr / ovr follow from the attribute and compute_ovr is unchanged apart from its PIPELINE_VERSION stamp."
+ ],
+ "notes": [
+  "THE SUBJECT, DECOMPOSED FROM data/provenance.json BEFORE ANYTHING WAS TOUCHED. Jim Les '91: 3pt path 1 (deadeye), 5.6 3PA/100, era multiplier 1.6938, .461, vol .835, acc .994, chucker gate 1.000. gunner composite 0.65 x .835 + 0.35 x .994 = 0.891; deadeye value 0.88 x .994 + 0.12 x .835 = 0.975, CAPPED to 0.95; the volume premium +0.07 x (.835-.70)/.30 = +0.0315 added AFTER the cap -> 0.9815 -> out 97 -> (97/99)^1.12 -> 3pt 97. Underneath it the gunner boost paid 0.891 x 1.08 = 0.9619 on its own, which is card 95 — so re-applying the cap alone reaches 95, not the 93 the scout expected, and the boost is what the round had to reach.",
+  "WHY THE BOOST IS THE SAME OBJECT AS THE PREMIUM. The de-stack round made them exclusive in this file's own words — 'the gunner boost and the volume premium are alternatives', max of the two, never both — so they are two prices for one claim: that this man shot a high volume of threes. One of them was gated (vol > 0.70) and neither was ever asked how many shots stood behind it. recal_51 wrote the objection ('attempts are a RATE, per hundred'), recal_78 built the answer for the rim and mid deadeye floors, recal_126 extended it to the diet, recal_145 put the mid premium on a load share and recal_166 put the paint premium on the discounted rate. The 3PT lifts are the last two terms in the file that never heard any of it.",
+  "THE CAP RE-APPLICATION IS CONTINUOUS AND THE OBVIOUS FORM IS NOT. A naive min(OUT, EYE_CAP) whenever the deadeye path wins was measured and rejected: a card at vol = acc = 0.95 sits exactly on the eye == gun crossing, and a ten-thousandth of accuracy would drop it 99 -> 93. Paying the premium to each path BEFORE comparing them — max(min(1, gun + prem), min(EYE_CAP, eye + prem)) — is continuous at the crossing, can never fall below what the gunner path already earned, and is byte-identical for every card whose deadeye value plus premium stays under the cap.",
+  "MEASURED ON THE WHOLE POOL BEFORE APPLYING. 3pt: 4,133 movers, ALL DOWN, distribution -1 x 3,566, -2 x 543, -3 x 19, -4 x 5. The subject's rank on the 3pt board goes 71st -> 184th of 10,000. Every pin the dispatch named was read before and after: Hamilton '06 60/60, Kerr '96 61/61, Korver '15 58/58, Hield '25 58/58, Beasley '23 56/56, Snell '18 50/50, Bowen '06 45/45, Curry '16 96/96, Miller '97 87/87, Seth Curry '23 mid 95/95. 193 anchors, 0 failing, mean |error| 0.83 — identical to the reading at 188.",
+  "THE CLASS THE ROUND FOUND IS ONE ARCHETYPE AND IT READS LIKE IT: thin-sample specialists whose bar was built on a part-season of threes — Bobby Simmons '09 86 -> 82, Michael Redd '02 and Michael Porter Jr. '21 98 -> 94, Seth Curry '20 and Luke Kennard '23 96 -> 93, Danny Green '12 97 -> 94, Pat Garrity '01 95 -> 92, Ben Gordon '06 95 -> 92, and from the other end of the file Dale Ellis '85 78 -> 74 and Craig Hodges '86 85 -> 82. Every deadeye with a full season behind him — Curry, Korver '15, Klay '15, Duncan Robinson '20, Ray Allen '06, Hield, Beasley — does not move a point."
+ ]
+}
