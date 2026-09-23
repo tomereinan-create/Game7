@@ -927,9 +927,59 @@ def o_score(p, trace=None):
             # monster on the 0.30 clamp — a 70% cut for a number nobody measured. Where the data
             # is measured the r49/r50 gate stands whole; where it is not, the factor is 1.0 —
             # no discount, no boost.
+            # recal_190 (HIS RULING, verbatim: "Zion 21' OFF too high"; landed on his "Push 194",
+            # which accepted the frontier this round measured). THE ATTEMPT CEILING, 2.85 -> 2.00.
+            #
+            # THE CARD. Zion Williamson '21 read OFF 92 on 27.0 points, 3.7 assists and 33.2 minutes
+            # at usage 29.8 and .649 true shooting — above Hakeem Olajuwon '93 (88 +-1), Moses Malone
+            # '82 (86 +-1), Patrick Ewing '90 (85 +-1) and Shaquille O'Neal '96 (91 +-1). His o_score
+            # is 98.5286 and his standard path is 93.538, so the whole of the distance between him
+            # and that class is THIS FACTOR: he is the busiest self-created paint diet on the board,
+            # 14.87 attempts a hundred at playvol 55, and it pays him att_f 2.7917.
+            #
+            # 2.85 WAS A DEAD LETTER AND THAT IS THE DEFECT. recal_47 wrote the power and then wrote
+            # a ceiling above the top of the board: of the 855 measured-era cards this branch pays,
+            # ZERO reach 2.85 — the maximum is the subject's own 2.7917 — so the clamp never bound on
+            # anybody and the factor ran unbounded to whatever the busiest diet happened to be. A
+            # ceiling that no card can touch is not a ceiling; it is the absence of one.
+            # 2.00 IS recal_45's OWN SENTENCE, not a new number. That round set the shape "hinged so
+            # the median specialist sits on the floor and THE BUSIEST DOUBLES, which is how
+            # max(volume/50, 1) behaved before it". Doubling is 2.0. The ceiling is put back where
+            # the round that built the factor said it was, and the curve beneath it is untouched.
+            # THE CLASS AGREES INDEPENDENTLY, measured on those 855 cards' own self-created paint
+            # rate: p25 3.34/100 (att_f 0.30, the floor), median 4.40 (0.4495), p75 5.91 (0.6995),
+            # p90 7.71 (1.0419), p95 8.86 (1.2848), p99 13.32 (2.3668). Only 44 of 855 are paid
+            # above 1.0 at all and only 16 above 2.00, so the ceiling binds on the top 1.9% of the
+            # class it prices and nothing else in the distribution moves.
+            #
+            # THIS IS THE FRONTIER AND THE ROUND SAYS SO. His number was 86 +-3 and it is NOT
+            # reachable in o_score; 90 is, and he accepted it. The wall is SHAQUILLE O'NEAL '02
+            # (off 98 +-1): his bonus is 18.176 to the subject's 4.990 on the same attempt rate,
+            # because the subject's free-throw stroke (70) already sits on recal_44's gate FLOOR at
+            # 0.2500 while Shaq's (52) sits at its top, 1.0000 — a 3.76:1 lever against the subject
+            # on every factor the two men share. Shaq '02 leaves his band below a ceiling of 1.51553
+            # and the subject does not print 89 until 1.50971: the two constraints miss each other by
+            # 0.0058 of this constant, 0.047 of the subject's o_score.
+            # THE OTHER THREE ROUTES, each measured and each blocked by a pin rather than by taste:
+            #   recal_44's GATE FLOOR 0.25 is the pre-1997 interior class's WHOLE bonus (recal_52
+            #     pins att_f at 1.0 where the shot tables do not reach, and Moses '82 at stroke 76,
+            #     Hakeem '93/'94 and Ewing '90 at 77 all sit on the clamp). 0.25 -> 0.20 reads the
+            #     subject 91 and Moses '82 84; deleting it reads him 89 and takes Moses '82 and
+            #     Ewing '90 to 83 and Hakeem '93/'94 to 86.
+            #   A ONE-ZONE GATE is the wrong way round: Shaq '00 is mid 23 / 3pt 2 and Shaq '02 is
+            #     mid 6 / 3pt 2 against the subject's mid 32, so any gate on a missing second zone
+            #     cuts the doctrine card HARDER than the card the ruling names.
+            #   recal_131's PAINT EVIDENCE cannot separate him from DWIGHT HOWARD '11, who is his
+            #     twin on every input this channel reads (evidence 74.21 against 75.40, zone block
+            #     22.96 against 24.34) and is pinned off 78 +-1 with 0.060 of o_score of room.
+            #     Capping this bonus at K x evidence - block needs K >= 0.3684 to hold Howard and
+            #     K <= 0.3586 to reach the subject: provably infeasible.
+            # MEASURED: 9 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -2; DEF and every
+            # attribute move on ZERO. The nine are one class and read like it — Zion '21 and the
+            # measured-era Shaq and Giannis seasons whose paint diet is the busiest on the board.
             if a.get('rim_mid_measured'):
                 _create = 0.35 + 0.65 * min(1.0, a['playvol'] / 50.0)
-                att_f = min(2.85, max(0.30, ((_two * _create) / 7.5) ** 1.5))
+                att_f = min(2.00, max(0.30, ((_two * _create) / 7.5) ** 1.5))
             else:
                 att_f = 1.0
             # AND HOW MUCH HE SHOOTS AT ALL (recal_51). Attempts are a RATE — per hundred — so a

@@ -880,5 +880,17 @@
     "current": 90,
     "superseded_by": 196,
     "superseded_note": "SUPERSEDED by Tomer's own round-196 ruling on the SAME CARD: 'Even Hakeem and Kareem OFF is too low', Hakeem '94 92 +-3. recal_51's 88 +-1 and the new 92 +-3 overlap only at 89; the new ruling is the later one and stands."
+  },
+  {
+    "card": "Zion Williamson '21",
+    "scale": "off",
+    "target": 92,
+    "tol": 1,
+    "round": 156,
+    "ruling": "Push 154-157",
+    "note": "re-pins recal_51's 90 +-1, which Tomer released on this round. 2,026 minutes of a 72-game season read 2,308 on the 82-game scale: mconf 0.860 -> 0.965, and four bars rise at once (efficiency 87 -> 92, fouldraw 90 -> 94, orb 81 -> 85, talent 93 -> 95). A proved frontier, not a tuning failure: Stockton '99 needs (82/50)^a >= 1.628 (a >= 0.985) while holding Zion at 91 needs (82/72)^a <= 1.109 (a <= 0.797).",
+    "current": 90,
+    "superseded_by": 190,
+    "superseded_note": "Tomer 2026-09-23: 'Push 194' — accepted the 190 frontier, 86 unreachable in both lanes. His ruling on the card was \"Zion 21' OFF too high\" and the number he was offered was 86 +-3; recal_190 measured that as unreachable in o_score and landed the frontier instead, the paint dominance bonus's attempt ceiling 2.85 -> 2.00 (recal_45's own 'the busiest doubles'), which reads him 92 -> 90 with every other anchor held. The wall is Shaquille O'Neal '02 (off 98 +-1), who leaves his band below a ceiling of 1.51553 while the subject does not print 89 until 1.50971 — the two constraints miss by 0.047 of the subject's o_score. He is RE-PINNED at 90 +-1 by round 190 below, so the number is still held, just held lower."
   }
 ]
