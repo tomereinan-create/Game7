@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 205
+PIPELINE_VERSION = 210
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -664,6 +664,71 @@ Z2_CLEAR = _pctl([max(0, sorted([_p['attrs']['3pt'], _p['attrs']['rim'], _p['att
                                 reverse=True)[1] - sorted([_p['attrs']['3pt'], _p['attrs']['rim'],
                                 _p['attrs']['mid']], reverse=True)[2]) for _p in players], 0.95)
 Z2_W = 0.130
+# ====================== recal_210 — THE MONOTONICITY LAW ON THE ZONE BLOCK ======================
+# HIS RULING, verbatim: "how is Bird losing 3pt and go up in rating? This has to be fixed."
+#
+# THE LAW. A card's OFF must never RISE when one of its scoring bars (rim / mid / 3pt) FALLS,
+# everything else equal. It is not a statement about Bird; it is the statement that the three
+# scoring bars are RATINGS — more of one is more offence — and every term that reads them owes
+# that direction. The evidence he was shown is three seasons of one card, from round 207's
+# attribute move: Larry Bird '83 3pt 28 -> 15 and OFF 88 -> 89; '84 3pt 42 -> 30, OFF 90 -> 91;
+# '82 3pt 25 -> 14, OFF 84 -> 85.
+#
+# WHERE IT LIVES, measured on the whole pool before anything was changed (lower each of the three
+# bars by 1..10 on every one of the 10,000 cards and ask whether printed OFF ever rises): 567 cards
+# invert, 895 (card, bar) pairs. Attributed to the term whose payment RISES when the bar falls:
+#     zone-dominance bonus (recal_37/38/43)   458 cards   <- CONFLICT, receipt 210 has the proof
+#     era's third zone (recal_196, below)     400 cards   <- THIS ROUND
+#     glue floor (recal_155) + is_big flips    98 cards   <- CONFLICT
+#     interior (recal_112/139/167)             16 cards   <- CONFLICT (the same 3pt exclusion ramp)
+#     paint floor / conversion / off-ball /    18 cards
+#     big hub
+#
+# THE DEFECT IN THIS TERM, and it is arithmetic in recal_196's own sentence. That round says: "The
+# weight the absent third zone cannot earn is TRANSFERRED to the second", and it pays the transfer on
+# the CLEARANCE, c x (z1 - z2), at a coefficient c = 0.130 x era x creation x load. Multiply the
+# bracket out and the term is `c*z1 - c*z2`: it CHARGES the third zone c a point. The vector above
+# PAYS the third zone 0.05 a point. Wherever c > 0.05 the third zone costs more than it earns, and
+# that difference IS the inversion — up to 0.08 a point, which is the third zone's own weight over
+# again. Bird '83's thirteen points of 3pt earned 0.65 in the vector and cost 1.69 in the clearance:
+# net +1.04 of o_score, +0.97 of raw OFF, his printed point.
+# A TRANSFER THAT DESTROYS WEIGHT IS NOT A TRANSFER. recal_196 wrote a SUBTRACTION and called it a
+# move: 0.130 is two and a half times the 0.05 it claimed to be moving, so 0.08 of the third zone's
+# price went nowhere.
+#
+# THE FIX IS THE WORD "TRANSFERRED", MADE EXACT: the third zone is paid the SAME coefficient the
+# clearance charges it. `max(0, c - Z2_VEC_W) x z[2]` is the shortfall between what the term charges
+# and what the vector pays, and once it is paid the two slots balance. Written out, the zone block of
+# a no-third-zone card is exactly the reweighting the round's own sentence describes:
+#     0.22*z[0] + (0.08 + c)*z[1] + max(0, 0.05 - c)*z[2]
+# — the second zone takes the third zone's weight, and when c reaches 0.05 the third slot is empty
+# and the whole of it has moved. Nothing else changes: the four factors, the 0.130, the clearance and
+# its p95 saturation are untouched, and above the saturation the term reads neither bar.
+# MONOTONE BY CONSTRUCTION, and the proof is two lines rather than a sweep. With the clearance below
+# its cap, d(total)/dz[1] = 0.08 + c >= 0 and d(total)/dz[2] = max(0.05, c) - c >= 0; above the cap
+# the term is flat in both bars and the vector alone decides, 0.08 and 0.05. z[0], z[1], z[2] are
+# order statistics of the three bars and each is non-decreasing in each bar, so a payment
+# non-decreasing in the sorted vector is non-decreasing in rim, in mid and in 3pt.
+# IT CAN ONLY EVER ADD, AND IT IS THE IDENTITY FOR EVERY CARD THAT WAS ALREADY LAWFUL: the shortfall
+# is zero wherever era x creation x load <= 0.385, so recal_196's own protected cards do not move by
+# a thousandth — Magic Johnson '90 (93 +-1, era 0.60 x creation 1.00 x load 0.56, c = 0.0437),
+# Patrick Ewing '90 (85 +-1, c = 0.0335), Hakeem Olajuwon '94 (c = 0.0468), Hakeem '90 (73 +-1,
+# c = 0.0445), Moses Malone '82 and '85 (creation 0.00, c = 0) and every measured-era card including
+# Karl Malone '99, which has no term at all.
+#
+# WHY NOT THE OTHER DIRECTION — CAPPING THE COEFFICIENT AT 0.05, which is the same law read as a
+# subtraction. MEASURED, and it is PROVABLY INFEASIBLE against recal_196's own subjects: capping c
+# leaves the most a monotone transfer can pay at 0.05 x (z1 - z2), and KAREEM ABDUL-JABBAR '80
+# (rim 98 / mid 64 / 3pt 5, clearance 59) has a ceiling of 2.95 of o_score against the 5.240 he
+# collects and the 4.597 he needs to hold OFF 87 — the BOTTOM edge of his own 90 +-3, zero room down.
+# The sweep agrees: he reads 85 and George Gervin '80 (93 +-3, also on his bottom edge) reads 89.
+# AND THE THIRD DIRECTION, reading the clearance against a FIXED reference instead of the card's own
+# third zone, is infeasible from the other side: it pays every three-zone 1980s card the transfer, and
+# Magic Johnson '90's 93 +-1 admits at most +1.29 of o_score while Kareem '80 needs +1.65 more than
+# the bounded form can give him. Ewing '90 closes it: his second zone (67) is HIGHER than Kareem's
+# (64) and he admits only +0.44, so no non-decreasing function of the second zone can reach Kareem
+# without passing Ewing. Receipt 210 carries both sweeps.
+Z2_VEC_W = 0.05   # z[2]'s own weight in the vector above, named so the balance can be written
 # recal_131's own scoring-load line, PZ_V_LO / PZ_V_HI, restated at module scope because the paint
 # floor assigns those two names LOCALLY inside o_score, further down than this term is paid.
 Z2_LD_LO, Z2_LD_HI = 55.0, 80.0
@@ -815,13 +880,17 @@ def o_score(p, trace=None):
         _e3 = ERA3[p['peak_season']]
         _z2cr = min(1.0, max(0.0, (a['playvol'] - Z2_CR_LO) / (Z2_CR_HI - Z2_CR_LO)))
         _z2ld = min(1.0, max(0.0, (a['volume'] - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
-        _z2 = Z2_W * _e3 * _z2cr * _z2ld * min(Z2_CLEAR, max(0.0, z[1] - z[2]))
+        # recal_210: the transfer's own coefficient, and the shortfall it owes the third zone.
+        _z2c = Z2_W * _e3 * _z2cr * _z2ld
+        _z2bal = max(0.0, _z2c - Z2_VEC_W) * z[2]
+        _z2 = _z2c * min(Z2_CLEAR, max(0.0, z[1] - z[2])) + _z2bal
         std += _z2
         if trace is not None:
             trace['era_third_zone'] = dict(era=_e3, l3=_L3[p['peak_season']], foot=ERA3_FOOT,
                                            full=ERA3_FULL, creation=_z2cr, load=_z2ld,
                                            clearance=max(0.0, z[1] - z[2]), cap=Z2_CLEAR,
-                                           w=Z2_W, added=_z2)
+                                           w=Z2_W, coeff=_z2c, vec_w=Z2_VEC_W, balance=_z2bal,
+                                           added=_z2)
     elif trace is not None:
         trace['era_third_zone'] = None
     # EVERY FLOOR IS DELETED (recal_37). Specialist, maestro and creator each REPLACED the sum for
@@ -2938,8 +3007,13 @@ if _CARD:
               f"own min {_e2['foot']:.1f} / median {_e2['full']:.1f}: era share {_e2['era']:.3f}")
         print(f"  weight {_e2['w']} x era {_e2['era']:.3f} x creation {_e2['creation']:.3f} (playvol "
               f"over the pool's own {Z2_CR_LO:g}->{Z2_CR_HI:g}) x load {_e2['load']:.3f} (recal_131's "
-              f"volume line) x clearance {min(_e2['cap'], _e2['clearance']):.0f} "
-              f"(z1-z2 {_e2['clearance']:.0f}, capped at the pool's own p95 {_e2['cap']:g}) = +{_e2['added']:.3f}")
+              f"volume line) = coefficient {_e2['coeff']:.4f}")
+        print(f"  x clearance {min(_e2['cap'], _e2['clearance']):.0f} "
+              f"(z1-z2 {_e2['clearance']:.0f}, capped at the pool's own p95 {_e2['cap']:g})"
+              + (f" + recal_210 balance {_e2['balance']:.3f} (the transfer charges z[2] "
+                 f"{_e2['coeff']:.4f} a point and the vector pays it {_e2['vec_w']:g})"
+                 if _e2['balance'] > 0 else '')
+              + f" = +{_e2['added']:.3f}")
     elif 'era_third_zone' in _ot:
         print("ERA'S THIRD ZONE (recal_196) - did NOT fire (his shot chart is MEASURED, or his league's "
               "third zone was already the median league's)")
@@ -3122,6 +3196,48 @@ print("\nARCHETYPE CHECKS:")
 for nm in ["Dennis Rodman '92", "Trae Young '22", "Steve Kerr '96", "Shane Battier '06", "Dereck Lively II '24", "Rudy Gobert '19", "Draymond Green '16", "Carmelo Anthony '14", "Stephen Curry '16", "LeBron James '13", "Michael Jordan '88", "Kareem Abdul-Jabbar '80"]:
     m = [p for p in players if p['name'] == nm]
     if m: p = m[0]; print(f"  {p['name']:28s} OVR {p['ovr']}  O {p['o_ovr']}  D {p['d_ovr']}  paint {p['attrs']['rim']} mid {p['attrs']['mid']}")
+
+# recal_210 — THE MONOTONICITY LAW, PRINTED ON EVERY REGENERATION LIKE A PIN. His ruling ("how is
+# Bird losing 3pt and go up in rating? This has to be fixed") settles a LAW and not a number, so it
+# is reported the way anchors.json's numbers are: lower each of the three scoring bars by 1..10 on
+# every one of the 10,000 cards and count the cards that are paid MORE for LESS. Two counts, because
+# the round closed one half and the other half is a standing conflict he has to rule on:
+#   ZONE BLOCK  the vector 0.22/0.08/0.05 plus recal_196's era transfer. Monotone BY CONSTRUCTION
+#               after this round (403 -> 0), and this line is the guard: any later round that reopens
+#               the transfer's coefficient will print its own violation here.
+#   O_SCORE     the whole offensive score. 567 -> 448 cards. What is left is recal_37/38/43's
+#               zone-dominance bonus (459 cards: its shape reads z[0] against 1.5 x (z[1] + z[2]),
+#               so a weaker second or third zone lowers the bar and fires the bonus harder),
+#               recal_155's glue floor and is_big's own `rim >= 60` shape clause (98), and the
+#               `3pt < 68` exclusion ramps in recal_112/139/167 and recal_131 (31). Round 210
+#               measured the repair for the bonus and it is a TWO-SIDED anchor conflict — see the
+#               block above o_score and receipt 210.
+def _zone_block(_zq):
+    _ztr = {}
+    o_score(_zq, _ztr)
+    _ze = _ztr.get('era_third_zone')
+    return (sum(_zw * _zx for (_zl, _zx, _zw, _zy) in _ztr['terms'][:3])
+            + ((_ze or {}).get('added', 0.0) if _ze else 0.0))
+def _mono_count(_f):
+    """(cards, (card, bar) pairs) that are paid MORE for a LOWER bar. Reads the SCORE, not the
+    printed OFF, so the band's rounding cannot hide a violation."""
+    _n, _c = 0, 0
+    for _mq in players:
+        _ma, _mb, _hit = _mq['attrs'], _f(_mq), False
+        for _mbar in ('rim', 'mid', '3pt'):
+            _mo = _ma[_mbar]
+            for _md in range(1, 11):
+                if _mo - _md < 0: break
+                _ma[_mbar] = _mo - _md
+                if _f(_mq) > _mb + 1e-9:
+                    _n += 1; _hit = True; break
+            _ma[_mbar] = _mo
+        _c += 1 if _hit else 0
+    return _c, _n
+print(f"\nMONOTONICITY (recal_210's law — OFF must never rise when rim/mid/3pt falls):")
+print("  zone block (vector + recal_196 transfer): %d cards / %d (card,bar) pairs — must be 0" % _mono_count(_zone_block))
+print("  whole o_score: %d cards / %d (card,bar) pairs — the open conflict (recal_37/38/43's "
+      "dominance bonus, recal_155's glue floor + is_big, the 3pt exclusion ramps)" % _mono_count(o_score))
 
 # THE STANDING PINS, printed on every regeneration. recal_90 re-derived OFF_TOP and Shaq '00 fell
 # 99 -> 97 while four earlier receipts still carried him at 99 — and nothing said so until someone
