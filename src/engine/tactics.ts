@@ -1071,6 +1071,39 @@ const interior = (x: Attrs) => clamp((SHOOT_3PT_HI - x['3pt']) / 40, 0, 1)
 export const scorerCreator = (x: Attrs) => 0.45 * x.volume + 0.3 * x.efficiency + 25 * creation(x)
 
 /**
+ * THE PLAY-VOLUME GATE ON THE HELIO ENGINE (recal_206, his ruling: "2016 Spurs cant be Helio, bc
+ * Kawhi cant be the primary playmaker as well. Helio needs to be ran by a guy with high vol and
+ * playvol, not only one.").
+ *
+ * scorerCreator is a weighted SUM: a huge scoring load and a high efficiency carry a man to the top
+ * of it whether or not he ever runs anything, because 25 x creation is the only playmaking in it and
+ * it is worth at most 25 of the composite's ~100. Kawhi Leonard '16 (volume 85, efficiency 89,
+ * playvol 48) reads 80.4 — the best scorer-creator on his floor and the engine of a helio read the
+ * Spurs should never have had. His ruling says the helio engine is a CONJUNCTION: high volume AND
+ * high play volume, not one or the other.
+ *
+ * So the HELIO read — and only the helio read — prices the playmaking the engine does not do.
+ * HELIO_PV 65 is not chosen, it is the measurement: over the 1,255 wheel fives the men the engine
+ * currently picks as helio engines have a MEDIAN play volume of 65 (scripts/_tmp/grid206.ts; the
+ * whole board's first options run p50 58, the card pool p75 60). A man at or above the median
+ * offence-runner pays nothing; below it he pays HELIO_PV_W 0.45 of a point per point, continuously,
+ * with no cliff and no floor — a pure scorer at playvol 26 pays 17.6 and a non-passer pays more.
+ *
+ * It is ASYMMETRIC on purpose, because his ruling is: the volume side is already in the composite
+ * and the playmaking side is the gate that was missing. Nothing prices a man for scoring too little,
+ * so Magic Johnson '87 (volume 70, playvol 98) — the definition of the shape — is untouched, and so
+ * is every head of the list: Jokic '22 (96), James '18 (95), Doncic '24 (94), Price '94 (93),
+ * Wade '09 (91), Iverson '06 (88), Curry '16 (86), Harden '15 (85).
+ *
+ * scorerCreator itself is NOT touched: twoStars (the helio duo veto), the triangle's separation
+ * term and featured/heliMan all read the same composite they read before this round, so the only
+ * thing that moves is which fives FIT helio. Helio on the wheel: 200 of 1,255 before, 141 after.
+ */
+export const HELIO_PV = 65
+export const HELIO_PV_W = 0.45
+export const heliEngineScore = (x: Attrs) => scorerCreator(x) - HELIO_PV_W * Math.max(0, HELIO_PV - x.playvol)
+
+/**
  * TWO SUPERSTARS (his ruling: "why Helio when they have 2 superstars?"). Helio is one man being the
  * whole offence; two men who are both that man is a different team, and the read must say so.
  * General, no names: the five's top two by scorerCreator, both over STAR_LINE and within DUO_GAP of
@@ -1222,8 +1255,18 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // five with two stars scores low here by construction and bestStyle will not read it as helio
       // at all. The ball-security floor survives at a lighter weight — one man carrying an offence
       // still needs four who do not turn it over. Thunder '22 (Gilgeous-Alexander alone) reads 65.
+      //
+      // recal_206 (his ruling: "2016 Spurs cant be Helio, bc Kawhi cant be the primary playmaker as
+      // well. Helio needs to be ran by a guy with high vol and playvol, not only one."). The leading
+      // term is no longer the top composite on the floor but the ENGINE's helio score — the same
+      // composite, priced for the play volume he does not carry (heliEngineScore above). The
+      // separation term is untouched and still reads scorerCreator, because "does one man tower over
+      // the other four as a scorer" is the question it was written to ask. San Antonio '16 reads
+      // 63.9 -> 58.6 and falls to balanced; Denver '22 (Jokic) and the Lakers '87 (Johnson) do not
+      // move at all.
       const e = a.map(scorerCreator).sort((x, y) => y - x)
-      return 0.7 * e[0] + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
+      const engine = heliMan(five, null).creator
+      return 0.7 * (engine ? heliEngineScore(engine.attrs) : 0) + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
     }
   }
 }

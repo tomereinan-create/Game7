@@ -17,6 +17,9 @@ import {
   screenFit,
   STAR_LINE,
   heliMan,
+  heliEngineScore,
+  HELIO_PV,
+  HELIO_PV_W,
   popFit,
   popPair,
   postFit,
@@ -213,6 +216,60 @@ describe('two superstars are never read as helio', () => {
     // and a star beside a good second man is NOT two superstars
     const solo = cut("LeBron James '16", "Kyrie Irving '16", "J.R. Smith '16", "Kevin Love '16", "Timofey Mozgov '16")
     expect(twoStars(solo)).toBe(false)
+  })
+})
+
+/**
+ * THE HELIO ENGINE MUST ALSO PLAYMAKE (recal_206, his ruling: "2016 Spurs cant be Helio, bc Kawhi
+ * cant be the primary playmaker as well. Helio needs to be ran by a guy with high vol and playvol,
+ * not only one.").
+ *
+ * scorerCreator is a weighted SUM, so a big scoring load at a high efficiency carried a man who
+ * never ran an offence to the top of it. The HELIO read — and only that read — now prices the
+ * engine for the play volume he does not carry: HELIO_PV_W per point under HELIO_PV. The rule is
+ * asymmetric on purpose, so the men who ARE the shape (Johnson, Jokic, James) are untouched.
+ */
+const SPURS_16 = cut("Tony Parker '16", "Danny Green '16", "Kawhi Leonard '16", "LaMarcus Aldridge '16", "Tim Duncan '16")
+const LAKERS_87 = cut("Magic Johnson '87", "Byron Scott '87", "James Worthy '87", "A.C. Green '87", "Kareem Abdul-Jabbar '87")
+
+describe('a helio engine is high volume AND high play volume', () => {
+  it("the Spurs '16 are not a helio five: Leonard is the best scorer on the floor and not its playmaker", () => {
+    const kawhi = g("Kawhi Leonard '16").attrs
+    expect(kawhi.volume).toBeGreaterThanOrEqual(80)
+    expect(kawhi.playvol).toBeLessThan(HELIO_PV)
+    // he still wins the scorer-creator composite — the round does not move that
+    expect(Math.max(...SPURS_16.map((p) => scorerCreator(p.attrs)))).toBeCloseTo(scorerCreator(kawhi), 10)
+    expect(featured('helio', SPURS_16)[0].name).toBe("Kawhi Leonard '16")
+    // ...but the helio FIT is priced for the playmaking he does not do, and the five reads balanced
+    expect(heliEngineScore(kawhi)).toBeCloseTo(scorerCreator(kawhi) - HELIO_PV_W * (HELIO_PV - kawhi.playvol), 10)
+    expect(styleFit('helio', SPURS_16)).toBeLessThan(60)
+    expect(bestStyle(SPURS_16).style).toBe('balanced')
+  })
+
+  it('the price is continuous and one-sided: only the playmaking side is gated', () => {
+    // nothing is charged at or above the line, however little a man scores
+    const magic = g("Magic Johnson '87").attrs
+    expect(magic.playvol).toBeGreaterThanOrEqual(HELIO_PV)
+    expect(heliEngineScore(magic)).toBeCloseTo(scorerCreator(magic), 10)
+    expect(bestStyle(LAKERS_87).style).toBe('helio')
+    // and below it the charge grows a point at a time — no cliff anywhere on the axis
+    const charge = (playvol: number) => scorerCreator({ ...magic, playvol }) - heliEngineScore({ ...magic, playvol })
+    expect(charge(HELIO_PV)).toBeCloseTo(0, 10)
+    expect(charge(HELIO_PV + 20)).toBeCloseTo(0, 10)
+    for (let pv = HELIO_PV; pv > 1; pv--) {
+      expect(charge(pv - 1) - charge(pv)).toBeCloseTo(HELIO_PV_W, 10)
+      // the score itself still RISES with play volume, so nobody gains by passing less
+      expect(heliEngineScore({ ...magic, playvol: pv - 1 })).toBeLessThan(heliEngineScore({ ...magic, playvol: pv }))
+    }
+  })
+
+  it('the men who ARE the shape survive it, and the duo veto is untouched', () => {
+    // one clear star who also runs the offence: the read recal_115 pinned still stands
+    expect(bestStyle(THUNDER_22).style).toBe('helio')
+    expect(g("Shai Gilgeous-Alexander '22").attrs.playvol).toBeGreaterThanOrEqual(HELIO_PV)
+    // scorerCreator itself did not move, so the two-superstar veto reads exactly as before
+    expect(twoStars(THUNDER_16)).toBe(true)
+    expect(bestStyle(THUNDER_16).style).toBe('pnr')
   })
 })
 
