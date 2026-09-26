@@ -120,9 +120,9 @@
    "card": "Hakeem Olajuwon '94",
    "scale": "off",
    "op": "~",
-   "value": 89,
+   "value": 90,
    "tol": 0,
-   "label": "recal_196 subject, coefficient 0.0468 — inside the third zone's own weight. UNMOVED"
+   "label": "recal_196 subject, coefficient 0.0468 — inside the third zone's own weight. UNMOVED [pipeline-210 integration: reads 90 on main, where recal_207's 3pt re-sort sits under him; the branch's base (689a0a8) read 89]"
   },
   {
    "card": "Moses Malone '82",

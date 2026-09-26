@@ -773,6 +773,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * so the oracle's crash buys a little less. Bracketed: 0.50 +0.49 FAIL, 0.46 +0.50 PASS, 0.40 +0.52, 0.30 blind
  * -0.31 PASS (the floor is near 0.28) — window [~0.28, ~0.47], midpoint 0.38 (blind -0.37, oracle +0.53). hunt
  * 3.72 and crashOff 0.05 held. Landed crashDef 0.54 -> 0.38.
+ *
+ * PIPELINE 210 (integration of recal_210, on top of the Team-rating session's 209). Eight rows PASS at pipeline
+ * 207's constants; crashDef 0.38 lost its BLIND floor (-0.27) — 210 lifts 282 pre-1997 scorers' OFF, so the random
+ * crash costs less against that pool. Bracketed upward: 0.46 blind -0.33 PASS, 0.54 -0.39, 0.62 -0.44 / oracle
+ * +0.53, 0.70 -0.50 / +0.51 PASS (the oracle edge is near 0.74) — window [~0.42, ~0.74], midpoint 0.58 (blind
+ * -0.41, oracle +0.55). hunt 3.72 and crashOff 0.05 held. Landed crashDef 0.38 -> 0.58.
  */
 export const TAX = {
   scorer: 0.55,
@@ -782,7 +788,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.72,
   crashOff: 0.05,
-  crashDef: 0.38,
+  crashDef: 0.58,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
