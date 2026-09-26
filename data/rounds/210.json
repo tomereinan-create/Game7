@@ -1,0 +1,376 @@
+{
+ "round": 210,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "how is Bird losing 3pt and go up in rating? This has to be fixed",
+ "title": "the monotonicity law on the zone block — recal_196's era transfer charged the third zone 0.130 a point while the vector paid it 0.05, so it was a SUBTRACTION and not a transfer; the shortfall is now paid back and the block is monotone in rim, mid and 3pt by construction (403 -> 0 inverting cards). The dominance bonus is a measured two-sided anchor conflict and is reported, not applied",
+ "subject": "Larry Bird '83",
+ "scale": "off",
+ "target": 91,
+ "tol": 3,
+ "before": 88,
+ "after": 91,
+ "pipeline_version": 210,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_VEC_W = 0\\.05",
+   "label": "THE WHOLE ROUND, and it is not a new number — z[2]'s own weight in the zone vector, named so the balance can be written",
+   "note": "the 0.05 of `0.05*z[2]` two lines above o_score's zone block, hoisted to module scope"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_z2bal = max\\(0\\.0, _z2c - Z2_VEC_W\\) \\* z\\[2\\]",
+   "label": "THE BALANCE: what recal_196's clearance charges the third zone, minus what the vector pays it",
+   "note": "zero wherever era x creation x load <= 0.385, so every card that was already lawful is byte-identical"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_z2 = _z2c \\* min\\(Z2_CLEAR, max\\(0\\.0, z\\[1\\] - z\\[2\\]\\)\\) \\+ _z2bal",
+   "label": "recal_196's term, unchanged, plus the balance",
+   "note": "the four factors, the clearance and its p95 saturation are all untouched"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_W = 0\\.130",
+   "label": "recal_196's transfer coefficient, NOT lowered — the round pays the shortfall instead of cutting the transfer",
+   "note": "0.130 stays; capping it at 0.05 is the same law read as a subtraction and is provably infeasible (see COST)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "0\\.22\\*z\\[0\\] \\+ 0\\.08\\*z\\[1\\] \\+ 0\\.05\\*z\\[2\\]",
+   "label": "the zone vector itself, byte-identical — the law is met inside the era term, not by reweighting the board",
+   "note": "0.22 / 0.08 / 0.05 unchanged; every measured-era card moves by exactly zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_CLEAR = _pctl",
+   "label": "the clearance's saturation at the pool's own p95, untouched",
+   "note": "51.05; above it the term reads neither bar and is flat, which is monotone on its own"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "def _mono_count\\(_f\\):",
+   "label": "THE LAW IS PRINTED LIKE A PIN on every regeneration — anchors.json can hold a value but not a derivative",
+   "note": "two lines: the zone block (must be 0) and the whole o_score (the open conflict, 580 cards / 1003 pairs)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_shape = max\\(min\\(1\\.0, max\\(0\\.0, \\(z\\[0\\] - \\(91\\.0 - ZD_W\\)\\) / ZD_W\\)\\) if z\\[0\\] > z\\[1\\] \\+ z\\[2\\] else 0\\.0,",
+   "label": "recal_37/38/43's dominance shape, DELIBERATELY UNTOUCHED — the repair is a two-sided anchor conflict",
+   "note": "it still reads z[0] against 1.5 x (z[1] + z[2]); 459 cards still invert through it and that is his call"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = ",
+   "label": "recal_90's band anchors, NOT re-derived (the dispatch forbade it)",
+   "note": "102.75 / 104.25 unchanged; 13 cards sit above OFF_TOP, as before"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Larry Bird '82",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 1,
+   "label": "THE RULING'S SECOND SEASON: 84 -> 86, and at 3pt 14 he now reads 86 too instead of 85"
+  },
+  {
+   "card": "Larry Bird '84",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 1,
+   "label": "THE RULING'S THIRD SEASON: 90 -> 93, inside recal_196's own 91 +-3, and at 3pt 30 he reads 93 instead of 91"
+  },
+  {
+   "card": "Magic Johnson '90",
+   "scale": "off",
+   "op": "~",
+   "value": 93,
+   "tol": 0,
+   "label": "recal_196's OWN byte-identical card and recal_138's 93 +-1: era 0.60 x creation 1.00 x load 0.56 = 0.336, coefficient 0.0437, under 0.05, so the balance is 0.0000. UNMOVED"
+  },
+  {
+   "card": "Patrick Ewing '90",
+   "scale": "off",
+   "op": "~",
+   "value": 86,
+   "tol": 0,
+   "label": "recal_52's 85 +-1 with ZERO room up, and the card that closes the third route (coefficient 0.0335). UNMOVED"
+  },
+  {
+   "card": "Kareem Abdul-Jabbar '80",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 0,
+   "label": "THE BLOCKING PIN OF THE OTHER FORM: 90 +-3 reading 87, the bottom edge with zero room down. He is UNMOVED here and reads 85 under the capped-coefficient form"
+  },
+  {
+   "card": "George Gervin '80",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "the second blocking pin: 93 +-3 on its bottom edge. UNMOVED here, 89 under the capped form"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "off",
+   "op": "~",
+   "value": 89,
+   "tol": 0,
+   "label": "recal_196 subject, coefficient 0.0468 — inside the third zone's own weight. UNMOVED"
+  },
+  {
+   "card": "Moses Malone '82",
+   "scale": "off",
+   "op": "~",
+   "value": 85,
+   "tol": 1,
+   "label": "creation 0.00 (his second-zone looks come off the glass), so no term and no balance. UNMOVED"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 2,
+   "label": "recal_98's 90 +-2: a MEASURED shot chart, so the era term never fires for him. UNMOVED"
+  },
+  {
+   "card": "Michael Jordan '87",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 2,
+   "label": "recal_196's own subject at 96 +-2, and the largest star mover: 95 -> 96 on a balance of 1.05 of o_score"
+  },
+  {
+   "card": "Clyde Drexler '88",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 0,
+   "label": "recal_196 subject, coefficient 0.0936: balance +0.79 of o_score and he holds 88 exactly"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "the pin the dominance-bonus repair breaks (it reads 97 there). UNMOVED by this round"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 0,
+   "label": "the pin the dominance-bonus repair breaks the OTHER way (53 there). UNMOVED by this round"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_51's 58 +-1, zero room. UNMOVED"
+  },
+  {
+   "card": "Kevin Durant '13",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "recal_198's 98 +-1, measured era. UNMOVED"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "recal_90's 99 +-0. UNMOVED"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "the doctrine card. UNMOVED"
+  },
+  {
+   "card": "Dominique Wilkins '86",
+   "scale": "off",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "recal_196 reported him unreachable HERE and this round does not reach him either: creation 0.64 x era 0.86 x load 1.00 = 0.55, coefficient 0.0716, balance +0.47 of o_score, still 76"
+  },
+  {
+   "card": "Larry Bird '83",
+   "scale": "ovr",
+   "op": "~",
+   "value": 89,
+   "tol": 1,
+   "label": "THE SUBJECT'S OVR FOLLOWS HIS OFF: 87 -> 89 through the blend, no band and no marginal (recal_85)"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Larry Bird '84",
+   "below": "Larry Bird '83",
+   "label": "THE RULING ITSELF, read as an order: the season with the better arc (3pt 42) must not sit under the season with the worse one (3pt 28). 93 over 91, where the LAB had 91 against 88 the wrong way round"
+  },
+  {
+   "scale": "off",
+   "above": "Larry Bird '83",
+   "below": "Larry Bird '82",
+   "label": "the same sentence on the next pair: 3pt 28 over 3pt 25, 91 over 86"
+  },
+  {
+   "scale": "off",
+   "above": "Larry Bird '86",
+   "below": "Larry Bird '84",
+   "label": "and the three-zone Bird stays above the two-zone Bird: 3pt 86 reads 97 over 3pt 42's 93"
+  },
+  {
+   "scale": "off",
+   "above": "Michael Jordan '87",
+   "below": "Larry Bird '84",
+   "label": "recal_196's own pair keeps its order through the round: 96 over 93"
+  },
+  {
+   "scale": "off",
+   "above": "Kareem Abdul-Jabbar '80",
+   "below": "Moses Malone '82",
+   "label": "the two interior pins that bracket the term stay in order and both are unmoved: 87 over 85"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Clint Capela '17",
+   "label": "recal_47's standing order, untouched: 99 over 58"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 282,
+  "max_abs": 5,
+  "top": [
+   [
+    "Freeman Williams '81",
+    73,
+    78
+   ],
+   [
+    "Larry Bird '80",
+    75,
+    79
+   ],
+   [
+    "Fred Brown '80",
+    68,
+    72
+   ],
+   [
+    "World B. Free '86",
+    79,
+    82
+   ],
+   [
+    "World B. Free '85",
+    76,
+    79
+   ],
+   [
+    "Mark Aguirre '82",
+    74,
+    77
+   ],
+   [
+    "Larry Bird '85",
+    93,
+    96
+   ],
+   [
+    "Larry Bird '84",
+    90,
+    93
+   ],
+   [
+    "Larry Bird '83",
+    88,
+    91
+   ],
+   [
+    "Larry Bird '81",
+    76,
+    79
+   ],
+   [
+    "Freeman Williams '80",
+    77,
+    80
+   ],
+   [
+    "Fred Brown '81",
+    74,
+    77
+   ],
+   [
+    "Larry Bird '87",
+    98,
+    99
+   ],
+   [
+    "Michael Jordan '87",
+    95,
+    96
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kevin Durant '14",
+   "Larry Bird '87",
+   "LeBron James '12",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24"
+  ]
+ },
+ "cost": [
+  "THE HALF THAT IS NOT LANDED, AND IT IS A MEASURED TWO-SIDED ANCHOR CONFLICT: recal_37/38/43's ZONE-DOMINANCE BONUS, 459 of the 580 remaining inverting cards. Its shape is `max(ramp(z[0] - 88) if z[0] > z[1]+z[2], ramp(z[0] - (1.5*(z[1]+z[2]) - 3)))`, so a WEAKER second or third zone lowers the bar and fires a bonus worth 5 to 18 raw points harder — LeBron James '10 gains +1.655 of o_score for THREE points less mid, Dwyane Wade '09 +1.59 for seven. THE REPAIR IS FORCED IN SHAPE: the bonus's payment P runs 5 to 18, so d(bonus)/dz[1] = -0.5 x P is 60 to 220 times the 0.08 the vector pays z[1]; no width, no cap and no rescale can bring it inside the budget, and the ONLY monotone form reads the weapon against a FIXED bar. MEASURED, both directions: (a) shape = ramp(max(3pt,rim) against the existing 91 line), dropping the towering test and the 1.5 clause, takes the inversions 448 -> 82 printed cards and FAILS FOUR PINS in both directions at once — Stephen Curry '16 95 +-1 -> 97 and LeBron James '13 97 +-1 -> 99 (the towering test was the only thing keeping a broad-diet star out of a specialist bonus), Malik Beasley '23 58 +-3 -> 53 and Donyell Marshall '07 52 +-3 -> 48 (1,776 of the 2,268 cards the bonus pays have a weapon under 88 and lose it); 877 cards move, 463 up and 414 down. (b) Any LOWER fixed bar saves Beasley and makes Curry and LeBron worse; any HIGHER one does the reverse. HIS CALL: the law on that term costs four standing pins, and no parameterisation avoids it.",
+  "THE OTHER TWO RESIDUAL CLASSES, both outside this agent's lane. recal_155's GLUE FLOOR and is_big's own `rim >= 60` shape clause account for 98 cards, and the worst inversion on the whole board is a CLASS FLIP rather than a weight: Cedric Maxwell '80 drops rim 63 -> 59, stops being a big, collects the glue floor and prints OFF 66 -> 76 (+10); Maxwell '81 +9, Boris Diaw '06 +9, Kevin Gamble '91 +5. is_big drives DEF, d_bigness, the OVR cap branch and the archetype tree, so it cannot be moved from an OFF round. The last 31 are the `3pt < 68` EXCLUSION RAMPS in recal_112/139/167's interior premium, recal_131's paint floor and recal_204's conversion term — each is a class gate whose removal would pay the term to the shooters it exists to exclude.",
+  "THE CAPPED-COEFFICIENT FORM IS THE SAME LAW READ AS A SUBTRACTION AND IT IS PROVABLY INFEASIBLE, which is why the round pays the shortfall instead. With recal_196's own exclusion kept (a card whose third zone is as good as his second earns nothing), monotonicity bounds the whole transfer at 0.05 x (z1 - z2). KAREEM ABDUL-JABBAR '80 (rim 98 / mid 64 / 3pt 5, clearance 59) therefore has a ceiling of 2.95 of o_score against the 5.240 he collects and the 4.597 he needs to hold OFF 87 — the BOTTOM edge of recal_196's own 90 +-3, zero room down. Deficit 1.65 of o_score, 1.5 of printed OFF. The sweep confirms it: he reads 85 and George Gervin '80 (93 +-3, also on his bottom edge) reads 89, and those were the only two failures of 184 card pins.",
+  "AND THE FIXED-REFERENCE FORM (read the clearance against the league's own third zone instead of the card's) is infeasible from the other side. It pays every THREE-zone 1980s card the transfer, so Magic Johnson '90's 93 +-1 admits at most +1.29 of o_score while Kareem '80 needs +1.65 more than the bounded form gives him; and Patrick Ewing '90 closes it, because his second zone (67) is HIGHER than Kareem's (64) and he admits only +0.44 — no non-decreasing function of the second zone can reach Kareem without passing Ewing. Only a fitted step (reference ~57, cap ~7, weight ~0.83 a point, six times the vector's own top weight) satisfies all three, and that is a new term, not a repair.",
+  "THE THIRD ZONE IS NOW WORTH EXACTLY ZERO TO A FULL-PROFILE 1980s CARD INSIDE THE CLEARANCE'S LIVE REGION, and that is the transfer taken literally rather than a defect. For a card whose coefficient exceeds 0.05 the algebra collapses to 0.22*z[0] + (0.08+c)*z[1] + 0*z[2]: Larry Bird '84 reads 93 at 3pt 42 and 93 at 3pt 30, flat, never rising. Below the clearance's p95 saturation and for every coefficient under 0.05 the third slot keeps 0.05 - c. The era share fades to 0 by 2003 and the term only fires on an INFERRED shot chart (pre-1997), so no card with a real chart is affected either way.",
+  "ONE CARD ENTERED THE 99 CLUB ON OFF: Larry Bird '87, 98 -> 99 (17 cards at 99, none left). OFF_TOP was NOT re-derived and the count of cards above the anchor is unchanged at 13. DEF moves on ZERO cards, every attribute on zero, and the movers are 282 of 10,000 — EVERY ONE OF THEM UP, mean +1.30, max +5 — 237 of them 1980s cards and 45 from 1990-96, which is exactly the inferred no-third-zone class the term is defined on."
+ ],
+ "notes": [
+  "THE LAW, in his own words: 'how is Bird losing 3pt and go up in rating? This has to be fixed.' A card's OFF must never RISE when one of its scoring bars (rim, mid, 3pt) FALLS, everything else equal. The evidence is three seasons of one card from round 207's attribute move: Larry Bird '83 3pt 28 -> 15 and OFF 88 -> 89, '84 3pt 42 -> 30 and OFF 90 -> 91, '82 3pt 25 -> 14 and OFF 84 -> 85.",
+  "THE LAB REPRODUCES IT AND THEN CLOSES IT, on the shipped cards with nothing else touched. BEFORE — Bird '83 at 3pt 28 reads OFF 88 (raw 88.438) and at 3pt 15 reads 89 (raw 88.683): INVERSION. AFTER — 3pt 28 reads 91 (raw 90.510) and 3pt 15 reads 90 (raw 89.793): lawful. Bird '82: 84 / 85 becomes 86 / 86. Bird '84: 90 / 91 becomes 93 / 93.",
+  "WHERE IT LIVED, measured on the whole pool before anything was changed — lower each of the three bars by 1..10 on every one of the 10,000 cards and ask whether the score rises. 963 cards invert (1,391 card-bar pairs), 567 of them far enough to move printed OFF. Attributed to the term whose payment RISES when the bar falls: the dominance bonus 458 cards, recal_196's era third zone 400, the glue floor + is_big 98, the interior premium 16, the paint floor 13, conversion / off-ball / big hub 5.",
+  "THE DEFECT IS ARITHMETIC IN recal_196's OWN SENTENCE. That round says 'the weight the absent third zone cannot earn is TRANSFERRED to the second' and pays it on the clearance, c x (z1 - z2), at c = 0.130 x era x creation x load. Multiply the bracket out: the term CHARGES the third zone c a point while the vector PAYS it 0.05. Wherever c > 0.05 a point of the third zone costs more than it earns, and that difference — up to 0.08 a point, the third zone's own weight over again — IS the inversion. Bird '83's thirteen points of 3pt earned 0.65 and cost 1.69: net +1.04 of o_score, +0.97 of raw OFF, his printed point. A transfer that destroys weight is not a transfer; 0.130 is two and a half times the 0.05 it claimed to be moving.",
+  "THE FIX IS THE WORD 'TRANSFERRED', MADE EXACT, and it introduces no number: `max(0, c - Z2_VEC_W) x z[2]`, where Z2_VEC_W is the 0.05 of `0.05*z[2]` in the vector itself. Written out, the zone block of a no-third-zone card becomes 0.22*z[0] + (0.08 + c)*z[1] + max(0, 0.05 - c)*z[2] — the second zone takes the third zone's weight, and when c reaches 0.05 the third slot is empty and the WHOLE of it has moved, which is the sentence the round wrote.",
+  "MONOTONE BY CONSTRUCTION, and the proof is two lines rather than a sweep. Below the clearance's saturation d(total)/dz[1] = 0.08 + c >= 0 and d(total)/dz[2] = max(0.05, c) - c >= 0; above it the term reads neither bar and the vector alone decides, 0.08 and 0.05. z[0], z[1] and z[2] are order statistics of the three bars and each is non-decreasing in each bar, so a payment non-decreasing in the sorted vector is non-decreasing in rim, in mid and in 3pt. The sweep is the receipt and not the argument: the zone block goes from 403 inverting cards to 0.",
+  "IT CAN ONLY EVER ADD, AND IT IS THE IDENTITY FOR EVERY CARD THAT WAS ALREADY LAWFUL. The balance is zero wherever era x creation x load <= 0.385, so recal_196's own protected cards do not move by a thousandth: Magic Johnson '90 (93 +-1, c = 0.0437) — the card the round was built to leave alone — Patrick Ewing '90 (c = 0.0335), Hakeem Olajuwon '94 (0.0468), Hakeem '90 (0.0445), Moses Malone '82 and '85 (creation 0.00) and every measured-era card, Karl Malone '99 included, which has no term at all. 282 of 10,000 cards move, EVERY ONE UP, and all 282 are pre-1997 inferred cards.",
+  "WHY THE 1980s RISING IS THE RIGHT DIRECTION AND NOT COLLATERAL. recal_196 exists because of two of his rulings — '80s wings OFF is too low. MJ, Drexler, Pippen, Bird, Wilkins, Gervin' and 'Even Hakeem and Kareem OFF is too low' — and it reported four of those six as unreached. This round pays the shortfall recal_196 was destroying and the same class moves: Bird '83 88 -> 91, '84 90 -> 93, '85 93 -> 96, '86 95 -> 97, '87 98 -> 99, Michael Jordan '87 95 -> 96, Julius Erving '80 95 -> 96, Alex English '83 93 -> 94, Adrian Dantley '84 96 -> 97, Isiah Thomas '85 79 -> 80. Dominique Wilkins '86 and Scottie Pippen '92, which recal_196 declared unreachable HERE, are still 76 and 75 — their clearance is small and the balance cannot make a zone inference into a shot chart, exactly as that round said.",
+  "ALL 212 ANCHORS PASS (211 standing plus this round's own), 0 failing, mean |error| 1.00 — unchanged from the base. The 184 card-scale pins were graded independently on every variant: the capped-coefficient form fails 2 (Kareem '80, Gervin '80) and the dominance-bonus repair fails 4 (Curry '16, LeBron '13, Beasley '23, Donyell Marshall '07). This form fails none.",
+  "THE LAW IS NOW PRINTED ON EVERY REGENERATION, in two lines beside the anchor table, because anchors.json can hold a value but not a derivative: the zone block (must be 0) and the whole o_score (580 cards / 1,003 card-bar pairs, the open conflict). A later round that reopens recal_196's coefficient, or that lands the bonus repair, will print its own reading there."
+ ]
+}
