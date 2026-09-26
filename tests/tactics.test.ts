@@ -37,6 +37,10 @@ import {
   STYLES,
   stylePts,
   triangleReaders,
+  passChain,
+  ballStop,
+  MOT_CHAIN,
+  MOT_HOLD_FREE,
   TRI_POST,
   twoStars,
   type PnrPair,
@@ -809,5 +813,118 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     expect(SAMPLE.length).toBeGreaterThan(400)
     expect(iso / SAMPLE.length).toBeGreaterThan(0.03)
     expect(iso / SAMPLE.length).toBeLessThan(0.1)
+  })
+})
+
+/**
+ * MOTION (recal_211, his ruling: "yes do the motion round"). The read was dead — three of the 1,255
+ * wheel fives after recal_208 took the Mavericks '17 — because half the old fit's weight was ball
+ * SECURITY and the passing half was a MEAN a lone point guard carried. What it asks now is whether
+ * the men who are NOT the lead passer still pass (passChain), whether there is a man who holds it
+ * (ballStop, continuous where recal_58 had a category), and it shades that with the mean three and
+ * the mean ball security. The subject is DECLINED with its measurement: the Spurs '16 STARTERS do
+ * not reach it, and the bench unit the research names does.
+ */
+describe('motion is the ball advanced by the pass, and it is a live read again', () => {
+  const HEAT_24 = cut("Terry Rozier '24", "Tyler Herro '24", "Duncan Robinson '24", "Jimmy Butler '24", "Bam Adebayo '24")
+  const PISTONS_07 = cut("Chauncey Billups '07", "Richard Hamilton '07", "Tayshaun Prince '07", "Chris Webber '07", "Rasheed Wallace '07")
+  /** the unit Pounding The Rock and nbamath name as the Spurs' motion offence — Ginobili '16 has no card */
+  const SPURS_16_BENCH = cut("Patty Mills '16", "Kyle Anderson '16", "Boris Diaw '16", "David West '16")
+  const bump = (five: Player[], name: string, k: keyof Player['attrs'], v: number): Player[] =>
+    five.map((p) => (p.name === name ? { ...p, attrs: { ...p.attrs, [k]: v } } : p))
+  /** every third team-season on the wheel, cut the way the app cuts it: a deterministic sample. */
+  const MOTION_SAMPLE: Player[][] = []
+  const BY_M = new Map(PLAYERS.map((q) => [q.name, q]))
+  for (let i = 0; i < WHEEL.length; i += 3) {
+    const roster = WHEEL[i].p.map((n) => BY_M.get(n)).filter((q): q is Player => !!q)
+    if (roster.length < 5) continue
+    const five = startingFive(roster).five.filter((q): q is Player => !!q)
+    if (five.length === 5) MOTION_SAMPLE.push(five)
+  }
+
+  it('it is a signature system, not a second balanced: 53 of the 1,255 wheel fives', () => {
+    const n = MOTION_SAMPLE.filter((five) => bestStyle(five).style === 'motion').length
+    expect(MOTION_SAMPLE.length).toBeGreaterThan(400)
+    expect(n / MOTION_SAMPLE.length).toBeGreaterThan(0.02)
+    expect(n / MOTION_SAMPLE.length).toBeLessThan(0.08)
+  })
+
+  it("Miami's pass-and-cut Heat and the Webber Pistons read it", () => {
+    expect(bestStyle(HEAT_24).style).toBe('motion')
+    expect(bestStyle(PISTONS_07).style).toBe('motion')
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'motion' }, HEAT_24)).toBeGreaterThan(0)
+    // ...and calling it on a five that runs everything through one handler COSTS, the tax law as written
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'motion' }, SUNS_05)).toBeLessThan(0)
+  })
+
+  it('THE PASS CHAIN is read at the weak end: the lead passer cannot buy it', () => {
+    // passChain is the three LOWEST play volumes, so the man who already runs it adds nothing...
+    expect(passChain(HEAT_24.map((p) => p.attrs))).toBeCloseTo((43 + 53 + 61) / 3, 6)
+    expect(styleFit('motion', bump(HEAT_24, "Jimmy Butler '24", 'playvol', 99))).toBeCloseTo(styleFit('motion', HEAT_24), 6)
+    // ...and one more pass out of the man who passes least is worth MOT_CHAIN / 3 a point
+    const up = styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', 53))
+    expect(up - styleFit('motion', HEAT_24)).toBeCloseTo((MOT_CHAIN * 10) / 3, 6)
+  })
+
+  it('THE MAN WHO HOLDS IT is charged continuously — recal_58 had a cliff, and Aldridge sat under it', () => {
+    // the old term was `volume >= 90 && playvol < 50` at -12 a head: Aldridge '16 (volume 88) was one
+    // point of volume from free. Now his scoring load over his passing load is charged by the point.
+    const lma = g("LaMarcus Aldridge '16").attrs
+    expect(lma.volume - lma.playvol).toBe(63)
+    expect(ballStop([lma])).toBe(63 - MOT_HOLD_FREE)
+    // no cliff anywhere on the curve, and nothing is charged inside the free allowance
+    const at = (vol: number) => ballStop([{ ...lma, volume: vol }])
+    for (let v = 10; v < 99; v++) expect(at(v + 1) - at(v)).toBeCloseTo(v + 1 <= lma.playvol + MOT_HOLD_FREE ? 0 : 1, 6)
+    expect(at(lma.playvol + MOT_HOLD_FREE)).toBe(0)
+    // and it reads the WORST holder only: one man standing still is what kills the set
+    expect(ballStop(SPURS_16.map((p) => p.attrs))).toBe(63 - MOT_HOLD_FREE)
+  })
+
+  it('it is not the triangle: there is no post option in it at all', () => {
+    // the triangle is a post option plus mid-range readers (recal_128); motion never asks either
+    // question, so the whole fit is blind to rim and mid
+    let flat = HEAT_24
+    for (const p of HEAT_24) flat = bump(bump(flat, p.name, 'rim', 1), p.name, 'mid', 1)
+    expect(styleFit('motion', flat)).toBeCloseTo(styleFit('motion', HEAT_24), 6)
+    expect(styleFit('triangle', flat)).toBeLessThan(styleFit('triangle', HEAT_24))
+  })
+
+  it('every term is monotone and continuous — more passing, more shooting, fewer turnovers', () => {
+    const base = styleFit('motion', HEAT_24)
+    expect(styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', 44))).toBeGreaterThan(base)
+    expect(styleFit('motion', bump(HEAT_24, "Bam Adebayo '24", '3pt', 25))).toBeGreaterThan(base)
+    expect(styleFit('motion', bump(HEAT_24, "Bam Adebayo '24", 'ballsec', 52))).toBeGreaterThan(base)
+    expect(styleFit('motion', bump(HEAT_24, "Tyler Herro '24", 'volume', 99))).toBeLessThan(base)
+    for (let v = 1; v < 99; v++) {
+      const step =
+        styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', v + 1)) -
+        styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', v))
+      expect(Math.abs(step)).toBeLessThanOrEqual(MOT_CHAIN + 1e-9)
+    }
+  })
+
+  it("HIS RULING, and the DECLINE with it: the Spurs '16 STARTERS do not reach motion, their BENCH does", () => {
+    // "Motion, or balanced" — and the cards say balanced, for the reason the research gives: the
+    // starters isolated for Aldridge and Leonard, and Aldridge is the worst holder on any pinned five
+    expect(styleFit('motion', SPURS_16)).toBeLessThan(60)
+    expect(bestStyle(SPURS_16).style).toBe('balanced')
+    // the unit that actually ran motion reads motion, and by 20 points on the starters
+    expect(bestStyle(SPURS_16_BENCH).style).toBe('motion')
+    expect(styleFit('motion', SPURS_16_BENCH) - styleFit('motion', SPURS_16)).toBeGreaterThan(20)
+  })
+
+  it('and it does not move a read a ruling has pinned', () => {
+    for (const [five, style] of [
+      [BULLS_97, 'triangle'],
+      [CELTICS_25, 'fiveout'],
+      [JAZZ_97, 'pnr'],
+      [SUNS_05, 'pnr'],
+      [THUNDER_16, 'pnr'],
+      [THUNDER_22, 'helio'],
+      [LAKERS_87, 'helio'],
+    ] as [Player[], Style][]) {
+      expect(bestStyle(five).style).toBe(style)
+      expect(styleFit('motion', five)).toBeLessThan(styleFit(style, five))
+    }
   })
 })
