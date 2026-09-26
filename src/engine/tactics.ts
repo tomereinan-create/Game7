@@ -767,6 +767,12 @@ export const DEFAULT_TACTICS: Tactics = {
  * 3.68 blind -0.30 PASS, 3.75 -0.36 / oracle +0.51 PASS, 3.80 oracle +0.49 FAIL, 3.90 +0.44 — window
  * [~3.67, ~3.77], midpoint 3.72 (blind -0.33, oracle +0.52). crashOff 0.05 and crashDef 0.54 held. Landed hunt
  * 3.65 -> 3.72. 205's branch re-ratification (hunt 3.74 / crashOff .13 / crashDef .30) is superseded, not stacked.
+ *
+ * PIPELINE 207 (integration of recal_207, on top of the Team-rating session's recal_206). Eight rows PASS at pipeline
+ * 205's constants; crashDef 0.54 lost its ORACLE edge (+0.48) — 207 re-sorts 2,600 three-point bars (1,880 down),
+ * so the oracle's crash buys a little less. Bracketed: 0.50 +0.49 FAIL, 0.46 +0.50 PASS, 0.40 +0.52, 0.30 blind
+ * -0.31 PASS (the floor is near 0.28) — window [~0.28, ~0.47], midpoint 0.38 (blind -0.37, oracle +0.53). hunt
+ * 3.72 and crashOff 0.05 held. Landed crashDef 0.54 -> 0.38.
  */
 export const TAX = {
   scorer: 0.55,
@@ -776,7 +782,7 @@ export const TAX = {
   scheme: 0.80,
   hunt: 3.72,
   crashOff: 0.05,
-  crashDef: 0.54,
+  crashDef: 0.38,
 }
 
 const TEMPO_LVL: Record<Tactics['tempo'], number> = { fast: 1, normal: 0, slow: -1 }
