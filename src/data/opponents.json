@@ -793,11 +793,11 @@
         "peak_season": 2026,
         "talent": 66,
         "in": 75,
-        "out": 19,
+        "out": 20,
         "id": 55,
         "pd": 53,
         "attrs": {
-          "3pt": 16,
+          "3pt": 17,
           "rim": 68,
           "mid": 56,
           "rim_mid_measured": true,
@@ -2158,7 +2158,7 @@
         "o_ovr": 59,
         "d_ovr": 58,
         "ovr": 59,
-        "marg": 69
+        "marg": 68
       },
       {
         "name": "Moses Moody '26",
@@ -2656,7 +2656,7 @@
         "peak_season": 2026,
         "talent": 82,
         "in": 69,
-        "out": 32,
+        "out": 33,
         "id": 87,
         "pd": 64,
         "attrs": {
@@ -4933,7 +4933,7 @@
         "peak_season": 2026,
         "talent": 71,
         "in": 79,
-        "out": 5,
+        "out": 4,
         "id": 75,
         "pd": 53,
         "attrs": {
@@ -5685,11 +5685,11 @@
         "peak_season": 2026,
         "talent": 83,
         "in": 68,
-        "out": 12,
+        "out": 11,
         "id": 88,
         "pd": 97,
         "attrs": {
-          "3pt": 10,
+          "3pt": 9,
           "rim": 58,
           "mid": 21,
           "rim_mid_measured": true,
@@ -5723,11 +5723,11 @@
         "peak_season": 2026,
         "talent": 75,
         "in": 73,
-        "out": 25,
+        "out": 26,
         "id": 88,
         "pd": 59,
         "attrs": {
-          "3pt": 22,
+          "3pt": 23,
           "rim": 60,
           "mid": 36,
           "rim_mid_measured": true,

@@ -101,12 +101,15 @@ const SECTIONS: Section[] = [
     k: '3pt',
     title: '3pt',
     rows: (_p, v) => [
-      { label: 'path', value: v[0] === 0 ? 'GUNNER' : v[0] === 1 ? 'DEADEYE' : 'under 2 attempts/100 — FT-touch fallback' },
+      { label: 'path', value: v[0] === 0 ? 'GUNNER' : v[0] === 1 ? 'DEADEYE' : 'under 2 attempts/100 — volume-first, no deadeye path' },
       { label: '3PA /100 (raw)', value: n1(v[1]) },
       { label: 'era multiplier', value: `×${n1(v[2])}` },
       { label: '3P%', value: pc(v[3]) },
       { label: 'volume percentile (era-adj, modern pool)', value: ptl(v[4]) },
       { label: 'accuracy percentile (modern pool)', value: ptl(v[5]) },
+      // recal_207: under 2 attempts/100 the accuracy leg is a sample-weighted blend of the measured
+      // 3P% percentile and the FT touch-prior. Shown only when the sample is short of the foot.
+      ...((v[7] ?? 1) < 1 ? [{ label: 'accuracy sample weight (49.6 attempts = whole)', value: `×${n1(v[7])}` }] : []),
       // the gate multiplier is a season input, not an essay — it stays as a row
       ...((v[6] ?? 1) < 1 ? [{ label: 'chucker gate', value: `×${n1(v[6])}` }] : []),
     ],

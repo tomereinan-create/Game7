@@ -2034,5 +2034,14 @@
     "round": 205,
     "ruling": "Rodney McCray '88 DEF 81 -> target 88 +-3",
     "note": "recal_205: the position branch's rim-presence ramp (recal_187) takes its TOP from the lead perdef has over rimprot, over recal_164's own width 10 - POS_RP_HI 55 at no lead, recal_99's deterrence foot DET_LO 68 at a lead of ten or more. 1988 All-Defensive FIRST team, 6'7\" (height 79), 33.2 mpg, perdef 93 / discipline 93 / rimprot 56 / drb 57 / perimdisrupt 12: recal_103's gap test cannot see him (perimdisrupt - drb = -45) and recal_187's ramp saturated one point under his rimprot, so he was 1.000 big on a big vector of 72.0 against his own perimeter vector of 80.7. He lands on 87, the bottom half of this tolerance and #8 of 1988 behind Cooper (93) and Alvin Robertson (91); 88 exactly would need the ramp's top above DET_LO, which is a constant this file already spends on deterrence."
+  },
+  {
+    "card": "Tony Parker '16",
+    "scale": "attr:3pt",
+    "target": 48,
+    "tol": 5,
+    "round": 207,
+    "ruling": "Why does 2016 Parker have accuracy percentile 16 when he is shooting 40+% from 3? ... I want it fixed, mid 40s to 50s is fine for Parker '16.",
+    "note": "THE ACCURACY LEG'S 2-ATTEMPTS/100 DOOR BECOMES A RAMP ON THE SAMPLE BEHIND THE PERCENTAGE. 27 of 65 at .415 over 1,980 minutes is 1.7 3PA/100, under the gate, so his .415 was never read and the leg reported 0.35 x his FREE-THROW percentile instead (0.155, p16) - which ranked Michael Jordan '89 (27 of 98, .276) ABOVE him. The FT stand-in is now blended toward the measured 3P% percentile over the attempt COUNT, whole at ACC_CNT_FULL = 49.6 attempts: the retired gate's own arithmetic (2 3PA/100 x MIN_MP 1200 at the median league pace 99.27), confirmed from the other end by the 47.3-attempt smallest sample the gate already admitted. 29 -> 45 (OFF 65 -> 66), the low half of his band, and 45 is close to the CEILING of this term - the accuracy percentile saturates at 1.0 and the 20/60/20 smoother blends his '15 (77 pre-smooth) and '17 (21) into him, so even a perfect accuracy prints 47. 3 of 6 still buys nothing (Andre Drummond '13 unmoved at 6, sample weight 0.048). LANDED WITH ONE ANCHOR IN CONFLICT: recal_117's John Stockton '90 off 84 +-3 reads 88 (47 of 113 at .416 on 1.9 3PA/100 - the same card with a larger sample), and no sample foot exists that lands this ruling and holds that band. See data/rounds/207.json COST."
   }
 ]

@@ -1,0 +1,455 @@
+{
+ "round": 207,
+ "agent": "stats-to-ratings",
+ "status": "done",
+ "ruling": "Why does 2016 Parker have accuracy percentile 16 when he is shooting 40+% from 3? ... I want it fixed, mid 40s to 50s is fine for Parker '16.",
+ "title": "the 3pt ACCURACY leg's 2-attempts/100 door becomes a ramp on the SAMPLE BEHIND THE PERCENTAGE — the FT stand-in is blended toward the measured 3P% percentile over the attempt COUNT, saturating at ACC_CNT_FULL = 49.6 attempts, which is the old gate's own arithmetic (2 3PA/100 x MIN_MP 1200 at the median league pace) and the smallest sample the gate already admitted (47.3)",
+ "subject": "Tony Parker '16",
+ "scale": "attr:3pt",
+ "target": 48,
+ "tol": 5,
+ "before": 29,
+ "after": 45,
+ "pipeline_version": 207,
+ "knobs": [
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "ACC_CNT_FULL = 2\\.0 \\* \\(MIN_MP \\* _MED_PACE / 48\\.0\\) / 100\\.0",
+   "label": "THE WHOLE ROUND'S ONE CONSTANT, and it is not a new one — the retired gate restated in attempts",
+   "note": "2 3PA/100 over the file's own minimum qualifying season (MIN_MP = 1200) at the median league pace 99.27 = 49.6 attempts; the smallest sample the gate already admitted whole is 47.3"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_accw = min\\(1\\.0, _att3_count\\(r\\) / ACC_CNT_FULL\\)",
+   "label": "the ramp itself — the sample weight, zero at no attempts and whole at the foot",
+   "note": "replaces a hard step at 2 raw 3PA/100"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "acc = _stand3 \\+ _accw\\*\\(P_3pp_mod\\(p3\\) - _stand3\\)",
+   "label": "the blend — FROM the old stand-in, TOWARD the measured percentile, never past it",
+   "note": "Parker '16: 0.155 -> 0.920, the value his .415 always had"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_stand3 = 0\\.35\\*P\\['ft_pct'\\]\\(r\\['ft_pct'\\]\\)",
+   "label": "the FT touch-prior, UNCHANGED and whole at the bottom",
+   "note": "0.35 x the FT percentile, exactly as before; a card with no three-point sample keeps it entire"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "def _att3_count\\(r\\):",
+   "label": "recal_78's attempt-count estimator, reused — no new input is read",
+   "note": "minutes x league pace / 48 = possessions on the floor, times the per-100 rate"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "P_3pp_mod = pctile\\(\\[r\\['x3p_pct'\\] for r in mod if \\(r\\['x3pa_per_100'\\] or 0\\) >= 2\\]\\)",
+   "label": "THE REFERENCE POOL IS UNTOUCHED — 2,763 modern cards define the accuracy scale before and after",
+   "note": "the rate line still decides WHO DEFINES the scale; it no longer decides whose percentage is read"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "elif \\(r\\['x3pa_per_100'\\] or 0\\) >= 2:",
+   "label": "recal_185's DEADEYE path keeps its own 2-attempts/100 test, untouched",
+   "note": "the deadeye path pays MEASURED accuracy; under the line the leg is a sample-weighted blend, so there is still nothing for it to pay"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "GUN_BOOST = min\\(1\\.0, gun \\* \\(1 \\+ 0\\.08\\*_cnt3\\)\\)",
+   "label": "recal_202's gunner boost, untouched",
+   "note": "the round touches the accuracy leg's gate and nothing else in the composite"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "_prem3 = 0\\.07\\*_cnt3\\*max\\(0\\.0, \\(vol - 0\\.70\\)/0\\.30\\)",
+   "label": "recal_202's high-volume premium, untouched",
+   "note": "Parker's vol is 0.189 and stays 0.189 — the volume leg is not paid twice"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Tony Parker '15",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 61,
+   "tol": 2,
+   "label": "HIS OWN ARC, and it stays an arc: 53 -> 61 (his '15 is above the rate gate at 2.3; it moves only because the smoother blends his '14 and '16 into it)"
+  },
+  {
+   "card": "Tony Parker '14",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 40,
+   "tol": 2,
+   "label": "the other under-gate season, 1.7 3PA/100 on 66 attempts at .373: 31 -> 40"
+  },
+  {
+   "card": "Tony Parker '13",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 24,
+   "tol": 2,
+   "label": "his peak card moves 19 -> 24 and his OFF 87 -> 88"
+  },
+  {
+   "card": "Tony Parker '17",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 26,
+   "tol": 2,
+   "label": "20 -> 26, all of it through the smoother — '17 is 2.2 3PA/100, above the rate line, and is byte-identical pre-smooth"
+  },
+  {
+   "card": "Richard Hamilton '06",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 60,
+   "tol": 0,
+   "label": "recal_185's ANCHOR, sitting at the bottom of its 65 +-5 band and named in the dispatch as the card that must not fall: 2.3 3PA/100 on 123 attempts, above the rate line, BYTE-IDENTICAL at 60"
+  },
+  {
+   "card": "Jim Les '91",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 93,
+   "tol": 0,
+   "label": "recal_202's anchor, 5.6 3PA/100 on 154 attempts: BYTE-IDENTICAL at 93"
+  },
+  {
+   "card": "Andre Drummond '13",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 6,
+   "tol": 0,
+   "label": "THE BOTTOM OF THE RAMP, AND THE WHOLE REASON IT IS A RAMP: 3 of 6 from three, .500, an accuracy percentile of 0.999 if anyone read it. Sample weight 0.048, so he keeps 95% of the FT stand-in and reads 6, exactly as before. 3 for 6 buys nothing."
+  },
+  {
+   "card": "Jim McIlvaine '98",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 8,
+   "tol": 0,
+   "label": "the same floor from the other side, 0 for 5: BYTE-IDENTICAL at 8. 808 of the 1,380 cards under a 0.2 sample weight move by exactly zero"
+  },
+  {
+   "card": "John Stockton '90",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 0,
+   "label": "THE ANCHOR CONFLICT, RECORDED AS MEASURED AND NOT AS WISHED. 47 of 113 from three at .416 on 1.9 3PA/100 — attr:3pt 25 -> 59, OFF 86 -> 88, one point outside recal_117's John Stockton '90 off 84 +-3. See COST: no sample foot exists that lands the subject and holds this band."
+  },
+  {
+   "card": "Detlef Schrempf '87",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "THE LARGEST MOVE ON THE BOARD, +51: 33 of 69 at .478 in 1987, an era multiplier of 1.99 — the card the old gate scored as a man who could not shoot"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 23,
+   "tol": 2,
+   "label": "THE CLASS THAT FALLS, and it is the round's own argument: 27 of 98 at .276 read 30 under the stand-in (0.35 x his .850 FT percentile) — ABOVE Parker's .415. Now 23, and his OFF is unmoved at 99"
+  },
+  {
+   "card": "Larry Bird '83",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 15,
+   "tol": 2,
+   "label": "the same reading, -13: 22 of 77 at .286. His OFF goes UP (88 -> 89) because compute_ovr's zone shape re-sorts him toward the paint"
+  },
+  {
+   "card": "Larry Bird '86",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 86,
+   "tol": 0,
+   "label": "THE PEAK BIRD CARDS ARE UNTOUCHED: 82 of 194, well above the rate line. BYTE-IDENTICAL at 86, and '88 at 74"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "the star OFF pin, unmoved"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "the star OFF pin, unmoved"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 61,
+   "tol": 1,
+   "label": "specialist pin, unmoved"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "specialist pin, unmoved"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 0,
+   "label": "specialist pin, unmoved"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 0,
+   "label": "specialist pin, unmoved"
+  },
+  {
+   "card": "Sam Hauser '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "specialist pin, unmoved"
+  },
+  {
+   "card": "Buddy Hield '25",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_137's specialist, unmoved"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_137's specialist, unmoved"
+  },
+  {
+   "card": "Steve Novak '13",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "unmoved"
+  },
+  {
+   "card": "Anthony Tolliver '14",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "unmoved"
+  },
+  {
+   "card": "Matt Bullard '92",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 89,
+   "tol": 0,
+   "label": "unmoved"
+  },
+  {
+   "card": "Dennis Scott '94",
+   "scale": "attr:3pt",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "unmoved (round 206 holds this card's pin; this round does not reach it)"
+  },
+  {
+   "card": "Tony Parker '16",
+   "scale": "off",
+   "op": "~",
+   "value": 66,
+   "tol": 1,
+   "label": "THE SUBJECT'S OFF FOLLOWS BY ONE: 65 -> 66, OVR 60 -> 61. The 3pt bar is a zone input, not a scoring term"
+  }
+ ],
+ "order": [
+  {
+   "scale": "attr:3pt",
+   "above": "Tony Parker '15",
+   "below": "Tony Parker '16",
+   "label": "HIS OWN ARC KEEPS ITS SHAPE: the season he took them at 2.3 a hundred still reads above the season he took them at 1.7, 61 against 45"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Tony Parker '16",
+   "below": "Tony Parker '14",
+   "label": ".415 above .373 on the same 1.7 attempts a hundred, 45 against 40 — the ordering the stand-in could not see at all"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Tony Parker '16",
+   "below": "Michael Jordan '89",
+   "label": "THE INVERSION THIS ROUND EXISTS TO FIX. 27 of 65 at .415 now reads above 27 of 98 at .276, 45 against 23. It was 29 against 30"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Jim Les '91",
+   "below": "Tony Parker '16",
+   "label": "recal_202's anchor still stands far above the subject, 93 against 45"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Richard Hamilton '06",
+   "below": "Tony Parker '16",
+   "label": "recal_185's anchor holds its place over the subject, 60 against 45 — .458 on 123 attempts above .415 on 65"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Stephen Curry '16",
+   "below": "Detlef Schrempf '87",
+   "label": "the largest riser on the board does not approach the top: 99 against 70"
+  },
+  {
+   "scale": "attr:3pt",
+   "above": "Detlef Schrempf '87",
+   "below": "Andre Drummond '13",
+   "label": "69 attempts at .478 above 6 attempts at .500 — the ramp reading sample size, which is its whole job"
+  },
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "Tony Parker '16",
+   "label": "96 against 66"
+  }
+ ],
+ "movers": {
+  "scale": "attr:3pt",
+  "count": 2600,
+  "max_abs": 51,
+  "top": [
+   [
+    "Detlef Schrempf '87",
+    19,
+    70
+   ],
+   [
+    "Campy Russell '82",
+    20,
+    69
+   ],
+   [
+    "John Long '88",
+    29,
+    70
+   ],
+   [
+    "Andrew Toney '82",
+    21,
+    58
+   ],
+   [
+    "John Stockton '90",
+    25,
+    59
+   ],
+   [
+    "Trent Tucker '85",
+    37,
+    68
+   ],
+   [
+    "John Battle '88",
+    18,
+    49
+   ],
+   [
+    "Ricky Sobers '83",
+    30,
+    60
+   ],
+   [
+    "T.J. McConnell '23",
+    18,
+    42
+   ],
+   [
+    "Tony Parker '16",
+    29,
+    45
+   ],
+   [
+    "Allen Leavell '88",
+    29,
+    16
+   ],
+   [
+    "Larry Bird '83",
+    28,
+    15
+   ],
+   [
+    "Jon Sundvold '84",
+    31,
+    19
+   ],
+   [
+    "Larry Bird '84",
+    42,
+    30
+   ],
+   [
+    "Larry Bird '82",
+    25,
+    14
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "attr:3pt",
+  "cards": [
+   "Buddy Hield '19",
+   "Buddy Hield '20",
+   "Craig Hodges '89",
+   "Dale Ellis '99",
+   "Damon Jones '08",
+   "Dana Barros '90",
+   "Dennis Scott '94",
+   "Dennis Scott '95",
+   "Duncan Robinson '20",
+   "Isaiah Joe '23",
+   "Isaiah Joe '24",
+   "Isaiah Joe '25"
+  ]
+ },
+ "cost": [
+  "ONE ANCHOR FAILS AND THE CONFLICT IS PROVABLE, NOT A TUNING MISS. recal_117's John Stockton '90 off 84 +-3 reads 88. He shot 47 of 113 from three at .416 on 1.9 3PA/100 — the SAME card as the subject in every respect the accuracy leg can see, with a LARGER sample (113 attempts against 65). Any ramp that reads Parker's 65 shots reads Stockton's 113 at least as fully, so the two cannot be separated by this term. MEASURED ACROSS THE FOOT, not argued: at ACC_CNT_FULL = 79 attempts (the largest foot at which the subject still clears his band bottom of 43) Parker reads 43 and Stockton is still at full weight, 59, OFF 88 — the anchor fails. At ACC_CNT_FULL = 113 (Stockton's own sample, the first foot that can touch him at all) Parker falls to 39, OUT of his band, and Stockton reads 60 — HIGHER, because his own '89 and '91 neighbours feed the smoother. There is no foot where both hold. Stockton '90 holds his band at attr:3pt <= 50 (probed: 3pt 59 -> OFF 88, 50 -> 87, 45 -> 87, 42 -> 86).",
+  "THE DECISION IS HIS, NOT THE AGENT'S. Either recal_117's band is released (its own note records that 84 was NOT reachable in 2026 and the round landed 82; the card has since drifted to 86 and this round adds 2, so 88 is an overshoot of a target he asked to be RAISED toward), or this round is declined and Parker '16 stays at 29 with his .415 unread. Doctrine 5: a round that breaks an anchor is not done, and Tomer decides which ruling stands.",
+  "THE TACTICS DEVIATION-TAX LAW IS ONE TICK UNDER ITS EDGE AND WAS NOT RE-SWEPT (the dispatch said report, do not re-sweep). `crash def glass` oracle reads +0.4752 against the law's +0.50 floor; on this branch's base it read +0.51, so the pool moved it by 0.03. tests/tactics.test.ts fails on that one line and nothing else. The integrator's single merged-pool sweep of hunt / crashOff / crashDef covers it, exactly as it did at pipeline 205.",
+  "THE PROVENANCE SIDECAR GREW ONE SLOT. `out` is now 8 long: index 7 is the accuracy leg's sample weight, 1.0 for every card the old gate admitted. src/ui/Advanced.tsx reads it as `v[7] ?? 1`, so an older provenance.json renders unchanged, and the panel's path label for a sub-2 card no longer says 'FT-touch fallback' — that is no longer what the leg does.",
+  "P_3pp_mod's REFERENCE POOL WAS DELIBERATELY LEFT ALONE and the file now says why. The 2 3PA/100 line still selects the 2,763 modern cards that DEFINE the absolute accuracy scale — the right job for a rate, because a scale built from men who did not shoot is not a shooting scale. Only its second job, deciding whose percentage is read against that scale, is retired."
+ ],
+ "notes": [
+  "THE DEFECT, DECOMPOSED ON THE SUBJECT. Tony Parker '16 shot 27 of 65 from three, .415, over 1,980 minutes in 72 games. .415 is the 92nd percentile of the modern reference pool. His accuracy leg read 0.155. 65 attempts over 1,980 minutes is 1.7 three-point attempts per 100 possessions, and the leg's gate was 2, so his percentage was never read: what the leg reported instead was 0.35 x his FREE-THROW percentile (.760, p44) — a number that is not three-point accuracy and does not contain a three-point shot. 3pt 29, OFF 65.",
+  "WHY A RATE IS THE WRONG QUESTION TO ASK OF AN ACCURACY. The leg decides one thing: is this percentage standing on enough shots to mean something. That is a COUNT, and the file already builds the count (recal_78's estimator, reused here unchanged). A rate answers a different question — what share of the man's offence the shot was — and the VOLUME leg is the whole of that answer already: Parker's vol is 0.189 before and after. Charging the low rate again inside the accuracy term is one fact counted twice, and at the extreme it inverts: Michael Jordan '89 (98 attempts, .276) and Tony Parker '16 (65 attempts, .415) both fell under the line, and the FT stand-in ranked JORDAN'S three-point accuracy ABOVE PARKER'S, 30 to 29.",
+  "WHY THE FOOT IS NOT A FITTED NUMBER, WHICH IS THE ROUND'S ONE REAL CHOICE. The old gate is itself an attempt count once you write it out: 2 3PA/100 across the file's own minimum qualifying season (MIN_MP = 1200) at the median league pace (99.27) is 2 x (1200 x 99.27 / 48) / 100 = 49.6 shots. Read from the other end, the class the gate admits confirms the same number: of the 5,473 cards at or above 2 3PA/100 the SMALLEST three-point sample in the whole class is 47.3 attempts (p1 65.9, p25 163.1, p50 238.8). The gate already treated 49.6 attempts as a readable sample; it simply refused to look at the identical sample when it arrived over more minutes. ACC_CNT_FULL is computed in the file from MIN_MP and the pace table, so no new literal enters it.",
+  "NO NEW CLIFF, AND THE OLD ONE SHRINKS TO NOTHING. Above 2 3PA/100 the expression is byte-identical. Below it the ramp can only move acc TOWARD the value the branch above would have returned and never past it, so the step at the line is strictly smaller than the step this round found there (recal_43's rule), and it is exactly zero for any card whose sample clears the foot. 1,018 of the 4,527 cards under the rate line now read their percentage whole; 3,509 cards carry a partial weight; 808 of the 1,380 cards under a 0.2 weight move by exactly zero points.",
+  "THE FOOTPRINT, AND IT IS SMALL WHERE IT MATTERS. 2,600 of 10,000 cards move on attr:3pt (720 up, 1,880 down, max +51 / -13), but only 378 move on OFF and only 4 by more than 3 — because the 3pt bar enters compute_ovr as a ZONE SHAPE, not as a scoring term. OVR moves on 215 cards and by more than 3 on two. The top 12 by 3pt is identical, card for card.",
+  "THE CLASS THAT FALLS, NAMED, BECAUSE THE DISPATCH ASKED FOR IT. The losers are the men the stand-in FLATTERED: a good free-throw shooter who took threes badly and was scored on his free throws. Michael Jordan '85/'87/'88 (7 of 53, 12 of 66) 21 -> 12, Jordan '89 30 -> 23, Larry Bird '82/'83/'84 (22 of 77 at .286 in '83) 28 -> 15, Paul Westphal '80 29 -> 18, Walter Davis '84 28 -> 17, Reggie Theus '80/'81 28 -> 18, Allen Leavell '88 29 -> 16, Chris Douglas-Roberts '10 21 -> 12. Every one of those is a reading of shots the man actually took. Not one of them loses an OFF anchor; the largest OFF fall on the whole board is Andrew Toney '82 at -2, and he is a RISER on 3pt (21 -> 58) whose zone shape re-sorted.",
+  "THE CLASS THAT RISES IS THE 1980s AND THE LOW-RATE MODERN ROLE PLAYER. Detlef Schrempf '87 (33 of 69, .478) 19 -> 70, Campy Russell '82 (25 of 57, .439) 20 -> 69, John Long '88 (34 of 77, .442) 29 -> 70, John Stockton '90 (47 of 113, .416) 25 -> 59, Andrew Toney '82 (25 of 59, .424) 21 -> 58, Trent Tucker '85 (29 of 72, .403) 37 -> 68, T.J. McConnell '23 (26 of 59, .441) 18 -> 42, Amir Johnson '15 (19 of 46, .413) 11 -> 28. The era multiplier is doing the other half of the work on the 1980s cards and always did — what changed is that their percentage is now in the composite at all.",
+  "THE VARIANTS MEASURED AND REJECTED, ALL BEFORE ANYTHING WAS APPLIED. (1) A ramp on the RATE from 1.0 to 2.0 3PA/100: the subject reads 40, below his band, and it gives Stockton MORE weight than Parker (1.9 against 1.7), so it cannot separate them either. (2) BAYESIAN SHRINKAGE of the percentage itself toward the class mean, w = n/(n+k) with k measured from the binomial-to-between-player variance ratio (k ~ 120): the subject reads 39. It is the statistically honest form and it does not reach his number; it also gives Stockton a strictly larger weight than Parker at every k, so it is no help on the conflict. (3) REMOVING THE GATE OUTRIGHT: Andre Drummond '13 reads an accuracy percentile of 0.999 on 3 of 6, which is the exact failure the stand-in exists to prevent. The count ramp is the only form measured that lands the subject and leaves 3 for 6 worth nothing.",
+  "WHAT THE DISPATCH FENCED OFF AND THIS ROUND DID NOT TOUCH. Round 206 owns the VOLUME leg (`vol = P_3pa_mod(...)`), `_cnt3`, GUN_BOOST and recal_202's premium `_prem3` — all four are byte-identical here and are carried as knobs so the receipt proves it. recal_185's deadeye path keeps its own 2-attempts/100 test: the deadeye pays MEASURED accuracy, and under the line the leg is a sample-weighted BLEND rather than a measured percentage, so there is still nothing for that path to pay. Probed anyway for the record: opening the deadeye ramp to the subject as well takes him to 58, above his band."
+ ]
+}
