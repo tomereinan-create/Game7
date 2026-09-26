@@ -1,0 +1,222 @@
+{
+  "round": 212,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "You have moved Adams to the wing. Adams can either be the screener or inside the paint, since he has no 3pt and no mid — then, on the second five: Enes Freedom cant be in the corner on a durant and westbrook pnr",
+  "title": "the pick-and-roll grows an inside spot: the gate is the three alone (an arc spot is a three-point spot) and the one dunker seat is ranked by height + orb, not by the worse shooter",
+  "subject": "Thunder '16",
+  "scale": "team:off",
+  "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+  "target": 77,
+  "tol": 0,
+  "before": 77,
+  "after": 77,
+  "pipeline_version": 207,
+  "knobs": [
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "const dunker = \\(p: Player\\) => p\\.attrs\\.height \\+ p\\.attrs\\.orb",
+      "label": "WHO THE DUNKER SPOT IS FOR: size and the offensive glass, the two things that spot asks for, at equal weight",
+      "note": "did not exist - the shape had no inside spot, so it never had to rank men for one"
+    },
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "\\[DUNK_R\\],\\s+\\(p\\) => \\(canSpace\\(p\\) \\? tall\\(p\\) : -100 - dunker\\(p\\)\\),",
+      "label": "the pick-and-roll's reserve is DUNK_R; the gate is canSpace (the three alone) and the rank into it is dunker, deepest man lowest",
+      "note": "was `[], (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),` - an empty reserve, so every leftover stood on the arc and the lowest spot the shape owned was the wing"
+    },
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "let need = idx\\.filter\\(\\(i\\) => !canSpace\\(men\\[i\\]\\)\\)\\.length",
+      "label": "stand() is UNCHANGED: every set asks the same question before handing out an inside spot, because every spot it gives up is behind the line",
+      "note": "an earlier cut of this round parameterised this line; the gate turned out to be the default, so the parameter was removed again"
+    },
+    {
+      "file": "tests/court.test.ts",
+      "pattern": "the Thunder '16: Freedom in the paint, and the gate that reads a mid-range gets it backwards",
+      "label": "the second ruling is pinned by name, on the five he named - Freedom inside, Roberson on the wing, Ibaka in the corner",
+      "note": "new: the five that refuted the first cut of this round"
+    },
+    {
+      "file": "tests/court.test.ts",
+      "pattern": "the Thunder '15: Adams stands IN THE PAINT, and Jackson does not",
+      "label": "the first ruling is pinned by name too - Adams inside, Jackson on the arc",
+      "note": "replaces recal_209's pin, 'a five with TWO bigs does not walk the leftover one into a corner: Adams takes the wing', whose assertion (outsideLine(Adams) === true) is exactly what this ruling reverses"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves no rating: Thunder '16 offense is untouched",
+      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 77
+    },
+    {
+      "label": "...and its defense",
+      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "scale": "team:def",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "...and Thunder '15, the first ruling's five, on both dials",
+      "five": ["Reggie Jackson '15", "Anthony Morrow '15", "Russell Westbrook '15", "Serge Ibaka '15", "Steven Adams '15"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "...",
+      "five": ["Reggie Jackson '15", "Anthony Morrow '15", "Russell Westbrook '15", "Serge Ibaka '15", "Steven Adams '15"],
+      "scale": "team:def",
+      "op": "==",
+      "value": 48
+    },
+    {
+      "label": "THE GATE, READ OFF THE SHIPPED POOL - Freedom cannot shoot the three, so he may not stand on the arc...",
+      "card": "Enes Freedom '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 23
+    },
+    {
+      "label": "...and neither can Roberson, so the gate alone cannot say which of them goes inside",
+      "card": "Andre Roberson '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 16
+    },
+    {
+      "label": "THE REFUTED GATE: Freedom's mid is 47, so a max(3pt, mid) gate reads him as a shooter and leaves him in the corner",
+      "card": "Enes Freedom '16",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 47
+    },
+    {
+      "label": "...while Roberson's is 16, so that gate sends HIM inside instead - backwards on both men",
+      "card": "Andre Roberson '16",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 16
+    },
+    {
+      "label": "THE RANK: Freedom lives at the rim, orb 86...",
+      "card": "Enes Freedom '16",
+      "scale": "attr:orb",
+      "op": "==",
+      "value": 86
+    },
+    {
+      "label": "...Roberson does not, orb 59, so height + orb is 168 against 138 and Freedom takes the spot",
+      "card": "Andre Roberson '16",
+      "scale": "attr:orb",
+      "op": "==",
+      "value": 59
+    },
+    {
+      "label": "Ibaka '16 clears the shooting line at exactly 40, so the corner is his and he is never sent inside",
+      "card": "Serge Ibaka '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 40
+    },
+    {
+      "label": "the screener the pair names on that five does not move a bar",
+      "card": "Kevin Durant '16",
+      "scale": "off",
+      "op": "==",
+      "value": 96
+    },
+    {
+      "label": "THE FIRST FIVE - Adams still has no three, so he still may not stand on the arc...",
+      "card": "Steven Adams '15",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 6
+    },
+    {
+      "label": "...Jackson fails that line too at 37, which is why the RANK and not the gate picks the man",
+      "card": "Reggie Jackson '15",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 37
+    },
+    {
+      "label": "...and the glass settles it: Adams orb 84...",
+      "card": "Steven Adams '15",
+      "scale": "attr:orb",
+      "op": "==",
+      "value": 84
+    },
+    {
+      "label": "...against Jackson orb 33, so 167 against 107 and Adams takes the spot",
+      "card": "Reggie Jackson '15",
+      "scale": "attr:orb",
+      "op": "==",
+      "value": 33
+    },
+    {
+      "label": "the one real shooter left over on that five keeps a corner",
+      "card": "Anthony Morrow '15",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 95
+    },
+    {
+      "label": "nor does the handler the pick-and-roll rests on move",
+      "card": "Russell Westbrook '15",
+      "scale": "off",
+      "op": "==",
+      "value": 83
+    }
+  ],
+  "order": [
+    {
+      "label": "WHY THE FINISHING TERM IS NOT `rim`: Jackson '15 is the BETTER rim scorer of the pair, because rim is a scoring RATE and a slashing guard finishes his own drives",
+      "scale": "attr:rim",
+      "above": "Reggie Jackson '15",
+      "below": "Steven Adams '15"
+    },
+    {
+      "label": "...and the glass is the reading that gets it right: the dunker spot asks who LIVES at the rim, not who finishes his own drives",
+      "scale": "attr:orb",
+      "above": "Steven Adams '15",
+      "below": "Reggie Jackson '15"
+    },
+    {
+      "label": "WHY THE RANK IS NOT THE THREE: Roberson '16 is the WORSE three-point shooter of his pair, so ranking by the three would seat him and leave Freedom in the corner again",
+      "scale": "attr:3pt",
+      "above": "Enes Freedom '16",
+      "below": "Andre Roberson '16"
+    },
+    {
+      "label": "...and the glass gets that one right too",
+      "scale": "attr:orb",
+      "above": "Enes Freedom '16",
+      "below": "Andre Roberson '16"
+    }
+  ],
+  "notes": [
+    "THE DEFECT. recal_209 got Steven Adams '15 out of a CORNER by making the roll's leftover sort carry the pop's clause, and the lowest spot this shape owned was the weak-side WING, so that is where he landed. His first ruling says the wing is also wrong, for the same reason the corner was: the arc is the one place a man his defender can ignore must not stand, because that defender then sits in the screen. 'Adams can either be the screener or inside the paint' names the only two places he may be, and pnrPair picks Ibaka for the screen, so the paint is the one left. The machinery was already in the file - spotsFor's postup case keeps DUNK_R as a `swap` reserve for a second big who cannot shoot - and the pick-and-roll now uses the same reserve, the same constant and the same code path.",
+    "RECAL_209'S RECORDED LIMIT NO LONGER HOLDS, AND THIS LINE IS HERE SO THE LEDGER DOES NOT READ AS IF IT DID. 209's receipt states: 'A five carrying two men who cannot shoot still seats one of them in a corner, because this shape holds one wing and two corners and nothing else; the sort at least sends the worse shooter to the wing.' That was an honest description of the geometry at the time and it is now false in both halves. The shape holds one wing, ONE corner and the dunker spot whenever a leftover cannot shoot, and the deepest such man is sent INSIDE rather than to the wing.",
+    "THE FIRST CUT OF THIS ROUND WAS WRONG AND THE SECOND FIVE IS WHAT KILLED IT. It read his words 'no 3pt and no mid' as a two-bar gate, max(3pt, mid) < SHOOT_3PT, because Thunder '15 carries TWO men who fail the shooting line - Adams at 3pt 6 and Jackson at 3pt 37 - against ONE inside spot, and a gate that separated them looked like the answer. Thunder '16 refutes it in BOTH directions at once. Durant sets that screen, so Enes Freedom '16 (3pt 23, mid 47) is a leftover, and a mid-reading gate calls him a shooter and leaves him in a CORNER at 3pt 23, which is the exact defect this case exists to fix; and Andre Roberson '16 (3pt 16, mid 16) clears the gate and is sent inside in his place. His ruling: 'Enes Freedom cant be in the corner on a durant and westbrook pnr'.",
+    "AN ARC SPOT IS A THREE-POINT SPOT, SO THE GATE READS THE THREE ALONE. Every spot this shape has left for the three leftovers is behind the line - one wing and two corners - and they all ask one question: must the defence close out on him out there. A man's mid-range is no answer to that question, because there is no mid-range spot anywhere in this set to stand him on. So the gate is `canSpace`, 3pt >= SHOOT_3PT, the same line every other set in spotsFor uses, and this round cuts no new threshold at all. stand() is left exactly as it was - the earlier cut had parameterised its gate, and with the gate turning out to be the default that parameter was removed again, so the helper is byte-identical to main.",
+    "WHICH MOVES THE WHOLE QUESTION INTO THE RANK. On the three alone a five can hand this shape two men who may not stand on the arc against one inside spot, and Thunder '15 does. Ranking them by the three seats the worse shooter, and that is the same error a second time: Roberson at 3pt 16 is a WORSE shooter than Freedom at 23, so a worst-shooter-first rank leaves Freedom in the corner exactly as the mid-reading gate did. The dunker spot is not for the worst shooter. It is for the man who can live at the rim, and the shape now ranks the men who cannot shoot by `dunker` = height + orb, the two things that spot actually asks for - the size to be there and the work to be there when the ball goes up - at equal weight on the one 0-99 sheet. Freedom 82 + 86 = 168 over Roberson 79 + 59 = 138; Adams 83 + 84 = 167 over Jackson 74 + 33 = 107. Both by a distance, so no one-point card change turns either over.",
+    "IT IS NOT `rim`, AND THE FIRST SUBJECT FIVE IS THE PROOF - this is the measurement that chose the formula. Reggie Jackson '15 has a BETTER rim rating (64) than Steven Adams '15 (54), because `rim` is a SCORING RATE and a slashing guard finishes his own drives all day. The dunker spot is not asking 'does he finish his own drives', it is asking 'does he live at the rim'. Six candidate ranks were measured over the 341 wheel fives that read pick-and-roll or pick-and-pop, against the unambiguous error - seating a man who is STRICTLY DOMINATED as an inside player, shorter AND a worse finisher AND a worse rebounder, by a non-shooter left out on the arc. height + orb: 0 such fives. Every candidate carrying a rim term: 4 to 7 (h + rim - shot 7, h + (rim-shot)/2 6, 2h + rim - shot 6, h + (rim+orb)/2 - shot 4, h + rim + orb - 2shot 4), with Calbert Cheaney over Juwan Howard, Trevor Ariza over David West and Kendrick Perkins over Serge Ibaka among the errors. Height alone also scores 0 but carries no finishing term at all and clears Thunder '16 by only 3 inches, which is the cliff his ruling should not sit on; height + orb clears it by 30.",
+    "ONE is the whole reserve, not two, because the SCREENER rolls down that lane: a second man standing in it leaves the roll nowhere to go. That is the shape's own geometry, not a tuning. DOCUMENTED ANSWER TO THE OVERFLOW: when more men cannot shoot than the reserve holds, the deepest takes the dunker and the others take the arc, the next-deepest on the wing - Thunder '16 is itself the case (Freedom in, Roberson the wing, Ibaka the corner at exactly 3pt 40), as is Warriors '14 (Bogut in, Iguodala the wing at 3pt 38). A man who cannot shoot never takes a corner while a man who can is still standing. Every five still stands five men on five different spots, asserted over FIVE and 60 pool cuts in tests/court.test.ts.",
+    "THE POP TAKES THE RESERVE TOO, AND THE SPURS '11 SHOW WHY IT MUST. recal_129 ('Make pick n pop to be the same as pick n roll in terms of design') made the two calls one body, and the pop needs the reserve MORE: popPair's screener is the SHOOTING big, so a non-shooting big is never the man in the screen and is always one of the three left over. Tim Duncan '11 is the clean case - the roll walks him into the SCREEN, the pop hands the screen to Bonner and puts Duncan on the DUNKER SPOT, and he is never stood on the arc in either call. Drawn as a CALL over all 1,255 wheel fives, 1,160 pickpop drawings move against 1,071 pnr drawings, which is that asymmetry counted.",
+    "NOTHING ELSE MOVES, BY CONSTRUCTION AND BY MEASUREMENT. This round does not touch src/engine/tactics.ts at all (recal_214 is changing screenFit/popFit there) and it touches only the pnr/pickpop case of spotsFor's switch (recal_213 is adding new cases to the same switch). spotsFor is read by the drawing and never by a fit: no styleFit changes, so no five changes its READ, no tactic changes its price, no card and no team rating moves, and no pipeline output is regenerated. Measured, not assumed: every wheel five drawn in every one of the eight styles, 10,040 rows before and after, and the ONLY rows that differ are pnr (1,071) and pickpop (1,160) - balanced, fiveout, motion, postup, triangle and helio are unchanged to the last unit. The wheel's 1,255 fives still read balanced 470, pnr 316, postup 235, helio 141, triangle 45, pickpop 25, fiveout 19, motion 4.",
+    "THE FOOTPRINT IS LARGE AND IT IS REPORTED, NOT BURIED. Gating on the three alone is a much wider net than the first cut's two-bar gate: 259 of the 341 wheel fives that READ pick-and-roll or pick-and-pop now stand exactly one man in the paint, against 164 under the refuted gate, and 82 draw bit-for-bit as they did. That is 76% of pick-and-roll fives, and it is the honest consequence of his ruling plus the pool: 58.7% of the 10,000 cards fail the shooting line, most of them pre-1990. Of the 259, 233 take the man recal_209 had already moved to the wing and 26 take him out of a corner. Shooters still ring the arc; only a man who cannot shoot goes in, and only one of them.",
+    "PINNED BY TEST, not by anchor, because data/anchors.json reads card and team RATING scales and has no scale for a style or a spot - the same reason recal_209 gave. Four cases: \"the Thunder '16: Freedom in the paint, and the gate that reads a mid-range gets it backwards\" (it asserts the pair is Westbrook + Durant, that a max(3pt, mid) reading ranks Freedom ABOVE Roberson and so gets it backwards, that both men fail canSpace, that Roberson is the worse three-point shooter, and that Freedom is off the line inside 8 feet while Roberson has the wing and Ibaka the corner); \"the Thunder '15: Adams stands IN THE PAINT, and Jackson does not\" (it asserts both men fail canSpace, that Jackson's rim BEATS Adams's, and that height + orb reverses that); 'the pop keeps the inside spot too, and needs it more than the roll does'; and 'a five whose leftovers can all shoot still draws three men behind the line'. holds() was rewritten from 'all three leftovers are behind the line' to the RANKING it always meant - inside below wing below corner, in the shape's own sort order - plus: at most one leftover is off the line, he always fails canSpace, and he is the DEEPEST of the men who cannot shoot."
+  ],
+  "cost": [
+    "recal_209's receipt carries a claim that is now false and cannot be edited out of the past: 'this shape holds one wing and two corners and nothing else'. The correction is stated in this round's notes. A later reader should take 209 as the round that got Adams out of the corner and 212 as the round that finished the job.",
+    "recal_209's OWN KNOB LINE NOW GOES MISS, AND IT IS LEFT THAT WAY ON PURPOSE. Its pattern pins the literal `(p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),` and this round replaces that tail with `-100 - dunker(p)`, so `npm run receipts -- 209` reads 6 OK / 1 missed where it read 7 OK / 0 missed on main. Loosening 209's pattern to keep it green would be editing the record: a knob going MISS is the ledger's way of saying a later round rewrote that line, which is what happened. The whole ledger already carries 919 such lines. What 209 established still stands in substance - a man who cannot shoot is never sorted above a man who can - it is simply no longer the bottom of the order, because the men who cannot shoot are now ranked among themselves by depth rather than by their three.",
+    "RECAL_209'S ORDER AMONG NON-SHOOTERS IS SUPERSEDED, NOT JUST EXTENDED. 209 sorted the men who cannot shoot by their three, worst lowest. They are now sorted by height + orb, deepest lowest. On a five carrying two or more of them this changes which one takes the WING and which takes the remaining corner, not only who goes inside. That is the ruling's own doing - 'Enes Freedom cant be in the corner' is precisely a statement that the three is the wrong order for these men - but a later round should know the wing is no longer 'the worst shooter's spot'.",
+    "RECAL_129'S PIN WAS RE-CUT, and this is the one place this round touches another ruling's test. 'it stands on the SAME five spots the roll does' asserted that the pop and the roll draw the same SET of five spots on any five. That was true only while the shape had no conditional spot. It now has one, so a different pair can move a SPOT and not merely a man: Spurs '11 stand Duncan in the screen on the roll and on the dunker spot on the pop, and the pop therefore has two men inside the line where the roll has one. The case is renamed 'it is drawn by ONE body: the same pair draws the same five spots in both calls' and asserts the ruling's actual substance - identical spots for an identical pair, the screener inside the arc in both, and Duncan off the arc in both - which is strictly stronger than what it replaced.",
+    "The test count rises by THREE (440 on main -> 443): recal_209's single Adams case became two (Thunder '15 and Thunder '16, one per ruling), plus the pop's share of the reserve and the no-change guarantee for all-shooting fives, both of which are decisions this dispatch asked to be made explicitly.",
+    "`dunker` reads `orb`, which no other part of spotsFor reads. If a later round ever wants an inside spot in another set, the question 'who is deep enough for it' now has an answer in this file to reuse rather than to re-invent."
+  ]
+}

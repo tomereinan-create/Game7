@@ -331,6 +331,18 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
  * who cannot shoot sorting below every man who can (recal_209: a five with TWO bigs leaves one of
  * them outside the screen, and a straight height sort walked him into a corner). It holds
  * everywhere the shape is drawn: a five read as pick-and-roll, a called one, a named pair.
+ *
+ * ...with ONE exception, and it is the whole of recal_212 (his rulings: "You have moved Adams to the
+ * wing. Adams can either be the screener or inside the paint, since he has no 3pt and no mid", then
+ * "Enes Freedom cant be in the corner on a durant and westbrook pnr"). The wing recal_209 gave Adams
+ * is still the arc, so the set keeps the dunker spot in reserve and gives up a corner for it when a
+ * leftover cannot shoot. The GATE is the three alone, `canSpace`, because every spot this shape has
+ * left is behind the line and a mid-range rating is no answer to a closeout; the RANK into the one
+ * inside spot is `height + orb`, the dunker spot's own two questions, because on the three alone a
+ * five can hand the shape two men who may not stand on the arc and only the deepest of them can
+ * have the spot. A five whose leftovers can all shoot draws exactly as it did. `holds` therefore
+ * asserts the RANKING — inside, then wing, then corner, in the shape's own sort order — rather
+ * than "all three behind the line", and separately that the man sent inside can never shoot.
  */
 describe('the pick-and-roll stands the screen beside the ball, and the rest behind the line', () => {
   const THUNDER = [g("Shai Gilgeous-Alexander '24"), g("Josh Giddey '24"), g("Luguentz Dort '24"), g("Jalen Williams '24"), g("Chet Holmgren '24")]
@@ -365,18 +377,34 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     expect(outsideLine(at[h])).toBe(true)
     expect(outsideLine(at[s])).toBe(false)
     expect(feet(at[s])[1]).toBeGreaterThan(19)
-    // and nobody else is inside the arc: the other three stand behind the line — one wing and two
-    // corners — and the man on the wing is the lowest of the three by the shape's own sort: the
-    // shortest (his ruling: "smallest not handler guy on the wing, the other 2 corners"), with a
-    // man who cannot shoot below every man who can, worst shooter lowest, so a leftover big takes
-    // the wing and never a corner (recal_209, his ruling: "Pnr for 15' Thunder when Steven adams
-    // in the corner cant be the main tactic as his def will sag off him")
+    // the other three stand in RANK order: the corner is the shooter's spot, the wing is below it,
+    // and below the wing is the dunker spot, which this shape now holds in reserve for a man with
+    // no jumper at all (recal_212, his ruling: "You have moved Adams to the wing. Adams can either
+    // be the screener or inside the paint, since he has no 3pt and no mid"; recal_209 before it,
+    // his ruling: "Pnr for 15' Thunder when Steven adams in the corner cant be the main tactic as
+    // his def will sag off him"). The shape's own sort must agree with the ranks: worse man lower.
     const rest = [0, 1, 2, 3, 4].filter((i) => i !== h && i !== s)
-    for (const i of rest) expect(outsideLine(at[i])).toBe(true)
-    const wing = rest.filter((i) => !inCorner(at[i]))
-    expect(wing).toHaveLength(1)
-    const sortKey = (p: Player) => (canSpace(p) ? p.attrs.height : p.attrs['3pt'] - 100)
-    for (const i of rest) if (i !== wing[0]) expect(sortKey(five[i])).toBeGreaterThanOrEqual(sortKey(five[wing[0]]))
+    const dunker = (p: Player) => p.attrs.height + p.attrs.orb
+    const rank = (i: number) => (!outsideLine(at[i]) ? 0 : inCorner(at[i]) ? 2 : 1)
+    const sortKey = (p: Player) => (canSpace(p) ? p.attrs.height : -100 - dunker(five[five.indexOf(p)]))
+    for (const i of rest)
+      for (const j of rest) if (sortKey(five[i]) < sortKey(five[j])) expect(rank(i)).toBeLessThanOrEqual(rank(j))
+    // the reserve is ONE spot and it is never given to a man who can shoot: at most one man is off
+    // the line, and he always fails `canSpace`. A CORNER and a WING ask the same question of a man
+    // and the three is the whole answer, so the gate that opens the spot reads nothing else.
+    const inside = rest.filter((i) => !outsideLine(at[i]))
+    expect(inside.length).toBeLessThanOrEqual(1)
+    for (const i of inside) expect(canSpace(five[i])).toBe(false)
+    // ...and he is the DEEPEST of the men who cannot shoot, by height + orb - not the worst shooter
+    // of them (his ruling: "Enes Freedom cant be in the corner on a durant and westbrook pnr")
+    for (const i of inside) for (const j of rest) if (!canSpace(five[j])) expect(dunker(five[i])).toBeGreaterThanOrEqual(dunker(five[j]))
+    // still exactly one wing, whatever the reserve did to the corners
+    expect(rest.filter((i) => rank(i) === 1)).toHaveLength(1)
+    // a man who cannot shoot never takes a CORNER while a man who can is still standing
+    const shooterOutside = rest.some((i) => canSpace(five[i]) && rank(i) < 2)
+    if (!shooterOutside) for (const i of rest) if (!canSpace(five[i]) && rank(i) === 2) expect(rest.every((j) => !canSpace(five[j]))).toBe(true)
+    // and a five whose leftovers can ALL shoot is untouched: three men behind the line, as before
+    if (rest.every((i) => canSpace(five[i]))) for (const i of rest) expect(outsideLine(at[i])).toBe(true)
     // five different spots, whatever the pair
     expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
   }
@@ -402,19 +430,92 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     holds(okc, null)
   })
 
-  it("a five with TWO bigs does not walk the leftover one into a corner: Adams takes the wing", () => {
-    // recal_209, his ruling: "Pnr for 15' Thunder when Steven adams in the corner cant be the main
-    // tactic as his def will sag off him" — Ibaka sets the screen, so the OTHER big is one of the
-    // three left over, and the height sort used to seat the tallest of them in a corner
+  it("the Thunder '15: Adams stands IN THE PAINT, and Jackson does not", () => {
+    // recal_212, his ruling: "You have moved Adams to the wing. Adams can either be the screener or
+    // inside the paint, since he has no 3pt and no mid". recal_209 got him out of the CORNER and on
+    // to the wing (his ruling then: "Pnr for 15' Thunder when Steven adams in the corner cant be
+    // the main tactic as his def will sag off him") — Ibaka sets the screen, so the OTHER big is
+    // one of the three left over, and the wing was the lowest spot this shape owned. The wing is
+    // still the arc, so the shape gained an inside spot and Adams takes it.
+    //
+    // THIS FIVE IS WHY THE GATE CANNOT PICK THE MAN. Jackson '15 fails the shooting line too (3pt
+    // 37), so the gate hands the shape TWO men who may not stand on the arc against ONE inside
+    // spot, and the RANK has to choose. It chooses on height + orb, the dunker spot's own two
+    // questions, and Adams takes it by 60 — 83 + 84 against 74 + 33.
     const okc = [g("Reggie Jackson '15"), g("Anthony Morrow '15"), g("Russell Westbrook '15"), g("Serge Ibaka '15"), g("Steven Adams '15")]
     expect(pnrPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
-    const adams = okc.findIndex((p) => p.name === "Steven Adams '15")
-    expect(canSpace(okc[adams])).toBe(false)
+    const [adams, jackson, morrow] = ["Steven Adams '15", "Reggie Jackson '15", "Anthony Morrow '15"].map((n) => okc.findIndex((p) => p.name === n))
     expect(okc[adams].attrs.height).toBe(Math.max(...okc.map((p) => p.attrs.height)))
+    // both men fail the SHOOTING line, so the line alone cannot say which of them goes in
+    expect(canSpace(okc[adams])).toBe(false)
+    expect(canSpace(okc[jackson])).toBe(false)
+    // and it is NOT settled by `rim`: Jackson is the better rim scorer of the two, because rim is a
+    // scoring rate and a slashing guard finishes his own drives. The glass is what settles it.
+    expect(okc[jackson].attrs.rim).toBeGreaterThan(okc[adams].attrs.rim)
+    const dunker = (q: Player) => q.attrs.height + q.attrs.orb
+    expect(dunker(okc[adams])).toBeGreaterThan(dunker(okc[jackson]))
     const at = spotsFor({ style: 'pnr', pnr: null }, okc)
-    expect(outsideLine(at[adams])).toBe(true)
-    expect(inCorner(at[adams])).toBe(false)
+    // Adams inside, in the paint and not on a block: down by the rim, below the free-throw line
+    expect(outsideLine(at[adams])).toBe(false)
+    expect(feet(at[adams])[1]).toBeLessThan(8)
+    // Jackson keeps the arc, on the wing; the one man who can really shoot keeps a corner
+    expect(outsideLine(at[jackson])).toBe(true)
+    expect(inCorner(at[jackson])).toBe(false)
+    expect(inCorner(at[morrow])).toBe(true)
     holds(okc, null)
+  })
+
+  it("the Thunder '16: Freedom in the paint, and the gate that reads a mid-range gets it backwards", () => {
+    // his ruling: "Enes Freedom cant be in the corner on a durant and westbrook pnr". DURANT sets
+    // this screen, so Freedom is one of the three left over, and a gate cut on max(3pt, mid) fails
+    // this five in BOTH directions at once: Freedom (3pt 23, mid 47) clears such a gate and stays
+    // out on the arc, while Roberson (3pt 16, mid 16) fails it and is sent inside instead. The three
+    // alone gates it — both men fail `canSpace` — and height + orb ranks it, so Freedom goes in.
+    const okc = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
+    const pair = pnrPair(okc, null)
+    expect(pair.handler!.name).toBe("Russell Westbrook '16")
+    expect(pair.screener!.name).toBe("Kevin Durant '16")
+    const [freedom, roberson, ibaka] = ["Enes Freedom '16", "Andre Roberson '16", "Serge Ibaka '16"].map((n) => okc.findIndex((p) => p.name === n))
+    // the refuted gate: on the better of the two jump shots, Roberson is the worse man and Freedom
+    // reads as a shooter. Both readings are wrong, and both are the same mistake.
+    const jumper = (q: Player) => Math.max(q.attrs['3pt'], q.attrs.mid)
+    expect(jumper(okc[freedom])).toBeGreaterThan(jumper(okc[roberson]))
+    // ...and on the three, which is the only question a spot behind the line asks, both fail
+    expect(canSpace(okc[freedom])).toBe(false)
+    expect(canSpace(okc[roberson])).toBe(false)
+    // Roberson is even the WORSE three-point shooter, so ranking by the three would seat him
+    expect(okc[roberson].attrs['3pt']).toBeLessThan(okc[freedom].attrs['3pt'])
+    const at = spotsFor({ style: 'pnr', pnr: null }, okc)
+    expect(outsideLine(at[freedom])).toBe(false)
+    expect(feet(at[freedom])[1]).toBeLessThan(8)
+    // Roberson takes the wing and Ibaka, who can shoot at 3pt 40, takes the corner
+    expect(inCorner(at[roberson])).toBe(false)
+    expect(outsideLine(at[roberson])).toBe(true)
+    expect(canSpace(okc[ibaka])).toBe(true)
+    expect(inCorner(at[ibaka])).toBe(true)
+    holds(okc, null)
+  })
+
+  it('the pop keeps the inside spot too, and needs it more than the roll does', () => {
+    // recal_129, his ruling: "Make pick n pop to be the same as pick n roll in terms of design" —
+    // one body, so the reserve cannot be the roll's alone. The pop is also the case that needs it
+    // most: ITS screener is the SHOOTING big (popPair), so a non-shooting big is never the man in
+    // the screen and is always one of the three left over.
+    const okc = [g("Reggie Jackson '15"), g("Anthony Morrow '15"), g("Russell Westbrook '15"), g("Serge Ibaka '15"), g("Steven Adams '15")]
+    const adams = okc.findIndex((p) => p.name === "Steven Adams '15")
+    expect(popPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
+    const pop = spotsFor({ style: 'pickpop', pnr: null }, okc)
+    expect(pop).toEqual(spotsFor({ style: 'pnr', pnr: null }, okc))
+    expect(outsideLine(pop[adams])).toBe(false)
+  })
+
+  it('a five whose leftovers can all shoot still draws three men behind the line', () => {
+    // the ruling ADDS a case; it does not redraw the pick-and-roll. Nobody left over here has
+    // nothing, so no corner is given up and the screener is the only man inside the arc.
+    const gsw = [g("Stephen Curry '16"), g("Klay Thompson '16"), g("Kevin Durant '17"), g("Draymond Green '16"), g("Serge Ibaka '15")]
+    const at = spotsFor({ style: 'pnr', pnr: null }, gsw)
+    expect(at.filter((xy) => !outsideLine(xy))).toHaveLength(1)
+    holds(gsw, null)
   })
 
   it('holds for every five the pool can cut, auto-paired', () => {
@@ -635,6 +736,15 @@ describe('the triangle stands a triangle on the strong side and the two-man game
  * height — which made the SHAPE the tell. It is not the tell: the roll and the pop set the same
  * screen, and what differs is which big walks into it. So the two sets now draw one floor, and part
  * only on the pair the engine names.
+ *
+ * ONE BODY means: hand the two calls the SAME pair and they draw the same five spots, man for man.
+ * It does not mean the five spots are the same whoever the pair is - recal_212 gave the shape a
+ * conditional inside spot, the dunker, taken when a man who cannot shoot is left OUT of the screen,
+ * so a different pair can now move a spot and not merely a man. The Spurs '11 are the clean case
+ * and they show the rule is one rule: Tim Duncan cannot shoot, and he is never stood on the arc in
+ * either call - the roll walks him into the SCREEN, the pop hands the screen to Bonner and puts
+ * Duncan on the DUNKER SPOT. The two sets still part only on the pair, which is the whole of his
+ * ruling; what the pair decides is now slightly larger than it was.
  */
 describe('the pick-and-pop draws the pick-and-roll floor, and parts from it only on the men', () => {
   const SPURS = [g("Tony Parker '11"), g("Manu Ginóbili '11"), g("Richard Jefferson '11"), g("Matt Bonner '11"), g("Tim Duncan '11")]
@@ -643,15 +753,35 @@ describe('the pick-and-pop draws the pick-and-roll floor, and parts from it only
   const cap = (h: string) => (h.match(/ct-call">([^<]*)/)?.[1] ?? '').replace(/&#x27;/g, "'")
   const key = (at: readonly (readonly [number, number])[]) => [...at].map((xy) => xy.join(',')).sort()
 
-  it('it stands on the SAME five spots the roll does — the screener is inside the arc, not behind it', () => {
+  it('it is drawn by ONE body: the same pair draws the same five spots in both calls', () => {
+    // the ruling, stated exactly ("Make pick n pop to be the same as pick n roll in terms of
+    // design"): there is no pop floor and no roll floor, there is one floor read with one pair.
+    const same: PnrPair = { handler: "Tony Parker '11", screener: "Tim Duncan '11" }
+    expect(spotsFor({ style: 'pickpop', pnr: same }, SPURS)).toEqual(spotsFor({ style: 'pnr', pnr: same }, SPURS))
     const pop = spotsFor({ style: 'pickpop', pnr: null }, SPURS)
     const roll = spotsFor({ style: 'pnr', pnr: null }, SPURS)
-    expect(key(pop)).toEqual(key(roll))
     expect(new Set(key(pop)).size).toBe(5)
-    // one man inside the line in both, and he is the screener
-    expect(pop.filter((xy) => !outsideLine(xy))).toHaveLength(1)
-    const s = SPURS.findIndex((p) => p.name === popPair(SPURS, null).screener!.name)
-    expect(outsideLine(pop[s])).toBe(false)
+    expect(new Set(key(roll)).size).toBe(5)
+    // the screener is inside the arc in both calls, never behind it
+    for (const [style, at] of [['pickpop', pop], ['pnr', roll]] as const) {
+      const pair = (style === 'pickpop' ? popPair : pnrPair)(SPURS, null)
+      const s = SPURS.findIndex((q) => q.name === pair.screener!.name)
+      expect(outsideLine(at[s])).toBe(false)
+    }
+    // AND THE MAN WHO CANNOT SHOOT IS NEVER ON THE ARC IN EITHER (recal_212, his rulings: "Adams can
+    // either be the screener or inside the paint" and "Enes Freedom cant be in the corner on a
+    // durant and westbrook pnr") - which is the two places the roll and the pop respectively put
+    // him: Duncan takes the screen when the roll names him and the dunker spot when the pop does not
+    const duncan = SPURS.findIndex((q) => q.name === "Tim Duncan '11")
+    expect(canSpace(SPURS[duncan])).toBe(false)
+    expect(outsideLine(roll[duncan])).toBe(false)
+    expect(outsideLine(pop[duncan])).toBe(false)
+    expect(pnrPair(SPURS, null).screener!.name).toBe("Tim Duncan '11")
+    expect(popPair(SPURS, null).screener!.name).toBe("Matt Bonner '11")
+    // so the pop stands TWO men inside the line here and the roll stands one - the pop's screener is
+    // the SHOOTING big, so its non-shooting big is a leftover and claims the reserve
+    expect(pop.filter((xy) => !outsideLine(xy))).toHaveLength(2)
+    expect(roll.filter((xy) => !outsideLine(xy))).toHaveLength(1)
   })
 
   it('the popper is the shooter, and the roll would have picked someone else', () => {
