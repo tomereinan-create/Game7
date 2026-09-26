@@ -17,7 +17,7 @@
   "tol": 0,
   "before": 55,
   "after": 55,
-  "pipeline_version": 205,
+  "pipeline_version": 206,
   "knobs": [
     {
       "file": "src/engine/tactics.ts",
