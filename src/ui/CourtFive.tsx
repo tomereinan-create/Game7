@@ -140,6 +140,20 @@ const TRI_TOP: XY = peri(-6, 4)
 const TRI_PINCH: XY = at(-10, KEY_D)
 const DUNK_L: XY = at(-10, 5)
 const DUNK_R: XY = at(10, 5)
+/**
+ * THE ISOLATION (recal_208, his ruling: "1) Yes."). The mirror image of helio's floor: helio puts
+ * its engine alone at the TOP with four men low, because he is reading the whole defense; an iso
+ * puts its scorer on the WING with the ball and clears everybody to the far side, because he is
+ * reading one man and wants nothing else in the picture. ISO_WING is two feet behind the arc at 40
+ * degrees, far enough off the middle that the help has to commit; the other four stand on the weak
+ * side of the floor — the point pulled across, the weak-side wing, the weak-side corner, and the
+ * weak-side dunker spot for the man who cannot shoot. Nobody stands on the scorer's side at all,
+ * which is what "clear out" means, and the closest pair on the floor (the dunker and the corner
+ * above him) is 13.3 feet, comfortably past the pick-and-roll's own PAIR_FT.
+ */
+const ISO_WING: XY = peri(40, 2)
+const ISO_TOP: XY = peri(-20, 5)
+const ISO_WEAK: XY = peri(-52, 6)
 /* the two break lanes RUN_L/RUN_R went with the transition set (recal_127, his ruling:
    "Remove transition entirely from the db.") — no shape stands a man on the half-court line now */
 
@@ -288,7 +302,7 @@ export function inferredStyle(five: (Player | null)[]): { style: Style; fit: num
   return men.length < 5 ? null : bestStyle(men)
 }
 
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'> | null | undefined, five: (Player | null)[]): XY[] {
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' | 'iso'> | null | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   const style = plan ? plan.style : inferredStyle(five)?.style
   if (!style || men.length < 5) return [...AT]
@@ -391,6 +405,15 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
       const s = who(men, 'helio', plan)
       return stand(men, { [s]: peri(0, 6) }, [[DUNK_L, 0], [DUNK_R, 0], [CORNER_L, 2], [CORNER_R, 2]])
     }
+    case 'iso': {
+      // the scorer alone on the strong-side wing with the ball, the other four cleared to the weak
+      // side (recal_208). HIS scorer when the plan names one, the engine's own when it does not,
+      // read through the same `featured`/isoMan the fit and the caption read. One inside spot — the
+      // weak-side dunker — and the weak-side elbow held in reserve for a second man who cannot
+      // shoot, so a non-shooter is never sent out to space a floor he cannot space.
+      const s = who(men, 'iso', plan)
+      return stand(men, { [s]: ISO_WING }, [[DUNK_L, 0], [ISO_TOP, 1], [ISO_WEAK, 1], [CORNER_L, 2]], [TRI_PINCH])
+    }
   }
 }
 
@@ -438,7 +461,7 @@ function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
  * put 5 out on my tactics it should be shown here as well"): the label the tactics panel uses,
  * and whose call it is — so "five-out · your tactic" cannot be mistaken for a best-fit read.
  */
-function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>, men: Player[]): string {
+function setLine(set: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' | 'iso'>, men: Player[]): string {
   const label = STYLES.find((s) => s.key === set.style)?.label ?? set.style
   // ...and it names the men the call runs through, the same way the best-fit read does: a post-up
   // he called on a man is "post-up · O'Neal · your tactic" (recal_124).

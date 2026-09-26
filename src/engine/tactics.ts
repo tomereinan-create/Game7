@@ -62,6 +62,14 @@ export interface Tactics {
    * a plan that has never been to the panel are untouched. Only `helio` as a style reads it.
    */
   helio?: string | null
+  /**
+   * THE ISO SCORER (recal_208, his ruling: "1) Yes." to iso as the home of the fives recal_206's
+   * play-volume gate knocked out of helio). The fourth name-keyed call, and the same shape as the
+   * post target and the helio creator: the man the set clears out for. Absent/null is the engine's
+   * own scorer (see isoMan), so an old save, an AI opponent and a plan that has never been to the
+   * panel are untouched. Only `iso` as a style reads it.
+   */
+  iso?: string | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -116,6 +124,7 @@ export interface StyleCall {
   pnr?: PnrPair | null
   post?: string | null
   helio?: string | null
+  iso?: string | null
 }
 
 /**
@@ -127,7 +136,7 @@ export interface StyleCall {
  * points over the free default. A save that still says `transition` loads as `balanced`; see
  * reconcileTactics, which has always dropped a style that no longer exists.
  */
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop'
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop' | 'iso'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -137,6 +146,7 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'helio', label: 'helio' },
   { key: 'triangle', label: 'triangle' },
   { key: 'pickpop', label: 'pick-and-pop' },
+  { key: 'iso', label: 'isolation' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -148,6 +158,7 @@ export const DEFAULT_TACTICS: Tactics = {
   pnr: null,
   post: null,
   helio: null,
+  iso: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -831,6 +842,8 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     post: legalMan(t.post, names) ? t.post : null,
     // ...and so is the helio creator (recal_125), on the same rule
     helio: legalMan(t.helio, names) ? t.helio : null,
+    // ...and the iso scorer (recal_208), the fourth of the same shape
+    iso: legalMan(t.iso, names) ? t.iso : null,
   }
 }
 
@@ -865,6 +878,7 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     // ...and so does the post-up target: it is part of calling the style, not a call of its own
     post: rank >= 2 ? t.post : null,
     helio: rank >= 2 ? t.helio : null,
+    iso: rank >= 2 ? t.iso : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -1173,6 +1187,109 @@ export const postOption = (five: Player[]): Player | null =>
 /** Men who can both pass and shoot the mid-range — the ones the triangle actually reads through. */
 export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => p.attrs.playvol >= TRI_PV && p.attrs.mid >= TRI_MID)
 
+/**
+ * THE ISOLATION (recal_208, his ruling: "1) Yes." — asked whether ISO should be the home of the 59
+ * fives recal_206's play-volume gate knocked out of helio). The second style added since recal_58's
+ * set, and it exists because recal_206 split one idea in two. His rule there was that the helio
+ * engine is a CONJUNCTION — "Helio needs to be ran by a guy with high vol and playvol, not only
+ * one." — and a rule of that shape leaves a complement behind it:
+ *
+ *   helio  high volume AND high play volume — one man scores AND creates (James, Jokic, Johnson,
+ *          Doncic, Harden, Wade, Curry, Iverson)
+ *   iso    high volume and LOW play volume — one man who gets his OWN shot instead of making one
+ *          for somebody else (Leonard, Anthony, DeRozan, Nowitzki, King, Dantley, Gervin, Embiid)
+ *
+ * The two read the same five men and hand it to different sets, and the number that parts them is
+ * measured, not chosen: over the 1,255 wheel fives the man HELIO nominates has a median play volume
+ * of 65 (HELIO_PV, recal_206) and the man ISO nominates has a median of 53 (ISO_PV, probed with the
+ * playvol term removed so the measurement is not circular; the five's top-VOLUME man reads 54, the
+ * card pool p50 41). Twelve points of play volume is the whole of his distinction, in the engine's
+ * own currency.
+ *
+ * THE ISO SCORER, isoScorer: takes a lot (ISO_VOL), makes them (ISO_EFF), beats his man with a
+ * JUMPER (ISO_JMP on max(mid, 3pt)) and gets to the line doing it (ISO_FD on fouldraw). The four
+ * weights sum to 1, so the composite sits on the same 0-100 axis every other fit reads.
+ *   max(mid, 3pt) IS THE DISCRIMINATOR, and max(mid, rim) is not. An iso scorer beats you with a
+ *   shot he created; a man scoring at the RIM at volume is being FED there (post-up) or rolling
+ *   into it (pick-and-roll). The first cut of this fit read max(mid, rim) and nominated Dwight
+ *   Howard, Antetokounmpo and Jokic, which is three wrong answers from one term.
+ *   FOULDRAW is what keeps a SPOT-UP shooter out of the job, which max(mid, 3pt) alone cannot:
+ *   Klay Thompson '16 (3pt 99, fouldraw 19), Dell Curry '95 (97 / 12) and Ryan Anderson '11 (99 /
+ *   38) are set up by somebody; Dantley '86 (90), Embiid '23 (91), Gilgeous-Alexander '26 (90) and
+ *   DeRozan '18 (88) are the men creating the shot. Without it the Warriors '16 nominated Thompson
+ *   over Curry and the Celtics '25 Porzingis over Tatum.
+ *
+ * NOMINATE ON THE COMPOSITE, PRICE THE NOMINEE — recal_206's own division of labour, mirrored.
+ * `isoMan` picks the five's best isoScorer and `featured`, the caption and the floor all read that
+ * man, so the drawing always names the scorer; the FIT then charges him ISO_PV_W 0.55 of a point
+ * for every point of play volume he carries above ISO_PV 53, continuously, no cliff and no floor.
+ * It is the exact mirror of heliEngineScore and asymmetric for the same reason: the volume side is
+ * already inside the composite and the play-making side is the gate. Nothing prices a man for
+ * passing too little, so Dantley '81 (playvol 48) and King '84 (39) pay nothing and Jokic '22 (96)
+ * pays 23.7. HELIO_PV_W's own 0.45 lands the same 81 fives; 0.55 was kept because it leaves the
+ * Jazz '97 pick-and-roll anchor 4.2 points of margin instead of 3.1, and recal_206 rejected a pair
+ * of constants for leaving "a knife edge rather than a ruling".
+ *
+ * THE SET: ISO_W_MAN 0.80 on the priced scorer, ISO_W_REST 0.20 on the shooting of the four men
+ * standing away from him, ISO_BASE -6 so the whole thing sits where the other eight sit.
+ *
+ * AND THE SPACING PRICE IS SCALED BY THE ROOM HIS OWN GAME NEEDS (isoRoom) — the one term this
+ * round could not have without measuring. A flat ISO_HOLE per non-shooter cannot be right for both
+ * ends of the league's history: at 8 a point it read the Spurs '16 45.3 (correct) and the Jazz '81
+ * 33.3 and Knicks '84 31.0 (wrong — those are the archetypal iso teams), and dropping it far enough
+ * to claim them (3 a point) takes iso to 165 of 1,255 and hands it the Spurs. The two cases are not
+ * the same case. A man who isolates from the WING needs a driving lane, and every non-shooter
+ * standing in it is a help defender already there; a man who works from the MID-POST beats his
+ * defender in traffic and always did — Leonard and Aldridge worked a cramped floor in 2016
+ * (Pounding The Rock, 2016: the Spurs' starters "relied on heavy isolation from LaMarcus Aldridge
+ * and Kawhi Leonard" while the motion offense was the bench unit). So the price is ISO_HOLE x
+ * isoRoom(scorer) x non-shooters, and isoRoom is 1 - interior: 0 for a man at 3pt <= 20, rising
+ * continuously to 1 at 3pt >= SHOOT_3PT_HI. The same two lines the post-up hub is scaled by,
+ * running the other way. Leonard '16 (3pt 77) pays the full 8 a man; Dantley '81 (13) pays nothing.
+ *
+ * WHAT IT WINS: 81 of the 1,255 wheel fives (6.5%) — a signature system, not a default. It takes 32
+ * from balanced, 15 from post-up, 14 from helio, 13 from the pick-and-roll, 4 from the triangle, 2
+ * from five-out and 1 each from motion and pick-and-pop. Every existing anchor read holds, with the
+ * thinnest margin 4.2 (Jazz '97). It FINISHES recal_206: five of the seven fives still reading helio
+ * on an engine under play volume 50 come here instead — Dantley's Jazz '81/'82/'85/'86 and King's
+ * Knicks '84. The two it does not claim are Pierce's Bucks '90/'91, and for a reason rather than by
+ * accident: Pierce shot 47 and 57 from three, so isoRoom charges him nearly the full spacing price
+ * for three teammates who cannot shoot, and his own helio read stands.
+ * AND IT DOES NOT CLAIM THE SPURS '16, by his ruling on them: "2) Motion, or balanced." They read
+ * iso 54.0 against the free default's 60.0.
+ */
+export const ISO_VOL = 0.4
+export const ISO_EFF = 0.2
+export const ISO_JMP = 0.25
+export const ISO_FD = 0.15
+export const ISO_PV = 53
+export const ISO_PV_W = 0.55
+export const ISO_BASE = -6
+export const ISO_W_MAN = 0.8
+export const ISO_W_REST = 0.2
+export const ISO_HOLE = 8
+/** The man the set clears out for: volume, efficiency, the jumper he creates, the fouls he draws. */
+export const isoScorer = (x: Attrs) => ISO_VOL * x.volume + ISO_EFF * x.efficiency + ISO_JMP * Math.max(x.mid, x['3pt']) + ISO_FD * x.fouldraw
+/** ...and what he is worth to an ISO, once he is charged for the offense he runs for other men. */
+export const isoScore = (x: Attrs) => isoScorer(x) - ISO_PV_W * Math.max(0, x.playvol - ISO_PV)
+/** How much ROOM his iso needs: 0 for a man who works inside the arc, 1 for one who beats you from it. */
+export const isoRoom = (x: Attrs) => 1 - interior(x)
+
+/**
+ * WHO THE FLOOR IS CLEARED FOR (recal_208). The fourth of the same shape as postMan and heliMan:
+ * the plan's man when it names one who is on the five, the engine's own otherwise — and the
+ * engine's own is isoScorer's argmax, NOT isoScore's, so the caption and the drawing name the
+ * five's best one-on-one scorer even on a five whose best one-on-one scorer is also its point
+ * guard. The fit prices whoever is named, which is the deviation tax paying for itself: call the
+ * iso on a passer and the style is worth less, call it on a man who cannot score and it is worth
+ * nothing.
+ */
+export function isoMan(five: Player[], pick?: string | null): { scorer: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { scorer: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (!five.length) return { scorer: null, chosen: false }
+  return { scorer: five.reduce((m, p) => (isoScorer(p.attrs) > isoScorer(m.attrs) ? p : m), five[0]), chosen: false }
+}
+
 export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
@@ -1273,6 +1390,26 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       const e = a.map(scorerCreator).sort((x, y) => y - x)
       const engine = heliMan(five, null).creator
       return 0.7 * (engine ? heliEngineScore(engine.attrs) : 0) + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
+    }
+    case 'iso': {
+      // HELIO'S COMPLEMENT (recal_208) — one man who gets his own shot, four men cleared out of his
+      // way. HIS scorer when the plan names one, the engine's own when it does not, through the one
+      // function isoMan, so the fit, the caption and the floor cannot name different men. The
+      // leading term is the nominee PRICED for the offense he runs for others (isoScore), the
+      // second is the shooting of the four standing away from him, and the spacing price is scaled
+      // by the room his own game needs: a wing iso pays ISO_HOLE for every non-shooter in his
+      // driving lane, a mid-post iso pays nothing. The block above carries the whole derivation.
+      const { scorer } = isoMan(five, call?.iso)
+      const rest = five.filter((p) => p.name !== scorer?.name)
+      const holes = rest.filter((p) => !canSpace(p)).length
+      return clamp(
+        ISO_BASE +
+          ISO_W_MAN * (scorer ? isoScore(scorer.attrs) : 0) +
+          ISO_W_REST * mean(rest, (p) => p.attrs['3pt']) -
+          ISO_HOLE * (scorer ? isoRoom(scorer.attrs) : 1) * holes,
+        0,
+        100,
+      )
     }
   }
 }
@@ -1433,6 +1570,8 @@ export function featured(style: Style, five: Player[], call?: StyleCall | null):
       return [heliMan(five, call?.helio).creator].filter((p): p is Player => !!p)
     case 'postup':
       return [postMan(five, call?.post).hub].filter((p): p is Player => !!p)
+    case 'iso':
+      return [isoMan(five, call?.iso).scorer].filter((p): p is Player => !!p)
     case 'triangle':
       return [postOption(five)].filter((p): p is Player => !!p)
     case 'pickpop': {

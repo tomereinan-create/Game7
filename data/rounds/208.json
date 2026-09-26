@@ -1,0 +1,265 @@
+{
+  "round": 208,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "1) Yes.",
+  "title": "a ninth playstyle, ISO - helio's complement, one man who gets his own shot instead of creating for others: Dantley's Jazz and King's Knicks leave helio, the Spurs '16 do not come with them",
+  "scale": "team:off",
+  "subject": "Spurs '16 (best legal five)",
+  "five": [
+    "Tony Parker '16",
+    "Danny Green '16",
+    "Kawhi Leonard '16",
+    "LaMarcus Aldridge '16",
+    "Tim Duncan '16"
+  ],
+  "target": 55,
+  "tol": 0,
+  "before": 55,
+  "after": 55,
+  "pipeline_version": 207,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export type Style = 'balanced' \\| 'fiveout' \\| 'pnr' \\| 'motion' \\| 'postup' \\| 'helio' \\| 'triangle' \\| 'pickpop' \\| 'iso'",
+      "label": "the set is nine styles now",
+      "note": "8 styles -> 9; iso appended, so no existing key moved"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "\\{ key: 'iso', label: 'isolation' \\}",
+      "label": "the panel entry and its label",
+      "note": "new"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_VOL = 0\\.4\\s*\\nexport const ISO_EFF = 0\\.2\\s*\\nexport const ISO_JMP = 0\\.25\\s*\\nexport const ISO_FD = 0\\.15",
+      "label": "the iso-scorer composite: volume, efficiency, the jumper he creates, the fouls he draws - four weights summing to 1",
+      "note": "new"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_PV = 53\\s*\\nexport const ISO_PV_W = 0\\.55",
+      "label": "the play-volume line an iso scorer works under, and the price per point above it - the measured MIRROR of HELIO_PV 65",
+      "note": "new; 53 is the median play volume of the man the fit nominates over the 1,255 wheel fives"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_BASE = -6\\s*\\nexport const ISO_W_MAN = 0\\.8\\s*\\nexport const ISO_W_REST = 0\\.2\\s*\\nexport const ISO_HOLE = 8",
+      "label": "the set: 0.80 on the priced scorer, 0.20 on the four cleared away from him, -6 base, 8 a point per non-shooter in his lane",
+      "note": "new"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const isoScorer = \\(x: Attrs\\) => ISO_VOL \\* x\\.volume \\+ ISO_EFF \\* x\\.efficiency \\+ ISO_JMP \\* Math\\.max\\(x\\.mid, x\\['3pt'\\]\\) \\+ ISO_FD \\* x\\.fouldraw",
+      "label": "max(mid, 3pt) is the discriminator, NOT max(mid, rim) - a rim scorer at volume is fed or rolling, not isolating",
+      "note": "new; fouldraw is what keeps a spot-up shooter out of the job"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const isoScore = \\(x: Attrs\\) => isoScorer\\(x\\) - ISO_PV_W \\* Math\\.max\\(0, x\\.playvol - ISO_PV\\)",
+      "label": "the exact mirror of heliEngineScore: helio charges the play volume a man does NOT carry, iso charges the play volume he DOES",
+      "note": "new"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const isoRoom = \\(x: Attrs\\) => 1 - interior\\(x\\)",
+      "label": "the spacing price is scaled by the room his own game needs: a wing iso pays the lot, a mid-post iso pays nothing",
+      "note": "new; 1 - the same interior() the post-up hub is scaled by, running the other way"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "ISO_HOLE \\* \\(scorer \\? isoRoom\\(scorer\\.attrs\\) : 1\\) \\* holes",
+      "label": "the fit's spacing term, the one knob a flat constant could not carry across the eras",
+      "note": "new"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export function isoMan\\(five: Player\\[\\], pick\\?: string \\| null\\): \\{ scorer: Player \\| null; chosen: boolean \\}",
+      "label": "the plan-selectable man, the fourth of postMan/heliMan's shape - nominated on the composite, priced by the fit",
+      "note": "new; read by the fit, featured(), the caption and CourtFive.spotsFor"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_PV = 65\\s*\\nexport const HELIO_PV_W = 0\\.45",
+      "label": "recal_206's gate is UNTOUCHED - iso is its complement, not a loosening of it",
+      "note": "65 / 0.45 -> 65 / 0.45"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const scorerCreator = \\(x: Attrs\\) => 0\\.45 \\* x\\.volume \\+ 0\\.3 \\* x\\.efficiency \\+ 25 \\* creation\\(x\\)",
+      "label": "recal_115's composite is untouched, so twoStars, the triangle separation, heliMan and featured read exactly what they read",
+      "note": "0.45/0.3/25 -> 0.45/0.3/25"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export const creation = \\(a: Attrs\\) => \\(0\\.45 \\* a\\.playvol \\+ 0\\.2 \\* a\\.ballsec\\) / \\(0\\.65 \\* 99\\)",
+      "label": "offense.ts was NOT touched, so src/engine/offense.ts <-> data/team_rating.py parity holds and no rating moved",
+      "note": "unchanged - the round is a tactics read, not a pipeline change"
+    },
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "const ISO_WING: XY = peri\\(40, 2\\)\\s*\\nconst ISO_TOP: XY = peri\\(-20, 5\\)\\s*\\nconst ISO_WEAK: XY = peri\\(-52, 6\\)",
+      "label": "the drawn set: the scorer alone on the strong-side wing, the other four cleared to the weak side",
+      "note": "new; the mirror image of helio's 'engine up top, four low'"
+    },
+    {
+      "file": "src/ui/TacticsPanel.tsx",
+      "pattern": "const c = isoMan\\(five, tactics\\.iso\\)\\.scorer\\?\\.name",
+      "label": "the panel row that makes the man selectable, opening lit on the engine's own scorer",
+      "note": "new"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: the Spurs '16 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "...nor the Jazz '81 offence dial, the five that MOVES style",
+      "five": [
+        "Rickey Green '81",
+        "Darrell Griffith '81",
+        "Adrian Dantley '81",
+        "Ben Poquette '81",
+        "Wayne Cooper '81"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 29
+    },
+    {
+      "label": "...nor the Knicks '84 offence dial",
+      "five": [
+        "Ray Williams '84",
+        "Darrell Walker '84",
+        "Bernard King '84",
+        "Louis Orr '84",
+        "Bill Cartwright '84"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 43
+    },
+    {
+      "label": "THE ISO SHAPE, in the cards: Dantley '81 takes a lot",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:volume",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "...and does NOT create for others - the whole of the difference from helio",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 52
+    },
+    {
+      "label": "...and gets his own shot, which is what fouldraw measures",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:fouldraw",
+      "op": ">=",
+      "value": 80
+    },
+    {
+      "label": "King '84 is the other end of recal_206's holdout list: the lowest play volume on it",
+      "card": "Bernard King '84",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 44
+    },
+    {
+      "label": "and the HELIO head is a conjunction, untouched: Johnson '87 runs everything",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "Jokic '22 too, so iso charges him the most any man on the wheel pays",
+      "card": "Nikola Jokić '22",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "Leonard '16 is a wing iso, so his set pays the FULL spacing price - the reason the Spurs stay out",
+      "card": "Kawhi Leonard '16",
+      "scale": "attr:3pt",
+      "op": ">=",
+      "value": 60
+    },
+    {
+      "label": "...and Dantley '81 is a mid-post iso, so his pays none of it",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:3pt",
+      "op": "<=",
+      "value": 20
+    },
+    {
+      "label": "Pierce '91 is NOT claimed for a reason: he shoots threes, so his cramped floor is charged",
+      "card": "Ricky Pierce '91",
+      "scale": "attr:3pt",
+      "op": ">=",
+      "value": 45
+    },
+    {
+      "label": "the spot-up shooter fouldraw keeps out of the job: Thompson '16",
+      "card": "Klay Thompson '16",
+      "scale": "attr:fouldraw",
+      "op": "<=",
+      "value": 25
+    },
+    {
+      "label": "...against the man beside him who does create his own shot",
+      "card": "Stephen Curry '16",
+      "scale": "attr:fouldraw",
+      "op": ">=",
+      "value": 40
+    }
+  ],
+  "order": [
+    {
+      "label": "the two composites part on play volume, not on scoring: Dantley '81 out-scores Johnson '87",
+      "scale": "attr:volume",
+      "above": "Adrian Dantley '81",
+      "below": "Magic Johnson '87"
+    },
+    {
+      "label": "...and Johnson '87 out-creates him by more",
+      "scale": "attr:playvol",
+      "above": "Magic Johnson '87",
+      "below": "Adrian Dantley '81"
+    }
+  ],
+  "movers": {
+    "scale": "attr:volume",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "notes": [
+    "HIS RULING was one word, on a question with two parts. Asked whether the 59 fives recal_206's play-volume gate knocked out of helio should have ISO as their home: '1) Yes.' And asked what the Spurs '16 are instead: '2) Motion, or balanced.' Both halves are pinned in tests/tactics.test.ts.",
+    "ISO IS THE COMPLEMENT OF HIS OWN RULE. recal_206 made the helio engine a CONJUNCTION - 'Helio needs to be ran by a guy with high vol and playvol, not only one.' - and a rule of that shape leaves a complement behind it: high volume and LOW play volume, a man who gets his own shot instead of making one for somebody else. The number that parts the two is MEASURED, not chosen: over the 1,255 wheel fives the man HELIO nominates has a median play volume of 65 (HELIO_PV) and the man ISO nominates has a median of 53 (ISO_PV, probed with the playvol term removed so the measurement is not circular; the five's top-VOLUME man reads 54, the card pool p50 41). Twelve points of play volume is the whole of his distinction.",
+    "THE COUNT: iso wins 81 of the 1,255 wheel fives, 6.5% - a signature system, not a default. The wheel read balanced 470 / pnr 316 / postup 235 / helio 141 / triangle 45 / pickpop 25 / fiveout 19 / motion 4 before, and balanced 436 / pnr 303 / postup 222 / helio 128 / iso 81 / triangle 41 / pickpop 24 / fiveout 17 / motion 3 after. Taken from balanced 34, post-up 13, pick-and-roll 13, helio 13, triangle 4, five-out 2, pick-and-pop 1, motion 1.",
+    "IT FINISHES recal_206. Seven fives still read helio on an engine under play volume 50, because their scorerCreator is 83-87 and the gate could not pull them under. Iso claims FIVE of the seven: Dantley's Jazz '81 (helio 67.7 -> iso 69.9), '82 (63.3 -> 70.1), '85 (60.9 -> 70.4), '86 (64.6 -> 67.2) and King's Knicks '84 (60.7 -> 65.9). It does not claim Pierce's Bucks '90/'91, and that is a reading rather than a shortfall: Pierce shot 47 and 57 from three, so isoRoom charges him nearly the full spacing price for three teammates who cannot shoot (iso 53.4 and 48.1 against helio 63.3). King's Knicks '85 also stay - helio 68.8 against iso 66.6 - because that five's separation term is four points stronger than '84's.",
+    "THE SPURS '16 DO NOT COME. They read balanced 60.0 before and after, with iso 54.0 - six points of margin, not a knife edge, and measured on the SHIPPED cards (recal_207 moved Parker '16 from 3pt 29 to 45, which takes the five from three non-shooters around Kawhi to two and lifts their iso fit from 45.0 to 54.0; the round was fitted at 29 and re-fitted and re-measured at 45 on merged main). The research reads the real 2016 starters as heavy isolation from Aldridge and Leonard - Pounding The Rock, 2016 - and his ruling is the contract that overrides it.",
+    "THE ONE KNOB THAT NEEDED MEASURING was the spacing price. A flat charge per non-shooter cannot be right at both ends of the league's history: at 8 a point it read the Spurs '16 45.3 (correct) and the Jazz '81 33.3 and Knicks '84 31.0 (wrong - those are the archetypal iso teams), and dropping it far enough to claim them (3 a point) takes iso to 165 of 1,255 and hands it the Spurs. The two cases are not the same case. A man who isolates from the WING needs a driving lane and every non-shooter standing in it is a help defender already there; a man who works from the MID-POST beats his defender in traffic and always did. So the price is ISO_HOLE x isoRoom(scorer) x non-shooters, and isoRoom is 1 - interior(): 0 at 3pt <= 20, rising continuously to 1 at 3pt >= SHOOT_3PT_HI 60, the same two lines the post-up hub is already scaled by, running the other way. No cliff, one formula, no per-team clause.",
+    "REJECTED, MEASURED FIRST: (a) max(mid, rim) as the discriminator instead of max(mid, 3pt) - it nominated Dwight Howard, Antetokounmpo and Jokic, because a man scoring at the RIM at volume is being fed there or rolling into it, not isolating; (b) reading the four supporting men on max(mid, 3pt) too, to make the spacing term era-fair - it took the Spurs '16 to iso 70.0 and 210 of 1,255, because Aldridge, Parker and Duncan all have mid-range; (c) a flat spacing charge at every value from 2 to 10 a point - no setting claims the era teams and leaves the Spurs out, which is what forced the isoRoom interaction; (d) HELIO_PV_W's own 0.45 as the iso slope - it lands the same 81 fives, and 0.55 was kept only because it leaves the Jazz '97 pick-and-roll anchor 4.2 points of margin instead of 3.1. recal_206 rejected a pair of constants for leaving 'a knife edge rather than a ruling'.",
+    "NOMINATE ON THE COMPOSITE, PRICE THE NOMINEE - recal_206's own division of labour, mirrored. isoMan picks the five's best isoScorer and featured(), the caption and the floor all read that man, so the drawing always names the scorer; the fit then charges whoever is named. Reading the argmax of the PRICED score instead nominated bench gunners as iso men on the helio teams (Bones Hyland for the Nuggets '22, Michael Beasley for the Heat '09, Porzingis over Tatum for the Celtics '25) and cost the Celtics '25 five-out anchor six points of margin.",
+    "EVERY STYLE ANCHOR HOLDS, thinnest margin first: Jazz '97 pnr 76.2 against iso 72.0 (4.2), Hornets '95 postup 77.7 / 70.4 (7.3), Celtics '25 fiveout 72.8 / 64.6 (8.2), Suns '05 pnr 84.9 / 74.9 (10.1), Bulls '96 triangle 72.8 / 61.6 (11.3), Thunder '25 pnr 74.2 / 61.8 (12.4), Thunder '22 helio 65.3 / 52.4 (12.9), Magic '11 postup 81.6 / 68.2 (13.4), Bulls '97 triangle 75.0 / 59.3 (15.7), Nuggets '25 pnr 72.9 / 49.4 (23.6), Rockets '18 pnr 90.8 / 54.0 (36.8). The helio head is untouched: Lakers '87 (Johnson) 67.0, Nuggets '22 (Jokic) 76.8, Cavaliers '18 (James) 73.1, Mavericks '24 (Doncic) 64.9, Rockets '15 (Harden) 74.7, Heat '09 (Wade) 69.4, Warriors '16 (Curry) 69.3, 76ers '06 (Iverson) 64.7.",
+    "THE CAMPAIGN LADDER DOES NOT REORDER. bestStyle is read in exactly two places - CourtFive (the scouting drawing and its caption) and TeamDb (a filter chip) - and by nothing in the sim or the resolver, so a style read cannot move a margin. Two of the 30 campaign opponents' DISPLAYED reads change: the Kings '26 balanced 60.0 -> iso 62.7 (DeRozan) and the Heat '26 five-out 69.1 -> iso 70.5 (Powell). Every opponent rating and every round's position is byte-identical. Thunder '15, the subject of another pending round, is untouched: pnr 71.4, with iso 40.2 on Westbrook.",
+    "THE DEVIATION TAX LAW still passes with nine styles in the pool: playstyle reads default 0.00, random -1.31, oracle +2.04 against its band of oracle >= +0.50 and random in [-1.50, -0.30]. No tax constant was touched - the harness re-ratified every one of the nine unchanged.",
+    "NO CARD MOVED AND NO RATING MOVED. The round is a tactics read: src/engine/offense.ts and data/team_rating.py are untouched, so nothing in the OVR chain, nothing in marg, and nothing in the 212-anchor table can have moved. 212 anchors, 0 failing, mean |error| 1.00 - the same table main shipped."
+  ],
+  "cost": [
+    "STYLES is nine long now and iso is appended, so no existing key changed index; two tests that asserted toHaveLength(8) now assert 9 (tests/tactics.test.ts). A round that adds a tenth style should expect the same two lines.",
+    "Tactics gains a fourth name-keyed one-man call, `iso`, on the same three rules as post/helio: reconcileTactics drops it when the man leaves the five, gateTactics silences it below Playbook 2, and absent/null means the engine's own scorer - so every save, every AI opponent and every plan that has never been to the panel is untouched.",
+    "isoRoom is the second reader of the module-local interior() helper (the post-up hub is the first). A round that re-cuts SHOOT_3PT_HI moves both the post-up scaling and the iso spacing price, in opposite directions.",
+    "The seven low-playvol helio holdouts are now five fewer: Pierce's Bucks '90/'91 still read helio on an engine at play volume 45. If he rules on those two specifically, the lever is the iso spacing price or the helio separation term, not the gate - tightening HELIO_PV further was measured and reaches them only by taking the head with it.",
+    "CourtFive.tsx received exactly one new case and its three spot constants; nothing else in that file was touched, and the parallel design session owns the rest of it."
+  ]
+}

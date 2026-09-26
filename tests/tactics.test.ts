@@ -20,6 +20,11 @@ import {
   heliEngineScore,
   HELIO_PV,
   HELIO_PV_W,
+  isoMan,
+  isoRoom,
+  isoScore,
+  isoScorer,
+  ISO_PV,
   popFit,
   popPair,
   postFit,
@@ -39,6 +44,8 @@ import {
   type Tactics,
 } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
+import { WHEEL } from '../src/data/wheel'
+import { startingFive } from '../src/engine/bestfive'
 
 /**
  * THE DEVIATION TAX LAW (recal_59, permanent). Every tactic, on random matchups: the oracle-best
@@ -558,8 +565,8 @@ describe('transition is removed, and a save that still names it loads as balance
   const NAMES5 = FIVE5.map((p) => p.name)
 
   it('the style is not in the union, the list, or anything that enumerates them', () => {
-    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop'])
-    expect(STYLES).toHaveLength(8)
+    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop', 'iso'])
+    expect(STYLES).toHaveLength(9)
     expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
   })
 
@@ -652,7 +659,7 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
 
   it('it is in the set, the panel and the tax law like any other style', () => {
     expect(STYLES.map((s) => s.key)).toContain('triangle')
-    expect(STYLES).toHaveLength(8)
+    expect(STYLES).toHaveLength(9)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97)).toBeGreaterThan(0)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)).toBeLessThan(0)
   })
@@ -704,5 +711,103 @@ describe('pick-and-pop is the roll with the screener stepping out', () => {
     expect(popFit(km)).toBeCloseTo(screenFit(km), 10)
     expect(styleFit('pickpop', JAZZ_97)).toBeCloseTo(styleFit('pnr', JAZZ_97), 10)
     expect(bestStyle(JAZZ_97).style).toBe('pnr')
+  })
+})
+
+/**
+ * THE ISOLATION (recal_208, his ruling: "1) Yes." — asked whether ISO should be the home of the
+ * fives recal_206's play-volume gate knocked out of helio). It is helio's complement, and the two
+ * must never claim each other's teams: helio is one man who scores AND creates, iso is one man who
+ * gets his own shot. Pinned here is the whole of his ruling — the fives that MOVE, the five he
+ * ruled must not (his ruling on them: "2) Motion, or balanced."), and the helio head.
+ */
+describe('iso is helio\'s complement: a man who gets his own shot, four men cleared out', () => {
+  const JAZZ_81 = cut("Rickey Green '81", "Darrell Griffith '81", "Adrian Dantley '81", "Ben Poquette '81", "Wayne Cooper '81")
+  const KNICKS_84 = cut("Ray Williams '84", "Darrell Walker '84", "Bernard King '84", "Louis Orr '84", "Bill Cartwright '84")
+  const DANTLEY = "Adrian Dantley '81"
+  const KING = "Bernard King '84"
+  /** every third team-season on the wheel, cut the way the app cuts it: a deterministic sample. */
+  const SAMPLE: Player[][] = []
+  const BY = new Map(PLAYERS.map((q) => [q.name, q]))
+  for (let i = 0; i < WHEEL.length; i += 3) {
+    const roster = WHEEL[i].p.map((n) => BY.get(n)).filter((q): q is Player => !!q)
+    if (roster.length < 5) continue
+    const five = startingFive(roster).five.filter((q): q is Player => !!q)
+    if (five.length === 5) SAMPLE.push(five)
+  }
+
+  it('it is in the set, the panel and the tax law like any other style', () => {
+    expect(STYLES.map((x) => x.key)).toContain('iso')
+    expect(STYLES.find((x) => x.key === 'iso')!.label).toBe('isolation')
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'iso' }, JAZZ_81)).toBeGreaterThan(0)
+    // ...and calling it on the five that invented the other shape COSTS, the tax law as written
+    expect(stylePts({ ...DEFAULT_TACTICS, style: 'iso' }, LAKERS_87)).toBeLessThan(0)
+  })
+
+  it("finishes recal_206: Dantley's Jazz and King's Knicks leave helio for iso", () => {
+    // both read helio before this round on a scorerCreator recal_206's gate could not pull under,
+    // with an engine at play volume 39-48 — the archetypal isolation teams
+    expect(g(DANTLEY).attrs.playvol).toBeLessThan(ISO_PV)
+    expect(g(KING).attrs.playvol).toBeLessThan(ISO_PV)
+    expect(bestStyle(JAZZ_81).style).toBe('iso')
+    expect(bestStyle(KNICKS_84).style).toBe('iso')
+    expect(featured('iso', JAZZ_81)[0].name).toBe(DANTLEY)
+    expect(featured('iso', KNICKS_84)[0].name).toBe(KING)
+  })
+
+  it('HIS RULING: the Spurs \'16 are not an iso — "2) Motion, or balanced."', () => {
+    // the research reads the real 2016 starters as heavy isolation; his ruling is the contract, and
+    // the fit must clear the free default's 60 by a real margin rather than by a knife edge
+    expect(styleFit('iso', SPURS_16)).toBeLessThan(57)
+    expect(bestStyle(SPURS_16).style).toBe('balanced')
+  })
+
+  it('the helio head does not move: one man who creates is not one man who isolates', () => {
+    for (const five of [LAKERS_87, THUNDER_22]) {
+      expect(bestStyle(five).style).toBe('helio')
+      expect(styleFit('iso', five)).toBeLessThan(styleFit('helio', five))
+    }
+    // ...because the fit charges the nominee for the offense he runs for other men, continuously
+    const magic = g("Magic Johnson '87")
+    expect(magic.attrs.playvol).toBeGreaterThan(ISO_PV)
+    expect(isoScore(magic.attrs)).toBeLessThan(isoScorer(magic.attrs))
+    expect(isoScorer(magic.attrs) - isoScore(magic.attrs)).toBeCloseTo(0.55 * (magic.attrs.playvol - ISO_PV), 6)
+  })
+
+  it('the nominee is the scorer, not the spot-up shooter beside him', () => {
+    // fouldraw is what parts them: without it the fit nominated Thompson (3pt 99, fouldraw 19)
+    const gsw = cut("Stephen Curry '16", "Klay Thompson '16", "Andre Iguodala '16", "Draymond Green '16", "Andrew Bogut '16")
+    expect(isoMan(gsw).scorer!.name).toBe("Stephen Curry '16")
+  })
+
+  it('the spacing price is scaled by the room his own game needs, and has no cliff', () => {
+    // a WING iso needs a driving lane and pays for every non-shooter standing in it; a MID-POST iso
+    // beats his man in traffic. Leonard '16 (3pt 77) pays the lot, Dantley '81 (3pt 13) pays nothing
+    const kawhi = g("Kawhi Leonard '16")
+    expect(isoRoom(kawhi.attrs)).toBeCloseTo(1, 6)
+    expect(isoRoom(g(DANTLEY).attrs)).toBeCloseTo(0, 6)
+    const at = (three: number) => isoRoom({ ...kawhi.attrs, '3pt': three })
+    for (let t = 20; t < 60; t++) expect(at(t + 1) - at(t)).toBeCloseTo(1 / 40, 6)
+    expect(at(19)).toBe(0)
+    expect(at(61)).toBe(1)
+  })
+
+  it('a called iso names its man, and a bad call is priced as one', () => {
+    const names = JAZZ_81.map((q) => q.name)
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'iso', iso: "Rickey Green '81" }
+    expect(featured('iso', JAZZ_81, called)[0].name).toBe("Rickey Green '81")
+    expect(styleFit('iso', JAZZ_81, undefined, called)).toBeLessThan(styleFit('iso', JAZZ_81))
+    // name-keyed like the other three one-man calls: off the five it is dropped, not honoured
+    expect(reconcileTactics({ ...called, iso: "Michael Jordan '90" }, names).iso).toBe(null)
+    expect(reconcileTactics(called, names).iso).toBe("Rickey Green '81")
+    // and below Playbook 2 it is not heard at all, the same as the post target and the creator
+    expect(gateTactics(called, 1).iso).toBe(null)
+  })
+
+  it('it is a signature system, not a default: a twentieth of the wheel, not a third', () => {
+    const iso = SAMPLE.filter((five) => bestStyle(five).style === 'iso').length
+    expect(SAMPLE.length).toBeGreaterThan(400)
+    expect(iso / SAMPLE.length).toBeGreaterThan(0.03)
+    expect(iso / SAMPLE.length).toBeLessThan(0.1)
   })
 })
