@@ -25,6 +25,8 @@ import {
   isoScore,
   isoScorer,
   ISO_PV,
+  ISO_PV_W,
+  SHOOT_3PT_HI,
   popFit,
   popPair,
   postFit,
@@ -771,11 +773,11 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
       expect(bestStyle(five).style).toBe('helio')
       expect(styleFit('iso', five)).toBeLessThan(styleFit('helio', five))
     }
-    // ...because the fit charges the nominee for the offense he runs for other men, continuously
+    // ...because the fit charges whoever is named for the offense he runs for other men, continuously
     const magic = g("Magic Johnson '87")
     expect(magic.attrs.playvol).toBeGreaterThan(ISO_PV)
     expect(isoScore(magic.attrs)).toBeLessThan(isoScorer(magic.attrs))
-    expect(isoScorer(magic.attrs) - isoScore(magic.attrs)).toBeCloseTo(0.55 * (magic.attrs.playvol - ISO_PV), 6)
+    expect(isoScorer(magic.attrs) - isoScore(magic.attrs)).toBeCloseTo(ISO_PV_W * (magic.attrs.playvol - ISO_PV), 6)
   })
 
   it('the nominee is the scorer, not the spot-up shooter beside him', () => {
@@ -925,6 +927,72 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     ] as [Player[], Style][]) {
       expect(bestStyle(five).style).toBe(style)
       expect(styleFit('motion', five)).toBeLessThan(styleFit(style, five))
+    }
+  })
+})
+
+/**
+ * THE POST-UP OWNS THE MEN ON THE BLOCK (recal_208 amended, his ruling: "You have moved post up
+ * players into iso. AD, Bosh, Embid, are all post players not iso."). The first cut let a
+ * back-to-the-basket big be nominated as an iso scorer off his MID-RANGE, and isoRoom then charged
+ * him nothing for spacing because his three is low. The fix partitions the two NOMINATIONS at
+ * POST_HEIGHT, the line postMan already uses, reading both of postMan's facts — tall AND interior.
+ */
+describe('iso does not take a post player: the two nominations partition the floor at POST_HEIGHT', () => {
+  const PELICANS_16 = cut("Jrue Holiday '16", "Toney Douglas '16", "Eric Gordon '16", "Anthony Davis '16", "Ryan Anderson '16")
+  const SIXERS_23 = cut("James Harden '23", "Tyrese Maxey '23", "Matisse Thybulle '23", "Tobias Harris '23", "Joel Embiid '23")
+  const RAPTORS_10 = cut("José Calderón '10", "Jarrett Jack '10", "Hedo Türkoğlu '10", "Andrea Bargnani '10", "Chris Bosh '10")
+  const NETS_23 = cut("Kyrie Irving '23", "Seth Curry '23", "Joe Harris '23", "Kevin Durant '23", "Nic Claxton '23")
+
+  it('HIS RULING: Davis, Bosh and Embiid are not iso men — the engine will not nominate them', () => {
+    for (const n of ["Anthony Davis '16", "Chris Bosh '10", "Joel Embiid '23", "Joel Embiid '21"]) {
+      const p = g(n)
+      expect(p.attrs.height, n).toBeGreaterThanOrEqual(POST_HEIGHT)
+      expect(p.attrs['3pt'], n).toBeLessThan(SHOOT_3PT_HI) // ...so postFit's interior scaling owns him
+    }
+    expect(isoMan(PELICANS_16).scorer!.name).not.toBe("Anthony Davis '16")
+    expect(isoMan(SIXERS_23).scorer!.name).not.toBe("Joel Embiid '23")
+    expect(isoMan(RAPTORS_10).scorer!.name).not.toBe("Chris Bosh '10")
+    // ...and their fives are not read as iso, which is the whole of his ruling
+    for (const five of [PELICANS_16, SIXERS_23, RAPTORS_10]) expect(bestStyle(five).style).not.toBe('iso')
+  })
+
+  it('...and the men he kept ARE nominated, every one of them under POST_HEIGHT', () => {
+    for (const n of ["Adrian Dantley '81", "Bernard King '84", "DeMar DeRozan '17", "Kawhi Leonard '16", "George Gervin '82", "Carmelo Anthony '13", "Kiki Vandeweghe '84"]) {
+      expect(g(n).attrs.height, n).toBeLessThan(POST_HEIGHT)
+    }
+  })
+
+  it('the gate reads BOTH of postMan\'s facts, not height alone: Durant \'23 stays', () => {
+    // he is 6'11" and the post-up will not have him either — postFit scales by interior() and his
+    // three is 78, so the block is not his. On a height-only gate the Nets '23 lose him, nominate
+    // Irving and fall out of iso at 57.0, which contradicts the half of the ruling this style is for.
+    const kd = g("Kevin Durant '23")
+    expect(kd.attrs.height).toBeGreaterThanOrEqual(POST_HEIGHT)
+    expect(kd.attrs['3pt']).toBeGreaterThanOrEqual(SHOOT_3PT_HI)
+    expect(postFit(kd.attrs)).toBe(0)
+    expect(isoMan(NETS_23).scorer!.name).toBe("Kevin Durant '23")
+    expect(bestStyle(NETS_23).style).toBe('iso')
+  })
+
+  it('it gates the NOMINATION and not the price: a called iso on a seven-footer is still priced', () => {
+    // recal_124's doctrine, verbatim: height decides who the ENGINE nominates, not what a man the
+    // CALLER names is worth. isoScore carries no height term at all, so naming Embiid prices Embiid.
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'iso', iso: "Joel Embiid '23" }
+    expect(isoMan(SIXERS_23, called.iso).scorer!.name).toBe("Joel Embiid '23")
+    expect(featured('iso', SIXERS_23, called)[0].name).toBe("Joel Embiid '23")
+    const embiid = g("Joel Embiid '23")
+    const tall = { ...embiid.attrs, height: 72 }
+    expect(isoScore(tall)).toBe(isoScore(embiid.attrs))
+    // ...and calling it on him beats calling it on the man the gate leaves behind, because he is the
+    // better one-on-one scorer — the tax prices the CALL, it does not forbid it
+    expect(styleFit('iso', SIXERS_23, undefined, called)).toBeGreaterThan(styleFit('iso', SIXERS_23))
+  })
+
+  it('every five still has an iso man to name, so no caption and no floor can break', () => {
+    for (const five of [PELICANS_16, SIXERS_23, RAPTORS_10, NETS_23, SPURS_16, LAKERS_87, THUNDER_22, CELTICS_25, JAZZ_97]) {
+      expect(isoMan(five).scorer).not.toBe(null)
+      expect(featured('iso', five)).toHaveLength(1)
     }
   })
 })
