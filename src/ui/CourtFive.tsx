@@ -335,24 +335,26 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio'>
       // the handler sets the screen, so the shape is always five men on five different spots
       if (s < 0 || s === h) s = best(men, (p) => p.attrs.height, h)
       // the other three by HEIGHT, the shortest onto the wing and the corners to the other two (his
-      // ruling: "smallest not handler guy on the wing, the other 2 corners") — except in the POP,
-      // where a man who cannot shoot sorts BELOW every man who can, worst shooter lowest, so the
-      // wing is his and the corners go to shooters. The roll does not need that clause: ITS
-      // screener is the non-shooting big, so the three left over are shooters already. The pop's
-      // screener is the SHOOTING big by definition, which leaves the man who cannot space still
-      // standing out there, and a straight height sort walks him into a CORNER — the one thing his
-      // older ruling forbids ("Why is Ayton out and James in? Makes no sense"). A five carrying TWO
-      // men who cannot shoot still seats one of them in a corner, because this shape holds one wing
-      // and two corners and nothing else; the sort at least sends the worse shooter to the wing,
-      // which is what the pop's old floor did too. That clause and the pair are the whole of the
-      // difference between the two sets, and both are differences of WHO, never of WHERE.
+      // ruling: "smallest not handler guy on the wing, the other 2 corners") — with one clause on
+      // top of the height sort, in BOTH calls: a man who cannot shoot sorts below every man who
+      // can, worst shooter lowest, so the wing is his and the corners go to shooters. A straight
+      // height sort walks the tallest man left over into a CORNER, which is the one thing his older
+      // ruling forbids ("Why is Ayton out and James in? Makes no sense"), and the clause used to be
+      // the pop's alone on the assumption that the ROLL's screener is always the five's only
+      // non-shooting big. That is false of any five with TWO bigs: Thunder '15 set the screen with
+      // Ibaka and left ADAMS outside it (recal_209, his ruling: "Pnr for 15' Thunder when Steven
+      // adams in the corner cant be the main tactic as his def will sag off him"). A five carrying
+      // two men who cannot shoot still seats one of them in a corner, because this shape holds one
+      // wing and two corners and nothing else; the sort at least sends the worse shooter to the
+      // wing. The PAIR is now the whole of the difference between the two sets, and it is a
+      // difference of WHO, never of WHERE.
       const tall = (p: Player) => p.attrs.height
       return stand(
         men,
         { [h]: BALL, [s]: SCREEN },
         [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]],
         [],
-        style === 'pnr' ? tall : (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),
+        (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),
       )
     }
     case 'triangle':

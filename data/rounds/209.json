@@ -1,0 +1,64 @@
+{
+  "round": 209,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Pnr for 15' Thunder when Steven adams in the corner cant be the main tactic as his def will sag off him",
+  "title": "the pick-and-roll stops walking a non-shooting big into a corner: the roll's spot sort carries the pop's clause, and the drawing half of the ruling lands alone",
+  "subject": "Thunder '15",
+  "scale": "team:off",
+  "five": ["Reggie Jackson '15", "Anthony Morrow '15", "Russell Westbrook '15", "Serge Ibaka '15", "Steven Adams '15"],
+  "target": 56,
+  "tol": 0,
+  "before": 56,
+  "after": 56,
+  "pipeline_version": 207,
+  "knobs": [
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "\\n        \\(p\\) => \\(canSpace\\(p\\) \\? tall\\(p\\) : p\\.attrs\\['3pt'\\] - 100\\),",
+      "label": "the roll's spot sort now carries the pop's clause: a man who cannot shoot sorts below every man who can, worst shooter lowest",
+      "note": "was `style === 'pnr' ? tall : (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100)` - in the roll a straight height sort walked the tallest leftover into a CORNER on any five with two bigs"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves no rating: the subject five's offense is untouched",
+      "five": ["Reggie Jackson '15", "Anthony Morrow '15", "Russell Westbrook '15", "Serge Ibaka '15", "Steven Adams '15"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "...and its defense",
+      "five": ["Reggie Jackson '15", "Anthony Morrow '15", "Russell Westbrook '15", "Serge Ibaka '15", "Steven Adams '15"],
+      "scale": "team:def",
+      "op": "==",
+      "value": 48
+    },
+    {
+      "label": "the man the ruling names does not move a bar: Steven Adams '15 three",
+      "card": "Steven Adams '15",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 6
+    },
+    {
+      "label": "nor does the handler the pick-and-roll rests on",
+      "card": "Russell Westbrook '15",
+      "scale": "off",
+      "op": "==",
+      "value": 83
+    }
+  ],
+  "notes": [
+    "THE DEFECT, AND IT WAS STATED OUT LOUD IN THE CODE. spotsFor's pnr/pickpop case stood the three men outside the two-man game by HEIGHT in the roll, on a written assumption: 'The roll does not need that clause: ITS screener is the non-shooting big, so the three left over are shooters already.' That is false of any five with TWO bigs. Thunder '15 set the screen with Ibaka (pnrPair's own choice), which leaves ADAMS - 3pt 6, the tallest man in the picture - among the three leftovers, and the height sort seated him in a CORNER. That is what he saw, and it is the one thing an older ruling of his forbids ('Why is Ayton out and James in? Makes no sense').",
+    "THE FIX IS THE CLAUSE THE POP ALREADY HAD, one line below, now run by both calls: a man who cannot shoot sorts below every man who can, worst shooter lowest, so the wing is his and the corners go to shooters. Adams takes the wing. The PAIR is now the whole of the difference between the roll and the pop, and it is a difference of WHO, never of WHERE. A five carrying two men who cannot shoot still seats one of them in a corner, because this shape holds one wing and two corners and nothing else; the sort at least sends the worse shooter to the wing, which is what the pop's own floor did before recal_129 merged the two shapes.",
+    "NOTHING ELSE MOVES, BY CONSTRUCTION. This round does not touch src/engine/tactics.ts. spotsFor is read by the drawing, never by a fit: no styleFit changes, so no five changes its READ, no tactic changes its price, no card and no team rating moves, and no pipeline output is regenerated. The wheel's 1,255 fives read exactly as they read at pipeline 207 - balanced 470, pnr 316, postup 235, helio 141, triangle 45, pickpop 25, fiveout 19, motion 4. Thunder '15 still read pnr 71.4.",
+    "THIS IS HALF OF A ROUND, SPLIT ON HIS WORD, AND THE OTHER HALF IS DEFERRED, NOT DISCARDED. The ruling has two limbs: the corner (a drawing defect) and 'cant be the main tactic' (the pick-and-roll's spacing term, which prices Adams at nothing because 0.25 x MEAN(the other three, 3pt) lets Morrow's 95 hide his 6). The fit limb was built and measured - a closeout-line charge on every leftover past the first, PNR_SAG 2, the knee of a feasible window of [1.48, 3.45] - and it moves 120 of the 1,255 fives, taking pnr 309 -> 197 and sending 69 fives to balanced. He asked for the limbs separated ('split 209') so that the ISO round (208) and the motion round can be judged against a league the pick-and-roll has not been pulled out of. The fit limb survives on branch recal_209_pnr_sag_UNACCEPTED and is his to call.",
+    "PINNED BY TEST, because anchors.py reads card and team RATING scales and has no style or spot scale: tests/court.test.ts, 'a five with TWO bigs does not walk the leftover one into a corner: Adams takes the wing' - it asserts pnrPair names Ibaka, that Adams cannot space, that Adams is the tallest man on the floor, and that his spot is outside the line and NOT in a corner. The shape's own invariant test was rewritten in the same commit from 'the shortest of the three is the man on the wing' to 'the lowest of the three by the shape's own sort', because the old wording encoded the behaviour this round changes rather than a ruling of his."
+  ],
+  "cost": [
+    "One older test assertion was rewritten because it pinned the changed behaviour and not a ruling: the court test's 'the shortest of the three is the man on the wing' now reads 'the lowest of the three by the shape's own sort' (height, with a non-shooter below every shooter).",
+    "The visible half of the ruling lands while the half he actually worded ('cant be the main tactic') does not: Thunder '15 still READ pick-and-roll after this round, with Adams on the wing instead of in the corner. That is the split he asked for, and it is recorded here so the ledger never reads as if the whole ruling shipped."
+  ]
+}

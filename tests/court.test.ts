@@ -327,7 +327,9 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
  * line" — the Thunder '24 court stood Holmgren on the block and Dort and Giddey low inside the arc.
  * The screen is now set beside the ball at the top of the key, one ring apart, and the other three
  * stand behind the line — the weak-side wing and both corners, the wing going to the shortest of
- * the three (his ruling: "smallest not handler guy on the wing, the other 2 corners"). It holds
+ * the three (his ruling: "smallest not handler guy on the wing, the other 2 corners") with a man
+ * who cannot shoot sorting below every man who can (recal_209: a five with TWO bigs leaves one of
+ * them outside the screen, and a straight height sort walked him into a corner). It holds
  * everywhere the shape is drawn: a five read as pick-and-roll, a called one, a named pair.
  */
 describe('the pick-and-roll stands the screen beside the ball, and the rest behind the line', () => {
@@ -363,14 +365,18 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     expect(outsideLine(at[h])).toBe(true)
     expect(outsideLine(at[s])).toBe(false)
     expect(feet(at[s])[1]).toBeGreaterThan(19)
-    // and nobody else is inside the arc: the other three stand behind the line — one wing and
-    // two corners — and the shortest of the three is the man on the wing (his ruling: "smallest
-    // not handler guy on the wing, the other 2 corners")
+    // and nobody else is inside the arc: the other three stand behind the line — one wing and two
+    // corners — and the man on the wing is the lowest of the three by the shape's own sort: the
+    // shortest (his ruling: "smallest not handler guy on the wing, the other 2 corners"), with a
+    // man who cannot shoot below every man who can, worst shooter lowest, so a leftover big takes
+    // the wing and never a corner (recal_209, his ruling: "Pnr for 15' Thunder when Steven adams
+    // in the corner cant be the main tactic as his def will sag off him")
     const rest = [0, 1, 2, 3, 4].filter((i) => i !== h && i !== s)
     for (const i of rest) expect(outsideLine(at[i])).toBe(true)
     const wing = rest.filter((i) => !inCorner(at[i]))
     expect(wing).toHaveLength(1)
-    for (const i of rest) if (i !== wing[0]) expect(five[i].attrs.height).toBeGreaterThanOrEqual(five[wing[0]].attrs.height)
+    const sortKey = (p: Player) => (canSpace(p) ? p.attrs.height : p.attrs['3pt'] - 100)
+    for (const i of rest) if (i !== wing[0]) expect(sortKey(five[i])).toBeGreaterThanOrEqual(sortKey(five[wing[0]]))
     // five different spots, whatever the pair
     expect(new Set(at.map((xy) => xy.join(','))).size).toBe(5)
   }
@@ -393,6 +399,21 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     const okc = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
     expect(inferredStyle(okc)!.style).toBe('pnr')
     expect(spotsFor(null, okc)).toEqual(spotsFor({ style: 'pnr', pnr: null }, okc))
+    holds(okc, null)
+  })
+
+  it("a five with TWO bigs does not walk the leftover one into a corner: Adams takes the wing", () => {
+    // recal_209, his ruling: "Pnr for 15' Thunder when Steven adams in the corner cant be the main
+    // tactic as his def will sag off him" — Ibaka sets the screen, so the OTHER big is one of the
+    // three left over, and the height sort used to seat the tallest of them in a corner
+    const okc = [g("Reggie Jackson '15"), g("Anthony Morrow '15"), g("Russell Westbrook '15"), g("Serge Ibaka '15"), g("Steven Adams '15")]
+    expect(pnrPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
+    const adams = okc.findIndex((p) => p.name === "Steven Adams '15")
+    expect(canSpace(okc[adams])).toBe(false)
+    expect(okc[adams].attrs.height).toBe(Math.max(...okc.map((p) => p.attrs.height)))
+    const at = spotsFor({ style: 'pnr', pnr: null }, okc)
+    expect(outsideLine(at[adams])).toBe(true)
+    expect(inCorner(at[adams])).toBe(false)
     holds(okc, null)
   })
 
