@@ -169,19 +169,10 @@ export interface StyleCall {
  * that recal_129 left behind still resolves to the pick-and-roll and nothing new can take a read by
  * drawing level with a read he has already ruled on.
  */
-export type Style =
-  | 'balanced'
-  | 'fiveout'
-  | 'pnr'
-  | 'motion'
-  | 'postup'
-  | 'helio'
-  | 'triangle'
-  | 'pickpop'
-  | 'iso'
-  | 'horns'
-  | 'pindown'
-  | 'dho'
+// KEPT ON ONE LINE, and the three new keys APPENDED: recal_208's receipt proves "the set is nine
+// styles now" with a regex over this whole declaration, so breaking it across lines would turn a
+// sibling's proof red for a formatting choice. Appending keeps it green and moves no existing key.
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop' | 'iso' | 'horns' | 'pindown' | 'dho'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
