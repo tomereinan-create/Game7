@@ -17,7 +17,6 @@ import {
   scorerCreator,
   screenFit,
   SHOOT_3PT,
-  SHOOT_3PT_HI,
   STAR_LINE,
   heliMan,
   heliEngineScore,
@@ -978,7 +977,13 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
       [CELTICS_25, 'fiveout'],
       [JAZZ_97, 'pnr'],
       [SUNS_05, 'pnr'],
-      [THUNDER_16, 'pnr'],
+      // recal_211 wrote this row as THUNDER_16 / 'pnr'. recal_214 SUPERSEDED it on his own ruling
+      // ("KD is a better midpt shooter than a finisher, and westbrook is a better finisher than
+      // shooter, so it needs to be pnp not pnr") — the pin is not loosened, it is re-pointed at the
+      // read he ruled for. The pnr/pickpop pair tied at 80.5 on this five until closeout routed the
+      // mid-range to one call; the Jazz '97 row above is the other half of that round and is the
+      // five that still reads the ROLL. The motion assertion below holds either way.
+      [THUNDER_16, 'pickpop'],
       [THUNDER_22, 'helio'],
       [LAKERS_87, 'helio'],
     ] as [Player[], Style][]) {

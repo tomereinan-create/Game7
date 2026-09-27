@@ -6,7 +6,13 @@
   "title": "the mid-range belongs to ONE call: the closeout ramp routes it between the roll and the pop, so the Thunder '16 read pick-and-pop and the Jazz '97 keep the roll at the same fit",
   "subject": "Thunder '16",
   "scale": "team:off",
-  "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+  "five": [
+    "Russell Westbrook '16",
+    "Andre Roberson '16",
+    "Kevin Durant '16",
+    "Serge Ibaka '16",
+    "Enes Freedom '16"
+  ],
   "target": 77,
   "tol": 0,
   "before": 77,
@@ -35,21 +41,39 @@
   "expect": [
     {
       "label": "the round moves no rating: the subject five's offense is untouched",
-      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
       "scale": "team:off",
       "op": "==",
       "value": 77
     },
     {
       "label": "...and its defense",
-      "five": ["Russell Westbrook '16", "Andre Roberson '16", "Kevin Durant '16", "Serge Ibaka '16", "Enes Freedom '16"],
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
       "scale": "team:def",
       "op": "==",
       "value": 56
     },
     {
       "label": "the held anchor's five does not move either (recal_120: Jazz 97' pnr Stockton and Malone is more fitting)",
-      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
       "scale": "team:off",
       "op": "==",
       "value": 95
@@ -109,18 +133,20 @@
     "THE FIX ROUTES THE SHOT, IT DOES NOT DELETE IT. closeout is a continuous ramp on the two lines this file already owns — 0 at SHOOT_3PT (40, 'may stand behind the line') to 1 at SHOOT_3PT_HI (60, recal_115's 'the defence must close out on him'), no new threshold invented. The roll lerps from his best interior finish max(rim, mid) at closeout 0 DOWN to his pure rim at 1; the pop lerps from his three at closeout 0 UP to his best jumper max(mid, 3pt) at 1. Each term is therefore EXACTLY its old self at the end where it belongs — recal_120's screenFit at 3pt <= 40, recal_129's popFit at 3pt >= 60 — and gives the shot up at the other end. Durant '16 roll 98 -> 86 against pop 98: pickpop 80.5 beats pnr 76.3 and the Thunder read the pop. Malone '97 roll 89 -> 89 (untouched, closeout 0) against pop 89 -> 14: Jazz '97 pnr stays at the same 76.25 recal_120 gave it and pickpop falls 76.25 -> 50.00, so the anchor now holds by a STRICT preference where it used to hold by a tie-break.",
     "THE OBVIOUS FIX WAS MEASURED AND REJECTED. Making the roll rim-only, min(rim, efficiency), gives Durant the pop (86 against 98) but also gives it to MALONE (roll 83, pop 89) and breaks recal_120's ruling. Malone's 94 mid is a post/elbow jumper and no term reading rim/mid/3pt alone can tell that from a shot taken stepping out behind a screen — the closeout ramp is the fact that tells them apart, and it is the only reason the mid can leave the roll at all.",
     "NO CLIFF, AND THE DIP IS MEASURED. Both lerps carry the mid over the SAME 20-point window, so a screener INSIDE the ramp (3pt 41..59) reads a little under his old max on both calls. Over all 4,385 bigs in the pool the dip exceeds 2 points on FOUR cards and 5 points on TWO (worst: Grant Hill '10, 7.2, a 58-OVR rotation card; Steve Smith '98 6.0). The symmetric-lerp shape was chosen against two alternatives for exactly this reason: a flat partition (mid x (1-t) / mid x t) dips over 5 points on 15 bigs and 24.5 on Nowitzki '08, and a roll-side-only lerp dips over 5 on 7. Continuity is pinned in tests/tactics.test.ts: one point of three moves either term by less than the ramp's own slope, the pop never falls as the three rises and the roll never rises, on every value 0..99.",
-    "THE WHEEL, all 1,255 fieldable team-seasons. pnr 316 -> 302, pickpop 25 -> 43, postup 235 -> 234, balanced 470 -> 467; fiveout 19, helio 141, triangle 45, motion 4 unchanged. 28 fives change their READ and 21 of those are pnr -> pickpop — every Durant Thunder ('10 through '16), every Nowitzki Dallas ('01, '02, '04, '09, '10, '11, '15), the Durant Warriors ('17, '19), the Porzingis Wizards ('17, '18) and the Siakam/Turner Pacers ('24, '25). The pnr FIT moved on only 92 of 1,255 (mean -0.22, min -18.2, max +6.1 — it can RISE, because the roll now picks a different screener); the pickpop fit moved on 803, every one of them down or flat (mean -6.68, min -28.7), which is non-shooting bigs losing a pop they should never have had (Capela '18 pop 23 -> 2, Ayton '26 70 -> 4, Freedom '16 47 -> 23). The BEST fit of a five moved on 13 fives at all; the worst loss is -3.25 (Knicks '24, Randle inside the ramp) and the biggest gain +6.10 (Sonics '98, whose roll screener becomes Vin Baker instead of Detlef Schrempf and whose read goes postup -> pnr).",
-    "EVERY PINNED READ HELD, checked through bestStyle on the wheel's own starting fives: Jazz '97 pnr (76.25, unmoved), Nuggets '25 pnr, Thunder '25 pnr (pickpop 74.25 -> 54.30, another tie broken the right way), Suns '05 pnr, Rockets '18 pnr, Thunder '15 pnr, Magic '11 postup, Hornets '95 postup, Celtics '25 fiveout, Thunder '22 helio, Bulls '96 and '97 triangle. Three fives move ONTO the pick-and-roll and off pick-and-pop (Hornets '96, Jazz '03, Knicks '24) because their pop screener was a mid-range big nobody closes out on.",
+    "THE WHEEL, all 1,255 fieldable team-seasons, RE-MEASURED on the merged board c9adb79 (recal_208's iso and recal_211's motion integrated; the branch's first measurement was taken on 9fd3f5a, where iso does not exist and motion is the old formula, and read pnr 316 -> 302). On the real board: pnr 304 -> 289, pickpop 25 -> 43, balanced 406 -> 404, postup 228 -> 227; motion 56, iso 55, triangle 36, helio 128, fiveout 17 unchanged. 27 fives change their READ and 21 of those are pnr -> pickpop — every Durant Thunder ('10 through '16), the Nowitzki Dallas years ('01, '02, '04, '09, '10, '11, '15), the Durant Warriors ('17, '19), the Porzingis Wizards ('17, '18), the Cavaliers '00, the Suns '00 and the Pacers '24/'25; three move the other way, onto the ROLL (Hornets '96, Jazz '03, Knicks '24), and three onto the pick-and-roll from elsewhere (Sonics '98 off post-up, Suns '14 and Pacers '20 off balanced). The pnr FIT moved on only 92 of 1,255 (mean -0.22, min -18.2, max +6.1 — it can RISE, because the roll now picks a different screener); the pickpop fit moved on 803, every one of them down or flat (mean -6.68, min -28.7), which is non-shooting bigs losing a pop they should never have had (Capela '18 pop 23 -> 2, Ayton '26 70 -> 4, Freedom '16 47 -> 23). The BEST fit of a five moved on 12 fives at all; worst -3.25 (Knicks '24, Randle inside the ramp), best +6.10 (Sonics '98, whose roll screener becomes Vin Baker instead of Detlef Schrempf).",
+    "EVERY PINNED READ HELD on the merged board, checked through bestStyle on the wheel's own starting fives: Jazz '97 pnr (76.25, unmoved), Nuggets '25 pnr, Thunder '25 pnr (pickpop 74.25 -> 54.30, another tie broken the right way), Suns '05 pnr, Rockets '18 pnr, Thunder '15 pnr, Magic '11 postup, Hornets '95 postup, Celtics '25 fiveout, Thunder '22 helio, Lakers '87 helio, Bulls '96 and '97 triangle, Spurs '16 balanced 60.0 (recal_211's declined subject; its pickpop falls 56.0 -> 44.8 and its read does not move). Three fives move ONTO the pick-and-roll and off pick-and-pop (Hornets '96, Jazz '03, Knicks '24) because their pop screener was a mid-range big nobody closes out on.",
     "THE THUNDER'S ROLL PAIR DOES NOT CHANGE, and he was told it might not: pnrPair still names Westbrook + DURANT, because Durant's roll is 86 and Freedom '16 — rim 93, the only true rim runner on that floor — is capped by his efficiency 80. Durant 86 > Freedom 80 is a real reading of the two cards and no change to the screener TERMS can reach it; the allocation defect (pnrPair maximises each slot independently, so the same man can take both jobs) is left for its own round as instructed. What DID change is the same defect on 57 other fives, where the roll screener is now the rim man instead of the shooter: Dallas's roll goes from Nowitzki to Dampier/LaFrentz/Jamison, Seattle's from Schrempf to Baker, Charlotte's from Glen Rice to Divac. And the POP screener changed on 352 fives, from the biggest man to the man who can actually shoot (Magic over Kareem on the '80 and '81 Lakers, Bird over Parish on the '81 Celtics).",
     "THUNDER '15 IS STILL AN EXACT TIE, recorded rather than hidden: Ibaka '15 (rim 38, mid 90, 3pt 46, efficiency 58) sits inside the ramp and his EFFICIENCY caps both terms at 58, so pnr and pickpop both read 71.40 and the read stays pnr on list order. The anchor he set ('Pnr for 15' Thunder...') is what it is required to be; the tie is a property of a 58-efficiency card, not of the two formulas.",
     "NOTHING REGENERATES AND NO RATING MOVES. This round touches src/engine/tactics.ts only — no python, no data. data/team_rating.py and src/engine/offense.ts are untouched, so teamOffense, defenseVs and ratings100 are bit-identical: all 30 campaign opponents read the same style, the same OFF and the same DEF dial before and after (measured, diff empty), so the campaign ladder cannot reorder. compute_ovr.py's marginal term is untouched and no card's OFF/DEF/OVR moves.",
-    "THE DEVIATION TAX LAW STILL PASSES ON ALL NINE ROWS with every constant left where main has it (TAX.style 0.35). The playstyle row is the only one that moved: blind -0.94 -> -1.08 (band [-1.5, -0.3]) and oracle +2.11 -> +2.07 (floor +0.5). The other eight are bit-identical.",
+    "THE DEVIATION TAX LAW STILL PASSES ON ALL NINE ROWS with every constant left where main has it (TAX.style 0.35). On the merged board the playstyle row reads blind -0.98 / oracle +2.12 against main's -0.94 / +2.11 — inside the band [-1.5, -0.3] with the oracle far over its +0.5 floor. The other eight rows are bit-identical.",
     "PINNED BY TEST, because data/anchors.json has card and team RATING scales and no style scale (the same reason recal_120, recal_129 and recal_209 have no anchor row): tests/tactics.test.ts, 'the mid-range belongs to ONE call: the Thunder '16 read pick-and-pop, the Jazz '97 keep the roll' names both fives in one test — Durant over SHOOT_3PT_HI with closeout 1 and popFit > screenFit, Malone under SHOOT_3PT with closeout 0, his screenFit equal to recal_120's own expression, and bestStyle reading pickpop for one five and pnr for the other."
   ],
   "cost": [
     "Four older test assertions pinned the DEFECT and were rewritten to the ruling: tests/tactics.test.ts expected bestStyle(THUNDER_16) to be 'pnr' in two places (recal_115's duo veto, whose content is that it is NOT helio — one now asserts 'pickpop', the other asserts not 'helio'), the Jazz tie test became the ruling's pin, and tests/court.test.ts's caption test now expects pick-and-pop with the same two names, Westbrook + Durant.",
+    "recal_211's pinned-reads block (tests/tactics.test.ts, 'and it does not move a read a ruling has pinned') listed THUNDER_16 / 'pnr'. That row is SUPERSEDED by this round's ruling and now reads 'pickpop', with the supersession named in place so it cannot be mistaken for a loosened pin; its second assertion, styleFit('motion', five) < styleFit(style, five), was re-checked against pickpop and holds. The other six rows (Bulls '97 triangle, Celtics '25 fiveout, Jazz '97 pnr, Suns '05 pnr, Thunder '22 helio, Lakers '87 helio) are untouched and still pass.",
     "court.test.ts's 'a five that IS read as a pick-and-roll draws the called floor' used the Thunder '16 as its pick-and-roll five; it now uses the Jazz '97, which is the standing pnr read on the wheel. The floor shape itself is unchanged — pnr and pickpop draw the same spots since recal_209.",
     "recal_129's doc statement 'a mid-range popper scores identically in both' is now history, not behaviour, and is marked as such in the file. A later round that wants to re-widen the ramp should know that the 40..60 window was chosen to keep Ibaka '15's roll term at his efficiency cap: a wider window (recal_115's interior ramp, 20..60) drops it 58 -> 38 and puts the Thunder '15 pnr anchor at risk.",
-    "The allocation defect is NOT fixed: pnrPair and popPair still maximise the handler and the screener slots independently, so one man can be the best answer to both and the second-best rim runner is never considered. He raised it on Freedom '16 and it is left for its own round."
+    "The allocation defect is NOT fixed: pnrPair and popPair still maximise the handler and the screener slots independently, so one man can be the best answer to both and the second-best rim runner is never considered. He raised it on Freedom '16 and it is left for its own round.",
+    "MEASURED AND RE-MEASURED ON TWO BOARDS. The round was built on 9fd3f5a and then merged onto c9adb79 (recal_208 iso + recal_211 motion) and re-derived there; every count in these notes is the c9adb79 reading. Two things only the merge could show: recal_211's pinned-reads row for THUNDER_16 (superseded above), and a DUPLICATE IMPORT — main's test file already imports SHOOT_3PT_HI for recal_208, so the branch's own import of it broke `tsc -b`, which broke the dist rebuild and failed tests/serve.test.ts. vitest alone does not catch that (it type-strips); `npx tsc -b` does. Both fixed on the branch; the integrator should run tsc, not only the suites."
   ]
 }
