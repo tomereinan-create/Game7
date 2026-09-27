@@ -992,6 +992,9 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  *   screener min(rim, efficiency)  — the ROLL only. A screener who POPS is the other half of the
  *          action and was worth nothing for it: Malone '97 (rim 77, mid 94) read 77. It is now his
  *          best finish off the screen, roll or pop: min(max(rim, mid), efficiency) — Malone 89.
+ *          recal_214 keeps that number for Malone and every other man nobody closes out on, and
+ *          ONLY that man: the mid-range now rides the `closeout` ramp into one call or the other
+ *          instead of sitting in both. See the block below screenFit.
  *
  * The mid-range MOVED here, it was not invented: recal_115 had put max(rim, mid) into the POST-UP
  * hub to stop a mid-post game reading as no post game at all. That was the wrong home for it. A big
@@ -1005,27 +1008,79 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  * shares toward the pair was measured to cost the well-spaced pick-and-roll fives (Nuggets '25,
  * Thunder '25) their read.
  */
+/**
+ * WHOSE SHOT THE MID-RANGE IS (recal_214, his ruling: "KD is a better mid\3pt shooter than a
+ * finisher, and westbrook is a better finisher than shooter, so it needs to be pnp not pnr").
+ *
+ * recal_120 put the mid-range into the ROLL and recal_129 put it into the POP, and neither round
+ * took it out of the other one — so the SAME shot was in both terms and the two calls could not be
+ * told apart by the man who takes it. Durant '16 (rim 86, mid 98, 3pt 80, efficiency 98) read 98
+ * either way, an exact tie broken only by pick-and-roll being listed first in STYLES; no attribute
+ * on either Thunder man moved the pick-and-roll fit at all. recal_129 wrote that behaviour down as
+ * a feature ("a mid-range popper scores identically in both") and it was one until he ruled on a
+ * case it gets backwards: NO mid-range big could ever prefer the pop.
+ *
+ * The mid-range is now ROUTED to one call or the other by the one fact that decides which shot it
+ * actually is — whether the defence has to CLOSE OUT on him. That is a three-point question and the
+ * line already exists: SHOOT_3PT (40, "may stand behind the line") to SHOOT_3PT_HI (60, recal_115's
+ * "the defence must close out on him"). `closeout` is that ramp, continuous, because the house rule
+ * is no cliffs:
+ *
+ *   roll  lerps from his best interior finish max(rim, mid) at closeout 0 DOWN to his pure rim at 1
+ *   pop   lerps from his three at closeout 0 UP to his best jumper max(mid, 3pt) at 1
+ *
+ * Each term is therefore EXACTLY its old self at the end where it belongs — recal_120's screenFit at
+ * 3pt <= 40 and recal_129's popFit at 3pt >= 60 — and gives the shot up at the other end:
+ *   Malone '97   (3pt 14)  roll 89 -> 89, pop 89 -> 14   the elbow jumper of a man nobody guards out
+ *                                                        there is a SCREEN shot, so Jazz '97 keeps
+ *                                                        pnr at the same 76.2 fit (recal_120 held)
+ *   Durant '16   (3pt 80)  roll 98 -> 86, pop 98 -> 98   POP, and the Thunder's tie is broken
+ *   Ibaka '15    (3pt 46)  roll 58 -> 58, pop 58 -> 58   his efficiency caps both; Thunder '15 pnr
+ *   Nowitzki '02 (3pt 76)  roll 93 -> 46, pop 93 -> 93   the popper he always was
+ *   Capela '18   (3pt 2)   roll 85 -> 85, pop 23 ->  2   the roller he always was
+ *
+ * The rejected fix, for the record: making the roll rim-only, min(rim, efficiency), gives Durant the
+ * pop but also gives it to Malone (roll 83, pop 89) and breaks recal_120's anchor. Malone's 94 mid is
+ * a post/elbow jumper and the term cannot tell that from a shot taken stepping out behind a screen —
+ * the closeout ramp is what tells them apart, and it is why the mid can leave the roll at all.
+ *
+ * NOT a partition: both lerps carry the mid over the SAME interval, so a man in the middle of the
+ * ramp (3pt 41..59) reads a little under his old max on both calls. Measured, the dip is 4 bigs of
+ * 4,385 over 2 points and 2 over 5 (worst: Grant Hill '10 7.2, a 58-OVR rotation card) — the
+ * symmetric-lerp shape was chosen over the flat partition exactly to keep it that small (partition:
+ * 15 bigs over 5, worst 24.5 on Nowitzki '08).
+ */
+export const closeout = (x: Attrs) => clamp((x['3pt'] - SHOOT_3PT) / (SHOOT_3PT_HI - SHOOT_3PT), 0, 1)
+
 export const ELITE_PV = 80
 export const ELITE_LIFT = 24
 const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
 export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
-export const screenFit = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.efficiency)
+export const screenFit = (x: Attrs) => Math.min(x.rim + Math.max(0, x.mid - x.rim) * (1 - closeout(x)), x.efficiency)
 
 /**
  * THE POP (recal_129, his ruling: "Add pick n pop"). Pick-and-roll where the screener steps OUT, so
  * the term is his JUMPER — the better of his mid-range and his three, capped by his efficiency the
  * way every screener term is — and the roll is not in it at all.
  *
- * Read against screenFit, which is min(max(rim, mid), efficiency), this says exactly one thing: the
+ * Read against screenFit, which WAS min(max(rim, mid), efficiency), this said exactly one thing: the
  * pop is worth more than the roll ONLY when the screener's THREE is his best shot. A mid-range
- * popper scores identically in both, because recal_120 already put the mid into the pick-and-roll's
- * screener term when it took the mid-range out of the post-up hub — Malone '97 reads 89 either way,
- * Nowitzki '02 reads 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
- * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tie on the same man,
+ * popper scored identically in both, because recal_120 already put the mid into the pick-and-roll's
+ * screener term when it took the mid-range out of the post-up hub — Malone '97 read 89 either way,
+ * Nowitzki '02 read 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
+ * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tied on the same man,
  * and a tie goes to the style that was already there. The fives pick-and-pop actually wins are the
  * stretch fours and fives whose three beats both — Bonner, Bertans, Lewis, Murphy, Gallinari.
+ *
+ * recal_214 ROUTES the mid-range instead of duplicating it (see closeout, above): the tie was the
+ * defect, not the design, and the Jazz keep their pick-and-roll because Malone's roll term is
+ * untouched at 89 while his pop falls to his 3pt 14 — a strict preference now, not a tie-break.
+ * The term is his three at closeout 0, lerped up to recal_129's own max(mid, 3pt) at closeout 1,
+ * so every card recal_129 named (Bonner 79, Lewis 76, Gallinari 76, Murphy 79, Bertans, Porziņģis)
+ * reads the number this line has always given it.
  */
-export const popFit = (x: Attrs) => Math.min(Math.max(x.mid, x['3pt']), x.efficiency)
+export const popFit = (x: Attrs) =>
+  Math.min(x['3pt'] + Math.max(0, x.mid - x['3pt']) * closeout(x), x.efficiency)
 
 /**
  * THE PICK-AND-POP PAIR. It IS the pick-and-roll pair — the same `pnr` field on the plan, so a man
@@ -1844,7 +1899,9 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // his two men when he named them, the engine's own pair when he did not — the same three
       // terms and the same three weights, but since recal_120 the two-man terms are handlerFit and
       // screenFit (see pnrPair): the handler led by his PLAY VOLUME instead of capped by his
-      // scoring, the screener credited for the pop as well as the roll. Jazz '97 (Stockton 87.1,
+      // scoring, the screener credited for his best finish off the screen — recal_214 narrows that
+      // to the ROLL for a man the defence must close out on, and leaves it whole for everyone
+      // Malone '97 is like, which is why this five does not move. Jazz '97 (Stockton 87.1,
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
       const { handler: h, screener: d } = pnrPair(five, call?.pnr)
@@ -1877,7 +1934,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // mid-post game from reading as no post game at all. recal_120 takes the mid-range back out
       // (his ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): a big who scores from the
       // elbow is being screened free by a guard, not fed on the block, so the mid-range belongs to
-      // the pick-and-POP — it is in screenFit now — and the block keeps the rim. Malone '97 (rim 77,
+      // the pick-and-POP — it is in the two screener terms now, routed between them by recal_214's
+      // closeout ramp — and the block keeps the rim. Malone '97 (rim 77,
       // mid 94) falls from 94 to 77 here and rises from 77 to 89 there, which is the whole round in
       // one card. O'Neal '00 (rim 99) and Olajuwon '94 (rim 95) do not move at all.
       // HIS man when the plan names one, the engine's hub when it does not (recal_124) — one
@@ -1892,6 +1950,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
       // (recal_129). Identical weights on purpose: the two calls are then separated by the screener
       // and by nothing else, so pick-and-pop wins exactly when the pop is worth more than the roll.
+      // recal_214 is what makes that separation reachable at all for a mid-range shooter: the two
+      // terms shared the mid-range, so they could TIE on the same man (Thunder '16, 80.5 to 80.5).
       const { handler: ph, screener: pd } = popPair(five, call?.pnr)
       const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
       return 0.4 * (ph ? handlerFit(ph.attrs) : 0) + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
