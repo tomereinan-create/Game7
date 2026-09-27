@@ -4,6 +4,7 @@ import { PLAYERS } from '../src/engine/pool'
 import {
   bestStyle,
   canSpace,
+  closeout,
   DEFAULT_TACTICS,
   DUO_GAP,
   featured,
@@ -15,6 +16,8 @@ import {
   reconcileTactics,
   scorerCreator,
   screenFit,
+  SHOOT_3PT,
+  SHOOT_3PT_HI,
   STAR_LINE,
   heliMan,
   heliEngineScore,
@@ -186,13 +189,21 @@ describe('the helio engine is the best scorer-creator, not the busiest man', () 
 })
 
 describe('two superstars are never read as helio', () => {
-  it("the Thunder '16 read the pick-and-roll between their two, not one man's offense", () => {
+  it("the Thunder '16 read the two-man game between their two, not one man's offense", () => {
     expect(twoStars(THUNDER_16)).toBe(true)
     const e = THUNDER_16.map((p) => scorerCreator(p.attrs)).sort((a, b) => b - a)
     expect(e[1]).toBeGreaterThanOrEqual(STAR_LINE)
     expect(e[0] - e[1]).toBeLessThanOrEqual(DUO_GAP)
-    expect(bestStyle(THUNDER_16).style).toBe('pnr')
+    // recal_115's veto is that it is NOT helio; WHICH two-man game it is went to the pop in
+    // recal_214 (his ruling: "KD is a better midpt shooter than a finisher ... it needs to be
+    // pnp not pnr"). Both calls still name the same two men, which is what this test is about.
+    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
     // ...and the pair the caption names is the two of them
+    expect(
+      featured('pickpop', THUNDER_16)
+        .map((p) => p.name)
+        .sort(),
+    ).toEqual(["Kevin Durant '16", "Russell Westbrook '16"])
     expect(
       featured('pnr', THUNDER_16)
         .map((p) => p.name)
@@ -269,7 +280,7 @@ describe('a helio engine is high volume AND high play volume', () => {
     expect(g("Shai Gilgeous-Alexander '22").attrs.playvol).toBeGreaterThanOrEqual(HELIO_PV)
     // scorerCreator itself did not move, so the two-superstar veto reads exactly as before
     expect(twoStars(THUNDER_16)).toBe(true)
-    expect(bestStyle(THUNDER_16).style).toBe('pnr')
+    expect(bestStyle(THUNDER_16).style).not.toBe('helio') // pick-and-pop since recal_214
   })
 })
 
@@ -697,12 +708,58 @@ describe('pick-and-pop is the roll with the screener stepping out', () => {
     }
   })
 
-  it("a MID-RANGE popper ties, and the tie keeps his ruling: the Jazz '97 stay pick-and-roll", () => {
+  /**
+   * recal_214, his ruling: "KD is a better mid\3pt shooter than a finisher, and westbrook is a
+   * better finisher than shooter, so it needs to be pnp not pnr."
+   *
+   * The mid-range used to sit in BOTH screener terms, so the two calls could not be told apart by
+   * the man who takes the shot: the Thunder '16 read pnr 80.5 / pickpop 80.5, an exact tie broken
+   * only by pick-and-roll being listed first. `closeout` now ROUTES the mid to one call or the
+   * other on the SHOOT_3PT..SHOOT_3PT_HI ramp, and the two named fives come apart the right way —
+   * the Thunder to the pop, the Jazz staying on the roll at the same fit recal_120 gave them.
+   */
+  it("the mid-range belongs to ONE call: the Thunder '16 read pick-and-pop, the Jazz '97 keep the roll", () => {
+    const kd = g("Kevin Durant '16").attrs
+    // "KD is a better mid\3pt shooter than a finisher" — and the defence must close out on him
+    expect(Math.max(kd.mid, kd['3pt'])).toBeGreaterThan(kd.rim)
+    expect(kd['3pt']).toBeGreaterThanOrEqual(SHOOT_3PT_HI)
+    expect(closeout(kd)).toBe(1)
+    expect(popFit(kd)).toBeGreaterThan(screenFit(kd)) // 98 against 86; it was 98 either way
+    expect(styleFit('pickpop', THUNDER_16)).toBeGreaterThan(styleFit('pnr', THUNDER_16))
+    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
+
+    // ...and the Jazz '97 hold recal_120's ruling ("Jazz 97' pnr Stockton and Malone is more
+    // fitting"): nobody closes out on Malone, so his elbow jumper stays a SCREEN shot and his roll
+    // term is untouched — a strict preference now, where it used to be a tie-break
     const km = g("Karl Malone '97").attrs
     expect(km.mid).toBeGreaterThan(km.rim)
-    // recal_120 already put the mid into the roll term, so the two calls are worth the same man
-    expect(popFit(km)).toBeCloseTo(screenFit(km), 10)
-    expect(styleFit('pickpop', JAZZ_97)).toBeCloseTo(styleFit('pnr', JAZZ_97), 10)
+    expect(km['3pt']).toBeLessThan(SHOOT_3PT)
+    expect(closeout(km)).toBe(0)
+    expect(screenFit(km)).toBeCloseTo(Math.min(Math.max(km.rim, km.mid), km.efficiency), 10)
+    expect(popFit(km)).toBeLessThan(screenFit(km))
+    expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
     expect(bestStyle(JAZZ_97).style).toBe('pnr')
+  })
+
+  it('the ramp is continuous and each term is its old self at its own end', () => {
+    const base = g("Karl Malone '97").attrs
+    // no cliff: one point of three moves either term by at most the ramp's own slope — the shot it
+    // carries spread over the SHOOT_3PT..SHOOT_3PT_HI window — everywhere on the axis
+    const step = 1 + base.mid / (SHOOT_3PT_HI - SHOOT_3PT) + 1e-9
+    for (let t = 1; t <= 99; t++) {
+      const lo = { ...base, '3pt': t - 1 }
+      const hi = { ...base, '3pt': t }
+      expect(Math.abs(screenFit(hi) - screenFit(lo))).toBeLessThan(step)
+      expect(Math.abs(popFit(hi) - popFit(lo))).toBeLessThan(step)
+      // the pop never falls as the three rises, and the roll never rises
+      expect(popFit(hi)).toBeGreaterThanOrEqual(popFit(lo) - 1e-9)
+      expect(screenFit(hi)).toBeLessThanOrEqual(screenFit(lo) + 1e-9)
+    }
+    // at 3pt <= SHOOT_3PT the roll IS recal_120's min(max(rim, mid), efficiency)...
+    const shy = { ...base, '3pt': SHOOT_3PT }
+    expect(screenFit(shy)).toBeCloseTo(Math.min(Math.max(shy.rim, shy.mid), shy.efficiency), 10)
+    // ...and at 3pt >= SHOOT_3PT_HI the pop IS recal_129's min(max(mid, 3pt), efficiency)
+    const gunner = { ...base, '3pt': SHOOT_3PT_HI }
+    expect(popFit(gunner)).toBeCloseTo(Math.min(Math.max(gunner.mid, gunner['3pt']), gunner.efficiency), 10)
   })
 })
