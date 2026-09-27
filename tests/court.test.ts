@@ -297,10 +297,13 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
 
   it('the best-fit caption names the man, or the pair, the shape runs through', () => {
     // recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?" — the
-    // read used to name a shape and no man. The Thunder '16 read the pnr between their two stars,
-    // and the caption names both; the Thunder '22 read helio and it names the one man.
+    // read used to name a shape and no man. The Thunder '16 read the two-man game between their two
+    // stars and the caption names both; the Thunder '22 read helio and it names the one man.
+    // recal_214 moved WHICH two-man game it is to the pop (his ruling: "KD is a better midpt
+    // shooter than a finisher, and westbrook is a better finisher than shooter, so it needs to be
+    // pnp not pnr") — the two names are the ruling here, and they are unchanged.
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toMatch(/^pick-and-roll · best fit \d+ · Westbrook \+ Durant$/)
+    expect(caption(draw(null, okc16))).toMatch(/^pick-and-pop · best fit \d+ · Westbrook \+ Durant$/)
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
     expect(caption(draw(null, okc22))).toMatch(/^helio · best fit \d+ · Gilgeous-Alexander$/) // the fit number rides the pool (recal_116 moved it 65 -> 64); the man is the ruling
     // ...and a shape that features nobody names nobody, rather than picking a starter at random
@@ -394,12 +397,15 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
   })
 
   it('a five that IS read as a pick-and-roll draws the called floor, spot for spot', () => {
-    // the Thunder '16 (his ruling: "why Helio when they have 2 superstars?") — two stars inside
-    // DUO_GAP of each other, so the read is the pnr between them and the caption names both
-    const okc = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(inferredStyle(okc)!.style).toBe('pnr')
-    expect(spotsFor(null, okc)).toEqual(spotsFor({ style: 'pnr', pnr: null }, okc))
-    holds(okc, null)
+    // the Jazz '97 (recal_120, his ruling: "Jazz 97' pnr Stockton and Malone is more fitting") —
+    // the standing pick-and-roll read on the wheel. It was the Thunder '16 until recal_214 routed
+    // the mid-range to one call ("KD is a better midpt shooter than a finisher ... it needs to be
+    // pnp not pnr") and their read became the pop; the Jazz are the five that still reads the ROLL,
+    // so the inference is checked on them.
+    const jazz = [g("John Stockton '97"), g("Jeff Hornacek '97"), g("Bryon Russell '97"), g("Karl Malone '97"), g("Greg Ostertag '97")]
+    expect(inferredStyle(jazz)!.style).toBe('pnr')
+    expect(spotsFor(null, jazz)).toEqual(spotsFor({ style: 'pnr', pnr: null }, jazz))
+    holds(jazz, null)
   })
 
   it("a five with TWO bigs does not walk the leftover one into a corner: Adams takes the wing", () => {

@@ -70,6 +70,26 @@ export interface Tactics {
    * panel are untouched. Only `iso` as a style reads it.
    */
   iso?: string | null
+  /**
+   * THE HIGH ELBOW MAN (recal_213, his ruling: "Sounds good"). Horns is the one shape that is
+   * called on TWO bigs, and this names the first of them — the man the entry pass goes to at the
+   * ball-side elbow. The second is whoever else on the floor can play the other elbow, so the call
+   * is one name and not a pair: naming both would let a plan point horns at two guards.
+   * Absent/null is the engine's own pick (see hornsMen). Only `horns` as a style reads it.
+   */
+  horns?: string | null
+  /**
+   * THE MAN RUN OFF THE SCREENS (recal_213). The pin-down's one-man call, the same shape as the
+   * post target, the helio creator and the iso scorer — and the only one of the five whose man is
+   * priced for what he does NOT do: run the offense. Absent/null is the engine's own shooter (see
+   * pinMan). Only `pindown` as a style reads it.
+   */
+  pindown?: string | null
+  /**
+   * THE HAND-OFF HUB (recal_213). The big whose hands the offense runs through at the top of the
+   * key. Absent/null is the engine's own hub (see dhoMan). Only `dho` as a style reads it.
+   */
+  dho?: string | null
   /** Attack their worst defender. Needs a creator to run it, and a victim to point him at. */
   hunt: boolean
   /** Send men to the offensive glass. Pays with rebounders, leaks transition without them. */
@@ -125,6 +145,9 @@ export interface StyleCall {
   post?: string | null
   helio?: string | null
   iso?: string | null
+  horns?: string | null
+  pindown?: string | null
+  dho?: string | null
 }
 
 /**
@@ -136,7 +159,20 @@ export interface StyleCall {
  * points over the free default. A save that still says `transition` loads as `balanced`; see
  * reconcileTactics, which has always dropped a style that no longer exists.
  */
-export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop' | 'iso'
+/**
+ * ...AND THREE MORE IN ONE ROUND (recal_213, his ruling: "Sounds good"). Twelve now, and the three
+ * were fitted JOINTLY rather than as three serial rounds, because each of them takes fives from all
+ * of the other eleven and a count measured against a board that does not yet carry its siblings is
+ * a count of something that will never ship. See hornsFit / pindownFit / dhoFit below for the
+ * derivations; the three are appended at the END of this list on purpose, because `bestStyle` walks
+ * it in order with a strict `>` and so a TIE goes to the older style — the Jazz '97 pnr/pickpop tie
+ * that recal_129 left behind still resolves to the pick-and-roll and nothing new can take a read by
+ * drawing level with a read he has already ruled on.
+ */
+// KEPT ON ONE LINE, and the three new keys APPENDED: recal_208's receipt proves "the set is nine
+// styles now" with a regex over this whole declaration, so breaking it across lines would turn a
+// sibling's proof red for a formatting choice. Appending keeps it green and moves no existing key.
+export type Style = 'balanced' | 'fiveout' | 'pnr' | 'motion' | 'postup' | 'helio' | 'triangle' | 'pickpop' | 'iso' | 'horns' | 'pindown' | 'dho'
 export const STYLES: { key: Style; label: string }[] = [
   { key: 'balanced', label: 'balanced' },
   { key: 'fiveout', label: 'five-out' },
@@ -147,6 +183,9 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'triangle', label: 'triangle' },
   { key: 'pickpop', label: 'pick-and-pop' },
   { key: 'iso', label: 'isolation' },
+  { key: 'horns', label: 'horns' },
+  { key: 'pindown', label: 'pin-down' },
+  { key: 'dho', label: 'hand-off hub' },
 ]
 
 export const DEFAULT_TACTICS: Tactics = {
@@ -159,6 +198,9 @@ export const DEFAULT_TACTICS: Tactics = {
   post: null,
   helio: null,
   iso: null,
+  horns: null,
+  pindown: null,
+  dho: null,
   hunt: false,
   crashOff: false,
   crashDef: false,
@@ -850,6 +892,10 @@ export function reconcileTactics(t: Tactics, roster: string[] | null): Tactics {
     helio: legalMan(t.helio, names) ? t.helio : null,
     // ...and the iso scorer (recal_208), the fourth of the same shape
     iso: legalMan(t.iso, names) ? t.iso : null,
+    // ...and recal_213's three: the high elbow man, the man run off the screens, the hand-off hub
+    horns: legalMan(t.horns, names) ? t.horns : null,
+    pindown: legalMan(t.pindown, names) ? t.pindown : null,
+    dho: legalMan(t.dho, names) ? t.dho : null,
   }
 }
 
@@ -885,6 +931,9 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
     post: rank >= 2 ? t.post : null,
     helio: rank >= 2 ? t.helio : null,
     iso: rank >= 2 ? t.iso : null,
+    horns: rank >= 2 ? t.horns : null,
+    pindown: rank >= 2 ? t.pindown : null,
+    dho: rank >= 2 ? t.dho : null,
     crashOff: rank >= 2 ? t.crashOff : false,
     crashDef: rank >= 2 ? t.crashDef : false,
     scheme: rank >= 3 ? t.scheme : 'matchup',
@@ -934,6 +983,9 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  *   screener min(rim, efficiency)  — the ROLL only. A screener who POPS is the other half of the
  *          action and was worth nothing for it: Malone '97 (rim 77, mid 94) read 77. It is now his
  *          best finish off the screen, roll or pop: min(max(rim, mid), efficiency) — Malone 89.
+ *          recal_214 keeps that number for Malone and every other man nobody closes out on, and
+ *          ONLY that man: the mid-range now rides the `closeout` ramp into one call or the other
+ *          instead of sitting in both. See the block below screenFit.
  *
  * The mid-range MOVED here, it was not invented: recal_115 had put max(rim, mid) into the POST-UP
  * hub to stop a mid-post game reading as no post game at all. That was the wrong home for it. A big
@@ -947,27 +999,79 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  * shares toward the pair was measured to cost the well-spaced pick-and-roll fives (Nuggets '25,
  * Thunder '25) their read.
  */
+/**
+ * WHOSE SHOT THE MID-RANGE IS (recal_214, his ruling: "KD is a better mid\3pt shooter than a
+ * finisher, and westbrook is a better finisher than shooter, so it needs to be pnp not pnr").
+ *
+ * recal_120 put the mid-range into the ROLL and recal_129 put it into the POP, and neither round
+ * took it out of the other one — so the SAME shot was in both terms and the two calls could not be
+ * told apart by the man who takes it. Durant '16 (rim 86, mid 98, 3pt 80, efficiency 98) read 98
+ * either way, an exact tie broken only by pick-and-roll being listed first in STYLES; no attribute
+ * on either Thunder man moved the pick-and-roll fit at all. recal_129 wrote that behaviour down as
+ * a feature ("a mid-range popper scores identically in both") and it was one until he ruled on a
+ * case it gets backwards: NO mid-range big could ever prefer the pop.
+ *
+ * The mid-range is now ROUTED to one call or the other by the one fact that decides which shot it
+ * actually is — whether the defence has to CLOSE OUT on him. That is a three-point question and the
+ * line already exists: SHOOT_3PT (40, "may stand behind the line") to SHOOT_3PT_HI (60, recal_115's
+ * "the defence must close out on him"). `closeout` is that ramp, continuous, because the house rule
+ * is no cliffs:
+ *
+ *   roll  lerps from his best interior finish max(rim, mid) at closeout 0 DOWN to his pure rim at 1
+ *   pop   lerps from his three at closeout 0 UP to his best jumper max(mid, 3pt) at 1
+ *
+ * Each term is therefore EXACTLY its old self at the end where it belongs — recal_120's screenFit at
+ * 3pt <= 40 and recal_129's popFit at 3pt >= 60 — and gives the shot up at the other end:
+ *   Malone '97   (3pt 14)  roll 89 -> 89, pop 89 -> 14   the elbow jumper of a man nobody guards out
+ *                                                        there is a SCREEN shot, so Jazz '97 keeps
+ *                                                        pnr at the same 76.2 fit (recal_120 held)
+ *   Durant '16   (3pt 80)  roll 98 -> 86, pop 98 -> 98   POP, and the Thunder's tie is broken
+ *   Ibaka '15    (3pt 46)  roll 58 -> 58, pop 58 -> 58   his efficiency caps both; Thunder '15 pnr
+ *   Nowitzki '02 (3pt 76)  roll 93 -> 46, pop 93 -> 93   the popper he always was
+ *   Capela '18   (3pt 2)   roll 85 -> 85, pop 23 ->  2   the roller he always was
+ *
+ * The rejected fix, for the record: making the roll rim-only, min(rim, efficiency), gives Durant the
+ * pop but also gives it to Malone (roll 83, pop 89) and breaks recal_120's anchor. Malone's 94 mid is
+ * a post/elbow jumper and the term cannot tell that from a shot taken stepping out behind a screen —
+ * the closeout ramp is what tells them apart, and it is why the mid can leave the roll at all.
+ *
+ * NOT a partition: both lerps carry the mid over the SAME interval, so a man in the middle of the
+ * ramp (3pt 41..59) reads a little under his old max on both calls. Measured, the dip is 4 bigs of
+ * 4,385 over 2 points and 2 over 5 (worst: Grant Hill '10 7.2, a 58-OVR rotation card) — the
+ * symmetric-lerp shape was chosen over the flat partition exactly to keep it that small (partition:
+ * 15 bigs over 5, worst 24.5 on Nowitzki '08).
+ */
+export const closeout = (x: Attrs) => clamp((x['3pt'] - SHOOT_3PT) / (SHOOT_3PT_HI - SHOOT_3PT), 0, 1)
+
 export const ELITE_PV = 80
 export const ELITE_LIFT = 24
 const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
 export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
-export const screenFit = (x: Attrs) => Math.min(Math.max(x.rim, x.mid), x.efficiency)
+export const screenFit = (x: Attrs) => Math.min(x.rim + Math.max(0, x.mid - x.rim) * (1 - closeout(x)), x.efficiency)
 
 /**
  * THE POP (recal_129, his ruling: "Add pick n pop"). Pick-and-roll where the screener steps OUT, so
  * the term is his JUMPER — the better of his mid-range and his three, capped by his efficiency the
  * way every screener term is — and the roll is not in it at all.
  *
- * Read against screenFit, which is min(max(rim, mid), efficiency), this says exactly one thing: the
+ * Read against screenFit, which WAS min(max(rim, mid), efficiency), this said exactly one thing: the
  * pop is worth more than the roll ONLY when the screener's THREE is his best shot. A mid-range
- * popper scores identically in both, because recal_120 already put the mid into the pick-and-roll's
- * screener term when it took the mid-range out of the post-up hub — Malone '97 reads 89 either way,
- * Nowitzki '02 reads 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
- * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tie on the same man,
+ * popper scored identically in both, because recal_120 already put the mid into the pick-and-roll's
+ * screener term when it took the mid-range out of the post-up hub — Malone '97 read 89 either way,
+ * Nowitzki '02 read 93 either way. That is why the Jazz '97 do not move off the pick-and-roll (his
+ * ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): the two calls tied on the same man,
  * and a tie goes to the style that was already there. The fives pick-and-pop actually wins are the
  * stretch fours and fives whose three beats both — Bonner, Bertans, Lewis, Murphy, Gallinari.
+ *
+ * recal_214 ROUTES the mid-range instead of duplicating it (see closeout, above): the tie was the
+ * defect, not the design, and the Jazz keep their pick-and-roll because Malone's roll term is
+ * untouched at 89 while his pop falls to his 3pt 14 — a strict preference now, not a tie-break.
+ * The term is his three at closeout 0, lerped up to recal_129's own max(mid, 3pt) at closeout 1,
+ * so every card recal_129 named (Bonner 79, Lewis 76, Gallinari 76, Murphy 79, Bertans, Porziņģis)
+ * reads the number this line has always given it.
  */
-export const popFit = (x: Attrs) => Math.min(Math.max(x.mid, x['3pt']), x.efficiency)
+export const popFit = (x: Attrs) =>
+  Math.min(x['3pt'] + Math.max(0, x.mid - x['3pt']) * closeout(x), x.efficiency)
 
 /**
  * THE PICK-AND-POP PAIR. It IS the pick-and-roll pair — the same `pnr` field on the plan, so a man
@@ -1444,6 +1548,326 @@ export const passChain = (a: Attrs[]): number => {
 /** The worst holder on the floor: his scoring load over his passing load, over the free allowance. */
 export const ballStop = (a: Attrs[]): number => (a.length ? Math.max(...a.map((x) => Math.max(0, x.volume - x.playvol - MOT_HOLD_FREE))) : 0)
 
+/**
+ * HOW BIG A MAN IS, AS A RAMP AND NOT A GATE (recal_213). Two of the three styles this round adds
+ * are about BIGS — horns puts two of them on the elbows, the hand-off hub puts one at the top of
+ * the key — and both need to say "he is a four or a five" without a cliff in it.
+ *
+ * POST_HEIGHT 81 is the line this file already has for that question, and recal_124 made it a GATE
+ * on the nomination: postMan simply will not look at a man under 6'9". recal_208 copied the shape
+ * (facesUp), and the two together are a real fault the orchestrator asked to be fixed rather than
+ * repeated — one inch of height flips which man a set is built around. So the same fact is spent
+ * differently here: a CONTINUOUS ramp that is 0 at `lo`, 1 at `hi`, and inside the price rather than
+ * on the nomination, so a plan that names a 6'6" man at an elbow still gets a number for him and the
+ * deviation tax does the rest. Nothing in this round gates anything.
+ *
+ * MEASURED, not chosen, over the 1,255 wheel fives (scripts/_tmp/m213.ts): the two men hornsMen
+ * nominates run height p10 80, p50 82, p90 84, and the hub dhoMan nominates runs p10 81, p50 83.
+ * So horns ramps 78 -> 82 (a 6'6" forward is worth nothing at an elbow, a 6'10" big is worth all of
+ * it, and the median elbow man is at the top) and the hub ramps 79 -> 83 (POST_HEIGHT 81 lands
+ * exactly HALF WAY up it — the post-up's own line, reached as a slope). The two are written out
+ * separately rather than shared: they answer the same question about different jobs, and a later
+ * round must be able to move one without silently moving the other.
+ */
+const heightRamp = (x: Attrs, lo: number, hi: number) => clamp((x.height - lo) / (hi - lo), 0, 1)
+
+/**
+ * HORNS (recal_213, his ruling: "Sounds good"). Two bigs at the elbows and a handler up top: the
+ * classic two-elbow alignment, and the set that carries high-low, the elbow hand-off, the elbow
+ * pick-and-roll and the post entry. It is the tenth style and the first one that is a call on TWO
+ * BIGS rather than on a big and a guard.
+ *
+ *   THE ELBOW MEN   An elbow operator does two things from there: he PASSES (high-low, the hand-off,
+ *                   the entry) and he SHOOTS THE MID-RANGE (the elbow jumper, the pop off the elbow
+ *                   screen). `elbowSkill` is those two attributes with the WEAKER one leading at
+ *                   HORN_WEAK 0.75 and the stronger at HORN_STRONG 0.25 — a man who can only do one
+ *                   of the two is worth a quarter of a man who can do both, which is what "operate
+ *                   from the elbow" means and is why the term is not a max. Measured: over the wheel
+ *                   the men this fit nominates run min(mid, playvol) p50 30 and p90 54, so the
+ *                   two-way elbow big is the rare thing, and it is paid like one.
+ *                     It is the term that does the work of keeping the round honest. Serge Ibaka '16
+ *                   (mid 92, playvol 7) and Andrea Bargnani '10 (83 / 14) are spot-up bigs who
+ *                   happen to stand at an elbow; on a max they read 92 and 83 and they carry a
+ *                   horns read on two pinned fives. On the weaker-led form they read 28 and 31.
+ *   THE SECOND ONE  carries the fit, at HORN_LOW 0.55 against HORN_HIGH 0.32 for the first. The same
+ *                   convexity the triangle pays its third reader (TRI_READ3): every five has one big
+ *                   who can do something at an elbow and the SECOND is what makes the alignment
+ *                   possible at all. A great high man beside nobody is a post-up, not horns.
+ *   THE HANDLER     HORN_HAND 0.13 on the best handlerFit among the three men who are not at an
+ *                   elbow. Light on purpose and deliberately NOT the leading term: horns is a call
+ *                   on the bigs, and handlerFit clamps at 99, so a heavier weight would be a term
+ *                   the set's own featured men cannot move (the fault the pick-and-roll carries on
+ *                   the Thunder '16, which this round was told not to repeat).
+ *
+ * HORNS ASKS NOTHING ABOUT THE THREE-POINT LINE, and that is the structural fact that keeps it from
+ * being a synonym: every other two-man set in this file (pnr, pickpop, postup, iso, fiveout) carries
+ * a mean-three or a shooter-count term, and horns carries none — the two corners of a horns set are
+ * spacing the floor for an action that happens at the free-throw line. It is also the opposite of
+ * the triangle where they touch: the triangle CHARGES a dominant creator (TRI_SEP) and horns PAYS a
+ * handler. Over the wheel the horns fit correlates 0.22 with the triangle, 0.18 with the pnr, 0.31
+ * with the post-up and -0.11 with iso.
+ *
+ * WHAT IT WINS: 33 of the 1,255 wheel fives (2.6%), and the list is the alignment in names —
+ * Garnett's Timberwolves ('94/'96/'97/'00/'02/'06/'07), Webber and Divac's Kings ('02/'03), Marc
+ * Gasol and Randolph's Grizzlies ('14/'15/'16/'17), Daugherty and Nance's Cavaliers '91, Bird and
+ * McHale's Celtics ('90/'91/'92), Sabonis and Wallace's Blazers '01, the Magic '25, the Nelson Bucks
+ * '81/'82, the Lakers '80/'81/'88, the Sonics '84/'85/'86.
+ *
+ * AND IT IS CAPPED AT 2.6% BY A PIN, WHICH IS REPORTED RATHER THAN TUNED AROUND. HORN_BASE 17 is not
+ * chosen for the band, it is the largest value that holds the Nuggets '25 on the pick-and-roll (his
+ * ruling): Jokić and Gordon are two men who can both pass and shoot from an elbow, so the Nuggets
+ * read horns 71.0 against a pnr of 72.9, and one more point of base flips them. At 18 horns wins 40
+ * fives (3.2%) and breaks that read; at 19 it wins 54 and also takes the Raptors '10. The band was
+ * not reachable without breaking a ruling, so the count is what the rulings leave.
+ */
+export const HORN_BASE = 17
+export const HORN_HIGH = 0.32
+export const HORN_LOW = 0.55
+export const HORN_HAND = 0.13
+export const HORN_WEAK = 0.75
+export const HORN_STRONG = 0.25
+export const HORN_H0 = 78
+export const HORN_H1 = 82
+/** What a man is worth at an elbow: the weaker of his passing and his mid-range leads, scaled by his size. */
+export const elbowSkill = (x: Attrs) =>
+  (HORN_WEAK * Math.min(x.mid, x.playvol) + HORN_STRONG * Math.max(x.mid, x.playvol)) * heightRamp(x, HORN_H0, HORN_H1)
+/**
+ * ...and what he is worth UP TOP, which is the same ramp read the other way round — handlerFit scaled
+ * by how much of a guard he is, `1 - heightRamp`, the shape isoRoom already uses against `interior`.
+ * Written this way rather than as "the best handler among the three men who are not at an elbow"
+ * because the exclusion form is DISCONTINUOUS: the moment one big overtakes another on elbowSkill the
+ * pair swaps, the elbow terms stay level (they were tied at the crossing) but the excluded set changes
+ * and the handler term jumps. Measured at 11.7 points on the Grizzlies '17 before this form; 0.0 after.
+ */
+export const hornsHandler = (x: Attrs) => handlerFit(x) * (1 - heightRamp(x, HORN_H0, HORN_H1))
+
+/**
+ * THE TWO MEN ON THE ELBOWS (recal_213). The plan's man is the HIGH one when it names somebody on
+ * the five, and the engine fills the other elbow with the best man left either way — so a called
+ * horns always draws and prices two men, and naming a guard costs the high term rather than
+ * breaking the set. With nobody named it is simply the floor's two best elbow men.
+ */
+export function hornsMen(five: Player[], pick?: string | null): { high: Player | null; low: Player | null; chosen: boolean } {
+  const named = legalMan(pick, five.map((p) => p.name)) ? (five.find((p) => p.name === pick) ?? null) : null
+  const rest = five.filter((p) => p !== named).slice().sort((x, y) => elbowSkill(y.attrs) - elbowSkill(x.attrs))
+  const high = named ?? rest.shift() ?? null
+  return { high, low: rest[0] ?? null, chosen: !!named }
+}
+
+/**
+ * THE OFF-BALL PIN-DOWN (recal_213, his ruling: "Sounds good"). A shooter run off staggered screens:
+ * the offense is the movement of a man WITHOUT the ball. Miller, Allen, Thompson, Rice, Redd, Houston.
+ *
+ * It is the complement of the complement. recal_206 split the ball-dominant star in two (helio =
+ * high volume AND high play volume, iso = high volume and LOW play volume), and recal_208 noted that
+ * iso's own discriminator was FOULDRAW — "what keeps a SPOT-UP shooter out of the job", naming Klay
+ * Thompson '16, Dell Curry '95 and Ryan Anderson '11 as men who "are set up by somebody". This style
+ * is those men. They are high-volume scorers with low play volume, exactly like an iso man, and they
+ * are not iso men for one reason: THEY DO NOT CREATE THEIR OWN SHOT. So the fit reads three facts
+ * that iso does not read at all, and iso's own spacing term is absent:
+ *
+ *   THE SHOT HE TAKES    pinShot, the better of his mid-range and his three. Era-honest on purpose:
+ *   COMING OFF           a 1985 pin-down produced a mid-range jumper and a 2016 one produced a three,
+ *                        and a 3pt-led term would say the shape did not exist before 1990.
+ *   HOW MUCH OF HIS      pinCatch, and it is THE discriminator against iso and the post-up. A man run
+ *   GAME IS OFF THE      off a screen shoots over the top of it; a man whose best scoring is AT THE
+ *   CATCH                RIM is either being fed there (post-up) or beating his man off the dribble
+ *                        (iso). The term is his jumper over his rim game, ramped from
+ *                        -PIN_CATCH_FREE 10 to PIN_CATCH_SPAN 50 above it, with a PIN_CATCH_FLOOR 0.30
+ *                        so it fades rather than zeroes. Measured: the men this fit nominates run
+ *                        pinShot - rim p25 15, p50 33, p90 66 (the whole card pool runs p50 9).
+ *                        It is what parts Reggie Miller '97 (94 - 29, full credit) and Klay Thompson
+ *                        '16 (99 - 39, full credit) from Bernard King '84 (74 - 98, the floor) and
+ *                        Adrian Dantley '81 (87 - 99, the floor) — the two fives his ruling pins to
+ *                        iso, read on the one column that separates the shapes.
+ *   HOW MUCH OF THE      the scoring load, as a plain share of the axis (volume / 99). A pin-down is
+ *   OFFENSE HE IS        run for a team's first option, not its fifth; without the load the fit
+ *                        nominates a 60-volume specialist on every five and reads 45 of them.
+ *
+ * ...and a pin-down is run for a WING (pinWing, a ramp DOWN on height from PIN_H0 80 to PIN_H1 84).
+ * Measured: the men this fit nominates run height p50 77 and p90 80, so a 6'8" man takes the whole
+ * term and only the seven-footers are charged. Without it the fit nominates Nowitzki and reads six
+ * Mavericks fives as pin-downs, which is a description of the pick-and-pop.
+ *
+ * THEN THE PRICE. pinOffBall is the play-volume fade, and it is the third use of the line recal_206
+ * measured and recal_208 mirrored: PIN_PV 56 is the MEDIAN play volume of the man this fit nominates
+ * over the 1,255 wheel fives (helio's own median is 65, iso's 57 — the three styles nominate men
+ * from the same part of the board and part on WHAT THEY DO, not on how much they pass). At or below
+ * it he is entirely an off-ball man; the credit fades continuously to nothing by PIN_PV_MAX 95,
+ * because a man who runs the offense cannot be the man the offense is run for. Written as a
+ * multiplicative fade, the shape `interior` and `isoRoom` already use in this file, rather than as a
+ * subtraction: a fade cannot drive the leading term negative and needs no floor.
+ *   Jordan '96 is the card this term exists for: mid 98, rim 62, volume 98 — the best pin-down
+ *   scorer on the board on everything above — and playvol 65, which fades him to 0.77 and leaves the
+ *   Bulls '96 and '97 on the triangle by 4.9 and 4.6.
+ *
+ * AND WHAT THE OTHER FOUR OWE HIM is ONE thing: somebody has to hit him coming off the screen.
+ * PIN_W_PASS 0.18 on the best play volume among the four. The SCREEN ITSELF is deliberately not in
+ * the fit — there is no screening attribute on this sheet, and the nearest proxies (height, or
+ * screenFit, which is a screener's SCORING) would price a pin-down by how tall the other four are.
+ * What the set asks of them is the pass.
+ *
+ * WHAT IT WINS: 62 of the 1,255 wheel fives (4.9%) — squarely in the band the other signature systems
+ * occupy. The list is the brief in names: Reggie Miller's Pacers ('96/'97/'98), Ray Allen's Bucks
+ * ('00/'01/'02) and Sonics ('05/'06/'07), Glenn Robinson's Bucks ('96/'97/'98), Michael Redd's Bucks
+ * '05, Glen Rice's Hornets ('97/'98) and Dell Curry's '94, Allan Houston's Knicks
+ * ('00/'01/'02/'03/'04), Klay Thompson's Warriors ('15/'16), Carmelo Anthony's Knicks '14, the
+ * Nuggets '07/'08, the Bulls '05/'06/'07/'08. Every one of those is a high-volume jump-shooter with
+ * somebody else's assists, which is the whole shape.
+ *   AND IT IS NOT ISO: over the wheel the two fits correlate 0.22, and pin-down takes only FOUR of
+ *   iso's 55 fives (the Bulls '98, the Clippers '23, the Knicks '16, the Spurs '83). Every five his
+ *   ruling pins to iso holds — Raptors '17 by 31.0, Jazz '81 by 30.0, Knicks '84 by 25.7, Nets '23
+ *   by 4.3.
+ *   AND IT IS NOT FIVE-OUT (r 0.19): five-out is a COUNT of men who can stand behind the arc and has
+ *   no featured man at all; this is one man's load and his jumper. The Celtics '25 hold five-out by
+ *   22.4 over it.
+ */
+export const PIN_BASE = -7
+export const PIN_W_MAN = 0.8
+export const PIN_W_PASS = 0.18
+export const PIN_JMP = 0.75
+export const PIN_EFF = 0.25
+export const PIN_CATCH_FLOOR = 0.3
+export const PIN_CATCH_FREE = 10
+export const PIN_CATCH_SPAN = 50
+export const PIN_H0 = 80
+export const PIN_H1 = 84
+export const PIN_PV = 56
+export const PIN_PV_MAX = 95
+/** The shot a man takes coming off a screen: the better of his mid-range and his three. */
+export const pinShot = (x: Attrs) => Math.max(x.mid, x['3pt'])
+/** ...and how much of his scoring is off the CATCH rather than off the dribble or off a feed. */
+export const pinCatch = (x: Attrs) =>
+  PIN_CATCH_FLOOR + (1 - PIN_CATCH_FLOOR) * clamp((pinShot(x) - x.rim + PIN_CATCH_FREE) / PIN_CATCH_SPAN, 0, 1)
+/** A pin-down is run for a wing: full at PIN_H0, nothing by PIN_H1. */
+export const pinWing = (x: Attrs) => clamp((PIN_H1 - x.height) / (PIN_H1 - PIN_H0), 0, 1)
+/** The man the screens are set for, before he is priced for the offense he runs himself. */
+export const pinScorer = (x: Attrs) => (PIN_JMP * pinShot(x) + PIN_EFF * x.efficiency) * (x.volume / 99) * pinCatch(x) * pinWing(x)
+/** ...and how much of him is OFF the ball: all of it at PIN_PV, none by PIN_PV_MAX. */
+export const pinOffBall = (x: Attrs) => clamp((PIN_PV_MAX - x.playvol) / (PIN_PV_MAX - PIN_PV), 0, 1)
+export const pinScore = (x: Attrs) => pinScorer(x) * pinOffBall(x)
+
+/**
+ * WHO IS RUN OFF THE SCREENS (recal_213). The fifth call of the same shape as postMan, heliMan and
+ * isoMan: the plan's man when it names one who is on the five, the engine's own otherwise — and the
+ * engine's own is the best pinScorer, the UNPRICED composite, so the caption and the floor name the
+ * five's best off-ball shooter even when that man is also its point guard. The fit then prices
+ * whoever is named, which is the deviation tax paying for itself.
+ *
+ * NO GATE. Every other nomination in this file filters the floor first (postMan by POST_HEIGHT,
+ * isoMan by facesUp, pnrPair by playvol and height); this one looks at all five men, because the two
+ * facts a gate would encode — that he is a wing and that he shoots rather than finishes — are inside
+ * pinScorer as ramps. A five of towers nominates its least tall big and reads far under the free
+ * default, which is the honest reading of five men nobody can run off a screen.
+ */
+export function pinMan(five: Player[], pick?: string | null): { shooter: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { shooter: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (!five.length) return { shooter: null, chosen: false }
+  return { shooter: five.reduce((m, p) => (pinScore(p.attrs) > pinScore(m.attrs) ? p : m), five[0]), chosen: false }
+}
+
+/**
+ * THE HAND-OFF HUB (recal_213, his ruling: "Sounds good"). A passing big at the top of the key
+ * handing off to shooters — the offense runs through a BIG MAN'S hands, not a guard's. Sabonis,
+ * Noah, Vlade Divac, Brad Miller, Pau Gasol, Simmons.
+ *
+ * It is the fourth quadrant of recal_206's conjunction, and that is exactly how it is built. His
+ * rule there was that the helio engine needs high volume AND high play volume; recal_208 took the
+ * complement (high volume, low play volume) for iso. The quadrant nobody had was HIGH PLAY VOLUME
+ * AND LOW VOLUME — a big who creates for other men without needing shots — and it is the literal
+ * reading of the pitch he approved: the hub PASSES rather than SCORES.
+ *
+ *   THE HUB     DHO_PASS 0.62 on his play volume and DHO_SHOT 0.38 on pinShot, his own jumper: the
+ *               hand-off is only a threat if the man holding the ball can keep it and shoot it.
+ *               Scaled by his size (DHO_H0 79 -> DHO_H1 83; POST_HEIGHT 81 is the half-way point)
+ *               and then by `selfless`, a fade on his SCORING LOAD: full credit at DHO_VOL_FREE 50
+ *               and nothing by DHO_VOL_MAX 90. Measured — the hubs this fit nominates run volume
+ *               p50 42, p75 58, p90 69 — and written as the multiplicative fade `interior` and
+ *               `isoRoom` already use, so it cannot drive the term negative.
+ *                 THIS IS WHERE THE STYLE PARTS FROM HELIO (r -0.04) and from the post-up (r 0.01).
+ *               Jokić '25 is the best passing big on the board (playvol 97) and takes 89th-percentile
+ *               volume, so `selfless` leaves him 0.025 of his hub term and the Nuggets read
+ *               pick-and-roll and helio, exactly as his rulings on 2022 and 2025 require. The men the
+ *               style claims are the ones who genuinely do not shoot: Sabonis '24 (volume 50),
+ *               Divac '02 (34), Brad Miller '05 (33), Noah '14 (28).
+ *   THE MEN HE  DHO_W_SHOOT 0.30 on the mean pinShot of the best DHO_TOP 2 of the other four — the
+ *   HANDS OFF   two men who actually come off the hand-off, not all four. A hand-off produces a
+ *   TO          pull-up or a catch-and-shoot, so the term is the shot they take off it.
+ *   ...AND HE   minus DHO_GUARD 0.90 for every point by which the best passer among the other four
+ *   MUST BE THE out-passes the hub. This is his own sentence priced: "a big man's hands, not a
+ *   PASSER      guard's." The Raptors '10 are the case — Türkoğlu at 6'10" reads as a hub until you
+ *               notice José Calderón passes 23 points more than he does, which is 20.7 off the fit
+ *               and leaves Toronto on the pick-and-roll his ruling pins them to.
+ *
+ * NOT MOTION EITHER, though they are the two passing styles and correlate most of anything this
+ * round adds (r 0.42): motion reads the THREE LOWEST play volumes on the floor and has no featured
+ * man; this reads the single highest, on a big, and charges the five for having a guard above him.
+ * One is an offense with no hub and the other is an offense that is nothing but a hub.
+ *
+ * WHAT IT WINS: 45 of the 1,255 wheel fives (3.6%). Sabonis's Kings ('23/'24/'25) and Pacers
+ * ('20/'21/'22), the Adelman Kings of Divac and Brad Miller ('04/'05/'06/'07/'08/'09), Simmons's
+ * 76ers ('18/'19/'20/'21), Noah's Bulls ('14/'15), Pau Gasol's Spurs ('17/'18), Jokić's first
+ * Nuggets ('16/'17/'20, before the volume arrived), the Jazz '20/'23, the Nets '26.
+ *   WHAT IT COSTS, recorded: five Showtime Lakers fives ('82/'83/'84/'85/'86/'91) read it, because
+ *   Magic Johnson is listed at 6'9" and in those years took well under half the shots. Height and
+ *   the glass are the only facts this sheet has about whether a man is a big, and 6'9" is a big on
+ *   both. The one Lakers five his ruling pins — the '87 — holds helio by 3.6, and `selfless` is what
+ *   holds it: Johnson '87 took volume 71 and is faded to 0.475.
+ */
+export const DHO_BASE = 27
+export const DHO_W_HUB = 0.62
+export const DHO_W_SHOOT = 0.3
+export const DHO_PASS = 0.62
+export const DHO_SHOT = 0.38
+export const DHO_VOL_FREE = 50
+export const DHO_VOL_MAX = 90
+export const DHO_H0 = 79
+export const DHO_H1 = 83
+export const DHO_TOP = 2
+export const DHO_GUARD = 25
+/** How little of the offense he takes for himself: all of the credit at DHO_VOL_FREE, none by DHO_VOL_MAX. */
+export const selfless = (x: Attrs) => clamp((DHO_VOL_MAX - x.volume) / (DHO_VOL_MAX - DHO_VOL_FREE), 0, 1)
+/** What a man is worth as a hand-off hub: he passes, he can shoot it himself, he is big, he does not shoot much. */
+export const hubScore = (x: Attrs) =>
+  (DHO_PASS * x.playvol + DHO_SHOT * pinShot(x)) * heightRamp(x, DHO_H0, DHO_H1) * selfless(x)
+
+/**
+ * WHOSE HANDS THE OFFENSE RUNS THROUGH (recal_213). The sixth call of the same shape: the plan's man
+ * when it names one on the five, the engine's best hubScore otherwise. Unlike the other five this
+ * one nominates on the PRICED composite, because every term in it is part of what makes a man a hub
+ * — there is no separate "who is obviously the hub" question to ask.
+ */
+/**
+ * ...AND HE HAS TO BE THE FIVE'S OWN PASSER, NOT ITS POINT GUARD — his sentence, priced: "a big man's
+ * hands, not a guard's". `primacy` is the third fade in this style and the same shape as `selfless`
+ * and `interior`: all of the credit when nobody on the floor passes more than he does, fading to
+ * nothing by DHO_GUARD 25 points of play volume behind the five's best passer.
+ *
+ * It is folded into the NOMINATION and not added afterwards, which is the difference between a
+ * continuous fit and a 58-point step. `dhoMan` picks the argmax of exactly the quantity the fit then
+ * uses, so at the point where one man overtakes another the two are TIED and nothing jumps; with the
+ * guard price added after the nomination the hub could swap to a man whose price was 58 points
+ * different (measured on the Pacers '96). The other five featured styles in this file all carry a
+ * version of that fault and two of them carry a far bigger one (the post-up steps 47.6 on a single
+ * inch of height, the pick-and-roll 38.7); this round was told not to add another.
+ *
+ * The Raptors '10 are the case it exists for: Türkoğlu at 6'10" reads as a hub until you notice José
+ * Calderón passes 23 points more than he does, which fades him to 0.08 and leaves Toronto on the
+ * pick-and-roll his ruling pins them to. The Spurs '16 are the second: Duncan '16 is 22 behind Parker.
+ */
+export const hubFit = (five: Player[], p: Player): number => {
+  const other = five.filter((q) => q !== p)
+  const best = other.length ? Math.max(...other.map((q) => q.attrs.playvol)) : 0
+  const primacy = clamp((DHO_GUARD - Math.max(0, best - p.attrs.playvol)) / DHO_GUARD, 0, 1)
+  return hubScore(p.attrs) * primacy
+}
+
+export function dhoMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
+  if (legalMan(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
+  if (!five.length) return { hub: null, chosen: false }
+  return { hub: five.reduce((m, p) => (hubFit(five, p) > hubFit(five, m) ? p : m), five[0]), chosen: false }
+}
+
 export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
@@ -1466,7 +1890,9 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // his two men when he named them, the engine's own pair when he did not — the same three
       // terms and the same three weights, but since recal_120 the two-man terms are handlerFit and
       // screenFit (see pnrPair): the handler led by his PLAY VOLUME instead of capped by his
-      // scoring, the screener credited for the pop as well as the roll. Jazz '97 (Stockton 87.1,
+      // scoring, the screener credited for his best finish off the screen — recal_214 narrows that
+      // to the ROLL for a man the defence must close out on, and leaves it whole for everyone
+      // Malone '97 is like, which is why this five does not move. Jazz '97 (Stockton 87.1,
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
       const { handler: h, screener: d } = pnrPair(five, call?.pnr)
@@ -1499,7 +1925,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // mid-post game from reading as no post game at all. recal_120 takes the mid-range back out
       // (his ruling: "Jazz 97' pnr Stockton and Malone is more fitting"): a big who scores from the
       // elbow is being screened free by a guard, not fed on the block, so the mid-range belongs to
-      // the pick-and-POP — it is in screenFit now — and the block keeps the rim. Malone '97 (rim 77,
+      // the pick-and-POP — it is in the two screener terms now, routed between them by recal_214's
+      // closeout ramp — and the block keeps the rim. Malone '97 (rim 77,
       // mid 94) falls from 94 to 77 here and rises from 77 to 89 there, which is the whole round in
       // one card. O'Neal '00 (rim 99) and Olajuwon '94 (rim 95) do not move at all.
       // HIS man when the plan names one, the engine's hub when it does not (recal_124) — one
@@ -1514,6 +1941,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
       // (recal_129). Identical weights on purpose: the two calls are then separated by the screener
       // and by nothing else, so pick-and-pop wins exactly when the pop is worth more than the roll.
+      // recal_214 is what makes that separation reachable at all for a mid-range shooter: the two
+      // terms shared the mid-range, so they could TIE on the same man (Thunder '16, 80.5 to 80.5).
       const { handler: ph, screener: pd } = popPair(five, call?.pnr)
       const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
       return 0.4 * (ph ? handlerFit(ph.attrs) : 0) + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
@@ -1573,6 +2002,40 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
         0,
         100,
       )
+    }
+    case 'horns': {
+      // TWO ELBOWS AND A HANDLER (recal_213). The plan's high man when it names one, the engine's own
+      // two otherwise, through the one function hornsMen. The SECOND elbow man carries the fit — that
+      // is the rare thing and the thing that makes the alignment possible — and the handler is a
+      // light third term because horns is a call on the bigs. No spacing term at all: the block above
+      // carries the whole derivation and the reason.
+      const { high, low } = hornsMen(five, call?.horns)
+      const hand = Math.max(...five.map((p) => hornsHandler(p.attrs)))
+      return clamp(
+        HORN_BASE + HORN_HIGH * (high ? elbowSkill(high.attrs) : 0) + HORN_LOW * (low ? elbowSkill(low.attrs) : 0) + HORN_HAND * hand,
+        0,
+        100,
+      )
+    }
+    case 'pindown': {
+      // THE MAN WITHOUT THE BALL (recal_213). His shooter when the plan names one, the engine's own
+      // otherwise, through pinMan — priced for the shot he takes coming off, how much of his game is
+      // off the catch, how much of the offense he is, and how little of it he runs. Plus the one
+      // thing the other four owe him: somebody who can hit him coming off the screen.
+      const { shooter } = pinMan(five, call?.pindown)
+      const rest = five.filter((p) => p.name !== shooter?.name)
+      const pass = rest.length ? Math.max(...rest.map((p) => p.attrs.playvol)) : 0
+      return clamp(PIN_BASE + PIN_W_MAN * (shooter ? pinScore(shooter.attrs) : 0) + PIN_W_PASS * pass, 0, 100)
+    }
+    case 'dho': {
+      // A BIG MAN'S HANDS (recal_213). The hub, the two men who come off the hand-off, and the price
+      // for having a guard who passes more than he does. The block above carries the derivation and
+      // the reason the Nuggets are not here.
+      const { hub } = dhoMan(five, call?.dho)
+      const rest = five.filter((p) => p.name !== hub?.name)
+      const off = rest.map((p) => pinShot(p.attrs)).sort((x, y) => y - x).slice(0, DHO_TOP)
+      const comers = off.length ? off.reduce((t, v) => t + v, 0) / off.length : 0
+      return clamp(DHO_BASE + DHO_W_HUB * (hub ? hubFit(five, hub) : 0) + DHO_W_SHOOT * comers, 0, 100)
     }
   }
 }
@@ -1745,6 +2208,16 @@ export function featured(style: Style, five: Player[], call?: StyleCall | null):
       const { handler, screener } = pnrPair(five, call?.pnr)
       return [handler, screener].filter((p): p is Player => !!p)
     }
+    // recal_213's three. Horns features TWO men, like the pick-and-roll, because the alignment IS the
+    // pair of elbows; the pin-down and the hand-off hub feature one, like the post and the iso.
+    case 'horns': {
+      const { high, low } = hornsMen(five, call?.horns)
+      return [high, low].filter((p): p is Player => !!p)
+    }
+    case 'pindown':
+      return [pinMan(five, call?.pindown).shooter].filter((p): p is Player => !!p)
+    case 'dho':
+      return [dhoMan(five, call?.dho).hub].filter((p): p is Player => !!p)
     default:
       return []
   }
