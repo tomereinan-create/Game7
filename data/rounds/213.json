@@ -1,0 +1,434 @@
+{
+  "round": 213,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Sounds good",
+  "title": "three playstyles in one round, fitted jointly - HORNS (two bigs on the elbows, the SECOND one carries the fit), the OFF-BALL PIN-DOWN (a high-volume jump-shooter whose shot is created for him, parted from iso by his jumper over his rim game) and the HAND-OFF HUB (the fourth quadrant of recal_206: high play volume and LOW volume, a big who creates for other men without needing shots) - 32 / 46 / 48 of the 1,255 wheel fives (2.5% / 3.7% / 3.8%), all 23 pinned reads hold with the thinnest margin at 1.9, and no card and no rating moves",
+  "scale": "team:off",
+  "subject": "Grizzlies '17 (best legal five, the head of the horns list)",
+  "five": [
+    "Mike Conley '17",
+    "Tony Allen '17",
+    "Vince Carter '17",
+    "Zach Randolph '17",
+    "Marc Gasol '17"
+  ],
+  "target": 46,
+  "tol": 0,
+  "before": 46,
+  "after": 46,
+  "pipeline_version": 210,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export type Style =\\s*\\n(?:\\s*\\|\\s*'[a-z]+'\\s*\\n){9}\\s*\\|\\s*'horns'\\s*\\n\\s*\\|\\s*'pindown'\\s*\\n\\s*\\|\\s*'dho'",
+      "label": "the Style union goes from nine to twelve, with the three new keys LAST",
+      "note": "9 -> 12; last on purpose - bestStyle walks STYLES with a strict `>` so a tie goes to the older style, and the Jazz '97 pnr/pickpop tie still resolves to the pick-and-roll"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "\\{ key: 'horns', label: 'horns' \\},\\s*\\n\\s*\\{ key: 'pindown', label: 'pin-down' \\},\\s*\\n\\s*\\{ key: 'dho', label: 'hand-off hub' \\},",
+      "label": "...and so does STYLES, which is what the panel, the caption and the TeamDb filter enumerate",
+      "note": "new - three entries appended"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const heightRamp = \\(x: Attrs, lo: number, hi: number\\) => clamp\\(\\(x\\.height - lo\\) / \\(hi - lo\\), 0, 1\\)",
+      "label": "SIZE IS A RAMP AND NEVER A GATE - the fix the round was asked for, not the fault it was asked not to repeat",
+      "note": "new; POST_HEIGHT 81 is a hard gate on postMan's nomination and facesUp copies it, so one inch of height flips which man a set is built around. This spends the same fact as a slope, inside the price"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HORN_BASE = 17\\s*\\nexport const HORN_HIGH = 0\\.32\\s*\\nexport const HORN_LOW = 0\\.55\\s*\\nexport const HORN_HAND = 0\\.13\\s*\\nexport const HORN_WEAK = 0\\.75\\s*\\nexport const HORN_STRONG = 0\\.25\\s*\\nexport const HORN_H0 = 78\\s*\\nexport const HORN_H1 = 82",
+      "label": "HORNS, the whole fit: the base, the two elbow men, the handler up top, and the weaker-of-two-skills lead",
+      "note": "new; HORN_LOW 0.55 > HORN_HIGH 0.32 because the SECOND elbow big is the rare thing (the triangle's TRI_READ3 convexity, in continuous form)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const elbowSkill = \\(x: Attrs\\) =>\\s*\\n\\s*\\(HORN_WEAK \\* Math\\.min\\(x\\.mid, x\\.playvol\\) \\+ HORN_STRONG \\* Math\\.max\\(x\\.mid, x\\.playvol\\)\\) \\* heightRamp\\(x, HORN_H0, HORN_H1\\)",
+      "label": "an elbow operator has to do BOTH jobs - it is the WEAKER of his passing and his mid-range that leads, so a max is not the term",
+      "note": "new; Ibaka '16 (mid 92, playvol 7) reads 28.3 where a max reads 92, and that is what keeps horns off the Thunder '16 and the Raptors '10"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const hornsHandler = \\(x: Attrs\\) => handlerFit\\(x\\) \\* \\(1 - heightRamp\\(x, HORN_H0, HORN_H1\\)\\)",
+      "label": "...and the handler up top is the same ramp read the other way, so the term does not JUMP when the elbow pair swaps",
+      "note": "new; written as `max over the three men who are not at an elbow` it stepped 11.7 points on the Grizzlies '17 - the exclusion form is the discontinuity, not the ramp"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const PIN_BASE = -7\\s*\\nexport const PIN_W_MAN = 0\\.8\\s*\\nexport const PIN_W_PASS = 0\\.18\\s*\\nexport const PIN_JMP = 0\\.75\\s*\\nexport const PIN_EFF = 0\\.25\\s*\\nexport const PIN_CATCH_FLOOR = 0\\.3\\s*\\nexport const PIN_CATCH_FREE = 10\\s*\\nexport const PIN_CATCH_SPAN = 50\\s*\\nexport const PIN_H0 = 80\\s*\\nexport const PIN_H1 = 84\\s*\\nexport const PIN_PV = 56\\s*\\nexport const PIN_PV_MAX = 95",
+      "label": "THE OFF-BALL PIN-DOWN, the whole fit",
+      "note": "new; PIN_BASE -7 rather than -4 is the one concession this round makes to a sibling: at -4 the Pistons '07 read pin-down 68.3 over recal_211's motion 67.2, and Richard Hamilton is the style's own archetype. The pin held; the finding is in the cost notes"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pinCatch = \\(x: Attrs\\) =>\\s*\\n\\s*PIN_CATCH_FLOOR \\+ \\(1 - PIN_CATCH_FLOOR\\) \\* clamp\\(\\(pinShot\\(x\\) - x\\.rim \\+ PIN_CATCH_FREE\\) / PIN_CATCH_SPAN, 0, 1\\)",
+      "label": "THE DISCRIMINATOR against iso and the post-up: his jumper over his rim game",
+      "note": "new; Miller '96 and Thompson '16 take all of it, Dantley '81 (87 against a rim of 99) and King '84 (74 / 98) take the floor - the two fives his ruling pins to iso, parted on one column"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pinOffBall = \\(x: Attrs\\) => clamp\\(\\(PIN_PV_MAX - x\\.playvol\\) / \\(PIN_PV_MAX - PIN_PV\\), 0, 1\\)",
+      "label": "...and the third use of recal_206's measured play-volume line: the man the offense is run FOR cannot be the man running it",
+      "note": "new; PIN_PV 56 is the MEASURED median play volume of the man this fit nominates over the 1,255 wheel fives (helio 65, iso 57). Written as a multiplicative fade, the shape interior/isoRoom already use, not as a subtraction"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const DHO_BASE = 27\\s*\\nexport const DHO_W_HUB = 0\\.62\\s*\\nexport const DHO_W_SHOOT = 0\\.3\\s*\\nexport const DHO_PASS = 0\\.62\\s*\\nexport const DHO_SHOT = 0\\.38\\s*\\nexport const DHO_VOL_FREE = 50\\s*\\nexport const DHO_VOL_MAX = 90\\s*\\nexport const DHO_H0 = 79\\s*\\nexport const DHO_H1 = 83\\s*\\nexport const DHO_TOP = 2\\s*\\nexport const DHO_GUARD = 25",
+      "label": "THE HAND-OFF HUB, the whole fit",
+      "note": "new; DHO_H0 79 / DHO_H1 83 puts POST_HEIGHT 81 exactly half way up the ramp - the post-up's own line, reached as a slope instead of a gate"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const selfless = \\(x: Attrs\\) => clamp\\(\\(DHO_VOL_MAX - x\\.volume\\) / \\(DHO_VOL_MAX - DHO_VOL_FREE\\), 0, 1\\)",
+      "label": "THE FOURTH QUADRANT of recal_206's conjunction: helio is high volume AND high playvol, iso is high volume and LOW playvol, this is HIGH PLAYVOL AND LOW VOLUME",
+      "note": "new; DHO_VOL_FREE 50 / DHO_VOL_MAX 90 against a measured nominee volume of p50 42 / p75 58 / p90 69. Jokic '25 (volume 89) keeps 0.025 of his hub term, which is why the Nuggets read pnr and helio as his rulings require"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const primacy = clamp\\(\\(DHO_GUARD - Math\\.max\\(0, best - p\\.attrs\\.playvol\\)\\) / DHO_GUARD, 0, 1\\)\\s*\\n\\s*return hubScore\\(p\\.attrs\\) \\* primacy",
+      "label": "\"a big man's hands, not a guard's\" - priced, folded INTO the nomination so the fit is continuous where the hub swaps",
+      "note": "new; added AFTER the nomination instead it stepped 58.5 points on one inch of height. dhoMan is the argmax of exactly the quantity the fit uses, so at the crossing the two men are tied"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "case 'horns': \\{[\\s\\S]{0,800}?HORN_BASE \\+ HORN_HIGH \\* \\(high \\? elbowSkill\\(high\\.attrs\\) : 0\\) \\+ HORN_LOW \\* \\(low \\? elbowSkill\\(low\\.attrs\\) : 0\\) \\+ HORN_HAND \\* hand",
+      "label": "the three styleFit cases: horns...",
+      "note": "new; three terms and a base, and NO mean-three or shooter-count term at all - the structural fact that keeps horns from being a synonym for the pnr, the pop or the post"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "PIN_BASE \\+ PIN_W_MAN \\* \\(shooter \\? pinScore\\(shooter\\.attrs\\) : 0\\) \\+ PIN_W_PASS \\* pass",
+      "label": "...the pin-down...",
+      "note": "new; the man, and the one thing the other four owe him - somebody who can hit him coming off the screen"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "DHO_BASE \\+ DHO_W_HUB \\* \\(hub \\? hubFit\\(five, hub\\) : 0\\) \\+ DHO_W_SHOOT \\* comers",
+      "label": "...and the hand-off hub",
+      "note": "new; the hub, and the mean shot of the DHO_TOP 2 men who actually come off the hand-off"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export function hornsMen\\(five: Player\\[\\], pick\\?: string \\| null\\)",
+      "label": "EVERY ONE OF THE THREE IS A PLAN-SELECTABLE CALL (hornsMen / pinMan / dhoMan), the fifth, sixth and seventh of the shape postMan, heliMan and isoMan already have",
+      "note": "new; horns names its HIGH elbow man and the engine fills the other elbow, so a called horns always draws and prices two men"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export function pinMan\\(five: Player\\[\\], pick\\?: string \\| null\\)[\\s\\S]{0,400}?pinScore\\(p\\.attrs\\) > pinScore\\(m\\.attrs\\)",
+      "label": "...and the pin-down nominates on the PRICED score, which is what makes its own swap continuous",
+      "note": "new; nominating on the unpriced composite (recal_208's isoMan shape) stepped 35.0 points"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "horns: legalMan\\(t\\.horns, names\\) \\? t\\.horns : null,\\s*\\n\\s*pindown: legalMan\\(t\\.pindown, names\\) \\? t\\.pindown : null,\\s*\\n\\s*dho: legalMan\\(t\\.dho, names\\) \\? t\\.dho : null,",
+      "label": "the three new calls migrate and gate exactly like the four before them (reconcileTactics + gateTactics)",
+      "note": "new; a save that names a man who has left the five drops the name and keeps the plan, and below playbook rank 2 none of the three is heard"
+    },
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "return stand\\(men, \\{ \\[h\\]: ELBOW_R, \\[l\\]: TRI_PINCH \\}, \\[\\[peri\\(0, 6\\), 1\\], \\[CORNER_L, 2\\], \\[CORNER_R, 2\\]\\], \\[DUNK_R\\]\\)",
+      "label": "three new spotsFor cases and nothing else in that file: horns stands BOTH featured men, on the two elbow spots the triangle and the motion set already use",
+      "note": "new; recal_212's pnr/pickpop case is untouched"
+    },
+    {
+      "file": "src/ui/CourtFive.tsx",
+      "pattern": "return stand\\(men, \\{ \\[s\\]: at\\(0, 21\\) \\}, \\[\\[peri\\(-36\\), 1\\], \\[peri\\(36\\), 1\\], \\[CORNER_R, 2\\], \\[DUNK_L, 0\\]\\]\\)",
+      "label": "...and the hand-off hub stands at the TOP OF THE KEY, which is INSIDE the arc",
+      "note": "new; that is what the phrase means and it keeps his spacing law intact for a set whose featured man is usually a big who cannot shoot (\"Why is Ayton out and James in? Makes no sense\")"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const MOT_BASE = 16\\s*\\nexport const MOT_CHAIN = 0\\.85",
+      "label": "recal_211's motion is UNTOUCHED",
+      "note": "16 / 0.85 -> 16 / 0.85; the Pistons '07 keep the motion read recal_211 measured"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_PV = 57\\s*\\nexport const ISO_PV_W = 0\\.45",
+      "label": "recal_208's iso as amended is UNTOUCHED",
+      "note": "57 / 0.45 -> 57 / 0.45; pin-down takes FOUR of its 55 fives and every iso ruling holds"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_PV = 65\\s*\\nexport const HELIO_PV_W = 0\\.45",
+      "label": "recal_206's helio gate is UNTOUCHED, and the helio head does not move by a decimal",
+      "note": "65 / 0.45 -> 65 / 0.45"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const screenFit = \\(x: Attrs\\) => Math\\.min\\(Math\\.max\\(x\\.rim, x\\.mid\\), x\\.efficiency\\)",
+      "label": "screenFit is untouched - recal_214's region, not this round's",
+      "note": "unchanged"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const popFit = \\(x: Attrs\\) => Math\\.min\\(Math\\.max\\(x\\.mid, x\\['3pt'\\]\\), x\\.efficiency\\)",
+      "label": "...and so is popFit",
+      "note": "unchanged"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export const creation = \\(a: Attrs\\) => \\(0\\.45 \\* a\\.playvol \\+ 0\\.2 \\* a\\.ballsec\\) / \\(0\\.65 \\* 99\\)",
+      "label": "offense.ts was NOT touched, so src/engine/offense.ts <-> data/team_rating.py parity holds and no rating moved",
+      "note": "unchanged - the round is a tactics read, not a pipeline change"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: the Grizzlies '17 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "...nor the Pacers '96 offence dial, the head of the pin-down list",
+      "five": [
+        "Mark Jackson '96",
+        "Reggie Miller '96",
+        "Derrick McKey '96",
+        "Dale Davis '96",
+        "Rik Smits '96"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 62
+    },
+    {
+      "label": "...nor the Kings '24 offence dial, the reference five for the hand-off hub",
+      "five": [
+        "De'Aaron Fox '24",
+        "Malik Monk '24",
+        "Harrison Barnes '24",
+        "Keegan Murray '24",
+        "Domantas Sabonis '24"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 53
+    },
+    {
+      "label": "...nor the Spurs '16 defence dial, the five his ruling pins to balanced or motion",
+      "five": [
+        "Tony Parker '16",
+        "Danny Green '16",
+        "Kawhi Leonard '16",
+        "LaMarcus Aldridge '16",
+        "Tim Duncan '16"
+      ],
+      "scale": "team:def",
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "HORNS IN THE CARDS: Marc Gasol '17 can pass from the elbow (the min-led term needs both)",
+      "card": "Marc Gasol '17",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 55
+    },
+    {
+      "label": "...and shoot from it, which is why he is the high man",
+      "card": "Marc Gasol '17",
+      "scale": "attr:mid",
+      "op": ">=",
+      "value": 60
+    },
+    {
+      "label": "...and Randolph '17 is the SECOND elbow big, the term that carries the fit at HORN_LOW 0.55",
+      "card": "Zach Randolph '17",
+      "scale": "attr:mid",
+      "op": ">=",
+      "value": 50
+    },
+    {
+      "label": "WHY IBAKA IS NOT AN ELBOW OPERATOR: he shoots it",
+      "card": "Serge Ibaka '16",
+      "scale": "attr:mid",
+      "op": ">=",
+      "value": 85
+    },
+    {
+      "label": "...and he does not pass it, so HORN_WEAK reads 7 and not 92 - one card, and it is what keeps horns off the Thunder '16",
+      "card": "Serge Ibaka '16",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 10
+    },
+    {
+      "label": "THE PIN-DOWN IN THE CARDS: Reggie Miller '96 takes a lot",
+      "card": "Reggie Miller '96",
+      "scale": "attr:volume",
+      "op": ">=",
+      "value": 85
+    },
+    {
+      "label": "...from outside, not at the rim - pinCatch reads 90 against a rim of 44 and gives him all of it",
+      "card": "Reggie Miller '96",
+      "scale": "attr:rim",
+      "op": "<=",
+      "value": 50
+    },
+    {
+      "label": "...and he does not run the offence (PIN_PV 56 is the measured median of the men this fit nominates)",
+      "card": "Reggie Miller '96",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 56
+    },
+    {
+      "label": "WHY IT IS NOT ISO, in one column: Dantley '81 scores at the RIM at volume",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:rim",
+      "op": ">=",
+      "value": 95
+    },
+    {
+      "label": "...and so does King '84 - both are floored at PIN_CATCH_FLOOR and both keep the iso read his ruling gave them",
+      "card": "Bernard King '84",
+      "scale": "attr:rim",
+      "op": ">=",
+      "value": 95
+    },
+    {
+      "label": "...while Thompson '16 does not, which is why the Warriors '16 are the head of the list",
+      "card": "Klay Thompson '16",
+      "scale": "attr:rim",
+      "op": "<=",
+      "value": 45
+    },
+    {
+      "label": "THE HUB IN THE CARDS: Sabonis '24 passes like a guard",
+      "card": "Domantas Sabonis '24",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 80
+    },
+    {
+      "label": "...and does NOT shoot, so `selfless` gives him all of his hub term (DHO_VOL_FREE 50)",
+      "card": "Domantas Sabonis '24",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 50
+    },
+    {
+      "label": "...and Noah '14 is the same shape, which is why the Bulls '14 and '15 read it",
+      "card": "Joakim Noah '14",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 30
+    },
+    {
+      "label": "WHY THE NUGGETS ARE NOT HERE, by his own two rulings: Jokic '25 is the best passing big on the board",
+      "card": "Nikola Jokić '25",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 95
+    },
+    {
+      "label": "...and he takes 89th-percentile volume doing it, so DHO_VOL_MAX 90 leaves him 0.025 of the term",
+      "card": "Nikola Jokić '25",
+      "scale": "attr:volume",
+      "op": ">=",
+      "value": 85
+    },
+    {
+      "label": "WHY TORONTO '10 IS NOT A HUB FIVE: Turkoglu passes",
+      "card": "Hedo Türkoğlu '10",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 55
+    },
+    {
+      "label": "...but Calderon passes 23 points more, and `primacy` fades him to 0.08 - the pick-and-roll read his ruling pins holds",
+      "card": "José Calderón '10",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 80
+    },
+    {
+      "label": "the helio head is untouched because no fit it reads was touched: Johnson '87 runs everything",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "...and the Celtics '25 keep five-out because Porzingis shoots (the anchor at the thinnest margin on the board)",
+      "card": "Kristaps Porziņģis '25",
+      "scale": "attr:3pt",
+      "op": ">=",
+      "value": 60
+    }
+  ],
+  "order": [
+    {
+      "label": "HORNS in two cards: the elbow needs BOTH, and Webber '02 does both where Ibaka '16 does one",
+      "scale": "attr:playvol",
+      "above": "Chris Webber '02",
+      "below": "Serge Ibaka '16"
+    },
+    {
+      "label": "THE PIN-DOWN in two cards: the man run off the screen shoots over the top of it, the iso man finishes at the rim",
+      "scale": "attr:rim",
+      "above": "Adrian Dantley '81",
+      "below": "Reggie Miller '96"
+    },
+    {
+      "label": "THE HUB in two cards: the hand-off hub passes MORE and shoots LESS than the helio engine beside him",
+      "scale": "attr:playvol",
+      "above": "Domantas Sabonis '24",
+      "below": "De'Aaron Fox '24"
+    },
+    {
+      "label": "...and the volume side of the same conjunction, which is the whole of recal_206's fourth quadrant",
+      "scale": "attr:volume",
+      "above": "De'Aaron Fox '24",
+      "below": "Domantas Sabonis '24"
+    }
+  ],
+  "movers": {
+    "scale": "attr:playvol",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "notes": [
+    "HIS RULING was \"Sounds good\", to three styles asked for by name: horns (two bigs at the elbows, a handler up top), the off-ball pin-down (a shooter run off staggered screens) and the DHO hub (a passing big at the top of the key handing off to shooters).",
+    "FITTED AS ONE ROUND, NOT THREE. Each of the three takes fives from all of the other eleven, so a count measured on a board that does not yet carry its siblings is a count of something that would never ship - and three separate rounds would each append to STYLES, the Style union, styleFit's switch, featured and spotsFor and conflict on every one of those lines. The round was built on recal_211 merged (which already carries recal_208's iso as amended), so every number here is against the nine-style board that will actually ship.",
+    "HORNS - 32 of 1,255 (2.5%). Three terms and a base, and the one structural fact that keeps it from being a synonym: it asks NOTHING about the three-point line. Every other two-man set in the file (pnr, pickpop, postup, iso, fiveout) carries a mean-three or a shooter-count term; horns carries none, because the two corners of a horns set are spacing a floor for an action that happens at the free-throw line. `elbowSkill` is the WEAKER of a man's mid-range and his play volume at HORN_WEAK 0.75 and the stronger at HORN_STRONG 0.25 - a man who can only do one of the two things at an elbow is worth a quarter of a man who can do both - scaled by a height ramp 78 -> 82 (measured: the men it nominates run height p10 80, p50 82). HORN_LOW 0.55 on the SECOND elbow man against HORN_HIGH 0.32 on the first, the triangle's TRI_READ3 convexity in continuous form: every five has one big who can do something at an elbow and the second is the rare thing. HORN_HAND 0.13 on the handler, deliberately light, because handlerFit clamps at 99 and a heavier weight would be a term the set's own featured men cannot move - the exact fault this round was told not to repeat.",
+    "HORNS, THE LIST, and it is the alignment in names: Garnett's Timberwolves ('94 65.9, '96 69.4, '97 78.1, '00 67.4, '02 64.6, '06 65.7, '07 62.5), Webber's Kings ('02 70.1 with Stojakovic, '03 68.5, '05 68.0 with Brad Miller) and his Wizards '98 65.0, Marc Gasol and Randolph's Grizzlies ('14 61.2, '15 62.3, '16 66.0, '17 69.0), Bird and McHale's Celtics ('90 64.9, '91 62.9, '92 61.5), Sikma and Chambers's Sonics ('84 62.3, '85 62.8, '86 62.0), Nance and Daugherty's Cavaliers '91 65.0, Kareem and Magic's Lakers ('80 64.9, '81 65.0), Wagner and Banchero's Magic '25 70.4, LeBron and Bosh's Heat '12 68.7, Rasheed and Sabonis's Blazers '01 63.8, Lanier's Bucks '82 65.6, Jermaine O'Neal and Murphy's Pacers '07 64.2, Coleman and Bowie's Nets '93 62.2, Nance and Adams's Suns '87 61.6 and Manning and Robinson's '98 62.4. TAKEN FROM: 14 balanced, 6 pick-and-roll, 5 motion, 3 post-up, 2 triangle, 1 pick-and-pop, 1 helio.",
+    "HORNS IS CAPPED AT 2.5% BY HIS OWN NUGGETS RULING, AND THAT IS REPORTED RATHER THAN TUNED AROUND. HORN_BASE 17 is not chosen for the band; it is the largest value that leaves the Nuggets '25 on the pick-and-roll. Jokic and Gordon are two men who can both pass and shoot from an elbow, so Denver reads horns 71.0 against a pnr of 72.9 - and at 18 horns wins 41 fives (3.3%) and takes them, at 19 it wins 61 and takes the Raptors '10 as well. The 3-7% band was not reachable without breaking a ruling, so the count is what the rulings leave. The Spurs '16, which the pitch names as horns' own reference five, read 54.1 and stay balanced by his ruling \"Motion, or balanced\" - Duncan '16 shoots mid 24 and Aldridge '16 passes playvol 25, so neither of them is a two-way elbow man on the cards.",
+    "THE OFF-BALL PIN-DOWN - 46 of 1,255 (3.7%). recal_208 wrote iso's own discriminator down: FOULDRAW is \"what keeps a SPOT-UP shooter out of the job\", and it named Klay Thompson '16, Dell Curry '95 and Ryan Anderson '11 as men who \"are set up by somebody\". This style is those men - high-volume scorers with low play volume, exactly like an iso man, and not iso men because THEY DO NOT CREATE THEIR OWN SHOT. Four facts: pinShot, the better of his mid-range and his three (era-honest: a 1985 pin-down produced a mid-range jumper); pinCatch, his jumper OVER HIS RIM GAME, ramped from -10 to +40 with a 0.30 floor, which is the whole distinction from iso and the post-up; his scoring load as a share of the axis; and pinWing, a ramp down on height 80 -> 84 (measured: the men it nominates run height p50 77, p90 80 - without it the fit nominates Nowitzki and reads six Mavericks fives). Then pinOffBall, the third use of recal_206's line: PIN_PV 56 is the MEASURED median play volume of the man this fit nominates over the wheel, against helio's 65 and iso's 57, fading to nothing by PIN_PV_MAX 95.",
+    "THE PIN-DOWN, THE LIST: Glenn Robinson's and Ray Allen's Bucks ('97 67.4, '98 74.3, '00 75.9, '01 75.7, '02 75.0) and Redd's '05 71.5, Reggie Miller's Pacers ('96 74.6, '97 70.2, '98 63.6), Allan Houston's Pistons '96 60.9 and Knicks ('98 60.4, '00 63.2, '01 69.7, '02 74.3, '03 72.3, '04 73.0) plus Carmelo's ('14 75.3, '17 62.2), Klay Thompson's Warriors ('15 74.5, '16 77.2), Ray Allen's Sonics ('05 64.6, '06 74.7, '07 68.6), Ben Gordon's Bulls ('05 70.0, '06 66.9, '07 67.8, '08 69.6), Glen Rice's Hornets ('97 71.8, '98 64.7), Mitch Richmond's Kings ('96 70.7, '98 67.5), Robinson's Hawks '03 72.3 and 76ers '04 71.4, Richard Hamilton's Wizards '01 64.1 and Pistons '06 63.1, J.R. Smith's Nuggets ('08 63.3, '09 62.9) and Ricky Pierce's '97 61.7, Jordan's Bulls '98 71.9, McCollum's Blazers '17 68.2, the Clippers '20 (George) and '23 (Leonard), Hield's Kings '19 66.0, Terry's Mavericks '09 64.9, Gerald Green's Suns '14 63.5, Nick Young's Lakers '14 60.7. TAKEN FROM: 16 balanced, 9 pick-and-roll, 7 post-up, 5 helio, 4 pick-and-pop, 3 triangle, 2 iso. Every one is a high-volume jump-shooter playing on somebody else's assists.",
+    "AND IT IS NOT ISO (r 0.24): it takes exactly TWO of iso's 55 fives, the Bulls '98 (Jordan, iso 68.0 -> pin-down 71.9) and the Clippers '23 (Leonard, 63.1 -> 65.9), and every five his rulings pin to iso holds - Raptors '17 by 5.1, Nets '23 by 4.3, Jazz '81 by 2.2, Knicks '84 by 5.2. AND IT IS NOT FIVE-OUT (r 0.31): five-out is a COUNT of men who can stand behind the arc and has no featured man at all; this is one man's load and his jumper, and the Celtics '25 hold five-out over it by 39.9.",
+    "THE HAND-OFF HUB - 48 of 1,255 (3.8%), and it is the FOURTH QUADRANT of recal_206. His rule there was that the helio engine needs high volume AND high play volume; recal_208 took the complement (high volume, LOW play volume) for iso. The quadrant nobody had was HIGH PLAY VOLUME AND LOW VOLUME - a big who creates for other men without needing shots - and it is the literal reading of the pitch he approved: the hub PASSES rather than SCORES. The fit is DHO_PASS 0.62 on his play volume and DHO_SHOT 0.38 on his own jumper (the hand-off is only a threat if he can keep it), scaled by a height ramp 79 -> 83 with POST_HEIGHT 81 exactly half way up it, then by `selfless` (all of the credit at volume 50, none by 90; measured nominee volume p50 42, p75 58, p90 69) and then by `primacy` (all of it when nobody on the floor passes more than he does, none by DHO_GUARD 25 points behind the five's best passer). Plus DHO_W_SHOOT 0.30 on the mean shot of the DHO_TOP 2 men who actually come off the hand-off.",
+    "THE HUB, THE LIST: the Adelman Kings of Divac and Brad Miller ('04 86.9, '06 67.8, '07 67.0, '08 84.5, '09 83.3) and Cauley-Stein's '18 64.1, Sabonis's Kings ('23 83.3, '24 81.4, '25 86.9) and Pacers ('20 66.9, '21 71.7, '22 72.2), Simmons's 76ers ('18 82.1, '19 79.2, '20 75.2, '21 81.3), Pau Gasol's Spurs ('17 73.7, '18 81.1), Noah's Bulls ('14 77.4, '15 76.0), Jokic's FIRST Nuggets ('16 63.0, '17 76.5, '18 71.2, '20 67.1 - the four years before the volume arrived), Marc Gasol's Grizzlies ('18 61.5, '19 65.2), Ingles's Jazz ('17 60.9, '20 65.8), Odom's Clippers ('00 67.0, '01 60.4), Claxton's Nets '26 82.1, Sengun's Rockets '23 64.4, Plumlee's Pistons '21 70.4, Gugliotta's Bullets '94 64.9, McKey's Pacers '95 73.7 / McRoberts's '11 70.6 / Murphy's '10 68.1, Kukoc's Bulls '95 68.0, Jason Smith's Knicks '15 74.1, Mickey Johnson's Bucks '81 64.5, Pippen's Rockets '99 61.9. TAKEN FROM: 19 balanced, 13 post-up, 7 motion, 3 pick-and-roll, 2 helio, 2 iso, 1 triangle, 1 five-out.",
+    "AND IT IS NOT HELIO (r 0.19), NOT THE POST-UP (r 0.04) AND NOT MOTION (r 0.35, the joint-highest correlation anything in this round has with anything, alongside dho/pindown 0.35 and dho/horns 0.33): helio reads scoring load and this reads none of it; the post-up reads the rim and this reads none of it; motion reads the THREE LOWEST play volumes on the floor and has no featured man where this reads the single highest, on a big, and charges the five for having a guard above him. One is an offence with no hub and the other is an offence that is nothing but a hub. No pair in the round exceeds 0.35, against the 0.79 and 0.86 for which recal_75 CUT two defensive schemes as synonyms.",
+    "WHAT IT COSTS, RECORDED: SEVEN Showtime Lakers fives read it ('82 68.3, '83 69.5, '84 67.6, '85 71.9, '86 72.4, '88 63.5, '91 65.7), because Magic Johnson is listed at 6'9 and in those years took well under half the shots. Height is the only fact this sheet has about whether a man is a big, and 6'9 is a big. The one Lakers five his ruling pins - the '87 - holds helio 67.0 by 3.6, and `selfless` is what holds it: Johnson '87 took volume 71 and is faded to 0.475.",
+    "THE BOARD, BEFORE -> AFTER over the 1,255 wheel fives: balanced 406 -> 357, pnr 304 -> 286, postup 228 -> 205, helio 128 -> 120, motion 56 -> 44, iso 55 -> 51, triangle 36 -> 30, pickpop 25 -> 20, fiveout 17 -> 16, and horns 0 -> 32, pindown 0 -> 46, dho 0 -> 48. 126 of the 1,255 reads change and every one of them is a five moving INTO one of the three: 49 out of balanced, 23 out of the post-up, 18 out of the pick-and-roll, 12 out of motion, 8 out of helio, 6 out of the triangle, 5 out of the pop, 4 out of iso and 1 out of five-out (the Nuggets '18, to the hub - Jokic again). No pair of OLD styles trades a single five.",
+    "EVERY PINNED READ HOLDS, and the thinnest margin to anything this round adds is 1.9: Bulls '97 triangle 75.0 against dho 73.0 (1.9), Nuggets '25 pnr 72.9 against horns 71.0 (1.9), Raptors '10 pnr 68.5 against horns 66.0 (2.5), Lakers '87 helio 67.0 against dho 63.4 (3.6), Spurs '16 balanced 60.0 against dho 56.3 / horns 54.1 / pindown 53.0 (3.7), Nets '23 iso 68.1 against horns 63.8 (4.3), Bulls '96 triangle 72.8 against horns 67.9 (4.9), Cavaliers '18 helio 73.1 against horns 64.7 (8.4), Thunder '16 pnr 80.5 against horns 70.0 (10.4), Celtics '25 fiveout 72.8 (18.2 to the nearest of the three). The two thinnest margins on the BOARD are recal_211's own and are untouched to the decimal: Celtics '25 fiveout 72.8 against motion 71.1 (1.7) and Bulls '96 triangle 72.8 against motion 71.1 (1.8). The rest hold with room: Jazz '97 pnr 76.2, Thunder '25 pnr 74.2, Suns '05 pnr 84.9, Rockets '18 pnr 90.8, 76ers '23 pnr 81.6, Magic '11 postup 81.6, Hornets '95 postup 77.7, Pelicans '16 postup 73.8, Thunder '22 helio 65.3, Nuggets '22 helio 76.8, Raptors '17 iso 71.3, Jazz '81 iso 69.9, Knicks '84 iso 65.9, and recal_211's Pistons '07 motion 67.2. 23 of 23, plus the sibling's.",
+    "THE HELIO HEAD IS UNMOVED TO THE DECIMAL, because no fit it reads was touched: Magic '87 67.0, Jokic '22 76.8, James '18 73.1. Helio's COUNT falls 128 -> 120: it loses eight marginal fives (Lakers '88 63.1, Kings '96 63.9 and '98 60.5, Pistons '06 61.5, Heat '12 67.5, Warriors '16 69.3, Blazers '17 65.9, Nuggets '20 65.1) and gains none. That is proportionately the SMALLEST loss on the board (6.3% of its fives against balanced's 12.1%) and it is unavoidable: 126 new reads cannot be found without taking them from somewhere, and protecting a count would take a gate.",
+    "NO CLIFFS, MEASURED BY PERTURBATION THE WAY THE FAULTS WERE (scripts/_tmp/cliff213.ts sweeps every attribute of every man from 0 to 99 on five fives and records the worst ONE-POINT step in each fit). Every TERM in all three fits is a ramp, so the only steps left are the ones every featured style has - the point at which the engine's nominee changes - and all three sit at the BOTTOM of the board, not the top: horns 9.8, dho 12.0, pindown 16.3, against postup 47.6, pnr and pickpop 38.7, fiveout 25.3 (the -25 shy-big step), helio 17.2, triangle 16.0, iso 13.2, motion 0.6. Three separate design decisions were taken to get there and each one is recorded in the source: the horns handler is `handlerFit x (1 - heightRamp)` rather than a max over the excluded men (11.7 -> 0 on that term), the pin-down nominates on the PRICED score rather than recal_208's unpriced composite (35.0 -> 16.3), and the hand-off hub's guard price is folded INTO the nomination rather than added after it (58.5 -> 12.0).",
+    "NO TERM SATURATES FOR ITS OWN FEATURED MAN, the other fault the round was told not to repeat (the pick-and-roll's fit cannot be moved by either man in the action on the Thunder '16). One point on the featured man's leading attribute moves all three fits, and it is pinned in tests/tactics.test.ts: both Grizzlies '17 elbow men move horns, Miller moves the pin-down, Sabonis moves the hub.",
+    "THE CAMPAIGN LADDER DOES NOT REORDER. bestStyle is read in exactly two places - CourtFive (the scouting drawing and its caption) and TeamDb (a filter chip) - and by nothing in the sim or the resolver; src/data/opponents.json carries no style field. Of the 30 campaign opponents exactly THREE change their caption and nothing else: the Nets '26 (balanced -> hand-off hub 81.1, Claxton), the Pelicans '26 (motion -> hand-off hub 65.3, Queen) and the Timberwolves '26 (balanced -> pin-down 61.3, Edwards). No opponent rating and no round's position can move.",
+    "THE DEVIATION TAX LAW STILL PASSES with twelve styles live: playstyle reads default 0.00, random -0.97, oracle +2.20 against its band (oracle >= +0.50, random in [-1.50, -0.30]); on the same base with nine styles it read random -1.10, oracle +2.21. All nine harness rows PASS and no tax constant was touched.",
+    "NO CARD MOVED AND NO RATING MOVED. src/engine/offense.ts and data/team_rating.py are untouched, so nothing in the OVR chain, nothing in `marg` and nothing in the anchor table can have moved: 213 anchors, 0 failing, mean |error| 1.01 - the same table this branch started from.",
+    "THE ONE SIBLING PIN THIS ROUND WEIGHED AND HELD: at PIN_BASE -4 (the value the joint sweep preferred, 62 fives / 4.9%) the Pistons '07 read pin-down 68.3 over recal_211's motion 67.2, and Richard Hamilton is the single most famous pin-down shooter of the 2000s - the honest read. recal_211's test pins that five to motion and his own rulings say nothing about it, so the pin WON: PIN_BASE -7 leaves Detroit on motion by 1.9 and costs pin-down 16 fives. If he wants Hamilton's Pistons to read pin-down, -4 is the whole change.",
+    "REJECTED, MEASURED FIRST. (a) HORNS as a MAX of mid and play volume (his 'pass and/or shoot' read literally): it nominates Ibaka '16 at 92 and Bargnani '10 at 83 and carries horns onto the Thunder '16 and the Raptors '10, both pinned to the pick-and-roll. (b) HORNS with a spacing term: it makes the style modern-only - the Celtics '90, a genuine two-elbow five, have a mean three of 10.7 - and it does not fix either pinned five. (c) BIGNESS as height x the defensive glass: it does separate Magic Johnson (drb 53) and Turkoglu (53) from Jokic (95) and Sabonis (98), but `drb` is era-loaded (1980s bigs run 60-70 where modern bigs run 95) and it would have made all three styles modern-only; measured, it also cut every count and thinned the pinned margins to 0.2-0.9. (d) BIGNESS as the offensive glass alone: Magic '82 has orb 67. (e) THE HUB as the plain surplus `playvol - volume` (motion's ballStop mirrored, slope 1 both ways): elegant, and it caps the style at 20 fives (1.6%) with the Nets '23 breaking first, where the multiplicative `selfless` fade reaches 48 at the same pins. (f) THE HUB with a LINEAR volume charge instead of a fade: 1.7 points per point of volume was needed to hold the Nuggets, four times helio's and iso's own 0.45, with no defence for the asymmetry. (g) PIN_PV at 45 rather than the measured 56: 62 fives (4.9%), and it is not the median of anything. (h) HORN_BASE 18 and DHO_BASE 29: each reaches the 3-7% band for its own style and each breaks a pinned read (the Nuggets '25 pick-and-roll and the Bulls '97 triangle respectively).",
+    "TEN FIVES, BEFORE -> AFTER, since the round's unit is the five and not the card: Timberwolves '97 balanced 60.0 -> horns 78.1 (Gugliotta + Garnett) | Magic '25 balanced 60.0 -> horns 70.4 (Wagner + Banchero) | Kings '02 postup 68.7 -> horns 70.1 (Webber + Stojakovic) | Grizzlies '17 postup 66.1 -> horns 69.0 (Gasol + Randolph) | Warriors '16 helio 69.3 -> pindown 77.2 (Thompson) | Bucks '00 pnr 69.5 -> pindown 75.9 (Robinson) | Pacers '96 postup 67.9 -> pindown 74.6 (Miller) | Kings '25 triangle 79.6 -> dho 86.9 (Sabonis) | 76ers '18 postup 66.2 -> dho 82.1 (Simmons) | Bulls '14 balanced 60.0 -> dho 77.4 (Noah). And ten that do NOT move: Spurs '16 balanced, Jazz '97 pnr, Thunder '16 pnr, Rockets '18 pnr, Magic '11 postup, Hornets '95 postup, Celtics '25 fiveout, Nuggets '22 helio, Bulls '96 triangle, Knicks '84 iso."
+  ],
+  "cost": [
+    "TWELVE STYLES. STYLES is now 12 entries and Style is a 12-member union; anything that enumerates them (the TacticsPanel chips, the TeamDb filter, DEF_AT's mirror on the defensive side) now has three more rows with no UI change made for them. tests/tactics.test.ts asserts the list IN ORDER, because bestStyle's strict `>` makes the order load-bearing: the three new keys are LAST so a tie can never take a read he has already ruled on.",
+    "THE THREE NEW CALLS HAVE NO PANEL YET. `horns`, `pindown` and `dho` are live fields on Tactics, reconciled, gated and read by styleFit / featured / spotsFor, so a plan can name its man and the deviation tax prices a bad call - but src/ui/TacticsPanel.tsx was deliberately NOT touched (recal_211 is in it and the brief scoped this round to CourtFive). Adding the three pickers is three copies of the existing post/helio/iso block and is a UI round, not an engine one.",
+    "HORN_BASE 17 IS PINNED BY THE NUGGETS '25 AND DHO_BASE 27 BY THE BULLS '97. Both are one point from breaking a read. A later round that moves the pick-and-roll's handler or screener terms (recal_214 is in screenFit and popFit right now) moves the Nuggets' pnr fit and therefore horns' whole headroom; a round that moves the triangle moves the hub's. Re-measure scripts/_tmp/base213.ts before touching either base.",
+    "THE PIN-DOWN NOMINATES ON THE PRICED SCORE, WHICH BREAKS recal_208's OWN DIVISION OF LABOUR ON PURPOSE (\"nominate on the composite, price the nominee\"). It was measured: nominating on the unpriced pinScorer steps the fit 35.0 points where the nominee swaps, and this round was told not to add a cliff of that shape. The consequence is that a five whose best off-ball shooter is also its lead guard captions the SECOND-best shooter instead - which is arguably the better caption for this style anyway, since the whole claim is that the man does not run the offence.",
+    "THE HUB'S `primacy` MAKES dhoMan's NOMINATION DEPEND ON THE FIVE, not just on the man - the first nomination in this file that does. hubFit takes the five; a caller that wants a man's standalone hub value wants hubScore. Nothing else in the module nominates that way and a later round adding a style should know the option exists.",
+    "MAGIC JOHNSON READS AS A HAND-OFF HUB on five Showtime fives ('82-'86, '91). Height is the only fact the sheet has about whether a man is a big; the two alternatives were both measured and both rejected (the defensive glass is era-loaded, the offensive glass has Magic '82 at 67). If he rules that a 6'9\" point guard is not a hub, the lever is a second, non-height fact about playing inside - and the honest answer is that this attribute sheet does not carry one.",
+    "FIVE-OUT FELL 17 -> 16, the first time its count has moved since recal_115 set it. The five is the Nuggets '18 (fiveout 70.7 -> hand-off hub, Jokic), not the Celtics '25, whose anchor holds by the same 1.7 recal_211 left it at.",
+    "NO anchors.json ENTRY, following recal_206, recal_208 and recal_211: a style READ has no scale in the anchor table (which holds card attributes and the two team dials), so the three rulings are pinned in tests/tactics.test.ts - four describe blocks, 18 cases, including each style's own count band, every pinned read, the helio head, the no-saturation sweep and the no-cliff sweep. 213 anchors, 0 failing, unchanged.",
+    "scripts/_tmp/ CARRIES THE DESIGN PROBES (probe213 the board and the pins, grid213/g2 the candidate fits, s2-s4 and base213 the sweeps, cliff213 the perturbation measurement, m213 the measured lines, final213 the claimed lists, camp2 the campaign captions). They are scratch and are NOT committed; the numbers they produced are in this file."
+  ]
+}

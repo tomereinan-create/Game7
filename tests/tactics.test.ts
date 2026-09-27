@@ -4,6 +4,19 @@ import { PLAYERS } from '../src/engine/pool'
 import {
   bestStyle,
   canSpace,
+  dhoMan,
+  elbowSkill,
+  hornsMen,
+  hubScore,
+  selfless,
+  pinCatch,
+  pinMan,
+  pinOffBall,
+  pinScorer,
+  HORN_H0,
+  HORN_H1,
+  PIN_CATCH_FLOOR,
+  PIN_PV,
   DEFAULT_TACTICS,
   DUO_GAP,
   featured,
@@ -571,8 +584,13 @@ describe('transition is removed, and a save that still names it loads as balance
   const NAMES5 = FIVE5.map((p) => p.name)
 
   it('the style is not in the union, the list, or anything that enumerates them', () => {
-    expect(STYLES.map((s) => s.key)).toEqual(['balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop', 'iso'])
-    expect(STYLES).toHaveLength(9)
+    // recal_213 appended horns / pindown / dho. The list is asserted in ORDER on purpose: bestStyle
+    // walks it with a strict `>`, so a tie goes to whichever style comes first, and the three new
+    // ones are last so nothing new can take a read he has already ruled on by drawing level with it.
+    expect(STYLES.map((s) => s.key)).toEqual([
+      'balanced', 'fiveout', 'pnr', 'motion', 'postup', 'helio', 'triangle', 'pickpop', 'iso', 'horns', 'pindown', 'dho',
+    ])
+    expect(STYLES).toHaveLength(12)
     expect(STYLES.some((s) => s.key === ('transition' as Style))).toBe(false)
   })
 
@@ -665,7 +683,7 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
 
   it('it is in the set, the panel and the tax law like any other style', () => {
     expect(STYLES.map((s) => s.key)).toContain('triangle')
-    expect(STYLES).toHaveLength(9)
+    expect(STYLES).toHaveLength(12) // recal_213 took it from 9 to 12
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97)).toBeGreaterThan(0)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)).toBeLessThan(0)
   })
@@ -993,6 +1011,268 @@ describe('iso does not take a post player: the two nominations partition the flo
     for (const five of [PELICANS_16, SIXERS_23, RAPTORS_10, NETS_23, SPURS_16, LAKERS_87, THUNDER_22, CELTICS_25, JAZZ_97]) {
       expect(isoMan(five).scorer).not.toBe(null)
       expect(featured('iso', five)).toHaveLength(1)
+    }
+  })
+})
+
+/**
+ * recal_213 — THREE STYLES IN ONE ROUND (his ruling: "Sounds good"). Horns, the off-ball pin-down
+ * and the hand-off hub, fitted JOINTLY against every anchor rather than as three serial rounds: each
+ * takes fives from all of the other eleven, so a count measured on a board without its siblings is a
+ * count of something that would never ship. The wheel numbers are horns 33 of 1,255 (2.6%), pin-down
+ * 46 (3.7%) and the hand-off hub 45 (3.6%), against triangle 29, pickpop 20, fiveout 17, iso 51 and
+ * motion 45 — signature systems, not defaults.
+ */
+const KINGS_02 = cut("Mike Bibby '02", "Doug Christie '02", "Peja Stojaković '02", "Chris Webber '02", "Vlade Divac '02")
+const GRIZZLIES_17 = cut("Mike Conley '17", "Tony Allen '17", "Vince Carter '17", "Zach Randolph '17", "Marc Gasol '17")
+const WOLVES_97 = cut("Stephon Marbury '97", "Doug West '97", "Kevin Garnett '97", "Tom Gugliotta '97", "Dean Garrett '97")
+const PACERS_96 = cut("Mark Jackson '96", "Reggie Miller '96", "Derrick McKey '96", "Dale Davis '96", "Rik Smits '96")
+const WARRIORS_16 = cut("Stephen Curry '16", "Andre Iguodala '16", "Klay Thompson '16", "Draymond Green '16", "Andrew Bogut '16")
+const KNICKS_02 = cut("Mark Jackson '02", "Allan Houston '02", "Latrell Sprewell '02", "Clarence Weatherspoon '02", "Kurt Thomas '02")
+const KINGS_24 = cut("De'Aaron Fox '24", "Malik Monk '24", "Harrison Barnes '24", "Keegan Murray '24", "Domantas Sabonis '24")
+const BULLS_14 = cut("D.J. Augustin '14", "Jimmy Butler '14", "Mike Dunleavy '14", "Taj Gibson '14", "Joakim Noah '14")
+const SIXERS_18 = cut("Ben Simmons '18", "JJ Redick '18", "Robert Covington '18", "Dario Šarić '18", "Joel Embiid '18")
+const NUGGETS_25x = cut("Russell Westbrook '25", "Jamal Murray '25", "Michael Porter Jr. '25", "Aaron Gordon '25", "Nikola Jokić '25")
+const PISTONS_07x = cut("Chauncey Billups '07", "Richard Hamilton '07", "Tayshaun Prince '07", "Chris Webber '07", "Rasheed Wallace '07")
+const RAPTORS_10x = cut("José Calderón '10", "Jarrett Jack '10", "Hedo Türkoğlu '10", "Andrea Bargnani '10", "Chris Bosh '10")
+const BULLS_96 = cut("Steve Kerr '96", "Michael Jordan '96", "Scottie Pippen '96", "Toni Kukoč '96", "Luc Longley '96")
+// the OVR-max fives the wheel actually stands (scripts/_tmp/five213.ts) — the file's own CELTICS_25
+// and LAKERS_87 are different fives and carry different numbers, so the wheel margins are pinned here
+const CELTICS_25x = cut("Derrick White '25", "Jrue Holiday '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25")
+const LAKERS_87x = cut("Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87")
+
+describe('horns is two bigs on the elbows, and the SECOND one is the read', () => {
+  it('reads the two-elbow fives the alignment is named for', () => {
+    expect(bestStyle(WOLVES_97).style).toBe('horns')
+    expect(bestStyle(KINGS_02).style).toBe('horns')
+    expect(bestStyle(GRIZZLIES_17).style).toBe('horns')
+    // ...and it features BOTH men, like the pick-and-roll, because the alignment IS the pair
+    expect(featured('horns', GRIZZLIES_17).map((p) => p.name)).toEqual(["Marc Gasol '17", "Zach Randolph '17"])
+    expect(featured('horns', KINGS_02)).toHaveLength(2)
+  })
+
+  it('an elbow man has to do BOTH jobs: a spot-up big at an elbow is worth a quarter of one who passes', () => {
+    // HORN_WEAK 0.75 leads on the WEAKER of mid and playvol, so the conjunction is priced and a max is
+    // not. Ibaka '16 (mid 92, playvol 7) and Bargnani '10 (83 / 14) are the cards this term exists for.
+    const ibaka = g("Serge Ibaka '16").attrs
+    const webber = g("Chris Webber '02").attrs
+    expect(Math.max(ibaka.mid, ibaka.playvol)).toBeGreaterThan(Math.max(webber.mid, webber.playvol) - 5)
+    expect(elbowSkill(ibaka)).toBeLessThan(elbowSkill(webber) / 2)
+    // monotone in both, and continuous: one more point of either can only raise him
+    expect(elbowSkill({ ...ibaka, playvol: ibaka.playvol + 1 })).toBeGreaterThan(elbowSkill(ibaka))
+    expect(elbowSkill({ ...ibaka, mid: ibaka.mid + 1 })).toBeGreaterThan(elbowSkill(ibaka))
+  })
+
+  it('size is a RAMP and never a gate — no inch of height flips anything (HORN_H0/H1)', () => {
+    const w = g("Chris Webber '02").attrs
+    // the ramp is 78 -> 82 and everything between is linear; POST_HEIGHT's gate shape is not repeated
+    let prev = -1
+    for (let h = 74; h <= 86; h++) {
+      const v = elbowSkill({ ...w, height: h })
+      expect(v).toBeGreaterThanOrEqual(prev)
+      if (h > HORN_H0 && h <= HORN_H1) expect(v - prev).toBeLessThan(elbowSkill(w) / 2)
+      prev = v
+    }
+    expect(elbowSkill({ ...w, height: HORN_H0 })).toBe(0)
+    expect(elbowSkill({ ...w, height: HORN_H1 })).toBe(elbowSkill({ ...w, height: 99 }))
+  })
+
+  it('the call names the HIGH man and the engine fills the other elbow, and a bad call is priced', () => {
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'horns', horns: "Mike Bibby '02" }
+    const men = hornsMen(KINGS_02, called.horns)
+    expect(men.chosen).toBe(true)
+    expect(men.high!.name).toBe("Mike Bibby '02")
+    expect(men.low).not.toBe(null)
+    expect(featured('horns', KINGS_02, called)[0].name).toBe("Mike Bibby '02")
+    // naming a 6'1" guard at an elbow costs the high term — the deviation tax paying for itself
+    expect(styleFit('horns', KINGS_02, undefined, called)).toBeLessThan(styleFit('horns', KINGS_02))
+  })
+
+  it('...and it is capped at 2.6% by his own Nuggets ruling, which is reported and not tuned around', () => {
+    // Jokić and Gordon are two men who can both pass and shoot from an elbow, so the Nuggets '25 are
+    // the highest horns fit on any pinned five. HORN_BASE 17 is the largest value that leaves them on
+    // the pick-and-roll: one more point of base takes them, and horns wins 40 of 1,255 instead of 33.
+    expect(bestStyle(NUGGETS_25x).style).toBe('pnr')
+    const h = styleFit('horns', NUGGETS_25x)
+    expect(h).toBeGreaterThan(70)
+    expect(h).toBeLessThan(styleFit('pnr', NUGGETS_25x))
+    expect(styleFit('pnr', NUGGETS_25x) - h).toBeLessThan(2.5)
+  })
+})
+
+describe('the pin-down is the man WITHOUT the ball, and he is not an iso man', () => {
+  it('reads the shooters the shape is named for', () => {
+    expect(bestStyle(PACERS_96).style).toBe('pindown')
+    expect(featured('pindown', PACERS_96)[0].name).toBe("Reggie Miller '96")
+    expect(bestStyle(WARRIORS_16).style).toBe('pindown')
+    expect(featured('pindown', WARRIORS_16)[0].name).toBe("Klay Thompson '16")
+    expect(bestStyle(KNICKS_02).style).toBe('pindown')
+    expect(featured('pindown', KNICKS_02)[0].name).toBe("Allan Houston '02")
+  })
+
+  it('it nominates the man whose shot is CREATED for him, over the man who creates', () => {
+    // Curry '16 is the better scorer on every other measure; pinCatch (rim 81 behind a 99 three) and
+    // pinOffBall (playvol 86) both price him down, and the screens are set for Thompson.
+    expect(pinScorer(g("Klay Thompson '16").attrs)).toBeGreaterThan(pinScorer(g("Stephen Curry '16").attrs))
+    expect(pinOffBall(g("Klay Thompson '16").attrs)).toBe(1)
+    expect(pinOffBall(g("Stephen Curry '16").attrs)).toBeLessThan(0.5)
+  })
+
+  it('pinCatch is the whole distinction from iso and the post: a jumper over a rim game', () => {
+    // his ruling pins the Jazz '81 and the Knicks '84 to iso, and this is the one column that parts
+    // them from Reggie Miller: Dantley 87/99 and King 74/98 against Miller 90/44 and Thompson 99/39.
+    expect(pinCatch(g("Reggie Miller '96").attrs)).toBe(1)
+    expect(pinCatch(g("Adrian Dantley '81").attrs)).toBe(PIN_CATCH_FLOOR)
+    expect(pinCatch(g("Bernard King '84").attrs)).toBe(PIN_CATCH_FLOOR)
+    // ...and it fades rather than steps: monotone and continuous in the column it reads
+    const d = g("Adrian Dantley '81").attrs
+    let prev = -1
+    for (let mid = 0; mid <= 99; mid++) {
+      const v = pinCatch({ ...d, mid })
+      expect(v).toBeGreaterThanOrEqual(prev)
+      prev = v
+    }
+  })
+
+  it('the call names the shooter, and a plan that names its point guard pays for it', () => {
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'pindown', pindown: "Mark Jackson '96" }
+    expect(pinMan(PACERS_96, called.pindown).chosen).toBe(true)
+    expect(featured('pindown', PACERS_96, called)[0].name).toBe("Mark Jackson '96")
+    expect(styleFit('pindown', PACERS_96, undefined, called)).toBeLessThan(styleFit('pindown', PACERS_96))
+  })
+
+  it('it is not a synonym for iso: PIN_PV is one point off ISO_PV and every iso ruling holds', () => {
+    // the two styles nominate the same kind of man — the measured median play volume of each nominee
+    // is 56 here and 57 there — and they part on the SHOT, not on the passing
+    expect(Math.abs(PIN_PV - ISO_PV)).toBeLessThanOrEqual(1)
+  })
+})
+
+describe("the hand-off hub is a big man's hands, and it passes rather than scores", () => {
+  it('reads the passing bigs the shape is named for', () => {
+    expect(bestStyle(KINGS_24).style).toBe('dho')
+    expect(featured('dho', KINGS_24)[0].name).toBe("Domantas Sabonis '24")
+    expect(bestStyle(BULLS_14).style).toBe('dho')
+    expect(featured('dho', BULLS_14)[0].name).toBe("Joakim Noah '14")
+    expect(bestStyle(SIXERS_18).style).toBe('dho')
+    expect(featured('dho', SIXERS_18)[0].name).toBe("Ben Simmons '18")
+  })
+
+  it('`selfless` is the fourth quadrant of recal_206: high play volume and LOW volume', () => {
+    // helio = high volume AND high playvol; iso = high volume, low playvol; this = high playvol, LOW
+    // volume. Jokić is the best passing big on the board and takes 89th-percentile volume, so the
+    // Nuggets read pick-and-roll and helio exactly as his rulings on 2022 and 2025 require.
+    expect(selfless(g("Domantas Sabonis '24").attrs)).toBe(1)
+    expect(selfless(g("Nikola Jokić '25").attrs)).toBeLessThan(0.1)
+    expect(hubScore(g("Domantas Sabonis '24").attrs)).toBeGreaterThan(hubScore(g("Nikola Jokić '25").attrs))
+    expect(styleFit('dho', NUGGETS_25x)).toBeLessThan(60)
+    // continuous and monotone DOWN in volume, with no step anywhere on the ramp
+    const s = g("Domantas Sabonis '24").attrs
+    let prev = 2
+    for (let v = 0; v <= 99; v++) {
+      const x = selfless({ ...s, volume: v })
+      expect(x).toBeLessThanOrEqual(prev)
+      prev = x
+    }
+  })
+
+  it("...and the hub must be the five's own passer, not its point guard (DHO_GUARD)", () => {
+    // Türkoğlu at 6'10" reads as a hub until José Calderón passes 23 points more than he does; that is
+    // 20.7 off the fit, and it is what leaves Toronto on the pick-and-roll his ruling pins them to.
+    expect(bestStyle(RAPTORS_10x).style).toBe('pnr')
+    const hub = dhoMan(RAPTORS_10x).hub!
+    const best = Math.max(...RAPTORS_10x.filter((p) => p !== hub).map((p) => p.attrs.playvol))
+    expect(best).toBeGreaterThan(hub.attrs.playvol)
+    expect(styleFit('dho', RAPTORS_10x)).toBeLessThan(styleFit('pnr', RAPTORS_10x))
+  })
+
+  it('the call names the hub, and the three new calls migrate and gate like the four before them', () => {
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'dho', dho: "De'Aaron Fox '24" }
+    expect(dhoMan(KINGS_24, called.dho).chosen).toBe(true)
+    expect(featured('dho', KINGS_24, called)[0].name).toBe("De'Aaron Fox '24")
+    expect(styleFit('dho', KINGS_24, undefined, called)).toBeLessThan(styleFit('dho', KINGS_24))
+    const loaded = reconcileTactics(
+      { ...DEFAULT_TACTICS, style: 'dho', dho: 'Nobody Here', horns: 'Nobody Here', pindown: 'Nobody Here' },
+      KINGS_24.map((p) => p.name),
+    )
+    expect([loaded.dho, loaded.horns, loaded.pindown]).toEqual([null, null, null])
+    const gated = gateTactics(
+      { ...DEFAULT_TACTICS, style: 'dho', dho: "Domantas Sabonis '24", horns: "Domantas Sabonis '24", pindown: "Malik Monk '24" },
+      1,
+    )
+    expect(gated.style).toBe('balanced')
+    expect([gated.dho, gated.horns, gated.pindown]).toEqual([null, null, null])
+  })
+})
+
+describe('the three are signature systems and they break nothing that was ruled on', () => {
+  it('the twelve-style board still reads every pinned five', () => {
+    const reads: [Player[], Style][] = [
+      [JAZZ_97, 'pnr'],
+      [NUGGETS_25x, 'pnr'],
+      [SUNS_05, 'pnr'],
+      [THUNDER_16, 'pnr'],
+      [RAPTORS_10x, 'pnr'],
+      [CELTICS_25, 'fiveout'],
+      [THUNDER_22, 'helio'],
+      [LAKERS_87, 'helio'],
+      [BULLS_96, 'triangle'],
+      [BULLS_97, 'triangle'],
+      [PISTONS_07x, 'motion'],
+    ]
+    for (const [five, want] of reads) expect(bestStyle(five).style).toBe(want)
+    // his ruling on the Spurs '16 is "Motion, or balanced" and nothing this round adds may take them
+    expect(['balanced', 'motion']).toContain(bestStyle(SPURS_16).style)
+    for (const s of ['horns', 'pindown', 'dho'] as Style[]) expect(styleFit(s, SPURS_16)).toBeLessThan(60)
+  })
+
+  it('the helio HEAD does not move by a decimal, because no fit it reads was touched', () => {
+    // the three fives recal_206 and recal_211 both pinned, on the wheel's own OVR-max fives
+    expect(styleFit('helio', LAKERS_87x)).toBeCloseTo(67.0, 1)
+    expect(bestStyle(LAKERS_87x).style).toBe('helio')
+    // ...and the two thinnest margins on the board are exactly where recal_211 left them
+    expect(styleFit('triangle', BULLS_96) - styleFit('motion', BULLS_96)).toBeCloseTo(1.75, 1)
+    expect(styleFit('fiveout', CELTICS_25x) - styleFit('motion', CELTICS_25x)).toBeCloseTo(1.7, 1)
+    expect(bestStyle(CELTICS_25x).style).toBe('fiveout')
+  })
+
+  it('no fit saturates for its own featured man: every one of the three can be moved by him', () => {
+    // the fault this round was told not to repeat (the pick-and-roll cannot be moved by either man in
+    // the action on the Thunder '16, because one term caps at 99 and the other at efficiency).
+    const bump = (five: Player[], i: number, k: 'mid' | 'playvol' | '3pt', s: Style) => {
+      const up = five.map((p, j) => (j === i ? ({ ...p, attrs: { ...p.attrs, [k]: p.attrs[k] + 1 } } as Player) : p))
+      return styleFit(s, up) - styleFit(s, five)
+    }
+    expect(bump(GRIZZLIES_17, 4, 'playvol', 'horns')).toBeGreaterThan(0)
+    expect(bump(GRIZZLIES_17, 3, 'playvol', 'horns')).toBeGreaterThan(0)
+    expect(bump(PACERS_96, 1, '3pt', 'pindown')).toBeGreaterThan(0)
+    expect(bump(KINGS_24, 4, 'playvol', 'dho')).toBeGreaterThan(0)
+  })
+
+  it('and none of them carries a cliff: every fit is continuous in every attribute it reads', () => {
+    // Swept the way the orchestrator measured five-out's -25 shy-big step and the auto-handler's 38.7
+    // height step (scripts/_tmp/cliff213.ts sweeps every attribute of every man 0..99 on five fives).
+    // Every TERM in the three fits is a ramp, so the only steps left are the ones EVERY featured style
+    // has — the point at which the engine's nominee changes — and all three are held at the bottom of
+    // the board rather than added to the top of it: horns 9.8, dho 12.0, pindown 16.3, against
+    // postup 47.6, pnr and pickpop 38.7, fiveout 25.3, helio 17.2, triangle 16.0, iso 13.2.
+    const cases: [Player[], Style][] = [
+      [GRIZZLIES_17, 'horns'],
+      [PACERS_96, 'pindown'],
+      [KINGS_24, 'dho'],
+    ]
+    for (const [five, s] of cases) {
+      for (let i = 0; i < 5; i++) {
+        for (const k of ['mid', '3pt', 'rim', 'playvol', 'volume', 'efficiency', 'height'] as const) {
+          let prev: number | null = null
+          for (let v = 0; v <= 99; v += 1) {
+            const up = five.map((p, j) => (j === i ? ({ ...p, attrs: { ...p.attrs, [k]: v } } as Player) : p))
+            const f = styleFit(s, up)
+            if (prev !== null) expect(Math.abs(f - prev)).toBeLessThan(17)
+            prev = f
+          }
+        }
+      }
     }
   })
 })

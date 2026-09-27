@@ -416,6 +416,49 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' 
       const s = who(men, 'iso', plan)
       return stand(men, { [s]: ISO_WING }, [[DUNK_L, 0], [ISO_TOP, 1], [ISO_WEAK, 1], [CORNER_L, 2]], [TRI_PINCH])
     }
+    case 'horns': {
+      // TWO ELBOWS AND A HANDLER (recal_213). The alignment is the shape, so both featured men are
+      // placed: the high man on the ball-side elbow and the second big on the weak-side elbow, the
+      // two spots the triangle and the motion set already use (ELBOW_R, TRI_PINCH) — which is the
+      // point, they are the elbows. The handler takes the top of the key and the other two the
+      // corners, so exactly two men are inside the arc and they are the two the call names. A plan
+      // that names a guard as its high man still stands him at an elbow: a call is a call, and the
+      // fit has already charged him for it.
+      const pair = featured('horns', men, plan)
+      const h = pair[0] ? men.findIndex((p) => p.name === pair[0].name) : 0
+      let l = pair[1] ? men.findIndex((p) => p.name === pair[1].name) : -1
+      if (l < 0 || l === h) l = best(men, (p) => p.attrs.height, h)
+      // ...and the set keeps ONE inside spot in reserve, the same way the post-up does, so a third
+      // man who cannot shoot is never sent out to a corner or to the top of the arc to space a floor
+      // he cannot space (his ruling: "Why is Ayton out and James in? Makes no sense").
+      return stand(men, { [h]: ELBOW_R, [l]: TRI_PINCH }, [[peri(0, 6), 1], [CORNER_L, 2], [CORNER_R, 2]], [DUNK_R])
+    }
+    case 'pindown': {
+      // THE MAN WITHOUT THE BALL (recal_213). The one set on this floor whose featured man is drawn
+      // where he is GOING rather than where he stands: the shooter has come off two staggered screens
+      // up the strong side and catches on the wing. The two screens are the strong-side elbow and the
+      // strong-side post, and they are INSIDE spots (rank 0), so `stand` sends the men who cannot
+      // shoot to set them and keeps the shooters out on the floor — the same rule the post-up's
+      // dunker spot follows. The passer stands above the break on the weak side of the middle,
+      // because the ball has to be delivered across the shooter's path, and the fifth man holds the
+      // weak-side corner.
+      const s = who(men, 'pindown', plan)
+      return stand(men, { [s]: TRI_WING }, [[peri(-12, 5), 1], [ELBOW_R, 0], [TRI_POST, 0], [CORNER_L, 2]])
+    }
+    case 'dho': {
+      // A BIG MAN'S HANDS (recal_213). Helio's floor stands its engine alone at the top with four men
+      // low; this stands its HUB at the top and sends two men AT him — the wings, who are the two the
+      // fit pays for (DHO_TOP) and the two who come off the hand-off. The remaining two hold a corner
+      // and the weak-side dunker spot, so the set keeps one inside spot for a man who cannot shoot
+      // and never sends him out to space a floor he cannot space.
+      const s = who(men, 'dho', plan)
+      // The hub stands at the TOP OF THE KEY, which is INSIDE the arc — that is what the phrase
+      // means and it is where a hand-off hub actually stands, a step above the free-throw line with
+      // his back to the basket. It also keeps the one spacing law intact for a set whose featured man
+      // is usually a big who cannot shoot: helio's engine reads the whole defence from behind the
+      // line, this one holds the ball inside it.
+      return stand(men, { [s]: at(0, 21) }, [[peri(-36), 1], [peri(36), 1], [CORNER_R, 2], [DUNK_L, 0]])
+    }
   }
 }
 
