@@ -1,0 +1,241 @@
+{
+  "round": 211,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "yes do the motion round",
+  "title": "motion becomes a live read - the PASS CHAIN (the three men who do NOT lead the five) carries the fit, the man who HOLDS it is charged continuously instead of by category, and motion goes 3 of 1,255 -> 56 (4.5%); the Spurs '16 STARTERS are declined with the measurement and their BENCH unit reads motion 69.2",
+  "scale": "team:off",
+  "subject": "Spurs '16 (best legal five)",
+  "five": [
+    "Tony Parker '16",
+    "Danny Green '16",
+    "Kawhi Leonard '16",
+    "LaMarcus Aldridge '16",
+    "Tim Duncan '16"
+  ],
+  "target": 55,
+  "tol": 0,
+  "before": 55,
+  "after": 55,
+  "pipeline_version": 207,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const MOT_BASE = 16\\s*\\nexport const MOT_CHAIN = 0\\.85\\s*\\nexport const MOT_SPACE = 0\\.12\\s*\\nexport const MOT_BS = 0\\.12\\s*\\nexport const MOT_HOLD = 0\\.35\\s*\\nexport const MOT_HOLD_FREE = 30",
+      "label": "the whole of the new motion fit: base, the pass chain, the off-ball threat, ball security, and the charge on the man who holds it",
+      "note": "new; the old fit had no named constant at all - 0.5 x mean(ballsec) + 0.3 x mean(playvol) + 4 x (3pt >= 60 count) - 12 x (stopper count)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const passChain = \\(a: Attrs\\[\\]\\): number => \\{\\s*\\n\\s*const pv = a\\.map\\(\\(x\\) => x\\.playvol\\)\\.sort\\(\\(x, y\\) => x - y\\)\\.slice\\(0, 3\\)",
+      "label": "THE DISCRIMINATOR: the mean play volume of the three LOWEST men on the floor - the lead guard cannot buy it and one non-passer drags it down",
+      "note": "new; playvol is the assist-rate percentile (build_ratings.py), so this is literally 'do the men who are not the lead passer still pass'"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ballStop = \\(a: Attrs\\[\\]\\): number => \\(a\\.length \\? Math\\.max\\(\\.\\.\\.a\\.map\\(\\(x\\) => Math\\.max\\(0, x\\.volume - x\\.playvol - MOT_HOLD_FREE\\)\\)\\) : 0\\)",
+      "label": "the man who HOLDS it, continuous and worst-man-only, replacing recal_58's `volume >= 90 && playvol < 50` category at -12 a head",
+      "note": "new; MOT_HOLD_FREE 30 is the wheel's own p75 of volume - playvol per man (p50 10), so three men in four pay nothing"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "MOT_BASE \\+\\s*\\n\\s*MOT_CHAIN \\* passChain\\(a\\) \\+\\s*\\n\\s*MOT_SPACE \\* avg\\(\\(x\\) => x\\['3pt'\\]\\) \\+\\s*\\n\\s*MOT_BS \\* avg\\(\\(x\\) => x\\.ballsec\\) -\\s*\\n\\s*MOT_HOLD \\* ballStop\\(a\\)",
+      "label": "the fit itself: four terms, every one continuous and monotone - motion is the only style fit with no threshold count in it",
+      "note": "new; ball security falls from 0.5 of the weight to 0.12, the same light shade the triangle gives it"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_PV = 65\\s*\\nexport const HELIO_PV_W = 0\\.45",
+      "label": "recal_206's helio gate is UNTOUCHED",
+      "note": "65 / 0.45 -> 65 / 0.45"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_PV = 57\\s*\nexport const ISO_PV_W = 0\\.45",
+      "label": "recal_208 AS AMENDED is UNTOUCHED - motion's claim is about the four men WITHOUT the ball, iso's is about the one with it, and after this round the two styles do not trade a single five",
+      "note": "57 / 0.45 -> 57 / 0.45 (the amendment's own values; iso stays 55 of 1,255 through this round)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const TRI_POST = 70\\s*\\nexport const TRI_PV = 50\\s*\\nexport const TRI_MID = 60",
+      "label": "recal_128's triangle is UNTOUCHED, and motion is blind to rim and mid so the two sets cannot be one set",
+      "note": "70 / 50 / 60 -> 70 / 50 / 60"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const scorerCreator = \\(x: Attrs\\) => 0\\.45 \\* x\\.volume \\+ 0\\.3 \\* x\\.efficiency \\+ 25 \\* creation\\(x\\)",
+      "label": "recal_115's composite is untouched, so twoStars, the triangle separation, heliMan, isoMan and featured read exactly what they read",
+      "note": "0.45/0.3/25 -> 0.45/0.3/25"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export const creation = \\(a: Attrs\\) => \\(0\\.45 \\* a\\.playvol \\+ 0\\.2 \\* a\\.ballsec\\) / \\(0\\.65 \\* 99\\)",
+      "label": "offense.ts was NOT touched, so src/engine/offense.ts <-> data/team_rating.py parity holds and no rating moved",
+      "note": "unchanged - the round is a tactics read, not a pipeline change"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const facesUp = \\(x: Attrs\\) => x\\.height < POST_HEIGHT \\|\\| interior\\(x\\) === 0",
+      "label": "recal_208's post-up gate on the iso nomination, merged under this round and left exactly as it landed",
+      "note": "unchanged - this round re-measured on top of it rather than refitting"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves NO rating: the Spurs '16 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "...nor the Heat '24 offence dial, the five that moves furthest INTO motion (76.7)",
+      "five": [
+        "Terry Rozier '24",
+        "Tyler Herro '24",
+        "Duncan Robinson '24",
+        "Jimmy Butler '24",
+        "Bam Adebayo '24"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 51
+    },
+    {
+      "label": "...nor the Pistons '07, the one five that KEPT motion through the round",
+      "five": [
+        "Chauncey Billups '07",
+        "Richard Hamilton '07",
+        "Tayshaun Prince '07",
+        "Chris Webber '07",
+        "Rasheed Wallace '07"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 48
+    },
+    {
+      "label": "WHY THE SPURS ARE DECLINED: Aldridge '16 takes a lot",
+      "card": "LaMarcus Aldridge '16",
+      "scale": "attr:volume",
+      "op": ">=",
+      "value": 88
+    },
+    {
+      "label": "...and passes almost none of it - a 63-point gap, the worst holder on any pinned five (ballStop charges 33)",
+      "card": "LaMarcus Aldridge '16",
+      "scale": "attr:playvol",
+      "op": "<=",
+      "value": 25
+    },
+    {
+      "label": "...and he is ONE POINT of volume under recal_58's old ball-stopper gate, which is why the category had to go",
+      "card": "LaMarcus Aldridge '16",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 89
+    },
+    {
+      "label": "...and the Spurs' mean three is dragged under 46 by Duncan",
+      "card": "Tim Duncan '16",
+      "scale": "attr:3pt",
+      "op": "<=",
+      "value": 10
+    },
+    {
+      "label": "THE MOTION SHAPE, in the cards: the Heat '24's third-least passer still passes (the pass chain's floor)",
+      "card": "Duncan Robinson '24",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 40
+    },
+    {
+      "label": "...and their big passes like a guard, which is what 'the bigs run lanes' looks like on a sheet",
+      "card": "Bam Adebayo '24",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 50
+    },
+    {
+      "label": "the Spurs' BENCH unit is the one the research names: Mills passes",
+      "card": "Patty Mills '16",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 55
+    },
+    {
+      "label": "...Diaw passes",
+      "card": "Boris Diaw '16",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 50
+    },
+    {
+      "label": "...and West passes - three men over 50 where the starters have two",
+      "card": "David West '16",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 50
+    },
+    {
+      "label": "the helio head is untouched because motion never asks its question: Johnson '87 runs everything",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 90
+    },
+    {
+      "label": "...and the Bulls '97 triangle keeps its read on a pass chain of 50.0, one of the highest on the wheel",
+      "card": "Toni Kukoč '97",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 55
+    }
+  ],
+  "order": [
+    {
+      "label": "the whole decline in two cards: the Spurs' bench big passes more than their starting big",
+      "scale": "attr:playvol",
+      "above": "David West '16",
+      "below": "LaMarcus Aldridge '16"
+    },
+    {
+      "label": "...and the pass chain is not about the lead guard: Robinson '24 out-passes Danny Green '16 as a fourth option",
+      "scale": "attr:playvol",
+      "above": "Duncan Robinson '24",
+      "below": "Danny Green '16"
+    }
+  ],
+  "movers": {
+    "scale": "attr:playvol",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "notes": [
+    "HIS RULING was 'yes do the motion round', on one number: motion won FOUR of the 1,255 team-seasons on the wheel, and THREE after recal_208's iso took the Mavericks '17. A style that reads on 0.2% of the league is not a tactic, it is a label on dead code.",
+    "WHAT WAS WRONG: the old fit was 0.5 x mean(ballsec) + 0.3 x mean(playvol) + 4 x (men at 3pt >= 60) - 12 x (men with volume >= 90 AND playvol < 50). Half the weight was ball SECURITY - not turning it over - so it mostly rewarded a careful five; the passing half was a MEAN, which one 88-assist point guard carries on his own; and the stopper term was an undocumented recal_58 category with a cliff in it (Aldridge '16, volume 88, was one point from free).",
+    "WHAT THE REAL THING IS (researched at his suggestion): the ball is advanced BY THE PASS, NOT THE DRIBBLE; all five men touch it; the bigs run lanes instead of posting; the threat away from the ball is screening and cutting. And in the 2016 Spurs' case it was the BENCH - Mills, Ginobili, West, Diaw - that ran motion while the starters ran isolation for Aldridge and Leonard (Pounding The Rock, 2016; nbamath, 2016), which is why his own answer on that five was 'Motion, or balanced'.",
+    "THE FIT, four terms and no threshold in any of them: MOT_CHAIN 0.85 x passChain, the mean play volume of the three LOWEST men (wheel p25 27.0, p50 31.7, p90 41.3 - so it spreads an ordinary five and a passing five by ~12 points); MOT_SPACE 0.12 x the mean three (deliberately NOT five-out's count of closeout threats - motion's off-ball threat is the cut and the screen, and a count at a line would make the two sets one set); MOT_BS 0.12 x mean ball security, the same light shade the triangle gives it; minus MOT_HOLD 0.35 per point of ballStop, the WORST holder's volume - playvol above MOT_HOLD_FREE 30 (the wheel's own p75 of that gap per man, p50 10). MOT_BASE 16 puts an ordinary five at ~50, under balanced's free 60.",
+    "THE COUNT: motion wins 56 of the 1,255 wheel fives, 4.5% - the 4-8% band the other signature systems occupy. Measured on recal_208 AS AMENDED (e05df9e, the post-up gate on isoMan), which is the board this round shipped against. BEFORE: balanced 440 / pnr 310 / postup 232 / helio 131 / iso 55 / triangle 42 / pickpop 25 / fiveout 17 / motion 3. AFTER: balanced 406 / pnr 304 / postup 228 / helio 128 / motion 56 / iso 55 / triangle 36 / pickpop 25 / fiveout 17. 57 of the 1,255 reads change and every one of them involves motion: 55 fives move IN (34 from balanced, 6 triangle, 6 pick-and-roll, 5 helio, 4 post-up and NONE from iso), the Pistons '07 keep the read they had, and 2 move OUT (the Pistons '06 and '08, to helio). No pair of other styles trades a five.",
+    "WHO IT READS, and it is a list that looks like the tape: Heat '24 76.7, Heat '23 70.2, Heat '22 70.1, Heat '21 68.7 (Miami's pass-and-cut offence, four straight years), Raptors '26 69.4, Warriors '94 68.7, Pelicans '24 68.7, Bulls '94 68.1 / '95 64.8 / '15 66.2 / '26 66.2, Magic '21 67.4 / '24 66.9 / '23 65.2 / '18 64.1, Pistons '07 67.2, Cavaliers '24 66.8 / '25 66.6 / '19 64.1, Sixers '01 66.2, Hawks '09 66.0, Spurs '24 65.9, Bucks '82 65.5 / '81 60.7, Kings '06 65.1 / '18 63.2 / '17 62.7, Pacers '13 62.2 / '14 62.1 / '85 61.6 / '22 61.0, Celtics '21 64.2 / '08 63.4, Timberwolves '06 60.6 / '07 60.3.",
+    "AND WHO LOST IT, because it is the same formula for everyone: the Pistons '06 (motion 63.9 -> 55.9) and '08 (67.3 -> 60.0) fall to helio, while the '07 five keeps motion. That is not noise, it is the pass chain: the '07 five's third-lowest play volume is Chris Webber at 52, so its chain reads 41.3 against 30.7 and 32.7 for the years either side. Detroit's assists were Billups' in '06 and '08 and the whole floor's in '07.",
+    "THE SUBJECT IS DECLINED WITH ITS MEASUREMENT (his house rule, recal_82 / recal_88). The Spurs '16 STARTING five reads motion 47.3 against balanced's 60.0 (53.6 before the round), and the reason is the ruling's own reason: Aldridge '16 is volume 88 / playvol 25, a 63-point gap and the worst holder on any pinned five (0.35 x 33 = 11.6 off the fit), and Duncan 9 / Aldridge 24 from three give the five a mean three of 45.6. Their play volumes are 48/73/32/25/51. To lift them over 60 the fit must sit ~13 points higher, which is motion on 300+ of the 1,255 fives - a second balanced - and on the way there it takes the Celtics '25 out of five-out and the Bulls '96 out of the triangle. Measured, not asserted: of ~200 weight combinations gridded (scripts/_tmp, four terms x base), not one lands the Spurs over 60 with motion under 19% of the wheel - the gentlest such setting reads Spurs 61.6 with motion on 241 of 1,255.",
+    "WHAT DOES READ MOTION IS THE UNIT THE RESEARCH NAMES. Mills / Anderson / Diaw / West '16 - the Spurs' second unit, with no Ginobili '16 card in the pool - reads motion 39.3 before this round and 69.2 after, its best style by 11.5 points over the triangle, and 21.9 points above the starters. The cards agree with the tape and with his own 'Motion, or balanced': the starters isolated, the bench ran motion.",
+    "MOTION IS NOT THE TRIANGLE, structurally and not just numerically: the triangle is a post option (TRI_POST) plus mid-range readers (TRI_MID), and the motion fit does not read rim or mid at all - flattening every man's rim and mid to 1 leaves the motion fit identical and drops the triangle's (pinned in tests/tactics.test.ts). Of the five triangle fives motion takes, all five were marginal triangles (fits 60.1-65.3: Raptors '26, Knicks '21, Magic '21, Hawks '26, Kings '05); the signature ones hold with margin - Bulls '97 75.0 against motion 71.3, Bulls '96 72.8 / 71.1, Kings '25 triangle 79.6 against motion 67.0, Suns '24 72.7 against 69.8.",
+    "EVERY PINNED READ HOLDS, thinnest first, on the amended board: Celtics '25 fiveout 72.8 against motion 71.1 (1.7), Bulls '96 triangle 72.8 / 71.1 (1.8), Bulls '97 triangle 75.0 / 71.3 (3.7), Nuggets '25 pnr 72.9 / 68.6 (4.3), Lakers '87 helio 67.0 / 59.2 (7.8), Spurs '16 balanced 60.0 / 47.3 (12.7), Nuggets '22 helio 76.8 / 62.5 (14.2), Thunder '22 helio 65.3 / 50.7 (14.6), Thunder '25 pnr 74.2 / 58.3 (16.0), Jazz '97 pnr 76.2 / 57.2 (19.1), Cavaliers '18 helio 73.1 / 53.3 (19.9), Knicks '84 iso 65.9 / 37.2 (28.7), Hornets '95 postup 77.7 / 44.7 (33.0), Jazz '81 iso 69.9 / 33.4 (36.5), Magic '11 postup 81.6 / 43.1 (38.6), Rockets '18 pnr 90.8 / 48.6 (42.2), Suns '05 pnr 84.9 / 36.2 (48.8), Thunder '16 pnr 80.5 / 29.6 (50.9). The Spurs '16 read balanced, as he ruled - not helio (58.6), not iso (54.0), not motion (47.3).",
+    "THE HELIO HEAD IS UNMOVED and helio moves by three: 131 of 1,255 before this round, 128 after - it loses FIVE marginal fives to motion (Bulls '94 60.1, Kings '06 61.4, Kings '17 61.3, Cavaliers '24 65.1, Timberwolves '06 60.2) and gains TWO back (the Pistons '06 and '08, which leave motion for it). Magic '87 67.0, Jokic '22 76.8, James '18 73.1 and Gilgeous-Alexander's Thunder '22 65.3 all hold their reads and their fits to the decimal.",
+    "THE CAMPAIGN LADDER DOES NOT REORDER. bestStyle is read in exactly two places - CourtFive (the scouting drawing and its caption) and TeamDb (a filter chip) - and by nothing in the sim or the resolver, so no opponent rating and no round's position can move; src/data/opponents.json carries no style. The deviation tax law still passes with motion live: playstyle reads default 0.00, random -1.22, oracle +2.04 against its band (oracle >= +0.50, random in [-1.50, -0.30]); on the same base with the OLD motion fit it read random -1.37, oracle +2.03, so calling motion is no longer a uniformly bad call. All nine harness rows PASS.",
+    "NO CARD MOVED AND NO RATING MOVED. The round is a tactics read: src/engine/offense.ts and data/team_rating.py are untouched, so nothing in the OVR chain, nothing in marg and nothing in the anchor table can have moved. 212 anchors, 0 failing, mean |error| 1.00 - the same table main shipped.",
+    "REJECTED, MEASURED FIRST: (a) keeping ball security as the leading term at any weight - it is what made the old fit a 'careful five' detector, and at the calibration that lands 4-8% the Spurs still read 58.6 at best, below the free default; (b) a COUNT of closeout threats at 3pt >= 60 like five-out's - at the calibrations that reach 5-6% it takes two fives out of five-out, and at 6 points a shooter the Celtics '25 with them; (c) the stopper term as a SUM over all five men instead of the worst man - it double-charges a two-star five and cost helio five more fives; (d) a play-volume SEPARATION penalty (the triangle's separation term on playvol) - 0.93-correlated with the pass chain over the wheel, it adds nothing the chain does not say; (e) MOT_BASE at 14, 15 and 17, re-measured on the amended board: 14 gives motion 32 fives (2.5%), 15 gives 41 (3.3%) - both under the band he was shown - and 17 gives 76 (6.1%) but takes the Bulls '98 out of iso and cuts the Bulls '96 triangle and Celtics '25 five-out margins to 0.7. 16 is the only value in the band that leaves iso whole at 55 and keeps both those margins at 1.7.",
+    "RE-MEASURED ON THE AMENDMENT. This round was first fitted on recal_208 at e71fd26 (iso 81 fives) and re-measured on e05df9e after his ruling 'You have moved post up players into iso. AD, Bosh, Embid, are all post players not iso.' took iso to 55. The formula did not change one constant: motion lands 53 -> 56 fives because the 26 teams iso gave back are on balanced, pnr, postup and helio, and three of them (Celtics '08, Kings '17, Timberwolves '06/'07 among the movers) are motion's. The only qualitative change is that motion now takes ZERO iso fives: the Bulls '98, which the first cut claimed at 67.0 against iso 66.2, stay iso at 68.0 because the amendment's ISO_PV_W 0.45 raised Jordan's price-adjusted score - so the two styles do not trade a single five in either direction."
+  ],
+  "cost": [
+    "MOTION'S FIT NOW HAS SIX NAMED CONSTANTS where it had none (MOT_BASE / MOT_CHAIN / MOT_SPACE / MOT_BS / MOT_HOLD / MOT_HOLD_FREE) and two exported helpers (passChain, ballStop). A later round that re-cuts the play-volume scale in build_ratings.py moves motion's leading term directly - it is the only fit that reads playvol at the WEAK end of the five.",
+    "MOTION'S THINNEST NEIGHBOURS, re-measured on the amended board: Bulls '98 iso 68.0 against motion 67.0 (1.0 - not a pinned read, and it moved the other way only because the iso amendment lifted it), Celtics '25 fiveout 72.8 / 71.1 (1.7), Bulls '96 triangle 72.8 / 71.1 (1.8), Suns '24 triangle 72.7 / 69.8 (2.9). The Bulls '96 and Celtics '25 are genuinely motion-shaped fives (pass chains 48.3 and 50.3, the two highest on any pinned five) and their reads are held by MOT_BASE: raising it by 1 flips neither, by 2 flips both. The thinnest margins on the BOARD are not motion's - the pnr/pickpop pairs tie at 0.00 by construction (recal_129 gave them identical weights).",
+    "recal_58's ball-stopper category is GONE, not moved: nothing else in the module read `volume >= 90 && playvol < 50`. ballStop is its continuous replacement and reads only the worst man, so a five with two holders is charged once - that is deliberate (one man standing still is what kills the set) and is the alternative a later ruling would revisit first.",
+    "CourtFive.spotsFor's motion case was NOT touched: the drawing is a staggered perimeter with the non-shooter cutting off the elbow, which is still what the fit describes (bigs running lanes, off-ball cutting), and the parallel design session owns that file.",
+    "The Pistons '06 and '08 lost a read they had, to helio. If he rules that all three Pistons years should read motion, the lever is the pass chain's depth (the mean of the three lowest, versus the four lowest) - measured at four: it takes motion past 9% of the wheel and breaks the Celtics '25 five-out anchor.",
+    "Nine styles and 53 motion fives means the TeamDb style filter now returns a non-trivial motion list for the first time; nothing in the UI was changed for it.",
+    "NO anchors.json ENTRY, following recal_206 and recal_208: a style READ has no scale in the anchor table (which holds card attributes and the two team dials), so the ruling is pinned in tests/tactics.test.ts - 'motion is the ball advanced by the pass, and it is a live read again', eight cases including the 4-8% band, the Spurs decline and the seven pinned reads. 212 anchors, 0 failing, unchanged."
+  ]
+}
