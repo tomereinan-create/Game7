@@ -4736,7 +4736,10 @@ body.offstage #root { position: relative; z-index: 1; }
    * the floor's own ceiling is `112cqh`, which is read off the column itself and cannot drift.
    */
   .tdb-detail { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 34px; align-items: start; }
-  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 380px; }
+  /* what stands above and below the block: the two status lines, the club line and the season
+     strip. 380 -> 352 when the pool footnote came off the foot of this page (his ruling,
+     2026-09-27) — it was 28px of it. */
+  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 352px; }
   .tdb-sheet:not(.tdb-list) .tdb-detail {
     grid-template-columns: minmax(0, min(calc((100vh - var(--tdb-chrome)) * 1.12), 50%)) minmax(0, 1fr);
   }
@@ -4815,9 +4818,14 @@ body.offstage #root { position: relative; z-index: 1; }
    and the dials in it were sized against the WIDTH of a 1,990px desk (7vw) with no opinion about
    its height. They take a vh term as well now, so a wide-but-short window draws them at the size
    that window can afford. The card's own top padding and the floor's top margin come in with
-   them. `--tdb-chrome` is restated to match: 380 -> 336, measured after these three. */
+   them. `--tdb-chrome` is restated to match: 380 -> 336 for those three, and 336 -> 308 when the
+   pool footnote came off the foot of the page (his ruling, 2026-09-27), which was 28px of it. It
+   stays a little HIGHER than the truth on purpose: the cost of over-estimating the chrome is that
+   the floor fills its column and the spare height is split above and below it, which is what the
+   centring is for; the cost of under-estimating it is a strip of black beside the floor, which is
+   the thing two of his rulings have been about. */
 @media (min-width: 1100px) and (max-height: 900px) {
-  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 336px; }
+  .tdb-sheet:not(.tdb-list) { --tdb-chrome: 322px; }
   .tdb-sheet:not(.tdb-list) > .card { padding-top: 10px; }
   .tdb-sheet .dials.tdb-scale .dial { width: clamp(88px, min(7vw, 15.5vh), 168px); }
   .tdb-sheet .dials.tdb-scale .dial svg { width: clamp(76px, min(6.2vw, 13vh), 150px); }

@@ -1006,7 +1006,11 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
             </div>
             </div>
           </div>
-          <div className="cap hint">Only men in the card pool appear — a season the pipeline never rated is not here.</div>
+          {/* NO FOOTNOTE (his ruling, 2026-09-27: "Remove - Only men in the card pool appear — a
+              season the pipeline never rated is not here."). It was a caveat about the POOL
+              standing under a page about a team, and the page it stood under already answers it:
+              the roster lists the men it has and the floor stands the five it can field. The
+              height it took goes back to the floor — see `--tdb-chrome`, which is measured. */}
         </>
       ) : null}
     </div>
