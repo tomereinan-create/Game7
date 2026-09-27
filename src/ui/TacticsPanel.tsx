@@ -4,21 +4,7 @@ import { useUserMode } from '../state/viewmode'
 import { usageSurplus } from '../engine/offense'
 import type { Player } from '../engine/types'
 import { surname } from '../engine/names'
-import {
-  gateTactics,
-  heliMan,
-  pnrPair,
-  popPair,
-  postMan,
-  postOption,
-  triangleReaders,
-  SCHEMES,
-  schemeFit,
-  styleFit,
-  STYLES,
-  tacticsParts,
-  type Tactics,
-} from '../engine/tactics'
+import { gateTactics, heliMan, isoMan, pnrPair, popPair, postMan, postOption, schemeFit, SCHEMES, styleFit, STYLES, type Tactics, tacticsParts, triangleReaders } from '../engine/tactics'
 
 /** The name a chip wears: the season tag off, and the surname alone. */
 // E16: was `.slice(-1)[0]`, which turned every Jr./III into his own surname.
@@ -228,6 +214,26 @@ export function TacticsCalls({
                 <ChipRow>
                   {five.map((p) => (
                     <button key={p.name} className={`sortb ${c === p.name ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, helio: p.name })}>
+                      {shortName(p.name)}
+                    </button>
+                  ))}
+                </ChipRow>
+              </div>
+            )
+          })()
+        : null}
+      {/* HIS RULING: "1) Yes." — iso becomes a style of its own (recal_208), and like the post
+          target and the helio creator it is a call on a SHAPE plus a call on a MAN: the scorer the
+          floor is cleared for. Opens lit on the man the engine would clear out for. */}
+      {side === 'off' && playbook >= 2 && tactics.style === 'iso'
+        ? (() => {
+            const c = isoMan(five, tactics.iso).scorer?.name ?? ''
+            return (
+              <div className="posbar">
+                <span className="cap">Iso scorer</span>
+                <ChipRow>
+                  {five.map((p) => (
+                    <button key={p.name} className={`sortb ${c === p.name ? 'on' : ''}`} onClick={() => onTactics({ ...tactics, iso: p.name })}>
                       {shortName(p.name)}
                     </button>
                   ))}
