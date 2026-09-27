@@ -258,11 +258,37 @@ type Rank = 0 | 1 | 2
 type Rest = readonly [XY, Rank]
 
 /**
+ * WHO THE DUNKER SPOT IS FOR (his rulings: "Enes Freedom cant be in the corner on a durant and
+ * westbrook pnr", and before it "Adams can either be the screener or inside the paint, since he has
+ * no 3pt and no mid"). `canSpace` says who may stand on the ARC; it does not say which of the men
+ * who may not is the one to put at the rim, and a shape with one inside spot and two such men has
+ * to answer that. The dunker spot asks for exactly two things — the size to live there and the
+ * work to be there when the ball goes up — so it is read off height and the offensive glass, the
+ * two bars on the sheet that say so, at equal weight.
+ *
+ * IT IS NOT `rim`, AND THE SUBJECT FIVE IS THE PROOF. Reggie Jackson '15 has a BETTER rim rating
+ * (64) than Steven Adams '15 (54), because `rim` is a SCORING RATE and a slashing guard finishes
+ * his own drives all day. The dunker spot is not asking "does he finish his own drives", it is
+ * asking "does he live at the rim", and the sheet's reading of that is orb. Measured over the 341
+ * wheel fives that read pick-and-roll or pick-and-pop: height + orb never once seats a man who is
+ * strictly dominated as an inside player — shorter AND a worse finisher AND a worse rebounder —
+ * by a non-shooter left out on the arc, while every candidate carrying a rim term does it 4 to 7
+ * times (Cheaney over Juwan Howard, Ariza over David West, Perkins over Ibaka).
+ *
+ * Both men his two rulings name clear their man by a distance, so no one-point card change turns
+ * this over: Adams 83 + 84 = 167 against Jackson 74 + 33 = 107, Freedom 82 + 86 = 168 against
+ * Roberson 79 + 59 = 138.
+ */
+const dunker = (p: Player) => p.attrs.height + p.attrs.orb
+
+/**
  * Stand the unfeatured men. `swap` is the shape's reserve of extra INSIDE spots: when more men
  * cannot shoot than the set has inside spots, the set gives up its most spacer-y spot (the corner
  * first) for one of them, which is how post-up seats a second big on the dunker spot rather than
  * in the weak-side corner. A set with no reserve (five-out, which is five men behind the line by
- * definition) simply keeps its non-shooters off the corners.
+ * definition) simply keeps its non-shooters off the corners. Every set asks the SAME question of a
+ * man before handing him an inside spot — `canSpace`, can he shoot from out there — because every
+ * spot a set gives up to make room is behind the three-point line.
  */
 function stand(men: Player[], picked: Record<number, XY>, rest: Rest[], swap: XY[] = [], sortKey: (p: Player) => number = (p) => p.attrs['3pt']): XY[] {
   const idx = men.map((_, i) => i).filter((i) => !(i in picked))
@@ -357,18 +383,58 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' 
       // the pop's alone on the assumption that the ROLL's screener is always the five's only
       // non-shooting big. That is false of any five with TWO bigs: Thunder '15 set the screen with
       // Ibaka and left ADAMS outside it (recal_209, his ruling: "Pnr for 15' Thunder when Steven
-      // adams in the corner cant be the main tactic as his def will sag off him"). A five carrying
-      // two men who cannot shoot still seats one of them in a corner, because this shape holds one
-      // wing and two corners and nothing else; the sort at least sends the worse shooter to the
-      // wing. The PAIR is now the whole of the difference between the two sets, and it is a
-      // difference of WHO, never of WHERE.
+      // adams in the corner cant be the main tactic as his def will sag off him").
+      //
+      // THE SHAPE HOLDS AN INSIDE SPOT NOW (recal_212, his rulings: "You have moved Adams to the
+      // wing. Adams can either be the screener or inside the paint, since he has no 3pt and no
+      // mid", then "Enes Freedom cant be in the corner on a durant and westbrook pnr"). recal_209's
+      // receipt recorded the opposite as a limit — that this shape holds one wing and two corners
+      // and nothing else, so a five with two non-shooters must seat one of them out there and the
+      // sort can only send the worse one to the wing. That limit is gone. The set keeps ONE spot in
+      // reserve, the dunker, and gives up its most spacer-y spot for it exactly the way post-up
+      // does — same idiom, same `swap`, same DUNK_R.
+      //
+      // AN ARC SPOT IS A THREE-POINT SPOT, SO THE GATE READS THE THREE ALONE. Every spot this shape
+      // has left for the three leftovers is behind the line, a wing and two corners, and they all
+      // ask one question: must the defence close out on him out there. A man's mid-range is no
+      // answer to it, because there is no mid-range spot anywhere in this set to stand him on. So
+      // the gate is `canSpace`, the same line every other set uses, and no new threshold is cut.
+      // A gate on max(3pt, mid) was tried first and Thunder '16 refutes it in both directions:
+      // Durant sets that screen, which leaves Enes Freedom '16 (3pt 23, mid 47) a leftover, and a
+      // mid-reading gate left him in a CORNER at 3pt 23 — the exact defect this case exists to
+      // fix — while sending Andre Roberson '16 (3pt 16, mid 16) inside instead.
+      //
+      // WHICH MEANS THE GATE CANNOT PICK THE MAN, AND THE RANK HAS TO. On the three alone a five
+      // can hand this shape TWO men who may not stand on the arc against ONE inside spot: Thunder
+      // '15 does, Adams at 6 and Jackson at 37. Ranking them by the three seats the worse shooter,
+      // and that is wrong too — Roberson at 16 is a worse shooter than Freedom at 23, and it would
+      // leave Freedom in the corner again. The dunker spot is not for the worst shooter, it is for
+      // the man who can live at the rim, so the non-shooters are ranked by `dunker` — height and
+      // the offensive glass — and the deepest of them takes it. Adams over Jackson, Freedom over
+      // Roberson, both by a wide margin. Note what this costs and what it buys: the spacers are
+      // still sorted by height, shortest to the wing (his ruling: "smallest not handler guy on the
+      // wing, the other 2 corners"), but the men who cannot shoot are now sorted from the rim
+      // OUTWARD by how much they belong at it, which is a different order from recal_209's "worst
+      // shooter lowest" on any five carrying more than one of them.
+      //
+      // ONE is the whole reserve, not two, because the SCREENER rolls down that lane: a second man
+      // standing in it leaves the roll nowhere to go, which is the shape's own geometry and not a
+      // number. So when more men cannot shoot than the reserve holds, the deepest takes the dunker
+      // and the others take the arc, the next-deepest on the wing and never a corner while a
+      // shooter is standing (Thunder '16: Freedom in, Roberson the wing, Ibaka the corner at 3pt
+      // 40; Warriors '14: Bogut in, Iguodala the wing at 3pt 38).
+      //
+      // The POP takes the reserve too, and needs it more: its screener is the SHOOTING big, so a
+      // non-shooting big there is always one of the three left over rather than sometimes the man
+      // in the screen. The PAIR is still the whole of the difference between the two sets, and it
+      // is a difference of WHO, never of WHERE.
       const tall = (p: Player) => p.attrs.height
       return stand(
         men,
         { [h]: BALL, [s]: SCREEN },
         [[peri(-45, 6), 1], [CORNER_L, 2], [CORNER_R, 2]],
-        [],
-        (p) => (canSpace(p) ? tall(p) : p.attrs['3pt'] - 100),
+        [DUNK_R],
+        (p) => (canSpace(p) ? tall(p) : -100 - dunker(p)),
       )
     }
     case 'triangle':
