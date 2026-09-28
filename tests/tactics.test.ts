@@ -4,6 +4,9 @@ import { PLAYERS } from '../src/engine/pool'
 import {
   bestStyle,
   canSpace,
+  cornerFit,
+  CORNER_SHOT,
+  CORNER_EFF,
   closeout,
   dhoMan,
   elbowSkill,
@@ -190,7 +193,9 @@ describe('the pick-and-roll pair he calls', () => {
     const want =
       0.4 * (rollHandler(g(pick.handler).attrs) / rollHandler.K) +
       0.35 * (screenFit(g(pick.screener).attrs) / screenFit.K) +
-      0.25 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+      // recal_223, his ruling: "Make everything use cornerFit, card included, everywhere there is
+      // open spacer change it to corner/wing" — the rest leg is the corner/wing term, not the bare bar.
+      0.25 * (rest.reduce((t, p) => t + cornerFit(p.attrs) / cornerFit.K, 0) / rest.length)
     expect(styleFit('pnr', FIVE, undefined, { pnr: pick })).toBeCloseTo(want, 10)
   })
 
@@ -391,7 +396,10 @@ describe('five-out is a count of shooters, and a non-shooting big is a hole in i
     // post-up, and five-out is still 13.6 points clear of it. A MOVED PINNED READ, reported.
     expect(CELTICS_25.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
     expect(CELTICS_25.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(0)
-    expect(styleFit('fiveout', CELTICS_25)).toBeCloseTo(73.2, 1)
+    // recal_223 RE-POINTS THIS NUMBER: the two GRADED legs (the mean and the worst) are corner/wing
+    // reads now, so the fit moves 73.2 -> 70.8. The +10-a-shooter COUNT is untouched and still reads
+    // the raw bar — a gate is not a grade — which is why the four shooters above are still four.
+    expect(styleFit('fiveout', CELTICS_25)).toBeCloseTo(70.8, 1)
     expect(bestStyle(CELTICS_25).style).not.toBe('postup')
     expect(bestStyle(CELTICS_25).style).toBe('pickpop')
   })
@@ -403,7 +411,9 @@ describe('five-out is a count of shooters, and a non-shooting big is a hole in i
     const rockets = cut("Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18")
     expect(rockets.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
     expect(rockets.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(1) // Capela
-    expect(styleFit('fiveout', rockets)).toBeCloseTo(61.2, 1)
+    // recal_223 RE-POINTS THIS NUMBER: 61.2 -> 66.1 on the corner/wing read of the two graded legs
+    // (Houston's four shooters are efficient), and the five is STILL not read five-out.
+    expect(styleFit('fiveout', rockets)).toBeCloseTo(66.1, 1)
     expect(styleFit('fiveout', rockets)).toBeLessThan(styleFit('pnr', rockets))
     expect(bestStyle(rockets).style).toBe('pnr')
   })
@@ -434,7 +444,9 @@ describe('post-up still fits a true post hub, and only one', () => {
     // THAT IS A MOVED PINNED READ and it is reported: what keeps Boston off the post-up now is the
     // pick-and-pop at 75.1, not a penalty on the hub.
     expect(g("Kristaps Porziņģis '25").attrs['3pt']).toBeGreaterThanOrEqual(60)
-    expect(styleFit('postup', CELTICS_25)).toBeCloseTo(74.4, 1)
+    // recal_223 RE-POINTS THIS NUMBER: 74.4 -> 72.6, because the four men off the block are graded
+    // by cornerFit and Boston's spacers shoot better than they finish.
+    expect(styleFit('postup', CELTICS_25)).toBeCloseTo(72.6, 1)
     expect(bestStyle(CELTICS_25).style).not.toBe('postup')
     // O'Neal, who shoots 2, is the man the term is FOR and reads 97.8 of a possible 100
     expect(postFit(g("Shaquille O'Neal '00").attrs) / postFit.K).toBeGreaterThan(97)
@@ -463,7 +475,8 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
     // subtraction and `pinOffBall` with every other minus in the file (his ruling 1).
     const b = bestStyle(JAZZ_97)
     expect(featured('pnr', JAZZ_97).map((p) => p.name)).toEqual(["John Stockton '97", "Karl Malone '97"])
-    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.35, 1)
+    // recal_223 RE-POINTS THIS NUMBER: 76.35 -> 78.75, the three rest men graded by cornerFit.
+    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(78.75, 1)
     expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
     expect(b.style).toBe('pindown')
   })
@@ -552,7 +565,8 @@ describe('the post-up target he calls', () => {
     const rest = LAKERS_00.filter((p) => p.name !== auto.hub!.name)
     // recal_222: the hub term is the NORMALISED postFit with its own `.K` divided straight back out,
     // which is the invariant that kept the rescale from moving a read anywhere on the board.
-    const want = 0.7 * (postFit(auto.hub!.attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    // recal_223: the four men off the block are the corner/wing term (his ruling), not bare 3pt.
+    const want = 0.7 * (postFit(auto.hub!.attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + cornerFit(p.attrs) / cornerFit.K, 0) / rest.length)
     expect(styleFit('postup', LAKERS_00)).toBeCloseTo(want, 10)
     expect(styleFit('postup', LAKERS_00, undefined, post(null))).toBeCloseTo(want, 10)
     // ...and a plan from before the field existed prices identically
@@ -567,7 +581,8 @@ describe('the post-up target he calls', () => {
     expect(postMan(LAKERS_00, pick).chosen).toBe(true)
     expect(featured('postup', LAKERS_00, post(pick))[0].name).toBe(pick)
     const rest = LAKERS_00.filter((p) => p.name !== pick)
-    const want = 0.7 * Math.max(0, postFit(g(pick).attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    // recal_223: the four men off the block are the corner/wing term (his ruling), not bare 3pt.
+    const want = 0.7 * Math.max(0, postFit(g(pick).attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + cornerFit(p.attrs) / cornerFit.K, 0) / rest.length)
     expect(styleFit('postup', LAKERS_00, undefined, post(pick))).toBeCloseTo(want, 10)
   })
 
@@ -959,11 +974,20 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // that WINS each five is now the pin-down (73.8 to iso's 70.8; 67.5 to 65.8), because the
     // pin-down spot lost `pinCatch`'s rim subtraction and `pinOffBall` with every other minus in the
     // file (his ruling 1) and both men are huge mid-range scorers. MOVED PINNED READS, reported.
+    // recal_223 RE-POINTS THIS ROW AND IT MOVES TOWARD THE SIDE THIS TEST IS NAMED FOR. His ruling
+    // ("Make everything use cornerFit, card included, everywhere there is open spacer change it to
+    // corner/wing") puts iso's ISO_W_REST leg on the corner/wing term, and the four men cleared out
+    // of Dantley's and King's way grade better there than the raw bar credited them for. Both
+    // isolations rise; KING'S KNICKS NOW READ ISO OUTRIGHT (67.65 to the pin-down's 67.51, a flip of
+    // 0.14), and DANTLEY'S JAZZ STILL READ PIN-DOWN — iso 70.80 -> 72.34 against 73.78 — which is
+    // recal_222's own reported state for that five and is left as it lands, not tuned into line.
     for (const five of [JAZZ_81, KNICKS_84]) {
       expect(bestStyle(five).style).not.toBe('helio')
       expect(styleFit('iso', five)).toBeGreaterThan(styleFit('helio', five))
-      expect(bestStyle(five).style).toBe('pindown')
     }
+    expect(bestStyle(KNICKS_84).style).toBe('iso')
+    expect(bestStyle(JAZZ_81).style).toBe('pindown')
+    expect(styleFit('iso', JAZZ_81)).toBeCloseTo(72.34, 1)
     expect(featured('iso', JAZZ_81)[0].name).toBe(DANTLEY)
     expect(featured('iso', KNICKS_84)[0].name).toBe(KING)
   })
@@ -1541,7 +1565,12 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
 
 describe('the pin-down is the man WITHOUT the ball, and he is not an iso man', () => {
   it('reads the shooters the shape is named for', () => {
-    expect(bestStyle(PACERS_96).style).toBe('pindown')
+    // recal_223 RE-POINTS THIS ONE READ AND REPORTS IT: the Pacers '96 leave the pin-down for the
+    // POST-UP (74.6 -> 75.6), because the post-up's four spacers are graded by cornerFit now and
+    // Indiana's four men around Rik Smits shoot and finish well enough to carry it past Miller's
+    // pin-down, which is unchanged. The MAN the pin-down names is still Miller, which is the part of
+    // this test that is about the pin-down at all.
+    expect(bestStyle(PACERS_96).style).toBe('postup')
     expect(featured('pindown', PACERS_96)[0].name).toBe("Reggie Miller '96")
     expect(bestStyle(WARRIORS_16).style).toBe('pindown')
     // recal_222: the Warriors '16 pin-down is run for CURRY '16 (94.8) rather than Thompson (85.9),
@@ -1825,7 +1854,10 @@ describe('the three are signature systems and they break nothing that was ruled 
     expect(styleFit('triangle', BULLS_96) - styleFit('motion', BULLS_96)).toBeGreaterThan(1.75)
     expect(bestStyle(BULLS_96).style).toBe('triangle')
     expect(bestStyle(CELTICS_25x).style).toBe('motion')
-    expect(styleFit('motion', CELTICS_25x) - styleFit('fiveout', CELTICS_25x)).toBeCloseTo(2.9, 1)
+    // recal_223 RE-POINTS THIS MARGIN: 2.9 -> 5.3. Five-out's two graded legs became corner/wing
+    // reads and motion's MOT_SPACE leg did NOT (it is the one weighted `3pt` average left in
+    // styleFit, and round 223 reports it rather than changing it), so the gap widens on this floor.
+    expect(styleFit('motion', CELTICS_25x) - styleFit('fiveout', CELTICS_25x)).toBeCloseTo(5.3, 1)
   })
 
   it('no fit saturates for its own featured man: every one of the three can be moved by him', () => {
@@ -2045,7 +2077,8 @@ describe('the handler is nominated on a ramp, and every five has one', () => {
     expect(kd.rim).toBeGreaterThan(kd['3pt'])
     expect(popHandler(kd)).toBeGreaterThan(rollHandler(kd))
     // ...and the fit it feeds is essentially where recal_120 left it on the five that named it
-    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.35, 1)
+    // recal_223 RE-POINTS THIS NUMBER: 76.35 -> 78.75, the three rest men graded by cornerFit.
+    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(78.75, 1)
     expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
   })
 })
@@ -2090,9 +2123,13 @@ describe('recal_222: no spot term subtracts, and every one of them reads 100 on 
     ['hubScore', hubScore],
     ['pinScore', pinScore],
     ['hornsHandler', hornsHandler],
+    /* recal_223, his ruling: "Make everything use cornerFit, card included, everywhere there is open
+       spacer change it to corner/wing". The corner/wing is a WRAPPED TERM now and not the bare bar,
+       so it joins the other eleven here and the page's one exception (recal_222's note 4a) is closed. */
+    ['cornerFit', cornerFit],
   ]
 
-  it('all eleven wrapped spot terms read 100.000000 at their own best height', () => {
+  it('all TWELVE wrapped spot terms read 100.000000 at their own best height', () => {
     for (const [name, f] of SPOTS) {
       let best = 0
       for (let h = 60; h <= 95; h++) best = Math.max(best, f(max99(h)))
@@ -2100,11 +2137,23 @@ describe('recal_222: no spot term subtracts, and every one of them reads 100 on 
     }
   })
 
-  it('...and the twelfth spot, the corner/wing, reads 99.0 because it IS the 3pt bar', () => {
-    // the only spot on the grade page whose value is an ATTRIBUTE rather than a composite. Bars cap
-    // at 99, so this one reads 99.0 and he has left it there — the exception is recorded, not tuned.
-    expect(max99(78)['3pt']).toBe(99)
-    expect(SHOOT_3PT_HI).toBeLessThan(99)
+  it('...INCLUDING the twelfth, the corner/wing, which is no longer the bare 3pt bar', () => {
+    // recal_222 had to record this spot at 99.0 because its value was an ATTRIBUTE and bars cap at 99.
+    // recal_223 makes it the engine's own `cornerFit` — CORNER_SHOT .75 x 3pt + CORNER_EFF .25 x
+    // efficiency, wrapped like the other eleven — so all twelve reach 100 and the card row, five-out,
+    // the post-up, iso, the pick-and-roll and the pick-and-pop all grade a spacer by the same number.
+    expect(CORNER_SHOT + CORNER_EFF).toBeCloseTo(1, 9)
+    expect(cornerFit(max99(78))).toBeCloseTo(100, 6)
+    expect(cornerFit.K).toBeCloseTo(100 / 99, 12)
+    // THE SHOT STAYS DOMINANT: a point of three is worth three times a point of efficiency here.
+    const x = g("Stephen Curry '16").attrs
+    expect(cornerFit({ ...x, '3pt': 50 }) - cornerFit({ ...x, '3pt': 49 })).toBeCloseTo(CORNER_SHOT * cornerFit.K, 9)
+    expect(cornerFit({ ...x, efficiency: 50 }) - cornerFit({ ...x, efficiency: 49 })).toBeCloseTo(CORNER_EFF * cornerFit.K, 9)
+    // ...AND A GATE IS NOT A GRADE: the thresholds still read the raw bar, so a 3pt 50 / eff 90 man
+    // reads exactly 60 on cornerFit and is STILL not one of five-out's counted shooters.
+    const fake = { ...x, '3pt': 50, efficiency: 90 }
+    expect(cornerFit(fake) / cornerFit.K).toBeCloseTo(SHOOT_3PT_HI, 9)
+    expect(fake['3pt'] >= SHOOT_3PT_HI).toBe(false)
   })
 
   it('the rescale moved no read: `.K` is divided straight back out at every use site', () => {
@@ -2143,6 +2192,7 @@ describe('recal_222: no spot term subtracts, and every one of them reads 100 on 
     expect(HORN_WEAK + HORN_STRONG).toBeCloseTo(1, 9) // elbow: weaker .75 / stronger .25, times size
     expect(DHO_PASS + DHO_SHOT).toBeCloseTo(1, 9) // hub: playvol .62 / shot .38, times size
     expect(PIN_JMP + PIN_EFF).toBeCloseTo(1, 9) // pin-down: jumper .75 / efficiency .25
+    expect(CORNER_SHOT + CORNER_EFF).toBeCloseTo(1, 9) // recal_223 corner/wing: 3pt .75 / efficiency .25
     // ...and the HORNS HANDLER is `playvol` at FULL weight, which is the 0.72 he caught
     const jok = g("Nikola Jokić '25").attrs
     expect(hornsHandler(jok) / hornsHandler.K).toBeCloseTo(jok.playvol, 9)

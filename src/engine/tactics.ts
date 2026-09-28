@@ -1385,6 +1385,33 @@ export function roleMen(t: Tactics, five: Player[]): { scorer: string | null; pl
 export const SHOOT_3PT = 40
 export const SHOOT_3PT_HI = 60
 export const canSpace = (p: Player) => p.attrs['3pt'] >= SHOOT_3PT
+
+/**
+ * THE CORNER / WING — ONE FORMULA, EVERYWHERE (recal_223, his ruling: "Make everything use
+ * cornerFit, card included, everywhere there is open spacer change it to corner/wing").
+ *
+ * The same floor position — a man standing off the ball behind the arc — was graded by a different
+ * expression in every set that has one. Five-out read bare `3pt` twice, the post-up's four spacers
+ * read bare `3pt`, iso's four read bare `3pt`, the pick-and-roll's and the pick-and-pop's three rest
+ * men read bare `3pt`, and the player card's "Corner / wing" row read the `3pt` BAR itself. Six
+ * graded legs and one card row, one position, seven expressions. This is that one expression.
+ *
+ * WHY EFFICIENCY IS A QUARTER OF IT. The bar says how well he shoots the shot; it does not say
+ * whether the shot goes in when he takes it in a game. A man at 3pt 70 / efficiency 45 and a man at
+ * 3pt 70 / efficiency 90 are not the same spacer, and every other spot in this file already reads
+ * the second column (the roller .10, the popper .05, the iso .30, the pin-down .25). 0.75/0.25 keeps
+ * the SHOT dominant — the corner is a shooting spot and must stay one — while making the defence's
+ * actual question, "does he make me pay", a term rather than nothing. The weights sum to 1.00 and
+ * the term is wrapped in `toHundred` like the other eleven, so the spot reads 100 on a 99-across
+ * card: recal_223 closes the one exception recal_222 recorded at 99.0.
+ *
+ * A GATE IS NOT A GRADE. `canSpace` above, five-out's SHOOT_3PT_HI shooter COUNT and `bestStyle`'s
+ * `shy` count are thresholds, not weights, and they stay on the raw bar. See the comment beside the
+ * count in `styleFit`.
+ */
+export const CORNER_SHOT = 0.75
+export const CORNER_EFF = 0.25
+const cornerFitRaw = (x: Attrs) => clamp(CORNER_SHOT * x['3pt'] + CORNER_EFF * x.efficiency, 0, 99)
 /** recal_222, HIS RULING 1 (the reset): the five-out fit no longer SUBTRACTS 25 a man for a big who
  *  cannot shoot, so `shyBig` — height >= 81 && 3pt < SHOOT_3PT — has no reader left and is deleted.
  *  What keeps the Rockets '18 off five-out now is the two positive terms they do not earn (61.2)
@@ -2288,8 +2315,19 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // carries it, the mean and the floor shade it, and every non-shooting big is a 25-point hole
       // in the middle of the floor. Boston '25 reads 73 (four shooters, no shy big); Houston '18,
       // four shooters and Capela, reads 36.
+      //
+      // recal_223, his ruling: "Make everything use cornerFit, card included, everywhere there is
+      // open spacer change it to corner/wing". THE TWO GRADED LEGS — the mean and the floor — are
+      // corner/wing reads now, because a five-out seat IS a corner/wing seat and there is nothing
+      // else on this floor. THE +10 COUNT STAYS ON THE RAW BAR, AND THAT IS DELIBERATE: A GATE IS
+      // NOT A GRADE. The count asks one yes/no question — must the defence come out to him at all —
+      // and `cornerFit` folds in efficiency, so a man at 3pt 50 / efficiency 90 reads exactly 60 and
+      // would be counted a five-out shooter he is not. Nobody should "finish the job" here: every
+      // THRESHOLD in this file (this count, `canSpace`, `bestStyle`'s `shy`) stays on `3pt`, and
+      // every WEIGHT moves to `cornerFit`.
       const shooters = a.filter((x) => x['3pt'] >= SHOOT_3PT_HI).length
-      return 0.3 * avg((x) => x['3pt']) + 0.2 * Math.min(...a.map((x) => x['3pt'])) + 10 * shooters
+      const corner = a.map((x) => cornerFit(x) / cornerFit.K)
+      return 0.3 * (corner.reduce((t, v) => t + v, 0) / corner.length) + 0.2 * Math.min(...corner) + 10 * shooters
     }
     case 'pnr': {
       // his two men when he named them, the engine's own pair when he did not — the same three
@@ -2304,7 +2342,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       const handler = h ? (rollHandler(h.attrs) / rollHandler.K) * (chosen ? 1 : handlerRead(h.attrs)) : 0
       const dive = d ? screenFit(d.attrs) / screenFit.K : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
-      return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => p.attrs['3pt'])
+      // recal_223: the three rest men are the corner/wing read, not the bare bar (see cornerFit).
+      return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => cornerFit(p.attrs) / cornerFit.K)
     }
     case 'motion': {
       // THE PASS, NOT THE DRIBBLE (recal_211, his ruling: "yes do the motion round"). The pass chain
@@ -2340,7 +2379,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // which is the deviation tax law applied to the second half of the call.
       const { hub } = postMan(five, call?.post)
       const post = hub ? Math.max(0, postFit(hub.attrs) / postFit.K) : 0
-      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => p.attrs['3pt']) * 0.3
+      // recal_223: the four men off the block are corner/wing reads, not bare 3pt (see cornerFit).
+      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => cornerFit(p.attrs) / cornerFit.K) * 0.3
     }
     case 'pickpop': {
       // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
@@ -2351,7 +2391,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       const { handler: ph, screener: pd, chosen: pc } = popPair(five, call?.pnr)
       const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
       const phand = ph ? (popHandler(ph.attrs) / popHandler.K) * (pc ? 1 : handlerRead(ph.attrs)) : 0
-      return 0.4 * phand + 0.35 * (pd ? popFit(pd.attrs) / popFit.K : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
+      // recal_223: the three rest men are the corner/wing read, the same term the roll leg reads.
+      return 0.4 * phand + 0.35 * (pd ? popFit(pd.attrs) / popFit.K : 0) + 0.25 * mean(prest, (p) => cornerFit(p.attrs) / cornerFit.K)
     }
     case 'triangle': {
       const post = postOption(five)
@@ -2399,11 +2440,13 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // driving lane, a mid-post iso pays nothing. The block above carries the whole derivation.
       const { scorer } = isoMan(five, call?.iso)
       const rest = five.filter((p) => p.name !== scorer?.name)
+      // recal_223: ISO_W_REST is a WEIGHT and reads cornerFit; `holes` is a GATE and stays on the
+      // raw bar through `canSpace` — "can he stand there at all" is not "how good is he there".
       const holes = rest.filter((p) => !canSpace(p)).length
       return clamp(
         ISO_BASE +
           ISO_W_MAN * (scorer ? isoScore(scorer.attrs) / isoScore.K : 0) +
-          ISO_W_REST * mean(rest, (p) => p.attrs['3pt']) -
+          ISO_W_REST * mean(rest, (p) => cornerFit(p.attrs) / cornerFit.K) -
           ISO_HOLE * (scorer ? isoRoom(scorer.attrs) : 1) * holes,
         0,
         100,
@@ -2821,3 +2864,4 @@ export const elbowSkill = toHundred(elbowSkillRaw)
 export const hubScore = toHundred(hubScoreRaw)
 export const pinScore = toHundred(pinScoreRaw)
 export const hornsHandler = toHundred(hornsHandlerRaw)
+export const cornerFit = toHundred(cornerFitRaw)

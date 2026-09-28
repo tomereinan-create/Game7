@@ -1,5 +1,6 @@
 import { PLAYERS } from '../engine/pool'
 import {
+  cornerFit,
   elbowSkill,
   heliEngineScore,
   hornsHandler,
@@ -44,7 +45,13 @@ export const SPOTS: Spot[] = [
   { key: 'pnp', name: 'PnP handler', f: popHandler },
   { key: 'roll', name: 'Roller', f: screenFit },
   { key: 'pop', name: 'Popper', f: popFit },
-  { key: 'wing', name: 'Corner / wing', f: (x) => x['3pt'] },
+  /* recal_223, his ruling: "Make everything use cornerFit, card included, everywhere there is open
+     spacer change it to corner/wing". This row read the 3pt BAR itself — the one spot on the page
+     whose value was an attribute and not a term, which is why recal_222 had to record it as the one
+     spot that tops out at 99 instead of 100. It is the engine's own corner/wing term now, the same
+     one five-out, the post-up, iso, the pick-and-roll and the pick-and-pop all grade a spacer by, so
+     the card and the floor cannot disagree about a man standing in the corner. */
+  { key: 'wing', name: 'Corner / wing', f: cornerFit },
   { key: 'post', name: 'Post hub', f: postFit },
   { key: 'helio', name: 'Helio engine', f: heliEngineScore },
   { key: 'iso', name: 'Iso man', f: isoScore },
