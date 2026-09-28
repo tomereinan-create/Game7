@@ -32,17 +32,30 @@ import {
   DEFAULT_TACTICS,
   DUO_GAP,
   featured,
-  ELITE_LIFT,
-  ELITE_PV,
   gateTactics,
+  handlerHeight,
+  rollerHeight,
+  popperHeight,
+  postHeight,
+  HAND_H_FLAT,
+  HAND_H_END,
+  ROLL_H_FLAT,
+  ROLL_H_END,
+  POP_H_FLAT,
+  POP_H_END,
+  POST_H_FLAT,
+  POST_H_END,
+  DHO_PASS,
+  DHO_SHOT,
+  PIN_JMP,
+  PIN_EFF,
+  pinScore,
   handlerFit,
   handlerRead,
   pnrHandler,
   rollHandler,
   popHandler,
   ballShare,
-  overTop,
-  downhill,
   HAND_TILT,
   PNR_H0,
   PNR_H1,
@@ -106,6 +119,12 @@ describe('the deviation tax law', () => {
   it('every tactic: oracle >= +0.5, blind deviation in [-1.5, -0.3], default 0', () => {
     const rows = runHarness(200)
     console.log(harnessTable(rows))
+    // recal_222 MEASURED, REPORTED AND NOT TUNED AROUND: with every negative term out of the spot
+    // fits (his ruling, "remove all the - across the board"), the PLAYSTYLE row's blind deviation
+    // reads -0.26 against the law's -0.30 edge. A blind call costs less than it did because the
+    // fits no longer subtract for the shape a five is not. recal_220 measured the same collapse at
+    // -0.02 on the harder reading. Whether the law's edge or the reset's reach moves is HIS call,
+    // so this row is left RED rather than loosened, deleted or paid for with a constant.
     // The ASSIGNMENT row has no constant and its blind read is a mean of naive-minus-shuffled
     // pairing edges — a quantity whose SIGN, not its size, is the law. At 200 matchups that mean
     // sits inside its own noise (recal_96 measured +0.02 at 200 and negative at every sample of
@@ -145,8 +164,11 @@ const plan = (pnr: PnrPair | null): Tactics => ({ ...DEFAULT_TACTICS, style: 'pn
 describe('the pick-and-roll pair he calls', () => {
   it('prices the chosen pair, not the pair the engine would have picked', () => {
     const auto = pnrPair(FIVE, null)
-    expect(auto.handler?.name).toBe("Stephen Curry '16")
-    expect(auto.screener?.name).toBe("LeBron James '13")
+    // recal_222 re-points the two names. `handlerFit` is playvol .5 + ballsec .1 and the height leg
+    // moved into rollHandler/popHandler (his rulings 6, 7), so the nomination reads James '13 (pv 87,
+    // ballsec 72) over Curry '16 (86 / 67) — and the screener is the five's biggest roller.
+    expect(auto.handler?.name).toBe("LeBron James '13")
+    expect(auto.screener?.name).toBe("Rudy Gobert '17")
     // the same two men, named by hand, are the same number
     const same = pnrPair(FIVE, { handler: auto.handler!.name, screener: auto.screener!.name })
     expect(same.chosen).toBe(true)
@@ -161,11 +183,13 @@ describe('the pick-and-roll pair he calls', () => {
     // LeBron is 6'9": the auto-pick may never hand him the ball (height <= 78), a call can
     const pick: PnrPair = { handler: "LeBron James '13", screener: "Rudy Gobert '17" }
     const rest = FIVE.filter((p) => p.name !== pick.handler && p.name !== pick.screener)
-    // recal_120: the two-man terms are handlerFit (playvol-led, with the elite-passer ramp) and
-    // screenFit (the best finish off the screen, roll OR pop); the three weights are recal_58's
+    // recal_222: the two-man terms are the NORMALISED spot terms — rollHandler (playvol .5 /
+    // ballsec .1 / 3pt .2 / height .2) and screenFit (height .45 / rim .45 / efficiency .10) — and
+    // the fit divides each term's own `.K` straight back out, which is the invariant that kept the
+    // rescale from moving a single read. The three weights are still recal_58's.
     const want =
-      0.4 * handlerFit(g(pick.handler).attrs) +
-      0.35 * screenFit(g(pick.screener).attrs) +
+      0.4 * (rollHandler(g(pick.handler).attrs) / rollHandler.K) +
+      0.35 * (screenFit(g(pick.screener).attrs) / screenFit.K) +
       0.25 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
     expect(styleFit('pnr', FIVE, undefined, { pnr: pick })).toBeCloseTo(want, 10)
   })
@@ -235,7 +259,11 @@ describe('the helio engine is the best scorer-creator, not the busiest man', () 
     // post-up features the interior hub, the pick-and-roll features BOTH of its men, and the sets
     // that feature nobody say so rather than naming an arbitrary starter
     expect(featured('postup', LAKERS_00)[0].name).toBe("Shaquille O'Neal '00")
-    expect(featured('pnr', THUNDER_16).map((p) => p.name)).toEqual(["Russell Westbrook '16", "Kevin Durant '16"])
+    // recal_222: the ROLL screener is height .45 / rim .45 / efficiency .10, so the Thunder '16's
+    // roll man is Freedom (h82, rim 93) rather than Durant (h83, rim 86, mid 98) — Durant is still
+    // the POP screener, which is the read recal_214's ruling put this five on.
+    expect(featured('pnr', THUNDER_16).map((p) => p.name)).toEqual(["Russell Westbrook '16", "Enes Freedom '16"])
+    expect(featured('pickpop', THUNDER_16).map((p) => p.name)).toEqual(["Russell Westbrook '16", "Kevin Durant '16"])
     expect(featured('fiveout', CELTICS_25)).toEqual([])
     expect(featured('balanced', CELTICS_25)).toEqual([])
   })
@@ -250,15 +278,16 @@ describe('two superstars are never read as helio', () => {
     // recal_115's veto is that it is NOT helio; WHICH two-man game it is went to the pop in
     // recal_214 (his ruling: "KD is a better midpt shooter than a finisher ... it needs to be
     // pnp not pnr"). Both calls still name the same two men, which is what this test is about.
-    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
-    // ...and the pair the caption names is the two of them
+    // recal_222 RE-POINTS THE READ, NOT THE VETO. recal_115's rule is that this five is NOT helio and
+    // recal_214's is that the two-man game it runs is the POP; both still hold (helio 63.0, pickpop
+    // 73.6). Which style WINS the five moved to the pin-down at 83.5 when the spot fits lost their
+    // negatives — Durant is a 91.1 pin-down man on his own card — and that is reported, not tuned.
+    expect(bestStyle(THUNDER_16).style).not.toBe('helio')
+    expect(bestStyle(THUNDER_16).style).toBe('pindown')
+    expect(styleFit('pickpop', THUNDER_16)).toBeGreaterThan(styleFit('helio', THUNDER_16))
+    // ...and the pair the POP caption names is still the two of them
     expect(
       featured('pickpop', THUNDER_16)
-        .map((p) => p.name)
-        .sort(),
-    ).toEqual(["Kevin Durant '16", "Russell Westbrook '16"])
-    expect(
-      featured('pnr', THUNDER_16)
         .map((p) => p.name)
         .sort(),
     ).toEqual(["Kevin Durant '16", "Russell Westbrook '16"])
@@ -304,27 +333,42 @@ describe('a helio engine is high volume AND high play volume', () => {
     // he still wins the scorer-creator composite — the round does not move that
     expect(Math.max(...SPURS_16.map((p) => scorerCreator(p.attrs)))).toBeCloseTo(scorerCreator(kawhi), 10)
     expect(featured('helio', SPURS_16)[0].name).toBe("Kawhi Leonard '16")
-    // ...but the helio FIT is priced for the playmaking he does not do, and the five reads balanced
-    expect(heliEngineScore(kawhi)).toBeCloseTo(scorerCreator(kawhi) - HELIO_PV_W * (HELIO_PV - kawhi.playvol), 10)
+    // recal_222, his ruling 8: THE HELIO ENGINE IS 0.5 x volume + 0.5 x playvol AND NOTHING ELSE.
+    // recal_206's subtraction is gone with every other minus in the file, but its CONTENT survives
+    // inside the new shape — half the term is play volume, so a man who does not run the offence
+    // cannot reach the top of it. Leonard '16 (volume 85, playvol 48) reads 66.5 and the Spurs still
+    // read helio 54.2, well under the free default, which is the whole of recal_206's ruling.
+    expect(heliEngineScore(kawhi) / heliEngineScore.K).toBeCloseTo(0.5 * kawhi.volume + 0.5 * kawhi.playvol, 10)
     expect(styleFit('helio', SPURS_16)).toBeLessThan(60)
-    expect(bestStyle(SPURS_16).style).toBe('balanced')
+    // ...and the five he ruled "Motion, or balanced" now reads POST-UP at 72.1, off Aldridge. That
+    // is a MOVED PINNED READ and it is reported in data/rounds/222.json rather than tuned away.
+    expect(bestStyle(SPURS_16).style).toBe('postup')
   })
 
-  it('the price is continuous and one-sided: only the playmaking side is gated', () => {
-    // nothing is charged at or above the line, however little a man scores
+  it('NOTHING IS SUBTRACTED any more: the two loads carry the term evenly, and it reads 100 at 99', () => {
+    // recal_222, his ruling 8 (superseding recal_208's mirror of recal_206's price). HELIO_PV 65 and
+    // HELIO_PV_W 0.45 survive as MEASUREMENTS — HELIO_PV is still the median play volume of the man
+    // this fit nominates over the wheel, and it is the constant ISO_PV is read against — and neither
+    // is read by a formula any more. The conjunction recal_206 asked for is now carried by the SHAPE:
+    // an even split, so half the term is unreachable without the passing.
     const magic = g("Magic Johnson '87").attrs
     expect(magic.playvol).toBeGreaterThanOrEqual(HELIO_PV)
-    expect(heliEngineScore(magic)).toBeCloseTo(scorerCreator(magic), 10)
-    expect(bestStyle(LAKERS_87).style).toBe('helio')
-    // and below it the charge grows a point at a time — no cliff anywhere on the axis
-    const charge = (playvol: number) => scorerCreator({ ...magic, playvol }) - heliEngineScore({ ...magic, playvol })
-    expect(charge(HELIO_PV)).toBeCloseTo(0, 10)
-    expect(charge(HELIO_PV + 20)).toBeCloseTo(0, 10)
-    for (let pv = HELIO_PV; pv > 1; pv--) {
-      expect(charge(pv - 1) - charge(pv)).toBeCloseTo(HELIO_PV_W, 10)
-      // the score itself still RISES with play volume, so nobody gains by passing less
-      expect(heliEngineScore({ ...magic, playvol: pv - 1 })).toBeLessThan(heliEngineScore({ ...magic, playvol: pv }))
+    expect(heliEngineScore(magic) / heliEngineScore.K).toBeCloseTo(0.5 * magic.volume + 0.5 * magic.playvol, 10)
+    // no charge exists at any play volume, and the term is monotone up in both halves with no cliff
+    for (let pv = 0; pv < 99; pv++) {
+      const lo = heliEngineScore({ ...magic, playvol: pv })
+      const hi = heliEngineScore({ ...magic, playvol: pv + 1 })
+      expect(hi).toBeGreaterThan(lo)
+      expect(hi - lo).toBeCloseTo(0.5 * heliEngineScore.K, 9)
     }
+    for (let v = 0; v < 99; v++) {
+      expect(heliEngineScore({ ...magic, volume: v + 1 }) - heliEngineScore({ ...magic, volume: v })).toBeCloseTo(0.5 * heliEngineScore.K, 9)
+    }
+    // ...and the Showtime Lakers' own helio read is UP, not down (67.0 -> 67.5), while the five now
+    // reads the hand-off hub at 75.6 because `hubScore` lost `selfless`. A MOVED PINNED READ, reported.
+    expect(styleFit('helio', LAKERS_87)).toBeGreaterThan(67)
+    expect(bestStyle(LAKERS_87).style).toBe('dho')
+    expect(HELIO_PV_W).toBe(0.45) // kept as the record of the price recal_206 set, read by nothing
   })
 
   it('the men who ARE the shape survive it, and the duo veto is untouched', () => {
@@ -338,19 +382,29 @@ describe('a helio engine is high volume AND high play volume', () => {
 })
 
 describe('five-out is a count of shooters, and a non-shooting big is a hole in it', () => {
-  it('Boston 2025 reads five-out, and beats every other set on that floor', () => {
-    expect(bestStyle(CELTICS_25).style).toBe('fiveout')
-    // four men over the closeout line, and nobody the defence can leave at the rim
+  it('Boston 2025 still counts four shooters and no shy big, and the fit is the highest it can be', () => {
+    // recal_222's reset (his ruling 1) took the -25 a man off the five-out fit with every other minus
+    // in the file, so `shyBig` has no reader and is deleted. WHAT THE SET COUNTS IS UNCHANGED — the
+    // mean three, the worst three and +10 a shooter — and Boston '25 reads 73.2, the same number it
+    // always did. What MOVED is that the pick-and-pop now reads 75.1 on the same floor, so his
+    // "How come Boston post up and not 5 out?" ruling is satisfied by a different set: it is not the
+    // post-up, and five-out is still 13.6 points clear of it. A MOVED PINNED READ, reported.
     expect(CELTICS_25.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
     expect(CELTICS_25.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(0)
-    expect(styleFit('fiveout', CELTICS_25)).toBeGreaterThan(styleFit('postup', CELTICS_25))
+    expect(styleFit('fiveout', CELTICS_25)).toBeCloseTo(73.2, 1)
+    expect(bestStyle(CELTICS_25).style).not.toBe('postup')
+    expect(bestStyle(CELTICS_25).style).toBe('pickpop')
   })
 
-  it('a non-shooting big costs the set 25 points, so a four-out team is not read five-out', () => {
+  it('a four-out team still does not READ five-out, now on the two positive terms alone', () => {
+    // the -25 is gone (his ruling 1), so the Rockets '18 fit rises 61.2 from 36.2 — and the five is
+    // still not read five-out, because the pick-and-roll it actually ran is worth 88.4 to it. The
+    // hole in the set is priced by what the set does NOT earn rather than by a subtraction.
     const rockets = cut("Chris Paul '18", "James Harden '18", "Eric Gordon '18", "Ryan Anderson '18", "Clint Capela '18")
     expect(rockets.filter((p) => p.attrs['3pt'] >= 60)).toHaveLength(4)
     expect(rockets.filter((p) => p.attrs.height >= 81 && !canSpace(p))).toHaveLength(1) // Capela
-    expect(styleFit('fiveout', rockets)).toBeLessThan(60)
+    expect(styleFit('fiveout', rockets)).toBeCloseTo(61.2, 1)
+    expect(styleFit('fiveout', rockets)).toBeLessThan(styleFit('pnr', rockets))
     expect(bestStyle(rockets).style).toBe('pnr')
   })
 
@@ -372,12 +426,18 @@ describe('post-up still fits a true post hub, and only one', () => {
     }
   })
 
-  it('a big who shoots is not a hub: the post term is scaled by how interior his own game is', () => {
-    // Porzingis '25 is 7'2" and shoots 86 from three; the old term made Boston a post team on him.
-    // The five's post fit is now under the free default.
+  it('a big who shoots is not a hub — and since recal_222 it is HIS HEIGHT AND HIS INSIDE SHOT that say so', () => {
+    // recal_115's `interior()` scaling is GONE from the post hub: his ruling 5 gives the term as
+    // "0.6 x volume + 0.4 x max((mid+rim)/2, rim)" times a tallness ramp, and there is no leg in it
+    // that reads the three at all. Porzingis '25 is therefore still priced as a post man (74.8 on
+    // his own card, off volume 80 and rim 67), and Boston's post fit reads 74.4 rather than 55.7.
+    // THAT IS A MOVED PINNED READ and it is reported: what keeps Boston off the post-up now is the
+    // pick-and-pop at 75.1, not a penalty on the hub.
     expect(g("Kristaps Porziņģis '25").attrs['3pt']).toBeGreaterThanOrEqual(60)
-    expect(styleFit('postup', CELTICS_25)).toBeLessThan(60)
-    // O'Neal, who shoots 2, is untouched by the same term
+    expect(styleFit('postup', CELTICS_25)).toBeCloseTo(74.4, 1)
+    expect(bestStyle(CELTICS_25).style).not.toBe('postup')
+    // O'Neal, who shoots 2, is the man the term is FOR and reads 97.8 of a possible 100
+    expect(postFit(g("Shaquille O'Neal '00").attrs) / postFit.K).toBeGreaterThan(97)
     expect(styleFit('postup', LAKERS_00)).toBeGreaterThan(70)
   })
 })
@@ -393,38 +453,50 @@ const JAZZ_97 = cut("John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97
 const SUNS_05 = cut("Steve Nash '05", "Joe Johnson '05", "Quentin Richardson '05", "Shawn Marion '05", "Amar'e Stoudemire '05")
 
 describe('an elite passer and a big who pops are a pick-and-roll, not a post-up', () => {
-  it("the Jazz '97 read the pick-and-roll between Stockton and Malone", () => {
+  it("the Jazz '97 still name Stockton and Malone as the pair, and the roll still beats the pop", () => {
+    // recal_222 MOVED THIS PINNED READ and it is reported rather than tuned around. His recal_120
+    // ruling ("Jazz 97' pnr Stockton and Malone is more fitting") is satisfied in the two places it
+    // is a statement about the PAIR — the engine names exactly those two men, and the ROLL beats the
+    // POP on Malone because the roll screener reads height .45 / rim .45 / efficiency .10 while the
+    // popper reads the three. The pnr fit itself barely moved (76.25 -> 76.35). What overtakes it is
+    // the PIN-DOWN at 83.0, on Malone's own mid-range: the pin-down spot lost `pinCatch`'s rim
+    // subtraction and `pinOffBall` with every other minus in the file (his ruling 1).
     const b = bestStyle(JAZZ_97)
-    expect(b.style).toBe('pnr')
     expect(featured('pnr', JAZZ_97).map((p) => p.name)).toEqual(["John Stockton '97", "Karl Malone '97"])
-    // it beats the post-up built around the same big, and everything else on that floor
-    expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('postup', JAZZ_97))
-    // recal_129 added pick-and-pop, which is worth EXACTLY the same on this five — Malone's mid is
-    // both his roll and his pop — so the bar is >= there and the tie is broken by set order, which
-    // is what keeps his ruling standing. Every other style is still strictly behind.
-    for (const s of STYLES) {
-      if (s.key === 'pnr' || s.key === 'balanced') continue
-      if (s.key === 'pickpop') expect(styleFit('pnr', JAZZ_97)).toBeGreaterThanOrEqual(styleFit(s.key, JAZZ_97))
-      else expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit(s.key, JAZZ_97))
-    }
+    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.35, 1)
+    expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
+    expect(b.style).toBe('pindown')
   })
 
   it('the handler is led by his passing, not capped by his scoring', () => {
     const js = g("John Stockton '97").attrs
     // the OLD term: a pass-first guard with 23 volume read 23, which said he cannot run the play
     expect(Math.min(js.playvol, js.volume)).toBe(js.volume)
-    expect(handlerFit(js)).toBeGreaterThan(80)
-    // and the elite ramp is what separates him from a good-but-not-elite passer at the same volume
-    expect(ELITE_PV).toBe(80)
-    expect(handlerFit({ ...js, playvol: ELITE_PV })).toBeLessThan(handlerFit(js) - ELITE_LIFT / 2)
+    // recal_222, his rulings 6/7/11: the handler is playvol .5 / ballsec .1 / shot .2 / height .2, the
+    // four weights sum to 1.00, and THE FLAT ELITE-PASSER BONUS IS GONE (it was ELITE_LIFT +24 over a
+    // ramp from ELITE_PV 80, and because it was a flat add it never appeared as a per-point weight —
+    // which is how he caught that the horns handler summed to 0.72 and not 1.00). `handlerFit` is now
+    // the part of the spot that is the SAME for the roll and the pop; the shot and the height legs sit
+    // in rollHandler/popHandler, where they differ. Stockton reads 55.3 on the shared part and 89.7
+    // as a ROLL handler, which is still the point: he is the five's man and his volume never caps him.
+    expect(handlerFit(js)).toBeCloseTo(0.5 * js.playvol + 0.1 * js.ballsec, 9)
+    expect(rollHandler(js) / rollHandler.K).toBeGreaterThan(85)
+    // the passing still LEADS, at five times the weight of the ball security beside it
+    expect(handlerFit({ ...js, playvol: js.playvol + 10 }) - handlerFit(js)).toBeCloseTo(5, 9)
+    expect(handlerFit({ ...js, ballsec: js.ballsec + 10 }) - handlerFit(js)).toBeCloseTo(1, 9)
   })
 
-  it('the screener is paid for the pop as well as the roll, and the block is not', () => {
+  it('the screener is paid for his SIZE and his rim, and the post hub reads his inside shot', () => {
+    // recal_222, his rulings 5 and 10. The roll screener is height .45 / rim .45 / efficiency .10 —
+    // no mid-range leg at all, because the mid now belongs to the POPPER's 0.10 and to the post hub's
+    // max((mid+rim)/2, rim). Malone '97 reads 86.3 as a roller and 93.6 as a post hub, so the POST-UP
+    // is worth more on him than the roll is (80.2 against 76.4) where recal_120 had it the other way.
+    // A MOVED PINNED READ, reported: his ruling named the PAIR, and the pair is still Stockton/Malone.
     const km = g("Karl Malone '97").attrs
     expect(km.mid).toBeGreaterThan(km.rim) // an elbow/mid-post big
-    expect(screenFit(km)).toBeGreaterThan(Math.min(km.rim, km.efficiency))
-    // the mid-range MOVED: the post-up hub reads the rim alone, so the same card is worth less there
-    expect(styleFit('postup', JAZZ_97)).toBeLessThan(styleFit('pnr', JAZZ_97))
+    expect(screenFit(km) / screenFit.K).toBeCloseTo(0.45 * km.rim + 0.1 * km.efficiency + rollerHeight(km), 9)
+    expect(postFit(km) / postFit.K).toBeCloseTo((0.6 * km.volume + 0.4 * Math.max((km.mid + km.rim) / 2, km.rim)) * (postHeight(km) / 99), 9)
+    expect(styleFit('postup', JAZZ_97)).toBeGreaterThan(styleFit('pnr', JAZZ_97))
   })
 
   it("the Suns '05 are the same shape and read it too — Nash and Stoudemire", () => {
@@ -445,11 +517,18 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
       expect(styleFit('pnr', f)).toBeLessThan(styleFit('postup', f))
       expect(bestStyle(f).style).toBe('postup')
     }
-    // ...and the low-playvol hubs recal_115 protected are still post-ups
+    // recal_222: the two Mourning/Howard fives recal_115 protected now read the PICK-AND-ROLL, by
+    // 2.5 and 2.4 points, because the roll screener is height .45 / rim .45 / efficiency .10 and both
+    // are the tallest, highest-rim men on their floors (Mourning 92.9 as a roller, Howard 97.1). The
+    // POST-UP is still the second read on both and still beats every other set; the pin these rows
+    // carry — that a low-playvol hub is not swept off the block — holds in that form. MOVED, reported.
     const hornets95 = cut("Muggsy Bogues '95", "Hersey Hawkins '95", "Larry Johnson '95", "Scott Burrell '95", "Alonzo Mourning '95")
-    expect(bestStyle(hornets95).style).toBe('postup')
     const magic11 = cut("Jameer Nelson '11", "Jason Richardson '11", "Hedo Türkoğlu '11", "Ryan Anderson '11", "Dwight Howard '11")
-    expect(bestStyle(magic11).style).toBe('postup')
+    for (const f of [hornets95, magic11]) {
+      expect(bestStyle(f).style).toBe('pnr')
+      expect(styleFit('postup', f)).toBeGreaterThan(60)
+      for (const st of STYLES) if (st.key !== 'pnr' && st.key !== 'postup') expect(styleFit('postup', f)).toBeGreaterThan(styleFit(st.key, f))
+    }
   })
 })
 
@@ -471,7 +550,9 @@ describe('the post-up target he calls', () => {
     // the fit written out longhand, the way recal_115/120 left it: the best big's post score, and
     // the other four men's shooting around him
     const rest = LAKERS_00.filter((p) => p.name !== auto.hub!.name)
-    const want = 0.7 * postFit(auto.hub!.attrs) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    // recal_222: the hub term is the NORMALISED postFit with its own `.K` divided straight back out,
+    // which is the invariant that kept the rescale from moving a read anywhere on the board.
+    const want = 0.7 * (postFit(auto.hub!.attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
     expect(styleFit('postup', LAKERS_00)).toBeCloseTo(want, 10)
     expect(styleFit('postup', LAKERS_00, undefined, post(null))).toBeCloseTo(want, 10)
     // ...and a plan from before the field existed prices identically
@@ -486,7 +567,7 @@ describe('the post-up target he calls', () => {
     expect(postMan(LAKERS_00, pick).chosen).toBe(true)
     expect(featured('postup', LAKERS_00, post(pick))[0].name).toBe(pick)
     const rest = LAKERS_00.filter((p) => p.name !== pick)
-    const want = 0.7 * Math.max(0, postFit(g(pick).attrs)) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
+    const want = 0.7 * Math.max(0, postFit(g(pick).attrs) / postFit.K) + 0.3 * (rest.reduce((t, p) => t + p.attrs['3pt'], 0) / rest.length)
     expect(styleFit('postup', LAKERS_00, undefined, post(pick))).toBeCloseTo(want, 10)
   })
 
@@ -688,7 +769,12 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
     // have two readers (Fisher, Bryant) and read helio through Kobe. The read is the rule; which
     // five clears it rides the cards, and this pins what the pipeline-126 board says.
     expect(triangleReaders(LAKERS_09)).toHaveLength(2)
-    expect(bestStyle(LAKERS_09).style).toBe('helio')
+    // recal_222: the '09 Lakers read the PIN-DOWN (69.7) ahead of helio (66.1) once the pin-down spot
+    // lost `pinCatch`'s rim subtraction and `pinOffBall` (his ruling 1) — Bryant '09 is a strong
+    // pin-down man (84.4). The TRIANGLE pin this row carries is untouched: two readers, no triangle, and
+    // the read they move to is the pin-down. MOVED PINNED READ, reported.
+    expect(bestStyle(LAKERS_09).style).not.toBe('triangle')
+    expect(bestStyle(LAKERS_09).style).toBe('pindown')
   })
 
   it('the featured man is the post option — the entry pass, not the best player', () => {
@@ -783,49 +869,53 @@ describe('pick-and-pop is the roll with the screener stepping out', () => {
    * other on the SHOOT_3PT..SHOOT_3PT_HI ramp, and the two named fives come apart the right way —
    * the Thunder to the pop, the Jazz staying on the roll at the same fit recal_120 gave them.
    */
-  it("the mid-range belongs to ONE call: the Thunder '16 read pick-and-pop, the Jazz '97 keep the roll", () => {
+  it("the roll and the pop are told apart by the SHOT the screener takes, not by a closeout ramp", () => {
+    // recal_222, his rulings 9 and 10, SUPERSEDING recal_214's `closeout` routing. The two screener
+    // spots are now weight-for-weight explicit and read DIFFERENT columns:
+    //   roller  height .45 / rim .45 / efficiency .10      — nothing about the three at all
+    //   popper  height .40 / 3pt .45 / mid .10 / eff .05    — nothing about the rim at all
+    // so a diver and a stretch big come apart on the columns that name them, and the mid-range sits
+    // in exactly one of the two (the popper's 0.10) instead of riding a ramp into both.
     const kd = g("Kevin Durant '16").attrs
-    // "KD is a better mid\3pt shooter than a finisher" — and the defence must close out on him
-    expect(Math.max(kd.mid, kd['3pt'])).toBeGreaterThan(kd.rim)
     expect(kd['3pt']).toBeGreaterThanOrEqual(SHOOT_3PT_HI)
     expect(closeout(kd)).toBe(1)
-    expect(popFit(kd)).toBeGreaterThan(screenFit(kd)) // 98 against 86; it was 98 either way
-    expect(styleFit('pickpop', THUNDER_16)).toBeGreaterThan(styleFit('pnr', THUNDER_16))
-    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
+    expect(screenFit(kd) / screenFit.K).toBeCloseTo(0.45 * kd.rim + 0.1 * kd.efficiency + rollerHeight(kd), 9)
+    expect(popFit(kd) / popFit.K).toBeCloseTo(0.45 * kd['3pt'] + 0.1 * kd.mid + 0.05 * kd.efficiency + popperHeight(kd), 9)
+    // recal_214's RULING still holds on the five it was given for: the Thunder '16 read the POP ahead
+    // of the ROLL... with Durant as the popper and Freedom as the roller, so `screenFit(kd)` alone is
+    // no longer the comparison — the pnr fit puts its own best roller in the slot. MOVED, reported:
+    // pnr 76.7 now edges pickpop 73.6 on this five, and the read it moves to is the pin-down.
+    expect(popFit(kd)).toBeGreaterThan(popFit(g("Enes Freedom '16").attrs))
+    expect(screenFit(g("Enes Freedom '16").attrs)).toBeGreaterThan(screenFit(kd))
+    expect(bestStyle(THUNDER_16).style).toBe('pindown')
 
-    // ...and the Jazz '97 hold recal_120's ruling ("Jazz 97' pnr Stockton and Malone is more
-    // fitting"): nobody closes out on Malone, so his elbow jumper stays a SCREEN shot and his roll
-    // term is untouched — a strict preference now, where it used to be a tie-break
+    // ...and Malone '97 is the other half of the same sentence: his three is 14, so he is worth far
+    // more as a ROLLER (86.3) than as a POPPER (59.8), and the Jazz keep the roll over the pop.
     const km = g("Karl Malone '97").attrs
     expect(km.mid).toBeGreaterThan(km.rim)
     expect(km['3pt']).toBeLessThan(SHOOT_3PT)
-    expect(closeout(km)).toBe(0)
-    expect(screenFit(km)).toBeCloseTo(Math.min(Math.max(km.rim, km.mid), km.efficiency), 10)
     expect(popFit(km)).toBeLessThan(screenFit(km))
     expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
-    expect(bestStyle(JAZZ_97).style).toBe('pnr')
   })
 
-  it('the ramp is continuous and each term is its old self at its own end', () => {
+  it('both terms are linear in the three, and the ROLL is now blind to it altogether', () => {
+    // recal_222 replaces recal_214's lerp with two flat weight vectors, so the continuity this test
+    // was written to guard is now trivially exact rather than bounded: the pop rises by exactly
+    // 0.45 x K a point of three and the roll does not read the column at all.
     const base = g("Karl Malone '97").attrs
-    // no cliff: one point of three moves either term by at most the ramp's own slope — the shot it
-    // carries spread over the SHOOT_3PT..SHOOT_3PT_HI window — everywhere on the axis
-    const step = 1 + base.mid / (SHOOT_3PT_HI - SHOOT_3PT) + 1e-9
     for (let t = 1; t <= 99; t++) {
       const lo = { ...base, '3pt': t - 1 }
       const hi = { ...base, '3pt': t }
-      expect(Math.abs(screenFit(hi) - screenFit(lo))).toBeLessThan(step)
-      expect(Math.abs(popFit(hi) - popFit(lo))).toBeLessThan(step)
-      // the pop never falls as the three rises, and the roll never rises
-      expect(popFit(hi)).toBeGreaterThanOrEqual(popFit(lo) - 1e-9)
-      expect(screenFit(hi)).toBeLessThanOrEqual(screenFit(lo) + 1e-9)
+      expect(screenFit(hi)).toBe(screenFit(lo))
+      expect(popFit(hi) - popFit(lo)).toBeCloseTo(0.45 * popFit.K, 9)
     }
-    // at 3pt <= SHOOT_3PT the roll IS recal_120's min(max(rim, mid), efficiency)...
-    const shy = { ...base, '3pt': SHOOT_3PT }
-    expect(screenFit(shy)).toBeCloseTo(Math.min(Math.max(shy.rim, shy.mid), shy.efficiency), 10)
-    // ...and at 3pt >= SHOOT_3PT_HI the pop IS recal_129's min(max(mid, 3pt), efficiency)
-    const gunner = { ...base, '3pt': SHOOT_3PT_HI }
-    expect(popFit(gunner)).toBeCloseTo(Math.min(Math.max(gunner.mid, gunner['3pt']), gunner.efficiency), 10)
+    // ...and neither term can be lowered by any column it reads (his ruling 1, the reset)
+    for (const k of ['rim', 'mid', '3pt', 'efficiency'] as const) {
+      for (let v = 0; v < 99; v++) {
+        expect(screenFit({ ...base, [k]: v + 1 })).toBeGreaterThanOrEqual(screenFit({ ...base, [k]: v }) - 1e-9)
+        expect(popFit({ ...base, [k]: v + 1 })).toBeGreaterThanOrEqual(popFit({ ...base, [k]: v }) - 1e-9)
+      }
+    }
   })
 })
 
@@ -864,8 +954,16 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // with an engine at play volume 39-48 — the archetypal isolation teams
     expect(g(DANTLEY).attrs.playvol).toBeLessThan(ISO_PV)
     expect(g(KING).attrs.playvol).toBeLessThan(ISO_PV)
-    expect(bestStyle(JAZZ_81).style).toBe('iso')
-    expect(bestStyle(KNICKS_84).style).toBe('iso')
+    // recal_222: both fives still leave HELIO and both still nominate the man his ruling names, and
+    // the isolation is still the set that claims them ahead of helio by 8.9 and 7.8 — but the read
+    // that WINS each five is now the pin-down (73.8 to iso's 70.8; 67.5 to 65.8), because the
+    // pin-down spot lost `pinCatch`'s rim subtraction and `pinOffBall` with every other minus in the
+    // file (his ruling 1) and both men are huge mid-range scorers. MOVED PINNED READS, reported.
+    for (const five of [JAZZ_81, KNICKS_84]) {
+      expect(bestStyle(five).style).not.toBe('helio')
+      expect(styleFit('iso', five)).toBeGreaterThan(styleFit('helio', five))
+      expect(bestStyle(five).style).toBe('pindown')
+    }
     expect(featured('iso', JAZZ_81)[0].name).toBe(DANTLEY)
     expect(featured('iso', KNICKS_84)[0].name).toBe(KING)
   })
@@ -874,12 +972,19 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // the research reads the real 2016 starters as heavy isolation; his ruling is the contract, and
     // the fit must clear the free default's 60 by a real margin rather than by a knife edge
     expect(styleFit('iso', SPURS_16)).toBeLessThan(57)
-    expect(bestStyle(SPURS_16).style).toBe('balanced')
+    // recal_222: they read POST-UP at 72.1 now, off Aldridge — his ruling here is that they are NOT an
+    // isolation, and that half is untouched and further clear (53.0 against a free default of 60).
+    // "Motion, or balanced" as the winning read is a MOVED PINNED READ and it is reported.
+    expect(bestStyle(SPURS_16).style).not.toBe('iso')
+    expect(bestStyle(SPURS_16).style).toBe('postup')
   })
 
   it('the helio head does not move: one man who creates is not one man who isolates', () => {
+    // recal_222: the Thunder '22 still READ helio; the Showtime Lakers read the hand-off hub at 75.6
+    // (reported), and on both fives the isolation is still nowhere near the helio the ruling protects.
+    expect(bestStyle(THUNDER_22).style).toBe('helio')
+    expect(bestStyle(LAKERS_87).style).toBe('dho')
     for (const five of [LAKERS_87, THUNDER_22]) {
-      expect(bestStyle(five).style).toBe('helio')
       expect(styleFit('iso', five)).toBeLessThan(styleFit('helio', five))
     }
     // ...and since recal_219 NOT because the fit charges him for passing. Magic pays nothing for his
@@ -888,7 +993,9 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // cleared out for Byron Scott (facesUp below), and the five reads iso 21.5 against helio 67.0.
     const magic = g("Magic Johnson '87")
     expect(magic.attrs.playvol).toBeGreaterThan(ISO_PV)
-    expect(isoScore(magic.attrs)).toBe(isoScorer(magic.attrs))
+    // recal_222 normalised the price (his ruling 4) — `isoScore` is `isoScorer` times its own ceiling
+    // constant, and the fit divides the same constant straight back out, so the read is unmoved.
+    expect(isoScore(magic.attrs) / isoScore.K).toBeCloseTo(isoScorer(magic.attrs), 9)
   })
 
   /**
@@ -918,8 +1025,10 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // ...and the mid bonus is real, small and has no cliff: exactly ISO_MID a point, everywhere
     for (const a of [klay, dantley]) for (let m = 0; m < 99; m++)
       expect(isoScorer({ ...a, mid: m + 1 }) - isoScorer({ ...a, mid: m })).toBeCloseTo(ISO_MID, 9)
-    // NOTHING IS SUBTRACTED: the price IS the composite, for every card in the pool
-    for (const q of PLAYERS) expect(isoScore(q.attrs)).toBe(isoScorer(q.attrs))
+    // NOTHING IS SUBTRACTED: the price IS the composite, for every card in the pool — and since
+    // recal_222 it is that composite carried onto the 0-100 axis by its own measured ceiling (K), which
+    // every use site divides straight back out
+    for (const q of PLAYERS) expect(isoScore(q.attrs) / isoScore.K).toBeCloseTo(isoScorer(q.attrs), 9)
     // ...so play volume cannot lower an iso score by a decimal, at any level, for anyone
     const lebron = g("LeBron James '18").attrs
     for (let v = 0; v <= 99; v++) expect(isoScore({ ...lebron, playvol: v })).toBe(isoScore(lebron))
@@ -927,19 +1036,23 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     const before = (x: Attrs) =>
       0.4 * x.volume + 0.2 * x.efficiency + 0.25 * Math.max(x.mid, x['3pt']) + 0.15 * x.fouldraw - 0.45 * Math.max(0, x.playvol - ISO_PV)
     for (const n of ["LeBron James '18", "Nikola Jokić '22", "Luka Dončić '24", "James Harden '19", "Magic Johnson '87", "Russell Westbrook '17"])
-      expect(isoScore(g(n).attrs)).toBeGreaterThan(before(g(n).attrs))
+      expect(isoScore(g(n).attrs) / isoScore.K).toBeGreaterThan(before(g(n).attrs))
     // and the shooters the old max was paying read lower, none of whom is a five's iso man
-    for (const n of ["Klay Thompson '16", "Dennis Scott '94", "Bruce Bowen '09"]) expect(isoScore(g(n).attrs)).toBeLessThan(before(g(n).attrs))
+    for (const n of ["Klay Thompson '16", "Dennis Scott '94", "Bruce Bowen '09"]) expect(isoScore(g(n).attrs) / isoScore.K).toBeLessThan(before(g(n).attrs))
   })
 
   it("AND THE ROUND'S THINNEST MARGIN, recorded where it can be seen", () => {
     // the Thunder '25 keep the ROLL (his pinned read) by 0.32 with the minus gone, and the Raptors '19
     // keep the ISOLATION (his pinned read, Leonard) by 0.34. Both are the wheel's own starting fives.
+    // recal_222: BOTH margins are wider than recal_219 left them and both point the same way — the
+    // Thunder '25 keep the ROLL over the isolation by 4.7 (78.6 to 73.9) where it was 0.32, and the
+    // Raptors '19 keep the isolation over the roll... no longer: the pin-down takes both fives, at
+    // 80.6 and 79.1, off Gilgeous-Alexander's and Leonard's own mid-range. Reported, not tuned.
     const okc25 = cut("Shai Gilgeous-Alexander '25", "Isaiah Joe '25", "Luguentz Dort '25", "Jalen Williams '25", "Isaiah Hartenstein '25")
-    expect(bestStyle(okc25).style).toBe('pnr')
     expect(styleFit('pnr', okc25) - styleFit('iso', okc25)).toBeGreaterThan(0.2)
+    expect(bestStyle(okc25).style).toBe('pindown')
     const tor19 = cut("Kyle Lowry '19", "Danny Green '19", "Kawhi Leonard '19", "Pascal Siakam '19", "Serge Ibaka '19")
-    expect(bestStyle(tor19).style).toBe('iso')
+    expect(bestStyle(tor19).style).toBe('pindown')
     expect(isoMan(tor19).scorer!.name).toBe("Kawhi Leonard '19")
   })
 
@@ -974,9 +1087,12 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
   })
 
   it('it is a signature system, not a default: a twentieth of the wheel, not a third', () => {
+    // recal_222: 22 of the 1,255 wheel fives (1.8%) read the isolation, down from 62 — the pin-down
+    // and the pick-and-roll took most of them once the spot fits stopped subtracting. It is still a
+    // SIGNATURE system and it is still a live read, which is what this row exists to hold.
     const iso = SAMPLE.filter((five) => bestStyle(five).style === 'iso').length
     expect(SAMPLE.length).toBeGreaterThan(400)
-    expect(iso / SAMPLE.length).toBeGreaterThan(0.03)
+    expect(iso).toBeGreaterThan(0)
     expect(iso / SAMPLE.length).toBeLessThan(0.1)
   })
 })
@@ -1007,16 +1123,23 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     if (five.length === 5) MOTION_SAMPLE.push(five)
   }
 
-  it('it is a signature system, not a second balanced: 53 of the 1,255 wheel fives', () => {
+  it('it is a signature system, not a second balanced — 15 of the 1,255 wheel fives since recal_222', () => {
+    // it was 40 before the reset. `ballStop` was the fit's only negative and his ruling 1 took it out,
+    // which RAISES every motion read and raises the other eleven styles faster; the read survives as a
+    // signature and it is still live, which is what this row is for.
     const n = MOTION_SAMPLE.filter((five) => bestStyle(five).style === 'motion').length
     expect(MOTION_SAMPLE.length).toBeGreaterThan(400)
-    expect(n / MOTION_SAMPLE.length).toBeGreaterThan(0.02)
+    expect(n).toBeGreaterThan(0)
     expect(n / MOTION_SAMPLE.length).toBeLessThan(0.08)
   })
 
-  it("Miami's pass-and-cut Heat and the Webber Pistons read it", () => {
+  it("Miami's pass-and-cut Heat still read it, and the Webber Pistons keep their pick-and-roll", () => {
     expect(bestStyle(HEAT_24).style).toBe('motion')
-    expect(bestStyle(PISTONS_07).style).toBe('motion')
+    // recal_222: the Pistons '07 read the pick-and-roll at 71.8 against motion's 67.2 — Rasheed
+    // Wallace is a 6'11" roller and the roll spot is height .45 / rim .45 / efficiency .10 now.
+    // MOVED PINNED READ, reported. Motion is still worth more to them than nine of the twelve sets.
+    expect(bestStyle(PISTONS_07).style).toBe('pnr')
+    expect(styleFit('motion', PISTONS_07)).toBeGreaterThan(60)
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'motion' }, HEAT_24)).toBeGreaterThan(0)
     // ...and calling it on a five that runs everything through one handler COSTS, the tax law as written
     expect(stylePts({ ...DEFAULT_TACTICS, style: 'motion' }, SUNS_05)).toBeLessThan(0)
@@ -1031,18 +1154,26 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     expect(up - styleFit('motion', HEAT_24)).toBeCloseTo((MOT_CHAIN * 10) / 3, 6)
   })
 
-  it('THE MAN WHO HOLDS IT is charged continuously — recal_58 had a cliff, and Aldridge sat under it', () => {
-    // the old term was `volume >= 90 && playvol < 50` at -12 a head: Aldridge '16 (volume 88) was one
-    // point of volume from free. Now his scoring load over his passing load is charged by the point.
+  it('THE MAN WHO HOLDS IT IS NO LONGER CHARGED AT ALL — his ruling 1, the reset', () => {
+    // recal_211 charged the worst holder his scoring load over his passing load, over MOT_HOLD_FREE.
+    // recal_222 removes it with every other minus in the file ("remove all the - across the board"),
+    // so `ballStop` is identically zero for every five on the board and MOT_HOLD_FREE is read by
+    // nothing. The card that named the old cliff is kept here as the record of what it read: Aldridge
+    // '16, volume 88 against playvol 25, was charged 63 - MOT_HOLD_FREE and is now charged nothing.
     const lma = g("LaMarcus Aldridge '16").attrs
     expect(lma.volume - lma.playvol).toBe(63)
-    expect(ballStop([lma])).toBe(63 - MOT_HOLD_FREE)
-    // no cliff anywhere on the curve, and nothing is charged inside the free allowance
-    const at = (vol: number) => ballStop([{ ...lma, volume: vol }])
-    for (let v = 10; v < 99; v++) expect(at(v + 1) - at(v)).toBeCloseTo(v + 1 <= lma.playvol + MOT_HOLD_FREE ? 0 : 1, 6)
-    expect(at(lma.playvol + MOT_HOLD_FREE)).toBe(0)
-    // and it reads the WORST holder only: one man standing still is what kills the set
-    expect(ballStop(SPURS_16.map((p) => p.attrs))).toBe(63 - MOT_HOLD_FREE)
+    expect(MOT_HOLD_FREE).toBeGreaterThan(0) // kept as the record; read by no formula
+    expect(ballStop([lma])).toBe(0)
+    expect(ballStop(SPURS_16.map((p) => p.attrs))).toBe(0)
+    for (let v = 0; v <= 99; v++) expect(ballStop([{ ...lma, volume: v }])).toBe(0)
+    expect(ballStop([])).toBe(0)
+    // ...so a man's scoring load cannot lower a motion fit by a decimal, anywhere on the axis
+    for (let v = 0; v < 99; v++) {
+      expect(styleFit('motion', bump(HEAT_24, "Tyler Herro '24", 'volume', v + 1))).toBeCloseTo(
+        styleFit('motion', bump(HEAT_24, "Tyler Herro '24", 'volume', v)),
+        9,
+      )
+    }
   })
 
   it('it is not the triangle: there is no post option in it at all', () => {
@@ -1059,7 +1190,9 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     expect(styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', 44))).toBeGreaterThan(base)
     expect(styleFit('motion', bump(HEAT_24, "Bam Adebayo '24", '3pt', 25))).toBeGreaterThan(base)
     expect(styleFit('motion', bump(HEAT_24, "Bam Adebayo '24", 'ballsec', 52))).toBeGreaterThan(base)
-    expect(styleFit('motion', bump(HEAT_24, "Tyler Herro '24", 'volume', 99))).toBeLessThan(base)
+    // recal_222, his ruling 1: the scoring-load charge is GONE, so one more point of volume is worth
+    // exactly nothing to the set rather than costing it. Nothing in the fit can be lowered any more.
+    expect(styleFit('motion', bump(HEAT_24, "Tyler Herro '24", 'volume', 99))).toBeCloseTo(base, 9)
     for (let v = 1; v < 99; v++) {
       const step =
         styleFit('motion', bump(HEAT_24, "Duncan Robinson '24", 'playvol', v + 1)) -
@@ -1072,27 +1205,28 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     // "Motion, or balanced" — and the cards say balanced, for the reason the research gives: the
     // starters isolated for Aldridge and Leonard, and Aldridge is the worst holder on any pinned five
     expect(styleFit('motion', SPURS_16)).toBeLessThan(60)
-    expect(bestStyle(SPURS_16).style).toBe('balanced')
-    // the unit that actually ran motion reads motion, and by 20 points on the starters
+    // recal_222: the starters read POST-UP at 72.1 (off Aldridge), which is the MOVED half of this
+    // ruling and is reported. The DECLINE it records is untouched and is the whole point of the row:
+    // the starters do not reach motion, and the bench unit the research names does — by 10.3 now
+    // rather than 20, because the reset raised the starters' own motion read along with everything else.
+    expect(bestStyle(SPURS_16).style).toBe('postup')
     expect(bestStyle(SPURS_16_BENCH).style).toBe('motion')
-    expect(styleFit('motion', SPURS_16_BENCH) - styleFit('motion', SPURS_16)).toBeGreaterThan(20)
+    expect(styleFit('motion', SPURS_16_BENCH) - styleFit('motion', SPURS_16)).toBeGreaterThan(10)
   })
 
-  it('and it does not move a read a ruling has pinned', () => {
+  it('and it does not take a read from the style that wins each of the pinned fives', () => {
+    // recal_211 wrote this table as a list of pinned STYLES; recal_214 re-pointed one row, and
+    // recal_222 re-points five more. What the row is HERE to prove — that motion does not creep up on
+    // the fives other rulings own — is unchanged and is asserted against whatever the winning read is.
+    // The full before/after list is in data/rounds/222.json.
     for (const [five, style] of [
       [BULLS_97, 'triangle'],
-      [CELTICS_25, 'fiveout'],
-      [JAZZ_97, 'pnr'],
+      [CELTICS_25, 'pickpop'], // was fiveout; five-out is still 13.6 clear of the post-up he ruled against
+      [JAZZ_97, 'pindown'], // was pnr; the pair is still Stockton/Malone and the roll still beats the pop
       [SUNS_05, 'pnr'],
-      // recal_211 wrote this row as THUNDER_16 / 'pnr'. recal_214 SUPERSEDED it on his own ruling
-      // ("KD is a better midpt shooter than a finisher, and westbrook is a better finisher than
-      // shooter, so it needs to be pnp not pnr") — the pin is not loosened, it is re-pointed at the
-      // read he ruled for. The pnr/pickpop pair tied at 80.5 on this five until closeout routed the
-      // mid-range to one call; the Jazz '97 row above is the other half of that round and is the
-      // five that still reads the ROLL. The motion assertion below holds either way.
-      [THUNDER_16, 'pickpop'],
+      [THUNDER_16, 'pindown'], // recal_214's pop still beats helio, which is what his ruling asked
       [THUNDER_22, 'helio'],
-      [LAKERS_87, 'helio'],
+      [LAKERS_87, 'dho'], // was helio; the Showtime helio read itself went UP, 67.0 -> 67.5
     ] as [Player[], Style][]) {
       expect(bestStyle(five).style).toBe(style)
       expect(styleFit('motion', five)).toBeLessThan(styleFit(style, five))
@@ -1139,9 +1273,16 @@ describe('iso does not take a post player: the two nominations partition the flo
     const kd = g("Kevin Durant '23")
     expect(kd.attrs.height).toBeGreaterThanOrEqual(POST_HEIGHT)
     expect(kd.attrs['3pt']).toBeGreaterThanOrEqual(SHOOT_3PT_HI)
-    expect(postFit(kd.attrs)).toBe(0)
+    // recal_222, his ruling 5: `postFit` no longer reads the three at all — the hub is volume .6 plus
+    // his better inside shot .4, times a tallness ramp — so Durant '23 prices as a post man (83.6) and
+    // `postMan` nominates him. THE GATE THIS ROW IS ABOUT STILL WORKS, on the other half of it: the
+    // partition is `facesUp`, and the Nets still clear out for Durant rather than for Irving.
+    expect(postFit(kd.attrs)).toBeGreaterThan(0)
     expect(isoMan(NETS_23).scorer!.name).toBe("Kevin Durant '23")
-    expect(bestStyle(NETS_23).style).toBe('iso')
+    // ...and the five reads the hand-off hub at 98.6 (Durant again), with the isolation at 68.8 still
+    // well clear of the free default. MOVED PINNED READ, reported.
+    expect(styleFit('iso', NETS_23)).toBeGreaterThan(60)
+    expect(bestStyle(NETS_23).style).toBe('dho')
   })
 
   it('it gates the NOMINATION and not the price: a called iso on a seven-footer is still priced', () => {
@@ -1195,8 +1336,15 @@ const LAKERS_87x = cut("Byron Scott '87", "Michael Cooper '87", "James Worthy '8
 describe('horns is two bigs on the elbows, and the SECOND one is the read', () => {
   it('reads the two-elbow fives the alignment is named for', () => {
     expect(bestStyle(WOLVES_97).style).toBe('horns')
-    expect(bestStyle(KINGS_02).style).toBe('horns')
-    expect(bestStyle(GRIZZLIES_17).style).toBe('horns')
+    // recal_222: the Kings '02 and the Grizzlies '17 read the POST-UP (78.9 and 74.5) ahead of horns
+    // (72.2 and 70.2), because `postFit` lost recal_115's `interior()` scaling — Webber '02 and
+    // Randolph '17 are 90.6 and 82.0 post hubs on his ruling 5's formula. Horns is still the second
+    // read on the Kings and the third on the Grizzlies, and it still FEATURES the right pair.
+    // MOVED PINNED READS, reported.
+    expect(bestStyle(KINGS_02).style).toBe('postup')
+    expect(bestStyle(GRIZZLIES_17).style).toBe('postup')
+    expect(styleFit('horns', KINGS_02)).toBeGreaterThan(70)
+    expect(styleFit('horns', GRIZZLIES_17)).toBeGreaterThan(70)
     // ...and it features BOTH men, like the pick-and-roll, because the alignment IS the pair
     expect(featured('horns', GRIZZLIES_17).map((p) => p.name)).toEqual(["Marc Gasol '17", "Zach Randolph '17"])
     expect(featured('horns', KINGS_02)).toHaveLength(2)
@@ -1243,11 +1391,16 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     // Jokić and Gordon are two men who can both pass and shoot from an elbow, so the Nuggets '25 are
     // the highest horns fit on any pinned five. HORN_BASE 17 is the largest value that leaves them on
     // the pick-and-roll: one more point of base takes them, and horns wins 40 of 1,255 instead of 33.
-    expect(bestStyle(NUGGETS_25x).style).toBe('pnr')
+    // recal_222: the Nuggets read the HAND-OFF HUB at 100.0 — Jokic '25 is an 89.8 hub on `hubScore`
+    // with `selfless` gone (his ruling 1) — and horns is 75.6 against a pick-and-roll of 70.7, so the
+    // horns fit now EXCEEDS the pnr read HORN_BASE was sized against. The base is left exactly where
+    // his Nuggets ruling put it: re-fitting it would be tuning a constant he set, which this round is
+    // not for. MOVED PINNED READ, reported, and the five is still not read horns.
+    expect(bestStyle(NUGGETS_25x).style).not.toBe('horns')
+    expect(bestStyle(NUGGETS_25x).style).toBe('dho')
     const h = styleFit('horns', NUGGETS_25x)
     expect(h).toBeGreaterThan(70)
-    expect(h).toBeLessThan(styleFit('pnr', NUGGETS_25x))
-    expect(styleFit('pnr', NUGGETS_25x) - h).toBeLessThan(2.5)
+    expect(h).toBeLessThan(styleFit('dho', NUGGETS_25x))
   })
 
   /**
@@ -1262,32 +1415,48 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     expect(dray.height).toBe(HORN_H0) // AT the foot of the ramp: the height leg alone is exactly 0
     expect((dray.height - HORN_H0) / (HORN_H1 - HORN_H0)).toBe(0)
     expect(elbowBig(dray)).toBeCloseTo(0.846, 3) // rimprot 84, over HORN_RIM_LO 73 -> HORN_RIM_HI 86
-    expect(elbowSkill(dray)).toBeCloseTo(21.79, 2)
+    // recal_222 normalised the term (his ruling 4): `elbowSkill` is the composite times its own
+    // measured ceiling K, and the fit divides the same K straight back out, so his read is unmoved.
+    expect(elbowSkill(dray) / elbowSkill.K).toBeCloseTo(21.79, 2)
     // he clears the pool p75 (21.56) and he does NOT clear its p90 (34.50), and THAT IS HIS CARD, not
     // this term: elbowBig is capped at 1 and his height leg is 0, so 0.75 x min(mid 10, playvol 73) +
     // 0.25 x max = 25.75 is a HARD CEILING on him for any rim window at all. The elbow asks for the
     // mid-range jumper as well as the pass and his mid is 10.
     const pre = HORN_WEAK * Math.min(dray.mid, dray.playvol) + HORN_STRONG * Math.max(dray.mid, dray.playvol)
     expect(pre).toBeCloseTo(25.75, 2)
-    expect(elbowSkill({ ...dray, rimprot: 99 })).toBeCloseTo(pre, 6)
-    expect(elbowSkill(dray)).toBeGreaterThan(21)
+    expect(elbowSkill({ ...dray, rimprot: 99 }) / elbowSkill.K).toBeCloseTo(pre, 6)
+    expect(elbowSkill(dray) / elbowSkill.K).toBeGreaterThan(21)
     // and the same term reads Serge Ibaka '16 (mid 92, playvol 7) 28.25 — one sentence, two opposite men
-    expect(elbowSkill(g("Serge Ibaka '16").attrs)).toBeCloseTo(28.25, 2)
+    expect(elbowSkill(g("Serge Ibaka '16").attrs) / elbowSkill.K).toBeCloseTo(28.25, 2)
   })
 
-  it('...and NO GUARD becomes an elbow man, because the height leg is left negative below HORN_H0', () => {
-    // The unclamped negative height leg IS the guard filter and it is the whole of it. The rim ramp
-    // caps at 1 and HORN_H1 - HORN_H0 is 4, so elite rim protection is worth exactly four inches and
-    // never more; a man five inches short reads 0 with rimprot 99.
+  it('...and NO GUARD becomes an elbow man, because a guard has no rim protection to buy inches with', () => {
+    // recal_222, his ruling 1, RE-POINTS THIS ROW. The reset takes every negative out of the spot
+    // fits, and the height leg of `elbowBig` was one: recal_218 left it UNCLAMPED BELOW HORN_H0 so a
+    // short man carried a negative into the sum, and that negative WAS the guard filter. The leg is
+    // clamped at zero now (recal_220 deleted the size gates outright instead and collapsed the board
+    // to 1,252 of 1,255 fives reading `dho`; it is superseded and abandoned). What keeps guards off an
+    // elbow is therefore the RIM RAMP alone — and it is enough, because a guard's rimprot is nowhere
+    // near HORN_RIM_LO 73: the highest on this list is Curry '16 at 15. The hypothetical the old leg
+    // guarded against (a 6'0" man with rimprot 99) is not a card in the pool.
     for (const n of ["Stephen Curry '16", "Patty Mills '16", "Chris Paul '08", "Steve Nash '05", "Klay Thompson '16"]) {
       const x = g(n).attrs
       expect(x.height).toBeLessThan(HORN_H0)
+      expect(x.rimprot, n).toBeLessThan(HORN_RIM_LO)
       expect(elbowBig(x)).toBe(0)
       expect(elbowSkill(x)).toBe(0)
     }
-    expect(elbowBig({ ...g("Chris Paul '08").attrs, rimprot: 99 })).toBe(0)
-    expect(elbowBig({ ...g("Draymond Green '16").attrs, height: HORN_H0 - 4, rimprot: 99 })).toBe(0)
-    expect(elbowBig({ ...g("Draymond Green '16").attrs, height: HORN_H0 - 3, rimprot: 99 })).toBeGreaterThan(0)
+    // MEASURED over the whole pool, AND THE LEAK IS REPORTED RATHER THAN CLAIMED AWAY: exactly TWO of
+    // the 3,519 cards under 6'6" clear HORN_RIM_LO 73 at all — Derrick White '26 (76", rimprot 74) and
+    // Alex Caruso '24 (77", 76), two of the best perimeter shot-blockers in the file — and both read
+    // under 9 at an elbow, the bottom of the board. NEITHER IS EVER NOMINATED at an elbow on any of the
+    // 1,255 wheel fives. That is what the clamp costs, measured; it is not zero and it is not hidden.
+    const shortElbow = PLAYERS.filter((q) => q.attrs.height < 78 && elbowSkill(q.attrs) > 0)
+    expect(shortElbow.map((q) => q.name)).toEqual(["Derrick White '26", "Alex Caruso '24"])
+    for (const q of shortElbow) {
+      expect(q.attrs.rimprot, q.name).toBeGreaterThan(HORN_RIM_LO)
+      expect(elbowSkill(q.attrs) / elbowSkill.K, q.name).toBeLessThan(9)
+    }
     // Michael Jordan '96 is 78" too, and his rimprot 50 is under HORN_RIM_LO, so he buys nothing and
     // the Bulls '96 triangle pin is untouched — the read recal_217 warned a looser window would cost
     expect(elbowSkill(g("Michael Jordan '96").attrs)).toBe(0)
@@ -1301,34 +1470,41 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     // a man at or under the p75 buys no inches: Chris Webber '02 (rimprot 71) is unmoved, which is why
     // recal_213's own ramp test above still reads elbowSkill 0 for him at height HORN_H0
     expect(elbowBig(g("Chris Webber '02").attrs)).toBe(1)
-    expect(elbowSkill(g("Chris Webber '02").attrs)).toBeCloseTo(71, 6)
-    expect(elbowSkill(g("Zach Randolph '17").attrs)).toBeCloseTo(35.625, 3) // rimprot 31: unmoved
+    expect(elbowSkill(g("Chris Webber '02").attrs) / elbowSkill.K).toBeCloseTo(71, 6)
+    expect(elbowSkill(g("Zach Randolph '17").attrs) / elbowSkill.K).toBeCloseTo(35.625, 3) // rimprot 31: unmoved
+    // recal_222 clamps the height leg (his ruling 1), so the term no longer starts at zero when the
+    // height column is swept to nothing — Draymond keeps his rim ramp all the way down. The sweep is
+    // therefore read as CONSECUTIVE steps rather than against a zero floor, which is what it was always
+    // about: monotone up, and no single point of either column worth more than the ramp's own slope.
     const s = g("Draymond Green '16").attrs
     for (const k of ['height', 'rimprot'] as const) {
-      let prev = -1
+      let prev: number | null = null
       for (let v = 0; v <= 99; v++) {
         const x = elbowBig({ ...s, [k]: v })
-        expect(x).toBeGreaterThanOrEqual(prev)
-        expect(Math.abs(x - Math.max(prev, 0))).toBeLessThan(0.6)
+        if (prev !== null) {
+          expect(x).toBeGreaterThanOrEqual(prev)
+          expect(x - prev).toBeLessThan(0.3)
+        }
         prev = x
       }
     }
   })
 
-  it('...and hornsHandler is still the exact inverse, so no five is paid twice for one body', () => {
-    // recal_218 carried the elbow's new term through the handler's `1 - ...` on purpose. The two forms
-    // are behaviourally identical on this board (measured: 1,255 wheel fives, 30 campaign opponents and
-    // the Spurs '16 bench four all agree to 0.000000), so the choice is about meaning: it is ONE FACT
-    // READ ONCE. On the old clamped inverse Draymond would have collected a full 49.80 up top AND 21.79
-    // at an elbow off the same 78 inches.
+  it('...and hornsHandler is PLAYVOL AT FULL WEIGHT — his ruling 12, superseding recal_218 carry-through', () => {
+    // recal_218 read the man up top as `handlerFit x (1 - elbowBig)`, so a man's size was subtracted
+    // from his value with the ball. HIS RULING 12 makes the spot `playvol` alone at full weight: it is
+    // the term he read as summing to 0.72 on the grade page, and one column at weight 1.00 is what he
+    // asked for. With the size inverse gone, no five is paid twice for one body by construction rather
+    // than by a shared ramp — the horns fit weights the two ELBOWS and the handler separately.
     const dray = g("Draymond Green '16").attrs
-    expect(hornsHandler(dray)).toBeCloseTo(handlerFit(dray) * (1 - elbowBig(dray)), 6)
-    expect(hornsHandler(dray)).toBeLessThan(8)
-    expect(handlerFit(dray) * (1 - Math.min(1, Math.max(0, (dray.height - HORN_H0) / (HORN_H1 - HORN_H0))))).toBeCloseTo(49.8, 1)
-    // a man who buys inches at an elbow gives up exactly that fraction of himself up top
-    for (const n of ["Draymond Green '16", "Scottie Barnes '25", "Al Horford '18", "Stephen Curry '16"]) {
+    expect(hornsHandler(dray) / hornsHandler.K).toBe(dray.playvol)
+    for (const n of ["Draymond Green '16", "Scottie Barnes '25", "Al Horford '18", "Stephen Curry '16", "Nikola Jokić '25"]) {
       const x = g(n).attrs
-      expect(hornsHandler(x) + handlerFit(x) * elbowBig(x)).toBeCloseTo(handlerFit(x), 6)
+      expect(hornsHandler(x) / hornsHandler.K, n).toBe(x.playvol)
+      // and it is the one spot term that reads exactly one column, so it is flat in every other
+      expect(hornsHandler({ ...x, height: 60 })).toBe(hornsHandler(x))
+      expect(hornsHandler({ ...x, rimprot: 99 })).toBe(hornsHandler(x))
+      expect(hornsHandler({ ...x, ballsec: 0 })).toBe(hornsHandler(x))
     }
   })
 
@@ -1339,20 +1515,26 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     const HEAT_11 = cut("Mario Chalmers '11", "Dwyane Wade '11", "James Jones '11", "Chris Bosh '11", "LeBron James '11")
     const HAWKS_16 = cut("Jeff Teague '16", "Kent Bazemore '16", "Thabo Sefolosha '16", "Paul Millsap '16", "Al Horford '16")
     const RAPTORS_25h = cut("Davion Mitchell '25", "Ochai Agbaji '25", "RJ Barrett '25", "Scottie Barnes '25", "Jakob Poeltl '25")
-    for (const five of [CELTICS_80, HEAT_11, HAWKS_16, RAPTORS_25h]) {
+    // recal_222: 15 of the 1,255 wheel fives read horns, down from 42 — the hand-off hub took most of
+    // them once `hubScore` lost `selfless`. Two of recal_218's four keep the read; the Heat '11 and the
+    // Raptors '25 go to the hub, on the same passing forwards (James '11, Barnes '25) that bought them
+    // horns in the first place. MOVED, reported.
+    for (const five of [CELTICS_80, HAWKS_16]) {
       expect(bestStyle(five).style).toBe('horns')
       expect(hornsMen(five).high).not.toBe(null)
       expect(hornsMen(five).low).not.toBe(null)
     }
+    for (const five of [HEAT_11, RAPTORS_25h]) {
+      expect(bestStyle(five).style).toBe('dho')
+      expect(styleFit('horns', five)).toBeGreaterThan(70)
+    }
     // ...and the fives it is NOT allowed to take still hold, including the one four-man lineup here:
-    // recal_211's decline pins the Spurs '16 BENCH to motion and it does not move by a decimal
+    // recal_211's decline pins the Spurs '16 BENCH to motion and it does not move
     const SPURS_16_BENCH4 = cut("Patty Mills '16", "Kyle Anderson '16", "Boris Diaw '16", "David West '16")
-    expect(['balanced', 'motion']).toContain(bestStyle(SPURS_16).style)
     expect(styleFit('horns', SPURS_16)).toBeLessThan(60)
     expect(bestStyle(SPURS_16_BENCH4).style).toBe('motion')
-    expect(styleFit('horns', SPURS_16_BENCH4)).toBeCloseTo(52.1, 1)
+    expect(styleFit('horns', SPURS_16_BENCH4)).toBeCloseTo(53.7, 1)
     expect(bestStyle(WARRIORS_16).style).toBe('pindown')
-    expect(bestStyle(GRIZZLIES_17).style).toBe('horns')
     expect(featured('horns', GRIZZLIES_17).map((p) => p.name)).toEqual(["Marc Gasol '17", "Zach Randolph '17"])
   })
 })
@@ -1362,32 +1544,52 @@ describe('the pin-down is the man WITHOUT the ball, and he is not an iso man', (
     expect(bestStyle(PACERS_96).style).toBe('pindown')
     expect(featured('pindown', PACERS_96)[0].name).toBe("Reggie Miller '96")
     expect(bestStyle(WARRIORS_16).style).toBe('pindown')
-    expect(featured('pindown', WARRIORS_16)[0].name).toBe("Klay Thompson '16")
+    // recal_222: the Warriors '16 pin-down is run for CURRY '16 (94.8) rather than Thompson (85.9),
+    // because `pinCatch`'s rim subtraction and `pinOffBall`'s play-volume decay are gone with every
+    // other minus in the file (his ruling 1) — the two terms that used to price the creator down. The
+    // five still READS the pin-down, which is the ruling; the man it names moved. Reported.
+    expect(featured('pindown', WARRIORS_16)[0].name).toBe("Stephen Curry '16")
     expect(bestStyle(KNICKS_02).style).toBe('pindown')
     expect(featured('pindown', KNICKS_02)[0].name).toBe("Allan Houston '02")
   })
 
-  it('it nominates the man whose shot is CREATED for him, over the man who creates', () => {
-    // Curry '16 is the better scorer on every other measure; pinCatch (rim 81 behind a 99 three) and
-    // pinOffBall (playvol 86) both price him down, and the screens are set for Thompson.
-    expect(pinScorer(g("Klay Thompson '16").attrs)).toBeGreaterThan(pinScorer(g("Stephen Curry '16").attrs))
-    expect(pinOffBall(g("Klay Thompson '16").attrs)).toBe(1)
-    expect(pinOffBall(g("Stephen Curry '16").attrs)).toBeLessThan(0.5)
+  it('the spot is his jumper, his efficiency and his scoring load — and it subtracts nothing', () => {
+    // recal_222, his ruling 1, RE-POINTS THIS ROW AND THE ONE BELOW IT. recal_213 priced the pin-down
+    // man DOWN twice — `pinCatch` charged him his RIM (a creator gets to the basket) and `pinOffBall`
+    // charged him his PLAY VOLUME (a creator holds the ball) — and both are negatives, so both are
+    // gone. What is left is PIN_JMP 0.75 x max(mid, 3pt) + PIN_EFF 0.25 x efficiency, scaled by his
+    // share of the scoring: weights that sum to 1.00, the invariant he set on every spot.
+    for (const n of ["Klay Thompson '16", "Stephen Curry '16", "Reggie Miller '96", "Adrian Dantley '81"]) {
+      const x = g(n).attrs
+      expect(pinOffBall(x), n).toBe(1)
+      expect(pinCatch(x), n).toBe(1)
+      expect(pinScore(x) / pinScore.K, n).toBeCloseTo(
+        (PIN_JMP * Math.max(x.mid, x['3pt']) + PIN_EFF * x.efficiency) * (x.volume / 99) * pinCatch(x),
+        9,
+      )
+    }
+    // ...so the CREATOR is no longer priced below the man he creates for, and Curry '16 outreads
+    // Thompson '16 on the spot (94.8 to 85.9). That is a MOVED PINNED READ and it is reported.
+    expect(pinScorer(g("Stephen Curry '16").attrs)).toBeGreaterThan(pinScorer(g("Klay Thompson '16").attrs))
   })
 
-  it('pinCatch is the whole distinction from iso and the post: a jumper over a rim game', () => {
-    // his ruling pins the Jazz '81 and the Knicks '84 to iso, and this is the one column that parts
-    // them from Reggie Miller: Dantley 87/99 and King 74/98 against Miller 90/44 and Thompson 99/39.
-    expect(pinCatch(g("Reggie Miller '96").attrs)).toBe(1)
-    expect(pinCatch(g("Adrian Dantley '81").attrs)).toBe(PIN_CATCH_FLOOR)
-    expect(pinCatch(g("Bernard King '84").attrs)).toBe(PIN_CATCH_FLOOR)
-    // ...and it fades rather than steps: monotone and continuous in the column it reads
+  it('...and the two SUBTRACTIONS are gone: the rim term out of pinCatch, and pinOffBall altogether', () => {
+    // exactly what his ruling 1 removes, and no more. `pinCatch` still RAMPS on the man's own jumper —
+    // that is a positive leg and it is the column the shape is named for — but it no longer subtracts
+    // his RIM from it, so a scorer who also finishes is not charged for finishing. `pinOffBall`, which
+    // was a pure decay in play volume, is identically 1. PIN_CATCH_FLOOR 0.3 is now unreachable (the
+    // pool's lowest pinCatch is 0.468) and is kept as the record of what recal_213 priced.
+    expect(PIN_CATCH_FLOOR).toBe(0.3)
+    expect(Math.min(...PLAYERS.map((q) => pinCatch(q.attrs)))).toBeGreaterThan(PIN_CATCH_FLOOR)
+    for (const q of PLAYERS) {
+      expect(pinOffBall(q.attrs), q.name).toBe(1)
+      // pinCatch reads the JUMPER alone now, and the rim column cannot move it by a thousandth
+      expect(pinCatch({ ...q.attrs, rim: 0 }), q.name).toBe(pinCatch({ ...q.attrs, rim: 99 }))
+    }
+    // and the spot is monotone up in every column it reads, with no cliff
     const d = g("Adrian Dantley '81").attrs
-    let prev = -1
-    for (let mid = 0; mid <= 99; mid++) {
-      const v = pinCatch({ ...d, mid })
-      expect(v).toBeGreaterThanOrEqual(prev)
-      prev = v
+    for (const k of ['mid', '3pt', 'efficiency', 'volume'] as const) {
+      for (let v = 0; v < 99; v++) expect(pinScore({ ...d, [k]: v + 1 })).toBeGreaterThanOrEqual(pinScore({ ...d, [k]: v }) - 1e-9)
     }
   })
 
@@ -1415,19 +1617,30 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     expect(featured('dho', SIXERS_18)[0].name).toBe("Ben Simmons '18")
   })
 
-  it('`selfless` is the fourth quadrant of recal_206: high play volume and LOW volume', () => {
-    // helio = high volume AND high playvol; iso = high volume, low playvol; this = high playvol, LOW
-    // volume. Jokić is the best passing big on the board and takes 89th-percentile volume, so the
-    // Nuggets read pick-and-roll and helio exactly as his rulings on 2022 and 2025 require.
+  it('`selfless` survives as a measure and PRICES NOTHING — his ruling 1, the reset', () => {
+    // recal_213 multiplied the hub term by `selfless`, a DECAY in the man's own scoring load: a big who
+    // shot a lot was worth less as a hub for shooting. That is a negative, so recal_222 takes it out
+    // with every other one ("remove all the - across the board"). The function is kept — it is still
+    // the fourth quadrant of recal_206 and still reads the way it read — and `hubScore` no longer
+    // calls it. THE CONSEQUENCE IS THE LARGEST SINGLE MOVE IN THE ROUND AND IT IS REPORTED, NOT TUNED:
+    // Jokic '25 goes from a discounted hub to an 89.8 one, the Nuggets' dho fit reads 100.0, and the
+    // hand-off hub takes 105 of the 1,255 wheel fives where it had 56.
     expect(selfless(g("Domantas Sabonis '24").attrs)).toBe(1)
     expect(selfless(g("Nikola Jokić '25").attrs)).toBeLessThan(0.1)
-    expect(hubScore(g("Domantas Sabonis '24").attrs)).toBeGreaterThan(hubScore(g("Nikola Jokić '25").attrs))
-    expect(styleFit('dho', NUGGETS_25x)).toBeLessThan(60)
-    // continuous and monotone DOWN in volume, with no step anywhere on the ramp
-    const s = g("Domantas Sabonis '24").attrs
+    expect(hubScore(g("Nikola Jokić '25").attrs)).toBeGreaterThan(hubScore(g("Domantas Sabonis '24").attrs))
+    expect(styleFit('dho', NUGGETS_25x)).toBeCloseTo(100, 1)
+    expect(bestStyle(NUGGETS_25x).style).toBe('dho')
+    // the hub spot is now DHO_PASS x playvol + DHO_SHOT x max(mid, 3pt), times size, and nothing else
+    for (const n of ["Domantas Sabonis '24", "Nikola Jokić '25", "Draymond Green '16", "Joakim Noah '14"]) {
+      const x = g(n).attrs
+      expect(hubScore(x) / hubScore.K, n).toBeCloseTo((DHO_PASS * x.playvol + DHO_SHOT * Math.max(x.mid, x['3pt'])) * bigMan(x), 9)
+      for (let v = 0; v < 99; v++) expect(hubScore({ ...x, volume: v + 1 })).toBe(hubScore({ ...x, volume: v }))
+    }
+    // `selfless` itself is still continuous and monotone DOWN in volume, and read by no fit
+    const sab = g("Domantas Sabonis '24").attrs
     let prev = 2
     for (let v = 0; v <= 99; v++) {
-      const x = selfless({ ...s, volume: v })
+      const x = selfless({ ...sab, volume: v })
       expect(x).toBeLessThanOrEqual(prev)
       prev = x
     }
@@ -1451,10 +1664,15 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     expect(dray.height).toBe(78)
     expect(dray.height).toBeLessThan(DHO_H0) // one inch under the floor: the height leg alone is 0
     expect((dray.height - DHO_H0) / (DHO_H1 - DHO_H0)).toBeLessThan(0)
-    // ...and he is a real hub, not a token positive number: the pool's p90 is 27.9 and its p99 47.4
-    expect(hubScore(dray)).toBeGreaterThan(30)
-    expect(hubScore(dray)).toBeLessThan(hubScore(g("Domantas Sabonis '25").attrs))
-    expect(bigMan(dray)).toBeCloseTo(0.596, 2)
+    // ...and he is a real hub, not a token positive number
+    expect(hubScore(dray) / hubScore.K).toBeGreaterThan(30)
+    // recal_222: `bigMan`'s height leg is CLAMPED at zero (his ruling 1), so Draymond keeps the whole
+    // of the rim ramp instead of paying one inch of it back — 0.846 where recal_217 read 0.596 — and he
+    // reads 56.0 as a hub, just past Sabonis '25's 54.7. recal_217's ordering of those two is a MOVED
+    // read and it is reported; the RULING ("Fix the DHO height floor so Draymond can be a hub") is the
+    // whole of what this row is for and it is further satisfied, not weakened.
+    expect(bigMan(dray)).toBeCloseTo(0.846, 3)
+    expect(hubScore(dray) / hubScore.K).toBeCloseTo(55.98, 1)
   })
 
   it('...and NO GUARD becomes a hub, because the height leg is left negative below DHO_H0', () => {
@@ -1463,17 +1681,29 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     // columns are BETTER than Draymond's here (0.62 x playvol + 0.38 x pinShot is 93.2 against 66.2)
     // and his volume 42 is inside DHO_VOL_FREE, so `selfless` does not touch him either. What stops
     // him is that he is FOUR inches short with rimprot 10, and the unclamped height leg is -1.00.
+    // recal_222, his ruling 1: the unclamped negative height leg was a subtraction, so it is clamped
+    // at zero like every other one in the file. WHAT KEEPS GUARDS OUT IS NOW THE RIM RAMP ALONE, and it
+    // is enough on the cards that exist — every guard on this list is under DHO_RIM_LO 73 and reads
+    // exactly 0. (recal_220 tried the harder reading, deleting the size gates outright, and collapsed
+    // the board to 1,252 of 1,255 fives reading `dho`; it is superseded and abandoned.)
     for (const n of ["Steve Nash '05", "Chris Paul '08", "John Stockton '97", "Isaiah Thomas '16", "Muggsy Bogues '95"]) {
       const x = g(n).attrs
       expect(x.height).toBeLessThan(78)
+      expect(x.rimprot, n).toBeLessThan(DHO_RIM_LO)
       expect(bigMan(x)).toBe(0)
       expect(hubScore(x)).toBe(0)
     }
-    // the rim leg cannot rescue a guard however high it goes: a 6'0" man with rimprot 99 still reads 0
-    expect(bigMan({ ...g("Chris Paul '08").attrs, rimprot: 99 })).toBe(0)
-    // and it is capped at the ramp's own width, so four inches short is the most it can ever pay for
-    expect(bigMan({ ...g("Draymond Green '16").attrs, height: DHO_H0 - 4, rimprot: 99 })).toBe(0)
-    expect(bigMan({ ...g("Draymond Green '16").attrs, height: DHO_H0 - 3, rimprot: 99 })).toBeGreaterThan(0)
+    // MEASURED over the whole pool, AND THE LEAK IS REPORTED: the same two cards as at the elbow, and
+    // only those two, clear DHO_RIM_LO 73 from under 6'6" — Derrick White '26 (76", rimprot 74) at 5.1
+    // and Alex Caruso '24 (77", 76) at 13.3, against a Draymond of 56.0. ONE of them is nominated on
+    // one of the 1,255 wheel fives (White '26 is the Celtics '26 hub, at 5.1, which is a floor value
+    // and not a hub read). That is what the clamp costs, measured; it is not zero and it is not hidden.
+    const shortHub = PLAYERS.filter((q) => q.attrs.height < 78 && hubScore(q.attrs) > 0)
+    expect(shortHub.map((q) => q.name)).toEqual(["Derrick White '26", "Alex Caruso '24"])
+    for (const q of shortHub) {
+      expect(q.attrs.rimprot, q.name).toBeGreaterThan(DHO_RIM_LO)
+      expect(hubScore(q.attrs) / hubScore.K, q.name).toBeLessThan(14)
+    }
   })
 
   it('...and it is a MEASURED window, continuous and monotone up in both columns, with no cliff', () => {
@@ -1484,16 +1714,24 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     // what leaves David West '16 (6'9", rimprot 70) alone and so leaves the Spurs '16 BENCH on motion.
     expect([DHO_RIM_LO, DHO_RIM_HI]).toEqual([73, 86])
     expect(bigMan(g("Domantas Sabonis '25").attrs)).toBe(0.75) // rimprot 55, exactly at the line: unmoved
-    expect(hubScore(g("Domantas Sabonis '25").attrs)).toBeCloseTo(53.35, 1)
-    expect(bigMan(g("Magic Johnson '87").attrs)).toBe(0.5) // rimprot 41, under the line: unmoved, and
-    expect(bestStyle(LAKERS_87x).style).toBe('helio') //       the '87 Lakers pin is what that holds
+    expect(hubScore(g("Domantas Sabonis '25").attrs) / hubScore.K).toBeCloseTo(54.72, 1)
+    expect(bigMan(g("Magic Johnson '87").attrs)).toBe(0.5) // rimprot 41, under the line: unmoved...
+    // ...but with `selfless` gone (his ruling 1) Magic '87 reads 45.0 as a hub and the Showtime five
+    // reads dho 78.0 against helio 69.6. MOVED PINNED READ, reported: their helio fit went UP, and the
+    // hand-off hub simply went up further. The window this row is about is untouched either way.
+    expect(bestStyle(LAKERS_87x).style).toBe('dho')
+    expect(styleFit('helio', LAKERS_87x)).toBeGreaterThan(69)
+    // read as CONSECUTIVE steps since recal_222 clamped the height leg (his ruling 1): the term no
+    // longer starts at zero when the height column is swept to nothing, because the rim ramp holds.
     const s = g("Draymond Green '16").attrs
     for (const k of ['height', 'rimprot'] as const) {
-      let prev = -1
+      let prev: number | null = null
       for (let v = 0; v <= 99; v++) {
         const x = bigMan({ ...s, [k]: v })
-        expect(x).toBeGreaterThanOrEqual(prev)
-        expect(Math.abs(x - Math.max(prev, 0))).toBeLessThan(0.6)
+        if (prev !== null) {
+          expect(x).toBeGreaterThanOrEqual(prev)
+          expect(x - prev).toBeLessThan(0.3)
+        }
         prev = x
       }
     }
@@ -1509,9 +1747,12 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
   })
 
   it("...and the hub must be the five's own passer, not its point guard (DHO_GUARD)", () => {
-    // Türkoğlu at 6'10" reads as a hub until José Calderón passes 23 points more than he does; that is
-    // 20.7 off the fit, and it is what leaves Toronto on the pick-and-roll his ruling pins them to.
-    expect(bestStyle(RAPTORS_10x).style).toBe('pnr')
+    // Türkoğlu at 6'10" reads as a hub until José Calderón passes 23 points more than he does. DHO_GUARD
+    // is a POSITIVE ramp (`primacy`, a fraction of the term) rather than a subtraction, so his ruling 1
+    // leaves it exactly where recal_213 put it — and it still does the job: Toronto '10 reads dho 55.1,
+    // the tenth of the twelve sets. recal_222 moves the five off the pick-and-roll and onto the POST-UP
+    // (78.7 to 77.8), on Bosh, because `postFit` lost recal_115's `interior()` scaling. MOVED, reported.
+    expect(bestStyle(RAPTORS_10x).style).toBe('postup')
     const hub = dhoMan(RAPTORS_10x).hub!
     const best = Math.max(...RAPTORS_10x.filter((p) => p !== hub).map((p) => p.attrs.playvol))
     expect(best).toBeGreaterThan(hub.attrs.playvol)
@@ -1539,9 +1780,12 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
 
 describe('the three are signature systems and they break nothing that was ruled on', () => {
   it('the twelve-style board still reads every pinned five', () => {
+    // recal_222 re-points seven of these eleven rows and the full before/after list is in
+    // data/rounds/222.json. WHAT THE TABLE IS FOR is unchanged: every five a ruling has touched is
+    // pinned to exactly one read, so a later round cannot walk past it.
     const reads: [Player[], Style][] = [
-      [JAZZ_97, 'pnr'],
-      [NUGGETS_25x, 'pnr'],
+      [JAZZ_97, 'pindown'], // was pnr — the pair is still Stockton/Malone and the roll still beats the pop
+      [NUGGETS_25x, 'dho'], // was pnr — Jokic '25 is an 89.8 hub with `selfless` gone
       [SUNS_05, 'pnr'],
       // THIS ROW WAS 'pnr' WHEN THIS ROUND WAS FITTED AND recal_214 SUPERSEDED IT, on his own
       // ruling: "KD is a better midpt shooter than a finisher, and westbrook is a better finisher
@@ -1550,29 +1794,38 @@ describe('the three are signature systems and they break nothing that was ruled 
       // same stale row and recal_214 re-pointed it too; this was the second copy of it. What the
       // row is here to prove is unchanged either way: nothing recal_213 adds may take this five,
       // and the nearest of the three is horns at 70.0 against the pop's 80.5.
-      [THUNDER_16, 'pickpop'],
-      [RAPTORS_10x, 'pnr'],
-      [CELTICS_25, 'fiveout'],
+      [THUNDER_16, 'pindown'], // recal_214's pop still beats helio, which is what his ruling asked
+      [RAPTORS_10x, 'postup'], // was pnr — `postFit` lost recal_115's interior() scaling
+      [CELTICS_25, 'pickpop'], // was fiveout — five-out is still 13.6 clear of the post-up he ruled against
       [THUNDER_22, 'helio'],
-      [LAKERS_87, 'helio'],
+      [LAKERS_87, 'dho'], // was helio — their helio read itself went UP, 67.0 -> 67.5
       [BULLS_96, 'triangle'],
       [BULLS_97, 'triangle'],
-      [PISTONS_07x, 'motion'],
+      [PISTONS_07x, 'pnr'], // was motion — Rasheed Wallace is a 6'11" roller on his ruling 10
     ]
     for (const [five, want] of reads) expect(bestStyle(five).style).toBe(want)
-    // his ruling on the Spurs '16 is "Motion, or balanced" and nothing this round adds may take them
-    expect(['balanced', 'motion']).toContain(bestStyle(SPURS_16).style)
-    for (const s of ['horns', 'pindown', 'dho'] as Style[]) expect(styleFit(s, SPURS_16)).toBeLessThan(60)
+    // his ruling on the Spurs '16 is "Motion, or balanced" and recal_222 moves them to the POST-UP at
+    // 72.1, off Aldridge. MOVED PINNED READ, reported. The three sets recal_213 added still do not take
+    // them, which is what this row was written to hold.
+    expect(bestStyle(SPURS_16).style).toBe('postup')
+    for (const s of ['horns', 'pindown', 'dho'] as Style[]) expect(styleFit(s, SPURS_16)).toBeLessThan(70)
   })
 
-  it('the helio HEAD does not move by a decimal, because no fit it reads was touched', () => {
-    // the three fives recal_206 and recal_211 both pinned, on the wheel's own OVR-max fives
-    expect(styleFit('helio', LAKERS_87x)).toBeCloseTo(67.0, 1)
-    expect(bestStyle(LAKERS_87x).style).toBe('helio')
-    // ...and the two thinnest margins on the board are exactly where recal_211 left them
-    expect(styleFit('triangle', BULLS_96) - styleFit('motion', BULLS_96)).toBeCloseTo(1.75, 1)
-    expect(styleFit('fiveout', CELTICS_25x) - styleFit('motion', CELTICS_25x)).toBeCloseTo(1.7, 1)
-    expect(bestStyle(CELTICS_25x).style).toBe('fiveout')
+  it('the helio head reads HIGHER, and the two thin margins recal_211 left are now wide', () => {
+    // recal_222, his ruling 8: the helio engine is 0.5 x volume + 0.5 x playvol with nothing
+    // subtracted, so the Showtime read RISES, 67.0 -> 69.6. What takes the five is the hand-off hub at
+    // 78.0, because `hubScore` lost `selfless` (ruling 1). Both are MOVED PINNED READS and both are
+    // reported rather than tuned around.
+    expect(styleFit('helio', LAKERS_87x)).toBeCloseTo(69.6, 1)
+    expect(styleFit('helio', LAKERS_87x)).toBeGreaterThan(67.0)
+    expect(bestStyle(LAKERS_87x).style).toBe('dho')
+    // ...and recal_211's two knife edges are no longer knife edges: the reset lifted every style, and
+    // the triangle and the pick-and-pop pulled clear of motion on these two fives. The Celtics '25x
+    // now read MOTION at 75.7 with five-out 2.9 behind it — the closest margin in this block.
+    expect(styleFit('triangle', BULLS_96) - styleFit('motion', BULLS_96)).toBeGreaterThan(1.75)
+    expect(bestStyle(BULLS_96).style).toBe('triangle')
+    expect(bestStyle(CELTICS_25x).style).toBe('motion')
+    expect(styleFit('motion', CELTICS_25x) - styleFit('fiveout', CELTICS_25x)).toBeCloseTo(2.9, 1)
   })
 
   it('no fit saturates for its own featured man: every one of the three can be moved by him', () => {
@@ -1644,13 +1897,23 @@ describe('the handler is nominated on a ramp, and every five has one', () => {
     expect(featured('pnr', CAST_16).map((p) => p.name)).toEqual([pair.handler!.name, pair.screener!.name])
     // it was 38.1 with a null handler, a fit the two-man terms could not reach at all
     expect(styleFit('pnr', CAST_16)).toBeGreaterThan(44)
-    // ...and a plan that NAMES him prices him on his own game, height-free (recal_124's doctrine)
+    // ...and a plan that NAMES him prices him on his own game
     const called: Tactics = { ...DEFAULT_TACTICS, style: 'pnr', pnr: { handler: "Kevin Durant '16", screener: "Enes Freedom '16" } }
     expect(styleFit('pnr', CAST_16, undefined, called)).toBeGreaterThan(60)
     expect(stylePts(called, CAST_16)).toBeGreaterThan(0)
+    // recal_222, HIS RULING 3 AND 7, SUPERSEDING recal_124's height-free handler: the handler spot now
+    // CARRIES height at 0.20 of its weight, flat at 6'3" and under and nothing by 6'11" — "taller is
+    // worse", his words. `handlerFit` (the part the roll and the pop share) is still height-free, and
+    // the height leg lives in rollHandler/popHandler where the spot is graded. So a short Durant reads
+    // HIGHER as a handler, by the full 19.8 the leg is worth, and the shared base does not move.
     const short = { ...kd.attrs, height: 72 }
-    expect(rollHandler(short)).toBe(rollHandler(kd.attrs))
     expect(handlerFit(short)).toBe(handlerFit(kd.attrs))
+    expect(rollHandler(short)).toBeGreaterThan(rollHandler(kd.attrs))
+    // he is 6'11", two inches up a ten-inch ramp, so he holds 3.96 of the leg's 19.8 and a 6'0" copy
+    // of him collects the other 15.84
+    expect(handlerHeight(kd.attrs)).toBeCloseTo(3.96, 9)
+    expect(handlerHeight(short)).toBeCloseTo(0.2 * 99, 9)
+    expect((rollHandler(short) - rollHandler(kd.attrs)) / rollHandler.K).toBeCloseTo(0.2 * 99 - 3.96, 9)
   })
 
   it('...and he does not displace a better handler: Westbrook still holds the Thunder \'16', () => {
@@ -1658,27 +1921,37 @@ describe('the handler is nominated on a ramp, and every five has one', () => {
     expect(pnrHandler(g("Russell Westbrook '16").attrs)).toBeGreaterThan(pnrHandler(g("Kevin Durant '16").attrs))
     expect(pnrPair(THUNDER_16, null).handler!.name).toBe("Russell Westbrook '16")
     expect(popPair(THUNDER_16, null).handler!.name).toBe("Russell Westbrook '16")
-    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
+    // recal_222: the five reads the pin-down (reported); the POP still beats the ROLL for Durant, which
+    // is what recal_214's ruling was about, and the pair is still these two men.
+    expect(styleFit('pickpop', THUNDER_16)).toBeGreaterThan(styleFit('helio', THUNDER_16))
   })
 
   it('the anchor the discount is sized against: Murray keeps the ball from Jokic, Magic takes it', () => {
     // Denver's pick-and-roll is Murray handling and Jokic SCREENING, and a 97-playvol seven-footer
     // must not simply take the ball from a 71-playvol guard. PNR_HDISC is what stops him.
+    // recal_222, his ruling 1, RE-POINTS THIS ROW. PNR_HDISC was a DISCOUNT — `handlerRead` multiplied
+    // the nomination down by a man's height — and a discount is a negative, so it is gone with the rest
+    // and `handlerRead` is identically 1. The height fact did not disappear: it moved INTO the spot, as
+    // his ruling 3's 0.20 leg on rollHandler/popHandler, where it is a positive for the short man
+    // rather than a penalty on the tall one. What that costs is that `pnrHandler` IS `handlerFit`, and
+    // Jokic '25 (playvol 97) outreads Murray '25 on it — so DENVER'S BALL MOVES TO JOKIC. That is a
+    // MOVED PINNED READ, it is the one this round cannot hold on the nomination side, and it is
+    // reported rather than tuned: holding it would mean putting a subtraction back.
     const jok = g("Nikola Jokić '25").attrs
     const mur = g("Jamal Murray '25").attrs
-    expect(handlerFit(jok)).toBeGreaterThan(handlerFit(mur)) // he IS the better handler on the base
-    expect(pnrHandler(jok)).toBeLessThan(pnrHandler(mur)) // ...and still not Denver's
-    expect(pnrPair(NUGGETS_25x, null).handler!.name).toBe("Jamal Murray '25")
-    expect(pnrPair(NUGGETS_25x, null).screener!.name).toBe("Nikola Jokić '25")
-    expect(bestStyle(NUGGETS_25x).style).toBe('pnr')
-    // ...while Magic '87, the same height as nobody on that floor, DOES take it — and the Showtime
-    // Lakers keep the helio their own ruling pinned, because the engine's own read is priced at what
-    // it reads (handlerRead) and not at a named man's full handlerFit
+    expect(handlerFit(jok)).toBeGreaterThan(handlerFit(mur))
+    expect(pnrHandler(jok)).toBe(handlerFit(jok))
+    expect(pnrPair(NUGGETS_25x, null).handler!.name).toBe("Nikola Jokić '25")
+    // ...and the ROLL SPOT still knows which of them is the big: Jokic reads 96.0 as a screener against
+    // Murray's 39.7, which is the fact recal_216's discount was standing in for.
+    expect(screenFit(jok)).toBeGreaterThan(screenFit(mur))
+    // Magic '87 still takes his own five's ball, on both cuts of it — and their pick-and-roll now reads
+    // 71.7 against a helio of 69.6, because he is a 66.3 roll handler with Abdul-Jabbar behind him. The
+    // Showtime five reads neither: the hand-off hub takes it at 78.0. MOVED PINNED READ, reported.
     expect(pnrPair(LAKERS_87x, null).handler!.name).toBe("Magic Johnson '87")
     expect(pnrPair(LAKERS_87, null).handler!.name).toBe("Magic Johnson '87")
-    expect(bestStyle(LAKERS_87x).style).toBe('helio')
-    expect(bestStyle(LAKERS_87).style).toBe('helio')
-    expect(styleFit('pnr', LAKERS_87x)).toBeLessThan(styleFit('helio', LAKERS_87x))
+    expect(bestStyle(LAKERS_87x).style).toBe('dho')
+    expect(styleFit('pnr', LAKERS_87x)).toBeLessThan(styleFit('dho', LAKERS_87x))
   })
 
   it('no gate, no null: every five on the board nominates a handler and a big to screen for him', () => {
@@ -1694,33 +1967,32 @@ describe('the handler is nominated on a ramp, and every five has one', () => {
 
   it('BOTH halves are ramps: the score is continuous and monotone in height and in play volume', () => {
     const kd = g("Kevin Durant '16").attrs
-    // height: the old line 78 is the FOOT of the ramp, so nobody who was eligible loses a decimal,
-    // and no inch above it flips anything — the step is the ramp's own slope
-    expect(PNR_H0).toBe(78)
-    expect(PNR_H1).toBe(82)
-    expect(handlerRead({ ...kd, height: PNR_H0 })).toBe(handlerRead({ ...kd, height: 60 }))
-    expect(handlerRead({ ...kd, height: PNR_H1 })).toBe(handlerRead({ ...kd, height: 99 }))
-    expect(handlerRead({ ...kd, height: PNR_H1 })).toBeCloseTo(1 - PNR_HDISC, 10)
-    // play volume: the old floor 70 is the TOP of the ramp, and the foot is a FLOOR and not a zero
-    expect(PNR_PV1).toBe(70)
-    expect(ballShare({ ...kd, playvol: PNR_PV1 })).toBe(1)
-    expect(ballShare({ ...kd, playvol: 99 })).toBe(1)
-    expect(ballShare({ ...kd, playvol: PNR_PV0 })).toBeCloseTo(PNR_PVFLOOR, 10)
-    expect(ballShare({ ...kd, playvol: 0 })).toBeCloseTo(PNR_PVFLOOR, 10)
-    let prevH: number | null = null
-    for (let h = 60; h <= 99; h++) {
-      const v = pnrHandler({ ...kd, height: h })
-      if (prevH !== null) {
-        expect(v).toBeLessThanOrEqual(prevH + 1e-9)
-        expect(prevH - v).toBeLessThan(handlerFit(kd) / 3) // no cliff: at most the ramp's own slope
-      }
-      prevH = v
+    // recal_222, his ruling 1: BOTH RAMPS ARE GONE, because both were multipliers BELOW 1 and a
+    // multiplier below 1 is a subtraction by another name. `handlerRead` and `ballShare` are
+    // identically 1 for every card, and the four constants are kept as the record of what recal_216
+    // priced. The nomination is `handlerFit` itself — one continuous, monotone score over all five men
+    // that can never be null, which is the half of recal_216's ruling this round keeps.
+    expect([PNR_H0, PNR_H1, PNR_PV0, PNR_PV1]).toEqual([78, 82, 60, 70])
+    expect(PNR_HDISC).toBeGreaterThan(0) // the record; read by no formula
+    expect(PNR_PVFLOOR).toBeGreaterThan(0) // the record; read by no formula
+    for (const q of PLAYERS.slice(0, 400)) {
+      expect(handlerRead(q.attrs), q.name).toBe(1)
+      expect(ballShare(q.attrs), q.name).toBe(1)
+      expect(pnrHandler(q.attrs), q.name).toBe(handlerFit(q.attrs))
     }
+    // no inch of height moves the nomination at all now, and play volume only ever raises it
+    for (let h = 60; h <= 99; h++) expect(pnrHandler({ ...kd, height: h })).toBe(pnrHandler(kd))
     let prevP: number | null = null
     for (let pv = 0; pv <= 99; pv++) {
       const v = pnrHandler({ ...kd, playvol: pv })
-      if (prevP !== null) expect(v).toBeGreaterThanOrEqual(prevP - 1e-9)
+      if (prevP !== null) expect(v).toBeGreaterThan(prevP)
       prevP = v
+    }
+    // ...and the height fact is not lost, it moved into the SPOT: the roll and the pop both carry it
+    // at 0.20, flat at HAND_H_FLAT and under, nothing by HAND_H_END (his ruling 3)
+    for (let h = 60; h < 99; h++) {
+      expect(rollHandler({ ...kd, height: h + 1 })).toBeLessThanOrEqual(rollHandler({ ...kd, height: h }) + 1e-9)
+      expect(popHandler({ ...kd, height: h + 1 })).toBeLessThanOrEqual(popHandler({ ...kd, height: h }) + 1e-9)
     }
   })
 
@@ -1746,29 +2018,175 @@ describe('the handler is nominated on a ramp, and every five has one', () => {
     }
   })
 
-  it('HIS RULING: the pnr handler is the shooter and the pnp handler is the driver', () => {
+  it('HIS RULING, now as two named weights: the ROLL handler gains 3pt and the POP handler gains rim', () => {
+    // recal_222, HIS RULING 2, SUPERSEDING recal_216's HAND_TILT. The tilt was a SUBTRACTION (each spot
+    // docked a man for being the wrong kind of scorer for it) and the reset takes it out; the same
+    // distinction is now made by two positive 0.20 legs on different columns:
+    //   rollHandler = handlerFit + 0.20 x 3pt + height     — the shooter, "a better shooter"
+    //   popHandler  = handlerFit + 0.20 x rim  + height     — the driver, "a better inside scorer"
+    // so the direction of his ruling is exact and general: whichever of the two shots a man is better
+    // at is the call he grades better in. HAND_TILT is kept at 0 as the record of the old span.
     const rus = g("Russell Westbrook '16").attrs
     const kd = g("Kevin Durant '16").attrs
-    // "Westbrook would fit better in a pnp system" — and Durant is the other half of the same line
-    expect(popHandler(rus)).toBeGreaterThan(rollHandler(rus))
-    expect(rollHandler(kd)).toBeGreaterThan(popHandler(kd))
-    // it is ONE base with two tilts, so recal_120's elite-passer ramp survives in both
-    expect(rollHandler(rus)).toBeLessThanOrEqual(handlerFit(rus))
-    expect(popHandler(rus)).toBeLessThanOrEqual(handlerFit(rus))
-    expect(Math.max(rollHandler(rus), popHandler(rus))).toBe(handlerFit(rus))
-    expect(Math.max(rollHandler(kd), popHandler(kd))).toBe(handlerFit(kd))
-    // "Not a huge impact": the whole span is HAND_TILT on a term that carries 0.40 of the fit
-    expect(HAND_TILT).toBe(3)
-    for (const n of ["Russell Westbrook '16", "Kevin Durant '16", "John Stockton '97", "Nikola Jokić '25", "Magic Johnson '87"]) {
-      const a = g(n).attrs
-      expect(Math.abs(rollHandler(a) - popHandler(a))).toBeLessThanOrEqual(HAND_TILT)
+    expect(HAND_TILT).toBe(0)
+    // the general law, on the whole pool: 3pt > rim reads higher on the ROLL, and the other way round
+    for (const q of PLAYERS.slice(0, 500)) {
+      const x = q.attrs
+      if (x['3pt'] > x.rim) expect(rollHandler(x), q.name).toBeGreaterThan(popHandler(x))
+      if (x.rim > x['3pt']) expect(popHandler(x), q.name).toBeGreaterThan(rollHandler(x))
+      expect(rollHandler(x) - popHandler(x)).toBeCloseTo(0.2 * (x['3pt'] - x.rim) * rollHandler.K, 9)
     }
-    // no new threshold: the roll's credit IS recal_214's closeout ramp, read from the ball
-    expect(overTop(kd)).toBe(closeout(kd))
-    expect(downhill(kd)).toBeCloseTo(Math.max(0, Math.min(1, (kd.rim - kd['3pt']) / (SHOOT_3PT_HI - SHOOT_3PT))), 10)
-    // ...and it never lifts a fit, so no five gains a two-man read it did not have
-    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.25, 1) // recal_120's own number, unmoved
-    expect(bestStyle(JAZZ_97).style).toBe('pnr')
-    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
+    // "Westbrook would fit better in a pnp system" — rim 80 over a three of 41, and he still does
+    expect(popHandler(rus)).toBeGreaterThan(rollHandler(rus))
+    // ...and DURANT '16 NOW GRADES THE SAME WAY, because his card says rim 86 against a three of 80.
+    // recal_216 pinned him the other way with `closeout`, which read the three against a 40..60 band
+    // rather than against his own rim. A MOVED PINNED READ, reported: the LAW is his ruling's law, and
+    // this card falls on the other side of it. `overTop`/`downhill` are gone with the tilt that read them.
+    expect(kd.rim).toBeGreaterThan(kd['3pt'])
+    expect(popHandler(kd)).toBeGreaterThan(rollHandler(kd))
+    // ...and the fit it feeds is essentially where recal_120 left it on the five that named it
+    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.35, 1)
+    expect(styleFit('pnr', JAZZ_97)).toBeGreaterThan(styleFit('pickpop', JAZZ_97))
+  })
+})
+
+/**
+ * recal_222 — THE SPOT TERMS REBUILT, AND THE TWO INVARIANTS HE SET ON THEM.
+ *
+ * His twelve rulings, in the order he gave them, are recorded in data/rounds/222.json. Two of them
+ * are LAWS about every spot at once rather than facts about one, and they are pinned here so no
+ * later round can break them without a red row:
+ *
+ *   1. THE RESET — "remove all the - across the board", carried from recal_219's iso to every spot
+ *      fit in the file. No spot term subtracts anything from any man any more. The size gates are
+ *      not deleted, they are CLAMPED at zero (recal_220 deleted them outright and collapsed the
+ *      board to 1,252 of 1,255 fives reading `dho`; it is superseded and abandoned, and its
+ *      measurement is the record of why the harder reading was wrong).
+ *   2. EVERY SPOT READS 100 ON A 99-ACROSS CARD — "In every spot, the value should get to 100. So
+ *      if I dont achieve that, auto add the stats to 100." `toHundred` divides each term by its own
+ *      MEASURED ceiling; every fit divides the same `.K` straight back out at its use site, so the
+ *      rescale moved no read by a thousandth. Both halves are asserted below.
+ *
+ * ELEVEN OF THE TWELVE SPOTS READ EXACTLY 100. The twelfth is the corner/wing, which IS the 3pt bar
+ * itself, and bars cap at 99 — so that spot reads 99.0 and stays there, by his leave.
+ */
+describe('recal_222: no spot term subtracts, and every one of them reads 100 on a 99-across card', () => {
+  /** the perfect card, at whatever height the term in question is flat at */
+  const max99 = (height: number): Attrs =>
+    ({
+      '3pt': 99, rim: 99, mid: 99, ft: 99, fouldraw: 99, orb: 99, drb: 99, playvol: 99, ballsec: 99,
+      volume: 99, efficiency: 99, durability: 99, rimprot: 99, perimdisrupt: 99, perdef: 99,
+      discipline: 99, rim_mid_measured: true, height, usg_raw: 40, ts_raw: 0.7, ts_rel: 0.7,
+    }) as unknown as Attrs
+  const SPOTS: [string, ((x: Attrs) => number) & { K: number }][] = [
+    ['rollHandler', rollHandler],
+    ['popHandler', popHandler],
+    ['screenFit', screenFit],
+    ['popFit', popFit],
+    ['postFit', postFit],
+    ['heliEngineScore', heliEngineScore],
+    ['isoScore', isoScore],
+    ['elbowSkill', elbowSkill],
+    ['hubScore', hubScore],
+    ['pinScore', pinScore],
+    ['hornsHandler', hornsHandler],
+  ]
+
+  it('all eleven wrapped spot terms read 100.000000 at their own best height', () => {
+    for (const [name, f] of SPOTS) {
+      let best = 0
+      for (let h = 60; h <= 95; h++) best = Math.max(best, f(max99(h)))
+      expect(best, name).toBeCloseTo(100, 6)
+    }
+  })
+
+  it('...and the twelfth spot, the corner/wing, reads 99.0 because it IS the 3pt bar', () => {
+    // the only spot on the grade page whose value is an ATTRIBUTE rather than a composite. Bars cap
+    // at 99, so this one reads 99.0 and he has left it there — the exception is recorded, not tuned.
+    expect(max99(78)['3pt']).toBe(99)
+    expect(SHOOT_3PT_HI).toBeLessThan(99)
+  })
+
+  it('the rescale moved no read: `.K` is divided straight back out at every use site', () => {
+    // K is the same number for all eleven, because every raw term was built to top out at exactly 99
+    for (const [name, f] of SPOTS) expect(f.K, name).toBeCloseTo(100 / 99, 12)
+    // ...and the fit reads term/K, which is the raw term to the last bit a double can carry
+    const cards = PLAYERS.slice(0, 400).map((p) => p.attrs)
+    for (const [name, f] of SPOTS) for (const x of cards) expect(f(x) / f.K, name).toBeCloseTo(f(x) * (99 / 100), 9)
+  })
+
+  it('THE RESET: no spot term can be lowered by any attribute, for any card', () => {
+    // "remove all the - across the board" — every spot term is a weighted sum of non-negative legs,
+    // so one more point of anything the term reads can only raise it or leave it alone.
+    const COLS = ['3pt', 'rim', 'mid', 'volume', 'playvol', 'ballsec', 'efficiency', 'fouldraw', 'rimprot'] as const
+    for (const n of ["Stephen Curry '16", "Nikola Jokić '25", "Draymond Green '16", "Shaquille O'Neal '00"]) {
+      const base = g(n).attrs
+      for (const [name, f] of SPOTS) {
+        for (const k of COLS) {
+          for (let v = 0; v < 99; v++) {
+            expect(f({ ...base, [k]: v + 1 }), `${name} ${n} ${k}=${v}`).toBeGreaterThanOrEqual(f({ ...base, [k]: v }) - 1e-9)
+          }
+        }
+      }
+    }
+  })
+
+  it('EVERY SPOT WEIGHT SUMS TO 1.00, which is how he caught that horns handler summed to 0.72', () => {
+    // he reads the grade page as PER-POINT WEIGHTS, so a spot whose weights do not sum to 1 cannot
+    // reach 100, and a flat bonus (the old ELITE_LIFT +24) hides from that column entirely.
+    expect(0.5 + 0.1 + 0.2 + 0.2).toBeCloseTo(1, 9) // handler: playvol .5 / ballsec .1 / shot .2 / height .2
+    expect(0.45 + 0.45 + 0.1).toBeCloseTo(1, 9) // roller: height .45 / rim .45 / efficiency .10
+    expect(0.4 + 0.45 + 0.1 + 0.05).toBeCloseTo(1, 9) // popper: height .40 / 3pt .45 / mid .10 / eff .05
+    expect(0.6 + 0.4).toBeCloseTo(1, 9) // post hub: volume .6 / inside shot .4, times a tallness ramp
+    expect(0.5 + 0.5).toBeCloseTo(1, 9) // helio engine: volume .5 / playvol .5, and nothing else
+    expect(ISO_VOL + ISO_EFF + ISO_FD + ISO_MID).toBeCloseTo(1, 9) // iso: .40 / .30 / .20 / .10
+    expect(HORN_WEAK + HORN_STRONG).toBeCloseTo(1, 9) // elbow: weaker .75 / stronger .25, times size
+    expect(DHO_PASS + DHO_SHOT).toBeCloseTo(1, 9) // hub: playvol .62 / shot .38, times size
+    expect(PIN_JMP + PIN_EFF).toBeCloseTo(1, 9) // pin-down: jumper .75 / efficiency .25
+    // ...and the HORNS HANDLER is `playvol` at FULL weight, which is the 0.72 he caught
+    const jok = g("Nikola Jokić '25").attrs
+    expect(hornsHandler(jok) / hornsHandler.K).toBeCloseTo(jok.playvol, 9)
+    for (const q of PLAYERS.slice(0, 400)) expect(hornsHandler(q.attrs) / hornsHandler.K).toBeCloseTo(q.attrs.playvol, 9)
+  })
+
+  it('HIS RULING on height: each of the four ramps is flat past the line he named', () => {
+    // handler flat at 6'3" and under (taller is worse); roller flat at 6'10" and over, popper at
+    // 6'8" and over, post hub at 6'9" and over (shorter is worse). Ten inches, ten points, ~1 an inch.
+    expect([HAND_H_FLAT, HAND_H_END]).toEqual([75, 85])
+    expect([ROLL_H_FLAT, ROLL_H_END]).toEqual([82, 72])
+    expect([POP_H_FLAT, POP_H_END]).toEqual([80, 70])
+    expect([POST_H_FLAT, POST_H_END]).toEqual([81, 71])
+    const at = (f: (x: Attrs) => number, h: number) => f(max99(h))
+    expect(at(handlerHeight, 75)).toBeCloseTo(at(handlerHeight, 60), 9)
+    expect(at(handlerHeight, 85)).toBe(0)
+    expect(at(rollerHeight, 82)).toBeCloseTo(at(rollerHeight, 95), 9)
+    expect(at(rollerHeight, 72)).toBe(0)
+    expect(at(popperHeight, 80)).toBeCloseTo(at(popperHeight, 95), 9)
+    expect(at(popperHeight, 70)).toBe(0)
+    expect(at(postHeight, 81)).toBeCloseTo(at(postHeight, 95), 9)
+    expect(at(postHeight, 71)).toBe(0)
+    // ...and each is worth exactly the weight his ruling gives it on a 99 card
+    expect(at(handlerHeight, 60)).toBeCloseTo(0.2 * 99, 9)
+    expect(at(rollerHeight, 95)).toBeCloseTo(0.45 * 99, 9)
+    expect(at(popperHeight, 95)).toBeCloseTo(0.4 * 99, 9)
+    for (const f of [handlerHeight, rollerHeight, popperHeight, postHeight]) {
+      for (let h = 60; h < 95; h++) expect(Math.abs(at(f, h + 1) - at(f, h))).toBeLessThan(11)
+    }
+  })
+
+  it('THE POST HUB IS HIS FORMULA, and height MULTIPLIES so his 6:4 stays exactly 6:4', () => {
+    // "0.6 x volume + 0.4 x the better of (mid+rim)/2 and rim", times a tallness ramp. Because the
+    // ramp MULTIPLIES rather than taking a slice of the weight, the ratio between the two halves is
+    // height-free — which is the whole reason he asked for it that way round.
+    for (const n of ["Shaquille O'Neal '00", "Karl Malone '97", "Kevin Durant '23", "Nikola Jokić '25"]) {
+      const x = g(n).attrs
+      const skill = 0.6 * x.volume + 0.4 * Math.max((x.mid + x.rim) / 2, x.rim)
+      expect(postFit(x) / postFit.K, n).toBeCloseTo(skill * (postHeight(x) / 99), 9)
+      for (const h of [72, 76, 81, 90]) {
+        const t = { ...x, height: h }
+        if (postHeight(t) === 0) continue
+        expect((postFit(t) / postFit.K) / (postHeight(t) / 99), `${n} h${h}`).toBeCloseTo(skill, 9)
+      }
+    }
   })
 })

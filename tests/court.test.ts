@@ -178,12 +178,13 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
   it('the Lakers five stands Ayton inside, not in the corner', () => {
     expect(canSpace(LAKERS[AYTON])).toBe(false)
     const at = spotsFor(null, LAKERS)
-    // recal_115 moved this five's READ from post-up to helio: LeBron '26 shoots 38 from three, so
-    // the post-up hub term (which is now scaled by how interior a big's own game is) no longer
-    // makes a post team of the Lakers, and Doncic is the five's best scorer-creator by 10 points.
-    // The RULING under test is unchanged and is about the spot, not the shape: whatever the five is
-    // read as, the man who cannot shoot stands inside and never in a corner.
-    expect(inferredStyle(LAKERS)!.style).toBe('helio')
+    // recal_115 moved this five's READ from post-up to helio, and recal_222 moved it back: his ruling
+    // 5 gives the post hub as "0.6 x volume + 0.4 x max((mid+rim)/2, rim)" times a tallness ramp, with
+    // no leg that reads the three at all, so recal_115's `interior()` scaling is gone and James '26 is
+    // a post hub again (postup 78.5 against helio 70.2). The RULING under test is unchanged and is
+    // about the SPOT, not the shape: whatever the five is read as, the man who cannot shoot stands
+    // inside and never in a corner. MOVED READ, reported in data/rounds/222.json.
+    expect(inferredStyle(LAKERS)!.style).toBe('postup')
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
@@ -302,13 +303,20 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
     // recal_214 moved WHICH two-man game it is to the pop (his ruling: "KD is a better midpt
     // shooter than a finisher, and westbrook is a better finisher than shooter, so it needs to be
     // pnp not pnr") — the two names are the ruling here, and they are unchanged.
+    // recal_222: the Thunder '16's winning read moved to the PIN-DOWN, which features ONE man (Durant),
+    // so the caption names one. recal_214's ruling is still satisfied where it is a statement about the
+    // two-man game — the POP caption on this five still reads "Westbrook + Durant", asserted below.
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toMatch(/^pick-and-pop · best fit \d+ · Westbrook \+ Durant$/)
+    expect(caption(draw(null, okc16))).toMatch(/^pin-down · best fit \d+ · Durant$/)
+    expect(caption(draw({ style: 'pickpop', pnr: null }, okc16))).toMatch(/Westbrook \+ Durant/)
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
     expect(caption(draw(null, okc22))).toMatch(/^helio · best fit \d+ · Gilgeous-Alexander$/) // the fit number rides the pool (recal_116 moved it 65 -> 64); the man is the ruling
     // ...and a shape that features nobody names nobody, rather than picking a starter at random
+    // recal_222: Boston '25's winning read moved to the pick-and-pop, which DOES feature a pair, so the
+    // "features nobody names nobody" half of this row is asserted on five-out as a CALL instead.
     const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
-    expect(caption(draw(null, bos25))).toMatch(/^five-out · best fit \d+$/)
+    expect(caption(draw(null, bos25))).toMatch(/^pick-and-pop · best fit \d+ · Tatum \+ Porziņģis$/)
+    expect(caption(draw({ style: 'fiveout', pnr: null }, bos25))).not.toMatch(/·[^·]+·/)
   })
 
   it('a five still being filled keeps the ghost floor, and claims no shape', () => {
@@ -417,11 +425,12 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // the floor by 27 points of scorer-creator, which is what a helio offence is — so the pair is
     // asserted against the CALL, which is what the ruling was about ("If its pnr, ..."). The
     // inference is checked below on a five that is read as a pick-and-roll.
-    // recal_219 moved it once more, to ISO: with the play-volume minus gone (his ruling, "remove all
-    // the - across the board") Gilgeous-Alexander '24 is priced on his own composite and the five reads
-    // iso 75.9 against helio 74.7. The assertion below is the read, not the ruling — what this test is
-    // here to prove is the PAIR and the floor, and both are asserted against the CALL, unchanged.
-    expect(inferredStyle(THUNDER)!.style).toBe('iso')
+    // recal_219 moved it to ISO and recal_222 moved it once more, to the PIN-DOWN: the pin-down spot
+    // lost `pinCatch`'s rim subtraction and `pinOffBall` with every other minus in the file (his ruling
+    // 1) and Gilgeous-Alexander '24 is a big mid-range scorer. The assertion below is the read, not the
+    // ruling — what this test is here to prove is the PAIR and the floor, and both are asserted against
+    // the CALL, unchanged: Holmgren is still the screener his ruling names.
+    expect(inferredStyle(THUNDER)!.style).toBe('pindown')
     const pair = pnrPair(THUNDER, null)
     expect(pair.handler!.name).toBe("Shai Gilgeous-Alexander '24")
     expect(pair.screener!.name).toBe("Chet Holmgren '24")
@@ -434,9 +443,17 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // the mid-range to one call ("KD is a better midpt shooter than a finisher ... it needs to be
     // pnp not pnr") and their read became the pop; the Jazz are the five that still reads the ROLL,
     // so the inference is checked on them.
+    // recal_222 moved the Jazz's WINNING read to the pin-down (82.98 against a pnr of 76.35), so the
+    // five whose INFERENCE is a pick-and-roll is now the Suns '05 — the other five recal_120's own
+    // block pins to the roll, Nash handling and Stoudemire diving. The Jazz keep the pair and the
+    // roll-over-pop preference, which is what his ruling said; that is asserted in tests/tactics.test.ts.
+    const suns = [g("Steve Nash '05"), g("Joe Johnson '05"), g("Quentin Richardson '05"), g("Shawn Marion '05"), g("Amar'e Stoudemire '05")]
+    expect(inferredStyle(suns)!.style).toBe('pnr')
+    expect(spotsFor(null, suns)).toEqual(spotsFor({ style: 'pnr', pnr: null }, suns))
+    holds(suns, null)
     const jazz = [g("John Stockton '97"), g("Jeff Hornacek '97"), g("Bryon Russell '97"), g("Karl Malone '97"), g("Greg Ostertag '97")]
-    expect(inferredStyle(jazz)!.style).toBe('pnr')
-    expect(spotsFor(null, jazz)).toEqual(spotsFor({ style: 'pnr', pnr: null }, jazz))
+    expect(pnrPair(jazz, null).handler!.name).toBe("John Stockton '97")
+    expect(pnrPair(jazz, null).screener!.name).toBe("Karl Malone '97")
     holds(jazz, null)
   })
 
@@ -452,8 +469,14 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // 37), so the gate hands the shape TWO men who may not stand on the arc against ONE inside
     // spot, and the RANK has to choose. It chooses on height + orb, the dunker spot's own two
     // questions, and Adams takes it by 60 — 83 + 84 against 74 + 33.
+    // recal_222, his ruling 10: the ROLL screener is height .45 / rim .45 / efficiency .10, so ADAMS
+    // (6'11", rim 54, efficiency 65) outreads Ibaka (6'11", rim 35, efficiency 48) and takes the screen
+    // — which is the FIRST of the two spots his own ruling gives him ("Adams can either be the screener
+    // or inside the paint"). The pop screener is still Ibaka, who is the shooter of the two, and the
+    // POP is where the inside spot is now asserted (the next test down). MOVED, reported.
     const okc = [g("Reggie Jackson '15"), g("Anthony Morrow '15"), g("Russell Westbrook '15"), g("Serge Ibaka '15"), g("Steven Adams '15")]
-    expect(pnrPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
+    expect(pnrPair(okc, null).screener!.name).toBe("Steven Adams '15")
+    expect(popPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
     const [adams, jackson, morrow] = ["Steven Adams '15", "Reggie Jackson '15", "Anthony Morrow '15"].map((n) => okc.findIndex((p) => p.name === n))
     expect(okc[adams].attrs.height).toBe(Math.max(...okc.map((p) => p.attrs.height)))
     // both men fail the SHOOTING line, so the line alone cannot say which of them goes in
@@ -464,14 +487,18 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     expect(okc[jackson].attrs.rim).toBeGreaterThan(okc[adams].attrs.rim)
     const dunker = (q: Player) => q.attrs.height + q.attrs.orb
     expect(dunker(okc[adams])).toBeGreaterThan(dunker(okc[jackson]))
-    const at = spotsFor({ style: 'pnr', pnr: null }, okc)
-    // Adams inside, in the paint and not on a block: down by the rim, below the free-throw line
+    // the POP is the call that leaves him over, and it puts him where his ruling's other half says:
+    // inside, in the paint and not on a block — down by the rim, below the free-throw line
+    const at = spotsFor({ style: 'pickpop', pnr: null }, okc)
     expect(outsideLine(at[adams])).toBe(false)
     expect(feet(at[adams])[1]).toBeLessThan(8)
     // Jackson keeps the arc, on the wing; the one man who can really shoot keeps a corner
     expect(outsideLine(at[jackson])).toBe(true)
     expect(inCorner(at[jackson])).toBe(false)
     expect(inCorner(at[morrow])).toBe(true)
+    // ...and on the ROLL, where Adams sets the screen, he is beside the ball and inside the arc
+    const roll = spotsFor({ style: 'pnr', pnr: null }, okc)
+    expect(outsideLine(roll[adams])).toBe(false)
     holds(okc, null)
   })
 
@@ -481,10 +508,14 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // this five in BOTH directions at once: Freedom (3pt 23, mid 47) clears such a gate and stays
     // out on the arc, while Roberson (3pt 16, mid 16) fails it and is sent inside instead. The three
     // alone gates it — both men fail `canSpace` — and height + orb ranks it, so Freedom goes in.
+    // recal_222, his ruling 10: on the ROLL, Freedom (6'10", rim 93) is the screener and Durant is not,
+    // so the five that leaves Freedom over is now the POP — where DURANT is the screener, which is the
+    // pair his ruling names ("a durant and westbrook pnr"). The spot assertions move to the pop call.
     const okc = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    const pair = pnrPair(okc, null)
+    const pair = popPair(okc, null)
     expect(pair.handler!.name).toBe("Russell Westbrook '16")
     expect(pair.screener!.name).toBe("Kevin Durant '16")
+    expect(pnrPair(okc, null).screener!.name).toBe("Enes Freedom '16")
     const [freedom, roberson, ibaka] = ["Enes Freedom '16", "Andre Roberson '16", "Serge Ibaka '16"].map((n) => okc.findIndex((p) => p.name === n))
     // the refuted gate: on the better of the two jump shots, Roberson is the worse man and Freedom
     // reads as a shooter. Both readings are wrong, and both are the same mistake.
@@ -495,7 +526,7 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     expect(canSpace(okc[roberson])).toBe(false)
     // Roberson is even the WORSE three-point shooter, so ranking by the three would seat him
     expect(okc[roberson].attrs['3pt']).toBeLessThan(okc[freedom].attrs['3pt'])
-    const at = spotsFor({ style: 'pnr', pnr: null }, okc)
+    const at = spotsFor({ style: 'pickpop', pnr: null }, okc)
     expect(outsideLine(at[freedom])).toBe(false)
     expect(feet(at[freedom])[1]).toBeLessThan(8)
     // Roberson takes the wing and Ibaka, who can shoot at 3pt 40, takes the corner
@@ -515,8 +546,13 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     const adams = okc.findIndex((p) => p.name === "Steven Adams '15")
     expect(popPair(okc, null).screener!.name).toBe("Serge Ibaka '15")
     const pop = spotsFor({ style: 'pickpop', pnr: null }, okc)
-    expect(pop).toEqual(spotsFor({ style: 'pnr', pnr: null }, okc))
+    // recal_222, his ruling 10: the two calls now nominate DIFFERENT screeners on this five — the roll
+    // takes Adams (rim 54) and the pop takes Ibaka (3pt 40) — so the two floors are no longer the same
+    // five spots. "The same in terms of design" is asserted where it is a statement about the DESIGN:
+    // both calls hold the reserved inside spot, and both put the non-shooting big inside the arc.
     expect(outsideLine(pop[adams])).toBe(false)
+    expect(outsideLine(spotsFor({ style: 'pnr', pnr: null }, okc)[adams])).toBe(false)
+    expect(new Set(pop.map((xy) => xy.join(','))).size).toBe(5)
   })
 
   it('a five whose leftovers can all shoot still draws three men behind the line', () => {

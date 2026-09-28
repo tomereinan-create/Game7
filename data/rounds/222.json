@@ -1,0 +1,227 @@
+{
+  "round": 222,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "In every spot, the value should get to 100. So if I dont achieve that, auto add the stats to 100 / remove all the - across the board",
+  "title": "the twelve spot terms rebuilt from his rulings: every negative removed from every spot fit, each term normalised so a 99-across card reads 100 with `.K` divided straight back out at all eleven fit use-sites (so no read moves by a thousandth from the rescale), the handler at playvol .5 / ballsec .1 / shot .2 / height .2 with the flat elite-passer bonus gone, the roll gaining 3pt and the pop gaining rim, four height ramps flat past the lines he named (handler 6'3\", roller 6'10\", popper 6'8\", post hub 6'9\"), the post hub 0.6 volume + 0.4 max((mid+rim)/2, rim) times a MULTIPLICATIVE tallness ramp so his 6:4 stays 6:4, the helio engine 0.5 volume + 0.5 playvol and nothing else, the popper .40/.45/.10/.05, the roller .45/.45/.10, and `hornsHandler` playvol alone at full weight — every spot's weights sum to 1.00",
+  "scale": "team:off",
+  "subject": "Nuggets '25",
+  "five": [
+    "Russell Westbrook '25",
+    "Jamal Murray '25",
+    "Michael Porter Jr. '25",
+    "Aaron Gordon '25",
+    "Nikola Jokić '25"
+  ],
+  "target": 87,
+  "tol": 0,
+  "before": 87,
+  "after": 87,
+  "pipeline_version": 222,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const toHundred = \\(f: \\(x: Attrs\\) => number\\) => \\{\\s*\\n  const K = 100 / ceiling\\(f\\)",
+      "label": "HIS RULING: every spot term divided by its OWN measured ceiling so a 99-across card reads 100",
+      "note": "new — `ceiling` sweeps the all-99 card across every height and takes the best; `.K` is the divisor the fits multiply back"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const rollHandler = toHundred\\(rollHandlerRaw\\)\\s*\\nexport const popHandler = toHundred\\(popHandlerRaw\\)\\s*\\nexport const screenFit = toHundred\\(screenFitRaw\\)\\s*\\nexport const popFit = toHundred\\(popFitRaw\\)\\s*\\nexport const postFit = toHundred\\(postFitRaw\\)\\s*\\nexport const heliEngineScore = toHundred\\(heliEngineScoreRaw\\)\\s*\\nexport const isoScore = toHundred\\(isoScoreRaw\\)\\s*\\nexport const elbowSkill = toHundred\\(elbowSkillRaw\\)\\s*\\nexport const hubScore = toHundred\\(hubScoreRaw\\)\\s*\\nexport const pinScore = toHundred\\(pinScoreRaw\\)\\s*\\nexport const hornsHandler = toHundred\\(hornsHandlerRaw\\)",
+      "label": "the eleven wrapped spot terms, in one place — all eleven read 100.000000 on an all-99 card",
+      "note": "every K is 100/99 because every raw term was built to top out at exactly 99"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const handlerFit = \\(x: Attrs\\) => clamp\\(0\\.5 \\* x\\.playvol \\+ 0\\.1 \\* x\\.ballsec, 0, 99\\)",
+      "label": "HIS RULINGS 6, 7 and 11: handler playvol .5 / ballsec .1 here, and the flat ELITE_LIFT +24 bonus GONE",
+      "note": "0.6*playvol + 0.24*volume + ELITE_LIFT*elitePass -> 0.5*playvol + 0.1*ballsec (+ shot .2 and height .2 in the two spots)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "recal_222, HIS RULING 11: the flat elite-passer bonus is GONE from `handlerFit`",
+      "label": "the proof the elite-passer bonus is GONE: the deletion note stands where ELITE_PV / ELITE_LIFT / elitePass were",
+      "note": "three lines deleted; the block that replaces them names what they were and why they went"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HAND_H_FLAT = 75, HAND_H_END = 85, HAND_H = 10\\s*\\nexport const ROLL_H_FLAT = 82, ROLL_H_END = 72, ROLL_H = 10\\s*\\nexport const POP_H_FLAT = 80, POP_H_END = 70, POP_H = 10",
+      "label": "HIS RULING 3: handler flat at 6'3\" and under, roller flat at 6'10\" and over, popper flat at 6'8\" and over",
+      "note": "new — ten inches, ten points, ~1 a point, the same size as the 0.1-per-point terms on the three and the rim"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const rollHandlerRaw = \\(x: Attrs\\) => clamp\\(handlerFit\\(x\\) \\+ 0\\.2 \\* x\\['3pt'\\] \\+ handlerHeight\\(x\\), 0, 99\\)\\s*\\nconst popHandlerRaw = \\(x: Attrs\\) => clamp\\(handlerFit\\(x\\) \\+ 0\\.2 \\* x\\.rim \\+ handlerHeight\\(x\\), 0, 99\\)",
+      "label": "HIS RULING 2: the ROLL handler gains his 3pt and the POP handler gains his rim — two positive legs, no tilt",
+      "note": "clamp(handlerFit - HAND_TILT * max(0, downhill - overTop)) -> handlerFit + 0.2*3pt + height (and the mirror)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const screenFitRaw = \\(x: Attrs\\) => clamp\\(0\\.45 \\* x\\.rim \\+ 0\\.1 \\* x\\.efficiency \\+ rollerHeight\\(x\\), 0, 99\\)",
+      "label": "HIS RULING 10: roller height .45 / rim .45 / efficiency .10",
+      "note": "min(rim + max(0, mid - rim) * (1 - closeout), efficiency) -> 0.45*rim + 0.1*eff + 0.45*height"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const popFitRaw = \\(x: Attrs\\) =>\\s*\\n  clamp\\(0\\.45 \\* x\\['3pt'\\] \\+ 0\\.05 \\* x\\.efficiency \\+ 0\\.1 \\* x\\.mid \\+ popperHeight\\(x\\), 0, 99\\)",
+      "label": "HIS RULING 9: popper height .40 / 3pt .45 / mid .10 / efficiency .05",
+      "note": "min(3pt + max(0, mid - 3pt) * closeout, efficiency) -> the four named weights"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const postFitRaw = \\(x: Attrs\\) =>\\s*\\n  \\(0\\.6 \\* x\\.volume \\+ 0\\.4 \\* Math\\.max\\(\\(x\\.mid \\+ x\\.rim\\) / 2, x\\.rim\\)\\) \\* tallBonus\\(x\\.height, POST_H_FLAT, POST_H_END\\)",
+      "label": "HIS RULING 5: 0.6 volume + 0.4 of his better inside shot, TIMES a tallness ramp so the 6:4 stays 6:4",
+      "note": "min(rim, volume) * interior(x) -> his formula; recal_115's interior() scaling is gone with the rest of the minuses"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const heliEngineScoreRaw = \\(x: Attrs\\) => 0\\.5 \\* x\\.volume \\+ 0\\.5 \\* x\\.playvol",
+      "label": "HIS RULING 8: the helio engine is scoring load and playmaking load, evenly. Nothing else.",
+      "note": "scorerCreator(x) - HELIO_PV_W * max(0, HELIO_PV - playvol) -> 0.5*volume + 0.5*playvol"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const hornsHandlerRaw = \\(x: Attrs\\) => x\\.playvol",
+      "label": "HIS RULING 12: the man up top is `playvol` alone at FULL weight",
+      "note": "handlerFit(x) * (1 - elbowBig(x)) -> x.playvol — the spot he read as summing to 0.72 now sums to 1.00"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const handlerRead = \\(_x: Attrs\\) => 1",
+      "label": "HIS RULING 1 (the reset): PNR_HDISC's height discount on the nomination is gone",
+      "note": "ballShare(x) * (1 - PNR_HDISC * heightRamp(x, PNR_H0, PNR_H1)) -> 1; a multiplier below 1 is a subtraction by another name"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ballStop = \\(_a: Attrs\\[\\]\\): number => 0",
+      "label": "HIS RULING 1: motion no longer charges the worst ball-holder",
+      "note": "max over the five of max(0, volume - playvol - MOT_HOLD_FREE) -> 0"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pinWing = \\(_x: Attrs\\) => 1\\s*\\n",
+      "label": "HIS RULING 1: the pin-down's height decay is gone",
+      "note": "clamp((PIN_H1 - height) / (PIN_H1 - PIN_H0), 0, 1) -> 1"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pinOffBall = \\(_x: Attrs\\) => 1",
+      "label": "HIS RULING 1: the pin-down no longer charges its man his play volume",
+      "note": "clamp((PIN_PV_MAX - playvol) / (PIN_PV_MAX - PIN_PV), 0, 1) -> 1"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pinCatch = \\(x: Attrs\\) =>\\s*\\n  PIN_CATCH_FLOOR \\+ \\(1 - PIN_CATCH_FLOOR\\) \\* clamp\\(\\(pinShot\\(x\\) \\+ PIN_CATCH_FREE\\) / PIN_CATCH_SPAN, 0, 1\\)",
+      "label": "HIS RULING 1: pinCatch keeps its POSITIVE jumper ramp and loses the `- x.rim` subtraction",
+      "note": "(pinShot - rim + PIN_CATCH_FREE) / SPAN -> (pinShot + PIN_CATCH_FREE) / SPAN; the pool's lowest pinCatch is now 0.468"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const hubScoreRaw = \\(x: Attrs\\) =>\\s*\\n  \\(DHO_PASS \\* x\\.playvol \\+ DHO_SHOT \\* pinShot\\(x\\)\\) \\* bigMan\\(x\\)",
+      "label": "HIS RULING 1: the hand-off hub no longer decays in the hub's own scoring load (`selfless` is gone)",
+      "note": "(DHO_PASS*playvol + DHO_SHOT*pinShot) * bigMan * selfless -> ... * bigMan. The largest single move in the round."
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const bigMan = \\(x: Attrs\\) =>\\s*\\n  clamp\\(clamp\\(\\(x\\.height - DHO_H0\\) / \\(DHO_H1 - DHO_H0\\), 0, 1\\) \\+ clamp\\(\\(x\\.rimprot - DHO_RIM_LO\\) / \\(DHO_RIM_HI - DHO_RIM_LO\\), 0, 1\\), 0, 1\\)",
+      "label": "HIS RULING 1, THE CLAMP AND NOT THE DELETION: the height leg is clamped at zero, the size gate is KEPT",
+      "note": "recal_217's unclamped negative leg -> clamped; recal_220 deleted the gate outright and collapsed the board to 1,252/1,255 dho — superseded and abandoned"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const elbowBig = \\(x: Attrs\\) =>\\s*\\n  clamp\\(clamp\\(\\(x\\.height - HORN_H0\\) / \\(HORN_H1 - HORN_H0\\), 0, 1\\) \\+ clamp\\(\\(x\\.rimprot - HORN_RIM_LO\\) / \\(HORN_RIM_HI - HORN_RIM_LO\\), 0, 1\\), 0, 1\\)",
+      "label": "...and the same clamp on the horns elbow, character for character with `bigMan`",
+      "note": "recal_218's unclamped negative leg -> clamped. Cost measured: exactly 2 of 3,519 sub-6'6\" cards now read nonzero."
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HAND_TILT = 0",
+      "label": "the record of recal_214/216's roll/pop tilt, superseded by his ruling 2 and read by nothing",
+      "note": "3 -> 0; `overTop` and `downhill` are deleted with it"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "export function ratings100",
+      "label": "NOT TOUCHED: no rating, no team dial and no python moved in this round",
+      "note": "src/engine/offense.ts and data/team_rating.py are byte-identical to origin/main"
+    }
+  ],
+  "expect": [
+    {
+      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+      "scale": "team:off",
+      "op": "~",
+      "value": 95,
+      "tol": 0,
+      "label": "Jazz '97 team:off — unmoved, because tactics.ts is not in the rating path"
+    },
+    {
+      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "scale": "team:off",
+      "op": "~",
+      "value": 66,
+      "tol": 0,
+      "label": "Lakers '87 team:off — unmoved"
+    },
+    {
+      "five": ["Derrick White '25", "Jrue Holiday '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25"],
+      "scale": "team:off",
+      "op": "~",
+      "value": 48,
+      "tol": 0,
+      "label": "Celtics '25 team:off — unmoved"
+    },
+    {
+      "five": ["Russell Westbrook '25", "Jamal Murray '25", "Michael Porter Jr. '25", "Aaron Gordon '25", "Nikola Jokić '25"],
+      "scale": "team:def",
+      "op": "~",
+      "value": 40,
+      "tol": 0,
+      "label": "Nuggets '25 team:def — unmoved"
+    },
+    { "card": "Nikola Jokić '25", "scale": "off", "op": "~", "value": 99, "tol": 0, "label": "no card rating moved: this round touches no python and no offense.ts" },
+    { "card": "Draymond Green '16", "scale": "off", "op": "~", "value": 59, "tol": 0, "label": "the subject of recal_217/218 — his CARD is untouched; only his spot grades moved" },
+    { "card": "Kevin Durant '16", "scale": "off", "op": "~", "value": 96, "tol": 2, "label": "the card whose roll/pop pin moved — the card itself did not" },
+    { "card": "Derrick White '26", "scale": "attr:rimprot", "op": ">=", "value": 73, "label": "the measured cost of the clamp: one of exactly two sub-6'6\" cards over DHO_RIM_LO 73" },
+    { "card": "Alex Caruso '24", "scale": "attr:rimprot", "op": ">=", "value": 73, "label": "...and the other one" }
+  ],
+  "order": [
+    { "scale": "off", "above": "Nikola Jokić '25", "below": "Domantas Sabonis '24", "label": "card ratings are untouched, so every order around the round holds trivially" },
+    { "scale": "off", "above": "Shaquille O'Neal '00", "below": "Karl Malone '97" }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": []
+  },
+  "notes": [
+    "WHAT THIS ROUND IS. His twelve rulings on the SPOT GRADE PAGE, taken one at a time against a generated page, in the order he gave them. Nothing in the rating pipeline moved: data/team_rating.py, src/engine/offense.ts, data/build_ratings.py and data/compute_ovr.py are byte-identical to origin/main, no card rating changed, `npm run anchors` reads 213 anchors / 0 failing, and every team:off and team:def dial in this file is the number origin/main gives. What moved is which STYLE each five reads, and those moves are listed below.",
+    "1. THE RESET — 'remove all the - across the board', carried from recal_219's iso to every spot fit in the file. Every negative term is gone: five-out's -25 a shy big (`shyBig` deleted), the triangle's TRI_SEP separation charge, motion's `ballStop`, helio's HELIO_PV_W charge, iso's ISO_PV_W (already gone in 219), the pin-down's `pinOffBall` decay and `pinCatch`'s `- x.rim`, the pin-down's `pinWing` height decay, the hand-off hub's `selfless` decay, the handler nomination's PNR_HDISC discount and PNR_PVFLOOR ramp, and recal_216's HAND_TILT. The constants are LEFT IN THE FILE as the record of what each round priced; no formula reads them.",
+    "1a. THE SIZE GATES ARE CLAMPED, NOT DELETED. `bigMan` and `elbowBig` had their height leg left UNCLAMPED BELOW the floor by recal_217/218, and that negative leg was the guard filter. It is clamped at zero here, and the RIM RAMP is what keeps guards out. recal_220 took the harder reading and deleted the size gates outright: it collapsed the board to 1,252 of the 1,255 wheel fives reading `dho`. recal_220 IS SUPERSEDED AND ABANDONED and must not be merged; its measurement stands as the record of why the harder reading was wrong, and its own receipt file is not touched by this round.",
+    "1b. WHAT THE CLAMP COSTS, MEASURED AND NOT CLAIMED AWAY. Exactly 2 of the 3,519 cards under 6'6\" now reach a nonzero size term: Derrick White '26 (76\", rimprot 74) and Alex Caruso '24 (77\", 76), two of the best perimeter shot-blockers in the file, both just over the p75 line DHO_RIM_LO/HORN_RIM_LO 73. They read 4.8/8.9 at an elbow and 5.1/13.3 as a hub, against a Draymond of 21.8/56.0. Over the 1,255 wheel fives NEITHER is ever nominated at an elbow, and ONE is nominated as a hub (White '26 is the Celtics '26 hub, at 5.1, which is a floor value). Pinned in tests/tactics.test.ts so it cannot grow unnoticed.",
+    "2. HIS RULING: 'roll gains 3pt, pop gains rim'. rollHandler = handlerFit + 0.20 x 3pt + height; popHandler = handlerFit + 0.20 x rim + height. Measured over 500 cards: 3pt > rim reads higher on the ROLL and rim > 3pt reads higher on the POP, exactly, for every card — the difference is 0.20 x (3pt - rim). recal_216's ruling ('Pnr handler should be a better shooter than a pnp handler') is therefore satisfied as a general law rather than on a band. THE COST: recal_216 pinned Durant '16 to the ROLL off `closeout`, which read his three against a fixed 40..60 window; his card is rim 86 against a three of 80, so on the ruling's own comparison he is the POP handler. Reported, not tuned.",
+    "3. HIS RULING on height: handler flat at 6'3\" (75) and under — taller is worse; roller flat at 6'10\" (82) and over; popper flat at 6'8\" (80) and over — shorter is worse. Each ramp spans ten inches and is worth its own weight x 99, so an inch is about a point, the same size as the 0.1-per-point terms on the three and the rim.",
+    "4. HIS RULING: 'In every spot, the value should get to 100. So if I dont achieve that, auto add the stats to 100.' `toHundred` divides each term by its OWN MEASURED ceiling (the term evaluated on an all-99 card, swept across every height, best taken) and multiplies to 100. ALL ELEVEN WRAPPED TERMS READ 100.000000, and every K is 100/99 because every raw term was built to top out at exactly 99. THE INVARIANT IS VERIFIED AND ASSERTED: each of the eleven fit use-sites divides the same `.K` straight back out, so the rescale moved no read — measured on 400 cards x 11 terms to 1e-9, and every team dial in this receipt is unmoved.",
+    "4a. ELEVEN OF THE TWELVE SPOTS READ 100. The twelfth, the CORNER/WING, reads 99.0 — that spot IS the 3pt bar and bars cap at 99. He has left it there and it is recorded here rather than tuned away.",
+    "5. HIS RULING: the post hub is 0.6 x volume + 0.4 x max((mid+rim)/2, rim), TIMES a tallness ramp flat at 6'9\" (81). The ramp MULTIPLIES rather than taking a slice of the weight, so the 6:4 he named stays exactly 6:4 at every height — asserted on four cards at four heights each. recal_115's `interior()` scaling goes with the rest of the minuses, which is why a shooting big (Porzingis '25, Durant '23) prices as a post man again.",
+    "6/7. HIS RULINGS on the handler: `ballsec` at 0.1 taken out of the play-volume weight, then height up and shot down — playvol .5 / shot .2 / ballsec .1 / height .2. Four weights, sum 1.00.",
+    "8. HIS RULING: the helio engine is 0.5 x volume + 0.5 x playvol, nothing else. recal_206's CONTENT survives inside the shape — half the term is play volume, so a man who does not run the offence cannot reach the top of it, and the Spurs '16 still read helio 54.2 against a free default of 60, which is that ruling. HELIO_PV 65 and HELIO_PV_W 0.45 are kept as measurements and are read by nothing.",
+    "9. HIS RULING: popper height .40 / 3pt .45 / mid .10 / efficiency .05. 10. HIS RULING: roller height .45 / rim .45 / efficiency .10. The two screener spots now read DISJOINT shooting columns — the roller has no 3pt leg and the popper has no rim leg — so recal_214's `closeout` lerp is superseded and the mid-range sits in exactly one of the two.",
+    "11. HIS RULING: the flat elite-passer bonus is GONE from `handlerFit`. It was ELITE_LIFT +24 over a ramp from ELITE_PV 80, and because it was a FLAT ADD it never appeared as a per-point weight — which is HOW HE CAUGHT that the horns handler summed to 0.72 and not 1.00. 12. HIS RULING: `hornsHandler` is `playvol` alone at full weight.",
+    "THE INVARIANT HE SET, VERIFIED: every spot's weights sum to 1.00 and every term reads 100 on an all-99 card. Handler .5+.2+.1+.2; roller .45+.45+.10; popper .40+.45+.10+.05; post hub .6+.4; helio .5+.5; iso .40+.30+.20+.10; elbow .75+.25; hub .62+.38; pin-down .75+.25; horns handler 1.00. All asserted in tests/tactics.test.ts.",
+    "THE BOARD, over the 1,255 wheel fives that can field a five. BEFORE (origin/main + recal_218 + recal_219): balanced 357 · pnr 251 · postup 206 · helio 111 · iso 62 · dho 56 · pindown 48 · horns 42 · motion 40 · pickpop 37 · triangle 29 · fiveout 16. AFTER: pnr 481 · postup 231 · pindown 132 · balanced 107 · dho 105 · helio 75 · pickpop 45 · triangle 22 · iso 22 · horns 15 · motion 15 · fiveout 5. Balanced falls from 357 to 107 because the free default is a constant 60 and every other fit rose when its subtractions went; the pick-and-roll nearly doubles because the roller spot is now height .45 / rim .45 and every five has a big.",
+    "THE HARNESS, REPORTED AND NOT TUNED. `npm run harness`: PLAYSTYLE blind deviation reads -0.26 against the deviation tax law's required -0.30 or lower, and the row FAILS. Every other row passes (main scorer -0.52, main playmaker -0.80, tempo -0.80, scheme -0.56, hunt -0.38, crash off -0.51, crash def -0.42, assignment -0.45; oracle rose on playstyle, +2.20 -> +2.51). The cause is structural and is his ruling's own consequence: a blind style call costs less when no fit subtracts for the shape a five is not. recal_220 measured the same collapse at -0.02 on the harder reading. WHETHER THE LAW'S EDGE OR THE RESET'S REACH MOVES IS HIS DECISION, so the test is left RED rather than loosened, deleted or paid for with a constant, and `npm test` reads 507 passing / 1 failing on exactly that row.",
+    "THE CAMPAIGN CANNOT REORDER, MEASURED ON ALL 30 OPPONENTS. Every one of the 30 rows in src/data/opponents.json reads the SAME team:off and team:def dial before and after — 1 Wizards 17/37, 12 Clippers 65/50, 22 Cavaliers 79/49, 26 Nuggets 81/41, 30 Thunder 70/59, and the other 25 — because an opponent's strength comes from src/engine/offense.ts and `bestStyle` is not an input to it. So the eight campaign rounds, and all thirty, stand in exactly the order they stood in. WHAT DOES MOVE IS THE CAPTION: 22 of the 30 opponents read a different best-fit style (the eight unchanged are the Nets, Pelicans, Bulls, Hornets, 76ers, Suns, Pistons and Thunder), which is the same change the wheel board shows and is visible to him as a label rather than as a difficulty.",
+    "MOVED PINNED READS, the full list, before -> after. His ruling on each five is quoted where the read is what carried it. Lakers '87 helio -> dho (and their helio fit itself ROSE, 67.0 -> 69.6). Jazz '97 pnr -> pindown (the PAIR is still Stockton/Malone and the roll still beats the pop; the pnr fit barely moved, 76.25 -> 76.35). Spurs '16 balanced -> postup ('Motion, or balanced'; they are still not an iso, 53.0, and the bench four still read motion). Celtics '25 fiveout -> pickpop ('How come Boston post up and not 5 out?'; they are still not a post-up, and five-out is 13.6 clear of it). Thunder '16 pickpop -> pindown (recal_214's pop still beats helio). Nuggets '25 pnr -> dho. Raptors '10 pnr -> postup. Pistons '07 motion -> pnr. Kings '02 horns -> postup. Grizzlies '17 horns -> postup. Heat '11 horns -> dho. Raptors '25 horns -> dho. Lakers '09 helio -> pindown. Jazz '81 iso -> pindown and Knicks '84 iso -> pindown (both still leave helio and both still nominate Dantley and King). Thunder '25 pnr -> pindown and Raptors '19 iso -> pindown. Hornets '95 postup -> pnr and Magic '11 postup -> pnr (post-up is still their second read and still beats every other set). Lakers '26 helio -> postup. Thunder '24 iso -> pindown. Celtics '25x fiveout -> motion. Bulls '92 helio -> dho. Nets '23 iso -> dho. Sixers '23 iso... postup. Pelicans '16 pnr -> postup.",
+    "MOVED PINNED NOMINATIONS. pnrPair's handler on the Nuggets '25: Murray -> JOKIC. This is the one recal_216 pin the round cannot hold: PNR_HDISC was the discount that kept a 97-playvol seven-footer from taking a 71-playvol guard's ball, and a discount is a negative. The height fact did not disappear — it moved into the SPOT as ruling 3's 0.20 leg, where it is a positive for the short man rather than a penalty on the tall one — and the ROLL SPOT still knows which of them is the big (Jokic 96.0 as a screener against Murray's 39.7). Holding the nomination would mean putting a subtraction back. Also: the Thunder '15 roll screener Ibaka -> ADAMS (his own ruling gives Adams both spots: 'Adams can either be the screener or inside the paint'), the Thunder '16 roll screener Durant -> FREEDOM with Durant still the POP screener, the Warriors '16 pin-down man Thompson -> CURRY, and the file's own FIVE (Curry/Thompson/James/Green/Gobert) handler Curry -> JAMES.",
+    "WHAT IS NOT IN THIS ROUND. No constant was re-fitted to reach a number: HORN_BASE 17 is left exactly where his Nuggets ruling put it even though the horns fit now exceeds the pnr read it was sized against; PIN_BASE, ISO_BASE, ISO_HOLE, TRI_SEP_FREE, MOT_HOLD_FREE, DHO_GUARD and the set-level weights are all untouched. The set-level terms that are still negative — iso's ISO_HOLE spacing charge, ISO_BASE -6, the balanced default's flat 60 — are NOT spot fits and his ruling is about the spots, so they stand."
+  ],
+  "cost": [
+    "recal_219's receipt goes RED in three knobs and recal_218's in one, on the recal_93 convention (a shipped round's receipt is the record of what it did, not a thing a later round rewrites). 219: `isoScore = (x) => isoScorer(x)` is now `isoScoreRaw` behind `toHundred`; `heliEngineScore = scorerCreator - HELIO_PV_W * ...` is his ruling 8's even split; `HELIO_PV = 65 / HELIO_PV_W = 0.45` still matches. 218: `elbowSkill = (HORN_WEAK * min + HORN_STRONG * max) * elbowBig` is now `elbowSkillRaw`, and `hornsHandler = handlerFit(x) * (1 - elbowBig(x))` is his ruling 12's bare playvol. recal_213's, 214's, 216's and 217's quoted lines are red for the same reason. They are LEFT RED; data/rounds/222.json is the record of what superseded them.",
+    "THE DEVIATION TAX LAW IS RED on the playstyle row (-0.26 against -0.30). This is not a broken test and it is not a failing anchor — it is the harness measurement his ruling produced, and the decision about it is his. A later round that wants the suite green has two honest options and neither is mine to take: move the law's edge, or give one spot fit back a negative.",
+    "recal_220 IS SUPERSEDED AND ABANDONED — do not merge it. It deleted the size gates in `bigMan`/`elbowBig` outright rather than clamping them and collapsed the board to 1,252 of 1,255 fives reading `dho`. Its own receipt file is untouched by this round and stands as the record of why the harder reading was wrong.",
+    "ELEVEN OF TWELVE SPOTS READ 100; the corner/wing reads 99.0 because it IS the 3pt bar. A later round that normalises attribute bars to 100 would make it twelve of twelve and should say so.",
+    "The constants left in the file as records and read by NO formula: ELITE_PV/ELITE_LIFT (deleted outright), PNR_HDISC, PNR_PVFLOOR, PNR_PV0, HAND_TILT, HELIO_PV, HELIO_PV_W, ISO_PV, TRI_SEP, MOT_HOLD_FREE, PIN_CATCH_FLOOR (now unreachable: the pool's lowest pinCatch is 0.468), PIN_H0/PIN_H1, PIN_PV/PIN_PV_MAX, DHO_VOL_FREE/DHO_VOL_MAX (via `selfless`, which still computes and is read by nothing). A later round that wants one of them back must re-add the term, not just the number."
+  ]
+}
