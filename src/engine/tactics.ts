@@ -1779,8 +1779,10 @@ export function pinMan(five: Player[], pick?: string | null): { shooter: Player 
  *
  *   THE HUB     DHO_PASS 0.62 on his play volume and DHO_SHOT 0.38 on pinShot, his own jumper: the
  *               hand-off is only a threat if the man holding the ball can keep it and shoot it.
- *               Scaled by his size (DHO_H0 79 -> DHO_H1 83; POST_HEIGHT 81 is the half-way point)
- *               and then by `selfless`, a fade on his SCORING LOAD: full credit at DHO_VOL_FREE 50
+ *               Scaled by `bigMan` — his height over DHO_H0 79 -> DHO_H1 83 (POST_HEIGHT 81 is the
+ *               half-way point) PLUS his rim protection over DHO_RIM_LO 73 -> DHO_RIM_HI 86, which is
+ *               recal_217's ruling and is derived in full at the term itself — and then by
+ *               `selfless`, a fade on his SCORING LOAD: full credit at DHO_VOL_FREE 50
  *               and nothing by DHO_VOL_MAX 90. Measured — the hubs this fit nominates run volume
  *               p50 42, p75 58, p90 69 — and written as the multiplicative fade `interior` and
  *               `isoRoom` already use, so it cannot drive the term negative.
@@ -1804,15 +1806,20 @@ export function pinMan(five: Player[], pick?: string | null): { shooter: Player 
  * man; this reads the single highest, on a big, and charges the five for having a guard above him.
  * One is an offense with no hub and the other is an offense that is nothing but a hub.
  *
- * WHAT IT WINS: 45 of the 1,255 wheel fives (3.6%). Sabonis's Kings ('23/'24/'25) and Pacers
- * ('20/'21/'22), the Adelman Kings of Divac and Brad Miller ('04/'05/'06/'07/'08/'09), Simmons's
- * 76ers ('18/'19/'20/'21), Noah's Bulls ('14/'15), Pau Gasol's Spurs ('17/'18), Jokić's first
- * Nuggets ('16/'17/'20, before the volume arrived), the Jazz '20/'23, the Nets '26.
+ * WHAT IT WINS: 57 of the 1,255 wheel fives (4.5%) since recal_217 added the rim leg to `bigMan` — it
+ * was 48 (3.8%) on height alone. Sabonis's Kings ('23/'24/'25) and Pacers ('20/'21/'22), the Adelman
+ * Kings of Divac and Brad Miller ('04/'05/'06/'07/'08/'09), Simmons's 76ers ('18/'19/'20/'21), Noah's
+ * Bulls ('14/'15), Pau Gasol's Spurs ('17/'18), Jokić's first Nuggets ('16/'17/'20, before the volume
+ * arrived), the Jazz '20/'23, the Nets '26 — and, from recal_217, Draymond's Warriors ('17/'22/'23),
+ * Adebayo's Heat ('20/'21), Barnes's Raptors ('25/'26), Horford's Celtics '18 and Kirilenko's Jazz
+ * '05: a rim-protecting big who passes and does not shoot much is what the style was always about,
+ * and those nine were being excluded on an inch.
  *   WHAT IT COSTS, recorded: five Showtime Lakers fives ('82/'83/'84/'85/'86/'91) read it, because
- *   Magic Johnson is listed at 6'9" and in those years took well under half the shots. Height and
- *   the glass are the only facts this sheet has about whether a man is a big, and 6'9" is a big on
- *   both. The one Lakers five his ruling pins — the '87 — holds helio by 3.6, and `selfless` is what
- *   holds it: Johnson '87 took volume 71 and is faded to 0.475.
+ *   Magic Johnson is listed at 6'9" and in those years took well under half the shots, and 6'9" is a
+ *   big on the one fact the term had. The one Lakers five his ruling pins — the '87 — holds helio by
+ *   3.6, and `selfless` is what holds it: Johnson '87 took volume 71 and is faded to 0.475. recal_217
+ *   did not move any of them by a decimal: Johnson's rimprot is 41, under DHO_RIM_LO, so the rim leg
+ *   pays him nothing and the '87 margin is still 3.6.
  */
 export const DHO_BASE = 27
 export const DHO_W_HUB = 0.62
@@ -1825,11 +1832,68 @@ export const DHO_H0 = 79
 export const DHO_H1 = 83
 export const DHO_TOP = 2
 export const DHO_GUARD = 25
+export const DHO_RIM_LO = 73
+export const DHO_RIM_HI = 86
 /** How little of the offense he takes for himself: all of the credit at DHO_VOL_FREE, none by DHO_VOL_MAX. */
 export const selfless = (x: Attrs) => clamp((DHO_VOL_MAX - x.volume) / (DHO_VOL_MAX - DHO_VOL_FREE), 0, 1)
+/**
+ * IS HE A BIG? TWO FACTS, AND THE SECOND ONE CAN PAY FOR THE INCHES HE IS SHORT (recal_217, his
+ * ruling: "Fix the DHO height floor so Draymond can be a hub"). `heightRamp` alone is a LISTED-HEIGHT
+ * test, and on the clearest modern example of this archetype it returns exactly zero: Draymond Green
+ * '16 is 78 inches, ONE INCH under DHO_H0, and the whole hub term is multiplied to nothing on a card
+ * that says hub in every other column (playvol 73, volume 25, so `selfless` gives him all of it, 3pt
+ * 55). Golden State's split game runs through his hands and the fit graded him bottom of the pool.
+ *
+ * WHY THE FLOOR CANNOT BE THE FIX, MEASURED. Three inches separate Draymond from Steve Nash '05 (75)
+ * and six from Chris Paul '08 (72), and Nash's other columns are BETTER than Draymond's here — 0.62 x
+ * playvol + 0.38 x pinShot is 93.2 for Nash against 66.2 for Draymond, and Nash's volume 42 is inside
+ * DHO_VOL_FREE so `selfless` does not touch him either. Height is the ONLY column keeping guards out
+ * of this style: `primacy` fades a man who passes LESS than the five's best passer, and a point guard
+ * usually IS the best passer, so it passes him straight through. Dropping DHO_H0 to 76 already breaks
+ * three pinned reads (Thunder '22 and Lakers '87 helio, Bulls '97 triangle) and takes the style to
+ * 6.3%; at 75 Draymond only reaches 24.8 and five men under 6'6" are hubs; at 73 it is 12.4% and 45
+ * of them. Deleting the height term is not a candidate at all — 895 of the 1,255 wheel fives read the
+ * hand-off hub (71.3%), 789 men under 6'6" become hubs, and 13 pinned reads fall.
+ *
+ * SO THE SECOND FACT DOES IT, and it is the one the sheet already uses to answer this exact question:
+ * `rimprot`. compute_ovr's own `is_big` is unconditional on rim protection, and recal_138/recal_179
+ * spent the whole argument establishing that a man's DEFENSIVE rim work — not his shot diet — is what
+ * says he is a big. It separates Draymond (84) from the guards by a mile (Nash 10, Paul 3) and, the
+ * part that matters, from the two men a height-only relaxation lets in: Josh Giddey '22 (rimprot 55,
+ * and he is TALLER at 79) and Toni Kukoč '97 (55). Those two are why the glass fails here and this
+ * does not — Draymond's rebounding (72) is two points off Giddey's (70), so no rebounding term can
+ * rank them the right way round, and recal_213 rejected the glass for its own reasons besides.
+ *
+ * THE FORM IS THE HEIGHT RAMP, UNCLAMPED BELOW, PLUS A RIM RAMP, CLAMPED ONCE:
+ *     bigMan = clamp((height - DHO_H0) / (DHO_H1 - DHO_H0) + rim, 0, 1)
+ * and everything the round needs is in that one line. Read it as inches: since the rim ramp is capped
+ * at 1 and the height ramp's width is DHO_H1 - DHO_H0 = 4, ELITE RIM PROTECTION IS WORTH EXACTLY FOUR
+ * INCHES AND NEVER MORE — the width of the ramp it is substituting into, which is why the coefficient
+ * is not a free knob. A man can be at most four inches short and still reach the top. Draymond is one
+ * inch short and reads 0.596; Nash is four inches short with rimprot 10 and reads 0, as does Paul at
+ * six inches short; a 6'0" guard could have rimprot 99 and still read 0. It is the height term being
+ * left NEGATIVE below DHO_H0, rather than clamped at zero first, that does that work.
+ *   DHO_RIM_LO 73 and DHO_RIM_HI 86 are MEASURED the way DHO_VOL_FREE was, off the men this fit
+ * already nominates over the 1,255 wheel fives: their rimprot runs p50 55, p75 73, p90 86. So the
+ * window is THEIR OWN TOP QUARTILE — a man at or below the p75 rim protection of the style's existing
+ * hubs buys no inches at all, because he is already being paid in real height, and only the top
+ * decile buys the full four. It is continuous and monotone up in both columns, it has no cliff, and
+ * it lifts nobody who was already at 1.
+ *   THE WINDOW IS THE TOP QUARTILE AND NOT THE MEDIAN FOR A MEASURED REASON. At DHO_RIM_LO 55 the
+ * leg also lifts David West '16 (6'9", rimprot 70) from 0.500 to 0.984, and his hubScore 32.8 -> 64.6
+ * carries the hand-off hub onto the Spurs '16 BENCH FOUR at 77.3 over motion's 69.2 — the unit
+ * recal_211's decline pins to motion, and the one five in the file that reads a four-man lineup. The
+ * p75 is the lowest line that leaves it alone; every setting from 70 up holds all 62 pinned reads and
+ * every setting below 70 breaks that one.
+ *   WHAT IT MOVES: the hub reads 48 -> 57 of 1,255 (3.8% -> 4.5%), the shortest hub anywhere on the
+ * wheel goes 80" -> 78" and stops there, and every pinned read holds. Draymond '16's hubScore goes
+ * 0.00 -> 39.44, the 97.5th percentile of the pool against a style p90 of 25.8 and a p99 of 45.7.
+ */
+export const bigMan = (x: Attrs) =>
+  clamp((x.height - DHO_H0) / (DHO_H1 - DHO_H0) + clamp((x.rimprot - DHO_RIM_LO) / (DHO_RIM_HI - DHO_RIM_LO), 0, 1), 0, 1)
 /** What a man is worth as a hand-off hub: he passes, he can shoot it himself, he is big, he does not shoot much. */
 export const hubScore = (x: Attrs) =>
-  (DHO_PASS * x.playvol + DHO_SHOT * pinShot(x)) * heightRamp(x, DHO_H0, DHO_H1) * selfless(x)
+  (DHO_PASS * x.playvol + DHO_SHOT * pinShot(x)) * bigMan(x) * selfless(x)
 
 /**
  * WHOSE HANDS THE OFFENSE RUNS THROUGH (recal_213). The sixth call of the same shape: the plan's man
