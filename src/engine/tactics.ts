@@ -1457,37 +1457,76 @@ export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => 
  * measured, not chosen: over the 1,255 wheel fives the man HELIO nominates has a median play volume
  * of 65 (HELIO_PV, recal_206) and the man ISO nominates has a median of 57 (ISO_PV, probed with the
  * playvol term removed so the measurement is not circular; the card pool p50 is 41). Eight points of
- * play volume is the whole of his distinction, in the engine's own currency. ISO_PV was 53 before the
+ * play volume is the whole of his distinction, in the engine's own currency [recal_219: it still parts
+ * the men the two fits NOMINATE, but it is no longer PRICED on the iso side — see his ruling below].
+ * ISO_PV was 53 before the
  * facesUp gate below and is re-read at 57 after it, because the gate changed WHICH man the fit
  * nominates and the constant is defined as a property of that man — a measurement follows its own
  * definition rather than being held where it was first taken.
  *
- * THE ISO SCORER, isoScorer: takes a lot (ISO_VOL), makes them (ISO_EFF), beats his man with a
- * JUMPER (ISO_JMP on max(mid, 3pt)) and gets to the line doing it (ISO_FD on fouldraw). The four
- * weights sum to 1, so the composite sits on the same 0-100 axis every other fit reads.
- *   max(mid, 3pt) IS THE DISCRIMINATOR, and max(mid, rim) is not. An iso scorer beats you with a
- *   shot he created; a man scoring at the RIM at volume is being FED there (post-up) or rolling
- *   into it (pick-and-roll). The first cut of this fit read max(mid, rim) and nominated Dwight
- *   Howard, Antetokounmpo and Jokic, which is three wrong answers from one term.
- *   FOULDRAW is what keeps a SPOT-UP shooter out of the job, which max(mid, 3pt) alone cannot:
- *   Klay Thompson '16 (3pt 99, fouldraw 19), Dell Curry '95 (97 / 12) and Ryan Anderson '11 (99 /
- *   38) are set up by somebody; Dantley '86 (90), Embiid '23 (91), Gilgeous-Alexander '26 (90) and
- *   DeRozan '18 (88) are the men creating the shot. Without it the Warriors '16 nominated Thompson
- *   over Curry and the Celtics '25 Porzingis over Tatum.
+ * THE ISO SCORER, isoScorer, AS recal_219 RE-RULED IT (his ruling: "For Iso man, we need a mix of
+ * volume, eff, and fouldraw. No need for 3pt bonus, add small mid bonus. If the playvol - 0.13 means
+ * that having more playmaking reduces your skill as iso player, then remove all the - across the
+ * board"). He takes a lot (ISO_VOL 0.40), makes them (ISO_EFF 0.30), gets to the line doing it
+ * (ISO_FD 0.20), and there is a SMALL bonus for the mid-range jumper he creates (ISO_MID 0.10) - the
+ * descending ladder in the order his ruling names the terms, and the only 0.1-spaced ladder that sums
+ * to 1, so the composite still sits on the same 0-100 axis every other fit reads. That axis is not
+ * decoration: shrinking the jumper weight WITHOUT handing it back to the other three (0.40/0.20/0.15
+ * + 0.10, sum 0.85) takes iso from 51 of the 1,255 wheel fives to THREE and drops Dantley's Jazz '81
+ * and King's Knicks '84 out of the style his own rulings put them in.
+ *   THE THREE IS GONE, AND WITH IT THE SHOOTER'S PATH INTO THE JOB. The term was ISO_JMP x max(mid,
+ *   3pt), and the max let a SPOT-UP man score on it: Sam Mack '98 (mid 7, 3pt 99), Bruce Bowen '09
+ *   (8 / 86) and Klay Thompson '26 (37 / 96) read 15-18 points of composite lower now, and every one
+ *   of the fourteen biggest drops on the board is a man whose three beat his mid. Not one of them is
+ *   the nominee of a five any ruling has pinned to the isolation. What it costs among the men who ARE
+ *   pinned is small and is paid in a three they do not isolate with: Leonard '19 -3.4, Anthony '13
+ *   -3.8, Jordan '96 -0.4, Thompson '16 -6.4 (and he was never the nominee), against Durant '23 +0.9,
+ *   Dantley '81 +1.2, King '84 +1.2, DeRozan '17 +0.4.
+ *   max(mid, rim) WOULD STILL BE WRONG, and that half of recal_208's argument stands: an iso scorer
+ *   beats you with a shot he created, while a man scoring at the RIM at volume is being FED there
+ *   (post-up) or rolling into it (pick-and-roll). The first cut of this fit read max(mid, rim) and
+ *   nominated Howard, Antetokounmpo and Jokic - three wrong answers from one term.
+ *   FOULDRAW carries more of the job than it did (0.15 -> 0.20) and it is still what keeps a spot-up
+ *   shooter out of it: Thompson '16 (3pt 99, fouldraw 19), Dell Curry '95 (97 / 12) and Ryan Anderson
+ *   '11 (99 / 38) are set up by somebody; Dantley '86 (90), Gilgeous-Alexander '26 (90) and DeRozan
+ *   '18 (88) create the shot. Without it the Warriors '16 nominated Thompson over Curry.
+ *   WHY 0.10 AND NOT 0.05 OR 0.20, measured both ways on the wheel with the rest of the ladder held in
+ *   proportion: at 0.05 the mid bonus is too small to hold Leonard's Raptors '19 in the isolation and
+ *   they fall to the pick-and-roll, which his ruling on Leonard will not have; at 0.20 it is large
+ *   enough to take the Thunder '25 off the ROLL, which is a pinned read. The window is 0.10 .. 0.15 and
+ *   "small" - his word - takes the bottom of it, which is also where the four weights fall out as the
+ *   ladder above.
  *
- * NOMINATE ON THE COMPOSITE, PRICE THE NOMINEE — recal_206's own division of labour, mirrored.
- * `isoMan` picks the five's best isoScorer among the men who face up (see facesUp below) and
- * `featured`, the caption and the floor all read that man, so the drawing always names the scorer;
- * the FIT then charges him ISO_PV_W of a point for every point of play volume he carries above
- * ISO_PV, continuously, no cliff and no floor. It is the exact mirror of heliEngineScore and
- * asymmetric for the same reason: the volume side is already inside the composite and the
- * play-making side is the gate. Nothing prices a man for passing too little, so Dantley '81
- * (playvol 48) and King '84 (39) pay nothing and Jokic '22 (96) pays 17.6.
- *   THE SLOPE IS HELIO'S OWN, ISO_PV_W 0.45 = HELIO_PV_W: one line, two sides, the same price per
- *   point either way, because there is no evidence for charging the two shapes at different rates
- *   and the constant is written out rather than aliased so a later round can retune one without
- *   silently moving the other. 0.55 was also measured and lands 53 fives instead of 55, moving no
- *   ruling and no anchor.
+ * NOMINATE ON THE COMPOSITE, AND SINCE recal_219 THE COMPOSITE IS THE WHOLE PRICE — recal_206's
+ * division of labour survives, its second half does not. `isoMan` picks the five's best
+ * isoScorer among the men who face up (see facesUp below) and `featured`, the caption and the floor all
+ * read that man, so the drawing always names the scorer; `isoScore`, which the FIT reads, is now that
+ * same composite and subtracts NOTHING. recal_208 charged the nominee ISO_PV_W 0.45 of a point for
+ * every point of play volume he carried above ISO_PV, as the exact mirror of heliEngineScore - "one
+ * line, two sides, the same price per point". His ruling above REVERSES the iso side of that symmetry.
+ * The two names are kept apart (isoScorer nominates, isoScore prices) so the seam is still there for a
+ * later ruling that wants a price again.
+ *   THE HELIO SIDE IS NOT TOUCHED, AND THE LINE IS NOW READ FROM ONE SIDE ONLY. heliEngineScore still
+ *   charges its engine for the play volume he does NOT carry, because recal_206 is his own ruling and
+ *   its content is a CONJUNCTION - "Helio needs to be ran by a guy with high vol and playvol, not only
+ *   one." - and a conjunction has to price the missing half. This ruling says the other direction is
+ *   not true: a better passer is not a worse one-on-one scorer.
+ *   WHAT IT COSTS, measured on the wheel: iso 51 fives -> 62 (4.1% -> 4.9%, still a signature system
+ *   inside the 3-7% band), helio 117 -> 111, 31 of the 1,255 reads change. The men the minus was
+ *   suppressing gain the most - Stockton '89 +25.7, Magic '91 +24.7, LeBron '17 +21.9, Jokic '22 +20.1,
+ *   Westbrook '17 +19.5 - and not one of them takes a five off helio, because the SET still has to be
+ *   worth running and the isolation only ever nominates a man who FACES UP: the Lakers '87 would have to
+ *   clear out for Byron Scott (Johnson '87 is h81 and interior) and read iso 21.5 against helio 67.0.
+ *   The six fives that do leave helio are the 76ers '92 and Suns '93 (Barkley), the Pistons '97 and '00
+ *   (Hill), the Celtics '17 (Thomas) and the Thunder '24 (Gilgeous-Alexander) - one-man scoring teams
+ *   whose man was being charged for the passing he also did. The helio HEAD does not move by a decimal:
+ *   Johnson '87 67.0, Jokic '22 76.8, James '18 73.1, Harden '15 74.7, Wade '09 69.4, Iverson '06 64.7.
+ *   EVERY PINNED READ HOLDS, and the two thinnest margins the round leaves are pinned in
+ *   tests/tactics.test.ts so a later round cannot walk past them: the Thunder '25 keep the roll by 0.32
+ *   (pnr 74.19 against iso 73.87) and the Raptors '19 keep the isolation by 0.34 (66.88 against 66.54).
+ *   ISO_PV 57 SURVIVES AS A MEASUREMENT AND PRICES NOTHING. It is the median play volume of the man
+ *   this fit nominates, it is the constant recal_213's PIN_PV 56 is read against, and it is the reason
+ *   the isolation and the pin-down are not synonyms. No formula reads it any more.
  *
  * THE SET: ISO_W_MAN 0.80 on the priced scorer, ISO_W_REST 0.20 on the shooting of the four men
  * standing away from him, ISO_BASE -6 so the whole thing sits where the other eight sit.
@@ -1506,41 +1545,52 @@ export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => 
  * continuously to 1 at 3pt >= SHOOT_3PT_HI. The same two lines the post-up hub is scaled by,
  * running the other way. Leonard '16 (3pt 77) pays the full 8 a man; Dantley '81 (13) pays nothing.
  *
- * WHAT IT WINS: 55 of the 1,255 wheel fives (4.4%) — a signature system, not a default. It takes 30
+ * WHAT IT WINS [recal_219: 62 of the 1,255 (4.9%), and the shape of the list is unchanged — it gains
+ * Gervin's Spurs '80/'81, Moncrief's Bucks '83, Drew's Jazz '83, Grant Hill's Pistons '95/'96/'97/'00,
+ * Thomas's Celtics '17, Zion's Pelicans '21, Fox's Kings '22, Luka's Mavericks '23 and
+ * Gilgeous-Alexander's Thunder '24/'26, and loses eight fives whose iso man was a three-point shooter
+ * being paid by the old max(mid, 3pt). The counts below are recal_208's own reading, left as its
+ * record]: 55 of the 1,255 wheel fives (4.4%) — a signature system, not a default. It takes 30
  * from balanced, 10 from helio, 6 from the pick-and-roll, 3 each from post-up and the triangle, 2
  * from five-out and 1 from motion. The list is the shape in names: Dantley's Jazz '80-'86 and his
  * Pistons '87-'89, Gervin's Spurs '80-'83, Vandeweghe's Nuggets and Blazers '83-'86, King's Knicks
  * '83/'84, Barkley's 76ers '88-'91 and Suns '96, Erving '82, Pierce's Bucks '89, Mullin's Warriors,
  * Anthony's Knicks '13/'16, DeRozan's Raptors '17/Spurs '20/Bulls '22/'23/Kings '26, Leonard's Spurs
  * '17/Raptors '19/Clippers '21/'23, Nowitzki's Mavericks '12/'17, Durant's Nets '23, Jordan '98.
- * Every existing anchor read holds, the thinnest margin 6.5 (Celtics '25 five-out 72.8 to iso 66.3).
+ * Every existing anchor read holds, the thinnest margin 6.5 (Celtics '25 five-out 72.8 to iso 66.3)
+ * [recal_219: 5.5 on that five, 72.78 to 67.29; the thinnest on the board is now the Thunder '25's 0.32].
  *   It FINISHES recal_206: five of the seven fives still reading helio on an engine under play volume
  *   50 come here instead — Dantley's Jazz '81/'82/'85/'86 and King's Knicks '84. The two it does not
  *   claim are Pierce's Bucks '90/'91, and for a reason rather than by accident: Pierce shot 47 and 57
  *   from three, so isoRoom charges him nearly the full spacing price for three teammates who cannot
  *   shoot, and his own helio read stands.
  *   AND IT DOES NOT CLAIM THE SPURS '16, by his ruling on them: "2) Motion, or balanced." They read
- *   iso 54.0 against the free default's 60.0.
+ *   iso 54.0 against the free default's 60.0 [recal_219: 53.0 — the round moved them further away].
  *   AND IT DOES NOT CLAIM A POST PLAYER, by his ruling: "You have moved post up players into iso. AD,
  *   Bosh, Embid, are all post players not iso." See facesUp below — that is the whole of the fix, and
  *   it took iso from 81 fives to 55.
  */
 export const ISO_VOL = 0.4
-export const ISO_EFF = 0.2
-export const ISO_JMP = 0.25
-export const ISO_FD = 0.15
+export const ISO_EFF = 0.3
+export const ISO_FD = 0.2
+export const ISO_MID = 0.1
 export const ISO_PV = 57
-export const ISO_PV_W = 0.45
 export const ISO_BASE = -6
 export const ISO_W_MAN = 0.8
 export const ISO_W_REST = 0.2
 export const ISO_HOLE = 8
-/** The man the set clears out for: volume, efficiency, the jumper he creates, the fouls he draws. */
-export const isoScorer = (x: Attrs) => ISO_VOL * x.volume + ISO_EFF * x.efficiency + ISO_JMP * Math.max(x.mid, x['3pt']) + ISO_FD * x.fouldraw
-/** ...and what he is worth to an ISO, once he is charged for the offense he runs for other men.
+/** The man the set clears out for: volume, efficiency, the fouls he draws, and a small bonus for the
+ *  mid-range jumper he creates (recal_219, his ruling: "we need a mix of volume, eff, and fouldraw.
+ *  No need for 3pt bonus, add small mid bonus"). 0.40 / 0.30 / 0.20 / 0.10, in his order, summing to 1. */
+export const isoScorer = (x: Attrs) => ISO_VOL * x.volume + ISO_EFF * x.efficiency + ISO_FD * x.fouldraw + ISO_MID * x.mid
+/** ...and what he is worth to an ISO, which since recal_219 is that composite and NOTHING ELSE: his
+ *  ruling struck out recal_208's play-volume price ("If the playvol - 0.13 means that having more
+ *  playmaking reduces your skill as iso player, then remove all the - across the board"). The two
+ *  names are kept apart because they are two jobs - isoScorer NOMINATES, isoScore PRICES - so a later
+ *  ruling that wants a price again has the seam, and the nomination cannot drift from the fit.
  *  HEIGHT-FREE on purpose (recal_124's doctrine): the gate that keeps post players out is on the
  *  NOMINATION, so a plan that names a seven-footer still prices him on his own game. */
-export const isoScore = (x: Attrs) => isoScorer(x) - ISO_PV_W * Math.max(0, x.playvol - ISO_PV)
+export const isoScore = (x: Attrs) => isoScorer(x)
 /** How much ROOM his iso needs: 0 for a man who works inside the arc, 1 for one who beats you from it. */
 export const isoRoom = (x: Attrs) => 1 - interior(x)
 

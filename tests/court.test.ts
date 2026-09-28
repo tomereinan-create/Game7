@@ -417,7 +417,11 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // the floor by 27 points of scorer-creator, which is what a helio offence is — so the pair is
     // asserted against the CALL, which is what the ruling was about ("If its pnr, ..."). The
     // inference is checked below on a five that is read as a pick-and-roll.
-    expect(inferredStyle(THUNDER)!.style).toBe('helio')
+    // recal_219 moved it once more, to ISO: with the play-volume minus gone (his ruling, "remove all
+    // the - across the board") Gilgeous-Alexander '24 is priced on his own composite and the five reads
+    // iso 75.9 against helio 74.7. The assertion below is the read, not the ruling — what this test is
+    // here to prove is the PAIR and the floor, and both are asserted against the CALL, unchanged.
+    expect(inferredStyle(THUNDER)!.style).toBe('iso')
     const pair = pnrPair(THUNDER, null)
     expect(pair.handler!.name).toBe("Shai Gilgeous-Alexander '24")
     expect(pair.screener!.name).toBe("Chet Holmgren '24")
