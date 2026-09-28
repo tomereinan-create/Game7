@@ -4950,6 +4950,7 @@ body.offstage #root { position: relative; z-index: 1; }
      room to spare. */
   .tdb-sheet .tdb-num { padding: clamp(8px, 1cqw, 13px) clamp(3px, 0.6cqw, 8px) clamp(6px, 0.7cqw, 9px); font-size: clamp(11px, calc(1.82cqw - 5.5px), 28px); }
   .tdb-sheet .tdb-num.rank { padding-top: 0; padding-bottom: clamp(8px, 1.1cqw, 14px); font-size: clamp(8px, calc(1.05cqw - 2px), 16px); }
+  .tdb-sheet .tdb-lab.rank { padding-top: 0; padding-bottom: clamp(8px, 1.1cqw, 14px); }
   /* THE ROSTER UNDER IT reads at the page's size too, not the phone's. The three tracks are
      clamps rather than the 102px/60px the phone gives them, because a name set at 34px over a box
      line still set at 10px is one row pretending to be two. */
@@ -4991,7 +4992,15 @@ body.offstage #root { position: relative; z-index: 1; }
   display: grid;
   container-type: inline-size;
   grid-template-columns: auto repeat(var(--cols), minmax(38px, 1fr));
-  align-items: center;
+  /* BASELINE, NOT BOX-CENTRE — his ruling, 2026-09-28: "Make sure everything here alligned ...
+     Even the line above teams should be connected to the line below pts." `center` gave every cell
+     a box of its own height floating in the middle of the row, which broke the block in two ways:
+     the empty corner over the label column was shorter than the column heads beside it, so its
+     border-bottom sat 7px high and the rule under PTS did not reach the rule over TEAM; and a
+     10px row label centred beside a 30px figure sits above that figure's baseline rather than on
+     it. One baseline per row fixes both readings — the head row opts back out with `stretch`
+     below, which is what puts the two halves of that rule on the same line. */
+  align-items: baseline;
   margin-top: 14px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -5001,6 +5010,9 @@ body.offstage #root { position: relative; z-index: 1; }
 /* the column heads, and the label column's own empty corner */
 .tdb-col,
 .tdb-lab.head {
+  /* the whole head row is one height, so the border under it is one line across all nineteen
+     tracks — the empty corner included. Without this the corner is as tall as its padding. */
+  align-self: stretch;
   padding: 7px 6px 6px;
   border-bottom: 1px solid var(--line-2);
   font-family: var(--mono);
@@ -5026,7 +5038,9 @@ body.offstage #root { position: relative; z-index: 1; }
   color: var(--ink-2);
 }
 .tdb-lab.opp { color: var(--them); }
-.tdb-lab.rank { font-weight: 400; color: var(--muted-2); }
+/* A RANK LABEL IS PADDED LIKE A RANK FIGURE (see `.tdb-num.rank`): same top of zero, same foot.
+   On one baseline an 8px top would push the whole rank row down and undo the tuck. */
+.tdb-lab.rank { padding-top: 0; padding-bottom: 7px; font-weight: 400; color: var(--muted-2); }
 .tdb-num {
   padding: 6px 6px 5px;
   text-align: center;
@@ -5053,6 +5067,7 @@ body.offstage #root { position: relative; z-index: 1; }
   .tdb-lab { padding: 8px 14px 8px 12px; }
   .tdb-num { padding: 9px 7px 7px; font-size: clamp(19px, 1.5vw, 30px); }
   .tdb-num.rank { padding-top: 0; padding-bottom: 10px; font-size: clamp(11px, 0.75vw, 15px); }
+  .tdb-lab.rank { padding-top: 0; padding-bottom: 10px; }
 }
 
 /* ---- the spotlight ----
