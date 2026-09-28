@@ -1,0 +1,241 @@
+{
+  "round": 218,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "fix horns too",
+  "title": "the horns elbow asks whether a man is big enough to stand there on the two facts the sheet has, not on listed height alone - `elbowBig` is the height ramp left unclamped below HORN_H0 78 plus a rim-protection ramp over HORN_RIM_LO 73 -> HORN_RIM_HI 86, clamped once, character-for-character recal_217's `bigMan`, and `hornsHandler` reads the new term's inverse so no five is paid twice for one body. Draymond Green '16's elbowSkill 0.00 -> 21.79 (p0.0 -> p75.3, over a pool p75 of 21.56 and UNDER its p90 of 34.50, which is a hard ceiling set by his own mid-range of 10 and is reported rather than tuned around); horns reads 36 -> 42 of 1,255 (2.9% -> 3.3%); six fives change read and every one moves INTO horns; the shortest man the fit nominates at a real value goes 79\" -> 78\" and stops there, with ZERO men under 6'6\" before or after; all 26 wheel pins, the Spurs '16 bench four and all 30 test fixtures hold; and no card, no rating and no campaign round order moves",
+  "scale": "team:off",
+  "subject": "Warriors '16 (best legal five - the pinned five the round had to hold, and Draymond's own)",
+  "five": [
+    "Stephen Curry '16",
+    "Andre Iguodala '16",
+    "Klay Thompson '16",
+    "Draymond Green '16",
+    "Andrew Bogut '16"
+  ],
+  "target": 86,
+  "tol": 0,
+  "before": 86,
+  "after": 86,
+  "pipeline_version": 218,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HORN_RIM_LO = 73\\s*\\nexport const HORN_RIM_HI = 86",
+      "label": "THE RIM WINDOW FOR THE ELBOW: recal_217's measured p75/p90, reused rather than re-measured, and that is a decision with a reason",
+      "note": "new; \"is he a big?\" is a question about a MAN, not about a style, and horns' own nominee set cannot answer it - `hornsMen` nominates TWO men per five off a term that is zero for everybody at or under 78\", so 22 of its 2,510 nominations are made at exactly 0.00 by a tie-break among zeros and 21 of those are men of 6'5\" or shorter. Their p75/p90 (79/89) is a reading of the gate this round removes; measured anyway it reaches only 12.88 for Draymond"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const elbowBig = \\(x: Attrs\\) =>\\s*\\n\\s*clamp\\(\\(x\\.height - HORN_H0\\) / \\(HORN_H1 - HORN_H0\\) \\+ clamp\\(\\(x\\.rimprot - HORN_RIM_LO\\) / \\(HORN_RIM_HI - HORN_RIM_LO\\), 0, 1\\), 0, 1\\)",
+      "label": "IS HE BIG ENOUGH FOR AN ELBOW? the height ramp LEFT UNCLAMPED BELOW plus a rim ramp, clamped once - the missing inner clamp on the height leg is the whole guard filter",
+      "note": "new; the same line as recal_217's `bigMan` with HORN_H0/H1/RIM_LO/RIM_HI in place of DHO_*. HORN_H1 - HORN_H0 = 4 and the rim ramp caps at 1, so elite rim protection is worth EXACTLY four inches and never more. Curry '16 (74\", rimprot 15) reads 0, Mills '16 (74\") reads 0, Chris Paul '08 (72\") reads 0 with rimprot 99, and Michael Jordan '96 - also 78\" - buys nothing because his rimprot 50 is under HORN_RIM_LO, which is what leaves the Bulls '96 triangle untouched"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const elbowSkill = \\(x: Attrs\\) =>\\s*\\n\\s*\\(HORN_WEAK \\* Math\\.min\\(x\\.mid, x\\.playvol\\) \\+ HORN_STRONG \\* Math\\.max\\(x\\.mid, x\\.playvol\\)\\) \\* elbowBig\\(x\\)",
+      "label": "...and the scaling factor is the ONLY thing about the elbow term that changed",
+      "note": "heightRamp(x, HORN_H0, HORN_H1) -> elbowBig(x). HORN_WEAK 0.75 and HORN_STRONG 0.25 leading on the WEAKER of mid and playvol are byte-identical to recal_213, which is why Draymond cannot reach the pool p90 here and why Serge Ibaka '16 still reads 28.25"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const hornsHandler = \\(x: Attrs\\) => handlerFit\\(x\\) \\* \\(1 - elbowBig\\(x\\)\\)",
+      "label": "THE MIRROR STAYS A MIRROR: the handler reads the inverse of the term the elbow reads, deliberately, and it is ONE FACT READ ONCE",
+      "note": "1 - heightRamp(x, HORN_H0, HORN_H1) -> 1 - elbowBig(x). Behaviourally identical on this board - measured over 1,286 units (1,255 wheel fives + 30 campaign opponents + the Spurs '16 bench four) the two forms' horns fits agree to 0.000000 - so the choice was made on meaning: on the old inverse Draymond '16 would have collected a full 49.80 up top AND 21.79 at an elbow off the same 78 inches; he now reads 7.66 up top. 384 cards move here, every one DOWN"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HORN_BASE = 17\\s*\\nexport const HORN_HIGH = 0\\.32\\s*\\nexport const HORN_LOW = 0\\.55\\s*\\nexport const HORN_HAND = 0\\.13\\s*\\nexport const HORN_WEAK = 0\\.75\\s*\\nexport const HORN_STRONG = 0\\.25\\s*\\nexport const HORN_H0 = 78\\s*\\nexport const HORN_H1 = 82",
+      "label": "AND EVERY OTHER HORNS KNOB IS UNTOUCHED - the base is still the largest value that holds the Nuggets '25 on the pick-and-roll",
+      "note": "UNCHANGED from recal_213. The floor HORN_H0 78 was NOT lowered: recal_217 proved on the sibling term that no floor reaches the target while holding the pins, and lowering this one has the same shape of cost"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const bigMan = \\(x: Attrs\\) =>\\s*\\n\\s*clamp\\(\\(x\\.height - DHO_H0\\) / \\(DHO_H1 - DHO_H0\\) \\+ clamp\\(\\(x\\.rimprot - DHO_RIM_LO\\) / \\(DHO_RIM_HI - DHO_RIM_LO\\), 0, 1\\), 0, 1\\)",
+      "label": "recal_217's OWN TERM IS NOT TOUCHED: the two ramps stay separate constants answering the same question about different jobs",
+      "note": "UNCHANGED. DHO_RIM_LO/HI and HORN_RIM_LO/HI hold the same numbers and are written out twice on purpose (recal_213's rule), so a later round can move one without silently moving the other"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "heightRamp = \\(x: Attrs, lo: number, hi: number\\) => clamp\\(\\(x\\.height - lo\\) / \\(hi - lo\\), 0, 1\\)",
+      "label": "`heightRamp` itself is unchanged and still read by postup/iso/pickpop - the fix is at the two call sites, not in the helper",
+      "note": "UNCHANGED; recal_216's `handlerRead` runs the pick-and-roll's handler through PNR_H0/PNR_H1, a DIFFERENT ramp, and this round does not go near it"
+    }
+  ],
+  "expect": [
+    {
+      "card": "Draymond Green '16",
+      "scale": "attr:height",
+      "op": "==",
+      "value": 78,
+      "label": "THE DEFECT IN ONE NUMBER: he is exactly AT HORN_H0 78, so the height ramp returned 0.00 and multiplied his whole elbow term away"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "attr:rimprot",
+      "op": "==",
+      "value": 84,
+      "label": "...and the column that pays for the inches, the one compute_ovr's own `is_big` is unconditional on"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 10,
+      "label": "...and the column that CAPS him at 25.75 whatever the rim window is: the elbow asks for the jumper too"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 73,
+      "label": "...the half of the job he does do"
+    },
+    {
+      "card": "Michael Jordan '96",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 72,
+      "label": "THE BULLS '96 TRIANGLE IS SAFE BY A MEASURED INCH: Jordan is 78\" too and his rim protection is under HORN_RIM_LO 73, so he buys nothing"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "attr:height",
+      "op": "<=",
+      "value": 74,
+      "label": "NO GUARD BECOMES AN ELBOW MAN: four inches short, so the unclamped height leg is -1.00 and no rim rating rescues him"
+    },
+    {
+      "five": [
+        "Stephen Curry '16",
+        "Andre Iguodala '16",
+        "Klay Thompson '16",
+        "Draymond Green '16",
+        "Andrew Bogut '16"
+      ],
+      "scale": "team:def",
+      "op": "==",
+      "value": 68,
+      "label": "NO RATING MOVES - tactics.ts feeds nothing in the ratings chain, so the DEF dial is untouched too"
+    },
+    {
+      "five": [
+        "Mike Conley '17",
+        "Tony Allen '17",
+        "Vince Carter '17",
+        "Zach Randolph '17",
+        "Marc Gasol '17"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 46,
+      "label": "the Grizzlies '17 - recal_213's own horns five, featured pair asserted by name in tests/tactics.test.ts - unmoved on the dial"
+    },
+    {
+      "five": [
+        "Jeff Teague '16",
+        "Kent Bazemore '16",
+        "Thabo Sefolosha '16",
+        "Paul Millsap '16",
+        "Al Horford '16"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 45,
+      "label": "the Hawks '16 - one of the six fives that change READ (pnr 64.6 -> horns 67.5) and whose dial does not move by a point"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "Steve Nash '05",
+      "label": "the axis the round spends separates the passing forward from the guard the style must never claim"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "Michael Jordan '96",
+      "label": "...and it separates him from the other 6'6\" man in the file, which is the whole of the Bulls '96 margin"
+    },
+    {
+      "scale": "attr:height",
+      "above": "Josh Giddey '22",
+      "below": "Draymond Green '16",
+      "label": "...while HEIGHT alone ranks them the wrong way round, which is why the floor was never the fix"
+    },
+    {
+      "scale": "attr:mid",
+      "above": "Serge Ibaka '16",
+      "below": "Draymond Green '16",
+      "label": "AND THE CEILING IS HONEST: the elbow wants the mid-range jumper, Ibaka has it and Draymond does not, so the weaker-led conjunction reads them 28.25 and 21.79"
+    }
+  ],
+  "movers": {
+    "scale": "attr:rimprot",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      [
+        "Draymond Green '16",
+        84,
+        84
+      ],
+      [
+        "Scottie Barnes '25",
+        82,
+        82
+      ],
+      [
+        "Al Horford '18",
+        85,
+        85
+      ]
+    ]
+  },
+  "cost": [
+    "THREE SHIPPED RECEIPT LINES GO RED AND ALL THREE ARE LEFT RED, ON recal_214's PRECEDENT. (1) recal_217's FOURTH KNOB - `MEASURED AND DELIBERATELY NOT CHANGED: horns' elbow term carries the identical defect one line away` - was a deliberate guard placed so that whoever landed this ruling could not land it silently; `npm run receipts -- 217` goes from 34 OK / 0 missed to 33 OK / 1 missed and that is the one MISS, reading ABSENT. (2) and (3) recal_213's OWN TWO HORNS KNOBS quote `elbowSkill` and `hornsHandler` character-for-character, so both now read ABSENT too (`an elbow operator has to do BOTH jobs...` and `...and the handler up top is the same ramp read the other way...`). recal_217 broke nothing of 213's because 213 never quoted `hubScore`'s scaling factor - only its constants, `selfless` and `primacy`, all of which 217 left alone. This round quotes both new lines in its own knobs instead. NEITHER data/rounds/213.json NOR data/rounds/217.json IS EDITED. recal_214 set that precedent when it re-expressed recal_120's screener line and left `the screener is paid for the POP as well as the roll` red (it is still red on main today), and recal_93's convention is the reason: a shipped round's receipt is the record of what that round did, not a thing a later round rewrites. The whole ledger goes 4,705 OK / 922 missed on main to 4,729 OK / 925 missed - +24 of this round's 27 lines net of the three it turns over, and `npm run receipts -- 218` is 27 OK / 0 missed on its own. Anyone auditing 213 or 217 should read those MISSes together with this paragraph.",
+    "HORN_RIM_LO 73 IS PINNED THE SAME WAY DHO_RIM_LO 73 IS, and by an overlapping set of fives. Measured here: at 70 the leg takes three more fives (Celtics '83 and Magic '17 off balanced, and the SPURS '23 off MOTION) for 0.74 of a point on the subject; recal_217 recorded that at the p50 window 55 it costs the Bulls '96 triangle on this term and the Spurs '16 bench four on the other. Any later round that lowers either constant is lowering it into a pin.",
+    "THE TWO WINDOWS NOW HOLD IDENTICAL NUMBERS IN TWO PLACES. DHO_RIM_LO/HI and HORN_RIM_LO/HI are both 73/86. They are separate constants on recal_213's rule, so a round that wants to move ONE must move only one - but a round that thinks it is changing \"the rim window\" must check both, and a round that measures a new one should know that horns' own nominee set gives 79/89 and is contaminated by 22 zero-tie-break nominations.",
+    "`elbowBig` IS NEW AND EXPORTED, and it is the second style term to read `rimprot` (recal_217 made the first). A later change to a rim-protection rating is now a change to TWO style reads. tests/tactics.test.ts's no-cliff sweep covers the new term in both columns.",
+    "HORN_H0 78 WAS NOT LOWERED AND SHOULD NOT BE. The fix is entirely on the second fact, exactly as 217's was; the floor still does the guard filtering through the unclamped negative leg, and that leg is what makes elite rim protection worth four inches and no more.",
+    "ONE CAMPAIGN CAPTION MOVES: round 21, the Timberwolves '26, balanced 60.0 -> horns 60.4. No opponent rating and no round's position can move - `bestStyle` is read only by CourtFive (the drawing and its caption) and TeamDb (a filter chip), src/data/opponents.json carries no style field, and the ladder order is the file's own `round` key.",
+    "NO REGENERATION, NO PARITY WORK, NO ANCHOR ADDED to data/anchors.json: the target is a style read, and anchors.json holds card and team-dial rulings. src/engine/tactics.ts has no python counterpart and is imported by nothing in the ratings chain, so the `marg` term in compute_ovr.py cannot move - verified by the 213-anchor table (0 failing) and by tests/parity.test.ts (worst py/ts disagreement 0.0000 pts). The ruling is pinned in tests/tactics.test.ts by name, in five `it` blocks under \"horns is two bigs on the elbows\". pipeline_version is written as 218 for the integrator to stamp; main is at 210."
+  ],
+  "notes": [
+    "HIS RULING was \"fix horns too\" - the mirror of recal_217's \"Fix the DHO height floor so Draymond can be a hub\", landed an hour earlier on the sibling term. DONE, and the one part of the brief it does not reach is stated flat below rather than tuned around.",
+    "THE DEFECT, EXACTLY. `elbowSkill` was scaled by heightRamp(x, HORN_H0 78, HORN_H1 82). Draymond Green '16 is 78 inches - AT the foot of the ramp, not under it - so the ramp returned 0.00 and his whole elbow term was multiplied to nothing. He read 0.00, the 0.0th percentile, sitting in a floor of 4,502 cards that all score exactly zero: he graded F at the one alignment in this file that is about a passing forward, one line away from the term recal_217 had just fixed for the same man on the same inch.",
+    "THE FORM, AND IT IS CHARACTER-FOR-CHARACTER 217's. elbowBig = clamp((height - HORN_H0) / (HORN_H1 - HORN_H0) + rimRamp, 0, 1): the height ramp LEFT UNCLAMPED BELOW, plus the rim ramp, clamped once. Read it as inches - the rim ramp caps at 1 and the height ramp's width is HORN_H1 - HORN_H0 = 4, so ELITE RIM PROTECTION IS WORTH EXACTLY FOUR INCHES AND NEVER MORE, which is why the coefficient is not a free knob and was not fitted. Continuous, monotone up in both columns, no cliff, one formula for everyone, and it lifts nobody who was already at 1.",
+    "THE SUBJECT: Draymond Green '16 elbowSkill 0.00 -> 21.79, percentile 0.0 -> 75.3. elbowBig 0.000 -> 0.846 (height leg 0.000, rim leg 0.846 on rimprot 84). The pool moves p50 7.13 -> 7.50, p75 21.00 -> 21.56, p90 33.75 -> 34.50, p99 57.94 -> 58.75, max 88.75 -> 88.75, and its floor of exact zeros drops 4,502 -> 4,489. Draymond '17 goes 0.00 -> 22.62 (p76.4) on rimprot 85; '22 and '23 come off zero as well.",
+    "AND THE ONE THING IT DOES NOT REACH, REPORTED RATHER THAN TUNED AROUND: 21.79 clears the pool p75 of 21.56 and does NOT clear its p90 of 34.50, which was the bar recal_217 was held to on the sibling term. IT IS PROVABLY UNREACHABLE FROM THE SIZE TERM. `elbowBig` is capped at 1 and Draymond's height leg is EXACTLY 0 (78 == HORN_H0), so his elbowSkill is bounded above by the conjunction itself: 0.75 x min(mid 10, playvol 73) + 0.25 x max(...) = 25.75, under the p90 for every possible setting of HORN_RIM_LO/HI including the degenerate one that hands him the full four inches. Verified in the test file: elbowSkill with rimprot forced to 99 equals 25.75 to six places.",
+    "WHY THAT IS THE RIGHT ANSWER AND NOT A SHORTFALL. His mid-range is 10. The elbow is the one job in this file that asks for PASSING AND THE MID-RANGE JUMPER, and HORN_WEAK 0.75 leading on the WEAKER of the two is the term recal_213 built to stop Serge Ibaka '16 (mid 92, playvol 7) and Andrea Bargnani '10 (83 / 14) from buying a horns read on a jump shot alone. It reads Ibaka 28.25 and Draymond 21.79 - the same sentence about two opposite men, each credited for half the job. Reaching the p90 for Draymond would mean re-weighting HORN_WEAK / HORN_STRONG, which hands the alignment back to the spot-up bigs and carries a horns read onto two pinned fives (recal_213's own measurement); that is a different ruling and it is not this one. So the DEFECT is fixed - he is no longer graded F by a listed inch - and the CEILING is his own shooting.",
+    "THE FLOOR WAS NOT THE FIX HERE EITHER, and the argument is inherited rather than re-run: recal_217 swept DHO_H0 at 76 / 75 / 74 / 73 on the sibling term and every setting either broke pinned reads or put men under 6'6\" into the style while still missing the target. HORN_H0 78 is one inch LOWER than DHO_H0 79 to begin with, so the negative leg here is measured against a lower floor - which is exactly why constraint 2 had to be verified and not assumed, and it holds: the unclamped leg still lets nobody in.",
+    "NO GUARD BECOMES AN ELBOW MAN, WHICH WAS THE BINDING CONSTRAINT. The shortest man the fit nominates ANYWHERE on the wheel is 72\" (Rickey Green '84) both before and after - but that is an artefact, not a nomination: when every man on a five reads 0.00 the sort is a tie-break among zeros, and 22 of the 2,510 nominations are exactly that. Counting only REAL nominations (elbowSkill > 0) the shortest goes from 79\" (Mike Mitchell '80) to 78\", and the four men at 78\" are Draymond Green '15, '16, '22 and '23. ZERO men under 6'6\" are nominated at a real value before or after. On the fives that actually READ horns the shortest elbow man goes 81\" (Magic Johnson '80) -> 79\" (Paul Millsap '16), and the distinct count goes 72 -> 84 men.",
+    "THE BOARD, BEFORE -> AFTER over the 1,255 wheel fives: horns 36 -> 42 (2.9% -> 3.3%, inside the 3-7% band and nowhere near the 8% line). It takes 2 from balanced, 2 from pnr and 1 each from pickpop and dho. fiveout 16, motion 41, postup 206, helio 117, triangle 29, iso 51 and pindown 46 are BYTE-IDENTICAL - no style other than horns was touched and no pair of old styles trades a five.",
+    "THE SIX FIVES THAT CHANGE READ, and every one moves INTO horns: 1. Celtics '80 balanced 60.0 -> horns 64.3 (Bird + Cowens); 2. Heat '11 pnr 71.5 -> horns 76.7 (LeBron + Bosh); 3. Mavericks '13 balanced 60.0 -> horns 63.5 (Nowitzki + Brand); 4. Hawks '16 pnr 64.6 -> horns 67.5 (Horford + Millsap); 5. Warriors '19 pickpop 67.7 -> horns 70.9 (Durant + Looney); 6. Raptors '25 dho 62.8 -> horns 70.1 (Barnes + Poeltl). Bird and Cowens at the two elbows, LeBron and Bosh, Horford and Millsap, Barnes and Poeltl - that list reads as the alignment finding the passing forwards it had been excluding on a listed inch, which is the same sentence recal_217's nine fives wrote.",
+    "EVERY PINNED READ HOLDS: 26 of 26 on the wheel, the Spurs '16 BENCH FOUR (recal_211's decline, the only four-man lineup in the test file - motion 69.2 with horns 52.1 behind it, unmoved to the decimal), and all 499 tests in 41 files. The thinnest margins are untouched because the men who set them sit under HORN_RIM_LO or were already at the top of the ramp: Nuggets '25 pnr 72.9 over horns 71.0 (1.9), Raptors '10 pnr 68.5 over 66.0 (2.5), Lakers '87 helio 67.0 over 63.3 (3.7), Bulls '97 triangle 75.0 over 70.4 (4.6), Bulls '96 triangle 72.8 over 67.9 (4.9), Spurs '16 balanced 60.0 over 54.1 (5.9), Pistons '07 motion 67.2 over 61.0 (6.2). Only two pinned fives see their horns fit move at all - the Jazz '81 39.9 -> 42.6 and the WARRIORS '16 32.6 -> 42.9 (Draymond himself) - and both still lose by more than 27.",
+    "WHY THE RIM WINDOW IS 73 -> 86 AND NOT HORNS' OWN MEASUREMENT. recal_217 derived those two numbers as the p75 and p90 rimprot of the men a big-man fit nominates, on the argument that \"is he a big?\" is a question about a MAN. Re-measuring on horns' own nominees looks more rigorous and is circular: `hornsMen` nominates TWO men per five off a term that is zero for everybody at or under 78\", so 22 of its 2,510 nominations are tie-breaks among zeros and 21 of those are men of 6'5\" or shorter (Rickey Green '84, Kyle Lowry '17, Curry '15 and '16, Patty Mills '16). Their p75/p90 is 79/89 - a reading of the gate this round exists to remove. Measured anyway: 79 -> 89 reaches only 12.88 for Draymond (p61.3), moves three fives instead of six and leaves the defect half-corrected. Measured at the p75 of the fives that actually READ horns (86/92) his 84 buys nothing at all and the round does nothing. 73 -> 86 is the one window derived from a question that was not asked through the broken gate.",
+    "AND IT IS NOT LOOSENED, WHICH THE BRIEF WARNED ABOUT BY NAME. Swept: HORN_RIM_LO 73 -> 70 buys 0.74 of a point on the subject (21.79 -> 22.53) and costs three more fives, one of them the SPURS '23 off motion; 73 -> 84 on the HIGH end hands Draymond his whole ceiling (25.75, p80.3) but 84 is not the measurement of anything and would be a constant fitted to one card, so it is rejected on doctrine 1 rather than on its number. The p75 is the right line on both terms.",
+    "hornsHandler: THE MIRROR STAYS A MIRROR, and the decision was made on meaning because the measurement could not make it. The two candidate forms - `1 - elbowBig(x)` and the old `1 - heightRamp(x, HORN_H0, HORN_H1)` - are behaviourally IDENTICAL on this board: over 1,286 units (all 1,255 wheel fives, all 30 campaign opponents and the Spurs '16 bench four) the two horns fits agree to 0.000000, because the man who maxes this term is always a guard whose elbowBig is 0 either way. So it was chosen on what the line says: it is ONE FACT READ ONCE, and a man who buys his place at an elbow with rim protection must give up the same fraction of himself up top. On the old inverse Draymond '16 would have collected a full 49.80 as the handler AND 21.79 as an elbow man off the same 78 inches; he now reads 7.66 up top, and the identity hornsHandler(x) + handlerFit(x) * elbowBig(x) == handlerFit(x) is asserted in the test file. 384 cards move here and every one moves DOWN; the four biggest are the four Draymonds. recal_216's `handlerRead`, which runs the PICK-AND-ROLL's handler through PNR_H0/PNR_H1, is a different ramp and was not touched.",
+    "NO CARD AND NO RATING MOVES. src/engine/tactics.ts has no python counterpart, is not imported by src/engine/offense.ts, data/team_rating.py or data/compute_ovr.py, and feeds nothing in the ratings chain - so there is no regeneration and the `marg` term cannot move. 384 of the 10,000 cards move `elbowSkill` and EVERY ONE MOVES UP (Scottie Barnes '26 +36.8, Al Horford '19 +33.0, Barnes '25 +32.4, Horford '15 +32.1, Horford '18 +31.9, Amen Thompson '25 +29.8); 384 move `hornsHandler` and every one moves DOWN; zero move OFF, DEF, OVR or any attribute. Verified: 213 anchors 0 failing, npm test 499/499, npm run harness 9/9, npx tsc -b clean, tests/parity.test.ts worst py/ts disagreement 0.0000 pts.",
+    "REJECTED, MEASURED FIRST. (a) LOWERING HORN_H0 - the sibling round's sweep of the same lever on DHO_H0 is conclusive and the geometry here is worse, since 78 is already the lower floor of the two. (b) RE-MEASURING THE RIM WINDOW ON HORNS' OWN NOMINEES (79/89) - reaches 12.88, half a fix, and the set is contaminated. (c) THE WINDOW'S TOP END AT 84, which would give the subject his full ceiling - a constant fitted to one card, declined on doctrine 1. (d) LOOSENING HORN_RIM_LO to 70 - three extra fives including a motion pin, for 0.74 of a point. (e) RE-WEIGHTING HORN_WEAK / HORN_STRONG to reach the pool p90 for Draymond - the only lever that CAN reach it, and it is a different ruling: the weaker-led conjunction is the term that keeps Ibaka '16 and Bargnani '10 out, recal_213 measured them at 92 and 83 on a max against 28 and 31 on this form, and it recorded that the max form carries a horns read onto two pinned fives. Not attempted beyond the measurement; named here so he can rule on it if 21.79 is not enough.",
+    "THE NUMBERS IN THE DISPATCH WERE TAKEN ON A BRANCH WITHOUT recal_216 and are superseded by these. Shipped main reads horns 36, not 33, so the count goes 36 -> 42 rather than 33 -> 39; the six fives that change read are the same six; ZERO pins break either way; Draymond's 21.79 and 22.62 and the pool's p50 7.5 / p90 34.5 / p99 58.8 reproduce exactly."
+  ],
+  "top12": {
+    "scale": "attr:rimprot",
+    "cards": [
+      "Ben Wallace '03",
+      "David Robinson '95",
+      "Hakeem Olajuwon '94",
+      "Marcus Camby '07",
+      "Marcus Camby '08",
+      "Rudy Gobert '21",
+      "Tim Duncan '01",
+      "Tim Duncan '07",
+      "Tim Duncan '08",
+      "Ben Wallace '04",
+      "Caldwell Jones '80",
+      "Caldwell Jones '81"
+    ]
+  }
+}

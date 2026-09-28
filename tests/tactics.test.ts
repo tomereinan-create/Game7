@@ -7,6 +7,8 @@ import {
   closeout,
   dhoMan,
   elbowSkill,
+  elbowBig,
+  hornsHandler,
   hornsMen,
   hubScore,
   bigMan,
@@ -21,6 +23,10 @@ import {
   pinScorer,
   HORN_H0,
   HORN_H1,
+  HORN_RIM_LO,
+  HORN_RIM_HI,
+  HORN_WEAK,
+  HORN_STRONG,
   PIN_CATCH_FLOOR,
   PIN_PV,
   DEFAULT_TACTICS,
@@ -1185,6 +1191,112 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     expect(h).toBeGreaterThan(70)
     expect(h).toBeLessThan(styleFit('pnr', NUGGETS_25x))
     expect(styleFit('pnr', NUGGETS_25x) - h).toBeLessThan(2.5)
+  })
+
+  /**
+   * recal_218 (his ruling: "fix horns too") — the mirror of recal_217. `heightRamp(x, HORN_H0, HORN_H1)`
+   * is a listed-height test and it returned exactly 0 on DRAYMOND GREEN '16, who is 78 inches, AT the
+   * foot of the ramp, so the whole elbow term was multiplied to nothing and he graded the 0.0th
+   * percentile at the one alignment in this file that is about a passing forward.
+   */
+  it('a passing forward can stand at an elbow at 6\'6": rim protection pays for the inches Draymond Green \'16 is short', () => {
+    const dray = g("Draymond Green '16").attrs
+    expect(dray.height).toBe(78)
+    expect(dray.height).toBe(HORN_H0) // AT the foot of the ramp: the height leg alone is exactly 0
+    expect((dray.height - HORN_H0) / (HORN_H1 - HORN_H0)).toBe(0)
+    expect(elbowBig(dray)).toBeCloseTo(0.846, 3) // rimprot 84, over HORN_RIM_LO 73 -> HORN_RIM_HI 86
+    expect(elbowSkill(dray)).toBeCloseTo(21.79, 2)
+    // he clears the pool p75 (21.56) and he does NOT clear its p90 (34.50), and THAT IS HIS CARD, not
+    // this term: elbowBig is capped at 1 and his height leg is 0, so 0.75 x min(mid 10, playvol 73) +
+    // 0.25 x max = 25.75 is a HARD CEILING on him for any rim window at all. The elbow asks for the
+    // mid-range jumper as well as the pass and his mid is 10.
+    const pre = HORN_WEAK * Math.min(dray.mid, dray.playvol) + HORN_STRONG * Math.max(dray.mid, dray.playvol)
+    expect(pre).toBeCloseTo(25.75, 2)
+    expect(elbowSkill({ ...dray, rimprot: 99 })).toBeCloseTo(pre, 6)
+    expect(elbowSkill(dray)).toBeGreaterThan(21)
+    // and the same term reads Serge Ibaka '16 (mid 92, playvol 7) 28.25 — one sentence, two opposite men
+    expect(elbowSkill(g("Serge Ibaka '16").attrs)).toBeCloseTo(28.25, 2)
+  })
+
+  it('...and NO GUARD becomes an elbow man, because the height leg is left negative below HORN_H0', () => {
+    // The unclamped negative height leg IS the guard filter and it is the whole of it. The rim ramp
+    // caps at 1 and HORN_H1 - HORN_H0 is 4, so elite rim protection is worth exactly four inches and
+    // never more; a man five inches short reads 0 with rimprot 99.
+    for (const n of ["Stephen Curry '16", "Patty Mills '16", "Chris Paul '08", "Steve Nash '05", "Klay Thompson '16"]) {
+      const x = g(n).attrs
+      expect(x.height).toBeLessThan(HORN_H0)
+      expect(elbowBig(x)).toBe(0)
+      expect(elbowSkill(x)).toBe(0)
+    }
+    expect(elbowBig({ ...g("Chris Paul '08").attrs, rimprot: 99 })).toBe(0)
+    expect(elbowBig({ ...g("Draymond Green '16").attrs, height: HORN_H0 - 4, rimprot: 99 })).toBe(0)
+    expect(elbowBig({ ...g("Draymond Green '16").attrs, height: HORN_H0 - 3, rimprot: 99 })).toBeGreaterThan(0)
+    // Michael Jordan '96 is 78" too, and his rimprot 50 is under HORN_RIM_LO, so he buys nothing and
+    // the Bulls '96 triangle pin is untouched — the read recal_217 warned a looser window would cost
+    expect(elbowSkill(g("Michael Jordan '96").attrs)).toBe(0)
+    expect(bestStyle(BULLS_96).style).toBe('triangle')
+    expect(bestStyle(BULLS_97).style).toBe('triangle')
+  })
+
+  it('...and the window is recal_217\'s p75/p90, continuous and monotone up in both columns', () => {
+    expect([HORN_RIM_LO, HORN_RIM_HI]).toEqual([DHO_RIM_LO, DHO_RIM_HI])
+    expect([HORN_RIM_LO, HORN_RIM_HI]).toEqual([73, 86])
+    // a man at or under the p75 buys no inches: Chris Webber '02 (rimprot 71) is unmoved, which is why
+    // recal_213's own ramp test above still reads elbowSkill 0 for him at height HORN_H0
+    expect(elbowBig(g("Chris Webber '02").attrs)).toBe(1)
+    expect(elbowSkill(g("Chris Webber '02").attrs)).toBeCloseTo(71, 6)
+    expect(elbowSkill(g("Zach Randolph '17").attrs)).toBeCloseTo(35.625, 3) // rimprot 31: unmoved
+    const s = g("Draymond Green '16").attrs
+    for (const k of ['height', 'rimprot'] as const) {
+      let prev = -1
+      for (let v = 0; v <= 99; v++) {
+        const x = elbowBig({ ...s, [k]: v })
+        expect(x).toBeGreaterThanOrEqual(prev)
+        expect(Math.abs(x - Math.max(prev, 0))).toBeLessThan(0.6)
+        prev = x
+      }
+    }
+  })
+
+  it('...and hornsHandler is still the exact inverse, so no five is paid twice for one body', () => {
+    // recal_218 carried the elbow's new term through the handler's `1 - ...` on purpose. The two forms
+    // are behaviourally identical on this board (measured: 1,255 wheel fives, 30 campaign opponents and
+    // the Spurs '16 bench four all agree to 0.000000), so the choice is about meaning: it is ONE FACT
+    // READ ONCE. On the old clamped inverse Draymond would have collected a full 49.80 up top AND 21.79
+    // at an elbow off the same 78 inches.
+    const dray = g("Draymond Green '16").attrs
+    expect(hornsHandler(dray)).toBeCloseTo(handlerFit(dray) * (1 - elbowBig(dray)), 6)
+    expect(hornsHandler(dray)).toBeLessThan(8)
+    expect(handlerFit(dray) * (1 - Math.min(1, Math.max(0, (dray.height - HORN_H0) / (HORN_H1 - HORN_H0))))).toBeCloseTo(49.8, 1)
+    // a man who buys inches at an elbow gives up exactly that fraction of himself up top
+    for (const n of ["Draymond Green '16", "Scottie Barnes '25", "Al Horford '18", "Stephen Curry '16"]) {
+      const x = g(n).attrs
+      expect(hornsHandler(x) + handlerFit(x) * elbowBig(x)).toBeCloseTo(handlerFit(x), 6)
+    }
+  })
+
+  it('...and horns stays a signature system, and every read it takes it takes fairly', () => {
+    // 36 of the 1,255 wheel fives before, 42 after (2.9% -> 3.3%), inside the 3-7% band. The six that
+    // come in are the passing-forward fives the listed-height test was excluding.
+    const CELTICS_80 = cut("Tiny Archibald '80", "Chris Ford '80", "Cedric Maxwell '80", "Larry Bird '80", "Dave Cowens '80")
+    const HEAT_11 = cut("Mario Chalmers '11", "Dwyane Wade '11", "James Jones '11", "Chris Bosh '11", "LeBron James '11")
+    const HAWKS_16 = cut("Jeff Teague '16", "Kent Bazemore '16", "Thabo Sefolosha '16", "Paul Millsap '16", "Al Horford '16")
+    const RAPTORS_25h = cut("Davion Mitchell '25", "Ochai Agbaji '25", "RJ Barrett '25", "Scottie Barnes '25", "Jakob Poeltl '25")
+    for (const five of [CELTICS_80, HEAT_11, HAWKS_16, RAPTORS_25h]) {
+      expect(bestStyle(five).style).toBe('horns')
+      expect(hornsMen(five).high).not.toBe(null)
+      expect(hornsMen(five).low).not.toBe(null)
+    }
+    // ...and the fives it is NOT allowed to take still hold, including the one four-man lineup here:
+    // recal_211's decline pins the Spurs '16 BENCH to motion and it does not move by a decimal
+    const SPURS_16_BENCH4 = cut("Patty Mills '16", "Kyle Anderson '16", "Boris Diaw '16", "David West '16")
+    expect(['balanced', 'motion']).toContain(bestStyle(SPURS_16).style)
+    expect(styleFit('horns', SPURS_16)).toBeLessThan(60)
+    expect(bestStyle(SPURS_16_BENCH4).style).toBe('motion')
+    expect(styleFit('horns', SPURS_16_BENCH4)).toBeCloseTo(52.1, 1)
+    expect(bestStyle(WARRIORS_16).style).toBe('pindown')
+    expect(bestStyle(GRIZZLIES_17).style).toBe('horns')
+    expect(featured('horns', GRIZZLIES_17).map((p) => p.name)).toEqual(["Marc Gasol '17", "Zach Randolph '17"])
   })
 })
 
