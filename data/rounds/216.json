@@ -1,0 +1,222 @@
+{
+  "round": 216,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "fix the handler height cliff. KD can run pnr. | Also fix the playvol gate. | Also, Pnr handler, should be a better shooter, than a pnp handler, who should be a better inside scorer. Not a huge impact, but its there. Westbrook would fit better in a pnp system.",
+  "title": "the pick-and-roll handler is nominated on two ramps instead of behind two cliffs, and the roll and the pop grade him differently — Durant '16 can run it, Murray still keeps the ball from Jokic",
+  "subject": "Thunder '16",
+  "scale": "team:off",
+  "five": [
+    "Russell Westbrook '16",
+    "Andre Roberson '16",
+    "Kevin Durant '16",
+    "Serge Ibaka '16",
+    "Enes Freedom '16"
+  ],
+  "target": 77,
+  "tol": 0,
+  "before": 77,
+  "after": 77,
+  "pipeline_version": 216,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ballShare = \\(x: Attrs\\) =>\\s*\\n?\\s*PNR_PVFLOOR \\+ \\(1 - PNR_PVFLOOR\\) \\* clamp\\(\\(x\\.playvol - PNR_PV0\\) / \\(PNR_PV1 - PNR_PV0\\), 0, 1\\)",
+      "label": "the playvol gate became a ramp: 1 at the old floor 70, down to a 0.15 FLOOR at 60, never zero",
+      "note": "new in recal_216 (was the filter half `playvol >= 70`)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const handlerRead = \\(x: Attrs\\) => ballShare\\(x\\) \\* \\(1 - PNR_HDISC \\* heightRamp\\(x, PNR_H0, PNR_H1\\)\\)",
+      "label": "...and the height gate became recal_213's own 78->82 ramp, discounted by PNR_HDISC 0.65",
+      "note": "new in recal_216 (was the filter half `height <= 78`)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const pnrHandler = \\(x: Attrs\\) => handlerFit\\(x\\) \\* handlerRead\\(x\\)",
+      "label": "the NOMINATION score: handlerFit read down by the two ramps, one pair for both calls",
+      "note": "new in recal_216"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const ranked = five\\.slice\\(\\)\\.sort\\(\\(x, y\\) => hScore\\(y\\) - hScore\\(x\\)\\)",
+      "label": "the handler is now the argmax over all five men, no filter, never null",
+      "note": "new in recal_216"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const rollHandler = \\(x: Attrs\\) => clamp\\(handlerFit\\(x\\) - HAND_TILT \\* Math\\.max\\(0, downhill\\(x\\) - overTop\\(x\\)\\), 0, 99\\)",
+      "label": "the ROLL's handler is docked for being a driver rather than a shooter (his ruling)",
+      "note": "new in recal_216; handlerFit itself is untouched"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const popHandler = \\(x: Attrs\\) => clamp\\(handlerFit\\(x\\) - HAND_TILT \\* Math\\.max\\(0, overTop\\(x\\) - downhill\\(x\\)\\), 0, 99\\)",
+      "label": "...and the POP's handler for being a shooter rather than a driver — Westbrook's call",
+      "note": "new in recal_216"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HAND_TILT = 3",
+      "label": "the whole span of the tilt: 3 points of a term that carries 0.40 of the fit",
+      "note": "\"Not a huge impact, but its there\""
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const handlerFit = \\(x: Attrs\\) => clamp\\(0\\.6 \\* x\\.playvol \\+ 0\\.24 \\* x\\.volume \\+ ELITE_LIFT \\* elitePass\\(x\\), 0, 99\\)",
+      "label": "recal_120's base is UNCHANGED and carries no height term, so a NAMED handler prices on his own game",
+      "note": "held, not touched"
+    }
+  ],
+  "expect": [
+    {
+      "label": "the round moves no rating: the subject five's offense is untouched (tactics.ts only)",
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 77
+    },
+    {
+      "label": "...and its defense",
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
+      "scale": "team:def",
+      "op": "==",
+      "value": 56
+    },
+    {
+      "label": "recal_120's anchor five does not move either (Jazz 97' pnr Stockton and Malone is more fitting)",
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 95
+    },
+    {
+      "label": "the subject of the ruling keeps every bar: Durant '16 height, the attribute the cliff read",
+      "card": "Kevin Durant '16",
+      "scale": "attr:height",
+      "op": "==",
+      "value": 83
+    },
+    {
+      "label": "...and his play volume, which is EXACTLY the old floor — so height alone excluded him",
+      "card": "Kevin Durant '16",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 70
+    },
+    {
+      "label": "...and his three, the attribute the roll's half of the tilt credits",
+      "card": "Kevin Durant '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 80
+    },
+    {
+      "label": "Westbrook '16 three, the attribute that sends him to the pop instead",
+      "card": "Russell Westbrook '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 41
+    },
+    {
+      "label": "...and his rim, the other half of the same comparison",
+      "card": "Russell Westbrook '16",
+      "scale": "attr:rim",
+      "op": "==",
+      "value": 80
+    },
+    {
+      "label": "the anchor the height discount is sized against: Jokic '25 play volume",
+      "card": "Nikola Jokić '25",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 97
+    },
+    {
+      "label": "...against Murray '25, the man who keeps the ball on that floor",
+      "card": "Jamal Murray '25",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 71
+    },
+    {
+      "label": "Magic '87, the 6'9\" handler the height gate forbade, keeps his play volume",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 98
+    },
+    {
+      "label": "Irving '23 play volume — two points under the old floor, and the foot PNR_PV0 is sized on him",
+      "card": "Kyrie Irving '23",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 68
+    },
+    {
+      "label": "Durant '16 OFF, a card rating no tactics round can reach",
+      "card": "Kevin Durant '16",
+      "scale": "off",
+      "op": "==",
+      "value": 96
+    },
+    {
+      "label": "Westbrook '16 OFF, the same",
+      "card": "Russell Westbrook '16",
+      "scale": "off",
+      "op": "==",
+      "value": 87
+    },
+    {
+      "label": "Magic Johnson '87 OVR, the same",
+      "card": "Magic Johnson '87",
+      "scale": "ovr",
+      "op": "==",
+      "value": 90
+    }
+  ],
+  "notes": [
+    "THE DEFECT WAS ONE LINE WITH TWO CLIFFS IN IT. pnrPair picked its handler out of `five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78)`, and handlerFit itself carries no height term at all, so height was priced NOWHERE except in that filter — as a veto. Measured by one-point perturbation of the pnr/pickpop fit over five pinned fives, main's two biggest discontinuities in the whole two-man game are exactly those two gates: 42.02 points of fit for one inch of height (Magic '87, 78 -> 79) and 25.00 for one point of play volume (Westbrook '16, 69 -> 70). The men the height half forbade from running a pick-and-roll at all: Magic '87 (playvol 98), Jokic '25 (97), LeBron '18 (95), Simmons '18 (90), Giannis '21 (79) and the subject, Durant '16 (70 — he cleared the other half EXACTLY, so height alone excluded him). The playvol half was worse than a cliff: it was the only way this function could return `handler: null`, and a null makes the fit's 0.40-weighted handler term read ZERO. That happened on 321 of the wheel's 1,255 fives — an IMPOSSIBLE pick-and-roll where the truth is a BAD one.",
+    "THE FIX MAKES THE OLD GATES THE ENDS OF TWO RAMPS, so no man who was eligible before loses a decimal: `height <= 78` becomes the FOOT of PNR_H0..PNR_H1 (78 -> 82, recal_213's own band, the ramp hornsHandler already reads the other way round) and `playvol >= 70` becomes the TOP of PNR_PV0..PNR_PV1 (60 -> 70) with a 0.15 FLOOR so the score never reaches zero and a five of five non-passers still nominates the best of them. pnrHandler = handlerFit x ballShare x (1 - 0.65 x heightRamp): Durant '16 22.4, Magic '87 50.7, Jokic '25 34.6, Murray '25 61.8. There is no filter left — the handler is the argmax of one continuous monotone score over all five men and can never be null (0 of 1,255 after, 321 before).",
+    "THE NOMINATION IS DISCOUNTED AND A NAMED MAN IS NOT. handlerRead scales the handler term of the fit only when NOBODY named a pair, because one question answers both halves of an auto-pick: who runs it, and how much of a pick-and-roll it is. A CALLED pair prices on handlerFit, height-free and ball-share-free — recal_124's doctrine verbatim, and what makes \"KD can run pnr\" worth calling: naming Durant + Freedom on the four-man cast reads 61.72 fit / +0.39 points where the engine's own read of the same five is 45.72 / -1.37. recal_208's iso already carries exactly this asymmetry (the engine will not nominate Embiid, a plan that names him is priced at his full isoScore and beats the engine's read); the difference here is that this one is a ramp, so a five with a 6'9\" handler falls DOWN the style smoothly instead of out of it. It is ALSO what holds the Lakers '87 helio pin: Magic is nominated (which the ruling asks for) while the Showtime pick-and-roll reads 62.0 against their pinned helio 67.0.",
+    "THE THREE RULINGS, EACH ACCOUNTABLE ON ITS OWN, on the wheel's 1,255 fieldable fives. The two GATES alone (HAND_TILT set to 0): 329 pairs move, 8 READS move, pnr 269 -> 274, pickpop 37 -> 40. The TILT on top moves 21 more reads and brings pnr back down to 258. Every moved pair attributed by lifting ONE gate at a time: the HEIGHT half alone would move 4 (Blazers '92 Porter -> Drexler, Mavericks '23 Dinwiddie -> Doncic, Bulls '26 Jones -> Giddey, Lakers '84 NONE -> Magic), the PLAYVOL half alone 249 (every one of them a five where nobody cleared playvol 70, so there was no handler at all), and 76 are reached by both — those had no handler AND a tall passer, and the man who ends up with the ball comes from the HEIGHT half on 66 of them (Magic's Lakers '83-'91, Bird's Celtics '84-'86, Pippen's Bulls '94-'98, Hardaway's Magic, Grant Hill's Pistons, McGrady's Magic and Rockets, LeBron's Cavaliers and Lakers, Jokic's Nuggets, Luka's Mavericks, Simmons's Sixers, Giannis's Bucks, LaMelo's Hornets) and from the PLAYVOL half on 10. 321 fives had a null handler before; 0 do now.",
+    "THE WHEEL DISTRIBUTION, shipped main -> after: balanced 357 -> 361, pnr 269 -> 258, postup 204 -> 207, helio 120 -> 120, iso 51 -> 51, dho 48 -> 48, pindown 46 -> 46, motion 44 -> 44, pickpop 37 -> 39, horns 33 -> 36, triangle 30 -> 29, fiveout 16 -> 16. 29 of 1,255 reads change (2.3%), and the pick-and-roll's reach FALLS rather than rises: the gates add 5 reads and the tilt takes 16 back off, because the tilt is a penalty on the wrong call and never a bonus on the right one, so no five's pnr fit can rise from it. Only 4 fives change read between the roll and the pop, which is the tilt's own count: Suns '01, Thunder '15 and Grizzlies '23 to the pop, Mavericks '04 to the roll.",
+    "THE PIN THAT MOVES, AND IT IS THE ONLY ONE: THUNDER '15, pnr -> pickpop. recal_214's receipt recorded that five as an EXACT TIE — Ibaka '15's efficiency 58 caps both screener terms, so pnr and pickpop both read 71.40 and the read stayed pnr only because pick-and-roll is listed first in STYLES. This round's third ruling breaks that tie by naming the man who breaks it: Westbrook '15 is 3pt 38 / rim 76, the downhill man, so his ROLL is docked 3 (99.0 -> 96.0) and his pop is not, giving pnr 70.20 against pickpop 71.40. His older ruling on that five (\"Pnr for 15' Thunder when Steven adams in the corner cant be the main tactic as his def will sag off him\") is about WHERE ADAMS STANDS, and that is untouched: the pair is Westbrook + Ibaka in both calls, the drawing is identical (tests/court.test.ts pins spotsFor pickpop === spotsFor pnr) and Adams stands in the paint either way. Exactly the supersession recal_214 made when his Durant/Westbrook ruling re-pointed THUNDER_16 from pnr to pickpop. HIS WORD DECIDES: setting HAND_TILT to 0 restores the tie and the pnr read, and costs the third ruling entirely.",
+    "EVERY OTHER PINNED READ HOLDS, measured through bestStyle on the wheel's own starting fives: Jazz '97 pnr (76.25, recal_120's number to the decimal, because Stockton '97 is 3pt 73 / rim 53 — a ROLL handler — and his term is not docked at all), Nuggets '25 pnr (72.94, unmoved, Murray handling and Jokic screening), Thunder '25 pnr, Suns '05 pnr, Rockets '18 pnr, Thunder '16 pickpop (80.48 against the roll's 75.14, a wider preference than recal_214 left), Magic '11 postup (81.63 against pnr 81.50 — a 0.13-point read, and the reason the tilt is a penalty and not a signed credit), Hornets '95 postup, Pelicans '16 postup, Celtics '25 fiveout, Thunder '22 helio, Lakers '87 helio, Bulls '96 and '97 triangle, Raptors '17 iso, Nets '23 iso, Jazz '81 iso, Knicks '84 iso, Spurs '16 balanced, Pistons '07 motion, Wolves '97 / Kings '02 / Grizzlies '17 horns, Pacers '96 / Warriors '16 / Knicks '02 pindown, Kings '24 / Bulls '14 / Sixers '18 dho.",
+    "TWO KNOBS ARE BOUNDED BY PINS AND THE BOUNDS ARE REPORTED, NOT TUNED AROUND (the practice recal_213 used for HORN_BASE). PNR_HDISC 0.65: under 0.48 the Showtime Lakers' own auto pick-and-roll clears the helio their ruling pinned (67.76 against 67.00 at 0.45), and under 0.38 Jokic outscores Murray and takes Denver's ball; what stops it climbing is that at 1.00 a 6'10\" man's nomination is ZERO and the ramp is the old veto in disguise. PNR_PV0 60: it is the GENTLEST foot that leaves the Nets '23 in the iso recal_208's ruling put them in — Irving '23 is playvol 68, two points under the old floor, and at a foot of 58 his pick-and-roll reads 68.4 against their iso 68.1 and the pin breaks. At 60 it is 66.7 against 68.1, a 1.4-point margin, and that margin is the thinnest thing in this round.",
+    "THE TILT'S SHAPE WAS MEASURED, NOT CHOSEN. Two forms were tried first and both break a pin. SIGNED about the midpoint (handlerFit +- HAND_TILT/2): Magic '11's post-up is a 0.13-point read and Jameer Nelson '11 is a pure shooter, so ANY credit on the roll side takes that five off the post (81.91 against 81.63) and it also widens the Nuggets '25 pnr-over-horns margin to 3.10, past the 2.5 recal_213 pinned as HORN_BASE's own cap. ONE-SIDED off the RAW credit (-HAND_TILT x (1 - credit)): every handler who is not both a shooter and a driver pays in BOTH calls, so the pick-and-roll loses 19 wheel reads instead of 11. The landed form docks each call by how much better SUITED the man is to the OTHER one, so the call he is built for prices him at exactly the handlerFit he had before this round: max(rollHandler, popHandler) === handlerFit for every card, and no pnr fit anywhere can rise. Measured, base -> roll / pop: Westbrook '16 99.0 -> 96.2 / 99.0 (the POP, his ruling), Durant '16 64.1 -> 64.1 / 62.0 (the ROLL, the other half of the same line), Stockton '97 87.1 -> 87.1 / 84.1 (the ROLL), Giannis '21 70.4 -> 67.4 / 70.4, Jokic '25 99.0 -> 99.0 / 99.0 (both, and the 99 clamp says so), LeBron '18 99.0 -> 98.1 / 99.0, Draymond '16 49.8 -> 49.8 / 47.5.",
+    "NO CLIFF REPLACES THE CLIFF, and the proof is the same perturbation table that found it. Worst one-point jump in the pnr/pickpop fit over five pinned fives, per attribute, main -> after: height 42.02 -> 19.32, playvol 25.00 -> 21.36, volume 3.67 -> 4.87, efficiency 4.40 -> 4.40, rim 4.05 -> 4.05, 3pt 2.59 -> 2.59, mid 0.35 -> 0.35. Both remaining leaders are SLOT crossings and neither is a price: the 19.32 is a man crossing the SCREENER's own height line of 80 (Hornacek '97 at 79 -> 80), which is not in his ruling and is left alone, and the 21.36 is the allocation defect recal_214 left for its own round — the nomination changing hands re-assigns the screen. Pinned in tests/tactics.test.ts at < 22 over 5 fives x 5 men x 7 attributes x 100 values x 2 calls.",
+    "ONE MAN CANNOT BE BOTH, which is new only because the round makes it possible: the old pools were disjoint by construction (handler <= 78, screener >= 80). On 26 wheel fives the nominated handler is also the best screener on the floor (Jokic, LeBron, Luka, Magic, Pippen). He keeps the BALL, which is the slot his nomination won, and the screen goes to the next big — UNLESS he is the five's only big, in which case the screen is a slot nobody else can fill and the ball goes to the second nominee instead (Nuggets '19 and '20, where Jokic is the whole front court: he screens, Murray handles). Without that second clause those two fives lost their screener entirely and 30 points of fit with it. After both clauses: 0 fives with a null handler, 0 with a null screener that had a big, and handler !== screener everywhere.",
+    "THE DRAWING IS FIXED WHERE THE GATE BROKE IT, and NOT where it was blamed. On main the 321 no-handler fives drew a pick-and-roll with nobody on the ball: the Lakers '87 stood BYRON SCOTT on the ball spot while pnrPair returned handler undefined, so the number and the floor named different men. After: Magic '87 holds the ball in the fit, the drawing and the caption. But the Lakers '80 and '81 are NOT this bug, and the measurement overrules the hypothesis: Magic '80 is playvol 75 / handlerFit 57.2 against NORM NIXON '80 at 58.0 (and '81: 60.0 against 65.1), so Nixon is the better handler on the base term before any height discount, at every value of PNR_HDISC from 0 to 1. Those two fives read horns anyway, and in a called pick-and-roll Magic still takes the dunker spot — because the second-year Magic card is a 75-playvol off-guard beside a point guard, not because of the gate this round removed. That drawing belongs to recal_212's rank (height + orb) or to the '80/'81 cards, and it is reported here rather than fixed in the wrong file.",
+    "NOTHING REGENERATES AND NO RATING MOVES. This round touches src/engine/tactics.ts and tests/tactics.test.ts only — no python, no data files. data/team_rating.py and src/engine/offense.ts are untouched, so teamOffense, defenseVs and ratings100 are bit-identical, every campaign opponent reads the same OFF and the same DEF dial, and the eight campaign rounds cannot reorder (src/data/opponents.json carries no style field and the AI runs balanced offense — bestStyle is a READ, see its own header). compute_ovr.py's marginal term is untouched, so no card's OFF/DEF/OVR moves and `marg` does not move.",
+    "THE DEVIATION TAX LAW PASSES ON ALL NINE ROWS with TAX.style left where main has it: playstyle blind -0.97 / oracle +2.19 (main -0.94 / +2.11), inside the band with the oracle far over its floor; the other eight rows are bit-identical. npm run anchors: 213 anchors, 0 failing, mean |error| 1.01 — unchanged, because no anchor in that file has a style scale. npx tsc -b clean (recal_214's lesson: vitest type-strips).",
+    "PINNED BY TEST, because data/anchors.json holds card and team RATING scales and no style scale — the same reason recal_120, recal_129, recal_209, recal_213 and recal_214 have no anchor row. tests/tactics.test.ts, 'the handler is nominated on a ramp, and every five has one': six tests naming Durant '16 (nominated on the four-man cast, priced height-free when called, and still behind Westbrook), Murray over Jokic and Magic over the Showtime guards with the helio held, no null handler and handler !== screener on 13 fives, both ramps continuous and monotone with the old lines as their ends, the fit's own no-cliff bound, and the roll/pop tilt with max(roll, pop) === handlerFit.",
+    "THE OLD FILTER LINE IS GONE FROM THE SOURCE and is deliberately not receipted as an inverted knob (a MISS fails the ledger, and an absence is not a reading): `git show 40696ef:src/engine/tactics.ts | grep 'playvol >= 70 && p.attrs.height <= 78'` is the whole of the before, and the five knob lines above are the after."
+  ],
+  "cost": [
+    "THUNDER '15 MOVES FROM pnr TO pickpop and that is the one pinned read this round changes. It was an exact 71.40 tie on main (recal_214 recorded it as a property of Ibaka '15's efficiency 58) and the third ruling breaks it in the direction his own words name — Westbrook is the downhill man, so the roll docks him. The substance of his '15 ruling (Adams inside, not in a corner) is untouched, the pair is Westbrook + Ibaka either way, and the drawing is identical by test. If he wants the pnr caption back, HAND_TILT = 0 restores it and gives up the third ruling; nothing else in the round depends on the tilt.",
+    "recal_213's claim that HORN_BASE 17 is the LARGEST value leaving the Nuggets '25 on the pick-and-roll is no longer tight, and the test that guards it (pnr - horns < 2.5) is now 1.90 on the wheel five it names and still passes. This round does not raise HORN_BASE — horns is not its ruling — but a later horns round should re-derive that cap rather than trust the comment.",
+    "The ALLOCATION DEFECT is now load-bearing where it was unreachable: with the handler's height filter gone, the handler and screener pools overlap, so on 26 wheel fives the best screener is given the ball and the second big sets the screen (Jokic '22, LeBron '18, Luka '24). pnrPair still maximises the two slots independently, which is the round recal_214 left open, and it is the source of the largest remaining discontinuity in the file (21.36 points when the nomination changes hands).",
+    "One older test assertion pinned the DEFECT and was re-pointed at its own ruling, not loosened: tests/tactics.test.ts 'a true post hub whose handler is not an elite passer keeps the post-up' asserted pnrPair(f, null).handler === null for the Lakers '00 and Rockets '94. Those fives now nominate Kobe '00 and Drexler '94, both under the old playvol floor, and the test asserts what the ruling it belongs to actually says: a pick-and-roll priced BELOW their post-up, and both fives still read postup.",
+    "The UI gains a fix nobody asked for and it should not be re-broken: TacticsPanel's Handler row opens lit on pnrPair's man, so on the 321 fives with no eligible handler it used to open BLANK. It cannot now.",
+    "The four-man Durant cast (Durant, Roberson, Ibaka, Freedom, Waiters '16) is the round's own smoke test and is NOT a wheel five: pnr 38.1 / -2.21 points with a null handler on main, 45.72 / -1.37 with Durant handling and Freedom rolling after, 61.72 / +0.39 when a plan names that pair."
+  ]
+}

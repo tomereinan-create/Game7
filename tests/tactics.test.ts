@@ -25,6 +25,20 @@ import {
   ELITE_PV,
   gateTactics,
   handlerFit,
+  handlerRead,
+  pnrHandler,
+  rollHandler,
+  popHandler,
+  ballShare,
+  overTop,
+  downhill,
+  HAND_TILT,
+  PNR_H0,
+  PNR_H1,
+  PNR_HDISC,
+  PNR_PV0,
+  PNR_PV1,
+  PNR_PVFLOOR,
   pnrPair,
   reconcileTactics,
   scorerCreator,
@@ -405,9 +419,16 @@ describe('an elite passer and a big who pops are a pick-and-roll, not a post-up'
   })
 
   it('a true post hub whose handler is not an elite passer keeps the post-up', () => {
-    // O'Neal and Olajuwon: no man on either five clears the handler gate at all
+    // O'Neal and Olajuwon: no man on either five cleared the old handler FILTER, so this test used
+    // to assert `pnrPair(f, null).handler === null`. recal_216 removed the filter on his ruling
+    // ("Also fix the playvol gate.") — every five now nominates the best handler it has, so the
+    // assertion is re-pointed at what the ruling it belongs to actually says: these two fives read
+    // POST-UP, and they read it with a real pick-and-roll priced below it rather than an impossible
+    // one priced at zero. Kobe '00 (playvol 66) and Drexler '94 bring the ball; neither five moves.
     for (const f of [LAKERS_00, ROCKETS_94]) {
-      expect(pnrPair(f, null).handler).toBe(null)
+      expect(pnrPair(f, null).handler).not.toBe(null)
+      expect(pnrPair(f, null).handler!.attrs.playvol).toBeLessThan(PNR_PV1)
+      expect(styleFit('pnr', f)).toBeLessThan(styleFit('postup', f))
       expect(bestStyle(f).style).toBe('postup')
     }
     // ...and the low-playvol hubs recal_115 protected are still post-ups
@@ -1343,5 +1364,161 @@ describe('the three are signature systems and they break nothing that was ruled 
         }
       }
     }
+  })
+})
+
+/**
+ * recal_216, his three rulings in one round on one filter:
+ *   "fix the handler height cliff. KD can run pnr."
+ *   "Also fix the playvol gate."
+ *   "Also, Pnr handler, should be a better shooter, than a pnp handler, who should be a better
+ *    inside scorer. Not a huge impact, but its there. Westbrook would fit better in a pnp system."
+ *
+ * pnrPair nominated its handler out of `playvol >= 70 && height <= 78`. Both halves were cliffs —
+ * one inch of height was worth 42.0 points of pick-and-roll fit on the Showtime Lakers and one point
+ * of play volume 25.0 on the Thunder '16 — and the playvol half was the only way this function could
+ * return a null handler, which made the 0.40-weighted handler term read ZERO on 321 of the wheel's
+ * 1,255 fives. Both are ramps now, inside the nomination score, and the handler can never be null.
+ */
+describe('the handler is nominated on a ramp, and every five has one', () => {
+  const CAST_16 = cut("Kevin Durant '16", "Andre Roberson '16", "Serge Ibaka '16", "Enes Freedom '16", "Dion Waiters '16")
+
+  it("HIS RULING: KD can run pnr — the five with no small handler names Durant '16 and reads a real one", () => {
+    const kd = g("Kevin Durant '16")
+    expect(kd.attrs.height).toBeGreaterThan(78) // the old gate's line, which excluded him
+    expect(kd.attrs.playvol).toBe(PNR_PV1) // ...he cleared the OTHER half exactly, so height did it
+    const pair = pnrPair(CAST_16, null)
+    expect(pair.handler!.name).toBe("Kevin Durant '16")
+    expect(pair.screener).not.toBe(null)
+    expect(pair.screener!.name).not.toBe(pair.handler!.name) // one man cannot hold both slots
+    expect(featured('pnr', CAST_16).map((p) => p.name)).toEqual([pair.handler!.name, pair.screener!.name])
+    // it was 38.1 with a null handler, a fit the two-man terms could not reach at all
+    expect(styleFit('pnr', CAST_16)).toBeGreaterThan(44)
+    // ...and a plan that NAMES him prices him on his own game, height-free (recal_124's doctrine)
+    const called: Tactics = { ...DEFAULT_TACTICS, style: 'pnr', pnr: { handler: "Kevin Durant '16", screener: "Enes Freedom '16" } }
+    expect(styleFit('pnr', CAST_16, undefined, called)).toBeGreaterThan(60)
+    expect(stylePts(called, CAST_16)).toBeGreaterThan(0)
+    const short = { ...kd.attrs, height: 72 }
+    expect(rollHandler(short)).toBe(rollHandler(kd.attrs))
+    expect(handlerFit(short)).toBe(handlerFit(kd.attrs))
+  })
+
+  it('...and he does not displace a better handler: Westbrook still holds the Thunder \'16', () => {
+    expect(handlerFit(g("Russell Westbrook '16").attrs)).toBeGreaterThan(handlerFit(g("Kevin Durant '16").attrs))
+    expect(pnrHandler(g("Russell Westbrook '16").attrs)).toBeGreaterThan(pnrHandler(g("Kevin Durant '16").attrs))
+    expect(pnrPair(THUNDER_16, null).handler!.name).toBe("Russell Westbrook '16")
+    expect(popPair(THUNDER_16, null).handler!.name).toBe("Russell Westbrook '16")
+    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
+  })
+
+  it('the anchor the discount is sized against: Murray keeps the ball from Jokic, Magic takes it', () => {
+    // Denver's pick-and-roll is Murray handling and Jokic SCREENING, and a 97-playvol seven-footer
+    // must not simply take the ball from a 71-playvol guard. PNR_HDISC is what stops him.
+    const jok = g("Nikola Jokić '25").attrs
+    const mur = g("Jamal Murray '25").attrs
+    expect(handlerFit(jok)).toBeGreaterThan(handlerFit(mur)) // he IS the better handler on the base
+    expect(pnrHandler(jok)).toBeLessThan(pnrHandler(mur)) // ...and still not Denver's
+    expect(pnrPair(NUGGETS_25x, null).handler!.name).toBe("Jamal Murray '25")
+    expect(pnrPair(NUGGETS_25x, null).screener!.name).toBe("Nikola Jokić '25")
+    expect(bestStyle(NUGGETS_25x).style).toBe('pnr')
+    // ...while Magic '87, the same height as nobody on that floor, DOES take it — and the Showtime
+    // Lakers keep the helio their own ruling pinned, because the engine's own read is priced at what
+    // it reads (handlerRead) and not at a named man's full handlerFit
+    expect(pnrPair(LAKERS_87x, null).handler!.name).toBe("Magic Johnson '87")
+    expect(pnrPair(LAKERS_87, null).handler!.name).toBe("Magic Johnson '87")
+    expect(bestStyle(LAKERS_87x).style).toBe('helio')
+    expect(bestStyle(LAKERS_87).style).toBe('helio')
+    expect(styleFit('pnr', LAKERS_87x)).toBeLessThan(styleFit('helio', LAKERS_87x))
+  })
+
+  it('no gate, no null: every five on the board nominates a handler and a big to screen for him', () => {
+    for (const f of [LAKERS_00, ROCKETS_94, JAZZ_97, SUNS_05, THUNDER_16, THUNDER_22, CELTICS_25, LAKERS_87, BULLS_96, SIXERS_18, NUGGETS_25x, GRIZZLIES_17, CAST_16]) {
+      const pair = pnrPair(f, null)
+      expect(pair.handler, f.map((p) => p.name).join(',')).not.toBe(null)
+      expect(pair.screener!.name).not.toBe(pair.handler!.name)
+      expect(popPair(f, null).screener!.name).not.toBe(popPair(f, null).handler!.name)
+      expect(featured('pnr', f)).toHaveLength(2)
+      expect(featured('pickpop', f)).toHaveLength(2)
+    }
+  })
+
+  it('BOTH halves are ramps: the score is continuous and monotone in height and in play volume', () => {
+    const kd = g("Kevin Durant '16").attrs
+    // height: the old line 78 is the FOOT of the ramp, so nobody who was eligible loses a decimal,
+    // and no inch above it flips anything — the step is the ramp's own slope
+    expect(PNR_H0).toBe(78)
+    expect(PNR_H1).toBe(82)
+    expect(handlerRead({ ...kd, height: PNR_H0 })).toBe(handlerRead({ ...kd, height: 60 }))
+    expect(handlerRead({ ...kd, height: PNR_H1 })).toBe(handlerRead({ ...kd, height: 99 }))
+    expect(handlerRead({ ...kd, height: PNR_H1 })).toBeCloseTo(1 - PNR_HDISC, 10)
+    // play volume: the old floor 70 is the TOP of the ramp, and the foot is a FLOOR and not a zero
+    expect(PNR_PV1).toBe(70)
+    expect(ballShare({ ...kd, playvol: PNR_PV1 })).toBe(1)
+    expect(ballShare({ ...kd, playvol: 99 })).toBe(1)
+    expect(ballShare({ ...kd, playvol: PNR_PV0 })).toBeCloseTo(PNR_PVFLOOR, 10)
+    expect(ballShare({ ...kd, playvol: 0 })).toBeCloseTo(PNR_PVFLOOR, 10)
+    let prevH: number | null = null
+    for (let h = 60; h <= 99; h++) {
+      const v = pnrHandler({ ...kd, height: h })
+      if (prevH !== null) {
+        expect(v).toBeLessThanOrEqual(prevH + 1e-9)
+        expect(prevH - v).toBeLessThan(handlerFit(kd) / 3) // no cliff: at most the ramp's own slope
+      }
+      prevH = v
+    }
+    let prevP: number | null = null
+    for (let pv = 0; pv <= 99; pv++) {
+      const v = pnrHandler({ ...kd, playvol: pv })
+      if (prevP !== null) expect(v).toBeGreaterThanOrEqual(prevP - 1e-9)
+      prevP = v
+    }
+  })
+
+  it('the FIT carries no cliff either: one point of any attribute is worth less than the gate was', () => {
+    // main's worst one-point jump over these fives was 42.02 (Magic '87, height 78 -> 79) and 25.00
+    // (Westbrook '16, playvol 69 -> 70). Every remaining step is smaller, and the two biggest are
+    // SLOT crossings that this round does not own: a man crossing the SCREENER's own height line
+    // (80), and the allocation defect recal_214 left for its own round (one man best at both jobs).
+    for (const style of ['pnr', 'pickpop'] as Style[]) {
+      for (const five of [THUNDER_16, JAZZ_97, NUGGETS_25x, LAKERS_87x, SIXERS_18]) {
+        for (let i = 0; i < 5; i++) {
+          for (const k of ['mid', '3pt', 'rim', 'playvol', 'volume', 'efficiency', 'height'] as const) {
+            let prev: number | null = null
+            for (let v = 0; v <= 99; v++) {
+              const up = five.map((p, j) => (j === i ? ({ ...p, attrs: { ...p.attrs, [k]: v } } as Player) : p))
+              const f = styleFit(style, up)
+              if (prev !== null) expect(Math.abs(f - prev), `${style} ${five[i].name} ${k}=${v}`).toBeLessThan(22)
+              prev = f
+            }
+          }
+        }
+      }
+    }
+  })
+
+  it('HIS RULING: the pnr handler is the shooter and the pnp handler is the driver', () => {
+    const rus = g("Russell Westbrook '16").attrs
+    const kd = g("Kevin Durant '16").attrs
+    // "Westbrook would fit better in a pnp system" — and Durant is the other half of the same line
+    expect(popHandler(rus)).toBeGreaterThan(rollHandler(rus))
+    expect(rollHandler(kd)).toBeGreaterThan(popHandler(kd))
+    // it is ONE base with two tilts, so recal_120's elite-passer ramp survives in both
+    expect(rollHandler(rus)).toBeLessThanOrEqual(handlerFit(rus))
+    expect(popHandler(rus)).toBeLessThanOrEqual(handlerFit(rus))
+    expect(Math.max(rollHandler(rus), popHandler(rus))).toBe(handlerFit(rus))
+    expect(Math.max(rollHandler(kd), popHandler(kd))).toBe(handlerFit(kd))
+    // "Not a huge impact": the whole span is HAND_TILT on a term that carries 0.40 of the fit
+    expect(HAND_TILT).toBe(3)
+    for (const n of ["Russell Westbrook '16", "Kevin Durant '16", "John Stockton '97", "Nikola Jokić '25", "Magic Johnson '87"]) {
+      const a = g(n).attrs
+      expect(Math.abs(rollHandler(a) - popHandler(a))).toBeLessThanOrEqual(HAND_TILT)
+    }
+    // no new threshold: the roll's credit IS recal_214's closeout ramp, read from the ball
+    expect(overTop(kd)).toBe(closeout(kd))
+    expect(downhill(kd)).toBeCloseTo(Math.max(0, Math.min(1, (kd.rim - kd['3pt']) / (SHOOT_3PT_HI - SHOOT_3PT))), 10)
+    // ...and it never lifts a fit, so no five gains a two-man read it did not have
+    expect(styleFit('pnr', JAZZ_97)).toBeCloseTo(76.25, 1) // recal_120's own number, unmoved
+    expect(bestStyle(JAZZ_97).style).toBe('pnr')
+    expect(bestStyle(THUNDER_16).style).toBe('pickpop')
   })
 })
