@@ -958,9 +958,14 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
 /**
  * WHO RUNS THE PICK-AND-ROLL. The plan's own two men when it names a legal pair (his ruling: "When
  * selenting pnr you have to select the 2 handler and screener"); otherwise the AUTO-PICK: the best
- * small HANDLER and the best big SCREENER, by the two terms the fit itself is built on (handlerFit
+ * HANDLER of the five and the best big SCREENER, by the terms the fit itself is built on (pnrHandler
  * and screenFit below). Every reader of the pair — the fit, the court, the caption — comes through
  * here, so the number and the drawing can never name different men.
+ *
+ * recal_216 took the handler's FILTER out (`playvol >= 70 && height <= 78`, two cliffs and the one
+ * way this function could return a null handler) and made both halves of it ramps inside the
+ * nomination score. The screener is still filtered by height, which is not in his ruling and is not
+ * touched: a big sets the screen.
  */
 /**
  * THE TWO MEN OF THE TWO-MAN GAME (recal_120, his ruling: "Jazz 97' pnr Stockton and Malone is more
@@ -1047,6 +1052,130 @@ export const ELITE_PV = 80
 export const ELITE_LIFT = 24
 const elitePass = (x: Attrs) => clamp((x.playvol - ELITE_PV) / 15, 0, 1)
 export const handlerFit = (x: Attrs) => clamp(0.6 * x.playvol + 0.24 * x.volume + ELITE_LIFT * elitePass(x), 0, 99)
+/**
+ * WHO THE ENGINE READS AS THE HANDLER (recal_216, his rulings: "fix the handler height cliff. KD can
+ * run pnr." and "Also fix the playvol gate.").
+ *
+ * pnrPair used to nominate out of a FILTER, `playvol >= 70 && height <= 78`, and both halves of it
+ * were cliffs of the kind the house rules forbid. Measured by perturbation, one inch of height was
+ * worth -38.7 fit points at the line — the largest discontinuity in this file — and the men it
+ * forbade from running a pick-and-roll at all were Magic Johnson '87 (playvol 98), Jokic '25 (97),
+ * LeBron '18 (95), Simmons '18 (90), Giannis '21 (79) and the subject, Durant '16 (70, so height
+ * alone excluded him). The playvol half was worse than a cliff: it was the only reason pnrPair could
+ * return `handler: null`, and a null makes the fit's 0.40-weighted handler term read ZERO — an
+ * IMPOSSIBLE pick-and-roll where the truth is a BAD one. Every five has a man who is the best of
+ * them at running it.
+ *
+ * Both gates are now RAMPS on the same measure, and the old lines are their ends, so no man who was
+ * eligible before is discounted by a decimal: `height <= 78` becomes the FOOT of PNR_H0..PNR_H1
+ * (recal_213's own 78 -> 82, the ramp hornsHandler already reads the other way round), and
+ * `playvol >= 70` becomes the TOP of PNR_PV0..PNR_PV1. There is no filter left: the handler is the
+ * argmax of one continuous, monotone score over all five men and can never be null.
+ *
+ *   `ballShare`   how much of the ball he actually has: 1 at playvol PNR_PV1 (70, the old floor),
+ *                 falling to PNR_PVFLOOR at PNR_PV0 (60) and never to zero — so a five of five
+ *                 non-passers still nominates its best handler, ranked by handlerFit, and reads a
+ *                 bad pick-and-roll instead of an impossible one. handlerFit already leads on play
+ *                 volume; this makes the conjunction CONVEX, the idiom elbowSkill uses — the
+ *                 scoring threat is worth something only to a man the ball goes through.
+ *                 PNR_PV0 60 is the GENTLEST foot that leaves the Nets '23 in the iso recal_208's
+ *                 ruling put them in (Irving '23 is playvol 68, one of the men the old floor cut by
+ *                 two points): at a foot of 58 their pick-and-roll clears their iso and the pin
+ *                 breaks. Reported, not tuned around, the way HORN_BASE is capped by the Nuggets.
+ *   `heightRamp`  and PNR_HDISC 0.65 is how much of a handler size takes away at the top of it. It
+ *                 is a DISCOUNT and not a veto: Magic '87 (handlerFit 99, height 81) reads 50.7 and
+ *                 still beats every guard on the Showtime Lakers, which is the ruling; Jokic '25
+ *                 (99, height 83) reads 34.6 and does NOT take the ball from Jamal Murray '25 (61.8,
+ *                 height 76), because Denver's pick-and-roll is Murray handling and Jokic screening.
+ *                 Durant '16 (64.1, height 83) reads 22.4 — the subject of the ruling, eligible at
+ *                 last, and on a floor with Westbrook (99.0) he is still the second of the two.
+ *                 Both bounds on it are FLOORS and they come from those two fives: under 0.48 the
+ *                 Showtime Lakers' own auto pick-and-roll (67.76 at 0.45) clears the helio 67.00
+ *                 their ruling pinned, and under 0.38 Jokic outscores Murray and takes the ball.
+ *                 What stops it climbing is the ruling itself: at 1.00 a 6'10" man's nomination is
+ *                 ZERO and the discount is the old veto wearing a ramp, with every all-big five tied
+ *                 at nothing. 0.65 leaves a seven-footer 35% of his handlerFit, which is enough for
+ *                 the fives that really have no guard (the Nuggets '22 nominate Jokic), and it sits
+ *                 clear of both floors.
+ *
+ * THE PRICE OF A READ IS WHAT THE ENGINE READS, AND A NAMED MAN PRICES ON HIS OWN GAME. handlerRead
+ * scales the handler term of the fit when NOBODY named a pair, because the same question answers
+ * both halves of an auto-pick — who runs it, and how much of a pick-and-roll it is. When the plan
+ * NAMES its two men the caller has answered the first half himself, and the second is the man's own
+ * handlerFit, height-free and ball-share-free: recal_124's doctrine verbatim ("height decides who
+ * the ENGINE nominates, never what a man the CALLER names is worth"), which is what makes "KD can
+ * run pnr" worth calling. recal_208's iso already carries exactly this asymmetry — the engine will
+ * not nominate Embiid and the Sixers fall out of iso, while a plan that names him is priced at his
+ * full isoScore and beats the engine's own read. The difference here is that this one is a ramp, so
+ * a five with a 6'9" handler falls DOWN the style smoothly instead of out of it.
+ */
+export const PNR_H0 = 78
+export const PNR_H1 = 82
+export const PNR_HDISC = 0.65
+export const PNR_PV0 = 60
+export const PNR_PV1 = 70
+export const PNR_PVFLOOR = 0.15
+export const ballShare = (x: Attrs) =>
+  PNR_PVFLOOR + (1 - PNR_PVFLOOR) * clamp((x.playvol - PNR_PV0) / (PNR_PV1 - PNR_PV0), 0, 1)
+/**
+ * ...and the two together: how much of a pick-and-roll handler the ENGINE reads a man as, 0-1. It
+ * multiplies the base rather than replacing it, so the ranking inside any one height and any one
+ * play volume is still handlerFit's own and a better handler is never nominated behind a worse one.
+ */
+export const handlerRead = (x: Attrs) => ballShare(x) * (1 - PNR_HDISC * heightRamp(x, PNR_H0, PNR_H1))
+/** The NOMINATION score: the base read down by the two facts above. One pair serves both calls. */
+export const pnrHandler = (x: Attrs) => handlerFit(x) * handlerRead(x)
+
+/**
+ * THE HANDLER IS NOT THE SAME MAN IN THE TWO CALLS (recal_216, his ruling: "Also, Pnr handler,
+ * should be a better shooter, than a pnp handler, who should be a better inside scorer. Not a huge
+ * impact, but its there. Westbrook would fit better in a pnp system").
+ *
+ * recal_214 routed the SCREENER's shot between the roll and the pop and left the handler shared, so
+ * `handlerFit` graded both calls identically — Westbrook 99/99, Jokic 99/99, LeBron 82/82,
+ * Giannis 71/71, Draymond 50/50 — and the two sets were told apart by the screener alone. His
+ * ruling is the other half of recal_214 and it is the same basketball read from the ball:
+ *
+ *   the ROLL   the big dives, the paint is full and the defence goes UNDER the screen, so the
+ *              handler has to shoot over it. His credit is `closeout`, recal_214's own ramp, which
+ *              is why no new threshold is cut here either.
+ *   the POP    the big vacates the paint, so there is a LANE and the handler is asked to drive it.
+ *              His credit is how much more downhill than up-top he is, his rim above his three over
+ *              the same 20-point window the closeout ramp uses. It is a RELATIVE measure on purpose:
+ *              rim attributes run high across the pool (Durant '16 is rim 86 and 3pt 80, and he is
+ *              the shooter of the two Thunder men, not the driver), so the raw rim cannot tell a
+ *              downhill guard from a big who dunks, and the difference can.
+ *
+ * IT IS A PENALTY ON THE WRONG CALL AND NEVER A BONUS ON THE RIGHT ONE, which is the only shape that
+ * reaches the ruling without moving a five that has nothing to do with it. Each call docks the
+ * handler by HAND_TILT x how much better SUITED he is to the other one, so the call a man is built
+ * for prices him at exactly the handlerFit he priced at before this round, and no five's
+ * pick-and-roll fit can RISE. The two forms that were measured and rejected:
+ *   SIGNED about 0.5 (+-HAND_TILT/2)  the Magic '11 post-up is a 0.13-point read (post-up 81.63
+ *       against pick-and-roll 81.50) and Jameer Nelson '11 is a pure shooter, so ANY credit on the
+ *       roll side takes that five off the post and breaks recal_115's pin. It also widens the
+ *       Nuggets '25 pnr-over-horns margin past the 2.5 recal_213 pinned as HORN_BASE's own cap.
+ *   ONE-SIDED off the RAW credit (-HAND_TILT x (1 - credit))  every handler who is not both a
+ *       shooter and a driver pays in both calls, so the pick-and-roll loses 19 reads on the wheel
+ *       instead of 11 and the drift is in the term rather than in the two men's difference.
+ * HAND_TILT 3 is the size: 3 points of a term that runs to 99 and carries 0.40 of the fit, so at
+ * most 1.2 points of fit, on 4 fives of 1,255 that change read between the roll and the pop.
+ * "Not a huge impact, but its there." Measured, base -> roll / pop:
+ *   Westbrook '16 (3pt 41, rim 80)  99.0 -> 96.2 / 99.0   the POP, which is his ruling
+ *   Durant '16    (3pt 80, rim 86)  64.1 -> 64.1 / 62.0   the ROLL, the other half of the same line
+ *   Stockton '97  (3pt 73, rim 53)  87.1 -> 87.1 / 84.1   the ROLL, so the Jazz '97 anchor is not
+ *                                                         even touched: pnr stays at 76.25
+ *   Giannis '21   (3pt 24, rim 99)  70.4 -> 67.4 / 70.4   the POP
+ *   Jokic '25     (3pt 72, rim 93)  99.0 -> 99.0 / 99.0   both, and the clamp says so
+ *   Draymond '16  (3pt 55, rim 51)  49.8 -> 49.8 / 47.5   the ROLL
+ */
+export const HAND_TILT = 3
+/** can he shoot over a defence that went under the screen — recal_214's ramp, unchanged */
+export const overTop = (x: Attrs) => closeout(x)
+/** ...and how much more downhill than up-top he is, on the same 20-point window */
+export const downhill = (x: Attrs) => clamp((x.rim - x['3pt']) / (SHOOT_3PT_HI - SHOOT_3PT), 0, 1)
+export const rollHandler = (x: Attrs) => clamp(handlerFit(x) - HAND_TILT * Math.max(0, downhill(x) - overTop(x)), 0, 99)
+export const popHandler = (x: Attrs) => clamp(handlerFit(x) - HAND_TILT * Math.max(0, overTop(x) - downhill(x)), 0, 99)
 export const screenFit = (x: Attrs) => Math.min(x.rim + Math.max(0, x.mid - x.rim) * (1 - closeout(x)), x.efficiency)
 
 /**
@@ -1082,7 +1211,8 @@ export const popFit = (x: Attrs) =>
 export function popPair(five: Player[], pick?: PnrPair | null): { handler: Player | null; screener: Player | null; chosen: boolean } {
   if (legalPair(pick, five.map((p) => p.name))) return pnrPair(five, pick)
   const handler = pnrPair(five, null).handler
-  const screener = five.filter((p) => p.attrs.height >= 80).slice().sort((x, y) => popFit(y.attrs) - popFit(x.attrs))[0] ?? null
+  // ...and the pop's screener excludes the handler for the same reason (see pnrPair).
+  const screener = five.filter((p) => p.attrs.height >= 80 && p.name !== handler?.name).slice().sort((x, y) => popFit(y.attrs) - popFit(x.attrs))[0] ?? null
   return { handler, screener, chosen: false }
 }
 
@@ -1092,16 +1222,30 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
     const screener = five.find((p) => p.name === pick!.screener) ?? null
     return { handler, screener, chosen: true }
   }
-  const hScore = (p: Player) => handlerFit(p.attrs)
+  const hScore = (p: Player) => pnrHandler(p.attrs)
   const dScore = (p: Player) => screenFit(p.attrs)
-  const handler = five.filter((p) => p.attrs.playvol >= 70 && p.attrs.height <= 78).sort((x, y) => hScore(y) - hScore(x))[0] ?? null
+  // ONE MAN CANNOT BE BOTH (recal_216). The two pools used to be disjoint by construction — the
+  // handler was filtered to height <= 78 and the screener is filtered to height >= 80 — so dropping
+  // the handler's filter is what makes the overlap possible at all: on 26 wheel fives the man the
+  // nomination picks is also the best screener on the floor (Jokic, LeBron, Luka, Magic, Pippen), and
+  // seating him twice double-books his spot on the drawing and leaves the fit's `rest` four men deep.
+  // He keeps the BALL, which is the slot his nomination won, and the screen goes to the next big.
+  // UNLESS HE IS THE ONLY BIG, in which case there is no next one and the screen is a slot nobody
+  // else can fill: then the ball goes to the second nominee instead (Nuggets '19 and '20 are the two
+  // fives on the wheel where Jokic is the whole of the front court — he screens, Murray handles).
+  // Nothing that existed before this round moves: a man the old filter let handle could never clear
+  // the screener's own height line, and that line is not in his ruling and is not touched.
+  const ranked = five.slice().sort((x, y) => hScore(y) - hScore(x))
+  const bigsBut = (ex: Player | null) => five.filter((p) => p.attrs.height >= 80 && p.name !== ex?.name)
+  let handler = ranked[0] ?? null
+  if (handler && !bigsBut(handler).length && bigsBut(null).length) handler = ranked[1] ?? null
   // ties on screenFit are real — two bigs can be capped by the same efficiency — and they are broken
   // by the ROLL: of two men who finish the same off the screen, the one who can get to the rim sets it.
   // Integration 161-167 (pipeline 167): a NEAR-tie (within one point) is a tie too. recal_166 took Deandre
   // Ayton '26's rim 71 -> 68, his screenFit 71 -> 70 against Rui Hachimura '26's 71, and an exact-tie rule
   // sent the roll man to a corner he cannot space (tests/court.test.ts). One point of screenFit is smoothing
   // noise; the roll decides inside it.
-  const screener = five.filter((p) => p.attrs.height >= 80).sort((x, y) => {
+  const screener = bigsBut(handler).sort((x, y) => {
     const d = dScore(y) - dScore(x)
     return Math.abs(d) > 1 ? d : (y.attrs.rim - x.attrs.rim) || d
   })[0] ?? null
@@ -1895,8 +2039,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // Malone '97 is like, which is why this five does not move. Jazz '97 (Stockton 87.1,
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
-      const { handler: h, screener: d } = pnrPair(five, call?.pnr)
-      const handler = h ? handlerFit(h.attrs) : 0
+      const { handler: h, screener: d, chosen } = pnrPair(five, call?.pnr)
+      const handler = h ? rollHandler(h.attrs) * (chosen ? 1 : handlerRead(h.attrs)) : 0
       const dive = d ? screenFit(d.attrs) : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
       return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => p.attrs['3pt'])
@@ -1943,9 +2087,10 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // and by nothing else, so pick-and-pop wins exactly when the pop is worth more than the roll.
       // recal_214 is what makes that separation reachable at all for a mid-range shooter: the two
       // terms shared the mid-range, so they could TIE on the same man (Thunder '16, 80.5 to 80.5).
-      const { handler: ph, screener: pd } = popPair(five, call?.pnr)
+      const { handler: ph, screener: pd, chosen: pc } = popPair(five, call?.pnr)
       const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
-      return 0.4 * (ph ? handlerFit(ph.attrs) : 0) + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
+      const phand = ph ? popHandler(ph.attrs) * (pc ? 1 : handlerRead(ph.attrs)) : 0
+      return 0.4 * phand + 0.35 * (pd ? popFit(pd.attrs) : 0) + 0.25 * mean(prest, (p) => p.attrs['3pt'])
     }
     case 'triangle': {
       const post = postOption(five)
