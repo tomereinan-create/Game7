@@ -928,19 +928,35 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
                   Same scale the cards use — white at 50, green above, red below — and OVR is one of
                   the three rather than a caption in the head, which is what it was before the floor
                   and the line took the page in two. */}
-              {detail.gauges ? (
-                <div className="dials tdb-scale tdb-clubdials">
-                  {(
-                    [
-                      ['OVR', ovrOf(picked) ?? 0],
-                      ['OFF', detail.gauges.off],
-                      ['DEF', detail.gauges.def],
-                    ] as const
-                  ).map(([l, v]) => (
-                    <Dial key={l} label={l} value={v} tone="scale" color={ratingTone(v)} sub={detail.gauges!.basis} />
-                  ))}
-                </div>
-              ) : null}
+              {/* THE DIALS ARE ALWAYS DRAWN — his ruling, 2026-09-28: "Teams without overall
+                  shouldn't change the design of the rest of the page other than not having overall,
+                  it causes the court to be in different location the the arrows as well, which
+                  makes navigating annoying". A season the pool cannot field a five for has no
+                  gauges, and dropping the block took ~90px out of the club line, so the season
+                  strip's ‹ › and the floor under it JUMPED between years of the same franchise —
+                  the arrow you were stepping with moved out from under the cursor. The block stands
+                  in both cases; what a team without a five loses is the NUMBERS, drawn the way the
+                  matchup panel already draws them: empty track, an em dash, "needs five". That also
+                  keeps `--tdb-chrome` honest, since it is measured with the dials present. */}
+              <div className="dials tdb-scale tdb-clubdials">
+                {(
+                  [
+                    ['OVR', ovrOf(picked) ?? 0],
+                    ['OFF', detail.gauges?.off ?? 0],
+                    ['DEF', detail.gauges?.def ?? 0],
+                  ] as const
+                ).map(([l, v]) => (
+                  <Dial
+                    key={l}
+                    label={l}
+                    value={v}
+                    tone="scale"
+                    color={detail.gauges ? ratingTone(v) : 'var(--faint)'}
+                    sub={detail.gauges ? detail.gauges.basis : 'needs five'}
+                    unread={!detail.gauges}
+                  />
+                ))}
+              </div>
             </div>
             {stripYears.length > 1 ? <SeasonStrip years={stripYears} cur={seasonId(picked)} go={step} mark="best" /> : null}
             {/* TWO COLUMNS ON A DESK (his ruling, 2026-09-21: "Make everything bigger here"). The

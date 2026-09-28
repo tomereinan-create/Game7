@@ -6,6 +6,7 @@ import { RULE } from './Archetypes'
 import { SeasonStrip, useYearKeys } from './SeasonStrip'
 import { TeamBanner } from './TeamBanner'
 import { HeatHex } from './HeatHex'
+import { spotGrades } from './spotFit'
 import { useUserMode } from '../state/viewmode'
 import { GROUPS, LINES, pct } from './Stat'
 import { PLAIN_SKIN, teamColor, terminalSkin } from './teamColors'
@@ -141,6 +142,37 @@ export const peakOf = (all: Player[]) => all.reduce((best, x) => (x.ovr >= best.
  * The strip itself now lives in ./SeasonStrip, because his later ruling put the same one on the
  * team page; this card only says which years there are and which is the peak.
  */
+/**
+ * EVERY OFFENSIVE SPOT, GRADED — his ruling, 2026-09-28.
+ *
+ * A ROW PER SPOT: what the action is called, the grade, and the engine's own figure behind it in
+ * the small. The figure is kept because a grade is a band and two men inside one band are not the
+ * same man; it is set small and dim because the band is the thing you read across twelve rows.
+ * The grid wraps into as many columns as the space allows (`auto-fit`), so the same block is four
+ * across in the floor the hexagon leaves on a wide desk, two on a laptop and one on a phone,
+ * without a breakpoint of its own.
+ */
+function SpotFits({ p }: { p: Player }) {
+  const spots = useMemo(() => spotGrades(p), [p])
+  const best = spots.reduce((a, b) => (b.pct > a.pct ? b : a))
+  return (
+    /* NO RULE OVER IT (his ruling, 2026-09-28: "remove OFFENSIVE SPOTS ▸ GRADED AGAINST ALL
+       10,000 SEASONS"). Twelve cells that each say what the action is and give it a letter do not
+       need a caption saying they are spots and they are graded — and the height it took is the
+       height the grades grow into. */
+    <div className="pc-spots">
+      <div className="pc-spotgrid">
+        {spots.map((s) => (
+          <div className={`pc-spot g${s.grade[0]}${s.key === best.key ? ' top' : ''}`} key={s.key}>
+            <span className="k">{s.name}</span>
+            <b>{s.grade}</b>
+            <u>{Math.round(s.fit)}</u>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => void }) {
   const [adv, setAdv] = useState(false)
   // The season being READ. It starts at the card that was opened and never leaves the man; the
@@ -354,6 +386,20 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
           )}
         </div>
 
+        {/* HIS FIT AT EVERY OFFENSIVE SPOT — his ruling, 2026-09-28: "In each player page, add
+            his fit offensive at each spot from the team rating system chat."
+
+            TWELVE SPOTS, GRADED AGAINST THE WHOLE POOL. The numbers are the team-rating side's
+            own — every one is a function exported by engine/tactics.ts — and the grade is where
+            this man's number stands among ten thousand seasons at that spot. See ui/spotFit.ts
+            for why it is a percentile and not the raw figure.
+
+            IT STANDS WITH THE HEXAGON because it is the same kind of thing said at a finer grain:
+            the hexagon is six axes of what he IS, this is twelve answers to where he can be PUT.
+            On a wide desk it takes the floor the hexagon left empty when it was capped — 838 by
+            178 of it, measured on his window — so the card pays nothing for it. SCOUT MODE ONLY,
+            with the attributes and the three verdicts: it is the engine's read of the man, which
+            is the one thing user mode is for not printing. */}
         {/* THE SHAPE, AND NOTHING SAID OVER IT — his ruling, 2026-09-22: "Delete SHAPE.HEX ▸ 6-AXIS
             from the player page". A hexagon with six labelled points does not need a caption
             announcing that it has six points; the block is the drawing now. */}
@@ -362,6 +408,7 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
             <div className="pct-hexbox" style={club}>
               <HeatHex men={[p]} size={168} />
             </div>
+            <SpotFits p={p} />
           </div>
         )}
       </div>
