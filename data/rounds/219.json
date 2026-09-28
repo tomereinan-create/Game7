@@ -1,0 +1,195 @@
+{
+  "round": 219,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "For Iso man, we need a mix of volume, eff, and fouldraw. No need for 3pt bonus, add small mid bonus. If the playvol - 0.13 means that having more playmaking reduces your skill as iso player, then remove all the - across the board",
+  "title": "the iso man is volume + efficiency + the line with a SMALL mid bonus, and nothing is subtracted: isoScorer becomes the descending ladder 0.40 / 0.30 / 0.20 / 0.10 in the order his ruling names the terms, the three-point half of max(mid, 3pt) is gone, and `isoScore` is the composite itself — recal_208's play-volume price (ISO_PV_W 0.45 above ISO_PV 57) is REVERSED, the helio side of that mirror is not touched",
+  "scale": "team:off",
+  "subject": "Raptors '19",
+  "five": ["Kyle Lowry '19", "Danny Green '19", "Kawhi Leonard '19", "Pascal Siakam '19", "Serge Ibaka '19"],
+  "target": 59,
+  "tol": 0,
+  "before": 59,
+  "after": 59,
+  "pipeline_version": 219,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_VOL = 0\\.4\\s*\\nexport const ISO_EFF = 0\\.3\\s*\\nexport const ISO_FD = 0\\.2\\s*\\nexport const ISO_MID = 0\\.1",
+      "label": "the four iso weights, in the order his ruling names the terms",
+      "note": "0.40 / 0.20 / 0.25(jmp) / 0.15 -> 0.40 / 0.30 / 0.20 / 0.10 (the only descending 0.1-spaced ladder that sums to 1)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const isoScorer = \\(x: Attrs\\) => ISO_VOL \\* x\\.volume \\+ ISO_EFF \\* x\\.efficiency \\+ ISO_FD \\* x\\.fouldraw \\+ ISO_MID \\* x\\.mid",
+      "label": "the composite: volume, efficiency, the fouls he draws, and a small mid bonus — NO 3pt term",
+      "note": "ISO_JMP * Math.max(x.mid, x['3pt']) -> ISO_MID * x.mid"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const isoScore = \\(x: Attrs\\) => isoScorer\\(x\\)\\s*\\n",
+      "label": "NOTHING IS SUBTRACTED: what he is worth to an iso IS the composite",
+      "note": "isoScorer(x) - ISO_PV_W * Math.max(0, x.playvol - ISO_PV) -> isoScorer(x)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_PV = 57\\s*\\nexport const ISO_BASE = -6",
+      "label": "the proof ISO_PV_W is GONE from the file — it stood between these two lines and nothing stands there now",
+      "note": "ISO_PV 57 survives as the measurement recal_213's PIN_PV 56 is read against; it prices nothing"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_PV = 65\\s*\\nexport const HELIO_PV_W = 0\\.45",
+      "label": "THE HELIO SIDE IS NOT TOUCHED (recal_206 is his own ruling: \"Helio needs to be ran by a guy with high vol and playvol\")",
+      "note": "65 / 0.45 -> 65 / 0.45"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const heliEngineScore = \\(x: Attrs\\) => scorerCreator\\(x\\) - HELIO_PV_W \\* Math\\.max\\(0, HELIO_PV - x\\.playvol\\)",
+      "label": "...and its minus stays, because a conjunction has to price the missing half",
+      "note": "unchanged — the line is now read from one side only"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const facesUp = \\(x: Attrs\\) => x\\.height < POST_HEIGHT \\|\\| interior\\(x\\) === 0",
+      "label": "the nomination gate that keeps the post players out is NOT this round's (his ruling: \"AD, Bosh, Embid, are all post players not iso\")",
+      "note": "unchanged"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "ISO_HOLE \\* \\(scorer \\? isoRoom\\(scorer\\.attrs\\) : 1\\) \\* holes",
+      "label": "the spacing price and the room his own game needs are unchanged too",
+      "note": "unchanged"
+    }
+  ],
+  "expect": [
+    {
+      "label": "THE ROUND MOVES NO RATING: the subject five's offence dial is untouched (no python, no data, no regeneration)",
+      "five": ["Kyle Lowry '19", "Danny Green '19", "Kawhi Leonard '19", "Pascal Siakam '19", "Serge Ibaka '19"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 59
+    },
+    {
+      "label": "...and its defence dial",
+      "five": ["Kyle Lowry '19", "Danny Green '19", "Kawhi Leonard '19", "Pascal Siakam '19", "Serge Ibaka '19"],
+      "scale": "team:def",
+      "op": "==",
+      "value": 57
+    },
+    {
+      "label": "the five whose pinned read this round came closest to breaking reads the same two dials as before (Thunder '25, the ROLL by 0.32)",
+      "five": ["Shai Gilgeous-Alexander '25", "Isaiah Joe '25", "Luguentz Dort '25", "Jalen Williams '25", "Isaiah Hartenstein '25"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 70
+    },
+    {
+      "label": "...and Dantley's Jazz '81, the five his own iso ruling is named for",
+      "five": ["Rickey Green '81", "Darrell Griffith '81", "Adrian Dantley '81", "Ben Poquette '81", "Wayne Cooper '81"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 29
+    },
+    {
+      "label": "the helio head's own five is bit-identical on offence (Lakers '87)",
+      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "scale": "team:off",
+      "op": "==",
+      "value": 66
+    },
+    {
+      "label": "no bar moves on the man the ruling is about: Leonard '19 mid",
+      "card": "Kawhi Leonard '19",
+      "scale": "attr:mid",
+      "op": "==",
+      "value": 98
+    },
+    {
+      "label": "...Leonard '19 three, the bonus this round DROPS from the iso composite",
+      "card": "Kawhi Leonard '19",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 62
+    },
+    {
+      "label": "...Gilgeous-Alexander '25 play volume, the bar the removed minus was charging (83, 26 over ISO_PV)",
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 83
+    },
+    {
+      "label": "...Magic Johnson '87 play volume, the highest bill the old minus sent (98)",
+      "card": "Magic Johnson '87",
+      "scale": "attr:playvol",
+      "op": "==",
+      "value": 98
+    },
+    {
+      "label": "...Thompson '16 three, the shooter the old max(mid, 3pt) was paying",
+      "card": "Klay Thompson '16",
+      "scale": "attr:3pt",
+      "op": "==",
+      "value": 99
+    },
+    {
+      "label": "...Dantley '81 fouldraw, the term that grows (weight 0.15 -> 0.20)",
+      "card": "Adrian Dantley '81",
+      "scale": "attr:fouldraw",
+      "op": "==",
+      "value": 86
+    },
+    {
+      "label": "and no card's OFF/DEF/OVR moves: Leonard '19",
+      "card": "Kawhi Leonard '19",
+      "scale": "ovr",
+      "op": "==",
+      "value": 94
+    },
+    {
+      "label": "...Gilgeous-Alexander '25",
+      "card": "Shai Gilgeous-Alexander '25",
+      "scale": "off",
+      "op": "==",
+      "value": 98
+    },
+    {
+      "label": "...Dantley '81",
+      "card": "Adrian Dantley '81",
+      "scale": "off",
+      "op": "==",
+      "value": 97
+    },
+    {
+      "label": "...King '84",
+      "card": "Bernard King '84",
+      "scale": "ovr",
+      "op": "==",
+      "value": 82
+    }
+  ],
+  "cost": [
+    "recal_208's RECEIPT LOSES FOUR KNOB LINES, named here and NOT edited (recal_93's convention, recal_214's precedent): `npm run receipts -- 208` prints 45 OK / 4 missed and exits 0. The four are its ISO_VOL/ISO_EFF/ISO_JMP/ISO_FD block, its ISO_PV/ISO_PV_W block, its isoScorer line ('max(mid, 3pt) is the discriminator') and its isoScore line ('the exact mirror of heliEngineScore'). All four are the formula THIS ruling reverses, so the MISS is the record of the reversal rather than a defect. Nothing else in the ledger changes status: 25 receipts OK on 216, 0 missed.",
+    "ISO_PV_W IS GONE FROM THE SOURCE and is deliberately not receipted as an inverted knob (an absence is not a reading; a MISS fails the ledger). `git show 02f39a1:src/engine/tactics.ts | grep ISO_PV_W` is the whole of the before, and the knob line on `ISO_PV = 57` immediately followed by `ISO_BASE = -6` is the after.",
+    "ISO_PV 57 IS NOW A MEASUREMENT THAT PRICES NOTHING. It stays because recal_213's PIN_PV 56 is defined against it and a shipped test reads the pair ('it is not a synonym for iso'). It was NOT re-measured onto the new nomination: the median play volume of the man iso nominates rises with this round, and moving the constant would break that test while changing no number in the app. A later round that wants ISO_PV to mean the new median must re-open recal_213's line with it.",
+    "HIS RULING SAYS 'remove all the - across the board' AND THIS ROUND IS SCOPED TO ISO. Two other minus-shaped terms were left alone on purpose and are reported rather than touched: heliEngineScore's HELIO_PV_W (recal_206 is his own standing ruling and its content is a conjunction), and pindown's pinOffBall, which is a multiplicative FADE on play volume rather than a subtraction (PIN_PV 56 -> PIN_PV_MAX 95) and belongs to recal_213. If he means the pin-down fade too, that is its own round.",
+    "THE THINNEST MARGIN ON THE BOARD IS NOW 0.32, and it is a pinned read: the Thunder '25 keep the pick-and-roll 74.19 against iso 73.87. Second thinnest is the Raptors '19 keeping the isolation 66.88 against pnr 66.54. Both are pinned by test in tests/tactics.test.ts. Any later round touching isoScorer, the pnr handler or the pin-down should expect to re-read those two fives first.",
+    "TWO SHIPPED TEST ASSERTIONS WERE REWRITTEN TO THE RULING, neither of them a pinned read: tests/tactics.test.ts's helio-head test asserted the OLD minus on Magic '87 (isoScore < isoScorer, and the difference equal to ISO_PV_W x (playvol - ISO_PV)) and now asserts isoScore === isoScorer with the reason the Lakers still read helio (their iso man would be Byron Scott, 21.5 against 67.0); tests/court.test.ts's Thunder '24 floor test asserted inferredStyle === 'helio' and now asserts 'iso' — that five leaves helio on this ruling, and what that test exists to prove is the pnr PAIR and the drawing, both asserted against the CALL and untouched."
+  ],
+  "notes": [
+    "WHAT MOVED, in one line: `isoScorer` is now ISO_VOL 0.40 x volume + ISO_EFF 0.30 x efficiency + ISO_FD 0.20 x fouldraw + ISO_MID 0.10 x mid, and `isoScore` is that composite with nothing taken off it. Per point of attribute, measured over all 10,000 cards: volume +0.40 (100% of cards) · efficiency +0.30 (100%) · fouldraw +0.20 (100%) · mid +0.10 (100%) · 3pt 0.00 (0%) · playvol 0.00 (0%). Before the round it was volume +0.40 · efficiency +0.20 · mid +0.16 (64%) · fouldraw +0.15 · playvol -0.13 (28%) · 3pt +0.09 (37%).",
+    "THE SUM MUST STAY 1, AND THAT IS A MEASUREMENT, NOT A HOUSE PREFERENCE. The obvious reading of 'add small mid bonus' is to shrink the jumper weight and leave the other three where they are (0.40 / 0.20 / 0.15 + 0.10, sum 0.85). Measured on the wheel that takes iso from 51 fives to THREE, and Dantley's Jazz '81 and King's Knicks '84 — the two fives his own iso rulings are named for — fall back to helio. At sum 0.90 (mid 0.15) it is 11 fives with the same two lost. The freed weight has to go back to the three terms he names, so the composite stays on the 0-100 axis ISO_BASE -6 and ISO_W_MAN 0.80 were fitted against.",
+    "AND WHERE IT GOES IS DECIDED BY HIS OWN PINNED READS, not by taste. Three splits of the freed 0.15 were measured, all summing to 1, all with mid 0.10. Feeding VOLUME first — either in the old 8:4:3 proportion (0.48 / 0.24 / 0.18) or rounded (0.45 / 0.25 / 0.20) — takes the THUNDER '25 off the pick-and-roll (iso 74.45 and 74.27 against pnr 74.19) and pushes iso to 81 and 75 fives. Leaving volume exactly where his earlier rounds put it and handing the freed weight to the two terms he names beside it holds every pinned read, and of the three that do (eff 0.30 / fd 0.20 -> 62 fives, eff 0.275 / fd 0.225 -> 64, eff 0.25 / fd 0.25 -> 70) the landed one has the smallest footprint on the wheel. It is also the only one that reads as a ladder: 0.40 / 0.30 / 0.20 / 0.10, in his own order, summing to 1 by construction.",
+    "'SMALL' IS BRACKETED FROM BOTH SIDES, with the rest of the ladder held in proportion. At mid 0.05 the bonus is too small to hold Leonard's RAPTORS '19 in the isolation and they fall to the pick-and-roll (66.54 against 66.88) — his ruling keeps them. At mid 0.20 it is large enough to take the THUNDER '25 off the roll (iso 74.33 against pnr 74.19) — a pinned read. The feasible window is 0.10 .. 0.15; 'small' is his word and takes the bottom of it, where the ladder also falls out, and where the mid term sits at half the smallest of the three core terms.",
+    "THE RISK THE DISPATCH NAMED, measured first and reported before anything was applied: with the minus gone, does iso start eating helio's fives? HELIO 117 -> 111 on the 1,255 wheel fives, and the HELIO HEAD does not move by a decimal because no fit it reads was touched — Johnson '87 67.00, Jokic '22 76.76, James '18 73.12, Harden '15 74.69, Wade '09 69.43, Iverson '06 64.65, each still the five's best read. (Curry's Warriors '16 read PINDOWN 77.16 over helio 69.28 on shipped main and still do; that is recal_213's board, not this round's.) The six fives that leave helio for iso are the 76ers '92 and Suns '93 (Barkley), the Pistons '97 and '00 (Grant Hill), the Celtics '17 (Isaiah Thomas) and the Thunder '24 (Gilgeous-Alexander) — one-man scoring teams whose man was being charged for the passing he also did.",
+    "WHY THE BIGGEST GAINERS DO NOT TAKE A SINGLE FIVE OFF HELIO. The men the minus was suppressing gain hugely on the composite — Stockton '89 36.8 -> 62.5, Magic '91 52.1 -> 76.7, LeBron '17 63.4 -> 85.3, Jokic '22 68.2 -> 88.2, Westbrook '17 56.8 -> 76.3, Harden '19 76.9 -> 88.9, Doncic '24 71.6 -> 83.6 — and the SET still has to be worth running. isoMan only nominates a man who FACES UP (recal_208's gate on his own ruling about the post players), so the Lakers '87 would have to clear out for Byron Scott and read iso 21.48 against helio 67.00; the Nuggets '22 read 31.75 against 76.76 and the Cavaliers '18 46.63 against 73.12. A high composite on one man is not an isolation offence.",
+    "ISO STAYS A SIGNATURE SYSTEM: 51 of 1,255 (4.1%) -> 62 (4.9%), inside the 3-7% band and nowhere near the 8% that would mean the reshape went too far. It takes 8 fives from balanced, 6 from helio, 5 from the pick-and-roll, 1 from motion and 1 from five-out, and LOSES 10 — 6 to balanced, 2 to the pin-down, 1 to the pick-and-roll, 1 to five-out — every one of them a five whose iso man was being paid by the three the round drops. 31 of the 1,255 reads change in total.",
+    "THE NEW LIST READS LIKE A ROLL CALL OF THE JOB, which is the best evidence the composite is right: Gervin's Spurs '80/'81/'82, Dantley's Jazz '80-'86 and Pistons '87-'89, Vandeweghe's Nuggets '83/'84 and Blazers '85/'86, King's Knicks '83/'84, Barkley's 76ers '88-'92 and Suns '93/'96, Erving '82, Moncrief '83, Mullin '91, Marciulionis '92, Kevin Johnson '92, Grant Hill's Pistons '95/'96/'97/'00, McGrady '01, Pierce '04, Maggette's Clippers '05/'07 and Warriors '09 and Bucks '11, Nowitzki '12, Anthony's Nuggets '06 and Knicks '13, Thomas '17, DeRozan's Raptors '17/'18, Spurs '20/'21, Bulls '22/'23 and Kings '26, Leonard's Raptors '19 and Clippers '21, Zion '21, Fox '22, Durant's Nets '23, Doncic's Mavericks '23, Gilgeous-Alexander's Thunder '24 and '26.",
+    "HIS OWN ISO RULINGS ALL HOLD, read through bestStyle on the wheel's own starting fives: DeRozan's Raptors '17 iso 71.57, Leonard's Raptors '19 66.88 and Clippers '21 65.35, Anthony's Knicks '13 64.33, Dantley's Jazz '81 70.81 / '82 71.41 / '84 74.06 / '85 71.15 / '86 69.03, King's Knicks '84 66.84, Durant's Nets '23 68.80, Gervin, Vandeweghe and Maggette all still iso. (Leonard's Spurs '17 read dho and his Clippers '23 read pindown on shipped main too — those two are not this round's doing and are unchanged by it.) AND THE MEN HE THREW OUT STAY OUT, on the facesUp gate this round does not touch: Davis's Pelicans '16 postup 73.82 (iso 46.67, and it FELL 5.3), Bosh's Raptors '10 pnr 68.48 (iso 47.39, fell 4.0), Embiid's 76ers '23 pnr 81.57 (iso 52.85 — it rises 10.8 because Embiid gains 2.3 on the composite, and it is still 28.7 short of the roll; he cannot be nominated at all).",
+    "EVERY OTHER PINNED READ HOLDS, measured through bestStyle on the wheel's own starting fives: Jazz '97 pnr 76.25, Nuggets '25 pnr 72.94, Thunder '25 pnr 74.19, Suns '05 pnr 84.95, Rockets '18 pnr 90.77, Thunder '15 pickpop 71.40, Thunder '16 pickpop 80.48, Magic '11 postup 81.63, Hornets '95 postup 77.70, Celtics '25 fiveout 72.78, Thunder '22 helio 65.30, Lakers '87 helio 67.00, Bulls '96 triangle 72.83, Bulls '97 triangle 74.99, Spurs '16 balanced 60.00 (iso 54.03 -> 52.99, further away than before), Pistons '07 motion 67.19, Warriors '16 pindown 77.16, Kings '25 dho 86.93, Kings '04 dho 86.88, 76ers '18 dho 91.71.",
+    "WHICH CARDS LOSE FROM THE THREE GOING, and the answer is exactly the men the max was mis-paying: Sam Mack '98 60.7 -> 42.3 (mid 7, 3pt 99), Kareem Rush '08 -17.4, Daequan Cook '09 -17.1, Klay Thompson '26 -16.5, Royce O'Neale '25 -16.0, Dennis Scott '94 -15.9, Bruce Bowen '09 -15.5. Every one of the fourteen biggest drops on the 10,000-card board is a man whose three beats his mid, and not one of them is the nominee of a five any ruling has pinned to the isolation. Among the pinned men the cost is small and is paid in a shot they do not isolate with: Leonard '19 -3.4, Anthony '13 -3.8, Tatum '24 -4.1, Jordan '96 -0.4, Thompson '16 -6.4 (never the nominee), against Dantley '81 +1.2, King '84 +1.2, Durant '23 +0.9, DeRozan '17 +0.4, Embiid '23 +2.3 (gated out).",
+    "NOTHING REGENERATES AND NO RATING MOVES. The round touches src/engine/tactics.ts, tests/tactics.test.ts and tests/court.test.ts only — no python, no data files. data/team_rating.py and src/engine/offense.ts are untouched, so teamOffense, defenseVs and ratings100 are bit-identical, compute_ovr.py's marginal term does not move and neither does any card's `marg`, OFF, DEF or OVR. src/data/opponents.json carries no style field and the AI runs the free default, so the eight campaign rounds cannot reorder. There is no python mirror of tactics.ts, so data/parity_check.py has nothing to compare here.",
+    "VERIFICATION: npx tsc -b clean. npm test 496 passed / 41 files (494 before; this round adds two). npm run anchors 213 anchors, 0 failing, mean |error| 1.01 — unchanged, because no anchor in that file has a style scale. The deviation-tax harness passes all nine rows with TAX untouched (playstyle blind -0.97 / oracle +2.21). PINNED BY TEST rather than by data/anchors.json, for the reason recal_120, recal_129, recal_208, recal_211, recal_213 and recal_214 all have no anchor row: that file holds card and team RATING scales and no style scale."
+  ]
+}

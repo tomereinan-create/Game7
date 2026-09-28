@@ -65,7 +65,10 @@ import {
   isoScore,
   isoScorer,
   ISO_PV,
-  ISO_PV_W,
+  ISO_VOL,
+  ISO_EFF,
+  ISO_FD,
+  ISO_MID,
   SHOOT_3PT_HI,
   popFit,
   popPair,
@@ -89,7 +92,7 @@ import {
   type Style,
   type Tactics,
 } from '../src/engine/tactics'
-import type { Player } from '../src/engine/types'
+import type { Attrs, Player } from '../src/engine/types'
 import { WHEEL } from '../src/data/wheel'
 import { startingFive } from '../src/engine/bestfive'
 
@@ -879,11 +882,65 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
       expect(bestStyle(five).style).toBe('helio')
       expect(styleFit('iso', five)).toBeLessThan(styleFit('helio', five))
     }
-    // ...because the fit charges whoever is named for the offense he runs for other men, continuously
+    // ...and since recal_219 NOT because the fit charges him for passing. Magic pays nothing for his
+    // play volume and the Lakers still cannot read as an isolation, because what parts the two is the
+    // SET and the man it nominates: Johnson '87 is h81 and interior, so the isolation would have to be
+    // cleared out for Byron Scott (facesUp below), and the five reads iso 21.5 against helio 67.0.
     const magic = g("Magic Johnson '87")
     expect(magic.attrs.playvol).toBeGreaterThan(ISO_PV)
-    expect(isoScore(magic.attrs)).toBeLessThan(isoScorer(magic.attrs))
-    expect(isoScorer(magic.attrs) - isoScore(magic.attrs)).toBeCloseTo(ISO_PV_W * (magic.attrs.playvol - ISO_PV), 6)
+    expect(isoScore(magic.attrs)).toBe(isoScorer(magic.attrs))
+  })
+
+  /**
+   * HIS RULING (recal_219): "For Iso man, we need a mix of volume, eff, and fouldraw. No need for 3pt
+   * bonus, add small mid bonus. If the playvol - 0.13 means that having more playmaking reduces your
+   * skill as iso player, then remove all the - across the board"
+   *
+   * It REVERSES the iso half of recal_208's symmetry with heliEngineScore on purpose. The helio side
+   * is recal_206's own ruling and is untouched: helio still charges its engine for the play volume he
+   * does NOT carry, because that ruling is a conjunction ("high vol and playvol"); iso no longer
+   * charges its scorer for the play volume he DOES carry, because this ruling says a better passer is
+   * not a worse one-on-one scorer. The two are no longer one line read from both sides.
+   */
+  it('HIS RULING: volume + eff + fouldraw, a SMALL mid bonus, and nothing subtracted', () => {
+    // the ladder, in the order his ruling names the terms - and 0.4/0.3/0.2/0.1 is the only descending
+    // 0.1-spaced ladder that sums to 1, so the composite still sits on the 0-100 axis every fit reads
+    expect([ISO_VOL, ISO_EFF, ISO_FD, ISO_MID]).toEqual([0.4, 0.3, 0.2, 0.1])
+    expect(ISO_VOL + ISO_EFF + ISO_FD + ISO_MID).toBeCloseTo(1, 9)
+    expect(ISO_MID).toBeLessThan(ISO_FD)
+    // NO 3PT TERM AT ALL. The old max(mid, 3pt) let a SHOOTER score on this term; the composite can no
+    // longer be moved by the three from either side of that max
+    const klay = g("Klay Thompson '16").attrs
+    const dantley = g(DANTLEY).attrs
+    expect(klay['3pt']).toBeGreaterThan(klay.mid)
+    expect(dantley.mid).toBeGreaterThan(dantley['3pt'])
+    for (const a of [klay, dantley]) for (const t of [0, 25, 50, 75, 99]) expect(isoScorer({ ...a, '3pt': t })).toBeCloseTo(isoScorer(a), 9)
+    // ...and the mid bonus is real, small and has no cliff: exactly ISO_MID a point, everywhere
+    for (const a of [klay, dantley]) for (let m = 0; m < 99; m++)
+      expect(isoScorer({ ...a, mid: m + 1 }) - isoScorer({ ...a, mid: m })).toBeCloseTo(ISO_MID, 9)
+    // NOTHING IS SUBTRACTED: the price IS the composite, for every card in the pool
+    for (const q of PLAYERS) expect(isoScore(q.attrs)).toBe(isoScorer(q.attrs))
+    // ...so play volume cannot lower an iso score by a decimal, at any level, for anyone
+    const lebron = g("LeBron James '18").attrs
+    for (let v = 0; v <= 99; v++) expect(isoScore({ ...lebron, playvol: v })).toBe(isoScore(lebron))
+    // THE MEN THE REMOVED MINUS WAS SUPPRESSING all read higher, which is the whole of his complaint
+    const before = (x: Attrs) =>
+      0.4 * x.volume + 0.2 * x.efficiency + 0.25 * Math.max(x.mid, x['3pt']) + 0.15 * x.fouldraw - 0.45 * Math.max(0, x.playvol - ISO_PV)
+    for (const n of ["LeBron James '18", "Nikola Jokić '22", "Luka Dončić '24", "James Harden '19", "Magic Johnson '87", "Russell Westbrook '17"])
+      expect(isoScore(g(n).attrs)).toBeGreaterThan(before(g(n).attrs))
+    // and the shooters the old max was paying read lower, none of whom is a five's iso man
+    for (const n of ["Klay Thompson '16", "Dennis Scott '94", "Bruce Bowen '09"]) expect(isoScore(g(n).attrs)).toBeLessThan(before(g(n).attrs))
+  })
+
+  it("AND THE ROUND'S THINNEST MARGIN, recorded where it can be seen", () => {
+    // the Thunder '25 keep the ROLL (his pinned read) by 0.32 with the minus gone, and the Raptors '19
+    // keep the ISOLATION (his pinned read, Leonard) by 0.34. Both are the wheel's own starting fives.
+    const okc25 = cut("Shai Gilgeous-Alexander '25", "Isaiah Joe '25", "Luguentz Dort '25", "Jalen Williams '25", "Isaiah Hartenstein '25")
+    expect(bestStyle(okc25).style).toBe('pnr')
+    expect(styleFit('pnr', okc25) - styleFit('iso', okc25)).toBeGreaterThan(0.2)
+    const tor19 = cut("Kyle Lowry '19", "Danny Green '19", "Kawhi Leonard '19", "Pascal Siakam '19", "Serge Ibaka '19")
+    expect(bestStyle(tor19).style).toBe('iso')
+    expect(isoMan(tor19).scorer!.name).toBe("Kawhi Leonard '19")
   })
 
   it('the nominee is the scorer, not the spot-up shooter beside him', () => {
