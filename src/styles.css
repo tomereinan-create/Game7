@@ -3838,6 +3838,44 @@ body:has(.sheet) { overflow: hidden; }
 .pct-attr b { flex: none; width: 26px; text-align: right; font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .pc-note { margin-top: 6px; font-size: 8.5px; letter-spacing: 0.06em; color: var(--muted-2); }
 
+/* ---- EVERY OFFENSIVE SPOT, GRADED (his ruling, 2026-09-28) ----
+   `auto-fit` AND NO BREAKPOINT OF ITS OWN. The block has to live in three very different holes —
+   838px of empty floor beside the hexagon on his desk, a narrow column under the dossier on a
+   laptop, and the full width of a phone — and a track that folds on its own content answers all
+   three: four across, then two, then one, with the same markup and the same cell.
+   THE CELL IS name / grade / figure on one line, with the name flexible and the two numbers
+   rigid, so the grades stand in a column down each fold instead of drifting with the length of
+   the word beside them. */
+.pc-spots { min-width: 0; }
+/* THE CELL IS THE SEASON LINE'S CELL — his ruling, 2026-09-28: "Make it way bigger". The first
+   pass laid the name, the grade and the figure on ONE line, which caps the grade at the height of
+   the word beside it and spends the width on a word nobody reads twice. Stacked, it is the shape
+   `.pc-cell` already uses eleven rows above it: the small label over the figure it belongs to, so
+   the letter can be set at reading size and the eye runs down a column of letters. */
+/* 190 AND NOT 150: the track has to hold the longest name on one line — "PnR handler · the roll"
+   — and it has to fold to a DIVISOR of twelve, or the last row comes out short. At 190 the strip
+   on his window takes four, a narrow column takes two and the capped block below takes six. */
+.pc-spotgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 1px; padding: 1px; }
+/* `line-height: 1` ON THE CELL is worth six pixels a row and it is not cosmetic: the grade is an
+   inline-block on a line whose height is the BODY's 1.5, so every row was carrying the leading of
+   a 13px paragraph nobody set. Three rows of that is eighteen pixels of a strip that has 178. */
+.pc-spot { display: block; min-width: 0; line-height: 1; padding: 6px 9px 6px; background: var(--surface); outline: 1px solid var(--line); }
+/* `line-height: 1.2` and not the body's 1.5: the name is one line and the leading under it is
+   pure cell height, which on a strip that holds exactly three rows is the difference between the
+   grades being 27px and 30 */
+.pc-spot .k { display: block; line-height: 1.2; font-size: 9.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-spot .k i { font-style: normal; color: var(--faint); }
+.pc-spot b { display: inline-block; margin-top: 2px; font-size: 22px; font-weight: 700; line-height: 1; color: var(--ink-2); }
+.pc-spot u { margin-left: 6px; text-decoration: none; font-size: 10px; color: var(--faint); }
+/* THE BANDS WEAR THE SCALE THE REST OF THE APP USES — green above the middle, red below, and the
+   middle left alone — so a column of grades reads at a glance without a key. */
+.pc-spot.gA { color: var(--you); }
+.pc-spot.gA b { color: var(--you); }
+.pc-spot.gB b { color: var(--ink); }
+.pc-spot.gD b, .pc-spot.gE b, .pc-spot.gF b { color: var(--danger); }
+/* his best spot of the twelve, named without a caption */
+.pc-spot.top { outline-color: var(--pct-acc-line); background: var(--pct-acc-tint); }
+
 /* ---- the shape, and the way into the numbers behind it ----
    NO RULE OVER THE HEXAGON (his ruling, 2026-09-22: "Delete SHAPE.HEX ▸ 6-AXIS from the player
    page") and NO DOOR INSIDE IT ("move advanced right below to the attributes"). What is left is
@@ -4322,15 +4360,36 @@ body:has(.sheet) { overflow: hidden; }
        rule across the top. Every line the strip does not spend on a label is a line the hexagon
        gets, and the hexagon is measured off this block's height: at two rows it came out 110px,
        at one it is 159. */
-    /* ONE CELL NOW. The strip was 'hex rule adv' — the drawing at the left-hand end with its
-       ruled name and the ADVANCED key beside it — and both of those are gone (his rulings,
-       2026-09-22). The hexagon keeps the left-hand end it was given and the attributes' own
-       ground runs out beside it. */
+    /* THE DRAWING AT ONE END AND THE TWELVE GRADES AT THE OTHER. The strip was 'hex rule adv'
+       — the hexagon with its ruled name and the ADVANCED key beside it — and both of those went
+       on 2026-09-22, which left 838 by 178 of empty floor here. His ruling of 2026-09-28 puts
+       the offensive spots in it, so the row is a pair again and the card pays nothing for the
+       new block. `align-items: start` and not `center`: the grades are a list and read from the
+       top of the row, while the hexagon's own box already pins itself to the top of it. */
     grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas: 'hex .';
-    align-items: center;
-    gap: 0 20px;
+    grid-template-areas: 'hex spots';
+    align-items: start;
+    gap: 0 24px;
   }
+  .pc-spots { grid-area: spots; }
+  /**
+   * FOUR ACROSS, ALWAYS, AND THAT IS THE ONE PLACE THE FOLD IS STATED RATHER THAN FOUND.
+   * Everywhere else this block may be as tall as it likes and `auto-fit` is right. Here it stands
+   * in a strip whose HEIGHT is fixed by `--shape-h` and whose WIDTH is whatever the hexagon
+   * leaves, so a fold found from the width alone is really choosing the number of ROWS — and at
+   * 1600x745 it chose two columns, which is six rows in a strip that holds three. Measured: 150px
+   * past the foot of a card that clips rather than scrolls. Twelve into four is three rows at
+   * every width in this block, which leaves the strip's height as the only thing to size the type
+   * against. The cap stops a 4K cell being 350px of mostly nothing.
+   */
+  .pc-spotgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 1150px; }
+  /* AND EVERY TERM IS A vh, for the same reason: what binds the cell is the height of the strip,
+     not the width of the card. Three rows have to stand in the 178px his window leaves — the card
+     is `overflow: hidden` up here, so a row too tall does not scroll, it cuts. */
+  .pc-spot { padding: clamp(4px, 0.5vh, 10px) clamp(9px, 0.7vw, 16px); }
+  .pc-spot .k { font-size: clamp(9.5px, 1.45vh, 15px); }
+  .pc-spot b { margin-top: clamp(2px, 0.3vh, 5px); font-size: clamp(20px, 3.9vh, 40px); }
+  .pc-spot u { margin-left: clamp(6px, 0.5vw, 11px); font-size: clamp(10px, 1.25vh, 15px); }
   /* THE BOX HUGS THE DRAWING AND STANDS AT THE TOP OF ITS ROW, which is what "higher" means once
      the row is its own: the case is square, as tall as the row allows up to its ceiling, and it
      starts immediately under the last attribute rather than floating in the middle of what is
@@ -4346,6 +4405,18 @@ body:has(.sheet) { overflow: hidden; }
      inside `.pc-main` it is the last line of the list, and it is set to the width of one of the
      three attribute columns rather than across all three — a key, not a banner. */
   .pc-adv { width: auto; align-self: start; min-width: clamp(180px, 18vw, 300px); margin-top: 6px; padding: 8px 24px; }
+}
+
+/* A WIDE BUT SHORT WINDOW, where the strip the grades stand in is 125px rather than 178. Three
+   rows still have to fit it, so the cell gives up everything it can: the padding, the leading and
+   ten points off the letter. The band stops below his own 810, which keeps the 31px he reads them
+   at — and it is stated as a band of its own rather than as a lower vh floor, because a floor
+   that low would have taken those ten points off every window. */
+@media (min-width: 1600px) and (max-height: 805px) {
+  .pc-spot { padding: 3px 7px; }
+  .pc-spot .k { font-size: 9px; }
+  .pc-spot b { margin-top: 1px; font-size: 19px; }
+  .pc-spot u { margin-left: 5px; font-size: 9px; }
 }
 
 /* THE KEY IS A KEY AND NOT A BANNER on a desk, wherever it stands: the width of one attribute
@@ -4390,9 +4461,16 @@ body:has(.sheet) { overflow: hidden; }
   .pc-grp { margin-bottom: 7px; }
   /* the rule and the key that used to share this row with the drawing are gone (his rulings,
      2026-09-22), so the hexagon stands on its own and takes the middle of the card's last line */
-  .pct-shape { display: grid; justify-items: center; }
-  .pct-hexbox { padding: 6px; }
+  /* the drawing centres itself and the grades take the width — `justify-items: center` would
+     have shrink-wrapped a block whose whole job is to fill a line */
+  .pct-shape { display: grid; justify-items: stretch; gap: 8px; }
+  .pct-hexbox { justify-self: center; padding: 6px; }
   .pct-hexbox .heathex { max-width: 132px; }
+  /* two across rather than one: twelve rows of one is a third of a phone screen for a block that
+     is read by scanning a column of grades */
+  .pc-spotgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pc-spot { padding: 4px 6px 3px; gap: 5px; }
+  .pc-spot .k { font-size: 8px; letter-spacing: 0.02em; }
   /* the key is a line of its own here where it used to share the hexagon's row, so it gives back
      what it can: this card already runs past a 375px screen and the body is its safety valve */
   .pc-adv { margin-top: 6px; padding: 7px 0; }
