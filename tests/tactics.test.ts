@@ -9,7 +9,12 @@ import {
   elbowSkill,
   hornsMen,
   hubScore,
+  bigMan,
   selfless,
+  DHO_H0,
+  DHO_H1,
+  DHO_RIM_LO,
+  DHO_RIM_HI,
   pinCatch,
   pinMan,
   pinOffBall,
@@ -1259,6 +1264,81 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     }
   })
 
+  /**
+   * recal_217, his ruling: "Fix the DHO height floor so Draymond can be a hub".
+   *
+   * The floor was a listed-height test and it returned exactly ZERO on the clearest modern example of
+   * the archetype: Draymond Green '16 is 78 inches, one inch under DHO_H0 79, so his whole hub term
+   * was multiplied to nothing on a card that says hub in every other column. `bigMan` adds the second
+   * fact the sheet has about whether a man is a big — `rimprot`, which is what compute_ovr's own
+   * `is_big` reads — as the height ramp UNCLAMPED BELOW plus a rim ramp, clamped once. Elite rim
+   * protection is worth exactly the width of the height ramp (four inches) and never more, so a man
+   * can be at most four inches short and still reach the top.
+   *
+   * The whole round is the tension between those two sentences, and this block is both halves of it.
+   */
+  it('a big man\'s hands can be 6\'6": rim protection pays for the inches Draymond Green \'16 is short', () => {
+    const dray = g("Draymond Green '16").attrs
+    expect(dray.height).toBe(78)
+    expect(dray.height).toBeLessThan(DHO_H0) // one inch under the floor: the height leg alone is 0
+    expect((dray.height - DHO_H0) / (DHO_H1 - DHO_H0)).toBeLessThan(0)
+    // ...and he is a real hub, not a token positive number: the pool's p90 is 27.9 and its p99 47.4
+    expect(hubScore(dray)).toBeGreaterThan(30)
+    expect(hubScore(dray)).toBeLessThan(hubScore(g("Domantas Sabonis '25").attrs))
+    expect(bigMan(dray)).toBeCloseTo(0.596, 2)
+  })
+
+  it('...and NO GUARD becomes a hub, because the height leg is left negative below DHO_H0', () => {
+    // Height is the only column keeping guards out of this style — `primacy` fades a man who passes
+    // LESS than the five's best passer and a point guard usually IS the best passer. Nash's other
+    // columns are BETTER than Draymond's here (0.62 x playvol + 0.38 x pinShot is 93.2 against 66.2)
+    // and his volume 42 is inside DHO_VOL_FREE, so `selfless` does not touch him either. What stops
+    // him is that he is FOUR inches short with rimprot 10, and the unclamped height leg is -1.00.
+    for (const n of ["Steve Nash '05", "Chris Paul '08", "John Stockton '97", "Isaiah Thomas '16", "Muggsy Bogues '95"]) {
+      const x = g(n).attrs
+      expect(x.height).toBeLessThan(78)
+      expect(bigMan(x)).toBe(0)
+      expect(hubScore(x)).toBe(0)
+    }
+    // the rim leg cannot rescue a guard however high it goes: a 6'0" man with rimprot 99 still reads 0
+    expect(bigMan({ ...g("Chris Paul '08").attrs, rimprot: 99 })).toBe(0)
+    // and it is capped at the ramp's own width, so four inches short is the most it can ever pay for
+    expect(bigMan({ ...g("Draymond Green '16").attrs, height: DHO_H0 - 4, rimprot: 99 })).toBe(0)
+    expect(bigMan({ ...g("Draymond Green '16").attrs, height: DHO_H0 - 3, rimprot: 99 })).toBeGreaterThan(0)
+  })
+
+  it('...and it is a MEASURED window, continuous and monotone up in both columns, with no cliff', () => {
+    // DHO_RIM_LO 73 / DHO_RIM_HI 86 are the p75 and p90 rimprot of the men this fit already nominates
+    // over the 1,255 wheel fives, so the window is THEIR OWN TOP QUARTILE: a man at or below the p75
+    // rim protection of the style's existing hubs buys no inches at all, because he is already being
+    // paid in real height, and only the top decile buys the full four. The p75 rather than the p50 is
+    // what leaves David West '16 (6'9", rimprot 70) alone and so leaves the Spurs '16 BENCH on motion.
+    expect([DHO_RIM_LO, DHO_RIM_HI]).toEqual([73, 86])
+    expect(bigMan(g("Domantas Sabonis '25").attrs)).toBe(0.75) // rimprot 55, exactly at the line: unmoved
+    expect(hubScore(g("Domantas Sabonis '25").attrs)).toBeCloseTo(53.35, 1)
+    expect(bigMan(g("Magic Johnson '87").attrs)).toBe(0.5) // rimprot 41, under the line: unmoved, and
+    expect(bestStyle(LAKERS_87x).style).toBe('helio') //       the '87 Lakers pin is what that holds
+    const s = g("Draymond Green '16").attrs
+    for (const k of ['height', 'rimprot'] as const) {
+      let prev = -1
+      for (let v = 0; v <= 99; v++) {
+        const x = bigMan({ ...s, [k]: v })
+        expect(x).toBeGreaterThanOrEqual(prev)
+        expect(Math.abs(x - Math.max(prev, 0))).toBeLessThan(0.6)
+        prev = x
+      }
+    }
+  })
+
+  it('...and the Warriors \'16 keep the pin-down his ruling gave them, by 7.0', () => {
+    // Draymond becoming a hub does move Golden State: the '17, '19, '22 and '23 fives read the
+    // hand-off hub now (reported, not slipped in). The '16 is the one that is PINNED and it holds —
+    // Curry passes 13 points more than Draymond does, so `primacy` leaves him 0.48 of his hub term.
+    expect(bestStyle(WARRIORS_16).style).toBe('pindown')
+    expect(styleFit('pindown', WARRIORS_16) - styleFit('dho', WARRIORS_16)).toBeGreaterThan(5)
+    expect(dhoMan(WARRIORS_16).hub!.name).toBe("Draymond Green '16")
+  })
+
   it("...and the hub must be the five's own passer, not its point guard (DHO_GUARD)", () => {
     // Türkoğlu at 6'10" reads as a hub until José Calderón passes 23 points more than he does; that is
     // 20.7 off the fit, and it is what leaves Toronto on the pick-and-roll his ruling pins them to.
@@ -1353,7 +1433,8 @@ describe('the three are signature systems and they break nothing that was ruled 
     ]
     for (const [five, s] of cases) {
       for (let i = 0; i < 5; i++) {
-        for (const k of ['mid', '3pt', 'rim', 'playvol', 'volume', 'efficiency', 'height'] as const) {
+        // recal_217 added `rimprot` to the sweep, because `bigMan` made it a column the hub fit reads
+        for (const k of ['mid', '3pt', 'rim', 'playvol', 'volume', 'efficiency', 'height', 'rimprot'] as const) {
           let prev: number | null = null
           for (let v = 0; v <= 99; v += 1) {
             const up = five.map((p, j) => (j === i ? ({ ...p, attrs: { ...p.attrs, [k]: v } } as Player) : p))

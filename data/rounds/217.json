@@ -1,0 +1,268 @@
+{
+  "round": 217,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Fix the DHO height floor so Draymond can be a hub",
+  "title": "the hand-off hub asks whether a man is a BIG on the two facts the sheet has, not on listed height alone - `bigMan` is the height ramp left unclamped below DHO_H0 plus a rim-protection ramp over DHO_RIM_LO 73 -> DHO_RIM_HI 86 (the p75 and p90 rimprot of the men the fit already nominates), clamped once, so elite rim protection is worth exactly the four inches of the ramp it substitutes into and never more. Draymond Green '16's hubScore 0.00 -> 39.44 (p0.0 -> p97.5, against a style p90 of 25.8 and his own corner's p68.7); the style reads 48 -> 57 of 1,255 (3.8% -> 4.5%); the shortest hub anywhere on the wheel goes 80\" -> 78\" and stops there, with ZERO men under 6'6\"; all 32 wheel pins and all 30 test-fixture reads hold, including the Warriors '16 pin-down by 8.7; and no card, no rating and no campaign round order moves",
+  "scale": "team:off",
+  "subject": "Warriors '16 (best legal five - the pinned five the round had to hold)",
+  "five": [
+    "Stephen Curry '16",
+    "Andre Iguodala '16",
+    "Klay Thompson '16",
+    "Draymond Green '16",
+    "Andrew Bogut '16"
+  ],
+  "target": 86,
+  "tol": 0,
+  "before": 86,
+  "after": 86,
+  "pipeline_version": 210,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const DHO_RIM_LO = 73\\s*\\nexport const DHO_RIM_HI = 86",
+      "label": "THE MEASURED WINDOW: the p75 and p90 rimprot of the men the hub fit already nominates over the 1,255 wheel fives",
+      "note": "new; their rimprot runs p50 55, p75 73, p90 86, so the window is THEIR OWN TOP QUARTILE - a man at or below the p75 rim protection of the style's existing hubs buys no inches at all, and only the top decile buys the full four"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const bigMan = \\(x: Attrs\\) =>\\s*\\n\\s*clamp\\(\\(x\\.height - DHO_H0\\) / \\(DHO_H1 - DHO_H0\\) \\+ clamp\\(\\(x\\.rimprot - DHO_RIM_LO\\) / \\(DHO_RIM_HI - DHO_RIM_LO\\), 0, 1\\), 0, 1\\)",
+      "label": "IS HE A BIG? the height ramp LEFT UNCLAMPED BELOW plus a rim ramp, clamped once - and that single missing inner clamp is the whole guard filter",
+      "note": "new; replaces `heightRamp(x, DHO_H0, DHO_H1)` inside hubScore. Because the rim ramp caps at 1 and the height ramp's width is DHO_H1 - DHO_H0 = 4, elite rim protection is worth EXACTLY four inches and never more, so the coefficient is not a free knob. Draymond is one inch short and reads 0.596; Nash is four inches short with rimprot 10 and reads 0; a 6'0\" guard with rimprot 99 still reads 0"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const hubScore = \\(x: Attrs\\) =>\\s*\\n\\s*\\(DHO_PASS \\* x\\.playvol \\+ DHO_SHOT \\* pinShot\\(x\\)\\) \\* bigMan\\(x\\) \\* selfless\\(x\\)",
+      "label": "...and that is the ONLY line of the hub fit that changed",
+      "note": "heightRamp(x, DHO_H0, DHO_H1) -> bigMan(x). DHO_BASE, DHO_W_HUB, DHO_W_SHOOT, DHO_PASS, DHO_SHOT, DHO_VOL_FREE, DHO_VOL_MAX, DHO_H0, DHO_H1, DHO_TOP, DHO_GUARD, `selfless`, `primacy`, `hubFit`, `dhoMan` and the dho case of styleFit are all byte-identical to recal_213"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const elbowSkill = \\(x: Attrs\\) =>\\s*\\n\\s*\\(HORN_WEAK \\* Math\\.min\\(x\\.mid, x\\.playvol\\) \\+ HORN_STRONG \\* Math\\.max\\(x\\.mid, x\\.playvol\\)\\) \\* heightRamp\\(x, HORN_H0, HORN_H1\\)",
+      "label": "MEASURED AND DELIBERATELY NOT CHANGED: horns' elbow term carries the identical defect one line away, and he has not ruled on it",
+      "note": "UNCHANGED - this pattern is recal_213's own and must still match. Draymond '16 reads elbowSkill 0.00 there too, at the very bottom of a 78 -> 82 height ramp. The same correction would take him to 21.79, horns 33 -> 39 of 1,255 (2.6% -> 3.1%), six fives change read (Celtics '80, Heat '11, Mavericks '13, Hawks '16, Warriors '19, Raptors '25) and ZERO pins break - so it is available and it is his call, not this round's"
+    }
+  ],
+  "expect": [
+    {
+      "label": "THE DEFECT IN ONE COLUMN: Draymond Green '16 is 78 inches, exactly ONE under DHO_H0 79, which is the whole reason the height-only ramp returned 0.00",
+      "card": "Draymond Green '16",
+      "scale": "attr:height",
+      "op": "==",
+      "value": 78
+    },
+    {
+      "label": "...and THE FACT THAT PAYS FOR THE INCH: his rim protection, which is what compute_ovr's own `is_big` reads",
+      "card": "Draymond Green '16",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 84
+    },
+    {
+      "label": "...while `selfless` was already giving him a full 1.00 (volume well under DHO_VOL_FREE 50) and `primacy` never touched him",
+      "card": "Draymond Green '16",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 25
+    },
+    {
+      "label": "...and he passes like a hub, which is the term the ramp was multiplying to nothing",
+      "card": "Draymond Green '16",
+      "scale": "attr:playvol",
+      "op": ">=",
+      "value": 73
+    },
+    {
+      "label": "WHY THE FLOOR COULD NOT BE THE FIX (1): Nash '05 is only THREE inches shorter and his other columns are BETTER - 0.62 x playvol + 0.38 x pinShot is 93.2 for him against 66.2 for Draymond",
+      "card": "Steve Nash '05",
+      "scale": "attr:height",
+      "op": "==",
+      "value": 75
+    },
+    {
+      "label": "...and `selfless` does not touch him either, because volume 42 is inside DHO_VOL_FREE 50 - so height was the ONLY column keeping him out",
+      "card": "Steve Nash '05",
+      "scale": "attr:volume",
+      "op": "<=",
+      "value": 42
+    },
+    {
+      "label": "...and what keeps him out NOW is the rim leg, which pays him nothing at all",
+      "card": "Steve Nash '05",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 10
+    },
+    {
+      "label": "WHY THE FLOOR COULD NOT BE THE FIX (2): Chris Paul '08 at 72 inches - `selfless` does separate him (volume 83) but only to 0.17, not to zero",
+      "card": "Chris Paul '08",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 3
+    },
+    {
+      "label": "WHY THE WINDOW IS THE p75 AND NOT THE p50 (1): Josh Giddey '22 is TALLER than Draymond and no rebounding term can rank them the right way round - his rimprot is what does",
+      "card": "Josh Giddey '22",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 55
+    },
+    {
+      "label": "...and he is 79 inches, so a height-only relaxation lights him up and takes the Thunder '22 off the helio read his ruling pins",
+      "card": "Josh Giddey '22",
+      "scale": "attr:height",
+      "op": "==",
+      "value": 79
+    },
+    {
+      "label": "WHY THE WINDOW IS THE p75 AND NOT THE p50 (2): David West '16 at rimprot 70 buys NOTHING, which is what leaves the Spurs '16 bench four on recal_211's motion",
+      "card": "David West '16",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 70
+    },
+    {
+      "label": "THE STYLE'S OWN HEAD DOES NOT MOVE A DECIMAL: Sabonis '25 sits at rimprot 55, under DHO_RIM_LO, so the Kings '25 read 86.9 exactly as recal_213 left them",
+      "card": "Domantas Sabonis '25",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 55
+    },
+    {
+      "label": "...nor does Magic Johnson '87, at rimprot 41 - which is what holds the Lakers '87 helio pin at its original 3.6 margin",
+      "card": "Magic Johnson '87",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 41
+    },
+    {
+      "label": "...nor Toni Kukoč '97, at rimprot 55, which is what holds the thinnest margin on the board (Bulls '97 triangle 75.0 against dho 73.0)",
+      "card": "Toni Kukoč '97",
+      "scale": "attr:rimprot",
+      "op": "<=",
+      "value": 55
+    },
+    {
+      "label": "THE ROUND MOVES NO RATING: the Warriors '16 defence dial",
+      "scale": "team:def",
+      "op": "==",
+      "value": 68
+    },
+    {
+      "label": "...nor the Kings '24 offence dial, recal_213's reference five for the hand-off hub",
+      "five": [
+        "De'Aaron Fox '24",
+        "Malik Monk '24",
+        "Harrison Barnes '24",
+        "Keegan Murray '24",
+        "Domantas Sabonis '24"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 53
+    },
+    {
+      "label": "...nor the Grizzlies '17 offence dial, recal_213's own subject",
+      "five": [
+        "Mike Conley '17",
+        "Tony Allen '17",
+        "Vince Carter '17",
+        "Zach Randolph '17",
+        "Marc Gasol '17"
+      ],
+      "scale": "team:off",
+      "op": "==",
+      "value": 46
+    },
+    {
+      "label": "...nor the Spurs '16 defence dial, the five his ruling pins to balanced or motion",
+      "five": [
+        "Tony Parker '16",
+        "Danny Green '16",
+        "Kawhi Leonard '16",
+        "LaMarcus Aldridge '16",
+        "Tim Duncan '16"
+      ],
+      "scale": "team:def",
+      "op": "==",
+      "value": 64
+    },
+    {
+      "label": "...nor Draymond Green '16's own card, on either end (recal_62's DEF 96 +-1 anchor is untouched: tactics feeds no rating)",
+      "card": "Draymond Green '16",
+      "scale": "def",
+      "op": "~",
+      "value": 97,
+      "tol": 1
+    },
+    {
+      "label": "...and his OFF is where the pipeline left it too - a style read is not an OVR input",
+      "card": "Draymond Green '16",
+      "scale": "off",
+      "op": "==",
+      "value": 59
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "Josh Giddey '22",
+      "label": "THE WHOLE ROUND IN ONE COMPARISON: the shorter man protects the rim more, and that is the fact the hub fit now reads"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "David West '16",
+      "label": "...and more than the 6'9\" big whose lift would have cost the Spurs '16 bench its motion read"
+    },
+    {
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "Steve Nash '05",
+      "label": "...and the guard the style must never claim is at the floor of the same column"
+    },
+    {
+      "scale": "attr:height",
+      "above": "Josh Giddey '22",
+      "below": "Draymond Green '16",
+      "label": "...while HEIGHT alone ranks them the wrong way round, which is why the floor was never the fix"
+    }
+  ],
+  "movers": {
+    "scale": "attr:rimprot",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      ["Draymond Green '16", 84, 84],
+      ["Al Horford '18", 85, 85],
+      ["Bam Adebayo '20", 91, 91]
+    ]
+  },
+  "notes": [
+    "HIS RULING was \"Fix the DHO height floor so Draymond can be a hub\", sharpened mid-round to \"Draymond should be a better fit as DHO hub than corner\" with the bar set at CLEARLY ABOVE THE POOL p90. MET, and not by the letter: hubScore 0.00 -> 39.44, percentile 0.0% -> 97.5%, against his corner's 68.7% on 3pt 55. The pool p90 is 25.8 and the p99 45.7, so he lands 1.53x p90 and just under the p99 - a genuinely good hand-off hub, behind Brad Miller '05 (59.2), Sabonis '25 (53.4) and Divac '04 (53.5) and ahead of Claxton '26 (46.5). The \"reached the letter, missed the intent\" band the orchestrator warned about (8.5 to 25.8, because 59% of the pool scores exactly zero so 8.5 alone matches his corner percentile) is cleared by 13.6 points.",
+    "THE DEFECT, EXACTLY. `hubScore` was scaled by `heightRamp(x, DHO_H0 79, DHO_H1 83)`. Draymond Green '16 is 78 inches - ONE INCH under the floor - so the ramp returned 0.00 and his whole hub term was multiplied to nothing. Nothing else on his card was the problem: playvol 73, volume 25 so `selfless` gives him a full 1.00, 3pt 55, and `primacy` never touched him. Strip the height term and he reads 66.2, near the top of the style. The height ramp alone is what zeroed him, and it did it on the clearest modern example of the archetype - Golden State's split game runs through his hands - on one inch.",
+    "THE TENSION, AND WHY THE FLOOR IS NOT THE FIX. The style's own sentence is \"a big man's hands, not a guard's\", and `primacy` does not protect it: it fades a man who passes LESS than the five's best passer, and a point guard usually IS the best passer. Height was the only column keeping guards out. Worse, Draymond is the WEAKER card on every other column in the fit: 0.62 x playvol + 0.38 x pinShot is 93.2 for Steve Nash '05 against 66.2 for Draymond, and Nash's volume 42 is inside DHO_VOL_FREE so `selfless` leaves him at 1.00 as well. MEASURED on the wheel: DHO_H0 76 already breaks three pinned reads (Thunder '22 helio, Lakers '87 helio, Bulls '97 triangle) and takes the style to 6.3% while reaching only 18.9 for Draymond; DHO_H0 75 reaches 24.8 (still under p90), goes to 8.4% - outside the 3-7% band - and puts FIVE men under 6'6\" in as hubs; DHO_H0 74 is 9.9% and 18 of them; DHO_H0 73 is 12.4% and 45. There is no setting of the floor that reaches the target and holds the board.",
+    "AND DELETING THE HEIGHT TERM, MEASURED AS ASKED: 895 of the 1,255 wheel fives read the hand-off hub (71.3%), 789 distinct men under 6'6\" become hubs, the shortest is Muggsy Bogues '92 at 5'3\", and THIRTEEN pinned reads fall (Jazz '97, Suns '05, Magic '11, Hornets '95, Celtics '25, Thunder '22, Lakers '87, Bulls '96 AND '97, Raptors '17, Jazz '81, Spurs '16, Pistons '07). It is not a candidate; it is the measurement that proves the guard test has to live somewhere.",
+    "SO IT LIVES ON A DIFFERENT AXIS, AND IT IS THE AXIS THE SHEET ALREADY USES FOR THIS EXACT QUESTION: `rimprot`. compute_ovr's own `is_big` is unconditional on rim protection, and recal_138 / recal_179 spent their whole argument establishing that a man's DEFENSIVE rim work - not his shot diet - is what says he is a big (recal_179's note: \"THE SHOT DIET IS NOT A ROLE\"). Reading the same fact here is consistent rather than novel. It separates Draymond (84) from the guards by a mile - Nash 10, Paul 3, Stockton 14, Bogues, Isaiah Thomas - and, the part that actually decides the round, from the two men a height-only relaxation lets in: Josh Giddey '22 (rimprot 55, and he is TALLER at 79 inches) and Toni Kukoč '97 (55).",
+    "THE FORM. bigMan = clamp((height - DHO_H0) / (DHO_H1 - DHO_H0) + rimRamp, 0, 1) - the height ramp LEFT UNCLAMPED BELOW, plus the rim ramp, clamped once. Read it as inches: since rimRamp caps at 1 and the height ramp's width is DHO_H1 - DHO_H0 = 4, ELITE RIM PROTECTION IS WORTH EXACTLY FOUR INCHES AND NEVER MORE - the width of the ramp it substitutes into, which is why the coefficient is not a free knob and was not fitted. A man can be at most four inches short and still reach the top. It is the missing inner clamp on the HEIGHT leg that does the guard filtering: Draymond is one inch short (-0.250) and his rim leg 0.846 carries him to 0.596; Nash is four inches short (-1.000) with a rim leg of 0.000; a 6'0\" guard with rimprot 99 reads exactly 0, and so does a man at DHO_H0 - 4 with rimprot 99. Continuous, monotone up in both columns, no cliff, one formula, and it lifts nobody who was already at 1.",
+    "DHO_RIM_LO 73 AND DHO_RIM_HI 86 ARE MEASURED, the way DHO_VOL_FREE 50 was: the men this fit already nominates over the 1,255 wheel fives run rimprot p50 55, p75 73, p90 86. The window is THEIR OWN TOP QUARTILE - a man at or below the p75 rim protection of the style's existing hubs buys no inches at all, because he is already being paid in real height, and only the top decile buys the full four. THE p75 RATHER THAN THE p50 IS FORCED, and this is the one number the round searched for: at DHO_RIM_LO 55 the leg also lifts David West '16 (6'9\", rimprot 70) from 0.500 to 0.984 and his hubScore 32.8 -> 64.6 carries the hand-off hub onto the SPURS '16 BENCH FOUR at 77.3 over motion's 69.2 - the unit recal_211's decline pins to motion, and the only four-man lineup in the test file. Swept: every setting from DHO_RIM_LO 70 upward holds all 62 pinned reads and every setting below 70 breaks that one. 73 is the measured line inside the feasible region.",
+    "THE BOARD, BEFORE -> AFTER over the 1,255 wheel fives: dho 48 -> 57 (3.8% -> 4.5%, inside the 3-7% band), and it takes 3 from motion, 3 from helio, 1 each from pnr, postup and pickpop. balanced 357, fiveout 16, triangle 30, iso 51, horns 33 and pindown 46 are BYTE-IDENTICAL - no style other than the hub was touched, and no pair of old styles trades a five. NINE of the 1,255 reads change and every one is a five moving INTO the hub: Jazz '05 postup 61.7 -> dho 67.3 (Kirilenko), Warriors '17 pickpop 74.3 -> dho 77.8 (Green), Celtics '18 helio 72.0 -> dho 74.4 (Horford), Heat '20 pnr 68.7 -> dho 80.0 (Adebayo), Heat '21 motion 68.7 -> dho 69.1 (Adebayo), Warriors '22 helio 65.5 -> dho 70.7 (Green), Warriors '23 helio 65.5 -> dho 67.9 (Green), Raptors '25 motion 62.1 -> dho 62.8 (Barnes), Raptors '26 motion 69.4 -> dho 78.0 (Barnes). Kirilenko, Adebayo, Horford and Barnes are the shape's own kind of man - a rim-protecting big who passes and does not shoot much - so the list reads as the style finding men it had been excluding on an inch.",
+    "NO GUARD BECOMES A HUB, WHICH WAS THE BINDING CONSTRAINT. The shortest man the fit NOMINATES anywhere on the wheel (counting only real nominations, hubFit > 0 - with everyone at zero `dhoMan`'s reduce returns the five's first man, which is an artefact and not a nomination) goes from 80\" (George McGinnis '80) to 78\", and the four men at 78\" are Draymond Green '16, '17, '22 and '23. Nobody under 6'6\" is nominated, before or after: ZERO. On the 57 fives that actually READ the hub the shortest hub is also 78\" (Draymond '17), against 80\" before. The next twelve shortest nominees are all 80\": McGinnis, Robert Reid, Sidney Wicks, Alex English, Chuck Person. 333 distinct men are nominated somewhere on the wheel, up from 329.",
+    "EVERY WARRIORS FIVE, BEFORE -> AFTER, reported rather than slipped in, because his brief asked for it by name. UNCHANGED: '80 postup, '81-'88 balanced, '89 iso, '90 balanced, '91 iso, '92 iso, '93 pnr, '94 motion, '95 pnr, '96 pnr, '97-'03 balanced, '04 pnr, '05 pickpop, '06-'08 pnr, '09 iso, '11 balanced, '13 postup, '14 pnr, '15 pindown 74.5, '19 pickpop 68.9. MOVED, all three to the hand-off hub with Draymond as the hub: '17 pickpop 74.3 -> dho 77.8, '22 helio 65.5 -> dho 70.7, '23 helio 65.5 -> dho 67.9. AND THE ONE THAT IS PINNED SURVIVES: the WARRIORS '16 hold pindown 77.2 (Klay Thompson) with the hub at 68.4 behind it, a margin of 8.7, up from 27.1 - Curry passes 13 points more than Draymond does, so `primacy` leaves Draymond only 0.48 of his hub term on that particular five. The pin-down pin is intact and it is asserted by name in tests/tactics.test.ts.",
+    "EVERY PINNED READ HOLDS - 32 of 32 on the wheel and 30 of 30 test fixtures, 62 in all, verified by sweep before a line was applied. The thinnest margins are untouched to the decimal because the men who set them all sit under DHO_RIM_LO: Bulls '97 triangle 75.0 against dho 73.0 (1.9, Kukoč rimprot 55), Lakers '87 helio 67.0 against dho 63.4 (3.6, Johnson 41), Spurs '16 balanced 60.0 against dho 56.3 (3.7, Duncan already at 1.000), Bulls '96 triangle 72.8 against dho 68.7 (4.2), Nets '23 iso 68.1 against dho 56.3 (11.8), Thunder '22 helio 65.3 against dho 48.9 (16.4, Giddey 55). The ten dho reads recal_213 landed are all still dho and six of them are unchanged to the decimal: Kings '25 86.9, Kings '04 86.9, Kings '08 84.5, Kings '09 83.3, Kings '23 83.3, Kings '24 81.4, Nets '26 82.1, Spurs '18 81.1. TWO RISE, and both are the round working as intended: 76ers '18 82.1 -> 91.7 and '21 81.3 -> 90.5, because Ben Simmons has rimprot 79 and goes 0.750 -> 1.000. Still dho, still Simmons featured.",
+    "THE CAMPAIGN LADDER DOES NOT REORDER, re-verified rather than assumed. bestStyle is read in exactly two places - CourtFive (the drawing and its caption) and TeamDb (a filter chip) - and by nothing in the sim, the resolver, src/state/campaign.ts or src/state/achievements.ts; src/data/opponents.json carries no style field. Of the 30 campaign opponents EXACTLY ONE changes its caption: round 20, the Raptors '26, motion 69.4 -> hand-off hub 78.0 (Scottie Barnes). No opponent rating and no round's position can move. The Pelicans '26 (round 8) were already reading the hub and their fit rises 66.3 -> 82.9 without changing caption.",
+    "NO CARD AND NO RATING MOVES. src/engine/tactics.ts is not imported by data/team_rating.py's port (src/engine/offense.ts), by compute_ovr.py or by anything in the ratings chain - there is no python counterpart to this file, which is why there is no parity work and no regeneration in this round, exactly as recal_213 recorded for the same reason. 667 of the 10,000 cards move `hubScore` and EVERY ONE MOVES UP; zero move OFF, DEF, OVR or any attribute. Biggest hubScore rises: Al Horford '19 +51.1, Horford '18 +50.6, Horford '17 +48.2, Draymond Green '17 +40.8, Green '16 +39.4, Horford '22 +37.7.",
+    "MEASURED AND DELIBERATELY NOT CHANGED - THE HORNS ELBOW TERM, which carries the identical defect one line away. `elbowSkill` is scaled by heightRamp(x, HORN_H0 78, HORN_H1 82), so Draymond '16 reads 0.00 there too, at the very bottom of that ramp. Applying the SAME correction (the height leg unclamped below HORN_H0, plus the same rim ramp 73 -> 86, clamped once, with `hornsHandler` taking the mirrored form as it already does): Draymond '16 elbowSkill 0.00 -> 21.79 and '17 0.00 -> 22.62, the pool moves p50 7.1 -> 7.5 / p90 33.8 -> 34.5 / p99 57.9 -> 58.8, horns goes 33 -> 39 of 1,255 (2.6% -> 3.1%, still inside the band), SIX fives change read (Celtics '80 balanced -> horns, Heat '11 pnr -> horns, Mavericks '13 balanced -> horns, Hawks '16 pnr -> horns, Warriors '19 pickpop -> horns, Raptors '25 dho -> horns) and ZERO pinned reads break. It is a clean, available change and it is his to rule on, not this round's. Note for whoever lands it: at the p50 window 55 instead of 73 it costs the Bulls '96 triangle pin, the same way it cost the Spurs '16 bench here - the p75 is the line on both terms. The elbowSkill knob regex in this receipt asserts the term is STILL the recal_213 form.",
+    "REJECTED, MEASURED FIRST. (a) THE FLOOR, at 76 / 75 / 74 / 73 - infeasible, numbers above; it cannot reach p90 for Draymond at any setting that holds the pins or the band. (b) DELETING THE HEIGHT TERM - 71.3% of the wheel, 789 guards, 13 pins. (c) BIGNESS AS HEIGHT PLUS THE GLASS, additive inches on 0.5 x (orb + drb) - this is the one that looked right and is not, and the reason is worth recording: Draymond's glass is 72 and Josh Giddey '22's is 70, two points apart, so NO rebounding term can rank them the right way round, and every setting generous enough to reach p90 for Draymond (+5 inches over a 45 -> 85 window gives him 39.3) also gives Giddey 48.1 and takes the Thunder '22 to dho 79.8 over helio 65.3. Ten variants of the window and the coefficient were swept and every one that reached the target broke that pin. Worth noting against recal_213, which rejected the glass because \"drb is era-loaded (1980s bigs run 60-70 where modern bigs run 95)\": that reason does not reproduce on the shipped pool - for men 81 inches and over, drb p50 runs 69 / 70 / 70 / 72 / 75 by decade and rimprot 71 / 70 / 68 / 70 / 75, both flat, because both are within-season percentiles. The glass fails here for a different and better reason than the one recorded. (d) THE GLASS MULTIPLICATIVELY, recal_213's own rejection (c) - inherited, not re-measured. (e) LOWERING DHO_VOL_FREE from 50 so `selfless` carries the guard test, which the brief suggested: DHO_VOL_FREE 25 gives Giddey 0.60 against Draymond's 1.00, not enough (Thunder '22 still reads dho 68.3), and the setting that IS enough (DHO_VOL_FREE 12) fades Sabonis '25 to 0.50 and takes the Kings '25 off their own dho pin to the triangle. The two constraints close the axis. (f) A RIM COEFFICIENT OTHER THAN THE RAMP'S WIDTH - swept at 2, 3, 3.5, 5 and 6 inches on the p50 window; 4 is the only value with an argument behind it, and once the window moved to the p75 the coefficient stopped being the free parameter anyway."
+  ],
+  "cost": [
+    "THE WARRIORS '17 NO LONGER READ PICK-AND-POP. recal_214 moved them there on his ruling about Durant and Westbrook; this round takes them to the hand-off hub at 77.8 over the pop's 74.3. The brief permitted it explicitly (\"a Warriors five reading hand-off hub is arguably correct basketball - I am not forbidding it - but it must be reported\") and it is not pinned in tests/tactics.test.ts or in any round file's expect block - recal_214 asserts nothing about this five's style, and the two anchors on the Warriors '17 in data/anchors.json are the OFF and DEF dials, which do not move. If he wants the pop back, the cheapest lever is DHO_BASE 27 -> 23, which costs the style 9 of its 57 fives; the honest alternative is to say Draymond is the hub of that team, which is what the fit now says.",
+    "THE WARRIORS '22 AND '23 LEAVE HELIO for the same reason, and the Warriors '19 do NOT move (pickpop 68.9 holds; they did move at the p50 window and do not at the p75). recal_206's and recal_211's helio pins are the Thunder '22 and the Lakers '87 and both hold.",
+    "DHO_RIM_LO 73 IS PINNED BY THE SPURS '16 BENCH FOUR, not by a preference. Any later round that lowers it below 70 breaks tests/tactics.test.ts's \"the Spurs '16 STARTERS do not reach motion, their BENCH does\" - the David West '16 case is written into the source comment and into this receipt so the next agent does not rediscover it. Conversely, raising DHO_RIM_HI above 86 walks Draymond back down: at 90 he reads 26.3 and at 95 he reads 16.5, i.e. back inside the band the orchestrator called \"the letter, not the intent\".",
+    "THE HORNS ELBOW RAMP IS STILL BROKEN ON PURPOSE. Draymond '16 reads elbowSkill 0.00 and the fix measured clean (33 -> 39, zero pins). It is left for him to rule on; the receipt's fourth knob asserts the term is UNCHANGED, so the round that lands it will turn that line red and must re-point it.",
+    "A NEW COLUMN IS NOW LOAD-BEARING IN tactics.ts: `rimprot`, which no style fit read before this round. tests/tactics.test.ts's no-cliff sweep was extended to include it, so any later change to a rim-protection rating is now a change to a style read as well - that is new coupling and it is the price of the fix.",
+    "NO REGENERATION, NO PARITY WORK, NO ANCHOR ADDED to data/anchors.json: the round's target is a style read, and anchors.json holds card and team-dial rulings. The ruling is pinned in tests/tactics.test.ts by name instead, in four `it` blocks under \"the hand-off hub is a big man's hands\", which is where recal_213's own dho rulings are pinned. pipeline_version is left at main's 210 for the integrator to stamp."
+  ]
+}
