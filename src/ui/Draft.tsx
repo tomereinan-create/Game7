@@ -1788,7 +1788,7 @@ export function Draft({
           has always been. Gated on a full five for the same reason the board is: every call is a
           FIT question about the personnel, and there is nothing to fit until the five is in. */}
       {planOpen && full && canCallPlan ? (
-        <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet sheet2 playsheet" onClick={(e) => e.stopPropagation()}>
           <div className="topbar">
             <span>Playbook</span>
             <button onClick={() => setPlanOpen(false)}>← Done</button>
@@ -1801,15 +1801,28 @@ export function Draft({
                   nothing says whether one was good. The same words My team's head uses. */}
               <span className="cap">{user || planWorth === null ? 'your plan' : worthLine(planWorth)}</span>
             </div>
-            <CourtFive
-              club={club}
-              plan={plan}
-              side={planSide}
-              onSide={setPlanSide}
-              spots={five.map((p, i) => ({ p, slot: POSITIONS[i], tag: user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`, onTap: () => openCard(p) }))}
-            />
+            {/* THE FLOOR TAKES THE HEIGHT THE CALLS LEAVE - his ruling, 2026-09-29: "make
+                everything to cover the screen, and especially the court bigger and defense offense
+                way bigger". This sheet IS the whole window and always was; what stood in it was a
+                430px floor and six 64px rows, so on his desk the panel ended 560px above the
+                bottom of the screen with the plan drawn at a phone's size in the middle of it.
+                The wrapper is the measured box: `.playfloor` takes what the head and the calls
+                leave and the floor is the biggest one that fits in it. */}
+            <div className="playfloor">
+              <CourtFive
+                club={club}
+                plan={plan}
+                side={planSide}
+                onSide={setPlanSide}
+                spots={five.map((p, i) => ({ p, slot: POSITIONS[i], tag: user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`, onTap: () => openCard(p) }))}
+              />
+            </div>
             {/* the opponent goes through, which My team cannot do: standing across from a named
-                five, the scheme's and the hunt's fits here ARE the ones the odds card below uses */}
+                five, the scheme's and the hunt's fits here ARE the ones the odds card below uses.
+                WRAPPED, so that on a desk wide enough the calls can stand BESIDE the floor rather
+                than under it - see `.playcalls`. `TacticsCalls` itself returns a fragment of rows
+                and is unchanged. */}
+            <div className="playcalls">
             <TacticsCalls
               tactics={called ?? tactics!}
               playbook={playbookRank(wallet)}
@@ -1818,6 +1831,7 @@ export function Draft({
               side={planSide}
               onTactics={onTactics!}
             />
+            </div>
           </div>
         </div>
       ) : null}

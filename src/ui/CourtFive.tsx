@@ -806,6 +806,15 @@ export function CourtFive({
         {
           aspectRatio: `100 / ${bottom - top}`,
           /**
+           * THE SAME RATIO, AS A BARE NUMBER, so a stylesheet can turn a HEIGHT into a width -
+           * `max-width: min(100%, calc(100cqh * var(--ct-wh)))`. A box that has a height to spend
+           * and wants the biggest floor that fits in it cannot read `aspect-ratio`; every screen
+           * that needed this used to hard-code the ratio as a literal (the draft's `* 1.19`, the
+           * team page's `112cqh`), which is a copy of a constant that lives in THIS file and
+           * changes when a bench is drawn. It is published now instead of copied.
+           */
+          '--ct-wh': (100 / (bottom - top)).toFixed(4),
+          /**
            * WHERE THE HARDWOOD ACTUALLY STARTS, as two percentages of this box — his ruling,
            * 2026-09-22: "The tactic is half on court half outside. Make it either all in or all
            * out."
