@@ -576,14 +576,27 @@ export function Series({
             {/* The filmstrip is a ROW of game chips and must never break mid-series, so it stays in
                 the lead group whatever the width: one track, one line, G1 to G7 in order. */}
             <div className="strip">
-              {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {
-                const won = result.games[k].won
-                const clinch = k === result.games.length - 1 && result.won
-                /* EVERY CHIP IS DRAWN FROM THE FIRST FRAME, empty until its game lands: a strip
-                   that GREW would move the chips already on it sideways as each one arrived, and
-                   the thing he is watching is the scores, not the layout. */
-                const here = k < shown
-                if (!here)
+              {/**
+               * THE STRIP IS THE WHOLE SERIES UNTIL IT IS DECIDED — his ruling, 2026-09-30: "Its
+               * showing 4 tickets before the series ends, so I know it will be a sweep."
+               *
+               * Quite right, and it is the same leak the caption had: the LENGTH of a series is
+               * its result. Four slots on the strip is a sweep announced before the first chip
+               * lands, five is 4-1, and so on. While it lands the strip is the format — seven
+               * slots for a best of seven — and it settles to the games actually played, which is
+               * the strip his earlier ruling read and is unchanged.
+               *
+               * EVERY SLOT IS DRAWN FROM THE FIRST FRAME, empty until its game arrives: a strip
+               * that GREW would move the chips already on it sideways as each one landed, and the
+               * thing he is watching is the scores, not the layout.
+               */}
+              {Array.from({ length: settled ? result.games.length : Math.max(result.games.length, result.toWin * 2 - 1) }, (_, k) => k).map((k) => {
+                const played = k < result.games.length
+                const s = played ? scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)[k] : null
+                const won = played && result.games[k].won
+                const clinch = played && k === result.games.length - 1 && result.won
+                const here = played && k < shown
+                if (!here || !s)
                   return (
                     <span className="gt pending" key={k} aria-hidden>
                       <i>G{k + 1}</i>

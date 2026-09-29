@@ -39,14 +39,37 @@ const W = 375
  * — the turns are what make it a snake rather than a table (his ruling, "even more snake, less
  * rowy").
  */
-const LANE = 208
+/* WAY BIGGER, AND THE LANE HAS TO PAY FOR IT — his ruling, 2026-09-30: "Make the campaign
+   tickets way bigger." A ticket cannot grow past the room between two of them, so the three
+   numbers that decide that room grow with it: the lane a level occupies (208 -> 280), the least
+   pitch a row will accept (162 -> 230) and the clearance at a turn, which is the one place a row
+   stands directly above another (212 -> 296). Fewer levels to a row and a longer trail is the
+   price, and it is the price of the ruling: this map is read by scrolling either way. */
+
 /**
  * Vertical clearance at the wall where two rows meet — the one place a row and the row above it
  * stand at the same x, and so the one distance that has to clear a ticket. The tallest ticket on
  * the map is the banner: a rod, a pennant, the notch cut out of its foot and three stars under it,
  * ~161px on a desk now that the hall is drawn at the same size as the other three blocks.
  */
-const TURN = 212
+/**
+ * THE GEOMETRY IS THE TICKET — his ruling, 2026-09-30: "Make the campaign tickets way bigger."
+ *
+ * A ticket cannot grow past the room between two of them, so the three numbers that decide that
+ * room are written as multiples of the ticket itself rather than as constants beside it: the lane
+ * a level occupies, the least pitch a row will accept, and the clearance at a turn, which is the
+ * one place a row stands directly above another. `TICKET` is the stylesheet's own
+ * `clamp(116px, 5.8vw, 218px)` — the two have to agree, and this is the side that can do
+ * arithmetic.
+ *
+ * WHY MULTIPLES AND NOT A WIDTH THRESHOLD. The ticket is the phone's 116 until about 2,000px of
+ * window, so a trail keyed to the WINDOW would lengthen a map whose tickets had not grown: at
+ * 1,900 it cost sixty per cent more scroll for no bigger ticket. Keyed to the ticket, every width
+ * where the ticket has not moved has a trail that has not moved either, to the pixel.
+ */
+const TICKET = (colW: number) => Math.min(218, Math.max(116, (colW || W) * 0.058))
+const laneOf = (colW: number) => TICKET(colW) * 1.8
+const turnOf = (colW: number) => TICKET(colW) * 1.83
 /**
  * How steeply a row climbs as it runs, as a SLOPE rather than a fixed rise. Stated as an angle
  * because that is what his ruling is about: "a snake going slightly up" is something the eye reads
@@ -114,13 +137,13 @@ const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
  */
 const BLOCK_DIVISORS = [15, 10, 6, 5, 3, 2] as const
 /** Narrowest lane a ticket is legible in: the widest ticket on the map is ~152px on a desk. */
-const MIN_PITCH = 162
+const minPitchOf = (colW: number) => TICKET(colW) * 1.4
 export const perRow = (colW: number) => {
   const w = colW || W
   const usable = Math.max(0, w - sideOf(w) * 2)
-  const natural = Math.max(2, Math.floor(usable / LANE) + 1)
+  const natural = Math.max(2, Math.floor(usable / laneOf(w)) + 1)
   // widest divisor of thirty that both fits the width and is not more than the lanes would allow
-  const fits = BLOCK_DIVISORS.find((c) => usable / (c - 1) >= MIN_PITCH && c <= natural + 1)
+  const fits = BLOCK_DIVISORS.find((c) => usable / (c - 1) >= minPitchOf(w) && c <= natural + 1)
   return fits ?? 2
 }
 export const rowsOf = (colW: number) => Math.ceil(ROUNDS / perRow(colW))
@@ -133,7 +156,7 @@ function lanes(colW: number) {
   // Never spread much wider than a lane. Without the cap a phone, which fits exactly two to a row,
   // would push one ticket to each wall with 150px of empty floor between them; a desk is already
   // under the cap (eight to a row is ~196px of pitch), so this only bites where it has to.
-  const pitch = cols > 1 ? Math.min(LANE * 1.15, usable / (cols - 1)) : 0
+  const pitch = cols > 1 ? Math.min(laneOf(w) * 1.15, usable / (cols - 1)) : 0
   return { cols, pitch, x0: (w - pitch * (cols - 1)) / 2 }
 }
 
@@ -145,7 +168,7 @@ function lanes(colW: number) {
 function climbOf(colW: number) {
   const { cols, pitch } = lanes(colW)
   const rise = TILT * pitch * (cols - 1)
-  return { rise, bow: BOW * rise, step: TURN + rise }
+  return { rise, bow: BOW * rise, step: turnOf(colW) + rise }
 }
 
 /**
@@ -210,7 +233,7 @@ export const yOf =
  * floor and where the era rule is drawn. Halfway between the two rows AT THE WALL THEY TURN ON,
  * which is where they come closest: a horizontal line drawn any lower would cross a ticket.
  */
-export const seamOf = (colW: number) => (level: number) => yRowOf(colW)(rowOf(colW)(level - 1)) + TURN / 2
+export const seamOf = (colW: number) => (level: number) => yRowOf(colW)(rowOf(colW)(level - 1)) + turnOf(colW) / 2
 
 /** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
 function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {

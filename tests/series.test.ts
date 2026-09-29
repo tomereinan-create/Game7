@@ -314,8 +314,10 @@ describe('the campaign series screen is unchanged', () => {
 describe('a series lands one game at a time', () => {
   it('opens with an empty strip, a 0-0 score and nothing that pronounces on the series', () => {
     const html = landing(5)
-    // five chips, all of them waiting
-    expect(html.split('class="gt pending"').length - 1).toBe(5)
+    // SEVEN slots, all of them waiting — his ruling, 2026-09-30: "Its showing 4 tickets before the
+    // series ends, so I know it will be a sweep." While it lands the strip is the FORMAT, not the
+    // outcome; it settles to the games actually played, which the next case pins.
+    expect(html.split('class="gt pending"').length - 1).toBe(7)
     // "Game 1", never "Game 1 of 5" — his ruling, 2026-09-29: the LENGTH of a series is its
     // result, so a caption counting towards a total hands him the ending before a chip lands
     expect(html).toContain('Game 1')
@@ -334,8 +336,18 @@ describe('a series lands one game at a time', () => {
   it('settles into exactly the screen it settled into before', () => {
     const html = campaign(5)
     expect(html).not.toContain('class="gt pending"')
+    // and the strip is the games PLAYED once it has settled, not the format
+    expect([...html.matchAll(/aria-label="Game /g)]).toHaveLength(5)
     expect(html).toContain('Where it was won')
     expect(html).toContain('Back to the map')
+  })
+
+  it('gives nothing away about the length while it lands', () => {
+    // a four-game series must not announce itself as a sweep by drawing four slots
+    for (const n of [4, 5, 6, 7]) {
+      const html = landing(n)
+      expect(html.split('class="gt pending"').length - 1, `a ${n}-game series`).toBe(7)
+    }
   })
 
   it('makes every landed game a door into that night', () => {

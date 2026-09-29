@@ -5638,6 +5638,13 @@ body.offstage #root { position: relative; z-index: 1; }
      the draft's own `.draft.set.solo` cap is here for the same reason. 900px is the widest the
      series-stats rows and the two player-line tables read at, and it is still 60% more room than
      the 562 column they were drawn in before this ruling. */
+  /* WHILE IT LANDS THERE IS ONLY ONE THING ON THE SCREEN — his ruling, 2026-09-30, on the sim:
+     "Make the game7 sim full screen." Nothing that pronounces on the series is drawn until it is
+     decided, so during the landing two of the three columns are empty and the verdict sat in the
+     middle one with black either side of it. One column while it lands, and the score, the room
+     and the strip have the whole desk. */
+  .result.landing { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .result.landing > .res-lead { grid-column: 1; grid-row: 1; }
   .res-more {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -6314,13 +6321,13 @@ body.offstage #root { position: relative; z-index: 1; }
   .node.arena.now .ticket { width: clamp(148px, 5.1vw, 190px); padding: 13px 10px 11px; }
   .node.wood.now .ticket { width: clamp(152px, 5.25vw, 195px); padding: 26px 0 11px; }
   .node.wood.locked .ticket { padding: 12px 10px 10px; }
-  .node .ticket-n { font-size: clamp(28px, 0.96vw, 36px); }
+  .node .ticket-n { font-size: clamp(28px, 1.4vw, 53px); }
   .node.arena.now .ticket-n,
-  .node.wood.now .ticket-n { font-size: clamp(31.5px, 1.08vw, 40px); }
-  .node .ticket-stub { font-size: clamp(12.5px, 0.43vw, 16px); }
-  .node .ticket-next { font-size: clamp(7.7px, 0.27vw, 9.9px); }
-  .node .ticket-champ { font-size: clamp(7.7px, 0.27vw, 9.9px); }
-  .node .node-stars { font-size: clamp(20px, 0.69vw, 25.6px); gap: 3px; }
+  .node.wood.now .ticket-n { font-size: clamp(31.5px, 1.57vw, 59px); }
+  .node .ticket-stub { font-size: clamp(12.5px, 0.62vw, 23px); }
+  .node .ticket-next { font-size: clamp(7.7px, 0.39vw, 14.5px); }
+  .node .ticket-champ { font-size: clamp(7.7px, 0.39vw, 14.5px); }
+  .node .node-stars { font-size: clamp(20px, 1vw, 38px); gap: 3px; }
   .node.wood .ticket-stub .ab { height: 26px; line-height: 26px; }
   .node.wood.now .ticket-stub .ab { height: 26px; line-height: 26px; }
 
@@ -6341,8 +6348,8 @@ body.offstage #root { position: relative; z-index: 1; }
   .node.hall.locked .ticket { padding: 30px 7px 20px; }
   .node.hall::after { top: 3px; width: 76px; height: 5px; }
   .node.hall.now::after { width: 90px; }
-  .node.hall .ticket-n { font-size: clamp(25.2px, 0.86vw, 32.3px); }
-  .node.hall.now .ticket-n { font-size: clamp(28.7px, 0.98vw, 36.7px); }
+  .node.hall .ticket-n { font-size: clamp(25.2px, 1.26vw, 47px); }
+  .node.hall.now .ticket-n { font-size: clamp(28.7px, 1.43vw, 54px); }
   .node.hall .ticket-stub { font-size: 12.5px; }
   .node.hall .ticket-stub .ab { top: 10px; font-size: 8.75px; }
   .node.hall.now .ticket-stub .ab { top: 26px; }
@@ -6353,8 +6360,8 @@ body.offstage #root { position: relative; z-index: 1; }
   .node.dusk .ticket { width: clamp(130px, 4.5vw, 166px); border-radius: 16px; padding: 3px; }
   .node.dusk .ticket::after { inset: 3px; border-radius: 13px; }
   .node.dusk.now .ticket { width: clamp(144px, 4.95vw, 184px); }
-  .node.dusk .ticket-n { font-size: clamp(26.6px, 0.91vw, 34px); margin-top: 28px; }
-  .node.dusk.now .ticket-n { font-size: clamp(30.1px, 1.03vw, 38.5px); margin-top: 48px; }
+  .node.dusk .ticket-n { font-size: clamp(26.6px, 1.33vw, 50px); margin-top: 28px; }
+  .node.dusk.now .ticket-n { font-size: clamp(30.1px, 1.5vw, 56px); margin-top: 48px; }
   .node.dusk .ticket-stub { font-size: 13px; }
   .node.dusk .ticket-stub .ab { left: 3px; right: 3px; top: 3px; height: 25px; line-height: 25px; border-radius: 13px 13px 0 0; font-size: 8.4px; }
   .node.dusk .ticket-champ { font-size: 9.1px; }
@@ -6738,9 +6745,9 @@ body.um {
   /* every ticket lies at its own slight angle, deterministic from the level */
   transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
 }
-/* the club ticket grows with the four skins' box (his ruling, 2026-09-29) */
+/* the club ticket grows with the four skins' box (his rulings, 2026-09-29 and 2026-09-30) */
 .node.club .ticket {
-  width: clamp(116px, 4vw, 149px);
+  width: clamp(116px, 5.8vw, 218px);
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-left: 5px solid var(--te, #f2ece0);
   border-radius: 8px;
@@ -6812,7 +6819,7 @@ body.um {
    it, and a gold glow so the eye finds it the moment the map recentres. */
 .node.club.now { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.12); z-index: 3; }
 .node.club.now .ticket {
-  width: clamp(116px, 4vw, 149px);
+  width: clamp(116px, 5.8vw, 218px);
   border: 2px solid #ffd76b;
   animation: none;
   box-shadow:
@@ -7617,8 +7624,8 @@ body:not(.um) .node .ticket,
 body:not(.um) .node.now .ticket,
 body:not(.um) .node.locked .ticket {
   box-sizing: border-box;
-  width: clamp(116px, 4vw, 149px);
-  min-height: clamp(94px, 3.25vw, 121px);
+  width: clamp(116px, 5.8vw, 218px);
+  min-height: clamp(94px, 4.7vw, 177px);
 }
 /* The banner hangs from a rod and the rod is on the node, so the hall alone keeps a top margin —
    the BOX is the same 116 x 94, it just starts 11px lower than the other three. */
