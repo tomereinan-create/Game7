@@ -254,7 +254,6 @@ export function TipOff({
   map,
   onTap,
   rows,
-  cap = null,
 }: {
   bug: Bug
   /** The two abbreviations on the scorebug. */
@@ -278,8 +277,6 @@ export function TipOff({
    * decides WHERE they stand (his ruling: "These players should be shown not down").
    */
   rows?: ReactNode
-  /** The salary cap's two figures, when the mode has them — the board prints them at its foot. */
-  cap?: { used: number; max: number } | null
 }) {
   return (
     <div className="tipoff jumbo-tipoff">
@@ -298,7 +295,6 @@ export function TipOff({
         theirs={theirs}
         map={map}
         onTap={onTap}
-        cap={cap}
       />
       {/* THE ROSTER. Last in the DOM and placed by the stylesheet, so the phone can read it
           straight after the board and a desk can stand it beside. */}

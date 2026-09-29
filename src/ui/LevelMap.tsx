@@ -908,9 +908,20 @@ export function LevelMap({
            */}
           {cur && (spendable || (teamNote && onMyTeam)) ? (
             <div
-              className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
-              /* pinned above tonight's ticket, and kept off both walls */
-              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
+              className="node-notes"
+              /**
+               * ABOVE THE TICKET, NOT ON IT — his ruling, 2026-09-30: "Make the sub and star icon
+               * above the ticket not on it."
+               *
+               * They were pinned 126px over the ticket's CENTRE and centred on that point, which
+               * cleared a 94px ticket and does not clear a 121px one: the tickets grew a third
+               * this morning and the notes ended up lying across them. The anchor is the stack's
+               * own FOOT now (`translate(-50%, -100%)`), so whatever is in it — one icon, two, or
+               * the worn-out sentence — its bottom edge sits 20px clear of the top of the tallest
+               * ticket the map draws, and adding a third note grows it upward, away from the
+               * ticket, rather than down onto it.
+               */
+              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 100 }}
             >
               {spendable ? (
                 /* A STAR, AND NOTHING ELSE — his ruling, 2026-09-29: "For the stars, I want big

@@ -14,8 +14,13 @@ import type { Bug } from './JerseyFive'
  * scoreboard, a ticker of the night's matchups, and the two fives in a single lit table.
  *
  * NOT ONE NUMBER IS NEW. The scores and the clock are `TIPOFF`, the same nothing-all with a full
- * quarter to play the crowd bar showed; the rows are `map`, the board the matchup panel resolves;
- * the payroll is the draft's own `capUsed` against `capMax`. Only the drawing changed.
+ * quarter to play the crowd bar showed, and the rows are `map`, the board the matchup panel
+ * resolves. Only the drawing changed.
+ *
+ * AND NO PAYROLL — his ruling, 2026-09-30: "Remove PAYROLL 68.2/75 / ROOM 6.8 from the jumbotron."
+ * 2e prints it at its foot, but by the time this board is up the five is signed and the money is
+ * spent: the cap belongs to the screen where a man is still being chosen, which is where it
+ * already stands, on the wheel's own bar. A scoreboard reports the game.
  *
  * THE CTA IS NOT HERE. 2e ends in a TAKE THE FLOOR button, and the app already stands one — the
  * dock's, which is the thing that actually starts the night and carries the worn-out and
@@ -41,7 +46,6 @@ export function Jumbotron({
   theirs,
   map,
   onTap,
-  cap = null,
 }: {
   bug: Bug
   /** The two abbreviations on the board. */
@@ -56,8 +60,6 @@ export function Jumbotron({
   /** `map[i]` is the man in `theirs` that `mine[i]` guards; null while there is no board. */
   map?: number[] | null
   onTap?: (p: Player) => void
-  /** The salary cap's two figures, when the mode has them. */
-  cap?: { used: number; max: number } | null
 }) {
   /**
    * The night's matchups, in the order your five stand. WITHOUT A BOARD the right-hand column is
@@ -68,7 +70,6 @@ export function Jumbotron({
    */
   const board = !!map
   const pairs = mine.map((p, i) => ({ p, foe: (map ? theirs[map[i]] : theirs[i]) ?? null }))
-  const room = cap ? Math.max(0, cap.max - cap.used) : 0
   return (
     <div className="jumbo">
       <div className="jumbo-head">
@@ -131,14 +132,6 @@ export function Jumbotron({
         ))}
       </div>
 
-      {cap ? (
-        <div className="jumbo-foot">
-          <span>
-            PAYROLL {cap.used.toFixed(1)}/{cap.max}
-          </span>
-          <span>ROOM {room.toFixed(1)}</span>
-        </div>
-      ) : null}
     </div>
   )
 }

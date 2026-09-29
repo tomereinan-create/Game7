@@ -99,10 +99,12 @@ describe('the tip-off draws the board once, and draws the board being played', (
     }
   })
 
-  it('prints the payroll only where there is one', () => {
+  it('says nothing about the money — the cap belongs to the screen that spends it', () => {
+    // his ruling, 2026-09-30: "Remove PAYROLL 68.2/75 / ROOM 6.8 from the jumbotron". By the time
+    // this board is up the five is signed; the cap stands on the wheel's own bar, where a man is
+    // still being chosen.
     expect(html).not.toContain('PAYROLL')
-    expect(draw({ cap: { used: 68.2, max: 75 } })).toContain('PAYROLL 68.2/75')
-    expect(draw({ cap: { used: 68.2, max: 75 } })).toContain('ROOM 6.8')
+    expect(html).not.toContain('ROOM')
   })
 
   it('the shot still scores: the bump rides on top of the board', () => {

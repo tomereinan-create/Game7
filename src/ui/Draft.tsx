@@ -2051,8 +2051,6 @@ export function Draft({
             mine={five}
             theirs={opponent.players}
             map={boardMap}
-            /* the board prints the payroll at its foot, in the mode that has one */
-            cap={salary ? { used: capUsed, max: capMax } : null}
             /* HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
                shall open photo #2." A shirt has no row to open out into, so it opens the man's
                card — which prints photo #2's season line and the rest of him, and is what a name

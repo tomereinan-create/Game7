@@ -3487,9 +3487,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* The nudges pinned beside the next opponent's node — a change waiting in my team, stars to spend.
    They stack in one column on the far side of the trail from the ticket and centre on it, so the
    trail and the ticket's dials stay clear whether there is one of them or two. */
-.node-notes { position: absolute; z-index: 5; width: 34%; display: flex; flex-direction: column; gap: 6px; transform: translateY(-50%); }
-.node-notes.left { left: 2%; align-items: flex-start; }
-.node-notes.right { right: 2%; align-items: flex-end; }
+/* the stack hangs by its FOOT above tonight's ticket — see the note in LevelMap */
+.node-notes { position: absolute; z-index: 5; max-width: 34%; display: flex; flex-direction: column; align-items: center; gap: 6px; transform: translate(-50%, -100%); }
 .node-note { max-width: 100%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
 .node-note i { font-style: normal; }
 .node-note .g { margin-right: 3px; }
@@ -9389,8 +9388,6 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   0%, 18% { color: var(--led-amber); text-shadow: 0 0 10px rgb(255 160 60 / 0.8); }
   22%, 100% { color: var(--led-dim); text-shadow: none; }
 }
-/* ---- the foot ---- */
-.jumbo-foot { flex: none; display: flex; justify-content: space-between; gap: 12px; padding: 0 clamp(16px, 1.3vw, 40px) clamp(16px, 1.3vw, 38px); font-family: var(--mono); font-size: clamp(10px, 0.62vw, 20px); letter-spacing: 0.06em; color: var(--led-amber); }
 
 /* THE PANEL AROUND IT. The old tip-off was a grid with a place for a crowd bar, two bands and two
    floors; none of those exist now. One column on a phone — the board, then the roster — and on a
