@@ -5,7 +5,7 @@ import OPP from '../src/data/opponents.json'
 import STATS from '../src/data/stats.json'
 import { ROUNDS, SIGMA } from '../src/config'
 import { seriesBox } from '../src/engine/boxstats'
-import { compile, simSeries } from '../src/engine/resolver'
+import { canBetter, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
 import { buildTicker } from '../src/engine/ticker'
 import type { Opponent, Player, SeriesResult, StatLine } from '../src/engine/types'
@@ -316,7 +316,10 @@ describe('a series lands one game at a time', () => {
     const html = landing(5)
     // five chips, all of them waiting
     expect(html.split('class="gt pending"').length - 1).toBe(5)
-    expect(html).toContain('Game 1 of 5')
+    // "Game 1", never "Game 1 of 5" — his ruling, 2026-09-29: the LENGTH of a series is its
+    // result, so a caption counting towards a total hands him the ending before a chip lands
+    expect(html).toContain('Game 1')
+    expect(html).not.toContain('Game 1 of')
     expect(html).toContain('<span class="u">0</span>')
     expect(html).toContain('<span class="t">0</span>')
     // and none of the things that only a decided series may say
@@ -378,6 +381,47 @@ describe('a series lands one game at a time', () => {
   it('still opens straight onto the tape when the landing is off', () => {
     // which is what a reduced-motion machine gets, and what the settled-screen cases render
     expect(campaign(7)).toContain('● LIVE')
+  })
+
+  /**
+   * HIS RULING, 2026-09-29: "In campaign, dont offer me rematch when I sweep." A rematch exists to
+   * BETTER a night, and a sweep is already worth the most a level can pay. What must NOT happen is
+   * the one the dock's shapes made easy: the three-door case asks for a rematch AND a next level,
+   * so taking the rematch away used to take the way on with it.
+   */
+  it('docks no rematch after a sweep, and still docks the way on', () => {
+    for (let seed = 1; seed < 5000; seed++) {
+      const r = simSeries(compile(A, OPP4.players), compile(OPP4.players, A), makeRng(seed), SIGMA)
+      if (!(r.won && r.losses === 0)) continue
+      expect(canBetter(r)).toBe(false)
+      const html = renderToStaticMarkup(
+        createElement(Series, {
+          reveal: false,
+          opponent: { ...opponents[3], round: 12 },
+          five: A,
+          mine: compile(A, OPP4.players),
+          theirs: compile(OPP4.players, A),
+          teamName: 'Los Angeles Lakers',
+          result: r,
+          seed,
+          onAdvance: () => {},
+          // App withholds it for a swept level; this pins what the dock does when it is withheld
+          onNext: () => {},
+        }),
+      )
+      expect(html).not.toContain('>Rematch<')
+      expect(html).toContain('Next level')
+      expect(html).toContain('Back to the map')
+      return
+    }
+    throw new Error('no sweep in 5000 seeds')
+  })
+
+  it('still offers the rematch when the night could have been better', () => {
+    const { r } = firstResult(A, OPP4.players, true)
+    expect(r.losses).toBeGreaterThan(0)
+    expect(canBetter(r)).toBe(true)
+    expect(dock({ won: true, next: true })).toContain('>Rematch<')
   })
 
   it('keeps every night, and the nights add up to the averages beside them', () => {

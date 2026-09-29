@@ -532,7 +532,12 @@ export function Series({
                 </h1>
                 <span className="v-side them">{opponent.ab ?? teamCode(opponent.team)}</span>
               </div>
-              {settled ? <p>{seriesNote(result.won, result.wins, result.losses)}</p> : <p className="v-landing">Game {Math.min(shown + 1, result.games.length)} of {result.games.length}…</p>}
+              {/* "Game 1", not "Game 1 of 4" — his ruling, 2026-09-29: "it says game 1 of X, but
+                  then I can know the series result." Quite right: the LENGTH of a series is its
+                  result. A best-of-seven that runs four games was a sweep and one that runs seven
+                  went the distance, so a caption that counts towards a total hands him the ending
+                  before the first chip lands. It counts up and says nothing about where it stops. */}
+              {settled ? <p>{seriesNote(result.won, result.wins, result.losses)}</p> : <p className="v-landing">Game {Math.min(shown + 1, result.games.length)}…</p>}
               {settled && result.won && !exhibition ? (
                 <div className="stars">
                   {'★'.repeat(starsFor(result))}
@@ -811,6 +816,18 @@ export function Series({
                 Rematch
               </button>
             </div>
+            <button className="btn" onClick={onNext}>
+              Next level
+            </button>
+          </div>
+        ) : onNext ? (
+          /* A WAY ON AND A WAY BACK, and no rematch — which is what a SWEPT level docks now (his
+             ruling: "dont offer me rematch when I sweep"). Without this shape the missing rematch
+             took the Next level door down with it, because the three-door case asks for both. */
+          <div className="dock-inner two">
+            <button className="btn ghost" onClick={onAdvance}>
+              {mainLabel}
+            </button>
             <button className="btn" onClick={onNext}>
               Next level
             </button>

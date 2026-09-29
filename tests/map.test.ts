@@ -99,7 +99,10 @@ describe('the campaign map always has a door to the staff tree', () => {
     const p = progress({ stars: [3, ...Array.from({ length: ROUNDS - 1 }, () => 0)] })
     const html = map(p)
     expect(hasNotice(html)).toBe(true)
-    expect(html).toContain('to spend')
+    // his ruling, 2026-09-29: "Instead of the stars to spend, have a star icon" — the notice is
+    // the glyph, the balance and the door, and the three words that repeated the glyph are gone
+    expect(html).toContain('Staff')
+    expect(html).not.toContain('to spend')
     expect(hasDoor(html)).toBe(true)
   })
 
@@ -425,7 +428,7 @@ describe('laying the header across drops none of its doors', () => {
     expect(html).toContain('class="map-head across"')
     expect(html).toContain('class="map-doors"')
     expect(hasDoor(html)).toBe(true) // ★ 3 / 450 →
-    expect(hasNotice(html)).toBe(true) // ★ 3 to spend · Staff →
+    expect(hasNotice(html)).toBe(true) // ★ 3 · Staff →
     expect(html).toContain('class="map-link team"') // Zhengzhou GA · rename
     expect(html).toContain('My team') // the death match's own door
     expect(html).toContain('Reset this campaign')

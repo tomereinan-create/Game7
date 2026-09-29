@@ -6,7 +6,7 @@ import { TeamDb } from './ui/TeamDb'
 import { odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
+import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
 import type { Assignment } from './engine/offense'
@@ -641,8 +641,11 @@ export default function App() {
                   // the same reading My team and the draft use: raw durability plus the Iron men boost
                   const left = (n: string) => (prog.wear[n] ?? PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 99) + duraBoost(prog)
                   const worn = prog.roster.filter((n) => left(n) <= WEAR_OUT).length
-                  if (worn) return worn === 1 ? 'A man is worn out — replace him in My team' : `${worn} men are worn out — My team`
-                  if (subsPerRound(prog) - prog.subsUsed > 0) return 'A change is waiting in My team'
+                  if (worn) return { kind: 'worn' as const, text: worn === 1 ? 'A man is worn out — replace him in My team' : `${worn} men are worn out — My team` }
+                  // HIS RULING, 2026-09-29: "Instead of 'A change is waiting in My team', have a
+                  // substitute icon." The map says it with the glyph now; the sentence stays as the
+                  // button's name, for a screen reader and for a hover.
+                  if (subsPerRound(prog) - prog.subsUsed > 0) return { kind: 'sub' as const, text: 'A change is waiting in My team' }
                   return null
                 })()
               : null
@@ -691,7 +694,7 @@ export default function App() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
-          onRematch={runEnded ? undefined : rematch}
+          onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
           onNext={pending.next !== null ? advance : undefined}
         />
       </>

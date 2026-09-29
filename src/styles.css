@@ -3490,6 +3490,10 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .node-note .g { margin-right: 3px; }
 .node-note .d { margin: 0 3px; }
 .node-note .a { margin-left: 4px; }
+/* THE SUBSTITUTION ARROWS (his ruling, 2026-09-29: "Instead of 'A change is waiting in My team',
+   have a substitute icon"). A glyph standing in for a sentence has to be read as a glyph, so it
+   is set a third bigger than the note's own mono and keeps no letter-spacing. */
+.node-note .sub { font-size: 1.45em; line-height: 1; letter-spacing: 0; vertical-align: -0.12em; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 12.6px; font-weight: 400; color: var(--ink); }
@@ -5733,15 +5737,21 @@ body.offstage #root { position: relative; z-index: 1; }
 
 /* ---- the in-game ask (his ruling): a dialog in the game's voice, never the browser's ---- */
 .ask-veil { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 20px; background: rgba(11, 10, 8, 0.72); backdrop-filter: blur(2px); }
-.ask { width: min(347px, 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: 2px solid var(--you); border-radius: 8px; padding: 16px 16px 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
-.ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 11.55px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
-.ask-btns { display: flex; gap: 10px; margin-top: 16px; }
+/* THE ASK IS THE SIZE OF THE QUESTION — his ruling, 2026-09-29: "The 'Before you sim / You still
+   have a change left in My team. Sim the series without it?' notification is way too small." It is
+   the one modal in the game that can cost him a level, and it was a 347px card with 11.5px of copy
+   and 7.7px buttons in the middle of a 3,840px desk. Every term is a clamp whose floor is the size
+   it has today, so the phone is untouched. */
+.ask { width: min(clamp(347px, 33vw, 760px), 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: clamp(2px, 0.2vw, 6px) solid var(--you); border-radius: clamp(8px, 0.55vw, 18px); padding: clamp(16px, 1.5vw, 44px) clamp(16px, 1.5vw, 44px) clamp(14px, 1.3vw, 38px); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
+.ask > .label { font-size: clamp(9px, 0.62vw, 20px); }
+.ask p { margin: clamp(8px, 0.7vw, 20px) 0 0; font-family: var(--serif); font-size: clamp(11.55px, 1.02vw, 32px); font-style: italic; color: var(--ink-2); line-height: 1.45; }
+.ask-btns { display: flex; gap: clamp(10px, 0.8vw, 24px); margin-top: clamp(16px, 1.3vw, 38px); }
 /* ...and the card's gold top rule is the dialog's other "go" signal, so a destructive ask does not
    wear it either. `height: 44px` used to sit on this rule and never applied — .btn's min-height of
    52px wins — so the dialog's buttons have always been 52px; the dead declaration is gone rather
    than made true, because 52px is what he has been pressing. */
 .ask.danger { border-top-color: var(--danger); }
-.ask-btns .btn { font-size: 7.7px; }
+.ask-btns .btn { font-size: clamp(7.7px, 0.68vw, 21px); height: auto; min-height: clamp(44px, 3.2vw, 92px); }
 
 /* ---- the team database: a year, a team, their best five ---- */
 .yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }

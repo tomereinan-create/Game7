@@ -131,6 +131,18 @@ export function gameMargin(A: Lineup, B: Lineup, rng: Rng, sigma = SIGMA): numbe
 export const starsFor = (r: SeriesResult) =>
   r.toWin <= 2 ? (r.losses === 0 ? 2 : 1) : r.losses === 0 ? 3 : r.losses < r.toWin - 1 ? 2 : 1
 
+/** The most this series was ever worth — a sweep's price, at whatever length it was played. */
+export const maxStars = (r: SeriesResult) => (r.toWin <= 2 ? 2 : 3)
+
+/**
+ * Is there a better night still to be had here? His ruling, 2026-09-29: "In campaign, dont offer
+ * me rematch when I sweep." The rematch exists to BETTER a result — a cleared level can be replayed
+ * for a bigger star — and a sweep is already the biggest, so the door leads back to where you
+ * stand. Said as the arithmetic rather than as "did he win 4-0", so it keeps meaning the same
+ * thing in a mode played to a different length.
+ */
+export const canBetter = (r: SeriesResult) => !r.won || starsFor(r) < maxStars(r)
+
 /** The expected margin, no noise. */
 export const meanMargin = (A: Lineup, B: Lineup) => decompose(A, B).total
 

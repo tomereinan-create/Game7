@@ -391,7 +391,7 @@ export function LevelMap({
   /** Death match only: the team screen — the five, their durability, and the round's spin. */
   onMyTeam?: () => void
   /** Death match only: a nudge pinned beside the next opponent — a change waiting, or a man worn out. */
-  teamNote?: string | null
+  teamNote?: { kind: 'sub' | 'worn'; text: string } | null
   /** Which branches this mode actually sells — the staff notice must not point at a hidden one. */
   salary?: boolean
   death?: boolean
@@ -624,8 +624,11 @@ export function LevelMap({
                 {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
                     at this size a space costs a full 7.3px character, which is what pushed the line
                     onto two at 375px. His wording is untouched. */}
+                {/* THE STAR SAYS IT — his ruling, 2026-09-29: "Instead of the stars to spend, have
+                    a star icon." The glyph was already there and the three words after it were
+                    saying the same thing again in mono. */}
                 <i className="g">★</i>
-                {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
+                {bal}<i className="d">·</i>Staff<i className="a">→</i>
               </button>
             ) : null}
             {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
@@ -892,12 +895,18 @@ export function LevelMap({
                 <button className={`node-note ${skin}`} onClick={onStaff}>
                   {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
                   <i className="g">★</i>
-                  {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
+                  {bal}<i className="d">·</i>Staff<i className="a">→</i>
                 </button>
               ) : null}
               {teamNote && onMyTeam ? (
-                <button className={`node-note ${skin}`} onClick={onMyTeam}>
-                  {teamNote} →
+                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  {/* A CHANGE IS A GLYPH — his ruling, 2026-09-29: "Instead of 'A change is waiting
+                      in My team', have a substitute icon." The sentence was the longest thing on
+                      the map and it said, at length, what the substitution arrows say at a glance.
+                      A man WORN OUT still gets his sentence: that one is not an offer, it is a
+                      thing gone wrong, and it names who. */}
+                  {teamNote.kind === 'sub' ? <i className="sub" aria-hidden>⇄</i> : teamNote.text}
+                  <i className="a">→</i>
                 </button>
               ) : null}
             </div>
