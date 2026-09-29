@@ -6023,6 +6023,14 @@ body.offstage #root { position: relative; z-index: 1; }
   color: #f6eedd;
 }
 .node.wood.locked .ticket-stub { color: #b39f83; }
+/* THE NUMBER HAS TO BE READABLE ON A LOCKED TICKET — his ruling, 2026-09-30: "Why some stages
+   arent numbered? Make sure all are throughout all modes."
+   They were numbered. The hardwood's number is set in the dark ink a PALE board wants (#241408),
+   and a locked ticket is that board darkened to #1c1207 — measured, 1.03 of contrast, which is
+   not a faint number, it is an invisible one. It takes the same pale ink the stub beside it
+   already takes when the ticket is locked. Every other skin was checked the same way at the same
+   time: the arena, the banner and the dusk all clear 15. */
+.node.wood.locked .ticket-n { color: #e6d3b0; }
 
 /* TIP-OFF. Brighter stock under the bulbs, and it hangs straight while everything around it lies
    at an angle — the one ticket that has not been dropped on the floor yet. */
