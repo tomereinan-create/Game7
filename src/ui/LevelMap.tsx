@@ -362,6 +362,27 @@ const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toF
  * switch: 1b ARENA NIGHTS below the seam, 1c HARDWOOD PRIME above it, both on screen together
  * where they meet. The sticky header wears the skin of the level you are on.
  */
+/**
+ * THE SUBSTITUTION — his ruling, 2026-09-29: "For the sub - 🔁 I want something like this but
+ * collored." Two arrows running a loop, and the colour is the point: the man coming ON is drawn in
+ * the accent this game paints YOUR side in, the man going OFF in the one it paints the other side
+ * in, so the icon says which way round a change goes without a word on it.
+ */
+function SubIcon() {
+  return (
+    <svg className="subicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
+      <g fill="none" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+        {/* on: the top track, running right */}
+        <path d="M4 8.6h13.2" stroke="var(--you)" />
+        <path d="M14.4 5.3 17.9 8.6 14.4 11.9" stroke="var(--you)" />
+        {/* off: the bottom track, running back */}
+        <path d="M20 15.4H6.8" stroke="var(--them)" />
+        <path d="M9.6 12.1 6.1 15.4 9.6 18.7" stroke="var(--them)" />
+      </g>
+    </svg>
+  )
+}
+
 export function LevelMap({
   title,
   progress,
@@ -892,21 +913,27 @@ export function LevelMap({
               style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
             >
               {spendable ? (
-                <button className={`node-note ${skin}`} onClick={onStaff}>
-                  {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
-                  <i className="g">★</i>
-                  {bal}<i className="d">·</i>Staff<i className="a">→</i>
+                /* A STAR, AND NOTHING ELSE — his ruling, 2026-09-29: "For the stars, I want big
+                   star icon, without 3 or to spend." The balance is already on the counter in the
+                   header; this one is not a figure, it is a KNOCK: there is something to place.
+                   The sentence stays as the button's name, for a screen reader and a hover. */
+                <button
+                  className={`node-note icon ${skin}`}
+                  onClick={onStaff}
+                  aria-label={`${bal} ${bal === 1 ? 'star' : 'stars'} to spend — the staff tree`}
+                  title={`${bal} ${bal === 1 ? 'star' : 'stars'} to spend — Staff`}
+                >
+                  <i className="bigstar" aria-hidden>★</i>
                 </button>
               ) : null}
               {teamNote && onMyTeam ? (
-                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                <button className={`node-note ${teamNote.kind === 'sub' ? 'icon ' : ''}${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
                   {/* A CHANGE IS A GLYPH — his ruling, 2026-09-29: "Instead of 'A change is waiting
                       in My team', have a substitute icon." The sentence was the longest thing on
                       the map and it said, at length, what the substitution arrows say at a glance.
                       A man WORN OUT still gets his sentence: that one is not an offer, it is a
                       thing gone wrong, and it names who. */}
-                  {teamNote.kind === 'sub' ? <i className="sub" aria-hidden>⇄</i> : teamNote.text}
-                  <i className="a">→</i>
+                  {teamNote.kind === 'sub' ? <SubIcon /> : <>{teamNote.text}<i className="a">→</i></>}
                 </button>
               ) : null}
             </div>

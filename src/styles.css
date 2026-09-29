@@ -2854,23 +2854,28 @@ button {
 .ticket { position: relative; display: block; width: 78px; border-radius: 8px; background: var(--surface); border: 2px solid var(--line-3); padding: 7px 6px 6px; box-shadow: 0 0 0 4px var(--bg); text-align: center; }
 .ticket-n { display: block; font-family: var(--serif); font-size: 16.8px; line-height: 1; font-weight: 400; }
 .ticket-stub { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: var(--muted); margin-top: 3px; white-space: nowrap; }
-.ticket-next { display: block; font-family: var(--mono); font-size: 5.25px; font-weight: 700; letter-spacing: 0.16em; }
+.ticket-next { display: block; font-family: var(--mono); font-size: clamp(5.25px, 0.18vw, 6.7px); font-weight: 700; letter-spacing: 0.16em; }
 .node.locked { opacity: 0.4; }
 .node.done .ticket { background: var(--you); border-color: var(--you); color: var(--you-ink); }
 .node.done .ticket-stub { color: var(--you-ink); opacity: 0.8; }
 .node.now .ticket { width: 86px; padding: 8px 6px 7px; border-color: var(--you); color: var(--you); animation: pulse 1.8s ease-in-out infinite; }
-.node.now .ticket-n { font-size: 18.2px; margin-top: 2px; }
+.node.now .ticket-n { font-size: clamp(18.2px, 0.63vw, 23.3px); margin-top: 2px; }
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--you-line); } 50% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 9px var(--you); } }
 .node-stars { display: flex; gap: 1px; font-size: 12px; line-height: 1; color: var(--line-3); }
 .node-stars i { font-style: normal; }
 .node-stars i.lit { color: var(--you); }
 .who i.sal { display: block; color: var(--you); }
 @media (min-width: 900px) {
-  .ticket { width: 96px; }
-  .node.now .ticket { width: 106px; }
-  .ticket-n { font-size: 22.4px; }
-  .ticket-stub { font-size: 10px; }
-  .node-stars { font-size: 13px; }
+  /* THE TICKETS READ AT THE SIZE OF THE DESK - his ruling, 2026-09-29: "In campaing, make the
+     team tickets bigger." A third bigger, which is what the trail can carry: measured at 3,840 the
+     lane pitch is 248px against a 116px ticket and the turn clears 212px against a 144px node, so
+     a 1.28 on both axes keeps 50px of side gap and 25px at the turns. Every floor is the size it
+     is today, so nothing under about 2,800px of window moves. */
+  .ticket { width: clamp(96px, 3.3vw, 123px); }
+  .node.now .ticket { width: clamp(106px, 3.65vw, 136px); }
+  .ticket-n { font-size: clamp(22.4px, 0.77vw, 28.7px); }
+  .ticket-stub { font-size: clamp(10px, 0.34vw, 12.8px); }
+  .node-stars { font-size: clamp(13px, 0.45vw, 16.6px); }
   .map-total { font-size: 56px; }
 }
 
@@ -3473,7 +3478,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* ---- era campaigns ---- */
 .mode.locked { opacity: 0.55; cursor: default; }
 .node.champ .node-disc { border-color: var(--you); }
-.ticket-champ { display: block; font-family: var(--mono); font-size: 4.9px; font-weight: 700; letter-spacing: 0.14em; margin-top: 2px; }
+.ticket-champ { display: block; font-family: var(--mono); font-size: clamp(4.9px, 0.17vw, 6.3px); font-weight: 700; letter-spacing: 0.14em; margin-top: 2px; }
 .node.done .ticket-champ { color: var(--you-ink); }
 .node.now .ticket-champ, .node.locked .ticket-champ { color: var(--you); }
 
@@ -3493,7 +3498,12 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* THE SUBSTITUTION ARROWS (his ruling, 2026-09-29: "Instead of 'A change is waiting in My team',
    have a substitute icon"). A glyph standing in for a sentence has to be read as a glyph, so it
    is set a third bigger than the note's own mono and keeps no letter-spacing. */
-.node-note .sub { font-size: 1.45em; line-height: 1; letter-spacing: 0; vertical-align: -0.12em; }
+/* A NOTE THAT IS A GLYPH is a target, not a line of type: it takes a square of its own and the
+   icon inside it is set at a size you can read across a map (his rulings, 2026-09-29: the
+   substitution icon, and "For the stars, I want big star icon"). */
+.node-note.icon { display: inline-flex; align-items: center; justify-content: center; padding: clamp(8px, 0.55vw, 16px); line-height: 1; }
+.node-note.icon .bigstar { font-size: clamp(22px, 1.5vw, 40px); line-height: 1; letter-spacing: 0; }
+.node-note.icon .subicon { width: clamp(24px, 1.7vw, 46px); height: clamp(24px, 1.7vw, 46px); display: block; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 12.6px; font-weight: 400; color: var(--ink); }
@@ -6271,18 +6281,24 @@ body.offstage #root { position: relative; z-index: 1; }
   /* THE SNAKE'S TICKETS. A row is ~190px of pitch wide per level, so the paper grows to fill it —
      and his ruling "Make the font bigger" is spent here first: this is the type he actually reads
      off the map. Everything below is one step up from the 1150px column these were cut for. */
+  /* A THIRD BIGGER ON A DESK - his ruling, 2026-09-29: "In campaing, make the team tickets
+     bigger." These are the rules that actually decide a ticket's size (the plain `.ticket` width
+     above is outranked by every skin), so this is where the growth has to be written. 1.28 is what
+     the trail can carry: measured at 3,840 the lane pitch is 248px against a 116px ticket and the
+     turn clears 212px against a 144px node. Every floor is today's size, so nothing under about
+     2,800px of window moves. */
   .node.arena .ticket,
-  .node.wood .ticket { width: 132px; padding: 12px 10px 10px; }
-  .node.arena.now .ticket { width: 148px; padding: 13px 10px 11px; }
-  .node.wood.now .ticket { width: 152px; padding: 26px 0 11px; }
+  .node.wood .ticket { width: clamp(132px, 4.55vw, 169px); padding: 12px 10px 10px; }
+  .node.arena.now .ticket { width: clamp(148px, 5.1vw, 190px); padding: 13px 10px 11px; }
+  .node.wood.now .ticket { width: clamp(152px, 5.25vw, 195px); padding: 26px 0 11px; }
   .node.wood.locked .ticket { padding: 12px 10px 10px; }
-  .node .ticket-n { font-size: 28px; }
+  .node .ticket-n { font-size: clamp(28px, 0.96vw, 36px); }
   .node.arena.now .ticket-n,
-  .node.wood.now .ticket-n { font-size: 31.5px; }
-  .node .ticket-stub { font-size: 12.5px; }
-  .node .ticket-next { font-size: 7.7px; }
-  .node .ticket-champ { font-size: 7.7px; }
-  .node .node-stars { font-size: 20px; gap: 3px; }
+  .node.wood.now .ticket-n { font-size: clamp(31.5px, 1.08vw, 40px); }
+  .node .ticket-stub { font-size: clamp(12.5px, 0.43vw, 16px); }
+  .node .ticket-next { font-size: clamp(7.7px, 0.27vw, 9.9px); }
+  .node .ticket-champ { font-size: clamp(7.7px, 0.27vw, 9.9px); }
+  .node .node-stars { font-size: clamp(20px, 0.69vw, 25.6px); gap: 3px; }
   .node.wood .ticket-stub .ab { height: 26px; line-height: 26px; }
   .node.wood.now .ticket-stub .ab { height: 26px; line-height: 26px; }
 
@@ -6298,13 +6314,13 @@ body.offstage #root { position: relative; z-index: 1; }
    * the banner and its rod, the foil card and its inset, and every number, band and caption on
    * them. Nothing changes shape — a banner is still a pennant, the dynasty card is still foil.
    */
-  .node.hall .ticket { width: 110px; margin-top: 11px; padding: 30px 7px 20px; }
-  .node.hall.now .ticket { width: 126px; padding: 41px 7px 23px; }
+  .node.hall .ticket { width: clamp(110px, 3.8vw, 141px); margin-top: 11px; padding: 30px 7px 20px; }
+  .node.hall.now .ticket { width: clamp(126px, 4.35vw, 161px); padding: 41px 7px 23px; }
   .node.hall.locked .ticket { padding: 30px 7px 20px; }
   .node.hall::after { top: 3px; width: 76px; height: 5px; }
   .node.hall.now::after { width: 90px; }
-  .node.hall .ticket-n { font-size: 25.2px; }
-  .node.hall.now .ticket-n { font-size: 28.7px; }
+  .node.hall .ticket-n { font-size: clamp(25.2px, 0.86vw, 32.3px); }
+  .node.hall.now .ticket-n { font-size: clamp(28.7px, 0.98vw, 36.7px); }
   .node.hall .ticket-stub { font-size: 12.5px; }
   .node.hall .ticket-stub .ab { top: 10px; font-size: 8.75px; }
   .node.hall.now .ticket-stub .ab { top: 26px; }
@@ -6312,11 +6328,11 @@ body.offstage #root { position: relative; z-index: 1; }
   .node.hall .ticket-next { top: 10px; }
   .node.hall.now::before { top: 58px; width: 300px; height: 300px; }
 
-  .node.dusk .ticket { width: 130px; border-radius: 16px; padding: 3px; }
+  .node.dusk .ticket { width: clamp(130px, 4.5vw, 166px); border-radius: 16px; padding: 3px; }
   .node.dusk .ticket::after { inset: 3px; border-radius: 13px; }
-  .node.dusk.now .ticket { width: 144px; }
-  .node.dusk .ticket-n { font-size: 26.6px; margin-top: 28px; }
-  .node.dusk.now .ticket-n { font-size: 30.1px; margin-top: 48px; }
+  .node.dusk.now .ticket { width: clamp(144px, 4.95vw, 184px); }
+  .node.dusk .ticket-n { font-size: clamp(26.6px, 0.91vw, 34px); margin-top: 28px; }
+  .node.dusk.now .ticket-n { font-size: clamp(30.1px, 1.03vw, 38.5px); margin-top: 48px; }
   .node.dusk .ticket-stub { font-size: 13px; }
   .node.dusk .ticket-stub .ab { left: 3px; right: 3px; top: 3px; height: 25px; line-height: 25px; border-radius: 13px 13px 0 0; font-size: 8.4px; }
   .node.dusk .ticket-champ { font-size: 9.1px; }
@@ -6700,8 +6716,9 @@ body.um {
   /* every ticket lies at its own slight angle, deterministic from the level */
   transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
 }
+/* the club ticket grows with the four skins' box (his ruling, 2026-09-29) */
 .node.club .ticket {
-  width: 116px;
+  width: clamp(116px, 4vw, 149px);
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-left: 5px solid var(--te, #f2ece0);
   border-radius: 8px;
@@ -6773,7 +6790,7 @@ body.um {
    it, and a gold glow so the eye finds it the moment the map recentres. */
 .node.club.now { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.12); z-index: 3; }
 .node.club.now .ticket {
-  width: 116px;
+  width: clamp(116px, 4vw, 149px);
   border: 2px solid #ffd76b;
   animation: none;
   box-shadow:
@@ -7568,12 +7585,18 @@ body.tunnel:not(.um) .chip-gold { background: #f5efe2; color: #12100d; }
    has to beat is four classes deep (`.node.arena.now .ticket`), so the same four are named here
    plus the body element, which settles the cascade without a single !important.
    ========================================================================== */
+/* AND THE BOX IS A THIRD BIGGER ON A DESK — his ruling, 2026-09-29: "In campaing, make the team
+   tickets bigger." THIS is the rule that decides a ticket's size in scout mode: it deliberately
+   outranks every skin so all four blocks stand the same box, which is why growing the skins' own
+   widths did nothing. 1.28 is what the trail carries — measured at 3,840 the lane pitch is 248px
+   and the turn clears 212px, so at 149 x 121 (and x1.12 for tonight's) there is still 99px of side
+   gap and 42 at the turns. The floors are today's numbers, so nothing under ~2,900px moves. */
 body:not(.um) .node .ticket,
 body:not(.um) .node.now .ticket,
 body:not(.um) .node.locked .ticket {
   box-sizing: border-box;
-  width: 116px;
-  min-height: 94px;
+  width: clamp(116px, 4vw, 149px);
+  min-height: clamp(94px, 3.25vw, 121px);
 }
 /* The banner hangs from a rod and the rod is on the node, so the hall alone keeps a top margin —
    the BOX is the same 116 x 94, it just starts 11px lower than the other three. */

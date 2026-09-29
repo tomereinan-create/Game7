@@ -102,7 +102,10 @@ describe('the campaign map always has a door to the staff tree', () => {
     // his ruling, 2026-09-29: "Instead of the stars to spend, have a star icon" — the notice is
     // the glyph, the balance and the door, and the three words that repeated the glyph are gone
     expect(html).toContain('Staff')
-    expect(html).not.toContain('to spend')
+    // "to spend" may live in an ATTRIBUTE — the star note beside the ticket keeps the sentence as
+    // its accessible name (his ruling, 2026-09-29: "big star icon, without 3 or to spend") — but
+    // it may never be visible type again
+    expect(html).not.toMatch(/>[^<]*to spend[^<]*</)
     expect(hasDoor(html)).toBe(true)
   })
 

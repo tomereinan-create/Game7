@@ -148,6 +148,17 @@ type Zone = {
   pick: Mode
   cup: boolean
   x: string
+  /**
+   * DOWN THE FLOOR FROM THE TOP, as a percentage of the court box — 0 is the half-court line and
+   * 100 is the baseline, so a bigger number is nearer the hoop.
+   *
+   * HIS RULING, 2026-09-29: "move jerseys 2,3,6 a little bit closer to the 3pt line." Measured on
+   * his own desk, the arc passes through 57.3% at the wings (x 17 and 83) and 35.9% at the top
+   * (x 50) — so SALARY CAP and DEATH MATCH stood 21 points above the line they were meant to be
+   * standing on, and 1V1 BID stood 20 above it. Seven points each closes a third of that: near
+   * enough to read as men spotted up outside the arc, far enough that the plates still clear the
+   * boundary they hang over.
+   */
   y: string
   side: 1 | -1
   no: string
@@ -263,7 +274,7 @@ export function FrontDoor({
       pick: 'salary',
       cup: cup(progress.salary),
       x: '17%',
-      y: '36%',
+      y: '43%',
       side: 1,
       no: '02',
       jersey: '2',
@@ -284,7 +295,7 @@ export function FrontDoor({
       pick: 'death',
       cup: cup(progress.death),
       x: '83%',
-      y: '36%',
+      y: '43%',
       side: -1,
       no: '03',
       jersey: '3',
@@ -352,7 +363,7 @@ export function FrontDoor({
       pick: 'auction',
       cup: false,
       x: '50%',
-      y: '16%',
+      y: '23%',
       side: 1,
       no: '06',
       jersey: '6',
