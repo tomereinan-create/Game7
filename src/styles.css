@@ -1575,10 +1575,25 @@ button {
   .myteam {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: auto auto;
+    /* THE FLOOR'S ROW TAKES THE SLACK (his ruling, 2026-09-30: "This page is too small make sure
+       you fill the screen"). The grid's own height is measured in MyTeam; the five keeps the
+       height it needs and everything left over goes to the floor above it. */
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 18px;
-    align-items: start;
+    align-items: stretch;
   }
+  .myteam > .col { display: flex; flex-direction: column; min-height: 0; }
+  .myteam > .col > .card { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  /* the floor is sized from the height its card has left, the way the draft's two are — `--ct-wh`
+     is the bare width-per-height CourtFive publishes for exactly this */
+  .myteam .col.b > .card > .court {
+    flex: 1 1 0;
+    min-height: 0;
+    width: auto;
+    max-width: min(100%, calc(100cqh * var(--ct-wh, 1.19)));
+    align-self: center;
+  }
+  .myteam .col.b > .card { container-type: size; }
   .myteam .col.b { grid-column: 1; grid-row: 1; }
   .myteam .col.a { grid-column: 1; grid-row: 2; }
   .myteam .col.band { display: block; grid-column: 2; grid-row: 1 / span 2; }

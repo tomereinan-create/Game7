@@ -481,11 +481,31 @@ export function MyTeam({
   const [showAnyway, setShowAnyway] = useState(false)
   /** A change is in play: the wheel has turned, or a man is picked, resting or moving. */
   const changing = !!(spun || spinning || sel || out || resting || moving)
+  /** The grid itself, so the page can be told how tall the desk is. */
+  const sheet = useRef<HTMLDivElement | null>(null)
   const measure = (reset = false) => {
     const a = menBox.current
     const b = floorBox.current
     if (!a || !b) return
     const stacked = window.innerWidth < 900
+    /**
+     * THIS PAGE FILLS THE DESK — his ruling, 2026-09-30: "This page is too small make sure you
+     * fill the screen." Its grid was `align-items: start` with no height of its own, so the three
+     * columns ended where their content ended and the rest of a 1,500px window was black. Measured
+     * the same way the draft board and the settled result are: what stands above this grid and
+     * what the dock reserves below it are both variables no rule can read. From here it is CSS —
+     * the columns stretch and the floor takes what the five leaves.
+     */
+    const board = sheet.current
+    if (board) {
+      board.style.minHeight = ''
+      if (!stacked) {
+        const root = document.getElementById('root')
+        const foot = root ? parseFloat(getComputedStyle(root).paddingBottom) || 0 : 0
+        const room = window.innerHeight - board.getBoundingClientRect().top - foot
+        if (room > 420) board.style.minHeight = `${Math.floor(room)}px`
+      }
+    }
     const top = a.getBoundingClientRect().top + window.scrollY
     const dock = document.querySelector<HTMLElement>('.dock')
     const avail = window.innerHeight - top - (dock?.offsetHeight ?? 0)
@@ -595,7 +615,7 @@ export function MyTeam({
       <div className="ladder" />
       {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the
           wheel is already in it, so the grid stays three across. */}
-      <div className={`myteam ${dropTactics && !display ? 'plan-hidden' : ''}`} style={{ paddingTop: 8, ...kitWear }}>
+      <div ref={sheet} className={`myteam ${dropTactics && !display ? 'plan-hidden' : ''}`} style={{ paddingTop: 8, ...kitWear }}>
         {/* BOX ONE — the men. His ruling put the stats and the durability on the left, and the
             court no longer stands above them: these five rows are the first thing on the screen
             at every width, so a change never asks him to scroll to see who he is deciding about. */}
