@@ -392,6 +392,13 @@ export function splitBox(five: Player[], box: TeamBox, ctx?: BoxCtx, rng?: Rng):
   }))
 }
 
+/** One night's box, both sides, as it was actually rolled. */
+export interface GameBox {
+  us: TeamBox
+  them: TeamBox
+  usLines: PlayerBox[]
+  themLines: PlayerBox[]
+}
 export interface SeriesBox {
   us: TeamBox
   them: TeamBox
@@ -399,6 +406,16 @@ export interface SeriesBox {
   usLines: PlayerBox[]
   themLines: PlayerBox[]
   games: number
+  /**
+   * EVERY NIGHT, KEPT - his ruling, 2026-09-29: "After simming, make every game pressable, to see
+   * what happnenned in that game(Box score wise)."
+   *
+   * These were always rolled; they were averaged and thrown away. They have to come out of THIS
+   * pass and not be recomputed per game, because the rng is consumed in order across the series:
+   * asking for game 3 on its own would answer with a different night from the one that was played,
+   * and the five nights would no longer add up to the averages printed beside them.
+   */
+  perGame: GameBox[]
 }
 
 const avg = (boxes: TeamBox[]): TeamBox => {
@@ -437,5 +454,6 @@ export function seriesBox(
       for (const k of Object.keys(o) as (keyof PlayerBox)[]) if (k !== 'name') (o[k] as number) /= xs.length || 1
       return o
     })
-  return { us: avg(us), them: avg(them), usLines: avgP(usP, five), themLines: avgP(themP, theirFive), games: games.length }
+  const perGame: GameBox[] = us.map((_, i) => ({ us: us[i], them: them[i], usLines: usP[i], themLines: themP[i] }))
+  return { us: avg(us), them: avg(them), usLines: avgP(usP, five), themLines: avgP(themP, theirFive), games: games.length, perGame }
 }

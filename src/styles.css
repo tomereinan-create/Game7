@@ -5453,7 +5453,25 @@ body.offstage #root { position: relative; z-index: 1; }
 .verdict.final h1 .d { color: var(--line-3); }
 .verdict.final h1 .t { color: var(--them); }
 .strip { display: flex; gap: 5px; margin-top: 12px; }
-.gt { flex: 1; display: grid; gap: 2px; justify-items: center; padding: 8px 0 7px; border-radius: 6px; border: 1px solid var(--line); }
+/* A CHIP IS A DOOR NOW (his ruling, 2026-09-29: "make every game pressable, to see what
+   happnenned in that game"), so it is a <button> and has to be told to stop looking like one. */
+.gt { flex: 1; display: grid; gap: 2px; justify-items: center; padding: 8px 0 7px; border-radius: 6px; border: 1px solid var(--line); appearance: none; background: none; font: inherit; color: inherit; text-align: center; cursor: pointer; }
+.gt:disabled { cursor: default; }
+/* a game that has not landed yet: the chip holds its place and says nothing */
+.gt.pending { border-style: dashed; border-color: var(--line-2); opacity: 0.5; }
+.gt.pending b { color: var(--faint); }
+.result.landing { cursor: pointer; }
+.v-landing { font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.gt:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
+/* ---- one night's box, off a filmstrip chip ---- */
+.gamesheet { padding-bottom: calc(var(--foot) + 16px); }
+.gs-score { display: flex; align-items: baseline; justify-content: center; gap: clamp(14px, 2.4vw, 64px); padding: clamp(10px, 1vw, 30px) 0 clamp(6px, 0.8vw, 22px); }
+.gs-side { display: grid; justify-items: center; gap: 2px; min-width: 0; }
+.gs-side i { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.62vw, 19px); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.gs-side b { font-family: var(--num); font-size: clamp(34px, 3.4vw, 96px); line-height: 1; color: var(--ink); }
+.gs-side.you b { color: var(--you); }
+.gs-side.them b { color: var(--them); }
+.gs-score em { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.6vw, 18px); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
 .gt i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--faint); }
 .gt b { font-family: var(--mono); font-size: 10px; }
 .gt b em { font-style: normal; color: var(--faint); }
