@@ -602,15 +602,12 @@ export function MyTeam({
       </button>
       <div className="topbar">
         <span>My team</span>
-        <span>
-          {spinsLeft > 0 ? (
-            <b>
-              {spinsLeft} {spinsLeft === 1 ? 'change' : 'changes'} left
-            </b>
-          ) : (
-            'no changes left'
-          )}
-        </span>
+        {/* NOTHING LEFT IS NOT NEWS — his ruling, 2026-09-30: "Remove no changes left." The head
+            counted the changes he had, and then went on counting when there were none: a line in
+            the corner of every screen of a run that said only that a thing he was not doing could
+            not be done. It says what he HAS, and when he has none it says nothing. The dock below
+            still offers the way out, in its own words. */}
+        <span>{spinsLeft > 0 ? <b>{spinsLeft} {spinsLeft === 1 ? 'change' : 'changes'} left</b> : null}</span>
       </div>
       <div className="ladder" />
       {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the
@@ -871,7 +868,7 @@ export function MyTeam({
             </button>
           ) : (
             <button className="btn ghost" onClick={onBack}>
-              No changes left — back to the map
+              Back to the map
             </button>
           )}
         </div>
