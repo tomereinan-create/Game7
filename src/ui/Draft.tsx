@@ -2045,20 +2045,14 @@ export function Draft({
             bug={bug}
             us={teamCode(teamName)}
             them={opponent.ab ?? teamCode(opponent.team)}
-            usName={teamName}
-            themName={opponent.team}
             step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
             bump={bump}
             flash={flash}
-            shooting={shooting}
             mine={five}
             theirs={opponent.players}
-            /* his kit on his shirts, their club on theirs — the two are told apart by colour before
-               a name is read, and a club is a fact about the team, which is why it stands in both
-               modes now that the two share this panel */
-            myClub={club}
-            theirClub={teamColor(opponent.ab)}
             map={boardMap}
+            /* the board prints the payroll at its foot, in the mode that has one */
+            cap={salary ? { used: capUsed, max: capMax } : null}
             /* HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
                shall open photo #2." A shirt has no row to open out into, so it opens the man's
                card — which prints photo #2's season line and the rest of him, and is what a name

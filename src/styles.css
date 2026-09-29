@@ -9309,3 +9309,96 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   .fd-cta:hover,
   .fd-cta:active { transform: none; }
 }
+
+/* ==========================================================================
+   THE JUMBOTRON — the tip-off board
+   ==========================================================================
+   His ruling, 2026-09-30, choosing 2e off the "Game7 Tipoff Redesigns" board: "Use the Jumbotron
+   E2." What stood here was a crowd bar over two jersey floors — your five drawn once and theirs
+   drawn again beneath it, the pairing written on the nameplates, and half the panel empty beside
+   them. This is the board's own answer: an LED scoreboard, a ticker of the night's matchups, and
+   the two fives in one lit table.
+
+   THE PALETTE IS THE DESIGN'S AND IT DOES NOT LEAK. Every colour on this panel is a token declared
+   on `.jumbo` itself — the near-black of an unlit board, its amber, and the blue and red a
+   scoreboard gives the two sides — so nothing outside it reads them and nothing inside it reads
+   the app's. That is the one place this screen stops speaking the app's colour language, and it
+   stops on purpose: a jumbotron is not the room, it is a thing in the room.
+
+   MOTION IS CSS. The board's own preview drives its ticker and its lit row off an 80ms React
+   interval; here the ticker is one keyframe and the row cycle is five staggered ones, so the panel
+   costs nothing to render — and under `prefers-reduced-motion` it is simply a still board with
+   every row lit, which is the same information without the theatre.
+   ========================================================================== */
+.jumbo {
+  --led-bg: #050403;
+  --led-edge: #2a1f10;
+  --led-amber: #ffb347;
+  --led-dim: #7a5a2e;
+  --led-us: #6f93ff;
+  --led-them: #ff4d5e;
+  display: flex;
+  flex-direction: column;
+  /* it lives inside a card that was measured against the dock — it fills that card and never
+     lengthens the page, which is the draft's own standing rule */
+  min-height: 0;
+  max-height: 100%;
+  border: 1px solid var(--led-edge);
+  border-radius: clamp(10px, 0.5vw, 18px);
+  overflow: hidden;
+  /* the dot pitch of an LED wall, over the black between the lamps */
+  background:
+    radial-gradient(circle, #161005 1px, transparent 1.4px) 0 0 / 5px 5px,
+    var(--led-bg);
+}
+.jumbo-head { flex: none; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 0.5vw, 16px); padding: clamp(14px, 1vw, 28px) clamp(16px, 1.3vw, 38px) clamp(8px, 0.5vw, 14px); }
+.jumbo-kick { font-family: var(--mono); font-size: clamp(10px, 0.62vw, 20px); letter-spacing: 0.24em; text-transform: uppercase; color: var(--led-amber); text-shadow: 0 0 8px rgb(255 160 60 / 0.7); text-align: center; }
+.jumbo-board { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 1.4vw, 46px); }
+.jumbo-side { display: flex; flex-direction: column; align-items: center; }
+.jumbo-side b { font-family: var(--mono); font-weight: 600; font-size: clamp(44px, 2.6vw, 86px); line-height: 1; font-variant-numeric: tabular-nums; }
+.jumbo-side i { font-style: normal; font-family: var(--mono); font-size: clamp(11px, 0.68vw, 22px); letter-spacing: 0.08em; }
+.jumbo-side.us b, .jumbo-side.us i { color: var(--led-us); }
+.jumbo-side.us b { text-shadow: 0 0 18px rgb(111 147 255 / 0.7); }
+.jumbo-side.them b, .jumbo-side.them i { color: var(--led-them); }
+.jumbo-side.them b { text-shadow: 0 0 18px rgb(255 77 94 / 0.7); }
+.jumbo-clock { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(3px, 0.2vw, 7px); }
+.jumbo-clock b { font-family: var(--mono); font-weight: 400; font-size: clamp(16px, 1.1vw, 36px); color: var(--led-amber); text-shadow: 0 0 10px rgb(255 160 60 / 0.8); font-variant-numeric: tabular-nums; }
+.jumbo-clock i { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.56vw, 18px); letter-spacing: 0.1em; text-transform: uppercase; color: var(--led-dim); }
+.jumbo-plus { position: absolute; top: -1.4em; left: 50%; transform: translateX(-50%); font-style: normal; font-family: var(--mono); font-size: clamp(12px, 0.8vw, 26px); color: var(--led-us); text-shadow: 0 0 12px rgb(111 147 255 / 0.8); }
+/* ---- the ticker ---- */
+.jumbo-tick { flex: none; overflow: hidden; border-top: 1px solid var(--led-edge); border-bottom: 1px solid var(--led-edge); padding: clamp(7px, 0.45vw, 14px) 0; margin-top: clamp(6px, 0.45vw, 14px); }
+.jumbo-tickrun { display: flex; width: max-content; animation: jumbo-roll 26s linear infinite; }
+.jumbo-tickrow { display: flex; gap: clamp(22px, 1.6vw, 52px); padding-right: clamp(22px, 1.6vw, 52px); }
+.jumbo-tickrow i { font-style: normal; font-family: var(--mono); font-size: clamp(11px, 0.7vw, 24px); white-space: nowrap; color: var(--led-amber); text-shadow: 0 0 6px rgb(255 160 60 / 0.6); }
+@keyframes jumbo-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* ---- the table ---- */
+.jumbo-grid { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(10px, 0.7vw, 22px) clamp(16px, 1.3vw, 40px); }
+.jumbo-gh, .jumbo-row { display: grid; grid-template-columns: clamp(34px, 2.4vw, 74px) minmax(0, 1fr) clamp(34px, 2.4vw, 74px) minmax(0, 1fr); align-items: center; gap: clamp(4px, 0.4vw, 12px); }
+.jumbo-gh { font-family: var(--mono); font-size: clamp(9px, 0.56vw, 18px); letter-spacing: 0.1em; color: var(--led-dim); padding-bottom: clamp(5px, 0.4vw, 12px); }
+.jumbo-row { padding: clamp(9px, 0.6vw, 18px) 0; border-bottom: 1px dashed var(--led-edge); color: var(--led-dim); }
+.jumbo-no { font-family: var(--mono); font-size: clamp(12px, 0.82vw, 27px); font-variant-numeric: tabular-nums; }
+.jumbo-man { display: block; min-width: 0; padding: 0; border: 0; background: none; text-align: left; font-family: var(--mono); font-size: clamp(12px, 0.82vw, 27px); color: inherit; letter-spacing: 0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.jumbo-man:disabled { cursor: default; }
+.jumbo-man:focus-visible { outline: 2px solid var(--led-amber); outline-offset: 2px; }
+/* THE LIT ROW walks the five, one at a time, the way a board cycles its lines. Five rows, six
+   seconds, so each is lit for a fifth of the loop and the rest read at the board's resting level. */
+@media (prefers-reduced-motion: no-preference) {
+  .jumbo-row { animation: jumbo-led 6s linear infinite; animation-delay: calc(var(--i) * 1.2s); }
+}
+@keyframes jumbo-led {
+  0%, 18% { color: var(--led-amber); text-shadow: 0 0 10px rgb(255 160 60 / 0.8); }
+  22%, 100% { color: var(--led-dim); text-shadow: none; }
+}
+/* ---- the foot ---- */
+.jumbo-foot { flex: none; display: flex; justify-content: space-between; gap: 12px; padding: 0 clamp(16px, 1.3vw, 40px) clamp(16px, 1.3vw, 38px); font-family: var(--mono); font-size: clamp(10px, 0.62vw, 20px); letter-spacing: 0.06em; color: var(--led-amber); }
+
+/* THE PANEL AROUND IT. The old tip-off was a grid with a place for a crowd bar, two bands and two
+   floors; none of those exist now. One column on a phone — the board, then the roster — and on a
+   desk the roster stands beside it, which is where the two floors used to leave a hole. */
+.tipoff.jumbo-tipoff { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(10px, 0.8vw, 24px); min-height: 0; }
+/* the board fills its half of the panel rather than shrinking to the five rows in it — beside a
+   roster of five men, a board that stops half way up reads as a box that failed to load */
+.tipoff.jumbo-tipoff > .jumbo { align-self: stretch; }
+@media (min-width: 900px) {
+  .tipoff.jumbo-tipoff:has(> .tip-rows) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
