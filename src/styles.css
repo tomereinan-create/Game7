@@ -1412,6 +1412,19 @@ button {
   flex-direction: column;
   padding-top: 30px;
 }
+/* A ROW IS AS TALL AS THE LINES IN IT, on a phone too - his ruling, 2026-09-29: "Allign the salary
+   cap to fit the box" / "Look at the unselectable players - They are one over the other." The desk
+   restates `--drow` against its own type; the shape of the fix is one rule and lives here, so the
+   two tiers cannot drift apart. Measured at 375: a name over its positions is 36px of box, and the
+   third line - the money, or the reason a man cannot be taken - takes it to 51 inside a 42px row. */
+.draft { --drow: 46px; }
+.draft.cap { --drow: 56px; }
+.draft .col.a .row.dr,
+.draft .col.a .row.dr.short,
+.draft .col.c .row.dr,
+.draft .col.c .row.dr.short { height: var(--drow); }
+.draft .col.b .row.dr { height: auto; min-height: 46px; }
+.draft .col.b .pname .who { padding: 4px 0; }
 /* MY TEAM (death match): the five and the wheel, two columns on a desk, five first on a phone. */
 .myteam {
   display: flex;
@@ -2191,9 +2204,13 @@ button {
   .draft .col.c .pname b { font-size: 17px; }
   .draft .col.a .pname i,
   .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
-  /* the floors take back what the shorter dock left over (his ruling: "Make the courts bigger
-     again") — the formula spends the last of the height above the dock, which is 32px more floor */
-  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 648px) * 1.19), 356px); }
+  /* THE 356px CEILING IS GONE - his ruling, 2026-09-29: "Fill the screen with the 5s, make it
+     bigger and longer. All modes." This was the formula that spent the height above the dock, and
+     it worked right up to its own ceiling: on a 1,500px desk `(100vh - 648) * 1.19` asks for 1,013
+     and the clamp answers 356, so every pixel past a 947px window went to black floor under the
+     columns. The board fills the desk now and the two floors take what the rows leave, measured in
+     Draft.tsx against BOTH columns at once so they stay the same size as each other - which is the
+     one thing no `vh` formula could promise, since what stands above each floor is different. */
   /* and "a little bit higher" (his ruling: "Move both 5s a little bit heigher and its perfect"):
      the floor comes up flush under the name row, the row itself sits tighter under the card's
      head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
@@ -2546,6 +2563,99 @@ button {
   .adv-open {
     font-size: 14px;
   }
+  /* ================================================================================
+     THE DRAFT TAKES THE WHOLE DESK - his rulings, 2026-09-29, on one screenful:
+       "Allign the salary cap to fit the box."
+       "Look at the unselectable players - They are one over the other. Fix it"
+       "Fill the screen with the 5s, make it bigger and longer. All modes."
+       "Instead of PG / open - draft a man here, have draft a man here large on top
+        and pg below. Make sure it alligns with the opposing team 5."
+       "Make the wheel way bigger."
+     Everything here is the same defect said five ways: this board was drawn against a
+     laptop and he is playing it on a 3,840 x 1,500 desk, where its rows hold two lines
+     of a three-line man, its floors stop at 356px and a third of the window is black.
+     ================================================================================ */
+
+  /* ---- 1. A ROW IS AS TALL AS THE LINES IN IT ----
+     `.who` is a name, a positions-and-archetype line and SOMETIMES a third: the money in
+     the salary cap, or the reason a man cannot be taken ("his two rings SG and SF are
+     already filled"). Measured on this desk, that third line takes the box from 57px to
+     80 in the team columns and to 88 in the wheel's roster - inside rows locked at 58
+     and 69. The overflow is not clipped, it is PAINTED, which is why his two screenshots
+     show the money printing through the name of the man below and the ineligible men
+     stacked one over the other.
+     THE TWO TEAM COLUMNS TAKE ONE HEIGHT AND THE MIDDLE ONE GROWS. The teams have to
+     stay row-for-row with each other - his ruling on the open chairs asks for it in as
+     many words - so their height is a single variable, set once for the screen by
+     whether the money is on. The wheel's roster answers to nobody and scrolls in a
+     measured box, so there a row is simply as tall as it needs to be, with a floor at
+     the height it has now. */
+  .draft { --drow: 58px; }
+  .draft.cap { --drow: 84px; }
+  .draft .col.a .row.dr,
+  .draft .col.a .row.dr.short,
+  .draft .col.c .row.dr,
+  .draft .col.c .row.dr.short { height: var(--drow); }
+  .draft .col.b .row.dr { height: auto; min-height: 69px; }
+  /* the air a fixed height used to provide, put where a row's own padding cannot reach it:
+     `.row.on` and `.row.exp` restate `padding` as a shorthand and would wipe it */
+  .draft .col.b .pname .who { padding: 5px 0; }
+
+  /* ---- 2. THE BOARD FILLS THE DESK ----
+     The grid's own height is measured in Draft.tsx (see `sheet` there) - no rule can know
+     how tall the band above it or the dock below it is. From here it is ordinary flex:
+     the columns stretch to the grid, the card stretches to its column, and the floor
+     inside takes whatever the head and the rows leave. */
+  .draft { align-items: stretch; }
+  .draft > .col { display: flex; flex-direction: column; min-height: 0; }
+  .draft > .col.a > .card,
+  .draft > .col.c > .card { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  /* the middle column measures its own list against the dock and must not be stretched
+     into one - a roster that filled the desk would put the SPIN key below the fold */
+  .draft > .col.b { justify-content: flex-start; }
+
+  /* ---- 3. THE FLOOR TAKES WHAT THE ROWS LEAVE ----
+     `flex: 1 1 0` and not `auto`: the box's height must come from the flex share ALONE,
+     so that sizing the floor inside it can never feed back into the box that sized it.
+     `flex-start` and not `center` because the two floors share a start line, which
+     Draft.tsx writes here as a padding-top - a centred floor would drift off it. */
+  .draft .court-line { flex: 1 1 0; min-height: 0; display: flex; align-items: flex-start; justify-content: center; }
+  .draft .court-line > .court { max-width: 100%; margin-left: auto; margin-right: auto; }
+  /* THE FLOOR IS A CONTAINER NOW, so a bigger floor is a floor with BIGGER MEN on it
+     rather than more hardwood between them. Every court in the app lays its men out in
+     percentages of the box and then draws them at fixed pixels - a 58px ring, a 15px
+     surname - which is the whole reason "make the 5s bigger" has had to be ruled on more
+     than once: the diagram is right at 356px and empty at 800. This is the team page's
+     own fix (`.tdb-sheet .court`, 2026-09-22) brought to the draft's two floors, and
+     every term keeps the draft's CURRENT pixel value as the floor of its clamp, so
+     nothing on a small window shrinks. */
+  .draft .court-line > .court { container-type: inline-size; }
+  .draft .court-line > .court .ct-bust { width: clamp(58px, 16.3cqw, 170px); height: clamp(58px, 16.3cqw, 170px); border-width: clamp(2px, 0.45cqw, 5px); }
+  /* the SPOT is the 86px box the draft has always given a man; the name plate inside it is the
+     120px his ruling widened it to and hangs past the box on a long surname. Two different
+     numbers, and putting the plate's on the box is what stood the five on top of each other. */
+  .draft .court-line > .court .ct-spot { width: clamp(86px, 24.2cqw, 252px); gap: clamp(1px, 0.5cqw, 6px); }
+  .draft .court-line > .court .ct-spot b { max-width: clamp(120px, 33.7cqw, 352px); font-size: clamp(14.7px, 4.13cqw, 43px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-spot i { font-size: clamp(13px, 3.65cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-init { font-size: clamp(17.5px, 4.91cqw, 51px); }
+  .draft .court-line > .court .ct-init.ghost { font-size: clamp(14.7px, 4.13cqw, 43px); }
+  .draft .court-line > .court .ct-call { font-size: clamp(12px, 3.37cqw, 35px); max-width: 52%; }
+
+  /* ---- 4. THE WHEEL, WAY BIGGER ----
+     his ruling, in those words. The three reels were 96 + 96 + 260 of content sitting in
+     the middle of a 1,630px column, which is the floors' mistake again: a fixed pixel
+     drawing inside a box that grew around it. They are a share of the column now, with
+     their present size as the floor of every clamp. */
+  .draft .reels { gap: clamp(10px, 1vw, 28px); padding: clamp(8px, 0.8vw, 22px) 0 clamp(10px, 1vw, 26px); }
+  .draft .reel { flex: 0 0 clamp(96px, 9.5vw, 300px); gap: clamp(4px, 0.4vw, 12px); }
+  .draft .reel.wide { flex: 1 1 auto; max-width: clamp(260px, 26vw, 820px); }
+  .draft .reel-cap { font-size: clamp(8px, 0.62vw, 19px); }
+  .draft .reel-row { font-size: clamp(10.5px, 1.05vw, 33px); }
+  .draft .reel.wide .reel-row { padding: 0 clamp(22px, 2.2vw, 68px); }
+  .draft .reel-arrow { border-top-width: clamp(5px, 0.45vw, 14px); border-bottom-width: clamp(5px, 0.45vw, 14px); }
+  .draft .reel-arrow.l { border-left-width: clamp(7px, 0.62vw, 20px); }
+  .draft .reel-arrow.r { border-right-width: clamp(7px, 0.62vw, 20px); }
+
   .ladder .rung {
     height: 7px;
   }

@@ -544,6 +544,24 @@ export function Draft({
    */
   const oppFloor = useRef<HTMLDivElement | null>(null)
   const myFloor = useRef<HTMLDivElement | null>(null)
+  /**
+   * THE BOARD IS AS TALL AS THE DESK — his ruling, 2026-09-29: "Fill the screen with the 5s, make
+   * it bigger and longer. All modes."
+   *
+   * The three columns were `align-items: start` in a grid with no height of its own, so on a
+   * 3,840 x 1,500 desk they ended at 869 and the dock sat at 1,406: five hundred pixels of black
+   * floor under a game drawn at a laptop's size. The floors could not take it either — their width
+   * was `clamp(220px, (100vh - 648px) * 1.19, 356px)`, and 356 is a ceiling, so past a certain
+   * window every extra pixel of height went to the black.
+   *
+   * The height cannot be written in CSS: what stands above this board is a 30px band on a phone
+   * and a 42px one on a desk, the dock's own height is a variable the dock itself sets, and both
+   * change with the mode. So it is MEASURED, in the same pass that already measures the roster's
+   * box and the two floors' start line, and handed to the grid as a min-height. Everything below
+   * — the columns stretching, the cards stretching inside them and the floors taking what the
+   * rows leave — is CSS from there (see `.draft` in the stylesheet).
+   */
+  const sheet = useRef<HTMLDivElement | null>(null)
   const onRosterScroll = () => {
     const el = rosterList.current
     if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
@@ -565,6 +583,26 @@ export function Draft({
       const list = rosterList.current
       const dock = document.querySelector<HTMLElement>('.dock')
       const stacked = window.innerWidth < 900
+      /* FIRST, because everything read below is read out of the layout this sets. Stacked on a
+         phone the board is as long as its three columns are and nothing is filled to anything. */
+      /* THE FOOT OF THE PAGE, ONCE, FOR BOTH THINGS THAT MEASURE AGAINST IT. The dock's own
+         height is not the reservation: #root pads its foot by the dock plus the safe-area foot
+         plus 14, and that padding is what the page must end inside of. The board below and the
+         roster's box further down used to answer this question differently — dock + 8 against the
+         true padding — and the six pixels between the two answers were a scrollbar on a screen
+         whose whole point is that it does not scroll. */
+      const root = document.getElementById('root')
+      const foot = root ? parseFloat(getComputedStyle(root).paddingBottom) || 0 : (dock?.offsetHeight ?? 0) + 8
+      const board = sheet.current
+      if (board) {
+        board.style.minHeight = ''
+        if (!stacked) {
+          const room = window.innerHeight - board.getBoundingClientRect().top - foot
+          // FLOOR and not round: a half pixel rounded UP is a scrollbar on a screen whose ruling
+          // is that it does not scroll
+          if (room > 480) board.style.minHeight = `${Math.floor(room)}px`
+        }
+      }
       if (list && stacked) {
         // overflow off too, not just the cap: a couple of rounding pixels are enough to make the
         // box scrollable, and a 4px nested scroller swallows the page's own swipe
@@ -579,8 +617,8 @@ export function Draft({
         // dock by exactly that much and the page scrolls after all
         const card = list.closest('.card')
         const trail = card ? Math.max(0, card.getBoundingClientRect().bottom - lb.bottom) : 0
-        const room = window.innerHeight - lb.top - (dock?.offsetHeight ?? 0) - trail - 8
-        list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
+        const room = window.innerHeight - lb.top - foot - trail
+        list.style.maxHeight = `${Math.max(196, Math.floor(room))}px`
         setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
       }
       /* HIS RULING: "In both modes, have both 5s the same size and alligned." See `oppFloor` above
@@ -591,8 +629,12 @@ export function Draft({
          two CARDS start — in scout mode your column opens with the analysis door and the
          opponent's does not. */
       const [a, c] = [oppFloor.current, myFloor.current]
+      const courtOf = (el: HTMLDivElement | null) => el?.querySelector<HTMLElement>(':scope > .court') ?? null
+      const [ca, cc] = [courtOf(a), courtOf(c)]
       if (a) a.style.paddingTop = ''
       if (c) c.style.paddingTop = ''
+      if (ca) ca.style.maxWidth = ''
+      if (cc) cc.style.maxWidth = ''
       // the FLOOR ITSELF, not its wrapper — the wrapper carries the margins (see `.court-line`),
       // so its own top is one 10px step above the boards and the line we are setting is the boards
       const floor = (el: HTMLDivElement) => (el.firstElementChild ?? el).getBoundingClientRect().top
@@ -601,6 +643,35 @@ export function Draft({
         const line = Math.max(ta, tc)
         if (line - ta >= 1) a.style.paddingTop = `${Math.round(line - ta)}px`
         if (line - tc >= 1) c.style.paddingTop = `${Math.round(line - tc)}px`
+        /**
+         * AND THE SIZE, WHICH IS THE OTHER HALF OF THE SAME OLD RULING - "have both 5s the same
+         * size and alligned" - now that his newer one ("Fill the screen with the 5s, make it
+         * bigger and longer") has taken the 356px ceiling off them.
+         *
+         * IT CANNOT BE A CSS FORMULA. The floor is as big as the height its column has left over,
+         * and the two columns leave over DIFFERENT amounts: the opponent's card carries a record
+         * and two dials above its floor, yours carries a payroll bar in the salary cap and nothing
+         * in the campaign, and the rows below them are as tall as the lines in them. A `vh` term
+         * cannot see any of that, and a container query would see each column on its own and draw
+         * two floors of two different sizes. So the SMALLER of the two rooms is measured here and
+         * both floors are drawn to it - they end up identical because they are told to be.
+         *
+         * `room` is measured from the start line, not from each box's own top, so it is the same
+         * distance the eye reads: floor's top to the bottom of the space the flex share gave it.
+         * The width is capped by the narrower column and floored at the 220px the old clamp had,
+         * so a short window is no worse off than it was.
+         */
+        if (ca && cc) {
+          const ar = getComputedStyle(ca).aspectRatio.split('/')
+          const wh = ar.length === 2 ? Number(ar[0]) / Number(ar[1]) : 100 / 84
+          const room = Math.min(a.getBoundingClientRect().bottom, c.getBoundingClientRect().bottom) - line
+          const wide = Math.min(a.clientWidth, c.clientWidth)
+          if (room > 0 && Number.isFinite(wh) && wh > 0) {
+            const size = Math.max(220, Math.min(wide, Math.round(room * wh)))
+            ca.style.maxWidth = `${size}px`
+            cc.style.maxWidth = `${size}px`
+          }
+        }
       }
     }
     measure()
@@ -1289,9 +1360,18 @@ export function Draft({
        */
       <div className="row dr chair" key={x} aria-hidden>
         <span className="pname">
+          {/* THE INSTRUCTION IS THE HEADLINE, THE RING IS THE CAPTION — his ruling, 2026-09-29:
+              "Instead of PG / open — draft a man here, have draft a man here large on top and pg
+              below. Make sure it alligns with the opposing team 5." On the other side of this
+              screen the big line is a MAN and the small line under it is his positions, so a chair
+              that put its ring on the big line was reading the other way round from the column it
+              stands beside: five position codes down the headline column, and the one thing the
+              row is actually telling him to do set in the caption. Swapped, the two columns say
+              the same kind of thing on the same line — and `--drow` holds them to the same height,
+              which is the alignment the ruling asks for. */}
           <span className="who">
-            <b>{x}</b>
-            <i>open — draft a man here</i>
+            <b>Draft a man here</b>
+            <i>{x}</i>
           </span>
         </span>
         <span className="mini">
@@ -1358,7 +1438,12 @@ export function Draft({
           sheet across a 1920px desk. Scout mode never takes this class: its left column carries
           the dials, the exact axis ratings and the opponent's sheets, and its right carries the
           matchup panel and the odds — that IS scout mode, and he named neither. */}
-      <div className={`draft${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
+      {/* `cap` — his ruling, 2026-09-29: "Allign the salary cap to fit the box." The salary line
+          is a THIRD line inside a row whose height was measured for two, so in the salary cap the
+          money ran out of the bottom of every row and printed over the name under it. A row's
+          height is one number in the stylesheet and only this screen knows whether the money is
+          on, so this is how the stylesheet is told — see `--drow`. */}
+      <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
           man is in — and the moment he is, the thing to look at is the two teams facing, not the
