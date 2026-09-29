@@ -7837,11 +7837,11 @@ body.map #root { padding-bottom: var(--foot); }
    * rather than asserted. Above about 720px of window height the 24px cap is what binds and this
    * half is idle; below 900px of width the page scrolls and it is idle again.
    */
-  --fd-u: clamp(9px, min(2.7vw, calc(3.6vh - 2px)), 24px);
-  --fd-u: clamp(9px, min(2.7vw, calc(3.6dvh - 2px)), 24px);
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6vh - 2px)), 54px);
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6dvh - 2px)), 54px);
   /* the inset every band keeps off the glass, and it is the same on all four so the page reads as
      one composition rather than four rows that happen to be stacked */
-  --fd-pad: clamp(14px, 2.4vw, 34px);
+  --fd-pad: clamp(14px, 2.4vw, 77px);
 
   /**
    * WHAT STANDS ON THE FLOOR, all of it in cqw off the court so the play is the same drawing at
@@ -7873,7 +7873,7 @@ body.map #root { padding-bottom: var(--foot); }
      is 12% of a height the court below it does not get 12% more of. Flagged rather than solved,
      like the plate above it — the alternative is holding the floor at 30 and making his ruling
      stop applying to the narrowest phone, which is the width it is least visible on. */
-  --fd-fig-h: clamp(34px, 9.3cqw, 105px);
+  --fd-fig-h: clamp(34px, 9.3cqw, 165px);
   /* HOW FAR ABOVE HIS MARK'S CENTRE THE MAN'S FEET LAND. This one number is the whole of his
      ruling "the jersey above the location and not to the side": it replaces both --ck-fig-gap
      (the step sideways) and --ck-fig-drop (the push below). It is read in exactly two places —
@@ -7891,8 +7891,8 @@ body.map #root { padding-bottom: var(--foot); }
      shirt's foot sits about three pixels inside it (-3.2 at 1440), which costs nothing: the hem is
      7.5px off the foot there, so what the plate covers is bare shirt. THE PHONE IS THE CASE THIS
      NUMBER IS FOR, because it is the only width where the hem and the plate can meet. */
-  --fd-fig-lift: clamp(10px, 1.4cqw, 18px);
-  --fd-ball-d: clamp(11px, 3.2cqw, 34px);
+  --fd-fig-lift: clamp(10px, 1.4cqw, 25px);
+  --fd-ball-d: clamp(11px, 3.2cqw, 56px);
   /* the smudge both shadows are made of. It is black now rather than the slate's own green, and
      it is centred rather than offset, because the light in this room comes from OVERHEAD CENTRE
      (see `.fd-glow`) where the slate's came raking from its upper left. */
@@ -7924,7 +7924,7 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-years {
   flex: none;
   font-family: var(--serif);
-  font-size: clamp(9.8px, calc(var(--fd-u) * 0.595), 15.4px);
+  font-size: clamp(9.8px, calc(var(--fd-u) * 0.595), 34.6px);
   letter-spacing: 0.24em;
   color: var(--muted);
 }
@@ -7936,7 +7936,7 @@ body.map #root { padding-bottom: var(--foot); }
    the rail and not a tagline on the mark. */
 .fd-cap {
   min-width: 0;
-  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 27px);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -7963,8 +7963,8 @@ body.map #root { padding-bottom: var(--foot); }
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: clamp(9px, 1.4vw, 18px);
-  padding: clamp(10px, calc(var(--fd-u) * 0.62), 16px) var(--fd-pad) calc(var(--fd-u) * 0.6);
+  gap: clamp(9px, 1.4vw, 41px);
+  padding: clamp(10px, calc(var(--fd-u) * 0.62), 36px) var(--fd-pad) calc(var(--fd-u) * 0.6);
   background: var(--bg);
   white-space: nowrap;
 }
@@ -7973,12 +7973,12 @@ body.map #root { padding-bottom: var(--foot); }
   /* "Game 7 and the ball bigger" - the wordmark and the ball beside it are the game's name on its
      own front door and were the smallest identity on any screen in it. The ball follows in
      FrontDoor.tsx, which is where its size is written. */
-  font: 400 clamp(30px, calc(var(--fd-u) * 2), 68px) / 1 var(--serif);
+  font: 400 clamp(30px, calc(var(--fd-u) * 2), 153px) / 1 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
 }
 .fd-word em { font-style: normal; color: var(--you); }
-.fd-div { flex: none; width: 1px; height: clamp(28px, calc(var(--fd-u) * 1.7), 44px); background: var(--line); }
+.fd-div { flex: none; width: 1px; height: clamp(28px, calc(var(--fd-u) * 1.7), 99px); background: var(--line); }
 /* THE CLUB BADGE, and it is drawn only when there is a club. `Progress.team` is null until he has
    named one, and with it null this row is the design's row minus the badge and its divider —
    which is the layout a fresh install opens on and so has to work anyway. The standing line reads
@@ -7993,12 +7993,12 @@ body.map #root { padding-bottom: var(--foot); }
   flex: none;
   display: grid;
   place-items: center;
-  width: clamp(62px, calc(var(--fd-u) * 3.4), 100px);
+  width: clamp(62px, calc(var(--fd-u) * 3.4), 225px);
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--crest);
   border: 3px solid var(--trim);
-  font: 400 clamp(20.3px, calc(var(--fd-u) * 1.19), 33.6px) / 1 var(--serif);
+  font: 400 clamp(20.3px, calc(var(--fd-u) * 1.19), 76px) / 1 var(--serif);
   color: var(--crest-ink);
   padding-top: 2px;
 }
@@ -8011,10 +8011,10 @@ body.map #root { padding-bottom: var(--foot); }
    The name is the franchise's own on its own front door, so it leads the row now. `.fd-club` keeps
    `min-width: 0` and the name keeps `text-overflow: ellipsis`, so a long one still shortens rather
    than pushing the stats off the end of the row. */
-.fd-club b { font: 400 clamp(21.7px, calc(var(--fd-u) * 1.54), 40.6px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
+.fd-club b { font: 400 clamp(21.7px, calc(var(--fd-u) * 1.54), 91px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
 .fd-club i {
   font-style: normal;
-  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 32px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -8030,15 +8030,15 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-stat i {
   display: block;
   font-style: normal;
-  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 32px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
-.fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 27px) / 1 var(--num); color: var(--ink); }
+.fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 61px) / 1 var(--num); color: var(--ink); }
 /* "the stars bigger" - the RAFTERS figure only. Cleared is a count of levels and keeps its size;
    the stars are the thing the whole ladder is banked in. */
-.fd-stat b.gold { font-size: clamp(24px, calc(var(--fd-u) * 1.5), 40px); color: var(--you); }
+.fd-stat b.gold { font-size: clamp(24px, calc(var(--fd-u) * 1.5), 90px); color: var(--you); }
 .fd-stat em { font-style: normal; color: var(--muted-2); }
 /* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
    the ink carrying the whole state, no radius and no gap. The idle ink is --faint (#8a8178) rather
@@ -8050,7 +8050,7 @@ body.map #root { padding-bottom: var(--foot); }
   place-items: center;
   min-height: 48px;
   padding: 0 calc(var(--fd-u) * 0.9);
-  font-size: clamp(11px, calc(var(--fd-u) * 0.58), 15px);
+  font-size: clamp(11px, calc(var(--fd-u) * 0.58), 34px);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -8188,7 +8188,7 @@ body.map #root { padding-bottom: var(--foot); }
      cqw, so all of them come down with it and none of them has to be re-placed. */
   width: calc(min(100cqw, calc(100cqh * 29 / 20)) * 0.93);
   aspect-ratio: 29 / 20;
-  border: clamp(2px, 0.2vw, 4px) solid rgb(var(--fd-line) / 0.26);
+  border: clamp(2px, 0.2vw, 8px) solid rgb(var(--fd-line) / 0.26);
   border-bottom: 0;
   background: radial-gradient(ellipse 70% 80% at 50% 88%, rgb(255 226 178 / 0.11) 0%, rgb(0 0 0 / 0) 72%);
 }
@@ -8233,29 +8233,29 @@ body.map #root { padding-bottom: var(--foot); }
  */
 .fd-arcbox { left: 14%; right: 14%; top: 0; bottom: 0; overflow: hidden; }
 /* 89.3% of the COURT is 124% of the box the arc is clipped to */
-.fd-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); border-radius: 50%; }
-.fd-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); }
+.fd-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.22); border-radius: 50%; }
+.fd-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.22); }
 .fd-corner.l { left: 14%; }
 .fd-corner.r { left: 86%; }
-.fd-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-bottom: 0; }
-.fd-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-radius: 50%; }
+.fd-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.2); border-bottom: 0; }
+.fd-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.2); border-radius: 50%; }
 /* THE RIM ASSEMBLY IS THE DESIGN'S, in our units. Ours was a single solid bar and had nothing to
    defend; this is a backboard, a stanchion and a net seen from above. The design draws all three
    at fixed pixels inside a percentage-scaled court, so its rim is huge on a phone and a speck on a
    desk; every one of them is converted to cqw with a pixel floor here. */
 .fd-board {
-  width: clamp(34px, 6.3cqw, 82px);
-  height: clamp(3px, 0.4cqw, 5px);
+  width: clamp(34px, 6.3cqw, 110px);
+  height: clamp(3px, 0.4cqw, 7px);
   bottom: 1.85cqw;
   background: linear-gradient(180deg, #f4efe4 0%, #b5a996 100%);
   box-shadow: 0 2px 5px rgb(0 0 0 / 0.6);
 }
-.fd-post { width: clamp(6px, 1cqw, 13px); height: clamp(7px, 1.2cqw, 15px); bottom: 0.7cqw; background: var(--line-3); }
+.fd-post { width: clamp(6px, 1cqw, 18px); height: clamp(7px, 1.2cqw, 21px); bottom: 0.7cqw; background: var(--line-3); }
 .fd-hoop {
   position: absolute;
   left: 50%;
   bottom: 3.6cqw;
-  width: clamp(22px, 4cqw, 52px);
+  width: clamp(22px, 4cqw, 70px);
   aspect-ratio: 1;
   transform: translateX(-50%);
   z-index: 9;
@@ -8376,9 +8376,9 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   /* the horizontal FLOOR is 4px and not 6 — see the note on `.fd-label`'s, which is the same note */
-  padding: clamp(2px, 0.3cqw, 4px) clamp(4px, 0.9cqw, 11px) 0;
+  padding: clamp(2px, 0.3cqw, 6px) clamp(4px, 0.9cqw, 16px) 0;
   background: var(--fd-shirt);
-  font: 400 clamp(7px, 1.33cqw, 13.3px) / 1 var(--serif);
+  font: 400 clamp(7px, 1.33cqw, 24px) / 1 var(--serif);
   color: var(--fd-shirt-ink);
 }
 .fd-marks.litflip .fd-mark.on .fd-no { background: var(--you-ink); color: var(--fd-shirt); }
@@ -8406,8 +8406,8 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-label {
   display: flex;
   align-items: center;
-  padding: clamp(3px, 0.4cqw, 5px) clamp(6px, 1.3cqw, 16px) clamp(2px, 0.25cqw, 3px);
-  font: 400 clamp(7.7px, 1.82cqw, 18.2px) / 1 var(--serif);
+  padding: clamp(3px, 0.4cqw, 7px) clamp(6px, 1.3cqw, 23px) clamp(2px, 0.25cqw, 5px);
+  font: 400 clamp(7.7px, 1.82cqw, 32px) / 1 var(--serif);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--ink-2);
@@ -8456,11 +8456,11 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-cup {
   position: absolute;
   left: 50%;
-  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 6px));
+  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 7px));
   transform: translateX(-50%);
   display: grid;
   place-items: center;
-  height: clamp(18px, 4.3cqw, 42px);
+  height: clamp(18px, 4.3cqw, 75px);
   line-height: 0;
   pointer-events: none;
 }
@@ -8716,7 +8716,7 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-read > * { flex: none; }
 .fd-tag {
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.55)), 13px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.55)), 29px);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--you);
@@ -8725,7 +8725,7 @@ body.map #root { padding-bottom: var(--foot); }
    job in the design's own language, and the same navy as the number tags and the foot band, which
    is what makes the three read as one structure. */
 .fd-name {
-  font: 400 clamp(21px, min(12.6cqw, calc(var(--fd-u) * 2.1)), 50.4px) / 0.84 var(--serif);
+  font: 400 clamp(21px, min(12.6cqw, calc(var(--fd-u) * 2.1)), 113px) / 0.84 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
   margin-top: 4px;
@@ -8747,7 +8747,7 @@ body.map #root { padding-bottom: var(--foot); }
      the death match's five rules ran 148px past the foot of that pane. `3dvh - 9px` is solved, not
      scaled: it hands back exactly the 18px that fitted there, and by 1,200 of window it has
      stopped binding, so a desk still reads the size the design asks for. */
-  font-size: clamp(17px, min(6.2cqw, calc(var(--fd-u) * 0.95), calc(3dvh - 9px)), 27px);
+  font-size: clamp(17px, min(6.2cqw, calc(var(--fd-u) * 0.95), calc(3dvh - 9px)), 61px);
   line-height: 1.5;
   color: var(--ink-2);
   text-wrap: pretty;
@@ -8812,8 +8812,8 @@ body.map #root { padding-bottom: var(--foot); }
 /* AND THE TYPE GROWS AT 500, where two columns are 240 apiece and the height the second column
    handed back is worth more than the points it costs. */
 @container (min-width: 500px) {
-  .fd-tag { font-size: clamp(11px, min(2.4cqw, calc(var(--fd-u) * 0.8)), 20px); }
-  .fd-name { font-size: clamp(23.8px, min(12.6cqw, calc(var(--fd-u) * 3.2)), 64.4px); }
+  .fd-tag { font-size: clamp(11px, min(2.4cqw, calc(var(--fd-u) * 0.8)), 45px); }
+  .fd-name { font-size: clamp(23.8px, min(12.6cqw, calc(var(--fd-u) * 3.2)), 145px); }
   .fd-desc {
     margin-top: 9px;
     /**
@@ -8848,13 +8848,13 @@ body.map #root { padding-bottom: var(--foot); }
        SO IT IS SOLVED RATHER THAN SCALED. `3dvh - 9px` hands back exactly the 18px that fitted at
        900, and is steep enough that by 1,200 of window it has stopped binding and the read is the
        size the design asks for - 31.2px on his own 1,500px desk, which is the full increase. */
-    font-size: clamp(17px, min(5cqw, calc(var(--fd-u) * 1.3), calc(3dvh - 9px)), 40px);
+    font-size: clamp(17px, min(5cqw, calc(var(--fd-u) * 1.3), calc(3dvh - 9px)), 90px);
     /* 1.4 rather than 1.5: at 20px a fifteenth of a line is four pixels, and over the ten lines
        this pane holds that is the difference between the sign-off standing on the board and the
        sign-off being scrolled to. */
     line-height: 1.4;
   }
-  .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 16px); }
+  .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 36px); }
   /* THE FURNITURE GIVES UP ITS AIR SO THE COPY CAN HAVE IT. Every number here is smaller than the
      one it overrides by four or five pixels and together they are worth about twenty, which is
      what the fifth rule costs — and they gave up two apiece again on 2026-09-21, when the identity
@@ -8875,7 +8875,7 @@ body.map #root { padding-bottom: var(--foot); }
   border-top: 1px solid var(--line);
 }
 .fd-metak {
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -8883,7 +8883,7 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-metav {
   margin-left: auto;
   /* the other half of "the stars bigger": the same figure said again at the foot of the read */
-  font: 400 clamp(16px, min(7.6cqw, calc(var(--fd-u) * 1.25)), 32px) / 1 var(--num);
+  font: 400 clamp(16px, min(7.6cqw, calc(var(--fd-u) * 1.25)), 72px) / 1 var(--num);
   text-transform: uppercase;
   color: var(--you);
 }
@@ -8898,7 +8898,7 @@ body.map #root { padding-bottom: var(--foot); }
   background: var(--you);
   color: var(--you-ink);
   text-align: center;
-  font: 400 clamp(14px, min(7.28cqw, calc(var(--fd-u) * 1.19)), 28px) / 1 var(--serif);
+  font: 400 clamp(14px, min(7.28cqw, calc(var(--fd-u) * 1.19)), 63px) / 1 var(--serif);
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -8914,7 +8914,7 @@ body.map #root { padding-bottom: var(--foot); }
   margin-top: auto;
   padding-top: 14px;
   max-width: 56ch;
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -8949,7 +8949,7 @@ body.map #root { padding-bottom: var(--foot); }
   align-items: baseline;
   justify-content: center;
   gap: 10px;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(8px, 1.4vw, 18px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.5), 29px) clamp(8px, 1.4vw, 41px);
   border-left: 1px solid rgb(255 255 255 / 0.14);
   cursor: pointer;
 }
@@ -8963,7 +8963,7 @@ body.map #root { padding-bottom: var(--foot); }
    the markup, not a pseudo-element. */
 .fd-bookrow b,
 .fd-bookrow i {
-  font: 400 clamp(9.8px, calc(var(--fd-u) * 0.63), 15.4px) / 1 var(--serif);
+  font: 400 clamp(9.8px, calc(var(--fd-u) * 0.63), 34.6px) / 1 var(--serif);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   overflow: hidden;
@@ -8977,11 +8977,11 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(10px, 1.4vw, 18px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.5), 29px) clamp(10px, 1.4vw, 41px);
   text-align: center;
   text-wrap: balance;
   white-space: normal;
-  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.5;

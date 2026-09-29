@@ -583,7 +583,7 @@ export function FrontDoor({
             one any more. */}
         {/* "Game 7 and the ball bigger" (his ruling, 2026-09-29, Home.dc.html). The wordmark beside
             it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
-        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 108px)" dribble />
+        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 243px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>
