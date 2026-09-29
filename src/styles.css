@@ -5534,7 +5534,13 @@ body.offstage #root { position: relative; z-index: 1; }
        track, which is narrower than "112–108" wants to be. */
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     column-gap: 24px;
-    align-items: start;
+    /* AND THE HEIGHT, TOO - his ruling, 2026-09-29: "Yes fix the result screen too". The 2026-09-08
+       ruling gave this screen the window's WIDTH and left `align-items: start`, so the three groups
+       ended where their content ended and a 1,500px desk showed a band across the top with five
+       hundred pixels of black under it. The grid's own height is measured in Series.tsx; the rows
+       are the three columns and then the doors, and every group stretches to its row. */
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
   }
   .result > * {
     display: block;
@@ -5543,17 +5549,45 @@ body.offstage #root { position: relative; z-index: 1; }
   /* The lead SPANS both card rows rather than sitting in the first of them: otherwise row 1 is as
      tall as the whole lead and the night card is pushed down to meet its foot, which puts back the
      scroll this ruling is about. */
+  /* THE LEAD IS READ IN ORDER AND CENTRED IN ITS COLUMN: the score, the room it was read in, and
+     the strip of nights under it. Centred rather than stretched because the three of them are one
+     block - a verdict with a gap torn through it is not a bigger verdict. */
   .res-lead {
     grid-column: 1;
     grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
   }
-  .res-won {
-    grid-column: 2;
-    grid-row: 1;
-  }
+  /* THE TWO CARDS DO stretch, and what is inside them spreads: five duel bars and two nameplates
+     given the height of the window are five duel bars with air around them, which is the one thing
+     this card has always wanted and never had. */
+  .res-won,
   .res-night {
     grid-column: 2;
-    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .res-won { grid-row: 1; }
+  .res-night { grid-row: 2; }
+  .res-won > .card,
+  .res-night > .card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .res-won .duels {
+    flex: 1 1 auto;
+    align-content: space-between;
+  }
+  /* the two nameplates stay TOGETHER - they are a star and the answer to him, and a card that
+     pushed the answer to its foot left the pair reading as two unrelated lines. It is the DOOR
+     that takes the slack, which is where a door belongs. */
+  .res-night .card .linkb {
+    margin-top: auto;
   }
   /* OPENED ON REQUEST, and capped. The box scores are the one part of this screen read as a TABLE,
      and a table stretched to 1400px puts every number a hand's width from the label it belongs to —
@@ -5609,9 +5643,44 @@ body.offstage #root { position: relative; z-index: 1; }
   .res-night > .card {
     margin-top: 0;
   }
+  /* three columns, so the lead no longer spans two rows */
+  .res-lead {
+    grid-row: 1;
+  }
   .res-more {
     grid-row: 2;
   }
+}
+
+/* ---- AND IT READS AT THE SIZE OF THE DESK IT IS ON ----
+   The other half of "fix the result screen too". A 64px score, a 10px chip and an 8.5px duel label
+   were cut for a 562px column; filling the window with the same type only makes the black between
+   the words bigger. Every figure on this screen is a share of the window now, with the size it has
+   today as the floor of its clamp, so nothing under 1,400px moves. */
+@media (min-width: 1400px) {
+  .result .verdict.final { padding-top: clamp(14px, 1.2vw, 40px); }
+  .result .verdict.final .v-kick { font-size: clamp(9px, 0.62vw, 20px); }
+  .result .verdict.final h1 { font-size: clamp(64px, 5.4vw, 170px); }
+  .result .v-row { gap: clamp(14px, 1.5vw, 46px); margin-top: clamp(10px, 0.8vw, 26px); }
+  .result .v-side { font-size: clamp(10px, 0.78vw, 25px); }
+  .result .verdict p { font-size: clamp(16.8px, 1.05vw, 33px); }
+  .result .stars { font-size: clamp(22px, 1.9vw, 60px); }
+  /* the filmstrip is what he presses now, so it is a row of targets and not a caption */
+  .result .strip { gap: clamp(5px, 0.5vw, 16px); margin-top: clamp(12px, 1.2vw, 40px); }
+  .result .gt { padding: clamp(8px, 0.95vw, 30px) 0 clamp(7px, 0.85vw, 27px); border-radius: clamp(6px, 0.4vw, 14px); gap: clamp(2px, 0.25vw, 8px); }
+  .result .gt i { font-size: clamp(7.5px, 0.55vw, 18px); }
+  .result .gt b { font-size: clamp(10px, 1.05vw, 34px); }
+  .result .duels { gap: clamp(10px, 0.9vw, 30px); margin-top: clamp(12px, 1vw, 30px); }
+  .result .duel-line { font-size: clamp(10px, 0.82vw, 26px); }
+  .result .duel-line span { font-size: clamp(8.5px, 0.6vw, 19px); }
+  .result .duel-bar { height: clamp(5px, 0.45vw, 14px); margin-top: clamp(4px, 0.35vw, 11px); }
+  .result .night-row { padding-top: clamp(8px, 0.7vw, 22px); gap: clamp(10px, 1vw, 30px); }
+  .result .night-row b { font-size: clamp(15.4px, 1.25vw, 40px); }
+  .result .night-row.small b { font-size: clamp(16px, 1.25vw, 40px); }
+  .result .night-row span { font-size: clamp(10.5px, 0.68vw, 22px); }
+  .result .card-head .label { font-size: clamp(11px, 0.68vw, 22px); }
+  .result .card-head .cap { font-size: clamp(9px, 0.6vw, 19px); }
+  .result .linkb { font-size: clamp(11px, 0.68vw, 22px); }
 }
 
 /* ---- achievements: the trophy case (round 63) ---- */

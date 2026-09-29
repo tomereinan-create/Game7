@@ -304,6 +304,18 @@ export function Series({
    */
   const [shown, setShown] = useState(() => (revealGames && !reduceMotion() ? 0 : result.games.length))
   const reveal = useRef<number | null>(null)
+  /**
+   * THE SETTLED NIGHT TAKES THE WHOLE DESK - his ruling, 2026-09-29: "Yes fix the result screen
+   * too", on the band of content this screen drew across the top of a 1,500px window with black
+   * under it.
+   *
+   * The 2026-09-08 ruling ("so it wont be all in the middle and having to scroll down") gave this
+   * screen the WIDTH - three columns instead of a 562px strip - and the height was never asked
+   * about, so the grid stayed `align-items: start` and the three groups ended wherever their
+   * content did. Same measurement as the draft board's, for the same reason: what stands above
+   * this grid and what the dock reserves below it are both variables no rule can read.
+   */
+  const resultBox = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!live || !tape) return
@@ -365,6 +377,25 @@ export function Series({
     document.body.classList.add('wide')
     return () => document.body.classList.remove('wide')
   }, [done])
+  useLayout(() => {
+    const fit = () => {
+      const el = resultBox.current
+      if (!el) return
+      el.style.minHeight = ''
+      // a phone stacks this screen and has no height to hand out
+      if (window.innerWidth < 900) return
+      const root = document.getElementById('root')
+      const foot = root ? parseFloat(getComputedStyle(root).paddingBottom) || 0 : 0
+      const room = window.innerHeight - el.getBoundingClientRect().top - foot
+      // MIN-height: with the box scores open the screen is longer than the window and scrolls,
+      // which is what that door is for
+      if (room > 420) el.style.minHeight = `${Math.floor(room)}px`
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    document.fonts?.ready.then(fit).catch(() => {})
+    return () => window.removeEventListener('resize', fit)
+  })
   const box = useMemo(
     () => (done ? seriesBox(five, opponent.players, LINES, result.games, scoresOf(result, tape ? { us: tape.us, them: tape.them } : null), makeRng(seed ^ 0x2545f491), boxCtx ?? undefined) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -456,7 +487,7 @@ export function Series({
         to spend and the order was already right. The grouping only bites on a desk.
       */}
       {done ? (
-        <div className={`result${settled ? '' : ' landing'}`} onClick={settled ? undefined : skipReveal}>
+        <div ref={resultBox} className={`result${settled ? '' : ' landing'}`} onClick={settled ? undefined : skipReveal}>
           <div className="res-lead">
             {/* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */}
             <div className={`verdict final ${user ? 'um-on' : ''}`}>
