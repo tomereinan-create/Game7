@@ -345,6 +345,41 @@ describe('a series lands one game at a time', () => {
     expect(html.split('aria-label="Game ').length - 1).toBe(r.games.length)
   })
 
+  /**
+   * HIS RULING, 2026-09-29: "If the series got to 7, show the 7 animation after loading the 6
+   * games, then the animation. Currently, the game 7 animation is happenning and then I get games
+   * 1-6 (Which will always end 3-3)."
+   *
+   * The tape was built to open this screen, because before the landing existed there was nothing
+   * for it to follow. Now it goes third: six chips, the decider on the tape, the seventh chip.
+   */
+  it('holds the Game 7 tape until the first six have landed', () => {
+    const { r, seed } = seriesOfLength(A, OPP4.players, 7)
+    const html = renderToStaticMarkup(
+      createElement(Series, {
+        opponent: OPP4,
+        five: A,
+        mine: compile(A, OPP4.players),
+        theirs: compile(OPP4.players, A),
+        teamName: 'Los Angeles Lakers',
+        result: r,
+        seed,
+        onAdvance: () => {},
+      }),
+    )
+    // the strip is up and waiting; the scorebug is not
+    expect(html.split('class="gt pending"').length - 1).toBe(7)
+    expect(html).not.toContain('● LIVE')
+    expect(html).not.toContain('>GAME 7<')
+    // and the landing is the only thing offering a way out of itself
+    expect(html).toContain('Skip to result')
+  })
+
+  it('still opens straight onto the tape when the landing is off', () => {
+    // which is what a reduced-motion machine gets, and what the settled-screen cases render
+    expect(campaign(7)).toContain('● LIVE')
+  })
+
   it('keeps every night, and the nights add up to the averages beside them', () => {
     const { r, seed } = seriesOfLength(A, OPP4.players, 5)
     const scores = r.games.map((g) => ({ us: g.us, them: g.them }))

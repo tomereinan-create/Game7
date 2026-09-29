@@ -289,7 +289,27 @@ export function Series({
     document.body.classList.add(`sk-${skin}`)
     return () => document.body.classList.remove(`sk-${skin}`)
   }, [skin])
-  const [live, setLive] = useState(!!decider)
+  /**
+   * GAME 7 GOES LAST, BECAUSE IT IS LAST — his ruling, 2026-09-29: "If the series got to 7, show
+   * the 7 animation after loading the 6 games, then the animation. Currently, the game 7 animation
+   * is happenning and then I get games 1-6 (Which will always end 3-3)."
+   *
+   * Exactly right, and it is the landing I added this morning that made it wrong: the tape was
+   * built to be the FIRST thing this screen did, because before the landing existed there was
+   * nothing for it to come after. So he watched the decider, learned the series, and was then
+   * shown six games whose ending he already knew and which could only ever add up to 3-3.
+   *
+   * The screen runs in three phases now — the first six chips land, the seventh is played on the
+   * tape, and then it lands too and the series may speak. `live` therefore starts FALSE whenever
+   * the landing is on, and is turned on by the landing reaching the decider. With the landing off
+   * (reduced motion, or a render that wants the settled screen) the tape opens the screen exactly
+   * as it always did.
+   */
+  const [live, setLive] = useState(!!decider && (!revealGames || reduceMotion()))
+  /** The decider has been played. A ref: it must not restart the tape by re-rendering. */
+  const tapeRun = useRef(!decider)
+  /** How many games may land before the tape: all of them, or all but the decider. */
+  const preGames = result.games.length - (decider ? 1 : 0)
   const timer = useRef<number | null>(null)
   /**
    * THE SERIES LANDS ONE GAME AT A TIME - his ruling, 2026-09-29: "Simming a series, should be 1
@@ -320,6 +340,7 @@ export function Series({
   useEffect(() => {
     if (!live || !tape) return
     if (i >= tape.ticks.length) {
+      tapeRun.current = true
       setLive(false)
       return
     }
@@ -332,6 +353,7 @@ export function Series({
 
   const skip = () => {
     if (timer.current) window.clearTimeout(timer.current)
+    tapeRun.current = true
     setLive(false)
     if (tape) setI(tape.ticks.length)
   }
@@ -339,15 +361,24 @@ export function Series({
   const done = !live
   /** Every game is on the strip and the series may speak. */
   const settled = shown >= result.games.length
+  /** The landing stops at the decider until the tape has played it. */
+  const revealCap = tapeRun.current ? result.games.length : preGames
   useEffect(() => {
-    if (!done || settled) return
+    if (!done || shown >= revealCap) return
     reveal.current = window.setTimeout(() => setShown((n) => n + 1), GAME_MS)
     return () => {
       if (reveal.current) window.clearTimeout(reveal.current)
     }
-  }, [done, settled, shown])
+  }, [done, revealCap, shown])
+  /* AND THE TAPE TAKES OVER when the six are down. `live` is what hides the strip and draws the
+     scorebug; when the tape ends it hands the screen back and the landing finishes the job. */
+  useEffect(() => {
+    if (!decider || tapeRun.current || live || shown < preGames) return
+    setLive(true)
+  }, [decider, live, shown, preGames])
   const skipReveal = () => {
     if (reveal.current) window.clearTimeout(reveal.current)
+    tapeRun.current = true
     setShown(result.games.length)
   }
   /** The series score as far as the strip has got, which is the final one once it is settled. */

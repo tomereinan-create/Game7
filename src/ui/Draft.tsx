@@ -42,6 +42,17 @@ export type { TeamSeason } from '../data/wheel'
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const SAL = SALARIES as Record<string, { sal: number; cap: number; pct: number }>
 const money = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${Math.round(n / 1e3)}K`)
+/**
+ * A team named with its season, saying the year ONCE - his ruling, 2026-09-29: "Detroit Pistons
+ * '04 '04 showing twice '04". Two of the four ladder blocks name their levels differently: The
+ * League's are a bare club with a `season` field beside them, The Champions' carry the year inside
+ * the name. A head that stamped `season` on unconditionally was right for one and doubled the
+ * other. The test is the name's own tail, not which block it came from, because a level built any
+ * other way in future gets the same answer.
+ */
+const seasonName = (team: string, season?: number | null) =>
+  !season || /’\d\d$|'\d\d$/.test(team.trim()) ? team : `${team} '${String(season).slice(2)}`
+
 /** "$30.1M · 124% of cap", or an honest blank where the record has no figure. */
 export const salaryLine = (name: string) => {
   const s = SAL[name]
@@ -843,14 +854,25 @@ export function Draft({
     setInfo(name)
   }
 
-  const confirm = () => {
-    if (!sel || !slot) return
-    setSlots((cur) => ({ ...cur, [slot]: sel }))
+  /**
+   * PRESSING THE RING IS THE ASSIGNMENT - his ruling, 2026-09-29: "Assign when pressing the
+   * position in Assign to PG SG SF PF C". The chips used to AIM the pick and leave the commit to
+   * the dock button below, which made a two-press job out of a row of five targets that each name
+   * exactly one outcome. `commit` takes the ring rather than reading it off state, because a chip
+   * has to both choose and commit in the same press and `setSlot` would not have landed yet.
+   */
+  const commit = (at: Pos) => {
+    if (!sel) return
+    setSlots((cur) => ({ ...cur, [at]: sel }))
     setSpun(null)
     setDisplay(null)
     setSel(null)
     setSlot(null)
     setInfo(null)
+  }
+  /** The dock's own button: the ring it commits is the one the chips last lit. */
+  const confirm = () => {
+    if (slot) commit(slot)
   }
 
   const canMove = (from: Pos, to: Pos) => canMoveSlot(slots, posOf, from, to)
@@ -1477,10 +1499,13 @@ export function Draft({
             the team name not below") — one row, the headline on the left and the two dials on the
             right, which gives the height the dials took back to the floor and the roster below. */}
         <div className="opp-top">
-          <div className="opp-name">
-            {opponent.team}
-            {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
-          </div>
+          {/* THE YEAR IS SAID ONCE - his ruling, 2026-09-29: "Detroit Pistons '04 '04 showing
+              twice '04". The League's levels carry a bare club ("Detroit Pistons") and a `season`
+              beside it, so the head stamps the year on; the Champions' levels carry the year IN
+              the name already ("Denver Nuggets '23", "Detroit Pistons '04") and were getting it
+              stamped on a second time. `seasonName` only stamps a name that does not already end
+              in one. */}
+          <div className="opp-name">{seasonName(opponent.team, opponent.season)}</div>
           {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         </div>
         {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
@@ -1697,7 +1722,7 @@ export function Draft({
                           key={x}
                           className={`sortb ${slot === x ? 'on' : ''} ${can ? '' : 'no'}`}
                           disabled={!can}
-                          onClick={() => can && setSlot(x)}
+                          onClick={() => can && commit(x)}
                         >
                           {x}
                         </button>

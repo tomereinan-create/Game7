@@ -2773,12 +2773,18 @@ button {
    without a width being guessed at anywhere. `row-gap` is small and `column-gap` is wide, because
    what separates two things standing beside each other is space and what separates two lines is
    almost nothing: the doors' own 44px boxes already hold them apart. */
-.map-head.across { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding: 4px 0 2px; }
+/* THE LADDER'S OWN HEAD READS AT THE SIZE OF THE DESK — his ruling, 2026-09-29: "Make this way
+   bigger", on the whole band: the level line, the era it belongs to, the count cleared, the star
+   counter, the staff door, the team line and the reset. It was cut for a phone — a 9.5px mono line
+   and a 24px counter — and on a 3,840px desk it is a strip of footnotes over a full-screen ladder.
+   Every term is a clamp whose FLOOR is the size it has today, so nothing under about 1,500px of
+   window moves by a pixel and the phone is untouched. */
+.map-head.across { display: flex; flex-wrap: wrap; align-items: center; gap: 0 clamp(16px, 1.1vw, 42px); padding: clamp(4px, 0.4vw, 16px) 0 clamp(2px, 0.3vw, 12px); }
 /* The reading line. A basis wide enough to hold its own text means the doors wrap under it on a
    phone rather than shouldering it into an ellipsis, and `flex-grow` lets it take up the slack on
    a desk so the doors sit out at the right where the home button is. */
 .map-head.across .map-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 7px; flex: 1 1 300px; min-width: 0; }
-.map-head.across .map-kicker { font-size: 9.5px; line-height: 1.5; }
+.map-head.across .map-kicker { font-size: clamp(9.5px, 0.62vw, 24px); line-height: 1.5; }
 /* the dot between the two halves is drawn, not typed, so it goes away by itself if a long era name
    wraps them onto separate lines */
 .map-head.across .map-read .map-kicker + .map-kicker::before { content: '·'; margin-right: 7px; opacity: 0.55; }
@@ -2789,23 +2795,25 @@ button {
 /* Every door is a 44px box (his phone, one thumb, no hover): the labels are 9.5px mono, which is
    nothing to hit otherwise. The box is invisible — the type does not move, it only gains reach. */
 .map-head.across .map-doors > * { min-height: 44px; display: inline-flex; align-items: center; }
-.map-head.across .map-link { font-size: 9.5px; }
+.map-head.across .map-link { font-size: clamp(9.5px, 0.62vw, 24px); }
 /* the counter comes down from 40px to 24: it is a door in a row of doors now, not a headline */
-.map-head.across button.map-total { display: inline-flex; font-size: 24px; padding: 0; margin: 0; }
-.map-head.across .map-total i { font-size: 12px; }
-.map-head.across .map-total .star { font-size: 17px; }
-.map-head.across button.map-total .a { font-size: 15px; margin-left: 6px; }
+.map-head.across button.map-total { display: inline-flex; font-size: clamp(24px, 1.7vw, 66px); padding: 0; margin: 0; }
+.map-head.across .map-total i { font-size: clamp(12px, 0.85vw, 33px); }
+.map-head.across .map-total .star { font-size: clamp(17px, 1.2vw, 46px); }
+.map-head.across button.map-total .a { font-size: clamp(15px, 1.05vw, 40px); margin-left: clamp(6px, 0.4vw, 15px); }
 /* the team line is a door among doors now, so it sizes to its own words instead of stretching to a
    column that no longer exists — and it still gives up the NAME first when the row runs out */
 .map-head.across .map-link.team { width: auto; min-width: 0; flex: 0 1 auto; justify-content: flex-start; }
 @media (min-width: 900px) {
-  .map-head.across { gap: 0 22px; padding: 6px 0 4px; }
-  .map-head.across .map-kicker { font-size: 11.5px; }
-  .map-head.across .map-link { font-size: 11.5px; }
-  .map-head.across button.map-total { font-size: 34px; }
-  .map-head.across .map-total i { font-size: 15px; }
-  .map-head.across .map-total .star { font-size: 24px; }
-  .map-head.across button.map-total .a { font-size: 19px; }
+  /* the desk restates the band, so the clamps have to be restated here too or this tier's own
+     fixed sizes win the cascade and nothing grows (his ruling: "Make this way bigger") */
+  .map-head.across { gap: 0 clamp(22px, 1.1vw, 42px); padding: clamp(6px, 0.4vw, 16px) 0 clamp(4px, 0.3vw, 12px); }
+  .map-head.across .map-kicker { font-size: clamp(11.5px, 0.62vw, 24px); }
+  .map-head.across .map-link { font-size: clamp(11.5px, 0.62vw, 24px); }
+  .map-head.across button.map-total { font-size: clamp(34px, 1.7vw, 66px); }
+  .map-head.across .map-total i { font-size: clamp(15px, 0.85vw, 33px); }
+  .map-head.across .map-total .star { font-size: clamp(24px, 1.2vw, 46px); }
+  .map-head.across button.map-total .a { font-size: clamp(19px, 1.05vw, 40px); }
 }
 /* AUTO-COMPLETE. On, the trail behind the door brings its locked tickets most of the way up —
    every one of them is a live target now. The door itself is the era row's last chip; the foot
@@ -3801,7 +3809,15 @@ body:has(.sheet) { overflow: hidden; }
    CourtFive off the constants that draw the floor; the fallbacks are the old numbers, so a court
    that somehow did not write them is no worse than it was. ALL IN rather than all out, because
    out is above the boards and the only thing above the boards on this page is the season strip. */
-.ct-call { position: absolute; top: calc(var(--ct-in-y, 2.5%) + 1.6%); right: calc(var(--ct-in-x, 3%) + 1.6%); max-width: 60%; text-align: right; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+/* OVER THE COURT — his ruling, 2026-09-29: "Move Helio over the court, and add Tactic: Helio."
+   It sat inside the lines, in the top-right corner of the boards, under the 2026-09-22 ruling
+   that asked for it "either all in or all out" — all in, because on the team page the only thing
+   above the boards is the season strip. This is the other of those two, chosen this time: the
+   caption stands in the out-of-bounds band at the top of the box, centred over the floor rather
+   than tucked in a corner of it, which is where a label for the whole five belongs now that it
+   IS just a label ("Tactic: Helio") and not a sentence. `--ct-in-y` is the depth of that band, so
+   the caption sits in it rather than across the boundary at any size of floor. */
+.ct-call { position: absolute; top: 0; left: 50%; right: auto; transform: translateX(-50%); max-width: 92%; text-align: center; min-height: var(--ct-in-y, 2.5%); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
 .ct-spot { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; width: 86px; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
 .ct-spot:disabled { cursor: default; }
 @media (prefers-reduced-motion: no-preference) {
@@ -5631,9 +5647,21 @@ body.offstage #root { position: relative; z-index: 1; }
    waits for. */
 @media (min-width: 1150px) {
   .result {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+    /* the widest track is the middle one now, because that is where the verdict went */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+  /* THE SCORE IN THE MIDDLE — his ruling, 2026-09-29: "In the Photo, the series score should be
+     in the middle." It opened the row on the left, which is where you start reading, and that was
+     the argument for it; but on a desk the three groups are read as a BOARD and not as a sentence,
+     and the verdict is the thing the other two explain. Between them, it is the middle of the
+     screen rather than the middle of a column — and WHERE IT WAS WON, which is the how, now sits
+     to its left, and THE NIGHT BELONGED TO, which is the who, to its right. */
+  .res-won {
+    grid-column: 1;
+    grid-row: 1;
   }
   .res-lead {
+    grid-column: 2;
     grid-row: 1;
   }
   .res-night {
@@ -6761,11 +6789,12 @@ body.um {
 /* The ladder's control row — four era chips and the auto door, then staff and rename.
    Nothing here is under 44px: it is the top of the map and it is all thumb. */
 .um-mapbar { display: flex; flex-direction: column; gap: 6px; padding: 0 14px 8px; }
-.um-eras { display: flex; gap: 5px; }
+/* the four era keys grow with the head above them (his ruling: "Make this way bigger") */
+.um-eras { display: flex; gap: clamp(5px, 0.4vw, 15px); }
 .um-era {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 44px;
+  min-height: clamp(44px, 3.2vw, 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6783,8 +6812,8 @@ body.um {
   text-transform: uppercase;
   cursor: pointer;
 }
-.um-era b { font-family: var(--serif); font-size: 10.5px; line-height: 1; font-weight: 400; }
-.um-era i { font-style: normal; font-size: 8px; letter-spacing: 0.02em; color: var(--um-cap); }
+.um-era b { font-family: var(--serif); font-size: clamp(10.5px, 0.8vw, 31px); line-height: 1; font-weight: 400; }
+.um-era i { font-style: normal; font-size: clamp(8px, 0.6vw, 23px); letter-spacing: 0.02em; color: var(--um-cap); }
 .um-era.on { border-color: var(--um-gold); background: #241f1a; color: var(--um-gold); }
 .um-era.on i { color: var(--um-gold); }
 .um-maprow { display: flex; gap: 8px; }

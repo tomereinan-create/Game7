@@ -554,17 +554,17 @@ function callLine(plan: Tactics, side: Side, men: Player[]): string {
  * nothing fits better than the free default says exactly that, rather than pretending 60 is a fit.
  */
 function fitLine(inf: { style: Style; fit: number }, men: Player[]): string {
-  const label = STYLES.find((s) => s.key === inf.style)?.label ?? inf.style
-  // HIS RULING: "Remove · no better fit." It was there to say the read was INFERRED and that the
-  // default won on its own rather than at some score — but BALANCED already says that to anybody
-  // reading it, and the tail was a sentence of apparatus over a diagram that has none.
-  if (inf.style === 'balanced') return label
-  // WHO IT RUNS THROUGH (recal_115, his ruling: "Why is the system helio for rus when KD is a better
-  // scorrer?"). The read used to name a shape and no man, so the only way to see whose offense the
-  // engine thought it was, was to find him standing at the top of the arc. The caption names him —
-  // and for the pick-and-roll it names BOTH men, which is what a five with two stars reads as.
-  const men2 = featured(inf.style, men).map((p) => surname(p.name))
-  return `${label} · best fit ${Math.round(inf.fit)}${men2.length ? ` · ${men2.join(' + ')}` : ''}`
+  void men
+  /**
+   * THE CAPTION IS THE CALL AND NOTHING ELSE — his ruling, 2026-09-29: "Remove best fit 60
+   * Billups. Move Helio over the court, and add Tactic: Helio."
+   *
+   * It read "helio · best fit 60 · Billups": a shape, the score it won on, and the man it runs
+   * through. The score was apparatus — it was there to say the read was INFERRED rather than
+   * called — and the name repeated a man already standing on the floor under it. What is left is
+   * the one thing the caption is for, said as a label.
+   */
+  return `Tactic: ${STYLES.find((s) => s.key === inf.style)?.label ?? inf.style}`
 }
 
 /**
