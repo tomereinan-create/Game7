@@ -581,7 +581,9 @@ export function FrontDoor({
             mark and wordmark grow with the window together. It carries the 7, and since his ruling
             of 2026-09-10 so does the ball on the floor below — there is no ball in this app without
             one any more. */}
-        <Ball size="clamp(42px, calc(var(--fd-u) * 3.4), 88px)" dribble />
+        {/* "Game 7 and the ball bigger" (his ruling, 2026-09-29, Home.dc.html). The wordmark beside
+            it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
+        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 108px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>

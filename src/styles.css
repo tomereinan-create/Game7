@@ -7970,7 +7970,10 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-word {
   flex: none;
-  font: 400 clamp(23.8px, calc(var(--fd-u) * 1.54), 53.2px) / 1 var(--serif);
+  /* "Game 7 and the ball bigger" - the wordmark and the ball beside it are the game's name on its
+     own front door and were the smallest identity on any screen in it. The ball follows in
+     FrontDoor.tsx, which is where its size is written. */
+  font: 400 clamp(30px, calc(var(--fd-u) * 2), 68px) / 1 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -8033,7 +8036,9 @@ body.map #root { padding-bottom: var(--foot); }
   color: var(--muted-2);
 }
 .fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 27px) / 1 var(--num); color: var(--ink); }
-.fd-stat b.gold { color: var(--you); }
+/* "the stars bigger" - the RAFTERS figure only. Cleared is a count of levels and keeps its size;
+   the stars are the thing the whole ladder is banked in. */
+.fd-stat b.gold { font-size: clamp(24px, calc(var(--fd-u) * 1.5), 40px); color: var(--you); }
 .fd-stat em { font-style: normal; color: var(--muted-2); }
 /* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
    the ink carrying the whole state, no radius and no gap. The idle ink is --faint (#8a8178) rather
@@ -8176,7 +8181,12 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-court {
   position: relative;
   container-type: inline-size;
-  width: min(100cqw, calc(100cqh * 29 / 20));
+  /* "make the court a touch smaller, while keeping everything aligned" - 7% off the width the
+     panel allows, and NOTHING else. The 29:20 stays, all six mark coordinates stay, and the panel
+     is still `align-items: center; justify-content: center`, so the floor keeps its centre. Every
+     line, mark, plate, hoop and the ball are laid out in percentages of this box or in its own
+     cqw, so all of them come down with it and none of them has to be re-placed. */
+  width: calc(min(100cqw, calc(100cqh * 29 / 20)) * 0.93);
   aspect-ratio: 29 / 20;
   border: clamp(2px, 0.2vw, 4px) solid rgb(var(--fd-line) / 0.26);
   border-bottom: 0;
@@ -8726,7 +8736,18 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-desc {
   margin: 12px 0 0;
   max-width: 42ch;
-  font-size: clamp(12px, min(4.3cqw, calc(var(--fd-u) * 0.62)), 17px);
+  /* HIS RULING, 2026-09-29 (Home.dc.html): "Make the mode description bigger, the stars bigger.
+     Game 7 and the ball bigger, and make the court a touch smaller, while keeping everything
+     aligned." The read is the thing this screen is FOR - it is what tells him what a mode is - and
+     it was set at a footnote's size beside a floor that takes half the window. 1.55x, which is the
+     design file's own number, floor and ceiling and every term with it.
+     PLUS A HEIGHT TERM THE DESIGN FILE DOES NOT HAVE, and cannot: the canvas draws at one fixed
+     frame, the app is resized. A 1,440x900 laptop puts the read pane UNDER the 500px the container
+     query below waits for, so this base rule is what it uses - and at 1.55x with no height in it,
+     the death match's five rules ran 148px past the foot of that pane. `3dvh - 9px` is solved, not
+     scaled: it hands back exactly the 18px that fitted there, and by 1,200 of window it has
+     stopped binding, so a desk still reads the size the design asks for. */
+  font-size: clamp(17px, min(6.2cqw, calc(var(--fd-u) * 0.95), calc(3dvh - 9px)), 27px);
   line-height: 1.5;
   color: var(--ink-2);
   text-wrap: pretty;
@@ -8816,7 +8837,18 @@ body.map #root { padding-bottom: var(--foot); }
      *     board: five rules where every other mark has three or four.
      *     It is dvh and not vh so a phone browser's collapsing toolbar is counted.
      */
-    font-size: clamp(12px, min(3.2cqw, calc(var(--fd-u) * 0.85), calc(8.4dvh - 46px)), 26px);
+    /* SCALED BY THE SAME 1.55 AS THE BASE - except the dvh KNEE, WHICH IS RE-MEASURED AND NOT
+       SCALED, and that is the one place this differs from the design file.
+       The knee is not a style, it is a FIT: it exists so the death match's five rules stand inside
+       their pane on a window too short to pay for the size the other terms want. Multiplying its
+       constants by 1.55 keeps the curve's shape and moves it to 1.55x the size, which by
+       construction no longer fits - measured, the scaled form (13dvh - 71px) puts the death match
+       148px past the foot of its pane at 1440x900, where the old one fitted with 28 to spare. The
+       design canvas draws at one fixed frame and cannot see this; the app is resized.
+       SO IT IS SOLVED RATHER THAN SCALED. `3dvh - 9px` hands back exactly the 18px that fitted at
+       900, and is steep enough that by 1,200 of window it has stopped binding and the read is the
+       size the design asks for - 31.2px on his own 1,500px desk, which is the full increase. */
+    font-size: clamp(17px, min(5cqw, calc(var(--fd-u) * 1.3), calc(3dvh - 9px)), 40px);
     /* 1.4 rather than 1.5: at 20px a fifteenth of a line is four pixels, and over the ten lines
        this pane holds that is the difference between the sign-off standing on the board and the
        sign-off being scrolled to. */
@@ -8850,7 +8882,8 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-metav {
   margin-left: auto;
-  font: 400 clamp(12px, min(5.8cqw, calc(var(--fd-u) * 0.92)), 23px) / 1 var(--num);
+  /* the other half of "the stars bigger": the same figure said again at the foot of the read */
+  font: 400 clamp(16px, min(7.6cqw, calc(var(--fd-u) * 1.25)), 32px) / 1 var(--num);
   text-transform: uppercase;
   color: var(--you);
 }
@@ -8986,7 +9019,7 @@ body.map #root { padding-bottom: var(--foot); }
      259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
      any. The read grows instead, and on a phone this band scrolls anyway. */
   .fd-panel { flex: none; container-type: inline-size; }
-  .fd-court { width: 100%; }
+  .fd-court { width: 93%; }
   .fd-read {
     flex: 1 0 auto;
     border-left: 0;
