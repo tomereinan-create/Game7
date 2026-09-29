@@ -7945,7 +7945,10 @@ body.map #root { padding-bottom: var(--foot); }
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: calc(var(--fd-u) * 0.4) var(--fd-pad);
+  /* the band's air, not its type: 0.4 of the unit was 42px of padding around a 35px line once
+     the unit came off its ceiling, and the floor below wants it more (his ruling: "Make the court
+     bigger in the home page") */
+  padding: calc(var(--fd-u) * 0.26) var(--fd-pad);
   background: var(--panel);
   border-bottom: 1px solid var(--divider);
   overflow: hidden;
@@ -7993,7 +7996,10 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   gap: clamp(9px, 1.4vw, 41px);
-  padding: clamp(10px, calc(var(--fd-u) * 0.62), 36px) var(--fd-pad) calc(var(--fd-u) * 0.6);
+  /* same again, and the phone's 10px floor holds so nothing there moves. The BALL and the
+     wordmark in this row keep every pixel his two rulings gave them - what is coming back to the
+     floor is the daylight around them. */
+  padding: clamp(10px, calc(var(--fd-u) * 0.42), 36px) var(--fd-pad) calc(var(--fd-u) * 0.4);
   background: var(--bg);
   white-space: nowrap;
 }
@@ -8215,7 +8221,14 @@ body.map #root { padding-bottom: var(--foot); }
      is still `align-items: center; justify-content: center`, so the floor keeps its centre. Every
      line, mark, plate, hoop and the ball are laid out in percentages of this box or in its own
      cqw, so all of them come down with it and none of them has to be re-placed. */
-  width: calc(min(100cqw, calc(100cqh * 29 / 20)) * 0.93);
+  /* THE FLOOR TAKES THE WHOLE PANEL - his ruling, 2026-09-29: "Make the court bigger in the home
+     page." The 0.93 was his own ruling of the same day ("make the court a touch smaller"), taken
+     back by this one; the panel is 29:20 and so is the floor, so at 1.0 they are the same box.
+     BEYOND 1.0 IS NOT AVAILABLE: this floor is bound by HEIGHT, not width - `100cqh * 29 / 20`
+     is the smaller of the two terms at every desk width - so a wider panel buys nothing and the
+     only other place to find floor is the chrome above and below it, which is where the rest of
+     this ruling is paid from. */
+  width: min(100cqw, calc(100cqh * 29 / 20));
   aspect-ratio: 29 / 20;
   border: clamp(2px, 0.2vw, 8px) solid rgb(var(--fd-line) / 0.26);
   border-bottom: 0;
@@ -8978,7 +8991,7 @@ body.map #root { padding-bottom: var(--foot); }
   align-items: baseline;
   justify-content: center;
   gap: 10px;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 29px) clamp(8px, 1.4vw, 41px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.34), 29px) clamp(8px, 1.4vw, 41px);
   border-left: 1px solid rgb(255 255 255 / 0.14);
   cursor: pointer;
 }
@@ -9006,7 +9019,7 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 29px) clamp(10px, 1.4vw, 41px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.34), 29px) clamp(10px, 1.4vw, 41px);
   text-align: center;
   text-wrap: balance;
   white-space: normal;
@@ -9048,6 +9061,10 @@ body.map #root { padding-bottom: var(--foot); }
      259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
      any. The read grows instead, and on a phone this band scrolls anyway. */
   .fd-panel { flex: none; container-type: inline-size; }
+  /* THE PHONE KEEPS THE 93%. Taking the desk's floor to the full panel is free — there is width
+     to spare either side — but at 375 the column IS the panel, and measured at 100% the VS FRIEND
+     plate hangs one pixel past the sideline into the panel's own `overflow: hidden`. The corner
+     plates are the thing that decided this number the first time; they decide it again. */
   .fd-court { width: 93%; }
   .fd-read {
     flex: 1 0 auto;
