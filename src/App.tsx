@@ -695,6 +695,9 @@ export default function App() {
           assignment={pending.assignment}
           onAdvance={finish}
           onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
+          /* the death match carries one five the whole way, so the end of a series is when he
+             wants to look at it — see `onMyTeam` in Series */
+          onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
           onNext={pending.next !== null ? advance : undefined}
         />
       </>

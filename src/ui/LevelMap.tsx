@@ -943,8 +943,14 @@ export function LevelMap({
                * the worn-out sentence — its bottom edge sits 20px clear of the top of the tallest
                * ticket the map draws, and adding a third note grows it upward, away from the
                * ticket, rather than down onto it.
+               *
+               * AND THE CLEARANCE IS THE TICKET'S OWN, not a number beside it — his ruling of
+               * 2026-09-30 is the second time this has had to be said, because the first fix used
+               * a fixed 100px and the tickets then doubled underneath it. `TICKET` is the same
+               * expression the stylesheet sizes them with, so the gap is 22px above the top of
+               * tonight's ticket at every width, whatever that ticket is.
                */
-              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 100 }}
+              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - (TICKET(colW) * 0.52 + 22) }}
             >
               {spendable ? (
                 /* A STAR, AND NOTHING ELSE — his ruling, 2026-09-29: "For the stars, I want big

@@ -25,6 +25,24 @@ const reduceMotion = () => {
 
 const FAST_MS = 75
 const SLOW_MS = 240
+/**
+ * THE CLOSING MINUTES OF A CLOSE GAME 7 RUN SLOW — his ruling, 2026-09-30: "If a game 7 is 5 pts
+ * or less in the last 5 min, slow down the sim (if its back to 6 its still slowed down, once it
+ * reach 5 in the last 5 its slowed down to the rest)."
+ *
+ * A LATCH, NOT A TEST. His parenthesis is the whole rule: the tape does not speed up again when
+ * the lead goes back out to six, because what it is reading has become a close finish and stays
+ * one. So the first tick inside the last five minutes with five or fewer between them turns it on,
+ * and it stays on to the buzzer.
+ */
+const CLUTCH_MS = 430
+const CLUTCH_SECS = 5 * 60
+const CLUTCH_PTS = 5
+/** "5:55" -> 355. A clock this cannot read is not a clutch clock. */
+const secsOf = (clock: string) => {
+  const [m, sec] = clock.split(':').map(Number)
+  return Number.isFinite(m) && Number.isFinite(sec) ? m * 60 + sec : Infinity
+}
 /** One game lands on the filmstrip every this many ms (his ruling: "1 game by 1"). */
 const GAME_MS = 600
 
@@ -199,6 +217,7 @@ export function Series({
   advanceLabel,
   skin = null,
   onHome,
+  onMyTeam,
   onAdvance,
   onRematch,
   onNext,
@@ -246,6 +265,14 @@ export function Series({
   reveal?: boolean
   /** A hot-seat table keeps its HOME / REMATCH pair: Home sits left of the advance button. */
   onHome?: () => void
+  /**
+   * THE DEATH MATCH'S OWN DOOR — his ruling, 2026-09-30: "After simming, add myteam button in
+   * deathmatch campaign." A run carries ONE five from the first level to the last and a change
+   * before each one, so the moment a series ends is exactly when he wants to look at who is worn
+   * and who he might swap. It was two screens away: back to the map, then My team. Absent in every
+   * other mode, which has no such screen.
+   */
+  onMyTeam?: () => void
   onAdvance: () => void
   /**
    * HIS RULING: "Add a rematch button, and advance(If you win your latest stage(not if you go back
@@ -337,6 +364,8 @@ export function Series({
    */
   const resultBox = useRef<HTMLDivElement | null>(null)
 
+  /** Latched the first time the last five minutes are inside five points; see `CLUTCH_MS`. */
+  const clutch = useRef(false)
   useEffect(() => {
     if (!live || !tape) return
     if (i >= tape.ticks.length) {
@@ -344,7 +373,11 @@ export function Series({
       setLive(false)
       return
     }
-    const delay = tape.ticks[i].slow ? SLOW_MS : FAST_MS
+    const t = tape.ticks[i]
+    // the 4th is the last quarter this game plays; anything past it is an overtime and is closer
+    // still, so it latches too
+    if (!clutch.current && t.q >= 4 && secsOf(t.clock) <= CLUTCH_SECS && Math.abs(t.us - t.them) <= CLUTCH_PTS) clutch.current = true
+    const delay = clutch.current ? CLUTCH_MS : t.slow ? SLOW_MS : FAST_MS
     timer.current = window.setTimeout(() => setI((n) => n + 1), delay)
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
@@ -699,6 +732,12 @@ export function Series({
             {!user ? (
               <button className="linkb" onClick={() => setAnalysis(true)}>
                 Full analysis →
+              </button>
+            ) : null}
+            {/* see `onMyTeam` above — the death match's five is the thing it is about */}
+            {onMyTeam ? (
+              <button className="linkb" onClick={onMyTeam}>
+                My team →
               </button>
             ) : null}
 

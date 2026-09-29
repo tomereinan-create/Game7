@@ -436,6 +436,33 @@ describe('a series lands one game at a time', () => {
     expect(dock({ won: true, next: true })).toContain('>Rematch<')
   })
 
+  /**
+   * HIS RULING, 2026-09-30: "After simming, add myteam button in deathmatch campaign." A run
+   * carries one five from the first level to the last, so the end of a series is when he wants to
+   * look at it — and it was two screens away. Absent in every other mode, which has no such
+   * screen: App only hands the door over when the mode is the death match and the run has a five.
+   */
+  it('offers the death match its own door to My team, and no other mode one', () => {
+    const { r, seed } = seriesOfLength(A, OPP4.players, 5)
+    const draw = (over: Record<string, unknown>) =>
+      renderToStaticMarkup(
+        createElement(Series, {
+          reveal: false,
+          opponent: OPP4,
+          five: A,
+          mine: compile(A, OPP4.players),
+          theirs: compile(OPP4.players, A),
+          teamName: 'Los Angeles Lakers',
+          result: r,
+          seed,
+          onAdvance: () => {},
+          ...over,
+        }),
+      )
+    expect(draw({ onMyTeam: () => {} })).toContain('My team →')
+    expect(draw({})).not.toContain('My team →')
+  })
+
   it('keeps every night, and the nights add up to the averages beside them', () => {
     const { r, seed } = seriesOfLength(A, OPP4.players, 5)
     const scores = r.games.map((g) => ({ us: g.us, them: g.them }))
