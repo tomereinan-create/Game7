@@ -2438,9 +2438,9 @@
           "ts_rel": 0.627
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 68,
         "d_ovr": 69,
-        "ovr": 69,
+        "ovr": 68,
         "marg": 85
       },
       {
@@ -5129,9 +5129,9 @@
           "ts_rel": 0.6
         },
         "big": true,
-        "o_ovr": 66,
+        "o_ovr": 65,
         "d_ovr": 84,
-        "ovr": 75,
+        "ovr": 74,
         "marg": 77
       },
       {

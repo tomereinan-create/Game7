@@ -1,5 +1,23 @@
 [
   {
+    "card": "Rashard Lewis '01",
+    "scale": "off",
+    "target": 65,
+    "tol": 3,
+    "round": 222,
+    "ruling": "the stretch-big off-ball floor pays +15 of o_score BINDING at volume 47-54 and nothing at 55, so a better season reads ten lower",
+    "note": "THE OFF-BALL FLOOR'S LOAD GATE BECAME A CEILING ON THE LIFT. 34.9 mpg, 14.8 points at 18.4% usage, TS .587, BPM 2.1: standard path 64.79 under a floor of 80.37 BINDING at arc share 1.0000 x load share 1.0000 (the whole 15.58 of correction) at volume 47, inside recal_64's `volume < 55` gate, printing OFF 75 while his own '02 (volume 61, 16.8 points at 20.8% usage, BPM 3.0) takes no floor at all and reads 64. The lift is now capped at the standard path's OWN volume channel between the card and a full scoring load, 0.26 x (80 - volume) - 0.26 is std's own volume weight and 80 is recal_131's PZ_V_HI, whose foot PZ_V_LO is this floor's own gate of 55. MONOTONE BY CONSTRUCTION: where the ceiling binds it falls at exactly the rate the standard path rises, so a card can never read lower for carrying more. OFF 75 -> 68, OVR 72 -> 67. 68 IS THE FRONTIER and the wall is OG Anunoby '21 (65 +-2, reading 63 with zero room down, volume 36, ceiling 11.440 against a correction of 11.267): 65 asks for 0.53 of o_score a volume point against the 0.26 the standard path pays, so no monotone ceiling reaches it while that pin stands. 16 of 10,000 cards move on OFF, every one DOWN, max -7; DEF and every attribute move on ZERO."
+  },
+  {
+    "card": "Donyell Marshall '04",
+    "scale": "off",
+    "target": 65,
+    "tol": 3,
+    "round": 222,
+    "ruling": "the stretch-big off-ball floor pays +15 of o_score BINDING at volume 47-54 and nothing at 55, so a better season reads ten lower",
+    "note": "THE SECOND SUBJECT, ONE POINT INSIDE THE GATE. 36.4 mpg, 14.7 points and 9.9 boards at 19.5% usage, TS .548, efficiency 69, BPM 2.7: standard path 64.90 under a floor of 79.95 BINDING at volume 54, printing OFF 74 while this term's own pinned subjects on comparable lines read 63-65 (Anunoby '21 63, Hachimura '26 64, Ryan Anderson '18 65) and his own '03 (volume 61) reads 59. recal_222's ceiling pays 6.76 of the 15.05 correction: OFF 74 -> 67, OVR 76 -> 73. The gate step at 54 -> 55 falls from 15.05 of o_score (14.00 printed OFF, his own bars) to 6.76 (6.29) - the ceiling's value at the gate. It is not closed all the way because closing it is a class extension to volume 79+, measured at 117 cards rising (Rashard Lewis '02, the ruling's own comparator, 64 -> 69)."
+  },
+  {
     "card": "Zion Williamson '21",
     "scale": "off",
     "target": 90,

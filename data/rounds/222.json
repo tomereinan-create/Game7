@@ -1,0 +1,143 @@
+{
+  "round": 222,
+  "agent": "ratings-to-off-def",
+  "status": "done",
+  "ruling": "the stretch-big off-ball floor pays +15 of o_score BINDING at volume 47-54 and nothing at 55, so a better season reads ten lower",
+  "title": "the off-ball floor's load gate becomes a CEILING on the lift, not a cliff: a correction may not exceed the standard path's own volume channel between the card's volume and a full scoring load (0.26 x (80 - volume)), so the man who carries more can never read less",
+  "scale": "off",
+  "subject": "Rashard Lewis '01",
+  "target": 65,
+  "tol": 3,
+  "before": 75,
+  "after": 68,
+  "pipeline_version": 222,
+  "knobs": [
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "OB_V_TOP, OB_V_W = 80\\.0, 0\\.26",
+      "label": "THE CEILING: the standard path's own volume weight (0.26, the literal in std) x the distance to a full scoring load (80 = recal_131's PZ_V_HI, 'a top-sixth load (usage 24.8)', whose foot PZ_V_LO IS this floor's own gate of 55)",
+      "note": "new: the gate's other half, ramped"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "_ob_lift = min\\(_ob_full, _ob_cap\\)",
+      "label": "the lift actually paid is the smaller of recal_118/170/188's share-scaled correction and the ceiling",
+      "note": "_flr = std + _f3 x _sb_load x (_fl - std)  ->  std + min(that, cap)"
+    },
+    {
+      "file": "data/compute_ovr.py",
+      "pattern": "if _f3 > 0\\.0 and a\\['volume'\\] < 55:",
+      "label": "recal_64's class gate is UNTOUCHED — no card outside the floor's own class is paid a thing, and every card above volume 55 reads exactly what it read before",
+      "note": "unchanged"
+    }
+  ],
+  "expect": [
+    { "card": "Donyell Marshall '04", "scale": "off", "op": "~", "value": 65, "tol": 3,
+      "label": "THE SECOND SUBJECT (74 -> 67): standard path 64.90 under a floor of 79.95 at volume 54, ONE point inside the gate; the ceiling pays 6.76 of a 15.05 correction" },
+    { "card": "Rashard Lewis '01", "scale": "ovr", "op": "~", "value": 67, "tol": 1,
+      "label": "the first subject's OVR follows OFF down, 72 -> 67 (DEF 64 unmoved)" },
+    { "card": "Donyell Marshall '04", "scale": "ovr", "op": "~", "value": 73, "tol": 1,
+      "label": "the second subject's OVR, 76 -> 73 (DEF 79 unmoved)" },
+    { "card": "Rashard Lewis '02", "scale": "off", "op": "~", "value": 64, "tol": 0,
+      "label": "THE SHAPE CHECK AND THE REASON THE GATE IS NOT OPENED UPWARD: his volume-61 season, the ruling's own comparator, reads 64 before and after — a class extension to volume 80 would have taken him to 69" },
+    { "card": "Rashard Lewis '03", "scale": "off", "op": "~", "value": 65, "tol": 0,
+      "label": "the same man at volume 72: unmoved at 65" },
+    { "card": "Donyell Marshall '03", "scale": "off", "op": "~", "value": 59, "tol": 0,
+      "label": "Marshall's own volume-61 season: unmoved at 59" },
+    { "card": "OG Anunoby '21", "scale": "off", "op": "~", "value": 65, "tol": 2,
+      "label": "THE WALL (recal_91's fitted subject, pinned 65 +-2, reading 63 with zero room down): volume 36, ceiling 11.440 against a correction of 11.267 — it does not reach him, by 0.173 of o_score, and he is unmoved" },
+    { "card": "Donyell Marshall '07", "scale": "off", "op": "~", "value": 52, "tol": 3,
+      "label": "THE OTHER CARD AT VOLUME 47 (pinned 52 +-3, reading 49 with zero room down): recal_188's line already cuts his correction to 0.245, the ceiling is 8.58 against a lift of 5.45, unmoved — this pair is why a SHARE of the correction is infeasible" },
+    { "card": "Ryan Anderson '18", "scale": "off", "op": "~", "value": 65, "tol": 3,
+      "label": "recal_188's own subject, unmoved at 65" },
+    { "card": "Mo Bamba '22", "scale": "off", "op": "~", "value": 56, "tol": 3, "label": "recal_188, unmoved at 56" },
+    { "card": "Maxi Kleber '20", "scale": "off", "op": "~", "value": 53, "tol": 3, "label": "recal_188, unmoved at 53" },
+    { "card": "Rui Hachimura '26", "scale": "off", "op": "~", "value": 65, "tol": 4, "label": "recal_91, unmoved at 64" },
+    { "card": "Sam Hauser '23", "scale": "off", "op": "~", "value": 60, "tol": 3, "label": "recal_170's frontier card, unmoved at 58" },
+    { "card": "Matt Bullard '92", "scale": "off", "op": "~", "value": 52, "tol": 3, "label": "recal_170, unmoved at 50" },
+    { "card": "Dorian Finney-Smith '20", "scale": "off", "op": "~", "value": 55, "tol": 3,
+      "label": "recal_118's own pin with zero room down: volume 6, the ceiling is 19.24 against his 14.39 — unmoved at 52" },
+    { "card": "Steve Novak '13", "scale": "off", "op": "~", "value": 60, "tol": 3, "label": "recal_99, unmoved at 59" },
+    { "card": "Anthony Tolliver '14", "scale": "off", "op": "~", "value": 56, "tol": 3, "label": "recal_99, unmoved at 54" },
+    { "card": "Kyle Korver '15", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "the wing branch: unmoved at 58" },
+    { "card": "Steve Kerr '96", "scale": "off", "op": "~", "value": 62, "tol": 1, "label": "the wing branch: unmoved at 61" },
+    { "card": "Tony Snell '18", "scale": "off", "op": "~", "value": 50, "tol": 1, "label": "recal_64's own pin: unmoved at 50" },
+    { "card": "Bruce Bowen '06", "scale": "off", "op": "~", "value": 45, "tol": 1, "label": "recal_64's own pin: unmoved at 45" },
+    { "card": "Domantas Sabonis '21", "scale": "off", "op": "~", "value": 71, "tol": 1, "label": "recal_55's big hub, unmoved at 71" },
+    { "card": "Richaun Holmes '21", "scale": "off", "op": "~", "value": 62, "tol": 3, "label": "unmoved at 65" },
+    { "card": "Nic Claxton '24", "scale": "off", "op": "~", "value": 56, "tol": 3, "label": "unmoved at 53" },
+    { "card": "Rudy Gobert '16", "scale": "off", "op": "~", "value": 48, "tol": 3, "label": "unmoved at 48" },
+    { "card": "Montrezl Harrell '18", "scale": "off", "op": "~", "value": 63, "tol": 2, "label": "volume 73, outside the class: unmoved at 63" },
+    { "card": "Clint Capela '17", "scale": "off", "op": "~", "value": 58, "tol": 1, "label": "unmoved at 58" },
+    { "card": "Clint Capela '18", "scale": "off", "op": "~", "value": 60, "tol": 2, "label": "unmoved at 60" },
+    { "card": "Nikola Jokić '25", "scale": "off", "op": "==", "value": 99, "label": "a star who cannot be touched: the class ends at volume 55" },
+    { "card": "Stephen Curry '16", "scale": "off", "op": "==", "value": 96, "label": "a star who cannot be touched" },
+    { "card": "Dirk Nowitzki '06", "scale": "off", "op": "==", "value": 92, "label": "the stretch big at a real load: volume 94, unmoved" },
+    { "card": "Kevin Love '12", "scale": "off", "op": "==", "value": 86, "label": "the largest gate step left in the file belongs to his bars, and at his real volume (89) he is outside the class and unmoved" }
+  ],
+  "order": [
+    { "scale": "off", "above": "Rui Hachimura '26", "below": "Tony Snell '18",
+      "label": "recal_91's own order pin, held" },
+    { "scale": "off", "above": "Rashard Lewis '01", "below": "Donyell Marshall '07",
+      "label": "the two volume-47 cards keep their order: 68 over 49" },
+    { "scale": "off", "above": "Donyell Marshall '04", "below": "Donyell Marshall '03",
+      "label": "67 over 59 — the subject still reads above his own worse season" }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 16,
+    "max_abs": 7,
+    "top": [
+      ["Donyell Marshall '04", 74, 67],
+      ["Rashard Lewis '01", 75, 68],
+      ["Raef LaFrentz '02", 68, 64],
+      ["Brook Lopez '23", 67, 64],
+      ["Vladimir Radmanović '04", 67, 64],
+      ["Chandler Parsons '15", 72, 70],
+      ["Dorian Finney-Smith '22", 60, 58],
+      ["Lauri Markkanen '21", 69, 67],
+      ["Rui Hachimura '25", 71, 69],
+      ["Channing Frye '11", 64, 63],
+      ["Dorian Finney-Smith '21", 63, 62],
+      ["John Collins '26", 69, 68],
+      ["Keegan Murray '24", 60, 59],
+      ["OG Anunoby '25", 64, 63],
+      ["OG Anunoby '26", 66, 65],
+      ["Rashard Lewis '10", 66, 65]
+    ]
+  },
+  "top12": {
+    "scale": "off",
+    "cards": [
+      "Giannis Antetokounmpo '20",
+      "Giannis Antetokounmpo '24",
+      "Giannis Antetokounmpo '25",
+      "Kevin Durant '14",
+      "Larry Bird '87",
+      "LeBron James '12",
+      "Michael Jordan '89",
+      "Michael Jordan '90",
+      "Nikola Jokić '21",
+      "Nikola Jokić '22",
+      "Nikola Jokić '23",
+      "Nikola Jokić '24"
+    ]
+  },
+  "cost": [
+    "THE GATE STEP IS NOT CLOSED, ONLY CUT: at volume 54 the ceiling is still worth 0.26 x (80 - 54) = 6.76 of o_score, so the step from 54 to 55 is a drop of up to 6.76 (6.29 printed OFF, worst case Kevin Love '12's bars) where it used to be 15.05 (14.00 printed, Donyell Marshall '04). Closing it entirely is PROVABLY a class extension: OG Anunoby '21 (pinned 65 +-2, reading 63, zero room down) keeps 11.27 of correction at volume 36, and a monotone law sheds at most 0.26 a volume point, so the payment cannot reach zero before volume 79. MEASURED at 80 with the gate opened to match: 117 cards RISE, max +6, and Rashard Lewis '02 — the ruling's own comparator — goes 64 -> 69. A later round that wants the step gone has to accept that lift or move the wall.",
+    "THE CEILING'S WINDOW IS [77, 81] AND BOTH EDGES ARE PINS, not taste: at 76 Anunoby '21 falls to 62 and leaves his band; at 82 Rashard Lewis '01 reads 69 and leaves his. 80 is recal_131's PZ_V_HI, the one line the file already has inside the window — but it is written as this term's OWN constant (OB_V_TOP), the way recal_188 wrote SB_SECOND_FULL rather than borrowing recal_163's, so a later re-cut of the paint floor's load ramp does not silently move this ceiling.",
+    "recal_210's rim/mid/3pt monotonicity count on the whole o_score goes 582 cards / 1006 pairs -> 584 / 1010 (the zone block itself stays at 0 / 0, which is the law's own gate). The +2 cards are cards whose paid lift is now a constant in 3pt (the ceiling, not the arc share) while their standard path still moves with it; the open conflict recal_210 recorded is unchanged in kind.",
+    "THE SUBJECTS LAND ON THE FRONTIER, both inside +-3 and both above target (68 and 67 against 65). Lewis '01 cannot print 65 under any monotone ceiling that holds Anunoby '21: the two are eleven volume points apart and 65 asks for 0.53 of o_score a volume point against the 0.26 the standard path pays. A later ruling that wants 65 exactly has to release Anunoby '21's pin.",
+    "The ceiling is applied to the lift AFTER recal_118's arc share and recal_188's load share, and that order is load-bearing: capping the correction BEFORE the shares reaches the subjects too but takes Donyell Marshall '07 (pinned 52 +-3, reading 49) to 46, because his lift is small only by his minutes."
+  ],
+  "notes": [
+    "THE DEFECT IS recal_64's GATE READ FROM ITS OTHER SIDE. recal_118 ramped the ARC half of `3pt >= 68 and volume < 55` for exactly this reason ('one rating point of 3pt decides a fifth of a card'); the LOAD half stayed a step, and recal_91/170/188 grew the thing behind it to as much as twenty-four printed OFF points.",
+    "Rashard Lewis '01: 34.9 mpg, 14.8 points at 18.4% usage, TS .587, BPM 2.1. Standard path 64.79 under a floor of 80.37 BINDING at arc share 1.0000 x load share 1.0000 — the whole 15.58 — printing OFF 75, while his own '02 (16.8 points at 20.8% usage, BPM 3.0, volume 61) is one side of the gate away, takes no floor at all and reads 64.",
+    "Donyell Marshall '04: 36.4 mpg, 14.7 points and 9.9 boards at 19.5% usage, TS .548, efficiency 69, BPM 2.7. Standard path 64.90, floor 79.95 BINDING at volume 54 — one point inside the gate — printing OFF 74 against this term's own pinned subjects at 63-65 (Anunoby '21 63, Hachimura '26 64, Ryan Anderson '18 65).",
+    "WHY A CEILING AND NOT A SHARE. A share of the correction ramped over volume (recal_118's shape, the first form the ruling names) pays the same share to every card at the same volume, and the class holds TWO cards at volume 47 whose rulings point opposite ways: Lewis '01 must shed ten printed points of a 15.58 correction and Marshall '07 must keep all of a 5.45 one. MEASURED: at the share that lands Lewis (0.33) Marshall '07 falls 49 -> 46, three outside his band.",
+    "AND A SHARE CANNOT BE MONOTONE. The correction reaches 24 of o_score while the standard path pays volume at 0.26 x load a point, so a share falling to zero anywhere inside ninety volume points takes a card DOWN for carrying more — which is the defect, not the repair.",
+    "THE CEILING IS MONOTONE BY CONSTRUCTION: where it binds it falls at exactly 0.26 a volume point, the standard path's own volume weight, while the standard path rises at 0.26 x load plus the signature term's 0.08 x efficiency/100. MEASURED on a volume sweep 0..54 of every card this floor can pay: no added violation reaches half a printed point (worst, Brook Lopez '23, 0.408 of o_score = 0.38 of OFF, off the hub and passer ramps whose own volume slope is under 0.26), and of the cards the ceiling binds on not one is under 25.8 mpg — every one is at recal_96's full load, where the ceiling's slope IS the standard path's own.",
+    "MEASURED on the whole pool: 16 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -7, mean -2.44; OVR follows on 13, max -5; DEF and every attribute move on ZERO. The top 12 by OFF is identical name for name and the top 50 by OVR has no entrant and no leaver. 215 anchors (this round adds two), 0 failing.",
+    "The movers are one archetype and read like it — the full-time stretch big who was carrying a real share of the offence and being paid as an off-ball specialist anyway: Marshall '04, Lewis '01 and '10, LaFrentz '02, Brook Lopez '23, Radmanović '04, Parsons '15, Markkanen '21, Hachimura '25, Frye '11, Collins '26, Anunoby '25 and '26, the two Finney-Smith seasons, Keegan Murray '24."
+  ]
+}
