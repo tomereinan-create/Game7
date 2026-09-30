@@ -663,6 +663,21 @@ export function LevelMap({
               <i> / {ROUNDS * 3}</i>
               <i className="a">→</i>
             </button>
+            {/* THE LIVES, BESIDE THE STARS — his ruling, 2026-09-30: "In death match, add Heart next
+                to the stars representing how many lifes you have." A heart and the count; the
+                sentence stays as its name. */}
+            {death ? (
+              <span className="map-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
+                <i className="heart">♥</i> {progress.lives}
+              </span>
+            ) : null}
+            {/* THE CHANGE, BESIDE THE STARS — his ruling, 2026-09-30: "The sub icon should be next to
+                the star not on the ticket." It used to stand in the stack over tonight's ticket. */}
+            {teamNote?.kind === 'sub' && onMyTeam ? (
+              <button className="map-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                <SubIcon />
+              </button>
+            ) : null}
             {spendable ? (
               <button className="map-link staff" onClick={onStaff}>
                 {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
@@ -742,6 +757,17 @@ export function LevelMap({
               <button className="um-staff" onClick={onStaff}>
                 ★ {bal} to spend · Staff →
               </button>
+              {/* the heart and the change stand beside the star here too — see the scout header */}
+              {death ? (
+                <span className="um-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
+                  <i className="heart">♥</i> {progress.lives}
+                </span>
+              ) : null}
+              {teamNote?.kind === 'sub' && onMyTeam ? (
+                <button className="um-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  <SubIcon />
+                </button>
+              ) : null}
               {/**
                * THE RENAME DOOR CARRIES THE NAME (his report: "RENAME renders as an empty text
                * input with a placeholder but is actually a button; the current team name appears
@@ -929,7 +955,7 @@ export function LevelMap({
            * is the death match's; this one belongs to every mode. When both are up they stack, on
            * the far side of the trail from the ticket, centred on it.
            */}
-          {cur && (spendable || (teamNote && onMyTeam)) ? (
+          {cur && (spendable || (teamNote?.kind === 'worn' && onMyTeam)) ? (
             <div
               className="node-notes"
               /**
@@ -966,14 +992,13 @@ export function LevelMap({
                   <i className="bigstar" aria-hidden>★</i>
                 </button>
               ) : null}
-              {teamNote && onMyTeam ? (
-                <button className={`node-note ${teamNote.kind === 'sub' ? 'icon ' : ''}${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                  {/* A CHANGE IS A GLYPH — his ruling, 2026-09-29: "Instead of 'A change is waiting
-                      in My team', have a substitute icon." The sentence was the longest thing on
-                      the map and it said, at length, what the substitution arrows say at a glance.
-                      A man WORN OUT still gets his sentence: that one is not an offer, it is a
-                      thing gone wrong, and it names who. */}
-                  {teamNote.kind === 'sub' ? <SubIcon /> : <>{teamNote.text}<i className="a">→</i></>}
+              {teamNote?.kind === 'worn' && onMyTeam ? (
+                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  {/* A man WORN OUT gets his sentence here: that one is not an offer, it is a thing
+                      gone wrong, and it names who. THE CHANGE GLYPH LEFT THIS STACK — his ruling,
+                      2026-09-30: "The sub icon should be next to the star not on the ticket." It
+                      stands in the header beside the star now, in both modes. */}
+                  {teamNote.text}<i className="a">→</i>
                 </button>
               ) : null}
             </div>

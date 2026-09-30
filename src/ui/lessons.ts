@@ -318,6 +318,75 @@ export function draftLesson(ctx: {
   return { id: 'draft.spin', kicker: 'Tutorial · The draft', title: 'Draft a five', steps }
 }
 
+/**
+ * THE SALARY, THE FIRST TIME THE WHEEL LANDS IN THE SALARY CAP (his ruling, 2026-09-30: "Add tutorial
+ * after spinning the wheel in salary mode, explaining the salary"). Read off the payroll bar as it
+ * stands and off the roster that just landed — the greyed men are named, with their price.
+ */
+export function salaryLesson(ctx: {
+  capUsed: number
+  capMax: number
+  capLeft: number
+  reserve: number
+  budget: number
+  /** open slots after this pick — what the reserve is held for */
+  after: number
+  /** the landed roster's men who cannot be afforded, with their price in points of the cap */
+  greyed: { name: string; cost: number | null }[]
+}): Lesson {
+  const steps: Step[] = [
+    {
+      at: '.capbar',
+      title: 'The payroll',
+      body: [
+        `Every card is priced at the man's real salary that season, as a share of that year's cap. Your five must come in under ${ctx.capMax}% of it. The bar reads ${ctx.capUsed.toFixed(1)}% used, ${Math.max(0, ctx.capLeft).toFixed(1)}% left.`,
+        ctx.reserve > 0
+          ? `${ctx.reserve}% of that is held back — 5% for each of the ${plural(ctx.after, 'slot')} still to fill after this one — so this pick has ${Math.max(0, ctx.budget).toFixed(1)}% to spend.`
+          : 'This is the last slot, so nothing is held back: every point left is this pick\u2019s to spend.',
+      ],
+    },
+  ]
+  if (ctx.greyed.length) {
+    const g = ctx.greyed[0]
+    steps.push({
+      at: '.col.b .row.dr.off',
+      title: 'A man you cannot afford',
+      body: [
+        `${ctx.greyed.length === 1 ? `${g.name} is` : `${plural(ctx.greyed.length, 'man', 'men')} on this roster are`} greyed: ${g.name} costs ${g.cost === null ? 'more than the budget' : `${g.cost.toFixed(1)}%`}, and the reason sits on his row. He can be read, not drafted.`,
+        'A roster with nobody you can pay for is a spin to take again. The Salary branch of the staff tree buys more room.',
+      ],
+    })
+  } else {
+    steps.push({ body: ['Every man on this roster fits under what is left. When one does not, his row is greyed and the reason is printed on it.'] })
+  }
+  return { id: 'salary.landed', kicker: 'Tutorial · The Salary cap', title: 'Paying the five', steps }
+}
+
+/**
+ * DURABILITY, THE FIRST TIME THE WHEEL LANDS IN THE DEATH MATCH (his ruling, 2026-09-30: "Add tutorial
+ * after spinning the wheel about DUR"). Told on the draft at level 1 and in My team after it —
+ * whichever wheel turns first, since the id is one.
+ */
+export function durLesson(ctx: { boost: number; floor: number; sample: { name: string; dur: number } | null }): Lesson {
+  return {
+    id: 'death.dur',
+    kicker: 'Tutorial · The Death match',
+    title: 'DUR',
+    steps: [
+      {
+        at: '.spin-roster .mt-dur',
+        body: [
+          `The badge on every man is his durability${ctx.sample ? ` — ${ctx.sample.name} has ${ctx.sample.dur}` : ''}. Every game he plays costs one, a best of seven anything from four to seven, and it never comes back on its own.`,
+          `At ${ctx.floor} or less he is worn out: he cannot take the floor, and the round's change has to replace him. Pick durable men for the long haul, or plan to rotate them.`,
+          ctx.boost > 0
+            ? `Iron men adds +${ctx.boost} to every man you carry, read on every card. The bench, further down the Survival branch, is where a man rests and recovers.`
+            : 'The Survival branch of the staff tree sells Iron men (+10 durability a rank, every man) and a bench, where a man rests and recovers.',
+        ],
+      },
+    ],
+  }
+}
+
 export function landedLesson(ctx: { team: string; year: number | string; open: string[]; respins: number; seasonRespins: number }): Lesson {
   const steps: Step[] = [
     {

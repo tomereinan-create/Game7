@@ -17,6 +17,8 @@ import { TacticsCalls } from './TacticsPanel'
 import { bare, capPct, landOn, salaryLine, WHEEL, type TeamSeason, heldPool } from './Draft'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
+import { useLesson } from '../state/tutorial'
+import { durLesson } from './lessons'
 import type { Skin } from './LevelMap'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -168,6 +170,13 @@ export function MyTeam({
   const [out, setOut] = useState<string | null>(null)
   /** Resting mode: the bench row was tapped, the next floor tap makes the exchange. */
   const [resting, setResting] = useState(false)
+  /**
+   * WHY THE LAST PRESS DID NOTHING (his ruling, 2026-09-30: "Trying to make un impossible change in
+   * death match (position\\budget) should show a reason for it not working"). A dimmed man used to
+   * swallow the tap. The reason is printed on his row AND, on the tap, in the dock, where the eye
+   * goes for the next thing to do. Cleared by the next press that does something.
+   */
+  const [blocked, setBlocked] = useState<string | null>(null)
   /** Switching mode: a floor man was tapped with nothing else pending; the next tap trades spots. */
   const [moving, setMoving] = useState<string | null>(null)
   /**
@@ -230,6 +239,31 @@ export function MyTeam({
               canField([...five.map((p) => p.name).filter((x) => x !== o), n]),
         )
 
+  const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
+  /**
+   * WHY A MAN OFF THE WHEEL CANNOT COME IN, in his own row's words — the position, or the money.
+   * Null when he can. The same two tests `replaceable` runs, asked one at a time so the answer
+   * says which one failed.
+   */
+  const whyIn = (n: string): string | null => {
+    if (replaceable(n).length) return null
+    if (capPct(n) === null) return 'no salary on record — he cannot be priced'
+    const pool = outs.filter((o) => o !== BENCH_SLOT && o !== bench?.name)
+    const fieldable = pool.filter((o) => canField([...five.map((p) => p.name).filter((x) => x !== o), n]))
+    if (!fieldable.length)
+      return `he plays ${posOf(n).join(' · ')} — the five cannot field with him in for ${pool.length ? pool.map(short).join(' or ') : 'anyone'}`
+    const room = Math.max(...fieldable.map((o) => capMax - capUsed + (capPct(o) ?? 0)))
+    return `over the cap — he costs ${(capPct(n) ?? 0).toFixed(1)}%, and at most ${Math.max(0, room).toFixed(1)}% fits in for ${fieldable.map(short).join(' or ')}`
+  }
+  /** Why a floor man cannot be the one to make way for `n`: the position, or the money. */
+  const whyOut = (n: string, o: string): string | null => {
+    if (!outs.includes(o)) return broken.length ? 'only a worn-out man can go this round' : null
+    const rest = five.map((p) => p.name).filter((x) => x !== o)
+    if (!canField([...rest, n])) return `${short(n)} cannot cover ${assigned[o] ?? posOf(o)[0]} — the five would not field`
+    const at = capUsed - (capPct(o) ?? 0) + (capPct(n) ?? 0)
+    if (at > capMax + 1e-9) return `over the cap — ${short(n)} in for ${short(o)} puts the payroll at ${at.toFixed(1)}% of ${capMax}%`
+    return null
+  }
   /** The rest-exchange is legal when the resulting floor five fields and fits the cap. */
   const canRest = (floorName: string) =>
     !!bench &&
@@ -249,6 +283,14 @@ export function MyTeam({
     const ia = five.findIndex((p) => p.name === a)
     const ib = five.findIndex((p) => p.name === b)
     return ia >= 0 && ib >= 0 && canMoveSlot(asSlots(), posOf, POSITIONS[ia], POSITIONS[ib])
+  }
+  /** Why two floor men cannot trade spots: whichever of them cannot play the other's. */
+  const whySwitch = (a: string, b: string): string => {
+    const pa = assigned[a] ?? posOf(a)[0]
+    const pb = assigned[b] ?? posOf(b)[0]
+    if (!posOf(a).includes(pb)) return `${short(a)} cannot play ${pb}`
+    if (!posOf(b).includes(pa)) return `${short(b)} cannot play ${pa}`
+    return `${short(a)} and ${short(b)} cannot trade spots`
   }
   const doSwitch = (a: string, b: string) => {
     const ia = five.findIndex((p) => p.name === a)
@@ -282,6 +324,7 @@ export function MyTeam({
    * team and the spin stays inside that franchise, hold the year and it stays inside that season.
    */
   const spin = () => {
+    setBlocked(null)
     if (spinning || spun || spinsLeft <= 0) return
     const draw = (from: TeamSeason[]) => landOn(taken, openPos, () => Math.random(), null, (n) => replaceable(n).length > 0, from)
     // a hold that leaves nothing legal falls back to the whole wheel rather than spending the
@@ -315,7 +358,14 @@ export function MyTeam({
     if (timer.current !== null) window.clearTimeout(timer.current)
   }, [])
 
+  /* his ruling, 2026-09-30: DUR explained the first time a wheel lands in the death match — the
+     draft at level 1 hooks the same lesson, so whichever turns first tells it once */
+  useLesson('death.dur', !!spun && !spinning, () =>
+    durLesson({ boost, floor: WEAR_OUT, sample: roster[0] ? { name: roster[0].name, dur: left(roster[0].name) } : null }),
+  )
+
   const confirm = () => {
+    setBlocked(null)
     if (!sel || !out || !replaceable(sel).includes(out)) return
     if (out === BENCH_SLOT) onSign?.(sel)
     else onSwap(out, sel)
@@ -398,29 +448,50 @@ export function MyTeam({
   // so a tap on the court IS the tap on his row — swap, rest, switch, all of it.
   const floorOpts = (p: Player) => {
     const worn = left(p.name) <= WEAR_OUT
-    const blocked =
+    const blockedBy =
       (sel ? !replaceable(sel).includes(p.name) : false) ||
       (resting ? !canRest(p.name) : false) ||
       (moving !== null && moving !== p.name ? !canSwitch(moving, p.name) : false)
+    /* THE REASON, in the same breath as the block (his ruling, 2026-09-30): which of the two
+       tests — the position or the money — this man fails for the change being tried. */
+    const why: string | null = !blockedBy
+      ? null
+      : sel
+        ? whyOut(sel, p.name)
+        : resting && bench
+          ? whyOut(bench.name, p.name)
+          : moving && moving !== p.name
+            ? whySwitch(moving, p.name)
+            : null
+    const refuse = () => setBlocked(why ? `${short(p.name)}: ${why}` : null)
     // his ruling: the band fills on the tap that is already there — the swap, the rest, the
     // position switch all still happen, and the man's sentence and season line come up with them
     const act = sel
-        ? () => setOut(outs.includes(p.name) && replaceable(sel).includes(p.name) ? p.name : out)
+        ? () => {
+            if (!(outs.includes(p.name) && replaceable(sel).includes(p.name))) return refuse()
+            setBlocked(null)
+            setOut(p.name)
+          }
         : resting
           ? () => {
-              if (!canRest(p.name)) return
+              if (!canRest(p.name)) return refuse()
+              setBlocked(null)
               onRest?.(p.name)
               setResting(false)
             }
           : moving
             ? () => {
                 if (moving === p.name) return setMoving(null)
-                if (!canSwitch(moving, p.name)) return
+                if (!canSwitch(moving, p.name)) return refuse()
+                setBlocked(null)
                 doSwitch(moving, p.name)
                 setMoving(null)
               }
-            : () => setMoving(p.name)
-    return { worn, blocked, on: out === p.name || moving === p.name, onTap: () => { act(); showMan(p.name) } }
+            : () => {
+                setBlocked(null)
+                setMoving(p.name)
+              }
+    return { worn, blocked: blockedBy, why, on: out === p.name || moving === p.name, onTap: () => { act(); showMan(p.name) } }
   }
   const benchTap = bench
     ? sel
@@ -640,7 +711,7 @@ export function MyTeam({
                 // the number lives in the DUR badge now, so the sub can never truncate it away
                 sub: o.worn
                   ? `${assigned[p.name] ?? posOf(p.name)[0]} · ${archetype(p)} · WORN OUT — must be replaced`
-                  : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)}`,
+                  : `${assigned[p.name] ?? posOf(p.name)[0]}${posOf(p.name).length > 1 ? ` (plays ${posOf(p.name).join(' · ')})` : ''} · ${archetype(p)}${o.why ? ` · ${o.why}` : ''}`,
                 dur: left(p.name),
                 worn: o.worn,
                 dim: o.worn || o.blocked,
@@ -667,7 +738,6 @@ export function MyTeam({
             {sel
               ? (() => {
                   const legal = replaceable(sel).filter((o) => o !== BENCH_SLOT)
-                  const short = (n: string) => n.replace(/ '\d\d( \([a-z]\))?$/, '')
                   return (
                     <div className="seriesnow-note">
                       {legal.length
@@ -806,13 +876,20 @@ export function MyTeam({
                   </div>
                   {roster.map((p) => {
                     const outsFor = replaceable(p.name)
+                    const why = outsFor.length ? null : whyIn(p.name)
                     return row(p, {
-                      sub: `${posOf(p.name).join(' · ')} · ${archetype(p)}${outsFor.length ? '' : ' · no legal swap'}`,
+                      /* the reason on the row, not "no legal swap" (his ruling, 2026-09-30) */
+                      sub: `${posOf(p.name).join(' · ')} · ${archetype(p)}${why ? ` · ${why}` : ''}`,
+                      /* his DUR badge, as the draft's wheel already prints it: the number the change
+                         is decided on, on the row it is decided from (and the DUR lesson lights it) */
+                      dur: left(p.name),
+                      worn: left(p.name) <= WEAR_OUT,
                       dim: !outsFor.length,
                       on: sel === p.name,
                       onTap: () => {
                         showMan(p.name)
-                        if (!outsFor.length) return
+                        if (!outsFor.length) return setBlocked(`${short(p.name)}: ${why}`)
+                        setBlocked(null)
                         setResting(false)
                         setSel(sel === p.name ? null : p.name)
                         setOut(outsFor.length === 1 ? outsFor[0] : null)
@@ -853,14 +930,16 @@ export function MyTeam({
               Spinning…
             </button>
           ) : spun ? (
-            <button className="btn" disabled={!sel || !out} onClick={confirm}>
+            <button className={`btn ${blocked && !(sel && out) ? 'ghost why' : ''}`} disabled={!sel || !out} onClick={confirm}>
               {sel && out
                 ? out === BENCH_SLOT
                   ? `Sign ${sel} to the bench`
                   : `${sel} in, ${out} out`
-                : sel
-                  ? 'Tap the man he replaces'
-                  : 'Tap a player to swap him in'}
+                : blocked
+                  ? blocked
+                  : sel
+                    ? 'Tap the man he replaces'
+                    : 'Tap a player to swap him in'}
             </button>
           ) : spinsLeft > 0 ? (
             <button className="btn" onClick={spin}>

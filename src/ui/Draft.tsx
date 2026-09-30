@@ -26,7 +26,7 @@ import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
-import { boardLesson, draftLesson, landedLesson, planLesson } from './lessons'
+import { boardLesson, draftLesson, durLesson, landedLesson, planLesson, salaryLesson } from './lessons'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
 import { CoachSays, CoachTipsDoor } from './UserRail'
@@ -792,6 +792,23 @@ export function Draft({
     landedLesson({ team: spun!.team, year: spun!.y, open, respins: charges('fo_spin'), seasonRespins: charges('fo_respin') }),
   )
   useLesson('plan', planOpen && full && canCallPlan, () => planLesson(playbookRank(wallet), death))
+  /* his rulings, 2026-09-30: the salary the first time the wheel lands in the Salary cap, and DUR the
+     first time it lands in the Death match. `roster` is the landed list, declared further down and
+     read only inside the builder, after this render has finished. */
+  useLesson('salary.landed', salary && !!spun && !spinning, () =>
+    salaryLesson({
+      capUsed,
+      capMax,
+      capLeft,
+      reserve,
+      budget,
+      after: Math.max(0, DRAFT_SIZE - picks.length - 1),
+      greyed: roster.filter((p) => overCap(p.name)).map((p) => ({ name: p.name, cost: capPct(p.name) })),
+    }),
+  )
+  useLesson('death.dur', death && !!spun && !spinning, () =>
+    durLesson({ boost: duraBoost(wallet), floor: WEAR_OUT, sample: roster[0] ? { name: roster[0].name, dur: left(roster[0].name) } : null }),
+  )
   useLesson('board', boardOpen && full, () => boardLesson(rank(wallet, 'coach_manual') >= 2))
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null

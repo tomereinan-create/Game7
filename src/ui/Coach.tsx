@@ -125,7 +125,10 @@ export function Coach() {
       setLay((l) => (same(l.box, b) && l.place === place && l.card.left === card.left && l.card.top === card.top ? l : { box: b, place, card }))
       raf = window.requestAnimationFrame(tick)
     }
-    raf = window.requestAnimationFrame(tick)
+    // the first measure is taken NOW, not on the next frame: a page that is not being drawn (a
+    // background tab, a hidden pane) never gets that frame, and the spot would stand where the
+    // last step left it. The frames that follow only track movement.
+    tick()
     return () => window.cancelAnimationFrame(raf)
   }, [lesson, s, step])
 
