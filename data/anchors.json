@@ -288,27 +288,9 @@
   "note": "106.4581 maps to 97.58 and rounds to 98"
  },
  {
-  "card": "Stephen Curry '16",
-  "scale": "off",
-  "target": 95,
-  "tol": 1,
-  "round": 89,
-  "ruling": "Dont do 87, only shift the weights a little torward 88",
-  "note": "one of the four complete stars the round predicted flat"
- },
- {
   "card": "Kawhi Leonard '17",
   "scale": "off",
   "target": 94,
-  "tol": 1,
-  "round": 89,
-  "ruling": "Dont do 87, only shift the weights a little torward 88",
-  "note": "flat"
- },
- {
-  "card": "LeBron James '13",
-  "scale": "off",
-  "target": 97,
   "tol": 1,
   "round": 89,
   "ruling": "Dont do 87, only shift the weights a little torward 88",
@@ -2117,5 +2099,23 @@
   "round": 223,
   "ruling": "I want the 24-33-minute scorers that follow to drop more",
   "note": "RE-PINNED by recal_223 after he released recal_121's 85 +-2. 34.4 mpg, volume 98 — the largest surplus on the board (43) — paid at 0.9218. 83 -> 82, and recal_121's own '15 >= '17 order was re-checked and HOLDS."
+ },
+ {
+  "card": "Stephen Curry '16",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 227,
+  "ruling": "Curry 16' OFF too low",
+  "note": "the signature's second payment (recal_227, SIG2_LO/SIG2_HI = the pool's p99.8 -> p99.9 of volume x efficiency / 100, paid at the signature's own standing weight 0.08 and scaled by recal_163's SECOND_FULL). Supersedes his own round-89 pin at 95 +-1. No bonus and no floor fires on this card; the whole of the move is recal_26's signature paid a second time at the top of its own distribution."
+ },
+ {
+  "card": "LeBron James '13",
+  "scale": "off",
+  "target": 99,
+  "tol": 1,
+  "round": 227,
+  "ruling": "Push 227 with LeBron '13 released if needed",
+  "note": "re-pinned at the reading recal_227 reaches; his signature is 95.06, the second-highest on the board, so the same term that lifts Curry '16 saturates on him too. Supersedes the round-89 pin at 97 +-1 on his own instruction."
  }
 ]

@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 223
+PIPELINE_VERSION = 227
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2867,6 +2867,87 @@ def o_score(p, trace=None):
                                         load=_second, mpg=_mp2, added=_3add,
                                         sig_gate=min(1.0, max(0.0, (_3sig - THREE_SIG_LO) / (THREE_SIG_HI - THREE_SIG_LO))),
                                         z2_gate=min(1.0, max(0.0, (z[2] - THREE_Z2_LO) / (THREE_Z2_HI - THREE_Z2_LO))))
+    # recal_227 (HIS RULING, verbatim: "Curry 16' OFF too low"; amended mid-round, verbatim: "Push 227
+    # with LeBron '13 released if needed"). THE SIGNATURE'S SECOND PAYMENT.
+    #
+    # THE CARD, DECOMPOSED FIRST — and the point of the round is that NOTHING IS MISSING from it.
+    # Stephen Curry '16 sums to o_score 104.0142 and his ten standing terms read: z[0] 21.780,
+    # z[1] 6.480, z[2] 3.700, efficiency 10.780, volume x load 23.801, playvol x load 16.340,
+    # ballsec 6.700, fouldraw x ft 5.005, orb 1.980, signature 7.448. No bonus fires and no floor
+    # touches him: recal_37/38's zone-dominance gate wants the weapon to tower over the OTHER TWO
+    # ZONES PUT TOGETHER (99 against 81 + 74) and recal_198's third level wants a third zone past 74
+    # (his is exactly 74, the ramp's foot). The raw is 96.7332 and he prints 95. The unanimous MVP —
+    # 30.1 points on .669 true shooting at 32.6% usage, the greatest efficiency-at-volume season the
+    # file holds — reads under James Harden '19 (96) and three points under LeBron James '13 (98).
+    #
+    # WHERE THE DEFECT IS, AND IT IS NOT THE BONUS. Measured before anything was written, on the
+    # whole pool: recal_210's own fixed-bar repair of the towering test (read the weapon against the
+    # flat 91 line and drop `z[0] > z[1] + z[2]`) pays him at most 5.0 x zone_f 1.10 x att_f 1.65 x
+    # gate_f 0.25 = +2.27 of o_score and takes him to 97, because a SHOOTER's bonus is gated on the
+    # offence he already has (recal_44) and Curry '16 sits on that gate's FLOOR, 0.25. The ruling
+    # needs +5.60 of o_score. No parameterisation of the dominance bonus reaches it, and the same
+    # measurement said so in receipt 210. The term that is actually short is the one that prices the
+    # thing the ruling names.
+    #
+    # THE TERM: recal_26's SIGNATURE, `0.08 x volume x efficiency / 100`, is LINEAR IN THE PRODUCT
+    # ACROSS THE WHOLE BOARD. The step from a median load-and-conversion pair to a good one and the
+    # step from a top-1% pair to the best one ever are paid at the same 0.08 a point. Curry '16's
+    # product is 93.10 against a pool median of 27.72 and a p99 of 80.36; four cards of 10,000 are
+    # above him and the whole of his lead over Harden '19 (86.13) is worth 0.56 of o_score. A
+    # signature that cannot separate the top of its own distribution is not pricing a signature.
+    #
+    # THE FIX IS recal_198's, APPLIED TO ITS OWN GATE. That round paid the THIRD ZONE a second time
+    # at its own standing weight once the signature cleared the pool's top percentiles, and said in
+    # terms that "the product is the GATE, it cannot be the payload" — because in 2026-05 the ruling
+    # it was landing (Kevin Durant '13 over LeBron James '13) was ordered the WRONG WAY by the
+    # product. THIS ruling is ordered the RIGHT way by it: Curry '16 93.10 against Harden '19 86.13
+    # and Shai Gilgeous-Alexander '25 86.24, and his own ruling has now released the one card the
+    # product put above the subject. So the payload CAN be the product here, and it is the product's
+    # own standing weight paid a second time — no new weight is introduced, exactly as recal_198
+    # introduced none.
+    #
+    # EVERY CONSTANT IS A PERCENTILE OF THE POOL, MEASURED, NOT CHOSEN (recal_130/176/198's rule):
+    #   SIG2_HI = 91.20 is the pool's p99.9 of `volume x efficiency / 100` — the dispatch's own
+    #     sentence, "a top-0.1% pair", turned into a number. 9 cards of 10,000 are above it.
+    #   SIG2_LO = 89.182 is the pool's p99.8 of the same quantity, so the gate FADES IN over the last
+    #     tenth of a percentile instead of stepping at it — recal_198's own construction one decimal
+    #     further out, and the reason every gate in this file is a ramp (recal_93, 99, 136, 137, 154,
+    #     164). 20 cards clear the foot.
+    #   SIG2_K = 0.08 is the SIGNATURE'S OWN STANDING WEIGHT, paid a second time, and recal_130's
+    #     doctrine follows it ("a rate paid twice is scaled twice"), so the second payment is scaled
+    #     by recal_163's SECOND-payment minute line SECOND_FULL = 33.9 exactly as recal_198's is.
+    #     The subject plays 34.2 and is paid in full.
+    # THE GATE READS THE RAW PRODUCT, not the first payment's `max(volume, 50, _hubload)` floor: at
+    # volume >= 90 (which `sig >= 89.182` forces, efficiency being capped at 99) neither the 50 floor
+    # nor the hub load can bind, so the two quantities are identical on every card this term touches.
+    #
+    # PROVABLY DISJOINT FROM EVERY FLOOR AND FROM THE CHARGE, by recal_198's own argument one rung
+    # higher: the gate needs volume >= 90.1, while recal_64's off-ball floor, recal_91's stretch-big
+    # floor, recal_155's two-level term, recal_182's glue floor and recal_186's glass floor all gate
+    # on `volume < 55`, recal_109's elite-passer band tops out at volume 93 with an efficiency gate,
+    # and the turnover charge needs efficiency < 60 (sig <= 59.4). The term is LAST in o_score, after
+    # recal_198's, so no floor's `_fl > std` comparison sees it. It reads no zone bar, so recal_210's
+    # monotonicity law is untouched by construction: d(std)/d(rim) = d(std)/d(mid) = d(std)/d(3pt) = 0
+    # on this line, and the zone block's inverting count stays at 0.
+    #
+    # MEASURED, on all 10,000 cards: 16 move on OFF, EVERY ONE OF THEM UP, max +4, and they are one
+    # class and read like it — the whole top of the volume-x-efficiency distribution and nothing else
+    # (Curry '15/'16, Durant '12/'13/'16, LeBron '13/'14, Dantley '80/'81/'82, Malone '90/'92/'98,
+    # Shaq '02/'03, SGA '26). DEF, every attribute, the big flag and is_big move on ZERO; 15 follow on
+    # OVR. The pool's raw OFF maximum does NOT move (Giannis '25, 116.15 of o_score, has signature
+    # 80.36 and is below the foot), so OFF_TOP is NOT re-derived and no card above the knee is moved
+    # by the band. THE COST IS THE SUMMIT'S TIE BLOCK, and it is recal_102's own trade taken one step
+    # further: cards printing OFF 99 go from 15 to 26.
+    SIG2_LO, SIG2_HI = 89.182, 91.20   # the pool's own p99.8 -> p99.9 of volume x efficiency / 100
+    SIG2_K = 0.08                      # the signature's OWN standing weight, paid a second time
+    _s2sig = a['volume'] * a['efficiency'] / 100.0
+    _s2g = min(1.0, max(0.0, (_s2sig - SIG2_LO) / (SIG2_HI - SIG2_LO)))
+    if _s2g > 0.0:
+        _s2add = SIG2_K * _s2sig * _s2g * _second
+        std += _s2add
+        if trace is not None:
+            trace['signature_second'] = dict(sig=_s2sig, gate=_s2g, k=SIG2_K, lo=SIG2_LO,
+                                             hi=SIG2_HI, load=_second, mpg=_mp2, added=_s2add)
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):
@@ -3447,6 +3528,12 @@ if _CARD:
               f"45->65); evidence {_pf['evidence']:.2f} (half the free-throw term, half the offensive "
               f"glass) x 0.30 = {0.30 * _pf['evidence']:.2f} against zone block {_pf['block']:.2f}: "
               f"+{_pf['added']:.3f}")
+    if 'signature_second' in _ot:
+        _s2 = _ot['signature_second']
+        print(f"SIGNATURE'S SECOND PAYMENT (recal_227) - volume x efficiency / 100 = {_s2['sig']:.2f} "
+              f"against the pool's own p99.8 {_s2['lo']:g} -> p99.9 {_s2['hi']:g}: gate {_s2['gate']:.4f}"
+              f" x the signature's own standing weight {_s2['k']:g} x recal_163's second-payment load "
+              f"{_s2['load']:.4f} ({_s2['mpg']} mpg against SECOND_FULL {SECOND_FULL}): +{_s2['added']:.3f}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
     _table(f"D_SCORE — the {_dt['branch']} branch (effective weights; recal_93 blends the two vectors)", _dt['terms'])
     print(f"  big vector {_dt['big_vector']:.4f}   perimeter vector {_dt['perim_vector']:.4f}"

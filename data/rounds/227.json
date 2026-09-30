@@ -1,0 +1,288 @@
+{
+ "round": 227,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Curry 16' OFF too low. | Push 227 with LeBron '13 released if needed.",
+ "title": "recal_26's volume x efficiency SIGNATURE is paid a SECOND time at the top of its own distribution: the term is linear in the product across the whole board, so the step from a top-1% load-and-conversion pair to the best one ever is worth the same 0.08 a point as any other step. Above the pool's p99.8 of that product the bar takes its own standing weight again, scaled by recal_163's second-payment minute line — recal_198's construction applied to recal_198's own gate",
+ "subject": "Stephen Curry '16",
+ "scale": "off",
+ "target": 99,
+ "tol": 1,
+ "before": 95,
+ "after": 99,
+ "pipeline_version": 227,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SIG2_LO, SIG2_HI = 89\\.182, 91\\.20",
+   "label": "THE ROUND'S CONSTANT PAIR — the pool's own p99.8 -> p99.9 of volume x efficiency / 100",
+   "note": "measured, not chosen: p99.9 = 91.20 is the dispatch's own sentence ('a top-0.1% pair') turned into a number, 9 cards of 10,000 above it; p99.8 = 89.182 makes the gate a RAMP over the last tenth of a percentile instead of a step, 20 cards clear the foot. recal_198's own THREE_SIG_LO/HI construction (p98 -> p99) one decimal further out"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SIG2_K = 0\\.08",
+   "label": "NO NEW WEIGHT — the signature's own standing weight, paid a second time",
+   "note": "the 0.08 of `('signature vol x eff', ..., 0.08, ...)` in the standard vector; recal_198 introduced none either (THREE_K = 0.05 is the third zone's own weight)"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_s2add = SIG2_K \\* _s2sig \\* _s2g \\* _second",
+   "label": "the payment, scaled by recal_130's doctrine ('a rate paid twice is scaled twice') through recal_163's SECOND_FULL = 33.9",
+   "note": "the subject plays 34.2 and is paid in full: gate 1.0000 x 0.08 x 93.10 x 1.0000 = +7.448 of o_score"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_s2sig = a\\['volume'\\] \\* a\\['efficiency'\\] / 100\\.0",
+   "label": "the gate reads the RAW product, not the first payment's max(volume, 50, _hubload) floor",
+   "note": "sig >= 89.182 with efficiency capped at 99 forces volume >= 90.1, so neither the 50 floor nor the hub load can bind: the two quantities are identical on every card this term touches"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ZD_W = 3\\.0",
+   "label": "recal_37/38/43/137's zone-dominance bonus, DELIBERATELY UNTOUCHED — it is not the term that is short",
+   "note": "recal_210's fixed-bar repair pays the subject at most 5.0 x zone_f 1.10 x att_f 1.65 x gate_f 0.25 = +2.27 and reads him 97; the ruling needs +5.60 of o_score. A SHOOTER's bonus is gated on the offence he already has (recal_44) and this card sits on that gate's FLOOR, 0.25"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived (recal_102 set them below the measured maximum on purpose)",
+   "note": "the pool's raw OFF top moves 108.0222 (Giannis '25) -> 111.3213 (Michael Jordan '89, signature 92.12) and the count above the anchor goes 21 -> 24; both were already far above OFF_TOP, so no card above the knee is re-mapped by this round"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "THREE_SIG_LO, THREE_SIG_HI = 73\\.04, 80\\.36",
+   "label": "recal_198's third-level term, untouched — the sibling this round is modelled on",
+   "note": "it does not fire on the subject at all: his third zone is exactly 74.0, the ramp's foot"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "THE SUBJECT, the unanimous MVP: 30.1 points on .669 true shooting at 32.6% usage, 34.2 mpg. No bonus and no floor fires on his card — the zone-dominance gate wants the weapon to tower over the other two zones put together (99 against 81 + 74) and recal_198's third level wants a third zone past 74 (his is exactly 74). His signature is 93.10, fourth on the board of 10,000, and it now pays a second time: o_score 104.0142 -> 111.4622, raw 96.7332 -> 103.6599. 95 -> 99"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "ovr",
+   "op": "~",
+   "value": 90,
+   "tol": 1,
+   "label": "his OVR through recal_83/104's offence-led blend (0.70 x OFF + 0.30 x DEF 69), 87 -> 90"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "RELEASED BY HIM AND RE-PINNED. His signature 95.06 is the second-highest on the board, so the same term saturates on him too: 98 -> 99. recal_89's 97 +-1 moves to anchors_superseded.json on his amendment"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "THE BINDING PIN AND THE REASON THE FOOT IS WHERE IT IS. He reads 96 with zero room up, and his signature is 86.13 — below the p99.8 foot, so the term does not fire on him at all and he is byte-identical. HELD at 96"
+  },
+  {
+   "card": "Shai Gilgeous-Alexander '25",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "the second binding pin: reads 98 with one point of room, signature 86.24, below the foot, byte-identical. HELD at 98"
+  },
+  {
+   "card": "Kevin Durant '13",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "recal_198's own subject, signature 95.04 (third on the board): 97 -> 99, moving TOWARD his 98 pin from below and landing on its upper edge"
+  },
+  {
+   "card": "Kevin Durant '14",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "the highest signature on the board, 96.03; already on 99 and stays there (his raw 102.5180 -> 109.6626)"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "signature 92.12: his raw moves 104.4675 -> 111.3213 and becomes the pool's top, but he was already clamped at 99 and prints the same"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "recal_98's pin, and the card that proves the foot is not free: his signature is 87.30, below p99.8. A foot at the pool's p99.5 (85.36) pays him +5.7 and takes him 91 -> 93, which is recal_98's ruling ('Eff is good but nothing crazy..') undone. HELD at 91"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "the pool's previous raw top (o_score 116.15) has signature 80.36 and is BELOW the foot: byte-identical, 99"
+  },
+  {
+   "card": "Joel Embiid '23",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "signature 82.32, below the foot: byte-identical at 94"
+  },
+  {
+   "card": "Luka Dončić '23",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "below the foot: byte-identical at 93"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "a deadeye must not take a scorer's payment: signature 9.40, nowhere near the foot. 58"
+  },
+  {
+   "card": "Malik Beasley '23",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 3,
+   "label": "recal_137's shooter, and the card recal_210 broke DOWNWARD with the fixed-bar dominance form. This round does not touch the dominance bonus at all, so he is byte-identical at 58"
+  },
+  {
+   "card": "Donyell Marshall '07",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "the other card recal_210's fixed-bar form broke: byte-identical at 49"
+  },
+  {
+   "card": "Chauncey Billups '06",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 1,
+   "label": "signature 60.72: byte-identical at 91"
+  },
+  {
+   "card": "Steve Nash '05",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "signature 40.32 — a maestro is not a volume scorer and takes nothing here: byte-identical at 92"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "signature 80.75, below the foot: byte-identical at 88"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "James Harden '19",
+   "label": "THE RULING, as an order: the greatest efficiency-at-volume season no longer reads under Harden '19 (99 over 96)"
+  },
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "Stephen Curry '15",
+   "label": "the subject still leads his own '15 (99 over 96) and '17 (94): the term lifts the season, not the man"
+  },
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "Shai Gilgeous-Alexander '25",
+   "label": "the subject now clears the second binding pin as well (99 over 98), which is what the ruling asked for and what the p99.8 foot buys"
+  },
+  {
+   "scale": "off",
+   "above": "Kevin Durant '13",
+   "below": "Kevin Durant '12",
+   "label": "the ramp orders its own class: '13 (signature 95.04, saturated) over '12 (90.24, gate 0.52) — 99 over 95"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 16,
+  "max_abs": 4,
+  "top": [
+   ["Stephen Curry '16", 95, 99],
+   ["Adrian Dantley '80", 95, 99],
+   ["LeBron James '14", 96, 99],
+   ["Karl Malone '90", 96, 99],
+   ["Kevin Durant '12", 92, 95],
+   ["Kevin Durant '13", 97, 99],
+   ["Adrian Dantley '81", 97, 99],
+   ["Stephen Curry '15", 94, 96],
+   ["Kevin Durant '16", 96, 98],
+   ["Karl Malone '98", 94, 96],
+   ["Karl Malone '92", 96, 98],
+   ["Shaquille O'Neal '02", 98, 99],
+   ["Shaquille O'Neal '03", 98, 99],
+   ["Shai Gilgeous-Alexander '26", 98, 99],
+   ["LeBron James '13", 98, 99],
+   ["Adrian Dantley '82", 98, 99]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Adrian Dantley '80",
+   "Adrian Dantley '81",
+   "Adrian Dantley '82",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Karl Malone '90",
+   "Kevin Durant '13",
+   "Kevin Durant '14",
+   "Larry Bird '87",
+   "LeBron James '12",
+   "LeBron James '13",
+   "LeBron James '14"
+  ]
+ },
+ "cost": [
+  "TWO PINS WERE RELEASED BY HIM AND RE-PINNED HERE, both moved to data/anchors_superseded.json with his words. Stephen Curry '16 off 95 +-1 (recal_89) -> 99 +-1, note \"Tomer 2026-09-30: 'Curry 16 OFF too low'\". LeBron James '13 off 97 +-1 (recal_89) -> 99 +-1, note \"Tomer 2026-09-30: 'Push 227 with LeBron 13 released if needed'\". LeBron '13 is NOT collateral the round chose: his signature is 95.06, the second-highest of 10,000, so any term that pays the top of that distribution pays him at least as much as the subject. The amendment is what makes the round landable at 99 rather than 98.",
+  "THE COST IS THE SUMMIT'S TIE BLOCK, and it is recal_102's own trade taken one step further. Cards printing OFF 99 go from 15 to 26. recal_102 put seventeen there on his instruction (\"Jordan still too low. I want him 98+ OFF and DEF\") by setting OFF_TOP 102.75 BELOW the measured maximum, so everything above the constant clamps; this round adds eleven cards that were already at 95-98 and are now past it. The band was NOT re-derived and no card above the knee is re-mapped — but the raw the band clamps moved a long way: the pool's raw OFF top is now Michael Jordan '89 at 111.3213 (was Giannis Antetokounmpo '25 at 108.0222) and 24 cards sit above OFF_TOP where 21 did. A future round that re-derives OFF_TOP will therefore find a much higher number than recal_90 measured, and the doctrine recal_102 overturned (\"the top is the MEASURED MAXIMUM RAW\") is now three points further from the constant.",
+  "THE DOMINANCE BONUS IS STILL THE OPEN CONFLICT recal_210 REPORTED, and this round deliberately does not touch it. recal_210 measured that the only monotone form of the towering test (read the weapon against a FIXED bar, drop `z[0] > z[1] + z[2]` and the 1.5 clause) breaks Malik Beasley '23 58 +-3 -> 53 and Donyell Marshall '07 52 +-3 -> 48 as well as lifting Curry '16 and LeBron '13, and 877 cards move. Two of those four pins are now released, but the two SHOOTER pins are not, and the form still cannot reach 99 on the subject in any case (+2.27 of o_score at most, gate_f pinned on its 0.25 floor). So recal_210's law — 478 cards / 867 (card,bar) pairs on the whole o_score, zone block 0 — is unchanged by this round, which reads no zone bar at all.",
+  "THE CLASS THIS TERM PRICES IS SMALL AND IT IS NOW MOSTLY AT THE CEILING. Nine cards of 10,000 saturate the gate (signature > 91.20) and eleven more are on the ramp. Eight of the sixteen movers land on 99, so a later ruling that wants to separate Adrian Dantley '80-'82, Karl Malone '90, LeBron '14 or Shaquille O'Neal '02/'03 from the subject cannot do it inside o_score without moving OFF_TOP or the 0.93 multiplier. Adrian Dantley '81 (97 -> 99) is the largest unpinned rise and the one to watch: 30.7 points on .626 true shooting, volume 94 / efficiency 99, OVR 82 -> 83 because his defence carries the card down."
+ ],
+ "notes": [
+  "HIS RULING, verbatim: \"Curry 16' OFF too low.\" And the amendment that arrived mid-round, verbatim: \"Push 227 with LeBron '13 released if needed.\" The target read off his words is 99 — the unanimous MVP, 30.1 ppg on .669 TS at 32.6% usage, with Michael Jordan '89, Kevin Durant '14 and Nikola Jokić '25.",
+  "THE CARD, DECOMPOSED FIRST, AND THE POINT IS THAT NOTHING IS MISSING FROM IT. o_score 104.0142 = z[0] 21.780 + z[1] 6.480 + z[2] 3.700 + efficiency 10.780 + volume x load 23.801 + playvol x load 16.340 + ballsec 6.700 + fouldraw x ft 5.005 + orb 1.980 + signature 7.448. Raw 96.7332, printed 95. No bonus fires: recal_37/38's zone-dominance gate demands the weapon tower over the OTHER TWO ZONES PUT TOGETHER and 99 < 81 + 74, so the greatest three-point season the file holds is read as having no weapon. recal_198's third level does not fire either: his third zone is 74.0, exactly the ramp's foot. No floor touches him.",
+  "WHY THE BONUS IS NOT THE ANSWER, MEASURED BEFORE ANYTHING WAS WRITTEN. recal_210 already measured the only monotone repair of the towering test and recorded that it reads this card 97, not 99 — and the arithmetic says why: a SHOOTER's bonus is gated on the offence he already has (recal_44, gate_f = 1.00 - (pre_off - 55) x 0.025), and at pre_off 96.73 the subject sits on that gate's FLOOR of 0.25. His whole reachable bonus is 5.0 x 1.10 x 1.65 x 0.25 = +2.27 of o_score. The ruling needs +5.60 (raw 101.9375 is the band's own 98.5 line, o_score 109.61). The dominance bonus is provably short by more than a factor of two, whatever is done to its shape.",
+  "SO THE TERM THAT IS SHORT IS THE ONE THE RULING NAMES. recal_26's SIGNATURE, 0.08 x volume x efficiency / 100, is LINEAR IN THE PRODUCT across the whole board: the step from a median pair to a good one and the step from a top-1% pair to the best one ever are paid at the same 0.08 a point. The subject's product is 93.10 against the pool's median 27.72, p99 80.36 and maximum 96.03 — fourth of 10,000 — and the whole of his lead over James Harden '19 (86.13) is worth 0.56 of o_score. A signature that cannot separate the top of its own distribution is not pricing a signature.",
+  "THE FIX IS recal_198's, APPLIED TO recal_198's OWN GATE. That round paid the THIRD ZONE a second time at its own standing weight once the signature cleared the pool's top percentiles, and stated in terms that \"the product is the GATE, it cannot be the payload\" — because the ruling it was landing (Kevin Durant '13 over LeBron James '13) was ordered the WRONG way by the product, five to one. THIS ruling is ordered the RIGHT way by it: Curry '16 93.10 against Harden '19 86.13 and Shai Gilgeous-Alexander '25 86.24, and his amendment has released the one card the product puts above the subject. So the payload can be the product here, and it is the product's own standing weight paid a second time. No new weight is introduced, exactly as recal_198 introduced none.",
+  "EVERY CONSTANT IS A PERCENTILE OF THE POOL, MEASURED, NOT CHOSEN. SIG2_HI = 91.20 is the pool's p99.9 of volume x efficiency / 100 — the dispatch's own phrase, 'a top-0.1% pair', turned into a number; 9 cards of 10,000 clear it. SIG2_LO = 89.182 is p99.8, so the gate FADES IN over the last tenth of a percentile instead of stepping at it (recal_93/99/136/137/154/164's rule that every gate in this file is a ramp); 20 cards clear the foot. SIG2_K = 0.08 is the signature's own weight, and recal_130's doctrine follows it — 'a rate paid twice is scaled twice' — so the second payment is scaled by recal_163's SECOND_FULL = 33.9. The subject plays 34.2 and is paid in full: 0.08 x 93.10 x 1.0000 x 1.0000 = +7.448.",
+  "THE FOOT IS NOT FREE AND THE ROUND SAYS WHICH CARD SETS IT. At the pool's p99.5 (85.36) the term pays Karl Malone '99 +5.7 and takes him 91 -> 93 — which is recal_98's ruling, in his own words 'How is Karl Malone 99 is 93 OFF? ... Eff is good but nothing crazy..', undone exactly. His signature is 87.30. At p99.7 (87.30) he sits precisely ON the foot and the gate is closed on him, which is a knife-edge; at p99.8 (89.182) he is 1.88 clear of it. p99.8 is also the narrowest of the reaching feet by collateral — 16 movers against 22 at p99.7 and 32 at p99.5 — which is recal_137's rule for choosing a width ('the round takes the narrowest width that reaches both numbers').",
+  "PROVABLY DISJOINT FROM EVERY FLOOR AND FROM THE CHARGE, by recal_198's own argument one rung higher. The gate needs volume >= 90.1 (efficiency is capped at 99), while recal_64's off-ball floor, recal_91's stretch-big floor, recal_155's two-level term, recal_182's glue floor and recal_186's glass floor all gate on volume < 55; recal_109's elite-passer band tops out at volume 93 with an efficiency gate; and the turnover charge needs efficiency < 60, so sig <= 59.4. The term is LAST in o_score, after recal_198's, so no floor's `_fl > std` comparison sees it.",
+  "MEASURED on all 10,000 cards: 16 move on OFF, EVERY ONE OF THEM UP, max +4; 15 follow on OVR; DEF, every attribute, the big flag and is_big move on ZERO. The movers are one class and read like it — the whole top of the volume x efficiency distribution and nothing else: Stephen Curry '15/'16, Kevin Durant '12/'13/'16, LeBron James '13/'14, Adrian Dantley '80/'81/'82, Karl Malone '90/'92/'98, Shaquille O'Neal '02/'03, Shai Gilgeous-Alexander '26. Every one of the 220 anchors passes except the two he released.",
+  "recal_210's MONOTONICITY LAW IS UNTOUCHED BY CONSTRUCTION: this term reads no zone bar, so d(std)/d(rim) = d(std)/d(mid) = d(std)/d(3pt) = 0 on its line. The zone block stays at 0 inverting cards and the whole-o_score count, the conflict recal_210 reported open, falls 580 -> 478 cards (1003 -> 867 pairs) because more of the dominance bonus's inverting cards are now clamped at the ceiling."
+ ]
+}
