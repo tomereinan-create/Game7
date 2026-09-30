@@ -1594,6 +1594,21 @@ button {
     align-self: center;
   }
   .myteam .col.b > .card { container-type: size; }
+  /* THE FIVE ON THE FLOOR GROW WITH THE FLOOR — his ruling, 2026-09-30: "Make my 5 on the court
+     bigger." The busts were the base 58px however wide the floor drew, so on his desk five small
+     discs stood on a 700px court. The same container-width clamps the playbook's floor and the
+     draft's court already wear, so a man is a sixth of the floor he stands on at every width. */
+  .myteam .col.b > .card > .court { container-type: inline-size; }
+  .myteam .col.b > .card > .court .ct-bust { width: clamp(58px, 17cqw, 210px); height: clamp(58px, 17cqw, 210px); border-width: clamp(2px, 0.45cqw, 6px); }
+  .myteam .col.b > .card > .court .ct-spot { width: clamp(86px, 23cqw, 284px); gap: clamp(1px, 0.5cqw, 7px); }
+  .myteam .col.b > .card > .court .ct-spot b { max-width: 100%; font-size: clamp(10.5px, 3.08cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+  .myteam .col.b > .card > .court .ct-spot i { font-size: clamp(9px, 2.7cqw, 33px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+  .myteam .col.b > .card > .court .ct-init { font-size: clamp(13.3px, 4.06cqw, 50px); }
+  .myteam .col.b > .card > .court .ct-init.ghost { font-size: clamp(10.5px, 3.22cqw, 40px); }
+  .myteam .col.b > .card > .court .ct-mark { font-size: clamp(6.5px, 1.6cqw, 18px); padding: clamp(1px, 0.3cqw, 3px) clamp(3px, 0.7cqw, 8px); right: clamp(-4px, -1cqw, -2px); }
+  .myteam .col.b > .card > .court .ct-call { font-size: clamp(8px, 2.6cqw, 32px); max-width: 52%; }
+  .myteam .col.b > .card > .court .ct-side { gap: clamp(4px, 0.9cqw, 12px); }
+  .myteam .col.b > .card > .court .ct-side .sortb { height: clamp(22px, 5.4cqw, 66px); padding: 0 clamp(7px, 1.7cqw, 21px); font-size: clamp(8px, 1.95cqw, 24px); }
   .myteam .col.b { grid-column: 1; grid-row: 1; }
   .myteam .col.a { grid-column: 1; grid-row: 2; }
   .myteam .col.band { display: block; grid-column: 2; grid-row: 1 / span 2; }
@@ -9521,3 +9536,10 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .um-sub:hover { background: #241f1a; }
 /* the dock's reason for a change that cannot be made (My team): a ghost that wraps its sentence */
 .btn.why:disabled { white-space: normal; line-height: 1.3; height: auto; padding-top: 10px; padding-bottom: 10px; color: var(--ink-2); opacity: 1; }
+
+/* TACTICS, LOCKED (My team; his ruling, 2026-09-30): the lock, the sentence that says what opens it,
+   and the three ranks — standing where the calls will stand. */
+.tac-locked { display: grid; justify-items: center; text-align: center; gap: clamp(8px, 0.6vw, 18px); padding: clamp(18px, 2vw, 60px) clamp(14px, 1.5vw, 44px) clamp(14px, 1.2vw, 36px); color: var(--muted); }
+.tac-lock { width: clamp(34px, 2.6vw, 78px); height: clamp(34px, 2.6vw, 78px); color: var(--you); }
+.tac-locked b { font-family: var(--mono); font-size: clamp(11px, 0.85vw, 26px); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+.tac-locked p { margin: 0; max-width: 46ch; font-family: var(--serif); font-size: clamp(11.5px, 0.95vw, 28px); font-style: italic; line-height: 1.45; color: var(--ink-2); }

@@ -836,7 +836,29 @@ export function MyTeam({
                       })()}
               </span>
             </div>
-            <TacticsCalls tactics={tactics} playbook={playbook} five={five} side={side} onTactics={onTactics} />
+            {playbook <= 0 ? (
+              /* THE LOCK, AND WHERE THE KEY IS — his ruling, 2026-09-30: "have the tactics locked with
+                 a lock icon with a - unlock in staff explanation". The box used to say "locked" in
+                 the corner over an empty card; it says what is locked and what opens it. */
+              <div className="tac-locked" role="note">
+                <svg className="tac-lock" viewBox="0 0 24 24" aria-hidden>
+                  <rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
+                  <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="12" cy="15.5" r="1.4" fill="currentColor" />
+                </svg>
+                <b>Tactics are locked</b>
+                <p>
+                  Unlock in Staff — the Playbook node, at the foot of the Coach branch, after Matchup coaching, Matchup board and Tempo
+                  control. One star a rank.
+                </p>
+                <p>
+                  Rank 1 names your main scorer and main playmaker and sets the tempo. Rank 2 adds the shot diet and the glass. Rank 3 the
+                  defensive scheme and hunting the mismatch.
+                </p>
+              </div>
+            ) : (
+              <TacticsCalls tactics={tactics} playbook={playbook} five={five} side={side} onTactics={onTactics} />
+            )}
           </div>
           )}
         </section>
