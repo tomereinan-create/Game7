@@ -47,27 +47,38 @@ const map = (p: Progress, extra: Record<string, unknown> = {}) =>
 
 /** HIS RULINGS, 2026-09-30: the heart beside the stars, the change beside the stars and off the ticket. */
 describe('the death match header', () => {
-  it('shows a heart with the lives in hand, in both modes, and only in the death match', () => {
+  it('shows a heart with the lives in hand — the spares plus the one in play — in both modes, only in the death match', () => {
     const p = progress({ lives: 2, roster: ['a', 'b', 'c', 'd', 'e'] })
     const scout = map(p, { death: true })
     expect(scout).toContain('class="map-lives"')
-    expect(scout).toContain('aria-label="2 lives in hand"')
+    expect(scout).toContain('aria-label="3 lives in hand"')
     setUserMode(true)
     try {
       const user = map(p, { death: true })
       expect(user).toContain('class="um-lives"')
-      expect(user).toContain('aria-label="2 lives in hand"')
+      expect(user).toContain('aria-label="3 lives in hand"')
     } finally {
       setUserMode(false)
     }
     expect(map(progress({ lives: 2 }), { death: false })).not.toContain('map-lives')
-    expect(map(progress({ lives: 1 }), { death: true })).toContain('aria-label="1 life in hand"')
+    // no spare life is still the life he is on: 1, never 0 (his ruling)
+    expect(map(progress({ lives: 0 }), { death: true })).toContain('aria-label="1 life in hand"')
+    expect(map(progress({ lives: 0 }), { death: true })).not.toContain('>♥</i> 0')
   })
 
   it('the change glyph stands beside the star, not over the ticket; a worn man keeps his sentence there', () => {
     const p = progress({ lives: 1, roster: ['a', 'b', 'c', 'd', 'e'] })
     const sub = map(p, { death: true, onMyTeam: () => {}, teamNote: { kind: 'sub', text: 'A change is waiting in My team' } })
     expect(sub).toContain('class="map-sub"')
+    // the door to My team is a glyph, in both headers (his ruling: "instead of myteam have a team icon")
+    expect(sub).toContain('class="map-team"')
+    expect(sub).not.toContain('My team →')
+    setUserMode(true)
+    try {
+      expect(map(p, { death: true, onMyTeam: () => {} })).toContain('class="um-team"')
+    } finally {
+      setUserMode(false)
+    }
     expect(sub).not.toContain('node-note icon')
     expect((sub.match(/class="subicon"/g) ?? []).length).toBe(1)
     const worn = map(p, { death: true, onMyTeam: () => {}, teamNote: { kind: 'worn', text: 'A man is worn out — replace him in My team' } })

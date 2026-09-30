@@ -9562,3 +9562,30 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .fd-mark.locked .fd-fig, .fd-mark.locked .fd-jersey { opacity: 0.45; filter: grayscale(0.6); }
 .fd-cta:disabled { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line-3); cursor: not-allowed; }
 .fd-cta:disabled:hover { background: var(--surface-2); }
+
+/* THE TEAM ICON — the door to My team on the map (his ruling, 2026-09-30), beside the star, the
+   heart and the change in both headers. */
+.map-team { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 6px; border: 1px solid var(--line-3); border-radius: 6px; background: var(--surface-2); color: var(--you); cursor: pointer; }
+.map-team .teamicon { width: 26px; height: 26px; display: block; }
+.map-team:hover { border-color: var(--you); }
+.um-team { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid var(--um-gold); border-radius: 5px; background: transparent; color: var(--um-gold); cursor: pointer; }
+.um-team .teamicon { width: 24px; height: 24px; display: block; }
+.um-team:hover { background: #241f1a; }
+
+/* THE MAN, AT DESK SIZE — his ruling, 2026-09-30 (a card of Collin Gillespie '26 at 10px type on
+   a 4K desk): "In my team page has to be way bigger." Every size in the band is a clamp on the
+   window's width from here up, floored at what the phone has today. */
+@media (min-width: 900px) {
+  .myteam .manband.column { gap: clamp(14px, 1.2vw, 40px); padding: clamp(12px, 1.1vw, 36px) clamp(14px, 1.3vw, 44px) clamp(14px, 1.3vw, 44px); }
+  .myteam .manband .label { font-size: clamp(8.5px, 0.72vw, 24px); }
+  .myteam .manband.column .mb-who p { font-size: clamp(11.2px, 1.05vw, 36px); line-height: 1.45; margin-top: clamp(6px, 0.5vw, 16px); }
+  .myteam .manband.column .mb-who i { font-size: clamp(9px, 0.85vw, 28px); margin-top: clamp(8px, 0.7vw, 22px); }
+  .myteam .manband .mb-when { font-size: clamp(9px, 0.82vw, 27px); margin-top: clamp(3px, 0.3vw, 10px); }
+  .myteam .manband.column .mb-grid { grid-template-columns: repeat(auto-fit, minmax(clamp(58px, 5.2vw, 170px), 1fr)) !important; gap: clamp(10px, 0.9vw, 30px) clamp(12px, 1vw, 34px); margin-top: clamp(8px, 0.8vw, 26px); }
+  .myteam .manband .mb-grid .bcell i { font-size: clamp(7.5px, 0.7vw, 23px); }
+  .myteam .manband .mb-grid .bcell b { font-size: clamp(15px, 1.5vw, 50px); }
+  .myteam .manband .mb-grid .bvs { font-size: clamp(7.5px, 0.66vw, 22px); }
+  .myteam .manband .mb-none { font-size: clamp(10px, 0.85vw, 28px); }
+  .myteam .mb-idle .seriesnow-note { font-size: clamp(11px, 0.95vw, 30px); line-height: 1.45; }
+  .myteam .mb-idle .label { font-size: clamp(8.5px, 0.72vw, 24px); }
+}
