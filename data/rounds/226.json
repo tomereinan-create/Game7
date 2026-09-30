@@ -1,0 +1,234 @@
+{
+  "round": 226,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Lets do Z for all / all tactics scores will be relative",
+  "title": "EVERY SPOT AND EVERY TACTIC IS NOW READ RELATIVELY — `SPOT_REF` and `STYLE_REF` (both frozen), `rel()` and a style z on a 0-99 axis where Z_MID 50 is a median card and Z_SPREAD 15 is one spread; `LEVEL` is DELETED with the leak it hid, spot FAMILIES share one ruler, and the elbow becomes the only offensive spot in the file that reads defensive bars",
+  "scale": "team:off",
+  "subject": "Pacers '96",
+  "five": ["Mark Jackson '96", "Reggie Miller '96", "Derrick McKey '96", "Dale Davis '96", "Rik Smits '96"],
+  "target": 62,
+  "tol": 0,
+  "before": 62,
+  "after": 62,
+  "pipeline_version": 226,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const Z_MID = 50\\s*\nexport const Z_SPREAD = 15",
+      "label": "THE AXIS — 50 is a median card at that job, 15 is one spread, on the same 0-99 the bars live on",
+      "note": "his ruling: \"Lets do Z for all\""
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const rel = \\(term: string, raw: number\\): number => \\{\\s*\n  const r = SPOT_REF\\[term\\]\\s*\n  if \\(!r \\|\\| !r\\.sd\\) return raw\\s*\n  return clamp\\(Z_MID \\+ Z_SPREAD \\* \\(\\(raw - r\\.mu\\) / r\\.sd\\), 0, 99\\)",
+      "label": "how far above the league's own middle he is AT THAT SPOT — the whole of the spot layer",
+      "note": "replaces the `/ .K` divide at every weighted use site in styleFit"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const SPOT_REF: Record<string, \\{ mu: number; sd: number \\}> = \\{",
+      "label": "the frozen spot reference, 14 terms, re-measured on the merged pool (pipeline 228) FIRST",
+      "note": "reproduced to the thousandth on all fourteen — 227/228 moved ratings, not attribute bars"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  rollHandler: \\{ mu: 47\\.666, sd: 17\\.299 \\},\\s*\n  popHandler: \\{ mu: 47\\.666, sd: 17\\.299 \\},\\s*\n  screenFit: \\{ mu: 54\\.008, sd: 18\\.714 \\},\\s*\n  popFit: \\{ mu: 54\\.008, sd: 18\\.714 \\},",
+      "label": "A FAMILY SHARES ONE RULER (his catch) — the two handlers, then the two screeners",
+      "note": "Curry '16 read BETTER at the pop (86.4) than the roll (84.7) while being 3.6 raw points better at the roll; now 86.9 / 83.7"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const STYLE_REF: Record<Style, \\{ mu: number; sd: number \\}> = \\{\\s*\n  balanced: \\{ mu: 60\\.000, sd: 0\\.000 \\},\\s*\n  fiveout: \\{ mu: 37\\.419, sd: 14\\.805 \\},\\s*\n  pnr: \\{ mu: 66\\.741, sd: 5\\.424 \\},",
+      "label": "the frozen style reference, re-measured SECOND, over all 1,255 wheel fives through styleFitRaw",
+      "note": "postup sd 10.333 -> 11.155, pnr mu 66.759 -> 66.741, iso 47.556 -> 48.790 — the scratch tree had inverted a CLAMPED z"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export function styleFit\\(style: Style, five: Player\\[\\], theirs\\?: Player\\[\\], call\\?: StyleCall \\| null\\): number \\{\\s*\n  const raw = styleFitRaw\\(style, five, theirs, call\\)",
+      "label": "the tactic layer — every style read against its own league, LEVEL deleted",
+      "note": "eleven fitted offsets, slopes 0.30 to 1.38, gone: an offset can only make eleven curves agree at one point"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  let pts = clamp\\(0\\.25 \\* \\(styleFit\\(t\\.style, five, theirs, t\\) - 55\\) - TAX\\.style, -10, 10\\)",
+      "label": "THE LEAK IS CLOSED — `stylePts` adds nothing to a fit; LEVEL used to sit inside styleFit and be paid here",
+      "note": "five-out fives were collecting 6.65 points of margin where they had earned 1.65"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ELBOW_PV = 0\\.2\\s*\nexport const ELBOW_BODY = 0\\.15\\s*\nexport const ELBOW_MAIN = 0\\.5\\s*\nexport const ELBOW_OFF = 0\\.15",
+      "label": "THE ELBOW, over three of his rulings — .20 playvol x size + .15 body + .50/.15 roller-popper",
+      "note": "four weights summing to 1.00: a 99-across card still reads 99 -> 100"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const elbowBody = \\(x: Attrs\\) => \\(x\\.orb \\+ x\\.drb \\+ x\\.rimprot\\) / 3",
+      "label": "THE PRECEDENT: the elbow is the ONLY offensive spot in this file that reads defensive bars",
+      "note": "orb/drb/rimprot — the three columns that separate Draymond (60/84/84) from Westbrook (65/69/24)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  const pass = ELBOW_PV \\* x\\.playvol \\* elbowBig\\(x\\) \\+ ELBOW_BODY \\* elbowBody\\(x\\)",
+      "label": "the passing leg is SCALED BY SIZE and the body leg is not",
+      "note": "Draymond keeps 0.846 of his pass at 6'6\"; Westbrook keeps none"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const PASS_PV = 0\\.7\\s*\nexport const PASS_BS = 0\\.3\\s*\nconst hornsHandlerRaw = \\(x: Attrs\\) => clamp\\(PASS_PV \\* x\\.playvol \\+ PASS_BS \\* x\\.ballsec, 0, 99\\)",
+      "label": "ONE PASSER TERM for two seats — the horns handler up top and the pin-down's passer",
+      "note": "`export const passerFit = hornsHandler`: the same job, so the same function"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const DHO_H_FLAT = 83, DHO_H_END = 73\\s*\nexport const DHO_PV = 0\\.5\\s*\nexport const hubHeight = \\(x: Attrs\\) => 0\\.5 \\* 99 \\* tallBonus\\(x\\.height, DHO_H_FLAT, DHO_H_END\\)\\s*\nconst hubScoreRaw = \\(x: Attrs\\) => clamp\\(DHO_PV \\* x\\.playvol \\+ hubHeight\\(x\\), 0, 99\\)",
+      "label": "THE ADDITIVE HAND-OFF HUB — 0.5 playvol + a height leg worth the other 0.5, flat at 6'11\", out at 6'1\"",
+      "note": "a hub is never multiplied to nothing by one inch; `bigMan` survives as the record and is read by nothing"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const popFitRaw = \\(x: Attrs\\) =>\\s*\n  clamp\\(0\\.6 \\* x\\['3pt'\\] \\+ popperHeight\\(x\\), 0, 99\\)",
+      "label": "THE POPPER — 0.60 of his three plus 0.40 of his size, and the mid-range is out of both screener spots",
+      "note": "the mid belongs to the elbow and the post hub, the two spots that read it"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const MOVE_PV = 0\\.6\\s*\nexport const MOVE_EFF = 0\\.4\\s*\nexport const MOVE_VOL = 0\\.1",
+      "label": "THE MOVER — motion's two 0.12 legs (mean 3pt, mean ballsec) become one 0.24 on `moverFit`",
+      "note": "the one negative he asked for by name, and the only one left in a spot term"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const COMER_VOL = 0\\.4\\s*\nexport const COMER_3PT = 0\\.25\\s*\nexport const COMER_MID = 0\\.25\\s*\nexport const COMER_PV = 0\\.1",
+      "label": "THE MAN COMING OFF THE HAND-OFF — his ruling \"Hand of comer should be vol, 3pt, mid\"",
+      "note": "four weights summing to 1.00"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const ISO_VOL = 0\\.8\\s*\nexport const ISO_FD = 0\\.2",
+      "label": "THE ISO MAN — his ruling \"Iso man should be - vol, fouldraw\", superseding recal_219's four-rung ladder",
+      "note": "ISO_EFF and ISO_MID kept at 0 as the record of what that round weighed"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const HELIO_ENGINE = 0\\.75\\s*\nexport const HELIO_CORNER = 0\\.25",
+      "label": "HELIO IS THE ENGINE AND FOUR CORNER MEN — his ruling \"Remove second creator from helio and have only corners\"",
+      "note": "the gap to the second creator is gone; helio no longer charges a five for owning a second star"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  \\{ key: 'pickpop', label: 'pick-and-pop' \\},\\s*\n[^\\n]*\\n[^\\n]*\\n  \\{ key: 'horns', label: 'horns' \\},",
+      "label": "ISOLATION IS OUT OF `STYLES` — eleven readable shapes, not twelve",
+      "note": "the key, the fit, the nomination and the price all survive: a save that names it still loads"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const CORNER_SHOT = 0\\.75\\s*\nexport const CORNER_EFF = 0\\.25",
+      "label": "recal_225's corner/wing weights, carried through the merge as named weights",
+      "note": "the scratch tree inlined them; they are set where they can be read"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  hunt: 3\\.68,\\s*\n  crashOff: 0\\.05,\\s*\n  crashDef: 0\\.26,",
+      "label": "the recal desk's taxes, verified against origin/main rather than assumed",
+      "note": "main has not moved them since pipeline 223; the integrator re-sweeps once on the merged pool"
+    }
+  ],
+  "expect": [
+    {
+      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+      "scale": "team:off", "op": "~", "value": 95, "tol": 0,
+      "label": "Jazz '97 team:off — unmoved: tactics.ts is not in the rating path"
+    },
+    {
+      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "scale": "team:off", "op": "~", "value": 66, "tol": 0,
+      "label": "Lakers '87 team:off — unmoved"
+    },
+    {
+      "five": ["Derrick White '25", "Jrue Holiday '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25"],
+      "scale": "team:off", "op": "~", "value": 48, "tol": 0,
+      "label": "Celtics '25 team:off — unmoved"
+    },
+    {
+      "five": ["Russell Westbrook '25", "Jamal Murray '25", "Michael Porter Jr. '25", "Aaron Gordon '25", "Nikola Jokić '25"],
+      "scale": "team:off", "op": "~", "value": 87, "tol": 0,
+      "label": "Nuggets '25 team:off — unmoved, though their READ moves dho -> horns"
+    },
+    {
+      "five": ["Stephen Curry '16", "Andre Iguodala '16", "Klay Thompson '16", "Draymond Green '16", "Andrew Bogut '16"],
+      "scale": "team:def", "op": "~", "value": 68, "tol": 0,
+      "label": "Warriors '16 team:def — unmoved: no defensive term is in this round"
+    },
+    {
+      "five": ["Mark Jackson '96", "Reggie Miller '96", "Derrick McKey '96", "Dale Davis '96", "Rik Smits '96"],
+      "scale": "team:def", "op": "~", "value": 47, "tol": 0,
+      "label": "Pacers '96 team:def — the subject's other dial, unmoved"
+    },
+    {
+      "card": "Draymond Green '16", "scale": "off", "op": "~", "value": 59, "tol": 0,
+      "label": "Draymond '16 OFF — the round's subject card does not move a rating; the ELBOW is not a rating"
+    },
+    {
+      "card": "Russell Westbrook '16", "scale": "off", "op": "~", "value": 87, "tol": 0,
+      "label": "Westbrook '16 OFF — unmoved"
+    },
+    {
+      "card": "Klay Thompson '15", "scale": "off", "op": "~", "value": 79, "tol": 0,
+      "label": "Klay '15 OFF — unmoved; only his ELBOW read moves, 69 -> 57"
+    },
+    {
+      "card": "Nikola Jokić '25", "scale": "ovr", "op": "~", "value": 91, "tol": 0,
+      "label": "Jokić '25 OVR — a star that must not move"
+    },
+    {
+      "card": "Stephen Curry '16", "scale": "ovr", "op": "~", "value": 90, "tol": 0,
+      "label": "Curry '16 OVR — a star that must not move"
+    },
+    {
+      "card": "Shaquille O'Neal '00", "scale": "ovr", "op": "~", "value": 96, "tol": 0,
+      "label": "O'Neal '00 OVR — a star that must not move"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:rimprot", "above": "Draymond Green '16", "below": "Russell Westbrook '16",
+      "label": "the bar the elbow's new body leg reads — unchanged by this round, and it is why the two men part"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      ["Draymond Green '16", 59, 59],
+      ["Russell Westbrook '16", 87, 87],
+      ["Klay Thompson '15", 79, 79]
+    ]
+  },
+  "notes": [
+    "NO PYTHON, NO offense.ts, NO RATING, NO CARD ATTRIBUTE. One file changed in src/ (src/engine/tactics.ts) and two test files re-pointed. `npm run anchors` reads 222 anchors, 0 failing, mean |error| 1.00 — character for character origin/main's own number, verified by stashing the round and re-running.",
+    "BASE: recal_226 branched off recal_225 (which carries recal_218, recal_219, recal_224 and recal_225) and then MERGED origin/main at 82f9555, pipeline 228. One conflict, in tests/court.test.ts, resolved to MAIN's side: his 2026-09-29 ruling \"Remove best fit 60 Billups\" removed the caption apparatus recal_225's rows still asserted.",
+    "THE ORDER, because it bit the scratch tree twice: SPOT_REF was re-measured FIRST, against the merged pool, and reproduced to the thousandth on all fourteen terms (227 and 228 move ratings, not attribute bars). STYLE_REF was re-measured SECOND, WHEEL -> startingFive -> styleFitRaw, no opponent, all 1,255 fives — and five rows moved because the scratch tree had measured them by INVERTING A CLAMPED z: postup sd 10.333 -> 11.155, pnr mu 66.759 -> 66.741, triangle 50.300 -> 50.314, helio 65.196 -> 65.195, and iso 47.556 -> 48.790 (that row had simply been copied off isoScore's SPOT_REF). `styleFitRaw` is exported for exactly this reason.",
+    "THE BOARD, before (recal_225 + main) -> after, over the 1,255 wheel fives: pnr 507 -> 97 · postup 261 -> 134 · pindown 117 -> 111 · dho 97 -> 150 · helio 69 -> 115 · balanced 63 -> 83 · pickpop 60 -> 106 · iso 28 -> 0 (out of STYLES) · triangle 22 -> 139 · motion 15 -> 184 · horns 11 -> 40 · fiveout 5 -> 96. 775 of 1,255 fives (61.8%) read a different style — the largest structural move the tactics system has had, and the point of the round rather than a side effect.",
+    "The dispatch's own before-board (measured on the scratch tree, before this merge) was motion 178, dho 150, triangle 141, postup 146, pickpop 106, helio 113, pindown 109, pnr 97, balanced 84, fiveout 93, horns 38. Mine differs on postup (146 -> 134) and motion (178 -> 184) and nowhere else by more than 3; the whole of that difference is the corrected postup spread.",
+    "THE CAMPAIGN CANNOT REORDER: all 30 opponents in src/data/opponents.json read exactly the same team:off and team:def dial before and after — 0 dials moved — so the eight rounds stand in the order they stood in. 19 of the 30 CAPTIONS move, which is a label and not a difficulty: round 1 Wizards pnr -> fiveout, 2 Pacers pnr -> dho, 4 Kings pnr -> triangle, 5 Jazz pnr -> fiveout, 6 Grizzlies pnr -> fiveout, 8 Pelicans dho -> motion, 10 Bucks pickpop -> fiveout, 13 Blazers pnr -> dho, 14 Heat pnr -> fiveout, 15 Hornets pnr -> helio, 18 Suns pnr -> triangle, 19 Hawks pickpop -> dho, 22 Cavaliers pnr -> horns, 24 Lakers postup -> dho, 25 Knicks pnr -> fiveout, 26 Nuggets dho -> fiveout, 28 Pistons pnr -> helio, 29 Spurs postup -> pickpop, 30 Thunder iso -> fiveout.",
+    "HORNS IS REPORTED AND NOT TUNED, per the dispatch. It correlates 0.864 with general team quality — still the highest of the eleven, against motion's 0.400 — and wins 40 of 1,255 (3.2%), back inside recal_213's own 3-7% band. Three rulings took it from 0.908/23 fives to 0.864/40. It is better, not solved.",
+    "THE DEVIATION TAX LAW'S PLAYSTYLE ROW, REPORTED AND LEFT RED. On the merged base it read blind -0.42 / oracle +2.55 and PASSED. After the round it reads blind -1.77 / oracle +3.88 and fails at the -1.50 floor rather than the -0.30 ceiling recal_222 and recal_223 were red at. The cause is arithmetic: `stylePts` is 0.25 x (fit - 55) and the 0.25 was fitted on a scale where a style's own spread ran 5.3 (pnr) to 14.8 (fiveout); every style now has the same spread by construction, Z_SPREAD 15, so a blind call costs 4.2x what it did. The fix is a slope — a constant — and the dispatch says in his words to report the number and not to pay for it with one. The test is not loosened, not deleted, and carries the measurement in its own comment.",
+    "THE ELBOW IS THE ROUND'S PRECEDENT, said plainly: `elbowBody` = (orb + drb + rimprot) / 3 makes the horns elbow THE ONLY OFFENSIVE SPOT IN THIS FILE THAT READS DEFENSIVE BARS. Nothing else in `styleFit` looks at a defensive column. It is a SUM at ELBOW_BODY 0.15, not a second product, so it cannot collapse the term the way postFit's tallness ramp collapses that one.",
+    "WHICH PINNED RULES ARE RESTORED. (1) HIS \"How come Boston post up and not 5 out?\" — the Celtics '25 READ FIVE-OUT again, at 85.0, for the first time since recal_115, and it is the highest five-out read on the wheel. (2) HIS \"Jazz 97' pnr Stockton and Malone is more fitting\" — the pick-and-roll beats the POST-UP on that five again (75.28 to 71.19) as well as beating the pop; the triangle wins the five outright, which is a separate move. (3) HIS \"Dramond should be heigher\" — Draymond '16 reads 67.58 at an elbow against Westbrook '16's 46.66, the right way round for the first time, and Westbrook is now BELOW the pool's own median elbow (49.60). (4) Klay '15's elbow is 56.85 where the raw bar ranked him 3,604th of 10,000 and a percentile on the narrowest spread on the board flattered him.",
+    "WHICH PINNED RULES ARE STILL CONTRADICTED, each re-pointed with its ruling named and none deleted or loosened. (a) recal_115's \"a five with ONE clear star still reads helio\" — the Thunder '22 read the hand-off hub 65.53 against helio 62.69; the DUO VETO half of that ruling is untouched. (b) recal_213's \"NO GUARD becomes an elbow man\" — it can no longer be stated as an equality, because only the PASSING leg is scaled by size: 19 of the 2,510 elbow seats over the wheel (0.8%) go to a man under 6'6\", and 147 of 3,519 short cards (4.2%) read above the pool's median elbow. (c) recal_213's \"NO GUARD becomes a hub\" — the same, and worse: with the hub ADDITIVE a guard keeps 0.50 x his play volume, so 892 of the 1,255 wheel fives NOMINATE a hub under 6'6\", though only 13 of the 152 fives that actually READ the hub have one. (d) his Nuggets ruling that horns is capped below them — the Nuggets '25 now read horns at 91.09; the dispatch forbids tuning horns and HORN_BASE is left where his ruling put it. (e) recal_124's \"the Lakers '00 and the Rockets '94 read post-up\" — both lose to MOTION by two tenths of a point (68.05/67.84 and 71.22/71.03), the round's thinnest contradiction, and both still NOMINATE O'Neal and Olajuwon.",
+    "TWO SATURATIONS MEASURED AND LEFT ALONE. (1) The z clamps at 0..99: 16 of the 12,550 style readings over the wheel sit on the top rail (14 triangle, 1 fiveout, 1 horns) and 27 on the bottom (21 postup, 5 pnr, 1 helio) — 0.34% in total. (2) The hand-off hub's own case ends in `clamp(..., 0, 100)`, written when its legs were raw spot scores; with every leg a z centred on 50 that ceiling now binds on 35 of the 1,255 fives (2.8%) and on 26 of the 152 that read the hub, so Sabonis cannot move the Kings '24 fit. Raising it would be tuning a constant no ruling asked about.",
+    "TEST SURFACE: 65 tests failed on the merged base after the engine file landed and 64 are re-pointed — every one with a comment naming the ruling in his words, none deleted, none loosened. Where a bound changed UNITS rather than value it is now asserted on `styleFitRaw` as well as on the z: the worst one-point attribute step over the pinned fives is 12.23 raw (Murray '25, playvol 94 -> 95, the Nuggets' handler slot crossing) — inside the old 22 — and 33.82 after the pick-and-roll's 2.77x magnification, and both are pinned. The 65th is the PLAYSTYLE row and it is left red on purpose.",
+    "RECONCILED FROM recal_225 RATHER THAN RE-DERIVED: `src/ui/spotFit.ts` keeps recal_225's version (the 'wing' row reading `cornerFit`) and compiles against the new exports unchanged; CORNER_SHOT / CORNER_EFF are restored as named weights the scratch tree had inlined; `elitePass`/ELITE_PV/ELITE_LIFT, `shyBig` and `heightRamp` are deleted, because recal_224 had already written their deletion notes and the scratch tree left the declarations behind; and `styleFit` now guards `Number.isFinite(raw)` so recal_127's dead `transition` still reads UNDEFINED rather than an ordinary 50 — a stale save must not start pricing as a real call."
+  ],
+  "cost": [
+    "LEVEL is gone and cannot be brought back as an offset: it was eleven constants fitted to force an even board, and being an offset it could only make eleven curves whose slopes ran 0.30 to 1.38 agree at ONE point. Anything that wants to move the board now moves a weight, a reference, or the style tax.",
+    "SPOT_REF and STYLE_REF are FROZEN by design. If they floated, a regeneration that lifted every shooter would lift the mean with them and cancel itself out, and the board could never move. Re-measuring them is its own round, and it must be done in that order — spot first, style second — or a style reference is measured against a ruler that is about to move (horns briefly won ZERO of 1,255 fives when the scratch tree did it the other way).",
+    "The deviation tax law's PLAYSTYLE row is RED at blind -1.77 against a -1.50 floor. It is a SLOPE problem (`stylePts`'s 0.25, fitted on the raw scale) and not a tax problem, so the next round that touches it should move the slope and not TAX.style.",
+    "The hand-off hub's `clamp(..., 0, 100)` binds on 2.8% of the wheel and the iso's does not bind at all (max raw 73.36). If a later round wants the hub to be movable everywhere, that ceiling is the thing to raise, and it should be raised alone and measured.",
+    "`primacy` (DHO_GUARD 25) is now the ONLY thing separating a guard from a big at the hand-off hub, and it points the wrong way: it fades a man who passes LESS than the five's best passer, and the guard usually IS that man. 892 of 1,255 fives nominate a short hub. Whoever rules on this next should know the fix is in the NOMINATION, not in `hubScore`, whose shape is his own ruling.",
+    "`bigMan`, DHO_PASS, DHO_SHOT, HORN_WEAK, HORN_STRONG, ELITE-era PNR_HDISC/PNR_PVFLOOR, HAND_TILT, MOT_HOLD/MOT_HOLD_FREE, ISO_PV/ISO_EFF/ISO_MID and HELIO_PV/HELIO_PV_W all survive as the RECORD of what an earlier round weighed and are read by no formula. Every one of them is asserted somewhere in tests/tactics.test.ts so a later round cannot quietly revive one.",
+    "`styleFitRaw` is newly exported. It is the only honest way to re-measure STYLE_REF (inverting a clamped z gives the wrong raw at the rails) and the only honest way to pin a bound that is about the fit's own arithmetic rather than about the scale a player sees. Later rounds should use it for both."
+  ]
+}

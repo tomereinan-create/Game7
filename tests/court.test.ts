@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { CourtFive, FLOOR, inCorner, inferredStyle, outsideLine, PAIR_FT, spotsFor, surname as surnameOf, type CourtSpot } from '../src/ui/CourtFive'
-import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, popPair, postMan, styleFit, STYLES, twoStars, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
+import { bestStyle, canSpace, DEFAULT_TACTICS, featured, heliMan, pnrPair, popPair, postMan, styleFit, STYLES, TRI_POST, twoStars, Z_MID, type PnrPair, type Style, type Tactics } from '../src/engine/tactics'
 import type { Player } from '../src/engine/types'
 import { PLAYERS } from '../src/engine/pool'
 
@@ -91,19 +91,25 @@ describe('a five with no plan stands in the shape of its best tactic', () => {
   for (let i = 0; i + 5 <= PLAYERS.length && SAMPLE.length < 60; i += 37) SAMPLE.push(PLAYERS.slice(i, i + 5))
 
   /** The ruling's own definition, written out longhand so the test does not lean on the engine —
-   *  including the two VETOES it has grown since: five-out is never read for a five with two men
-   *  who cannot shoot (recal_115), and helio is never read for a five with two stars (recal_115).
-   *  They were missing here and the test agreed by luck until recal_127 removed transition, which
-   *  had been winning outright on the sample five where the two answers diverge. */
+   *  including the three VETOES it has grown since: five-out is never read for a five with two men
+   *  who cannot shoot (recal_115), helio is never read for a five with two stars (recal_115), and
+   *  the triangle is never read for a five with nobody to feed on the block (recal_128).
+   *  recal_226, HIS RULING "all tactics scores will be relative": the free default is Z_MID 50 and
+   *  not a raw 60 — balanced has no spread by construction, so it reads exactly ORDINARY, which is
+   *  the same sentence the raw 60 used to say on a scale where 60 was the middle. The triangle's
+   *  entry-pass veto is written in here for the first time: it was missing and the test agreed by
+   *  luck while the triangle won 22 of 1,255, and this round takes it to 139. */
   const argmax = (five: Player[]): { style: Style; fit: number } => {
     let style: Style = 'balanced'
-    let fit = 60
+    let fit = Z_MID
     const shy = five.filter((p) => !canSpace(p)).length
     const duo = twoStars(five)
+    const hasPost = five.some((p) => Math.max(p.attrs.rim, p.attrs.mid) >= TRI_POST)
     for (const s of STYLES) {
       if (s.key === 'balanced') continue
       if (s.key === 'fiveout' && shy >= 2) continue
       if (s.key === 'helio' && duo) continue
+      if (s.key === 'triangle' && !hasPost) continue
       const f = styleFit(s.key, five)
       if (f > fit) {
         fit = f
@@ -119,10 +125,10 @@ describe('a five with no plan stands in the shape of its best tactic', () => {
       expect(bestStyle(five)).toEqual(want)
       expect(inferredStyle(five)).toEqual(want)
       if (want.style === 'balanced') {
-        // nothing may be inferred that does not actually beat the free default
-        for (const s of STYLES) expect(styleFit(s.key, five)).toBeLessThanOrEqual(60)
+        // nothing may be inferred that does not actually beat the free default — Z_MID since recal_226
+        for (const s of STYLES) expect(styleFit(s.key, five)).toBeLessThanOrEqual(Z_MID)
       } else {
-        expect(styleFit(want.style, five)).toBeGreaterThan(60)
+        expect(styleFit(want.style, five)).toBeGreaterThan(Z_MID)
       }
     }
   })
@@ -178,13 +184,15 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
   it('the Lakers five stands Ayton inside, not in the corner', () => {
     expect(canSpace(LAKERS[AYTON])).toBe(false)
     const at = spotsFor(null, LAKERS)
-    // recal_115 moved this five's READ from post-up to helio, and recal_222 moved it back: his ruling
-    // 5 gives the post hub as "0.6 x volume + 0.4 x max((mid+rim)/2, rim)" times a tallness ramp, with
-    // no leg that reads the three at all, so recal_115's `interior()` scaling is gone and James '26 is
-    // a post hub again (postup 78.5 against helio 70.2). The RULING under test is unchanged and is
-    // about the SPOT, not the shape: whatever the five is read as, the man who cannot shoot stands
-    // inside and never in a corner. MOVED READ, reported in data/rounds/222.json.
-    expect(inferredStyle(LAKERS)!.style).toBe('postup')
+    // recal_115 moved this five's READ from post-up to helio, recal_224 moved it back, and recal_226
+    // — his ruling "all tactics scores will be relative" — moves it again, to the HAND-OFF HUB
+    // (dho 84.0, horns 79.5, helio 79.0, postup 68.0): James '26 is a better hub against the league's
+    // hubs than he is a post against the league's posts, which is the sentence the z scale is for and
+    // the raw scale could not say. The RULING under test is unchanged and is about the SPOT, not the
+    // shape: whatever the five is read as, the man who cannot shoot stands inside and never in a
+    // corner, and the second half of this case asserts it in every shape. MOVED READ, reported in
+    // data/rounds/226.json.
+    expect(inferredStyle(LAKERS)!.style).toBe('dho')
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
@@ -303,16 +311,21 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
    * THE SHAPE IS STILL READ OFF THE FIVE — the caption no longer NAMES the man it runs through
    * (his ruling, 2026-09-29: "Remove best fit 60 Billups"), which was recal_115's answer to "Why
    * is the system helio for rus when KD is a better scorrer?". The reading itself is what that
-   * ruling was about and it is unchanged; this pins the READ rather than the sentence, so the
-   * Thunder '16 still come out a pick-and-pop and the Thunder '22 still come out helio.
+   * ruling was about and it is unchanged; this pins the READ rather than the sentence.
+   * recal_226 RE-POINTS BOTH READS and reports them as moved (his ruling: "all tactics scores will
+   * be relative"): the Thunder '16 go pick-and-pop -> PIN-DOWN (pindown 77.7, pickpop 75.9) and the
+   * Thunder '22 go helio -> HAND-OFF HUB (dho 65.5, helio 62.7). Both are CONTRADICTED PINS and are
+   * listed as such in data/rounds/226.json — the Thunder '22 were recal_115's "one clear star still
+   * reads helio" case and they no longer do, because helio's own spread (sd 7.70) is wider than the
+   * hub's (8.73) once every tactic is measured against its own league.
    */
   it('reads the shape off the five, and says only which shape', () => {
     // the CAPTION is the assertion, not the style key behind it: the key is the engine's private
     // name for the shape and the label is what the ruling is about
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toBe('Tactic: pick-and-pop')
+    expect(caption(draw(null, okc16))).toBe('Tactic: pin-down')
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
-    expect(caption(draw(null, okc22))).toBe('Tactic: helio')
+    expect(caption(draw(null, okc22))).toBe('Tactic: hand-off hub')
     const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
     expect(caption(draw(null, bos25))).toBe('Tactic: five-out')
     // and not one of them carries the apparatus any more

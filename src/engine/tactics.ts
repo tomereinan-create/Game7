@@ -182,7 +182,8 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'helio', label: 'helio' },
   { key: 'triangle', label: 'triangle' },
   { key: 'pickpop', label: 'pick-and-pop' },
-  { key: 'iso', label: 'isolation' },
+  /* 'iso' REMOVED from the board on his ruling 2026-09-30, "Remove iso tactic". The type, the
+     term and isoMan stay so a called iso still prices, but no five is ever READ as one. */
   { key: 'horns', label: 'horns' },
   { key: 'pindown', label: 'pin-down' },
   { key: 'dho', label: 'hand-off hub' },
@@ -956,6 +957,47 @@ export function gateTactics(t: Tactics, rank: number): Tactics {
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
+
+/** The league's own middle and spread at every spot, measured once over the shipped pool and FROZEN.
+ *  His ruling 2026-09-30, "Lets do Z for all": a spot's raw term says nothing on its own - pinScore
+ *  averages 27 over the pool and screenFit 54 - so every spot is read as DISTANCE FROM THE MIDDLE, in
+ *  spreads. Percentile was the other candidate and he rejected it with the case that decides it: the
+ *  elbow's spread is the narrowest on the board, so Klay '15 ranks 83rd there on a raw 61, a number
+ *  that says "a fine elbow man" about somebody who should barely be doing it. His z is +0.95.
+ *  NOT recomputed per run: if it floated, a regeneration that lifted every shooter would lift the mean
+ *  with them and cancel itself out, and the board could never move. Re-measure it as its own round. */
+export const SPOT_REF: Record<string, { mu: number; sd: number }> = {
+  /* A FAMILY SHARES ONE RULER (his catch, 2026-09-30). The roll handler and the pop handler are the
+   * same seat with one leg swapped - 0.20 of 3pt against 0.20 of rim - so measuring them against
+   * different-width spreads made Curry '16 read BETTER at the pop (86.4) than at the roll (84.7)
+   * while being 3.6 raw points better at the roll. The pop's spread was 15.7 against the roll's 18.7,
+   * so its ruler was 1.19x more sensitive and the magnification beat his real edge. Relativising is
+   * right when two spots measure different jobs and wrong when they are variants of one, so the two
+   * handlers share a reference and so do the two screeners. */
+  rollHandler: { mu: 47.666, sd: 17.299 },
+  popHandler: { mu: 47.666, sd: 17.299 },
+  screenFit: { mu: 54.008, sd: 18.714 },
+  popFit: { mu: 54.008, sd: 18.714 },
+  cornerFit: { mu: 40.800, sd: 23.097 },
+  postFit: { mu: 35.197, sd: 22.632 },
+  heliEngineScore: { mu: 45.723, sd: 19.844 },
+  elbowSkill: { mu: 48.484, sd: 14.237 },
+  hornsHandler: { mu: 46.848, sd: 17.320 },
+  pinScore: { mu: 27.213, sd: 21.742 },
+  hubScore: { mu: 50.674, sd: 11.931 },
+  moverFit: { mu: 47.542, sd: 15.372 },
+  comerFit: { mu: 43.727, sd: 19.207 },
+  isoScore: { mu: 47.556, sd: 23.526 },
+}
+/** 50 is the median card, 15 is one spread — a spot rating on the same 0-99 axis as everything else. */
+export const Z_MID = 50
+export const Z_SPREAD = 15
+/** How far above the league's middle he is at that job. */
+export const rel = (term: string, raw: number): number => {
+  const r = SPOT_REF[term]
+  if (!r || !r.sd) return raw
+  return clamp(Z_MID + Z_SPREAD * ((raw - r.mu) / r.sd), 0, 99)
+}
 const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.reduce((t, p) => t + f(p), 0) / five.length : 50)
 
 /**
@@ -1062,12 +1104,9 @@ const mean = (five: Player[], f: (p: Player) => number) => (five.length ? five.r
  */
 export const closeout = (x: Attrs) => clamp((x['3pt'] - SHOOT_3PT) / (SHOOT_3PT_HI - SHOOT_3PT), 0, 1)
 
-/** recal_222, HIS RULING 11: the flat elite-passer bonus is GONE from `handlerFit`. It was
- *  ELITE_LIFT +24 over a ramp from ELITE_PV 80, and because it was a FLAT ADD it never showed up as a
- *  per-point weight — which is how he caught that the horns handler summed to 0.72 and not 1.00. The
- *  spot is now four named weights that sum to 1.00: playvol .5 and ballsec .1 here (the part the roll
- *  and the pop share), plus the shot .2 and the height .2 in `rollHandler`/`popHandler` below, where
- *  the two calls read different columns. `elitePass`, ELITE_PV and ELITE_LIFT are deleted with it. */
+/* recal_224 deleted the flat elite-passer bonus from the handler: ELITE_LIFT +24 over a ramp from
+ * ELITE_PV 80 was a FLAT ADD, so it never showed up as a per-point weight and the handler's legs did
+ * not sum to anything readable. `elitePass`, ELITE_PV and ELITE_LIFT are deleted with it. */
 export const handlerFit = (x: Attrs) => clamp(0.5 * x.playvol + 0.1 * x.ballsec, 0, 99)
 /**
  * WHO THE ENGINE READS AS THE HANDLER (recal_216, his rulings: "fix the handler height cliff. KD can
@@ -1187,21 +1226,11 @@ export const pnrHandler = (x: Attrs) => handlerFit(x) * handlerRead(x)
  *   Jokic '25     (3pt 72, rim 93)  99.0 -> 99.0 / 99.0   both, and the clamp says so
  *   Draymond '16  (3pt 55, rim 51)  49.8 -> 49.8 / 47.5   the ROLL
  */
-/**
- * recal_222, HIS RULING 2, SUPERSEDES THE WHOLE OF THE BLOCK ABOVE. The tilt was a SUBTRACTION — each
- * call docked a handler for being the wrong kind of scorer for it — and his ruling takes every minus
- * out of the spot fits. The same distinction is made below by two POSITIVE 0.20 legs on different
- * columns: the ROLL handler gains his THREE and the POP handler gains his RIM, so whichever of the two
- * shots a man is better at is the call he grades better in — generally, with no band in the middle and
- * no cap. HAND_TILT is left at 0 as the record of the span recal_214/216 priced; `overTop` and
- * `downhill` are deleted with it, because nothing reads them and `closeout` (which overTop aliased) is
- * still here for the pop pair's own use.
- *   WHAT IT COSTS, RECORDED: recal_216 pinned Durant '16 as the ROLL handler, because `closeout` read
- * his three against a fixed 40..60 band rather than against his own rim. His card is rim 86 against a
- * three of 80, so on the ruling's own comparison he is the POP handler. The law is his law; this card
- * falls on the other side of it.
- */
 export const HAND_TILT = 0
+/** can he shoot over a defence that went under the screen — recal_214's ramp, unchanged */
+export const overTop = (x: Attrs) => closeout(x)
+/** ...and how much more downhill than up-top he is, on the same 20-point window */
+export const downhill = (x: Attrs) => clamp((x.rim - x['3pt']) / (SHOOT_3PT_HI - SHOOT_3PT), 0, 1)
 /** HIS RULING: height in the three two-man-game spots, each flat past the line he named.
  *  handler  full credit at 6'3" (75) and under, fading to nothing by 85 — the taller, the lower.
  *  roller   full credit at 6'10" (82) and over, fading to nothing by 72 — the shorter, the lower.
@@ -1266,9 +1295,17 @@ const screenFitRaw = (x: Attrs) => clamp(0.45 * x.rim + 0.1 * x.efficiency + rol
  * The term is his three at closeout 0, lerped up to recal_129's own max(mid, 3pt) at closeout 1,
  * so every card recal_129 named (Bonner 79, Lewis 76, Gallinari 76, Murphy 79, Bertans, Porziņģis)
  * reads the number this line has always given it.
+ *
+ * HIS RULING 2026-09-30, WHICH IS WHAT THE LINE BELOW ACTUALLY IS: the popper is HIS THREE AND HIS
+ * SIZE and nothing else — POP 0.60 x 3pt + 0.40 x a tallness ramp flat from POP_H_FLAT 6'8" down to
+ * POP_H_END 5'10". recal_224's mid-range 0.10 and efficiency 0.05 legs are gone: a man who steps out
+ * behind the screen is being asked to shoot the shot the defence gives up, and the mid-range belongs
+ * to the elbow and to the post hub, which are the two spots that read it. The two weights sum to
+ * 1.00, so a 99-across card still reads 99 -> 100, and the roll term is the exact mirror (rim and
+ * size, nothing about the arc) so the two calls come apart on the columns that name them.
  */
 const popFitRaw = (x: Attrs) =>
-  clamp(0.45 * x['3pt'] + 0.05 * x.efficiency + 0.1 * x.mid + popperHeight(x), 0, 99)
+  clamp(0.6 * x['3pt'] + popperHeight(x), 0, 99)
 
 /**
  * THE PICK-AND-POP PAIR. It IS the pick-and-roll pair — the same `pnr` field on the plan, so a man
@@ -1336,6 +1373,13 @@ export function pnrPair(five: Player[], pick?: PnrPair | null): { handler: Playe
 export const POST_HEIGHT = 81
 /** HIS RULING: post hub is volume 0.6 plus 0.4 of his better inside shot — the average of his
  *  mid-range and his rim when the mid is the stronger of the two, his rim alone when it is not. */
+/** HIS RULING: a man on the arc is 75% his three and 25% whether he makes what he takes.
+ *  recal_225's two named weights are kept as named weights (the round's ruling was "Make everything
+ *  use cornerFit, card included, everywhere there is open spacer change it to corner/wing"), so the
+ *  ratio is readable where it is set and not only inside the expression. */
+export const CORNER_SHOT = 0.75
+export const CORNER_EFF = 0.25
+const cornerFitRaw = (x: Attrs) => CORNER_SHOT * x['3pt'] + CORNER_EFF * x.efficiency
 export const POST_H_FLAT = 81, POST_H_END = 71
 export const postHeight = (x: Attrs) => 99 * tallBonus(x.height, POST_H_FLAT, POST_H_END)
 /** HIS RULING, both halves, left exactly as he wrote them: volume 0.6 plus 0.4 of the better of
@@ -1399,37 +1443,8 @@ export function roleMen(t: Tactics, five: Player[]): { scorer: string | null; pl
 export const SHOOT_3PT = 40
 export const SHOOT_3PT_HI = 60
 export const canSpace = (p: Player) => p.attrs['3pt'] >= SHOOT_3PT
-
-/**
- * THE CORNER / WING — ONE FORMULA, EVERYWHERE (recal_223, his ruling: "Make everything use
- * cornerFit, card included, everywhere there is open spacer change it to corner/wing").
- *
- * The same floor position — a man standing off the ball behind the arc — was graded by a different
- * expression in every set that has one. Five-out read bare `3pt` twice, the post-up's four spacers
- * read bare `3pt`, iso's four read bare `3pt`, the pick-and-roll's and the pick-and-pop's three rest
- * men read bare `3pt`, and the player card's "Corner / wing" row read the `3pt` BAR itself. Six
- * graded legs and one card row, one position, seven expressions. This is that one expression.
- *
- * WHY EFFICIENCY IS A QUARTER OF IT. The bar says how well he shoots the shot; it does not say
- * whether the shot goes in when he takes it in a game. A man at 3pt 70 / efficiency 45 and a man at
- * 3pt 70 / efficiency 90 are not the same spacer, and every other spot in this file already reads
- * the second column (the roller .10, the popper .05, the iso .30, the pin-down .25). 0.75/0.25 keeps
- * the SHOT dominant — the corner is a shooting spot and must stay one — while making the defence's
- * actual question, "does he make me pay", a term rather than nothing. The weights sum to 1.00 and
- * the term is wrapped in `toHundred` like the other eleven, so the spot reads 100 on a 99-across
- * card: recal_223 closes the one exception recal_222 recorded at 99.0.
- *
- * A GATE IS NOT A GRADE. `canSpace` above, five-out's SHOOT_3PT_HI shooter COUNT and `bestStyle`'s
- * `shy` count are thresholds, not weights, and they stay on the raw bar. See the comment beside the
- * count in `styleFit`.
- */
-export const CORNER_SHOT = 0.75
-export const CORNER_EFF = 0.25
-const cornerFitRaw = (x: Attrs) => clamp(CORNER_SHOT * x['3pt'] + CORNER_EFF * x.efficiency, 0, 99)
-/** recal_222, HIS RULING 1 (the reset): the five-out fit no longer SUBTRACTS 25 a man for a big who
- *  cannot shoot, so `shyBig` — height >= 81 && 3pt < SHOOT_3PT — has no reader left and is deleted.
- *  What keeps the Rockets '18 off five-out now is the two positive terms they do not earn (61.2)
- *  against the pick-and-roll they do (88.4), rather than a penalty. */
+/* recal_224: five-out's -25 on a big who cannot shoot is gone with every other negative in a spot
+ * fit, so `shyBig` — height >= 81 && 3pt < SHOOT_3PT — has no reader left and is deleted. */
 /** How much of a big's game is INTERIOR: 1 at 3pt <= 20, falling to 0 once he shoots like a shooter. */
 const interior = (x: Attrs) => clamp((SHOOT_3PT_HI - x['3pt']) / 40, 0, 1)
 
@@ -1676,10 +1691,11 @@ export const triangleReaders = (five: Player[]): Player[] => five.filter((p) => 
  *   Bosh, Embid, are all post players not iso." See facesUp below — that is the whole of the fix, and
  *   it took iso from 81 fives to 55.
  */
-export const ISO_VOL = 0.4
-export const ISO_EFF = 0.3
+export const ISO_VOL = 0.8
 export const ISO_FD = 0.2
-export const ISO_MID = 0.1
+/** Priced at nothing since his 2026-09-30 ruling; kept as the record of what recal_219 weighed. */
+export const ISO_EFF = 0
+export const ISO_MID = 0
 export const ISO_PV = 57
 export const ISO_BASE = -6
 export const ISO_W_MAN = 0.8
@@ -1688,7 +1704,10 @@ export const ISO_HOLE = 8
 /** The man the set clears out for: volume, efficiency, the fouls he draws, and a small bonus for the
  *  mid-range jumper he creates (recal_219, his ruling: "we need a mix of volume, eff, and fouldraw.
  *  No need for 3pt bonus, add small mid bonus"). 0.40 / 0.30 / 0.20 / 0.10, in his order, summing to 1. */
-export const isoScorer = (x: Attrs) => ISO_VOL * x.volume + ISO_EFF * x.efficiency + ISO_FD * x.fouldraw + ISO_MID * x.mid
+/* HIS RULING 2026-09-30: "Iso man should be - vol, fouldraw." Two attributes, and efficiency and
+ * the mid-range are both out - recal_219's four-rung ladder is down to the load he carries and the
+ * line he gets to. ISO_VOL 0.80 + ISO_FD 0.20 is 1.00, so a 99-across card reads 99 -> 100. */
+export const isoScorer = (x: Attrs) => clamp(ISO_VOL * x.volume + ISO_FD * x.fouldraw, 0, 99)
 /** ...and what he is worth to an ISO, which since recal_219 is that composite and NOTHING ELSE: his
  *  ruling struck out recal_208's play-volume price ("If the playvol - 0.13 means that having more
  *  playmaking reduces your skill as iso player, then remove all the - across the board"). The two
@@ -1869,11 +1888,9 @@ export const ballStop = (_a: Attrs[]): number => 0
  * separately rather than shared: they answer the same question about different jobs, and a later
  * round must be able to move one without silently moving the other.
  */
-/** recal_222: `heightRamp(x, lo, hi)` is deleted. Its three readers are gone — `handlerRead`'s
- *  PNR_HDISC discount and `ballShare`'s floor (both multipliers below 1, which is a subtraction by
- *  another name, so the reset took them), `elbowSkill` (recal_218 moved it onto `elbowBig`) and
- *  `hornsHandler` (his ruling 12: playvol alone at full weight). The clamped ramp survives inside
- *  `bigMan` and `elbowBig`, written out in place. */
+/* recal_224: `heightRamp(x, lo, hi)` has no reader left — `handlerRead`'s PNR_HDISC is gone, horns
+ * reads recal_218's `elbowBig` and the hand-off hub reads `hubHeight`. The window numbers above are
+ * the measurement those two ramps were built from and the comment is kept for them. */
 
 /**
  * HORNS (recal_213, his ruling: "Sounds good"). Two bigs at the elbows and a handler up top: the
@@ -1933,6 +1950,9 @@ export const HORN_BASE = 17
 export const HORN_HIGH = 0.32
 export const HORN_LOW = 0.55
 export const HORN_HAND = 0.13
+/** The WEAKER elbow man carries the weight: horns is about having two, not one. */
+export const HORN_WEAK_W = 0.55
+export const HORN_STRONG_W = 0.32
 export const HORN_WEAK = 0.75
 export const HORN_STRONG = 0.25
 export const HORN_H0 = 78
@@ -1996,8 +2016,49 @@ export const HORN_RIM_HI = 86
 export const elbowBig = (x: Attrs) =>
   clamp(clamp((x.height - HORN_H0) / (HORN_H1 - HORN_H0), 0, 1) + clamp((x.rimprot - HORN_RIM_LO) / (HORN_RIM_HI - HORN_RIM_LO), 0, 1), 0, 1)
 /** What a man is worth at an elbow: the weaker of his passing and his mid-range leads, scaled by his size. */
-const elbowSkillRaw = (x: Attrs) =>
-  (HORN_WEAK * Math.min(x.mid, x.playvol) + HORN_STRONG * Math.max(x.mid, x.playvol)) * elbowBig(x)
+/* HIS RULING 2026-09-29: "Horns elbow should be - bigger of(40% roller 40% playvol, 20% popper),
+ * (40% popper, 20% roller, 40% playvol)". Two elbow men, one who rolls off it and one who pops off it,
+ * and each man is read as whichever he is better at. Both blends sum to 1.00, so a 99-across card
+ * reads 99 -> 100. The max is continuous and monotone - the difference between the two blends is
+ * 0.2*(roller - popper), so this is 0.4*playvol + 0.2*(roller + popper) + 0.2*max(roller, popper),
+ * with no cliff where the better half changes hands. `screenFit` and `popFit` each carry their own
+ * height ramp, so his size counts twice over through them and not through a separate `elbowBig`. */
+export const ELBOW_PV = 0.2
+export const ELBOW_BODY = 0.15
+export const ELBOW_MAIN = 0.5
+export const ELBOW_OFF = 0.15
+/* HIS RULING 2026-09-30, option 2 after option 1 kept guards out but left Draymond where he was:
+ * THE ELBOW READS A BIG MAN'S BODY. Scaling the passing leg by size dropped Westbrook '16 from 63 to
+ * 45, which was the point, but moved Draymond '16 only 62 -> 64, because passing is a fifth of the
+ * term and he is below average on the other four fifths - roller 56, popper 65, rim 51, mid 10. The
+ * elbow was reading only what a man SCORES from there. It now also reads what he IS there: the glass
+ * at both ends and his presence at the rim, the three bars that separate Draymond (60/84/84) from
+ * Westbrook (65/69/24) and that no other offensive spot looks at. It is a SUM, not another product,
+ * so it cannot collapse the term the way postFit's ramp collapses that one. ELBOW_PV .20 + ELBOW_BODY
+ * .15 + ELBOW_MAIN .50 + ELBOW_OFF .15 is 1.00, so a 99-across card still reads 99 -> 100. */
+const elbowBody = (x: Attrs) => (x.orb + x.drb + x.rimprot) / 3
+/* HIS RULING 2026-09-30: "Elbow should be - 0.2 playvol and the rest popper\roller." Play volume falls
+ * from 0.40 to 0.20 and the two screening halves take the 0.80 between them. The point is to stop the
+ * elbow being a proxy for general quality: playvol is the most generic bar on the sheet, so weighting
+ * it heaviest made a good passer an elbow man whatever his body, and horns ended up correlating 0.908
+ * with "is this a good team" and winning 20 fives of 1,255. He is still read as whichever elbow he is,
+ * the diver or the popper, and the blends still sum to 1.00 so a 99-across card reads 99 -> 100. */
+const elbowSkillRaw = (x: Attrs) => {
+  const roll = screenFit(x) / screenFit.K
+  const pop = popFit(x) / popFit.K
+  /* HIS RULING 2026-09-30, choosing option 1 of four for "Dramond should be heigher": the passing leg
+   * is SCALED BY SIZE rather than paid flat. Cutting playvol to 0.20 correctly dropped Westbrook '16
+   * (6'4", rimprot 24) from 85 to 63, but it took Draymond '16 down with him to 62, because on the two
+   * bars the elbow reads - rim finishing and three-point shooting - the two men look alike, and what
+   * actually makes Draymond an elbow man is none of that. `elbowBig` is the ramp recal_218 built and
+   * the reset orphaned: height over HORN_H0 78 -> HORN_H1 82 plus rim protection over HORN_RIM_LO 73
+   * -> HORN_RIM_HI 86, clamped once. Draymond reads 0.85 on it and keeps his passing; Westbrook reads
+   * 0 and keeps none. A 99-across card still reads 1 on the ramp, so the term still tops out at 99. */
+  const pass = ELBOW_PV * x.playvol * elbowBig(x) + ELBOW_BODY * elbowBody(x)
+  const diver = pass + ELBOW_MAIN * roll + ELBOW_OFF * pop
+  const popper = pass + ELBOW_MAIN * pop + ELBOW_OFF * roll
+  return clamp(Math.max(diver, popper), 0, 99)
+}
 /**
  * ...and what he is worth UP TOP, which is the same ramp read the other way round — handlerFit scaled
  * by how much of a guard he is, `1 - elbowBig`, the shape isoRoom already uses against `interior`.
@@ -2021,7 +2082,12 @@ const elbowSkillRaw = (x: Attrs) =>
  * precedent (the recal_93 convention: a shipped round's receipt is the record of what it did, not a
  * thing a later round rewrites); data/rounds/218.json names them.
  */
-const hornsHandlerRaw = (x: Attrs) => x.playvol
+/* HIS RULING 2026-09-29: the man who hands the ball off - at an elbow in horns, at the top of a
+ * pin-down - is playvol .70 and ballsec .30. One formula, so ONE term: the pin-down's passer leg
+ * reads this same function, and PASS_PV + PASS_BS is 1.00 so a 99-across card reads 99 -> 100. */
+export const PASS_PV = 0.7
+export const PASS_BS = 0.3
+const hornsHandlerRaw = (x: Attrs) => clamp(PASS_PV * x.playvol + PASS_BS * x.ballsec, 0, 99)
 
 /**
  * THE TWO MEN ON THE ELBOWS (recal_213). The plan's man is the HIGH one when it names somebody on
@@ -2273,9 +2339,17 @@ export const selfless = (x: Attrs) => clamp((DHO_VOL_MAX - x.volume) / (DHO_VOL_
  */
 export const bigMan = (x: Attrs) =>
   clamp(clamp((x.height - DHO_H0) / (DHO_H1 - DHO_H0), 0, 1) + clamp((x.rimprot - DHO_RIM_LO) / (DHO_RIM_HI - DHO_RIM_LO), 0, 1), 0, 1)
-/** What a man is worth as a hand-off hub: he passes, he can shoot it himself, he is big, he does not shoot much. */
-const hubScoreRaw = (x: Attrs) =>
-  (DHO_PASS * x.playvol + DHO_SHOT * pinShot(x)) * bigMan(x)
+/* HIS RULING 2026-09-30: "DHO hub should be - height playvol only." The shot half is gone with
+ * `pinShot`, and so is `bigMan`'s rim-protection leg - rim protection is not height. Two terms, half
+ * each, and the height leg is an ADDITIVE ramp on the same shape the roller and the popper use rather
+ * than a multiplier, so a hub is never multiplied to nothing by one inch. Flat at DHO_H_FLAT 83 and
+ * out at DHO_H_END 73, a ten-inch span like the other three, which keeps Draymond '16 (78") a hub at
+ * half the height leg - his recal_217 ruling, "Fix the DHO height floor so Draymond can be a hub".
+ * DHO_PV + the height leg's 0.5 is 1.00, so a 99-across card reads 99 -> 100. */
+export const DHO_H_FLAT = 83, DHO_H_END = 73
+export const DHO_PV = 0.5
+export const hubHeight = (x: Attrs) => 0.5 * 99 * tallBonus(x.height, DHO_H_FLAT, DHO_H_END)
+const hubScoreRaw = (x: Attrs) => clamp(DHO_PV * x.playvol + hubHeight(x), 0, 99)
 
 /**
  * WHOSE HANDS THE OFFENSE RUNS THROUGH (recal_213). The sixth call of the same shape: the plan's man
@@ -2305,7 +2379,7 @@ export const hubFit = (five: Player[], p: Player): number => {
   const other = five.filter((q) => q !== p)
   const best = other.length ? Math.max(...other.map((q) => q.attrs.playvol)) : 0
   const primacy = clamp((DHO_GUARD - Math.max(0, best - p.attrs.playvol)) / DHO_GUARD, 0, 1)
-  return (hubScore(p.attrs) / hubScore.K) * primacy
+  return (rel('hubScore', hubScore(p.attrs))) * primacy
 }
 
 export function dhoMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
@@ -2314,7 +2388,73 @@ export function dhoMan(five: Player[], pick?: string | null): { hub: Player | nu
   return { hub: five.reduce((m, p) => (hubFit(five, p) > hubFit(five, m) ? p : m), five[0]), chosen: false }
 }
 
-export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
+/** The corner men of any set: everybody the call does not name. His ruling, "Everybody should
+ *  have a role" - no style may leave a man unread. */
+const cornerMean = (men: Player[]) => mean(men, (q) => rel('cornerFit', cornerFit(q.attrs)))
+/* HIS RULING 2026-09-30: "Mover should be - playvol, eff, and small minus for vol." A motion man moves
+ * the ball and finishes what he takes; a man who shoots a lot is the one who stops it. Neither 3pt nor
+ * ballsec survives - his formula names three attributes and those are the three.
+ *
+ * THIS IS THE FIRST NEGATIVE BACK IN A SPOT TERM since his reset ("remove all the - across the board"),
+ * and he asked for it in those words, so it is small and it is the only one: MOVE_VOL 0.10 against
+ * MOVE_PV 0.60 and MOVE_EFF 0.40. One consequence of any negative leg, recorded rather than hidden: a
+ * 99-across card is no longer this term's maximum - a high-playvol, high-efficiency, LOW-volume man
+ * scores above it - so `toHundred` normalises the 99-card to 100 and a few real cards read past it. */
+export const MOVE_PV = 0.6
+export const MOVE_EFF = 0.4
+export const MOVE_VOL = 0.1
+const moverFitRaw = (x: Attrs) => clamp(MOVE_PV * x.playvol + MOVE_EFF * x.efficiency - MOVE_VOL * x.volume, 0, 99)
+/* HIS RULING 2026-09-30: "Hand of comer should be vol, 3pt, mid." The man coming off the hand-off used
+ * to be read on `pinShot`, a bare max(mid, 3pt) with no spot of its own. He is a scorer taking a shot
+ * off the catch, so he is his load and both the shots he can take from it. COMER_VOL 0.40 +
+ * COMER_3PT 0.25 + COMER_MID 0.25 + COMER_PV 0.10 (his second ruling, the same day) is 1.00, so a 99-across card reads 99 -> 100. `pinShot` survives inside the
+ * pin-down's own term and is no longer the hand-off's reading. */
+export const COMER_VOL = 0.4
+export const COMER_3PT = 0.25
+export const COMER_MID = 0.25
+export const COMER_PV = 0.1
+const comerFitRaw = (x: Attrs) =>
+  clamp(COMER_VOL * x.volume + COMER_3PT * x['3pt'] + COMER_MID * x.mid + COMER_PV * x.playvol, 0, 99)
+/** What teams normally score at each tactic, and how far they spread, measured once over the wheel's
+ *  own fives and FROZEN for the same reason SPOT_REF is. Balanced has no spread by construction - it
+ *  is a flat 60 for any five - so it reads exactly ordinary, which is what it is. */
+/* RE-MEASURED FOR recal_226 on the pool as it stands after the merge (pipeline 228), in the order
+ * the dispatch names: SPOT_REF first (it reproduced to the thousandth on all fourteen terms - 227
+ * and 228 moved ratings, not attribute bars), THEN every style, because styleFitRaw reads `rel` and
+ * a style reference measured before the spot reference it depends on is measured against a ruler
+ * that is about to move. Method: WHEEL -> startingFive -> styleFitRaw, no opponent, all 1,255 fives.
+ * `styleFitRaw` rather than inverting styleFit: the z is CLAMPED to 0..99, so a five at the rail
+ * inverts to the wrong raw and drags the moments with it - which is the whole difference between
+ * these numbers and the scratch tree's (postup sd 10.333 -> 11.155, pnr mu 66.759 -> 66.741,
+ * triangle 50.300 -> 50.314, iso 47.556 -> 48.790, which had been copied off isoScore's SPOT_REF). */
+export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
+  balanced: { mu: 60.000, sd: 0.000 },
+  fiveout: { mu: 37.419, sd: 14.805 },
+  pnr: { mu: 66.741, sd: 5.424 },
+  motion: { mu: 55.685, sd: 6.758 },
+  postup: { mu: 65.178, sd: 11.155 },
+  helio: { mu: 65.195, sd: 7.696 },
+  triangle: { mu: 50.314, sd: 8.676 },
+  pickpop: { mu: 61.241, sd: 6.934 },
+  iso: { mu: 48.790, sd: 12.396 },
+  horns: { mu: 79.708, sd: 5.275 },
+  pindown: { mu: 59.017, sd: 7.434 },
+  dho: { mu: 77.277, sd: 8.731 },
+}
+export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
+  const raw = styleFitRaw(style, five, theirs, call)
+  /* A STYLE NOBODY ENUMERATES ANY MORE READS NOTHING AT ALL, not an ordinary 50. `styleFitRaw`'s
+   * switch has no default, so recal_127's dead `transition` — and any other key a stale save can
+   * carry — falls out of it as undefined, and that contract has to survive the z or a save from
+   * before recal_127 would start pricing as a real call. */
+  if (!Number.isFinite(raw)) return raw
+  const r = STYLE_REF[style]
+  if (!r || !r.sd) return Z_MID
+  return clamp(Z_MID + Z_SPREAD * ((raw - r.mu) / r.sd), 0, 99)
+}
+/** The tactic's own unrelativised score. Exported so SPOT_REF and STYLE_REF can be re-measured
+ *  from the file itself rather than by inverting a CLAMPED z (a five at the rail inverts wrong). */
+export function styleFitRaw(style: Style, five: Player[], _theirs?: Player[], call?: StyleCall | null): number {
   if (!five.length || style === 'balanced') return 60 // priced to zero
   const a = five.map((p) => p.attrs)
   const avg = (f: (x: Player['attrs']) => number) => a.reduce((t, x) => t + f(x), 0) / a.length
@@ -2329,19 +2469,13 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // carries it, the mean and the floor shade it, and every non-shooting big is a 25-point hole
       // in the middle of the floor. Boston '25 reads 73 (four shooters, no shy big); Houston '18,
       // four shooters and Capela, reads 36.
-      //
-      // recal_223, his ruling: "Make everything use cornerFit, card included, everywhere there is
-      // open spacer change it to corner/wing". THE TWO GRADED LEGS — the mean and the floor — are
-      // corner/wing reads now, because a five-out seat IS a corner/wing seat and there is nothing
-      // else on this floor. THE +10 COUNT STAYS ON THE RAW BAR, AND THAT IS DELIBERATE: A GATE IS
-      // NOT A GRADE. The count asks one yes/no question — must the defence come out to him at all —
-      // and `cornerFit` folds in efficiency, so a man at 3pt 50 / efficiency 90 reads exactly 60 and
-      // would be counted a five-out shooter he is not. Nobody should "finish the job" here: every
-      // THRESHOLD in this file (this count, `canSpace`, `bestStyle`'s `shy`) stays on `3pt`, and
-      // every WEIGHT moves to `cornerFit`.
+      /* HIS RULING 2026-09-28: "Make everything use cornerFit, card included, everywhere there is open
+       * spacer change it to corner/wing." Both GRADED legs below now read `cornerFit`, so one corner man
+       * is worth the same whatever the call. THIS COUNT STAYS ON RAW 3PT on purpose: it asks whether the
+       * defence has to come out to him at all, and `cornerFit` folds in efficiency - a 50/90 man reads 60
+       * and would be counted a five-out shooter he is not. A gate is not a grade. */
       const shooters = a.filter((x) => x['3pt'] >= SHOOT_3PT_HI).length
-      const corner = a.map((x) => cornerFit(x) / cornerFit.K)
-      return 0.3 * (corner.reduce((t, v) => t + v, 0) / corner.length) + 0.2 * Math.min(...corner) + 10 * shooters
+      return 0.3 * avg((x) => rel('cornerFit', cornerFit(x))) + 0.2 * Math.min(...a.map((x) => rel('cornerFit', cornerFit(x)))) + 10 * shooters
     }
     case 'pnr': {
       // his two men when he named them, the engine's own pair when he did not — the same three
@@ -2353,24 +2487,18 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // Malone 89, three men shooting 41) reads 76.2 against a post-up of 68.6; it read 46.4
       // against 80.5 before the round.
       const { handler: h, screener: d, chosen } = pnrPair(five, call?.pnr)
-      const handler = h ? (rollHandler(h.attrs) / rollHandler.K) * (chosen ? 1 : handlerRead(h.attrs)) : 0
-      const dive = d ? screenFit(d.attrs) / screenFit.K : 0
+      const handler = h ? (rel('rollHandler', rollHandler(h.attrs))) * (chosen ? 1 : handlerRead(h.attrs)) : 0
+      const dive = d ? rel('screenFit', screenFit(d.attrs)) : 0
       const rest = five.filter((p) => p.name !== h?.name && p.name !== d?.name)
-      // recal_223: the three rest men are the corner/wing read, not the bare bar (see cornerFit).
-      return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => cornerFit(p.attrs) / cornerFit.K)
+      return 0.4 * handler + 0.35 * dive + 0.25 * mean(rest, (p) => rel('cornerFit', cornerFit(p.attrs)))
     }
     case 'motion': {
       // THE PASS, NOT THE DRIBBLE (recal_211, his ruling: "yes do the motion round"). The pass chain
       // at the weak end carries it, the mean three and the mean ball security shade it, and the one
       // man who holds the ball is charged continuously instead of by category. The block above
       // carries the whole derivation, the wheel count and the declined subject.
-      return (
-        MOT_BASE +
-        MOT_CHAIN * passChain(a) +
-        MOT_SPACE * avg((x) => x['3pt']) +
-        MOT_BS * avg((x) => x.ballsec) -
-        MOT_HOLD * ballStop(a)
-      )
+      // MOT_SPACE + MOT_BS was 0.24 spread over 3pt and ballsec; it is one mover leg at 0.24 now.
+      return MOT_BASE + MOT_CHAIN * passChain(a) + (MOT_SPACE + MOT_BS) * avg((x) => rel('moverFit', moverFit(x))) - MOT_HOLD * ballStop(a)
     }
     case 'postup': {
       // A POST HUB WORKS INSIDE (recal_115), AND HE WORKS AT THE RIM (recal_120). The term was
@@ -2392,9 +2520,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // is a worse post man than the engine's pick scores less here and the style is worth less,
       // which is the deviation tax law applied to the second half of the call.
       const { hub } = postMan(five, call?.post)
-      const post = hub ? Math.max(0, postFit(hub.attrs) / postFit.K) : 0
-      // recal_223: the four men off the block are corner/wing reads, not bare 3pt (see cornerFit).
-      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => cornerFit(p.attrs) / cornerFit.K) * 0.3
+      const post = hub ? Math.max(0, rel('postFit', postFit(hub.attrs))) : 0
+      return post * 0.7 + mean(five.filter((p) => p.name !== hub?.name), (p) => rel('cornerFit', cornerFit(p.attrs))) * 0.3
     }
     case 'pickpop': {
       // the pick-and-roll's three terms and its three weights, with the ROLL swapped for the POP
@@ -2404,9 +2531,8 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // terms shared the mid-range, so they could TIE on the same man (Thunder '16, 80.5 to 80.5).
       const { handler: ph, screener: pd, chosen: pc } = popPair(five, call?.pnr)
       const prest = five.filter((p) => p.name !== ph?.name && p.name !== pd?.name)
-      const phand = ph ? (popHandler(ph.attrs) / popHandler.K) * (pc ? 1 : handlerRead(ph.attrs)) : 0
-      // recal_223: the three rest men are the corner/wing read, the same term the roll leg reads.
-      return 0.4 * phand + 0.35 * (pd ? popFit(pd.attrs) / popFit.K : 0) + 0.25 * mean(prest, (p) => cornerFit(p.attrs) / cornerFit.K)
+      const phand = ph ? (rel('popHandler', popHandler(ph.attrs))) * (pc ? 1 : handlerRead(ph.attrs)) : 0
+      return 0.4 * phand + 0.35 * (pd ? rel('popFit', popFit(pd.attrs)) : 0) + 0.25 * mean(prest, (p) => rel('cornerFit', cornerFit(p.attrs)))
     }
     case 'triangle': {
       const post = postOption(five)
@@ -2423,26 +2549,13 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       )
     }
     case 'helio': {
-      // HELIO IS ONE MAN ALONE (recal_115, his ruling: "why Helio when they have 2 superstars?").
-      // Two changes. The engine is the five's best SCORER-CREATOR, not its highest play-volume man
-      // (scorerCreator above), so Durant '16 is Oklahoma City's featured man and not Westbrook. And
-      // the fit now reads the SEPARATION: a helio offence is a man who towers over the four beside
-      // him, so the term is his composite plus what he has on the second-best man on the floor. A
-      // five with two stars scores low here by construction and bestStyle will not read it as helio
-      // at all. The ball-security floor survives at a lighter weight — one man carrying an offence
-      // still needs four who do not turn it over. Thunder '22 (Gilgeous-Alexander alone) reads 65.
-      //
-      // recal_206 (his ruling: "2016 Spurs cant be Helio, bc Kawhi cant be the primary playmaker as
-      // well. Helio needs to be ran by a guy with high vol and playvol, not only one."). The leading
-      // term is no longer the top composite on the floor but the ENGINE's helio score — the same
-      // composite, priced for the play volume he does not carry (heliEngineScore above). The
-      // separation term is untouched and still reads scorerCreator, because "does one man tower over
-      // the other four as a scorer" is the question it was written to ask. San Antonio '16 reads
-      // 63.9 -> 58.6 and falls to balanced; Denver '22 (Jokic) and the Lakers '87 (Johnson) do not
-      // move at all.
-      const e = a.map(scorerCreator).sort((x, y) => y - x)
+      /* HIS RULING 2026-09-30: "Remove second creator from helio and have only corners." The gap to
+       * the second creator is gone - helio no longer charges a five for owning a second star - and so
+       * is the old floor on the lowest ballsec. What is left is the engine and the four men spacing
+       * for him: HELIO_ENGINE 0.75 + HELIO_CORNER 0.25 is 1.00, so a 99-across five reads 99 -> 100. */
       const engine = heliMan(five, null).creator
-      return 0.7 * (engine ? heliEngineScore(engine.attrs) / heliEngineScore.K : 0) + 0.3 * (e[0] - (e[1] ?? 0)) + 0.12 * Math.min(...a.map((x) => x.ballsec))
+      const hrest = five.filter((p) => p.name !== engine?.name)
+      return HELIO_ENGINE * (engine ? rel('heliEngineScore', heliEngineScore(engine.attrs)) : 0) + HELIO_CORNER * cornerMean(hrest)
     }
     case 'iso': {
       // HELIO'S COMPLEMENT (recal_208) — one man who gets his own shot, four men cleared out of his
@@ -2454,28 +2567,35 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // driving lane, a mid-post iso pays nothing. The block above carries the whole derivation.
       const { scorer } = isoMan(five, call?.iso)
       const rest = five.filter((p) => p.name !== scorer?.name)
-      // recal_223: ISO_W_REST is a WEIGHT and reads cornerFit; `holes` is a GATE and stays on the
-      // raw bar through `canSpace` — "can he stand there at all" is not "how good is he there".
       const holes = rest.filter((p) => !canSpace(p)).length
       return clamp(
         ISO_BASE +
-          ISO_W_MAN * (scorer ? isoScore(scorer.attrs) / isoScore.K : 0) +
-          ISO_W_REST * mean(rest, (p) => cornerFit(p.attrs) / cornerFit.K) -
+          ISO_W_MAN * (scorer ? rel('isoScore', isoScore(scorer.attrs)) : 0) +
+          ISO_W_REST * mean(rest, (p) => rel('cornerFit', cornerFit(p.attrs))) -
           ISO_HOLE * (scorer ? isoRoom(scorer.attrs) : 1) * holes,
         0,
         100,
       )
     }
     case 'horns': {
-      // TWO ELBOWS AND A HANDLER (recal_213). The plan's high man when it names one, the engine's own
-      // two otherwise, through the one function hornsMen. The SECOND elbow man carries the fit — that
-      // is the rare thing and the thing that makes the alignment possible — and the handler is a
-      // light third term because horns is a call on the bigs. No spacing term at all: the block above
-      // carries the whole derivation and the reason.
+      /* HIS RULING 2026-09-30: "Fix horns." It was reading 0.908 against general team quality - the
+       * highest of the eleven - and winning 23 fives of 1,255. Not because teams are bad at it but
+       * because it said nothing about them: if you were good at horns you were good at everything, so
+       * something else was always higher. Horns now measures the one thing only horns needs, TWO men
+       * who can play an elbow, by weighting the WEAKER of the pair heaviest - the same shape five-out
+       * uses on its worst shooter. One great big and four others is a pick-and-roll; two of them is a
+       * horns team, and nothing else on the board reads that. */
       const { high, low } = hornsMen(five, call?.horns)
-      const hand = Math.max(...five.map((p) => hornsHandler(p.attrs) / hornsHandler.K))
+      const ea = high ? rel('elbowSkill', elbowSkill(high.attrs)) : 0
+      const eb = low ? rel('elbowSkill', elbowSkill(low.attrs)) : 0
+      const weaker = Math.min(ea, eb)
+      const stronger = Math.max(ea, eb)
+      const hand = Math.max(...five.map((p) => rel('hornsHandler', hornsHandler(p.attrs))))
+      const orest = five.filter((p) => p.name !== high?.name && p.name !== low?.name)
       return clamp(
-        HORN_BASE + HORN_HIGH * (high ? elbowSkill(high.attrs) / elbowSkill.K : 0) + HORN_LOW * (low ? elbowSkill(low.attrs) / elbowSkill.K : 0) + HORN_HAND * hand,
+        HORN_BASE +
+          0.75 * (HORN_WEAK_W * weaker + HORN_STRONG_W * stronger + HORN_HAND * hand) +
+          0.25 * cornerMean(orest),
         0,
         100,
       )
@@ -2487,8 +2607,16 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // thing the other four owe him: somebody who can hit him coming off the screen.
       const { shooter } = pinMan(five, call?.pindown)
       const rest = five.filter((p) => p.name !== shooter?.name)
-      const pass = rest.length ? Math.max(...rest.map((p) => p.attrs.playvol)) : 0
-      return clamp(PIN_BASE + PIN_W_MAN * (shooter ? pinScore(shooter.attrs) / pinScore.K : 0) + PIN_W_PASS * pass, 0, 100)
+      const pass = rest.length ? Math.max(...rest.map((p) => rel('hornsHandler', passerFit(p.attrs)))) : 0
+      const passer = rest.slice().sort((x, y) => passerFit(y.attrs) - passerFit(x.attrs))[0]
+      const prest2 = rest.filter((p) => p.name !== passer?.name)
+      return clamp(
+        PIN_BASE +
+          0.75 * (PIN_W_MAN * (shooter ? rel('pinScore', pinScore(shooter.attrs)) : 0) + PIN_W_PASS * pass) +
+          0.25 * cornerMean(prest2),
+        0,
+        100,
+      )
     }
     case 'dho': {
       // A BIG MAN'S HANDS (recal_213). The hub, the two men who come off the hand-off, and the price
@@ -2496,9 +2624,17 @@ export function styleFit(style: Style, five: Player[], _theirs?: Player[], call?
       // the reason the Nuggets are not here.
       const { hub } = dhoMan(five, call?.dho)
       const rest = five.filter((p) => p.name !== hub?.name)
-      const off = rest.map((p) => pinShot(p.attrs)).sort((x, y) => y - x).slice(0, DHO_TOP)
+      const ranked = rest.slice().sort((x, y) => comerFit(y.attrs) - comerFit(x.attrs))
+      const off = ranked.slice(0, DHO_TOP).map((p) => rel('comerFit', comerFit(p.attrs)))
       const comers = off.length ? off.reduce((t, v) => t + v, 0) / off.length : 0
-      return clamp(DHO_BASE + DHO_W_HUB * (hub ? hubFit(five, hub) : 0) + DHO_W_SHOOT * comers, 0, 100)
+      const drest = ranked.slice(DHO_TOP)
+      return clamp(
+        DHO_BASE +
+          0.75 * (DHO_W_HUB * (hub ? hubFit(five, hub) : 0) + DHO_W_SHOOT * comers) +
+          0.25 * cornerMean(drest),
+        0,
+        100,
+      )
     }
   }
 }
@@ -2617,7 +2753,7 @@ export function aiScheme(five: Player[], theirs: Player[]): Scheme {
  */
 export function bestStyle(five: Player[], theirs?: Player[]): { style: Style; fit: number } {
   let best: Style = 'balanced'
-  let bestFit = 60
+  let bestFit = Z_MID // balanced reads exactly ordinary now, not a raw 60
   // FIVE-OUT DEMANDS SHOOTERS (his ruling). Every other set owns an inside spot to stand a
   // non-shooter on; five-out owns none, so a five carrying two men who cannot shoot is never READ
   // as five-out however the fit lands. Called five-out is untouched — a call is a call.
@@ -2689,7 +2825,10 @@ export function featured(style: Style, five: Player[], call?: StyleCall | null):
 /** The style's worth: 0.06 x (fit - 60) minus the deviation tax, plus the tempo synergies. */
 export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number {
   if (t.style === 'balanced') return 0
-  let pts = clamp(0.11 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -2.5, 2.5)
+  // HIS RULING: "Make the fit matter more" - the slope more than doubles (0.11 -> 0.25) and the
+  // clamp opens from +-2.5 to +-10, so the call is worth up to twenty points of spread end to end
+  // instead of five, and a five coached against its grain is punished rather than mildly taxed.
+  let pts = clamp(0.25 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -10, 10)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
   // recal_127 removed transition and its two tempo synergies with it; post-up's is the only one left
   return pts
@@ -2878,4 +3017,10 @@ export const elbowSkill = toHundred(elbowSkillRaw)
 export const hubScore = toHundred(hubScoreRaw)
 export const pinScore = toHundred(pinScoreRaw)
 export const hornsHandler = toHundred(hornsHandlerRaw)
+/** The same seat under its other name: the man who feeds a pin-down. His ruling, one formula. */
+export const passerFit = hornsHandler
+export const HELIO_ENGINE = 0.75
+export const HELIO_CORNER = 0.25
 export const cornerFit = toHundred(cornerFitRaw)
+export const moverFit = toHundred(moverFitRaw)
+export const comerFit = toHundred(comerFitRaw)
