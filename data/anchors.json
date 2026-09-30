@@ -350,14 +350,6 @@
     "ruling": "Dont do 87, only shift the weights a little torward 88"
   },
   {
-    "card": "Jaylen Brown '26",
-    "scale": "off",
-    "target": 83,
-    "tol": 1,
-    "round": 89,
-    "ruling": "Dont do 87, only shift the weights a little torward 88"
-  },
-  {
     "card": "Shai Gilgeous-Alexander '25",
     "scale": "off",
     "target": 97,
@@ -704,14 +696,6 @@
     "card": "Shaquille O'Neal '08",
     "scale": "off",
     "target": 64,
-    "tol": 1,
-    "round": 51,
-    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
-  },
-  {
-    "card": "Shaquille O'Neal '09",
-    "scale": "off",
-    "target": 71,
     "tol": 1,
     "round": 51,
     "ruling": "recal_51 — the paint branch gains a VOLUME RAMP"
@@ -1235,15 +1219,6 @@
     "round": 119,
     "ruling": "For the scout, I agree with 3,4,5,6,7",
     "note": "THE OTHER HALF OF THE SUBJECT'S ROW, pinned so a later OFF round cannot pay for its offence out of the defence's pocket. recal_119 moved 0 of 1,255 DEF dials and drtgRef is bit-identical on all of them; this records that the Celtics '24 DEF dial read 65 before and after."
-  },
-  {
-    "card": "Russell Westbrook '15",
-    "scale": "off",
-    "target": 85,
-    "tol": 2,
-    "round": 121,
-    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
-    "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named."
   },
   {
     "kind": "order",
@@ -2106,5 +2081,41 @@
     "round": 221,
     "ruling": "efficient 3-and-D wings fall between two floors",
     "note": "THE SEAM BETWEEN THE TWO WING FLOORS. recal_64/118's off-ball floor prices only the arc (0.38 x 3pt + 0.20 x efficiency + 0.08 x ballsec + 0.06 x discipline, 0.72 of weight, not one possession bar in it) and recal_155/169's glue floor prices the possessions a low-usage man ends and starts - but the glue floor was GATED OFF for anyone with 3pt >= 68, so the wing who both spaces AND converts everything else got neither floor's credit for the second thing. recal_221 DELETED that exclusion: disjointness is a property of the PAYMENT, not of the bar - both floors are written in recal_118's form `std + f x (floor - std)` and applied in sequence on the SAME std, so the second can only pay the excess over the first and two floors can never stack. The gate's one named protection had already been superseded by recal_169: recal_155 recorded Kyle Korver '15 at a glue floor of 64.7 over a standard path of 62.4 ('+2 without it'), and today the used-possession ramp makes it 62.053 over 61.920 - he prints 58 before and after. THE TWO-CARD PROOF is Josh Hart '25 (3pt 37, OFF 64, recal_155's own subject) against Josh Hart '26 (3pt 69, the same job on a better season, OFF 53): eleven printed points the wrong way round on one bar; after, 64 and 68. MEASURED: 142 of 10,000 cards move on OFF, every one UP, mean +3.10, max +15; DEF and every attribute on ZERO; zero bigs, zero cards with volume >= 55, zero cards with 3pt <= 40 and zero cards above the 93 knee; top 50 by OFF and by OVR identical in order. Snell '18 50, Bowen '06 45, Kerr '96 61, Gee '16 36, Javonte Green '22 50 and Hart '25 OVR 63 are EXACTLY unmoved (their possession averages are 15.33 / 18.00 / 22.67 / 38.67 / 44.67 / 70.00 and the first four floors do not bind). THIS SUBJECT: a 31.6-mpg starter, 7.0 points on 38.5%, TS .599, 6.8 rebounds, 2.5 assists, VORP rank 56 of 206. Off-ball floor 40.120 binding by ONE point; glue floor 48.157 at a gate that was 0.1071 (3pt 65) and is now 1.0000. OFF 38 -> 45, ON THE LOWER EDGE OF THIS BAND with 0.29 of raw to spare (44.786 against an edge of 44.500) - the round has no size knob to widen it, the fix is a deletion and GL_K 1.070 is recal_155's measured ceiling. A later round that takes anything off a low-usage wing's standard path takes him out of this pin."
+  },
+  {
+    "card": "Ricky Pierce '91",
+    "scale": "off",
+    "target": 89,
+    "tol": 2,
+    "round": 223,
+    "ruling": "recal_96's 24-minute full-load line pays the volume x load term WHOLE to 27-29-mpg sixth men, so a bench scorer is priced as a 38-minute starter.",
+    "note": "THE SUBJECT of recal_223. 27.8 mpg, 20.5 ppg, usage 29.7, TS .586, BPM 2.3 off the bench, and he printed OFF 93 on volume 96 x load 1.0000 x 0.26 = 24.960 of an o_score of 99.7047 — a quarter of his offence at a starter's rate. The volume bar's surplus above this file's own low-usage line 55 now takes the class's own upper quartile of minutes (36.3, measured on the 3,425 cards with volume > 55 whose load is paid in full at recal_96's line: p25 30.2, median 33.7, p75 36.3) instead of recal_96's 24-minute foot. His surplus of 41 is paid at 0.6502. 93 -> 89, OVR 77 -> 75."
+  },
+  {
+    "card": "Shaquille O'Neal '09",
+    "scale": "off",
+    "target": 69,
+    "tol": 1,
+    "round": 223,
+    "ruling": "223 with Shaq 09 released, if we can make it more aggressive - the better",
+    "note": "RE-PINNED by recal_223 after he released recal_51's 71 +-1. 30.0 mpg, volume 72, surplus 17 paid at 0.7449. 70 -> 69."
+  },
+  {
+    "card": "Jaylen Brown '26",
+    "scale": "off",
+    "target": 81,
+    "tol": 1,
+    "round": 223,
+    "ruling": "I want the 24-33-minute scorers that follow to drop more",
+    "note": "RE-PINNED by recal_223 after he released recal_89's 83 +-1. 34.4 mpg, volume 96, surplus 41 paid at 0.9218 — he moves at all only because the class's own p75 (36.3) sits above his minutes. 82 -> 81."
+  },
+  {
+    "card": "Russell Westbrook '15",
+    "scale": "off",
+    "target": 82,
+    "tol": 2,
+    "round": 223,
+    "ruling": "I want the 24-33-minute scorers that follow to drop more",
+    "note": "RE-PINNED by recal_223 after he released recal_121's 85 +-2. 34.4 mpg, volume 98 — the largest surplus on the board (43) — paid at 0.9218. 83 -> 82, and recal_121's own '15 >= '17 order was re-checked and HOLDS."
   }
 ]
