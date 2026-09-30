@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 221
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2270,12 +2270,99 @@ def o_score(p, trace=None):
     # and lifts 411 now; 236 lose it entirely and 179 of those are NEGATIVE-BPM seasons. Negative-BPM
     # movers 390 -> 211, and the lifts of ten printed points or more 84 -> 39. The floor still binds
     # on 482 cards (739 before) and the negative-BPM share of everything it pays falls 52% -> 43%.
+    # recal_221 (HIS RULING — scout group A, agreed 2026-09-30, verbatim: "efficient 3-and-D wings
+    # fall between two floors"). DISPATCHED AS ROUND 216 AND RENUMBERED TO 221 BY THE LEDGER: 216 and
+    # 217 were already taken on main by the players-to-team lane (Thunder '16 and Warriors '16), and
+    # writing 216 would have shadowed a landed receipt without git flagging it.
+    # THE SHOOTER EXCLUSION IS DELETED. DISJOINTNESS IS A PROPERTY OF THE PAYMENT, NOT OF THE BAR.
+    #
+    # THE DEFECT, and it is a SEAM between this floor and recal_64/118's. A wing who spaces is sent to
+    # the off-ball floor, whose four terms are `0.38 x 3pt + 0.20 x efficiency + 0.08 x ballsec +
+    # 0.06 x discipline` — 0.72 of weight, "the whole of what a standstill wing specialist does".
+    # A wing who does not space is sent HERE, where the possessions he ends and starts are priced.
+    # THE MAN WHO DOES BOTH GOT NEITHER'S CREDIT FOR THE SECOND THING: the off-ball floor reads no
+    # possession bar at all and, being only 0.72 of weight, DOES NOT EVEN BIND on him — and this floor
+    # then switched itself off because his arc bar was high.
+    #   Alex Caruso '24     28.7 mpg, 10.1 points on 40.8% from the arc, TS .607, 3.8 assists, BPM
+    #                       +2.5. Standard path 47.766; off-ball floor 43.080, NOT BINDING (it is 4.7
+    #                       BELOW his own weighted line); glue gate EXACTLY ZERO at 3pt 75. OFF 44.
+    #   Royce O'Neale '21   31.6-mpg starter, 7.0 points on 38.5%, TS .599, 6.8 rebounds, VORP rank
+    #                       56 of 206. Off-ball floor 40.120 binding by ONE POINT; glue floor 48.157
+    #                       at a gate of 0.1071. OFF 38.
+    # THE TWO-CARD PROOF, the same man on the same job: JOSH HART '25 (3pt 37, 15.2% usage, TS .611,
+    # drb/orb/playvol 83/69/58) is recal_155's OWN subject and prints OFF 64 off a glue floor of
+    # 68.48. JOSH HART '26 (3pt 69, 16.3% usage, TS .612, 82/64/61 — the SAME season, better from the
+    # arc) had this floor switched off by that one bar and printed OFF 53. ELEVEN printed points
+    # BELOW his own worse-shooting year, and the only thing that changed is the thing he got better at.
+    #
+    # WHY THE GATE CAN GO, and it is an argument about the FORM, not a preference. recal_155 took
+    # recal_112's sentence — "efficiency earned at the rim and the line is paid here and efficiency
+    # earned from the arc is paid there" — and made it a gate on the BAR. But both floors are written
+    # in recal_118's form `std + f x (floor - std)` and they are applied IN SEQUENCE ON THE SAME std:
+    # by the time this floor is reached, whatever the off-ball floor paid is ALREADY INSIDE std, so
+    # this floor can only ever pay the EXCESS over it. Two floors in that form cannot stack — a man
+    # gets the better stand-in for his offence, never the sum of two. The channels were already
+    # disjoint IN THE ARITHMETIC; the gate asserted it a second time, on the bar, and the second
+    # assertion is the one that costs a card its floor.
+    #
+    # THE GATE'S OWN JUSTIFICATION WAS SUPERSEDED BY recal_169, measured rather than argued.
+    # recal_155 called it "load-bearing rather than decorative: Kyle Korver '15 (pinned off 58 +-1)
+    # has a glue floor of 64.7 against a standard path of 62.4 and would take +2 without it." That was
+    # true before recal_169 put the conversion half behind the possessions actually used. TODAY his
+    # floor computes 1.070 x (0.5 x 27.00 + 0.5 x 94 x 0.9467) = 62.053 against a standard path of
+    # 61.920 — a correction of 0.13 of o_score, 0.12 of raw — and he prints 58 BEFORE AND AFTER.
+    # The one card the gate was said to protect no longer needs it.
+    #
+    # WHO IS UNTOUCHED, and it is by construction rather than by luck. ZERO cards with 3pt <= 40 move
+    # (their gate was already 1.0000) and ZERO with volume >= 55 (recal_112's low-usage line is not
+    # touched): Alonzo Gee '16 36, Javonte Green '22 50 and Josh Hart '25 64/OVR 63 are EXACTLY
+    # unchanged. Every standstill-spacer pin the off-ball floor was built on has too little possession
+    # work for this floor to reach — their (drb + orb + playvol)/3 is Snell '18 15.33, Bowen '06
+    # 18.00, Kerr '96 22.67, Korver '15 27.00 against Caruso's 39.33, O'Neale's 47.33 and Hart '25's
+    # 70.00 — so Snell 50, Bowen 45 and Kerr 61 move by EXACTLY zero, and Korver by 0.12 of raw.
+    #
+    # THE BIG SIDE IS NOT TOUCHED AND IS NOT THE SAME CLAIM. recal_182's second-chance floor keeps its
+    # arc exclusion: its conversion half is GB_CONV, the CLASS's median, not the man's own rate, so
+    # there is no rate of his to pay twice — and the big's arc channel, recal_91's stretch-big branch,
+    # is NOT the thin one this round is about (1.16 of weight, orb + rim + volume on top of the four
+    # wing terms). The seam is a WING seam. `not is_big` therefore stands, and it is LOAD-BEARING:
+    # MEASURED, deleting it breaks TEN anchors — Rudy Gobert '16 off 48 -> 73, Nic Claxton '24 56 ->
+    # 70, Richaun Holmes '21 62 -> 73, Cedric Maxwell '80 67 -> 76, Ayton '26 58 -> 67, Capela '17
+    # 58 -> 63, Capela '18 60 -> 65, Nenê '11 65 -> 69, Rodman '96 OVR 63 -> 68 and recal_119's
+    # BOS '24 OFF rank <= 10 at 11 of 26.
+    # WHAT THAT COSTS, named because two of the round's four subjects are bigs by is_big (the lifetime
+    # PF/C union rule at the top of this file) and are therefore OUTSIDE this seam:
+    #   Herbert Jones '24   PROVABLY UNREACHABLE HERE, whatever the gates. His possession average is
+    #                       (16 + 47 + 34)/3 = 32.333 and his usage 14.4, so this floor's arithmetic
+    #                       CEILING for him is 1.070 x (16.167 + 0.5 x 61 x 0.96) = 48.628 against a
+    #                       standard path of 47.354: OFF 45 with EVERY gate deleted, two short of his
+    #                       band. What does reach him is recal_99's evidence gate on the stretch-big
+    #                       branch (volume 8 -> 22 OR orb 45 -> 65), which pays him 0.1429 of recal_91's
+    #                       three terms: at 1.0 his floor is 52.25 and he prints OFF 48.
+    #   Josh McRoberts '14  his glue floor WOULD be 1.070 x (26.833 + 0.5 x 52 x 0.90) = 53.75 against
+    #                       a standard path of 44.834 — OFF 50, inside his band — but only by deleting
+    #                       `not is_big`, which is the ten-anchor break above. recal_99's gate alone
+    #                       (_g 0.35 -> 1.0) takes him to OFF 44.
+    # MEASURED on the whole pool: 142 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +3.10,
+    # max +15; OVR follows on 113, mean +2.01, max +10; DEF and every attribute move on ZERO. ZERO
+    # bigs move. OFF_TOP is NOT re-derived and nothing needs it to be — the highest card this floor
+    # prints anywhere is OFF 71, the raw top is 99 before and after, and the top 50 by OFF and the top
+    # 50 by OVR are identical NAME FOR NAME AND IN ORDER, no entrant, no leaver, no rank flip. All 213
+    # anchors hold. The movers are ONE archetype and read like it — Mike Miller '09/'10, Josh Hart
+    # '26, Nicolas Batum '13/'14/'19, Mikal Bridges '20/'21, Kawhi Leonard '12/'13, Shane Battier
+    # '03/'05/'06, James Posey '00/'07/'08/'09, Patrick Beverley '17/'19/'20, Hersey Hawkins '98-'00,
+    # Boris Diaw '09/'13/'14, Jared Dudley '11/'16, Bryon Russell '97-'99, Landry Fields '11, Trevor
+    # Ariza '13, Doug Christie '03, Christian Braun '25, Josh Green '23, Caleb Martin '22, Vince
+    # Williams Jr. '24 — the 3-and-D wings who shoot AND rebound AND move it, and who until now were
+    # paid for exactly one of the three.
     GL_V_LO, GL_V_HI = 25.0, 55.0
     GL_K = 1.070
     GL_U_FULL = 15.0
     if not is_big(p) and a['volume'] < GL_V_HI:
+        # recal_221: the 3pt 68 -> 40 exclusion that stood here is DELETED (see above). What remains
+        # is recal_112's low-usage ramp and recal_96's load share.
         _gg = (min(1.0, max(0.0, (GL_V_HI - a['volume']) / (GL_V_HI - GL_V_LO)))
-               * min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO))) * _load)
+               * _load)
         _gpos = (a['drb'] + a['orb'] + a['playvol']) / 3.0
         _gused = a['usg_raw'] * _load
         _gu = min(1.0, max(0.0, _gused / GL_U_FULL))
@@ -3122,7 +3209,8 @@ if _CARD:
               f"= {_gl2['pos']:.2f}, half against conversion (efficiency {_gl2['bars'][3]} x "
               f"recal_169's used-load ramp {_gl2['u']:.4f} = {_gl2['bars'][3] * _gl2['u']:.2f}), x "
               f"{_gl2['k']:.3f} = floor {_gl2['floor']:.2f}; gate {_gl2['gate']:.4f} (volume 55->25 "
-              f"x 3pt 68->40 x recal_96's load share {_gl2['load']:.4f}): +{_gl2['added']:.3f}")
+              f"x recal_96's load share {_gl2['load']:.4f}; recal_221 deleted the 3pt 68->40 "
+              f"exclusion): +{_gl2['added']:.3f}")
         print(f"  recal_169 - possessions actually used {_gl2['used']:.2f} (usage {_gl2['used'] / max(_gl2['load'], 1e-9):.1f}"
               f" x load {_gl2['load']:.4f}) against the class's upper-quartile load 15.0 -> the "
               f"conversion half is paid at {_gl2['u']:.4f}")
