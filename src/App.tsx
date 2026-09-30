@@ -8,7 +8,10 @@ import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
-import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
+import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { teach, teachOnce, useLesson } from './state/tutorial'
+import { Coach } from './ui/Coach'
+import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -35,7 +38,7 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
-import { useUserMode } from './state/viewmode'
+import { isTutorial, useTutorial, useUserMode } from './state/viewmode'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
@@ -144,6 +147,8 @@ export default function App() {
       onUnlocked((d) => {
         setToasts((t) => [...t, d])
         window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
+        // the tutorial's coach says what a toast is, the first time one goes up
+        if (isTutorial()) teachOnce('trophy', () => trophyLesson(d))
       }),
     [],
   )
@@ -160,6 +165,16 @@ export default function App() {
     document.body.classList.toggle('um', userMode)
     return () => document.body.classList.remove('um')
   }, [userMode])
+  /**
+   * TUTORIAL MODE IS USER MODE WITH A COACH (his ruling, 2026-09-30). `um` is set above for it
+   * too — every gate user mode has, it has — and `tut` is the one extra class, for the coach's
+   * own furniture. The lessons themselves are hooked on further down, once the screen is known.
+   */
+  const tutorial = useTutorial()
+  useEffect(() => {
+    document.body.classList.toggle('tut', tutorial)
+    return () => document.body.classList.remove('tut')
+  }, [tutorial])
 
   /**
    * THE DOCK MEASURES ITSELF (E9). Nearly every screen ends in a dock fixed to the foot of the
@@ -251,6 +266,68 @@ export default function App() {
     setPickTeam(false)
   }
   const teamName = team ? `${team.city} ${team.name}` : 'Your team'
+
+  /**
+   * WHICH SCREEN IS UP, as the render below decides it — the same chain of conditions, in the
+   * same order, read here once so the coach can be handed lessons BEFORE the early returns (hooks
+   * cannot follow them). If the chain below changes, this changes with it.
+   */
+  const screen =
+    mode === null
+      ? 'door'
+      : mode === 'custom'
+        ? 'custom'
+        : mode === 'auction'
+          ? 'auction'
+          : mode === 'versus' || !cm || !prog
+            ? 'versus'
+            : team === null || pickTeam
+              ? 'team'
+              : myTeam && death && carry && (!level || !opponent)
+                ? 'myteam'
+                : staff && (!level || !opponent)
+                  ? 'staff'
+                  : !level || !opponent
+                    ? 'map'
+                    : pending
+                      ? 'result'
+                      : 'draft'
+  const bal = prog ? balance(prog) : 0
+  /* THE COACH'S LESSONS, ONE PER ROOM (tutorial mode). Each is told the first time its room is on
+     the screen, built off what App knows about it then. The draft and the result hook their own
+     (they know the wheel and the strip); the front door hooks its own. */
+  useLesson('custom', screen === 'custom', customLesson)
+  useLesson('versus', screen === 'versus', versusLesson)
+  useLesson('auction', screen === 'auction', auctionLesson)
+  useLesson(pickTeam ? 'team.rename' : 'team', screen === 'team', () => teamLesson(pickTeam))
+  useLesson('map', screen === 'map', () =>
+    mapLesson({ mode: cm!, level: currentLevel(prog!), opp: (() => { const l = currentLevel(prog!); return l ? opponents[l - 1] : null })(), eras: ERAS, bal, lives: prog!.lives }),
+  )
+  useLesson(`mode.${cm ?? 'campaign'}`, screen === 'map' && cm !== 'campaign', () => ladderLesson(cm!, prog!.lives)!)
+  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal))
+  useLesson('staff', screen === 'staff', () =>
+    staffLesson({ bal, earned: earned(prog!), branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : [])] }),
+  )
+  useLesson('myteam', screen === 'myteam', () =>
+    myTeamLesson({
+      five: (carry ?? []).map((p) => ({ name: p.name, left: (prog!.wear[p.name] ?? p.attrs.durability) + duraBoost(prog!) })),
+      allowed: subsPerRound(prog!),
+      used: prog!.subsUsed,
+      bench: prog!.bench,
+      heal: benchHeal(prog!),
+      floor: WEAR_OUT,
+    }),
+  )
+  /* A NEW BLOCK REACHED: told on the map, the first time the frontier stands in it. Every block
+     above the first, so a ladder resumed halfway up is told about the blocks it is already past
+     only once — and never about block I, which the map lesson covers. */
+  useEffect(() => {
+    if (!tutorial || screen !== 'map' || !prog) return
+    const top = currentLevel(prog) ?? ROUNDS + 1
+    ERAS.forEach((e, k) => {
+      if (k > 0 && top >= e.first) teachOnce(`era.${k}`, () => eraLesson(k, ERAS))
+    })
+  }, [tutorial, screen, prog])
 
   const sim = (five: Player[], assignment: Assignment, toWin: number) => {
     if (!opponent || !prog || !cm || !level) return
@@ -351,6 +428,8 @@ export default function App() {
       const settled = pending.result.won ? { ...next, roster: names } : die(next)
       commit(cm, settled)
       settleAch(settled)
+      // the coach on a death-match loss: a life spent, or the run over — the same rule `die` reads
+      if (tutorial && !pending.result.won) teach(prog.lives > 0 ? lifeLesson(prog.lives - 1) : runOverLesson())
     } else {
       const settled = { ...prog, stars, record, plays: prog.plays + 1 }
       commit(cm, settled)
@@ -444,6 +523,8 @@ export default function App() {
   const sheet = (
     <>
       {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb onBack={() => setTeamDb(false)} /> : null}
+      {/* the tutorial's coach: renders nothing outside tutorial mode, and on every screen inside it */}
+      <Coach />
       {toasts.length ? (
         <div className="ach-toasts">
           {toasts.map((d) => (
@@ -604,6 +685,9 @@ export default function App() {
             // Survival nodes take effect the moment they are bought: a life bought is a life in hand,
             // and a checkpoint bought is ground you can no longer lose.
             commit(cm, death ? { ...next, lives: livesBought(next), checkpoint: checkpointLevel(next) } : next)
+            // THE UNLOCK IS EXPLAINED THE MOMENT IT IS BOUGHT (tutorial mode, his ruling: "Everytime
+            // you unlock a new feature its explained as well"). One lesson per rank of every node.
+            if (tutorial) teach(unlockLesson(id, rank(next, id)))
           }}
           onRespec={() => commit(cm, respec(prog))}
           onBack={() => setStaff(false)}

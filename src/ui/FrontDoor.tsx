@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
-import { setUserMode } from '../state/viewmode'
+import { setViewMode, useViewMode } from '../state/viewmode'
+import { openIndex, useLesson } from '../state/tutorial'
+import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
 import { myColor } from './teamColors'
 import { Ball } from './Ball'
@@ -219,6 +221,21 @@ export function FrontDoor({
    * user mode's, on the mode prop. THE MODE IS SPENT HERE (3 of 3).
    */
   const cup = (p: Progress) => user && currentLevel(p) === null
+  /**
+   * WHICH CHIP IS LIT is the three-way mode, not the two-way blindfold: the tutorial is user
+   * mode with a coach (state/viewmode.ts), so `user` is true for both and cannot tell them apart.
+   */
+  const vm = useViewMode()
+  /* THE COACH'S FIRST WORD (tutorial mode): the door explains itself the first time it is seen
+     through this lens. Built off what the door already knows — the club, the next level up. */
+  useLesson('door', true, () =>
+    doorLesson({
+      team: team ? `${team.city} ${team.name}` : null,
+      cur,
+      cleared: clearedCount(progress.campaign),
+      stars: totalStars(progress.campaign),
+    }),
+  )
 
   /**
    * The six, in the board's own order and at ITS OWN COORDINATES — his override #1. x/y are
@@ -650,12 +667,25 @@ export function FrontDoor({
             on both boards; only which one is lit changes, because a player who cannot get from one
             mode to the other is stuck in the one he is in. */}
         <span className="fd-modes" role="group" aria-label="How do you want to see the game?">
-          <button className={`fd-mode${user ? ' on' : ''}`} onClick={() => setUserMode(true)} aria-pressed={user}>
+          <button className={`fd-mode${vm === 'user' ? ' on' : ''}`} onClick={() => setViewMode('user')} aria-pressed={vm === 'user'}>
             User
           </button>
-          <button className={`fd-mode${user ? '' : ' on'}`} onClick={() => setUserMode(false)} aria-pressed={!user}>
+          {/* THE THIRD CHIP (his ruling, 2026-09-30): user mode with the coach. It sits between the
+              two because that is what it is — user's blindfold, scout's explanations. */}
+          <button className={`fd-mode${vm === 'tutorial' ? ' on' : ''}`} onClick={() => setViewMode('tutorial')} aria-pressed={vm === 'tutorial'}>
+            Tutorial
+          </button>
+          <button className={`fd-mode${vm === 'scout' ? ' on' : ''}`} onClick={() => setViewMode('scout')} aria-pressed={vm === 'scout'}>
             Scout
           </button>
+          {/* THE COACH'S ? ON THE DOOR: every other screen floats it under the home fab, and on
+              this one, at phone width, that corner is where the chips wrap to — so the door
+              carries it here, beside the choice that switched the coach on. */}
+          {vm === 'tutorial' ? (
+            <button className="fd-mode fd-help" onClick={() => openIndex(true)} aria-label="Tutorial — every lesson so far" title="Tutorial lessons">
+              ?
+            </button>
+          ) : null}
         </span>
         {/* the wrap point on a phone: everything above this runs on line one, everything below it on
             line two. Display:none above 640px, where the row is the single line the design draws. */}

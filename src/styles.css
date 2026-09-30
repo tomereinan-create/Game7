@@ -9429,3 +9429,73 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
 @media (min-width: 900px) {
   .tipoff.jumbo-tipoff:has(> .tip-rows) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
+
+/* =====================================================================================
+   THE COACH — tutorial mode (his ruling, 2026-09-30: "Add tutorial mode, which will be the
+   same as user mode, but everything explain"). One card in the ask's own voice — surface-2,
+   the gold top rule, serif italic copy — placed by src/ui/Coach.tsx off a spot cut in the
+   veil around the control being explained. The spot's shadow IS the veil when a step has a
+   target; a step with none dims the whole screen instead.
+   ===================================================================================== */
+.coach-veil { position: fixed; inset: 0; z-index: 97; }
+.coach-veil:not(.lit) { background: rgba(11, 10, 8, 0.72); backdrop-filter: blur(2px); }
+.coach-spot {
+  position: fixed; border-radius: 12px; pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 2px var(--you), 0 0 28px rgba(240, 179, 35, 0.35);
+  transition: left 0.22s ease-out, top 0.22s ease-out, width 0.22s ease-out, height 0.22s ease-out;
+  animation: coach-pulse 1.6s ease-in-out infinite;
+}
+@keyframes coach-pulse {
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 2px var(--you), 0 0 22px rgba(240, 179, 35, 0.28); }
+  50% { box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 3px var(--you-hi), 0 0 40px rgba(240, 179, 35, 0.5); }
+}
+.coach-card {
+  position: fixed; z-index: 98; box-sizing: border-box;
+  width: min(clamp(347px, 30vw, 720px), calc(100vw - 24px));
+  background: var(--surface-2); border: 1px solid var(--line-3); border-top: clamp(2px, 0.2vw, 6px) solid var(--you);
+  border-radius: clamp(8px, 0.55vw, 18px); padding: clamp(14px, 1.2vw, 36px) clamp(16px, 1.4vw, 40px) clamp(12px, 1.1vw, 32px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out;
+}
+/* a step with no target: the card stands alone in the middle of the screen */
+/* centred by margins rather than a transform, which the entry animation owns for its first frames */
+.coach-card.free { inset: 0; margin: auto; height: fit-content; }
+/* a phone: the card sits at the foot whatever the spot is doing, clear of the safe area */
+.coach-card.foot { left: 12px; right: 12px; width: auto; bottom: calc(12px + var(--foot)); top: auto; }
+.coach-kick { display: block; font-family: var(--mono); font-size: clamp(8.5px, 0.62vw, 20px); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--you); }
+.coach-card h2 { margin: clamp(6px, 0.5vw, 14px) 0 0; font-family: var(--mono); font-size: clamp(13px, 0.95vw, 30px); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); line-height: 1.2; }
+.coach-card p { margin: clamp(8px, 0.6vw, 18px) 0 0; font-family: var(--serif); font-size: clamp(12px, 0.98vw, 30px); font-style: italic; color: var(--ink-2); line-height: 1.45; }
+.coach-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: clamp(14px, 1.1vw, 32px); }
+.coach-dots { display: inline-flex; gap: 6px; align-items: center; }
+.coach-dots i { width: clamp(6px, 0.45vw, 14px); height: clamp(6px, 0.45vw, 14px); border-radius: 50%; background: var(--line-3); }
+.coach-dots i.done { background: var(--you-line); }
+.coach-dots i.on { background: var(--you); box-shadow: 0 0 0 3px var(--you-tint); }
+.coach-btns { display: inline-flex; gap: clamp(8px, 0.7vw, 20px); }
+.coach-btns.wrap { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+.coach-btns .btn { font-size: clamp(7.7px, 0.62vw, 19px); height: auto; min-height: clamp(40px, 2.8vw, 80px); padding-left: clamp(14px, 1vw, 30px); padding-right: clamp(14px, 1vw, 30px); }
+
+/* THE ? — the only door back to a lesson. It stands in the top-right stack with the home and map
+   fabs, third in the column: the foot-left corner was tried first and measured ON the level-1
+   ticket, which is where every ladder starts. Under every veil (the ask, the coach) and over
+   every screen. */
+.coach-fab {
+  position: fixed; top: 72px; right: 10px; z-index: 85;
+  width: 44px; height: 44px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--you-line); background: var(--surface-2); color: var(--you);
+  font-family: var(--mono); font-size: 20px; font-weight: 700; line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25); backdrop-filter: blur(14px) saturate(1.25);
+}
+.coach-fab:hover { border-color: var(--you); background: var(--you-tint); }
+.coach-fab:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* THE FRONT DOOR CARRIES ITS ? IN THE MODE ROW INSTEAD (FrontDoor.tsx, `.fd-help`): a floating
+   button there measured on the SCOUT chip at phone width, where the identity row wraps under it. */
+body:has(.fd-modes .fd-help) .coach-fab { display: none; }
+.fd-mode.fd-help { color: var(--you); border-left: 1px solid var(--line-3); min-width: 48px; padding: 0 calc(var(--fd-u) * 0.6); }
+
+/* THE ? SHEET: the lessons told so far, replayable. It stands in the ask's veil. */
+.coach-card.index { position: relative; left: auto; top: auto; transform: none; width: min(clamp(347px, 36vw, 860px), 100%); max-height: calc(100vh - 40px); display: flex; flex-direction: column; }
+.coach-list { display: grid; gap: 6px; margin-top: clamp(10px, 0.8vw, 22px); overflow: auto; min-height: 0; flex: 1 1 auto; }
+.coach-row { display: grid; gap: 2px; text-align: left; padding: clamp(8px, 0.6vw, 18px) clamp(10px, 0.8vw, 22px); background: var(--surface); border: 1px solid var(--line-2); border-left: 3px solid var(--you-line); border-radius: 6px; color: var(--ink); cursor: pointer; }
+.coach-row:hover { border-color: var(--you); }
+.coach-row i { font-style: normal; font-family: var(--mono); font-size: clamp(8px, 0.55vw, 17px); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--you); }
+.coach-row b { font-family: var(--mono); font-size: clamp(11px, 0.78vw, 24px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }

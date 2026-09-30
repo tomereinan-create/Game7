@@ -13,6 +13,8 @@ import type { Assignment } from '../engine/offense'
 import { useLayout } from './useLayout'
 import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
+import { useLesson } from '../state/tutorial'
+import { resultLesson } from './lessons'
 
 /** Whether this machine has asked for less motion. The draft reads it the same way. */
 const reduceMotion = () => {
@@ -394,6 +396,21 @@ export function Series({
   const done = !live
   /** Every game is on the strip and the series may speak. */
   const settled = shown >= result.games.length
+  /* THE COACH ON THE RESULT (tutorial mode): the first win and the first loss each get their lesson,
+     once the strip has settled — not over a series still landing. An exhibition banks nothing and
+     is not a lesson about stars. Built off this night: the line, the games, the stars, the doors. */
+  useLesson(result.won ? 'result.win' : 'result.loss', settled && !exhibition, () =>
+    resultLesson({
+      won: result.won,
+      wins: result.wins,
+      losses: result.losses,
+      games: result.games.length,
+      stars: starsFor(result),
+      next: !!onNext,
+      rematch: !!onRematch,
+      death: !!onMyTeam,
+    }),
+  )
   /** The landing stops at the decider until the tape has played it. */
   const revealCap = tapeRun.current ? result.games.length : preGames
   useEffect(() => {
