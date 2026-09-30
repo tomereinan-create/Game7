@@ -9613,3 +9613,21 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .node-note.icon { min-width: clamp(46px, 3.2vw, 88px); min-height: clamp(46px, 3.2vw, 88px); box-sizing: border-box; padding: 0; }
 .node-note.icon .bigstar { font-size: clamp(28px, 2vw, 56px); width: clamp(28px, 2vw, 56px); height: clamp(28px, 2vw, 56px); display: grid; place-items: center; line-height: 1; }
 .node-note.icon .subicon { width: clamp(28px, 2vw, 56px); height: clamp(28px, 2vw, 56px); }
+
+/* THE CLUB IN THE COURT'S TOP-RIGHT CORNER (his ruling, 2026-09-30). Crest over name, right-aligned,
+   sized to the court's own width so it keeps its corner at every size; the name still shortens
+   with an ellipsis rather than crossing the floor. Above the lines, below the marks. */
+.fd-court > .fd-badge {
+  position: absolute;
+  top: 2.5%;
+  right: 2.5%;
+  z-index: 2;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(4px, 0.8cqw, 12px);
+  max-width: 30%;
+  pointer-events: none;
+}
+.fd-court > .fd-badge .fd-crest { width: clamp(36px, 7.5cqw, 120px); border-width: clamp(2px, 0.3cqw, 4px); font-size: clamp(13px, 2.8cqw, 44px); }
+.fd-court > .fd-badge .fd-club { max-width: 100%; text-align: right; }
+.fd-court > .fd-badge .fd-club b { font-size: clamp(13px, 2.6cqw, 40px); line-height: 1.05; }

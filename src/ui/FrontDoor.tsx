@@ -621,31 +621,11 @@ export function FrontDoor({
             one any more. */}
         {/* "Game 7 and the ball bigger" (his ruling, 2026-09-29, Home.dc.html). The wordmark beside
             it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
-        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 243px)" dribble />
+        {/* "A touch bit smaller" — his ruling, 2026-09-30: 4.2 → 3.8 units, the cap with it. */}
+        <Ball size="clamp(50px, calc(var(--fd-u) * 3.8), 220px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>
-        {team ? <span className="fd-div" aria-hidden /> : null}
-        {team ? (
-          <span className="fd-badge">
-            <span
-              className="fd-crest"
-              aria-hidden
-              style={
-                { '--crest': kit?.primary ?? 'var(--mine)', '--trim': kit?.accent ?? 'var(--you)', '--crest-ink': kit?.ink ?? '#fff' } as CSSProperties
-              }
-            >
-              {initials}
-            </span>
-            {/* HIS RULING, 2026-09-11: "Remove Campaign · level 80 of 150." The standing line under
-                the club name is gone — the read pane already says which ladder you are looking at
-                and how far in you are, and saying it again beside the crest said it for the CAMPAIGN
-                whichever mode you were reading. The club name stands alone. */}
-            <span className="fd-club">
-              <b>{`${team.city} ${team.name}`}</b>
-            </span>
-          </span>
-        ) : null}
         {/*
           HIS RULING, 2026-09-11: "157 ★ / Cleared 79/150 — here in the main page it needs to update
           when Im changing modes."
@@ -734,6 +714,29 @@ export function FrontDoor({
                 so a plate in a corner can run a little past the sideline onto the panel rather than
                 losing its last letters to it — which is what happened the moment his ruling made the
                 names bigger and moved two of them into the corners. */}
+            {/* THE CLUB STANDS ON THE FLOOR, TOP RIGHT — his ruling, 2026-09-30: "move the team's name
+                to be inside the court on the top right side." Crest over name, right-aligned, in
+                the corner behind the straight where no mark stands. It left the identity row. */}
+            {team ? (
+              <span className="fd-badge">
+                <span
+                  className="fd-crest"
+                  aria-hidden
+                  style={
+                    { '--crest': kit?.primary ?? 'var(--mine)', '--trim': kit?.accent ?? 'var(--you)', '--crest-ink': kit?.ink ?? '#fff' } as CSSProperties
+                  }
+                >
+                  {initials}
+                </span>
+                {/* HIS RULING, 2026-09-11: "Remove Campaign · level 80 of 150." The standing line under
+                    the club name is gone — the read pane already says which ladder you are looking at
+                    and how far in you are, and saying it again beside the crest said it for the CAMPAIGN
+                    whichever mode you were reading. The club name stands alone. */}
+                <span className="fd-club">
+                  <b>{`${team.city} ${team.name}`}</b>
+                </span>
+              </span>
+            ) : null}
             <span className="fd-lines" aria-hidden>
               {/* the arc lives in a box cut to the width between the two straights, so the circle
                   ENDS where they begin rather than sweeping on down to the baseline */}
