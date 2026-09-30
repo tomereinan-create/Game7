@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { _resetTutor, dismiss, replay, resetTutorial, teach, teachOnce, tutorState, wasTold } from '../src/state/tutorial'
 import { isUserMode, isTutorial, setViewMode, viewMode } from '../src/state/viewmode'
 import { NODE, NODES } from '../src/engine/tree'
-import { draftLesson, eraLesson, fullLesson, mapLesson, resultLesson, spendLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
+import { draftLesson, eraLesson, mapLesson, resultLesson, spendLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
 import { Coach } from '../src/ui/Coach'
 import { FrontDoor } from '../src/ui/FrontDoor'
 import { LEVELS, ERAS } from '../src/App'
@@ -136,15 +136,6 @@ describe('the lessons are built off the state', () => {
     expect(text).not.toContain('Spin the wheel')
     expect(text).toContain('change left')
     expect(l.steps.some((s) => s.at === '.staffbar')).toBe(true)
-  })
-
-  it('the five-in lesson lists the five and only offers doors that are open', () => {
-    const five = opp.players.map((p) => p.name)
-    const l = fullLesson({ five, opp, hasBoard: false, hasPlan: false, tips: true })
-    const text = l.steps.flatMap((s) => s.body).join(' ')
-    for (const n of five) expect(text).toContain(n)
-    expect(l.steps.some((s) => s.at === '.staffbar')).toBe(false)
-    expect(l.steps.some((s) => s.at === '.tips-door')).toBe(true)
   })
 
   it('the result lesson counts the stars and the doors on the dock', () => {

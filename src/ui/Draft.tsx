@@ -26,7 +26,7 @@ import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
-import { boardLesson, draftLesson, fullLesson, landedLesson, planLesson } from './lessons'
+import { boardLesson, draftLesson, landedLesson, planLesson } from './lessons'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
 import { CoachSays, CoachTipsDoor } from './UserRail'
@@ -775,9 +775,10 @@ export function Draft({
   const tips = user && full ? coachSays(five, opponent.players, assignment) : []
 
   /**
-   * THE COACH'S LESSONS ON THIS SCREEN (tutorial mode — his ruling, 2026-09-30). Five states, one
+   * THE COACH'S LESSONS ON THIS SCREEN (tutorial mode — his ruling, 2026-09-30). Four states, one
    * lesson each, told the first time the state is true and never again: the screen itself, the
-   * wheel landed, the five in, the playbook open, the board open. Each is built off what this
+   * wheel landed, the playbook open, the board open. (The five-in lesson stood here too; his
+   * ruling the same day: "Remove Tutorial · Five in completely.") Each is built off what this
    * render knows — tonight's opponent, the team the wheel stopped on, the spots still open, the
    * charges left — and the coach lights the real control. Nothing here renders; see Coach.tsx.
    * A carried five (the death match after level 1) is its own first lesson, because there is no
@@ -790,7 +791,6 @@ export function Draft({
   useLesson('draft.landed', !!spun && !spinning, () =>
     landedLesson({ team: spun!.team, year: spun!.y, open, respins: charges('fo_spin'), seasonRespins: charges('fo_respin') }),
   )
-  useLesson('draft.full', full && !carry, () => fullLesson({ five: five.map((p) => p.name), opp: opponent, ...lessonCtx }))
   useLesson('plan', planOpen && full && canCallPlan, () => planLesson(playbookRank(wallet), death))
   useLesson('board', boardOpen && full, () => boardLesson(rank(wallet, 'coach_manual') >= 2))
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])

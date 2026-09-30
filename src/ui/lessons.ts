@@ -345,39 +345,8 @@ export function landedLesson(ctx: { team: string; year: number | string; open: s
   return { id: 'draft.landed', kicker: 'Tutorial · The wheel landed', title: `${ctx.team} ${ctx.year}`, steps }
 }
 
-export function fullLesson(ctx: { five: string[]; opp: Opponent; hasBoard: boolean; hasPlan: boolean; tips: boolean }): Lesson {
-  const steps: Step[] = [
-    {
-      at: '.tipoff',
-      title: 'The tip-off',
-      body: [`Both fives, in club colours, PG to C: ${ctx.five.join(', ')} across from ${oppName(ctx.opp)}. Each man stands opposite the man he picks up.`],
-    },
-  ]
-  if (ctx.tips)
-    steps.push({
-      at: '.tips-door',
-      title: 'Coaching tips',
-      body: [
-        'The i opens three things your coach says about this matchup, read off both fives: who to play through, who has their best man, and where the glass stands.',
-        'Sentences a coach would say in a huddle — no numbers, no verdict.',
-      ],
-    })
-  if (ctx.hasBoard || ctx.hasPlan)
-    steps.push({
-      at: '.staffbar',
-      title: 'Your staff doors',
-      body: [
-        [ctx.hasBoard ? 'Matchup board: assign every defender yourself.' : '', ctx.hasPlan ? 'Playbook: call the plan for this five.' : ''].filter(Boolean).join(' '),
-        'Both open once the five is in, because both are questions about the personnel.',
-      ],
-    })
-  steps.push({
-    at: '.dock .btn',
-    title: 'Take the floor',
-    body: ['The ball goes up and the series is played, best of seven. The games land one at a time; the result screen explains what the night was worth.'],
-  })
-  return { id: 'draft.full', kicker: 'Tutorial · Five in', title: 'Your five is set', steps }
-}
+/* `fullLesson` — the five-in lesson — stood here and is gone: his ruling, 2026-09-30, "Remove
+   Tutorial · Five in completely." */
 
 export function planLesson(rank: number, death: boolean): Lesson {
   const steps: Step[] = [
