@@ -3,6 +3,7 @@ import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '..
 import { migrate, playbookRank, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
+import { teamCode } from '../engine/names'
 import { isTutorial } from './viewmode'
 
 /** Three save slots: the campaign, its salary-cap variant, and the death match. */
@@ -75,7 +76,20 @@ export interface Team {
    * migration, and nobody's team changes colour behind their back.
    */
   colors?: Kit
+  /**
+   * THE CLUB'S THREE LETTERS — his ruling, 2026-09-30: "Selecting a team from now on you will choose
+   * a 3 letters such as GSW, and these 3 letters will replace the 2 letters from now on." Chosen on
+   * the name screen, worn on the crest, the scorebug and the series line. Optional, because every
+   * club named before this ruling has none: `clubCode` falls back to the letters the app used to
+   * derive, so nobody's crest goes blank.
+   */
+  code?: string
 }
+
+/** Three capital letters, or nothing. */
+export const isClubCode = (c: unknown): c is string => typeof c === 'string' && /^[A-Z]{3}$/.test(c)
+/** The letters the club wears: its chosen code, or the ones derived from its name. */
+export const clubCode = (t: Team | null): string => (t ? (isClubCode(t.code) ? t.code : teamCode(`${t.city} ${t.name}`)) : '')
 
 export interface Progress {
   coach: CoachId | null

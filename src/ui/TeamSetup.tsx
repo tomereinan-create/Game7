@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Team } from '../state/campaign'
+import { isClubCode, type Team } from '../state/campaign'
+import { teamCode } from '../engine/names'
 import { useUserMode } from '../state/viewmode'
 import { DEFAULT_KIT, KITS, kitColor, type Kit } from './teamColors'
 
@@ -42,6 +43,12 @@ export function TeamSetup({
   const [city, setCity] = useState<Team | null>(initial)
   const [name, setName] = useState(initial?.name ?? '')
   /**
+   * THE THREE LETTERS (his ruling, 2026-09-30). Typed here, three capitals; empty, the field shows
+   * what the app would derive from the city and the name as its placeholder, and pressing Play
+   * with it empty takes that. A club renamed keeps the code it had.
+   */
+  const [code, setCode] = useState(initial?.code ?? '')
+  /**
    * THE KIT. A renamed team keeps the colours it already wears; a new one starts in the app's own
    * ice, so picking nothing is not picking wrong. The twelve are the whole picker — the two colour
    * wells under them are for the club that isn't in the twelve, and they write the same two values.
@@ -79,7 +86,9 @@ export function TeamSetup({
     setQ(c[0])
   }
   const user = useUserMode()
-  const ready = !!city && name.trim().length > 0
+  const derived = city && name.trim() ? teamCode(`${city.city} ${name.trim()}`) : ''
+  const codeOut = isClubCode(code) ? code : derived
+  const ready = !!city && name.trim().length > 0 && (code === '' || isClubCode(code))
   /**
    * WHETHER THIS IS A FIRST TIME OR A RENAME (his report: "the edit screen's CTA says 'PLAY AS
    * THE…' instead of SAVE"). Nothing had to be plumbed for this: `initial` is the team the map
@@ -140,6 +149,22 @@ export function TeamSetup({
           onChange={(e) => setName(e.target.value)}
         />
 
+        <label className="label" htmlFor="tcode">
+          Three letters
+        </label>
+        <input
+          id="tcode"
+          className="field code"
+          placeholder={derived || 'e.g. GSW'}
+          value={code}
+          maxLength={3}
+          autoCapitalize="characters"
+          spellCheck={false}
+          onChange={(e) => setCode(e.target.value.replace(/[^a-z]/gi, '').toUpperCase().slice(0, 3))}
+          aria-invalid={code !== '' && !isClubCode(code)}
+        />
+        <div className="cap chosen">{codeOut ? `Worn as ${codeOut} — on the crest, the scorebug and every series line.` : 'Three capital letters, like GSW. Empty takes the ones the name gives.'}</div>
+
         {/* HIS RULING: "Allow me to pick my team colors when starting a campaign." Twelve kits,
             each a two-tone chip printed in the colours it actually is — the swatch IS the preview,
             so nothing here needs a name to be read. The two wells below take any pair the twelve
@@ -184,6 +209,7 @@ export function TeamSetup({
             <span className="kicker">You are</span>
             <b>
               {city.city} {name.trim()}
+              {codeOut ? <i className="plate-code">{codeOut}</i> : null}
             </b>
           </div>
         ) : (
@@ -200,7 +226,7 @@ export function TeamSetup({
           <button className="btn ghost" onClick={onBack}>
             ← Back
           </button>
-          <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim(), colors: kit })}>
+          <button className="btn" disabled={!ready} onClick={() => ready && onDone({ ...city!, name: name.trim(), colors: kit, code: codeOut || undefined })}>
             {/* The bundle names the whole franchise on the button — "Play as the Salt Lake City
                 Sevens", the thing that goes on the jersey — where the app names only the nickname.
                 User mode takes the bundle's wording; scout mode's label is untouched. */}

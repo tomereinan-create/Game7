@@ -22,6 +22,7 @@ import {
   advanceTo,
   applyWear,
   callsPlan,
+  clubCode,
   planFor,
   WEAR_OUT,
   currentLevel,
@@ -818,6 +819,7 @@ export default function App() {
           mine={pending.mine}
           theirs={pending.theirs}
           teamName={teamName}
+          teamAb={clubCode(team)}
           result={pending.result}
           seed={pending.seed}
           skin={skin}
@@ -842,6 +844,7 @@ export default function App() {
         opponent={opponent}
         seed={levelSeed(prog, level)}
         teamName={teamName}
+        teamAb={clubCode(team)}
         salary={capped}
         skin={skin}
         wallet={prog}

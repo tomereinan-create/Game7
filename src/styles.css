@@ -9631,3 +9631,10 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .fd-court > .fd-badge .fd-crest { width: clamp(36px, 7.5cqw, 120px); border-width: clamp(2px, 0.3cqw, 4px); font-size: clamp(13px, 2.8cqw, 44px); }
 .fd-court > .fd-badge .fd-club { max-width: 100%; text-align: right; }
 .fd-court > .fd-badge .fd-club b { font-size: clamp(13px, 2.6cqw, 40px); line-height: 1.05; }
+
+/* THE THREE LETTERS on the name screen (his ruling, 2026-09-30) */
+.field.code { max-width: 9ch; letter-spacing: 0.18em; font-family: var(--mono); font-weight: 700; }
+.field.code[aria-invalid="true"] { border-color: var(--danger); }
+.plate-code { display: inline-block; margin-left: 10px; padding: 2px 7px; font-family: var(--mono); font-size: 0.55em; font-weight: 700; letter-spacing: 0.16em; vertical-align: middle; border: 1px solid var(--ka, var(--you)); border-radius: 4px; color: var(--ink); font-style: normal; }
+/* three letters in the door's crest: a shade smaller than two were */
+.fd-court > .fd-badge .fd-crest { font-size: clamp(11px, 2.3cqw, 36px); letter-spacing: 0.04em; }
