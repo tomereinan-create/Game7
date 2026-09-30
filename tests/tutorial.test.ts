@@ -1,7 +1,7 @@
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { _resetTutor, dismiss, replay, resetTutorial, teach, teachOnce, tutorState, wasTold } from '../src/state/tutorial'
+import { _resetTutor, dismiss, replay, resetTutorial, teach, teachOnce, tutorialLock, TUTORIAL_GATE, tutorState, wasTold } from '../src/state/tutorial'
 import { isUserMode, isTutorial, setViewMode, viewMode } from '../src/state/viewmode'
 import { NODE, NODES } from '../src/engine/tree'
 import { draftLesson, eraLesson, mapDoorLesson, mapLesson, spendLesson, staffLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
@@ -65,6 +65,35 @@ describe('the tutorial plays on its own slot', () => {
     expect(text).not.toContain('Rafters')
     expect(text).not.toContain('record book')
     expect(text).toContain('own ladder')
+  })
+})
+
+describe('the tutorial\u2019s ladder gate', () => {
+  const all = (campaign: number, salary: number) => {
+    const p = Object.fromEntries(MODES.map((m) => [m, resetProgress(m)])) as Record<CampaignMode, Progress>
+    p.campaign = { ...p.campaign, stars: p.campaign.stars.map((_, i) => (i < campaign ? 1 : 0)) }
+    p.salary = { ...p.salary, stars: p.salary.stars.map((_, i) => (i < salary ? 1 : 0)) }
+    return p
+  }
+  it('the Salary cap waits for 30 stars on the Campaign, the Death match for 30 on the Salary cap', () => {
+    expect(TUTORIAL_GATE).toBe(30)
+    expect(tutorialLock('campaign', all(0, 0))).toBeNull()
+    expect(tutorialLock('salary', all(29, 0))).toEqual({ needs: 'campaign', have: 29, stars: 30 })
+    expect(tutorialLock('salary', all(30, 0))).toBeNull()
+    expect(tutorialLock('death', all(150, 29))).toEqual({ needs: 'salary', have: 29, stars: 30 })
+    expect(tutorialLock('death', all(150, 30))).toBeNull()
+  })
+  it('the door draws the lock in tutorial mode only, and greys the button', () => {
+    setViewMode('tutorial')
+    const html = renderToStaticMarkup(createElement(FrontDoor, { user: true, progress: all(3, 0), team: null, onPick: () => {} }))
+    expect((html.match(/fd-mark locked/g) ?? []).length).toBe(2)
+    expect(html).toContain('class="fd-lock"')
+    expect(html).toContain('Salary cap, locked')
+    setViewMode('user')
+    const open = renderToStaticMarkup(createElement(FrontDoor, { user: true, progress: all(3, 0), team: null, onPick: () => {} }))
+    expect(open).not.toContain('fd-mark locked')
+    expect(open).not.toContain('fd-lock')
+    setViewMode('scout')
   })
 })
 

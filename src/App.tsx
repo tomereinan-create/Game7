@@ -9,7 +9,7 @@ import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
-import { teach, teachOnce, useLesson, useTutor } from './state/tutorial'
+import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
 import type { Assignment } from './engine/offense'
@@ -592,6 +592,8 @@ export default function App() {
             else if (m === 'archetypes') setArchs(true)
             else if (m === 'achievements') setAch(true)
             else if (m === 'teams') setTeamDb(true)
+            // the tutorial's gate (state/tutorial.ts): the door says why on the front door itself
+            else if (tutorial && (m === 'salary' || m === 'death') && tutorialLock(m, progress)) return
             else setMode(m)
           }}
         />

@@ -3,7 +3,7 @@ import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
 import { setViewMode, useViewMode } from '../state/viewmode'
-import { openIndex, useLesson } from '../state/tutorial'
+import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
 import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
 import { myColor } from './teamColors'
@@ -226,6 +226,15 @@ export function FrontDoor({
    * mode with a coach (state/viewmode.ts), so `user` is true for both and cannot tell them apart.
    */
   const vm = useViewMode()
+  /**
+   * THE TUTORIAL'S GATE (his ruling, 2026-09-30): in tutorial mode the Salary cap waits for 30 stars
+   * on the Campaign and the Death match for 30 on the Salary cap. The rule is `tutorialLock`; this
+   * screen only draws it — a lock over the shirt, the reason in the read, the button greyed — and
+   * App refuses the pick as well, so a locked door cannot be opened by any route.
+   */
+  const lockOf = (m: CampaignMode) => (vm === 'tutorial' ? tutorialLock(m, progress) : null)
+  const lockLine = (l: NonNullable<ReturnType<typeof tutorialLock>>) =>
+    `Locked in the tutorial until ${l.stars} stars are banked on ${l.needs === 'campaign' ? 'the Campaign' : 'the Salary cap'} — ${l.have} so far.`
   /* THE COACH'S FIRST WORD (tutorial mode): the door explains itself the first time it is seen
      through this lens. Built off what the door already knows — the club, the next level up. */
   useLesson('door', true, () =>
@@ -403,6 +412,7 @@ export function FrontDoor({
     },
   ]
   const z = zones[sel]
+  const zlock = z.pick === 'salary' || z.pick === 'death' ? lockOf(z.pick) : null
   /**
    * WHICH LADDER THE MARK YOU ARE READING BELONGS TO, or null for the three side modes — Custom, VS
    * Friend and 1v1 Bid keep no progress of their own. The identity row's two figures follow this.
@@ -772,7 +782,7 @@ export function FrontDoor({
               {zones.map((s, i) => (
                 <button
                   key={s.pick}
-                  className={`fd-mark${i === sel ? ' on' : ''}`}
+                  className={`fd-mark${i === sel ? ' on' : ''}${(s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick) ? ' locked' : ''}`}
                   style={
                     {
                       left: s.x,
@@ -787,8 +797,24 @@ export function FrontDoor({
                      is named in full and in the order it should be heard — "Campaign, all 150
                      cleared" rather than the cup first and the play after it. Every other mark takes
                      its name from the plate, which is what it always did. */
-                  aria-label={s.cup ? `${s.label}, all ${ROUNDS} cleared` : undefined}
+                  aria-label={
+                    (s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick)
+                      ? `${s.label}, locked — ${lockLine(lockOf(s.pick)!)}`
+                      : s.cup
+                        ? `${s.label}, all ${ROUNDS} cleared`
+                        : undefined
+                  }
                 >
+                  {/* THE LOCK STANDS WHERE THE CUP WOULD — the tutorial's gate, see `lockOf` */}
+                  {(s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick) ? (
+                    <span className="fd-lock" aria-hidden>
+                      <svg viewBox="0 0 24 24">
+                        <rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <circle cx="12" cy="15.5" r="1.4" fill="currentColor" />
+                      </svg>
+                    </span>
+                  ) : null}
                   {/* THE CUP STANDS ABOVE THE JERSEY — his standing ruling: "Add a trophy for EVERY
                       mode at 150 wins(An actual golden trophy at the end)". It used to stand beside
                       the name; on this floor the name is a GOLD PLATE when it is the one you are on,
@@ -821,7 +847,7 @@ export function FrontDoor({
           <div className="fd-tag">{z.tag}</div>
           <div className="fd-name">{z.label}</div>
           <div className="fd-rule" aria-hidden />
-          <p className="fd-desc">{z.desc}</p>
+          <p className="fd-desc">{zlock ? lockLine(zlock) : z.desc}</p>
           {/*
             HOW IT IS PLAYED — his ruling, 2026-09-11: "Add in the home page the rules for each
             mode. In the black blank space." The read pane said what a mode IS and then stopped, and
@@ -849,8 +875,8 @@ export function FrontDoor({
             {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
             <span className="fd-metav">{z.meta}</span>
           </div>
-          <button className="fd-cta" onClick={() => onPick(z.pick)}>
-            {z.cta}
+          <button className="fd-cta" disabled={!!zlock} onClick={() => onPick(z.pick)}>
+            {zlock ? `Locked · ${zlock.have} / ${zlock.stars} ★` : z.cta}
           </button>
           {/* THE SIGN-OFF STANDS AT THE FOOT OF THE READ, IN BOTH MODES NOW. It used to move to the
               foot band in user mode, because user mode had no record book to close the board with.

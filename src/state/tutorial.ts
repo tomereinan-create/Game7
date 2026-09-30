@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { useTutorial } from './viewmode'
+import { totalStars, type CampaignMode, type Progress } from './campaign'
 
 /**
  * THE TUTORIAL'S MEMORY — his ruling, 2026-09-30: "Add tutorial mode, which will be the same as
@@ -152,4 +153,20 @@ export function useLesson(id: string, when: boolean, build: () => Lesson) {
     if (tutorial && when) teachOnce(id, build)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tutorial, when, id, epoch])
+}
+
+/**
+ * THE TUTORIAL'S LADDER GATE — his ruling, 2026-09-30: "In tutorial mode, salary cap is locked
+ * until you have 30 stars in campaign, and death match until you have 30 stars in salary cap."
+ * Tutorial mode only: user and scout open every door as they always have. The stars are the
+ * tutorial slot's own (App holds that slot while the mode is on), so the gate reads the ladder
+ * he is actually climbing. Null when the door is open; otherwise which ladder pays for it and how
+ * far along it is.
+ */
+export const TUTORIAL_GATE = 30
+export function tutorialLock(mode: CampaignMode, all: Record<CampaignMode, Progress>): { needs: CampaignMode; have: number; stars: number } | null {
+  const needs: CampaignMode | null = mode === 'salary' ? 'campaign' : mode === 'death' ? 'salary' : null
+  if (!needs) return null
+  const have = totalStars(all[needs])
+  return have >= TUTORIAL_GATE ? null : { needs, have, stars: TUTORIAL_GATE }
 }
