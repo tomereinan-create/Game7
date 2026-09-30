@@ -395,6 +395,23 @@ const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toF
  * THE TEAM — his ruling, 2026-09-30: "instead of myteam have a team icon." Five men in the shape
  * the floor draws them, one lit: the door to the five he carries.
  */
+/**
+ * THE STAFF — his ruling, 2026-09-30: "Instead of staff have staff icon." Three hexagons in a
+ * chain, the trellis the tree is drawn as: the door to the staff room.
+ */
+function StaffIcon() {
+  return (
+    <svg className="stafficon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
+      <g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+        <path d="M12 2.6 15.2 4.5v3.7L12 10.1 8.8 8.2V4.5Z" />
+        <path d="M6 10.3 9.2 12.2v3.7L6 17.8 2.8 15.9v-3.7Z" />
+        <path d="M18 10.3 21.2 12.2v3.7L18 17.8l-3.2-1.9v-3.7Z" />
+        <path d="M10.4 9.4 7.6 11m8.8-1.6 2.8 1.6" strokeLinecap="round" />
+      </g>
+      <circle cx="12" cy="6.4" r="1.2" fill="currentColor" />
+    </svg>
+  )
+}
 function TeamIcon() {
   return (
     <svg className="teamicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
@@ -693,13 +710,6 @@ export function LevelMap({
                 <i className="heart">♥</i> {progress.lives + 1}
               </span>
             ) : null}
-            {/* THE CHANGE, BESIDE THE STARS — his ruling, 2026-09-30: "The sub icon should be next to
-                the star not on the ticket." It used to stand in the stack over tonight's ticket. */}
-            {teamNote?.kind === 'sub' && onMyTeam ? (
-              <button className="map-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                <SubIcon />
-              </button>
-            ) : null}
             {spendable ? (
               <button className="map-link staff" onClick={onStaff}>
                 {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
@@ -709,7 +719,10 @@ export function LevelMap({
                     a star icon." The glyph was already there and the three words after it were
                     saying the same thing again in mono. */}
                 <i className="g">★</i>
-                {bal}<i className="d">·</i>Staff<i className="a">→</i>
+                {bal}<i className="d">·</i>
+                {/* the word became the icon — his ruling, 2026-09-30 */}
+                <StaffIcon />
+                <i className="a">→</i>
               </button>
             ) : null}
             {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
@@ -777,8 +790,8 @@ export function LevelMap({
           </div>
           {user ? (
             <div className="um-maprow">
-              <button className="um-staff" onClick={onStaff}>
-                ★ {bal} to spend · Staff →
+              <button className="um-staff" onClick={onStaff} aria-label={`${bal} to spend — Staff`} title="Staff">
+                ★ {bal} to spend · <StaffIcon /> →
               </button>
               {/* the heart and the change stand beside the star here too — see the scout header */}
               {death ? (
@@ -791,11 +804,6 @@ export function LevelMap({
                    change is waiting; the team icon stands whenever there is a five to look at */
                 <button className="um-team" onClick={onMyTeam} aria-label="My team" title="My team">
                   <TeamIcon />
-                </button>
-              ) : null}
-              {teamNote?.kind === 'sub' && onMyTeam ? (
-                <button className="um-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                  <SubIcon />
                 </button>
               ) : null}
               {/**
@@ -985,7 +993,7 @@ export function LevelMap({
            * is the death match's; this one belongs to every mode. When both are up they stack, on
            * the far side of the trail from the ticket, centred on it.
            */}
-          {cur && (spendable || (teamNote?.kind === 'worn' && onMyTeam)) ? (
+          {cur && (spendable || (teamNote && onMyTeam)) ? (
             <div
               className="node-notes"
               /**
@@ -1022,13 +1030,15 @@ export function LevelMap({
                   <i className="bigstar" aria-hidden>★</i>
                 </button>
               ) : null}
-              {teamNote?.kind === 'worn' && onMyTeam ? (
-                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                  {/* A man WORN OUT gets his sentence here: that one is not an offer, it is a thing
-                      gone wrong, and it names who. THE CHANGE GLYPH LEFT THIS STACK — his ruling,
-                      2026-09-30: "The sub icon should be next to the star not on the ticket." It
-                      stands in the header beside the star now, in both modes. */}
-                  {teamNote.text}<i className="a">→</i>
+              {teamNote && onMyTeam ? (
+                <button className={`node-note ${teamNote.kind === 'sub' ? 'icon ' : ''}${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  {/* A CHANGE IS A GLYPH, BESIDE THE STAR — his rulings, 2026-09-29 ("Instead of 'A
+                      change is waiting in My team', have a substitute icon") and 2026-09-30 ("The
+                      sub icon should be next to the star icon above the ticket and not in the
+                      header"). It spent an hour in the header; the stack over the ticket is a row
+                      now, so the two glyphs stand side by side. A man WORN OUT still gets his
+                      sentence: that one is not an offer, it is a thing gone wrong, and it names who. */}
+                  {teamNote.kind === 'sub' ? <SubIcon /> : <>{teamNote.text}<i className="a">→</i></>}
                 </button>
               ) : null}
             </div>

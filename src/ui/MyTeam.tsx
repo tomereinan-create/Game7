@@ -672,13 +672,16 @@ export function MyTeam({
         </svg>
       </button>
       <div className="topbar">
-        <span>My team</span>
-        {/* NOTHING LEFT IS NOT NEWS — his ruling, 2026-09-30: "Remove no changes left." The head
-            counted the changes he had, and then went on counting when there were none: a line in
-            the corner of every screen of a run that said only that a thing he was not doing could
-            not be done. It says what he HAS, and when he has none it says nothing. The dock below
-            still offers the way out, in its own words. */}
-        <span>{spinsLeft > 0 ? <b>{spinsLeft} {spinsLeft === 1 ? 'change' : 'changes'} left</b> : null}</span>
+        <span>
+          My team
+          {/* NOTHING LEFT IS NOT NEWS — his ruling, 2026-09-30: "Remove no changes left." It says
+              what he HAS, and when he has none it says nothing. AND IT STANDS BY THE TITLE, not in
+              the far corner — his ruling the same day: "1 change left is being hidden by the map
+              and the home icon, place it somewhere else." The corner is where the two fabs are
+              pinned on every screen. */}
+          {spinsLeft > 0 ? <b className="mt-left"> · {spinsLeft} {spinsLeft === 1 ? 'change' : 'changes'} left</b> : null}
+        </span>
+        <span />
       </div>
       <div className="ladder" />
       {/* two columns only when the plan has stepped aside AND nothing took its box — mid-swap the

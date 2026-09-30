@@ -66,10 +66,11 @@ describe('the death match header', () => {
     expect(map(progress({ lives: 0 }), { death: true })).not.toContain('>♥</i> 0')
   })
 
-  it('the change glyph stands beside the star, not over the ticket; a worn man keeps his sentence there', () => {
+  it('the change glyph stands beside the big star over the ticket, not in the header; a worn man keeps his sentence there', () => {
     const p = progress({ lives: 1, roster: ['a', 'b', 'c', 'd', 'e'] })
     const sub = map(p, { death: true, onMyTeam: () => {}, teamNote: { kind: 'sub', text: 'A change is waiting in My team' } })
-    expect(sub).toContain('class="map-sub"')
+    expect(sub).not.toContain('map-sub')
+    expect(sub).toContain('node-note icon')
     // the door to My team is a glyph, in both headers (his ruling: "instead of myteam have a team icon")
     expect(sub).toContain('class="map-team"')
     expect(sub).not.toContain('My team →')
@@ -79,10 +80,24 @@ describe('the death match header', () => {
     } finally {
       setUserMode(false)
     }
-    expect(sub).not.toContain('node-note icon')
     expect((sub.match(/class="subicon"/g) ?? []).length).toBe(1)
+    // and the staff doors carry the icon, not the word (his ruling: "Instead of staff have staff icon") —
+    // the scout notice stands only while a star can be placed, so give it stars; the user row always stands
+    const rich = map(progress({ stars: Array.from({ length: ROUNDS }, (_, i) => (i < 3 ? 2 : 0)), roster: ['a', 'b', 'c', 'd', 'e'] }), { death: true })
+    expect(rich).toContain('class="map-link staff"')
+    expect(rich).toContain('class="stafficon"')
+    expect(rich).not.toMatch(/·<\/i>Staff</)
+    setUserMode(true)
+    try {
+      const row = map(p, { death: true })
+      expect(row).toContain('class="um-staff"')
+      expect(row).toContain('class="stafficon"')
+      expect(row).not.toContain('· Staff →')
+    } finally {
+      setUserMode(false)
+    }
     const worn = map(p, { death: true, onMyTeam: () => {}, teamNote: { kind: 'worn', text: 'A man is worn out — replace him in My team' } })
-    expect(worn).not.toContain('map-sub')
+    expect(worn).not.toContain('subicon')
     expect(worn).toContain('A man is worn out')
     expect(worn).toContain('class="node-note ')
   })

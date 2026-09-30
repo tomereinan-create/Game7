@@ -3518,7 +3518,8 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
    They stack in one column on the far side of the trail from the ticket and centre on it, so the
    trail and the ticket's dials stay clear whether there is one of them or two. */
 /* the stack hangs by its FOOT above tonight's ticket — see the note in LevelMap */
-.node-notes { position: absolute; z-index: 5; max-width: 34%; display: flex; flex-direction: column; align-items: center; gap: 6px; transform: translate(-50%, -100%); }
+/* A ROW, not a column — his ruling, 2026-09-30: the change glyph stands NEXT TO the star. The worn sentence still wraps under when both are up. */
+.node-notes { position: absolute; z-index: 5; max-width: 34%; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; transform: translate(-50%, -100%); }
 .node-note { max-width: 100%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
 .node-note i { font-style: normal; }
 .node-note .g { margin-right: 3px; }
@@ -9526,14 +9527,8 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
    in its own gold-bordered idiom. */
 .map-lives { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--num); font-size: 27px; line-height: 1; color: var(--them); }
 .map-lives .heart { font-style: normal; font-size: 24px; line-height: 1; }
-.map-sub { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 6px; border: 1px solid var(--line-3); border-radius: 6px; background: var(--surface-2); cursor: pointer; }
-.map-sub .subicon { width: 26px; height: 26px; display: block; }
-.map-sub:hover { border-color: var(--you); }
 .um-lives { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 1px solid var(--them-line); border-radius: 5px; color: var(--them); font-family: var(--serif); font-size: 13px; white-space: nowrap; }
 .um-lives .heart { font-style: normal; font-size: 16px; line-height: 1; }
-.um-sub { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid var(--um-gold); border-radius: 5px; background: transparent; cursor: pointer; }
-.um-sub .subicon { width: 24px; height: 24px; display: block; }
-.um-sub:hover { background: #241f1a; }
 /* the dock's reason for a change that cannot be made (My team): a ghost that wraps its sentence */
 .btn.why:disabled { white-space: normal; line-height: 1.3; height: auto; padding-top: 10px; padding-bottom: 10px; color: var(--ink-2); opacity: 1; }
 
@@ -9589,3 +9584,8 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .myteam .mb-idle .seriesnow-note { font-size: clamp(11px, 0.95vw, 30px); line-height: 1.45; }
   .myteam .mb-idle .label { font-size: clamp(8.5px, 0.72vw, 24px); }
 }
+
+/* THE STAFF ICON in the two staff doors (his ruling, 2026-09-30: "Instead of staff have staff icon") */
+.map-link.staff .stafficon { width: 1.5em; height: 1.5em; vertical-align: -0.4em; margin: 0 2px; }
+.um-staff .stafficon { width: 1.6em; height: 1.6em; vertical-align: -0.45em; margin: 0 2px; }
+.mt-left { font-weight: 700; color: var(--you); }
