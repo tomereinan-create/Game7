@@ -934,5 +934,27 @@
     "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named.",
     "superseded_by": 223,
     "superseded_note": "Tomer 2026-09-30: \"I want the 24-33-minute scorers that follow to drop more\" — the volume x load second line (recal_223, VOL_LOW 55 / VOL_SECOND 36.3). He released this pin himself so the second-payment line could be set at the class's own measured upper quartile of minutes instead of stopping under it; the card is re-pinned in the same round at what the law now reads."
+  },
+  {
+    "card": "Stephen Curry '16",
+    "scale": "off",
+    "target": 95,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "one of the four complete stars the round predicted flat",
+    "superseded_by": 227,
+    "superseded_note": "Tomer 2026-09-30: \"Curry 16 OFF too low\""
+  },
+  {
+    "card": "LeBron James '13",
+    "scale": "off",
+    "target": 97,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "flat",
+    "superseded_by": 227,
+    "superseded_note": "Tomer 2026-09-30: \"Push 227 with LeBron 13 released if needed\""
   }
 ]
