@@ -9585,7 +9585,31 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .myteam .mb-idle .label { font-size: clamp(8.5px, 0.72vw, 24px); }
 }
 
-/* THE STAFF ICON in the two staff doors (his ruling, 2026-09-30: "Instead of staff have staff icon") */
-.map-link.staff .stafficon { width: 1.5em; height: 1.5em; vertical-align: -0.4em; margin: 0 2px; }
-.um-staff .stafficon { width: 1.6em; height: 1.6em; vertical-align: -0.45em; margin: 0 2px; }
 .mt-left { font-weight: 700; color: var(--you); }
+
+/* THE HEADER'S GLYPHS AT A SIZE THAT READS — his ruling, 2026-09-30: "All the header icons are way
+   too small." One star, one heart, one team, each on the window's width, floored at what the phone
+   has. The star is the staff door; its balance stands beside it at the same measure. */
+.map-link.staff { display: inline-flex; align-items: center; gap: clamp(6px, 0.4vw, 12px); font-size: clamp(20px, 1.5vw, 44px); text-decoration: none; }
+.map-link.staff .g { font-size: clamp(30px, 2.2vw, 64px); line-height: 1; margin: 0; }
+.map-link.staff .a { font-size: clamp(14px, 1vw, 30px); margin-left: 2px; }
+.map-total { font-size: clamp(22px, 1.4vw, 40px); }
+.map-total i { font-size: clamp(14px, 0.95vw, 28px); }
+.map-lives { font-size: clamp(22px, 1.5vw, 44px); gap: clamp(6px, 0.4vw, 12px); }
+.map-lives .heart { font-size: clamp(28px, 2vw, 58px); }
+.map-team { min-width: clamp(44px, 3vw, 84px); min-height: clamp(44px, 3vw, 84px); }
+.map-team .teamicon { width: clamp(26px, 2vw, 58px); height: clamp(26px, 2vw, 58px); }
+.um-staff { display: inline-flex; align-items: center; gap: clamp(6px, 0.4vw, 12px); min-height: clamp(44px, 3vw, 84px); font-size: clamp(16px, 1.3vw, 38px); }
+.um-staff .g { font-style: normal; font-size: clamp(28px, 2vw, 58px); line-height: 1; }
+.um-staff .a { font-style: normal; font-size: clamp(12px, 0.9vw, 26px); }
+.um-lives { min-height: clamp(44px, 3vw, 84px); font-size: clamp(16px, 1.3vw, 38px); gap: clamp(6px, 0.4vw, 12px); }
+.um-lives .heart { font-size: clamp(24px, 1.9vw, 54px); }
+.um-team { min-width: clamp(44px, 3vw, 84px); min-height: clamp(44px, 3vw, 84px); }
+.um-team .teamicon { width: clamp(24px, 1.9vw, 54px); height: clamp(24px, 1.9vw, 54px); }
+
+/* THE STAR AND THE CHANGE OVER THE TICKET ARE ONE SIZE — his ruling, 2026-09-30: "The stars and the
+   sub icon should be the same size." Both notes are the same square, and both glyphs the same
+   measure inside it. */
+.node-note.icon { min-width: clamp(46px, 3.2vw, 88px); min-height: clamp(46px, 3.2vw, 88px); box-sizing: border-box; padding: 0; }
+.node-note.icon .bigstar { font-size: clamp(28px, 2vw, 56px); width: clamp(28px, 2vw, 56px); height: clamp(28px, 2vw, 56px); display: grid; place-items: center; line-height: 1; }
+.node-note.icon .subicon { width: clamp(28px, 2vw, 56px); height: clamp(28px, 2vw, 56px); }

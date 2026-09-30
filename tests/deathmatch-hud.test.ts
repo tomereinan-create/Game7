@@ -81,18 +81,20 @@ describe('the death match header', () => {
       setUserMode(false)
     }
     expect((sub.match(/class="subicon"/g) ?? []).length).toBe(1)
-    // and the staff doors carry the icon, not the word (his ruling: "Instead of staff have staff icon") —
-    // the scout notice stands only while a star can be placed, so give it stars; the user row always stands
+    // THE STAR IS THE STAFF DOOR, AND IT STANDS ONCE (his ruling: "Instead of the staff icon make
+    // the stars icon ... 1 clear time is enough"): the counter keeps its figures without a glyph, the
+    // notice carries the one star — it stands only while a star can be placed, so give it stars
     const rich = map(progress({ stars: Array.from({ length: ROUNDS }, (_, i) => (i < 3 ? 2 : 0)), roster: ['a', 'b', 'c', 'd', 'e'] }), { death: true })
     expect(rich).toContain('class="map-link staff"')
-    expect(rich).toContain('class="stafficon"')
-    expect(rich).not.toMatch(/·<\/i>Staff</)
+    expect(rich).not.toContain('stafficon')
+    expect(rich).not.toContain('class="star"')
+    expect((rich.match(/class="g">★</g) ?? []).length).toBe(1)
     setUserMode(true)
     try {
       const row = map(p, { death: true })
       expect(row).toContain('class="um-staff"')
-      expect(row).toContain('class="stafficon"')
-      expect(row).not.toContain('· Staff →')
+      expect(row).not.toContain('stafficon')
+      expect(row).not.toContain('to spend ·')
     } finally {
       setUserMode(false)
     }

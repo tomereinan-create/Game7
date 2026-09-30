@@ -395,23 +395,6 @@ const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toF
  * THE TEAM — his ruling, 2026-09-30: "instead of myteam have a team icon." Five men in the shape
  * the floor draws them, one lit: the door to the five he carries.
  */
-/**
- * THE STAFF — his ruling, 2026-09-30: "Instead of staff have staff icon." Three hexagons in a
- * chain, the trellis the tree is drawn as: the door to the staff room.
- */
-function StaffIcon() {
-  return (
-    <svg className="stafficon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
-      <g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-        <path d="M12 2.6 15.2 4.5v3.7L12 10.1 8.8 8.2V4.5Z" />
-        <path d="M6 10.3 9.2 12.2v3.7L6 17.8 2.8 15.9v-3.7Z" />
-        <path d="M18 10.3 21.2 12.2v3.7L18 17.8l-3.2-1.9v-3.7Z" />
-        <path d="M10.4 9.4 7.6 11m8.8-1.6 2.8 1.6" strokeLinecap="round" />
-      </g>
-      <circle cx="12" cy="6.4" r="1.2" fill="currentColor" />
-    </svg>
-  )
-}
 function TeamIcon() {
   return (
     <svg className="teamicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
@@ -694,8 +677,12 @@ export function LevelMap({
              * zero took the whole tree off the screen while the counter still read ★ 10. The
              * counter is the door: you tap your stars to go and spend them.
              */}
+            {/* ONE STAR IN THE HEADER — his ruling, 2026-09-30: "Instead of the staff icon make the
+                stars icon ... No need to see the same icons multiple times. 1 clear time is enough."
+                The counter keeps the figures and gives up its glyph; the star stands once, large,
+                on the staff door below, which is the thing the glyph means. */}
             <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
-              <span className="star">★</span> {total}
+              {total}
               <i> / {ROUNDS * 3}</i>
               <i className="a">→</i>
             </button>
@@ -718,10 +705,10 @@ export function LevelMap({
                 {/* THE STAR SAYS IT — his ruling, 2026-09-29: "Instead of the stars to spend, have
                     a star icon." The glyph was already there and the three words after it were
                     saying the same thing again in mono. */}
+                {/* THE STAR IS THE DOOR — his ruling, 2026-09-30: "Instead of the staff icon make
+                    the stars icon." Large, with the balance beside it, and nothing else. */}
                 <i className="g">★</i>
-                {bal}<i className="d">·</i>
-                {/* the word became the icon — his ruling, 2026-09-30 */}
-                <StaffIcon />
+                {bal}
                 <i className="a">→</i>
               </button>
             ) : null}
@@ -791,7 +778,7 @@ export function LevelMap({
           {user ? (
             <div className="um-maprow">
               <button className="um-staff" onClick={onStaff} aria-label={`${bal} to spend — Staff`} title="Staff">
-                ★ {bal} to spend · <StaffIcon /> →
+                <i className="g">★</i> {bal} <i className="a">→</i>
               </button>
               {/* the heart and the change stand beside the star here too — see the scout header */}
               {death ? (
