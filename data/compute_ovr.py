@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 222
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2066,13 +2066,92 @@ def o_score(p, trace=None):
         _sb_load = _load if not is_big(p) else (
             1.0 if _mp2 is None else
             min(1.0, max(0.0, (_mp2 - LOAD_FOOT) / (SB_SECOND_FULL - LOAD_FOOT))))
+        #
+        # recal_222 (HIS RULING, scout group C, agreed 2026-09-30, verbatim: "the stretch-big off-ball
+        # floor pays +15 of o_score BINDING at volume 47-54 and nothing at 55, so a better season reads
+        # ten lower"). THE GATE IS A CEILING ON THE LIFT, NOT A CLIFF.
+        #
+        # THE DEFECT, and it is r64's gate read from its other side. recal_118 ramped the ARC half of
+        # `3pt >= 68 and volume < 55`; the LOAD half stayed a step, with a correction worth up to
+        # twenty-four printed OFF points behind it. One rating point of `volume` therefore decides a
+        # fifth of a card, and the man who did MORE reads less. THE TWO CARDS, decomposed:
+        #   Rashard Lewis '01     34.9 mpg, 14.8 points at 18.4% usage, TS .587, BPM 2.1. Standard path
+        #                         64.79 under a floor of 80.37 BINDING at arc share 1.0000 x load share
+        #                         1.0000 — the WHOLE 15.58 — and he printed OFF 75. His own '02 (16.8
+        #                         points at 20.8% usage, BPM 3.0) is volume 61, one side of the gate
+        #                         away, takes no floor at all and reads 64; his '03 reads 65.
+        #   Donyell Marshall '04  36.4 mpg, 14.7 points and 9.9 boards at 19.5% usage, TS .548, BPM 2.7.
+        #                         Standard path 64.90, floor 79.95 BINDING at volume 54 — ONE POINT
+        #                         inside the gate — printing OFF 74, while this term's own pinned
+        #                         subjects on comparable lines read 63-65 (Anunoby '21 63, Hachimura
+        #                         '26 64, Ryan Anderson '18 65) and his own '03 (volume 61) reads 59.
+        #
+        # WHY NOT A SHARE RAMP — the first form his ruling names, and it is PROVABLY infeasible, not
+        # merely worse. A share of the correction ramped over volume (recal_118's shape) pays the SAME
+        # share to every card at the same volume, and this class holds TWO cards at volume 47 whose
+        # rulings point opposite ways: Rashard Lewis '01 must shed ten printed points of a 15.58
+        # correction, and Donyell Marshall '07 (16.8 mpg, pinned 52 +-3, reading 49 with ZERO room
+        # down) must keep all of a 5.45 one — his is small already because recal_188's line scales it
+        # to 0.245. MEASURED: at the share that lands Lewis (0.33) Marshall '07 falls 49 -> 46.
+        # A share also cannot be MONOTONE in volume, which his ruling forbids: the correction reaches
+        # 24 while the standard path pays only 0.26 x load a volume point, so a share that falls to
+        # zero anywhere inside ninety points of volume takes some card DOWN for carrying more.
+        #
+        # THE TERM — A CEILING, which is the second form his ruling names ("the floor itself reading
+        # the standard path's own volume so it cannot exceed what a volume-61 season of the same man
+        # reads"). The off-ball floor is a claim about a man who does NOT carry the offence, so the most
+        # it may be worth is what the offence ITSELF would pay him for carrying the ball from where he
+        # is up to a full scoring load:   lift <= OB_V_W x (OB_V_TOP - volume).
+        # NO NEW KIND OF CONSTANT. OB_V_W 0.26 is the standard path's OWN volume weight, the literal
+        # thirty lines up this function. OB_V_TOP 80 is recal_131's PZ_V_HI — "a top-sixth load (usage
+        # 24.8)", the line this file already reads as a full scoring load — and that ramp's FOOT,
+        # PZ_V_LO, IS this floor's own gate of 55, so the ceiling spans exactly the distance between
+        # the two lines the file already has.
+        # MONOTONE BY CONSTRUCTION, and that is the whole reason for a ceiling rather than a share:
+        # where it binds it falls at exactly 0.26 a volume point while the standard path rises at
+        # 0.26 x load plus the signature term's 0.08 x efficiency/100, so a card cannot read lower for
+        # carrying more. MEASURED on a volume sweep 0..54 of every card this floor can pay: the ceiling
+        # adds NO violation as large as half a printed point (worst, Brook Lopez '23, 0.408 of o_score
+        # = 0.38 of OFF, off the hub and passer ramps whose own volume slope is under 0.26), and of the
+        # cards it binds on NOT ONE is under 25.8 mpg — every one is at recal_96's full load, where the
+        # ceiling's slope IS the standard path's own. THE GATE STEP falls from 15.05 of o_score (14.00
+        # printed OFF, Donyell Marshall '04) to 6.76 (6.29, Kevin Love '12) — the ceiling's own value
+        # at the gate, 0.26 x (80 - 54).
+        #
+        # WHY THE STEP IS NOT CLOSED ALL THE WAY: a THEOREM off his own pins, not a choice. Closing it
+        # means the payment reaches zero AT the gate, so the class must extend to wherever the ceiling
+        # does. OG Anunoby '21 (pinned 65 +-2, reading 63, ZERO room down) is volume 36 and keeps a
+        # correction of 11.27, and a monotone law may shed at most 0.26 a volume point: 11.27 / 0.26 is
+        # 43 points, so the class would have to run past volume 79. MEASURED at 80 with the gate opened
+        # to match: 117 cards RISE, max +6 (Markkanen '22 and '20, Parsons '16), and the volume-61
+        # seasons his ruling calls fine rise with them — Rashard Lewis '02, his own comparator, 64 ->
+        # 69. The ceiling's window is [77, 81] and it is MEASURED on both sides: below 77 Anunoby '21
+        # leaves his pin (62 at 76), above 81 the subjects leave theirs (Lewis '01 69 at 82). 80 is the
+        # file's own line, inside the window.
+        # WHERE IT LANDS AND WHERE IT STOPS — the targets are 65 / 65 +-3 and the subjects land 68 / 67,
+        # both inside and both ON THE FRONTIER: Lewis '01 cannot print 65 under any monotone ceiling
+        # that holds Anunoby '21, because the two are eleven volume points apart and 65 asks for 0.53
+        # of o_score a point against the 0.26 the standard path pays.
+        # MEASURED on the whole pool: 16 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -7,
+        # mean -2.4; DEF and every attribute move on ZERO; the top 12 by OFF is identical name for name
+        # and the top 50 by OVR has no entrant and no leaver. Every wing pin of recal_64/118 and every
+        # stretch-big pin of recal_91/170/188 holds unmoved (Korver '15 58, Kerr '96 61, Snell '18 50,
+        # Bowen '06 45, Novak '13 59, Tolliver '14 54, Anunoby '21 63, Hachimura '26 64, Anderson '18
+        # 65, Bamba '22 56, Kleber '20 53, Hauser '23 58, Bullard '92 50, Finney-Smith '20 52,
+        # Marshall '07 49).
+        OB_V_TOP, OB_V_W = 80.0, 0.26
+        _ob_cap = OB_V_W * max(0.0, OB_V_TOP - a['volume'])
         _ob_std = std
-        _flr = std + _f3 * _sb_load * (_fl - std)
+        _ob_full = _f3 * _sb_load * (_fl - std)
+        _ob_lift = min(_ob_full, _ob_cap)
+        _flr = std + _ob_lift
         std = max(std, _flr)
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           load=_sb_load, load96=_load, std=_ob_std,
                                           second_full=SB_SECOND_FULL, mpg=_mp2,
+                                          cap=_ob_cap, v_top=OB_V_TOP, v_w=OB_V_W, lift=_ob_lift,
+                                          uncapped=_ob_full,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     # recal_131 (HIS RULING, verbatim: "What I dont like, is Malone being 69 OFF with 25 ppg on not
     # bad eff"). THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK.
@@ -3116,6 +3195,11 @@ if _CARD:
               f"(recal_118) x load share {_f['load']:.4f} ({_fline}; {_f['mpg']} mpg, recal_96's own "
               f"line reads {_f['load96']:.4f}) -> "
               f"{_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+        print(f"  recal_222's CEILING (the standard path's own volume weight {_f['v_w']:g} x the "
+              f"distance to a full scoring load {_f['v_top']:.0f} - volume {_a['volume']}) = "
+              f"{_f['cap']:.3f} against a lift of {_f['uncapped']:.3f}: "
+              + ('the ceiling BINDS, lift paid %.3f' % _f['lift'] if _f['cap'] < _f['uncapped']
+                 else 'not reached, the whole correction is paid'))
     if 'glue' in _ot:
         _gl2 = _ot['glue']
         print(f"GLUE FLOOR (recal_155) - possession work drb/orb/playvol {_gl2['bars'][:3]} averaged "
