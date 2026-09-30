@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 220
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -732,6 +732,59 @@ Z2_VEC_W = 0.05   # z[2]'s own weight in the vector above, named so the balance 
 # recal_131's own scoring-load line, PZ_V_LO / PZ_V_HI, restated at module scope because the paint
 # floor assigns those two names LOCALLY inside o_score, further down than this term is paid.
 Z2_LD_LO, Z2_LD_HI = 55.0, 80.0
+# ============ recal_220 — THE TRANSFER'S LOAD FACTOR READS THE PAID LOAD, NOT THE RATE ============
+# HIS RULING, verbatim: "recal_196's era transfer is paid at FULL load to part-time scorers — its
+# load factor reads the RAW volume bar over recal_131's 55->80 line, not recal_96's minutes share,
+# so a 20-minute man's transfer is whole while his own volume x load term is cut to 0.70."
+#
+# THE DEFECT IS A MISQUOTE OF THE LAW recal_196 ITSELF CITES. Its LOAD factor is documented, forty
+# lines above, as "recal_131's own scoring-load line, PZ_V_LO/PZ_V_HI (volume 55 -> 80). recal_130's
+# rule: a rate paid twice is scaled twice." But recal_131's floor reads that line on `_vol` — the
+# volume bar AFTER recal_96's minutes share (`_pz = ramp(_vol, PZ_V_LO, PZ_V_HI) x ...`, inside
+# o_score) — and recal_196 reads the same two numbers on the RAW bar `a['volume']`. Same line, two
+# different quantities, and the raw one is exactly what recal_96 was written to stop pricing:
+# "`volume` is a usage percentile ... per possession he was on the floor for, and o_score never
+# asked how much of a game the man was on the floor."
+# WHAT IT COST, on the card that names the round: David Thompson '82, 20.4 mpg, share 0.700. The
+# vector pays his volume 87 as 60.90 and his playvol 42 as 29.40 — and then the era transfer read
+# the SAME volume bar raw, 87, cleared the 80 of the line, and paid him load 1.000. A transfer of
+# +7.594 of o_score, the largest on the board, to a man the file had just ruled a part-time scorer.
+#
+# THE FIX IS ONE SUBSTITUTION AND NO NEW NUMBER: `_vol` for `a['volume']`, so the transfer's load
+# factor reads the same PAID load the vector reads, on the same 55 -> 80 line recal_131 reads it on.
+# IDENTITY AT FULL LOAD, BY CONSTRUCTION: `_vol = a['volume'] x load_share(p)` and load_share is
+# 1.0 for every card at or above LOAD_FULL (24 mpg) and for every card with no minutes on the sheet,
+# so `_vol == a['volume']` there and the coefficient is unchanged to the last bit. MEASURED: 79 of
+# 10,000 cards move, every one of them DOWN, every one 1980-1996 and every one between 16.1 and 23.8
+# mpg — the class the ruling names, and nothing else. DEF moves on zero cards, every attribute on
+# zero, the top 12 by OFF is unchanged, and all 213 anchors hold (0 failing). George Gervin '80,
+# Kareem Abdul-Jabbar '80, Michael Jordan '87, Paul Westphal '80, Bird '83/'84, Drexler '88,
+# Hakeem '94, Magic '90, Ewing '90 and Moses '82 are byte-identical.
+# MONOTONE STILL: the load factor reads no scoring bar, and it can only SHRINK the coefficient c,
+# so recal_210's two derivatives (0.08 + c >= 0 and max(0.05, c) - c >= 0) both still hold. The
+# regeneration's own zone-block monotonicity count stays at 0 cards.
+#
+# WHAT IS NOT REACHED, AND IT IS NOT A LOAD QUESTION: ANDREW TONEY '81, asked 68 +-3, reads 73 and
+# is UNMOVED. He played 23.6 mpg — 0.967 of the board's own ratified full-load line (LOAD_FULL = 24,
+# located by Clint Capela '17's pin in recal_96) — so his paid volume is 79.27 against a raw 82 and
+# his load factor goes 1.000 -> 0.971. The arithmetic of his own frontier: his transfer is
+# c x 23 + (c - 0.05) x 33 = 56c - 1.65, he prints 71 at o_score 76.87, so he needs c <= 0.0927,
+# i.e. a load factor <= 0.713. NO reading of recal_96's share can deliver 0.713 to a man at 0.967.
+# What he is, is a rookie shooting .535 TS in a .583 league with a BPM of -3.0 and an efficiency bar
+# of 57 — an ATTRIBUTE complaint, and the zone inference and ts_rel that set those bars belong to
+# stats-to-ratings, not to this file.
+# THE FRONTIER THAT DOES REACH HIM, MEASURED AND PRICED, NOT TAKEN (it is a release, his call):
+# read the load on recal_163's SECOND-payment line instead — `a['volume'] x ramp(mpg, LOAD_FOOT,
+# SECOND_FULL)`, 12 -> 33.9, on the argument that recal_196's own citation of recal_130 makes this
+# the SECOND reading of the volume rate. It lands all three subjects (Thompson 66, Toney 68,
+# Williams 64), holds all 213 anchors, and keeps every full-load subject byte-identical INCLUDING
+# Westphal '80 at 32.5 mpg. ITS PRICE IS THE CLASS IT REPRICES: 306 cards move instead of 79, and
+# 207 of them are between 24 and 33.9 mpg — Walter Davis '81 -6, Mike Woodson '82 -6 and '84 -6,
+# Purvis Short '80 -6, James Silas '81 -6, Quintin Dailey '83/'85 -6, Albert King '84 -5, David
+# Thompson '83 -5, Junior Bridgeman '81 -5. Those are not part-time scorers, they are ROTATION
+# starters, and several of them sit in the post-84 class he called FINE in round 215. Cutting them
+# is a ruling, not a repair, so the line stays at recal_96's 24.
+
 # ============ recal_215 — DECLINED. NOTHING BELOW THIS LINE CHANGED; READ IT BEFORE RE-CUTTING ====
 # HIS RULING, verbatim: "Cards pre 84 are too high. Post 84 are fine."
 # Nine subjects at +-3 (Westphal '80 90, Dantley '82 93 / '81 92 / '80 90, Erving '80 91 / '81 91 /
@@ -912,7 +965,10 @@ def o_score(p, trace=None):
     if not a.get('rim_mid_measured') and ERA3.get(p.get('peak_season'), 0.0) > 0.0:
         _e3 = ERA3[p['peak_season']]
         _z2cr = min(1.0, max(0.0, (a['playvol'] - Z2_CR_LO) / (Z2_CR_HI - Z2_CR_LO)))
-        _z2ld = min(1.0, max(0.0, (a['volume'] - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
+        # recal_220: the load factor reads the PAID volume `_vol` (= volume x recal_96's minutes
+        # share), which is the quantity recal_131's own floor reads on this very line — see the
+        # block at Z2_LD_LO/Z2_LD_HI. Identity for every card at full load.
+        _z2ld = min(1.0, max(0.0, (_vol - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
         # recal_210: the transfer's own coefficient, and the shortfall it owes the third zone.
         _z2c = Z2_W * _e3 * _z2cr * _z2ld
         _z2bal = max(0.0, _z2c - Z2_VEC_W) * z[2]
@@ -921,6 +977,7 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['era_third_zone'] = dict(era=_e3, l3=_L3[p['peak_season']], foot=ERA3_FOOT,
                                            full=ERA3_FULL, creation=_z2cr, load=_z2ld,
+                                           vol_paid=_vol, vol_raw=a['volume'],
                                            clearance=max(0.0, z[1] - z[2]), cap=Z2_CLEAR,
                                            w=Z2_W, coeff=_z2c, vec_w=Z2_VEC_W, balance=_z2bal,
                                            added=_z2)
@@ -3040,7 +3097,8 @@ if _CARD:
               f"own min {_e2['foot']:.1f} / median {_e2['full']:.1f}: era share {_e2['era']:.3f}")
         print(f"  weight {_e2['w']} x era {_e2['era']:.3f} x creation {_e2['creation']:.3f} (playvol "
               f"over the pool's own {Z2_CR_LO:g}->{Z2_CR_HI:g}) x load {_e2['load']:.3f} (recal_131's "
-              f"volume line) = coefficient {_e2['coeff']:.4f}")
+              f"volume line {Z2_LD_LO:g}->{Z2_LD_HI:g}, read on the PAID volume {_e2['vol_paid']:.2f} "
+              f"= volume x recal_96's share — recal_220) = coefficient {_e2['coeff']:.4f}")
         print(f"  x clearance {min(_e2['cap'], _e2['clearance']):.0f} "
               f"(z1-z2 {_e2['clearance']:.0f}, capped at the pool's own p95 {_e2['cap']:g})"
               + (f" + recal_210 balance {_e2['balance']:.3f} (the transfer charges z[2] "
