@@ -864,17 +864,24 @@ export function FrontDoor({
               foot of its own pane before a single point was added. In two columns they are half as
               tall, and the height that buys is what the copy is now set in. The paragraphs keep
               `.fd-desc` — one face for the sentence and the lines under it, as before. */}
-          <div className="fd-rules">
-            {z.rules.map((r) => (
-              <p className="fd-desc" key={r}>
-                · {r}
-              </p>
-            ))}
-          </div>
-          <div className="fd-meta">
-            {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
-            <span className="fd-metav">{z.meta}</span>
-          </div>
+          {/* A LOCKED DOOR SAYS ONLY THAT IT IS LOCKED — his ruling, 2026-09-30: "Until a mode has
+              been unlocked, only show that its locked in the description." The rules and the meta
+              line wait behind the lock with the mode itself. */}
+          {zlock ? null : (
+            <>
+              <div className="fd-rules">
+                {z.rules.map((r) => (
+                  <p className="fd-desc" key={r}>
+                    · {r}
+                  </p>
+                ))}
+              </div>
+              <div className="fd-meta">
+                {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
+                <span className="fd-metav">{z.meta}</span>
+              </div>
+            </>
+          )}
           <button className="fd-cta" disabled={!!zlock} onClick={() => onPick(z.pick)}>
             {zlock ? `Locked · ${zlock.have} / ${zlock.stars} ★` : z.cta}
           </button>
