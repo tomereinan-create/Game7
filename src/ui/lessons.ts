@@ -134,51 +134,35 @@ export function teamLesson(rename: boolean): Lesson {
           'Tap a city, type the name, pick a kit — or mix your own Main and Trim.',
         ],
       },
-      { at: '.dock .btn:not(.ghost)', body: ['Press when the name is set. The map has a Rename door if you change your mind.'] },
+      /* his ruling, 2026-09-30: "Remove Your club · 2 of 2" — the dock button step is gone */
     ],
   }
 }
 
 /* ---------------------------------------------------------------- the map */
 export function mapLesson(ctx: { mode: CampaignMode; level: number | null; opp: Opponent | null; eras: Era[]; bal: number; lives: number }): Lesson {
-  const blocks = ctx.eras
-    .map((e, i) => `${ROMAN[i]} ${e.name}, levels ${e.first}–${(ctx.eras[i + 1]?.first ?? ROUNDS + 1) - 1}`)
-    .join(' · ')
-  const first = (CAMPAIGNS as unknown as { name: string; blurb: string }[]).find((t) => t.name === ctx.eras[0]?.name)?.blurb
-  const steps: Step[] = [
-    {
-      at: '.node.now',
-      title: ctx.level && ctx.opp ? `Level ${ctx.level} · ${oppName(ctx.opp)}` : 'The ladder',
-      body: ctx.level
-        ? [
-            `The lit ticket is tonight's game — level ${ctx.level} of ${ROUNDS}, against ${ctx.opp ? oppName(ctx.opp) : 'the next team up'}. Press it to draft a five and play a best of seven.`,
-            'Every ticket above it is closed until you win the one below. Every ticket you have cleared can be pressed again.',
-          ]
-        : ['Every rung is cleared. Any ticket can be pressed again for a better star.'],
-    },
-    {
-      title: 'Stars',
-      body: [
-        'Win and the next rung opens. A win banks stars: one for going the distance, two for a shorter series, three for a sweep.',
-        'A loss costs nothing but the attempt — and a cleared level can be replayed for a better star at any time.',
-      ],
-    },
-    {
-      at: '.um-eras',
-      title: 'Four blocks',
-      body: [`${blocks}.`, ...(first ? [`Block I: ${first}`] : []), 'The chips scroll the map to a block — they never move where you are. Each block wears its own look, and the coach says a word when you reach a new one.'],
-    },
-    {
-      at: '.um-staff',
-      title: 'Staff',
-      body: [
-        `Stars buy staff. You have ${plural(ctx.bal, 'star')} to spend. The Staff door opens the tree: every rank costs one star, and every rank widens what you can do — more spins, more reads, a playbook. None adds a point of rating.`,
-        'Every rank you buy is explained the moment you buy it.',
-      ],
-    },
-    { at: '.um-rename', title: 'Your club', body: ['The club as it stands. Press to rename it or change the kit.'] },
-  ]
-  return { id: 'map', kicker: `Tutorial · ${TITLE(ctx.mode)}`, title: `${ROUNDS} rungs`, steps }
+  /* HIS RULING, 2026-09-30: the Stars step and the Four blocks step are gone, and the Staff step
+     moved to `spendLesson`, which is told after the first series is won — when there is a star to
+     spend and the door means something. What is left: tonight's ticket, and the club. `eras`,
+     `bal` and `lives` stay in the signature for the callers; nothing here reads them now. */
+  return {
+    id: 'map',
+    kicker: `Tutorial · ${TITLE(ctx.mode)}`,
+    title: `${ROUNDS} rungs`,
+    steps: [
+      {
+        at: '.node.now',
+        title: ctx.level && ctx.opp ? `Level ${ctx.level} · ${oppName(ctx.opp)}` : 'The ladder',
+        body: ctx.level
+          ? [
+              `The lit ticket is tonight's game — level ${ctx.level} of ${ROUNDS}, against ${ctx.opp ? oppName(ctx.opp) : 'the next team up'}. Press it to draft a five and play a best of seven.`,
+              'Every ticket above it is closed until you win the one below. Every ticket you have cleared can be pressed again.',
+            ]
+          : ['Every rung is cleared. Any ticket can be pressed again for a better star.'],
+      },
+      { at: '.um-rename', title: 'Your club', body: ['The club as it stands. Press to rename it or change the kit.'] },
+    ],
+  }
 }
 
 /**
@@ -218,18 +202,22 @@ export function ladderLesson(mode: CampaignMode, lives: number): Lesson | null {
   return null
 }
 
-/** The first time there is a star to spend and the map is on the screen. */
+/**
+ * STAFF, TOLD AFTER THE FIRST SERIES IS WON (his ruling, 2026-09-30: "Move Staff ... after you win
+ * a series"). It fires the first time the map is on the screen with a star to spend, which is
+ * exactly then — the door is explained when there is something to spend at it.
+ */
 export function spendLesson(bal: number): Lesson {
   return {
     id: 'spend',
-    kicker: 'Tutorial · Stars',
+    kicker: 'Tutorial · Staff',
     title: `${plural(bal, 'star')} to spend`,
     steps: [
       {
         at: '.um-staff',
         body: [
-          `You have banked ${plural(bal, 'star')} that nothing has claimed yet. The Staff door takes you to the tree, where a star buys a rank.`,
-          'Nothing is lost by waiting — stars keep — but a rank bought now works from the next draft on.',
+          `Stars buy staff. You have ${plural(bal, 'star')} to spend. The Staff door opens the tree: every rank costs one star, and every rank widens what you can do — more spins, more reads, a playbook. None adds a point of rating.`,
+          'Every rank you buy is explained the moment you buy it. Nothing is lost by waiting — stars keep — but a rank bought now works from the next draft on.',
         ],
       },
     ],

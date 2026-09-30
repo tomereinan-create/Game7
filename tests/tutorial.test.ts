@@ -4,8 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { _resetTutor, dismiss, replay, resetTutorial, teach, teachOnce, tutorState, wasTold } from '../src/state/tutorial'
 import { isUserMode, isTutorial, setViewMode, viewMode } from '../src/state/viewmode'
 import { NODE, NODES } from '../src/engine/tree'
-import { ROUNDS } from '../src/config'
-import { draftLesson, eraLesson, fullLesson, mapLesson, resultLesson, unlockLesson } from '../src/ui/lessons'
+import { draftLesson, eraLesson, fullLesson, mapLesson, resultLesson, spendLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
 import { Coach } from '../src/ui/Coach'
 import { FrontDoor } from '../src/ui/FrontDoor'
 import { LEVELS, ERAS } from '../src/App'
@@ -188,14 +187,17 @@ describe('the lessons are built off the state', () => {
     expect(NODE.fo_spin.ranks).toBe(3)
   })
 
-  it('the map lesson lights tonight’s ticket and names the blocks; the era lesson carries the tier’s own line', () => {
+  it('the map lesson lights tonight’s ticket and stops there; the era lesson carries the tier’s own line', () => {
     const prog = resetProgress('campaign')
     const l = mapLesson({ mode: 'campaign', level: 1, opp: LEVELS[0], eras: ERAS, bal: 0, lives: prog.lives })
     expect(l.steps[0].at).toBe('.node.now')
     expect(l.steps[0].title).toContain(LEVELS[0].team)
-    const blocks = l.steps.find((s) => s.at === '.um-eras')!.body.join(' ')
-    for (const e of ERAS) expect(blocks).toContain(e.name)
-    expect(blocks).toContain(`${ROUNDS}`)
+    // his ruling: no Stars step, no Four blocks step, and Staff waits for the first win
+    expect(l.steps).toHaveLength(2)
+    expect(l.steps.some((s) => s.at === '.um-eras' || s.at === '.um-staff')).toBe(false)
+    expect(spendLesson(2).steps[0].at).toBe('.um-staff')
+    expect(spendLesson(2).steps[0].body.join(' ')).toContain('2 stars to spend')
+    expect(teamLesson(false).steps).toHaveLength(1)
     const era = eraLesson(1, ERAS)
     expect(era.id).toBe('era.1')
     expect(era.title).toContain(ERAS[1].name)
