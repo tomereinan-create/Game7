@@ -1,0 +1,462 @@
+{
+ "round": 221,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "efficient 3-and-D wings fall between two floors",
+ "title": "the glue floor stops excluding shooters — disjointness is a property of the PAYMENT, not of the bar. Two floors written in recal_118's form and applied in sequence on the same standard path cannot stack, so the 3pt 68 -> 40 exclusion was asserting a second time what the arithmetic already guaranteed, and it cost the wing who both spaces AND converts everything else his only possession channel. Josh Hart '26 (3pt 69) printed ELEVEN OFF points under his own worse-shooting '25 (3pt 37) on the same job",
+ "subject": "Alex Caruso '24",
+ "scale": "off",
+ "target": 50,
+ "tol": 3,
+ "before": 44,
+ "after": 49,
+ "pipeline_version": 222,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gg = \\(min\\(1\\.0, max\\(0\\.0, \\(GL_V_HI - a\\['volume'\\]\\) / \\(GL_V_HI - GL_V_LO\\)\\)\\)\\s*\\n?\\s*\\* _load\\)",
+   "label": "THE WHOLE ROUND: the glue floor's gate is now recal_112's low-usage ramp x recal_96's load share, and nothing else",
+   "note": "the factor `min(1, max(0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO)))` that stood between them is DELETED — one knob, no new constant, one constant fewer"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "if not is_big\\(p\\) and a\\['volume'\\] < GL_V_HI:",
+   "label": "the OTHER two gates of the glue floor, both UNTOUCHED and both load-bearing",
+   "note": "`not is_big` is recal_155/182's perimeter/big split — deleting it breaks TEN anchors (see COST); recal_112's volume 55 line is untouched, so ZERO cards with volume >= 55 move"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_K = 1\\.070",
+   "label": "recal_155's size, NOT re-solved — the round opens the gate, it does not raise the floor",
+   "note": "1.070 is recal_155's measured ceiling (1.08 breaks recal_119's BOS '24 OFF rank <= 10); Josh Hart '25 sits ON this floor and prints OFF 64 / OVR 63 before and after"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "GL_U_FULL = 15\\.0",
+   "label": "recal_169's used-possession reference, untouched — and it is what makes the deletion safe",
+   "note": "the class's own upper quartile of usg x load. It is the reason Korver '15's floor is 62.05 today and not recal_155's 64.7: the gate's one named protection had already been superseded by this ramp"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_gfl = GL_K \\* \\(0\\.5 \\* _gpos \\+ 0\\.5 \\* a\\['efficiency'\\] \\* _gu\\)",
+   "label": "the floor itself, byte-identical: half the possession work, half the conversion it was earned on",
+   "note": "(drb + orb + playvol)/3 against efficiency x the used-possession ramp — recal_155's own vector and recal_169's own qualifier"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_fl = 0\\.38\\*a\\['3pt'\\] \\+ 0\\.20\\*a\\['efficiency'\\] \\+ 0\\.08\\*a\\['ballsec'\\] \\+ 0\\.06\\*a\\['discipline'\\]",
+   "label": "recal_64/118's off-ball floor — the OTHER side of the seam, deliberately UNTOUCHED",
+   "note": "0.72 of weight with no possession bar in it. Any lift to this vector is paid ~1:1 to Snell '18, Bowen '06 and Korver '15, whose floors are BINDING with 1.75 / 1.12 / 2.06 of o_score of room: that is why the fix is on the other floor"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "min\\(1\\.0, max\\(0\\.0, \\(EF_3P_HI - a\\['3pt'\\]\\) / \\(EF_3P_HI - EF_3P_LO\\)\\)\\)\\s*\\n?\\s*\\* min\\(1\\.0, max\\(0\\.0, \\(a\\['orb'\\] - GB_O_LO\\) / \\(GB_O_HI - GB_O_LO\\)\\)\\)",
+   "label": "recal_182's second-chance floor KEEPS its arc exclusion, and that is a class statement rather than an exemption",
+   "note": "its conversion half is GB_CONV, the CLASS's median efficiency, not the man's own rate — there is no rate of his to pay twice. EF_3P_LO/HI therefore stay live here and in recal_112's interior term"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_90's band anchors, NOT re-derived (the dispatch forbade it, and nothing here needs it)",
+   "note": "the highest card this floor prints anywhere is OFF 71, 22 below the knee; the raw OFF top is 99 before and after and no card above the knee moves by a thousandth"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Alex Caruso '24",
+   "scale": "ovr",
+   "op": "~",
+   "value": 70,
+   "tol": 1,
+   "label": "THE SUBJECT'S OVR FOLLOWS HIS OFF through recal_83's defence-led branch: 0.5 x 49 + 0.5 x 92, 68 -> 70. Standard path 47.766, off-ball floor 43.080 (4.7 BELOW his own weighted line, not binding), glue floor 52.544 at a gate of 1.0000 where it was 0.0000"
+  },
+  {
+   "card": "Royce O'Neale '21",
+   "scale": "off",
+   "op": "~",
+   "value": 48,
+   "tol": 3,
+   "label": "SUBJECT 2, his ruled 48 +-3: 38 -> 45, on the band's lower edge. Off-ball floor 40.120 binding by ONE point; glue floor 48.157 at a gate that was 0.1071 (3pt 65) and is now 1.0000. Raw 44.786 against a band edge of 44.500 — 0.29 of raw of slack, named for the next round"
+  },
+  {
+   "card": "Herbert Jones '24",
+   "scale": "off",
+   "op": ">=",
+   "value": 44,
+   "label": "SUBJECT 3, NOT REACHED and PROVABLY UNREACHABLE IN THIS SEAM: he is a big by is_big (lifetime PF, never a guard), so the glue floor's arithmetic ceiling for him is 1.070 x (16.167 + 0.5 x 61 x 0.96) = 48.628 against a standard path of 47.354 — OFF 45 with EVERY gate deleted, two short of his 50 +-3. Recorded as >= so the round that does reach him (recal_99's evidence gate: at _g 1.0 his floor is 52.25 and he prints 48) does not trip this receipt"
+  },
+  {
+   "card": "Josh McRoberts '14",
+   "scale": "off",
+   "op": ">=",
+   "value": 42,
+   "label": "SUBJECT 4 (the 'land him too if the same term reaches him' card), NOT REACHED: also a big. His glue floor WOULD be 1.070 x (26.833 + 0.5 x 52 x 0.90) = 53.75 against a standard path of 44.834 — OFF 50, inside his 48 +-3 — but only by deleting `not is_big`, which breaks ten anchors"
+  },
+  {
+   "card": "Josh Hart '26",
+   "scale": "off",
+   "op": "~",
+   "value": 68,
+   "tol": 1,
+   "label": "THE TWO-CARD PROOF, the half that was wrong: 3pt 69, 16.3% usage, TS .612, drb/orb/playvol 82/64/61. Glue floor 73.295, gate was EXACTLY ZERO. 53 -> 68, the largest move on the board"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "recal_155's OWN subject and the other half of the proof: 3pt 37, so his gate was already 1.0000 and he moves by EXACTLY zero. OVR 63, OFF 64"
+  },
+  {
+   "card": "Tony Snell '18",
+   "scale": "off",
+   "op": "~",
+   "value": 50,
+   "tol": 1,
+   "label": "recal_64's pin with 1.75 of o_score of room, and the class statement: his possession average is 15.33 against Caruso's 39.33, so this floor computes 35.45 against a standard path of 53.620 and cannot reach him. UNMOVED"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "~",
+   "value": 45,
+   "tol": 1,
+   "label": "recal_64's other pin, 1.12 of room: possession average 18.00, glue floor 28.17 against 48.880. UNMOVED"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "THE CARD THE GATE WAS SAID TO PROTECT. recal_155: 'load-bearing rather than decorative — Korver would take +2 without it.' Today, after recal_169: floor 62.053 against a standard path of 61.920, +0.13 of o_score, +0.12 of raw. 58 BEFORE AND AFTER"
+  },
+  {
+   "card": "Steve Kerr '96",
+   "scale": "off",
+   "op": "~",
+   "value": 62,
+   "tol": 1,
+   "label": "possession average 22.67, glue floor 52.08 against a standard path of 66.126. UNMOVED at 61"
+  },
+  {
+   "card": "Alonzo Gee '16",
+   "scale": "off",
+   "op": "~",
+   "value": 36,
+   "tol": 3,
+   "label": "recal_169's subject: 3pt 13, so his gate was ALREADY 1.0000 and the deletion is the identity for him. EXACTLY unmoved — as is every one of the 0 cards with 3pt <= 40 that moved"
+  },
+  {
+   "card": "Javonte Green '22",
+   "scale": "off",
+   "op": "~",
+   "value": 48,
+   "tol": 3,
+   "label": "recal_169's other subject: 3pt 39, gate already 1.0000 (the ramp clips). UNMOVED at 50"
+  },
+  {
+   "card": "Rui Hachimura '26",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 4,
+   "label": "recal_91's subject, a big: outside this floor by construction. UNMOVED at 64, and still above Snell"
+  },
+  {
+   "card": "OG Anunoby '21",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 2,
+   "label": "recal_91's other subject, 63 with ZERO room down and 4 up — a big. UNMOVED"
+  },
+  {
+   "card": "Dorian Finney-Smith '20",
+   "scale": "off",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_118's wall, a big. UNMOVED at 52"
+  },
+  {
+   "card": "Maxi Kleber '20",
+   "scale": "off",
+   "op": "~",
+   "value": 53,
+   "tol": 3,
+   "label": "recal_188's subject, a big whose off-ball floor is BINDING (62.950 over a standard path of 46.063). UNMOVED"
+  },
+  {
+   "card": "Mo Bamba '22",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "recal_188's second subject, a big. UNMOVED"
+  },
+  {
+   "card": "Ryan Anderson '18",
+   "scale": "off",
+   "op": "~",
+   "value": 65,
+   "tol": 3,
+   "label": "recal_188's third subject, 65 with zero room up. UNMOVED"
+  },
+  {
+   "card": "Sam Hauser '23",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 3,
+   "label": "recal_170's frontier card, a Celtic and a big. UNMOVED at 58, and recal_119's BOS '24 OFF rank <= 10 reads 10 of 26 before and after"
+  },
+  {
+   "card": "Steve Novak '13",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 3,
+   "label": "recal_99's subject. UNMOVED at 59"
+  },
+  {
+   "card": "Anthony Tolliver '14",
+   "scale": "off",
+   "op": "~",
+   "value": 56,
+   "tol": 3,
+   "label": "recal_99's other subject. UNMOVED at 54"
+  },
+  {
+   "card": "Donyell Marshall '07",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "recal_170's subject. UNMOVED at 49"
+  },
+  {
+   "card": "Matt Bullard '92",
+   "scale": "off",
+   "op": "~",
+   "value": 52,
+   "tol": 3,
+   "label": "recal_170's other subject. UNMOVED at 50"
+  },
+  {
+   "card": "Cedric Maxwell '80",
+   "scale": "off",
+   "op": "~",
+   "value": 67,
+   "tol": 4,
+   "label": "recal_112's pin, and one of the ten that the `not is_big` variant breaks (67 -> 76 there). UNMOVED at 66 here"
+  },
+  {
+   "card": "Clint Capela '17",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "recal_51's pin with zero room, and another of the ten (58 -> 63 there). UNMOVED at 58 here"
+  },
+  {
+   "card": "Reggie Miller '97",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 1,
+   "label": "recal_89's pin and recal_204's own wall — volume 85 is outside recal_112's low-usage line, which this round does not touch. UNMOVED"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "a star OFF pin, volume far outside the gate. UNMOVED"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "the doctrine card. UNMOVED — and no card above the 93 knee moves at all"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "recal_90's 99 +-0. UNMOVED"
+  },
+  {
+   "card": "Kawhi Leonard '12",
+   "scale": "ovr",
+   "op": "~",
+   "value": 75,
+   "tol": 1,
+   "label": "the largest STAR mover, and it is the archetype's rookie season: 15.0% usage, TS .551... on 37.6% from the arc with drb 58 / orb 59. OFF 53 -> 60, OVR 72 -> 75. His '13 follows, 76 -> 78"
+  },
+  {
+   "card": "Mikal Bridges '21",
+   "scale": "off",
+   "op": "~",
+   "value": 60,
+   "tol": 1,
+   "label": "the modern rotation card the round is named for: 3pt 72, efficiency 93, 14.5% usage. 52 -> 60, OVR 66 -> 70"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Josh Hart '26",
+   "below": "Josh Hart '25",
+   "label": "THE ROUND'S OWN SENTENCE READ AS AN ORDER: the same man on the same job, and the season that shoots BETTER (3pt 69 against 37, TS .612 against .611) must not print under the one that shoots worse. 68 over 64, where the base had 53 under 64 — eleven points the wrong way round on one bar"
+  },
+  {
+   "scale": "off",
+   "above": "Kyle Korver '15",
+   "below": "Alex Caruso '24",
+   "label": "the pinned standstill shooter still leads the subject: 58 over 49. Korver converts at 94 to Caruso's 64; Caruso's claim is the 39.33 of possession work to Korver's 27.00, and it is worth five points, not fifteen"
+  },
+  {
+   "scale": "off",
+   "above": "Rui Hachimura '26",
+   "below": "Tony Snell '18",
+   "label": "the standing pair pin (Hachimura >= Snell), both UNMOVED: 64 over 50"
+  },
+  {
+   "scale": "off",
+   "above": "Alex Caruso '24",
+   "below": "Alonzo Gee '16",
+   "label": "the ruling's own comparison: the efficient 3-and-D wing over the non-shooter recal_169 cut to 36. 49 over 36, where the base had 44 over 36 — the gap widens, which is the ruling"
+  },
+  {
+   "scale": "off",
+   "above": "Josh Hart '25",
+   "below": "Royce O'Neale '21",
+   "label": "inside the same floor: the 37.6-minute glue starter who uses 15.2% over the 31.6-minute one who uses 9.7%. 64 over 45"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Clint Capela '17",
+   "label": "recal_47's standing order, untouched: 99 over 58"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 142,
+  "max_abs": 15,
+  "top": [
+   [
+    "Mike Miller '09",
+    56,
+    71
+   ],
+   [
+    "Josh Hart '26",
+    53,
+    68
+   ],
+   [
+    "Mike Miller '10",
+    56,
+    69
+   ],
+   [
+    "Nicolas Batum '14",
+    54,
+    63
+   ],
+   [
+    "Landry Fields '11",
+    50,
+    59
+   ],
+   [
+    "Hersey Hawkins '98",
+    54,
+    62
+   ],
+   [
+    "Mikal Bridges '21",
+    52,
+    60
+   ],
+   [
+    "Kawhi Leonard '12",
+    53,
+    60
+   ],
+   [
+    "Boris Diaw '14",
+    51,
+    58
+   ],
+   [
+    "Vince Williams Jr. '24",
+    48,
+    55
+   ],
+   [
+    "Mickaël Piétrus '07",
+    48,
+    55
+   ],
+   [
+    "Royce O'Neale '21",
+    38,
+    45
+   ],
+   [
+    "Bryon Russell '97",
+    53,
+    59
+   ],
+   [
+    "Alex Caruso '24",
+    44,
+    49
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kevin Durant '14",
+   "Larry Bird '87",
+   "LeBron James '12",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24"
+  ]
+ },
+ "cost": [
+  "DISPATCHED AS ROUND 216, RENUMBERED TO 221 BY THE LEDGER MID-ROUND. data/rounds/216.json and 217.json were already on main when this round started (players-to-team's Thunder '16 and Warriors '16, integrated at 02f39a1), and writing 216 would have shadowed a landed receipt without git flagging it — main has not touched that file since the branch point, so the merge would have taken this round's version silently. PIPELINE_VERSION is stamped 221 in both python files and in src/data/pipeline.json; the integrator's stamp is the highest round in the batch and is monotonic, so a lower-numbered sibling does not lower it.",
+  "TWO OF THE FOUR SUBJECTS ARE BIGS BY is_big AND ARE OUTSIDE THIS SEAM. Herbert Jones '24 (50 +-3, reads 44) and Josh McRoberts '14 (48 +-3, reads 42) are both lifetime-PF cards, so the off-ball floor routes them onto recal_91's STRETCH-BIG branch and the glue floor's `not is_big` excludes them. Jones is PROVABLY unreachable here whatever the gates: possession average 32.333 at 14.4% usage gives an arithmetic ceiling of 48.628 against a standard path of 47.354 — OFF 45. What reaches him is recal_99's EVIDENCE GATE on the stretch-big branch, `max(volume 8 -> 22, orb 45 -> 65)`, which pays him 0.1429 of recal_91's three added terms: at 1.0 his floor is 52.25 against a standard path of 47.354 and he prints OFF 48, inside his band. That gate is the sibling round's term (the dispatch put 'the stretch-big floor's volume gate' in another lane), so the subject is handed over rather than forced. McRoberts needs more than that gate: at _g 1.0 he reads OFF 44.",
+  "OPENING THE GLUE FLOOR TO BIGS IS MEASURED AND REFUSED — it is the one change that would reach McRoberts (glue floor 53.75 against a standard path of 44.834, OFF 50) and it BREAKS TEN ANCHORS: Rudy Gobert '16 off 48 -> 73 (+25), Nic Claxton '24 56 -> 70 (+14), Richaun Holmes '21 62 -> 73 (+11), Cedric Maxwell '80 67 -> 76 (+9), Deandre Ayton '26 58 -> 67 (+9), Clint Capela '17 58 -> 63 (+5), Clint Capela '18 60 -> 65 (+5), Nenê '11 65 -> 69 (+4), Dennis Rodman '96 OVR 63 -> 68 (+5) and recal_119's BOS '24 OFF rank <= 10 at 11 of 26. `not is_big` stands, and recal_182's second-chance floor is the big-side channel it exists for.",
+  "THE OTHER FLOOR OF THE SEAM WAS MEASURED AND NOT USED, and the reason is a geometry a later round should know: recal_64/118's off-ball floor is BINDING on its own pins, so anything added to its four-term vector is paid to them at ~1:1. Tony Snell '18 has 1.75 of o_score of room, Bruce Bowen '06 1.12 and Kyle Korver '15 2.06, while Alex Caruso '24's floor sits 4.69 BELOW his own standard path and needs +6.93 before it binds at all and +10.68 to print 50. No uniform lift of that vector exists; any lift proportional to the possession work fails on Korver (27.00 against Caruso's 39.33, a ratio of 1.17 against a required ratio of 8), and any lift proportional to efficiency fails on Korver hardest of all (94). The glue floor is the safe side of the seam because it is an AVERAGE that stands in for the whole offence rather than an addition: a pure shooter's own low possession work drags his floor below his standard path and he does not move.",
+  "O'NEALE '21 LANDS ON THE LOWER EDGE OF HIS BAND, with 0.29 of raw (0.31 of o_score) between him and 44. The round has no size knob to widen it — the fix is a deletion — and GL_K is not available (1.070 is recal_155's measured ceiling). A later round that takes anything off a low-usage wing's standard path takes him out of his own anchor.",
+  "THE GLUE FLOOR NOW PAYS 51 CARDS WITH 3pt >= 68 that it paid nothing before, and 91 more that it paid pro rata. Every one of the 142 movers is a low-usage perimeter card: ZERO bigs move, ZERO cards with volume >= 55 move, ZERO cards with 3pt <= 40 move (their gate was already 1.0000), and ZERO cards above the 93 knee move. OFF_TOP was NOT re-derived and nothing asked it to be."
+ ],
+ "notes": [
+  "THE SEAM, in one sentence. A wing who spaces is sent to recal_64/118's off-ball floor, whose four terms are `0.38 x 3pt + 0.20 x efficiency + 0.08 x ballsec + 0.06 x discipline` — 0.72 of weight, and not one possession bar in it. A wing who does not space is sent to recal_155/169's glue floor, where the possessions he ends and starts are priced. THE MAN WHO DOES BOTH GOT NEITHER'S CREDIT FOR THE SECOND THING: the arc floor is too thin to bind on him, and the possession floor switched itself off because his arc bar was high.",
+  "THE THREE SUBJECTS, DECOMPOSED. Alex Caruso '24 (28.7 mpg, 10.1 points on 40.8% from the arc, TS .607, 3.8 assists, BPM +2.5): standard path 47.766, off-ball floor 43.080 — 4.7 BELOW his own weighted line and not binding — glue gate EXACTLY ZERO at 3pt 75. OFF 44. Royce O'Neale '21 (31.6-mpg starter, 7.0 points on 38.5%, TS .599, 6.8 rebounds, VORP rank 56 of 206): off-ball floor 40.120 binding by ONE point, glue floor 48.157 at a gate of 0.1071. OFF 38. Herbert Jones '24 (30.5 mpg, 11.0 on 41.8%, TS .593, TOV% 12.4): a big, stretch-big floor 41.047 against a standard path of 47.354, not binding. OFF 44.",
+  "THE TWO-CARD PROOF, and it is one man on one job. JOSH HART '25 — recal_155's own subject, 3pt 37, 15.2% usage, TS .611, drb/orb/playvol 83/69/58 — prints OFF 64 off a glue floor of 68.48. JOSH HART '26 — 3pt 69, 16.3% usage, TS .612, 82/64/61, the SAME season and better from the arc — had this floor switched off by that one bar and printed OFF 53. Eleven printed points BELOW his own worse-shooting year, and the only thing that changed is the thing he got better at. After: 68 and 64, ordered the right way.",
+  "WHY THE GATE CAN GO, and it is an argument about the FORM. recal_155 took recal_112's sentence — 'efficiency earned at the rim and the line is paid here and efficiency earned from the arc is paid there' — and made it a gate on the BAR. But both floors are written in recal_118's form `std + f x (floor - std)` and they are applied IN SEQUENCE ON THE SAME std: by the time the glue floor is reached, whatever the off-ball floor paid is ALREADY INSIDE std, so the glue floor can only ever pay the EXCESS over it. Two floors in that form cannot stack — a man gets the better stand-in for his offence, never the sum of two. The channels were already disjoint IN THE ARITHMETIC; the gate asserted it a second time, on the bar, and the second assertion is the one that costs a card its floor.",
+  "THE GATE'S OWN JUSTIFICATION WAS SUPERSEDED BY recal_169, measured rather than argued. recal_155 called it 'load-bearing rather than decorative: Kyle Korver '15 (pinned off 58 +-1) has a glue floor of 64.7 against a standard path of 62.4 and would take +2 without it.' That was true before recal_169 put the conversion half behind the possessions actually used. TODAY his floor computes 1.070 x (0.5 x 27.00 + 0.5 x 94 x 0.9467) = 62.053 against a standard path of 61.920 — a correction of 0.13 of o_score, 0.12 of raw — and he prints 58 BEFORE AND AFTER. The one card the gate was said to protect no longer needs it.",
+  "WHO IS UNTOUCHED, BY CONSTRUCTION RATHER THAN BY LUCK. The pins the off-ball floor was built on have too little possession work for this floor to reach: (drb + orb + playvol)/3 is Snell '18 15.33, Bowen '06 18.00, Kerr '96 22.67 and Korver '15 27.00, against Caruso's 39.33, O'Neale's 47.33 and Hart '25's 70.00. Their glue floors are 35.45, 28.17, 52.08 and 62.05 against standard paths of 53.620, 48.880, 66.126 and 61.920. Snell 50, Bowen 45, Kerr 61, Gee 36, Green 50 and Hart '25 64/OVR 63 are EXACTLY unchanged, and Korver moves by 0.12 of raw.",
+  "MEASURED on the whole pool: 142 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +3.10, max +15; OVR follows on 113, mean +2.01, max +10; DEF and every attribute move on ZERO, and build_ratings.py's provenance.json is byte-identical. The top 50 by OFF and the top 50 by OVR are identical NAME FOR NAME AND IN ORDER — no entrant, no leaver, and scout reports 0 rank flips touching the top 50. All 213 anchors hold, 0 failing, mean |error| 1.01, unchanged from the base. The tactics harness passes 9 of 9 and 520 tests pass.",
+  "THE MOVERS ARE ONE ARCHETYPE AND READ LIKE IT: Mike Miller '09/'10, Josh Hart '26, Nicolas Batum '13/'14/'19, Mikal Bridges '20/'21, Kawhi Leonard '12/'13, Shane Battier '03/'05/'06, James Posey '00/'07/'08/'09, Patrick Beverley '17/'19/'20, Hersey Hawkins '98/'99/'00, Boris Diaw '09/'13/'14, Jared Dudley '11/'16, Bryon Russell '97/'98/'99, Landry Fields '11, Trevor Ariza '13, Doug Christie '03, Brent Barry '00, Christian Braun '25, Josh Green '23, Caleb Martin '22, Donte DiVincenzo '21, P.J. Tucker '14, Justin Champagnie '25, Vince Williams Jr. '24, Mickaël Piétrus '07, Ime Udoka '07, Rick Fox '01, Mario Elie '99, Keith Askins '96 — the 3-and-D wings who shoot AND rebound AND move it, and who until now were paid for exactly one of the three."
+ ]
+}

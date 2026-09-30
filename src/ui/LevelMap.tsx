@@ -39,14 +39,37 @@ const W = 375
  * — the turns are what make it a snake rather than a table (his ruling, "even more snake, less
  * rowy").
  */
-const LANE = 208
+/* WAY BIGGER, AND THE LANE HAS TO PAY FOR IT — his ruling, 2026-09-30: "Make the campaign
+   tickets way bigger." A ticket cannot grow past the room between two of them, so the three
+   numbers that decide that room grow with it: the lane a level occupies (208 -> 280), the least
+   pitch a row will accept (162 -> 230) and the clearance at a turn, which is the one place a row
+   stands directly above another (212 -> 296). Fewer levels to a row and a longer trail is the
+   price, and it is the price of the ruling: this map is read by scrolling either way. */
+
 /**
  * Vertical clearance at the wall where two rows meet — the one place a row and the row above it
  * stand at the same x, and so the one distance that has to clear a ticket. The tallest ticket on
  * the map is the banner: a rod, a pennant, the notch cut out of its foot and three stars under it,
  * ~161px on a desk now that the hall is drawn at the same size as the other three blocks.
  */
-const TURN = 212
+/**
+ * THE GEOMETRY IS THE TICKET — his ruling, 2026-09-30: "Make the campaign tickets way bigger."
+ *
+ * A ticket cannot grow past the room between two of them, so the three numbers that decide that
+ * room are written as multiples of the ticket itself rather than as constants beside it: the lane
+ * a level occupies, the least pitch a row will accept, and the clearance at a turn, which is the
+ * one place a row stands directly above another. `TICKET` is the stylesheet's own
+ * `clamp(116px, 5.8vw, 218px)` — the two have to agree, and this is the side that can do
+ * arithmetic.
+ *
+ * WHY MULTIPLES AND NOT A WIDTH THRESHOLD. The ticket is the phone's 116 until about 2,000px of
+ * window, so a trail keyed to the WINDOW would lengthen a map whose tickets had not grown: at
+ * 1,900 it cost sixty per cent more scroll for no bigger ticket. Keyed to the ticket, every width
+ * where the ticket has not moved has a trail that has not moved either, to the pixel.
+ */
+const TICKET = (colW: number) => Math.min(218, Math.max(116, (colW || W) * 0.058))
+const laneOf = (colW: number) => TICKET(colW) * 1.8
+const turnOf = (colW: number) => TICKET(colW) * 1.83
 /**
  * How steeply a row climbs as it runs, as a SLOPE rather than a fixed rise. Stated as an angle
  * because that is what his ruling is about: "a snake going slightly up" is something the eye reads
@@ -114,13 +137,13 @@ const sideOf = (colW: number) => Math.min(SIDEMAX, Math.max(20, colW * 0.09))
  */
 const BLOCK_DIVISORS = [15, 10, 6, 5, 3, 2] as const
 /** Narrowest lane a ticket is legible in: the widest ticket on the map is ~152px on a desk. */
-const MIN_PITCH = 162
+const minPitchOf = (colW: number) => TICKET(colW) * 1.4
 export const perRow = (colW: number) => {
   const w = colW || W
   const usable = Math.max(0, w - sideOf(w) * 2)
-  const natural = Math.max(2, Math.floor(usable / LANE) + 1)
+  const natural = Math.max(2, Math.floor(usable / laneOf(w)) + 1)
   // widest divisor of thirty that both fits the width and is not more than the lanes would allow
-  const fits = BLOCK_DIVISORS.find((c) => usable / (c - 1) >= MIN_PITCH && c <= natural + 1)
+  const fits = BLOCK_DIVISORS.find((c) => usable / (c - 1) >= minPitchOf(w) && c <= natural + 1)
   return fits ?? 2
 }
 export const rowsOf = (colW: number) => Math.ceil(ROUNDS / perRow(colW))
@@ -133,7 +156,7 @@ function lanes(colW: number) {
   // Never spread much wider than a lane. Without the cap a phone, which fits exactly two to a row,
   // would push one ticket to each wall with 150px of empty floor between them; a desk is already
   // under the cap (eight to a row is ~196px of pitch), so this only bites where it has to.
-  const pitch = cols > 1 ? Math.min(LANE * 1.15, usable / (cols - 1)) : 0
+  const pitch = cols > 1 ? Math.min(laneOf(w) * 1.15, usable / (cols - 1)) : 0
   return { cols, pitch, x0: (w - pitch * (cols - 1)) / 2 }
 }
 
@@ -145,7 +168,7 @@ function lanes(colW: number) {
 function climbOf(colW: number) {
   const { cols, pitch } = lanes(colW)
   const rise = TILT * pitch * (cols - 1)
-  return { rise, bow: BOW * rise, step: TURN + rise }
+  return { rise, bow: BOW * rise, step: turnOf(colW) + rise }
 }
 
 /**
@@ -210,7 +233,7 @@ export const yOf =
  * floor and where the era rule is drawn. Halfway between the two rows AT THE WALL THEY TURN ON,
  * which is where they come closest: a horizontal line drawn any lower would cross a ticket.
  */
-export const seamOf = (colW: number) => (level: number) => yRowOf(colW)(rowOf(colW)(level - 1)) + TURN / 2
+export const seamOf = (colW: number) => (level: number) => yRowOf(colW)(rowOf(colW)(level - 1)) + turnOf(colW) / 2
 
 /** Smooth trail through every node — a Catmull-Rom spline as cubic Béziers. */
 function trail(xAt: (i: number) => number, yAt: (i: number) => number): string {
@@ -362,6 +385,27 @@ const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toF
  * switch: 1b ARENA NIGHTS below the seam, 1c HARDWOOD PRIME above it, both on screen together
  * where they meet. The sticky header wears the skin of the level you are on.
  */
+/**
+ * THE SUBSTITUTION — his ruling, 2026-09-29: "For the sub - 🔁 I want something like this but
+ * collored." Two arrows running a loop, and the colour is the point: the man coming ON is drawn in
+ * the accent this game paints YOUR side in, the man going OFF in the one it paints the other side
+ * in, so the icon says which way round a change goes without a word on it.
+ */
+function SubIcon() {
+  return (
+    <svg className="subicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
+      <g fill="none" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+        {/* on: the top track, running right */}
+        <path d="M4 8.6h13.2" stroke="var(--you)" />
+        <path d="M14.4 5.3 17.9 8.6 14.4 11.9" stroke="var(--you)" />
+        {/* off: the bottom track, running back */}
+        <path d="M20 15.4H6.8" stroke="var(--them)" />
+        <path d="M9.6 12.1 6.1 15.4 9.6 18.7" stroke="var(--them)" />
+      </g>
+    </svg>
+  )
+}
+
 export function LevelMap({
   title,
   progress,
@@ -391,7 +435,7 @@ export function LevelMap({
   /** Death match only: the team screen — the five, their durability, and the round's spin. */
   onMyTeam?: () => void
   /** Death match only: a nudge pinned beside the next opponent — a change waiting, or a man worn out. */
-  teamNote?: string | null
+  teamNote?: { kind: 'sub' | 'worn'; text: string } | null
   /** Which branches this mode actually sells — the staff notice must not point at a hidden one. */
   salary?: boolean
   death?: boolean
@@ -619,13 +663,31 @@ export function LevelMap({
               <i> / {ROUNDS * 3}</i>
               <i className="a">→</i>
             </button>
+            {/* THE LIVES, BESIDE THE STARS — his ruling, 2026-09-30: "In death match, add Heart next
+                to the stars representing how many lifes you have." A heart and the count; the
+                sentence stays as its name. */}
+            {death ? (
+              <span className="map-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
+                <i className="heart">♥</i> {progress.lives}
+              </span>
+            ) : null}
+            {/* THE CHANGE, BESIDE THE STARS — his ruling, 2026-09-30: "The sub icon should be next to
+                the star not on the ticket." It used to stand in the stack over tonight's ticket. */}
+            {teamNote?.kind === 'sub' && onMyTeam ? (
+              <button className="map-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                <SubIcon />
+              </button>
+            ) : null}
             {spendable ? (
               <button className="map-link staff" onClick={onStaff}>
                 {/* The star, the separator and the arrow are spaced by margin, not by mono spaces:
                     at this size a space costs a full 7.3px character, which is what pushed the line
                     onto two at 375px. His wording is untouched. */}
+                {/* THE STAR SAYS IT — his ruling, 2026-09-29: "Instead of the stars to spend, have
+                    a star icon." The glyph was already there and the three words after it were
+                    saying the same thing again in mono. */}
                 <i className="g">★</i>
-                {bal} to spend<i className="d">·</i>Staff<i className="a">→</i>
+                {bal}<i className="d">·</i>Staff<i className="a">→</i>
               </button>
             ) : null}
             {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
@@ -695,6 +757,17 @@ export function LevelMap({
               <button className="um-staff" onClick={onStaff}>
                 ★ {bal} to spend · Staff →
               </button>
+              {/* the heart and the change stand beside the star here too — see the scout header */}
+              {death ? (
+                <span className="um-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
+                  <i className="heart">♥</i> {progress.lives}
+                </span>
+              ) : null}
+              {teamNote?.kind === 'sub' && onMyTeam ? (
+                <button className="um-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  <SubIcon />
+                </button>
+              ) : null}
               {/**
                * THE RENAME DOOR CARRIES THE NAME (his report: "RENAME renders as an empty text
                * input with a placeholder but is actually a button; the current team name appears
@@ -882,22 +955,50 @@ export function LevelMap({
            * is the death match's; this one belongs to every mode. When both are up they stack, on
            * the far side of the trail from the ticket, centred on it.
            */}
-          {cur && (spendable || (teamNote && onMyTeam)) ? (
+          {cur && (spendable || (teamNote?.kind === 'worn' && onMyTeam)) ? (
             <div
-              className={`node-notes ${xAt(cur - 1) > colW / 2 ? 'left' : 'right'}`}
-              /* pinned above tonight's ticket, and kept off both walls */
-              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - 126 }}
+              className="node-notes"
+              /**
+               * ABOVE THE TICKET, NOT ON IT — his ruling, 2026-09-30: "Make the sub and star icon
+               * above the ticket not on it."
+               *
+               * They were pinned 126px over the ticket's CENTRE and centred on that point, which
+               * cleared a 94px ticket and does not clear a 121px one: the tickets grew a third
+               * this morning and the notes ended up lying across them. The anchor is the stack's
+               * own FOOT now (`translate(-50%, -100%)`), so whatever is in it — one icon, two, or
+               * the worn-out sentence — its bottom edge sits 20px clear of the top of the tallest
+               * ticket the map draws, and adding a third note grows it upward, away from the
+               * ticket, rather than down onto it.
+               *
+               * AND THE CLEARANCE IS THE TICKET'S OWN, not a number beside it — his ruling of
+               * 2026-09-30 is the second time this has had to be said, because the first fix used
+               * a fixed 100px and the tickets then doubled underneath it. `TICKET` is the same
+               * expression the stylesheet sizes them with, so the gap is 22px above the top of
+               * tonight's ticket at every width, whatever that ticket is.
+               */
+              style={{ left: Math.min(Math.max(xAt(cur - 1), 180), Math.max(180, colW - 180)), top: yAt(cur - 1) - (TICKET(colW) * 0.52 + 22) }}
             >
               {spendable ? (
-                <button className={`node-note ${skin}`} onClick={onStaff}>
-                  {/* spaced by margin, not by mono spaces — the same reason the header notice is */}
-                  <i className="g">★</i>
-                  {bal} {bal === 1 ? 'star' : 'stars'} to spend<i className="d">·</i>Staff<i className="a">→</i>
+                /* A STAR, AND NOTHING ELSE — his ruling, 2026-09-29: "For the stars, I want big
+                   star icon, without 3 or to spend." The balance is already on the counter in the
+                   header; this one is not a figure, it is a KNOCK: there is something to place.
+                   The sentence stays as the button's name, for a screen reader and a hover. */
+                <button
+                  className={`node-note icon ${skin}`}
+                  onClick={onStaff}
+                  aria-label={`${bal} ${bal === 1 ? 'star' : 'stars'} to spend — the staff tree`}
+                  title={`${bal} ${bal === 1 ? 'star' : 'stars'} to spend — Staff`}
+                >
+                  <i className="bigstar" aria-hidden>★</i>
                 </button>
               ) : null}
-              {teamNote && onMyTeam ? (
-                <button className={`node-note ${skin}`} onClick={onMyTeam}>
-                  {teamNote} →
+              {teamNote?.kind === 'worn' && onMyTeam ? (
+                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  {/* A man WORN OUT gets his sentence here: that one is not an offer, it is a thing
+                      gone wrong, and it names who. THE CHANGE GLYPH LEFT THIS STACK — his ruling,
+                      2026-09-30: "The sub icon should be next to the star not on the ticket." It
+                      stands in the header beside the star now, in both modes. */}
+                  {teamNote.text}<i className="a">→</i>
                 </button>
               ) : null}
             </div>

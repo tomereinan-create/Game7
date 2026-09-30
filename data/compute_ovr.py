@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 228
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -91,6 +91,69 @@ LOAD_FOOT, LOAD_FULL = 12.0, 24.0
 # 24-minute bench boundary; 33.9 is that quartile, measured on the 193 cards recal_107 and recal_112
 # pay. The long comment sits at the two terms themselves, inside o_score.
 SECOND_FULL = 33.9
+# recal_223 (HIS RULINGS, verbatim: "recal_96's 24-minute full-load line pays the volume x load term
+# WHOLE to 27-29-mpg sixth men, so a bench scorer is priced as a 38-minute starter." — then, on the
+# frontier this round first measured and declined, "223 with Shaq '09 released, if we can make it
+# more aggressive — the better", and finally "I want the 24-33-minute scorers that follow to drop
+# more"). THE VOLUME BAR'S OWN SECOND-PAYMENT LINE.
+#
+# THE DEFECT. recal_96 gave `volume` and `playvol` a load share whose full-load line is 24 minutes,
+# and 24 asks ONE question: did this man play at all. Every rotation player clears it, so a 27.8-
+# minute sixth man using 29.7% of his team's possessions was paid the SAME price per unit of volume
+# as a 38-minute first option. Ricky Pierce '91 took volume 96 x load 1.0000 x 0.26 = 24.960 of an
+# o_score of 99.7047 — a quarter of his offence at a starter's rate on a bench workload — and printed
+# OFF 93, above his own '93 (28.8 mpg, 87) and Manu Ginobili '07 (27.5 mpg, BPM 7.8, 87). EVERY OTHER
+# full-load term in this file already carried a second line above 24: recal_163's SECOND_FULL 33.9,
+# recal_188's SB_SECOND_FULL 31.6, recal_130's 34.7 for creation. The bar that most literally CLAIMS
+# a workload had none, and recal_189 declined trying to move the 24 itself.
+#
+# THE LAW, and it is recal_130/163/188's method applied where it had not been:
+#     _vol = min(volume, VOL_LOW) * load_share  +  max(0, volume - VOL_LOW) * second_share
+#     second_share = clip((mpg - LOAD_FOOT) / (VOL_SECOND - LOAD_FOOT), 0, 1)
+# recal_96's own ramp off recal_96's own foot; monotone in minutes, continuous, no new KIND of
+# constant. THE SPLIT IS THE WHOLE IDEA: the first VOL_LOW of the bar keeps recal_96's 12->24 foot —
+# the question "did he play at all" — and only the part of the bar that CLAIMS A STARTER'S LOAD keeps
+# rising to the class's own line. `_load` itself is NOT touched, so playvol x load, recal_155's glue
+# floor, recal_91's glass floor, the stretch-big floor and recal_151's rim-anchor premium all stay
+# exactly on recal_96's line: John Stockton '01 (29.2 mpg, volume 31, playvol 99, off 86 +-2) is
+# BYTE-IDENTICAL. The dispatch asked whether the paid load is shared with playvol. It is not, on
+# purpose — this term reads a SCORING claim and playvol reads a creation one.
+#
+# VOL_LOW = 55 IS THIS FILE'S OWN LOW-USAGE LINE, not a new number: recal_64's off-ball gate,
+# recal_107's two-level gate, recal_112's efficient-interior pair, recal_131's paint-evidence ramp
+# (55 -> 80) and recal_196's load factor (Z2_LD_LO 55) all already cut there. Below it a card is not
+# claiming a load at all, so there is nothing to discount — which is why Clint Capela '17 (23.9 mpg,
+# volume 43, off 58 +-1 with ZERO room) is byte-identical, and Malik Beasley '23 (25.8 mpg, volume
+# 50) and Buddy Hield '25 (22.7, 52) with him. THAT CARD IS THE EXACT WALL recal_189 DECLINED ON: no
+# function of MINUTES could separate Capela from Jerry Stackhouse '07 at 24.1 mpg, and this law does
+# not try to — it separates them on the volume CLAIM, 43 against 80.
+#
+# VOL_SECOND = 36.3 IS MEASURED, NOT FITTED. The class is the one the SECOND payment pays: the cards
+# that have a surplus above VOL_LOW and whose load is already paid IN FULL at recal_96's line, i.e.
+# volume > 55 and mpg >= 24 — 3,425 of 10,000 cards — and their upper quartile of minutes is p25
+# 30.2, median 33.7, p75 36.3. (The wider class, every card at mpg >= 24, is 7,203 cards at
+# 27.7 / 31.4 / 34.8, and 34.8 was the setting this round landed on before his second amendment.)
+#
+# WHAT IT COST, and he paid it explicitly, twice. THREE pins are released and re-pinned at their new
+# readings in this same round: recal_51's Shaquille O'Neal '09 off 71 +-1 (30.0 mpg, volume 72, read
+# 70 on raw 69.8651 with 0.3651 of raw in hand — the pin that made this round a DECLINE the first
+# time) -> 69 +-1; recal_89's Jaylen Brown '26 off 83 +-1 -> 81 +-1; recal_121's Russell Westbrook
+# '15 off 85 +-2 -> 82 +-2, with recal_121's own '15 >= '17 order re-checked and HELD. With those
+# three released, 36.3 is clean: every remaining card, order and team anchor passes.
+#
+# AND 36.3 IS THE END OF THE ROAD, not an arbitrary stop. The next honest line up is the volume >= 80
+# class's own p75, 37.4, and it takes recal_190's Zion Williamson '21 (90 +-1) to 88. So the ladder
+# is: 33.9 -> subject 90, Shaq '09 only · 34.8 -> 90, Shaq '09 only · 35.3 -> 90, + Brown '26 ·
+# 35.4 -> 90, + Westbrook '15 · 36.3 -> 89, those three and nothing else · 37.4 -> 89, + Zion '21.
+#
+# MEASURED on the whole pool at 36.3: the subject 93 -> 89, 1,944 cards move on OFF, EVERY ONE OF
+# THEM DOWN, max -6; DEF and every attribute move on ZERO; NO CARD AT mpg >= 36.3 MOVES AT ALL, so
+# the first options this term was mispricing against are byte-identical to the byte. The movers are
+# exactly the class the ruling names, in every decade: Lou Williams '17 80 -> 77, Isaiah Thomas '15
+# 84 -> 80, Jordan Clarkson '18 69 -> 66, Sam Cassell '07 75 -> 72, Ben Gordon '05 76 -> 72, Dell
+# Curry '94 80 -> 76, Andrew Toney '82 84 -> 80, Corey Maggette '11 62 -> 57, Freeman Williams '81
+# 78 -> 72, Jerry Stackhouse '07 67 -> 64 (which is recal_189's declined ruling arriving on its own).
+VOL_LOW, VOL_SECOND = 55.0, 36.3
 # recal_99: the evidence recal_91's stretch-big terms are paid against - load, or glass.
 SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8.0, 22.0, 45.0, 65.0
 def load_share(p):
@@ -732,6 +795,92 @@ Z2_VEC_W = 0.05   # z[2]'s own weight in the vector above, named so the balance 
 # recal_131's own scoring-load line, PZ_V_LO / PZ_V_HI, restated at module scope because the paint
 # floor assigns those two names LOCALLY inside o_score, further down than this term is paid.
 Z2_LD_LO, Z2_LD_HI = 55.0, 80.0
+# ============ recal_220 — THE TRANSFER'S LOAD FACTOR READS THE PAID LOAD, NOT THE RATE ============
+# HIS RULING, verbatim: "recal_196's era transfer is paid at FULL load to part-time scorers — its
+# load factor reads the RAW volume bar over recal_131's 55->80 line, not recal_96's minutes share,
+# so a 20-minute man's transfer is whole while his own volume x load term is cut to 0.70."
+#
+# THE DEFECT IS A MISQUOTE OF THE LAW recal_196 ITSELF CITES. Its LOAD factor is documented, forty
+# lines above, as "recal_131's own scoring-load line, PZ_V_LO/PZ_V_HI (volume 55 -> 80). recal_130's
+# rule: a rate paid twice is scaled twice." But recal_131's floor reads that line on `_vol` — the
+# volume bar AFTER recal_96's minutes share (`_pz = ramp(_vol, PZ_V_LO, PZ_V_HI) x ...`, inside
+# o_score) — and recal_196 reads the same two numbers on the RAW bar `a['volume']`. Same line, two
+# different quantities, and the raw one is exactly what recal_96 was written to stop pricing:
+# "`volume` is a usage percentile ... per possession he was on the floor for, and o_score never
+# asked how much of a game the man was on the floor."
+# WHAT IT COST, on the card that names the round: David Thompson '82, 20.4 mpg, share 0.700. The
+# vector pays his volume 87 as 60.90 and his playvol 42 as 29.40 — and then the era transfer read
+# the SAME volume bar raw, 87, cleared the 80 of the line, and paid him load 1.000. A transfer of
+# +7.594 of o_score, the largest on the board, to a man the file had just ruled a part-time scorer.
+#
+# THE FIX IS ONE SUBSTITUTION AND NO NEW NUMBER: `_vol` for `a['volume']`, so the transfer's load
+# factor reads the same PAID load the vector reads, on the same 55 -> 80 line recal_131 reads it on.
+# IDENTITY AT FULL LOAD, BY CONSTRUCTION: `_vol = a['volume'] x load_share(p)` and load_share is
+# 1.0 for every card at or above LOAD_FULL (24 mpg) and for every card with no minutes on the sheet,
+# so `_vol == a['volume']` there and the coefficient is unchanged to the last bit. MEASURED: 79 of
+# 10,000 cards move, every one of them DOWN, every one 1980-1996 and every one between 16.1 and 23.8
+# mpg — the class the ruling names, and nothing else. DEF moves on zero cards, every attribute on
+# zero, the top 12 by OFF is unchanged, and all 213 anchors hold (0 failing). George Gervin '80,
+# Kareem Abdul-Jabbar '80, Michael Jordan '87, Paul Westphal '80, Bird '83/'84, Drexler '88,
+# Hakeem '94, Magic '90, Ewing '90 and Moses '82 are byte-identical.
+# MONOTONE STILL: the load factor reads no scoring bar, and it can only SHRINK the coefficient c,
+# so recal_210's two derivatives (0.08 + c >= 0 and max(0.05, c) - c >= 0) both still hold. The
+# regeneration's own zone-block monotonicity count stays at 0 cards.
+#
+# WHAT IS NOT REACHED, AND IT IS NOT A LOAD QUESTION: ANDREW TONEY '81, asked 68 +-3, reads 73 and
+# is UNMOVED. He played 23.6 mpg — 0.967 of the board's own ratified full-load line (LOAD_FULL = 24,
+# located by Clint Capela '17's pin in recal_96) — so his paid volume is 79.27 against a raw 82 and
+# his load factor goes 1.000 -> 0.971. The arithmetic of his own frontier: his transfer is
+# c x 23 + (c - 0.05) x 33 = 56c - 1.65, he prints 71 at o_score 76.87, so he needs c <= 0.0927,
+# i.e. a load factor <= 0.713. NO reading of recal_96's share can deliver 0.713 to a man at 0.967.
+# What he is, is a rookie shooting .535 TS in a .583 league with a BPM of -3.0 and an efficiency bar
+# of 57 — an ATTRIBUTE complaint, and the zone inference and ts_rel that set those bars belong to
+# stats-to-ratings, not to this file.
+# THE FRONTIER THAT DOES REACH HIM, MEASURED AND PRICED, NOT TAKEN (it is a release, his call):
+# read the load on recal_163's SECOND-payment line instead — `a['volume'] x ramp(mpg, LOAD_FOOT,
+# SECOND_FULL)`, 12 -> 33.9, on the argument that recal_196's own citation of recal_130 makes this
+# the SECOND reading of the volume rate. It lands all three subjects (Thompson 66, Toney 68,
+# Williams 64), holds all 213 anchors, and keeps every full-load subject byte-identical INCLUDING
+# Westphal '80 at 32.5 mpg. ITS PRICE IS THE CLASS IT REPRICES: 306 cards move instead of 79, and
+# 207 of them are between 24 and 33.9 mpg — Walter Davis '81 -6, Mike Woodson '82 -6 and '84 -6,
+# Purvis Short '80 -6, James Silas '81 -6, Quintin Dailey '83/'85 -6, Albert King '84 -5, David
+# Thompson '83 -5, Junior Bridgeman '81 -5. Those are not part-time scorers, they are ROTATION
+# starters, and several of them sit in the post-84 class he called FINE in round 215. Cutting them
+# is a ruling, not a repair, so the line stays at recal_96's 24.
+
+# ============ recal_215 — DECLINED. NOTHING BELOW THIS LINE CHANGED; READ IT BEFORE RE-CUTTING ====
+# HIS RULING, verbatim: "Cards pre 84 are too high. Post 84 are fine."
+# Nine subjects at +-3 (Westphal '80 90, Dantley '82 93 / '81 92 / '80 90, Erving '80 91 / '81 91 /
+# '82 90, Davis '80 89, English '83 89) against the cards he calls FINE at +-1 (Dantley '84/'85/'86,
+# King '84/'85, Malone '89-'93, Bird '85-'88, Jordan '85-'92, Barkley, Robinson, Price).
+#
+# THERE IS NO PRE-84 EDGE IN THIS TERM'S ONLY INPUT. ERA3 reads the league's own mean 3pt RATING that
+# season, and it is FLAT across exactly the years the ruling divides: 1980 14.79, 1981 13.53, 1982
+# 14.65, 1983 13.64, 1984 14.01 — then 1985 15.59, 1986 16.57, 1987 18.83. The shares are therefore
+# 0.943 / 1.000 / 0.950 / 0.995 / 0.979 / 0.907 / 0.863: 1984 sits BETWEEN 1980 and 1983 and ABOVE
+# 1985. Any monotone reshaping of the ramp that cuts 1981 cuts 1984 at least as hard. 294
+# (foot, full, power) settings were measured; the best that holds every pin reaches ZERO of the nine.
+#
+# THE TWO-CARD PROOF, which needs no sweep. Adrian Dantley '81 (asked 92, so <= 95) and Adrian Dantley
+# '84 (called fine at 97, so >= 96). They print 97 and 97 on o_scores 107.617 and 106.959 — '81 is
+# HIGHER. Everything this file can read between them: z 99/87/12 v 93/92/14, playvol 48 v 50, volume
+# 94 v 93, efficiency 99 v 95, era 1.000 v 0.979. '81 LEADS on best zone and on efficiency, so cutting
+# him harder pays LESS for a better weapon — the inversion recal_210 outlawed; and he TRAILS on second
+# zone, third zone and playvol, so cutting on those takes Kareem '80 (second zone 64, the lowest of the
+# class, on the floor of his 90 +-3) down first. The same collision repeats: Dantley '82 and Kareem '80
+# are BOTH playvol 49 (one must lose 2.421 of o_score, the other admits 1.027); Dantley '80 and Bernard
+# King '84 are BOTH playvol 39 (3.029 needed against 2.303 admitted).
+#
+# THE WIDE SEARCH, so no later round repeats it: ANY new subtractive term gated on this same pre-1997
+# inferred class, -K x ramp(x, lo, hi), over 26 attributes x every ramp on that attribute's own values
+# x 8 depths x both directions. SEVEN settings hold all 213 anchors AND leave every post-84 card within
+# a point; each reaches at most TWO of the nine, and every one of them is a gate on era in (0.995, 1.0],
+# i.e. a selector for the 1981 season alone. Doctrine 1 forbids it. Fading recal_196's own legs is the
+# same story: three clean settings, one subject each, each a single-card selector.
+# THE FRONTIER AND ITS PRICE (receipt 215 carries the ladder): Z2_W 0.130 -> 0.060 lands all nine and
+# costs FIVE pins — Gervin '80 (93 +-3 -> 88), Kareem '80 (90 +-3 -> 85), Bird '83 (91 +-3 -> 86),
+# Jordan '87 (96 +-2 -> 93), Hakeem '94 (92 +-3 -> 88) — plus 214 cards from 1984-96 moving more than a
+# point. 0.120 is the last setting where nothing fails and nothing lands. THAT RELEASE IS HIS CALL.
 if not _CARD:
     print(f"era third zone: 3pt season means {ERA3_FOOT:.2f} (min) -> {ERA3_FULL:.2f} (median); "
           f"creation {Z2_CR_LO:g}->{Z2_CR_HI:g}, clearance cap {Z2_CLEAR:g}, weight {Z2_W}")
@@ -823,7 +972,17 @@ def o_score(p, trace=None):
     # a spot-up shooter uses nothing) while Jerome's are 34.3% (volume 70, playvol 61). A man who
     # carries nothing has nothing to discount, and only the narrow instrument can tell them apart.
     _load = load_share(p)
-    _vol, _pvol = a['volume'] * _load, a['playvol'] * _load
+    # recal_223: the volume bar's SECOND-payment line. Only the part of the bar above this file's own
+    # low-usage line VOL_LOW claims a starter's load, and that part is paid at the class's own upper
+    # quartile of minutes (VOL_SECOND) instead of recal_96's 24-minute "did he play at all" foot.
+    # `_load` itself is untouched, so playvol x load and every floor that reads it stay on recal_96's
+    # line. A card with no minutes on the sheet takes 1.0 — recal_96's "measured, or not at all".
+    # The whole argument, the class quartiles and the released pins are in the block above o_score.
+    _vmp = _MPG.get(p['name'])
+    _vsec = 1.0 if _vmp is None else min(1.0, max(0.0,
+            (_vmp - LOAD_FOOT) / (VOL_SECOND - LOAD_FOOT)))
+    _vol = min(a['volume'], VOL_LOW) * _load + max(0.0, a['volume'] - VOL_LOW) * _vsec
+    _pvol = a['playvol'] * _load
     # recal_138: THE HUB'S CLASS AND HIS LOAD, computed here because BOTH the signature term below
     # and recal_55's hub premium further down read them. See the block above o_score for the whole
     # argument. `_role` is 1.0 for every big (recal_55's class, byte-identical), and for a perimeter
@@ -867,7 +1026,8 @@ def o_score(p, trace=None):
         trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
         trace['load'] = dict(share=_load, mpg=_MPG.get(p['name']), foot=LOAD_FOOT, full=LOAD_FULL,
                              volume_raw=a['volume'], volume_paid=_vol,
-                             playvol_raw=a['playvol'], playvol_paid=_pvol)
+                             playvol_raw=a['playvol'], playvol_paid=_pvol,
+                             vol_low=VOL_LOW, vol_second=VOL_SECOND, vol_second_share=_vsec)
     # THE ERA'S THIRD ZONE (recal_196). The whole argument, the measurement and the four factors are
     # in the block above o_score. The vector's third slot is a three-zone game's third option; where
     # the league had no third zone, that weight is transferred to the second zone's clearance over
@@ -879,7 +1039,10 @@ def o_score(p, trace=None):
     if not a.get('rim_mid_measured') and ERA3.get(p.get('peak_season'), 0.0) > 0.0:
         _e3 = ERA3[p['peak_season']]
         _z2cr = min(1.0, max(0.0, (a['playvol'] - Z2_CR_LO) / (Z2_CR_HI - Z2_CR_LO)))
-        _z2ld = min(1.0, max(0.0, (a['volume'] - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
+        # recal_220: the load factor reads the PAID volume `_vol` (= volume x recal_96's minutes
+        # share), which is the quantity recal_131's own floor reads on this very line — see the
+        # block at Z2_LD_LO/Z2_LD_HI. Identity for every card at full load.
+        _z2ld = min(1.0, max(0.0, (_vol - Z2_LD_LO) / (Z2_LD_HI - Z2_LD_LO)))
         # recal_210: the transfer's own coefficient, and the shortfall it owes the third zone.
         _z2c = Z2_W * _e3 * _z2cr * _z2ld
         _z2bal = max(0.0, _z2c - Z2_VEC_W) * z[2]
@@ -888,6 +1051,7 @@ def o_score(p, trace=None):
         if trace is not None:
             trace['era_third_zone'] = dict(era=_e3, l3=_L3[p['peak_season']], foot=ERA3_FOOT,
                                            full=ERA3_FULL, creation=_z2cr, load=_z2ld,
+                                           vol_paid=_vol, vol_raw=a['volume'],
                                            clearance=max(0.0, z[1] - z[2]), cap=Z2_CLEAR,
                                            w=Z2_W, coeff=_z2c, vec_w=Z2_VEC_W, balance=_z2bal,
                                            added=_z2)
@@ -2033,13 +2197,92 @@ def o_score(p, trace=None):
         _sb_load = _load if not is_big(p) else (
             1.0 if _mp2 is None else
             min(1.0, max(0.0, (_mp2 - LOAD_FOOT) / (SB_SECOND_FULL - LOAD_FOOT))))
+        #
+        # recal_222 (HIS RULING, scout group C, agreed 2026-09-30, verbatim: "the stretch-big off-ball
+        # floor pays +15 of o_score BINDING at volume 47-54 and nothing at 55, so a better season reads
+        # ten lower"). THE GATE IS A CEILING ON THE LIFT, NOT A CLIFF.
+        #
+        # THE DEFECT, and it is r64's gate read from its other side. recal_118 ramped the ARC half of
+        # `3pt >= 68 and volume < 55`; the LOAD half stayed a step, with a correction worth up to
+        # twenty-four printed OFF points behind it. One rating point of `volume` therefore decides a
+        # fifth of a card, and the man who did MORE reads less. THE TWO CARDS, decomposed:
+        #   Rashard Lewis '01     34.9 mpg, 14.8 points at 18.4% usage, TS .587, BPM 2.1. Standard path
+        #                         64.79 under a floor of 80.37 BINDING at arc share 1.0000 x load share
+        #                         1.0000 — the WHOLE 15.58 — and he printed OFF 75. His own '02 (16.8
+        #                         points at 20.8% usage, BPM 3.0) is volume 61, one side of the gate
+        #                         away, takes no floor at all and reads 64; his '03 reads 65.
+        #   Donyell Marshall '04  36.4 mpg, 14.7 points and 9.9 boards at 19.5% usage, TS .548, BPM 2.7.
+        #                         Standard path 64.90, floor 79.95 BINDING at volume 54 — ONE POINT
+        #                         inside the gate — printing OFF 74, while this term's own pinned
+        #                         subjects on comparable lines read 63-65 (Anunoby '21 63, Hachimura
+        #                         '26 64, Ryan Anderson '18 65) and his own '03 (volume 61) reads 59.
+        #
+        # WHY NOT A SHARE RAMP — the first form his ruling names, and it is PROVABLY infeasible, not
+        # merely worse. A share of the correction ramped over volume (recal_118's shape) pays the SAME
+        # share to every card at the same volume, and this class holds TWO cards at volume 47 whose
+        # rulings point opposite ways: Rashard Lewis '01 must shed ten printed points of a 15.58
+        # correction, and Donyell Marshall '07 (16.8 mpg, pinned 52 +-3, reading 49 with ZERO room
+        # down) must keep all of a 5.45 one — his is small already because recal_188's line scales it
+        # to 0.245. MEASURED: at the share that lands Lewis (0.33) Marshall '07 falls 49 -> 46.
+        # A share also cannot be MONOTONE in volume, which his ruling forbids: the correction reaches
+        # 24 while the standard path pays only 0.26 x load a volume point, so a share that falls to
+        # zero anywhere inside ninety points of volume takes some card DOWN for carrying more.
+        #
+        # THE TERM — A CEILING, which is the second form his ruling names ("the floor itself reading
+        # the standard path's own volume so it cannot exceed what a volume-61 season of the same man
+        # reads"). The off-ball floor is a claim about a man who does NOT carry the offence, so the most
+        # it may be worth is what the offence ITSELF would pay him for carrying the ball from where he
+        # is up to a full scoring load:   lift <= OB_V_W x (OB_V_TOP - volume).
+        # NO NEW KIND OF CONSTANT. OB_V_W 0.26 is the standard path's OWN volume weight, the literal
+        # thirty lines up this function. OB_V_TOP 80 is recal_131's PZ_V_HI — "a top-sixth load (usage
+        # 24.8)", the line this file already reads as a full scoring load — and that ramp's FOOT,
+        # PZ_V_LO, IS this floor's own gate of 55, so the ceiling spans exactly the distance between
+        # the two lines the file already has.
+        # MONOTONE BY CONSTRUCTION, and that is the whole reason for a ceiling rather than a share:
+        # where it binds it falls at exactly 0.26 a volume point while the standard path rises at
+        # 0.26 x load plus the signature term's 0.08 x efficiency/100, so a card cannot read lower for
+        # carrying more. MEASURED on a volume sweep 0..54 of every card this floor can pay: the ceiling
+        # adds NO violation as large as half a printed point (worst, Brook Lopez '23, 0.408 of o_score
+        # = 0.38 of OFF, off the hub and passer ramps whose own volume slope is under 0.26), and of the
+        # cards it binds on NOT ONE is under 25.8 mpg — every one is at recal_96's full load, where the
+        # ceiling's slope IS the standard path's own. THE GATE STEP falls from 15.05 of o_score (14.00
+        # printed OFF, Donyell Marshall '04) to 6.76 (6.29, Kevin Love '12) — the ceiling's own value
+        # at the gate, 0.26 x (80 - 54).
+        #
+        # WHY THE STEP IS NOT CLOSED ALL THE WAY: a THEOREM off his own pins, not a choice. Closing it
+        # means the payment reaches zero AT the gate, so the class must extend to wherever the ceiling
+        # does. OG Anunoby '21 (pinned 65 +-2, reading 63, ZERO room down) is volume 36 and keeps a
+        # correction of 11.27, and a monotone law may shed at most 0.26 a volume point: 11.27 / 0.26 is
+        # 43 points, so the class would have to run past volume 79. MEASURED at 80 with the gate opened
+        # to match: 117 cards RISE, max +6 (Markkanen '22 and '20, Parsons '16), and the volume-61
+        # seasons his ruling calls fine rise with them — Rashard Lewis '02, his own comparator, 64 ->
+        # 69. The ceiling's window is [77, 81] and it is MEASURED on both sides: below 77 Anunoby '21
+        # leaves his pin (62 at 76), above 81 the subjects leave theirs (Lewis '01 69 at 82). 80 is the
+        # file's own line, inside the window.
+        # WHERE IT LANDS AND WHERE IT STOPS — the targets are 65 / 65 +-3 and the subjects land 68 / 67,
+        # both inside and both ON THE FRONTIER: Lewis '01 cannot print 65 under any monotone ceiling
+        # that holds Anunoby '21, because the two are eleven volume points apart and 65 asks for 0.53
+        # of o_score a point against the 0.26 the standard path pays.
+        # MEASURED on the whole pool: 16 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -7,
+        # mean -2.4; DEF and every attribute move on ZERO; the top 12 by OFF is identical name for name
+        # and the top 50 by OVR has no entrant and no leaver. Every wing pin of recal_64/118 and every
+        # stretch-big pin of recal_91/170/188 holds unmoved (Korver '15 58, Kerr '96 61, Snell '18 50,
+        # Bowen '06 45, Novak '13 59, Tolliver '14 54, Anunoby '21 63, Hachimura '26 64, Anderson '18
+        # 65, Bamba '22 56, Kleber '20 53, Hauser '23 58, Bullard '92 50, Finney-Smith '20 52,
+        # Marshall '07 49).
+        OB_V_TOP, OB_V_W = 80.0, 0.26
+        _ob_cap = OB_V_W * max(0.0, OB_V_TOP - a['volume'])
         _ob_std = std
-        _flr = std + _f3 * _sb_load * (_fl - std)
+        _ob_full = _f3 * _sb_load * (_fl - std)
+        _ob_lift = min(_ob_full, _ob_cap)
+        _flr = std + _ob_lift
         std = max(std, _flr)
         if trace is not None:
             trace['offball_floor'] = dict(value=_flr, binding=std == _flr, share=_f3, full=_fl,
                                           load=_sb_load, load96=_load, std=_ob_std,
                                           second_full=SB_SECOND_FULL, mpg=_mp2,
+                                          cap=_ob_cap, v_top=OB_V_TOP, v_w=OB_V_W, lift=_ob_lift,
+                                          uncapped=_ob_full,
                                           branch='stretch big (recal_91)' if is_big(p) else 'wing (recal_64)')
     # recal_131 (HIS RULING, verbatim: "What I dont like, is Malone being 69 OFF with 25 ppg on not
     # bad eff"). THE PAINT-EVIDENCE FLOOR ON THE ZONE BLOCK.
@@ -2237,12 +2480,99 @@ def o_score(p, trace=None):
     # and lifts 411 now; 236 lose it entirely and 179 of those are NEGATIVE-BPM seasons. Negative-BPM
     # movers 390 -> 211, and the lifts of ten printed points or more 84 -> 39. The floor still binds
     # on 482 cards (739 before) and the negative-BPM share of everything it pays falls 52% -> 43%.
+    # recal_221 (HIS RULING — scout group A, agreed 2026-09-30, verbatim: "efficient 3-and-D wings
+    # fall between two floors"). DISPATCHED AS ROUND 216 AND RENUMBERED TO 221 BY THE LEDGER: 216 and
+    # 217 were already taken on main by the players-to-team lane (Thunder '16 and Warriors '16), and
+    # writing 216 would have shadowed a landed receipt without git flagging it.
+    # THE SHOOTER EXCLUSION IS DELETED. DISJOINTNESS IS A PROPERTY OF THE PAYMENT, NOT OF THE BAR.
+    #
+    # THE DEFECT, and it is a SEAM between this floor and recal_64/118's. A wing who spaces is sent to
+    # the off-ball floor, whose four terms are `0.38 x 3pt + 0.20 x efficiency + 0.08 x ballsec +
+    # 0.06 x discipline` — 0.72 of weight, "the whole of what a standstill wing specialist does".
+    # A wing who does not space is sent HERE, where the possessions he ends and starts are priced.
+    # THE MAN WHO DOES BOTH GOT NEITHER'S CREDIT FOR THE SECOND THING: the off-ball floor reads no
+    # possession bar at all and, being only 0.72 of weight, DOES NOT EVEN BIND on him — and this floor
+    # then switched itself off because his arc bar was high.
+    #   Alex Caruso '24     28.7 mpg, 10.1 points on 40.8% from the arc, TS .607, 3.8 assists, BPM
+    #                       +2.5. Standard path 47.766; off-ball floor 43.080, NOT BINDING (it is 4.7
+    #                       BELOW his own weighted line); glue gate EXACTLY ZERO at 3pt 75. OFF 44.
+    #   Royce O'Neale '21   31.6-mpg starter, 7.0 points on 38.5%, TS .599, 6.8 rebounds, VORP rank
+    #                       56 of 206. Off-ball floor 40.120 binding by ONE POINT; glue floor 48.157
+    #                       at a gate of 0.1071. OFF 38.
+    # THE TWO-CARD PROOF, the same man on the same job: JOSH HART '25 (3pt 37, 15.2% usage, TS .611,
+    # drb/orb/playvol 83/69/58) is recal_155's OWN subject and prints OFF 64 off a glue floor of
+    # 68.48. JOSH HART '26 (3pt 69, 16.3% usage, TS .612, 82/64/61 — the SAME season, better from the
+    # arc) had this floor switched off by that one bar and printed OFF 53. ELEVEN printed points
+    # BELOW his own worse-shooting year, and the only thing that changed is the thing he got better at.
+    #
+    # WHY THE GATE CAN GO, and it is an argument about the FORM, not a preference. recal_155 took
+    # recal_112's sentence — "efficiency earned at the rim and the line is paid here and efficiency
+    # earned from the arc is paid there" — and made it a gate on the BAR. But both floors are written
+    # in recal_118's form `std + f x (floor - std)` and they are applied IN SEQUENCE ON THE SAME std:
+    # by the time this floor is reached, whatever the off-ball floor paid is ALREADY INSIDE std, so
+    # this floor can only ever pay the EXCESS over it. Two floors in that form cannot stack — a man
+    # gets the better stand-in for his offence, never the sum of two. The channels were already
+    # disjoint IN THE ARITHMETIC; the gate asserted it a second time, on the bar, and the second
+    # assertion is the one that costs a card its floor.
+    #
+    # THE GATE'S OWN JUSTIFICATION WAS SUPERSEDED BY recal_169, measured rather than argued.
+    # recal_155 called it "load-bearing rather than decorative: Kyle Korver '15 (pinned off 58 +-1)
+    # has a glue floor of 64.7 against a standard path of 62.4 and would take +2 without it." That was
+    # true before recal_169 put the conversion half behind the possessions actually used. TODAY his
+    # floor computes 1.070 x (0.5 x 27.00 + 0.5 x 94 x 0.9467) = 62.053 against a standard path of
+    # 61.920 — a correction of 0.13 of o_score, 0.12 of raw — and he prints 58 BEFORE AND AFTER.
+    # The one card the gate was said to protect no longer needs it.
+    #
+    # WHO IS UNTOUCHED, and it is by construction rather than by luck. ZERO cards with 3pt <= 40 move
+    # (their gate was already 1.0000) and ZERO with volume >= 55 (recal_112's low-usage line is not
+    # touched): Alonzo Gee '16 36, Javonte Green '22 50 and Josh Hart '25 64/OVR 63 are EXACTLY
+    # unchanged. Every standstill-spacer pin the off-ball floor was built on has too little possession
+    # work for this floor to reach — their (drb + orb + playvol)/3 is Snell '18 15.33, Bowen '06
+    # 18.00, Kerr '96 22.67, Korver '15 27.00 against Caruso's 39.33, O'Neale's 47.33 and Hart '25's
+    # 70.00 — so Snell 50, Bowen 45 and Kerr 61 move by EXACTLY zero, and Korver by 0.12 of raw.
+    #
+    # THE BIG SIDE IS NOT TOUCHED AND IS NOT THE SAME CLAIM. recal_182's second-chance floor keeps its
+    # arc exclusion: its conversion half is GB_CONV, the CLASS's median, not the man's own rate, so
+    # there is no rate of his to pay twice — and the big's arc channel, recal_91's stretch-big branch,
+    # is NOT the thin one this round is about (1.16 of weight, orb + rim + volume on top of the four
+    # wing terms). The seam is a WING seam. `not is_big` therefore stands, and it is LOAD-BEARING:
+    # MEASURED, deleting it breaks TEN anchors — Rudy Gobert '16 off 48 -> 73, Nic Claxton '24 56 ->
+    # 70, Richaun Holmes '21 62 -> 73, Cedric Maxwell '80 67 -> 76, Ayton '26 58 -> 67, Capela '17
+    # 58 -> 63, Capela '18 60 -> 65, Nenê '11 65 -> 69, Rodman '96 OVR 63 -> 68 and recal_119's
+    # BOS '24 OFF rank <= 10 at 11 of 26.
+    # WHAT THAT COSTS, named because two of the round's four subjects are bigs by is_big (the lifetime
+    # PF/C union rule at the top of this file) and are therefore OUTSIDE this seam:
+    #   Herbert Jones '24   PROVABLY UNREACHABLE HERE, whatever the gates. His possession average is
+    #                       (16 + 47 + 34)/3 = 32.333 and his usage 14.4, so this floor's arithmetic
+    #                       CEILING for him is 1.070 x (16.167 + 0.5 x 61 x 0.96) = 48.628 against a
+    #                       standard path of 47.354: OFF 45 with EVERY gate deleted, two short of his
+    #                       band. What does reach him is recal_99's evidence gate on the stretch-big
+    #                       branch (volume 8 -> 22 OR orb 45 -> 65), which pays him 0.1429 of recal_91's
+    #                       three terms: at 1.0 his floor is 52.25 and he prints OFF 48.
+    #   Josh McRoberts '14  his glue floor WOULD be 1.070 x (26.833 + 0.5 x 52 x 0.90) = 53.75 against
+    #                       a standard path of 44.834 — OFF 50, inside his band — but only by deleting
+    #                       `not is_big`, which is the ten-anchor break above. recal_99's gate alone
+    #                       (_g 0.35 -> 1.0) takes him to OFF 44.
+    # MEASURED on the whole pool: 142 of 10,000 cards move on OFF, EVERY ONE OF THEM UP, mean +3.10,
+    # max +15; OVR follows on 113, mean +2.01, max +10; DEF and every attribute move on ZERO. ZERO
+    # bigs move. OFF_TOP is NOT re-derived and nothing needs it to be — the highest card this floor
+    # prints anywhere is OFF 71, the raw top is 99 before and after, and the top 50 by OFF and the top
+    # 50 by OVR are identical NAME FOR NAME AND IN ORDER, no entrant, no leaver, no rank flip. All 213
+    # anchors hold. The movers are ONE archetype and read like it — Mike Miller '09/'10, Josh Hart
+    # '26, Nicolas Batum '13/'14/'19, Mikal Bridges '20/'21, Kawhi Leonard '12/'13, Shane Battier
+    # '03/'05/'06, James Posey '00/'07/'08/'09, Patrick Beverley '17/'19/'20, Hersey Hawkins '98-'00,
+    # Boris Diaw '09/'13/'14, Jared Dudley '11/'16, Bryon Russell '97-'99, Landry Fields '11, Trevor
+    # Ariza '13, Doug Christie '03, Christian Braun '25, Josh Green '23, Caleb Martin '22, Vince
+    # Williams Jr. '24 — the 3-and-D wings who shoot AND rebound AND move it, and who until now were
+    # paid for exactly one of the three.
     GL_V_LO, GL_V_HI = 25.0, 55.0
     GL_K = 1.070
     GL_U_FULL = 15.0
     if not is_big(p) and a['volume'] < GL_V_HI:
+        # recal_221: the 3pt 68 -> 40 exclusion that stood here is DELETED (see above). What remains
+        # is recal_112's low-usage ramp and recal_96's load share.
         _gg = (min(1.0, max(0.0, (GL_V_HI - a['volume']) / (GL_V_HI - GL_V_LO)))
-               * min(1.0, max(0.0, (EF_3P_HI - a['3pt']) / (EF_3P_HI - EF_3P_LO))) * _load)
+               * _load)
         _gpos = (a['drb'] + a['orb'] + a['playvol']) / 3.0
         _gused = a['usg_raw'] * _load
         _gu = min(1.0, max(0.0, _gused / GL_U_FULL))
@@ -2537,6 +2867,154 @@ def o_score(p, trace=None):
                                         load=_second, mpg=_mp2, added=_3add,
                                         sig_gate=min(1.0, max(0.0, (_3sig - THREE_SIG_LO) / (THREE_SIG_HI - THREE_SIG_LO))),
                                         z2_gate=min(1.0, max(0.0, (z[2] - THREE_Z2_LO) / (THREE_Z2_HI - THREE_Z2_LO))))
+    # recal_227 (HIS RULING, verbatim: "Curry 16' OFF too low"; amended mid-round, verbatim: "Push 227
+    # with LeBron '13 released if needed"). THE SIGNATURE'S SECOND PAYMENT.
+    #
+    # THE CARD, DECOMPOSED FIRST — and the point of the round is that NOTHING IS MISSING from it.
+    # Stephen Curry '16 sums to o_score 104.0142 and his ten standing terms read: z[0] 21.780,
+    # z[1] 6.480, z[2] 3.700, efficiency 10.780, volume x load 23.801, playvol x load 16.340,
+    # ballsec 6.700, fouldraw x ft 5.005, orb 1.980, signature 7.448. No bonus fires and no floor
+    # touches him: recal_37/38's zone-dominance gate wants the weapon to tower over the OTHER TWO
+    # ZONES PUT TOGETHER (99 against 81 + 74) and recal_198's third level wants a third zone past 74
+    # (his is exactly 74, the ramp's foot). The raw is 96.7332 and he prints 95. The unanimous MVP —
+    # 30.1 points on .669 true shooting at 32.6% usage, the greatest efficiency-at-volume season the
+    # file holds — reads under James Harden '19 (96) and three points under LeBron James '13 (98).
+    #
+    # WHERE THE DEFECT IS, AND IT IS NOT THE BONUS. Measured before anything was written, on the
+    # whole pool: recal_210's own fixed-bar repair of the towering test (read the weapon against the
+    # flat 91 line and drop `z[0] > z[1] + z[2]`) pays him at most 5.0 x zone_f 1.10 x att_f 1.65 x
+    # gate_f 0.25 = +2.27 of o_score and takes him to 97, because a SHOOTER's bonus is gated on the
+    # offence he already has (recal_44) and Curry '16 sits on that gate's FLOOR, 0.25. The ruling
+    # needs +5.60 of o_score. No parameterisation of the dominance bonus reaches it, and the same
+    # measurement said so in receipt 210. The term that is actually short is the one that prices the
+    # thing the ruling names.
+    #
+    # THE TERM: recal_26's SIGNATURE, `0.08 x volume x efficiency / 100`, is LINEAR IN THE PRODUCT
+    # ACROSS THE WHOLE BOARD. The step from a median load-and-conversion pair to a good one and the
+    # step from a top-1% pair to the best one ever are paid at the same 0.08 a point. Curry '16's
+    # product is 93.10 against a pool median of 27.72 and a p99 of 80.36; four cards of 10,000 are
+    # above him and the whole of his lead over Harden '19 (86.13) is worth 0.56 of o_score. A
+    # signature that cannot separate the top of its own distribution is not pricing a signature.
+    #
+    # THE FIX IS recal_198's, APPLIED TO ITS OWN GATE. That round paid the THIRD ZONE a second time
+    # at its own standing weight once the signature cleared the pool's top percentiles, and said in
+    # terms that "the product is the GATE, it cannot be the payload" — because in 2026-05 the ruling
+    # it was landing (Kevin Durant '13 over LeBron James '13) was ordered the WRONG WAY by the
+    # product. THIS ruling is ordered the RIGHT way by it: Curry '16 93.10 against Harden '19 86.13
+    # and Shai Gilgeous-Alexander '25 86.24, and his own ruling has now released the one card the
+    # product put above the subject. So the payload CAN be the product here, and it is the product's
+    # own standing weight paid a second time — no new weight is introduced, exactly as recal_198
+    # introduced none.
+    #
+    # EVERY CONSTANT IS A PERCENTILE OF THE POOL, MEASURED, NOT CHOSEN (recal_130/176/198's rule):
+    #   SIG2_HI = 91.20 is the pool's p99.9 of `volume x efficiency / 100` — the dispatch's own
+    #     sentence, "a top-0.1% pair", turned into a number. 9 cards of 10,000 are above it.
+    #   SIG2_LO = 89.182 is the pool's p99.8 of the same quantity, so the gate FADES IN over the last
+    #     tenth of a percentile instead of stepping at it — recal_198's own construction one decimal
+    #     further out, and the reason every gate in this file is a ramp (recal_93, 99, 136, 137, 154,
+    #     164). 20 cards clear the foot.
+    #   SIG2_K = 0.08 is the SIGNATURE'S OWN STANDING WEIGHT, paid a second time, and recal_130's
+    #     doctrine follows it ("a rate paid twice is scaled twice"), so the second payment is scaled
+    #     by recal_163's SECOND-payment minute line SECOND_FULL = 33.9 exactly as recal_198's is.
+    #     The subject plays 34.2 and is paid in full.
+    # THE GATE READS THE RAW PRODUCT, not the first payment's `max(volume, 50, _hubload)` floor: at
+    # volume >= 90 (which `sig >= 89.182` forces, efficiency being capped at 99) neither the 50 floor
+    # nor the hub load can bind, so the two quantities are identical on every card this term touches.
+    #
+    # PROVABLY DISJOINT FROM EVERY FLOOR AND FROM THE CHARGE, by recal_198's own argument one rung
+    # higher: the gate needs volume >= 90.1, while recal_64's off-ball floor, recal_91's stretch-big
+    # floor, recal_155's two-level term, recal_182's glue floor and recal_186's glass floor all gate
+    # on `volume < 55`, recal_109's elite-passer band tops out at volume 93 with an efficiency gate,
+    # and the turnover charge needs efficiency < 60 (sig <= 59.4). The term is LAST in o_score, after
+    # recal_198's, so no floor's `_fl > std` comparison sees it. It reads no zone bar, so recal_210's
+    # monotonicity law is untouched by construction: d(std)/d(rim) = d(std)/d(mid) = d(std)/d(3pt) = 0
+    # on this line, and the zone block's inverting count stays at 0.
+    #
+    # MEASURED, on all 10,000 cards: 16 move on OFF, EVERY ONE OF THEM UP, max +4, and they are one
+    # class and read like it — the whole top of the volume-x-efficiency distribution and nothing else
+    # (Curry '15/'16, Durant '12/'13/'16, LeBron '13/'14, Dantley '80/'81/'82, Malone '90/'92/'98,
+    # Shaq '02/'03, SGA '26). DEF, every attribute, the big flag and is_big move on ZERO; 15 follow on
+    # OVR. The pool's raw OFF maximum does NOT move (Giannis '25, 116.15 of o_score, has signature
+    # 80.36 and is below the foot), so OFF_TOP is NOT re-derived and no card above the knee is moved
+    # by the band. THE COST IS THE SUMMIT'S TIE BLOCK, and it is recal_102's own trade taken one step
+    # further: cards printing OFF 99 go from 15 to 26.
+    #
+    # recal_228 (HIS RULING, verbatim: "Karl Malone and Adrian Dantley shouldn't raise"). THE SECOND
+    # PAYMENT IS GATED ON THE THIRD LEVEL. recal_227 shipped the term with ONE gate — the product —
+    # and the product alone cannot say what the second payment is FOR. Its sixteen movers were all up
+    # and he accepted seven of them and refused six: Curry '15/'16, LeBron '13/'14, Durant '12/'13/'16
+    # stand; Karl Malone '90/'92/'98 and Adrian Dantley '80/'81/'82 go back where they were.
+    #
+    # THE CONDITION THAT SEPARATES THEM IS NOT A NAME LIST AND IT IS NOT THE ONE THE ROUND EXPECTED.
+    # Measured on the twenty cards that clear SIG2_LO, with the two other candidates refuted on the
+    # same table before this one was written:
+    #   CREATION (playvol) CANNOT DO IT. Karl Malone '98 reads 65 and Kevin Durant '13 reads 65 — one
+    #     refused, one accepted, on the same number. Adrian Dantley '81 (48) is under Durant '12 (56)
+    #     but Curry '15 (91) and LeBron '14 (87) are over both; there is no cut.
+    #   THE ZONE PROVENANCE (pre-1997 inferred rim/mid) CANNOT DO IT EITHER. Five of the six refused
+    #     cards are inferred, but Karl Malone '98 is MEASURED (rim_mid_measured true) and refused,
+    #     while every accepted card is measured. A gate on provenance leaves him paid.
+    #   THE THIRD LEVEL DOES IT, WITH A GAP OF FORTY POINTS AND NOTHING IN IT. Sort the three scoring
+    #     bars and read the WORST one, z[2] — recal_198's own quantity. The refused six read 22, 12,
+    #     11, 11, 12, 11. The accepted seven read 74, 70, 69, 62, 82, 80, 74. The lowest accepted card
+    #     (LeBron James '14, 62) stands twenty-six points above the highest refused one (Karl Malone
+    #     '90, 22), and the two sets do not interleave anywhere.
+    #
+    # AND THAT GAP IS THE RULING'S OWN SENTENCE. recal_26's product prices a LOAD carried at a
+    # CONVERSION; the second payment is the premium for doing it at the very top of the board, and
+    # what the seven accepted cards have in common is that the conversion is carried ACROSS THE DIET —
+    # there is no level you can send them to. Curry '16 is the perimeter case of the same property
+    # (his weapon IS the arc, so his worst level is still 74); Durant and LeBron are the three-level
+    # case. Karl Malone and Adrian Dantley are the opposite card: a top-1% load converted at a top-1%
+    # rate inside ONE zone, with nothing at the second or third level (Malone '90 reads 99 / 68 / 22).
+    # They are paid for that load and that efficiency by recal_26's FIRST payment, at the same 0.08
+    # every card gets. The SECOND payment is the one that says the defence has no answer, and against
+    # a one-zone interior scorer it does.
+    #
+    # THE CONSTANTS ARE THE POOL'S OWN PERCENTILES OF z[2], MEASURED, NOT CHOSEN, and they are
+    # recal_198's construction on recal_198's quantity one notch in from its own (that round used the
+    # CLASS's p95 -> p99, 74 -> 82, because for it the third zone was the PAYLOAD; here it is only the
+    # QUALIFIER, so the line is the pool's):
+    #   SIG2_Z2_LO = 48.0 is the POOL's p95 of the third level — 488 cards of 10,000 are above it.
+    #     Below it a scorer has a level the defence can send him to and takes nothing here.
+    #   SIG2_Z2_HI = 62.0 is the POOL's p99 of the same quantity — 90 cards clear it — so the gate is
+    #     a RAMP over the last four percentiles instead of a step (recal_93/99/136/137/154/164/198).
+    # Ten of the twenty cards in the signature class clear the foot and nine are whole at the ceiling.
+    #
+    # recal_210's MONOTONICITY LAW HOLDS BY CONSTRUCTION, which is why the gate reads z[2] and not the
+    # 3pt bar. z[2] is the MINIMUM of the three scoring bars, so lowering any one of them can only
+    # lower it or leave it; the gate is non-decreasing in every bar and the payment can never rise for
+    # a weaker card. A gate on `3pt` alone would separate the same six (Malone '90 22 against LeBron
+    # '14 64) but would be non-monotone in rim and mid.
+    #
+    # MEASURED, on all 10,000 cards, against the shipped 227 pool: 8 cards move on OFF, EVERY ONE OF
+    # THEM DOWN, max -4, and they are exactly the cards recal_227 lifted without a third level —
+    # Malone '90 99->96, '92 98->96, '98 96->94, Dantley '80 99->95, '81 99->97, '82 99->98, and
+    # Shaquille O'Neal '02 99->98 and '03 99->98 (z[2] = 2, the purest one-zone cards on the board,
+    # unnamed in the ruling and restored by the same condition, '02 landing back ON recal_49's pin of
+    # 98). All six named cards land EXACTLY on their pre-227 readings and all seven accepted cards
+    # hold EXACTLY at their 227 readings. Shai Gilgeous-Alexander '26 (z[2] = 65) is whole and stays
+    # 99. DEF, every attribute, the big flag and is_big move on ZERO; 8 follow on OVR. THE BAND IS NOT
+    # RE-DERIVED and no card above the knee is re-mapped, but the raw the band clamps comes back down:
+    # Michael Jordan '89 (z[2] = 23) loses the payment and his raw falls 111.3213 -> 104.4675, so the
+    # pool's raw OFF top is Kevin Durant '14 at 109.6626 again and the count above OFF_TOP goes
+    # 24 -> 18. He was clamped at 99 both ways, as are Jordan '90 (z[2] 42) and LeBron '12 (50).
+    # Cards printing OFF 99 fall 26 -> 20.
+    SIG2_LO, SIG2_HI = 89.182, 91.20   # the pool's own p99.8 -> p99.9 of volume x efficiency / 100
+    SIG2_Z2_LO, SIG2_Z2_HI = 48.0, 62.0  # recal_228: the POOL's own p95 -> p99 of the THIRD level
+    SIG2_K = 0.08                      # the signature's OWN standing weight, paid a second time
+    _s2sig = a['volume'] * a['efficiency'] / 100.0
+    _s2siggate = min(1.0, max(0.0, (_s2sig - SIG2_LO) / (SIG2_HI - SIG2_LO)))
+    _s2z2gate = min(1.0, max(0.0, (z[2] - SIG2_Z2_LO) / (SIG2_Z2_HI - SIG2_Z2_LO)))
+    _s2g = _s2siggate * _s2z2gate
+    if _s2g > 0.0:
+        _s2add = SIG2_K * _s2sig * _s2g * _second
+        std += _s2add
+        if trace is not None:
+            trace['signature_second'] = dict(sig=_s2sig, gate=_s2g, k=SIG2_K, lo=SIG2_LO,
+                                             hi=SIG2_HI, load=_second, mpg=_mp2, added=_s2add,
+                                             sig_gate=_s2siggate, z2=z[2], z2_gate=_s2z2gate,
+                                             z2_lo=SIG2_Z2_LO, z2_hi=SIG2_Z2_HI)
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):
@@ -3007,7 +3485,8 @@ if _CARD:
               f"own min {_e2['foot']:.1f} / median {_e2['full']:.1f}: era share {_e2['era']:.3f}")
         print(f"  weight {_e2['w']} x era {_e2['era']:.3f} x creation {_e2['creation']:.3f} (playvol "
               f"over the pool's own {Z2_CR_LO:g}->{Z2_CR_HI:g}) x load {_e2['load']:.3f} (recal_131's "
-              f"volume line) = coefficient {_e2['coeff']:.4f}")
+              f"volume line {Z2_LD_LO:g}->{Z2_LD_HI:g}, read on the PAID volume {_e2['vol_paid']:.2f} "
+              f"= volume x recal_96's share — recal_220) = coefficient {_e2['coeff']:.4f}")
         print(f"  x clearance {min(_e2['cap'], _e2['clearance']):.0f} "
               f"(z1-z2 {_e2['clearance']:.0f}, capped at the pool's own p95 {_e2['cap']:g})"
               + (f" + recal_210 balance {_e2['balance']:.3f} (the transfer charges z[2] "
@@ -3023,6 +3502,9 @@ if _CARD:
               f"line (foot {_l['foot']:.0f}): share {_l['share']:.4f}")
         print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
+        print(f"  VOLUME'S SECOND LINE (recal_223) - the first {_l['vol_low']:.0f} of the bar takes the "
+              f"24-minute foot; the surplus {max(0.0, _l['volume_raw'] - _l['vol_low']):.0f} takes the "
+              f"class's own p75 of {_l['vol_second']:.1f} minutes -> share {_l['vol_second_share']:.4f}")
     if 'interior' in _ot:
         _i2 = _ot['interior']
         print(f"EFFICIENT INTERIOR SCORER (recal_112; recal_139 reads the claim ONCE) - efficiency "
@@ -3083,13 +3565,19 @@ if _CARD:
               f"(recal_118) x load share {_f['load']:.4f} ({_fline}; {_f['mpg']} mpg, recal_96's own "
               f"line reads {_f['load96']:.4f}) -> "
               f"{_f['value']:.3f} — {'BINDING' if _f['binding'] else 'not binding'}")
+        print(f"  recal_222's CEILING (the standard path's own volume weight {_f['v_w']:g} x the "
+              f"distance to a full scoring load {_f['v_top']:.0f} - volume {_a['volume']}) = "
+              f"{_f['cap']:.3f} against a lift of {_f['uncapped']:.3f}: "
+              + ('the ceiling BINDS, lift paid %.3f' % _f['lift'] if _f['cap'] < _f['uncapped']
+                 else 'not reached, the whole correction is paid'))
     if 'glue' in _ot:
         _gl2 = _ot['glue']
         print(f"GLUE FLOOR (recal_155) - possession work drb/orb/playvol {_gl2['bars'][:3]} averaged "
               f"= {_gl2['pos']:.2f}, half against conversion (efficiency {_gl2['bars'][3]} x "
               f"recal_169's used-load ramp {_gl2['u']:.4f} = {_gl2['bars'][3] * _gl2['u']:.2f}), x "
               f"{_gl2['k']:.3f} = floor {_gl2['floor']:.2f}; gate {_gl2['gate']:.4f} (volume 55->25 "
-              f"x 3pt 68->40 x recal_96's load share {_gl2['load']:.4f}): +{_gl2['added']:.3f}")
+              f"x recal_96's load share {_gl2['load']:.4f}; recal_221 deleted the 3pt 68->40 "
+              f"exclusion): +{_gl2['added']:.3f}")
         print(f"  recal_169 - possessions actually used {_gl2['used']:.2f} (usage {_gl2['used'] / max(_gl2['load'], 1e-9):.1f}"
               f" x load {_gl2['load']:.4f}) against the class's upper-quartile load 15.0 -> the "
               f"conversion half is paid at {_gl2['u']:.4f}")
@@ -3107,6 +3595,15 @@ if _CARD:
               f"45->65); evidence {_pf['evidence']:.2f} (half the free-throw term, half the offensive "
               f"glass) x 0.30 = {0.30 * _pf['evidence']:.2f} against zone block {_pf['block']:.2f}: "
               f"+{_pf['added']:.3f}")
+    if 'signature_second' in _ot:
+        _s2 = _ot['signature_second']
+        print(f"SIGNATURE'S SECOND PAYMENT (recal_227) - volume x efficiency / 100 = {_s2['sig']:.2f} "
+              f"against the pool's own p99.8 {_s2['lo']:g} -> p99.9 {_s2['hi']:g}: {_s2['sig_gate']:.4f}"
+              f"; THIRD LEVEL {_s2['z2']:.0f} against the pool's own p95 {_s2['z2_lo']:g} -> p99 "
+              f"{_s2['z2_hi']:g} (recal_228, the load must be converted across the diet): "
+              f"{_s2['z2_gate']:.4f}; gate {_s2['gate']:.4f}"
+              f" x the signature's own standing weight {_s2['k']:g} x recal_163's second-payment load "
+              f"{_s2['load']:.4f} ({_s2['mpg']} mpg against SECOND_FULL {SECOND_FULL}): +{_s2['added']:.3f}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
     _table(f"D_SCORE — the {_dt['branch']} branch (effective weights; recal_93 blends the two vectors)", _dt['terms'])
     print(f"  big vector {_dt['big_vector']:.4f}   perimeter vector {_dt['perim_vector']:.4f}"

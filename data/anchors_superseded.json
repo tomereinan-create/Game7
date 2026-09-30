@@ -903,5 +903,58 @@
     "note": "scan item 4, the double charge. Volume was read twice - by the gate and again by (1 - volume/100) - so inside the band scoring MORE lowered a passer's OFF by about 0.28 a point, and his best season by BPM (8.9, 17.2/14.5 on .607 TS) read 79, three below his own '88. Volume is now read ONCE, by the gate, and the band widens 65 -> 68. 79 -> 82, and the arc turns the right way up ('88 80, '89 83, '90 82, '91 80, '92 83). 84 is not reachable: Steve Nash '05 is six volume points away and identical on everything else the term reads, so every parameterisation that puts '90 above 82 puts Nash above his own 85 +-3.",
     "superseded_by": 207,
     "superseded_note": "Tomer 2026-09-26: 'Push 207' — the accuracy-count ramp reads his 47 of 113 at .416 (3pt 25 -> 59) and he reads OFF 88; released to 88 ±3."
+  },
+  {
+    "card": "Jaylen Brown '26",
+    "scale": "off",
+    "target": 83,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "superseded_by": 223,
+    "superseded_note": "Tomer 2026-09-30: \"I want the 24-33-minute scorers that follow to drop more\" — the volume x load second line (recal_223, VOL_LOW 55 / VOL_SECOND 36.3). He released this pin himself so the second-payment line could be set at the class's own measured upper quartile of minutes instead of stopping under it; the card is re-pinned in the same round at what the law now reads."
+  },
+  {
+    "card": "Shaquille O'Neal '09",
+    "scale": "off",
+    "target": 71,
+    "tol": 1,
+    "round": 51,
+    "ruling": "recal_51 — the paint branch gains a VOLUME RAMP",
+    "superseded_by": 223,
+    "superseded_note": "Tomer 2026-09-30: \"223 with Shaq 09 released\" — the volume x load second line (recal_223). He was the single pin that made recal_223 a decline: 30.0 mpg, volume 72, reading 70 on raw 69.8651 with 0.3651 of raw in hand, which capped the second line at 31.75 while the subject needed 32.37. Re-pinned in the same round at what it reads."
+  },
+  {
+    "card": "Russell Westbrook '15",
+    "scale": "off",
+    "target": 85,
+    "tol": 2,
+    "round": 121,
+    "ruling": "This is way too much ball sec for a very turnover prone guy. In addition to the OFF being a touch heigher than Id like it to be.. More around 85",
+    "note": "the OFF half of the ruling recal_116 answered on ballsec; reached by the handler's turnover charge in compute_ovr.py (handling load x efficiency x ball security), and REAFFIRMED after recal_111 declined it with three pins named.",
+    "superseded_by": 223,
+    "superseded_note": "Tomer 2026-09-30: \"I want the 24-33-minute scorers that follow to drop more\" — the volume x load second line (recal_223, VOL_LOW 55 / VOL_SECOND 36.3). He released this pin himself so the second-payment line could be set at the class's own measured upper quartile of minutes instead of stopping under it; the card is re-pinned in the same round at what the law now reads."
+  },
+  {
+    "card": "Stephen Curry '16",
+    "scale": "off",
+    "target": 95,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "one of the four complete stars the round predicted flat",
+    "superseded_by": 227,
+    "superseded_note": "Tomer 2026-09-30: \"Curry 16 OFF too low\""
+  },
+  {
+    "card": "LeBron James '13",
+    "scale": "off",
+    "target": 97,
+    "tol": 1,
+    "round": 89,
+    "ruling": "Dont do 87, only shift the weights a little torward 88",
+    "note": "flat",
+    "superseded_by": 227,
+    "superseded_note": "Tomer 2026-09-30: \"Push 227 with LeBron 13 released if needed\""
   }
 ]

@@ -5,7 +5,7 @@ import OPP from '../src/data/opponents.json'
 import STATS from '../src/data/stats.json'
 import { ROUNDS, SIGMA } from '../src/config'
 import { seriesBox } from '../src/engine/boxstats'
-import { compile, simSeries } from '../src/engine/resolver'
+import { canBetter, compile, simSeries } from '../src/engine/resolver'
 import { makeRng } from '../src/engine/rng'
 import { buildTicker } from '../src/engine/ticker'
 import type { Opponent, Player, SeriesResult, StatLine } from '../src/engine/types'
@@ -43,6 +43,9 @@ const bid = (games = 6) => {
   const { r, seed } = seriesOfLength(A, B, games)
   return renderToStaticMarkup(
     createElement(Series, {
+      // the settled screen, with no timers to run: these cases pin what a FINISHED series docks
+      // and prints. The landing itself (his ruling, 2026-09-29) is pinned separately below.
+      reveal: false,
       opponent: { round: 1, team: 'The Machine', ab: 'MACHINE', players: B, positions: [] },
       five: A,
       mine: compile(A, B),
@@ -66,6 +69,9 @@ const campaign = (games = 6) => {
   const { r, seed } = seriesOfLength(A, OPP4.players, games)
   return renderToStaticMarkup(
     createElement(Series, {
+      // the settled screen, with no timers to run: these cases pin what a FINISHED series docks
+      // and prints. The landing itself (his ruling, 2026-09-29) is pinned separately below.
+      reveal: false,
       opponent: OPP4,
       five: A,
       mine: compile(A, OPP4.players),
@@ -88,6 +94,9 @@ const dock = (opts: { won: boolean; next?: boolean; round?: number }) => {
   const { r, seed } = firstResult(A, opp.players, opts.won)
   return renderToStaticMarkup(
     createElement(Series, {
+      // the settled screen, with no timers to run: these cases pin what a FINISHED series docks
+      // and prints. The landing itself (his ruling, 2026-09-29) is pinned separately below.
+      reveal: false,
       opponent: opp,
       five: A,
       mine: compile(A, opp.players),
@@ -101,6 +110,23 @@ const dock = (opts: { won: boolean; next?: boolean; round?: number }) => {
     }),
   )
 }
+/** The campaign's result screen the instant it opens, with the reveal ON and no timer yet run. */
+const landing = (games = 5) => {
+  const { r, seed } = seriesOfLength(A, OPP4.players, games)
+  return renderToStaticMarkup(
+    createElement(Series, {
+      opponent: OPP4,
+      five: A,
+      mine: compile(A, OPP4.players),
+      theirs: compile(OPP4.players, A),
+      teamName: 'Los Angeles Lakers',
+      result: r,
+      seed,
+      onAdvance: () => {},
+    }),
+  )
+}
+
 /** The first six-game series with the outcome we want, so the screen renders settled. */
 function firstResult(us: Player[], them: Player[], won: boolean): { r: SeriesResult; seed: number } {
   for (let seed = 1; seed < 5000; seed++) {
@@ -136,7 +162,7 @@ describe('the two doors off a settled series', () => {
     expect(html).not.toContain('Next level')
     // his word for leaving goes ghost, the rematch takes the gold — after a loss it is the door wanted
     expect(html.indexOf('Back to the map')).toBeLessThan(html.indexOf('>Rematch<'))
-    expect(html).toContain('<button class="btn ghost">Back to the map</button>')
+    expect(html).toContain('<button class="btn ghost" data-door="map">Back to the map</button>')
     expect(html).toContain('<button class="btn">Rematch</button>')
   })
 
@@ -272,5 +298,183 @@ describe('the campaign series screen is unchanged', () => {
     expect(html).toContain('● LIVE')
     expect(html).toContain('Skip to result')
     expect(html).toContain('<div class="dock-inner">')
+  })
+})
+
+/**
+ * HIS RULINGS, 2026-09-29:
+ *   "Simming a series, should be 1 game by 1, not all immidiately."
+ *   "After simming, make every game pressable, to see what happnenned in that game(Box score
+ *    wise)."
+ *
+ * The engine resolves a series in one call and always will; what these pin is that the SCREEN no
+ * longer hands him the finished thing. Nothing here touches a number: the same series, printed in
+ * the order it was played, and every night in it kept rather than averaged away.
+ */
+describe('a series lands one game at a time', () => {
+  it('opens with an empty strip, a 0-0 score and nothing that pronounces on the series', () => {
+    const html = landing(5)
+    // SEVEN slots, all of them waiting — his ruling, 2026-09-30: "Its showing 4 tickets before the
+    // series ends, so I know it will be a sweep." While it lands the strip is the FORMAT, not the
+    // outcome; it settles to the games actually played, which the next case pins.
+    expect(html.split('class="gt pending"').length - 1).toBe(7)
+    // "Game 1", never "Game 1 of 5" — his ruling, 2026-09-29: the LENGTH of a series is its
+    // result, so a caption counting towards a total hands him the ending before a chip lands
+    expect(html).toContain('Game 1')
+    expect(html).not.toContain('Game 1 of')
+    expect(html).toContain('<span class="u">0</span>')
+    expect(html).toContain('<span class="t">0</span>')
+    // and none of the things that only a decided series may say
+    for (const settledOnly of ['Where it was won', 'The night belonged to', 'class="stars"']) {
+      expect(html).not.toContain(settledOnly)
+    }
+    // the only door offered is the one out of the wait
+    expect(html).toContain('Skip to result')
+    expect(html).not.toContain('Back to the map')
+  })
+
+  it('settles into exactly the screen it settled into before', () => {
+    const html = campaign(5)
+    expect(html).not.toContain('class="gt pending"')
+    // and the strip is the games PLAYED once it has settled, not the format
+    expect([...html.matchAll(/aria-label="Game /g)]).toHaveLength(5)
+    expect(html).toContain('Where it was won')
+    expect(html).toContain('Back to the map')
+  })
+
+  it('gives nothing away about the length while it lands', () => {
+    // a four-game series must not announce itself as a sweep by drawing four slots
+    for (const n of [4, 5, 6, 7]) {
+      const html = landing(n)
+      expect(html.split('class="gt pending"').length - 1, `a ${n}-game series`).toBe(7)
+    }
+  })
+
+  it('makes every landed game a door into that night', () => {
+    const { r } = seriesOfLength(A, OPP4.players, 5)
+    const html = campaign(5)
+    // one button per game, each naming its own night for a screen reader
+    for (let k = 0; k < r.games.length; k++) {
+      expect(html).toContain(`Game ${k + 1}, `)
+    }
+    expect(html.split('aria-label="Game ').length - 1).toBe(r.games.length)
+  })
+
+  /**
+   * HIS RULING, 2026-09-29: "If the series got to 7, show the 7 animation after loading the 6
+   * games, then the animation. Currently, the game 7 animation is happenning and then I get games
+   * 1-6 (Which will always end 3-3)."
+   *
+   * The tape was built to open this screen, because before the landing existed there was nothing
+   * for it to follow. Now it goes third: six chips, the decider on the tape, the seventh chip.
+   */
+  it('holds the Game 7 tape until the first six have landed', () => {
+    const { r, seed } = seriesOfLength(A, OPP4.players, 7)
+    const html = renderToStaticMarkup(
+      createElement(Series, {
+        opponent: OPP4,
+        five: A,
+        mine: compile(A, OPP4.players),
+        theirs: compile(OPP4.players, A),
+        teamName: 'Los Angeles Lakers',
+        result: r,
+        seed,
+        onAdvance: () => {},
+      }),
+    )
+    // the strip is up and waiting; the scorebug is not
+    expect(html.split('class="gt pending"').length - 1).toBe(7)
+    expect(html).not.toContain('● LIVE')
+    expect(html).not.toContain('>GAME 7<')
+    // and the landing is the only thing offering a way out of itself
+    expect(html).toContain('Skip to result')
+  })
+
+  it('still opens straight onto the tape when the landing is off', () => {
+    // which is what a reduced-motion machine gets, and what the settled-screen cases render
+    expect(campaign(7)).toContain('● LIVE')
+  })
+
+  /**
+   * HIS RULING, 2026-09-29: "In campaign, dont offer me rematch when I sweep." A rematch exists to
+   * BETTER a night, and a sweep is already worth the most a level can pay. What must NOT happen is
+   * the one the dock's shapes made easy: the three-door case asks for a rematch AND a next level,
+   * so taking the rematch away used to take the way on with it.
+   */
+  it('docks no rematch after a sweep, and still docks the way on', () => {
+    for (let seed = 1; seed < 5000; seed++) {
+      const r = simSeries(compile(A, OPP4.players), compile(OPP4.players, A), makeRng(seed), SIGMA)
+      if (!(r.won && r.losses === 0)) continue
+      expect(canBetter(r)).toBe(false)
+      const html = renderToStaticMarkup(
+        createElement(Series, {
+          reveal: false,
+          opponent: { ...opponents[3], round: 12 },
+          five: A,
+          mine: compile(A, OPP4.players),
+          theirs: compile(OPP4.players, A),
+          teamName: 'Los Angeles Lakers',
+          result: r,
+          seed,
+          onAdvance: () => {},
+          // App withholds it for a swept level; this pins what the dock does when it is withheld
+          onNext: () => {},
+        }),
+      )
+      expect(html).not.toContain('>Rematch<')
+      expect(html).toContain('Next level')
+      expect(html).toContain('Back to the map')
+      return
+    }
+    throw new Error('no sweep in 5000 seeds')
+  })
+
+  it('still offers the rematch when the night could have been better', () => {
+    const { r } = firstResult(A, OPP4.players, true)
+    expect(r.losses).toBeGreaterThan(0)
+    expect(canBetter(r)).toBe(true)
+    expect(dock({ won: true, next: true })).toContain('>Rematch<')
+  })
+
+  /**
+   * HIS RULING, 2026-09-30: "After simming, add myteam button in deathmatch campaign." A run
+   * carries one five from the first level to the last, so the end of a series is when he wants to
+   * look at it — and it was two screens away. Absent in every other mode, which has no such
+   * screen: App only hands the door over when the mode is the death match and the run has a five.
+   */
+  it('offers the death match its own door to My team, and no other mode one', () => {
+    const { r, seed } = seriesOfLength(A, OPP4.players, 5)
+    const draw = (over: Record<string, unknown>) =>
+      renderToStaticMarkup(
+        createElement(Series, {
+          reveal: false,
+          opponent: OPP4,
+          five: A,
+          mine: compile(A, OPP4.players),
+          theirs: compile(OPP4.players, A),
+          teamName: 'Los Angeles Lakers',
+          result: r,
+          seed,
+          onAdvance: () => {},
+          ...over,
+        }),
+      )
+    expect(draw({ onMyTeam: () => {} })).toContain('My team →')
+    expect(draw({})).not.toContain('My team →')
+  })
+
+  it('keeps every night, and the nights add up to the averages beside them', () => {
+    const { r, seed } = seriesOfLength(A, OPP4.players, 5)
+    const scores = r.games.map((g) => ({ us: g.us, them: g.them }))
+    const box = seriesBox(A, OPP4.players, L, r.games, scores, makeRng(seed ^ 0x2545f491))
+    expect(box.perGame).toHaveLength(r.games.length)
+    box.perGame.forEach((g, i) => {
+      // a night's five men score that night's points, exactly
+      expect(g.usLines.reduce((a, l) => a + l.pts, 0)).toBe(scores[i].us)
+      expect(g.themLines.reduce((a, l) => a + l.pts, 0)).toBe(scores[i].them)
+    })
+    // and the series line printed beside them is the mean of those nights
+    const mean = box.perGame.reduce((a, g) => a + g.us.pts, 0) / box.perGame.length
+    expect(box.us.pts).toBeCloseTo(mean, 6)
   })
 })

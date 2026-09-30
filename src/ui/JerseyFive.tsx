@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import type { Player } from '../engine/types'
-import { POSITIONS } from '../engine/positions'
 import { Ball } from './Ball'
 import { LINES } from './Stat'
 import { cardInk, type TeamColor } from './teamColors'
 import { surnameCaps } from '../engine/names'
+import { Jumbotron } from './Jumbotron'
 
 /**
  * GAME NIGHT'S FLOOR (the design bundle, screen 5) — user mode only.
@@ -246,16 +246,11 @@ export function TipOff({
   bug,
   us,
   them,
-  usName,
-  themName,
   step,
   bump = 0,
   flash = false,
-  shooting = false,
   mine,
   theirs,
-  myClub = null,
-  theirClub = null,
   map,
   onTap,
   rows,
@@ -264,17 +259,11 @@ export function TipOff({
   /** The two abbreviations on the scorebug. */
   us: string
   them: string
-  /** The two names on the club bands — the franchise you named, and the team you are playing. */
-  usName: string
-  themName: string
   step: string
   bump?: number
   flash?: boolean
-  shooting?: boolean
   mine: Player[]
   theirs: Player[]
-  myClub?: TeamColor | null
-  theirClub?: TeamColor | null
   /**
    * The board, resolved: `map[i]` is the index of the man in `theirs` that `mine[i]` guards. Null
    * while there is no board to draw — then the nameplates fall back to the season headline they
@@ -289,41 +278,26 @@ export function TipOff({
    */
   rows?: ReactNode
 }) {
-  /** The same five pairings read the other way: who is on their man `j`. */
-  const guard: (number | undefined)[] = []
-  if (map) map.forEach((j, i) => (guard[j] = i))
   return (
-    <div className="tipoff">
-      <CrowdBar bug={bug} us={us} them={them} step={step} bump={bump} flash={flash} />
-      <div className="tip-band you">
-        <b>{usName}</b>
-        <i>Your five</i>
-      </div>
-      <JerseyFive
-        club={myClub}
-        shooting={shooting}
-        spots={mine.map((p, i) => ({
-          p,
-          slot: POSITIONS[i] ?? String(i + 1),
-          note: map && theirs[map[i]] ? `on ${surname(theirs[map[i]].name)}` : undefined,
-          onTap: onTap ? () => onTap(p) : undefined,
-        }))}
-      />
-      <div className="tip-band them">
-        <b>{themName}</b>
-        <i>Who guards whom</i>
-      </div>
-      <JerseyFive
-        club={theirClub}
-        spots={theirs.map((p, j) => ({
-          p,
-          slot: POSITIONS[j] ?? String(j + 1),
-          note: guard[j] !== undefined && mine[guard[j]!] ? `${surname(mine[guard[j]!].name)} on him` : undefined,
-          onTap: onTap ? () => onTap(p) : undefined,
-        }))}
+    <div className="tipoff jumbo-tipoff">
+      {/* THE JUMBOTRON (his ruling, 2026-09-30: "Use the Jumbotron E2"). What stood here was the
+          crowd bar and two jersey floors — your five drawn once and theirs drawn again under it,
+          with the pairing on the nameplates. The board says the same four things in one readout;
+          see Jumbotron.tsx for what moved and what did not. */}
+      <Jumbotron
+        bug={bug}
+        us={us}
+        them={them}
+        step={step}
+        bump={bump}
+        flash={flash}
+        mine={mine}
+        theirs={theirs}
+        map={map}
+        onTap={onTap}
       />
       {/* THE ROSTER. Last in the DOM and placed by the stylesheet, so the phone can read it
-          straight after your own floor and a desk can stand it beside both of them. */}
+          straight after the board and a desk can stand it beside. */}
       {rows ? <div className="tip-rows">{rows}</div> : null}
     </div>
   )

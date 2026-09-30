@@ -289,36 +289,35 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
   it('balanced is no call: the best-fit read and its caption stay exactly as they were', () => {
     expect(draw({ style: 'balanced', pnr: null })).toBe(draw(null))
     expect(caption(draw(null))).not.toContain('your tactic')
-    // his ruling removed the "· no better fit" tail: a balanced read is now the bare label, and
-    // what this case is really pinning is that the read is still INFERRED and not called.
+    // his ruling removed the "· no better fit" tail, and his ruling of 2026-09-29 removed the
+    // rest of the apparatus with it ("Remove best fit 60 Billups ... add Tactic: Helio"): an
+    // inferred read is the label alone, under a Tactic: stamp. What this case is really pinning is
+    // that the read is still INFERRED and not called.
     const inferred = inferredStyle(FIVE)!.style
-    expect(caption(draw(null))).toContain(inferred === 'balanced' ? 'Balanced' : 'best fit')
-    if (inferred === 'balanced') expect(caption(draw(null))).not.toContain('no better fit')
+    expect(caption(draw(null))).toBe(`Tactic: ${inferred === 'balanced' ? 'Balanced' : STYLES.find((x) => x.key === inferred)!.label}`)
+    expect(caption(draw(null))).not.toContain('best fit')
+    expect(caption(draw(null))).not.toContain('no better fit')
   })
 
-  it('the best-fit caption names the man, or the pair, the shape runs through', () => {
-    // recal_115, his ruling: "Why is the system helio for rus when KD is a better scorrer?" — the
-    // read used to name a shape and no man. The Thunder '16 read the two-man game between their two
-    // stars and the caption names both; the Thunder '22 read helio and it names the one man.
-    // recal_214 moved WHICH two-man game it is to the pop (his ruling: "KD is a better midpt
-    // shooter than a finisher, and westbrook is a better finisher than shooter, so it needs to be
-    // pnp not pnr") — the two names are the ruling here, and they are unchanged.
-    // recal_222: the Thunder '16's winning read moved to the PIN-DOWN, which features ONE man (Durant),
-    // so the caption names one. recal_214's ruling is still satisfied where it is a statement about the
-    // two-man game — the POP caption on this five still reads "Westbrook + Durant", asserted below.
+  /**
+   * THE SHAPE IS STILL READ OFF THE FIVE — the caption no longer NAMES the man it runs through
+   * (his ruling, 2026-09-29: "Remove best fit 60 Billups"), which was recal_115's answer to "Why
+   * is the system helio for rus when KD is a better scorrer?". The reading itself is what that
+   * ruling was about and it is unchanged; this pins the READ rather than the sentence, so the
+   * Thunder '16 still come out a pick-and-pop and the Thunder '22 still come out helio.
+   */
+  it('reads the shape off the five, and says only which shape', () => {
+    // the CAPTION is the assertion, not the style key behind it: the key is the engine's private
+    // name for the shape and the label is what the ruling is about
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toMatch(/^pin-down · best fit \d+ · Durant$/)
-    expect(caption(draw({ style: 'pickpop', pnr: null }, okc16))).toMatch(/Westbrook \+ Durant/)
+    expect(caption(draw(null, okc16))).toBe('Tactic: pick-and-pop')
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
-    expect(caption(draw(null, okc22))).toMatch(/^helio · best fit \d+ · Gilgeous-Alexander$/) // the fit number rides the pool (recal_116 moved it 65 -> 64); the man is the ruling
-    // ...and a shape that features nobody names nobody, rather than picking a starter at random
-    // recal_222: Boston '25's winning read moved to the pick-and-pop, which DOES feature a pair, so the
-    // "features nobody names nobody" half of this row is asserted on five-out as a CALL instead.
+    expect(caption(draw(null, okc22))).toBe('Tactic: helio')
     const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
-    expect(caption(draw(null, bos25))).toMatch(/^pick-and-pop · best fit \d+ · Tatum \+ Porziņģis$/)
-    expect(caption(draw({ style: 'fiveout', pnr: null }, bos25))).not.toMatch(/·[^·]+·/)
+    expect(caption(draw(null, bos25))).toBe('Tactic: five-out')
+    // and not one of them carries the apparatus any more
+    for (const five of [okc16, okc22, bos25]) expect(caption(draw(null, five))).not.toContain('best fit')
   })
-
   it('a five still being filled keeps the ghost floor, and claims no shape', () => {
     const four = [...FIVE.slice(0, 4), null]
     expect(draw({ style: 'fiveout', pnr: null }, four)).toBe(draw(null, four))
@@ -771,7 +770,7 @@ describe('the triangle stands a triangle on the strong side and the two-man game
   it('the caption names the post option', () => {
     const plan = { ...DEFAULT_TACTICS, style: 'triangle' as const }
     expect(cap(shot({ spots: spotsOf(BULLS), tactic: plan }))).toBe('triangle · Jordan · your tactic')
-    expect(cap(shot({ spots: spotsOf(BULLS) }))).toContain('triangle · best fit')
+    expect(cap(shot({ spots: spotsOf(BULLS) }))).toBe('Tactic: triangle')
   })
 })
 

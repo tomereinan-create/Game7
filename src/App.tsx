@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
@@ -6,9 +6,12 @@ import { TeamDb } from './ui/TeamDb'
 import { odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
+import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
-import { benchHeal, buy, capBonus, checkpointLevel, duraBoost, livesBought, paceMastery, playbookRank, respec, subsPerRound } from './engine/tree'
+import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
+import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
+import { Coach } from './ui/Coach'
+import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
 import { makeRng, randomSeed } from './engine/rng'
@@ -28,6 +31,7 @@ import {
   loadTeam,
   MODES,
   resetProgress,
+  resetTutorialSaves,
   saveProgress,
   saveTeam,
   starsFromUrl,
@@ -35,7 +39,8 @@ import {
   type Progress,
   type Team,
 } from './state/campaign'
-import { useUserMode } from './state/viewmode'
+import { isTutorial, useTutorial, useUserMode } from './state/viewmode'
+import { requestTeam, useTeamRequest } from './state/openteam'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
@@ -127,6 +132,21 @@ export default function App() {
   const [ach, setAch] = useState(false)
   const [teamDb, setTeamDb] = useState(false)
   /**
+   * A PLAYER CARD ASKED FOR HIS TEAM (his ruling, 2026-09-30 — see state/openteam.ts). The Team
+   * database opens on that season, over whatever was up, and the other reference overlays step
+   * aside: the chain below shows the first one standing, and a database under the roster would
+   * not be seen. The ask is cleared when the database is closed, so the next visit from the front
+   * door starts on the list as it always has.
+   */
+  const teamReq = useTeamRequest()
+  useEffect(() => {
+    if (!teamReq) return
+    setRoster(false)
+    setArchs(false)
+    setAch(false)
+    setTeamDb(true)
+  }, [teamReq])
+  /**
    * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). A way of
    * LOOKING at the ladder, and his second ruling makes that literal: "When moving the auto mode to
    * off, clear back all the completed stages and return to normal." So it BORROWS the ladder
@@ -144,6 +164,8 @@ export default function App() {
       onUnlocked((d) => {
         setToasts((t) => [...t, d])
         window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
+        // the tutorial's coach says what a toast is, the first time one goes up
+        if (isTutorial()) teachOnce('trophy', () => trophyLesson(d))
       }),
     [],
   )
@@ -160,6 +182,16 @@ export default function App() {
     document.body.classList.toggle('um', userMode)
     return () => document.body.classList.remove('um')
   }, [userMode])
+  /**
+   * TUTORIAL MODE IS USER MODE WITH A COACH (his ruling, 2026-09-30). `um` is set above for it
+   * too — every gate user mode has, it has — and `tut` is the one extra class, for the coach's
+   * own furniture. The lessons themselves are hooked on further down, once the screen is known.
+   */
+  const tutorial = useTutorial()
+  useEffect(() => {
+    document.body.classList.toggle('tut', tutorial)
+    return () => document.body.classList.remove('tut')
+  }, [tutorial])
 
   /**
    * THE DOCK MEASURES ITSELF (E9). Nearly every screen ends in a dock fixed to the foot of the
@@ -251,6 +283,68 @@ export default function App() {
     setPickTeam(false)
   }
   const teamName = team ? `${team.city} ${team.name}` : 'Your team'
+
+  /**
+   * WHICH SCREEN IS UP, as the render below decides it — the same chain of conditions, in the
+   * same order, read here once so the coach can be handed lessons BEFORE the early returns (hooks
+   * cannot follow them). If the chain below changes, this changes with it.
+   */
+  const screen =
+    mode === null
+      ? 'door'
+      : mode === 'custom'
+        ? 'custom'
+        : mode === 'auction'
+          ? 'auction'
+          : mode === 'versus' || !cm || !prog
+            ? 'versus'
+            : team === null || pickTeam
+              ? 'team'
+              : myTeam && death && carry && (!level || !opponent)
+                ? 'myteam'
+                : staff && (!level || !opponent)
+                  ? 'staff'
+                  : !level || !opponent
+                    ? 'map'
+                    : pending
+                      ? 'result'
+                      : 'draft'
+  const bal = prog ? balance(prog) : 0
+  /* THE COACH'S LESSONS, ONE PER ROOM (tutorial mode). Each is told the first time its room is on
+     the screen, built off what App knows about it then. The draft and the result hook their own
+     (they know the wheel and the strip); the front door hooks its own. */
+  useLesson('custom', screen === 'custom', customLesson)
+  useLesson('versus', screen === 'versus', versusLesson)
+  useLesson('auction', screen === 'auction', auctionLesson)
+  useLesson(pickTeam ? 'team.rename' : 'team', screen === 'team', () => teamLesson(pickTeam))
+  useLesson('map', screen === 'map', () =>
+    mapLesson({ mode: cm!, level: currentLevel(prog!), opp: (() => { const l = currentLevel(prog!); return l ? opponents[l - 1] : null })(), eras: ERAS, bal, lives: prog!.lives }),
+  )
+  useLesson(`mode.${cm ?? 'campaign'}`, screen === 'map' && cm !== 'campaign', () => ladderLesson(cm!, prog!.lives)!)
+  useLesson('spend', screen === 'map' && bal >= 1, () => spendLesson(bal))
+  useLesson('staff', screen === 'staff', () =>
+    staffLesson({ bal, earned: earned(prog!), branches: ['Scout', 'Front office', 'Coach', ...(capped ? (['Salary'] as Branch[]) : []), ...(death ? (['Survival'] as Branch[]) : [])] }),
+  )
+  useLesson('myteam', screen === 'myteam', () =>
+    myTeamLesson({
+      five: (carry ?? []).map((p) => ({ name: p.name, left: (prog!.wear[p.name] ?? p.attrs.durability) + duraBoost(prog!) })),
+      allowed: subsPerRound(prog!),
+      used: prog!.subsUsed,
+      bench: prog!.bench,
+      heal: benchHeal(prog!),
+      floor: WEAR_OUT,
+    }),
+  )
+  /* A NEW BLOCK REACHED: told on the map, the first time the frontier stands in it. Every block
+     above the first, so a ladder resumed halfway up is told about the blocks it is already past
+     only once — and never about block I, which the map lesson covers. */
+  useEffect(() => {
+    if (!tutorial || screen !== 'map' || !prog) return
+    const top = currentLevel(prog) ?? ROUNDS + 1
+    ERAS.forEach((e, k) => {
+      if (k > 0 && top >= e.first) teachOnce(`era.${k}`, () => eraLesson(k, ERAS))
+    })
+  }, [tutorial, screen, prog])
 
   const sim = (five: Player[], assignment: Assignment, toWin: number) => {
     if (!opponent || !prog || !cm || !level) return
@@ -351,6 +445,8 @@ export default function App() {
       const settled = pending.result.won ? { ...next, roster: names } : die(next)
       commit(cm, settled)
       settleAch(settled)
+      // the coach on a death-match loss: a life spent, or the run over — the same rule `die` reads
+      if (tutorial && !pending.result.won) teach(prog.lives > 0 ? lifeLesson(prog.lives - 1) : runOverLesson())
     } else {
       const settled = { ...prog, stars, record, plays: prog.plays + 1 }
       commit(cm, settled)
@@ -439,11 +535,38 @@ export default function App() {
     setTeamDb(false)
   }
 
+  /**
+   * THE TUTORIAL'S OWN SLOT (his ruling, 2026-09-30: "once I restart it starts from stage 1 (But
+   * doesnt change the stage in the other modes) (I also pick a new team name and colors only for
+   * tutorial mode)"). The saves are keyed on the view mode (state/campaign.ts, `saveKey`), so the
+   * moment the mode flips into or out of the tutorial everything this component holds is the OTHER
+   * slot's, and is read again — the three ladders and the club — and the walk goes home, because
+   * the level, the draft and the pending night were the other slot's too. A Reset tutorial (the
+   * epoch moving while in the tutorial) wipes the tutorial's slot first, so it comes back at stage
+   * one with no club, which is the team screen asking for a new name and colours. On mount nothing
+   * has flipped and nothing happens.
+   */
+  const { epoch } = useTutor()
+  const slot = useRef({ tutorial, epoch })
+  useEffect(() => {
+    const prev = slot.current
+    slot.current = { tutorial, epoch }
+    if (prev.tutorial === tutorial && prev.epoch === epoch) return
+    if (tutorial && prev.epoch !== epoch) resetTutorialSaves()
+    setProgress(Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>)
+    setTeamState(loadTeam())
+    leave()
+    // `leave` is redefined every render and is not a dependency: the flip is the event.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tutorial, epoch])
+
   // The roster is an overlay, not a screen: leaving the draft to look something
   // up must not throw away the picks already made.
   const sheet = (
     <>
-      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb onBack={() => setTeamDb(false)} /> : null}
+      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb initial={teamReq} onBack={() => { setTeamDb(false); requestTeam(null) }} /> : null}
+      {/* the tutorial's coach: renders nothing outside tutorial mode, and on every screen inside it */}
+      <Coach />
       {toasts.length ? (
         <div className="ach-toasts">
           {toasts.map((d) => (
@@ -469,6 +592,8 @@ export default function App() {
             else if (m === 'archetypes') setArchs(true)
             else if (m === 'achievements') setAch(true)
             else if (m === 'teams') setTeamDb(true)
+            // the tutorial's gate (state/tutorial.ts): the door says why on the front door itself
+            else if (tutorial && (m === 'salary' || m === 'death') && tutorialLock(m, progress)) return
             else setMode(m)
           }}
         />
@@ -604,6 +729,9 @@ export default function App() {
             // Survival nodes take effect the moment they are bought: a life bought is a life in hand,
             // and a checkpoint bought is ground you can no longer lose.
             commit(cm, death ? { ...next, lives: livesBought(next), checkpoint: checkpointLevel(next) } : next)
+            // THE UNLOCK IS EXPLAINED THE MOMENT IT IS BOUGHT (tutorial mode, his ruling: "Everytime
+            // you unlock a new feature its explained as well"). One lesson per rank of every node.
+            if (tutorial) teach(unlockLesson(id, rank(next, id)))
           }}
           onRespec={() => commit(cm, respec(prog))}
           onBack={() => setStaff(false)}
@@ -641,8 +769,11 @@ export default function App() {
                   // the same reading My team and the draft use: raw durability plus the Iron men boost
                   const left = (n: string) => (prog.wear[n] ?? PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 99) + duraBoost(prog)
                   const worn = prog.roster.filter((n) => left(n) <= WEAR_OUT).length
-                  if (worn) return worn === 1 ? 'A man is worn out — replace him in My team' : `${worn} men are worn out — My team`
-                  if (subsPerRound(prog) - prog.subsUsed > 0) return 'A change is waiting in My team'
+                  if (worn) return { kind: 'worn' as const, text: worn === 1 ? 'A man is worn out — replace him in My team' : `${worn} men are worn out — My team` }
+                  // HIS RULING, 2026-09-29: "Instead of 'A change is waiting in My team', have a
+                  // substitute icon." The map says it with the glyph now; the sentence stays as the
+                  // button's name, for a screen reader and for a hover.
+                  if (subsPerRound(prog) - prog.subsUsed > 0) return { kind: 'sub' as const, text: 'A change is waiting in My team' }
                   return null
                 })()
               : null
@@ -691,7 +822,10 @@ export default function App() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
-          onRematch={runEnded ? undefined : rematch}
+          onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
+          /* the death match carries one five the whole way, so the end of a series is when he
+             wants to look at it — see `onMyTeam` in Series */
+          onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
           onNext={pending.next !== null ? advance : undefined}
         />
       </>

@@ -25,6 +25,8 @@ import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
 import { useUserMode } from '../state/viewmode'
+import { useLesson } from '../state/tutorial'
+import { boardLesson, draftLesson, durLesson, landedLesson, planLesson, salaryLesson } from './lessons'
 // COACHING TIPS is all this screen takes off the rail now (his ruling, 2026-09-09). ManHead,
 // ScoutsWord and TaleOfTheTape went with the two rails he removed — see the note in UserRail.
 import { CoachSays, CoachTipsDoor } from './UserRail'
@@ -42,6 +44,17 @@ export type { TeamSeason } from '../data/wheel'
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const SAL = SALARIES as Record<string, { sal: number; cap: number; pct: number }>
 const money = (n: number) => (n >= 1e6 ? `$${(n / 1e6).toFixed(1)}M` : `$${Math.round(n / 1e3)}K`)
+/**
+ * A team named with its season, saying the year ONCE - his ruling, 2026-09-29: "Detroit Pistons
+ * '04 '04 showing twice '04". Two of the four ladder blocks name their levels differently: The
+ * League's are a bare club with a `season` field beside them, The Champions' carry the year inside
+ * the name. A head that stamped `season` on unconditionally was right for one and doubled the
+ * other. The test is the name's own tail, not which block it came from, because a level built any
+ * other way in future gets the same answer.
+ */
+const seasonName = (team: string, season?: number | null) =>
+  !season || /’\d\d$|'\d\d$/.test(team.trim()) ? team : `${team} '${String(season).slice(2)}`
+
 /** "$30.1M · 124% of cap", or an honest blank where the record has no figure. */
 export const salaryLine = (name: string) => {
   const s = SAL[name]
@@ -544,6 +557,24 @@ export function Draft({
    */
   const oppFloor = useRef<HTMLDivElement | null>(null)
   const myFloor = useRef<HTMLDivElement | null>(null)
+  /**
+   * THE BOARD IS AS TALL AS THE DESK — his ruling, 2026-09-29: "Fill the screen with the 5s, make
+   * it bigger and longer. All modes."
+   *
+   * The three columns were `align-items: start` in a grid with no height of its own, so on a
+   * 3,840 x 1,500 desk they ended at 869 and the dock sat at 1,406: five hundred pixels of black
+   * floor under a game drawn at a laptop's size. The floors could not take it either — their width
+   * was `clamp(220px, (100vh - 648px) * 1.19, 356px)`, and 356 is a ceiling, so past a certain
+   * window every extra pixel of height went to the black.
+   *
+   * The height cannot be written in CSS: what stands above this board is a 30px band on a phone
+   * and a 42px one on a desk, the dock's own height is a variable the dock itself sets, and both
+   * change with the mode. So it is MEASURED, in the same pass that already measures the roster's
+   * box and the two floors' start line, and handed to the grid as a min-height. Everything below
+   * — the columns stretching, the cards stretching inside them and the floors taking what the
+   * rows leave — is CSS from there (see `.draft` in the stylesheet).
+   */
+  const sheet = useRef<HTMLDivElement | null>(null)
   const onRosterScroll = () => {
     const el = rosterList.current
     if (el) setRosterEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
@@ -565,6 +596,26 @@ export function Draft({
       const list = rosterList.current
       const dock = document.querySelector<HTMLElement>('.dock')
       const stacked = window.innerWidth < 900
+      /* FIRST, because everything read below is read out of the layout this sets. Stacked on a
+         phone the board is as long as its three columns are and nothing is filled to anything. */
+      /* THE FOOT OF THE PAGE, ONCE, FOR BOTH THINGS THAT MEASURE AGAINST IT. The dock's own
+         height is not the reservation: #root pads its foot by the dock plus the safe-area foot
+         plus 14, and that padding is what the page must end inside of. The board below and the
+         roster's box further down used to answer this question differently — dock + 8 against the
+         true padding — and the six pixels between the two answers were a scrollbar on a screen
+         whose whole point is that it does not scroll. */
+      const root = document.getElementById('root')
+      const foot = root ? parseFloat(getComputedStyle(root).paddingBottom) || 0 : (dock?.offsetHeight ?? 0) + 8
+      const board = sheet.current
+      if (board) {
+        board.style.minHeight = ''
+        if (!stacked) {
+          const room = window.innerHeight - board.getBoundingClientRect().top - foot
+          // FLOOR and not round: a half pixel rounded UP is a scrollbar on a screen whose ruling
+          // is that it does not scroll
+          if (room > 480) board.style.minHeight = `${Math.floor(room)}px`
+        }
+      }
       if (list && stacked) {
         // overflow off too, not just the cap: a couple of rounding pixels are enough to make the
         // box scrollable, and a 4px nested scroller swallows the page's own swipe
@@ -579,8 +630,8 @@ export function Draft({
         // dock by exactly that much and the page scrolls after all
         const card = list.closest('.card')
         const trail = card ? Math.max(0, card.getBoundingClientRect().bottom - lb.bottom) : 0
-        const room = window.innerHeight - lb.top - (dock?.offsetHeight ?? 0) - trail - 8
-        list.style.maxHeight = `${Math.max(196, Math.round(room))}px`
+        const room = window.innerHeight - lb.top - foot - trail
+        list.style.maxHeight = `${Math.max(196, Math.floor(room))}px`
         setRosterEnd(list.scrollTop + list.clientHeight >= list.scrollHeight - 2)
       }
       /* HIS RULING: "In both modes, have both 5s the same size and alligned." See `oppFloor` above
@@ -591,8 +642,12 @@ export function Draft({
          two CARDS start — in scout mode your column opens with the analysis door and the
          opponent's does not. */
       const [a, c] = [oppFloor.current, myFloor.current]
+      const courtOf = (el: HTMLDivElement | null) => el?.querySelector<HTMLElement>(':scope > .court') ?? null
+      const [ca, cc] = [courtOf(a), courtOf(c)]
       if (a) a.style.paddingTop = ''
       if (c) c.style.paddingTop = ''
+      if (ca) ca.style.maxWidth = ''
+      if (cc) cc.style.maxWidth = ''
       // the FLOOR ITSELF, not its wrapper — the wrapper carries the margins (see `.court-line`),
       // so its own top is one 10px step above the boards and the line we are setting is the boards
       const floor = (el: HTMLDivElement) => (el.firstElementChild ?? el).getBoundingClientRect().top
@@ -601,6 +656,35 @@ export function Draft({
         const line = Math.max(ta, tc)
         if (line - ta >= 1) a.style.paddingTop = `${Math.round(line - ta)}px`
         if (line - tc >= 1) c.style.paddingTop = `${Math.round(line - tc)}px`
+        /**
+         * AND THE SIZE, WHICH IS THE OTHER HALF OF THE SAME OLD RULING - "have both 5s the same
+         * size and alligned" - now that his newer one ("Fill the screen with the 5s, make it
+         * bigger and longer") has taken the 356px ceiling off them.
+         *
+         * IT CANNOT BE A CSS FORMULA. The floor is as big as the height its column has left over,
+         * and the two columns leave over DIFFERENT amounts: the opponent's card carries a record
+         * and two dials above its floor, yours carries a payroll bar in the salary cap and nothing
+         * in the campaign, and the rows below them are as tall as the lines in them. A `vh` term
+         * cannot see any of that, and a container query would see each column on its own and draw
+         * two floors of two different sizes. So the SMALLER of the two rooms is measured here and
+         * both floors are drawn to it - they end up identical because they are told to be.
+         *
+         * `room` is measured from the start line, not from each box's own top, so it is the same
+         * distance the eye reads: floor's top to the bottom of the space the flex share gave it.
+         * The width is capped by the narrower column and floored at the 220px the old clamp had,
+         * so a short window is no worse off than it was.
+         */
+        if (ca && cc) {
+          const ar = getComputedStyle(ca).aspectRatio.split('/')
+          const wh = ar.length === 2 ? Number(ar[0]) / Number(ar[1]) : 100 / 84
+          const room = Math.min(a.getBoundingClientRect().bottom, c.getBoundingClientRect().bottom) - line
+          const wide = Math.min(a.clientWidth, c.clientWidth)
+          if (room > 0 && Number.isFinite(wh) && wh > 0) {
+            const size = Math.max(220, Math.min(wide, Math.round(room * wh)))
+            ca.style.maxWidth = `${size}px`
+            cc.style.maxWidth = `${size}px`
+          }
+        }
       }
     }
     measure()
@@ -689,6 +773,43 @@ export function Draft({
    * card that draws them simply is not there while the draft is still going on.
    */
   const tips = user && full ? coachSays(five, opponent.players, assignment) : []
+
+  /**
+   * THE COACH'S LESSONS ON THIS SCREEN (tutorial mode — his ruling, 2026-09-30). Four states, one
+   * lesson each, told the first time the state is true and never again: the screen itself, the
+   * wheel landed, the playbook open, the board open. (The five-in lesson stood here too; his
+   * ruling the same day: "Remove Tutorial · Five in completely.") Each is built off what this
+   * render knows — tonight's opponent, the team the wheel stopped on, the spots still open, the
+   * charges left — and the coach lights the real control. Nothing here renders; see Coach.tsx.
+   * A carried five (the death match after level 1) is its own first lesson, because there is no
+   * wheel to explain and the five is already on the floor.
+   */
+  const lessonCtx = { hasBoard: has('coach_manual'), hasPlan: canCallPlan, tips: user && tips.length > 0 }
+  useLesson(carry ? 'draft.carry' : 'draft.spin', true, () =>
+    draftLesson({ level: opponent.round, opp: opponent, salary, death, carry: !!carry, spins: rank(wallet, 'fo_spin'), changeLeft: spinLeft, ...lessonCtx }),
+  )
+  useLesson('draft.landed', !!spun && !spinning, () =>
+    landedLesson({ team: spun!.team, year: spun!.y, open, respins: charges('fo_spin'), seasonRespins: charges('fo_respin') }),
+  )
+  useLesson('plan', planOpen && full && canCallPlan, () => planLesson(playbookRank(wallet), death))
+  /* his rulings, 2026-09-30: the salary the first time the wheel lands in the Salary cap, and DUR the
+     first time it lands in the Death match. `roster` is the landed list, declared further down and
+     read only inside the builder, after this render has finished. */
+  useLesson('salary.landed', salary && !!spun && !spinning, () =>
+    salaryLesson({
+      capUsed,
+      capMax,
+      capLeft,
+      reserve,
+      budget,
+      after: Math.max(0, DRAFT_SIZE - picks.length - 1),
+      greyed: roster.filter((p) => overCap(p.name)).map((p) => ({ name: p.name, cost: capPct(p.name) })),
+    }),
+  )
+  useLesson('death.dur', death && !!spun && !spinning, () =>
+    durLesson({ boost: duraBoost(wallet), floor: WEAR_OUT, sample: roster[0] ? { name: roster[0].name, dur: left(roster[0].name) } : null }),
+  )
+  useLesson('board', boardOpen && full, () => boardLesson(rank(wallet, 'coach_manual') >= 2))
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
   const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
@@ -772,14 +893,25 @@ export function Draft({
     setInfo(name)
   }
 
-  const confirm = () => {
-    if (!sel || !slot) return
-    setSlots((cur) => ({ ...cur, [slot]: sel }))
+  /**
+   * PRESSING THE RING IS THE ASSIGNMENT - his ruling, 2026-09-29: "Assign when pressing the
+   * position in Assign to PG SG SF PF C". The chips used to AIM the pick and leave the commit to
+   * the dock button below, which made a two-press job out of a row of five targets that each name
+   * exactly one outcome. `commit` takes the ring rather than reading it off state, because a chip
+   * has to both choose and commit in the same press and `setSlot` would not have landed yet.
+   */
+  const commit = (at: Pos) => {
+    if (!sel) return
+    setSlots((cur) => ({ ...cur, [at]: sel }))
     setSpun(null)
     setDisplay(null)
     setSel(null)
     setSlot(null)
     setInfo(null)
+  }
+  /** The dock's own button: the ring it commits is the one the chips last lit. */
+  const confirm = () => {
+    if (slot) commit(slot)
   }
 
   const canMove = (from: Pos, to: Pos) => canMoveSlot(slots, posOf, from, to)
@@ -1289,9 +1421,18 @@ export function Draft({
        */
       <div className="row dr chair" key={x} aria-hidden>
         <span className="pname">
+          {/* THE INSTRUCTION IS THE HEADLINE, THE RING IS THE CAPTION — his ruling, 2026-09-29:
+              "Instead of PG / open — draft a man here, have draft a man here large on top and pg
+              below. Make sure it alligns with the opposing team 5." On the other side of this
+              screen the big line is a MAN and the small line under it is his positions, so a chair
+              that put its ring on the big line was reading the other way round from the column it
+              stands beside: five position codes down the headline column, and the one thing the
+              row is actually telling him to do set in the caption. Swapped, the two columns say
+              the same kind of thing on the same line — and `--drow` holds them to the same height,
+              which is the alignment the ruling asks for. */}
           <span className="who">
-            <b>{x}</b>
-            <i>open — draft a man here</i>
+            <b>Draft a man here</b>
+            <i>{x}</i>
           </span>
         </span>
         <span className="mini">
@@ -1358,7 +1499,12 @@ export function Draft({
           sheet across a 1920px desk. Scout mode never takes this class: its left column carries
           the dials, the exact axis ratings and the opponent's sheets, and its right carries the
           matchup panel and the odds — that IS scout mode, and he named neither. */}
-      <div className={`draft${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
+      {/* `cap` — his ruling, 2026-09-29: "Allign the salary cap to fit the box." The salary line
+          is a THIRD line inside a row whose height was measured for two, so in the salary cap the
+          money ran out of the bottom of every row and printed over the name under it. A row's
+          height is one number in the stylesheet and only this screen knows whether the money is
+          on, so this is how the stylesheet is told — see `--drow`. */}
+      <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
           man is in — and the moment he is, the thing to look at is the two teams facing, not the
@@ -1392,10 +1538,13 @@ export function Draft({
             the team name not below") — one row, the headline on the left and the two dials on the
             right, which gives the height the dials took back to the floor and the roster below. */}
         <div className="opp-top">
-          <div className="opp-name">
-            {opponent.team}
-            {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
-          </div>
+          {/* THE YEAR IS SAID ONCE - his ruling, 2026-09-29: "Detroit Pistons '04 '04 showing
+              twice '04". The League's levels carry a bare club ("Detroit Pistons") and a `season`
+              beside it, so the head stamps the year on; the Champions' levels carry the year IN
+              the name already ("Denver Nuggets '23", "Detroit Pistons '04") and were getting it
+              stamped on a second time. `seasonName` only stamps a name that does not already end
+              in one. */}
+          <div className="opp-name">{seasonName(opponent.team, opponent.season)}</div>
           {user ? null : <TeamDials five={opponent.players} tone="them" vs={opponent.season ?? 'field'} />}
         </div>
         {/* The NET is an engine number and the axis line below it is engine ratings — or, unbought,
@@ -1612,7 +1761,7 @@ export function Draft({
                           key={x}
                           className={`sortb ${slot === x ? 'on' : ''} ${can ? '' : 'no'}`}
                           disabled={!can}
-                          onClick={() => can && setSlot(x)}
+                          onClick={() => can && commit(x)}
                         >
                           {x}
                         </button>
@@ -1703,7 +1852,7 @@ export function Draft({
           has always been. Gated on a full five for the same reason the board is: every call is a
           FIT question about the personnel, and there is nothing to fit until the five is in. */}
       {planOpen && full && canCallPlan ? (
-        <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet sheet2 playsheet" onClick={(e) => e.stopPropagation()}>
           <div className="topbar">
             <span>Playbook</span>
             <button onClick={() => setPlanOpen(false)}>← Done</button>
@@ -1716,15 +1865,28 @@ export function Draft({
                   nothing says whether one was good. The same words My team's head uses. */}
               <span className="cap">{user || planWorth === null ? 'your plan' : worthLine(planWorth)}</span>
             </div>
-            <CourtFive
-              club={club}
-              plan={plan}
-              side={planSide}
-              onSide={setPlanSide}
-              spots={five.map((p, i) => ({ p, slot: POSITIONS[i], tag: user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`, onTap: () => openCard(p) }))}
-            />
+            {/* THE FLOOR TAKES THE HEIGHT THE CALLS LEAVE - his ruling, 2026-09-29: "make
+                everything to cover the screen, and especially the court bigger and defense offense
+                way bigger". This sheet IS the whole window and always was; what stood in it was a
+                430px floor and six 64px rows, so on his desk the panel ended 560px above the
+                bottom of the screen with the plan drawn at a phone's size in the middle of it.
+                The wrapper is the measured box: `.playfloor` takes what the head and the calls
+                leave and the floor is the biggest one that fits in it. */}
+            <div className="playfloor">
+              <CourtFive
+                club={club}
+                plan={plan}
+                side={planSide}
+                onSide={setPlanSide}
+                spots={five.map((p, i) => ({ p, slot: POSITIONS[i], tag: user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`, onTap: () => openCard(p) }))}
+              />
+            </div>
             {/* the opponent goes through, which My team cannot do: standing across from a named
-                five, the scheme's and the hunt's fits here ARE the ones the odds card below uses */}
+                five, the scheme's and the hunt's fits here ARE the ones the odds card below uses.
+                WRAPPED, so that on a desk wide enough the calls can stand BESIDE the floor rather
+                than under it - see `.playcalls`. `TacticsCalls` itself returns a fragment of rows
+                and is unchanged. */}
+            <div className="playcalls">
             <TacticsCalls
               tactics={called ?? tactics!}
               playbook={playbookRank(wallet)}
@@ -1733,6 +1895,7 @@ export function Draft({
               side={planSide}
               onTactics={onTactics!}
             />
+            </div>
           </div>
         </div>
       ) : null}
@@ -1921,19 +2084,11 @@ export function Draft({
             bug={bug}
             us={teamCode(teamName)}
             them={opponent.ab ?? teamCode(opponent.team)}
-            usName={teamName}
-            themName={opponent.team}
             step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
             bump={bump}
             flash={flash}
-            shooting={shooting}
             mine={five}
             theirs={opponent.players}
-            /* his kit on his shirts, their club on theirs — the two are told apart by colour before
-               a name is read, and a club is a fact about the team, which is why it stands in both
-               modes now that the two share this panel */
-            myClub={club}
-            theirClub={teamColor(opponent.ab)}
             map={boardMap}
             /* HIS RULING: "Pressing on a player shouldnt open the thing on the buttom left, it
                shall open photo #2." A shirt has no row to open out into, so it opens the man's

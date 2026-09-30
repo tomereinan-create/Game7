@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
-import { setUserMode } from '../state/viewmode'
+import { setViewMode, useViewMode } from '../state/viewmode'
+import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
+import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
 import { myColor } from './teamColors'
 import { Ball } from './Ball'
@@ -148,6 +150,17 @@ type Zone = {
   pick: Mode
   cup: boolean
   x: string
+  /**
+   * DOWN THE FLOOR FROM THE TOP, as a percentage of the court box — 0 is the half-court line and
+   * 100 is the baseline, so a bigger number is nearer the hoop.
+   *
+   * HIS RULING, 2026-09-29: "move jerseys 2,3,6 a little bit closer to the 3pt line." Measured on
+   * his own desk, the arc passes through 57.3% at the wings (x 17 and 83) and 35.9% at the top
+   * (x 50) — so SALARY CAP and DEATH MATCH stood 21 points above the line they were meant to be
+   * standing on, and 1V1 BID stood 20 above it. Seven points each closes a third of that: near
+   * enough to read as men spotted up outside the arc, far enough that the plates still clear the
+   * boundary they hang over.
+   */
   y: string
   side: 1 | -1
   no: string
@@ -208,6 +221,30 @@ export function FrontDoor({
    * user mode's, on the mode prop. THE MODE IS SPENT HERE (3 of 3).
    */
   const cup = (p: Progress) => user && currentLevel(p) === null
+  /**
+   * WHICH CHIP IS LIT is the three-way mode, not the two-way blindfold: the tutorial is user
+   * mode with a coach (state/viewmode.ts), so `user` is true for both and cannot tell them apart.
+   */
+  const vm = useViewMode()
+  /**
+   * THE TUTORIAL'S GATE (his ruling, 2026-09-30): in tutorial mode the Salary cap waits for 30 stars
+   * on the Campaign and the Death match for 30 on the Salary cap. The rule is `tutorialLock`; this
+   * screen only draws it — a lock over the shirt, the reason in the read, the button greyed — and
+   * App refuses the pick as well, so a locked door cannot be opened by any route.
+   */
+  const lockOf = (m: CampaignMode) => (vm === 'tutorial' ? tutorialLock(m, progress) : null)
+  const lockLine = (l: NonNullable<ReturnType<typeof tutorialLock>>) =>
+    `Locked in the tutorial until ${l.stars} stars are banked on ${l.needs === 'campaign' ? 'the Campaign' : 'the Salary cap'} — ${l.have} so far.`
+  /* THE COACH'S FIRST WORD (tutorial mode): the door explains itself the first time it is seen
+     through this lens. Built off what the door already knows — the club, the next level up. */
+  useLesson('door', true, () =>
+    doorLesson({
+      team: team ? `${team.city} ${team.name}` : null,
+      cur,
+      cleared: clearedCount(progress.campaign),
+      stars: totalStars(progress.campaign),
+    }),
+  )
 
   /**
    * The six, in the board's own order and at ITS OWN COORDINATES — his override #1. x/y are
@@ -263,7 +300,7 @@ export function FrontDoor({
       pick: 'salary',
       cup: cup(progress.salary),
       x: '17%',
-      y: '36%',
+      y: '43%',
       side: 1,
       no: '02',
       jersey: '2',
@@ -284,7 +321,7 @@ export function FrontDoor({
       pick: 'death',
       cup: cup(progress.death),
       x: '83%',
-      y: '36%',
+      y: '43%',
       side: -1,
       no: '03',
       jersey: '3',
@@ -352,7 +389,7 @@ export function FrontDoor({
       pick: 'auction',
       cup: false,
       x: '50%',
-      y: '16%',
+      y: '23%',
       side: 1,
       no: '06',
       jersey: '6',
@@ -375,6 +412,7 @@ export function FrontDoor({
     },
   ]
   const z = zones[sel]
+  const zlock = z.pick === 'salary' || z.pick === 'death' ? lockOf(z.pick) : null
   /**
    * WHICH LADDER THE MARK YOU ARE READING BELONGS TO, or null for the three side modes — Custom, VS
    * Friend and 1v1 Bid keep no progress of their own. The identity row's two figures follow this.
@@ -581,7 +619,9 @@ export function FrontDoor({
             mark and wordmark grow with the window together. It carries the 7, and since his ruling
             of 2026-09-10 so does the ball on the floor below — there is no ball in this app without
             one any more. */}
-        <Ball size="clamp(42px, calc(var(--fd-u) * 3.4), 88px)" dribble />
+        {/* "Game 7 and the ball bigger" (his ruling, 2026-09-29, Home.dc.html). The wordmark beside
+            it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
+        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 243px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>
@@ -637,12 +677,25 @@ export function FrontDoor({
             on both boards; only which one is lit changes, because a player who cannot get from one
             mode to the other is stuck in the one he is in. */}
         <span className="fd-modes" role="group" aria-label="How do you want to see the game?">
-          <button className={`fd-mode${user ? ' on' : ''}`} onClick={() => setUserMode(true)} aria-pressed={user}>
+          <button className={`fd-mode${vm === 'user' ? ' on' : ''}`} onClick={() => setViewMode('user')} aria-pressed={vm === 'user'}>
             User
           </button>
-          <button className={`fd-mode${user ? '' : ' on'}`} onClick={() => setUserMode(false)} aria-pressed={!user}>
+          {/* THE THIRD CHIP (his ruling, 2026-09-30): user mode with the coach. It sits between the
+              two because that is what it is — user's blindfold, scout's explanations. */}
+          <button className={`fd-mode${vm === 'tutorial' ? ' on' : ''}`} onClick={() => setViewMode('tutorial')} aria-pressed={vm === 'tutorial'}>
+            Tutorial
+          </button>
+          <button className={`fd-mode${vm === 'scout' ? ' on' : ''}`} onClick={() => setViewMode('scout')} aria-pressed={vm === 'scout'}>
             Scout
           </button>
+          {/* THE COACH'S ? ON THE DOOR: every other screen floats it under the home fab, and on
+              this one, at phone width, that corner is where the chips wrap to — so the door
+              carries it here, beside the choice that switched the coach on. */}
+          {vm === 'tutorial' ? (
+            <button className="fd-mode fd-help" onClick={() => openIndex(true)} aria-label="Tutorial — every lesson so far" title="Tutorial lessons">
+              ?
+            </button>
+          ) : null}
         </span>
         {/* the wrap point on a phone: everything above this runs on line one, everything below it on
             line two. Display:none above 640px, where the row is the single line the design draws. */}
@@ -729,7 +782,7 @@ export function FrontDoor({
               {zones.map((s, i) => (
                 <button
                   key={s.pick}
-                  className={`fd-mark${i === sel ? ' on' : ''}`}
+                  className={`fd-mark${i === sel ? ' on' : ''}${(s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick) ? ' locked' : ''}`}
                   style={
                     {
                       left: s.x,
@@ -744,8 +797,24 @@ export function FrontDoor({
                      is named in full and in the order it should be heard — "Campaign, all 150
                      cleared" rather than the cup first and the play after it. Every other mark takes
                      its name from the plate, which is what it always did. */
-                  aria-label={s.cup ? `${s.label}, all ${ROUNDS} cleared` : undefined}
+                  aria-label={
+                    (s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick)
+                      ? `${s.label}, locked — ${lockLine(lockOf(s.pick)!)}`
+                      : s.cup
+                        ? `${s.label}, all ${ROUNDS} cleared`
+                        : undefined
+                  }
                 >
+                  {/* THE LOCK STANDS WHERE THE CUP WOULD — the tutorial's gate, see `lockOf` */}
+                  {(s.pick === 'salary' || s.pick === 'death') && lockOf(s.pick) ? (
+                    <span className="fd-lock" aria-hidden>
+                      <svg viewBox="0 0 24 24">
+                        <rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <circle cx="12" cy="15.5" r="1.4" fill="currentColor" />
+                      </svg>
+                    </span>
+                  ) : null}
                   {/* THE CUP STANDS ABOVE THE JERSEY — his standing ruling: "Add a trophy for EVERY
                       mode at 150 wins(An actual golden trophy at the end)". It used to stand beside
                       the name; on this floor the name is a GOLD PLATE when it is the one you are on,
@@ -778,7 +847,7 @@ export function FrontDoor({
           <div className="fd-tag">{z.tag}</div>
           <div className="fd-name">{z.label}</div>
           <div className="fd-rule" aria-hidden />
-          <p className="fd-desc">{z.desc}</p>
+          <p className="fd-desc">{zlock ? lockLine(zlock) : z.desc}</p>
           {/*
             HOW IT IS PLAYED — his ruling, 2026-09-11: "Add in the home page the rules for each
             mode. In the black blank space." The read pane said what a mode IS and then stopped, and
@@ -795,19 +864,26 @@ export function FrontDoor({
               foot of its own pane before a single point was added. In two columns they are half as
               tall, and the height that buys is what the copy is now set in. The paragraphs keep
               `.fd-desc` — one face for the sentence and the lines under it, as before. */}
-          <div className="fd-rules">
-            {z.rules.map((r) => (
-              <p className="fd-desc" key={r}>
-                · {r}
-              </p>
-            ))}
-          </div>
-          <div className="fd-meta">
-            {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
-            <span className="fd-metav">{z.meta}</span>
-          </div>
-          <button className="fd-cta" onClick={() => onPick(z.pick)}>
-            {z.cta}
+          {/* A LOCKED DOOR SAYS ONLY THAT IT IS LOCKED — his ruling, 2026-09-30: "Until a mode has
+              been unlocked, only show that its locked in the description." The rules and the meta
+              line wait behind the lock with the mode itself. */}
+          {zlock ? null : (
+            <>
+              <div className="fd-rules">
+                {z.rules.map((r) => (
+                  <p className="fd-desc" key={r}>
+                    · {r}
+                  </p>
+                ))}
+              </div>
+              <div className="fd-meta">
+                {z.metaKey ? <span className="fd-metak">{z.metaKey}</span> : null}
+                <span className="fd-metav">{z.meta}</span>
+              </div>
+            </>
+          )}
+          <button className="fd-cta" disabled={!!zlock} onClick={() => onPick(z.pick)}>
+            {zlock ? `Locked · ${zlock.have} / ${zlock.stars} ★` : z.cta}
           </button>
           {/* THE SIGN-OFF STANDS AT THE FOOT OF THE READ, IN BOTH MODES NOW. It used to move to the
               foot band in user mode, because user mode had no record book to close the board with.

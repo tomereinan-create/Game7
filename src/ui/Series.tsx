@@ -13,9 +13,40 @@ import type { Assignment } from '../engine/offense'
 import { useLayout } from './useLayout'
 import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
+import { useLesson } from '../state/tutorial'
+import { mapDoorLesson } from './lessons'
+
+/** Whether this machine has asked for less motion. The draft reads it the same way. */
+const reduceMotion = () => {
+  try {
+    return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  } catch {
+    return false
+  }
+}
 
 const FAST_MS = 75
 const SLOW_MS = 240
+/**
+ * THE CLOSING MINUTES OF A CLOSE GAME 7 RUN SLOW — his ruling, 2026-09-30: "If a game 7 is 5 pts
+ * or less in the last 5 min, slow down the sim (if its back to 6 its still slowed down, once it
+ * reach 5 in the last 5 its slowed down to the rest)."
+ *
+ * A LATCH, NOT A TEST. His parenthesis is the whole rule: the tape does not speed up again when
+ * the lead goes back out to six, because what it is reading has become a close finish and stays
+ * one. So the first tick inside the last five minutes with five or fewer between them turns it on,
+ * and it stays on to the buzzer.
+ */
+const CLUTCH_MS = 430
+const CLUTCH_SECS = 5 * 60
+const CLUTCH_PTS = 5
+/** "5:55" -> 355. A clock this cannot read is not a clutch clock. */
+const secsOf = (clock: string) => {
+  const [m, sec] = clock.split(':').map(Number)
+  return Number.isFinite(m) && Number.isFinite(sec) ? m * 60 + sec : Infinity
+}
+/** One game lands on the filmstrip every this many ms (his ruling: "1 game by 1"). */
+const GAME_MS = 600
 
 interface StatRow {
   label: string
@@ -62,7 +93,7 @@ function Duel({ label, a, b, aText, bText, lowerBetter = false }: { label: strin
 }
 
 /** A team's player box lines, averaged over the series. Columns sum to the team line every game. */
-function PlayerLines({ title, tone, lines }: { title: string; tone: 'you' | 'them'; lines: PlayerBox[] }) {
+function PlayerLines({ title, tone, lines, per = 'per game' }: { title: string; tone: 'you' | 'them'; lines: PlayerBox[]; /** what one row IS — averages over the series, or one night's line */ per?: string }) {
   const cols: [string, (l: PlayerBox) => string][] = [
     ['PTS', (l) => f1(l.pts)],
     ['FG%', (l) => pc(l.fgm, l.fga)],
@@ -77,7 +108,7 @@ function PlayerLines({ title, tone, lines }: { title: string; tone: 'you' | 'the
   return (
     <div className={`card plines ${tone}`}>
       <div className="card-head">
-        <span className="label">{title} · per game</span>
+        <span className="label">{title}{per ? ` · ${per}` : ''}</span>
       </div>
       <div className="pl-scroll">
         <table className="pl">
@@ -188,9 +219,11 @@ export function Series({
   advanceLabel,
   skin = null,
   onHome,
+  onMyTeam,
   onAdvance,
   onRematch,
   onNext,
+  reveal: revealGames = true,
 }: {
   opponent: Opponent
   five: Player[]
@@ -225,8 +258,23 @@ export function Series({
    * table belong to no block, and keep the house colours.
    */
   skin?: Skin | null
+  /**
+   * Whether the series LANDS a game at a time on this screen (his ruling, 2026-09-29: "Simming a
+   * series, should be 1 game by 1, not all immidiately") or is simply settled when it opens.
+   * Default on. Off for a machine that has asked for less motion, and for a render that wants the
+   * finished screen without running any timers - which is what the tests pin.
+   */
+  reveal?: boolean
   /** A hot-seat table keeps its HOME / REMATCH pair: Home sits left of the advance button. */
   onHome?: () => void
+  /**
+   * THE DEATH MATCH'S OWN DOOR — his ruling, 2026-09-30: "After simming, add myteam button in
+   * deathmatch campaign." A run carries ONE five from the first level to the last and a change
+   * before each one, so the moment a series ends is exactly when he wants to look at who is worn
+   * and who he might swap. It was two screens away: back to the map, then My team. Absent in every
+   * other mode, which has no such screen.
+   */
+  onMyTeam?: () => void
   onAdvance: () => void
   /**
    * HIS RULING: "Add a rematch button, and advance(If you win your latest stage(not if you go back
@@ -251,6 +299,13 @@ export function Series({
   const [i, setI] = useState(0)
   const [analysis, setAnalysis] = useState(false)
   const [boxOpen, setBoxOpen] = useState(false)
+  /**
+   * WHICH NIGHT HE HAS OPENED - his ruling, 2026-09-29: "After simming, make every game pressable,
+   * to see what happnenned in that game(Box score wise)." The filmstrip under the verdict was five
+   * chips that said 111-85 and nothing else; every one of those nights was rolled in full and then
+   * averaged away. `box.perGame` keeps them (see `seriesBox`), so a chip is a door now.
+   */
+  const [gameOpen, setGameOpen] = useState<number | null>(null)
   const user = useUserMode()
   // Screens open at the top; the map's own scroll position must not carry over.
   useEffect(() => {
@@ -263,16 +318,68 @@ export function Series({
     document.body.classList.add(`sk-${skin}`)
     return () => document.body.classList.remove(`sk-${skin}`)
   }, [skin])
-  const [live, setLive] = useState(!!decider)
+  /**
+   * GAME 7 GOES LAST, BECAUSE IT IS LAST — his ruling, 2026-09-29: "If the series got to 7, show
+   * the 7 animation after loading the 6 games, then the animation. Currently, the game 7 animation
+   * is happenning and then I get games 1-6 (Which will always end 3-3)."
+   *
+   * Exactly right, and it is the landing I added this morning that made it wrong: the tape was
+   * built to be the FIRST thing this screen did, because before the landing existed there was
+   * nothing for it to come after. So he watched the decider, learned the series, and was then
+   * shown six games whose ending he already knew and which could only ever add up to 3-3.
+   *
+   * The screen runs in three phases now — the first six chips land, the seventh is played on the
+   * tape, and then it lands too and the series may speak. `live` therefore starts FALSE whenever
+   * the landing is on, and is turned on by the landing reaching the decider. With the landing off
+   * (reduced motion, or a render that wants the settled screen) the tape opens the screen exactly
+   * as it always did.
+   */
+  const [live, setLive] = useState(!!decider && (!revealGames || reduceMotion()))
+  /** The decider has been played. A ref: it must not restart the tape by re-rendering. */
+  const tapeRun = useRef(!decider)
+  /** How many games may land before the tape: all of them, or all but the decider. */
+  const preGames = result.games.length - (decider ? 1 : 0)
   const timer = useRef<number | null>(null)
+  /**
+   * THE SERIES LANDS ONE GAME AT A TIME - his ruling, 2026-09-29: "Simming a series, should be 1
+   * game by 1, not all immidiately."
+   *
+   * The engine resolves the whole series in one call and always has; what he was shown was the
+   * FINISHED thing - 4-1 as a headline over five scores that were simply there. A series is five
+   * nights and it should arrive like five nights. So the strip fills a chip at a time, the score
+   * over it counts up as it does, and nothing that PRONOUNCES on the series - the note, the stars,
+   * the rafters, where it was won, whose night it was, the doors - appears until it is decided.
+   * Presentation only: not one number changes, and one tap anywhere skips to the end.
+   */
+  const [shown, setShown] = useState(() => (revealGames && !reduceMotion() ? 0 : result.games.length))
+  const reveal = useRef<number | null>(null)
+  /**
+   * THE SETTLED NIGHT TAKES THE WHOLE DESK - his ruling, 2026-09-29: "Yes fix the result screen
+   * too", on the band of content this screen drew across the top of a 1,500px window with black
+   * under it.
+   *
+   * The 2026-09-08 ruling ("so it wont be all in the middle and having to scroll down") gave this
+   * screen the WIDTH - three columns instead of a 562px strip - and the height was never asked
+   * about, so the grid stayed `align-items: start` and the three groups ended wherever their
+   * content did. Same measurement as the draft board's, for the same reason: what stands above
+   * this grid and what the dock reserves below it are both variables no rule can read.
+   */
+  const resultBox = useRef<HTMLDivElement | null>(null)
 
+  /** Latched the first time the last five minutes are inside five points; see `CLUTCH_MS`. */
+  const clutch = useRef(false)
   useEffect(() => {
     if (!live || !tape) return
     if (i >= tape.ticks.length) {
+      tapeRun.current = true
       setLive(false)
       return
     }
-    const delay = tape.ticks[i].slow ? SLOW_MS : FAST_MS
+    const t = tape.ticks[i]
+    // the 4th is the last quarter this game plays; anything past it is an overtime and is closer
+    // still, so it latches too
+    if (!clutch.current && t.q >= 4 && secsOf(t.clock) <= CLUTCH_SECS && Math.abs(t.us - t.them) <= CLUTCH_PTS) clutch.current = true
+    const delay = clutch.current ? CLUTCH_MS : t.slow ? SLOW_MS : FAST_MS
     timer.current = window.setTimeout(() => setI((n) => n + 1), delay)
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
@@ -281,11 +388,42 @@ export function Series({
 
   const skip = () => {
     if (timer.current) window.clearTimeout(timer.current)
+    tapeRun.current = true
     setLive(false)
     if (tape) setI(tape.ticks.length)
   }
 
   const done = !live
+  /** Every game is on the strip and the series may speak. */
+  const settled = shown >= result.games.length
+  /* THE COACH ON THE RESULT (tutorial mode) — his ruling, 2026-09-30: "Remove Tutorial · The result
+     and instead point on back to map in order to show the stars use (staff)." One step, after a
+     win that banked something, lighting the map door (`data-door="map"` on whichever button carries
+     it in this dock's shape): the stars are spent on the map, and that is where the coach goes next. */
+  useLesson('result.map', settled && result.won && !exhibition, () => mapDoorLesson(starsFor(result)))
+  /** The landing stops at the decider until the tape has played it. */
+  const revealCap = tapeRun.current ? result.games.length : preGames
+  useEffect(() => {
+    if (!done || shown >= revealCap) return
+    reveal.current = window.setTimeout(() => setShown((n) => n + 1), GAME_MS)
+    return () => {
+      if (reveal.current) window.clearTimeout(reveal.current)
+    }
+  }, [done, revealCap, shown])
+  /* AND THE TAPE TAKES OVER when the six are down. `live` is what hides the strip and draws the
+     scorebug; when the tape ends it hands the screen back and the landing finishes the job. */
+  useEffect(() => {
+    if (!decider || tapeRun.current || live || shown < preGames) return
+    setLive(true)
+  }, [decider, live, shown, preGames])
+  const skipReveal = () => {
+    if (reveal.current) window.clearTimeout(reveal.current)
+    tapeRun.current = true
+    setShown(result.games.length)
+  }
+  /** The series score as far as the strip has got, which is the final one once it is settled. */
+  const runWins = result.games.slice(0, shown).filter((g) => g.won).length
+  const runLosses = shown - runWins
   /**
    * HIS RULING: "Change photo 1 so it wont be all in the middle and having to scroll down."
    *
@@ -310,6 +448,25 @@ export function Series({
     document.body.classList.add('wide')
     return () => document.body.classList.remove('wide')
   }, [done])
+  useLayout(() => {
+    const fit = () => {
+      const el = resultBox.current
+      if (!el) return
+      el.style.minHeight = ''
+      // a phone stacks this screen and has no height to hand out
+      if (window.innerWidth < 900) return
+      const root = document.getElementById('root')
+      const foot = root ? parseFloat(getComputedStyle(root).paddingBottom) || 0 : 0
+      const room = window.innerHeight - el.getBoundingClientRect().top - foot
+      // MIN-height: with the box scores open the screen is longer than the window and scrolls,
+      // which is what that door is for
+      if (room > 420) el.style.minHeight = `${Math.floor(room)}px`
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    document.fonts?.ready.then(fit).catch(() => {})
+    return () => window.removeEventListener('resize', fit)
+  })
   const box = useMemo(
     () => (done ? seriesBox(five, opponent.players, LINES, result.games, scoresOf(result, tape ? { us: tape.us, them: tape.them } : null), makeRng(seed ^ 0x2545f491), boxCtx ?? undefined) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -401,22 +558,27 @@ export function Series({
         to spend and the order was already right. The grouping only bites on a desk.
       */}
       {done ? (
-        <div className="result">
+        <div ref={resultBox} className={`result${settled ? '' : ' landing'}`} onClick={settled ? undefined : skipReveal}>
           <div className="res-lead">
             {/* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */}
             <div className={`verdict final ${user ? 'um-on' : ''}`}>
               <div className="v-kick">Series · best of seven</div>
               <div className="v-row">
                 <span className="v-side you">{myAb}</span>
-                <h1 className={result.won ? 'w' : 'l'}>
-                  <span className="u">{result.wins}</span>
+                <h1 className={!settled ? '' : result.won ? 'w' : 'l'}>
+                  <span className="u">{runWins}</span>
                   <span className="d">–</span>
-                  <span className="t">{result.losses}</span>
+                  <span className="t">{runLosses}</span>
                 </h1>
                 <span className="v-side them">{opponent.ab ?? teamCode(opponent.team)}</span>
               </div>
-              <p>{seriesNote(result.won, result.wins, result.losses)}</p>
-              {result.won && !exhibition ? (
+              {/* "Game 1", not "Game 1 of 4" — his ruling, 2026-09-29: "it says game 1 of X, but
+                  then I can know the series result." Quite right: the LENGTH of a series is its
+                  result. A best-of-seven that runs four games was a sweep and one that runs seven
+                  went the distance, so a caption that counts towards a total hands him the ending
+                  before the first chip lands. It counts up and says nothing about where it stops. */}
+              {settled ? <p>{seriesNote(result.won, result.wins, result.losses)}</p> : <p className="v-landing">Game {Math.min(shown + 1, result.games.length)}…</p>}
+              {settled && result.won && !exhibition ? (
                 <div className="stars">
                   {'★'.repeat(starsFor(result))}
                   <span>{'★'.repeat(3 - starsFor(result))}</span>
@@ -431,7 +593,7 @@ export function Series({
                 It stays directly under the score, in the same group, because the band is the ROOM the
                 score was read in: its boards and its confetti are absolutely positioned inside it, so
                 it carries its own frame wherever the group is put. */}
-            {user ? (
+            {user && settled ? (
               <div className="um-rafters" aria-hidden>
                 <span className="um-boards" />
                 {result.won ? (
@@ -454,24 +616,55 @@ export function Series({
             {/* The filmstrip is a ROW of game chips and must never break mid-series, so it stays in
                 the lead group whatever the width: one track, one line, G1 to G7 in order. */}
             <div className="strip">
-              {scoresOf(result, tape ? { us: tape.us, them: tape.them } : null).map((s, k) => {
-                const won = result.games[k].won
-                const clinch = k === result.games.length - 1 && result.won
+              {/**
+               * THE STRIP IS THE WHOLE SERIES UNTIL IT IS DECIDED — his ruling, 2026-09-30: "Its
+               * showing 4 tickets before the series ends, so I know it will be a sweep."
+               *
+               * Quite right, and it is the same leak the caption had: the LENGTH of a series is
+               * its result. Four slots on the strip is a sweep announced before the first chip
+               * lands, five is 4-1, and so on. While it lands the strip is the format — seven
+               * slots for a best of seven — and it settles to the games actually played, which is
+               * the strip his earlier ruling read and is unchanged.
+               *
+               * EVERY SLOT IS DRAWN FROM THE FIRST FRAME, empty until its game arrives: a strip
+               * that GREW would move the chips already on it sideways as each one landed, and the
+               * thing he is watching is the scores, not the layout.
+               */}
+              {Array.from({ length: settled ? result.games.length : Math.max(result.games.length, result.toWin * 2 - 1) }, (_, k) => k).map((k) => {
+                const played = k < result.games.length
+                const s = played ? scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)[k] : null
+                const won = played && result.games[k].won
+                const clinch = played && k === result.games.length - 1 && result.won
+                const here = played && k < shown
+                if (!here || !s)
+                  return (
+                    <span className="gt pending" key={k} aria-hidden>
+                      <i>G{k + 1}</i>
+                      <b>–</b>
+                    </span>
+                  )
                 return (
-                  <span className={`gt ${clinch ? 'clinch' : won ? 'w' : 'l'}`} key={k}>
+                  <button
+                    type="button"
+                    className={`gt ${clinch && settled ? 'clinch' : won ? 'w' : 'l'}`}
+                    key={k}
+                    disabled={!box || !settled}
+                    aria-label={`Game ${k + 1}, ${s.us} to ${s.them} — box score`}
+                    onClick={() => setGameOpen(k)}
+                  >
                     <i>G{k + 1}</i>
                     <b>
                       {s.us}
                       <em>–</em>
                       {s.them}
                     </b>
-                  </span>
+                  </button>
                 )
               })}
             </div>
           </div>
 
-          {box ? (
+          {box && settled ? (
             <div className="res-won">
               <div className="card">
                 <div className="card-head">
@@ -494,7 +687,7 @@ export function Series({
             </div>
           ) : null}
 
-          {box
+          {box && settled
             ? (() => {
                 const star = [...box.usLines].sort((a, b) => b.pts - a.pts)[0]
                 const answer = [...box.themLines].sort((a, b) => b.pts - a.pts)[0]
@@ -533,7 +726,7 @@ export function Series({
           {/* WHAT HE ASKED FOR, WHEN HE ASKS FOR IT. The box scores and the analysis door are the
               only things on this screen that are opened rather than read, so they take the full
               width UNDER the three groups above and never push the result off the fold. */}
-          <div className="res-more">
+          <div className="res-more" hidden={!settled}>
             {/*
               E1 (2026-09-09): this door was NOT gated. User mode says "Play blind. No ratings, no
               verdict." and the draft screen keeps that promise everywhere — the court tags, both teams'
@@ -546,6 +739,12 @@ export function Series({
             {!user ? (
               <button className="linkb" onClick={() => setAnalysis(true)}>
                 Full analysis →
+              </button>
+            ) : null}
+            {/* see `onMyTeam` above — the death match's five is the thing it is about */}
+            {onMyTeam ? (
+              <button className="linkb" onClick={onMyTeam}>
+                My team →
               </button>
             ) : null}
 
@@ -583,6 +782,63 @@ export function Series({
 
       {/* The full-analysis sheet is `position: fixed; inset: 0` and belongs to no group; it stands
           outside the result grid so it is never sized by a grid track. */}
+      {/* ONE NIGHT, IN FULL - his ruling, 2026-09-29: "After simming, make every game pressable, to
+          see what happnenned in that game(Box score wise)."
+
+          NOT A SECOND WAY OF SAYING THE SERIES. Everything already on this screen is an AVERAGE
+          over the games played - "per game - 5 played" is written on the card that holds it - and
+          an average is exactly what a filmstrip chip is not: G4 101-97 was a night, and until now
+          the only thing the screen would tell him about it was its final score. This is that
+          night's own box, rolled in the same pass as the rest of the series (`box.perGame`), so
+          the five of them add up to the averages standing beside them.
+
+          The same full-screen sheet the playbook and the board use, with the same DONE in its top
+          bar. `Duel` and `PlayerLines` are the cards this screen already draws the series with -
+          nothing here is a new way of reading a box, only a new box to read. */}
+      {gameOpen !== null && box && box.perGame[gameOpen] ? (
+        (() => {
+          const g = box.perGame[gameOpen]
+          const sc = scoresOf(result, tape ? { us: tape.us, them: tape.them } : null)[gameOpen]
+          const won = result.games[gameOpen].won
+          return (
+            <div className="sheet sheet2 gamesheet" onClick={(e) => e.stopPropagation()}>
+              <div className="topbar">
+                <span>Game {gameOpen + 1}</span>
+                <button onClick={() => setGameOpen(null)}>← Done</button>
+              </div>
+              <div className="rule2" />
+              <div className="gs-score">
+                <span className={`gs-side ${won ? 'you' : ''}`}>
+                  <i>{teamName}</i>
+                  <b>{sc.us}</b>
+                </span>
+                <em>{won ? 'won' : 'lost'}</em>
+                <span className={`gs-side ${won ? '' : 'them'}`}>
+                  <i>{opponent.team}</i>
+                  <b>{sc.them}</b>
+                </span>
+              </div>
+              <div className="card">
+                <div className="card-head">
+                  <span className="label">Where this one went</span>
+                  <span className="cap">game {gameOpen + 1} of {result.games.length}</span>
+                </div>
+                <div className="duels">
+                  <Duel label="Points" a={sc.us} b={sc.them} aText={String(sc.us)} bText={String(sc.them)} />
+                  <Duel label="FG%" a={g.us.fgm / Math.max(1, g.us.fga)} b={g.them.fgm / Math.max(1, g.them.fga)} aText={pc(g.us.fgm, g.us.fga)} bText={pc(g.them.fgm, g.them.fga)} />
+                  <Duel label="3P%" a={g.us.tpm / Math.max(1, g.us.tpa)} b={g.them.tpm / Math.max(1, g.them.tpa)} aText={pc(g.us.tpm, g.us.tpa)} bText={pc(g.them.tpm, g.them.tpa)} />
+                  <Duel label="Rebounds" a={g.us.reb} b={g.them.reb} aText={f1(g.us.reb)} bText={f1(g.them.reb)} />
+                  <Duel label="Assists" a={g.us.ast} b={g.them.ast} aText={f1(g.us.ast)} bText={f1(g.them.ast)} />
+                  <Duel label="Turnovers" a={g.us.tov} b={g.them.tov} aText={f1(g.us.tov)} bText={f1(g.them.tov)} lowerBetter />
+                </div>
+              </div>
+              {/* not "per game": one row here IS the game */}
+              <PlayerLines title={teamName} tone="you" lines={g.usLines} per={`game ${gameOpen + 1}`} />
+              <PlayerLines title={opponent.team} tone="them" lines={g.themLines} per={`game ${gameOpen + 1}`} />
+            </div>
+          )
+        })()
+      ) : null}
       {analysis ? <Analysis mine={five} theirs={opponent.players} assignment={assignment} sigma={sigma} myName={teamName} theirName={opponent.team} onClose={() => setAnalysis(false)} /> : null}
 
       {/* The three-door dock used to bolt an empty 64px div under the page, because the page's
@@ -596,6 +852,14 @@ export function Series({
               Skip to result
             </button>
           </div>
+        ) : !settled ? (
+          /* The ways on are not offered until the series has one - a NEXT LEVEL under a 2-1 strip
+             is a door out of a night that has not finished happening. */
+          <div className="dock-inner">
+            <button className="btn ghost" onClick={skipReveal}>
+              Skip to result
+            </button>
+          </div>
         ) : onNext && onRematch ? (
           /* THREE DOORS (his ruling: "Add a rematch button, and advance…"). Three across at 375
              would put "Back to the map" in a 114px slot, and his own word does not fit that — so
@@ -604,7 +868,7 @@ export function Series({
              height, well over the 44 a finger needs. */
           <div className="dock-inner stack">
             <div className="dock-row">
-              <button className="btn ghost" onClick={onAdvance}>
+              <button className="btn ghost" data-door="map" onClick={onAdvance}>
                 {mainLabel}
               </button>
               <button className="btn ghost" onClick={onRematch}>
@@ -615,15 +879,27 @@ export function Series({
               Next level
             </button>
           </div>
+        ) : onNext ? (
+          /* A WAY ON AND A WAY BACK, and no rematch — which is what a SWEPT level docks now (his
+             ruling: "dont offer me rematch when I sweep"). Without this shape the missing rematch
+             took the Next level door down with it, because the three-door case asks for both. */
+          <div className="dock-inner two">
+            <button className="btn ghost" data-door="map" onClick={onAdvance}>
+              {mainLabel}
+            </button>
+            <button className="btn" onClick={onNext}>
+              Next level
+            </button>
+          </div>
         ) : onRematch ? (
           /* TWO DOORS. The gold one is always the one on the right, and it is always the furthest
              forward thing on offer: after a win that is still his word for leaving (the stars are
              banked on the way), after a loss it is the rematch — "the obvious thing to want". */
           <div className="dock-inner two">
-            <button className="btn ghost" onClick={result.won ? onRematch : onAdvance}>
+            <button className="btn ghost" data-door={result.won ? undefined : 'map'} onClick={result.won ? onRematch : onAdvance}>
               {result.won ? 'Rematch' : mainLabel}
             </button>
-            <button className="btn" onClick={result.won ? onAdvance : onRematch}>
+            <button className="btn" data-door={result.won ? 'map' : undefined} onClick={result.won ? onAdvance : onRematch}>
               {result.won ? mainLabel : 'Rematch'}
             </button>
           </div>
@@ -634,7 +910,7 @@ export function Series({
                 Home
               </button>
             ) : null}
-            <button className={`btn ${advanceLabel || result.won ? '' : 'ghost'}`} onClick={onAdvance}>
+            <button className={`btn ${advanceLabel || result.won ? '' : 'ghost'}`} data-door="map" onClick={onAdvance}>
               {mainLabel}
             </button>
           </div>

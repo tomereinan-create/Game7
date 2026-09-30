@@ -1412,6 +1412,19 @@ button {
   flex-direction: column;
   padding-top: 30px;
 }
+/* A ROW IS AS TALL AS THE LINES IN IT, on a phone too - his ruling, 2026-09-29: "Allign the salary
+   cap to fit the box" / "Look at the unselectable players - They are one over the other." The desk
+   restates `--drow` against its own type; the shape of the fix is one rule and lives here, so the
+   two tiers cannot drift apart. Measured at 375: a name over its positions is 36px of box, and the
+   third line - the money, or the reason a man cannot be taken - takes it to 51 inside a 42px row. */
+.draft { --drow: 46px; }
+.draft.cap { --drow: 56px; }
+.draft .col.a .row.dr,
+.draft .col.a .row.dr.short,
+.draft .col.c .row.dr,
+.draft .col.c .row.dr.short { height: var(--drow); }
+.draft .col.b .row.dr { height: auto; min-height: 46px; }
+.draft .col.b .pname .who { padding: 4px 0; }
 /* MY TEAM (death match): the five and the wheel, two columns on a desk, five first on a phone. */
 .myteam {
   display: flex;
@@ -1562,10 +1575,40 @@ button {
   .myteam {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: auto auto;
+    /* THE FLOOR'S ROW TAKES THE SLACK (his ruling, 2026-09-30: "This page is too small make sure
+       you fill the screen"). The grid's own height is measured in MyTeam; the five keeps the
+       height it needs and everything left over goes to the floor above it. */
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 18px;
-    align-items: start;
+    align-items: stretch;
   }
+  .myteam > .col { display: flex; flex-direction: column; min-height: 0; }
+  .myteam > .col > .card { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  /* the floor is sized from the height its card has left, the way the draft's two are — `--ct-wh`
+     is the bare width-per-height CourtFive publishes for exactly this */
+  .myteam .col.b > .card > .court {
+    flex: 1 1 0;
+    min-height: 0;
+    width: auto;
+    max-width: min(100%, calc(100cqh * var(--ct-wh, 1.19)));
+    align-self: center;
+  }
+  .myteam .col.b > .card { container-type: size; }
+  /* THE FIVE ON THE FLOOR GROW WITH THE FLOOR — his ruling, 2026-09-30: "Make my 5 on the court
+     bigger." The busts were the base 58px however wide the floor drew, so on his desk five small
+     discs stood on a 700px court. The same container-width clamps the playbook's floor and the
+     draft's court already wear, so a man is a sixth of the floor he stands on at every width. */
+  .myteam .col.b > .card > .court { container-type: inline-size; }
+  .myteam .col.b > .card > .court .ct-bust { width: clamp(58px, 17cqw, 210px); height: clamp(58px, 17cqw, 210px); border-width: clamp(2px, 0.45cqw, 6px); }
+  .myteam .col.b > .card > .court .ct-spot { width: clamp(86px, 23cqw, 284px); gap: clamp(1px, 0.5cqw, 7px); }
+  .myteam .col.b > .card > .court .ct-spot b { max-width: 100%; font-size: clamp(10.5px, 3.08cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+  .myteam .col.b > .card > .court .ct-spot i { font-size: clamp(9px, 2.7cqw, 33px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+  .myteam .col.b > .card > .court .ct-init { font-size: clamp(13.3px, 4.06cqw, 50px); }
+  .myteam .col.b > .card > .court .ct-init.ghost { font-size: clamp(10.5px, 3.22cqw, 40px); }
+  .myteam .col.b > .card > .court .ct-mark { font-size: clamp(6.5px, 1.6cqw, 18px); padding: clamp(1px, 0.3cqw, 3px) clamp(3px, 0.7cqw, 8px); right: clamp(-4px, -1cqw, -2px); }
+  .myteam .col.b > .card > .court .ct-call { font-size: clamp(8px, 2.6cqw, 32px); max-width: 52%; }
+  .myteam .col.b > .card > .court .ct-side { gap: clamp(4px, 0.9cqw, 12px); }
+  .myteam .col.b > .card > .court .ct-side .sortb { height: clamp(22px, 5.4cqw, 66px); padding: 0 clamp(7px, 1.7cqw, 21px); font-size: clamp(8px, 1.95cqw, 24px); }
   .myteam .col.b { grid-column: 1; grid-row: 1; }
   .myteam .col.a { grid-column: 1; grid-row: 2; }
   .myteam .col.band { display: block; grid-column: 2; grid-row: 1 / span 2; }
@@ -1918,6 +1961,78 @@ button {
 }
 .sheet.sheet2 > * { grid-column: 1 / -1; max-width: none; margin-left: 0; margin-right: 0; }
 .sheet.sheet2 > .adv-card { grid-column: auto; }
+
+/* ---- THE PLAYBOOK COVERS THE SCREEN ----
+   HIS RULING, 2026-09-29: "make everything to cover the screen, and especially the court bigger
+   and defense offense way bigger."
+
+   The sheet was already the whole window - it is `position: fixed; inset: 0` - and that was the
+   problem hiding in plain sight: a full-screen sheet laid out `align-content: start`, holding a
+   430px floor and six 64px rows, ends where its content ends. On a 3,840 x 1,500 desk the card
+   stopped at 938 and the plan he came here to read was a diagram the size of a phone's in the
+   middle of it.
+
+   So the sheet is a COLUMN that fills, the card fills the sheet, and the floor takes whatever the
+   head and the calls leave. `flex: 1 1 0` on the box and not on the floor: the floor keeps its
+   aspect ratio and is sized from the box's height (`--ct-wh` is written by CourtFive, which is the
+   only thing that knows how deep a court it drew), so it can never feed back into the box that
+   sized it. */
+/* AND IT KEEPS THE FOOT IT WAS RESERVING FOR A DOCK IT DOES NOT HAVE. `.sheet` pads its bottom by
+   the dock's height plus the safe area plus 42, because most sheets stand their own dock; this one
+   is closed by the DONE in its top bar, so that reservation was 148px of black under the card on
+   every window. */
+.sheet.sheet2.playsheet { padding-bottom: calc(var(--foot) + 16px); }
+.sheet.sheet2.playsheet { display: flex; flex-direction: column; align-items: stretch; }
+.sheet.sheet2.playsheet > .card { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.playfloor { flex: 1 1 0; min-height: 0; display: flex; align-items: flex-start; justify-content: center; container-type: size; }
+.playfloor > .court { max-width: min(100%, calc(100cqh * var(--ct-wh, 1.19))); margin: 0 auto; container-type: inline-size; }
+/* NOT `.court-line`, which is the DRAFT's start-line wrapper: sharing that class put this floor
+   under `.draft .court-line > .court`, whose `max-width: 100%` outranks the rule above by one
+   class and blew the floor up to the full width of the sheet. */
+/* AND A BIGGER FLOOR IS BIGGER MEN, not more hardwood between them - the same fix the team page
+   took in 2026-09-22 and the draft's two floors took this morning. Every term keeps the size this
+   panel draws today as the floor of its clamp. */
+.playfloor > .court .ct-bust { width: clamp(58px, 17cqw, 210px); height: clamp(58px, 17cqw, 210px); border-width: clamp(2px, 0.45cqw, 6px); }
+.playfloor > .court .ct-spot { width: clamp(86px, 23cqw, 284px); gap: clamp(1px, 0.5cqw, 7px); }
+.playfloor > .court .ct-spot b { max-width: 100%; font-size: clamp(10.5px, 3.08cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+.playfloor > .court .ct-spot i { font-size: clamp(9px, 2.7cqw, 33px); padding: 0 clamp(4px, 0.9cqw, 11px); }
+.playfloor > .court .ct-init { font-size: clamp(13.3px, 4.06cqw, 50px); }
+.playfloor > .court .ct-init.ghost { font-size: clamp(10.5px, 3.22cqw, 40px); }
+.playfloor > .court .ct-call { font-size: clamp(8px, 2.6cqw, 32px); max-width: 52%; }
+/* "DEFENSE OFFENSE WAY BIGGER" - the half of the plan you are looking at is the one control on
+   this screen that changes what every other control means, and it was a 22px pair of chips in the
+   corner of the floor, smaller than the surname of any man standing on it. It is a share of the
+   floor now, like everything else drawn on it. */
+.playfloor > .court .ct-side { gap: clamp(4px, 0.9cqw, 12px); }
+.playfloor > .court .ct-side .sortb { height: clamp(22px, 5.4cqw, 66px); padding: 0 clamp(7px, 1.7cqw, 21px); font-size: clamp(8px, 1.95cqw, 24px); }
+
+/* ON A DESK THE CALLS STAND BESIDE THE FLOOR, not under it - the other half of "make everything
+   to cover the screen". Stacked, the floor is bound by the height the six rows leave, and the
+   3,700px of width either side of it is the black he is looking at. Side by side, the floor takes
+   the WHOLE height of the card and the rows take the width they never needed, so the same window
+   draws a floor half as big again and a plan that reads at the size of the screen it is on.
+   1400px and not 900: under that the rows are the wider thing on the screen and splitting the
+   card in two would set the chip rows scrolling inside themselves to save a floor that has no
+   height to grow into anyway. */
+@media (min-width: 1400px) {
+  .sheet.sheet2.playsheet > .card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: clamp(20px, 2vw, 60px);
+    align-items: stretch;
+  }
+  .sheet.sheet2.playsheet > .card > .card-head { grid-column: 1 / -1; }
+  .playsheet .playfloor { grid-column: 1; grid-row: 2; align-items: center; }
+  .playsheet .playcalls { grid-column: 2; grid-row: 2; align-self: center; min-width: 0; }
+  /* and they read at the size of the desk they are on: a 10px caption and a 22px chip were cut
+     for a phone's column and this one is eighteen hundred pixels wide */
+  .playsheet .posbar { padding: clamp(10px, 0.9vw, 30px) 0 clamp(8px, 0.75vw, 26px); }
+  .playsheet .posbar > .cap { font-size: clamp(9px, 0.62vw, 19px); }
+  .playsheet .posbar .sortb { height: clamp(26px, 1.9vw, 54px); padding: 0 clamp(9px, 0.75vw, 22px); font-size: clamp(9px, 0.62vw, 19px); }
+  .playsheet .posbar > .tnote { font-size: clamp(11px, 0.6vw, 18px); }
+  .playsheet .seriesnow-note { font-size: clamp(11px, 0.6vw, 18px); }
+}
 .adv-open {
   display: block;
   width: 100%;
@@ -2191,9 +2306,13 @@ button {
   .draft .col.c .pname b { font-size: 17px; }
   .draft .col.a .pname i,
   .draft .col.c .pname i { font-size: 11px; margin-top: 1px; }
-  /* the floors take back what the shorter dock left over (his ruling: "Make the courts bigger
-     again") — the formula spends the last of the height above the dock, which is 32px more floor */
-  .draft .court-line > .court { max-width: clamp(220px, calc((100vh - 648px) * 1.19), 356px); }
+  /* THE 356px CEILING IS GONE - his ruling, 2026-09-29: "Fill the screen with the 5s, make it
+     bigger and longer. All modes." This was the formula that spent the height above the dock, and
+     it worked right up to its own ceiling: on a 1,500px desk `(100vh - 648) * 1.19` asks for 1,013
+     and the clamp answers 356, so every pixel past a 947px window went to black floor under the
+     columns. The board fills the desk now and the two floors take what the rows leave, measured in
+     Draft.tsx against BOTH columns at once so they stay the same size as each other - which is the
+     one thing no `vh` formula could promise, since what stands above each floor is different. */
   /* and "a little bit higher" (his ruling: "Move both 5s a little bit heigher and its perfect"):
      the floor comes up flush under the name row, the row itself sits tighter under the card's
      head, and the dials give 4px. Your own floor follows, because it keeps the opponent's line. */
@@ -2546,6 +2665,99 @@ button {
   .adv-open {
     font-size: 14px;
   }
+  /* ================================================================================
+     THE DRAFT TAKES THE WHOLE DESK - his rulings, 2026-09-29, on one screenful:
+       "Allign the salary cap to fit the box."
+       "Look at the unselectable players - They are one over the other. Fix it"
+       "Fill the screen with the 5s, make it bigger and longer. All modes."
+       "Instead of PG / open - draft a man here, have draft a man here large on top
+        and pg below. Make sure it alligns with the opposing team 5."
+       "Make the wheel way bigger."
+     Everything here is the same defect said five ways: this board was drawn against a
+     laptop and he is playing it on a 3,840 x 1,500 desk, where its rows hold two lines
+     of a three-line man, its floors stop at 356px and a third of the window is black.
+     ================================================================================ */
+
+  /* ---- 1. A ROW IS AS TALL AS THE LINES IN IT ----
+     `.who` is a name, a positions-and-archetype line and SOMETIMES a third: the money in
+     the salary cap, or the reason a man cannot be taken ("his two rings SG and SF are
+     already filled"). Measured on this desk, that third line takes the box from 57px to
+     80 in the team columns and to 88 in the wheel's roster - inside rows locked at 58
+     and 69. The overflow is not clipped, it is PAINTED, which is why his two screenshots
+     show the money printing through the name of the man below and the ineligible men
+     stacked one over the other.
+     THE TWO TEAM COLUMNS TAKE ONE HEIGHT AND THE MIDDLE ONE GROWS. The teams have to
+     stay row-for-row with each other - his ruling on the open chairs asks for it in as
+     many words - so their height is a single variable, set once for the screen by
+     whether the money is on. The wheel's roster answers to nobody and scrolls in a
+     measured box, so there a row is simply as tall as it needs to be, with a floor at
+     the height it has now. */
+  .draft { --drow: 58px; }
+  .draft.cap { --drow: 84px; }
+  .draft .col.a .row.dr,
+  .draft .col.a .row.dr.short,
+  .draft .col.c .row.dr,
+  .draft .col.c .row.dr.short { height: var(--drow); }
+  .draft .col.b .row.dr { height: auto; min-height: 69px; }
+  /* the air a fixed height used to provide, put where a row's own padding cannot reach it:
+     `.row.on` and `.row.exp` restate `padding` as a shorthand and would wipe it */
+  .draft .col.b .pname .who { padding: 5px 0; }
+
+  /* ---- 2. THE BOARD FILLS THE DESK ----
+     The grid's own height is measured in Draft.tsx (see `sheet` there) - no rule can know
+     how tall the band above it or the dock below it is. From here it is ordinary flex:
+     the columns stretch to the grid, the card stretches to its column, and the floor
+     inside takes whatever the head and the rows leave. */
+  .draft { align-items: stretch; }
+  .draft > .col { display: flex; flex-direction: column; min-height: 0; }
+  .draft > .col.a > .card,
+  .draft > .col.c > .card { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  /* the middle column measures its own list against the dock and must not be stretched
+     into one - a roster that filled the desk would put the SPIN key below the fold */
+  .draft > .col.b { justify-content: flex-start; }
+
+  /* ---- 3. THE FLOOR TAKES WHAT THE ROWS LEAVE ----
+     `flex: 1 1 0` and not `auto`: the box's height must come from the flex share ALONE,
+     so that sizing the floor inside it can never feed back into the box that sized it.
+     `flex-start` and not `center` because the two floors share a start line, which
+     Draft.tsx writes here as a padding-top - a centred floor would drift off it. */
+  .draft .court-line { flex: 1 1 0; min-height: 0; display: flex; align-items: flex-start; justify-content: center; }
+  .draft .court-line > .court { max-width: 100%; margin-left: auto; margin-right: auto; }
+  /* THE FLOOR IS A CONTAINER NOW, so a bigger floor is a floor with BIGGER MEN on it
+     rather than more hardwood between them. Every court in the app lays its men out in
+     percentages of the box and then draws them at fixed pixels - a 58px ring, a 15px
+     surname - which is the whole reason "make the 5s bigger" has had to be ruled on more
+     than once: the diagram is right at 356px and empty at 800. This is the team page's
+     own fix (`.tdb-sheet .court`, 2026-09-22) brought to the draft's two floors, and
+     every term keeps the draft's CURRENT pixel value as the floor of its clamp, so
+     nothing on a small window shrinks. */
+  .draft .court-line > .court { container-type: inline-size; }
+  .draft .court-line > .court .ct-bust { width: clamp(58px, 16.3cqw, 170px); height: clamp(58px, 16.3cqw, 170px); border-width: clamp(2px, 0.45cqw, 5px); }
+  /* the SPOT is the 86px box the draft has always given a man; the name plate inside it is the
+     120px his ruling widened it to and hangs past the box on a long surname. Two different
+     numbers, and putting the plate's on the box is what stood the five on top of each other. */
+  .draft .court-line > .court .ct-spot { width: clamp(86px, 24.2cqw, 252px); gap: clamp(1px, 0.5cqw, 6px); }
+  .draft .court-line > .court .ct-spot b { max-width: clamp(120px, 33.7cqw, 352px); font-size: clamp(14.7px, 4.13cqw, 43px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-spot i { font-size: clamp(13px, 3.65cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-init { font-size: clamp(17.5px, 4.91cqw, 51px); }
+  .draft .court-line > .court .ct-init.ghost { font-size: clamp(14.7px, 4.13cqw, 43px); }
+  .draft .court-line > .court .ct-call { font-size: clamp(12px, 3.37cqw, 35px); max-width: 52%; }
+
+  /* ---- 4. THE WHEEL, WAY BIGGER ----
+     his ruling, in those words. The three reels were 96 + 96 + 260 of content sitting in
+     the middle of a 1,630px column, which is the floors' mistake again: a fixed pixel
+     drawing inside a box that grew around it. They are a share of the column now, with
+     their present size as the floor of every clamp. */
+  .draft .reels { gap: clamp(10px, 1vw, 28px); padding: clamp(8px, 0.8vw, 22px) 0 clamp(10px, 1vw, 26px); }
+  .draft .reel { flex: 0 0 clamp(96px, 9.5vw, 300px); gap: clamp(4px, 0.4vw, 12px); }
+  .draft .reel.wide { flex: 1 1 auto; max-width: clamp(260px, 26vw, 820px); }
+  .draft .reel-cap { font-size: clamp(8px, 0.62vw, 19px); }
+  .draft .reel-row { font-size: clamp(10.5px, 1.05vw, 33px); }
+  .draft .reel.wide .reel-row { padding: 0 clamp(22px, 2.2vw, 68px); }
+  .draft .reel-arrow { border-top-width: clamp(5px, 0.45vw, 14px); border-bottom-width: clamp(5px, 0.45vw, 14px); }
+  .draft .reel-arrow.l { border-left-width: clamp(7px, 0.62vw, 20px); }
+  .draft .reel-arrow.r { border-right-width: clamp(7px, 0.62vw, 20px); }
+
   .ladder .rung {
     height: 7px;
   }
@@ -2591,12 +2803,18 @@ button {
    without a width being guessed at anywhere. `row-gap` is small and `column-gap` is wide, because
    what separates two things standing beside each other is space and what separates two lines is
    almost nothing: the doors' own 44px boxes already hold them apart. */
-.map-head.across { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; padding: 4px 0 2px; }
+/* THE LADDER'S OWN HEAD READS AT THE SIZE OF THE DESK — his ruling, 2026-09-29: "Make this way
+   bigger", on the whole band: the level line, the era it belongs to, the count cleared, the star
+   counter, the staff door, the team line and the reset. It was cut for a phone — a 9.5px mono line
+   and a 24px counter — and on a 3,840px desk it is a strip of footnotes over a full-screen ladder.
+   Every term is a clamp whose FLOOR is the size it has today, so nothing under about 1,500px of
+   window moves by a pixel and the phone is untouched. */
+.map-head.across { display: flex; flex-wrap: wrap; align-items: center; gap: 0 clamp(16px, 1.1vw, 42px); padding: clamp(4px, 0.4vw, 16px) 0 clamp(2px, 0.3vw, 12px); }
 /* The reading line. A basis wide enough to hold its own text means the doors wrap under it on a
    phone rather than shouldering it into an ellipsis, and `flex-grow` lets it take up the slack on
    a desk so the doors sit out at the right where the home button is. */
 .map-head.across .map-read { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 7px; flex: 1 1 300px; min-width: 0; }
-.map-head.across .map-kicker { font-size: 9.5px; line-height: 1.5; }
+.map-head.across .map-kicker { font-size: clamp(9.5px, 0.62vw, 24px); line-height: 1.5; }
 /* the dot between the two halves is drawn, not typed, so it goes away by itself if a long era name
    wraps them onto separate lines */
 .map-head.across .map-read .map-kicker + .map-kicker::before { content: '·'; margin-right: 7px; opacity: 0.55; }
@@ -2607,23 +2825,25 @@ button {
 /* Every door is a 44px box (his phone, one thumb, no hover): the labels are 9.5px mono, which is
    nothing to hit otherwise. The box is invisible — the type does not move, it only gains reach. */
 .map-head.across .map-doors > * { min-height: 44px; display: inline-flex; align-items: center; }
-.map-head.across .map-link { font-size: 9.5px; }
+.map-head.across .map-link { font-size: clamp(9.5px, 0.62vw, 24px); }
 /* the counter comes down from 40px to 24: it is a door in a row of doors now, not a headline */
-.map-head.across button.map-total { display: inline-flex; font-size: 24px; padding: 0; margin: 0; }
-.map-head.across .map-total i { font-size: 12px; }
-.map-head.across .map-total .star { font-size: 17px; }
-.map-head.across button.map-total .a { font-size: 15px; margin-left: 6px; }
+.map-head.across button.map-total { display: inline-flex; font-size: clamp(24px, 1.7vw, 66px); padding: 0; margin: 0; }
+.map-head.across .map-total i { font-size: clamp(12px, 0.85vw, 33px); }
+.map-head.across .map-total .star { font-size: clamp(17px, 1.2vw, 46px); }
+.map-head.across button.map-total .a { font-size: clamp(15px, 1.05vw, 40px); margin-left: clamp(6px, 0.4vw, 15px); }
 /* the team line is a door among doors now, so it sizes to its own words instead of stretching to a
    column that no longer exists — and it still gives up the NAME first when the row runs out */
 .map-head.across .map-link.team { width: auto; min-width: 0; flex: 0 1 auto; justify-content: flex-start; }
 @media (min-width: 900px) {
-  .map-head.across { gap: 0 22px; padding: 6px 0 4px; }
-  .map-head.across .map-kicker { font-size: 11.5px; }
-  .map-head.across .map-link { font-size: 11.5px; }
-  .map-head.across button.map-total { font-size: 34px; }
-  .map-head.across .map-total i { font-size: 15px; }
-  .map-head.across .map-total .star { font-size: 24px; }
-  .map-head.across button.map-total .a { font-size: 19px; }
+  /* the desk restates the band, so the clamps have to be restated here too or this tier's own
+     fixed sizes win the cascade and nothing grows (his ruling: "Make this way bigger") */
+  .map-head.across { gap: 0 clamp(22px, 1.1vw, 42px); padding: clamp(6px, 0.4vw, 16px) 0 clamp(4px, 0.3vw, 12px); }
+  .map-head.across .map-kicker { font-size: clamp(11.5px, 0.62vw, 24px); }
+  .map-head.across .map-link { font-size: clamp(11.5px, 0.62vw, 24px); }
+  .map-head.across button.map-total { font-size: clamp(34px, 1.7vw, 66px); }
+  .map-head.across .map-total i { font-size: clamp(15px, 0.85vw, 33px); }
+  .map-head.across .map-total .star { font-size: clamp(24px, 1.2vw, 46px); }
+  .map-head.across button.map-total .a { font-size: clamp(19px, 1.05vw, 40px); }
 }
 /* AUTO-COMPLETE. On, the trail behind the door brings its locked tickets most of the way up —
    every one of them is a live target now. The door itself is the era row's last chip; the foot
@@ -2664,23 +2884,28 @@ button {
 .ticket { position: relative; display: block; width: 78px; border-radius: 8px; background: var(--surface); border: 2px solid var(--line-3); padding: 7px 6px 6px; box-shadow: 0 0 0 4px var(--bg); text-align: center; }
 .ticket-n { display: block; font-family: var(--serif); font-size: 16.8px; line-height: 1; font-weight: 400; }
 .ticket-stub { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: var(--muted); margin-top: 3px; white-space: nowrap; }
-.ticket-next { display: block; font-family: var(--mono); font-size: 5.25px; font-weight: 700; letter-spacing: 0.16em; }
+.ticket-next { display: block; font-family: var(--mono); font-size: clamp(5.25px, 0.18vw, 6.7px); font-weight: 700; letter-spacing: 0.16em; }
 .node.locked { opacity: 0.4; }
 .node.done .ticket { background: var(--you); border-color: var(--you); color: var(--you-ink); }
 .node.done .ticket-stub { color: var(--you-ink); opacity: 0.8; }
 .node.now .ticket { width: 86px; padding: 8px 6px 7px; border-color: var(--you); color: var(--you); animation: pulse 1.8s ease-in-out infinite; }
-.node.now .ticket-n { font-size: 18.2px; margin-top: 2px; }
+.node.now .ticket-n { font-size: clamp(18.2px, 0.63vw, 23.3px); margin-top: 2px; }
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--you-line); } 50% { box-shadow: 0 0 0 4px var(--bg), 0 0 0 9px var(--you); } }
 .node-stars { display: flex; gap: 1px; font-size: 12px; line-height: 1; color: var(--line-3); }
 .node-stars i { font-style: normal; }
 .node-stars i.lit { color: var(--you); }
 .who i.sal { display: block; color: var(--you); }
 @media (min-width: 900px) {
-  .ticket { width: 96px; }
-  .node.now .ticket { width: 106px; }
-  .ticket-n { font-size: 22.4px; }
-  .ticket-stub { font-size: 10px; }
-  .node-stars { font-size: 13px; }
+  /* THE TICKETS READ AT THE SIZE OF THE DESK - his ruling, 2026-09-29: "In campaing, make the
+     team tickets bigger." A third bigger, which is what the trail can carry: measured at 3,840 the
+     lane pitch is 248px against a 116px ticket and the turn clears 212px against a 144px node, so
+     a 1.28 on both axes keeps 50px of side gap and 25px at the turns. Every floor is the size it
+     is today, so nothing under about 2,800px of window moves. */
+  .ticket { width: clamp(96px, 3.3vw, 123px); }
+  .node.now .ticket { width: clamp(106px, 3.65vw, 136px); }
+  .ticket-n { font-size: clamp(22.4px, 0.77vw, 28.7px); }
+  .ticket-stub { font-size: clamp(10px, 0.34vw, 12.8px); }
+  .node-stars { font-size: clamp(13px, 0.45vw, 16.6px); }
   .map-total { font-size: 56px; }
 }
 
@@ -3200,6 +3425,29 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 .mdef.lifted { opacity: 0.4; }
 .mdef.empty { color: var(--faint); }
 
+/* ---- THE MATCHUP BOARD, WAY BIGGER ----
+   HIS RULING, 2026-09-29, in those words. The sheet is the whole window and the board inside it
+   ended 585px above the bottom of his desk, with each defender - a thing you pick up and DROP on
+   a man - drawn as a 10.5px surname in a 57px box. The sheet fills now and the board card takes
+   what the head and the analysis leave, its five rows sharing that height equally; the type and
+   the targets are a share of the window rather than a phone's fixed pixels. Every clamp keeps
+   today's size as its floor, so a small window is exactly what it was. */
+.sheet.sheet2.boardsheet { padding-bottom: calc(var(--foot) + 16px); display: flex; flex-direction: column; align-items: stretch; }
+.boardsheet > .card.mboard { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.boardsheet > .card.mboard > .mrow { flex: 1 1 0; min-height: 0; }
+@media (min-width: 1400px) {
+  .boardsheet .mo b,
+  .boardsheet .mdef b { font-size: clamp(10.5px, 0.92vw, 34px); }
+  .boardsheet .mo i,
+  .boardsheet .mdef i { font-size: clamp(9px, 0.6vw, 22px); margin-top: clamp(2px, 0.2vw, 8px); }
+  .boardsheet .mdef { padding: clamp(6px, 0.6vw, 22px) clamp(8px, 0.8vw, 28px); border-radius: clamp(8px, 0.5vw, 18px); }
+  .boardsheet .mrow { gap: clamp(8px, 1.2vw, 44px); padding: clamp(8px, 0.6vw, 20px) 0; }
+  .boardsheet .mrow .arrow { font-size: clamp(11px, 0.78vw, 28px); }
+  .boardsheet .lede { font-size: clamp(11px, 0.58vw, 20px); }
+  .boardsheet .solvebar .sortb { height: clamp(26px, 1.7vw, 50px); padding: 0 clamp(9px, 0.75vw, 24px); font-size: clamp(9px, 0.6vw, 19px); }
+  .boardsheet .solvebar i { font-size: clamp(10px, 0.55vw, 18px); }
+}
+
 /* ---- 0-100 dials ---- */
 .dials { display: flex; gap: 14px; padding: 6px 0 2px; }
 .dial { display: grid; justify-items: center; gap: 0; width: 72px; }
@@ -3260,7 +3508,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* ---- era campaigns ---- */
 .mode.locked { opacity: 0.55; cursor: default; }
 .node.champ .node-disc { border-color: var(--you); }
-.ticket-champ { display: block; font-family: var(--mono); font-size: 4.9px; font-weight: 700; letter-spacing: 0.14em; margin-top: 2px; }
+.ticket-champ { display: block; font-family: var(--mono); font-size: clamp(4.9px, 0.17vw, 6.3px); font-weight: 700; letter-spacing: 0.14em; margin-top: 2px; }
 .node.done .ticket-champ { color: var(--you-ink); }
 .node.now .ticket-champ, .node.locked .ticket-champ { color: var(--you); }
 
@@ -3269,14 +3517,22 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
 /* The nudges pinned beside the next opponent's node — a change waiting in my team, stars to spend.
    They stack in one column on the far side of the trail from the ticket and centre on it, so the
    trail and the ticket's dials stay clear whether there is one of them or two. */
-.node-notes { position: absolute; z-index: 5; width: 34%; display: flex; flex-direction: column; gap: 6px; transform: translateY(-50%); }
-.node-notes.left { left: 2%; align-items: flex-start; }
-.node-notes.right { right: 2%; align-items: flex-end; }
+/* the stack hangs by its FOOT above tonight's ticket — see the note in LevelMap */
+.node-notes { position: absolute; z-index: 5; max-width: 34%; display: flex; flex-direction: column; align-items: center; gap: 6px; transform: translate(-50%, -100%); }
 .node-note { max-width: 100%; padding: 7px 10px; border: 1px solid var(--you); border-radius: 8px; background: var(--surface-2); color: var(--you); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; line-height: 1.5; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
 .node-note i { font-style: normal; }
 .node-note .g { margin-right: 3px; }
 .node-note .d { margin: 0 3px; }
 .node-note .a { margin-left: 4px; }
+/* THE SUBSTITUTION ARROWS (his ruling, 2026-09-29: "Instead of 'A change is waiting in My team',
+   have a substitute icon"). A glyph standing in for a sentence has to be read as a glyph, so it
+   is set a third bigger than the note's own mono and keeps no letter-spacing. */
+/* A NOTE THAT IS A GLYPH is a target, not a line of type: it takes a square of its own and the
+   icon inside it is set at a size you can read across a map (his rulings, 2026-09-29: the
+   substitution icon, and "For the stars, I want big star icon"). */
+.node-note.icon { display: inline-flex; align-items: center; justify-content: center; padding: clamp(8px, 0.55vw, 16px); line-height: 1; }
+.node-note.icon .bigstar { font-size: clamp(22px, 1.5vw, 40px); line-height: 1; letter-spacing: 0; }
+.node-note.icon .subicon { width: clamp(24px, 1.7vw, 46px); height: clamp(24px, 1.7vw, 46px); display: block; }
 .era-band.left { left: 0; text-align: left; }
 .era-band.right { right: 0; text-align: right; }
 .era-band b { display: block; font-family: var(--serif); font-size: 12.6px; font-weight: 400; color: var(--ink); }
@@ -3596,7 +3852,15 @@ body:has(.sheet) { overflow: hidden; }
    CourtFive off the constants that draw the floor; the fallbacks are the old numbers, so a court
    that somehow did not write them is no worse than it was. ALL IN rather than all out, because
    out is above the boards and the only thing above the boards on this page is the season strip. */
-.ct-call { position: absolute; top: calc(var(--ct-in-y, 2.5%) + 1.6%); right: calc(var(--ct-in-x, 3%) + 1.6%); max-width: 60%; text-align: right; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+/* OVER THE COURT — his ruling, 2026-09-29: "Move Helio over the court, and add Tactic: Helio."
+   It sat inside the lines, in the top-right corner of the boards, under the 2026-09-22 ruling
+   that asked for it "either all in or all out" — all in, because on the team page the only thing
+   above the boards is the season strip. This is the other of those two, chosen this time: the
+   caption stands in the out-of-bounds band at the top of the box, centred over the floor rather
+   than tucked in a corner of it, which is where a label for the whole five belongs now that it
+   IS just a label ("Tactic: Helio") and not a sentence. `--ct-in-y` is the depth of that band, so
+   the caption sits in it rather than across the boundary at any size of floor. */
+.ct-call { position: absolute; top: 0; left: 50%; right: auto; transform: translateX(-50%); max-width: 92%; text-align: center; min-height: var(--ct-in-y, 2.5%); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
 .ct-spot { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; width: 86px; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
 .ct-spot:disabled { cursor: default; }
 @media (prefers-reduced-motion: no-preference) {
@@ -5248,7 +5512,25 @@ body.offstage #root { position: relative; z-index: 1; }
 .verdict.final h1 .d { color: var(--line-3); }
 .verdict.final h1 .t { color: var(--them); }
 .strip { display: flex; gap: 5px; margin-top: 12px; }
-.gt { flex: 1; display: grid; gap: 2px; justify-items: center; padding: 8px 0 7px; border-radius: 6px; border: 1px solid var(--line); }
+/* A CHIP IS A DOOR NOW (his ruling, 2026-09-29: "make every game pressable, to see what
+   happnenned in that game"), so it is a <button> and has to be told to stop looking like one. */
+.gt { flex: 1; display: grid; gap: 2px; justify-items: center; padding: 8px 0 7px; border-radius: 6px; border: 1px solid var(--line); appearance: none; background: none; font: inherit; color: inherit; text-align: center; cursor: pointer; }
+.gt:disabled { cursor: default; }
+/* a game that has not landed yet: the chip holds its place and says nothing */
+.gt.pending { border-style: dashed; border-color: var(--line-2); opacity: 0.5; }
+.gt.pending b { color: var(--faint); }
+.result.landing { cursor: pointer; }
+.v-landing { font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.gt:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
+/* ---- one night's box, off a filmstrip chip ---- */
+.gamesheet { padding-bottom: calc(var(--foot) + 16px); }
+.gs-score { display: flex; align-items: baseline; justify-content: center; gap: clamp(14px, 2.4vw, 64px); padding: clamp(10px, 1vw, 30px) 0 clamp(6px, 0.8vw, 22px); }
+.gs-side { display: grid; justify-items: center; gap: 2px; min-width: 0; }
+.gs-side i { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.62vw, 19px); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.gs-side b { font-family: var(--num); font-size: clamp(34px, 3.4vw, 96px); line-height: 1; color: var(--ink); }
+.gs-side.you b { color: var(--you); }
+.gs-side.them b { color: var(--them); }
+.gs-score em { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.6vw, 18px); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
 .gt i { font-style: normal; font-family: var(--mono); font-size: 7.5px; letter-spacing: 0.1em; color: var(--faint); }
 .gt b { font-family: var(--mono); font-size: 10px; }
 .gt b em { font-style: normal; color: var(--faint); }
@@ -5311,7 +5593,13 @@ body.offstage #root { position: relative; z-index: 1; }
        track, which is narrower than "112–108" wants to be. */
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     column-gap: 24px;
-    align-items: start;
+    /* AND THE HEIGHT, TOO - his ruling, 2026-09-29: "Yes fix the result screen too". The 2026-09-08
+       ruling gave this screen the window's WIDTH and left `align-items: start`, so the three groups
+       ended where their content ended and a 1,500px desk showed a band across the top with five
+       hundred pixels of black under it. The grid's own height is measured in Series.tsx; the rows
+       are the three columns and then the doors, and every group stretches to its row. */
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
   }
   .result > * {
     display: block;
@@ -5320,23 +5608,58 @@ body.offstage #root { position: relative; z-index: 1; }
   /* The lead SPANS both card rows rather than sitting in the first of them: otherwise row 1 is as
      tall as the whole lead and the night card is pushed down to meet its foot, which puts back the
      scroll this ruling is about. */
+  /* THE LEAD IS READ IN ORDER AND CENTRED IN ITS COLUMN: the score, the room it was read in, and
+     the strip of nights under it. Centred rather than stretched because the three of them are one
+     block - a verdict with a gap torn through it is not a bigger verdict. */
   .res-lead {
     grid-column: 1;
     grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
   }
-  .res-won {
-    grid-column: 2;
-    grid-row: 1;
-  }
+  /* THE TWO CARDS DO stretch, and what is inside them spreads: five duel bars and two nameplates
+     given the height of the window are five duel bars with air around them, which is the one thing
+     this card has always wanted and never had. */
+  .res-won,
   .res-night {
     grid-column: 2;
-    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .res-won { grid-row: 1; }
+  .res-night { grid-row: 2; }
+  .res-won > .card,
+  .res-night > .card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .res-won .duels {
+    flex: 1 1 auto;
+    align-content: space-between;
+  }
+  /* the two nameplates stay TOGETHER - they are a star and the answer to him, and a card that
+     pushed the answer to its foot left the pair reading as two unrelated lines. It is the DOOR
+     that takes the slack, which is where a door belongs. */
+  .res-night .card .linkb {
+    margin-top: auto;
   }
   /* OPENED ON REQUEST, and capped. The box scores are the one part of this screen read as a TABLE,
      and a table stretched to 1400px puts every number a hand's width from the label it belongs to —
      the draft's own `.draft.set.solo` cap is here for the same reason. 900px is the widest the
      series-stats rows and the two player-line tables read at, and it is still 60% more room than
      the 562 column they were drawn in before this ruling. */
+  /* WHILE IT LANDS THERE IS ONLY ONE THING ON THE SCREEN — his ruling, 2026-09-30, on the sim:
+     "Make the game7 sim full screen." Nothing that pronounces on the series is drawn until it is
+     decided, so during the landing two of the three columns are empty and the verdict sat in the
+     middle one with black either side of it. One column while it lands, and the score, the room
+     and the strip have the whole desk. */
+  .result.landing { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .result.landing > .res-lead { grid-column: 1; grid-row: 1; }
   .res-more {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -5374,9 +5697,21 @@ body.offstage #root { position: relative; z-index: 1; }
    waits for. */
 @media (min-width: 1150px) {
   .result {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+    /* the widest track is the middle one now, because that is where the verdict went */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+  /* THE SCORE IN THE MIDDLE — his ruling, 2026-09-29: "In the Photo, the series score should be
+     in the middle." It opened the row on the left, which is where you start reading, and that was
+     the argument for it; but on a desk the three groups are read as a BOARD and not as a sentence,
+     and the verdict is the thing the other two explain. Between them, it is the middle of the
+     screen rather than the middle of a column — and WHERE IT WAS WON, which is the how, now sits
+     to its left, and THE NIGHT BELONGED TO, which is the who, to its right. */
+  .res-won {
+    grid-column: 1;
+    grid-row: 1;
   }
   .res-lead {
+    grid-column: 2;
     grid-row: 1;
   }
   .res-night {
@@ -5386,9 +5721,44 @@ body.offstage #root { position: relative; z-index: 1; }
   .res-night > .card {
     margin-top: 0;
   }
+  /* three columns, so the lead no longer spans two rows */
+  .res-lead {
+    grid-row: 1;
+  }
   .res-more {
     grid-row: 2;
   }
+}
+
+/* ---- AND IT READS AT THE SIZE OF THE DESK IT IS ON ----
+   The other half of "fix the result screen too". A 64px score, a 10px chip and an 8.5px duel label
+   were cut for a 562px column; filling the window with the same type only makes the black between
+   the words bigger. Every figure on this screen is a share of the window now, with the size it has
+   today as the floor of its clamp, so nothing under 1,400px moves. */
+@media (min-width: 1400px) {
+  .result .verdict.final { padding-top: clamp(14px, 1.2vw, 40px); }
+  .result .verdict.final .v-kick { font-size: clamp(9px, 0.62vw, 20px); }
+  .result .verdict.final h1 { font-size: clamp(64px, 5.4vw, 170px); }
+  .result .v-row { gap: clamp(14px, 1.5vw, 46px); margin-top: clamp(10px, 0.8vw, 26px); }
+  .result .v-side { font-size: clamp(10px, 0.78vw, 25px); }
+  .result .verdict p { font-size: clamp(16.8px, 1.05vw, 33px); }
+  .result .stars { font-size: clamp(22px, 1.9vw, 60px); }
+  /* the filmstrip is what he presses now, so it is a row of targets and not a caption */
+  .result .strip { gap: clamp(5px, 0.5vw, 16px); margin-top: clamp(12px, 1.2vw, 40px); }
+  .result .gt { padding: clamp(8px, 0.95vw, 30px) 0 clamp(7px, 0.85vw, 27px); border-radius: clamp(6px, 0.4vw, 14px); gap: clamp(2px, 0.25vw, 8px); }
+  .result .gt i { font-size: clamp(7.5px, 0.55vw, 18px); }
+  .result .gt b { font-size: clamp(10px, 1.05vw, 34px); }
+  .result .duels { gap: clamp(10px, 0.9vw, 30px); margin-top: clamp(12px, 1vw, 30px); }
+  .result .duel-line { font-size: clamp(10px, 0.82vw, 26px); }
+  .result .duel-line span { font-size: clamp(8.5px, 0.6vw, 19px); }
+  .result .duel-bar { height: clamp(5px, 0.45vw, 14px); margin-top: clamp(4px, 0.35vw, 11px); }
+  .result .night-row { padding-top: clamp(8px, 0.7vw, 22px); gap: clamp(10px, 1vw, 30px); }
+  .result .night-row b { font-size: clamp(15.4px, 1.25vw, 40px); }
+  .result .night-row.small b { font-size: clamp(16px, 1.25vw, 40px); }
+  .result .night-row span { font-size: clamp(10.5px, 0.68vw, 22px); }
+  .result .card-head .label { font-size: clamp(11px, 0.68vw, 22px); }
+  .result .card-head .cap { font-size: clamp(9px, 0.6vw, 19px); }
+  .result .linkb { font-size: clamp(11px, 0.68vw, 22px); }
 }
 
 /* ---- achievements: the trophy case (round 63) ---- */
@@ -5413,15 +5783,21 @@ body.offstage #root { position: relative; z-index: 1; }
 
 /* ---- the in-game ask (his ruling): a dialog in the game's voice, never the browser's ---- */
 .ask-veil { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 20px; background: rgba(11, 10, 8, 0.72); backdrop-filter: blur(2px); }
-.ask { width: min(347px, 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: 2px solid var(--you); border-radius: 8px; padding: 16px 16px 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
-.ask p { margin: 8px 0 0; font-family: var(--serif); font-size: 11.55px; font-style: italic; color: var(--ink-2); line-height: 1.45; }
-.ask-btns { display: flex; gap: 10px; margin-top: 16px; }
+/* THE ASK IS THE SIZE OF THE QUESTION — his ruling, 2026-09-29: "The 'Before you sim / You still
+   have a change left in My team. Sim the series without it?' notification is way too small." It is
+   the one modal in the game that can cost him a level, and it was a 347px card with 11.5px of copy
+   and 7.7px buttons in the middle of a 3,840px desk. Every term is a clamp whose floor is the size
+   it has today, so the phone is untouched. */
+.ask { width: min(clamp(347px, 33vw, 760px), 100%); background: var(--surface-2); border: 1px solid var(--line-3); border-top: clamp(2px, 0.2vw, 6px) solid var(--you); border-radius: clamp(8px, 0.55vw, 18px); padding: clamp(16px, 1.5vw, 44px) clamp(16px, 1.5vw, 44px) clamp(14px, 1.3vw, 38px); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out; }
+.ask > .label { font-size: clamp(9px, 0.62vw, 20px); }
+.ask p { margin: clamp(8px, 0.7vw, 20px) 0 0; font-family: var(--serif); font-size: clamp(11.55px, 1.02vw, 32px); font-style: italic; color: var(--ink-2); line-height: 1.45; }
+.ask-btns { display: flex; gap: clamp(10px, 0.8vw, 24px); margin-top: clamp(16px, 1.3vw, 38px); }
 /* ...and the card's gold top rule is the dialog's other "go" signal, so a destructive ask does not
    wear it either. `height: 44px` used to sit on this rule and never applied — .btn's min-height of
    52px wins — so the dialog's buttons have always been 52px; the dead declaration is gone rather
    than made true, because 52px is what he has been pressing. */
 .ask.danger { border-top-color: var(--danger); }
-.ask-btns .btn { font-size: 7.7px; }
+.ask-btns .btn { font-size: clamp(7.7px, 0.68vw, 21px); height: auto; min-height: clamp(44px, 3.2vw, 92px); }
 
 /* ---- the team database: a year, a team, their best five ---- */
 .yr-rail { display: flex; gap: 6px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
@@ -5684,6 +6060,14 @@ body.offstage #root { position: relative; z-index: 1; }
   color: #f6eedd;
 }
 .node.wood.locked .ticket-stub { color: #b39f83; }
+/* THE NUMBER HAS TO BE READABLE ON A LOCKED TICKET — his ruling, 2026-09-30: "Why some stages
+   arent numbered? Make sure all are throughout all modes."
+   They were numbered. The hardwood's number is set in the dark ink a PALE board wants (#241408),
+   and a locked ticket is that board darkened to #1c1207 — measured, 1.03 of contrast, which is
+   not a faint number, it is an invisible one. It takes the same pale ink the stub beside it
+   already takes when the ticket is locked. Every other skin was checked the same way at the same
+   time: the arena, the banner and the dusk all clear 15. */
+.node.wood.locked .ticket-n { color: #e6d3b0; }
 
 /* TIP-OFF. Brighter stock under the bulbs, and it hangs straight while everything around it lies
    at an angle — the one ticket that has not been dropped on the floor yet. */
@@ -5941,18 +6325,24 @@ body.offstage #root { position: relative; z-index: 1; }
   /* THE SNAKE'S TICKETS. A row is ~190px of pitch wide per level, so the paper grows to fill it —
      and his ruling "Make the font bigger" is spent here first: this is the type he actually reads
      off the map. Everything below is one step up from the 1150px column these were cut for. */
+  /* A THIRD BIGGER ON A DESK - his ruling, 2026-09-29: "In campaing, make the team tickets
+     bigger." These are the rules that actually decide a ticket's size (the plain `.ticket` width
+     above is outranked by every skin), so this is where the growth has to be written. 1.28 is what
+     the trail can carry: measured at 3,840 the lane pitch is 248px against a 116px ticket and the
+     turn clears 212px against a 144px node. Every floor is today's size, so nothing under about
+     2,800px of window moves. */
   .node.arena .ticket,
-  .node.wood .ticket { width: 132px; padding: 12px 10px 10px; }
-  .node.arena.now .ticket { width: 148px; padding: 13px 10px 11px; }
-  .node.wood.now .ticket { width: 152px; padding: 26px 0 11px; }
+  .node.wood .ticket { width: clamp(132px, 4.55vw, 169px); padding: 12px 10px 10px; }
+  .node.arena.now .ticket { width: clamp(148px, 5.1vw, 190px); padding: 13px 10px 11px; }
+  .node.wood.now .ticket { width: clamp(152px, 5.25vw, 195px); padding: 26px 0 11px; }
   .node.wood.locked .ticket { padding: 12px 10px 10px; }
-  .node .ticket-n { font-size: 28px; }
+  .node .ticket-n { font-size: clamp(28px, 1.4vw, 53px); }
   .node.arena.now .ticket-n,
-  .node.wood.now .ticket-n { font-size: 31.5px; }
-  .node .ticket-stub { font-size: 12.5px; }
-  .node .ticket-next { font-size: 7.7px; }
-  .node .ticket-champ { font-size: 7.7px; }
-  .node .node-stars { font-size: 20px; gap: 3px; }
+  .node.wood.now .ticket-n { font-size: clamp(31.5px, 1.57vw, 59px); }
+  .node .ticket-stub { font-size: clamp(12.5px, 0.62vw, 23px); }
+  .node .ticket-next { font-size: clamp(7.7px, 0.39vw, 14.5px); }
+  .node .ticket-champ { font-size: clamp(7.7px, 0.39vw, 14.5px); }
+  .node .node-stars { font-size: clamp(20px, 1vw, 38px); gap: 3px; }
   .node.wood .ticket-stub .ab { height: 26px; line-height: 26px; }
   .node.wood.now .ticket-stub .ab { height: 26px; line-height: 26px; }
 
@@ -5968,13 +6358,13 @@ body.offstage #root { position: relative; z-index: 1; }
    * the banner and its rod, the foil card and its inset, and every number, band and caption on
    * them. Nothing changes shape — a banner is still a pennant, the dynasty card is still foil.
    */
-  .node.hall .ticket { width: 110px; margin-top: 11px; padding: 30px 7px 20px; }
-  .node.hall.now .ticket { width: 126px; padding: 41px 7px 23px; }
+  .node.hall .ticket { width: clamp(110px, 3.8vw, 141px); margin-top: 11px; padding: 30px 7px 20px; }
+  .node.hall.now .ticket { width: clamp(126px, 4.35vw, 161px); padding: 41px 7px 23px; }
   .node.hall.locked .ticket { padding: 30px 7px 20px; }
   .node.hall::after { top: 3px; width: 76px; height: 5px; }
   .node.hall.now::after { width: 90px; }
-  .node.hall .ticket-n { font-size: 25.2px; }
-  .node.hall.now .ticket-n { font-size: 28.7px; }
+  .node.hall .ticket-n { font-size: clamp(25.2px, 1.26vw, 47px); }
+  .node.hall.now .ticket-n { font-size: clamp(28.7px, 1.43vw, 54px); }
   .node.hall .ticket-stub { font-size: 12.5px; }
   .node.hall .ticket-stub .ab { top: 10px; font-size: 8.75px; }
   .node.hall.now .ticket-stub .ab { top: 26px; }
@@ -5982,11 +6372,11 @@ body.offstage #root { position: relative; z-index: 1; }
   .node.hall .ticket-next { top: 10px; }
   .node.hall.now::before { top: 58px; width: 300px; height: 300px; }
 
-  .node.dusk .ticket { width: 130px; border-radius: 16px; padding: 3px; }
+  .node.dusk .ticket { width: clamp(130px, 4.5vw, 166px); border-radius: 16px; padding: 3px; }
   .node.dusk .ticket::after { inset: 3px; border-radius: 13px; }
-  .node.dusk.now .ticket { width: 144px; }
-  .node.dusk .ticket-n { font-size: 26.6px; margin-top: 28px; }
-  .node.dusk.now .ticket-n { font-size: 30.1px; margin-top: 48px; }
+  .node.dusk.now .ticket { width: clamp(144px, 4.95vw, 184px); }
+  .node.dusk .ticket-n { font-size: clamp(26.6px, 1.33vw, 50px); margin-top: 28px; }
+  .node.dusk.now .ticket-n { font-size: clamp(30.1px, 1.5vw, 56px); margin-top: 48px; }
   .node.dusk .ticket-stub { font-size: 13px; }
   .node.dusk .ticket-stub .ab { left: 3px; right: 3px; top: 3px; height: 25px; line-height: 25px; border-radius: 13px 13px 0 0; font-size: 8.4px; }
   .node.dusk .ticket-champ { font-size: 9.1px; }
@@ -6370,8 +6760,9 @@ body.um {
   /* every ticket lies at its own slight angle, deterministic from the level */
   transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
 }
+/* the club ticket grows with the four skins' box (his rulings, 2026-09-29 and 2026-09-30) */
 .node.club .ticket {
-  width: 116px;
+  width: clamp(116px, 5.8vw, 218px);
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-left: 5px solid var(--te, #f2ece0);
   border-radius: 8px;
@@ -6443,7 +6834,7 @@ body.um {
    it, and a gold glow so the eye finds it the moment the map recentres. */
 .node.club.now { transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1.12); z-index: 3; }
 .node.club.now .ticket {
-  width: 116px;
+  width: clamp(116px, 5.8vw, 218px);
   border: 2px solid #ffd76b;
   animation: none;
   box-shadow:
@@ -6469,11 +6860,12 @@ body.um {
 /* The ladder's control row — four era chips and the auto door, then staff and rename.
    Nothing here is under 44px: it is the top of the map and it is all thumb. */
 .um-mapbar { display: flex; flex-direction: column; gap: 6px; padding: 0 14px 8px; }
-.um-eras { display: flex; gap: 5px; }
+/* the four era keys grow with the head above them (his ruling: "Make this way bigger") */
+.um-eras { display: flex; gap: clamp(5px, 0.4vw, 15px); }
 .um-era {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 44px;
+  min-height: clamp(44px, 3.2vw, 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6491,8 +6883,8 @@ body.um {
   text-transform: uppercase;
   cursor: pointer;
 }
-.um-era b { font-family: var(--serif); font-size: 10.5px; line-height: 1; font-weight: 400; }
-.um-era i { font-style: normal; font-size: 8px; letter-spacing: 0.02em; color: var(--um-cap); }
+.um-era b { font-family: var(--serif); font-size: clamp(10.5px, 0.8vw, 31px); line-height: 1; font-weight: 400; }
+.um-era i { font-style: normal; font-size: clamp(8px, 0.6vw, 23px); letter-spacing: 0.02em; color: var(--um-cap); }
 .um-era.on { border-color: var(--um-gold); background: #241f1a; color: var(--um-gold); }
 .um-era.on i { color: var(--um-gold); }
 .um-maprow { display: flex; gap: 8px; }
@@ -7237,12 +7629,18 @@ body.tunnel:not(.um) .chip-gold { background: #f5efe2; color: #12100d; }
    has to beat is four classes deep (`.node.arena.now .ticket`), so the same four are named here
    plus the body element, which settles the cascade without a single !important.
    ========================================================================== */
+/* AND THE BOX IS A THIRD BIGGER ON A DESK — his ruling, 2026-09-29: "In campaing, make the team
+   tickets bigger." THIS is the rule that decides a ticket's size in scout mode: it deliberately
+   outranks every skin so all four blocks stand the same box, which is why growing the skins' own
+   widths did nothing. 1.28 is what the trail carries — measured at 3,840 the lane pitch is 248px
+   and the turn clears 212px, so at 149 x 121 (and x1.12 for tonight's) there is still 99px of side
+   gap and 42 at the turns. The floors are today's numbers, so nothing under ~2,900px moves. */
 body:not(.um) .node .ticket,
 body:not(.um) .node.now .ticket,
 body:not(.um) .node.locked .ticket {
   box-sizing: border-box;
-  width: 116px;
-  min-height: 94px;
+  width: clamp(116px, 5.8vw, 218px);
+  min-height: clamp(94px, 4.7vw, 177px);
 }
 /* The banner hangs from a rod and the rod is on the node, so the hall alone keeps a top margin —
    the BOX is the same 116 x 94, it just starts 11px lower than the other three. */
@@ -7545,11 +7943,11 @@ body.map #root { padding-bottom: var(--foot); }
    * rather than asserted. Above about 720px of window height the 24px cap is what binds and this
    * half is idle; below 900px of width the page scrolls and it is idle again.
    */
-  --fd-u: clamp(9px, min(2.7vw, calc(3.6vh - 2px)), 24px);
-  --fd-u: clamp(9px, min(2.7vw, calc(3.6dvh - 2px)), 24px);
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6vh - 2px)), 54px);
+  --fd-u: clamp(9px, min(2.7vw, calc(3.6dvh - 2px)), 54px);
   /* the inset every band keeps off the glass, and it is the same on all four so the page reads as
      one composition rather than four rows that happen to be stacked */
-  --fd-pad: clamp(14px, 2.4vw, 34px);
+  --fd-pad: clamp(14px, 2.4vw, 77px);
 
   /**
    * WHAT STANDS ON THE FLOOR, all of it in cqw off the court so the play is the same drawing at
@@ -7581,7 +7979,7 @@ body.map #root { padding-bottom: var(--foot); }
      is 12% of a height the court below it does not get 12% more of. Flagged rather than solved,
      like the plate above it — the alternative is holding the floor at 30 and making his ruling
      stop applying to the narrowest phone, which is the width it is least visible on. */
-  --fd-fig-h: clamp(34px, 9.3cqw, 105px);
+  --fd-fig-h: clamp(34px, 9.3cqw, 165px);
   /* HOW FAR ABOVE HIS MARK'S CENTRE THE MAN'S FEET LAND. This one number is the whole of his
      ruling "the jersey above the location and not to the side": it replaces both --ck-fig-gap
      (the step sideways) and --ck-fig-drop (the push below). It is read in exactly two places —
@@ -7599,8 +7997,8 @@ body.map #root { padding-bottom: var(--foot); }
      shirt's foot sits about three pixels inside it (-3.2 at 1440), which costs nothing: the hem is
      7.5px off the foot there, so what the plate covers is bare shirt. THE PHONE IS THE CASE THIS
      NUMBER IS FOR, because it is the only width where the hem and the plate can meet. */
-  --fd-fig-lift: clamp(10px, 1.4cqw, 18px);
-  --fd-ball-d: clamp(11px, 3.2cqw, 34px);
+  --fd-fig-lift: clamp(10px, 1.4cqw, 25px);
+  --fd-ball-d: clamp(11px, 3.2cqw, 56px);
   /* the smudge both shadows are made of. It is black now rather than the slate's own green, and
      it is centred rather than offset, because the light in this room comes from OVERHEAD CENTRE
      (see `.fd-glow`) where the slate's came raking from its upper left. */
@@ -7624,7 +8022,10 @@ body.map #root { padding-bottom: var(--foot); }
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: calc(var(--fd-u) * 0.4) var(--fd-pad);
+  /* the band's air, not its type: 0.4 of the unit was 42px of padding around a 35px line once
+     the unit came off its ceiling, and the floor below wants it more (his ruling: "Make the court
+     bigger in the home page") */
+  padding: calc(var(--fd-u) * 0.26) var(--fd-pad);
   background: var(--panel);
   border-bottom: 1px solid var(--divider);
   overflow: hidden;
@@ -7632,7 +8033,7 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-years {
   flex: none;
   font-family: var(--serif);
-  font-size: clamp(9.8px, calc(var(--fd-u) * 0.595), 15.4px);
+  font-size: clamp(9.8px, calc(var(--fd-u) * 0.595), 34.6px);
   letter-spacing: 0.24em;
   color: var(--muted);
 }
@@ -7644,7 +8045,7 @@ body.map #root { padding-bottom: var(--foot); }
    the rail and not a tagline on the mark. */
 .fd-cap {
   min-width: 0;
-  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 27px);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -7671,19 +8072,25 @@ body.map #root { padding-bottom: var(--foot); }
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: clamp(9px, 1.4vw, 18px);
-  padding: clamp(10px, calc(var(--fd-u) * 0.62), 16px) var(--fd-pad) calc(var(--fd-u) * 0.6);
+  gap: clamp(9px, 1.4vw, 41px);
+  /* same again, and the phone's 10px floor holds so nothing there moves. The BALL and the
+     wordmark in this row keep every pixel his two rulings gave them - what is coming back to the
+     floor is the daylight around them. */
+  padding: clamp(10px, calc(var(--fd-u) * 0.42), 36px) var(--fd-pad) calc(var(--fd-u) * 0.4);
   background: var(--bg);
   white-space: nowrap;
 }
 .fd-word {
   flex: none;
-  font: 400 clamp(23.8px, calc(var(--fd-u) * 1.54), 53.2px) / 1 var(--serif);
+  /* "Game 7 and the ball bigger" - the wordmark and the ball beside it are the game's name on its
+     own front door and were the smallest identity on any screen in it. The ball follows in
+     FrontDoor.tsx, which is where its size is written. */
+  font: 400 clamp(30px, calc(var(--fd-u) * 2), 153px) / 1 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
 }
 .fd-word em { font-style: normal; color: var(--you); }
-.fd-div { flex: none; width: 1px; height: clamp(28px, calc(var(--fd-u) * 1.7), 44px); background: var(--line); }
+.fd-div { flex: none; width: 1px; height: clamp(28px, calc(var(--fd-u) * 1.7), 99px); background: var(--line); }
 /* THE CLUB BADGE, and it is drawn only when there is a club. `Progress.team` is null until he has
    named one, and with it null this row is the design's row minus the badge and its divider —
    which is the layout a fresh install opens on and so has to work anyway. The standing line reads
@@ -7698,12 +8105,12 @@ body.map #root { padding-bottom: var(--foot); }
   flex: none;
   display: grid;
   place-items: center;
-  width: clamp(62px, calc(var(--fd-u) * 3.4), 100px);
+  width: clamp(62px, calc(var(--fd-u) * 3.4), 225px);
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--crest);
   border: 3px solid var(--trim);
-  font: 400 clamp(20.3px, calc(var(--fd-u) * 1.19), 33.6px) / 1 var(--serif);
+  font: 400 clamp(20.3px, calc(var(--fd-u) * 1.19), 76px) / 1 var(--serif);
   color: var(--crest-ink);
   padding-top: 2px;
 }
@@ -7716,10 +8123,10 @@ body.map #root { padding-bottom: var(--foot); }
    The name is the franchise's own on its own front door, so it leads the row now. `.fd-club` keeps
    `min-width: 0` and the name keeps `text-overflow: ellipsis`, so a long one still shortens rather
    than pushing the stats off the end of the row. */
-.fd-club b { font: 400 clamp(21.7px, calc(var(--fd-u) * 1.54), 40.6px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
+.fd-club b { font: 400 clamp(21.7px, calc(var(--fd-u) * 1.54), 91px) / 0.95 var(--serif); text-transform: uppercase; color: var(--ink); }
 .fd-club i {
   font-style: normal;
-  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 32px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
@@ -7735,13 +8142,15 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-stat i {
   display: block;
   font-style: normal;
-  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 14px);
+  font-size: clamp(10px, calc(var(--fd-u) * 0.52), 32px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
-.fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 27px) / 1 var(--num); color: var(--ink); }
-.fd-stat b.gold { color: var(--you); }
+.fd-stat b { display: block; font: 400 clamp(17px, calc(var(--fd-u) * 1.02), 61px) / 1 var(--num); color: var(--ink); }
+/* "the stars bigger" - the RAFTERS figure only. Cleared is a count of levels and keeps its size;
+   the stars are the thing the whole ladder is banked in. */
+.fd-stat b.gold { font-size: clamp(24px, calc(var(--fd-u) * 1.5), 90px); color: var(--you); }
 .fd-stat em { font-style: normal; color: var(--muted-2); }
 /* THE MODE PAIR, in the header where the door screen draws it: one seamless frame, the ground and
    the ink carrying the whole state, no radius and no gap. The idle ink is --faint (#8a8178) rather
@@ -7753,7 +8162,7 @@ body.map #root { padding-bottom: var(--foot); }
   place-items: center;
   min-height: 48px;
   padding: 0 calc(var(--fd-u) * 0.9);
-  font-size: clamp(11px, calc(var(--fd-u) * 0.58), 15px);
+  font-size: clamp(11px, calc(var(--fd-u) * 0.58), 34px);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--faint);
@@ -7884,9 +8293,21 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-court {
   position: relative;
   container-type: inline-size;
+  /* "make the court a touch smaller, while keeping everything aligned" - 7% off the width the
+     panel allows, and NOTHING else. The 29:20 stays, all six mark coordinates stay, and the panel
+     is still `align-items: center; justify-content: center`, so the floor keeps its centre. Every
+     line, mark, plate, hoop and the ball are laid out in percentages of this box or in its own
+     cqw, so all of them come down with it and none of them has to be re-placed. */
+  /* THE FLOOR TAKES THE WHOLE PANEL - his ruling, 2026-09-29: "Make the court bigger in the home
+     page." The 0.93 was his own ruling of the same day ("make the court a touch smaller"), taken
+     back by this one; the panel is 29:20 and so is the floor, so at 1.0 they are the same box.
+     BEYOND 1.0 IS NOT AVAILABLE: this floor is bound by HEIGHT, not width - `100cqh * 29 / 20`
+     is the smaller of the two terms at every desk width - so a wider panel buys nothing and the
+     only other place to find floor is the chrome above and below it, which is where the rest of
+     this ruling is paid from. */
   width: min(100cqw, calc(100cqh * 29 / 20));
   aspect-ratio: 29 / 20;
-  border: clamp(2px, 0.2vw, 4px) solid rgb(var(--fd-line) / 0.26);
+  border: clamp(2px, 0.2vw, 8px) solid rgb(var(--fd-line) / 0.26);
   border-bottom: 0;
   background: radial-gradient(ellipse 70% 80% at 50% 88%, rgb(255 226 178 / 0.11) 0%, rgb(0 0 0 / 0) 72%);
 }
@@ -7931,29 +8352,29 @@ body.map #root { padding-bottom: var(--foot); }
  */
 .fd-arcbox { left: 14%; right: 14%; top: 0; bottom: 0; overflow: hidden; }
 /* 89.3% of the COURT is 124% of the box the arc is clipped to */
-.fd-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); border-radius: 50%; }
-.fd-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.22); }
+.fd-arc { width: 124%; aspect-ratio: 1; bottom: -44.65cqw; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.22); border-radius: 50%; }
+.fd-corner { bottom: 0; width: 0; height: 26.4cqw; border-left: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.22); }
 .fd-corner.l { left: 14%; }
 .fd-corner.r { left: 86%; }
-.fd-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-bottom: 0; }
-.fd-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(2px, 0.22cqw, 3px) solid rgb(var(--fd-line) / 0.2); border-radius: 50%; }
+.fd-key { width: 32.1%; height: 28.6cqw; bottom: 0; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.2); border-bottom: 0; }
+.fd-ftc { width: 19.6%; aspect-ratio: 1; bottom: 18.7cqw; border: clamp(2px, 0.22cqw, 4px) solid rgb(var(--fd-line) / 0.2); border-radius: 50%; }
 /* THE RIM ASSEMBLY IS THE DESIGN'S, in our units. Ours was a single solid bar and had nothing to
    defend; this is a backboard, a stanchion and a net seen from above. The design draws all three
    at fixed pixels inside a percentage-scaled court, so its rim is huge on a phone and a speck on a
    desk; every one of them is converted to cqw with a pixel floor here. */
 .fd-board {
-  width: clamp(34px, 6.3cqw, 82px);
-  height: clamp(3px, 0.4cqw, 5px);
+  width: clamp(34px, 6.3cqw, 110px);
+  height: clamp(3px, 0.4cqw, 7px);
   bottom: 1.85cqw;
   background: linear-gradient(180deg, #f4efe4 0%, #b5a996 100%);
   box-shadow: 0 2px 5px rgb(0 0 0 / 0.6);
 }
-.fd-post { width: clamp(6px, 1cqw, 13px); height: clamp(7px, 1.2cqw, 15px); bottom: 0.7cqw; background: var(--line-3); }
+.fd-post { width: clamp(6px, 1cqw, 18px); height: clamp(7px, 1.2cqw, 21px); bottom: 0.7cqw; background: var(--line-3); }
 .fd-hoop {
   position: absolute;
   left: 50%;
   bottom: 3.6cqw;
-  width: clamp(22px, 4cqw, 52px);
+  width: clamp(22px, 4cqw, 70px);
   aspect-ratio: 1;
   transform: translateX(-50%);
   z-index: 9;
@@ -8074,9 +8495,9 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   /* the horizontal FLOOR is 4px and not 6 — see the note on `.fd-label`'s, which is the same note */
-  padding: clamp(2px, 0.3cqw, 4px) clamp(4px, 0.9cqw, 11px) 0;
+  padding: clamp(2px, 0.3cqw, 6px) clamp(4px, 0.9cqw, 16px) 0;
   background: var(--fd-shirt);
-  font: 400 clamp(7px, 1.33cqw, 13.3px) / 1 var(--serif);
+  font: 400 clamp(7px, 1.33cqw, 24px) / 1 var(--serif);
   color: var(--fd-shirt-ink);
 }
 .fd-marks.litflip .fd-mark.on .fd-no { background: var(--you-ink); color: var(--fd-shirt); }
@@ -8104,8 +8525,8 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-label {
   display: flex;
   align-items: center;
-  padding: clamp(3px, 0.4cqw, 5px) clamp(6px, 1.3cqw, 16px) clamp(2px, 0.25cqw, 3px);
-  font: 400 clamp(7.7px, 1.82cqw, 18.2px) / 1 var(--serif);
+  padding: clamp(3px, 0.4cqw, 7px) clamp(6px, 1.3cqw, 23px) clamp(2px, 0.25cqw, 5px);
+  font: 400 clamp(7.7px, 1.82cqw, 32px) / 1 var(--serif);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--ink-2);
@@ -8154,11 +8575,11 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-cup {
   position: absolute;
   left: 50%;
-  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 6px));
+  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 7px));
   transform: translateX(-50%);
   display: grid;
   place-items: center;
-  height: clamp(18px, 4.3cqw, 42px);
+  height: clamp(18px, 4.3cqw, 75px);
   line-height: 0;
   pointer-events: none;
 }
@@ -8414,7 +8835,7 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-read > * { flex: none; }
 .fd-tag {
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.55)), 13px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.55)), 29px);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--you);
@@ -8423,7 +8844,7 @@ body.map #root { padding-bottom: var(--foot); }
    job in the design's own language, and the same navy as the number tags and the foot band, which
    is what makes the three read as one structure. */
 .fd-name {
-  font: 400 clamp(21px, min(12.6cqw, calc(var(--fd-u) * 2.1)), 50.4px) / 0.84 var(--serif);
+  font: 400 clamp(21px, min(12.6cqw, calc(var(--fd-u) * 2.1)), 113px) / 0.84 var(--serif);
   text-transform: uppercase;
   color: var(--ink);
   margin-top: 4px;
@@ -8434,7 +8855,18 @@ body.map #root { padding-bottom: var(--foot); }
 .fd-desc {
   margin: 12px 0 0;
   max-width: 42ch;
-  font-size: clamp(12px, min(4.3cqw, calc(var(--fd-u) * 0.62)), 17px);
+  /* HIS RULING, 2026-09-29 (Home.dc.html): "Make the mode description bigger, the stars bigger.
+     Game 7 and the ball bigger, and make the court a touch smaller, while keeping everything
+     aligned." The read is the thing this screen is FOR - it is what tells him what a mode is - and
+     it was set at a footnote's size beside a floor that takes half the window. 1.55x, which is the
+     design file's own number, floor and ceiling and every term with it.
+     PLUS A HEIGHT TERM THE DESIGN FILE DOES NOT HAVE, and cannot: the canvas draws at one fixed
+     frame, the app is resized. A 1,440x900 laptop puts the read pane UNDER the 500px the container
+     query below waits for, so this base rule is what it uses - and at 1.55x with no height in it,
+     the death match's five rules ran 148px past the foot of that pane. `3dvh - 9px` is solved, not
+     scaled: it hands back exactly the 18px that fitted there, and by 1,200 of window it has
+     stopped binding, so a desk still reads the size the design asks for. */
+  font-size: clamp(17px, min(6.2cqw, calc(var(--fd-u) * 0.95), calc(3dvh - 9px)), 61px);
   line-height: 1.5;
   color: var(--ink-2);
   text-wrap: pretty;
@@ -8499,8 +8931,8 @@ body.map #root { padding-bottom: var(--foot); }
 /* AND THE TYPE GROWS AT 500, where two columns are 240 apiece and the height the second column
    handed back is worth more than the points it costs. */
 @container (min-width: 500px) {
-  .fd-tag { font-size: clamp(11px, min(2.4cqw, calc(var(--fd-u) * 0.8)), 20px); }
-  .fd-name { font-size: clamp(23.8px, min(12.6cqw, calc(var(--fd-u) * 3.2)), 64.4px); }
+  .fd-tag { font-size: clamp(11px, min(2.4cqw, calc(var(--fd-u) * 0.8)), 45px); }
+  .fd-name { font-size: clamp(23.8px, min(12.6cqw, calc(var(--fd-u) * 3.2)), 145px); }
   .fd-desc {
     margin-top: 9px;
     /**
@@ -8524,13 +8956,24 @@ body.map #root { padding-bottom: var(--foot); }
      *     board: five rules where every other mark has three or four.
      *     It is dvh and not vh so a phone browser's collapsing toolbar is counted.
      */
-    font-size: clamp(12px, min(3.2cqw, calc(var(--fd-u) * 0.85), calc(8.4dvh - 46px)), 26px);
+    /* SCALED BY THE SAME 1.55 AS THE BASE - except the dvh KNEE, WHICH IS RE-MEASURED AND NOT
+       SCALED, and that is the one place this differs from the design file.
+       The knee is not a style, it is a FIT: it exists so the death match's five rules stand inside
+       their pane on a window too short to pay for the size the other terms want. Multiplying its
+       constants by 1.55 keeps the curve's shape and moves it to 1.55x the size, which by
+       construction no longer fits - measured, the scaled form (13dvh - 71px) puts the death match
+       148px past the foot of its pane at 1440x900, where the old one fitted with 28 to spare. The
+       design canvas draws at one fixed frame and cannot see this; the app is resized.
+       SO IT IS SOLVED RATHER THAN SCALED. `3dvh - 9px` hands back exactly the 18px that fitted at
+       900, and is steep enough that by 1,200 of window it has stopped binding and the read is the
+       size the design asks for - 31.2px on his own 1,500px desk, which is the full increase. */
+    font-size: clamp(17px, min(5cqw, calc(var(--fd-u) * 1.3), calc(3dvh - 9px)), 90px);
     /* 1.4 rather than 1.5: at 20px a fifteenth of a line is four pixels, and over the ten lines
        this pane holds that is the difference between the sign-off standing on the board and the
        sign-off being scrolled to. */
     line-height: 1.4;
   }
-  .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 16px); }
+  .fd-metak { font-size: clamp(10px, min(1.9cqw, calc(var(--fd-u) * 0.62)), 36px); }
   /* THE FURNITURE GIVES UP ITS AIR SO THE COPY CAN HAVE IT. Every number here is smaller than the
      one it overrides by four or five pixels and together they are worth about twenty, which is
      what the fifth rule costs — and they gave up two apiece again on 2026-09-21, when the identity
@@ -8551,14 +8994,15 @@ body.map #root { padding-bottom: var(--foot); }
   border-top: 1px solid var(--line);
 }
 .fd-metak {
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
 .fd-metav {
   margin-left: auto;
-  font: 400 clamp(12px, min(5.8cqw, calc(var(--fd-u) * 0.92)), 23px) / 1 var(--num);
+  /* the other half of "the stars bigger": the same figure said again at the foot of the read */
+  font: 400 clamp(16px, min(7.6cqw, calc(var(--fd-u) * 1.25)), 72px) / 1 var(--num);
   text-transform: uppercase;
   color: var(--you);
 }
@@ -8573,7 +9017,7 @@ body.map #root { padding-bottom: var(--foot); }
   background: var(--you);
   color: var(--you-ink);
   text-align: center;
-  font: 400 clamp(14px, min(7.28cqw, calc(var(--fd-u) * 1.19)), 28px) / 1 var(--serif);
+  font: 400 clamp(14px, min(7.28cqw, calc(var(--fd-u) * 1.19)), 63px) / 1 var(--serif);
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -8589,7 +9033,7 @@ body.map #root { padding-bottom: var(--foot); }
   margin-top: auto;
   padding-top: 14px;
   max-width: 56ch;
-  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 12px);
+  font-size: clamp(9px, min(3cqw, calc(var(--fd-u) * 0.45)), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.7;
@@ -8624,7 +9068,7 @@ body.map #root { padding-bottom: var(--foot); }
   align-items: baseline;
   justify-content: center;
   gap: 10px;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(8px, 1.4vw, 18px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.34), 29px) clamp(8px, 1.4vw, 41px);
   border-left: 1px solid rgb(255 255 255 / 0.14);
   cursor: pointer;
 }
@@ -8638,7 +9082,7 @@ body.map #root { padding-bottom: var(--foot); }
    the markup, not a pseudo-element. */
 .fd-bookrow b,
 .fd-bookrow i {
-  font: 400 clamp(9.8px, calc(var(--fd-u) * 0.63), 15.4px) / 1 var(--serif);
+  font: 400 clamp(9.8px, calc(var(--fd-u) * 0.63), 34.6px) / 1 var(--serif);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   overflow: hidden;
@@ -8652,11 +9096,11 @@ body.map #root { padding-bottom: var(--foot); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(9px, calc(var(--fd-u) * 0.5), 13px) clamp(10px, 1.4vw, 18px);
+  padding: clamp(9px, calc(var(--fd-u) * 0.34), 29px) clamp(10px, 1.4vw, 41px);
   text-align: center;
   text-wrap: balance;
   white-space: normal;
-  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 12px);
+  font-size: clamp(9px, calc(var(--fd-u) * 0.45), 27px);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.5;
@@ -8694,7 +9138,11 @@ body.map #root { padding-bottom: var(--foot); }
      259 at the reference size) and not one pixel more; `flex: none`, so the column cannot hand it
      any. The read grows instead, and on a phone this band scrolls anyway. */
   .fd-panel { flex: none; container-type: inline-size; }
-  .fd-court { width: 100%; }
+  /* THE PHONE KEEPS THE 93%. Taking the desk's floor to the full panel is free — there is width
+     to spare either side — but at 375 the column IS the panel, and measured at 100% the VS FRIEND
+     plate hangs one pixel past the sideline into the panel's own `overflow: hidden`. The corner
+     plates are the thing that decided this number the first time; they decide it again. */
+  .fd-court { width: 93%; }
   .fd-read {
     flex: 1 0 auto;
     border-left: 0;
@@ -8905,3 +9353,212 @@ body.door #root { max-width: none; margin: 0; padding: 0 0 var(--foot); }
   .fd-cta:hover,
   .fd-cta:active { transform: none; }
 }
+
+/* ==========================================================================
+   THE JUMBOTRON — the tip-off board
+   ==========================================================================
+   His ruling, 2026-09-30, choosing 2e off the "Game7 Tipoff Redesigns" board: "Use the Jumbotron
+   E2." What stood here was a crowd bar over two jersey floors — your five drawn once and theirs
+   drawn again beneath it, the pairing written on the nameplates, and half the panel empty beside
+   them. This is the board's own answer: an LED scoreboard, a ticker of the night's matchups, and
+   the two fives in one lit table.
+
+   THE PALETTE IS THE DESIGN'S AND IT DOES NOT LEAK. Every colour on this panel is a token declared
+   on `.jumbo` itself — the near-black of an unlit board, its amber, and the blue and red a
+   scoreboard gives the two sides — so nothing outside it reads them and nothing inside it reads
+   the app's. That is the one place this screen stops speaking the app's colour language, and it
+   stops on purpose: a jumbotron is not the room, it is a thing in the room.
+
+   MOTION IS CSS. The board's own preview drives its ticker and its lit row off an 80ms React
+   interval; here the ticker is one keyframe and the row cycle is five staggered ones, so the panel
+   costs nothing to render — and under `prefers-reduced-motion` it is simply a still board with
+   every row lit, which is the same information without the theatre.
+   ========================================================================== */
+.jumbo {
+  --led-bg: #050403;
+  --led-edge: #2a1f10;
+  --led-amber: #ffb347;
+  --led-dim: #7a5a2e;
+  --led-us: #6f93ff;
+  --led-them: #ff4d5e;
+  display: flex;
+  flex-direction: column;
+  /* it lives inside a card that was measured against the dock — it fills that card and never
+     lengthens the page, which is the draft's own standing rule */
+  min-height: 0;
+  max-height: 100%;
+  border: 1px solid var(--led-edge);
+  border-radius: clamp(10px, 0.5vw, 18px);
+  overflow: hidden;
+  /* the dot pitch of an LED wall, over the black between the lamps */
+  background:
+    radial-gradient(circle, #161005 1px, transparent 1.4px) 0 0 / 5px 5px,
+    var(--led-bg);
+}
+.jumbo-head { flex: none; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 0.5vw, 16px); padding: clamp(14px, 1vw, 28px) clamp(16px, 1.3vw, 38px) clamp(8px, 0.5vw, 14px); }
+.jumbo-kick { font-family: var(--mono); font-size: clamp(10px, 0.62vw, 20px); letter-spacing: 0.24em; text-transform: uppercase; color: var(--led-amber); text-shadow: 0 0 8px rgb(255 160 60 / 0.7); text-align: center; }
+.jumbo-board { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 1.4vw, 46px); }
+.jumbo-side { display: flex; flex-direction: column; align-items: center; }
+.jumbo-side b { font-family: var(--mono); font-weight: 600; font-size: clamp(44px, 2.6vw, 86px); line-height: 1; font-variant-numeric: tabular-nums; }
+.jumbo-side i { font-style: normal; font-family: var(--mono); font-size: clamp(11px, 0.68vw, 22px); letter-spacing: 0.08em; }
+.jumbo-side.us b, .jumbo-side.us i { color: var(--led-us); }
+.jumbo-side.us b { text-shadow: 0 0 18px rgb(111 147 255 / 0.7); }
+.jumbo-side.them b, .jumbo-side.them i { color: var(--led-them); }
+.jumbo-side.them b { text-shadow: 0 0 18px rgb(255 77 94 / 0.7); }
+.jumbo-clock { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(3px, 0.2vw, 7px); }
+.jumbo-clock b { font-family: var(--mono); font-weight: 400; font-size: clamp(16px, 1.1vw, 36px); color: var(--led-amber); text-shadow: 0 0 10px rgb(255 160 60 / 0.8); font-variant-numeric: tabular-nums; }
+.jumbo-clock i { font-style: normal; font-family: var(--mono); font-size: clamp(9px, 0.56vw, 18px); letter-spacing: 0.1em; text-transform: uppercase; color: var(--led-dim); }
+.jumbo-plus { position: absolute; top: -1.4em; left: 50%; transform: translateX(-50%); font-style: normal; font-family: var(--mono); font-size: clamp(12px, 0.8vw, 26px); color: var(--led-us); text-shadow: 0 0 12px rgb(111 147 255 / 0.8); }
+/* ---- the ticker ---- */
+.jumbo-tick { flex: none; overflow: hidden; border-top: 1px solid var(--led-edge); border-bottom: 1px solid var(--led-edge); padding: clamp(7px, 0.45vw, 14px) 0; margin-top: clamp(6px, 0.45vw, 14px); }
+.jumbo-tickrun { display: flex; width: max-content; animation: jumbo-roll 26s linear infinite; }
+.jumbo-tickrow { display: flex; gap: clamp(22px, 1.6vw, 52px); padding-right: clamp(22px, 1.6vw, 52px); }
+.jumbo-tickrow i { font-style: normal; font-family: var(--mono); font-size: clamp(11px, 0.7vw, 24px); white-space: nowrap; color: var(--led-amber); text-shadow: 0 0 6px rgb(255 160 60 / 0.6); }
+@keyframes jumbo-roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* ---- the table ---- */
+.jumbo-grid { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(10px, 0.7vw, 22px) clamp(16px, 1.3vw, 40px); }
+.jumbo-gh, .jumbo-row { display: grid; grid-template-columns: clamp(34px, 2.4vw, 74px) minmax(0, 1fr) clamp(34px, 2.4vw, 74px) minmax(0, 1fr); align-items: center; gap: clamp(4px, 0.4vw, 12px); }
+.jumbo-gh { font-family: var(--mono); font-size: clamp(9px, 0.56vw, 18px); letter-spacing: 0.1em; color: var(--led-dim); padding-bottom: clamp(5px, 0.4vw, 12px); }
+.jumbo-row { padding: clamp(9px, 0.6vw, 18px) 0; border-bottom: 1px dashed var(--led-edge); color: var(--led-dim); }
+.jumbo-no { font-family: var(--mono); font-size: clamp(12px, 0.82vw, 27px); font-variant-numeric: tabular-nums; }
+.jumbo-man { display: block; min-width: 0; padding: 0; border: 0; background: none; text-align: left; font-family: var(--mono); font-size: clamp(12px, 0.82vw, 27px); color: inherit; letter-spacing: 0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.jumbo-man:disabled { cursor: default; }
+.jumbo-man:focus-visible { outline: 2px solid var(--led-amber); outline-offset: 2px; }
+/* THE LIT ROW walks the five, one at a time, the way a board cycles its lines. Five rows, six
+   seconds, so each is lit for a fifth of the loop and the rest read at the board's resting level. */
+@media (prefers-reduced-motion: no-preference) {
+  .jumbo-row { animation: jumbo-led 6s linear infinite; animation-delay: calc(var(--i) * 1.2s); }
+}
+@keyframes jumbo-led {
+  0%, 18% { color: var(--led-amber); text-shadow: 0 0 10px rgb(255 160 60 / 0.8); }
+  22%, 100% { color: var(--led-dim); text-shadow: none; }
+}
+
+/* THE PANEL AROUND IT. The old tip-off was a grid with a place for a crowd bar, two bands and two
+   floors; none of those exist now. One column on a phone — the board, then the roster — and on a
+   desk the roster stands beside it, which is where the two floors used to leave a hole. */
+.tipoff.jumbo-tipoff { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(10px, 0.8vw, 24px); min-height: 0; }
+/* the board fills its half of the panel rather than shrinking to the five rows in it — beside a
+   roster of five men, a board that stops half way up reads as a box that failed to load */
+.tipoff.jumbo-tipoff > .jumbo { align-self: stretch; }
+@media (min-width: 900px) {
+  .tipoff.jumbo-tipoff:has(> .tip-rows) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+
+/* =====================================================================================
+   THE COACH — tutorial mode (his ruling, 2026-09-30: "Add tutorial mode, which will be the
+   same as user mode, but everything explain"). One card in the ask's own voice — surface-2,
+   the gold top rule, serif italic copy — placed by src/ui/Coach.tsx off a spot cut in the
+   veil around the control being explained. The spot's shadow IS the veil when a step has a
+   target; a step with none dims the whole screen instead.
+   ===================================================================================== */
+.coach-veil { position: fixed; inset: 0; z-index: 97; }
+.coach-veil:not(.lit) { background: rgba(11, 10, 8, 0.72); backdrop-filter: blur(2px); }
+.coach-spot {
+  position: fixed; border-radius: 12px; pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 2px var(--you), 0 0 28px rgba(240, 179, 35, 0.35);
+  transition: left 0.22s ease-out, top 0.22s ease-out, width 0.22s ease-out, height 0.22s ease-out;
+  animation: coach-pulse 1.6s ease-in-out infinite;
+}
+@keyframes coach-pulse {
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 2px var(--you), 0 0 22px rgba(240, 179, 35, 0.28); }
+  50% { box-shadow: 0 0 0 9999px rgba(11, 10, 8, 0.74), 0 0 0 3px var(--you-hi), 0 0 40px rgba(240, 179, 35, 0.5); }
+}
+.coach-card {
+  position: fixed; z-index: 98; box-sizing: border-box;
+  width: min(clamp(347px, 30vw, 720px), calc(100vw - 24px));
+  background: var(--surface-2); border: 1px solid var(--line-3); border-top: clamp(2px, 0.2vw, 6px) solid var(--you);
+  border-radius: clamp(8px, 0.55vw, 18px); padding: clamp(14px, 1.2vw, 36px) clamp(16px, 1.4vw, 40px) clamp(12px, 1.1vw, 32px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6); animation: ach-in 0.2s ease-out;
+}
+/* a step with no target: the card stands alone in the middle of the screen */
+/* centred by margins rather than a transform, which the entry animation owns for its first frames */
+.coach-card.free { inset: 0; margin: auto; height: fit-content; }
+/* a phone: the card sits at the foot whatever the spot is doing, clear of the safe area */
+.coach-card.foot { left: 12px; right: 12px; width: auto; bottom: calc(12px + var(--foot)); top: auto; }
+.coach-kick { display: block; font-family: var(--mono); font-size: clamp(8.5px, 0.62vw, 20px); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--you); }
+.coach-card h2 { margin: clamp(6px, 0.5vw, 14px) 0 0; font-family: var(--mono); font-size: clamp(13px, 0.95vw, 30px); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); line-height: 1.2; }
+.coach-card p { margin: clamp(8px, 0.6vw, 18px) 0 0; font-family: var(--serif); font-size: clamp(12px, 0.98vw, 30px); font-style: italic; color: var(--ink-2); line-height: 1.45; }
+.coach-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: clamp(14px, 1.1vw, 32px); }
+.coach-dots { display: inline-flex; gap: 6px; align-items: center; }
+.coach-dots i { width: clamp(6px, 0.45vw, 14px); height: clamp(6px, 0.45vw, 14px); border-radius: 50%; background: var(--line-3); }
+.coach-dots i.done { background: var(--you-line); }
+.coach-dots i.on { background: var(--you); box-shadow: 0 0 0 3px var(--you-tint); }
+.coach-btns { display: inline-flex; gap: clamp(8px, 0.7vw, 20px); }
+.coach-btns.wrap { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+.coach-btns .btn { font-size: clamp(7.7px, 0.62vw, 19px); height: auto; min-height: clamp(40px, 2.8vw, 80px); padding-left: clamp(14px, 1vw, 30px); padding-right: clamp(14px, 1vw, 30px); }
+
+/* THE ? — the only door back to a lesson. It stands in the top-right stack with the home and map
+   fabs, third in the column: the foot-left corner was tried first and measured ON the level-1
+   ticket, which is where every ladder starts. Under every veil (the ask, the coach) and over
+   every screen. */
+.coach-fab {
+  position: fixed; top: 72px; right: 10px; z-index: 85;
+  width: 44px; height: 44px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--you-line); background: var(--surface-2); color: var(--you);
+  font-family: var(--mono); font-size: 20px; font-weight: 700; line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25); backdrop-filter: blur(14px) saturate(1.25);
+}
+.coach-fab:hover { border-color: var(--you); background: var(--you-tint); }
+.coach-fab:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* THE FRONT DOOR CARRIES ITS ? IN THE MODE ROW INSTEAD (FrontDoor.tsx, `.fd-help`): a floating
+   button there measured on the SCOUT chip at phone width, where the identity row wraps under it. */
+body:has(.fd-modes .fd-help) .coach-fab { display: none; }
+.fd-mode.fd-help { color: var(--you); border-left: 1px solid var(--line-3); min-width: 48px; padding: 0 calc(var(--fd-u) * 0.6); }
+
+/* THE ? SHEET: the lessons told so far, replayable. It stands in the ask's veil. */
+.coach-card.index { position: relative; left: auto; top: auto; transform: none; width: min(clamp(347px, 36vw, 860px), 100%); max-height: calc(100vh - 40px); display: flex; flex-direction: column; }
+.coach-list { display: grid; gap: 6px; margin-top: clamp(10px, 0.8vw, 22px); overflow: auto; min-height: 0; flex: 1 1 auto; }
+.coach-row { display: grid; gap: 2px; text-align: left; padding: clamp(8px, 0.6vw, 18px) clamp(10px, 0.8vw, 22px); background: var(--surface); border: 1px solid var(--line-2); border-left: 3px solid var(--you-line); border-radius: 6px; color: var(--ink); cursor: pointer; }
+.coach-row:hover { border-color: var(--you); }
+.coach-row i { font-style: normal; font-family: var(--mono); font-size: clamp(8px, 0.55vw, 17px); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--you); }
+.coach-row b { font-family: var(--mono); font-size: clamp(11px, 0.78vw, 24px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* THE CARD'S DOOR TO HIS TEAM (his ruling, 2026-09-30): one link per club he played for that season,
+   under the banner, in the terminal's own voice. */
+.pc-clubs { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 2px; }
+.pc-club { padding: 4px 0; font-family: var(--mono); font-size: clamp(10px, 0.78vw, 13px); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* THE HEART AND THE CHANGE BESIDE THE STAR (his rulings, 2026-09-30). The scout header prints the
+   star counter in --num at 27px; the heart takes the same measure in the opponent's red, and the
+   change glyph keeps the 44px box every door on that row keeps. The user-mode row does the same
+   in its own gold-bordered idiom. */
+.map-lives { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--num); font-size: 27px; line-height: 1; color: var(--them); }
+.map-lives .heart { font-style: normal; font-size: 24px; line-height: 1; }
+.map-sub { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 6px; border: 1px solid var(--line-3); border-radius: 6px; background: var(--surface-2); cursor: pointer; }
+.map-sub .subicon { width: 26px; height: 26px; display: block; }
+.map-sub:hover { border-color: var(--you); }
+.um-lives { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 1px solid var(--them-line); border-radius: 5px; color: var(--them); font-family: var(--serif); font-size: 13px; white-space: nowrap; }
+.um-lives .heart { font-style: normal; font-size: 16px; line-height: 1; }
+.um-sub { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 8px; border: 1px solid var(--um-gold); border-radius: 5px; background: transparent; cursor: pointer; }
+.um-sub .subicon { width: 24px; height: 24px; display: block; }
+.um-sub:hover { background: #241f1a; }
+/* the dock's reason for a change that cannot be made (My team): a ghost that wraps its sentence */
+.btn.why:disabled { white-space: normal; line-height: 1.3; height: auto; padding-top: 10px; padding-bottom: 10px; color: var(--ink-2); opacity: 1; }
+
+/* TACTICS, LOCKED (My team; his ruling, 2026-09-30): the lock, the sentence that says what opens it,
+   and the three ranks — standing where the calls will stand. */
+.tac-locked { display: grid; justify-items: center; text-align: center; gap: clamp(8px, 0.6vw, 18px); padding: clamp(18px, 2vw, 60px) clamp(14px, 1.5vw, 44px) clamp(14px, 1.2vw, 36px); color: var(--muted); }
+.tac-lock { width: clamp(34px, 2.6vw, 78px); height: clamp(34px, 2.6vw, 78px); color: var(--you); }
+.tac-locked b { font-family: var(--mono); font-size: clamp(11px, 0.85vw, 26px); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+.tac-locked p { margin: 0; max-width: 46ch; font-family: var(--serif); font-size: clamp(11.5px, 0.95vw, 28px); font-style: italic; line-height: 1.45; color: var(--ink-2); }
+
+/* THE TUTORIAL'S GATE ON THE FRONT DOOR (his ruling, 2026-09-30): a lock where the cup would stand,
+   the shirt dimmed, the button greyed and still readable. */
+.fd-lock {
+  position: absolute;
+  left: 50%;
+  bottom: calc(50% + var(--fd-fig-lift) + var(--fd-fig-h) * var(--dep) + clamp(2px, 0.4cqw, 7px));
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  height: clamp(18px, 4.3cqw, 75px);
+  line-height: 0;
+  pointer-events: none;
+  color: var(--you);
+}
+.fd-lock svg { width: auto; height: 100%; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.7)); }
+.fd-mark.locked .fd-fig, .fd-mark.locked .fd-jersey { opacity: 0.45; filter: grayscale(0.6); }
+.fd-cta:disabled { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line-3); cursor: not-allowed; }
+.fd-cta:disabled:hover { background: var(--surface-2); }

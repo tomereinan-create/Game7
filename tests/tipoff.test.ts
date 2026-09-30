@@ -38,11 +38,15 @@ describe('the scorebug before the tip', () => {
 
 /**
  * HIS RULING, 2026-09-08: "only show both teams one next to the other (with the matchups) … Do the
- * same in scout mode." The board is drawn on the nameplates rather than in a table beside the
- * floor — yours say who each man is ON, theirs say who is on HIM — so the two rows have to be
- * inverses of one another or the panel contradicts itself half way down.
+ * same in scout mode." — and his ruling of 2026-09-30, choosing the Jumbotron off the tip-off
+ * board: "Use the Jumbotron E2."
+ *
+ * The CLAIM is the older ruling's and has not moved: this panel shows both fives with the board
+ * between them, once, and the pairing it prints is the pairing being played. What changed is that
+ * it is one lit table now instead of two jersey floors with the board written on the nameplates —
+ * which is why the case below reads rows rather than "on HIM" captions.
  */
-describe('the tip-off draws the same board from both sides', () => {
+describe('the tip-off draws the board once, and draws the board being played', () => {
   const man = (name: string, i: number) =>
     ({ name, player: name, ovr: 70, o_ovr: 70, d_ovr: 70, peak_season: 1990 + i, attrs: {}, in: 50, out: 50, id: 50, pd: 50 }) as unknown as Player
   const mine = ['Abel', 'Baker', 'Cole', 'Dunn', 'Ewing'].map(man)
@@ -50,83 +54,67 @@ describe('the tip-off draws the same board from both sides', () => {
   // a board that is NOT the identity: everyone is on somebody else's man
   const map = [2, 0, 4, 1, 3]
 
-  const html = renderToStaticMarkup(
-    createElement(TipOff, {
-      bug: TIPOFF,
-      us: 'ABC',
-      them: 'XYZ',
-      usName: 'Salt Lake City Sevens',
-      themName: 'Sacramento Kings',
-      step: 'Level 4 · best of 7',
-      mine,
-      theirs,
-      map,
-    }),
-  )
+  const draw = (over: Record<string, unknown> = {}) =>
+    renderToStaticMarkup(
+      createElement(TipOff, {
+        bug: TIPOFF,
+        us: 'ABC',
+        them: 'XYZ',
+        step: 'Level 4 · best of 7',
+        mine,
+        theirs,
+        map,
+        ...over,
+      }),
+    )
+  const html = draw()
 
-  it('names both teams, one band each', () => {
-    expect(html).toContain('Salt Lake City Sevens')
-    expect(html).toContain('Sacramento Kings')
-    expect(html).toContain('Your five')
-    expect(html).toContain('Who guards whom')
+  it('reads the board before the tip: nothing scored, a full first quarter', () => {
+    expect(html).toContain('>00<')
+    expect(html).toContain('12:00')
+    expect(html).toContain('1st')
+    expect(html).toContain('Level 4 · best of 7')
+    expect(html).toContain('>ABC<')
+    expect(html).toContain('>XYZ<')
   })
 
-  it('every pairing reads the same both ways', () => {
+  it('spells every pairing out, and stands the five in their own order', () => {
+    // the ticker is where the panel CLAIMS a pairing, so that is where the claim is read
     for (let i = 0; i < map.length; i++) {
-      expect(html).toContain(`on ${theirs[map[i]].name.toUpperCase()}`)
-      expect(html).toContain(`${mine[i].name.toUpperCase()} on him`)
+      expect(html).toContain(`◆ ${mine[i].name.toUpperCase()} ON ${theirs[map[i]].name.toUpperCase()}`)
+    }
+    // and the table stands your five in the order they were given
+    const rows = [...html.matchAll(/class="jumbo-man"[^>]*>([A-Z]+)</g)].map((x) => x[1])
+    expect(rows).toEqual(mine.map((p) => p.name.toUpperCase()))
+    const foes = [...html.matchAll(/class="jumbo-man foe"[^>]*>([A-Z]+)</g)].map((x) => x[1])
+    expect(foes).toEqual(map.map((j) => theirs[j].name.toUpperCase()))
+  })
+
+  it('names each man once a side, so neither five is drawn twice', () => {
+    for (const p of [...mine, ...theirs]) {
+      const n = html.split(p.name.toUpperCase()).length - 1
+      // once in the ticker, once in the table, and the ticker is written twice to loop
+      expect(n, `${p.name} appears ${n} times`).toBeLessThanOrEqual(3)
+      expect(n).toBeGreaterThan(0)
     }
   })
 
-  it('with no board to draw it prints no pairing at all rather than a wrong one', () => {
-    const blank = renderToStaticMarkup(
-      createElement(TipOff, {
-        bug: TIPOFF, us: 'ABC', them: 'XYZ', usName: 'Us', themName: 'Them', step: 'Level 4', mine, theirs, map: null,
-      }),
-    )
-    expect(blank).not.toContain('on him')
-    expect(blank).not.toContain('on VANCE')
+  it('says nothing about the money — the cap belongs to the screen that spends it', () => {
+    // his ruling, 2026-09-30: "Remove PAYROLL 68.2/75 / ROOM 6.8 from the jumbotron". By the time
+    // this board is up the five is signed; the cap stands on the wheel's own bar, where a man is
+    // still being chosen.
+    expect(html).not.toContain('PAYROLL')
+    expect(html).not.toContain('ROOM')
   })
 
-  /**
-   * WHERE THE ROSTER RIDES — SCOUT MODE'S RULE NOW.
-   *
-   * HIS RULING, 2026-09-09: "These players should be shown not down." Your five's rows used to be
-   * laid UNDER both floors and fell off the bottom of the screen. They come INSIDE the panel now,
-   * so the stylesheet can stand them beside the floors on a desk and under your own five's
-   * jerseys on a phone. The DOM order is the load-bearing part: `.tip-rows` is LAST, after both
-   * floors, and every position it is ever drawn in is a grid placement off that one slot.
-   *
-   * HIS LATER RULING THE SAME DAY names the rows among the things user mode's game night loses —
-   * "… and my 5 lined up. Keep only the middle part" — so the draft hands this panel a roster in
-   * SCOUT MODE ONLY. That does not change the rule below by a word; it changes who invokes it.
-   * The panel is still the thing that decides WHERE a roster stands when it is given one, and the
-   * case under this one is now user mode's own state as well as a scout-mode edge: handed nothing,
-   * it draws no slot at all rather than an empty column beside the floors.
-   */
-  it('holds your five as rows, last in the panel, for the stylesheet to place', () => {
-    const withRows = renderToStaticMarkup(
-      createElement(TipOff, {
-        bug: TIPOFF, us: 'ABC', them: 'XYZ', usName: 'Us', themName: 'Them', step: 'Level 4', mine, theirs, map,
-        rows: createElement('p', { className: 'row dr' }, 'Abel'),
-      }),
-    )
-    expect(withRows).toContain('tip-rows')
-    // after BOTH floors: the last `.jf` in the markup opens before the roster does
-    expect(withRows.lastIndexOf('class="jf"')).toBeLessThan(withRows.indexOf('tip-rows'))
+  it('the shot still scores: the bump rides on top of the board', () => {
+    expect(draw({ bump: 2, flash: true })).toContain('>02<')
+    expect(draw({ bump: 2, flash: true })).toContain('+2')
   })
 
-  /**
-   * AND THIS IS USER MODE'S GAME NIGHT (his ruling, 2026-09-09: "… and my 5 lined up. Keep only
-   * the middle part"). The draft passes no `rows` at all there, so the panel must come out as the
-   * scorebug and the two floors and nothing else — no empty roster slot, and on a desk no second
-   * grid track standing open beside the fives.
-   */
-  it('draws no roster slot at all for a panel that has no rows to hand it — which is user mode', () => {
-    expect(html).not.toContain('tip-rows')
-    // the two floors and the two bands are still all there: only the list went
-    expect(html).toContain('Your five')
-    expect(html).toContain('Who guards whom')
-    expect(html.match(/class="jf"/g)).toHaveLength(2)
+  it('says nothing about a pairing it has not been given', () => {
+    const blind = draw({ map: null })
+    for (const p of theirs) expect(blind).toContain(p.name.toUpperCase())
+    expect(blind).not.toContain('◆')
   })
 })

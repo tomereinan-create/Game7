@@ -86,7 +86,7 @@ export function Matchups({
   }
 
   return (
-    <div className="sheet sheet2" onClick={(e) => e.stopPropagation()}>
+    <div className="sheet sheet2 boardsheet" onClick={(e) => e.stopPropagation()}>
       <div className="topbar">
         <span>Matchup board</span>
         <button onClick={onBack}>← Done</button>
@@ -121,7 +121,12 @@ export function Matchups({
         </div>
       ) : null}
 
-      <div className="card">
+      {/* `mboard` - his ruling, 2026-09-29: "Make matchup board way bigger". This is the card the
+          board itself is in, and it is the one thing on the sheet that should take whatever height
+          the sheet has left: five rows he DRAGS men between, drawn at a 10.5px surname inside a
+          57px target on a desk two thousand pixels wide. Named so the stylesheet can tell it from
+          the analysis card under it, which is a read and not a control. */}
+      <div className="card mboard">
         <div className="card-head">
           <span className="label">Their five · who guards whom</span>
         </div>
