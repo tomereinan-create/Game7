@@ -232,22 +232,86 @@
   "count": 16,
   "max_abs": 4,
   "top": [
-   ["Stephen Curry '16", 95, 99],
-   ["Adrian Dantley '80", 95, 99],
-   ["LeBron James '14", 96, 99],
-   ["Karl Malone '90", 96, 99],
-   ["Kevin Durant '12", 92, 95],
-   ["Kevin Durant '13", 97, 99],
-   ["Adrian Dantley '81", 97, 99],
-   ["Stephen Curry '15", 94, 96],
-   ["Kevin Durant '16", 96, 98],
-   ["Karl Malone '98", 94, 96],
-   ["Karl Malone '92", 96, 98],
-   ["Shaquille O'Neal '02", 98, 99],
-   ["Shaquille O'Neal '03", 98, 99],
-   ["Shai Gilgeous-Alexander '26", 98, 99],
-   ["LeBron James '13", 98, 99],
-   ["Adrian Dantley '82", 98, 99]
+   [
+    "Stephen Curry '16",
+    95,
+    99
+   ],
+   [
+    "Adrian Dantley '80",
+    95,
+    99
+   ],
+   [
+    "LeBron James '14",
+    96,
+    99
+   ],
+   [
+    "Karl Malone '90",
+    96,
+    99
+   ],
+   [
+    "Kevin Durant '12",
+    92,
+    95
+   ],
+   [
+    "Kevin Durant '13",
+    97,
+    99
+   ],
+   [
+    "Adrian Dantley '81",
+    97,
+    99
+   ],
+   [
+    "Stephen Curry '15",
+    94,
+    96
+   ],
+   [
+    "Kevin Durant '16",
+    96,
+    98
+   ],
+   [
+    "Karl Malone '98",
+    94,
+    96
+   ],
+   [
+    "Karl Malone '92",
+    96,
+    98
+   ],
+   [
+    "Shaquille O'Neal '02",
+    98,
+    99
+   ],
+   [
+    "Shaquille O'Neal '03",
+    98,
+    99
+   ],
+   [
+    "Shai Gilgeous-Alexander '26",
+    98,
+    99
+   ],
+   [
+    "LeBron James '13",
+    98,
+    99
+   ],
+   [
+    "Adrian Dantley '82",
+    98,
+    99
+   ]
   ]
  },
  "top12": {
