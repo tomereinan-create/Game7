@@ -296,18 +296,66 @@
   "count": 1944,
   "max_abs": 6,
   "top": [
-   ["Freeman Williams '81", 78, 72],
-   ["Corey Maggette '11", 62, 57],
-   ["John Williamson '80", 68, 63],
-   ["Andrew Toney '82", 84, 80],
-   ["Ben Gordon '05", 76, 72],
-   ["Calvin Murphy '83", 64, 60],
-   ["Dell Curry '94", 80, 76],
-   ["Derrick Rose '20", 80, 76],
-   ["Eddie Johnson '91", 74, 70],
-   ["Giannis Antetokounmpo '20", 99, 97],
-   ["Isaiah Thomas '15", 84, 80],
-   ["Lou Williams '17", 80, 77]
+   [
+    "Freeman Williams '81",
+    78,
+    72
+   ],
+   [
+    "Corey Maggette '11",
+    62,
+    57
+   ],
+   [
+    "John Williamson '80",
+    68,
+    63
+   ],
+   [
+    "Andrew Toney '82",
+    84,
+    80
+   ],
+   [
+    "Ben Gordon '05",
+    76,
+    72
+   ],
+   [
+    "Calvin Murphy '83",
+    64,
+    60
+   ],
+   [
+    "Dell Curry '94",
+    80,
+    76
+   ],
+   [
+    "Derrick Rose '20",
+    80,
+    76
+   ],
+   [
+    "Eddie Johnson '91",
+    74,
+    70
+   ],
+   [
+    "Giannis Antetokounmpo '20",
+    99,
+    97
+   ],
+   [
+    "Isaiah Thomas '15",
+    84,
+    80
+   ],
+   [
+    "Lou Williams '17",
+    80,
+    77
+   ]
   ]
  },
  "top12": {

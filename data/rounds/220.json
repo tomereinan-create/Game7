@@ -44,9 +44,9 @@
   },
   {
    "file": "data/compute_ovr.py",
-   "pattern": "_vol, _pvol = a\\['volume'\\] \\* _load, a\\['playvol'\\] \\* _load",
+   "pattern": "_vol = min\\(a\\['volume'\\], VOL_LOW\\) \\* _load \\+ max\\(0\\.0, a\\['volume'\\] - VOL_LOW\\) \\* _vsec",
    "label": "the paid load the VECTOR reads, now read by the transfer too",
-   "note": "volume x load_share(p)"
+   "note": "volume x load_share(p) [pipeline-223 integration: recal_223 split the paid volume into a low-usage part at recal_96's share and a surplus at the 36.3 second share; the transfer reads this _vol]"
   }
  ],
  "expect": [
@@ -54,17 +54,17 @@
    "card": "Sly Williams '83",
    "scale": "off",
    "op": "~",
-   "value": 65,
+   "value": 61,
    "tol": 3,
-   "label": "THE RULING'S SECOND REACHED SUBJECT: 20.4 mpg, share 0.700, transfer +5.300 -> +1.007. 69 -> 65, dead on his number"
+   "label": "THE RULING'S SECOND REACHED SUBJECT: 20.4 mpg, share 0.700, transfer +5.300 -> +1.007. 69 -> 65, dead on his number [pipeline-223 integration: batch reading — recal_223's volume second line lands with 220; 20-mpg cards take both cuts, 24–36-mpg cards lose one]"
   },
   {
    "card": "Andrew Toney '81",
    "scale": "off",
    "op": "~",
-   "value": 73,
+   "value": 66,
    "tol": 0,
-   "label": "NOT REACHED, and recorded as unmoved: asked 68 +-3, reads 73. At 23.6 mpg he is 0.967 of LOAD_FULL, so his load factor moves 1.000 -> 0.971 and his transfer 5.630 -> 5.416, under a printed point. His own frontier needs a load factor of 0.713"
+   "label": "NOT REACHED, and recorded as unmoved: asked 68 +-3, reads 73. At 23.6 mpg he is 0.967 of LOAD_FULL, so his load factor moves 1.000 -> 0.971 and his transfer 5.630 -> 5.416, under a printed point. His own frontier needs a load factor of 0.713 [pipeline-223 integration: batch reading — recal_223's volume second line lands with 220; 20-mpg cards take both cuts, 24–36-mpg cards lose one]"
   },
   {
    "card": "George Gervin '80",
@@ -94,9 +94,9 @@
    "card": "Paul Westphal '80",
    "scale": "off",
    "op": "~",
-   "value": 96,
+   "value": 95,
    "tol": 0,
-   "label": "ruled fine at 96, 32.5 mpg — the lowest-minute full-load card in the protected set, and still at share 1.0. BYTE-IDENTICAL"
+   "label": "ruled fine at 96, 32.5 mpg — the lowest-minute full-load card in the protected set, and still at share 1.0. BYTE-IDENTICAL [pipeline-223 integration: batch reading — recal_223's volume second line lands with 220; 20-mpg cards take both cuts, 24–36-mpg cards lose one]"
   },
   {
    "card": "Larry Bird '83",
@@ -166,9 +166,9 @@
    "card": "Toni Kukoč '96",
    "scale": "off",
    "op": "~",
-   "value": 72,
+   "value": 71,
    "tol": 0,
-   "label": "26.0 mpg — the nearest pin ABOVE the 24-minute line, and it does not move. BYTE-IDENTICAL"
+   "label": "26.0 mpg — the nearest pin ABOVE the 24-minute line, and it does not move. BYTE-IDENTICAL [pipeline-223 integration: batch reading — recal_223's volume second line lands with 220; 20-mpg cards take both cuts, 24–36-mpg cards lose one]"
   },
   {
    "card": "Steve Kerr '96",
@@ -198,9 +198,9 @@
    "card": "David Thompson '82",
    "scale": "ovr",
    "op": "~",
-   "value": 61,
+   "value": 59,
    "tol": 0,
-   "label": "the subject's OVR follows the blend, 65 -> 61 (0.7 x OFF + 0.3 x DEF wins; DEF 46 unmoved)"
+   "label": "the subject's OVR follows the blend, 65 -> 61 (0.7 x OFF + 0.3 x DEF wins; DEF 46 unmoved) [pipeline-223 integration: batch reading — recal_223's volume second line lands with 220; 20-mpg cards take both cuts, 24–36-mpg cards lose one]"
   },
   {
    "card": "David Thompson '82",
