@@ -162,7 +162,7 @@ describe('the two doors off a settled series', () => {
     expect(html).not.toContain('Next level')
     // his word for leaving goes ghost, the rematch takes the gold — after a loss it is the door wanted
     expect(html.indexOf('Back to the map')).toBeLessThan(html.indexOf('>Rematch<'))
-    expect(html).toContain('<button class="btn ghost">Back to the map</button>')
+    expect(html).toContain('<button class="btn ghost" data-door="map">Back to the map</button>')
     expect(html).toContain('<button class="btn">Rematch</button>')
   })
 

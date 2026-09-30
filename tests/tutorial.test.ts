@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { _resetTutor, dismiss, replay, resetTutorial, teach, teachOnce, tutorState, wasTold } from '../src/state/tutorial'
 import { isUserMode, isTutorial, setViewMode, viewMode } from '../src/state/viewmode'
 import { NODE, NODES } from '../src/engine/tree'
-import { draftLesson, eraLesson, mapLesson, resultLesson, spendLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
+import { draftLesson, eraLesson, mapDoorLesson, mapLesson, spendLesson, staffLesson, teamLesson, unlockLesson } from '../src/ui/lessons'
+import { Series } from '../src/ui/Series'
 import { Coach } from '../src/ui/Coach'
 import { FrontDoor } from '../src/ui/FrontDoor'
 import { LEVELS, ERAS } from '../src/App'
@@ -138,21 +139,33 @@ describe('the lessons are built off the state', () => {
     expect(l.steps.some((s) => s.at === '.staffbar')).toBe(true)
   })
 
-  it('the result lesson counts the stars and the doors on the dock', () => {
-    const win = resultLesson({ won: true, wins: 4, losses: 0, games: 4, stars: 3, next: true, rematch: false, death: false })
-    expect(win.id).toBe('result.win')
-    const wt = win.steps.flatMap((s) => [s.title ?? '', ...s.body]).join(' ')
-    expect(wt).toContain('4–0')
-    expect(wt).toContain('3 stars')
-    expect(wt).toContain('sweep')
-    expect(wt).toContain('Next level')
-    expect(wt).not.toContain('Rematch')
-    const loss = resultLesson({ won: false, wins: 2, losses: 4, games: 6, stars: 0, next: false, rematch: true, death: true })
-    expect(loss.id).toBe('result.loss')
-    const lt = loss.steps.flatMap((s) => [s.title ?? '', ...s.body]).join(' ')
-    expect(lt).toContain('4–2')
-    expect(lt).toContain('Rematch')
-    expect(lt).toContain('life')
+  it('a win points at the door back to the map, where the stars are spent; a loss says nothing', () => {
+    const l = mapDoorLesson(3)
+    expect(l.id).toBe('result.map')
+    expect(l.steps).toHaveLength(1)
+    expect(l.steps[0].at).toBe('.dock [data-door="map"]')
+    expect(l.steps[0].body.join(' ')).toContain('3 stars')
+    const html = renderToStaticMarkup(
+      createElement(Series, {
+        opponent: LEVELS[0],
+        five: LEVELS[1].players,
+        mine: { players: LEVELS[1].players } as never,
+        theirs: { players: LEVELS[0].players } as never,
+        teamName: 'Test',
+        result: { won: true, wins: 4, losses: 0, games: [] } as never,
+        seed: 1,
+        assignment: 'naive',
+        onAdvance: () => {},
+      } as never),
+    )
+    expect(html).toContain('data-door="map"')
+  })
+
+  it('the staff lesson is the balance and the branches, nothing more', () => {
+    const l = staffLesson({ bal: 2, earned: 2, branches: ['Scout', 'Front office', 'Coach'] })
+    expect(l.steps).toHaveLength(2)
+    expect(l.steps[0].at).toBe('.map-total')
+    expect(l.steps[1].at).toBe('.treesvg')
   })
 
   it('every rank of every node has an unlock lesson that says where it shows up', () => {

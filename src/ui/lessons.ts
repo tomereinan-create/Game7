@@ -389,30 +389,26 @@ export function boardLesson(canSolve: boolean): Lesson {
 }
 
 /* ---------------------------------------------------------------- the result */
-export function resultLesson(ctx: { won: boolean; wins: number; losses: number; games: number; stars: number; next: boolean; rematch: boolean; death: boolean }): Lesson {
-  const doors: string[] = []
-  if (ctx.next) doors.push('Next level goes straight into the next draft')
-  if (ctx.rematch) doors.push(`Rematch plays this level again on a fresh wheel${ctx.won ? ', for a better star' : ''}`)
-  doors.push('Back to the map settles the night and returns to the ladder')
-  const rule = ctx.stars === 3 ? 'a sweep is worth three' : ctx.stars === 2 ? 'a series won short of seven is worth two' : 'going the distance is worth one'
-  const steps: Step[] = [
-    {
-      at: '.verdict',
-      title: ctx.won ? `You won it ${ctx.wins}–${ctx.losses}` : `They took it ${ctx.losses}–${ctx.wins}`,
-      body: [
-        `The series line, and the ${plural(ctx.games, 'game')} under it as a strip. Press any game for its box score — and the cards below read the series as a whole.`,
-      ],
-    },
-    {
-      title: ctx.won ? `${plural(ctx.stars, 'star')} banked` : 'Nothing banked',
-      body: ctx.won
-        ? [`That banks ${plural(ctx.stars, 'star')}: ${rule}. Stars are spent on staff, off the map. A level keeps its best star, so a rematch can only improve it.`]
-        : ['No stars tonight, and nothing lost but the attempt. The wheel reseeds every time, so a rematch is a different draft.', ...(ctx.death ? ['In the Death match a loss costs a life, and with none left it ends the run.'] : [])],
-    },
-    { at: '.dock', title: 'The doors', body: [`${doors.join('. ')}.`] },
-  ]
-  if (ctx.death) steps.push({ title: 'Wear', body: [`Every man who played lost one durability per game — ${ctx.games} tonight. My team is where you read it and change a man.`] })
-  return { id: ctx.won ? 'result.win' : 'result.loss', kicker: 'Tutorial · The result', title: ctx.won ? 'A win' : 'A loss', steps }
+/**
+ * THE RESULT LESSON IS GONE (his ruling, 2026-09-30: "Remove Tutorial · The result and instead
+ * point on back to map in order to show the stars use (staff)"). What stands in its place is one
+ * step after a win, on the door back to the map — because the stars just banked are spent there,
+ * and the Staff lesson (`spendLesson`) is waiting on the other side of it.
+ */
+export function mapDoorLesson(stars: number): Lesson {
+  return {
+    id: 'result.map',
+    kicker: 'Tutorial · Stars',
+    title: `${plural(stars, 'star')} banked`,
+    steps: [
+      {
+        at: '.dock [data-door="map"]',
+        body: [
+          `That win banked ${plural(stars, 'star')}. Stars are spent on the map — go back to it and the coach shows you where.`,
+        ],
+      },
+    ],
+  }
 }
 
 /* ---------------------------------------------------------------- the staff tree */
@@ -438,12 +434,7 @@ export function staffLesson(ctx: { bal: number; earned: number; branches: Branch
         title: `${ctx.branches.length} branches`,
         body: [ctx.branches.map((b) => names[b]).join('. ') + '.', 'A branch is a chain: one rank in a node opens the node below it, so a branch can be walked wide or deep.'],
       },
-      {
-        at: '.treenode',
-        title: 'A node',
-        body: ['Tap a hexagon for its ranks. The sheet says what each rank buys, and the gold button takes one star for the next one. The coach explains every rank the moment it is bought.'],
-      },
-      { body: ['Reset spending refunds every star and unlearns every node, if you change your mind about a branch.'] },
+      /* his ruling, 2026-09-30: the "A node" and "Reset spending" steps are gone */
     ],
   }
 }
