@@ -40,6 +40,7 @@ import {
   type Team,
 } from './state/campaign'
 import { isTutorial, useTutorial, useUserMode } from './state/viewmode'
+import { requestTeam, useTeamRequest } from './state/openteam'
 import { Draft } from './ui/Draft'
 import { Home, type Mode } from './ui/Home'
 import { LevelMap, skinAt } from './ui/LevelMap'
@@ -130,6 +131,21 @@ export default function App() {
   const [archs, setArchs] = useState(false)
   const [ach, setAch] = useState(false)
   const [teamDb, setTeamDb] = useState(false)
+  /**
+   * A PLAYER CARD ASKED FOR HIS TEAM (his ruling, 2026-09-30 — see state/openteam.ts). The Team
+   * database opens on that season, over whatever was up, and the other reference overlays step
+   * aside: the chain below shows the first one standing, and a database under the roster would
+   * not be seen. The ask is cleared when the database is closed, so the next visit from the front
+   * door starts on the list as it always has.
+   */
+  const teamReq = useTeamRequest()
+  useEffect(() => {
+    if (!teamReq) return
+    setRoster(false)
+    setArchs(false)
+    setAch(false)
+    setTeamDb(true)
+  }, [teamReq])
   /**
    * AUTO-COMPLETE (his ruling: "I want an auto complete mode to see the latter stages"). A way of
    * LOOKING at the ladder, and his second ruling makes that literal: "When moving the auto mode to
@@ -548,7 +564,7 @@ export default function App() {
   // up must not throw away the picks already made.
   const sheet = (
     <>
-      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb onBack={() => setTeamDb(false)} /> : null}
+      {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb initial={teamReq} onBack={() => { setTeamDb(false); requestTeam(null) }} /> : null}
       {/* the tutorial's coach: renders nothing outside tutorial mode, and on every screen inside it */}
       <Coach />
       {toasts.length ? (

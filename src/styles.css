@@ -9499,3 +9499,8 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .coach-row:hover { border-color: var(--you); }
 .coach-row i { font-style: normal; font-family: var(--mono); font-size: clamp(8px, 0.55vw, 17px); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--you); }
 .coach-row b { font-family: var(--mono); font-size: clamp(11px, 0.78vw, 24px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* THE CARD'S DOOR TO HIS TEAM (his ruling, 2026-09-30): one link per club he played for that season,
+   under the banner, in the terminal's own voice. */
+.pc-clubs { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 2px; }
+.pc-club { padding: 4px 0; font-family: var(--mono); font-size: clamp(10px, 0.78vw, 13px); letter-spacing: 0.12em; text-transform: uppercase; }

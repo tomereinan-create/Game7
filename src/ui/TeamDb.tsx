@@ -480,7 +480,7 @@ export function franchiseYears(t: TeamSeason): { all: TeamSeason[]; best: TeamSe
 }
 
 /** The team database: pick a span of years, pick a team, read their best five and its ratings. */
-export function TeamDb({ onBack }: { onBack: () => void }) {
+export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** open on this season rather than the list — a player card's "his team" door (state/openteam.ts) */ initial?: TeamSeason | null }) {
   const [span, setSpanState] = useState<Span>(loadSpan)
   const [from, to] = span
   const [fromQ, setFromQ] = useState(() => String(span[0]))
@@ -529,6 +529,11 @@ export function TeamDb({ onBack }: { onBack: () => void }) {
     listScroll.current = window.scrollY
     setPicked(t)
   }
+  // a card's "his team" press lands here already picked; a second press while open re-picks
+  useEffect(() => {
+    if (initial) pick(initial)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initial])
 
   /**
    * HIS RULING: "You can navigate here as well between years" — the franchise's seasons as the same

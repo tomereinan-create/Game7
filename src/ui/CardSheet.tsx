@@ -8,6 +8,8 @@ import { TeamBanner } from './TeamBanner'
 import { HeatHex } from './HeatHex'
 import { spotGrades } from './spotFit'
 import { useUserMode } from '../state/viewmode'
+import { requestTeam } from '../state/openteam'
+import { WHEEL } from '../data/wheel'
 import { GROUPS, LINES, pct } from './Stat'
 import { PLAIN_SKIN, teamColor, terminalSkin } from './teamColors'
 
@@ -218,6 +220,15 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
   const teams = line?.teams ?? []
   const ab = teams.length === 1 ? teams[0] : undefined
   const club = useMemo(() => terminalSkin(teamColor(ab)), [ab]) as React.CSSProperties
+  /**
+   * THE TEAM HE PLAYED ON THAT YEAR, PRESSABLE (his ruling, 2026-09-30: "In the player card, there
+   * need to be a pressable option to move to this year's team (that he played on)"). The real
+   * team-seasons name their men by card name, so the man's own row finds his club — both clubs,
+   * for a season split by a trade — and the press closes this card and opens the Team database on
+   * that season (state/openteam.ts carries the ask up to App). A card the seasons do not hold
+   * (nobody's roster lists him that year) simply has no door.
+   */
+  const clubs = useMemo(() => WHEEL.filter((t) => t.y === p.peak_season && t.p.includes(p.name)), [p.peak_season, p.name])
 
   const peak = all.length ? peakOf(all) : null
   // A man the pool holds one season of has no strip to step and no peak to compare against — that
@@ -275,6 +286,24 @@ export function CardSheet({ p: opened, onClose }: { p: Player; onClose: () => vo
             <div className="pc-name">{p.player}</div>
             <div className="pc-tag">{tag}</div>
           </TeamBanner>
+          {clubs.length ? (
+            <div className="pc-clubs">
+              {clubs.map((t) => (
+                <button
+                  key={`${t.ab}${t.y}`}
+                  className="linkb pc-club"
+                  data-team={`${t.ab}${t.y}`}
+                  onClick={() => {
+                    onClose()
+                    requestTeam(t)
+                  }}
+                >
+                  {t.y} {t.team}
+                  {t.rec ? ` · ${t.rec}` : ''} →
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className="pct-meta">
             {META.map(([k, v]) => (
               <div className="pct-mrow" key={k}>
