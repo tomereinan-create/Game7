@@ -16,7 +16,7 @@ import { useTutorial } from './viewmode'
  * ONCE. A lesson is told the first time its trigger is true and never again on its own; the
  * trigger is a screen state (five in, wheel landed, series settled) or an event (a rank bought,
  * a block reached, a trophy). `told` is the set of ids already given, saved with the browser, and
- * it is what "Restart the tutorial" clears. `queue` is what is waiting to be said now — a rank
+ * it is what "Reset tutorial" clears. `queue` is what is waiting to be said now — a rank
  * bought three times in a row queues three lessons, and they are read one after another.
  *
  * Node has no localStorage (tests, receipts); the in-memory copy is the store there, the same
@@ -47,10 +47,18 @@ interface State extends Saved {
   queue: Lesson[]
   /** The ? sheet is open. */
   index: boolean
+  /**
+   * HOW MANY TIMES THE TUTORIAL HAS BEEN RESET (his ruling: "Have a 'reset tutorial' button, that
+   * will act as you first opened this mode"). Forgetting the lessons is half of it: the screen he
+   * is standing on has already fired its hook, and a hook that only re-runs when its state changes
+   * would say nothing until he walked somewhere else. Every `useLesson` reads this, so a reset
+   * re-arms them all and the current screen's lesson is told again at once.
+   */
+  epoch: number
 }
 
 const KEY = 'game7.tutorial.v1'
-const fresh = (): State => ({ told: {}, order: [], queue: [], index: false })
+const fresh = (): State => ({ told: {}, order: [], queue: [], index: false, epoch: 0 })
 
 let cur: State = (() => {
   try {
@@ -111,9 +119,9 @@ export function replay(id: string) {
 export function openIndex(on: boolean) {
   if (cur.index !== on) set({ ...cur, index: on })
 }
-/** Forget every lesson: the tutorial starts over from the next screen. */
+/** Forget every lesson and tell the current screen's again: as if the mode had just been opened. */
 export function resetTutorial() {
-  set({ ...fresh(), index: false })
+  set({ ...fresh(), epoch: cur.epoch + 1 })
 }
 /** Tests only. */
 export function _resetTutor() {
@@ -139,8 +147,9 @@ export function useTutor(): State {
  */
 export function useLesson(id: string, when: boolean, build: () => Lesson) {
   const tutorial = useTutorial()
+  const { epoch } = useTutor()
   useEffect(() => {
     if (tutorial && when) teachOnce(id, build)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tutorial, when, id])
+  }, [tutorial, when, id, epoch])
 }

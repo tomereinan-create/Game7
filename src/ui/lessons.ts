@@ -46,7 +46,7 @@ export function doorLesson(ctx: { team: string | null; cur: number | null; clear
       {
         body: [
           'This is the tutorial. It plays exactly like user mode — no ratings, no odds, no verdict on your picks — and a coach steps in the first time you reach a screen or unlock something, and explains it.',
-          'Next walks a lesson through. Skip closes it. The ? button at the foot of every screen brings any lesson back.',
+          'Next walks a lesson through. Skip closes it. The ? button on every screen brings any lesson back, and Reset tutorial there starts it from the top.',
         ],
       },
       {

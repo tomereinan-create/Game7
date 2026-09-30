@@ -74,14 +74,19 @@ describe('the coach remembers', () => {
     expect(tutorState().order).toEqual(['a', 'b'])
   })
 
-  it('an empty lesson is not a lesson, and Start over forgets everything', () => {
+  it('an empty lesson is not a lesson, and Reset tutorial forgets everything and re-arms the screen', () => {
     teach({ id: 'x', kicker: '', title: '', steps: [] })
     expect(tutorState().queue).toHaveLength(0)
     teach(lesson('a'))
     dismiss()
+    const before = tutorState().epoch
     resetTutorial()
     expect(wasTold('a')).toBe(false)
     expect(tutorState().order).toEqual([])
+    expect(tutorState().queue).toEqual([])
+    expect(tutorState().index).toBe(false)
+    // and the epoch moves, which is what re-arms every screen's hook so the current one is told again
+    expect(tutorState().epoch).toBe(before + 1)
   })
 })
 

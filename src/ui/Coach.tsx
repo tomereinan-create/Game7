@@ -20,7 +20,8 @@ import { setViewMode, useTutorial } from '../state/viewmode'
  *   2. THE ? BUTTON, pinned at the foot of every screen in tutorial mode — the only door back to a
  *      lesson already told.
  *   3. THE ? SHEET: every lesson told so far, in the order it was told, each replayable, and two
- *      switches — start the tutorial over, or leave it for user mode.
+ *      switches — reset the tutorial (as if the mode had just been opened), or leave it for user
+ *      mode.
  *
  * The card is placed off the spot: under it when there is room, over it when there is not, and
  * on a phone it sits at the foot of the screen whatever the spot is doing. A step whose selector
@@ -221,8 +222,10 @@ export function Coach() {
             </div>
             <div className="coach-foot">
               <span className="coach-btns wrap">
-                <button className="btn ghost" onClick={() => { resetTutorial(); openIndex(false) }}>
-                  Start over
+                {/* his ruling: "act as you first opened this mode" — every lesson forgotten and the
+                    screen he is on told again at once (see `epoch` in state/tutorial.ts) */}
+                <button className="btn ghost" onClick={() => resetTutorial()}>
+                  Reset tutorial
                 </button>
                 <button className="btn ghost" onClick={() => { openIndex(false); setViewMode('user') }}>
                   Leave for User mode
