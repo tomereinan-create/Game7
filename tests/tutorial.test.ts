@@ -9,7 +9,8 @@ import { draftLesson, eraLesson, fullLesson, mapLesson, resultLesson, unlockLess
 import { Coach } from '../src/ui/Coach'
 import { FrontDoor } from '../src/ui/FrontDoor'
 import { LEVELS, ERAS } from '../src/App'
-import { MODES, resetProgress, type CampaignMode, type Progress } from '../src/state/campaign'
+import { MODES, resetProgress, saveKey, teamKey, type CampaignMode, type Progress } from '../src/state/campaign'
+import { doorLesson } from '../src/ui/lessons'
 
 /**
  * HIS RULING, 2026-09-30: "Add tutorial mode, which will be the same as user mode, but
@@ -39,6 +40,31 @@ describe('the view mode is three-way', () => {
     expect(html).toContain('>Scout<')
     expect(html).toMatch(/fd-mode on"[^>]*aria-pressed="true">Tutorial</)
     setViewMode('scout')
+  })
+})
+
+describe('the tutorial plays on its own slot', () => {
+  it('its ladders and its club are saved under their own keys, and only in tutorial mode', () => {
+    setViewMode('tutorial')
+    for (const m of MODES) expect(saveKey(m)).toBe(`game7.tut.${m}.v2`)
+    expect(teamKey()).toBe('game7.tut.team.v1')
+    setViewMode('user')
+    for (const m of MODES) expect(saveKey(m)).toBe(`game7.${m}.v2`)
+    expect(teamKey()).toBe('game7.team.v1')
+    setViewMode('scout')
+    expect(saveKey('campaign')).toBe('game7.campaign.v2')
+  })
+
+  it('the door lesson is a welcome, the six marks and where to start — nothing else', () => {
+    const l = doorLesson({ team: null, cur: 1, cleared: 0, stars: 0 })
+    expect(l.steps).toHaveLength(3)
+    expect(l.steps[0].at).toBeUndefined()
+    expect(l.steps[1].at).toBe('.fd-court')
+    expect(l.steps[2].at).toBe('.fd-cta')
+    const text = l.steps.flatMap((s) => s.body).join(' ')
+    expect(text).not.toContain('Rafters')
+    expect(text).not.toContain('record book')
+    expect(text).toContain('own ladder')
   })
 })
 

@@ -38,6 +38,10 @@ const BLIND =
 
 /* ---------------------------------------------------------------- the front door */
 export function doorLesson(ctx: { team: string | null; cur: number | null; cleared: number; stars: number }): Lesson {
+  /* HIS RULING, 2026-09-30: "#1 Should only be welcome and something funny or entertaining. Remove
+     #3,4,5,6." So: the welcome, the six marks, and where to start. The counters, the record book
+     and the lenses explain themselves when he gets there; `ctx` is kept for the lines that still
+     read it. */
   return {
     id: 'door',
     kicker: 'Tutorial · The front door',
@@ -45,8 +49,9 @@ export function doorLesson(ctx: { team: string | null; cur: number | null; clear
     steps: [
       {
         body: [
-          'This is the tutorial. It plays exactly like user mode — no ratings, no odds, no verdict on your picks — and a coach steps in the first time you reach a screen or unlock something, and explains it.',
-          'Next walks a lesson through. Skip closes it. The ? button on every screen brings any lesson back, and Reset tutorial there starts it from the top.',
+          `Welcome${ctx.team ? `, ${ctx.team}` : ''}. Every card in here is a real season, 1980 to 2026, and every night is a best of seven. You draft off a wheel, you call the plan, and you find out.`,
+          'Two house rules before you start. One: the wheel does not take requests — it has been asked. Two: there are no bad picks, only picks the other coach liked more.',
+          'The coach steps in the first time you reach a screen or unlock something. Next walks a lesson through, Skip closes it, and the ? on every screen brings any lesson back — or resets the tutorial to the top.',
         ],
       },
       {
@@ -58,41 +63,12 @@ export function doorLesson(ctx: { team: string | null; cur: number | null; clear
         ],
       },
       {
-        at: '.fd-read',
-        title: 'The read-out',
-        body: [
-          'What the mode is, how it is played, and the button that starts it.',
-          ctx.cur ? `Level ${ctx.cur} is up next in the Campaign${ctx.team ? ` for the ${ctx.team}` : ''}.` : 'Every rung of the Campaign is cleared — it can be run again.',
-        ],
-      },
-      {
-        at: '.fd-stat.first',
-        title: 'Rafters and Cleared',
-        body: [
-          `Rafters counts the stars you have banked on the ladder you are reading — ${plural(ctx.stars, 'star')} so far. Cleared is how many of the ${ROUNDS} rungs are done: ${ctx.cleared}.`,
-          'A win banks one to three stars. Stars are the only currency in the game, and they are spent on staff.',
-        ],
-      },
-      {
-        at: '.fd-foot',
-        title: 'The record book',
-        body: [
-          'Database is every card in the game. Archetypes are the shapes a player comes in. Teams is every real five. Trophies is the case for your achievements.',
-          'These are reference rooms: they show their numbers even in the tutorial, because a database that will not tell you a rating is not a database. The blindfold is about what you are told while you play.',
-        ],
-      },
-      {
-        at: '.fd-modes',
-        title: 'Three lenses',
-        body: [
-          'User plays blind. Scout shows every rating, every read and every price. Tutorial is User with this coach beside it.',
-          'Switch at any time — the switch changes nothing about your saves.',
-        ],
-      },
-      {
         at: '.fd-cta',
         title: 'Start here',
-        body: ['Press the 1 on the floor for the Campaign, then the gold button. The first thing it asks for is your club.'],
+        body: [
+          ctx.cur && ctx.cleared > 0 ? `Level ${ctx.cur} is up next in the Campaign.` : 'The Campaign starts at level 1, and the tutorial keeps its own ladder — the other modes are not touched.',
+          'Press the 1 on the floor, then the gold button. The first thing it asks for is your club.',
+        ],
       },
     ],
   }

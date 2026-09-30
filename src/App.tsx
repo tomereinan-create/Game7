@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
@@ -9,7 +9,7 @@ import CAMPAIGNS from './data/campaigns.json'
 import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
 import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
 import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
-import { teach, teachOnce, useLesson } from './state/tutorial'
+import { teach, teachOnce, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
 import type { Assignment } from './engine/offense'
@@ -31,6 +31,7 @@ import {
   loadTeam,
   MODES,
   resetProgress,
+  resetTutorialSaves,
   saveProgress,
   saveTeam,
   starsFromUrl,
@@ -517,6 +518,31 @@ export default function App() {
     setAch(false)
     setTeamDb(false)
   }
+
+  /**
+   * THE TUTORIAL'S OWN SLOT (his ruling, 2026-09-30: "once I restart it starts from stage 1 (But
+   * doesnt change the stage in the other modes) (I also pick a new team name and colors only for
+   * tutorial mode)"). The saves are keyed on the view mode (state/campaign.ts, `saveKey`), so the
+   * moment the mode flips into or out of the tutorial everything this component holds is the OTHER
+   * slot's, and is read again — the three ladders and the club — and the walk goes home, because
+   * the level, the draft and the pending night were the other slot's too. A Reset tutorial (the
+   * epoch moving while in the tutorial) wipes the tutorial's slot first, so it comes back at stage
+   * one with no club, which is the team screen asking for a new name and colours. On mount nothing
+   * has flipped and nothing happens.
+   */
+  const { epoch } = useTutor()
+  const slot = useRef({ tutorial, epoch })
+  useEffect(() => {
+    const prev = slot.current
+    slot.current = { tutorial, epoch }
+    if (prev.tutorial === tutorial && prev.epoch === epoch) return
+    if (tutorial && prev.epoch !== epoch) resetTutorialSaves()
+    setProgress(Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>)
+    setTeamState(loadTeam())
+    leave()
+    // `leave` is redefined every render and is not a dependency: the flip is the event.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tutorial, epoch])
 
   // The roster is an overlay, not a screen: leaving the draft to look something
   // up must not throw away the picks already made.

@@ -3,6 +3,7 @@ import { DEFAULT_TACTICS, gateTactics, reconcileTactics, type Tactics } from '..
 import { migrate, playbookRank, type NodeId } from '../engine/tree'
 import type { CoachId } from '../engine/types'
 import type { Kit } from '../ui/teamColors'
+import { isTutorial } from './viewmode'
 
 /** Three save slots: the campaign, its salary-cap variant, and the death match. */
 export type CampaignMode = 'campaign' | 'salary' | 'death'
@@ -160,7 +161,16 @@ export function applyWear(wear: Record<string, number>, five: string[], games: n
 export const wornOut = (wear: Record<string, number>, five: string[], dur: (name: string) => number) =>
   five.filter((n) => (wear[n] ?? dur(n)) <= WEAR_OUT)
 
-const key = (m: CampaignMode) => `game7.${m}.v2`
+/**
+ * THE TUTORIAL HAS ITS OWN SAVES (his ruling, 2026-09-30: "unlike scout and user, once I restart it
+ * starts from stage 1 (But doesnt change the stage in the other modes) (I also pick a new team name
+ * and colors only for tutorial mode)"). Scout and user mode share one ladder and one club, as they
+ * always have; the tutorial plays on a slot of its own, under its own keys, so a Reset tutorial can
+ * wipe it to stage one and a fresh club without a star of the real ladder moving. Which slot is read
+ * is decided by the view mode at the moment of the read — App reloads its state when the mode flips.
+ */
+export const saveKey = (m: CampaignMode) => (isTutorial() ? `game7.tut.${m}.v2` : `game7.${m}.v2`)
+const key = saveKey
 
 /**
  * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
@@ -177,7 +187,7 @@ const key = (m: CampaignMode) => `game7.${m}.v2`
  * because a player who named a club in the salary cap and never opened the campaign still has one,
  * and that is exactly the case the front door was already working around.
  */
-const TEAM_KEY = 'game7.team.v1'
+export const teamKey = () => (isTutorial() ? 'game7.tut.team.v1' : 'game7.team.v1')
 
 const readTeam = (raw: string | null): Team | null => {
   if (!raw) return null
@@ -191,8 +201,10 @@ const readTeam = (raw: string | null): Team | null => {
 
 export function loadTeam(): Team | null {
   try {
-    const own = readTeam(localStorage.getItem(TEAM_KEY))
+    const own = readTeam(localStorage.getItem(teamKey()))
     if (own) return own
+    // the tutorial's club is its own: nothing to adopt, he names it fresh
+    if (isTutorial()) return null
     // no shared club yet: adopt one out of the old per-ladder saves, oldest ruling first
     for (const m of MODES) {
       const raw = localStorage.getItem(key(m)) ?? (legacyKey(m) ? localStorage.getItem(legacyKey(m)!) : null)
@@ -215,13 +227,23 @@ export function loadTeam(): Team | null {
 
 export function saveTeam(t: Team) {
   try {
-    localStorage.setItem(TEAM_KEY, JSON.stringify(t))
+    localStorage.setItem(teamKey(), JSON.stringify(t))
   } catch {
     /* private mode — the game still plays, it just forgets */
   }
 }
-/** The first 30 levels were briefly saved under their own era key. */
-const legacyKey = (m: CampaignMode) => (m === 'campaign' ? 'game7.c2026.v2' : null)
+/** The first 30 levels were briefly saved under their own era key. The tutorial's slot has no past. */
+const legacyKey = (m: CampaignMode) => (m === 'campaign' && !isTutorial() ? 'game7.c2026.v2' : null)
+
+/** Reset tutorial: the tutorial's three ladders back to stage one and its club forgotten. Nothing else is touched. */
+export function resetTutorialSaves() {
+  try {
+    for (const m of MODES) localStorage.removeItem(`game7.tut.${m}.v2`)
+    localStorage.removeItem('game7.tut.team.v1')
+  } catch {
+    /* private mode — there was nothing saved to forget */
+  }
+}
 
 const fresh = (): Progress => ({
   coach: null,
