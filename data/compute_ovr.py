@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 215
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -732,6 +732,39 @@ Z2_VEC_W = 0.05   # z[2]'s own weight in the vector above, named so the balance 
 # recal_131's own scoring-load line, PZ_V_LO / PZ_V_HI, restated at module scope because the paint
 # floor assigns those two names LOCALLY inside o_score, further down than this term is paid.
 Z2_LD_LO, Z2_LD_HI = 55.0, 80.0
+# ============ recal_215 — DECLINED. NOTHING BELOW THIS LINE CHANGED; READ IT BEFORE RE-CUTTING ====
+# HIS RULING, verbatim: "Cards pre 84 are too high. Post 84 are fine."
+# Nine subjects at +-3 (Westphal '80 90, Dantley '82 93 / '81 92 / '80 90, Erving '80 91 / '81 91 /
+# '82 90, Davis '80 89, English '83 89) against the cards he calls FINE at +-1 (Dantley '84/'85/'86,
+# King '84/'85, Malone '89-'93, Bird '85-'88, Jordan '85-'92, Barkley, Robinson, Price).
+#
+# THERE IS NO PRE-84 EDGE IN THIS TERM'S ONLY INPUT. ERA3 reads the league's own mean 3pt RATING that
+# season, and it is FLAT across exactly the years the ruling divides: 1980 14.79, 1981 13.53, 1982
+# 14.65, 1983 13.64, 1984 14.01 — then 1985 15.59, 1986 16.57, 1987 18.83. The shares are therefore
+# 0.943 / 1.000 / 0.950 / 0.995 / 0.979 / 0.907 / 0.863: 1984 sits BETWEEN 1980 and 1983 and ABOVE
+# 1985. Any monotone reshaping of the ramp that cuts 1981 cuts 1984 at least as hard. 294
+# (foot, full, power) settings were measured; the best that holds every pin reaches ZERO of the nine.
+#
+# THE TWO-CARD PROOF, which needs no sweep. Adrian Dantley '81 (asked 92, so <= 95) and Adrian Dantley
+# '84 (called fine at 97, so >= 96). They print 97 and 97 on o_scores 107.617 and 106.959 — '81 is
+# HIGHER. Everything this file can read between them: z 99/87/12 v 93/92/14, playvol 48 v 50, volume
+# 94 v 93, efficiency 99 v 95, era 1.000 v 0.979. '81 LEADS on best zone and on efficiency, so cutting
+# him harder pays LESS for a better weapon — the inversion recal_210 outlawed; and he TRAILS on second
+# zone, third zone and playvol, so cutting on those takes Kareem '80 (second zone 64, the lowest of the
+# class, on the floor of his 90 +-3) down first. The same collision repeats: Dantley '82 and Kareem '80
+# are BOTH playvol 49 (one must lose 2.421 of o_score, the other admits 1.027); Dantley '80 and Bernard
+# King '84 are BOTH playvol 39 (3.029 needed against 2.303 admitted).
+#
+# THE WIDE SEARCH, so no later round repeats it: ANY new subtractive term gated on this same pre-1997
+# inferred class, -K x ramp(x, lo, hi), over 26 attributes x every ramp on that attribute's own values
+# x 8 depths x both directions. SEVEN settings hold all 213 anchors AND leave every post-84 card within
+# a point; each reaches at most TWO of the nine, and every one of them is a gate on era in (0.995, 1.0],
+# i.e. a selector for the 1981 season alone. Doctrine 1 forbids it. Fading recal_196's own legs is the
+# same story: three clean settings, one subject each, each a single-card selector.
+# THE FRONTIER AND ITS PRICE (receipt 215 carries the ladder): Z2_W 0.130 -> 0.060 lands all nine and
+# costs FIVE pins — Gervin '80 (93 +-3 -> 88), Kareem '80 (90 +-3 -> 85), Bird '83 (91 +-3 -> 86),
+# Jordan '87 (96 +-2 -> 93), Hakeem '94 (92 +-3 -> 88) — plus 214 cards from 1984-96 moving more than a
+# point. 0.120 is the last setting where nothing fails and nothing lands. THAT RELEASE IS HIS CALL.
 if not _CARD:
     print(f"era third zone: 3pt season means {ERA3_FOOT:.2f} (min) -> {ERA3_FULL:.2f} (median); "
           f"creation {Z2_CR_LO:g}->{Z2_CR_HI:g}, clearance cap {Z2_CLEAR:g}, weight {Z2_W}")
