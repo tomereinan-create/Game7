@@ -2117,5 +2117,23 @@
   "round": 227,
   "ruling": "Push 227 with LeBron '13 released if needed",
   "note": "re-pinned at the reading recal_227 reaches; his signature is 95.06, the second-highest on the board, so the same term that lifts Curry '16 saturates on him too. Supersedes the round-89 pin at 97 +-1 on his own instruction."
+ },
+ {
+  "card": "Karl Malone '90",
+  "scale": "off",
+  "target": 96,
+  "tol": 1,
+  "round": 228,
+  "ruling": "Karl Malone and Adrian Dantley shouldn't raise.",
+  "note": "THE RULING'S FIRST NAME, RESTORED TO ITS PRE-227 READING. 31.0 points on .627 true shooting at 31.7% usage, 38.1 mpg: volume 98 / efficiency 94, signature 92.12 — fourth on the board of 10,000 and well clear of recal_227's p99.8 foot, so the product alone paid him the second signature a second time and took him 96 -> 99. His zones are 99 rim / 68 mid / 22 three: a top-1% load converted at a top-1% rate INSIDE ONE ZONE. recal_228 gates the second payment on the third level (the pool's own p95 48 -> p99 62 of z[2]) and his 22 closes it dead, which is exactly the 96 he read before 227. He keeps recal_26's FIRST payment of 7.370 like every other card."
+ },
+ {
+  "card": "Adrian Dantley '81",
+  "scale": "off",
+  "target": 97,
+  "tol": 1,
+  "round": 228,
+  "ruling": "Karl Malone and Adrian Dantley shouldn't raise.",
+  "note": "THE RULING'S SECOND NAME, and the largest unpinned rise recal_227's own receipt flagged to watch. 30.7 points on .626 true shooting, 42.7 mpg: volume 94 / efficiency 99, signature 93.06, fifth on the board. Zones 99 / 87 / 12 — no third level at all — so the same third-level gate closes on him and he returns to 97 exactly. o_score 107.6174, raw 100.0842. His '80 (95) and '82 (98) restore with him on the same condition, and so do Karl Malone '92 (96) and '98 (94)."
  }
 ]

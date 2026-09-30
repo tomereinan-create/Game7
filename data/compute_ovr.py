@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 227
+PIPELINE_VERSION = 228
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -2938,16 +2938,83 @@ def o_score(p, trace=None):
     # 80.36 and is below the foot), so OFF_TOP is NOT re-derived and no card above the knee is moved
     # by the band. THE COST IS THE SUMMIT'S TIE BLOCK, and it is recal_102's own trade taken one step
     # further: cards printing OFF 99 go from 15 to 26.
+    #
+    # recal_228 (HIS RULING, verbatim: "Karl Malone and Adrian Dantley shouldn't raise"). THE SECOND
+    # PAYMENT IS GATED ON THE THIRD LEVEL. recal_227 shipped the term with ONE gate — the product —
+    # and the product alone cannot say what the second payment is FOR. Its sixteen movers were all up
+    # and he accepted seven of them and refused six: Curry '15/'16, LeBron '13/'14, Durant '12/'13/'16
+    # stand; Karl Malone '90/'92/'98 and Adrian Dantley '80/'81/'82 go back where they were.
+    #
+    # THE CONDITION THAT SEPARATES THEM IS NOT A NAME LIST AND IT IS NOT THE ONE THE ROUND EXPECTED.
+    # Measured on the twenty cards that clear SIG2_LO, with the two other candidates refuted on the
+    # same table before this one was written:
+    #   CREATION (playvol) CANNOT DO IT. Karl Malone '98 reads 65 and Kevin Durant '13 reads 65 — one
+    #     refused, one accepted, on the same number. Adrian Dantley '81 (48) is under Durant '12 (56)
+    #     but Curry '15 (91) and LeBron '14 (87) are over both; there is no cut.
+    #   THE ZONE PROVENANCE (pre-1997 inferred rim/mid) CANNOT DO IT EITHER. Five of the six refused
+    #     cards are inferred, but Karl Malone '98 is MEASURED (rim_mid_measured true) and refused,
+    #     while every accepted card is measured. A gate on provenance leaves him paid.
+    #   THE THIRD LEVEL DOES IT, WITH A GAP OF FORTY POINTS AND NOTHING IN IT. Sort the three scoring
+    #     bars and read the WORST one, z[2] — recal_198's own quantity. The refused six read 22, 12,
+    #     11, 11, 12, 11. The accepted seven read 74, 70, 69, 62, 82, 80, 74. The lowest accepted card
+    #     (LeBron James '14, 62) stands twenty-six points above the highest refused one (Karl Malone
+    #     '90, 22), and the two sets do not interleave anywhere.
+    #
+    # AND THAT GAP IS THE RULING'S OWN SENTENCE. recal_26's product prices a LOAD carried at a
+    # CONVERSION; the second payment is the premium for doing it at the very top of the board, and
+    # what the seven accepted cards have in common is that the conversion is carried ACROSS THE DIET —
+    # there is no level you can send them to. Curry '16 is the perimeter case of the same property
+    # (his weapon IS the arc, so his worst level is still 74); Durant and LeBron are the three-level
+    # case. Karl Malone and Adrian Dantley are the opposite card: a top-1% load converted at a top-1%
+    # rate inside ONE zone, with nothing at the second or third level (Malone '90 reads 99 / 68 / 22).
+    # They are paid for that load and that efficiency by recal_26's FIRST payment, at the same 0.08
+    # every card gets. The SECOND payment is the one that says the defence has no answer, and against
+    # a one-zone interior scorer it does.
+    #
+    # THE CONSTANTS ARE THE POOL'S OWN PERCENTILES OF z[2], MEASURED, NOT CHOSEN, and they are
+    # recal_198's construction on recal_198's quantity one notch in from its own (that round used the
+    # CLASS's p95 -> p99, 74 -> 82, because for it the third zone was the PAYLOAD; here it is only the
+    # QUALIFIER, so the line is the pool's):
+    #   SIG2_Z2_LO = 48.0 is the POOL's p95 of the third level — 488 cards of 10,000 are above it.
+    #     Below it a scorer has a level the defence can send him to and takes nothing here.
+    #   SIG2_Z2_HI = 62.0 is the POOL's p99 of the same quantity — 90 cards clear it — so the gate is
+    #     a RAMP over the last four percentiles instead of a step (recal_93/99/136/137/154/164/198).
+    # Ten of the twenty cards in the signature class clear the foot and nine are whole at the ceiling.
+    #
+    # recal_210's MONOTONICITY LAW HOLDS BY CONSTRUCTION, which is why the gate reads z[2] and not the
+    # 3pt bar. z[2] is the MINIMUM of the three scoring bars, so lowering any one of them can only
+    # lower it or leave it; the gate is non-decreasing in every bar and the payment can never rise for
+    # a weaker card. A gate on `3pt` alone would separate the same six (Malone '90 22 against LeBron
+    # '14 64) but would be non-monotone in rim and mid.
+    #
+    # MEASURED, on all 10,000 cards, against the shipped 227 pool: 8 cards move on OFF, EVERY ONE OF
+    # THEM DOWN, max -4, and they are exactly the cards recal_227 lifted without a third level —
+    # Malone '90 99->96, '92 98->96, '98 96->94, Dantley '80 99->95, '81 99->97, '82 99->98, and
+    # Shaquille O'Neal '02 99->98 and '03 99->98 (z[2] = 2, the purest one-zone cards on the board,
+    # unnamed in the ruling and restored by the same condition, '02 landing back ON recal_49's pin of
+    # 98). All six named cards land EXACTLY on their pre-227 readings and all seven accepted cards
+    # hold EXACTLY at their 227 readings. Shai Gilgeous-Alexander '26 (z[2] = 65) is whole and stays
+    # 99. DEF, every attribute, the big flag and is_big move on ZERO; 8 follow on OVR. THE BAND IS NOT
+    # RE-DERIVED and no card above the knee is re-mapped, but the raw the band clamps comes back down:
+    # Michael Jordan '89 (z[2] = 23) loses the payment and his raw falls 111.3213 -> 104.4675, so the
+    # pool's raw OFF top is Kevin Durant '14 at 109.6626 again and the count above OFF_TOP goes
+    # 24 -> 18. He was clamped at 99 both ways, as are Jordan '90 (z[2] 42) and LeBron '12 (50).
+    # Cards printing OFF 99 fall 26 -> 20.
     SIG2_LO, SIG2_HI = 89.182, 91.20   # the pool's own p99.8 -> p99.9 of volume x efficiency / 100
+    SIG2_Z2_LO, SIG2_Z2_HI = 48.0, 62.0  # recal_228: the POOL's own p95 -> p99 of the THIRD level
     SIG2_K = 0.08                      # the signature's OWN standing weight, paid a second time
     _s2sig = a['volume'] * a['efficiency'] / 100.0
-    _s2g = min(1.0, max(0.0, (_s2sig - SIG2_LO) / (SIG2_HI - SIG2_LO)))
+    _s2siggate = min(1.0, max(0.0, (_s2sig - SIG2_LO) / (SIG2_HI - SIG2_LO)))
+    _s2z2gate = min(1.0, max(0.0, (z[2] - SIG2_Z2_LO) / (SIG2_Z2_HI - SIG2_Z2_LO)))
+    _s2g = _s2siggate * _s2z2gate
     if _s2g > 0.0:
         _s2add = SIG2_K * _s2sig * _s2g * _second
         std += _s2add
         if trace is not None:
             trace['signature_second'] = dict(sig=_s2sig, gate=_s2g, k=SIG2_K, lo=SIG2_LO,
-                                             hi=SIG2_HI, load=_second, mpg=_mp2, added=_s2add)
+                                             hi=SIG2_HI, load=_second, mpg=_mp2, added=_s2add,
+                                             sig_gate=_s2siggate, z2=z[2], z2_gate=_s2z2gate,
+                                             z2_lo=SIG2_Z2_LO, z2_hi=SIG2_Z2_HI)
     if trace is not None: trace['o_score'] = std
     return std
 def d_score(p, trace=None):
@@ -3531,7 +3598,10 @@ if _CARD:
     if 'signature_second' in _ot:
         _s2 = _ot['signature_second']
         print(f"SIGNATURE'S SECOND PAYMENT (recal_227) - volume x efficiency / 100 = {_s2['sig']:.2f} "
-              f"against the pool's own p99.8 {_s2['lo']:g} -> p99.9 {_s2['hi']:g}: gate {_s2['gate']:.4f}"
+              f"against the pool's own p99.8 {_s2['lo']:g} -> p99.9 {_s2['hi']:g}: {_s2['sig_gate']:.4f}"
+              f"; THIRD LEVEL {_s2['z2']:.0f} against the pool's own p95 {_s2['z2_lo']:g} -> p99 "
+              f"{_s2['z2_hi']:g} (recal_228, the load must be converted across the diet): "
+              f"{_s2['z2_gate']:.4f}; gate {_s2['gate']:.4f}"
               f" x the signature's own standing weight {_s2['k']:g} x recal_163's second-payment load "
               f"{_s2['load']:.4f} ({_s2['mpg']} mpg against SECOND_FULL {SECOND_FULL}): +{_s2['added']:.3f}")
     print(f"\n  o_score {_ot['o_score']:.4f}  x 0.93 display multiplier  =  raw {_oraw:.4f}")
