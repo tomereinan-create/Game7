@@ -6,10 +6,10 @@
  "title": "the era transfer's load factor reads the PAID volume — recal_196 documents that factor as recal_131's own 55->80 scoring-load line under recal_130's rule that a rate paid twice is scaled twice, but recal_131's floor reads that line on `_vol` (volume AFTER recal_96's minutes share) while the transfer read it on the RAW bar. One substitution, no new number, identity at full load: 79 cards move, every one DOWN, every one 1980-96 and every one 16.1-23.8 mpg. Andrew Toney '81 is NOT reached (23.6 mpg is 0.967 of the ratified full-load line, so his load factor only moves 1.000 -> 0.971) and the frontier that would reach him is measured and priced, not taken. DISPATCHED AS ROUND 217, WHICH IS ALREADY TAKEN by the landed players-to-team recal_217 (the DHO hub) — filed as 220, the first free number",
  "subject": "David Thompson '82",
  "scale": "off",
- "target": 68,
+ "target": 64,
  "tol": 3,
  "before": 73,
- "after": 68,
+ "after": 64,
  "pipeline_version": 222,
  "knobs": [
   {
@@ -362,6 +362,7 @@
   "MEASURED ON THE WHOLE POOL, against the base board: 79 of 10,000 cards move on OFF, EVERY ONE OF THEM DOWN, max -7, mean -2.08; 62 move on OVR, max -5; DEF moves on ZERO cards and every attribute on ZERO (build_ratings.py is unchanged but for the version stamp — 0 cards differ on any attribute). Every mover is a 1980-1996 card and every mover's minutes lie between 16.1 and 23.8 — the class the ruling names, and nothing else. No 1997+ card moves on any scale. The top 12 by OFF is unchanged and no card enters or leaves the top 50 by OVR.",
   "MONOTONE STILL (recal_210's law). The load factor reads no scoring bar, and the substitution can only SHRINK the coefficient c, so both derivatives survive unchanged in sign: below the clearance cap d(total)/dz[1] = 0.08 + c >= 0 and d(total)/dz[2] = max(0.05, c) - c >= 0. The regeneration's own zone-block monotonicity line prints 0 cards / 0 (card, bar) pairs, as it did at 210.",
   "THE OTHER READING INSIDE THE RULING — the load factor reading recal_96's SHARE directly instead of the paid volume — was measured too: Thompson 71, Williams 67, Toney 73. It lands two of three at the very top edge of their bands instead of on their numbers, and it throws away the 55 -> 80 line recal_196 chose. The paid-volume reading is both the more faithful quote (recal_131 reads the line on exactly this quantity) and the closer fit, so it is the one taken.",
-  "WHY THE CREATION LEG WAS NOT THE ANSWER EITHER, since the ruling offered it as an alternative ('its creation test should not saturate at playvol 41 for a bench scorer'): Toney's playvol is 64 RAW and 61.87 PAID, so the test saturates on either quantity, and recomputing the 27 -> 41 line off the pool's paid-playvol distribution lowers it and saturates more cards, not fewer. The creation leg cannot cut a man who genuinely created his own looks; what is wrong with Toney '81 is the efficiency and zone bars, upstream."
+  "WHY THE CREATION LEG WAS NOT THE ANSWER EITHER, since the ruling offered it as an alternative ('its creation test should not saturate at playvol 41 for a bench scorer'): Toney's playvol is 64 RAW and 61.87 PAID, so the test saturates on either quantity, and recomputing the 27 -> 41 line off the pool's paid-playvol distribution lowers it and saturates more cards, not fewer. The creation leg cannot cut a man who genuinely created his own looks; what is wrong with Toney '81 is the efficiency and zone bars, upstream.",
+  "[pipeline-223 integration: the subject reads 64 on the merged pool — recal_223's second load line cuts a 20-mpg card's volume surplus to 0.35 of full and this round's transfer reads that paid load; both rulings say drop; anchor re-pointed 68 -> 64 ±3]"
  ]
 }
