@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 210
+PIPELINE_VERSION = 223
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -91,6 +91,69 @@ LOAD_FOOT, LOAD_FULL = 12.0, 24.0
 # 24-minute bench boundary; 33.9 is that quartile, measured on the 193 cards recal_107 and recal_112
 # pay. The long comment sits at the two terms themselves, inside o_score.
 SECOND_FULL = 33.9
+# recal_223 (HIS RULINGS, verbatim: "recal_96's 24-minute full-load line pays the volume x load term
+# WHOLE to 27-29-mpg sixth men, so a bench scorer is priced as a 38-minute starter." — then, on the
+# frontier this round first measured and declined, "223 with Shaq '09 released, if we can make it
+# more aggressive — the better", and finally "I want the 24-33-minute scorers that follow to drop
+# more"). THE VOLUME BAR'S OWN SECOND-PAYMENT LINE.
+#
+# THE DEFECT. recal_96 gave `volume` and `playvol` a load share whose full-load line is 24 minutes,
+# and 24 asks ONE question: did this man play at all. Every rotation player clears it, so a 27.8-
+# minute sixth man using 29.7% of his team's possessions was paid the SAME price per unit of volume
+# as a 38-minute first option. Ricky Pierce '91 took volume 96 x load 1.0000 x 0.26 = 24.960 of an
+# o_score of 99.7047 — a quarter of his offence at a starter's rate on a bench workload — and printed
+# OFF 93, above his own '93 (28.8 mpg, 87) and Manu Ginobili '07 (27.5 mpg, BPM 7.8, 87). EVERY OTHER
+# full-load term in this file already carried a second line above 24: recal_163's SECOND_FULL 33.9,
+# recal_188's SB_SECOND_FULL 31.6, recal_130's 34.7 for creation. The bar that most literally CLAIMS
+# a workload had none, and recal_189 declined trying to move the 24 itself.
+#
+# THE LAW, and it is recal_130/163/188's method applied where it had not been:
+#     _vol = min(volume, VOL_LOW) * load_share  +  max(0, volume - VOL_LOW) * second_share
+#     second_share = clip((mpg - LOAD_FOOT) / (VOL_SECOND - LOAD_FOOT), 0, 1)
+# recal_96's own ramp off recal_96's own foot; monotone in minutes, continuous, no new KIND of
+# constant. THE SPLIT IS THE WHOLE IDEA: the first VOL_LOW of the bar keeps recal_96's 12->24 foot —
+# the question "did he play at all" — and only the part of the bar that CLAIMS A STARTER'S LOAD keeps
+# rising to the class's own line. `_load` itself is NOT touched, so playvol x load, recal_155's glue
+# floor, recal_91's glass floor, the stretch-big floor and recal_151's rim-anchor premium all stay
+# exactly on recal_96's line: John Stockton '01 (29.2 mpg, volume 31, playvol 99, off 86 +-2) is
+# BYTE-IDENTICAL. The dispatch asked whether the paid load is shared with playvol. It is not, on
+# purpose — this term reads a SCORING claim and playvol reads a creation one.
+#
+# VOL_LOW = 55 IS THIS FILE'S OWN LOW-USAGE LINE, not a new number: recal_64's off-ball gate,
+# recal_107's two-level gate, recal_112's efficient-interior pair, recal_131's paint-evidence ramp
+# (55 -> 80) and recal_196's load factor (Z2_LD_LO 55) all already cut there. Below it a card is not
+# claiming a load at all, so there is nothing to discount — which is why Clint Capela '17 (23.9 mpg,
+# volume 43, off 58 +-1 with ZERO room) is byte-identical, and Malik Beasley '23 (25.8 mpg, volume
+# 50) and Buddy Hield '25 (22.7, 52) with him. THAT CARD IS THE EXACT WALL recal_189 DECLINED ON: no
+# function of MINUTES could separate Capela from Jerry Stackhouse '07 at 24.1 mpg, and this law does
+# not try to — it separates them on the volume CLAIM, 43 against 80.
+#
+# VOL_SECOND = 36.3 IS MEASURED, NOT FITTED. The class is the one the SECOND payment pays: the cards
+# that have a surplus above VOL_LOW and whose load is already paid IN FULL at recal_96's line, i.e.
+# volume > 55 and mpg >= 24 — 3,425 of 10,000 cards — and their upper quartile of minutes is p25
+# 30.2, median 33.7, p75 36.3. (The wider class, every card at mpg >= 24, is 7,203 cards at
+# 27.7 / 31.4 / 34.8, and 34.8 was the setting this round landed on before his second amendment.)
+#
+# WHAT IT COST, and he paid it explicitly, twice. THREE pins are released and re-pinned at their new
+# readings in this same round: recal_51's Shaquille O'Neal '09 off 71 +-1 (30.0 mpg, volume 72, read
+# 70 on raw 69.8651 with 0.3651 of raw in hand — the pin that made this round a DECLINE the first
+# time) -> 69 +-1; recal_89's Jaylen Brown '26 off 83 +-1 -> 81 +-1; recal_121's Russell Westbrook
+# '15 off 85 +-2 -> 82 +-2, with recal_121's own '15 >= '17 order re-checked and HELD. With those
+# three released, 36.3 is clean: every remaining card, order and team anchor passes.
+#
+# AND 36.3 IS THE END OF THE ROAD, not an arbitrary stop. The next honest line up is the volume >= 80
+# class's own p75, 37.4, and it takes recal_190's Zion Williamson '21 (90 +-1) to 88. So the ladder
+# is: 33.9 -> subject 90, Shaq '09 only · 34.8 -> 90, Shaq '09 only · 35.3 -> 90, + Brown '26 ·
+# 35.4 -> 90, + Westbrook '15 · 36.3 -> 89, those three and nothing else · 37.4 -> 89, + Zion '21.
+#
+# MEASURED on the whole pool at 36.3: the subject 93 -> 89, 1,944 cards move on OFF, EVERY ONE OF
+# THEM DOWN, max -6; DEF and every attribute move on ZERO; NO CARD AT mpg >= 36.3 MOVES AT ALL, so
+# the first options this term was mispricing against are byte-identical to the byte. The movers are
+# exactly the class the ruling names, in every decade: Lou Williams '17 80 -> 77, Isaiah Thomas '15
+# 84 -> 80, Jordan Clarkson '18 69 -> 66, Sam Cassell '07 75 -> 72, Ben Gordon '05 76 -> 72, Dell
+# Curry '94 80 -> 76, Andrew Toney '82 84 -> 80, Corey Maggette '11 62 -> 57, Freeman Williams '81
+# 78 -> 72, Jerry Stackhouse '07 67 -> 64 (which is recal_189's declined ruling arriving on its own).
+VOL_LOW, VOL_SECOND = 55.0, 36.3
 # recal_99: the evidence recal_91's stretch-big terms are paid against - load, or glass.
 SB_V_LO, SB_V_HI, SB_ORB_LO, SB_ORB_HI = 8.0, 22.0, 45.0, 65.0
 def load_share(p):
@@ -856,7 +919,17 @@ def o_score(p, trace=None):
     # a spot-up shooter uses nothing) while Jerome's are 34.3% (volume 70, playvol 61). A man who
     # carries nothing has nothing to discount, and only the narrow instrument can tell them apart.
     _load = load_share(p)
-    _vol, _pvol = a['volume'] * _load, a['playvol'] * _load
+    # recal_223: the volume bar's SECOND-payment line. Only the part of the bar above this file's own
+    # low-usage line VOL_LOW claims a starter's load, and that part is paid at the class's own upper
+    # quartile of minutes (VOL_SECOND) instead of recal_96's 24-minute "did he play at all" foot.
+    # `_load` itself is untouched, so playvol x load and every floor that reads it stay on recal_96's
+    # line. A card with no minutes on the sheet takes 1.0 — recal_96's "measured, or not at all".
+    # The whole argument, the class quartiles and the released pins are in the block above o_score.
+    _vmp = _MPG.get(p['name'])
+    _vsec = 1.0 if _vmp is None else min(1.0, max(0.0,
+            (_vmp - LOAD_FOOT) / (VOL_SECOND - LOAD_FOOT)))
+    _vol = min(a['volume'], VOL_LOW) * _load + max(0.0, a['volume'] - VOL_LOW) * _vsec
+    _pvol = a['playvol'] * _load
     # recal_138: THE HUB'S CLASS AND HIS LOAD, computed here because BOTH the signature term below
     # and recal_55's hub premium further down read them. See the block above o_score for the whole
     # argument. `_role` is 1.0 for every big (recal_55's class, byte-identical), and for a perimeter
@@ -900,7 +973,8 @@ def o_score(p, trace=None):
         trace['zones'] = dict(z=z, rim=a['rim'], mid=a['mid'], three=a['3pt'])
         trace['load'] = dict(share=_load, mpg=_MPG.get(p['name']), foot=LOAD_FOOT, full=LOAD_FULL,
                              volume_raw=a['volume'], volume_paid=_vol,
-                             playvol_raw=a['playvol'], playvol_paid=_pvol)
+                             playvol_raw=a['playvol'], playvol_paid=_pvol,
+                             vol_low=VOL_LOW, vol_second=VOL_SECOND, vol_second_share=_vsec)
     # THE ERA'S THIRD ZONE (recal_196). The whole argument, the measurement and the four factors are
     # in the block above o_score. The vector's third slot is a three-zone game's third option; where
     # the league had no third zone, that weight is transferred to the second zone's clearance over
@@ -3056,6 +3130,9 @@ if _CARD:
               f"line (foot {_l['foot']:.0f}): share {_l['share']:.4f}")
         print(f"  volume {_l['volume_raw']} paid as {_l['volume_paid']:.2f} - "
               f"playvol {_l['playvol_raw']} paid as {_l['playvol_paid']:.2f} - every SKILL rate untouched")
+        print(f"  VOLUME'S SECOND LINE (recal_223) - the first {_l['vol_low']:.0f} of the bar takes the "
+              f"24-minute foot; the surplus {max(0.0, _l['volume_raw'] - _l['vol_low']):.0f} takes the "
+              f"class's own p75 of {_l['vol_second']:.1f} minutes -> share {_l['vol_second_share']:.4f}")
     if 'interior' in _ot:
         _i2 = _ot['interior']
         print(f"EFFICIENT INTERIOR SCORER (recal_112; recal_139 reads the claim ONCE) - efficiency "

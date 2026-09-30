@@ -85,9 +85,9 @@
           "ts_rel": 0.521
         },
         "big": false,
-        "o_ovr": 60,
+        "o_ovr": 59,
         "d_ovr": 44,
-        "ovr": 55,
+        "ovr": 54,
         "marg": 42
       },
       {
@@ -199,7 +199,7 @@
           "ts_rel": 0.516
         },
         "big": true,
-        "o_ovr": 60,
+        "o_ovr": 58,
         "d_ovr": 69,
         "ovr": 64,
         "marg": 53
@@ -292,9 +292,9 @@
           "ts_rel": 0.563
         },
         "big": false,
-        "o_ovr": 62,
+        "o_ovr": 61,
         "d_ovr": 46,
-        "ovr": 57,
+        "ovr": 56,
         "marg": 54
       },
       {
@@ -368,9 +368,9 @@
           "ts_rel": 0.559
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 60,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 85
       },
       {
@@ -537,9 +537,9 @@
           "ts_rel": 0.588
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 76,
         "d_ovr": 51,
-        "ovr": 69,
+        "ovr": 68,
         "marg": 89
       },
       {
@@ -668,9 +668,9 @@
           "ts_rel": 0.516
         },
         "big": false,
-        "o_ovr": 61,
+        "o_ovr": 60,
         "d_ovr": 53,
-        "ovr": 59,
+        "ovr": 58,
         "marg": 45
       },
       {
@@ -706,9 +706,9 @@
           "ts_rel": 0.575
         },
         "big": false,
-        "o_ovr": 77,
+        "o_ovr": 76,
         "d_ovr": 46,
-        "ovr": 68,
+        "ovr": 67,
         "marg": 88
       },
       {
@@ -744,9 +744,9 @@
           "ts_rel": 0.608
         },
         "big": false,
-        "o_ovr": 73,
+        "o_ovr": 72,
         "d_ovr": 48,
-        "ovr": 66,
+        "ovr": 65,
         "marg": 82
       },
       {
@@ -875,9 +875,9 @@
           "ts_rel": 0.579
         },
         "big": false,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 48,
-        "ovr": 68,
+        "ovr": 67,
         "marg": 81
       },
       {
@@ -951,7 +951,7 @@
           "ts_rel": 0.583
         },
         "big": false,
-        "o_ovr": 67,
+        "o_ovr": 66,
         "d_ovr": 48,
         "ovr": 61,
         "marg": 65
@@ -989,9 +989,9 @@
           "ts_rel": 0.586
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 59,
-        "ovr": 71,
+        "ovr": 70,
         "marg": 90
       },
       {
@@ -1196,9 +1196,9 @@
           "ts_rel": 0.567
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 67,
         "d_ovr": 83,
-        "ovr": 76,
+        "ovr": 75,
         "marg": 68
       },
       {
@@ -1289,9 +1289,9 @@
           "ts_rel": 0.558
         },
         "big": false,
-        "o_ovr": 63,
+        "o_ovr": 60,
         "d_ovr": 50,
-        "ovr": 59,
+        "ovr": 57,
         "marg": 60
       },
       {
@@ -1327,9 +1327,9 @@
           "ts_rel": 0.534
         },
         "big": true,
-        "o_ovr": 67,
+        "o_ovr": 66,
         "d_ovr": 64,
-        "ovr": 66,
+        "ovr": 65,
         "marg": 64
       },
       {
@@ -1365,7 +1365,7 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 65,
+        "o_ovr": 64,
         "d_ovr": 53,
         "ovr": 61,
         "marg": 47
@@ -1496,9 +1496,9 @@
           "ts_rel": 0.511
         },
         "big": false,
-        "o_ovr": 53,
+        "o_ovr": 51,
         "d_ovr": 57,
-        "ovr": 55,
+        "ovr": 54,
         "marg": 40
       },
       {
@@ -1534,7 +1534,7 @@
           "ts_rel": 0.565
         },
         "big": false,
-        "o_ovr": 67,
+        "o_ovr": 66,
         "d_ovr": 55,
         "ovr": 63,
         "marg": 86
@@ -1648,9 +1648,9 @@
           "ts_rel": 0.63
         },
         "big": true,
-        "o_ovr": 82,
+        "o_ovr": 80,
         "d_ovr": 65,
-        "ovr": 77,
+        "ovr": 76,
         "marg": 97
       }
     ]
@@ -1741,9 +1741,9 @@
           "ts_rel": 0.584
         },
         "big": false,
-        "o_ovr": 74,
+        "o_ovr": 71,
         "d_ovr": 45,
-        "ovr": 65,
+        "ovr": 63,
         "marg": 70
       },
       {
@@ -1855,7 +1855,7 @@
           "ts_rel": 0.571
         },
         "big": true,
-        "o_ovr": 65,
+        "o_ovr": 64,
         "d_ovr": 71,
         "ovr": 68,
         "marg": 88
@@ -1910,9 +1910,9 @@
           "ts_rel": 0.569
         },
         "big": false,
-        "o_ovr": 69,
+        "o_ovr": 68,
         "d_ovr": 63,
-        "ovr": 67,
+        "ovr": 66,
         "marg": 67
       },
       {
@@ -1948,7 +1948,7 @@
           "ts_rel": 0.546
         },
         "big": false,
-        "o_ovr": 68,
+        "o_ovr": 67,
         "d_ovr": 62,
         "ovr": 66,
         "marg": 58
@@ -1986,9 +1986,9 @@
           "ts_rel": 0.552
         },
         "big": true,
-        "o_ovr": 55,
+        "o_ovr": 54,
         "d_ovr": 63,
-        "ovr": 59,
+        "ovr": 58,
         "marg": 48
       },
       {
@@ -2024,9 +2024,9 @@
           "ts_rel": 0.563
         },
         "big": true,
-        "o_ovr": 70,
+        "o_ovr": 68,
         "d_ovr": 52,
-        "ovr": 65,
+        "ovr": 63,
         "marg": 72
       },
       {
@@ -2117,9 +2117,9 @@
           "ts_rel": 0.62
         },
         "big": false,
-        "o_ovr": 89,
+        "o_ovr": 87,
         "d_ovr": 53,
-        "ovr": 78,
+        "ovr": 77,
         "marg": 96
       },
       {
@@ -2400,9 +2400,9 @@
           "ts_rel": 0.615
         },
         "big": false,
-        "o_ovr": 95,
+        "o_ovr": 93,
         "d_ovr": 69,
-        "ovr": 87,
+        "ovr": 86,
         "marg": 98
       },
       {
@@ -2569,9 +2569,9 @@
           "ts_rel": 0.535
         },
         "big": false,
-        "o_ovr": 65,
+        "o_ovr": 63,
         "d_ovr": 49,
-        "ovr": 60,
+        "ovr": 59,
         "marg": 42
       },
       {
@@ -2607,9 +2607,9 @@
           "ts_rel": 0.589
         },
         "big": false,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 56,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 83
       },
       {
@@ -2776,9 +2776,9 @@
           "ts_rel": 0.598
         },
         "big": false,
-        "o_ovr": 78,
+        "o_ovr": 76,
         "d_ovr": 47,
-        "ovr": 69,
+        "ovr": 67,
         "marg": 88
       },
       {
@@ -2852,7 +2852,7 @@
           "ts_rel": 0.541
         },
         "big": true,
-        "o_ovr": 65,
+        "o_ovr": 64,
         "d_ovr": 84,
         "ovr": 74,
         "marg": 88
@@ -2945,9 +2945,9 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 79,
+        "o_ovr": 76,
         "d_ovr": 51,
-        "ovr": 71,
+        "ovr": 68,
         "marg": 71
       },
       {
@@ -2983,9 +2983,9 @@
           "ts_rel": 0.597
         },
         "big": false,
-        "o_ovr": 73,
+        "o_ovr": 70,
         "d_ovr": 53,
-        "ovr": 67,
+        "ovr": 65,
         "marg": 77
       },
       {
@@ -3059,9 +3059,9 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 64,
+        "o_ovr": 63,
         "d_ovr": 67,
-        "ovr": 66,
+        "ovr": 65,
         "marg": 65
       },
       {
@@ -3266,7 +3266,7 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 70,
+        "o_ovr": 69,
         "d_ovr": 68,
         "ovr": 69,
         "marg": 58
@@ -3511,9 +3511,9 @@
           "ts_rel": 0.591
         },
         "big": true,
-        "o_ovr": 86,
+        "o_ovr": 84,
         "d_ovr": 76,
-        "ovr": 83,
+        "ovr": 82,
         "marg": 94
       }
     ]
@@ -3604,9 +3604,9 @@
           "ts_rel": 0.573
         },
         "big": false,
-        "o_ovr": 86,
+        "o_ovr": 85,
         "d_ovr": 51,
-        "ovr": 76,
+        "ovr": 75,
         "marg": 91
       },
       {
@@ -3642,9 +3642,9 @@
           "ts_rel": 0.531
         },
         "big": false,
-        "o_ovr": 61,
+        "o_ovr": 60,
         "d_ovr": 56,
-        "ovr": 60,
+        "ovr": 59,
         "marg": 50
       },
       {
@@ -3811,9 +3811,9 @@
           "ts_rel": 0.549
         },
         "big": false,
-        "o_ovr": 74,
+        "o_ovr": 72,
         "d_ovr": 54,
-        "ovr": 68,
+        "ovr": 67,
         "marg": 73
       },
       {
@@ -3980,9 +3980,9 @@
           "ts_rel": 0.563
         },
         "big": false,
-        "o_ovr": 70,
+        "o_ovr": 69,
         "d_ovr": 59,
-        "ovr": 67,
+        "ovr": 66,
         "marg": 86
       },
       {
@@ -4018,9 +4018,9 @@
           "ts_rel": 0.563
         },
         "big": false,
-        "o_ovr": 72,
+        "o_ovr": 70,
         "d_ovr": 53,
-        "ovr": 66,
+        "ovr": 65,
         "marg": 78
       },
       {
@@ -4056,9 +4056,9 @@
           "ts_rel": 0.559
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 64,
-        "ovr": 71,
+        "ovr": 70,
         "marg": 60
       },
       {
@@ -4094,7 +4094,7 @@
           "ts_rel": 0.551
         },
         "big": true,
-        "o_ovr": 72,
+        "o_ovr": 71,
         "d_ovr": 89,
         "ovr": 80,
         "marg": 88
@@ -4187,7 +4187,7 @@
           "ts_rel": 0.599
         },
         "big": false,
-        "o_ovr": 86,
+        "o_ovr": 85,
         "d_ovr": 64,
         "ovr": 79,
         "marg": 92
@@ -4263,9 +4263,9 @@
           "ts_rel": 0.574
         },
         "big": true,
-        "o_ovr": 74,
+        "o_ovr": 73,
         "d_ovr": 61,
-        "ovr": 70,
+        "ovr": 69,
         "marg": 82
       },
       {
@@ -4301,7 +4301,7 @@
           "ts_rel": 0.555
         },
         "big": true,
-        "o_ovr": 59,
+        "o_ovr": 58,
         "d_ovr": 78,
         "ovr": 68,
         "marg": 59
@@ -4394,9 +4394,9 @@
           "ts_rel": 0.574
         },
         "big": false,
-        "o_ovr": 79,
+        "o_ovr": 77,
         "d_ovr": 47,
-        "ovr": 69,
+        "ovr": 68,
         "marg": 79
       },
       {
@@ -4432,9 +4432,9 @@
           "ts_rel": 0.591
         },
         "big": false,
-        "o_ovr": 88,
+        "o_ovr": 87,
         "d_ovr": 58,
-        "ovr": 79,
+        "ovr": 78,
         "marg": 96
       },
       {
@@ -4753,7 +4753,7 @@
           "ts_rel": 0.55
         },
         "big": true,
-        "o_ovr": 76,
+        "o_ovr": 75,
         "d_ovr": 71,
         "ovr": 74,
         "marg": 91
@@ -4808,9 +4808,9 @@
           "ts_rel": 0.596
         },
         "big": false,
-        "o_ovr": 93,
+        "o_ovr": 92,
         "d_ovr": 69,
-        "ovr": 86,
+        "ovr": 85,
         "marg": 98
       },
       {
@@ -4884,9 +4884,9 @@
           "ts_rel": 0.584
         },
         "big": true,
-        "o_ovr": 82,
+        "o_ovr": 81,
         "d_ovr": 64,
-        "ovr": 77,
+        "ovr": 76,
         "marg": 87
       },
       {
@@ -5167,9 +5167,9 @@
           "ts_rel": 0.609
         },
         "big": true,
-        "o_ovr": 79,
+        "o_ovr": 77,
         "d_ovr": 70,
-        "ovr": 76,
+        "ovr": 75,
         "marg": 95
       }
     ]
@@ -5222,7 +5222,7 @@
           "ts_rel": 0.6
         },
         "big": false,
-        "o_ovr": 89,
+        "o_ovr": 88,
         "d_ovr": 54,
         "ovr": 78,
         "marg": 96
@@ -5505,9 +5505,9 @@
           "ts_rel": 0.556
         },
         "big": false,
-        "o_ovr": 82,
+        "o_ovr": 81,
         "d_ovr": 66,
-        "ovr": 77,
+        "ovr": 76,
         "marg": 77
       },
       {
@@ -5636,7 +5636,7 @@
           "ts_rel": 0.552
         },
         "big": false,
-        "o_ovr": 79,
+        "o_ovr": 78,
         "d_ovr": 67,
         "ovr": 75,
         "marg": 87
@@ -5843,48 +5843,48 @@
           "ts_rel": 0.561
         },
         "big": false,
-        "o_ovr": 78,
+        "o_ovr": 77,
         "d_ovr": 57,
-        "ovr": 72,
+        "ovr": 71,
         "marg": 83
       },
       {
-        "name": "Dylan Harper '26",
-        "player": "Dylan Harper",
+        "name": "Devin Vassell '26",
+        "player": "Devin Vassell",
         "peak_season": 2026,
-        "talent": 81,
-        "in": 60,
-        "out": 39,
-        "id": 54,
-        "pd": 55,
+        "talent": 76,
+        "in": 27,
+        "out": 83,
+        "id": 47,
+        "pd": 52,
         "attrs": {
-          "3pt": 36,
-          "rim": 65,
-          "mid": 65,
+          "3pt": 82,
+          "rim": 12,
+          "mid": 94,
           "rim_mid_measured": true,
-          "ft": 76,
-          "fouldraw": 34,
-          "orb": 47,
-          "drb": 40,
-          "playvol": 63,
-          "ballsec": 58,
-          "volume": 57,
-          "efficiency": 43,
-          "durability": 34,
-          "rimprot": 54,
-          "perimdisrupt": 47,
+          "ft": 81,
+          "fouldraw": 26,
+          "orb": 16,
+          "drb": 36,
+          "playvol": 34,
+          "ballsec": 89,
+          "volume": 46,
+          "efficiency": 39,
+          "durability": 67,
+          "rimprot": 47,
+          "perimdisrupt": 34,
           "height": 77,
-          "perdef": 55,
-          "discipline": 28,
-          "usg_raw": 21.8,
-          "ts_raw": 0.574,
-          "ts_rel": 0.56
+          "perdef": 52,
+          "discipline": 90,
+          "usg_raw": 19,
+          "ts_raw": 0.569,
+          "ts_rel": 0.556
         },
         "big": false,
-        "o_ovr": 59,
-        "d_ovr": 58,
+        "o_ovr": 60,
+        "d_ovr": 56,
         "ovr": 59,
-        "marg": 68
+        "marg": 60
       },
       {
         "name": "Keldon Johnson '26",
@@ -5919,7 +5919,7 @@
           "ts_rel": 0.59
         },
         "big": false,
-        "o_ovr": 62,
+        "o_ovr": 61,
         "d_ovr": 56,
         "ovr": 60,
         "marg": 89
@@ -5995,9 +5995,9 @@
           "ts_rel": 0.605
         },
         "big": true,
-        "o_ovr": 84,
+        "o_ovr": 81,
         "d_ovr": 95,
-        "ovr": 90,
+        "ovr": 88,
         "marg": 97
       }
     ]
@@ -6050,7 +6050,7 @@
           "ts_rel": 0.645
         },
         "big": false,
-        "o_ovr": 99,
+        "o_ovr": 98,
         "d_ovr": 70,
         "ovr": 90,
         "marg": 99
@@ -6164,9 +6164,9 @@
           "ts_rel": 0.639
         },
         "big": true,
-        "o_ovr": 69,
+        "o_ovr": 68,
         "d_ovr": 93,
-        "ovr": 81,
+        "ovr": 80,
         "marg": 96
       },
       {
