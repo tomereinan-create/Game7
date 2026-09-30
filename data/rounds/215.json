@@ -1,0 +1,316 @@
+{
+ "round": 215,
+ "agent": "ratings-to-off-def",
+ "status": "declined",
+ "ruling": "Cards pre 84 are too high. Post 84 are fine.",
+ "title": "DECLINED at the frontier — the era's third zone cannot be cut for 1980-83 without cutting 1984-96 by the same amount, because the ramp's ONLY input (the league's own 3pt level) is FLAT across 1980-84: 14.79 / 13.53 / 14.65 / 13.64 / 14.01. There is no pre-84 edge in the data. The first pin to fall on the way to ANY of the nine subjects is his own George Gervin '80, and Adrian Dantley '81 (too high) against Adrian Dantley '84 (fine) is a two-card proof: same man, same role, 0.658 of o_score apart, and the ruling asks for five printed points between them. Nothing moves; the measurement is the round",
+ "subject": "Paul Westphal '80",
+ "scale": "off",
+ "target": 90,
+ "tol": 3,
+ "before": 96,
+ "after": 96,
+ "pipeline_version": 215,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_W = 0\\.130",
+   "label": "recal_196's transfer weight — SWEPT 0.130 -> 0.000 and LEFT AT 0.130",
+   "note": "0.130 is the last value at which every one of the 213 anchors passes AND no card moves; 0.110 takes Gervin '80 out, 0.100 Kareem '80, 0.090 Bird '83, 0.060 Jordan '87 and Hakeem '94"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ERA3_FOOT, ERA3_FULL = min\\(_L3\\.values\\(\\)\\), _pctl\\(list\\(_L3\\.values\\(\\)\\), 0\\.5\\)",
+   "label": "THE RULING'S OWN CANDIDATE (b), the era ramp — measured over 294 (foot, full, power) settings and UNCHANGED",
+   "note": "13.53 -> 35.66 stands; no reshaping of it reaches a single subject with the pins held, and the reason is printed in the notes"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_CR_LO, Z2_CR_HI = \\(_pctl\\(\\[_p\\['attrs'\\]\\['playvol'\\] for _p in players\\], 0\\.25\\),",
+   "label": "candidate (a), the creation gate on playvol — measured as a fade in both directions and UNCHANGED",
+   "note": "27 -> 41 stands; Dantley '82 (playvol 49) and Kareem '80 (playvol 49) sit on the same point of it and pull opposite ways"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_z2bal = max\\(0\\.0, _z2c - Z2_VEC_W\\) \\* z\\[2\\]",
+   "label": "candidate (d), recal_210's balance — UNCHANGED, and it is what saves Bird '85/'86 from every cut tried",
+   "note": "Bird '86's term is 4.91 balance against 0.79 clearance, so a clearance-leg cut leaves him alone; Westphal '80 is 1.31 against 6.38 and takes the whole of it"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_z2c = Z2_W \\* _e3 \\* _z2cr \\* _z2ld",
+   "label": "the four factors of recal_196's coefficient, byte-identical",
+   "note": "era x creation x load, all three swept as fade axes"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "Z2_CLEAR = _pctl",
+   "label": "the clearance's p95 saturation, untouched",
+   "note": "51.05; lowering it is a uniform cut and Gervin '80 bounds it at 12.6%"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "recal_90's band anchors NOT re-derived (the dispatch forbade it) and NOT reshaped",
+   "note": "measured and rejected: every pre-84 subject is ABOVE the knee and Gervin/Kareem are BELOW it, so the band looked like the shape-based separator — but every post-84 card he calls fine sits in the same stretch and takes the same cut"
+  },
+  {
+   "file": "data/build_ratings.py",
+   "pattern": "PIPELINE_VERSION = 215",
+   "label": "the round ran the whole chain to PROVE the decline: players_stats.json and provenance.json are byte-identical to pipeline 210",
+   "note": "md5 1f6dc19d500ee2b809a924332e7e818c before and after; only the two version stamps changed"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Paul Westphal '80",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 0,
+   "label": "THE SUBJECT, asked 90 +-3, RECORDED AT 96. Raw 90.7 without recal_196's term at all, so even deleting the term outright leaves him at 91 and the term is the only route — see COST"
+  },
+  {
+   "card": "George Gervin '80",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "THE WALL. His own 196 pin 93 +-3 reading 90, zero room down: he admits 0.430 of o_score and the CHEAPEST of the nine subjects (Walter Davis '80) needs 1.734"
+  },
+  {
+   "card": "Kareem Abdul-Jabbar '80",
+   "scale": "off",
+   "op": "~",
+   "value": 87,
+   "tol": 0,
+   "label": "THE SECOND WALL. 90 +-3 reading 87, admits 1.027 of o_score; Dantley '82 sits on the SAME playvol (49) and needs 2.421"
+  },
+  {
+   "card": "Adrian Dantley '81",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "THE TWO-CARD PROOF, half one: asked 92 +-3, so he must fall to 95 or below"
+  },
+  {
+   "card": "Adrian Dantley '84",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 0,
+   "label": "THE TWO-CARD PROOF, half two: he calls this one FINE at 97 +-1, so it must stay at 96 or above. Same man, same team, same role, o_score 106.959 against '81's 107.617 — the ruling asks the pair to cross AND to open a printed point, on cards the file reads as 99/87/12 eff 99 and 93/92/14 eff 95"
+  },
+  {
+   "card": "Adrian Dantley '82",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "asked 93 +-3, recorded at 98"
+  },
+  {
+   "card": "Adrian Dantley '80",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "asked 90 +-3, recorded at 95; playvol 39, the SAME as Bernard King '84, which he calls fine"
+  },
+  {
+   "card": "Bernard King '84",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "post-84 and fine at 94 +-1: admits 2.303 of o_score where Dantley '80, on the identical playvol, needs 3.029"
+  },
+  {
+   "card": "Julius Erving '80",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 0,
+   "label": "asked 91 +-3, recorded at 96"
+  },
+  {
+   "card": "Julius Erving '81",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 0,
+   "label": "asked 91 +-3, recorded at 96 — one of only two subjects any clean tuning reaches, and only through a gate that selects the 1981 season alone"
+  },
+  {
+   "card": "Julius Erving '82",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "asked 90 +-3, recorded at 95"
+  },
+  {
+   "card": "Walter Davis '80",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "asked 89 +-3, recorded at 94 — the CHEAPEST subject on the board at 1.734 of o_score, and still four times what Gervin '80 admits"
+  },
+  {
+   "card": "Alex English '83",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 0,
+   "label": "asked 89 +-3, recorded at 94"
+  },
+  {
+   "card": "Larry Bird '83",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "recal_210's own pin, 91 +-3 reading 90: the THIRD wall, and it falls at Z2_W 0.090 before six of the nine subjects land"
+  },
+  {
+   "card": "Michael Jordan '87",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 0,
+   "label": "recal_196's subject, 96 +-2: falls at Z2_W 0.060, which is where the last of the nine finally lands"
+  },
+  {
+   "card": "Hakeem Olajuwon '94",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 0,
+   "label": "92 +-3, the fifth wall, also gone at Z2_W 0.060"
+  },
+  {
+   "card": "Clyde Drexler '88",
+   "scale": "off",
+   "op": "~",
+   "value": 88,
+   "tol": 0,
+   "label": "88 +-3, the sixth wall (Z2_W 0.040)"
+  },
+  {
+   "card": "Larry Bird '86",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 0,
+   "label": "post-84 and fine: his term is 4.91 of recal_210 BALANCE against 0.79 of clearance, so he is the one card the obvious cut spares — and Westphal '80 has the identical playvol (74) with the ratio the other way round"
+  },
+  {
+   "card": "Magic Johnson '83",
+   "scale": "off",
+   "op": "~",
+   "value": 89,
+   "tol": 0,
+   "label": "HE ASKED TO CHECK HIM: load factor 0.000 (32 scoring volume), so recal_196's term is worth exactly ZERO on this card and no tuning of it can move him at all"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 0,
+   "label": "the 1997+ byte-identity witness: a measured shot chart, no era term, unmoved"
+  },
+  {
+   "card": "Shaquille O'Neal '00",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "the doctrine card. UNMOVED"
+  },
+  {
+   "card": "Kevin Durant '13",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "recal_198's 98 +-1. UNMOVED"
+  },
+  {
+   "card": "Paul Westphal '80",
+   "scale": "ovr",
+   "op": "~",
+   "value": 85,
+   "tol": 0,
+   "label": "the subject's OVR follows his OFF through the blend and is unmoved with it"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Paul Westphal '80",
+   "below": "George Gervin '80",
+   "label": "THE RULING READ AS AN ORDER, and it does NOT hold: he wants Westphal at 90 and Gervin at 93, and the board has Westphal 96 over Gervin 90 — a six-point inversion that no cut of a term they BOTH collect can close, because Gervin's coefficient is half of Westphal's"
+  },
+  {
+   "scale": "off",
+   "above": "Adrian Dantley '82",
+   "below": "Kareem Abdul-Jabbar '80",
+   "label": "the same sentence on the interior pair: 98 over 87, and the ruling asks for 93 over 90"
+  },
+  {
+   "scale": "off",
+   "above": "Larry Bird '86",
+   "below": "Larry Bird '83",
+   "label": "recal_210's order, untouched: 98 over 90"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Clint Capela '17",
+   "label": "recal_47's standing order, untouched: 99 over 58"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 0,
+  "max_abs": 0,
+  "top": []
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '20",
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kevin Durant '14",
+   "Larry Bird '87",
+   "LeBron James '12",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22",
+   "Nikola Jokić '23",
+   "Nikola Jokić '24"
+  ]
+ },
+ "cost": [
+  "WHAT THE RELEASE COSTS, and it is his call, not this agent's. The single knob that reaches all nine is recal_196's own weight, Z2_W 0.130 -> 0.060, with recal_210's balance kept exact. AT 0.060 the nine land: Westphal '80 96 -> 93, Dantley '82 98 -> 95, Dantley '81 97 -> 95, Dantley '80 95 -> 93, Erving '80 96 -> 93, Erving '81 96 -> 93, Erving '82 95 -> 92, Davis '80 94 -> 90, English '83 94 -> 90 — every one inside his +-3. THE BILL: FIVE PINS BREAK — George Gervin '80 93 +-3 reads 88, Kareem Abdul-Jabbar '80 90 +-3 reads 85, Larry Bird '83 91 +-3 reads 86, Michael Jordan '87 96 +-2 reads 93, Hakeem Olajuwon '94 92 +-3 reads 88 — and 214 cards from 1984-96 move by MORE than one point, including every card he named as fine: Dantley '84 97 -> 94, '85 95 -> 93, '86 96 -> 94, King '84 94 -> 91, '85 95 -> 93, Bird '85 96 -> 93, '86 98 -> 95, '88 97 -> 94, Malone '89 94 -> 92, '90 96 -> 94, '91 96 -> 94, Jordan '85 96 -> 94, '87 95 -> 93, '88 98 -> 96, '91 98 -> 96, Barkley '88 90 -> 88, '90 93 -> 91, Robinson '94 95 -> 94. 616 cards move, max 5. That is the whole release: five anchors AND the post-84 +-1.",
+  "THE LADDER, so he can price a smaller release. Z2_W 0.120: 0 anchors fail, 0 subjects land, 204 cards move by 1 (and ten of them are post-84 cards he calls fine, moving the wrong way for nothing). 0.110: Gervin '80 goes, still 0 subjects. 0.100: Kareem '80 goes, 1 subject lands (Walter Davis '80). 0.090: Bird '83 goes, 4 land. 0.080: 6 land. 0.070: 8 land, 192 post-84 cards move >1. 0.060: 9 land, 5 anchors fail. 0.000 (the term deleted outright): Westphal reads 91, Dantley '82 94, and 8 anchors fail including Michael Jordan '89's 99 +-1.",
+  "IF HE RELEASES ONLY GERVIN '80 AND KAREEM '80 — the two the dispatch named — the round STILL does not land. Walter Davis '80 is the cheapest subject and needs Z2_W 0.103, where those two are the only failures (18 post-84 cards move >1); but Bird '83's 91 +-3 falls at 0.090 with only four subjects home, and Jordan '87 and Hakeem '94 fall at 0.060 which is where the ninth finally lands. THE MINIMUM RELEASE FOR ALL NINE IS FIVE PINS, not two.",
+  "THE ONE THING THAT WOULD MAKE THIS A RATINGS ROUND AND DOES NOT: candidate (c) — the inferred rim/mid pair on very high FG% seasons. It is NOT the cause and it is NOT this agent's file either way. Dantley reads rim 99 / mid 87 in '81 on .559 shooting and rim 93 / mid 92 in '84 on .558; George Gervin '80 reads rim 91 / mid 96 on .528 and is a PIN at the floor. A cut to the inference on high-FG% inferred seasons therefore takes Gervin down with Dantley, and Dantley '84 down with Dantley '81. If Tomer wants that route opened anyway it belongs to stats-to-ratings, not here.",
+  "THE BAND WAS THE ONE PROMISING SHAPE AND IT FAILS FOR A CLEAN REASON. All nine subjects sit ABOVE the 93 knee (raw 94.11 to 100.94) and both pins sit BELOW it (Gervin 89.90, Kareem 87.46), so a flatter stretch above the knee would have cut the subjects and left the pins untouched to the byte. But every post-84 card he calls fine is in the SAME stretch — Dantley '84 raw 99.47, King '84 94.64, Bird '86 100.34, Malone '90 97.19 — and a band is a function of the raw score alone, so it cannot tell 1981 from 1984. OFF_TOP was neither re-derived nor reshaped; 13 cards still sit above it."
+ ],
+ "notes": [
+  "HIS RULING, verbatim: 'Cards pre 84 are too high. Post 84 are fine.' Nine subjects were derived from his words at +-3 — Westphal '80 90, Dantley '82 93, Dantley '81 92, Dantley '80 90, Erving '80 91, Erving '81 91, Erving '82 90, Davis '80 89, English '83 89 — against the post-84 cards he named as fine at +-1: Dantley '84/'85/'86, King '84/'85, Malone '89-'93, Bird '85-'88, Jordan '85-'92, Barkley, Robinson, Price.",
+  "WHY THERE IS NO PRE-84 EDGE TO CUT ON, and this is the whole round in one table. recal_196's era share is a function of ONE quantity, the league's own mean 3pt rating that season, and it is FLAT across exactly the years the ruling divides: 1980 14.79, 1981 13.53, 1982 14.65, 1983 13.64, 1984 14.01, then 1985 15.59, 1986 16.57, 1987 18.83. The 3pt line was adopted gradually and 1984 shot it no more than 1981 did. So the era shares read 0.943 / 1.000 / 0.950 / 0.995 / 0.979 / 0.907 / 0.863 — 1984 sits BETWEEN 1980 and 1983, ABOVE 1985. Any monotone reshaping of the ramp that cuts 1981 cuts 1984 at least as hard. 294 (foot, full, power) settings were measured: the best that holds every pin and every post-84 card reaches ZERO of the nine.",
+  "THE TWO-CARD PROOF, which needs no sweep at all. Adrian Dantley '81 (asked 92, so he must read 95 or below) and Adrian Dantley '84 (called fine at 97, so he must read 96 or above). Today they both print 97 and their o_scores are 107.617 and 106.959 — '81 is 0.658 HIGHER. The round would have to cross them and then open 1.75 of o_score on top, and the ONLY things the file can read between them are: z 99/87/12 against 93/92/14, playvol 48 against 50, volume 94 against 93, efficiency 99 against 95, era 1.000 against 0.979. '81 leads on best zone and on efficiency, so cutting him harder means paying LESS for a better weapon and better shooting, which is precisely the inversion recal_210 outlawed and which this file now prints a monotonicity count for on every run. '81 trails on second zone, third zone and playvol, so cutting him harder on any of those takes Kareem Abdul-Jabbar '80 (second zone 64, the lowest of the whole class, and at the floor of his pin) down first and hardest.",
+  "THE SAME COLLISION, THREE MORE TIMES, on the one axis the dispatch flagged: playvol. Dantley '82 and Kareem '80 are BOTH playvol 49 — one must lose 2.421 of o_score, the other may lose 1.027. Dantley '80 and Bernard King '84 are BOTH playvol 39 — one must lose 3.029, the other may lose 2.303. Erving '80 needs 39.0% of his clearance leg at playvol 64 while Bird '83 admits 38.3% of his at playvol 68, so even the ordering is backwards. A creation fade is the right instinct — Westphal (74) against Gervin (34) is exactly the pair it separates — but the class is not sorted by creation.",
+  "THE WIDE SEARCH, and it is the strongest statement in the round. Not just the era term: ANY new subtractive term gated on the same pre-1997 inferred class (so 1997+ stays byte-identical), of the form -K x ramp(x, lo, hi), over 26 attributes x every ramp on that attribute's own values x 8 depths x both directions. Clean settings — zero anchor failures AND zero post-84 cards moving more than a point — number SEVEN, they all reach at most TWO of the nine, and every one of them is a gate on era in (0.995, 1.000], which is a selector for the 1981 season and nothing else. A one-season gate is a per-player override wearing a ramp, and doctrine 1 forbids it. The same search run on recal_196's own two legs (fade the coefficient, or fade the clearance leg alone) gives three clean settings, each reaching ONE subject, each a selector for a single card: a clearance gate at 80-84 catches Dantley '80 alone, a coefficient gate at 0.125-0.135 catches the 1981/1983 full-load cards alone.",
+  "WHAT IS ACTUALLY TRUE ABOUT THE CLASS, for the next round. recal_196's term is the largest single payment on the 1980-83 board — 7.2 to 8.0 of o_score on the nine subjects, against o_scores of 101 to 109 — and it is paid almost entirely on the CLEARANCE leg (6.4 to 6.8) rather than recal_210's balance (0.6 to 1.3). The cards he calls fine from 1985 on divide in two: the no-third-zone scorers (Dantley '84-'86, King '84/'85, Malone '89-'93) collect the SAME clearance leg and fall with the subjects, while the three-zone cards (Bird '85-'88) collect almost pure balance and do not. So the only clean line the term draws is 'has a third zone' against 'has not' — and Dantley '81 and Dantley '84 are on the same side of it.",
+  "NOTHING MOVED. The chain was run end to end to prove it: data/players_stats.json and data/provenance.json are byte-identical to pipeline 210 (md5 1f6dc19d500ee2b809a924332e7e818c and 079d2e7588dcedccedd3ef5ecf838800), 0 cards move on OFF, on DEF, on OVR and on every attribute, and the only changed bytes in the repo are the two PIPELINE_VERSION stamps and the two files that print them. All 213 anchors pass, 0 failing, mean |error| 1.01, and all nine tactics harness rows PASS.",
+  "THE FRONTIER, stated the way the dispatch asked for it. Gervin '80 and Kareem '80 CANNOT hold. The cheapest of the nine subjects costs four times what Gervin admits. The release it takes to land all nine is FIVE pins — Gervin '80, Kareem '80, Bird '83, Jordan '87, Hakeem '94 — plus the post-84 +-1 on 214 cards from 1984-96, every one of which he has just called fine. That is his call and this round does not make it."
+ ]
+}
