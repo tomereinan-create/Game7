@@ -1,5 +1,5 @@
 {
-  "round": 222,
+  "round": 224,
   "agent": "players-to-team",
   "status": "done",
   "ruling": "In every spot, the value should get to 100. So if I dont achieve that, auto add the stats to 100 / remove all the - across the board",
@@ -17,7 +17,7 @@
   "tol": 0,
   "before": 87,
   "after": 87,
-  "pipeline_version": 222,
+  "pipeline_version": 224,
   "knobs": [
     {
       "file": "src/engine/tactics.ts",
@@ -148,7 +148,13 @@
   ],
   "expect": [
     {
-      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
       "scale": "team:off",
       "op": "~",
       "value": 95,
@@ -156,7 +162,13 @@
       "label": "Jazz '97 team:off — unmoved, because tactics.ts is not in the rating path"
     },
     {
-      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
       "scale": "team:off",
       "op": "~",
       "value": 66,
@@ -164,7 +176,13 @@
       "label": "Lakers '87 team:off — unmoved"
     },
     {
-      "five": ["Derrick White '25", "Jrue Holiday '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25"],
+      "five": [
+        "Derrick White '25",
+        "Jrue Holiday '25",
+        "Jaylen Brown '25",
+        "Jayson Tatum '25",
+        "Kristaps Porziņģis '25"
+      ],
       "scale": "team:off",
       "op": "~",
       "value": 48,
@@ -172,22 +190,70 @@
       "label": "Celtics '25 team:off — unmoved"
     },
     {
-      "five": ["Russell Westbrook '25", "Jamal Murray '25", "Michael Porter Jr. '25", "Aaron Gordon '25", "Nikola Jokić '25"],
+      "five": [
+        "Russell Westbrook '25",
+        "Jamal Murray '25",
+        "Michael Porter Jr. '25",
+        "Aaron Gordon '25",
+        "Nikola Jokić '25"
+      ],
       "scale": "team:def",
       "op": "~",
       "value": 40,
       "tol": 0,
       "label": "Nuggets '25 team:def — unmoved"
     },
-    { "card": "Nikola Jokić '25", "scale": "off", "op": "~", "value": 99, "tol": 0, "label": "no card rating moved: this round touches no python and no offense.ts" },
-    { "card": "Draymond Green '16", "scale": "off", "op": "~", "value": 59, "tol": 0, "label": "the subject of recal_217/218 — his CARD is untouched; only his spot grades moved" },
-    { "card": "Kevin Durant '16", "scale": "off", "op": "~", "value": 96, "tol": 2, "label": "the card whose roll/pop pin moved — the card itself did not" },
-    { "card": "Derrick White '26", "scale": "attr:rimprot", "op": ">=", "value": 73, "label": "the measured cost of the clamp: one of exactly two sub-6'6\" cards over DHO_RIM_LO 73" },
-    { "card": "Alex Caruso '24", "scale": "attr:rimprot", "op": ">=", "value": 73, "label": "...and the other one" }
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "~",
+      "value": 99,
+      "tol": 0,
+      "label": "no card rating moved: this round touches no python and no offense.ts"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "off",
+      "op": "~",
+      "value": 59,
+      "tol": 0,
+      "label": "the subject of recal_217/218 — his CARD is untouched; only his spot grades moved"
+    },
+    {
+      "card": "Kevin Durant '16",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 2,
+      "label": "the card whose roll/pop pin moved — the card itself did not"
+    },
+    {
+      "card": "Derrick White '26",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 73,
+      "label": "the measured cost of the clamp: one of exactly two sub-6'6\" cards over DHO_RIM_LO 73"
+    },
+    {
+      "card": "Alex Caruso '24",
+      "scale": "attr:rimprot",
+      "op": ">=",
+      "value": 73,
+      "label": "...and the other one"
+    }
   ],
   "order": [
-    { "scale": "off", "above": "Nikola Jokić '25", "below": "Domantas Sabonis '24", "label": "card ratings are untouched, so every order around the round holds trivially" },
-    { "scale": "off", "above": "Shaquille O'Neal '00", "below": "Karl Malone '97" }
+    {
+      "scale": "off",
+      "above": "Nikola Jokić '25",
+      "below": "Domantas Sabonis '24",
+      "label": "card ratings are untouched, so every order around the round holds trivially"
+    },
+    {
+      "scale": "off",
+      "above": "Shaquille O'Neal '00",
+      "below": "Karl Malone '97"
+    }
   ],
   "movers": {
     "scale": "off",

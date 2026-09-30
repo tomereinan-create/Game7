@@ -1,0 +1,252 @@
+{
+  "round": 225,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "Make everything use cornerFit, card included, everywhere there is open spacer change it to corner/wing.",
+  "title": "one corner, one formula, everywhere — the open-spacer seat becomes a single term, `cornerFit` = CORNER_SHOT .75 x 3pt + CORNER_EFF .25 x efficiency wrapped in `toHundred`, read by all SIX graded spacer legs in `styleFit` (five-out's mean and its floor, the post-up's four men off the block, iso's four cleared out, the pick-and-roll's three rest men and the pick-and-pop's three) and by the player card's \"Corner / wing\" row, which stopped being the bare 3pt bar — while EVERY THRESHOLD stays on the raw bar, because a gate is not a grade",
+  "scale": "team:off",
+  "subject": "Pacers '96",
+  "five": [
+    "Mark Jackson '96",
+    "Reggie Miller '96",
+    "Derrick McKey '96",
+    "Dale Davis '96",
+    "Rik Smits '96"
+  ],
+  "target": 62,
+  "tol": 0,
+  "before": 62,
+  "after": 62,
+  "pipeline_version": 225,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const CORNER_SHOT = 0\\.75\\s*\nexport const CORNER_EFF = 0\\.25\\s*\nconst cornerFitRaw = \\(x: Attrs\\) => clamp\\(CORNER_SHOT \\* x\\['3pt'\\] \\+ CORNER_EFF \\* x\\.efficiency, 0, 99\\)",
+      "label": "THE ONE CORNER/WING TERM — .75 of the shot, .25 of the efficiency, weights summing to 1.00",
+      "note": "new in 223 — the shot stays dominant; a point of three is worth three points of efficiency"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const cornerFit = toHundred\\(cornerFitRaw\\)",
+      "label": "the twelfth wrapped spot term — reads 100.000000 on a 99-across card like the other eleven",
+      "note": "closes recal_222's one recorded exception (note 4a: the corner/wing topped out at 99.0)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const corner = a\\.map\\(\\(x\\) => cornerFit\\(x\\) / cornerFit\\.K\\)\\s*\n      return 0\\.3 \\* \\(corner\\.reduce\\(\\(t, v\\) => t \\+ v, 0\\) / corner\\.length\\) \\+ 0\\.2 \\* Math\\.min\\(\\.\\.\\.corner\\) \\+ 10 \\* shooters",
+      "label": "five-out's TWO GRADED LEGS (the mean and the floor) on cornerFit",
+      "note": "0.3 x avg(3pt) + 0.2 x min(3pt) -> 0.3 x avg(cornerFit) + 0.2 x min(cornerFit)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "const shooters = a\\.filter\\(\\(x\\) => x\\['3pt'\\] >= SHOOT_3PT_HI\\)\\.length",
+      "label": "A GATE IS NOT A GRADE — five-out's \\+10 shooter COUNT still reads the RAW bar and must not move",
+      "note": "unchanged on purpose: cornerFit folds in efficiency, so 3pt 50 / eff 90 reads exactly 60"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return 0\\.4 \\* handler \\+ 0\\.35 \\* dive \\+ 0\\.25 \\* mean\\(rest, \\(p\\) => cornerFit\\(p\\.attrs\\) / cornerFit\\.K\\)",
+      "label": "the pick-and-roll's three rest men",
+      "note": "mean(rest, 3pt) -> mean(rest, cornerFit)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return post \\* 0\\.7 \\+ mean\\(five\\.filter\\(\\(p\\) => p\\.name !== hub\\?\\.name\\), \\(p\\) => cornerFit\\(p\\.attrs\\) / cornerFit\\.K\\) \\* 0\\.3",
+      "label": "the post-up's four men off the block",
+      "note": "mean(rest, 3pt) x 0.3 -> mean(rest, cornerFit) x 0.3"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "return 0\\.4 \\* phand \\+ 0\\.35 \\* \\(pd \\? popFit\\(pd\\.attrs\\) / popFit\\.K : 0\\) \\+ 0\\.25 \\* mean\\(prest, \\(p\\) => cornerFit\\(p\\.attrs\\) / cornerFit\\.K\\)",
+      "label": "the pick-and-pop's three rest men",
+      "note": "mean(prest, 3pt) -> mean(prest, cornerFit)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "ISO_W_REST \\* mean\\(rest, \\(p\\) => cornerFit\\(p\\.attrs\\) / cornerFit\\.K\\) -",
+      "label": "iso's four men cleared out of the way — the WEIGHT moves, the `holes` GATE does not",
+      "note": "ISO_W_REST x mean(rest, 3pt) -> ISO_W_REST x mean(rest, cornerFit); canSpace untouched"
+    },
+    {
+      "file": "src/ui/spotFit.ts",
+      "pattern": "\\{ key: 'wing', name: 'Corner / wing', f: cornerFit \\}",
+      "label": "THE CARD ROW — \"card included\": the player card's Corner / wing grade is the engine's term",
+      "note": "f: (x) => x['3pt'] -> f: cornerFit"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "MOT_SPACE \\* avg\\(\\(x\\) => x\\['3pt'\\]\\) \\+",
+      "label": "REPORTED AND NOT CHANGED: motion's MOT_SPACE is the one weighted `3pt` average left in styleFit",
+      "note": "his word is wanted before it moves; measured cost if it does: motion 15 -> 17 of 1,255 fives"
+    }
+  ],
+  "expect": [
+    {
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 95,
+      "tol": 0,
+      "label": "Jazz '97 team:off — unmoved: tactics.ts is not in the rating path"
+    },
+    {
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 66,
+      "tol": 0,
+      "label": "Lakers '87 team:off — unmoved"
+    },
+    {
+      "five": [
+        "Derrick White '25",
+        "Jrue Holiday '25",
+        "Jaylen Brown '25",
+        "Jayson Tatum '25",
+        "Kristaps Porziņģis '25"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 48,
+      "tol": 0,
+      "label": "Celtics '25 team:off — unmoved"
+    },
+    {
+      "five": [
+        "Russell Westbrook '25",
+        "Jamal Murray '25",
+        "Michael Porter Jr. '25",
+        "Aaron Gordon '25",
+        "Nikola Jokić '25"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
+      "label": "Nuggets '25 team:off — unmoved, the subject of recal_222"
+    },
+    {
+      "five": [
+        "Russell Westbrook '25",
+        "Jamal Murray '25",
+        "Michael Porter Jr. '25",
+        "Aaron Gordon '25",
+        "Nikola Jokić '25"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 40,
+      "tol": 0,
+      "label": "Nuggets '25 team:def — unmoved"
+    },
+    {
+      "five": [
+        "Ray Williams '84",
+        "Darrell Walker '84",
+        "Bernard King '84",
+        "Louis Orr '84",
+        "Bill Cartwright '84"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 43,
+      "tol": 0,
+      "label": "Knicks '84 — the five that FLIPPED to iso: its style moved, its dial did not"
+    },
+    {
+      "card": "Nikola Jokić '25",
+      "scale": "off",
+      "op": "~",
+      "value": 99,
+      "tol": 0,
+      "label": "no card rating moved: no python, no offense.ts, no attribute"
+    },
+    {
+      "card": "Reggie Miller '96",
+      "scale": "off",
+      "op": "~",
+      "value": 88,
+      "tol": 0,
+      "label": "the pin-down man of the one five whose READ moved — his CARD is untouched"
+    },
+    {
+      "card": "Stephen Curry '16",
+      "scale": "off",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
+      "label": "the man the corner/wing row is most about — his card does not move either"
+    },
+    {
+      "card": "Draymond Green '16",
+      "scale": "off",
+      "op": "~",
+      "value": 59,
+      "tol": 0,
+      "label": "recal_217/218's subject — unmoved"
+    }
+  ],
+  "order": [
+    {
+      "scale": "attr:3pt",
+      "above": "Stephen Curry '16",
+      "below": "Rik Smits '96",
+      "label": "the corner/wing term is still led by the SHOT: .75 of it is the bar"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      [
+        "Reggie Miller '96",
+        88,
+        88
+      ],
+      [
+        "Stephen Curry '16",
+        96,
+        96
+      ],
+      [
+        "Nikola Jokić '25",
+        99,
+        99
+      ]
+    ]
+  },
+  "notes": [
+    "WHAT THIS ROUND IS. His ruling is that ONE floor position gets ONE formula. The same man standing in the same corner was graded by SEVEN different expressions: five-out read the bare 3pt bar twice (its mean and its floor), the post-up's four men off the block read bare 3pt, iso's four cleared-out men read bare 3pt, the pick-and-roll's three rest men and the pick-and-pop's three read bare 3pt, and the shipped player card's Corner / wing row read the 3pt BAR ITSELF through an inline lambda. All seven now read cornerFit — CORNER_SHOT 0.75 x 3pt + CORNER_EFF 0.25 x efficiency, weights summing to 1.00, wrapped in recal_222's toHundred so the spot reads 100.000000 on a 99-across card, with every use site dividing the same .K straight back out.",
+    "THE BASE I WAS HANDED WAS WRONG AND I AM REPORTING IT RATHER THAN QUIETLY FITTING IT. The dispatch said cornerFit already existed on recal_222 and was read by two call sites (the pnr and pickpop rest legs), so that only four legs plus the card row were left. IT DOES NOT EXIST ANYWHERE IN THE REPOSITORY: git grep cornerFit over every local branch and every remote ref returns nothing, and recal_222 (7cadc6e) reads mean(rest, (p) => p.attrs['3pt']) in both of those legs. So this round INTRODUCES the term and converts SIX graded legs, not four — which is what everything, everywhere there is open spacer requires, since leaving the two rest legs on the bare bar would leave the ruling false in the two places the dispatch believed were already done.",
+    "WHO IS WRONG ABOUT THE BOARD, MEASURED. Method, stated explicitly: WHEEL from src/data/wheel.ts, startingFive from src/engine/bestfive.ts, bestStyle(five) with NO opponent passed, over the 1,255 team-seasons that can field a five. ON THAT METHOD MY BASE REPRODUCES recal_222's OWN REPORTED BOARD TO THE FIVE: pnr 481, postup 231, pindown 132, balanced 107, dho 105, helio 75, pickpop 45, triangle 22, iso 22, horns 15, motion 15, fiveout 5. The dispatch's before-recal_222 column (pnr 530, postup 204, pickpop 86, ...) is NOT that state. I reconstructed it: applying cornerFit to ONLY the two rest legs on my base gives pnr 547, postup 206, pindown 125, dho 104, balanced 71, helio 71, pickpop 59, triangle 22, iso 18, motion 15, horns 11, fiveout 6 — the same shape as the dispatch's before column, close on ten of twelve rows, and off by 27 fives on the pnr/pickpop SPLIT alone. So the dispatch's scratch state carried a second, uncommitted change in the pnr/pickpop screener path on top of cornerFit.",
+    "AND WE AGREE COMPLETELY ABOUT WHAT THE FOUR LEGS DO, WHICH IS THE POINT OF THE CROSS-CHECK. The dispatch's before -> after DELTAS are pnr -35, postup +57, pindown -10, dho -8, pickpop +1, balanced -8, helio -4, iso +9, triangle -1, motion 0, horns 0, fiveout -1. My own two-leg -> six-leg deltas are pnr -35, postup +56, pindown -10, dho -8, pickpop +1, balanced -8, helio -4, iso +10, triangle -1, motion 0, horns 0, fiveout -1 — ten of twelve rows identical and two off by one. The four legs behave exactly as the dispatch measured; only the base it measured from was not recal_222.",
+    "THE BOARD THIS ROUND ACTUALLY SHIPS, on the same method. BEFORE: pnr 481, postup 231, pindown 132, balanced 107, dho 105, helio 75, pickpop 45, triangle 22, iso 22, horns 15, motion 15, fiveout 5. AFTER: pnr 512, postup 262, pindown 115, dho 96, helio 67, balanced 63, pickpop 60, iso 28, triangle 21, motion 15, horns 11, fiveout 5. 123 of the 1,255 fives (9.8%) read a different style; ZERO fives keep their style and change the man it nominates. The post-up gains the most (+31) because efficiency generally sits above the three-point bar, so a spacer grades higher on cornerFit than on the raw column, and the post-up's spacing leg is the heaviest one (0.3 against a hub at 0.7). The biggest single gainers are the eighties post fives — 76ers '83 65.7 -> 70.3 off Moses Malone, Bucks '86 62.0 -> 66.5 — and the biggest losers are the modern guard pick-and-rolls whose spacers shoot better than they score, Blazers '20 86.7 -> 84.0 and Hornets '21 fiveout 84.7 -> 81.5.",
+    "A GATE IS NOT A GRADE, AND THE COMMENT SAYS SO BESIDE THE COUNT. Five-out's +10 x shooters still reads x['3pt'] >= SHOOT_3PT_HI on the RAW bar, and so do iso's holes (through canSpace) and bestStyle's shy. The count asks a yes/no question — must the defence come out to him at all — and cornerFit folds in efficiency, so a man at 3pt 50 / efficiency 90 reads EXACTLY 60 and would be counted a five-out shooter he is not. That exact case is asserted in tests/tactics.test.ts so nobody finishes the job later. The rule for the file: every THRESHOLD stays on 3pt, every WEIGHT reads cornerFit.",
+    "THE ONE LEG LEFT, REPORTED AND NOT CHANGED. motion's MOT_SPACE x avg(3pt) is the only weighted 3pt average still in styleFit. It is not a designated spacer seat — motion has no man standing still — which is why it sits outside the dispatch's enumeration, and the cost of converting it was measured anyway: motion 15 -> 17 of 1,255, dho 105 -> 95, balanced 63 -> 62, nothing else moves. HIS WORD IS WANTED BEFORE IT MOVES. Everything else in the file that reads the bar is either a threshold, a man's OWN spot term (rollHandler's 0.2 x 3pt, popFit's 0.45 x 3pt, pinShot's max(mid, 3pt) — the shooter coming off a screen, not standing in a corner), a ramp (interior, closeout), or the OPPONENT's shooting inside the defensive schemeFit.",
+    "NO RATING MOVED, AND THE CAMPAIGN CANNOT REORDER. No python was touched: data/team_rating.py, data/build_ratings.py, data/compute_ovr.py and src/engine/offense.ts are byte-identical to origin/main, so the marg term did not move and no card OVR/OFF/DEF/attribute changed. npm run anchors reads 213 anchors / 0 failing, mean |error| 1.01 — identical to origin/main. MEASURED ON ALL 30 CAMPAIGN OPPONENTS through ratings100: every one of the 30 reads the SAME team:off and team:def dial before and after (1 Wizards 17/37, 10 Bucks 20/41, 19 Hawks 35/52, 22 Cavaliers 79/49, 26 Nuggets 81/41, 27 Celtics 51/53, 30 Thunder 70/59 and the other 23), so the eight campaign rounds stand in exactly the order they stood in. THREE of the thirty change the CAPTION only: round 10 Milwaukee pnr -> pickpop, round 19 Atlanta pnr -> pickpop, round 27 Boston pnr -> triangle.",
+    "THE TESTS RE-POINTED, EACH WITH A COMMENT NAMING THIS RULING, AND NONE DELETED OR LOOSENED. Four formula copies now read cornerFit (the pnr pair's want, the two post-up wants, and the spot-term list, which gains a twelfth entry). Five pinned numbers move: five-out Boston 73.2 -> 70.8, five-out Rockets '18 61.2 -> 66.1, post-up Boston 74.4 -> 72.6, pnr Jazz '97 76.35 -> 78.75 (in two places), motion-minus-five-out on the Celtics 2.9 -> 5.3. TWO PINNED READS FLIP AND BOTH ARE REPORTED: King's Knicks '84 leave the pin-down for ISO (67.65 to 67.51, a flip of 0.14 — which is the side that test is NAMED for), and the Pacers '96 leave the pin-down for the POST-UP (74.6 -> 75.6, Rik Smits' hub carried by four men who grade better in the corner). Dantley's Jazz '81 do NOT flip: iso rises 70.80 -> 72.34 against a pin-down of 73.78, and that is left where it lands. recal_222's note that the twelfth spot must read 99.0 because it IS the 3pt bar is superseded: all twelve now read 100.000000 and all twelve K are 100/99.",
+    "THE ONE DELIBERATE RED IS STILL RED AND IT MOVED. npm run harness PLAYSTYLE reads blind deviation -0.22 against the deviation tax law's required -0.30 or lower, where recal_222 left it at -0.26; the oracle rose +2.51 -> +2.54. NOT TUNED AND NOT LOOSENED, by instruction. The cause is unchanged from recal_222 and is structural: a blind style call costs less when the fits subtract nothing for the shape a five is not, and this round widens every set's reach again rather than narrowing it. Whether the LAW's edge or the RESET's reach moves is his decision. Every other harness row passes and is unmoved from recal_222 to the hundredth (main scorer -0.52, main playmaker -0.80, tempo -0.80, scheme -0.56, hunt -0.38, crash off -0.51, crash def -0.42, assignment -0.45). npm test reads 507 passing / 1 failing on exactly that row — the same 507/1 recal_222 reported.",
+    "src/ui/spotFit.ts IS NORMALLY THE DESIGN SESSION'S LANE AND I TOOK IT, AND SAY SO. His ruling names the card explicitly (card included), the change is one property in one row from an inline (x) => x['3pt'] lambda to the engine's exported cornerFit, and that file's own header says it adds no rule and only reads them. Nothing about the page, the bands, the percentile or the layout moved. The file arrived on origin/main after recal_222 branched, so this branch carries a clean merge of origin/main (62542f2) in order to have it at all."
+  ],
+  "cost": [
+    "cornerFit, CORNER_SHOT and CORNER_EFF are new exports of src/engine/tactics.ts. THE RULE FOR EVERY LATER ROUND: a WEIGHT on a man standing off the ball behind the arc reads cornerFit(x) / cornerFit.K; a THRESHOLD reads x['3pt'] raw. Do not convert five-out's shooter count, iso's canSpace holes or bestStyle's shy.",
+    "motion's MOT_SPACE x avg(3pt) is the one weighted 3pt average left in styleFit, deliberately, pending his word. Measured cost of converting it: motion 15 -> 17, dho 105 -> 95, balanced 63 -> 62 of the 1,255 wheel fives.",
+    "TWO PINNED STYLE READS MOVED: Knicks '84 pindown -> iso, Pacers '96 pindown -> postup. Both re-pointed in tests/tactics.test.ts with the ruling named. THREE CAMPAIGN CAPTIONS MOVED (rounds 10, 19, 27) with no dial change, so no round reordered.",
+    "recal_222's note 4a is SUPERSEDED: the corner/wing spot no longer tops out at 99.0 because it is no longer the bare 3pt bar.",
+    "The deviation tax law's PLAYSTYLE row is still RED and now reads -0.22 (recal_222 left it at -0.26) against its required -0.30. Carried forward untouched by instruction; the test fails on exactly that row and nothing else.",
+    "This branch is recal_222 + a clean merge of origin/main 62542f2 (needed for src/ui/spotFit.ts). No data file, no anchors.json entry and no tactics tax was touched, because no rating moved; the integrator stamps PIPELINE_VERSION."
+  ]
+}
