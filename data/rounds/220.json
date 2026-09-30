@@ -10,7 +10,7 @@
  "tol": 3,
  "before": 73,
  "after": 68,
- "pipeline_version": 220,
+ "pipeline_version": 222,
  "knobs": [
   {
    "file": "data/compute_ovr.py",
@@ -248,22 +248,86 @@
   "count": 79,
   "max_abs": 7,
   "top": [
-   ["Billy Ray Bates '82", 61, 54],
-   ["Fred Brown '80", 73, 67],
-   ["Steve Mix '80", 71, 65],
-   ["Abdul Jeelani '80", 62, 57],
-   ["Austin Carr '80", 61, 56],
-   ["David Thompson '82", 73, 68],
-   ["Eddie Johnson '82", 64, 59],
-   ["Fred Brown '83", 61, 56],
-   ["Billy Ray Bates '81", 75, 71],
-   ["Calvin Murphy '82", 56, 52],
-   ["Eddie Johnson '86", 65, 61],
-   ["Fred Brown '82", 66, 62],
-   ["Quintin Dailey '88", 58, 54],
-   ["Sly Williams '83", 69, 65],
-   ["Steve Mix '81", 63, 59],
-   ["Albert King '82", 61, 58]
+   [
+    "Billy Ray Bates '82",
+    61,
+    54
+   ],
+   [
+    "Fred Brown '80",
+    73,
+    67
+   ],
+   [
+    "Steve Mix '80",
+    71,
+    65
+   ],
+   [
+    "Abdul Jeelani '80",
+    62,
+    57
+   ],
+   [
+    "Austin Carr '80",
+    61,
+    56
+   ],
+   [
+    "David Thompson '82",
+    73,
+    68
+   ],
+   [
+    "Eddie Johnson '82",
+    64,
+    59
+   ],
+   [
+    "Fred Brown '83",
+    61,
+    56
+   ],
+   [
+    "Billy Ray Bates '81",
+    75,
+    71
+   ],
+   [
+    "Calvin Murphy '82",
+    56,
+    52
+   ],
+   [
+    "Eddie Johnson '86",
+    65,
+    61
+   ],
+   [
+    "Fred Brown '82",
+    66,
+    62
+   ],
+   [
+    "Quintin Dailey '88",
+    58,
+    54
+   ],
+   [
+    "Sly Williams '83",
+    69,
+    65
+   ],
+   [
+    "Steve Mix '81",
+    63,
+    59
+   ],
+   [
+    "Albert King '82",
+    61,
+    58
+   ]
   ]
  },
  "top12": {
