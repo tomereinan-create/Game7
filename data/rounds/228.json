@@ -1,0 +1,380 @@
+{
+ "round": 228,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Karl Malone and Adrian Dantley shouldn't raise.",
+ "title": "recal_227's SECOND signature payment is gated on the THIRD LEVEL: the product alone cannot say what the premium is FOR, so above the p99.8 product the payment is scaled by the pool's own p95 -> p99 of z[2] (48 -> 62). A top-1% load converted at a top-1% rate INSIDE ONE ZONE is paid by recal_26's first payment like everyone else and takes nothing here; the premium is for a conversion carried across the diet, or from the arc",
+ "subject": "Karl Malone '90",
+ "scale": "off",
+ "target": 96,
+ "tol": 1,
+ "before": 99,
+ "after": 96,
+ "pipeline_version": 228,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SIG2_Z2_LO, SIG2_Z2_HI = 48\\.0, 62\\.0",
+   "label": "THE ROUND'S WHOLE CHANGE — the pool's own p95 -> p99 of the THIRD scoring level",
+   "note": "measured, not chosen: p95 = 48.0 (488 cards of 10,000 above it) is the foot, p99 = 62.0 (90 cards) is whole, so the gate is a RAMP over the last four percentiles instead of a step. recal_198's construction on recal_198's own quantity, one notch in from its own (that round used the CLASS's p95 -> p99, 74 -> 82, because for it the third zone was the PAYLOAD; here it is only the QUALIFIER). Ten of the twenty cards in the signature class clear the foot, nine are whole"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_s2g = _s2siggate \\* _s2z2gate",
+   "label": "the two gates multiply — recal_198's exact form (sig_gate x z2_gate)",
+   "note": "identical in shape to `_3g` eight lines above it. Nothing else in the term moves: SIG2_LO/HI 89.182/91.20, SIG2_K 0.08 and recal_163's SECOND_FULL 33.9 are byte-identical to recal_227"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_s2z2gate = min\\(1\\.0, max\\(0\\.0, \\(z\\[2\\] - SIG2_Z2_LO\\) / \\(SIG2_Z2_HI - SIG2_Z2_LO\\)\\)\\)",
+   "label": "the gate reads z[2], the WORST of the three sorted bars — NOT the 3pt bar, and that is recal_210's law",
+   "note": "z[2] is the MINIMUM of rim/mid/3pt, so lowering any one bar can only lower it or leave it: the gate is non-decreasing in every bar and no card is ever paid MORE for LESS. A gate on `3pt` alone separates the same six cards (Malone '90 22 against LeBron '14 64) but is non-monotone in rim and mid. Measured after the change: zone block 0 cards, whole o_score 478 cards / 867 pairs — both unchanged from recal_227"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SIG2_LO, SIG2_HI = 89\\.182, 91\\.20",
+   "label": "recal_227's product gate, UNTOUCHED — the round does not move the foot, it adds the second condition",
+   "note": "lifting SIG2_LO cannot do the job: Adrian Dantley '81 (93.06) and Karl Malone '90 (92.12) sit ABOVE Stephen Curry '16 (93.10)'s neighbours and any foot that excludes them excludes the subject of recal_227. The product orders this class the wrong way, which is why the separator has to be a second quantity"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "SIG2_K = 0\\.08",
+   "label": "NO NEW WEIGHT AND NO CHANGED WEIGHT — still the signature's own standing weight",
+   "note": "recal_227 introduced none and this round introduces none either; it only narrows who is paid"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived (recal_102 set them below the measured maximum on purpose)",
+   "note": "the pool's raw OFF top falls 111.3213 (Michael Jordan '89, whose z[2] is 23 and who loses the second payment) -> 109.6626 (Kevin Durant '14, z[2] 82) and the count above the anchor goes 24 -> 18. Every one of those cards was already above OFF_TOP and clamps to 99 either way, so NO card above the knee is re-mapped by this round"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "THREE_SIG_LO, THREE_SIG_HI = 73\\.04, 80\\.36",
+   "label": "recal_198's third-level term, untouched — the sibling whose construction this round copies",
+   "note": "it pays the third zone as the PAYLOAD above the class's p95 of 74; this round reads the same quantity only as a QUALIFIER on a different payload, so the two do not overlap in what they price"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "ZD_W = 3\\.0",
+   "label": "recal_37/38/43/137's zone-dominance bonus, DELIBERATELY UNTOUCHED",
+   "note": "it fires on Karl Malone '90 (+1.788, gate_f on its 0.25 floor) and not on Adrian Dantley '81, so it cannot be the separator either way; recal_210's open conflict on it is unchanged by this round"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Karl Malone '90",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "THE RULING'S FIRST NAME. 31.0 points on .627 true shooting at 31.7% usage, 38.1 mpg; volume 98 / efficiency 94, signature 92.12 (fourth of 10,000) — so recal_227's product gate saturated on him. His zones are 99 rim / 68 mid / 22 three: the load is converted inside ONE zone. z[2] 22 is 26 points under the new foot of 48, the gate closes dead, and he lands EXACTLY on his pre-227 reading. o_score 104.5010, raw 97.1859. 99 -> 96"
+  },
+  {
+   "card": "Karl Malone '92",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "z[2] 12 (zones 99 / 73 / 12), signature 90.21 — restored exactly. 98 -> 96"
+  },
+  {
+   "card": "Karl Malone '98",
+   "scale": "off",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "THE CARD THAT KILLS THE OTHER TWO CANDIDATES. His playvol is 65 — the SAME 65 as Kevin Durant '13, who is accepted — so a creation gate cannot separate the classes; and his rim/mid are MEASURED (rim_mid_measured true, he is a 1998 card), so a gate on inferred pre-1997 zones leaves him paid. Only the third level does it: z[2] 11. 96 -> 94"
+  },
+  {
+   "card": "Adrian Dantley '80",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "zones 98 / 93 / 11, signature 92.07: restored exactly. 99 -> 95, the round's largest move"
+  },
+  {
+   "card": "Adrian Dantley '81",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "THE RULING'S SECOND NAME, and the card recal_227's own receipt flagged to watch as its largest unpinned rise. 30.7 points on .626 true shooting, 42.7 mpg; volume 94 / efficiency 99, signature 93.06 (fifth of 10,000). Zones 99 / 87 / 12 — no third level at all. o_score 107.6174, raw 100.0842. 99 -> 97"
+  },
+  {
+   "card": "Adrian Dantley '82",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "zones 98 / 86 / 11, signature 91.08: restored exactly. 99 -> 98"
+  },
+  {
+   "card": "Stephen Curry '16",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "recal_227's SUBJECT AND HIS PIN, HELD BYTE-IDENTICAL. His weapon IS the arc, so his WORST level is 74 — zones 99 / 81 / 74, twelve clear of the p99 ceiling — and both gates read 1.0000. The second payment is still the whole +7.448: o_score 111.4622, raw 103.6599. This is the 'or from the perimeter' half of the condition and it costs nothing to state. 99"
+  },
+  {
+   "card": "LeBron James '13",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "his re-pinned 99 from recal_227, HELD. Zones 97 / 83 / 69, z[2] 69 over the p99 ceiling: whole. 99"
+  },
+  {
+   "card": "LeBron James '14",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "THE BINDING CARD ON THE CEILING, and the reason it is 62 and not 65 or 71. His third level is EXACTLY 62 — the pool's own p99 — so he is the lowest accepted card and he is paid WHOLE. Twenty-six points of clear air separate him from the highest refused card (Karl Malone '90, 22) and the two sets do not interleave anywhere. HELD at 99"
+  },
+  {
+   "card": "Kevin Durant '13",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "recal_198's own subject and his pin. Zones 98 / 85 / 82 — the three-level case in its purest form — whole on both gates. HELD at 99, the pin's upper edge"
+  },
+  {
+   "card": "Kevin Durant '16",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "zones 98 / 86 / 80: whole. HELD at 98"
+  },
+  {
+   "card": "Kevin Durant '12",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "THE LOW EDGE OF THE ACCEPTED SET ON THE PRODUCT (signature 90.24, gate 0.52) and comfortably whole on the third level (z[2] 74). HELD at 95"
+  },
+  {
+   "card": "Stephen Curry '15",
+   "scale": "off",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "zones 99 / 83 / 70: whole. HELD at 96"
+  },
+  {
+   "card": "Shaquille O'Neal '02",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "UNNAMED IN THE RULING AND RESTORED BY THE SAME CONDITION — and it puts him back ON recal_49's own pin. Zones 99 / 6 / 2: z[2] = 2, the purest one-zone card the file holds. 99 -> 98"
+  },
+  {
+   "card": "Shaquille O'Neal '03",
+   "scale": "off",
+   "op": "~",
+   "value": 98,
+   "tol": 1,
+   "label": "the same card a year later, zones 99 / 3 / 2. 99 -> 98"
+  },
+  {
+   "card": "Shai Gilgeous-Alexander '26",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "UNNAMED IN THE RULING AND HELD AT HIS 227 READING, because the condition does not touch him: zones 99 / 82 / 65, three clear of the p99 ceiling, whole on both gates. 99"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "HIS PIN, HELD. He LOSES the second payment (z[2] 23) — his raw falls 111.3213 -> 104.4675 and he gives up the pool's raw OFF top — but he was clamped by OFF_TOP 102.75 both ways and prints the same. 99"
+  },
+  {
+   "card": "Michael Jordan '90",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "z[2] 42, under the foot: loses the payment, still clamped. 99"
+  },
+  {
+   "card": "LeBron James '12",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 1,
+   "label": "z[2] 50, on the ramp at 0.1429: keeps a seventh of the payment, still clamped. 99"
+  },
+  {
+   "card": "Karl Malone '99",
+   "scale": "off",
+   "op": "~",
+   "value": 90,
+   "tol": 2,
+   "label": "recal_98's pin ('Eff is good but nothing crazy..'), untouched by both rounds: his signature is 87.30, below recal_227's p99.8 foot, so the term never fired on him. BYTE-IDENTICAL at 91"
+  },
+  {
+   "card": "James Harden '19",
+   "scale": "off",
+   "op": "~",
+   "value": 95,
+   "tol": 1,
+   "label": "signature 86.13, below the product foot: byte-identical at 96"
+  },
+  {
+   "card": "Shai Gilgeous-Alexander '25",
+   "scale": "off",
+   "op": "~",
+   "value": 97,
+   "tol": 1,
+   "label": "signature 86.24, below the product foot: byte-identical at 98"
+  },
+  {
+   "card": "Giannis Antetokounmpo '25",
+   "scale": "off",
+   "op": "~",
+   "value": 99,
+   "tol": 0,
+   "label": "signature 80.36, below the foot; byte-identical at 99, and still >= Shaquille O'Neal '00"
+  },
+  {
+   "card": "Larry Bird '83",
+   "scale": "off",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "recal_210's pin, and the law it settled: byte-identical at 90"
+  },
+  {
+   "card": "Kyle Korver '15",
+   "scale": "off",
+   "op": "~",
+   "value": 58,
+   "tol": 1,
+   "label": "signature 9.40 — a deadeye is nowhere near either gate: 58"
+  }
+ ],
+ "order": [
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "Karl Malone '90",
+   "label": "THE RULING, as an order: the unanimous MVP's three-level-guarded season is paid the premium and the one-zone interior scorer is not (99 over 96)"
+  },
+  {
+   "scale": "off",
+   "above": "LeBron James '14",
+   "below": "Adrian Dantley '81",
+   "label": "the lowest ACCEPTED third level (62) over the highest REFUSED one (12), with the whole payment on one side and none on the other: 99 over 97"
+  },
+  {
+   "scale": "off",
+   "above": "Kevin Durant '13",
+   "below": "Karl Malone '98",
+   "label": "the two cards that share playvol 65 — the candidate the round REFUTED — separated by the third level instead: 99 over 94"
+  },
+  {
+   "scale": "off",
+   "above": "Stephen Curry '16",
+   "below": "James Harden '19",
+   "label": "recal_227's own order, preserved: 99 over 96"
+  },
+  {
+   "scale": "off",
+   "above": "Shaquille O'Neal '00",
+   "below": "Shaquille O'Neal '02",
+   "label": "recal_47/49's order, restored to strict: 99 over 98"
+  }
+ ],
+ "movers": {
+  "scale": "off",
+  "count": 8,
+  "max_abs": 4,
+  "top": [
+   [
+    "Adrian Dantley '80",
+    99,
+    95
+   ],
+   [
+    "Karl Malone '90",
+    99,
+    96
+   ],
+   [
+    "Karl Malone '98",
+    96,
+    94
+   ],
+   [
+    "Karl Malone '92",
+    98,
+    96
+   ],
+   [
+    "Adrian Dantley '81",
+    99,
+    97
+   ],
+   [
+    "Shaquille O'Neal '02",
+    99,
+    98
+   ],
+   [
+    "Shaquille O'Neal '03",
+    99,
+    98
+   ],
+   [
+    "Adrian Dantley '82",
+    99,
+    98
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "off",
+  "cards": [
+   "Giannis Antetokounmpo '24",
+   "Giannis Antetokounmpo '25",
+   "Kevin Durant '13",
+   "Kevin Durant '14",
+   "Larry Bird '87",
+   "LeBron James '12",
+   "LeBron James '13",
+   "LeBron James '14",
+   "Michael Jordan '89",
+   "Michael Jordan '90",
+   "Nikola Jokić '21",
+   "Nikola Jokić '22"
+  ]
+ },
+ "cost": [
+  "THE CONDITION IS GENERAL AND IT REACHES TWO CARDS HE DID NOT NAME. Shaquille O'Neal '02 and '03 (z[2] = 2, zones 99 / 6 / 2 and 99 / 3 / 2) are the purest one-zone cards on the board and they come back 99 -> 98 with Malone and Dantley. For '02 that is a RETURN TO recal_49's own pin of 98 +-1, which recal_227 had pushed to its upper edge, and it restores recal_47's order Shaquille O'Neal '00 >= '02 to strict. '03 carries no pin. Shai Gilgeous-Alexander '26, the third unnamed card, HOLDS at 99: his third level is 65, three points over the ceiling.",
+  "THE POOL'S RAW OFF TOP FALLS AND recal_227's SUMMIT TIE BLOCK SHRINKS. Michael Jordan '89 (z[2] = 23) loses the second payment and his raw goes 111.3213 -> 104.4675; the pool's raw OFF maximum is now Kevin Durant '14 at 109.6626 and the count of cards above OFF_TOP 102.75 falls 24 -> 18. Cards printing OFF 99 fall 26 -> 20 (recal_102's own seventeen plus three). OFF_TOP was NOT re-derived and no card above the knee is re-mapped: every card that lost the payment here was already clamped, or is one of the eight movers below the anchor. A future round that re-derives OFF_TOP will find 109.66 where recal_227's receipt recorded 111.32.",
+  "THE TERM NOW PRICES A CLASS OF NINE, NOT TWENTY. Twenty cards clear recal_227's product foot; ten of them clear the third-level foot of 48 and nine are whole at 62. Eight of those nine print OFF 99 (Curry '16, LeBron '13/'14, Durant '13/'14, SGA '26 and the two already-clamped Jordan-era cards are not among them — Jordan is excluded now). A later ruling that wants to separate Stephen Curry '16, LeBron James '13/'14, Kevin Durant '13/'14 or Shai Gilgeous-Alexander '26 from each other still cannot do it inside o_score without moving OFF_TOP or the 0.93 multiplier; recal_227's warning stands for the remaining class.",
+  "TWO CANDIDATE CONDITIONS WERE MEASURED AND REFUTED, and the measurement should not be repeated. A CREATION gate (playvol) is impossible: Karl Malone '98 reads 65 and Kevin Durant '13 reads 65, one refused and one accepted on the same number, and Adrian Dantley '81 (48) sits under Kevin Durant '12 (56) while Stephen Curry '15 (91) and LeBron James '14 (87) sit over both. A ZONE-PROVENANCE gate (do not pay an inferred pre-1997 card) is impossible: Karl Malone '98 is rim_mid_measured TRUE and is refused. Only the third level separates the two sets, and it does so with 40 points of clear air.",
+  "recal_210's MONOTONICITY LAW IS WHY THE GATE READS z[2] AND NOT 3pt. Both quantities separate the same six cards, but z[2] is the MINIMUM of the three bars and is therefore non-decreasing in each of them, while a 3pt gate would pay a card MORE for a weaker rim or mid. Measured after the change: zone block 0 cards / 0 pairs, whole o_score 478 cards / 867 pairs — both exactly what recal_227 shipped, so the standing conflict recal_210 reported is neither widened nor narrowed here."
+ ],
+ "notes": [
+  "HIS RULING, verbatim: \"Karl Malone and Adrian Dantley shouldn't raise.\" recal_227's sixteen movers were all up; he accepted seven (Stephen Curry '15/'16, LeBron James '13/'14, Kevin Durant '12/'13/'16) and refused six (Karl Malone '90/'92/'98, Adrian Dantley '80/'81/'82), asking for their pre-227 readings back. The round's whole job was to find the GENERAL condition that separates the two classes, not a name list.",
+  "WHAT recal_227 SHIPPED, AND WHAT WAS MISSING FROM IT. That round paid recal_26's signature — volume x efficiency / 100 — a SECOND time above the pool's p99.8 of the product, at the product's own standing weight 0.08. It had ONE gate, and that gate was the payload itself. A single quantity cannot both select the class and price it: the product says only that a huge load was converted at a huge rate, and it says that of Karl Malone '90 (92.12, fourth of 10,000) as loudly as it says it of Stephen Curry '16 (93.10). Raising the foot cannot help — Adrian Dantley '81 at 93.06 sits within four hundredths of the subject.",
+  "THE SEPARATOR, MEASURED ON THE TWENTY CARDS OF THE CLASS BEFORE ANYTHING WAS WRITTEN. Sort each card's three scoring bars and read the WORST one, z[2] — recal_198's own quantity. The seven ACCEPTED cards read 74, 70, 69, 62, 82, 80, 74. The six REFUSED cards read 22, 12, 11, 11, 12, 11. The lowest accepted card, LeBron James '14 at 62, stands twenty-six points above the highest refused card, Karl Malone '90 at 22, and the two sets do not interleave anywhere. No other quantity on the sheet does this: playvol puts Karl Malone '98 and Kevin Durant '13 on the same 65, and zone provenance leaves Karl Malone '98 (measured) paid.",
+  "AND THE GAP IS THE RULING'S OWN SENTENCE, NOT A CURVE FITTED TO IT. recal_26's first payment already prices a load carried at a conversion, at 0.08 for every card on the board. The SECOND payment is a premium, and what the seven accepted cards have in common is that there is no level you can send them to: Kevin Durant '13 reads 98 mid / 85 rim / 82 three, LeBron James '13 97 / 83 / 69. Stephen Curry '16 is the perimeter case of the same property — his weapon IS the arc, so even his WORST level is 74. Karl Malone '90 (99 / 68 / 22) and Adrian Dantley '81 (99 / 87 / 12) are the opposite card: a top-1% load converted at a top-1% rate inside ONE zone. They are paid for that load and that efficiency by the first payment, like everyone else.",
+  "THE CONSTANTS ARE THE POOL'S OWN PERCENTILES OF z[2], MEASURED, NOT CHOSEN, and the construction is recal_198's on recal_198's quantity. SIG2_Z2_LO = 48.0 is the pool's p95 (488 cards of 10,000 clear it) and SIG2_Z2_HI = 62.0 is the pool's p99 (90 cards), so the gate fades in over the last four percentiles instead of stepping — the rule every gate in this file follows (recal_93, 99, 136, 137, 154, 164, 198, 227). recal_198 used the CLASS's p95 -> p99 of the same bar (74 -> 82) because there the third zone was the PAYLOAD; here it is only the QUALIFIER, so the line is the board's and not the class's. The two gates multiply, exactly as `_3g` does eight lines above.",
+  "NOTHING ELSE IN THE TERM MOVES. SIG2_LO/SIG2_HI (89.182, 91.20), SIG2_K (0.08) and recal_163's SECOND_FULL (33.9) are byte-identical to recal_227. No new weight is introduced, no weight is changed, no anchor is re-derived and OFF_TOP is NOT touched.",
+  "MEASURED, on all 10,000 cards against the shipped 227 pool: 8 cards move on OFF, EVERY ONE OF THEM DOWN, max -4; 8 follow on OVR; DEF, every attribute, the big flag, is_big and marg move on ZERO. The movers are exactly the cards recal_227 lifted without a third level — Karl Malone '90/'92/'98, Adrian Dantley '80/'81/'82, Shaquille O'Neal '02/'03. Against the PRE-227 pool the net of the two rounds is 8 cards up and nothing down: Stephen Curry '15/'16, LeBron James '13/'14, Kevin Durant '12/'13/'16 and Shai Gilgeous-Alexander '26. All six named cards land EXACTLY on their pre-227 readings; all seven accepted cards hold EXACTLY at their 227 readings.",
+  "EVERY PIN HOLDS AND THE LEDGER GRADES 222 ANCHORS, 0 FAILING. The six the round had to reach are inside +-0; recal_227's two re-pinned cards (Stephen Curry '16 99 +-1, LeBron James '13 99 +-1) are byte-identical; recal_198's Kevin Durant '13 98 +-1 holds at 99; recal_98's Karl Malone '99 90 +-2 never saw either term (signature 87.30, below the product foot) and is byte-identical at 91; recal_102's Michael Jordan '89 99 +-1 loses the payment and prints the same because he was clamped; recal_89's James Harden '19 95 +-1 and Shai Gilgeous-Alexander '25 97 +-1 are below the product foot and byte-identical; recal_90's Giannis Antetokounmpo '25 and Nikola Jokić '25 >= Shaquille O'Neal '00 hold; recal_196's six (Michael Jordan '87, Kareem Abdul-Jabbar '80, George Gervin '80, Larry Bird '84, Clyde Drexler '88, Hakeem Olajuwon '94) and recal_210's Larry Bird '83 are byte-identical; every team OFF pin is unchanged because no team's five moved. recal_49's Shaquille O'Neal '02 98 +-1 goes from the edge back to dead centre.",
+  "THE HARNESS AND THE TESTS: npm run harness passes all nine dials (main scorer, main playmaker, tempo, playstyle, scheme, hunt, crash off glass, crash def glass, assignment — default 0.00, random negative, oracle positive on every one); npx tsc -b clean; npx vitest run 529 tests in 44 files, all passing. src/engine/tactics.ts was not touched."
+ ]
+}
