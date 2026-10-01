@@ -182,8 +182,11 @@ export const STYLES: { key: Style; label: string }[] = [
   { key: 'helio', label: 'helio' },
   { key: 'triangle', label: 'triangle' },
   { key: 'pickpop', label: 'pick-and-pop' },
-  /* 'iso' REMOVED from the board on his ruling 2026-09-30, "Remove iso tactic". The type, the
-     term and isoMan stay so a called iso still prices, but no five is ever READ as one. */
+  /* BACK ON THE BOARD, his ruling 2026-10-01: "We can also add back the iso tactic." It was taken off
+     on 2026-09-30 and the term, the nomination and the price were all deliberately left standing, so
+     putting it back is this one line - and the five that asked for it is the Thunder '25, which he
+     ruled "Can be pnr/helio/balanced/iso". */
+  { key: 'iso', label: 'isolation' },
   { key: 'horns', label: 'horns' },
   { key: 'pindown', label: 'pin-down' },
   { key: 'dho', label: 'hand-off hub' },
@@ -2479,17 +2482,17 @@ const comerFitRaw = (x: Attrs) =>
  * re-measuring, hand-off read 43% of the board against the 7% it reads here. */
 export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   balanced: { mu: 60.000, sd: 0.000 },
-  fiveout: { mu: 37.419, sd: 14.805 },
-  pnr: { mu: 66.741, sd: 5.424 },
-  motion: { mu: 55.685, sd: 6.758 },
-  postup: { mu: 65.178, sd: 11.155 },
-  helio: { mu: 65.195, sd: 7.696 },
-  triangle: { mu: 50.314, sd: 8.676 },
-  pickpop: { mu: 61.241, sd: 6.934 },
-  iso: { mu: 48.790, sd: 12.396 },
-  horns: { mu: 79.708, sd: 5.275 },
-  pindown: { mu: 57.382, sd: 5.420 },
-  dho: { mu: 86.378, sd: 6.388 },
+  fiveout: { mu: 37.421, sd: 14.819 },
+  pnr: { mu: 66.765, sd: 5.354 },
+  motion: { mu: 55.687, sd: 6.750 },
+  postup: { mu: 65.335, sd: 10.529 },
+  helio: { mu: 65.199, sd: 7.691 },
+  triangle: { mu: 50.304, sd: 8.632 },
+  pickpop: { mu: 61.251, sd: 6.938 },
+  iso: { mu: 48.793, sd: 12.393 },
+  horns: { mu: 79.717, sd: 5.277 },
+  pindown: { mu: 57.389, sd: 5.415 },
+  dho: { mu: 70.877, sd: 10.400 },
 }
 export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
   const raw = styleFitRaw(style, five, theirs, call)
@@ -2679,9 +2682,21 @@ export function styleFitRaw(style: Style, five: Player[], _theirs?: Player[], ca
       const off = ranked.slice(0, DHO_TOP).map((p) => rel('comerFit', comerFit(p.attrs)))
       const comers = off.length ? off.reduce((t, v) => t + v, 0) / off.length : 0
       const drest = ranked.slice(DHO_TOP)
+      /* HIS RULING 2026-10-01: "25' Thunder cant be hoh(hand of hub). Can be pnr/helio/balanced/iso."
+       * The Thunder '25 read the hand-off at 82 on Hartenstein, a fine passing big who is NOT their
+       * offence — Gilgeous-Alexander is. The set needs both halves and the file had lost each of them
+       * separately: `bigMan` was a product on `hubScore` that only bigs survived, and his "height
+       * playvol only" ruling retired it; `DHO_GUARD`'s primacy said the hub must be the five's own
+       * passer, and recal_226 retired that because with bigMan gone it handed the seat to point
+       * guards. NOMINATION keeps height (recal_226's fix stands, 48 short hubs not 892) and the PRICE
+       * gets centrality back: a hub who creates far less than the five's best creator does not carry
+       * a hand-off offence, whatever his hands. Jokić and Sabonis ARE their five's best passer and
+       * pay nothing; Hartenstein is not. */
+      const bestPv = Math.max(...five.map((q) => q.attrs.playvol))
+      const central = hub ? clamp((DHO_GUARD - Math.max(0, bestPv - hub.attrs.playvol)) / DHO_GUARD, 0, 1) : 0
       return clamp(
         DHO_BASE +
-          0.75 * (DHO_W_HUB * (hub ? hubFit(five, hub) : 0) + DHO_W_SHOOT * comers) +
+          0.75 * (DHO_W_HUB * (hub ? hubFit(five, hub) * central : 0) + DHO_W_SHOOT * comers) +
           0.25 * cornerMean(drest),
         0,
         100,
