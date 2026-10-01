@@ -847,14 +847,25 @@ export const DEFAULT_TACTICS: Tactics = {
  * [~3.67, ~3.69], midpoint 3.68 (blind -0.31, oracle +0.51). crashDef 0.40 +0.49 FAIL, 0.34 +0.51 PASS, 0.24 blind
  * -0.37, 0.16 -0.31 PASS — window [~0.15, ~0.37], midpoint 0.26 (blind -0.39, oracle +0.54). crashOff 0.05 held.
  * Landed hunt 3.72 -> 3.68, crashDef 0.46 -> 0.26.
+ *
+ * PIPELINE 231 (integration of recal_229 / 231 on recal_226's rewrite). Both regenerations reshuffle the harness's
+ * ovr >= 55 draw (229 moves 436 DEF readings at 81-82 inches; 231 lifts 15 two-way guards' OVR), and two rows lost
+ * their BLIND floor: main scorer 0.55 read -0.26 and hunt 3.68 read -0.22; recal_226's playstyle row, red on main,
+ * reads -1.26 / +3.56 PASS here. SCORER bracketed: 0.65 -0.35 / +1.44 PASS, 0.75 -0.43, 1.20 -0.79 / +1.04,
+ * 2.00 -1.35 / +0.53 PASS (the oracle edge is near 2.05) — window [~0.60, ~2.05], midpoint 1.30 by r126's rule.
+ * HUNT's window is EMPTY on this pool: 3.72 -0.25 / +0.51, 3.75 -0.27 / +0.50, 3.78 -0.30 / +0.48, 3.88 -0.38 /
+ * +0.44 — the blind floor is only reached after the oracle edge is lost (the sampling lottery recal_199's branch
+ * recorded once before). Landed hunt 3.75, the last value that holds the ORACLE edge, and its blind read of -0.27
+ * is REPORTED AND LEFT RED by 0.03, as recal_226 left playstyle: not loosened, not tuned past the oracle. crashOff
+ * 0.05 and crashDef 0.26 held. Landed scorer 0.55 -> 1.30, hunt 3.68 -> 3.75.
  */
 export const TAX = {
-  scorer: 0.55,
+  scorer: 1.30,
   playmaker: 1.10,
   tempo: 0.6,
   style: 0.35,
   scheme: 0.80,
-  hunt: 3.68,
+  hunt: 3.75,
   crashOff: 0.05,
   crashDef: 0.26,
 }
