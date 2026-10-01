@@ -1,0 +1,333 @@
+{
+ "round": 229,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Push C",
+ "title": "the POSITION branch's HEIGHT TEST becomes a REACH instead of a door: recal_114's 80-inch band edge is kept as the FOOT and recal_187/205's rim-presence ramp now fades out over the three inches above it, so a listed power forward at 6'9\" with 0.2 blocks a game is graded on his own perimeter vector the way the 6'8\" man beside him already was, and a 6'11\" one still keeps the whole position verdict",
+ "subject": "Charles Oakley '94",
+ "scale": "def",
+ "target": 81,
+ "tol": 3,
+ "before": 75,
+ "after": 79,
+ "pipeline_version": 229,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_HT_IN = 3\\.0",
+   "label": "THE ROUND'S WHOLE CHANGE — the inches past recal_114's edge over which the rim-presence ramp's reach fades",
+   "note": "the ruling's own span: 6'8\" (POS_HT_MAX 80, the band edge) to 6'11\" (83, the last inch under seven feet). It IS a new constant and is named as one. 4, 6 and 8 (build_ratings' own height widths, `1 - (ht-80)/8` and rep_hf's /6) all reach both targets too and were measured; each one pulls genuine centres into the fade — at 8 a 7'0\" centre is graded half a wing — and 3 is the only reach under which every 83-inch card in the pool is byte-identical. Pool heights are integers, so the fade is read at exactly two values: 1/3 at 81 inches, 2/3 at 82"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_HT_MAX = 80\\.0",
+   "label": "recal_114's band edge, UNTOUCHED and now the FOOT of the ramp rather than its door",
+   "note": "at 80 inches and under `_ht_over` is 0.0 and the branch is byte-identical to recal_187/205 to the last bit — which is the comparator the ruling leans on: Anthony Mason '97 (height 80, perdef 84 / rimprot 45 / drb 87) stays at d_bigness 0.0000 and DEF 80"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_ht_over = min\\(1\\.0, max\\(0\\.0, \\(a\\.get\\('height', 76\\) - POS_HT_MAX\\) / POS_HT_IN\\)\\)",
+   "label": "the height test is a RAMP, not a cliff — the last hard step left in d_bigness",
+   "note": "it replaces `if a.get('height', 76) <= POS_HT_MAX:`, a hard admission test that skipped recal_187/205's whole ramp for a card one inch over the line. The guard `if _ht_over < 1.0` keeps the ramp from being computed at all above the reach, so cards at 83 inches and taller take the same code path and the same verdict they always did"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_w_pos \\*= _rim \\+ \\(1\\.0 - _rim\\) \\* _ht_over",
+   "label": "the fade is applied to the ramp's OUTPUT, and that is the only form that states both halves of the ruling",
+   "note": "it interpolates between recal_187/205's verdict at the foot (`_rim`) and recal_103's whole position verdict at the reach (1.0). Fading the ramp's TOP instead — a shorter bar for a whole rim claim as height rises — was rejected on the ruling's own second half: at the reach it would leave a 6'11\" card with NO rim number at 0.000 big, the exact opposite of 'a 6'11\" one is not'"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_RP_LO, POS_RP_HI = C1_RP_LO, C1_RP_HI",
+   "label": "recal_187's rim-presence ramp itself is NOT re-footed and NOT re-topped",
+   "note": "45 -> 55 are still recal_136's own ends; recal_205's lead-driven top (POS_RP_TOP_WIDTH 10, POS_RP_HI_MAX = DET_LO 68) is byte-identical. The round changes WHERE the ramp applies, not what it says"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "POS_GAP_LO, POS_GAP_HI = 30\\.0, 60\\.0",
+   "label": "recal_103's gap override, untouched — and it is why the subject needed this round",
+   "note": "Charles Oakley '94 reads perimdisrupt - drb = -36, far on the rebounding side, so the gap test gives him 1.0000 and cannot see the contradiction between his listing and his empty rim sheet"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "return \\(a\\['rimprot'\\] >= 55 and a\\['3pt'\\] < 45 and a\\['rimprot'\\] >= a\\['perdef'\\]\\) or \\(a\\['rim'\\] >= 60 and a\\['3pt'\\] < 40\\) or a\\['rimprot'\\] >= 80",
+   "label": "is_big IS NOT TOUCHED — recal_93 / 103 / 164 / 187 / 205's own law, kept",
+   "note": "the boolean still labels the card, still gates recal_55's big hub and recal_91's stretch-big floor and still picks the OVR cap branch. MEASURED: OFF moves on ZERO cards of 10,000 and every attribute moves on zero"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "DEF_TOP IS NOT RE-DERIVED (the dispatch's own instruction, and recal_90's cost)",
+   "note": "every mover is between DEF 46 and 77 raw, nowhere near the 93 knee, so band() is the identity for all 436 of them and no card above the knee is re-mapped"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Charles Oakley '94",
+   "scale": "def",
+   "op": "~",
+   "value": 81,
+   "tol": 3,
+   "label": "THE RULING'S FIRST CARD. 1994 All-Defensive FIRST team, 6'9\" (height 81), 35.8 mpg, 11.8 rpg, 1.3 spg, DBPM 1.5, own ballot drep 1.0; perdef 83 / drb 84 / perimdisrupt 48 / rimprot 43 (0.2 bpg). The lowest DEF of any first-team big on the board — next is Tyson Chandler '13 at 86. d_bigness 1.0000 -> 0.3333, d_score 66.0680 -> 69.9271, raw 79.0526. 75 -> 79"
+  },
+  {
+   "card": "Charles Oakley '98",
+   "scale": "def",
+   "op": "~",
+   "value": 82,
+   "tol": 3,
+   "label": "THE RULING'S SECOND CARD, and the far edge of its tolerance, recorded as such. 2nd-team All-Defensive, 34.6 mpg, 1.6 spg, DBPM 2.3, height 81; perdef 80 / drb 85 / perimdisrupt 60 / rimprot 49. His rimprot clears recal_187's foot of 45 but not recal_205's top (perdef leads by 31, so the top is DET_LO 68): rim claim 0.1739, lifted to d_bigness 0.4493 by the 81-inch reach. 76 -> 79"
+  },
+  {
+   "card": "Anthony Mason '97",
+   "scale": "def",
+   "op": "~",
+   "value": 80,
+   "tol": 1,
+   "label": "THE COMPARATOR THE RULING IS BUILT ON, HELD BYTE-IDENTICAL. The same shape ONE INCH SHORTER (height 80, perdef 84 / rimprot 45 / drb 87, 2nd team): the ramp already ran for him, d_bigness is 0.0000 and he takes his whole perimeter vector 70.9224. recal_114's edge is the foot, so he cannot move. 80"
+  },
+  {
+   "card": "Karl Malone '97",
+   "scale": "def",
+   "op": "~",
+   "value": 87,
+   "tol": 3,
+   "label": "THE HARDEST PIN IN THE 81-INCH CLASS, and it does not move. Height 81, rimprot 72 against perdef 76: the lead is 4, the top is 60.2, and his rim claim is already whole, so the reach multiplies 1.0 by 1.0. BYTE-IDENTICAL at 85"
+  },
+  {
+   "card": "Ben Wallace '06",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 7,
+   "label": "height 81, rimprot 97 — a genuine 6'9\" rim protector is exactly the card the reach must not touch. Rim claim whole, d_bigness 1.0000. BYTE-IDENTICAL at 99, and still >= Rudy Gobert '19 (92)"
+  },
+  {
+   "card": "Bam Adebayo '23",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "height 81, rimprot 78 / perdef 79: lead 1, top 56.3, claim whole. BYTE-IDENTICAL at 85"
+  },
+  {
+   "card": "Kurt Thomas '09",
+   "scale": "def",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "height 81, rimprot 77 / perdef 72 — rimprot LEADS, so recal_205's top is 55 and the claim was whole before the reach existed. BYTE-IDENTICAL at 71"
+  },
+  {
+   "card": "Kevin Durant '19",
+   "scale": "def",
+   "op": "~",
+   "value": 79,
+   "tol": 3,
+   "label": "HEIGHT 83 — the reach's own ceiling, and the proof the second half of the ruling is stated and not merely claimed. `_ht_over` is 1.0, the ramp is not computed at all, and he takes the whole position verdict exactly as he did. BYTE-IDENTICAL at 79"
+  },
+  {
+   "card": "Rodney McCray '88",
+   "scale": "def",
+   "op": "~",
+   "value": 88,
+   "tol": 3,
+   "label": "recal_205's OWN SUBJECT, below the foot at height 79: his ramp is untouched and he is byte-identical at 87"
+  },
+  {
+   "card": "Herbert Jones '23",
+   "scale": "def",
+   "op": "~",
+   "value": 91,
+   "tol": 3,
+   "label": "recal_103's own subject (height 79, gap +71): graded a wing by the gap test, which this round does not read. BYTE-IDENTICAL at 91"
+  },
+  {
+   "card": "Dennis Rodman '90",
+   "scale": "def",
+   "op": "~",
+   "value": 94,
+   "tol": 1,
+   "label": "height 79, under the foot: byte-identical at 95"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "def",
+   "op": "~",
+   "value": 96,
+   "tol": 1,
+   "label": "height 78, under the foot: byte-identical at 97"
+  },
+  {
+   "card": "Ken Norman '94",
+   "scale": "def",
+   "op": "~",
+   "value": 55,
+   "tol": 3,
+   "label": "recal_136's subject, not on this branch at all: byte-identical at 54"
+  },
+  {
+   "card": "Scottie Pippen '03",
+   "scale": "def",
+   "op": "~",
+   "value": 76,
+   "tol": 1,
+   "label": "recal_93's subject, not on this branch: byte-identical at 77"
+  },
+  {
+   "card": "LeBron James '04",
+   "scale": "def",
+   "op": "~",
+   "value": 70,
+   "tol": 2,
+   "label": "recal_164's subject, not on this branch: byte-identical at 68"
+  },
+  {
+   "card": "Jimmy Butler '16",
+   "scale": "def",
+   "op": "~",
+   "value": 85,
+   "tol": 3,
+   "label": "byte-identical at 86"
+  },
+  {
+   "card": "Mark Eaton '85",
+   "scale": "def",
+   "op": "~",
+   "value": 93,
+   "tol": 2,
+   "label": "height 88, far above the reach: byte-identical at 94"
+  },
+  {
+   "card": "Rudy Gobert '19",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 3,
+   "label": "height 85, above the reach: byte-identical at 92"
+  },
+  {
+   "card": "Andrei Kirilenko '13",
+   "scale": "def",
+   "op": "~",
+   "value": 75,
+   "tol": 2,
+   "label": "THE LARGEST CARD IN THE rimprot >= 55 CLASS THAT DOES MOVE, named here rather than buried: height 81, rimprot 59 against perdef 74, so recal_205's lead saturates and his top is DET_LO 68 — his rim claim was never whole and the reach pays him the rest of his own perimeter vector. 73 -> 75, the largest move in that class in either direction being 3"
+  },
+  {
+   "card": "Zach Randolph '10",
+   "scale": "def",
+   "op": "~",
+   "value": 56,
+   "tol": 2,
+   "label": "THE ROUND'S LARGEST FALL, named: height 81, rimprot 46 / perdef 45 — a 6'9\" power forward with no rim sheet AND no perimeter sheet, so his own perimeter vector reads under his big one and the same law that lifts Oakley lowers him. 61 -> 56"
+  },
+  {
+   "card": "Bobby Portis '23",
+   "scale": "def",
+   "op": "~",
+   "value": 50,
+   "tol": 2,
+   "label": "the second-largest fall, the same shape (rimprot 45 / perdef 38): 56 -> 50"
+  },
+  {
+   "card": "Jerome Williams '05",
+   "scale": "def",
+   "op": "~",
+   "value": 59,
+   "tol": 2,
+   "label": "THE ROUND'S LARGEST RISE: height 81, rimprot 36 / perdef 61 — the Junk Yard Dog archetype, a listed power forward who guarded wings. 49 -> 59"
+  },
+  {
+   "card": "Larry Bird '86",
+   "scale": "def",
+   "op": "~",
+   "value": 80,
+   "tol": 2,
+   "label": "THE ONLY STAR IN THE CLASS AND THE ONLY ONE-POINT MOVE ON A CAMPAIGN FIVE: height 81, rimprot 60 / perdef 74, lead saturated, top 68 — his claim was 0.652 and the reach pays him a third of the rest. 79 -> 80"
+  }
+ ],
+ "order": [
+  {
+   "scale": "def",
+   "above": "Anthony Mason '97",
+   "below": "Charles Oakley '94",
+   "label": "THE RULING AS AN ORDER, and the one it had wrong: the comparator one inch shorter still reads higher (80 over 79), but on a 1-point gap instead of the 5-point gap one inch of listed height used to buy"
+  },
+  {
+   "scale": "def",
+   "above": "Karl Malone '97",
+   "below": "Charles Oakley '94",
+   "label": "a 6'9\" forward who DOES protect the rim over one who does not, both at height 81: 85 over 79, byte-identical above and moved below"
+  },
+  {
+   "scale": "def",
+   "above": "Ben Wallace '06",
+   "below": "Rudy Gobert '19",
+   "label": "the standing pin, held through a round that moves 436 cards: 99 over 92"
+  },
+  {
+   "scale": "def",
+   "above": "Tyson Chandler '13",
+   "below": "Charles Oakley '94",
+   "label": "the two first-team bigs the ruling names as the ends of the same ladder — 86 over 79, where it was 86 over 75"
+  }
+ ],
+ "movers": {
+  "scale": "def",
+  "count": 436,
+  "max_abs": 10,
+  "top": [
+   ["Jerome Williams '05", 49, 59],
+   ["David Wood '91", 53, 63],
+   ["Jorge Garbajosa '07", 65, 72],
+   ["Jerome Williams '98", 51, 58],
+   ["Jerome Williams '04", 61, 68],
+   ["A.C. Green '01", 50, 57],
+   ["Charles Oakley '95", 69, 75],
+   ["Chandler Parsons '14", 56, 62],
+   ["Bobby Portis '23", 56, 50],
+   ["Zach Randolph '10", 61, 56],
+   ["Terry Davis '92", 60, 55],
+   ["Julius Randle '16", 62, 57],
+   ["Charles Oakley '94", 75, 79],
+   ["Charles Oakley '98", 76, 79]
+  ]
+ },
+ "top12": {
+  "scale": "def",
+  "cards": [
+   "Ben Wallace '01",
+   "Ben Wallace '02",
+   "Ben Wallace '03",
+   "Ben Wallace '04",
+   "Ben Wallace '05",
+   "Ben Wallace '06",
+   "Dwight Howard '10",
+   "Dwight Howard '11",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "Kawhi Leonard '16",
+   "Dwight Howard '09"
+  ]
+ },
+ "cost": [
+  "A NEW CONSTANT ENTERS THE FILE AND IT IS NAMED AS ONE. POS_HT_IN = 3.0 is the first height width in compute_ovr.py that is not borrowed from an older round. It is the ruling's own span (6'8\" to 6'11\") and not a fitted number — 4, 6 and 8 reach both targets too — but a later round that wants to re-derive it should know that the choice was made on BLAST RADIUS, not on the subjects: at 4 the 83-inch cards enter the fade, at 8 a 7'0\" centre is graded half a wing. The subjects read 80 / 80 at a reach of 4 and 80 / 80 at 8, against 79 / 79 at 3; all four are inside the +-3 the ruling gave.",
+  "THE DISPATCH'S BYTE-IDENTITY CLAUSE IS MET IN THE LAW BUT NOT IN ITS SHORTHAND, AND HERE IS THE EXACT SET. It asked that 81-inch PF/C bigs with rimprot >= 55 be byte-identical. 92 of them are NOT: they move by +3 to -3 (51 up, 41 down, no move larger than 3), and EVERY ONE OF THE 92 has perdef ABOVE rimprot — which is recal_205's own class, the cards whose rim claim that round ruled is not whole until DET_LO 68. The condition that actually buys byte-identity is `rimprot >= its own recal_205 top`, and every card meeting it is unmoved to the last bit: Karl Malone '97 (72 / 76), Ben Wallace '06 (97 / 90), Bam Adebayo '23 (78 / 79), Kurt Thomas '09 (77 / 72). Buying the shorthand instead would mean forcing the claim whole at rimprot 55 for 81-82-inch cards only — a NEW step at the exact bar recal_136, 164, 187 and 205 each spent a round ramping — and it also misses the second subject: Charles Oakley '98 would read 78, outside his band. The 92 are reported, not tuned away. Largest: Andrei Kirilenko '13 73 -> 75, Alvan Adams '85 71 -> 73, Frank Brickowski '90 62 -> 65, Hedo Turkoglu '01 56 -> 59.",
+  "240 OF THE 436 MOVERS GO DOWN, WHICH IS THE LAW AND NOT A SIDE EFFECT. The branch grades a man on HIS OWN vector; for a 6'9\" power forward with no rim sheet AND no perimeter sheet the perimeter vector reads UNDER the big one, and he falls. 44 fall by 3 or more, max -6 (Bobby Portis '23 56 -> 50), and the class is one archetype: Zach Randolph (5 seasons), David Lee, Julius Randle, Carlos Boozer, Luis Scola, Juwan Howard, Terry Davis, A.C. Green's late years, Charles Oakley's OWN '87 and '88 (65 -> 61, 63 -> 59 — the two seasons before he had a perimeter sheet). 51 rise by 3 or more, max +10 (Jerome Williams '05, David Wood '91).",
+  "THE CAMPAIGN LADDER REORDERS ELEVEN LEVELS ON ONE POINT OF ONE CARD. Detlef Schrempf '94 (height 82) moves DEF 54 -> 55 and that flips Seattle '94's best legal five from Kendall Gill '94 to him, which moves the Sonics from champs round 24 to 32 and slides Lakers '82, Spurs '16, Cavaliers '09, Pistons '04, Lakers '80, Bucks '20, Heat '06 and Thunder '13 each one round earlier; All-time Raptors and All-time Jazz swap rounds 13/14 (Carlos Boozer '07 70 -> 68). NO team dial moves: all 37 def anchors and every team:defdial pin pass, and the eight-round tiers are unchanged in composition. 16 cards on campaign fives move at all, and only Larry Bird '86 (79 -> 80) is a star.",
+  "THE HARNESS ROWS MOVE FOR A SAMPLING REASON, NOT A TACTICS REASON, AND THE RED ROW CHANGES SEAT. runHarness draws its 200 matchups from PLAYERS.filter(ovr >= 55) with a fixed seed, so a change in that pool's MEMBERSHIP reshuffles every draw. Five cards enter it (Charles Oakley '92, Jorge Garbajosa '07, Luol Deng '16, Omri Casspi '15, Paul Griffin '80) and six leave it (A.C. Green '91, Adam Keefe '98, Antawn Jamison '13, Charles Oakley '87, Dave Greenwood '87, Julius Randle '16) — 6,581 -> 6,580. On the same unchanged src/engine/tactics.ts the table goes: playstyle -1.67 FAIL -> -1.26 PASS, main scorer -0.51 PASS -> -0.26 FAIL, hunt -0.31 PASS -> -0.22 FAIL, every other row PASS either way. The test count is identical — tests/tactics.test.ts's deviation-tax test is the one failing test on main (playstyle, red on purpose per recal_226) and is the one failing test here (main scorer, the -0.30 upper edge). tactics.ts was NOT touched and neither was the test.",
+  "WHAT THE REACH DOES NOT REACH, for the next round in this branch: every card at 83 inches and taller is byte-identical (0 movers at 83, measured), every card under 81 is byte-identical (recal_114's edge is the foot), and the gap test, the rim ramp's foot and top, DEF_TOP and is_big are all untouched. The branch now has no hard step left in it: the gap is a ramp (recal_103), the rim claim is a ramp (recal_187), its top is a ramp (recal_205) and its reach is a ramp (this round)."
+ ],
+ "notes": [
+  "HIS RULING, verbatim: \"Push C\" — scout group C of 2026-10-01, whose brief is that the position branch's height edge is a cliff: POS_HT_MAX = 80.0 is a hard door on recal_187/205's rim-presence ramp, so a listed PF/C at 81 inches skips the ramp entirely, d_bigness is a hard 1.0 and the big vector's 0.40 x rimprot is taken whole.",
+  "THE DEFECT, DECOMPOSED ON THE SUBJECT BEFORE ANYTHING WAS WRITTEN. Charles Oakley '94: pos ['PF','C'], so the POSITION branch decides him. recal_103's gap test reads perimdisrupt - drb = 48 - 84 = -36, far on the rebounding side, giving _w_pos 1.0000. recal_187's rim-presence ramp would have read his rimprot of 43 against a top of 68 (recal_205: perdef 83 leads rimprot 43 by 40, so the lead saturates) and returned 0.0000 — he has no rim claim at all. It never ran: `height <= POS_HT_MAX` is false by ONE INCH. His big vector is 0.40 x 83 + 0.40 x 43 + 0.17 x 84 + 0.03 x 44 = 66.0680, of which 17.25 is rim protection he does not have; his perimeter vector is 71.8567. 66.0680 x 1.1305 = 74.69 -> DEF 75.",
+  "THE COMPARATOR IS THE PROOF IT IS THE EDGE AND NOT THE MAN. Anthony Mason '97 is the same card one inch shorter: height 80, perdef 84 / rimprot 45 / drb 87, 2nd-team All-Defensive, the same listing, the same empty rim sheet. For him the ramp runs, his claim is 0.0000, d_bigness is 0.0000 and he takes his whole perimeter vector for DEF 80. Five printed points of difference, and nothing on either sheet says so.",
+  "WHY A RAMP AND NOT A HIGHER EDGE. recal_187 did not choose 80 as a statement about rim presence; it borrowed recal_114's band edge — a statement about where a card stops being a PERIMETER DEFENDER — and used it as a hard admission test for a different question. Both facts are true and neither is a step. A man's height is a continuous claim on the rim, so the ramp's REACH fades with it; above the reach nothing changes, because at seven feet the listing is the stronger fact and a centre with no blocks is still a centre. recal_114's edge stays exactly where it is, as the FOOT.",
+  "THE FORM, AND WHY IT IS THIS WAY ROUND. `_ht_over = clamp((height - 80) / 3)` and the ramp's output is blended, `_w_pos *= _rim + (1 - _rim) x _ht_over`. At the foot that is recal_187/205 to the bit; at the reach it is recal_103's whole position verdict. The alternative — fading the ramp's TOP, so a taller card needs a smaller rim number for a whole claim — was rejected because at the reach it sends a 6'11\" card with NO rim number to 0.000 big, which is the opposite of the ruling's second half, and it reads Charles Oakley '98 at 78, outside his band.",
+  "MEASURED, on all 10,000 cards against the shipped 228 pool: 436 move on DEF (196 up, 240 down, max +10 / -6, mean -0.03), 255 follow on OVR (max +5 / -3), and OFF, every attribute, is_big, the big flag and marg move on ZERO. Every mover is at height 81 (324) or 82 (112); ZERO cards move at 83 and above and zero below 81. The top 12 by DEF is identical. 224 anchors, 0 failing, mean |error| 1.02.",
+  "THE PINS IN THE 81-83-INCH CLASS, EACH READ RATHER THAN ASSUMED: Karl Malone '97 85 (rimprot 72 / perdef 76, claim whole), Ben Wallace '06 99 (97 / 90), Bam Adebayo '23 85 (78 / 79), Kurt Thomas '09 71 (77 / 72, rimprot leads so the top is 55), Kevin Durant '19 79 and '24 (height 83, above the reach, the ramp is not computed at all) — all byte-identical. Below the foot and equally unmoved: Dennis Rodman '90 95 / '96, Draymond Green '16 97, Rodney McCray '88 87, Herbert Jones '23 91, Scottie Pippen '03 77, LeBron James '04 68, Jimmy Butler '16 86, Ken Norman '94 54, Carroll '14 / Crowder '16 / Ingles '17, Roundfield '82/'83, Divac '02, Shaq '94/'00, Eaton '85 94, Gobert '19 92, Jrue Holiday '21 92, Michael Jordan '89 99, Dirk '07 74.",
+  "THE SUBJECTS LAND IN THE LOW HALF OF THEIR BANDS AND THAT IS REPORTED, NOT ROUNDED AWAY: Charles Oakley '94 75 -> 79 against 81 +-3 (-2) and '98 76 -> 79 against 82 +-3 (-3, the far edge). 81 and 82 are their whole perimeter vectors (71.8567 and 72.2465 x 1.1305 = 81.23 and 81.68), which the fade can only pay in full by dying AT 81 — the cliff moved one inch rather than removed. The rest of the Oakley run comes with them on the same law: '92 68 -> 70, '93 73 -> 77, '95 69 -> 75, '96 69 -> 73, '97 73 -> 77, '99 72 (rimprot 54 / perdef 69, unmoved by rounding), and '87 65 -> 61 / '88 63 -> 59 fall, because in those two seasons his own perimeter vector was under his big one.",
+  "THE LEDGER: python build_ratings.py (provenance.json byte-identical, no input moved) -> python compute_ovr.py players_stats.json, both copies taken, npm run opponents, npm run anchors 224/0, npx tsc -b clean, npx vitest run 545 passed / 1 failed (tests/tactics.test.ts's deviation-tax row, which is also the single failing test on main — see COST), npm run receipts -- 229. PIPELINE_VERSION 228 -> 229 in both python files. src/engine/tactics.ts and src/engine/offense.ts were NOT touched."
+ ]
+}

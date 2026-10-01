@@ -2135,5 +2135,23 @@
   "round": 228,
   "ruling": "Karl Malone and Adrian Dantley shouldn't raise.",
   "note": "THE RULING'S SECOND NAME, and the largest unpinned rise recal_227's own receipt flagged to watch. 30.7 points on .626 true shooting, 42.7 mpg: volume 94 / efficiency 99, signature 93.06, fifth on the board. Zones 99 / 87 / 12 — no third level at all — so the same third-level gate closes on him and he returns to 97 exactly. o_score 107.6174, raw 100.0842. His '80 (95) and '82 (98) restore with him on the same condition, and so do Karl Malone '92 (96) and '98 (94)."
+ },
+ {
+  "card": "Charles Oakley '94",
+  "scale": "def",
+  "target": 81,
+  "tol": 3,
+  "round": 229,
+  "ruling": "Push C",
+  "note": "recal_229: the position branch's HEIGHT test becomes a REACH. recal_114's edge POS_HT_MAX 80 is kept as the foot and recal_187/205's rim-presence ramp now fades out over POS_HT_IN = 3 inches above it (the ruling's own span, 6'8\" to 6'11\"), so the ramp's output is blended `_rim + (1 - _rim) x _ht_over` instead of being skipped whole at 80.01. 1994 All-Defensive FIRST team, 6'9\" (height 81), 35.8 mpg, 11.8 rpg, 1.3 spg, DBPM 1.5, own ballot drep 1.0: perdef 83 / drb 84 / perimdisrupt 48 / rimprot 43 (0.2 bpg). recal_103's gap test cannot see him (perimdisrupt - drb = -36) and one inch of listed height skipped the ramp entirely, so he was a hard 1.000 big on a big vector of 66.07 against his own perimeter vector of 71.86 - the lowest DEF of any first-team big on the board, next is Tyson Chandler '13 at 86. At 81 inches the reach pays 1/3 and his rim claim is nil, so d_bigness 1.0000 -> 0.3333 and d_score 66.068 -> 69.9271, raw 79.0526. 75 -> 79, the low half of this tolerance; 81 exactly is his whole perimeter vector and would need the fade to die at 81 instead of ramping from 80, which is the cliff moved rather than removed. THE COMPARATOR, held byte-identical: Anthony Mason '97, the same shape one inch shorter (height 80, perdef 84 / rimprot 45 / drb 87), d_bigness 0.0000, DEF 80."
+ },
+ {
+  "card": "Charles Oakley '98",
+  "scale": "def",
+  "target": 82,
+  "tol": 3,
+  "round": 229,
+  "ruling": "Push C",
+  "note": "recal_229, the same law on the same man four years later: 2nd-team All-Defensive, 34.6 mpg, 1.6 spg, DBPM 2.3, height 81, perdef 80 / drb 85 / perimdisrupt 60 / rimprot 49. His rimprot clears recal_187's foot of 45 but not recal_205's top (perdef leads rimprot by 31, so the lead saturates and the top is DET_LO 68), giving a rim claim of 0.1739; the 81-inch reach of 1/3 lifts it to d_bigness 0.4493 where the height test used to skip it and read 1.0000. d_score 67.4963 -> 70.1123, raw 79.2620. 76 -> 79, the far edge of this tolerance and recorded as such."
  }
 ]
