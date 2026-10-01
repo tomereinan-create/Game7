@@ -440,7 +440,10 @@ export function LevelMap({
   onToggleAuto,
   onAutoTo,
   onReset,
+  focus = null,
 }: {
+  /** the level the map should open centred on — the one he just walked out of (App's `lastLevel`) */
+  focus?: number | null
   title: string
   progress: Progress
   opponents: Opponent[]
@@ -517,6 +520,7 @@ export function LevelMap({
   /** User mode plays blind: the design's mode table takes the dials off tonight's ticket. */
   const user = useUserMode()
   const nowRef = useRef<HTMLButtonElement>(null)
+  const focusRef = useRef<HTMLButtonElement>(null)
   // Destructive actions ask IN the game (browser popups never render on his phone).
   const [askReset, setAskReset] = useState(false)
 
@@ -597,7 +601,8 @@ export function LevelMap({
   const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
 
   useEffect(() => {
-    nowRef.current?.scrollIntoView({ block: 'center' })
+    // the stage he came from first (his ruling, 2026-10-01), the next level otherwise
+    ;(focusRef.current ?? nowRef.current)?.scrollIntoView({ block: 'center' })
   }, [])
   /**
    * Take the eye to a block without taking the campaign there. The trail is laid out in the page's
@@ -1046,7 +1051,7 @@ export function LevelMap({
             return (
               <button
                 key={level}
-                ref={state === 'now' ? nowRef : undefined}
+                ref={state === 'now' ? nowRef : level === focus ? focusRef : undefined}
                 /* USER MODE WEARS ONE TICKET, NOT FOUR (the design bundle's option B). The four block
                    skins — arena card, paper, banner, dusk — are scout mode's, and each one is a whole
                    sheet of rules hung off `.node.arena` and friends. Naming the node `club` instead of

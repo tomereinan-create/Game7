@@ -19,7 +19,10 @@ export function Matchups({
   onChange,
   onBack,
   canSolve = false,
+  inline = false,
 }: {
+  /** no sheet, no top bar: a section of the playbook (his ruling, 2026-10-01) */
+  inline?: boolean
   mine: Player[]
   theirs: Player[]
   /** map[i] = index in `theirs` guarded by mine[i]. */
@@ -85,13 +88,25 @@ export function Matchups({
     setDrag(null)
   }
 
+  /* INLINE — his ruling, 2026-10-01: "Make the matchup inside the playbook." On a desk the board
+     stands as a section of the playbook card beside the jumbotron, with no sheet and no top bar
+     of its own; on a phone it is still the full sheet a door opens. Same rows, same drag. */
+  const Wrap = inline ? 'div' : 'div'
   return (
-    <div className="sheet sheet2 boardsheet" onClick={(e) => e.stopPropagation()}>
-      <div className="topbar">
-        <span>Matchup board</span>
-        <button onClick={onBack}>← Done</button>
-      </div>
-      <div className="rule2" />
+    <Wrap className={inline ? 'mboard-inline' : 'sheet sheet2 boardsheet'} onClick={(e) => e.stopPropagation()}>
+      {inline ? (
+        <div className="card-head">
+          <span className="label">Matchup board</span>
+        </div>
+      ) : (
+        <>
+          <div className="topbar">
+            <span>Matchup board</span>
+            <button onClick={onBack}>← Done</button>
+          </div>
+          <div className="rule2" />
+        </>
+      )}
       {user ? (
         <div className="lede">Drag a defender onto the man you want him on, or tap a defender then an opponent.</div>
       ) : (
@@ -211,6 +226,6 @@ export function Matchups({
           {short(mine[drag.i].name)}
         </div>
       ) : null}
-    </div>
+    </Wrap>
   )
 }
