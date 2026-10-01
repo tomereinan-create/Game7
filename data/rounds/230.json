@@ -1,0 +1,243 @@
+{
+  "round": 230,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "We can also add back the iso tactic / 25' Thunder cant be hoh(hand of hub). Can be pnr/helio/balanced/iso. / 2020' clippers cant be pindown. They arent even a knockdown shooting team. They can do pnr (Lou will in Harrel out (a tactic/team fit can change the starting 5)), Balanced",
+  "title": "the iso is a read again, the hand-off hub is NOMINATED on height and PRICED on centrality, and the frozen reference that priced it was re-measured rather than transcribed",
+  "subject": "Thunder '25",
+  "five": [
+    "Shai Gilgeous-Alexander '25",
+    "Isaiah Joe '25",
+    "Luguentz Dort '25",
+    "Jalen Williams '25",
+    "Isaiah Hartenstein '25"
+  ],
+  "scale": "team:off",
+  "target": 70,
+  "tol": 0,
+  "before": 70,
+  "after": 70,
+  "pipeline_version": 230,
+  "knobs": [
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  \\{ key: 'pickpop', label: 'pick-and-pop' \\},\\s*\\n(?:[^\\n]*\\n){4}  \\{ key: 'iso', label: 'isolation' \\},",
+      "label": "ISOLATION IS BACK ON THE BOARD, his ruling \"We can also add back the iso tactic\" — and back in its ORIGINAL SEAT, eighth, between pickpop and horns, so bestStyle's strict `>` resolves ties exactly as it did before recal_226 took it off",
+      "note": "STYLES 11 -> 12; the term, the nomination (isoMan) and the price were all left standing in recal_226, so the return is one line"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "      const bestPv = Math\\.max\\(\\.\\.\\.five\\.map\\(\\(q\\) => q\\.attrs\\.playvol\\)\\)\\s*\\n      const central = hub \\? clamp\\(\\(DHO_GUARD - Math\\.max\\(0, bestPv - hub\\.attrs\\.playvol\\)\\) / DHO_GUARD, 0, 1\\) : 0",
+      "label": "THE WHOLE OF HIS THUNDER RULING — the hub is NOMINATED on height (recal_226's fix, untouched) and PRICED on CENTRALITY: how close the hub's play volume is to the five's best creator's, DHO_GUARD 25 wide, linear to zero",
+      "note": "the file had lost both halves of the original design separately - bigMan was a product only bigs survived (retired by \"DHO hub should be - height playvol only\"), and DHO_GUARD's primacy said the hub must be the five's own passer (retired by recal_226 because with bigMan gone it handed the seat to point guards). Nomination keeps height, the price gets centrality back."
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "          0\\.75 \\* \\(DHO_W_HUB \\* \\(hub \\? hubFit\\(five, hub\\) \\* central : 0\\) \\+ DHO_W_SHOOT \\* comers\\) \\+",
+      "label": "`central` multiplies THE HUB LEG ONLY — not the comers, not the corner men, and never the nomination",
+      "note": "hubFit(five, hub) * central"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  pindown: \\{ mu: 57\\.382, sd: 5\\.420 \\},\\s*\\n  dho: \\{ mu: 63\\.231, sd: 15\\.332 \\},",
+      "label": "THE ONE STYLE_REF ROW THE RULING MOVES, re-measured through styleFitRaw over the 1,255 wheel fives AFTER re-verifying SPOT_REF — and the eleven other rows LEFT FROZEN because they reproduce main's values to within 0.03",
+      "note": "dho mu 86.378 -> 63.231, sd 6.388 -> 15.332; pindown and the other ten byte-identical to origin/main"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  rollHandler: \\{ mu: 47\\.666, sd: 17\\.299 \\},\\s*\\n  popHandler: \\{ mu: 47\\.666, sd: 17\\.299 \\},",
+      "label": "SPOT_REF IS UNTOUCHED and was re-verified FIRST, the order the file's own law names: all fourteen terms reproduce to the thousandth (worst drift 0.0005), measured family-pooled over all 10,000 cards",
+      "note": "no spot formula and no attribute bar moved in this round"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const STYLE_SLOPE = 0\\.2",
+      "label": "THE SLOPE IS NOT TOUCHED — his second ruling of the day on it, \"Revert to 0.20\", stands, and the PLAYSTYLE row went green WITHOUT it",
+      "note": "0.20, unchanged from main; the 0.143 alternative is costed in the notes and left for him"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  hunt: 3\\.75,",
+      "label": "the recal desk's hunt tax, verified against origin/main rather than assumed — the ONE red harness row is theirs and is deliberately untouched",
+      "note": "hunt 3.75, their own 3.68 -> 3.75"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const hubFit = \\(_five: Player\\[\\], p: Player\\): number => rel\\('hubScore', hubScore\\(p\\.attrs\\)\\)",
+      "label": "recal_226's NOMINATION survives whole — `primacy` stays deleted, so the hub is still chosen on height and play volume and `central` never chooses him, only prices him",
+      "note": "48 short hubs on the wheel, not 892, unchanged by this round"
+    }
+  ],
+  "expect": [
+    {
+      "five": [
+        "Shai Gilgeous-Alexander '25",
+        "Isaiah Joe '25",
+        "Luguentz Dort '25",
+        "Jalen Williams '25",
+        "Isaiah Hartenstein '25"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 61,
+      "tol": 0,
+      "label": "THE SUBJECT'S OTHER DIAL IS BYTE-IDENTICAL — no python, no offense.ts, no rating and no card attribute moved, so a tactics round cannot move a dial"
+    },
+    {
+      "five": [
+        "Mark Jackson '96",
+        "Reggie Miller '96",
+        "Derrick McKey '96",
+        "Dale Davis '96",
+        "Rik Smits '96"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 62,
+      "tol": 0,
+      "label": "recal_226's own subject, unchanged on both dials"
+    },
+    {
+      "five": [
+        "Mark Jackson '96",
+        "Reggie Miller '96",
+        "Derrick McKey '96",
+        "Dale Davis '96",
+        "Rik Smits '96"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 47,
+      "tol": 0,
+      "label": "Pacers '96 defence, unchanged"
+    },
+    {
+      "five": [
+        "Patrick Beverley '20",
+        "Paul George '20",
+        "Kawhi Leonard '20",
+        "Montrezl Harrell '20",
+        "Ivica Zubac '20"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 83,
+      "tol": 0,
+      "label": "THE CLIPPERS '20, the ruling this round deliberately does NOT address — their dials are untouched and the finding is recorded in COST"
+    },
+    {
+      "five": [
+        "Russell Westbrook '25",
+        "Jamal Murray '25",
+        "Michael Porter Jr. '25",
+        "Aaron Gordon '25",
+        "Nikola Jokić '25"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
+      "label": "the Nuggets '25, whose hub IS their best creator and who therefore pay `central` nothing"
+    },
+    {
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 66,
+      "tol": 0,
+      "label": "Showtime, hub Magic Johnson, raw hand-off fit unmoved"
+    },
+    {
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 95,
+      "tol": 0,
+      "label": "the Jazz '97, whose hand-off read falls 90.6 -> 53.9 raw without their dial moving a point"
+    },
+    {
+      "five": [
+        "Mike Conley '17",
+        "Tony Allen '17",
+        "Vince Carter '17",
+        "Zach Randolph '17",
+        "Marc Gasol '17"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 56,
+      "tol": 0,
+      "label": "the Grizzlies '17, the cleanest case of the ruling: a passing seven-footer whose point guard runs the offence"
+    }
+  ],
+  "movers": {
+    "scale": "off",
+    "count": 0,
+    "max_abs": 0,
+    "top": [
+      [
+        "Isaiah Hartenstein '25",
+        51,
+        51
+      ],
+      [
+        "Shai Gilgeous-Alexander '25",
+        98,
+        98
+      ],
+      [
+        "Nikola Jokić '25",
+        99,
+        99
+      ],
+      [
+        "Domantas Sabonis '24",
+        89,
+        89
+      ],
+      [
+        "Marc Gasol '17",
+        75,
+        75
+      ]
+    ]
+  },
+  "notes": [
+    "WHAT WAS ALREADY COMMITTED AND WHAT THIS PASS FOUND. Two of his three rulings arrived as a WIP commit: iso back in STYLES, and the hand-off hub priced on `central`. The dispatch asked for both layers of the frozen reference to be RE-VERIFIED in the file's own order, spot first and then every style row through styleFitRaw. THE ORDER CAUGHT A WRONG TABLE, which is the whole value of the rule.",
+    "LAYER ONE, SPOT_REF: all fourteen terms reproduce to the thousandth, worst drift 0.0005 (pinScore mu 27.213 / sd 21.742 to the decimal). Measured family-pooled over all 10,000 cards, because the roll and pop handlers share one ruler and so do the two screeners - his own catch of 2026-09-30. Nothing in these rulings touches a spot formula or an attribute bar, so this is the expected result and it is CHECKED rather than assumed.",
+    "LAYER TWO, STYLE_REF: measured WHEEL -> startingFive -> styleFitRaw, no opponent, all 1,255 fives. Exactly ONE style's formula moved, so exactly one row may move. Eleven rows reproduce origin/main's frozen values to within 0.03 (worst: postup mu 0.0110 / sd 0.0293, pickpop mu 0.0102, horns mu 0.0085) and are LEFT EXACTLY AS THEY WERE. The WIP had re-stamped all twelve with that drift, which is the float the block's own opening paragraph forbids - 'if it floated, a regeneration that lifted every shooter would lift the mean with them and cancel itself out, and the board could never move'.",
+    "AND THE WIP's dho ROW REPRODUCES NO FORM OF THE SHIPPED FORMULA. It read mu 70.877 / sd 10.400. Measured: `central` on the five's best playvol gives 63.231 / 15.332; on the REST's best playvol, identical; half-weighted, 74.813 / 9.813; at a 50-point guard window instead of DHO_GUARD 25, 68.897 / 14.440; with `central` off altogether, 86.386 / 6.389 - which is this table's own PREVIOUS frozen row to 0.008, i.e. the one variant that does reproduce is the one from before the ruling. Five candidates measured, none within 2 points of 70.877. The row is now the measurement: mu 63.231, sd 15.332.",
+    "THE COST OF THE WRONG ROW WAS NOT COSMETIC, and this is the reusable lesson. An `sd` 1.47x too narrow makes one point of hand-off fit worth 1.47x what it is worth. That is why TWO CLIFF-CONTINUITY CASES were red (styleFit moving 24.83 points on one attribute point against a 17-point law, and the pnr z moving 34.26 against 34) and why the deviation tax law's PLAYSTYLE row read blind -1.56 against its -1.50 floor. Correcting the table took the failing-test count from 25 to 16 WITHOUT A SINGLE RE-POINT: nine of the 25 were the bad table, not the ruling.",
+    "THE PLAYSTYLE ROW IS GREEN AND NOT ONE CONSTANT WAS TUNED TO MAKE IT SO. It reads blind -1.34 / oracle +3.69 PASS, inside [-1.50, -0.30], with STYLE_SLOPE at his \"Revert to 0.20\". HIS 0.143 WAS NOT NEEDED AND IS NOT USED: it was the honest number for a row that was red, the row was red because of a mis-transcribed reference, and paying it would have cost a third of every tactic's worth to the scoreboard (mean |stylePts| 2.64 at 0.20 against 1.92 at 0.143) for headroom the board does not need. He has ruled on that constant twice in one day and the second ruling was to leave it; it is left. If a later round does want the headroom, the number is 0.143 = 0.25 x 8.56/15 and the file carries the derivation.",
+    "THE ONE RED HARNESS ROW IS THE RECAL DESK'S AND IS DELIBERATELY UNTOUCHED: `hunt` oracle +0.498 against the +0.50 floor, two thousandths, from their own hunt 3.68 -> 3.75 in pipeline 231. No constant in src/engine/tactics.ts that this round owns moves it, and re-pointing somebody else's law row would hide it. 8 of 9 rows PASS; tests/tactics.test.ts's deviation-tax case fails on that row and on nothing else, exactly as it does on main.",
+    "THE SUBJECT LANDS INSIDE HIS OWN LIST. The Thunder '25 read the hand-off hub at 81.99 on Hartenstein, a fine passing big who is 23 points of play volume behind Gilgeous-Alexander. With `central` the hub leg is a sliver and dho reads 51.23, TENTH of twelve; the winning read is HELIO at 77.72 - 'Can be pnr/helio/balanced/iso' - with pnr 67.91 and iso 69.16 both also in his list and both above the hand-off. Nothing else on the five moved by a thousandth, and their off/def dials are 70/61 before and after.",
+    "ISO'S RETURN NEEDED NO MEASUREMENT AND WAS CHECKED ANYWAY: its stored STYLE_REF row reproduces to 48.792 / 12.397 against the frozen 48.790 / 12.396, drift 0.002, so recal_226 retired the style without disturbing its reference and the row is left frozen. It goes back into its ORIGINAL SEAT, eighth, so bestStyle's strict `>` breaks ties exactly as it did before - iso cannot take a read from a style he has ruled on by drawing level with it.",
+    "THE BOARD MOVE IS DECOMPOSED RATHER THAN REPORTED AS ONE NUMBER, because two rulings landed together. Over the 1,255 wheel fives bestStyle moves on 330 - but 176 of those are the iso coming back (by construction: a new member of the argmax set), 175 are the hand-off change, and the two overlap on 21. ISO ALONE: pindown 193 -> 152, motion 191 -> 169, helio 119 -> 99, iso 176. HAND-OFF ALONE: dho 90 -> 189. THE FINISHED BOARD: dho 189, motion 162, iso 158, pindown 142, triangle 105, pickpop 103, postup 98, helio 87, pnr 82, fiveout 56, horns 40, balanced 33.",
+    "THE HAND-OFF'S SHARE GOING UP IS COUNTER-INTUITIVE AND THE MECHANISM IS ARITHMETIC, NOT A BUG: `central` cuts the raw fit on the many fives whose hub is not their creator and leaves the few whose hub IS alone, so the raw distribution's mean falls 23 points and its spread more than doubles (p50 85.7 -> 56.3, p90 95.5 -> 89.5, the ceiling mass 51 -> 37 fives). Standardising a distribution with a long LOWER tail lifts its upper tail: a five at raw 100 read z 81.99 against the old narrow reference and reads 85.97 against the new wide one WITH ITS RAW UNCHANGED. The fives that rise are exactly the right ones - Jokic, Sabonis, LeBron, Magic, Scottie Barnes - but the share is 15.1% of the board where it was 7.6%, and that is reported, not tuned.",
+    "THE CAMPAIGN LADDER CANNOT REORDER AND THAT IS STRUCTURAL, NOT MEASURED-LUCKY: src/data/opponents.json carries no style or tactics field at all (round, team, ab, season, champion, record, positions, players), the order is a function of the team dials, and no python, no src/engine/offense.ts, no rating and no card attribute moved. 7 of the 24 readable opening fives change the CAPTION a player sees - Pacers '26 pickpop -> iso, Nets '26 horns -> dho, Blazers '26 fiveout -> dho, Hawks '26 triangle -> dho, Raptors '26 motion -> dho, Lakers '26 dho -> horns, Spurs '26 dho -> iso - and every one of the 30 keeps its round number, its five and both dials.",
+    "226 ANCHORS, 0 FAILING, mean |error| 1.01 - main's own number, because not one data file is touched. npx tsc -b clean, npm run build clean, 547 of 548 tests pass with the single red being the recal desk's hunt row. 16 tests were re-pointed and every one carries a comment naming the ruling in his words; none deleted, none loosened, and three are STRONGER than what they replaced (the Raptors '25 and the Nuggets '25 now assert the RAW fit as well as the z, so the weights are held and not only the scale, and the Grizzlies '17 assert the hub NOMINATION beside the moved read)."
+  ],
+  "cost": [
+    "HIS THIRD RULING IS NOT ADDRESSED BY THIS ROUND, DELIBERATELY, AND THE MEASUREMENT SAYS WHY A FORMULA FIX WOULD BE WRONG. \"2020' clippers cant be pindown. They arent even a knockdown shooting team. They can do pnr (Lou will in Harrel out (a tactic/team fit can change the starting 5)), Balanced\". Three findings, all re-measured on this tree, so the next round starts from the reading instead of re-deriving it.",
+    "(1) A SPACING DRAG ON THE PIN-DOWN WOULD PUNISH THE WRONG TEAMS. By the engine's own cornerFit the Clippers '20 floor is BETTER spaced than the Pacers '96 - worst 41 / mean 59 against worst 34 / mean 51 on the z, worst 27 / mean 55 against worst 16 / mean 42 on the raw - and the Pacers are Reggie Miller's team, the pin-down archetype, which reads 87.39. So 'they aren't a knockdown shooting team' is not something a shooting term can be made to say about this five without taking the read off the five the set is named for.",
+    "(2) HIS OWN LINEUP CHANGE DOES MOVE THEM, AND NOT TO THE PICK-AND-ROLL. Swapping Lou Williams '20 in for Montrezl Harrell '20, exactly as he describes, takes the pin-down 82.17 -> 73.13 and from 1st to 4th. But the five then reads MOTION 85.03, with fiveout 80.03 and pickpop 73.34 ahead of the pin-down too; pnr reaches only 67.60 and balanced is 50.00 by construction. So his intuition that the pin-down is wrong for them IS reproduced, and his intuition about the destination is not.",
+    "(3) THE REAL CONTENT OF THAT RULING IS ARCHITECTURAL, AND IT IS A RULING HE HAS NOT MADE. `startingFive` picks one five and `bestStyle` then grades the twelve tactics on it, so the engine can never see that a team is a pick-and-roll team WITH A DIFFERENT LINEUP - his own parenthesis, 'a tactic/team fit can change the starting 5'. Making the tactic and the five chosen JOINTLY is a change to src/engine/bestfive.ts, not to src/engine/tactics.ts, and it would move every team's five and therefore every dial and the whole campaign ladder. It needs his word before anybody writes it.",
+    "THE ROUND'S OWN CLEAREST COST, MEASURED AND LEFT FOR HIS RULING: recal_213's pinned sentence 'no guard becomes a hub' goes from 0 of the 96 fives that READ the hand-off to 17 of 189 (1.4% of the board, up from 0%). The NOMINATION is unchanged - 48 short hubs on the wheel, exactly as recal_226 left it, because `central` prices the hub and never chooses him - but a POINT-GUARD hub is by definition his own five's best creator, so he pays nothing where every big whose guard runs the offence pays, and the widened reference then lets him win a five. The seventeen: Michael Ray Richardson '80/'81/'82, Jason Kidd '96/'06/'07/'08, Mark Jackson '97/'02, Andre Miller '01, Jose Calderon '12, Jeff Teague '14 and five more. THE FIX IS A SECOND HALF OF THE SET HE HAS NOT RULED ON (a height or bigness floor on the PRICE as well as on the nomination), so it is recorded in tests/tactics.test.ts beside the pinned rule and left for him.",
+    "FOUR PINNED READS MOVE AND ALL FOUR ARE RE-POINTED WITH THE RULING NAMED, NOT WIDENED: the Spurs '16 dho 73.27 -> pindown 65.45 (the FIFTH round running that his 'Motion, or balanced' is contradicted - their motion 55.51 and their bench's 90.73 are both byte-identical and the DECLINE is unchanged); the Grizzlies '17 dho 78.42 -> triangle 68.30 at the number the row already asserted; the Lakers '26 dho 81.99 -> horns 79.48 in tests/court.test.ts, where the ruling under test is about the SPOT and not the shape; the Knicks '02 pindown 65.11 -> dho 65.72, which is the guard-hub cost above. Two fives GAIN the read for the right reason - the Kings '24 fiveout 84.18 -> dho 85.97 on Sabonis and the Raptors '25 motion 71.78 -> dho 73.90 on Scottie Barnes, both with their RAW hand-off fit unmoved.",
+    "AND TWO READS ARE RESTORED TO RULINGS THAT HAD BEEN OVERRULED BY THE STYLE COMING OFF THE BOARD: Dantley's Jazz '81 and King's Knicks '84 both read ISOLATION outright again - 69.04 over the pin-down's 63.07, and 68.96 over 53.07 - for the first time since recal_223, which is recal_206's ruling and recal_208's '1) Yes.' and the test's own title finally agreeing with the board. Not one fit on either five moved by a thousandth; only bestStyle's permission to name the shape did.",
+    "STYLE_REF.dho's PREVIOUS VALUE IS SUPERSEDED: mu 86.378 / sd 6.388 (recal_226) -> 63.231 / 15.332. recal_226's receipt pins the old pair in a knob pattern and that line will now read MISS on its own round; that is the supersession working, not a break. The eleven other rows and all fourteen SPOT_REF terms are byte-identical to origin/main, so every other frozen-reference knob in every earlier round still matches.",
+    "PIPELINE_VERSION IS LEFT AT WHATEVER MAIN HAS (231 in src/data/pipeline.json) and this file says 230, per the shared rule that the integrator stamps the highest round in the batch and never lower than the current stamp. No regeneration was run and none is needed: `marg` cannot move, because nothing in data/ and nothing in src/engine/offense.ts was touched."
+  ]
+}

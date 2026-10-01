@@ -2479,20 +2479,39 @@ const comerFitRaw = (x: Attrs) =>
  * and dho 77.277/8.731 -> 86.378/6.388 (the hub is now a BIG rather than the floor's best passer, and
  * a big scores the hub term far higher, so the whole style shifts up nine points of raw). The other
  * nine reproduced unchanged. THIS ORDER IS NOT OPTIONAL: when the scratch tree removed primacy without
- * re-measuring, hand-off read 43% of the board against the 7% it reads here. */
+ * re-measuring, hand-off read 43% of the board against the 7% it reads here.
+ *   RE-MEASURED A THIRD TIME FOR recal_230, in the same order, and THE ORDER CAUGHT A WRONG TABLE. His
+ * ruling "25' Thunder cant be hoh(hand of hub)" moves one style's formula and one only, so exactly one
+ * row may move. SPOT_REF first: it reproduces to the thousandth on all fourteen terms for the third
+ * time (worst drift 0.0005, measured family-pooled over all 10,000 cards, since the roll/pop handlers
+ * and the two screeners share a ruler). Then every style through `styleFitRaw` over the 1,255 wheel
+ * fives: ELEVEN ROWS REPRODUCE THE FROZEN VALUES ABOVE TO WITHIN 0.03 and are therefore LEFT EXACTLY
+ * AS THEY WERE — that is what frozen means, and re-stamping them with a regeneration's noise is the
+ * float this block's own opening paragraph forbids. ONLY `dho` MOVES: mu 86.378 -> 63.231, sd 6.388 ->
+ * 15.332, because `central` cuts the hub leg on every five whose hub is not its own best creator, which
+ * drops the mean 23 points and more than doubles the spread.
+ *   THE FIRST PASS OF THAT ROUND STAMPED mu 70.877 / sd 10.400 HERE AND IT REPRODUCES NO FORM OF THE
+ * SHIPPED FORMULA — not `central` on the five's best playvol (63.231/15.332), not on the rest's
+ * (identical), not half-weighted (74.813/9.813), not at a wider guard window (68.897/14.440 at 50
+ * inches of play volume), not with `central` off at all (86.386/6.389, which is this table's own frozen
+ * row to 0.008). It stamped the other eleven rows too, with drifts of up to 0.168. The cost of the
+ * wrong row was not cosmetic: an `sd` 1.47x too narrow made one point of hand-off fit worth 1.47x what
+ * it is worth, which failed the two CLIFF-CONTINUITY cases in tests/tactics.test.ts and put the
+ * deviation tax law's PLAYSTYLE row at -1.56, RED, where the corrected table reads -1.34, PASS. A
+ * FROZEN REFERENCE IS A MEASUREMENT AND MUST BE TAKEN, NEVER TRANSCRIBED. */
 export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   balanced: { mu: 60.000, sd: 0.000 },
-  fiveout: { mu: 37.421, sd: 14.819 },
-  pnr: { mu: 66.765, sd: 5.354 },
-  motion: { mu: 55.687, sd: 6.750 },
-  postup: { mu: 65.335, sd: 10.529 },
-  helio: { mu: 65.199, sd: 7.691 },
-  triangle: { mu: 50.304, sd: 8.632 },
-  pickpop: { mu: 61.251, sd: 6.938 },
-  iso: { mu: 48.793, sd: 12.393 },
-  horns: { mu: 79.717, sd: 5.277 },
-  pindown: { mu: 57.389, sd: 5.415 },
-  dho: { mu: 70.877, sd: 10.400 },
+  fiveout: { mu: 37.419, sd: 14.805 },
+  pnr: { mu: 66.741, sd: 5.424 },
+  motion: { mu: 55.685, sd: 6.758 },
+  postup: { mu: 65.178, sd: 11.155 },
+  helio: { mu: 65.195, sd: 7.696 },
+  triangle: { mu: 50.314, sd: 8.676 },
+  pickpop: { mu: 61.241, sd: 6.934 },
+  iso: { mu: 48.790, sd: 12.396 },
+  horns: { mu: 79.708, sd: 5.275 },
+  pindown: { mu: 57.382, sd: 5.420 },
+  dho: { mu: 63.231, sd: 15.332 },
 }
 export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
   const raw = styleFitRaw(style, five, theirs, call)

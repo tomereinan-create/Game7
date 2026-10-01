@@ -192,7 +192,13 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     // shape: whatever the five is read as, the man who cannot shoot stands inside and never in a
     // corner, and the second half of this case asserts it in every shape. MOVED READ, reported in
     // data/rounds/226.json.
-    expect(inferredStyle(LAKERS)!.style).toBe('dho')
+    //   recal_230 MOVES IT ONE MORE STEP, to HORNS, and the cause is his ruling "25' Thunder cant be
+    // hoh(hand of hub)": the hand-off's hub leg is now multiplied by `central`, how close the hub is
+    // to being the five's own best creator. James '26 IS the hub by `hubScore`, but Dončić '26 creates
+    // more, so the Lakers pay for the gap and dho reads 81.99 -> 78.31, a shade under horns at 79.48
+    // (helio 79.01, pindown 74.44 — all three byte-identical). The RULING under test is unchanged and
+    // is still about the SPOT, not the shape. MOVED READ, reported in data/rounds/230.json.
+    expect(inferredStyle(LAKERS)!.style).toBe('horns')
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
