@@ -979,14 +979,17 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
     // call is worth +0.65 rather than a charge. The pin this line carries — that calling the triangle
     // on a one-reader five is worth far less than calling it on a three-reader one — is asserted as
     // the GAP instead, which is the quantity the deviation tax law is actually about.
-    // ...AND recal_226's SECOND PASS RE-FITS THE UNIT, his ruling of 2026-09-30 on `stylePts`'s slope:
-    // 0.25 -> STYLE_SLOPE 0.20, so the SAME 40.02 points of fit between these two fives now price
-    // 8.00 points of margin where they priced 9.36. Re-pointed to the new unit and TIED TO THE
-    // CONSTANT rather than to a number, so this bound can only move again when the slope does.
+    // ...AND THE UNIT HAS BEEN RE-FIT TWICE. recal_226 took `stylePts`'s slope 0.25 -> 0.20, and
+    // recal_230 took it to STYLE_SLOPE 0.143 on his ruling "Fix the playstyle row, use 0.143" — the
+    // deviation tax law's PLAYSTYLE row reads blind -1.30 against its -1.50 floor at that slope and
+    // PASSES for the first time since the relativising. What this line pins is the FIT GAP between a
+    // three-reader five and a one-reader one, so the floor is stated in fit and converted by the
+    // constant: a bare margin number would have to be re-fitted every time the slope moves, which is
+    // how it came to read 7.9 against a gap the slope had already made 5.72.
     const gap =
       stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97) -
       stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)
-    expect(gap).toBeGreaterThan(7.9)
+    expect(gap).toBeGreaterThan(STYLE_SLOPE * 39)
     expect(gap).toBeCloseTo(STYLE_SLOPE * (styleFit('triangle', BULLS_97) - styleFit('triangle', LAKERS_00)), 6)
   })
 })

@@ -998,11 +998,17 @@ export const Z_SPREAD = 15
  * style the SAME spread by construction (Z_SPREAD 15), so the same slope prices a blind call 2-3x
  * harder on the narrow styles and the deviation tax law's PLAYSTYLE row went RED at its -1.50 floor
  * with a blind read of -1.77, while 29 of the 1,255 wheel fives sat pinned on the +-10 clamp —
- * flattening precisely the teams the fit exists to separate. 0.143 would restore the old blind cost
- * exactly; HIS CHOICE IS 0.20, because it keeps more of the payout scale (mean |pts| 2.38 against the
- * old scale's 3.32, where 0.143 pays 1.60) and still brings the blind cost back inside the floor.
+ * flattening precisely the teams the fit exists to separate.
+ *
+ * HIS RULING 2026-10-01: "Fix the playstyle row, use 0.143." recal_226 shipped 0.20 for the payout
+ * scale and reported the deviation tax law's PLAYSTYLE row still RED by 0.17 - blind -1.67 against
+ * the -1.50 floor - rather than tuning until it passed. He has now chosen the law over the scale.
+ * 0.143 is not a fitted number: it is 0.25 x 8.56/15, the old slope times the ratio of the old mean
+ * per-style spread to the single spread of 15 that standardising gives every style, so a blind call
+ * costs exactly what it cost before the relativising. The price he accepted is the payout: a five
+ * playing its own best style is paid less than it was, and that is the law's cost, not a defect.
  */
-export const STYLE_SLOPE = 0.2
+export const STYLE_SLOPE = 0.143
 /** How far above the league's middle he is at that job. */
 export const rel = (term: string, raw: number): number => {
   const r = SPOT_REF[term]
