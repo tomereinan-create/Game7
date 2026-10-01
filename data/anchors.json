@@ -2135,5 +2135,23 @@
   "round": 228,
   "ruling": "Karl Malone and Adrian Dantley shouldn't raise.",
   "note": "THE RULING'S SECOND NAME, and the largest unpinned rise recal_227's own receipt flagged to watch. 30.7 points on .626 true shooting, 42.7 mpg: volume 94 / efficiency 99, signature 93.06, fifth on the board. Zones 99 / 87 / 12 — no third level at all — so the same third-level gate closes on him and he returns to 97 exactly. o_score 107.6174, raw 100.0842. His '80 (95) and '82 (98) restore with him on the same condition, and so do Karl Malone '92 (96) and '98 (94)."
+ },
+ {
+  "card": "Jason Kidd '01",
+  "scale": "ovr",
+  "target": 81,
+  "tol": 1,
+  "round": 231,
+  "ruling": "Push D",
+  "note": "THE PERIMETER OVR CLAMP BIT ONLY THE TWO-WAY GUARD. recal_3's cap max(o_ovr + 10, 0.85 x d_ovr) was written for the STOPPER and on that class it is not the fence at all - Bruce Bowen '06 (OFF 45 / DEF 93) has a floor of 79.05 against the BLEND of 69.00 he actually prints, so recal_104's blend is what holds him down and no loosening of a cap can ever lift a card past its own blend. MEASURED on the 228 pool: 43 cards of 10,000 are cap-bound, 24 of them in OFF 60-69, mean gap 0.86, and all eight largest gaps are two-way guards (the dispatch's 63 / 28 / 0.80 does not reproduce under any of four readings of 'bound' and is corrected). This All-NBA 1st-team season (OFF 69 / DEF 94) blends to 81.50 and printed 79, and the BINDING half was the FLOOR 0.85 x 94 = 79.90 and not the gate 79 - the same finding recal_93 recorded for Kawhi '14, so the same half is loosened and the gate is left exactly as it was (recal_93 measured and rejected the gate-side forms o_ovr + 15 and o_ovr + 10 + k*(d - o) because they rewrite the half of recal_3 that was not the cause; the dispatch's 'widen the +10 gap with DEF above 90' is that rejected family). THE FIX: the floor now RAMPS from 0.85 x d_ovr to recal_104's blend ITSELF as OFF rises over OFF_FLOOR_LO 60 -> OFF_FLOOR_HI 66 - 60 is his own lower knee, verbatim, and 66 is MEASURED where the ruling left an example ('-> 75'), being the median o_ovr of the 82 perimeter starters in the 30 opening campaign fives (mean 66.4), the 70th percentile of all 5,423 perimeter cards, and the bottom of the 'OFF 66-72' band the ruling names as the biting shape. At the top of the ramp the floor equals the blend, so the card is simply not clipped. max(0.0, raw - _floor) makes it a one-way valve, so like recal_93 and recal_99 it can only move a card UP. OVR 79 -> 81, and he goes 15th of 2001 to 9th, passing Eddie Jones '01 (80, who does not move a point) and level with Paul Pierce '01 (81). 15 cards move on OVR, every one UP, max +2; ZERO bigs move; OFF, DEF, all 22 attributes, talent and marg move on ZERO cards, and the top 12 by OVR is identical. Bowen '06 69, Thybulle '21 55 and Roberson '17 60 are held BY CONSTRUCTION - their floors sit 10.05, 19.80 and 17.00 points ABOVE the blends they print, so no choice of knee could have moved them."
+ },
+ {
+  "card": "Jrue Holiday '21",
+  "scale": "ovr",
+  "target": 81,
+  "tol": 1,
+  "round": 231,
+  "ruling": "Push D",
+  "note": "THE LARGEST CAP GAP ON THE BOARD, and the second subject of the same ruling. OFF 69 / DEF 93 blends to 81.00 and printed 79, clipped by 1.95 with the floor 79.05 sitting one tenth of a point over the gate 79 - the clamp was deciding his card by a tenth. His offence is three points over the measured starter knee of 66, so the ramp is whole, the floor equals the blend and he is not clipped. His DEF pin (92 +-1) is byte-identical at 93 and is NOT the subject: this round writes one expression that reads o_ovr and d_ovr and produces ovr, so OFF and DEF move on zero cards by construction. His neighbouring season '20 (OFF 66 / DEF 90), sitting exactly ON the knee, rises 76 -> 78 with him. OVR 79 -> 81."
  }
 ]

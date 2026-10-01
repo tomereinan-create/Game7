@@ -1,0 +1,390 @@
+{
+ "round": 231,
+ "agent": "ratings-to-off-def",
+ "status": "done",
+ "ruling": "Push D",
+ "title": "the OVR offence clamp was written for the STOPPER and only ever bit the TWO-WAY GUARD: recal_3's elite-defence floor now RAMPS from 0.85 x DEF to recal_104's blend as the offence rises from 60 to 66, the measured OFF of a perimeter starter on this board, so a man with no offence is fenced exactly as before and a man whose offence is already a starter's is not clipped at all",
+ "subject": "Jason Kidd '01",
+ "scale": "ovr",
+ "target": 81,
+ "tol": 1,
+ "before": 79,
+ "after": 81,
+ "pipeline_version": 231,
+ "knobs": [
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "OFF_FLOOR_LO, OFF_FLOOR_HI = 60, 66",
+   "label": "THE ROUND'S WHOLE CHANGE — the two knees of the elite-defence floor's ramp",
+   "note": "60 is HIS OWN lower knee, verbatim from the ruling ('the 0.85 x DEF floor ramps toward the blend as OFF rises over 60'). 66 is MEASURED where the ruling left an example ('-> 75'): the median o_ovr of the 82 perimeter starters in the 30 opening fives of the campaign ladder (mean 66.4), the 70th percentile of all 5,423 perimeter cards, and the bottom of the 'OFF 66-72' band the ruling itself names as the biting shape. At 75 the three subjects read 80/80/79 — inside tolerance but one under every target"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_floor \\+= _ramp \\* max\\(0\\.0, raw - _floor\\)",
+   "label": "the ramp is a ONE-WAY VALVE — it can only raise the floor toward the blend, never below 0.85 x d_ovr",
+   "note": "`max(0.0, ...)` is load-bearing, not decoration. Without it a card whose blend sits BELOW 0.85 x d_ovr would have its floor pulled DOWN toward the blend, and because `ovr = int(min(cap, round(raw)))` truncates, a card with raw 70.6 and floor 70.7 would print 70 where it printed 71. With it the change is monotone and, like every earlier loosening of this clamp (recal_93, recal_99), can only ever move a card UP: all 15 movers are up"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "_ramp = min\\(1\\.0, max\\(0\\.0, \\(p\\['o_ovr'\\] - OFF_FLOOR_LO\\) / \\(OFF_FLOOR_HI - OFF_FLOOR_LO\\)\\)\\)",
+   "label": "the ramp reads o_ovr — the card's OWN offence, which is the quantity the ruling names",
+   "note": "'a two-way guard whose OFF is already a starter's is not clipped'. It is a RAMP and not a step, the rule every gate in this file follows (recal_93, 99, 136, 137, 154, 164, 198, 227): at OFF 62 Jason Kidd '97 gets a third of the relief, at 63 Eddie Jones '97 gets a half, at 66 and above the relief is whole"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "cap = max\\(p\\['o_ovr'\\] \\+ \\(40 if is_big\\(p\\) else 10\\), _floor\\)",
+   "label": "recal_3's OFFENCE GATE IS UNTOUCHED — +10 perimeter, +40 big, exactly as recal_99 left it",
+   "note": "measured, not assumed: for all three subjects the BINDING half is the FLOOR and not the gate (Kidd '01 floor 79.90 against gate 79, Jrue '21 79.05 against 79, Kidd '00 79.05 against 78), so this round loosens the same half recal_93 loosened. recal_93 measured and REJECTED both gate-side forms (`o_ovr + 15`, `o_ovr + 10 + k*(d - o)`) because they rewrite 'the half of recal 3 that was NOT the cause'; the dispatch's alternative suggestion — widening the +10 gap with DEF above 90 — is that rejected family and is not taken"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "raw = max\\(0\\.5 \\* p\\['o_ovr'\\] \\+ 0\\.5 \\* p\\['d_ovr'\\], 0\\.70 \\* p\\['o_ovr'\\] \\+ 0\\.30 \\* p\\['d_ovr'\\]\\)",
+   "label": "recal_83/85/104's blend IS the whole of OVR and is byte-identical — the round changes only what may clip it",
+   "note": "the ceiling the ramp runs to is the blend itself, so no card can print above it: `ovr = int(min(99, cap, round(raw)))` is unchanged and a looser cap can never lift a card past its own blend. THAT is why the stopper class is fenced BY CONSTRUCTION"
+  },
+  {
+   "file": "data/compute_ovr.py",
+   "pattern": "KNEE, OFF_TOP, DEF_TOP = 93\\.0, 102\\.75, 104\\.25",
+   "label": "the band anchors are NOT re-derived and NOT touched (recal_90's cost does not apply)",
+   "note": "this clamp sits DOWNSTREAM of o_ovr and d_ovr, after both bands are already computed, so no card above the knee is re-mapped and no raw distribution moves. OFF and DEF move on ZERO cards"
+  }
+ ],
+ "expect": [
+  {
+   "card": "Jason Kidd '01",
+   "scale": "ovr",
+   "op": "~",
+   "value": 81,
+   "tol": 1,
+   "label": "THE RULING'S FIRST NAME, and the second-largest cap gap on the board. All-NBA 1st team; OFF 69 / DEF 94 blends to 81.50 and printed 79, clipped by 2.10. The binding half was the FLOOR, 0.85 x 94 = 79.90, not the gate (79). Ramp whole at OFF 69, floor = the blend. He goes from 15th of 2001 — behind Eddie Jones '01 80, level with Rasheed Wallace '01 79 — to 9th, level with Paul Pierce '01. 79 -> 81"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "ovr",
+   "op": "~",
+   "value": 81,
+   "tol": 1,
+   "label": "THE RULING'S SECOND NAME, the LARGEST gap on the board. OFF 69 / DEF 93 blends to 81.00 and printed 79, clipped by 1.95 with the floor 79.05 a tenth over the gate 79. His DEF 92 +-1 pin is NOT the subject and is byte-identical at 93. 79 -> 81"
+  },
+  {
+   "card": "Jason Kidd '00",
+   "scale": "ovr",
+   "op": "~",
+   "value": 80,
+   "tol": 1,
+   "label": "THE RULING'S THIRD NAME. OFF 68 / DEF 93 blends to 80.50 against a floor of 79.05 and a gate of 78. 79 -> 80"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "ovr",
+   "op": "==",
+   "value": 69,
+   "label": "THE CLASS THE CLAMP WAS WRITTEN FOR, HELD — and the measurement that shows the clamp is not what holds him. OFF 45 / DEF 93: his floor is 79.05 against a BLEND of 69.00, so he was never cap-bound at all; recal_104's blend is the fence. His ramp is 0.0000 (OFF 45 is fifteen under the lower knee) and, more deeply, `max(0.0, raw - _floor)` is zero because his blend is ten BELOW his floor — no choice of knee could have moved him. 69, byte-identical"
+  },
+  {
+   "card": "Bruce Bowen '06",
+   "scale": "off",
+   "op": "==",
+   "value": 45,
+   "label": "his OFF pin, byte-identical — OFF moves on ZERO cards this round, by construction"
+  },
+  {
+   "card": "Matisse Thybulle '21",
+   "scale": "ovr",
+   "op": "==",
+   "value": 55,
+   "label": "the purest stopper on the board, HELD. OFF 22 / DEF 88: floor 74.80 against a blend of 55.00, ramp 0.0000, nineteen points of clear air between the floor and the number he prints. 55, byte-identical"
+  },
+  {
+   "card": "Andre Roberson '17",
+   "scale": "ovr",
+   "op": "==",
+   "value": 60,
+   "label": "the third named stopper, HELD. OFF 29 / DEF 90: floor 76.50 against a blend of 59.50, ramp 0.0000. 60, byte-identical"
+  },
+  {
+   "card": "Kawhi Leonard '14",
+   "scale": "ovr",
+   "op": "~",
+   "value": 80,
+   "tol": 2,
+   "label": "recal_93's OWN SUBJECT AND PIN, HELD BYTE-IDENTICAL — and the reason is the valve. His OFF 65 puts his ramp at 0.8333, but his floor 0.85 x 97 = 82.45 is ABOVE his blend of 81.00, so `max(0.0, raw - _floor)` is zero and the ramp pays him nothing. He is BLEND-bound, not cap-bound, and the round that was built on him cannot be re-opened by this one. 81"
+  },
+  {
+   "card": "Kawhi Leonard '15",
+   "scale": "ovr",
+   "op": "==",
+   "value": 87,
+   "label": "THE CARD TRUNCATION HOLDS STILL. Blend 87.50, floor 83.30 -> 87.50 on a whole ramp, gate 87: his cap goes 87.00 -> 87.50 and `int(min(87.5, 88))` is 87 either way. He was cap-bound by 1.00 and is released, and he does not move a point. 87, byte-identical"
+  },
+  {
+   "card": "Josh Hart '25",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "recal_155's pin, HELD. His cap was never the fence and its own receipt says so ('THE CAP IS NOT THE FENCE'): gate 74 against a blend of 62.80. He is the one card where the ramp LOWERS the floor term (51.00 -> 58.87, because his blend is below it) and it changes nothing, because the gate is the max. 63, byte-identical"
+  },
+  {
+   "card": "Dennis Rodman '96",
+   "scale": "ovr",
+   "op": "~",
+   "value": 63,
+   "tol": 3,
+   "label": "recal_182's pin, HELD. A big: gate 42 + 40 = 82 against a blend of 65.50, and his own receipt records 'the big cap (o_ovr + 40) was never binding'. Ramp 0.0000 at OFF 42. ZERO bigs move this round. 66, byte-identical"
+  },
+  {
+   "card": "Jason Kidd '99",
+   "scale": "off",
+   "op": "~",
+   "value": 74,
+   "tol": 3,
+   "label": "THE PIN THE DISPATCH SAYS MUST NOT MOVE, and it cannot: this clamp is downstream of o_ovr. 71, byte-identical"
+  },
+  {
+   "card": "Jason Kidd '02",
+   "scale": "off",
+   "op": "~",
+   "value": 75,
+   "tol": 3,
+   "label": "the same, byte-identical at 72 — his OVR rises 82 -> 83 and his OFF does not move a point"
+  },
+  {
+   "card": "Jrue Holiday '21",
+   "scale": "def",
+   "op": "~",
+   "value": 92,
+   "tol": 1,
+   "label": "his DEF pin, byte-identical at 93 — DEF moves on ZERO cards this round, by construction"
+  },
+  {
+   "card": "Scottie Pippen '98",
+   "scale": "ovr",
+   "op": "==",
+   "value": 82,
+   "label": "THE LARGEST UNNAMED MOVER, and the same shape as the three subjects. OFF 69 / DEF 96 blends to 82.50 against a floor of 81.60. 81 -> 82"
+  },
+  {
+   "card": "Jrue Holiday '20",
+   "scale": "ovr",
+   "op": "==",
+   "value": 78,
+   "label": "the subject's own neighbouring season, sitting exactly ON the measured knee: OFF 66, ramp 1.0000 at the first point it reaches whole. Blend 78.00, floor 76.50. 76 -> 78"
+  },
+  {
+   "card": "Jason Kidd '97",
+   "scale": "ovr",
+   "op": "==",
+   "value": 74,
+   "label": "THE RAMP'S MIDDLE, printed rather than asserted: OFF 62, ramp 0.3333, floor 73.95 -> 74.13 against a blend of 74.50. A third of the relief, and it is enough for one point. 73 -> 74"
+  },
+  {
+   "card": "Eddie Jones '97",
+   "scale": "ovr",
+   "op": "==",
+   "value": 74,
+   "label": "the other partial card: OFF 63, ramp 0.5000, floor 73.95 -> 74.47 against a blend of 75.00. 73 -> 74"
+  },
+  {
+   "card": "Eddie Jones '01",
+   "scale": "ovr",
+   "op": "==",
+   "value": 80,
+   "label": "THE CARD THE DISPATCH NAMES AS THE DEFECT'S WITNESS — the man Jason Kidd '01 was ranked behind — and he does not move. OFF 75 / DEF 86: his gate is 85, twelve over his floor, so he was never cap-bound. 80, byte-identical, and Kidd now reads over him"
+  },
+  {
+   "card": "Rasheed Wallace '01",
+   "scale": "ovr",
+   "op": "==",
+   "value": 79,
+   "label": "the card Kidd '01 was level with, HELD. A big: gate 114. 79, byte-identical"
+  },
+  {
+   "card": "Michael Jordan '89",
+   "scale": "ovr",
+   "op": "==",
+   "value": 99,
+   "label": "the summit, untouched — the top 12 by OVR is identical name-for-name and point-for-point"
+  },
+  {
+   "card": "Ben Wallace '07",
+   "scale": "ovr",
+   "op": "==",
+   "value": 69,
+   "label": "recal_99's OWN SUBJECT, the big-branch sibling, HELD. OFF 41 / DEF 97: the big gate is 81 and the floor 82.45, against a blend of 69.00 — he is blend-bound, like every card recal_99 lifted, and his ramp is 0.0000 besides. 69, byte-identical"
+  },
+  {
+   "card": "Shai Gilgeous-Alexander '25",
+   "scale": "ovr",
+   "op": "==",
+   "value": 91,
+   "label": "a star who should not have moved, and did not: OFF 98 / DEF 74, offence-led blend, nothing near this clamp. 91"
+  },
+  {
+   "card": "Draymond Green '16",
+   "scale": "ovr",
+   "op": "==",
+   "value": 78,
+   "label": "the other famous two-way defender, a big by this file's reckoning (gate 59 + 40 = 99) and therefore never in the floor's reach. 78, byte-identical"
+  }
+ ],
+ "order": [
+  {
+   "scale": "ovr",
+   "above": "Jason Kidd '01",
+   "below": "Eddie Jones '01",
+   "label": "THE RULING, AS AN ORDER. The defect the dispatch names was that the All-NBA 1st-team two-way guard read UNDER Eddie Jones '01; he now reads over him, 81 to 80, and Jones himself did not move a point"
+  },
+  {
+   "scale": "ovr",
+   "above": "Jason Kidd '01",
+   "below": "Rasheed Wallace '01",
+   "label": "and over the card he was level with, 81 to 79"
+  },
+  {
+   "scale": "ovr",
+   "above": "Jason Kidd '01",
+   "below": "Bruce Bowen '06",
+   "label": "THE WHOLE POINT OF THE ROUND, as an order: the two-way guard (OFF 69) over the no-offence stopper (OFF 45) with the SAME DEF neighbourhood, 81 to 69, and the gap WIDENS by two because only one of them was ever clipped"
+  },
+  {
+   "scale": "ovr",
+   "above": "Jrue Holiday '21",
+   "below": "Matisse Thybulle '21",
+   "label": "the same contrast inside one season and one franchise's defensive scheme: 81 to 55"
+  },
+  {
+   "scale": "ovr",
+   "above": "Jason Kidd '02",
+   "below": "Jason Kidd '01",
+   "label": "the Kidd seasons keep their own order — '02 (OFF 72 / DEF 95) over '01 (OFF 69 / DEF 94), 83 to 81. Both released, neither inverted"
+  },
+  {
+   "scale": "ovr",
+   "above": "Kawhi Leonard '15",
+   "below": "Jason Kidd '02",
+   "label": "recal_93's card still reads over the round's biggest release, 87 to 83"
+  }
+ ],
+ "movers": {
+  "scale": "ovr",
+  "count": 15,
+  "max_abs": 2,
+  "top": [
+   [
+    "Jrue Holiday '21",
+    79,
+    81
+   ],
+   [
+    "Jason Kidd '01",
+    79,
+    81
+   ],
+   [
+    "Jrue Holiday '20",
+    76,
+    78
+   ],
+   [
+    "Jason Kidd '02",
+    82,
+    83
+   ],
+   [
+    "Jason Kidd '07",
+    82,
+    83
+   ],
+   [
+    "Scottie Pippen '98",
+    81,
+    82
+   ],
+   [
+    "Jason Kidd '99",
+    81,
+    82
+   ],
+   [
+    "Jason Kidd '00",
+    79,
+    80
+   ],
+   [
+    "Metta World Peace '07",
+    79,
+    80
+   ],
+   [
+    "Metta World Peace '08",
+    79,
+    80
+   ],
+   [
+    "Dennis Johnson '82",
+    77,
+    78
+   ],
+   [
+    "Eddie Jones '98",
+    76,
+    77
+   ],
+   [
+    "Dennis Johnson '80",
+    76,
+    77
+   ],
+   [
+    "Jason Kidd '97",
+    73,
+    74
+   ],
+   [
+    "Eddie Jones '97",
+    73,
+    74
+   ]
+  ]
+ },
+ "top12": {
+  "scale": "ovr",
+  "cards": [
+   "Michael Jordan '89",
+   "Giannis Antetokounmpo '19",
+   "Giannis Antetokounmpo '20",
+   "LeBron James '12",
+   "LeBron James '13",
+   "Michael Jordan '88",
+   "Michael Jordan '90",
+   "Michael Jordan '91",
+   "Giannis Antetokounmpo '22",
+   "LeBron James '09",
+   "LeBron James '10",
+   "Giannis Antetokounmpo '21"
+  ]
+ },
+ "cost": [
+  "THE DISPATCH'S OWN FIGURE IS CORRECTED, NOT COPIED. It reads '63 of the cap-bound cards, 28 in OFF 60-69, mean gap 0.80'. Re-measured on the shipped 228 pool under four readings of 'bound': `cap < round(blend)` gives 43 cards / 24 in OFF 60-69 / mean gap 0.86 / max 2; the unrounded `cap < blend` gives 50 / 26; `int(cap) < round(blend)` gives 43 / 24; `cap <= round(blend)` gives 96 / 35. None of them is 63/28/0.80. The CONCLUSION the figure was offered for survives intact and is stronger than reported — the bite is concentrated in OFF 60-69 (24 of 43) and every one of the eight largest gaps is a perimeter guard — but a later round should use 43 and 0.86.",
+  "THE CLAMP STILL BINDS ON 33 CARDS, down from 43. Eighteen of them sit in OFF 50-59 and fifteen at OFF 60-65 on partial relief. Nothing at OFF 66 or above is clipped by the elite-defence floor any more, by construction: at the upper knee the floor IS the blend. A later ruling that wants to clip a perimeter card whose OFF is 66 or better must move the GATE (o_ovr + 10) or the blend, not this floor.",
+  "THE STOPPER CLASS IS NOW FENCED BY THE BLEND ALONE, AND THAT IS WORTH STATING FLAT because the ruling asks the clamp to keep fencing it. It never did. Bruce Bowen '06's floor is 79.05 against a blend of 69.00, Matisse Thybulle '21's 74.80 against 55.00, Andre Roberson '17's 76.50 against 59.50 — recal_104's `max(0.5o + 0.5d, 0.7o + 0.3d)` is the whole of what holds them down, and because `ovr = int(min(99, cap, round(raw)))` no loosening of a cap can ever lift a card above its own blend. The three named cards are held by CONSTRUCTION and no choice of knee could have moved them. The corollary is the warning: if a later round ever wants a no-offence stopper to read lower, this clamp is not the knob — the 0.5/0.5 weight is.",
+  "OFF_FLOOR_HI 66 IS DERIVED FROM THE CAMPAIGN LADDER, WHICH IS DOWNSTREAM OF OVR — and the circularity was checked, not waved past. `npm run opponents` after the change leaves src/data/opponents.json with ZERO changed lines (`git diff --numstat` reports it not at all) and all 150 campaign levels in the same order with the same rosters and the same team:off / team:def dials, so the 82 perimeter starters the constant is measured on are the same 82 and their o_ovr (which this round cannot move) is unchanged. Two independent reads agree on the number anyway: the ladder median is 66.0 (mean 66.4) and 66 is the 70th percentile of all 5,423 perimeter cards. A later round that re-derives it should re-measure both.",
+  "THE BAND ANCHORS ARE NOT RE-DERIVED AND recal_90's COST DOES NOT APPLY. This clamp runs after o_ovr and d_ovr are final, so no raw distribution moves, no card above the KNEE of 93 is re-mapped, and OFF_TOP / DEF_TOP (102.75 / 104.25) are untouched. OFF, DEF, every one of the 22 attributes, `talent`, `big`, `is_big` and `marg` move on ZERO of the 10,000 cards. 15 cards move, on OVR only, and every one moves UP.",
+  "ELEVEN CARDS RISE THAT THE RULING DOES NOT NAME, and they are one shape: the two-way perimeter defender whose offence is a starter's. Scottie Pippen '98 81 -> 82, Jason Kidd '97/'99/'02/'07, Jrue Holiday '20, Metta World Peace '07/'08, Eddie Jones '97/'98, Dennis Johnson '80/'82. That is the class the ruling describes ('the OFF 66-72 / DEF 90-95 guard is the only shape it bites'), so the generality is the point and not a side effect — but none of the eleven carries an OVR pin, and if he wants any of them back the knob is OFF_FLOOR_HI.",
+  "THREE CAMPAIGN LEVELS RE-PRINT A NUMBER AND NONE REORDERS. Chicago Bulls '98 (level 23 of The Champions, Pippen 81 -> 82), Milwaukee Bucks '21 (level 51, Jrue 79 -> 81) and All-time Kings (All-Time level 4, World Peace 79 -> 80). In all three the roster is the same five men, the team:off and team:def dials are byte-identical, and every level's `net` is unchanged — so no tier reorders and no round of the ladder changes difficulty. The other 147 levels are byte-identical."
+ ],
+ "notes": [
+  "HIS RULING, verbatim: \"Push D\" — scout group D, 2026-10-01, whose brief is that the perimeter OVR offence cap bites only the two-way guard, with Jason Kidd '01 79 -> 81 +-1, Jrue Holiday '21 79 -> 81 +-1 and Jason Kidd '00 79 -> 80 +-1 as its subjects, and Bruce Bowen '06 / Matisse Thybulle / Andre Roberson as the class that must not rise.",
+  "WHAT THE CLAMP IS, AND THE DEFECT. recal_3 wrote `cap = max(o_ovr + 10, 0.80 x d_ovr)` on a plain thought: a defence-first perimeter player stops ONE man, so his offence should gate his ceiling, with an elite-defence floor underneath so a genuine stopper is not buried. recal_93 raised the floor to 0.85 for Kawhi Leonard '14 and recal_99 gave the big branch the same floor under a +40 gate. What none of the three rounds measured is WHO the clamp actually reaches. The answer, measured on the shipped 228 pool: 43 cards of 10,000 are cap-bound, 24 of them in OFF 60-69, and the eight largest gaps on the whole board are Jason Kidd '01 (2.10), Jason Kidd '02 (2.00), Eddie Jones '98 (2.00), Dennis Johnson '80 (2.00), Jrue Holiday '21 (1.95), Jrue Holiday '20 (1.50), Eddie Jones '97 (1.05) and a run of 1.00s. Every one is a two-way guard. The STOPPER — the class the clamp was written for — is not in the list at all, and cannot be: Bruce Bowen '06's floor of 79.05 sits TEN POINTS ABOVE the blend of 69.00 that he actually prints.",
+  "WHICH HALF WAS BINDING, MEASURED BEFORE ANYTHING WAS WRITTEN — the discipline recal_93 set on this exact line. For Jason Kidd '01 the floor is 0.85 x 94 = 79.90 against a gate of 79; for Jrue Holiday '21, 79.05 against 79; for Jason Kidd '00, 79.05 against 78. The FLOOR decides all three, which is the same finding recal_93 recorded for Kawhi '14 ('the binding term is NOT o_ovr + 10 (75) but the elite-defence FLOOR'). So the round loosens the floor and leaves the gate exactly as it was.",
+  "AND THE GATE-SIDE ALTERNATIVE IS NOT MEASURED AGAIN, BECAUSE recal_93 ALREADY REFUTED IT. The dispatch offers two shapes: ramp the floor, or 'the +10 gap widens with DEF above 90'. The second is verbatim the family recal_93 rejected — `o_ovr + 15` (613 cards move) and `o_ovr + 10 + 0.17*(d - o)` (584 cards) — on the ground that each 'rewrites the half of recal 3 that was NOT the cause, the offence gate, for every perimeter card on the board'. A DEF-above-90 widening needs k >= 0.667 to carry Jason Kidd '00 and would re-price every elite defender's gate to reach three cards whose gap is under 2.1. The floor-side form moves 15 cards. It is the smaller change and it is the one aimed at the cause.",
+  "THE FORM, AND WHY IT IS A CEILING ON THE BLEND AND NOT A NEW CONSTANT. The floor keeps 0.85 x d_ovr for a man with no offence and RAMPS TO recal_104's BLEND ITSELF as his offence rises from OFF_FLOOR_LO to OFF_FLOOR_HI. At the top of the ramp the floor equals the blend, so the cap cannot clip — the card is simply not clamped, which is the ruling's own sentence ('a two-way guard whose OFF is already a starter's is not clipped'). No new scale is invented: the target the relief runs to is a number the file already computes two lines above, so the round adds a RAMP and two knees and nothing else.",
+  "THE VALVE IS WHY IT CANNOT HURT ANYONE. `_floor += _ramp * max(0.0, raw - _floor)` — the `max(0.0, ...)` means the ramp can only RAISE the floor toward the blend, never pull it below 0.85 x d_ovr. Without it the term would be non-monotone: a card whose blend sits below his floor would have the floor dragged DOWN, and because the clamp truncates (`int(min(99, cap, round(raw)))`) a card with raw 70.6 and floor 70.7 would print 70 where it had printed 71. With it, this round joins recal_93 and recal_99 as a loosening that can only move a card UP, and the measurement confirms it: 15 movers, all 15 up, max +2, zero down.",
+  "AND THE VALVE IS ALSO WHY recal_93's OWN SUBJECT CANNOT BE RE-OPENED. Kawhi Leonard '14's OFF 65 puts his ramp at 0.8333, but his floor 0.85 x 97 = 82.45 is ABOVE his blend of 81.00, so `max(0.0, raw - _floor)` is zero and he is paid nothing. He is blend-bound, holds byte-identical at 81, and his pin (80 +-2) is untouched.",
+  "THE TWO CONSTANTS, one his and one measured. OFF_FLOOR_LO = 60 is taken verbatim from the ruling. OFF_FLOOR_HI is the number the ruling left as an example ('-> 75') and it is MEASURED rather than accepted, because 'a starter's offence' is a line the board can be asked for: the median o_ovr of the 82 PERIMETER starters in the 30 opening fives of the campaign ladder is 66.0 (mean 66.4), 66 is the 70th percentile of all 5,423 perimeter cards, and 66 is the bottom of the 'OFF 66-72' band the ruling itself names as the biting shape. Three reads, one number. The knee sweep is on the record: 60->75 gives the subjects 80/80/79 (inside +-1 but one under every target, because `int()` truncates the cap and a gap of 2 cannot survive it), 60->72 gives 81/80/80, 60->70 gives 81/80/80, 60->68 gives 81/81/80, and the measured 60->66 gives 81/81/80 — every target EXACT. 55->66 and 50->66 give the same three subjects and move three more cards (Rajon Rondo '11, Maurice Cheeks '84, Larry Hughes '06), which is why the lower knee stays at his 60.",
+  "MEASURED, on all 10,000 cards against the shipped 228 pool: 15 cards move on OVR, EVERY ONE OF THEM UP, max +2. ZERO bigs move. OFF, DEF, all 22 attributes, `talent`, `big` and `marg` move on ZERO cards — by construction, since this clamp is the last line of the file's rating stage and reads o_ovr and d_ovr without writing them. The top 12 by OVR is identical name-for-name and point-for-point. One rank change matters and it is the ruling's: Jason Kidd '01 goes 15th of 2001 to 9th, passing Rasheed Wallace '01 (79), Dirk Nowitzki '01, Ray Allen '01, Tracy McGrady '01, Vince Carter '01 and Eddie Jones '01 (all 80), level with Paul Pierce '01 (81) — and not one of those six moved a point.",
+  "EVERY ANCHOR HOLDS AND THE LEDGER GRADES 224 ANCHORS, 0 FAILING, mean |error| 1.00 — 222 on main's own board plus this round's two (Jason Kidd '01 ovr 81 +-1, Jrue Holiday '21 ovr 81 +-1, both +0), and the mean is unchanged to the hundredth. The three OVR anchors on the board are all BLEND-bound rather than cap-bound and are therefore held by construction: Josh Hart '25 63 +-3 (gate 74 against a blend of 62.80 — his own receipt says 'THE CAP IS NOT THE FENCE'), Kawhi Leonard '14 80 +-2 (floor 82.45 above the blend 81.00), Dennis Rodman '96 63 +-3 (big gate 82 against a blend of 65.50). Every OFF pin, every DEF pin, every attribute pin and every team dial is untouched BY CONSTRUCTION, not by luck — the round writes one expression that reads o_ovr and d_ovr and produces ovr. Jason Kidd '99/'02 OFF (74/75 +-3, reading 71/72) and Jrue Holiday '21 DEF (92 +-1, reading 93) are byte-identical; Bruce Bowen '06 OFF 45 is byte-identical.",
+  "THE HARNESS AND THE TESTS. `npm run harness` reproduces main exactly: main scorer +1.48, main playmaker +2.26, tempo +0.69, scheme +0.78, hunt +0.51, crash off glass +0.55, crash def glass +0.54, assignment +3.08 all PASS, and PLAYSTYLE FAILS at random -1.67 / oracle +3.25 — the row recal_226 left RED ON PURPOSE, to the same hundredth. `npx tsc -b` clean. `npx vitest run` 546 tests in 45 files: 545 pass, and the one failure is that same playstyle row (tests/tactics.test.ts, 'expected -1.6650813098926915 to be >= -1.5'). src/engine/tactics.ts was NOT touched and neither was any other TypeScript file; no test was re-pointed, loosened or deleted by this round."
+ ]
+}
