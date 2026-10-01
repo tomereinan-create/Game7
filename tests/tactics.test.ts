@@ -192,11 +192,17 @@ describe('the deviation tax law', () => {
     // looked like the sharper board costing the law again. It was not: the `dho` STYLE_REF row that pass
     // carried (mu 70.877 / sd 10.400) reproduces NO form of the shipped formula. Re-measured in the order
     // the file's own law names — SPOT_REF first, which reproduces to the thousandth on all fourteen terms,
-    // then every style through `styleFitRaw` over the 1,255 wheel fives — the row is mu 63.231 / sd 15.332,
-    // and the eleven other rows reproduce main's frozen values to within 0.03 and are therefore LEFT
-    // FROZEN. On the corrected reference the law reads blind -1.34 / oracle +3.69, PASS, with STYLE_SLOPE
-    // untouched at his "Revert to 0.20". An `sd` 1.47x too narrow was making one point of dho fit worth
-    // 1.47x what it is worth, which is also why the two continuity cases below were red.
+    // then every style through `styleFitRaw` over the 1,255 wheel fives — and re-measured a second time
+    // when his SIZE FLOOR landed ("The tighter one, full at 6'10", nothing under 6'5""), the row reads
+    // mu 59.878 / sd 12.635. THE ELEVEN OTHER ROWS ARE LEFT FROZEN: they reproduce EXACTLY, to 0.000, on
+    // the pool they were measured on (pipeline 228), and to within 0.03 on the shipped pool (231). On the
+    // corrected reference the law reads blind -1.38 / oracle +3.72, PASS, with STYLE_SLOPE untouched at
+    // his "Revert to 0.20" — his second ruling on that constant in one day, and it was to leave it. The
+    // comparison that matters is against MAIN, not against the round's own worst moment: main reads -1.31
+    // / +3.37 and also PASSES, so this round spends 0.07 of blind headroom and buys 0.35 of oracle, and
+    // every other row in the table is byte-identical to main's. An `sd` 1.47x too narrow was making one
+    // point of dho fit worth 1.47x what it is worth, which is also why the two continuity cases below
+    // were red.
     //
     // THE ONE RED ROW LEFT IS NOT THIS DESK'S: `hunt` reads oracle +0.498 against the +0.50 floor, from
     // the recal desk's own `hunt 3.68 -> 3.75`. It is reported here and deliberately not touched — no
@@ -452,7 +458,7 @@ describe('a helio engine is high volume AND high play volume', () => {
     // what this case is for — these Spurs are not a helio five — reads 43.98, lower again.
     //   ...and recal_230 moves it BACK TO THE PIN-DOWN on his ruling "25' Thunder cant be hoh(hand of
     // hub). Can be pnr/helio/balanced/iso": Duncan '16 is the hub by `hubScore` but Parker '16 creates
-    // more, so `central` prices the gap and dho reads 73.27 -> 49.70, under pindown's 65.45. Every other
+    // more, so `central` prices the gap and dho reads 73.27 -> 53.62, under pindown's 65.45. Every other
     // row on this five is byte-identical. Still not "Motion, or balanced", still reported as contradicted
     // rather than tuned, and motion 55.51 is still the fourth read; what the case is FOR holds at 43.98.
     expect(bestStyle(SPURS_16).style).toBe('pindown')
@@ -554,12 +560,26 @@ describe('post-up still fits a true post hub, and only one', () => {
     // cannot widen it without this case saying so. This is the THINNEST contradicted pin in the
     // round and it is reported in data/rounds/226.json rather than tuned: the man the post-up
     // NOMINATES is unchanged on both fives, which is what the ruling under this describe is about.
+    //   recal_230 SPLITS THE PAIR, and the half that leaves does so on his ruling 2026-10-01: "The
+    // tighter one, full at 6'10", nothing under 6'5"." The hand-off credit is now gated on the hub's
+    // BODY as well as his centrality, which lifts the league's hand-off distribution off the guards it
+    // was crowded with (STYLE_REF.dho mu 86.378 -> 59.878, sd 6.388 -> 12.635 re-measured through
+    // styleFitRaw over the 1,255 wheel fives) — and O'NEAL '00 AT 7'1" IS THE PUREST THING THAT GATE
+    // CAN FIND. Los Angeles reads the HAND-OFF HUB at 74.37, over motion's unmoved 68.05 and the
+    // post-up's unmoved 67.84. MOVED PINNED READ, reported in data/rounds/230.json, and reported rather
+    // than tuned because what this describe is FOR — the man the post-up NOMINATES — is unchanged on
+    // both fives and is asserted on both below. The ROCKETS '94 keep the row whole: Olajuwon is 0.32 of
+    // `central` behind Kenny Smith, so their hand-off reads 50.82 and motion 71.22 still wins by the
+    // two tenths this case was written about.
+    expect(bestStyle(ROCKETS_94).style).toBe('motion')
+    expect(bestStyle(ROCKETS_94).fit - styleFit('postup', ROCKETS_94)).toBeLessThan(0.25)
+    expect(bestStyle(LAKERS_00).style).toBe('dho')
+    expect(styleFit('postup', LAKERS_00)).toBeCloseTo(67.84, 1) // the post-up itself did NOT move
+    expect(styleFit('motion', LAKERS_00)).toBeCloseTo(68.05, 1) // nor did the read it used to lose to
     for (const [f, man] of [
       [LAKERS_00, "Shaquille O'Neal '00"],
       [ROCKETS_94, "Hakeem Olajuwon '94"],
     ] as const) {
-      expect(bestStyle(f).style).toBe('motion')
-      expect(bestStyle(f).fit - styleFit('postup', f)).toBeLessThan(0.25)
       expect(styleFit('postup', f)).toBeGreaterThan(Z_MID)
       expect(featured('postup', f)[0].name).toBe(man)
     }
@@ -1005,13 +1025,14 @@ describe('the triangle is a read, and reads best where the passing and the mid-r
     // call is worth +0.65 rather than a charge. The pin this line carries — that calling the triangle
     // on a one-reader five is worth far less than calling it on a three-reader one — is asserted as
     // the GAP instead, which is the quantity the deviation tax law is actually about.
-    // ...AND THE UNIT HAS BEEN RE-FIT TWICE. recal_226 took `stylePts`'s slope 0.25 -> 0.20, and
-    // recal_230 took it to STYLE_SLOPE 0.143 on his ruling "Fix the playstyle row, use 0.143" — the
-    // deviation tax law's PLAYSTYLE row reads blind -1.30 against its -1.50 floor at that slope and
-    // PASSES for the first time since the relativising. What this line pins is the FIT GAP between a
-    // three-reader five and a one-reader one, so the floor is stated in fit and converted by the
-    // constant: a bare margin number would have to be re-fitted every time the slope moves, which is
-    // how it came to read 7.9 against a gap the slope had already made 5.72.
+    // ...AND THE BOUND IS TIED TO THE CONSTANT INSTEAD OF TO A NUMBER. recal_226 took `stylePts`'s slope
+    // 0.25 -> 0.20; recal_230 measured 0.143 as the honest slope for a PLAYSTYLE row that was red and
+    // then did NOT take it, because the row was red from a mis-measured STYLE_REF and reads blind -1.38
+    // PASS at 0.20 once that is fixed — HIS SECOND RULING ON THE CONSTANT THE SAME DAY WAS "Revert to
+    // 0.20", so 0.20 is what ships. What this line pins is the FIT GAP between a three-reader five and a
+    // one-reader one, so the floor is stated in fit and converted BY the constant: a bare margin number
+    // has to be re-fitted every time the slope moves, which is how it came to read 7.9 against a gap the
+    // slope had already made 5.72.
     const gap =
       stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, BULLS_97) -
       stylePts({ ...DEFAULT_TACTICS, style: 'triangle' }, LAKERS_00)
@@ -1220,7 +1241,7 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // the five's own read on the BENCH four his ruling's own research names (90.73, its own case below).
     // ...and recal_230 moves it back to the PIN-DOWN at 65.45 on his ruling "25' Thunder cant be hoh(hand
     // of hub)": `central` prices Duncan '16's creation gap behind Parker '16 and the hand-off falls 73.27
-    // -> 49.70. THE HALF THIS CASE IS NAMED FOR SURVIVES THE ISO COMING BACK ON THE BOARD, which is the
+    // -> 53.62. THE HALF THIS CASE IS NAMED FOR SURVIVES THE ISO COMING BACK ON THE BOARD, which is the
     // thing worth checking this round: iso reads 46.81 here, BELOW Z_MID, so even with the shape offered
     // again these Spurs are not read as one. Still contradicted against "2) Motion, or balanced", still
     // reported rather than tuned, and motion 55.51 is still their third read behind postup 61.89.
@@ -1325,7 +1346,7 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // RULING 2026-10-01: "25' Thunder cant be hoh(hand of hub). Can be pnr/helio/balanced/iso." The
     // hand-off's hub leg is now multiplied by `central` — DHO_GUARD 25 inches of play volume between
     // the hub and the five's best creator, linear to zero — so Hartenstein '25, a fine passing big who
-    // is 23 points of playvol behind Gilgeous-Alexander, carries only a sliver of it: dho 81.99 -> 51.23,
+    // is 23 points of playvol behind Gilgeous-Alexander, carries only a sliver of it: dho 81.99 -> 55.48,
     // tenth of twelve. THE WINNING READ IS HELIO AT 77.72, INSIDE HIS OWN LIST. Nothing else on this five
     // moved by a thousandth; the iso-over-pnr margin asserted above is the same 1.25 it was.
     expect(bestStyle(okc25).style).toBe('helio')
@@ -1379,13 +1400,20 @@ describe('iso is helio\'s complement: a man who gets his own shot, four men clea
     // halves of this row swap places in a way that is arithmetic and not judgement: `bestStyle` now
     // enumerates iso, so `iso > best` is ZERO BY CONSTRUCTION (the max of a set cannot be beaten by a
     // member of it) and the fives that used to show up in that column are exactly the ones that now
-    // READ iso. The 17.6% recal_226 measured becomes 14.2% read outright — 59 of 416 — and the test's
+    // READ iso. The 17.6% recal_226 measured becomes 15.6% read outright — 65 of 416 — and the test's
     // question is asked on the column that can still answer it. The 0.25 ceiling is KEPT, unchanged and
     // on the same quantity it was always about: how much of the board one signature shape may own.
+    //   AND THE 65 IS THE SAME COUNT recal_226 MEASURED IN THE OTHER COLUMN, which is the check this
+    // row is really making: on origin/main, with iso off the board, 65 of these 416 fives had an iso
+    // fit at or above every shape the board WOULD read. Putting the shape back converts that set into
+    // reads almost man for man — 64 of the 65 are the same fives, with the Lakers '95 joining and the
+    // Blazers '03 leaving, both because the hand-off's own reference moved underneath them. So his
+    // second ruling of the day did not buy the isolation a bigger share; it kept it at the size the
+    // board already said it was.
     const readAsIso = SAMPLE.filter((five) => bestStyle(five).style === 'iso').length
     const outFitsTheBoard = SAMPLE.filter((five) => styleFit('iso', five) >= bestStyle(five).fit).length
     expect(SAMPLE.length).toBeGreaterThan(400)
-    expect(readAsIso).toBe(59)
+    expect(readAsIso).toBe(65)
     expect(outFitsTheBoard).toBe(readAsIso) // iso is on the board again, so the two columns are one
     expect(readAsIso / SAMPLE.length).toBeLessThan(0.25)
   })
@@ -1544,7 +1572,7 @@ describe('motion is the ball advanced by the pass, and it is a live read again',
     // the gap is 35.2 as before; only which style beats motion on the starters has moved.
     // ...and recal_230 moves it back to the PIN-DOWN at 65.45, on his ruling "25' Thunder cant be
     // hoh(hand of hub)": `central` charges Duncan '16 for Parker '16's creation edge and the hand-off
-    // falls 73.27 -> 49.70. THE DECLINE IS STILL WORD FOR WORD WHAT IT WAS — motion 55.51 on the
+    // falls 73.27 -> 53.62. THE DECLINE IS STILL WORD FOR WORD WHAT IT WAS — motion 55.51 on the
     // starters, 90.73 on the bench, the same 35.2 gap, both numbers byte-identical — and only the name
     // of the style that beats motion on the starters has moved, for the fourth time, which is why this
     // row asserts the decline as a GAP and the winning read as a reported pin.
@@ -1621,8 +1649,18 @@ describe('iso does not take a post player: the two nominations partition the flo
     expect(isoMan(NETS_23).scorer!.name).toBe("Kevin Durant '23")
     // ...and the five reads HORNS at 84.47, with the hand-off hub second at 83.28 and the isolation
     // at 64.43 still clear of the relative middle. MOVED PINNED READ, reported.
+    //   recal_230 MOVES IT TO THE HAND-OFF HUB, on his ruling 2026-10-01: "The tighter one, full at
+    // 6'10", nothing under 6'5"." The hand-off credit is gated on the hub's BODY now as well as on his
+    // centrality, and DURANT '23 AT 6'11" IS THE MAN THAT GATE IS FOR — full size credit, and `central`
+    // 0.88 because he creates nearly as much as Irving does. With the guard hubs priced out, the
+    // league's hand-off distribution falls and widens (STYLE_REF.dho mu 86.378 -> 59.878, sd 6.388 ->
+    // 12.635) and Brooklyn's own raw moves only 100.00 -> 96.65, so dho reads 93.66 over the horns'
+    // UNMOVED 84.47. THE GATE THIS ROW IS ABOUT IS UNTOUCHED and is asserted above and below: `postMan`
+    // still nominates Durant, and the isolation still clears the middle at 64.43. MOVED PINNED READ.
+    expect(styleFit('iso', NETS_23)).toBeCloseTo(64.43, 1)
     expect(styleFit('iso', NETS_23)).toBeGreaterThan(Z_MID)
-    expect(bestStyle(NETS_23).style).toBe('horns')
+    expect(styleFit('horns', NETS_23)).toBeCloseTo(84.47, 1) // the horns fit itself did not move
+    expect(bestStyle(NETS_23).style).toBe('dho')
   })
 
   it('it gates the NOMINATION and not the price: a called iso on a seven-footer is still priced', () => {
@@ -1692,7 +1730,7 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     // asserted all along — on his ruling "25' Thunder cant be hoh(hand of hub). Can be pnr/helio/
     // balanced/iso". Gasol '17 keeps the hub SEAT (the nomination is untouched, which is what the next
     // line is for) but Conley '17 creates more, so `central` prices the gap and the hand-off reads
-    // 78.42 -> 57.79. Memphis is the cleanest case of the ruling's own sentence: a passing seven-footer
+    // 78.42 -> 63.43. Memphis is the cleanest case of the ruling's own sentence: a passing seven-footer
     // whose point guard runs the offence is not a hand-off team, he is a big on a triangle five.
     expect(bestStyle(GRIZZLIES_17).style).toBe('triangle')
     expect(dhoMan(GRIZZLIES_17).hub!.name).toBe("Marc Gasol '17")
@@ -1775,10 +1813,22 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     // "Fix horns." ruling was that the elbow should reward exactly that pair. HORN_BASE is left where
     // his Nuggets ruling put it and the read is left where it lands — the dispatch for this round
     // says horns is better, not solved, and must not be tuned. Listed in data/rounds/226.json.
-    expect(bestStyle(NUGGETS_25x).style).toBe('horns')
+    //   recal_230 HANDS THE READ BACK TO THE HAND-OFF HUB AND THE CONTRADICTION GOES AWAY ON ITS OWN,
+    // which is worth saying because no horns constant was touched to do it. His ruling 2026-10-01 —
+    // "The tighter one, full at 6'10", nothing under 6'5"" — gates the hand-off credit on the hub's
+    // body, JOKIĆ '25 AT 6'11" TAKES IT WHOLE and is his own five's best creator besides, so Denver's
+    // raw stays at the rail (100.0) while the league's hand-off distribution falls off the guards it
+    // was crowded with (STYLE_REF.dho mu 86.378 -> 59.878, sd 6.388 -> 12.635). dho reads 97.63 against
+    // a horns fit that is byte-identical at 91.09. HORN_BASE IS STILL EXACTLY WHERE HIS NUGGETS RULING
+    // PUT IT and what this case was written to bound is asserted below, STRONGER than before: horns is
+    // not merely above the middle on Denver, it is the SECOND read and beats all ten other shapes —
+    // which is the quantity HORN_BASE was sized against, and it is now pinned as a comparison instead
+    // of as a number so a later round cannot move it without this row saying so.
+    expect(bestStyle(NUGGETS_25x).style).toBe('dho')
     const h = styleFit('horns', NUGGETS_25x)
+    expect(h).toBeCloseTo(91.09, 1) // unmoved: this round touches no horns constant
     expect(h).toBeGreaterThan(Z_MID)
-    expect(h).toBeGreaterThan(styleFit('dho', NUGGETS_25x))
+    for (const s of STYLES) if (s.key !== 'horns' && s.key !== 'dho') expect(h, s.key).toBeGreaterThan(styleFit(s.key, NUGGETS_25x))
   })
 
   /**
@@ -1915,19 +1965,19 @@ describe('horns is two bigs on the elbows, and the SECOND one is the read', () =
     // the read: the Celtics '80 (46.31), the Hawks '16 (51.91) and the Raptors '25 (64.40) all read
     // MOTION now and the Heat '11 keep the hub. The five horns DOES take is the one it should — the
     // Nuggets '25 at 91.09, asserted in its own case above. MOVED READS, all four reported.
-    //   recal_230 SPLITS THE LOOP BY ONE FIVE, and the one that leaves is the clearest case on the board
-    // of what his ruling "25' Thunder cant be hoh(hand of hub)" pays as well as what it charges. The
-    // Celtics '80 and the Hawks '16 are untouched at motion 59.42 and 74.17. THE RAPTORS '25 READ THE
-    // HAND-OFF HUB at 73.90 over motion's 71.78, and their raw hand-off fit DID NOT MOVE (87.66 before
-    // and after): Scottie Barnes '25 IS Toronto's best creator as well as its tallest passer, so
-    // `central` is a flat 1 on him and the five pays nothing — it simply rises against a league whose
-    // other hand-off fits fell. What this case is FOR, the horns PAIR, is asserted on all four below
-    // and is untouched. MOVED READ, reported in data/rounds/230.json.
-    for (const five of [CELTICS_80, HAWKS_16]) {
+    //   recal_230 KEEPS ALL THREE ROWS WHOLE, and the Raptors are the five that says why the round needed
+    // its second ruling. `central` alone (his "25' Thunder cant be hoh(hand of hub)") would have taken
+    // them to the hand-off hub at 73.90, because Scottie Barnes '25 IS Toronto's best creator and so
+    // paid nothing. HIS SECOND RULING THE SAME DAY — "The tighter one, full at 6'10", nothing under
+    // 6'5"" — gates the credit on the BODY too, and Barnes at 6'8" keeps 0.60 of it: their raw falls
+    // 87.66 -> 73.40 and the z to 66.06, under motion's UNMOVED 71.78. Centrality could not tell "the
+    // offence runs through this man" from "this man is the point guard"; size can. The Celtics '80 and
+    // the Hawks '16 are byte-identical at motion 59.42 and 74.17 throughout.
+    for (const five of [CELTICS_80, HAWKS_16, RAPTORS_25h]) {
       expect(bestStyle(five).style).toBe('motion')
     }
-    expect(bestStyle(RAPTORS_25h).style).toBe('dho')
-    expect(styleFitRaw('dho', RAPTORS_25h)).toBeCloseTo(87.66, 1) // the RAW is what did not move
+    expect(styleFit('motion', RAPTORS_25h)).toBeCloseTo(71.78, 1) // unmoved; the hand-off fell to it
+    expect(styleFit('dho', RAPTORS_25h)).toBeLessThan(styleFit('motion', RAPTORS_25h))
     for (const five of [CELTICS_80, HAWKS_16, RAPTORS_25h]) {
       expect(hornsMen(five).high).not.toBe(null)
       expect(hornsMen(five).low).not.toBe(null)
@@ -1973,21 +2023,19 @@ describe('the pin-down is the man WITHOUT the ball, and he is not an iso man', (
     // other minus in the file (his ruling 1) — the two terms that used to price the creator down. The
     // five still READS the pin-down, which is the ruling; the man it names moved. Reported.
     expect(featured('pindown', WARRIORS_16)[0].name).toBe("Stephen Curry '16")
-    // recal_230 RE-POINTS THE KNICKS '02 AND THIS IS THE ROUND'S REPORTED COST, not a tidy consequence.
-    // His ruling "25' Thunder cant be hoh(hand of hub). Can be pnr/helio/balanced/iso" is priced as
-    // `central`, the hub's play volume against the five's best creator's — and a POINT GUARD hub is
-    // always his own five's best creator, so central is 1 on him and less than 1 on every big whose
-    // guard runs the offence. The hand-off's raw distribution therefore drops 23 points of mean and
-    // widens (STYLE_REF.dho mu 86.378 -> 63.231, sd 6.388 -> 15.332, re-measured through styleFitRaw
-    // over the 1,255 wheel fives), which lifts the fives that pay nothing — and New York's hub is MARK
-    // JACKSON '02 at 6'3", raw 79.30 unmoved, z 33.38 -> 65.72, over the pin-down's unchanged 65.11.
-    // recal_213's pinned sentence "no guard becomes a hub" goes from 0 of the 96 fives that READ the
-    // hand-off to 17 of 189. It is written down here and in data/rounds/230.json and left for his
-    // ruling rather than tuned away, because the price that fixes it is a second half of the set he
-    // has not ruled on. The MAN the pin-down names — the half of this case about the pin-down at all —
-    // is asserted below and is untouched at Allan Houston.
-    expect(bestStyle(KNICKS_02).style).toBe('dho')
+    // recal_230 LEAVES THE KNICKS '02 ON THE PIN-DOWN, and the trip they did NOT take is the reason the
+    // round has two rulings in it. Pricing the hand-off hub on `central` alone (his "25' Thunder cant be
+    // hoh(hand of hub)") would have taken them: a POINT GUARD hub is always his own five's best creator,
+    // so MARK JACKSON '02 at 6'3" paid nothing where every big whose guard runs the offence paid, and
+    // once the league's hand-off distribution fell off those bigs he won the five at z 65.72 over this
+    // same 65.11. recal_213's pinned sentence "no guard becomes a hub" went from 0 fives to 17 that way.
+    // HIS SECOND RULING THE SAME DAY IS THE SIZE FLOOR THAT SHUTS IT: "The tighter one, full at 6'10",
+    // nothing under 6'5"." Jackson is under the floor, his credit is exactly 0, New York's hand-off raw
+    // falls 79.30 -> 52.96 and the z reads 41.79 — ninth of twelve. The pin-down is byte-identical at
+    // 65.11 and the man it names is byte-identical at Allan Houston, both asserted below.
+    expect(bestStyle(KNICKS_02).style).toBe('pindown')
     expect(styleFit('pindown', KNICKS_02)).toBeCloseTo(65.11, 1)
+    expect(styleFit('dho', KNICKS_02)).toBeLessThan(Z_MID) // the guard hub is priced out, not merely beaten
     expect(featured('pindown', KNICKS_02)[0].name).toBe("Allan Houston '02")
   })
 
@@ -2059,7 +2107,16 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     // recal_226: the Sixers '18 read HORNS at 93.67 with the hub second at 89.04 — Embiid and Simmons
     // are two men who can both play an elbow, which is what his "Fix horns." ruling made the elbow
     // ask. The hub still NAMES Simmons, which is what this case is about. MOVED READ, reported.
-    expect(bestStyle(SIXERS_18).style).toBe('horns')
+    //   recal_230 GIVES THEM BACK TO THE HAND-OFF HUB, and Philadelphia is the single cleanest five on
+    // the board for his ruling 2026-10-01: "The tighter one, full at 6'10", nothing under 6'5"." BEN
+    // SIMMONS '18 IS 6'10" AND IS HIS OWN FIVE'S BEST CREATOR — full size credit, `central` a flat 1.00
+    // — so Philadelphia's raw stays at the rail at 100.00 while the league's hand-off distribution falls
+    // off the guards the floor prices out (STYLE_REF.dho mu 86.378 -> 59.878, sd 6.388 -> 12.635). dho
+    // reads 97.63 over a horns fit that is byte-identical at 93.67. The hub still NAMES SIMMONS, which is
+    // what this case is about and is asserted below. MOVED READ, reported in data/rounds/230.json.
+    expect(bestStyle(SIXERS_18).style).toBe('dho')
+    expect(styleFitRaw('dho', SIXERS_18)).toBeCloseTo(100.0, 1) // at the rail, and it was there before
+    expect(styleFit('horns', SIXERS_18)).toBeCloseTo(93.67, 1) // the horns fit did not move
     expect(styleFit('dho', SIXERS_18)).toBeGreaterThan(Z_MID)
     expect(featured('dho', SIXERS_18)[0].name).toBe("Ben Simmons '18")
   })
@@ -2086,14 +2143,18 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     // points of raw (STYLE_REF.dho mu 77.277 -> 86.378, sd 8.731 -> 6.388) and Denver's raw 100.0 —
     // which is unchanged and still at the rail — now reads 81.99 against the league's own hubs instead
     // of 89.04. Re-pointed on both rulers: the RAW is asserted too, so the weights are still held.
-    // ...and recal_230 re-points the Z AGAIN AND ONLY THE Z, for the same reason and in the same words:
-    // his ruling "25' Thunder cant be hoh(hand of hub)" puts `central` on the hub leg, which moves the
-    // LEAGUE's hand-off distribution (mu 86.378 -> 63.231, sd 6.388 -> 15.332) and not Denver's own fit.
-    // Jokić '25 is the Nuggets' best creator as well as their hub, so central is a flat 1, the raw stays
-    // at the rail at 100.0, and the same five now reads 85.97 against a league whose hand-offs fell.
+    // ...and recal_230 re-points the Z AGAIN AND ONLY THE Z, for the same reason and in the same words.
+    // His two rulings of 2026-10-01 put `central` on the hub leg and then a SIZE FLOOR on `central` —
+    // "The tighter one, full at 6'10", nothing under 6'5"" — and both of them move the LEAGUE's hand-off
+    // distribution rather than Denver's own fit (STYLE_REF.dho mu 86.378 -> 59.878, sd 6.388 -> 12.635,
+    // re-measured through styleFitRaw over the 1,255 wheel fives). JOKIĆ '25 IS 6'11" AND IS THE
+    // NUGGETS' BEST CREATOR AS WELL AS THEIR HUB, so he takes both halves whole: size credit 1.00,
+    // centrality 1.00, the raw stays at the rail at 100.0, and the same five reads 97.63 against a
+    // league whose hand-offs fell. This case asserts BOTH RULERS on purpose — the raw holds the
+    // weights, the z holds the reference — so neither can drift without the row saying so.
     expect(styleFitRaw('dho', NUGGETS_25x)).toBeCloseTo(100.0, 1)
-    expect(styleFit('dho', NUGGETS_25x)).toBeCloseTo(85.97, 1)
-    expect(bestStyle(NUGGETS_25x).style).toBe('horns') // reported in the horns block; the hub is second
+    expect(styleFit('dho', NUGGETS_25x)).toBeCloseTo(97.63, 1)
+    expect(bestStyle(NUGGETS_25x).style).toBe('dho') // and it wins the five again, horns second at 91.09
     for (const n of ["Domantas Sabonis '24", "Nikola Jokić '25", "Draymond Green '16", "Joakim Noah '14"]) {
       const x = g(n).attrs
       expect(hubScore(x) / hubScore.K, n).toBeCloseTo(DHO_PV * x.playvol + hubHeight(x), 9)
@@ -2159,16 +2220,41 @@ describe("the hand-off hub is a big man's hands, and it passes rather than score
     //     enough to keep the style off the five — so a player sees it on 1% of the board, not 71%.
     // That is the round's clearest cost. It is written down and left where his ruling puts it.
     //   recal_226 THEN DELETED `primacy` and the nomination figure fell 892 -> 48, with 0 of the 96 fives
-    // that READ the hand-off carrying a short hub — the strongest this pinned rule has ever read.
-    //   recal_230 GIVES PART OF IT BACK AND THE NUMBER IS RECORDED RATHER THAN SMOOTHED. His ruling
-    // "25' Thunder cant be hoh(hand of hub)" prices the hub leg by `central`, the hub's play volume
-    // against the five's best creator's, and a point-guard hub IS his five's best creator — so he pays
-    // nothing where every big whose guard runs the offence pays. The nomination figure is UNCHANGED at
-    // 48 (central never chooses the hub), but of the 189 fives that now read the hand-off, 17 have a
-    // hub under 6'6": Michael Ray Richardson '80-'82, Jason Kidd '96/'06/'07/'08, Mark Jackson '97/'02,
-    // Andre Miller '01, Calderón '12, Teague '14 and five more. 1.4% of the board, up from 0%. The
-    // assertions below are on `hubScore` and are untouched by it — a guard is still a below-average hub
-    // on paper — and the leak is in the RELATIVISING, not in the spot. Left for his ruling.
+    // that READ the hand-off carrying a short hub — the strongest this pinned rule had ever read.
+    //   recal_230 MAKES IT AN ASSERTION INSTEAD OF A COMMENT, AND THAT IS THE POINT OF THE ROUND'S SECOND
+    // RULING. His first — "25' Thunder cant be hoh(hand of hub)" — priced the hub leg by `central`, the
+    // hub's play volume against the five's best creator's, and that number alone BROKE the pinned rule:
+    // a point-guard hub IS his own five's best creator by definition, so `central` read a flat 1.00 on
+    // Haliburton exactly as on Jokić, guards paid nothing where every big whose guard runs the offence
+    // paid, and 17 of the 189 reading fives came back with a hub under 6'6" — Michael Ray Richardson
+    // '80-'82, Jason Kidd '96/'06/'07/'08, Mark Jackson '97/'02, Andre Miller '01, Calderón '12,
+    // Teague '14 and five more. HIS SECOND RULING THE SAME DAY IS THE ANSWER TO EXACTLY THAT: "The
+    // tighter one, full at 6'10", nothing under 6'5"." DHO_CEN_LO 77 -> DHO_CEN_HI 82 multiplies the
+    // credit, so centrality says how central he is and SIZE says whether a man that size may be paid for
+    // it — the two-part test the set always had, split across its two jobs: HEIGHT AND PLAYMAKING choose
+    // the hub (`hubScore`, untouched, 48 short nominations as recal_226 left them), CENTRALITY TIMES SIZE
+    // says what he is worth there.
+    //   SO THE RULE IS ASSERTED AS THE SENTENCE recal_213 WROTE, over the whole wheel, and it reads
+    // STRONGER than "0 under 6'6"": the SHORTEST hub on any of the 145 fives that read the hand-off is
+    // 6'8" — Steve Smith '94, Grant Hill '96, Pippen '99/'02/'03, McGrady '05/'07/'08 — so there is a
+    // two-inch margin under the rule and not a boundary case. The nomination is deliberately NOT bounded
+    // here: `central` must never choose the hub, only price him, and the 48 short NOMINATIONS are
+    // asserted unchanged so that a later round cannot quietly turn the price back into a gate.
+    const SHORT = 78 // recal_213's own line, 6'6"
+    const byName = new Map(PLAYERS.map((q) => [q.name, q]))
+    const wheelFives = WHEEL.map((t) => t.p.map((n) => byName.get(n)).filter((q): q is Player => !!q))
+      .filter((r) => r.length >= 5)
+      .map((r) => startingFive(r).five.filter((q): q is Player => !!q))
+      .filter((f) => f.length === 5)
+    expect(wheelFives).toHaveLength(1255)
+    const nominated = wheelFives.map((f) => dhoMan(f).hub).filter((h): h is Player => !!h)
+    expect(nominated.filter((h) => h.attrs.height < SHORT)).toHaveLength(48) // the SEAT is unchanged
+    const readingHubs = wheelFives
+      .filter((f) => bestStyle(f).style === 'dho')
+      .map((f) => dhoMan(f).hub!)
+    expect(readingHubs).toHaveLength(145)
+    expect(readingHubs.filter((h) => h.attrs.height < SHORT)).toHaveLength(0) // "no guard becomes a hub"
+    expect(Math.min(...readingHubs.map((h) => h.attrs.height))).toBe(80) // and the margin is two inches
     const dray = hubScore(g("Draymond Green '16").attrs)
     for (const n of ["Steve Nash '05", "Chris Paul '08", "John Stockton '97", "Isaiah Thomas '16", "Muggsy Bogues '95"]) {
       const x = g(n).attrs
@@ -2296,7 +2382,11 @@ describe('the three are signature systems and they break nothing that was ruled 
     // pinned to exactly one read, so a later round cannot walk past it.
     const reads: [Player[], Style][] = [
       [JAZZ_97, 'triangle'], // the pair is still Stockton/Malone and the roll beats the post again
-      [NUGGETS_25x, 'horns'], // Jokic '25 and Porter are the two best elbow reads on any pinned five
+      // recal_230 — BACK TO THE HAND-OFF HUB at 97.63, on his ruling 2026-10-01: "The tighter one, full
+      // at 6'10", nothing under 6'5"." Jokić '25 is 6'11" and is Denver's own best creator, so he takes
+      // the whole of the gated credit while the guard hubs lose theirs; horns is second at 91.09, which
+      // is byte-identical to main, and its own case above still pins it as the nearest challenger.
+      [NUGGETS_25x, 'dho'],
       [SUNS_05, 'pnr'],
       // THIS ROW WAS 'pnr' WHEN THIS ROUND WAS FITTED AND recal_214 SUPERSEDED IT, on his own
       // ruling: "KD is a better midpt shooter than a finisher, and westbrook is a better finisher
@@ -2328,7 +2418,7 @@ describe('the three are signature systems and they break nothing that was ruled 
     // "25' Thunder cant be hoh(hand of hub). Can be pnr/helio/balanced/iso". THE NOMINATION IS THE PART
     // THAT DOES NOT MOVE and it is asserted on the next line exactly as recal_226 left it: Duncan '16 is
     // still San Antonio's hub, because `central` prices the hub leg and never chooses the hub. What it
-    // prices is that Parker '16 creates more than Duncan does, so dho 73.27 -> 49.70. Still contradicted
+    // prices is that Parker '16 creates more than Duncan does, so dho 73.27 -> 53.62. Still contradicted
     // against "2) Motion, or balanced", still reported, still not tuned — the fifth round running.
     expect(bestStyle(SPURS_16).style).toBe('pindown')
     expect(dhoMan(SPURS_16).hub!.name).toBe("Tim Duncan '16")

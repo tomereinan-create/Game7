@@ -2488,11 +2488,26 @@ const comerFitRaw = (x: Attrs) =>
  * row may move. SPOT_REF first: it reproduces to the thousandth on all fourteen terms for the third
  * time (worst drift 0.0005, measured family-pooled over all 10,000 cards, since the roll/pop handlers
  * and the two screeners share a ruler). Then every style through `styleFitRaw` over the 1,255 wheel
- * fives: ELEVEN ROWS REPRODUCE THE FROZEN VALUES ABOVE TO WITHIN 0.03 and are therefore LEFT EXACTLY
- * AS THEY WERE — that is what frozen means, and re-stamping them with a regeneration's noise is the
- * float this block's own opening paragraph forbids. ONLY `dho` MOVES: mu 86.378 -> 63.231, sd 6.388 ->
- * 15.332, because `central` cuts the hub leg on every five whose hub is not its own best creator, which
- * drops the mean 23 points and more than doubles the spread.
+ * fives: ELEVEN ROWS REPRODUCE THE FROZEN VALUES ABOVE and are therefore LEFT EXACTLY AS THEY WERE —
+ * that is what frozen means, and re-stamping them with a regeneration's noise is the float this block's
+ * own opening paragraph forbids. ONLY `dho` MOVES, and it moved TWICE in the round because his second
+ * ruling of 2026-10-01 — "The tighter one, full at 6'10\", nothing under 6'5\"." — put a SIZE FLOOR on
+ * `central`: mu 86.378 -> 63.231 -> 59.878, sd 6.388 -> 15.332 -> 12.635. The shipped row is the one
+ * measured against the SHIPPED formula. `central` cuts the hub leg on every five whose hub is not its
+ * own best creator and the floor cuts it again on every hub under 6'10", which together drop the mean
+ * 26 points and double the spread.
+ *   AND THE ELEVEN ROWS WERE CHECKED AGAINST THE POOL THEY WERE MEASURED ON, which is the only check
+ * that can tell a stale table from a moved one. On pipeline 228 - recal_226's own pool - all eleven
+ * reproduce to 0.000, exactly. On the shipped pool (231) the worst drift is postup sd 0.029 and pnr sd
+ * 0.002: that is the regeneration, it is inside the noise this table is frozen against, and nothing is
+ * re-stamped for it.
+ *   TWO APPARENT MISMATCHES WERE REPORTED DURING THE ROUND - pnr sd 5.424 against a measured 5.354 and
+ * postup sd 11.155 against 10.529 - AND THEY ARE THE MEASUREMENT METHOD, NOT THE POOL. Inverting the
+ * CLAMPED z instead of calling `styleFitRaw` reproduces 5.354 and 10.529 to the thousandth, which is
+ * exactly the error the paragraph above this one warns about: the two styles with fives at the 0..99
+ * rail are the two whose moments the inversion drags. `dho` is unaffected either way, because its wide
+ * reference pulls every five off the rail (12.635 by both routes). So BOTH ROWS STAY FROZEN, and the
+ * decision not to re-freeze them is deliberate rather than an oversight.
  *   THE FIRST PASS OF THAT ROUND STAMPED mu 70.877 / sd 10.400 HERE AND IT REPRODUCES NO FORM OF THE
  * SHIPPED FORMULA — not `central` on the five's best playvol (63.231/15.332), not on the rest's
  * (identical), not half-weighted (74.813/9.813), not at a wider guard window (68.897/14.440 at 50
@@ -2500,7 +2515,7 @@ const comerFitRaw = (x: Attrs) =>
  * row to 0.008). It stamped the other eleven rows too, with drifts of up to 0.168. The cost of the
  * wrong row was not cosmetic: an `sd` 1.47x too narrow made one point of hand-off fit worth 1.47x what
  * it is worth, which failed the two CLIFF-CONTINUITY cases in tests/tactics.test.ts and put the
- * deviation tax law's PLAYSTYLE row at -1.56, RED, where the corrected table reads -1.34, PASS. A
+ * deviation tax law's PLAYSTYLE row at -1.56, RED, where the corrected table reads -1.38, PASS. A
  * FROZEN REFERENCE IS A MEASUREMENT AND MUST BE TAKEN, NEVER TRANSCRIBED. */
 export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   balanced: { mu: 60.000, sd: 0.000 },

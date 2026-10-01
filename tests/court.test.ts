@@ -192,13 +192,16 @@ describe('a man who cannot shoot is never sent out to space the floor', () => {
     // shape: whatever the five is read as, the man who cannot shoot stands inside and never in a
     // corner, and the second half of this case asserts it in every shape. MOVED READ, reported in
     // data/rounds/226.json.
-    //   recal_230 MOVES IT ONE MORE STEP, to HORNS, and the cause is his ruling "25' Thunder cant be
-    // hoh(hand of hub)": the hand-off's hub leg is now multiplied by `central`, how close the hub is
-    // to being the five's own best creator. James '26 IS the hub by `hubScore`, but Dončić '26 creates
-    // more, so the Lakers pay for the gap and dho reads 81.99 -> 78.31, a shade under horns at 79.48
-    // (helio 79.01, pindown 74.44 — all three byte-identical). The RULING under test is unchanged and
-    // is still about the SPOT, not the shape. MOVED READ, reported in data/rounds/230.json.
-    expect(inferredStyle(LAKERS)!.style).toBe('horns')
+    //   recal_230 LEAVES THE READ WHERE recal_226 PUT IT, and the two halves of the round cancel on
+    // this five exactly. His ruling "25' Thunder cant be hoh(hand of hub)" multiplies the hand-off's
+    // hub leg by `central` (how close the hub is to being the five's own best creator) and Dončić '26
+    // creates more than James '26 does, so the raw falls 100.00 -> 85.48. But his SECOND ruling the
+    // same day — "The tighter one, full at 6'10", nothing under 6'5"" — is the size floor that keeps
+    // the credit off guards, which drops the LEAGUE's hand-off distribution with it (STYLE_REF.dho mu
+    // 86.378 -> 59.878, sd 6.388 -> 12.635), and James at 6'9" keeps 0.80 of the credit. Net: dho
+    // 81.99 -> 80.39, still a shade ABOVE horns at 79.48 (helio 79.01, pindown 74.44 — all three
+    // byte-identical to main). The RULING under test never moved and is about the SPOT, not the shape.
+    expect(inferredStyle(LAKERS)!.style).toBe('dho')
     expect(outsideLine(at[AYTON])).toBe(false)
     expect(inCorner(at[AYTON])).toBe(false)
   })
