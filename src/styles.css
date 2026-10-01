@@ -9638,3 +9638,59 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .plate-code { display: inline-block; margin-left: 10px; padding: 2px 7px; font-family: var(--mono); font-size: 0.55em; font-weight: 700; letter-spacing: 0.16em; vertical-align: middle; border: 1px solid var(--ka, var(--you)); border-radius: 4px; color: var(--ink); font-style: normal; }
 /* three letters in the door's crest: a shade smaller than two were */
 .fd-court > .fd-badge .fd-crest { font-size: clamp(11px, 2.3cqw, 36px); letter-spacing: 0.04em; }
+
+/* =====================================================================================
+   THE DESK SCALE — his ruling, 2026-10-01, after the survey of every screen at 3840 x 1500:
+   "Fix all." Eight pages stood as a 562px phone column in the middle of the desk with 7–12px
+   type, and five more filled the width with type cut for a phone. The phone column IS the
+   design of those pages — a list of rows, a form, a slate — so they are not re-laid out; they
+   are SCALED, with CSS zoom, from 1600px up: 1.0 at a laptop, ~1.4 at 2400, ~2.26 at 3840,
+   and the column widens from 347/390 to 520/560 CSS px under it, so the Database reads as a
+   1,175px column of 16px rows on his desk rather than a 347px column of 7px ones. Pages that
+   already fill the width (the card, the team page, the box score, the analysis, the matchup
+   panel, the tactics calls) take a lighter scale, capped where they would overflow. Nothing
+   below 1600px changes.
+   `zoom` is standard since Chrome 128 / Safari 17 / Firefox 126 and reflows content into the
+   narrower CSS width it leaves, so a scaled panel grows DOWN, never out of its column.
+   ===================================================================================== */
+:root { --desk-zoom: 1; --desk-zoom-lite: 1; --desk-zoom-mid: 1; }
+@media (min-width: 1600px) {
+  /* the three factors are NUMBERS, and CSS cannot divide a viewport length into one, so App
+     writes them on the root from the window's width (see `deskZoom` in App.tsx):
+     zoom = clamp(1, width / 1700, 2.3) · mid = clamp(1, width / 2000, 1.9) · lite = clamp(1, width / 2400, 1.6) */
+  /* the four pages that live in #root: Custom, Vs friend, 1v1 bid, the name screen */
+  body:has(.page-zoom) #root { max-width: none; }
+  .page-zoom { zoom: var(--desk-zoom); max-width: 560px; margin: 0 auto; }
+  /* the record book and Compare: the Database, Archetypes, Trophies */
+  .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) { zoom: var(--desk-zoom); }
+  .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) > * { max-width: 520px; }
+  /* pages that already fill: a lighter hand */
+  .tdb-sheet { zoom: var(--desk-zoom-lite); }
+  .sheet.pc-term { zoom: var(--desk-zoom-lite); }
+  .sheet.sheet2.gamesheet, .sheet.sheet2.an { zoom: var(--desk-zoom-mid); }
+  .draft .card:has(.mp-row) { zoom: var(--desk-zoom-lite); }
+  .myteam .col.c:not(.wheel) > .card { zoom: var(--desk-zoom-lite); }
+  .ranksheet .card { zoom: var(--desk-zoom-mid); }
+  /* the staff tree takes the room the desk has */
+  .treesvg { max-width: min(100%, 46vw); max-height: 66vh; }
+  .tree-lede { font-size: clamp(11px, 0.85vw, 28px); }
+  /* the map's small print */
+  .map-head .map-kicker, .map-read .map-kicker, .map-read > span, .map-kicker { font-size: clamp(11px, 0.72vw, 26px); }
+  .um-mapbar .um-eras .um-era.auto, .um-era.auto { font-size: clamp(9px, 0.6vw, 22px); }
+  .node .ab { font-size: clamp(8px, 0.5vw, 18px) !important; }
+  .node .ln { font-size: clamp(13px, 0.75vw, 27px) !important; }
+  .node-dials .dial .dl, .pdials .dial .dl, .dial .dl { font-size: clamp(7px, 0.5vw, 17px); }
+  .dial .ds { font-size: clamp(9px, 0.55vw, 18px); }
+  .era-band em, .era em, .trail em { font-size: clamp(9px, 0.6vw, 22px); }
+  .seriesnow-note, .myteam .seriesnow-note { font-size: clamp(10px, 0.7vw, 24px); }
+  .assignworth .label, .assignworth .cap, .assignworth i { font-size: clamp(9px, 0.6vw, 20px); }
+  .assignworth b { font-size: clamp(14px, 1vw, 34px); }
+  .gauge-basis { font-size: clamp(7.5px, 0.5vw, 17px); }
+  /* My team's small print */
+  .mt-dur b { font-size: clamp(13px, 0.9vw, 30px); }
+  .mt-dur i { font-size: clamp(6.5px, 0.5vw, 16px); }
+  .mt-dur { min-width: clamp(32px, 2.2vw, 72px); }
+  .rowhead span, .rowhead .gcap { font-size: clamp(8px, 0.6vw, 20px); }
+  .rowhead { height: auto; min-height: 24px; }
+  .myteam .col.a .card-head .cap, .myteam .sal { font-size: clamp(12px, 0.75vw, 24px); }
+}

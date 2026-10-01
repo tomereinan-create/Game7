@@ -195,6 +195,27 @@ export default function App() {
   }, [tutorial])
 
   /**
+   * THE DESK SCALE (his ruling, 2026-10-01: "Fix all", after the survey at 3840 x 1500). Three
+   * zoom factors for the pages the stylesheet scales from 1600px up — the phone-column pages at
+   * full strength, the pages that already fill at a lighter one. They are plain numbers written
+   * on the root, because `zoom` takes a number and CSS cannot divide a viewport length into one.
+   * 1 below 1600px, so a phone and a laptop are untouched.
+   */
+  useEffect(() => {
+    const root = document.documentElement
+    const write = () => {
+      const w = window.innerWidth
+      const f = (per: number, cap: number) => (w < 1600 ? 1 : Math.min(cap, Math.max(1, w / per)))
+      root.style.setProperty('--desk-zoom', f(1700, 2.3).toFixed(3))
+      root.style.setProperty('--desk-zoom-mid', f(2000, 1.9).toFixed(3))
+      root.style.setProperty('--desk-zoom-lite', f(2400, 1.6).toFixed(3))
+    }
+    write()
+    window.addEventListener('resize', write)
+    return () => window.removeEventListener('resize', write)
+  }, [])
+
+  /**
    * THE DOCK MEASURES ITSELF (E9). Nearly every screen ends in a dock fixed to the foot of the
    * window, and the page under it has to keep exactly that much floor clear or its last card is
    * read from under the gradient. That height was written down by hand in four bottom paddings —
@@ -627,7 +648,10 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <Custom onHome={leave} />
+        {/* `.page-zoom`: the desk scale for a page cut for the phone column — see the stylesheet */}
+        <div className="page-zoom">
+          <Custom onHome={leave} />
+        </div>
       </>
     )
 
@@ -636,7 +660,9 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <Auction onHome={leave} />
+        <div className="page-zoom">
+          <Auction onHome={leave} />
+        </div>
       </>
     )
 
@@ -645,7 +671,9 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <Versus onHome={leave} />
+        <div className="page-zoom">
+          <Versus onHome={leave} />
+        </div>
       </>
     )
 
@@ -654,12 +682,14 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <TeamSetup
-          title={TITLE(cm)}
-          initial={team}
-          onDone={setTeam}
-          onBack={pickTeam ? () => setPickTeam(false) : leave}
-        />
+        <div className="page-zoom">
+          <TeamSetup
+            title={TITLE(cm)}
+            initial={team}
+            onDone={setTeam}
+            onBack={pickTeam ? () => setPickTeam(false) : leave}
+          />
+        </div>
       </>
     )
   }
