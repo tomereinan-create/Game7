@@ -236,6 +236,7 @@ export function Draft({
   opponent,
   seed,
   teamName,
+  teamAb,
   salary = false,
   wallet,
   club = null,
@@ -254,6 +255,8 @@ export function Draft({
   opponent: Opponent
   seed: number
   teamName: string
+  /** the club's three letters (his ruling, 2026-09-30) — the scorebug and the spread line wear them */
+  teamAb?: string
   /** Salary Cap campaign: every row also shows that season's salary and share of the cap. */
   salary?: boolean
   /** The campaign's staff tree: what's owned gates what this screen can do. */
@@ -1952,7 +1955,7 @@ export function Draft({
                   minus sign is exactly the reading he made. Naming the side turns it into the line
                   a book would post — SLC −6.8 — which can only be read one way. His ruling: keep
                   the convention, label it properly. */}
-              <i>Spread · {chance.spread >= 0 ? teamCode(teamName) : (opponent.ab ?? teamCode(opponent.team))}</i>
+              <i>Spread · {chance.spread >= 0 ? (teamAb ?? teamCode(teamName)) : (opponent.ab ?? teamCode(opponent.team))}</i>
             </div>
             <div>
               <b className={chance.game >= 0.5 ? 'you' : 'them'}>{(100 * chance.game).toFixed(0)}%</b>
@@ -2082,7 +2085,7 @@ export function Draft({
         {full ? (
           <TipOff
             bug={bug}
-            us={teamCode(teamName)}
+            us={teamAb ?? teamCode(teamName)}
             them={opponent.ab ?? teamCode(opponent.team)}
             step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
             bump={bump}

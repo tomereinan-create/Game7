@@ -194,7 +194,7 @@ export function ladderLesson(mode: CampaignMode, lives: number): Lesson | null {
         {
           body: [
             'One five, carried from the first level to the last. You may change a single man before each level, and no more — in My team, between levels. Every man spends durability per game played; at the floor he must be replaced.',
-            `Lose with no life left and the run ends — every star and every node with it. You have ${plural(lives, 'extra life', 'extra lives')} in hand; the Survival branch of the staff tree sells more. It runs on the salary cap too.`,
+            `Lose with no life left and the run ends — every star and every node with it. The heart on the map counts your lives: ${lives + 1} now, the one you are on${lives ? ` and ${plural(lives, 'spare')}` : ''}. The Survival branch of the staff tree sells more. It runs on the salary cap too.`,
           ],
         },
       ],
@@ -611,7 +611,7 @@ export function lifeLesson(livesLeft: number): Lesson {
     id: 'death.life',
     kicker: 'Tutorial · The Death match',
     title: 'A life spent',
-    steps: [{ body: [`That loss cost a life; the run goes on with ${plural(livesLeft, 'life', 'lives')} left. Extra lives come from the Survival branch of the staff tree.`] }],
+    steps: [{ body: [`That loss cost a life; the run goes on with ${plural(livesLeft, 'life', 'lives')} left — the heart on the map counts them. Extra lives come from the Survival branch of the staff tree.`] }],
   }
 }
 export function runOverLesson(): Lesson {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
-import { currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
+import { clubCode, currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
 import { setViewMode, useViewMode } from '../state/viewmode'
 import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
 import { doorLesson } from './lessons'
@@ -572,7 +572,8 @@ export function FrontDoor({
      anyway (a fresh install opens on it). */
   /* DERIVED, NOT STORED — nothing in the app computes a club's initials. Guard the empty and the
      one-word case rather than indexing blind. */
-  const initials = team ? ((team.city[0] ?? '') + (team.name[0] ?? '')).toUpperCase() : ''
+  /* the club's chosen three letters, or the ones derived from its name (his ruling, 2026-09-30) */
+  const initials = clubCode(team)
 
   /** The book along the foot — the four scout-only rooms, with what is in each one. */
   const book: { pick: Mode; label: string; note: string }[] = [
@@ -621,31 +622,11 @@ export function FrontDoor({
             one any more. */}
         {/* "Game 7 and the ball bigger" (his ruling, 2026-09-29, Home.dc.html). The wordmark beside
             it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
-        <Ball size="clamp(52px, calc(var(--fd-u) * 4.2), 243px)" dribble />
+        {/* "A touch bit smaller" — his ruling, 2026-09-30: 4.2 → 3.8 units, the cap with it. */}
+        <Ball size="clamp(50px, calc(var(--fd-u) * 3.8), 220px)" dribble />
         <b className="fd-word">
           Game<em>7</em>
         </b>
-        {team ? <span className="fd-div" aria-hidden /> : null}
-        {team ? (
-          <span className="fd-badge">
-            <span
-              className="fd-crest"
-              aria-hidden
-              style={
-                { '--crest': kit?.primary ?? 'var(--mine)', '--trim': kit?.accent ?? 'var(--you)', '--crest-ink': kit?.ink ?? '#fff' } as CSSProperties
-              }
-            >
-              {initials}
-            </span>
-            {/* HIS RULING, 2026-09-11: "Remove Campaign · level 80 of 150." The standing line under
-                the club name is gone — the read pane already says which ladder you are looking at
-                and how far in you are, and saying it again beside the crest said it for the CAMPAIGN
-                whichever mode you were reading. The club name stands alone. */}
-            <span className="fd-club">
-              <b>{`${team.city} ${team.name}`}</b>
-            </span>
-          </span>
-        ) : null}
         {/*
           HIS RULING, 2026-09-11: "157 ★ / Cleared 79/150 — here in the main page it needs to update
           when Im changing modes."
@@ -734,6 +715,25 @@ export function FrontDoor({
                 so a plate in a corner can run a little past the sideline onto the panel rather than
                 losing its last letters to it — which is what happened the moment his ruling made the
                 names bigger and moved two of them into the corners. */}
+            {/* THE CLUB STANDS ON THE FLOOR, TOP RIGHT — his ruling, 2026-09-30: "move the team's name
+                to be inside the court on the top right side." Crest over name, right-aligned, in
+                the corner behind the straight where no mark stands. It left the identity row. */}
+            {team ? (
+              <span className="fd-badge">
+                <span
+                  className="fd-crest"
+                  aria-hidden
+                  style={
+                    { '--crest': kit?.primary ?? 'var(--mine)', '--trim': kit?.accent ?? 'var(--you)', '--crest-ink': kit?.ink ?? '#fff' } as CSSProperties
+                  }
+                >
+                  {initials}
+                </span>
+                {/* THE NAME IS GONE FROM THE CORNER — his ruling, 2026-09-30: "Remove the name, only
+                    have the 2 letters." (Three, since the same ruling.) The read pane and the map
+                    still print the club in full. */}
+              </span>
+            ) : null}
             <span className="fd-lines" aria-hidden>
               {/* the arc lives in a box cut to the width between the two straights, so the circle
                   ENDS where they begin rather than sweeping on down to the baseline */}

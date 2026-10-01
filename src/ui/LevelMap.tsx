@@ -391,6 +391,23 @@ const tiltOf = (level: number) => `${((((level * 37) % 7) - 3) * 0.6 || 0.6).toF
  * the accent this game paints YOUR side in, the man going OFF in the one it paints the other side
  * in, so the icon says which way round a change goes without a word on it.
  */
+/**
+ * THE TEAM — his ruling, 2026-09-30: "instead of myteam have a team icon." Five men in the shape
+ * the floor draws them, one lit: the door to the five he carries.
+ */
+function TeamIcon() {
+  return (
+    <svg className="teamicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
+      <g fill="currentColor">
+        <circle cx="12" cy="5" r="2.6" />
+        <circle cx="5" cy="10.5" r="2.4" opacity="0.8" />
+        <circle cx="19" cy="10.5" r="2.4" opacity="0.8" />
+        <circle cx="7.5" cy="18" r="2.4" opacity="0.6" />
+        <circle cx="16.5" cy="18" r="2.4" opacity="0.6" />
+      </g>
+    </svg>
+  )
+}
 function SubIcon() {
   return (
     <svg className="subicon" viewBox="0 0 24 24" width="1em" height="1em" focusable="false" aria-hidden>
@@ -596,6 +613,8 @@ export function LevelMap({
   const litIdx = cur ? cur - 1 : ROUNDS - 1
   const litLen = litIdx / (ROUNDS - 1)
 
+  /** the heart's name: the extra lives in the save plus the one in play */
+  const livesLabel = `${progress.lives + 1} ${progress.lives + 1 === 1 ? 'life' : 'lives'} in hand`
   return (
     <>
       {/**
@@ -658,8 +677,12 @@ export function LevelMap({
              * zero took the whole tree off the screen while the counter still read ★ 10. The
              * counter is the door: you tap your stars to go and spend them.
              */}
+            {/* ONE STAR IN THE HEADER — his ruling, 2026-09-30: "Instead of the staff icon make the
+                stars icon ... No need to see the same icons multiple times. 1 clear time is enough."
+                The counter keeps the figures and gives up its glyph; the star stands once, large,
+                on the staff door below, which is the thing the glyph means. */}
             <button className="map-total" onClick={onStaff} aria-label={`Staff tree — ${bal} of ${total} stars unspent`}>
-              <span className="star">★</span> {total}
+              {total}
               <i> / {ROUNDS * 3}</i>
               <i className="a">→</i>
             </button>
@@ -667,16 +690,12 @@ export function LevelMap({
                 to the stars representing how many lifes you have." A heart and the count; the
                 sentence stays as its name. */}
             {death ? (
-              <span className="map-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
-                <i className="heart">♥</i> {progress.lives}
+              /* THE LIFE HE IS ON COUNTS — his ruling, 2026-09-30: "Instead of 0 life show 1 life
+                 (once you reach 0 its game over)". The save holds the EXTRA lives; the heart shows
+                 those plus the one in play, so a run with none to spare reads 1, never 0. */
+              <span className="map-lives" role="img" aria-label={livesLabel} title={livesLabel}>
+                <i className="heart">♥</i> {progress.lives + 1}
               </span>
-            ) : null}
-            {/* THE CHANGE, BESIDE THE STARS — his ruling, 2026-09-30: "The sub icon should be next to
-                the star not on the ticket." It used to stand in the stack over tonight's ticket. */}
-            {teamNote?.kind === 'sub' && onMyTeam ? (
-              <button className="map-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                <SubIcon />
-              </button>
             ) : null}
             {spendable ? (
               <button className="map-link staff" onClick={onStaff}>
@@ -686,8 +705,11 @@ export function LevelMap({
                 {/* THE STAR SAYS IT — his ruling, 2026-09-29: "Instead of the stars to spend, have
                     a star icon." The glyph was already there and the three words after it were
                     saying the same thing again in mono. */}
+                {/* THE STAR IS THE DOOR — his ruling, 2026-09-30: "Instead of the staff icon make
+                    the stars icon." Large, with the balance beside it, and nothing else. */}
                 <i className="g">★</i>
-                {bal}<i className="d">·</i>Staff<i className="a">→</i>
+                {bal}
+                <i className="a">→</i>
               </button>
             ) : null}
             {/* His ruling: the NAME is the half that yields. RENAME is the actionable half and never
@@ -699,8 +721,9 @@ export function LevelMap({
               <span className="rn">rename</span>
             </button>
             {onMyTeam ? (
-              <button className="map-link" onClick={onMyTeam}>
-                My team →
+              /* the door is a glyph now (his ruling, 2026-09-30); the words stay as its name */
+              <button className="map-team" onClick={onMyTeam} aria-label="My team" title="My team">
+                <TeamIcon />
               </button>
             ) : null}
             {/* HIS RULING: "Move Reset this campaign next to the home page." It sat in the foot,
@@ -754,18 +777,20 @@ export function LevelMap({
           </div>
           {user ? (
             <div className="um-maprow">
-              <button className="um-staff" onClick={onStaff}>
-                ★ {bal} to spend · Staff →
+              <button className="um-staff" onClick={onStaff} aria-label={`${bal} to spend — Staff`} title="Staff">
+                <i className="g">★</i> {bal} <i className="a">→</i>
               </button>
               {/* the heart and the change stand beside the star here too — see the scout header */}
               {death ? (
-                <span className="um-lives" role="img" aria-label={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`} title={`${progress.lives} ${progress.lives === 1 ? 'life' : 'lives'} in hand`}>
-                  <i className="heart">♥</i> {progress.lives}
+                <span className="um-lives" role="img" aria-label={livesLabel} title={livesLabel}>
+                  <i className="heart">♥</i> {progress.lives + 1}
                 </span>
               ) : null}
-              {teamNote?.kind === 'sub' && onMyTeam ? (
-                <button className="um-sub" onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                  <SubIcon />
+              {onMyTeam ? (
+                /* user mode had no door to My team but the change glyph, which only stands while a
+                   change is waiting; the team icon stands whenever there is a five to look at */
+                <button className="um-team" onClick={onMyTeam} aria-label="My team" title="My team">
+                  <TeamIcon />
                 </button>
               ) : null}
               {/**
@@ -955,7 +980,7 @@ export function LevelMap({
            * is the death match's; this one belongs to every mode. When both are up they stack, on
            * the far side of the trail from the ticket, centred on it.
            */}
-          {cur && (spendable || (teamNote?.kind === 'worn' && onMyTeam)) ? (
+          {cur && (spendable || (teamNote && onMyTeam)) ? (
             <div
               className="node-notes"
               /**
@@ -992,13 +1017,15 @@ export function LevelMap({
                   <i className="bigstar" aria-hidden>★</i>
                 </button>
               ) : null}
-              {teamNote?.kind === 'worn' && onMyTeam ? (
-                <button className={`node-note ${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
-                  {/* A man WORN OUT gets his sentence here: that one is not an offer, it is a thing
-                      gone wrong, and it names who. THE CHANGE GLYPH LEFT THIS STACK — his ruling,
-                      2026-09-30: "The sub icon should be next to the star not on the ticket." It
-                      stands in the header beside the star now, in both modes. */}
-                  {teamNote.text}<i className="a">→</i>
+              {teamNote && onMyTeam ? (
+                <button className={`node-note ${teamNote.kind === 'sub' ? 'icon ' : ''}${skin}`} onClick={onMyTeam} aria-label={teamNote.text} title={teamNote.text}>
+                  {/* A CHANGE IS A GLYPH, BESIDE THE STAR — his rulings, 2026-09-29 ("Instead of 'A
+                      change is waiting in My team', have a substitute icon") and 2026-09-30 ("The
+                      sub icon should be next to the star icon above the ticket and not in the
+                      header"). It spent an hour in the header; the stack over the ticket is a row
+                      now, so the two glyphs stand side by side. A man WORN OUT still gets his
+                      sentence: that one is not an offer, it is a thing gone wrong, and it names who. */}
+                  {teamNote.kind === 'sub' ? <SubIcon /> : <>{teamNote.text}<i className="a">→</i></>}
                 </button>
               ) : null}
             </div>

@@ -22,6 +22,7 @@ import {
   advanceTo,
   applyWear,
   callsPlan,
+  clubCode,
   planFor,
   WEAR_OUT,
   currentLevel,
@@ -446,7 +447,8 @@ export default function App() {
       commit(cm, settled)
       settleAch(settled)
       // the coach on a death-match loss: a life spent, or the run over — the same rule `die` reads
-      if (tutorial && !pending.result.won) teach(prog.lives > 0 ? lifeLesson(prog.lives - 1) : runOverLesson())
+      // `lives` is the extra lives; the coach counts the way the heart does — those plus the one in play
+      if (tutorial && !pending.result.won) teach(prog.lives > 0 ? lifeLesson(prog.lives) : runOverLesson())
     } else {
       const settled = { ...prog, stars, record, plays: prog.plays + 1 }
       commit(cm, settled)
@@ -817,6 +819,7 @@ export default function App() {
           mine={pending.mine}
           theirs={pending.theirs}
           teamName={teamName}
+          teamAb={clubCode(team)}
           result={pending.result}
           seed={pending.seed}
           skin={skin}
@@ -841,6 +844,7 @@ export default function App() {
         opponent={opponent}
         seed={levelSeed(prog, level)}
         teamName={teamName}
+        teamAb={clubCode(team)}
         salary={capped}
         skin={skin}
         wallet={prog}
