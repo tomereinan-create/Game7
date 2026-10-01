@@ -9,7 +9,7 @@ import bisect, io, json, os as _os, re, sys
 # VERSIONING LAW (sync verdict 3): one integer, bumped per applied batch, printed by every receipt and
 # shown on the app's debug panel. Both pipelines carry it so a card can always be traced to the code
 # that made it. 21 = recal_21 + the pipeline-sync verdict.
-PIPELINE_VERSION = 229
+PIPELINE_VERSION = 231
 
 # team_rating.py's functions only — its demo section at the bottom expects the peak-only file.
 src = io.open('team_rating.py', encoding='utf-8').read()
@@ -3449,7 +3449,55 @@ for p in players:
     # underneath it - and differ only in the gate, which is r3's own distinction ("an elite anchor is
     # a defensive SYSTEM, so bigs are effectively exempt"). MEASURED: 33 cards move on OVR, every one
     # of them UP, max +6, and no anchor moves at all.
-    cap = max(p['o_ovr'] + (40 if is_big(p) else 10), 0.85 * p['d_ovr'])
+    #
+    # recal_231 (HIS RULING, scout group D, verbatim: "Push D"). THE FLOOR RAMPS TO THE BLEND ONCE THE
+    # OFFENCE IS A STARTER'S. recal_3 wrote this clamp for the STOPPER class - the man who scores
+    # nothing and guards one other man - and on that class it is not the fence at all: Bruce Bowen '06
+    # (o 45, d 93) has a floor of 79.05 against a BLEND of 69, Matisse Thybulle '21 a floor of 74.80
+    # against 55, Andre Roberson '17 a floor of 76.50 against 59.50. recal_104's blend is what holds
+    # those three down, and because `ovr = min(cap, round(raw))` a LOOSER cap can never lift a card
+    # above its own blend, the stopper class is fenced BY CONSTRUCTION and no choice of knee can move
+    # it. MEASURED on the whole pool: 43 cards are cap-bound (`cap < round(blend)`; 50 by the
+    # unrounded `cap < blend`), 24 of them in OFF 60-69, mean gap 0.86 and max gap 2. The dispatch's
+    # own figure (63 cap-bound, 28 in OFF 60-69, mean 0.80) does not reproduce under any of four
+    # readings of "bound" and is CORRECTED here, not copied. The one shape the clamp actually bites is
+    # the TWO-WAY GUARD: Jason Kidd '01 (o 69, d 94) blends to 81.50 and printed 79, Jrue Holiday '21
+    # (o 69, d 93) blends to 81.00 and printed 79 - the largest gaps on the board - every Kidd season
+    # '97-'07, both Jrue '20/'21, both Eddie Jones '97/'98, both Dennis Johnson '80/'82, Metta World
+    # Peace '07/'08, Pippen '98.
+    # WHICH HALF IS BINDING, measured and not guessed, exactly as recal_93 did it: for all three
+    # subjects it is the ELITE-DEFENCE FLOOR and not the gate - Kidd '01 floor 79.90 against gate 79,
+    # Jrue '21 floor 79.05 against gate 79, Kidd '00 floor 79.05 against gate 78. So this round
+    # loosens the SAME half recal_93 loosened and leaves the gate alone. recal_93 measured and
+    # REJECTED both of the gate-side forms (`o_ovr + 15`, and `o_ovr + 10 + k*(d - o)`) on the ground
+    # that they rewrite "the half of recal 3 that was NOT the cause"; the dispatch's alternative
+    # suggestion - widening the +10 gap with DEF above 90 - is that rejected family, so it is not
+    # taken.
+    # THE FORM: the floor keeps 0.85 x d_ovr for a man with no offence and RAMPS TO THE BLEND ITSELF
+    # as his offence rises from OFF_FLOOR_LO to OFF_FLOOR_HI, at which point the floor equals the
+    # blend and the card is simply not clipped. `max(0.0, ...)` makes it a one-way valve: the ramp can
+    # only ever RAISE the floor toward the blend, never pull it below 0.85 x d_ovr, so like every
+    # earlier loosening of this clamp it is monotone and can only move a card UP.
+    # THE TWO CONSTANTS. OFF_FLOOR_LO 60 is his own lower knee, taken verbatim from the ruling ("the
+    # 0.85 x DEF floor ramps toward the blend as OFF rises over 60"). OFF_FLOOR_HI is the number the
+    # ruling left as an example ("-> 75") and it is MEASURED instead of accepted: "a two-way guard
+    # whose OFF is already a starter's is not clipped" names a line, and a starter's offence on this
+    # board is 66 - the median o_ovr of the 82 perimeter starters in the 30 opening fives of the
+    # campaign ladder (mean 66.4), the 70th percentile of all 5,423 perimeter cards, and the bottom of
+    # the "OFF 66-72" band the ruling itself names as the biting shape. At 75 the three subjects read
+    # 80/80/79 - inside tolerance but one under every target, because `int()` truncates the cap and a
+    # gap of 2 cannot survive it; at the measured 66 they read 81/81/80, every target exact.
+    # MEASURED: 15 cards move on OVR, every one of them UP, max +2; ZERO bigs move; OFF, DEF and every
+    # attribute move on zero cards by construction (this clamp is downstream of both); the clamp still
+    # binds on 33 cards, 18 of them in OFF 50-59 and 15 at OFF 60-65 on partial relief. The three OVR
+    # anchors - Josh Hart '25 63, Kawhi Leonard '14 80, Dennis Rodman '96 63 - are all BLEND-bound and
+    # not cap-bound (Hart's floor is 74 against a blend of 62.80, Rodman's big gate 82 against 65.50,
+    # Kawhi '14's floor 82.45 against 81.00), so none of them can move.
+    OFF_FLOOR_LO, OFF_FLOOR_HI = 60, 66
+    _floor = 0.85 * p['d_ovr']
+    _ramp = min(1.0, max(0.0, (p['o_ovr'] - OFF_FLOOR_LO) / (OFF_FLOOR_HI - OFF_FLOOR_LO)))
+    _floor += _ramp * max(0.0, raw - _floor)
+    cap = max(p['o_ovr'] + (40 if is_big(p) else 10), _floor)
     _tops.append(raw)
     p['ovr'] = int(min(99, cap, round(raw)))
     # the marginal survives as a CARD FIELD so the draft and team screens can still read it; it simply
