@@ -2332,6 +2332,9 @@ export const DHO_H0 = 79
 export const DHO_H1 = 83
 export const DHO_TOP = 2
 export const DHO_GUARD = 25
+/** The hand-off credit's size floor: nothing under 6'5", full at 6'10". His ruling 2026-10-01. */
+export const DHO_CEN_LO = 77
+export const DHO_CEN_HI = 82
 export const DHO_RIM_LO = 73
 export const DHO_RIM_HI = 86
 /** How little of the offense he takes for himself: all of the credit at DHO_VOL_FREE, none by DHO_VOL_MAX. */
@@ -2511,7 +2514,7 @@ export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   iso: { mu: 48.790, sd: 12.396 },
   horns: { mu: 79.708, sd: 5.275 },
   pindown: { mu: 57.382, sd: 5.420 },
-  dho: { mu: 63.231, sd: 15.332 },
+  dho: { mu: 59.878, sd: 12.635 },
 }
 export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
   const raw = styleFitRaw(style, five, theirs, call)
@@ -2712,7 +2715,16 @@ export function styleFitRaw(style: Style, five: Player[], _theirs?: Player[], ca
        * a hand-off offence, whatever his hands. Jokić and Sabonis ARE their five's best passer and
        * pay nothing; Hartenstein is not. */
       const bestPv = Math.max(...five.map((q) => q.attrs.playvol))
-      const central = hub ? clamp((DHO_GUARD - Math.max(0, bestPv - hub.attrs.playvol)) / DHO_GUARD, 0, 1) : 0
+      /* A SIZE FLOOR ON THE CREDIT, his ruling 2026-10-01: "The tighter one, full at 6'10\", nothing
+       * under 6'5\"." Centrality alone cannot tell "the offence runs through this man" from "this man
+       * is a point guard": a guard IS his own five's best creator by definition, so `central` reads a
+       * flat 1.00 on Haliburton exactly as it does on Jokić, and pricing on it handed full marks to
+       * the men the nomination exists to keep out — recal_213's pinned "no guard becomes a hub" went
+       * from 0 of the fives that read the hand-off to 17. The credit is now gated on the body, so the
+       * set has the two-part test it always had, split across its two jobs: HEIGHT AND PLAYMAKING
+       * choose the hub (`hubScore`, untouched), CENTRALITY TIMES SIZE says what he is worth there. */
+      const cenSize = hub ? clamp((hub.attrs.height - DHO_CEN_LO) / (DHO_CEN_HI - DHO_CEN_LO), 0, 1) : 0
+      const central = hub ? clamp((DHO_GUARD - Math.max(0, bestPv - hub.attrs.playvol)) / DHO_GUARD, 0, 1) * cenSize : 0
       return clamp(
         DHO_BASE +
           0.75 * (DHO_W_HUB * (hub ? hubFit(five, hub) * central : 0) + DHO_W_SHOOT * comers) +
