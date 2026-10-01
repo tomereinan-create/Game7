@@ -9665,7 +9665,10 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) { zoom: var(--desk-zoom); }
   .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) > * { max-width: 520px; }
   /* pages that already fill: a lighter hand */
-  .tdb-sheet { zoom: var(--desk-zoom-lite); }
+  /* THE TEAMS LIST ONLY — his report, 2026-10-01, with a picture of a team page cut off at the floor:
+     "I dont see everything." The team page is a full-screen layout that sizes itself to the window,
+     so a scale pushes its lower half out of it; the list is a list. */
+  .tdb-sheet.tdb-list { zoom: var(--desk-zoom-lite); }
   .sheet.pc-term { zoom: var(--desk-zoom-lite); }
   .sheet.sheet2.gamesheet, .sheet.sheet2.an { zoom: var(--desk-zoom-mid); }
   .draft .card:has(.mp-row) { zoom: var(--desk-zoom-lite); }
