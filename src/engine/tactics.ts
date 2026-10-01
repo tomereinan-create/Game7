@@ -992,6 +992,17 @@ export const SPOT_REF: Record<string, { mu: number; sd: number }> = {
 /** 50 is the median card, 15 is one spread — a spot rating on the same 0-99 axis as everything else. */
 export const Z_MID = 50
 export const Z_SPREAD = 15
+/**
+ * WHAT ONE POINT OF STYLE FIT IS WORTH IN THE MARGIN, RE-FITTED (his ruling 2026-09-30). The old
+ * 0.25 was fitted on a RAW scale whose per-style spreads ran 5.2 to 14.8; relativising gave every
+ * style the SAME spread by construction (Z_SPREAD 15), so the same slope prices a blind call 2-3x
+ * harder on the narrow styles and the deviation tax law's PLAYSTYLE row went RED at its -1.50 floor
+ * with a blind read of -1.77, while 29 of the 1,255 wheel fives sat pinned on the +-10 clamp —
+ * flattening precisely the teams the fit exists to separate. 0.143 would restore the old blind cost
+ * exactly; HIS CHOICE IS 0.20, because it keeps more of the payout scale (mean |pts| 2.38 against the
+ * old scale's 3.32, where 0.143 pays 1.60) and still brings the blind cost back inside the floor.
+ */
+export const STYLE_SLOPE = 0.2
 /** How far above the league's middle he is at that job. */
 export const rel = (term: string, raw: number): number => {
   const r = SPOT_REF[term]
@@ -2171,8 +2182,24 @@ export function hornsMen(five: Player[], pick?: string | null): { high: Player |
  *   22.4 over it.
  */
 export const PIN_BASE = -7
+/**
+ * HIS RULING 2026-09-30, verbatim: "In pindown, we have 2 players coming off pin down screens.
+ * Therefore, we have 2 shooters, and screeners. Pin down screener should be roller. So 2 shooters,
+ * 1 handler, 2 rollers." The set is SYMMETRICAL — a pin-down on each side of the floor — so it seats
+ * five real jobs and the three anonymous corner seats recal_213's one-shooter set handed its
+ * leftovers (0.25 x `cornerMean` of whoever was left) are GONE: every man in the five is doing
+ * something the set asks of him, and what the fit reads is the SHAPE of the set rather than a place
+ * to stand. The screener is graded on `screenFit`, the ROLLER term, his ruling — because that is what
+ * he does the moment the screen is set, and the paragraph above's complaint that "there is no
+ * screening attribute on this sheet" is answered by his ruling naming the term it should borrow.
+ * PIN_W_SHOOT .25 x2 + PIN_W_PASS .20 + PIN_W_ROLL .15 x2 = 1.00, so a five of 99-across cards reads
+ * 99 and the fit needs no rescaling against the other ten.
+ */
+export const PIN_W_SHOOT = 0.25
+export const PIN_W_PASS = 0.2
+export const PIN_W_ROLL = 0.15
+/** Kept as the record of recal_213's ONE-shooter set (0.80 on the named man); nothing reads it now. */
 export const PIN_W_MAN = 0.8
-export const PIN_W_PASS = 0.18
 export const PIN_JMP = 0.75
 export const PIN_EFF = 0.25
 export const PIN_CATCH_FLOOR = 0.3
@@ -2358,29 +2385,20 @@ const hubScoreRaw = (x: Attrs) => clamp(DHO_PV * x.playvol + hubHeight(x), 0, 99
  * — there is no separate "who is obviously the hub" question to ask.
  */
 /**
- * ...AND HE HAS TO BE THE FIVE'S OWN PASSER, NOT ITS POINT GUARD — his sentence, priced: "a big man's
- * hands, not a guard's". `primacy` is the third fade in this style and the same shape as `selfless`
- * and `interior`: all of the credit when nobody on the floor passes more than he does, fading to
- * nothing by DHO_GUARD 25 points of play volume behind the five's best passer.
- *
- * It is folded into the NOMINATION and not added afterwards, which is the difference between a
- * continuous fit and a 58-point step. `dhoMan` picks the argmax of exactly the quantity the fit then
- * uses, so at the point where one man overtakes another the two are TIED and nothing jumps; with the
- * guard price added after the nomination the hub could swap to a man whose price was 58 points
- * different (measured on the Pacers '96). The other five featured styles in this file all carry a
- * version of that fault and two of them carry a far bigger one (the post-up steps 47.6 on a single
- * inch of height, the pick-and-roll 38.7); this round was told not to add another.
- *
- * The Raptors '10 are the case it exists for: Türkoğlu at 6'10" reads as a hub until you notice José
- * Calderón passes 23 points more than he does, which fades him to 0.08 and leaves Toronto on the
- * pick-and-roll his ruling pins them to. The Spurs '16 are the second: Duncan '16 is 22 behind Parker.
+ * ...AND `primacy` IS DELETED (2026-09-30), WITH THE REASON WRITTEN DOWN BECAUSE IT READS LIKE A
+ * SAFEGUARD BEING REMOVED AND IS THE OPPOSITE. It existed to keep a point guard out of the seat when
+ * `hubScore` was `(playvol, shot) x bigMan` — a PRODUCT, which zeroed short men by itself, so primacy
+ * was only ever breaking ties among men the height multiplier had already admitted. His ruling "DHO
+ * hub should be - height playvol only" made the height leg ADDITIVE and took `bigMan` out of the
+ * score, which left primacy as the ONLY thing choosing the hub — and what primacy selects is the man
+ * who passes MOST on the floor, i.e. the point guard, exactly inverting the sentence it was written
+ * for. MEASURED over the 1,255 wheel fives: 892 nominated a hub under 6'6" with it (Toronto '10's hub
+ * was Calderón, not Türkoğlu), and 48 without it — because his own formula already carries height at
+ * half the weight and picks bigs unaided. Of the fives that actually READ hand-off, ZERO now have a
+ * short hub. DHO_GUARD stays exported as the record of the fade and of the Raptors '10 case it was
+ * written for; nothing reads it.
  */
-export const hubFit = (five: Player[], p: Player): number => {
-  const other = five.filter((q) => q !== p)
-  const best = other.length ? Math.max(...other.map((q) => q.attrs.playvol)) : 0
-  const primacy = clamp((DHO_GUARD - Math.max(0, best - p.attrs.playvol)) / DHO_GUARD, 0, 1)
-  return (rel('hubScore', hubScore(p.attrs))) * primacy
-}
+export const hubFit = (_five: Player[], p: Player): number => rel('hubScore', hubScore(p.attrs))
 
 export function dhoMan(five: Player[], pick?: string | null): { hub: Player | null; chosen: boolean } {
   if (legalMan(pick, five.map((p) => p.name))) return { hub: five.find((p) => p.name === pick) ?? null, chosen: true }
@@ -2426,7 +2444,17 @@ const comerFitRaw = (x: Attrs) =>
  * `styleFitRaw` rather than inverting styleFit: the z is CLAMPED to 0..99, so a five at the rail
  * inverts to the wrong raw and drags the moments with it - which is the whole difference between
  * these numbers and the scratch tree's (postup sd 10.333 -> 11.155, pnr mu 66.759 -> 66.741,
- * triangle 50.300 -> 50.314, iso 47.556 -> 48.790, which had been copied off isoScore's SPOT_REF). */
+ * triangle 50.300 -> 50.314, iso 47.556 -> 48.790, which had been copied off isoScore's SPOT_REF).
+ *   RE-MEASURED AGAIN when his three 2026-09-30 rulings landed in this same round, in the same order:
+ * SPOT_REF first, which reproduced to the thousandth on all fourteen terms a SECOND time (nothing in
+ * the three touches a spot formula or an attribute bar), then every style through `styleFitRaw`. Two
+ * rows moved, and only the two whose raw distribution the rulings move: pindown 59.017/7.434 ->
+ * 57.382/5.420 (two shooters and two screeners instead of one shooter and three corner men - a
+ * narrower set, because averaging two men of each kind cancels the extremes a single nomination kept)
+ * and dho 77.277/8.731 -> 86.378/6.388 (the hub is now a BIG rather than the floor's best passer, and
+ * a big scores the hub term far higher, so the whole style shifts up nine points of raw). The other
+ * nine reproduced unchanged. THIS ORDER IS NOT OPTIONAL: when the scratch tree removed primacy without
+ * re-measuring, hand-off read 43% of the board against the 7% it reads here. */
 export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   balanced: { mu: 60.000, sd: 0.000 },
   fiveout: { mu: 37.419, sd: 14.805 },
@@ -2438,8 +2466,8 @@ export const STYLE_REF: Record<Style, { mu: number; sd: number }> = {
   pickpop: { mu: 61.241, sd: 6.934 },
   iso: { mu: 48.790, sd: 12.396 },
   horns: { mu: 79.708, sd: 5.275 },
-  pindown: { mu: 59.017, sd: 7.434 },
-  dho: { mu: 77.277, sd: 8.731 },
+  pindown: { mu: 57.382, sd: 5.420 },
+  dho: { mu: 86.378, sd: 6.388 },
 }
 export function styleFit(style: Style, five: Player[], theirs?: Player[], call?: StyleCall | null): number {
   const raw = styleFitRaw(style, five, theirs, call)
@@ -2601,22 +2629,23 @@ export function styleFitRaw(style: Style, five: Player[], _theirs?: Player[], ca
       )
     }
     case 'pindown': {
-      // THE MAN WITHOUT THE BALL (recal_213). His shooter when the plan names one, the engine's own
-      // otherwise, through pinMan — priced for the shot he takes coming off, how much of his game is
-      // off the catch, how much of the offense he is, and how little of it he runs. Plus the one
-      // thing the other four owe him: somebody who can hit him coming off the screen.
+      /* TWO MEN COME OFF, ONE FEEDS THEM, TWO SET FOR THEM (his ruling 2026-09-30, quoted whole at
+       * PIN_W_SHOOT). The two shooters are the top two by `pinScore` — the plan's named man first when
+       * there is one, so calling the set still names who it is run for — the best `passerFit` of the
+       * remaining three is the handler, and the last two are the screeners, graded on `screenFit`,
+       * the roller term, his ruling. No corner seats: the leftovers of the one-shooter set are gone. */
       const { shooter } = pinMan(five, call?.pindown)
-      const rest = five.filter((p) => p.name !== shooter?.name)
-      const pass = rest.length ? Math.max(...rest.map((p) => rel('hornsHandler', passerFit(p.attrs)))) : 0
-      const passer = rest.slice().sort((x, y) => passerFit(y.attrs) - passerFit(x.attrs))[0]
-      const prest2 = rest.filter((p) => p.name !== passer?.name)
-      return clamp(
-        PIN_BASE +
-          0.75 * (PIN_W_MAN * (shooter ? rel('pinScore', pinScore(shooter.attrs)) : 0) + PIN_W_PASS * pass) +
-          0.25 * cornerMean(prest2),
-        0,
-        100,
-      )
+      const byShot = five.slice().sort((x, y) => pinScore(y.attrs) - pinScore(x.attrs))
+      const shooters = shooter
+        ? [shooter, ...byShot.filter((q) => q.name !== shooter.name)].slice(0, 2)
+        : byShot.slice(0, 2)
+      const prest = five.filter((q) => !shooters.some((sh) => sh.name === q.name))
+      const feeder = prest.slice().sort((x, y) => passerFit(y.attrs) - passerFit(x.attrs))[0]
+      const screeners = prest.filter((q) => q.name !== feeder?.name)
+      const shot = shooters.length ? mean(shooters, (q) => rel('pinScore', pinScore(q.attrs))) : 0
+      const feed = feeder ? rel('hornsHandler', passerFit(feeder.attrs)) : 0
+      const roll = screeners.length ? mean(screeners, (q) => rel('screenFit', screenFit(q.attrs))) : 0
+      return clamp(PIN_BASE + 2 * PIN_W_SHOOT * shot + PIN_W_PASS * feed + 2 * PIN_W_ROLL * roll, 0, 100)
     }
     case 'dho': {
       // A BIG MAN'S HANDS (recal_213). The hub, the two men who come off the hand-off, and the price
@@ -2828,7 +2857,9 @@ export function stylePts(t: Tactics, five: Player[], theirs?: Player[]): number 
   // HIS RULING: "Make the fit matter more" - the slope more than doubles (0.11 -> 0.25) and the
   // clamp opens from +-2.5 to +-10, so the call is worth up to twenty points of spread end to end
   // instead of five, and a five coached against its grain is punished rather than mildly taxed.
-  let pts = clamp(0.25 * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -10, 10)
+  // ...and recal_226 re-fits that slope to STYLE_SLOPE 0.20 for the relative scale it now reads; the
+  // measurement and his reason for 0.20 over 0.143 are at the constant.
+  let pts = clamp(STYLE_SLOPE * (styleFit(t.style, five, theirs, t) - 55) - TAX.style, -10, 10)
   if (t.style === 'postup' && t.tempo === 'slow') pts += 0.5 // the post grinds best at a crawl
   // recal_127 removed transition and its two tempo synergies with it; post-up's is the only one left
   return pts

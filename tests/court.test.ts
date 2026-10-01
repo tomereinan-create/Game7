@@ -318,14 +318,24 @@ describe('a five drawn beside a set tactic stands in that tactic', () => {
    * listed as such in data/rounds/226.json — the Thunder '22 were recal_115's "one clear star still
    * reads helio" case and they no longer do, because helio's own spread (sd 7.70) is wider than the
    * hub's (8.73) once every tactic is measured against its own league.
+   *   ...AND BOTH COME BACK in the same round, on his three rulings of 2026-09-30 — "In pindown, we
+   * have 2 players coming off pin down screens ... So 2 shooters, 1 handler, 2 rollers" and "DHO hub
+   * should be - height playvol only" with `primacy` deleted. Re-pointed a SECOND time, to what the
+   * two rulings they contradicted asked for in the first place: the Thunder '16 read PICK-AND-POP
+   * again (75.87, pindown second at 73.52), which is recal_214's own ruling "KD is a better midpt
+   * shooter than a finisher ... it needs to be pnp not pnr"; and the Thunder '22 read HELIO again
+   * (62.69, dho fourth at 50.31), which is recal_115's "one clear star still reads helio". The
+   * pin-down stopped winning them because it now asks for TWO shooters and TWO screeners instead of
+   * paying one man 0.80 of the fit, and the hand-off hub stopped winning the '22 because the seat
+   * went from Gilgeous-Alexander to Pokusevski once primacy was out of the nomination.
    */
   it('reads the shape off the five, and says only which shape', () => {
     // the CAPTION is the assertion, not the style key behind it: the key is the engine's private
     // name for the shape and the label is what the ruling is about
     const okc16 = [g("Russell Westbrook '16"), g("Andre Roberson '16"), g("Kevin Durant '16"), g("Serge Ibaka '16"), g("Enes Freedom '16")]
-    expect(caption(draw(null, okc16))).toBe('Tactic: pin-down')
+    expect(caption(draw(null, okc16))).toBe('Tactic: pick-and-pop')
     const okc22 = [g("Josh Giddey '22"), g("Shai Gilgeous-Alexander '22"), g("Luguentz Dort '22"), g("Aleksej Pokusevski '22"), g("Darius Bazley '22")]
-    expect(caption(draw(null, okc22))).toBe('Tactic: hand-off hub')
+    expect(caption(draw(null, okc22))).toBe('Tactic: helio')
     const bos25 = [g("Derrick White '25"), g("Jaylen Brown '25"), g("Jayson Tatum '25"), g("Kristaps Porziņģis '25"), g("Al Horford '25")]
     expect(caption(draw(null, bos25))).toBe('Tactic: five-out')
     // and not one of them carries the apparatus any more
@@ -442,7 +452,14 @@ describe('the pick-and-roll stands the screen beside the ball, and the rest behi
     // 1) and Gilgeous-Alexander '24 is a big mid-range scorer. The assertion below is the read, not the
     // ruling — what this test is here to prove is the PAIR and the floor, and both are asserted against
     // the CALL, unchanged: Holmgren is still the screener his ruling names.
-    expect(inferredStyle(THUNDER)!.style).toBe('pindown')
+    // ...and his ruling of 2026-09-30 ("In pindown, we have 2 players coming off pin down screens.
+    // Therefore, we have 2 shooters, and screeners. Pin down screener should be roller. So 2 shooters,
+    // 1 handler, 2 rollers") moves it BACK TO HELIO, which is where recal_115 put it and the read this
+    // case carried for four rounds: the pin-down no longer pays one man 0.80 of the fit, so one big
+    // mid-range scorer cannot carry the set on his own, and Oklahoma City is one man's offence again.
+    // Re-pointed to the read, not loosened; the PAIR and the floor, which is what the case proves,
+    // are asserted against the CALL below and are untouched.
+    expect(inferredStyle(THUNDER)!.style).toBe('helio')
     const pair = pnrPair(THUNDER, null)
     expect(pair.handler!.name).toBe("Shai Gilgeous-Alexander '24")
     expect(pair.screener!.name).toBe("Chet Holmgren '24")

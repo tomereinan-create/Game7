@@ -2,11 +2,17 @@
   "round": 226,
   "agent": "players-to-team",
   "status": "done",
-  "ruling": "Lets do Z for all / all tactics scores will be relative",
-  "title": "EVERY SPOT AND EVERY TACTIC IS NOW READ RELATIVELY — `SPOT_REF` and `STYLE_REF` (both frozen), `rel()` and a style z on a 0-99 axis where Z_MID 50 is a median card and Z_SPREAD 15 is one spread; `LEVEL` is DELETED with the leak it hid, spot FAMILIES share one ruler, and the elbow becomes the only offensive spot in the file that reads defensive bars",
+  "ruling": "Lets do Z for all / all tactics scores will be relative + 2026-09-30, folded in: \"In pindown, we have 2 players coming off pin down screens. Therefore, we have 2 shooters, and screeners. Pin down screener should be roller. So 2 shooters, 1 handler, 2 rollers\" / \"DHO hub should be - height playvol only\" / the stylePts slope ruled to 0.20",
+  "title": "EVERY SPOT AND EVERY TACTIC IS NOW READ RELATIVELY — `SPOT_REF` and `STYLE_REF` (both frozen), `rel()` and a style z on a 0-99 axis where Z_MID 50 is a median card and Z_SPREAD 15 is one spread; `LEVEL` is DELETED with the leak it hid, spot FAMILIES share one ruler, and the elbow becomes the only offensive spot in the file that reads defensive bars · AND THREE RULINGS OF 2026-09-30 FOLDED IN RATHER THAN SHIPPED BROKEN AND FIXED A ROUND LATER: the PIN-DOWN is reseated as his symmetrical set (2 shooters .25 each + 1 handler .20 + 2 screeners .15 each, the screener graded on the ROLLER term), `DHO_GUARD`'s primacy fade is DELETED from `hubFit` (it was the only selector left once the height leg went additive, and what it selected was the point guard — short hubs 892 of 1,255 -> 48, and ZERO on the fives that read the hand-off), and `stylePts`'s slope is re-fitted 0.25 -> STYLE_SLOPE 0.20",
   "scale": "team:off",
   "subject": "Pacers '96",
-  "five": ["Mark Jackson '96", "Reggie Miller '96", "Derrick McKey '96", "Dale Davis '96", "Rik Smits '96"],
+  "five": [
+    "Mark Jackson '96",
+    "Reggie Miller '96",
+    "Derrick McKey '96",
+    "Dale Davis '96",
+    "Rik Smits '96"
+  ],
   "target": 62,
   "tol": 0,
   "before": 62,
@@ -51,9 +57,9 @@
     },
     {
       "file": "src/engine/tactics.ts",
-      "pattern": "  let pts = clamp\\(0\\.25 \\* \\(styleFit\\(t\\.style, five, theirs, t\\) - 55\\) - TAX\\.style, -10, 10\\)",
+      "pattern": "  let pts = clamp\\(STYLE_SLOPE \\* \\(styleFit\\(t\\.style, five, theirs, t\\) - 55\\) - TAX\\.style, -10, 10\\)",
       "label": "THE LEAK IS CLOSED — `stylePts` adds nothing to a fit; LEVEL used to sit inside styleFit and be paid here",
-      "note": "five-out fives were collecting 6.65 points of margin where they had earned 1.65"
+      "note": "five-out fives were collecting 6.65 points of margin where they had earned 1.65; the slope itself is now STYLE_SLOPE"
     },
     {
       "file": "src/engine/tactics.ts",
@@ -132,67 +138,247 @@
       "pattern": "  hunt: 3\\.68,\\s*\n  crashOff: 0\\.05,\\s*\n  crashDef: 0\\.26,",
       "label": "the recal desk's taxes, verified against origin/main rather than assumed",
       "note": "main has not moved them since pipeline 223; the integrator re-sweeps once on the merged pool"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const STYLE_SLOPE = 0\\.2\\s*\\n/\\*\\* How far above the league's middle he is at that job\\. \\*/",
+      "label": "THE SLOPE, RE-FITTED FOR THE RELATIVE SCALE — 0.25 -> 0.20, his ruling of 2026-09-30",
+      "note": "0.25 was fitted where per-style spreads ran 5.2..14.8; every style now has Z_SPREAD 15, so the same slope priced a blind call 2-3x harder. 0.143 restores the old cost exactly; he chose 0.20 to keep the payout scale (mean |pts| 2.64 vs 3.25, where 0.143 pays 1.92)"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const PIN_W_SHOOT = 0\\.25\\s*\nexport const PIN_W_PASS = 0\\.2\\s*\nexport const PIN_W_ROLL = 0\\.15\\s*\n/\\*\\* Kept as the record of recal_213's ONE-shooter set",
+      "label": "THE PIN-DOWN IS HIS SET — two shooters .25 each, one handler .20, two screeners .15 each, summing to 1.00",
+      "note": "his ruling: \"In pindown, we have 2 players coming off pin down screens. Therefore, we have 2 shooters, and screeners. Pin down screener should be roller. So 2 shooters, 1 handler, 2 rollers\" — PIN_W_MAN 0.80 survives as the record of recal_213's one-shooter set and is read by nothing"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "      const roll = screeners\\.length \\? mean\\(screeners, \\(q\\) => rel\\('screenFit', screenFit\\(q\\.attrs\\)\\)\\) : 0\\s*\n      return clamp\\(PIN_BASE \\+ 2 \\* PIN_W_SHOOT \\* shot \\+ PIN_W_PASS \\* feed \\+ 2 \\* PIN_W_ROLL \\* roll, 0, 100\\)",
+      "label": "THE SCREENER IS GRADED AS A ROLLER — his ruling, and the end of the three anonymous corner seats",
+      "note": "recal_213's set paid the named man 0.80 and handed the leftovers 0.25 x `cornerMean`; all five men now have a job the set actually asks of them"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "export const hubFit = \\(_five: Player\\[\\], p: Player\\): number => rel\\('hubScore', hubScore\\(p\\.attrs\\)\\)",
+      "label": "`primacy` IS DELETED FROM THE HUB — the height leg picks the big, unaided",
+      "note": "it was written when hubScore was (playvol, shot) x bigMan, a product that zeroed short men by itself; with the height leg ADDITIVE it became the only selector, and it selects whoever passes MOST. 892 of 1,255 fives nominated a hub under 6'6\"; 48 now, and 0 of the 96 that READ the hand-off. DHO_GUARD stays exported as the record"
+    },
+    {
+      "file": "src/engine/tactics.ts",
+      "pattern": "  pindown: \\{ mu: 57\\.382, sd: 5\\.420 \\},\\s*\n  dho: \\{ mu: 86\\.378, sd: 6\\.388 \\},",
+      "label": "THE TWO STYLE_REF ROWS THE THREE RULINGS MOVE, re-measured in the dispatch's order — spot first, style second",
+      "note": "pindown 59.017/7.434 -> 57.382/5.420 and dho 77.277/8.731 -> 86.378/6.388; the other nine reproduced unchanged, and SPOT_REF reproduced to the thousandth on all fourteen terms a second time. Removing primacy WITHOUT re-measuring made hand-off read 43% of the board; re-measured it reads 7%"
     }
   ],
   "expect": [
     {
-      "five": ["John Stockton '97", "Jeff Hornacek '97", "Bryon Russell '97", "Karl Malone '97", "Greg Ostertag '97"],
-      "scale": "team:off", "op": "~", "value": 95, "tol": 0,
+      "five": [
+        "John Stockton '97",
+        "Jeff Hornacek '97",
+        "Bryon Russell '97",
+        "Karl Malone '97",
+        "Greg Ostertag '97"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 95,
+      "tol": 0,
       "label": "Jazz '97 team:off — unmoved: tactics.ts is not in the rating path"
     },
     {
-      "five": ["Byron Scott '87", "Michael Cooper '87", "James Worthy '87", "Magic Johnson '87", "Kareem Abdul-Jabbar '87"],
-      "scale": "team:off", "op": "~", "value": 66, "tol": 0,
+      "five": [
+        "Byron Scott '87",
+        "Michael Cooper '87",
+        "James Worthy '87",
+        "Magic Johnson '87",
+        "Kareem Abdul-Jabbar '87"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 66,
+      "tol": 0,
       "label": "Lakers '87 team:off — unmoved"
     },
     {
-      "five": ["Derrick White '25", "Jrue Holiday '25", "Jaylen Brown '25", "Jayson Tatum '25", "Kristaps Porziņģis '25"],
-      "scale": "team:off", "op": "~", "value": 48, "tol": 0,
+      "five": [
+        "Derrick White '25",
+        "Jrue Holiday '25",
+        "Jaylen Brown '25",
+        "Jayson Tatum '25",
+        "Kristaps Porziņģis '25"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 48,
+      "tol": 0,
       "label": "Celtics '25 team:off — unmoved"
     },
     {
-      "five": ["Russell Westbrook '25", "Jamal Murray '25", "Michael Porter Jr. '25", "Aaron Gordon '25", "Nikola Jokić '25"],
-      "scale": "team:off", "op": "~", "value": 87, "tol": 0,
+      "five": [
+        "Russell Westbrook '25",
+        "Jamal Murray '25",
+        "Michael Porter Jr. '25",
+        "Aaron Gordon '25",
+        "Nikola Jokić '25"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
       "label": "Nuggets '25 team:off — unmoved, though their READ moves dho -> horns"
     },
     {
-      "five": ["Stephen Curry '16", "Andre Iguodala '16", "Klay Thompson '16", "Draymond Green '16", "Andrew Bogut '16"],
-      "scale": "team:def", "op": "~", "value": 68, "tol": 0,
+      "five": [
+        "Stephen Curry '16",
+        "Andre Iguodala '16",
+        "Klay Thompson '16",
+        "Draymond Green '16",
+        "Andrew Bogut '16"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 68,
+      "tol": 0,
       "label": "Warriors '16 team:def — unmoved: no defensive term is in this round"
     },
     {
-      "five": ["Mark Jackson '96", "Reggie Miller '96", "Derrick McKey '96", "Dale Davis '96", "Rik Smits '96"],
-      "scale": "team:def", "op": "~", "value": 47, "tol": 0,
+      "five": [
+        "Mark Jackson '96",
+        "Reggie Miller '96",
+        "Derrick McKey '96",
+        "Dale Davis '96",
+        "Rik Smits '96"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 47,
+      "tol": 0,
       "label": "Pacers '96 team:def — the subject's other dial, unmoved"
     },
     {
-      "card": "Draymond Green '16", "scale": "off", "op": "~", "value": 59, "tol": 0,
+      "card": "Draymond Green '16",
+      "scale": "off",
+      "op": "~",
+      "value": 59,
+      "tol": 0,
       "label": "Draymond '16 OFF — the round's subject card does not move a rating; the ELBOW is not a rating"
     },
     {
-      "card": "Russell Westbrook '16", "scale": "off", "op": "~", "value": 87, "tol": 0,
+      "card": "Russell Westbrook '16",
+      "scale": "off",
+      "op": "~",
+      "value": 87,
+      "tol": 0,
       "label": "Westbrook '16 OFF — unmoved"
     },
     {
-      "card": "Klay Thompson '15", "scale": "off", "op": "~", "value": 79, "tol": 0,
+      "card": "Klay Thompson '15",
+      "scale": "off",
+      "op": "~",
+      "value": 79,
+      "tol": 0,
       "label": "Klay '15 OFF — unmoved; only his ELBOW read moves, 69 -> 57"
     },
     {
-      "card": "Nikola Jokić '25", "scale": "ovr", "op": "~", "value": 91, "tol": 0,
+      "card": "Nikola Jokić '25",
+      "scale": "ovr",
+      "op": "~",
+      "value": 91,
+      "tol": 0,
       "label": "Jokić '25 OVR — a star that must not move"
     },
     {
-      "card": "Stephen Curry '16", "scale": "ovr", "op": "~", "value": 90, "tol": 0,
+      "card": "Stephen Curry '16",
+      "scale": "ovr",
+      "op": "~",
+      "value": 90,
+      "tol": 0,
       "label": "Curry '16 OVR — a star that must not move"
     },
     {
-      "card": "Shaquille O'Neal '00", "scale": "ovr", "op": "~", "value": 96, "tol": 0,
+      "card": "Shaquille O'Neal '00",
+      "scale": "ovr",
+      "op": "~",
+      "value": 96,
+      "tol": 0,
       "label": "O'Neal '00 OVR — a star that must not move"
+    },
+    {
+      "five": [
+        "Tony Parker '16",
+        "Danny Green '16",
+        "Kawhi Leonard '16",
+        "LaMarcus Aldridge '16",
+        "Tim Duncan '16"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 55,
+      "tol": 0,
+      "label": "Spurs '16 team:off — unmoved, though the three fixes move their READ pindown -> dho on Duncan"
+    },
+    {
+      "five": [
+        "Mike Conley '17",
+        "Tony Allen '17",
+        "Vince Carter '17",
+        "Zach Randolph '17",
+        "Marc Gasol '17"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 46,
+      "tol": 0,
+      "label": "Grizzlies '17 team:off — unmoved, though their READ moves triangle -> dho on Marc Gasol"
+    },
+    {
+      "five": [
+        "José Calderón '10",
+        "Jarrett Jack '10",
+        "Hedo Türkoğlu '10",
+        "Andrea Bargnani '10",
+        "Chris Bosh '10"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 55,
+      "tol": 0,
+      "label": "Raptors '10 team:off — unmoved; their HUB goes back to Türkoğlu and the five still reads five-out"
+    },
+    {
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
+      "scale": "team:off",
+      "op": "~",
+      "value": 77,
+      "tol": 0,
+      "label": "Thunder '16 team:off — unmoved; their READ is RESTORED to recal_214's pick-and-pop"
+    },
+    {
+      "five": [
+        "Russell Westbrook '16",
+        "Andre Roberson '16",
+        "Kevin Durant '16",
+        "Serge Ibaka '16",
+        "Enes Freedom '16"
+      ],
+      "scale": "team:def",
+      "op": "~",
+      "value": 56,
+      "tol": 0,
+      "label": "Thunder '16 team:def — unmoved: no defensive term is in any of the three fixes"
     }
   ],
   "order": [
     {
-      "scale": "attr:rimprot", "above": "Draymond Green '16", "below": "Russell Westbrook '16",
+      "scale": "attr:rimprot",
+      "above": "Draymond Green '16",
+      "below": "Russell Westbrook '16",
       "label": "the bar the elbow's new body leg reads — unchanged by this round, and it is why the two men part"
     }
   ],
@@ -201,9 +387,21 @@
     "count": 0,
     "max_abs": 0,
     "top": [
-      ["Draymond Green '16", 59, 59],
-      ["Russell Westbrook '16", 87, 87],
-      ["Klay Thompson '15", 79, 79]
+      [
+        "Draymond Green '16",
+        59,
+        59
+      ],
+      [
+        "Russell Westbrook '16",
+        87,
+        87
+      ],
+      [
+        "Klay Thompson '15",
+        79,
+        79
+      ]
     ]
   },
   "notes": [
@@ -220,15 +418,30 @@
     "WHICH PINNED RULES ARE STILL CONTRADICTED, each re-pointed with its ruling named and none deleted or loosened. (a) recal_115's \"a five with ONE clear star still reads helio\" — the Thunder '22 read the hand-off hub 65.53 against helio 62.69; the DUO VETO half of that ruling is untouched. (b) recal_213's \"NO GUARD becomes an elbow man\" — it can no longer be stated as an equality, because only the PASSING leg is scaled by size: 19 of the 2,510 elbow seats over the wheel (0.8%) go to a man under 6'6\", and 147 of 3,519 short cards (4.2%) read above the pool's median elbow. (c) recal_213's \"NO GUARD becomes a hub\" — the same, and worse: with the hub ADDITIVE a guard keeps 0.50 x his play volume, so 892 of the 1,255 wheel fives NOMINATE a hub under 6'6\", though only 13 of the 152 fives that actually READ the hub have one. (d) his Nuggets ruling that horns is capped below them — the Nuggets '25 now read horns at 91.09; the dispatch forbids tuning horns and HORN_BASE is left where his ruling put it. (e) recal_124's \"the Lakers '00 and the Rockets '94 read post-up\" — both lose to MOTION by two tenths of a point (68.05/67.84 and 71.22/71.03), the round's thinnest contradiction, and both still NOMINATE O'Neal and Olajuwon.",
     "TWO SATURATIONS MEASURED AND LEFT ALONE. (1) The z clamps at 0..99: 16 of the 12,550 style readings over the wheel sit on the top rail (14 triangle, 1 fiveout, 1 horns) and 27 on the bottom (21 postup, 5 pnr, 1 helio) — 0.34% in total. (2) The hand-off hub's own case ends in `clamp(..., 0, 100)`, written when its legs were raw spot scores; with every leg a z centred on 50 that ceiling now binds on 35 of the 1,255 fives (2.8%) and on 26 of the 152 that read the hub, so Sabonis cannot move the Kings '24 fit. Raising it would be tuning a constant no ruling asked about.",
     "TEST SURFACE: 65 tests failed on the merged base after the engine file landed and 64 are re-pointed — every one with a comment naming the ruling in his words, none deleted, none loosened. Where a bound changed UNITS rather than value it is now asserted on `styleFitRaw` as well as on the z: the worst one-point attribute step over the pinned fives is 12.23 raw (Murray '25, playvol 94 -> 95, the Nuggets' handler slot crossing) — inside the old 22 — and 33.82 after the pick-and-roll's 2.77x magnification, and both are pinned. The 65th is the PLAYSTYLE row and it is left red on purpose.",
-    "RECONCILED FROM recal_225 RATHER THAN RE-DERIVED: `src/ui/spotFit.ts` keeps recal_225's version (the 'wing' row reading `cornerFit`) and compiles against the new exports unchanged; CORNER_SHOT / CORNER_EFF are restored as named weights the scratch tree had inlined; `elitePass`/ELITE_PV/ELITE_LIFT, `shyBig` and `heightRamp` are deleted, because recal_224 had already written their deletion notes and the scratch tree left the declarations behind; and `styleFit` now guards `Number.isFinite(raw)` so recal_127's dead `transition` still reads UNDEFINED rather than an ordinary 50 — a stale save must not start pricing as a real call."
+    "RECONCILED FROM recal_225 RATHER THAN RE-DERIVED: `src/ui/spotFit.ts` keeps recal_225's version (the 'wing' row reading `cornerFit`) and compiles against the new exports unchanged; CORNER_SHOT / CORNER_EFF are restored as named weights the scratch tree had inlined; `elitePass`/ELITE_PV/ELITE_LIFT, `shyBig` and `heightRamp` are deleted, because recal_224 had already written their deletion notes and the scratch tree left the declarations behind; and `styleFit` now guards `Number.isFinite(raw)` so recal_127's dead `transition` still reads UNDEFINED rather than an ordinary 50 — a stale save must not start pricing as a real call.",
+    "THREE RULINGS OF 2026-09-30 ARE FOLDED INTO THIS ROUND RATHER THAN SHIPPED AS A KNOWN DEFECT AND CORRECTED A ROUND LATER (his words: \"Fold them into 226\"). All three are in src/engine/tactics.ts, none of them touches python, offense.ts, a rating or a card attribute, and `npm run anchors` still reads 222 anchors, 0 failing, mean |error| 1.00 — main's own number.",
+    "FIX 1, THE PIN-DOWN IS RESEATED. His ruling verbatim: \"In pindown, we have 2 players coming off pin down screens. Therefore, we have 2 shooters, and screeners. Pin down screener should be roller. So 2 shooters, 1 handler, 2 rollers.\" The set is symmetrical, so all five men have a real job and the three anonymous corner seats recal_213's one-shooter set handed its leftovers (0.25 x `cornerMean`) are gone. PIN_W_SHOOT .25 x2 + PIN_W_PASS .20 + PIN_W_ROLL .15 x2 = 1.00. Nomination: the top two by `pinScore` are the shooters (the plan's named man first when there is one, so a CALL still names who the set is run for), the best `passerFit` of the remaining three is the handler, the last two are the screeners and are graded on `screenFit` — the roller term, his ruling. PIN_W_MAN 0.80 survives as the record of the one-shooter set and is read by nothing.",
+    "FIX 2, `DHO_GUARD`'s PRIMACY FADE IS DELETED FROM `hubFit`. This is the defect recal_226's own report flagged — 892 of 1,255 fives nominated a hub under 6'6\" and Toronto '10's hub was Calderón. The cause is that primacy was written when `hubScore` was `(playvol, shot) x bigMan`, a product that zeroed short men by itself, so primacy was only breaking ties among men the height multiplier had already admitted; his ruling \"DHO hub should be - height playvol only\" made the height leg ADDITIVE and removed `bigMan`, leaving primacy as the ONLY selector — and what it selects is whoever passes MOST, which is the point guard. MEASURED: hubs under 6'6\" 892 -> 48 of 1,255, and of the 96 fives that actually READ hand-off, ZERO have a short hub (it was 13 of 152). DHO_GUARD stays exported as the record.",
+    "FIX 2's PINNED RULE IS BACK. recal_213's \"NO GUARD becomes a hub\" was listed as contradicted AND GETTING WORSE in this round's first pass; it is RESTORED as the rule it was written as. The two fives it was written for both read right again: the Raptors '10's hub is HEDO TÜRKOĞLU (6'10\") rather than Calderón (6'3\"), and the Warriors '16's is ANDREW BOGUT (7'0\") rather than Curry (6'2\"). It is not an equality — 48 of 1,255 nominations (3.8%) still go to a man under 6'6\", on fives with no big who passes at all — but a player never SEES one, because the hand-off never wins those fives.",
+    "FIX 3, `stylePts`'s SLOPE 0.25 -> STYLE_SLOPE 0.20, the constant this round's first pass correctly refused to invent and he has now ruled. The diagnosis was right and is the justification: relativising gave every style a spread of 15 where they had run 5.2 to 14.8, so the same slope prices a blind call far harder. 0.143 would restore the old blind cost exactly; he chose 0.20 because it keeps more of the payout scale (mean |pts| 2.64 against 3.25 at the old slope, where 0.143 pays 1.92). WHAT 0.20 BUYS, measured over the 1,255 wheel fives x 11 styles: the +10 rail EMPTIES — 26 fives were pinned flat at their own best style and now none are (132 of 12,550 five x style pairs sat on the clamp, now 33, every one of them at the -10 floor on an absurd mismatch). That is the half of the fault that was flattening precisely the teams the fit exists to separate.",
+    "THE PLAYSTYLE ROW, ASKED FOR BY NAME AND REPORTED NOT TUNED: it is STILL RED, by 0.17. Blind -1.77 (relative scale, old slope) -> -1.94 once fixes 1 and 2 landed, because both make the board SHARPER, which is the point of them and costs the law -> -1.67 / oracle +3.25 at his 0.20, against the -1.50 floor. 0.143 reads -1.30 / +2.62 and would PASS. Left red at 0.17, not loosened, not deleted, not skipped; the test's own comment carries the whole decomposition.",
+    "THE ORDER THE DISPATCH NAMES WAS OBSERVED A SECOND TIME. SPOT_REF re-measured FIRST and reproduced to the thousandth on all fourteen terms (nothing in the three fixes touches a spot formula or an attribute bar), THEN every STYLE_REF row through `styleFitRaw`. Two rows moved and only the two whose raw distribution the rulings move: pindown 59.017/7.434 -> 57.382/5.420 (averaging two men of each kind cancels the extremes a single nomination kept) and dho 77.277/8.731 -> 86.378/6.388 (every hub seat now holds a big, and a big scores the hub term nine raw points higher). The other nine reproduced unchanged. THIS IS NOT OPTIONAL: when the scratch tree removed primacy WITHOUT re-measuring, hand-off read 43% of the board; re-measured it reads 7%.",
+    "THE FINISHED BOARD over the 1,255 wheel fives: pindown 190 · motion 188 · triangle 125 · postup 121 · helio 119 · pickpop 107 · fiveout 104 · dho 95 · pnr 87 · balanced 71 · horns 48. THE DISPATCH'S OWN FIGURE IS CORRECTED, not confirmed: it read pindown 194 · motion 186 · postup 142 · triangle 130 · helio 119 · pickpop 112 · dho 94 · pnr 89 · balanced 76 · fiveout 64 · horns 49, which was measured on the scratch branch `_page` — a tree that still carries `shyBig`, `heightRamp`, the inlined corner weights and the pre-recal_226 popper, and whose five-out therefore reads 40 fives lower. Against recal_226's own base (motion 184, dho 150, triangle 139, postup 134, helio 115, pindown 111, pickpop 106, pnr 97, fiveout 96, balanced 83, horns 40) the three fixes move the hand-off 150 -> 95 and the pin-down 111 -> 190, and nothing else by more than 18.",
+    "THE CAMPAIGN STILL CANNOT REORDER AFTER THE THREE FIXES: all 30 opponents in src/data/opponents.json read exactly the same team:off and team:def dial before and after, 0 dials moved, verified by stashing the three fixes and re-running. 11 of the 30 CAPTIONS move, which is a label and not a difficulty: 2 Pacers dho -> pickpop, 3 Nets dho -> horns, 4 Kings triangle -> pindown, 7 Mavericks dho -> postup, 11 Warriors pindown -> motion, 13 Blazers dho -> fiveout, 18 Suns triangle -> pindown, 19 Hawks dho -> triangle, 20 Raptors dho -> motion, 21 Timberwolves dho -> fiveout, 29 Spurs pickpop -> dho.",
+    "HORNS IS STILL UNTOUCHED AND STILL REPORTED: it correlates 0.864 with general team quality, the highest of the eleven, and wins 48 of 1,255 (3.8%) after the three fixes against 40 before. No horns constant moved in this round or in these three fixes.",
+    "TEST SURFACE OF THE THREE FIXES: 21 tests failed, 20 are re-pointed with a comment naming the ruling in his words, none deleted and none loosened, and the 21st is the PLAYSTYLE row left deliberately red. Two re-points are STRONGER than what they replaced: the triangle's style-points gap is now tied to STYLE_SLOPE itself rather than to a hard-coded 9, and the Nuggets' hand-off read is asserted on `styleFitRaw` (100.0, unchanged and still at the rail) as well as on the z (89.04 -> 81.99, a change of ruler and not of judgement). SIX RE-POINTS ARE RESTORATIONS: the Thunder '16 to recal_214's pick-and-pop, the Thunder '22 and the Thunder '24 to recal_115's helio, the Pacers '96 to the pin-down recal_213's own brief names them for, the Raptors '10's hub to Türkoğlu and the Warriors '16's to Bogut.",
+    "WHAT THE THREE FIXES MOVED AMONG THE 33 REFERENCE FIVES, 10 of them: Thunder '16 pindown 77.72 -> pickpop 75.87 (RESTORED to recal_214's ruling) · Thunder '22 dho 65.53 -> helio 62.69 (RESTORED to recal_115's) · Thunder '24 pindown -> helio 74.39 (RESTORED) · Pacers '96 postup 64.74 -> pindown 87.39 (RESTORED to recal_213's brief) · Spurs '16 pindown 64.07 -> dho 73.27 on Duncan (still contradicting \"2) Motion, or balanced\", now by a big man's hand-off) · Grizzlies '17 triangle 68.30 -> dho 78.42 on Marc Gasol · Sixers '23 pindown 86.89 -> dho 81.10 on Embiid · Kings '24 dho 89.04 -> fiveout 84.18, hub still Sabonis · Pelicans '16 pindown 81.55 -> pickpop 76.83 · the Curry/Klay/LeBron/Draymond/Gobert reference five dho 89.04 -> horns 86.02. The other 23 hold, including Jazz '97 triangle, Bulls '96/'97 triangle, Celtics '25 five-out, Lakers '00 and Rockets '94 motion, Warriors '16/'17 motion, Nets '23 and Sixers '18 horns, Raptors '10 five-out and the Spurs '16 BENCH on motion at 90.73."
   ],
   "cost": [
     "LEVEL is gone and cannot be brought back as an offset: it was eleven constants fitted to force an even board, and being an offset it could only make eleven curves whose slopes ran 0.30 to 1.38 agree at ONE point. Anything that wants to move the board now moves a weight, a reference, or the style tax.",
     "SPOT_REF and STYLE_REF are FROZEN by design. If they floated, a regeneration that lifted every shooter would lift the mean with them and cancel itself out, and the board could never move. Re-measuring them is its own round, and it must be done in that order — spot first, style second — or a style reference is measured against a ruler that is about to move (horns briefly won ZERO of 1,255 fives when the scratch tree did it the other way).",
-    "The deviation tax law's PLAYSTYLE row is RED at blind -1.77 against a -1.50 floor. It is a SLOPE problem (`stylePts`'s 0.25, fitted on the raw scale) and not a tax problem, so the next round that touches it should move the slope and not TAX.style.",
+    "The deviation tax law's PLAYSTYLE row is RED at blind -1.67 against a -1.50 floor, after his ruled slope STYLE_SLOPE 0.20 brought it in from -1.94. It is still a SLOPE question and not a tax question: 0.143 reads -1.30 and PASSES, and he chose 0.20 knowingly, for the payout scale. A later round that wants the row green moves STYLE_SLOPE, not TAX.style, and should expect to give up about a quarter of the fit's payout to do it.",
     "The hand-off hub's `clamp(..., 0, 100)` binds on 2.8% of the wheel and the iso's does not bind at all (max raw 73.36). If a later round wants the hub to be movable everywhere, that ceiling is the thing to raise, and it should be raised alone and measured.",
-    "`primacy` (DHO_GUARD 25) is now the ONLY thing separating a guard from a big at the hand-off hub, and it points the wrong way: it fades a man who passes LESS than the five's best passer, and the guard usually IS that man. 892 of 1,255 fives nominate a short hub. Whoever rules on this next should know the fix is in the NOMINATION, not in `hubScore`, whose shape is his own ruling.",
+    "`primacy` (DHO_GUARD 25) IS DELETED from `hubFit` by his 2026-09-30 ruling, and the constant survives as the record. Do not revive it as a fade on an ADDITIVE hub: it fades a man who passes LESS than the five's best passer, so on an additive score it selects the point guard, which is the opposite of \"a big man's hands, not a guard's\". The height leg is what does that job now. The residue is 48 of 1,255 fives (3.8%) nominating a hub under 6'6\" — fives with no passing big at all — and 0 of the 96 that READ the hand-off, so a player never sees one.",
     "`bigMan`, DHO_PASS, DHO_SHOT, HORN_WEAK, HORN_STRONG, ELITE-era PNR_HDISC/PNR_PVFLOOR, HAND_TILT, MOT_HOLD/MOT_HOLD_FREE, ISO_PV/ISO_EFF/ISO_MID and HELIO_PV/HELIO_PV_W all survive as the RECORD of what an earlier round weighed and are read by no formula. Every one of them is asserted somewhere in tests/tactics.test.ts so a later round cannot quietly revive one.",
-    "`styleFitRaw` is newly exported. It is the only honest way to re-measure STYLE_REF (inverting a clamped z gives the wrong raw at the rails) and the only honest way to pin a bound that is about the fit's own arithmetic rather than about the scale a player sees. Later rounds should use it for both."
+    "`styleFitRaw` is newly exported. It is the only honest way to re-measure STYLE_REF (inverting a clamped z gives the wrong raw at the rails) and the only honest way to pin a bound that is about the fit's own arithmetic rather than about the scale a player sees. Later rounds should use it for both.",
+    "PIN_W_MAN 0.80 is now the record of recal_213's ONE-shooter pin-down and is read by nothing, like `bigMan`, DHO_PASS and DHO_SHOT. The live set is PIN_W_SHOOT/PIN_W_PASS/PIN_W_ROLL and they sum to 1.00 — a later round that moves one must move another, or a five of 99-across cards stops reading 99.",
+    "`featured('pindown', ...)` still names ONE man, the plan's shooter, even though the fit now reads TWO coming off. That is deliberate — the CALL names one man and the caption follows the call — but a round that wants the court to draw both pin-downs has to touch `featured` and `spotsFor` together, and that is a UI ruling, not this one.",
+    "STYLE_REF.pindown and STYLE_REF.dho were re-measured with these three fixes and are frozen again at 57.382/5.420 and 86.378/6.388. Any later change to the pin-down's seats or to who takes the hub invalidates BOTH rows and must re-measure them — spot reference first, style reference second, through `styleFitRaw`. Removing primacy without that step made the hand-off read 43% of the board."
   ]
 }
