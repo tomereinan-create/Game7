@@ -9665,7 +9665,10 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) { zoom: var(--desk-zoom); }
   .sheet:not(.sheet2):not(.tdb-sheet):not(.pc-term) > * { max-width: 520px; }
   /* pages that already fill: a lighter hand */
-  .tdb-sheet { zoom: var(--desk-zoom-lite); }
+  /* THE TEAMS LIST ONLY — his report, 2026-10-01, with a picture of a team page cut off at the floor:
+     "I dont see everything." The team page is a full-screen layout that sizes itself to the window,
+     so a scale pushes its lower half out of it; the list is a list. */
+  .tdb-sheet.tdb-list { zoom: var(--desk-zoom-lite); }
   .sheet.pc-term { zoom: var(--desk-zoom-lite); }
   .sheet.sheet2.gamesheet, .sheet.sheet2.an { zoom: var(--desk-zoom-mid); }
   .draft .card:has(.mp-row) { zoom: var(--desk-zoom-lite); }
@@ -9693,4 +9696,33 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .rowhead span, .rowhead .gcap { font-size: clamp(8px, 0.6vw, 20px); }
   .rowhead { height: auto; min-height: 24px; }
   .myteam .col.a .card-head .cap, .myteam .sal { font-size: clamp(12px, 0.75vw, 24px); }
+}
+
+/* =====================================================================================
+   THE FIVE-IN SCREEN ON A DESK — his ruling, 2026-10-01: "Make the jumbotron bigger and the
+   playbook next to it. Make the matchup inside the playbook." The jumbotron's column gives up
+   its 744px cap, and a fourth column stands beside it: the playbook as a card, the board as its
+   last section. `.has-plan` is set by the draft when the five is in, the window is 1150 or wider,
+   and there is a playbook or a board to stand.
+   ===================================================================================== */
+@media (min-width: 1150px) {
+  .draft.set.solo { grid-template-columns: min(1400px, 100%); }
+  .draft.set.has-plan { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.55fr) minmax(0, 1.05fr); }
+  .draft.set.solo.has-plan { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); max-width: 3200px; margin: 0 auto; justify-content: stretch; }
+  .draft .col.d { order: 4; min-width: 0; }
+  .draft .col.d .playcard { display: flex; flex-direction: column; gap: 10px; }
+  .side-switch { display: inline-flex; gap: 6px; }
+  .playworth { margin-top: -4px; }
+  .playcalls.standing { display: grid; gap: 0; }
+  .mboard-inline { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+  .mboard-inline > .card { margin: 0; }
+  .mboard-inline .lede { margin: 0; }
+}
+@media (min-width: 1150px) {
+  /* the inline board takes the sheet's desk sizes */
+  .mboard-inline .mdef { padding: clamp(6px, 0.6vw, 22px) clamp(8px, 0.8vw, 28px); border-radius: clamp(8px, 0.5vw, 18px); }
+  .mboard-inline .mrow { gap: clamp(8px, 1.2vw, 44px); padding: clamp(8px, 0.6vw, 20px) 0; }
+  .mboard-inline .mdef b, .mboard-inline .mo b { font-size: clamp(13px, 0.9vw, 30px); }
+  .mboard-inline .mdef i, .mboard-inline .mo i { font-size: clamp(9px, 0.62vw, 20px); }
+  .mboard-inline .arrow { font-size: clamp(14px, 1vw, 32px); }
 }

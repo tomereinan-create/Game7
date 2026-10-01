@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
-import { bestStyle, canSpace, featured, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
+import { bestStyle, canSpace, featured, passerFit, pinMan, pinScore, pnrPair, popPair, SCHEMES, STYLES, type Scheme, type StyleCall, type Style, type Tactics } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { cardInk, type TeamColor } from './teamColors'
 
@@ -328,7 +328,57 @@ export function inferredStyle(five: (Player | null)[]): { style: Style; fit: num
   return men.length < 5 ? null : bestStyle(men)
 }
 
-export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' | 'iso'> | null | undefined, five: (Player | null)[]): XY[] {
+/**
+ * NO TWO MEN ON ONE SPOT — his ruling, 2026-10-01: "Some tactics players are one over the other and
+ * its unreadable. Make sure it never happens." Every set is drawn by hand and some put two men a
+ * step apart, and a step is less than a bust. So after any set is laid out, any pair standing
+ * closer than a bust's width are pushed apart along the line between them, a little at a time,
+ * until none are — kept on the floor, and a pair on the very same point are parted sideways. The
+ * sets are untouched; this is the last word over all of them.
+ */
+export const APART_FT = 8.5
+const apart = (xy: XY[]): XY[] => {
+  const min = APART_FT * FT
+  const pts = xy.map(([x, y]) => [x, y] as [number, number])
+  const lo = 50 - SIDE + 4
+  const hi = 50 + SIDE - 4
+  const top = HALF + 4
+  const foot = BASE - 3
+  for (let pass = 0; pass < 40; pass++) {
+    let moved = false
+    for (let i = 0; i < pts.length; i++)
+      for (let j = i + 1; j < pts.length; j++) {
+        let dx = pts[j][0] - pts[i][0]
+        let dy = pts[j][1] - pts[i][1]
+        let d = Math.hypot(dx, dy)
+        if (d >= min - 1e-6) continue
+        if (d < 1e-6) {
+          dx = 1
+          dy = 0
+          d = 1
+        }
+        const push = (min - d) / 2 + 0.01
+        const ux = dx / d
+        const uy = dy / d
+        pts[i][0] -= ux * push
+        pts[i][1] -= uy * push
+        pts[j][0] += ux * push
+        pts[j][1] += uy * push
+        for (const p of [pts[i], pts[j]]) {
+          p[0] = Math.min(hi, Math.max(lo, p[0]))
+          p[1] = Math.min(foot, Math.max(top, p[1]))
+        }
+        moved = true
+      }
+    if (!moved) break
+  }
+  return pts.map(([x, y]) => [x, y] as const)
+}
+
+export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' | 'iso' | 'pindown'> | null | undefined, five: (Player | null)[]): XY[] {
+  return apart(spotsRaw(plan, five))
+}
+function spotsRaw(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' | 'iso' | 'pindown'> | null | undefined, five: (Player | null)[]): XY[] {
   const men = five.filter((p): p is Player => !!p)
   const style = plan ? plan.style : inferredStyle(five)?.style
   if (!style || men.length < 5) return [...AT]
@@ -500,16 +550,34 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' 
       return stand(men, { [h]: ELBOW_R, [l]: TRI_PINCH }, [[peri(0, 6), 1], [CORNER_L, 2], [CORNER_R, 2]], [DUNK_R])
     }
     case 'pindown': {
-      // THE MAN WITHOUT THE BALL (recal_213). The one set on this floor whose featured man is drawn
-      // where he is GOING rather than where he stands: the shooter has come off two staggered screens
-      // up the strong side and catches on the wing. The two screens are the strong-side elbow and the
-      // strong-side post, and they are INSIDE spots (rank 0), so `stand` sends the men who cannot
-      // shoot to set them and keeps the shooters out on the floor — the same rule the post-up's
-      // dunker spot follows. The passer stands above the break on the weak side of the middle,
-      // because the ball has to be delivered across the shooter's path, and the fifth man holds the
-      // weak-side corner.
-      const s = who(men, 'pindown', plan)
-      return stand(men, { [s]: TRI_WING }, [[peri(-12, 5), 1], [ELBOW_R, 0], [TRI_POST, 0], [CORNER_L, 2]])
+      // TWO PIN-DOWNS, ONE ON EACH SIDE (his ruling, 2026-09-30: "In pindown, we have 2 players
+      // coming off pin down screens. Therefore, we have 2 shooters, and screeners. Pin down screener
+      // should be roller. So 2 shooters, 1 handler, 2 rollers" — seated by recal_226). The two
+      // shooters come off their screens and catch on the two wings; the handler stands at the top
+      // with the ball to deliver to either; the two screeners stand on the two posts, one each
+      // side, where the pin-downs are set. Seats as the engine nominates them: the top two by
+      // pinScore are the shooters (the plan's named man first), the best passer of the rest is the
+      // handler, the last two set the screens. It used to stack both screens on the strong side —
+      // the elbow and the post — which is where two men stood on top of each other (his report,
+      // 2026-10-01: "Some tactics players are one over the other and its unreadable").
+      const named = pinMan(men, plan?.pindown).shooter
+      const byShot = [...men].sort((a, b) => pinScore(b.attrs) - pinScore(a.attrs))
+      const shooters = [named ?? byShot[0], ...byShot.filter((p) => p !== (named ?? byShot[0]))].slice(0, 2)
+      const rest = men.filter((p) => !shooters.includes(p))
+      const handler = rest.reduce((m, p) => (passerFit(p.attrs) > passerFit(m.attrs) ? p : m), rest[0])
+      const screeners = rest.filter((p) => p !== handler)
+      const seat = (p: Player) => men.indexOf(p)
+      return stand(
+        men,
+        {
+          [seat(shooters[0])]: TRI_WING,
+          [seat(shooters[1])]: peri(-46, 4),
+          [seat(handler)]: peri(0, 6),
+          [seat(screeners[0])]: TRI_POST,
+          [seat(screeners[1])]: at(-8, 12),
+        },
+        [],
+      )
     }
     case 'dho': {
       // A BIG MAN'S HANDS (recal_213). Helio's floor stands its engine alone at the top with four men
@@ -525,6 +593,10 @@ export function spotsFor(plan: Pick<Tactics, 'style' | 'pnr' | 'post' | 'helio' 
       // line, this one holds the ball inside it.
       return stand(men, { [s]: at(0, 21) }, [[peri(-36), 1], [peri(36), 1], [CORNER_R, 2], [DUNK_L, 0]])
     }
+    default:
+      // a style with no drawing of its own (a stale save's isolation, a key this floor has not
+      // learned) stands in the balanced shape rather than drawing nothing
+      return [...AT]
   }
 }
 

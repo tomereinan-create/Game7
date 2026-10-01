@@ -117,6 +117,17 @@ export default function App() {
     return all
   })
   const [level, setLevel] = useState<number | null>(null)
+  /**
+   * THE STAGE HE CAME FROM (his ruling, 2026-10-01: "Pressing back to map should lead me to the
+   * stage I was at"). The map centred on the NEXT level every time it mounted, so walking out of
+   * level 78's draft on a cleared ladder landed him at the top of the trail, 72 rungs from where
+   * he was. The last level opened is kept across the walk back and the map centres on it; a
+   * fresh entry from the front door (`leave` clears it) centres on the next level as before.
+   */
+  const [lastLevel, setLastLevel] = useState<number | null>(null)
+  useEffect(() => {
+    if (level) setLastLevel(level)
+  }, [level])
   const [pending, setPending] = useState<Pending | null>(null)
   const [pickTeam, setPickTeam] = useState(false)
   /**
@@ -544,6 +555,7 @@ export default function App() {
     if (auto) autoOff(auto)
     setMode(null)
     setLevel(null)
+    setLastLevel(null)
     setPending(null)
     setPickTeam(false)
     setStaff(false)
@@ -784,6 +796,7 @@ export default function App() {
           eras={ERAS}
           teamName={teamName}
           onPlay={setLevel}
+          focus={lastLevel}
           onTeam={() => setPickTeam(true)}
           onStaff={() => setStaff(true)}
           salary={capped}
