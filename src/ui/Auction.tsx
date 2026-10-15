@@ -12,6 +12,7 @@ import { HeatHex } from './HeatHex'
 import { BUDGET, machineTakes, SLOTS, type MachineCtx, type Skill } from './machine'
 import { PlayerCard } from './PlayerCard'
 import { Series } from './Series'
+import { play } from './sfx'
 import { LINES } from './Stat'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -221,6 +222,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const sell = (i: 0 | 1, p: number) => {
     const opts = legalOpen(i, man)
     if (!opts.length) return advance(`${man.name} — no chair could field him, off the block`) // defensive; the gate forbids it
+    // the hammer: the till for a human's buy, just the chips for the Machine's
+    play(i === 1 && foe === 'bot' ? 'bid' : 'sold')
     // H2: the hammer is when the money goes. Every route out of this function ends in the man being
     // seated — directly, or through the slot chooser — so charging here charges exactly once.
     setBudget((cur) => (i === 0 ? [cur[0] - p, cur[1]] : [cur[0], cur[1] - p]))
@@ -238,6 +241,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
     // the other chair is beaten flat — out already, or a raise would break his $1-a-slot floor: auto-pass, sold
     if (outFor(k) || p + 1 > ceiling(k)) sell(i, p)
     else {
+      play('bid')
       setPrice(p)
       setTop(i)
     }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { dismiss, openIndex, replay, resetTutorial, useTutor, type Lesson } from '../state/tutorial'
 import { setViewMode, useTutorial } from '../state/viewmode'
+import { play } from './sfx'
 
 /**
  * THE COACH — the tutorial's one piece of furniture, on every screen (his ruling, 2026-09-30:
@@ -67,8 +68,12 @@ export function Coach() {
   const cardRef = useRef<HTMLDivElement>(null)
   const scrolledFor = useRef<string>('')
 
-  // a new lesson starts at its first step
-  useEffect(() => setStep(0), [lesson?.id])
+  // a new lesson starts at its first step, and the coach clears his throat
+  useEffect(() => {
+    setStep(0)
+    if (lesson) play('coach')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lesson?.id])
 
   const s = lesson?.steps[Math.min(step, (lesson?.steps.length ?? 1) - 1)] ?? null
   const last = !!lesson && step >= lesson.steps.length - 1

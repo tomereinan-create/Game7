@@ -2,7 +2,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { CardProvider } from './ui/CardSheet'
+import { installSfx } from './ui/sfx'
 import './styles.css'
+
+// every button's tap sound, and the first tap that lets the browser play any sound at all
+installSfx()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

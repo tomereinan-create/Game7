@@ -32,6 +32,7 @@ import { boardLesson, draftLesson, durLesson, landedLesson, planLesson, salaryLe
 import { CoachSays, CoachTipsDoor } from './UserRail'
 import { teamColor, type TeamColor } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
+import { play } from './sfx'
 // LegsLeft is no longer drawn here: it was the last block of user mode's game-night rail, which
 // his ruling of 2026-09-09 removed whole. It still lives in JerseyFive.
 import { TipOff, TIPOFF } from './JerseyFive'
@@ -869,6 +870,7 @@ export function Draft({
     setUpcoming(null)
     if (!res) {
       setDead(true)
+      play('error')
       return
     }
     setSel(null)
@@ -880,6 +882,7 @@ export function Draft({
     // Reduced motion gets the answer and not the ride.
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setSpun(res)
+      play('reveal')
       return
     }
     setSpinning(true)
@@ -887,6 +890,7 @@ export function Draft({
     timer.current = window.setTimeout(() => {
       setSpun(res)
       setSpinning(false)
+      play('reveal')
     }, REEL_YEAR_MS + 120)
   }
 
@@ -920,6 +924,7 @@ export function Draft({
    */
   const commit = (at: Pos) => {
     if (!sel) return
+    play('pick')
     setSlots((cur) => ({ ...cur, [at]: sel }))
     setSpun(null)
     setDisplay(null)
@@ -1010,6 +1015,7 @@ export function Draft({
   /** The drop IS the pick — same transition as confirm(), which is what the dock button calls. */
   const draftAt = (name: string, to: Pos) => {
     if (!canDrop(name, to)) return
+    play('pick')
     setSlots((cur) => dropDraft(cur, posOf, name, to))
     setSpun(null)
     setDisplay(null)

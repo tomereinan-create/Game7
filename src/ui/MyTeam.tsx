@@ -3,6 +3,7 @@ import { archetype, PLAYERS } from '../engine/pool'
 import { useLayout } from './useLayout'
 import { wearSkin } from './teamColors'
 import { buildReels, REEL_YEAR_MS, SpinReels, type Hold, type ReelSpin } from './SpinReels'
+import { play } from './sfx'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot, type Slots } from '../engine/slots'
 // (orderFive lives below — the roster's slot order is derived here and honored everywhere)
@@ -334,6 +335,7 @@ export function MyTeam({
       // nothing legal to land on anywhere — say so the way it always did, with no reel to run
       setDisplay(null)
       setSpun(null)
+      play('error')
       return
     }
     onSpend() // the wheel does not turn twice for one change
@@ -343,6 +345,7 @@ export function MyTeam({
     // Reduced motion gets the answer and not the ride: the reels render already stopped on it.
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setSpun(res)
+      play('reveal')
       return
     }
     setSpinning(true)
@@ -350,6 +353,7 @@ export function MyTeam({
     timer.current = window.setTimeout(() => {
       setSpun(res)
       setSpinning(false)
+      play('reveal')
     }, REEL_YEAR_MS + 120)
   }
 
@@ -367,6 +371,7 @@ export function MyTeam({
   const confirm = () => {
     setBlocked(null)
     if (!sel || !out || !replaceable(sel).includes(out)) return
+    play('pick')
     if (out === BENCH_SLOT) onSign?.(sel)
     else onSwap(out, sel)
     setSpun(null)
@@ -463,7 +468,10 @@ export function MyTeam({
           : moving && moving !== p.name
             ? whySwitch(moving, p.name)
             : null
-    const refuse = () => setBlocked(why ? `${short(p.name)}: ${why}` : null)
+    const refuse = () => {
+      if (why) play('error')
+      setBlocked(why ? `${short(p.name)}: ${why}` : null)
+    }
     // his ruling: the band fills on the tap that is already there — the swap, the rest, the
     // position switch all still happen, and the man's sentence and season line come up with them
     const act = sel

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { TeamSeason } from '../data/wheel'
+import { whirr } from './sfx'
 
 /**
  * THE WHEEL, AS TWO REELS (his ruling, with a picture of Hearthstone's Finding Opponent screen:
@@ -93,7 +94,8 @@ export const REEL_STAGGER_MS = 800
 /** The whole slowing-down, in one piece. His "a bit more dramatic" lives in this number. */
 const LAND_MS = 1100
 /** A quintic ease-out: falls away steeply, then trails for a long time. */
-const LAND = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const LAND_CURVE = [0.22, 1, 0.36, 1] as const
+const LAND = `cubic-bezier(${LAND_CURVE.join(', ')})`
 /** That curve's x1/y1 — the reciprocal of how many times its own average it starts at. The landing
  *  distance is `v × LAND_MS × K`, which is what makes it start at exactly `v`. */
 const K = 0.22
@@ -209,6 +211,45 @@ export function stripFor(rows: number, spinMs: number): number {
  * two reels stay his 0.8s apart. The brake's own distance is derived from that same `v`, so the
  * hand-off is still seamless — a slightly faster reel brakes over slightly more ground.
  */
+/** How far through the brake the reel is (0–1) at a moment through it (0–1): `LAND` solved. */
+function brakeAt(x: number): number {
+  const [x1, y1, x2, y2] = LAND_CURVE
+  const at = (p1: number, p2: number, u: number) => 3 * p1 * u * (1 - u) ** 2 + 3 * p2 * u * u * (1 - u) + u ** 3
+  let lo = 0
+  let hi = 1
+  for (let i = 0; i < 30; i++) {
+    const m = (lo + hi) / 2
+    if (at(x1, x2, m) < x) lo = m
+    else hi = m
+  }
+  return at(y1, y2, (lo + hi) / 2)
+}
+
+/** The whirr is sampled this often. */
+export const WHIRR_STEP_MS = 10
+
+/**
+ * THE REEL'S SPEED, AS THE WHIRR HEARS IT: a fraction of flat-out every `WHIRR_STEP_MS`, from the
+ * press to the moment the reel stops visibly moving. The run is flat out; the brake's speed is the
+ * slope of `LAND`, which starts at exactly flat-out (that is what K is for). The quintic tail
+ * creeps for its last few hundred milliseconds, so the curve ends when there are fewer than two
+ * pixels to go rather than when the transition does — that is where the eye says it stopped.
+ */
+export function whirrRates(spinMs: number, brakePx: number): Float32Array {
+  const out: number[] = []
+  const dx = 0.002
+  for (let t = 0; ; t += WHIRR_STEP_MS) {
+    if (t <= spinMs) {
+      out.push(1)
+      continue
+    }
+    const x = (t - spinMs) / LAND_MS
+    if (x >= 1 || brakePx * (1 - brakeAt(x)) < 2) break
+    out.push((K * (brakeAt(Math.min(1, x + dx)) - brakeAt(x))) / dx)
+  }
+  return Float32Array.from(out)
+}
+
 export function reelPlan(rows: number, at: number, spinMs: number, from: number): ReelPlan {
   const strip = stripFor(rows, spinMs)
   const nominal = SPEED * spinMs + SPEED * LAND_MS * K
@@ -238,6 +279,7 @@ function Reel({
   onHold,
   nonce,
   wide,
+  pitch,
 }: {
   label: string
   rows: string[]
@@ -251,6 +293,8 @@ function Reel({
   onHold?: () => void
   nonce: number
   wide?: boolean
+  /** The whirr's pitch: the two reels sound apart, the team a little higher. */
+  pitch: number
 }) {
   const spinMs = ms - LAND_MS
   /**
@@ -289,9 +333,12 @@ function Reel({
     setMove({ y: plan.start, ms: 0, ease: 'linear' })
 
     const timers: number[] = []
+    let hush = () => {}
     const go = () => {
       setFast(true)
       setMove({ y: plan.mid, ms: plan.spinMs, ease: 'linear' })
+      // the sound rides the same clock as the strip, and stops where the eye says it stopped
+      hush = whirr(whirrRates(plan.spinMs, Math.abs(plan.mid - plan.end)), WHIRR_STEP_MS, pitch)
       timers.push(
         // the speed stops being constant and starts falling — at exactly the speed it was doing
         window.setTimeout(() => {
@@ -323,6 +370,7 @@ function Reel({
       cancelAnimationFrame(raf)
       window.clearTimeout(late)
       for (const t of timers) window.clearTimeout(t)
+      hush()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce])
@@ -375,6 +423,7 @@ export function SpinReels({ spin, spinning, hold = null, onHold }: { spin: ReelS
         rows={spin.team.rows}
         at={spin.team.at}
         ms={REEL_TEAM_MS}
+        pitch={1.12}
         spinning={spinning}
         frozen={spin.held === 'team'}
         held={hold === 'team'}
@@ -386,6 +435,7 @@ export function SpinReels({ spin, spinning, hold = null, onHold }: { spin: ReelS
         rows={spin.year.rows}
         at={spin.year.at}
         ms={REEL_YEAR_MS}
+        pitch={1}
         spinning={spinning}
         frozen={spin.held === 'year'}
         held={hold === 'year'}

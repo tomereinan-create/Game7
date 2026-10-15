@@ -13,6 +13,7 @@ import { WHEEL, posOf, type TeamSeason } from './Draft'
 import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
 import { PlayerCard } from './PlayerCard'
 import { Series } from './Series'
+import { play } from './sfx'
 
 const VS_POOL = 12
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
@@ -159,6 +160,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
     done || result || fielded.has(p.player) ? [] : legalRingsFor(slots, loaded, who, remaining, p.name)
 
   const place = (name: string, ring: Pos) => {
+    play('pick')
     setSlots((cur) => {
       const next: [Slots, Slots] = [{ ...cur[0] }, { ...cur[1] }]
       next[who][ring] = name

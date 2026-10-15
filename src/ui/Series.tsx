@@ -11,6 +11,7 @@ import { seriesBox, type BoxCtx, type PlayerBox, type SeriesBox } from '../engin
 import { Analysis } from './Analysis'
 import type { Assignment } from '../engine/offense'
 import { useLayout } from './useLayout'
+import { play } from './sfx'
 import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
@@ -421,6 +422,31 @@ export function Series({
     tapeRun.current = true
     setShown(result.games.length)
   }
+  /**
+   * THE NIGHT, HEARD: a whistle as the strip starts to fill, a chip landing for each game (pitched
+   * up for a win, down for a loss), and the verdict once the series has spoken — the crowd for a
+   * win, applause for the title, the sax for a loss. A skip lands every chip at once and sounds
+   * none of them; the verdict still comes.
+   */
+  const heard = useRef(shown)
+  useEffect(() => {
+    if (shown === 0) play('whistle')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  useEffect(() => {
+    if (shown === heard.current + 1) play('game', { rate: result.games[shown - 1]?.won ? 1.06 : 0.9 })
+    heard.current = shown
+  }, [shown, result])
+  const verdict = useRef(false)
+  useEffect(() => {
+    if (!settled || !done || verdict.current) return
+    // a beat after the last chip, so the deciding game is heard before the crowd drowns it
+    const t = window.setTimeout(() => {
+      verdict.current = true
+      play(!result.won ? 'lose' : !exhibition && opponent.round === ROUNDS ? 'champion' : 'win')
+    }, 300)
+    return () => window.clearTimeout(t)
+  }, [settled, done, result, exhibition, opponent.round])
   /** The series score as far as the strip has got, which is the final one once it is settled. */
   const runWins = result.games.slice(0, shown).filter((g) => g.won).length
   const runLosses = shown - runWins

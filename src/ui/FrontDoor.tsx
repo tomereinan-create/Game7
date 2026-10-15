@@ -3,6 +3,7 @@ import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { clubCode, currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
 import { setViewMode, useViewMode } from '../state/viewmode'
+import { setSoundOn, useSoundOn } from '../state/sound'
 import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
 import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
@@ -226,6 +227,7 @@ export function FrontDoor({
    * mode with a coach (state/viewmode.ts), so `user` is true for both and cannot tell them apart.
    */
   const vm = useViewMode()
+  const sound = useSoundOn()
   /**
    * THE TUTORIAL'S GATE (his ruling, 2026-09-30): in tutorial mode the Salary cap waits for 30 stars
    * on the Campaign and the Death match for 30 on the Salary cap. The rule is `tutorialLock`; this
@@ -677,6 +679,10 @@ export function FrontDoor({
               ?
             </button>
           ) : null}
+          {/* SOUND, lit when on: the one audio switch, saved with the browser (src/state/sound.ts) */}
+          <button className={`fd-mode fd-sound${sound ? ' on' : ''}`} onClick={() => setSoundOn(!sound)} aria-pressed={sound} title={sound ? 'Sound is on' : 'Sound is off'}>
+            Sound
+          </button>
         </span>
         {/* the wrap point on a phone: everything above this runs on line one, everything below it on
             line two. Display:none above 640px, where the row is the single line the design draws. */}

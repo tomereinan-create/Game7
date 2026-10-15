@@ -11,6 +11,7 @@ import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engin
 import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
+import { play } from './ui/sfx'
 import { auctionLesson, customLesson, eraLesson, ladderLesson, lifeLesson, mapLesson, myTeamLesson, runOverLesson, spendLesson, staffLesson, teamLesson, trophyLesson, unlockLesson, versusLesson } from './ui/lessons'
 import type { Assignment } from './engine/offense'
 import { Tree } from './ui/Tree'
@@ -174,6 +175,8 @@ export default function App() {
   useEffect(
     () =>
       onUnlocked((d) => {
+        // a beat late: unlocks land in the same moment as the stars' coin, and the two would blur
+        window.setTimeout(() => play('achievement'), 350)
         setToasts((t) => [...t, d])
         window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
         // the tutorial's coach says what a toast is, the first time one goes up
@@ -453,6 +456,8 @@ export default function App() {
     if (!cm || !prog || !level || !pending) return false
     const stars = [...prog.stars]
     if (pending.result.won) stars[level - 1] = Math.max(stars[level - 1], starsFor(pending.result))
+    // the coin drops only for stars that are new — a replay that did no better banks nothing
+    if (stars[level - 1] > prog.stars[level - 1]) play('stars')
     /**
      * THE RECORD (his ruling: the draft's own card carries it beside the franchise name). Counted
      * here because this is the one place a series settles for all three modes, and counted per
@@ -769,7 +774,8 @@ export default function App() {
           skin={skin}
           onBuy={(id) => {
             const next = buy(prog, id)
-            if (!next) return
+            if (!next) return play('error')
+            play('stars')
             // Survival nodes take effect the moment they are bought: a life bought is a life in hand,
             // and a checkpoint bought is ground you can no longer lose.
             commit(cm, death ? { ...next, lives: livesBought(next), checkpoint: checkpointLevel(next) } : next)

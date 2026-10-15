@@ -8172,6 +8172,8 @@ body.map #root { padding-bottom: var(--foot); }
 }
 .fd-mode.on { color: var(--you); background: var(--you-tint); }
 .fd-mode:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+/* the sound switch rides the same row but is not a view mode, so a rule sets it apart */
+.fd-mode.fd-sound { border-left: 1px solid var(--line-3); }
 .fd-idbr { display: none; }
 
 /* ---------- 3 · the floor and the read beside it ----------
