@@ -22,3 +22,4 @@ tsconfig.tsbuildinfo
 
 # the full-size PNGs Higgsfield hands back; the map ships the JPEGs in public/moments
 scripts/moments/originals/
+scripts/moments/candidates/

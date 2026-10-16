@@ -45,6 +45,18 @@ const AUTH = { Authorization: `Key ${creds}` }
 
 const onlyIx = args.indexOf('--only')
 const only = onlyIx >= 0 ? new Set(args[onlyIx + 1].split(',')) : null
+/**
+ * CANDIDATES (his question, 2026-10-16: one roll per moment was giving absurd pictures - two
+ * men merged into one, borders, gibberish). `--n 4` asks the API for four pictures of each
+ * moment (its batch_size takes 1 or 4) and saves them ALL to scripts/moments/candidates/<slug>/
+ * instead of public/moments, leaving the manifest alone, so the slot keeps whatever it has
+ * until one of the four is picked:  node scripts/moments/generate.mjs --pick the-stepover 3
+ */
+const nIx = args.indexOf('--n')
+const N = nIx >= 0 ? Number(args[nIx + 1]) : 1
+if (![1, 4].includes(N)) { console.error('--n takes 1 or 4'); process.exit(2) }
+const CAND = path.join(ROOT, 'scripts/moments/candidates')
+const pickIx = args.indexOf('--pick')
 
 const sheet = JSON.parse(await readFile(SHEET, 'utf8'))
 const STYLE = sheet.style
@@ -55,7 +67,7 @@ async function submit(m) {
     prompt: `${m.prompt} ${STYLE}`,
     aspect_ratio: sheet.aspect_ratio || '3:4',
     resolution: sheet.resolution || '1080p',
-    batch_size: 1,
+    batch_size: N,
     enhance_prompt: false,
   }
   const r = await fetch(`${API}/${MODEL}`, {
@@ -91,28 +103,66 @@ const extOf = (url, type) => {
   return m ? m[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg'
 }
 
+async function download(url) {
+  const img = await fetch(url)
+  if (!img.ok) throw new Error(`download ${url}: ${img.status}`)
+  return { ext: extOf(url, img.headers.get('content-type')), bytes: Buffer.from(await img.arrayBuffer()) }
+}
+
 async function one(m, manifest) {
   const have = manifest[m.slug]?.file && (await exists(path.join(ROOT, 'public', manifest[m.slug].file)))
-  if (have) { console.log(`skip   ${m.slug} (have it)`); return }
-  if (dry) { console.log(`would  ${m.slug}: ${m.prompt}`); return }
-  console.log(`submit ${m.slug}`)
+  // a candidates run is asked for on purpose, so a slot that already has a picture still gets its four
+  if (have && N === 1) { console.log(`skip   ${m.slug} (have it)`); return }
+  if (dry) { console.log(`would  ${m.slug} x${N}: ${m.prompt}`); return }
+  console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''}`)
   const sub = await submit(m)
   const done = await poll(sub.status_url, m.slug)
   if (done.status !== 'completed') {
     console.log(`FAIL   ${m.slug}: ${done.status} ${done.error || ''}`)
-    manifest[m.slug] = { ...m, status: done.status, error: done.error || null }
+    if (N === 1) manifest[m.slug] = { ...m, status: done.status, error: done.error || null }
     return
   }
-  const url = done.images?.[0]?.url
-  const img = await fetch(url)
-  if (!img.ok) throw new Error(`download ${m.slug}: ${img.status}`)
-  const ext = extOf(url, img.headers.get('content-type'))
-  await writeFile(path.join(OUT, `${m.slug}.${ext}`), Buffer.from(await img.arrayBuffer()))
+  const urls = (done.images ?? []).map((i) => i.url).filter(Boolean)
+  if (N > 1) {
+    const dir = path.join(CAND, m.slug)
+    await mkdir(dir, { recursive: true })
+    for (const [k, url] of urls.entries()) {
+      const { ext, bytes } = await download(url)
+      await writeFile(path.join(dir, `${k + 1}.${ext}`), bytes)
+    }
+    console.log(`cands  ${m.slug}: ${urls.length} in scripts/moments/candidates/${m.slug}/`)
+    return
+  }
+  const { ext, bytes } = await download(urls[0])
+  await writeFile(path.join(OUT, `${m.slug}.${ext}`), bytes)
   manifest[m.slug] = { ...m, status: 'completed', file: `moments/${m.slug}.${ext}`, request_id: done.request_id }
   console.log(`saved  ${m.slug}.${ext}`)
 }
 
+/** --pick <slug> <k>: the k-th candidate becomes the slot's picture; shrink.py then makes the JPEG */
+async function pick(slug, k) {
+  const m = sheet.moments.find((x) => x.slug === slug)
+  if (!m) throw new Error(`no moment ${slug}`)
+  const dir = path.join(CAND, slug)
+  const { readdir, copyFile } = await import('node:fs/promises')
+  const file = (await readdir(dir)).find((f) => f.startsWith(`${k}.`))
+  if (!file) throw new Error(`no candidate ${k} in ${dir}`)
+  const ext = file.split('.').pop()
+  await copyFile(path.join(dir, file), path.join(OUT, `${slug}.${ext}`))
+  const manifestPath = path.join(OUT, 'manifest.json')
+  const manifest = (await exists(manifestPath)) ? JSON.parse(await readFile(manifestPath, 'utf8')) : {}
+  manifest[slug] = { ...m, status: 'completed', file: `moments/${slug}.${ext}`, picked: Number(k) }
+  await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
+  console.log(`picked ${slug}: candidate ${k}`)
+}
+
 await mkdir(OUT, { recursive: true })
+if (pickIx >= 0) {
+  await pick(args[pickIx + 1], args[pickIx + 2])
+  const { spawnSync } = await import('node:child_process')
+  spawnSync('python', [path.join(ROOT, 'scripts/moments/shrink.py')], { stdio: 'inherit' })
+  process.exit(0)
+}
 const manifestPath = path.join(OUT, 'manifest.json')
 const manifest = (await exists(manifestPath)) ? JSON.parse(await readFile(manifestPath, 'utf8')) : {}
 const queue = sheet.moments.filter((m) => !only || only.has(m.slug))
