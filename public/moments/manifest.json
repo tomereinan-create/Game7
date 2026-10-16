@@ -68,5 +68,75 @@
     "status": "completed",
     "file": "moments/eighty-one.jpg",
     "request_id": "acee4a71-d9a8-4a2d-8ce9-5ee5de985be2"
+  },
+  "the-free-throw-line-dunk": {
+    "slug": "the-free-throw-line-dunk",
+    "tier": "customs",
+    "era": "1988",
+    "title": "From the Line",
+    "prompt": "A human basketball player in full flight, body stretched perfectly horizontal, legs split, one arm holding the ball high, drawn as a flat red-and-gold silhouette of an athlete in strict side profile. Below him the free-throw line glows as the only mark on a black floor and a dotted arc traces his flight from the line to a rim at the right edge. A human body with arms and legs, not an object.",
+    "status": "completed",
+    "file": "moments/the-free-throw-line-dunk.jpg",
+    "request_id": "a4a14503-a16b-4a9a-9036-61dc28cb4761"
+  },
+  "the-skyhook": {
+    "slug": "the-skyhook",
+    "tier": "all-time",
+    "era": "1985",
+    "title": "The Skyhook",
+    "prompt": "An impossibly tall black silhouette seen from far below, elongated like a cathedral spire, releasing a hook shot with one arm straight up, the ball at the very top of the frame, the shot's arc a thin golden line curving toward a rim beyond the edge of the picture. A flat featureless shape against a purple field, gold light. Nothing else in the frame.",
+    "status": "completed",
+    "file": "moments/the-skyhook.jpg",
+    "request_id": "82c0f6cb-44e3-4ba3-979d-15e482d3d996"
+  },
+  "the-flu-game": {
+    "slug": "the-flu-game",
+    "tier": "champions",
+    "era": "1997",
+    "title": "The Flu Game",
+    "prompt": "A single black silhouette of a basketball player on his knees at centre court, seen from behind, head bowed, one hand flat on the floor, the centre circle glowing beneath him like a halo. Everything else black. One beam of sickly grey-green light from above and a red wash across his back. No other figure in the frame, no equipment of any kind.",
+    "status": "completed",
+    "file": "moments/the-flu-game.jpg",
+    "request_id": "4cf6113b-e0fe-4e32-8c61-37cf836ccb25"
+  },
+  "the-dream-shake": {
+    "slug": "the-dream-shake",
+    "tier": "all-time",
+    "era": "1994",
+    "title": "The Dream Shake",
+    "prompt": "A centre on the low block drawn as a multiple exposure: four ghost silhouettes of the same figure pivoting one way, then the other, then rising for the shot, the last one solid. Flat scarlet shapes on black with a glowing gold motion trail. One defender a dim silhouette leaning the wrong way. Blank featureless figures, blank uniforms.",
+    "status": "completed",
+    "file": "moments/the-dream-shake.jpg",
+    "request_id": "b8533573-7a21-47ae-9c77-6890ffb2bfc6"
+  },
+  "the-logo-three": {
+    "slug": "the-logo-three",
+    "tier": "league",
+    "era": "2016",
+    "title": "From the Logo",
+    "prompt": "A slight guard releasing a jumper from a distance so absurd the rim is a tiny bright circle at the far top of the frame, the ball a glowing dot halfway there, the court stretched to a vanishing point between them. Blue and gold on a black floor, the half-court circle glowing under his feet. The picture fills the whole frame edge to edge with no border, no title band and no caption area.",
+    "status": "completed",
+    "file": "moments/the-logo-three.jpg",
+    "request_id": "b5ca3e6a-c3d9-40d6-8029-b6db0246fcb7"
+  },
+  "the-stepover": {
+    "slug": "the-stepover",
+    "tier": "customs",
+    "era": "2001",
+    "title": "The Stepover",
+    "prompt": "Shot from floor level: a guard's huge foot and leg stepping over a fallen opponent, the standing guard a solid white silhouette towering out of the top of the frame, the fallen player a flat purple-and-gold shape sprawled across a glowing white floor. One hard spotlight, long hard shadows. Two complete solid silhouettes with blank uniforms.",
+    "status": "completed",
+    "file": "moments/the-stepover.jpg",
+    "request_id": "76430c49-9321-4065-8a17-971b2d319de5"
+  },
+  "the-first-team": {
+    "slug": "the-first-team",
+    "tier": "customs",
+    "era": "mythical",
+    "title": "The First Team",
+    "prompt": "Exactly five colossal silhouettes, five separate figures standing shoulder to shoulder in one line across the horizon of an empty glowing court the size of a city, seen from far away and below like a mountain range, sunset light pouring between them. Each of the five a different colour: black, green, red, purple, gold. The final boss of a climb through basketball history.",
+    "status": "completed",
+    "file": "moments/the-first-team.jpg",
+    "request_id": "cff5dd1d-87be-4e42-bc65-4669234bdf95"
   }
 }
