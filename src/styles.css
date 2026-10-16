@@ -3344,7 +3344,7 @@ button.map-total .a { font-size: 20px; color: var(--you); margin-left: 8px; }
  */
 @media (min-width: 900px) {
   .treewrap { display: flex; justify-content: center; overflow: visible; }
-  .treesvg { max-width: min(100%, 900px); max-height: 62vh; }
+  .treesvg { max-width: min(100%, 900px); max-height: max(62vh, 380px); }
   /* the staff room's own header, cut back so the zoomed-out trellis has the screen it needs. The
      68px star count is the MAP's — it counts 450 there; here it counts what is left to spend. */
   /* the STAFF header only — the map's own star count keeps its 68px, and the map is a skinned
@@ -9681,7 +9681,7 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .myteam .col.c:not(.wheel) > .card { zoom: var(--desk-zoom-lite); }
   .ranksheet .card { zoom: var(--desk-zoom-mid); }
   /* the staff tree takes the room the desk has */
-  .treesvg { max-width: min(100%, 46vw); max-height: 66vh; }
+  .treesvg { max-width: min(100%, 46vw); max-height: max(66vh, 380px); }
   .tree-lede { font-size: clamp(11px, 0.85vw, 28px); }
   /* the map's small print */
   .map-head .map-kicker, .map-read .map-kicker, .map-read > span, .map-kicker { font-size: clamp(11px, 0.72vw, 26px); }
@@ -9731,4 +9731,103 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .mboard-inline .mdef b, .mboard-inline .mo b { font-size: clamp(13px, 0.9vw, 30px); }
   .mboard-inline .mdef i, .mboard-inline .mo i { font-size: clamp(9px, 0.62vw, 20px); }
   .mboard-inline .arrow { font-size: clamp(14px, 1vw, 32px); }
+}
+
+/* =====================================================================================
+   EVERY SCREEN TAKES A ZOOM — his ruling, 2026-10-16: "I want every screen to be fully
+   adjustable to zoom." A browser zoom is a window of a different size: 200% on his
+   3,840 x 1,500 desk is a 1,920 x 750 window, 300% is 1,280 x 500, and a laptop at 150% is
+   about 1,280 x 650. The screens built to FILL one window were each drawn for a tall wide one,
+   and each failed its own way once the window was not that. The rule this block holds them to:
+   a window too short for the fill gets a scroll, never an overlap or a clipped control, and a
+   window too narrow for three columns gets fewer columns, never words cut to "An...".
+   ===================================================================================== */
+
+/* HOME: THE BUTTON STAYS IN VIEW. The read pane already scrolls inside itself when its copy is
+   taller than the band (a 1,024 x 768 window, or anything under ~600 tall), but nothing said so:
+   RUN IT AGAIN sat half under the four doors at the foot, cut through the middle. It is pinned
+   to the foot of the pane now and the rules scroll up behind it. Desk only: on a phone the pane
+   is not a scroller and the page itself scrolls past it. */
+@media (min-width: 900px) {
+  .fd-read > .fd-cta { position: sticky; bottom: 0; z-index: 1; }
+}
+
+/* THE TEAM PAGE ON A SHORT WINDOW. "One screen, no scroll" sizes the floor from the height the
+   page has left: (100vh - chrome) x 1.12. At 500 tall that is a 199px floor whose men stand on
+   each other and a roster that shows one row. Under 640 there is no one-screen answer, so the
+   page takes the sheet's own scroll back, the floor takes a fixed share of the width, and the
+   roster lists in full. */
+@media (min-width: 1100px) and (max-height: 640px) {
+  .tdb-sheet:not(.tdb-list) { height: auto; overflow-y: auto; }
+  .tdb-sheet:not(.tdb-list) > .card > .tdb-detail { grid-template-rows: auto; }
+  .tdb-sheet:not(.tdb-list) .tdb-detail { grid-template-columns: minmax(0, min(460px, 42%)) minmax(0, 1fr); }
+  .tdb-left { container-type: inline-size; justify-content: flex-start; }
+  .tdb-sheet:not(.tdb-list) .court { max-width: 100%; }
+  .tdb-sheet:not(.tdb-list) .tdb-right { max-height: none; overflow: visible; }
+}
+
+/* THE DRAFT BETWEEN A TABLET AND A DESK. Three columns at 0.85 / 1.30 / 0.85 need about 1,700px:
+   under that the two team columns are narrower than the words in them — measured at 1,440 the
+   names print "Andrew Nem...", "Draft a man...", the headline wraps into its own dials, and at
+   1,024 every name is two letters (and at 1,600, "Russell Westbroo..."). So from 900 to 1,799 the draft is TWO columns: the wheel and
+   the list you pick from keep the left, and the right column carries your five with the
+   opponent under it. The two floors are no longer side by side there, so Draft.tsx stops
+   matching their size and start line (it checks the boxes, not the width) and each floor is
+   drawn at a size of its own; the five-in states get the same two tracks. Under 1,150, one. */
+@media (min-width: 900px) and (max-width: 1799px) {
+  .draft:not(.set) {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-areas: "b c" "b a";
+    align-items: start;
+  }
+  .draft:not(.set) > .col.a { grid-area: a; }
+  .draft:not(.set) > .col.b { grid-area: b; }
+  .draft:not(.set) > .col.c { grid-area: c; }
+  .draft .court-line { flex: none; }
+  .draft .court-line > .court { max-width: min(100%, 420px); }
+  .draft.set:not(.solo) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
+  /* the roster goes back UNDER the floors in your card: the split beside them was measured for a
+     column 2.15/3 of the window, and at 1.4/2.4 its names print "Mitch Ric..." */
+  .draft.set:not(.solo) .tipoff { grid-template-columns: minmax(0, 1fr); }
+  .draft.set:not(.solo) .tipoff > .tip-rows { grid-column: auto; grid-row: auto; border-left: 0; padding-left: 0; }
+  .draft.set.has-plan:not(.solo) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-areas: "c d" "a a";
+  }
+  .draft.set.has-plan:not(.solo) > .col.a { grid-area: a; }
+  .draft.set.has-plan:not(.solo) > .col.c { grid-area: c; }
+  .draft.set.has-plan:not(.solo) > .col.d { grid-area: d; }
+}
+/* and under 1,150 two columns are still two narrow ones (1,024: "Mitch Richmond '...", "Draft a
+   man he..."), so the draft is ONE column there, at the width a column reads at: the wheel, then
+   your five, then the opponent - the order you use them in, top to bottom. */
+@media (min-width: 900px) and (max-width: 1149px) {
+  .draft:not(.set), .draft.set:not(.solo) {
+    grid-template-columns: minmax(0, 760px);
+    grid-template-areas: "b" "c" "a";
+    justify-content: center;
+  }
+  .draft.set:not(.solo) > .col.a { grid-area: a; }
+  .draft.set:not(.solo) > .col.c { grid-area: c; }
+}
+
+/* THE PLAYER CARD'S SAFETY VALVE, BACK. "One screen, no scroll" took the body's scroll away on a
+   desk (`overflow: hidden`), and the stylesheet says in its own words what that costs when the
+   window is smaller than the card: it does not scroll, it CUTS. Measured: at 1,280 x 500 the
+   attributes stop at DEFENSE and the twelve grades are gone; at 1,024 x 768 the last row of grades
+   is under the foot and the dossier row, squeezed to nothing by `minmax(0, 1fr)`, prints its
+   sentence underneath the hexagon. The body scrolls again where it does not fit - on a window
+   where it fits there is nothing to scroll and nothing changes - and the dossier's row is never
+   shorter than what is in it. */
+@media (min-width: 900px) {
+  .pc-body { overflow-y: auto; overflow-x: hidden; }
+}
+@media (min-width: 900px) and (max-width: 1599px), (min-width: 900px) and (max-height: 739px) {
+  .pc-body { grid-template-rows: auto minmax(min-content, 1fr) auto; }
+  /* the attributes span both rows of the left column, and a spanning item's height is handed to
+     the stretching row - which stretched the dossier by the whole attribute list and pushed the
+     hexagon a screen down. Size-contained, the list stops sizing the rows it stands in and simply
+     runs down its own column; the rows are what the right-hand column needs, and the body scrolls
+     to whichever side is longer. */
+  .pc-main { contain: size; }
 }

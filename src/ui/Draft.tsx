@@ -673,7 +673,11 @@ export function Draft({
       // the FLOOR ITSELF, not its wrapper — the wrapper carries the margins (see `.court-line`),
       // so its own top is one 10px step above the boards and the line we are setting is the boards
       const floor = (el: HTMLDivElement) => (el.firstElementChild ?? el).getBoundingClientRect().top
-      if (a && c && !stacked) {
+      /* SIDE BY SIDE IS READ OFF THE BOXES, not the width: between 900 and 1,799 the draft is two
+         columns and your five stands ABOVE the opponent's (see "EVERY SCREEN TAKES A ZOOM" in the
+         stylesheet), where a shared start line would pad one floor down by the other's whole card */
+      const beside = !!a && !!c && (a.getBoundingClientRect().right <= c.getBoundingClientRect().left + 1 || c.getBoundingClientRect().right <= a.getBoundingClientRect().left + 1)
+      if (a && c && !stacked && beside) {
         const [ta, tc] = [floor(a), floor(c)]
         const line = Math.max(ta, tc)
         if (line - ta >= 1) a.style.paddingTop = `${Math.round(line - ta)}px`
