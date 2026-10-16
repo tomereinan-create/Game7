@@ -9,7 +9,7 @@
 		{
 			"binding": "DB",
 			"database_name": "game7-friends",
-			"database_id": "PLACEHOLDER-run-wrangler-d1-create-game7-friends",
+			"database_id": "78d62cef-0b8f-404e-9158-f36942206a42",
 			"migrations_dir": "migrations"
 		}
 	],
