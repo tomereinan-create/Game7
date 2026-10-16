@@ -9110,7 +9110,9 @@ body.map #root { padding-bottom: var(--foot); }
 
 /* ---------- the desk ---------- */
 @media (min-width: 900px) {
-  .fd-bookrow { flex: 1 1 0; }
+  /* five doors since Friends joined (2026-10-16): equal fifths cut "TEAMS · EVERY SEASON" at a
+     1024 window, so each door takes the width its own words need and shares out the rest */
+  .fd-bookrow { flex: 1 1 auto; }
   .fd-bookrow:nth-child(odd) { border-left: 1px solid rgb(255 255 255 / 0.14); }
   .fd-bookrow:first-child { border-left: 0; }
 }
@@ -9726,3 +9728,27 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .mboard-inline .mdef i, .mboard-inline .mo i { font-size: clamp(9px, 0.62vw, 20px); }
   .mboard-inline .arrow { font-size: clamp(14px, 1vw, 32px); }
 }
+
+/* ---------- FRIENDS (the ruling, 2026-10-16: "Add option to add friends") ----------
+   Built out of the house's own parts — .card, .lrow, .field, .btn, .chip-btn — so the screen
+   adds only what it has that no other room does: a friend code to read out, a row of two small
+   answers at the end of a line, and a dot for "online now". */
+.fr-add { display: grid; gap: 10px; padding-top: 10px; }
+.fr-add.row { grid-template-columns: 1fr auto; align-items: center; }
+.fr-add.row .field.code { max-width: none; }
+.fr-add.row .btn { width: auto; min-height: 44px; padding: 0 14px; font-size: 14px; box-shadow: 0 5px 0 var(--you-line); }
+.fr-add.row .btn:disabled { box-shadow: 0 5px 0 #0a0908; }
+.fr-note { padding-top: 10px; font-size: 13px; color: var(--ink-2); }
+.fr-me { display: flex; align-items: center; gap: 14px; padding-top: 10px; }
+.fr-code { font-family: var(--mono); font-size: 26px; font-weight: 700; letter-spacing: 0.18em; color: var(--you); }
+.fr-who { display: grid; gap: 6px; min-width: 0; }
+.fr-who b { font-size: 14px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fr-who .map-link { justify-self: start; }
+.fr-acts { flex: none; display: flex; align-items: center; gap: 6px; }
+.fr-acts .chip-btn { margin-left: 0; min-height: 30px; padding: 4px 10px; }
+.chip-btn.on { background: var(--you); border-color: var(--you); color: var(--you-ink); font-weight: 700; }
+.chip-btn.danger { border-color: var(--danger-line); color: var(--danger); }
+.chip-btn:disabled { opacity: 0.45; cursor: default; }
+.fr-dot { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: var(--you); vertical-align: 1px; }
+.fr-out .lwho b { color: var(--muted); }
+.fr-back { display: inline-block; margin: 0 0 8px; }

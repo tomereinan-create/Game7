@@ -1,0 +1,27 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "game7-friends",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-10-01",
+
+	// Accounts, friend lists, challenges and the head-to-head record.
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "game7-friends",
+			"database_id": "PLACEHOLDER-run-wrangler-d1-create-game7-friends",
+			"migrations_dir": "migrations"
+		}
+	],
+
+	// One room per accepted challenge: it holds the draft's move log and relays each pick to the
+	// other phone over a WebSocket.
+	"durable_objects": {
+		"bindings": [{ "name": "ROOM", "class_name": "Room" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room"] }],
+
+	"observability": {
+		"enabled": true
+	}
+}

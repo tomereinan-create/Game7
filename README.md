@@ -57,6 +57,26 @@ The published site is the `gh-pages` branch — main at the root, previews besid
 — rewritten as a single commit each time, since a build is seven megabytes and
 keeping them as history would add that to the repo on every push.
 
+## The friends server
+
+`server/` is a Cloudflare Worker: D1 holds accounts, friend lists, challenges and
+results, and each accepted challenge is a Durable Object that keeps the draft's move
+log and relays every pick to the other phone over a WebSocket. The game replays the
+log through the same `replay` the hot seat uses, so the server knows nothing about
+players or ratings.
+
+```bash
+cd server && npm install
+npm run db:local      # once: create the local tables
+npm run dev           # wrangler dev on :8787
+```
+
+`npm run dev` for the game talks to port 8787 on whatever host served the page, so a
+phone on the same Wi-Fi works too; a build talks to the deployed Worker (`FRIENDS_API`
+in `src/state/friends.ts`, or `VITE_FRIENDS_API` at build time). Deploying:
+`npx wrangler d1 create game7-friends`, put the id in `wrangler.jsonc`, then
+`npm run db:remote` and `npm run deploy`.
+
 ## Playing it without a terminal
 
 There is a **Game7** shortcut on the Desktop. Double-clicking it runs
@@ -533,6 +553,13 @@ media query, 1.5× type, a 562px column.
 - **Player vs Friend** — hot-seat on one phone. Twelve-player shared board, snake
   draft (A B B A A B B A A B), then the two fives play a best-of-seven with the
   campaign resolver.
+- **Friends** (along the foot of the front door) — pick a name and get a six-letter
+  friend code; add friends by theirs. No email, no password: the account is a token
+  in the browser's storage, and clearing the site's data deletes it. Challenge a
+  friend and, once they accept, the two of you play Player vs Friend from two
+  phones — same board, same snake, same law. Each phone reads the series from its
+  own bench, and every friend row keeps your series record against them. This is
+  the one feature that needs the network; see *The friends server* below.
 - The campaign's draft runs off **the wheel**: five spins per round, each
   landing on a random year + conference + team (1,314 real team-seasons, built
   by `scripts/teams.ts` from per-stint Basketball-Reference rows, so traded

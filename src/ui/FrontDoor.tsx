@@ -6,6 +6,7 @@ import { setViewMode, useViewMode } from '../state/viewmode'
 import { openIndex, tutorialLock, useLesson } from '../state/tutorial'
 import { doorLesson } from './lessons'
 import { achCount } from '../state/achievements'
+import { useFriendsNote } from '../state/friends'
 import { myColor } from './teamColors'
 import { Ball } from './Ball'
 import { Trophy } from './Trophy'
@@ -575,12 +576,18 @@ export function FrontDoor({
   /* the club's chosen three letters, or the ones derived from its name (his ruling, 2026-09-30) */
   const initials = clubCode(team)
 
-  /** The book along the foot — the four scout-only rooms, with what is in each one. */
+  const friendsNote = useFriendsNote()
+
+  /**
+   * The book along the foot — the four reference rooms, with what is in each one, and FRIENDS
+   * (the ruling, 2026-10-16: "Add option to add friends"), whose note is what is waiting on you.
+   */
   const book: { pick: Mode; label: string; note: string }[] = [
     { pick: 'database', label: 'Database', note: PLAYERS.length.toLocaleString() },
     { pick: 'archetypes', label: 'Archetypes', note: String(DEFAULT_ORDER.length) },
     { pick: 'teams', label: 'Teams', note: 'Every season' },
     { pick: 'achievements', label: 'Trophies', note: `${achCount().done} / ${achCount().total}` },
+    { pick: 'friends', label: 'Friends', note: friendsNote },
   ]
 
   /**

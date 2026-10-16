@@ -2,7 +2,7 @@ import { type CampaignMode, type Progress, type Team } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
 import { FrontDoor } from './FrontDoor'
 
-export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
+export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams' | 'friends'
 
 export interface Era {
   name: string

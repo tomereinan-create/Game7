@@ -54,6 +54,7 @@ import { TeamSetup } from './ui/TeamSetup'
 import { Custom } from './ui/Custom'
 import { Versus } from './ui/Versus'
 import { Auction } from './ui/Auction'
+import { Friends } from './ui/Friends'
 
 interface Tier {
   id: string
@@ -329,7 +330,9 @@ export default function App() {
         ? 'custom'
         : mode === 'auction'
           ? 'auction'
-          : mode === 'versus' || !cm || !prog
+          : mode === 'friends'
+            ? 'friends'
+            : mode === 'versus' || !cm || !prog
             ? 'versus'
             : team === null || pickTeam
               ? 'team'
@@ -674,6 +677,17 @@ export default function App() {
         {homeFab}
         <div className="page-zoom">
           <Auction onHome={leave} />
+        </div>
+      </>
+    )
+
+  if (mode === 'friends')
+    return (
+      <>
+        {sheet}
+        {homeFab}
+        <div className="page-zoom">
+          <Friends onHome={leave} />
         </div>
       </>
     )

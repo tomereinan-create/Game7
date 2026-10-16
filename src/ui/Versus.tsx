@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
@@ -103,23 +103,165 @@ export function legalRingsFor(
 }
 
 /**
- * Hot-seat: two people, one phone. Alternate picks from one board, then the
- * two fives play a best-of-seven with the exact campaign resolver.
+ * THE TABLE IS A LOG OF MOVES (2026-10-16, for online friends). One phone used to hold the
+ * slots, the loaded flags and the pick order as state and mutate them on each tap; two phones
+ * cannot share mutations, but they can share a list. So every tap is now a move, and the table
+ * is whatever `replay` makes of the list — on one phone the list is local state, online it is the
+ * room's log (state/room.ts), and the same function reads both.
  */
-export function Versus({ onHome }: { onHome: () => void }) {
-  const [seed, setSeed] = useState(() => (Math.random() * 0xffffffff) >>> 0)
-  const [names, setNames] = useState<[string, string]>(['Player 1', 'Player 2'])
+export type VsMove =
+  | { k: 'pick'; side: 0 | 1; name: string; ring: Pos }
+  | { k: 'load'; side: 0 | 1; team: string; y: number }
+  | { k: 'undo' }
+  | { k: 'sim'; seed: number }
+
+export interface VsTable {
   /**
    * G10: a side is a BOARD OF FIVE RINGS now, not a flat list. It was `[string[], string[]]`, so
    * there was nothing to constrain against — `take()` had no ring, nothing counted filled rings,
    * and the resolver was handed a board-ordered list. This is the campaign's own shape
    * (Draft.tsx) and Bid's, so all three modes now agree about what a five is.
    */
-  const [slots, setSlots] = useState<[Slots, Slots]>([{}, {}])
+  slots: [Slots, Slots]
   /** Which sides took a whole real team instead of drafting — they are off the clock. */
-  const [loaded, setLoaded] = useState<[boolean, boolean]>([false, false])
+  loaded: [boolean, boolean]
   /** Every ring filled by DRAFTING, newest last, so the last pick can be taken back. */
-  const [order, setOrder] = useState<{ side: 0 | 1; ring: Pos }[]>([])
+  order: { side: 0 | 1; ring: Pos }[]
+  /** A loaded real team's short name, which takes the chair's name on one phone. */
+  teams: [string | null, string | null]
+  /** Set once the series is simmed: the box scores and the Game 7 tape are drawn from it. */
+  simSeed: number | null
+}
+
+/** Floor order, the way the campaign hands a five to the resolver. */
+const fiveOf = (s: Slots) => POSITIONS.map((x) => BY_NAME.get(s[x] ?? '')).filter((p): p is Player => !!p)
+const filled = (s: Slots) => POSITIONS.filter((x) => s[x]).length
+
+/** Who is on the clock. A loaded side is off it: the snake collapses to whoever still drafts. */
+export function onClock(slots: readonly [Slots, Slots], loaded: readonly [boolean, boolean]): 0 | 1 {
+  if (loaded[0] !== loaded[1]) return loaded[0] ? 1 : 0
+  const turn = (loaded[0] ? 0 : filled(slots[0])) + (loaded[1] ? 0 : filled(slots[1]))
+  return ORDER[Math.min(turn, ORDER.length - 1)]
+}
+
+/**
+ * A team-season this side may actually take. Two ways it can fail, and BOTH are refused with a
+ * reason rather than hidden, so the drafter is not left wondering where a club went:
+ *   - its best legal five is short (the rows that already print OVR "—"), or
+ *   - taking it would strand the other drafter. Measured before the gate: 0.25% of
+ *     club-by-state pairs strand, and 97 of 100 boards contain at least one such club — so
+ *     without this the constraint would trade a 69% illegal-five rate for a rarer soft-lock.
+ * This is exactly what `landOn` does for the wheel and `lotIdx` for the block: never offer a
+ * choice that cannot be fielded.
+ */
+export function loadCheck(
+  pool: readonly Player[],
+  slots: readonly [Slots, Slots],
+  loaded: readonly [boolean, boolean],
+  t: TeamSeason,
+  side: 0 | 1,
+): { ok: true; five: Player[] } | { ok: false; why: 'short' | 'strands' } {
+  const other = side === 0 ? 1 : 0
+  const otherMen = new Set(fiveOf(slots[other]).map((p) => p.player))
+  const cands = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !otherMen.has(p.player))
+  const best = startingFive(cands).five
+  if (!best.every(Boolean)) return { ok: false, why: 'short' }
+  const men = (best as Player[]).map((p) => p.player)
+  const fielded = new Set([...fiveOf(slots[0]), ...fiveOf(slots[1])].map((p) => p.player))
+  const rest = pool.filter((q) => !fielded.has(q.player) && !men.includes(q.player)).map((q) => q.name)
+  if (!loaded[other] && !canStillFill(rest, posOf, POSITIONS.filter((x) => !slots[other][x]))) return { ok: false, why: 'strands' }
+  return { ok: true, five: best as Player[] }
+}
+
+/**
+ * THE LOG, READ. Each move is held to the same law the screen applies before sending it — on the
+ * clock, an open ring he can play, nobody stranded — and a move that fails it is skipped. On one
+ * phone that never happens; online it means a move that slipped past one phone is skipped by both
+ * alike, so the two tables cannot drift apart.
+ */
+export function replay(pool: readonly Player[], moves: readonly VsMove[]): VsTable {
+  const slots: [Slots, Slots] = [{}, {}]
+  const loaded: [boolean, boolean] = [false, false]
+  let order: { side: 0 | 1; ring: Pos }[] = []
+  const teams: [string | null, string | null] = [null, null]
+  let simSeed: number | null = null
+  for (const m of moves) {
+    if (simSeed !== null) break
+    if (m.k === 'pick') {
+      const fielded = new Set([...fiveOf(slots[0]), ...fiveOf(slots[1])].map((p) => p.player))
+      const remaining = pool.filter((p) => !fielded.has(p.player))
+      if (m.side !== onClock(slots, loaded) || !remaining.some((p) => p.name === m.name)) continue
+      if (!legalRingsFor(slots, loaded, m.side, remaining, m.name).includes(m.ring)) continue
+      slots[m.side] = { ...slots[m.side], [m.ring]: m.name }
+      order.push({ side: m.side, ring: m.ring })
+    } else if (m.k === 'undo') {
+      let at = order.length - 1
+      while (at >= 0 && loaded[order[at].side]) at--
+      if (at < 0) continue
+      const last = order[at]
+      const next = { ...slots[last.side] }
+      delete next[last.ring]
+      slots[last.side] = next
+      order = [...order.slice(0, at), ...order.slice(at + 1)]
+    } else if (m.k === 'load') {
+      const t = WHEEL.find((w) => w.team === m.team && w.y === m.y)
+      const check = t ? loadCheck(pool, slots, loaded, t, m.side) : null
+      if (!t || !check?.ok) continue
+      const five: Slots = {}
+      POSITIONS.forEach((x, i) => {
+        const p = check.five[i]
+        if (p) five[x] = p.name
+      })
+      slots[m.side] = five
+      loaded[m.side] = true
+      order = order.filter((o) => o.side !== m.side)
+      teams[m.side] = `'${String(t.y).slice(2)} ${t.team.split(' ').pop()}`
+    } else if (m.k === 'sim') {
+      if (filled(slots[0]) === DRAFT_SIZE && filled(slots[1]) === DRAFT_SIZE) simSeed = m.seed
+    }
+  }
+  return { slots, loaded, order, teams, simSeed }
+}
+
+/** Online play: the room's seats, names and log stand in for this phone's own (state/room.ts). */
+export interface VsOnline {
+  seat: 0 | 1
+  names: [string, string]
+  seed: number
+  moves: readonly VsMove[]
+  present: [boolean, boolean]
+  /** False while the socket is down — taps would go nowhere, so the dock says so. */
+  connected: boolean
+  send: (m: VsMove) => void
+  rematch: () => void
+  report: (winner: 0 | 1) => void
+}
+
+const newSeed = () => (Math.random() * 0xffffffff) >>> 0
+
+/** The same series told from the other bench: every game's winner and score turned round. */
+const mirror = (r: SeriesResult): SeriesResult => ({
+  ...r,
+  wins: r.losses,
+  losses: r.wins,
+  won: !r.won,
+  games: r.games.map((g) => ({ ...g, margin: -g.margin, won: !g.won, us: g.them, them: g.us })),
+})
+
+/**
+ * Hot-seat: two people, one phone. Alternate picks from one board, then the
+ * two fives play a best-of-seven with the exact campaign resolver.
+ *
+ * Online (`online` set): the same table on two phones. This phone may only move for its own seat,
+ * and only when that seat is on the clock; everything else — the board, the law, the series — is
+ * the hot seat's, unchanged.
+ */
+export function Versus({ onHome, online }: { onHome: () => void; online?: VsOnline }) {
+  const [localSeed, setLocalSeed] = useState(newSeed)
+  const [localMoves, setLocalMoves] = useState<VsMove[]>([])
+  const seed = online ? online.seed : localSeed
+  const moves = online ? online.moves : localMoves
+  const play = (m: VsMove) => (online ? online.send(m) : setLocalMoves((cur) => [...cur, m]))
   /** A man who can fill more than one open ring needs to be told where he is going. */
   const [choosing, setChoosing] = useState<{ name: string; rings: Pos[] } | null>(null)
   const [loadFor, setLoadFor] = useState<0 | 1 | null>(null)
@@ -134,41 +276,54 @@ export function Versus({ onHome }: { onHome: () => void }) {
     }
   }
   const [info, setInfo] = useState<string | null>(null)
-  // the seed rides along with the series: the box scores and the Game 7 tape are drawn from it
-  const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
 
   const pool = useMemo(() => versusPool(seed), [seed])
+  const { slots, loaded, order, teams, simSeed } = useMemo(() => replay(pool, moves), [pool, moves])
+  /** A drafted chair is Player 1 / Player 2 on one phone, a loaded one its club; online, the person. */
+  const names: [string, string] = online ? online.names : [teams[0] ?? 'Player 1', teams[1] ?? 'Player 2']
 
   const openOf = (i: 0 | 1) => POSITIONS.filter((x) => !slots[i][x])
   const countOf = (i: 0 | 1) => DRAFT_SIZE - openOf(i).length
   const done = countOf(0) === DRAFT_SIZE && countOf(1) === DRAFT_SIZE
-  // a loaded side is off the clock: the snake collapses to whoever still drafts
-  const turn = (loaded[0] ? 0 : countOf(0)) + (loaded[1] ? 0 : countOf(1))
-  const who: 0 | 1 = loaded[0] && !loaded[1] ? 1 : loaded[1] && !loaded[0] ? 0 : ORDER[Math.min(turn, ORDER.length - 1)]
+  const who = onClock(slots, loaded)
+  /** Whether a tap on this phone is a move: always on one phone, only on your own clock online. */
+  const mine = !online || (online.connected && who === online.seat)
 
-  /** Floor order, the way the campaign hands a five to the resolver. */
-  const five = (i: 0 | 1) => POSITIONS.map((x) => BY_NAME.get(slots[i][x] ?? '')).filter((p): p is Player => !!p)
-  const A = five(0)
-  const B = five(1)
+  const A = fiveOf(slots[0])
+  const B = fiveOf(slots[1])
   /** One man, one matchup - a pool card whose player is already fielded (either side) is dead. */
   const fielded = new Set([...A, ...B].map((p) => p.player))
   /** Board cards nobody has taken and whose man is not already on a floor. */
   const remaining = pool.filter((p) => !fielded.has(p.player))
 
+  // the seed rides along with the series: the box scores and the Game 7 tape are drawn from it.
+  // Rated AGAINST each other, the way the campaign and Custom sim and the way this screen's own
+  // odds and analysis are compiled below — defense is a property of the pairing, so a five rated
+  // on its own plays a different series from the one the spread on the result screen describes.
+  const result = useMemo(() => {
+    if (simSeed === null) return null
+    const a = fiveOf(slots[0])
+    const b = fiveOf(slots[1])
+    return { r: simSeries(compile(a, b), compile(b, a), makeRng(simSeed), SIGMA), seed: simSeed }
+  }, [simSeed, slots])
+
+  // online, each phone tells the room who won the series it replayed — the head-to-head record
+  useEffect(() => {
+    if (online && result) online.report(result.r.won ? 0 : 1)
+    // `online` is a new object every render; the result is what changes once per series
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result])
+
   const legalRings = (p: Player): Pos[] =>
     done || result || fielded.has(p.player) ? [] : legalRingsFor(slots, loaded, who, remaining, p.name)
 
   const place = (name: string, ring: Pos) => {
-    setSlots((cur) => {
-      const next: [Slots, Slots] = [{ ...cur[0] }, { ...cur[1] }]
-      next[who][ring] = name
-      return next
-    })
-    setOrder((cur) => [...cur, { side: who, ring }])
+    play({ k: 'pick', side: who, name, ring })
     setChoosing(null)
   }
 
   const take = (p: Player) => {
+    if (!mine) return
     const rings = legalRings(p)
     if (!rings.length) return
     if (rings.length === 1) place(p.name, rings[0])
@@ -179,91 +334,39 @@ export function Versus({ onHome }: { onHome: () => void }) {
    * G10's safety valve. Under the guard the board can always be finished, so this should never be
    * needed — but `done` can never become true if the invariant is ever broken, and the dock would
    * sit there forever. It also gives a misclick somewhere to go, which this mode had no answer for.
+   * Online it is yours to use on your own last pick only, and only while it is still the last.
    */
+  const lastPick = order.length ? order[order.length - 1] : null
+  const canUndo = !done && !!lastPick && (!online || (online.connected && lastPick.side === online.seat))
   const undo = () => {
-    const last = [...order].reverse().find((o) => !loaded[o.side])
-    if (!last) return
-    setSlots((cur) => {
-      const next: [Slots, Slots] = [{ ...cur[0] }, { ...cur[1] }]
-      delete next[last.side][last.ring]
-      return next
-    })
-    setOrder((cur) => {
-      const at = cur.lastIndexOf(last)
-      return at < 0 ? cur : [...cur.slice(0, at), ...cur.slice(at + 1)]
-    })
+    play({ k: 'undo' })
     setChoosing(null)
   }
 
-  /**
-   * A team-season this side may actually take. Two ways it can fail, and BOTH are refused with a
-   * reason rather than hidden, so the drafter is not left wondering where a club went:
-   *   - its best legal five is short (the rows that already print OVR "—"), or
-   *   - taking it would strand the other drafter. Measured before the gate: 0.25% of
-   *     club-by-state pairs strand, and 97 of 100 boards contain at least one such club — so
-   *     without this the constraint would trade a 69% illegal-five rate for a rarer soft-lock.
-   * This is exactly what `landOn` does for the wheel and `lotIdx` for the block: never offer a
-   * choice that cannot be fielded.
-   */
   const loadable = (t: TeamSeason, side: 0 | 1): { ok: true; five: Player[] } | { ok: false; why: string } => {
-    const other = side === 0 ? 1 : 0
-    const otherMen = new Set(five(other).map((p) => p.player))
-    const cands = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !otherMen.has(p.player))
-    const best = startingFive(cands).five
-    if (!best.every(Boolean)) return { ok: false, why: 'their best five here is short' }
-    const men = (best as Player[]).map((p) => p.player)
-    const rest = remaining.filter((q) => !men.includes(q.player)).map((q) => q.name)
-    if (!loaded[other] && !canStillFill(rest, posOf, openOf(other))) return { ok: false, why: `that would leave ${names[other]} unable to field a five` }
-    return { ok: true, five: best as Player[] }
+    const check = loadCheck(pool, slots, loaded, t, side)
+    if (check.ok) return check
+    return { ok: false, why: check.why === 'short' ? 'their best five here is short' : `that would leave ${names[side === 0 ? 1 : 0]} unable to field a five` }
   }
 
   const loadTeam = (t: TeamSeason) => {
-    if (loadFor === null) return
-    const side = loadFor
-    const check = loadable(t, side)
-    if (!check.ok) return
-    setSlots((cur) => {
-      const next: [Slots, Slots] = [{ ...cur[0] }, { ...cur[1] }]
-      next[side] = {}
-      POSITIONS.forEach((x, i) => {
-        const p = check.five[i]
-        if (p) next[side][x] = p.name
-      })
-      return next
-    })
-    setLoaded((cur) => {
-      const next: [boolean, boolean] = [cur[0], cur[1]]
-      next[side] = true
-      return next
-    })
-    setOrder((cur) => cur.filter((o) => o.side !== side))
-    setNames((cur) => {
-      const next: [string, string] = [cur[0], cur[1]]
-      next[side] = `'${String(t.y).slice(2)} ${t.team.split(' ').pop()}`
-      return next
-    })
+    if (loadFor === null || !loadable(t, loadFor).ok) return
+    play({ k: 'load', side: loadFor, team: t.team, y: t.y })
     setLoadFor(null)
     setChoosing(null)
   }
 
-  const sim = () => {
-    const s = (Math.random() * 0xffffffff) >>> 0
-    // Rated AGAINST each other, the way the campaign and Custom sim and the way this screen's own
-    // odds and analysis are compiled below — defense is a property of the pairing, so a five rated
-    // on its own plays a different series from the one the spread on the result screen describes.
-    setResult({ r: simSeries(compile(A, B), compile(B, A), makeRng(s), SIGMA), seed: s })
-  }
+  const sim = () => play({ k: 'sim', seed: newSeed() })
 
   const reset = () => {
-    setSeed((Math.random() * 0xffffffff) >>> 0)
-    setSlots([{}, {}])
-    setLoaded([false, false])
-    setOrder([])
+    if (online) online.rematch()
+    else {
+      setLocalSeed(newSeed())
+      setLocalMoves([])
+    }
     setChoosing(null)
-    setNames(['Player 1', 'Player 2'])
     setLoadFor(null)
     setInfo(null)
-    setResult(null)
   }
 
   const ringOf = (p: Player): { side: 0 | 1; ring: Pos } | null => {
@@ -273,21 +376,28 @@ export function Versus({ onHome }: { onHome: () => void }) {
 
   // HIS RULING: the hot seat is treated the same as a campaign — the campaign's own series
   // screen, full box scores and Game 7 on the ticker. A loaded real team keeps its own short
-  // name on the scorebug; a drafted chair stays P1 / P2.
+  // name on the scorebug; a drafted chair stays P1 / P2. Online the chairs are people, each
+  // scorebug code is made from the person's name, and each phone reads the series from its own
+  // bench: chair 2's phone gets it mirrored. Every game's winner and score is the same on both
+  // phones (a box score's total depends only on the margin's size); the player lines inside a
+  // box are rolled for whichever bench is "us", so those can read differently phone to phone.
   if (result) {
-    const opponent = { round: 1, team: names[1], ab: loaded[1] ? undefined : 'P2', players: B, positions: [...POSITIONS] as string[] }
+    const me = online?.seat ?? 0
+    const foe = me === 0 ? 1 : 0
+    const fives = [A, B] as const
+    const opponent = { round: 1, team: names[foe], ab: loaded[foe] || online ? undefined : 'P2', players: fives[foe], positions: [...POSITIONS] as string[] }
     return (
       <Series
         opponent={opponent}
-        five={A}
-        mine={compile(A, B)}
-        theirs={compile(B, A)}
-        teamName={names[0]}
-        teamAb={loaded[0] ? undefined : 'P1'}
-        result={result.r}
+        five={fives[me]}
+        mine={compile(fives[me], fives[foe])}
+        theirs={compile(fives[foe], fives[me])}
+        teamName={names[me]}
+        teamAb={loaded[me] || online ? undefined : 'P1'}
+        result={me === 0 ? result.r : mirror(result.r)}
         seed={result.seed}
         exhibition
-        kicker="Player vs Friend"
+        kicker={online ? 'Online · vs friend' : 'Player vs Friend'}
         advanceLabel="Rematch"
         onHome={onHome}
         onAdvance={reset}
@@ -298,17 +408,22 @@ export function Versus({ onHome }: { onHome: () => void }) {
   return (
     <>
       <div className="topbar">
-        <span>Player vs Friend</span>
+        <span>{online ? `Online · vs ${names[online.seat === 0 ? 1 : 0]}` : 'Player vs Friend'}</span>
       </div>
       <div className="rule2" />
 
       <div className="vs-head">
         <div className={`vs-side ${!done && who === 0 && !loaded[0] ? 'now' : ''}`}>
           <b>{names[0]}</b>
-          <span>{loaded[0] ? 'a real five, loaded' : `${countOf(0)}/5 picked${!done && who === 0 ? ' · on the clock' : ''}`}</span>
-          <button className="map-link" onClick={() => setLoadFor(loadFor === 0 ? null : 0)}>
-            {loaded[0] ? 'Swap the team →' : 'Load a real team →'}
-          </button>
+          <span>
+            {loaded[0] ? 'a real five, loaded' : `${countOf(0)}/5 picked${!done && who === 0 ? ' · on the clock' : ''}`}
+            {online ? (online.seat === 0 ? ' · you' : online.present[0] ? '' : ' · away') : ''}
+          </span>
+          {!online || (online.seat === 0 && !done) ? (
+            <button className="map-link" onClick={() => setLoadFor(loadFor === 0 ? null : 0)}>
+              {loaded[0] ? 'Swap the team →' : 'Load a real team →'}
+            </button>
+          ) : null}
         </div>
         <div className="vs-mid">
           SNAKE
@@ -317,10 +432,15 @@ export function Versus({ onHome }: { onHome: () => void }) {
         </div>
         <div className={`vs-side r ${!done && who === 1 && !loaded[1] ? 'now' : ''}`}>
           <b>{names[1]}</b>
-          <span>{loaded[1] ? 'a real five, loaded' : `${countOf(1)}/5 picked${!done && who === 1 ? ' · on the clock' : ''}`}</span>
-          <button className="map-link" onClick={() => setLoadFor(loadFor === 1 ? null : 1)}>
-            {loaded[1] ? 'Swap the team →' : 'Load a real team →'}
-          </button>
+          <span>
+            {loaded[1] ? 'a real five, loaded' : `${countOf(1)}/5 picked${!done && who === 1 ? ' · on the clock' : ''}`}
+            {online ? (online.seat === 1 ? ' · you' : online.present[1] ? '' : ' · away') : ''}
+          </span>
+          {!online || (online.seat === 1 && !done) ? (
+            <button className="map-link" onClick={() => setLoadFor(loadFor === 1 ? null : 1)}>
+              {loaded[1] ? 'Swap the team →' : 'Load a real team →'}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -335,7 +455,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
         ))}
       </div>
 
-      {choosing ? (
+      {choosing && mine ? (
         <div className="card">
           <div className="card-head">
             <span className="label">Where does {choosing.name} play?</span>
@@ -425,9 +545,9 @@ export function Versus({ onHome }: { onHome: () => void }) {
           <Bars
             mine={compile(A, B)}
             theirs={compile(B, A)}
-            title="Player 1 vs Player 2"
-            leftLabel="PLAYER 1"
-            rightLabel="PLAYER 2"
+            title={online ? `${names[0]} vs ${names[1]}` : 'Player 1 vs Player 2'}
+            leftLabel={online ? names[0].toUpperCase() : 'PLAYER 1'}
+            rightLabel={online ? names[1].toUpperCase() : 'PLAYER 2'}
             leftWord="P1"
             rightWord="P2"
           />
@@ -481,13 +601,25 @@ export function Versus({ onHome }: { onHome: () => void }) {
 
       <div className="dock">
         <div className="dock-inner">
-          {!done && order.length ? (
+          {canUndo && lastPick ? (
             <button className="btn ghost" onClick={undo}>
-              Take back {names[order[order.length - 1].side]}’s last pick
+              {online ? 'Take back your last pick' : `Take back ${names[lastPick.side]}’s last pick`}
             </button>
           ) : null}
-          <button className={`btn ${done ? '' : who === 1 ? 'them' : 'ghost'}`} disabled={false} onClick={done ? sim : undefined}>
-            {done ? 'Sim the series' : `${names[who]} — pick ${DRAFT_SIZE - countOf(who)} more`}
+          <button
+            className={`btn ${done ? '' : who === 1 ? 'them' : 'ghost'}`}
+            disabled={!!online && !online.connected}
+            onClick={done ? sim : undefined}
+          >
+            {online && !online.connected
+              ? 'Reconnecting…'
+              : done
+                ? 'Sim the series'
+                : !online
+                  ? `${names[who]} — pick ${DRAFT_SIZE - countOf(who)} more`
+                  : mine
+                    ? `Your pick — ${DRAFT_SIZE - countOf(who)} more`
+                    : `${names[who]} is picking…`}
           </button>
         </div>
       </div>

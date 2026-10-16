@@ -1,0 +1,17 @@
+{
+  "name": "game7-friends",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "db:local": "wrangler d1 migrations apply game7-friends --local",
+    "db:remote": "wrangler d1 migrations apply game7-friends --remote",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "wrangler": "^4.0.0"
+  }
+}
