@@ -10,6 +10,8 @@ import { Ask } from './Ask'
 import { Trophy } from './Trophy'
 import { cardInk, teamColor } from './teamColors'
 import { useUserMode } from '../state/viewmode'
+import { fileOf, postersFor, type Manifest } from './moments'
+import './moments.css'
 
 /**
  * THE SNAKE (his ruling: "instead of only going up, make it go like a snake to fill the screen").
@@ -599,6 +601,28 @@ export function LevelMap({
   // `bands` reads the block list for the mode, so a flip of the switch has to re-band the trail
   const BANDS = useMemo(() => bands(ROUNDS, colW), [colW, user])
   const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
+  /**
+   * THE ICONIC MOMENTS (his ask, 2026-10-16) — posters in the gutters either side of the trail,
+   * each inside its tier's band and sealed until that tier has fallen. The layout is
+   * src/ui/moments.ts; the gutter itself is carved by moments.css from 1280px of window, and the
+   * trail lays itself out for the narrower column it is left with, so nothing above knows.
+   */
+  const POSTERS = useMemo(() => postersFor(eras, ROUNDS, progress.stars, seam, H), [eras, progress.stars, seam, H])
+  /**
+   * Which pictures exist is the generator's manifest (public/moments/manifest.json): read once,
+   * after the first paint, and a moment it does not list wears its typographic face. No manifest
+   * — a checkout where the script has never run — is the same as an empty one.
+   */
+  const [manifest, setManifest] = useState<Manifest | null>(null)
+  useEffect(() => {
+    if (typeof fetch !== 'function') return
+    let live = true
+    fetch(`${import.meta.env.BASE_URL}moments/manifest.json`, { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => { if (live && m && typeof m === 'object') setManifest(m as Manifest) })
+      .catch(() => {})
+    return () => { live = false }
+  }, [])
 
   useEffect(() => {
     // the stage he came from first (his ruling, 2026-10-01), the next level otherwise
@@ -858,6 +882,7 @@ export function LevelMap({
        * And the width the trail measures itself at is its OWN box, which this does not touch — the
        * geometry is handed the same 347px on a phone as before.
        */}
+      <div className="trail-wrap">
       <div className="trail-room">
         <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
           {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
@@ -1109,6 +1134,29 @@ export function LevelMap({
             )
           })}
         </div>
+      </div>
+      {/* THE GUTTERS: the posters stand beside the trail's room, not in it — the room clips
+          sideways (see .trail-room), so anything hung past its wall would be cut. They are
+          decoration: no pointer, no tab stop, nothing a screen reader has to walk past. */}
+      <div className="moments" aria-hidden>
+        {POSTERS.map((p) => {
+          const file = fileOf(manifest, p.slug)
+          return (
+            <figure
+              key={p.slug}
+              className={`moment ${p.side} ${skinOf(p.first)} ${p.lit ? 'lit' : 'sealed'}${file ? '' : ' noimg'}`}
+              style={{ top: p.top }}
+            >
+              {file ? <img src={`${import.meta.env.BASE_URL}${file}`} alt="" loading="lazy" decoding="async" /> : null}
+              <span className="face">{p.lit ? p.title : ''}</span>
+              <figcaption>
+                <b>{p.lit ? p.title : 'Sealed'}</b>
+                <i>{p.lit ? p.era : `clear ${p.eraName}`}</i>
+              </figcaption>
+            </figure>
+          )
+        })}
+      </div>
       </div>
 
       {askReset ? (
