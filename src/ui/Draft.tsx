@@ -574,6 +574,8 @@ export function Draft({
    * pad comes off and nothing moves.
    */
   const oppFloor = useRef<HTMLDivElement | null>(null)
+  /** the smallest floor the draft draws before it lets the page scroll - see "A SHORT WINDOW" below */
+  const FLOOR_MIN = 240
   const myFloor = useRef<HTMLDivElement | null>(null)
   /**
    * THE BOARD IS AS TALL AS THE DESK — his ruling, 2026-09-29: "Fill the screen with the 5s, make
@@ -664,6 +666,8 @@ export function Draft({
       const [ca, cc] = [courtOf(a), courtOf(c)]
       if (a) a.style.paddingTop = ''
       if (c) c.style.paddingTop = ''
+      if (a) a.style.minHeight = ''
+      if (c) c.style.minHeight = ''
       if (ca) ca.style.maxWidth = ''
       if (cc) cc.style.maxWidth = ''
       // the FLOOR ITSELF, not its wrapper — the wrapper carries the margins (see `.court-line`),
@@ -689,18 +693,36 @@ export function Draft({
          *
          * `room` is measured from the start line, not from each box's own top, so it is the same
          * distance the eye reads: floor's top to the bottom of the space the flex share gave it.
-         * The width is capped by the narrower column and floored at the 220px the old clamp had,
-         * so a short window is no worse off than it was.
+         * The width is capped by the narrower column and floored at FLOOR_MIN (see A SHORT WINDOW).
          */
         if (ca && cc) {
           const ar = getComputedStyle(ca).aspectRatio.split('/')
           const wh = ar.length === 2 ? Number(ar[0]) / Number(ar[1]) : 100 / 84
           const room = Math.min(a.getBoundingClientRect().bottom, c.getBoundingClientRect().bottom) - line
           const wide = Math.min(a.clientWidth, c.clientWidth)
-          if (room > 0 && Number.isFinite(wh) && wh > 0) {
-            const size = Math.max(220, Math.min(wide, Math.round(room * wh)))
+          if (Number.isFinite(wh) && wh > 0) {
+            const size = Math.max(Math.min(FLOOR_MIN, wide), Math.min(wide, Math.round(Math.max(0, room) * wh)))
             ca.style.maxWidth = `${size}px`
             cc.style.maxWidth = `${size}px`
+          }
+          /**
+           * A SHORT WINDOW - his report, 2026-10-16: "As the game zooms in or out, or another
+           * computer is using it, it doesnt adjust and looks ugly." Zoomed in on the desk, the
+           * window is ~740 CSS px tall and the flex share left the opponent's floor an 82px box;
+           * the floor was held at 220px wide (185 tall), so it was drawn straight over the roster's
+           * head and first rows, and at 220 its own five overlapped as well - six rings and plates
+           * on top of each other, because the men were held at a 340px floor's pixels (the
+           * stylesheet now shrinks them with the court below 340, see `.draft .court-line`). So
+           * the minimum is FLOOR_MIN, or the column's width if that is narrower - 240, where the
+           * names still read and a 1440 x 900 laptop still does not scroll - and when the flex
+           * share is too short for it the BOX grows to hold the floor and the page scrolls: a
+           * scroll on a zoomed-in window, rather than a drawing on top of the rows. (Under 480px of room the board is not stretched at all and
+           * the share was ZERO.) Set here, after the size, and taken off at the top of every
+           * measure, so it never feeds back into the room it was sized from.
+           */
+          for (const [w, ct] of [[a, ca], [c, cc]] as const) {
+            const over = ct.getBoundingClientRect().bottom - w.getBoundingClientRect().bottom
+            if (over >= 1) w.style.minHeight = `${Math.ceil(w.getBoundingClientRect().height + over)}px`
           }
         }
       }

@@ -2730,18 +2730,24 @@ button {
      than once: the diagram is right at 356px and empty at 800. This is the team page's
      own fix (`.tdb-sheet .court`, 2026-09-22) brought to the draft's two floors, and
      every term keeps the draft's CURRENT pixel value as the floor of its clamp, so
-     nothing on a small window shrinks. */
+     nothing on a small window shrinks - UNTIL THE FLOOR ITSELF IS UNDER 340px (his report,
+     2026-10-16, "it doesnt adjust and looks ugly"). A 900-1250px window gives each team a
+     column narrower than that, and fixed 58px rings in a 219px court stood on each other
+     (six overlaps, measured). So each floor is `min(px, k cqw)` with k = px / 340: at 340
+     and up nothing changes, below it the five shrink with the court and keep its shape.
+     340 is the narrowest court with no overlap at full size (measured: 6 at 220, 4 at 260,
+     1 at 300, none from 340). */
   .draft .court-line > .court { container-type: inline-size; }
-  .draft .court-line > .court .ct-bust { width: clamp(58px, 16.3cqw, 170px); height: clamp(58px, 16.3cqw, 170px); border-width: clamp(2px, 0.45cqw, 5px); }
+  .draft .court-line > .court .ct-bust { width: clamp(min(58px, 17.06cqw), 16.3cqw, 170px); height: clamp(min(58px, 17.06cqw), 16.3cqw, 170px); border-width: clamp(2px, 0.45cqw, 5px); }
   /* the SPOT is the 86px box the draft has always given a man; the name plate inside it is the
      120px his ruling widened it to and hangs past the box on a long surname. Two different
      numbers, and putting the plate's on the box is what stood the five on top of each other. */
-  .draft .court-line > .court .ct-spot { width: clamp(86px, 24.2cqw, 252px); gap: clamp(1px, 0.5cqw, 6px); }
-  .draft .court-line > .court .ct-spot b { max-width: clamp(120px, 33.7cqw, 352px); font-size: clamp(14.7px, 4.13cqw, 43px); padding: 0 clamp(4px, 0.9cqw, 10px); }
-  .draft .court-line > .court .ct-spot i { font-size: clamp(13px, 3.65cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 10px); }
-  .draft .court-line > .court .ct-init { font-size: clamp(17.5px, 4.91cqw, 51px); }
-  .draft .court-line > .court .ct-init.ghost { font-size: clamp(14.7px, 4.13cqw, 43px); }
-  .draft .court-line > .court .ct-call { font-size: clamp(12px, 3.37cqw, 35px); max-width: 52%; }
+  .draft .court-line > .court .ct-spot { width: clamp(min(86px, 25.3cqw), 24.2cqw, 252px); gap: clamp(1px, 0.5cqw, 6px); }
+  .draft .court-line > .court .ct-spot b { max-width: clamp(min(120px, 35.3cqw), 33.7cqw, 352px); font-size: clamp(min(14.7px, 4.32cqw), 4.13cqw, 43px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-spot i { font-size: clamp(min(13px, 3.82cqw), 3.65cqw, 38px); padding: 0 clamp(4px, 0.9cqw, 10px); }
+  .draft .court-line > .court .ct-init { font-size: clamp(min(17.5px, 5.15cqw), 4.91cqw, 51px); }
+  .draft .court-line > .court .ct-init.ghost { font-size: clamp(min(14.7px, 4.32cqw), 4.13cqw, 43px); }
+  .draft .court-line > .court .ct-call { font-size: clamp(min(12px, 3.53cqw), 3.37cqw, 35px); max-width: 52%; }
 
   /* ---- 4. THE WHEEL, WAY BIGGER ----
      his ruling, in those words. The three reels were 96 + 96 + 260 of content sitting in
