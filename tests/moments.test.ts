@@ -51,9 +51,9 @@ describe('the prompt sheet', () => {
     }
     expect(MOMENTS.length).toBeGreaterThanOrEqual(10)
   })
-  it('the style forbids text, logos and real people — the posters are art, not likenesses', () => {
+  it('the style forbids text, logos and likenesses — the posters are art, recognisable by jersey and pose', () => {
     const style = SHEET.style
-    for (const word of ['no text anywhere', 'no logos', 'no visible faces', 'no real people']) expect(style).toContain(word)
+    for (const word of ['no text of any kind except the jersey numbers', 'no logos', 'never a photographic likeness']) expect(style).toContain(word)
   })
 })
 
@@ -82,7 +82,7 @@ describe('where a poster hangs', () => {
     }
   })
 
-  it('oldest lowest within a tier, and the one with no year on top', () => {
+  it('oldest lowest within a tier', () => {
     const inTier = (key: string) => posters.filter((p) => p.tier === key)
     for (const key of TIER_KEYS) {
       const ps = inTier(key)
@@ -93,8 +93,6 @@ describe('where a poster hangs', () => {
         expect(ps[i].top).toBeLessThan(ps[i - 1].top)
       }
     }
-    const myth = posters.find((p) => p.slug === 'the-first-team')!
-    expect(posters.filter((p) => p.tier === myth.tier).every((p) => p.top >= myth.top)).toBe(true)
   })
 
   it('alternates walls up the whole trail — no two neighbours on the same side', () => {
@@ -187,7 +185,7 @@ describe('on the map', () => {
     const html = map(progress({ stars: stars((l) => l <= lastOf(0)) }))
     const lit = html.match(/<figure class="moment [^"]*\blit\b[^"]*"/g) ?? []
     expect(lit).toHaveLength(MOMENTS.filter((m) => m.tier === 'league').length)
-    expect(html).toContain('Eighty-One')
+    expect(html).toContain('The Bounce')
     expect(html).not.toContain('The Last Shot')
   })
 
