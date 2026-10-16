@@ -5,8 +5,9 @@
     "era": "2016",
     "title": "From the Logo",
     "prompt": "Oklahoma City, overtime, 2016: a slight guard in a dark navy Warriors road jersey with a gold 30 releasing a jump shot one step past the half-court logo, feet together, already turning away before it lands, while the rim is a tiny distant hoop at the far end of the floor and a Thunder defender in white trails too far away to matter. The whole empty half court lies between the shooter and the basket. Navy and gold on a pale floor, the crowd dark.",
-    "status": "failed",
-    "error": "Generation failed"
+    "status": "completed",
+    "file": "moments/the-logo-three.jpg",
+    "request_id": "17caa330-b6d4-4e75-9231-bec8fe01b0c9"
   },
   "the-dagger": {
     "slug": "the-dagger",
@@ -44,8 +45,9 @@
     "era": "1997",
     "title": "The Flu Game",
     "prompt": "The end of Game 5 of the 1997 Finals in Utah: two teammates in red road Bulls jerseys walking off the floor together. The one on the right, with a white 23, is slumped and spent, head hanging, held up by the one on the left, with a white 33, whose arm is wrapped around his shoulders. The crowd behind them is a dense dark pattern. Two red figures with white numbers on black, a sickly green cast in the shadows.",
-    "status": "failed",
-    "error": "Generation failed"
+    "status": "completed",
+    "file": "moments/the-flu-game.jpg",
+    "request_id": "7a786924-6e5c-47eb-a6a6-2712281cf359"
   },
   "the-shrug": {
     "slug": "the-shrug",

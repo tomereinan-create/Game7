@@ -57,6 +57,23 @@ const N = nIx >= 0 ? Number(args[nIx + 1]) : 1
 if (![1, 4].includes(N)) { console.error('--n takes 1 or 4'); process.exit(2) }
 const CAND = path.join(ROOT, 'scripts/moments/candidates')
 const pickIx = args.indexOf('--pick')
+/**
+ * STYLES. SOUL V2 takes a `style_id`; the default is a general photographic look, which is why
+ * every poster came back as a photo-collage with a fake credit line however hard the prompt
+ * asked for a screen print. `--styles` lists the model's own styles (name and id) so one that
+ * is an illustration can be chosen; the sheet's `style_id` (or `--style <id>`) then rides on
+ * every request.
+ */
+const styleIx = args.indexOf('--style')
+if (args.includes('--styles')) {
+  const r = await fetch(`${API}/v1/text2image/soul-styles/v2`, { headers: AUTH })
+  if (!r.ok) { console.error(`styles: ${r.status} ${await r.text()}`); process.exit(1) }
+  const j = await r.json()
+  const list = Array.isArray(j) ? j : (j.styles ?? j.items ?? j.data ?? [])
+  for (const s of list) console.log(`${s.id}  ${s.name ?? s.title ?? ''}  ${s.description ?? ''}`.trim())
+  console.log(`${list.length} styles`)
+  process.exit(0)
+}
 
 const sheet = JSON.parse(await readFile(SHEET, 'utf8'))
 const STYLE = sheet.style
@@ -70,6 +87,8 @@ async function submit(m) {
     batch_size: N,
     enhance_prompt: false,
   }
+  const styleId = styleIx >= 0 ? args[styleIx + 1] : sheet.style_id
+  if (styleId) body.style_id = styleId
   const r = await fetch(`${API}/${MODEL}`, {
     method: 'POST',
     headers: { ...AUTH, 'Content-Type': 'application/json', 'Idempotency-Key': randomUUID() },
