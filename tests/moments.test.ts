@@ -53,7 +53,7 @@ describe('the prompt sheet', () => {
   })
   it('the style forbids text, logos and real people — the posters are art, not likenesses', () => {
     const style = SHEET.style
-    for (const word of ['No text', 'no logos', 'no identifiable faces', 'no real people']) expect(style).toContain(word)
+    for (const word of ['no text anywhere', 'no logos', 'no visible faces', 'no real people']) expect(style).toContain(word)
   })
 })
 

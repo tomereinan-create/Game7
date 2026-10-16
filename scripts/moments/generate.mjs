@@ -125,3 +125,11 @@ await Promise.all(Array.from({ length: CONCURRENCY }, async () => {
 }))
 if (!dry) await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n')
 console.log(dry ? 'dry run done' : `manifest: ${path.relative(ROOT, manifestPath)}`)
+
+// The API hands back ~4MB PNGs; the map draws a poster at most ~340px wide. shrink.py turns each
+// new PNG into a 1024px JPEG, keeps the original out of git, and re-points the manifest.
+if (!dry) {
+  const { spawnSync } = await import('node:child_process')
+  const r = spawnSync('python', [path.join(ROOT, 'scripts/moments/shrink.py')], { stdio: 'inherit' })
+  if (r.status !== 0) console.log('shrink.py did not run (python + Pillow needed); the PNGs stay as they are')
+}

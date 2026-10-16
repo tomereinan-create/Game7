@@ -1,1 +1,72 @@
-{}
+{
+  "the-last-shot": {
+    "slug": "the-last-shot",
+    "tier": "champions",
+    "era": "1998",
+    "title": "The Last Shot",
+    "prompt": "A lone shooter frozen in a perfect follow-through, wrist bent, fingers pointing at the rim, seen from behind and below against a wall of blinding white light. The whole arena is reduced to one giant glowing scoreboard reading 5.2 in the dark above him. Red figure, black void, white light.",
+    "status": "completed",
+    "file": "moments/the-last-shot.jpg",
+    "request_id": "dc39aafe-59d1-4ea2-b171-bac49d817b1f"
+  },
+  "the-block": {
+    "slug": "the-block",
+    "tier": "champions",
+    "era": "2016",
+    "title": "The Block",
+    "prompt": "Shot from directly behind the backboard: a hand and forearm slamming a basketball flat against the glass, the shooter's hand still underneath it, both arms stretched to their limit. Wine-red and gold light, the glass cracking into a star pattern around the ball, nothing else in frame.",
+    "status": "completed",
+    "file": "moments/the-block.jpg",
+    "request_id": "634a9e25-eaea-40c1-bc95-a323775c47ed"
+  },
+  "the-junior-skyhook": {
+    "slug": "the-junior-skyhook",
+    "tier": "all-time",
+    "era": "1987",
+    "title": "The Junior Skyhook",
+    "prompt": "A point guard mid-stride across the lane, lofting a running one-handed hook, the ball leaving his fingertips in a shaft of gold light, two defenders behind him dissolved into green smoke. Gold figure, green haze, a clock reading :02 burned faintly into the dark.",
+    "status": "completed",
+    "file": "moments/the-junior-skyhook.jpg",
+    "request_id": "58a3d2e0-6a39-4633-b235-3ff3155932a4"
+  },
+  "the-shrug": {
+    "slug": "the-shrug",
+    "tier": "champions",
+    "era": "1992",
+    "title": "The Shrug",
+    "prompt": "A player seen from the front, shoulders raised, palms turned up, head tilted, the universal shrug, lit from below like a statue. Six basketballs hang in a perfect row in the air above him like a halo. Red figure on a deep black field.",
+    "status": "completed",
+    "file": "moments/the-shrug.jpg",
+    "request_id": "5a2d09d4-270e-4599-9aad-32fa4c1856ce"
+  },
+  "the-lob": {
+    "slug": "the-lob",
+    "tier": "champions",
+    "era": "2000",
+    "title": "The Lob",
+    "prompt": "A basketball hanging at the apex of its arc at the very top of the frame, and far below two giant hands rising to meet it, the rest of the player's body falling into darkness. Gold light, the ball's arc drawn as a thin bright line from the bottom corner. Nothing else.",
+    "status": "completed",
+    "file": "moments/the-lob.jpg",
+    "request_id": "8ab1a840-7c79-455b-95f8-5b4dd9cb189c"
+  },
+  "the-dagger": {
+    "slug": "the-dagger",
+    "tier": "league",
+    "era": "2016",
+    "title": "The Dagger",
+    "prompt": "A shooter at the top of a step-back, the defender's outstretched hand a half-second late, the ball leaving his hand with a long bright trail that turns into the shape of a dagger blade. Wine-red and gold, 53 seconds glowing faintly in the black.",
+    "status": "completed",
+    "file": "moments/the-dagger.jpg",
+    "request_id": "7a79a9f5-9e45-45c9-b08c-3798718cebf3"
+  },
+  "eighty-one": {
+    "slug": "eighty-one",
+    "tier": "league",
+    "era": "2006",
+    "title": "Eighty-One",
+    "prompt": "A guard in purple walking alone off a court, back to camera, the hardwood behind him covered in eighty-one glowing shot marks, each a small burst of light, forming a constellation over the floor. Black arena, purple figure, gold sparks.",
+    "status": "completed",
+    "file": "moments/eighty-one.jpg",
+    "request_id": "acee4a71-d9a8-4a2d-8ce9-5ee5de985be2"
+  }
+}
