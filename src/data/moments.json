@@ -1,7 +1,7 @@
 {
   "aspect_ratio": "3:4",
   "resolution": "1080p",
-  "style": "Original art-directed sports poster in a flat screen-print style that stays faithful to the real photograph of the moment: the real jersey colours and numbers, the real arena, the real pose and the real position of every figure, so the moment is recognisable from the picture alone. One dominant colour per poster, hard graphic light, bold flat shapes, vast negative space. Faces are left in shadow or simplified to a few shapes, never a photographic likeness. Jerseys are plain: the number only, with no team name, no wordmark and no lettering across the chest. The picture runs edge to edge with no border, no margin and no caption area, and there is no text of any kind except the jersey numbers: no title, no caption, no credits, no watermark, no logos, no wordmarks.",
+  "style": "Epic cinematic sports art poster. One dramatic, stylised scene that captures the essence of the moment rather than a photograph of the game: the real jersey colours and numbers, the defining pose and the one key object stay exactly as they were, but the setting is free - a vast dark void, a night sky, fog, water, a court that runs to the horizon, light trails, impossible scale. Painterly and graphic, bold shapes, dramatic rim light, one dominant colour, vast negative space. Faces in shadow or simplified, never a photographic likeness. No text of any kind except the jersey numbers, no logos, no wordmarks, no border, no caption, no title, no credits, no watermark.",
   "moments": [
     { "slug": "the-bounce",
       "tier": "league",
@@ -13,7 +13,7 @@
       "tier": "league",
       "era": "2016",
       "title": "From the Logo",
-      "prompt": "Oklahoma City, overtime, 2016, the shot from the logo. Exactly two players and nobody else. A slight guard in a solid dark navy sleeveless jersey printed with nothing but a large gold number 30 has just released a jump shot from one step past the half-court circle, both arms still up in the follow-through, the ball a small bright sphere high in the air above him on its way to a rim that stands tiny and far away at the top of the frame. One Thunder defender in a solid white jersey trails a few steps behind him, too far away to matter. The whole empty half court lies between the shooter and the basket, the half-court circle under his feet. Navy and gold figure on a pale floor, the crowd a dark band."
+      "prompt": "The shot from the logo, 2016: a lone slight guard in a dark navy sleeveless jersey with a large gold 30 stands one long stride past the half-court line on an endless dark court, both arms still raised in the follow-through of a jump shot, 38 feet from the basket. The ball is a small burning comet with a long golden trail arcing high across a black sky toward a tiny glowing rim an impossible distance away at the far end of the court. The hardwood lines run to the horizon like a runway, the half-court circle glowing under his feet. One white-shirted defender, a few steps behind him, dissolves into the dark. Navy and gold on black."
     },
     { "slug": "the-dagger",
       "tier": "league",

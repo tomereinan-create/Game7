@@ -52,7 +52,7 @@ describe('the prompt sheet', () => {
     expect(MOMENTS.length).toBeGreaterThanOrEqual(10)
   })
   it('the style forbids text, logos and likenesses — the posters are art, recognisable by jersey and pose', () => {
-    const style = SHEET.style
+    const style = SHEET.style.toLowerCase()
     for (const word of ['no text of any kind except the jersey numbers', 'no logos', 'never a photographic likeness']) expect(style).toContain(word)
   })
 })
