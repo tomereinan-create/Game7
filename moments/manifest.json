@@ -1,0 +1,82 @@
+{
+  "the-logo-three": {
+    "slug": "the-logo-three",
+    "tier": "league",
+    "era": "2016",
+    "title": "From the Logo",
+    "prompt": "The shot from the logo, overtime, 2016. One figure, alone. A slight guard in a dark navy sleeveless jersey with a large gold 30 has just released a jump shot from the centre-court logo on his OWN half of the floor, one stride before the half-court line, seen from behind and slightly above so the entire empty far half of the court stretches away in front of him. Both arms are still raised in the follow-through. The ball is a burning comet with a long golden trail arcing high across a black sky toward a tiny glowing rim at the far end, 38 feet away. The half-court line crosses the floor just in front of his feet; the court's lines run to the horizon like a runway and fade into darkness. Nobody else on the floor. Navy and gold on black.",
+    "status": "completed",
+    "file": "moments/the-logo-three.jpg",
+    "picked": null
+  },
+  "the-bounce": {
+    "slug": "the-bounce",
+    "tier": "league",
+    "era": "2019",
+    "title": "The Bounce",
+    "prompt": "Game 7 at the buzzer, 2019. Only two figures. A forward in a black jersey with a white 2 is crouched low on his heels in the right baseline corner, inches inside the sideline, both hands on his knees, staring up. A tall defender in a white jersey with a red 21, who just closed out on him, is still in the air beside him with one arm up. The rim stands at the top of the frame with the ball balanced on the front of its iron, frozen at the top of its fourth bounce, glowing like the only light in a dark arena. A shot clock above the backboard reads 0.0. The floor below them is a sliver of hardwood; everything else is black and the crowd a wall of faint red. Black, white and red.",
+    "status": "completed",
+    "file": "moments/the-bounce.jpg",
+    "picked": null
+  },
+  "the-dagger": {
+    "slug": "the-dagger",
+    "tier": "league",
+    "era": "2016",
+    "title": "The Dagger",
+    "prompt": "Game 7 of the 2016 Finals, 53 seconds left. Only two figures. A guard in a black jersey with a gold 2 is at the top of his jump on the right wing, well outside the three-point arc, releasing a step-back three with the ball just off his fingertips above his head. The defender in a white jersey with a gold 30 is directly in front of him, a half step too late, lunging with his right arm stretched up toward the ball, off balance. Seen from the baseline at floor level. The three-point arc glows under the shooter's feet; the ball's path is a thin red line toward a rim at the left edge. Behind them, instead of a crowd, a solid wall of yellow light. Black, wine red and gold on yellow.",
+    "status": "completed",
+    "file": "moments/the-dagger.jpg",
+    "picked": null
+  },
+  "the-last-shot": {
+    "slug": "the-last-shot",
+    "tier": "champions",
+    "era": "1998",
+    "title": "The Last Shot",
+    "prompt": "The last shot, 1998 Finals, Utah. Only two figures. A guard in a red jersey with a black 23 is frozen at the top of the key, just inside the free-throw line, in a full follow-through: right arm extended toward the rim, wrist snapped down, fingers hanging, feet just landing. One stride to his left, a defender in a white jersey with purple trim is stumbling backward and away from him, off balance, his left hand reaching down toward the floor, pushed off the play. The ball hangs halfway to the rim at the top right of the frame, a small sphere catching the light. Everything else is a black void, the hardwood a lit wedge under them with the free-throw line and the key drawn in gold, a clock reading 5.2 burning faintly in the dark above. Red, white and black.",
+    "status": "completed",
+    "file": "moments/the-last-shot.jpg",
+    "picked": null
+  },
+  "the-shrug": {
+    "slug": "the-shrug",
+    "tier": "champions",
+    "era": "1992",
+    "title": "The Shrug",
+    "prompt": "The shrug, Game 1 of the 1992 Finals. One figure, alone. A guard in a white home jersey with a red 23, seen from the front, jogging back down the floor after a made three, shoulders raised, both palms turned up and out, head tilted and turned to his right toward the broadcast table, as if to say he cannot explain it either. Above him in the dark, six basketballs hang in a perfect arc like a halo, each glowing orange. The floor under him is a lit strip of hardwood; the rest is black. White and red on black, orange halo.",
+    "status": "completed",
+    "file": "moments/the-shrug.jpg",
+    "picked": null
+  },
+  "the-flu-game": {
+    "slug": "the-flu-game",
+    "tier": "champions",
+    "era": "1997",
+    "title": "The Flu Game",
+    "prompt": "The flu game, Game 5 of the 1997 Finals. Only two figures. Two teammates in red road jerseys walking off the floor together toward the viewer. The one on the right, with a white 23, is slumped and spent, head hanging, legs barely under him. The one on the left, with a white 33, holds him up with an arm wrapped around his shoulders. Behind them the arena is a dark, feverish blur, and the hardwood runs back into fog. A sickly green cast in every shadow, the two red jerseys the only saturated colour. Red on black with green shadows.",
+    "status": "completed",
+    "file": "moments/the-flu-game.jpg",
+    "picked": null
+  },
+  "the-block": {
+    "slug": "the-block",
+    "tier": "champions",
+    "era": "2016",
+    "title": "The Block",
+    "prompt": "The chase-down block, Game 7 of the 2016 Finals. Only two figures. A guard in a white jersey with a gold 9 is in the air under the rim on the right side, at the end of a layup, the ball just leaving his hand toward the glass. A forward in a black jersey with a gold 23 has arrived from behind at full stretch, flying in from the left, and pins the ball flat against the backboard with his right hand, inches from the rim. Seen from behind the baseline, slightly below, so the backboard glass is a pale rectangle between them and the viewer. Behind them a sea of yellow: the whole arena is a solid field of yellow light. Black, white and gold on yellow.",
+    "status": "completed",
+    "file": "moments/the-block.jpg",
+    "picked": null
+  },
+  "the-lob": {
+    "slug": "the-lob",
+    "tier": "champions",
+    "era": "2000",
+    "title": "The Lob",
+    "prompt": "The lob, Game 7 of the 2000 Western Conference Finals. Only three figures. A huge centre in a gold jersey with a purple 34 is above the rim with both hands on the ball, catching an alley-oop, about to dunk, mouth open. Below and behind him on the right wing, outside the three-point line, the guard in gold with a purple 8 who threw the pass stands with his right arm still pointed up at the rim. Under the basket a defender in a black jersey is beaten, arms down, turning to watch. The ball's path from the guard's hand to the centre's is a thin gold arc. Everything else is a deep purple void with the key drawn in gold on the floor. Gold and purple on dark purple.",
+    "status": "completed",
+    "file": "moments/the-lob.jpg",
+    "picked": null
+  }
+}
