@@ -134,9 +134,9 @@
     "tier": "customs",
     "era": "2001",
     "title": "The Stepover",
-    "prompt": "Game 1 of the 2001 Finals at Staples Center: a small guard in a white 76ers jersey with a black 3, a sleeve on his right arm and a headband, stepping over a defender in a gold Lakers jersey with a purple 10 who lies sprawled on his back on the floor after the jumper, the guard looking down at him as he passes. Seen from the side at floor level, the courtside seats behind. White and black on gold.",
+    "prompt": "Game 1 of the 2001 Finals at Staples Center. Exactly two players and nobody else. A small guard in a plain white jersey with a black number 3, a black sleeve on his right arm and a white headband, stepping over one defender who lies on his back on the floor in a plain gold jersey with a purple number 10, the guard looking down at him as he passes. Seen from the side at floor level, the courtside seats dark behind, a warm gold floor. One figure standing, one figure down.",
     "status": "completed",
     "file": "moments/the-stepover.jpg",
-    "request_id": "4bec6270-712e-4273-b0af-42f83460b398"
+    "picked": 3
   }
 }

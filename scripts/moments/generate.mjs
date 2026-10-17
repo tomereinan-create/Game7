@@ -36,8 +36,8 @@ const creds =
   (process.env.HF_API_KEY_ID && process.env.HF_API_KEY_SECRET ? `${process.env.HF_API_KEY_ID}:${process.env.HF_API_KEY_SECRET}` : '')
 const args = process.argv.slice(2)
 const dry = args.includes('--dry')
-// a dry run only prints the sheet, so it needs no key
-if (!dry && !creds.includes(':')) {
+// a dry run only prints the sheet and a pick only copies a file, so neither needs the key
+if (!dry && !args.includes('--pick') && !creds.includes(':')) {
   console.error('No credentials: set HF_CREDENTIALS="keyid:secret" (or HF_API_KEY_ID and HF_API_KEY_SECRET).')
   process.exit(2)
 }
