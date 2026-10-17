@@ -87,5 +87,6 @@
       "title": "The Dunk of Death",
       "prompt": "Sydney, the 2000 Olympics: a guard in a dark navy USA jersey with a white 9 at the top of his leap, legs spread wide, clearing the head of a seven-foot defender in a white France jersey who ducks beneath him, the ball slammed down one-handed at the rim. Seen from the side, the arena's blue court below. Navy and white on a pale blue field, the crowd dark."
     }
-  ]
+  ],
+  "model": "recraft"
 }
