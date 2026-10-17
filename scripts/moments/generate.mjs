@@ -28,7 +28,6 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const SHEET = path.join(ROOT, 'src/data/moments.json')
 const OUT = path.join(ROOT, 'public/moments')
 const API = 'https://api.higgsfield.ai'
-const MODEL = process.env.HF_MODEL || 'higgsfield-ai/soul/v2/standard'
 const CONCURRENCY = 3
 
 const creds =
@@ -79,17 +78,63 @@ const sheet = JSON.parse(await readFile(SHEET, 'utf8'))
 const STYLE = sheet.style
 const exists = (p) => access(p).then(() => true, () => false)
 
+/**
+ * THE MODELS. SOUL is a photograph-of-people model: every poster it made was a photo-collage
+ * with a misspelt wordmark and a fake credit line, however the prompt was worded, and its style
+ * list is film looks only. The same key reaches other models on the same API (checked against
+ * docs.higgsfield.ai, 2026-10-17): Recraft is built for illustration and poster design and
+ * takes a palette; Ideogram is the one that renders text and numbers cleanly. Neither takes a
+ * batch, so `--n 4` on them is four requests in flight at once.
+ *
+ *   --model soul      higgsfield-ai/soul/v2/standard   (batch_size 1|4, style_id)
+ *   --model recraft   recraft/v4.1/pro/text-to-image   (2k, colors[], background_color)
+ *   --model ideogram  ideogram/v4.0                    (rendering_speed QUALITY)
+ */
+const MODELS = {
+  soul: {
+    path: 'higgsfield-ai/soul/v2/standard',
+    batch: true,
+    body: (m) => {
+      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: sheet.resolution || '1080p', batch_size: N, enhance_prompt: false }
+      const styleId = styleIx >= 0 ? args[styleIx + 1] : sheet.style_id
+      if (styleId) b.style_id = styleId
+      return b
+    },
+  },
+  recraft: {
+    path: 'recraft/v4.1/pro/text-to-image',
+    batch: false,
+    body: (m) => {
+      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', output_format: 'png' }
+      if (m.colors) b.colors = m.colors.map((rgb) => ({ rgb }))
+      if (m.background) b.background_color = { rgb: m.background }
+      return b
+    },
+  },
+  ideogram: {
+    path: 'ideogram/v4.0',
+    batch: false,
+    body: (m) => ({ prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', rendering_speed: 'QUALITY' }),
+  },
+  /** takes up to ten public reference URLs in `refs` on the moment - the real photograph, for composition */
+  grok: {
+    path: 'xai/grok-imagine-image-2.0',
+    batch: false,
+    body: (m) => {
+      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', quality: 'medium' }
+      if (m.refs?.length) b.image_urls = m.refs.slice(0, 10)
+      return b
+    },
+  },
+}
+const modelIx = args.indexOf('--model')
+const MODEL_KEY = modelIx >= 0 ? args[modelIx + 1] : (sheet.model || 'soul')
+if (!MODELS[MODEL_KEY]) { console.error(`--model takes ${Object.keys(MODELS).join(' | ')}`); process.exit(2) }
+const M = MODELS[MODEL_KEY]
+
 async function submit(m) {
-  const body = {
-    prompt: `${m.prompt} ${STYLE}`,
-    aspect_ratio: sheet.aspect_ratio || '3:4',
-    resolution: sheet.resolution || '1080p',
-    batch_size: N,
-    enhance_prompt: false,
-  }
-  const styleId = styleIx >= 0 ? args[styleIx + 1] : sheet.style_id
-  if (styleId) body.style_id = styleId
-  const r = await fetch(`${API}/${MODEL}`, {
+  const body = M.body(m)
+  const r = await fetch(`${API}/${process.env.HF_MODEL || M.path}`, {
     method: 'POST',
     headers: { ...AUTH, 'Content-Type': 'application/json', 'Idempotency-Key': randomUUID() },
     body: JSON.stringify(body),
@@ -133,23 +178,27 @@ async function one(m, manifest) {
   // a candidates run is asked for on purpose, so a slot that already has a picture still gets its four
   if (have && N === 1) { console.log(`skip   ${m.slug} (have it)`); return }
   if (dry) { console.log(`would  ${m.slug} x${N}: ${m.prompt}`); return }
-  console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''}`)
-  const sub = await submit(m)
-  const done = await poll(sub.status_url, m.slug)
-  if (done.status !== 'completed') {
-    console.log(`FAIL   ${m.slug}: ${done.status} ${done.error || ''}`)
-    if (N === 1) manifest[m.slug] = { ...m, status: done.status, error: done.error || null }
+  console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''} (${MODEL_KEY})`)
+  // a model with a batch takes one request for N pictures; the others take N requests at once
+  const runs = M.batch ? 1 : N
+  const dones = await Promise.all(Array.from({ length: runs }, async () => poll((await submit(m)).status_url, m.slug)))
+  const good = dones.filter((d) => d.status === 'completed')
+  for (const d of dones) if (d.status !== 'completed') console.log(`FAIL   ${m.slug}: ${d.status} ${d.error || ''}`)
+  if (!good.length) {
+    if (N === 1) manifest[m.slug] = { ...m, status: dones[0].status, error: dones[0].error || null }
     return
   }
-  const urls = (done.images ?? []).map((i) => i.url).filter(Boolean)
+  const done = good[0]
+  const urls = good.flatMap((d) => (d.images ?? []).map((i) => i.url)).filter(Boolean)
   if (N > 1) {
     const dir = path.join(CAND, m.slug)
     await mkdir(dir, { recursive: true })
+    // named by model so two models' candidates sit side by side:  --pick <slug> recraft-2
     for (const [k, url] of urls.entries()) {
       const { ext, bytes } = await download(url)
-      await writeFile(path.join(dir, `${k + 1}.${ext}`), bytes)
+      await writeFile(path.join(dir, `${MODEL_KEY}-${k + 1}.${ext}`), bytes)
     }
-    console.log(`cands  ${m.slug}: ${urls.length} in scripts/moments/candidates/${m.slug}/`)
+    console.log(`cands  ${m.slug}: ${urls.length} in scripts/moments/candidates/${m.slug}/ (${MODEL_KEY}-1..${urls.length})`)
     return
   }
   const { ext, bytes } = await download(urls[0])
