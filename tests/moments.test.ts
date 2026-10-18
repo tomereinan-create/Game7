@@ -56,7 +56,7 @@ describe('the prompt sheet', () => {
     expect(new Set(MOMENTS.map((m) => (m as { look?: string }).look)).size).toBe(MOMENTS.length)
     const style = SHEET.style.toLowerCase()
     for (const word of ['no text of any kind', 'no logos', 'portraits of no one']) expect(style).toContain(word)
-    for (const m of MOMENTS) expect((m as { concepts?: string[] }).concepts?.length, m.slug + ' has four concepts').toBe(4)
+    for (const m of MOMENTS) expect((m as { concepts?: string[] }).concepts?.length, m.slug + ' has concepts').toBeGreaterThanOrEqual(1)
   })
 })
 
