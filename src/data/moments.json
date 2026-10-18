@@ -17,30 +17,30 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-bounce.jpg"
       ]
     },
-    { "slug": "the-logo-three",
+    { "slug": "the-stepback",
       "tier": "league",
-      "era": "2016",
-      "title": "From the Logo",
-      "look": "Classical oil painting on a frozen lake at night under the aurora: the ice runs flat to the horizon, green and violet light curtains the sky, the far hoop a tiny lit post at the edge of the ice, the ball a comet across the aurora.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in dark navy at the left, feet together just off the ground at the end of his release, both arms up; the white-shirted defender lunging in from the right with one arm stretched toward him, a step too late; the referee between them as a dark figure. The shooter is 38 feet from the basket, so the hoop is TINY and far away at the top edge of the frame, never near him. Change the world to a frozen lake under the northern lights: the floor becomes ice running to the horizon, the crowd becomes a dark line of pines, the ball a comet with a long gold trail arcing toward the distant hoop. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+      "era": "2019",
+      "title": "The Stepback",
+      "look": "Bold graphic-novel ink and flat colour, heavy black outlines, halftone shadows, a hard panel border of thick ink, the kind of comic frame that freezes a villain mid-stare.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the tall bearded guard in a plain red jersey standing over the play at the free-throw line, cradling the ball against his hip with both hands, head tilted down, staring at the man on the floor; the defender in a plain white jersey sitting on the hardwood on his backside, one knee up, both hands on the floor behind him, looking up at him; the distant teammate at the right edge and the hoop at the far left; the crowd a dark band. Change the medium to comic-book ink: the arena becomes a few bold black strokes, the crowd a halftone grey wall, a burst of speed-line radiating from the fallen man where he was dropped, no words in any burst. The bearded face is a solid black shape under the beard, no features. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-stepback.jpg"
+      ],
       "concepts": [
         ""
-      ],
-      "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-logo-three.jpg"
       ]
     },
-    { "slug": "the-dagger",
+    { "slug": "the-crossover",
       "tier": "league",
-      "era": "2016",
-      "title": "The Dagger",
-      "look": "Classical oil painting inside an erupting volcano at night: the floor a black crust of cooled lava, rivers of fire behind, ash and embers in the air, the hoop on a basalt pillar at the far right.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in plain black at the right, at the top of his jump, the ball held above his head at release, body leaning back; the defender in plain white at the left, a full stride away, stretched out with his right arm straight up and his body falling forward, too late; the referee as a dark figure; the bench behind as a row of dark seated silhouettes. Change the world to the inside of an erupting volcano: black lava crust underfoot, rivers of fire behind the figures where the yellow crowd was, embers and ash in the air, the hoop on a basalt pillar at the far right edge. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+      "era": "2015",
+      "title": "The Crossover",
+      "look": "Cel-shaded anime action art: clean linework, flat colour cells, dramatic speed lines, a shattered-glass burst where the ankles break, floor reflections, exaggerated motion.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the slight guard in a plain blue jersey low and driving left with the ball on the floor at his left hand, his right arm swept back; the defender in a plain white jersey falling backward to the floor at the right, one leg kicked up, one arm reaching after him too late; the referee as a dark shape behind. Change the medium to cel-shaded anime: the court floor a glossy reflecting plane, the crowd a soft-focus colour wash, speed lines across the whole frame, a burst of shattered-glass shapes under the falling defender. No faces: both heads turned so the faces are hidden, drawn as hair and shadow only. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-crossover.jpg"
+      ],
       "concepts": [
         ""
-      ],
-      "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dagger.jpg"
       ]
     },
     { "slug": "the-last-shot",
@@ -56,19 +56,6 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-last-shot.webp"
       ]
     },
-    { "slug": "the-flu-game",
-      "tier": "champions",
-      "era": "1997",
-      "title": "The Flu Game",
-      "look": "Classical oil painting of two figures crossing a glacier in a whiteout: blowing snow, a crevasse to one side, a pale sun through the storm, the two red jerseys the only colour.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the two men in plain red walking away from the viewer toward the right, the one on the left with his arm wrapped around the shoulders of the one on the right, who is slumped and spent with his head hanging; the other red figures walking at the left edge as distant silhouettes; the hoop above at the top right as a dark post in the storm. Change the world to a glacier in a whiteout: blowing snow, a crevasse opening on the right, a pale sun through the storm, every figure seen from behind. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
-      "concepts": [
-        ""
-      ],
-      "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-flu-game.jpg"
-      ]
-    },
     { "slug": "the-block",
       "tier": "champions",
       "era": "2016",
@@ -82,17 +69,43 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-block.jpg"
       ]
     },
-    { "slug": "the-lob",
+    { "slug": "the-corner-three",
       "tier": "champions",
-      "era": "2000",
-      "title": "The Lob",
-      "look": "Classical oil painting of a colossal figure standing waist-deep in a stormy sea at night, lightning behind, the hoop on a lighthouse at the left where the ball has just gone through, the crowd a dark shore far below.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the camera position; the huge centre in plain gold filling the frame from the waist up, turning to his right with both arms flung wide in a roar, his head thrown back and entirely in black shadow so no face shows; a teammate's hand grabbing his left arm from the left edge; the ball flying out of the top left corner. Change the world to a stormy sea at night: he stands waist-deep in black water like a colossus, lightning behind him, a lighthouse at the top left with a hoop on it where the ball has just come through, the crowd a line of lights on a far shore. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+      "era": "2013",
+      "title": "The Corner Three",
+      "look": "Classical oil painting in which the whole white-clad crowd has become a towering frozen tidal wave of white water curling over the corner, the shooter at its foot, the ball at the crest.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the shooter in a plain white jersey with red trim at the right, feet off the floor in the corner, back-pedalling, the ball released at the top of his jump from both hands above his head; the defender in a plain black jersey lunging at him from below with his right arm straight up, too late; the second black-clad defender watching at the far left; the row of seated figures behind. Change the world: the arena and its sea of white shirts become a single enormous wave of white water frozen at the moment of breaking over the corner, the two players at its foot on a sliver of hardwood, the ball a bright point at the wave’s crest. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-corner-three.jpg"
+      ],
       "concepts": [
         ""
-      ],
+      ]
+    },
+    { "slug": "the-junior-skyhook",
+      "tier": "champions",
+      "era": "1987",
+      "title": "The Junior Skyhook",
+      "look": "Art-nouveau stained-glass window: bold black leading between panes of saturated glass, gold, purple, green and white, the figures long and flowing, a round rose window where the ball is, light glowing through.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the camera low behind the two defenders; the guard in a plain purple-and-gold jersey running across the lane from left to right, his right arm sweeping up in a running hook, the ball leaving his fingertips at the top of the frame; the goggled centre in purple at the far left and the defender in plain white and green at the centre-left, both with their backs to us, arms reaching up; the crowd a band at the right. Change the medium to a stained-glass window: every figure and the hardwood become panes of coloured glass divided by black leading, the ball a small round rose window at the top, light pouring through. The hooking player’s head is a pane of dark glass, no face. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
       "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-lob.jpg"
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-junior-skyhook.jpg"
+      ],
+      "concepts": [
+        ""
+      ]
+    },
+    { "slug": "the-trophy",
+      "tier": "champions",
+      "era": "2010",
+      "title": "The Fifth",
+      "look": "Classical oil painting of a victor on a stone plinth in a colosseum at night, both trophies held to the sky, gold confetti falling like embers, torchlight, the crowd a dark roaring mass under the arches.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the champion at the centre in a plain white t-shirt and a plain dark cap, both arms raised high above his head, the large gold trophy with the ball on top in his right hand and the smaller silver trophy in his left, a plain gold wristband on the left wrist; the teammates’ raised arms and fists around him; the dark arena behind. Change the world to a colosseum at night: he stands on a stone plinth on the sand, torches burn in the arches, gold confetti falls like embers, the crowd a dark mass under the stone. His face is turned up and lost in the glare of the trophies, no features visible. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-trophy.jpg"
+      ],
+      "concepts": [
+        ""
       ]
     },
     { "slug": "the-skyhook",
@@ -108,30 +121,30 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-skyhook.jpg"
       ]
     },
+    { "slug": "the-hundred",
+      "tier": "all-time",
+      "era": "1962",
+      "title": "One Hundred",
+      "look": "A 1960s screen-printed poster: coarse halftone dots, three flat inks - black, cream and a single red - the grain of old newsprint, the image posterised into bold shapes.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the seated giant in a plain white jersey filling the frame from the waist up, turned slightly to his left, his right hand holding up a square sheet of paper at chest height on which the number 100 is written large by hand in black marker; the dark locker-room curtain behind and the hand pointing at the top right. Change the medium to a 1960s halftone screen print in black, cream and one red: the number 100 on the paper is the ONLY text in the picture and must stay exactly as written. His face is posterised into pure black shadow, no features. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-hundred.jpg"
+      ],
+      "concepts": [
+        ""
+      ]
+    },
     { "slug": "the-dream-shake",
       "tier": "all-time",
       "era": "1995",
       "title": "The Dream Shake",
-      "look": "Classical oil painting in a hall of mirrors at midnight: black marble floor, tall mirrors on every side each holding a different moment of the spin, candlelight, the hoop at the top of the frame.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in plain red seen from behind at the left, both arms up with the ball held high above his head at the top of his turn toward the basket; the defender in plain white at the right, beside and slightly behind him, one arm up, caught leaning the wrong way with his weight going right, his head turned away; the backboard and rim above between them. Change the world to a hall of mirrors at midnight: black marble floor, tall mirrors on every side each reflecting a different frame of the spin - the fake one way, the pivot, the rise - candlelight, the crowd gone. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
-      "concepts": [
-        ""
-      ],
+      "look": "Hand-drawn anime key art: the spin drawn with three fading afterimages in a swirl of speed lines, cel shading, a dramatic low angle, the defender flung off balance.",
+      "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the centre in a plain red jersey seen from behind at the left, both arms up with the ball held high above his head at the top of his turn toward the basket; the defender in a plain white jersey at the right, beside and slightly behind him, one arm up, caught leaning the wrong way with his weight going right; the backboard and rim above between them. Add three fading afterimages of the red centre trailing to the right showing the fake he just sold, and a swirl of speed lines around the spin. Change the medium to cel-shaded anime: flat colour cells, clean lines, the arena a dark colour wash. The defender’s head is turned away and drawn as hair and shadow, no face. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
       "refs": [
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dream-shake.jpg"
-      ]
-    },
-    { "slug": "the-shot",
-      "tier": "all-time",
-      "era": "1989",
-      "title": "The Shot",
-      "look": "Classical oil painting at the mouth of a cave opening onto a starry sky: the two figures silhouetted against the stars, the hoop hanging from the cave roof, the ball at the top of its rise lit like a lantern.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the camera directly behind the shooter at mid height; the shooter in plain red at the top of his jump with the ball held high in both hands above his head about to release; the defender in plain white just beyond him on the right with his right arm thrust up past the ball; the backboard and rim directly ahead above them; two other players low at the left and right edges as dark silhouettes. Change the world to the mouth of a great cave opening onto a starry night: the floor becomes stone, the hoop hangs from the cave roof, the crowd becomes the stars beyond. No clock. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+      ],
       "concepts": [
         ""
-      ],
-      "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-shot.jpg"
       ]
     },
     { "slug": "the-free-throw-line-dunk",
@@ -171,19 +184,6 @@
       ],
       "refs": [
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dunk-of-death.jpg"
-      ]
-    },
-    { "slug": "the-shrug",
-      "tier": "champions",
-      "era": "1992",
-      "title": "The Shrug",
-      "look": "Classical oil painting of a lone figure standing in shallow water at the end of a flooded cathedral nave, rain falling through a broken roof, six basketballs floating in the air above him each burning like a small sun, their light on the water.",
-      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the one player in plain white with red trim, seen from the front and cropped at the thigh, jogging forward with both elbows bent and held out from his body, forearms level, both palms open and turned up at chest height, shoulders lifted, head turned to his right. His head is turned so far and so deep in shadow that no face shows. Nobody else. Change the world to a flooded cathedral nave: he stands ankle-deep in black water, rain falling through a broken roof, six basketballs hanging in an arc above him each burning like a small sun. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
-      "concepts": [
-        ""
-      ],
-      "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-shrug.jpg"
       ]
     }
   ]
