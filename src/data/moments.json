@@ -8,39 +8,39 @@
       "tier": "league",
       "era": "2019",
       "title": "The Bounce",
-      "look": "Breath held: everything still, the ball the only warm light.",
-      "prompt": "A Black forward in a black jersey is crouched low on his heels in the corner, both hands on his knees, head tilted up, frozen. Beside him a taller defender in a white jersey is still in the air, one arm up. Above them the rim, and the ball resting on the very front of its iron at the top of its fourth bounce. A clock above the backboard reads 0.0. Both faces turned up and away.",
+      "look": "Classical oil painting seen from high above, a deep dark sea floor: the court a lit slab of sand on the seabed, every figure frozen with their faces turned up toward the rim, the ball resting on the rim glowing like a pearl, light shafts from the surface, kelp where the crowd stood.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the high overhead angle; the hoop at the bottom left with the ball resting on the front of its rim; the shooter in white crouched on his heels in the corner with both hands on his knees staring at it; the tall figure in red bent beside him; the whole bench and crowd frozen in a wall behind them, every head turned toward the ball; the clock at the top left reading 0.0. Change the world to the floor of a deep dark sea, light falling from the surface, the crowd a wall of drifting kelp and shadowed figures. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "Underwater, on the floor of a dark sea: light ripples down from the surface, the ball glows on the rim like a pearl, bubbles rise from the crouched man's mouth, kelp sways where the crowd would be. Cinematic painting.",
-        "A snow-covered summit at dusk: the hoop planted in the snow at the cliff's edge, spindrift blowing, the two men in their jerseys in the cold, the ball balanced on the rim against a violet sky. Epic landscape painting.",
-        "Hand-drawn anime key art: the ball on the rim drawn huge in the foreground with four motion echoes of its bounces, the crouched forward and the leaping defender small below, arena lights streaked, red and black.",
-        "The actual arena, photo-real cinematic: the view from behind the baseline, every seat a wall of red, dust in the lights, slow-motion stillness, the ball lit like the only thing in the building."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-bounce.jpg"
       ]
     },
     { "slug": "the-logo-three",
       "tier": "league",
       "era": "2016",
       "title": "From the Logo",
-      "look": "Distance: the shooter small, the ball's trail the brightest thing in the frame.",
-      "prompt": "A Black guard in a dark navy jersey stands at the centre-court logo on his own half of the floor with both arms still raised in his follow-through; the ball is a streak of gold arcing high toward a tiny rim at the far end of the empty half court. Nobody else on the floor. Face turned up toward the shot.",
+      "look": "Classical oil painting under a night sky: the court an endless dark plain running to the horizon, the far hoop tiny and lit, the ball a comet with a long gold trail across the stars.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in dark navy at the left, feet together just off the floor at the end of his release, both arms up; the white-shirted defender lunging in from the right with one arm stretched toward him, a step too late; the great empty distance between the shooter and the basket; the crowd as a band behind. Change the world to a dark plain under a star-filled night sky: the floor runs to the horizon, the far hoop is a tiny lit ring at the edge of the frame, the ball a comet with a long gold trail, the crowd a dark ridge of hills. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "In orbit: the court is a glass floor floating above a blue planet, the far rim hangs among the stars, the ball a comet. Cinematic science-fiction painting.",
-        "Medieval: a torchlit stone castle courtyard, the rim an iron ring hung on a far rampart, the shooter in his navy jersey among banners and armoured onlookers frozen in awe. Classical oil painting.",
-        "A real empty gym at night, photo-real cinematic: one bank of lights, the shooter alone, the distance made enormous by a wide lens, sweat and dust in the beam.",
-        "Hand-drawn anime key art: a dramatic low angle behind the shooter, the ball's trail a blazing gold ribbon with speed lines across the whole frame, the far rim a tiny glow."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-logo-three.jpg"
       ]
     },
     { "slug": "the-dagger",
       "tier": "league",
       "era": "2016",
       "title": "The Dagger",
-      "look": "A wall of yellow behind, the figures dark and rim-lit.",
-      "prompt": "A Black guard in a black jersey is at the top of a step-back jump shot, leaning back, the ball just off his fingertips above his head, far outside the three-point arc. Right in front of him a Black defender in a white jersey lunges a half step too late, right arm stretched up past the ball, off balance. A clock reads 53.0. Faces turned away.",
+      "look": "Classical oil painting on a flat rooftop above a city at night, the whole sky behind a solid field of blazing yellow light.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in black at the right, at the top of his jump, the ball held above his head at release, body leaning back; the defender in white at the left, a full stride away, stretched out with his right arm straight up and his body falling forward, too late; the row of seated figures behind. Change the world to a rooftop at night: the floor a dark roof, the bench a row of dark figures against a solid yellow sky, a tower with a hoop at the far right edge. A clock in the yellow reads 53.0. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "On a black lava field at night: rivers of lava glow behind them, ash rains down, the rim stands on a basalt pillar at the left edge, the ball's path a line of fire. Cinematic painting.",
-        "The actual arena, photo-real cinematic: every seat a solid wall of yellow t-shirts, floor-level angle, the clock in the glare, film grain.",
-        "A rooftop court above a neon megacity in the rain: holographic adverts, the rim glowing neon at the left edge, reflections in the wet floor. Cinematic science-fiction.",
-        "Both players as old men in their seventies, still in the jerseys, the same step-back and the same late lunge, on a sunlit empty park court at golden hour with long shadows. Tender realistic painting."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dagger.jpg"
       ]
     },
     { "slug": "the-last-shot",
@@ -60,13 +60,13 @@
       "tier": "champions",
       "era": "1997",
       "title": "The Flu Game",
-      "look": "Feverish: sickly green in the shadows, the two red jerseys the only saturated colour.",
-      "prompt": "Two Black teammates in red jerseys walk off toward the viewer. The one on the right is slumped and spent, head hanging, knees buckling. The one on the left holds him up with an arm wrapped around his shoulders, taking his weight. Faces down.",
+      "look": "Classical oil painting on a narrow stone bridge in a storm: rain slanting across, fog below on both sides, a sickly green light from beneath, the two red jerseys the only saturated colour.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the two men in red walking away from the viewer toward the right, the one on the left with his arm wrapped around the shoulders of the one on the right, who is slumped and spent with his head hanging; the hoop and backboard above at the top right; the other red figures walking at the left edge; the crowd a wall behind. Change the world to a stone bridge in a rainstorm at night, the crowd becoming a dark cliff of faces in the fog, green light from below. Faces not visible. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "A desert at noon: heat shimmer, dunes to the horizon, the two trudging through sand, a green-tinged sky. Epic painting.",
-        "A storm at sea: the two on the deck of a ship in a gale, waves breaking over the rail, green lightning. Cinematic painting.",
-        "The actual arena tunnel, photo-real cinematic: walking off the floor into the tunnel, the crowd behind a blur, a green cast in the light, sweat on the skin.",
-        "Hand-drawn anime key art: two weary heroes at the end of a battle in the rain, the taller one carrying the other, a feverish green glow."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-flu-game.jpg"
       ]
     },
     { "slug": "the-block",
@@ -99,26 +99,26 @@
       "tier": "all-time",
       "era": "1985",
       "title": "The Skyhook",
-      "look": "Statues: the hook at full extension over the reaching defender.",
-      "prompt": "A seven-foot Black centre in a gold jersey, wearing goggles, is turned sideways to the basket releasing a hook shot: left arm raised across his body as a shield, right arm fully straight above his head, the ball leaving his fingertips at the very top of the frame. A Black defender in green stands chest to chest with him, both arms up, a full head short. The rim at the top right, the ball's arc a thin line toward it. Faces in shadow.",
+      "look": "Classical oil painting of two giants standing in the sea at night: waves breaking around their knees, the hoop on a rock at the right, the ball becoming the moon at the top of its arc, gold moonlight on the water.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the tall shooter in gold at the left, body turned sideways, right arm fully straight above his head releasing the hook, the ball at his fingertips at the top; the defender in red beside him reaching up with both arms and falling a full head short; the hoop at the top right; the two small figures at the right. Change the world to the open sea at night: the two men waist-deep in black water, the hoop on a rock, the crowd a dark coastline, the ball glowing like a moon. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "Underwater among the ruins of a sunken city: the two on the sea floor, the ball rising toward a rim lit by the surface, fish drifting past. Cinematic painting.",
-        "A marble Greek temple at dawn: the two drawn like statues come to life, the hoop an iron ring on a column, olive trees. Classical painting.",
-        "The old Boston Garden, photo-real cinematic: the parquet floor, the hook at full extension over the reaching defender, dust in the old lights.",
-        "Both players as old men in their eighties in the same jerseys, the hook still perfect, in a sunlit empty gym with soft light. Tender realistic painting."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-skyhook.jpg"
       ]
     },
     { "slug": "the-dream-shake",
       "tier": "all-time",
       "era": "1995",
       "title": "The Dream Shake",
-      "look": "Motion: one sharp figure, ghosts fading, the defender off balance.",
-      "prompt": "On the low block with his back to the rim, a Black centre in a red jersey is caught sharp at the end of a spin, pivoting toward the baseline with the ball at his hip and his head turned over his shoulder toward the rim. Three fading ghosts of him trail off to the right, the fake he just sold the other way. Beside him a Black defender in white leans hard the wrong way, feet crossed, hand grabbing at nothing. Faces turned away.",
+      "look": "Classical oil painting on a round stage under one spotlight in a dark theatre: polished floor reflecting the figures, three faint ghost images of the shooter trailing to the right, the defender dissolving into smoke.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in red seen from behind at the left, both arms up with the ball held high above his head at the top of his turn toward the basket; the defender in white at the right, beside and slightly behind him, one arm up, caught leaning the wrong way with his weight going right; the backboard and rim above between them. Add three faint ghost images of the shooter trailing off to the right showing the fake he just sold. Change the world to a round stage under a single spotlight in a dark theatre, the crowd a dark auditorium. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "A ballroom under chandeliers: the spin as a dance on a polished reflecting floor, the defender stumbling off the beat, the rim hung above a stage. Cinematic painting.",
-        "A neon-lit court inside a space station: the ghosts as holographic afterimages in cyan, the defender's wrong lean in red light. Science-fiction painting.",
-        "The actual arena, photo-real cinematic: the low block, the spin frozen in motion blur, the defender's crossed feet, the crowd dark.",
-        "Hand-drawn anime key art: the spin with three afterimages and swirling speed lines, the defender flung off balance, dramatic framing."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dream-shake.jpg"
       ]
     },
     { "slug": "the-shot",
@@ -138,52 +138,52 @@
       "tier": "customs",
       "era": "1988",
       "title": "From the Line",
-      "look": "Flight: the body flat, the line glowing where he took off.",
-      "prompt": "Strict side profile. A Black player in a red jersey in full flight, body stretched flat and horizontal, legs split front and back, the ball held high in his leading hand with the arm straight, soaring from the free-throw line toward a rim at the right edge of the frame. The free-throw line glows below where he took off. Nobody else.",
+      "look": "Classical oil painting in a night sky: the leaper flying between two banks of cloud, a hoop standing on a cloud at the left, the arena lights become stars and a thousand camera flashes, a single glowing line far below marking where he took off.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the leaper in red at the centre in full flight toward the hoop at the top left, body stretched, legs split front and back, the ball held high in his right hand with the arm straight, his left arm back; the hoop at the top left with its net; the brilliant light at the top right. Change the world to a night sky: he flies between banks of cloud, the hoop stands on a cloud, the crowd becomes a field of stars and camera flashes, the free-throw line a single glowing mark on the dark earth far below. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "Over a canyon: he has leapt from one cliff edge, the free-throw line painted on the rock, across a gorge toward a rim on the far cliff, a river far below, dawn light. Epic landscape painting.",
-        "A neon court in a megacity at night: the flight path traced by the lights of drones, the rim on a floating platform. Cinematic science-fiction.",
-        "The old 1988 stadium, photo-real cinematic: the arena dark, a thousand camera flashes, the flat flight from the line.",
-        "Hand-drawn anime key art: the flight with full-frame speed lines and a glowing trail, the figure stretched impossibly long, the rim with a flare."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-free-throw-line-dunk.jpg"
       ]
     },
     { "slug": "the-stepover",
       "tier": "customs",
       "era": "2001",
       "title": "The Stepover",
-      "look": "One hard light, long shadows, the one standing over the one down.",
-      "prompt": "Floor level, looking along the hardwood. A small Black guard in a white jersey with a sleeve on one arm and a headband steps over a Black defender who lies flat on his back on the floor in a gold jersey, the standing figure towering out of the top of the frame and looking down at him. Faces in shadow.",
+      "look": "Classical oil painting on the sand floor of a torchlit colosseum at night: the fallen man in the sand, the standing man towering over him, stone arches and a dark crowd behind, one torch throwing long shadows.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the small guard in a black jersey with a sleeve on his right arm and cornrows, stepping over with his right knee high and his eyes down on the man on the floor; the defender in gold sitting on the floor, propped on one hand, looking up at him; the row of gold-clad teammates and a man in a suit standing behind. Change the world to a colosseum at night: the floor becomes sand, the bench becomes a row of figures in gold cloaks under stone arches, a torch for light. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "A medieval battlefield after the battle: mud, banners, the small guard stepping over the fallen knight in gold, fog, dawn. Classical oil painting.",
-        "A giant chessboard: the floor is black and white squares, the fallen defender lies across a square like a toppled king, the guard stepping over him. Surreal cinematic painting.",
-        "The actual arena, photo-real cinematic: the real floor-level angle, courtside seats, one hard spotlight, the step-over.",
-        "Both as boys of twelve on a playground at dusk, the same step-over and the same look down, chalk lines on asphalt. Warm realistic painting."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-stepover.jpg"
       ]
     },
     { "slug": "the-dunk-of-death",
       "tier": "customs",
       "era": "2000",
       "title": "The Dunk of Death",
-      "look": "The leap at impossible height over the ducking giant.",
-      "prompt": "From the side. A Black guard in a dark navy jersey is at the top of a leap, legs spread wide, clearing the head of a white seven-foot defender in a white jersey who stands under him and ducks, the ball slammed down one-handed at the rim at the top of the frame. Faces hidden by the angle.",
+      "look": "Classical oil painting in a ruined temple at dawn: pale light through broken columns, dust in the air, the hoop hung from the temple arch.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the leaper in navy at the very top of the frame, legs spread wide around the head of the white-shirted seven-footer who is bent under him, the ball slammed one-handed into the hoop at the top left, the two other navy players watching below. Change the world to a ruined stone temple at dawn: the hoop hangs from a broken arch, the arena becomes columns and a pale sky, the crowd becomes figures lost in dust. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "Silhouetted against an erupting volcano: lava fountains, ash, the rim on a black rock. Cinematic painting.",
-        "An ancient Olympic stadium of marble and sand at dawn: the leap drawn like a frieze come to life, laurel wreaths. Classical painting.",
-        "The actual Sydney arena, photo-real cinematic: the blue court, the leap at impossible height over the ducking giant, the crowd gasping.",
-        "Hand-drawn anime key art: the leap with radial speed lines, the giant below shrinking in perspective, the dunk with a flare."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dunk-of-death.jpg"
       ]
     },
     { "slug": "the-shrug",
       "tier": "champions",
       "era": "1992",
       "title": "The Shrug",
-      "look": "Smoke and warm rim light, a black arena.",
-      "prompt": "The player is a Black man in a white jersey with red trim and white shorts, jogging back up the floor toward the viewer after the sixth three, just past the broadcast table. The shrug exactly as it happened: both elbows bent and held out from his body, forearms level, both palms open and turned up at chest height, shoulders lifted, head turned to his right toward the broadcast table at the right edge of the frame, a faint perplexed half-smile, mouth slightly open, face partly lit and partly in shadow - the face of no one in particular. Nobody else on the floor. No clock, no scoreboard.",
+      "look": "Classical oil painting in a dark hall full of drifting smoke, one warm light from the front, and above him in the black six basketballs hanging in an arc, each burning like a small sun.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the one player in a white jersey with red trim, seen from the front and cropped at the thigh, jogging back with both elbows bent and held out from his body, forearms level, both palms open and turned up at chest height, shoulders lifted, head turned to his right with a faint perplexed half-smile. Nobody else. Change the world to a dark smoky hall with six burning basketballs in an arc above him. No clock. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
       "concepts": [
-        "Six basketballs hang in an arc in the black above him, each burning like a small sun and trailing fire, their light falling on his shoulders through the drifting smoke.",
-        "Seen from the broadcast table's side of the floor so he looks almost toward the viewer. Behind him, drawn in thin lines of gold light across the dark arena, six arcs rise from six spots beyond the three-point line and fall into one distant rim, the paths of the six threes still hanging in the air.",
-        "A wide shot from high in the rafters: the arena a vast dark bowl, the player tiny at mid-court with his palms up, and six white spotlight beams stabbing down from the roof and converging on him, the only light in the building.",
-        "Behind him the rim and its net are enormous, filling the top of the frame, the net still swinging, and six balls lie scattered on the hardwood under it where they fell, each one glowing faintly. Smoke along the floor."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-shrug.jpg"
       ]
     }
   ]
