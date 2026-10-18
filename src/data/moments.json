@@ -113,7 +113,7 @@
       "era": "1985",
       "title": "The Skyhook",
       "look": "Classical oil painting of two giants on a mountain summit above the clouds at dawn: the cloud sea below, the hoop on a rock spire at the right, the ball at the top of its arc becoming the rising sun.",
-      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two figures in the same poses on the same summit above the clouds, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: there is no basketball. The shooter’s raised right hand holds the SUN itself, a blazing golden sphere the size of a basketball, its rays streaming out between his fingers, so that he is releasing the sun toward the hoop. The sun that was in the sky behind is gone; his hand is the only light source, and its glow falls on both men and the clouds. Change nothing else.",
+      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two figures in the same poses on the same summit above the clouds, the sun held in the shooter’s raised hand with its rays streaming out, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: the two men are dressed as ancient Greek gods instead of basketball players. The shooter in gold wears a gold-edged white chiton draped over one shoulder, a golden laurel wreath, gold armbands and sandals, bare muscled arms; the defender in red wears a crimson chiton and bronze armbands and sandals. No jerseys, no shorts, no socks, no sneakers, no modern clothing of any kind. Their bodies, poses, hands and heads stay exactly where they are. Change nothing else.",
       "concepts": [
         ""
       ],
