@@ -187,8 +187,8 @@ async function download(url) {
 
 async function one(m, manifest) {
   const have = manifest[m.slug]?.file && (await exists(path.join(ROOT, 'public', manifest[m.slug].file)))
-  // a candidates run is asked for on purpose, so a slot that already has a picture still gets its four
-  if (have && N === 1) { console.log(`skip   ${m.slug} (have it)`); return }
+  // a slot that already holds a picked picture is left alone, even on a candidates run, unless --only names it
+  if (have && !only) { console.log(`skip   ${m.slug} (have it)`); return }
   if (dry) { console.log(`would  ${m.slug} x${N}: ${m.prompt}`); return }
   console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''} (${MODEL_KEY})`)
   // a model with a batch takes one request for N pictures; the others take N requests at once

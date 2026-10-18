@@ -44,7 +44,14 @@
     "tier": "champions",
     "era": "1992",
     "title": "The Shrug",
-    "prompt": "The shrug, Game 1 of the 1992 Finals. One figure, alone. A guard in a white home jersey with a red 23, seen from the front, jogging back down the floor after a made three, shoulders raised, both palms turned up and out, head tilted and turned to his right toward the broadcast table, as if to say he cannot explain it either. Above him in the dark, six basketballs hang in a perfect arc like a halo, each glowing orange. The floor under him is a lit strip of hardwood; the rest is black. White and red on black, orange halo.",
+    "look": "Smoke and warm rim light, a black arena.",
+    "prompt": "The player is a Black man in a white jersey with red trim and white shorts, jogging back up the floor toward the viewer after the sixth three, just past the broadcast table. The shrug exactly as it happened: both elbows bent and held out from his body, forearms level, both palms open and turned up at chest height, shoulders lifted, head turned to his right toward the broadcast table at the right edge of the frame, a faint perplexed half-smile, mouth slightly open, face partly lit and partly in shadow - the face of no one in particular. Nobody else on the floor. No clock, no scoreboard.",
+    "concepts": [
+      "Six basketballs hang in an arc in the black above him, each burning like a small sun and trailing fire, their light falling on his shoulders through the drifting smoke.",
+      "Seen from the broadcast table's side of the floor so he looks almost toward the viewer. Behind him, drawn in thin lines of gold light across the dark arena, six arcs rise from six spots beyond the three-point line and fall into one distant rim, the paths of the six threes still hanging in the air.",
+      "A wide shot from high in the rafters: the arena a vast dark bowl, the player tiny at mid-court with his palms up, and six white spotlight beams stabbing down from the roof and converging on him, the only light in the building.",
+      "Behind him the rim and its net are enormous, filling the top of the frame, the net still swinging, and six balls lie scattered on the hardwood under it where they fell, each one glowing faintly. Smoke along the floor."
+    ],
     "status": "completed",
     "file": "moments/the-shrug.jpg",
     "picked": null
