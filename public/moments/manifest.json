@@ -75,5 +75,22 @@
     "status": "completed",
     "file": "moments/the-lob.jpg",
     "picked": null
+  },
+  "the-last-shot": {
+    "slug": "the-last-shot",
+    "tier": "champions",
+    "era": "1998",
+    "title": "The Last Shot",
+    "look": "Classical oil painting, dark and monumental: a vast cathedral nave, one shaft of light from a high window falling on the two men, the hoop hung on a far pillar, a small scoreboard in the dark reading 6.6.",
+    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly: the same camera position behind the shooter, the same two figures in the same places, the same pose of every limb - the shooter landed with both feet on the floor, right arm forward in the follow-through with the wrist bent down, left arm raised and bent, the defender bent over and stumbling away to the right, the ball in the air above the distant rim, the shot clock above the backboard reading 6.6. Change only the world: the arena becomes a vast dark cathedral nave with one shaft of light from a high window, the crowd becomes shadowed stone arches. The shooter is a Black man in a plain red jersey and shorts with no number and no lettering; the defender wears plain white with purple trim. Faces not visible. No text anywhere except 6.6.",
+    "concepts": [
+      ""
+    ],
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-last-shot.webp"
+    ],
+    "status": "completed",
+    "file": "moments/the-last-shot.jpg",
+    "request_id": "bb29ed7c-9b16-4d77-b54a-f67845b826cc"
   }
 }
