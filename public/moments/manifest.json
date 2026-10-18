@@ -185,5 +185,56 @@
     "status": "completed",
     "file": "moments/the-dunk-of-death.jpg",
     "request_id": "f86c6b5a-73fc-4058-b096-7205dfd1d29e"
+  },
+  "the-stepover": {
+    "slug": "the-stepover",
+    "tier": "customs",
+    "era": "2001",
+    "title": "The Stepover",
+    "look": "Classical oil painting on the sand floor of a torchlit colosseum at night: the fallen man in the sand, the standing man towering over him, stone arches and a dark crowd behind, one torch throwing long shadows.",
+    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the small guard in a black jersey with a sleeve on his right arm and cornrows stepping over the man on the floor, his right knee high, both his hands down at his sides, his eyes down on the fallen man; the defender in gold sitting on the floor propped on one hand, looking up at him; the row of gold-clad teammates and a man in a suit standing behind. There is NO ball in the picture and nobody is shooting or reaching up. Change the world to a colosseum at night: the floor becomes sand, the bench becomes a row of figures in gold cloaks under stone arches, a torch for light. No clock. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
+    "concepts": [
+      ""
+    ],
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-stepover.jpg"
+    ],
+    "status": "completed",
+    "file": "moments/the-stepover.jpg",
+    "request_id": "61f82660-199f-49ff-abb3-8c2a001b7553"
+  },
+  "the-logo-three": {
+    "slug": "the-logo-three",
+    "tier": "league",
+    "era": "2016",
+    "title": "From the Logo",
+    "look": "Classical oil painting under a night sky: the court an endless dark plain running to the horizon, the far hoop tiny and lit, the ball a comet with a long gold trail across the stars.",
+    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the shooter in dark navy at the left, feet together just off the floor at the end of his release, both arms up; the white-shirted defender lunging in from the right with one arm stretched toward him, a step too late; the referee between them; the crowd as a band behind. The shooter stands at the half-court line, 38 feet from the basket, so the far hoop is TINY and far away at the top edge of the frame, never near him. Change the world to a dark plain under a star-filled night sky: the floor runs to the horizon, the far hoop a tiny lit ring at the edge of the frame, the ball a comet with a long gold trail arcing toward it, the crowd a dark ridge of hills. No clock. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
+    "concepts": [
+      ""
+    ],
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-logo-three.jpg"
+    ],
+    "status": "completed",
+    "file": "moments/the-logo-three.jpg",
+    "request_id": "3a1bc2b0-865d-4c47-916b-e97af6d9823b"
+  },
+  "the-lob": {
+    "slug": "the-lob",
+    "tier": "champions",
+    "era": "2000",
+    "title": "The Lob",
+    "look": "Classical oil painting at the top of a city at night: the huge centre on the roof of the tallest tower, the sky deep purple, gold windows below, the ball just thrown down through a hoop at the edge of the roof, the crowd a sea of gold light far below.",
+    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the huge centre in gold filling the frame from the waist up, turning to his right with his mouth open in a roar and both arms flung wide, a teammate's hand grabbing his left arm from the left edge, the ball flying out of the top left corner - and change only the world: the arena becomes the roof of the tallest tower in a city at night, a deep purple sky, the crowd a sea of gold lights far below, a basketball hoop at the roof's edge where the ball has just come through. The jersey is plain gold with purple trim, no name, no number, no lettering, no logos; no text anywhere. His face is turned away into shadow, not visible.",
+    "concepts": [
+      ""
+    ],
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-lob.jpg"
+    ],
+    "status": "completed",
+    "file": "moments/the-lob.jpg",
+    "request_id": "132bd6c2-42ed-4b9d-9424-4849b1dd9302"
   }
 }
