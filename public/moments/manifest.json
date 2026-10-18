@@ -91,5 +91,22 @@
     "title": "The Last Shot",
     "status": "completed",
     "file": "moments/the-last-shot.jpg"
+  },
+  "the-skyhook": {
+    "slug": "the-skyhook",
+    "tier": "all-time",
+    "era": "1985",
+    "title": "The Skyhook",
+    "look": "Classical oil painting of two giants on a mountain summit above the clouds at dawn: the cloud sea below, the hoop on a rock spire at the right, the ball at the top of its arc becoming the rising sun.",
+    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the tall shooter in plain gold at the left, body turned sideways, right arm fully straight above his head releasing the hook, the ball at his fingertips at the top; the defender in plain red beside him reaching up with both arms and falling a full head short; the hoop at the top right; the two small figures at the right as dark silhouettes. Both main figures have their heads in deep shadow or turned away so no face shows. Change the world to a mountain summit above a sea of clouds at dawn: the floor becomes bare rock, the crowd becomes the cloud sea, the hoop stands on a rock spire, the ball glows like the rising sun. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+    "concepts": [
+      ""
+    ],
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-skyhook.jpg"
+    ],
+    "status": "completed",
+    "file": "moments/the-skyhook.jpg",
+    "picked": null
   }
 }
