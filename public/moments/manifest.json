@@ -1,21 +1,4 @@
 {
-  "the-bounce": {
-    "slug": "the-bounce",
-    "tier": "league",
-    "era": "2019",
-    "title": "The Bounce",
-    "look": "Classical oil painting seen from high above, a deep dark sea floor: the court a lit slab of sand on the seabed, every figure frozen with their faces turned up toward the rim, the ball resting on the rim glowing like a pearl, light shafts from the surface, kelp where the crowd stood.",
-    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the high overhead angle; the hoop at the bottom left with the ball resting on the front of its rim; the shooter in white crouched on his heels in the corner with both hands on his knees staring at it; the tall figure in red bent beside him; the whole bench and crowd frozen in a wall behind them, every head turned toward the ball; the clock at the top left reading 0.0. Change the world to the floor of a deep dark sea, light falling from the surface, the crowd a wall of drifting kelp and shadowed figures. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
-    "concepts": [
-      ""
-    ],
-    "refs": [
-      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-bounce.jpg"
-    ],
-    "status": "completed",
-    "file": "moments/the-bounce.jpg",
-    "request_id": "8e2b70f5-a9fa-4172-bc98-f27373b60349"
-  },
   "the-dagger": {
     "slug": "the-dagger",
     "tier": "league",
@@ -168,23 +151,6 @@
     "status": "completed",
     "file": "moments/the-free-throw-line-dunk.jpg",
     "request_id": "ae64216f-6c72-40f1-ad54-2c455b061422"
-  },
-  "the-dunk-of-death": {
-    "slug": "the-dunk-of-death",
-    "tier": "customs",
-    "era": "2000",
-    "title": "The Dunk of Death",
-    "look": "Classical oil painting in a ruined temple at dawn: pale light through broken columns, dust in the air, the hoop hung from the temple arch.",
-    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the leaper in navy at the very top of the frame, legs spread wide around the head of the white-shirted seven-footer who is bent under him, the ball slammed one-handed into the hoop at the top left, the two other navy players watching below. Change the world to a ruined stone temple at dawn: the hoop hangs from a broken arch, the arena becomes columns and a pale sky, the crowd becomes figures lost in dust. Every jersey is plain in its team colours with no name, no number, no lettering and no logos; no sponsor boards, no signage, no text anywhere except the one clock named. Faces not visible.",
-    "concepts": [
-      ""
-    ],
-    "refs": [
-      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-dunk-of-death.jpg"
-    ],
-    "status": "completed",
-    "file": "moments/the-dunk-of-death.jpg",
-    "request_id": "f86c6b5a-73fc-4058-b096-7205dfd1d29e"
   },
   "the-stepover": {
     "slug": "the-stepover",
