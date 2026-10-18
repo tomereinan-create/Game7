@@ -83,5 +83,13 @@
     "status": "completed",
     "file": "moments/the-bounce.jpg",
     "picked": null
+  },
+  "the-last-shot": {
+    "slug": "the-last-shot",
+    "tier": "champions",
+    "era": "1998",
+    "title": "The Last Shot",
+    "status": "completed",
+    "file": "moments/the-last-shot.jpg"
   }
 }
