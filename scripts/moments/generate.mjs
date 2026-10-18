@@ -95,7 +95,7 @@ const MODELS = {
     path: 'higgsfield-ai/soul/v2/standard',
     batch: true,
     body: (m) => {
-      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: sheet.resolution || '1080p', batch_size: N, enhance_prompt: false }
+      const b = { prompt: `${m.prompt} ${m.look ? m.look + " " : ""}${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: sheet.resolution || '1080p', batch_size: N, enhance_prompt: false }
       const styleId = styleIx >= 0 ? args[styleIx + 1] : sheet.style_id
       if (styleId) b.style_id = styleId
       return b
@@ -105,7 +105,7 @@ const MODELS = {
     path: 'recraft/v4.1/pro/text-to-image',
     batch: false,
     body: (m) => {
-      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', output_format: 'png' }
+      const b = { prompt: `${m.prompt} ${m.look ? m.look + " " : ""}${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', output_format: 'png' }
       if (m.colors) b.colors = m.colors.map((rgb) => ({ rgb }))
       if (m.background) b.background_color = { rgb: m.background }
       return b
@@ -114,14 +114,14 @@ const MODELS = {
   ideogram: {
     path: 'ideogram/v4.0',
     batch: false,
-    body: (m) => ({ prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', rendering_speed: 'QUALITY' }),
+    body: (m) => ({ prompt: `${m.prompt} ${m.look ? m.look + " " : ""}${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', rendering_speed: 'QUALITY' }),
   },
   /** takes up to ten public reference URLs in `refs` on the moment - the real photograph, for composition */
   grok: {
     path: 'xai/grok-imagine-image-2.0',
     batch: false,
     body: (m) => {
-      const b = { prompt: `${m.prompt} ${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', quality: 'medium' }
+      const b = { prompt: `${m.prompt} ${m.look ? m.look + " " : ""}${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', resolution: '2k', quality: 'medium' }
       if (m.refs?.length) b.image_urls = m.refs.slice(0, 10)
       return b
     },

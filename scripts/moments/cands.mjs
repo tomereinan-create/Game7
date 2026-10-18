@@ -24,7 +24,7 @@ const n = Number(nArg)
 const sheet = JSON.parse(await readFile(path.join(ROOT, 'src/data/moments.json'), 'utf8'))
 const m = sheet.moments.find((x) => x.slug === slug)
 if (!m) { console.error(`no moment ${slug}`); process.exit(2) }
-const prompt = `${m.prompt} ${sheet.style}`
+const prompt = `${m.prompt} ${m.look ? m.look + " " : ""}${sheet.style}`
 const dir = path.join(ROOT, 'scripts/moments/candidates', slug)
 await mkdir(dir, { recursive: true })
 const short = model.replace(/_image|_/g, '').replace(/\d+$/, (d) => d) // gpt_image_2_5 -> gpt25
