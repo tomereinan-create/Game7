@@ -35,7 +35,7 @@
       "era": "2015",
       "title": "The Crossover",
       "look": "Cel-shaded anime comedy on a real basketball court: clean linework, flat colour cells, speed lines, a slapstick fall, the whole arena watching.",
-      "prompt": "Reproduce the reference picture EXACTLY as it is - the same cel-shaded anime style, the same three figures in the same poses, the same ball, mop, wet-floor sign, crowd and court - with only two changes: (1) the word printed on the yellow sign under the pictogram now reads SLIPPERY in plain black capitals, nothing else; (2) the shoes are plain white with no logo or mark of any kind. Change nothing else.",
+      "prompt": "Reproduce the reference picture EXACTLY as it is - the same cel-shaded anime style, the same three figures in the same poses, the same mop, the yellow wet-floor sign reading SLIPPERY, the crowd and court - with two changes only: (1) ZOOM OUT: pull the camera back so the whole scene is seen from further away, the figures smaller and fully inside the frame with more court floor and more crowd around them; (2) there is NO basketball anywhere in the picture: the man in blue holds the mop with BOTH hands and is mopping the floor, his left hand on the mop handle where the ball used to be. Change nothing else.",
       "refs": [
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-crossover-pick.jpg"
       ],
