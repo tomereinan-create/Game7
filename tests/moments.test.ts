@@ -55,7 +55,7 @@ describe('the prompt sheet', () => {
     for (const m of MOMENTS) expect((m as { look?: string }).look, m.slug + ' has a look of its own').toBeTruthy()
     expect(new Set(MOMENTS.map((m) => (m as { look?: string }).look)).size).toBe(MOMENTS.length)
     const style = SHEET.style.toLowerCase()
-    for (const word of ['no text except', 'no logos', 'portraits of no one']) expect(style).toContain(word)
+    for (const word of ['no text of any kind', 'no logos', 'portraits of no one']) expect(style).toContain(word)
   })
 })
 

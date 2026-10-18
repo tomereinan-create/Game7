@@ -132,8 +132,20 @@ const MODEL_KEY = modelIx >= 0 ? args[modelIx + 1] : (sheet.model || 'soul')
 if (!MODELS[MODEL_KEY]) { console.error(`--model takes ${Object.keys(MODELS).join(' | ')}`); process.exit(2) }
 const M = MODELS[MODEL_KEY]
 
-async function submit(m) {
-  const body = M.body(m)
+/**
+ * FOUR DIFFERENT ONES (his ruling, 2026-10-18: "Offer 4 different ones. This one all had the
+ * fireballs and the same concept."). A moment may carry `concepts`, a list of settings; the k-th
+ * candidate of a run takes the k-th concept in front of the moment's base prompt, so four
+ * candidates are four ideas rather than four rolls of one. A model with a batch cannot vary the
+ * prompt inside it, so this only applies to the models that take one request per picture.
+ */
+const withConcept = (m, k) => {
+  const c = m.concepts?.length ? m.concepts[k % m.concepts.length] : null
+  return c ? { ...m, prompt: `${c} ${m.prompt}` } : m
+}
+
+async function submit(m, k = 0) {
+  const body = M.body(withConcept(m, k))
   const r = await fetch(`${API}/${process.env.HF_MODEL || M.path}`, {
     method: 'POST',
     headers: { ...AUTH, 'Content-Type': 'application/json', 'Idempotency-Key': randomUUID() },
@@ -181,7 +193,12 @@ async function one(m, manifest) {
   console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''} (${MODEL_KEY})`)
   // a model with a batch takes one request for N pictures; the others take N requests at once
   const runs = M.batch ? 1 : N
-  const dones = await Promise.all(Array.from({ length: runs }, async () => poll((await submit(m)).status_url, m.slug)))
+  // a failed submit is one candidate lost, not the whole moment
+  const dones = await Promise.all(
+    Array.from({ length: runs }, async (_, k) => {
+      try { return await poll((await submit(m, k)).status_url, m.slug) } catch (e) { return { status: 'failed', error: e.message } }
+    }),
+  )
   const good = dones.filter((d) => d.status === 'completed')
   for (const d of dones) if (d.status !== 'completed') console.log(`FAIL   ${m.slug}: ${d.status} ${d.error || ''}`)
   if (!good.length) {
@@ -193,12 +210,17 @@ async function one(m, manifest) {
   if (N > 1) {
     const dir = path.join(CAND, m.slug)
     await mkdir(dir, { recursive: true })
-    // named by model so two models' candidates sit side by side:  --pick <slug> recraft-2
-    for (const [k, url] of urls.entries()) {
+    // named by model, and by the run's index so the k-th file is the k-th concept even when one
+    // run failed:  --pick <slug> recraft-2
+    let saved = 0
+    for (const [k, d] of dones.entries()) {
+      const url = d.images?.[0]?.url
+      if (!url) continue
       const { ext, bytes } = await download(url)
       await writeFile(path.join(dir, `${MODEL_KEY}-${k + 1}.${ext}`), bytes)
+      saved++
     }
-    console.log(`cands  ${m.slug}: ${urls.length} in scripts/moments/candidates/${m.slug}/ (${MODEL_KEY}-1..${urls.length})`)
+    console.log(`cands  ${m.slug}: ${saved} in scripts/moments/candidates/${m.slug}/ (${MODEL_KEY}-1..${runs})`)
     return
   }
   const { ext, bytes } = await download(urls[0])
