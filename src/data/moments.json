@@ -30,7 +30,9 @@
       ],
       "concepts": [
         ""
-      ]
+      ],
+      "mode": "campaign",
+      "at": "Houston Rockets '18"
     },
     { "slug": "the-crossover",
       "mode": "death",
@@ -129,7 +131,7 @@
       "era": "1985",
       "title": "The Skyhook",
       "look": "Classical oil painting of two giants on a mountain summit above the clouds at dawn: the cloud sea below, the hoop on a rock spire at the right, the ball at the top of its arc becoming the rising sun.",
-      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two men in the same poses on the same summit above the clouds, the blazing white sun held in the raised right hand exactly as it is, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: their CLOTHES. The man in gold now wears a gold-edged white chiton draped over one shoulder, a golden laurel wreath, gold armbands and gladiator sandals; the man in red wears a crimson chiton with bronze armbands and sandals. No jerseys, no shorts, no socks, no sneakers anywhere. Bodies, poses, hands, heads and the sun stay exactly where they are. Change nothing else.",
+      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two men in the same poses on the same summit above the clouds, the blazing white sun held in the raised right hand exactly as it is, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: their CLOTHES. The man in gold now wears a gold-edged white chiton draped over one shoulder, a golden laurel wreath, gold armbands and gladiator sandals; the man in red wears a crimson chiton with bronze armbands and sandals. No jerseys, no shorts, no socks, no sneakers anywhere. The two men themselves are IDENTICAL to the reference: the same dark brown skin tone, the same faces, the same short beard and hair, the same build, the same poses and hands, the same heads tilted up at the sun. Only the clothing changes; the men do not. Change nothing else.",
       "concepts": [
         ""
       ],
