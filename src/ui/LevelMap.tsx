@@ -611,9 +611,10 @@ export function LevelMap({
   const mode: Mode = death ? 'death' : salary ? 'salary' : 'campaign'
   const POSTERS = useMemo(() => {
     const at = new Map(opponents.map((o) => [o.team, o.round]))
-    // a poster is the gutter less its 88px of air, at 3:4 (moments.css); the gap is that and a third
-    const gutter = typeof window === 'undefined' ? 220 : Math.min(400, Math.max(220, window.innerWidth * 0.115))
-    return postersFor(mode, (team) => at.get(team) ?? null, ROUNDS, progress.stars, (level) => yAt(level - 1), (level) => xAt(level - 1), colW, (gutter - 88) * (4 / 3) * 1.35)
+    // a mural is 30% of the trail wide (300..1000px, moments.css) at 3:4; two on one wall need
+    // that height and a little air between them, or they melt into each other
+    const mural = Math.min(1000, Math.max(300, colW * 0.3))
+    return postersFor(mode, (team) => at.get(team) ?? null, ROUNDS, progress.stars, (level) => yAt(level - 1), (level) => xAt(level - 1), colW, mural * (4 / 3) * 1.2)
   }, [mode, opponents, progress.stars, yAt, xAt, colW])
   /**
    * Which pictures exist is the generator's manifest (public/moments/manifest.json): read once,
@@ -889,7 +890,6 @@ export function LevelMap({
        * And the width the trail measures itself at is its OWN box, which this does not touch — the
        * geometry is handed the same 347px on a phone as before.
        */}
-      <div className="trail-wrap">
       <div className="trail-room">
         <div ref={trailRef} className={`trail ${auto ? 'auto' : ''}`} style={{ height: H }}>
           {/* THE FLOOR, one element per block. It used to be two pseudo-elements on .trail, which is
@@ -919,6 +919,21 @@ export function LevelMap({
                 : null}
             </div>
           ))}
+          {/* THE MURALS (his ruling, 2026-10-19: "infused, not pasted"): each picture painted into
+              the block's floor behind the ticket it belongs to, feathered on every side by
+              moments.css, with no frame and no caption. Inside .trail so the room's clip and the
+              floor apply; after the grounds and before the lit line, so tickets stand on it. */}
+          <div className="moments" aria-hidden>
+            {POSTERS.map((p) => {
+              const file = fileOf(manifest, p.slug)
+              if (!file) return null
+              return (
+                <figure key={p.slug} className={`moment ${p.side} ${p.lit ? 'lit' : 'sealed'}`} style={{ top: p.top }}>
+                  <img src={`${import.meta.env.BASE_URL}${file}`} alt="" loading="lazy" decoding="async" />
+                </figure>
+              )
+            })}
+          </div>
           {/* Drawn 1:1 in the measured width — a snake's U-turns cannot be stretched. */}
           <svg className="trail-svg" viewBox={`0 0 ${colW} ${H}`} preserveAspectRatio="none" aria-hidden>
             {/* The lit trail is ONE stroke in every skin's colour. userSpaceOnUse pins the stops to
@@ -1142,30 +1157,6 @@ export function LevelMap({
           })}
         </div>
       </div>
-      {/* THE GUTTERS: the posters stand beside the trail's room, not in it — the room clips
-          sideways (see .trail-room), so anything hung past its wall would be cut. They are
-          decoration: no pointer, no tab stop, nothing a screen reader has to walk past. */}
-      <div className="moments" aria-hidden>
-        {POSTERS.map((p) => {
-          const file = fileOf(manifest, p.slug)
-          return (
-            <figure
-              key={p.slug}
-              className={`moment ${p.side} ${skinOf(p.level)} ${p.lit ? 'lit' : 'sealed'}${file ? '' : ' noimg'}`}
-              style={{ top: p.top }}
-            >
-              {file ? <img src={`${import.meta.env.BASE_URL}${file}`} alt="" loading="lazy" decoding="async" /> : null}
-              <span className="face">{p.lit ? p.title : ''}</span>
-              <figcaption>
-                <b>{p.lit ? p.title : 'Sealed'}</b>
-                <i>{p.lit ? p.era : `reach level ${p.level}`}</i>
-              </figcaption>
-            </figure>
-          )
-        })}
-      </div>
-      </div>
-
       {askReset ? (
         <Ask
           label="The whole campaign"

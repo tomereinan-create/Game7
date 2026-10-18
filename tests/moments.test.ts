@@ -191,35 +191,31 @@ describe('on the map', () => {
       }),
     )
 
-  it('hangs this campaign’s posters only, sealed, outside the trail’s clipped room', () => {
-    for (const mode of MODES) {
-      const html = map(progress(), mode)
-      const figures = html.match(/<figure class="moment [^"]*"/g) ?? []
-      expect(figures, mode).toHaveLength(hang(mode).length)
-      expect(figures.every((f) => f.includes(' sealed'))).toBe(true)
-    }
+  it('paints the murals INSIDE the trail room, under the lit line, with no frame text at all', () => {
     const html = map(progress())
-    // the gutter is OUTSIDE .trail-room (which clips sideways), beside it in .trail-wrap
-    expect(html.indexOf('class="moments"')).toBeGreaterThan(html.indexOf('class="trail-room"'))
-    expect(html).toContain('class="trail-wrap"')
+    // inside .trail-room (so the room's clip and the floor apply), before the trail's own line
+    const room = html.indexOf('class="trail-room"')
+    const murals = html.indexOf('class="moments"')
+    const line = html.indexOf('class="trail-svg"')
+    expect(murals).toBeGreaterThan(room)
+    expect(line).toBeGreaterThan(murals)
+    // no gutter wrapper any more: the trail runs wall to wall
+    expect(html).not.toContain('class="trail-wrap"')
+    // his ruling: no name and no date on the image - and no caption element to carry one
+    expect(html).not.toContain('<figcaption')
+    expect(html).not.toContain('reach level')
+    for (const m of MOMENTS) expect(html).not.toContain(m.title)
+  })
+
+  it('with no manifest there is no picture, so nothing is painted - a mural is never a blank frame', () => {
+    const html = map(progress())
+    expect(html).not.toContain('<figure')
     expect(html).not.toContain('<img')
-    // a sealed poster says what opens it, not what it is
-    const block = hang('campaign').find((p) => p.slug === 'the-block')!
-    expect(html).toContain(`reach level ${block.level}`)
-    expect(html).not.toContain('The Last Shot')
   })
 
-  it('lights a poster the moment its stage is reached, and names it', () => {
-    const block = hang('campaign').find((p) => p.slug === 'the-block')!
-    const html = map(progress({ stars: stars((l) => l < block.level) }))
-    expect(html).toContain('The Block')
-    expect(html).not.toContain('The Last Shot')
-  })
-
-  it('a poster is decoration, not a door — nothing in the gutter is a button', () => {
+  it('a mural is decoration, not a door - nothing in it is a button', () => {
     const html = map(progress())
-    const gutter = html.slice(html.indexOf('class="moments"'))
-    const end = gutter.indexOf('</div>')
-    expect(gutter.slice(0, end)).not.toContain('<button')
+    const block = html.slice(html.indexOf('class="moments"'))
+    expect(block.slice(0, block.indexOf('</div>'))).not.toContain('<button')
   })
 })

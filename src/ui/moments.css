@@ -1,71 +1,47 @@
 /* ==========================================================================
-   THE ICONIC MOMENTS - posters in the gutters beside the campaign ladder (his ask, 2026-10-16).
+   THE ICONIC MOMENTS - murals on the campaign ladder's floor.
    See src/ui/moments.ts for where they hang and when they light.
 
-   THE GUTTER IS CARVED OUT OF THE TRAIL. The map is full-screen (his ruling) and the snake runs
-   wall to wall, so there is no margin to hang anything in until one is made: from 1280px of
-   window the trail's room gives up a gutter either side and the posters stand in it. The trail
-   measures its own box, so it lays itself out for the narrower column by itself - six to a row
-   on a laptop instead of ten - and nothing in LevelMap's geometry knows the posters exist. Under
-   1280 there is no gutter and no poster: a phone's whole width is the ladder's.
+   INFUSED, NOT PASTED (his ruling, 2026-10-19: "the images are pasted rather than infused in the
+   page. The room on the side feels unnatural. Remove the name and the date."). The first cut
+   carved a gutter either side of the trail and hung framed, captioned posters in it, which read
+   as a second column stuck on beside the map. Now there is no gutter: the trail runs wall to
+   wall as it always did, and each picture is painted INTO the block's floor behind the ticket it
+   belongs to - a mural, feathered on every side by a radial mask so it has no edge, no frame and
+   no caption, sitting between the ground and the trail so the tickets stand on it. Sealed, it is
+   a ghost in the floor; reached, it comes up in colour.
    ========================================================================== */
 .trail-wrap { position: relative; }
 .moments { display: none; }
-@media (min-width: 1280px) {
-  /* 220 is the least gutter a poster still reads in (132px wide at 1280); 400 is as much as the
-     desk gives up (a 312px poster at 3,840, and the trail keeps ten to a row) */
-  body.map .trail-wrap { --gutter: clamp(220px, 11.5vw, 400px); margin: 0 var(--gutter); }
-  .moments { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-  /* 3:4, the sheet's own aspect; centred on the y the layout hands it, so the picture's size
-     never feeds back into where it hangs */
+@media (min-width: 900px) {
+  /* inside .trail (so the room's clip and the block's floor apply), under the lit line and the
+     tickets (z 1 and 2 in styles.css) but over the ground (z 0, earlier in the DOM) */
+  .moments { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 0; }
   .moment {
     position: absolute;
-    /* 44px off the trail's room either side: the room clips its tickets at a 21px bleed past the
-       trail, so a poster standing 44px out never touches the wall a ticket is cut at */
-    width: calc(var(--gutter) - 88px);
+    /* a third of the trail at a laptop, a quarter of it on the 3,840 desk; 3:4 like the pictures */
+    width: clamp(300px, 30%, 1000px);
     aspect-ratio: 3 / 4;
     margin: 0;
-    transform: translateY(-50%) rotate(var(--lean, 0deg));
-    border-radius: 6px;
+    transform: translateY(-50%);
     overflow: hidden;
-    background: #07070b;
-    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    /* the feather: a soft ellipse, dense at the wall side, gone before it reaches the row's
+       middle, and faded well before its own top and bottom so it melts into the floor */
+    -webkit-mask-image: radial-gradient(ellipse 62% 52% at var(--mx) 50%, #000 0, rgba(0, 0, 0, 0.9) 38%, transparent 100%);
+    mask-image: radial-gradient(ellipse 62% 52% at var(--mx) 50%, #000 0, rgba(0, 0, 0, 0.9) 38%, transparent 100%);
   }
-  .moment.left { right: calc(100% + 44px); --lean: -1.2deg; }
-  .moment.right { left: calc(100% + 44px); --lean: 1.2deg; }
+  /* bleeding past the wall a little, so the feather's bright centre sits where the end ticket
+     stands rather than inboard of it */
+  .moment.left { left: -6%; --mx: 30%; }
+  .moment.right { right: -6%; --mx: 70%; }
   .moment img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  /* NO PICTURE YET (the sheet names a moment the script has not generated): the poster is its
-     title set large on the block's own colour, so the ladder is dressed before the art lands */
-  .moment .face {
-    position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 9% 9% 30%;
-    font-family: var(--serif); font-size: clamp(20px, 1.7vw, 46px); line-height: 1.02; color: rgba(255, 255, 255, 0.92);
-    background: radial-gradient(120% 90% at 30% 20%, var(--m1), transparent 60%), linear-gradient(170deg, var(--m2), #07070b 85%);
+  /* REACHED: colour, slightly let into the floor so the block's light still reads through */
+  .moment.lit img { opacity: 0.88; animation: moment-unveil 1.4s ease-out both; }
+  /* SEALED: a ghost in the floor - there, but not yet. The stage it belongs to opens it. */
+  .moment.sealed img { opacity: 0.28; filter: grayscale(1) brightness(0.55) contrast(1.1); }
+  @keyframes moment-unveil {
+    from { opacity: 0.28; filter: grayscale(1) brightness(0.55) contrast(1.1); }
+    to { opacity: 0.88; filter: grayscale(0) brightness(1) contrast(1); }
   }
-  .moment.arena { --m1: rgba(255, 116, 52, 0.55); --m2: #121a2e; }
-  .moment.hall { --m1: rgba(217, 164, 65, 0.5); --m2: #2a1308; }
-  .moment.wood { --m1: rgba(255, 190, 120, 0.45); --m2: #3a2210; }
-  .moment.dusk { --m1: rgba(62, 230, 176, 0.45); --m2: #1b1440; }
-  /* a picture covers the face; the img is only rendered when the manifest has one */
-  .moment img + .face { display: none; }
-  .moment figcaption {
-    position: absolute; left: 0; right: 0; bottom: 0; padding: 14% 8% 7%;
-    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.78) 60%);
-  }
-  /* the typographic face already says the title, so its caption keeps only the year */
-  .moment.noimg.lit figcaption b { display: none; }
-  .moment figcaption b { display: block; font-family: var(--serif); font-weight: 400; font-size: clamp(13px, 0.95vw, 26px); line-height: 1.1; color: #fff; }
-  .moment figcaption i { display: block; margin-top: 4px; font-family: var(--mono); font-style: normal; font-size: clamp(8.5px, 0.58vw, 15px); letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.62); }
-  /* SEALED: the picture is there, under glass, too dark to read - the stage it hangs beside has
-     not been reached yet (his ruling, 2026-10-19). The caption says which level opens it. */
-  .moment.sealed img, .moment.sealed .face { filter: grayscale(1) brightness(0.2) contrast(1.15); }
-  .moment.sealed figcaption b { color: rgba(255, 255, 255, 0.55); }
-  .moment.sealed { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05); }
-  /* LIT: unveiled the moment its stage is reached; the light is a hair of gold on the
-     frame, and the picture comes up over a second rather than snapping */
-  .moment.lit { box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 214, 140, 0.35), 0 0 28px rgba(255, 190, 90, 0.16); }
-  .moment.lit img, .moment.lit .face { animation: moment-unveil 1.1s ease-out both; }
-  /* both ends are the same three functions, so the filter interpolates instead of snapping — a
-     `to { filter: none }` never left the first frame */
-  @keyframes moment-unveil { from { filter: grayscale(1) brightness(0.2) contrast(1.15); } to { filter: grayscale(0) brightness(1) contrast(1); } }
-  @media (prefers-reduced-motion: reduce) { .moment.lit img, .moment.lit .face { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .moment.lit img { animation: none; } }
 }
