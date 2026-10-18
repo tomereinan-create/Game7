@@ -108,5 +108,22 @@
     "status": "completed",
     "file": "moments/the-skyhook.jpg",
     "picked": null
+  },
+  "the-junior-skyhook": {
+    "slug": "the-junior-skyhook",
+    "tier": "champions",
+    "era": "1987",
+    "title": "The Junior Skyhook",
+    "look": "Art-nouveau stained-glass window: bold black leading between panes of saturated glass, gold, purple, green and white, the figures long and flowing, a round rose window where the ball is, light glowing through.",
+    "prompt": "Repaint the reference photograph, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world and the medium. Keep: the camera low behind the two defenders; the guard in a plain purple-and-gold jersey running across the lane from left to right, his right arm sweeping up in a running hook, the ball leaving his fingertips at the top of the frame; the goggled centre in purple at the far left and the defender in plain white and green at the centre-left, both with their backs to us, arms reaching up; the crowd a band at the right. Change the medium to a stained-glass window: every figure and the hardwood become panes of coloured glass divided by black leading, the ball a small round rose window at the top, light pouring through. The hooking player\u2019s face is painted in the glass but simplified to a few leaded panes of colour, soft and unclear, not a likeness. HARD RULES: faces are present, complete and painted naturally in the style of the picture - never blacked out, blurred, smudged or missing - but they belong to invented athletes: give each man a different face from the real player (another jaw, another nose, another hairline), so nobody is identifiable and nothing looks censored; never a blacked-out, featureless or missing face; every jersey, shirt and cap is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture",
+    "refs": [
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-junior-skyhook.jpg"
+    ],
+    "concepts": [
+      ""
+    ],
+    "status": "completed",
+    "file": "moments/the-junior-skyhook.jpg",
+    "picked": null
   }
 }
