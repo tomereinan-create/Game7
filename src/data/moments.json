@@ -4,7 +4,10 @@
   "model": "recraft",
   "style": "Epic poster art. The default medium is dark cinematic painting with volumetric light, atmosphere and painterly realism; when the concept names another medium - hand-drawn anime key art, classical oil, photo-real cinematic - that medium rules, done to the highest standard of its kind. Serious and grand, never childish, never flat clip-art. The players are real-looking athletes but portraits of no one: a face turned away, in shadow, in the glare, or simply not anyone famous, never a featureless blank. What makes the moment recognisable is the situation - the clock, the distance, the geometry, who stands and who falls, the object at the instant. Team colours are kept. Every figure named is present as described and nobody else. No scoreboard and no clock anywhere unless the scene names one, and then only where it says; no text of any kind; no logos, no wordmarks, no numbers, no border, no caption, no title, no credits, no watermark.",
   "moments": [
-    { "slug": "the-bounce", "tier": "league", "era": "2019", "title": "The Bounce",
+    { "slug": "the-bounce",
+      "tier": "league",
+      "era": "2019",
+      "title": "The Bounce",
       "look": "Breath held: everything still, the ball the only warm light.",
       "prompt": "A Black forward in a black jersey is crouched low on his heels in the corner, both hands on his knees, head tilted up, frozen. Beside him a taller defender in a white jersey is still in the air, one arm up. Above them the rim, and the ball resting on the very front of its iron at the top of its fourth bounce. A clock above the backboard reads 0.0. Both faces turned up and away.",
       "concepts": [
@@ -12,8 +15,12 @@
         "A snow-covered summit at dusk: the hoop planted in the snow at the cliff's edge, spindrift blowing, the two men in their jerseys in the cold, the ball balanced on the rim against a violet sky. Epic landscape painting.",
         "Hand-drawn anime key art: the ball on the rim drawn huge in the foreground with four motion echoes of its bounces, the crouched forward and the leaping defender small below, arena lights streaked, red and black.",
         "The actual arena, photo-real cinematic: the view from behind the baseline, every seat a wall of red, dust in the lights, slow-motion stillness, the ball lit like the only thing in the building."
-      ] },
-    { "slug": "the-logo-three", "tier": "league", "era": "2016", "title": "From the Logo",
+      ]
+    },
+    { "slug": "the-logo-three",
+      "tier": "league",
+      "era": "2016",
+      "title": "From the Logo",
       "look": "Distance: the shooter small, the ball's trail the brightest thing in the frame.",
       "prompt": "A Black guard in a dark navy jersey stands at the centre-court logo on his own half of the floor with both arms still raised in his follow-through; the ball is a streak of gold arcing high toward a tiny rim at the far end of the empty half court. Nobody else on the floor. Face turned up toward the shot.",
       "concepts": [
@@ -21,8 +28,12 @@
         "Medieval: a torchlit stone castle courtyard, the rim an iron ring hung on a far rampart, the shooter in his navy jersey among banners and armoured onlookers frozen in awe. Classical oil painting.",
         "A real empty gym at night, photo-real cinematic: one bank of lights, the shooter alone, the distance made enormous by a wide lens, sweat and dust in the beam.",
         "Hand-drawn anime key art: a dramatic low angle behind the shooter, the ball's trail a blazing gold ribbon with speed lines across the whole frame, the far rim a tiny glow."
-      ] },
-    { "slug": "the-dagger", "tier": "league", "era": "2016", "title": "The Dagger",
+      ]
+    },
+    { "slug": "the-dagger",
+      "tier": "league",
+      "era": "2016",
+      "title": "The Dagger",
       "look": "A wall of yellow behind, the figures dark and rim-lit.",
       "prompt": "A Black guard in a black jersey is at the top of a step-back jump shot, leaning back, the ball just off his fingertips above his head, far outside the three-point arc. Right in front of him a Black defender in a white jersey lunges a half step too late, right arm stretched up past the ball, off balance. A clock reads 53.0. Faces turned away.",
       "concepts": [
@@ -30,17 +41,25 @@
         "The actual arena, photo-real cinematic: every seat a solid wall of yellow t-shirts, floor-level angle, the clock in the glare, film grain.",
         "A rooftop court above a neon megacity in the rain: holographic adverts, the rim glowing neon at the left edge, reflections in the wet floor. Cinematic science-fiction.",
         "Both players as old men in their seventies, still in the jerseys, the same step-back and the same late lunge, on a sunlit empty park court at golden hour with long shadows. Tender realistic painting."
-      ] },
-    { "slug": "the-last-shot", "tier": "champions", "era": "1998", "title": "The Last Shot",
-      "look": "One warm light, the push-off, the follow-through, 5.2.",
-      "prompt": "A Black shooter in a red jersey at the top of the key, frozen in a full follow-through: right arm extended toward the rim, wrist snapped down, fingers hanging, feet just landing. One stride to his left a Black defender in a white jersey with purple trim stumbles backward and away, off balance, his left hand reaching down for the floor, as if pushed. The ball hangs halfway to the rim. A clock reads 5.2. Faces in shadow.",
+      ]
+    },
+    { "slug": "the-last-shot",
+      "tier": "champions",
+      "era": "1998",
+      "title": "The Last Shot",
+      "look": "One warm light. The event is the push-off and the follow-through: the hand still hanging after the release, the defender stumbling away, 5.2.",
+      "prompt": "Seen from the side, at chest height, both men in full view. On the left, a Black shooter in a red jersey and red shorts has just landed from a mid-range jump shot at the top of the key: feet on the floor, knees soft, his whole right arm still held high and straight toward the rim in the follow-through, wrist bent down, fingers hanging loose - the shot has already left his hand and the ball hangs in the air halfway to the rim at the top right of the frame, about to drop in. One stride to his right, a Black defender in a white jersey with purple trim has been pushed off and is stumbling backward and away from the shooter, bent at the waist, off balance, one hand reaching down toward the floor to catch himself, his back turned toward the shooter. Nobody else. A scoreboard somewhere in the dark reads 5.2, the only text in the picture. Faces turned away or in shadow.",
       "concepts": [
-        "A frozen lake under a huge moon: the defender slipping on the ice, the hoop standing alone on the ice, the 5.2 glowing on the face of the moon. Cold cinematic painting.",
-        "The floor of the Colosseum at sunset: sand, the hoop on a marble column, the crowd a sea of togas, the defender falling in the sand. Classical oil painting.",
-        "The actual arena in Utah, photo-real cinematic: the view from the side, the crowd a dark dense mass, one beam of light on the two men, 5.2 on the scoreboard.",
-        "Hand-drawn anime key art: the follow-through in dramatic foreshortening, the defender falling with speed lines, the ball mid-air with a glow, 5.2 burning in the black."
-      ] },
-    { "slug": "the-flu-game", "tier": "champions", "era": "1997", "title": "The Flu Game",
+        "The actual arena in Utah, photo-real cinematic: the crowd a dense dark mass, one beam of light on the two men, the ball in the beam, 5.2 on the scoreboard above the far basket.",
+        "A frozen lake under a huge moon: the hoop standing alone on the ice at the top right, the defender slipping backward on the ice, the 5.2 glowing on the face of the moon. Cold cinematic painting.",
+        "Hand-drawn anime key art: the follow-through held high and sharp with the ball glowing mid-air, the defender tumbling away with speed lines, 5.2 burning in the black.",
+        "Classical oil painting in a cathedral of light: a vast dark nave, one shaft of sun from a high window on the two men, the hoop hung on a far pillar, 5.2 in the stained glass."
+      ]
+    },
+    { "slug": "the-flu-game",
+      "tier": "champions",
+      "era": "1997",
+      "title": "The Flu Game",
       "look": "Feverish: sickly green in the shadows, the two red jerseys the only saturated colour.",
       "prompt": "Two Black teammates in red jerseys walk off toward the viewer. The one on the right is slumped and spent, head hanging, knees buckling. The one on the left holds him up with an arm wrapped around his shoulders, taking his weight. Faces down.",
       "concepts": [
@@ -48,8 +67,12 @@
         "A storm at sea: the two on the deck of a ship in a gale, waves breaking over the rail, green lightning. Cinematic painting.",
         "The actual arena tunnel, photo-real cinematic: walking off the floor into the tunnel, the crowd behind a blur, a green cast in the light, sweat on the skin.",
         "Hand-drawn anime key art: two weary heroes at the end of a battle in the rain, the taller one carrying the other, a feverish green glow."
-      ] },
-    { "slug": "the-block", "tier": "champions", "era": "2016", "title": "The Block",
+      ]
+    },
+    { "slug": "the-block",
+      "tier": "champions",
+      "era": "2016",
+      "title": "The Block",
       "look": "Monumental low angle, the hand on the glass.",
       "prompt": "From behind the baseline, below the rim. A Black guard in a white jersey is in the air at the end of a layup, the ball just leaving his hand toward the backboard. A Black forward in a black jersey has flown in from the left at full stretch and pins the ball flat against the backboard with his right hand, inches from the rim. Faces hidden by arms and angle.",
       "concepts": [
@@ -57,8 +80,12 @@
         "A medieval castle gate: the hoop mounted on the portcullis, the blocker slamming the ball against the gate like a knight, torchlight, banners. Classical oil painting.",
         "The actual arena, photo-real cinematic: a sea of yellow, the view from under the rim, the hand flat on the glass, the ball squashed against it.",
         "A court in a glass tower above a city of lights: the backboard a holographic pane that shatters into pixels around the ball. Cinematic science-fiction."
-      ] },
-    { "slug": "the-lob", "tier": "champions", "era": "2000", "title": "The Lob",
+      ]
+    },
+    { "slug": "the-lob",
+      "tier": "champions",
+      "era": "2000",
+      "title": "The Lob",
       "look": "Gold light, the arc of the pass, the catch above the rim.",
       "prompt": "A huge Black centre in a gold jersey is above the rim with both hands on the ball, catching an alley-oop, about to dunk. Below and far to the right, outside the arc, a Black guard in gold stands with his right arm still pointed up at the rim, the pass's path a thin gold arc between them. Under the basket a defender in black is beaten, arms down. Faces turned up.",
       "concepts": [
@@ -66,8 +93,12 @@
         "A volcano's crater: the rim stands on a rock spire over glowing lava, the pass arcs through the smoke, the catcher silhouetted against the fire. Cinematic painting.",
         "The actual arena, photo-real cinematic: the view from the baseline, a purple and gold crowd, the arc of the pass drawn in light, the catch above the rim.",
         "Hand-drawn anime key art: the catch at the rim with explosive speed lines and a gold flare, the passer tiny below, the arc a ribbon of light."
-      ] },
-    { "slug": "the-skyhook", "tier": "all-time", "era": "1985", "title": "The Skyhook",
+      ]
+    },
+    { "slug": "the-skyhook",
+      "tier": "all-time",
+      "era": "1985",
+      "title": "The Skyhook",
       "look": "Statues: the hook at full extension over the reaching defender.",
       "prompt": "A seven-foot Black centre in a gold jersey, wearing goggles, is turned sideways to the basket releasing a hook shot: left arm raised across his body as a shield, right arm fully straight above his head, the ball leaving his fingertips at the very top of the frame. A Black defender in green stands chest to chest with him, both arms up, a full head short. The rim at the top right, the ball's arc a thin line toward it. Faces in shadow.",
       "concepts": [
@@ -75,8 +106,12 @@
         "A marble Greek temple at dawn: the two drawn like statues come to life, the hoop an iron ring on a column, olive trees. Classical painting.",
         "The old Boston Garden, photo-real cinematic: the parquet floor, the hook at full extension over the reaching defender, dust in the old lights.",
         "Both players as old men in their eighties in the same jerseys, the hook still perfect, in a sunlit empty gym with soft light. Tender realistic painting."
-      ] },
-    { "slug": "the-dream-shake", "tier": "all-time", "era": "1995", "title": "The Dream Shake",
+      ]
+    },
+    { "slug": "the-dream-shake",
+      "tier": "all-time",
+      "era": "1995",
+      "title": "The Dream Shake",
       "look": "Motion: one sharp figure, ghosts fading, the defender off balance.",
       "prompt": "On the low block with his back to the rim, a Black centre in a red jersey is caught sharp at the end of a spin, pivoting toward the baseline with the ball at his hip and his head turned over his shoulder toward the rim. Three fading ghosts of him trail off to the right, the fake he just sold the other way. Beside him a Black defender in white leans hard the wrong way, feet crossed, hand grabbing at nothing. Faces turned away.",
       "concepts": [
@@ -84,8 +119,12 @@
         "A neon-lit court inside a space station: the ghosts as holographic afterimages in cyan, the defender's wrong lean in red light. Science-fiction painting.",
         "The actual arena, photo-real cinematic: the low block, the spin frozen in motion blur, the defender's crossed feet, the crowd dark.",
         "Hand-drawn anime key art: the spin with three afterimages and swirling speed lines, the defender flung off balance, dramatic framing."
-      ] },
-    { "slug": "the-shot", "tier": "all-time", "era": "1989", "title": "The Shot",
+      ]
+    },
+    { "slug": "the-shot",
+      "tier": "all-time",
+      "era": "1989",
+      "title": "The Shot",
       "look": "Hang time: everything still but the falling defender.",
       "prompt": "A Black shooter in a red jersey hangs in the air at the free-throw line at the top of his jump, knees tucked, the ball at the top of a double-clutch release above his head. A white defender in a white jersey with orange trim has already sailed past him to the left, arm up, too early, falling. The rim at the top right. A clock reads 0:03. Faces turned away.",
       "concepts": [
@@ -93,8 +132,12 @@
         "A forest clearing at night in falling snow: the rim nailed to a great oak, the shooter hanging among the snowflakes, the defender tumbling into a drift. Epic painting.",
         "The actual arena, photo-real cinematic: the view from the side, the hang time, the falling defender, 0:03 on the clock, the crowd on its feet.",
         "Hand-drawn anime key art: the hang time as a frozen frame with radial speed lines, the defender flying past in motion blur, 0:03 burning in the dark."
-      ] },
-    { "slug": "the-free-throw-line-dunk", "tier": "customs", "era": "1988", "title": "From the Line",
+      ]
+    },
+    { "slug": "the-free-throw-line-dunk",
+      "tier": "customs",
+      "era": "1988",
+      "title": "From the Line",
       "look": "Flight: the body flat, the line glowing where he took off.",
       "prompt": "Strict side profile. A Black player in a red jersey in full flight, body stretched flat and horizontal, legs split front and back, the ball held high in his leading hand with the arm straight, soaring from the free-throw line toward a rim at the right edge of the frame. The free-throw line glows below where he took off. Nobody else.",
       "concepts": [
@@ -102,8 +145,12 @@
         "A neon court in a megacity at night: the flight path traced by the lights of drones, the rim on a floating platform. Cinematic science-fiction.",
         "The old 1988 stadium, photo-real cinematic: the arena dark, a thousand camera flashes, the flat flight from the line.",
         "Hand-drawn anime key art: the flight with full-frame speed lines and a glowing trail, the figure stretched impossibly long, the rim with a flare."
-      ] },
-    { "slug": "the-stepover", "tier": "customs", "era": "2001", "title": "The Stepover",
+      ]
+    },
+    { "slug": "the-stepover",
+      "tier": "customs",
+      "era": "2001",
+      "title": "The Stepover",
       "look": "One hard light, long shadows, the one standing over the one down.",
       "prompt": "Floor level, looking along the hardwood. A small Black guard in a white jersey with a sleeve on one arm and a headband steps over a Black defender who lies flat on his back on the floor in a gold jersey, the standing figure towering out of the top of the frame and looking down at him. Faces in shadow.",
       "concepts": [
@@ -111,8 +158,12 @@
         "A giant chessboard: the floor is black and white squares, the fallen defender lies across a square like a toppled king, the guard stepping over him. Surreal cinematic painting.",
         "The actual arena, photo-real cinematic: the real floor-level angle, courtside seats, one hard spotlight, the step-over.",
         "Both as boys of twelve on a playground at dusk, the same step-over and the same look down, chalk lines on asphalt. Warm realistic painting."
-      ] },
-    { "slug": "the-dunk-of-death", "tier": "customs", "era": "2000", "title": "The Dunk of Death",
+      ]
+    },
+    { "slug": "the-dunk-of-death",
+      "tier": "customs",
+      "era": "2000",
+      "title": "The Dunk of Death",
       "look": "The leap at impossible height over the ducking giant.",
       "prompt": "From the side. A Black guard in a dark navy jersey is at the top of a leap, legs spread wide, clearing the head of a white seven-foot defender in a white jersey who stands under him and ducks, the ball slammed down one-handed at the rim at the top of the frame. Faces hidden by the angle.",
       "concepts": [
@@ -120,8 +171,12 @@
         "An ancient Olympic stadium of marble and sand at dawn: the leap drawn like a frieze come to life, laurel wreaths. Classical painting.",
         "The actual Sydney arena, photo-real cinematic: the blue court, the leap at impossible height over the ducking giant, the crowd gasping.",
         "Hand-drawn anime key art: the leap with radial speed lines, the giant below shrinking in perspective, the dunk with a flare."
-      ] },
-    { "slug": "the-shrug", "tier": "champions", "era": "1992", "title": "The Shrug",
+      ]
+    },
+    { "slug": "the-shrug",
+      "tier": "champions",
+      "era": "1992",
+      "title": "The Shrug",
       "look": "Smoke and warm rim light, a black arena.",
       "prompt": "The player is a Black man in a white jersey with red trim and white shorts, jogging back up the floor toward the viewer after the sixth three, just past the broadcast table. The shrug exactly as it happened: both elbows bent and held out from his body, forearms level, both palms open and turned up at chest height, shoulders lifted, head turned to his right toward the broadcast table at the right edge of the frame, a faint perplexed half-smile, mouth slightly open, face partly lit and partly in shadow - the face of no one in particular. Nobody else on the floor. No clock, no scoreboard.",
       "concepts": [
@@ -129,6 +184,7 @@
         "Seen from the broadcast table's side of the floor so he looks almost toward the viewer. Behind him, drawn in thin lines of gold light across the dark arena, six arcs rise from six spots beyond the three-point line and fall into one distant rim, the paths of the six threes still hanging in the air.",
         "A wide shot from high in the rafters: the arena a vast dark bowl, the player tiny at mid-court with his palms up, and six white spotlight beams stabbing down from the roof and converging on him, the only light in the building.",
         "Behind him the rim and its net are enormous, filling the top of the frame, the net still swinging, and six balls lie scattered on the hardwood under it where they fell, each one glowing faintly. Smoke along the floor."
-      ] }
+      ]
+    }
   ]
 }
