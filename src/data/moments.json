@@ -73,13 +73,13 @@
       "tier": "champions",
       "era": "2016",
       "title": "The Block",
-      "look": "Monumental low angle, the hand on the glass.",
-      "prompt": "From behind the baseline, below the rim. A Black guard in a white jersey is in the air at the end of a layup, the ball just leaving his hand toward the backboard. A Black forward in a black jersey has flown in from the left at full stretch and pins the ball flat against the backboard with his right hand, inches from the rim. Faces hidden by arms and angle.",
+      "look": "Classical oil painting on a glacier: the backboard is a wall of blue ice, cracks spreading through it from the ball, snow blowing, the crowd a mass of yellow-clad figures lost in the blizzard.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly: the same camera position below and to the side of the rim, the same two figures in the same places and poses - the shooter in white, in the air at the end of a layup with his right hand still under the ball; the blocker in black arriving from behind at full stretch, his right hand pinning the ball flat against the backboard an inch from the rim, his left arm raised; the rim and net in the same place. Change only the world: the arena becomes a glacier, the backboard a slab of blue ice with cracks spreading from the ball, the crowd behind a blur of yellow in blowing snow. The shooter is a Black man in a plain white jersey with gold trim, the blocker a Black man in a plain black jersey; no numbers, no lettering, no logos, no sponsor boards. Faces not visible. No text anywhere.",
       "concepts": [
-        "On a glacier: the backboard is a wall of ice, the two in the air above a crevasse, cracks spreading through the ice from the ball, a blizzard. Cinematic painting.",
-        "A medieval castle gate: the hoop mounted on the portcullis, the blocker slamming the ball against the gate like a knight, torchlight, banners. Classical oil painting.",
-        "The actual arena, photo-real cinematic: a sea of yellow, the view from under the rim, the hand flat on the glass, the ball squashed against it.",
-        "A court in a glass tower above a city of lights: the backboard a holographic pane that shatters into pixels around the ball. Cinematic science-fiction."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-block.jpg"
       ]
     },
     { "slug": "the-lob",
@@ -125,13 +125,13 @@
       "tier": "all-time",
       "era": "1989",
       "title": "The Shot",
-      "look": "Hang time: everything still but the falling defender.",
-      "prompt": "A Black shooter in a red jersey hangs in the air at the free-throw line at the top of his jump, knees tucked, the ball at the top of a double-clutch release above his head. A white defender in a white jersey with orange trim has already sailed past him to the left, arm up, too early, falling. The rim at the top right. A clock reads 0:03. Faces turned away.",
+      "look": "Classical oil painting, deep underwater: the two figures weightless on a dark sea floor, light falling in shafts from the surface far above, bubbles rising, the hoop and backboard standing on the seabed, the crowd a dim wall of drifting kelp.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly: the same camera position directly behind the shooter at mid height, the same figures in the same places and poses - the shooter in red at the top of his jump with the ball held high in both hands above his head about to release, the defender in white just beyond him on the right with his right arm thrust up and past the ball, the backboard and rim directly ahead above them, two other players low at the left and right edges watching. Change only the world: the arena becomes the floor of a deep dark sea with shafts of light from the surface, the crowd a wall of drifting kelp, bubbles trailing from the men. A small scoreboard glows in the gloom reading 0:00. The shooter is a Black man in a plain red jersey with no name and no number; the defender is a white man in a plain white jersey with orange and blue trim; no lettering, no logos. Faces not visible. No text anywhere except 0:00.",
       "concepts": [
-        "Weightless in deep water: the defender sinking past, the rim floating at the surface, light from above, bubbles. Cinematic painting.",
-        "A forest clearing at night in falling snow: the rim nailed to a great oak, the shooter hanging among the snowflakes, the defender tumbling into a drift. Epic painting.",
-        "The actual arena, photo-real cinematic: the view from the side, the hang time, the falling defender, 0:03 on the clock, the crowd on its feet.",
-        "Hand-drawn anime key art: the hang time as a frozen frame with radial speed lines, the defender flying past in motion blur, 0:03 burning in the dark."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-shot.jpg"
       ]
     },
     { "slug": "the-free-throw-line-dunk",
