@@ -86,13 +86,13 @@
       "tier": "champions",
       "era": "2000",
       "title": "The Lob",
-      "look": "Gold light, the arc of the pass, the catch above the rim.",
-      "prompt": "A huge Black centre in a gold jersey is above the rim with both hands on the ball, catching an alley-oop, about to dunk. Below and far to the right, outside the arc, a Black guard in gold stands with his right arm still pointed up at the rim, the pass's path a thin gold arc between them. Under the basket a defender in black is beaten, arms down. Faces turned up.",
+      "look": "Classical oil painting at the top of a city at night: the huge centre on the roof of the tallest tower, the sky deep purple, gold windows below, the ball just thrown down through a hoop at the edge of the roof, the crowd a sea of gold light far below.",
+      "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the huge centre in gold filling the frame from the waist up, turning to his right with his mouth open in a roar and both arms flung wide, a teammate's hand grabbing his left arm from the left edge, the ball flying out of the top left corner - and change only the world: the arena becomes the roof of the tallest tower in a city at night, a deep purple sky, the crowd a sea of gold lights far below, a basketball hoop at the roof's edge where the ball has just come through. The jersey is plain gold with purple trim, no name, no number, no lettering, no logos; no text anywhere. His face is turned away into shadow, not visible.",
       "concepts": [
-        "Both players as boys of ten in oversized gold jerseys on a cracked playground court at sunset, the rim bent, the lob and the catch exactly the same. Warm realistic painting.",
-        "A volcano's crater: the rim stands on a rock spire over glowing lava, the pass arcs through the smoke, the catcher silhouetted against the fire. Cinematic painting.",
-        "The actual arena, photo-real cinematic: the view from the baseline, a purple and gold crowd, the arc of the pass drawn in light, the catch above the rim.",
-        "Hand-drawn anime key art: the catch at the rim with explosive speed lines and a gold flare, the passer tiny below, the arc a ribbon of light."
+        ""
+      ],
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-lob.jpg"
       ]
     },
     { "slug": "the-skyhook",
