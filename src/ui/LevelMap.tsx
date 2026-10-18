@@ -10,7 +10,7 @@ import { Ask } from './Ask'
 import { Trophy } from './Trophy'
 import { cardInk, teamColor } from './teamColors'
 import { useUserMode } from '../state/viewmode'
-import { fileOf, postersFor, type Manifest } from './moments'
+import { fileOf, postersFor, type Manifest, type Mode } from './moments'
 import './moments.css'
 
 /**
@@ -602,12 +602,19 @@ export function LevelMap({
   const BANDS = useMemo(() => bands(ROUNDS, colW), [colW, user])
   const TRAIL = useMemo(() => trail(xAt, yAt), [xAt, yAt])
   /**
-   * THE ICONIC MOMENTS (his ask, 2026-10-16) — posters in the gutters either side of the trail,
-   * each inside its tier's band and sealed until that tier has fallen. The layout is
-   * src/ui/moments.ts; the gutter itself is carved by moments.css from 1280px of window, and the
-   * trail lays itself out for the narrower column it is left with, so nothing above knows.
+   * THE ICONIC MOMENTS (his ask, 2026-10-16) — posters in the gutters either side of the trail.
+   * His rulings of 2026-10-19: each beside the level it belongs to, a set of its own per campaign,
+   * and lit the moment that level is reached. The layout is src/ui/moments.ts; the gutter itself
+   * is carved by moments.css from 1280px of window, and the trail lays itself out for the narrower
+   * column it is left with, so nothing above knows.
    */
-  const POSTERS = useMemo(() => postersFor(eras, ROUNDS, progress.stars, seam, H), [eras, progress.stars, seam, H])
+  const mode: Mode = death ? 'death' : salary ? 'salary' : 'campaign'
+  const POSTERS = useMemo(() => {
+    const at = new Map(opponents.map((o) => [o.team, o.round]))
+    // a poster is the gutter less its 88px of air, at 3:4 (moments.css); the gap is that and a third
+    const gutter = typeof window === 'undefined' ? 220 : Math.min(400, Math.max(220, window.innerWidth * 0.115))
+    return postersFor(mode, (team) => at.get(team) ?? null, ROUNDS, progress.stars, (level) => yAt(level - 1), (level) => xAt(level - 1), colW, (gutter - 88) * (4 / 3) * 1.35)
+  }, [mode, opponents, progress.stars, yAt, xAt, colW])
   /**
    * Which pictures exist is the generator's manifest (public/moments/manifest.json): read once,
    * after the first paint, and a moment it does not list wears its typographic face. No manifest
@@ -1144,14 +1151,14 @@ export function LevelMap({
           return (
             <figure
               key={p.slug}
-              className={`moment ${p.side} ${skinOf(p.first)} ${p.lit ? 'lit' : 'sealed'}${file ? '' : ' noimg'}`}
+              className={`moment ${p.side} ${skinOf(p.level)} ${p.lit ? 'lit' : 'sealed'}${file ? '' : ' noimg'}`}
               style={{ top: p.top }}
             >
               {file ? <img src={`${import.meta.env.BASE_URL}${file}`} alt="" loading="lazy" decoding="async" /> : null}
               <span className="face">{p.lit ? p.title : ''}</span>
               <figcaption>
                 <b>{p.lit ? p.title : 'Sealed'}</b>
-                <i>{p.lit ? p.era : `clear ${p.eraName}`}</i>
+                <i>{p.lit ? p.era : `reach level ${p.level}`}</i>
               </figcaption>
             </figure>
           )

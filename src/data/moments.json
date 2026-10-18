@@ -5,6 +5,8 @@
   "style": "Epic poster art. The default medium is dark cinematic painting with volumetric light, atmosphere and painterly realism; when the concept names another medium - hand-drawn anime key art, classical oil, photo-real cinematic - that medium rules, done to the highest standard of its kind. Serious and grand, never childish, never flat clip-art. The players are real-looking athletes but portraits of no one: a face turned away, in shadow, in the glare, or simply not anyone famous, never a featureless blank. What makes the moment recognisable is the situation - the clock, the distance, the geometry, who stands and who falls, the object at the instant. Team colours are kept. Every figure named is present as described and nobody else. No scoreboard and no clock anywhere unless the scene names one, and then only where it says; no text of any kind; no logos, no wordmarks, no numbers, no border, no caption, no title, no credits, no watermark.",
   "moments": [
     { "slug": "the-bounce",
+      "mode": "salary",
+      "at": "Toronto Raptors '19",
       "tier": "league",
       "era": "2019",
       "title": "The Bounce",
@@ -31,6 +33,8 @@
       ]
     },
     { "slug": "the-crossover",
+      "mode": "death",
+      "at": "Golden State Warriors '15",
       "tier": "league",
       "era": "2015",
       "title": "The Crossover",
@@ -44,6 +48,8 @@
       ]
     },
     { "slug": "the-last-shot",
+      "mode": "campaign",
+      "at": "Chicago Bulls '98",
       "tier": "champions",
       "era": "1998",
       "title": "The Last Shot",
@@ -57,6 +63,8 @@
       ]
     },
     { "slug": "the-block",
+      "mode": "campaign",
+      "at": "Cleveland Cavaliers '16",
       "tier": "champions",
       "era": "2016",
       "title": "The Block",
@@ -70,6 +78,8 @@
       ]
     },
     { "slug": "the-corner-three",
+      "mode": "salary",
+      "at": "Miami Heat '13",
       "tier": "champions",
       "era": "2013",
       "title": "The Corner Three",
@@ -83,6 +93,8 @@
       ]
     },
     { "slug": "the-junior-skyhook",
+      "mode": "death",
+      "at": "Los Angeles Lakers '87",
       "tier": "champions",
       "era": "1987",
       "title": "The Junior Skyhook",
@@ -96,6 +108,8 @@
       ]
     },
     { "slug": "the-trophy",
+      "mode": "death",
+      "at": "Los Angeles Lakers '10",
       "tier": "champions",
       "era": "2010",
       "title": "The Fifth",
@@ -109,11 +123,13 @@
       ]
     },
     { "slug": "the-skyhook",
+      "mode": "salary",
+      "at": "Los Angeles Lakers '85",
       "tier": "all-time",
       "era": "1985",
       "title": "The Skyhook",
       "look": "Classical oil painting of two giants on a mountain summit above the clouds at dawn: the cloud sea below, the hoop on a rock spire at the right, the ball at the top of its arc becoming the rising sun.",
-      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two figures in the same poses on the same summit above the clouds, the sun held in the shooter’s raised hand with its rays streaming out, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: the two men are dressed as ancient Greek gods instead of basketball players. The shooter in gold wears a gold-edged white chiton draped over one shoulder, a golden laurel wreath, gold armbands and sandals, bare muscled arms; the defender in red wears a crimson chiton and bronze armbands and sandals. No jerseys, no shorts, no socks, no sneakers, no modern clothing of any kind. Their bodies, poses, hands and heads stay exactly where they are. Change nothing else.",
+      "prompt": "Reproduce the reference picture EXACTLY as it is - the same oil-painting style, the same two men in the same poses on the same summit above the clouds, the blazing white sun held in the raised right hand exactly as it is, the same hoop on the rock spire, the same seated silhouettes, the same golden sky - with ONE change: their CLOTHES. The man in gold now wears a gold-edged white chiton draped over one shoulder, a golden laurel wreath, gold armbands and gladiator sandals; the man in red wears a crimson chiton with bronze armbands and sandals. No jerseys, no shorts, no socks, no sneakers anywhere. Bodies, poses, hands, heads and the sun stay exactly where they are. Change nothing else.",
       "concepts": [
         ""
       ],
@@ -122,6 +138,8 @@
       ]
     },
     { "slug": "the-hundred",
+      "mode": "campaign",
+      "at": "All-time Warriors",
       "tier": "all-time",
       "era": "1962",
       "title": "One Hundred",
@@ -135,6 +153,8 @@
       ]
     },
     { "slug": "the-dream-shake",
+      "mode": "death",
+      "at": "Houston Rockets '95",
       "tier": "all-time",
       "era": "1995",
       "title": "The Dream Shake",
@@ -148,6 +168,8 @@
       ]
     },
     { "slug": "the-free-throw-line-dunk",
+      "mode": "campaign",
+      "at": "All-1980s",
       "tier": "customs",
       "era": "1988",
       "title": "From the Line",
@@ -161,6 +183,8 @@
       ]
     },
     { "slug": "the-stepover",
+      "mode": "salary",
+      "at": "All-MVPs",
       "tier": "customs",
       "era": "2001",
       "title": "The Stepover",
@@ -174,6 +198,8 @@
       ]
     },
     { "slug": "the-dunk-of-death",
+      "mode": "death",
+      "at": "All-2000s",
       "tier": "customs",
       "era": "2000",
       "title": "The Dunk of Death",

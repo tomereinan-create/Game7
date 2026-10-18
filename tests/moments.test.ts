@@ -3,18 +3,18 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import CAMPAIGNS from '../src/data/campaigns.json'
 import SHEET from '../src/data/moments.json'
-import OPP from '../src/data/opponents.json'
 import { ROUNDS } from '../src/config'
 import { DEFAULT_TACTICS } from '../src/engine/tactics'
 import type { Opponent } from '../src/engine/types'
 import type { Progress } from '../src/state/campaign'
-import { heightOf, LevelMap, seamOf, yOf } from '../src/ui/LevelMap'
-import { fileOf, MOMENTS, postersFor, TIER_KEYS } from '../src/ui/moments'
+import { LevelMap, xOf, yOf } from '../src/ui/LevelMap'
+import MANIFEST from '../public/moments/manifest.json'
+import { fileOf, MODES, MOMENTS, postersFor, TIER_KEYS, type Mode } from '../src/ui/moments'
 
 /**
  * THE ICONIC MOMENTS (his ask, 2026-10-16): posters in the gutters beside the ladder, one list
- * shared by the generator and the map, each hung inside its own tier's band and sealed until that
- * tier has fallen.
+ * shared by the generator and the map. Since 2026-10-19 each hangs beside the level it belongs to,
+ * on one campaign's ladder only, and lights when that level is reached.
  */
 const tiers = CAMPAIGNS as unknown as { id: string; name: string; years: [number, number]; levels: unknown[] }[]
 const eras = (() => {
@@ -26,11 +26,8 @@ const eras = (() => {
   })
 })()
 const W = 1600
-const seam = seamOf(W)
-const H = heightOf(W)
 const y = yOf(W)
 const stars = (lit: (level: number) => boolean) => Array.from({ length: ROUNDS }, (_, i) => (lit(i + 1) ? 1 : 0))
-const lastOf = (ti: number) => (eras[ti + 1]?.first ?? ROUNDS + 1) - 1
 
 describe('the prompt sheet', () => {
   it('names only the four tiers, in the ladder order campaigns.json deals them', () => {
@@ -60,71 +57,93 @@ describe('the prompt sheet', () => {
   })
 })
 
-describe('where a poster hangs', () => {
-  const posters = postersFor(eras, ROUNDS, stars(() => false), seam, H)
+/** The ladder exactly as App deals it: four tiers, levels renumbered 1..ROUNDS. */
+const LADDER = tiers.flatMap((t, ti) =>
+  (t.levels as { team: string }[]).map((o, i) => ({ ...o, round: eras[ti].first + i, era: t.name })),
+) as unknown as Opponent[]
+const levelOf = (team: string) => LADDER.find((o) => o.team === team)?.round ?? null
+const at = (level: number) => y(level - 1)
+const hang = (mode: Mode, s = stars(() => false)) => postersFor(mode, levelOf, ROUNDS, s, at)
+/** The posters he picked by hand (2026-10-19) — the manifest's completed entries. */
+const KEEPERS = Object.entries(MANIFEST as Record<string, { status?: string }>)
+  .filter(([, m]) => m.status === 'completed')
+  .map(([slug]) => slug)
 
-  it('hangs every moment once', () => {
-    expect(posters.map((p) => p.slug).sort()).toEqual(MOMENTS.map((m) => m.slug).sort())
-  })
-
-  it('inside its own tier: between that tier’s first ticket and its last, never over a seam', () => {
-    for (const p of posters) {
-      const ti = TIER_KEYS.indexOf(p.tier as (typeof TIER_KEYS)[number])
-      const first = eras[ti].first
-      const last = lastOf(ti)
-      // the trail climbs, so a higher level is a SMALLER y
-      const bottom = ti === 0 ? H : seam(first)
-      const top = ti === eras.length - 1 ? 0 : seam(eras[ti + 1].first)
-      expect(p.top, `${p.slug} below its tier`).toBeLessThan(bottom)
-      expect(p.top, `${p.slug} above its tier`).toBeGreaterThan(top)
-      expect(p.first).toBe(first)
-      expect(p.eraName).toBe(eras[ti].name)
-      // and it is nearer its own tier's tickets than the next tier's
-      expect(p.top).toBeLessThan(y(first - 1) + 1)
-      expect(p.top).toBeGreaterThan(y(last - 1) - 1)
+describe('the correct place (his ruling, 2026-10-19)', () => {
+  it('every moment on a wall names a mode and a team the ladder carries', () => {
+    for (const m of MOMENTS) {
+      if (!m.mode && !m.at) continue
+      expect(MODES, m.slug).toContain(m.mode)
+      expect(levelOf(m.at!), `${m.slug} hangs beside "${m.at}", which is not on the ladder`).not.toBeNull()
     }
   })
-
-  it('oldest lowest within a tier', () => {
-    const inTier = (key: string) => posters.filter((p) => p.tier === key)
-    for (const key of TIER_KEYS) {
-      const ps = inTier(key)
-      for (let i = 1; i < ps.length; i++) {
-        const a = Number.parseInt(ps[i - 1].era, 10)
-        const b = Number.parseInt(ps[i].era, 10)
-        if (Number.isFinite(a) && Number.isFinite(b)) expect(b).toBeGreaterThanOrEqual(a)
-        expect(ps[i].top).toBeLessThan(ps[i - 1].top)
+  it('every poster he kept is on a wall', () => {
+    expect(KEEPERS.length).toBeGreaterThanOrEqual(10)
+    const placed = new Set(MODES.flatMap((mode) => hang(mode).map((p) => p.slug)))
+    for (const slug of KEEPERS) expect(placed.has(slug), slug).toBe(true)
+  })
+  it('a poster stands level with the ticket of the stage it belongs to', () => {
+    for (const mode of MODES)
+      for (const p of hang(mode)) {
+        expect(p.level).toBe(levelOf(MOMENTS.find((m) => m.slug === p.slug)!.at!))
+        expect(p.top).toBe(y(p.level - 1))
       }
+    // the anchors are the moments' own nights, not their tiers' bands
+    const block = hang('campaign').find((p) => p.slug === 'the-block')!
+    expect(LADDER[block.level - 1].team).toBe("Cleveland Cavaliers '16")
+  })
+  it('two posters a few levels apart never share a wall', () => {
+    for (const mode of MODES) {
+      const ps = hang(mode)
+      for (let i = 1; i < ps.length; i++) if (Math.abs(ps[i].top - ps[i - 1].top) < 600) expect(ps[i].side, `${ps[i - 1].slug} / ${ps[i].slug}`).not.toBe(ps[i - 1].side)
     }
   })
-
-  it('alternates walls up the whole trail — no two neighbours on the same side', () => {
-    const byHeight = [...posters].sort((a, b) => b.top - a.top)
-    for (let i = 1; i < byHeight.length; i++) expect(byHeight[i].side).not.toBe(byHeight[i - 1].side)
+  it('takes the wall nearer its own ticket, unless a neighbour already stands there', () => {
+    const x = xOf(W)
+    for (const mode of MODES) {
+      const ps = postersFor(mode, levelOf, ROUNDS, stars(() => false), at, (l) => x(l - 1), W, 600)
+      ps.forEach((p, i) => {
+        const near = x(p.level - 1) < W / 2 ? 'left' : 'right'
+        const crowded = ps.slice(0, i).some((q) => q.side === near && Math.abs(q.top - p.top) < 600)
+        if (!crowded) expect(p.side, p.slug).toBe(near)
+        for (const q of ps.slice(0, i)) if (q.side === p.side) expect(Math.abs(q.top - p.top) >= 600 || crowded, `${q.slug} / ${p.slug}`).toBe(true)
+      })
+    }
   })
-
-  it('a five-level test ladder hangs only the first tier’s posters', () => {
-    const few = postersFor(eras, 5, [1, 1, 1, 1, 1], seamOf(375), heightOf(375))
-    expect(few.every((p) => p.tier === TIER_KEYS[0])).toBe(true)
-    expect(few.length).toBe(MOMENTS.filter((m) => m.tier === TIER_KEYS[0]).length)
+  it('a ladder too short for a moment does not hang it', () => {
+    const few = postersFor('campaign', levelOf, 5, [1, 1, 1, 1, 1], at)
+    expect(few.every((p) => p.level <= 5)).toBe(true)
   })
 })
 
-describe('sealed until the block falls (his ruling: unlock with progress)', () => {
-  it('a fresh campaign has every poster sealed', () => {
-    expect(postersFor(eras, ROUNDS, stars(() => false), seam, H).every((p) => !p.lit)).toBe(true)
+describe('each campaign its own images (his ruling, 2026-10-19)', () => {
+  it('the three ladders share no poster, and each hangs at least three', () => {
+    const seen = new Map<string, Mode>()
+    for (const mode of MODES) {
+      const ps = hang(mode)
+      expect(ps.length, mode).toBeGreaterThanOrEqual(3)
+      for (const p of ps) {
+        expect(seen.has(p.slug), `${p.slug} on ${seen.get(p.slug)} and ${mode}`).toBe(false)
+        seen.set(p.slug, mode)
+      }
+    }
   })
-  it('the League cleared lights the League’s posters and no other', () => {
-    const ps = postersFor(eras, ROUNDS, stars((l) => l <= lastOf(0)), seam, H)
-    expect(ps.filter((p) => p.tier === 'league').every((p) => p.lit)).toBe(true)
-    expect(ps.filter((p) => p.tier !== 'league').every((p) => !p.lit)).toBe(true)
+})
+
+describe('images only unlock as you get to the stage (his ruling, 2026-10-19)', () => {
+  it('a fresh campaign lights nothing above level 1', () => {
+    for (const mode of MODES) expect(hang(mode).filter((p) => p.lit).every((p) => p.level === 1)).toBe(true)
   })
-  it('one level short of the end of a tier is still sealed', () => {
-    const ps = postersFor(eras, ROUNDS, stars((l) => l < lastOf(0)), seam, H)
-    expect(ps.filter((p) => p.tier === 'league').every((p) => !p.lit)).toBe(true)
+  it('reaching a stage lights its poster — before it is cleared — and nothing above it', () => {
+    const block = hang('campaign').find((p) => p.slug === 'the-block')!
+    const onIt = hang('campaign', stars((l) => l < block.level))
+    expect(onIt.find((p) => p.slug === 'the-block')!.lit).toBe(true)
+    expect(onIt.filter((p) => p.level > block.level).every((p) => !p.lit)).toBe(true)
+    const below = hang('campaign', stars((l) => l < block.level - 1))
+    expect(below.find((p) => p.slug === 'the-block')!.lit).toBe(false)
   })
-  it('the whole ladder cleared lights all of them', () => {
-    expect(postersFor(eras, ROUNDS, stars(() => true), seam, H).every((p) => p.lit)).toBe(true)
+  it('a cleared stage stays lit, and the whole ladder cleared lights all of them', () => {
+    for (const mode of MODES) expect(hang(mode, stars(() => true)).every((p) => p.lit)).toBe(true)
   })
 })
 
@@ -155,40 +174,45 @@ describe('on the map', () => {
     bench: null,
     ...over,
   })
-  const map = (p: Progress) =>
+  const map = (p: Progress, mode: Mode = 'campaign') =>
     renderToStaticMarkup(
       createElement(LevelMap, {
         title: 'Campaign',
         progress: p,
-        opponents: OPP as Opponent[],
+        opponents: LADDER,
         eras,
         teamName: 'Zhengzhou GA',
         onPlay: () => {},
         onTeam: () => {},
         onStaff: () => {},
         onReset: () => {},
+        salary: mode === 'salary',
+        death: mode === 'death',
       }),
     )
 
-  it('hangs every poster, sealed, outside the trail’s clipped room, with no picture before the generator has run', () => {
+  it('hangs this campaign’s posters only, sealed, outside the trail’s clipped room', () => {
+    for (const mode of MODES) {
+      const html = map(progress(), mode)
+      const figures = html.match(/<figure class="moment [^"]*"/g) ?? []
+      expect(figures, mode).toHaveLength(hang(mode).length)
+      expect(figures.every((f) => f.includes(' sealed'))).toBe(true)
+    }
     const html = map(progress())
-    const figures = html.match(/<figure class="moment [^"]*"/g) ?? []
-    expect(figures).toHaveLength(MOMENTS.length)
-    expect(figures.every((f) => f.includes(' sealed'))).toBe(true)
     // the gutter is OUTSIDE .trail-room (which clips sideways), beside it in .trail-wrap
     expect(html.indexOf('class="moments"')).toBeGreaterThan(html.indexOf('class="trail-room"'))
     expect(html).toContain('class="trail-wrap"')
     expect(html).not.toContain('<img')
     // a sealed poster says what opens it, not what it is
-    expect(html).toContain('clear The League')
+    const block = hang('campaign').find((p) => p.slug === 'the-block')!
+    expect(html).toContain(`reach level ${block.level}`)
     expect(html).not.toContain('The Last Shot')
   })
 
-  it('lights the League’s posters once its thirty have fallen, and names them', () => {
-    const html = map(progress({ stars: stars((l) => l <= lastOf(0)) }))
-    const lit = html.match(/<figure class="moment [^"]*\blit\b[^"]*"/g) ?? []
-    expect(lit).toHaveLength(MOMENTS.filter((m) => m.tier === 'league').length)
-    expect(html).toContain('The Bounce')
+  it('lights a poster the moment its stage is reached, and names it', () => {
+    const block = hang('campaign').find((p) => p.slug === 'the-block')!
+    const html = map(progress({ stars: stars((l) => l < block.level) }))
+    expect(html).toContain('The Block')
     expect(html).not.toContain('The Last Shot')
   })
 
