@@ -297,7 +297,12 @@ describe('the campaign series screen is unchanged', () => {
     expect(html).toContain('GAME 7')
     expect(html).toContain('● LIVE')
     expect(html).toContain('Skip to result')
-    expect(html).toContain('<div class="dock-inner">')
+    // the sim speed bar (his ruling, 2026-10-18) stands over the skip door while the tape runs,
+    // at its top stop - the speed every series ran at before it - when nothing has been chosen
+    expect(html).toContain('<div class="dock-inner stack"><label class="simspeed">')
+    expect(html).toContain('<b>Fastest</b>')
+    // on the decider there is no next game to skip to
+    expect(html).not.toContain('Skip game')
   })
 })
 

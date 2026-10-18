@@ -142,11 +142,18 @@ export function buildTicker(
   rng: Rng,
   lines: Record<string, StatLine | null>,
   ctx?: { us: BoxCtx; them: BoxCtx },
+  /**
+   * THE SCORE THE GAME ALREADY HAS, when it has one. Game 7's tape draws its own final (and the
+   * strip takes the tape's), so it passes nothing and walks exactly as it always has. Games 1-6
+   * already carry the resolver's score on their chips; played on the tape at a slowed sim speed
+   * (his ruling, 2026-10-18) they must walk to THAT score, not a second one.
+   */
+  final?: { us: number; them: number },
 ): { ticks: Tick[]; us: number; them: number } {
-  const s = boxScore(margin, rng)
+  const s = final ? null : boxScore(margin, rng)
   const won = margin > 0
-  const finalUs = won ? s.win : s.lose
-  const finalThem = won ? s.lose : s.win
+  const finalUs = final ? final.us : won ? s!.win : s!.lose
+  const finalThem = final ? final.them : won ? s!.lose : s!.win
 
   const g = gameBoxes(us, them, lines, finalUs, finalThem, rng, ctx?.us, ctx?.them)
   const usL = splitBox(us, g.us, ctx?.us, rng)

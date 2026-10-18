@@ -48,6 +48,47 @@ const secsOf = (clock: string) => {
 /** One game lands on the filmstrip every this many ms (his ruling: "1 game by 1"). */
 const GAME_MS = 600
 
+/**
+ * THE SIM SPEED BAR — his ruling, 2026-10-18: "Make the sim of the series with a controllable bar.
+ * Current speed is the fastest, allow players to slow it down. When slowed down, games 1-6 will
+ * also be shown the same as game 7 is now (Game 7 will always be slower)."
+ *
+ * Five stops, slowest first. The top one IS the series as it always ran: games 1-6 land on the
+ * strip as chips, Game 7 plays on the tape at its own pace (`g7: 1`). Every stop under it puts
+ * games 1-6 on the tape too, at `game` times the tape's own tick, and Game 7 at `g7` times it -
+ * and `g7` is above `game` on every stop, so the decider is always the slowest night of the
+ * series at whatever speed it is watched. A game is ~204 plays, so a game 1-6 runs about 7s at
+ * QUICK, 11 at MEDIUM, 19 at SLOW and 30 at SLOWEST; Game 7 about 22, 26, 32 and 42, before its
+ * clutch latch.
+ */
+const SPEEDS: { label: string; game: number | null; g7: number }[] = [
+  { label: 'Slowest', game: 1.6, g7: 2.2 },
+  { label: 'Slow', game: 1.0, g7: 1.7 },
+  { label: 'Medium', game: 0.6, g7: 1.35 },
+  { label: 'Quick', game: 0.35, g7: 1.15 },
+  { label: 'Fastest', game: null, g7: 1 },
+]
+const FASTEST = SPEEDS.length - 1
+/** One viewer's convenience, remembered between series; the fastest whenever storage is not there. */
+const SPEED_KEY = 'game7.simSpeed'
+const readSpeed = () => {
+  try {
+    const raw = localStorage.getItem(SPEED_KEY)
+    const v = Number(raw)
+    return raw !== null && Number.isInteger(v) && v >= 0 && v <= FASTEST ? v : FASTEST
+  } catch {
+    return FASTEST
+  }
+}
+const writeSpeed = (v: number) => {
+  try {
+    localStorage.setItem(SPEED_KEY, String(v))
+  } catch {
+    /* a private window: the bar still works for this series */
+  }
+}
+type Tape = ReturnType<typeof buildTicker>
+
 interface StatRow {
   label: string
   a: string
@@ -289,12 +330,36 @@ export function Series({
   const myAb = teamAb ?? teamCode(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
 
-  const tape = useMemo(() => {
-    if (!decider) return null
-    // The tape plays from the game's own box now (B2/B3), so it needs the stat lines and the same
-    // tactical context the box scores consume.
-    return buildTicker(decider.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635), LINES, boxCtx ?? undefined)
-  }, [decider, five, opponent.players, seed, boxCtx])
+  /**
+   * EVERY GAME CAN GO ON THE TAPE NOW (the sim speed bar, above), each built the first time it is
+   * asked for. Game 7's is the tape it always was - its own seed, its own final, which the strip
+   * then takes. Games 1-6 each get a seed of their own and walk to the score their chip already
+   * carries, so slowing the sim down never changes a number on the screen.
+   */
+  const tapeOf = useMemo(() => {
+    const cache = new Map<number, Tape>()
+    return (g: number): Tape => {
+      let t = cache.get(g)
+      if (!t) {
+        const game = result.games[g]
+        // The tape plays from the game's own box now (B2/B3), so it needs the stat lines and the same
+        // tactical context the box scores consume.
+        t =
+          g === 6
+            ? buildTicker(game.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635), LINES, boxCtx ?? undefined)
+            : buildTicker(game.margin, five, opponent.players, makeRng((seed ^ 0x5bf03635 ^ Math.imul(0x9e3779b9, g + 1)) >>> 0), LINES, boxCtx ?? undefined, { us: game.us, them: game.them })
+        cache.set(g, t)
+      }
+      return t
+    }
+  }, [result, five, opponent.players, seed, boxCtx])
+  /** The decider's tape: its final is the one the strip, the box and the stats read for Game 7. */
+  const tape = decider ? tapeOf(6) : null
+  const [speed, setSpeedRaw] = useState(readSpeed)
+  const setSpeed = (v: number) => {
+    setSpeedRaw(v)
+    writeSpeed(v)
+  }
 
   const [i, setI] = useState(0)
   const [analysis, setAnalysis] = useState(false)
@@ -329,16 +394,25 @@ export function Series({
    * shown six games whose ending he already knew and which could only ever add up to 3-3.
    *
    * The screen runs in three phases now — the first six chips land, the seventh is played on the
-   * tape, and then it lands too and the series may speak. `live` therefore starts FALSE whenever
-   * the landing is on, and is turned on by the landing reaching the decider. With the landing off
-   * (reduced motion, or a render that wants the settled screen) the tape opens the screen exactly
-   * as it always did.
+   * tape, and then it lands too and the series may speak. With the sim speed bar below its top
+   * stop (2026-10-18) every one of the six takes the tape before its chip lands as well, so the
+   * phases are a game at a time; see `onAir`. With the landing off (reduced motion, or a render
+   * that wants the settled screen) the decider's tape opens the screen exactly as it always did.
    */
-  const [live, setLive] = useState(!!decider && (!revealGames || reduceMotion()))
-  /** The decider has been played. A ref: it must not restart the tape by re-rendering. */
-  const tapeRun = useRef(!decider)
-  /** How many games may land before the tape: all of them, or all but the decider. */
-  const preGames = result.games.length - (decider ? 1 : 0)
+  /** The screen opens settled (reduced motion, or a render that wants the finished screen). */
+  const settledOpen = !revealGames || reduceMotion()
+  /**
+   * WHICH GAME IS ON THE TAPE, or null while the strip has the screen. Settled-open, only the
+   * decider is ever played, at once, as it always was. Landing, the first game goes straight on
+   * the tape when the bar is below its top stop.
+   */
+  const [onAir, setOnAir] = useState<number | null>(() =>
+    settledOpen ? (decider ? 6 : null) : readSpeed() < FASTEST && result.games.length ? 0 : null,
+  )
+  /** The games whose tape has run, or been skipped. A ref: it must not restart a tape by re-rendering. */
+  const played = useRef(new Set<number>())
+  /** "Skip to result" was pressed: nothing else goes on the tape. */
+  const skippedAll = useRef(false)
   const timer = useRef<number | null>(null)
   /**
    * THE SERIES LANDS ONE GAME AT A TIME - his ruling, 2026-09-29: "Simming a series, should be 1
@@ -369,31 +443,44 @@ export function Series({
   /** Latched the first time the last five minutes are inside five points; see `CLUTCH_MS`. */
   const clutch = useRef(false)
   useEffect(() => {
-    if (!live || !tape) return
-    if (i >= tape.ticks.length) {
-      tapeRun.current = true
-      setLive(false)
+    if (onAir === null) return
+    const air = tapeOf(onAir)
+    const g7 = onAir === 6
+    // the bar went back to the top while a game 1-6 was on: that game is done, the chips resume
+    if (i >= air.ticks.length || (!g7 && SPEEDS[speed].game === null)) {
+      played.current.add(onAir)
+      setOnAir(null)
       return
     }
-    const t = tape.ticks[i]
+    const t = air.ticks[i]
     // the 4th is the last quarter this game plays; anything past it is an overtime and is closer
-    // still, so it latches too
-    if (!clutch.current && t.q >= 4 && secsOf(t.clock) <= CLUTCH_SECS && Math.abs(t.us - t.them) <= CLUTCH_PTS) clutch.current = true
-    const delay = clutch.current ? CLUTCH_MS : t.slow ? SLOW_MS : FAST_MS
-    timer.current = window.setTimeout(() => setI((n) => n + 1), delay)
+    // still, so it latches too. Game 7's rule alone: it was ruled for the decider.
+    if (g7 && !clutch.current && t.q >= 4 && secsOf(t.clock) <= CLUTCH_SECS && Math.abs(t.us - t.them) <= CLUTCH_PTS) clutch.current = true
+    const base = g7 && clutch.current ? CLUTCH_MS : t.slow ? SLOW_MS : FAST_MS
+    const pace = SPEEDS[speed]
+    timer.current = window.setTimeout(() => setI((n) => n + 1), base * (g7 ? pace.g7 : (pace.game ?? 0)))
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
     }
-  }, [i, live, tape])
+  }, [i, onAir, tapeOf, speed])
 
-  const skip = () => {
+  /** Off the tape and onto the strip: this game's chip lands next, and the series goes on. */
+  const skipGame = () => {
     if (timer.current) window.clearTimeout(timer.current)
-    tapeRun.current = true
-    setLive(false)
-    if (tape) setI(tape.ticks.length)
+    if (onAir !== null) played.current.add(onAir)
+    setOnAir(null)
+  }
+  /** The whole series, settled now. */
+  const skipAll = () => {
+    if (timer.current) window.clearTimeout(timer.current)
+    if (reveal.current) window.clearTimeout(reveal.current)
+    skippedAll.current = true
+    if (onAir !== null) played.current.add(onAir)
+    setOnAir(null)
+    setShown(result.games.length)
   }
 
-  const done = !live
+  const done = onAir === null
   /** Every game is on the strip and the series may speak. */
   const settled = shown >= result.games.length
   /* THE COACH ON THE RESULT (tutorial mode) — his ruling, 2026-09-30: "Remove Tutorial · The result
@@ -401,26 +488,36 @@ export function Series({
      win that banked something, lighting the map door (`data-door="map"` on whichever button carries
      it in this dock's shape): the stars are spent on the map, and that is where the coach goes next. */
   useLesson('result.map', settled && result.won && !exhibition, () => mapDoorLesson(starsFor(result)))
-  /** The landing stops at the decider until the tape has played it. */
-  const revealCap = tapeRun.current ? result.games.length : preGames
+  /**
+   * THE LANDING, ONE GAME AT A TIME, AND WHICH GAMES GO ON THE TAPE. The next game is the next
+   * chip. If it has not been played yet and the bar says it should be - the decider always, games
+   * 1-6 whenever the bar is below its top stop - it goes on the tape, after a beat so the chip
+   * before it is read; once its tape has run, or at the top stop, it simply lands. GAME 7 GOES
+   * LAST, BECAUSE IT IS LAST (2026-09-29): it is only reached once the six are on the strip.
+   */
   useEffect(() => {
-    if (!done || shown >= revealCap) return
-    reveal.current = window.setTimeout(() => setShown((n) => n + 1), GAME_MS)
+    if (onAir !== null || shown >= result.games.length) return
+    const n = shown
+    const wantsTape = !played.current.has(n) && !skippedAll.current && (n === 6 || SPEEDS[speed].game !== null)
+    if (wantsTape) {
+      const go = () => {
+        clutch.current = false
+        setI(0)
+        setOnAir(n)
+      }
+      // the decider at the top stop follows its sixth chip at once, as it always has
+      if (n === 0 || (n === 6 && speed === FASTEST)) {
+        go()
+        return
+      }
+      reveal.current = window.setTimeout(go, GAME_MS)
+    } else {
+      reveal.current = window.setTimeout(() => setShown((k) => k + 1), GAME_MS)
+    }
     return () => {
       if (reveal.current) window.clearTimeout(reveal.current)
     }
-  }, [done, revealCap, shown])
-  /* AND THE TAPE TAKES OVER when the six are down. `live` is what hides the strip and draws the
-     scorebug; when the tape ends it hands the screen back and the landing finishes the job. */
-  useEffect(() => {
-    if (!decider || tapeRun.current || live || shown < preGames) return
-    setLive(true)
-  }, [decider, live, shown, preGames])
-  const skipReveal = () => {
-    if (reveal.current) window.clearTimeout(reveal.current)
-    tapeRun.current = true
-    setShown(result.games.length)
-  }
+  }, [onAir, shown, speed, result.games.length])
   /** The series score as far as the strip has got, which is the final one once it is settled. */
   const runWins = result.games.slice(0, shown).filter((g) => g.won).length
   const runLosses = shown - runWins
@@ -472,8 +569,34 @@ export function Series({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [done, result, seed, tape],
   )
-  const cur = tape ? tape.ticks.slice(Math.max(0, i - 8), i) : []
-  const head = tape ? (i > 0 ? tape.ticks[i - 1] : { q: 1, clock: '12:00', us: 0, them: 0 }) : null
+  const air = onAir !== null ? tapeOf(onAir) : null
+  const at = air ? Math.min(i, air.ticks.length) : 0
+  const cur = air ? air.ticks.slice(Math.max(0, at - 8), at) : []
+  const head = air ? (at > 0 ? air.ticks[at - 1] : { q: 1, clock: '12:00', us: 0, them: 0 }) : null
+  /** The series as it stood when this game tipped off - "Series 3–3" for the decider. */
+  const airWins = onAir !== null ? result.games.slice(0, onAir).filter((g) => g.won).length : 0
+  const airLosses = onAir !== null ? onAir - airWins : 0
+  /**
+   * THE BAR ITSELF. In the dock for as long as the series is still happening, on the tape and on
+   * the strip both, and gone once it has settled. Below the top stop every game is played; at it,
+   * games 1-6 land as chips again.
+   */
+  const speedBar =
+    !done || !settled ? (
+      <label className="simspeed">
+        <span className="simspeed-k">Sim speed</span>
+        <input
+          type="range"
+          min={0}
+          max={FASTEST}
+          step={1}
+          value={speed}
+          onChange={(e) => setSpeed(Number(e.target.value))}
+          aria-valuetext={SPEEDS[speed].label}
+        />
+        <b>{SPEEDS[speed].label}</b>
+      </label>
+    ) : null
   /** His word for the door that settles the night and leaves. Unchanged by the two new ones. */
   const mainLabel = advanceLabel ?? (exhibition ? 'Back to the board' : result.won && opponent.round === ROUNDS ? 'Claim the title' : 'Back to the map')
 
@@ -495,7 +618,7 @@ export function Series({
       </div>
       <div className="rule2" />
 
-      {decider && tape && !done ? (
+      {air && !done ? (
         /* Game 7 as a true scorebug (design 2h): team panels on their tints, the run on the bug's foot. */
         <div className="scorebug">
           <div className="sb-grid">
@@ -504,7 +627,7 @@ export function Series({
               <b>{head!.us}</b>
             </div>
             <div className="sb-mid">
-              <span className="g7-badge">GAME 7</span>
+              <span className="g7-badge">GAME {onAir! + 1}</span>
               <span className="sb-clock">
                 Q{head!.q} · {head!.clock}
               </span>
@@ -516,16 +639,18 @@ export function Series({
             </div>
           </div>
           <div className="sb-foot">
-            <span className="you">{runLine(tape.ticks, i, myAb, opponent.ab ?? teamCode(opponent.team)) ?? ''}</span>
-            <span>Series 3–3</span>
+            <span className="you">{runLine(air.ticks, at, myAb, opponent.ab ?? teamCode(opponent.team)) ?? ''}</span>
+            <span>
+              Series {airWins}–{airLosses}
+            </span>
           </div>
         </div>
       ) : null}
-      {decider && tape && !done ? (
+      {air && !done ? (
         <div className="card" style={{ paddingTop: 10 }}>
           <div className="feed tall">
             {cur.map((t, k) => (
-              <div className="feed-row" key={i - cur.length + k}>
+              <div className="feed-row" key={at - cur.length + k}>
                 <span className="t">
                   Q{t.q} {t.clock}
                 </span>
@@ -558,7 +683,7 @@ export function Series({
         to spend and the order was already right. The grouping only bites on a desk.
       */}
       {done ? (
-        <div ref={resultBox} className={`result${settled ? '' : ' landing'}`} onClick={settled ? undefined : skipReveal}>
+        <div ref={resultBox} className={`result${settled ? '' : ' landing'}`} onClick={settled ? undefined : skipAll}>
           <div className="res-lead">
             {/* Verdict first (design 2g): the series score as the headline, the seven games as a filmstrip. */}
             <div className={`verdict final ${user ? 'um-on' : ''}`}>
@@ -846,19 +971,26 @@ export function Series({
           App.tsx measures whatever dock is standing into `--dock`, and every bottom padding is
           calc'd off that — so the tall shape simply reports its own height and the floor follows. */}
       <div className="dock">
-        {!done ? (
-          <div className="dock-inner">
-            <button className="btn ghost" onClick={skip}>
-              Skip to result
-            </button>
-          </div>
-        ) : !settled ? (
+        {!done || !settled ? (
           /* The ways on are not offered until the series has one - a NEXT LEVEL under a 2-1 strip
-             is a door out of a night that has not finished happening. */
-          <div className="dock-inner">
-            <button className="btn ghost" onClick={skipReveal}>
-              Skip to result
-            </button>
+             is a door out of a night that has not finished happening. On a game 1-6 tape there is
+             a second door: off this game and on to the next, without giving up the rest. */
+          <div className="dock-inner stack">
+            {speedBar}
+            {!done && onAir !== null && onAir < 6 ? (
+              <div className="dock-row">
+                <button className="btn ghost" onClick={skipGame}>
+                  Skip game
+                </button>
+                <button className="btn ghost" onClick={skipAll}>
+                  Skip to result
+                </button>
+              </div>
+            ) : (
+              <button className="btn ghost" onClick={skipAll}>
+                Skip to result
+              </button>
+            )}
           </div>
         ) : onNext && onRematch ? (
           /* THREE DOORS (his ruling: "Add a rematch button, and advance…"). Three across at 375

@@ -456,3 +456,19 @@ describe('the game 7 tape plays the night the box describes', () => {
     expect(top / t.us, 'the biggest single share of our points').toBeLessThan(0.5)
   })
 })
+
+describe('a game 1-6 on the tape (the sim speed bar, 2026-10-18)', () => {
+  it('walks to exactly the score it was handed, never a second one', () => {
+    const us = opponents[3].players
+    const them = opponents[6].players
+    for (let i = 0; i < 1000; i++) {
+      const margin = ((i % 41) - 20) + 0.5
+      const won = margin > 0
+      const final = won ? { us: 104 + (i % 9), them: 98 } : { us: 95, them: 101 + (i % 7) }
+      const tape = buildTicker(margin, us, them, makeRng(i * 97 + 3), LINES, undefined, final)
+      const last = tape.ticks[tape.ticks.length - 1]
+      expect([tape.us, tape.them]).toEqual([final.us, final.them])
+      expect([last.us, last.them]).toEqual([final.us, final.them])
+    }
+  })
+})

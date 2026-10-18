@@ -9831,3 +9831,28 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
      to whichever side is longer. */
   .pc-main { contain: size; }
 }
+
+/* THE SIM SPEED BAR (his ruling, 2026-10-18: "Make the sim of the series with a controllable bar").
+   One line over the skip doors while the series is still happening: the caption, the slider, and
+   the stop it is on. The native range in the house accent; its own row so a thumb on the slider
+   never lands on SKIP. */
+.simspeed {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 5.5em;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+.simspeed input { width: 100%; height: 28px; margin: 0; accent-color: var(--you); cursor: pointer; }
+.simspeed b { font-weight: 700; color: var(--you); text-align: right; }
+@media (min-width: 900px) {
+  .simspeed { font-size: clamp(11px, 0.7vw, 18px); min-height: clamp(44px, 2.6vw, 64px); }
+  .simspeed input { height: clamp(28px, 1.6vw, 40px); }
+}
