@@ -54,6 +54,13 @@ const only = onlyIx >= 0 ? new Set(args[onlyIx + 1].split(',')) : null
 const nIx = args.indexOf('--n')
 const N = nIx >= 0 ? Number(args[nIx + 1]) : 1
 if (![1, 4].includes(N)) { console.error('--n takes 1 or 4'); process.exit(2) }
+/**
+ * NOTHING GOES ON THE LADDER BY ITSELF (his ruling, 2026-10-18: "There is no need for you to
+ * put the images in the game just yet, I will tell you which ones to use"). Every run, even a
+ * single picture, lands in scripts/moments/candidates/<slug>/; a slot changes only through
+ * --pick. `--place` is the old behaviour for the day he asks for it back.
+ */
+const PLACE = args.includes('--place')
 const CAND = path.join(ROOT, 'scripts/moments/candidates')
 const pickIx = args.indexOf('--pick')
 /**
@@ -188,7 +195,7 @@ async function download(url) {
 async function one(m, manifest) {
   const have = manifest[m.slug]?.file && (await exists(path.join(ROOT, 'public', manifest[m.slug].file)))
   // a slot that already holds a picked picture is left alone, even on a candidates run, unless --only names it
-  if (have && !only) { console.log(`skip   ${m.slug} (have it)`); return }
+  if (have && !only && PLACE) { console.log(`skip   ${m.slug} (have it)`); return }
   if (dry) { console.log(`would  ${m.slug} x${N}: ${m.prompt}`); return }
   console.log(`submit ${m.slug}${N > 1 ? ` x${N}` : ''} (${MODEL_KEY})`)
   // a model with a batch takes one request for N pictures; the others take N requests at once
@@ -202,25 +209,27 @@ async function one(m, manifest) {
   const good = dones.filter((d) => d.status === 'completed')
   for (const d of dones) if (d.status !== 'completed') console.log(`FAIL   ${m.slug}: ${d.status} ${d.error || ''}`)
   if (!good.length) {
-    if (N === 1) manifest[m.slug] = { ...m, status: dones[0].status, error: dones[0].error || null }
+    if (N === 1 && PLACE) manifest[m.slug] = { ...m, status: dones[0].status, error: dones[0].error || null }
     return
   }
   const done = good[0]
   const urls = good.flatMap((d) => (d.images ?? []).map((i) => i.url)).filter(Boolean)
-  if (N > 1) {
+  if (N > 1 || !PLACE) {
     const dir = path.join(CAND, m.slug)
     await mkdir(dir, { recursive: true })
     // named by model, and by the run's index so the k-th file is the k-th concept even when one
     // run failed:  --pick <slug> recraft-2
     let saved = 0
+    const existing = (await import('node:fs/promises')).readdir(dir).then((l) => l.filter((f) => f.startsWith(MODEL_KEY + '-')).length)
+    const base = await existing
     for (const [k, d] of dones.entries()) {
       const url = d.images?.[0]?.url
       if (!url) continue
       const { ext, bytes } = await download(url)
-      await writeFile(path.join(dir, `${MODEL_KEY}-${k + 1}.${ext}`), bytes)
+      await writeFile(path.join(dir, `${MODEL_KEY}-${base + k + 1}.${ext}`), bytes)
       saved++
     }
-    console.log(`cands  ${m.slug}: ${saved} in scripts/moments/candidates/${m.slug}/ (${MODEL_KEY}-1..${runs})`)
+    console.log(`cands  ${m.slug}: ${saved} in scripts/moments/candidates/${m.slug}/ (${MODEL_KEY}-${base + 1}..${base + runs})`)
     return
   }
   const { ext, bytes } = await download(urls[0])
