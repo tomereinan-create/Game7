@@ -94,16 +94,18 @@
   },
   "the-skyhook": {
     "slug": "the-skyhook",
+    "mode": "salary",
+    "at": "Los Angeles Lakers '85",
     "tier": "all-time",
     "era": "1985",
     "title": "The Skyhook",
     "look": "Classical oil painting of two giants on a mountain summit above the clouds at dawn: the cloud sea below, the hoop on a rock spire at the right, the ball at the top of its arc becoming the rising sun.",
-    "prompt": "Repaint the reference photograph as a classical oil painting, keeping its composition exactly - the same camera position, the same figures in the same places, every limb and the ball exactly where the photo has them - and change only the world. Keep: the tall shooter in plain gold at the left, body turned sideways, right arm fully straight above his head releasing the hook, the ball at his fingertips at the top; the defender in plain red beside him reaching up with both arms and falling a full head short; the hoop at the top right; the two small figures at the right as dark silhouettes. Both main figures have their heads in deep shadow or turned away so no face shows. Change the world to a mountain summit above a sea of clouds at dawn: the floor becomes bare rock, the crowd becomes the cloud sea, the hoop stands on a rock spire, the ball glows like the rising sun. HARD RULES: no face is visible anywhere - every face is turned away, hidden in deep shadow, lost in glare, or a featureless dark silhouette; every jersey and shirt is a plain, solid colour with nothing printed on it - no name, no number, no word, no crest, no stripe-logo; no sponsor boards, no signage, no clock, no scoreboard, no text of any kind anywhere in the picture.",
+    "prompt": "Edit the reference picture: change ONLY the clothing of the two basketball players and nothing else. The shooter, a Black man with DARK brown skin exactly as dark as the defender\u2019s - the same deep tone on his arms, legs, chest and face, never lightened by the sun behind him - short black hair and a full black beard, keeps his exact face, skin colour, body and pose; his gold jersey, gold shorts, striped socks and sneakers are replaced by a plain white Greek chiton edged in gold, draped over one shoulder, a thin golden laurel wreath on his head, gold armbands, and leather gladiator sandals on bare legs. The defender, a Black man with deep brown skin and short black hair, keeps his exact face, skin, body and pose; his red jersey, red shorts, socks and sneakers are replaced by a plain crimson chiton, bronze armbands and leather sandals. Everything else in the picture is pixel-for-pixel the same: the blazing white sun in the shooter\u2019s raised right hand with its rays, the summit of rock, the sea of clouds, the golden sky, the hoop on the rock spire at the right, the three dark seated silhouettes at the bottom right. No basketball anywhere.",
     "concepts": [
       ""
     ],
     "refs": [
-      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-skyhook.jpg"
+      "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/moments/refs/the-skyhook-pick.jpg"
     ],
     "status": "completed",
     "file": "moments/the-skyhook.jpg",
