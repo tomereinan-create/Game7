@@ -105,3 +105,16 @@ export function postersFor(
     return { slug: m.slug, title: m.title, era: m.era, tier: m.tier, level, side, top, lit: level <= reached }
   })
 }
+
+/**
+ * THE PAINTED ROOMS behind the desk screens (public/moments/screens/<file>): a CSS `url()` handed
+ * to a stylesheet through a custom property resolves against the STYLESHEET's address, and the
+ * build's base is './' - so a relative path came out as /assets/moments/..., which the server
+ * answers with the app's own page and the room stayed dark (2026-10-19). Resolved against the
+ * document instead, so it is the same file in the dev server, the build and the static server.
+ */
+export const plateUrl = (file: string): string => {
+  const rel = `${import.meta.env.BASE_URL}moments/screens/${file}`
+  const abs = typeof document === 'undefined' ? rel : new URL(rel, document.baseURI).href
+  return `url("${abs}")`
+}

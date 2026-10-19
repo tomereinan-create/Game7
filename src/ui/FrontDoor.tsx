@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { plateUrl } from './moments'
 import { DEFAULT_ORDER, PLAYERS } from '../engine/pool'
 import { ROUNDS } from '../config'
 import { clubCode, currentLevel, totalStars, clearedCount, type Progress, type CampaignMode, type Team } from '../state/campaign'
@@ -625,7 +626,7 @@ export function FrontDoor({
        session's Grok concept: a dark arena under the rafter lights, the six plays as banners
        hanging over the floor). `--plate` is the painted arena, public/moments/screens/home-arena.jpg;
        until it exists the stylesheet draws the room (see `.fd.arena`). A desk only. */
-    <div className="fd arena" style={{ '--plate': `url(${import.meta.env.BASE_URL}moments/screens/home-arena.jpg)` } as CSSProperties}>
+    <div className="fd arena" style={{ '--plate': plateUrl('home-arena.jpg') } as CSSProperties}>
       {friends ? (
         <Ask
           label="Friends"

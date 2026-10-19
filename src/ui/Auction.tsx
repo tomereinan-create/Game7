@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { plateUrl } from './moments'
 import { SIGMA } from '../config'
 import { achMachineWin } from '../state/achievements'
 import { archetype, PLAYERS } from '../engine/pool'
@@ -412,7 +413,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
           auction house, wood panelling, a chandelier, a lectern under a spotlight, brass and
           velvet). The plate is the room alone; until the moments session paints it, the stylesheet
           draws the panelling and the beam itself (see `.room-plate.au`). */}
-      <div className="room-plate au" aria-hidden style={{ '--plate': `url(${import.meta.env.BASE_URL}moments/screens/auction-room.jpg)` } as CSSProperties} />
+      <div className="room-plate au" aria-hidden style={{ '--plate': plateUrl('auction-room.jpg') } as CSSProperties} />
       <div className="topbar">
         <span>1v1 Bid</span>
         <span>$20 each · first to five</span>
