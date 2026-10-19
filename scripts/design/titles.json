@@ -1,0 +1,19 @@
+{
+  "aspect_ratio": "16:9",
+  "model": "grok",
+  "resolution": "2k",
+  "style": "Cinematic, dark and monumental, photoreal with painterly murals, volumetric light, film grain, haze, embers. No logos, no emblems, no watermark, no caption, no identifiable faces - every figure in silhouette.",
+  "moments": [
+    {
+      "slug": "game7-title",
+      "title": "Game 7 title in the arena",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/arena-frame.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, camera, lighting and materials exactly. Change only this: the words GAME 7 now hang in the air above the court, directly under the shaft of light and in front of the far basket - two enormous letters-and-numeral built like an arena marquee, three-dimensional, burnished dark metal with their faces lit from within in hot white-gold, throwing light down onto the hardwood and catching the haze. Embers drift around them. The painted murals on the walls stay as they are. Nothing else is written anywhere; GAME 7 is the only text."
+    }
+  ]
+}
