@@ -10524,130 +10524,146 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 }
 
 /* =====================================================================================
-   THE HOME PAGE IS THE PICTURE - his ruling, 2026-10-19, the build beside the Grok concept: "Look
-   yourself. Big difference. Cant you just paste the grok image?" So it is pasted. The page is a
-   16:9 STAGE, letterboxed on a wider desk, and the stage's backdrop is Grok's painting of the
-   arena WITH the six banners hanging in it (public/moments/screens/home-stage.jpg). Everything
-   alive sits on the painting at the painted spot, in the stage's own units (cqw/cqh of the stage):
-   the six marks are transparent hit areas over the painted banners, the five you are not on
-   dimmed by a dark pennant laid over them and the one you are on left lit; the read is a dark
-   slab on the right half, where the concept painted it, at the concept's type sizes; the rail and
-   the identity row ride the black above the rafters; the four doors are the tunnel mouths with
-   their EXIT signs along the bottom. The CSS pennants (.fd-plate), the jersey, the court drawing
-   and the ball stand down: the painting carries them. A desk only; the phone keeps its floor.
+   THE HOME PAGE IS THE PICTURE - his rulings, 2026-10-19. First, the build beside the Grok
+   concept: "Look yourself. Big difference. Cant you just paste the grok image?" So it is pasted:
+   Grok's painting of the arena is the page, and everything alive sits on it at the painted spot.
+   Then his four changes: (1) "I want GAZ and Game 7 both to be a banner" - the picture hangs
+   EIGHT pennants: GAME 7 at the head, the six plays, and a blank one at the tail that carries the
+   club's initials live; (2) "longer and more decorated ... not too much" - tall pennants, a gold
+   trim, a short fringe, a star; (3) "when different things light up, the corresponding light
+   should light ... we have only 1 lamp" - the painting has NO beam; each pennant has its own
+   fixture above it, and the one you are on is lit by a cone drawn from ITS fixture, moving with
+   the choice; (4) "stretch it to the sides a little bit, should cover full screen" - the picture
+   is painted 2:1 (the widest Grok makes) and stretched to the window, so on his 2.56:1 desk it
+   gives 28% sideways and on a 16:9 laptop takes 11%, with no bars anywhere.
+   Everything is placed in the stage's own units (cqw/cqh of the stage = percent of the picture),
+   so it stretches with the picture. The marks are hit areas over the painted pennants: the five
+   you are not on sit under a dark veil, yours under its light. The CSS pennants (.fd-plate's
+   face), the jersey, the court drawing, the ball, the rail's logo and years (painted on the GAME
+   7 pennant) all stand down. A desk only; the phone keeps its floor.
    ===================================================================================== */
 @media (min-width: 900px) {
-  html:has(body.door .fd.arena), body.door:has(.fd.arena) { background: #000; }
-  body.door:has(.fd.arena) #root {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 0;
-  }
-  /* the letterbox on a wider desk is the picture itself, blurred and dark, not dead black */
-  .fd.arena::before {
-    content: ''; position: fixed; inset: -40px; z-index: -1; pointer-events: none;
-    background: #000 var(--plate, none) center / cover no-repeat;
-    filter: blur(28px) brightness(0.38);
-  }
+  html:has(body.door .fd.arena), body.door:has(.fd.arena) { background: #02030a; }
+  body.door:has(.fd.arena) #root { min-height: 100vh; padding: 0; margin: 0; max-width: none; }
   .fd.arena {
     position: relative;
-    width: min(100vw, calc(100vh * 16 / 9));
-    height: min(100vh, calc(100vw * 9 / 16));
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     min-height: 0;
-    margin: 0 auto;
+    margin: 0;
     container-type: size;
     overflow: hidden;
-    background-color: #05070b;
-    background-image: var(--plate, none);
-    background-size: 100% 100%;
-    background-position: center;
+    background: #05070b var(--plate, none) center / 100% 100% no-repeat;
     display: block;
   }
   .fd.arena > .fd-rail, .fd.arena > .fd-id, .fd.arena > .fd-band, .fd.arena > .fd-foot { position: absolute; left: 0; right: 0; margin: 0; }
-  /* ---- the rail and the identity row ride the black above the rafters ---- */
-  .fd.arena > .fd-rail { top: 0; height: 4.2cqh; padding: 0 2.3cqw; background: none; border: 0; align-items: center; }
-  .fd.arena .fd-years, .fd.arena .fd-cap { font-size: 1.05cqw; letter-spacing: 0.22em; color: #9aa0ab; }
-  .fd.arena > .fd-id { top: 3.6cqh; height: 12.6cqh; padding: 0 2.3cqw; background: none; border: 0; align-items: center; gap: 1.2cqw; }
-  .fd.arena .fd-word { font-size: 4.6cqw; }
-  .fd.arena .fd-stat i { font-size: 0.85cqw; letter-spacing: 0.2em; }
-  .fd.arena .fd-stat b { font-size: 2.2cqw; }
-  .fd.arena .fd-stat b.gold { font-size: 2.6cqw; }
-  .fd.arena .fd-mode { font-size: 0.95cqw; padding: 0.55cqw 1.4cqw; letter-spacing: 0.16em; }
-  .fd.arena .fd-friend { width: 2.2cqw; height: 2.2cqw; }
 
-  /* ---- the band: the painted arena, with the marks over its banners and the slab to the right ---- */
-  .fd.arena > .fd-band { top: 10cqh; height: 77cqh; display: block; }
-  .fd.arena .fd-panel { position: absolute; inset: 0; width: auto; aspect-ratio: auto; background: none; box-shadow: none; border: 0; container-type: normal; }
-  .fd.arena .fd-court { position: absolute; inset: 0; width: auto; height: auto; aspect-ratio: auto; border: 0; background: none; container-type: normal; }
+  /* ---- the rail: the painting carries the logo and the years; the rest rides the rafters ---- */
+  .fd.arena > .fd-rail { top: 0; height: 4.4cqh; padding: 0 1.6cqw; background: none; border: 0; align-items: center; justify-content: flex-end; }
+  .fd.arena .fd-years { display: none; }
+  .fd.arena .fd-cap { font-size: 0.85cqw; letter-spacing: 0.22em; color: #aab0bb; }
+  .fd.arena > .fd-id { top: 3.8cqh; height: 10cqh; padding: 0 1.6cqw; background: none; border: 0; align-items: center; justify-content: flex-end; gap: 1.4cqw; }
+  .fd.arena > .fd-id > .ball7, .fd.arena .fd-word, .fd.arena .fd-div, .fd.arena .fd-idbr { display: none !important; }
+  .fd.arena .fd-stat i { font-size: 0.7cqw; letter-spacing: 0.2em; }
+  .fd.arena .fd-stat b { font-size: 1.7cqw; }
+  .fd.arena .fd-stat b.gold { font-size: 2cqw; }
+  .fd.arena .fd-mode { font-size: 0.8cqw; padding: 0.5cqw 1.2cqw; letter-spacing: 0.16em; }
+  .fd.arena .fd-friend { width: 2cqw; height: 2cqw; }
+
+  /* ---- the band is the whole picture; every mark is placed in percent of it ---- */
+  .fd.arena > .fd-band { top: 0; height: 100cqh; display: block; pointer-events: none; }
+  .fd.arena .fd-panel { position: absolute; inset: 0; width: auto; aspect-ratio: auto; background: none; box-shadow: none; border: 0; container-type: normal; pointer-events: none; }
+  .fd.arena .fd-court { position: absolute; inset: 0; width: auto; height: auto; aspect-ratio: auto; border: 0; background: none; container-type: normal; pointer-events: none; }
+  .fd.arena .fd-marks { pointer-events: none; }
   .fd.arena .fd-lines, .fd.arena .fd-hoop, .fd.arena .fd-air, .fd.arena .fd-glow, .fd.arena .fd-fig, .fd.arena .fd-cup, .fd.arena .fd-mark > svg { display: none !important; }
-  /* THE MARKS ARE HIT AREAS over the painted banners. Their centres are the painting's, measured
-     in the stage's units (percent of the band's width and height), written per mark below. The
-     plate inside is the dimmer: a pennant-shaped dark veil over a banner you are not on. */
-  .fd.arena .fd-mark { filter: none; min-width: 0; min-height: 0; width: 6.3cqw; height: 22.4cqh; z-index: 2 !important; top: 21.8% !important; }
-  .fd.arena .fd-mark:nth-child(2) { left: 19.3% !important; }
-  .fd.arena .fd-mark:nth-child(3) { left: 27.15% !important; }
-  .fd.arena .fd-mark:nth-child(1) { left: 34.6% !important; }
-  .fd.arena .fd-mark:nth-child(4) { left: 41.9% !important; }
-  .fd.arena .fd-mark:nth-child(5) { left: 49.5% !important; }
-  .fd.arena .fd-mark:nth-child(6) { left: 56.85% !important; }
+
+  /* THE MARKS ARE HIT AREAS over the painted pennants (centres and size measured on the picture) */
+  .fd.arena .fd-mark { pointer-events: auto; filter: none; min-width: 0; min-height: 0; width: 7.9cqw; height: 29cqh; z-index: 2 !important; top: 29.4% !important; }
+  .fd.arena .fd-mark:nth-child(2) { left: 27.65% !important; }
+  .fd.arena .fd-mark:nth-child(3) { left: 36.65% !important; }
+  .fd.arena .fd-mark:nth-child(1) { left: 45.4% !important; }
+  .fd.arena .fd-mark:nth-child(4) { left: 54.75% !important; }
+  .fd.arena .fd-mark:nth-child(5) { left: 63.9% !important; }
+  .fd.arena .fd-mark:nth-child(6) { left: 73% !important; }
+  /* the veil: a pennant-shaped shadow over a play you are not on; gone from the one you are on */
   .fd.arena .fd-mark .fd-plate {
     position: absolute; inset: 0; width: auto; min-height: 0; padding: 0; margin: 0;
-    background: rgba(3, 5, 10, 0.62); border: 0; box-shadow: none;
-    clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%);
-    transform: none; transition: background 160ms linear;
+    background: rgba(2, 4, 10, 0.6); border: 0; box-shadow: none;
+    clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 97%, 0 82%);
+    transform: none; transition: background 180ms linear;
     flex-direction: column; justify-content: flex-end; align-items: center;
   }
   .fd.arena .fd-mark .fd-no, .fd.arena .fd-mark .fd-label { opacity: 0; }
   .fd.arena .fd-mark .fd-no::after { content: none; }
-  .fd.arena .fd-mark:hover:not(.on) .fd-plate { background: rgba(3, 5, 10, 0.4); transform: none; }
-  .fd.arena .fd-mark.on .fd-plate { background: none; transform: none; }
-  /* the one you are on is lit: a warm halo behind it, the beam's light caught on it */
-  .fd.arena .fd-mark.on::before {
-    content: ''; position: absolute; left: 50%; top: 50%; width: 220%; height: 150%;
-    transform: translate(-50%, -50%); z-index: -1; clip-path: none;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 226, 170, 0.34), rgba(255, 210, 140, 0.1) 55%, transparent 75%);
-    pointer-events: none;
-  }
-  .fd.arena .fd-mark.locked .fd-plate { background: rgba(3, 5, 10, 0.78); filter: none; }
+  .fd.arena .fd-mark:hover:not(.on) .fd-plate { background: rgba(2, 4, 10, 0.38); transform: none; }
+  .fd.arena .fd-mark.on .fd-plate { background: rgba(255, 232, 190, 0.13); mix-blend-mode: screen; transform: none; }
+  .fd.arena .fd-mark.locked .fd-plate { background: rgba(2, 4, 10, 0.78); filter: none; }
   .fd.arena .fd-lock { z-index: 1; }
-  /* the club's badge hangs beside the banners: right of the row, level with their tops */
-  .fd.arena .fd-badge { top: 7.5cqh !important; left: 9.5cqw !important; right: auto !important; bottom: auto !important; }
-  .fd.arena .fd-badge .fd-crest { width: 3.8cqw; font-size: 1.3cqw; }
+  /* THE LIGHT FOLLOWS THE CHOICE: the fixture above the pennant you are on comes on, and its cone
+     falls down the pennant to the floor. Drawn on the mark, so it moves with it; the cone's apex
+     is the painted fixture, 8.5% down the picture, the mark's top is 15% down. */
+  .fd.arena .fd-mark.on::before {
+    content: ''; position: absolute; left: 50%; top: -9.5cqh; width: 9cqw; height: 9cqw;
+    transform: translate(-50%, -50%); z-index: -1; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 246, 225, 0.95) 0 4%, rgba(255, 238, 200, 0.5) 12%, rgba(255, 230, 180, 0.12) 32%, transparent 60%);
+  }
+  .fd.arena .fd-mark.on::after {
+    content: ''; position: absolute; left: 50%; top: -6.5cqh; width: 34cqw; height: 92cqh;
+    transform: translateX(-50%); z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 240, 205, 0.5), rgba(255, 232, 190, 0.2) 40%, rgba(255, 225, 170, 0.1) 75%, rgba(255, 220, 160, 0) 100%);
+    clip-path: polygon(48.5% 0, 51.5% 0, 100% 100%, 0 100%);
+    mix-blend-mode: screen;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .fd.arena .fd-mark.on::after { animation: fd-lamp-on 420ms ease-out both; }
+    @keyframes fd-lamp-on { from { opacity: 0; } 60% { opacity: 0.55; } 75% { opacity: 0.35; } to { opacity: 1; } }
+  }
+  /* THE CLUB'S PENNANT: the blank one at the tail of the row carries the initials, live */
+  .fd.arena .fd-badge {
+    top: 27cqh !important; left: 81.8cqw !important; right: auto !important; bottom: auto !important;
+    transform: translate(-50%, -50%); pointer-events: none;
+  }
+  .fd.arena .fd-badge .fd-crest {
+    width: auto; height: auto; border: 0; box-shadow: none; background: none; border-radius: 0;
+    font: 400 3.6cqw / 1 var(--serif); letter-spacing: 0.04em; color: #efe9dc;
+    text-shadow: 0 0.3cqh 1cqh rgba(0, 0, 0, 0.6);
+  }
 
-  /* ---- the read: the concept's slab, on the right half ---- */
+  /* ---- the read: a slab over the right stands, under the tail of the row ---- */
   .fd.arena .fd-read {
-    position: absolute; left: 62.4cqw; width: 35.6cqw; top: 6cqh; height: 68cqh; max-height: none;
-    margin: 0; padding: 2.8cqh 1.8cqw 2.2cqh;
-    background: rgba(6, 8, 12, 0.93);
+    position: absolute; left: 58.6cqw; width: 39.6cqw; top: 45cqh; height: 42cqh; max-height: none;
+    margin: 0; padding: 2.2cqh 1.4cqw 1.6cqh;
+    background: rgba(6, 8, 12, 0.92);
     border: 1px solid rgba(255, 255, 255, 0.09);
     box-shadow: 0 2.6cqh 6cqh rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transform: perspective(160cqw) rotateY(-4deg);
+    transform: perspective(160cqw) rotateY(-3deg);
     transform-origin: left center;
     container-type: normal;
     overflow: hidden auto;
+    pointer-events: auto;
   }
-  .fd.arena .fd-tag { font-size: 1.05cqw; letter-spacing: 0.22em; color: #f0b532; }
-  .fd.arena .fd-name { font: 800 4.6cqw / 0.95 var(--sans); letter-spacing: 0.005em; color: #f6f4ef; margin-top: 0.4cqh; text-transform: uppercase; }
-  .fd.arena .fd-rule { height: 2px; background: #2457c7; margin: 1.6cqh 0 2.4cqh; }
-  .fd.arena .fd-desc { font-size: 1.12cqw; line-height: 1.45; color: #f1efe9; margin: 0 0 0.6cqh; }
-  .fd.arena .fd-rules { display: block; columns: 1; margin: 1.4cqh 0 0; }
-  .fd.arena .fd-rules .fd-desc { margin: 0 0 0.7cqh; }
-  .fd.arena .fd-meta { margin-top: 3.4cqh; padding-top: 2cqh; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: baseline; }
-  .fd.arena .fd-metak { font-size: 0.95cqw; letter-spacing: 0.22em; color: #8d93a0; text-transform: uppercase; }
-  .fd.arena .fd-metav { font-size: 2cqw; color: #f0b532; }
-  .fd.arena .fd-cta { margin-top: 1.2cqh; height: 5.8cqh; font-size: 1.7cqw; background: #f0b532; color: #141008; letter-spacing: 0.02em; border: 0; }
+  .fd.arena .fd-tag { font-size: 1.5cqh; letter-spacing: 0.22em; color: #f0b532; }
+  .fd.arena .fd-name { font: 800 5.6cqh / 0.95 var(--sans); letter-spacing: 0.005em; color: #f6f4ef; margin-top: 0.3cqh; text-transform: uppercase; }
+  .fd.arena .fd-rule { height: 2px; background: #2457c7; margin: 1cqh 0 1.2cqh; }
+  .fd.arena .fd-desc { font-size: 1.72cqh; line-height: 1.32; color: #f1efe9; margin: 0 0 0.4cqh; }
+  .fd.arena .fd-rules { display: block; columns: 1; margin: 0.8cqh 0 0; }
+  .fd.arena .fd-rules .fd-desc { margin: 0 0 0.4cqh; }
+  .fd.arena .fd-meta { margin-top: 1.2cqh; padding-top: 0.9cqh; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: baseline; }
+  .fd.arena .fd-metak { font-size: 1.3cqh; letter-spacing: 0.22em; color: #8d93a0; text-transform: uppercase; }
+  .fd.arena .fd-metav { font-size: 3cqh; color: #f0b532; }
+  .fd.arena .fd-cta { margin-top: 0.9cqh; height: 4.8cqh; font-size: 2.2cqh; position: static; background: #f0b532; color: #141008; letter-spacing: 0.02em; border: 0; }
   .fd.arena .fd-cta:disabled { background: #6a5a2c; color: #241e10; }
-  .fd.arena .fd-signoff { margin-top: 1.6cqh; font-size: 0.75cqw; letter-spacing: 0.18em; color: #8d93a0; }
+  .fd.arena .fd-signoff { margin-top: 1cqh; font-size: 1cqh; letter-spacing: 0.18em; color: #8d93a0; }
 
   /* ---- the four tunnel doors along the bottom, each under its EXIT ---- */
-  .fd.arena > .fd-foot { top: 86.8cqh; height: 13.2cqh; display: grid; grid-template-columns: repeat(4, 19.2cqw); column-gap: 6.4cqw; justify-content: center; align-items: start; padding: 0; background: none; border: 0; }
+  .fd.arena > .fd-foot { top: 87.5cqh; height: 12.5cqh; display: grid; grid-template-columns: repeat(4, 19.2cqw); column-gap: 6.4cqw; justify-content: center; align-items: start; padding: 0; background: none; border: 0; }
   .fd.arena .fd-bookrow {
-    margin: 0; height: 11.6cqh; padding: 1.1cqh 0 0; display: grid; grid-template-rows: auto auto; row-gap: 0.6cqh; justify-items: center; align-content: start;
+    margin: 0; height: 11cqh; padding: 1cqh 0 0; display: grid; grid-template-rows: auto auto; row-gap: 0.5cqh; justify-items: center; align-content: start;
     background: linear-gradient(#0d1016, #04050a); border: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 0;
     box-shadow: inset 0 1.2cqh 2.4cqh rgba(0, 0, 0, 0.7);
   }
-  .fd.arena .fd-bookrow b, .fd.arena .fd-bookrow i { font-size: 1.25cqw; letter-spacing: 0.06em; }
+  .fd.arena .fd-bookrow b, .fd.arena .fd-bookrow i { font-size: 1cqw; letter-spacing: 0.06em; }
   .fd.arena .fd-bookrow b { color: #f6f4ef; }
-  .fd.arena .fd-bookrow::after { font-size: 2.3cqw; margin-top: 0; padding: 0.1em 0.4em; }
+  .fd.arena .fd-bookrow::after { font-size: 2cqw; margin-top: 0; padding: 0.1em 0.4em; }
 }
