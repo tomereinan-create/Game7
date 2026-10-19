@@ -79,6 +79,13 @@ const TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  // the moments' posters and the Game 7 intro clip (public/moments): sent as what they are, so the
+  // series screen's "is the clip there" check reads a video and not a download
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
 }
 
 const open = (url) => {

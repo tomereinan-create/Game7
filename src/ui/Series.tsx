@@ -443,8 +443,9 @@ export function Series({
   const resultBox = useRef<HTMLDivElement | null>(null)
 
   /**
-   * THE GAME 7 INTRO CLIP: public/moments/game7-intro.mp4, made by the moments session. Looked for
-   * once; a dev server answers a missing file with the app's own page, so only a video counts.
+   * THE GAME 7 INTRO CLIP: public/moments/game7-intro.mp4, made by the moments session with Grok
+   * (his pick, 2026-10-19). Looked for once; a server answers a missing file with the app's own
+   * page, so that page is the one answer that does not count.
    * Absent, unreachable, or on a machine that asked for less motion, the decider goes straight to
    * the tape as it always has.
    */
@@ -458,7 +459,9 @@ export function Series({
     let live = true
     fetch(`${import.meta.env.BASE_URL}${INTRO}`, { method: 'HEAD' })
       .then((r) => {
-        if (live) intro.current = r.ok && (r.headers.get('content-type') ?? '').startsWith('video') ? 'ready' : 'none'
+        // a missing file comes back as the app's own page (text/html) from the dev server and from
+        // serve.mjs alike; anything else that answers is the clip
+        if (live) intro.current = r.ok && !(r.headers.get('content-type') ?? '').startsWith('text/html') ? 'ready' : 'none'
       })
       .catch(() => {
         if (live) intro.current = 'none'
