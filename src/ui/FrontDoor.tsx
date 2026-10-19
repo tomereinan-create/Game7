@@ -875,7 +875,9 @@ export function FrontDoor({
                   ) : null}
                   <Jersey no={s.jersey} />
                   <span className="fd-plate">
-                    <span className="fd-no">{s.no}</span>
+                    <span className="fd-no" data-n={s.jersey}>
+                      {s.no}
+                    </span>
                     <span className="fd-label">{s.label}</span>
                   </span>
                 </button>
