@@ -9,6 +9,7 @@ import { achCount } from '../state/achievements'
 import { myColor } from './teamColors'
 import { Ball } from './Ball'
 import { Trophy } from './Trophy'
+import { Ask } from './Ask'
 import { useLayout } from './useLayout'
 import type { Mode } from './Home'
 
@@ -447,6 +448,26 @@ export function FrontDoor({
    */
   const [pass, setPass] = useState<{ from: number; id: number } | null>(null)
   const passId = useRef(1)
+  /**
+   * FRIENDS — his ruling, 2026-10-19: "Add a friend icon somewhere in the app for adding friends."
+   * The game has no accounts and no server, so for now the icon is the door and the room behind it
+   * says so: friends are coming, and here is the game to send them. The phone's own share sheet
+   * when there is one, the clipboard otherwise.
+   */
+  const [friends, setFriends] = useState(false)
+  const [invited, setInvited] = useState(false)
+  const invite = async () => {
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}`
+    try {
+      if (navigator.share) await navigator.share({ title: 'Game7', text: 'Draft a five and play me in Game7', url })
+      else await navigator.clipboard.writeText(url)
+      setInvited(true)
+      window.setTimeout(() => setInvited(false), 2500)
+    } catch {
+      /* he closed the share sheet, or the clipboard is not his to write: nothing to undo */
+    }
+    setFriends(false)
+  }
   function press(i: number) {
     /* THE SECOND PRESS ENTERS — his ruling, 2026-09-22: "In the main page, pressing twice on a mode
        should enter it."
@@ -601,6 +622,16 @@ export function FrontDoor({
 
   return (
     <div className="fd">
+      {friends ? (
+        <Ask
+          label="Friends"
+          text="Playing your friends online is coming. Until then, send them the game - you can play one another on one screen in Vs friend and 1v1 bid."
+          yes="Send an invite link"
+          no="Close"
+          onYes={invite}
+          onClose={() => setFriends(false)}
+        />
+      ) : null}
       {/* ---------- the rail across the top ---------- */}
       <div className="fd-rail">
         <span className="fd-years">1980—2026</span>
@@ -678,6 +709,14 @@ export function FrontDoor({
             </button>
           ) : null}
         </span>
+        <button className={`fd-friend${invited ? ' sent' : ''}`} onClick={() => setFriends(true)} aria-label="Friends" title={invited ? 'Invite link ready' : 'Friends'}>
+          {/* a head and shoulders with a plus: the same hand the map's and the card door's icons are drawn in */}
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="9" cy="8" r="3.4" />
+            <path d="M2.8 20c.6-3.6 3.2-5.6 6.2-5.6s5.6 2 6.2 5.6" />
+            {invited ? <path d="M16.5 11.5l2 2 3.5-4" /> : <path d="M19 7.5v6M16 10.5h6" />}
+          </svg>
+        </button>
         {/* the wrap point on a phone: everything above this runs on line one, everything below it on
             line two. Display:none above 640px, where the row is the single line the design draws. */}
         <span className="fd-idbr" aria-hidden />

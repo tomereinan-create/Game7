@@ -9910,3 +9910,29 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 @media (min-width: 1600px) {
   .page-zoom.hotseat { zoom: var(--desk-zoom-lite); max-width: none; }
 }
+
+/* THE GAME 7 INTRO (his ruling, 2026-10-19: "Have a special game 7 animation ... An animation that
+   shown when you get to game 7"). The moments session's clip, full-window over everything, the
+   dock included: it has no door, because Game 7 has none. It hands over to the tape when it ends. */
+.g7-intro { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: #000; }
+.g7-intro video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* THE FRIEND DOOR on the front door (his ruling, 2026-10-19: "Add a friend icon somewhere in the
+   app for adding friends"): a square key beside the mode chips, in their frame and their ink. */
+.fd-friend {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: calc(var(--fd-u) * 0.5);
+  border: 1px solid var(--line-3);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+.fd-friend svg { width: clamp(20px, calc(var(--fd-u) * 1.05), 44px); height: auto; }
+.fd-friend:hover { color: var(--you); border-color: var(--you-line, var(--you)); }
+.fd-friend.sent { color: var(--you); }
+.fd-friend:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 639px) { .fd-friend { order: 1; } }

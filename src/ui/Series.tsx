@@ -88,6 +88,8 @@ const writeSpeed = (v: number) => {
   }
 }
 type Tape = ReturnType<typeof buildTicker>
+/** Where the Game 7 intro clip lives, if the moments session has made it. */
+const INTRO = 'moments/game7-intro.mp4'
 
 interface StatRow {
   label: string
@@ -440,6 +442,45 @@ export function Series({
    */
   const resultBox = useRef<HTMLDivElement | null>(null)
 
+  /**
+   * THE GAME 7 INTRO CLIP: public/moments/game7-intro.mp4, made by the moments session. Looked for
+   * once; a dev server answers a missing file with the app's own page, so only a video counts.
+   * Absent, unreachable, or on a machine that asked for less motion, the decider goes straight to
+   * the tape as it always has.
+   */
+  const intro = useRef<'unknown' | 'ready' | 'none'>('unknown')
+  const [introOn, setIntroOn] = useState(false)
+  useEffect(() => {
+    if (!decider || reduceMotion() || typeof fetch !== 'function') {
+      intro.current = 'none'
+      return
+    }
+    let live = true
+    fetch(`${import.meta.env.BASE_URL}${INTRO}`, { method: 'HEAD' })
+      .then((r) => {
+        if (live) intro.current = r.ok && (r.headers.get('content-type') ?? '').startsWith('video') ? 'ready' : 'none'
+      })
+      .catch(() => {
+        if (live) intro.current = 'none'
+      })
+    return () => {
+      live = false
+    }
+  }, [decider])
+  /** The clip is over (or would not play): the decider tips off. */
+  const introDone = () => {
+    if (!introOn) return
+    setIntroOn(false)
+    clutch.current = false
+    setI(0)
+    setOnAir(6)
+  }
+  // a clip that stalls must not hold the decider hostage
+  useEffect(() => {
+    if (!introOn) return
+    const t = window.setTimeout(introDone, 15000)
+    return () => window.clearTimeout(t)
+  })
   /** Latched the first time the last five minutes are inside five points; see `CLUTCH_MS`. */
   const clutch = useRef(false)
   useEffect(() => {
@@ -470,14 +511,19 @@ export function Series({
     if (onAir !== null) played.current.add(onAir)
     setOnAir(null)
   }
-  /** The whole series, settled now. */
+  /**
+   * The whole series, settled now - UP TO GAME 7, WHICH CANNOT BE SKIPPED (his ruling, 2026-10-19:
+   * "You can never skip game7, only sim."). Skipping from anywhere before the decider lands the
+   * six and goes straight to it; the decider's tape has no skip door at all, and plays out.
+   */
   const skipAll = () => {
     if (timer.current) window.clearTimeout(timer.current)
     if (reveal.current) window.clearTimeout(reveal.current)
     skippedAll.current = true
-    if (onAir !== null) played.current.add(onAir)
+    if (onAir !== null && onAir !== 6) played.current.add(onAir)
+    if (onAir === 6) return
     setOnAir(null)
-    setShown(result.games.length)
+    setShown(decider && !played.current.has(6) ? 6 : result.games.length)
   }
 
   const done = onAir === null
@@ -498,11 +544,17 @@ export function Series({
   useEffect(() => {
     if (onAir !== null || shown >= result.games.length) return
     const n = shown
-    const wantsTape = !played.current.has(n) && !skippedAll.current && (n === 6 || SPEEDS[speed].game !== null)
+    const wantsTape = !played.current.has(n) && (n === 6 || (!skippedAll.current && SPEEDS[speed].game !== null))
     if (wantsTape) {
       const go = () => {
         clutch.current = false
         setI(0)
+        // THE GAME 7 INTRO (his ruling, 2026-10-19: "Have a special game 7 animation ... shown when
+        // you get to game 7"): when the clip exists, it plays first and hands over to the tape
+        if (n === 6 && intro.current === 'ready') {
+          setIntroOn(true)
+          return
+        }
         setOnAir(n)
       }
       // the decider at the top stop follows its sixth chip at once, as it always has
@@ -970,6 +1022,11 @@ export function Series({
           bottom padding was written for a ONE-ROW dock and this one is two. It does not any more:
           App.tsx measures whatever dock is standing into `--dock`, and every bottom padding is
           calc'd off that — so the tall shape simply reports its own height and the floor follows. */}
+      {introOn ? (
+        <div className="g7-intro" aria-label="Game 7">
+          <video src={`${import.meta.env.BASE_URL}${INTRO}`} autoPlay muted playsInline onEnded={introDone} onError={introDone} />
+        </div>
+      ) : null}
       <div className="dock">
         {!done || !settled ? (
           /* The ways on are not offered until the series has one - a NEXT LEVEL under a 2-1 strip
@@ -977,7 +1034,7 @@ export function Series({
              a second door: off this game and on to the next, without giving up the rest. */
           <div className="dock-inner stack">
             {speedBar}
-            {!done && onAir !== null && onAir < 6 ? (
+            {onAir === 6 || introOn ? null : !done && onAir !== null ? (
               <div className="dock-row">
                 <button className="btn ghost" onClick={skipGame}>
                   Skip game

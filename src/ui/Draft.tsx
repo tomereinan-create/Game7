@@ -421,20 +421,12 @@ export function Draft({
   /** Whether the coaching tips are being read (his ruling: "Move Coaching tips to information button"). */
   const [tipsOpen, setTipsOpen] = useState(false)
   /**
-   * A DESK OR A PHONE — his ruling, 2026-10-01 (a screenshot of the five-in screen at 3840 wide:
-   * one narrow column in the middle of the desk, the staff bar's two doors over an empty card):
-   * "Make the jumbotron bigger and the playbook next to it. Make the matchup inside the
-   * playbook." From 1150px up the five-in screen is two pieces side by side — the jumbotron, and
-   * the playbook as a standing card with the matchup board inside it — and the doors that opened
-   * them as sheets are not drawn. Under 1150 nothing changes: the doors and their sheets stay.
+   * THE PLAYBOOK IS A SCREEN OF ITS OWN, ON EVERY WINDOW — his ruling, 2026-10-19: "The playbook
+   * should be in a different screen (All modes)." It stood beside the jumbotron on a desk from
+   * 2026-10-01 ("Make the jumbotron bigger and the playbook next to it"); that column is gone, and
+   * the five-in screen carries the same two doors a phone always had — PLAYBOOK and MATCHUP
+   * BOARD — each opening its full-screen sheet.
    */
-  const [desk, setDesk] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1150px)').matches)
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1150px)')
-    const on = () => setDesk(mq.matches)
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
-  }, [])
   const has = (id: NodeId) => owned(wallet, id)
   // Per-draft allowances: an owned Front-office node is one use every draft.
   const [used, setUsed] = useState<Partial<Record<NodeId, number>>>({})
@@ -1548,7 +1540,7 @@ export function Draft({
           money ran out of the bottom of every row and printed over the name under it. A row's
           height is one number in the stylesheet and only this screen knows whether the money is
           on, so this is how the stylesheet is told — see `--drow`. */}
-      <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}${full && !display && desk && (canCallPlan || has('coach_manual')) ? ' has-plan' : ''}`}>
+      <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
           man is in — and the moment he is, the thing to look at is the two teams facing, not the
@@ -1943,7 +1935,7 @@ export function Draft({
           </div>
         </div>
       ) : null}
-      {full && !desk && (has('coach_manual') || canCallPlan) ? (
+      {full && (has('coach_manual') || canCallPlan) ? (
         <div className="card staffbar">
           {has('coach_manual') ? (
             <button className="sortb on" onClick={() => setBoardOpen(true)}>
@@ -2292,55 +2284,6 @@ export function Draft({
         </div>
       ) : null}
       </section>
-      {/* THE PLAYBOOK BESIDE THE JUMBOTRON, WITH THE BOARD INSIDE IT (his ruling, 2026-10-01). A desk
-          only, the five in: the same calls the sheet carries, standing in a card of their own with
-          an OFFENSE/DEFENSE switch in its head, and the matchup board as its last section. The two
-          sheets above still exist for the phone, where this column is not drawn. */}
-      {full && !display && desk && (canCallPlan || has('coach_manual')) ? (
-        <section className="col d plan">
-          <div className="card playcard">
-            <div className="card-head">
-              <span className="label">{canCallPlan ? 'Playbook' : 'Matchup board'}</span>
-              {canCallPlan ? (
-                <span className="side-switch" role="group" aria-label="Which side of the ball">
-                  <button className={`sortb ${planSide === 'off' ? 'on' : ''}`} onClick={() => setPlanSide('off')}>
-                    Offense
-                  </button>
-                  <button className={`sortb ${planSide === 'def' ? 'on' : ''}`} onClick={() => setPlanSide('def')}>
-                    Defense
-                  </button>
-                </span>
-              ) : null}
-            </div>
-            {canCallPlan ? (
-              <>
-                <div className="cap playworth">{user || planWorth === null ? 'your plan' : worthLine(planWorth)}</div>
-                <div className="playcalls standing">
-                  <TacticsCalls
-                    tactics={called ?? tactics!}
-                    playbook={playbookRank(wallet)}
-                    five={five}
-                    theirs={opponent.players}
-                    side={planSide}
-                    onTactics={onTactics!}
-                  />
-                </div>
-              </>
-            ) : null}
-            {has('coach_manual') ? (
-              <Matchups
-                inline
-                mine={five}
-                theirs={opponent.players}
-                map={board ?? naiveAssignment(five, opponent.players)}
-                onChange={setBoard}
-                onBack={() => {}}
-                canSolve={rank(wallet, 'coach_manual') >= 2}
-              />
-            ) : null}
-          </div>
-        </section>
-      ) : null}
       </div>
 
       {askSim ? (
