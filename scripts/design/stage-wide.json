@@ -1,0 +1,19 @@
+{
+  "aspect_ratio": "2:1",
+  "model": "grok",
+  "resolution": "2k",
+  "style": "An EMPTY ROOM: a background plate for a game screen, with no interface in it at all - no panels, no plaques, no cards, no buttons, no bars, no icons, no clock, no words, no letters, no numbers anywhere. Photoreal, dark and cinematic, with atmosphere (haze, floor light, depth). No watermark, no caption.",
+  "moments": [
+    {
+      "slug": "home-stage-wide",
+      "title": "Home stage, wide: eight banners, no beam",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-stage-8.jpg"
+      ],
+      "prompt": "Repaint the reference image into this WIDER frame, keeping everything in it exactly as it is - the arena, the rafters, the eight hanging pennants with their words and numerals in the same order (GAME 7, 2 SALARY CAP, 3 DEATH MATCH, 1 CAMPAIGN, 4 CUSTOM, 5 VS FRIEND, 6 1V1 BID, blank), the small fixture above each, the unlit floor with its orange ball mark. The extra width on both sides is more of the arena: the curving stands and rafters continuing left and right. The row of pennants keeps its size and stays over the left and centre, so the right side of the wider picture is pure arena with nothing hanging in it. No single beam, no new text."
+    }
+  ]
+}
