@@ -24,6 +24,28 @@
       ],
       "tier": "screen",
       "era": ""
+    },
+    {
+      "slug": "auction-room",
+      "title": "Auction room plate",
+      "look": "",
+      "prompt": "Repaint the reference image keeping its composition, camera, lighting, colours and materials exactly. Change only this: empty the room of every piece of interface, so it is the auction house alone - the dark wood panelling, the chandelier, the single spotlight beam falling on the centre of the red carpet, the two leather club chairs low left and right, the velvet rope, the cigar haze. The rostrum, the lectern, the player card, the gavel, the brass plates, the paddles, the hooks, the rings and every word and number are gone, and the centre of the floor is open and empty under the light. A clean background plate with no text anywhere.",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/auction-concept.jpg"
+      ],
+      "tier": "screen",
+      "era": ""
+    },
+    {
+      "slug": "versus-gym",
+      "title": "Versus gym plate",
+      "look": "",
+      "prompt": "Repaint the reference image keeping its composition, camera, lighting, colours and materials exactly. Change only this: empty the gym of every piece of interface, so it is the room alone - the hardwood court in perspective reflecting the two coloured lights, the far hoop under haze, the blue-lit locker wall on the left and the red-lit locker wall on the right, the empty benches. The card table, the player cards, the scoreboard strip, the hanging sign, the rings, the hooks and every word and number are gone, and the middle of the floor is open and empty. A clean background plate with no text anywhere.",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/versus-concept.jpg"
+      ],
+      "tier": "screen",
+      "era": ""
     }
   ]
 }
