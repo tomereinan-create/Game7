@@ -125,6 +125,23 @@ const MODELS = {
     batch: false,
     body: (m) => ({ prompt: `${m.prompt} ${m.look ? m.look + " " : ""}${STYLE}`, aspect_ratio: sheet.aspect_ratio || '3:4', rendering_speed: 'QUALITY' }),
   },
+  /**
+   * GROK IMAGINE VIDEO 1.5 (checked against docs.higgsfield.ai, 2026-10-19): a clip of 1..15 s from a
+   * text prompt, with either ONE first frame (`image_url`, up to 1080p) or up to seven reference
+   * images (`image_urls`, 480p/720p only). A moment names which with `first` (true = the first ref is
+   * the first frame) and its length with `duration`. The reply carries `video.url`; the file is .mp4.
+   */
+  grokvideo: {
+    path: 'xai/grok-imagine-video/v1.5/reference-to-video',
+    batch: false,
+    body: (m) => {
+      const b = { prompt: `${m.prompt} ${m.look ? m.look + ' ' : ''}${STYLE}`, duration: m.duration || 5, aspect_ratio: sheet.aspect_ratio || '16:9' }
+      if (m.first && m.refs?.length) { b.image_url = m.refs[0]; b.resolution = sheet.resolution || '1080p' }
+      else if (m.refs?.length) { b.image_urls = m.refs.slice(0, 7); b.resolution = sheet.resolution === '480p' ? '480p' : '720p' }
+      else b.resolution = sheet.resolution || '1080p'
+      return b
+    },
+  },
   /** takes up to ten public reference URLs in `refs` on the moment - the real photograph, for composition */
   grok: {
     path: 'xai/grok-imagine-image-2.0',
@@ -181,6 +198,7 @@ async function poll(statusUrl, slug) {
 /** the picture's own extension — the API hands back a URL, and its type decides the name */
 const extOf = (url, type) => {
   const t = (type || '').toLowerCase()
+  if (t.includes('mp4') || t.includes('video')) return 'mp4'
   if (t.includes('png')) return 'png'
   if (t.includes('webp')) return 'webp'
   if (t.includes('jpeg') || t.includes('jpg')) return 'jpg'
@@ -215,7 +233,8 @@ async function one(m, manifest) {
     return
   }
   const done = good[0]
-  const urls = good.flatMap((d) => (d.images ?? []).map((i) => i.url)).filter(Boolean)
+  const urlsOf = (d) => (d.video?.url ? [d.video.url] : (d.images ?? []).map((i) => i.url))
+  const urls = good.flatMap(urlsOf).filter(Boolean)
   if (N > 1 || !PLACE) {
     const dir = path.join(CAND, m.slug)
     await mkdir(dir, { recursive: true })
@@ -225,7 +244,7 @@ async function one(m, manifest) {
     const existing = (await import('node:fs/promises')).readdir(dir).then((l) => l.filter((f) => f.startsWith(MODEL_KEY + '-')).length)
     const base = await existing
     for (const [k, d] of dones.entries()) {
-      const url = d.images?.[0]?.url
+      const url = urlsOf(d)[0]
       if (!url) continue
       const { ext, bytes } = await download(url)
       await writeFile(path.join(dir, `${MODEL_KEY}-${base + k + 1}.${ext}`), bytes)

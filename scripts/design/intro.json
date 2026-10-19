@@ -1,0 +1,20 @@
+{
+  "aspect_ratio": "16:9",
+  "resolution": "720p",
+  "model": "grokvideo",
+  "style": "Cinematic, dark and monumental, painterly like the reference murals, smooth slow camera, film grain, volumetric light. No text of any kind, no logos, no numbers, no scoreboard, no watermark, no identifiable faces - every figure in silhouette, turned away, or lost in the light.",
+  "moments": [
+    { "slug": "game7-intro", "title": "Game 7", "tier": "screen", "era": "",
+      "duration": 6,
+      "first": false,
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/the-last-shot.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/the-block.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/the-dunk-of-death.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/the-skyhook.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/the-bounce.jpg"
+      ],
+      "look": "",
+      "prompt": "A six-second cinematic intro for a Game 7. The camera glides slowly forward through a vast dark arena at night, empty seats lost in haze, a single shaft of light on the far basket. As it moves, the painted iconic moments from the reference images appear one after another as huge murals hanging in the dark on either side of the camera's path - the shooter's follow-through, the hand pinning the ball to the glass, the leap over the giant, the hook shot releasing the sun, the ball resting on the rim - each one lighting up as the camera passes and falling back into shadow behind. Embers drift. In the last second the camera reaches the basket, the light swells to a white burst, and the frame goes to black. No text appears at any point." }
+  ]
+}
