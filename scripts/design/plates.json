@@ -58,6 +58,18 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-stage-1.jpg"
       ],
       "prompt": "Repaint the reference image keeping everything exactly - the arena, the lights, the beam, the haze, the stands, the floor with its ball mark, and the six banners with their numerals and labels. Change only this: the whole row of six banners is moved to the LEFT, so that it hangs over the left half of the picture - the first banner (2 SALARY CAP) close to the left edge and the last banner (6 1V1 BID) ending to the left of the beam, before the centre of the picture; the six evenly spaced, at the same height as now, the same size. The right half of the picture is left as pure arena with nothing hanging in it. No other change, no new text."
+    },
+    {
+      "slug": "home-stage-8",
+      "title": "Home stage: eight banners, no beam",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/screens/home-arena.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/pennant-style.jpg"
+      ],
+      "prompt": "The FIRST image is the scene: keep it exactly - the empty arena at night, the rafter lights, the haze, the dark stands, the polished floor with its orange ball mark. Change only this. (a) The single beam of light falling on the centre of the court is GONE: no spotlight is lit, the arena sits in its ambient glow, the floor still faintly reflecting the rafter lights. (b) EIGHT banners hang from the rafters in one row over the left two thirds of the picture, from near the left edge to just past the centre, evenly spaced, all at the same height with their tops just under the rafters. They are tall pennants in the style of the SECOND image: dark navy cloth, about twice as tall as wide, a thin gold trim inside an orange edge, a short gold fringe hanging from the pointed bottom, a small gold star above the numeral - decorated but restrained. Left to right: the first banner carries the words GAME 7 with an orange basketball bearing a 7 above them and the years 1980 - 2026 small under them; then six banners each with one big bold white numeral and a short white label under it: 2 SALARY CAP, 3 DEATH MATCH, 1 CAMPAIGN, 4 CUSTOM, 5 VS FRIEND, 6 1V1 BID; the eighth banner is blank navy cloth with the same trim and fringe and nothing written on it. (c) Above each of the eight banners, a small unlit spotlight fixture hangs from the rafters. The right third of the picture stays pure arena with nothing hanging in it. No other text anywhere."
     }
   ]
 }
