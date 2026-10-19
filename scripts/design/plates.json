@@ -1,0 +1,30 @@
+{
+  "aspect_ratio": "16:9",
+  "model": "grok",
+  "resolution": "2k",
+  "style": "An EMPTY ROOM: a background plate for a game screen, with no interface in it at all - no panels, no plaques, no cards, no buttons, no bars, no icons, no clock, no words, no letters, no numbers anywhere. Photoreal, dark and cinematic, with atmosphere (haze, floor light, depth). No watermark, no caption.",
+  "moments": [
+    {
+      "slug": "auction-room",
+      "title": "Auction room plate",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/auction-room-pick.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, camera, lighting, colours and materials exactly. Change only this: remove the two framed plaques from the walls, the bar across the top, the round icon in the corner and the two buttons at the bottom, and paint the wood panelling, carpet and floor that were behind them. Everything else stays: the chandelier, the spotlight beam, the two leather club chairs, the brass posts and the red velvet rope, the haze, the red carpet. An empty auction room with no text anywhere."
+    },
+    {
+      "slug": "versus-gym",
+      "title": "Versus gym plate",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/versus-gym-pick.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, camera, lighting, colours and materials exactly. Change only this: remove the two glowing roster panels left and right, the title and clock at the top and the bar at the bottom, and paint the gym that was behind them - the dark walls, the lockers with hooks, the benches, the hardwood floor with its reflections. Everything else stays: the court in perspective, the hoop, the blue neon on the left and the red neon on the right, the haze. An empty gym with no text anywhere."
+    }
+  ]
+}
