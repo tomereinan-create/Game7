@@ -55,10 +55,9 @@
       "tier": "screen",
       "era": "",
       "refs": [
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/screens/home-arena.jpg",
-        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-rafters-concept.jpg"
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-stage-1.jpg"
       ],
-      "prompt": "The FIRST image is the scene: keep it exactly - the empty arena, the rafter lights, the one beam on centre court, the haze, the stands, the floor with its orange ball mark. Change only this: SIX banners now hang from the rafters in a row over the left half of the picture, in the style of the banners in the SECOND image - tall dark navy pennants with a thin orange edge and a pointed bottom, each with one big bold white numeral and a short white label under it. Left to right: 2 SALARY CAP, 3 DEATH MATCH, 1 CAMPAIGN, 4 CUSTOM, 5 VS FRIEND, 6 1V1 BID, evenly spaced, all six hanging at the same height with their tops just under the rafters, all six lit the same (none singled out), the beam passing between them to the floor. The right half of the picture stays as it is in the first image: arena only, nothing drawn on it. No panel, no text anywhere except the six banners."
+      "prompt": "Repaint the reference image keeping everything exactly - the arena, the lights, the beam, the haze, the stands, the floor with its ball mark, and the six banners with their numerals and labels. Change only this: the whole row of six banners is moved to the LEFT, so that it hangs over the left half of the picture - the first banner (2 SALARY CAP) close to the left edge and the last banner (6 1V1 BID) ending to the left of the beam, before the centre of the picture; the six evenly spaced, at the same height as now, the same size. The right half of the picture is left as pure arena with nothing hanging in it. No other change, no new text."
     }
   ]
 }
