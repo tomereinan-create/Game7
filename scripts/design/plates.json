@@ -47,6 +47,18 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-rafters-concept.jpg"
       ],
       "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty the arena of every piece of interface, so it is the arena interior alone at night - the rafter spotlights, one warm beam falling on the centre of the court, haze in the light, dark empty stands rising on every side, the polished hardwood floor filling the lower half of the frame with the hoop at the far end and the centre circle in the foreground carrying an orange basketball mark. The banners, the panel, the exit signs, every word, number and logo are gone. An empty arena with no text anywhere."
+    },
+    {
+      "slug": "home-stage",
+      "title": "Home stage: the arena with its six banners",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/screens/home-arena.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-rafters-concept.jpg"
+      ],
+      "prompt": "The FIRST image is the scene: keep it exactly - the empty arena, the rafter lights, the one beam on centre court, the haze, the stands, the floor with its orange ball mark. Change only this: SIX banners now hang from the rafters in a row over the left half of the picture, in the style of the banners in the SECOND image - tall dark navy pennants with a thin orange edge and a pointed bottom, each with one big bold white numeral and a short white label under it. Left to right: 2 SALARY CAP, 3 DEATH MATCH, 1 CAMPAIGN, 4 CUSTOM, 5 VS FRIEND, 6 1V1 BID, evenly spaced, all six hanging at the same height with their tops just under the rafters, all six lit the same (none singled out), the beam passing between them to the floor. The right half of the picture stays as it is in the first image: arena only, nothing drawn on it. No panel, no text anywhere except the six banners."
     }
   ]
 }
