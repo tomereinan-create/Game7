@@ -10522,3 +10522,42 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   }
   .fd.arena .fd-bookrow:hover::after { color: #ff6a5a; }
 }
+
+/* =====================================================================================
+   THE ARENA, AS PAINTED - his ruling, 2026-10-19, with the build beside the Grok concept: "These
+   are 2 different photos. I want the one gronk created." The painting is halves: the arena and
+   its banners on the LEFT half, the read as a slab on the RIGHT half, the club's badge between
+   them, the tunnel doors along the bottom. The band's panel used to take its width from the band's
+   HEIGHT (29:20), so on his 3,840-wide desk it came out as 40% and the read swallowed the arena,
+   the badge landing on the title. Here the halves are halves at every desk width, the banners
+   hang high under the rail, and the plate is let through brighter, as the painting lights it.
+   ===================================================================================== */
+@media (min-width: 900px) {
+  .fd.arena .fd-panel { flex: 0 0 50%; width: 50%; aspect-ratio: auto; }
+  .fd.arena .fd-court { width: 100%; height: 100%; aspect-ratio: auto; }
+  /* the painting's arena is lit: the darkening the fallback room needed comes off the plate */
+  .fd.arena {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.14)),
+      var(--plate, none),
+      linear-gradient(180deg, #05070b 0 58%, #2a1a0e 58%, #4a2c15 80%, #1d120a 100%);
+  }
+  /* the banners hang high, under the rail, the Campaign in the beam's centre at 43% */
+  .fd.arena .fd-mark { top: 24% !important; }
+  .fd.arena .fd-mark:nth-child(2) { left: 11% !important; }
+  .fd.arena .fd-mark:nth-child(3) { left: 25% !important; }
+  .fd.arena .fd-mark:nth-child(1) { left: 43% !important; }
+  .fd.arena .fd-mark:nth-child(4) { left: 61% !important; }
+  .fd.arena .fd-mark:nth-child(5) { left: 73.5% !important; }
+  .fd.arena .fd-mark:nth-child(6) { left: 85.5% !important; }
+  .fd.arena .fd-plate { width: clamp(70px, 8.6cqw, 240px); min-height: clamp(120px, 14cqw, 380px); }
+  /* the club's badge: beside the last banner, level with their tops, as painted */
+  .fd.arena .fd-badge { top: 5% !important; right: 1.2% !important; }
+  /* the read: a slab on the right half that stands as tall as its words, not the whole band */
+  .fd.arena .fd-read {
+    flex: 1 1 auto;
+    align-self: flex-start;
+    max-height: calc(100% - clamp(28px, 6vh, 120px));
+    margin: clamp(14px, 3vh, 60px) clamp(16px, 2vw, 70px) clamp(14px, 3vh, 60px) clamp(10px, 1.2vw, 40px);
+  }
+}
