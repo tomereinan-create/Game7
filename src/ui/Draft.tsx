@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
 import { CAP_LIMIT, CAP_RESERVE, DRAFT_SIZE, SIGMA } from '../config'
@@ -1540,6 +1540,10 @@ export function Draft({
           money ran out of the bottom of every row and printed over the name under it. A row's
           height is one number in the stylesheet and only this screen knows whether the money is
           on, so this is how the stylesheet is told — see `--drow`. */}
+      {/* THE WAR ROOM (his ruling, 2026-10-19, on the moments session's Grok concept): the room
+          behind the board. The plate is the room alone; the stylesheet draws it until it is
+          painted (see `.room-plate.wr`). A desk only. */}
+      <div className="room-plate wr" aria-hidden style={{ '--plate': `url(${import.meta.env.BASE_URL}moments/screens/war-room.jpg)` } as CSSProperties} />
       <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth

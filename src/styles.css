@@ -10070,3 +10070,307 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .hs-vs .hs-stage .pool > .row.st.on { border-color: rgba(90, 160, 255, 0.8); box-shadow: 0 0 18px rgba(47, 123, 255, 0.45); background: linear-gradient(#0f2142, #0a142a); }
   .hs-vs .hs-stage .pool > .row.st.on2 { border-color: rgba(255, 90, 90, 0.8); box-shadow: 0 0 18px rgba(255, 52, 52, 0.42); background: linear-gradient(#3a1012, #220a0b); }
 }
+
+/* =====================================================================================
+   THE DRAFT AS A SCOUTING WAR ROOM — his ruling, 2026-10-19, on the moments session's Grok
+   concept (scripts/design/candidates/draft/grok-1.png): "Your concept is great, the issue is that
+   I cant put images of players." So the room is built as painted, with no photograph anywhere:
+     LEFT    the opponent pinned to a chalk wall - the court in chalk, the five men as pinned
+             cards with their initials, their stat lines on a clipped paper sheet;
+     CENTRE  a brass-and-walnut slot machine - the team and year reels lit from inside, brass
+             HOLD tabs, a lever - with the landed team on its brass nameplate and the roster as
+             scouting dossiers, a numbered tab, the name, the role stamped in red, three numbers;
+     RIGHT   my court glowing on a light table, the empty rings as soft spotlights, the five
+             chairs as paper name tags;
+     FOOT    the key as a brass plate along the table edge.
+   A desk only (900px and up); a phone keeps its column. The room behind is `.room-plate.wr`,
+   drawn here until the moments session paints public/moments/screens/war-room.jpg.
+   ===================================================================================== */
+.room-plate.wr {
+  background-color: #0d0907;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)),
+    var(--plate, none),
+    radial-gradient(ellipse 40% 34% at 50% 0%, rgba(255, 214, 150, 0.2), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.8) 100%),
+    linear-gradient(180deg, #120d0a 0 70%, #2b1a0f 70%, #3b2414 84%, #1d120a 100%);
+}
+@media (max-width: 899px) { .room-plate.wr { display: none; } }
+
+@media (min-width: 900px) {
+  /* the skins the ladder's blocks paint on the draft give way to the room */
+  body:has(.room-plate.wr) { background: #0d0907; }
+
+  /* ---------- LEFT: the chalk wall ---------- */
+  .draft .col.a > .card {
+    background:
+      radial-gradient(ellipse 60% 40% at 30% 20%, rgba(255, 255, 255, 0.05), transparent 70%),
+      radial-gradient(ellipse 50% 30% at 70% 70%, rgba(255, 255, 255, 0.035), transparent 70%),
+      linear-gradient(#1d2421, #161b19);
+    border: 10px solid #4a301b;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 50px rgba(0, 0, 0, 0.55), 0 24px 50px rgba(0, 0, 0, 0.6);
+  }
+  .draft .col.a .card-head .label, .draft .col.a .card-head .cap, .draft .col.a .opp-line { color: rgba(238, 236, 228, 0.82); }
+  .draft .col.a .opp-name { color: #f1efe7; text-shadow: 0 0 1px rgba(255, 255, 255, 0.5), 0 0 8px rgba(255, 255, 255, 0.08); }
+  .draft .col.a .court { background: transparent; --wash: rgba(255, 255, 255, 0.02); --line: rgba(238, 236, 228, 0.5); --line-2: rgba(238, 236, 228, 0.35); --line-3: rgba(238, 236, 228, 0.35); }
+  .draft .col.a .court .ct-call { color: rgba(238, 236, 228, 0.85); }
+  /* the five men, pinned: a paper card with the initials in pencil, a red pin through the top */
+  .draft .col.a .court .ct-bust {
+    position: relative;
+    border-radius: 3px !important;
+    background: linear-gradient(#f3ebd8, #e4d8bd) !important;
+    border: 0 !important;
+    box-shadow: 0 7px 14px rgba(0, 0, 0, 0.55);
+    transform: rotate(var(--tilt, -3deg));
+  }
+  .draft .col.a .court .ct-spot:nth-of-type(2n) .ct-bust { --tilt: 3deg; }
+  .draft .col.a .court .ct-spot:nth-of-type(3n) .ct-bust { --tilt: -1deg; }
+  .draft .col.a .court .ct-bust::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 35% 35%, #ff9a7a, #b3261e 70%);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.55);
+  }
+  .draft .col.a .court .ct-init { color: #2a241c !important; font-family: var(--serif); }
+  .draft .col.a .court .ct-spot b { color: #f1efe7; background: none; text-shadow: 0 0 1px rgba(255, 255, 255, 0.45); letter-spacing: 0.06em; }
+  .draft .col.a .court .ct-spot i { color: rgba(238, 236, 228, 0.65); background: none; }
+  /* their stat lines on a clipped paper sheet */
+  .draft .col.a .rowhead.dr,
+  .draft .col.a .row.dr {
+    background: #ece3cd;
+    color: #2b251d;
+    margin-left: -6px;
+    margin-right: -6px;
+    padding-left: 14px;
+    padding-right: 10px;
+    width: calc(100% + 12px);
+    border-top: 1px solid rgba(60, 45, 30, 0.16);
+    font-family: 'Courier New', ui-monospace, monospace;
+  }
+  .draft .col.a .rowhead.dr { position: relative; margin-top: 18px; border-radius: 3px 3px 0 0; border-top: 0; }
+  .draft .col.a .rowhead.dr::before { content: ''; position: absolute; top: -12px; left: 50%; width: 64px; height: 18px; transform: translateX(-50%); border-radius: 4px 4px 2px 2px; background: linear-gradient(#d9d3c6, #8f8a80); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+  .draft .col.a .rowhead.dr span, .draft .col.a .rowhead .gcap { color: #6b5d48; }
+  .draft .col.a .row.dr .who b { color: #2b251d; font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; }
+  .draft .col.a .row.dr .who i { color: #74654e; }
+  .draft .col.a .row.dr .mini { color: #2b251d; font-family: 'Courier New', ui-monospace, monospace; }
+  .draft .col.a .row.dr .mini i { color: #9a8a70; }
+  .draft .col.a .row.dr .pinfo { color: #6b5d48; border-color: rgba(60, 45, 30, 0.2); }
+  .draft .col.a .oppmen, .draft .col.a .oppman-name, .draft .col.a .oppman-nums, .draft .col.a .oppmen-cap { color: rgba(238, 236, 228, 0.8); }
+
+  /* ---------- CENTRE: the slot machine ---------- */
+  .draft:not(.set) .col.b > .card {
+    position: relative;
+    background:
+      radial-gradient(ellipse 70% 30% at 50% 0%, rgba(255, 220, 160, 0.12), transparent 70%),
+      repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 9px),
+      linear-gradient(#45291a, #2c190e 55%, #1f120a);
+    border: 4px solid #8e6a32;
+    border-radius: 26px 26px 8px 8px;
+    box-shadow: inset 0 0 0 2px #d8b066, inset 0 0 40px rgba(0, 0, 0, 0.55), 0 30px 60px rgba(0, 0, 0, 0.65);
+  }
+  .draft:not(.set) .col.b > .card > .card-head {
+    background: linear-gradient(#1a110b, #0f0a06);
+    border: 2px solid #b68a42;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+  }
+  .draft:not(.set) .col.b > .card > .card-head .label { color: #e8c98a; }
+  .draft:not(.set) .col.b > .card > .card-head .cap { color: #cdb488; }
+  .draft:not(.set) .wheel-card .reels {
+    position: relative;
+    background: #120c07;
+    border: 3px solid #b68a42;
+    border-radius: 12px;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.85), 0 0 0 5px #24160c, 0 0 0 7px #8e6a32;
+    margin: 0 clamp(18px, 2vw, 44px);
+  }
+  /* the lever */
+  .draft:not(.set) .wheel-card .reels::after {
+    content: '';
+    position: absolute;
+    right: clamp(-44px, -2.2vw, -30px);
+    top: 8%;
+    width: 11px;
+    height: 70%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #7a5a2a, #e2c27a 50%, #7a5a2a);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  .draft:not(.set) .wheel-card .reels::before {
+    content: '';
+    position: absolute;
+    right: clamp(-50px, -2.5vw, -36px);
+    top: calc(8% - 12px);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #e46a52, #7d1410 75%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.55);
+  }
+  .draft:not(.set) .wheel-card .reel-win {
+    background: linear-gradient(#b9a37c, #f1e6cd 40%, #f6eedb 50%, #f1e6cd 60%, #b9a37c);
+    border-radius: 7px;
+    box-shadow: inset 0 10px 14px rgba(0, 0, 0, 0.5), inset 0 -10px 14px rgba(0, 0, 0, 0.5);
+  }
+  .draft:not(.set) .wheel-card .reel-row { color: #2b2016; }
+  /* the window the reels stop in, lit from inside */
+  .draft:not(.set) .wheel-card .reel-mark { background: rgba(255, 160, 70, 0.3); border-top: 2px solid #ff9a3c; border-bottom: 2px solid #ff9a3c; box-shadow: 0 0 14px rgba(255, 140, 60, 0.55), inset 0 0 12px rgba(255, 140, 60, 0.4); }
+  .draft:not(.set) .wheel-card .reel.set .reel-mark { background: rgba(255, 150, 60, 0.42); border-color: #ffae52; }
+  .draft:not(.set) .wheel-card .reel-arrow.l { border-left-color: #ff9a3c; }
+  .draft:not(.set) .wheel-card .reel-arrow.r { border-right-color: #ff9a3c; }
+  .draft:not(.set) .wheel-card .reel-cap { color: #cdb488; }
+  .draft:not(.set) .wheel-card .reel-hold { background: linear-gradient(#e2bf74, #a77d3a); color: #1b130b; border: 1px solid #5a4220; border-radius: 4px; }
+  .draft:not(.set) .wheel-card .reel-hold[aria-pressed='true'] { background: linear-gradient(#ffd27a, #e09a2a); box-shadow: 0 0 10px rgba(255, 190, 80, 0.6); }
+  /* the landed team on the machine's brass nameplate */
+  .draft:not(.set) .col.b .spin-team,
+  .draft:not(.set) .col.b .spin-sub {
+    background: linear-gradient(#1a110b, #0f0a06);
+    border: 2px solid #b68a42;
+    text-align: center;
+    margin-left: clamp(18px, 2vw, 44px);
+    margin-right: clamp(18px, 2vw, 44px);
+  }
+  .draft:not(.set) .col.b .spin-team { margin-top: 14px; border-bottom: 0; border-radius: 6px 6px 0 0; padding-top: 10px; color: #f0cf8e; letter-spacing: 0.06em; }
+  .draft:not(.set) .col.b .spin-sub { border-top: 0; border-radius: 0 0 6px 6px; padding-bottom: 10px; color: #dcc9a4; }
+  .draft:not(.set) .wheel-card > .cap.hint { color: #cdb488; text-align: center; }
+  /* between pulls: the machine at rest, its whisper and its narrowing chips in brass */
+  .draft:not(.set) .wheel-idle .spin-team.dim { opacity: 0.7; }
+  .draft:not(.set) .wheel-idle .whisper-roster, .draft:not(.set) .wheel-idle .widen-cap { color: #cdb488; text-align: center; }
+  .draft:not(.set) .wheel-idle .poschips { justify-content: center; }
+  .draft:not(.set) .wheel-idle .sortb { background: linear-gradient(#24160c, #170e07); border: 1px solid #8e6a32; color: #e8c98a; }
+  .draft:not(.set) .wheel-idle .sortb.on { background: linear-gradient(#e2bf74, #a77d3a); color: #1b130b; border-color: #5a4220; }
+  /* the roster as scouting dossiers on the table */
+  .draft:not(.set) .wheel-card .spin-roster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 18px 12px;
+    align-content: start;
+    padding: 18px 6px 10px;
+    counter-reset: dossier;
+  }
+  .draft:not(.set) .wheel-card .spin-roster > .rowhead { display: none; }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr {
+    counter-increment: dossier;
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) 26px;
+    grid-template-rows: auto auto;
+    row-gap: 10px;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    width: auto;
+    padding: 22px 10px 12px 14px;
+    border: 0;
+    border-radius: 3px;
+    background: linear-gradient(#f1e7d1, #e2d4b6);
+    color: #2a2218;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5);
+    transform: rotate(var(--lean, 0deg));
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  .draft:not(.set) .wheel-card .spin-roster > div:nth-child(odd) > .row.dr { --lean: -0.8deg; }
+  .draft:not(.set) .wheel-card .spin-roster > div:nth-child(3n) > .row.dr { --lean: 0.9deg; }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr:hover { transform: translateY(-3px) rotate(var(--lean, 0deg)); box-shadow: 0 16px 26px rgba(0, 0, 0, 0.55); }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr::before {
+    content: counter(dossier);
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1px 14px 2px;
+    border-radius: 3px 3px 0 0;
+    background: #c9a35c;
+    color: #2a2218;
+    font: 700 12px/1.3 'Courier New', ui-monospace, monospace;
+  }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .pname { grid-column: 1 / -1; }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .who b { color: #2a2218; font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; font-size: clamp(14px, 0.82vw, 24px); line-height: 1.15; white-space: normal; overflow: visible; text-overflow: clip; }
+  /* the role, stamped */
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .who i {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 6px;
+    border: 2px solid #b3261e;
+    border-radius: 2px;
+    color: #b3261e;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: clamp(9px, 0.5vw, 14px);
+    white-space: normal;
+    transform: rotate(-1.5deg);
+    opacity: 0.88;
+  }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .mini { grid-column: 1; justify-self: start; width: 140px; color: #2a2218; font-family: 'Courier New', ui-monospace, monospace; }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .mini i { color: #9a8a70; }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr .pinfo { grid-column: 2; grid-row: 2; color: #6b5d48; border-color: rgba(60, 45, 30, 0.2); }
+  .draft:not(.set) .wheel-card .spin-roster .row.dr.on { box-shadow: 0 0 0 3px var(--you), 0 14px 24px rgba(0, 0, 0, 0.55); }
+  .draft:not(.set) .wheel-card .spin-roster .pdetail { grid-column: 1 / -1; margin: 0; border-radius: 4px; }
+
+  /* ---------- RIGHT: the light table ---------- */
+  .draft:not(.set) .col.c > .card {
+    background: linear-gradient(#2c1c11, #1c120b);
+    border: 3px solid #6b4b25;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(216, 176, 102, 0.35), 0 24px 50px rgba(0, 0, 0, 0.6);
+  }
+  .draft:not(.set) .col.c > .card > .card-head { background: linear-gradient(#1a110b, #0f0a06); border: 2px solid #8e6a32; border-radius: 4px; padding: 8px 12px; }
+  .draft:not(.set) .col.c > .card > .card-head .label, .draft:not(.set) .col.c .opp-name { color: #f0e2c4; }
+  .draft:not(.set) .col.c .court {
+    --wash: transparent;
+    --line: rgba(255, 238, 208, 0.38);
+    border-radius: 6px;
+    background: radial-gradient(ellipse 70% 60% at 50% 45%, #3c4246, #1c2023 75%);
+    box-shadow: inset 0 0 50px rgba(255, 236, 200, 0.1), 0 0 0 6px #23160d, 0 0 34px rgba(255, 220, 150, 0.14);
+  }
+  /* an empty ring is a soft spotlight waiting for a man */
+  .draft:not(.set) .col.c .court .ct-spot.ct-open .ct-bust {
+    background: radial-gradient(circle, rgba(255, 238, 196, 0.32), rgba(255, 220, 150, 0.07) 62%, transparent 72%) !important;
+    border: 2px solid rgba(255, 232, 186, 0.75) !important;
+    box-shadow: 0 0 24px rgba(255, 214, 140, 0.45), inset 0 0 14px rgba(255, 236, 196, 0.3);
+  }
+  .draft:not(.set) .col.c .court .ct-init.ghost { color: #fff4dc; }
+  .draft:not(.set) .col.c .court .ct-spot i { color: #fff4dc; background: rgba(20, 16, 12, 0.7); }
+  /* the five chairs as paper name tags */
+  .draft:not(.set) .col.c .row.dr {
+    margin: 6px 0 0;
+    width: auto;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 3px;
+    background: linear-gradient(#efe5cf, #e1d3b5);
+    color: #2a2218;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+  }
+  .draft:not(.set) .col.c .row.dr .who b { color: #2a2218; font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; }
+  .draft:not(.set) .col.c .row.dr .who i { color: #74654e; }
+  .draft:not(.set) .col.c .row.dr .mini { color: #2a2218; font-family: 'Courier New', ui-monospace, monospace; }
+  .draft:not(.set) .col.c .row.dr.chair .who b { color: #6b5d48; font-weight: 400; }
+
+  /* the five in: the reading cards stand in the same room, walnut and brass */
+  .draft.set .col.c > .card {
+    background: linear-gradient(#24170e, #170f09);
+    border: 1px solid #6b4b25;
+    box-shadow: inset 0 0 0 1px rgba(216, 176, 102, 0.22), 0 18px 40px rgba(0, 0, 0, 0.55);
+  }
+  .draft.set .col.c > .card .card-head .label { color: #f0e2c4; }
+
+  /* ---------- FOOT: the brass plate ---------- */
+  body:has(.room-plate.wr) .dock .btn {
+    background: linear-gradient(180deg, #e2bf74, #b28741 52%, #8d662b);
+    color: #1b130b;
+    border: 1px solid #5a4220;
+    box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.65), inset 0 -2px 0 rgba(60, 40, 15, 0.4), 0 6px 0 #4a3517, 0 12px 26px rgba(0, 0, 0, 0.5);
+    font-family: var(--serif);
+    letter-spacing: 0.08em;
+  }
+  body:has(.room-plate.wr) .dock .btn:disabled { filter: saturate(0.4) brightness(0.72); }
+  body:has(.room-plate.wr) .dock { background: linear-gradient(to top, rgba(13, 9, 7, 0.92) 60%, rgba(13, 9, 7, 0)); }
+}
