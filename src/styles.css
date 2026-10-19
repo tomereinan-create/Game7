@@ -9986,7 +9986,6 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .hs-au .au-price { color: #f0c96c; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
 .hs-au .au-price.p2 { color: #ff6b62; }
 .hs-au .au-block .au-why { color: #e7d7b4; }
-.au-rope { display: none; }
 /* the keys are brass plaques */
 .hs-au:has(.hs-floor) .dock .btn {
   background: linear-gradient(180deg, #e2bf74, #b28741 52%, #8d662b);
@@ -10030,14 +10029,13 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .hs-au .hs-floor > .vs-head > .vs-mid { font-size: clamp(16px, 1.3vw, 30px); line-height: 1.25; padding: 4px 0 2px; }
   .hs-vs .hs-floor > .vs-head > .vs-mid { font-size: clamp(15px, 1.15vw, 28px); padding: 10px 26px; border: 2px solid #4d9bff; border-radius: 4px; box-shadow: 0 0 18px rgba(77, 155, 255, 0.6), inset 0 0 14px rgba(77, 155, 255, 0.35); text-shadow: 0 0 10px rgba(140, 190, 255, 0.9); }
   .hs-vs .hs-floor > .vs-head > .vs-mid br { display: none; }
-  /* the lectern, top to bottom: the card on it, the shape, the front plaque, the rope */
+  /* the lectern, top to bottom: the card on it, the shape, the front plaque - the painted room
+     (auction-room.jpg) carries the velvet rope in front of it */
   .hs-au .hs-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
   .hs-au .hs-stage > * { width: min(100%, 760px); }
   .hs-au .hs-stage > .au-man { order: 1; }
   .hs-au .hs-stage > .au-hex { order: 2; margin-top: -8px; }
   .hs-au .hs-stage > .au-block { order: 3; width: min(100%, 560px); }
-  .hs-au .hs-stage > .au-rope { order: 4; display: block; width: min(100%, 640px); height: clamp(48px, 4vw, 96px); margin-top: -10px; }
-  .hs-au .hs-stage > .au-rope svg { width: 100%; height: 100%; display: block; }
   .hs-au .hs-stage > .au-actions { order: 5; }
   .hs-au .hs-stage > .card { order: 6; }
   .hs-au .hs-floor > .vs-head > .vs-side { text-align: center; }

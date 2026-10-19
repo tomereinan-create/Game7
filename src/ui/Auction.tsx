@@ -516,18 +516,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
             <i className="au-arch">{archetype(man)}</i>
             <DetailGrid p={man} mode="stats" />
           </div>
-          {/* the velvet rope in front of the lectern - the room's, drawn rather than painted, so it
-              stands in front of the plaque and behind nothing (desk only, see `.au-rope`) */}
-          <div className="au-rope" aria-hidden>
-            <svg viewBox="0 0 600 120" preserveAspectRatio="none">
-              <path d="M40 22 C 200 118, 400 118, 560 22" fill="none" stroke="#8e1b1b" strokeWidth="9" strokeLinecap="round" />
-              <path d="M40 22 C 200 118, 400 118, 560 22" fill="none" stroke="#c43a2c" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
-              <rect x="31" y="14" width="18" height="106" rx="4" fill="#9c7432" />
-              <rect x="551" y="14" width="18" height="106" rx="4" fill="#9c7432" />
-              <circle cx="40" cy="12" r="12" fill="#d8b066" />
-              <circle cx="560" cy="12" r="12" fill="#d8b066" />
-            </svg>
-          </div>
           {/* the lot's shape at a glance — ungated, same open book as the dials */}
           <div className="au-hex">
             <HeatHex men={[man]} size={110} ungated />
