@@ -1,0 +1,21 @@
+{
+  "aspect_ratio": "16:9",
+  "resolution": "1080p",
+  "model": "grokvideo",
+  "style": "Cinematic, dark and monumental, volumetric light, film grain, haze, embers. No new text, no logos, no emblems, no watermark, no identifiable faces - every figure in silhouette.",
+  "moments": [
+    {
+      "slug": "game7-title",
+      "title": "Game 7 title, animated",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "duration": 5,
+      "first": true,
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/game7-title-pick.jpg"
+      ],
+      "prompt": "Start exactly on the first frame and keep every element of it in place: the arena, the two painted murals, the basket, the shaft of light, and the huge GAME 7 marquee letters hanging over the court. Over five seconds the camera pushes in slowly and steadily towards the letters. The letters come alive: their inner light surges brighter in a slow pulse, hot white-gold, throwing light down onto the hardwood; embers rise and drift around them; the haze in the shaft of light moves gently. The letters never change shape, spelling or position - GAME 7 stays perfectly legible the whole time. No new text appears anywhere."
+    }
+  ]
+}
