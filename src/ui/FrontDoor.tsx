@@ -626,7 +626,7 @@ export function FrontDoor({
        session's Grok concept: a dark arena under the rafter lights, the six plays as banners
        hanging over the floor). `--plate` is the painted arena, public/moments/screens/home-arena.jpg;
        until it exists the stylesheet draws the room (see `.fd.arena`). A desk only. */
-    <div className="fd arena" style={{ '--plate': plateUrl('home-arena.jpg') } as CSSProperties}>
+    <div className="fd arena" style={{ '--plate': plateUrl('home-stage.jpg') } as CSSProperties}>
       {friends ? (
         <Ask
           label="Friends"
