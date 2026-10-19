@@ -36,6 +36,17 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-concept.jpg"
       ],
       "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty the room of everything that stands in it, so it is the scouting war room alone late at night - the single hanging lamp over the centre, the haze in its light, the dark plaster-and-wood walls, deep shadow at the edges, and the long oak table top running across the bottom third of the frame, bare. The chalkboard, the slot machine, the light table, every card, dossier, plate and word are gone. An empty room with no text anywhere."
+    },
+    {
+      "slug": "home-arena",
+      "title": "Home arena plate",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-rafters-concept.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty the arena of every piece of interface, so it is the arena interior alone at night - the rafter spotlights, one warm beam falling on the centre of the court, haze in the light, dark empty stands rising on every side, the polished hardwood floor filling the lower half of the frame with the hoop at the far end and the centre circle in the foreground carrying an orange basketball mark. The banners, the panel, the exit signs, every word, number and logo are gone. An empty arena with no text anywhere."
     }
   ]
 }
