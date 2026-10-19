@@ -25,6 +25,17 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/versus-gym-pick.jpg"
       ],
       "prompt": "Repaint the reference image keeping its composition, camera, lighting, colours and materials exactly. Change only this: remove the two glowing roster panels left and right, the title and clock at the top and the bar at the bottom, and paint the gym that was behind them - the dark walls, the lockers with hooks, the benches, the hardwood floor with its reflections. Everything else stays: the court in perspective, the hoop, the blue neon on the left and the red neon on the right, the haze. An empty gym with no text anywhere."
+    },
+    {
+      "slug": "war-room",
+      "title": "War room plate",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-concept.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty the room of everything that stands in it, so it is the scouting war room alone late at night - the single hanging lamp over the centre, the haze in its light, the dark plaster-and-wood walls, deep shadow at the edges, and the long oak table top running across the bottom third of the frame, bare. The chalkboard, the slot machine, the light table, every card, dossier, plate and word are gone. An empty room with no text anywhere."
     }
   ]
 }
