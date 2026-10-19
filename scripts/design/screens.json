@@ -1,0 +1,29 @@
+{
+  "aspect_ratio": "16:9",
+  "model": "grok",
+  "style": "A finished, polished game screen, designed by a top-tier game UI studio. The result must look like a real, buildable interface: a clear layout with aligned panels, consistent spacing, one type family, readable text, every element purposeful. Dark and cinematic, with atmosphere (smoke, floor light, depth) but never cluttered. No watermark, no caption, no credits.",
+  "moments": [
+    {
+      "slug": "versus",
+      "title": "Vs friend",
+      "look": "",
+      "prompt": "Redesign the game screen in the reference image. Keep its CONTENT and purpose exactly: a 'Player vs Friend' draft on one phone - two benches (Player 1 on the left, 'on the clock'; Player 2 on the right), each with a 'Load a real team' link and five position rings PG SG SF PF C, a 'snake order' marker between them, a draft board of twelve player cards (name, year, position, two ratings and a small bar chart each), and one wide action bar at the bottom reading 'Player 1 - pick 5 more'. Change the DESIGN: this is now a wide desk layout that fills the whole 16:9 frame instead of a narrow phone column on black. The two benches become two facing locker-room doors or two facing courtside benches, left and right, each lit in its own colour (cool blue for Player 1, hot red for Player 2), with the five rings drawn as five empty jersey hooks under each. The draft board sits between them as a long table of cards seen from slightly above, the twelve cards laid in two rows of six like a card game, each card a small player tile with its name and ratings. Behind everything a dark gym at night: a hardwood floor reflecting the two coloured lights, haze, a far hoop. The action bar runs along the bottom edge like a scoreboard strip. Text must be real, legible English exactly as listed.",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/versus-today.jpg"
+      ],
+      "tier": "screen",
+      "era": ""
+    },
+    {
+      "slug": "auction",
+      "title": "1v1 bid",
+      "look": "",
+      "prompt": "Redesign the game screen in the reference image. Keep its CONTENT and purpose exactly: a '1v1 Bid' auction - two chairs (Player 1 left, Player 2 right) each holding '$20' and '0/5 men' with five open rings PG SG SF PF C, an 'open outcry' marker between them, a central lot 'Lot 1 - on the block' showing one player card (Toni Kukoc '99, Point forward, O71 D61) with three small stat bars PLAY OUT REB, a line 'Player 1 holds the bid', and two big buttons at the bottom: 'Player 2 - bid $2' and 'Pass'. Change the DESIGN: this is now a wide desk layout filling the whole 16:9 frame instead of a tiny phone column on black. It is an AUCTION HOUSE at night: a dark wood-panelled room, a raised auctioneer's rostrum at the centre with the player card standing on it under one hot spotlight and a brass gavel beside it, a red velvet rope, the current bid '$1' glowing on a brass plate; the two bidders' chairs are two leather club chairs left and right, each with a small brass money plate reading '$20' and five empty hooks for the rings; the bid and pass buttons are two heavy brass paddles at the bottom edge. Deep shadow, a single chandelier, cigar haze. Text must be real, legible English exactly as listed.",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/auction-today.jpg"
+      ],
+      "tier": "screen",
+      "era": ""
+    }
+  ]
+}

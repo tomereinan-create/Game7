@@ -25,7 +25,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
-const SHEET = path.join(ROOT, 'src/data/moments.json')
+// --sheet <file> reads another sheet (the design screens, say); its candidates land beside it
+const sheetIx = process.argv.indexOf('--sheet')
+const SHEET = sheetIx >= 0 ? path.resolve(process.argv[sheetIx + 1]) : path.join(ROOT, 'src/data/moments.json')
 const OUT = path.join(ROOT, 'public/moments')
 const API = 'https://api.higgsfield.ai'
 const CONCURRENCY = 3
@@ -61,7 +63,7 @@ if (![1, 4].includes(N)) { console.error('--n takes 1 or 4'); process.exit(2) }
  * --pick. `--place` is the old behaviour for the day he asks for it back.
  */
 const PLACE = args.includes('--place')
-const CAND = path.join(ROOT, 'scripts/moments/candidates')
+const CAND = sheetIx >= 0 ? path.join(path.dirname(SHEET), 'candidates') : path.join(ROOT, 'scripts/moments/candidates')
 const pickIx = args.indexOf('--pick')
 /**
  * STYLES. SOUL V2 takes a `style_id`; the default is a general photographic look, which is why
