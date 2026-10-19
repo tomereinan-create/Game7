@@ -621,7 +621,11 @@ export function FrontDoor({
   }, [])
 
   return (
-    <div className="fd">
+    /* THE ARENA (his ruling, 2026-10-19: "Use this design for the home page" - the moments
+       session's Grok concept: a dark arena under the rafter lights, the six plays as banners
+       hanging over the floor). `--plate` is the painted arena, public/moments/screens/home-arena.jpg;
+       until it exists the stylesheet draws the room (see `.fd.arena`). A desk only. */
+    <div className="fd arena" style={{ '--plate': `url(${import.meta.env.BASE_URL}moments/screens/home-arena.jpg)` } as CSSProperties}>
       {friends ? (
         <Ask
           label="Friends"

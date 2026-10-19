@@ -10372,3 +10372,141 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   body:has(.room-plate.wr) .dock .btn:disabled { filter: saturate(0.4) brightness(0.72); }
   body:has(.room-plate.wr) .dock { background: linear-gradient(to top, rgba(13, 9, 7, 0.92) 60%, rgba(13, 9, 7, 0)); }
 }
+
+/* =====================================================================================
+   THE HOME PAGE AS AN ARENA — his ruling, 2026-10-19: "Use this design for the home page" (the
+   moments session's Grok concept). A dark arena under the rafter lights fills the window; the six
+   plays hang over the floor as banners, the one you are on lowered into its own spotlight; the
+   read stands to the right as a panel turned toward you; the four reference rooms are the
+   arena's tunnel doors, each under a red EXIT sign. The concept drew five banners and left
+   Custom out - all six hang here, Custom between the Campaign and Vs friend. A desk only: the
+   phone keeps its floor of shirts.
+   ===================================================================================== */
+@media (min-width: 900px) {
+  .fd.arena {
+    background-color: #05070b;
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.3)),
+      var(--plate, none),
+      radial-gradient(ellipse 18% 42% at 28% 30%, rgba(255, 236, 196, 0.14), transparent 70%),
+      radial-gradient(ellipse 30% 22% at 28% 92%, rgba(255, 196, 120, 0.22), transparent 70%),
+      radial-gradient(ellipse 90% 60% at 30% 10%, rgba(120, 150, 210, 0.12), transparent 70%),
+      linear-gradient(180deg, #05070b 0 58%, #2a1a0e 58%, #4a2c15 80%, #1d120a 100%);
+    background-size: cover;
+    background-position: center;
+  }
+  /* the floor painted in the room is the floor: the court's own drawing, hoop and ball stand down */
+  .fd.arena .fd-panel,
+  .fd.arena .fd-court { background: transparent; box-shadow: none; border: 0; }
+  .fd.arena .fd-lines,
+  .fd.arena .fd-hoop,
+  .fd.arena .fd-air,
+  .fd.arena .fd-glow,
+  .fd.arena .fd-fig { display: none; }
+
+  /* ---------- the six banners, hung in a row ---------- */
+  .fd.arena .fd-mark { top: 24% !important; z-index: 2 !important; }
+  .fd.arena .fd-mark:nth-child(2) { left: 11% !important; }
+  .fd.arena .fd-mark:nth-child(3) { left: 25.5% !important; }
+  .fd.arena .fd-mark:nth-child(1) { left: 41% !important; }
+  .fd.arena .fd-mark:nth-child(4) { left: 56.5% !important; }
+  .fd.arena .fd-mark:nth-child(5) { left: 71% !important; }
+  .fd.arena .fd-mark:nth-child(6) { left: 85.5% !important; }
+  .fd.arena .fd-plate {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.4cqw;
+    width: clamp(80px, 12.5cqw, 300px);
+    padding: 1.8cqw 0.6cqw 4cqw;
+    white-space: normal;
+    text-align: center;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(180deg, #3d1219, #22090d) padding-box,
+      linear-gradient(180deg, #c9a35c, #6e5226) border-box;
+    clip-path: polygon(0 0, 100% 0, 100% 84%, 50% 100%, 0 84%);
+    box-shadow: none;
+    transition: transform 200ms cubic-bezier(0.32, 0.72, 0.3, 1);
+  }
+  .fd.arena .fd-mark { filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.6)); }
+  .fd.arena .fd-no { font-family: var(--serif); font-size: clamp(34px, 6cqw, 150px); line-height: 1; color: #f4ecdc; background: none; padding: 0; }
+  .fd.arena .fd-label { font-size: clamp(11px, 1.6cqw, 38px); line-height: 1.1; letter-spacing: 0.06em; text-transform: uppercase; color: #efe4cf; background: none; padding: 0; white-space: normal; }
+  /* the banner you are on drops into its own spotlight */
+  .fd.arena .fd-mark.on .fd-plate {
+    transform: translateY(1.6cqw) scale(1.18);
+    border: 2px solid transparent;
+    background:
+      linear-gradient(180deg, #6b1a22, #3a0c12) padding-box,
+      linear-gradient(180deg, #f0cd7c, #9c7432) border-box;
+    box-shadow: none;
+  }
+  .fd.arena .fd-mark.on .fd-no, .fd.arena .fd-mark.on .fd-label { color: #fff; }
+  .fd.arena .fd-mark.on::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -40cqh;
+    width: 34cqw;
+    height: 150cqh;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(255, 238, 200, 0.2), rgba(255, 230, 180, 0.08) 55%, transparent 90%);
+    clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .fd.arena .fd-mark.locked .fd-plate { filter: saturate(0.4) brightness(0.7); }
+  .fd.arena .fd-mark:hover:not(.on) .fd-plate { transform: translateY(0.5cqw); }
+
+  /* ---------- the read, turned toward you ---------- */
+  .fd.arena .fd-read {
+    margin: clamp(14px, 3vh, 60px) clamp(14px, 2vw, 60px) clamp(14px, 3vh, 60px) 0;
+    background: rgba(7, 9, 13, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transform: perspective(1800px) rotateY(-4deg);
+    transform-origin: right center;
+  }
+  .fd.arena .fd-name { font-family: var(--sans); font-weight: 800; letter-spacing: 0.01em; }
+
+  /* ---------- the four tunnel doors, each under its EXIT ---------- */
+  .fd.arena .fd-foot { background: linear-gradient(#07090d, #030406); border-top: 1px solid rgba(255, 255, 255, 0.06); }
+  .fd.arena .fd-bookrow {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-items: baseline;
+    column-gap: 0.5em;
+    row-gap: 6px;
+    margin: 10px clamp(8px, 1.6vw, 40px) 0;
+    padding-bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-bottom: 0;
+    background: linear-gradient(#11141b, #07090d);
+    box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.6);
+  }
+  .fd.arena .fd-bookrow:nth-child(odd) { border-left: 1px solid rgba(255, 255, 255, 0.07); }
+  .fd.arena .fd-bookrow b, .fd.arena .fd-bookrow i { color: #f28a3c; }
+  .fd.arena .fd-bookrow::after {
+    content: 'EXIT';
+    /* the cell's old hover rule (a 2px bar across its top) is reset - this is a sign, not a bar */
+    position: static;
+    height: auto;
+    transform: none;
+    transition: none;
+    grid-column: 1 / -1;
+    justify-self: center;
+    display: block;
+    margin-top: 2px;
+    padding: 0.05em 0.35em;
+    border: 1px solid rgba(255, 80, 70, 0.55);
+    background: rgba(40, 0, 0, 0.55);
+    color: #ff4436;
+    font: 400 clamp(18px, 1.6vw, 44px) / 1 var(--serif);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 6px rgba(255, 60, 40, 0.95), 0 0 18px rgba(255, 40, 30, 0.6);
+    box-shadow: 0 0 14px rgba(255, 50, 40, 0.35);
+  }
+  .fd.arena .fd-bookrow:hover::after { color: #ff6a5a; }
+}
