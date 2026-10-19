@@ -9936,3 +9936,139 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 .fd-friend.sent { color: var(--you); }
 .fd-friend:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 @media (max-width: 639px) { .fd-friend { order: 1; } }
+
+/* =====================================================================================
+   THE TWO ROOMS — his pick, 2026-10-19: the moments session's Grok concepts for the hot-seat
+   screens. 1v1 BID is an auction house (wood panelling, a chandelier, a beam of light on a
+   lectern, plaques and brass hooks for the two bidders, a velvet rope, brass plaques for keys).
+   PLAYER VS FRIEND is a gym at night (the court in perspective, the two benches' lockers lit blue
+   and red, a neon SNAKE ORDER sign, the board as a table of tiles, a neon key). The rooms are
+   drawn in CSS; `--plate` is the painted room behind them (public/moments/screens/*.jpg), listed
+   first so it covers the drawing the moment it exists and the drawing shows while it does not.
+   ===================================================================================== */
+.room-plate { position: fixed; inset: 0; z-index: -1; pointer-events: none; background-size: cover; background-position: center; }
+.room-plate.au {
+  background-color: #120c08;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.32)),
+    var(--plate, none),
+    radial-gradient(ellipse 70% 60% at 50% 28%, transparent 35%, rgba(0, 0, 0, 0.78) 100%),
+    linear-gradient(118deg, transparent 52%, rgba(255, 232, 186, 0.08) 58%, rgba(255, 232, 186, 0.02) 66%, transparent 70%),
+    radial-gradient(circle at 50% 4%, rgba(255, 214, 140, 0.18), transparent 22%),
+    repeating-linear-gradient(90deg, #1a110c 0 3px, #22160f 3px 150px, #1d130d 150px 153px, #241811 153px 300px),
+    linear-gradient(#1a110c, #0e0906);
+}
+.room-plate.vs {
+  background-color: #05070c;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    var(--plate, none),
+    radial-gradient(55% 70% at -5% 55%, rgba(47, 123, 255, 0.28), transparent 70%),
+    radial-gradient(55% 70% at 105% 55%, rgba(255, 52, 52, 0.26), transparent 70%),
+    radial-gradient(40% 30% at 50% 8%, rgba(160, 200, 255, 0.12), transparent 70%),
+    linear-gradient(180deg, #05070c 0 50%, #1c120b 50%, #3a2414 78%, #22150c 100%);
+}
+
+/* ---------- the auction house ---------- */
+.hs-au .vs-side { background: linear-gradient(#18110d, #0e0a08); border: 1px solid #6b5126; box-shadow: inset 0 0 0 4px #110c09, inset 0 0 0 5px rgba(224, 184, 98, 0.42), 0 16px 36px rgba(0, 0, 0, 0.55); border-radius: 4px; }
+.hs-au .vs-side.now { border-color: #e0b862; box-shadow: inset 0 0 0 4px #110c09, inset 0 0 0 5px rgba(240, 200, 110, 0.85), 0 0 26px rgba(240, 190, 90, 0.25), 0 16px 36px rgba(0, 0, 0, 0.55); background: linear-gradient(#211710, #120c09); }
+.hs-au .vs-side b { font-family: var(--serif); font-weight: 400; color: #f3ead8; }
+.hs-au .vs-side.r b { color: #e2484a; }
+.hs-au .au-cash { color: #e7c57a; }
+/* the five positions are the brass hooks his chair hangs his men on */
+.hs-au .vs-side .au-buy::before { content: ''; display: inline-block; width: 7px; height: 11px; margin-right: 8px; border: 2px solid #c9a050; border-top: 0; border-radius: 0 0 7px 7px; vertical-align: -1px; }
+.hs-au .vs-side.r .au-buy::before { margin: 3px 0 0 8px; float: right; }
+.hs-au .vs-mid { color: #d8c6a2; font-family: var(--serif); letter-spacing: 0.22em; }
+/* the lot: the man's card on the lectern, the price on the lectern's front plaque */
+.hs-au .au-man { background: linear-gradient(#11100f, #0b0a09); border: 1px solid rgba(224, 184, 98, 0.35); border-radius: 5px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55); padding: 16px 16px 6px; }
+.hs-au .au-block { background: linear-gradient(180deg, #3b2517, #22150d); border: 1px solid #7a5a2a; border-radius: 6px; box-shadow: inset 0 0 0 6px #1b110b, inset 0 0 0 7px rgba(224, 184, 98, 0.5), 0 18px 40px rgba(0, 0, 0, 0.6); padding: 18px 14px 14px; }
+.hs-au .au-block .au-kick { color: #e7d7b4; }
+.hs-au .au-price { color: #f0c96c; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6); }
+.hs-au .au-price.p2 { color: #ff6b62; }
+.hs-au .au-block .au-why { color: #e7d7b4; }
+.au-rope { display: none; }
+/* the keys are brass plaques */
+.hs-au:has(.hs-floor) .dock .btn {
+  background: linear-gradient(180deg, #e2bf74, #b28741 52%, #8d662b);
+  color: #1b130b;
+  border: 1px solid #5a4220;
+  box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.65), inset 0 -2px 0 rgba(60, 40, 15, 0.4), 0 6px 0 #4a3517, 0 12px 26px rgba(0, 0, 0, 0.5);
+  font-family: var(--serif);
+  letter-spacing: 0.06em;
+}
+.hs-au:has(.hs-floor) .dock .btn.them { color: #8e1a1a; }
+.hs-au:has(.hs-floor) .dock .btn:disabled { filter: saturate(0.4) brightness(0.7); }
+.hs-au .dock { background: linear-gradient(to top, rgba(12, 8, 6, 0.92) 60%, rgba(12, 8, 6, 0)); }
+
+/* ---------- the night gym ---------- */
+.hs-vs .vs-side { background: rgba(6, 10, 20, 0.86); border: 1px solid rgba(90, 160, 255, 0.55); border-radius: 6px; box-shadow: 0 0 0 1px rgba(90, 160, 255, 0.18), 0 0 26px rgba(47, 123, 255, 0.3), inset 0 0 32px rgba(47, 123, 255, 0.1); }
+.hs-vs .vs-side.r { border-color: rgba(255, 90, 90, 0.55); box-shadow: 0 0 0 1px rgba(255, 90, 90, 0.18), 0 0 26px rgba(255, 52, 52, 0.28), inset 0 0 32px rgba(255, 52, 52, 0.1); }
+.hs-vs .vs-side.now { background: rgba(10, 22, 48, 0.9); box-shadow: 0 0 0 1px rgba(90, 160, 255, 0.5), 0 0 40px rgba(47, 123, 255, 0.5), inset 0 0 40px rgba(47, 123, 255, 0.18); }
+.hs-vs .vs-side.r.now { background: rgba(48, 10, 10, 0.9); box-shadow: 0 0 0 1px rgba(255, 90, 90, 0.5), 0 0 40px rgba(255, 52, 52, 0.48), inset 0 0 40px rgba(255, 52, 52, 0.16); }
+.hs-vs .vs-side b { color: #fff; }
+.hs-vs .vs-side.r b { color: #ff4a4a; }
+.hs-vs .vs-side .au-buy::before { content: ''; display: inline-block; width: 6px; height: 10px; margin-right: 8px; border: 2px solid #8fb6ff; border-top: 0; border-radius: 0 0 6px 6px; vertical-align: -1px; }
+.hs-vs .vs-side.r .au-buy::before { border-color: #ff8f8f; margin: 3px 0 0 8px; float: right; }
+.hs-vs .vs-mid { color: #fff; font-weight: 700; letter-spacing: 0.12em; }
+.hs-vs .pool { background: rgba(7, 9, 14, 0.88); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6); }
+.board-cap { display: none; }
+.hs-vs:has(.hs-floor) .dock .btn {
+  background: linear-gradient(#070a12, #070a12) padding-box, linear-gradient(90deg, #3d8bff, #ff3b3b) border-box;
+  border: 2px solid transparent;
+  color: #fff;
+  box-shadow: 0 0 22px rgba(61, 139, 255, 0.32), 0 0 22px rgba(255, 59, 59, 0.22);
+}
+.hs-vs:has(.hs-floor) .dock .btn.them { background: linear-gradient(#12070a, #12070a) padding-box, linear-gradient(90deg, #3d8bff, #ff3b3b) border-box; }
+.hs-vs .dock { background: linear-gradient(to top, rgba(4, 6, 10, 0.92) 60%, rgba(4, 6, 10, 0)); }
+
+@media (min-width: 900px) {
+  /* the sign hangs over the middle, the two walls run the floor's full height */
+  .hs-floor { grid-template-rows: auto 1fr; }
+  .hs-floor > .vs-head > .vs-side { grid-row: 1 / span 2; }
+  .hs-floor > .hs-stage { grid-row: 2; }
+  .hs-floor > .vs-head > .vs-mid { display: flex; grid-column: 2; grid-row: 1; justify-self: center; align-self: start; text-align: center; }
+  .hs-au .hs-floor > .vs-head > .vs-mid { font-size: clamp(16px, 1.3vw, 30px); line-height: 1.25; padding: 4px 0 2px; }
+  .hs-vs .hs-floor > .vs-head > .vs-mid { font-size: clamp(15px, 1.15vw, 28px); padding: 10px 26px; border: 2px solid #4d9bff; border-radius: 4px; box-shadow: 0 0 18px rgba(77, 155, 255, 0.6), inset 0 0 14px rgba(77, 155, 255, 0.35); text-shadow: 0 0 10px rgba(140, 190, 255, 0.9); }
+  .hs-vs .hs-floor > .vs-head > .vs-mid br { display: none; }
+  /* the lectern, top to bottom: the card on it, the shape, the front plaque, the rope */
+  .hs-au .hs-stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .hs-au .hs-stage > * { width: min(100%, 760px); }
+  .hs-au .hs-stage > .au-man { order: 1; }
+  .hs-au .hs-stage > .au-hex { order: 2; margin-top: -8px; }
+  .hs-au .hs-stage > .au-block { order: 3; width: min(100%, 560px); }
+  .hs-au .hs-stage > .au-rope { order: 4; display: block; width: min(100%, 640px); height: clamp(48px, 4vw, 96px); margin-top: -10px; }
+  .hs-au .hs-stage > .au-rope svg { width: 100%; height: 100%; display: block; }
+  .hs-au .hs-stage > .au-actions { order: 5; }
+  .hs-au .hs-stage > .card { order: 6; }
+  .hs-au .hs-floor > .vs-head > .vs-side { text-align: center; }
+  .hs-au .hs-floor .vs-side .au-buy { text-align: left; }
+  .hs-au .hs-floor .vs-side.r .au-buy { text-align: right; }
+  /* the board is a table of tiles, six to a row on a desk */
+  .board-cap { display: inline; }
+  .hs-vs .hs-stage .pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; padding: 14px; }
+  .hs-vs .hs-stage .pool > .card-head,
+  .hs-vs .hs-stage .pool > .pdetail { grid-column: 1 / -1; }
+  .hs-vs .hs-stage .pool > .pdetail { margin: 0; }
+  .hs-vs .hs-stage .pool > .rowhead { display: none; }
+  .hs-vs .hs-stage .pool > .row.st {
+    grid-template-columns: minmax(0, 1fr) 28px;
+    grid-template-rows: auto auto;
+    row-gap: 8px;
+    height: auto;
+    margin: 0;
+    width: auto;
+    padding: 12px 10px 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 6px;
+    background: linear-gradient(#141821, #0b0e14);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  }
+  .hs-vs .hs-stage .pool > .row.st .pname { grid-column: 1 / -1; }
+  /* a tile has the height a row did not: a long name takes a second line rather than an ellipsis */
+  .hs-vs .hs-stage .pool > .row.st .pname .who b,
+  .hs-vs .hs-stage .pool > .row.st .pname .who i { white-space: normal; overflow: visible; text-overflow: clip; }
+  .hs-vs .hs-stage .pool > .row.st .mini { grid-column: 1; justify-self: start; width: 150px; }
+  .hs-vs .hs-stage .pool > .row.st .pinfo { grid-column: 2; grid-row: 2; }
+  .hs-vs .hs-stage .pool > .row.st.on { border-color: rgba(90, 160, 255, 0.8); box-shadow: 0 0 18px rgba(47, 123, 255, 0.45); background: linear-gradient(#0f2142, #0a142a); }
+  .hs-vs .hs-stage .pool > .row.st.on2 { border-color: rgba(255, 90, 90, 0.8); box-shadow: 0 0 18px rgba(255, 52, 52, 0.42); background: linear-gradient(#3a1012, #220a0b); }
+}

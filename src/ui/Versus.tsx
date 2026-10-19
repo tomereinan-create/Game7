@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { PLAYERS } from '../engine/pool'
 import { compile, simSeries } from '../engine/resolver'
@@ -297,6 +297,10 @@ export function Versus({ onHome }: { onHome: () => void }) {
 
   return (
     <>
+      {/* THE ROOM (his pick, 2026-10-19: the moments session's Grok concept for this screen - a gym
+          at night, the court in perspective, the two benches' lockers lit blue and red). The plate
+          is the room alone; until it is painted the stylesheet draws the floor and the two lights. */}
+      <div className="room-plate vs" aria-hidden style={{ '--plate': `url(${import.meta.env.BASE_URL}moments/screens/versus-gym.jpg)` } as CSSProperties} />
       <div className="topbar">
         <span>Player vs Friend</span>
       </div>
@@ -324,7 +328,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
           </button>
         </div>
         <div className="vs-mid">
-          SNAKE
+          SNAKE{' '}
           <br />
           ORDER
         </div>
@@ -447,6 +451,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
       <div className="pool">
         <div className="card-head">
           <span className="label">Draft board — {VS_POOL} players</span>
+          <span className="cap board-cap">PTS · REB · AST</span>
         </div>
         <div className="rowhead st">
           <span>Player</span>

@@ -672,7 +672,7 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <div className="page-zoom hotseat">
+        <div className="page-zoom hotseat hs-au">
           <Auction onHome={leave} />
         </div>
       </>
@@ -683,7 +683,7 @@ export default function App() {
       <>
         {sheet}
         {homeFab}
-        <div className="page-zoom hotseat">
+        <div className="page-zoom hotseat hs-vs">
           <Versus onHome={leave} />
         </div>
       </>
