@@ -46,6 +46,17 @@
       ],
       "tier": "screen",
       "era": ""
+    },
+    {
+      "slug": "draft",
+      "title": "Campaign draft",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image. Keep its CONTENT and purpose exactly, in three columns: LEFT, the opponent - a header 'Level 5 opponent - Utah Jazz 26' with '22-60 season lines', a half-court diagram labelled 'Tactic: Horns' with five circles bearing initials (KG, KF, LM, BS, CW) and the names GEORGE, FILIPOWSKI, MARKKANEN, SENSABAUGH, WILLIAMS at their positions, and under it a five-row list of those players with their points, rebounds and assists. CENTRE, the spin - 'Spin 1 of 5 - it lands on', two reels, a TEAM reel showing 'Cleveland Cavaliers' between 'Dallas Mavericks' and 'Los Angeles Clippers' and a YEAR reel showing '2003' between '2002' and '2004', each with a HOLD toggle; below, the heading 'CLEVELAND CAVALIERS - 2003 - Eastern Conference - Central - 17-65' and a roster of eight rows (Ricky Davis 03, Zydrunas Ilgauskas 03, Dajuan Wagner 03, Carlos Boozer 03, Jumaine Jones 03, Darius Miles 03, Tyrone Hill 03, Milt Palacio 03) each with position, a role word and three numbers. RIGHT, my five - 'Gaziantep ag' with '91-17' and '0 of 5', a half-court with five dotted empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here'. One wide bar at the bottom reading 'Tap a player to scout him'. Change the DESIGN: this is a SCOUTING WAR ROOM late at night, filling the whole 16:9 frame. The left column is the opponent pinned to a cork-and-chalk wall - the court drawn in chalk, the five men as pinned photos with chalk initials, their stat lines on a clipped sheet. The centre is a tall brass-and-walnut slot machine standing on a long oak table: its two reels are the team and the year, lit from inside, with two brass HOLD levers; the roster is eight scouting dossiers laid in a row on the table below it, each a card with a name tab, the role stamped on it and its three numbers. The right column is my court as a floor diagram glowing on a light table, five empty rings lit as soft spotlights marked OPEN, with five empty name tags beside it. The bottom bar is a brass plate along the table edge. One hanging lamp over the table, haze, deep shadow at the edges. Text must be real, legible English exactly as listed."
     }
   ]
 }
