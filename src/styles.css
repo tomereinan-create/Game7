@@ -10561,7 +10561,8 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
 
   /* ---- the rail: the painting carries the logo and the years; the rest rides the rafters ---- */
   .fd.arena > .fd-rail { top: 0; height: 4.4cqh; padding: 0 1.6cqw; background: none; border: 0; align-items: center; justify-content: flex-end; }
-  .fd.arena .fd-years { display: none; }
+  /* the years are painted on the GAME 7 pennant; the caption is gone by his ruling ("Remove the Six ways to play") */
+  .fd.arena .fd-years, .fd.arena .fd-cap { display: none; }
   .fd.arena .fd-cap { font-size: 0.85cqw; letter-spacing: 0.22em; color: #aab0bb; }
   .fd.arena > .fd-id { top: 3.8cqh; height: 10cqh; padding: 0 1.6cqw; background: none; border: 0; align-items: center; justify-content: flex-end; gap: 1.4cqw; }
   .fd.arena > .fd-id > .ball7, .fd.arena .fd-word, .fd.arena .fd-div, .fd.arena .fd-idbr { display: none !important; }
