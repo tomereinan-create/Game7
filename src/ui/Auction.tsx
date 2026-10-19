@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SIGMA } from '../config'
 import { achMachineWin } from '../state/achievements'
-import { PLAYERS } from '../engine/pool'
+import { archetype, PLAYERS } from '../engine/pool'
 import { eligible, POSITIONS } from '../engine/positions'
 import { compile, simSeries } from '../engine/resolver'
 import { isRateable } from '../engine/offense'
@@ -10,9 +10,8 @@ import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
 import { HeatHex } from './HeatHex'
 import { BUDGET, machineTakes, SLOTS, type MachineCtx, type Skill } from './machine'
-import { PlayerCard } from './PlayerCard'
 import { Series } from './Series'
-import { LINES } from './Stat'
+import { DetailGrid, LINES } from './Stat'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 
@@ -62,7 +61,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
   const [assign, setAssign] = useState<{ side: 0 | 1; name: string; price: number; opts: number[] } | null>(null)
   const [note, setNote] = useState<string | null>(null)
   const [botSay, setBotSay] = useState<string | null>(null)
-  const [info, setInfo] = useState(false)
   // the seed rides along with the series: the box scores and the Game 7 tape are drawn from it
   const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
 
@@ -199,7 +197,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
     setTop(null)
     setPassed([false, false])
     setBotSay(null)
-    setInfo(false)
   }
 
   /**
@@ -370,7 +367,6 @@ export function Auction({ onHome }: { onHome: () => void }) {
     setAssign(null)
     setNote(null)
     setBotSay(null)
-    setInfo(false)
     setResult(null)
   }
 
@@ -440,6 +436,13 @@ export function Auction({ onHome }: { onHome: () => void }) {
         ) : null}
       </div>
 
+      {/*
+        THE FLOOR — his ruling, 2026-10-19: "The 1v1 bid should be more full screen. Push both teams
+        to the side. Dont show the player OVR. put his name and stats in the middle." On a desk the
+        two bidders stand against the two walls and the man on the block takes the middle (see
+        `.hs-floor`); on a phone it is the same stack as before.
+      */}
+      <div className="hs-floor">
       <div className="vs-head">
         <div className={`vs-side ${top === 0 ? 'now' : ''}`}>
           <b>{names[0]}</b>
@@ -475,6 +478,7 @@ export function Auction({ onHome }: { onHome: () => void }) {
         </div>
       </div>
 
+      <div className="hs-stage">
       {note ? <div className="cap hint">Last lot — {note}</div> : null}
 
       {!done && man ? (
@@ -500,16 +504,12 @@ export function Auction({ onHome }: { onHome: () => void }) {
                   : 'no bids yet — a pass is final for this lot'}
             </div>
           </div>
-          <div className="pool">
-            <PlayerCard
-              p={man}
-              pick={null}
-              owner={null}
-              dimmed={false}
-              expanded={info}
-              onClick={() => setInfo(!info)}
-              onInfo={() => setInfo(!info)}
-            />
+          {/* THE MAN ON THE BLOCK: his name and his season, no rating (his ruling, above). The real
+              box line, never blended - the same cells the draft's season panel prints. */}
+          <div className="au-man">
+            <b className="au-name">{man.name}</b>
+            <i className="au-arch">{archetype(man)}</i>
+            <DetailGrid p={man} mode="stats" />
           </div>
           {/* the lot's shape at a glance — ungated, same open book as the dials */}
           <div className="au-hex">
@@ -568,6 +568,8 @@ export function Auction({ onHome }: { onHome: () => void }) {
           />
         </div>
       ) : null}
+      </div>
+      </div>
 
       {/*
         H2 (2026-09-10): THE DOCK CARRIES THE ACTION NOW. It was a three-arm ternary whose middle

@@ -5,7 +5,7 @@ import { compile, simSeries } from '../engine/resolver'
 import { isRateable } from '../engine/offense'
 import { POSITIONS, type Pos } from '../engine/positions'
 import { canStillFill, type Slots } from '../engine/slots'
-import { LINES } from './Stat'
+import { LINES, StatHead } from './Stat'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
 import { Bars } from './Bars'
@@ -302,10 +302,23 @@ export function Versus({ onHome }: { onHome: () => void }) {
       </div>
       <div className="rule2" />
 
+      {/*
+        THE FLOOR — his ruling, 2026-10-19 ("The 1v1 bid should be more full screen. Push both teams
+        to the side. Dont show the player OVR. put his name and stats in the middle" / "Same for
+        Player vs Friend"). On a desk the two sides stand against the two walls with their fives in
+        them and the board takes the middle (see `.hs-floor`); on a phone it is the same stack as
+        before, the two sides over the board.
+      */}
+      <div className="hs-floor">
       <div className="vs-head">
         <div className={`vs-side ${!done && who === 0 && !loaded[0] ? 'now' : ''}`}>
           <b>{names[0]}</b>
           <span>{loaded[0] ? 'a real five, loaded' : `${countOf(0)}/5 picked${!done && who === 0 ? ' · on the clock' : ''}`}</span>
+          {POSITIONS.map((x) => (
+            <span key={x} className={`au-buy ${slots[0][x] ? '' : 'o'}`}>
+              {x} · {slots[0][x] ?? 'open'}
+            </span>
+          ))}
           <button className="map-link" onClick={() => setLoadFor(loadFor === 0 ? null : 0)}>
             {loaded[0] ? 'Swap the team →' : 'Load a real team →'}
           </button>
@@ -318,23 +331,20 @@ export function Versus({ onHome }: { onHome: () => void }) {
         <div className={`vs-side r ${!done && who === 1 && !loaded[1] ? 'now' : ''}`}>
           <b>{names[1]}</b>
           <span>{loaded[1] ? 'a real five, loaded' : `${countOf(1)}/5 picked${!done && who === 1 ? ' · on the clock' : ''}`}</span>
+          {POSITIONS.map((x) => (
+            <span key={x} className={`au-buy ${slots[1][x] ? '' : 'o'}`}>
+              {x} · {slots[1][x] ?? 'open'}
+            </span>
+          ))}
           <button className="map-link" onClick={() => setLoadFor(loadFor === 1 ? null : 1)}>
             {loaded[1] ? 'Swap the team →' : 'Load a real team →'}
           </button>
         </div>
       </div>
 
-      {/* G10: the five rings each side is filling, so the board says what the mode is asking for. */}
-      <div className="vs-head">
-        {([0, 1] as const).map((i) => (
-          <div key={i} className={`vs-side ${i === 1 ? 'r' : ''}`}>
-            <span className="cap">
-              {POSITIONS.map((x) => `${x}${slots[i][x] ? '' : ' ·'}`).join(' ')}
-            </span>
-          </div>
-        ))}
-      </div>
-
+      {/* G10's five rings each side is filling are the five lines in each side panel now, with the
+          man standing in each one - the board still says what the mode is asking for. */}
+      <div className="hs-stage">
       {choosing ? (
         <div className="card">
           <div className="card-head">
@@ -437,9 +447,11 @@ export function Versus({ onHome }: { onHome: () => void }) {
       <div className="pool">
         <div className="card-head">
           <span className="label">Draft board — {VS_POOL} players</span>
-          <span className="cap" style={{ letterSpacing: '0.02em' }}>
-            IN·OUT│ID·PD
-          </span>
+        </div>
+        <div className="rowhead st">
+          <span>Player</span>
+          <StatHead />
+          <span />
         </div>
         {pool.map((p) => {
           const held = ringOf(p)
@@ -470,6 +482,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
               pick={null}
               owner={o}
               ownerLabel={label}
+              stats
               dimmed={!held && (dead || !rings.length)}
               expanded={info === p.name}
               onClick={() => take(p)}
@@ -477,6 +490,8 @@ export function Versus({ onHome }: { onHome: () => void }) {
             />
           )
         })}
+      </div>
+      </div>
       </div>
 
       <div className="dock">

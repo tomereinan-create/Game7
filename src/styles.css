@@ -9856,3 +9856,57 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
   .simspeed { font-size: clamp(11px, 0.7vw, 18px); min-height: clamp(44px, 2.6vw, 64px); }
   .simspeed input { height: clamp(28px, 1.6vw, 40px); }
 }
+
+/* =====================================================================================
+   THE HOT-SEAT FLOORS: 1v1 BID AND PLAYER VS FRIEND — his ruling, 2026-10-19: "The 1v1 bid
+   should be more full screen. Push both teams to the side. Dont show the player OVR. put his name
+   and stats in the middle" / "Same for Player vs Friend". Both pages were the phone's 560px
+   column, zoomed. On a desk the page takes the window: the two sides stand against the two walls,
+   held in view while the middle scrolls, and the middle is the thing being fought over - the man
+   on the block, or the draft board. On a phone nothing moves: the sides stay over the middle.
+   ===================================================================================== */
+/* a board row with the season line where the rating stood (PlayerCard `stats`) */
+.row.st, .rowhead.st { display: grid; gap: 6px; align-items: center; grid-template-columns: minmax(0, 1fr) 104px 28px; }
+/* the man on the block, by name, with his season under him */
+.au-man { text-align: center; padding: 6px 0 2px; }
+.au-name { display: block; font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink); }
+.au-arch { display: block; margin-top: 6px; font-family: var(--mono); font-style: normal; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.au-man .pdetail { margin: 12px 0 0; text-align: left; }
+@media (min-width: 900px) {
+  body:has(.hotseat) #root { max-width: none; }
+  .page-zoom.hotseat { max-width: none; padding: 0 clamp(8px, 1.4vw, 36px); }
+  .hs-floor {
+    display: grid;
+    grid-template-columns: minmax(230px, 0.75fr) minmax(0, 1.7fr) minmax(230px, 0.75fr);
+    gap: clamp(16px, 2vw, 48px);
+    align-items: start;
+    margin-top: 14px;
+  }
+  .hs-floor > .vs-head { display: contents; }
+  .hs-floor > .vs-head > .vs-mid { display: none; }
+  .hs-floor > .vs-head > .vs-side { grid-row: 1; position: sticky; top: 16px; gap: 8px; padding: 18px 20px; }
+  .hs-floor > .vs-head > .vs-side:not(.r) { grid-column: 1; }
+  .hs-floor > .vs-head > .vs-side.r { grid-column: 3; }
+  .hs-floor > .hs-stage { grid-column: 2; grid-row: 1; min-width: 0; }
+  .hs-floor > .hs-stage > .vs-head:first-child,
+  .hs-floor > .hs-stage > .card:first-child,
+  .hs-floor > .hs-stage > .pool:first-child { margin-top: 0; }
+  .hs-floor .vs-side b { font-size: 24px; }
+  .hs-floor .vs-side .au-cash { font-size: 34px; }
+  .hs-floor .vs-side .au-buy { font-size: 13px; white-space: normal; padding: 6px 0; border-top: 1px solid var(--divider); color: var(--ink-2); }
+  .hs-floor .vs-side .au-buy.o { color: var(--faint); }
+  .hs-floor .vs-side .map-link { margin-top: 6px; }
+  .row.st, .rowhead.st { grid-template-columns: minmax(0, 1fr) 150px 28px; }
+  .hs-stage .au-price { font-size: 56px; }
+  .au-name { font-size: clamp(34px, 3vw, 64px); }
+  .au-arch { font-size: 12px; }
+  .au-man .bgrid { grid-template-columns: repeat(7, 1fr); gap: 12px; }
+  .au-man .bcell i { font-size: 10px; }
+  .au-man .bcell b { font-size: 20px; }
+  .au-man .dtier, .au-man .dline { font-size: 11px; }
+}
+/* past 1600 the page-zoom scale would shrink this back into a column; the floor takes the lighter
+   desk factor instead and keeps the window */
+@media (min-width: 1600px) {
+  .page-zoom.hotseat { zoom: var(--desk-zoom-lite); max-width: none; }
+}
