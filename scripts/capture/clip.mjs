@@ -9,10 +9,12 @@
  * Options: --out clips/<name>.mp4 · --fps 60 · --ending 12 (seconds for the "-ending" cut; 0 = none)
  *          --quality 92 (JPEG quality of the captured frames) · --hold 2.5 (seconds held on the result)
  *
- * HOW. The page is the creator frame itself (`framed=1`): a 432x768 viewport at device scale 2.5, so
- * every frame Chrome paints is a native 1080x1920 — never an upscale. Frames come off the Chrome
- * DevTools screencast as they are painted and are laid onto a fixed 60 fps clock (a frame is held
- * until the next one arrives), then piped straight into ffmpeg as H.264 — nothing piles up in memory.
+ * HOW. A 1080x1920 window opens the creator page, which lays the game out in its 432x768 phone frame
+ * and scales that frame up 2.5x (src/boot.ts) — Chrome rasters the scaled frame at full resolution,
+ * so text stays sharp. (A 432x768 viewport at device scale 2.5 would be the obvious way, but the
+ * DevTools screencast hands back CSS-pixel frames, 432x768.) Frames come off the screencast as they
+ * are painted and are laid onto a fixed 60 fps clock (a frame is held until the next one arrives —
+ * a still screen paints nothing), then piped straight into ffmpeg as H.264, so nothing piles up.
  * (Playwright's own recordVideo would do too, but it needs an explicit `size` or it scales the video
  * down to fit 800x800, and it writes VP9 WebM, which editors take less kindly than MP4.)
  *
@@ -38,9 +40,8 @@ const FPS = Number(opt('fps', 60))
 const QUALITY = Number(opt('quality', 92))
 const ENDING = Number(opt('ending', 12))
 const HOLD = Number(opt('hold', 2.5))
-const W = 432
-const H = 768
-const SCALE = 2.5
+const W = 1080
+const H = 1920
 
 const ffmpeg = findFfmpeg()
 if (!ffmpeg) {
@@ -51,7 +52,6 @@ if (!ffmpeg) {
 function urlFor(run) {
   const u = new URL(APP)
   u.searchParams.set('creator', '1')
-  u.searchParams.set('framed', '1')
   u.searchParams.set('auto', '1')
   for (const k of ['seed', 'a', 'b', 'level', 'team']) if (run[k] !== undefined && run[k] !== null) u.searchParams.set(k, String(run[k]))
   return u.href
@@ -83,7 +83,7 @@ function cut(src, from, to, out) {
 
 async function record(browser, run) {
   const out = resolve(run.out ?? nameFor(run))
-  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: SCALE, isMobile: true, hasTouch: true })
+  const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 })
   const cdp = await page.context().newCDPSession(page)
   const enc = encoder(out)
 
@@ -111,14 +111,21 @@ async function record(browser, run) {
 
   const url = urlFor(run)
   await page.goto(url, { waitUntil: 'domcontentloaded' })
-  await cdp.send('Page.startScreencast', { format: 'jpeg', quality: QUALITY, maxWidth: W * SCALE, maxHeight: H * SCALE, everyNthFrame: 1 })
+  await cdp.send('Page.startScreencast', { format: 'jpeg', quality: QUALITY, maxWidth: W, maxHeight: H, everyNthFrame: 1 })
+  // the game itself runs in the frame's iframe; its beats are read there
+  let game = null
+  for (let i = 0; i < 100 && !game; i++) {
+    game = page.frames().find((f) => /framed=1/.test(f.url())) ?? null
+    if (!game) await new Promise((r) => setTimeout(r, 100))
+  }
+  if (!game) throw new Error('the creator frame did not load')
 
   // the run's beats, in seconds from the first frame — for the trims and the editor
   const beats = {}
   const now = () => (t0 === null ? 0 : Date.now() / 1000 - t0)
   const deadline = Date.now() + 6 * 60 * 1000
   while (Date.now() < deadline) {
-    const s = await page.evaluate(() => ({
+    const s = await game.evaluate(() => ({
       draft: !!document.querySelector('.cr-hud'),
       settle: !!document.querySelector('.cr-settle'),
       series: !!document.querySelector('.cr-hud') === false && !document.querySelector('.cr-settle'),

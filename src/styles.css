@@ -10942,3 +10942,13 @@ body.creator .draft .wheel-idle .spin-team { font-size: 48px; }
   .shr-wait { width: calc(76vh / var(--desk-zoom, 1) * 0.5625); }
   .shr-sheet.inapp .shr-img { width: auto; max-height: calc(76vh / var(--desk-zoom, 1)); }
 }
+
+/* P6 — creator mode's series: the Game 7 tape fills the frame. The topbar's level line is noise on
+   film; the scorebug and the play-by-play grow to the 9:16 frame and the feed runs down the safe
+   zone (clear of the top ~10% and the bottom ~20% the apps draw their own furniture over). */
+body.creator .topbar,
+body.creator .topbar + .rule2 { display: none; }
+body.creator .scorebug { zoom: 1.32; margin-top: 64px; }
+body.creator .feed.tall { zoom: 1.22; }
+body.creator .result { zoom: 1.12; padding-top: 40px; }
+body.creator .shr-open { display: none; }
