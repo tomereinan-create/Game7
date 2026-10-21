@@ -288,6 +288,39 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-today.jpg"
       ],
       "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE, THE WHEEL, which is TWO TALL VERTICAL REELS side by side, caught mid-spin: each reel is a window showing five stacked rows of a long list running UPWARD past a fixed marker band in the middle, pinched between a left and a right arrow; the left reel is TEAM and has just stopped, 'Cleveland Cavaliers' lit in the marker band with 'Dallas Mavericks' above it and 'Los Angeles Clippers' below, the rows fading into the dark at the top and bottom of the window; the right reel is YEAR and is still running, its rows a vertical motion blur with '2003' just about to reach the marker; over each reel a small HOLD tab; above them 'Spin 1 of 5' and 'Open: PG SG SF PF C'; below them the landed team's line 'CLEVELAND CAVALIERS - 2003 - Eastern Conference - Central - 17-65' and the roster of eight (Ricky Davis 03, Zydrunas Ilgauskas 03, Dajuan Wagner 03, Carlos Boozer 03, Jumaine Jones 03, Darius Miles 03, Tyrone Hill 03, Milt Palacio 03), each with a position, a role word and three numbers; one wide bar at the bottom reading 'Tap a player to scout him'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here'. No photographs of people. The reels are the HERO of the screen: big, mechanical, alive with motion. Rich and atmospheric but orderly and legible: one type family, aligned panels, nothing cluttered. Change the DESIGN, filling the whole 16:9 frame: a BANK VAULT of the league. Two tall steel combination wheels turned on their side as the two reels, engraved team names and years rolling past a lit brass pointer, the right one spinning in a blur; the opponent and my five on two polished steel doors left and right with their courts etched in; the roster as eight safe-deposit drawers with engraved plates sliding out; cold steel, warm brass, one hanging lamp, deep shadow. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft4-steel",
+      "title": "Draft, vault: steel",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-vault.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are. Change only this: the hanging lamp at the top is REMOVED and the light comes from the panels and the reels themselves; and the materials and colour are now cold BRUSHED STEEL and glass: dark gunmetal panels, the reel drums in brushed titanium with their edges lit ice-blue, the landed row a cool white band, all accents blue-white instead of gold, a faint blue haze. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft4-marble",
+      "title": "Draft, vault: marble",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-vault.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are. Change only this: the hanging lamp at the top is REMOVED and the light comes from the panels and the reels themselves; and the materials and colour are now BLACK MARBLE and GOLD: the panels black marble with fine gold veins, the reel drums in polished gold with black lettering, the landed row lit warm gold, the roster plates black with gold edges, warm amber accents. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft4-copper",
+      "title": "Draft, vault: copper",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-vault.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are. Change only this: the hanging lamp at the top is REMOVED and the light comes from the panels and the reels themselves; and the materials and colour are now CARBON and COPPER: matte carbon-fibre panels, the reel drums in dark copper with their edges glowing a hot orange, the landed row an orange band, all accents copper-orange, embers of light in the dark. Text stays exactly as it is, legible English."
     }
   ]
 }
