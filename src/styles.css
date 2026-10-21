@@ -9947,6 +9947,9 @@ body:has(.fd-modes .fd-help) .coach-fab { display: none; }
    first so it covers the drawing the moment it exists and the drawing shows while it does not.
    ===================================================================================== */
 .room-plate { position: fixed; inset: 0; z-index: -1; pointer-events: none; background-size: cover; background-position: center; }
+/* a fixed z:-1 plate paints BELOW an in-flow body background whenever html carries a background of
+   its own (a skin's gradient does), so the body stands clear on the screens that hang a room */
+body:has(.room-plate.au), body:has(.room-plate.vs) { background: transparent; }
 .room-plate.au {
   background-color: #120c08;
   background-image:
