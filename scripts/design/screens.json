@@ -387,6 +387,39 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
       ],
       "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts, the brushed-steel material and every word and number exactly where they are. Change only the COLOUR OF THE LIGHT: the blue-white glow everywhere becomes warm AMBER and ivory - the reel edges, the landed row, the arrows, the haze and the floor reflections all a warm gold-white, the steel itself warm gunmetal. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft7-walnut",
+      "title": "Draft, new look: walnut",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Redesign the reference screen, keeping its LAYOUT and CONTENT exactly: three columns, the two reel drums at the centre with the team stopped on Cleveland Cavaliers and the year still spinning toward 2003, the roster of eight under them, the opponent court and list on the left, my five rings and lines on the right, the bar at the bottom, every word and number as it is. Change the DESIGN LANGUAGE and the COLOURS: warm and tactile - the panels are dark walnut wood with ivory inlay lines, the reel drums are ivory cylinders with dark lettering turning inside brass rings, the landed row lit soft sage green, the roster plates small ivory tiles, the type warm ivory, the room a dim library with amber light and no haze. Text must be real, legible English exactly as in the reference."
+    },
+    {
+      "slug": "draft7-neon",
+      "title": "Draft, new look: neon",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Redesign the reference screen, keeping its LAYOUT and CONTENT exactly: three columns, the two reel drums at the centre with the team stopped on Cleveland Cavaliers and the year still spinning toward 2003, the roster of eight under them, the opponent court and list on the left, my five rings and lines on the right, the bar at the bottom, every word and number as it is. Change the DESIGN LANGUAGE and the COLOURS: bold and graphic - the panels are matte graphite with sharp coral-red edges, the reel drums are black cylinders with coral lettering and a violet glow spilling from their housing, the landed row a coral band, the arrows violet, flat surfaces with no chrome or reflection, the room pure black. Text must be real, legible English exactly as in the reference."
+    },
+    {
+      "slug": "draft7-teal",
+      "title": "Draft, new look: teal",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Redesign the reference screen, keeping its LAYOUT and CONTENT exactly: three columns, the two reel drums at the centre with the team stopped on Cleveland Cavaliers and the year still spinning toward 2003, the roster of eight under them, the opponent court and list on the left, my five rings and lines on the right, the bar at the bottom, every word and number as it is. Change the DESIGN LANGUAGE and the COLOURS: clean and modern - the panels are deep midnight navy with hairline electric-teal borders and rounded corners, the reel drums are white-faced cylinders with navy lettering, the running reel a teal motion blur, the landed row a teal band, the roster plates navy chips with teal text, the room a soft navy gradient, no metal anywhere. Text must be real, legible English exactly as in the reference."
     }
   ]
 }
