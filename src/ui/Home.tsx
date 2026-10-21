@@ -1,6 +1,7 @@
 import { type CampaignMode, type Progress, type Team } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
 import { FrontDoor } from './FrontDoor'
+import { SiteFooter } from './SiteFooter'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
@@ -36,5 +37,10 @@ export interface Era {
  * drawing rendered twice, which is what keeps scout's board and user's board the same board.
  */
 export function Home(props: { progress: Record<CampaignMode, Progress>; team: Team | null; onPick: (m: Mode) => void }) {
-  return <FrontDoor user={useUserMode()} {...props} />
+  return (
+    <>
+      <FrontDoor user={useUserMode()} {...props} />
+      <SiteFooter />
+    </>
+  )
 }

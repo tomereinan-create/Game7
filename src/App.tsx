@@ -55,6 +55,23 @@ import { Versus } from './ui/Versus'
 import { Auction } from './ui/Auction'
 import { autoTeam } from './state/autoteam'
 import { track } from './analytics'
+import { CREATOR, type Creator } from './creator/params'
+import { asOpponent, teamSeason } from './creator/teams'
+import { CreatorSettle } from './creator/Settle'
+
+/** Creator mode's club: the `team` in the address ("Tel Aviv Jets" — the last word is the nickname),
+ *  or one named off the run's seed, so the same address always wears the same name. */
+function creatorTeam(c: Creator): Team {
+  if (c.team) {
+    const words = c.team.split(/\s+/)
+    const name = words.length > 1 ? words.pop()! : 'Sevens'
+    return { city: words.join(' '), country: 'US', name }
+  }
+  const r = makeRng(c.seed)
+  return autoTeam(() => r.next())
+}
+/** Creator mode's `b`: a team-season to draft against instead of a campaign level. */
+const creatorOpp = CREATOR?.b ? (() => { const t = teamSeason(CREATOR.b!); return t ? asOpponent(t, Math.min(CREATOR.level, ROUNDS)) : null })() : null
 
 /** Never played a series and never banked a star: the visitor the launch gate is for (P1). */
 const firstRun = (p: Progress) => p.plays === 0 && p.stars.every((s) => s === 0)
@@ -116,17 +133,29 @@ interface Pending {
 }
 
 
+/**
+ * CREATOR MODE'S "SETTLE IT" (P6): two team-seasons named in the address get their own screen —
+ * both fives, the 10,000-sim win chance, then one featured series. Everything else, creator mode
+ * included, is the game.
+ */
 export default function App() {
+  return CREATOR?.a && CREATOR.b ? <CreatorSettle /> : <Game />
+}
+
+function Game() {
   // Which front-door mode is active. The two campaigns share every screen
   // after Home; only the save slot and the salary line differ.
-  const [mode, setMode] = useState<Mode | null>(null)
+  // Creator mode (P6) opens straight onto a campaign draft, in memory (see src/boot.ts).
+  const [mode, setMode] = useState<Mode | null>(CREATOR ? 'campaign' : null)
   const [progress, setProgress] = useState<Record<CampaignMode, Progress>>(() => {
     const all = Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>
+    // creator mode: the run's seed IS the ladder's seed, so the same address deals the same wheel
+    if (CREATOR) all.campaign = { ...all.campaign, seed: CREATOR.seed }
     // `?stars=1` marks the whole ladder cleared at one star — his door onto the later blocks.
-    starsFromUrl(all)
+    else starsFromUrl(all)
     return all
   })
-  const [level, setLevel] = useState<number | null>(null)
+  const [level, setLevel] = useState<number | null>(CREATOR ? Math.min(CREATOR.level, ROUNDS) : null)
   /**
    * THE STAGE HE CAME FROM (his ruling, 2026-10-01: "Pressing back to map should lead me to the
    * stage I was at"). The map centred on the NEXT level every time it mounted, so walking out of
@@ -148,7 +177,7 @@ export default function App() {
    * nickname and a colour picker that reset to ice-blue were a toll on the door of every mode —
    * three times in one sitting. Held here, read from its own key, written back on every change.
    */
-  const [team, setTeamState] = useState<Team | null>(loadTeam)
+  const [team, setTeamState] = useState<Team | null>(() => (CREATOR ? creatorTeam(CREATOR) : loadTeam()))
   const [staff, setStaff] = useState(false)
   const [myTeam, setMyTeam] = useState(false)
   const [roster, setRoster] = useState(false)
@@ -239,6 +268,10 @@ export default function App() {
     document.body.classList.toggle('tut', tutorial)
     return () => document.body.classList.remove('tut')
   }, [tutorial])
+  /** P6: creator mode's furniture rules (the dock, the fabs and the toasts go; the reels grow). */
+  useEffect(() => {
+    document.body.classList.toggle('creator', !!CREATOR)
+  }, [])
 
   /**
    * THE DESK SCALE (his ruling, 2026-10-01: "Fix all", after the survey at 3840 x 1500). Three
@@ -323,7 +356,7 @@ export default function App() {
   const capped = cm === 'salary' || death
   const opponents = LEVELS
   const prog = cm ? progress[cm] : null
-  const opponent = level ? opponents[Math.min(level, ROUNDS) - 1] : null
+  const opponent = level ? (creatorOpp && cm === 'campaign' ? creatorOpp : opponents[Math.min(level, ROUNDS) - 1]) : null
   /**
    * WHICH BLOCK THE CAMPAIGN IS STANDING IN, as a skin. The map has worn one per block of thirty
    * since the four-skins ruling; his ruling here — "Make the skill tree and the drafting (spin) the
@@ -428,7 +461,8 @@ export default function App() {
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
     const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players, paceMastery(prog)) : null
     const mine = plan ? applyMod(base, { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : base
-    const seed = randomSeed()
+    // creator mode: the series is a function of the run's seed and the attempt, so a filmed run replays
+    const seed = CREATOR ? (levelSeed(prog, level) ^ 0x5bd1e995) >>> 0 || 1 : randomSeed()
     const sig = pc ? SIGMA * pc.sigmaMult : SIGMA
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran. The box scores
@@ -963,6 +997,8 @@ export default function App() {
            all, so this is not a peek at the roster, it is the only move left. */
         onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
         autoSpin={autoSpin}
+        autoplay={!!CREATOR?.auto}
+        creator={!!CREATOR}
       />
     </>
   )

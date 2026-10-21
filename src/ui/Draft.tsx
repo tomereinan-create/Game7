@@ -259,6 +259,7 @@ export function Draft({
   onMyTeam,
   autoSpin = false,
   autoplay = false,
+  creator = false,
 }: {
   opponent: Opponent
   seed: number
@@ -330,6 +331,11 @@ export function Draft({
    * The wheel is seeded, so the same seed films the same run every time.
    */
   autoplay?: boolean
+  /**
+   * CREATOR MODE (P6): the win chance rides a bar across the top of the 9:16 frame, and with the
+   * dock hidden that bar is also the one control — it spins, drafts the lit man, and tips off.
+   */
+  creator?: boolean
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -1610,6 +1616,25 @@ export function Draft({
           is the painted room; `.room-plate.st-*` in styles.css paints the panels, the reels and
           the roster to match. A desk only. */}
       <div className={`room-plate st st-${death ? 'steel' : salary ? 'walnut' : 'arena'}`} aria-hidden style={{ '--plate': plateUrl(`draft-${death ? 'steel' : salary ? 'walnut' : 'arena'}.jpg`) } as CSSProperties} />
+      {creator ? (
+        <button
+          className={`cr-hud${chance ? ' on' : ''}`}
+          disabled={autoplay || shooting || spinning}
+          onClick={() => (full ? takeTheFloor() : sel && slot ? commit(slot) : !spun ? spin() : undefined)}
+        >
+          <span className="cr-vs">
+            <i>vs</i>
+            <b>
+              {opponent.team}
+              {opponent.season ? ` '${String(opponent.season).slice(2)}` : ''}
+            </b>
+          </span>
+          <span className="cr-wc">
+            <b>{chance ? `${Math.round(100 * chance.series)}%` : `${picks.length}/${DRAFT_SIZE}`}</b>
+            <i>{chance ? 'win chance' : 'drafted'}</i>
+          </span>
+        </button>
+      ) : null}
       <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
@@ -2033,7 +2058,8 @@ export function Draft({
       {chance && !user ? (
         <div className="card odds">
           <div className="card-head">
-            <span className="label">Before you sim</span>
+            {/* P2 (launch gate): the card says what its numbers are — the win chance, never "odds" */}
+            <span className="label">Win chance</span>
             {/* ONE DECIMAL, because it is a reading and not the number itself. A pace call multiplies
                 SIGMA by 0.94 or 1.08 and the card printed the float raw — "noise σ 9.399999999999999"
                 on a 375px phone. Only the death match could reach a pace call before this pass, so

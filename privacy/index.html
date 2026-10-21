@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Privacy · %SITE_NAME%</title>
+    <meta name="description" content="What %SITE_NAME% stores and measures, and what it does not." />
+    <meta name="theme-color" content="%SITE_THEME%" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="../icon-192.png" />
+    <style>
+      :root { color-scheme: dark; --bg: %SITE_THEME%; --ink: #f2ece0; --muted: #a59d90; --line: #2a2622; --you: #f0b323; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      main { max-width: 680px; margin: 0 auto; padding: 32px 16px calc(env(safe-area-inset-bottom, 0px) + 48px); }
+      h1 { font-size: 30px; line-height: 1.15; margin: 8px 0 4px; }
+      h2 { font-size: 18px; margin: 32px 0 6px; color: var(--you); }
+      p, li { color: #ddd5c7; }
+      .muted { color: var(--muted); font-size: 14px; }
+      a { color: var(--you); }
+      .back { display: inline-block; margin-bottom: 12px; text-decoration: none; }
+      .opt { margin-top: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+      button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--you); background: transparent; color: var(--ink); cursor: pointer; }
+      button[aria-pressed='true'] { background: var(--you); color: #141008; }
+      footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="back" href="../">← Back to the game</a>
+      <h1>Privacy</h1>
+      <p class="muted">%SITE_NAME% · last updated 22 October 2026</p>
+
+      <h2>The short version</h2>
+      <ul>
+        <li>No accounts, no sign-up, no ads, no ad trackers, no tracking pixels.</li>
+        <li>Your progress stays in your own browser. We never receive it.</li>
+        <li>We count how the game is used with anonymous, cookieless analytics. Nothing is stored on your device for that, and you can switch it off below.</li>
+      </ul>
+
+      <h2>Your saves</h2>
+      <p>Your campaigns, club name, stars and settings are kept in this browser's local storage on your device. They are never sent to us. Clearing your browser data deletes them. A <b>save code</b> is your progress written out as text so you can move it to another browser yourself; anyone you give a save code to can load that progress.</p>
+
+      <h2>Analytics</h2>
+      <p>To learn whether people reach the first spin and finish a series, the game sends a handful of anonymous events (for example: the game was opened, the first spin happened, a series finished, a share button was pressed) to <b>PostHog</b>, hosted in the EU. Each event carries the page address, where the visit came from (for example the <code>ref</code> or <code>s</code> tag on a shared link), the kind of browser and device, and the game's own facts (level, result). We run PostHog in its cookieless mode: no cookies, no local storage, and no identifier is stored on your device. PostHog derives a short-lived anonymous count from the connection on its own servers; it does not build a profile of you and we never identify you. Analytics events are kept for up to 12 months.</p>
+      <p>We may also use <b>Cloudflare Web Analytics</b>, a cookieless page-view counter.</p>
+      <p>Your save data is never read for analytics. If your browser sends Global Privacy Control or Do Not Track, no analytics are sent.</p>
+      <div class="opt">
+        <p style="margin-top: 0">Analytics in this browser: <b id="state">on</b></p>
+        <button id="toggle" type="button" aria-pressed="false">Turn analytics off</button>
+        <p class="muted" style="margin-bottom: 0">Turning them off keeps one small "off" setting in this browser so the choice is remembered.</p>
+      </div>
+
+      <h2>Children</h2>
+      <p>The game is made for a general audience. It asks for no name, email or other personal information, and it shows no ads.</p>
+
+      <h2>Your rights and contact</h2>
+      <p>Because we hold no account or personal profile, there is usually nothing we can look up about you. If you have a question or a request about your data, contact us<span id="contact"></span>.</p>
+
+      <footer>
+        <p class="muted">%SITE_DISCLAIMER%</p>
+      </footer>
+    </main>
+    <script>
+      ;(function () {
+        var KEY = 'game7.analytics'
+        var contact = '%SITE_CONTACT%'
+        if (contact && contact.indexOf('%') !== 0) {
+          var a = document.createElement('a')
+          a.href = 'mailto:' + contact
+          a.textContent = contact
+          var c = document.getElementById('contact')
+          c.append(' at ', a)
+        }
+        var state = document.getElementById('state')
+        var btn = document.getElementById('toggle')
+        function read() {
+          try { return localStorage.getItem(KEY) === 'off' } catch (e) { return false }
+        }
+        function paint() {
+          var off = read()
+          state.textContent = off ? 'off' : 'on'
+          btn.textContent = off ? 'Turn analytics back on' : 'Turn analytics off'
+          btn.setAttribute('aria-pressed', off ? 'true' : 'false')
+        }
+        btn.addEventListener('click', function () {
+          try {
+            if (read()) localStorage.removeItem(KEY)
+            else localStorage.setItem(KEY, 'off')
+          } catch (e) {}
+          paint()
+        })
+        paint()
+      })()
+    </script>
+  </body>
+</html>

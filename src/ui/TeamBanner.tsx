@@ -175,7 +175,8 @@ export function TeamBanner({ teams, children }: { teams: string[]; children: Rea
   const one = teams.length === 1 ? CLUBS[teams[0]] : undefined
   const [conf, p, s, t] = one ?? SPLIT
   const fx = FX[t](p, s)
-  const top = one ? `NBA ▸ ${conf}` : teams.length > 1 ? 'NBA ▸ SPLIT SEASON' : 'NBA'
+  // P2 (launch gate): the league's name came off the banner — the conference is the club's own fact
+  const top = one ? conf : teams.length > 1 ? 'SPLIT SEASON' : ''
   return (
     <div
       className="pct-banner"
