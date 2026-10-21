@@ -8,3 +8,11 @@ export function track(event: string, props: Props = {}): void {
   void event
   void props
 }
+
+const once = new Set<string>()
+/** The first time this event happens in this visit (a page load), and never again until the next. */
+export function trackOnce(event: string, props: Props = {}): void {
+  if (once.has(event)) return
+  once.add(event)
+  track(event, props)
+}

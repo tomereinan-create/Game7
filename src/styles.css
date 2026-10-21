@@ -10607,3 +10607,25 @@ body:has(.room-plate.au), body:has(.room-plate.vs) { background: transparent; }
   .fd.arena .fd-bookrow b { color: #f6f4ef; }
   .fd.arena .fd-bookrow::after { font-size: 2cqw; margin-top: 0; padding: 0.1em 0.4em; }
 }
+
+/* =====================================================================================
+   THE LAUNCH GATE (2026-10-22). The pre-launch changes that sit across other screens' rules:
+   one tap to a visible spin (P1), the footer (P2), creator mode (P6), the escape and the save
+   code (P9). Kept together at the foot so they win the cascade without editing those blocks.
+   ===================================================================================== */
+
+/* P1 — ON A PHONE THE REELS LEAD. The opponent card grew a court and a roster and is 650px tall
+   at 375; standing first, it pushed the wheel under the dock, so the first spin happened off
+   screen. The wheel goes first in the phone stack and the opponent follows it. */
+@media (max-width: 899px) {
+  .draft .col.b { order: 0; }
+  .draft .wheel-card,
+  .draft .wheel-idle { scroll-margin-top: 56px; }
+  /* and the front door's button stays on screen while the rules scroll under it */
+  .fd-read > .fd-cta {
+    position: sticky;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    z-index: 2;
+    box-shadow: 0 -14px 24px 6px var(--bg, #0b0a09);
+  }
+}

@@ -296,7 +296,9 @@ export function FrontDoor({
       ],
       metaKey: 'Banked',
       meta: `★ ${banked(progress.campaign)} / ${ROUNDS * 3}`,
-      cta: cur ? 'Continue →' : 'Run it again →',
+      /* P1: a visitor who has never played is taken straight to level 1 with the wheel turning
+         (App's onPick), so the button says what it does rather than "Continue" */
+      cta: progress.campaign.plays === 0 && banked(progress.campaign) === 0 ? 'Spin your first five →' : cur ? 'Continue →' : 'Run it again →',
     },
     {
       pick: 'salary',

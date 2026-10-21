@@ -53,6 +53,11 @@ import { TeamSetup } from './ui/TeamSetup'
 import { Custom } from './ui/Custom'
 import { Versus } from './ui/Versus'
 import { Auction } from './ui/Auction'
+import { autoTeam } from './state/autoteam'
+import { track } from './analytics'
+
+/** Never played a series and never banked a star: the visitor the launch gate is for (P1). */
+const firstRun = (p: Progress) => p.plays === 0 && p.stars.every((s) => s === 0)
 
 interface Tier {
   id: string
@@ -134,6 +139,8 @@ export default function App() {
     if (level) setLastLevel(level)
   }, [level])
   const [pending, setPending] = useState<Pending | null>(null)
+  /** P1: the draft opened by a first visit spins on arrival. Cleared the moment that night is simmed. */
+  const [autoSpin, setAutoSpin] = useState(false)
   const [pickTeam, setPickTeam] = useState(false)
   /**
    * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
@@ -448,6 +455,8 @@ export default function App() {
       heal: benchHeal(prog),
       dur,
     })
+    setAutoSpin(false)
+    track('series_complete', { mode: cm, level, won: result.won, games: result.games.length, chance: Math.round(pre * 100) })
     // the toasts and the coach wait for the landing (see `hold`)
     hold.current = true
     held.current = { toasts: [], lesson: null }
@@ -561,6 +570,7 @@ export default function App() {
     setMode(null)
     setLevel(null)
     setLastLevel(null)
+    setAutoSpin(false)
     setPending(null)
     setPickTeam(false)
     setStaff(false)
@@ -634,7 +644,20 @@ export default function App() {
             else if (m === 'teams') setTeamDb(true)
             // the tutorial's gate (state/tutorial.ts): the door says why on the front door itself
             else if (tutorial && (m === 'salary' || m === 'death') && tutorialLock(m, progress)) return
-            else setMode(m)
+            else if ((MODES as string[]).includes(m) && !tutorial) {
+              /* ONE TAP TO A VISIBLE SPIN (P1, the launch gate). No name screen on the way in: a
+                 club with no name is named at random (state/autoteam.ts) and the map's rename door
+                 changes it later. And a visitor who has never played walks straight into level
+                 1's draft with the wheel already turning — the map, the ticket and the spin button
+                 were three more presses between the video and the thing it showed. The tutorial
+                 keeps its name screen: naming the club is one of its lessons. */
+              if (!team) setTeam(autoTeam())
+              setMode(m)
+              if (m === 'campaign' && firstRun(progress.campaign)) {
+                setLevel(1)
+                setAutoSpin(true)
+              }
+            } else setMode(m)
           }}
         />
       </>
@@ -939,6 +962,7 @@ export default function App() {
            the way walking out does: a five with a worn-out man in it cannot take the floor at
            all, so this is not a peek at the roster, it is the only move left. */
         onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
+        autoSpin={autoSpin}
       />
     </>
   )

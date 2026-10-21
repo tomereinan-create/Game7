@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { trackOnce } from '../analytics'
 import { plateUrl } from './moments'
 import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
@@ -225,6 +226,10 @@ function widenRoster(t: TeamSeason, mode: Wide): string[] {
 // Boston read the same as every other. `teamCode` is the one rule, in names.ts, and it reads the
 // city: SLC. Written `ab`s still win wherever the wheel has one.
 /** Whether this machine has asked for less motion. Read at press time, not cached. */
+/** Creator mode's hands-free pacing, in ms: before the first spin, between spins, reading a landed
+ *  roster, holding the lit man before he is drafted, and holding the full five before the floor. */
+const AUTO_MS = { first: 900, spin: 600, read: 1500, pick: 800, sim: 1800 }
+
 const reduceMotion = () => {
   try {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -252,6 +257,8 @@ export function Draft({
   onBack,
   onRoster,
   onMyTeam,
+  autoSpin = false,
+  autoplay = false,
 }: {
   opponent: Opponent
   seed: number
@@ -311,6 +318,18 @@ export function Draft({
    * instead of myteam."
    */
   onMyTeam?: () => void
+  /**
+   * THE FIRST SPIN SPINS ITSELF (P1, the launch gate). A visitor who came from a video pressed one
+   * button on the front door to get here; the wheel they came for goes round on arrival rather than
+   * waiting for a second press on a button at the foot of the screen.
+   */
+  autoSpin?: boolean
+  /**
+   * CREATOR MODE'S HANDS-FREE RUN (P6): spin, take the best man the wheel offers at an open ring,
+   * spin again, and take the floor when the five is full — every step on a timer a camera can follow.
+   * The wheel is seeded, so the same seed films the same run every time.
+   */
+  autoplay?: boolean
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -890,6 +909,8 @@ export function Draft({
       setDead(true)
       return
     }
+    // the funnel's second step (P5): once per visit, whichever draft it happens in
+    trackOnce('first_spin', { level: opponent.round, auto: autoSpin || autoplay })
     setSel(null)
     setSlot(null)
     setInfo(null)
@@ -1213,6 +1234,44 @@ export function Draft({
       window.setTimeout(() => onSim(five, assignment, toWin), 2500),
     )
   }
+  /* THE FIRST SPIN SPINS ITSELF (P1) — once, on arrival. The draft is keyed per attempt, so this
+     mounts once per wheel; the timer gives the screen a beat to paint before the reels go. */
+  useEffect(() => {
+    if (!autoSpin || autoplay) return
+    const t = window.setTimeout(() => spin(), 650)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /* ON A PHONE THE REELS LEAD THE COLUMN (P1, see the launch-gate block in the stylesheet), and a
+     spin pulls them back into view when the page was scrolled down to read the opponent. */
+  useEffect(() => {
+    if (!spinning || window.innerWidth >= 900) return
+    sheet.current?.querySelector('.wheel-card')?.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'auto' : 'smooth' })
+  }, [spinning])
+
+  /* CREATOR MODE'S HANDS-FREE RUN (P6). One step per state change: spin; let the landed roster be
+     read; light the best man the five can still take (the highest overall at an open ring); draft
+     him; spin again; and take the floor once the five is full. Deterministic for a given seed —
+     the wheel's draw and this choice are both pure functions of what is on the board. */
+  useEffect(() => {
+    if (!autoplay || dead || shooting) return
+    let t = 0
+    if (full) t = window.setTimeout(takeTheFloor, AUTO_MS.sim)
+    else if (spinning) return
+    else if (!spun) t = window.setTimeout(() => spin(), picks.length ? AUTO_MS.spin : AUTO_MS.first)
+    else if (!sel) {
+      const best = roster.filter((p) => draftable(p.name)).sort((a, b) => b.ovr - a.ovr || a.name.localeCompare(b.name))[0]
+      if (best)
+        t = window.setTimeout(() => {
+          setSel(best.name)
+          setSlot(posOf(best.name).find((x) => open.includes(x)) ?? null)
+        }, AUTO_MS.read)
+    } else if (slot) t = window.setTimeout(() => commit(slot), AUTO_MS.pick)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoplay, dead, shooting, full, spinning, spun, sel, slot])
+
   const dock = () => {
     // A worn-out man cannot take the floor, and the change lives in MY TEAM on the map — the
     // draft only holds the door until he has been replaced there.
