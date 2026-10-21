@@ -24,3 +24,4 @@ tsconfig.tsbuildinfo
 scripts/moments/originals/
 scripts/moments/candidates/
 scripts/design/candidates/
+dist-mover/
