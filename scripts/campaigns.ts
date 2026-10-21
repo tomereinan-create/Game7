@@ -635,7 +635,7 @@ function theCustoms(): Level[] {
     { name: 'All-Most-Improved', ab: 'MIP', tag: 'all-time', build: (pool) => pickFive(men((n) => mip.has(n), pool), (p) => p.ovr) },
     { name: 'All-Rookies-of-the-Year', ab: 'ROY', tag: 'all-time', build: (pool) => pickFive(men((n) => roy.has(n), pool), (p) => p.ovr) },
     { name: 'All-Hall-of-Fame', ab: 'HOF', tag: 'all-time', build: (pool) => pickFive(men((n) => hallOfFame.has(n), pool), (p) => p.ovr) },
-    { name: 'All-NBA First Team', ab: 'ANBA', tag: 'all-time', build: (pool) => pickFive(men((n) => allNba1.has(n), pool), (p) => p.ovr) },
+    { name: 'All-League First Team', ab: 'ALFT', tag: 'all-time', build: (pool) => pickFive(men((n) => allNba1.has(n), pool), (p) => p.ovr) },
     { name: 'All-Defensive First Team', ab: 'ADEF', tag: 'all-time', build: (pool) => pickFive(men((n) => allDef1.has(n), pool), (p) => p.ovr) },
     { name: 'All-Shooters', ab: '3PT', tag: 'all-time', build: (pool) => specialists('3pt', 90, pool) },
     { name: 'All-Rim-Runners', ab: 'RIM', tag: 'all-time', build: (pool) => specialists('rim', 90, pool) },
