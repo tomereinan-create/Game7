@@ -420,6 +420,18 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
       ],
       "prompt": "Redesign the reference screen, keeping its LAYOUT and CONTENT exactly: three columns, the two reel drums at the centre with the team stopped on Cleveland Cavaliers and the year still spinning toward 2003, the roster of eight under them, the opponent court and list on the left, my five rings and lines on the right, the bar at the bottom, every word and number as it is. Change the DESIGN LANGUAGE and the COLOURS: clean and modern - the panels are deep midnight navy with hairline electric-teal borders and rounded corners, the reel drums are white-faced cylinders with navy lettering, the running reel a teal motion blur, the landed row a teal band, the roster plates navy chips with teal text, the room a soft navy gradient, no metal anywhere. Text must be real, legible English exactly as in the reference."
+    },
+    {
+      "slug": "draft7-arena",
+      "title": "Draft, in the arena",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg",
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/public/moments/screens/home-stage.jpg"
+      ],
+      "prompt": "Redesign the FIRST reference screen in the world of the SECOND reference image, keeping the first screen's LAYOUT and CONTENT exactly: three columns, the two reel drums at the centre with the team stopped on Cleveland Cavaliers and the year still spinning toward 2003, the roster of eight under them, the opponent court and list on the left, my five rings and lines on the right, the bar at the bottom, every word and number as it is. The DESIGN is the second image's arena: the dark arena at night with its rafters and empty stands behind everything, the polished hardwood court as the floor. The left and right columns are two tall hanging PENNANTS in dark navy cloth with a thin gold trim and a gold fringe, their content printed on the cloth in white; the two reel drums hang from the rafters at the centre under one warm spotlight, navy drums with gold rings and white lettering, the landed row lit gold; the roster of eight is a row of small navy-and-gold plates standing on the court floor below the drums; the bottom bar is a gold strip along the baseline. No haze, no neon, no steel. Text must be real, legible English exactly as in the first reference."
     }
   ]
 }
