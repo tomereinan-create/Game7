@@ -45,9 +45,12 @@ function shareEnv(): Env {
   return canShareFile(new File([new Uint8Array(8)], 'probe.png', { type: 'image/png' })) ? 'native' : 'desktop'
 }
 
-const mint = (ref: string) => {
+/** A fresh share ID and the link that carries it — with the challenge (P11) in its hash, when the
+ *  series can be replayed, so every share is also a playable "beat it" link. */
+const linkFor = (d: ShareData, s: string, ref: string) => shareLink({ s, ref }, d.challenge ? `c=${d.challenge}` : '')
+const mint = (d: ShareData, ref: string) => {
   const s = newShareId()
-  return { s, link: shareLink({ s, ref }) }
+  return { s, link: linkFor(d, s, ref) }
 }
 
 const clicked = (d: ShareData, target: string, s: string, extra: Record<string, string> = {}) =>
@@ -70,7 +73,7 @@ function shareNatively(d: ShareData, story: Blob): Promise<'shared' | 'cancelled
   try {
     const file = new File([story], fileName(d, 'story'), { type: 'image/png' })
     if (!canShareFile(file)) return Promise.resolve('failed')
-    const { s, link } = mint('native')
+    const { s, link } = mint(d, 'native')
     clicked(d, 'native', s)
     return navigator.share({ files: [file], text: shareText(d, link, false), url: link }).then(
       () => 'shared' as const,
@@ -245,7 +248,7 @@ export function ShareSheet({ data, story: drawn = null, onClose }: { data: Share
   }, [])
 
   const copyText = async () => {
-    const { s, link } = mint('copy')
+    const { s, link } = mint(data, 'copy')
     const t = shareText(data, link)
     clicked(data, 'copy', s)
     if (await copy(t)) {
@@ -281,7 +284,7 @@ export function ShareSheet({ data, story: drawn = null, onClose }: { data: Share
     })
   }
 
-  const xHref = (s: string) => xIntent(data, shareLink({ s, ref: 'x' }))
+  const xHref = (s: string) => xIntent(data, linkFor(data, s, 'x'))
   const xLink = (primary: boolean) => (
     <a
       className={primary ? 'btn shr-t' : 'btn ghost shr-t'}

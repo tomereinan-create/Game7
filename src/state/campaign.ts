@@ -259,6 +259,8 @@ export function resetTutorialSaves() {
   }
 }
 
+/** A new ladder, never saved — for a run that keeps nothing (a challenge's "your turn", P11). */
+export const freshProgress = (): Progress => fresh()
 const fresh = (): Progress => ({
   coach: null,
   stars: Array.from({ length: ROUNDS }, () => 0),

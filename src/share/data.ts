@@ -5,6 +5,8 @@ import { maxStars, starsFor } from '../engine/resolver'
 import type { Lineup, Opponent, Player, SeriesResult } from '../engine/types'
 import { SITE } from '../site'
 import { printedUrl } from './link'
+import { challengeOf, encodeChallenge } from './challenge'
+import { SIGMA } from '../config'
 
 /**
  * WHAT THE SHARE CARD SAYS (P10), as plain data and plain text — no DOM, so every word of it is
@@ -36,6 +38,8 @@ export interface ShareInput {
    */
   scores?: { us: number; them: number }[]
   sigma?: number
+  /** The series' seed: with it the share carries a replayable challenge (P11). */
+  seed?: number
   /** A one-off (Custom, Vs friend, 1v1 bid): no level, no stars. */
   exhibition?: boolean
   /** The screen's own kicker ("1v1 Bid", "Player vs Friend"), when it has one. */
@@ -82,6 +86,8 @@ export interface ShareData {
   winChance: number
   /** The address printed on the card ("buzzerdraft.com"): no share ID, no ref. */
   url: string
+  /** The replayable challenge (P11), encoded for a link's `#c=`; absent when there is no seed. */
+  challenge?: string
 }
 
 /** A card's season tag: "Michael Jordan '96" -> "96", "Tony Mitchell '14 (a)" -> "14". */
@@ -169,6 +175,22 @@ export function shareData(input: ShareInput, url: string = printedUrl()): ShareD
     stamps: stampsFor(games, r.won, r.toWin, winChance),
     winChance,
     url,
+    ...(() => {
+      const c = input.seed
+        ? challengeOf({
+            teamName: input.teamName,
+            teamAb: input.teamAb ?? teamCode(input.teamName),
+            five: input.five,
+            opponent,
+            mine: input.mine,
+            theirs: input.theirs,
+            sigma: input.sigma ?? SIGMA,
+            seed: input.seed,
+            result: r,
+          })
+        : null
+      return c ? { challenge: encodeChallenge(c) } : {}
+    })(),
   }
 }
 

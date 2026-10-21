@@ -58,6 +58,8 @@ import { track } from './analytics'
 import { CREATOR, type Creator } from './creator/params'
 import { asOpponent, teamSeason } from './creator/teams'
 import { CreatorSettle } from './creator/Settle'
+import { challengeFromUrl } from './share/challenge'
+import { ChallengeView } from './ui/ChallengeView'
 import { ImportPrompt, IosHint, StandaloneWelcome } from './ui/Escape'
 import { standalone } from './share/inapp'
 
@@ -141,7 +143,25 @@ interface Pending {
  * included, is the game.
  */
 export default function App() {
-  return CREATOR?.a && CREATOR.b ? <CreatorSettle /> : <Game />
+  /* A CHALLENGE LINK (P11): `#c=` opens the challenge — call it, watch it, then your turn — and
+     only then the game. Read once; the address keeps it until the challenge is left, so a reload
+     mid-series comes back to it. */
+  const [challenge, setChallenge] = useState(() => (CREATOR || typeof location === 'undefined' ? null : challengeFromUrl(location.href)))
+  if (CREATOR?.a && CREATOR.b) return <CreatorSettle />
+  if (challenge)
+    return (
+      <ChallengeView
+        c={challenge}
+        onDone={() => {
+          const u = new URL(location.href)
+          u.hash = u.hash.replace(/(^#|&)c=[^&]*/, '').replace(/^#&?$/, '')
+          u.searchParams.delete('c')
+          history.replaceState(history.state, '', u.href)
+          setChallenge(null)
+        }}
+      />
+    )
+  return <Game />
 }
 
 function Game() {

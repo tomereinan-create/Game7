@@ -781,7 +781,7 @@ export function Series({
                   result the strip has not landed yet. Game 7's score is the tape's, as on the strip. */}
               {settled ? (
                 <ShareButton
-                  input={{ opponent, five, mine, theirs, teamName, teamAb: myAb, result, sigma, exhibition, kicker, scores: scoresOf(result, tape ? { us: tape.us, them: tape.them } : null) }}
+                  input={{ opponent, five, mine, theirs, teamName, teamAb: myAb, result, sigma, seed, exhibition, kicker, scores: scoresOf(result, tape ? { us: tape.us, them: tape.them } : null) }}
                 />
               ) : null}
             </div>
