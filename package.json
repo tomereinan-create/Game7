@@ -31,7 +31,8 @@
     "scout": "vite-node scripts/scout.ts",
     "balance": "vite-node scripts/balance.ts",
     "starters": "vite-node scripts/starters.ts",
-    "batch-sim": "vite-node scripts/batch-sim.ts"
+    "batch-sim": "vite-node scripts/batch-sim.ts",
+    "calibrate": "vite-node scripts/calibrate.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

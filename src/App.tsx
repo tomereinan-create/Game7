@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { CAP_LIMIT, ROUNDS, SIGMA } from './config'
+import { CAP_LIMIT, ROUNDS } from './config'
 import { achCheckMeta, achResetCampaign, achSettleSeries, onUnlocked, type AchDef } from './state/achievements'
 import { Achievements } from './ui/Achievements'
 import { TeamDb } from './ui/TeamDb'
-import { odds } from './engine/odds'
+import { night, odds } from './engine/odds'
 import type { Tactics } from './engine/tactics'
 import CAMPAIGNS from './data/campaigns.json'
-import { applyMod, canBetter, compile, meanMargin, simSeries, starsFor } from './engine/resolver'
-import { aiTempo, boxContext, pace, reconcileTactics, tacticsMod } from './engine/tactics'
+import { canBetter, simSeries, starsFor } from './engine/resolver'
+import { boxContext, reconcileTactics } from './engine/tactics'
 import { balance, benchHeal, buy, capBonus, checkpointLevel, duraBoost, earned, livesBought, paceMastery, playbookRank, rank, respec, subsPerRound, type Branch } from './engine/tree'
 import { teach, teachOnce, tutorialLock, useLesson, useTutor } from './state/tutorial'
 import { Coach } from './ui/Coach'
@@ -415,14 +415,11 @@ export default function App() {
     // rule: the death match always has a plan, everywhere else the Playbook node opens one, and
     // the names are read against the five that is actually playing. See state/campaign.ts.
     const plan = planFor(cm, prog, five.map((p) => p.name))
-    const base = compile(five, opponent.players, assignment)
-    const theirs = compile(opponent.players, five)
     // PACE (recal_57): both teams pick a tempo — the AI reads the surpluses and answers — and the
     // night gets a relative volume-surplus term plus a variance shift, replacing the flat sigma map.
-    const pc = plan ? pace(plan.tempo, aiTempo(opponent.players, five, meanMargin(theirs, base) < 0), five, opponent.players, paceMastery(prog)) : null
-    const mine = plan ? applyMod(base, { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : base
+    // Built by odds.ts `night`, the same call the draft card makes, so the card prices this night.
+    const { mine, theirs, pc, sigma: sig } = night(five, opponent.players, assignment, plan, paceMastery(prog))
     const seed = randomSeed()
-    const sig = pc ? SIGMA * pc.sigmaMult : SIGMA
     // Every mode sims the series entirely — the death match included (his ruling). Its wear is
     // charged when the series settles, in finish(), one durability per game it ran. The box scores
     // consume the tactical state (recal_61), so the context is captured at the moment of the sim.

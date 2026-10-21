@@ -8,20 +8,20 @@ import { teamCode } from '../engine/names'
 import { useLayout } from './useLayout'
 import { eligible, POSITIONS, type Pos } from '../engine/positions'
 import { canMoveSlot, moveSlot } from '../engine/slots'
-import { odds } from '../engine/odds'
+import { night, odds } from '../engine/odds'
 import { Analysis } from './Analysis'
 import { Ask } from './Ask'
 import { useCard } from './CardSheet'
 import { CourtFive, type Side } from './CourtFive'
 import { ChipRow } from './ChipRow'
 import { isRateable, naiveAssignment, solveBoard, type Assignment } from '../engine/offense'
-import { aiTempo, DEFAULT_TACTICS, gateTactics, pace, reconcileTactics, styleFit, STYLES, tacticsMod, type Tactics } from '../engine/tactics'
+import { DEFAULT_TACTICS, gateTactics, reconcileTactics, styleFit, STYLES, type Tactics } from '../engine/tactics'
 import { capBonus, duraBoost, owned, paceMastery, playbookRank, rank, respinSeason, type NodeId } from '../engine/tree'
 import { WEAR_OUT, type Progress } from '../state/campaign'
 import { Matchups } from './Matchups'
 import { TacticsCalls, tacticsWorth, worthLine } from './TacticsPanel'
 import { MatchupPanel, TeamDials } from './MatchupPanel'
-import { applyMod, compile, meanMargin } from '../engine/resolver'
+import { compile, meanMargin } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Opponent, Player } from '../engine/types'
 import { DetailGrid, LINES, Mini, StatHead } from './Stat'
@@ -755,9 +755,6 @@ export function Draft({
     const by = need > 0 ? Math.min(need, Math.max(0, spare)) : spare < 0 ? spare : 0
     if (by) list.scrollBy({ top: by, behavior: reduceMotion() ? 'auto' : 'smooth' })
   }, [info])
-  // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
-  const pc = plan && five.length ? pace(plan.tempo, aiTempo(opponent.players, five, false), five, opponent.players, paceMastery(wallet)) : null
-  const sigma = pc ? SIGMA * pc.sigmaMult : SIGMA
   const open = POSITIONS.filter((x) => !slots[x])
   // Defense is a pairing: both ratings are against the other five, and change as you draft.
   const full = picks.length === DRAFT_SIZE
@@ -780,6 +777,12 @@ export function Draft({
   const overCap = (name: string) => salary && ((capPct(name) ?? 0) > budget + 1e-9 || unpriced(name))
   // Defensive assignment: naive until the Coach node; the board (if owned) overrides with the player's own map.
   const assignment: Assignment = full && board && has('coach_manual') ? board : has('coach_optimal') ? 'optimal' : 'naive'
+  // PACE (recal_57): the AI answers the tempo call off the surpluses; the readout below shows both.
+  // The card prices the night the sim plays: odds.ts `night`, the call App.tsx sims with (P8 — it
+  // used to assume the AI was never the underdog, and so never answered a wash night slow).
+  const nt = five.length ? night(five, opponent.players, assignment, plan, paceMastery(wallet)) : null
+  const pc = nt?.pc ?? null
+  const sigma = nt?.sigma ?? SIGMA
   /**
    * THE SAME BOARD, AS FIVE PAIRINGS, for the tip-off's nameplates. `assignment` is what the sim
    * is handed and it may be a WORD — 'optimal' is a board the engine solves at sim time, not a map
@@ -848,7 +851,7 @@ export function Draft({
   )
   useLesson('board', boardOpen && full, () => boardLesson(rank(wallet, 'coach_manual') >= 2))
   const theirs = useMemo(() => compile(opponent.players, five.length ? five : undefined), [opponent, five])
-  const mine = five.length ? (plan ? applyMod(compile(five, opponent.players, assignment), { ...tacticsMod(plan, five, opponent.players), bonus: (tacticsMod(plan, five, opponent.players).bonus ?? 0) + (pc?.margin ?? 0) }) : compile(five, opponent.players, assignment)) : null
+  const mine = nt ? nt.mine : null
   const chance = full && mine ? odds(mine, theirs, sigma, toWin) : null
   /** Matchup coaching rank 2: what the board you are playing is worth against a naive one. */
   const assignWorth = useMemo(() => {
