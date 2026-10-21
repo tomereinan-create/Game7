@@ -70,6 +70,39 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/pennant-style.jpg"
       ],
       "prompt": "The FIRST image is the scene: keep it exactly - the empty arena at night, the rafter lights, the haze, the dark stands, the polished floor with its orange ball mark. Change only this. (a) The single beam of light falling on the centre of the court is GONE: no spotlight is lit, the arena sits in its ambient glow, the floor still faintly reflecting the rafter lights. (b) EIGHT banners hang from the rafters in one row over the left two thirds of the picture, from near the left edge to just past the centre, evenly spaced, all at the same height with their tops just under the rafters. They are tall pennants in the style of the SECOND image: dark navy cloth, about twice as tall as wide, a thin gold trim inside an orange edge, a short gold fringe hanging from the pointed bottom, a small gold star above the numeral - decorated but restrained. Left to right: the first banner carries the words GAME 7 with an orange basketball bearing a 7 above them and the years 1980 - 2026 small under them; then six banners each with one big bold white numeral and a short white label under it: 2 SALARY CAP, 3 DEATH MATCH, 1 CAMPAIGN, 4 CUSTOM, 5 VS FRIEND, 6 1V1 BID; the eighth banner is blank navy cloth with the same trim and fringe and nothing written on it. (c) Above each of the eight banners, a small unlit spotlight fixture hangs from the rafters. The right third of the picture stays pure arena with nothing hanging in it. No other text anywhere."
+    },
+    {
+      "slug": "draft-plate-arena",
+      "title": "draft-plate-arena",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-arena.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty it of every piece of interface - the three panels, the two reel drums and their housing, the roster, the courts, every card, plate, bar, word and number are gone, and what remains is the arena alone: the dark stands and rafters, the spotlights, the polished hardwood court filling the lower half with the orange ball mark at centre and the far hoop; two bare gold banner poles may stay at the top corners with nothing hanging from them. An empty room with no text anywhere."
+    },
+    {
+      "slug": "draft-plate-walnut",
+      "title": "draft-plate-walnut",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-walnut.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty it of every piece of interface - the three panels, the two reel drums and their housing, the roster, the courts, every card, plate, bar, word and number are gone, and what remains is the library alone: the dark walnut panelling, the bookshelves far behind, the two brass wall lamps, the warm light pooling on the empty polished wood desk across the bottom third. An empty room with no text anywhere."
+    },
+    {
+      "slug": "draft-plate-steel",
+      "title": "draft-plate-steel",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its camera, lighting, colours and materials exactly. Change only this: empty it of every piece of interface - the three panels, the two reel drums and their housing, the roster, the courts, every card, plate, bar, word and number are gone, and what remains is the steel room alone: the dark gunmetal walls, the cool blue-white light from above, the faint haze, the reflective dark steel floor across the bottom third. An empty room with no text anywhere."
     }
   ]
 }
