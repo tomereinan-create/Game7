@@ -33,6 +33,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Every page carries the name from src/site.ts, the link-preview picture is there, and with
+      # VITE_MOMENTS=0 set on this job no AI poster or intro clip reached dist/moments.
+      - name: Check the build
+        run: node scripts/check-dist.mjs
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
