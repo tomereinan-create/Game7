@@ -1,9 +1,7 @@
 import { WHEEL, type TeamSeason } from '../data/wheel'
-import { startingFive } from '../engine/bestfive'
-import { PLAYERS } from '../engine/pool'
+import { bestStarters, realStarters } from '../engine/starters'
 import type { Opponent, Player } from '../engine/types'
 
-const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const POS = ['PG', 'SG', 'SF', 'PF', 'C']
 
 /** A team-season by its creator-mode id, `1996-CHI` (the season's closing year, then the club). */
@@ -14,13 +12,13 @@ export function teamSeason(id: string): TeamSeason | null {
 }
 
 /**
- * The five a team-season puts on the floor in a filmed run. Best legal five by the cards for now
- * (the Team database's own read); the real-starters loader (P7) takes over when it lands, because
- * the "Settle It" videos argue about the five that actually started.
+ * The five a team-season puts on the floor in a filmed run: its REAL starters, the men who started
+ * the most games (P7, src/engine/starters.ts) — the "Settle It" videos argue about the five that
+ * actually played. The best legal five by the cards stands in only where the cards run short.
  */
-export function fiveFor(t: TeamSeason): Player[] {
-  const pool = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)
-  return startingFive(pool).five.filter((p): p is Player => !!p)
+export function fiveFor(t: TeamSeason, sitOut?: ReadonlySet<string>): Player[] {
+  const real = realStarters(t.y, t.ab, sitOut)
+  return real.length === 5 ? real : bestStarters(t.y, t.ab, sitOut)
 }
 
 /** How a team-season is printed on screen: "'96 Chicago Bulls". */

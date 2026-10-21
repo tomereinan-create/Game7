@@ -3,6 +3,7 @@ import { SIGMA } from '../config'
 import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import { Series } from '../ui/Series'
+import { seriesSeed } from '../engine/batch'
 import { CREATOR } from './params'
 import { asOpponent, fiveFor, seasonName, teamSeason } from './teams'
 
@@ -28,8 +29,10 @@ export function CreatorSettle() {
   const B = teamSeason(c.b!)
   const sides = useMemo(() => {
     if (!A || !B) return null
+    // B loads with A's men sitting out — Custom's rule, and scripts/batch-sim.ts's default — so
+    // the bar on screen and the script's table are the same 10,000 series
     const fa = fiveFor(A)
-    const fb = fiveFor(B)
+    const fb = fiveFor(B, new Set(fa.map((p) => p.player)))
     return { fa, fb, mine: compile(fa, fb), theirs: compile(fb, fa) }
   }, [A, B])
   const [done, setDone] = useState(0)
@@ -39,19 +42,20 @@ export function CreatorSettle() {
   useEffect(() => {
     document.body.classList.add('creator')
     if (!sides) return
-    // the batch runs in slices so the count can be watched climbing; ~2.5 s end to end
+    // the batch runs in slices so the count can be watched climbing; ~2.5 s end to end (timers, not
+    // animation frames, so a background tab still finishes the count)
     let i = 0
     let w = 0
-    let raf = 0
+    let t = 0
     const step = () => {
       const end = Math.min(SIMS, i + 70)
-      for (; i < end; i++) if (simSeries(sides.mine, sides.theirs, makeRng(BATCH_BASE + i), SIGMA).won) w++
+      for (; i < end; i++) if (simSeries(sides.mine, sides.theirs, makeRng(seriesSeed(BATCH_BASE, i)), SIGMA).won) w++
       setDone(i)
       setWins(w)
-      if (i < SIMS) raf = requestAnimationFrame(step)
+      if (i < SIMS) t = window.setTimeout(step, 16)
     }
-    raf = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf)
+    t = window.setTimeout(step, 16)
+    return () => window.clearTimeout(t)
   }, [sides])
 
   useEffect(() => {
