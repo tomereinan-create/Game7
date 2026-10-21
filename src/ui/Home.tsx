@@ -45,6 +45,9 @@ export function Home(props: { progress: Record<CampaignMode, Progress>; team: Te
       <FrontDoor user={useUserMode()} {...props} />
       <SiteFooter>
         <FooterDoors />
+        {/* P6: the way into creator mode from inside the installed app, which has no address bar to
+            type ?creator=1 into. It wears the club's name; nothing it does is saved. */}
+        <a href={`?creator=1${props.team ? `&team=${encodeURIComponent(`${props.team.city} ${props.team.name}`)}` : ''}`}>Creator mode</a>
       </SiteFooter>
     </>
   )

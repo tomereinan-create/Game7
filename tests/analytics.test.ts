@@ -56,7 +56,7 @@ describe('analytics', () => {
     const events = capture.mock.calls.map((c) => c[0])
     expect(events).toEqual(['open', 'link_open', 'first_spin'])
     expect(capture.mock.calls[0][1]).toMatchObject({ s: 'ab12cd34', ref: 'tt', utm_source: 'tiktok' })
-    expect(replaced.at(-1)).toBe('https://game.test/?creator=0#x')
+    expect(replaced[replaced.length - 1]).toBe('https://game.test/?creator=0#x')
     expect(store.size).toBe(0)
   })
 
