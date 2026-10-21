@@ -30,13 +30,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The deploy's own settings (src/site.ts `deployFor`), from the repository's Actions variables.
+      # Unset is off: no key, no analytics; no token, no beacon; VITE_MOMENTS=0 leaves the AI posters out.
       - name: Build
         run: npm run build
+        env:
+          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
+          VITE_POSTHOG_HOST: ${{ vars.VITE_POSTHOG_HOST }}
+          VITE_CF_BEACON: ${{ vars.VITE_CF_BEACON }}
+          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+          SITE_URL: ${{ vars.SITE_URL }}
 
       # Every page carries the name from src/site.ts, the link-preview picture is there, and with
       # VITE_MOMENTS=0 set on this job no AI poster or intro clip reached dist/moments.
       - name: Check the build
         run: node scripts/check-dist.mjs
+        env:
+          VITE_MOMENTS: ${{ vars.VITE_MOMENTS }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
