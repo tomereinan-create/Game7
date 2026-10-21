@@ -321,6 +321,39 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-vault.jpg"
       ],
       "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are. Change only this: the hanging lamp at the top is REMOVED and the light comes from the panels and the reels themselves; and the materials and colour are now CARBON and COPPER: matte carbon-fibre panels, the reel drums in dark copper with their edges glowing a hot orange, the landed row an orange band, all accents copper-orange, embers of light in the dark. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft5-glass",
+      "title": "Draft, steel: glass",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are, in the same brushed-steel-and-glass material and cool blue-white light. Change only this: the three panels become thick smoked GLASS slabs with a fine steel frame, so the dark room shows faintly through them; the reel drums sit inside a glass housing with their edges lit; the landed row glows white; everything else as it is. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft5-hud",
+      "title": "Draft, steel: hud",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are, in the same brushed-steel-and-glass material and cool blue-white light. Change only this: the three panels lose their heavy frames and become thin floating steel plates with a hairline edge of light, hovering over a darker floor; the reel drums are larger and more exposed, their housing stripped to two steel rails; the landed row and the arrows a sharper white; a little more empty dark around everything. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft5-cockpit",
+      "title": "Draft, steel: cockpit",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are, in the same brushed-steel-and-glass material and cool blue-white light. Change only this: the three panels are angled toward the viewer like the consoles of a cockpit, the left and right ones turned in; the reel drums sit deeper in a recessed steel bay with a warm white glow spilling out of it; small steel rivets and seams on the frames; the floor a dark reflective steel grid. Text stays exactly as it is, legible English."
     }
   ]
 }
