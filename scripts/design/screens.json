@@ -178,6 +178,61 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/home-today.jpg"
       ],
       "prompt": "Redesign the game screen in the reference image. Keep its CONTENT and purpose exactly: the home page of a basketball game called GAME 7. Top left, a basketball bearing a 7 and the wordmark 'GAME7' with '1980 - 2026' above it; top right, 'Six ways to play - pick a spot on the floor', a stars count 'Rafters - Campaign 100' with a star, 'Cleared 79/150', and a three-way switch 'User - Tutorial - Scout'. LEFT HALF, the floor: a half-court with six numbered jerseys standing at six spots, each with its label: 1 'Campaign' (the selected one, lit), 2 'Salary cap', 3 'Death match', 4 'Custom', 5 'Vs friend', 6 '1v1 bid', plus a small round badge 'GAZ'. RIGHT HALF, the selected mode: '01 - The Gauntlet' over the big title 'CAMPAIGN', the line '150 levels against every team in the league, best of seven each. Level 80 is up next.', four short rules ('Every level is a best-of-seven. Win it and the next rung unlocks.', 'A win banks one to three stars - a sweep is worth the most.', 'Stars buy staff nodes, and a cleared level can be replayed for a better one.', 'Losing costs nothing but the attempt.'), 'Banked 100 / 450' with a star, and one big button 'CONTINUE'. Along the bottom, four doors: 'Database 10,000', 'Archetypes 66', 'Teams every season', 'Trophies 23 / 60'. No photographs of people anywhere. Change the DESIGN, filling the whole 16:9 frame: from the STANDS of a full arena, looking down at the court. The six modes are six lit panels around a giant four-sided jumbotron hanging over centre court, numbered, the Campaign panel lit gold and the rest cool; the court below shows the GAZ badge at centre. The jumbotron's main face shows the selected mode: the title, the lines, the rules, the banked stars, and CONTINUE as its bottom band. The wordmark with the years is on the jumbotron's top ring. The four doors along the bottom are four sections of the courtside LED ribbon. Crowd in silhouette, floodlights, confetti in the air. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft2-blueprint",
+      "title": "Draft, clean: blueprint",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-wheel-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION at their positions, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE: a bar reading 'Spin 1 of 5' and 'Open: PG SG SF PF C', then a card headed 'THE WHEEL' with the line 'A random year, conference and team. Draft one from that roster.', the space below it empty until the wheel is spun, and one wide button at the bottom reading 'Spin the wheel'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here' with their position letters. No photographs of people. THE BRIEF IS SIMPLICITY: a clean, calm screen with generous space, one type family, few colours, flat surfaces, thin rules, no ornament, no texture, no clutter - every element purposeful and easy to read. Change the DESIGN, filling the whole 16:9 frame: a BLUEPRINT. Deep navy ground, everything drawn in thin white lines and small white type like an architectural drawing; one gold accent for the live numbers and the button; the half-courts are line drawings; the wheel card is a thin white circle with the words inside it. Nothing else. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft2-scoreboard",
+      "title": "Draft, clean: scoreboard",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-wheel-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION at their positions, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE: a bar reading 'Spin 1 of 5' and 'Open: PG SG SF PF C', then a card headed 'THE WHEEL' with the line 'A random year, conference and team. Draft one from that roster.', the space below it empty until the wheel is spun, and one wide button at the bottom reading 'Spin the wheel'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here' with their position letters. No photographs of people. THE BRIEF IS SIMPLICITY: a clean, calm screen with generous space, one type family, few colours, flat surfaces, thin rules, no ornament, no texture, no clutter - every element purposeful and easy to read. Change the DESIGN, filling the whole 16:9 frame: a BROADCAST SCOREBOARD. Pure black ground; three flat charcoal panels with square corners; all type in one amber LED-style face, white for names; the half-courts as faint amber lines; the wheel card a plain amber ring; the button a solid amber bar. Nothing else. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft2-paper",
+      "title": "Draft, clean: paper",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-wheel-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION at their positions, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE: a bar reading 'Spin 1 of 5' and 'Open: PG SG SF PF C', then a card headed 'THE WHEEL' with the line 'A random year, conference and team. Draft one from that roster.', the space below it empty until the wheel is spun, and one wide button at the bottom reading 'Spin the wheel'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here' with their position letters. No photographs of people. THE BRIEF IS SIMPLICITY: a clean, calm screen with generous space, one type family, few colours, flat surfaces, thin rules, no ornament, no texture, no clutter - every element purposeful and easy to read. Change the DESIGN, filling the whole 16:9 frame: a SHEET OF PAPER. Warm cream ground like a printed scouting sheet; black ink type in one plain typeface; thin black rules dividing the three columns; the half-courts printed in thin black lines; one red ink stamp for the button; the wheel card a simple black circle outline. Nothing else. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft2-glass",
+      "title": "Draft, clean: glass",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-wheel-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION at their positions, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE: a bar reading 'Spin 1 of 5' and 'Open: PG SG SF PF C', then a card headed 'THE WHEEL' with the line 'A random year, conference and team. Draft one from that roster.', the space below it empty until the wheel is spun, and one wide button at the bottom reading 'Spin the wheel'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here' with their position letters. No photographs of people. THE BRIEF IS SIMPLICITY: a clean, calm screen with generous space, one type family, few colours, flat surfaces, thin rules, no ornament, no texture, no clutter - every element purposeful and easy to read. Change the DESIGN, filling the whole 16:9 frame: DARK GLASS. A very dark, softly blurred arena far behind; three frosted-glass panels with soft edges and a faint white border; white type in one light face; the half-courts as pale glowing lines; the wheel card a soft glowing disc; the button a glass bar with a thin white edge. Calm and quiet. Nothing else. Text must be real, legible English exactly as listed."
+    },
+    {
+      "slug": "draft2-chalk",
+      "title": "Draft, clean: chalk",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-wheel-today.jpg"
+      ],
+      "prompt": "Redesign the game screen in the reference image, keeping its CONTENT and purpose exactly, in three columns. LEFT, the opponent: 'Level 36 opponent', 'Dallas Mavericks 11', '57-25 season lines', a half-court diagram labelled 'Tactic: Pin-down' with five square cards bearing initials (JK, JT, DN, TC, SM) and the names KIDD, TERRY, NOWITZKI, CHANDLER, MARION at their positions, and under it a five-row list (Jason Kidd 11, Jason Terry 11, Shawn Marion 11, Dirk Nowitzki 11, Tyson Chandler 11) each with a position line and three numbers. CENTRE: a bar reading 'Spin 1 of 5' and 'Open: PG SG SF PF C', then a card headed 'THE WHEEL' with the line 'A random year, conference and team. Draft one from that roster.', the space below it empty until the wheel is spun, and one wide button at the bottom reading 'Spin the wheel'. RIGHT, my five: '91-17', 'Gaziantep ag', '0 of 5', a half-court with five empty rings PG SG SF PF C each marked OPEN, and five lines 'Draft a man here' with their position letters. No photographs of people. THE BRIEF IS SIMPLICITY: a clean, calm screen with generous space, one type family, few colours, flat surfaces, thin rules, no ornament, no texture, no clutter - every element purposeful and easy to read. Change the DESIGN, filling the whole 16:9 frame: CHALK ON SLATE. A dark slate ground; everything hand-drawn in white chalk with one yellow chalk for the live numbers and the button; the half-courts chalked; the five cards as chalk squares; the wheel card a chalk circle; plenty of empty slate between things. Nothing else. Text must be real, legible English exactly as listed."
     }
   ]
 }
