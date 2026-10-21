@@ -354,6 +354,39 @@
         "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
       ],
       "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts and every word and number exactly where they are, in the same brushed-steel-and-glass material and cool blue-white light. Change only this: the three panels are angled toward the viewer like the consoles of a cockpit, the left and right ones turned in; the reel drums sit deeper in a recessed steel bay with a warm white glow spilling out of it; small steel rivets and seams on the frames; the floor a dark reflective steel grid. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft6-emerald",
+      "title": "Draft, steel in emerald",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts, the brushed-steel material and every word and number exactly where they are. Change only the COLOUR OF THE LIGHT: the blue-white glow everywhere becomes deep EMERALD GREEN - the reel edges, the landed row, the arrows, the haze and the floor reflections all green, the steel itself cool and neutral. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft6-crimson",
+      "title": "Draft, steel in crimson",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts, the brushed-steel material and every word and number exactly where they are. Change only the COLOUR OF THE LIGHT: the blue-white glow everywhere becomes deep CRIMSON RED - the reel edges, the landed row, the arrows, the haze and the floor reflections all red, the steel itself dark and neutral. Text stays exactly as it is, legible English."
+    },
+    {
+      "slug": "draft6-amber",
+      "title": "Draft, steel in amber",
+      "look": "",
+      "tier": "screen",
+      "era": "",
+      "refs": [
+        "https://raw.githubusercontent.com/tomereinan-create/Game7/main/scripts/design/refs/draft-steel.jpg"
+      ],
+      "prompt": "Repaint the reference image keeping its composition, layout, every panel, the two reel drums with the team stopped and the year still spinning, the roster, the courts, the brushed-steel material and every word and number exactly where they are. Change only the COLOUR OF THE LIGHT: the blue-white glow everywhere becomes warm AMBER and ivory - the reel edges, the landed row, the arrows, the haze and the floor reflections all a warm gold-white, the steel itself warm gunmetal. Text stays exactly as it is, legible English."
     }
   ]
 }
