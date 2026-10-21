@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { WHEEL, type TeamSeason } from './Draft'
-import { ovrOf, startingFive, winsOf, YEARS } from './TeamDb'
+import { ovrOf, winsOf, YEARS } from './TeamDb'
 import { DRAFT_SIZE, SIGMA } from '../config'
 import { teamCode } from '../engine/names'
 import { PLAYERS } from '../engine/pool'
+import { loadFive, type FiveKind } from '../engine/starters'
 import { compile, simSeries } from '../engine/resolver'
 import { makeRng } from '../engine/rng'
 import type { Player, SeriesResult } from '../engine/types'
@@ -39,6 +40,13 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const [loadYear, setLoadYear] = useState(YEARS[0])
   const [loadSort, setLoadSort] = useState<'rec' | 'ovr'>('rec')
   const [loadFlip, setLoadFlip] = useState(false)
+  /**
+   * WHICH FIVE A LOADED TEAM BRINGS: the men who really started for it (most games started that
+   * season — engine/starters.ts), or the best legal five by OVR the loader always used. Real is the
+   * default: "the '96 Bulls" is Harper and Rodman, and a Settle-It matchup has to be the team that
+   * played, not the five the ratings would have picked.
+   */
+  const [loadKind, setLoadKind] = useState<FiveKind>('real')
   const pickLoadSort = (k: 'rec' | 'ovr') => {
     if (k === loadSort) setLoadFlip((f) => !f)
     else {
@@ -113,8 +121,7 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const loadTeam = (t: TeamSeason) => {
     // the same man may not appear twice across the matchup, so the other side's men sit this one out
     const other = new Set(teams[1 - side].map((n) => BY_NAME.get(n)?.player ?? n))
-    const pool = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !other.has(p.player))
-    const names5 = startingFive(pool).five.filter((p): p is Player => !!p).map((p) => p.name)
+    const names5 = loadFive(t.y, t.ab, loadKind, other).map((p) => p.name)
     setTeams((cur) => {
       const next: [string[], string[]] = [[...cur[0]], [...cur[1]]]
       next[side] = names5
@@ -209,6 +216,14 @@ export function Custom({ onHome }: { onHome: () => void }) {
               ))}
             </div>
             <div className="filterbar">
+              <button className={`sortb ${loadKind === 'real' ? 'on' : ''}`} onClick={() => setLoadKind('real')}>
+                Real starters
+              </button>
+              <button className={`sortb ${loadKind === 'best' ? 'on' : ''}`} onClick={() => setLoadKind('best')}>
+                Best five
+              </button>
+            </div>
+            <div className="filterbar">
               <button className={`sortb ${loadSort === 'rec' ? (loadFlip ? 'on asc' : 'on') : ''}`} onClick={() => pickLoadSort('rec')}>
                 Best record
               </button>
@@ -243,7 +258,11 @@ export function Custom({ onHome }: { onHome: () => void }) {
                   <span className="tdb-go">→</span>
                 </button>
               ))}
-            <div className="cap hint">Their best legal five by OVR fills {names[side]} — men already on the other side sit out.</div>
+            <div className="cap hint">
+              {loadKind === 'real'
+                ? `The five who started the most games that season fill ${names[side]} — a starter with no card, or already on the other side, gives way to the next man by starts.`
+                : `Their best legal five by OVR fills ${names[side]} — men already on the other side sit out.`}
+            </div>
           </>
         ) : (
           <>
