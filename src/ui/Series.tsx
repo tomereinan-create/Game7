@@ -4,7 +4,7 @@ import { teamCode } from '../engine/names'
 import { seriesNote } from '../engine/notes'
 import { makeRng } from '../engine/rng'
 import { starsFor } from '../engine/resolver'
-import { buildTicker } from '../engine/ticker'
+import { buildTicker, tapeSeed } from '../engine/ticker'
 import type { Lineup, Opponent, Player, SeriesResult } from '../engine/types'
 import { LINES } from './Stat'
 import { seriesBox, type BoxCtx, type PlayerBox, type SeriesBox } from '../engine/boxstats'
@@ -355,8 +355,8 @@ export function Series({
         // tactical context the box scores consume.
         t =
           g === 6
-            ? buildTicker(game.margin, five, opponent.players, makeRng(seed ^ 0x5bf03635), LINES, boxCtx ?? undefined)
-            : buildTicker(game.margin, five, opponent.players, makeRng((seed ^ 0x5bf03635 ^ Math.imul(0x9e3779b9, g + 1)) >>> 0), LINES, boxCtx ?? undefined, { us: game.us, them: game.them })
+            ? buildTicker(game.margin, five, opponent.players, makeRng(tapeSeed(seed, g)), LINES, boxCtx ?? undefined)
+            : buildTicker(game.margin, five, opponent.players, makeRng(tapeSeed(seed, g)), LINES, boxCtx ?? undefined, { us: game.us, them: game.them })
         cache.set(g, t)
       }
       return t

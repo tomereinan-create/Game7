@@ -30,7 +30,8 @@
     "read": "cd data && python compute_ovr.py --read",
     "scout": "vite-node scripts/scout.ts",
     "balance": "vite-node scripts/balance.ts",
-    "starters": "vite-node scripts/starters.ts"
+    "starters": "vite-node scripts/starters.ts",
+    "batch-sim": "vite-node scripts/batch-sim.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -129,6 +129,14 @@ function eventsFor(side: 'us' | 'them', mine: PlayerBox[], theirs: PlayerBox[], 
 }
 
 /**
+ * THE SEED A GAME'S TAPE DRAWS FROM, off the series seed — `g` is the game's index, 0-based. Game 7
+ * (index 6) draws its own FINAL from it too, and that final is the one the Series screen shows for
+ * the decider, not the resolver's box score. Kept here rather than inline in Series.tsx so the
+ * batch sim (engine/batch.ts) can print the Game 7 score a replay of that seed will show.
+ */
+export const tapeSeed = (seed: number, g: number) => (g === 6 ? seed ^ 0x5bf03635 : (seed ^ 0x5bf03635 ^ Math.imul(0x9e3779b9, g + 1)) >>> 0)
+
+/**
  * Game 7 presentation. The resolver decided the margin; this plays the night that produced it.
  *
  * The score is `boxScore(margin)` — the same call the resolver makes, so the Series screen's

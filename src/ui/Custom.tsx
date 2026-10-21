@@ -216,10 +216,10 @@ export function Custom({ onHome }: { onHome: () => void }) {
               ))}
             </div>
             <div className="filterbar">
-              <button className={`sortb ${loadKind === 'real' ? 'on' : ''}`} onClick={() => setLoadKind('real')}>
+              <button className={`sortb pick ${loadKind === 'real' ? 'on' : ''}`} onClick={() => setLoadKind('real')}>
                 Real starters
               </button>
-              <button className={`sortb ${loadKind === 'best' ? 'on' : ''}`} onClick={() => setLoadKind('best')}>
+              <button className={`sortb pick ${loadKind === 'best' ? 'on' : ''}`} onClick={() => setLoadKind('best')}>
                 Best five
               </button>
             </div>
