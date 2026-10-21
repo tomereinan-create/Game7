@@ -6,11 +6,14 @@ import App from './App'
 import { CardProvider } from './ui/CardSheet'
 import { CREATOR } from './creator/params'
 import { initAnalytics } from './analytics'
+import { listenForInstall } from './state/install'
 import './styles.css'
 
 if (mountHere()) {
   // P5: cookieless, and a no-op without a key; creator mode sends nothing
   initAnalytics({ creator: !!CREATOR })
+  // P9: Chrome's install prompt can fire before anything is mounted to hear it
+  if (!CREATOR) listenForInstall()
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <CardProvider>

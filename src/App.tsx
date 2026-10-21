@@ -58,6 +58,8 @@ import { track } from './analytics'
 import { CREATOR, type Creator } from './creator/params'
 import { asOpponent, teamSeason } from './creator/teams'
 import { CreatorSettle } from './creator/Settle'
+import { ImportPrompt, IosHint, StandaloneWelcome } from './ui/Escape'
+import { standalone } from './share/inapp'
 
 /** Creator mode's club: the `team` in the address ("Tel Aviv Jets" — the last word is the nickname),
  *  or one named off the run's seed, so the same address always wears the same name. */
@@ -490,6 +492,9 @@ function Game() {
       dur,
     })
     setAutoSpin(false)
+    // P9: ask the browser to keep this origin's storage through a quota sweep (it does not stop
+    // Safari's seven-day rule). Firefox would put up a permission prompt for it, so not there.
+    if (!CREATOR && (standalone() || !/Firefox\//.test(navigator.userAgent))) void navigator.storage?.persist?.().catch(() => false)
     track('series_complete', { mode: cm, level, won: result.won, games: result.games.length, chance: Math.round(pre * 100) })
     // the toasts and the coach wait for the landing (see `hold`)
     hold.current = true
@@ -651,6 +656,15 @@ function Game() {
       {roster ? <Roster onBack={() => setRoster(false)} /> : archs ? <Archetypes onBack={() => setArchs(false)} /> : ach ? <Achievements onBack={() => setAch(false)} /> : teamDb ? <TeamDb initial={teamReq} onBack={() => { setTeamDb(false); requestTeam(null) }} /> : null}
       {/* the tutorial's coach: renders nothing outside tutorial mode, and on every screen inside it */}
       <Coach />
+      {/* P9: a link that carries a save, the iOS Home Screen hint after the first spin, and the
+          Home Screen app's first launch. None of them in creator mode, which saves nothing. */}
+      {CREATOR ? null : (
+        <>
+          <ImportPrompt />
+          <IosHint />
+          <StandaloneWelcome />
+        </>
+      )}
       {toasts.length ? (
         <div className="ach-toasts">
           {toasts.map((d) => (

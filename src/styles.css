@@ -10642,8 +10642,8 @@ body:has(.room-plate.au), body:has(.room-plate.vs) { background: transparent; }
 }
 .site-foot p { margin: 0 auto 8px; max-width: 64ch; }
 .site-foot nav { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
-.site-foot a,
-.site-foot button {
+.site-foot nav > a,
+.site-foot nav > button {
   color: inherit;
   font: inherit;
   text-decoration: underline;
@@ -10653,8 +10653,8 @@ body:has(.room-plate.au), body:has(.room-plate.vs) { background: transparent; }
   padding: 4px 0;
   cursor: pointer;
 }
-.site-foot a:hover,
-.site-foot button:hover { color: var(--ink, #f2ece0); }
+.site-foot nav > a:hover,
+.site-foot nav > button:hover { color: var(--ink, #f2ece0); }
 /* the wordmark carries the product's name from src/site.ts; a long one steps down a size on a phone */
 @media (max-width: 639px) {
   .fd-word.long { font-size: clamp(24px, calc(var(--fd-u, 10px) * 1.55), 120px); }
@@ -10683,7 +10683,7 @@ body.creator #root { padding-bottom: 16px !important; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  height: 72px;
+  height: 80px;
   padding: 0 18px;
   background: linear-gradient(#0b0a09 70%, rgb(11 10 9 / 0));
   border: 0;
@@ -10694,12 +10694,12 @@ body.creator #root { padding-bottom: 16px !important; }
 .cr-hud:disabled { cursor: default; opacity: 1; }
 .cr-vs { display: flex; flex-direction: column; min-width: 0; }
 .cr-vs i { font: 500 11px/1 var(--mono, monospace); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-style: normal; }
-.cr-vs b { font: 400 30px/1.05 var(--serif); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-vs b { font: 400 27px/0.98 var(--serif); text-transform: uppercase; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .cr-wc { display: flex; flex-direction: column; align-items: flex-end; flex: none; }
 .cr-wc b { font: 400 44px/0.95 var(--serif); color: var(--muted); }
 .cr-wc i { font: 500 10px/1 var(--mono, monospace); letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-style: normal; }
 .cr-hud.on .cr-wc b { color: var(--you); }
-body.creator .draft { padding-top: 78px; }
+body.creator .draft { padding-top: 88px; }
 /* the reels lead and grow; the opponent waits for the five to be full */
 body.creator .draft:not(.set) .col.a { display: none; }
 body.creator .draft .wheel-card .reels { zoom: 1.32; }
@@ -10736,3 +10736,89 @@ body.creator .draft .wheel-idle .spin-team { font-size: 48px; }
 .cr-count b { color: var(--ink); font-variant-numeric: tabular-nums; }
 .cr-go { margin-top: 8px; }
 .cr-err { padding: 40px 0; color: var(--muted); }
+
+/* P9 — THE WAY OUT AND THE WAY HOME: the in-app escape, the save-code sheet, the install hint. */
+.g7-escape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px calc(12px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+  border: 0;
+  background: var(--you, #f0b323);
+  color: var(--you-ink, #141008);
+  font: 700 15px/1.2 var(--sans, 'Space Grotesk', system-ui, sans-serif);
+  text-align: left;
+  cursor: pointer;
+}
+.g7-escape b { font-size: 20px; }
+.g7-sheet {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.62);
+}
+.g7-card {
+  width: min(520px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  padding: 18px 18px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  border-radius: 16px 16px 0 0;
+  background: var(--surface, #17140f);
+  border: 1px solid var(--line-2, #2a2622);
+  color: var(--ink, #f2ece0);
+  font: 400 15px/1.5 var(--sans, 'Space Grotesk', system-ui, sans-serif);
+}
+@media (min-width: 700px) {
+  .g7-sheet { align-items: center; }
+  .g7-card { border-radius: 16px; }
+}
+.g7-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.g7-head b { font: 400 26px/1.1 var(--serif); text-transform: uppercase; }
+.g7-x { flex: none; width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--muted, #a59d90); font-size: 24px; cursor: pointer; }
+.g7-card p { margin: 8px 0; color: var(--ink-2, #ddd5c7); }
+.g7-card .btn { width: 100%; margin-top: 10px; }
+.g7-code {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-2, #2a2622);
+  border-radius: 8px;
+  background: var(--bg, #0b0a09);
+  color: var(--ink, #f2ece0);
+  font: 400 12.5px/1.4 var(--mono, ui-monospace, monospace);
+  word-break: break-all;
+  resize: vertical;
+}
+.g7-row { display: flex; gap: 10px; }
+.g7-row .btn { flex: 1; }
+.g7-rule { height: 1px; margin: 18px 0 8px; background: var(--line-2, #2a2622); }
+.g7-msg { color: var(--them, #ff7a6b) !important; }
+.g7-steps { margin: 6px 0 10px; padding-left: 22px; }
+.g7-steps li { margin: 4px 0; }
+.g7-toast {
+  position: fixed;
+  z-index: 70;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  transform: translateX(-50%);
+  width: min(460px, calc(100% - 24px));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 14px;
+  border-radius: 12px;
+  background: var(--surface, #17140f);
+  border: 1px solid var(--you, #f0b323);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.5);
+}
+.g7-toast-go { flex: 1; padding: 10px 0; border: 0; background: none; color: var(--ink, #f2ece0); font: 400 14px/1.3 var(--sans, sans-serif); text-align: left; cursor: pointer; }
+.g7-toast-go b { color: var(--you, #f0b323); }
+.site-foot .g7-install { color: var(--you, #f0b323); }

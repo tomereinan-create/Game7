@@ -2,6 +2,7 @@ import { type CampaignMode, type Progress, type Team } from '../state/campaign'
 import { useUserMode } from '../state/viewmode'
 import { FrontDoor } from './FrontDoor'
 import { SiteFooter } from './SiteFooter'
+import { EscapeBanner, FooterDoors } from './Escape'
 
 export type Mode = CampaignMode | 'database' | 'archetypes' | 'versus' | 'auction' | 'custom' | 'achievements' | 'teams'
 
@@ -39,8 +40,12 @@ export interface Era {
 export function Home(props: { progress: Record<CampaignMode, Progress>; team: Team | null; onPick: (m: Mode) => void }) {
   return (
     <>
+      {/* P9: inside TikTok / Instagram, the one visible way out to a real browser — never automatic */}
+      <EscapeBanner />
       <FrontDoor user={useUserMode()} {...props} />
-      <SiteFooter />
+      <SiteFooter>
+        <FooterDoors />
+      </SiteFooter>
     </>
   )
 }

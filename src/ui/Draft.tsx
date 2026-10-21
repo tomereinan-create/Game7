@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { trackOnce } from '../analytics'
+import { FIRST_SPIN } from '../state/install'
 import { plateUrl } from './moments'
 import SALARIES from '../data/salaries.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
@@ -917,6 +918,8 @@ export function Draft({
     }
     // the funnel's second step (P5): once per visit, whichever draft it happens in
     trackOnce('first_spin', { level: opponent.round, auto: autoSpin || autoplay })
+    // P9: the iOS Add-to-Home-Screen hint waits for this moment (src/ui/Escape.tsx)
+    if (!creator) window.dispatchEvent(new Event(FIRST_SPIN))
     setSel(null)
     setSlot(null)
     setInfo(null)
