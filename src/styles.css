@@ -10822,3 +10822,123 @@ body.creator .draft .wheel-idle .spin-team { font-size: 48px; }
 .g7-toast-go { flex: 1; padding: 10px 0; border: 0; background: none; color: var(--ink, #f2ece0); font: 400 14px/1.3 var(--sans, sans-serif); text-align: left; cursor: pointer; }
 .g7-toast-go b { color: var(--you, #f0b323); }
 .site-foot .g7-install { color: var(--you, #f0b323); }
+   THE SHARE CARD (P10) — the Share door under the verdict, and the sheet it opens
+   (src/ui/ShareSheet.tsx). Its own prefix, shr-. The sheet is the app's own full-screen
+   .sheet with DONE in its top bar, and its doors are the dock's .btn and .btn.ghost, so it
+   reads as one more room of the same house rather than a share widget bolted on.
+   ===================================================================================== */
+/* The door: a quiet outline under the stars, never the gold — the gold on this screen is the way
+   on, in the dock. 44px tall, which is what a thumb needs. */
+.shr-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 0 18px;
+  border: 1px solid var(--line-3);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 #080706;
+  transition: box-shadow 0.12s ease, transform 0.12s ease, border-color 0.12s ease;
+}
+.shr-open:hover { border-color: var(--ink); }
+.shr-open:active { transform: translateY(3px); box-shadow: 0 1px 0 #080706; transition: none; }
+.shr-open:focus-visible { outline: 2px solid var(--you); outline-offset: 3px; }
+.shr-open svg { flex: none; color: var(--you); }
+/* the result reads at the size of the desk it is on, and the door with it */
+@media (min-width: 1400px) {
+  .result .shr-open {
+    min-height: clamp(44px, 2.6vw, 84px);
+    margin-top: clamp(14px, 1vw, 32px);
+    padding: 0 clamp(18px, 1.2vw, 40px);
+    gap: clamp(8px, 0.5vw, 16px);
+    border-radius: clamp(6px, 0.4vw, 14px);
+    font-size: clamp(10.5px, 0.7vw, 22px);
+  }
+  .result .shr-open svg { width: clamp(14px, 0.9vw, 28px); height: clamp(14px, 0.9vw, 28px); }
+}
+
+/* The sheet stands over the result's own sheets, and has no dock, so it keeps no dock's floor. */
+.sheet.shr-sheet { z-index: 72; padding-bottom: calc(var(--foot) + 28px); }
+.shr-body { display: grid; gap: 16px; margin-top: 12px; }
+.shr-fig { margin: 0; display: grid; gap: 10px; justify-items: center; }
+/* The picture keeps its 9:16 and never runs off the window. The heights are divided by the desk
+   zoom because a zoomed sheet multiplies a vh with everything else. The press-and-hold menu is
+   switched back ON here explicitly: in an app's webview it is the only way the picture leaves. */
+.shr-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(58vh / var(--desk-zoom, 1));
+  aspect-ratio: 1080 / 1920;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  -webkit-touch-callout: default;
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+.shr-wait {
+  display: grid;
+  place-items: center;
+  width: min(100%, calc(58vh / var(--desk-zoom, 1) * 0.5625));
+  padding: 24px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* in a webview the picture IS the share: the whole column, the hint above it */
+.shr-sheet.inapp .shr-img { width: 100%; max-height: none; }
+.shr-sheet.inapp .shr-wait { width: 100%; }
+.shr-hint {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px dashed var(--you-line);
+  border-radius: 6px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--you);
+}
+/* the doors: the dock's own buttons, spaced for their 7px of travel */
+.shr-targets { display: grid; gap: 15px; }
+.shr-sheet .btn.shr-t { gap: 10px; text-decoration: none; }
+.shr-t small { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; opacity: 0.7; }
+.shr-help { margin: 4px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
+.shr-note { margin: 0; text-align: center; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--you); }
+.shr-note:empty { display: none; }
+.shr-manual {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line-3);
+  border-radius: 6px;
+  font: 13px/1.45 var(--sans);
+  resize: vertical;
+}
+/* A desk (or a tablet) has the width to stand the picture beside its doors. The two `:not()`s are
+   there to match the weight of the desk scale's own `.sheet:not(...) > *` cap, which this follows. */
+@media (min-width: 720px) {
+  .sheet.shr-sheet:not(.sheet2):not(.pc-term) > * { max-width: 760px; }
+  .shr-body { grid-template-columns: auto minmax(0, 300px); justify-content: center; align-items: start; gap: 28px; }
+  .shr-img { max-height: calc(76vh / var(--desk-zoom, 1)); }
+  .shr-wait { width: calc(76vh / var(--desk-zoom, 1) * 0.5625); }
+  .shr-sheet.inapp .shr-img { width: auto; max-height: calc(76vh / var(--desk-zoom, 1)); }
+}

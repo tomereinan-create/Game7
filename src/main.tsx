@@ -9,12 +9,18 @@ import { initAnalytics } from './analytics'
 import { listenForInstall } from './state/install'
 import './styles.css'
 
-if (mountHere()) {
+const root = document.getElementById('root')!
+// THE SHARE CARD PREVIEW (dev server only): ?sharepreview=1 draws both card formats from fixed
+// samples in place of the app, for a screenshot. `import.meta.env.DEV` is false in a build, so
+// this branch and the module it loads are dropped from production.
+if (import.meta.env.DEV && new URLSearchParams(location.search).get('sharepreview') === '1') {
+  void import('./share/preview').then((m) => m.mountSharePreview(root))
+} else if (mountHere()) {
   // P5: cookieless, and a no-op without a key; creator mode sends nothing
   initAnalytics({ creator: !!CREATOR })
   // P9: Chrome's install prompt can fire before anything is mounted to hear it
   if (!CREATOR) listenForInstall()
-  createRoot(document.getElementById('root')!).render(
+  createRoot(root).render(
     <StrictMode>
       <CardProvider>
         {/* The blue crawl used to hang here, outside App and pinned to the window, so that every

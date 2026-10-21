@@ -15,6 +15,7 @@ import type { Skin } from './LevelMap'
 import { useUserMode } from '../state/viewmode'
 import { useLesson } from '../state/tutorial'
 import { mapDoorLesson } from './lessons'
+import { ShareButton } from './ShareSheet'
 
 /** Whether this machine has asked for less motion. The draft reads it the same way. */
 const reduceMotion = () => {
@@ -775,6 +776,13 @@ export function Series({
                   {'★'.repeat(starsFor(result))}
                   <span>{'★'.repeat(3 - starsFor(result))}</span>
                 </div>
+              ) : null}
+              {/* THE SHARE CARD (P10): only once the series has spoken, so it never gives away a
+                  result the strip has not landed yet. Game 7's score is the tape's, as on the strip. */}
+              {settled ? (
+                <ShareButton
+                  input={{ opponent, five, mine, theirs, teamName, teamAb: myAb, result, sigma, exhibition, kicker, scores: scoresOf(result, tape ? { us: tape.us, them: tape.them } : null) }}
+                />
               ) : null}
             </div>
 
