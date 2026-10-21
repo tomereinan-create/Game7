@@ -1,11 +1,12 @@
 /**
  * THE ONE PLACE THE PRODUCT IS NAMED, AND WHERE IT LIVES.
  *
- * "Game 7" cannot be the product's brand: G7 IP Holdings holds approved GAME 7 applications for game
- * software and online games (USPTO serials 97682027 and 98675755). The name is undecided, so every
- * surface that says what the product is called — the page title, the manifest, the Open Graph card,
- * the share text, the footer, the privacy page, the mover page — reads it from here, and changing
- * it is one edit. "Game 7" stays as an in-game term: the Game 7 ticker, "survive Game 7".
+ * His decision (2026-10-22): the product stays "Game 7". The trademark search found GAME 7 filings
+ * for game software (G7 IP Holdings, USPTO serials 97682027 and 98675755), so a rename may still
+ * come — which is why every surface that says what the product is called (the page title, the
+ * manifest, the Open Graph card, the share text, the wordmark, the footer, the privacy page, the
+ * mover page) reads it from here, and changing it is one edit plus `node scripts/capture/stills.mjs`
+ * for the link-preview picture. "Game 7" is also the in-game term: the Game 7 ticker.
  *
  * Read by the app (`import { SITE } from './site'`) AND by vite.config.ts at build time (the HTML
  * pages and the manifest are written from it), so this file must stay plain data: no DOM, no
@@ -17,7 +18,7 @@ export interface Site {
   name: string
   /** The home-screen label under the icon. Twelve characters or fewer reads whole on iOS. */
   shortName: string
-  /** The bare domain once it is bought ('buzzerdraft.com'), or '' while there is none. */
+  /** The bare domain once it is bought ('game7draft.com'), or '' while there is none. */
   domain: string
   /**
    * The absolute address of the app, with its trailing slash. Link previews need absolute URLs, so
@@ -39,7 +40,8 @@ export interface Site {
   contact: string
 }
 
-const NAME = 'Buzzer Draft'
+const NAME = 'Game 7'
+/** Planned: 'game7draft.com' (handles @game7draft). Not bought yet — set it here once it is. */
 const DOMAIN = ''
 /** Where the game is served today, until a domain is bought and Cloudflare Pages takes over. */
 export const LEGACY_URL = 'https://tomereinan-create.github.io/Game7/'
@@ -50,7 +52,7 @@ export const SITE: Site = {
   domain: DOMAIN,
   url: DOMAIN ? `https://${DOMAIN}/` : LEGACY_URL,
   description: 'Spin the wheel, draft five real players from any season since 1980, and survive a best-of-seven. Free, in your browser.',
-  ogTitle: `${NAME}: spin, draft five, survive Game 7`,
+  ogTitle: `${NAME}: spin the wheel, draft five, win the series`,
   ogImageAlt: 'A slot-machine wheel landing on a team-season above a basketball score bug reading Game 7.',
   themeColor: '#0b0a09',
   disclaimer:

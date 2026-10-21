@@ -84,7 +84,7 @@ export interface ShareData {
   stamps: Stamp[]
   /** The pre-series win chance, 0..1. Decides UPSET; never printed. */
   winChance: number
-  /** The address printed on the card ("buzzerdraft.com"): no share ID, no ref. */
+  /** The address printed on the card ("game7draft.com"): no share ID, no ref. */
   url: string
   /** The replayable challenge (P11), encoded for a link's `#c=`; absent when there is no seed. */
   challenge?: string
@@ -267,7 +267,7 @@ export function xIntent(d: ShareData, link: string): string {
   return `https://x.com/intent/post?text=${encodeURIComponent(shareText(d, link, false))}&url=${encodeURIComponent(link)}`
 }
 
-/** "buzzer-draft-4-3-story.png" */
+/** "game-7-4-3-story.png" */
 export function fileName(d: Pick<ShareData, 'wins' | 'losses'>, format: 'story' | 'wide'): string {
   const slug = SITE.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'share'
   return `${slug}-${d.wins}-${d.losses}-${format}.png`

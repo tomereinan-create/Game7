@@ -668,11 +668,12 @@ export function FrontDoor({
             it grows to match in `.fd-word`; this one is written here because the size is a prop. */}
         {/* "A touch bit smaller" — his ruling, 2026-09-30: 4.2 → 3.8 units, the cap with it. */}
         <Ball size="clamp(50px, calc(var(--fd-u) * 3.8), 220px)" dribble />
-        {/* P2: the product's name comes from src/site.ts — "Game 7" is the deciding game, not the
-            brand. The last word wears the accent the 7 used to. */}
+        {/* P2: the product's name comes from src/site.ts, so a rename is one edit. The last word
+            wears the accent the 7 always has. */}
         <b className={`fd-word${SITE.name.length > 7 ? ' long' : ''}`}>
           {SITE.name.split(' ').slice(0, -1).join(' ')}
-          {SITE.name.includes(' ') ? ' ' : ''}
+          {/* "Game 7" keeps the mark it always had, GAME7: a number tucks up against the word */}
+          {SITE.name.includes(' ') && !/^\d+$/.test(SITE.name.split(' ').slice(-1)[0]) ? ' ' : ''}
           <em>{SITE.name.split(' ').slice(-1)[0]}</em>
         </b>
         {/*

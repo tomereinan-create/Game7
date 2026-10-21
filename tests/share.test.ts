@@ -205,8 +205,7 @@ describe('the text', () => {
     expect(t).toEqual([headline(d), emojiGrid(d), `Play me in ${SITE.name}`, LINK])
     expect(t[0]).toMatch(/★☆☆$/)
     expect(shareText(d, LINK, false)).not.toContain(LINK)
-    // "Game 7" is the deciding game, never the product
-    expect(shareText(d, LINK)).not.toMatch(/play me in game 7/i)
+    // the product's name is written as src/site.ts writes it ("Game 7"), never the old "Game7"
     expect(shareText(d, LINK)).not.toMatch(/Game7/)
   })
 

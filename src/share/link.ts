@@ -32,7 +32,7 @@ export function shareLink(q: { s?: string; ref?: string; c?: string } = {}, hash
   return u.href
 }
 
-/** The address without its scheme, for printing on a card: "buzzerdraft.com" or "x.github.io/Game7". */
+/** The address without its scheme, for printing on a card: "game7draft.com" or "x.github.io/Game7". */
 export function printedUrl(): string {
   return appUrl().replace(/^https?:\/\//, '').replace(/\/$/, '')
 }

@@ -19,7 +19,8 @@ const app = args.includes('--app') ? args[args.indexOf('--app') + 1] : null
 const site = readFileSync(join(root, 'src/site.ts'), 'utf8')
 const NAME = (/const NAME = '([^']*)'/.exec(site) ?? [])[1] ?? 'Game'
 const words = NAME.split(' ')
-const nameHtml = words.length > 1 ? `${words.slice(0, -1).join(' ')}<br /><em>${words.at(-1)}</em>` : `<em>${NAME}</em>`
+// the last word wears the gold; a long name breaks before it, a short one ("Game 7") stays on one line
+const nameHtml = words.length > 1 ? `${words.slice(0, -1).join(' ')}${NAME.length > 10 ? '<br />' : ' '}<em>${words.at(-1)}</em>` : `<em>${NAME}</em>`
 
 const browser = await launch()
 try {

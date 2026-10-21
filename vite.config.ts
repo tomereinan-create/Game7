@@ -19,7 +19,7 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
   const vars: Record<string, string> = {
     SITE_NAME: site.name,
     SITE_SHORT: site.shortName,
-    SITE_TITLE: `${site.name} — spin a five, survive Game 7`,
+    SITE_TITLE: `${site.name} — spin the wheel, draft five, win the series`,
     SITE_DESC: site.description,
     SITE_URL: site.url,
     SITE_THEME: site.themeColor,
