@@ -403,7 +403,7 @@ export function FrontDoor({
       label: '1v1 bid',
       tag: '$20 each',
       /* P2 (launch gate): no betting words — "pot" and "ante" read as gambling in every clip */
-      desc: 'A $20 budget each, best five wins. Blind-bid every man to the block.',
+      desc: 'A $20 budget each, best five wins. Every man goes to the block.',
       /* THE ONE META WITH NO KEY. Ours reads HOUSE RULES and has no middot to split at, and the
          mockup's answer — key "House rules", value "$20" — invents a number that appears nowhere in
          the data and says the kicker's "$20 each" twice. So the string stays whole in the value and

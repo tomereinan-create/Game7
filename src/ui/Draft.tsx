@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
-import { trackOnce } from '../analytics'
+import { track, trackOnce } from '../analytics'
 import { FIRST_SPIN } from '../state/install'
 import { plateUrl } from './moments'
 import SALARIES from '../data/salaries.json'
@@ -1246,6 +1246,12 @@ export function Draft({
       window.setTimeout(() => onSim(five, assignment, toWin), 2500),
     )
   }
+  /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count) */
+  useEffect(() => {
+    if (full && !carry && !creator) track('draft_complete', { level: opponent.round, salary, death })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [full])
+
   /* THE FIRST SPIN SPINS ITSELF (P1) — once, on arrival. The draft is keyed per attempt, so this
      mounts once per wheel; the timer gives the screen a beat to paint before the reels go. */
   useEffect(() => {
