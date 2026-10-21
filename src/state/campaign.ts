@@ -297,6 +297,39 @@ export function die(p: Progress): Progress {
   return { ...fresh(), coach: p.coach, deaths: p.deaths + 1 }
 }
 
+/**
+ * THE SAVE AS IT STANDS ONCE A SERIES HAS SETTLED — stars, record, play count and, in the death
+ * match, the wear, the bench's healing and the death itself.
+ *
+ * App writes this THE MOMENT THE SERIES IS SIMMED, before a single game lands on the result screen.
+ * It used to be written when a door off that screen was tapped, which made the result optional:
+ * tap Home (or refresh, or close the app) during the playback and a death-match loss, a spent life
+ * and every game of wear simply never happened — and the draft wheel is seeded, so coming back
+ * dealt the same five again for a fresh sim. A real win was lost the same way. The playback is
+ * presentation; the night is decided, and banked, when the ball goes up.
+ */
+export function settledProgress(
+  mode: CampaignMode,
+  p: Progress,
+  s: { level: number; won: boolean; stars: number; games: number; five: string[]; heal: number; dur: (name: string) => number },
+): Progress {
+  const stars = [...p.stars]
+  if (s.won) stars[s.level - 1] = Math.max(stars[s.level - 1], s.stars)
+  const rec = p.record ?? { w: 0, l: 0 }
+  const record = s.won ? { w: rec.w + 1, l: rec.l } : { w: rec.w, l: rec.l + 1 }
+  if (!isDeath(mode)) return { ...p, stars, record, plays: p.plays + 1 }
+  // every man who played loses one durability per game the series ran; the My team change resets
+  const wear = applyWear(p.wear, s.five, s.games, s.dur)
+  // THE BENCH HEALS: the sixth man played nothing, and each settled series restores him, capped at
+  // his own card's durability
+  if (p.bench && s.heal > 0) {
+    const cap = s.dur(p.bench)
+    wear[p.bench] = Math.min(cap, (wear[p.bench] ?? cap) + s.heal)
+  }
+  const next = { ...p, stars, record, plays: p.plays + 1, wear, subsUsed: 0 }
+  return s.won ? { ...next, roster: s.five } : die(next)
+}
+
 export function loadProgress(m: CampaignMode): Progress {
   try {
     const raw = localStorage.getItem(key(m)) ?? (legacyKey(m) ? localStorage.getItem(legacyKey(m)!) : null)

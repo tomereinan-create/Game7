@@ -20,13 +20,11 @@ import type { Lineup, Opponent, Player, SeriesResult } from './engine/types'
 import type { BoxCtx } from './engine/boxstats'
 import {
   advanceTo,
-  applyWear,
   callsPlan,
   clubCode,
   planFor,
   WEAR_OUT,
   currentLevel,
-  die,
   levelSeed,
   loadProgress,
   loadTeam,
@@ -35,6 +33,7 @@ import {
   resetTutorialSaves,
   saveProgress,
   saveTeam,
+  settledProgress,
   starsFromUrl,
   type CampaignMode,
   type Progress,
@@ -103,6 +102,12 @@ interface Pending {
    * went up.
    */
   next: number | null
+  /**
+   * Death match: this loss ended the run (no extra life left to absorb it). Read off the save as it
+   * stood before the sim — the save is already settled by the time the result screen renders, and a
+   * dead run's save has no lives and no five to read it from.
+   */
+  runEnded: boolean
 }
 
 
@@ -171,14 +176,37 @@ export default function App() {
   const [auto, setAuto] = useState<{ mode: CampaignMode; stars: number[] } | null>(null)
   // unlock toasts: the trophy case speaks once, quietly, then leaves
   const [toasts, setToasts] = useState<AchDef[]>([])
+  /**
+   * THE RESULT IS BANKED AT THE SIM, BUT ANNOUNCED AT THE LANDING. A series settles the moment it
+   * is simmed (see `sim`), so its achievements unlock then too — while the result screen is still
+   * landing game 1. A "Sweep" toast over a 0-0 strip would give the night away, so while a series
+   * is playing back, unlocks and the coach's death-match word wait here, and go up when the strip
+   * settles (Series' `onSettled`) or when he walks off the screen before it does.
+   */
+  const hold = useRef(false)
+  const held = useRef<{ toasts: AchDef[]; lesson: (() => void) | null }>({ toasts: [], lesson: null })
+  const toast = (d: AchDef) => {
+    setToasts((t) => [...t, d])
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
+    // the tutorial's coach says what a toast is, the first time one goes up
+    if (isTutorial()) teachOnce('trophy', () => trophyLesson(d))
+  }
+  const release = () => {
+    if (!hold.current) return
+    hold.current = false
+    const { toasts: ds, lesson } = held.current
+    held.current = { toasts: [], lesson: null }
+    ds.forEach(toast)
+    lesson?.()
+  }
   useEffect(
     () =>
       onUnlocked((d) => {
-        setToasts((t) => [...t, d])
-        window.setTimeout(() => setToasts((t) => t.filter((x) => x !== d)), 5000)
-        // the tutorial's coach says what a toast is, the first time one goes up
-        if (isTutorial()) teachOnce('trophy', () => trophyLesson(d))
+        if (hold.current) held.current.toasts.push(d)
+        else toast(d)
       }),
+    // `toast` reads only setters and module functions; registering once is the point
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 
@@ -401,6 +429,51 @@ export default function App() {
     const boxCtx = plan && pc ? boxContext(plan, pc.lvl, five, opponent.players, assignment) : null
     const pre = odds(mine, theirs, sig, toWin).series
     const result = simSeries(mine, theirs, makeRng(seed), sig, toWin)
+    /**
+     * SETTLING THE NIGHT, HERE AND NOW. The stars (a win keeps the better of old and new), the
+     * record, the play count, the death match's wear, its lost life or its death, and the
+     * achievements are all written before the result screen lands its first game — see
+     * `settledProgress`. They used to wait for a door off that screen, so tapping Home, refreshing
+     * or closing the app during the playback threw the night away: a death-match loss never
+     * happened, and the seeded wheel dealt the same five again for a fresh roll of the series; a
+     * real win and its stars were lost the same way. The doors only navigate now.
+     */
+    const dur = (n: string) => PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 50
+    const settled = settledProgress(cm, prog, {
+      level,
+      won: result.won,
+      stars: starsFor(result),
+      games: result.games.length,
+      five: five.map((p) => p.name),
+      heal: benchHeal(prog),
+      dur,
+    })
+    // the toasts and the coach wait for the landing (see `hold`)
+    hold.current = true
+    held.current = { toasts: [], lesson: null }
+    commit(cm, settled)
+    achSettleSeries({
+      mode: cm,
+      team: `${teamName} · ${TITLE(cm)}`,
+      level,
+      five,
+      opponent,
+      result,
+      seed,
+      pre,
+      plan,
+      pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+      boxCtx,
+      assignment,
+      prevProg: prog,
+      nextProg: settled,
+    })
+    // the coach on a death-match loss: a life spent, or the run over — the same rule `die` reads
+    // `lives` is the extra lives; the coach counts the way the heart does — those plus the one in play
+    if (death && tutorial && !result.won) {
+      const lives = prog.lives
+      held.current.lesson = () => teach(lives > 0 ? lifeLesson(lives) : runOverLesson())
+    }
     setPending({
       five,
       mine,
@@ -413,110 +486,40 @@ export default function App() {
       sigma: sig,
       plan,
       pc: pc ? { ours: pc.ours, theirs: pc.theirs, margin: pc.margin } : null,
+      // read off the save as it stood BEFORE this series settled — see `advanceTo`
       next: advanceTo(prog, level, result.won),
+      runEnded: death && !result.won && prog.lives === 0,
     })
   }
 
 
-  /** Achievements settle where the series does — everything they read was captured at sim time. */
-  const settleAch = (nextProg: Progress) => {
-    if (!cm || !prog || !level || !pending || !opponent) return
-    achSettleSeries({
-      mode: cm,
-      team: `${teamName} · ${TITLE(cm)}`,
-      level,
-      five: pending.five,
-      opponent,
-      result: pending.result,
-      seed: pending.seed,
-      pre: pending.pre,
-      plan: pending.plan,
-      pc: pending.pc,
-      boxCtx: pending.boxCtx ?? null,
-      assignment: pending.assignment,
-      prevProg: prog,
-      nextProg,
-    })
-  }
-
-  /**
-   * SETTLING THE NIGHT. A win keeps the better of old and new stars; a loss costs only the attempt.
-   *
-   * This used to be finish() itself, and finish() was the only door off the result screen. His
-   * ruling — "Add a rematch button, and advance(If you win your latest stage…)" — opens two more,
-   * and ALL THREE SETTLE FIRST: the stars, the record, the play count, the death match's wear and
-   * the achievements are written right here, so a rematch that skipped it would throw away the
-   * night he had just played. The doors differ only in where they leave him. Returns true when the
-   * night really settled, so a door that cannot settle does not navigate either.
-   */
-  const settle = () => {
-    if (!cm || !prog || !level || !pending) return false
-    const stars = [...prog.stars]
-    if (pending.result.won) stars[level - 1] = Math.max(stars[level - 1], starsFor(pending.result))
-    /**
-     * THE RECORD (his ruling: the draft's own card carries it beside the franchise name). Counted
-     * here because this is the one place a series settles for all three modes, and counted per
-     * NIGHT rather than per level: replaying a cleared level for a better star is another series
-     * won or lost, and the record is what the franchise did, not which rungs it holds.
-     */
-    const rec = prog.record ?? { w: 0, l: 0 }
-    const record = pending.result.won ? { w: rec.w + 1, l: rec.l } : { w: rec.w, l: rec.l + 1 }
-    if (death) {
-      // The series is simmed in one piece now, so its cost lands in one piece too: every man who
-      // played loses one durability per game the series ran. The My team spin resets — one change
-      // between series, spent there and nowhere else.
-      const names = pending.five.map((p) => p.name)
-      const wear = applyWear(prog.wear, names, pending.result.games.length, (n) => PLAYERS.find((p) => p.name === n)?.attrs.durability ?? 50)
-      // THE BENCH HEALS. The sixth man played nothing, so he takes no wear — and each settled
-      // series restores him, capped at his own card's durability, never past it.
-      const heal = benchHeal(prog)
-      if (prog.bench && heal > 0) {
-        const cap = PLAYERS.find((p) => p.name === prog.bench)?.attrs.durability ?? 50
-        wear[prog.bench] = Math.min(cap, (wear[prog.bench] ?? cap) + heal)
-      }
-      const next = { ...prog, stars, record, plays: prog.plays + 1, wear, subsUsed: 0 }
-      const settled = pending.result.won ? { ...next, roster: names } : die(next)
-      commit(cm, settled)
-      settleAch(settled)
-      // the coach on a death-match loss: a life spent, or the run over — the same rule `die` reads
-      // `lives` is the extra lives; the coach counts the way the heart does — those plus the one in play
-      if (tutorial && !pending.result.won) teach(prog.lives > 0 ? lifeLesson(prog.lives) : runOverLesson())
-    } else {
-      const settled = { ...prog, stars, record, plays: prog.plays + 1 }
-      commit(cm, settled)
-      settleAch(settled)
-    }
-    return true
-  }
-
-  /** His word, unchanged: settle the night and go back to the map. */
+  /** His word, unchanged: back to the map. The night was settled at the sim. */
   const finish = () => {
-    if (settle()) {
-      setPending(null)
-      setLevel(null)
-    }
+    release()
+    setPending(null)
+    setLevel(null)
   }
   /**
    * REMATCH (his ruling: "Add a rematch button"). The same level again, straight from here, without
-   * walking back to the map and tapping the ticket. It settles first and then simply keeps `level`
-   * where it is, which drops him on the draft — and because settling bumped `plays`, `levelSeed`
-   * spins a different wheel, exactly as a replay off the map does.
+   * walking back to the map and tapping the ticket. It keeps `level` where it is, which drops him on
+   * the draft — and because settling bumped `plays`, `levelSeed` spins a different wheel, exactly as
+   * a replay off the map does.
    */
   const rematch = () => {
-    if (settle()) setPending(null)
+    release()
+    setPending(null)
   }
   /**
    * ADVANCE (his ruling: "and advance(If you win your latest stage(not if you go back to a stage
    * you already won))"). Straight into the next level's draft. WHICH level, and whether there is
-   * one at all, was decided at the sim and is carried in `pending.next`; it settles first for the
-   * same reason a rematch does.
+   * one at all, was decided at the sim and is carried in `pending.next`.
    */
   const advance = () => {
     const to = pending?.next ?? null
-    if (to !== null && settle()) {
-      setPending(null)
-      setLevel(to)
-    }
+    if (to === null) return
+    release()
+    setPending(null)
+    setLevel(to)
   }
 
   /** Put the real ladder back. Called when auto is switched off, and on the way out of a campaign. */
@@ -551,6 +554,8 @@ export default function App() {
   }, [userMode, auto])
 
   const leave = () => {
+    // walking off a result before it landed: the night is already banked, so its toasts go up now
+    release()
     // walking home with auto still on would leave a borrowed ladder in the save
     if (auto) autoOff(auto)
     setMode(null)
@@ -849,7 +854,7 @@ export default function App() {
      * would be offering to resurrect it, so the death match's last loss keeps its single door back
      * to the map. A loss the run survives (a life absorbed it) still rematches like any other.
      */
-    const runEnded = death && !pending.result.won && prog.lives === 0
+    const runEnded = pending.runEnded
     return (
       <>
         {sheet}
@@ -868,10 +873,22 @@ export default function App() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
+          onSettled={release}
           onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
           /* the death match carries one five the whole way, so the end of a series is when he
-             wants to look at it — see `onMyTeam` in Series */
-          onMyTeam={death && prog.roster ? () => setMyTeam(true) : undefined}
+             wants to look at it — see `onMyTeam` in Series. My team is the map's room, so the
+             result closes on the way in (the night is already settled); a run that just died has
+             no five left to show */
+          onMyTeam={
+            death && prog.roster
+              ? () => {
+                  release()
+                  setPending(null)
+                  setLevel(null)
+                  setMyTeam(true)
+                }
+              : undefined
+          }
           onNext={pending.next !== null ? advance : undefined}
         />
       </>

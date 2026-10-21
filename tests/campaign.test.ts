@@ -5,7 +5,7 @@ import SALARIES from '../src/data/salaries.json'
 import { PLAYERS } from '../src/engine/pool'
 import { buy, checkpointLevel, livesBought, subsPerRound, type Wallet } from '../src/engine/tree'
 import { balance, earned } from '../src/engine/tree'
-import { advanceTo, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
+import { advanceTo, applyWear, clearedCount, currentLevel, die, levelSeed, loadProgress, playable, saveProgress, settledProgress, totalStars, wornOut, type Progress } from '../src/state/campaign'
 
 const prog = (stars: number[]): Progress => ({ coach: 'def', stars, seed: 12345, plays: 0, spent: 0, nodes: {}, roster: null, lives: 0, checkpoint: 0, deaths: 0, wear: {}, subsUsed: 0, tactics: DEFAULT_TACTICS, bench: null })
 const zeros = () => Array.from({ length: ROUNDS }, () => 0)
@@ -283,5 +283,67 @@ describe('death match — wear', () => {
     expect(die(p).wear).toEqual({})
     // ...but a life spent keeps the run exactly as it was, wear included
     expect(die({ ...p, lives: 1 }).wear).toEqual({ a: 9 })
+  })
+})
+
+/**
+ * THE NIGHT IS BANKED AT THE SIM (the report: "Death Match permadeath can be skipped. Lose a series,
+ * tap Home, and the loss never happens"). App writes `settledProgress` the moment a series is
+ * simmed, before the result screen lands a game, so walking off that screen cannot undo it. These
+ * pin what that one write carries.
+ */
+describe('a settled series', () => {
+  const five = ['a', 'b', 'c', 'd', 'e']
+  const dur = () => 80
+  const night = (won: boolean, games: number) => ({ level: 1, won, stars: won ? 3 : 0, games, five, heal: 0, dur })
+
+  it('a death-match loss with no life left ends the run in the same write', () => {
+    const p: Progress = { ...prog(zeros().map((_, i) => (i < 4 ? 2 : 0))), roster: five, nodes: { coach_tactics: 2 }, spent: 4 }
+    const s = settledProgress('death', p, night(false, 4))
+    expect(s.deaths).toBe(1)
+    expect(s.roster).toBeNull()
+    expect(s.stars.every((x) => x === 0)).toBe(true)
+    expect(s.nodes).toEqual({})
+  })
+
+  it('a death-match loss a life absorbs spends the life AND charges the wear', () => {
+    const p: Progress = { ...prog(zeros()), roster: five, lives: 1, subsUsed: 1 }
+    const s = settledProgress('death', p, night(false, 6))
+    expect(s.lives).toBe(0)
+    expect(s.roster).toEqual(five)
+    expect(s.wear).toEqual(Object.fromEntries(five.map((n) => [n, 74])))
+    expect(s.subsUsed).toBe(0)
+    expect(s.plays).toBe(1)
+  })
+
+  it('a death-match win banks the stars, the record and the wear, and carries the five', () => {
+    const s = settledProgress('death', { ...prog(zeros()), roster: null }, night(true, 5))
+    expect(s.stars[0]).toBe(3)
+    expect(s.record).toEqual({ w: 1, l: 0 })
+    expect(s.roster).toEqual(five)
+    expect(s.wear.a).toBe(75)
+  })
+
+  it('the bench heals, capped at his card', () => {
+    const p: Progress = { ...prog(zeros()), roster: five, bench: 'f', wear: { f: 70 } }
+    expect(settledProgress('death', p, { ...night(true, 4), heal: 5 }).wear.f).toBe(75)
+    expect(settledProgress('death', p, { ...night(true, 4), heal: 50 }).wear.f).toBe(80)
+  })
+
+  it('the other modes bank the stars and the record, keep the better star, and charge no wear', () => {
+    const p = prog(zeros().map((_, i) => (i === 0 ? 3 : 0)))
+    const lost = settledProgress('campaign', p, night(false, 4))
+    expect(lost.stars[0]).toBe(3)
+    expect(lost.record).toEqual({ w: 0, l: 1 })
+    expect(lost.plays).toBe(1)
+    const won = settledProgress('salary', p, { ...night(true, 7), stars: 1 })
+    expect(won.stars[0]).toBe(3)
+    expect(won.wear).toEqual({})
+  })
+
+  it('every settle spends the attempt, so the draft wheel is a new one after it', () => {
+    const p = prog(zeros())
+    const s = settledProgress('death', { ...p, lives: 1, roster: five }, night(false, 4))
+    expect(levelSeed(s, 1)).not.toBe(levelSeed(p, 1))
   })
 })

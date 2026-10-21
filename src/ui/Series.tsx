@@ -266,6 +266,7 @@ export function Series({
   onAdvance,
   onRematch,
   onNext,
+  onSettled,
   reveal: revealGames = true,
 }: {
   opponent: Opponent
@@ -328,6 +329,12 @@ export function Series({
   /** The same ruling's other door: straight into the next level. The caller decides if it is his
    *  latest stage — this screen only knows whether it was handed the door. */
   onNext?: () => void
+  /**
+   * The strip has landed every game and the series has spoken. The caller banks the night at the
+   * sim, before this screen opens, and holds what would give it away (the achievement toasts)
+   * until here.
+   */
+  onSettled?: () => void
 }) {
   const myAb = teamAb ?? teamCode(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
@@ -537,6 +544,11 @@ export function Series({
      win that banked something, lighting the map door (`data-door="map"` on whichever button carries
      it in this dock's shape): the stars are spent on the map, and that is where the coach goes next. */
   useLesson('result.map', settled && result.won && !exhibition, () => mapDoorLesson(starsFor(result)))
+  const settledCb = useRef(onSettled)
+  settledCb.current = onSettled
+  useEffect(() => {
+    if (done && settled) settledCb.current?.()
+  }, [done, settled])
   /**
    * THE LANDING, ONE GAME AT A TIME, AND WHICH GAMES GO ON THE TAPE. The next game is the next
    * chip. If it has not been played yet and the bar says it should be - the decider always, games
