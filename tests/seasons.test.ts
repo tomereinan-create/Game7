@@ -145,7 +145,8 @@ describe('the club lights the banner, and only the banner', () => {
 
   it('never prints the club on the banner', () => {
     const por = sheet(card("Rasheed Wallace '01"))
-    expect(top(por)).toBe('NBA ▸ WEST')
+    // P2 (launch gate): the league's name came off the banner; the conference stays
+    expect(top(por)).toBe('WEST')
     expect(por).not.toContain('pct-ban-ghost')
   })
 
@@ -155,6 +156,6 @@ describe('the club lights the banner, and only the banner', () => {
     const multi = sheet(card("Rasheed Wallace '04"))
     expect(slug(multi)).toBe('POR/ATL/DET // S2004')
     expect(banner(multi)?.startsWith('split ')).toBe(true)
-    expect(top(multi)).toBe('NBA ▸ SPLIT SEASON')
+    expect(top(multi)).toBe('SPLIT SEASON')
   })
 })

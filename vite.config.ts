@@ -112,7 +112,7 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         // the game, and the static privacy page beside it (P5) — both written from src/site.ts
-        input: { main: join(root, 'index.html'), privacy: join(root, 'privacy/index.html') },
+        input: { index: join(root, 'index.html'), privacy: join(root, 'privacy/index.html') },
       },
     },
     // PORT is honoured when the environment sets one, so a second session can bring up its own dev
