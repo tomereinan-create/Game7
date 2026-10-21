@@ -1544,7 +1544,13 @@ export function Draft({
       {/* THE WAR ROOM (his ruling, 2026-10-19, on the moments session's Grok concept): the room
           behind the board. The plate is the room alone; the stylesheet draws it until it is
           painted (see `.room-plate.wr`). A desk only. */}
-      <div className="room-plate wr" aria-hidden style={{ '--plate': plateUrl('war-room.jpg') } as CSSProperties} />
+      {/* THE DRAFT'S THREE ROOMS - his ruling, 2026-10-21, on three Grok paintings: "These are
+          perfect. Make these the draft page. 1 For each mode." The campaign drafts in the ARENA
+          (the home page's world: pennants, navy and gold), the salary cap in the WALNUT library
+          (brass and ivory), the death match in the STEEL room (gunmetal and ice-blue). The plate
+          is the painted room; `.room-plate.st-*` in styles.css paints the panels, the reels and
+          the roster to match. A desk only. */}
+      <div className={`room-plate st st-${death ? 'steel' : salary ? 'walnut' : 'arena'}`} aria-hidden style={{ '--plate': plateUrl(`draft-${death ? 'steel' : salary ? 'walnut' : 'arena'}.jpg`) } as CSSProperties} />
       <div ref={sheet} className={`draft${salary ? ' cap' : ''}${full && !display ? ' set' : ''}${user && full && !display ? ' solo' : ''}`}>
       {/* THE OPPONENT'S COLUMN, GONE IN USER MODE ONCE THE FIVE IS SET (his ruling, above). It is
           how you scout who you are playing WHILE you draft, so it stands untouched until the fifth
