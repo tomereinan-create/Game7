@@ -89,6 +89,7 @@ export function CreatorSettle() {
         exhibition
         kicker="Settle it"
         onAdvance={() => setPlay(false)}
+        onSettled={() => (document.body.dataset.creatorDone = '1')}
       />
     )
   }

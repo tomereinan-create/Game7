@@ -941,7 +941,11 @@ function Game() {
           skin={skin}
           assignment={pending.assignment}
           onAdvance={finish}
-          onSettled={release}
+          onSettled={() => {
+            release()
+            // the clip script (scripts/capture/clip.mjs) waits for this to end a filmed run
+            if (CREATOR) document.body.dataset.creatorDone = '1'
+          }}
           onRematch={runEnded || !canBetter(pending.result) ? undefined : rematch}
           /* the death match carries one five the whole way, so the end of a series is when he
              wants to look at it — see `onMyTeam` in Series. My team is the map's room, so the
