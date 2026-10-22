@@ -97,6 +97,11 @@ export function Roster({ onBack }: { onBack: () => void }) {
   const [scroll, setScroll] = useState(0)
   const [viewH, setViewH] = useState(800)
   const sheet = useRef<HTMLDivElement>(null)
+  // a dialog takes the focus when it opens, so Tab starts inside it (the sheet itself, not the
+  // search box: focusing an input would throw a phone's keyboard up over the list)
+  useEffect(() => {
+    sheet.current?.focus({ preventScroll: true })
+  }, [])
   // team / year / actual-stat filters. Empty means "no opinion", so the default view is the whole pool.
   const [team, setTeam] = useState('')
   const [yrFrom, setYrFrom] = useState('')
@@ -227,7 +232,7 @@ export function Roster({ onBack }: { onBack: () => void }) {
   if (comparing) return <Compare initial={picked} onBack={() => setComparing(false)} />
 
   return (
-    <div className="sheet" ref={sheet}>
+    <div className="sheet" ref={sheet} role="dialog" aria-modal="true" aria-label="Player database" tabIndex={-1}>
       <div className="topbar">
         <span>
           Database · <b>{rows.length.toLocaleString()}</b>

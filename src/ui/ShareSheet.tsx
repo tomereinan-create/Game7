@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { track } from '../analytics'
 import { renderShareCard, type CardFormat } from '../share/card'
-import { copyText } from '../share/clipboard'
+import { copyText as copyToClipboard } from '../share/clipboard'
 import { altText, fileName, shareData, shareText, xIntent, type ShareData, type ShareInput } from '../share/data'
 import { inAppBrowser, platform } from '../share/inapp'
 import { newShareId, shareLink } from '../share/link'
+import { useInertRoot } from './inert'
 
 /**
  * THE SHARE DOOR ON THE RESULT (P10), and the sheet behind it.
@@ -86,7 +87,7 @@ function shareNatively(d: ShareData, story: Blob): Promise<'shared' | 'cancelled
 }
 
 /** The clipboard, then the old copy command, then nothing (the sheet shows the text to select). */
-const copy = copyText
+const copy = copyToClipboard
 
 const ShareGlyph = () => (
   <svg viewBox="0 0 16 16" aria-hidden width="14" height="14">
@@ -142,7 +143,8 @@ export function ShareButton({ input }: { input: ShareInput }) {
   const data = useMemo(() => (open ? shareData(latest.current) : null), [open, input.result])
   const close = () => {
     setOpen(false)
-    door.current?.focus()
+    // after the sheet has gone and the page behind it is live again (useInertRoot)
+    window.setTimeout(() => door.current?.focus(), 0)
   }
 
   return (
@@ -214,6 +216,7 @@ export function ShareSheet({ data, story: drawn = null, onClose }: { data: Share
     return () => URL.revokeObjectURL(u)
   }, [story, env])
 
+  useInertRoot()
   useEffect(() => {
     done.current?.focus()
     const key = (e: KeyboardEvent) => {

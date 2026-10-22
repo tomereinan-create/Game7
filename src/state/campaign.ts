@@ -452,6 +452,20 @@ export function saveProgress(m: CampaignMode, p: Progress) {
 }
 
 /**
+ * A LADDER THAT HAS NEVER BEEN SAVED IS SAVED THE MOMENT ITS FIRST DRAFT OPENS (the live check,
+ * 2026-10-22). Its seed — which deals the wheel — was only written at the first result, so a reload
+ * mid-draft on a first visit drew a brand-new seed and a different wheel: a free re-roll past the rule
+ * that walking out with men on the board spends the attempt. Written once; never over a real save.
+ */
+export function saveIfNew(m: CampaignMode, p: Progress) {
+  try {
+    if (localStorage.getItem(key(m)) === null && !(legacyKey(m) && localStorage.getItem(legacyKey(m)!) !== null)) saveProgress(m, p)
+  } catch {
+    /* storage blocked: nothing to keep a seed in either way */
+  }
+}
+
+/**
  * THE STARS DOOR (his ruling: "Win all the games with 1 star so I can see the design of the latter
  * stages"). Load the game with `?stars=1` and every level of every campaign is marked cleared at
  * one star, which unlocks the whole ladder and lets the map be walked to the top — the blocks at

@@ -7,6 +7,7 @@ import { shareLink } from '../share/link'
 import { SITE } from '../site'
 import { FIRST_SPIN, promptInstall, useCanInstall } from '../state/install'
 import { applySave, BadCode, collectSave, decodeSave, encodeSave, hasProgress, importFromUrl } from '../state/savecode'
+import { useInertRoot } from './inert'
 
 /**
  * THE WAY OUT, AND THE WAY HOME (P9, the launch gate).
@@ -65,6 +66,7 @@ function openOutside(url: string) {
 }
 
 function Sheet({ title, onClose, children }: { title: string; onClose?: () => void; children: React.ReactNode }) {
+  useInertRoot()
   // Escape closes it, as it closes the app's other dialogs (the live check, 2026-10-22)
   const close = useRef(onClose)
   close.current = onClose

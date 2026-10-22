@@ -1264,10 +1264,16 @@ export function Draft({
   }, [full])
 
   /* THE FIRST SPIN SPINS ITSELF (P1) — once, on arrival. The draft is keyed per attempt, so this
-     mounts once per wheel; the timer gives the screen a beat to paint before the reels go. */
+     mounts once per wheel; the timer gives the screen a beat to paint before the reels go.
+     It calls the CURRENT spin, not the one this effect mounted with: that copy still saw no
+     `upcoming` and drew a landing of its own, so the first visit dealt a different wheel from the
+     same seed than a spin by hand does — and a reload (which comes back to this draft with the
+     seed kept) dealt the other one (the live check, 2026-10-22). */
+  const spinNow = useRef(spin)
+  spinNow.current = spin
   useEffect(() => {
     if (!autoSpin || autoplay) return
-    const t = window.setTimeout(() => spin(), 650)
+    const t = window.setTimeout(() => spinNow.current(), 650)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
