@@ -1,8 +1,9 @@
 /**
- * Guards a finished build (dist/) before it is deployed — run by .github/workflows/deploy.yml.
+ * Guards a finished build (dist/) before it is deployed — run by .github/workflows/cloudflare-pages.yml.
  *
  *   · Every %SITE_*% / %OG_*% placeholder was written (src/site.ts reached every page).
- *   · The link-preview picture and the manifest are there.
+ *   · The link-preview picture and the manifest are there; the privacy page's contact is exempt from
+ *     Cloudflare's email obfuscation.
  *   · With VITE_MOMENTS=0 (the AI posters left out of the build), no poster and no intro clip
  *     slipped into dist/moments — the CI check the launch plan asks for.
  */
@@ -19,6 +20,13 @@ for (const page of ['index.html', 'privacy/index.html']) {
     const left = readFileSync(p, 'utf8').match(/%(SITE|OG|HTML)_[A-Z_]+%/g)
     if (left) fail.push(`${page}: placeholders not written: ${[...new Set(left)].join(', ')}`)
   }
+}
+// the contact stays readable on the live domain: its Cloudflare zone rewrites any address it is not
+// told to leave alone (privacy/index.html, 2026-10-22)
+{
+  const p = join(dist, 'privacy/index.html')
+  if (existsSync(p) && !/<!--email_off-->\s*<a href="mailto:[^"]+@[^"]+">[^<]+@[^<]+<\/a>\s*<!--\/email_off-->/.test(readFileSync(p, 'utf8')))
+    fail.push('privacy/index.html: the contact address is not inside <!--email_off--> markers')
 }
 for (const f of ['og-image.png', 'manifest.webmanifest', 'apple-touch-icon.png']) if (!existsSync(join(dist, f))) fail.push(`missing ${f}`)
 if (process.env.VITE_MOMENTS === '0') {

@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { track } from '../analytics'
 import { renderShareCard, type CardFormat } from '../share/card'
+import { copyText as copyToClipboard } from '../share/clipboard'
 import { altText, fileName, shareData, shareText, xIntent, type ShareData, type ShareInput } from '../share/data'
 import { inAppBrowser, platform } from '../share/inapp'
 import { newShareId, shareLink } from '../share/link'
+import { useInertRoot } from './inert'
 
 /**
  * THE SHARE DOOR ON THE RESULT (P10), and the sheet behind it.
@@ -85,32 +87,7 @@ function shareNatively(d: ShareData, story: Blob): Promise<'shared' | 'cancelled
 }
 
 /** The clipboard, then the old copy command, then nothing (the sheet shows the text to select). */
-async function copy(t: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(t)
-      return true
-    }
-  } catch {
-    /* refused: try the old way */
-  }
-  try {
-    const ta = document.createElement('textarea')
-    ta.value = t
-    ta.setAttribute('readonly', '')
-    ta.style.position = 'fixed'
-    ta.style.top = '0'
-    ta.style.opacity = '0'
-    document.body.appendChild(ta)
-    ta.select()
-    ta.setSelectionRange(0, t.length)
-    const ok = document.execCommand('copy')
-    ta.remove()
-    return ok
-  } catch {
-    return false
-  }
-}
+const copy = copyToClipboard
 
 const ShareGlyph = () => (
   <svg viewBox="0 0 16 16" aria-hidden width="14" height="14">
@@ -166,7 +143,8 @@ export function ShareButton({ input }: { input: ShareInput }) {
   const data = useMemo(() => (open ? shareData(latest.current) : null), [open, input.result])
   const close = () => {
     setOpen(false)
-    door.current?.focus()
+    // after the sheet has gone and the page behind it is live again (useInertRoot)
+    window.setTimeout(() => door.current?.focus(), 0)
   }
 
   return (
@@ -238,6 +216,7 @@ export function ShareSheet({ data, story: drawn = null, onClose }: { data: Share
     return () => URL.revokeObjectURL(u)
   }, [story, env])
 
+  useInertRoot()
   useEffect(() => {
     done.current?.focus()
     const key = (e: KeyboardEvent) => {

@@ -123,6 +123,8 @@ const server = createServer((req, res) => {
       return false
     }
   }
+  // a folder's own page (/privacy/ is dist/privacy/index.html), then the game for anything else
+  if (path !== '/' && !isFile(file) && isFile(join(file, 'index.html'))) file = join(file, 'index.html')
   if (!isFile(file) || path === '/') file = join(dist, 'index.html')
   if (!isFile(file)) {
     // dist/ is mid-rebuild. Say so and stay up: dying here takes the open game down with it.

@@ -31,4 +31,47 @@ describe('a challenge link replays the series it was shared from', () => {
     expect(decodeChallenge('not-a-code')).toBeNull()
     expect(decodeChallenge(encodeChallenge({ ...c, a: { ...c.a, p: c.a.p.slice(0, 4) } }))).toBeNull()
   })
+
+  // the live check, 2026-10-22: g=1e308 froze the tab, g=1000 played Game 7 at 12–354
+  it('rejects numbers no real night can have', () => {
+    const bad = (x: object) => decodeChallenge(encodeChallenge({ ...c, ...x } as typeof c))
+    expect(bad({ g: 1e308 })).toBeNull()
+    expect(bad({ g: 1000 })).toBeNull()
+    expect(bad({ g: 0.001 })).toBeNull()
+    expect(bad({ m: Array(9).fill(1e308) })).toBeNull()
+    expect(bad({ m: [...c.m.slice(0, 8), 'x'] })).toBeNull()
+    // within each value's range, but a 100-point spread
+    expect(bad({ m: c.m.map((x, i) => (i === 8 ? 100 : x)) })).toBeNull()
+    expect(bad({ s: 1.5 })).toBeNull()
+    expect(bad({ s: 2 ** 33 })).toBeNull()
+    expect(bad({ w: 2.5 })).toBeNull()
+    expect(bad({ a: { ...c.a, n: 'x'.repeat(500) } })).toBeNull()
+    // and every real night still passes: a plan's quick pace, the death match's slow one
+    expect(bad({ g: 9.4 })).not.toBeNull()
+    expect(bad({ g: 10.8 })).not.toBeNull()
+  })
+})
+
+describe("'Your turn' seats the challenge's opponent at real positions", () => {
+  it('a five sent in tap order is seated PG to C', async () => {
+    const { seatFive } = await import('../src/ui/ChallengeView')
+    const B = realStarters(2017, 'GSW')
+    const seated = seatFive([...B].reverse())
+    expect(seated.positions).toEqual(['PG', 'SG', 'SF', 'PF', 'C'])
+    expect(seated.players.map((p) => p.name).sort()).toEqual(B.map((p) => p.name).sort())
+    const { eligible, POSITIONS } = await import('../src/engine/positions')
+    const { LINES } = await import('../src/ui/Stat')
+    seated.players.forEach((p, i) => expect(eligible(LINES[p.name]?.pos)).toContain(POSITIONS[i]))
+  })
+
+  it('a five that cannot fill every spot seats whom it can; the rest keep a position they played', async () => {
+    const { seatFive } = await import('../src/ui/ChallengeView')
+    const { eligible } = await import('../src/engine/positions')
+    const { LINES } = await import('../src/ui/Stat')
+    const B = realStarters(2026, 'WAS')
+    const seated = seatFive([...B].reverse())
+    expect(seated.players).toHaveLength(5)
+    expect(new Set(seated.players.map((p) => p.name)).size).toBe(5)
+    seated.players.forEach((p, i) => expect(eligible(LINES[p.name]?.pos)).toContain(seated.positions[i]))
+  })
 })

@@ -269,6 +269,7 @@ export function Series({
   onNext,
   onSettled,
   reveal: revealGames = true,
+  replay = false,
 }: {
   opponent: Opponent
   five: Player[]
@@ -336,6 +337,12 @@ export function Series({
    * until here.
    */
   onSettled?: () => void
+  /**
+   * SOMEONE ELSE'S SERIES, REPLAYED FROM THEIR LINK (the live check, 2026-10-22): no Share door.
+   * The card it made was the sender's — their five, their "Won 4–1 … play me" — so a recipient who
+   * posted it would be claiming a series they only watched. Their own turn has its own door.
+   */
+  replay?: boolean
 }) {
   const myAb = teamAb ?? teamCode(teamName)
   const decider = result.games.length === 7 ? result.games[6] : null
@@ -779,7 +786,7 @@ export function Series({
               ) : null}
               {/* THE SHARE CARD (P10): only once the series has spoken, so it never gives away a
                   result the strip has not landed yet. Game 7's score is the tape's, as on the strip. */}
-              {settled ? (
+              {settled && !replay ? (
                 <ShareButton
                   input={{ opponent, five, mine, theirs, teamName, teamAb: myAb, result, sigma, seed, exhibition, kicker, scores: scoresOf(result, tape ? { us: tape.us, them: tape.them } : null) }}
                 />

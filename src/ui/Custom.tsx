@@ -32,6 +32,8 @@ export function Custom({ onHome }: { onHome: () => void }) {
   const [side, setSide] = useState<0 | 1>(0)
   const [teams, setTeams] = useState<[string[], string[]]>([[], []])
   const [names, setNames] = useState<[string, string]>(['Team A', 'Team B'])
+  /** A loaded team's real club code, kept while the side still wears the name it was loaded under. */
+  const [clubs, setClubs] = useState<[{ name: string; ab: string } | null, { name: string; ab: string } | null]>([null, null])
   const [q, setQ] = useState('')
   const [info, setInfo] = useState<string | null>(null)
   const [result, setResult] = useState<{ r: SeriesResult; seed: number } | null>(null)
@@ -60,10 +62,16 @@ export function Custom({ onHome }: { onHome: () => void }) {
    * every code rule that leads with the city — which is the rule, because a scoreboard names the
    * city — returns TEA for both of them. So the sandbox's own default names carry their own codes,
    * A and B, the way the hot seat carries P1 and P2. The moment a side is renamed, by hand or by
-   * loading a real team into it, the name he gave it is what gets read.
+   * loading a real team into it, the name he gave it is what gets read — except that a loaded team
+   * keeps its real club code until it is renamed (the live check, 2026-10-22: "'26 Oklahoma City
+   * Thunder" read OCT on the result, two screens after the picker had shown OKC).
    */
   const DEFAULT_NAMES: [string, string] = ['Team A', 'Team B']
-  const code = (i: 0 | 1) => (names[i] === DEFAULT_NAMES[i] ? (i ? 'B' : 'A') : teamCode(names[i]))
+  const code = (i: 0 | 1) => {
+    const club = clubs[i]
+    if (club && club.name === names[i]) return club.ab
+    return names[i] === DEFAULT_NAMES[i] ? (i ? 'B' : 'A') : teamCode(names[i])
+  }
 
   const five = (i: 0 | 1) => teams[i].map((n) => BY_NAME.get(n)!).filter(Boolean)
   const A = five(0)
@@ -127,9 +135,15 @@ export function Custom({ onHome }: { onHome: () => void }) {
       next[side] = names5
       return next
     })
+    const name = `'${String(t.y).slice(2)} ${t.team}`
     setNames((cur) => {
       const next: [string, string] = [cur[0], cur[1]]
-      next[side] = `'${String(t.y).slice(2)} ${t.team}`
+      next[side] = name
+      return next
+    })
+    setClubs((cur) => {
+      const next: typeof cur = [cur[0], cur[1]]
+      next[side] = { name, ab: t.ab }
       return next
     })
     setLoadOpen(false)

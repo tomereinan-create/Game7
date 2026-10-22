@@ -260,6 +260,7 @@ export function Draft({
   onMyTeam,
   autoSpin = false,
   autoplay = false,
+  backLabel,
   creator = false,
   onPicks,
 }: {
@@ -313,6 +314,8 @@ export function Draft({
   onSim: (five: Player[], assignment: Assignment, toWin: number) => void
   /** Leaving mid-draft: `started` says picks exist, so the attempt is spent and the wheel reseeds. */
   onBack: (started: boolean) => void
+  /** What the corner's way out is called when it does not lead to the level map (a challenge's). */
+  backLabel?: string
   onRoster: () => void
   /**
    * Death match only: the door to MY TEAM, which is the one room a worn-out man can be replaced
@@ -1261,10 +1264,16 @@ export function Draft({
   }, [full])
 
   /* THE FIRST SPIN SPINS ITSELF (P1) — once, on arrival. The draft is keyed per attempt, so this
-     mounts once per wheel; the timer gives the screen a beat to paint before the reels go. */
+     mounts once per wheel; the timer gives the screen a beat to paint before the reels go.
+     It calls the CURRENT spin, not the one this effect mounted with: that copy still saw no
+     `upcoming` and drew a landing of its own, so the first visit dealt a different wheel from the
+     same seed than a spin by hand does — and a reload (which comes back to this draft with the
+     seed kept) dealt the other one (the live check, 2026-10-22). */
+  const spinNow = useRef(spin)
+  spinNow.current = spin
   useEffect(() => {
     if (!autoSpin || autoplay) return
-    const t = window.setTimeout(() => spin(), 650)
+    const t = window.setTimeout(() => spinNow.current(), 650)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -1598,7 +1607,7 @@ export function Draft({
         THIS screen because only this screen knows whether picks are on the board, which is what
         spends the attempt.
       */}
-      <button className={`map-fab ${skin}`} onClick={() => onBack(picks.length > 0)} aria-label="Level map" title="Back to the level map">
+      <button className={`map-fab ${skin}`} onClick={() => onBack(picks.length > 0)} aria-label={backLabel ?? 'Level map'} title={backLabel ?? 'Back to the level map'}>
         <svg viewBox="0 0 24 24" aria-hidden>
           <path d="M9 5 3 7.5v12L9 17l6 2.5 6-2.5v-12L15 7 9 5Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
           <path d="M9 5v12M15 7v12.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1672,7 +1681,7 @@ export function Draft({
               `var(--you)` — the accent that means YOUR side everywhere in this app — and the team
               you are playing does not get to wear it. */}
           <span className="label">
-            <span className="tname">Level {opponent.round} opponent</span>
+            <span className="tname">{opponent.label ?? `Level ${opponent.round} opponent`}</span>
             {opponent.record ?? opponent.tag ? <i className="orec">· {opponent.record ?? opponent.tag}</i> : null}
           </span>
           <span className="cap">Season lines</span>
@@ -2233,7 +2242,7 @@ export function Draft({
             bug={bug}
             us={teamAb ?? teamCode(teamName)}
             them={opponent.ab ?? teamCode(opponent.team)}
-            step={`Level ${opponent.round} · best of ${toWin * 2 - 1}`}
+            step={`${opponent.label ?? `Level ${opponent.round}`} · best of ${toWin * 2 - 1}`}
             bump={bump}
             flash={flash}
             mine={five}

@@ -34,6 +34,7 @@ import {
   MODES,
   resetProgress,
   resetTutorialSaves,
+  saveIfNew,
   saveProgress,
   saveTeam,
   settledProgress,
@@ -82,6 +83,25 @@ const creatorOpp = CREATOR?.b ? (() => { const t = teamSeason(CREATOR.b!); retur
 
 /** Never played a series and never banked a star: the visitor the launch gate is for (P1). */
 const firstRun = (p: Progress) => p.plays === 0 && p.stars.every((s) => s === 0)
+
+/**
+ * A RELOAD MID-DRAFT COMES BACK TO THE DRAFT (the live check, 2026-10-22: it dropped the player on
+ * the front door, and iOS reloads a tab it evicted from the background the same way). The open
+ * level is kept in this TAB's session storage while a draft is on the screen and read once on load.
+ * The picks are not kept — the wheel is one seeded stream — but the seed is (`saveIfNew`), so the
+ * same wheel deals again and nothing is re-rolled.
+ */
+const RESUME = 'game7.resume'
+const resumeAt: { mode: CampaignMode; level: number } | null = (() => {
+  if (CREATOR) return null
+  try {
+    const r = JSON.parse(sessionStorage.getItem(RESUME) ?? 'null') as { mode?: unknown; level?: unknown } | null
+    if (r && (MODES as unknown[]).includes(r.mode) && Number.isInteger(r.level) && (r.level as number) >= 1 && (r.level as number) <= ROUNDS) return { mode: r.mode as CampaignMode, level: r.level as number }
+  } catch {
+    /* storage blocked or a bad value: start at the door */
+  }
+  return null
+})()
 
 interface Tier {
   id: string
@@ -171,7 +191,7 @@ function Game() {
   // Which front-door mode is active. The two campaigns share every screen
   // after Home; only the save slot and the salary line differ.
   // Creator mode (P6) opens straight onto a campaign draft, in memory (see src/boot.ts).
-  const [mode, setMode] = useState<Mode | null>(CREATOR ? 'campaign' : null)
+  const [mode, setMode] = useState<Mode | null>(CREATOR ? 'campaign' : (resumeAt?.mode ?? null))
   const [progress, setProgress] = useState<Record<CampaignMode, Progress>>(() => {
     const all = Object.fromEntries(MODES.map((m) => [m, loadProgress(m)])) as Record<CampaignMode, Progress>
     // creator mode: the run's seed IS the ladder's seed, so the same address deals the same wheel
@@ -180,7 +200,7 @@ function Game() {
     else starsFromUrl(all)
     return all
   })
-  const [level, setLevel] = useState<number | null>(CREATOR ? Math.min(CREATOR.level, ROUNDS) : null)
+  const [level, setLevel] = useState<number | null>(CREATOR ? Math.min(CREATOR.level, ROUNDS) : (resumeAt?.level ?? null))
   /**
    * THE STAGE HE CAME FROM (his ruling, 2026-10-01: "Pressing back to map should lead me to the
    * stage I was at"). The map centred on the NEXT level every time it mounted, so walking out of
@@ -213,6 +233,15 @@ function Game() {
   const [archs, setArchs] = useState(false)
   const [ach, setAch] = useState(false)
   const [teamDb, setTeamDb] = useState(false)
+  /* THE FRONT DOOR STEPS BACK WHILE ONE OF ITS ROOMS IS OPEN (the live check, 2026-10-22: Tab from
+     the Database's door walked six hidden front-door controls before it reached the search box).
+     The rooms are full-screen sheets drawn beside the door, not over a portal, so the door itself
+     goes inert — no focus, no clicks — and comes back when the room closes. */
+  const frontDoor = useRef<HTMLDivElement>(null)
+  const roomOpen = mode === null && (roster || archs || ach || teamDb)
+  useEffect(() => {
+    if (frontDoor.current) frontDoor.current.inert = roomOpen
+  }, [roomOpen])
   /**
    * A PLAYER CARD ASKED FOR HIS TEAM (his ruling, 2026-09-30 — see state/openteam.ts). The Team
    * database opens on that season, over whatever was up, and the other reference overlays step
@@ -439,6 +468,18 @@ function Game() {
                     : pending
                       ? 'result'
                       : 'draft'
+  useEffect(() => {
+    if (CREATOR) return
+    try {
+      if (screen === 'draft' && cm && level) sessionStorage.setItem(RESUME, JSON.stringify({ mode: cm, level }))
+      else sessionStorage.removeItem(RESUME)
+    } catch {
+      /* storage blocked: a reload starts at the door, as it always did */
+    }
+    // a borrowed (auto) ladder is never written; the real one is put back when auto goes off
+    if (screen === 'draft' && cm && prog && !auto) saveIfNew(cm, prog)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, cm, level])
   const bal = prog ? balance(prog) : 0
   /* THE COACH'S LESSONS, ONE PER ROOM (tutorial mode). Each is told the first time its room is on
      the screen, built off what App knows about it then. The draft and the result hook their own
@@ -709,6 +750,8 @@ function Game() {
     return (
       <>
         {sheet}
+        {/* display: contents — a handle for `inert`, invisible to the layout */}
+        <div ref={frontDoor} style={{ display: 'contents' }}>
         <Home
           progress={progress}
           team={team}
@@ -735,6 +778,7 @@ function Game() {
             } else setMode(m)
           }}
         />
+        </div>
       </>
     )
   }

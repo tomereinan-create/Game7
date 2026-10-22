@@ -119,6 +119,8 @@ export function Versus({ onHome }: { onHome: () => void }) {
   const [slots, setSlots] = useState<[Slots, Slots]>([{}, {}])
   /** Which sides took a whole real team instead of drafting — they are off the clock. */
   const [loaded, setLoaded] = useState<[boolean, boolean]>([false, false])
+  /** A loaded side's real club code ('OKC'), for the scorebug: its name, "'26 Thunder", reads THU. */
+  const [abs, setAbs] = useState<[string, string]>(['', ''])
   /** Every ring filled by DRAFTING, newest last, so the last pick can be taken back. */
   const [order, setOrder] = useState<{ side: 0 | 1; ring: Pos }[]>([])
   /** A man who can fill more than one open ring needs to be told where he is going. */
@@ -243,6 +245,11 @@ export function Versus({ onHome }: { onHome: () => void }) {
       next[side] = `'${String(t.y).slice(2)} ${t.team.split(' ').pop()}`
       return next
     })
+    setAbs((cur) => {
+      const next: [string, string] = [cur[0], cur[1]]
+      next[side] = t.ab
+      return next
+    })
     setLoadFor(null)
     setChoosing(null)
   }
@@ -259,6 +266,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
     setSeed((Math.random() * 0xffffffff) >>> 0)
     setSlots([{}, {}])
     setLoaded([false, false])
+    setAbs(['', ''])
     setOrder([])
     setChoosing(null)
     setNames(['Player 1', 'Player 2'])
@@ -274,9 +282,10 @@ export function Versus({ onHome }: { onHome: () => void }) {
 
   // HIS RULING: the hot seat is treated the same as a campaign — the campaign's own series
   // screen, full box scores and Game 7 on the ticker. A loaded real team keeps its own short
-  // name on the scorebug; a drafted chair stays P1 / P2.
+  // CLUB CODE on the scorebug (the live check, 2026-10-22: one made from its name read 'PIS' for the
+  // Pistons and 'THU' for the Thunder); a drafted chair stays P1 / P2.
   if (result) {
-    const opponent = { round: 1, team: names[1], ab: loaded[1] ? undefined : 'P2', players: B, positions: [...POSITIONS] as string[] }
+    const opponent = { round: 1, team: names[1], ab: loaded[1] ? abs[1] || undefined : 'P2', players: B, positions: [...POSITIONS] as string[] }
     return (
       <Series
         opponent={opponent}
@@ -284,7 +293,7 @@ export function Versus({ onHome }: { onHome: () => void }) {
         mine={compile(A, B)}
         theirs={compile(B, A)}
         teamName={names[0]}
-        teamAb={loaded[0] ? undefined : 'P1'}
+        teamAb={loaded[0] ? abs[0] || undefined : 'P1'}
         result={result.r}
         seed={result.seed}
         exhibition

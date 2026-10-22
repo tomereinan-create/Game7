@@ -58,7 +58,10 @@
       <p>The game is made for a general audience. It asks for no name, email or other personal information, and it shows no ads.</p>
 
       <h2>Your rights and contact</h2>
-      <p>Because we hold no account or personal profile, there is usually nothing we can look up about you. If you have a question or a request about your data, write to <a href="mailto:%SITE_CONTACT%">%SITE_CONTACT%</a>.</p>
+      <p>Because we hold no account or personal profile, there is usually nothing we can look up about you. If you have a question or a request about your data, write to <!--email_off--><a href="mailto:%SITE_CONTACT%">%SITE_CONTACT%</a><!--/email_off-->.</p>
+      <!-- The two markers around the address keep Cloudflare's email obfuscation off it: the domain's
+           zone rewrote it into a placeholder and a decoding script, so the live page carried no
+           readable contact (2026-10-22). The address is published on purpose. -->
 
       <footer>
         <p class="muted">%SITE_DISCLAIMER%</p>

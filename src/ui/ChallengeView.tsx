@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { track } from '../analytics'
+import { startingFive } from '../engine/bestfive'
 import { night } from '../engine/odds'
 import { PLAYERS } from '../engine/pool'
 import { simSeries } from '../engine/resolver'
+import { eligible, POSITIONS } from '../engine/positions'
 import { makeRng, randomSeed } from '../engine/rng'
 import type { Assignment } from '../engine/offense'
 import type { Opponent, Player, SeriesResult } from '../engine/types'
@@ -12,10 +14,25 @@ import { autoTeam } from '../state/autoteam'
 import { clubCode, freshProgress, loadTeam } from '../state/campaign'
 import { Draft } from './Draft'
 import { Series } from './Series'
+import { LINES } from './Stat'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 const POS = ['PG', 'SG', 'SF', 'PF', 'C']
 const sideName = (n: string, y?: number) => (y ? `${n} '${String(y).slice(2)}` : n)
+
+/**
+ * THE OPPONENT AT ITS POSITIONS (the live check, 2026-10-22: a Custom five arrives in the order its
+ * men were tapped, so "Your turn" seated Giannis at PG and Durant at C). The five is seated the way
+ * the ladder seats a real team — the best legal board, PG to C — and a five that cannot fill all
+ * five spots (no one who ever played PF) seats whom it can, and the rest take the open spots under
+ * the position they actually played — a tag never names a spot a man never played.
+ */
+export function seatFive(players: Player[]): { players: Player[]; positions: string[] } {
+  const { five, bench } = startingFive(players)
+  const rest = [...bench]
+  const seated = five.map((p) => p ?? rest.shift()!)
+  return { players: seated, positions: five.map((p, i) => (p ? POSITIONS[i] : eligible(LINES[seated[i].name]?.pos)[0])) }
+}
 
 /**
  * A CHALLENGE LINK, OPENED (P11). Three steps, and nothing is saved by any of them:
@@ -76,6 +93,7 @@ export function ChallengeView({ c, onDone }: { c: Challenge; onDone: () => void 
           seed={c.s}
           sigma={c.g}
           exhibition
+          replay
           kicker="Challenge"
           advanceLabel={`Your turn: beat ${sideName(c.b.n, c.b.y)} →`}
           onHome={onDone}
@@ -118,7 +136,13 @@ export function ChallengeView({ c, onDone }: { c: Challenge; onDone: () => void 
 }
 
 /** "Your turn": the wheel against the challenge's opponent, on a ladder that is never saved. */
-function YourTurn({ opponent, onDone }: { opponent: Opponent; onDone: () => void }) {
+function YourTurn({ opponent: shared, onDone }: { opponent: Opponent; onDone: () => void }) {
+  const [opponent] = useState<Opponent>(() => ({ ...shared, label: 'Challenge opponent', ...seatFive(shared.players) }))
+  /* LEAVING WITH MEN ON THE BOARD ASKS FIRST, as the home button does in the game: the first tap
+     says what it costs, the second leaves. Three seconds, then it forgets. */
+  const [armed, setArmed] = useState(false)
+  const armTimer = useRef(0)
+  useEffect(() => () => window.clearTimeout(armTimer.current), [])
   const [wallet] = useState(freshProgress)
   const [team] = useState(() => loadTeam() ?? autoTeam())
   const [seed] = useState(randomSeed)
@@ -143,6 +167,12 @@ function YourTurn({ opponent, onDone }: { opponent: Opponent; onDone: () => void
       />
     )
   return (
+    <>
+    {armed ? (
+      <div className="home-arm" role="status">
+        Tap again to leave — your picks are lost
+      </div>
+    ) : null}
     <Draft
       opponent={opponent}
       seed={seed}
@@ -153,11 +183,22 @@ function YourTurn({ opponent, onDone }: { opponent: Opponent; onDone: () => void
       onSim={(five: Player[], assignment: Assignment, toWin: number) => {
         const n = night(five, opponent.players, assignment, null)
         const s = randomSeed()
-        track('series_complete', { mode: 'challenge', won: false })
-        setNight({ five, mine: n.mine, theirs: n.theirs, sigma: n.sigma, seed: s, result: simSeries(n.mine, n.theirs, makeRng(s), n.sigma, toWin) })
+        const result = simSeries(n.mine, n.theirs, makeRng(s), n.sigma, toWin)
+        track('series_complete', { mode: 'challenge', won: result.won, games: result.games.length })
+        setNight({ five, mine: n.mine, theirs: n.theirs, sigma: n.sigma, seed: s, result })
       }}
-      onBack={onDone}
+      backLabel={armed ? 'Leave the challenge' : 'Leave'}
+      onBack={(started) => {
+        if (started && !armed) {
+          setArmed(true)
+          window.clearTimeout(armTimer.current)
+          armTimer.current = window.setTimeout(() => setArmed(false), 3000)
+          return
+        }
+        onDone()
+      }}
       onRoster={() => {}}
     />
+    </>
   )
 }
