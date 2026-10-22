@@ -95,6 +95,31 @@ function sitePages(site: Site, deploy: Deploy): Plugin {
     },
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'manifest.webmanifest', source: manifest })
+      /* A REAL "NOT FOUND" (the live check, 2026-10-22): with no 404.html the host answered every
+         unknown path with the game itself and a 200 — /favicon.ico, /robots.txt, a missing bundle
+         (which the worker then kept for a year as that bundle). With this page the host answers 404,
+         and a creator's /c/<handle> link is rewritten to the game in public/_redirects. */
+      const home = deploy.base === './' ? site.url : deploy.base
+      this.emitFile({
+        type: 'asset',
+        fileName: '404.html',
+        source: `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Not here · ${esc(site.name)}</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:${site.themeColor};color:#f6f4ef;font:16px/1.5 system-ui,sans-serif;text-align:center}a{color:#f0b323}</style></head><body><main><h1>Nothing here</h1><p><a href="${esc(home)}">Play ${esc(site.name)} →</a></p></main></body></html>
+`,
+      })
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: `User-agent: *
+Allow: /
+Sitemap: ${site.url}sitemap.xml
+` })
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${site.url}</loc></url>
+  <url><loc>${site.url}privacy/</loc></url>
+</urlset>
+`,
+      })
     },
     /**
      * THE AI POSTERS, BEHIND A FLAG. `VITE_MOMENTS=0` leaves the iconic-moments pictures and the

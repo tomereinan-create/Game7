@@ -59,7 +59,8 @@ function boot(net: Map<string, string>, offline = { now: false }) {
   const fetch = async (req: Request | string) => {
     if (offline.now) throw new Error('offline')
     const body = net.get(keyOf(req))
-    return body === undefined ? new Response('', { status: 404 }) : new Response(body)
+    // a page is served as one, the way a host serves HTML
+    return body === undefined ? new Response('', { status: 404 }) : new Response(body, { headers: body.startsWith('<!doctype') ? { 'content-type': 'text/html' } : {} })
   }
 
   // eslint-disable-next-line no-new-func
@@ -151,6 +152,30 @@ describe('service worker — the phone always sees the newest deploy', () => {
     await sw.get(`${ORIGIN}assets/index-AAA.js`)
     net.delete(`${ORIGIN}assets/index-AAA.js`) // gone from the network; cache must answer
     expect(await (await sw.get(`${ORIGIN}assets/index-AAA.js`)).text()).toBe('v1')
+  })
+
+  it('a visit to another page (/privacy/) never becomes the app: offline, the game still opens', async () => {
+    const net = network(shellV1, 'assets/index-AAA.js', 'v1')
+    net.set(`${ORIGIN}privacy/`, '<!doctype html><title>Privacy</title>')
+    const offline = { now: false }
+    const sw = boot(net, offline)
+
+    await sw.get(ORIGIN, 'navigate')
+    await sw.get(`${ORIGIN}assets/index-AAA.js`)
+    expect(await (await sw.get(`${ORIGIN}privacy/`, 'navigate')).text()).toContain('Privacy')
+
+    offline.now = true
+    expect(await (await sw.get(ORIGIN, 'navigate')).text()).toBe(shellV1)
+    expect(await (await sw.get(`${ORIGIN}assets/index-AAA.js`)).text()).toBe('v1')
+  })
+
+  it('a missing bundle answered with a host page is not kept under the bundle name', async () => {
+    const net = network(shellV1, 'assets/index-AAA.js', 'v1')
+    net.set(`${ORIGIN}assets/index-ZZZ.js`, '<!doctype html><title>not here</title>')
+    const sw = boot(net)
+    await sw.get(`${ORIGIN}assets/index-ZZZ.js`)
+    const box = await sw.caches.open('game7')
+    expect([...box.store.keys()]).not.toContain(`${ORIGIN}assets/index-ZZZ.js`)
   })
 
   it('activating drops caches from an older worker', async () => {
