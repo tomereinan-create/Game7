@@ -11092,3 +11092,7 @@ body.creator .shr-open { display: none; }
   bottom: calc(var(--foot, 0px) + var(--dock, 0px) + 12px + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
 }
+
+/* LIVE CHECK #10 — the star / sub notes hang UP from their anchor, which LevelMap now measures off
+   the ticket as drawn (the rule at the head of the map block said so; this later one had said 0). */
+.node-notes { transform: translate(-50%, -100%); }
