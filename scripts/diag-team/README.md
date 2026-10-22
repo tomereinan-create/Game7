@@ -79,3 +79,30 @@ npx vite-node scripts/diag-team/bands119.ts             # the four archetype lin
 | `cards119.py` | proves no card moved on `o_ovr` / `d_ovr` / `ovr` / attrs, and sizes the `marg` move |
 | `ladder119.py` | proves the campaign ladder's League tier did not reorder |
 | `pin119.py` | adds the round's two pins to `data/anchors.json` programmatically |
+
+## recal_232 — the 44 holed team-seasons, re-solved one step out of position, and the 0.13 penalty
+
+His rulings (2026-10-22): "yes, go with rule C for the 44 teams, but have this player penelised for
+playing oop" / "re-solve version, 0.13 penalty, build it". 1,314 team-seasons = 1,255 strict + 15
+short (fewer than five pool men) + 44 whose strict walk leaves a hole. `bestfive.ts teamFive`
+re-solves the 44 letting a man stand one step (PG-SG-SF-PF-C) from a listed position, marks him
+(`Player.oop`, on a copy) and `MKNOBS.OOP_DRTG = 0.13` charges his five's DRtg per marked man.
+
+```
+npx vite-node scripts/diag-team/base232.ts before.json             # ON THE OLD ENGINE: every five + its dials
+npx vite-node scripts/diag-team/holes232.ts                        # the 44: holes, alternate slots, one-step candidates
+npx vite-node scripts/diag-team/minoop232.ts                       # the fewest seats each needs out of position (36 x 1, 8 x 2)
+npx vite-node scripts/diag-team/realoop232.ts                      # THE PENALTY'S EVIDENCE: 1,110 real starting fives
+# ... apply the change ...
+npx vite-node scripts/diag-team/after232.ts before.json after.json -v   # the proof + the 44 table
+python scripts/diag-team/pickcheck232.py after.json                # anchors.py's team_five IS teamFive
+```
+
+| file | what it answers |
+| --- | --- |
+| `base232.ts` | every team-season's five and its OFF/DEF/OVR, offRaw, drtgRef and unrounded dial, as JSON |
+| `holes232.ts` | for each of the 44: the hole, whether ANY strict board exists (none does), the one-step candidates |
+| `minoop232.ts` | the fewest out-of-position seats each holed roster needs, and the best such board |
+| `realoop232.ts` | real fives that needed a man one step out vs the engine: +0.351 real DRtg per man (s.e. 0.129) with drtgRef, height and rim protection held; 2.786 real per drtgRef point -> 0.126, shipped 0.13 |
+| `after232.ts` | 1,255 strict fives EXACTLY unchanged (men, slots, offRaw, drtgRef, dial, dials), 15 still short, the 44 table (with and without the penalty, season rank), and the season-rank labels that moved |
+| `pickcheck232.py` | `data/anchors.py`'s `team_five` against the TS `teamFive` on all 1,314: same set, same number marked, drtgRef to 1e-9 |

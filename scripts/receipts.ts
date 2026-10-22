@@ -25,6 +25,7 @@ import { K_MATCH } from '../src/config'
 import { runHarness } from '../src/engine/harness'
 import { seasonGauges as gauges64 } from '../src/engine/gauges'
 import { startingFive as bestFive64, winsOf as winsOf66 } from '../src/engine/bestfive'
+import { seatOutOfPosition as seat232, type Pos as Pos232 } from '../src/engine/positions'
 import { WHEEL as WHEEL64 } from '../src/data/wheel'
 import { _reset as achReset, ACHIEVEMENTS, achSettleSeries, achState } from '../src/state/achievements'
 import type { Progress as Prog63 } from '../src/state/campaign'
@@ -103,8 +104,18 @@ interface RoundFile {
 type Card = (typeof PLAYERS)[number]
 /** Deterministic tie-break for every "read the board now" listing (no locale involved). */
 const cmpName = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
-/** Exact card name first; a bare player name resolves to his peak card (talent, then ovr). */
+/**
+ * Exact card name first; a bare player name resolves to his peak card (talent, then ovr).
+ * recal_232: "Jonas Valančiūnas '25@PF" is that card seated OUT OF POSITION at PF — a marked copy
+ * (positions.ts seatOutOfPosition), never the card — so a `team:*` five can be the re-solved five the
+ * Teams screen fields, penalty included. The same form data/parity_check.py and data/anchors.py read.
+ */
 const cardOf = (name: string): Card | null => {
+  const seat = /^(.*)@(PG|SG|SF|PF|C)$/.exec(name)
+  if (seat) {
+    const base = cardOf(seat[1])
+    return base ? seat232(base, seat[2] as Pos232) : null
+  }
   const exact = by.get(name)
   if (exact) return exact
   const seasons = PLAYERS.filter((p) => p.player === name)

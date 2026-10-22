@@ -1,0 +1,236 @@
+{
+  "round": 232,
+  "agent": "players-to-team",
+  "status": "done",
+  "ruling": "yes, go with rule C for the 44 teams, but have this player penelised for playing oop / re-solve version, 0.13 penalty, build it",
+  "title": "THE 44 HOLED TEAM-SEASONS FIELD A FIVE, AND THE MAN OUT OF POSITION COSTS IT ON DEFENCE. 44 of the 1,314 wheel team-seasons had five or more men on the card pool but no strict PG-to-C board, so the Teams screen read 'needs five', they had no dials and no season rank, and Versus refused them. Only when the strict walk leaves a hole, bestfive.ts teamFive now re-solves the five letting a man stand ONE STEP (PG-SG-SF-PF-C) from a listed position: fewest such men, then total OVR, then recal_147's dial key, then the strict board's men keep their seats, then recal_74's PG assists. The stand-in comes back as a marked COPY (Player.oop, never the card) and MKNOBS.OOP_DRTG = 0.13 is added to the five's DRtg per marked man in defenseVs/teamDefense and the python twins defense_vs/team_defense — measured on 1,110 real starting fives (+0.351 real DRtg per man, s.e. 0.129 = 0.126 drtgRef). Offence unpenalised. 36 clubs need one stand-in and 8 need two; the 1,255 strict fives are bit-identical (0 of 1,255 changed a man, a slot, offRaw, drtgRef, the dial or OFF/DEF/OVR); no card and no marg moved. Wizards '25 field Valančiūnas (C) at PF: DEF 41 -> 39, OFF 29.",
+  "subject": "Wizards '25 (re-solved five, Valančiūnas at PF)",
+  "five": [
+    "Jordan Poole '25",
+    "Kyshawn George '25",
+    "Justin Champagnie '25",
+    "Jonas Valančiūnas '25@PF",
+    "Alex Sarr '25"
+  ],
+  "season": 2025,
+  "scale": "team:defdial",
+  "target": 39,
+  "tol": 1,
+  "after": 39,
+  "pipeline_version": 232,
+  "knobs": [
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "OOP_DRTG: 0\\.13,",
+      "label": "THE PENALTY — DRtg per man seated out of position (MKNOBS)",
+      "note": "new: 0.13 = 0.351 real DRtg per man / 2.786 real per drtgRef point, over 1,110 real starting fives"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "OOP_DRTG=0\\.13,",
+      "label": "the python twin, same constant",
+      "note": "parity: the Wizards '25 marked five agrees to ~1e-13 (tests/parity.test.ts)"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "const drtg = 110 - K\\.DRTG_COEF \\* \\(didx - 55\\) \\+ huntPen \\+ oopPen",
+      "label": "defenseVs charges it: ratings100's drtgRef, the gauges and a simmed series all read it",
+      "note": "0 for every unmarked five, so x + 0 is x, bit for bit"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "\\+ hunt_pen \\+ oop_penalty\\(us\\)",
+      "label": "defense_vs charges it the same way, same place",
+      "note": "only OUR defence: the other five defending a marked five is untouched"
+    },
+    {
+      "file": "src/engine/offense.ts",
+      "pattern": "drtg \\+= oopPenalty\\(five\\)",
+      "label": "teamDefense (the standalone lineup path) charges it too",
+      "note": "compile() without an opponent reads teamRating -> teamDefense"
+    },
+    {
+      "file": "data/team_rating.py",
+      "pattern": "drtg  \\+= oop_penalty\\(five\\)",
+      "label": "team_defense, the python twin",
+      "note": "same order of operations"
+    },
+    {
+      "file": "src/engine/positions.ts",
+      "pattern": "export function oneStepFrom\\(listed: readonly Pos\\[\\], slot: Pos\\): Pos \\| null",
+      "label": "one step along PG-SG-SF-PF-C — read only by the re-solve, never by the draft",
+      "note": "eligible() is untouched: the draft's law is still the data"
+    },
+    {
+      "file": "src/engine/positions.ts",
+      "pattern": "return \\{ \\.\\.\\.p, oop: slot \\}",
+      "label": "the mark lives on a COPY, never on a card",
+      "note": "Player.oop?: Pos in types.ts"
+    },
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "export function teamFive\\(roster: Player\\[\\]\\)",
+      "label": "THE RE-SOLVE — only when startingFive leaves a hole",
+      "note": "startingFive is unchanged and stays strict for the draft and every existing caller"
+    },
+    {
+      "file": "src/engine/bestfive.ts",
+      "pattern": "if \\(strict\\.five\\.every\\(Boolean\\) \\|\\| roster\\.length < POSITIONS\\.length\\) return strict",
+      "label": "a club that fields strictly gets startingFive's own result back; fewer than five men still 'needs five'",
+      "note": "1,255 untouched, 15 still short"
+    },
+    {
+      "file": "src/engine/seasonRank.ts",
+      "pattern": "const five = teamFive\\(",
+      "label": "the season rank pools the Teams screen's own five",
+      "note": "the 44 are ranked and counted; 24 seasons' pools grow"
+    },
+    {
+      "file": "src/ui/TeamDb.tsx",
+      "pattern": "teamFive\\(t\\.p\\.map",
+      "label": "the Teams screen's cached five (fiveOf) is the team-season five",
+      "note": "the 44 get OFF/DEF/OVR dials and a season rank"
+    },
+    {
+      "file": "src/ui/TeamDb.tsx",
+      "pattern": "`\\$\\{from\\} · at \\$\\{POSITIONS\\[i\\]\\}`",
+      "label": "the stand-in's court tag reads 'C · at PF', in the floor's danger tone",
+      "note": "danger: !!from"
+    },
+    {
+      "file": "src/ui/Versus.tsx",
+      "pattern": "const best = teamFive\\(cands\\)\\.five",
+      "label": "Versus may load the 44; each side's five marks its stand-in",
+      "note": "a drafted ring is always one of the man's own, so drafted fives read as before"
+    },
+    {
+      "file": "src/engine/starters.ts",
+      "pattern": "return teamFive\\(pool\\)\\.five",
+      "label": "bestStarters (the 'best' load in Custom, the batch, the creator) is the team-season five",
+      "note": "Custom keeps the mark for a 'best' load"
+    },
+    {
+      "file": "data/anchors.py",
+      "pattern": "def team_five\\(roster\\):",
+      "label": "anchors.py's port of bestfive.ts follows (recal_147: the two move together)",
+      "note": "the team_rank season boards pool the 44; all 11 rank pins still pass"
+    },
+    {
+      "file": "data/parity_check.py",
+      "pattern": "dict\\(players\\[m\\.group\\(1\\)\\], oop=m\\.group\\(2\\)\\)",
+      "label": "'Name@PF' is a card seated out of position — the same form in parity_check.py, anchors.py and receipts.ts",
+      "note": "so a receipt or a pin can name the re-solved five"
+    }
+  ],
+  "expect": [
+    {
+      "five": [
+        "Jordan Poole '25",
+        "Kyshawn George '25",
+        "Justin Champagnie '25",
+        "Jonas Valančiūnas '25",
+        "Alex Sarr '25"
+      ],
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 41,
+      "tol": 1,
+      "label": "the same five with NO mark reads 41 — the penalty is the whole difference"
+    },
+    {
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 29,
+      "tol": 1,
+      "label": "offence unpenalised: the marked five's OFF"
+    },
+    {
+      "five": [
+        "Jordan Poole '25",
+        "Kyshawn George '25",
+        "Justin Champagnie '25",
+        "Jonas Valančiūnas '25",
+        "Alex Sarr '25"
+      ],
+      "scale": "team:offdial",
+      "op": "~",
+      "value": 29,
+      "tol": 1,
+      "label": "...equals the unmarked five's OFF"
+    },
+    {
+      "five": [
+        "Doc Rivers '85",
+        "Dominique Wilkins '85@SG",
+        "Kevin Willis '85@SF",
+        "Cliff Levingston '85",
+        "Tree Rollins '85"
+      ],
+      "season": 1985,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 58,
+      "tol": 2,
+      "label": "two stand-ins, 0.26: Hawks '85 with Wilkins at SG and Willis at SF"
+    },
+    {
+      "five": [
+        "Doc Rivers '85",
+        "Dominique Wilkins '85",
+        "Kevin Willis '85",
+        "Cliff Levingston '85",
+        "Tree Rollins '85"
+      ],
+      "season": 1985,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 63,
+      "tol": 2,
+      "label": "...and the same five unmarked"
+    },
+    {
+      "five": [
+        "Rajon Rondo '08",
+        "Ray Allen '08",
+        "Paul Pierce '08",
+        "Kevin Garnett '08",
+        "Kendrick Perkins '08"
+      ],
+      "season": 2008,
+      "scale": "team:defdial",
+      "op": "~",
+      "value": 92,
+      "tol": 3,
+      "label": "a strict five is untouched (recal_147's subject, 92 before and after)"
+    },
+    {
+      "five": [
+        "Steve Kerr '96",
+        "Michael Jordan '96",
+        "Scottie Pippen '96",
+        "Toni Kukoč '96",
+        "Luc Longley '96"
+      ],
+      "season": 1996,
+      "scale": "team:ovrdial",
+      "op": "~",
+      "value": 85,
+      "tol": 3,
+      "label": "a strict five is untouched (recal_105's subject, 85 before and after)"
+    }
+  ],
+  "cost": [
+    "NO CARD MOVED and no marg moved: compute_ovr.py was re-run on this branch and every file it writes came back byte-identical — cards never carry 'oop', so oop_penalty adds exactly 0 to every five the pipeline prices. Nothing to regenerate; PIPELINE_VERSION is left at main's for the integrator.",
+    "THE SEASON RANK LABELS MOVE (display only): 24 seasons gain 1-6 re-solved clubs in their pool, so 414 of the 1,255 strict fives show a different '#n in YYYY' on at least one dial (their own numbers are bit-identical; the clubs they are ranked among grew). The 11 team_rank anchors all still pass (ORL '24 DEF 17/26 -> 19/29, PHI '26 15/24 -> 18/30, OKC '26 1/24 -> 1/30).",
+    "Two new anchors: Wizards '25 team:defdial 39 +-1 (unmarked 41 — a round that drops the penalty fails it) and Hawks '85 team:defdial 58 +-2 (unmarked 63 — a penalty that stops counting per man fails it). Both name the five with the '@POS' seat mark.",
+    "REAL fives are NOT marked: realStarters (the 'real' load, the creator's filmed fives) can start three guards and is left as it was — the ruling was about the 44 best fives. The measurement that sized the penalty came from those real fives; marking them would be a separate ruling.",
+    "Versus and Custom carry the mark into the series but draw no tag for it (their side panels list names, not positions) — the Teams screen is the one place the stand-in is drawn ('C · at PF'). A tag there is the design lane's call.",
+    "campaigns.json / opponents.json were not regenerated and no campaign five carries a mark: scripts/campaigns.ts still builds its tiers with the strict startingFive, so the eight campaign rounds are untouched."
+  ],
+  "notes": [
+    "THE RULE HE CHOSE, as built: 1,314 team-seasons = 1,255 strict + 15 short (fewer than five pool men, still 'needs five') + 44 re-solved. 36 re-solve with one man out of position and 8 with two (Hawks '85, Bullets '89, Warriors '10, Jazz '12, Heat '15, Hawks '20, Warriors '26, Grizzlies '26). None needs three. The built fives are identical, man for man and seat for seat, to the probe table he chose from.",
+    "THE PENALTY'S EVIDENCE (scripts/diag-team/realoop232.ts): 1,110 real starting fives with every starter carded, real DRtg/ORtg from Team Summaries, all centred within season. 942 seat legally; 138 need one man one step out, 26 need two. Controlled for drtgRef, mean height and best rim protector: +0.351 real DRtg per out-of-position man (s.e. 0.129), real DRtg = 2.786 x drtgRef there, so 0.126 drtgRef — shipped 0.13. Uncontrolled per-seat OLS agrees (0.349 real -> 0.134). Offence: -0.10 real ORtg per seat, inside its noise, so offence is not priced.",
+    "WHAT 0.13 IS ON HIS SCALE: about 2-3 DEF points on the Team DB's all-time dial per marked man (the dial runs ~17-20 points per drtgRef point), about 1 point on ratings100's 0-100 int (K_DEF 8). Wizards '25 DEF 41 -> 39; Hawks '85 63 -> 58; Warriors '26 54 -> 49; Cavaliers '92 66 -> 64 (OVR 81 -> 80, #2 of 27 in 1992).",
+    "THE PROOF (scripts/diag-team/base232.ts before, after232.ts after): for all 1,255 strict fives the five's men and slots, offRaw, drtgRef, the unrounded dial and OFF/DEF/OVR compare EXACTLY equal (Object.is) — 1,255 identical, 0 changed. tests/oop.test.ts walks the whole wheel and re-asserts 1,255 / 15 / 44 (36 one, 8 two) and that every marked man is one step from a listed position."
+  ]
+}

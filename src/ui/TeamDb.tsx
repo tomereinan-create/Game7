@@ -3,7 +3,7 @@ import { seasonGauges } from '../engine/gauges'
 import { rankLabel, seasonRank } from '../engine/seasonRank'
 import { teamLine } from '../engine/teamline'
 import { archetype, PLAYERS } from '../engine/pool'
-import { eligible, POSITIONS } from '../engine/positions'
+import { eligible, oneStepFrom, POSITIONS } from '../engine/positions'
 import { bestStyle, STYLES, type Style } from '../engine/tactics'
 import type { Player } from '../engine/types'
 import { WHEEL, type TeamSeason } from './Draft'
@@ -17,9 +17,9 @@ import { SeasonStrip, useYearKeys } from './SeasonStrip'
 
 const BY_NAME = new Map(PLAYERS.map((p) => [p.name, p]))
 export const YEARS = [...new Set(WHEEL.map((t) => t.y))].sort((a, b) => b - a)
-export { startingFive, winsOf } from '../engine/bestfive'
+export { startingFive, teamFive, winsOf } from '../engine/bestfive'
 
-import { startingFive, winsOf } from '../engine/bestfive'
+import { teamFive, winsOf } from '../engine/bestfive'
 
 /**
  * A man on the rest of the roster — his ruling: "Also pressing on a bench player will open this
@@ -117,14 +117,16 @@ function resolveYear(raw: string): number | null | 'partial' {
   return clampYear(Number(d.slice(0, 4)))
 }
 
-// The startingFive backtrack is the expensive part — cached once per team-season,
+// The teamFive backtrack is the expensive part — cached once per team-season,
 // and the OVR and the gauges both read from it instead of re-deriving. Exported:
-// the Custom and Versus team pickers rank on the same cache.
+// the Custom and Versus team pickers rank on the same cache. recal_232: it is the TEAM-SEASON five —
+// the best legal five, or for the 44 clubs whose strict walk leaves a hole, the re-solve with its
+// stand-in marked (and charged MKNOBS.OOP_DRTG on DEF); only a pool of fewer than five is null.
 const FIVES = new Map<TeamSeason, Player[] | null>()
 export function fiveOf(t: TeamSeason): Player[] | null {
   const hit = FIVES.get(t)
   if (hit !== undefined) return hit
-  const five = startingFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
+  const five = teamFive(t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)).five.filter((p): p is Player => !!p)
   const out = five.length === 5 ? five : null
   FIVES.set(t, out)
   return out
@@ -691,7 +693,8 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
   const detail = useMemo(() => {
     if (!picked) return null
     const roster = picked.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p)
-    const { five, bench } = startingFive(roster)
+    // recal_232: the team-season five, the same one fiveOf caches — a stand-in comes back marked
+    const { five, bench } = teamFive(roster)
     const fielded = five.filter((p): p is Player => !!p)
     // The same gauges the list card is painted from. The head used to read its numbers off
     // `ratings100` and the list off these, so one team had two verdicts depending which screen you
@@ -706,7 +709,8 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
       roster,
       five,
       bench,
-      sheet: [...fielded, ...bench],
+      // the sheet lists CARDS: a stand-in's marked copy is for the floor and the engine, not his row
+      sheet: [...fielded.map((p) => BY_NAME.get(p.name) ?? p), ...bench],
       gauges: fielded.length === 5 ? seasonGauges(fielded, picked.y) : null,
       // where the five stands in its own season, beside each all-time dial (his ruling, 2026-10-22)
       rank: fielded.length === 5 ? seasonRank(fielded, picked.y, picked.ab) : null,
@@ -992,12 +996,20 @@ export function TeamDb({ onBack, initial = null }: { onBack: () => void; /** ope
                  BOTH MODES NOW, with the draft's: the club chip two lines above this floor has
                  always worn the club in user mode, so the floor under it was the odd one out. */
               club={teamColor(picked.ab)}
-              spots={detail.five.map((p, i) => ({
-                p,
-                slot: POSITIONS[i],
-                tag: p ? (user ? POSITIONS[i] : `${POSITIONS[i]} · ${p.ovr}`) : '',
-                onTap: p ? () => openCard(p) : undefined,
-              }))}
+              spots={detail.five.map((p, i) => {
+                /* recal_232 (his ruling: "have this player penelised for playing oop"): a man the
+                   re-solve stood one step off his listed positions says so on the floor — "C · at PF"
+                   — in the floor's existing danger tone, because his five pays for it on DEF. */
+                const from = p?.oop ? oneStepFrom(eligible(LINES[p.name]?.pos), POSITIONS[i]) : null
+                const seat = from ? `${from} · at ${POSITIONS[i]}` : POSITIONS[i]
+                return {
+                  p,
+                  slot: POSITIONS[i],
+                  tag: p ? (user ? seat : `${seat} · ${p.ovr}`) : '',
+                  danger: !!from,
+                  onTap: p ? () => openCard(BY_NAME.get(p.name) ?? p) : undefined,
+                }
+              })}
             />
             </div>
             <div className="tdb-right">

@@ -1,4 +1,4 @@
-import { eligible, POSITIONS } from './positions'
+import { eligible, oneStepFrom, POSITIONS, seatOutOfPosition } from './positions'
 import { ratings100 } from './offense'
 import { dialOvrRaw, seasonOf } from './gauges'
 import { LINES } from '../ui/Stat'
@@ -134,4 +134,114 @@ export function startingFive(roster: Player[]): { five: (Player | null)[]; bench
   }
   const picked = new Set(best.filter(Boolean).map((p) => p!.name))
   return { five: best, bench: roster.filter((p) => !picked.has(p.name)).sort((a, b) => b.ovr - a.ovr) }
+}
+
+/**
+ * THE TEAM-SEASON FIVE (recal_232, his rulings, 2026-10-22: "yes, go with rule C for the 44 teams,
+ * but have this player penelised for playing oop" / "re-solve version, 0.13 penalty, build it").
+ *
+ * 1,314 team-seasons stand on the wheel. 1,255 field a strict legal five — every man at a position
+ * Basketball-Reference listed for him — and `startingFive` above is, and stays, their five. 15 have
+ * fewer than five men in the card pool and still read "needs five". The other 44 have enough men
+ * but no strict board: the walk leaves a slot empty (Wizards '25 have no PF; Hawks '85 can fill
+ * neither SG nor SF behind Rivers and Wilkins). Those 44 had no dials, no season rank, and could not
+ * be loaded into Versus or Custom.
+ *
+ * THE RE-SOLVE, and only when the strict walk leaves a hole: re-choose the five letting a man stand
+ * ONE STEP (PG-SG-SF-PF-C) from a position he was listed at (positions.ts `oneStepFrom`). Of every
+ * such board, in this order:
+ *   (1) the FEWEST men out of position — 36 of the 44 need one, 8 need two (Hawks '85, Bullets '89,
+ *       Warriors '10, Jazz '12, Heat '15, Hawks '20, Warriors '26, Grizzlies '26); none needs three;
+ *   (2) the highest total OVR — the strict rule's own key;
+ *   (3) of tied SETS, recal_147's key (the Team DB's unrounded dial OVR, raw net beneath it), read
+ *       on the five as it would stand, penalty included;
+ *   (4) of that set's boards, the one where the most men of the strict (holed) board keep their seat;
+ *   (5) recal_74's arrangement: the PG with the most assists; then the first board found.
+ * Each man seated off his listed positions comes back as a marked COPY (`oop` = his seat,
+ * positions.ts `seatOutOfPosition`), never the card, and every engine path reads the mark:
+ * MKNOBS.OOP_DRTG = 0.13 on the five's DRtg per marked man (offense.ts defenseVs / teamDefense), so
+ * ratings100's drtgRef, the Team DB gauges and a simmed series all see the same penalised five.
+ *
+ * A club that fields strictly gets `startingFive`'s own result object back — the same five, the same
+ * slots, the same numbers, bit for bit. The DRAFT and every five a person builds never come here:
+ * `eligible` is still the whole of the draft's law.
+ */
+export function teamFive(roster: Player[]): { five: (Player | null)[]; bench: Player[] } {
+  const strict = startingFive(roster)
+  if (strict.five.every(Boolean) || roster.length < POSITIONS.length) return strict
+  const cands = roster.map((p) => ({ p, pos: eligible(LINES[p.name]?.pos) }))
+  type Board = { men: Player[]; off: boolean[] }
+  let bestK = Infinity
+  let bestSum = -1
+  let boards: Board[] = []
+  const men: Player[] = []
+  const off: boolean[] = []
+  const used = new Set<string>()
+  const walk = (i: number, k: number, sum: number) => {
+    if (k > bestK) return
+    if (i === POSITIONS.length) {
+      if (k < bestK || sum > bestSum) {
+        bestK = k
+        bestSum = sum
+        boards = []
+      }
+      if (sum === bestSum) boards.push({ men: [...men], off: [...off] })
+      return
+    }
+    const slot = POSITIONS[i]
+    for (const c of cands) {
+      if (used.has(c.p.name)) continue
+      const inPos = c.pos.includes(slot)
+      if (!inPos && !oneStepFrom(c.pos, slot)) continue
+      used.add(c.p.name)
+      men.push(c.p)
+      off.push(!inPos)
+      walk(i + 1, inPos ? k : k + 1, sum + c.p.ovr)
+      used.delete(c.p.name)
+      men.pop()
+      off.pop()
+    }
+  }
+  walk(0, 0, 0)
+  // no board even one step out: the roster stays as the strict walk left it ("needs five")
+  if (!boards.length) return strict
+  const mark = (b: Board): Player[] => b.men.map((p, i) => (b.off[i] ? seatOutOfPosition(p, POSITIONS[i]) : p))
+  // (3) the distinct SETS at the optimum, each with every board that spells it, in walk order
+  const sets = new Map<string, Board[]>()
+  for (const b of boards) {
+    const key = b.men
+      .map((p) => p.name)
+      .sort()
+      .join('|')
+    const at = sets.get(key)
+    if (at) at.push(b)
+    else sets.set(key, [b])
+  }
+  let pick = [...sets.values()][0]
+  if (sets.size > 1) {
+    let bestKey = -Infinity
+    let bestNet = -Infinity
+    for (const bs of sets.values()) {
+      const five = mark(bs[0])
+      const key = dialOvrRaw(five, seasonOf(five))
+      const r = ratings100(five)
+      const net = r.offRaw - r.drtgRef
+      if (key > bestKey || (key === bestKey && net > bestNet)) {
+        bestKey = key
+        bestNet = net
+        pick = bs
+      }
+    }
+  }
+  // (4) the strict board's men keep their seats; (5) recal_74, the PG with the most assists
+  const kept = (b: Board) => b.men.reduce((n, p, i) => n + (strict.five[i]?.name === p.name ? 1 : 0), 0)
+  const apg = (b: Board) => LINES[b.men[0].name]?.apg ?? 0
+  let board = pick[0]
+  for (const b of pick) {
+    const dk = kept(b) - kept(board)
+    if (dk > 0 || (dk === 0 && apg(b) > apg(board))) board = b
+  }
+  const five = mark(board)
+  const picked = new Set(five.map((p) => p.name))
+  return { five, bench: roster.filter((p) => !picked.has(p.name)).sort((a, b) => b.ovr - a.ovr) }
 }

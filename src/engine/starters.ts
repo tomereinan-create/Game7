@@ -1,7 +1,7 @@
 import STARTS from '../data/starters.json'
 import STATS from '../data/stats.json'
 import { WHEEL, type TeamSeason } from '../data/wheel'
-import { startingFive } from './bestfive'
+import { teamFive } from './bestfive'
 import { PLAYERS } from './pool'
 import { eligible, POSITIONS } from './positions'
 import type { Player, StatLine } from './types'
@@ -102,12 +102,17 @@ export function realStarters(year: number, ab: string, sitOut: ReadonlySet<strin
   return floorOrder(men)
 }
 
-/** The best legal five by OVR — the loader's other choice, and what it always was (bestfive.ts). */
+/**
+ * The best legal five by OVR — the loader's other choice, and what it always was (bestfive.ts). It is
+ * the TEAM-SEASON five, `teamFive`: where the strict walk leaves a hole (recal_232) a man stands one
+ * step out of position as a marked copy, and the engine charges his five for it — so a "best" load
+ * of Wizards '25 brings Valančiūnas at PF, penalised, instead of four men.
+ */
 export function bestStarters(year: number, ab: string, sitOut: ReadonlySet<string> = new Set()): Player[] {
   const t = teamSeason(year, ab)
   if (!t) return []
   const pool = t.p.map((n) => BY_NAME.get(n)).filter((p): p is Player => !!p && !sitOut.has(p.player))
-  return startingFive(pool).five.filter((p): p is Player => !!p)
+  return teamFive(pool).five.filter((p): p is Player => !!p)
 }
 
 export type FiveKind = 'real' | 'best'
