@@ -193,6 +193,10 @@ function Game() {
   /** P1: the draft opened by a first visit spins on arrival. Cleared the moment that night is simmed. */
   const [autoSpin, setAutoSpin] = useState(false)
   const [pickTeam, setPickTeam] = useState(false)
+  /** Men on the draft's board right now, and whether Home has been tapped once over them. */
+  const draftPicks = useRef(0)
+  const [homeArmed, setHomeArmed] = useState(false)
+  const armTimer = useRef(0)
   /**
    * ONE CLUB, ALL THREE LADDERS (his ruling, 2026-09-11: "Change it so there will be one team name,
    * colors, for all modes"). It used to be a field on each ladder's own save, so the city, the
@@ -678,7 +682,8 @@ function Game() {
       {CREATOR ? null : (
         <>
           <ImportPrompt />
-          <IosHint />
+          {/* never over a draft: it waits for a screen between picks (the map, a result, the door) */}
+          <IosHint quiet={screen === 'draft'} />
           <StandaloneWelcome />
         </>
       )}
@@ -729,6 +734,27 @@ function Game() {
     )
   }
 
+  /**
+   * HOME DOES NOT THROW A DRAFT AWAY ON ONE TAP (the live check, 2026-10-22: a toast's close button
+   * sat under this button, and one stray tap took a first-time visitor home and lost his picks).
+   * With men on the board the first tap only asks — "Tap again to leave" — and the second leaves,
+   * spending the attempt exactly as walking out through the map does (the wheel reseeds). Three
+   * seconds, then it forgets. No popup: window.confirm never renders on his phone.
+   */
+  const homeTap = () => {
+    if (screen === 'draft' && draftPicks.current > 0) {
+      if (!homeArmed) {
+        setHomeArmed(true)
+        window.clearTimeout(armTimer.current)
+        armTimer.current = window.setTimeout(() => setHomeArmed(false), 3000)
+        return
+      }
+      if (cm && prog) commit(cm, { ...prog, plays: prog.plays + 1 })
+    }
+    setHomeArmed(false)
+    draftPicks.current = 0
+    leave()
+  }
   // One home icon, pinned top-right on every screen but Home.
   const homeFab = (
     /* HIS RULING: "The home and map icons should be the same design as the stage." The two fabs
@@ -739,13 +765,20 @@ function Game() {
        works on every screen whether the body is skinned or not — and only inside a CAMPAIGN: a
        custom matchup, a hot-seat table and the auction stand on no block of the ladder, so an
        ember or a mint disc there would be naming a room they are not in. */
-    <button className={`home-fab ${cm ? skin : ''}`} onClick={leave} aria-label="Home" title="Home">
+    <>
+    {homeArmed ? (
+      <div className="home-arm" role="status">
+        Tap again to leave — your picks are lost
+      </div>
+    ) : null}
+    <button className={`home-fab ${cm ? skin : ''}${homeArmed ? ' armed' : ''}`} onClick={homeTap} aria-label={homeArmed ? 'Leave the draft' : 'Home'} title="Home">
       <svg viewBox="0 0 24 24" aria-hidden>
         <path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M5.5 10.5V20h13v-9.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         <path d="M10 20v-5.5h4V20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
       </svg>
     </button>
+    </>
   )
 
   if (mode === 'custom')
@@ -1032,6 +1065,7 @@ function Game() {
            all, so this is not a peek at the roster, it is the only move left. */
         onMyTeam={death && prog.roster ? () => { setLevel(null); setMyTeam(true) } : undefined}
         autoSpin={autoSpin}
+        onPicks={(n) => (draftPicks.current = n)}
         autoplay={!!CREATOR?.auto}
         creator={!!CREATOR}
       />

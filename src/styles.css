@@ -11028,3 +11028,26 @@ body.creator .shr-open { display: none; }
 /* and the side's name field takes the head's width rather than 60% of it ("'00 Los Angeles Lake") */
 .cu-side .card-head { gap: 8px; }
 .cu-side .cu-name { flex: 1 1 auto; width: auto; min-width: 0; text-overflow: ellipsis; }
+
+/* THE LIVE CHECK (2026-10-22) — the blocker. The Add-to-Home-Screen toast stood at the top-right
+   corner, its close button under the Home and map buttons (z 80 over its 70), so "Not now" was a tap
+   on Home. It sits below the two buttons now, and Home asks before it drops a draft (App.tsx). */
+.g7-toast { top: calc(env(safe-area-inset-top, 0px) + 66px); }
+@media (min-width: 900px) { .g7-toast { top: calc(env(safe-area-inset-top, 0px) + 78px); } }
+.home-fab.armed { border-color: var(--them, #ef4a63); color: var(--them, #ef4a63); }
+.home-arm {
+  position: fixed;
+  z-index: 81;
+  top: calc(env(safe-area-inset-top, 0px) + 60px);
+  right: 10px;
+  max-width: min(260px, calc(100vw - 20px));
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--them, #ef4a63);
+  background: var(--surface-2, #1b1712);
+  color: var(--ink, #f6f4ef);
+  font: 600 13px/1.3 var(--sans);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+  pointer-events: none;
+}
+@media (min-width: 900px) { .home-arm { top: calc(env(safe-area-inset-top, 0px) + 72px); } }

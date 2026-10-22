@@ -261,6 +261,7 @@ export function Draft({
   autoSpin = false,
   autoplay = false,
   creator = false,
+  onPicks,
 }: {
   opponent: Opponent
   seed: number
@@ -337,6 +338,8 @@ export function Draft({
    * dock hidden that bar is also the one control — it spins, drafts the lit man, and tips off.
    */
   creator?: boolean
+  /** How many men are on the board — App guards its Home button with it (the live check, 2026-10-22). */
+  onPicks?: (n: number) => void
 }) {
   // Death match starts with last level's five already placed; a normal draft starts empty.
   // The carried five arrives in SLOT ORDER (PG to C) — the order My team shows and the player can
@@ -1246,6 +1249,11 @@ export function Draft({
       window.setTimeout(() => onSim(five, assignment, toWin), 2500),
     )
   }
+  useEffect(() => {
+    onPicks?.(picks.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picks.length])
+
   /* P5: the funnel's third step — a five drafted in full (a death match's carried five does not count) */
   useEffect(() => {
     if (full && !carry && !creator) track('draft_complete', { level: opponent.round, salary, death })
